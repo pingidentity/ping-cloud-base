@@ -19,7 +19,7 @@ kustomize build ${CONFIG_ROOT_DIR} | tee ${CONFIG_FILE}
 echo "[dev-env] config written to ${CONFIG_FILE}"
 
 # Apply the configuration
-# echo "[dev-env] deploying environment ${ENVIRONMENT}"
+echo "[dev-env] deploying dev environment"
 
 # The kustomize included with kubectl is an older version. So this does not
 # work right. For now, we'll just send the output of kustomize to kubectl.
