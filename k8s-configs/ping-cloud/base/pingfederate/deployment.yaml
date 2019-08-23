@@ -1,0 +1,21 @@
+# This defines the pingfederate deployment.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pingfederate
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: pingfederate
+    spec:
+      containers:
+      - name: pingfederate
+        image: pingidentity/pingfederate:edge
+        ports:
+        - containerPort: 9999
+          name: pf-admin
+        envFrom:
+          - configMapRef:
+              name: environment-variables

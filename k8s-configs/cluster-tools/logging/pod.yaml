@@ -1,0 +1,145 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    kubernetes.io/psp: eks.privileged
+  creationTimestamp: "2019-08-22T23:23:23Z"
+  generateName: fluentd-
+  labels:
+    app: fluentd
+    controller-revision-hash: 575848f47f
+    pod-template-generation: "2"
+  name: fluentd-2rm9v
+  namespace: elastic-stack-logging
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: DaemonSet
+    name: fluentd
+    uid: edeea9bf-c51d-11e9-8ec8-0a7e041febb0
+  resourceVersion: "166550"
+  selfLink: /api/v1/namespaces/elastic-stack-logging/pods/fluentd-2rm9v
+  uid: d5eb6a5f-c533-11e9-9653-029026535bd6
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchFields:
+          - key: metadata.name
+            operator: In
+            values:
+            - ip-192-168-69-110.us-west-2.compute.internal
+  containers:
+  - env:
+    - name: FLUENT_ELASTICSEARCH_HOST
+      value: elasticsearch.elastic-stack-logging.svc.cluster.local
+    - name: FLUENT_ELASTICSEARCH_PORT
+      value: "9200"
+    - name: FLUENT_ELASTICSEARCH_SCHEME
+      value: http
+    - name: FLUENTD_SYSTEMD_CONF
+      value: disable
+    image: fluent/fluentd-kubernetes-daemonset:v1.4.2-debian-elasticsearch-1.1
+    imagePullPolicy: IfNotPresent
+    name: fluentd
+    resources:
+      limits:
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 200Mi
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /fluentd/etc/conf.d
+      name: kubernetes-namespace-logging
+      readOnly: true
+    - mountPath: /var/log
+      name: varlog
+    - mountPath: /var/lib/docker/containers
+      name: varlibdockercontainers
+      readOnly: true
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: fluentd-token-2hgfz
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  nodeName: ip-192-168-69-110.us-west-2.compute.internal
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: fluentd
+  serviceAccountName: fluentd
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/disk-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/unschedulable
+    operator: Exists
+  volumes:
+  - configMap:
+      defaultMode: 420
+      name: kubernetes-namespace-logging
+    name: kubernetes-namespace-logging
+  - hostPath:
+      path: /var/log
+      type: ""
+    name: varlog
+  - hostPath:
+      path: /var/lib/docker/containers
+      type: ""
+    name: varlibdockercontainers
+  - name: fluentd-token-2hgfz
+    secret:
+      defaultMode: 420
+      secretName: fluentd-token-2hgfz
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2019-08-22T23:23:23Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2019-08-22T23:23:25Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2019-08-22T23:23:25Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2019-08-22T23:23:23Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: docker://33f05ed1befcca072069aea1599a50bc8d9a3bd2bb6fc30832362576e2d52e11
+    image: fluent/fluentd-kubernetes-daemonset:v1.4.2-debian-elasticsearch-1.1
+    imageID: docker-pullable://fluent/fluentd-kubernetes-daemonset@sha256:ce4885865850d3940f5e5318066897b8502c0b955066392de7fd4ef6f1fd4275
+    lastState: {}
+    name: fluentd
+    ready: true
+    restartCount: 0
+    state:
+      running:
+        startedAt: "2019-08-22T23:23:24Z"
+  hostIP: 192.168.69.110
+  phase: Running
+  podIP: 192.168.89.91
+  qosClass: Burstable
+  startTime: "2019-08-22T23:23:23Z"

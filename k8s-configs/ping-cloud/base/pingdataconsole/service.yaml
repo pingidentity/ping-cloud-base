@@ -1,0 +1,10 @@
+# This service exposes the http port to the cluster.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: pingdataconsole-service
+spec:
+  ports:
+    - port: 8080
+      name: http

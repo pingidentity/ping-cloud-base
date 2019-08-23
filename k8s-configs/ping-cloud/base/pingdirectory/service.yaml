@@ -1,0 +1,12 @@
+# Headless service that provides DNS between the pods in the pingdirectory
+# topology
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ds-topology
+spec:
+  ports:
+  - port: 636
+    name: ldaps
+  clusterIP: None

@@ -1,0 +1,82 @@
+# This defines the deployment (as a stateful set) of the pingdirectory servers
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ds
+spec:
+  serviceName: ds-topology
+  replicas: 1
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
+  template:
+    metadata:
+      annotations:
+        lastUpdateTime: "NA"
+    spec:
+      volumes:
+      - name: passwords
+        secret:
+          secretName: passwords
+          defaultMode: 256
+      - name: out-dir
+        persistentVolumeClaim:
+          claimName: out-dir
+      terminationGracePeriodSeconds: 300
+      containers:
+      - name: ds
+        image: pingidentity/pingdirectory:edge
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 389
+          name: ldap
+        - containerPort: 636
+          name: ldaps
+        resources:
+          requests:
+            memory: "12Gi"
+            cpu: "1"
+          limits:
+            memory: "12Gi"
+            cpu: "1"
+        env:
+        - name: K8S_STATEFUL_SET_NAME
+          value: ds
+        - name: K8S_STATEFUL_SET_SERVICE_NAME
+          value: $(K8S_STATEFUL_SET_SERVICE_NAME)
+        envFrom:
+        - configMapRef:
+            name: environment-variables
+        volumeMounts:
+        - name: out-dir
+          mountPath: /opt/out
+        - name: passwords
+          mountPath: /usr/local/secrets
+          readOnly: true
+        readinessProbe:
+          exec:
+            command: [ liveness.sh ]
+          periodSeconds: 30
+          failureThreshold: 120
+        livenessProbe:
+          exec:
+            command: [ liveness.sh ]
+          initialDelaySeconds: 600
+          periodSeconds: 30
+          failureThreshold: 10
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - ${STAGING_DIR}/hooks/90-shutdown-sequence.sh
+  volumeClaimTemplates:
+  - metadata:
+      name: out-dir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: io1
+      resources:
+        requests:
+          storage: 400Gi

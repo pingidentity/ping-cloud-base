@@ -1,0 +1,9 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+- namespace.yaml
+- rbac.yaml
+
+# Web link: https://github.com/kubernetes/ingress-nginx/blob/nginx-0.25.1/deploy/aws/nlb
+- https://github.com/kubernetes/ingress-nginx/deploy/aws/nlb?ref=nginx-0.25.1

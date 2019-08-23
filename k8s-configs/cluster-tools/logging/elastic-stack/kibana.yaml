@@ -1,0 +1,68 @@
+# This defines the ingress for the Kibana dashboard
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: kibana-ingress
+  labels:
+    app: kibana
+spec:
+  tls:
+  - hosts:
+    - kibana.pingcloud.ping-eng.com
+  rules:
+  - host: kibana.pingcloud.ping-eng.com
+    http:
+      paths:
+        # This rule gives external access to the dashboard
+        - path: /
+          backend:
+            serviceName: kibana
+            servicePort: 5601
+
+---
+
+# This service exposes the Kibana http port to the cluster.
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana
+  labels:
+    app: kibana
+spec:
+  ports:
+  - port: 5601
+  selector:
+    app: kibana
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana
+  labels:
+    app: kibana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kibana
+  template:
+    metadata:
+      labels:
+        app: kibana
+    spec:
+      containers:
+      - name: kibana
+        image: docker.elastic.co/kibana/kibana:7.2.0
+        resources:
+          limits:
+            cpu: 1000m
+          requests:
+            cpu: 100m
+        env:
+          - name: ELASTICSEARCH_URL
+            value: http://elasticsearch:9200
+        ports:
+        - containerPort: 5601
+          name: http

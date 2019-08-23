@@ -1,0 +1,19 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+namespace: ping-cloud
+
+commonLabels:
+  app: ping-cloud
+
+resources:
+- namespace.yaml
+- ./pingdirectory
+- ./pingdataconsole
+#- ./pingfederate
+#- ./pingaccess
+
+configMapGenerator:
+- name: environment-variables
+  behavior: merge
+  env: env_vars

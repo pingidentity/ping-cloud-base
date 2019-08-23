@@ -1,0 +1,28 @@
+# This defines the ingress for the management console and currently provides
+# SSL termination with a self-signed certificate.
+
+# NOTE: it will only work if an ingress controller (e.g. nginx) is running on
+# your cluster.
+
+# FIXME: Change ingress controller certificate to CA-signed certificate.
+# FIXME: Currently the LB is registered with a wildcard CNAME on Scalr for the
+#        pingcloud sub-domain under ping-eng.com. Change it to some other
+#        external DNS service (e.g. Route53) instead.
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: pingdataconsole-ingress
+spec:
+  tls:
+  - hosts:
+    - internal.pingcloud.ping-eng.com
+  rules:
+  - host: internal.pingcloud.ping-eng.com
+    http:
+      paths:
+        # This rule gives external access to the pingdirectory console
+        - path: /console
+          backend:
+            serviceName: pingdataconsole-service
+            servicePort: 8080

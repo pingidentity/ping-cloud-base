@@ -1,0 +1,23 @@
+# This defines the network policy for pod access
+# NOTE: this will only work if a network provider that supports network policy
+# (e.g. Calico) is installed on your cluster.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: intra-ds-network-policy
+spec:
+  podSelector:
+    matchLabels:
+      app: ping-cloud
+  policyTypes:
+  - Ingress
+  ingress:
+    # Only pods within the namespace and the nginx ingress controller
+    # pod can get to the pods in the namespace.
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          namespace: ping-cloud
+    - namespaceSelector:
+        matchLabels:
+          app.kubernetes.io/name: ingress-nginx

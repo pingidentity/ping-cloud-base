@@ -1,0 +1,18 @@
+# This defines the ping data console deployment
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pingdataconsole-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: pingdataconsole
+    spec:
+      containers:
+      - name: pingdataconsole
+        image: pingidentity/pingdataconsole:edge
+        ports:
+        - containerPort: 8080
+          name: http

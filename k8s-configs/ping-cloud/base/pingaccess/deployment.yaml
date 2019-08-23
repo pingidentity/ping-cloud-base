@@ -1,0 +1,23 @@
+# This defines the pingaccess deployment.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pingaccess
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: pingaccess
+    spec:
+      containers:
+      - name: pingaccess
+        image: pingidentity/pingaccess:edge
+        ports:
+        - containerPort: 9000
+          name: pa-admin
+        - containerPort: 443
+          name: https
+        envFrom:
+          - configMapRef:
+              name: environment-variables

@@ -1,0 +1,38 @@
+# This defines the ingress for the pingaccess management console.
+
+# NOTE: it will only work if an ingress controller (e.g. nginx) is running on
+# your cluster.
+
+# FIXME: Change ingress controller certificate to CA-signed certificate.
+# FIXME: Currently the LB is registered with a wildcard CNAME on Scalr for the
+#        pingcloud sub-domain under ping-eng.com. Change it to some other
+#        external DNS service (e.g. Route53) instead.
+# FIXME: Make pingaccess listen on non-secure port so SSL can be terminated at
+#        the LB.
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: pingaccess-ingress
+  labels:
+    role: pingaccess
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  tls:
+  - hosts:
+    - internal.pingcloud.ping-eng.com
+  rules:
+  - host: internal.pingcloud.ping-eng.com
+    http:
+      paths:
+        # This rule gives external access to the pingaccess console service
+        - path: /pa-console
+          backend:
+            serviceName: pingaccess-console-serviec
+            servicePort: 443
+        # This rule gives external access to the pingaccess admin service
+        - path: /pa-admin
+          backend:
+            serviceName: pingaccess-admin-service
+            servicePort: 9000
