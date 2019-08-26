@@ -2,13 +2,16 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
+#- ../common
 - deployment.yaml
 - service.yaml
 - ingress.yaml
+
+#namePrefix: pingaccess-
 
 commonLabels:
   role: pingaccess
 
 configMapGenerator:
-- name: environment-variables
+- name: pingaccess-environment-variables
   env: env_vars

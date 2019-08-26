@@ -8,12 +8,7 @@ commonLabels:
 
 resources:
 - namespace.yaml
-- ./pingdirectory
-- ./pingdataconsole
-#- ./pingfederate
-#- ./pingaccess
-
-configMapGenerator:
-- name: environment-variables
-  behavior: merge
-  env: env_vars
+- pingaccess
+- pingdataconsole
+- pingdirectory
+- pingfederate

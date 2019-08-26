@@ -18,4 +18,4 @@ spec:
           name: pf-admin
         envFrom:
           - configMapRef:
-              name: environment-variables
+              name: pingfederate-environment-variables

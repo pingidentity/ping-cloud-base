@@ -27,12 +27,13 @@ spec:
     http:
       paths:
         # This rule gives external access to the pingaccess console service
-        - path: /pa-console
+        - path: /
           backend:
-            serviceName: pingaccess-console-serviec
-            servicePort: 443
-        # This rule gives external access to the pingaccess admin service
-        - path: /pa-admin
-          backend:
-            serviceName: pingaccess-admin-service
+            serviceName: pingaccess-console-service
             servicePort: 9000
+
+        # This rule gives external access to the pingaccess admin service
+#        - path: /pa-admin
+#          backend:
+#            serviceName: pingaccess-admin-service
+#            servicePort: 443

@@ -13,7 +13,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: pingfederate-admin-service-ingress
+  name: pingfederate-ingress
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
 spec:
@@ -25,7 +25,7 @@ spec:
     http:
       paths:
         # This rule gives external access to the pingfederate admin console
-        - path: /pf-admin
+        - path: /pingfederate/app
           backend:
             serviceName: pingfederate-admin-service
             servicePort: 9999

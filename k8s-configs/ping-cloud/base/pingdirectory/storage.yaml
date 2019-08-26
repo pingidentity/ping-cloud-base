@@ -3,7 +3,7 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: io1
+  name: pingdirectory-io1
 provisioner: kubernetes.io/aws-ebs
 parameters:
   type: io1

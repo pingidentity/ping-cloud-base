@@ -14,7 +14,8 @@ spec:
     http:
       paths:
         # This rule gives external access to the dashboard
-        - path: /kibana
+        # FIXME: The Kibana dashboard only works if base path is /
+        - path: /
           backend:
             serviceName: kibana
             servicePort: 5601

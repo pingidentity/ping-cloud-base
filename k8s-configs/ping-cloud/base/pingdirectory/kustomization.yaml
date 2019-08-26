@@ -2,23 +2,29 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
+#- ../common
 - storage.yaml
 - secret.yaml
 - statefulset.yaml
 - service.yaml
 
+#namePrefix: pingdirectory-
+
 commonLabels:
   role: pingdirectory
 
 configMapGenerator:
-- name: environment-variables
+- name: pingdirectory-environment-variables
   env: env_vars
 
 vars:
-- name: K8S_STATEFUL_SET_SERVICE_NAME
+- name: K8S_STATEFUL_SET_NAME
   objref:
     kind: StatefulSet
     name: ds
     apiVersion: apps/v1
-  fieldref:
-    fieldpath: spec.serviceName
+- name: K8S_STATEFUL_SET_SERVICE_NAME
+  objref:
+    kind: Service
+    name: ds-topology
+    apiVersion: v1

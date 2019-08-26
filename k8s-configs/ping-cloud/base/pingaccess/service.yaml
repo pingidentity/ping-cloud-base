@@ -6,8 +6,8 @@ metadata:
   name: pingaccess-console-service
 spec:
   ports:
-    - port: 443
-      name: https
+    - port: 9000
+      name: pa-console
 
 ---
 
@@ -19,5 +19,5 @@ metadata:
   name: pingaccess-admin-service
 spec:
   ports:
-    - port: 9000
+    - port: 443
       name: pa-admin
