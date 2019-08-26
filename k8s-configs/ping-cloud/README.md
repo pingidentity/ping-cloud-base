@@ -1,50 +1,26 @@
 # Summary
 
-This directory contains all the Kubernetes configuration files that may be used
-to deploy the Ping Cloud software stack to a Kubernetes cluster.
+This directory contains all the base Kubernetes configuration files that may be
+used to deploy the Ping Cloud software stack onto a Kubernetes cluster.
 
-# Variables
+# Customization
 
-The configuration files contain variables so there are no collisions when they
-are applied through the CI/CD pipeline.
-
-If these Kubernetes configuration files are to be directly applied with
-"kubectl apply -k" (e.g. kubectl apply -k overlays/prod), then all occurrences
-of these variables must be replaced with unique values appropriate for the
-Kubernetes cluster.
-
-The following variables are currently used and sourced from .gitlab-ci.yml:
+The configuration in this repository may be used as a base for any customer
+deployment by simply providing a kustomization.yaml file that looks like this:
 
 ```
-NAMESPACE_NAME - a unique name for the environment
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+- https://gitlab.corp.pingidentity.com/ping-cloud-private-tenant/ping-cloud-base/k8s-configs?ref=master
 ```
 
-The following sed command may be used on Unix systems to recursively replace
-any variable (e.g. ${NAMESPACE_NAME}) with appropriate values:
-
-
-```
-find . -type f -exec sed -i.bak 's|\${NAMESPACE_NAME}|k8s-icecream|g' {} \;
-```
-
-where "k8s-icecream" is the namespace where the configuration files will be
-applied on the Kubernetes cluster.
-
-Alternatively, the consolidated Kubernetes manifest may be generated for the
-production environment by running:
+In addition, some overrides must be provided (e.g. via secret and configmap
+generators) for the DEVOPS user/key and the ingress URLs at a minimum. The
+tests/kustomize directory shows an example of how this can be done. Then, a new
+environment may simply be created by running:
 
 ```
-NAMESPACE=k8s-icecream kustomize build overlays/prod
+kubectl apply -k .
 ```
-
-# CI/CD Pipeline
-
-The following command must be run on the  Gitlab runner to apply the
-configuration files:
-
-```
-kustomize build overlays/${PROFILE} | envsubst | kubectl apply -f -
-```
-
-where PROFILE may be one of "prod" or "test" and set in .gitlab-ci.yml.
-If PROFILE is not set, then "test" is automatically assumed.
