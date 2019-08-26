@@ -16,9 +16,9 @@ metadata:
 spec:
   tls:
   - hosts:
-    - internal.pingcloud.ping-eng.com
+    - dev.ping-demo.com
   rules:
-  - host: internal.pingcloud.ping-eng.com
+  - host: dev.ping-demo.com
     http:
       paths:
         # This rule gives external access to the pingdirectory console

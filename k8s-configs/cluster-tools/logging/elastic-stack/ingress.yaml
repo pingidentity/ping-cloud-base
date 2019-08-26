@@ -1,0 +1,20 @@
+# This defines the ingress for the Kibana dashboard
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: kibana-ingress
+  labels:
+    app: kibana
+spec:
+  tls:
+  - hosts:
+    - dev.ping-demo.com
+  rules:
+  - host: dev.ping-demo.com
+    http:
+      paths:
+        # This rule gives external access to the dashboard
+        - path: /kibana
+          backend:
+            serviceName: kibana
+            servicePort: 5601
