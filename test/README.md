@@ -20,9 +20,8 @@ at the very minimum:
 - TENANT_DOMAIN
 
 The DEVOPS user and key may be obtained from the Ping DevOps GTE team here:
-```
+
 https://docs.google.com/forms/d/e/1FAIpQLSdgEFvqQQNwlsxlT6SaraeDMBoKFjkJVCyMvGPVPKcrzT3yHA/viewform
-```
 
 The TENANT_DOMAIN must be an AWS registered domain and hosted zone on Route53 in
 the same AWS IAM role (e.g. arn:aws:iam::574076504146:role/GTE) as your EKS
@@ -65,6 +64,5 @@ https://logs.k8s-icecream.ping-devops.com
 ```
 
 Information to access the environments may be found here:
-```
+
 https://github.com/pingidentity/pingidentity-devops-getting-started/tree/master/11-docker-compose/03-full-stack
-```
