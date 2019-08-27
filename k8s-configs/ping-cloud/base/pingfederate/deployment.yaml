@@ -16,6 +16,8 @@ spec:
         ports:
         - containerPort: 9999
           name: pf-admin
+        - containerPort: 9031
+          name: oauthplayground
         envFrom:
           - configMapRef:
               name: pingfederate-environment-variables

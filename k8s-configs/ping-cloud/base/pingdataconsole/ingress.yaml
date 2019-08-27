@@ -5,9 +5,6 @@
 # your cluster.
 
 # FIXME: Change ingress controller certificate to CA-signed certificate.
-# FIXME: Currently the LB is registered with a wildcard CNAME on Scalr for the
-#        pingcloud sub-domain under ping-eng.com. Change it to some other
-#        external DNS service (e.g. Route53) instead.
 
 apiVersion: extensions/v1beta1
 kind: Ingress

@@ -4,10 +4,7 @@
 # your cluster.
 
 # FIXME: Change ingress controller certificate to CA-signed certificate.
-# FIXME: Currently the LB is registered with a wildcard CNAME on Scalr for the
-#        pingcloud sub-domain under ping-eng.com. Change it to some other
-#        external DNS service (e.g. Route53) instead.
-# FIXME: Make pingaccess listen on non-secure port so SSL can be terminated at
+# FIXME: Make pingfederate listen on non-secure port so SSL can be terminated at
 #        the LB.
 
 apiVersion: extensions/v1beta1
@@ -29,3 +26,7 @@ spec:
           backend:
             serviceName: pingfederate-admin-service
             servicePort: 9999
+        - path: /OAuthPlayground
+          backend:
+            serviceName: oauth-playground-service
+            servicePort: 9031
