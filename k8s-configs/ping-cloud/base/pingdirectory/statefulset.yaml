@@ -76,7 +76,7 @@ spec:
     spec:
       accessModes:
       - ReadWriteOnce
-      storageClassName: io1
+      storageClassName: pingdirectory-io1
       resources:
         requests:
           storage: 400Gi
