@@ -26,11 +26,11 @@ spec:
         # This rule gives external access to the pingaccess console service
         - path: /
           backend:
-            serviceName: pingaccess-console-service
+            serviceName: pingaccess
             servicePort: 9000
 
         # This rule gives external access to the pingaccess admin service
 #        - path: /pa-admin
 #          backend:
-#            serviceName: pingaccess-admin-service
+#            serviceName: pingaccess
 #            servicePort: 443

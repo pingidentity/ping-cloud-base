@@ -24,9 +24,11 @@ spec:
         # This rule gives external access to the pingfederate admin console
         - path: /pingfederate/app
           backend:
-            serviceName: pingfederate-admin-service
+            serviceName: pingfederate
             servicePort: 9999
+
+         # This rule gives external access to the OAuth playground
         - path: /OAuthPlayground
           backend:
-            serviceName: oauth-playground-service
+            serviceName: pingfederate
             servicePort: 9031

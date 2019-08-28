@@ -5,7 +5,7 @@ kind: StatefulSet
 metadata:
   name: ds
 spec:
-  serviceName: ds-topology
+  serviceName: pingdirectory
   replicas: 1
   updateStrategy:
     type: RollingUpdate

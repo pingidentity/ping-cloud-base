@@ -1,23 +1,13 @@
-# This service exposes the pingfederate admin port to the cluster.
+# This service exposes the pingfederate admin and OAuthPlayground ports to the
+# cluster.
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: pingfederate-admin-service
+  name: pingfederate
 spec:
   ports:
     - port: 9999
-      name: pf-admin
-
----
-
-# This service exposes the oauth playground to the cluster.
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: oauth-playground-service
-spec:
-  ports:
+      name: pf-console
     - port: 9031
       name: oauthplayground

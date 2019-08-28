@@ -3,7 +3,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pingdataconsole-deployment
+  name: pingdataconsole
 spec:
   replicas: 1
   template:

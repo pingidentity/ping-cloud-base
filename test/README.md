@@ -45,19 +45,16 @@ When all pods are ready, you should be able to access the following URLs:
 
 ```
 Pingdirectory console:
-https://k8s-icecream.ping-devops.com/console
-
-Pingdirectory data:
-https://k8s-icecream.ping-devops.com/dc=example,dc=com
+https://pingdataconsolek8s-icecream.ping-devops.com/console
 
 Pingfederate console:
-https://k8s-icecream.ping-devops.com/pingfederate/app
+https://pingfederate.k8s-icecream.ping-devops.com/pingfederate/app
 
 OAuthPlayground:
-https://k8s-icecream.ping-devops.com/OAuthPlayground
+https://pingfederate.k8s-icecream.ping-devops.com/OAuthPlayground
 
 Pingaccess console:
-https://k8s-icecream.ping-devops.com
+https://pingaccess.k8s-icecream.ping-devops.com
 
 Kibana console:
 https://logs.k8s-icecream.ping-devops.com

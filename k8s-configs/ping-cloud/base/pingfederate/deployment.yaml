@@ -15,7 +15,7 @@ spec:
         image: pingidentity/pingfederate:edge
         ports:
         - containerPort: 9999
-          name: pf-admin
+          name: pf-console
         - containerPort: 9031
           name: oauthplayground
         envFrom:

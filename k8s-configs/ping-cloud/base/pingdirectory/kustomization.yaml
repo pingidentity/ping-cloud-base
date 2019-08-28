@@ -26,5 +26,5 @@ vars:
 - name: K8S_STATEFUL_SET_SERVICE_NAME
   objref:
     kind: Service
-    name: ds-topology
+    name: pingdirectory
     apiVersion: v1
