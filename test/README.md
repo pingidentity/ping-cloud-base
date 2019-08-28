@@ -1,7 +1,7 @@
 # Summary
 
 This directory allows anyone to set up a cookie-cutter Ping Software stack on
-a Kubernete clusters for evaluation purposes. Currently only AWS EKS clusters
+a Kubernetes cluster for evaluation purposes. Currently only AWS EKS clusters
 are supported.
 
 # Testing
@@ -45,13 +45,13 @@ When all pods are ready, you should be able to access the following URLs:
 
 ```
 Pingdirectory console:
-https://pingdataconsolek8s-icecream.ping-devops.com/console
+https://pingdataconsole.k8s-icecream.ping-devops.com/console
 
 Pingfederate console:
 https://pingfederate.k8s-icecream.ping-devops.com/pingfederate/app
 
-OAuthPlayground:
-https://pingfederate.k8s-icecream.ping-devops.com/OAuthPlayground
+Pingfederate authorization server endpoints:
+https://pingfederate.k8s-icecream.ping-devops.com
 
 Pingaccess console:
 https://pingaccess.k8s-icecream.ping-devops.com
