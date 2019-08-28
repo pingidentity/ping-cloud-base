@@ -27,8 +27,8 @@ spec:
             serviceName: pingfederate
             servicePort: 9999
 
-         # This rule gives external access to the OAuth playground
-        - path: /OAuthPlayground
+         # This rule gives external access to the pingfederate AS endpoints
+        - path: /
           backend:
             serviceName: pingfederate
             servicePort: 9031
