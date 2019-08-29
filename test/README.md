@@ -33,7 +33,7 @@ Refer to the AWS online documentation on how to set these up.
 To build the environment, simply run:
 
 ```
-kustomize build https://gitlab.corp.pingidentity.com/ping-cloud-private-tenant/ping-cloud-base/test?ref=master | envsubst | kubectl apply -f -
+kustomize build https://github.com/pingidentity/ping-cloud-base/test?ref=master | envsubst | kubectl apply -f -
 ```
 
 Monitor it by running:
@@ -60,6 +60,6 @@ Kibana console:
 https://logs.k8s-icecream.ping-devops.com
 ```
 
-Information to access the environments may be found here:
+Information on how to access the environments may be found here:
 
 https://github.com/pingidentity/pingidentity-devops-getting-started/tree/master/11-docker-compose/03-full-stack
