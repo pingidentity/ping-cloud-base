@@ -12,7 +12,7 @@ spec:
     spec:
       containers:
       - name: pingfederate
-        image: pingidentity/pingfederate:edge
+        image: pingidentity/pingfederate:9.3.0-edge
         ports:
         - containerPort: 9999
           name: pf-console
