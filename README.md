@@ -65,4 +65,33 @@ Information on how to access the environments may be found here:
 
 https://github.com/pingidentity/pingidentity-devops-getting-started/tree/master/11-docker-compose/03-full-stack
 
+# Customization
+
+The configuration in this repository may be used as a base for any customer
+deployment by simply providing a kustomization.yaml file that looks like this:
+
+```
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+- https://github.com/pingidentity/ping-cloud-base/k8s-configs?ref=master
+```
+
+In addition, some overrides must be provided (e.g. via secret and configmap
+generators) for the DEVOPS user/key and the ingress URLs at a minimum. The
+test directory shows an example of how this can be done. Then, a new environment
+may simply be created by running:
+
+```
+kustomize build . | kubectl apply -f -
+```
+
+Note that the manifest files only work with kustomize v3.1.0 or later. The
+kustomize that's included in kubectl is of an older version. So the following
+direct invocation from kubectl does not work at the moment.
+
+```
+kubectl apply -k .
+```
 
