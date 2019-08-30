@@ -2,6 +2,7 @@
 set -ex
 
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
+. ${SCRIPT_HOME}/../common.sh
 
 # Kubernetes variables
 KUBECONFIG=${CI_PROJECT_DIR}/kubeconfig
