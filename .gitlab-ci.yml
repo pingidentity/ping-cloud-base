@@ -1,0 +1,48 @@
+## Pipeline stages ##
+stages:
+  - build
+  - test
+
+## Global environment variables ##
+variables:
+  TENANT_DOMAIN: ${CI_COMMIT_REF_SLUG}.ping-aws.com
+
+## Build stage ##
+deploy:
+  stage: build
+  tags:
+    - platform-publish-docker
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+  script:
+    - ./ci-scripts/build/deploy.sh
+  only:
+    changes:
+      - k8s-config/**/*
+      - test/**/*
+
+wait-until-ready:
+  stage: build
+  script:
+    - ./ci-scripts/build/wait-until-ready.sh
+
+## Test stage ##
+pd-unit-tests:
+  stage: test
+  script:
+    - ./ci-scripts/test/run-test.sh pingdirectory
+
+pf-unit-tests:
+  stage: test
+  script:
+    - ./ci-scripts/test/run-test.sh pingfederate
+
+pa-unit-tests:
+  stage: test
+  script:
+    - ./ci-scripts/test/run-test.sh pingaccess
+
+integration-tests:
+  stage: test
+  script:
+    - ./ci-scripts/test/run-test.sh integration
+
