@@ -22,27 +22,37 @@ deploy:
 
 wait-until-ready:
   stage: build
+  tags:
+    - shell-runner
   script:
     - sh ./ci-scripts/build/wait-until-ready.sh
 
 ## Test stage ##
 pd-unit-tests:
   stage: test
+  tags:
+    - shell-runner
   script:
     - sh ./ci-scripts/test/run-test.sh pingdirectory
 
 pf-unit-tests:
   stage: test
+  tags:
+    - shell-runner
   script:
     - sh ./ci-scripts/test/run-test.sh pingfederate
 
 pa-unit-tests:
   stage: test
+  tags:
+    - shell-runner
   script:
     - sh ./ci-scripts/test/run-test.sh pingaccess
 
 integration-tests:
   stage: test
+  tags:
+    - shell-runner
   script:
     - sh ./ci-scripts/test/run-test.sh integration
 
