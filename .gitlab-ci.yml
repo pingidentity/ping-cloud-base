@@ -15,10 +15,10 @@ deploy:
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
     - sh ./ci-scripts/build/deploy.sh
-  only:
-    changes:
-      - k8s-config/**/*
-      - test/**/*
+#  only:
+#    changes:
+#      - k8s-config/**/*
+#      - test/**/*
 
 wait-until-ready:
   stage: build
