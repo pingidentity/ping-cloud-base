@@ -17,7 +17,7 @@ PING_ACCESS_CONSOLE=https://pingaccess.${TENANT_DOMAIN}
 # Arguments
 #   $1 -> The message to echo
 ##########################################################################
-function log {
+log() {
   echo "$(date) $1"
 }
 
@@ -29,7 +29,7 @@ function log {
 # Returns:
 #   0 on success; non-zero on failure
 ##########################################################################
-function testUrl {
+testUrl() {
   log "Testing URL: $1"
   wget --spider --no-check-certificate $1 >/dev/null 2>&1
   exit_code=$?
@@ -47,7 +47,7 @@ function testUrl {
 # Returns:
 #   Command's exit code.
 ##########################################################################
-function retryWithBackoff {
+retryWithBackoff() {
   max_attempts=$1
   timeout=$2
   command=$3

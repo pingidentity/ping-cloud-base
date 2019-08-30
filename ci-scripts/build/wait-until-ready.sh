@@ -4,7 +4,7 @@ set -e
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 . ${SCRIPT_HOME}/../common.sh
 
-function isReady() {
+isReady() {
   STATUS=$(kubectl get pods -n ping-cloud --no-headers | awk '{ print $2; }')
 
   NUM_PODS=$(echo ${STATUS} | wc | awk '{ print $2; }')
