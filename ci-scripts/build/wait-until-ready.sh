@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
