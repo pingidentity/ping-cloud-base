@@ -59,7 +59,9 @@ retryWithBackoff() {
     "${command}"
     exit_code=$?
 
-    [[ ${exit_code} == 0 ]] && break
+    if [[ ${exit_code} == 0 ]]; then
+      break
+    fi
 
     log "Failed attempt ${attempt} - retrying in ${timeout} seconds"
     sleep ${timeout}

@@ -17,7 +17,7 @@ deploy:
     - sh ./ci-scripts/build/deploy.sh
 #  only:
 #    changes:
-#      - k8s-config/**/*
+#      - k8s-configs/**/*
 #      - test/**/*
 
 wait-until-ready:

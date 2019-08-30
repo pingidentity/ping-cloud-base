@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+set -ex
 
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 . ${SCRIPT_HOME}/../common.sh
@@ -13,7 +13,11 @@ isReady() {
   NUM_READY=$(echo ${STATUS} | grep -o '1/1' | wc -l | awk '{ print $1; }')
   log "number ready: ${NUM_READY}"
 
-  [[ ${NUM_READY} -eq ${NUM_PODS} ]] && return 0 || return 1
+  if [[ ${NUM_READY} -eq ${NUM_PODS} ]]; then
+    return 0
+  else
+    return 1
+  fi
 }
 
 # Check if all pods are ready 60 times with an initial timeout of 2 seconds

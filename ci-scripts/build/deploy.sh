@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+set -ex
 
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 
@@ -32,4 +32,5 @@ echo "aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}" >> "${AWS_CREDENTIALS_FI
 echo "role_arn = ${AWS_ROLE_ARN}" >> "${AWS_CREDENTIALS_FILE}"
 
 # Deploy to Kubernetes
+log "Deploying config under ${CI_PROJECT_DIR}/test"
 kustomize build ${CI_PROJECT_DIR}/test | envsubst | kubectl apply -f -
