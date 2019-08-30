@@ -2,7 +2,7 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-- https://gitlab.corp.pingidentity.com/ping-cloud-private-tenant/ping-cloud-base/test?ref=master
+- ../k8s-configs
 
 configMapGenerator:
 - name: pingaccess-environment-variables

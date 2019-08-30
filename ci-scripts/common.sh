@@ -55,11 +55,11 @@ retryWithBackoff() {
   attempt=0
   exit_code=0
 
-  while [[ ${attempt} < ${max_attempts} ]]; do
+  while [ ${attempt} < ${max_attempts} ]; do
     "${command}"
     exit_code=$?
 
-    if [[ ${exit_code} == 0 ]]; then
+    if [ ${exit_code} == 0 ]; then
       break
     fi
 

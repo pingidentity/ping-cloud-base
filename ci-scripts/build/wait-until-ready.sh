@@ -13,7 +13,7 @@ isReady() {
   NUM_READY=$(echo ${STATUS} | grep -o '1/1' | wc -l | awk '{ print $1; }')
   log "number ready: ${NUM_READY}"
 
-  if [[ ${NUM_READY} -eq ${NUM_PODS} ]]; then
+  if [ ${NUM_READY} -eq ${NUM_PODS} ]; then
     return 0
   else
     return 1
