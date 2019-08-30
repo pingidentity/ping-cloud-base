@@ -28,6 +28,19 @@ parameters:
 mountOptions:
   - discard
 ---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: elasticsearch-gp2
+  labels:
+    app: elasticsearch
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: gp2
+  fsType: ext4
+mountOptions:
+  - discard
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -100,7 +113,7 @@ spec:
         app: elasticsearch
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      storageClassName: elasticsearch-io1
+      storageClassName: elasticsearch-gp2
       resources:
         requests:
-          storage: 100Gi
+          storage: 10Gi

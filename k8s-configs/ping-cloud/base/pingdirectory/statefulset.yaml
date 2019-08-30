@@ -35,10 +35,10 @@ spec:
           name: ldaps
         resources:
           requests:
-            memory: "12Gi"
+            memory: "6Gi"
             cpu: "1"
           limits:
-            memory: "12Gi"
+            memory: "6Gi"
             cpu: "1"
         env:
         - name: K8S_STATEFUL_SET_NAME
@@ -69,14 +69,14 @@ spec:
           preStop:
             exec:
               command:
-              - ${STAGING_DIR}/hooks/90-shutdown-sequence.sh
+              - /opt/staging/hooks/90-shutdown-sequence.sh
   volumeClaimTemplates:
   - metadata:
       name: out-dir
     spec:
       accessModes:
       - ReadWriteOnce
-      storageClassName: pingdirectory-io1
+      storageClassName: pingdirectory-gp2
       resources:
         requests:
-          storage: 400Gi
+          storage: 10Gi
