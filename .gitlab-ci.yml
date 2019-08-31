@@ -10,8 +10,10 @@ variables:
 ## Build stage ##
 deploy:
   stage: build
+  variables:
+    AWS_DEFAULT_REGION: us-west-2
   tags:
-    - platform-publish-docker
+    - pd-eks-deploy
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
     - sh ./ci-scripts/build/deploy.sh
@@ -19,13 +21,6 @@ deploy:
 #    changes:
 #      - k8s-configs/**/*
 #      - test/**/*
-
-wait-until-ready:
-  stage: build
-  tags:
-    - shell-runner
-  script:
-    - sh ./ci-scripts/build/wait-until-ready.sh
 
 ## Test stage ##
 pd-unit-tests:
