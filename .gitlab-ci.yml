@@ -10,44 +10,42 @@ variables:
 ## Build stage ##
 deploy:
   stage: build
-  variables:
-    AWS_DEFAULT_REGION: us-west-2
   tags:
     - pd-eks-deploy
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
-    - sh ./ci-scripts/build/deploy.sh
-#  only:
-#    changes:
-#      - k8s-configs/**/*
-#      - test/**/*
+    - ./ci-scripts/build/deploy.sh
 
 ## Test stage ##
 pd-unit-tests:
   stage: test
   tags:
-    - shell-runner
+    - pd-eks-deploy
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
-    - sh ./ci-scripts/test/run-test.sh pingdirectory
+    - ./ci-scripts/test/run-test.sh pingdirectory
 
 pf-unit-tests:
   stage: test
   tags:
-    - shell-runner
+    - pd-eks-deploy
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
-    - sh ./ci-scripts/test/run-test.sh pingfederate
+    - ./ci-scripts/test/run-test.sh pingfederate
 
 pa-unit-tests:
   stage: test
   tags:
-    - shell-runner
+    - pd-eks-deploy
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
-    - sh ./ci-scripts/test/run-test.sh pingaccess
+    - ./ci-scripts/test/run-test.sh pingaccess
 
 integration-tests:
   stage: test
   tags:
-    - shell-runner
+    - pd-eks-deploy
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
-    - sh ./ci-scripts/test/run-test.sh integration
+    - ./ci-scripts/test/run-test.sh integration
 
