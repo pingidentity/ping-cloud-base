@@ -13,9 +13,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - dev.ping-demo.com
+    - pingdataconsole-dev.ping-demo.com
+    secretName: tls-secret
   rules:
-  - host: dev.ping-demo.com
+  - host: pingdataconsole-dev.ping-demo.com
     http:
       paths:
         # This rule gives external access to the pingdirectory console
