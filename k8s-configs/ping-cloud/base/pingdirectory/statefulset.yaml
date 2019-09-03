@@ -35,16 +35,18 @@ spec:
           name: ldaps
         resources:
           requests:
-            memory: "6Gi"
+            memory: "8Gi"
             cpu: "1"
           limits:
-            memory: "6Gi"
+            memory: "8Gi"
             cpu: "1"
         env:
         - name: K8S_STATEFUL_SET_NAME
           value: $(K8S_STATEFUL_SET_NAME)
         - name: K8S_STATEFUL_SET_SERVICE_NAME
           value: $(K8S_STATEFUL_SET_SERVICE_NAME)
+        - name: MAX_HEAP_SIZE
+          value: 6g
         envFrom:
         - configMapRef:
             name: pingdirectory-environment-variables
@@ -76,7 +78,7 @@ spec:
     spec:
       accessModes:
       - ReadWriteOnce
-      storageClassName: pingdirectory-gp2
+      storageClassName: pingdirectory-io1
       resources:
         requests:
-          storage: 10Gi
+          storage: 20Gi

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -ex
 
 # Configure kubectl
@@ -36,14 +36,13 @@ sed -i "s|\([name|namespace: ]\)ping-cloud$|\1${NAMESPACE}|g" ${DEPLOY_FILE}
 
 kubectl apply -f ${DEPLOY_FILE}
 
-# Give each pod 5 minutes to initialize. The PF, PA apps deploy fast. PD is the
+# Give each pod some time to initialize. The PF, PA apps deploy fast. PD is the
 # long pole.
+# FIXME: PD time will need to be adjusted based on number of replicas because
+#        the ds servers are set up sequentially.
 for deployment in $(kubectl get deployment,statefulset -n ${NAMESPACE} -o name); do
-  # FIXME: pingaccess is busted ATM. Remove when fixed.
-  if [ ${deployment} = 'deployment.extensions/pingaccess' ]; then
-    continue
-  fi
-  kubectl rollout status --timeout 300s ${deployment} -n ${NAMESPACE} -w
+  [[ ${deployment} = 'statefulset.apps/ds' ]] && TIMEOUT=600s || TIMEOUT=120s
+  kubectl rollout status --timeout ${TIMEOUT} ${deployment} -n ${NAMESPACE} -w
 done
 
 # Print out the ingress objects for the ping stack
