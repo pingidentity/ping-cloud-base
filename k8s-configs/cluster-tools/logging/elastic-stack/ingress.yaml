@@ -8,9 +8,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - logs.dev.ping-demo.com
+    - logs-dev.ping-demo.com
+    secretName: tls-secret
   rules:
-  - host: logs.dev.ping-demo.com
+  - host: logs-dev.ping-demo.com
     http:
       paths:
         # This rule gives external access to the dashboard

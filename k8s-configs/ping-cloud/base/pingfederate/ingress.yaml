@@ -16,10 +16,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - dev.ping-demo.com
-#    secretName: tls-secret
+    - pingfederate-dev.ping-demo.com
+    secretName: tls-secret
   rules:
-  - host: dev.ping-demo.com
+  - host: pingfederate-dev.ping-demo.com
     http:
       paths:
         # This rule gives external access to the pingfederate admin console

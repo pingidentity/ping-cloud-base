@@ -5,6 +5,7 @@ namespace: elastic-stack-logging
 
 resources:
 - namespace.yaml
+- secret.yaml
 - ingress.yaml
 - elasticsearch.yaml
 - fluentd.yaml
