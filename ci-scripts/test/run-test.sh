@@ -1,12 +1,15 @@
-#!/bin/sh
-set -ex
+#!/bin/bash
 
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 . ${SCRIPT_HOME}/../common.sh
 
-TEST_DIR=${SCRIPT_HOME}/$1
+TEST_DIRS=${@}
+[[ -z ${TEST_DIRS} ]] &&
+  TEST_DIRS=$(find ${SCRIPT_HOME} -type d -mindepth 1 -exec basename '{}' \;)
 
-for script in $(find ${TEST_DIR} -name \*.sh); do
-  log "Running script ${script}"
-  ${script}
+for dir in ${TEST_DIRS}; do
+  for script in $(find ${SCRIPT_HOME}/${dir} -name \*.sh); do
+    log "Running script ${script}"
+    ${script}
+  done
 done
