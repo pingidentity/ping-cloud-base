@@ -57,5 +57,4 @@ chaos-tests:
     - pd-eks-deploy
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
-    - find ${CI_PROJECT_DIR} -ls
-#    - ./ci-scripts/test/run-test.sh chaos
+    - ./ci-scripts/test/run-test.sh chaos

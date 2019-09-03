@@ -1,6 +1,7 @@
-#!bin/sh
+#!/bin/sh
 set -ex
 
-find ${CI_PROJECT_DIR} -ls
+SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
+. ${SCRIPT_HOME}/../../common.sh
 
-# TODO
+log 'TODO'
