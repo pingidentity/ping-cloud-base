@@ -1,6 +1,6 @@
 #!/bin/bash
 
-EKS_CLUSTER_NAME="${1:-csg-test-cluster}"
+EKS_CLUSTER_NAME="${1:-ci-cd-cluster}"
 
 # Set the kubectl context to the right cluster
 kubectl config use-context ${EKS_CLUSTER_NAME}
@@ -8,35 +8,31 @@ kubectl config use-context ${EKS_CLUSTER_NAME}
 # Get all namespaces with the desired namespace prefix
 namespace_prefix="ping-cloud-"
 
-ping_namespaces=$(kubectl get ns -o name |
-  grep "${namespace_prefix}" |
-  grep -v "${namespace_prefix}master" |
-  cut -d/ -f2)
-
-# Get all remote git branches except master. We'll leave the environment on
+# We'll leave the environment on
 # master always running so it's available for quick testing.
-git_branches=$(git ls-remote -q --heads |
-  grep -v master |
-  awk '{ print $2 }' |
-  cut -d/ -f3)
+ping_namespaces() {
+  kubectl get ns -o name |
+    sed -n "s|^namespace/${namespace_prefix}||p" |
+    grep -v "master" |
+    sort
+}
+
+git_branches() {
+  git ls-remote -q --heads |
+    awk '{ print $2 }' |
+    sed "s|^refs/heads/||" |
+    grep -v '^master$'
+}
 
 echo "Namespaces in cluster ${EKS_CLUSTER_NAME} w/ prefix ${namespace_prefix}:"
-echo "${ping_namespaces}"
+ping_namespaces
 
 echo "Git remote branches:"
-echo "${git_branches}"
+git_branches
 
-namespaces_to_delete=
-for namespace in ${ping_namespaces}; do
-  branch=$(echo ${namespace/#${namespace_prefix}})
-  if [[ ! ${branch} =~ ${git_branches} ]]; then
-    namespaces_to_delete="${namespaces_to_delete} ${namespace}"
-  fi
-done
-
-if [[ ! -z ${namespaces_to_delete} ]]; then
-  echo "Deleting namespaces:${namespaces_to_delete}"
-  kubectl delete namespace${namespaces_to_delete} &
-else
-  echo "No namespaces to delete"
-fi
+comm -23 <(ping_namespaces) <(git_branches) |
+  sed "s|^|${namespace_prefix}|" |
+  xargs sh -c '
+    echo "Deleting namespaces: $@"
+    kubectl delete namespace "$@"
+  ' ignore-me
