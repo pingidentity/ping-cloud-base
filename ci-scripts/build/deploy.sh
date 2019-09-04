@@ -19,10 +19,6 @@ kubectl config set-context "${EKS_CLUSTER_NAME}" \
   --cluster="${EKS_CLUSTER_NAME}" \
   --user=aws
 
-kubectl config set-context "${EKS_CLUSTER_NAME}" \
-  --cluster="${EKS_CLUSTER_NAME}" \
-  --user=aws
-
 kubectl config use-context "${EKS_CLUSTER_NAME}"
 
 # Deploy the configuration to Kubernetes
