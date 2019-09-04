@@ -91,7 +91,6 @@ Note that the manifest files only work with kustomize v3.1.0 or later. The
 kustomize that's included in kubectl is of an older version. So the following
 direct invocation from kubectl does not work at the moment.
 
-```
-kubectl apply -k .
-```
+~~kubectl apply -k .~~
+
 
