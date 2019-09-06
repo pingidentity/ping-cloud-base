@@ -9,6 +9,8 @@ spec:
   template:
     metadata:
       name: pingdataconsole
+      annotations:
+        lastUpdateTime: "NA"
     spec:
       containers:
       - name: pingdataconsole

@@ -9,6 +9,8 @@ spec:
   template:
     metadata:
       name: pingfederate
+      annotations:
+        lastUpdateTime: "NA"
     spec:
       containers:
       - name: pingfederate
