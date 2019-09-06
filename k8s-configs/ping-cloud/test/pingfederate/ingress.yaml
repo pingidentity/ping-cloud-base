@@ -6,16 +6,16 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: pingfederate-other-ingress
+  name: pingfederateconsole-ingress
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
 spec:
   tls:
   - hosts:
-    - pingfederate-dev.ping-demo.com
+    - pingfederateconsole-dev.ping-demo.com
     secretName: tls-secret
   rules:
-  - host: pingfederate-dev.ping-demo.com
+  - host: pingfederateconsole-dev.ping-demo.com
     http:
       paths:
         # This rule gives external access to the pingfederate admin console
@@ -24,6 +24,23 @@ spec:
             serviceName: pingfederate
             servicePort: 9999
 
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: pingfederateoauth-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  tls:
+  - hosts:
+    - pingfederateoauth-dev.ping-demo.com
+    secretName: tls-secret
+  rules:
+  - host: pingfederateoauth-dev.ping-demo.com
+    http:
+      paths:
         # This rule gives external access to the pingfederate oauth playground
         - path: /OAuthPlayground
           backend:
