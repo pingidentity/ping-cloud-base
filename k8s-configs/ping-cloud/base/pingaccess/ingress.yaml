@@ -1,11 +1,7 @@
-# This defines the ingress for the pingaccess management console.
+# This defines the ingress for the pingaccess runtime service
 
 # NOTE: it will only work if an ingress controller (e.g. nginx) is running on
 # your cluster.
-
-# FIXME: Change ingress controller certificate to CA-signed certificate.
-# FIXME: Make pingaccess listen on non-secure port so SSL can be terminated at
-#        the LB.
 
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -24,14 +20,8 @@ spec:
   - host: pingacess-dev.ping-demo.com
     http:
       paths:
-        # This rule gives external access to the pingaccess console service
+        # This rule gives external access to the pingaccess runtime service
         - path: /
           backend:
             serviceName: pingaccess
-            servicePort: 9000
-
-        # This rule gives external access to the pingaccess admin service
-#        - path: /pa-admin
-#          backend:
-#            serviceName: pingaccess
-#            servicePort: 443
+            servicePort: 443

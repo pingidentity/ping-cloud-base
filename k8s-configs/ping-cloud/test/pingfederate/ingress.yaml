@@ -1,4 +1,4 @@
-# This defines the ingress for the pingfederate authorization services.
+# This defines the ingress for other pingfederate services useful for test.
 
 # NOTE: it will only work if an ingress controller (e.g. nginx) is running on
 # your cluster.
@@ -6,7 +6,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: pingfederate-ingress
+  name: pingfederate-other-ingress
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
 spec:
@@ -18,8 +18,14 @@ spec:
   - host: pingfederate-dev.ping-demo.com
     http:
       paths:
-        # This rule gives external access to the pingfederate AS endpoints
-        - path: /
+        # This rule gives external access to the pingfederate admin console
+        - path: /pingfederate
+          backend:
+            serviceName: pingfederate
+            servicePort: 9999
+
+        # This rule gives external access to the pingfederate oauth playground
+        - path: /OAuthPlayground
           backend:
             serviceName: pingfederate
             servicePort: 9031

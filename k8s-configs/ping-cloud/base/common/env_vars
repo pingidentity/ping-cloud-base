@@ -1,7 +1,0 @@
-# Defines common environment variables for the entire Ping Stack
-ORCHESTRATION_TYPE=kubernetes
-
-PING_IDENTITY_DEVOPS_KEY=@PING_IDENTITY_DEVOPS_KEY@
-PING_IDENTITY_DEVOPS_USER=@PING_IDENTITY_DEVOPS_USER@
-
-SERVER_PROFILE_URL=https://www.github.com/pingidentity/pingidentity-server-profiles.git

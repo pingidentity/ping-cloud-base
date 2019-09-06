@@ -19,27 +19,46 @@ configMapGenerator:
   env: env_vars
 
 patchesJson6902:
-- path: logs_ingress_patch.yaml
+# logs
+- path: ingress-patches/logs.yaml
   target:
     group: extensions
     version: v1beta1
     kind: Ingress
     name: kibana-ingress
-- path: pingdataconsole_ingress_patch.yaml
+
+# pingdata
+- path: ingress-patches/pingdataconsole.yaml
   target:
     group: extensions
     version: v1beta1
     kind: Ingress
     name: pingdataconsole-ingress
-- path: pingfederate_ingress_patch.yaml
+
+# pingfederate
+- path: ingress-patches/pingfederate.yaml
   target:
     group: extensions
     version: v1beta1
     kind: Ingress
     name: pingfederate-ingress
-- path: pingaccess_ingress_patch.yaml
+- path: ingress-patches/pingfederate.yaml
+  target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingfederate-other-ingress
+
+# pingaccess
+- path: ingress-patches/pingaccess.yaml
   target:
     group: extensions
     version: v1beta1
     kind: Ingress
     name: pingaccess-ingress
+- path: ingress-patches/pingaccessconsole.yaml
+  target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingaccessconsole-ingress

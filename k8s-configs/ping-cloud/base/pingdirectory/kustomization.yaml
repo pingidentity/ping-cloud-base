@@ -2,13 +2,10 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-#- ../common
 - storage.yaml
 - secret.yaml
 - statefulset.yaml
 - service.yaml
-
-#namePrefix: pingdirectory-
 
 commonLabels:
   role: pingdirectory
