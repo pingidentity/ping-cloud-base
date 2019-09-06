@@ -27,8 +27,8 @@ kustomize build ${CI_PROJECT_DIR}/test | envsubst > ${DEPLOY_FILE}
 
 # Append the branch name to the ping-cloud namespace to make it unique. It's
 # okay for the common cluster tools to just be deployed once to the cluster.
-NAMESPACE=ping-cloud-${CI_COMMIT_REF_SLUG}
-sed -i "s|\([name|namespace: ]\)ping-cloud$|\1${NAMESPACE}|g" ${DEPLOY_FILE}
+NAMESPACE=${CI_COMMIT_REF_SLUG}
+sed -i -E "s/((namespace|name): ping-cloud$)/\1-${NAMESPACE}/g" ${DEPLOY_FILE}
 
 kubectl apply -f ${DEPLOY_FILE}
 
