@@ -4,8 +4,6 @@
 # NOTE: it will only work if an ingress controller (e.g. nginx) is running on
 # your cluster.
 
-# FIXME: Change ingress controller certificate to CA-signed certificate.
-
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
