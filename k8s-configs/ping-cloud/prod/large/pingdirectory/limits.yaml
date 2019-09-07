@@ -1,0 +1,15 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ds
+spec:
+  replicas: 12
+  template:
+    spec:
+      containers:
+        - name: ds
+          resources:
+            limits:
+              memory: 16g
+            requests:
+              memory: 16g
