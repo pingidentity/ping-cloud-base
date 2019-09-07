@@ -10,6 +10,17 @@ spec:
         - name: ds
           resources:
             limits:
-              memory: 8g
+              memory: 8Gi
+              cpu: 1
             requests:
-              memory: 8g
+              memory: 8Gi
+              cpu: 1
+          env:
+          - name: MAX_HEAP_SIZE
+            value: 8g
+  volumeClaimTemplates:
+    - spec:
+        storageClassName: pingdirectory-gp2
+        resources:
+          requests:
+            storage: 100Gi
