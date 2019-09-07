@@ -46,7 +46,9 @@ spec:
         - name: K8S_STATEFUL_SET_SERVICE_NAME
           value: $(K8S_STATEFUL_SET_SERVICE_NAME)
         - name: MAX_HEAP_SIZE
-          value: 6g
+          valueFrom:
+            resourceFieldRef:
+              resource: limits.memory
         envFrom:
         - configMapRef:
             name: pingdirectory-environment-variables
