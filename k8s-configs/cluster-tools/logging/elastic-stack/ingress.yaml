@@ -9,7 +9,7 @@ spec:
   tls:
   - hosts:
     - logs-dev.ping-demo.com
-    secretName: tls-secret
+    secretName: tls-secret-logging
   rules:
   - host: logs-dev.ping-demo.com
     http:

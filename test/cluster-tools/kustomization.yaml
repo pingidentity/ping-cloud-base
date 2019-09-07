@@ -1,0 +1,14 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+- ../../k8s-configs/cluster-tools
+
+patchesJson6902:
+# logs
+- path: ingress-patches/logs.yaml
+  target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: kibana-ingress
