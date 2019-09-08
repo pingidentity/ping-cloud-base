@@ -4,6 +4,7 @@
 # Common variables
 ##################################################################
 FQDN=${ENVIRONMENT}.${TENANT_DOMAIN}
+
 PINGDIRECTORY_CONSOLE=https://pingdataconsole${FQDN}/console
 
 PINGFEDERATE_CONSOLE=https://pingfederate${FQDN}/pingfederate/app
