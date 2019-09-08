@@ -3,15 +3,16 @@
 ##################################################################
 # Common variables
 ##################################################################
-PINGDIRECTORY_CONSOLE=https://pingdataconsole-${TENANT_DOMAIN}/console
+FQDN=${ENVIRONMENT}.${TENANT_DOMAIN}
+PINGDIRECTORY_CONSOLE=https://pingdataconsole${FQDN}/console
 
-PINGFEDERATE_CONSOLE=https://pingfederate-${TENANT_DOMAIN}/pingfederate/app
-PINGFEDERATE_AUTH_ENDPOINT=https://pingfederate-${TENANT_DOMAIN}
-PINGFEDERATE_OAUTH_PLAYGROUND=https://pingfederate-${TENANT_DOMAIN}/OAuthPlayground
+PINGFEDERATE_CONSOLE=https://pingfederate${FQDN}/pingfederate/app
+PINGFEDERATE_AUTH_ENDPOINT=https://pingfederate${FQDN}
+PINGFEDERATE_OAUTH_PLAYGROUND=https://pingfederate${FQDN}/OAuthPlayground
 
-PING_ACCESS_CONSOLE=https://pingaccess-${TENANT_DOMAIN}
+PING_ACCESS_CONSOLE=https://pingaccess${FQDN}
 
-LOGS_CONSOLE=https://logs-${TENANT_DOMAIN}
+LOGS_CONSOLE=https://logs.${TENANT_DOMAIN}
 
 ##########################################################################
 # Echoes a message prepended with the current time

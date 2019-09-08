@@ -3,9 +3,11 @@
 # A script that may be used to set up a dev/test environment against the
 # current cluster. Must have the GTE devops user and key exported as
 # environment variables.
-NAMESPACE=ping-cloud-${USER}
-export TENANT_DOMAIN="${TENANT_DOMAIN:-${USER}.eks-poc.au1.ping-lab.cloud}"
+export ENVIRONMENT="${ENVIRONMENT:--${USER}}"
+export TENANT_DOMAIN="${TENANT_DOMAIN:-eks-poc.au1.ping-lab.cloud}"
 
+ENVIRONMENT_NO_HYPHEN_PREFIX=$(echo ${ENVIRONMENT/#-})
+NAMESPACE=ping-cloud-${ENVIRONMENT_NO_HYPHEN_PREFIX}
 DEPLOY_FILE=/tmp/deploy.yaml
 
 kustomize build test | envsubst > ${DEPLOY_FILE}

@@ -22,6 +22,9 @@ kubectl config set-context "${EKS_CLUSTER_NAME}" \
 kubectl config use-context "${EKS_CLUSTER_NAME}"
 
 # Deploy the configuration to Kubernetes
+[[ ${CI_COMMIT_REF_SLUG} != master ]] &&
+  export ENVIRONMENT=-${CI_COMMIT_REF_SLUG}
+
 DEPLOY_FILE=/tmp/deploy.yaml
 kustomize build ${CI_PROJECT_DIR}/test | envsubst > ${DEPLOY_FILE}
 

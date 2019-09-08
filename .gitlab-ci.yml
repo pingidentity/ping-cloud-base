@@ -6,7 +6,7 @@ stages:
 
 ## Global environment variables ##
 variables:
-  TENANT_DOMAIN: ${CI_COMMIT_REF_SLUG}.ping-aws.com
+  TENANT_DOMAIN: ping-aws.com
 
 ## Build stage ##
 deploy:
