@@ -39,18 +39,6 @@ patchesJson6902:
     version: v1beta1
     kind: Ingress
     name: pingfederate-ingress
-- path: ingress-patches/pingfederateoauth.yaml
-  target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: pingfederateoauth-ingress
-- path: ingress-patches/pingfederateconsole.yaml
-  target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: pingfederateconsole-ingress
 
 # pingaccess
 - path: ingress-patches/pingaccess.yaml
@@ -59,9 +47,3 @@ patchesJson6902:
     version: v1beta1
     kind: Ingress
     name: pingaccess-ingress
-- path: ingress-patches/pingaccessconsole.yaml
-  target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: pingaccessconsole-ingress

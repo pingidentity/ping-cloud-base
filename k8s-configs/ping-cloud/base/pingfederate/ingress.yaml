@@ -13,6 +13,7 @@ spec:
   tls:
   - hosts:
     - pingfederate-dev.ping-demo.com
+    - pingfederateconsole-dev.ping-demo.com
     secretName: tls-secret
   rules:
   - host: pingfederate-dev.ping-demo.com
@@ -23,3 +24,11 @@ spec:
           backend:
             serviceName: pingfederate
             servicePort: 9031
+  - host: pingfederateconsole-dev.ping-demo.com
+    http:
+      paths:
+        # This rule gives external access to the pingfederate admin console
+        - path: /pingfederate
+          backend:
+            serviceName: pingfederate
+            servicePort: 9999

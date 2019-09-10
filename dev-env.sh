@@ -16,4 +16,9 @@ sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" ${DEPLOY_FILE
 echo "Deploying ${DEPLOY_FILE} to namespace ${NAMESPACE} for tenant ${TENANT_DOMAIN}"
 kubectl apply -f ${DEPLOY_FILE}
 
+# Print out the ingress objects for logs and the ping stack
+kubectl get ingress -n elastic-stack-logging
 kubectl get ingress -n ${NAMESPACE}
+
+# Print out the  pods for the ping stack
+kubectl get pods -n ${NAMESPACE}
