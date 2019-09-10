@@ -3,5 +3,13 @@
   value: pingaccess${ENVIRONMENT}.${TENANT_DOMAIN}
 
 - op: replace
+  path: /spec/tls/0/hosts/1
+  value: pingaccessconsole${ENVIRONMENT}.${TENANT_DOMAIN}
+
+- op: replace
   path: /spec/rules/0/host
   value: pingaccess${ENVIRONMENT}.${TENANT_DOMAIN}
+
+- op: replace
+  path: /spec/rules/1/host
+  value: pingaccessconsole${ENVIRONMENT}.${TENANT_DOMAIN}

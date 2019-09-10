@@ -15,6 +15,7 @@ spec:
   tls:
   - hosts:
     - pingacess-dev.ping-demo.com
+    - pingacessconsole-dev.ping-demo.com
     secretName: tls-secret
   rules:
   - host: pingacess-dev.ping-demo.com
@@ -25,3 +26,11 @@ spec:
           backend:
             serviceName: pingaccess
             servicePort: 443
+  - host: pingacessconsole-dev.ping-demo.com
+    http:
+      paths:
+        # This rule gives external access to the pingaccess console service
+        - path: /
+          backend:
+            serviceName: pingaccess
+            servicePort: 9000

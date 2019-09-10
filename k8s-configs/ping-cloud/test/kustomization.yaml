@@ -8,6 +8,4 @@ commonLabels:
 
 resources:
 - ../base
-- pingaccess
 - pingdataconsole
-- pingfederate

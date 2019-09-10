@@ -44,5 +44,9 @@ for deployment in $(kubectl get deployment,statefulset -n ${NAMESPACE} -o name);
   kubectl rollout status --timeout ${TIMEOUT} ${deployment} -n ${NAMESPACE} -w
 done
 
-# Print out the ingress objects for the ping stack
+# Print out the ingress objects for logs and the ping stack
+kubectl get ingress -n elastic-stack-logging
 kubectl get ingress -n ${NAMESPACE}
+
+# Print out the  pods for the ping stack
+kubectl get pods -n ${NAMESPACE}
