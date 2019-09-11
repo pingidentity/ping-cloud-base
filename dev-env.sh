@@ -19,7 +19,7 @@ echo "Initial Value ENVIRONMENT: ${ENVIRONMENT}"
 # A script that may be used to set up a dev/test environment against the
 # current cluster. Must have the GTE devops user and key exported as
 # environment variables.
-export ENVIRONMENT="${ENVIRONMENT:--${USER}}"
+export ENVIRONMENT=-"${ENVIRONMENT:-${USER}}"
 export TENANT_DOMAIN="${TENANT_DOMAIN:-eks-poc.au1.ping-lab.cloud}"
 
 ENVIRONMENT_NO_HYPHEN_PREFIX=$(echo ${ENVIRONMENT/#-})

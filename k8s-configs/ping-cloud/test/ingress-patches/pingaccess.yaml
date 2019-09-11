@@ -1,0 +1,15 @@
+- op: add
+  path: /spec/tls/0/hosts/-
+  value: pingacessconsole-dev.ping-demo.com
+
+- op: add
+  path: /spec/rules/-
+  value:
+    host: pingacessconsole-dev.ping-demo.com
+    http:
+      paths:
+      # This rule gives external access to the pingaccess console
+      - path: /
+        backend:
+          serviceName: pingaccess
+          servicePort: 9000

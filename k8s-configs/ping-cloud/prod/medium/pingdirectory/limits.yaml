@@ -11,13 +11,15 @@ spec:
           resources:
             limits:
               memory: 12Gi
-              cpu: 2
+              cpu: 3
             requests:
               memory: 12Gi
-              cpu: 2
+              cpu: 3
           env:
           - name: MAX_HEAP_SIZE
             value: 12g
+          - name: UNBOUNDID_JAVA_ARGS
+            value: "-client -Xmx12g -Xms12g"
   volumeClaimTemplates:
     - spec:
         storageClassName: pingdirectory-io1

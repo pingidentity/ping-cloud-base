@@ -1,0 +1,15 @@
+- op: add
+  path: /spec/tls/0/hosts/-
+  value: pingfederateconsole-dev.ping-demo.com
+
+- op: add
+  path: /spec/rules/-
+  value:
+    host: pingfederateconsole-dev.ping-demo.com
+    http:
+      paths:
+      # This rule gives external access to the pingfederate console
+      - path: /pingfederate
+        backend:
+          serviceName: pingfederate
+          servicePort: 9999
