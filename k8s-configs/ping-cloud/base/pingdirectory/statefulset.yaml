@@ -36,10 +36,10 @@ spec:
         resources:
           requests:
             memory: "8Gi"
-            cpu: "1"
+            cpu: "2"
           limits:
             memory: "8Gi"
-            cpu: "1"
+            cpu: "2"
         env:
         - name: K8S_STATEFUL_SET_NAME
           value: $(K8S_STATEFUL_SET_NAME)
@@ -47,6 +47,8 @@ spec:
           value: $(K8S_STATEFUL_SET_SERVICE_NAME)
         - name: MAX_HEAP_SIZE
           value: 8g
+        - name: UNBOUNDID_JAVA_ARGS
+          value: "-client -Xmx8g -Xms8g"
         envFrom:
         - configMapRef:
             name: pingdirectory-environment-variables

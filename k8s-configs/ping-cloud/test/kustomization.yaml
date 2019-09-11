@@ -9,3 +9,20 @@ commonLabels:
 resources:
 - ../base
 - pingdataconsole
+
+patchesJson6902:
+# pingaccess
+- path: ingress-patches/pingaccess.yaml
+  target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingaccess-ingress
+
+# pingfederate
+- path: ingress-patches/pingfederate.yaml
+  target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingfederate-ingress
