@@ -3,11 +3,15 @@ declare dryrun="false"
 #
 # Parse Parameters
 #
-while getopts "n" OPTION
+while getopts 'n' OPTION
 do
-  case $OPTION in
+  case ${OPTION} in
     n)
-      dryrun="true"
+      dryrun='true'
+      ;;
+    *)
+      echo "Usage ${0} [ -n ] n = dry-run"
+      exit 1
       ;;
   esac
 done
@@ -29,7 +33,7 @@ DEPLOY_FILE=/tmp/deploy.yaml
 kustomize build test | envsubst > ${DEPLOY_FILE}
 sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" ${DEPLOY_FILE}
 
-if [ "${dryrun}" = "false" ]; then
+if [ "${dryrun}" = 'false' ]; then
    echo "Deploying ${DEPLOY_FILE} to namespace ${NAMESPACE} for tenant ${TENANT_DOMAIN}"
    kubectl apply -f ${DEPLOY_FILE}
 
