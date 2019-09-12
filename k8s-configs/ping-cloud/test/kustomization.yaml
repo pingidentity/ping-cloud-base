@@ -9,6 +9,7 @@ commonLabels:
 resources:
 - ../base
 - pingdataconsole
+- httpbin
 
 patchesJson6902:
 # pingaccess
