@@ -1,0 +1,13 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+nameSuffix: -private
+
+commonLabels:
+  app.kubernetes.io/name: ingress-nginx
+  app.kubernetes.io/part-of: ingress-nginx
+  app.kubernetes.io/role: ingress-nginx-private
+
+resources:
+- deployment.yaml
+- service.yaml

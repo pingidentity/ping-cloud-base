@@ -4,8 +4,14 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 namespace: ingress-nginx
 
 resources:
+# Create the namespace
 - namespace.yaml
+
+# Apply cluster-wide RBAC rules
+# Web link: https://github.com/kubernetes/ingress-nginx/tree/nginx-0.25.1/deploy/cluster-wide
+#- https://github.com/kubernetes/ingress-nginx/deploy/cluster-wide?ref=nginx-0.25.1
 - rbac.yaml
 
-# Web link: https://github.com/kubernetes/ingress-nginx/blob/nginx-0.25.1/deploy/aws/nlb
-- https://github.com/kubernetes/ingress-nginx/deploy/aws/nlb?ref=nginx-0.25.1
+# Add a public and private controller and load balancer
+- public
+- private
