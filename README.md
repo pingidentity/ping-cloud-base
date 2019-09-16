@@ -54,16 +54,16 @@ Pingdirectory console:
 https://pingdataconsole.k8s-icecream.ping-devops.com/console
 
 Pingfederate console:
-https://pingfederateconsole.k8s-icecream.ping-devops.com/pingfederate/app
+https://pingfederate-admin.k8s-icecream.ping-devops.com/pingfederate/app
 
-Pingfederate authorization server endpoint:
+Pingfederate runtime endpoint:
 https://pingfederate.k8s-icecream.ping-devops.com
 
 Pingfederate oauth playground:
 https://pingfederate.k8s-icecream.ping-devops.com/OAuthPlayground
 
 Pingaccess console:
-https://pingaccessconsole.k8s-icecream.ping-devops.com
+https://pingaccess-admin.k8s-icecream.ping-devops.com
 
 Pingaccess runtime endpoint:
 https://pingaccess.k8s-icecream.ping-devops.com
