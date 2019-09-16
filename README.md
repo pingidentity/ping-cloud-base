@@ -56,6 +56,9 @@ https://pingdataconsole.k8s-icecream.ping-devops.com/console
 Pingfederate console:
 https://pingfederate-admin.k8s-icecream.ping-devops.com/pingfederate/app
 
+Pingfederate API:
+https://pingfederate-admin.k8s-icecream.ping-devops.com/pf-admin-api/api-docs
+
 Pingfederate runtime endpoint:
 https://pingfederate.k8s-icecream.ping-devops.com
 
@@ -64,6 +67,9 @@ https://pingfederate.k8s-icecream.ping-devops.com/OAuthPlayground
 
 Pingaccess console:
 https://pingaccess-admin.k8s-icecream.ping-devops.com
+
+Pingaccess API:
+https://pingaccess-admin.k8s-icecream.ping-devops.com/pa-admin-api/v3/api-docs/
 
 Pingaccess runtime endpoint:
 https://pingaccess.k8s-icecream.ping-devops.com
