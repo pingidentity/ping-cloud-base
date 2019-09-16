@@ -3,13 +3,5 @@
   value: pingfederate${ENVIRONMENT}.${TENANT_DOMAIN}
 
 - op: replace
-  path: /spec/tls/0/hosts/1
-  value: pingfederateconsole${ENVIRONMENT}.${TENANT_DOMAIN}
-
-- op: replace
   path: /spec/rules/0/host
   value: pingfederate${ENVIRONMENT}.${TENANT_DOMAIN}
-
-- op: replace
-  path: /spec/rules/1/host
-  value: pingfederateconsole${ENVIRONMENT}.${TENANT_DOMAIN}

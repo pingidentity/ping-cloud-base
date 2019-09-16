@@ -11,6 +11,7 @@ metadata:
     role: pingaccess
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    kubernetes.io/ingress.class: nginx
 spec:
   tls:
   - hosts:
@@ -25,3 +26,34 @@ spec:
         backend:
           serviceName: pingaccess
           servicePort: 443
+
+---
+
+# This defines the ingress for the pingaccess admin service
+
+# NOTE: it will only work if an ingress controller (e.g. nginx) is running on
+# your cluster.
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: pingaccess-admin-ingress
+  labels:
+    role: pingaccess
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    kubernetes.io/ingress.class: nginx-private
+spec:
+  tls:
+  - hosts:
+    - pingacess-admin-dev.ping-demo.com
+    secretName: tls-secret
+  rules:
+  - host: pingacess-admin-dev.ping-demo.com
+    http:
+      paths:
+      # This rule gives internal access to the pingaccess admin services.
+      - path: /
+        backend:
+          serviceName: pingaccess
+          servicePort: 9000

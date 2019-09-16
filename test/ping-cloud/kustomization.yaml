@@ -32,7 +32,7 @@ patchesJson6902:
     kind: Ingress
     name: pingdataconsole-ingress
 
-# pingfederate
+# pingfederate runtime
 - path: ingress-patches/pingfederate.yaml
   target:
     group: extensions
@@ -40,10 +40,26 @@ patchesJson6902:
     kind: Ingress
     name: pingfederate-ingress
 
-# pingaccess
+# pingfederate admin
+- path: ingress-patches/pingfederate-admin.yaml
+  target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingfederate-admin-ingress
+
+# pingaccess runtime
 - path: ingress-patches/pingaccess.yaml
   target:
     group: extensions
     version: v1beta1
     kind: Ingress
     name: pingaccess-ingress
+
+# pingaccess admin
+- path: ingress-patches/pingaccess-admin.yaml
+  target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingaccess-admin-ingress
