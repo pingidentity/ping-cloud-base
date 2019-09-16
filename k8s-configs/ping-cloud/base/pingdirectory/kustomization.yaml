@@ -6,6 +6,7 @@ resources:
 - secret.yaml
 - statefulset.yaml
 - service.yaml
+- periodic-backup.yaml
 
 commonLabels:
   role: pingdirectory

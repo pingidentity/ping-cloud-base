@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: restore-script
+data:
+  restore.sh: |
+    #!/bin/sh
+    set -e
+
+    CURRENT_BACKUP_DIR=$(readlink -f /pd_backups/current)
+    SERVER_BACKUP_DIR=/opt/out/restore
+
+    echo "Current backup contents:"
+    ls ${CURRENT_BACKUP_DIR}
+
+    # FIXME: put kubectl in the image
+    echo "Installing kubectl"
+    curl https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
+    chmod +x /usr/local/bin/kubectl
+
+    echo "Copying backup from ${CURRENT_BACKUP_DIR} to ds-0:${SERVER_BACKUP_DIR}"
+    kubectl cp ${CURRENT_BACKUP_DIR} ds-0:${SERVER_BACKUP_DIR}
+
+    echo "Restoring to the latest backup under ${SERVER_BACKUP_DIR}"
+    /opt/server/bin/restore --task \
+      --useSSL --trustAll \
+      --hostname ds-0.pingdirectory \
+      --port ${LDAPS_PORT} \
+      --bindDN ${ROOT_USER_DN} \
+      --bindPasswordFile ${ROOT_USER_PASSWORD_FILE} \
+      --backupDirectory ${SERVER_BACKUP_DIR}
+
+    echo "Removing backup directory ds-0:${SERVER_BACKUP_DIR}"
+    kubectl exec ds-0 -- rm -rf ${SERVER_BACKUP_DIR}
+
+---
+
+# A manual restore can be performed by deploying this job. It will restore
+# data that was backed up by the periodic backup job to ds-0. All other servers
+# will initialize the data from ds-0 via dsreplication. This job can also be
+# used to load the data initially from a backup created in another
+# environment, e.g. dev.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ds-restore
+spec:
+  backoffLimit: 5
+  template:
+    spec:
+      serviceAccount: pd-backup-serviceaccount
+      restartPolicy: Never
+      containers:
+      - name: ds-restore
+        image: pingidentity/pingdirectory:edge
+        command:
+        - /opt/in/restore.sh
+        volumeMounts:
+        - name: passwords
+          mountPath: /usr/local/secrets
+          readOnly: true
+        - name: backup-volume
+          mountPath: /pd_backups
+        - name: restore-script
+          mountPath: /opt/in
+      volumes:
+      - name: passwords
+        secret:
+          secretName: passwords
+          defaultMode: 256
+      - name: restore-script
+        configMap:
+          name: restore-script
+          defaultMode: 0777
+      - name: backup-volume
+        persistentVolumeClaim:
+          claimName: pd-backup-pvc

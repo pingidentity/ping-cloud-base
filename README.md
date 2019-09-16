@@ -34,7 +34,12 @@ Refer to the AWS online documentation on how to set these up.
 To build the environment, simply run:
 
 ```
-kustomize build https://github.com/pingidentity/ping-cloud-base/test?ref=master | envsubst | kubectl apply -f -
+kustomize build https://github.com/pingidentity/ping-cloud-base/test?ref=master |
+  envsubst '
+    ${PING_IDENTITY_DEVOPS_USER
+    ${PING_IDENTITY_DEVOPS_KEY}
+    ${TENANT_DOMAIN}' |
+  kubectl apply -f -
 ```
 
 Monitor it by running:
