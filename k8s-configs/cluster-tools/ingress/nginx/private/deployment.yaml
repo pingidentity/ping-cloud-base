@@ -1,3 +1,23 @@
+# FIXME: Due to the following bug in kustomize, we're having to copy the nginx
+# yaml files for the private nginx controller and corresponding service instead
+# of using their remote github URL:
+#
+# https://github.com/kubernetes-sigs/kustomize/issues/1248
+#
+# The bug is that inheriting from a common base in two or more peer directories
+# results in the following error for common "vars" defined in the base. For
+# example, if the base kustomization has a var named "POD_NAME", then two
+# peer overlays prod and staging will work independently. But when built
+# together will result in this error:
+#
+# Error: accumulating resources: recursed merging from path 'staging': var
+# 'POD_NAME' already encountered
+#
+# There is a PR for the defect, but it hasn't been merged yet. When the latest
+# kustomize is released, we should get rid of this and do the kustomization
+# the same way as the public ingress is done, i.e. using the remote URL from
+# the nginx ingress repo.
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
