@@ -10,6 +10,8 @@ resources:
 # Apply cluster-wide RBAC rules
 - rbac.yaml
 
-# Add a public and private controller and load balancer
+# Add a public and private controller and load balancer. The public controller
+# will manage the LB for admin services, whereas the private controller will
+# manage the LB for the runtime services.
 - public
 - private
