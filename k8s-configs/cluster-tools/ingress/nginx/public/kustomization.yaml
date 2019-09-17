@@ -5,3 +5,11 @@ resources:
 # Add an NLB (external-facing by default)
 # Web link: https://github.com/kubernetes/ingress-nginx/tree/nginx-0.25.1/deploy/aws/nlb
 - https://github.com/kubernetes/ingress-nginx/deploy/aws/nlb?ref=nginx-0.25.1
+
+patchesJson6902:
+- path: set-ingress-class-in-args.yaml
+  target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: nginx-ingress-controller

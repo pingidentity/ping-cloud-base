@@ -36,10 +36,10 @@ spec:
           image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.25.0
           args:
             - /nginx-ingress-controller
-            - --configmap=$(POD_NAMESPACE)/$(NGINX_CONFIGMAP_NAME)
-            - --tcp-services-configmap=$(POD_NAMESPACE)/$(TCP_CONFIGMAP_NAME)
-            - --udp-services-configmap=$(POD_NAMESPACE)/$(UDP_CONFIGMAP_NAME)
-            - --publish-service=$(POD_NAMESPACE)/$(SERVICE_NAME)
+            - --configmap=$(POD_NAMESPACE)/$(NGINX_CONFIGMAP_NAME_PRIVATE)
+            - --tcp-services-configmap=$(POD_NAMESPACE)/$(TCP_CONFIGMAP_NAME_PRIVATE)
+            - --udp-services-configmap=$(POD_NAMESPACE)/$(UDP_CONFIGMAP_NAME_PRIVATE)
+            - --publish-service=$(POD_NAMESPACE)/$(SERVICE_NAME_PRIVATE)
             - --annotations-prefix=nginx.ingress.kubernetes.io
             - --ingress-class=nginx-private
           securityContext:

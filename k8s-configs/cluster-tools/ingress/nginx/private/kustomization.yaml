@@ -9,5 +9,36 @@ commonLabels:
   app.kubernetes.io/role: ingress-nginx-private
 
 resources:
+- configmap.yaml
 - deployment.yaml
 - service.yaml
+
+vars:
+- fieldref:
+    fieldPath: metadata.name
+  name: NGINX_CONFIGMAP_NAME_PRIVATE
+  objref:
+    apiVersion: v1
+    kind: ConfigMap
+    name: nginx-configuration
+- fieldref:
+    fieldPath: metadata.name
+  name: TCP_CONFIGMAP_NAME_PRIVATE
+  objref:
+    apiVersion: v1
+    kind: ConfigMap
+    name: tcp-services
+- fieldref:
+    fieldPath: metadata.name
+  name: UDP_CONFIGMAP_NAME_PRIVATE
+  objref:
+    apiVersion: v1
+    kind: ConfigMap
+    name: udp-services
+- fieldref:
+    fieldPath: metadata.name
+  name: SERVICE_NAME_PRIVATE
+  objref:
+    apiVersion: v1
+    kind: Service
+    name: ingress-nginx
