@@ -1,17 +1,14 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
-namespace: ingress-nginx
-
 resources:
-# Create the namespace
-- namespace.yaml
-
-# Apply cluster-wide RBAC rules
-- rbac.yaml
-
 # Add a public and private controller and load balancer. The public controller
-# will manage the LB for admin services, whereas the private controller will
-# manage the LB for the runtime services.
+# will manage the LB for admin services (to be accessed by administrators),
+# whereas the private controller will manage the LB for the runtime services
+# (to be accessed by end users).
 - public
 - private
+
+commonLabels:
+  app.kubernetes.io/name: ingress-nginx
+  app.kubernetes.io/part-of: ingress-nginx

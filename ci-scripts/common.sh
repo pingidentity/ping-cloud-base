@@ -3,6 +3,8 @@
 ##################################################################
 # Common variables
 ##################################################################
+[[ ${CI_COMMIT_REF_SLUG} != master ]] && export ENVIRONMENT=-${CI_COMMIT_REF_SLUG}
+
 FQDN=${ENVIRONMENT}.${TENANT_DOMAIN}
 
 # Common

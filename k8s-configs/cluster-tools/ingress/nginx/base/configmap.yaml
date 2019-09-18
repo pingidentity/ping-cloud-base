@@ -4,12 +4,14 @@ metadata:
   name: nginx-configuration
 
 ---
+
 kind: ConfigMap
 apiVersion: v1
 metadata:
   name: tcp-services
 
 ---
+
 kind: ConfigMap
 apiVersion: v1
 metadata:
