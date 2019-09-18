@@ -17,9 +17,9 @@ spec:
         image: pingidentity/pingfederate:9.3.0-edge
         ports:
         - containerPort: 9999
-          name: pf-console
+          name: pf-admin
         - containerPort: 9031
-          name: oauthplayground
+          name: pf-runtime
         envFrom:
           - configMapRef:
               name: pingfederate-environment-variables

@@ -8,6 +8,6 @@ metadata:
 spec:
   ports:
     - port: 9999
-      name: pf-console
+      name: pf-admin
     - port: 9031
-      name: oauthplayground
+      name: pf-runtime
