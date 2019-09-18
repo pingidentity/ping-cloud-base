@@ -17,9 +17,9 @@ spec:
         image: pingidentity/pingaccess:edge
         ports:
         - containerPort: 9000
-          name: pa-console
-        - containerPort: 443
           name: pa-admin
+        - containerPort: 443
+          name: pa-runtime
         envFrom:
           - configMapRef:
               name: pingaccess-environment-variables
