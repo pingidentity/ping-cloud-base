@@ -16,9 +16,9 @@ patchesJson6902:
 
 # Make the admin nodes available externally for test purposes. In general, they
 # will be behind a VPN gateway on all CDEs so only admins have access to them.
-- path: patches/ingress-service.yaml
+- path: patches/private-ingress-service.yaml
   target:
     version: v1
     kind: Service
-    name: ingress-nginx-private
-    namespace: ingress-nginx
+    name: ingress-nginx
+    namespace: ingress-nginx-private

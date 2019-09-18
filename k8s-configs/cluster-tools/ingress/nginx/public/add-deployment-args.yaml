@@ -1,4 +1,4 @@
 - op: add
   path: /spec/template/spec/containers/0/args/-
   value:
-    --ingress-class=nginx
+    --ingress-class=nginx-public

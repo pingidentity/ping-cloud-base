@@ -2,12 +2,17 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-# Add an NLB (external-facing by default)
-# Web link: https://github.com/kubernetes/ingress-nginx/tree/nginx-0.25.1/deploy/aws/nlb
-- https://github.com/kubernetes/ingress-nginx/deploy/aws/nlb?ref=nginx-0.25.1
+- namespace.yaml
+- ../base
+- rbac.yaml
+
+namespace: ingress-nginx-public
+
+commonLabels:
+  app.kubernetes.io/role: ingress-nginx-public
 
 patchesJson6902:
-- path: set-ingress-class-in-args.yaml
+- path: add-deployment-args.yaml
   target:
     group: apps
     version: v1

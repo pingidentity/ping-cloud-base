@@ -1,6 +1,6 @@
 # FIXME: Due to the following bug in kustomize, we're having to copy the nginx
-# yaml files for the private nginx controller and corresponding service instead
-# of using their remote github URL:
+# yaml files for the private nginx service instead of using their remote
+# github URL:
 #
 # https://github.com/kubernetes-sigs/kustomize/issues/1248
 #
@@ -8,15 +8,15 @@
 # results in the following error for common "vars" defined in the base. For
 # example, if the base kustomization has a var named "POD_NAME", then two
 # peer overlays prod and staging will work independently. But when built
-# together will result in this error:
+# together, it will result in this error:
 #
 # Error: accumulating resources: recursed merging from path 'staging': var
 # 'POD_NAME' already encountered
 #
 # There is a PR for the defect, but it hasn't been merged yet. When the latest
-# kustomize is released, we should get rid of this and do the kustomization
-# the same way as the public ingress is done, i.e. using the remote URL from
-# the nginx ingress repo.
+# kustomize is released, we should get rid of this and do the kustomization in
+# the same way the public ingress is done, i.e. using the remote URL from the
+# nginx ingress repo.
 
 apiVersion: apps/v1
 kind: Deployment
@@ -33,15 +33,14 @@ spec:
       serviceAccountName: nginx-ingress-serviceaccount
       containers:
         - name: nginx-ingress-controller
-          image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.25.0
+          image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.25.1
           args:
             - /nginx-ingress-controller
-            - --configmap=$(POD_NAMESPACE)/$(NGINX_CONFIGMAP_NAME_PRIVATE)
-            - --tcp-services-configmap=$(POD_NAMESPACE)/$(TCP_CONFIGMAP_NAME_PRIVATE)
-            - --udp-services-configmap=$(POD_NAMESPACE)/$(UDP_CONFIGMAP_NAME_PRIVATE)
-            - --publish-service=$(POD_NAMESPACE)/$(SERVICE_NAME_PRIVATE)
+            - --configmap=$(POD_NAMESPACE)/nginx-configuration
+            - --tcp-services-configmap=$(POD_NAMESPACE)/tcp-services
+            - --udp-services-configmap=$(POD_NAMESPACE)/udp-services
+            - --publish-service=$(POD_NAMESPACE)/ingress-nginx
             - --annotations-prefix=nginx.ingress.kubernetes.io
-            - --ingress-class=nginx-private
           securityContext:
             allowPrivilegeEscalation: true
             capabilities:
