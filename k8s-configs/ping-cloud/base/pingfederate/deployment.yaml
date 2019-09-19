@@ -15,6 +15,7 @@ spec:
       containers:
       - name: pingfederate
         image: pingidentity/pingfederate:9.3.0-edge
+        imagePullPolicy: Always
         ports:
         - containerPort: 9999
           name: pf-admin

@@ -15,10 +15,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - pingacess-dev.ping-demo.com
+    - pingaccess-dev.ping-demo.com
     secretName: tls-secret
   rules:
-  - host: pingacess-dev.ping-demo.com
+  - host: pingaccess-dev.ping-demo.com
     http:
       paths:
       # This rule gives external access to the pingaccess runtime service
@@ -46,10 +46,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - pingacess-admin-dev.ping-demo.com
+    - pingaccess-admin-dev.ping-demo.com
     secretName: tls-secret
   rules:
-  - host: pingacess-admin-dev.ping-demo.com
+  - host: pingaccess-admin-dev.ping-demo.com
     http:
       paths:
       # This rule gives internal access to the pingaccess admin services.

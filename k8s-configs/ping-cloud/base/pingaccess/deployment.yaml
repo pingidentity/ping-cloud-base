@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
       - name: pingaccess
-        image: pingidentity/pingaccess:edge
+        image: pingidentity/pingaccess:5.3.0-edge
+        imagePullPolicy: Always
         ports:
         - containerPort: 9000
           name: pa-admin
