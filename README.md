@@ -25,7 +25,7 @@ The DEVOPS user and key may be obtained from the Ping DevOps GTE team here:
 https://docs.google.com/forms/d/e/1FAIpQLSdgEFvqQQNwlsxlT6SaraeDMBoKFjkJVCyMvGPVPKcrzT3yHA/viewform
 
 The TENANT_DOMAIN must be an AWS registered domain and hosted zone on Route53 in
-the same AWS IAM role (e.g. arn:aws:iam::574076504146:role/GTE) as your EKS
+the same AWS IAM role (e.g. arn:aws:iam::555555555555:role/ROLE) as your EKS
 cluster. For example, if it is set to k8s-icecream.ping-devops.com, then
 ping-devops.com must be a valid DNS domain registered by some registrar (e.g.
 AWS Route53). There must also be a hosted zone created for it on AWS Route53.
@@ -36,7 +36,7 @@ To build the environment, simply run:
 ```
 kustomize build https://github.com/pingidentity/ping-cloud-base/test?ref=master |
   envsubst '
-    ${PING_IDENTITY_DEVOPS_USER
+    ${PING_IDENTITY_DEVOPS_USER}
     ${PING_IDENTITY_DEVOPS_KEY}
     ${TENANT_DOMAIN}' |
   kubectl apply -f -
