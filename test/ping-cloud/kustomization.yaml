@@ -63,3 +63,11 @@ patchesJson6902:
     version: v1beta1
     kind: Ingress
     name: pingaccess-admin-ingress
+
+# pingaccess agent
+- path: ingress-patches/pingaccess-agent.yaml
+  target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingaccess-agent-ingress

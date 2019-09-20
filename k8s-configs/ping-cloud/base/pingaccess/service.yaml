@@ -10,3 +10,5 @@ spec:
       name: pa-admin
     - port: 443
       name: pa-runtime
+    - port: 3030
+      name: pa-agent
