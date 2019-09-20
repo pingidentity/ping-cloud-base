@@ -21,6 +21,8 @@ spec:
           name: pa-admin
         - containerPort: 443
           name: pa-runtime
+        - containerPort: 3030
+          name: pa-agent
         envFrom:
           - configMapRef:
               name: pingaccess-environment-variables

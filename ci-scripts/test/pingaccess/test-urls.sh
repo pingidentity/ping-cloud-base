@@ -9,3 +9,4 @@ testUrl ${PINGACCESS_API}
 
 # runtime URL
 testUrl ${PINGACCESS_RUNTIME}/anything
+testUrl ${PINGACCESS_AGENT}
