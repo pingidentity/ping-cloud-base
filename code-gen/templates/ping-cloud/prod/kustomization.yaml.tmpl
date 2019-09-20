@@ -1,0 +1,50 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+- ../../cluster-tools
+- https://github.com/pingidentity/ping-cloud-base/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}?ref=master
+
+configMapGenerator:
+- name: pingaccess-environment-variables
+  behavior: merge
+  env: env_vars
+- name: pingdirectory-environment-variables
+  behavior: merge
+  env: env_vars
+- name: pingfederate-environment-variables
+  behavior: merge
+  env: env_vars
+
+patchesJson6902:
+# pingfederate runtime
+- path: patches/ingress/pingfederate.yaml
+  target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingfederate-ingress
+
+# pingfederate admin
+- path: patches/ingress/pingfederate-admin.yaml
+  target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingfederate-admin-ingress
+
+# pingaccess runtime
+- path: patches/ingress/pingaccess.yaml
+  target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingaccess-ingress
+
+# pingaccess admin
+- path: patches/ingress/pingaccess-admin.yaml
+  target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingaccess-admin-ingress
