@@ -26,9 +26,7 @@ substitute_vars() {
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 TEMPLATES_HOME="${SCRIPT_HOME}/templates"
 
-#SANDBOX_DIR=$(mktemp -d)/k8s-configs
 SANDBOX_DIR=/tmp/sandbox/k8s-configs
-
 rm -rf "${SANDBOX_DIR}"
 mkdir -p "${SANDBOX_DIR}"
 
