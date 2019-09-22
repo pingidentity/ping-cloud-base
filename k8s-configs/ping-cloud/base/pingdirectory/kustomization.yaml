@@ -15,6 +15,10 @@ configMapGenerator:
 - name: pingdirectory-environment-variables
   env: env_vars
 
+secretGenerator:
+- name: pingdirectory-secret-variables
+  env: secret_vars
+
 vars:
 - name: K8S_STATEFUL_SET_NAME
   objref:

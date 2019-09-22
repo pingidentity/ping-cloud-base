@@ -18,6 +18,3 @@ spec:
         ports:
         - containerPort: 8080
           name: http
-        envFrom:
-          - configMapRef:
-              name: pingdataconsole-environment-variables

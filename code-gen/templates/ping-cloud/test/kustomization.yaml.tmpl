@@ -5,19 +5,16 @@ resources:
 - ../../cluster-tools
 - https://github.com/pingidentity/ping-cloud-base/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}?ref=master
 
-configMapGenerator:
-- name: pingdataconsole-environment-variables
+secretGenerator:
+- name: pingaccess-secret-variables
   behavior: merge
-  env: env_vars
-- name: pingaccess-environment-variables
+  env: secret_vars
+- name: pingdirectory-secret-variables
   behavior: merge
-  env: env_vars
-- name: pingdirectory-environment-variables
+  env: secret_vars
+- name: pingfederate-secret-variables
   behavior: merge
-  env: env_vars
-- name: pingfederate-environment-variables
-  behavior: merge
-  env: env_vars
+  env: secret_vars
 
 patchesJson6902:
 # pingdata
@@ -59,3 +56,7 @@ patchesJson6902:
     version: v1beta1
     kind: Ingress
     name: pingaccess-admin-ingress
+
+patchesStrategicMerge:
+- patches/configmap/cluster-info.yaml
+- patches/configmap/cwagentconfig.yaml

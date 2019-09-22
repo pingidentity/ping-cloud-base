@@ -12,3 +12,7 @@ commonLabels:
 configMapGenerator:
 - name: pingaccess-environment-variables
   env: env_vars
+
+secretGenerator:
+- name: pingaccess-secret-variables
+  env: secret_vars
