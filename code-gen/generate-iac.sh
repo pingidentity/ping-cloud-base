@@ -23,6 +23,36 @@ substitute_vars() {
   done
 }
 
+check_env_vars() {
+  STATUS=0
+  for NAME in ${*}; do
+    VALUE="${!NAME}"
+    if test -z "${VALUE}"; then
+      echo "${NAME} environment variable must be set"
+      STATUS=1
+    fi
+  done
+  return ${STATUS}
+}
+
+check_env_vars "PING_IDENTITY_DEVOPS_USER" "PING_IDENTITY_DEVOPS_KEY"
+if test ${?} -ne 0; then
+  exit 1
+fi
+
+export SIZE="${SIZE:-small}"
+export TENANT_DOMAIN="${TENANT_DOMAIN:-eks-poc.au1.ping-lab.cloud}"
+export TLS_CERT_ARN="${TLS_CERT_ARN:-arn:aws:acm:us-east-1:123456789012:certificate/12345678-1234-1234-1234-123456789012}"
+export REGION="${REGION:-us-east-2}"
+export CLUSTER_NAME="${CLUSTER_NAME:-PingPOC}"
+
+echo "Using SIZE: ${SIZE}"
+echo "Using TENANT_DOMAIN: ${TENANT_DOMAIN}"
+echo "Using TLS_CERT_ARN: ${TLS_CERT_ARN}"
+echo "Using REGION: ${REGION}"
+echo "Using CLUSTER_NAME: ${CLUSTER_NAME}"
+echo "Using CUSTOMER_REPO_URL: ${CUSTOMER_REPO_URL}"
+
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 TEMPLATES_HOME="${SCRIPT_HOME}/templates"
 
