@@ -24,5 +24,7 @@ spec:
         - containerPort: 3030
           name: pa-agent
         envFrom:
-          - configMapRef:
-              name: pingaccess-environment-variables
+        - configMapRef:
+            name: pingaccess-environment-variables
+        - secretRef:
+            name: pingaccess-secret-variables

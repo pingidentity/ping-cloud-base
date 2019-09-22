@@ -8,7 +8,3 @@ resources:
 
 commonLabels:
   role: pingdataconsole
-
-configMapGenerator:
-- name: pingdataconsole-environment-variables
-  env: env_vars
