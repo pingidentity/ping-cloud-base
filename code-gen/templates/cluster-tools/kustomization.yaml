@@ -18,5 +18,5 @@ patchesJson6902:
 patchesStrategicMerge:
 - patches/service/ingress-private.yaml
 - patches/service/ingress-public.yaml
-- patches/configmap/cluster-info.yaml.tmpl
-- patches/configmap/cwagentconfig.yaml.tmpl
+- patches/configmap/cluster-info.yaml
+- patches/configmap/cwagentconfig.yaml
