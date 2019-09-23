@@ -5,6 +5,7 @@ resources:
 - https://github.com/pingidentity/ping-cloud-base/k8s-configs/cluster-tools/external-dns?ref=master
 - https://github.com/pingidentity/ping-cloud-base/k8s-configs/cluster-tools/ingress?ref=master
 - https://github.com/pingidentity/ping-cloud-base/k8s-configs/cluster-tools/logging?ref=master
+- https://github.com/pingidentity/ping-cloud-base/k8s-configs/cluster-tools/network-provider?ref=master
 - https://github.com/pingidentity/ping-cloud-base/k8s-configs/cluster-tools/monitoring?ref=master
 
 patchesJson6902:

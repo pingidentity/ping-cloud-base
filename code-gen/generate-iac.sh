@@ -70,8 +70,8 @@
 ##########################################################################
 
 # The list of variables in the template files that will be substituted.
-VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
-${PING_IDENTITY_DEVOPS_KEY_BASE64}
+VARS='${PING_IDENTITY_DEVOPS_USER}
+${PING_IDENTITY_DEVOPS_KEY}
 ${TENANT_DOMAIN}
 ${REGION}
 ${SIZE}
@@ -149,10 +149,6 @@ ENVIRONMENTS='dev test staging prod'
 PING_CLOUD_DIR="${SANDBOX_DIR}/ping-cloud"
 mkdir -p "${PING_CLOUD_DIR}"
 
-# These are exported as secrets, which are base64 encoded version of the user and key.
-export PING_IDENTITY_DEVOPS_USER_BASE64=$(echo ${PING_IDENTITY_DEVOPS_USER} | base64)
-export PING_IDENTITY_DEVOPS_KEY_BASE64=$(echo ${PING_IDENTITY_DEVOPS_KEY} | base64)
-
 for ENV in ${ENVIRONMENTS}; do
   ENV_DIR="${PING_CLOUD_DIR}/${ENV}"
   cp -r "${TEMPLATES_HOME}"/ping-cloud/"${ENV}" "${ENV_DIR}"
@@ -162,7 +158,10 @@ for ENV in ${ENVIRONMENTS}; do
     export KUSTOMIZE_BASE="${ENV}"
 
   # The k8s cluster name will be PingPoc-dev, PingPoc-test, etc. for the different CDEs
-  export CLUSTER_NAME=${TENANT_NAME}-${ENV}
+  # FIXME: uncomment line below and get rid of the line following when the setup of the clusters is fixed to follow
+  # this convention
+  # export CLUSTER_NAME=${TENANT_NAME}-${ENV}
+  export CLUSTER_NAME=${TENANT_NAME}
 
   substitute_vars "${ENV_DIR}"
 done
