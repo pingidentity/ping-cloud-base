@@ -1,4 +1,5 @@
-# This service exposes the pingaccess console to the cluster.
+# This service exposes the pingaccess admin, runtime and agent ports to the
+# cluster.
 
 apiVersion: v1
 kind: Service
@@ -6,9 +7,9 @@ metadata:
   name: pingaccess
 spec:
   ports:
-    - port: 9000
-      name: pa-admin
-    - port: 443
-      name: pa-runtime
-    - port: 3030
-      name: pa-agent
+  - port: 9000
+    name: pa-admin
+  - port: 443
+    name: pa-runtime
+  - port: 3030
+    name: pa-agent

@@ -50,8 +50,10 @@ for deployment in $(kubectl get deployment,statefulset -n ${NAMESPACE} -o name);
 done
 
 # Print out the ingress objects for logs and the ping stack
-kubectl get ingress -n elastic-stack-logging
-kubectl get ingress -n ${NAMESPACE}
+kubectl get ingress -A
+
+# Describe the LB service for pingdirectory
+kubectl describe svc pingdirectory-admin -n ${NAMESPACE}
 
 # Print out the  pods for the ping stack
 kubectl get pods -n ${NAMESPACE}

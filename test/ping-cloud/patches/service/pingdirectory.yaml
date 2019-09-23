@@ -1,0 +1,6 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: pingdirectory-admin
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}

@@ -12,3 +12,21 @@ spec:
   - port: 636
     name: ldaps
   clusterIP: None
+
+---
+
+# Service that exposes the pingdirectory LDAPS port on the admin subnet.
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pingdirectory-admin
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: pingdirectory-admin-dev.ping-demo.com
+    kubernetes.io/ingress.class: nginx-private
+spec:
+  externalTrafficPolicy: Local
+  type: LoadBalancer
+  ports:
+  - port: 636
+    name: ldaps
