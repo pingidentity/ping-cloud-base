@@ -16,6 +16,16 @@ spec:
       - name: pingaccess
         image: pingidentity/pingaccess:5.3.0-edge
         imagePullPolicy: Always
+        readinessProbe:
+          exec:
+            command: [ liveness.sh ]
+          periodSeconds: 30
+          failureThreshold: 10
+        livenessProbe:
+          exec:
+            command: [ liveness.sh ]
+          periodSeconds: 30
+          failureThreshold: 10
         ports:
         - containerPort: 9000
           name: pa-admin
