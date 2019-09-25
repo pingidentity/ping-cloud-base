@@ -16,6 +16,16 @@ spec:
       - name: pingfederate
         image: pingidentity/pingfederate:9.3.0-edge
         imagePullPolicy: Always
+        readinessProbe:
+          exec:
+            command: [ liveness.sh ]
+          periodSeconds: 30
+          failureThreshold: 10
+        livenessProbe:
+          exec:
+            command: [ liveness.sh ]
+          periodSeconds: 30
+          failureThreshold: 10
         ports:
         - containerPort: 9999
           name: pf-admin
