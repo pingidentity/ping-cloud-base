@@ -3,26 +3,26 @@ kind: StatefulSet
 metadata:
   name: ds
 spec:
-  replicas: 6
+  replicas: 3
   template:
     spec:
       containers:
-        - name: ds
-          resources:
-            limits:
-              memory: 12Gi
-              cpu: 3
-            requests:
-              memory: 12Gi
-              cpu: 3
-          env:
-          - name: MAX_HEAP_SIZE
-            value: 12g
-          - name: UNBOUNDID_JAVA_ARGS
-            value: "-client -Xmx12g -Xms12g"
-  volumeClaimTemplates:
-    - spec:
-        storageClassName: pingdirectory-io1
+      - name: ds
         resources:
+          limits:
+            memory: 20Gi
+            cpu: 3
           requests:
-            storage: 250Gi
+            memory: 20Gi
+            cpu: 3
+        env:
+        - name: MAX_HEAP_SIZE
+          value: 20g
+        - name: UNBOUNDID_JAVA_ARGS
+          value: "-client -Xmx20g -Xms20g"
+  volumeClaimTemplates:
+  - spec:
+      storageClassName: pingdirectory-io1
+      resources:
+        requests:
+          storage: 1000Gi
