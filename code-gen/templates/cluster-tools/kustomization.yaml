@@ -14,5 +14,4 @@ patchesJson6902:
     name: kibana-ingress
 
 patchesStrategicMerge:
-- patches/service/ingress-private.yaml
-- patches/service/ingress-public.yaml
+- patches/secret/tls-secret.yaml

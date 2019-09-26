@@ -1,7 +1,0 @@
-kind: Service
-apiVersion: v1
-metadata:
-  name: ingress-nginx
-  namespace: ingress-nginx-private
-  annotations:
-    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: ${TLS_CERT_ARN}
