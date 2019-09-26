@@ -35,10 +35,10 @@ spec:
           name: ldaps
         resources:
           requests:
-            memory: "8Gi"
+            memory: "5Gi"
             cpu: "2"
           limits:
-            memory: "8Gi"
+            memory: "5Gi"
             cpu: "2"
         env:
         - name: K8S_STATEFUL_SET_NAME
@@ -46,9 +46,9 @@ spec:
         - name: K8S_STATEFUL_SET_SERVICE_NAME
           value: $(K8S_STATEFUL_SET_SERVICE_NAME)
         - name: MAX_HEAP_SIZE
-          value: 8g
+          value: 5g
         - name: UNBOUNDID_JAVA_ARGS
-          value: "-client -Xmx8g -Xms8g"
+          value: "-client -Xmx5g -Xms5g"
         envFrom:
         - configMapRef:
             name: pingdirectory-environment-variables

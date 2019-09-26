@@ -7,20 +7,22 @@ spec:
   template:
     spec:
       containers:
-        - name: ds
-          resources:
-            limits:
-              memory: 8Gi
-              cpu: 2
-            requests:
-              memory: 8Gi
-              cpu: 2
-          env:
-          - name: MAX_HEAP_SIZE
-            value: 8g
-  volumeClaimTemplates:
-    - spec:
-        storageClassName: pingdirectory-gp2
+      - name: ds
         resources:
+          limits:
+            memory: 5Gi
+            cpu: 2
           requests:
-            storage: 100Gi
+            memory: 5Gi
+            cpu: 2
+        env:
+        - name: MAX_HEAP_SIZE
+          value: 5g
+        - name: UNBOUNDID_JAVA_ARGS
+          value: "-client -Xmx5g -Xms5g"
+  volumeClaimTemplates:
+  - spec:
+      storageClassName: pingdirectory-gp2
+      resources:
+        requests:
+          storage: 500Gi
