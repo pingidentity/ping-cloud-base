@@ -3,10 +3,11 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 - ../../k8s-configs/cluster-tools
+- ../../k8s-configs/cluster-tools/monitoring
 
 patchesJson6902:
 # logs
-- path: patches/logs-ingress.yaml
+- path: patches/ingress/logs.yaml
   target:
     group: extensions
     version: v1beta1
@@ -16,9 +17,14 @@ patchesJson6902:
 
 # Make the admin nodes available externally for test purposes. In general, they
 # will be behind a VPN gateway on all CDEs so only admins have access to them.
-- path: patches/private-ingress-service.yaml
+- path: patches/service/nginx-private-lb.yaml
   target:
     version: v1
     kind: Service
     name: ingress-nginx
     namespace: ingress-nginx-private
+
+patchesStrategicMerge:
+- patches/secret/tls-secret.yaml
+- patches/configmap/cluster-info.yaml
+- patches/configmap/cwagentconfig.yaml

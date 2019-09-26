@@ -66,3 +66,4 @@ patchesJson6902:
 
 patchesStrategicMerge:
 - patches/service/pingdirectory.yaml
+- patches/secret/tls-secret.yaml

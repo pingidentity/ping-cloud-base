@@ -32,28 +32,5 @@ PINGACCESS_API=https://pingaccess-admin${FQDN}/pa-admin-api/v3/api-docs
 PINGACCESS_RUNTIME=https://pingaccess${FQDN}
 PINGACCESS_AGENT=https://pingaccess-agent${FQDN}
 
-##########################################################################
-# Echoes a message prepended with the current time
-#
-# Arguments
-#   $1 -> The message to echo
-##########################################################################
-log() {
-  echo "$(date) $1"
-}
-
-##########################################################################
-# Tests whether a URL is reachable or not
-#
-# Arguments:
-#   $1 -> The URL
-# Returns:
-#   0 on success; non-zero on failure
-##########################################################################
-testUrl() {
-  log "Testing URL: $1"
-  curl -k $1 >/dev/null 2>&1
-  exit_code=$?
-  log "Command exit code: ${exit_code}"
-  return ${exit_code}
-}
+# Source some utility methods.
+. ${CI_PROJECT_DIR}/utils.sh
