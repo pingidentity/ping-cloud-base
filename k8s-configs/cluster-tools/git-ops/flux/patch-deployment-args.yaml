@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flux
+  namespace: flux
+spec:
+  template:
+    spec:
+      containers:
+      - name: flux
+        args:
+        - --manifest-generation=true
+        - --ssh-keygen-dir=/var/fluxd/keygen
+        - --git-branch=master
+        - --git-path=k8s-configs/ping-cloud/dev
+        - --git-url=git@github.com:pingidentity/ping-cloud-base.git

@@ -1,0 +1,13 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flux
+  namespace: flux
+spec:
+  template:
+    spec:
+      containers:
+      - name: flux
+        args:
+        - --git-path=k8s-configs/ping-cloud/${ENVIRONMENT}
+        - --git-url=${IAC_REPO_URL}
