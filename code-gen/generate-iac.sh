@@ -19,14 +19,19 @@
 # ------------
 # The scripts requires the following tools to be installed:
 #   - openssl
+#   - ssh-keygen
 #   - base64
+#   - kustomize
 #   - envsubst
 #
 # ------------------
 # Usage instructions
 # ------------------
-# The following mandatory environment variables must be present before running this script:
+# The script does not take any parameters, but rather acts on environment variables. The environment variables will
+# be substituted into the variables in the yaml template files. The following mandatory environment variables must be
+# present before running this script:
 #
+# ----------------------------------------------------------------------------------------------------------------------
 # Variable                    | Purpose
 # ----------------------------------------------------------------------------------------------------------------------
 # PING_IDENTITY_DEVOPS_USER   | A user with license to run Ping Software
@@ -34,6 +39,7 @@
 #
 # In addition, the following environment variables, if present, will be used for the following purposes:
 #
+# ----------------------------------------------------------------------------------------------------------------------
 # Variable       | Purpose                                            | Default (if not present)
 # ----------------------------------------------------------------------------------------------------------------------
 # TENANT_NAME    | The name of the tenant, e.g. k8s-icecream. This    | PingPOC
@@ -79,6 +85,9 @@ ${CLUSTER_NAME}
 ${IAC_REPO_URL}
 ${TLS_CRT_BASE64}
 ${TLS_KEY_BASE64}
+${IDENTITY_PUB}
+${IDENTITY_KEY}
+${ENVIRONMENT}
 ${KUSTOMIZE_BASE}'
 
 substitute_vars() {
@@ -97,7 +106,7 @@ substitute_vars() {
 . ../utils.sh
 
 # Checking required tools and environment variables.
-HAS_REQUIRED_TOOLS=$(check_binaries "openssl" "base64" "envsubst"; echo ${?})
+HAS_REQUIRED_TOOLS=$(check_binaries "openssl" "ssh-keygen" "base64" "kustomize" "envsubst"; echo ${?})
 HAS_REQUIRED_VARS=$(check_env_vars "PING_IDENTITY_DEVOPS_USER" "PING_IDENTITY_DEVOPS_KEY"; echo ${?})
 
 if test ${HAS_REQUIRED_TOOLS} -ne 0 || test ${HAS_REQUIRED_VARS} -ne 0; then
@@ -109,7 +118,7 @@ export SIZE="${SIZE:-small}"
 export TENANT_NAME="${TENANT_NAME:-PingPOC}"
 export TENANT_DOMAIN="${TENANT_DOMAIN:-eks-poc.au1.ping-lab.cloud}"
 export REGION="${REGION:-us-east-2}"
-export IAC_REPO_URL="${IAC_REPO_URL:-https://github.com/pingidentity/ping-cloud-base}"
+export IAC_REPO_URL="${IAC_REPO_URL:-git@github.com:pingidentity/ping-cloud-base.git}"
 
 # Print out the values being used for each variable.
 echo "Using SIZE: ${SIZE}"
@@ -123,6 +132,9 @@ TEMPLATES_HOME="${SCRIPT_HOME}/templates"
 
 # Generate a self-signed cert for the tenant domain.
 generate_tls_cert "${TENANT_DOMAIN}"
+
+# Generate an SSH key pair for flux CD.
+generate_ssh_key_pair
 
 # Copy the shared cluster tools to the sandbox directory and substitute its variables first.
 SANDBOX_DIR=/tmp/sandbox/k8s-configs
@@ -138,7 +150,12 @@ ENVIRONMENTS='dev test staging prod'
 PING_CLOUD_DIR="${SANDBOX_DIR}/ping-cloud"
 mkdir -p "${PING_CLOUD_DIR}"
 
+FLUXCD_DIR="${SANDBOX_DIR}/fluxcd"
+mkdir -p "${FLUXCD_DIR}"
+
 for ENV in ${ENVIRONMENTS}; do
+  export ENVIRONMENT=${ENV}
+
   ENV_DIR="${PING_CLOUD_DIR}/${ENV}"
   cp -r "${TEMPLATES_HOME}"/ping-cloud/"${ENV}" "${ENV_DIR}"
 
@@ -152,7 +169,25 @@ for ENV in ${ENVIRONMENTS}; do
   # export CLUSTER_NAME=${TENANT_NAME}-${ENV}
   export CLUSTER_NAME=${TENANT_NAME}
 
+  cp -r "${TEMPLATES_HOME}/.flux.yaml" "${ENV_DIR}"
   substitute_vars "${ENV_DIR}"
+
+  ENV_FLUX_DIR="${FLUXCD_DIR}/${ENV}"
+  mkdir -p "${ENV_FLUX_DIR}"
+
+  FLUX_SANDBOX="${TEMPLATES_HOME}"/flux-sandbox
+  mkdir -p "${FLUX_SANDBOX}"
+
+  cp "${TEMPLATES_HOME}"/fluxcd/* "${FLUX_SANDBOX}"
+  substitute_vars "${FLUX_SANDBOX}"
+
+  FLUX_YAML=$(mktemp)
+  kustomize build "${FLUX_SANDBOX}" > "${FLUX_YAML}"
+
+  mv "${FLUX_YAML}" "${ENV_FLUX_DIR}"/flux.yaml
+  rm -rf "${FLUX_SANDBOX}"
 done
 
-echo "Push the k8s-configs directory under ${SANDBOX_DIR} into the IaC repo onto these branches: dev test staging master"
+echo "Push the k8s-configs directory under ${SANDBOX_DIR} into the tenant IaC repo onto the master branch"
+echo "Add the following identity as a deploy key on the tenant IaC repo"
+echo "${IDENTITY_PUB}"

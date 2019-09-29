@@ -29,7 +29,7 @@ testUrl() {
 ########################################################################################################################
 # Generate a self-signed certificate for the provided domain. The subject of the certificate will match the domain name.
 # A wildcard SAN (Subject Alternate Name) will be added as well. For example, for the domain ping-aws.com, the subject
-# name will be "ping-aws.com" and the SAN "*.ping-aws.com". The base64 representation of the certificate and key will
+# name will be "ping-aws.com" and the SAN "*.ping-aws.com". The base64 representation of the certificate and key will be
 # exported in environment variables TLS_CRT_BASE64 and TLS_KEY_BASE64, respectively.
 #
 # Arguments
@@ -49,6 +49,20 @@ generate_tls_cert() {
   export TLS_KEY_BASE64=$(cat tls.key | base64 | tr -d '\n')
   cd -
   rm -rf "${CERTS_DIR}"
+}
+
+########################################################################################################################
+# Generate an RSA key pair. The base64 representation of the identity and key will exported in environment variables
+# IDENTITY_PUB and IDENTITY_KEY, respectively.
+########################################################################################################################
+generate_ssh_key_pair() {
+  KEY_PAIR_DIR=$(mktemp -d)
+  cd "${KEY_PAIR_DIR}"
+  ssh-keygen -q -t rsa -b 2048 -f id_rsa -N flux
+  export IDENTITY_PUB=$(cat id_rsa.pub | base64 | tr -d '\n')
+  export IDENTITY_KEY=$(cat id_rsa | base64 | tr -d '\n')
+  cd -
+  rm -rf "${KEY_PAIR_DIR}"
 }
 
 ########################################################################################################################

@@ -1,12 +1,9 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
-namespace: git-ops-flux
-
 resources:
-- namespace.yaml
-- https://github.com/fluxcd/flux/deploy?ref=master
+- ../../../k8s-configs/cluster-tools/git-ops
 
 patchesStrategicMerge:
-- patch-default-ns.yaml
+- flux-secret.yaml
 - patch-deployment-args.yaml
