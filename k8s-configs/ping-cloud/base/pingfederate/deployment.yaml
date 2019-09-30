@@ -35,4 +35,4 @@ spec:
         - configMapRef:
             name: pingfederate-environment-variables
         - secretRef:
-            name: pingfederate-secret-variables
+            name: devops-secret

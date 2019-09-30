@@ -41,11 +41,14 @@ generate_tls_cert "${TENANT_DOMAIN}"
 export REGION="${AWS_DEFAULT_REGION}"
 export CLUSTER_NAME="${EKS_CLUSTER_NAME}"
 
+export PING_IDENTITY_DEVOPS_USER_BASE64=$(echo -n "${PING_IDENTITY_DEVOPS_USER}" | base64)
+export PING_IDENTITY_DEVOPS_KEY_BASE64=$(echo -n "${PING_IDENTITY_DEVOPS_KEY}" | base64)
+
 # Deploy the configuration to Kubernetes
 DEPLOY_FILE=/tmp/deploy.yaml
 kustomize build ${CI_PROJECT_DIR}/test |
-  envsubst '${PING_IDENTITY_DEVOPS_USER}
-    ${PING_IDENTITY_DEVOPS_KEY}
+  envsubst '${PING_IDENTITY_DEVOPS_USER_BASE64}
+    ${PING_IDENTITY_DEVOPS_KEY_BASE64}
     ${ENVIRONMENT}
     ${TENANT_DOMAIN}
     ${CLUSTER_NAME}
