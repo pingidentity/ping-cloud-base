@@ -37,4 +37,4 @@ spec:
         - configMapRef:
             name: pingaccess-environment-variables
         - secretRef:
-            name: pingaccess-secret-variables
+            name: devops-secret

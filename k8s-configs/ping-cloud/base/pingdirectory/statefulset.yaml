@@ -16,10 +16,6 @@ spec:
         lastUpdateTime: "NA"
     spec:
       volumes:
-      - name: passwords
-        secret:
-          secretName: passwords
-          defaultMode: 256
       - name: out-dir
         persistentVolumeClaim:
           claimName: out-dir
@@ -53,13 +49,10 @@ spec:
         - configMapRef:
             name: pingdirectory-environment-variables
         - secretRef:
-            name: pingdirectory-secret-variables
+            name: devops-secret
         volumeMounts:
         - name: out-dir
           mountPath: /opt/out
-        - name: passwords
-          mountPath: /usr/local/secrets
-          readOnly: true
         readinessProbe:
           exec:
             command: [ liveness.sh ]

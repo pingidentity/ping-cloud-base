@@ -12,7 +12,3 @@ commonLabels:
 configMapGenerator:
 - name: pingfederate-environment-variables
   env: env_vars
-
-secretGenerator:
-- name: pingfederate-secret-variables
-  env: secret_vars

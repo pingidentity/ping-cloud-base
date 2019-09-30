@@ -4,17 +4,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 resources:
 - ../../k8s-configs/ping-cloud/test
 
-configMapGenerator:
-- name: pingaccess-environment-variables
-  behavior: merge
-  env: env_vars
-- name: pingdirectory-environment-variables
-  behavior: merge
-  env: env_vars
-- name: pingfederate-environment-variables
-  behavior: merge
-  env: env_vars
-
 patchesJson6902:
 # pingdata
 - path: patches/ingress/pingdataconsole.yaml
@@ -67,3 +56,4 @@ patchesJson6902:
 patchesStrategicMerge:
 - patches/service/pingdirectory.yaml
 - patches/secret/tls-secret.yaml
+- patches/secret/devops-secret.yaml

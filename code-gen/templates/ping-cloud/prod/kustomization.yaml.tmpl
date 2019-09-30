@@ -5,17 +5,6 @@ resources:
 - ../../cluster-tools
 - https://github.com/pingidentity/ping-cloud-base/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}?ref=master
 
-secretGenerator:
-- name: pingaccess-secret-variables
-  behavior: merge
-  env: secret_vars
-- name: pingdirectory-secret-variables
-  behavior: merge
-  env: secret_vars
-- name: pingfederate-secret-variables
-  behavior: merge
-  env: secret_vars
-
 patchesJson6902:
 # pingfederate runtime
 - path: patches/ingress/pingfederate.yaml
@@ -62,3 +51,4 @@ patchesStrategicMerge:
 - patches/configmap/cwagentconfig.yaml
 - patches/service/pingdirectory.yaml
 - patches/secret/tls-secret.yaml
+- patches/secret/devops-secret.yaml

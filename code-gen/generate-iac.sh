@@ -76,8 +76,8 @@
 ########################################################################################################################
 
 # The list of variables in the template files that will be substituted.
-VARS='${PING_IDENTITY_DEVOPS_USER}
-${PING_IDENTITY_DEVOPS_KEY}
+VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
+${PING_IDENTITY_DEVOPS_KEY_BASE64}
 ${TENANT_DOMAIN}
 ${REGION}
 ${SIZE}
@@ -126,6 +126,9 @@ echo "Using TENANT_NAME: ${TENANT_NAME}"
 echo "Using TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Using REGION: ${REGION}"
 echo "Using IAC_REPO_URL: ${IAC_REPO_URL}"
+
+export PING_IDENTITY_DEVOPS_USER_BASE64=$(echo -n "${PING_IDENTITY_DEVOPS_USER}" | base64)
+export PING_IDENTITY_DEVOPS_KEY_BASE64=$(echo -n "${PING_IDENTITY_DEVOPS_KEY}" | base64)
 
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 TEMPLATES_HOME="${SCRIPT_HOME}/templates"
