@@ -10,16 +10,16 @@ spec:
       - name: ds
         resources:
           limits:
-            memory: 5Gi
-            cpu: 2
+            memory: 14Gi
+            cpu: 3
           requests:
-            memory: 5Gi
-            cpu: 2
+            memory: 14Gi
+            cpu: 3
         env:
         - name: MAX_HEAP_SIZE
-          value: 5g
+          value: 14g
         - name: UNBOUNDID_JAVA_ARGS
-          value: "-client -Xmx5g -Xms5g"
+          value: "-client -Xmx14g -Xms14g"
   volumeClaimTemplates:
   - spec:
       storageClassName: pingdirectory-gp2
