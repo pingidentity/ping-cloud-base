@@ -9,5 +9,6 @@ spec:
       containers:
       - name: flux
         args:
-        - --git-path=k8s-configs/ping-cloud/${ENVIRONMENT}
+        - --manifest-generation=true
         - --git-url=${IAC_REPO_URL}
+        - --git-path=k8s-configs/ping-cloud/${ENVIRONMENT}

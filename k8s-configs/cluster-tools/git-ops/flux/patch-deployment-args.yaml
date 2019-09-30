@@ -11,6 +11,6 @@ spec:
         args:
         - --manifest-generation=true
         - --ssh-keygen-dir=/var/fluxd/keygen
+        - --git-url=git@github.com:pingidentity/ping-cloud-base.git
         - --git-branch=master
         - --git-path=k8s-configs/ping-cloud/dev
-        - --git-url=git@github.com:pingidentity/ping-cloud-base.git
