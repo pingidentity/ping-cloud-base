@@ -137,17 +137,20 @@ generate_tls_cert "${TENANT_DOMAIN}"
 generate_ssh_key_pair
 
 # Copy the shared cluster tools to the sandbox directory and substitute its variables first.
-SANDBOX_DIR=/tmp/sandbox/k8s-configs
+SANDBOX_DIR=/tmp/sandbox
 rm -rf "${SANDBOX_DIR}"
 mkdir -p "${SANDBOX_DIR}"
 
-cp -r "${TEMPLATES_HOME}/cluster-tools" "${SANDBOX_DIR}"
-substitute_vars "${SANDBOX_DIR}"
+K8S_CONFIGS_DIR="${SANDBOX_DIR}/k8s-configs"
+mkdir -p "${K8S_CONFIGS_DIR}"
+
+cp -r "${TEMPLATES_HOME}/cluster-tools" "${K8S_CONFIGS_DIR}"
+substitute_vars "${K8S_CONFIGS_DIR}/cluster-tools"
 
 # Next build up the directory for each environment.
 ENVIRONMENTS='dev test staging prod'
 
-PING_CLOUD_DIR="${SANDBOX_DIR}/ping-cloud"
+PING_CLOUD_DIR="${K8S_CONFIGS_DIR}/ping-cloud"
 mkdir -p "${PING_CLOUD_DIR}"
 
 FLUXCD_DIR="${SANDBOX_DIR}/fluxcd"
@@ -188,6 +191,6 @@ for ENV in ${ENVIRONMENTS}; do
   rm -rf "${FLUX_SANDBOX}"
 done
 
-echo "Push the k8s-configs directory under ${SANDBOX_DIR} into the tenant IaC repo onto the master branch"
+echo "Push the directories under ${SANDBOX_DIR} into the tenant IaC repo onto the master branch"
 echo "Add the following identity as a deploy key on the tenant IaC repo"
 echo "${IDENTITY_PUB}"
