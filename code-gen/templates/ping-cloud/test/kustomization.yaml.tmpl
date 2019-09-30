@@ -54,6 +54,15 @@ patchesJson6902:
     kind: Ingress
     name: pingaccess-admin-ingress
 
+# cluster auto-scaler
+- path: patches/deployment/patch-cluster-and-region.yaml
+  target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: cluster-autoscaler
+    namespace: cluster-autoscaler
+
 patchesStrategicMerge:
 - patches/configmap/cluster-info.yaml
 - patches/configmap/cwagentconfig.yaml
