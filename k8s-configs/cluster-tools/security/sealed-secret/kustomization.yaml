@@ -1,9 +1,8 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
+namespace: sealed-secret
+
 resources:
-- service-discovery
-- ingress
-- logging
-- network-provider
-- security
+- namespace.yaml
+- controller.yaml
