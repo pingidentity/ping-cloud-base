@@ -22,7 +22,7 @@ spec:
       terminationGracePeriodSeconds: 300
       containers:
       - name: ds
-        image: pingidentity/pingdirectory:edge
+        image: pingidentity/pingdirectory:7.3.0.0
         imagePullPolicy: Always
         ports:
         - containerPort: 389

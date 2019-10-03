@@ -64,8 +64,13 @@
 #                | number of user identities. Legal values are        |
 #                | small, medium or large.                            |
 #                |                                                    |
-# IAC_REPO_URL   | The URL of the IaC repository                      | https://github.com/pingidentity/ping-cloud-base
+# IAC_REPO_URL   | The URL of the IaC or cluster-state repository     | https://github.com/pingidentity/ping-cloud-base
 #                |                                                    |
+# K8S_BASE_URL   | The URL for the Kubernetes base manifest files     | https://github.com/pingidentity/ping-cloud-base
+#                |                                                    |
+# REGISTRY_NAME  | The registry hostname for the Docker images used   | docker.io
+#                | by the Ping stack. This can be Docker hub, ECR     |
+#                | (1111111111.dkr.ecr.us-east-2.amazonaws.com), etc. |
 ########################################################################################################################
 
 ########################################################################################################################
@@ -83,6 +88,8 @@ ${REGION}
 ${SIZE}
 ${CLUSTER_NAME}
 ${IAC_REPO_URL}
+${K8S_BASE_URL}
+${REGISTRY_NAME}
 ${TLS_CRT_BASE64}
 ${TLS_KEY_BASE64}
 ${IDENTITY_PUB}
@@ -113,12 +120,24 @@ if test ${HAS_REQUIRED_TOOLS} -ne 0 || test ${HAS_REQUIRED_VARS} -ne 0; then
   exit 1
 fi
 
+# Print out the values provided used for each variable.
+echo "Initial SIZE: ${SIZE}"
+echo "Initial TENANT_NAME: ${TENANT_NAME}"
+echo "Initial TENANT_DOMAIN: ${TENANT_DOMAIN}"
+echo "Initial REGION: ${REGION}"
+echo "Initial IAC_REPO_URL: ${IAC_REPO_URL}"
+echo "Initial K8S_BASE_URL: ${K8S_BASE_URL}"
+echo "Initial REGISTRY_NAME: ${REGISTRY_NAME}"
+echo ---
+
 # Use defaults for other variables, if not present.
 export SIZE="${SIZE:-small}"
 export TENANT_NAME="${TENANT_NAME:-PingPOC}"
 export TENANT_DOMAIN="${TENANT_DOMAIN:-eks-poc.au1.ping-lab.cloud}"
 export REGION="${REGION:-us-east-2}"
 export IAC_REPO_URL="${IAC_REPO_URL:-git@github.com:pingidentity/ping-cloud-base.git}"
+export K8S_BASE_URL="${K8S_BASE_URL:-https://github.com/pingidentity/ping-cloud-base}"
+export REGISTRY_NAME="${REGISTRY_NAME:-docker.io}"
 
 # Print out the values being used for each variable.
 echo "Using SIZE: ${SIZE}"
@@ -126,6 +145,9 @@ echo "Using TENANT_NAME: ${TENANT_NAME}"
 echo "Using TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Using REGION: ${REGION}"
 echo "Using IAC_REPO_URL: ${IAC_REPO_URL}"
+echo "Using K8S_BASE_URL: ${K8S_BASE_URL}"
+echo "Using REGISTRY_NAME: ${REGISTRY_NAME}"
+echo ---
 
 export PING_IDENTITY_DEVOPS_USER_BASE64=$(echo -n "${PING_IDENTITY_DEVOPS_USER}" | base64)
 export PING_IDENTITY_DEVOPS_KEY_BASE64=$(echo -n "${PING_IDENTITY_DEVOPS_KEY}" | base64)
@@ -195,5 +217,5 @@ for ENV in ${ENVIRONMENTS}; do
 done
 
 echo "Push the directories under ${SANDBOX_DIR} into the tenant IaC repo onto the master branch"
-echo "Add the following identity as a deploy key on the tenant IaC repo"
+echo "Add the following identity as a deploy key on the tenant IaC repo:"
 echo "${IDENTITY_PUB}"
