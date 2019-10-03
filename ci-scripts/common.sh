@@ -3,12 +3,16 @@
 ##################################################################
 # Common variables
 ##################################################################
+
+export REGION="${AWS_DEFAULT_REGION}"
+export CLUSTER_NAME="${EKS_CLUSTER_NAME}"
+
 [[ ${CI_COMMIT_REF_SLUG} != master ]] && export ENVIRONMENT=-${CI_COMMIT_REF_SLUG}
 
 FQDN=${ENVIRONMENT}.${TENANT_DOMAIN}
 
 # Common
-LOGS_CONSOLE=https://logs.${TENANT_DOMAIN}
+LOGS_CONSOLE=https://logs-${CLUSTER_NAME}.${TENANT_DOMAIN}
 
 # Pingdirectory
 PINGDIRECTORY_CONSOLE=https://pingdataconsole${FQDN}/console
