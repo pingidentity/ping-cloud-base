@@ -3,7 +3,15 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 - ../../cluster-tools
-- https://github.com/pingidentity/ping-cloud-base/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}?ref=master
+- ${K8S_BASE_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}?ref=master
+
+images:
+- name: pingidentity/pingdirectory
+  newName: ${REGISTRY_NAME}/pingidentity/pingdirectory
+- name: pingidentity/pingfederate
+  newName: ${REGISTRY_NAME}/pingidentity/pingfederate
+- name: pingidentity/pingaccess
+  newName: ${REGISTRY_NAME}/pingidentity/pingaccess
 
 patchesJson6902:
 # pingfederate runtime

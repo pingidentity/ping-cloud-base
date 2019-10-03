@@ -3,11 +3,11 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 # These include all the generic cloud-agnostic tools, like ingress, logging, service discovery, etc.
-- https://github.com/pingidentity/ping-cloud-base/k8s-configs/cluster-tools?ref=master
+- ${K8S_BASE_URL}/k8s-configs/cluster-tools?ref=master
 
 # Monitoring is specific to AWS at the moment. The cluster-autoscaler is always specific to the cloud provider.
-- https://github.com/pingidentity/ping-cloud-base/k8s-configs/cluster-tools/monitoring/container-insights?ref=master
-- https://github.com/pingidentity/ping-cloud-base/k8s-configs/cluster-tools/cluster-autoscaler/aws?ref=master
+- ${K8S_BASE_URL}/k8s-configs/cluster-tools/monitoring/container-insights?ref=master
+- ${K8S_BASE_URL}/k8s-configs/cluster-tools/cluster-autoscaler/aws?ref=master
 
 patchesJson6902:
 - path: patches/ingress/logs.yaml
