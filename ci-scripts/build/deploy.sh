@@ -38,9 +38,6 @@ fi
 # Generate a self-signed cert for the tenant domain.
 generate_tls_cert "${TENANT_DOMAIN}"
 
-export REGION="${AWS_DEFAULT_REGION}"
-export CLUSTER_NAME="${EKS_CLUSTER_NAME}"
-
 export PING_IDENTITY_DEVOPS_USER_BASE64=$(echo -n "${PING_IDENTITY_DEVOPS_USER}" | base64)
 export PING_IDENTITY_DEVOPS_KEY_BASE64=$(echo -n "${PING_IDENTITY_DEVOPS_KEY}" | base64)
 
