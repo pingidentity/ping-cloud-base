@@ -17,7 +17,7 @@
 # ------------
 # Requirements
 # ------------
-# The scripts requires the following tools to be installed:
+# The script requires the following tools to be installed:
 #   - openssl
 #   - ssh-keygen
 #   - base64

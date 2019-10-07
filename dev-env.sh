@@ -1,5 +1,63 @@
 #!/bin/bash
 
+########################################################################################################################
+#
+# This script may be used to set up a development or test environment to verify the Kubernetes and Kustomization yaml
+# files either in their present form or after making some local changes to them.
+#
+# ------------
+# Requirements
+# ------------
+# The script requires the following tools to be installed:
+#   - openssl
+#   - base64
+#   - kustomize
+#   - kubectl
+#   - envsubst
+#
+# In addition, the assumption is that kubectl is configured to authenticate and apply manifests to the Kubernetes
+# cluster. For EKS clusters, this requires an AWS key and secret with the appropriate IAM policies to be configured and
+# requires that the aws CLI tool and probably the aws-iam-authenticator CLI tool are installed.
+#
+# ------------------
+# Usage instructions
+# ------------------
+# The script does not take any parameters, but rather acts on environment variables. The environment variables will
+# be substituted into the variables in the yaml template files. The following mandatory environment variables must be
+# present before running this script:
+#
+# ----------------------------------------------------------------------------------------------------------------------
+# Variable                    | Purpose
+# ----------------------------------------------------------------------------------------------------------------------
+# PING_IDENTITY_DEVOPS_USER   | A user with license to run Ping Software
+# PING_IDENTITY_DEVOPS_KEY    | The key to the above user
+#
+# In addition, the following environment variables, if present, will be used for the following purposes:
+#
+# ----------------------------------------------------------------------------------------------------------------------
+# Variable       | Purpose                                            | Default (if not present)
+# ----------------------------------------------------------------------------------------------------------------------
+# TENANT_NAME    | The name of the tenant, e.g. k8s-icecream. This    | PingPOC
+#                | will be assumed to be the name of the Kubernetes   |
+#                | cluster. On AWS, the cluster name is a required    |
+#                | parameter to Container Insights, an AWS-specific   |
+#                | logging and monitoring solution.                   |
+#                |                                                    |
+# TENANT_DOMAIN  | The tenant's domain, e.g. k8s-icecream.com         | eks-poc.au1.ping-lab.cloud
+#                |                                                    |
+# ENVIRONMENT    | An environment to isolate the Ping stack into its  | The value of the USER environment variable.
+#                | own namespace within the Kubernetes cluster. This  |
+#                | is useful not just in a shared multi-tenant        |
+#                | Kubernetes cluster but could also be used to       |
+#                | create multiple Ping stacks within the same        |
+#                | cluster for testing purposes.                      |
+#                |                                                    |
+# REGION         | The region where the tenant environment is         | us-east-2
+#                | deployed. On AWS, this is a required parameter     |
+#                | to Container Insights, an AWS-specific logging     |
+#                | and monitoring solution.                           |
+########################################################################################################################
+
 # Source some utility methods.
 . utils.sh
 
@@ -20,7 +78,7 @@ do
 done
 
 # Checking required tools and environment variables.
-HAS_REQUIRED_TOOLS=$(check_binaries "openssl" "base64" "envsubst"; echo ${?})
+HAS_REQUIRED_TOOLS=$(check_binaries "openssl" "base64" "kustomize" "kubectl" "envsubst"; echo ${?})
 HAS_REQUIRED_VARS=$(check_env_vars "PING_IDENTITY_DEVOPS_USER" "PING_IDENTITY_DEVOPS_KEY"; echo ${?})
 
 if test ${HAS_REQUIRED_TOOLS} -ne 0 || test ${HAS_REQUIRED_VARS} -ne 0; then
@@ -28,9 +86,9 @@ if test ${HAS_REQUIRED_TOOLS} -ne 0 || test ${HAS_REQUIRED_VARS} -ne 0; then
 fi
 
 # Show initial values for relevant environment variables.
-echo "Initial ENVIRONMENT: ${ENVIRONMENT}"
+echo "Initial TENANT_NAME: ${TENANT_NAME}"
 echo "Initial TENANT_DOMAIN: ${TENANT_DOMAIN}"
-echo "Initial CLUSTER_NAME: ${CLUSTER_NAME}"
+echo "Initial ENVIRONMENT: ${ENVIRONMENT}"
 echo "Initial REGION: ${REGION}"
 
 # A script that may be used to set up a dev/test environment against the
@@ -38,18 +96,20 @@ echo "Initial REGION: ${REGION}"
 # environment variables.
 export ENVIRONMENT=-"${ENVIRONMENT:-${USER}}"
 export TENANT_DOMAIN="${TENANT_DOMAIN:-eks-poc.au1.ping-lab.cloud}"
-export CLUSTER_NAME="${TENANT_NAME:-PingPOC}"
+export TENANT_NAME="${TENANT_NAME:-PingPOC}"
 export REGION="${REGION:-us-east-2}"
 
 ENVIRONMENT_NO_HYPHEN_PREFIX=$(echo ${ENVIRONMENT/#-})
 
+# Show the values being used for the relevant environment variables.
+echo "Using TENANT_NAME: ${TENANT_NAME}"
 echo "Using TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Using ENVIRONMENT: ${ENVIRONMENT_NO_HYPHEN_PREFIX}"
-echo "Using CLUSTER_NAME: ${CLUSTER_NAME}"
 echo "Using REGION: ${REGION}"
 
 export PING_IDENTITY_DEVOPS_USER_BASE64=$(echo -n "${PING_IDENTITY_DEVOPS_USER}" | base64)
 export PING_IDENTITY_DEVOPS_KEY_BASE64=$(echo -n "${PING_IDENTITY_DEVOPS_KEY}" | base64)
+export CLUSTER_NAME=${TENANT_NAME}
 
 NAMESPACE=ping-cloud-${ENVIRONMENT_NO_HYPHEN_PREFIX}
 DEPLOY_FILE=/tmp/deploy.yaml
