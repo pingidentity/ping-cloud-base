@@ -95,6 +95,7 @@ ${TLS_KEY_BASE64}
 ${IDENTITY_PUB}
 ${IDENTITY_KEY}
 ${ENVIRONMENT}
+${ENVIRONMENT_GIT_PATH}
 ${KUSTOMIZE_BASE}'
 
 substitute_vars() {
@@ -182,14 +183,25 @@ FLUXCD_DIR="${SANDBOX_DIR}/fluxcd"
 mkdir -p "${FLUXCD_DIR}"
 
 for ENV in ${ENVIRONMENTS}; do
-  export ENVIRONMENT=${ENV}
+  export ENVIRONMENT_GIT_PATH=${ENV}
 
   ENV_DIR="${PING_CLOUD_DIR}/${ENV}"
   cp -r "${TEMPLATES_HOME}"/ping-cloud/"${ENV}" "${ENV_DIR}"
 
-  test "${ENV}" = 'prod' &&
-    export KUSTOMIZE_BASE="${ENV}/${SIZE}" ||
-    export KUSTOMIZE_BASE="${ENV}"
+  case "${ENV}" in
+    prod)
+      export KUSTOMIZE_BASE="prod/${SIZE}"
+      export ENVIRONMENT=""
+      ;;
+    staging)
+      export KUSTOMIZE_BASE='prod/small'
+      export ENVIRONMENT="-${ENV}"
+      ;;
+    dev | test)
+      export KUSTOMIZE_BASE='test'
+      export ENVIRONMENT="-${ENV}"
+      ;;
+  esac
 
   # The k8s cluster name will be PingPoc-dev, PingPoc-test, etc. for the different CDEs
   # FIXME: uncomment line below and get rid of the line following when the setup of the clusters is fixed to follow

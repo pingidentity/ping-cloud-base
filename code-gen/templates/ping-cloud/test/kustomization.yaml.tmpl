@@ -13,6 +13,17 @@ images:
 - name: pingidentity/pingaccess
   newName: ${REGISTRY_NAME}/pingidentity/pingaccess
 
+configMapGenerator:
+- name: pingdirectory-environment-variables
+  behavior: merge
+  env: env_vars
+- name: pingaccess-environment-variables
+  behavior: merge
+  env: env_vars
+- name: pingfederate-environment-variables
+  behavior: merge
+  env: env_vars
+
 patchesJson6902:
 # pingdata
 - path: patches/ingress/pingdataconsole.yaml
@@ -61,6 +72,14 @@ patchesJson6902:
     version: v1beta1
     kind: Ingress
     name: pingaccess-admin-ingress
+
+# logs
+- path: patches/ingress/logs.yaml
+  target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: kibana-ingress
 
 # cluster auto-scaler
 - path: patches/deployment/patch-cluster-and-region.yaml
