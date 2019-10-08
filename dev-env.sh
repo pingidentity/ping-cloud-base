@@ -23,13 +23,14 @@
 # Usage instructions
 # ------------------
 # Aside from a -n (dry-run option), the script does not take any parameters but rather acts on environment variables.
-# The environment variables will be substituted into the variables in the yaml template files. The following mandatory
-# environment variables must be present before running this script.
-
+# The environment variables will be substituted into the variables in the yaml template files.
+#
 # Both real and dry run will emit the Kubernetes manifest file for the entire deployment into the file /tmp/deploy.yaml.
 # After running the script in dry-run mode, the deploy.yaml file may be edited, if desired, but it should be able to
 # be deployed as-is onto the cluster. In fact, this is exactly what gets deployed when the script is run in real
 # mode, i.e. without the -n option.
+#
+# The following mandatory environment variables must be present before running this script.
 #
 # ----------------------------------------------------------------------------------------------------------------------
 # Variable                    | Purpose
@@ -55,7 +56,8 @@
 #                | is useful not just in a shared multi-tenant        |
 #                | Kubernetes cluster but could also be used to       |
 #                | create multiple Ping stacks within the same        |
-#                | cluster for testing purposes.                      |
+#                | cluster for testing purposes. It may be set to an  |
+#                | empty string.                                      |
 #                |                                                    |
 # REGION         | The region where the tenant environment is         | us-east-2
 #                | deployed. On AWS, this is a required parameter     |
