@@ -2,8 +2,7 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-- ../../cluster-tools
-- ${K8S_BASE_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}?ref=master
+- ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}?ref=${K8S_GIT_BRANCH}
 
 images:
 - name: pingidentity/pingdirectory
@@ -13,26 +12,7 @@ images:
 - name: pingidentity/pingaccess
   newName: ${REGISTRY_NAME}/pingidentity/pingaccess
 
-configMapGenerator:
-- name: pingdirectory-environment-variables
-  behavior: merge
-  env: env_vars
-- name: pingaccess-environment-variables
-  behavior: merge
-  env: env_vars
-- name: pingfederate-environment-variables
-  behavior: merge
-  env: env_vars
-
 patchesJson6902:
-# pingdata
-- path: patches/ingress/pingdataconsole.yaml
-  target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: pingdataconsole-ingress
-
 # pingfederate runtime
 - path: patches/ingress/pingfederate.yaml
   target:
@@ -73,26 +53,7 @@ patchesJson6902:
     kind: Ingress
     name: pingaccess-admin-ingress
 
-# logs
-- path: patches/ingress/logs.yaml
-  target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: kibana-ingress
-
-# cluster auto-scaler
-- path: patches/deployment/patch-cluster-and-region.yaml
-  target:
-    group: apps
-    version: v1
-    kind: Deployment
-    name: cluster-autoscaler
-    namespace: kube-system
-
 patchesStrategicMerge:
-- patches/configmap/cluster-info.yaml
-- patches/configmap/cwagentconfig.yaml
 - patches/service/pingdirectory.yaml
 - patches/secret/tls-secret.yaml
 - patches/secret/devops-secret.yaml

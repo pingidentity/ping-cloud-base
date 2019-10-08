@@ -66,7 +66,9 @@
 #                |                                                    |
 # IAC_REPO_URL   | The URL of the IaC or cluster-state repository     | https://github.com/pingidentity/ping-cloud-base
 #                |                                                    |
-# K8S_BASE_URL   | The URL for the Kubernetes base manifest files     | https://github.com/pingidentity/ping-cloud-base
+# K8S_GIT_URL    | The Git URL for the Kubernetes base manifest files | https://github.com/pingidentity/ping-cloud-base
+#                |                                                    |
+# K8S_GIT_BRANCH | The Git branch within the above Git URL            | master
 #                |                                                    |
 # REGISTRY_NAME  | The registry hostname for the Docker images used   | docker.io
 #                | by the Ping stack. This can be Docker hub, ECR     |
@@ -88,7 +90,8 @@ ${REGION}
 ${SIZE}
 ${CLUSTER_NAME}
 ${IAC_REPO_URL}
-${K8S_BASE_URL}
+${K8S_GIT_URL}
+${K8S_GIT_BRANCH}
 ${REGISTRY_NAME}
 ${TLS_CRT_BASE64}
 ${TLS_KEY_BASE64}
@@ -127,7 +130,8 @@ echo "Initial TENANT_NAME: ${TENANT_NAME}"
 echo "Initial TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Initial REGION: ${REGION}"
 echo "Initial IAC_REPO_URL: ${IAC_REPO_URL}"
-echo "Initial K8S_BASE_URL: ${K8S_BASE_URL}"
+echo "Initial K8S_GIT_URL: ${K8S_GIT_URL}"
+echo "Initial K8S_GIT_BRANCH: ${K8S_GIT_BRANCH}"
 echo "Initial REGISTRY_NAME: ${REGISTRY_NAME}"
 echo ---
 
@@ -137,7 +141,8 @@ export TENANT_NAME="${TENANT_NAME:-PingPOC}"
 export TENANT_DOMAIN="${TENANT_DOMAIN:-eks-poc.au1.ping-lab.cloud}"
 export REGION="${REGION:-us-east-2}"
 export IAC_REPO_URL="${IAC_REPO_URL:-git@github.com:pingidentity/ping-cloud-base.git}"
-export K8S_BASE_URL="${K8S_BASE_URL:-https://github.com/pingidentity/ping-cloud-base}"
+export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
+export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-master}"
 export REGISTRY_NAME="${REGISTRY_NAME:-docker.io}"
 
 # Print out the values being used for each variable.
@@ -146,7 +151,8 @@ echo "Using TENANT_NAME: ${TENANT_NAME}"
 echo "Using TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Using REGION: ${REGION}"
 echo "Using IAC_REPO_URL: ${IAC_REPO_URL}"
-echo "Using K8S_BASE_URL: ${K8S_BASE_URL}"
+echo "Using K8S_GIT_URL: ${K8S_GIT_URL}"
+echo "Using K8S_GIT_BRANCH: ${K8S_GIT_BRANCH}"
 echo "Using REGISTRY_NAME: ${REGISTRY_NAME}"
 echo ---
 
@@ -162,70 +168,85 @@ generate_tls_cert "${TENANT_DOMAIN}"
 # Generate an SSH key pair for flux CD.
 generate_ssh_key_pair
 
-# Copy the shared cluster tools to the sandbox directory and substitute its variables first.
+# Delete existing sandbox and re-create it
 SANDBOX_DIR=/tmp/sandbox
 rm -rf "${SANDBOX_DIR}"
 mkdir -p "${SANDBOX_DIR}"
 
-K8S_CONFIGS_DIR="${SANDBOX_DIR}/k8s-configs"
-mkdir -p "${K8S_CONFIGS_DIR}"
-
-cp -r "${TEMPLATES_HOME}/cluster-tools" "${K8S_CONFIGS_DIR}"
-substitute_vars "${K8S_CONFIGS_DIR}/cluster-tools"
-
-# Next build up the directory for each environment.
-ENVIRONMENTS='dev test staging prod'
-
-PING_CLOUD_DIR="${K8S_CONFIGS_DIR}/ping-cloud"
-mkdir -p "${PING_CLOUD_DIR}"
-
+# Next build up the directory structure of the cluster-state repo
 FLUXCD_DIR="${SANDBOX_DIR}/fluxcd"
 mkdir -p "${FLUXCD_DIR}"
 
+K8S_CONFIGS_DIR="${SANDBOX_DIR}/k8s-configs"
+PING_CLOUD_DIR="${K8S_CONFIGS_DIR}/ping-cloud"
+mkdir -p "${PING_CLOUD_DIR}"
+
+# Now generate the yaml files for each environment
+ENVIRONMENTS='dev test staging prod'
+
 for ENV in ${ENVIRONMENTS}; do
+  ENV_DIR="${PING_CLOUD_DIR}/${ENV}"
+
+  # Export all the environment variables required for envsubst
   export ENVIRONMENT_GIT_PATH=${ENV}
 
-  ENV_DIR="${PING_CLOUD_DIR}/${ENV}"
-  cp -r "${TEMPLATES_HOME}"/ping-cloud/"${ENV}" "${ENV_DIR}"
-
+  # The base URL for kustomization files, the cluster name and environment will be different for each CDE.
+  # The cluster name will be PingPoc for prod, PingPoc-dev, PingPoc-test, PingPoc-staging for the different CDEs
   case "${ENV}" in
     prod)
       export KUSTOMIZE_BASE="prod/${SIZE}"
-      export ENVIRONMENT=""
+      export CLUSTER_NAME=${TENANT_NAME}
+      export ENVIRONMENT=''
       ;;
     staging)
       export KUSTOMIZE_BASE='prod/small'
+      export CLUSTER_NAME=${TENANT_NAME}-${ENV}
       export ENVIRONMENT="-${ENV}"
       ;;
     dev | test)
       export KUSTOMIZE_BASE='test'
+      # FIXME: change to CLUSTER_NAME=${TENANT_NAME}-${ENV} when cluster setup is fixed
+      export CLUSTER_NAME=${TENANT_NAME}
       export ENVIRONMENT="-${ENV}"
       ;;
   esac
 
-  # The k8s cluster name will be PingPoc-dev, PingPoc-test, etc. for the different CDEs
-  # FIXME: uncomment line below and get rid of the line following when the setup of the clusters is fixed to follow
-  # this convention
-  # export CLUSTER_NAME=${TENANT_NAME}-${ENV}
-  export CLUSTER_NAME=${TENANT_NAME}
+  # Copy the shared cluster tools and Ping yaml templates into their target directories
+  cp -r "${TEMPLATES_HOME}"/cluster-tools "${PING_CLOUD_DIR}"
+  cp -r "${TEMPLATES_HOME}"/ping-cloud/cde "${ENV_DIR}"
 
-  cp -r "${TEMPLATES_HOME}/.flux.yaml" "${ENV_DIR}"
-  substitute_vars "${ENV_DIR}"
+  # Substitute variables in the environment directory
+  substitute_vars "${PING_CLOUD_DIR}"
 
+  # Generate the ping-cloud yaml file and move it into the environment directory
+  ENV_YAML=$(mktemp)
+  kustomize build "${ENV_DIR}" > "${ENV_YAML}"
+  rm -rf "${ENV_DIR}"/*
+  mv "${ENV_YAML}" "${ENV_DIR}"/ping.yaml
+
+  # Generate the tools yaml file and move it into the environment directory
+  TOOLS_YAML=$(mktemp)
+  kustomize build "${PING_CLOUD_DIR}"/cluster-tools > "${TOOLS_YAML}"
+  rm -rf "${PING_CLOUD_DIR}"/cluster-tools
+  mv "${TOOLS_YAML}" "${ENV_DIR}"/tools.yaml
+
+  # Copy the common files into the environment directory
+  cp "${TEMPLATES_HOME}"/ping-cloud/common/* "${ENV_DIR}"
+
+  # Copy the flux yaml into the environment directory
+  cp -r "${TEMPLATES_HOME}"/.flux.yaml "${ENV_DIR}"
+
+  # Next, build the flux.yaml file for each environment
   ENV_FLUX_DIR="${FLUXCD_DIR}/${ENV}"
   mkdir -p "${ENV_FLUX_DIR}"
 
-  FLUX_SANDBOX="${TEMPLATES_HOME}"/flux-sandbox
-  mkdir -p "${FLUX_SANDBOX}"
-
-  cp "${TEMPLATES_HOME}"/fluxcd/* "${FLUX_SANDBOX}"
-  substitute_vars "${FLUX_SANDBOX}"
+  cp "${TEMPLATES_HOME}"/fluxcd/* "${ENV_FLUX_DIR}"
+  substitute_vars "${ENV_FLUX_DIR}"
 
   FLUX_YAML=$(mktemp)
-  kustomize build "${FLUX_SANDBOX}" > "${FLUX_YAML}"
-
+  kustomize build "${ENV_FLUX_DIR}" > "${FLUX_YAML}"
+  rm -rf "${ENV_FLUX_DIR}"/*
   mv "${FLUX_YAML}" "${ENV_FLUX_DIR}"/flux.yaml
-  rm -rf "${FLUX_SANDBOX}"
 done
 
 echo "Push the directories under ${SANDBOX_DIR} into the tenant IaC repo onto the master branch"
