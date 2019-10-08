@@ -9,13 +9,5 @@ resources:
 - ${K8S_BASE_URL}/k8s-configs/cluster-tools/monitoring/container-insights?ref=master
 - ${K8S_BASE_URL}/k8s-configs/cluster-tools/cluster-autoscaler/aws?ref=master
 
-patchesJson6902:
-- path: patches/ingress/logs.yaml
-  target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: kibana-ingress
-
 patchesStrategicMerge:
 - patches/secret/tls-secret.yaml

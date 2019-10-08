@@ -1,7 +1,7 @@
 - op: replace
   path: /spec/tls/0/hosts/0
-  value: pingfederate-admin.${TENANT_DOMAIN}
+  value: pingfederate-admin${ENVIRONMENT}.${TENANT_DOMAIN}
 
 - op: replace
   path: /spec/rules/0/host
-  value: pingfederate-admin.${TENANT_DOMAIN}
+  value: pingfederate-admin${ENVIRONMENT}.${TENANT_DOMAIN}

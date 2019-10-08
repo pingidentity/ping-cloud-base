@@ -22,9 +22,14 @@
 # ------------------
 # Usage instructions
 # ------------------
-# The script does not take any parameters, but rather acts on environment variables. The environment variables will
-# be substituted into the variables in the yaml template files. The following mandatory environment variables must be
-# present before running this script:
+# Aside from a -n (dry-run option), the script does not take any parameters but rather acts on environment variables.
+# The environment variables will be substituted into the variables in the yaml template files. The following mandatory
+# environment variables must be present before running this script.
+
+# Both real and dry run will emit the Kubernetes manifest file for the entire deployment into the file /tmp/deploy.yaml.
+# After running the script in dry-run mode, the deploy.yaml file may be edited, if desired, but it should be able to
+# be deployed as-is onto the cluster. In fact, this is exactly what gets deployed when the script is run in real
+# mode, i.e. without the -n option.
 #
 # ----------------------------------------------------------------------------------------------------------------------
 # Variable                    | Purpose
@@ -58,6 +63,10 @@
 #                | and monitoring solution.                           |
 ########################################################################################################################
 
+# Source devops and aws-eks files, if present
+test -f ~/.pingidentity/devops && . ~/.pingidentity/devops
+test -f ~/.pingidentity/aws-eks && . ~/.pingidentity/aws-eks
+
 # Source some utility methods.
 . utils.sh
 
@@ -90,6 +99,7 @@ echo "Initial TENANT_NAME: ${TENANT_NAME}"
 echo "Initial TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Initial ENVIRONMENT: ${ENVIRONMENT}"
 echo "Initial REGION: ${REGION}"
+echo ---
 
 # A script that may be used to set up a dev/test environment against the
 # current cluster. Must have the GTE devops user and key exported as
