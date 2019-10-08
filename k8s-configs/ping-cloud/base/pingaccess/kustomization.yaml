@@ -9,6 +9,9 @@ resources:
 commonLabels:
   role: pingaccess
 
+generatorOptions:
+  disableNameSuffixHash: true
+
 configMapGenerator:
 - name: pingaccess-environment-variables
   env: env_vars
