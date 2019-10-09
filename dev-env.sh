@@ -22,8 +22,15 @@
 # ------------------
 # Usage instructions
 # ------------------
-# Aside from a -n (dry-run option), the script does not take any parameters but rather acts on environment variables.
-# The environment variables will be substituted into the variables in the yaml template files.
+# The script makes uses of several variables (see below) that will either come in via a couple of files:
+#
+#    ~/.pingidentity/devops    (Will bring in the PING_IDENTITY_DEVOPS_* variables)
+#    ~/.pingidentity/aws-eks
+#
+# or via environment variables.  If the -s (setup) option is provided to this script, the user will be prompted for
+# the TENANT_NAME, TENANT_DOMAIN, ENVIRONMENT, REGION variables and place them in the aws-eks file.
+#
+# These variables will be substituted into the variables in the yaml template files.
 #
 # Both real and dry run will emit the Kubernetes manifest file for the entire deployment into the file /tmp/deploy.yaml.
 # After running the script in dry-run mode, the deploy.yaml file may be edited, if desired, but it should be able to
@@ -75,11 +82,15 @@ test -f ~/.pingidentity/aws-eks && . ~/.pingidentity/aws-eks
 declare dryrun="false"
 
 # Parse Parameters
-while getopts 'n' OPTION
+while getopts 'ns' OPTION
 do
   case ${OPTION} in
     n)
       dryrun='true'
+      ;;
+    s)
+      setup_vars "TENANT_NAME" "TENANT_DOMAIN" "ENVIRONMENT" "REGION"
+      exit 1
       ;;
     *)
       echo "Usage ${0} [ -n ] n = dry-run"

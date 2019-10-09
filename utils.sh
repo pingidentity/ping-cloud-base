@@ -100,3 +100,71 @@ check_env_vars() {
   done
   return ${STATUS}
 }
+
+################################################################################
+# get_value (variable)
+#
+# Get the value of a vaiable, preserving the spaces
+################################################################################
+get_value ()
+{
+    IFS="%%"
+    eval printf '%s' "\${${1}}"
+    unset IFS
+}
+
+########################################################################################################################
+# Asks the user for a set of variable values and writes them to the aws-eks file
+#
+# Arguments
+#   ${*} -> The list of environment variables.
+########################################################################################################################
+setup_vars() {
+  PROPS_FILE=~/.pingidentity/aws-eks
+  TMP_PROPS_FILE="/tmp/aws-eks.$$"
+
+  echo "
+########################################################################################################################
+# ${0} - Setting up '${PROPS_FILE}'
+#
+# For each variable, either:
+#     type in the value
+#     <enter> for default
+#     '-' to remove value
+########################################################################################################################
+"
+
+  test -d "~/.pingidentity" && mkdir ~/.pingidentity
+  echo "###########################################
+# Ping Identity
+#
+# Input Variables for dev-env.sh script
+#
+# Created: $(date)
+###########################################
+" > ${TMP_PROPS_FILE}
+
+  for VAR_TO_SET in ${*}; do
+    VAR_DEFAULT="" && shift
+    VAR_PROMPT="${VAR_TO_SET}"
+
+    CURRENT_VALUE=$(get_value ${VAR_TO_SET})
+    test -z "${CURRENT_VALUE}" && CURRENT_VALUE="${VAR_DEFAULT}"
+
+    echo -n "${VAR_PROMPT} [${CURRENT_VALUE}] ? "
+    read answer
+    if test ! -z "${answer}"; then
+      if test "${answer}" = "-"; then
+        eval "unset \${VAR_TO_SET}"
+        echo "${VAR_TO_SET}=" >> ${TMP_PROPS_FILE}
+      else
+        eval "export \${VAR_TO_SET}=${answer}"
+        echo "${VAR_TO_SET}=${answer}" >> ${TMP_PROPS_FILE}
+      fi
+    else
+      echo "${VAR_TO_SET}=${CURRENT_VALUE}" >> ${TMP_PROPS_FILE}
+    fi
+  done
+
+  mv "${TMP_PROPS_FILE}" "${PROPS_FILE}"
+}
