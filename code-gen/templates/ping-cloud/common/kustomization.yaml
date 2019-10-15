@@ -10,15 +10,32 @@ generatorOptions:
   disableNameSuffixHash: true
 
 configMapGenerator:
-- name: pingdirectory-environment-variables
+# Pingaccess
+- name: pingaccess-environment-variables
   namespace: ping-cloud
   behavior: merge
   env: env_vars
 - name: pingaccess-environment-variables
   namespace: ping-cloud
   behavior: merge
+  env: pingaccess/env_vars
+
+# Pingdirectory
+- name: pingdirectory-environment-variables
+  namespace: ping-cloud
+  behavior: merge
   env: env_vars
+- name: pingdirectory-environment-variables
+  namespace: ping-cloud
+  behavior: merge
+  env: pingdirectory/env_vars
+
+# Pingfederate
 - name: pingfederate-environment-variables
   namespace: ping-cloud
   behavior: merge
   env: env_vars
+- name: pingfederate-environment-variables
+  namespace: ping-cloud
+  behavior: merge
+  env: pingfederate/env_vars
