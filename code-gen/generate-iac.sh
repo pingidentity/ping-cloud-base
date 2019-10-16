@@ -105,6 +105,7 @@ ${REGION}
 ${SIZE}
 ${CLUSTER_NAME}
 ${CLUSTER_STATE_REPO_URL}
+${CLUSTER_STATE_REPO_HOST}
 ${CONFIG_REPO_URL}
 ${CONFIG_REPO_BRANCH}
 ${ARTIFACT_REPO_URL}
@@ -148,13 +149,19 @@ echo "Initial SIZE: ${SIZE}"
 echo "Initial TENANT_NAME: ${TENANT_NAME}"
 echo "Initial TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Initial REGION: ${REGION}"
+
 echo "Initial CLUSTER_STATE_REPO_URL: ${CLUSTER_STATE_REPO_URL}"
+echo "Initial CLUSTER_STATE_REPO_HOST: ${CLUSTER_STATE_REPO_HOST}"
+
 echo "Initial CONFIG_REPO_URL: ${CONFIG_REPO_URL}"
 echo "Initial CONFIG_REPO_BRANCH: ${CONFIG_REPO_BRANCH}"
+
 echo "Initial ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
+
 echo "Initial K8S_GIT_URL: ${K8S_GIT_URL}"
 echo "Initial K8S_GIT_BRANCH: ${K8S_GIT_BRANCH}"
+
 echo "Initial REGISTRY_NAME: ${REGISTRY_NAME}"
 echo ---
 
@@ -165,6 +172,8 @@ export TENANT_DOMAIN="${TENANT_DOMAIN:-eks-poc.au1.ping-lab.cloud}"
 export REGION="${REGION:-us-east-2}"
 
 export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL:-git@github.com:pingidentity/ping-cloud-base.git}"
+export CLUSTER_STATE_REPO_HOST=$(cut -d '@' -f 2 <<< ${CLUSTER_STATE_REPO_URL} | cut -d '/' -f 1)
+
 export CONFIG_REPO_URL="${CONFIG_REPO_URL:-https://github.com/pingidentity/pingidentity-server-profiles}"
 export CONFIG_REPO_BRANCH="${CONFIG_REPO_BRANCH:-pcpt}"
 
@@ -183,6 +192,8 @@ echo "Using TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Using REGION: ${REGION}"
 
 echo "Using CLUSTER_STATE_REPO_URL: ${CLUSTER_STATE_REPO_URL}"
+echo "Using CLUSTER_STATE_REPO_HOST: ${CLUSTER_STATE_REPO_HOST}"
+
 echo "Using CONFIG_REPO_URL: ${CONFIG_REPO_URL}"
 echo "Using CONFIG_REPO_BRANCH: ${CONFIG_REPO_BRANCH}"
 
@@ -201,11 +212,16 @@ export PING_IDENTITY_DEVOPS_KEY_BASE64=$(echo -n "${PING_IDENTITY_DEVOPS_KEY}" |
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 TEMPLATES_HOME="${SCRIPT_HOME}/templates"
 
+# Generate an SSH key pair for flux CD.
+if test -z ${IDENTITY_PUB} && test -z ${IDENTITY_KEY}; then
+  generate_ssh_key_pair
+elif test -z ${IDENTITY_PUB} || test -z ${IDENTITY_KEY}; then
+  echo 'Provide fluxcd key-pair via IDENTITY_PUB/IDENTITY_KEY environment variables, or omit both for key-pair to be generated'
+  exit 1
+fi
+
 # Generate a self-signed cert for the tenant domain.
 generate_tls_cert "${TENANT_DOMAIN}"
-
-# Generate an SSH key pair for flux CD.
-generate_ssh_key_pair
 
 # Delete existing sandbox and re-create it
 SANDBOX_DIR=/tmp/sandbox

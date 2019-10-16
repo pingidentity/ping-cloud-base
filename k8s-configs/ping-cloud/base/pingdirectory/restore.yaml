@@ -52,7 +52,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: ds-restore
-        image: pingidentity/pingdirectory:edge
+        image: pingidentity/pingdirectory:7.3.0.0
         command:
         - /opt/in/restore.sh
         volumeMounts:

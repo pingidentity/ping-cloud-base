@@ -14,3 +14,11 @@ spec:
         - --git-url=git@github.com:pingidentity/ping-cloud-base.git
         - --git-branch=master
         - --git-path=k8s-configs/ping-cloud/dev
+        volumeMounts:
+        - mountPath: /root/.ssh
+          name: known-hosts
+      volumes:
+      - name: known-hosts
+        configMap:
+          defaultMode: 0644
+          name: known-hosts

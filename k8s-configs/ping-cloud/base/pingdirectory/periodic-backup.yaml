@@ -126,7 +126,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: ds-backup
-            image: pingidentity/pingdirectory:edge
+            image: pingidentity/pingdirectory:7.3.0.0
             command:
             - /opt/in/backup.sh
             env:

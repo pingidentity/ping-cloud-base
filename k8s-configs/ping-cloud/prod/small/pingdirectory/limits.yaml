@@ -21,8 +21,10 @@ spec:
         - name: UNBOUNDID_JAVA_ARGS
           value: "-client -Xmx14g -Xms14g"
   volumeClaimTemplates:
-  - spec:
-      storageClassName: pingdirectory-gp2
+  - metadata:
+      name: out-dir
+    spec:
+      storageClassName: pingdirectory-io1
       resources:
         requests:
           storage: 500Gi
