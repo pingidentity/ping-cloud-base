@@ -24,6 +24,8 @@ spec:
   - metadata:
       name: out-dir
     spec:
+      accessModes:
+      - ReadWriteOnce
       storageClassName: pingdirectory-io1
       resources:
         requests:
