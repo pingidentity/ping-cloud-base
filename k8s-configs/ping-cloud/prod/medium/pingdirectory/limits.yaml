@@ -21,7 +21,9 @@ spec:
         - name: UNBOUNDID_JAVA_ARGS
           value: "-client -Xmx30g -Xms30g"
   volumeClaimTemplates:
-  - spec:
+  - metadata:
+      name: out-dir
+    spec:
       storageClassName: pingdirectory-io1
       resources:
         requests:

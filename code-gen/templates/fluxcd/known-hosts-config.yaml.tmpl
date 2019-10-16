@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: known-hosts
+data:
+  known_hosts: |
+    ${CLUSTER_STATE_REPO_HOST} ssh-rsa ${IDENTITY_PUB}
