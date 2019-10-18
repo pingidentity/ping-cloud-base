@@ -54,6 +54,7 @@ patchesJson6902:
     name: pingaccess-agent-ingress
 
 patchesStrategicMerge:
-- patches/service/pingdirectory.yaml
+# - patches/service/pingdirectory.yaml
+- patches/service/pd-admin-delete.yaml
 - patches/secret/tls-secret.yaml
 - patches/secret/devops-secret.yaml
