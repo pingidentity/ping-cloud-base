@@ -101,9 +101,26 @@ done
 
 # Checking required tools and environment variables.
 HAS_REQUIRED_TOOLS=$(check_binaries "openssl" "base64" "kustomize" "kubectl" "envsubst"; echo ${?})
+
+if test ${HAS_REQUIRED_TOOLS} -ne 0; then
+  echo "Missing one of these tools."
+  echo "openssl base64 kustomize kubectl envsubst"
+  exit 1
+fi
+
 HAS_REQUIRED_VARS=$(check_env_vars "PING_IDENTITY_DEVOPS_USER" "PING_IDENTITY_DEVOPS_KEY"; echo ${?})
 
-if test ${HAS_REQUIRED_TOOLS} -ne 0 || test ${HAS_REQUIRED_VARS} -ne 0; then
+if test ! "${HAS_REQUIRED_VARS}" == "0"; then
+  echo "Variables PING_IDENTITY_DEVOPS_USER/PING_IDENTITY_DEVOPS_KEY required to be set.  "
+  echo "Please run 'setup' found in pingidentity-devops-getting-started repo"
+  exit 1
+fi
+
+HAS_REQUIRED_VARS=$(check_env_vars "TENANT_NAME" "TENANT_DOMAIN" "ENVIRONMENT" "REGION"; echo ${?})
+
+if test ! "${HAS_REQUIRED_VARS}" == "0"; then
+  echo "Variables TENANT_NAME/TENANT_DOMAIN/ENVIRONMENT/REGION required to be set.  "
+  echo "Please run '22-cloud/01-aws-eks/setup' found in pingidentity-devops-getting-started repo"
   exit 1
 fi
 
