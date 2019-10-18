@@ -31,10 +31,10 @@ spec:
           name: ldaps
         resources:
           requests:
-            memory: "5Gi"
+            memory: "3Gi"
             cpu: "2"
           limits:
-            memory: "5Gi"
+            memory: "3Gi"
             cpu: "2"
         env:
         - name: K8S_STATEFUL_SET_NAME
@@ -42,14 +42,15 @@ spec:
         - name: K8S_STATEFUL_SET_SERVICE_NAME
           value: $(K8S_STATEFUL_SET_SERVICE_NAME)
         - name: MAX_HEAP_SIZE
-          value: 5g
+          value: 1g
         - name: UNBOUNDID_JAVA_ARGS
-          value: "-client -Xmx5g -Xms5g"
+          value: "-client -Xmx1g -Xms1g"
         envFrom:
         - configMapRef:
             name: pingdirectory-environment-variables
         - secretRef:
             name: devops-secret
+            optional: true
         volumeMounts:
         - name: out-dir
           mountPath: /opt/out
@@ -75,7 +76,7 @@ spec:
     spec:
       accessModes:
       - ReadWriteOnce
-      storageClassName: pingdirectory-io1
+      storageClassName: pingdirectory-gp2
       resources:
         requests:
           storage: 20Gi
