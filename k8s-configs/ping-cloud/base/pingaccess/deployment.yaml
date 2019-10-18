@@ -33,8 +33,16 @@ spec:
           name: pa-runtime
         - containerPort: 3030
           name: pa-agent
+        resources:
+          requests:
+            memory: "1.5Gi"
+            cpu: "1"
+          limits:
+            memory: "1.5Gi"
+            cpu: "1"
         envFrom:
         - configMapRef:
             name: pingaccess-environment-variables
         - secretRef:
             name: devops-secret
+            optional: true
