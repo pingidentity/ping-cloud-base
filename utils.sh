@@ -52,15 +52,15 @@ generate_tls_cert() {
 }
 
 ########################################################################################################################
-# Generate an RSA key pair. The base64 representation of the identity and key will exported in environment variables
-# IDENTITY_PUB and IDENTITY_KEY, respectively.
+# Generate an RSA key pair. The identity and the base64 representation of the key will exported in environment variables
+# IDENTITY_PUB and IDENTITY_KEY_BASE64, respectively.
 ########################################################################################################################
 generate_ssh_key_pair() {
   KEY_PAIR_DIR=$(mktemp -d)
   cd "${KEY_PAIR_DIR}"
   ssh-keygen -q -t rsa -b 2048 -f id_rsa -N ''
   export IDENTITY_PUB=$(cat id_rsa.pub)
-  export IDENTITY_KEY=$(cat id_rsa | base64 | tr -d '\n')
+  export IDENTITY_KEY_BASE64=$(cat id_rsa | base64 | tr -d '\n')
   cd - > /dev/null
   rm -rf "${KEY_PAIR_DIR}"
 }
