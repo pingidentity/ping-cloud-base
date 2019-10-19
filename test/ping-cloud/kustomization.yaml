@@ -53,7 +53,13 @@ patchesJson6902:
     kind: Ingress
     name: pingaccess-agent-ingress
 
+# pingdirectory put ldaps on public and change the host
+- path: patches/service/pingdirectory.yaml
+  target:
+    version: v1
+    kind: Service
+    name: pingdirectory-admin
+
 patchesStrategicMerge:
-- patches/service/pingdirectory.yaml
 - patches/secret/tls-secret.yaml
 - patches/secret/devops-secret.yaml
