@@ -72,7 +72,7 @@ generate_ssh_key_pair() {
 #   ${*} -> The list of required binaries.
 ########################################################################################################################
 check_binaries() {
-STATUS=0
+  STATUS=0
 	for TOOL in ${*}; do
 	  which "${TOOL}" &>/dev/null
     if test ${?} -ne 0; then
@@ -99,4 +99,66 @@ check_env_vars() {
     fi
   done
   return ${STATUS}
+}
+
+########################################################################################################################
+# Parses the provided URL and exports its components into the environment variables URL_PROTOCOL, URL_USER, URL_PASS,
+# URL_HOST, URL_PORT and URL_PART. All but the URL_HOST are optional. See example URLs below.
+#
+# Arguments
+#   ${1} -> The URL from which to parse the host. Example URLs:
+#             - git@github.com:savitha-ping/savitha-ping-stack.git
+#             - https://github.com/savitha-ping/savitha-ping-stack.git
+#             - ssh://APKAVPNHKJ3QM5XNXNWM@git-codecommit.ap-southeast-2.amazonaws.com/v1/repos/cluster-state-repo
+#             - sftp://user@host.net/some/random/path
+#             - sftp://user:password@host.net:1234/some/random/path
+#   ${2} -> Debug mode. If true, prints the parsed values for protocol, username, password, host, port and path.
+########################################################################################################################
+parse_url() {
+  URL="${1}"
+  DEBUG="${2}"
+
+  # Extract the protocol.
+  if [[ "${URL}" =~ '://' ]]; then
+    export URL_PROTOCOL=$(echo "${URL}" | sed -e 's|^\(.*://\).*|\1|g')
+    URL_NO_PROTOCOL=$(echo "${URL}" | sed -e "s|${URL_PROTOCOL}||g")
+  else
+    export URL_PROTOCOL=
+    URL_NO_PROTOCOL="${URL}"
+  fi
+
+  # Extract the user and password (if any).
+  URL_USER_PASS=$(echo ${URL_NO_PROTOCOL} | grep @ | cut -d@ -f1)
+  export URL_PASS=$(echo "${URL_USER_PASS}" | grep : | cut -d: -f2)
+  if test -n "${URL_PASS}"; then
+    export URL_USER=$(echo "${URL_USER_PASS}" | grep : | cut -d: -f1)
+  else
+    export URL_USER="${URL_USER_PASS}"
+  fi
+
+  # Extract the host.
+  URL_HOST_PORT=$(echo "${URL_NO_PROTOCOL}" | sed -e "s|${URL_USER_PASS}@||g" | cut -d/ -f1)
+  export URL_PORT=$(echo "${URL_HOST_PORT}" | grep : | cut -d: -f2)
+
+  if test -n "${URL_PORT}"; then
+    export URL_HOST=$(echo "${URL_HOST_PORT}" | grep : | cut -d: -f1)
+  else
+    export URL_HOST="${URL_HOST_PORT}"
+  fi
+
+  # Extract the path (if any).
+  export URL_PATH=$(echo "${URL_NO_PROTOCOL}" | grep / | cut -d/ -f2-)
+
+  if test "${DEBUG}" = 'true'; then
+    echo "URL: ${URL}"
+    echo "URL_PROTOCOL: ${URL_PROTOCOL}"
+
+    echo "URL_USER: ${URL_USER}"
+    echo "URL_PASS: ${URL_PASS}"
+
+    echo "URL_HOST: ${URL_HOST}"
+    echo "URL_PORT: ${URL_PORT}"
+
+    echo "URL_PATH: ${URL_PATH}"
+  fi
 }

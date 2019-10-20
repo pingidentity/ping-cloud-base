@@ -89,8 +89,11 @@ do
 done
 
 # Checking required tools and environment variables.
-HAS_REQUIRED_TOOLS=$(check_binaries "openssl" "base64" "kustomize" "kubectl" "envsubst"; echo ${?})
-HAS_REQUIRED_VARS=$(check_env_vars "PING_IDENTITY_DEVOPS_USER" "PING_IDENTITY_DEVOPS_KEY"; echo ${?})
+check_binaries "openssl" "base64" "kustomize" "kubectl" "envsubst"
+HAS_REQUIRED_TOOLS=${?}
+
+check_env_vars "PING_IDENTITY_DEVOPS_USER" "PING_IDENTITY_DEVOPS_KEY"
+HAS_REQUIRED_VARS=${?}
 
 if test ${HAS_REQUIRED_TOOLS} -ne 0 || test ${HAS_REQUIRED_VARS} -ne 0; then
   exit 1
