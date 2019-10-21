@@ -45,8 +45,8 @@ generate_tls_cert() {
     -subj "/CN=${DOMAIN}" \
     -reqexts SAN -extensions SAN \
     -config <(cat /etc/ssl/openssl.cnf; printf "[SAN]\nsubjectAltName=DNS:*.${DOMAIN}") > /dev/null 2>&1
-  export TLS_CRT_BASE64=$(cat tls.crt | base64 | tr -d '\n')
-  export TLS_KEY_BASE64=$(cat tls.key | base64 | tr -d '\n')
+  export TLS_CRT_BASE64=$(cat tls.crt | base64 | tr -d '\r?\n')
+  export TLS_KEY_BASE64=$(cat tls.key | base64 | tr -d '\r?\n')
   cd - > /dev/null
   rm -rf "${CERTS_DIR}"
 }
@@ -60,7 +60,7 @@ generate_ssh_key_pair() {
   cd "${KEY_PAIR_DIR}"
   ssh-keygen -q -t rsa -b 2048 -f id_rsa -N ''
   export IDENTITY_PUB=$(cat id_rsa.pub)
-  export IDENTITY_KEY_BASE64=$(cat id_rsa | base64 | tr -d '\n')
+  export IDENTITY_KEY_BASE64=$(cat id_rsa | base64 | tr -d '\r?\n')
   cd - > /dev/null
   rm -rf "${KEY_PAIR_DIR}"
 }
