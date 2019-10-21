@@ -52,12 +52,18 @@
 # TENANT_DOMAIN  | The tenant's domain, e.g. k8s-icecream.com         | eks-poc.au1.ping-lab.cloud
 #                |                                                    |
 # ENVIRONMENT    | An environment to isolate the Ping stack into its  | The value of the USER environment variable.
-#                | own namespace within the Kubernetes cluster. This  |
-#                | is useful not just in a shared multi-tenant        |
-#                | Kubernetes cluster but could also be used to       |
-#                | create multiple Ping stacks within the same        |
-#                | cluster for testing purposes. It may be set to an  |
-#                | empty string.                                      |
+#                | own namespace within the Kubernetes cluster. The   |
+#                | Ping stack is generally deployed to a namespace    |
+#                | called "ping-cloud". But if ENVIRONMENT is set, it |
+#                | is used as a name suffix. For example, if it is    |
+#                | set to "staging", then the namespace will be       |
+#                | "ping-cloud-staging". This variable is useful not  |
+#                | just in a shared multi-tenant Kubernetes cluster   |
+#                | but could also be used to create multiple Ping     |
+#                | stacks within the same cluster for testing         |
+#                | purposes. It may be set to an empty string in      |
+#                | which case, the namespace used for the Ping stack  |
+#                | will simply be "ping-cloud".                       |
 #                |                                                    |
 # REGION         | The region where the tenant environment is         | us-east-2
 #                | deployed. On AWS, this is a required parameter     |
