@@ -73,7 +73,6 @@
 
 # Source devops and aws-eks files, if present
 test -f ~/.pingidentity/devops && . ~/.pingidentity/devops
-test -f ~/.pingidentity/aws-eks && . ~/.pingidentity/aws-eks
 
 # Source some utility methods.
 . utils.sh

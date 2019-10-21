@@ -245,7 +245,7 @@ elif test -z "${IDENTITY_PUB_FILE}" || test -z "${IDENTITY_KEY_FILE}"; then
 else
   echo 'Using provided key-pair for fluxcd'
   export IDENTITY_PUB=$(cat "${IDENTITY_PUB_FILE}")
-  export IDENTITY_KEY_BASE64=$(cat "${IDENTITY_KEY_FILE}" | base64 | tr -d '\n')
+  export IDENTITY_KEY_BASE64=$(cat "${IDENTITY_KEY_FILE}" | base64 | tr -d '\r?\n')
 fi
 
 # Get the known hosts contents for the cluster state repo host to pass it into flux.
