@@ -104,7 +104,7 @@ check_env_vars() {
 ################################################################################
 # get_value (variable)
 #
-# Get the value of a vaiable, preserving the spaces
+# Get the value of a variable, preserving the spaces
 ################################################################################
 get_value ()
 {
