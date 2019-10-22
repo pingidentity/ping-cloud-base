@@ -117,7 +117,7 @@ kind: CronJob
 metadata:
   name: ds-periodic-backup
 spec:
-  schedule: "* */6 * * *"
+  schedule: "0 */6 * * *"
   jobTemplate:
     spec:
       template:
