@@ -1,7 +1,7 @@
 - op: replace
   path: /spec/tls/0/hosts/0
-  value: pingaccess-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+  value: pingaccess-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
 
 - op: replace
   path: /spec/rules/0/host
-  value: pingaccess-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+  value: pingaccess-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
