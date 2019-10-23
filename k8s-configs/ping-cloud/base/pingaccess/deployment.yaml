@@ -16,6 +16,16 @@ spec:
       - name: pingaccess
         image: pingidentity/pingaccess:5.3.0
         imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "1.5Gi"
+            cpu: "1"
+          limits:
+            memory: "1.5Gi"
+            cpu: "1"
+        volumeMounts:
+        - name: pa-jwk
+          mountPath: /opt/in/instance/conf
         readinessProbe:
           exec:
             command: [ liveness.sh ]
@@ -38,3 +48,8 @@ spec:
             name: pingaccess-environment-variables
         - secretRef:
             name: devops-secret
+      volumes:
+      - name: pa-jwk
+        secret:
+          secretName: pa-jwk
+          defaultMode: 256
