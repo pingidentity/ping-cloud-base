@@ -17,9 +17,9 @@ spec:
             cpu: 15
         env:
         - name: MAX_HEAP_SIZE
-          value: 62g
+          value: 60g
         - name: UNBOUNDID_JAVA_ARGS
-          value: "-client -Xmx62g -Xms62g"
+          value: "-client -Xmx60g -Xms60g"
   volumeClaimTemplates:
   - metadata:
       name: out-dir

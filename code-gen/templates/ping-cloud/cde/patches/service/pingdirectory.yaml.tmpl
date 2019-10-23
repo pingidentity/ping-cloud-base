@@ -3,4 +3,4 @@ apiVersion: v1
 metadata:
   name: pingdirectory-admin
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+    external-dns.alpha.kubernetes.io/hostname: pingdirectory-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
