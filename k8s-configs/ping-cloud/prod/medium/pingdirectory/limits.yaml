@@ -30,3 +30,17 @@ spec:
       resources:
         requests:
           storage: 1000Gi
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pd-backup-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: pingdirectory-io1
+  resources:
+    requests:
+      storage: 100Gi
