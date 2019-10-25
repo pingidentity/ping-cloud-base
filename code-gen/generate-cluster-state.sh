@@ -268,7 +268,6 @@ fi
 parse_url "${CLUSTER_STATE_REPO_URL}"
 echo "Obtaining known_hosts contents for cluster state repo host: ${URL_HOST}"
 export KNOWN_HOSTS_CONTENTS=$(ssh-keyscan -H "${URL_HOST}" 2> /dev/null)
-echo ---
 
 # Generate a self-signed cert for the tenant domain.
 generate_tls_cert "${TENANT_DOMAIN}"
@@ -322,13 +321,13 @@ for ENV in ${ENVIRONMENTS}; do
     export CLUSTER_NAME="${TENANT_NAME}" ||
     export CLUSTER_NAME="${ENV}"
 
+  echo ---
   echo "For environment ${ENV}, using variable values:"
   echo "ENVIRONMENT_GIT_PATH: ${ENVIRONMENT_GIT_PATH}"
   echo "KUSTOMIZE_BASE: ${KUSTOMIZE_BASE}"
   echo "CLUSTER_NAME: ${CLUSTER_NAME}"
   echo "DNS_RECORD_SUFFIX: ${DNS_RECORD_SUFFIX}"
   echo "DNS_DOMAIN_PREFIX: ${DNS_DOMAIN_PREFIX}"
-  echo ---
 
   # Copy the shared cluster tools and Ping yaml templates into their target directories
   cp -r "${TEMPLATES_HOME}"/cluster-tools "${K8S_CONFIGS_DIR}"
@@ -369,6 +368,15 @@ for ENV in ${ENVIRONMENTS}; do
   mv "${FLUX_YAML}" "${ENV_FLUX_DIR}"/flux.yaml
 done
 
-echo "Push the directories under ${SANDBOX_DIR} into the tenant cluster-state repo onto the master branch"
-echo "Add the following identity as the FluxCD deploy key on the tenant cluster-state repo:"
+echo
+echo '------------------------'
+echo '#  Next steps to take  #'
+echo '------------------------'
+echo "1) Push the ${SANDBOX_DIR}/k8s-configs directory onto the master branch of the tenant cluster-state repo:"
+echo "${CLUSTER_STATE_REPO_URL}"
+echo
+echo "2) Add the following identity as the FluxCD deploy key on the tenant cluster-state repo, if not already added:"
 echo "${FLUX_PUB}"
+echo
+echo "3) Deploy the flux.yaml files under ${SANDBOX_DIR}/fluxcd into each CDE using:"
+echo 'kubectl apply -f flux.yaml'

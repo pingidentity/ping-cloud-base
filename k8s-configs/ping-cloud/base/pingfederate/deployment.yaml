@@ -16,6 +16,13 @@ spec:
       - name: pingfederate
         image: pingidentity/pingfederate:9.3.1
         imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1"
+          limits:
+            memory: "2Gi"
+            cpu: "1"
         readinessProbe:
           exec:
             command: [ liveness.sh ]
