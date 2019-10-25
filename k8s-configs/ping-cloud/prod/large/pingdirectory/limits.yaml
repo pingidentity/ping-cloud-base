@@ -10,16 +10,16 @@ spec:
       - name: ds
         resources:
           limits:
-            memory: 62Gi
+            memory: 64Gi
             cpu: 15
           requests:
-            memory: 62Gi
+            memory: 64Gi
             cpu: 15
         env:
         - name: MAX_HEAP_SIZE
-          value: 60g
+          value: 64g
         - name: UNBOUNDID_JAVA_ARGS
-          value: "-client -Xmx60g -Xms60g"
+          value: "-client -Xmx64g -Xms64g"
   volumeClaimTemplates:
   - metadata:
       name: out-dir
