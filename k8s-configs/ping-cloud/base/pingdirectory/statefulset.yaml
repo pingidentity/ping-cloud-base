@@ -42,9 +42,9 @@ spec:
         - name: K8S_STATEFUL_SET_SERVICE_NAME
           value: $(K8S_STATEFUL_SET_SERVICE_NAME)
         - name: MAX_HEAP_SIZE
-          value: 5g
+          value: 4g
         - name: UNBOUNDID_JAVA_ARGS
-          value: "-client -Xmx5g -Xms5g"
+          value: "-client -Xmx4g -Xms4g"
         envFrom:
         - configMapRef:
             name: pingdirectory-environment-variables

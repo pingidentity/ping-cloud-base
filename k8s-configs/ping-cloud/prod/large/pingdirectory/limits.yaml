@@ -42,5 +42,4 @@ spec:
   - ReadWriteOnce
   storageClassName: pingdirectory-io1
   resources:
-    requests:
-      storage: 200Gi
+    storage: 200Gi

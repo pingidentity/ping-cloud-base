@@ -283,14 +283,13 @@ FLUXCD_DIR="${SANDBOX_DIR}/fluxcd"
 mkdir -p "${FLUXCD_DIR}"
 
 K8S_CONFIGS_DIR="${SANDBOX_DIR}/k8s-configs"
-PING_CLOUD_DIR="${K8S_CONFIGS_DIR}/ping-cloud"
-mkdir -p "${PING_CLOUD_DIR}"
+mkdir -p "${K8S_CONFIGS_DIR}"
 
 # Now generate the yaml files for each environment
 ENVIRONMENTS='dev test stage prod'
 
 for ENV in ${ENVIRONMENTS}; do
-  ENV_DIR="${PING_CLOUD_DIR}/${ENV}"
+  ENV_DIR="${K8S_CONFIGS_DIR}/${ENV}"
 
   # Export all the environment variables required for envsubst
   export ENVIRONMENT_GIT_PATH=${ENV}
@@ -332,11 +331,11 @@ for ENV in ${ENVIRONMENTS}; do
   echo ---
 
   # Copy the shared cluster tools and Ping yaml templates into their target directories
-  cp -r "${TEMPLATES_HOME}"/cluster-tools "${PING_CLOUD_DIR}"
+  cp -r "${TEMPLATES_HOME}"/cluster-tools "${K8S_CONFIGS_DIR}"
   cp -r "${TEMPLATES_HOME}"/ping-cloud/cde "${ENV_DIR}"
 
   # Substitute variables in the environment directory
-  substitute_vars "${PING_CLOUD_DIR}"
+  substitute_vars "${K8S_CONFIGS_DIR}"
 
   # Generate the ping-cloud yaml file and move it into the environment directory
   ENV_YAML=$(mktemp)
@@ -346,8 +345,8 @@ for ENV in ${ENVIRONMENTS}; do
 
   # Generate the tools yaml file and move it into the environment directory
   TOOLS_YAML=$(mktemp)
-  kustomize build "${PING_CLOUD_DIR}"/cluster-tools > "${TOOLS_YAML}"
-  rm -rf "${PING_CLOUD_DIR}"/cluster-tools
+  kustomize build "${K8S_CONFIGS_DIR}"/cluster-tools > "${TOOLS_YAML}"
+  rm -rf "${K8S_CONFIGS_DIR}"/cluster-tools
   mv "${TOOLS_YAML}" "${ENV_DIR}"/tools.yaml
 
   # Copy the common files into the environment directory
