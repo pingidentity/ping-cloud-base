@@ -29,3 +29,33 @@ vars:
     kind: Service
     name: pingdirectory
     apiVersion: v1
+
+patches:
+- target:
+    kind: StatefulSet
+    name: ds
+  patch: |-
+    - op: add
+      path: /spec/template/spec/containers/0/env
+      value: [{"name":"K8S_STATEFUL_SET_NAME","value":"$(K8S_STATEFUL_SET_NAME)"},{"name":"K8S_STATEFUL_SET_SERVICE_NAME","value":"$(K8S_STATEFUL_SET_SERVICE_NAME)"},{"name":"MAX_HEAP_SIZE","value":"4g"},{"name":"UNBOUNDID_JAVA_ARGS","value":"-client -Xmx4g -Xms4g"}]
+- target:
+    kind: StatefulSet
+    name: ds
+  patch: |-
+    - op: add
+      path: /spec/template/spec/containers/0/volumeMounts
+      value: [{"name":"out-dir","mountPath":"/opt/out"}]
+- target:
+    kind: StatefulSet
+    name: ds
+  patch: |-
+    - op: add
+      path: /spec/template/spec/volumes
+      value: [{"name":"out-dir","persistentVolumeClaim":{"claimName":"out-dir"}}]
+- target:
+    kind: StatefulSet
+    name: ds
+  patch: |-
+    - op: add
+      path: /spec/volumeClaimTemplates
+      value: [{"metadata":{"name":"out-dir"},"spec":{"accessModes":["ReadWriteOnce"],"storageClassName":"pingdirectory-gp2","resources":{"requests":{"storage":"20Gi"}}}}]
