@@ -269,9 +269,6 @@ parse_url "${CLUSTER_STATE_REPO_URL}"
 echo "Obtaining known_hosts contents for cluster state repo host: ${URL_HOST}"
 export KNOWN_HOSTS_CONTENTS=$(ssh-keyscan -H "${URL_HOST}" 2> /dev/null)
 
-# Generate a self-signed cert for the tenant domain.
-generate_tls_cert "${TENANT_DOMAIN}"
-
 # Delete existing sandbox and re-create it
 SANDBOX_DIR=/tmp/sandbox
 rm -rf "${SANDBOX_DIR}"
@@ -328,6 +325,11 @@ for ENV in ${ENVIRONMENTS}; do
   echo "CLUSTER_NAME: ${CLUSTER_NAME}"
   echo "DNS_RECORD_SUFFIX: ${DNS_RECORD_SUFFIX}"
   echo "DNS_DOMAIN_PREFIX: ${DNS_DOMAIN_PREFIX}"
+
+  # Generate a self-signed cert for the tenant domain.
+  FQDN="${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}"
+  echo "Generating certificate for domain: ${FQDN}"
+  generate_tls_cert "${FQDN}"
 
   # Copy the shared cluster tools and Ping yaml templates into their target directories
   cp -r "${TEMPLATES_HOME}"/cluster-tools "${K8S_CONFIGS_DIR}"

@@ -10,7 +10,7 @@ spec:
     metadata:
       name: pingfederate
       annotations:
-        lastUpdateTime: "NA"
+        lastUpdateReason: "NA"
     spec:
       containers:
       - name: pingfederate

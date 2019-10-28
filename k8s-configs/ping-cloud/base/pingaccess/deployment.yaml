@@ -10,7 +10,7 @@ spec:
     metadata:
       name: pingaccess
       annotations:
-        lastUpdateTime: "NA"
+        lastUpdateReason: "NA"
     spec:
       containers:
       - name: pingaccess
