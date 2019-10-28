@@ -2,10 +2,10 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-- deployment.yaml
-- service.yaml
-- ingress.yaml
-- secret.yaml
+- ./deployment/deployment.yaml
+- ./ingress/ingress.yaml
+- ./secret/secret.yaml
+- ./service/service.yaml
 
 commonLabels:
   role: pingaccess
@@ -15,4 +15,27 @@ generatorOptions:
 
 configMapGenerator:
 - name: pingaccess-environment-variables
-  env: env_vars
+  env: ./env/env_vars
+
+patches:
+- target: 
+    kind: Deployment
+    name: pingaccess
+  patch: |-
+    - op: add
+      path: /spec/template/spec/containers/0/envFrom
+      value: [{"configMapRef":{"name":"pingaccess-environment-variables"}},{"secretRef":{"name":"devops-secret"}}]
+- target: 
+    kind: Deployment
+    name: pingaccess
+  patch: |-
+    - op: add
+      path: /spec/template/spec/containers/0/volumeMounts
+      value: [{"name":"pa-jwk","mountPath":"/opt/in/instance/conf"}]
+- target: 
+    kind: Deployment
+    name: pingaccess
+  patch: |-
+    - op: add
+      path: /spec/template/spec/volumes
+      value: [{"name":"pa-jwk","secret":{"secretName":"pa-jwk","defaultMode":256}}]

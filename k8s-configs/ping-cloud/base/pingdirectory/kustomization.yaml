@@ -2,11 +2,11 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-- secret.yaml
-- storage.yaml
-- statefulset.yaml
-- service.yaml
-- periodic-backup.yaml
+- ./secret/secret.yaml
+- ./storage/storage.yaml
+- ./statefulset/statefulset.yaml
+- ./service/service.yaml
+- ./periodic-backup/periodic-backup.yaml
 
 commonLabels:
   role: pingdirectory
@@ -16,7 +16,7 @@ generatorOptions:
 
 configMapGenerator:
 - name: pingdirectory-environment-variables
-  env: env_vars
+  env: ./env/env_vars
 
 vars:
 - name: K8S_STATEFUL_SET_NAME

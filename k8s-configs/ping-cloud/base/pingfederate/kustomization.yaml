@@ -2,9 +2,9 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-- deployment.yaml
-- service.yaml
-- ingress.yaml
+- ./deployment/deployment.yaml
+- ./ingress/ingress.yaml
+- ./service/service.yaml
 
 commonLabels:
   role: pingfederate
@@ -14,4 +14,13 @@ generatorOptions:
 
 configMapGenerator:
 - name: pingfederate-environment-variables
-  env: env_vars
+  env: ./env/env_vars
+
+patches:
+- target: 
+    kind: Deployment
+    name: pingfederate
+  patch: |-
+    - op: add
+      path: /spec/template/spec/containers/0/envFrom
+      value: [{"configMapRef":{"name":"pingfederate-environment-variables"}},{"secretRef":{"name":"devops-secret"}}]

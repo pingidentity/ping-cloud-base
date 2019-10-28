@@ -23,9 +23,6 @@ spec:
           limits:
             memory: "1.5Gi"
             cpu: "1"
-        volumeMounts:
-        - name: pa-jwk
-          mountPath: /opt/in/instance/conf
         readinessProbe:
           exec:
             command: [ liveness.sh ]
@@ -43,13 +40,3 @@ spec:
           name: pa-runtime
         - containerPort: 3030
           name: pa-agent
-        envFrom:
-        - configMapRef:
-            name: pingaccess-environment-variables
-        - secretRef:
-            name: devops-secret
-      volumes:
-      - name: pa-jwk
-        secret:
-          secretName: pa-jwk
-          defaultMode: 256

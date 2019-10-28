@@ -38,8 +38,3 @@ spec:
           name: pf-admin
         - containerPort: 9031
           name: pf-runtime
-        envFrom:
-        - configMapRef:
-            name: pingfederate-environment-variables
-        - secretRef:
-            name: devops-secret
