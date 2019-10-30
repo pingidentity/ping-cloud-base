@@ -14,7 +14,8 @@ spec:
     spec:
       containers:
       - name: pingfederate
-        image: pingidentity/pingfederate:9.3.1
+        # FIXME: switch to stable image before GA
+        image: pingidentity/pingfederate:9.3.1-edge
         imagePullPolicy: Always
         resources:
           requests:
@@ -23,6 +24,9 @@ spec:
           limits:
             memory: "2Gi"
             cpu: "1"
+        volumeMounts:
+        - name: pingfederate-secrets
+          mountPath: /opt/in/instance/default/conf
         readinessProbe:
           exec:
             command: [ liveness.sh ]
@@ -43,3 +47,10 @@ spec:
             name: pingfederate-environment-variables
         - secretRef:
             name: devops-secret
+            optional: true
+      volumes:
+      - name: pingfederate-secrets
+        secret:
+          secretName: pingfederate-secrets
+          optional: true
+          defaultMode: 256

@@ -19,10 +19,16 @@ spec:
       - name: out-dir
         persistentVolumeClaim:
           claimName: out-dir
+      - name: pingdirectory-secrets
+        secret:
+          secretName: pingdirectory-secrets
+          optional: true
+          defaultMode: 256
       terminationGracePeriodSeconds: 300
       containers:
       - name: ds
-        image: pingidentity/pingdirectory:7.3.0.0
+        # FIXME: switch to stable image before GA
+        image: pingidentity/pingdirectory:7.3.0.3-edge
         imagePullPolicy: Always
         ports:
         - containerPort: 389
@@ -50,9 +56,12 @@ spec:
             name: pingdirectory-environment-variables
         - secretRef:
             name: devops-secret
+            optional: true
         volumeMounts:
         - name: out-dir
           mountPath: /opt/out
+        - name: pingdirectory-secrets
+          mountPath: /opt/in/instance
         readinessProbe:
           exec:
             command: [ liveness.sh ]
@@ -78,4 +87,4 @@ spec:
       storageClassName: pingdirectory-gp2
       resources:
         requests:
-          storage: 20Gi
+          storage: 5Gi
