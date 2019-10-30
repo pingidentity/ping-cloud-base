@@ -2,10 +2,10 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
+- secret.yaml
 - deployment.yaml
 - service.yaml
 - ingress.yaml
-- secret.yaml
 
 commonLabels:
   role: pingaccess
