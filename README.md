@@ -9,9 +9,9 @@ cluster for evaluation purposes. Currently only AWS EKS clusters are supported.
 
 The following tools must be set up and configured correctly:
 
-- kubectl
-- kustomize
-- envsubst
+- kubectl (>= v1.14)
+- kustomize (>= v3.2)
+- envsubst (>= 0.20)
 
 To set up the environment, the following environment variables must be exported
 at the very minimum:
@@ -34,7 +34,7 @@ Refer to the AWS online documentation on how to set these up.
 To build the environment, simply run:
 
 ```
-kustomize build https://github.com/pingidentity/ping-cloud-base/test?ref=master |
+kustomize build https://github.com/pingidentity/ping-cloud-base?ref=master |
   envsubst '
     ${PING_IDENTITY_DEVOPS_USER}
     ${PING_IDENTITY_DEVOPS_KEY}
@@ -97,8 +97,12 @@ resources:
 
 In addition, some overrides must be provided (e.g. via secret and configmap
 generators) for the DEVOPS user/key and the ingress URLs at a minimum. The
-test directory shows an example of how this can be done. Then, a new environment
-may simply be created by running:
+kustomization.yaml in the root of this repository shows an example of how this
+can be done. More information on kustomize may be found here:
+
+https://kustomize.io/
+
+Then, a new environment may simply be created by running:
 
 ```
 kustomize build . | kubectl apply -f -
