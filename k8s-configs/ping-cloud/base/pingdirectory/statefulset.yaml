@@ -15,15 +15,6 @@ spec:
       annotations:
         lastUpdateReason: "NA"
     spec:
-      volumes:
-      - name: out-dir
-        persistentVolumeClaim:
-          claimName: out-dir
-      - name: pingdirectory-secrets
-        secret:
-          secretName: pingdirectory-secrets
-          optional: true
-          defaultMode: 256
       terminationGracePeriodSeconds: 300
       containers:
       - name: ds
@@ -62,6 +53,13 @@ spec:
           mountPath: /opt/out
         - name: pingdirectory-secrets
           mountPath: /opt/in/instance
+          readOnly: true
+        - name: ssh-id-key-secret
+          mountPath: "${HOME}/.ssh/id_rsa"
+          readOnly: true
+        - name: known-hosts-config
+          mountPath: "${HOME}/.ssh/known_hosts"
+          readOnly: true
         readinessProbe:
           exec:
             command: [ liveness.sh ]
@@ -78,6 +76,25 @@ spec:
             exec:
               command:
               - /opt/staging/hooks/90-shutdown-sequence.sh
+      volumes:
+      - name: out-dir
+        persistentVolumeClaim:
+          claimName: out-dir
+      - name: pingdirectory-secrets
+        secret:
+          secretName: pingdirectory-secrets
+          optional: true
+          defaultMode: 0400
+      - name: ssh-id-key-secret
+        secret:
+          secretName: ssh-id-key-secret
+          optional: true
+          defaultMode: 0400
+      - name: known-hosts-config
+        configMap:
+          name: known-hosts-config
+          optional: true
+          defaultMode: 0400
   volumeClaimTemplates:
   - metadata:
       name: out-dir

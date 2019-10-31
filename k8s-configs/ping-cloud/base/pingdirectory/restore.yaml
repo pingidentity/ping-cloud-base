@@ -63,15 +63,16 @@ spec:
           mountPath: /pd_backups
         - name: restore-script
           mountPath: /opt/in
+          readOnly: true
       volumes:
       - name: passwords
         secret:
           secretName: pingdirectory-user-passwords
-          defaultMode: 256
+          defaultMode: 0400
       - name: restore-script
         configMap:
           name: restore-script
-          defaultMode: 0777
+          defaultMode: 0600
       - name: backup-volume
         persistentVolumeClaim:
           claimName: pd-backup-pvc

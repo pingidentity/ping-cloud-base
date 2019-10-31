@@ -15,10 +15,12 @@ spec:
         - --git-branch=master
         - --git-path=k8s-configs/ping-cloud/dev
         volumeMounts:
-        - mountPath: /root/.ssh
+        - mountPath: "${HOME}/.ssh/known_hosts"
           name: known-hosts
+          readOnly: true
       volumes:
       - name: known-hosts
         configMap:
-          defaultMode: 0644
           name: known-hosts
+          optional: true
+          defaultMode: 0400
