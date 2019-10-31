@@ -1,4 +1,4 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: known-hosts
+  name: known-hosts-config
