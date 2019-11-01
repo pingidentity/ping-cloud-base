@@ -25,14 +25,14 @@ spec:
             memory: "2Gi"
             cpu: "1"
         volumeMounts:
-        - name: pingfederate-secrets
-          mountPath: /opt/in/instance/default/conf
+        - name: pingfederate-license
+          mountPath: /opt/in/instance/server/default/conf
           readOnly: true
         - name: ssh-id-key-secret
-          mountPath: "${HOME}/.ssh/id_rsa"
+          mountPath: "$(HOME)/.ssh/id_rsa"
           readOnly: true
         - name: known-hosts-config
-          mountPath: "${HOME}/.ssh/known_hosts"
+          mountPath: "$(HOME)/.ssh/known_hosts"
           readOnly: true
         readinessProbe:
           exec:
@@ -49,6 +49,10 @@ spec:
           name: pf-admin
         - containerPort: 9031
           name: pf-runtime
+        env:
+        # FIXME: fix home directory when containers run as non-root user
+        - name: HOME
+          value: /root
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
@@ -56,9 +60,9 @@ spec:
             name: devops-secret
             optional: true
       volumes:
-      - name: pingfederate-secrets
+      - name: pingfederate-license
         secret:
-          secretName: pingfederate-secrets
+          secretName: pingfederate-license
           optional: true
           defaultMode: 0400
       - name: ssh-id-key-secret

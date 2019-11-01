@@ -8,7 +8,7 @@ data:
     set -e
 
     CURRENT_BACKUP_DIR=$(readlink -f /pd_backups/current)
-    SERVER_BACKUP_DIR=/opt/out/restore
+    SERVER_BACKUP_DIR="${OUT_DIR}/restore"
 
     echo "Current backup contents:"
     ls ${CURRENT_BACKUP_DIR}
@@ -22,7 +22,7 @@ data:
     kubectl cp ${CURRENT_BACKUP_DIR} ds-0:${SERVER_BACKUP_DIR}
 
     echo "Restoring to the latest backup under ${SERVER_BACKUP_DIR}"
-    /opt/server/bin/restore --task \
+    "${SERVER_BITS_DIR}/bin/restore" --task \
       --useSSL --trustAll \
       --hostname ds-0.pingdirectory \
       --port ${LDAPS_PORT} \
@@ -52,7 +52,8 @@ spec:
       restartPolicy: Never
       containers:
       - name: ds-restore
-        image: pingidentity/pingdirectory:7.3.0.0
+        # FIXME: switch to stable image before GA
+        image: pingidentity/pingdirectory:7.3.0.3-edge
         command:
         - /opt/in/restore.sh
         volumeMounts:
@@ -67,12 +68,12 @@ spec:
       volumes:
       - name: passwords
         secret:
-          secretName: pingdirectory-user-passwords
+          secretName: pingdirectory-passwords
           defaultMode: 0400
       - name: restore-script
         configMap:
           name: restore-script
-          defaultMode: 0600
+          defaultMode: 0500
       - name: backup-volume
         persistentVolumeClaim:
           claimName: pd-backup-pvc

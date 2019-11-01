@@ -63,10 +63,10 @@ data:
     set -e
 
     # This is the backup directory on ds-0
-    SERVER_BACKUP_DIR=/opt/out/backup
+    SERVER_BACKUP_DIR="${OUT_DIR}/backup"
 
     echo "Doing a full backup of userRoot backend to ${BACKUP_DIR}"
-    /opt/server/bin/backup --task \
+    "${SERVER_BITS_DIR}/bin/backup" --task \
       --useSSL --trustAll \
       --hostname ds-0.pingdirectory \
       --port ${LDAPS_PORT} \
@@ -126,7 +126,8 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: ds-backup
-            image: pingidentity/pingdirectory:7.3.0.0
+            # FIXME: switch to stable image before GA
+            image: pingidentity/pingdirectory:7.3.0.3-edge
             command:
             - /opt/in/backup.sh
             env:
@@ -144,12 +145,12 @@ spec:
           volumes:
           - name: passwords
             secret:
-              secretName: pingdirectory-user-passwords
+              secretName: pingdirectory-passwords
               defaultMode: 0400
           - name: backup-script
             configMap:
               name: backup-script
-              defaultMode: 0600
+              defaultMode: 0500
           - name: backup-volume
             persistentVolumeClaim:
               claimName: pd-backup-pvc
