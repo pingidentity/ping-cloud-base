@@ -16,6 +16,26 @@ spec:
         lastUpdateReason: "NA"
     spec:
       terminationGracePeriodSeconds: 300
+      initContainers:
+      - name: ssh-init
+        image: busybox
+        command:
+        - /init-ssh-config.sh
+        volumeMounts:
+        - name: ssh-dir
+          mountPath: /.ssh
+        - name: ssh-id-key-secret
+          mountPath: /id_rsa
+          subPath: id_rsa
+          readOnly: true
+        - name: known-hosts-config
+          mountPath: /known_hosts
+          subPath: known_hosts
+          readOnly: true
+        - name: ssh-init-script
+          mountPath: /init-ssh-config.sh
+          subPath: init-ssh-config.sh
+          readOnly: true
       containers:
       - name: ds
         # FIXME: switch to stable image before GA
@@ -42,7 +62,6 @@ spec:
           value: 4g
         - name: UNBOUNDID_JAVA_ARGS
           value: "-client -Xmx4g -Xms4g"
-        # FIXME: fix home directory when containers run as non-root user
         - name: HOME
           value: /root
         envFrom:
@@ -52,19 +71,18 @@ spec:
             name: devops-secret
             optional: true
         volumeMounts:
+        # FIXME: fix home directory when containers run as non-root user
+        - name: ssh-dir
+          mountPath: /root/.ssh
+          readOnly: true
         - name: out-dir
           mountPath: /opt/out
-        - name: passwords
+        - name: pingdirectory-passwords
           mountPath: /usr/local/secrets
           readOnly: true
         - name: pingdirectory-license
-          mountPath: /opt/in/instance
-          readOnly: true
-        - name: ssh-id-key-secret
-          mountPath: "$(HOME)/.ssh/id_rsa"
-          readOnly: true
-        - name: known-hosts-config
-          mountPath: "$(HOME)/.ssh/known_hosts"
+          mountPath: /opt/in/instance/PingDirectory.lic
+          subPath: PingDirectory.lic
           readOnly: true
         readinessProbe:
           exec:
@@ -83,18 +101,12 @@ spec:
               command:
               - /opt/staging/hooks/90-shutdown-sequence.sh
       volumes:
-      - name: out-dir
-        persistentVolumeClaim:
-          claimName: out-dir
-      - name: passwords
-        secret:
-          secretName: pingdirectory-passwords
-          defaultMode: 0400
-      - name: pingdirectory-license
-        secret:
-          secretName: pingdirectory-license
-          optional: true
-          defaultMode: 0400
+      - name: ssh-dir
+        emptyDir: {}
+      - name: ssh-init-script
+        configMap:
+          name: ssh-init-script
+          defaultMode: 0500
       - name: ssh-id-key-secret
         secret:
           secretName: ssh-id-key-secret
@@ -103,6 +115,19 @@ spec:
       - name: known-hosts-config
         configMap:
           name: known-hosts-config
+          optional: true
+          defaultMode: 0400
+      - name: out-dir
+        persistentVolumeClaim:
+          claimName: out-dir
+      - name: pingdirectory-license
+        secret:
+          secretName: pingdirectory-license
+          optional: true
+          defaultMode: 0400
+      - name: pingdirectory-passwords
+        secret:
+          secretName: pingdirectory-passwords
           optional: true
           defaultMode: 0400
   volumeClaimTemplates:

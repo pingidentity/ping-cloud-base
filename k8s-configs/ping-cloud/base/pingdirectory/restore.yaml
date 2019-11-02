@@ -63,7 +63,8 @@ spec:
         - name: backup-volume
           mountPath: /pd_backups
         - name: restore-script
-          mountPath: /opt/in
+          mountPath: /opt/in/restore.sh
+          subPath: restore.sh
           readOnly: true
       volumes:
       - name: passwords

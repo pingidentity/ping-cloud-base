@@ -12,6 +12,26 @@ spec:
       annotations:
         lastUpdateReason: "NA"
     spec:
+      initContainers:
+      - name: ssh-init
+        image: busybox
+        command:
+        - /init-ssh-config.sh
+        volumeMounts:
+        - name: ssh-dir
+          mountPath: /.ssh
+        - name: ssh-id-key-secret
+          mountPath: /id_rsa
+          subPath: id_rsa
+          readOnly: true
+        - name: known-hosts-config
+          mountPath: /known_hosts
+          subPath: known_hosts
+          readOnly: true
+        - name: ssh-init-script
+          mountPath: /init-ssh-config.sh
+          subPath: init-ssh-config.sh
+          readOnly: true
       containers:
       - name: pingaccess
         # FIXME: switch to stable image before GA
@@ -25,14 +45,17 @@ spec:
             memory: "1.5Gi"
             cpu: "1"
         volumeMounts:
+        # FIXME: fix home directory when containers run as non-root user
+        - name: ssh-dir
+          mountPath: /root/.ssh
+          readOnly: true
         - name: pingaccess-license
-          mountPath: /opt/in/instance/conf
+          mountPath: /opt/in/instance/conf/pingaccess.lic
+          subPath: pingaccess.lic
           readOnly: true
-        - name: ssh-id-key-secret
-          mountPath: "$(HOME)/.ssh/id_rsa"
-          readOnly: true
-        - name: known-hosts-config
-          mountPath: "$(HOME)/.ssh/known_hosts"
+        - name: pingaccess-jwk
+          mountPath: /opt/in/instance/conf/pa.jwk
+          subPath: pa.jwk
           readOnly: true
         readinessProbe:
           exec:
@@ -52,9 +75,11 @@ spec:
         - containerPort: 3030
           name: pa-agent
         env:
-        # FIXME: fix home directory when containers run as non-root user
-        - name: HOME
-          value: /root
+        - name: INITIAL_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingaccess-passwords
+              key: INITIAL_ADMIN_PASSWORD
         envFrom:
         - configMapRef:
             name: pingaccess-environment-variables
@@ -62,11 +87,12 @@ spec:
             name: devops-secret
             optional: true
       volumes:
-      - name: pingaccess-license
-        secret:
-          secretName: pingaccess-license
-          optional: true
-          defaultMode: 0400
+      - name: ssh-dir
+        emptyDir: {}
+      - name: ssh-init-script
+        configMap:
+          name: ssh-init-script
+          defaultMode: 0500
       - name: ssh-id-key-secret
         secret:
           secretName: ssh-id-key-secret
@@ -75,5 +101,20 @@ spec:
       - name: known-hosts-config
         configMap:
           name: known-hosts-config
+          optional: true
+          defaultMode: 0400
+      - name: pingaccess-license
+        secret:
+          secretName: pingaccess-license
+          optional: true
+          defaultMode: 0400
+      - name: pingaccess-passwords
+        secret:
+          secretName: pingaccess-passwords
+          optional: true
+          defaultMode: 0400
+      - name: pingaccess-jwk
+        secret:
+          secretName: pingaccess-jwk
           optional: true
           defaultMode: 0400
