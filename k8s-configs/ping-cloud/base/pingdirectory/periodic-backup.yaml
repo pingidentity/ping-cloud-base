@@ -140,7 +140,8 @@ spec:
             - name: backup-volume
               mountPath: /pd_backups
             - name: backup-script
-              mountPath: /opt/in
+              mountPath: /opt/in/backup.sh
+              subPath: backup.sh
               readOnly: true
           volumes:
           - name: passwords
