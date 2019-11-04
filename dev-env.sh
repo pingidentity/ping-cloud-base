@@ -153,12 +153,20 @@ if test "${dryrun}" = 'false'; then
   kubectl apply -f ${DEPLOY_FILE}
 
   # Print out the ingress objects for logs and the ping stack
+  echo
+  echo '--- Ingress URLs ---'
   kubectl get ingress -A
 
-  # Describe the LB service for pingdirectory
-  kubectl describe svc pingdirectory-admin -n ${NAMESPACE}
+  # Print out the pingdirectory hostname
+  echo
+  echo '--- LDAP hostname ---'
+  kubectl get svc pingdirectory-admin -n ${NAMESPACE} \
+    -o jsonpath='{.metadata.annotations.external-dns\.alpha\.kubernetes\.io/hostname}'
 
   # Print out the  pods for the ping stack
+  echo
+  echo
+  echo '--- Pod status ---'
   kubectl get pods -n ${NAMESPACE}
 else
   less "${DEPLOY_FILE}"
