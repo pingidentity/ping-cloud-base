@@ -80,10 +80,11 @@ spec:
         - name: pingdirectory-passwords
           mountPath: /usr/local/secrets
           readOnly: true
-        - name: pingdirectory-license
-          mountPath: /opt/in/instance/PingDirectory.lic
-          subPath: PingDirectory.lic
-          readOnly: true
+        # FIXME: uncomment when image is fixed
+#        - name: pingdirectory-license
+#          mountPath: /opt/in/instance/PingDirectory.lic
+#          subPath: PingDirectory.lic
+#          readOnly: true
         readinessProbe:
           exec:
             command: [ liveness.sh ]
