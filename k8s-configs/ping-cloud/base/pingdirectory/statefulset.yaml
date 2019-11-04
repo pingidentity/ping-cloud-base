@@ -39,7 +39,7 @@ spec:
       containers:
       - name: ds
         # FIXME: switch to stable image before GA
-        image: pingidentity/pingdirectory:7.3.0.3-edge
+        image: pingidentity/pingdirectory:edge
         imagePullPolicy: Always
         ports:
         - containerPort: 389
@@ -62,8 +62,11 @@ spec:
           value: 4g
         - name: UNBOUNDID_JAVA_ARGS
           value: "-client -Xmx4g -Xms4g"
-        - name: HOME
-          value: /root
+        - name: ROOT_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingdirectory-passwords
+              key: root-user-password
         envFrom:
         - configMapRef:
             name: pingdirectory-environment-variables
