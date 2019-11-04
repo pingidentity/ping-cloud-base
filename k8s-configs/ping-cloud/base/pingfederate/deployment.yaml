@@ -49,10 +49,11 @@ spec:
         - name: ssh-dir
           mountPath: /root/.ssh
           readOnly: true
-        - name: pingfederate-license
-          mountPath: /opt/in/instance/server/default/conf/pingfederate.lic
-          subPath: pingfederate.lic
-          readOnly: true
+        # FIXME: uncomment when image is fixed
+#        - name: pingfederate-license
+#          mountPath: /opt/in/instance/server/default/conf/pingfederate.lic
+#          subPath: pingfederate.lic
+#          readOnly: true
         readinessProbe:
           exec:
             command: [ liveness.sh ]
