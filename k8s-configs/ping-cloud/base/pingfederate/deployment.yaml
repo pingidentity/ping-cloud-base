@@ -49,11 +49,14 @@ spec:
         - name: ssh-dir
           mountPath: /root/.ssh
           readOnly: true
-        # FIXME: uncomment when image is fixed
-#        - name: pingfederate-license
-#          mountPath: /opt/in/instance/server/default/conf/pingfederate.lic
-#          subPath: pingfederate.lic
-#          readOnly: true
+        - name: pingfederate-license
+          mountPath: /opt/in/instance/server/default/conf/pingfederate.lic
+          subPath: pingfederate.lic
+          readOnly: true
+        - name: pingfederate-jwk
+          mountPath: /opt/in/instance/server/default/data/pf.jwk
+          subPath: pf.jwk
+          readOnly: true
         readinessProbe:
           exec:
             command: [ liveness.sh ]
@@ -95,5 +98,10 @@ spec:
       - name: pingfederate-license
         secret:
           secretName: pingfederate-license
+          optional: true
+          defaultMode: 0400
+      - name: pingfederate-jwk
+        secret:
+          secretName: pingfederate-jwk
           optional: true
           defaultMode: 0400

@@ -49,11 +49,10 @@ spec:
         - name: ssh-dir
           mountPath: /root/.ssh
           readOnly: true
-        # FIXME: uncomment when image is fixed
-#        - name: pingaccess-license
-#          mountPath: /opt/in/instance/conf/pingaccess.lic
-#          subPath: pingaccess.lic
-#          readOnly: true
+        - name: pingaccess-license
+          mountPath: /opt/in/instance/conf/pingaccess.lic
+          subPath: pingaccess.lic
+          readOnly: true
         - name: pingaccess-jwk
           mountPath: /opt/in/instance/conf/pa.jwk
           subPath: pa.jwk
