@@ -3,3 +3,7 @@ ORCHESTRATION_TYPE=kubernetes
 SERVER_PROFILE_URL=https://www.github.com/pingidentity/pingidentity-server-profiles.git
 SERVER_PROFILE_PATH=baseline/pingaccess
 SERVER_PROFILE_BRANCH=pcpt
+
+# Add a 10s delay to PA startup. PA uses PF as the OIDC token provider,
+# and PA import will crash if the token provider is not available.
+INITIAL_DELAY_SECONDS=10
