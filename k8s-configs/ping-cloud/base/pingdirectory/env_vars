@@ -13,6 +13,3 @@ USER_BASE_DN=dc=example,dc=com
 MAX_HEAP_SIZE=4g
 
 DISABLE_SCHEMA_REPLICATION=true
-
-# FIXME: remove once image is fixed
-PD_DELEGATOR_PUBLIC_HOSTNAME=localhost

@@ -16,7 +16,7 @@ spec:
       - name: ssh-init
         image: busybox
         command:
-        - /init-ssh-config.sh
+        - /init.sh
         volumeMounts:
         - name: ssh-dir
           mountPath: /.ssh
@@ -28,9 +28,9 @@ spec:
           mountPath: /known_hosts
           subPath: known_hosts
           readOnly: true
-        - name: ssh-init-script
-          mountPath: /init-ssh-config.sh
-          subPath: init-ssh-config.sh
+        - name: init-script
+          mountPath: /init.sh
+          subPath: init.sh
           readOnly: true
       containers:
       - name: pingfederate
@@ -81,9 +81,9 @@ spec:
       volumes:
       - name: ssh-dir
         emptyDir: {}
-      - name: ssh-init-script
+      - name: init-script
         configMap:
-          name: ssh-init-script
+          name: init-script
           defaultMode: 0500
       - name: ssh-id-key-secret
         secret:
