@@ -47,12 +47,13 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # TENANT_NAME            | The name of the tenant, e.g. k8s-icecream.         | PingPOC
 #                        |                                                    |
-# TENANT_DOMAIN          | The tenant's domain and hosted zone in the prod    | eks-poc.au1.ping-lab.cloud
-#                        | CDE e.g. k8s-icecream.com. The tenant domain in    |
-#                        | other CDEs are assumed to have the CDE name as the |
-#                        | prefix, followed by a hyphen. For example, the     |
-#                        | tenant domain for stage is assumed to be           |
-#                        | stage-k8s-icecream.com.                            |
+# TENANT_DOMAIN          | The tenant's domain suffix that's common to all    | eks-poc.au1.ping-lab.cloud
+#                        | CDEs e.g. k8s-icecream.com. The tenant domain in   |
+#                        | each CDE is assumed to have the CDE name as the    |
+#                        | prefix, followed by a hyphen. For example, for the |
+#                        | above prefix, the tenant domain for stage is       |
+#                        | assumed to be stage-k8s-icecream.com and a hosted  |
+#                        | zone assumed to exist on Route53 for that domain.  |
 #                        |                                                    |
 # REGION                 | The region where the tenant environment is         | us-east-2
 #                        | deployed. For PCPT, this is a required parameter   |
@@ -312,10 +313,7 @@ for ENV in ${ENVIRONMENTS}; do
       ;;
   esac
 
-  if test "${ENV}" = 'prod'; then
-    export DNS_RECORD_SUFFIX=''
-    export DNS_DOMAIN_PREFIX=''
-  elif test "${IS_BELUGA_ENV}" = 'true'; then
+  if test "${IS_BELUGA_ENV}" = 'true'; then
     export DNS_RECORD_SUFFIX="-${ENV}"
     export DNS_DOMAIN_PREFIX=''
   else
