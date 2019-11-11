@@ -251,8 +251,8 @@ echo "Using SSH_ID_KEY_FILE: ${SSH_ID_KEY_FILE}"
 echo "Using IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
 echo ---
 
-export PING_IDENTITY_DEVOPS_USER_BASE64=$(echo -n "${PING_IDENTITY_DEVOPS_USER}" | base64)
-export PING_IDENTITY_DEVOPS_KEY_BASE64=$(echo -n "${PING_IDENTITY_DEVOPS_KEY}" | base64)
+export PING_IDENTITY_DEVOPS_USER_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_USER}")
+export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_KEY}")
 
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 TEMPLATES_HOME="${SCRIPT_HOME}/templates"
@@ -267,7 +267,7 @@ elif test -z "${SSH_ID_PUB_FILE}" || test -z "${SSH_ID_KEY_FILE}"; then
 else
   echo 'Using provided key-pair for SSH access'
   export SSH_ID_PUB=$(cat "${SSH_ID_PUB_FILE}")
-  export SSH_ID_KEY_BASE64=$(cat "${SSH_ID_KEY_FILE}" | base64 | tr -d '\r?\n')
+  export SSH_ID_KEY_BASE64=$(cat "${SSH_ID_KEY_FILE}" | base64_no_newlines)
 fi
 
 # Get the known hosts contents for the cluster state repo host to pass it into flux.
