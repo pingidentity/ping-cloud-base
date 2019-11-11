@@ -15,27 +15,33 @@ spec:
       annotations:
         lastUpdateReason: "NA"
     spec:
+      serviceAccount: pd-serviceaccount
       terminationGracePeriodSeconds: 300
       initContainers:
-      - name: ssh-init
-        image: busybox
+      - name: ds-init
+        image: bitnami/kubectl:latest
         command:
         - /init.sh
+        env:
+        - name: K8S_STATEFUL_SET_NAME
+          value: $(K8S_STATEFUL_SET_NAME)
+        envFrom:
+        - configMapRef:
+            name: pingdirectory-environment-variables
         volumeMounts:
         - name: ssh-dir
           mountPath: /.ssh
+        - name: data-dir
+          mountPath: /data
         - name: ssh-id-key-secret
           mountPath: /id_rsa
           subPath: id_rsa
-          readOnly: true
         - name: known-hosts-config
           mountPath: /known_hosts
           subPath: known_hosts
-          readOnly: true
-        - name: init-script
+        - name: ds-init
           mountPath: /init.sh
           subPath: init.sh
-          readOnly: true
       containers:
       - name: ds
         # FIXME: switch to stable image before GA
@@ -56,8 +62,6 @@ spec:
         env:
         - name: K8S_STATEFUL_SET_NAME
           value: $(K8S_STATEFUL_SET_NAME)
-        - name: K8S_STATEFUL_SET_SERVICE_NAME
-          value: $(K8S_STATEFUL_SET_SERVICE_NAME)
         - name: MAX_HEAP_SIZE
           value: 4g
         - name: UNBOUNDID_JAVA_ARGS
@@ -78,6 +82,12 @@ spec:
         - name: ssh-dir
           mountPath: /root/.ssh
           readOnly: true
+        - name: data-dir
+          mountPath: /opt/staging/topology.json
+          subPath: topology.json
+        - name: data-dir
+          mountPath: /usr/local/bin/kubectl
+          subPath: kubectl
         - name: out-dir
           mountPath: /opt/out
         - name: pingdirectory-passwords
@@ -86,7 +96,12 @@ spec:
         - name: pingdirectory-license
           mountPath: /opt/in/instance/PingDirectory.lic
           subPath: PingDirectory.lic
-          readOnly: true
+        - name: ds-pre-stop
+          mountPath: /opt/staging/pre-stop.sh
+          subPath: pre-stop.sh
+        - name: ds-post-start
+          mountPath: /opt/staging/hooks/80-post-start.sh
+          subPath: 80-post-start.sh
         readinessProbe:
           exec:
             command: [ liveness.sh ]
@@ -102,14 +117,24 @@ spec:
           preStop:
             exec:
               command:
-              - /opt/staging/hooks/90-shutdown-sequence.sh
+              - /opt/staging/pre-stop.sh
       volumes:
       - name: ssh-dir
         emptyDir: {}
-      - name: init-script
+      - name: data-dir
+        emptyDir: {}
+      - name: ds-init
         configMap:
-          name: init-script
-          defaultMode: 0500
+          name: ds-init
+          defaultMode: 0555
+      - name: ds-pre-stop
+        configMap:
+          name: ds-pre-stop
+          defaultMode: 0555
+      - name: ds-post-start
+        configMap:
+          name: ds-post-start
+          defaultMode: 0555
       - name: ssh-id-key-secret
         secret:
           secretName: ssh-id-key-secret

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pf-init
+data:
+  init.sh: |-
+    #!/bin/sh -x
+
+    #--- Sleep for the configured initial delay seconds --- #
+    SLEEP_SECONDS=${INITIAL_DELAY_SECONDS:-0}
+    sleep ${SLEEP_SECONDS}
+
+    #--- Copy SSH configuration files --- #
+    test -f /known_hosts && cp /known_hosts /.ssh
+    test -f /id_rsa && cp /id_rsa /.ssh
+
+    exit 0

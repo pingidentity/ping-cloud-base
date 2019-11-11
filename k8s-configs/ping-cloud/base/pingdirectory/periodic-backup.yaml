@@ -1,45 +1,4 @@
 apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: pd-backup-serviceaccount
-
----
-
-apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: Role
-metadata:
-  name: pd-backup-role
-rules:
-  - apiGroups:
-    - ""
-    resources:
-    - "pods"
-    verbs:
-    - get
-  - apiGroups:
-    - ""
-    resources:
-    - "pods/exec"
-    verbs:
-    - create
-
----
-
-apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: RoleBinding
-metadata:
-  name: pd-backup-role-binding
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: pd-backup-role
-subjects:
-  - kind: ServiceAccount
-    name: pd-backup-serviceaccount
-
----
-
-apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pd-backup-pvc
@@ -122,7 +81,7 @@ spec:
     spec:
       template:
         spec:
-          serviceAccount: pd-backup-serviceaccount
+          serviceAccount: pd-serviceaccount
           restartPolicy: OnFailure
           containers:
           - name: ds-backup
@@ -142,7 +101,6 @@ spec:
             - name: backup-script
               mountPath: /opt/in/backup.sh
               subPath: backup.sh
-              readOnly: true
           volumes:
           - name: passwords
             secret:
@@ -151,7 +109,7 @@ spec:
           - name: backup-script
             configMap:
               name: backup-script
-              defaultMode: 0500
+              defaultMode: 0555
           - name: backup-volume
             persistentVolumeClaim:
               claimName: pd-backup-pvc

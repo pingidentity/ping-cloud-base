@@ -2,21 +2,3 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: known-hosts-config
-
----
-
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: init-script
-data:
-  init.sh: |-
-    #!/bin/sh -x
-
-    SLEEP_SECONDS=${INITIAL_DELAY_SECONDS:-0}
-    sleep ${SLEEP_SECONDS}
-
-    test -e /known_hosts && cp /known_hosts /.ssh
-    test -e /id_rsa && cp /id_rsa /.ssh
-
-    exit 0
