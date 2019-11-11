@@ -38,8 +38,8 @@ fi
 # Generate a self-signed cert for the tenant domain.
 generate_tls_cert "${TENANT_DOMAIN}"
 
-export PING_IDENTITY_DEVOPS_USER_BASE64=$(echo -n "${PING_IDENTITY_DEVOPS_USER}" | base64)
-export PING_IDENTITY_DEVOPS_KEY_BASE64=$(echo -n "${PING_IDENTITY_DEVOPS_KEY}" | base64)
+export PING_IDENTITY_DEVOPS_USER_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_USER}")
+export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_KEY}")
 
 # Deploy the configuration to Kubernetes
 DEPLOY_FILE=/tmp/deploy.yaml

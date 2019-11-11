@@ -66,6 +66,16 @@ generate_ssh_key_pair() {
 }
 
 ########################################################################################################################
+# base64-encode the provided string and remove any new lines (both line feeds and carriage returns).
+#
+# Arguments
+#   ${1} -> The string to base64-encode.
+########################################################################################################################
+base64_no_newlines() {
+  echo -n "${1}" | base64 | tr -d '\r?\n'
+}
+
+########################################################################################################################
 # Verify that the provided binaries are available.
 #
 # Arguments
