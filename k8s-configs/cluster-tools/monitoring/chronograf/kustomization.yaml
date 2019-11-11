@@ -1,0 +1,17 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+namespace: chronograf
+
+commonLabels:
+  role: chronograf
+
+resources:
+- namespace.yaml
+- secret.yaml
+- configmap.yaml
+- pvc.yaml
+- deployment.yaml
+- service.yaml
+- ingress.yaml
+

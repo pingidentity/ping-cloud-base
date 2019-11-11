@@ -1,0 +1,13 @@
+---
+
+# Section: chronograf service
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: var-lib-chronograf
+spec:
+  accessModes:
+    - "ReadWriteOnce"
+  resources:
+    requests:
+      storage: 3Gi

@@ -1,0 +1,10 @@
+# Section: chronograf service
+apiVersion: v1
+kind: Service
+metadata:
+  name: chronograf
+spec:
+  ports:
+  - port: 80
+    targetPort: 8888
+    name: server

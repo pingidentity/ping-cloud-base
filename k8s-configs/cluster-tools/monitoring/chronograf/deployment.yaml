@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chronograf
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: chronograf
+    spec:
+      containers:
+      - name: chronograf
+        image: chronograf:alpine
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: INFLUXDB_DATABASE
+          value: tick
+        - name: RESOURCES_PATH
+          value: "/usr/share/chronograf/resources"
+        - name: LOG_LEVEL
+          value: "error"
+        envFrom:
+        # TODO:  will need to create secret for influx creds. 
+        - secretRef:
+            name: influxdb-creds
+        # TODO: change name to chronograf-configmap
+        ports:
+        - containerPort: 8888
+          protocol: TCP
+        resources:
+          limits:
+            cpu: "2"
+            memory: 3Gi
+          requests:
+            cpu: "2"
+            memory: 3Gi
+        volumeMounts:
+        - mountPath: /var/lib/chronograf
+          name: var-lib-chronograf
+        - name: config
+          mountPath: /usr/share/chronograf/resources
+      volumes:
+      - name: var-lib-chronograf
+        persistentVolumeClaim:
+          claimName: var-lib-chronograf
+      - name: config
+        configMap:
+          name: chronograf
+
