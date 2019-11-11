@@ -13,7 +13,7 @@ spec:
         lastUpdateReason: "NA"
     spec:
       initContainers:
-      - name: ssh-init
+      - name: pa-init
         image: busybox
         command:
         - /init.sh
@@ -23,15 +23,12 @@ spec:
         - name: ssh-id-key-secret
           mountPath: /id_rsa
           subPath: id_rsa
-          readOnly: true
         - name: known-hosts-config
           mountPath: /known_hosts
           subPath: known_hosts
-          readOnly: true
-        - name: init-script
+        - name: pa-init
           mountPath: /init.sh
           subPath: init.sh
-          readOnly: true
       containers:
       - name: pingaccess
         # FIXME: switch to stable image before GA
@@ -52,11 +49,9 @@ spec:
         - name: pingaccess-license
           mountPath: /opt/in/instance/conf/pingaccess.lic
           subPath: pingaccess.lic
-          readOnly: true
         - name: pingaccess-jwk
           mountPath: /opt/in/instance/conf/pa.jwk
           subPath: pa.jwk
-          readOnly: true
         readinessProbe:
           exec:
             command: [ liveness.sh ]
@@ -74,13 +69,12 @@ spec:
           name: pa-runtime
         - containerPort: 3030
           name: pa-agent
-        # FIXME: uncomment when image is fixed
-#        env:
-#        - name: INITIAL_ADMIN_PASSWORD
-#          valueFrom:
-#            secretKeyRef:
-#              name: pingaccess-passwords
-#              key: INITIAL_ADMIN_PASSWORD
+        env:
+        - name: INITIAL_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingaccess-passwords
+              key: INITIAL_ADMIN_PASSWORD
         envFrom:
         - configMapRef:
             name: pingaccess-environment-variables
@@ -90,10 +84,10 @@ spec:
       volumes:
       - name: ssh-dir
         emptyDir: {}
-      - name: init-script
+      - name: pa-init
         configMap:
-          name: init-script
-          defaultMode: 0500
+          name: pa-init
+          defaultMode: 0555
       - name: ssh-id-key-secret
         secret:
           secretName: ssh-id-key-secret
