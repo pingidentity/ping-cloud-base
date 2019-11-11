@@ -5,6 +5,9 @@ set -ex
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 . ${SCRIPT_HOME}/../common.sh
 
+#
+# --- Local debugging ---
+#
 # Configure kubectl but only when not in debug mode, which may be used locally for testing.
 # To test locally, export the following environment variables:
 #
@@ -13,6 +16,8 @@ SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 # export TENANT_DOMAIN=ping-aws.com
 # export AWS_DEFAULT_REGION=us-west-2
 # export EKS_CLUSTER_NAME=ci-cd-cluster
+#
+# Then, call this script with the debug option: ./deploy.sh debug
 #
 if test "${1}" != 'debug'; then
   echo "${KUBE_CA_PEM}" > "$(pwd)/kube.ca.pem"
