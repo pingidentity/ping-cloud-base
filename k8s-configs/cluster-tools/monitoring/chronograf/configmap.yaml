@@ -1,0 +1,15 @@
+apiVersion: v1
+data:
+  monitor.src: |-
+    {
+      "id": "5000",
+      "name": "internal",
+      "url": "http://influxdb:8086",
+      "type": "influx",
+      "insecureSkipVerify": false,
+      "default": true,
+      "organization": "influx"
+    }
+kind: ConfigMap
+metadata:
+  name: chronograf
