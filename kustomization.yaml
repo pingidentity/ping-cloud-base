@@ -125,6 +125,20 @@ patchesJson6902:
       path: /spec/rules/0/host
       value: logs.${TENANT_DOMAIN}
 
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: chronograf-ingress
+    namespace: chronograf
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: monitoring.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: monitoring.${TENANT_DOMAIN}
+
 # pingdirectory put ldaps on public and change the host
 - target:
     version: v1
