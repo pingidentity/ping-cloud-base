@@ -103,6 +103,10 @@
 #                        | SSH_ID_PUB_FILE must also be provided and          |
 #                        | correspond to this private key.                    |
 #                        |                                                    |
+# TARGET_DIR             | The directory where the manifest files will be     | /tmp/sandbox
+#                        | generated. If the target directory exists, it will |
+#                        | be deleted.                                        |
+#                        |                                                    |
 # IS_BELUGA_ENV          | An optional flag that may be provided to indicate  | false. Only intended for Beluga
 #                        | that the cluster state is being generated for      | developers.
 #                        | testing during Beluga development. If set to true, |
@@ -199,6 +203,7 @@ echo "Initial REGISTRY_NAME: ${REGISTRY_NAME}"
 echo "Initial SSH_ID_PUB_FILE: ${SSH_ID_PUB_FILE}"
 echo "Initial SSH_ID_KEY_FILE: ${SSH_ID_KEY_FILE}"
 
+echo "Initial TARGET_DIR: ${TARGET_DIR}"
 echo "Initial IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
 echo ---
 
@@ -224,6 +229,7 @@ export REGISTRY_NAME="${REGISTRY_NAME:-docker.io}"
 export SSH_ID_PUB_FILE="${SSH_ID_PUB_FILE}"
 export SSH_ID_KEY_FILE="${SSH_ID_KEY_FILE}"
 
+export TARGET_DIR="${TARGET_DIR:-/tmp/sandbox}"
 export IS_BELUGA_ENV="${IS_BELUGA_ENV}"
 
 # Print out the values being used for each variable.
@@ -248,6 +254,7 @@ echo "Using REGISTRY_NAME: ${REGISTRY_NAME}"
 echo "Using SSH_ID_PUB_FILE: ${SSH_ID_PUB_FILE}"
 echo "Using SSH_ID_KEY_FILE: ${SSH_ID_KEY_FILE}"
 
+echo "Using TARGET_DIR: ${TARGET_DIR}"
 echo "Using IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
 echo ---
 
@@ -267,7 +274,7 @@ elif test -z "${SSH_ID_PUB_FILE}" || test -z "${SSH_ID_KEY_FILE}"; then
 else
   echo 'Using provided key-pair for SSH access'
   export SSH_ID_PUB=$(cat "${SSH_ID_PUB_FILE}")
-  export SSH_ID_KEY_BASE64=$(cat "${SSH_ID_KEY_FILE}" | base64_no_newlines)
+  export SSH_ID_KEY_BASE64=$(base64_no_newlines "${SSH_ID_KEY_FILE}")
 fi
 
 # Get the known hosts contents for the cluster state repo host to pass it into flux.
@@ -279,16 +286,15 @@ parse_url "${CONFIG_REPO_URL}"
 echo "Obtaining known_hosts contents for config repo host: ${URL_HOST}"
 export KNOWN_HOSTS_CONFIG_REPO=$(ssh-keyscan -H "${URL_HOST}" 2> /dev/null)
 
-# Delete existing sandbox and re-create it
-SANDBOX_DIR=/tmp/sandbox
-rm -rf "${SANDBOX_DIR}"
-mkdir -p "${SANDBOX_DIR}"
+# Delete existing target directory and re-create it
+rm -rf "${TARGET_DIR}"
+mkdir -p "${TARGET_DIR}"
 
 # Next build up the directory structure of the cluster-state repo
-FLUXCD_DIR="${SANDBOX_DIR}/fluxcd"
+FLUXCD_DIR="${TARGET_DIR}/fluxcd"
 mkdir -p "${FLUXCD_DIR}"
 
-K8S_CONFIGS_DIR="${SANDBOX_DIR}/k8s-configs"
+K8S_CONFIGS_DIR="${TARGET_DIR}/k8s-configs"
 mkdir -p "${K8S_CONFIGS_DIR}"
 
 # Now generate the yaml files for each environment
@@ -384,11 +390,11 @@ echo
 echo '------------------------'
 echo '|  Next steps to take  |'
 echo '------------------------'
-echo "1) Push the ${SANDBOX_DIR}/k8s-configs directory onto the master branch of the tenant cluster-state repo:"
+echo "1) Push the ${TARGET_DIR}/k8s-configs directory onto the master branch of the tenant cluster-state repo:"
 echo "${CLUSTER_STATE_REPO_URL}"
 echo
-echo "2) Add the following identity as the deploy key on the cluster-state (rw) and config repos (ro), if not already added:"
+echo "2) Add the following identity as the deploy key on the cluster-state (rw) and config repo (ro), if not already added:"
 echo "${SSH_ID_PUB}"
 echo
-echo "3) Deploy the flux.yaml files under ${SANDBOX_DIR}/fluxcd into each CDE using:"
+echo "3) Deploy the flux.yaml files under ${TARGET_DIR}/fluxcd into each CDE using:"
 echo 'kubectl apply -f flux.yaml'

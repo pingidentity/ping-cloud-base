@@ -19,7 +19,11 @@ spec:
       terminationGracePeriodSeconds: 300
       initContainers:
       - name: ds-init
-        image: bitnami/kubectl:latest
+        # FIXME: switch to same user as app
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        image: bitnami/kubectl
         command:
         - /init.sh
         env:
@@ -81,7 +85,6 @@ spec:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
           mountPath: /root/.ssh
-          readOnly: true
         - name: data-dir
           mountPath: /opt/staging/topology.json
           subPath: topology.json
@@ -144,7 +147,7 @@ spec:
         configMap:
           name: known-hosts-config
           optional: true
-          defaultMode: 0400
+          defaultMode: 0644
       - name: out-dir
         persistentVolumeClaim:
           claimName: out-dir
