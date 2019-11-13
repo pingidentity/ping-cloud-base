@@ -45,8 +45,8 @@ generate_tls_cert() {
     -subj "/CN=${DOMAIN}" \
     -reqexts SAN -extensions SAN \
     -config <(cat /etc/ssl/openssl.cnf; printf "[SAN]\nsubjectAltName=DNS:*.${DOMAIN}") > /dev/null 2>&1
-  export TLS_CRT_BASE64=$(cat tls.crt | base64 | tr -d '\r?\n')
-  export TLS_KEY_BASE64=$(cat tls.key | base64 | tr -d '\r?\n')
+  export TLS_CRT_BASE64=$(base64_no_newlines tls.crt)
+  export TLS_KEY_BASE64=$(base64_no_newlines tls.key)
   cd - > /dev/null
   rm -rf "${CERTS_DIR}"
 }
@@ -60,19 +60,23 @@ generate_ssh_key_pair() {
   cd "${KEY_PAIR_DIR}"
   ssh-keygen -q -t rsa -b 2048 -f id_rsa -N ''
   export SSH_ID_PUB=$(cat id_rsa.pub)
-  export SSH_ID_KEY_BASE64=$(cat id_rsa | base64 | tr -d '\r?\n')
+  export SSH_ID_KEY_BASE64=$(base64_no_newlines id_rsa)
   cd - > /dev/null
   rm -rf "${KEY_PAIR_DIR}"
 }
 
 ########################################################################################################################
-# base64-encode the provided string and remove any new lines (both line feeds and carriage returns).
+# base64-encode the provided string or file contents and remove any new lines (both line feeds and carriage returns).
 #
 # Arguments
-#   ${1} -> The string to base64-encode.
+#   ${1} -> The string to base-64 encode, or a file whose contents to base64-encode.
 ########################################################################################################################
 base64_no_newlines() {
-  echo -n "${1}" | base64 | tr -d '\r?\n'
+  if test -f "${1}"; then
+    cat "${1}" | base64 | tr -d '\r?\n'
+  else
+    echo -n "${1}" | base64 | tr -d '\r?\n'
+  fi
 }
 
 ########################################################################################################################

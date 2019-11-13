@@ -14,12 +14,18 @@ spec:
     spec:
       initContainers:
       - name: pf-init
-        image: busybox
+        # FIXME: switch to same user as app
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        image: bitnami/kubectl
         command:
         - /init.sh
         volumeMounts:
         - name: ssh-dir
           mountPath: /.ssh
+        - name: data-dir
+          mountPath: /data
         - name: ssh-id-key-secret
           mountPath: /id_rsa
           subPath: id_rsa
@@ -45,7 +51,9 @@ spec:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
           mountPath: /root/.ssh
-          readOnly: true
+        - name: data-dir
+          mountPath: /usr/local/bin/kubectl
+          subPath: kubectl
         - name: pingfederate-license
           mountPath: /opt/in/instance/server/default/conf/pingfederate.lic
           subPath: pingfederate.lic
@@ -76,6 +84,8 @@ spec:
       volumes:
       - name: ssh-dir
         emptyDir: {}
+      - name: data-dir
+        emptyDir: {}
       - name: pf-init
         configMap:
           name: pf-init
@@ -89,7 +99,7 @@ spec:
         configMap:
           name: known-hosts-config
           optional: true
-          defaultMode: 0400
+          defaultMode: 0644
       - name: pingfederate-license
         secret:
           secretName: pingfederate-license

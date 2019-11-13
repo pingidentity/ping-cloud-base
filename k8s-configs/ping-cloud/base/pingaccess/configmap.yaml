@@ -14,4 +14,7 @@ data:
     test -f /known_hosts && cp /known_hosts /.ssh
     test -f /id_rsa && cp /id_rsa /.ssh
 
+    #--- Copy kubectl to the data directory ---#
+    which kubectl | xargs -I {} cp {} /data
+
     exit 0
