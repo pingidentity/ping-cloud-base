@@ -35,6 +35,9 @@ spec:
         - name: pa-init
           mountPath: /init.sh
           subPath: init.sh
+        envFrom:
+        - configMapRef:
+            name: pingaccess-environment-variables
       containers:
       - name: pingaccess
         # FIXME: switch to stable image before GA
