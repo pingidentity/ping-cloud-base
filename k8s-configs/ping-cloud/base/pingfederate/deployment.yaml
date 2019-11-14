@@ -35,6 +35,9 @@ spec:
         - name: pf-init
           mountPath: /init.sh
           subPath: init.sh
+        envFrom:
+        - configMapRef:
+            name: pingfederate-environment-variables
       containers:
       - name: pingfederate
         # FIXME: switch to stable image before GA
