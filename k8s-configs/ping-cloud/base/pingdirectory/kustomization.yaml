@@ -18,7 +18,8 @@ generatorOptions:
 
 configMapGenerator:
 - name: pingdirectory-environment-variables
-  env: env_vars
+  envs:
+  - env_vars
 
 vars:
 - name: K8S_STATEFUL_SET_NAME
