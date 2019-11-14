@@ -8,15 +8,18 @@ configMapGenerator:
 # Pingaccess
 - name: pingaccess-environment-variables
   behavior: merge
-  env: env_vars
+  envs:
+  - env_vars
 # Pingfederate
 - name: pingfederate-environment-variables
   behavior: merge
-  env: env_vars
+  envs:
+  - env_vars
 # Pingdirectory
 - name: pingdirectory-environment-variables
   behavior: merge
-  env: env_vars
+  envs:
+  - env_vars
 
 patchesJson6902:
 # pingdata

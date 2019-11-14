@@ -14,28 +14,22 @@ configMapGenerator:
 - name: pingaccess-environment-variables
   namespace: ping-cloud
   behavior: merge
-  env: env_vars
-- name: pingaccess-environment-variables
-  namespace: ping-cloud
-  behavior: merge
-  env: pingaccess/env_vars
+  envs:
+  - env_vars
+  - pingaccess/env_vars
 
 # Pingdirectory
 - name: pingdirectory-environment-variables
   namespace: ping-cloud
   behavior: merge
-  env: env_vars
-- name: pingdirectory-environment-variables
-  namespace: ping-cloud
-  behavior: merge
-  env: pingdirectory/env_vars
+  envs:
+  - env_vars
+  - pingdirectory/env_vars
 
 # Pingfederate
 - name: pingfederate-environment-variables
   namespace: ping-cloud
   behavior: merge
-  env: env_vars
-- name: pingfederate-environment-variables
-  namespace: ping-cloud
-  behavior: merge
-  env: pingfederate/env_vars
+  envs:
+  - env_vars
+  - pingfederate/env_vars
