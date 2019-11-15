@@ -6,6 +6,7 @@ kind: Service
 metadata:
   name: pingdirectory
 spec:
+  publishNotReadyAddresses: true
   ports:
   - port: 389
     name: ldap
