@@ -24,6 +24,7 @@ spec:
           runAsNonRoot: false
           runAsUser: 0
         image: bitnami/kubectl
+        imagePullPolicy: IfNotPresent
         command:
         - /init.sh
         env:
@@ -99,6 +100,9 @@ spec:
         - name: pingdirectory-license
           mountPath: /opt/in/instance/PingDirectory.lic
           subPath: PingDirectory.lic
+        - name: ds-ready
+          mountPath: /opt/staging/readiness.sh
+          subPath: readiness.sh
         - name: ds-pre-stop
           mountPath: /opt/staging/pre-stop.sh
           subPath: pre-stop.sh
@@ -107,7 +111,8 @@ spec:
           subPath: 80-post-start.sh
         readinessProbe:
           exec:
-            command: [ liveness.sh ]
+            command:
+            - /opt/staging/readiness.sh
           periodSeconds: 30
           failureThreshold: 120
         livenessProbe:
@@ -133,6 +138,10 @@ spec:
       - name: ds-pre-stop
         configMap:
           name: ds-pre-stop
+          defaultMode: 0555
+      - name: ds-ready
+        configMap:
+          name: ds-ready
           defaultMode: 0555
       - name: ds-post-start
         configMap:
