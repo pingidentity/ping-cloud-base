@@ -61,11 +61,11 @@ data:
     # sync or some other mechanism, like import-ldif, followed by dsreplication initialize-all. This assumption may be
     # different for each customer, but the script may be easily adjusted as appropriate for the customer's use case.
 
-    echo "Checking if replication is already set up on ${HOSTNAME}" >> $LOG_FILE
+    echo "Checking if replication is already set up on ${HOSTNAME}"
     REPL_SETUP_MARKER_FILE=/opt/out/instance/config/repl-setup
 
     if test -f "${REPL_SETUP_MARKER_FILE}"; then
-      echo "Replication is already set up on ${HOSTNAME}" >> $LOG_FILE
+      echo "Replication is already set up on ${HOSTNAME}"
       exit 0
     fi
 
@@ -135,7 +135,7 @@ data:
 
     # Verify that server is responsive on its LDAP secure port
     echo "Readiness probe - verifying root DSE access"
-    /opt/liveness.sh 2> /dev/null || exit 1
+    /opt/liveness.sh
 
     # Verify that replication is set up
     echo "Readiness probe - verifying replication is set up"
