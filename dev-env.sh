@@ -71,6 +71,12 @@
 #                | and monitoring solution.                           |
 ########################################################################################################################
 
+#
+# Ensure we're in the correct directory to run the script.
+#
+declare -r homeDir=$(dirname ${0})
+pushd ${homeDir} > /dev/null 2>&1
+
 # Source devops and aws-eks files, if present
 test -f ~/.pingidentity/devops && . ~/.pingidentity/devops
 
@@ -88,6 +94,7 @@ do
       ;;
     *)
       echo "Usage ${0} [ -n ] n = dry-run"
+      popd  > /dev/null 2>&1
       exit 1
       ;;
   esac
@@ -101,6 +108,7 @@ check_env_vars "PING_IDENTITY_DEVOPS_USER" "PING_IDENTITY_DEVOPS_KEY"
 HAS_REQUIRED_VARS=${?}
 
 if test ${HAS_REQUIRED_TOOLS} -ne 0 || test ${HAS_REQUIRED_VARS} -ne 0; then
+  popd  > /dev/null 2>&1
   exit 1
 fi
 
@@ -171,3 +179,5 @@ if test "${dryrun}" = 'false'; then
 else
   less "${DEPLOY_FILE}"
 fi
+
+popd  > /dev/null 2>&1
