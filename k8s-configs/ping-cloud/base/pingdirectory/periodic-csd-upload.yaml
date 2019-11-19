@@ -58,6 +58,12 @@ data:
       echo "Done copying CSD from server ${SERVER}"
 
       # FIXME: upload to S3
+      if test -z "${S3_CSD_ARCHIVES_BUCKET}"; then
+        echo "S3 bucket not provided for CSD archives"
+      else
+        #aws s3 cp "${DST_FILE}" "${S3_CSD_ARCHIVES_BUCKET}"
+      fi
+
     done
 
 ---
