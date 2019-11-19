@@ -24,7 +24,7 @@ spec:
           runAsNonRoot: false
           runAsUser: 0
         image: bitnami/kubectl
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         command:
         - /init.sh
         env:
