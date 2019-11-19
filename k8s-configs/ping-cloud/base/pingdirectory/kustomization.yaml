@@ -9,6 +9,7 @@ resources:
 - statefulset.yaml
 - service.yaml
 - periodic-backup.yaml
+- periodic-csd-upload.yaml
 
 commonLabels:
   role: pingdirectory
@@ -27,3 +28,10 @@ vars:
     kind: StatefulSet
     name: ds
     apiVersion: apps/v1
+- name: K8S_STATEFUL_SET_SERVICE_NAME
+  objref:
+    kind: StatefulSet
+    name: ds
+    apiVersion: apps/v1
+  fieldref:
+    fieldpath: spec.serviceName

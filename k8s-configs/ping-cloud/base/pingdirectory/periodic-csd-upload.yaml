@@ -1,0 +1,135 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: upload-script
+data:
+  upload.sh: |-
+    #!/bin/sh
+    set -x
+
+    # Install kubectl
+    echo "Installing kubectl"
+    curl https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
+    chmod +x /usr/local/bin/kubectl
+
+    NUM_REPLICAS=$(kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
+
+    START=0
+    END=$((${NUM_REPLICAS} - 1))
+
+    # Run from the target directory so the tar copy works with just a filename.
+    TARGET_DIR=/tmp
+    cd "${TARGET_DIR}"
+
+    for i in $(seq ${START} ${END}); do
+      SERVER="${K8S_STATEFUL_SET_NAME}-${i}"
+
+      # FIXME: In 8.0, use the --duration 1h argument to collect-support-data
+      "${SERVER_BITS_DIR}/bin/schedule-exec-task" \
+        --useSSL --trustAll \
+        --hostname "${SERVER}.${K8S_STATEFUL_SET_SERVICE_NAME}" \
+        --port ${LDAPS_PORT} \
+        --bindDN "${ROOT_USER_DN}" \
+        --bindPasswordFile "${ROOT_USER_PASSWORD_FILE}" \
+        --waitForCompletion \
+        --logCommandOutput \
+        "${SERVER_ROOT_DIR}/bin/collect-support-data"
+
+      CSD_OUT=$(kubectl exec "${SERVER}" -- find "${SERVER_ROOT_DIR}" -name support\*zip -type f | sort | tail -1)
+      if test -z "${CSD_OUT}"; then
+        echo "No support data archive found on ${SERVER}"
+        continue
+      fi
+
+      SRC_FILE="${SERVER}:${CSD_OUT}"
+      DST_FILE=$(basename "${CSD_OUT}")
+
+      echo "Copying ${SRC_FILE} to ${TARGET_DIR}/${DST_FILE}"
+      kubectl cp "${SRC_FILE}" "${DST_FILE}"
+
+      echo "Removing ${SRC_FILE} from the server"
+      kubectl exec "${SERVER}" -- rm -f "${CSD_OUT}"
+
+      echo "Done copying CSD from server ${SERVER}"
+    done
+
+---
+
+# Perform a CSD upload at 1 minute past every hour - the recurring task on the server runs every hour.
+#apiVersion: batch/v1beta1
+#kind: CronJob
+#metadata:
+#  name: ds-periodic-csd-upload
+#spec:
+#  schedule: "1 */1 * * *"
+#  jobTemplate:
+#    spec:
+#      template:
+#        spec:
+#          serviceAccount: pd-serviceaccount
+#          restartPolicy: Never
+#          containers:
+#          - name: ds-csd-uploader
+#            # FIXME: switch to stable image before GA
+#            image: pingidentity/pingdirectory:edge
+#            command:
+#            - /opt/in/upload.sh
+#            volumeMounts:
+#            - name: passwords
+#              mountPath: /usr/local/secrets
+#              readOnly: true
+#            - name: upload-script
+#              mountPath: /opt/in/upload.sh
+#              subPath: upload.sh
+#            env:
+#            - name: K8S_STATEFUL_SET_NAME
+#              value: $(K8S_STATEFUL_SET_NAME)
+#          volumes:
+#          - name: passwords
+#            secret:
+#              secretName: pingdirectory-passwords
+#              defaultMode: 0400
+#          - name: upload-script
+#            configMap:
+#              name: upload-script
+#              defaultMode: 0555
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ds-periodic-csd-upload
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: ds-periodic-csd-upload
+    spec:
+      serviceAccount: pd-serviceaccount
+      containers:
+      - name: ds-csd-uploader
+        # FIXME: switch to stable image before GA
+        image: pingidentity/pingdirectory:edge
+        command: [ 'sh', '-c', 'sleep 3600' ]
+        volumeMounts:
+        - name: passwords
+          mountPath: /usr/local/secrets
+          readOnly: true
+        - name: upload-script
+          mountPath: /opt/in/upload.sh
+          subPath: upload.sh
+        env:
+        - name: K8S_STATEFUL_SET_NAME
+          value: $(K8S_STATEFUL_SET_NAME)
+        - name: K8S_STATEFUL_SET_SERVICE_NAME
+          value: $(K8S_STATEFUL_SET_SERVICE_NAME)
+      volumes:
+      - name: passwords
+        secret:
+          secretName: pingdirectory-passwords
+          defaultMode: 0400
+      - name: upload-script
+        configMap:
+          name: upload-script
+          defaultMode: 0555
