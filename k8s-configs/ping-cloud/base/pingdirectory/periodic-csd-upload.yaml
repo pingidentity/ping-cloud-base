@@ -56,6 +56,8 @@ data:
       kubectl exec "${SERVER}" -- rm -f "${CSD_OUT}"
 
       echo "Done copying CSD from server ${SERVER}"
+
+      # FIXME: upload to S3
     done
 
 ---
