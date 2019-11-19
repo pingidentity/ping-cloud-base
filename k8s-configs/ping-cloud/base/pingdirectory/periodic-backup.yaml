@@ -73,96 +73,49 @@ data:
 
 # A manual restore can be performed using the restore job (restore.yaml) when
 # necessary.
-#apiVersion: batch/v1beta1
-#kind: CronJob
-#metadata:
-#  name: ds-periodic-backup
-#spec:
-#  schedule: "0 */6 * * *"
-#  jobTemplate:
-#    spec:
-#      template:
-#        spec:
-#          serviceAccount: pd-serviceaccount
-#          restartPolicy: OnFailure
-#          containers:
-#          - name: ds-backup
-#            # FIXME: switch to stable image before GA
-#            image: pingidentity/pingdirectory:edge
-#            command:
-#            - /opt/in/backup.sh
-#            env:
-#            - name: BACKUP_DIR
-#              value: /pd_backups
-#            - name: K8S_STATEFUL_SET_NAME
-#              value: $(K8S_STATEFUL_SET_NAME)
-#            - name: K8S_STATEFUL_SET_SERVICE_NAME
-#              value: $(K8S_STATEFUL_SET_SERVICE_NAME)
-#            volumeMounts:
-#            - name: passwords
-#              mountPath: /usr/local/secrets
-#              readOnly: true
-#            - name: backup-volume
-#              mountPath: /pd_backups
-#            - name: backup-script
-#              mountPath: /opt/in/backup.sh
-#              subPath: backup.sh
-#          volumes:
-#          - name: passwords
-#            secret:
-#              secretName: pingdirectory-passwords
-#              defaultMode: 0400
-#          - name: backup-script
-#            configMap:
-#              name: backup-script
-#              defaultMode: 0555
-#          - name: backup-volume
-#            persistentVolumeClaim:
-#              claimName: pd-backup-pvc
-
----
-
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1beta1
+kind: CronJob
 metadata:
   name: ds-periodic-backup
 spec:
-  replicas: 1
-  template:
-    metadata:
-      name: ds-periodic-backup
+  schedule: "0 */6 * * *"
+  jobTemplate:
     spec:
-      serviceAccount: pd-serviceaccount
-      containers:
-      - name: ds-backup
-        # FIXME: switch to stable image before GA
-        image: pingidentity/pingdirectory:edge
-        command: [ 'sh', '-c', 'sleep 3600' ]
-        env:
-        - name: BACKUP_DIR
-          value: /pd_backups
-        - name: K8S_STATEFUL_SET_NAME
-          value: $(K8S_STATEFUL_SET_NAME)
-        - name: K8S_STATEFUL_SET_SERVICE_NAME
-          value: $(K8S_STATEFUL_SET_SERVICE_NAME)
-        volumeMounts:
-        - name: passwords
-          mountPath: /usr/local/secrets
-          readOnly: true
-        - name: backup-volume
-          mountPath: /pd_backups
-        - name: backup-script
-          mountPath: /opt/in/backup.sh
-          subPath: backup.sh
-      volumes:
-      - name: passwords
-        secret:
-          secretName: pingdirectory-passwords
-          defaultMode: 0400
-      - name: backup-script
-        configMap:
-          name: backup-script
-          defaultMode: 0555
-      - name: backup-volume
-        persistentVolumeClaim:
-          claimName: pd-backup-pvc
+      template:
+        spec:
+          serviceAccount: pd-serviceaccount
+          restartPolicy: OnFailure
+          containers:
+          - name: ds-backup
+            # FIXME: switch to stable image before GA
+            image: pingidentity/pingdirectory:edge
+            command:
+            - /opt/in/backup.sh
+            env:
+            - name: BACKUP_DIR
+              value: /pd_backups
+            - name: K8S_STATEFUL_SET_NAME
+              value: $(K8S_STATEFUL_SET_NAME)
+            - name: K8S_STATEFUL_SET_SERVICE_NAME
+              value: $(K8S_STATEFUL_SET_SERVICE_NAME)
+            volumeMounts:
+            - name: passwords
+              mountPath: /usr/local/secrets
+              readOnly: true
+            - name: backup-volume
+              mountPath: /pd_backups
+            - name: backup-script
+              mountPath: /opt/in/backup.sh
+              subPath: backup.sh
+          volumes:
+          - name: passwords
+            secret:
+              secretName: pingdirectory-passwords
+              defaultMode: 0400
+          - name: backup-script
+            configMap:
+              name: backup-script
+              defaultMode: 0555
+          - name: backup-volume
+            persistentVolumeClaim:
+              claimName: pd-backup-pvc

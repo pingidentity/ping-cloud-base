@@ -55,81 +55,43 @@ data:
 
 ---
 
-# Perform a CSD upload at 1 minute past every hour - the recurring task on the server runs every hour.
-#apiVersion: batch/v1beta1
-#kind: CronJob
-#metadata:
-#  name: ds-periodic-csd-upload
-#spec:
-#  schedule: "1 */1 * * *"
-#  jobTemplate:
-#    spec:
-#      template:
-#        spec:
-#          serviceAccount: pd-serviceaccount
-#          restartPolicy: Never
-#          containers:
-#          - name: ds-csd-uploader
-#            # FIXME: switch to stable image before GA
-#            image: pingidentity/pingdirectory:edge
-#            command:
-#            - /opt/in/upload.sh
-#            volumeMounts:
-#            - name: passwords
-#              mountPath: /usr/local/secrets
-#              readOnly: true
-#            - name: upload-script
-#              mountPath: /opt/in/upload.sh
-#              subPath: upload.sh
-#            env:
-#            - name: K8S_STATEFUL_SET_NAME
-#              value: $(K8S_STATEFUL_SET_NAME)
-#          volumes:
-#          - name: passwords
-#            secret:
-#              secretName: pingdirectory-passwords
-#              defaultMode: 0400
-#          - name: upload-script
-#            configMap:
-#              name: upload-script
-#              defaultMode: 0555
-
----
-
-apiVersion: apps/v1
-kind: Deployment
+# Perform a CSD upload every hour.
+apiVersion: batch/v1beta1
+kind: CronJob
 metadata:
   name: ds-periodic-csd-upload
 spec:
-  replicas: 1
-  template:
-    metadata:
-      name: ds-periodic-csd-upload
+  schedule: "0 */1 * * *"
+  jobTemplate:
     spec:
-      serviceAccount: pd-serviceaccount
-      containers:
-      - name: ds-csd-uploader
-        # FIXME: switch to stable image before GA
-        image: pingidentity/pingdirectory:edge
-        command: [ 'sh', '-c', 'sleep 3600' ]
-        volumeMounts:
-        - name: passwords
-          mountPath: /usr/local/secrets
-          readOnly: true
-        - name: upload-script
-          mountPath: /opt/in/upload.sh
-          subPath: upload.sh
-        env:
-        - name: K8S_STATEFUL_SET_NAME
-          value: $(K8S_STATEFUL_SET_NAME)
-        - name: K8S_STATEFUL_SET_SERVICE_NAME
-          value: $(K8S_STATEFUL_SET_SERVICE_NAME)
-      volumes:
-      - name: passwords
-        secret:
-          secretName: pingdirectory-passwords
-          defaultMode: 0400
-      - name: upload-script
-        configMap:
-          name: upload-script
-          defaultMode: 0555
+      template:
+        spec:
+          serviceAccount: pd-serviceaccount
+          restartPolicy: Never
+          containers:
+          - name: ds-csd-uploader
+            # FIXME: switch to stable image before GA
+            image: pingidentity/pingdirectory:edge
+            command:
+            - /opt/in/upload.sh
+            volumeMounts:
+            - name: passwords
+              mountPath: /usr/local/secrets
+              readOnly: true
+            - name: upload-script
+              mountPath: /opt/in/upload.sh
+              subPath: upload.sh
+            env:
+            - name: K8S_STATEFUL_SET_NAME
+              value: $(K8S_STATEFUL_SET_NAME)
+            - name: K8S_STATEFUL_SET_SERVICE_NAME
+              value: $(K8S_STATEFUL_SET_SERVICE_NAME)
+          volumes:
+          - name: passwords
+            secret:
+              secretName: pingdirectory-passwords
+              defaultMode: 0400
+          - name: upload-script
+            configMap:
+              name: upload-script
+              defaultMode: 0555
