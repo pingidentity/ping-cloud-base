@@ -21,10 +21,14 @@ data:
     TARGET_DIR=/tmp
     cd "${TARGET_DIR}"
 
+    FORMAT="+%d/%b/%Y:%H:%M:%S %z"
+    NOW=$(date "${FORMAT}")
+    AN_HOUR_AGO=$(date --date="@$(($(date +%s) - 3600))" "${FORMAT}")
+
     for i in $(seq ${START} ${END}); do
       SERVER="${K8S_STATEFUL_SET_NAME}-${i}"
 
-      # FIXME: In 8.0, use the --duration 1h argument to collect-support-data
+      # FIXME: In 8.0, use the --duration 1h argument to collect-support-data instead of --timeRange
       "${SERVER_BITS_DIR}/bin/schedule-exec-task" \
         --useSSL --trustAll \
         --hostname "${SERVER}.${K8S_STATEFUL_SET_SERVICE_NAME}" \
@@ -33,7 +37,8 @@ data:
         --bindPasswordFile "${ROOT_USER_PASSWORD_FILE}" \
         --waitForCompletion \
         --logCommandOutput \
-        "${SERVER_ROOT_DIR}/bin/collect-support-data"
+        "${SERVER_ROOT_DIR}/bin/collect-support-data" \
+        "--timeRange" "\"${AN_HOUR_AGO},${NOW}\""
 
       CSD_OUT=$(kubectl exec "${SERVER}" -- find "${SERVER_ROOT_DIR}" -name support\*zip -type f | sort | tail -1)
       if test -z "${CSD_OUT}"; then
