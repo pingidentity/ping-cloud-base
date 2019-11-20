@@ -7,6 +7,17 @@ data:
     #!/bin/sh
     set -x
 
+    # Install AWS CLI if the upload location is S3
+    if test -z "${S3_CSD_ARCHIVES_BUCKET}"; then
+      echo "Upload location not provided"
+      exit 0
+    else
+      echo "Installing AWS CLI"
+      apk --update add python3
+      pip3 install --no-cache-dir --upgrade pip
+      pip3 install --no-cache-dir --upgrade awscli
+    fi
+
     # Install kubectl
     echo "Installing kubectl"
     curl https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
@@ -58,12 +69,8 @@ data:
       echo "Done copying CSD from server ${SERVER}"
 
       # FIXME: upload to S3
-      if test -z "${S3_CSD_ARCHIVES_BUCKET}"; then
-        echo "S3 bucket not provided for CSD archives"
-      else
-        #aws s3 cp "${DST_FILE}" "${S3_CSD_ARCHIVES_BUCKET}"
-      fi
-
+      echo "Uploading "${DST_FILE}" to ${S3_CSD_ARCHIVES_BUCKET}"
+      # aws s3 cp "${DST_FILE}" "${S3_CSD_ARCHIVES_BUCKET}"
     done
 
 ---
@@ -99,6 +106,9 @@ spec:
               value: $(K8S_STATEFUL_SET_NAME)
             - name: K8S_STATEFUL_SET_SERVICE_NAME
               value: $(K8S_STATEFUL_SET_SERVICE_NAME)
+            envFrom:
+            - configMapRef:
+                name: pingdirectory-environment-variables
           volumes:
           - name: passwords
             secret:

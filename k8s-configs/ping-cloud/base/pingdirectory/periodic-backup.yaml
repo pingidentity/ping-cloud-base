@@ -98,6 +98,9 @@ spec:
               value: $(K8S_STATEFUL_SET_NAME)
             - name: K8S_STATEFUL_SET_SERVICE_NAME
               value: $(K8S_STATEFUL_SET_SERVICE_NAME)
+            envFrom:
+            - configMapRef:
+                name: pingdirectory-environment-variables
             volumeMounts:
             - name: passwords
               mountPath: /usr/local/secrets
