@@ -1,0 +1,58 @@
+#
+# This service exposes the pingfederate admin port to the cluster.
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: pingfederate-admin
+  labels:
+    role: pingfederate-admin
+spec:
+  ports:
+  - port: 9999
+    name: pf-admin
+  selector:
+    role: pingfederate-admin
+---
+#
+# This service exposes the pingfederate runtime ports to the cluster.
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: pingfederate
+spec:
+  ports:
+  - port: 9031
+    name: pf-runtime
+  selector:
+    role: pingfederate-engine
+---    
+#
+# This is the PingFederate cluster communication service
+#
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+  name: pf-cluster
+spec:
+  publishNotReadyAddresses: true
+  clusterIP: None
+  ports:
+    - name: pf-cluster-bind
+      protocol: TCP
+      port: 7600
+      targetPort: 7600
+    - name: pf-cluster-mcast
+      protocol: TCP
+      port: 7601
+      targetPort: 7601
+    - name: pf-cluster-diag
+      protocol: TCP
+      port: 7500
+      targetPort: 7500
+  selector:
+     cluster: pf-cluster
+
