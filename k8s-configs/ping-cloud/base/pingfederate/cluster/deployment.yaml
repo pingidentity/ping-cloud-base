@@ -183,6 +183,10 @@ spec:
         env:
         - name:  OPERATIONAL_MODE
           value: CLUSTERED_ENGINE
+        - name:  PF_DNS_PING_NAMESPACE  
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
         resources:
           requests:
             memory: "2Gi"
