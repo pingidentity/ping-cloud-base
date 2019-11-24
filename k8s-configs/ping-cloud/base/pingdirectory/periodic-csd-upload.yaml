@@ -49,7 +49,7 @@ data:
         --waitForCompletion \
         --logCommandOutput \
         "${SERVER_ROOT_DIR}/bin/collect-support-data" \
-        "--timeRange" "\"${AN_HOUR_AGO},${NOW}\""
+        "--timeRange" "\"[${AN_HOUR_AGO}],[${NOW}]\""
 
       CSD_OUT=$(kubectl exec "${SERVER}" -- find "${SERVER_ROOT_DIR}" -name support\*zip -type f | sort | tail -1)
       if test -z "${CSD_OUT}"; then
@@ -70,51 +70,92 @@ data:
 
       # FIXME: upload to S3
       echo "Uploading "${DST_FILE}" to ${S3_CSD_ARCHIVES_BUCKET}"
-      # aws s3 cp "${DST_FILE}" "${S3_CSD_ARCHIVES_BUCKET}"
+      aws s3 cp "${DST_FILE}" "${S3_CSD_ARCHIVES_BUCKET}/${DST_FILE}"
     done
 
 ---
 
 # Perform a CSD upload every hour.
-apiVersion: batch/v1beta1
-kind: CronJob
+#apiVersion: batch/v1beta1
+#kind: CronJob
+#metadata:
+#  name: ds-periodic-csd-upload
+#spec:
+#  schedule: "0 */1 * * *"
+#  jobTemplate:
+#    spec:
+#      template:
+#        spec:
+#          serviceAccount: pd-serviceaccount
+#          restartPolicy: Never
+#          containers:
+#          - name: ds-csd-uploader
+#            # FIXME: switch to stable image before GA
+#            image: pingidentity/pingdirectory:edge
+#            command:
+#            - /opt/in/upload.sh
+#            volumeMounts:
+#            - name: passwords
+#              mountPath: /usr/local/secrets
+#              readOnly: true
+#            - name: upload-script
+#              mountPath: /opt/in/upload.sh
+#              subPath: upload.sh
+#            env:
+#            - name: K8S_STATEFUL_SET_NAME
+#              value: $(K8S_STATEFUL_SET_NAME)
+#            - name: K8S_STATEFUL_SET_SERVICE_NAME
+#              value: $(K8S_STATEFUL_SET_SERVICE_NAME)
+#            envFrom:
+#            - configMapRef:
+#                name: pingdirectory-environment-variables
+#          volumes:
+#          - name: passwords
+#            secret:
+#              secretName: pingdirectory-passwords
+#              defaultMode: 0400
+#          - name: upload-script
+#            configMap:
+#              name: upload-script
+#              defaultMode: 0555
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: ds-periodic-csd-upload
 spec:
-  schedule: "0 */1 * * *"
-  jobTemplate:
+  replicas: 1
+  template:
     spec:
-      template:
-        spec:
-          serviceAccount: pd-serviceaccount
-          restartPolicy: Never
-          containers:
-          - name: ds-csd-uploader
-            # FIXME: switch to stable image before GA
-            image: pingidentity/pingdirectory:edge
-            command:
-            - /opt/in/upload.sh
-            volumeMounts:
-            - name: passwords
-              mountPath: /usr/local/secrets
-              readOnly: true
-            - name: upload-script
-              mountPath: /opt/in/upload.sh
-              subPath: upload.sh
-            env:
-            - name: K8S_STATEFUL_SET_NAME
-              value: $(K8S_STATEFUL_SET_NAME)
-            - name: K8S_STATEFUL_SET_SERVICE_NAME
-              value: $(K8S_STATEFUL_SET_SERVICE_NAME)
-            envFrom:
-            - configMapRef:
-                name: pingdirectory-environment-variables
-          volumes:
-          - name: passwords
-            secret:
-              secretName: pingdirectory-passwords
-              defaultMode: 0400
-          - name: upload-script
-            configMap:
-              name: upload-script
-              defaultMode: 0555
+      serviceAccount: pd-serviceaccount
+      containers:
+      - name: ds-csd-uploader
+        # FIXME: switch to stable image before GA
+        image: pingidentity/pingdirectory:edge
+        command: [ 'sh', '-c', 'sleep 3600' ]
+        volumeMounts:
+        - name: passwords
+          mountPath: /usr/local/secrets
+          readOnly: true
+        - name: upload-script
+          mountPath: /opt/in/upload.sh
+          subPath: upload.sh
+        env:
+        - name: K8S_STATEFUL_SET_NAME
+          value: $(K8S_STATEFUL_SET_NAME)
+        - name: K8S_STATEFUL_SET_SERVICE_NAME
+          value: $(K8S_STATEFUL_SET_SERVICE_NAME)
+        envFrom:
+        - configMapRef:
+            name: pingdirectory-environment-variables
+      volumes:
+      - name: passwords
+        secret:
+          secretName: pingdirectory-passwords
+          defaultMode: 0400
+      - name: upload-script
+        configMap:
+          name: upload-script
+          defaultMode: 0555
