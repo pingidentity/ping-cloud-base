@@ -24,7 +24,7 @@ spec:
           runAsNonRoot: false
           runAsUser: 0
         image: bitnami/kubectl
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         command:
         - /init.sh
         env:
@@ -106,6 +106,9 @@ spec:
         - name: ds-pre-stop
           mountPath: /opt/staging/pre-stop.sh
           subPath: pre-stop.sh
+        - name: ds-csd-upload
+          mountPath: /opt/staging/upload.sh
+          subPath: upload.sh
         - name: ds-post-start
           mountPath: /opt/staging/hooks/80-post-start.sh
           subPath: 80-post-start.sh
@@ -138,6 +141,10 @@ spec:
       - name: ds-pre-stop
         configMap:
           name: ds-pre-stop
+          defaultMode: 0555
+      - name: ds-csd-upload
+        configMap:
+          name: ds-csd-upload
           defaultMode: 0555
       - name: ds-ready
         configMap:
