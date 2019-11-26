@@ -83,7 +83,7 @@ spec:
     spec:
       template:
         spec:
-          serviceAccount: pd-serviceaccount
+          serviceAccount: ping-serviceaccount
           restartPolicy: OnFailure
           containers:
           - name: ds-backup
@@ -94,10 +94,6 @@ spec:
             env:
             - name: BACKUP_DIR
               value: /pd_backups
-            - name: K8S_STATEFUL_SET_NAME
-              value: $(K8S_STATEFUL_SET_NAME)
-            - name: K8S_STATEFUL_SET_SERVICE_NAME
-              value: $(K8S_STATEFUL_SET_SERVICE_NAME)
             envFrom:
             - configMapRef:
                 name: pingdirectory-environment-variables
