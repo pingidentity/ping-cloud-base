@@ -18,5 +18,3 @@ MAX_HEAP_SIZE=4g
 
 DISABLE_SCHEMA_REPLICATION=true
 RETRY_TIMEOUT_SECONDS=3600
-
-S3_CSD_ARCHIVES_BUCKET=s3://savitha-cluster-csd-archives-bucket/pingdirectory

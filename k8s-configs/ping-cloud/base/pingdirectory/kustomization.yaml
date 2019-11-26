@@ -9,7 +9,6 @@ resources:
 - statefulset.yaml
 - service.yaml
 - periodic-backup.yaml
-- periodic-csd-upload.yaml
 
 commonLabels:
   role: pingdirectory
