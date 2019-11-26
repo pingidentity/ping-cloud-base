@@ -48,7 +48,7 @@ spec:
   backoffLimit: 5
   template:
     spec:
-      serviceAccount: pd-backup-serviceaccount
+      serviceAccount: pd-serviceaccount
       restartPolicy: Never
       containers:
       - name: ds-restore

@@ -21,47 +21,49 @@ data:
     #!/bin/sh
     set -e
 
-    # This is the backup directory on ds-0
+    SERVER="${K8S_STATEFUL_SET_NAME}-0"
+
+    # This is the backup directory on server 0
     SERVER_BACKUP_DIR="${OUT_DIR}/backup"
 
     echo "Doing a full backup of userRoot backend to ${BACKUP_DIR}"
     "${SERVER_BITS_DIR}/bin/backup" --task \
       --useSSL --trustAll \
-      --hostname ds-0.pingdirectory \
+      --hostname "${SERVER}.${K8S_STATEFUL_SET_SERVICE_NAME}" \
       --port ${LDAPS_PORT} \
-      --bindDN ${ROOT_USER_DN} \
-      --bindPasswordFile ${ROOT_USER_PASSWORD_FILE} \
-      --backupDirectory ${SERVER_BACKUP_DIR} \
+      --bindDN "${ROOT_USER_DN}" \
+      --bindPasswordFile "${ROOT_USER_PASSWORD_FILE}" \
+      --backupDirectory "${SERVER_BACKUP_DIR}" \
       --backendID userRoot \
       --compress \
       --retainPreviousFullBackupAge 1d
 
-    # FIXME: put kubectl in the image
+    # Install kubectl
     echo "Installing kubectl"
     curl https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
     chmod +x /usr/local/bin/kubectl
 
-    OLD_BACKUP_DIRS=$(find ${BACKUP_DIR} -name backup-\* -type d)
+    OLD_BACKUP_DIRS=$(find "${BACKUP_DIR}" -name backup-\* -type d)
     echo "Old backup directories: ${OLD_BACKUP_DIRS}"
 
-    NEW_BACKUP_DIR=${BACKUP_DIR}/backup-$(date +%Y%m%d_%H%M%S)
-    mkdir -p ${NEW_BACKUP_DIR}
+    NEW_BACKUP_DIR="${BACKUP_DIR}/backup-$(date +%Y%m%d_%H%M%S)"
+    mkdir -p "${NEW_BACKUP_DIR}"
 
-    echo "Copying backup from ds-0:${SERVER_BACKUP_DIR} to ${NEW_BACKUP_DIR}"
-    kubectl cp ds-0:${SERVER_BACKUP_DIR} ${NEW_BACKUP_DIR}
+    echo "Copying backup from ${SERVER}:${SERVER_BACKUP_DIR} to ${NEW_BACKUP_DIR}"
+    kubectl cp "${SERVER}:${SERVER_BACKUP_DIR}" "${NEW_BACKUP_DIR}"
 
     echo "Changing current backup to point to ${NEW_BACKUP_DIR}"
-    CURRENT_BACKUP_DIR=${BACKUP_DIR}/current
-    ln -snf ${NEW_BACKUP_DIR} ${CURRENT_BACKUP_DIR}
+    CURRENT_BACKUP_DIR="${BACKUP_DIR}/current"
+    ln -snf "${NEW_BACKUP_DIR}" "${CURRENT_BACKUP_DIR}"
 
     echo "Removing old backup directories: ${OLD_BACKUP_DIRS}"
-    echo ${OLD_BACKUP_DIRS} | xargs rm -rf
+    echo "${OLD_BACKUP_DIRS}" | xargs rm -rf
 
     echo "Backup directory contents:"
-    ls -latr ${BACKUP_DIR}
+    ls -latr "${BACKUP_DIR}"
 
     echo "Current backup contents:"
-    ls ${CURRENT_BACKUP_DIR}
+    ls "${CURRENT_BACKUP_DIR}"
 
 ---
 
@@ -92,6 +94,13 @@ spec:
             env:
             - name: BACKUP_DIR
               value: /pd_backups
+            - name: K8S_STATEFUL_SET_NAME
+              value: $(K8S_STATEFUL_SET_NAME)
+            - name: K8S_STATEFUL_SET_SERVICE_NAME
+              value: $(K8S_STATEFUL_SET_SERVICE_NAME)
+            envFrom:
+            - configMapRef:
+                name: pingdirectory-environment-variables
             volumeMounts:
             - name: passwords
               mountPath: /usr/local/secrets
