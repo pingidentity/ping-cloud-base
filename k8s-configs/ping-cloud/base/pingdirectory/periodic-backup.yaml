@@ -83,7 +83,7 @@ spec:
     spec:
       template:
         spec:
-          serviceAccount: pd-serviceaccount
+          serviceAccount: ping-serviceaccount
           restartPolicy: OnFailure
           containers:
           - name: ds-backup

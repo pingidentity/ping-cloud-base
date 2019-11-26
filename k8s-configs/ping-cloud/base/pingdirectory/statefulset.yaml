@@ -15,7 +15,7 @@ spec:
       annotations:
         lastUpdateReason: "NA"
     spec:
-      serviceAccount: pd-serviceaccount
+      serviceAccount: ping-serviceaccount
       terminationGracePeriodSeconds: 300
       initContainers:
       - name: ds-init

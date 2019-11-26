@@ -46,10 +46,11 @@ kind: Job
 metadata:
   name: ds-restore
 spec:
+  ttlSecondsAfterFinished: 0
   backoffLimit: 5
   template:
     spec:
-      serviceAccount: pd-serviceaccount
+      serviceAccount: ping-serviceaccount
       restartPolicy: Never
       containers:
       - name: ds-restore

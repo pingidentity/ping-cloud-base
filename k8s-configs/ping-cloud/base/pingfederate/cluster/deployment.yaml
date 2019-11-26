@@ -19,6 +19,7 @@ spec:
       annotations:
         lastUpdateReason: "NA"
     spec:
+      serviceAccount: ping-serviceaccount
       initContainers:
       - name: pf-init
         # FIXME: switch to same user as app
@@ -148,6 +149,7 @@ spec:
       annotations:
         lastUpdateReason: "NA"
     spec:
+      serviceAccount: ping-serviceaccount
       initContainers:
       - name: pf-init
         # FIXME: switch to same user as app
