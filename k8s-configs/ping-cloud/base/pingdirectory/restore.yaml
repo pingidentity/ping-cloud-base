@@ -18,28 +18,29 @@ data:
     curl https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
     chmod +x /usr/local/bin/kubectl
 
-    echo "Copying backup from ${CURRENT_BACKUP_DIR} to ds-0:${SERVER_BACKUP_DIR}"
-    kubectl cp ${CURRENT_BACKUP_DIR} ds-0:${SERVER_BACKUP_DIR}
+    SERVER="${K8S_STATEFUL_SET_NAME}-0"
+    echo "Copying backup from ${CURRENT_BACKUP_DIR} to ${SERVER}:${SERVER_BACKUP_DIR}"
+    kubectl cp "${CURRENT_BACKUP_DIR}" "${SERVER}:${SERVER_BACKUP_DIR}"
 
     echo "Restoring to the latest backup under ${SERVER_BACKUP_DIR}"
     "${SERVER_BITS_DIR}/bin/restore" --task \
       --useSSL --trustAll \
-      --hostname ds-0.pingdirectory \
+      --hostname "${SERVER}.${K8S_STATEFUL_SET_SERVICE_NAME}" \
       --port ${LDAPS_PORT} \
-      --bindDN ${ROOT_USER_DN} \
-      --bindPasswordFile ${ROOT_USER_PASSWORD_FILE} \
-      --backupDirectory ${SERVER_BACKUP_DIR}
+      --bindDN "${ROOT_USER_DN}" \
+      --bindPasswordFile "${ROOT_USER_PASSWORD_FILE}" \
+      --backupDirectory "${SERVER_BACKUP_DIR}"
 
-    echo "Removing backup directory ds-0:${SERVER_BACKUP_DIR}"
-    kubectl exec ds-0 -- rm -rf ${SERVER_BACKUP_DIR}
+    echo "Removing backup directory ${SERVER}:${SERVER_BACKUP_DIR}"
+    kubectl exec "${SERVER}" -- rm -rf "${SERVER_BACKUP_DIR}"
 
 ---
 
 # A manual restore can be performed by deploying this job. It will restore
 # data that was backed up by the periodic backup job to ds-0. All other servers
-# will initialize the data from ds-0 via dsreplication. This job can also be
-# used to load the data initially from a backup created in another
-# environment, e.g. dev.
+# must initialize the data from ds-0 via dsreplication initialize-all. This
+# job can also be used to load the data initially from a backup created in
+# another environment, e.g. dev.
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -65,6 +66,9 @@ spec:
         - name: restore-script
           mountPath: /opt/in/restore.sh
           subPath: restore.sh
+        envFrom:
+        - configMapRef:
+            name: pingdirectory-environment-variables
       volumes:
       - name: passwords
         secret:

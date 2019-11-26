@@ -27,9 +27,6 @@ spec:
         imagePullPolicy: Always
         command:
         - /init.sh
-        env:
-        - name: K8S_STATEFUL_SET_NAME
-          value: $(K8S_STATEFUL_SET_NAME)
         envFrom:
         - configMapRef:
             name: pingdirectory-environment-variables
@@ -65,8 +62,6 @@ spec:
             memory: "5Gi"
             cpu: "2"
         env:
-        - name: K8S_STATEFUL_SET_NAME
-          value: $(K8S_STATEFUL_SET_NAME)
         - name: MAX_HEAP_SIZE
           value: 4g
         - name: UNBOUNDID_JAVA_ARGS
@@ -106,9 +101,6 @@ spec:
         - name: ds-pre-stop
           mountPath: /opt/staging/pre-stop.sh
           subPath: pre-stop.sh
-        - name: ds-csd-upload
-          mountPath: /opt/staging/upload.sh
-          subPath: upload.sh
         - name: ds-post-start
           mountPath: /opt/staging/hooks/80-post-start.sh
           subPath: 80-post-start.sh
@@ -141,10 +133,6 @@ spec:
       - name: ds-pre-stop
         configMap:
           name: ds-pre-stop
-          defaultMode: 0555
-      - name: ds-csd-upload
-        configMap:
-          name: ds-csd-upload
           defaultMode: 0555
       - name: ds-ready
         configMap:

@@ -1,0 +1,45 @@
+# A manual backup job - this does the same thing as the CronJob except it may be configured to be triggered in reaction
+# to a ClickOps event.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ds-backup
+spec:
+  backoffLimit: 5
+  template:
+    spec:
+      serviceAccount: pd-serviceaccount
+      restartPolicy: Never
+      containers:
+      - name: ds-backup
+        # FIXME: switch to stable image before GA
+        image: pingidentity/pingdirectory:edge
+        command:
+        - /opt/in/backup.sh
+        env:
+        - name: BACKUP_DIR
+          value: /pd_backups
+        envFrom:
+        - configMapRef:
+            name: pingdirectory-environment-variables
+        volumeMounts:
+        - name: passwords
+          mountPath: /usr/local/secrets
+          readOnly: true
+        - name: backup-volume
+          mountPath: /pd_backups
+        - name: backup-script
+          mountPath: /opt/in/backup.sh
+          subPath: backup.sh
+      volumes:
+      - name: passwords
+        secret:
+          secretName: pingdirectory-passwords
+          defaultMode: 0400
+      - name: backup-script
+        configMap:
+          name: backup-script
+          defaultMode: 0555
+      - name: backup-volume
+        persistentVolumeClaim:
+          claimName: pd-backup-pvc
