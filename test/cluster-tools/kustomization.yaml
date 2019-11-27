@@ -2,9 +2,9 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
+- ../../k8s-configs/cluster-tools/cluster-autoscaler
 - ../../k8s-configs/cluster-tools
 - ../../k8s-configs/cluster-tools/monitoring
-- ../../k8s-configs/cluster-tools/cluster-autoscaler
 
 patchesJson6902:
 # logs

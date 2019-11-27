@@ -70,7 +70,7 @@
 #                 | to Container Insights, an AWS-specific logging     |
 #                 | and monitoring solution.                           |
 #                 |                                                    |
-# LOG_ARCHIVE_URL | The URL of the log archives. If provided, logs     | No default
+# LOG_ARCHIVE_URL | The URL of the log archives. If provided, logs     | https://unused
 #                 | are periodically captured and sent to this URL.    |
 ########################################################################################################################
 
@@ -130,7 +130,7 @@ export ENVIRONMENT=-"${ENVIRONMENT:-${USER}}"
 export TENANT_DOMAIN="${TENANT_DOMAIN:-eks-poc.au1.ping-lab.cloud}"
 export TENANT_NAME="${TENANT_NAME:-PingPOC}"
 export REGION="${REGION:-us-east-2}"
-export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL}"
+export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-https://unused}"
 
 ENVIRONMENT_NO_HYPHEN_PREFIX=$(echo ${ENVIRONMENT#-})
 
@@ -140,6 +140,7 @@ echo "Using TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Using ENVIRONMENT: ${ENVIRONMENT_NO_HYPHEN_PREFIX}"
 echo "Using REGION: ${REGION}"
 echo "Using LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
+echo ---
 
 export PING_IDENTITY_DEVOPS_USER_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_USER}")
 export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_KEY}")
