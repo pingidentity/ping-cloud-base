@@ -55,6 +55,7 @@ kustomize build ${CI_PROJECT_DIR}/test |
     ${TENANT_DOMAIN}
     ${CLUSTER_NAME}
     ${REGION}
+    ${LOG_ARCHIVE_URL}
     ${TLS_CRT_BASE64}
     ${TLS_KEY_BASE64}' > ${DEPLOY_FILE}
 

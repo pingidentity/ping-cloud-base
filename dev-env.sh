@@ -41,34 +41,37 @@
 # In addition, the following environment variables, if present, will be used for the following purposes:
 #
 # ----------------------------------------------------------------------------------------------------------------------
-# Variable       | Purpose                                            | Default (if not present)
+# Variable        | Purpose                                            | Default (if not present)
 # ----------------------------------------------------------------------------------------------------------------------
-# TENANT_NAME    | The name of the tenant, e.g. k8s-icecream. This    | PingPOC
-#                | will be assumed to be the name of the Kubernetes   |
-#                | cluster. On AWS, the cluster name is a required    |
-#                | parameter to Container Insights, an AWS-specific   |
-#                | logging and monitoring solution.                   |
-#                |                                                    |
-# TENANT_DOMAIN  | The tenant's domain, e.g. k8s-icecream.com         | eks-poc.au1.ping-lab.cloud
-#                |                                                    |
-# ENVIRONMENT    | An environment to isolate the Ping stack into its  | The value of the USER environment variable.
-#                | own namespace within the Kubernetes cluster. The   |
-#                | Ping stack is generally deployed to a namespace    |
-#                | called "ping-cloud". But if ENVIRONMENT is set, it |
-#                | is used as a name suffix. For example, if it is    |
-#                | set to "staging", then the namespace will be       |
-#                | "ping-cloud-staging". This variable is useful not  |
-#                | just in a shared multi-tenant Kubernetes cluster   |
-#                | but could also be used to create multiple Ping     |
-#                | stacks within the same cluster for testing         |
-#                | purposes. It may be set to an empty string in      |
-#                | which case, the namespace used for the Ping stack  |
-#                | will simply be "ping-cloud".                       |
-#                |                                                    |
-# REGION         | The region where the tenant environment is         | us-east-2
-#                | deployed. On AWS, this is a required parameter     |
-#                | to Container Insights, an AWS-specific logging     |
-#                | and monitoring solution.                           |
+# TENANT_NAME     | The name of the tenant, e.g. k8s-icecream. This    | PingPOC
+#                 | will be assumed to be the name of the Kubernetes   |
+#                 | cluster. On AWS, the cluster name is a required    |
+#                 | parameter to Container Insights, an AWS-specific   |
+#                 | logging and monitoring solution.                   |
+#                 |                                                    |
+# TENANT_DOMAIN   | The tenant's domain, e.g. k8s-icecream.com         | eks-poc.au1.ping-lab.cloud
+#                 |                                                    |
+# ENVIRONMENT     | An environment to isolate the Ping stack into its  | The value of the USER environment variable.
+#                 | own namespace within the Kubernetes cluster. The   |
+#                 | Ping stack is generally deployed to a namespace    |
+#                 | called "ping-cloud". But if ENVIRONMENT is set, it |
+#                 | is used as a name suffix. For example, if it is    |
+#                 | set to "staging", then the namespace will be       |
+#                 | "ping-cloud-staging". This variable is useful not  |
+#                 | just in a shared multi-tenant Kubernetes cluster   |
+#                 | but could also be used to create multiple Ping     |
+#                 | stacks within the same cluster for testing         |
+#                 | purposes. It may be set to an empty string in      |
+#                 | which case, the namespace used for the Ping stack  |
+#                 | will simply be "ping-cloud".                       |
+#                 |                                                    |
+# REGION          | The region where the tenant environment is         | us-east-2
+#                 | deployed. On AWS, this is a required parameter     |
+#                 | to Container Insights, an AWS-specific logging     |
+#                 | and monitoring solution.                           |
+#                 |                                                    |
+# LOG_ARCHIVE_URL | The URL of the log archives. If provided, logs     | No default
+#                 | are periodically captured and sent to this URL.    |
 ########################################################################################################################
 
 #
@@ -117,6 +120,7 @@ echo "Initial TENANT_NAME: ${TENANT_NAME}"
 echo "Initial TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Initial ENVIRONMENT: ${ENVIRONMENT}"
 echo "Initial REGION: ${REGION}"
+echo "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 echo ---
 
 # A script that may be used to set up a dev/test environment against the
@@ -126,6 +130,7 @@ export ENVIRONMENT=-"${ENVIRONMENT:-${USER}}"
 export TENANT_DOMAIN="${TENANT_DOMAIN:-eks-poc.au1.ping-lab.cloud}"
 export TENANT_NAME="${TENANT_NAME:-PingPOC}"
 export REGION="${REGION:-us-east-2}"
+export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL}"
 
 ENVIRONMENT_NO_HYPHEN_PREFIX=$(echo ${ENVIRONMENT#-})
 
@@ -134,6 +139,7 @@ echo "Using TENANT_NAME: ${TENANT_NAME}"
 echo "Using TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Using ENVIRONMENT: ${ENVIRONMENT_NO_HYPHEN_PREFIX}"
 echo "Using REGION: ${REGION}"
+echo "Using LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 
 export PING_IDENTITY_DEVOPS_USER_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_USER}")
 export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_KEY}")
@@ -152,6 +158,7 @@ kustomize build test |
     ${TENANT_DOMAIN}
     ${CLUSTER_NAME}
     ${REGION}
+    ${LOG_ARCHIVE_URL}
     ${TLS_CRT_BASE64}
     ${TLS_KEY_BASE64}' > ${DEPLOY_FILE}
 sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" ${DEPLOY_FILE}

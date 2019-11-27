@@ -6,6 +6,7 @@
 
 export REGION="${AWS_DEFAULT_REGION}"
 export CLUSTER_NAME="${EKS_CLUSTER_NAME}"
+export LOG_ARCHIVE_URL=s3://${CLUSTER_NAME}-csd-archives-bucket/pingdirectory
 
 [[ ${CI_COMMIT_REF_SLUG} != master ]] && export ENVIRONMENT=-${CI_COMMIT_REF_SLUG}
 
