@@ -7,3 +7,4 @@ URL="${PINGFEDERATE_AUTH_ENDPOINT}/as/token.oauth2?grant_type=client_credentials
 log "Attempting to obtain access token from ${URL}"
 
 curl --silent -v -k -X POST -u 'PingDirectory:2FederateM0re' "${URL}"
+exit ${?}
