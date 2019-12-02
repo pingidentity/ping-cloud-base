@@ -75,7 +75,7 @@
 #                        | the Ping stack will be provisioned without         |
 #                        | plugins.                                           |
 #                        |                                                    |
-# LOG_ARCHIVE_URL        | The URL of the log archives. If provided, logs are | No default
+# LOG_ARCHIVE_URL        | The URL of the log archives. If provided, logs are | The string "unused"
 #                        | periodically captured and sent to this URL.        |
 #                        |                                                    |
 # K8S_GIT_URL            | The Git URL of the Kubernetes base manifest files. | https://github.com/pingidentity/ping-cloud-base
@@ -218,7 +218,7 @@ export CONFIG_REPO_URL="${CONFIG_REPO_URL:-https://github.com/pingidentity/pingi
 export CONFIG_REPO_BRANCH="${CONFIG_REPO_BRANCH:-pcpt}"
 
 export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL}"
-export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL}"
+export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:unused}"
 
 export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
 export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-master}"
