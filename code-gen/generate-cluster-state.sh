@@ -24,7 +24,6 @@
 #   - ssh-keygen
 #   - ssh-keyscan
 #   - base64
-#   - kustomize
 #   - envsubst
 #
 # ------------------
@@ -171,7 +170,7 @@ substitute_vars() {
 . ../utils.sh
 
 # Checking required tools and environment variables.
-check_binaries "openssl" "ssh-keygen" "ssh-keyscan" "base64" "kustomize" "envsubst"
+check_binaries "openssl" "ssh-keygen" "ssh-keyscan" "base64" "envsubst"
 HAS_REQUIRED_TOOLS=${?}
 
 check_env_vars "PING_IDENTITY_DEVOPS_USER" "PING_IDENTITY_DEVOPS_KEY"
@@ -301,8 +300,6 @@ mkdir -p "${K8S_CONFIGS_DIR}"
 ENVIRONMENTS='dev test stage prod'
 
 for ENV in ${ENVIRONMENTS}; do
-  ENV_DIR="${K8S_CONFIGS_DIR}/${ENV}"
-
   # Export all the environment variables required for envsubst
   export ENVIRONMENT_GIT_PATH=${ENV}
 
@@ -344,46 +341,29 @@ for ENV in ${ENVIRONMENTS}; do
   echo "Generating certificate for domain: ${FQDN}"
   generate_tls_cert "${FQDN}"
 
-  # Copy the shared cluster tools and Ping yaml templates into their target directories
-  cp -r "${TEMPLATES_HOME}"/cluster-tools "${K8S_CONFIGS_DIR}"
-  cp -r "${TEMPLATES_HOME}"/ping-cloud/cde "${ENV_DIR}"
+  # Build the flux kustomization file for each environment
+  echo "Generating flux yaml"
 
-  # Substitute variables in the environment directory
-  substitute_vars "${K8S_CONFIGS_DIR}"
-
-  # Generate the ping-cloud yaml file and move it into the environment directory
-  echo "Generating ping.yaml"
-  ENV_YAML=$(mktemp)
-  kustomize build "${ENV_DIR}" > "${ENV_YAML}"
-  rm -rf "${ENV_DIR}"/*
-  mv "${ENV_YAML}" "${ENV_DIR}"/ping.yaml
-
-  # Generate the tools yaml file and move it into the environment directory
-  echo "Generating tools.yaml"
-  TOOLS_YAML=$(mktemp)
-  kustomize build "${K8S_CONFIGS_DIR}"/cluster-tools > "${TOOLS_YAML}"
-  rm -rf "${K8S_CONFIGS_DIR}"/cluster-tools
-  mv "${TOOLS_YAML}" "${ENV_DIR}"/tools.yaml
-
-  # Copy the common files into the environment directory
-  cp -r "${TEMPLATES_HOME}"/ping-cloud/common/* "${ENV_DIR}"
-  substitute_vars "${ENV_DIR}"
-
-  # Copy the flux yaml into the environment directory
-  echo "Generating flux.yaml"
-  cp -r "${TEMPLATES_HOME}"/.flux.yaml "${ENV_DIR}"
-
-  # Next, build the flux.yaml file for each environment
   ENV_FLUX_DIR="${FLUXCD_DIR}/${ENV}"
   mkdir -p "${ENV_FLUX_DIR}"
 
   cp "${TEMPLATES_HOME}"/fluxcd/* "${ENV_FLUX_DIR}"
+
   substitute_vars "${ENV_FLUX_DIR}"
 
-  FLUX_YAML=$(mktemp)
-  kustomize build "${ENV_FLUX_DIR}" > "${FLUX_YAML}"
-  rm -rf "${ENV_FLUX_DIR}"/*
-  mv "${FLUX_YAML}" "${ENV_FLUX_DIR}"/flux.yaml
+  # Copy the shared cluster tools and Ping yaml templates into their target directories
+  echo "Generating tools and ping yaml"
+
+  ENV_DIR="${K8S_CONFIGS_DIR}/${ENV}"
+  mkdir -p "${ENV_DIR}"
+
+  cp -r "${TEMPLATES_HOME}"/cluster-tools "${ENV_DIR}"
+  cp -r "${TEMPLATES_HOME}"/ping-cloud "${ENV_DIR}"
+
+  substitute_vars "${ENV_DIR}"
+
+  # Copy the base files into the environment directory
+  cp -r "${TEMPLATES_HOME}"/{.flux.yaml,kustomization.yaml,sealed-secrets.yaml} "${ENV_DIR}"
 done
 
 echo
@@ -396,5 +376,5 @@ echo
 echo "2) Add the following identity as the deploy key on the cluster-state (rw) and config repo (ro), if not already added:"
 echo "${SSH_ID_PUB}"
 echo
-echo "3) Deploy the flux.yaml files under ${TARGET_DIR}/fluxcd into each CDE using:"
-echo 'kubectl apply -f flux.yaml'
+echo "3) Deploy flux onto each CDE by navigating to ${TARGET_DIR}/fluxcd and running:"
+echo 'kustomize build | kubectl apply -f -'

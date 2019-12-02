@@ -2,32 +2,97 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-# These include all the generic cloud-agnostic tools, like ingress, logging, service discovery, etc.
-- ${K8S_GIT_URL}/k8s-configs/cluster-tools?ref=${K8S_GIT_BRANCH}
-
-# Monitoring is specific to AWS at the moment. The cluster-autoscaler is always specific to the cloud provider.
-- ${K8S_GIT_URL}/k8s-configs/cluster-tools/monitoring/container-insights?ref=${K8S_GIT_BRANCH}
+# The cluster-autoscaler is specific to the cloud provider.
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/cluster-autoscaler/aws?ref=${K8S_GIT_BRANCH}
 
-patchesJson6902:
-# logs
-- path: patches/ingress/logs.yaml
-  target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: kibana-ingress
+# Monitoring is specific to AWS at the moment.
+- ${K8S_GIT_URL}/k8s-configs/cluster-tools/monitoring/container-insights?ref=${K8S_GIT_BRANCH}
 
-# cluster auto-scaler
-- path: patches/deployment/patch-cluster-and-region.yaml
-  target:
+# This includes all the generic cloud-agnostic tools, like ingress, logging, service discovery, etc.
+- ${K8S_GIT_URL}/k8s-configs/cluster-tools?ref=${K8S_GIT_BRANCH}
+
+patchesJson6902:
+
+### Cluster auto-scaler ###
+- target:
     group: apps
     version: v1
     kind: Deployment
     name: cluster-autoscaler
     namespace: kube-system
+  patch: |-
+   - op: add
+     path: /spec/template/spec/containers/0/command/-
+     value:
+       --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/${CLUSTER_NAME}
+   - op: add
+     path: /spec/template/spec/containers/0/env
+     value:
+       - name: AWS_REGION
+         value: ${REGION}
+
+### Logs dashboard ###
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: kibana-ingress
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: logs${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: logs${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
 
 patchesStrategicMerge:
-- patches/configmap/cluster-info.yaml
-- patches/configmap/cwagentconfig.yaml
-- patches/secret/tls-secret.yaml
+
+### Cloud-watch logging and monitoring ###
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: cluster-info
+    namespace: amazon-cloudwatch
+  data:
+    cluster.name: ${CLUSTER_NAME}
+    logs.region: ${REGION}
+
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: cwagentconfig
+    namespace: amazon-cloudwatch
+  data:
+    # Configuration is in Json format. No matter what configure change you make,
+    # please keep the Json blob valid.
+    cwagentconfig.json: |
+      {
+        "agent": {
+          "region": "${REGION}"
+        },
+        "logs": {
+          "metrics_collected": {
+            "kubernetes": {
+              "cluster_name": "${CLUSTER_NAME}",
+              "metrics_collection_interval": 60
+            }
+          },
+          "force_flush_interval": 5
+        }
+      }
+
+### TLS certificate for logs dashboard ###
+- |-
+  apiVersion: v1
+  kind: Secret
+  type: kubernetes.io/tls
+  metadata:
+    name: tls-secret-logging
+    namespace: elastic-stack-logging
+  data:
+    tls.crt: |
+      ${TLS_CRT_BASE64}
+    tls.key: |
+      ${TLS_KEY_BASE64}
