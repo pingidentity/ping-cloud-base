@@ -363,7 +363,7 @@ for ENV in ${ENVIRONMENTS}; do
   substitute_vars "${ENV_DIR}"
 
   # Copy the base files into the environment directory
-  cp -r "${TEMPLATES_HOME}"/{.flux.yaml,kustomization.yaml,sealed-secrets.yaml} "${ENV_DIR}"
+  cp -r "${TEMPLATES_HOME}"/{.flux.yaml,kustomization.yaml,sealed-secrets.yaml,seal.sh} "${ENV_DIR}"
 done
 
 echo
