@@ -5,7 +5,6 @@ metadata:
 data:
   upload.sh: |-
     #!/bin/sh
-    set -x
 
     # Install kubectl
     echo "Installing kubectl"
@@ -17,11 +16,20 @@ data:
     START=0
     END=$((${NUM_REPLICAS} - 1))
 
+    CSD_FILES=
     for i in $(seq ${START} ${END}); do
       SERVER="${K8S_STATEFUL_SET_NAME}-${i}"
+
       echo "Uploading CSD on server ${SERVER}"
-      kubectl exec "${SERVER}" -- "${HOOKS_DIR}"/82-upload-csd-s3.sh
+      kubectl exec "${SERVER}" -- "${HOOKS_DIR}"/82-upload-csd-s3.sh | tee /tmp/upload.log
+
+      CSD_FILE=$(tail -1 /tmp/upload.log)
+      test -z "${CSD_FILES}" && CSD_FILES="${CSD_FILE}" || CSD_FILES="${CSD_FILES} ${CSD_FILE}"
     done
+
+    # Print the names of the uploaded files so callers know exactly what was uploaded
+    echo "The following files were uploaded:"
+    echo "${CSD_FILES}"
 
 ---
 
