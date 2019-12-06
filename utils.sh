@@ -116,7 +116,7 @@ testUrls() {
 }
 
 ########################################################################################################################
-# Tests whether a URL is reachable or not
+# Tests whether a URL is reachable or not with a timeout of 2 minutes.
 #
 # Arguments:
 #   ${1} -> The URL
@@ -125,7 +125,7 @@ testUrls() {
 ########################################################################################################################
 testUrl() {
   log "Testing URL: ${1}"
-  curl -k ${1} >/dev/null 2>&1
+  curl -k --max-time 120 ${1} >/dev/null 2>&1
   exit_code=${?}
   log "Command exit code: ${exit_code}"
   return ${exit_code}

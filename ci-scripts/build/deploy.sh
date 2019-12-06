@@ -54,11 +54,8 @@ kubectl apply -f ${DEPLOY_FILE}
 # Give each pod some time to initialize. The PF, PA apps deploy fast. PD is the
 # long pole and its timeout must be adjusted based on the number of replicas.
 for DEPLOYMENT in $(kubectl get statefulset,deployment -n ${NAMESPACE} -o name); do
-  TIMEOUT=120
-  if [[ ${DEPLOYMENT} = 'statefulset.apps/ds' ]]; then
-    NUM_PD_REPLICAS=$(kubectl get statefulset ds -o jsonpath='{.spec.replicas}' -n ${NAMESPACE})
-    TIMEOUT=$((${NUM_REPLICAS} * 300))
-  fi
+  NUM_REPLICAS=$(kubectl get ${DEPLOYMENT} -o jsonpath='{.spec.replicas}' -n ${NAMESPACE})
+  TIMEOUT=$((${NUM_REPLICAS} * 300))
   kubectl rollout status --timeout ${TIMEOUT}s ${DEPLOYMENT} -n ${NAMESPACE} -w
 done
 

@@ -17,6 +17,9 @@
 # kustomize is released, we should get rid of this and do the kustomization in
 # the same way the public ingress is done, i.e. using the remote URL from the
 # nginx ingress repo.
+#
+# This yaml file was copied from:
+# https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/cloud-generic/deployment.yaml
 
 apiVersion: apps/v1
 kind: Deployment
@@ -30,10 +33,12 @@ spec:
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"
     spec:
+      # wait up to five minutes for the drain of connections
+      terminationGracePeriodSeconds: 300
       serviceAccountName: nginx-ingress-serviceaccount
       containers:
         - name: nginx-ingress-controller
-          image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.25.1
+          image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.26.1
           args:
             - /nginx-ingress-controller
             - --configmap=$(POD_NAMESPACE)/nginx-configuration
@@ -62,8 +67,10 @@ spec:
           ports:
             - name: http
               containerPort: 80
+              protocol: TCP
             - name: https
               containerPort: 443
+              protocol: TCP
           livenessProbe:
             failureThreshold: 3
             httpGet:
@@ -83,3 +90,8 @@ spec:
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 10
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /wait-shutdown
