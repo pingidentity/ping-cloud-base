@@ -64,8 +64,6 @@ spec:
         env:
         - name: MAX_HEAP_SIZE
           value: 4g
-        - name: UNBOUNDID_JAVA_ARGS
-          value: "-client -Xmx4g -Xms4g"
         - name: ROOT_USER_PASSWORD
           valueFrom:
             secretKeyRef:

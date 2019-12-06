@@ -18,8 +18,6 @@ spec:
         env:
         - name: MAX_HEAP_SIZE
           value: 16g
-        - name: UNBOUNDID_JAVA_ARGS
-          value: "-client -Xmx16g -Xms16g"
   volumeClaimTemplates:
   - metadata:
       name: out-dir
