@@ -1,19 +1,23 @@
-apiVersion: apiextensions.k8s.io/v1beta1
-kind: CustomResourceDefinition
-metadata:
-  name: sealedsecrets.bitnami.com
-spec:
-  group: bitnami.com
-  names:
-    kind: SealedSecret
-    listKind: SealedSecretList
-    plural: sealedsecrets
-    singular: sealedsecret
-  scope: Namespaced
-  version: v1alpha1
+# This yaml was obtained from:
+# https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.9.6/controller.yaml
 
 ---
-
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: {}
+  labels:
+    name: sealed-secrets-controller
+  name: sealed-secrets-controller
+  namespace: kube-system
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    name: sealed-secrets-controller
+  type: ClusterIP
+---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: RoleBinding
 metadata:
@@ -21,6 +25,7 @@ metadata:
   labels:
     name: sealed-secrets-service-proxier
   name: sealed-secrets-service-proxier
+  namespace: kube-system
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -29,30 +34,7 @@ subjects:
 - apiGroup: rbac.authorization.k8s.io
   kind: Group
   name: system:authenticated
-
 ---
-
-apiVersion: rbac.authorization.k8s.io/v1beta1
-kind: Role
-metadata:
-  annotations: {}
-  labels:
-    name: sealed-secrets-service-proxier
-  name: sealed-secrets-service-proxier
-rules:
-- apiGroups:
-  - ""
-  resourceNames:
-  - 'http:sealed-secrets-controller:'
-  - sealed-secrets-controller
-  resources:
-  - services/proxy
-  verbs:
-  - create
-  - get
-
----
-
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: Role
 metadata:
@@ -60,6 +42,7 @@ metadata:
   labels:
     name: sealed-secrets-key-admin
   name: sealed-secrets-key-admin
+  namespace: kube-system
 rules:
 - apiGroups:
   - ""
@@ -68,9 +51,7 @@ rules:
   verbs:
   - create
   - list
-
 ---
-
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
 metadata:
@@ -85,9 +66,8 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: sealed-secrets-controller
-
+  namespace: kube-system
 ---
-
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
 metadata:
@@ -121,9 +101,7 @@ rules:
   verbs:
   - create
   - patch
-
 ---
-
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -131,19 +109,20 @@ metadata:
   labels:
     name: sealed-secrets-controller
   name: sealed-secrets-controller
-
+  namespace: kube-system
 ---
-
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations: {}
   labels:
     name: sealed-secrets-controller
   name: sealed-secrets-controller
+  namespace: kube-system
 spec:
   minReadySeconds: 30
   replicas: 1
+  revisionHistoryLimit: 10
   selector:
     matchLabels:
       name: sealed-secrets-controller
@@ -163,7 +142,7 @@ spec:
         command:
         - controller
         env: []
-        image: quay.io/bitnami/sealed-secrets-controller:v0.9.0
+        image: quay.io/bitnami/sealed-secrets-controller:v0.9.6
         imagePullPolicy: Always
         livenessProbe:
           httpGet:
@@ -193,26 +172,41 @@ spec:
       volumes:
       - emptyDir: {}
         name: tmp
-
 ---
-
-apiVersion: v1
-kind: Service
+apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: sealedsecrets.bitnami.com
+spec:
+  group: bitnami.com
+  names:
+    kind: SealedSecret
+    listKind: SealedSecretList
+    plural: sealedsecrets
+    singular: sealedsecret
+  scope: Namespaced
+  version: v1alpha1
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: Role
 metadata:
   annotations: {}
   labels:
-    name: sealed-secrets-controller
-  name: sealed-secrets-controller
-spec:
-  ports:
-  - port: 8080
-    targetPort: 8080
-  selector:
-    name: sealed-secrets-controller
-  type: ClusterIP
-
+    name: sealed-secrets-service-proxier
+  name: sealed-secrets-service-proxier
+  namespace: kube-system
+rules:
+- apiGroups:
+  - ""
+  resourceNames:
+  - 'http:sealed-secrets-controller:'
+  - sealed-secrets-controller
+  resources:
+  - services/proxy
+  verbs:
+  - create
+  - get
 ---
-
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: RoleBinding
 metadata:
@@ -220,6 +214,7 @@ metadata:
   labels:
     name: sealed-secrets-controller
   name: sealed-secrets-controller
+  namespace: kube-system
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -227,3 +222,4 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: sealed-secrets-controller
+  namespace: kube-system

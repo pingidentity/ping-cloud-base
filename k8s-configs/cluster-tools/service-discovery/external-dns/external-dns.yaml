@@ -1,3 +1,6 @@
+# This yaml file was obtained from:
+# https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md
+
 apiVersion: v1
 kind: ServiceAccount
 metadata:

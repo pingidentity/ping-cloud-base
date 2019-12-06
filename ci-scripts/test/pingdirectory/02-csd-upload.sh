@@ -25,13 +25,13 @@ log "Waiting for CSD upload job to complete"
 kubectl wait --for=condition=complete --timeout=300s job/ds-csd-upload -n "${NAMESPACE}"
 
 log "Expected CSD files:"
-expected_files | tee /tmp/uploaded.txt
+expected_files | tee /tmp/expected.txt
 
 log "Actual CSD files:"
-actual_files | tee /tmp/csds.txt
+actual_files | tee /tmp/actual.txt
 
 log "Verifying that the expected files were uploaded"
-NOT_UPLOADED=$(comm -23 /tmp/uploaded.txt /tmp/csds.txt)
+NOT_UPLOADED=$(comm -23 /tmp/expected.txt /tmp/actual.txt)
 
 if ! test -z "${NOT_UPLOADED}"; then
   log "The following files were not uploaded: ${NOT_UPLOADED}"
