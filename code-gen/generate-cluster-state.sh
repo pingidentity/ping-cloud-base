@@ -208,7 +208,8 @@ echo ---
 
 # Use defaults for other variables, if not present.
 export TENANT_NAME="${TENANT_NAME:-PingPOC}"
-export TENANT_DOMAIN="${TENANT_DOMAIN:-eks-poc.au1.ping-lab.cloud}"
+TENANT_DOMAIN_NO_DOT_SUFFIX="${TENANT_DOMAIN%.}"
+export TENANT_DOMAIN="${TENANT_DOMAIN_NO_DOT_SUFFIX:-eks-poc.au1.ping-lab.cloud}"
 export REGION="${REGION:-us-east-2}"
 export SIZE="${SIZE:-small}"
 

@@ -52,12 +52,14 @@ sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" ${DEPLOY_FILE
 kubectl apply -f ${DEPLOY_FILE}
 
 # Give each pod some time to initialize. The PF, PA apps deploy fast. PD is the
-# long pole.
-# FIXME: PD time will need to be adjusted based on number of replicas because
-#        the ds servers are set up sequentially.
-for deployment in $(kubectl get deployment,statefulset -n ${NAMESPACE} -o name); do
-  [[ ${deployment} = 'statefulset.apps/ds' ]] && TIMEOUT=600s || TIMEOUT=120s
-  kubectl rollout status --timeout ${TIMEOUT} ${deployment} -n ${NAMESPACE} -w
+# long pole and its timeout must be adjusted based on the number of replicas.
+for DEPLOYMENT in $(kubectl get statefulset,deployment -n ${NAMESPACE} -o name); do
+  TIMEOUT=120
+  if [[ ${DEPLOYMENT} = 'statefulset.apps/ds' ]]; then
+    NUM_PD_REPLICAS=$(kubectl get statefulset ds -o jsonpath='{.spec.replicas}' -n ${NAMESPACE})
+    TIMEOUT=$((${NUM_REPLICAS} * 300))
+  fi
+  kubectl rollout status --timeout ${TIMEOUT}s ${DEPLOYMENT} -n ${NAMESPACE} -w
 done
 
 # Print out the ingress objects for logs and the ping stack
