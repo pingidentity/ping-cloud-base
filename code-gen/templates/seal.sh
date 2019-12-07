@@ -79,7 +79,7 @@ done
 # The sealed-secrets controller must be deployed to the cluster.
 CERT_FILE=/tmp/cert.pem
 echo "Fetching the sealed secret certificate from the cluster into ${CERT_FILE}"
-kubeseal --fetch-cert --controller-namespace sealed-secret > "${CERT_FILE}"
+kubeseal --fetch-cert --controller-namespace kube-system > "${CERT_FILE}"
 
 SEALED_SECRETS_FILE=/tmp/sealed-secrets.yaml
 rm -f "${SEALED_SECRETS_FILE}"
