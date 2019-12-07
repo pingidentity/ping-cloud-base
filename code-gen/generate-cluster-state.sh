@@ -219,7 +219,7 @@ export CONFIG_REPO_URL="${CONFIG_REPO_URL:-https://github.com/pingidentity/pingi
 export CONFIG_REPO_BRANCH="${CONFIG_REPO_BRANCH:-pcpt}"
 
 export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL}"
-export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:unused}"
+export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 
 export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
 export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-master}"

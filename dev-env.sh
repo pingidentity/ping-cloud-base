@@ -130,7 +130,7 @@ export ENVIRONMENT=-"${ENVIRONMENT:-${USER}}"
 export TENANT_DOMAIN="${TENANT_DOMAIN:-eks-poc.au1.ping-lab.cloud}"
 export TENANT_NAME="${TENANT_NAME:-PingPOC}"
 export REGION="${REGION:-us-east-2}"
-export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:unused}"
+export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 
 ENVIRONMENT_NO_HYPHEN_PREFIX=$(echo ${ENVIRONMENT#-})
 
