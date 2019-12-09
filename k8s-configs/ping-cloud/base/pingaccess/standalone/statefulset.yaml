@@ -1,11 +1,15 @@
 # This defines the pingaccess deployment.
 
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: pingaccess
 spec:
   replicas: 1
+  serviceName: pingaccess
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
   template:
     metadata:
       name: pingaccess
@@ -14,7 +18,7 @@ spec:
     spec:
       serviceAccount: ping-serviceaccount
       initContainers:
-      - name: pa-init
+      - name: pingaccess-init
         # FIXME: switch to same user as app
         securityContext:
           runAsNonRoot: false
@@ -34,7 +38,7 @@ spec:
         - name: known-hosts-config
           mountPath: /known_hosts
           subPath: known_hosts
-        - name: pa-init
+        - name: pingaccess-init
           mountPath: /init.sh
           subPath: init.sh
         envFrom:
@@ -43,7 +47,7 @@ spec:
       containers:
       - name: pingaccess
         # FIXME: switch to stable image before GA
-        image: pingidentity/pingaccess:edge
+        image: pingidentity/pingaccess:5.3.1-alpine-edge
         imagePullPolicy: Always
         resources:
           requests:
@@ -77,12 +81,11 @@ spec:
           failureThreshold: 10
         ports:
         - containerPort: 9000
-          name: pa-admin
-        - containerPort: 443
-          name: pa-runtime
+        - containerPort: 3000
         - containerPort: 3030
-          name: pa-agent
         env:
+        - name: OPERATIONAL_MODE
+          value: STANDALONE
         - name: INITIAL_ADMIN_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -99,9 +102,9 @@ spec:
         emptyDir: {}
       - name: data-dir
         emptyDir: {}
-      - name: pa-init
+      - name: pingaccess-init
         configMap:
-          name: pa-init
+          name: pingaccess-init
           defaultMode: 0555
       - name: ssh-id-key-secret
         secret:

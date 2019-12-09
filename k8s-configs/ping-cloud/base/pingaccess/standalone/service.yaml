@@ -8,8 +8,9 @@ metadata:
 spec:
   ports:
   - port: 9000
-    name: pa-admin
+    name: pingaccess-admin
   - port: 443
-    name: pa-runtime
+    name: pingaccess-runtime
+    targetPort: 3000
   - port: 3030
-    name: pa-agent
+    name: pingaccess-agent

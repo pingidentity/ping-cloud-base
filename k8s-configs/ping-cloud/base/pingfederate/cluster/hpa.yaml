@@ -1,12 +1,12 @@
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: pingfederate-engine
+  name: pingfederate
 spec:
   maxReplicas: 8
   minReplicas: 1
   scaleTargetRef:
     apiVersion: extensions/v1beta1
     kind: Deployment
-    name: pingfederate-engine
+    name: pingfederate
   targetCPUUtilizationPercentage: 70
