@@ -44,7 +44,12 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # Variable               | Purpose                                            | Default (if not present)
 # ----------------------------------------------------------------------------------------------------------------------
-# TENANT_NAME            | The name of the tenant, e.g. k8s-icecream.         | PingPOC
+# TENANT_NAME            | The name of the tenant, e.g. k8s-icecream. If      | PingPOC
+#                        | provided, this value will be used for the cluster  |
+#                        | name and must have the correct case (e.g. PingPOC  |
+#                        | vs. pingpoc). If not provided, this variable is    |
+#                        | not used, and the cluster name defaults to the CDE |
+#                        | name.                                              |
 #                        |                                                    |
 # TENANT_DOMAIN          | The tenant's domain suffix that's common to all    | eks-poc.au1.ping-lab.cloud
 #                        | CDEs e.g. k8s-icecream.com. The tenant domain in   |
