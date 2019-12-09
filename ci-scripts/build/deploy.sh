@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex
+set -e
 
 # Source common environment variables
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
