@@ -6,7 +6,7 @@ SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 
 # Do not ever delete the environment on the master branch. And only delete an environment,
 # if the DELETE_ENV_AFTER_PIPELINE flag is true
-if test "${NAMESPACE}" -eq 'ping-cloud-master' || test "${DELETE_ENV_AFTER_PIPELINE}" = 'false'; then
+if test "${NAMESPACE}" = 'ping-cloud-master' || test "${DELETE_ENV_AFTER_PIPELINE}" = 'false'; then
   echo "Not deleting environment ${NAMESPACE}"
 else
   # Configure kube config
