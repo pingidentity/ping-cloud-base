@@ -1,0 +1,17 @@
+ORCHESTRATION_TYPE=kubernetes
+
+SERVER_PROFILE_URL=https://github.com/pingidentity/pingidentity-server-profiles.git
+SERVER_PROFILE_PATH=pingaccess-cluster
+# FIXME change to pcpt once calvin-dev branch is merged to pcpt branch
+SERVER_PROFILE_BRANCH=calvin-dev
+
+# Retry client request to pingaccess admin API up to 10 times. Engine pod uses admin
+# API to retrieve its proper configuration.
+API_RETRY_LIMIT=10
+
+# Seconds client request will wait for response from API.
+API_TIMEOUT_WAIT=5
+
+# Add a 10s delay to PA startup. PA uses PF as the OIDC token provider,
+# and PA import will crash if the token provider is not available.
+INITIAL_DELAY_SECONDS=20

@@ -1,0 +1,290 @@
+# This defines the pingaccess admin deployment.
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingaccess-admin
+  labels:
+    role: pingaccess-admin
+spec:
+  replicas: 1
+  serviceName: pingaccess
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
+  template:
+    metadata:
+      name: pingaccess-admin
+      labels:
+        role: pingaccess-admin
+      annotations:
+        lastUpdateReason: "NA"
+    spec:
+      serviceAccount: ping-serviceaccount
+      initContainers:
+      - name: pingaccess-init
+        # FIXME: switch to same user as app
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        image: bitnami/kubectl
+        imagePullPolicy: Always
+        command:
+        - /init.sh
+        volumeMounts:
+        - name: ssh-dir
+          mountPath: /.ssh
+        - name: data-dir
+          mountPath: /data
+        - name: ssh-id-key-secret
+          mountPath: /id_rsa
+          subPath: id_rsa
+        - name: known-hosts-config
+          mountPath: /known_hosts
+          subPath: known_hosts
+        - name: pingaccess-init
+          mountPath: /init.sh
+          subPath: init.sh
+        envFrom:
+        - configMapRef:
+            name: pingaccess-environment-variables
+      containers:
+      - name: pingaccess
+        # FIXME: switch to stable image before GA
+        image: pingidentity/pingaccess:5.3.1-alpine-edge
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "1.5Gi"
+            cpu: "1"
+          limits:
+            memory: "1.5Gi"
+            cpu: "1"
+        volumeMounts:
+        # FIXME: fix home directory when containers run as non-root user
+        - name: ssh-dir
+          mountPath: /root/.ssh
+        - name: data-dir
+          mountPath: /usr/local/bin/kubectl
+          subPath: kubectl
+        - name: pingaccess-license
+          mountPath: /opt/in/instance/conf/pingaccess.lic
+          subPath: pingaccess.lic
+        - name: pingaccess-jwk
+          mountPath: /opt/in/instance/conf/pa.jwk
+          subPath: pa.jwk
+        readinessProbe:
+          exec:
+            command: [ liveness.sh ]
+          periodSeconds: 30
+          failureThreshold: 10
+        livenessProbe:
+          exec:
+            command: [ liveness.sh ]
+          periodSeconds: 30
+          failureThreshold: 10
+        ports:
+        - containerPort: 9000
+        - containerPort: 9090
+        env:
+        - name: OPERATIONAL_MODE
+          value: CLUSTERED_CONSOLE
+        - name: HTTPS_PORT
+          value: "9090"
+        - name: INITIAL_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingaccess-passwords
+              key: INITIAL_ADMIN_PASSWORD
+        envFrom:
+        - configMapRef:
+            name: pingaccess-environment-variables
+        - secretRef:
+            name: devops-secret
+            optional: true
+      volumes:
+      - name: ssh-dir
+        emptyDir: {}
+      - name: data-dir
+        emptyDir: {}
+      - name: pingaccess-init
+        configMap:
+          name: pingaccess-init
+          defaultMode: 0555
+      - name: ssh-id-key-secret
+        secret:
+          secretName: ssh-id-key-secret
+          optional: true
+          defaultMode: 0400
+      - name: known-hosts-config
+        configMap:
+          name: known-hosts-config
+          optional: true
+          defaultMode: 0644
+      - name: pingaccess-license
+        secret:
+          secretName: pingaccess-license
+          optional: true
+          defaultMode: 0400
+      - name: pingaccess-passwords
+        secret:
+          secretName: pingaccess-passwords
+          optional: true
+          defaultMode: 0400
+      - name: pingaccess-jwk
+        secret:
+          secretName: pingaccess-jwk
+          optional: true
+          defaultMode: 0400
+
+---
+
+# This defines the pingaccess engine deployment.
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingaccess
+  labels:
+    role: pingaccess-engine
+spec:
+  replicas: 1
+  serviceName: pingaccess-engine
+  podManagementPolicy: Parallel
+  template:
+    metadata:
+      name: pingaccess-engine
+      labels:
+        role: pingaccess-engine
+      annotations:
+        lastUpdateReason: "NA"
+    spec:
+      initContainers:
+      - name: pingaccess-init
+        # FIXME: switch to same user as app
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        image: bitnami/kubectl
+        imagePullPolicy: IfNotPresent
+        command:
+        - /init.sh
+        volumeMounts:
+        - name: ssh-dir
+          mountPath: /.ssh
+        - name: data-dir
+          mountPath: /data
+        - name: ssh-id-key-secret
+          mountPath: /id_rsa
+          subPath: id_rsa
+        - name: known-hosts-config
+          mountPath: /known_hosts
+          subPath: known_hosts
+        - name: pingaccess-init
+          mountPath: /init.sh
+          subPath: init.sh
+        envFrom:
+        - configMapRef:
+            name: pingaccess-environment-variables
+      containers:
+      - name: pingaccess-engine
+        # FIXME: switch to stable image before GA
+        image: pingidentity/pingaccess:5.3.1-alpine-edge
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "1.5Gi"
+            cpu: "1"
+          limits:
+            memory: "1.5Gi"
+            cpu: "1"
+        volumeMounts:
+        # FIXME: fix home directory when containers run as non-root user
+        - name: ssh-dir
+          mountPath: /root/.ssh
+        - name: data-dir
+          mountPath: /usr/local/bin/kubectl
+          subPath: kubectl
+        - name: pingaccess-license
+          mountPath: /opt/in/instance/conf/pingaccess.lic
+          subPath: pingaccess.lic
+        - name: pingaccess-jwk
+          mountPath: /opt/in/instance/conf/pa.jwk
+          subPath: pa.jwk
+        - name: pingaccess-pre-stop
+          mountPath: /opt/staging/pre-stop.sh
+          subPath: pre-stop.sh
+        readinessProbe:
+          exec:
+            command: [ liveness.sh ]
+          periodSeconds: 30
+          failureThreshold: 10
+        livenessProbe:
+          exec:
+            command: [ liveness.sh ]
+          periodSeconds: 30
+          failureThreshold: 10
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - /opt/staging/pre-stop.sh
+        ports:
+        - containerPort: 3000
+        - containerPort: 3030
+        env:
+        - name: OPERATIONAL_MODE
+          value: CLUSTERED_ENGINE
+        - name: K8S_STATEFUL_SET_SERVICE_NAME_PA
+          value: $(K8S_STATEFUL_SET_SERVICE_NAME_PA)
+        - name: K8S_STATEFUL_SET_NAME_PA_ENGINE
+          value: $(K8S_STATEFUL_SET_NAME_PA_ENGINE)
+        - name: INITIAL_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingaccess-passwords
+              key: INITIAL_ADMIN_PASSWORD
+        envFrom:
+        - configMapRef:
+            name: pingaccess-environment-variables
+        - secretRef:
+            name: devops-secret
+            optional: true
+      volumes:
+      - name: ssh-dir
+        emptyDir: {}
+      - name: data-dir
+        emptyDir: {}
+      - name: pingaccess-init
+        configMap:
+          name: pingaccess-init
+          defaultMode: 0555
+      - name: ssh-id-key-secret
+        secret:
+          secretName: ssh-id-key-secret
+          optional: true
+          defaultMode: 0400
+      - name: known-hosts-config
+        configMap:
+          name: known-hosts-config
+          optional: true
+          defaultMode: 0644
+      - name: pingaccess-license
+        secret:
+          secretName: pingaccess-license
+          optional: true
+          defaultMode: 0400
+      - name: pingaccess-passwords
+        secret:
+          secretName: pingaccess-passwords
+          optional: true
+          defaultMode: 0400
+      - name: pingaccess-jwk
+        secret:
+          secretName: pingaccess-jwk
+          optional: true
+          defaultMode: 0400
+      - name: pingaccess-pre-stop
+        configMap:
+          name: pingaccess-pre-stop
+          defaultMode: 0555
