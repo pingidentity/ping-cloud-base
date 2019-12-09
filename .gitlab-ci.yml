@@ -22,7 +22,7 @@ deploy:
     - code-gen
 
 ## Test stage ##
-pd-unit-tests:
+pd-tests:
   stage: test
   tags:
     - pd-eks-deploy
@@ -32,7 +32,7 @@ pd-unit-tests:
   except:
     - code-gen
 
-pf-unit-tests:
+pf-tests:
   stage: test
   tags:
     - pd-eks-deploy
@@ -42,7 +42,7 @@ pf-unit-tests:
   except:
     - code-gen
 
-pa-unit-tests:
+pa-tests:
   stage: test
   tags:
     - pd-eks-deploy
