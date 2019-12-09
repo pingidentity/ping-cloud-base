@@ -8,6 +8,7 @@ ${VERBOSE} && set -x
 
 export REGION="${AWS_DEFAULT_REGION}"
 export CLUSTER_NAME="${EKS_CLUSTER_NAME}"
+export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
 
 export LOG_ARCHIVE_URL=s3://${CLUSTER_NAME}-csd-archives-bucket/pingdirectory
 export NAMESPACE=ping-cloud-${CI_COMMIT_REF_SLUG}
@@ -18,7 +19,7 @@ export AWS_PROFILE=csg
 FQDN=${ENVIRONMENT}.${TENANT_DOMAIN}
 
 # Common
-LOGS_CONSOLE=https://logs-${CLUSTER_NAME}.${TENANT_DOMAIN}
+LOGS_CONSOLE=https://logs-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
 
 # Pingdirectory
 PINGDIRECTORY_CONSOLE=https://pingdataconsole${FQDN}/console

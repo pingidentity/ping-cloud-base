@@ -37,6 +37,7 @@ kustomize build ${CI_PROJECT_DIR}/test |
     ${ENVIRONMENT}
     ${TENANT_DOMAIN}
     ${CLUSTER_NAME}
+    ${CLUSTER_NAME_LC}
     ${REGION}
     ${LOG_ARCHIVE_URL}
     ${TLS_CRT_BASE64}

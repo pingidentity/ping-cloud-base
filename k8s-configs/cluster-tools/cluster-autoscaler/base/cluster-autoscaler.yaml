@@ -125,6 +125,8 @@ metadata:
   namespace: kube-system
   labels:
     app: cluster-autoscaler
+  annotations:
+    cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
 spec:
   replicas: 1
   selector:
@@ -140,7 +142,7 @@ spec:
     spec:
       serviceAccountName: cluster-autoscaler
       containers:
-        - image: k8s.gcr.io/cluster-autoscaler:v1.12.3
+        - image: k8s.gcr.io/cluster-autoscaler:v1.13.9
           name: cluster-autoscaler
           resources:
             limits:
@@ -155,6 +157,8 @@ spec:
             - --stderrthreshold=info
             - --skip-nodes-with-local-storage=false
             - --expander=least-waste
+            - --balance-similar-node-groups
+            - --skip-nodes-with-system-pods=false
           volumeMounts:
             - name: ssl-certs
               mountPath: /etc/ssl/certs/ca-certificates.crt

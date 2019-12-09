@@ -43,11 +43,16 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # Variable        | Purpose                                            | Default (if not present)
 # ----------------------------------------------------------------------------------------------------------------------
-# TENANT_NAME     | The name of the tenant, e.g. k8s-icecream. This    | PingPOC
-#                 | will be assumed to be the name of the Kubernetes   |
-#                 | cluster. On AWS, the cluster name is a required    |
+# TENANT_NAME     | The name of the tenant, e.g. k8s-icecream. If      | PingPOC
+#                 | provided, this value will be used for the cluster  |
+#                 | name and must have the correct case (e.g. PingPOC  |
+#                 | vs. pingpoc). If not provided, this variable is    |
+#                 | not used, and the cluster name defaults to the CDE |
+#                 | name. On AWS, the cluster name is a required       |
 #                 | parameter to Container Insights, an AWS-specific   |
-#                 | logging and monitoring solution.                   |
+#                 | logging and monitoring solution, and cluster       |
+#                 | autoscaler, which is used for automatic scaling of |
+#                 | of Kubernetes worker nodes.                        |
 #                 |                                                    |
 # TENANT_DOMAIN   | The tenant's domain, e.g. k8s-icecream.com         | eks-poc.au1.ping-lab.cloud
 #                 |                                                    |
@@ -144,7 +149,9 @@ echo ---
 
 export PING_IDENTITY_DEVOPS_USER_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_USER}")
 export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_KEY}")
+
 export CLUSTER_NAME=${TENANT_NAME}
+export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
 
 NAMESPACE=ping-cloud-${ENVIRONMENT_NO_HYPHEN_PREFIX}
 DEPLOY_FILE=/tmp/deploy.yaml
@@ -158,6 +165,7 @@ kustomize build test |
     ${ENVIRONMENT}
     ${TENANT_DOMAIN}
     ${CLUSTER_NAME}
+    ${CLUSTER_NAME_LC}
     ${REGION}
     ${LOG_ARCHIVE_URL}
     ${TLS_CRT_BASE64}
