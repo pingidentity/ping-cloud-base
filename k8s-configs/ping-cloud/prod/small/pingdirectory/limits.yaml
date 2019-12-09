@@ -11,10 +11,10 @@ spec:
         resources:
           limits:
             memory: 16Gi
-            cpu: 3
+            cpu: 2
           requests:
             memory: 16Gi
-            cpu: 3
+            cpu: 2
         env:
         - name: MAX_HEAP_SIZE
           value: 16g
