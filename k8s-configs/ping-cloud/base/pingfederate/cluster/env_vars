@@ -9,3 +9,5 @@ SERVER_PROFILE_PARENT=PCPT
 SERVER_PROFILE_PCPT_URL=https://github.com/pingidentity/pingidentity-server-profiles.git
 SERVER_PROFILE_PCPT_PATH=baseline/pingfederate
 SERVER_PROFILE_PCPT_BRANCH=pcpt
+
+ACCEPT_EULA=YES
