@@ -7,3 +7,5 @@ SERVER_PROFILE_BRANCH=pcpt
 # Add a 10s delay to PA startup. PA uses PF as the OIDC token provider,
 # and PA import will crash if the token provider is not available.
 INITIAL_DELAY_SECONDS=20
+
+ACCEPT_EULA=YES
