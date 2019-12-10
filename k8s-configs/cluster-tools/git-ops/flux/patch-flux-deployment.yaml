@@ -13,14 +13,4 @@ spec:
         - --ssh-keygen-dir=/var/fluxd/keygen
         - --git-url=git@github.com:pingidentity/ping-cloud-base.git
         - --git-branch=master
-        - --git-path=k8s-configs/ping-cloud/dev
-        volumeMounts:
-        - mountPath: "${HOME}/.ssh/known_hosts"
-          name: known-hosts
-          readOnly: true
-      volumes:
-      - name: known-hosts
-        configMap:
-          name: known-hosts
-          optional: true
-          defaultMode: 0400
+        - --git-path=k8s-configs/ping-cloud/test

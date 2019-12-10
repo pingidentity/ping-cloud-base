@@ -3,10 +3,12 @@ stages:
   - build
   - test
   - chaos
+  - cleanup
 
 ## Global environment variables ##
 variables:
   TENANT_DOMAIN: ping-aws.com
+  DELETE_ENV_AFTER_PIPELINE: 'true'
 
 ## Build stage ##
 deploy:
@@ -17,10 +19,10 @@ deploy:
   script:
     - ./ci-scripts/build/deploy.sh
   except:
-    - flux
+    - code-gen
 
 ## Test stage ##
-pd-unit-tests:
+pd-tests:
   stage: test
   tags:
     - pd-eks-deploy
@@ -28,9 +30,9 @@ pd-unit-tests:
   script:
     - ./ci-scripts/test/run-test.sh pingdirectory
   except:
-    - flux
+    - code-gen
 
-pf-unit-tests:
+pf-tests:
   stage: test
   tags:
     - pd-eks-deploy
@@ -38,9 +40,9 @@ pf-unit-tests:
   script:
     - ./ci-scripts/test/run-test.sh pingfederate
   except:
-    - flux
+    - code-gen
 
-pa-unit-tests:
+pa-tests:
   stage: test
   tags:
     - pd-eks-deploy
@@ -48,7 +50,7 @@ pa-unit-tests:
   script:
     - ./ci-scripts/test/run-test.sh pingaccess
   except:
-    - flux
+    - code-gen
 
 integration-tests:
   stage: test
@@ -58,7 +60,7 @@ integration-tests:
   script:
     - ./ci-scripts/test/run-test.sh integration
   except:
-    - flux
+    - code-gen
 
 ## Chaos testing stage ##
 chaos-tests:
@@ -69,4 +71,15 @@ chaos-tests:
   script:
     - ./ci-scripts/test/run-test.sh chaos
   except:
-    - flux
+    - code-gen
+
+## Cleanup stage ##
+cleanup:
+  stage: cleanup
+  tags:
+    - pd-eks-deploy
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+  script:
+    - ./ci-scripts/build/cleanup.sh
+  except:
+    - code-gen
