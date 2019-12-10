@@ -5,6 +5,7 @@ namespace: flux
 
 resources:
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/git-ops?ref=${K8S_GIT_BRANCH}
+- known-hosts-config.yaml
 
 patchesStrategicMerge:
 
@@ -24,6 +25,14 @@ patchesStrategicMerge:
           - --manifest-generation=true
           - --git-url=${CLUSTER_STATE_REPO_URL}
           - --git-path=k8s-configs/${ENVIRONMENT_GIT_PATH}
+          volumeMounts:
+          - name: ssh-config
+            mountPath: /root/.ssh
+        volumes:
+        - name: ssh-config
+          configMap:
+            name: flux-ssh-config
+            defaultMode: 0644
 
 ### Deploy key to the cluster state repo ###
 - |-
@@ -36,13 +45,3 @@ patchesStrategicMerge:
   data:
     identity: |
       ${SSH_ID_KEY_BASE64}
-
-### Known hosts file for the cluster state repo ###
-- |-
-  apiVersion: v1
-  kind: ConfigMap
-  metadata:
-    name: known-hosts
-  data:
-    known_hosts: |
-      ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
