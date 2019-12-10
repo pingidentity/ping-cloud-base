@@ -1,0 +1,156 @@
+# This defines the pingfederate admin deployment.
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingfederate-admin
+  labels:
+    cluster: pf-cluster
+    role: pingfederate-admin
+spec:
+  replicas: 1
+  serviceName: pingfederate-admin
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
+  template:
+    metadata:
+      name: pingfederate-admin
+      labels:
+        cluster: pf-cluster
+        role: pingfederate-admin
+      annotations:
+        lastUpdateReason: "NA"
+    spec:
+      serviceAccount: ping-serviceaccount
+      initContainers:
+      - name: pf-init
+        # FIXME: switch to same user as app
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        image: bitnami/kubectl
+        imagePullPolicy: IfNotPresent
+        command:
+        - /init.sh
+        volumeMounts:
+        - name: ssh-dir
+          mountPath: /.ssh
+        - name: data-dir
+          mountPath: /data
+        - name: ssh-id-key-secret
+          mountPath: /id_rsa
+          subPath: id_rsa
+        - name: known-hosts-config
+          mountPath: /known_hosts
+          subPath: known_hosts
+        - name: pf-init
+          mountPath: /init.sh
+          subPath: init.sh
+        envFrom:
+        - configMapRef:
+            name: pingfederate-environment-variables
+      containers:
+      - name: pingfederate-admin
+        # FIXME: switch to stable PF10 image before GA
+        image:  zaphod80013/pingfederate:10.0.0-Beta-alpine-edge
+        imagePullPolicy: Always
+        env:
+        - name:  OPERATIONAL_MODE
+          value: CLUSTERED_CONSOLE
+        - name:  PF_DNS_PING_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: INITIAL_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingfederate-passwords
+              key: INITIAL_ADMIN_PASSWORD
+        envFrom:
+        - configMapRef:
+            name: pingfederate-environment-variables
+        - secretRef:
+            name: devops-secret
+            optional: true
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1"
+          limits:
+            memory: "2Gi"
+            cpu: "1"
+        volumeMounts:
+        # FIXME: fix home directory when containers run as non-root user
+        - name: ssh-dir
+          mountPath: /root/.ssh
+        - name: data-dir
+          mountPath: /usr/local/bin/kubectl
+          subPath: kubectl
+        - name: pingfederate-license
+          mountPath: /opt/in/instance/server/default/conf/pingfederate.lic
+          subPath: pingfederate.lic
+        - name: pingfederate-jwk
+          mountPath: /opt/in/instance/server/default/data/pf.jwk
+          subPath: pf.jwk 
+        readinessProbe:
+          exec:
+            command: [ liveness.sh ]
+          periodSeconds: 30
+          failureThreshold: 10
+        livenessProbe:
+          exec:
+            command: [ liveness.sh ]
+          periodSeconds: 30
+          failureThreshold: 10
+        ports:
+        - containerPort: 9999
+          name: pf-admin
+      volumes:
+      - name: ssh-dir
+        emptyDir: {}
+      - name: data-dir
+        emptyDir: {}
+      - name: pf-init
+        configMap:
+          name: pf-init
+          defaultMode: 0555
+      - name: ssh-id-key-secret
+        secret:
+          secretName: ssh-id-key-secret
+          optional: true
+          defaultMode: 0400
+      - name: known-hosts-config
+        configMap:
+          name: known-hosts-config
+          optional: true
+          defaultMode: 0644
+      - name: out-dir
+        persistentVolumeClaim:
+          claimName: out-dir
+      - name: pingfederate-license
+        secret:
+          secretName: pingfederate-license
+          optional: true
+          defaultMode: 0400
+      - name: pingaccess-passwords
+        secret:
+          secretName: pingaccess-passwords
+          optional: true
+          defaultMode: 0400
+      - name: pingfederate-jwk
+        secret:
+          secretName: pingfederate-jwk
+          optional: true
+          defaultMode: 0400
+  volumeClaimTemplates:
+  - metadata:
+      name: out-dir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: pingfederate-datastore
+      resources:
+        requests:
+          storage: 5Gi
+
