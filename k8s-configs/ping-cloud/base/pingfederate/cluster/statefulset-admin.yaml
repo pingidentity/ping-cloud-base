@@ -92,7 +92,9 @@ spec:
           subPath: pingfederate.lic
         - name: pingfederate-jwk
           mountPath: /opt/in/instance/server/default/data/pf.jwk
-          subPath: pf.jwk 
+          subPath: pf.jwk
+        - name: out-dir
+          mountPath: /opt/out 
         readinessProbe:
           exec:
             command: [ liveness.sh ]
