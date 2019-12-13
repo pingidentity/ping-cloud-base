@@ -192,3 +192,33 @@ parse_url() {
     echo "URL_PATH: ${URL_PATH}"
   fi
 }
+
+########################################################################################################################
+# Build all kustomizations under the provided directory and its sub-directories.
+#
+# Arguments
+#   ${1} -> The fully-qualified base directory.
+########################################################################################################################
+build_kustomizations_in_dir() {
+  DIR=${1}
+
+  log "Building all kustomizations in directory ${DIR}"
+
+  STATUS=0
+  KUSTOMIZATION_FILES=$(find "${DIR}" -name kustomization.yaml)
+
+  for KUSTOMIZATION_FILE in ${KUSTOMIZATION_FILES}; do
+    KUSTOMIZATION_DIR=$(dirname ${KUSTOMIZATION_FILE})
+
+    log "Processing kustomization.yaml in ${KUSTOMIZATION_DIR}"
+    kustomize build "${KUSTOMIZATION_DIR}" 1> /dev/null
+    BUILD_RESULT=${?}
+    log "Build result for directory ${KUSTOMIZATION_DIR}: ${BUILD_RESULT}"
+
+    test ${STATUS} -eq 0 && STATUS=${BUILD_RESULT}
+  done
+
+  log "Build result for base directory ${DIR}: ${STATUS}"
+
+  return ${STATUS}
+}

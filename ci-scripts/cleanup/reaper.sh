@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Run this script periodically to clean up any environments that are still left behind on the CI-CD EKS cluster.
+
 EKS_CLUSTER_NAME="${1:-ci-cd-cluster}"
 
 # Set the kubectl context to the right cluster

@@ -4,7 +4,7 @@
 # Common variables
 ##################################################################
 
-${VERBOSE} && set -x
+test ! -z ${VERBOSE} && set -x
 
 export REGION="${AWS_DEFAULT_REGION}"
 export CLUSTER_NAME="${EKS_CLUSTER_NAME}"
@@ -57,6 +57,11 @@ PINGACCESS_AGENT=https://pingaccess-agent${FQDN}
 # If the environment variables are not present, then the function will exit with a non-zero return code.
 ########################################################################################################################
 configure_kube() {
+  if test -n "${SKIP_CONFIGURE_KUBE}"; then
+    log "Skipping KUBE configuration"
+    return
+  fi
+
   check_env_vars "KUBE_CA_PEM" "KUBE_URL" "EKS_CLUSTER_NAME" "AWS_ACCOUNT_ROLE_ARN"
   HAS_REQUIRED_VARS=${?}
 
@@ -64,6 +69,7 @@ configure_kube() {
     exit 1
   fi
 
+  log "Configuring KUBE"
   echo "${KUBE_CA_PEM}" > "$(pwd)/kube.ca.pem"
 
   kubectl config set-cluster "${EKS_CLUSTER_NAME}" \
@@ -97,6 +103,11 @@ configure_kube() {
 # file.
 ########################################################################################################################
 configure_aws() {
+  if test -n "${SKIP_CONFIGURE_AWS}"; then
+    log "Skipping AWS CLI configuration"
+    return
+  fi
+
   check_env_vars "AWS_ACCESS_KEY_ID" "AWS_ACCESS_KEY_ID" "AWS_DEFAULT_REGION" "AWS_ACCOUNT_ROLE_ARN"
   HAS_REQUIRED_VARS=${?}
 
@@ -104,6 +115,7 @@ configure_aws() {
     exit 1
   fi
 
+  log "Configuring AWS CLI"
   mkdir -p ~/.aws
 
   cat > ~/.aws/config <<EOF

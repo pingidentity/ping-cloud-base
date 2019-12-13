@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -ex
 
 # Source common environment variables
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
@@ -17,11 +17,11 @@ SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 # export AWS_DEFAULT_REGION=us-west-2
 # export EKS_CLUSTER_NAME=ci-cd-cluster
 #
-# Then, call this script with the debug option: ./deploy.sh debug
+# Then, call this script in this manner: SKIP_CONFIGURE_KUBE=true ./deploy.sh
 #
-if test "${1}" != 'debug'; then
-  configure_kube
-fi
+
+# Configure kube config, unless skipped
+configure_kube
 
 # Generate a self-signed cert for the tenant domain.
 generate_tls_cert "${TENANT_DOMAIN}"
@@ -43,7 +43,7 @@ kustomize build ${CI_PROJECT_DIR}/test |
     ${TLS_CRT_BASE64}
     ${TLS_KEY_BASE64}' > ${DEPLOY_FILE}
 
-echo "Deploy file contents:"
+log "Deploy file contents:"
 cat ${DEPLOY_FILE}
 
 # Append the branch name to the ping-cloud namespace to make it unique. It's

@@ -171,6 +171,10 @@ substitute_vars() {
   done
 }
 
+# Ensure that this script works from any working directory.
+SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
+pushd "${SCRIPT_HOME}"
+
 # Source some utility methods.
 . ../utils.sh
 
@@ -182,6 +186,8 @@ check_env_vars "PING_IDENTITY_DEVOPS_USER" "PING_IDENTITY_DEVOPS_KEY"
 HAS_REQUIRED_VARS=${?}
 
 if test ${HAS_REQUIRED_TOOLS} -ne 0 || test ${HAS_REQUIRED_VARS} -ne 0; then
+  # Go back to previous working directory, if different, before exiting.
+  popd
   exit 1
 fi
 
@@ -371,6 +377,9 @@ for ENV in ${ENVIRONMENTS}; do
   # Copy the base files into the environment directory
   cp -r "${TEMPLATES_HOME}"/{.flux.yaml,kustomization.yaml,sealed-secrets.yaml,seal.sh} "${ENV_DIR}"
 done
+
+# Go back to previous working directory, if different
+popd
 
 echo
 echo '------------------------'
