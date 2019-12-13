@@ -5,8 +5,8 @@ resources:
 - secret.yaml
 - configmap.yaml
 - storage.yaml  
-- statefulset-admin.yaml
-- deployment-engine.yaml
+- statefulset.yaml
+- deployment.yaml
 - service.yaml
 - ingress.yaml
 - hpa.yaml
