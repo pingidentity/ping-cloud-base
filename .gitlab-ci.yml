@@ -1,5 +1,6 @@
 ## Pipeline stages ##
 stages:
+  - compile
   - build
   - test
   - chaos
@@ -9,6 +10,17 @@ stages:
 variables:
   TENANT_DOMAIN: ping-aws.com
   DELETE_ENV_AFTER_PIPELINE: 'true'
+
+## Compile stage ##
+compile:
+  stage: compile
+  tags:
+    - pd-eks-deploy
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+  script:
+    - ./ci-scripts/compile/compile.sh
+  except:
+    - code-gen
 
 ## Build stage ##
 deploy:
@@ -80,6 +92,6 @@ cleanup:
     - pd-eks-deploy
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
-    - ./ci-scripts/build/cleanup.sh
+    - ./ci-scripts/cleanup/teardown.sh
   except:
     - code-gen
