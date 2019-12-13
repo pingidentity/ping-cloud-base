@@ -66,9 +66,6 @@ spec:
         - name: pingaccess-license
           mountPath: /opt/in/instance/conf/pingaccess.lic
           subPath: pingaccess.lic
-        - name: pingaccess-jwk
-          mountPath: /opt/in/instance/conf/pa.jwk
-          subPath: pa.jwk
         readinessProbe:
           exec:
             command: [ liveness.sh ]
@@ -124,10 +121,5 @@ spec:
       - name: pingaccess-passwords
         secret:
           secretName: pingaccess-passwords
-          optional: true
-          defaultMode: 0400
-      - name: pingaccess-jwk
-        secret:
-          secretName: pingaccess-jwk
           optional: true
           defaultMode: 0400
