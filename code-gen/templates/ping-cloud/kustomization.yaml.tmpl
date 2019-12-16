@@ -1,7 +1,10 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
+namespace: ${PING_CLOUD_NAMESPACE}
+
 resources:
+${PING_CLOUD_NAMESPACE_RESOURCE}
 - ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}?ref=${K8S_GIT_BRANCH}
 
 images:
@@ -13,12 +16,27 @@ images:
   newName: ${REGISTRY_NAME}/pingidentity/pingaccess
 
 generatorOptions:
-  disableNameSuffixHash: true
+  disableNameSuffixHash: false
 
 configMapGenerator:
+
+# Create the config maps that hold the variable for triggering updates of PD servers
+- name: pingdirectory-last-update-config
+  envs:
+  - pingdirectory/env_vars
+
+# Create the config maps that hold the variable for triggering updates of PF servers
+- name: pingfederate-last-update-config
+  envs:
+  - pingfederate/env_vars
+
+# Create the config maps that hold the variable for triggering updates of PA servers
+- name: pingaccess-last-update-config
+  envs:
+  - pingaccess/env_vars
+
 # Pingaccess
 - name: pingaccess-environment-variables
-  namespace: ping-cloud
   behavior: merge
   envs:
   - env_vars
@@ -26,7 +44,6 @@ configMapGenerator:
 
 # Pingdirectory
 - name: pingdirectory-environment-variables
-  namespace: ping-cloud
   behavior: merge
   envs:
   - env_vars
@@ -34,13 +51,129 @@ configMapGenerator:
 
 # Pingfederate
 - name: pingfederate-environment-variables
-  namespace: ping-cloud
   behavior: merge
   envs:
   - env_vars
   - pingfederate/env_vars
 
+patchesStrategicMerge:
+
+### Ping app TLS certificate and key ###
+- |-
+  apiVersion: v1
+  kind: Secret
+  type: kubernetes.io/tls
+  metadata:
+    name: tls-secret
+  data:
+    tls.crt: |
+      ${TLS_CRT_BASE64}
+    tls.key: |
+      ${TLS_KEY_BASE64}
+
+### Ping app DevOps secret ###
+
+- |-
+  apiVersion: v1
+  kind: Secret
+  type: Opaque
+  metadata:
+    name: devops-secret
+  data:
+    PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER_BASE64}
+    PING_IDENTITY_DEVOPS_KEY: ${PING_IDENTITY_DEVOPS_KEY_BASE64}
+
+### Ping app SSH private key ###
+
+- |-
+  apiVersion: v1
+  kind: Secret
+  type: Opaque
+  metadata:
+    name: ssh-id-key-secret
+  data:
+    id_rsa: |
+      ${SSH_ID_KEY_BASE64}
+
+### Ping app known_hosts file ###
+
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: known-hosts-config
+  data:
+    known_hosts: |
+      ${KNOWN_HOSTS_CONFIG_REPO}
+
+${DELETE_PING_CLOUD_NAMESPACE_PATCH_MERGE}
+
 patchesJson6902:
+
+### Ping Directory Last Update Config Map ###
+- target:
+    group: apps
+    version: v1
+    kind: StatefulSet
+    name: ds
+  patch: |
+    - op: add
+      path: /spec/template/spec/containers/0/envFrom/-
+      value:
+        configMapRef:
+          name: pingdirectory-last-update-config
+
+### Ping Federate Admin Last Update Config Map ###
+- target:
+    group: apps
+    version: v1
+    kind: StatefulSet
+    name: pingfederate-admin
+  patch: |
+    - op: add
+      path: /spec/template/spec/containers/0/envFrom/-
+      value:
+        configMapRef:
+          name: pingfederate-last-update-config
+
+### Ping Federate Engine Last Update Config Map ###
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: pingfederate
+  patch: |
+    - op: add
+      path: /spec/template/spec/containers/0/envFrom/-
+      value:
+        configMapRef:
+          name: pingfederate-last-update-config
+
+### Ping Access Admin Last Update Config Map ###
+- target:
+    group: apps
+    version: v1
+    kind: StatefulSet
+    name: pingaccess-admin
+  patch: |
+    - op: add
+      path: /spec/template/spec/containers/0/envFrom/-
+      value:
+        configMapRef:
+          name: pingaccess-last-update-config
+
+### Ping Access Engine Last Update Config Map ###
+- target:
+    group: apps
+    version: v1
+    kind: StatefulSet
+    name: pingaccess
+  patch: |
+    - op: add
+      path: /spec/template/spec/containers/0/envFrom/-
+      value:
+        configMapRef:
+          name: pingaccess-last-update-config
 
 ### Ingress patches ###
 
@@ -114,61 +247,6 @@ patchesJson6902:
       path: /spec/rules/0/host
       value: pingaccess-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
 
-patchesStrategicMerge:
+${PING_DIRECTORY_LDAP_ENDPOINT_PATCH}
 
-### Ping Directory LDAP endpoint ###
-- |-
-  kind: Service
-  apiVersion: v1
-  metadata:
-    name: pingdirectory-admin
-    annotations:
-      external-dns.alpha.kubernetes.io/hostname: pingdirectory-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-
-### Ping app TLS certificate and key ###
-- |-
-  apiVersion: v1
-  kind: Secret
-  type: kubernetes.io/tls
-  metadata:
-    name: tls-secret
-  data:
-    tls.crt: |
-      ${TLS_CRT_BASE64}
-    tls.key: |
-      ${TLS_KEY_BASE64}
-
-### Ping app DevOps secret ###
-
-- |-
-  apiVersion: v1
-  kind: Secret
-  type: Opaque
-  metadata:
-    name: devops-secret
-  data:
-    PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER_BASE64}
-    PING_IDENTITY_DEVOPS_KEY: ${PING_IDENTITY_DEVOPS_KEY_BASE64}
-
-### Ping app SSH private key ###
-
-- |-
-  apiVersion: v1
-  kind: Secret
-  type: Opaque
-  metadata:
-    name: ssh-id-key-secret
-  data:
-    id_rsa: |
-      ${SSH_ID_KEY_BASE64}
-
-### Ping app known_hosts file ###
-
-- |-
-  apiVersion: v1
-  kind: ConfigMap
-  metadata:
-    name: known-hosts-config
-  data:
-    known_hosts: |
-      ${KNOWN_HOSTS_CONFIG_REPO}
+${PING_DATA_CONSOLE_INGRESS_PATCH}

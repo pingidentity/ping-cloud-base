@@ -1,0 +1,4 @@
+- op: remove
+  path: /metadata/annotations
+  value:
+    service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0

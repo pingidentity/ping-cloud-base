@@ -6,6 +6,3 @@ resources:
 - rbac.yaml
 - secret.yaml
 - configmap.yaml
-- pingaccess
-- pingdirectory
-- pingfederate

@@ -8,5 +8,8 @@ commonLabels:
 
 resources:
 - ../base
+- ../base/pingdirectory
+- ../base/pingaccess/cluster
+- ../base/pingfederate/cluster
 - pingdataconsole
 - httpbin
