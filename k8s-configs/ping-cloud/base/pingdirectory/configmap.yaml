@@ -135,7 +135,7 @@ data:
 
     # Verify that server is responsive on its LDAP secure port
     echo "Readiness probe - verifying root DSE access"
-    /opt/liveness.sh
+    /opt/liveness.sh || exit 1
 
     # Verify that replication is set up
     echo "Readiness probe - verifying replication is set up"
