@@ -2,8 +2,7 @@ ORCHESTRATION_TYPE=kubernetes
 
 SERVER_PROFILE_URL=https://github.com/pingidentity/pingidentity-server-profiles.git
 SERVER_PROFILE_PATH=pingaccess-cluster
-# FIXME change to pcpt once calvin-dev branch is merged to pcpt branch
-SERVER_PROFILE_BRANCH=calvin-dev
+SERVER_PROFILE_BRANCH=pcpt
 
 # Retry client request to pingaccess admin API up to 10 times. Engine pod uses admin
 # API to retrieve its proper configuration.
