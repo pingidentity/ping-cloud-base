@@ -1,0 +1,10 @@
+### Ping Directory LDAP endpoint ###
+- target:
+    version: v1
+    kind: Service
+    name: pingdirectory-admin
+  patch: |-
+    - op: remove
+      path: /metadata/annotations
+      value:
+        service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0

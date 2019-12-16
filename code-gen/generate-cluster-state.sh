@@ -157,7 +157,13 @@ ${KNOWN_HOSTS_CONFIG_REPO}
 ${DNS_RECORD_SUFFIX}
 ${DNS_DOMAIN_PREFIX}
 ${ENVIRONMENT_GIT_PATH}
-${KUSTOMIZE_BASE}'
+${PING_CLOUD_NAMESPACE}
+${KUSTOMIZE_BASE}
+${PING_CLOUD_NAMESPACE_RESOURCE}
+${PING_DATA_CONSOLE_INGRESS_PATCH}
+${PING_DIRECTORY_LDAP_ENDPOINT_PATCH}
+${SERVICE_NGINX_PRIVATE_PATCH}
+${DELETE_PING_CLOUD_NAMESPACE_PATCH_MERGE}'
 
 substitute_vars() {
   SUBST_DIR=${1}
@@ -169,6 +175,27 @@ substitute_vars() {
       rm -f "${FILE}"
     fi
   done
+}
+
+########################################################################################################################
+# Remove the file from its current location, substitute the variables in it using corresponding environment variables
+# and print its final contents to stdout.
+#
+# Arguments
+#   ${1} -> The name of the file to patch and remove.
+########################################################################################################################
+patch_remove_file() {
+  FILE_TO_PATCH="${1}"
+  FILE_NO_TMPL_EXT=${FILE_TO_PATCH%.tmpl}
+  FILE_NO_TMPL_EXT=$(basename "${FILE_NO_TMPL_EXT}")
+
+  TMP_DIR=$(mktemp -d)
+  mv "${FILE_TO_PATCH}" "${TMP_DIR}"
+  substitute_vars "${TMP_DIR}"
+
+  cat "${TMP_DIR}/${FILE_NO_TMPL_EXT}"
+
+  rm -rf "${TMP_DIR}"
 }
 
 # Ensure that this script works from any working directory.
@@ -329,22 +356,23 @@ for ENV in ${ENVIRONMENTS}; do
   esac
 
   if test "${IS_BELUGA_ENV}" = 'true'; then
+    export CLUSTER_NAME="${TENANT_NAME}"
+    export PING_CLOUD_NAMESPACE="ping-cloud-${ENV}"
     export DNS_RECORD_SUFFIX="-${ENV}"
     export DNS_DOMAIN_PREFIX=''
   else
+    export CLUSTER_NAME="${ENV}"
+    export PING_CLOUD_NAMESPACE='ping-cloud'
     export DNS_RECORD_SUFFIX=''
     export DNS_DOMAIN_PREFIX="${ENV}-"
   fi
-
-  test "${IS_BELUGA_ENV}" = 'true' &&
-    export CLUSTER_NAME="${TENANT_NAME}" ||
-    export CLUSTER_NAME="${ENV}"
 
   echo ---
   echo "For environment ${ENV}, using variable values:"
   echo "ENVIRONMENT_GIT_PATH: ${ENVIRONMENT_GIT_PATH}"
   echo "KUSTOMIZE_BASE: ${KUSTOMIZE_BASE}"
   echo "CLUSTER_NAME: ${CLUSTER_NAME}"
+  echo "PING_CLOUD_NAMESPACE: ${PING_CLOUD_NAMESPACE}"
   echo "DNS_RECORD_SUFFIX: ${DNS_RECORD_SUFFIX}"
   echo "DNS_DOMAIN_PREFIX: ${DNS_DOMAIN_PREFIX}"
 
@@ -372,14 +400,66 @@ for ENV in ${ENVIRONMENTS}; do
   cp -r "${TEMPLATES_HOME}"/cluster-tools "${ENV_DIR}"
   cp -r "${TEMPLATES_HOME}"/ping-cloud "${ENV_DIR}"
 
-  substitute_vars "${ENV_DIR}"
-
   # Copy the base files into the environment directory
-  cp -r "${TEMPLATES_HOME}"/{.flux.yaml,kustomization.yaml,sealed-secrets.yaml,seal.sh} "${ENV_DIR}"
+  find "${TEMPLATES_HOME}" -type f -maxdepth 1 | xargs -I {} cp {} "${ENV_DIR}"
+
+  ### Start some special-handling based on BELUGA environment and CDE type ###
+
+  # If Beluga environment, we want:
+  #
+  #   - All URLs to land on a public subnet, so a VPN/bridge network is not
+  #     required to access them.
+  #   - The namespace for the ping stack for the environment to be created and
+  #     the stock ping-cloud namespace to be deleted.
+  #
+  NGINX_FILE_TO_PATCH="${ENV_DIR}/cluster-tools/service-nginx-private-patch.yaml.tmpl"
+  PD_FILE_TO_PATCH="${ENV_DIR}/ping-cloud/pingdirectory-ldap-endpoint-patch.yaml.tmpl"
+
+  NAMESPACE_COMMENT="# All ping resources will live in the ${PING_CLOUD_NAMESPACE} namespace"
+  if test "${IS_BELUGA_ENV}" = 'true'; then
+    export PING_CLOUD_NAMESPACE_RESOURCE="${NAMESPACE_COMMENT}
+- namespace.yaml"
+
+    export DELETE_PING_CLOUD_NAMESPACE_PATCH_MERGE='### Delete ping-cloud namespace ###
+
+- |-
+  apiVersion: v1
+  kind: Namespace
+  metadata:
+    name: ping-cloud
+  $patch: delete'
+
+    export SERVICE_NGINX_PRIVATE_PATCH=$(patch_remove_file "${NGINX_FILE_TO_PATCH}")
+    export PING_DIRECTORY_LDAP_ENDPOINT_PATCH=$(patch_remove_file "${PD_FILE_TO_PATCH}")
+
+  else
+    export PING_CLOUD_NAMESPACE_RESOURCE="${NAMESPACE_COMMENT}"
+    export DELETE_PING_CLOUD_NAMESPACE_PATCH_MERGE=''
+    rm -f "${ENV_DIR}"/ping-cloud/namespace.yaml.tmpl
+
+    export SERVICE_NGINX_PRIVATE_PATCH=''
+    rm -f "${NGINX_FILE_TO_PATCH}"
+
+    export PING_DIRECTORY_LDAP_ENDPOINT_PATCH=''
+    rm -f "${PD_FILE_TO_PATCH}"
+  fi
+
+  # If it's a dev/test environment, then the pingdataconsole ingress must be kustomized.
+  CONSOLE_FILE_TO_PATCH="${ENV_DIR}/ping-cloud/pingdataconsole-ingress-patch.yaml.tmpl"
+  if test "${ENV}" = 'test' || test "${ENV}" = 'dev'; then
+    export PING_DATA_CONSOLE_INGRESS_PATCH=$(patch_remove_file "${CONSOLE_FILE_TO_PATCH}")
+  else
+    export PING_DATA_CONSOLE_INGRESS_PATCH=''
+    rm -f "${CONSOLE_FILE_TO_PATCH}"
+  fi
+
+  ### End special handling ###
+
+  substitute_vars "${ENV_DIR}"
 done
 
 # Go back to previous working directory, if different
-popd
+popd > /dev/null
 
 echo
 echo '------------------------'

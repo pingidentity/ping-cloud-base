@@ -11,40 +11,6 @@ resources:
 # This includes all the generic cloud-agnostic tools, like ingress, logging, service discovery, etc.
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools?ref=${K8S_GIT_BRANCH}
 
-patchesJson6902:
-
-### Cluster auto-scaler ###
-- target:
-    group: apps
-    version: v1
-    kind: Deployment
-    name: cluster-autoscaler
-    namespace: kube-system
-  patch: |-
-   - op: add
-     path: /spec/template/spec/containers/0/command/-
-     value:
-       --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/${CLUSTER_NAME}
-   - op: add
-     path: /spec/template/spec/containers/0/env
-     value:
-       - name: AWS_REGION
-         value: ${REGION}
-
-### Logs dashboard ###
-- target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: kibana-ingress
-  patch: |-
-    - op: replace
-      path: /spec/tls/0/hosts/0
-      value: logs${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-    - op: replace
-      path: /spec/rules/0/host
-      value: logs${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-
 patchesStrategicMerge:
 
 ### Cloud-watch logging and monitoring ###
@@ -96,3 +62,39 @@ patchesStrategicMerge:
       ${TLS_CRT_BASE64}
     tls.key: |
       ${TLS_KEY_BASE64}
+
+patchesJson6902:
+
+### Cluster auto-scaler ###
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: cluster-autoscaler
+    namespace: kube-system
+  patch: |-
+   - op: add
+     path: /spec/template/spec/containers/0/command/-
+     value:
+       --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/${CLUSTER_NAME}
+   - op: add
+     path: /spec/template/spec/containers/0/env
+     value:
+       - name: AWS_REGION
+         value: ${REGION}
+
+### Logs dashboard ###
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: kibana-ingress
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: logs${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: logs${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+
+${SERVICE_NGINX_PRIVATE_PATCH}
