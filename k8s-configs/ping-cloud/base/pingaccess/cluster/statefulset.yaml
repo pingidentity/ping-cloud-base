@@ -51,7 +51,7 @@ spec:
       containers:
       - name: pingaccess
         # FIXME: switch to stable image before GA
-        image: pingidentity/pingaccess:5.3.1-alpine-edge
+        image: pingidentity/pingaccess:1911-alpine-5.3.2
         imagePullPolicy: Always
         resources:
           requests:
@@ -189,7 +189,7 @@ spec:
       containers:
       - name: pingaccess-engine
         # FIXME: switch to stable image before GA
-        image: pingidentity/pingaccess:5.3.1-alpine-edge
+        image: pingidentity/pingaccess:1911-alpine-5.3.2
         imagePullPolicy: Always
         resources:
           requests:
