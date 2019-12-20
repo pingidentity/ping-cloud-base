@@ -69,7 +69,7 @@ spec:
       containers:
       - name: ds
         # FIXME: switch to stable image before GA
-        image: pingidentity/pingdirectory:edge
+        image: pingidentity/pingdirectory:1911-alpine-7.3.0.3
         imagePullPolicy: Always
         ports:
         - containerPort: 389
