@@ -5,6 +5,11 @@ used to deploy the Ping Cloud software stack onto a Kubernetes cluster. It
 allows anyone to set up a cookie-cutter Ping Software stack on a Kubernetes
 cluster for evaluation purposes. Currently only AWS EKS clusters are supported.
 
+# Warning
+
+This repository is still under active development and should not be used at this
+time for production purposes due to potential breaking changes.
+
 # Testing
 
 The following tools must be set up and configured correctly:
