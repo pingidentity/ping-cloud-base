@@ -4,7 +4,8 @@
     kind: Service
     name: pingdirectory-admin
   patch: |-
-    - op: remove
+    - op: replace
       path: /metadata/annotations
       value:
-        service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0
+        service.beta.kubernetes.io/aws-load-balancer-type: nlb
+        external-dns.alpha.kubernetes.io/hostname: pingdirectory-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
