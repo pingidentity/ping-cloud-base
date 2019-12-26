@@ -1,0 +1,10 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: pingdirectory-admin-cert
+spec:
+  secretName: tls-secret-pingdirectory-admin
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  commonName: pingdirectory-admin-dev.ping-demo.com

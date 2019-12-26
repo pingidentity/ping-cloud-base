@@ -156,9 +156,6 @@ export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
 NAMESPACE=ping-cloud-${ENVIRONMENT_NO_HYPHEN_PREFIX}
 DEPLOY_FILE=/tmp/deploy.yaml
 
-# Generate a self-signed cert for the tenant domain.
-generate_tls_cert "${TENANT_DOMAIN}"
-
 kustomize build test |
   envsubst '${PING_IDENTITY_DEVOPS_USER_BASE64}
     ${PING_IDENTITY_DEVOPS_KEY_BASE64}
@@ -167,9 +164,7 @@ kustomize build test |
     ${CLUSTER_NAME}
     ${CLUSTER_NAME_LC}
     ${REGION}
-    ${LOG_ARCHIVE_URL}
-    ${TLS_CRT_BASE64}
-    ${TLS_KEY_BASE64}' > ${DEPLOY_FILE}
+    ${LOG_ARCHIVE_URL}' > ${DEPLOY_FILE}
 sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" ${DEPLOY_FILE}
 
 if test "${dryrun}" = 'false'; then

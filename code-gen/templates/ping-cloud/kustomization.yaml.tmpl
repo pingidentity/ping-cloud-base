@@ -58,19 +58,6 @@ configMapGenerator:
 
 patchesStrategicMerge:
 
-### Ping app TLS certificate and key ###
-- |-
-  apiVersion: v1
-  kind: Secret
-  type: kubernetes.io/tls
-  metadata:
-    name: tls-secret
-  data:
-    tls.crt: |
-      ${TLS_CRT_BASE64}
-    tls.key: |
-      ${TLS_KEY_BASE64}
-
 ### Ping app DevOps secret ###
 
 - |-
@@ -105,6 +92,16 @@ patchesStrategicMerge:
   data:
     known_hosts: |
       ${KNOWN_HOSTS_CONFIG_REPO}
+
+### Pingdirectory TLS certificate ###
+
+- |-
+  apiVersion: certmanager.k8s.io/v1alpha1
+  kind: Certificate
+  metadata:
+    name: pingdirectory-admin-cert
+  spec:
+    commonName: pingdirectory-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
 
 ${DELETE_PING_CLOUD_NAMESPACE_PATCH_MERGE}
 

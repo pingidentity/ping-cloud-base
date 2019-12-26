@@ -8,13 +8,14 @@ kind: Ingress
 metadata:
   name: pingfederate-ingress
   annotations:
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     kubernetes.io/ingress.class: nginx-public
 spec:
   tls:
   - hosts:
     - pingfederate-dev.ping-demo.com
-    secretName: tls-secret
+    secretName: tls-secret-pingfederate-ingress
   rules:
   - host: pingfederate-dev.ping-demo.com
     http:
@@ -34,13 +35,14 @@ kind: Ingress
 metadata:
   name: pingfederate-admin-ingress
   annotations:
+    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     kubernetes.io/ingress.class: nginx-private
 spec:
   tls:
   - hosts:
     - pingfederate-admin-dev.ping-demo.com
-    secretName: tls-secret
+    secretName: tls-secret-pingfederate-admin-ingress
   rules:
   - host: pingfederate-admin-dev.ping-demo.com
     http:

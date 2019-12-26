@@ -2,16 +2,52 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-# The cluster-autoscaler is specific to the cloud provider.
+# These resources are specific to AWS at the moment and not included in the out-of-the-box configuration.
+- ${K8S_GIT_URL}/k8s-configs/cluster-tools/cert-manager/route53?ref=${K8S_GIT_BRANCH}
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/cluster-autoscaler/aws?ref=${K8S_GIT_BRANCH}
-
-# Monitoring is specific to AWS at the moment.
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/monitoring/container-insights?ref=${K8S_GIT_BRANCH}
 
 # This includes all the generic cloud-agnostic tools, like ingress, logging, service discovery, etc.
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools?ref=${K8S_GIT_BRANCH}
 
+# Include flux CD here so flux can update itself in the future
+- ${K8S_GIT_URL}/k8s-configs/cluster-tools/git-ops?ref=${K8S_GIT_BRANCH}
+
 patchesStrategicMerge:
+
+### Lets encrypt ACME certificate issuer for the cluster ###
+- |-
+  apiVersion: certmanager.k8s.io/v1alpha1
+  kind: ClusterIssuer
+  metadata:
+    name: letsencrypt-prod
+  spec:
+    acme:
+      email: ${CLUSTER_NAME_LC}@${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+      solvers:
+      - dns01:
+          route53:
+            region: ${REGION}
+        selector:
+          dnsZones:
+          - ${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+
+### Additional args to the flux deployment object ###
+- |-
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: flux
+    namespace: flux
+  spec:
+    template:
+      spec:
+        containers:
+        - name: flux
+          args:
+          - --manifest-generation=true
+          - --git-url=${CLUSTER_STATE_REPO_URL}
+          - --git-path=k8s-configs/${ENVIRONMENT_GIT_PATH}
 
 ### Cloud-watch logging and monitoring ###
 - |-
@@ -48,20 +84,6 @@ patchesStrategicMerge:
           "force_flush_interval": 5
         }
       }
-
-### TLS certificate for logs dashboard ###
-- |-
-  apiVersion: v1
-  kind: Secret
-  type: kubernetes.io/tls
-  metadata:
-    name: tls-secret-logging
-    namespace: elastic-stack-logging
-  data:
-    tls.crt: |
-      ${TLS_CRT_BASE64}
-    tls.key: |
-      ${TLS_KEY_BASE64}
 
 patchesJson6902:
 

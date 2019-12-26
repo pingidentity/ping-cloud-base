@@ -23,9 +23,6 @@ SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 # Configure kube config, unless skipped
 configure_kube
 
-# Generate a self-signed cert for the tenant domain.
-generate_tls_cert "${TENANT_DOMAIN}"
-
 export PING_IDENTITY_DEVOPS_USER_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_USER}")
 export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_KEY}")
 
@@ -39,9 +36,7 @@ kustomize build ${CI_PROJECT_DIR}/test |
     ${CLUSTER_NAME}
     ${CLUSTER_NAME_LC}
     ${REGION}
-    ${LOG_ARCHIVE_URL}
-    ${TLS_CRT_BASE64}
-    ${TLS_KEY_BASE64}' > ${DEPLOY_FILE}
+    ${LOG_ARCHIVE_URL}' > ${DEPLOY_FILE}
 
 log "Deploy file contents:"
 cat ${DEPLOY_FILE}
