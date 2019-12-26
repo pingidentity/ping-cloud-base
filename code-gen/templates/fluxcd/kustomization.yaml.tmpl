@@ -1,15 +1,38 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
-namespace: flux
-
 resources:
+
+# Deploy cert-manager as part of the bootstrap process so that it has time to register with the ACME server
+- ${K8S_GIT_URL}/k8s-configs/cluster-tools/cert-manager/route53?ref=${K8S_GIT_BRANCH}
+
+# Deploy the network provider so that flux is able to talk to the Kubernetes API server under all circumstances
+- ${K8S_GIT_URL}/k8s-configs/cluster-tools/network-provider?ref=${K8S_GIT_BRANCH}
+
+# Deploy flux
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/git-ops?ref=${K8S_GIT_BRANCH}
 - known-hosts-config.yaml
 
 patchesStrategicMerge:
 
-### Additional args to the deployment object ###
+### Lets encrypt ACME certificate issuer for the cluster ###
+- |-
+  apiVersion: certmanager.k8s.io/v1alpha1
+  kind: ClusterIssuer
+  metadata:
+    name: letsencrypt-prod
+  spec:
+    acme:
+      email: ${CLUSTER_NAME_LC}@${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+      solvers:
+      - dns01:
+          route53:
+            region: ${REGION}
+        selector:
+          dnsZones:
+          - ${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+
+### Additional args to the flux deployment object ###
 - |-
   apiVersion: apps/v1
   kind: Deployment

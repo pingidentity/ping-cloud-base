@@ -139,6 +139,7 @@ ${TENANT_DOMAIN}
 ${REGION}
 ${SIZE}
 ${CLUSTER_NAME}
+${CLUSTER_NAME_LC}
 ${CLUSTER_STATE_REPO_URL}
 ${CLUSTER_STATE_REPO_HOST}
 ${CONFIG_REPO_URL}
@@ -148,8 +149,6 @@ ${LOG_ARCHIVE_URL}
 ${K8S_GIT_URL}
 ${K8S_GIT_BRANCH}
 ${REGISTRY_NAME}
-${TLS_CRT_BASE64}
-${TLS_KEY_BASE64}
 ${SSH_ID_PUB}
 ${SSH_ID_KEY_BASE64}
 ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
@@ -367,6 +366,8 @@ for ENV in ${ENVIRONMENTS}; do
     export DNS_DOMAIN_PREFIX="${ENV}-"
   fi
 
+  export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
+
   echo ---
   echo "For environment ${ENV}, using variable values:"
   echo "ENVIRONMENT_GIT_PATH: ${ENVIRONMENT_GIT_PATH}"
@@ -375,11 +376,6 @@ for ENV in ${ENVIRONMENTS}; do
   echo "PING_CLOUD_NAMESPACE: ${PING_CLOUD_NAMESPACE}"
   echo "DNS_RECORD_SUFFIX: ${DNS_RECORD_SUFFIX}"
   echo "DNS_DOMAIN_PREFIX: ${DNS_DOMAIN_PREFIX}"
-
-  # Generate a self-signed cert for the tenant domain.
-  FQDN="${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}"
-  echo "Generating certificate for domain: ${FQDN}"
-  generate_tls_cert "${FQDN}"
 
   # Build the flux kustomization file for each environment
   echo "Generating flux yaml"

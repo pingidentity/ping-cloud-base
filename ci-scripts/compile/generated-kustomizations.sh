@@ -4,7 +4,10 @@ SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 . ${SCRIPT_HOME}/../common.sh
 
 # Generate the code first
-export TARGET_DIR=/tmp/sanbbox
+export K8S_GIT_URL=${CI_REPOSITORY_URL}
+export K8S_GIT_BRANCH=${CI_COMMIT_REF_SLUG}
+
+export TARGET_DIR=/tmp/sandbox
 export TENANT_DOMAIN="${EKS_CLUSTER_NAME}"
 
 STATUS=0

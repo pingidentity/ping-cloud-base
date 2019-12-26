@@ -2,9 +2,13 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
+# These are AWS-specific and not included in the out-of-the-box cluster tools.
+- ../../k8s-configs/cluster-tools/cert-manager/route53
 - ../../k8s-configs/cluster-tools/cluster-autoscaler
-- ../../k8s-configs/cluster-tools
 - ../../k8s-configs/cluster-tools/monitoring
+
+# These are cloud-agnostic cluster tools.
+- ../../k8s-configs/cluster-tools
 
 patchesJson6902:
 # logs
@@ -35,6 +39,6 @@ patchesJson6902:
     namespace: kube-system
 
 patchesStrategicMerge:
-- patches/secret/tls-secret.yaml
+- patches/clusterissuer/letsencrypt-issuer.yaml
 - patches/configmap/cluster-info.yaml
 - patches/configmap/cwagentconfig.yaml
