@@ -19,7 +19,7 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: bitnami/kubectl
+        image: curlimages/curl
         imagePullPolicy: Always
         command:
         - /init.sh

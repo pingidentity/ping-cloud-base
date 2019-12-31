@@ -23,7 +23,7 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: bitnami/kubectl
+        image: curlimages/curl
         imagePullPolicy: Always
         command:
         - /init.sh
@@ -41,6 +41,12 @@ spec:
         - name: pingaccess-init
           mountPath: /init.sh
           subPath: init.sh
+        env:
+        # PA uses PF as the OIDC token provider, and PA import will crash if the token provider is not available.
+        # A comma-separated list of services for which a particular service must wait.
+        # FIXME: remove this and use WAIT_FOR_SERVICES in server profile to prevent inter-dependent services in k8s
+        - name: INITIAL_DELAY_SECONDS
+          value: 20s
         envFrom:
         - configMapRef:
             name: pingaccess-environment-variables

@@ -26,7 +26,7 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: bitnami/kubectl
+        image: curlimages/curl
         imagePullPolicy: IfNotPresent
         command:
         - /init.sh
@@ -44,6 +44,11 @@ spec:
         - name: pf-init
           mountPath: /init.sh
           subPath: init.sh
+        env:
+        # PF engines must wait until the admin is ready
+        # A comma-separated list of services for which a particular service must wait
+        - name: WAIT_FOR_SERVICES
+          value: pingfederate-admin
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
