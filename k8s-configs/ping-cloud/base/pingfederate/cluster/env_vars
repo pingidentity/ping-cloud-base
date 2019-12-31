@@ -2,6 +2,8 @@ ORCHESTRATION_TYPE=kubernetes
 PF_LOG_LEVEL=INFO
 PF_DNS_PING_CLUSTER=pf-cluster
 PF_DNS_PING_NAMESPACE=placeholder
+
+# FIXME: fix server profile to correct location before kube mode 1
 #SERVER_PROFILE_URL=https://github.com/pingidentity/pingidentity-server-profiles.git
 #SERVER_PROFILE_PATH=minimal/pingfederate
 #SERVER_PROFILE_BRANCH=pcpt
@@ -14,6 +16,5 @@ SERVER_PROFILE_PCPT_URL=https://github.com/pingidentity/pingidentity-server-prof
 SERVER_PROFILE_PCPT_PATH=baseline/pingfederate
 SERVER_PROFILE_PCPT_BRANCH=pcpt
 
-INITIAL_DELAY_SECONDS=50
 ACCEPT_EULA=YES
 PING_IDENTITY_ACCEPT_EULA=YES

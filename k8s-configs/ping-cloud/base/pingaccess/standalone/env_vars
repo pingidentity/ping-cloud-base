@@ -5,9 +5,5 @@ SERVER_PROFILE_PATH=baseline/pingaccess
 # FIXME switch to PCPT branch when we have a server-profile to preconfigure httpbin and pingfederate as tokenprovider
 SERVER_PROFILE_BRANCH=master
 
-# Add a 10s delay to PA startup. PA uses PF as the OIDC token provider,
-# and PA import will crash if the token provider is not available.
-INITIAL_DELAY_SECONDS=20
-
 ACCEPT_EULA=YES
 PING_IDENTITY_ACCEPT_EULA=YES
