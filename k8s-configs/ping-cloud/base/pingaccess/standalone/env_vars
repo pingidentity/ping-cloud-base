@@ -7,3 +7,6 @@ SERVER_PROFILE_BRANCH=master
 
 ACCEPT_EULA=YES
 PING_IDENTITY_ACCEPT_EULA=YES
+
+# PA uses PF as the OIDC token provider, and PA import will crash if the token provider is not available.
+INITIAL_DELAY_SECONDS=20s
