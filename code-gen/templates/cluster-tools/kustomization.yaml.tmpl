@@ -15,22 +15,16 @@ resources:
 
 patchesStrategicMerge:
 
-### Lets encrypt ACME certificate issuer for the cluster ###
+### External DNS service account ###
 - |-
-  apiVersion: certmanager.k8s.io/v1alpha1
-  kind: ClusterIssuer
+  apiVersion: v1
+  kind: ServiceAccount
   metadata:
-    name: letsencrypt-prod
-  spec:
-    acme:
-      email: ${CLUSTER_NAME_LC}@${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-      solvers:
-      - dns01:
-          route53:
-            region: ${REGION}
-        selector:
-          dnsZones:
-          - ${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+    name: external-dns
+    namespace: external-dns
+    annotations:
+      purpose: service-account-for-external-dns
+      ${ROUTE53_IRSA_ARN_KEY_AND_VALUE}
 
 ### Additional args to the flux deployment object ###
 - |-
@@ -48,6 +42,14 @@ patchesStrategicMerge:
           - --manifest-generation=true
           - --git-url=${CLUSTER_STATE_REPO_URL}
           - --git-path=k8s-configs/${ENVIRONMENT_GIT_PATH}
+          volumeMounts:
+          - name: ssh-config
+            mountPath: /root/.ssh
+        volumes:
+        - name: ssh-config
+          configMap:
+            name: flux-ssh-config
+            defaultMode: 0644
 
 ### Cloud-watch logging and monitoring ###
 - |-
@@ -84,6 +86,23 @@ patchesStrategicMerge:
           "force_flush_interval": 5
         }
       }
+
+### Lets encrypt ACME certificate issuer for the cluster ###
+- |-
+  apiVersion: certmanager.k8s.io/v1alpha1
+  kind: ClusterIssuer
+  metadata:
+    name: letsencrypt-prod
+  spec:
+    acme:
+      email: ${CLUSTER_NAME_LC}@${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+      solvers:
+      - dns01:
+          route53:
+            region: ${REGION}
+        selector:
+          dnsZones:
+          - ${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
 
 patchesJson6902:
 

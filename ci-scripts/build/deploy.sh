@@ -36,7 +36,9 @@ kustomize build ${CI_PROJECT_DIR}/test |
     ${CLUSTER_NAME}
     ${CLUSTER_NAME_LC}
     ${REGION}
-    ${LOG_ARCHIVE_URL}' > ${DEPLOY_FILE}
+    ${ARTIFACT_REPO_URL}
+    ${LOG_ARCHIVE_URL}
+    ${BACKUP_URL}' > ${DEPLOY_FILE}
 
 log "Deploy file contents:"
 cat ${DEPLOY_FILE}

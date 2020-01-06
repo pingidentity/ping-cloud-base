@@ -10,7 +10,10 @@ export REGION="${AWS_DEFAULT_REGION}"
 export CLUSTER_NAME="${EKS_CLUSTER_NAME}"
 export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
 
-export LOG_ARCHIVE_URL=s3://${CLUSTER_NAME}-csd-archives-bucket/pingdirectory
+export ARTIFACT_REPO_URL=https://ping-artifacts.s3-us-west-2.amazonaws.com
+export LOG_ARCHIVE_URL=s3://${CLUSTER_NAME}-logs-bucket
+export BACKUP_URL=s3://${CLUSTER_NAME}-backup-bucket
+
 export NAMESPACE=ping-cloud-${CI_COMMIT_REF_SLUG}
 export AWS_PROFILE=csg
 

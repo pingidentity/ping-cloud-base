@@ -75,13 +75,71 @@
 # CONFIG_REPO_BRANCH     | The branch within the config repo to use for       | pcpt
 #                        | application configuration.                         |
 #                        |                                                    |
-# ARTIFACT_REPO_URL      | The URL for plugins (e.g. PF kits, PD extensions). | No default
-#                        | For PCPT, this is an S3 bucket. If not provided,   |
-#                        | the Ping stack will be provisioned without         |
-#                        | plugins.                                           |
+# ARTIFACT_REPO_URL      | The URL for plugins (e.g. PF kits, PD extensions). | The string "unused".
+#                        | If not provided, the Ping stack will be            |
+#                        | provisioned without plugins. This URL must always  |
+#                        | have an https scheme, e.g.                         |
+#                        | https://artifacts.s3-us-west-2.amazonaws.com.      |
 #                        |                                                    |
-# LOG_ARCHIVE_URL        | The URL of the log archives. If provided, logs are | The string "unused"
-#                        | periodically captured and sent to this URL.        |
+# LOG_ARCHIVE_URL        | The URL of the log archives. If provided, logs are | The string "unused". Only applies to
+#                        | periodically captured and sent to this URL. For    | Beluga environments. See IS_BELUGA_ENV
+#                        | AWS S3 buckets, it must be an S3 URL, e.g.         | variable below.
+#                        | s3://logs.                                         |
+#                        |                                                    |
+# DEV_LOG_ARCHIVE_URL    | The URL of the log archives for the dev CDE. If    | The string "unused".
+#                        | provided, logs are periodically captured and sent  |
+#                        | to this URL. For AWS S3 buckets, it must be an S3  |
+#                        | URL, e.g. s3://dev-logs.                           |
+#                        |                                                    |
+# TEST_LOG_ARCHIVE_URL   | The URL of the log archives for the test CDE. If   | The string "unused".
+#                        | provided, logs are periodically captured and sent  |
+#                        | to this URL. For AWS S3 buckets, it must be an S3  |
+#                        | URL, e.g. s3://test-logs.                          |
+#                        |                                                    |
+# STAGE_LOG_ARCHIVE_URL  | The URL of the log archives for the stage CDE. If  | The string "unused".
+#                        | provided, logs are periodically captured and sent  |
+#                        | to this URL. For AWS S3 buckets, it must be an S3  |
+#                        | URL, e.g. s3://stage-logs.                         |
+#                        |                                                    |
+# PROD_LOG_ARCHIVE_URL   | The URL of the log archives for the prod CDE. If   | The string "unused".
+#                        | provided, logs are periodically captured and sent  |
+#                        | to this URL. For AWS S3 buckets, it must be an S3  |
+#                        | URL, e.g. s3://prod-logs.                          |
+#                        |                                                    |
+# BACKUP_URL             | The URL of the backup location. If provided, data  | The string "unused". Only applies to
+#                        | backups are periodically captured and sent to this | Beluga environments. See IS_BELUGA_ENV
+#                        | URL. For AWS S3 buckets, it must be an S3 URL,     | variable below.
+#                        | e.g. s3://backups.                                 |
+#                        |                                                    |
+# DEV_BACKUP_URL         | The URL of the backup location for the dev CDE.    | The string "unused".
+#                        | If provided, data backups are periodically         |
+#                        | captured and sent to this URL. For AWS S3 buckets, |
+#                        | it must be an S3 URL, e.g. s3://dev-backups.       |
+#                        |                                                    |
+# TEST_BACKUP_URL        | The URL of the backup location for the test CDE.   | The string "unused".
+#                        | If provided, data backups are periodically         |
+#                        | captured and sent to this URL. For AWS S3 buckets, |
+#                        | it must be an S3 URL, e.g. s3://test-backups.      |
+#                        |                                                    |
+# STAGE_BACKUP_URL       | The URL of the backup location for the stage CDE.  | The string "unused".
+#                        | If provided, data backups are periodically         |
+#                        | captured and sent to this URL. For AWS S3 buckets, |
+#                        | it must be an S3 URL, e.g. s3://stage-backups.     |
+#                        |                                                    |
+# PROD_BACKUP_URL        | The URL of the backup location for the prod CDE.   | The string "unused".
+#                        | If provided, data backups are periodically         |
+#                        | captured and sent to this URL. For AWS S3 buckets, |
+#                        | it must be an S3 URL, e.g. s3://prod-backups.      |
+#                        |                                                    |
+# S3_IRSA_ARN            | The ARN of the IAM role that maps to the           | No default
+#                        | Kubernetes '*:ping-serviceaccount' service         |
+#                        | account, allowing it read/write access to S3       |
+#                        | buckets.                                           |
+#                        |                                                    |
+# ROUTE53_IRSA_ARN       | The ARN of the IAM role that maps to the           | No default
+#                        | Kubernetes 'external-dns:external-dns' service     |
+#                        | account, allowing it read/write access to Route53  |
+#                        | hosted zones.                                      |
 #                        |                                                    |
 # K8S_GIT_URL            | The Git URL of the Kubernetes base manifest files. | https://github.com/pingidentity/ping-cloud-base
 #                        |                                                    |
@@ -146,6 +204,17 @@ ${CONFIG_REPO_URL}
 ${CONFIG_REPO_BRANCH}
 ${ARTIFACT_REPO_URL}
 ${LOG_ARCHIVE_URL}
+${DEV_LOG_ARCHIVE_URL}
+${TEST_LOG_ARCHIVE_URL}
+${STAGE_LOG_ARCHIVE_URL}
+${PROD_LOG_ARCHIVE_URL}
+${BACKUP_URL}
+${DEV_BACKUP_URL}
+${TEST_BACKUP_URL}
+${STAGE_BACKUP_URL}
+${PROD_BACKUP_URL}
+${S3_IRSA_ARN_KEY_AND_VALUE}
+${ROUTE53_IRSA_ARN_KEY_AND_VALUE}
 ${K8S_GIT_URL}
 ${K8S_GIT_BRANCH}
 ${REGISTRY_NAME}
@@ -229,7 +298,21 @@ echo "Initial CONFIG_REPO_URL: ${CONFIG_REPO_URL}"
 echo "Initial CONFIG_REPO_BRANCH: ${CONFIG_REPO_BRANCH}"
 
 echo "Initial ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
+
 echo "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
+echo "Initial DEV_LOG_ARCHIVE_URL: ${DEV_LOG_ARCHIVE_URL}"
+echo "Initial TEST_LOG_ARCHIVE_URL: ${TEST_LOG_ARCHIVE_URL}"
+echo "Initial STAGE_LOG_ARCHIVE_URL: ${STAGE_LOG_ARCHIVE_URL}"
+echo "Initial PROD_LOG_ARCHIVE_URL: ${PROD_LOG_ARCHIVE_URL}"
+
+echo "Initial BACKUP_URL: ${BACKUP_URL}"
+echo "Initial DEV_BACKUP_URL: ${DEV_BACKUP_URL}"
+echo "Initial TEST_BACKUP_URL: ${TEST_BACKUP_URL}"
+echo "Initial STAGE_BACKUP_URL: ${STAGE_BACKUP_URL}"
+echo "Initial PROD_BACKUP_URL: ${PROD_BACKUP_URL}"
+
+echo "Initial S3_IRSA_ARN: ${S3_IRSA_ARN}"
+echo "Initial ROUTE53_IRSA_ARN: ${ROUTE53_IRSA_ARN}"
 
 echo "Initial K8S_GIT_URL: ${K8S_GIT_URL}"
 echo "Initial K8S_GIT_BRANCH: ${K8S_GIT_BRANCH}"
@@ -255,8 +338,25 @@ export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL:-git@github.com:pingiden
 export CONFIG_REPO_URL="${CONFIG_REPO_URL:-https://github.com/pingidentity/pingidentity-server-profiles}"
 export CONFIG_REPO_BRANCH="${CONFIG_REPO_BRANCH:-pcpt}"
 
-export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL}"
+export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
+
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
+export DEV_LOG_ARCHIVE_URL="${DEV_LOG_ARCHIVE_URL:-unused}"
+export TEST_LOG_ARCHIVE_URL="${TEST_LOG_ARCHIVE_URL:-unused}"
+export STAGE_LOG_ARCHIVE_URL="${STAGE_LOG_ARCHIVE_URL:-unused}"
+export PROD_LOG_ARCHIVE_URL="${PROD_LOG_ARCHIVE_URL:-unused}"
+
+export BACKUP_URL="${BACKUP_URL:-unused}"
+export DEV_BACKUP_URL="${DEV_BACKUP_URL:-unused}"
+export TEST_BACKUP_URL="${TEST_BACKUP_URL:-unused}"
+export STAGE_BACKUP_URL="${STAGE_BACKUP_URL:-unused}"
+export PROD_BACKUP_URL="${PROD_BACKUP_URL:-unused}"
+
+export S3_IRSA_ARN="${S3_IRSA_ARN}"
+export ROUTE53_IRSA_ARN="${ROUTE53_IRSA_ARN}"
+
+test ! -z ${S3_IRSA_ARN} && export S3_IRSA_ARN_KEY_AND_VALUE="eks.amazonaws.com/role-arn: ${S3_IRSA_ARN}"
+test ! -z ${ROUTE53_IRSA_ARN} && export ROUTE53_IRSA_ARN_KEY_AND_VALUE="eks.amazonaws.com/role-arn: ${ROUTE53_IRSA_ARN}"
 
 export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
 export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-master}"
@@ -281,7 +381,9 @@ echo "Using CONFIG_REPO_URL: ${CONFIG_REPO_URL}"
 echo "Using CONFIG_REPO_BRANCH: ${CONFIG_REPO_BRANCH}"
 
 echo "Using ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
-echo "Using LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
+
+echo "Using S3_IRSA_ARN: ${S3_IRSA_ARN}"
+echo "Using ROUTE53_IRSA_ARN: ${ROUTE53_IRSA_ARN}"
 
 echo "Using K8S_GIT_URL: ${K8S_GIT_URL}"
 echo "Using K8S_GIT_BRANCH: ${K8S_GIT_BRANCH}"
@@ -354,6 +456,28 @@ for ENV in ${ENVIRONMENTS}; do
       ;;
   esac
 
+  # If not Beluga environment, adjust the logs and backup URLs based on environment type.
+  if test "${IS_BELUGA_ENV}" != 'true'; then
+    case "${ENV}" in
+      dev)
+        export LOG_ARCHIVE_URL=${DEV_LOG_ARCHIVE_URL:-${LOG_ARCHIVE_URL}}
+        export BACKUP_URL=${DEV_BACKUP_URL:-${BACKUP_URL}}
+        ;;
+      test)
+        export LOG_ARCHIVE_URL=${TEST_LOG_ARCHIVE_URL:-${LOG_ARCHIVE_URL}}
+        export BACKUP_URL=${TEST_BACKUP_URL:-${BACKUP_URL}}
+        ;;
+      stage)
+        export LOG_ARCHIVE_URL=${STAGE_LOG_ARCHIVE_URL:-${LOG_ARCHIVE_URL}}
+        export BACKUP_URL=${STAGE_BACKUP_URL:-${BACKUP_URL}}
+        ;;
+      prod)
+        export LOG_ARCHIVE_URL=${PROD_LOG_ARCHIVE_URL:-${LOG_ARCHIVE_URL}}
+        export BACKUP_URL=${PROD_BACKUP_URL:-${BACKUP_URL}}
+        ;;
+    esac
+  fi
+
   if test "${IS_BELUGA_ENV}" = 'true'; then
     export CLUSTER_NAME="${TENANT_NAME}"
     export PING_CLOUD_NAMESPACE="ping-cloud-${ENV}"
@@ -376,6 +500,8 @@ for ENV in ${ENVIRONMENTS}; do
   echo "PING_CLOUD_NAMESPACE: ${PING_CLOUD_NAMESPACE}"
   echo "DNS_RECORD_SUFFIX: ${DNS_RECORD_SUFFIX}"
   echo "DNS_DOMAIN_PREFIX: ${DNS_DOMAIN_PREFIX}"
+  echo "LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
+  echo "BACKUP_URL: ${BACKUP_URL}"
 
   # Build the flux kustomization file for each environment
   echo "Generating flux yaml"
