@@ -7,7 +7,6 @@ resources:
 - storage.yaml
 - statefulset.yaml
 - service.yaml
-- certificate.yaml
 - periodic-backup.yaml
 
 commonLabels:

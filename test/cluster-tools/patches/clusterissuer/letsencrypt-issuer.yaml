@@ -4,6 +4,7 @@ metadata:
   name: letsencrypt-prod
 spec:
   acme:
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
     email: ${CLUSTER_NAME_LC}@${TENANT_DOMAIN}
     solvers:
     - dns01:

@@ -15,6 +15,35 @@ resources:
 
 patchesStrategicMerge:
 
+### Lets encrypt ACME certificate issuer for the cluster ###
+- |-
+  apiVersion: certmanager.k8s.io/v1alpha1
+  kind: ClusterIssuer
+  metadata:
+    name: letsencrypt-prod
+  spec:
+    acme:
+      email: ${CLUSTER_NAME_LC}@${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+      solvers:
+      - dns01:
+          route53:
+            region: ${REGION}
+        selector:
+          dnsZones:
+          - ${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+
+### Lets encrypt ACME certificate for all endpoints ###
+- |-
+  apiVersion: certmanager.k8s.io/v1alpha1
+  kind: Certificate
+  metadata:
+    name: acme-tls-cert
+    namespace: cert-manager
+  spec:
+    dnsNames:
+    - '*.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}'
+    commonName: ${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+
 ### External DNS service account ###
 - |-
   apiVersion: v1
@@ -87,24 +116,32 @@ patchesStrategicMerge:
         }
       }
 
-### Lets encrypt ACME certificate issuer for the cluster ###
-- |-
-  apiVersion: certmanager.k8s.io/v1alpha1
-  kind: ClusterIssuer
-  metadata:
-    name: letsencrypt-prod
-  spec:
-    acme:
-      email: ${CLUSTER_NAME_LC}@${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-      solvers:
-      - dns01:
-          route53:
-            region: ${REGION}
-        selector:
-          dnsZones:
-          - ${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-
 patchesJson6902:
+
+### Change the default TLS secret for the ingress controllers ###
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: nginx-ingress-controller
+    namespace: ingress-nginx-private
+  patch: |-
+    - op: add
+      path: /spec/template/spec/containers/0/args/-
+      value:
+        --default-ssl-certificate=cert-manager/acme-tls-cert
+
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: nginx-ingress-controller
+    namespace: ingress-nginx-public
+  patch: |-
+    - op: add
+      path: /spec/template/spec/containers/0/args/-
+      value:
+        --default-ssl-certificate=cert-manager/acme-tls-cert
 
 ### Cluster auto-scaler ###
 - target:
