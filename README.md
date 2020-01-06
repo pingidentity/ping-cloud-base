@@ -48,6 +48,7 @@ kustomize build https://github.com/pingidentity/ping-cloud-base?ref=master |
 ```
 
 Monitor it by running:
+
 ```
 kubectl get pods -n ping-cloud
 ```
