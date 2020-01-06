@@ -49,7 +49,7 @@ data:
     ORDINAL=$(echo ${SHORT_HOST_NAME##*-})
     echo "Pod ordinal: ${ORDINAL}"
 
-    NUM_REPLICAS=$(kubectl get statefulset "${K8S_STATEFUL_SET_NAME_PA_ENGINE}" -o jsonpath='{.spec.replicas}')
+    NUM_REPLICAS=$(kubectl get statefulset "${K8S_STATEFUL_SET_NAME_PINGACCESS}" -o jsonpath='{.spec.replicas}')
     echo "Number of replicas: ${NUM_REPLICAS}"
 
     if test ${ORDINAL} -lt ${NUM_REPLICAS}; then
@@ -58,10 +58,10 @@ data:
     fi
 
     # Retrieve Engine ID
-    ENGINE_ID=$( make_api_request -X GET https://${K8S_STATEFUL_SET_SERVICE_NAME_PA}:9000/pa-admin-api/v3/engines | \
+    ENGINE_ID=$( make_api_request -X GET https://${K8S_STATEFUL_SET_SERVICE_NAME_PINGACCESS_ADMIN}:9000/pa-admin-api/v3/engines | \
                 jq --arg SHORT_HOST_NAME "${SHORT_HOST_NAME}" \
                 '.items[] | select(.name==$SHORT_HOST_NAME) | .id' )
 
     # Delete Engine
-    make_api_request -X DELETE https://${K8S_STATEFUL_SET_SERVICE_NAME_PA}:9000/pa-admin-api/v3/engines/${ENGINE_ID} \
+    make_api_request -X DELETE https://${K8S_STATEFUL_SET_SERVICE_NAME_PINGACCESS_ADMIN}:9000/pa-admin-api/v3/engines/${ENGINE_ID} \
     > /dev/null

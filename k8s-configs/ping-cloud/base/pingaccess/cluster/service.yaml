@@ -4,7 +4,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: pingaccess
+  name: pingaccess-admin
 spec:
   ports:
   - port: 9000
@@ -19,7 +19,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: pingaccess-engine
+  name: pingaccess
 spec:
   ports:
     - port: 443
