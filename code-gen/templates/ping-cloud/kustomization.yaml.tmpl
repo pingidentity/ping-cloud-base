@@ -70,6 +70,16 @@ patchesStrategicMerge:
     PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER_BASE64}
     PING_IDENTITY_DEVOPS_KEY: ${PING_IDENTITY_DEVOPS_KEY_BASE64}
 
+### Ping cloud stack service account ###
+- |-
+  apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: ping-serviceaccount
+    annotations:
+      purpose: service-account-for-ping-cloud-stack
+      ${S3_IRSA_ARN_KEY_AND_VALUE}
+
 ### Ping app SSH private key ###
 
 - |-
