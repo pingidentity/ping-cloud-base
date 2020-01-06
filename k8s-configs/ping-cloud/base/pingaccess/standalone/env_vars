@@ -2,8 +2,7 @@ ORCHESTRATION_TYPE=kubernetes
 
 SERVER_PROFILE_URL=https://github.com/pingidentity/pingidentity-server-profiles.git
 SERVER_PROFILE_PATH=baseline/pingaccess
-# FIXME switch to PCPT branch when we have a server-profile to preconfigure httpbin and pingfederate as tokenprovider
-SERVER_PROFILE_BRANCH=master
+SERVER_PROFILE_BRANCH=pcpt
 
 ACCEPT_EULA=YES
 PING_IDENTITY_ACCEPT_EULA=YES

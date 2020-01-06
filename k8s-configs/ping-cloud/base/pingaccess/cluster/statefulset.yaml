@@ -8,7 +8,7 @@ metadata:
     role: pingaccess-admin
 spec:
   replicas: 1
-  serviceName: pingaccess
+  serviceName: pingaccess-admin
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: OrderedReady
@@ -149,7 +149,7 @@ metadata:
     role: pingaccess-engine
 spec:
   replicas: 1
-  serviceName: pingaccess-engine
+  serviceName: pingaccess
   podManagementPolicy: Parallel
   template:
     metadata:
@@ -239,10 +239,10 @@ spec:
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_ENGINE
-        - name: K8S_STATEFUL_SET_SERVICE_NAME_PA
-          value: $(K8S_STATEFUL_SET_SERVICE_NAME_PA)
-        - name: K8S_STATEFUL_SET_NAME_PA_ENGINE
-          value: $(K8S_STATEFUL_SET_NAME_PA_ENGINE)
+        - name: K8S_STATEFUL_SET_SERVICE_NAME_PINGACCESS_ADMIN
+          value: $(K8S_STATEFUL_SET_SERVICE_NAME_PINGACCESS_ADMIN)
+        - name: K8S_STATEFUL_SET_NAME_PINGACCESS
+          value: $(K8S_STATEFUL_SET_NAME_PINGACCESS)
         - name: INITIAL_ADMIN_PASSWORD
           valueFrom:
             secretKeyRef:
