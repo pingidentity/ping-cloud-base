@@ -4,8 +4,9 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 resources:
 - k8s-configs
 
-# DEVOPS user/key
 patchesStrategicMerge:
+
+# DEVOPS user/key
 - |-
   apiVersion: v1
   kind: ConfigMap
@@ -43,8 +44,9 @@ patchesStrategicMerge:
     PF_ADMIN_PUBLIC_HOSTNAME: pingfederate-admin.${TENANT_DOMAIN}
     PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
 
-# Ingress
 patchesJson6902:
+
+# Ingress
 - target:
     group: extensions
     version: v1beta1

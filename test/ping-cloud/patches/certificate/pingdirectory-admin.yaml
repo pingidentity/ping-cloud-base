@@ -1,6 +1,0 @@
-apiVersion: certmanager.k8s.io/v1alpha1
-kind: Certificate
-metadata:
-  name: pingdirectory-admin-cert
-spec:
-  commonName: pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}

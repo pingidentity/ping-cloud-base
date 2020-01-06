@@ -1,0 +1,9 @@
+apiVersion: certmanager.k8s.io/v1alpha1
+kind: Certificate
+metadata:
+  name: acme-tls-cert
+  namespace: cert-manager
+spec:
+  dnsNames:
+  - '*.${TENANT_DOMAIN}'
+  commonName: ${TENANT_DOMAIN}

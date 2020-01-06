@@ -5,14 +5,13 @@ metadata:
   name: kibana-ingress
   annotations:
     kubernetes.io/ingress.class: nginx-private
-    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
   labels:
     app: kibana
 spec:
   tls:
   - hosts:
     - logs-dev.ping-demo.com
-    secretName: tls-secret-kibana-ingress
+    secretName: tls-secret
   rules:
   - host: logs-dev.ping-demo.com
     http:

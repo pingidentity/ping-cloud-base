@@ -78,5 +78,4 @@ patchesJson6902:
     name: pingdirectory-admin
 
 patchesStrategicMerge:
-- patches/certificate/pingdirectory-admin.yaml
 - patches/secret/devops-secret.yaml
