@@ -43,7 +43,7 @@ spec:
       containers:
       - name: pingfederate
         # FIXME: switch to stable image before GA
-        image: pingidentity/pingfederate:edge
+        image:  pingidentity/pingfederate:10.0.0-alpine-edge
         imagePullPolicy: Always
         resources:
           requests:
