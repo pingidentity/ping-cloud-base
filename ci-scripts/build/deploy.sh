@@ -53,7 +53,7 @@ kubectl apply -f ${DEPLOY_FILE}
 # long pole and its timeout must be adjusted based on the number of replicas.
 for DEPLOYMENT in $(kubectl get statefulset,deployment -n ${NAMESPACE} -o name); do
   NUM_REPLICAS=$(kubectl get ${DEPLOYMENT} -o jsonpath='{.spec.replicas}' -n ${NAMESPACE})
-  TIMEOUT=$((${NUM_REPLICAS} * 300))
+  TIMEOUT=$((${NUM_REPLICAS} * 600))
   kubectl rollout status --timeout ${TIMEOUT}s ${DEPLOYMENT} -n ${NAMESPACE} -w
 done
 
