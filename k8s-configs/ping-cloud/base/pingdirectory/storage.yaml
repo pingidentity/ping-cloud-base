@@ -1,4 +1,4 @@
-# Sets up the storage class for the ds servers (data and configuration)
+# Sets up the storage class for the pingdirectory servers (data and configuration)
 
 apiVersion: storage.k8s.io/v1
 kind: StorageClass

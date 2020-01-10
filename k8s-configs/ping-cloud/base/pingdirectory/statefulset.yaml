@@ -3,7 +3,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: ds
+  name: pingdirectory
 spec:
   serviceName: pingdirectory
   replicas: 1
@@ -40,7 +40,7 @@ spec:
               topologyKey: "failure-domain.beta.kubernetes.io/zone"
       terminationGracePeriodSeconds: 300
       initContainers:
-      - name: ds-init
+      - name: pingdirectory-init
         # FIXME: switch to same user as app
         securityContext:
           runAsNonRoot: false
@@ -63,11 +63,11 @@ spec:
         - name: known-hosts-config
           mountPath: /known_hosts
           subPath: known_hosts
-        - name: ds-init
+        - name: pingdirectory-init
           mountPath: /init.sh
           subPath: init.sh
       containers:
-      - name: ds
+      - name: pingdirectory
         # FIXME: switch to stable image before GA
         image: pingidentity/pingdirectory:8.0.0.0-alpine-edge
         imagePullPolicy: Always
@@ -115,13 +115,13 @@ spec:
         - name: pingdirectory-license
           mountPath: /opt/in/instance/PingDirectory.lic
           subPath: PingDirectory.lic
-        - name: ds-ready
+        - name: pingdirectory-ready
           mountPath: /opt/staging/readiness.sh
           subPath: readiness.sh
-        - name: ds-pre-stop
+        - name: pingdirectory-pre-stop
           mountPath: /opt/staging/pre-stop.sh
           subPath: pre-stop.sh
-        - name: ds-post-start
+        - name: pingdirectory-post-start
           mountPath: /opt/staging/hooks/80-post-start.sh
           subPath: 80-post-start.sh
         readinessProbe:
@@ -146,21 +146,21 @@ spec:
         emptyDir: {}
       - name: data-dir
         emptyDir: {}
-      - name: ds-init
+      - name: pingdirectory-init
         configMap:
-          name: ds-init
+          name: pingdirectory-init
           defaultMode: 0555
-      - name: ds-pre-stop
+      - name: pingdirectory-pre-stop
         configMap:
-          name: ds-pre-stop
+          name: pingdirectory-pre-stop
           defaultMode: 0555
-      - name: ds-ready
+      - name: pingdirectory-ready
         configMap:
-          name: ds-ready
+          name: pingdirectory-ready
           defaultMode: 0555
-      - name: ds-post-start
+      - name: pingdirectory-post-start
         configMap:
-          name: ds-post-start
+          name: pingdirectory-post-start
           defaultMode: 0555
       - name: ssh-id-key-secret
         secret:

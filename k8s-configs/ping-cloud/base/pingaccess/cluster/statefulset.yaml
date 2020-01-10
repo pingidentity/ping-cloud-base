@@ -5,6 +5,7 @@ kind: StatefulSet
 metadata:
   name: pingaccess-admin
   labels:
+    cluster: pingaccess-cluster
     role: pingaccess-admin
 spec:
   replicas: 1
@@ -16,6 +17,7 @@ spec:
     metadata:
       name: pingaccess-admin
       labels:
+        cluster: pingaccess-cluster
         role: pingaccess-admin
       annotations:
         lastUpdateReason: "NA"
@@ -146,6 +148,7 @@ kind: StatefulSet
 metadata:
   name: pingaccess
   labels:
+    cluster: pingaccess-cluster
     role: pingaccess-engine
 spec:
   replicas: 1
@@ -155,6 +158,7 @@ spec:
     metadata:
       name: pingaccess-engine
       labels:
+        cluster: pingaccess-cluster
         role: pingaccess-engine
       annotations:
         lastUpdateReason: "NA"

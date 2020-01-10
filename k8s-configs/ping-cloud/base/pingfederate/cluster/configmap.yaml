@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: pf-init
+  name: pingfederate-init
 data:
   init.sh: |-
     #!/bin/sh -x

@@ -3,7 +3,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: ds-backup
+  name: pingdirectory-backup
 spec:
   ttlSecondsAfterFinished: 0
   backoffLimit: 5
@@ -12,7 +12,7 @@ spec:
       serviceAccount: ping-serviceaccount
       restartPolicy: Never
       containers:
-      - name: ds-backup
+      - name: pingdirectory-backup
         # FIXME: switch to stable image before GA
         image: pingidentity/pingdirectory:8.0.0.0-alpine-edge
         command:
@@ -43,4 +43,4 @@ spec:
           defaultMode: 0555
       - name: backup-volume
         persistentVolumeClaim:
-          claimName: pd-backup-pvc
+          claimName: pingdirectory-backup-pvc
