@@ -14,7 +14,7 @@ spec:
       containers:
       - name: ds-backup
         # FIXME: switch to stable image before GA
-        image: pingidentity/pingdirectory:1911-alpine-7.3.0.3
+        image: pingidentity/pingdirectory:8.0.0.0-alpine-edge
         command:
         - /opt/in/backup.sh
         env:
