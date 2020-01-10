@@ -15,7 +15,7 @@ spec:
       containers:
       - name: pingdataconsole
         # FIXME: switch to stable image before GA
-        image: pingidentity/pingdataconsole:1911-alpine
+        image: pingidentity/pingdataconsole:alpine-edge
         ports:
         - containerPort: 8080
           name: http
