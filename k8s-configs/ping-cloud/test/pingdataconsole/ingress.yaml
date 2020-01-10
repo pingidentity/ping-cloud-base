@@ -14,7 +14,6 @@ spec:
   tls:
   - hosts:
     - pingdataconsole-dev.ping-demo.com
-    secretName: tls-secret
   rules:
   - host: pingdataconsole-dev.ping-demo.com
     http:
