@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pd-backup-pvc
+  name: pingdirectory-backup-pvc
 spec:
   accessModes:
   - ReadWriteOnce
@@ -76,7 +76,7 @@ data:
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: ds-periodic-backup
+  name: pingdirectory-periodic-backup
 spec:
   schedule: "0 */6 * * *"
   jobTemplate:
@@ -86,7 +86,7 @@ spec:
           serviceAccount: ping-serviceaccount
           restartPolicy: OnFailure
           containers:
-          - name: ds-backup
+          - name: pingdirectory-backup
             # FIXME: switch to stable image before GA
             image: pingidentity/pingdirectory:8.0.0.0-alpine-edge
             command:
@@ -117,4 +117,4 @@ spec:
               defaultMode: 0555
           - name: backup-volume
             persistentVolumeClaim:
-              claimName: pd-backup-pvc
+              claimName: pingdirectory-backup-pvc

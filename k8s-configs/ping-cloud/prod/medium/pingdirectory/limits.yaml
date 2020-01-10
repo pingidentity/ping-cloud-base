@@ -1,13 +1,13 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: ds
+  name: pingdirectory
 spec:
   replicas: 3
   template:
     spec:
       containers:
-      - name: ds
+      - name: pingdirectory
         resources:
           limits:
             memory: 32Gi
@@ -34,7 +34,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pd-backup-pvc
+  name: pingdirectory-backup-pvc
 spec:
   accessModes:
   - ReadWriteOnce

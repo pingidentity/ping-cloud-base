@@ -1,6 +1,6 @@
 ORCHESTRATION_TYPE=kubernetes
 PF_LOG_LEVEL=INFO
-PF_DNS_PING_CLUSTER=pf-cluster
+PF_DNS_PING_CLUSTER=pingfederate-cluster
 PF_DNS_PING_NAMESPACE=placeholder
 
 # FIXME: fix server profile to correct location before kube mode 1

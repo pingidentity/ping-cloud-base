@@ -38,7 +38,7 @@ data:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: ds-csd-upload
+  name: pingdirectory-csd-upload
 spec:
   ttlSecondsAfterFinished: 0
   backoffLimit: 5
@@ -47,7 +47,7 @@ spec:
       serviceAccount: ping-serviceaccount
       restartPolicy: Never
       containers:
-      - name: ds-csd-uploader
+      - name: pingdirectory-csd-uploader
         # FIXME: switch to stable image before GA
         image: pingidentity/pingdirectory:8.0.0.0-alpine-edge
         command:

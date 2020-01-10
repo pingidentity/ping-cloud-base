@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: ds-init
+  name: pingdirectory-init
 data:
   init.sh: |-
     #!/bin/sh -x
@@ -44,7 +44,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: ds-post-start
+  name: pingdirectory-post-start
 data:
   80-post-start.sh: |-
     #!/bin/sh -x
@@ -140,7 +140,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: ds-ready
+  name: pingdirectory-ready
 data:
   readiness.sh: |-
     #!/bin/sh -x
@@ -159,7 +159,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: ds-pre-stop
+  name: pingdirectory-pre-stop
 data:
   pre-stop.sh: |-
     #!/bin/sh -x

@@ -37,14 +37,14 @@ data:
 ---
 
 # A manual restore can be performed by deploying this job. It will restore
-# data that was backed up by the periodic backup job to ds-0. All other servers
-# must initialize the data from ds-0 via dsreplication initialize-all. This
+# data that was backed up by the periodic backup job to pingdirectory-0. All other servers
+# must initialize the data from pingdirectory-0 via dsreplication initialize-all. This
 # job can also be used to load the data initially from a backup created in
 # another environment, e.g. dev.
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: ds-restore
+  name: pingdirectory-restore
 spec:
   ttlSecondsAfterFinished: 0
   backoffLimit: 5
@@ -53,7 +53,7 @@ spec:
       serviceAccount: ping-serviceaccount
       restartPolicy: Never
       containers:
-      - name: ds-restore
+      - name: pingdirectory-restore
         # FIXME: switch to stable image before GA
         image: pingidentity/pingdirectory:8.0.0.0-alpine-edge
         command:
@@ -81,4 +81,4 @@ spec:
           defaultMode: 0555
       - name: backup-volume
         persistentVolumeClaim:
-          claimName: pd-backup-pvc
+          claimName: pingdirectory-backup-pvc

@@ -5,7 +5,7 @@ kind: StatefulSet
 metadata:
   name: pingfederate-admin
   labels:
-    cluster: pf-cluster
+    cluster: pingfederate-cluster
     role: pingfederate-admin
 spec:
   replicas: 1
@@ -17,14 +17,14 @@ spec:
     metadata:
       name: pingfederate-admin
       labels:
-        cluster: pf-cluster
+        cluster: pingfederate-cluster
         role: pingfederate-admin
       annotations:
         lastUpdateReason: "NA"
     spec:
       serviceAccount: ping-serviceaccount
       initContainers:
-      - name: pf-init
+      - name: pingfederate-init
         # FIXME: switch to same user as app
         securityContext:
           runAsNonRoot: false
@@ -44,7 +44,7 @@ spec:
         - name: known-hosts-config
           mountPath: /known_hosts
           subPath: known_hosts
-        - name: pf-init
+        - name: pingfederate-init
           mountPath: /init.sh
           subPath: init.sh
         envFrom:
@@ -107,15 +107,14 @@ spec:
           failureThreshold: 10
         ports:
         - containerPort: 9999
-          name: pf-admin
       volumes:
       - name: ssh-dir
         emptyDir: {}
       - name: data-dir
         emptyDir: {}
-      - name: pf-init
+      - name: pingfederate-init
         configMap:
-          name: pf-init
+          name: pingfederate-init
           defaultMode: 0555
       - name: ssh-id-key-secret
         secret:
