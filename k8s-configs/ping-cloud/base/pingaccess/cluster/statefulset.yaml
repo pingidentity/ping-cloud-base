@@ -190,7 +190,7 @@ spec:
         env:
         # PA engine must wait for the PA admin to be ready
         - name: WAIT_FOR_SERVICES
-          value: pingaccess
+          value: pingaccess-admin
         envFrom:
         - configMapRef:
             name: pingaccess-environment-variables
