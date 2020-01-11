@@ -70,15 +70,57 @@ patchesStrategicMerge:
     PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER_BASE64}
     PING_IDENTITY_DEVOPS_KEY: ${PING_IDENTITY_DEVOPS_KEY_BASE64}
 
-### Ping cloud stack service account ###
+### Licenses ###
+
+# Add pingdirectory.lic to the data section with the base64-encoded value of the license file
 - |-
   apiVersion: v1
-  kind: ServiceAccount
+  kind: Secret
   metadata:
-    name: ping-serviceaccount
-    annotations:
-      purpose: service-account-for-ping-cloud-stack
-      ${S3_IRSA_ARN_KEY_AND_VALUE}
+    name: pingdirectory-license
+  type: Opaque
+
+# Add pingfederate.lic to the data section with the base64-encoded value of the license file
+- |-
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: pingfederate-license
+  type: Opaque
+
+# Add pingaccess.lic to the data section with the base64-encoded value of the license file
+- |-
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: pingaccess-license
+  type: Opaque
+
+### Product passwords ###
+
+# Supported keys (mounted as files): root-user-password, admin-user-password, encryption-password
+- |-
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: pingdirectory-passwords
+  type: Opaque
+
+# Supported keys (exported as environment variables): INITIAL_ADMIN_PASSWORD
+- |-
+  apiVersion: v1
+  kind: Secret
+  type: Opaque
+  metadata:
+    name: pingfederate-passwords
+
+# Supported keys (exported as environment variables): INITIAL_ADMIN_PASSWORD
+- |-
+  apiVersion: v1
+  kind: Secret
+  type: Opaque
+  metadata:
+    name: pingaccess-passwords
 
 ### Ping app SSH private key ###
 
@@ -102,6 +144,16 @@ patchesStrategicMerge:
   data:
     known_hosts: |
       ${KNOWN_HOSTS_CONFIG_REPO}
+
+### Ping cloud stack service account ###
+- |-
+  apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: ping-serviceaccount
+    annotations:
+      purpose: service-account-for-ping-cloud-stack
+      ${S3_IRSA_ARN_KEY_AND_VALUE}
 
 ${DELETE_PING_CLOUD_NAMESPACE_PATCH_MERGE}
 
