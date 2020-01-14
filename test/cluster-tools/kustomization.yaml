@@ -60,3 +60,12 @@ patchesJson6902:
     kind: Deployment
     name: nginx-ingress-controller
     namespace: ingress-nginx-public
+
+# Change the namespace of the ACME certificate to the ping-cloud namespace
+- path: patches/certificate/change-cert-namespace.yaml
+  target:
+    group: certmanager.k8s.io
+    version: v1alpha1
+    kind: Certificate
+    name: acme-tls-cert
+    namespace: cert-manager

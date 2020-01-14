@@ -15,6 +15,8 @@ rules:
     resources:
     - "pods"
     - "pods/log"
+    - "secrets"
+    - "configmaps"
     verbs:
     - get
     - list
@@ -22,6 +24,7 @@ rules:
     - "apps"
     resources:
     - "statefulsets"
+    - "deployments"
     verbs:
     - get
   - apiGroups:

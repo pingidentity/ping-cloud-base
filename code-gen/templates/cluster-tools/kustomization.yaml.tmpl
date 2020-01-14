@@ -129,7 +129,7 @@ patchesJson6902:
     - op: add
       path: /spec/template/spec/containers/0/args/-
       value:
-        --default-ssl-certificate=cert-manager/acme-tls-cert
+        --default-ssl-certificate=${PING_CLOUD_NAMESPACE}/acme-tls-cert
 
 - target:
     group: apps
@@ -141,7 +141,7 @@ patchesJson6902:
     - op: add
       path: /spec/template/spec/containers/0/args/-
       value:
-        --default-ssl-certificate=cert-manager/acme-tls-cert
+        --default-ssl-certificate=${PING_CLOUD_NAMESPACE}/acme-tls-cert
 
 ### Cluster auto-scaler ###
 - target:
@@ -151,15 +151,27 @@ patchesJson6902:
     name: cluster-autoscaler
     namespace: kube-system
   patch: |-
-   - op: add
-     path: /spec/template/spec/containers/0/command/-
-     value:
-       --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/${CLUSTER_NAME}
-   - op: add
-     path: /spec/template/spec/containers/0/env
-     value:
-       - name: AWS_REGION
-         value: ${REGION}
+    - op: add
+      path: /spec/template/spec/containers/0/command/-
+      value:
+        --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/${CLUSTER_NAME}
+    - op: add
+      path: /spec/template/spec/containers/0/env
+      value:
+        - name: AWS_REGION
+          value: ${REGION}
+
+# Change the namespace of the ACME certificate to the ping-cloud namespace
+- target:
+    group: certmanager.k8s.io
+    version: v1alpha1
+    kind: Certificate
+    name: acme-tls-cert
+    namespace: cert-manager
+  patch: |-
+    - op: replace
+      path: /metadata/namespace
+      value: ${PING_CLOUD_NAMESPACE}
 
 ### Logs dashboard ###
 - target:

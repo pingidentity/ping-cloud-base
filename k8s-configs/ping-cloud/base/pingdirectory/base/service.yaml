@@ -11,7 +11,7 @@ spec:
   - port: 389
     name: ldap
     targetPort: ldap
-  - port: 636
+  - port: 1636
     name: ldaps
     targetPort: ldaps
   clusterIP: None
