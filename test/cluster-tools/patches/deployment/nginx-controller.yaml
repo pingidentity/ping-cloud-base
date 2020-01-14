@@ -1,4 +1,4 @@
 - op: add
   path: /spec/template/spec/containers/0/args/-
   value:
-    --default-ssl-certificate=cert-manager/acme-tls-cert
+    --default-ssl-certificate=${NAMESPACE}/acme-tls-cert

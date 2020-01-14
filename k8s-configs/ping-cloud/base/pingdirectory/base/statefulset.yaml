@@ -74,7 +74,7 @@ spec:
         ports:
         - containerPort: 389
           name: ldap
-        - containerPort: 636
+        - containerPort: 1636
           name: ldaps
         resources:
           requests:

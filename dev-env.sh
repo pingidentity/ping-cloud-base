@@ -170,7 +170,7 @@ export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEV
 export CLUSTER_NAME=${TENANT_NAME}
 export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
 
-NAMESPACE=ping-cloud-${ENVIRONMENT_NO_HYPHEN_PREFIX}
+export NAMESPACE=ping-cloud-${ENVIRONMENT_NO_HYPHEN_PREFIX}
 DEPLOY_FILE=/tmp/deploy.yaml
 
 kustomize build test |
@@ -181,6 +181,7 @@ kustomize build test |
     ${CLUSTER_NAME}
     ${CLUSTER_NAME_LC}
     ${REGION}
+    ${NAMESPACE}
     ${ARTIFACT_REPO_URL}
     ${LOG_ARCHIVE_URL}
     ${BACKUP_URL}' > ${DEPLOY_FILE}
