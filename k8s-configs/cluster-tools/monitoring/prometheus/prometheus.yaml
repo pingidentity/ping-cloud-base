@@ -38,6 +38,9 @@ data:
       - source_labels: [__meta_kubernetes_pod_name]
         action: replace
         target_label: instance
+      - source_labels: [__meta_kubernetes_namespace]
+        action: replace
+        target_label: namespace
 
     # Other k8s jobs to scrape - see https://devopscube.com/setup-prometheus-monitoring-on-kubernetes/
     - job_name: 'kubernetes-apiservers'
