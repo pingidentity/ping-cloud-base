@@ -5,7 +5,7 @@ resources:
 # These are AWS-specific and not included in the out-of-the-box cluster tools.
 - ../../k8s-configs/cluster-tools/cert-manager/route53
 - ../../k8s-configs/cluster-tools/cluster-autoscaler
-- ../../k8s-configs/cluster-tools/monitoring
+- ../../k8s-configs/cluster-tools/monitoring/container-insights
 
 # These are cloud-agnostic cluster tools.
 - ../../k8s-configs/cluster-tools
@@ -25,6 +25,15 @@ patchesJson6902:
     kind: Ingress
     name: kibana-ingress
     namespace: elastic-stack-logging
+
+# monitoring with grafana
+- path: patches/ingress/grafana.yaml
+  target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: grafana-ingress
+    namespace: prometheus
 
 # Make the admin nodes available externally for test purposes. In general, they
 # will be behind a VPN gateway on all CDEs so only admins have access to them.

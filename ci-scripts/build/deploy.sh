@@ -55,7 +55,7 @@ kubectl apply -f ${DEPLOY_FILE}
 for DEPLOYMENT in $(kubectl get statefulset,deployment -n ${NAMESPACE} -o name); do
   NUM_REPLICAS=$(kubectl get ${DEPLOYMENT} -o jsonpath='{.spec.replicas}' -n ${NAMESPACE})
   TIMEOUT=$((${NUM_REPLICAS} * 600))
-  kubectl rollout status --timeout ${TIMEOUT}s ${DEPLOYMENT} -n ${NAMESPACE} -w
+  time kubectl rollout status --timeout ${TIMEOUT}s ${DEPLOYMENT} -n ${NAMESPACE} -w
 done
 
 # Print out the ingress objects for logs and the ping stack

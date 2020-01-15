@@ -141,6 +141,21 @@ spec:
             exec:
               command:
               - /opt/staging/pre-stop.sh
+      - name: pingdirectory-statsd-exporter
+        image: prom/statsd-exporter
+        args:
+        - "--statsd.mapping-config=/tmp/mapping/pingdirectory-statsd-mapping.yml"
+        - "--statsd.listen-udp=:8125"
+        - "--web.listen-address=:9102"
+        ports:
+          - containerPort: 9102
+            protocol: TCP
+          - containerPort: 8125
+            protocol: UDP
+        volumeMounts:
+          - mountPath: /tmp/mapping/
+            name: pingdirectory-statsd-mapping
+            readOnly: false
       volumes:
       - name: ssh-dir
         emptyDir: {}
@@ -185,6 +200,9 @@ spec:
           secretName: pingdirectory-passwords
           optional: true
           defaultMode: 0400
+      - name: pingdirectory-statsd-mapping
+        configMap:
+          name: pingdirectory-statsd-mapping
   volumeClaimTemplates:
   - metadata:
       name: out-dir

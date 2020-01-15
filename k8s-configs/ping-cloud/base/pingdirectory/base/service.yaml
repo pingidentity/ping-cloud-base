@@ -1,5 +1,5 @@
 # Headless service that provides DNS between the pods in the pingdirectory
-# topology
+# topology, and exposes statsd metrics to prometheus
 
 apiVersion: v1
 kind: Service
@@ -14,6 +14,8 @@ spec:
   - port: 1636
     name: ldaps
     targetPort: ldaps
+  - port: 9102
+    name: metrics
   clusterIP: None
 
 ---
