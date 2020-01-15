@@ -1,0 +1,9 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+- kube-state-metrics.yaml
+- namespace.yaml
+- grafana.yaml
+- prometheus.yaml
+- ingress.yaml

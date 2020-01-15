@@ -6,4 +6,5 @@ resources:
 - service-discovery
 - ingress
 - logging
+- monitoring
 - security

@@ -1,0 +1,23 @@
+# This defines the ingress for grafana.
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: grafana-ingress
+  namespace: prometheus
+  annotations:
+    kubernetes.io/ingress.class: nginx-private
+  labels:
+    app: grafana
+spec:
+  tls:
+  - hosts:
+    - grafana-dev.ping-demo.com
+  rules:
+  - host: grafana-dev.ping-demo.com
+    http:
+      paths:
+        # This rule gives external access to the grafana console
+        - path: /
+          backend:
+            serviceName: grafana
+            servicePort: 3000
