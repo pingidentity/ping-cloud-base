@@ -45,6 +45,12 @@ spec:
         # FIXME: switch to stable image before GA
         image:  pingidentity/pingfederate:10.0.0-alpine-edge
         imagePullPolicy: Always
+        env:
+        - name: INITIAL_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingfederate-passwords
+              key: INITIAL_ADMIN_PASSWORD
         resources:
           requests:
             memory: "2Gi"
