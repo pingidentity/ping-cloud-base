@@ -4,11 +4,17 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: pingfederate
+  labels:
+    cluster: standalone
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   template:
     metadata:
       name: pingfederate
+      labels:
+        cluster: standalone
       annotations:
         lastUpdateReason: "NA"
     spec:
