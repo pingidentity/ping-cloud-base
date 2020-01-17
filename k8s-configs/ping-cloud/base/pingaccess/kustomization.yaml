@@ -2,6 +2,4 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-# Fixme: change to cluster once prefiguration of httbin and pingfederate is in place for cluster
-#- standalone
 - cluster
