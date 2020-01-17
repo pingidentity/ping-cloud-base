@@ -2,11 +2,11 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-#- minimal-secret.yaml
-- baseline-secret.yaml
+- minimal-secret.yaml
+#- baseline-secret.yaml
 - configmap.yaml
-- storage.yaml  
-- statefulset.yaml
+# FIXME: Will move periodic-backup.yaml to code-gen before kube mode 1
+# - periodic-backup.yaml
 - deployment.yaml
 - service.yaml
 - ingress.yaml

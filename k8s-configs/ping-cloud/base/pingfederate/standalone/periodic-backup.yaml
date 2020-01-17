@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pingfederate-periodic-backup-script
+data:
+  backup-archive-data.sh: |-
+    #!/bin/sh
+
+    # Install kubectl
+    echo "Installing kubectl"
+    curl https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl \
+    -o /usr/local/bin/kubectl
+    
+    chmod +x /usr/local/bin/kubectl
+
+    UPLOAD_FILES=
+    SERVER=$(kubectl get pod -l cluster=standalone | sed -n "/${K8S_DEPLOYMENT_NAME_PINGFEDERATE}/p" | awk '{print $1}')
+
+    echo "Uploading pingfederate backup data on server ${SERVER}"
+    kubectl exec "${SERVER}" -- chmod +x "${HOOKS_DIR}"/82-upload-archive-data-s3.sh | tee /tmp/upload.log
+    kubectl exec "${SERVER}" -- "${HOOKS_DIR}"/82-upload-archive-data-s3.sh | tee /tmp/upload.log
+
+    UPLOAD_FILE=$(tail -1 /tmp/upload.log)
+    test -z "${UPLOAD_FILES}" && UPLOAD_FILES="${UPLOAD_FILE}" || UPLOAD_FILES="${UPLOAD_FILES} ${UPLOAD_FILE}"
+
+    # Print the names of the uploaded files so callers know exactly what was uploaded
+    echo "The following files were uploaded:"
+    echo "${UPLOAD_FILES}"
+
+---
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: pingfederate-admin-periodic-backup
+spec:
+  schedule: "*/5 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccount: ping-serviceaccount
+          restartPolicy: OnFailure
+          containers:
+          - name: pingfederate-backup
+            # FIXME: switch to stable image before GA
+            image: pingidentity/pingfederate:10.0.0-alpine-edge
+            command:
+            - /opt/in/backup-archive-data.sh
+            envFrom:
+            - configMapRef:
+                name: pingfederate-environment-variables
+            - secretRef:
+                name: devops-secret
+                optional: true
+            volumeMounts:
+            - name: pingfederate-periodic-backup-script
+              mountPath: /opt/in/backup-archive-data.sh
+              subPath: backup-archive-data.sh
+          volumes:
+          - name: pingfederate-periodic-backup-script
+            configMap:
+              name: pingfederate-periodic-backup-script
+              defaultMode: 0555
