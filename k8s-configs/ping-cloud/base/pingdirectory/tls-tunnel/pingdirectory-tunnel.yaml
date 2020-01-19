@@ -1,6 +1,11 @@
 # This patch may be applied to the pingdirectory statefulset to start up a sidecar container that'll tunnel TLS
 # traffic. Since nginx is simply a web proxy and cannot handle proxying anything but HTTPS traffic, this is necessary
 # for the pingdirectory LDAPS server.
+
+# This patch requires a secret object of the name acme-tls-cert to exist. This is usually created by cert-manager,
+# which interacts with Let's encrypt to issue an ACME certificate. For BYOC use cases, the secret may be created
+# declaratively with the tls.crt and tls.key that contains the identity certificate and key in base64-encoded PEM
+# format.
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -11,19 +16,20 @@ spec:
       containers:
       - name: stunnel
         image: dweomer/stunnel
+        securityContext:
+          # Run as the stunnel uid and gid
+          runAsNonRoot: true
+          runAsUser: 100
+          runAsGroup: 101
         imagePullPolicy: Always
         command:
         - sh
         - -c
         - |
 
-          echo "Installing kubectl"
-          wget https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl -P /usr/local/bin
-          chmod +x /usr/local/bin/kubectl
-
           echo "Configuring stunnel environment variables"
-          STUNNEL_BASE_DIR=/stunnel
-          STUNNEL_CONF_FILE=${STUNNEL_BASE_DIR}/stunnel.conf
+          STUNNEL_HOME=/home/stunnel
+          STUNNEL_CONF_FILE=${STUNNEL_HOME}/stunnel.conf
 
           STUNNEL_PID_DIR=/var/run/stunnel
           STUNNEL_PID_FILE=${STUNNEL_PID_DIR}/stunnel.pid
@@ -33,10 +39,8 @@ spec:
 
           STUNNEL_CA_FILE=/etc/ssl/certs/ca-certificates.crt
 
-          STUNNEL_CRT_FILE=${STUNNEL_BASE_DIR}/tls.crt
-          STUNNEL_KEY_FILE=${STUNNEL_BASE_DIR}/tls.key
-
-          mkdir -p ${STUNNEL_BASE_DIR} ${STUNNEL_PID_DIR} ${STUNNEL_LOG_DIR}
+          STUNNEL_CRT_FILE=${STUNNEL_HOME}/tls.crt
+          STUNNEL_KEY_FILE=${STUNNEL_HOME}/tls.key
 
           echo "Creating initial stunnel key-pair in file ${STUNNEL_CRT_FILE} and ${STUNNEL_KEY_FILE}"
           openssl req -x509 -nodes -newkey rsa:2048 -days 365 -subj '/CN=stunnel' \
@@ -70,52 +74,49 @@ spec:
           TIMEOUTbusy = -1
           EOF
 
-          echo "Updating stunnel CA and identity certificates"
-          cp -v ${STUNNEL_CA_FILE} /usr/local/share/ca-certificates/stunnel-ca.crt
-          cp -v ${STUNNEL_CRT_FILE} /usr/local/share/ca-certificates/stunnel.crt
-          update-ca-certificates
+          echo "Installing kubectl"
+          wget https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl -P ${STUNNEL_HOME}
+          chmod +x ${STUNNEL_HOME}/kubectl
 
           echo "Creating the periodic script to get the ACME certificate"
-          FETCH_CERT_SCRIPT=${STUNNEL_BASE_DIR}/fetch-cert.sh
+          FETCH_CERT_SCRIPT=${STUNNEL_HOME}/fetch-cert.sh
 
           cat > ${FETCH_CERT_SCRIPT} <<EOF
-          echo "Reload cron job last ran at \$(date)" > /tmp/cron.log
+          while true; do
+            echo "Running periodic fetch script at \$(date)"
 
-          SECRET_FILE=\$(mktemp)
-          kubectl get secret acme-tls-cert -o yaml > \${SECRET_FILE}
+            SECRET_FILE=\$(mktemp)
+            ${STUNNEL_HOME}/kubectl get secret acme-tls-cert -o yaml 2> /dev/null > \${SECRET_FILE}
 
-          if grep -q 'tls.crt' \${SECRET_FILE}; then
-            TEMP_CRT_FILE=\$(mktemp)
-            TEMP_KEY_FILE=\$(mktemp)
+            if grep -q 'tls.crt' \${SECRET_FILE}; then
+              TEMP_CRT_FILE=\$(mktemp)
+              TEMP_KEY_FILE=\$(mktemp)
 
-            grep 'tls.crt' \${SECRET_FILE} | cut -d: -f2 | base64 -d > \${TEMP_CRT_FILE}
-            grep 'tls.key' \${SECRET_FILE} | cut -d: -f2 | base64 -d > \${TEMP_KEY_FILE}
+              grep 'tls.key' \${SECRET_FILE} | cut -d: -f2 | base64 -d > \${TEMP_KEY_FILE}
+              grep 'tls.crt' \${SECRET_FILE} | cut -d: -f2 | base64 -d > \${TEMP_CRT_FILE}
 
-            echo "Updating stunnel CA and identity certificates"
-            chmod 600 \${TEMP_CRT_FILE}
-            cp -v \${TEMP_CRT_FILE} /usr/local/share/ca-certificates/stunnel.crt
-            update-ca-certificates
+              if ! diff \${TEMP_CRT_FILE} ${STUNNEL_CRT_FILE} > /dev/null; then
+                mv \${TEMP_CRT_FILE} ${STUNNEL_CRT_FILE}
+                mv \${TEMP_KEY_FILE} ${STUNNEL_KEY_FILE}
 
-            mv \${TEMP_CRT_FILE} ${STUNNEL_CRT_FILE}
-            mv \${TEMP_KEY_FILE} ${STUNNEL_KEY_FILE}
+                PID=\$(pgrep stunnel)
+                echo "Sending stunnel process PID \${PID} the HUP signal"
+                kill -HUP \${PID}
+                echo "stunnel config last reloaded at \$(date)"
+              else
+                echo "Certificate in \${TEMP_CRT_FILE} ${STUNNEL_CRT_FILE} are the same"
+              fi
+            else
+              echo "TLS key-pair not found in secret"
+            fi
 
-            PID=\$(pgrep stunnel)
-            echo "stunnel process \${PID} running - sending it the HUP signal"
-            kill -HUP \${PID}
-          else
-            echo "TLS secret not found"
-          fi
+            sleep 60
+          done
           EOF
 
+          echo "Starting periodic certificate update checker in the background"
           chmod a+x ${FETCH_CERT_SCRIPT}
-
-          echo "Adding a cron job to fetch the certificate every minute"
-          crontab -l | { cat; echo "* * * * * sh ${FETCH_CERT_SCRIPT}"; } | crontab -
-          crontab -l
-
-          echo "Starting the cron daemon"
-          crond
-          ps -ef q
+          sh ${FETCH_CERT_SCRIPT} &
 
           echo "Starting stunnel"
           exec stunnel ${STUNNEL_CONF_FILE}
