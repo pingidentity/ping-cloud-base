@@ -5,8 +5,6 @@ resources:
 - minimal-secret.yaml
 #- baseline-secret.yaml
 - configmap.yaml
-# FIXME: Will move periodic-backup.yaml to code-gen before kube mode 1
-# - periodic-backup.yaml
 - deployment.yaml
 - service.yaml
 - ingress.yaml

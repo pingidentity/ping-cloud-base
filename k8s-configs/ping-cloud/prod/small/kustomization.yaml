@@ -9,7 +9,7 @@ commonLabels:
 resources:
 - ../../base
 - ../../base/pingdirectory/tls-tunnel
-- ../../base/pingfederate/cluster
+- ../../base/pingfederate/aws
 
 patchesStrategicMerge:
 - pingdirectory/limits.yaml
