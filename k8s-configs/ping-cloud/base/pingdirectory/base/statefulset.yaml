@@ -4,9 +4,14 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: pingdirectory
+  labels:
+    class: pingdirectory-server
 spec:
   serviceName: pingdirectory
   replicas: 1
+  selector:
+    matchLabels:
+      class: pingdirectory-server
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: OrderedReady
@@ -14,6 +19,8 @@ spec:
     metadata:
       annotations:
         lastUpdateReason: "NA"
+      labels:
+        class: pingdirectory-server
     spec:
       serviceAccount: ping-serviceaccount
       affinity:
@@ -206,6 +213,8 @@ spec:
   volumeClaimTemplates:
   - metadata:
       name: out-dir
+      labels:
+        class: pingdirectory-server
     spec:
       accessModes:
       - ReadWriteOnce
