@@ -225,6 +225,7 @@ ${KNOWN_HOSTS_CONFIG_REPO}
 ${DNS_RECORD_SUFFIX}
 ${DNS_DOMAIN_PREFIX}
 ${ENVIRONMENT_GIT_PATH}
+${ENVIRONMENT_TYPE}
 ${PING_CLOUD_NAMESPACE}
 ${KUSTOMIZE_BASE}
 ${PING_CLOUD_NAMESPACE_RESOURCE}
@@ -442,6 +443,7 @@ ENVIRONMENTS='dev test stage prod'
 for ENV in ${ENVIRONMENTS}; do
   # Export all the environment variables required for envsubst
   export ENVIRONMENT_GIT_PATH=${ENV}
+  export ENVIRONMENT_TYPE=${ENV}
 
   # The base URL for kustomization files and environment will be different for each CDE.
   case "${ENV}" in
@@ -495,6 +497,7 @@ for ENV in ${ENVIRONMENTS}; do
   echo ---
   echo "For environment ${ENV}, using variable values:"
   echo "ENVIRONMENT_GIT_PATH: ${ENVIRONMENT_GIT_PATH}"
+  echo "ENVIRONMENT_TYPE: ${ENVIRONMENT_TYPE}"
   echo "KUSTOMIZE_BASE: ${KUSTOMIZE_BASE}"
   echo "CLUSTER_NAME: ${CLUSTER_NAME}"
   echo "PING_CLOUD_NAMESPACE: ${PING_CLOUD_NAMESPACE}"
