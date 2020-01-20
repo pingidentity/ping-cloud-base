@@ -1,5 +1,0 @@
-# Update this environment variable to trigger updates to the PD servers
-LAST_UPDATE_REASON=NA
-
-# FIXME: Change to baseline/pingaccess upon 1.0 release
-SERVER_PROFILE_PATH=pingaccess-cluster
