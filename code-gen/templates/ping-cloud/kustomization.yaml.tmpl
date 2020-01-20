@@ -12,8 +12,6 @@ images:
   newName: ${REGISTRY_NAME}/pingidentity/pingdirectory
 - name: pingidentity/pingfederate
   newName: ${REGISTRY_NAME}/pingidentity/pingfederate
-- name: pingidentity/pingaccess
-  newName: ${REGISTRY_NAME}/pingidentity/pingaccess
 
 generatorOptions:
   disableNameSuffixHash: false
@@ -29,18 +27,6 @@ configMapGenerator:
 - name: pingfederate-last-update-config
   envs:
   - pingfederate/env_vars
-
-# Create the config maps that hold the variable for triggering updates of PA servers
-- name: pingaccess-last-update-config
-  envs:
-  - pingaccess/env_vars
-
-# Pingaccess
-- name: pingaccess-environment-variables
-  behavior: merge
-  envs:
-  - env_vars
-  - pingaccess/env_vars
 
 # Pingdirectory
 - name: pingdirectory-environment-variables
@@ -88,14 +74,6 @@ patchesStrategicMerge:
     name: pingfederate-license
   type: Opaque
 
-# Add pingaccess.lic to the data section with the base64-encoded value of the license file
-- |-
-  apiVersion: v1
-  kind: Secret
-  metadata:
-    name: pingaccess-license
-  type: Opaque
-
 ### Product passwords ###
 
 # Supported keys (mounted as files): root-user-password, admin-user-password, encryption-password
@@ -113,14 +91,6 @@ patchesStrategicMerge:
   type: Opaque
   metadata:
     name: pingfederate-passwords
-
-# Supported keys (exported as environment variables): INITIAL_ADMIN_PASSWORD
-- |-
-  apiVersion: v1
-  kind: Secret
-  type: Opaque
-  metadata:
-    name: pingaccess-passwords
 
 ### Ping app SSH private key ###
 
@@ -198,32 +168,6 @@ patchesJson6902:
         configMapRef:
           name: pingfederate-last-update-config
 
-### Ping Access Admin Last Update Config Map ###
-- target:
-    group: apps
-    version: v1
-    kind: StatefulSet
-    name: pingaccess-admin
-  patch: |
-    - op: add
-      path: /spec/template/spec/containers/0/envFrom/-
-      value:
-        configMapRef:
-          name: pingaccess-last-update-config
-
-### Ping Access Engine Last Update Config Map ###
-- target:
-    group: apps
-    version: v1
-    kind: StatefulSet
-    name: pingaccess
-  patch: |
-    - op: add
-      path: /spec/template/spec/containers/0/envFrom/-
-      value:
-        configMapRef:
-          name: pingaccess-last-update-config
-
 ### Ingress patches ###
 
 # pingfederate runtime
@@ -253,48 +197,6 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingfederate-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-
-# pingaccess runtime
-- target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: pingaccess-ingress
-  patch: |
-    - op: replace
-      path: /spec/tls/0/hosts/0
-      value: pingaccess${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-    - op: replace
-      path: /spec/rules/0/host
-      value: pingaccess${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-
-# pingaccess agent
-- target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: pingaccess-agent-ingress
-  patch: |
-    - op: replace
-      path: /spec/tls/0/hosts/0
-      value: pingaccess-agent${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-    - op: replace
-      path: /spec/rules/0/host
-      value: pingaccess-agent${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-
-# pingaccess admin
-- target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: pingaccess-admin-ingress
-  patch: |
-    - op: replace
-      path: /spec/tls/0/hosts/0
-      value: pingaccess-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-    - op: replace
-      path: /spec/rules/0/host
-      value: pingaccess-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
 
 # pingdirectory admin
 - target:

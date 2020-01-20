@@ -9,11 +9,8 @@ commonLabels:
 resources:
 - ../../base
 - ../../base/pingdirectory/tls-tunnel
-- ../../base/pingaccess/cluster
 - ../../base/pingfederate/cluster
 
 patchesStrategicMerge:
 - pingdirectory/limits.yaml
 - pingfederate/limits.yaml
-- pingaccess/limits.yaml
-- pingaccess/admin-init-env.yaml

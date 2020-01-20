@@ -9,7 +9,6 @@ commonLabels:
 resources:
 - ../base
 - ../base/pingdirectory/tls-tunnel
-- ../base/pingaccess/cluster
 - ../base/pingfederate/cluster
 - pingdataconsole
 - httpbin
