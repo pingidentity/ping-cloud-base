@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: restore-script
+  name: pingdirectory-restore
 data:
   restore.sh: |
     #!/bin/sh
@@ -20,7 +20,7 @@ data:
 
     SERVER="${K8S_STATEFUL_SET_NAME}-0"
     echo "Copying backup from ${CURRENT_BACKUP_DIR} to ${SERVER}:${SERVER_BACKUP_DIR}"
-    kubectl cp "${CURRENT_BACKUP_DIR}" "${SERVER}:${SERVER_BACKUP_DIR}"
+    kubectl cp "${CURRENT_BACKUP_DIR}" "${SERVER}:${SERVER_BACKUP_DIR}" -c pingdirectory
 
     echo "Restoring to the latest backup under ${SERVER_BACKUP_DIR}"
     "${SERVER_BITS_DIR}/bin/restore" --task \
@@ -32,7 +32,7 @@ data:
       --backupDirectory "${SERVER_BACKUP_DIR}"
 
     echo "Removing backup directory ${SERVER}:${SERVER_BACKUP_DIR}"
-    kubectl exec "${SERVER}" -- rm -rf "${SERVER_BACKUP_DIR}"
+    kubectl exec "${SERVER}" -c pingdirectory -- rm -rf "${SERVER_BACKUP_DIR}"
 
 ---
 
@@ -45,6 +45,9 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: pingdirectory-restore
+  labels:
+    app: ping-cloud
+    role: pingdirectory
 spec:
   ttlSecondsAfterFinished: 0
   backoffLimit: 5
@@ -77,7 +80,7 @@ spec:
           defaultMode: 0400
       - name: restore-script
         configMap:
-          name: restore-script
+          name: pingdirectory-restore
           defaultMode: 0555
       - name: backup-volume
         persistentVolumeClaim:

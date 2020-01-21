@@ -4,6 +4,9 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: pingdirectory-backup
+  labels:
+    app: ping-cloud
+    role: pingdirectory
 spec:
   ttlSecondsAfterFinished: 0
   backoffLimit: 5
@@ -39,7 +42,7 @@ spec:
           defaultMode: 0400
       - name: backup-script
         configMap:
-          name: backup-script
+          name: pingdirectory-backup
           defaultMode: 0555
       - name: backup-volume
         persistentVolumeClaim:
