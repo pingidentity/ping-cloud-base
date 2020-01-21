@@ -437,6 +437,8 @@ mkdir -p "${FLUXCD_DIR}"
 K8S_CONFIGS_DIR="${TARGET_DIR}/k8s-configs"
 mkdir -p "${K8S_CONFIGS_DIR}"
 
+cp ../.gitignore "${TARGET_DIR}"
+
 # Now generate the yaml files for each environment
 ENVIRONMENTS='dev test stage prod'
 
