@@ -15,7 +15,7 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: backup-script
+  name: pingdirectory-backup
 data:
   backup.sh: |-
     #!/bin/sh
@@ -50,7 +50,7 @@ data:
     mkdir -p "${NEW_BACKUP_DIR}"
 
     echo "Copying backup from ${SERVER}:${SERVER_BACKUP_DIR} to ${NEW_BACKUP_DIR}"
-    kubectl cp "${SERVER}:${SERVER_BACKUP_DIR}" "${NEW_BACKUP_DIR}"
+    kubectl cp "${SERVER}:${SERVER_BACKUP_DIR}" "${NEW_BACKUP_DIR}" -c pingdirectory
 
     echo "Changing current backup to point to ${NEW_BACKUP_DIR}"
     CURRENT_BACKUP_DIR="${BACKUP_DIR}/current"
@@ -113,7 +113,7 @@ spec:
               defaultMode: 0400
           - name: backup-script
             configMap:
-              name: backup-script
+              name: pingdirectory-backup
               defaultMode: 0555
           - name: backup-volume
             persistentVolumeClaim:
