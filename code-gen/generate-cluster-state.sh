@@ -69,7 +69,7 @@
 #                        | small, medium or large.                            |
 #                        |                                                    |
 # CLUSTER_STATE_REPO_URL | The URL of the cluster-state repo.                 | https://github.com/pingidentity/ping-cloud-base
-#                        |                                                    |                        |                                                    |
+#                        |                                                    |
 # CONFIG_REPO_URL        | The URL of the config repo.                        | https://github.com/pingidentity/pingidentity-server-profiles
 #                        |                                                    |
 # CONFIG_REPO_BRANCH     | The branch within the config repo to use for       | pcpt
