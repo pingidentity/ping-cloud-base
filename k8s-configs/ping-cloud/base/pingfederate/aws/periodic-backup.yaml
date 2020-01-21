@@ -19,7 +19,7 @@ data:
     LOG_FILE=/tmp/upload.log
 
     echo "Uploading pingfederate backup data on server ${SERVER}"
-    kubectl exec "${SERVER}" -c pingfederate-admin -- sh -c "chmod +x ${SCRIPT} && test -x ${SCRIPT} && ${SCRIPT}" | tee "${LOG_FILE}"
+    kubectl exec "${SERVER}" -c pingfederate-admin -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" | tee "${LOG_FILE}"
 
     if test ${?} -eq 0; then
       UPLOAD_FILE=$(tail -1 "${LOG_FILE}")
