@@ -11,9 +11,9 @@ metadata:
 spec:
   tls:
   - hosts:
-    - grafana-dev.ping-demo.com
+    - monitoring-dev.ping-demo.com
   rules:
-  - host: grafana-dev.ping-demo.com
+  - host: monitoring-dev.ping-demo.com
     http:
       paths:
         # This rule gives external access to the grafana console
