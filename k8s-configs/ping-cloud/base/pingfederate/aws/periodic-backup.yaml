@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: pingfederate-periodic-backup-script
+  name: pingfederate-backup
 data:
   backup-archive-data.sh: |-
     #!/bin/sh
@@ -33,7 +33,7 @@ data:
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: pingfederate-admin-periodic-backup
+  name: pingfederate-periodic-backup
 spec:
   schedule: "*/5 * * * *"
   jobTemplate:
@@ -55,11 +55,11 @@ spec:
                 name: devops-secret
                 optional: true
             volumeMounts:
-            - name: pingfederate-periodic-backup-script
+            - name: pingfederate-backup
               mountPath: /opt/in/backup-archive-data.sh
               subPath: backup-archive-data.sh
           volumes:
-          - name: pingfederate-periodic-backup-script
+          - name: pingfederate-backup
             configMap:
-              name: pingfederate-periodic-backup-script
+              name: pingfederate-backup
               defaultMode: 0555
