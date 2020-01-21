@@ -19,12 +19,18 @@ data:
     CSD_FILES=
     for i in $(seq ${START} ${END}); do
       SERVER="${K8S_STATEFUL_SET_NAME}-${i}"
+      SCRIPT="${HOOKS_DIR}"/82-upload-csd-s3.sh
+      LOG_FILE=/tmp/upload.log
 
       echo "Uploading CSD on server ${SERVER}"
-      kubectl exec "${SERVER}" -- "${HOOKS_DIR}"/82-upload-csd-s3.sh | tee /tmp/upload.log
+      kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" | tee "${LOG_FILE}"
 
-      CSD_FILE=$(tail -1 /tmp/upload.log)
-      test -z "${CSD_FILES}" && CSD_FILES="${CSD_FILE}" || CSD_FILES="${CSD_FILES} ${CSD_FILE}"
+      if test ${?} -eq 0; then
+        CSD_FILE=$(tail -1 "${LOG_FILE}")
+        test -z "${CSD_FILES}" && CSD_FILES="${CSD_FILE}" || CSD_FILES="${CSD_FILES} ${CSD_FILE}"
+      else
+        echo "Upload script not found on server ${SERVER}"
+      fi
     done
 
     # Print the names of the uploaded files so callers know exactly what was uploaded
@@ -39,6 +45,9 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: pingdirectory-csd-upload
+  labels:
+    app: ping-cloud
+    role: pingdirectory
 spec:
   ttlSecondsAfterFinished: 0
   backoffLimit: 5
