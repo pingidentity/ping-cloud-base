@@ -8,7 +8,7 @@ metadata:
 spec:
   publishNotReadyAddresses: true
   ports:
-  - port: 389
+  - port: 1389
     name: ldap
     targetPort: ldap
   - port: 1636

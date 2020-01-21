@@ -79,7 +79,7 @@ spec:
         image: pingidentity/pingdirectory:8.0.0.0-alpine-edge
         imagePullPolicy: Always
         ports:
-        - containerPort: 389
+        - containerPort: 1389
           name: ldap
         - containerPort: 1636
           name: ldaps
