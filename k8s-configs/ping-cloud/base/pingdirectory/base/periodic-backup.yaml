@@ -88,7 +88,7 @@ spec:
           containers:
           - name: pingdirectory-backup
             # FIXME: switch to stable image before GA
-            image: pingidentity/pingdirectory:8.0.0.0-alpine-edge
+            image: pingidentity/pingdirectory:200109-8.0.0.0
             command:
             - /opt/in/backup.sh
             env:
