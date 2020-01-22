@@ -37,6 +37,8 @@ kustomize build ${CI_PROJECT_DIR}/test |
     ${CLUSTER_NAME_LC}
     ${REGION}
     ${NAMESPACE}
+    ${CONFIG_REPO_BRANCH}
+    ${CONFIG_PARENT_DIR}
     ${ARTIFACT_REPO_URL}
     ${LOG_ARCHIVE_URL}
     ${BACKUP_URL}' > ${DEPLOY_FILE}

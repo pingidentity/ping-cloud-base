@@ -54,7 +54,7 @@ spec:
       containers:
       - name: pingfederate-admin
         # FIXME: switch to stable PF10 image before GA
-        image:  pingidentity/pingfederate:10.0.0-alpine-edge
+        image:  pingidentity/pingfederate:1912-10.0.0
         imagePullPolicy: Always
         env:
         - name:  OPERATIONAL_MODE
@@ -200,7 +200,7 @@ spec:
       containers:
       - name: pingfederate
         # FIXME: switch to stable PF10 image before GA
-        image:  pingidentity/pingfederate:10.0.0-alpine-edge
+        image:  pingidentity/pingfederate:1912-10.0.0
         imagePullPolicy: Always
         env:
         - name:  OPERATIONAL_MODE

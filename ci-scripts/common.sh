@@ -10,6 +10,13 @@ export REGION="${AWS_DEFAULT_REGION}"
 export CLUSTER_NAME="${EKS_CLUSTER_NAME}"
 export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
 
+export CONFIG_PARENT_DIR=aws
+if test "${CI_COMMIT_REF_SLUG#profile-test-}" == "${CI_COMMIT_REF_SLUG}"; then
+  export CONFIG_REPO_BRANCH=master
+else
+  export CONFIG_REPO_BRANCH=${CI_COMMIT_REF_SLUG}
+fi
+
 export ARTIFACT_REPO_URL=https://ping-artifacts.s3-us-west-2.amazonaws.com
 export LOG_ARCHIVE_URL=s3://${CLUSTER_NAME}-logs-bucket
 export BACKUP_URL=s3://${CLUSTER_NAME}-backup-bucket

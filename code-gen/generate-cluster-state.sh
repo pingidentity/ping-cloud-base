@@ -70,9 +70,9 @@
 #                        |                                                    |
 # CLUSTER_STATE_REPO_URL | The URL of the cluster-state repo.                 | https://github.com/pingidentity/ping-cloud-base
 #                        |                                                    |
-# CONFIG_REPO_URL        | The URL of the config repo.                        | https://github.com/pingidentity/pingidentity-server-profiles
+# CONFIG_REPO_URL        | The URL of the config repo.                        | https://github.com/pingidentity/ping-cloud-base
 #                        |                                                    |
-# CONFIG_REPO_BRANCH     | The branch within the config repo to use for       | pcpt
+# CONFIG_REPO_BRANCH     | The branch within the config repo to use for       | master
 #                        | application configuration.                         |
 #                        |                                                    |
 # ARTIFACT_REPO_URL      | The URL for plugins (e.g. PF kits, PD extensions). | The string "unused".
@@ -336,8 +336,8 @@ export SIZE="${SIZE:-small}"
 
 export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL:-git@github.com:pingidentity/ping-cloud-base.git}"
 
-export CONFIG_REPO_URL="${CONFIG_REPO_URL:-https://github.com/pingidentity/pingidentity-server-profiles}"
-export CONFIG_REPO_BRANCH="${CONFIG_REPO_BRANCH:-pcpt}"
+export CONFIG_REPO_URL="${CONFIG_REPO_URL:-https://github.com/pingidentity/ping-cloud-base}"
+export CONFIG_REPO_BRANCH="${CONFIG_REPO_BRANCH:-master}"
 
 export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
 
