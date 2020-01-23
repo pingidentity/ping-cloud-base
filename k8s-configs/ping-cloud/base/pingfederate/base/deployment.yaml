@@ -30,7 +30,7 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: curlimages/curl
+        image: curlimages/curl:7.68.0
         imagePullPolicy: IfNotPresent
         command:
         - /init.sh
@@ -53,8 +53,7 @@ spec:
             name: pingfederate-environment-variables
       containers:
       - name: pingfederate-admin
-        # FIXME: switch to stable PF10 image before GA
-        image:  pingidentity/pingfederate:1912-10.0.0
+        image:  pingidentity/pingfederate:200109-10.0.0
         imagePullPolicy: Always
         env:
         - name:  OPERATIONAL_MODE
@@ -171,7 +170,7 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: curlimages/curl
+        image: curlimages/curl:7.68.0
         imagePullPolicy: IfNotPresent
         command:
         - /init.sh
@@ -199,8 +198,7 @@ spec:
             name: pingfederate-environment-variables
       containers:
       - name: pingfederate
-        # FIXME: switch to stable PF10 image before GA
-        image:  pingidentity/pingfederate:1912-10.0.0
+        image:  pingidentity/pingfederate:200109-10.0.0
         imagePullPolicy: Always
         env:
         - name:  OPERATIONAL_MODE

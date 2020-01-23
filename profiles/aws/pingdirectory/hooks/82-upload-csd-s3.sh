@@ -22,12 +22,10 @@ fi
 
 FORMAT="+%d/%b/%Y:%H:%M:%S %z"
 NOW=$(date "${FORMAT}")
-AN_HOUR_AGO=$(date --date="@$(($(date +%s) - 3600))" "${FORMAT}")
 
 cd "${OUT_DIR}"
 
-# FIXME: In 8.0, replace with the --duration arg instead of --timeRange arg
-collect-support-data --timeRange "\"[${AN_HOUR_AGO}],[${NOW}]\""
+collect-support-data --duration 1h
 CSD_OUT=$(find . -name support\*zip -type f | sort | tail -1)
 
 BUCKET_URL_NO_PROTOCOL=${LOG_ARCHIVE_URL#s3://}

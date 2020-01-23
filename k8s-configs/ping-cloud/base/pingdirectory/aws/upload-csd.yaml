@@ -57,7 +57,6 @@ spec:
       restartPolicy: Never
       containers:
       - name: pingdirectory-csd-uploader
-        # FIXME: switch to stable image before GA
         image: pingidentity/pingdirectory:200109-8.0.0.0
         command:
         - /opt/in/upload.sh

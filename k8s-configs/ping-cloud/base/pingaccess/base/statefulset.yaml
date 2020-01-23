@@ -29,7 +29,7 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: curlimages/curl
+        image: curlimages/curl:7.68.0
         imagePullPolicy: Always
         command:
         - /init.sh
@@ -169,7 +169,7 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: curlimages/curl
+        image: curlimages/curl:7.68.0
         imagePullPolicy: IfNotPresent
         command:
         - /init.sh

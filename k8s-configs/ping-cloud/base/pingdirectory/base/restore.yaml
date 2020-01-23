@@ -13,7 +13,6 @@ data:
     echo "Current backup contents:"
     ls ${CURRENT_BACKUP_DIR}
 
-    # FIXME: put kubectl in the image
     echo "Installing kubectl"
     curl https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
     chmod +x /usr/local/bin/kubectl
@@ -57,7 +56,6 @@ spec:
       restartPolicy: Never
       containers:
       - name: pingdirectory-restore
-        # FIXME: switch to stable image before GA
         image: pingidentity/pingdirectory:200109-8.0.0.0
         command:
         - /opt/in/restore.sh
