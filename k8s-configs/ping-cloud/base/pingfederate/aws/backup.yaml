@@ -13,8 +13,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: pingfederate-backup
-        # FIXME: switch to stable image before GA
-        image: pingidentity/pingfederate:10.0.0-alpine-edge
+        image: pingidentity/pingfederate:200109-10.0.0
         command:
         - /opt/in/backup-archive-data.sh
         envFrom:

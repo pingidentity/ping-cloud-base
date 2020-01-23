@@ -159,7 +159,7 @@ spec:
       serviceAccountName: prometheus
       containers:
       - name: prometheus
-        image: prom/prometheus
+        image: prom/prometheus:v2.15.2
         args:
           - "--config.file=/etc/prometheus/prometheus.yml"
         volumeMounts:

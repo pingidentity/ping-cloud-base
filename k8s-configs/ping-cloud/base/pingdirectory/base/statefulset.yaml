@@ -52,7 +52,7 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: curlimages/curl
+        image: curlimages/curl:7.68.0
         imagePullPolicy: Always
         command:
         - /init.sh
@@ -75,7 +75,6 @@ spec:
           subPath: init.sh
       containers:
       - name: pingdirectory
-        # FIXME: switch to stable image before GA
         image: pingidentity/pingdirectory:200109-8.0.0.0
         imagePullPolicy: Always
         ports:
@@ -149,7 +148,7 @@ spec:
               command:
               - /opt/staging/pre-stop.sh
       - name: pingdirectory-statsd-exporter
-        image: prom/statsd-exporter
+        image: prom/statsd-exporter:v0.14.1
         args:
         - "--statsd.mapping-config=/tmp/mapping/pingdirectory-statsd-mapping.yml"
         - "--statsd.listen-udp=:8125"
