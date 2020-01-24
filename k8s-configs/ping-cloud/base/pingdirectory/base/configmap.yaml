@@ -76,8 +76,8 @@ data:
     echo "Checking if replication is already set up on ${HOSTNAME}"
     REPL_SETUP_MARKER_FILE=/opt/out/instance/config/repl-setup
 
-    if test -f "${REPL_SETUP_MARKER_FILE}"; then
-      echo "Replication is already set up on ${HOSTNAME}"
+    if grep -q "${USER_BASE_DN}" "${REPL_SETUP_MARKER_FILE}" 2> /dev/null; then
+      echo "Replication is already set up on ${HOSTNAME} for ${USER_BASE_DN}"
       exit 0
     fi
 
@@ -86,7 +86,7 @@ data:
     echo "Pod ordinal: ${ORDINAL}"
 
     if test ${ORDINAL} -eq 0; then
-      touch "${REPL_SETUP_MARKER_FILE}"
+      echo "${USER_BASE_DN}" >> "${REPL_SETUP_MARKER_FILE}"
       exit 0
     fi
 
@@ -111,6 +111,12 @@ data:
     _replEnableResult=$?
     echo "Replication enable for ${HOSTNAME} result=${_replEnableResult}"
 
+    if test ${_replEnableResult} -eq 5; then
+      echo "Replication is already enabled for ${USER_BASE_DN} either directly or through a parent base DN"
+      echo "${USER_BASE_DN}" >> "${REPL_SETUP_MARKER_FILE}"
+      exit 0
+    fi
+
     if test ${_replEnableResult} -ne 0; then
       echo "Not running dsreplication initialize since enable failed with a non-successful return code"
       exit ${_replEnableResult}
@@ -132,7 +138,7 @@ data:
     _replInitResult=$?
     echo "Replication initialize for ${HOSTNAME} result=${_replInitResult}"
 
-    test ${_replInitResult} -eq 0 && touch "${REPL_SETUP_MARKER_FILE}"
+    test ${_replInitResult} -eq 0 && echo "${USER_BASE_DN}" >> "${REPL_SETUP_MARKER_FILE}"
     exit ${_replInitResult}
 
 ---
@@ -152,7 +158,7 @@ data:
     # Verify that replication is set up
     echo "Readiness probe - verifying replication is set up"
     REPL_SETUP_MARKER_FILE=/opt/out/instance/config/repl-setup
-    test -f "${REPL_SETUP_MARKER_FILE}" && exit 0 || exit 1
+    grep -q "${USER_BASE_DN}" "${REPL_SETUP_MARKER_FILE}" 2> /dev/null && exit 0 || exit 1
 
 ---
 
