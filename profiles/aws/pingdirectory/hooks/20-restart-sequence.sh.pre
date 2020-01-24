@@ -17,6 +17,6 @@ BASE_CLASS=organization
 END_ORG
 
 else
-    echo_red "ERROR: the base is expected to be dc=<your domain> or o=<your org>"
+    echo "ERROR: the base is expected to be dc=<your domain> or o=<your org>"
     exit 183
 fi

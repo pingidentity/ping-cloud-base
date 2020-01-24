@@ -11,7 +11,7 @@ echo "Uploading to location ${BACKUP_URL}"
 
 # Install AWS CLI if the upload location is S3
 if test "${BACKUP_URL#s3}" == "${BACKUP_URL}"; then
-   echo_red "Upload location is not S3"
+   echo "Upload location is not S3"
    exit 1
 else
    installTools
@@ -53,7 +53,7 @@ AWS_API_RESULT="${?}"
 echo "Upload return code: ${AWS_API_RESULT}"
 
 if [ "${AWS_API_RESULT}" != "0" ]; then
-  echo_red "Upload was unsuccessful - crash the container"
+  echo "Upload was unsuccessful - crash the container"
   exit 1
 fi
 

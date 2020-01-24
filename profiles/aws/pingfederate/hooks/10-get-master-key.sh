@@ -66,14 +66,14 @@ if ! [ -f ../server/default/data/pf.jwk ]; then
    if [ "${result}" = "0" ]; then
       echo "A master key does exist on S3 attempt to retrieve it"
       if [ "$(aws s3 cp "${masterKey}" ../server/default/data/pf.jwk > /dev/null 2>&1;echo $?)" != "0" ]; then
-         echo_red "Retrieval was unsuccessful - crash the container to prevent spurious key creation"
+         echo "Retrieval was unsuccessful - crash the container to prevent spurious key creation"
          exit 1
       else
          echo "Pre-existing master key found - using it"
          obfuscatePassword
       fi
    elif [ "${result}" != "1" ]; then
-      echo_red "Unexpected error accessing S3 - crash the container to prevent spurious key creation"
+      echo "Unexpected error accessing S3 - crash the container to prevent spurious key creation"
       aws s3 ls ${masterKey}
       exit 1
    else
