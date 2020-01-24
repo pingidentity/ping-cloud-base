@@ -1,14 +1,34 @@
 # PingFederate Artifact Service
 
-This directory contains the scripts required to upload PingFederate Artifacts 
+This directory contains the scripts required to upload existing PingFederate Artifacts 
 (Integration Kits) to an S3 Bucket. The bucket will be created if it doesn't already
-exist. The artifact name and version are extracted from the source file and uploaded 
+exist. The runtime components are extracted from the source file and uploaded 
 to the bucket. 
 
 For example, an artifact zip of the format <ARTIFACT_NAME>-<ARTIFACT_VERSION>.zip will 
 be uploaded to the following location,
 
 ${ARTIFACT_REPO_BUCKET}/pingfederate/<ARTIFACT_NAME>/<ARTIFACT_VERSION>/<ARTIFACT_NAME>-<ARTIFACT_VERSION>-runtime.zip
+
+# Required Runtime Specification
+
+The required structure for runtime artifact zips to be used with ping-cloud-base is as follows,
+
+```
+Zip Name: 
+    <ARTIFACT_NAME>-<ARTIFACT-VERSION>-runtime.zip
+Contents:
+    - deploy
+        - <IK_ADAPTER_NAME>.jar (The dependent libraries must be shaded and included within the adapter jar itself)
+        - [Optional] <IK_WAR_NAME>.war
+    - conf (If IK includes template and language-packs)
+        - template
+        - language-packs
+```
+
+```
+Note: Please make sure the deploy and conf folders are at the root level inside the artifact zip.
+```
 
 # Upload
 
@@ -18,10 +38,12 @@ The following tools must be set up and configured correctly:
 - unzip
 - aws (AWS config and credentials are properly configured to allow access to the bucket.)
 
-To upload all supported Integration Kits to the S3 bucket, simply run:
+## Upload supported public kits
+
+To upload all supported Integration Kits to a public S3 bucket, simply run:
 
 ```
-./upload-all.sh <S3_BUCKET_URL> 
+./upload-all.sh s3://<BUCKET_NAME> <ARTIFACT_SOURCE_URL>
 ```
 
 To make it easier the location of the S3 bucket can be exported through the 
@@ -29,13 +51,23 @@ following environment variable instead of passing it as an argument.
 
 - ARTIFACT_REPO_BUCKET
 
-For example, export ARTIFACT_REPO_BUCKET=<URL_TO_S3_BUCKET>
+For example, export ARTIFACT_REPO_BUCKET=s3://<BUCKET_NAME>
 
-To upload a specific Integration Kit to the S3 bucket, simply run:
+## Upload an existing kit
+
+To upload an existing Integration Kit to the S3 bucket, simply run:
 
 ```
-./upload-artifact.sh <HTTPS_URL_TO_SOURCE_ARTIFACT_ZIP> <S3_BUCKET_URL> 
+./upload-artifact.sh <HTTPS_URL_TO_SOURCE_ARTIFACT_ZIP> <ARTIFACT_VISIBILITY> s3://<BUCKET_NAME> 
 ```
+
+ARTIFACT_VISIBILITY can be either "public" or "private". Setting this arg to "public" will make the artifact 
+publicly accessible through https after being uploaded.
+
+## Upload runtime IK 
+
+If the zip file is in the specified format (as mentioned in the Specification section), it can
+be uploaded directly to the S3 bucket using AWS console or other means (such as aws cli).
 
 # Usage
 The artifacts available within the S3 bucket can be deployed to PingFederate
@@ -45,11 +77,13 @@ through a JSON specification as shown below,
 [
   {
     "name": "<ARTIFACT_1_NAME>",
-    "version": "<ARTIFACT_1_VERSION>"
+    "version": "<ARTIFACT_1_VERSION>".
+    "source": "public | private" (Default is "public")
   },
   {
     "name": "<ARTIFACT_2_NAME>",
     "version": "<ARTIFACT_2_VERSION>"
+    "source": "public | private" (Default is "public")
   }
 ]
 ```
@@ -58,7 +92,16 @@ Simply upload the JSON file to the following location within server profiles
 and the artifacts within this list will be downloaded from the artifact repo
 and deployed to PingFederate.
 
-- baseline/pingfederate/artifacts/artifact-list.json
+- aws/pingfederate/artifacts/artifact-list.json
 
-Note: The artifact repo environment variable (ARTIFACT_REPO_URL) containing the
-base location of the artifact repo needs to exist for the artifacts to be deployed.
+```
+For private plugins the environment variable ARTIFACT_REPO_URL needs to point to the private artifact repo.
+```
+
+```
+Public plugins are downloaded through the following URL by default,
+
+    https://ping-artifacts.s3-us-west-2.amazonaws.com
+
+The public repo URL can be updated through the environment variable PING_ARTIFACT_REPO_URL.
+```

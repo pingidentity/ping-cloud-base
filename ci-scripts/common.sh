@@ -17,7 +17,8 @@ else
   export CONFIG_REPO_BRANCH=${CI_COMMIT_REF_SLUG}
 fi
 
-export ARTIFACT_REPO_URL=https://ping-artifacts.s3-us-west-2.amazonaws.com
+export ARTIFACT_REPO_URL=https://${CLUSTER_NAME}-artifacts-bucket
+export PING_ARTIFACT_REPO_URL=https://ping-artifacts.s3-us-west-2.amazonaws.com
 export LOG_ARCHIVE_URL=s3://${CLUSTER_NAME}-logs-bucket
 export BACKUP_URL=s3://${CLUSTER_NAME}-backup-bucket
 

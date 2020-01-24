@@ -9,8 +9,12 @@ CURRENT_DIRECTORY=$(pwd)
 test ! -z "${1}" && ARTIFACT_SOURCE_URL="${1}"
 echo "Downloading Artifact ${ARTIFACT_SOURCE_URL}"
 
+# Allow overriding whether the artifact is public/private
+test ! -z "${2}" && ARTIFACT_VISIBILITY="${2}"
+echo "Artifact visibility is ${ARTIFACT_VISIBILITY}"
+
 # Allow overriding the Artifact Repo Bucket with an arg
-test ! -z "${2}" && ARTIFACT_REPO_BUCKET="${2}"
+test ! -z "${3}" && ARTIFACT_REPO_BUCKET="${3}"
 echo "Uploading to location ${ARTIFACT_REPO_BUCKET}"
 
 # Install AWS CLI if the upload location is S3
@@ -94,7 +98,7 @@ then
 else
     # Sub folder is not the artifact name so enumerate and get the dynamic value
     cd ${DOWNLOAD_DIR}/${ARTIFACT_NAME_WITH_VERSION}
-    ARTIFACT_SUB_FOLDER=$(find . -mindepth 1 -maxdepth 1 -type d  \( ! -iname ".*" \) | sed 's|^\./||g')
+    ARTIFACT_SUB_FOLDER=$(find . -mindepth 1 -maxdepth 1 -type d  \( ! -iname "[_.]*" \) | sed 's|^\./||g')
     ARTIFACT_LOCATION="${DOWNLOAD_DIR}/${ARTIFACT_NAME_WITH_VERSION}/${ARTIFACT_SUB_FOLDER}"
     cd ${CURRENT_DIRECTORY}
 fi
@@ -111,6 +115,13 @@ cp ${ARTIFACT_LOCATION}/dist/*.jar ${ARTIFACT_LOCATION}/work/deploy
 cp ${ARTIFACT_LOCATION}/dist/*.war ${ARTIFACT_LOCATION}/work/deploy
 
 # Handle the kits where the jars or wars are within deploy
+if [ -d "${ARTIFACT_LOCATION}/deploy" ]
+then
+    cp -r ${ARTIFACT_LOCATION}/deploy/*.jar ${ARTIFACT_LOCATION}/work/deploy
+    cp -r ${ARTIFACT_LOCATION}/deploy/*.war ${ARTIFACT_LOCATION}/work/deploy
+fi
+
+# Handle the kits where the jars or wars are within dist/deploy
 if [ -d "${ARTIFACT_LOCATION}/dist/deploy" ]
 then
     cp -r ${ARTIFACT_LOCATION}/dist/deploy/*.jar ${ARTIFACT_LOCATION}/work/deploy
@@ -196,8 +207,10 @@ echo ${ARTIFACT_LOCATION}/${ARTIFACT_FILE_NAME}
 aws s3 cp "${ARTIFACT_LOCATION}/${ARTIFACT_RUNTIME_ZIP}" "${TARGET_BASE_URL}/${ARTIFACT_NAME}/${ARTIFACT_VERSION}/"
 check_for_error "Could not upload artifact(s) to ${TARGET_BASE_URL}"
 
-# Give public read privilige to the uploaded artifact
-aws s3api put-object-acl --bucket ${BUCKET_NAME} --key "pingfederate/${ARTIFACT_NAME}/${ARTIFACT_VERSION}/${ARTIFACT_RUNTIME_ZIP}" --acl public-read
+if test ${ARTIFACT_VISIBILITY} == "public"; then
+  # Give public read privilige to the uploaded artifact
+  aws s3api put-object-acl --bucket ${BUCKET_NAME} --key "pingfederate/${ARTIFACT_NAME}/${ARTIFACT_VERSION}/${ARTIFACT_RUNTIME_ZIP}" --acl public-read
+fi
 
 # Cleanup
 rm ${DOWNLOAD_DIR}/${ARTIFACT_FILE_NAME}
