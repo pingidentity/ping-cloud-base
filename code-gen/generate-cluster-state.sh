@@ -75,11 +75,16 @@
 # CONFIG_REPO_BRANCH     | The branch within the config repo to use for       | master
 #                        | application configuration.                         |
 #                        |                                                    |
-# ARTIFACT_REPO_URL      | The URL for plugins (e.g. PF kits, PD extensions). | The string "unused".
-#                        | If not provided, the Ping stack will be            |
-#                        | provisioned without plugins. This URL must always  |
-#                        | have an https scheme, e.g.                         |
-#                        | https://artifacts.s3-us-west-2.amazonaws.com.      |
+# ARTIFACT_REPO_URL      | The URL for private plugins (e.g. PF kits, PD      | The string "unused".
+#                        | extensions). If not provided, the Ping stack will  |
+#                        | be provisioned without private plugins. This URL   |
+#                        | must use an https scheme, e.g.                     |
+#                        | https://customer-repo.s3-us-west-2.amazonaws.com   |
+#                        |                                                    |
+# PING_ARTIFACT_REPO_URL | This environment variable can be used to overwrite | https://ping-artifacts.s3-us-west-2.amazonaws.com
+#                        | the default endpoint for public plugins. This URL  |
+#                        | must use an https scheme as shown by the default   |
+#                        | value.                                             |
 #                        |                                                    |
 # LOG_ARCHIVE_URL        | The URL of the log archives. If provided, logs are | The string "unused". Only applies to
 #                        | periodically captured and sent to this URL. For    | Beluga environments. See IS_BELUGA_ENV
@@ -203,6 +208,7 @@ ${CLUSTER_STATE_REPO_HOST}
 ${CONFIG_REPO_URL}
 ${CONFIG_REPO_BRANCH}
 ${ARTIFACT_REPO_URL}
+${PING_ARTIFACT_REPO_URL}
 ${LOG_ARCHIVE_URL}
 ${DEV_LOG_ARCHIVE_URL}
 ${TEST_LOG_ARCHIVE_URL}
@@ -299,6 +305,7 @@ echo "Initial CONFIG_REPO_URL: ${CONFIG_REPO_URL}"
 echo "Initial CONFIG_REPO_BRANCH: ${CONFIG_REPO_BRANCH}"
 
 echo "Initial ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
+echo "Initial PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 
 echo "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 echo "Initial DEV_LOG_ARCHIVE_URL: ${DEV_LOG_ARCHIVE_URL}"
@@ -340,6 +347,7 @@ export CONFIG_REPO_URL="${CONFIG_REPO_URL:-https://github.com/pingidentity/ping-
 export CONFIG_REPO_BRANCH="${CONFIG_REPO_BRANCH:-master}"
 
 export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
+export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
 
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export DEV_LOG_ARCHIVE_URL="${DEV_LOG_ARCHIVE_URL:-unused}"
@@ -382,6 +390,7 @@ echo "Using CONFIG_REPO_URL: ${CONFIG_REPO_URL}"
 echo "Using CONFIG_REPO_BRANCH: ${CONFIG_REPO_BRANCH}"
 
 echo "Using ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
+echo "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 
 echo "Using S3_IRSA_ARN: ${S3_IRSA_ARN}"
 echo "Using ROUTE53_IRSA_ARN: ${ROUTE53_IRSA_ARN}"
