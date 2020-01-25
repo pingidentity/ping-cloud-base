@@ -2,7 +2,5 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-- namespace.yaml
-- grafana.yaml
-- prometheus.yaml
-- ingress.yaml
+- kube-state-metrics
+- metrics-server

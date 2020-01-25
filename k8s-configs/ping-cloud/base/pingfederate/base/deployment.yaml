@@ -8,6 +8,9 @@ metadata:
     cluster: pingfederate-cluster
     role: pingfederate-admin
 spec:
+  selector:
+    matchLabels:
+      role: pingfederate-admin
   replicas: 1
   # Recreate strategy will force admin to completely be removed from cluster
   # and recreate new admin upon deployment. This will avoid error of
@@ -153,6 +156,9 @@ metadata:
     cluster: pingfederate-cluster
     role: pingfederate-engine
 spec:
+  selector:
+    matchLabels:
+      role: pingfederate-engine
   replicas: 1
   template:
     metadata:
