@@ -75,7 +75,7 @@
 #                        | to Container Insights, an AWS-specific logging     |
 #                        | and monitoring solution.                           |
 #                        |                                                    |
-# CONFIG_REPO_BRANCH     | The branch within this repository for server       | master
+# CONFIG_REPO_BRANCH     | The branch within this repository for server       | v1.0.0
 #                        | profiles, i.e. configuration.                      |
 #                        |                                                    |
 # CONFIG_PARENT_DIR      | The parent directory for server profiles within    | aws
@@ -162,7 +162,7 @@ export ENVIRONMENT=-"${ENVIRONMENT:-${USER}}"
 export TENANT_DOMAIN="${TENANT_DOMAIN:-eks-poc.au1.ping-lab.cloud}"
 export TENANT_NAME="${TENANT_NAME:-PingPOC}"
 export REGION="${REGION:-us-east-2}"
-export CONFIG_REPO_BRANCH="${CONFIG_REPO_BRANCH:-master}"
+export CONFIG_REPO_BRANCH="${CONFIG_REPO_BRANCH:-v1.0.0}"
 export CONFIG_PARENT_DIR="${CONFIG_PARENT_DIR:-aws}"
 export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
 export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
