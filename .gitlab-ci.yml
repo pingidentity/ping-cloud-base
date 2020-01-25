@@ -1,10 +1,10 @@
 ## Pipeline stages ##
 stages:
-  - compile
-  - build
-  - test
-  - chaos
-  - cleanup
+- compile
+- build
+- test
+- chaos
+- cleanup
 
 ## Global environment variables ##
 variables:
@@ -15,44 +15,48 @@ variables:
 compile:
   stage: compile
   tags:
-    - pd-eks-deploy
+  - pd-eks-deploy
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
-    - ./ci-scripts/compile/compile.sh
+  - ./ci-scripts/compile/compile.sh
   except:
-    - code-gen
+    variables:
+    - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
 
 ## Build stage ##
 deploy:
   stage: build
   tags:
-    - pd-eks-deploy
+  - pd-eks-deploy
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
-    - ./ci-scripts/build/deploy.sh
+  - ./ci-scripts/build/deploy.sh
   except:
-    - code-gen
+    variables:
+    - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
 
 ## Test stage ##
 pd-tests:
   stage: test
   tags:
-    - pd-eks-deploy
+  - pd-eks-deploy
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
-    - ./ci-scripts/test/run-test.sh pingdirectory
+  - ./ci-scripts/test/run-test.sh pingdirectory
   except:
-    - code-gen
+    variables:
+    - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
 
 pf-tests:
   stage: test
   tags:
-    - pd-eks-deploy
+  - pd-eks-deploy
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
-    - ./ci-scripts/test/run-test.sh pingfederate
+  - ./ci-scripts/test/run-test.sh pingfederate
   except:
-    - code-gen
+    variables:
+    - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
 
 pa-tests:
   stage: test
@@ -62,7 +66,8 @@ pa-tests:
   script:
     - ./ci-scripts/test/run-test.sh pingaccess
   except:
-    - code-gen
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
 
 integration-tests:
   stage: test
@@ -72,26 +77,29 @@ integration-tests:
   script:
     - ./ci-scripts/test/run-test.sh integration
   except:
-    - code-gen
+    variables:
+      - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
 
 ## Chaos testing stage ##
 chaos-tests:
   stage: chaos
   tags:
-    - pd-eks-deploy
+  - pd-eks-deploy
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
-    - ./ci-scripts/test/run-test.sh chaos
+  - ./ci-scripts/test/run-test.sh chaos
   except:
-    - code-gen
+    variables:
+    - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
 
 ## Cleanup stage ##
 cleanup:
   stage: cleanup
   tags:
-    - pd-eks-deploy
+  - pd-eks-deploy
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
-    - ./ci-scripts/cleanup/teardown.sh
+  - ./ci-scripts/cleanup/teardown.sh
   except:
-    - code-gen
+    variables:
+    - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
