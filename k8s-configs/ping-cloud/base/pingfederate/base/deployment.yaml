@@ -79,10 +79,10 @@ spec:
         resources:
           requests:
             memory: "2Gi"
-            cpu: "1"
+            cpu: "2"
           limits:
             memory: "2Gi"
-            cpu: "1"
+            cpu: "2"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
@@ -221,10 +221,10 @@ spec:
         resources:
           requests:
             memory: "2Gi"
-            cpu: "1"
+            cpu: "2"
           limits:
             memory: "2Gi"
-            cpu: "1"
+            cpu: "2"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
