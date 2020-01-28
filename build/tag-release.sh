@@ -37,7 +37,7 @@ replace() {
         "k8s-configs/ping-cloud/base/${PRODUCT}/base/env_vars"
   done
 
-  # Verify tags
+  # Verify references
   echo "Verifying presence of ${TARGET_REF} in expected files:"
   grep "${TARGET_REF}" README.md ./dev-env.sh ./code-gen/generate-cluster-state.sh
 
