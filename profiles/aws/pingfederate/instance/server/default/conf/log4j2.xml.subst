@@ -1181,6 +1181,7 @@
         <!-- Limit categories -->
         <!-- ================ -->
 
+        <Logger name="com.unboundid" level="ERROR" />
         <Logger name="org.apache.http.wire" level="INFO" />
         <Logger name="com.pingidentity.pf.email" level="INFO" />
         <Logger name="org.sourceid" level="$${env:PF_LOG_LEVEL}" />
