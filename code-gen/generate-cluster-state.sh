@@ -16,6 +16,42 @@
 # manifest files for these environments contain deployments of both the Ping Cloud stack and the supporting tools
 # necessary to provide an end-to-end solution.
 #
+# For example, the script produces a directory structure as shown below (files within the sub-directories are omitted
+# for brevity):
+#
+# ├── cluster-state
+# │   └── k8s-configs
+# │       ├── dev
+# │       │   ├── cluster-tools
+# │       │   └── ping-cloud
+# │       │       ├── pingdirectory
+# │       │       └── pingfederate
+# │       ├── prod
+# │       │   ├── cluster-tools
+# │       │   └── ping-cloud
+# │       │       ├── pingdirectory
+# │       │       └── pingfederate
+# │       ├── stage
+# │       │   ├── cluster-tools
+# │       │   └── ping-cloud
+# │       │       ├── pingdirectory
+# │       │       └── pingfederate
+# │       └── test
+# │           ├── cluster-tools
+# │           └── ping-cloud
+# │               ├── pingdirectory
+# │               └── pingfederate
+# └── fluxcd
+#    ├── dev
+#    ├── prod
+#    ├── stage
+#    └── test
+# └── .gitignore
+#
+# Deploying the manifests under the fluxcd directory will bootstrap the cluster with a Continuous Delivery tool called
+# flux. Once flux is deployed to the cluster, it will deploy the rest of the ping stack and supporting tools. More
+# details on flux may be found here: https://docs.fluxcd.io/
+#
 # ------------
 # Requirements
 # ------------
@@ -70,16 +106,17 @@
 #                        |                                                    |
 # CLUSTER_STATE_REPO_URL | The URL of the cluster-state repo.                 | https://github.com/pingidentity/ping-cloud-base
 #                        |                                                    |
-# CONFIG_REPO_URL        | The URL of the config repo.                        | https://github.com/pingidentity/ping-cloud-base
+# CONFIG_REPO_URL        | The URL of the config repo.                        | Same value as CLUSTER_STATE_REPO_URL,
+#                        |                                                    | if not provided.
 #                        |                                                    |
 # CONFIG_REPO_BRANCH     | The branch within the config repo to use for       | v1.0.0-RC2
 #                        | application configuration.                         |
 #                        |                                                    |
-# ARTIFACT_REPO_URL      | The URL for private plugins (e.g. PF kits, PD      | The string "unused".
-#                        | extensions). If not provided, the Ping stack will  |
-#                        | be provisioned without private plugins. This URL   |
-#                        | must use an https scheme, e.g.                     |
-#                        | https://customer-repo.s3-us-west-2.amazonaws.com   |
+# ARTIFACT_REPO_URL      | The URL for plugins (e.g. PF kits, PD extensions). | The string "unused".
+#                        | If not provided, the Ping stack will be            |
+#                        | provisioned without plugins. This URL must always  |
+#                        | have an https scheme, e.g.                         |
+#                        | https://artifacts.s3-us-west-2.amazonaws.com.      |
 #                        |                                                    |
 # PING_ARTIFACT_REPO_URL | This environment variable can be used to overwrite | https://ping-artifacts.s3-us-west-2.amazonaws.com
 #                        | the default endpoint for public plugins. This URL  |
@@ -148,7 +185,8 @@
 #                        |                                                    |
 # K8S_GIT_URL            | The Git URL of the Kubernetes base manifest files. | https://github.com/pingidentity/ping-cloud-base
 #                        |                                                    |
-# K8S_GIT_BRANCH         | The Git branch within the above Git URL.           | v1.0.0-RC2
+# K8S_GIT_BRANCH         | The Git branch within the above Git URL.           | Same value as CONFIG_REPO_BRANCH, if
+#                        |                                                    | not provided.
 #                        |                                                    |
 # REGISTRY_NAME          | The registry hostname for the Docker images used   | docker.io
 #                        | by the Ping stack. This can be Docker hub, ECR     |
@@ -343,7 +381,7 @@ export SIZE="${SIZE:-small}"
 
 export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL:-git@github.com:pingidentity/ping-cloud-base.git}"
 
-export CONFIG_REPO_URL="${CONFIG_REPO_URL:-https://github.com/pingidentity/ping-cloud-base}"
+export CONFIG_REPO_URL="${CONFIG_REPO_URL:-${CLUSTER_STATE_REPO_URL}}"
 export CONFIG_REPO_BRANCH="${CONFIG_REPO_BRANCH:-v1.0.0-RC2}"
 
 export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
@@ -368,7 +406,7 @@ test ! -z ${S3_IRSA_ARN} && export S3_IRSA_ARN_KEY_AND_VALUE="eks.amazonaws.com/
 test ! -z ${ROUTE53_IRSA_ARN} && export ROUTE53_IRSA_ARN_KEY_AND_VALUE="eks.amazonaws.com/role-arn: ${ROUTE53_IRSA_ARN}"
 
 export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
-export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-v1.0.0-RC2}"
+export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-${CONFIG_REPO_BRANCH}}"
 
 export REGISTRY_NAME="${REGISTRY_NAME:-docker.io}"
 
@@ -441,12 +479,15 @@ mkdir -p "${TARGET_DIR}"
 
 # Next build up the directory structure of the cluster-state repo
 FLUXCD_DIR="${TARGET_DIR}/fluxcd"
+CLUSTER_STATE_DIR="${TARGET_DIR}/cluster-state"
+K8S_CONFIGS_DIR="${CLUSTER_STATE_DIR}/k8s-configs"
+
 mkdir -p "${FLUXCD_DIR}"
+mkdir -p "${CLUSTER_STATE_DIR}"
 
-K8S_CONFIGS_DIR="${TARGET_DIR}/k8s-configs"
-mkdir -p "${K8S_CONFIGS_DIR}"
-
-cp ../.gitignore "${TARGET_DIR}"
+cp ../.gitignore "${CLUSTER_STATE_DIR}"
+cp -pr ../profiles "${CLUSTER_STATE_DIR}"
+rm -rf "${CLUSTER_STATE_DIR}/profiles/dev" "${CLUSTER_STATE_DIR}/profiles/aws/pingaccess"
 
 # Now generate the yaml files for each environment
 ENVIRONMENTS='dev test stage prod'
@@ -601,10 +642,10 @@ echo
 echo '------------------------'
 echo '|  Next steps to take  |'
 echo '------------------------'
-echo "1) Push the ${TARGET_DIR}/k8s-configs directory onto the master branch of the tenant cluster-state repo:"
+echo "1) Push ${TARGET_DIR}/cluster-state/. into the master branch of the tenant cluster-state repo:"
 echo "${CLUSTER_STATE_REPO_URL}"
 echo
-echo "2) Add the following identity as the deploy key on the cluster-state (rw) and config repo (ro), if not already added:"
+echo "2) Add the following identity as the deploy key on the cluster-state (rw), if not already added:"
 echo "${SSH_ID_PUB}"
 echo
 echo "3) Deploy flux onto each CDE by navigating to ${TARGET_DIR}/fluxcd and running:"
