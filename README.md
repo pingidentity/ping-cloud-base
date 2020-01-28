@@ -39,7 +39,7 @@ Refer to the AWS online documentation on how to set these up.
 To build the environment, simply run:
 
 ```
-kustomize build https://github.com/pingidentity/ping-cloud-base?ref=v1.0.0-RC2-new-code-gen
+kustomize build https://github.com/pingidentity/ping-cloud-base?ref=v1.0.0-RC2
   envsubst '
     ${PING_IDENTITY_DEVOPS_USER}
     ${PING_IDENTITY_DEVOPS_KEY}
@@ -98,7 +98,7 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-- https://github.com/pingidentity/ping-cloud-base/k8s-configs?ref=v1.0.0-RC2-new-code-gen
+- https://github.com/pingidentity/ping-cloud-base/k8s-configs?ref=v1.0.0-RC2
 ```
 
 In addition, some overrides must be provided (e.g. via secret and configmap

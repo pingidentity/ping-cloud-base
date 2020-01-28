@@ -72,7 +72,7 @@
 #                        |                                                    |
 # CONFIG_REPO_URL        | The URL of the config repo.                        | https://github.com/pingidentity/ping-cloud-base
 #                        |                                                    |
-# CONFIG_REPO_BRANCH     | The branch within the config repo to use for       | v1.0.0-RC2-new-code-gen
+# CONFIG_REPO_BRANCH     | The branch within the config repo to use for       | v1.0.0-RC2
 #                        | application configuration.                         |
 #                        |                                                    |
 # ARTIFACT_REPO_URL      | The URL for private plugins (e.g. PF kits, PD      | The string "unused".
@@ -148,7 +148,7 @@
 #                        |                                                    |
 # K8S_GIT_URL            | The Git URL of the Kubernetes base manifest files. | https://github.com/pingidentity/ping-cloud-base
 #                        |                                                    |
-# K8S_GIT_BRANCH         | The Git branch within the above Git URL.           | v1.0.0-RC2-new-code-gen
+# K8S_GIT_BRANCH         | The Git branch within the above Git URL.           | v1.0.0-RC2
 #                        |                                                    |
 # REGISTRY_NAME          | The registry hostname for the Docker images used   | docker.io
 #                        | by the Ping stack. This can be Docker hub, ECR     |
@@ -344,7 +344,7 @@ export SIZE="${SIZE:-small}"
 export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL:-git@github.com:pingidentity/ping-cloud-base.git}"
 
 export CONFIG_REPO_URL="${CONFIG_REPO_URL:-https://github.com/pingidentity/ping-cloud-base}"
-export CONFIG_REPO_BRANCH="${CONFIG_REPO_BRANCH:-v1.0.0-RC2-new-code-gen}"
+export CONFIG_REPO_BRANCH="${CONFIG_REPO_BRANCH:-v1.0.0-RC2}"
 
 export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
 export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
@@ -368,7 +368,7 @@ test ! -z ${S3_IRSA_ARN} && export S3_IRSA_ARN_KEY_AND_VALUE="eks.amazonaws.com/
 test ! -z ${ROUTE53_IRSA_ARN} && export ROUTE53_IRSA_ARN_KEY_AND_VALUE="eks.amazonaws.com/role-arn: ${ROUTE53_IRSA_ARN}"
 
 export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
-export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-v1.0.0-RC2-new-code-gen}"
+export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-v1.0.0-RC2}"
 
 export REGISTRY_NAME="${REGISTRY_NAME:-docker.io}"
 
