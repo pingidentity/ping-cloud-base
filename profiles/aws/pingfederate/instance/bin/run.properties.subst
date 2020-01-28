@@ -166,7 +166,7 @@ pf.log.eventdetail=false
 # This property enables detailed system monitoring information to be made available
 # in the heartbeat endpoint
 #
-pf.heartbeat.system.monitoring=false
+pf.heartbeat.system.monitoring=true
 
 # ---------------------
 # Deployment Properties
@@ -353,6 +353,6 @@ javax.net.ssl.sessionCacheSize=5000
 org.apache.xml.security.ignoreLineBreaks=true
 
 # COMMENT THIS OUT IF TOO MUCH OUTPUT ON LDAP CHATTER
-com.unboundid.ldap.sdk.debug.enabled=true
-com.unboundid.ldap.sdk.debug.level=FINEST
-com.unboundid.ldap.sdk.debug.type=LDAP
+#com.unboundid.ldap.sdk.debug.enabled=true
+#com.unboundid.ldap.sdk.debug.level=FINEST
+#com.unboundid.ldap.sdk.debug.type=LDAP

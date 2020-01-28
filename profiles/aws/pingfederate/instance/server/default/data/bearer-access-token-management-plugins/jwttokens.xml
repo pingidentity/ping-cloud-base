@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urn:AccessTokenManagerConfiguration inheritAccessControlSettings="false" inheritSelectionSettings="false" inheritSessionValidationSettings="false" restrictClients="false" checkSessionRevocationStatus="false" checkValidAuthnSession="false" updateAuthnSessionActivity="false" defaultSubjectAttribute="" isInheritExtendedContractAttributes="false" name="jwttokens" xmlns:urn="urn:sourceid.org:saml2:adapter:conf">
+    <urn:Fields>
+        <urn:Field name="Token Lifetime">120</urn:Field>
+        <urn:Field name="JWS Algorithm">HS256</urn:Field>
+        <urn:Field name="Active Symmetric Key ID">01</urn:Field>
+        <urn:Field name="Active Signing Certificate Key ID"/>
+        <urn:Field name="JWE Algorithm"/>
+        <urn:Field name="JWE Content Encryption Algorithm"/>
+        <urn:Field name="Active Symmetric Encryption Key ID"/>
+        <urn:Field name="Asymmetric Encryption Key"/>
+        <urn:Field name="Asymmetric Encryption JWKS URL"/>
+        <urn:Field name="Include Key ID Header Parameter">true</urn:Field>
+        <urn:Field name="Include X.509 Thumbprint Header Parameter"/>
+        <urn:Field name="Default JWKS URL Cache Duration">720</urn:Field>
+        <urn:Field name="Include JWE Key ID Header Parameter">true</urn:Field>
+        <urn:Field name="Include JWE X.509 Thumbprint Header Parameter"/>
+        <urn:Field name="Client ID Claim Name">client_id</urn:Field>
+        <urn:Field name="Scope Claim Name">scope</urn:Field>
+        <urn:Field name="Space Delimit Scope Values">true</urn:Field>
+        <urn:Field name="Issuer Claim Value"/>
+        <urn:Field name="Audience Claim Value"/>
+        <urn:Field name="JWT ID Claim Length">0</urn:Field>
+        <urn:Field name="Access Grant GUID Claim Name"/>
+        <urn:Field name="JWKS Endpoint Path"/>
+        <urn:Field name="JWKS Endpoint Cache Duration">720</urn:Field>
+        <urn:Field name="Publish Key ID X.509 URL"/>
+        <urn:Field name="Publish Thumbprint X.509 URL"/>
+        <urn:Field name="Expand Scope Groups">false</urn:Field>
+    </urn:Fields>
+    <urn:AdvancedFields>
+        <urn:Field name="Include Key ID Header Parameter">true</urn:Field>
+        <urn:Field name="Include X.509 Thumbprint Header Parameter"/>
+        <urn:Field name="Default JWKS URL Cache Duration">720</urn:Field>
+        <urn:Field name="Include JWE Key ID Header Parameter">true</urn:Field>
+        <urn:Field name="Include JWE X.509 Thumbprint Header Parameter"/>
+        <urn:Field name="Client ID Claim Name">client_id</urn:Field>
+        <urn:Field name="Scope Claim Name">scope</urn:Field>
+        <urn:Field name="Space Delimit Scope Values">true</urn:Field>
+        <urn:Field name="Issuer Claim Value"/>
+        <urn:Field name="Audience Claim Value"/>
+        <urn:Field name="JWT ID Claim Length">0</urn:Field>
+        <urn:Field name="Access Grant GUID Claim Name"/>
+        <urn:Field name="JWKS Endpoint Path"/>
+        <urn:Field name="JWKS Endpoint Cache Duration">720</urn:Field>
+        <urn:Field name="Publish Key ID X.509 URL"/>
+        <urn:Field name="Publish Thumbprint X.509 URL"/>
+        <urn:Field name="Expand Scope Groups">false</urn:Field>
+    </urn:AdvancedFields>
+    <urn:Tables>
+        <urn:Table name="Symmetric Keys">
+            <urn:Row defaultRow="false">
+                <urn:Field name="Key ID">01</urn:Field>
+                <urn:Field name="Key">eyJhbGciOiJkaXIiLCJlbmMiOiJBMTI4Q0JDLUhTMjU2Iiwia2lkIjoiTHpUclFJS0NPSyIsInZlcnNpb24iOiIxMC4wLjAuMTUifQ..FROzWyoHwFCrWP4YvKsr1g.WiYTmeHPKdDWYzlFSQAmkVwAM1uLrEMYLGbAkGXSjh3mo91UeORRRHNPvnmCP2bV6dLeWla5jsEjOX-L7SSbvqecc1T-QgHQRw1Pi0YUpbg.aLjVnXB0Op4AGaTx-eMXpA</urn:Field>
+                <urn:Field name="Encoding"/>
+            </urn:Row>
+        </urn:Table>
+        <urn:Table name="Certificates"/>
+    </urn:Tables>
+    <urn:ExtendedContractAttributes>
+        <urn:AttributeName>even_odd_group</urn:AttributeName>
+        <urn:AttributeName>employeeID</urn:AttributeName>
+        <urn:AttributeName>email</urn:AttributeName>
+        <urn:AttributeName>group</urn:AttributeName>
+        <urn:AttributeName>username</urn:AttributeName>
+    </urn:ExtendedContractAttributes>
+    <urn:ResourceUri>https://pingfederate.prod-rock-lobster.us1.ping-lab.cloud/jwttokens</urn:ResourceUri>
+</urn:AccessTokenManagerConfiguration>

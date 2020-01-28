@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urn:AdapterConfiguration isInheritTargetApplicationInfo="false" isInheritExtendedContractAttributes="false" name="SPStub" xmlns:urn="urn:sourceid.org:saml2:adapter:conf">
+    <urn:Fields/>
+    <urn:AdvancedFields/>
+    <urn:Tables/>
+    <urn:ExtendedContractAttributes>
+        <urn:AttributeName>even_odd_group</urn:AttributeName>
+        <urn:AttributeName>employeeID</urn:AttributeName>
+        <urn:AttributeName>email</urn:AttributeName>
+        <urn:AttributeName>group</urn:AttributeName>
+        <urn:AttributeName>username</urn:AttributeName>
+    </urn:ExtendedContractAttributes>
+</urn:AdapterConfiguration>

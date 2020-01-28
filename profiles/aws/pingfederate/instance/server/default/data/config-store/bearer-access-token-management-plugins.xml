@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:config xmlns:con="http://www.sourceid.org/2004/05/config">
+    <con:map name="bearer-access-token-management-plugin-sequence">
+        <con:item name="jwttokens">1309129</con:item>
+    </con:map>
+    <con:map name="bearer-access-token-management-plugins">
+        <con:item name="jwttokens">com.pingidentity.pf.access.token.management.plugins.JwtBearerAccessTokenManagementPlugin</con:item>
+    </con:map>
+    <con:item name="bearer-access-token-management-plugins-default">jwttokens</con:item>
+</con:config>

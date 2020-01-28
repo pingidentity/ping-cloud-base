@@ -1,0 +1,96 @@
+# The IdP Session Registry stores SLO-related session information for IdP
+# adapters, as well as for IdP and SP connections that a user has interacted
+# with. It also stores sessions for PingFederate's Authentication Sessions
+# feature. 
+
+# This setting controls the maximum number of user sessions (for SLO or
+# Authentication Sessions) kept in memory. When this limit is reached, sessions
+# are removed on a least-recently-used basis.
+IdpSessionRegistryMapImpl.max.sessions=250000
+
+# This setting controls the maximum number of IdP adapter or IdP connection
+# sessions per user session. When this limit is reached, sessions are removed on
+# a first-in first-out basis.
+IdpSessionRegistryMapImpl.max.individual.sessions=500
+
+# This setting controls the maximum number of SP connection sessions per IdP
+# adapter or IdP connection session. When this limit is reached, sessions are
+# removed on a first-in first-out basis.
+IdpSessionRegistryMapImpl.max.partner.sessions=500
+
+# This setting defines the expiry period for user sessions in minutes.  If no
+# activity has been seen for a given user session for this period, it will be
+# removed.
+IdpSessionRegistryMapImpl.expiry.mins=1440
+
+
+# The SP Session Registry stores SLO-related session information for SP adapters
+# and IdP connections that a user has interacted with.
+
+# This setting controls the maximum number of user sessions kept in memory.
+# When this limit is reached, sessions are removed on a least-recently-used
+# basis.
+SpSessionRegistryMapImpl.max.sessions=250000
+
+# This setting controls the maximum number of SP adapter sessions per user
+# session.  When this limit is reached, sessions are removed on a first-in
+# first-out basis.
+SpSessionRegistryMapImpl.max.individual.sessions=500
+
+# This setting defines the expiry period for user sessions in minutes.  If no
+# activity has been seen for a given user session for this period, it will be
+# removed.
+SpSessionRegistryMapImpl.expiry.mins=1440
+
+
+# The Inter-Request State Management service has two maps. The 'state' map is
+# used to store short-lived state information between requests within an SSO or
+# SLO transaction. The 'attr' map is used by adapters (such as the HTML form
+# adapter) to store user session attributes.
+
+# This setting controls the maximum number of user sessions in the state map.
+# When this limit is reached, sessions are removed on a least-recently-used
+# basis.
+InterReqStateMgmtMapImpl.max.size.state.map=250000
+
+# This setting controls the expiry period for user sessions in the state map.
+# If no activity has been seen for a given user session for this period, it will
+# be removed.
+InterReqStateMgmtMapImpl.expiry.mins.state.map=30
+
+# This setting controls the maximum number of user sessions in the attribute
+# map.  When this limit is reached, sessions are removed on a
+# least-recently-used basis.
+InterReqStateMgmtMapImpl.max.size.attr.map=250000
+
+# This setting controls the expiry period for user sessions in the attribute
+# map.  If no activity has been seen for a given user session for this period,
+# it will be removed.
+InterReqStateMgmtMapImpl.expiry.mins.attr.map=1440
+
+# This setting controls the maximum number of attributes stored in the attribute 
+# map for a given user session.
+InterReqStateMgmtMapImpl.max.session.attrs=500
+
+
+# This setting controls the maximum number of revoked session identifiers kept
+# in memory. When this limit is reached, revoked identifiers are removed on a
+# first-in first-out basis.
+SessionRevocationServiceMapImpl.max.revoked.sris=50000
+
+
+# This setting controls the maximum number of IdP connections kept in memory.
+# When this limit is reached, connections are removed on a least-recently-used
+# basis.
+MetadataDirectory.max.size.idp.conn.map=10000
+
+# This setting controls the maximum number of SP connections kept in memory.
+# When this limit is reached, connections are removed on a least-recently-used
+# basis.
+MetadataDirectory.max.size.sp.conn.map=10000
+
+
+# This setting controls the maximum number of OAuth clients kept in memory. When
+# this limit is reached, clients are removed on a least-recently-used basis.
+ClientManagerXmlFileImpl.max.size.clients.map=10000
+

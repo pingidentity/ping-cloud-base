@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<adm:administrative-users multi-admin="true" xmlns:adm="http://pingidentity.com/2006/01/admin-users">
+</adm:administrative-users>
