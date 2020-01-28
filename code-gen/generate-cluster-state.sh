@@ -109,7 +109,7 @@
 # CONFIG_REPO_URL        | The URL of the config repo.                        | Same value as CLUSTER_STATE_REPO_URL,
 #                        |                                                    | if not provided.
 #                        |                                                    |
-# CONFIG_REPO_BRANCH     | The branch within the config repo to use for       | v1.0.0-RC2
+# CONFIG_REPO_BRANCH     | The branch within the config repo to use for       | master
 #                        | application configuration.                         |
 #                        |                                                    |
 # ARTIFACT_REPO_URL      | The URL for plugins (e.g. PF kits, PD extensions). | The string "unused".
@@ -382,7 +382,7 @@ export SIZE="${SIZE:-small}"
 export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL:-git@github.com:pingidentity/ping-cloud-base.git}"
 
 export CONFIG_REPO_URL="${CONFIG_REPO_URL:-${CLUSTER_STATE_REPO_URL}}"
-export CONFIG_REPO_BRANCH="${CONFIG_REPO_BRANCH:-v1.0.0-RC2}"
+export CONFIG_REPO_BRANCH="${CONFIG_REPO_BRANCH:-master}"
 
 export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
 export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
