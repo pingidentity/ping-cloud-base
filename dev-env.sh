@@ -2,8 +2,6 @@
 
 ########################################################################################################################
 #
-# Note: This script must be executed within its git checkout tree after switching to the desired branch.
-#
 # This script may be used to set up a development or test environment to verify the Kubernetes and Kustomization yaml
 # files either in their present form or after making some local changes to them.
 #
@@ -16,7 +14,6 @@
 #   - kustomize
 #   - kubectl
 #   - envsubst
-#   - git
 #
 # In addition, the assumption is that kubectl is configured to authenticate and apply manifests to the Kubernetes
 # cluster. For EKS clusters, this requires an AWS key and secret with the appropriate IAM policies to be configured and
@@ -78,8 +75,7 @@
 #                        | to Container Insights, an AWS-specific logging     |
 #                        | and monitoring solution.                           |
 #                        |                                                    |
-# CONFIG_REPO_BRANCH     | The branch within this repository for server       | The git branch where this script
-#                        |                                                    | exists, i.e. CI_COMMIT_REF_SLUG
+# CONFIG_REPO_BRANCH     | The branch within this repository for server       | master
 #                        | profiles, i.e. configuration.                      |
 #                        |                                                    |
 # CONFIG_PARENT_DIR      | The parent directory for server profiles within    | aws
@@ -135,7 +131,7 @@ do
 done
 
 # Checking required tools and environment variables.
-check_binaries "openssl" "base64" "kustomize" "kubectl" "envsubst" "git"
+check_binaries "openssl" "base64" "kustomize" "kubectl" "envsubst"
 HAS_REQUIRED_TOOLS=${?}
 
 check_env_vars "PING_IDENTITY_DEVOPS_USER" "PING_IDENTITY_DEVOPS_KEY"
@@ -162,13 +158,11 @@ echo ---
 # A script that may be used to set up a dev/test environment against the
 # current cluster. Must have the GTE devops user and key exported as
 # environment variables.
-CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-
 export ENVIRONMENT=-"${ENVIRONMENT:-${USER}}"
 export TENANT_DOMAIN="${TENANT_DOMAIN:-eks-poc.au1.ping-lab.cloud}"
 export TENANT_NAME="${TENANT_NAME:-PingPOC}"
 export REGION="${REGION:-us-east-2}"
-export CONFIG_REPO_BRANCH="${CONFIG_REPO_BRANCH:-${CURRENT_GIT_BRANCH}}"
+export CONFIG_REPO_BRANCH="${CONFIG_REPO_BRANCH:-master}"
 export CONFIG_PARENT_DIR="${CONFIG_PARENT_DIR:-aws}"
 export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
 export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
