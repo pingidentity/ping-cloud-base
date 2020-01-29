@@ -22,13 +22,14 @@ replace() {
   SOURCE_REF=${1}
   TARGET_REF=${2}
 
-  # Replace references in README.md
-  sed -i.bak -E "s/(ref=).*$/\1${TARGET_REF}/g" ./README.md
+  # Replace K8S_GIT_BRANCH in generate-cluster-state.sh
+  GENERATE_SCRIPT=code-gen/generate-cluster-state.sh
+  GENERATE_SCRIPT_BAK=code-gen/generate-cluster-state.sh.bak
+  cp "${GENERATE_SCRIPT}" "${GENERATE_SCRIPT_BAK}"
 
-  # Replace references in ./dev-env.sh and ./generate-cluster-state.sh
-  CURRENT_REF=$(grep '^# CONFIG_REPO_BRANCH' ./dev-env.sh | cut -d'|' -f3 | tr -d '[:blank:]')
-  sed -i.bak -E "s/\| ${CURRENT_REF}/\| ${TARGET_REF}/g" ./dev-env.sh code-gen/generate-cluster-state.sh
-  sed -i.bak -E "s/-${CURRENT_REF}/-${TARGET_REF}/g" ./dev-env.sh code-gen/generate-cluster-state.sh
+  export CI_COMMIT_REF_SLUG="${TARGET_REF}"
+  envsubt "${CI_COMMIT_REF_SLUG}" < "${GENERATE_SCRIPT_BAK}" > "${GENERATE_SCRIPT}"
+  rm -f "${GENERATE_SCRIPT_BAK}"
 
   # Replace SERVER_PROFILE_BRANCH variable in product-specific env_vars file
   PRODUCTS='pingdirectory pingfederate'
@@ -39,7 +40,7 @@ replace() {
 
   # Verify references
   echo "Verifying presence of ${TARGET_REF} in expected files:"
-  grep "${TARGET_REF}" README.md ./dev-env.sh ./code-gen/generate-cluster-state.sh
+  grep "${TARGET_REF}" "${GENERATE_SCRIPT}"
 
   for PRODUCT in pingdirectory ${PRODUCTS}; do
     grep "${TARGET_REF}" "k8s-configs/ping-cloud/base/${PRODUCT}/base/env_vars"

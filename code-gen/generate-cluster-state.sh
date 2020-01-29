@@ -185,8 +185,8 @@
 #                        |                                                    |
 # K8S_GIT_URL            | The Git URL of the Kubernetes base manifest files. | https://github.com/pingidentity/ping-cloud-base
 #                        |                                                    |
-# K8S_GIT_BRANCH         | The Git branch within the above Git URL.           | Same value as CONFIG_REPO_BRANCH, if
-#                        |                                                    | not provided.
+# K8S_GIT_BRANCH         | The Git branch within the above Git URL.           | The git branch where this script
+#                        |                                                    | exists, i.e. CI_COMMIT_REF_SLUG
 #                        |                                                    |
 # REGISTRY_NAME          | The registry hostname for the Docker images used   | docker.io
 #                        | by the Ping stack. This can be Docker hub, ECR     |
@@ -406,7 +406,7 @@ test ! -z ${S3_IRSA_ARN} && export S3_IRSA_ARN_KEY_AND_VALUE="eks.amazonaws.com/
 test ! -z ${ROUTE53_IRSA_ARN} && export ROUTE53_IRSA_ARN_KEY_AND_VALUE="eks.amazonaws.com/role-arn: ${ROUTE53_IRSA_ARN}"
 
 export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
-export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-${CONFIG_REPO_BRANCH}}"
+export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-${CI_COMMIT_REF_SLUG}}"
 
 export REGISTRY_NAME="${REGISTRY_NAME:-docker.io}"
 
@@ -448,7 +448,7 @@ echo ---
 export PING_IDENTITY_DEVOPS_USER_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_USER}")
 export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_KEY}")
 
-SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
+SCRIPT_HOME=$(cd $(dirname ${0}) 2> /dev/null; pwd)
 TEMPLATES_HOME="${SCRIPT_HOME}/templates"
 
 # Generate an SSH key pair for flux CD.
