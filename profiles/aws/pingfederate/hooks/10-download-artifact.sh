@@ -67,6 +67,7 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
               # Check to see if the Artifact Source URL is available
               if ( ( test "${ARTIFACT_SOURCE}" == "private" ) && ( test -z ${ARTIFACT_REPO_URL} ) ) || ( ( test "${ARTIFACT_SOURCE}" == "public" ) && ( test -z ${PING_ARTIFACT_REPO_URL} ) ); then
                 echo "${ARTIFACT_NAME} cannot be deployed as the ${ARTIFACT_SOURCE} source repo is not defined. "
+                exit 1
               else
                 # Make sure there aren't any duplicate entries for the artifact.
                 # This is needed to avoid issues with multiple plugin versions
@@ -95,9 +96,11 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
                     if ! unzip -o ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP} "deploy/*" "conf/*" -d ${OUT_DIR}/instance/server/default
                     then
                         echo Artifact ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP} could not be unzipped.
+                        exit 1
                     fi
                   else
                     echo "Artifact download failed from ${ARTIFACT_LOCATION}"
+                    exit 1
                   fi
 
                   # Cleanup
@@ -106,13 +109,16 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
                   fi
                 else
                   echo "Artifact ${ARTIFACT_NAME} is specified more than once in ${STAGING_DIR}/artifacts/artifact-list.json"
+                  exit 1
                 fi
               fi
             else
               echo "Artifact Version for ${ARTIFACT_NAME} could not be retrieved from ${STAGING_DIR}/artifacts/artifact-list.json"
+              exit 1
             fi
           else
             echo "Missing Artifact Name within ${STAGING_DIR}/artifacts/artifact-list.json"
+            exit 1
           fi
 
         done
