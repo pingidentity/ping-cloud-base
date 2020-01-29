@@ -36,9 +36,13 @@ if [ "$(aws s3 ls ${BACKUP_URL} > /dev/null 2>&1;echo $?)" = "1" ]; then
 fi
 
 #
-# We may already have a master key on disk if one was supplied through a secret or the 'in'
-# volume. If that is the case we will use that key during obfuscation. If one does not 
-# exist we check to see if one was previously uploaded to s3
+# We may already have a master key on disk if one was supplied through a secret, the 'in' volume or
+# extracted from a backup in the drop in deployer directory; in these cases we will use that key 
+# during obfuscation. If one does not exist we check to see if one was previously uploaded to s3,
+# if so we will use that otherwise we'll create one via obsfuscate.sh. In all cases the key used
+# is uploaded to S3 to ensure a common key is used that matches the data archive. 
+#
+# TODO: Review approach post release as it is currently AWS specific. 
 #
 if ! [ -f ../server/default/data/pf.jwk ]; then
    echo "No local master key found check s3 for a pre-existing key"
@@ -58,11 +62,10 @@ if ! [ -f ../server/default/data/pf.jwk ]; then
    else
       echo "No pre-existing master key found - obfuscate will create one which we will upload"
       obfuscatePassword
-      aws s3 cp ../server/default/data/pf.jwk ${target}/pf.jwk
    fi 
 else
    echo "A pre-existing master key was found on disk - using it"
    obfuscatePassword
 fi
+aws s3 cp ../server/default/data/pf.jwk ${target}/pf.jwk
 cd "${currentDir}"
-

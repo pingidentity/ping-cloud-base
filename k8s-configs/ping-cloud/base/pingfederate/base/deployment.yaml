@@ -159,7 +159,7 @@ spec:
   selector:
     matchLabels:
       role: pingfederate-engine
-  replicas: 1
+  replicas: 2
   template:
     metadata:
       name: pingfederate-engine
