@@ -60,49 +60,59 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
           ARTIFACT_SOURCE=$(_artifact '.source')
           ARTIFACT_RUNTIME_ZIP=${ARTIFACT_NAME}-${ARTIFACT_VERSION}-runtime.zip
 
-          # Check to see if the Artifact Source URL is available
-          if ( ( test "${ARTIFACT_SOURCE}" == "private" ) && ( test -z ${ARTIFACT_REPO_URL} ) ) || ( ( test "${ARTIFACT_SOURCE}" == "public" ) && ( test -z ${PING_ARTIFACT_REPO_URL} ) ); then
-            echo "${ARTIFACT_NAME} cannot be deployed as the ${ARTIFACT_SOURCE} source repo is not defined. "
-          else
-            # Make sure there aren't any duplicate entries for the artifact.
-            # This is needed to avoid issues with multiple plugin versions
-            ARTIFACT_NAME_COUNT=$(echo "${ARTIFACT_LIST_JSON}" | grep -iEo "${ARTIFACT_NAME}" | wc -l | xargs)
+          # Check to see if artifact name and version are available
+          if ( ( test ! "${ARTIFACT_NAME}" == "null" ) && ( test ! -z ${ARTIFACT_NAME} ) ); then
+            if ( ( test ! "${ARTIFACT_VERSION}" == "null" ) && ( test ! -z ${ARTIFACT_VERSION} ) ); then
 
-            if test "${ARTIFACT_NAME_COUNT}" == "1"; then
-
-              # Get artifact source location
-              if test "${ARTIFACT_SOURCE}" == "private"; then
-                ARTIFACT_LOCATION=${PRIVATE_BASE_URL}/${ARTIFACT_NAME}/${ARTIFACT_VERSION}/${ARTIFACT_RUNTIME_ZIP}
+              # Check to see if the Artifact Source URL is available
+              if ( ( test "${ARTIFACT_SOURCE}" == "private" ) && ( test -z ${ARTIFACT_REPO_URL} ) ) || ( ( test "${ARTIFACT_SOURCE}" == "public" ) && ( test -z ${PING_ARTIFACT_REPO_URL} ) ); then
+                echo "${ARTIFACT_NAME} cannot be deployed as the ${ARTIFACT_SOURCE} source repo is not defined. "
               else
-                ARTIFACT_LOCATION=${PUBLIC_BASE_URL}/${ARTIFACT_NAME}/${ARTIFACT_VERSION}/${ARTIFACT_RUNTIME_ZIP}
-              fi
+                # Make sure there aren't any duplicate entries for the artifact.
+                # This is needed to avoid issues with multiple plugin versions
+                ARTIFACT_NAME_COUNT=$(echo "${ARTIFACT_LIST_JSON}" | grep -iEo "${ARTIFACT_NAME}" | wc -l | xargs)
 
-              echo "Download Artifact from ${ARTIFACT_LOCATION}"
+                if test "${ARTIFACT_NAME_COUNT}" == "1"; then
 
-              # Use aws command if ARTIFACT_LOCATION is in s3 format otherwise use curl
-              if ! test ${ARTIFACT_LOCATION#s3} == "${ARTIFACT_LOCATION}"; then
-                aws s3 cp "${ARTIFACT_LOCATION}" ${DOWNLOAD_DIR}
-              else
-                curl "${ARTIFACT_LOCATION}" --output ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}
-              fi
+                  # Get artifact source location
+                  if test "${ARTIFACT_SOURCE}" == "private"; then
+                    ARTIFACT_LOCATION=${PRIVATE_BASE_URL}/${ARTIFACT_NAME}/${ARTIFACT_VERSION}/${ARTIFACT_RUNTIME_ZIP}
+                  else
+                    ARTIFACT_LOCATION=${PUBLIC_BASE_URL}/${ARTIFACT_NAME}/${ARTIFACT_VERSION}/${ARTIFACT_RUNTIME_ZIP}
+                  fi
 
-              # Unzip deploy and conf folders from the runtime zip
-              if test $(echo $?) == "0"; then
-                if ! unzip -o ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP} "deploy/*" "conf/*" -d ${OUT_DIR}/instance/server/default
-                then
-                    echo Artifact ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP} could not be unzipped.
+                  echo "Download Artifact from ${ARTIFACT_LOCATION}"
+
+                  # Use aws command if ARTIFACT_LOCATION is in s3 format otherwise use curl
+                  if ! test ${ARTIFACT_LOCATION#s3} == "${ARTIFACT_LOCATION}"; then
+                    aws s3 cp "${ARTIFACT_LOCATION}" ${DOWNLOAD_DIR}
+                  else
+                    curl "${ARTIFACT_LOCATION}" --output ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}
+                  fi
+
+                  # Unzip deploy and conf folders from the runtime zip
+                  if test $(echo $?) == "0"; then
+                    if ! unzip -o ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP} "deploy/*" "conf/*" -d ${OUT_DIR}/instance/server/default
+                    then
+                        echo Artifact ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP} could not be unzipped.
+                    fi
+                  else
+                    echo "Artifact download failed from ${ARTIFACT_LOCATION}"
+                  fi
+
+                  # Cleanup
+                  if test -f "${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}"; then
+                    rm ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}
+                  fi
+                else
+                  echo "Artifact ${ARTIFACT_NAME} is specified more than once in ${STAGING_DIR}/artifacts/artifact-list.json"
                 fi
-              else
-                echo "Artifact download failed from ${ARTIFACT_LOCATION}"
-              fi
-
-              # Cleanup
-              if test -f "${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}"; then
-                rm ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}
               fi
             else
-              echo "Artifact ${ARTIFACT_NAME} is specified more than once in ${STAGING_DIR}/artifacts/artifact-list.json"
+              echo "Artifact Version for ${ARTIFACT_NAME} could not be retrieved from ${STAGING_DIR}/artifacts/artifact-list.json"
             fi
+          else
+            echo "Missing Artifact Name within ${STAGING_DIR}/artifacts/artifact-list.json"
           fi
 
         done
@@ -114,7 +124,7 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
 
       else
         echo "Artifacts will not be deployed as could not parse ${STAGING_DIR}/artifacts/artifact-list.json."
-        exit 0
+        exit 1
       fi
     else
       echo "Artifacts will not be deployed as the environment variable ARTIFACT_REPO_URL and PING_ARTIFACT_REPO_URL are empty."
