@@ -11,7 +11,8 @@ export CLUSTER_NAME="${EKS_CLUSTER_NAME}"
 export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
 
 export CONFIG_PARENT_DIR=aws
-if test "${CI_COMMIT_REF_SLUG#profile-test-}" == "${CI_COMMIT_REF_SLUG}"; then
+if test "${CI_COMMIT_REF_SLUG#profile-test-}" == "${CI_COMMIT_REF_SLUG}" ||
+   test "${CI_COMMIT_REF_SLUG%-release-branch}" == "${CI_COMMIT_REF_SLUG}"; then
   export CONFIG_REPO_BRANCH=master
 else
   export CONFIG_REPO_BRANCH=${CI_COMMIT_REF_SLUG}
