@@ -22,15 +22,6 @@ replace() {
   SOURCE_REF=${1}
   TARGET_REF=${2}
 
-  # Replace K8S_GIT_BRANCH in generate-cluster-state.sh
-  GENERATE_SCRIPT=code-gen/generate-cluster-state.sh
-  GENERATE_SCRIPT_BAK=code-gen/generate-cluster-state.sh.bak
-  cp "${GENERATE_SCRIPT}" "${GENERATE_SCRIPT_BAK}"
-
-  export CI_COMMIT_REF_SLUG="${TARGET_REF}"
-  envsubt "${CI_COMMIT_REF_SLUG}" < "${GENERATE_SCRIPT_BAK}" > "${GENERATE_SCRIPT}"
-  rm -f "${GENERATE_SCRIPT_BAK}"
-
   # Replace SERVER_PROFILE_BRANCH variable in product-specific env_vars file
   PRODUCTS='pingdirectory pingfederate'
   for PRODUCT in pingdirectory ${PRODUCTS}; do
@@ -40,8 +31,6 @@ replace() {
 
   # Verify references
   echo "Verifying presence of ${TARGET_REF} in expected files:"
-  grep "${TARGET_REF}" "${GENERATE_SCRIPT}"
-
   for PRODUCT in pingdirectory ${PRODUCTS}; do
     grep "${TARGET_REF}" "k8s-configs/ping-cloud/base/${PRODUCT}/base/env_vars"
   done

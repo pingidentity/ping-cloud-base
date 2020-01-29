@@ -2,6 +2,8 @@
 
 ########################################################################################################################
 #
+# Note: This script must be executed within its git checkout tree after switching to the desired branch.
+#
 # This script may be used to generate the initial Kubernetes configurations to push into the cluster-state repository
 # for a particular tenant. This repo is referred to as the cluster state repo because the EKS clusters are always
 # (within a few minutes) reflective of the code in this repo. This repo is the only interface for updates to the
@@ -61,6 +63,7 @@
 #   - ssh-keyscan
 #   - base64
 #   - envsubst
+#   - git
 #
 # ------------------
 # Usage instructions
@@ -319,7 +322,7 @@ pushd "${SCRIPT_HOME}"
 . ../utils.sh
 
 # Checking required tools and environment variables.
-check_binaries "openssl" "ssh-keygen" "ssh-keyscan" "base64" "envsubst"
+check_binaries "openssl" "ssh-keygen" "ssh-keyscan" "base64" "envsubst" "git"
 HAS_REQUIRED_TOOLS=${?}
 
 check_env_vars "PING_IDENTITY_DEVOPS_USER" "PING_IDENTITY_DEVOPS_KEY"
@@ -406,7 +409,8 @@ test ! -z ${S3_IRSA_ARN} && export S3_IRSA_ARN_KEY_AND_VALUE="eks.amazonaws.com/
 test ! -z ${ROUTE53_IRSA_ARN} && export ROUTE53_IRSA_ARN_KEY_AND_VALUE="eks.amazonaws.com/role-arn: ${ROUTE53_IRSA_ARN}"
 
 export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
-export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-${CI_COMMIT_REF_SLUG}}"
+CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-${CURRENT_GIT_BRANCH}}"
 
 export REGISTRY_NAME="${REGISTRY_NAME:-docker.io}"
 
