@@ -93,7 +93,7 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
 
                   # Unzip deploy and conf folders from the runtime zip
                   if test $(echo $?) == "0"; then
-                    if ! unzip -o ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP} "deploy/*" "conf/*" -d ${OUT_DIR}/instance/server/default
+                    if ! unzip -o ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP} -d ${OUT_DIR}/instance/server/default
                     then
                         echo Artifact ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP} could not be unzipped.
                         exit 1
