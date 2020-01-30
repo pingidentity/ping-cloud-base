@@ -61,7 +61,7 @@ if ! test -z "${DATA_BACKUP_FILE}"; then
     exit 1
   fi
 
-  unzip "${OUT_DIR}/instance/server/default/data/drop-in-deployer/${DST_FILE}" \
+  unzip -o "${OUT_DIR}/instance/server/default/data/drop-in-deployer/${DST_FILE}" \
       pf.jwk \
       -d "${OUT_DIR}/instance/server/default/data"
 
