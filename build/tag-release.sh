@@ -44,7 +44,7 @@ replaceAndCommit() {
   done
   echo ---
 
-  echo "Creating new ${REF_TYPE} ${TARGET_REF}"
+  echo "Committing changes for new ${REF_TYPE} ${TARGET_REF}"
   git add .
   git commit -m "[skip pipeline] - creating new ${REF_TYPE} ${TARGET_REF}"
 }
@@ -66,15 +66,23 @@ echo "Making modifications in sandbox directory ${SANDBOX}"
 
 cd "${SANDBOX}"
 git clone git@gitlab.corp.pingidentity.com:ping-cloud-private-tenant/ping-cloud-base.git
+
+echo ---
 cd ping-cloud-base
+git checkout "${SOURCE_REF}"
 
 if test "${REF_TYPE}" = 'tag'; then
   replaceAndCommit "${SOURCE_REF}" "${TARGET_REF}" "${REF_TYPE}"
   git tag "${TARGET_REF}"
 else
-  git checkout -b "${TARGET_REF}" "origin/${SOURCE_REF}"
+  git checkout -b "${TARGET_REF}"
   replaceAndCommit "${SOURCE_REF}" "${TARGET_REF}" "${REF_TYPE}"
 fi
+
+echo ---
+echo "Files that are different between origin/${SOURCE_REF} and ${TARGET_REF} refs:"
+git diff --name-only origin/"${SOURCE_REF}" "${TARGET_REF}"
+echo ---
 
 # Confirm before pushing the tag to the server
 read -n 1 -srp 'Press any key to continue'
