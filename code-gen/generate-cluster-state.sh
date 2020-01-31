@@ -118,8 +118,8 @@
 # ARTIFACT_REPO_URL      | The URL for plugins (e.g. PF kits, PD extensions). | The string "unused".
 #                        | If not provided, the Ping stack will be            |
 #                        | provisioned without plugins. This URL must always  |
-#                        | have an https scheme, e.g.                         |
-#                        | https://artifacts.s3-us-west-2.amazonaws.com.      |
+#                        | have an s3 scheme, e.g.                            |
+#                        | s3://customer-repo-bucket-name.                    |
 #                        |                                                    |
 # PING_ARTIFACT_REPO_URL | This environment variable can be used to overwrite | https://ping-artifacts.s3-us-west-2.amazonaws.com
 #                        | the default endpoint for public plugins. This URL  |

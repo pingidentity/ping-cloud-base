@@ -1,6 +1,7 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
 metadata:
   name: pingfederate
 spec:
-  replicas: 4
+  minReplicas: 4
+  maxReplicas: 12
