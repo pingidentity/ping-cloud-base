@@ -1,0 +1,6 @@
+#!/usr/bin/env
+echo Hello from the baseline server profile 20-start-sequence.sh.pre hook!
+
+${VERBOSE} && set -x
+
+run_hook "20-download-artifact.sh"
