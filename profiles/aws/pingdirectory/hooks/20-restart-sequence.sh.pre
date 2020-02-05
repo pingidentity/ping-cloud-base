@@ -1,5 +1,12 @@
 #!/usr/bin/env
+
 echo Hello from the baseline server profile 20-restart-sequence.sh.pre hook!
+
+${VERBOSE} && set -x
+. "${HOOKS_DIR}/pingcommon.lib.sh"
+
+run_hook "30-change-admin-password.sh"
+
 echo "====> USER_BASE_DN=[${USER_BASE_DN}]"
 computedDomain=$(echo ${USER_BASE_DN} | sed 's/^dc=\([^,]*\).*/\1/' )
 computedOrg=$(echo ${USER_BASE_DN} | sed 's/^o=\([^,]*\).*/\1/' )
