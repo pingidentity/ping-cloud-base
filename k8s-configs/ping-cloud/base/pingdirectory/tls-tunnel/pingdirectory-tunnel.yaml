@@ -67,11 +67,16 @@ spec:
           foreground = yes
           client = no
 
+          TIMEOUTbusy = -1
+          TIMEOUTclose = -1
+          TIMEOUTconnect = -1
+          TIMEOUTidle = -1
+
           [ldaps]
           accept = 5678
           connect = localhost:${LDAP_PORT}
-          delay = no
-          TIMEOUTbusy = -1
+          delay = yes
+          sslVersion = TLSv1.2
           EOF
 
           echo "Installing kubectl"
@@ -104,7 +109,7 @@ spec:
                 kill -HUP \${PID}
                 echo "stunnel config last reloaded at \$(date)"
               else
-                echo "Certificate in \${TEMP_CRT_FILE} ${STUNNEL_CRT_FILE} are the same"
+                echo "Certificate in \${TEMP_CRT_FILE} and ${STUNNEL_CRT_FILE} are the same"
               fi
             else
               echo "TLS key-pair not found in secret"
