@@ -1,6 +1,0 @@
-#!/usr/bin/env sh
-
-${VERBOSE} && set -x
-. "${HOOKS_DIR}/pingcommon.lib.sh"
-
-run_hook "30-change-admin-password.sh"
