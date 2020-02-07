@@ -40,14 +40,6 @@ check_binaries() {
   return ${STATUS}
 }
 
-########################################################################################################################
-# Prints script usage
-########################################################################################################################
-usage() {
-  echo "Usage: ${0} [ -a ]"
-  echo "  where a => append script output to ${SEALED_SECRETS_YAML} and ${KUSTOMIZATION_YAML} under ${SCRIPT_DIR}"
-}
-
 ####################
 #   Start script   #
 ####################
@@ -56,25 +48,6 @@ usage() {
 check_binaries "kustomize" "kubeseal"
 HAS_REQUIRED_TOOLS=${?}
 test ${HAS_REQUIRED_TOOLS} -ne 0 && exit 1
-
-# Parse options.
-APPEND='false'
-while getopts ':ah' OPTION
-do
-  case ${OPTION} in
-    a)
-      APPEND='true'
-      ;;
-    h)
-      usage
-      exit 0
-      ;;
-    \?)
-      usage
-      exit 1
-      ;;
-  esac
-done
 
 # The sealed-secrets controller must be deployed to the cluster.
 CERT_FILE=/tmp/cert.pem
@@ -92,9 +65,9 @@ echo "Creating sealed secrets in ${SEALED_SECRETS_FILE} and patches in ${PATCHES
 OUT_DIR=$(mktemp -d)
 kustomize build --output "${OUT_DIR}"
 
-for FILE in $(find "${OUT_DIR}" | xargs grep -rl 'kind: Secret'); do
-   NAME=$(grep 'name:' "${FILE}" | cut -d: -f2 | tr -d '[:space:]')
-   NAMESPACE=$(grep 'namespace:' "${FILE}" | cut -d: -f2 | tr -d '[:space:]')
+for FILE in $(find "${OUT_DIR}" -type f | xargs grep -rl 'kind: Secret'); do
+  NAME=$(grep 'name:' "${FILE}" | cut -d: -f2 | tr -d '[:space:]')
+  NAMESPACE=$(grep 'namespace:' "${FILE}" | cut -d: -f2 | tr -d '[:space:]')
 
   # Only seal secrets that have data in them.
   if grep '^data' "${FILE}" &> /dev/null; then
@@ -120,6 +93,9 @@ for FILE in $(find "${OUT_DIR}" | xargs grep -rl 'kind: Secret'); do
       echo >> "${PATCHES_FILE}"
     fi
 
+    # Replace ping-cloud-* namespace to just ping-cloud because it is the default in the kustomization base.
+    echo -n "${NAMESPACE}" | grep '^ping-cloud' && NAMESPACE=ping-cloud
+
     cat >> "${PATCHES_FILE}" <<EOF
 - |-
   apiVersion: v1
@@ -135,26 +111,15 @@ EOF
   fi
 done
 
-if test "${APPEND}" = 'true'; then
-  echo "Appending the contents of ${SEALED_SECRETS_FILE} to the ${SEALED_SECRETS_YAML} file under ${SCRIPT_DIR}"
-  cat "${SEALED_SECRETS_FILE}" >> "${SCRIPT_DIR}/${SEALED_SECRETS_YAML}"
-
-  echo "Appending the patches in ${PATCHES_FILE} to the ${KUSTOMIZATION_YAML} under ${SCRIPT_DIR}"
-  cat "${PATCHES_FILE}" >> "${SCRIPT_DIR}/${KUSTOMIZATION_YAML}"
-fi
-
 echo
 echo '------------------------'
 echo '|  Next steps to take  |'
 echo '------------------------'
 
-if test "${APPEND}" = 'false'; then
-  echo "- Append the contents of ${SEALED_SECRETS_FILE} to the ${SEALED_SECRETS_YAML} file under ${SCRIPT_DIR}"
-  echo "- Append the patches in ${PATCHES_FILE} to the ${KUSTOMIZATION_YAML} under ${SCRIPT_DIR}"
-fi
-
+echo "- Append the contents of ${SEALED_SECRETS_FILE} to the ${SEALED_SECRETS_YAML} file under ${SCRIPT_DIR}"
+echo "- Add the patches in ${PATCHES_FILE} to the appropriate ${KUSTOMIZATION_YAML} files (either under ping-cloud or cluster-tools"
 echo "- Remove all Secret objects (search for 'kind: Secret') that don't have data from all ${KUSTOMIZATION_YAML} files"
 echo "- Push ${SEALED_SECRETS_YAML} and all modified ${KUSTOMIZATION_YAML} files into the cluster state repo"
-echo "- Run this script for each CDE in the order - dev, test, stage, prod, if not already done so"
+echo "- Run this script for each CDE in the order - dev, test, stage, prod, if not already done"
 
 popd &> /dev/null
