@@ -23,6 +23,7 @@ at the very minimum:
 
 - PING_IDENTITY_DEVOPS_USER
 - PING_IDENTITY_DEVOPS_KEY
+- BACKUP_URL
 - TENANT_DOMAIN
 
 The DEVOPS user and key may be obtained from the Ping DevOps GTE team here:
@@ -36,13 +37,17 @@ ping-devops.com must be a valid DNS domain registered by some registrar (e.g.
 AWS Route53). There must also be a hosted zone created for it on AWS Route53.
 Refer to the AWS online documentation on how to set these up.
 
+The BACKUP_URL must point to an s3 bucket on AWS. PingFederate in clustered mode
+(which is the default) requires an s3 bucket for high availability and fault tolerance. 
+
 To build the environment, simply run:
 
 ```
-kustomize build https://github.com/pingidentity/ping-cloud-base?ref=master
+kustomize build https://github.com/pingidentity/ping-cloud-base?ref=master |
   envsubst '
     ${PING_IDENTITY_DEVOPS_USER}
     ${PING_IDENTITY_DEVOPS_KEY}
+    ${BACKUP_URL}
     ${TENANT_DOMAIN}' |
   kubectl apply -f -
 ```
