@@ -94,7 +94,7 @@ for FILE in $(find "${OUT_DIR}" -type f | xargs grep -rl 'kind: Secret'); do
     fi
 
     # Replace ping-cloud-* namespace to just ping-cloud because it is the default in the kustomization base.
-    echo -n "${NAMESPACE}" | grep '^ping-cloud' && NAMESPACE=ping-cloud
+    echo -n "${NAMESPACE}" | grep '^ping-cloud' &> /dev/null && NAMESPACE=ping-cloud
 
     cat >> "${PATCHES_FILE}" <<EOF
 - |-
@@ -117,9 +117,11 @@ echo '|  Next steps to take  |'
 echo '------------------------'
 
 echo "- Append the contents of ${SEALED_SECRETS_FILE} to the ${SEALED_SECRETS_YAML} file under ${SCRIPT_DIR}"
-echo "- Add the patches in ${PATCHES_FILE} to the appropriate ${KUSTOMIZATION_YAML} files (either under ping-cloud or cluster-tools"
+echo "- Add the patches in ${PATCHES_FILE} to the appropriate ${KUSTOMIZATION_YAML} files (either under ping-cloud or cluster-tools)"
 echo "- Remove all Secret objects (search for 'kind: Secret') that don't have data from all ${KUSTOMIZATION_YAML} files"
+echo "- Verify that there are no errors by running 'kustomize build > deploy.yaml' from the k8s-configs directory"
+echo "- Validate that the patches are present in the deploy.yaml file generated above"
 echo "- Push ${SEALED_SECRETS_YAML} and all modified ${KUSTOMIZATION_YAML} files into the cluster state repo"
-echo "- Run this script for each CDE in the order - dev, test, stage, prod, if not already done"
+echo "- Run this script for each CDE branch in the order - dev, test, stage, prod, if not already done"
 
 popd &> /dev/null
