@@ -60,12 +60,7 @@ data:
     waitUntilLdapUp "localhost" "${LDAPS_PORT}" ""
 
     echo "Changing the cluster name to ${HOSTNAME}"
-    dsconfig --no-prompt \
-      --useSSL --trustAll \
-      --hostname "${HOSTNAME}" --port "${LDAPS_PORT}" \
-      set-server-instance-prop \
-      --instance-name "${HOSTNAME}" \
-      --set cluster-name:"${HOSTNAME}"
+    dsconfig --no-prompt set-server-instance-prop --instance-name "${HOSTNAME}" --set cluster-name:"${HOSTNAME}"
 
     # --- NOTE ---
     # This assumes that data initialization is only required once for the initial data in the server profile.
@@ -80,11 +75,12 @@ data:
     REPL_SETUP_MARKER_FILE=/opt/out/instance/config/repl-setup
 
     if test ${ORDINAL} -eq 0; then
-      echo "${USER_BASE_DN}" >> "${REPL_SETUP_MARKER_FILE}"
+      # Remove the user base DN from the replication marker file so the pod isn't prematurely considered ready
+      sed -i.bak -E "/${USER_BASE_DN}/d" "${REPL_SETUP_MARKER_FILE}"
 
       # The request control allows encoded passwords, which is always required for topology admin users
       # ldapmodify allows a --passwordUpdateBehavior allow-pre-encoded-password=true to do the same
-      echo "Changing admin user password, if necessary"
+      echo "Resetting password for user ${ADMIN_USER_NAME}"
       ldappasswordmodify \
         --authzID "dn:cn=${ADMIN_USER_NAME}" \
         --newPasswordFile "${ADMIN_USER_PASSWORD_FILE}" \
@@ -92,13 +88,27 @@ data:
       pwdModStatus=$?
       echo "Password reset for user ${ADMIN_USER_NAME} status: ${pwdModStatus}"
 
-      # The following exit codes are acceptable
+      # The following exit codes are acceptable:
       # 0 -> success
       # 32 -> user does not exist (e.g. first run, so replication has not been enabled)
       # 53 -> old and new passwords are the same
       if test ${pwdModStatus} -ne 0 && test ${pwdModStatus} -ne 32 && test ${pwdModStatus} -ne 53; then
         exit ${pwdModStatus}
       fi
+
+      # Update the license file, if necessary
+      LICENSE_FILE_PATH="${LICENSE_DIR}/${LICENSE_FILE_NAME}"
+
+      if test -f "${LICENSE_FILE_PATH}"; then
+        echo "Updating product license from file ${LICENSE_FILE_PATH}"
+        dsconfig --no-prompt set-license-prop --set "directory-platform-license-key<${LICENSE_FILE_PATH}"
+        licModStatus=$?
+        echo "Product license update status: ${pwdModStatus}"
+
+        test ${licModStatus} -ne 0 && exit ${licModStatus}
+      fi
+
+      echo "${USER_BASE_DN}" >> "${REPL_SETUP_MARKER_FILE}"
 
       exit 0
     fi

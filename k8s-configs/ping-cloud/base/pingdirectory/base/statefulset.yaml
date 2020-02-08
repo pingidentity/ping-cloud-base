@@ -134,14 +134,15 @@ spec:
           exec:
             command:
             - /opt/staging/readiness.sh
+          # Each PD pod is expected to be ready within 10 minutes. We'll check every 30s.
           periodSeconds: 30
-          failureThreshold: 120
+          failureThreshold: 20
         livenessProbe:
           exec:
             command: [ liveness.sh ]
-          initialDelaySeconds: 600
+          # Health checks will kick in 5 minutes after the pod starts up.
+          initialDelaySeconds: 300
           periodSeconds: 30
-          failureThreshold: 10
         lifecycle:
           preStop:
             exec:
