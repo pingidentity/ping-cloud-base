@@ -18,41 +18,25 @@
 # manifest files for these environments contain deployments of both the Ping Cloud stack and the supporting tools
 # necessary to provide an end-to-end solution.
 #
-# For example, the script produces a directory structure as shown below (files within the sub-directories are omitted
-# for brevity):
+# For example, the script produces a directory structure as shown below (Directories greater than a depth of 3 and
+# files within the directories are omitted for brevity):
 #
 # ├── cluster-state
 # │   └── k8s-configs
 # │       ├── dev
-# │       │   ├── cluster-tools
-# │       │   └── ping-cloud
-# │       │       ├── pingdirectory
-# │       │       └── pingfederate
 # │       ├── prod
-# │       │   ├── cluster-tools
-# │       │   └── ping-cloud
-# │       │       ├── pingdirectory
-# │       │       └── pingfederate
 # │       ├── stage
-# │       │   ├── cluster-tools
-# │       │   └── ping-cloud
-# │       │       ├── pingdirectory
-# │       │       └── pingfederate
 # │       └── test
-# │           ├── cluster-tools
-# │           └── ping-cloud
-# │               ├── pingdirectory
-# │               └── pingfederate
+# │   └── profiles
 # └── fluxcd
 #    ├── dev
 #    ├── prod
 #    ├── stage
 #    └── test
-# └── .gitignore
 #
-# Deploying the manifests under the fluxcd directory will bootstrap the cluster with a Continuous Delivery tool called
-# flux. Once flux is deployed to the cluster, it will deploy the rest of the ping stack and supporting tools. More
-# details on flux may be found here: https://docs.fluxcd.io/
+# Deploying the manifests under the fluxcd directory for a specific environment will bootstrap the cluster with a
+# Continuous Delivery tool called flux. Once flux is deployed to the cluster, it will deploy the rest of the ping stack
+# and supporting tools for that environment. More details on flux may be found here: https://docs.fluxcd.io/
 #
 # ------------
 # Requirements
@@ -108,12 +92,6 @@
 #                        | small, medium or large.                            |
 #                        |                                                    |
 # CLUSTER_STATE_REPO_URL | The URL of the cluster-state repo.                 | https://github.com/pingidentity/ping-cloud-base
-#                        |                                                    |
-# CONFIG_REPO_URL        | The URL of the config repo.                        | Same value as CLUSTER_STATE_REPO_URL,
-#                        |                                                    | if not provided.
-#                        |                                                    |
-# CONFIG_REPO_BRANCH     | The branch within the config repo to use for       | master
-#                        | application configuration.                         |
 #                        |                                                    |
 # ARTIFACT_REPO_URL      | The URL for plugins (e.g. PF kits, PD extensions). | The string "unused".
 #                        | If not provided, the Ping stack will be            |
@@ -189,7 +167,7 @@
 # K8S_GIT_URL            | The Git URL of the Kubernetes base manifest files. | https://github.com/pingidentity/ping-cloud-base
 #                        |                                                    |
 # K8S_GIT_BRANCH         | The Git branch within the above Git URL.           | The git branch where this script
-#                        |                                                    | exists, i.e. CI_COMMIT_REF_SLUG
+#                        |                                                    | exists, i.e. CI_COMMIT_REF_NAME
 #                        |                                                    |
 # REGISTRY_NAME          | The registry hostname for the Docker images used   | docker.io
 #                        | by the Ping stack. This can be Docker hub, ECR     |
@@ -245,9 +223,7 @@ ${SIZE}
 ${CLUSTER_NAME}
 ${CLUSTER_NAME_LC}
 ${CLUSTER_STATE_REPO_URL}
-${CLUSTER_STATE_REPO_HOST}
-${CONFIG_REPO_URL}
-${CONFIG_REPO_BRANCH}
+${CLUSTER_STATE_REPO_BRANCH}
 ${ARTIFACT_REPO_URL}
 ${PING_ARTIFACT_REPO_URL}
 ${LOG_ARCHIVE_URL}
@@ -268,10 +244,8 @@ ${REGISTRY_NAME}
 ${SSH_ID_PUB}
 ${SSH_ID_KEY_BASE64}
 ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
-${KNOWN_HOSTS_CONFIG_REPO}
 ${DNS_RECORD_SUFFIX}
 ${DNS_DOMAIN_PREFIX}
-${ENVIRONMENT_GIT_PATH}
 ${ENVIRONMENT_TYPE}
 ${PING_CLOUD_NAMESPACE}
 ${KUSTOMIZE_BASE}
@@ -342,9 +316,6 @@ echo "Initial SIZE: ${SIZE}"
 
 echo "Initial CLUSTER_STATE_REPO_URL: ${CLUSTER_STATE_REPO_URL}"
 
-echo "Initial CONFIG_REPO_URL: ${CONFIG_REPO_URL}"
-echo "Initial CONFIG_REPO_BRANCH: ${CONFIG_REPO_BRANCH}"
-
 echo "Initial ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Initial PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 
@@ -383,9 +354,6 @@ export REGION="${REGION:-us-east-2}"
 export SIZE="${SIZE:-small}"
 
 export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL:-git@github.com:pingidentity/ping-cloud-base.git}"
-
-export CONFIG_REPO_URL="${CONFIG_REPO_URL:-${CLUSTER_STATE_REPO_URL}}"
-export CONFIG_REPO_BRANCH="${CONFIG_REPO_BRANCH:-master}"
 
 export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
 export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
@@ -427,9 +395,6 @@ echo "Using REGION: ${REGION}"
 echo "Using SIZE: ${SIZE}"
 
 echo "Using CLUSTER_STATE_REPO_URL: ${CLUSTER_STATE_REPO_URL}"
-
-echo "Using CONFIG_REPO_URL: ${CONFIG_REPO_URL}"
-echo "Using CONFIG_REPO_BRANCH: ${CONFIG_REPO_BRANCH}"
 
 echo "Using ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
@@ -473,10 +438,6 @@ parse_url "${CLUSTER_STATE_REPO_URL}"
 echo "Obtaining known_hosts contents for cluster state repo host: ${URL_HOST}"
 export KNOWN_HOSTS_CLUSTER_STATE_REPO=$(ssh-keyscan -H "${URL_HOST}" 2> /dev/null)
 
-parse_url "${CONFIG_REPO_URL}"
-echo "Obtaining known_hosts contents for config repo host: ${URL_HOST}"
-export KNOWN_HOSTS_CONFIG_REPO=$(ssh-keyscan -H "${URL_HOST}" 2> /dev/null)
-
 # Delete existing target directory and re-create it
 rm -rf "${TARGET_DIR}"
 mkdir -p "${TARGET_DIR}"
@@ -490,15 +451,15 @@ mkdir -p "${FLUXCD_DIR}"
 mkdir -p "${CLUSTER_STATE_DIR}"
 
 cp ../.gitignore "${CLUSTER_STATE_DIR}"
-cp -pr ../profiles "${CLUSTER_STATE_DIR}"
-rm -rf "${CLUSTER_STATE_DIR}/profiles/dev" "${CLUSTER_STATE_DIR}/profiles/aws/pingaccess"
+cp -pr ../profiles/aws/. "${CLUSTER_STATE_DIR}"/profiles
+rm -rf "${CLUSTER_STATE_DIR}/profiles/pingaccess"
 
 # Now generate the yaml files for each environment
 ENVIRONMENTS='dev test stage prod'
 
 for ENV in ${ENVIRONMENTS}; do
   # Export all the environment variables required for envsubst
-  export ENVIRONMENT_GIT_PATH=${ENV}
+  test "${ENV}" = prod && export CLUSTER_STATE_REPO_BRANCH=master || export CLUSTER_STATE_REPO_BRANCH=${ENV}
   export ENVIRONMENT_TYPE=${ENV}
 
   # The base URL for kustomization files and environment will be different for each CDE.
@@ -552,7 +513,7 @@ for ENV in ${ENVIRONMENTS}; do
 
   echo ---
   echo "For environment ${ENV}, using variable values:"
-  echo "ENVIRONMENT_GIT_PATH: ${ENVIRONMENT_GIT_PATH}"
+  echo "CLUSTER_STATE_REPO_BRANCH: ${CLUSTER_STATE_REPO_BRANCH}"
   echo "ENVIRONMENT_TYPE: ${ENVIRONMENT_TYPE}"
   echo "KUSTOMIZE_BASE: ${KUSTOMIZE_BASE}"
   echo "CLUSTER_NAME: ${CLUSTER_NAME}"
@@ -639,6 +600,8 @@ for ENV in ${ENVIRONMENTS}; do
   substitute_vars "${ENV_DIR}"
 done
 
+cp -p push-cluster-state.sh "${TARGET_DIR}"
+
 # Go back to previous working directory, if different
 popd > /dev/null
 
@@ -646,7 +609,7 @@ echo
 echo '------------------------'
 echo '|  Next steps to take  |'
 echo '------------------------'
-echo "1) Push ${TARGET_DIR}/cluster-state/. into the master branch of the tenant cluster-state repo:"
+echo "1) Run ${TARGET_DIR}/push-cluster-state.sh to push the generated code into the tenant cluster-state repo:"
 echo "${CLUSTER_STATE_REPO_URL}"
 echo
 echo "2) Add the following identity as the deploy key on the cluster-state (rw), if not already added:"

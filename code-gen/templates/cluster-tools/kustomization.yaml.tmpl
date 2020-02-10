@@ -71,7 +71,8 @@ patchesStrategicMerge:
           args:
           - --manifest-generation=true
           - --git-url=${CLUSTER_STATE_REPO_URL}
-          - --git-path=k8s-configs/${ENVIRONMENT_GIT_PATH}
+          - --git-branch=${CLUSTER_STATE_REPO_BRANCH}
+          - --git-path=k8s-configs
           volumeMounts:
           - name: ssh-config
             mountPath: /root/.ssh
