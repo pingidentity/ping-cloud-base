@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 # WARNING: This script must only be used to seed the initial cluster state. It is destructive and will replace the
 # contents of the remote branches corresponding to the different Customer Deployment Environments with new state.
@@ -6,9 +6,9 @@
 # NOTE: This script must be run from the root of the cluster state repo clone directory. It acts on the following
 # environment variables, if set.
 #
-#   GENERATED_CODE_DIR -> The TARGET_DIR of generate-cluster-state.sh. Defaults to '/tmp/sandbox'. if unset.
+#   GENERATED_CODE_DIR -> The TARGET_DIR of generate-cluster-state.sh. Defaults to '/tmp/sandbox', if unset.
 #   ENVIRONMENTS -> A space-separated list of environments. Defaults to 'dev test stage prod', if unset. If provided,
-#   it must contain all or a subset of the environments currently created by the generate-cluster-state.sh script -
+#   it must contain all or a subset of the environments currently created by the generate-cluster-state.sh script, i.e.
 #   dev, test, stage, prod.
 #   PUSH_RETRY_COUNT -> The number to times to try pushing to the cluster state repo with a 2s sleep between each
 #   attempt to avoid IAM permission to repo sync issue.
@@ -48,9 +48,12 @@ push_with_retries() {
 
   for ATTEMPT in $(seq 1 "${RETRY_COUNT}"); do
     echo "Attempt #${ATTEMPT} pushing to server"
-    git push --set-upstream origin "${GIT_BRANCH}" && break
+    git push --set-upstream origin "${GIT_BRANCH}" && return 0
     sleep 2s
   done
+
+  echo "Unable to push to server branch ${GIT_BRANCH} after ${RETRY_COUNT} attempts"
+  return 1
 }
 
 ### Script start ###
@@ -69,11 +72,13 @@ for ENV in ${ENVIRONMENTS}; do
     GIT_BRANCH="${ENV}"
     # Check if the branch exists on remote. If so, switch to it and pull the latest code from it.
     if git ls-remote --quiet --heads | grep "${GIT_BRANCH}" &> /dev/null; then
+      git restore .
       git checkout "${GIT_BRANCH}"
       git pull
     else
       # Check if the branch exists locally. If so, switch to master first and then delete it.
-      if git rev-parse --verify "${GIT_BRANCH}"; then
+      if git rev-parse --verify "${GIT_BRANCH}" &> /dev/null; then
+        git restore .
         git checkout master
         git branch -D "${GIT_BRANCH}"
       fi
@@ -81,6 +86,7 @@ for ENV in ${ENVIRONMENTS}; do
     fi
   else
     GIT_BRANCH=master
+    git restore .
     git checkout "${GIT_BRANCH}"
     git pull
   fi
