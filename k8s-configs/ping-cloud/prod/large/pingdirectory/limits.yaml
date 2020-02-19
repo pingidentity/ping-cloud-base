@@ -28,17 +28,3 @@ spec:
       resources:
         requests:
           storage: 2000Gi
-
----
-
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pingdirectory-backup-pvc
-spec:
-  accessModes:
-  - ReadWriteOnce
-  storageClassName: pingdirectory-io1
-  resources:
-    requests:
-      storage: 200Gi
