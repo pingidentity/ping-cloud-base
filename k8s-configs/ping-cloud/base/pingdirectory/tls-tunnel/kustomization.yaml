@@ -9,6 +9,19 @@ patchesStrategicMerge:
 
 patchesJson6902:
 
+# Expose the stunnel port on the headless service used for internal communication
+- target:
+    version: v1
+    kind: Service
+    name: pingdirectory
+  patch: |-
+    - op: add
+      path: /spec/ports/-
+      value:
+        port: 5678
+        name: stunnel
+        targetPort: stunnel
+
 # Point the pingdirectory load balancer to the stunnel port
 - target:
     version: v1

@@ -97,6 +97,11 @@ spec:
             secretKeyRef:
               name: pingdirectory-passwords
               key: root-user-password
+        - name: PF_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingdirectory-passwords
+              key: pf-admin-user-password
         envFrom:
         - configMapRef:
             name: pingdirectory-environment-variables

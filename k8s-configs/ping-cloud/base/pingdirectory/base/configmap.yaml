@@ -54,6 +54,46 @@ data:
     test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
     test -f "${HOOKS_DIR}/pingdirectory.lib.sh" && . "${HOOKS_DIR}/pingdirectory.lib.sh"
 
+    ####################################################################################################################
+    # Change the password of the provided user.
+    #
+    # Arguments
+    #   ${1} -> The DN of the user.
+    #   ${2} -> The file containing the new password file in clear text.
+    #   ${3} -> Any optional control to be used with the LDAP modify request.
+    #
+    ####################################################################################################################
+    change_user_password() {
+      USER_DN="${1}"
+      NEW_PASSWORD_FILE="${2}"
+      CONTROL="${3}"
+
+      echo "Resetting password for user DN: ${USER_DN}"
+      if test -z "${CONTROL}"; then
+        ldappasswordmodify \
+          --authzID "dn:${USER_DN}" \
+          --newPasswordFile "${NEW_PASSWORD_FILE}"
+      else
+        ldappasswordmodify \
+          --authzID "dn:${USER_DN}" \
+          --newPasswordFile "${NEW_PASSWORD_FILE}" \
+          --control "${CONTROL}"
+      fi
+
+      pwdModStatus=$?
+      echo "Password reset for DN ${USER_DN} status: ${pwdModStatus}"
+
+      # The following exit codes are acceptable:
+      # 0 -> success
+      # 32 -> user does not exist
+      # 53 -> old and new passwords are the same
+      if test ${pwdModStatus} -ne 0 && test ${pwdModStatus} -ne 32 && test ${pwdModStatus} -ne 53; then
+        return ${pwdModStatus}
+      fi
+
+      return 0
+    }
+
     echo "Starting post-start hook"
 
     echo "Running ldapsearch test on this container (${HOSTNAME})"
@@ -61,6 +101,12 @@ data:
 
     echo "Changing the cluster name to ${HOSTNAME}"
     dsconfig --no-prompt set-server-instance-prop --instance-name "${HOSTNAME}" --set cluster-name:"${HOSTNAME}"
+
+    if test -f "${PF_ADMIN_USER_PASSWORD_FILE}"; then
+      change_user_password "uid=administrator,ou=People,${USER_BASE_DN}" "${PF_ADMIN_USER_PASSWORD_FILE}"
+      pwdModStatus=$?
+      test ${pwdModStatus} -ne 0 && exit ${pwdModStatus}
+    fi
 
     # --- NOTE ---
     # This assumes that data initialization is only required once for the initial data in the server profile.
@@ -80,21 +126,10 @@ data:
 
       # The request control allows encoded passwords, which is always required for topology admin users
       # ldapmodify allows a --passwordUpdateBehavior allow-pre-encoded-password=true to do the same
-      echo "Resetting password for user ${ADMIN_USER_NAME}"
-      ldappasswordmodify \
-        --authzID "dn:cn=${ADMIN_USER_NAME}" \
-        --newPasswordFile "${ADMIN_USER_PASSWORD_FILE}" \
-        --control '1.3.6.1.4.1.30221.2.5.51:true::MAOBAf8='
+      ALLOW_PRE_ENCODED_PW_CONTROL='1.3.6.1.4.1.30221.2.5.51:true::MAOBAf8='
+      change_user_password "cn=${ADMIN_USER_NAME}" "${ADMIN_USER_PASSWORD_FILE}" "${ALLOW_PRE_ENCODED_PW_CONTROL}"
       pwdModStatus=$?
-      echo "Password reset for user ${ADMIN_USER_NAME} status: ${pwdModStatus}"
-
-      # The following exit codes are acceptable:
-      # 0 -> success
-      # 32 -> user does not exist (e.g. first run, so replication has not been enabled)
-      # 53 -> old and new passwords are the same
-      if test ${pwdModStatus} -ne 0 && test ${pwdModStatus} -ne 32 && test ${pwdModStatus} -ne 53; then
-        exit ${pwdModStatus}
-      fi
+      test ${pwdModStatus} -ne 0 && exit ${pwdModStatus}
 
       # Update the license file, if necessary
       LICENSE_FILE_PATH="${LICENSE_DIR}/${LICENSE_FILE_NAME}"

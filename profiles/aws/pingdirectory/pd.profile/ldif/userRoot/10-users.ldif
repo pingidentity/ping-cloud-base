@@ -79,7 +79,7 @@ objectClass: pf-connected-identities
 sn: PingFederate
 cn: Administrator
 uid: administrator
-userPassword: ${ROOT_USER_PASSWORD}
+userPassword: ${PF_ADMIN_USER_PASSWORD}
 pf-connected-identity: auth-source=pf-local-identity:user-id=administrator
 
 dn: uid=access2federate,ou=People,${USER_BASE_DN}
