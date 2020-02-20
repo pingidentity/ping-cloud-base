@@ -83,7 +83,7 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
 
                 # Use aws command if ARTIFACT_LOCATION is in s3 format otherwise use curl
                 if ! test ${ARTIFACT_LOCATION#s3} == "${ARTIFACT_LOCATION}"; then
-                  aws s3 cp "${ARTIFACT_LOCATION}" ${DOWNLOAD_DIR}
+                  aws s3 cp "${ARTIFACT_LOCATION}" ${DOWNLOAD_DIR} --recursive
                 else
                   curl "${ARTIFACT_LOCATION}" --output ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}
                 fi
