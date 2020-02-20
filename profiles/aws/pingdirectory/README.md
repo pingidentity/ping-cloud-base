@@ -28,7 +28,7 @@ through a JSON specification as shown below,
 
 Simply upload the JSON file to the following location within server profiles
 and the artifacts within this list will be downloaded from the artifact repo
-and deployed to PingFederate.
+and deployed to PingDirectory.
 
 - aws/pingdirectory/artifacts/artifact-list.json
 
