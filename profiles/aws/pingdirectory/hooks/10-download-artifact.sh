@@ -36,7 +36,6 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
           mkdir "${DOWNLOAD_DIR}"
         fi
 
-        #DOWNLOAD_DIR=$(mktemp -d)
         DIRECTORY_NAME=$(echo ${PING_PRODUCT} | tr '[:upper:]' '[:lower:]')
 
         PUBLIC_BASE_URL="${PING_ARTIFACT_REPO_URL}"
