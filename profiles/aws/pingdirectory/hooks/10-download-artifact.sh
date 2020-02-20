@@ -26,7 +26,7 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
 
         # Install AWS CLI if the upload location is S3
         if test ! "${ARTIFACT_REPO_URL#s3}" == "${ARTIFACT_REPO_URL}" -o ! "${PING_ARTIFACT_REPO_URL#s3}" == "${PING_ARTIFACT_REPO_URL}"; then
-          installTools
+          installAwsCliTools
         fi
 
         DOWNLOAD_DIR="${STAGING_DIR}/pd.profile/server-sdk-extensions"
