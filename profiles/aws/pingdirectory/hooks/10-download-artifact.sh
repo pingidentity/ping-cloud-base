@@ -31,10 +31,8 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
 
         DOWNLOAD_DIR="${STAGING_DIR}/pd.profile/server-sdk-extensions"
 
-        # Create extensions folder if it doesn't exist
-        if ! test -d "${DOWNLOAD_DIR}"; then
-          mkdir "${DOWNLOAD_DIR}"
-        fi
+        # Create extensions folder
+        mkdir -p "${DOWNLOAD_DIR}"
 
         DIRECTORY_NAME=$(echo ${PING_PRODUCT} | tr '[:upper:]' '[:lower:]')
 
