@@ -74,18 +74,20 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
 
                 # Get artifact source location
                 if test "${ARTIFACT_SOURCE}" == "private"; then
-                  ARTIFACT_LOCATION=${PRIVATE_BASE_URL}/${ARTIFACT_NAME}/${ARTIFACT_VERSION}/
+                  ARTIFACT_LOCATION=${PRIVATE_BASE_URL}/${ARTIFACT_NAME}/${ARTIFACT_VERSION}
                 else
-                  ARTIFACT_LOCATION=${PUBLIC_BASE_URL}/${ARTIFACT_NAME}/${ARTIFACT_VERSION}/${ARTIFACT_RUNTIME_ZIP}
+                  ARTIFACT_LOCATION=${PUBLIC_BASE_URL}/${ARTIFACT_NAME}/${ARTIFACT_VERSION}
                 fi
 
                 echo "Download Artifact from ${ARTIFACT_LOCATION}"
 
                 # Use aws command if ARTIFACT_LOCATION is in s3 format otherwise use curl
                 if ! test ${ARTIFACT_LOCATION#s3} == "${ARTIFACT_LOCATION}"; then
-                  aws s3 cp "${ARTIFACT_LOCATION}" ${DOWNLOAD_DIR} --recursive
+                  aws s3 cp "${ARTIFACT_LOCATION}/" ${DOWNLOAD_DIR} --recursive
                 else
-                  curl "${ARTIFACT_LOCATION}" --output ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}
+                  # For downloading over https we need to specify the exact file name,
+                  # This will only work for standard extensions with a prefix of pingidentity.com
+                  curl "${ARTIFACT_LOCATION}/${ARTIFACT_RUNTIME_ZIP}" --output ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}
                 fi
 
                 if test $(echo $?) != "0"; then
