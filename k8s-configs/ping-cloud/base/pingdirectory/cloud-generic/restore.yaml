@@ -17,7 +17,9 @@ data:
     curl https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
     chmod +x /usr/local/bin/kubectl
 
-    SERVER="${K8S_STATEFUL_SET_NAME}-0"
+    test -z "${BACKUP_RESTORE_POD}" && SERVER="${K8S_STATEFUL_SET_NAME}-0" || SERVER="${BACKUP_RESTORE_POD}"
+
+    echo "Running restore script within ${SERVER} pod"
     echo "Copying backup from ${CURRENT_BACKUP_DIR} to ${SERVER}:${SERVER_BACKUP_DIR}"
     kubectl cp "${CURRENT_BACKUP_DIR}" "${SERVER}:${SERVER_BACKUP_DIR}" -c pingdirectory
 
