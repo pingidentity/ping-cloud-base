@@ -58,7 +58,13 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
           ARTIFACT_NAME=$(_artifact '.name')
           ARTIFACT_VERSION=$(_artifact '.version')
           ARTIFACT_SOURCE=$(_artifact '.source')
-          ARTIFACT_RUNTIME_ZIP="pingidentity.com.${ARTIFACT_NAME}-${ARTIFACT_VERSION}.zip"
+          ARTIFACT_FILENAME=$(_artifact '.filename')
+
+          if ( ( test ! "${ARTIFACT_FILENAME}" == "null" ) && ( test ! -z ${ARTIFACT_FILENAME} ) ); then
+            ARTIFACT_RUNTIME_ZIP="${ARTIFACT_FILENAME}"
+          else
+            ARTIFACT_RUNTIME_ZIP="pingidentity.com.${ARTIFACT_NAME}-${ARTIFACT_VERSION}.zip"
+          fi
 
           # Check to see if artifact name and version are available
           if ( ( test ! "${ARTIFACT_NAME}" == "null" ) && ( test ! -z ${ARTIFACT_NAME} ) ); then
@@ -85,7 +91,7 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
                 else
                   # For downloading over https we need to specify the exact file name,
                   # This will only work for standard extensions with a prefix of pingidentity.com
-                  curl "${ARTIFACT_LOCATION}/${ARTIFACT_RUNTIME_ZIP}" --output ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}
+                  curl -f "${ARTIFACT_LOCATION}/${ARTIFACT_RUNTIME_ZIP}" --output ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP} && echo "Artifact successfully downloaded." || exit 1
                 fi
 
                 if test $(echo $?) != "0"; then
