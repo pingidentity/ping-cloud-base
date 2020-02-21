@@ -16,6 +16,7 @@ DATA_BACKUP_FILE=
 DATA_BACKUP_FILE_NAME=$( echo "${BACKUP_FILE_NAME}" | tr -d '"' )
 if ! test -z "${DATA_BACKUP_FILE_NAME}"; then
 
+  echo "Attempting to restore backup from S3 specified by the user: ${DATA_BACKUP_FILE_NAME}"
   DATA_BACKUP_FILE_NAME="${DIRECTORY_NAME}/${DATA_BACKUP_FILE_NAME}"
   # Get the specified backup zip file from s3
   DATA_BACKUP_FILE=$( aws s3api list-objects \
@@ -36,6 +37,8 @@ else
     --prefix "${DIRECTORY_NAME}/data" \
     --query "reverse(sort_by(Contents[?LastModified>='${DAYS_AGO}'], &LastModified))[0].Key" \
     | tr -d '"' )
+
+  echo "Attempting to restore latest uploaded backup from S3: ${DATA_BACKUP_FILE}"
 fi
 
 # If a backup file in s3 exists
