@@ -17,11 +17,13 @@ through a JSON specification as shown below,
     "name": "<EXTENSION_1_NAME>",
     "version": "<EXTENSION_1_VERSION>".
     "source": "public | private" (Default is "public")
+    "filename": (Can be used to overwrite the default filename "pingidentity.com.${EXTENSION_1_NAME}-${EXTENSION_1_VERSION}.zip")
   },
   {
     "name": "<EXTENSION_2_NAME>",
     "version": "<EXTENSION_2_VERSION>"
     "source": "public | private" (Default is "public")
+    "filename": (Can be used to overwrite the default filename "pingidentity.com.${EXTENSION_2_NAME}-${EXTENSION_2_VERSION}.zip")
   }
 ]
 ```
