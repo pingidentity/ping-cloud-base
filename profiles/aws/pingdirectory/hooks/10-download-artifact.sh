@@ -91,7 +91,7 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
                 else
                   # For downloading over https we need to specify the exact file name,
                   # This will only work for standard extensions with a prefix of pingidentity.com
-                  curl "${ARTIFACT_LOCATION}/${ARTIFACT_RUNTIME_ZIP}" --output ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}
+                  curl -f "${ARTIFACT_LOCATION}/${ARTIFACT_RUNTIME_ZIP}" --output ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP} && echo "Artifact successfully downloaded." || exit 1
                 fi
 
                 if test $(echo $?) != "0"; then
