@@ -21,7 +21,9 @@ data:
     #!/bin/sh
     set -e
 
-    SERVER="${K8S_STATEFUL_SET_NAME}-0"
+    test -z "${BACKUP_RESTORE_POD}" && SERVER="${K8S_STATEFUL_SET_NAME}-0" || SERVER="${BACKUP_RESTORE_POD}"
+
+    echo "Running backup script within ${SERVER} pod"
 
     # This is the backup directory on server 0
     SERVER_BACKUP_DIR="${OUT_DIR}/backup"
