@@ -1,0 +1,76 @@
+dn: uid=administrator,ou=admins,o=platformconfig
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: pf-connected-identities
+sn: PingFederate
+cn: Administrator
+uid: administrator
+title: PF Admin
+title: PF Crypto Admin
+title: PF User Admin
+userPassword: ${ROOT_USER_PASSWORD}
+
+dn: uid=psuser,ou=admins,o=platformconfig
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: pf-connected-identities
+sn: PingFederate
+cn: Administrator
+uid: psuser
+title: PF Admin
+title: PF Crypto Admin
+title: PF User Admin
+userPassword: ${ROOT_USER_PASSWORD}
+
+dn: uid=pfauditor,ou=admins,o=platformconfig
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: pf-connected-identities
+sn: PingFederate
+cn: Auditor
+uid: pfauditor
+title: PF Audit Admin
+userPassword: ${ROOT_USER_PASSWORD}
+
+dn: uid=pfcrypto,ou=admins,o=platformconfig
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: pf-connected-identities
+sn: PingFederate
+cn: Auditor
+uid: pfcrypto
+title: PF Crypto Admin
+userPassword: ${ROOT_USER_PASSWORD}
+
+dn: uid=pfuseradmin,ou=admins,o=platformconfig
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: pf-connected-identities
+sn: PingFederate
+cn: Auditor
+uid: pfuseradmin
+title: PF User Admin
+userPassword: ${ROOT_USER_PASSWORD}
+
+
+dn: uid=access2federate,ou=admins,o=platformconfig
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: pf-connected-identities
+sn: PingAccess
+cn: pingFederateAdministrator
+uid: access2federate
+userPassword: ${ROOT_USER_PASSWORD}
+
