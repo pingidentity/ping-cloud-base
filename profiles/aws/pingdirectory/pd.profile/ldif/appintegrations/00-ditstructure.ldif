@@ -1,0 +1,26 @@
+dn: o=appintegrations
+objectClass: top
+objectClass: organization
+o: appintegrations
+
+dn: ou=accessgrants,o=appintegrations
+objectClass: top
+objectClass: organizationalUnit
+ou: accessgrants
+aci: (targetattr="*")(version 3.0; acl "DA08: Allow the pingfederate admin group to do eveything in this branch";allow (all) groupdn="ldap:///ou=pfadmingrp,ou=groups,o=platformconfig";)
+#aci: (targetattr="*")(version 3.0; acl "Allow the pingfederate user to do everything in this branch"; allow(all) userdn="ldap:///cn=root dns,cn=config";)
+
+dn: ou=clients,o=appintegrations
+objectClass: top
+objectClass: organizationalUnit
+ou: clients
+aci: (targetattr="*")(version 3.0; acl "DA08: Allow the pingfederate admin group to do eveything in this branch";allow (all) groupdn="ldap:///ou=pfadmingrp,ou=groups,o=platformconfig";)
+#aci: (targetattr="*")(version 3.0; acl "Allow the pingfederate user to do everything in this branch"; allow(all) userdn="ldap:///cn=root dns,cn=config";)
+
+dn: ou=authsessions,o=appintegrations
+objectClass: top
+objectClass: organizationalUnit
+ou: authsessions
+aci: (targetattr="*")(version 3.0; acl "DA08: Allow the pingfederate admin group to do eveything in this branch";allow (all) groupdn="ldap:///ou=pfadmingrp,ou=groups,o=platformconfig";)
+#aci: (targetattr="*")(version 3.0; acl "Allow the pingfederate user to do everything in this branch"; allow(all) userdn="ldap:///cn=root dns,cn=config";)
+

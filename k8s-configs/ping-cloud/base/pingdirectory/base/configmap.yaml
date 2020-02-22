@@ -103,7 +103,7 @@ data:
     dsconfig --no-prompt set-server-instance-prop --instance-name "${HOSTNAME}" --set cluster-name:"${HOSTNAME}"
 
     if test -f "${PF_ADMIN_USER_PASSWORD_FILE}"; then
-      change_user_password "uid=administrator,ou=People,${USER_BASE_DN}" "${PF_ADMIN_USER_PASSWORD_FILE}"
+      change_user_password "uid=administrator,ou=admins,o=platformconfig" "${PF_ADMIN_USER_PASSWORD_FILE}"
       pwdModStatus=$?
       test ${pwdModStatus} -ne 0 && exit ${pwdModStatus}
     fi
