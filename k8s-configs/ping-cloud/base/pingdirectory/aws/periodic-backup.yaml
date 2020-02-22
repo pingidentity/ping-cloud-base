@@ -18,7 +18,9 @@ data:
     SCRIPT="${HOOKS_DIR}"/90-upload-backup-s3.sh
     LOG_FILE=/tmp/upload.log
 
-    SERVER="${K8S_STATEFUL_SET_NAME}-0"
+    test -z "${BACKUP_RESTORE_POD}" && SERVER="${K8S_STATEFUL_SET_NAME}-0" || SERVER="${BACKUP_RESTORE_POD}"
+
+    echo "Running backup script within ${SERVER} pod"
     kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" | tee "${LOG_FILE}"
 
     if test ${?} -eq 0; then

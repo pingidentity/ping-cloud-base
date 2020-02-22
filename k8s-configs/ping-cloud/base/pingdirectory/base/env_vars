@@ -1,5 +1,5 @@
 ORCHESTRATION_TYPE=kubernetes
-
+#VERBOSE=true
 SERVER_PROFILE_URL=https://github.com/pingidentity/ping-cloud-base.git
 SERVER_PROFILE_PATH=profiles/aws/pingdirectory
 SERVER_PROFILE_BRANCH=master
@@ -24,6 +24,8 @@ K8S_STATEFUL_SET_NAME=pingdirectory
 K8S_STATEFUL_SET_SERVICE_NAME=pingdirectory
 
 BACKUP_FILE_NAME=
+# Pingdirectory pod name where backup / restore script will run
+BACKUP_RESTORE_POD=pingdirectory-0
 S3_BACKUP_FILTER_DAY_COUNT=3
 
 ACCEPT_EULA=YES
