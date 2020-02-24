@@ -1,6 +1,6 @@
 dsconfig set-backend-prop \
-      --backend-name "userRoot" \
-      --set db-cache-percent:35
+        --backend-name "userRoot" \
+        --set db-cache-percent:35
 
 dsconfig create-backend \
         --backend-name "platformconfig" \

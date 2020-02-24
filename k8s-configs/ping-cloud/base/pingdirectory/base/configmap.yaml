@@ -102,6 +102,33 @@ data:
     echo "Changing the cluster name to ${HOSTNAME}"
     dsconfig --no-prompt set-server-instance-prop --instance-name "${HOSTNAME}" --set cluster-name:"${HOSTNAME}"
 
+    # FIXME:
+    # DS-41417: manage-profile replace-profile has a bug today where it won't make any changes to any local-db backends
+    # after setup. When manage-profile replace-profile is fixed, the following code block may be removed.
+
+    # Create the user backend, if it does not exist or update it to the right base DN
+    if ! ldapsearch --baseDN 'cn=config' --searchScope sub \
+             "&(ds-cfg-backend-id=${USER_BACKEND_ID})(objectClass=ds-cfg-backend)" 1.1 &> /dev/null; then
+      echo "Backend ${USER_BACKEND_ID} does not exist - creating it"
+      dsconfig --no-prompt create-backend \
+        --type local-db \
+        --backend-name "${USER_BACKEND_ID}" \
+        --set "base-dn:${USER_BASE_DN}" \
+        --set enabled:true \
+        --set db-cache-percent:35
+    else
+      echo "Backend ${USER_BACKEND_ID} already exists - updating base DN to ${USER_BASE_DN}"
+      dsconfig --no-prompt set-backend-prop \
+        --backend-name "${USER_BACKEND_ID}" \
+        --set "base-dn:${USER_BASE_DN}" \
+        --set enabled:true \
+        --set db-cache-percent:35
+    fi
+
+    backendUpdateStatus=$?
+    echo "Backend ${USER_BACKEND_ID} update status: ${backendUpdateStatus}"
+    test ${backendUpdateStatus} -ne 0 && exit ${backendUpdateStatus}
+
     if test -f "${PF_ADMIN_USER_PASSWORD_FILE}"; then
       change_user_password "uid=administrator,ou=admins,o=platformconfig" "${PF_ADMIN_USER_PASSWORD_FILE}"
       pwdModStatus=$?
@@ -143,8 +170,19 @@ data:
         test ${licModStatus} -ne 0 && exit ${licModStatus}
       fi
 
-      echo "${USER_BASE_DN}" >> "${REPL_SETUP_MARKER_FILE}"
+      if ldapsearch --baseDN "${USER_BASE_DN}" --searchScope base '(&)' 1.1 &> /dev/null; then
+        echo "User base DN ${USER_BASE_DN} exists"
+        echo "${USER_BASE_DN}" >> "${REPL_SETUP_MARKER_FILE}"
+      else
+        echo "User base DN ${USER_BASE_DN} does not exist"
+      fi
 
+      exit 0
+    fi
+
+    # Bail if user base entry is not present
+    if ! ldapsearch --baseDN "${USER_BASE_DN}" --searchScope base '(&)' 1.1 &> /dev/null; then
+      echo "User base DN ${USER_BASE_DN} does not exist"
       exit 0
     fi
 
@@ -219,8 +257,14 @@ data:
     echo "Readiness probe - verifying root DSE access"
     /opt/liveness.sh || exit 1
 
+    # Bail if user base entry is not present
+    if ! ldapsearch --baseDN "${USER_BASE_DN}" --searchScope base '(&)' 1.1 &> /dev/null; then
+      echo "User base DN ${USER_BASE_DN} does not exist"
+      exit 0
+    fi
+
     # Verify that replication is set up
-    echo "Readiness probe - verifying replication is set up"
+    echo "Readiness probe - verifying replication is set up for ${USER_BASE_DN}"
     REPL_SETUP_MARKER_FILE=/opt/out/instance/config/repl-setup
     grep -q "${USER_BASE_DN}" "${REPL_SETUP_MARKER_FILE}" 2> /dev/null && exit 0 || exit 1
 

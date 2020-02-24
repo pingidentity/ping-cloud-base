@@ -9,6 +9,8 @@ ADMIN_USER_PASSWORD_FILE=/usr/local/secrets/admin-user-password
 PF_ADMIN_USER_PASSWORD_FILE=/usr/local/secrets/pf-admin-user-password
 
 LOCATION=Austin
+
+USER_BACKEND_ID=userRoot
 USER_BASE_DN=dc=example,dc=com
 
 LDAP_PORT=1389

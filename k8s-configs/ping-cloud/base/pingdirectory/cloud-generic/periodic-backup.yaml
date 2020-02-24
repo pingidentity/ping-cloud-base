@@ -28,7 +28,7 @@ data:
     # This is the backup directory on server 0
     SERVER_BACKUP_DIR="${OUT_DIR}/backup"
 
-    echo "Doing a full backup of userRoot backend to ${BACKUP_DIR}"
+    echo "Doing a full backup of ${USER_BACKEND_ID} backend to ${BACKUP_DIR}"
     "${SERVER_BITS_DIR}/bin/backup" --task \
       --useSSL --trustAll \
       --hostname "${SERVER}.${K8S_STATEFUL_SET_SERVICE_NAME}" \
@@ -36,7 +36,7 @@ data:
       --bindDN "${ROOT_USER_DN}" \
       --bindPasswordFile "${ROOT_USER_PASSWORD_FILE}" \
       --backupDirectory "${SERVER_BACKUP_DIR}" \
-      --backendID userRoot \
+      --backendID "${USER_BACKEND_ID}" \
       --compress \
       --retainPreviousFullBackupAge 1d
 
@@ -69,7 +69,7 @@ data:
 
 ---
 
-# Do a full backup of the userRoot backend every 6 hours and retain the backups
+# Do a full backup of the user backend every 6 hours and retain the backups
 # for a day. This goes into a separate persistent volume than the data attached
 # to each pingdirectory server.
 
