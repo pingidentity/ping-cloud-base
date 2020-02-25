@@ -46,7 +46,6 @@ objectClass: top
 cn: pdsreadmingrp
 ou: groups
 memberURL: ldap:///ou=infraadmin,o=platformconfig??sub?(title=SRE Admin)
-aci: (targetscope="subtree")(targetattr="*")(version 3.0; acl "DA04: allow admin access to members of PD SRE Admin group to manage users under ou=devopsaccount,o=platformconfig";allow (all) groupdn="ldap:///cn=pdsreadmingrp,ou=groups,o=platformconfig";)
 
 dn: cn=monitorRead,ou=groups,o=platformconfig
 objectClass: groupOfURLs

@@ -1,5 +1,0 @@
-
-Server Profile pingfederate
-  - Creates an initial PingFederate instance
-  - Authenticates admin console to PingDirectory
-
