@@ -68,7 +68,7 @@ spec:
         - name: PF_LDAP_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: pingfederate-passwords
+              name: pingcommon-passwords
               key: PF_LDAP_PASSWORD
         envFrom:
         - configMapRef:
@@ -215,7 +215,7 @@ spec:
         - name: PF_LDAP_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: pingfederate-passwords
+              name: pingcommon-passwords
               key: PF_LDAP_PASSWORD
         resources:
           requests:

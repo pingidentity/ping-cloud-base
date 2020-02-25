@@ -76,21 +76,24 @@ patchesStrategicMerge:
 
 ### Product passwords ###
 
-# Supported keys (mounted as files): root-user-password, admin-user-password, encryption-password, pf-admin-user-password
+# Supported keys:
+# Exported as environment variables: PF_LDAP_PASSWORD
 - |-
   apiVersion: v1
   kind: Secret
+  type: Opaque
+  metadata:
+    name: pingcommon-passwords
+
+# Supported keys:
+# Mounted as files: root-user-password, admin-user-password, encryption-password
+# Exported as environment variables: PF_ADMIN_USER_PASSWORD
+- |-
+  apiVersion: v1
+  kind: Secret
+  type: Opaque
   metadata:
     name: pingdirectory-passwords
-  type: Opaque
-
-# Supported keys (exported as environment variables): PF_LDAP_PASSWORD
-- |-
-  apiVersion: v1
-  kind: Secret
-  type: Opaque
-  metadata:
-    name: pingfederate-passwords
 
 ### Ping app SSH private key ###
 
