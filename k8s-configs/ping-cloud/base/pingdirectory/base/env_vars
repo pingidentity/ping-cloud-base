@@ -6,7 +6,6 @@ SERVER_PROFILE_BRANCH=v1.1-release-branch
 
 ROOT_USER_PASSWORD_FILE=/usr/local/secrets/root-user-password
 ADMIN_USER_PASSWORD_FILE=/usr/local/secrets/admin-user-password
-PF_ADMIN_USER_PASSWORD_FILE=/usr/local/secrets/pf-admin-user-password
 
 LOCATION=Austin
 

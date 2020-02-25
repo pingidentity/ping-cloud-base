@@ -129,11 +129,18 @@ data:
     echo "Backend ${USER_BACKEND_ID} update status: ${backendUpdateStatus}"
     test ${backendUpdateStatus} -ne 0 && exit ${backendUpdateStatus}
 
-    if test -f "${PF_ADMIN_USER_PASSWORD_FILE}"; then
-      change_user_password "uid=administrator,ou=admins,o=platformconfig" "${PF_ADMIN_USER_PASSWORD_FILE}"
-      pwdModStatus=$?
-      test ${pwdModStatus} -ne 0 && exit ${pwdModStatus}
-    fi
+    # Change PF user passwords
+    PASS_FILE=$(mktemp)
+
+    echo "${PF_ADMIN_USER_PASSWORD}" > "${PASS_FILE}"
+    change_user_password 'uid=administrator,ou=admins,o=platformconfig' "${PASS_FILE}"
+    pwdModStatus=$?
+    test ${pwdModStatus} -ne 0 && exit ${pwdModStatus}
+
+    echo "${PF_LDAP_PASSWORD}" > "${PASS_FILE}"
+    change_user_password 'uid=pingfederate,ou=devopsaccount,o=platformconfig' "${PASS_FILE}"
+    pwdModStatus=$?
+    test ${pwdModStatus} -ne 0 && exit ${pwdModStatus}
 
     # --- NOTE ---
     # This assumes that data initialization is only required once for the initial data in the server profile.
@@ -233,7 +240,7 @@ data:
       --baseDN "${USER_BASE_DN}" \
       --adminUID "${ADMIN_USER_NAME}" \
       --adminPasswordFile "${ADMIN_USER_PASSWORD_FILE}" \
-      --no-prompt \
+      --no-prompt --ignoreWarnings \
       --enableDebug \
       --globalDebugLevel verbose
 

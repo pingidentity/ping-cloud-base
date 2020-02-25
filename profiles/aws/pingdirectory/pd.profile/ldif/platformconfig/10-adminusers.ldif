@@ -12,7 +12,6 @@ title: PF User Admin
 givenName: pfadmin
 mail: pfadmin@test.com
 userPassword: ${ROOT_USER_PASSWORD}
-#userPassword: ubD5Cah8m9
 
 dn: uid=pdadmin,ou=devopsaccount,o=platformconfig
 objectClass: inetOrgPerson
@@ -28,7 +27,6 @@ title: monitorRead
 givenName: pdadmin
 mail: pdadmin@test.com
 userPassword: ${ROOT_USER_PASSWORD}
-#userPassword: gDB64qSRbK
 
 dn: uid=dirsre,ou=infraadmin,o=platformconfig
 objectClass: inetOrgPerson
@@ -42,7 +40,6 @@ title: SRE Admin
 givenName: dirsre
 mail: dirsre@test.com
 userPassword: ${ROOT_USER_PASSWORD}
-#userPassword: ekY%A$aNkf
 
 dn: uid=pingfederate,ou=devopsaccount,o=platformconfig
 objectClass: inetOrgPerson
@@ -55,8 +52,7 @@ sn: AppIntegration User
 title: PF Admin
 givenName: Pingfederate
 mail: Pingfederate@test.com
-userPassword: ${ROOT_USER_PASSWORD}
-#userPassword: ynGuqC4AN9
+userPassword: ${PF_LDAP_PASSWORD}
 
 dn: uid=openvpn,ou=devopsaccount,o=platformconfig
 objectClass: inetOrgPerson
@@ -70,4 +66,17 @@ title: VPN Admin
 givenName: openvpn
 mail: openvpn@test.com
 userPassword: ${ROOT_USER_PASSWORD}
-#userPassword: y6vTzgGNjr
+
+dn: uid=administrator,ou=admins,o=platformconfig
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+objectClass: pf-connected-identities
+sn: PingFederate
+cn: Administrator
+uid: administrator
+title: PF Admin
+title: PF Crypto Admin
+title: PF User Admin
+userPassword: ${PF_ADMIN_USER_PASSWORD}
