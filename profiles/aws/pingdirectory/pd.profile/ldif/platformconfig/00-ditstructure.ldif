@@ -14,6 +14,7 @@ objectClass: top
 objectClass: organizationalUnit
 ou: devopsaccount
 aci: (targetscope="subtree")(targetattr="*")(version 3.0; acl "DA05: Deny vpn users all accessto ou=devopsaccount,o=platformconfig";deny (all) groupdn="ldap:///ou=vpnadmingrp,ou=groups,o=platformconfig";)
+aci: (targetscope="subtree")(targetattr="*")(version 3.0; acl "DA04: allow admin access to members of PD SRE Admin group to manage users under ou=devopsaccount,o=platformconfig";allow (all) groupdn="ldap:///cn=pdsreadmingrp,ou=groups,o=platformconfig";)
 
 dn: ou=admins,o=platformconfig
 objectClass: top
