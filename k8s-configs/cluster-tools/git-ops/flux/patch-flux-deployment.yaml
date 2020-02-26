@@ -9,5 +9,9 @@ spec:
       containers:
       - name: flux
         args:
+        - --ssh-keygen-dir=/var/fluxd/keygen
+        - --listen-metrics=:3031
+        - --git-poll-interval=60s
         - --git-url=git@github.com:pingidentity/ping-cloud-base.git
+        - --git-branch=master
         - --git-path=k8s-configs/ping-cloud/test
