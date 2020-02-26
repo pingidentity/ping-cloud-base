@@ -97,7 +97,7 @@ data:
     echo "Starting post-start hook"
 
     echo "Running ldapsearch test on this container (${HOSTNAME})"
-    waitUntilLdapUp "localhost" "${LDAPS_PORT}" ""
+    waitUntilLdapUp "localhost" "${LDAPS_PORT}" 'cn=config'
 
     echo "Changing the cluster name to ${HOSTNAME}"
     dsconfig --no-prompt set-server-instance-prop --instance-name "${HOSTNAME}" --set cluster-name:"${HOSTNAME}"
@@ -152,6 +152,20 @@ data:
     ORDINAL=$(echo ${SHORT_HOST_NAME##*-})
     echo "Pod ordinal: ${ORDINAL}"
 
+    # It may take the user backend a few seconds to initialize after the server is restarted
+    USER_BASE_DN_EXISTS=false
+    RETRY_COUNT=5
+
+    for ATTEMPT in $(seq 1 "${RETRY_COUNT}"); do
+      if ldapsearch --baseDN "${USER_BASE_DN}" --searchScope base '(&)' 1.1 &> /dev/null; then
+        USER_BASE_DN_EXISTS=true
+        echo "User base DN ${USER_BASE_DN} exists"
+        break
+      fi
+      echo "Attempt #${ATTEMPT} - user base DN ${USER_BASE_DN} does not exist"
+      sleep 2s
+    done
+
     REPL_SETUP_MARKER_FILE=/opt/out/instance/config/repl-setup
 
     if test ${ORDINAL} -eq 0; then
@@ -177,18 +191,17 @@ data:
         test ${licModStatus} -ne 0 && exit ${licModStatus}
       fi
 
-      if ldapsearch --baseDN "${USER_BASE_DN}" --searchScope base '(&)' 1.1 &> /dev/null; then
-        echo "User base DN ${USER_BASE_DN} exists"
-        echo "${USER_BASE_DN}" >> "${REPL_SETUP_MARKER_FILE}"
-      else
+      if test "${USER_BASE_DN_EXISTS}" = 'false'; then
         echo "User base DN ${USER_BASE_DN} does not exist"
+      else
+        echo "${USER_BASE_DN}" >> "${REPL_SETUP_MARKER_FILE}"
       fi
 
       exit 0
     fi
 
     # Bail if user base entry is not present
-    if ! ldapsearch --baseDN "${USER_BASE_DN}" --searchScope base '(&)' 1.1 &> /dev/null; then
+    if test "${USER_BASE_DN_EXISTS}" = 'false'; then
       echo "User base DN ${USER_BASE_DN} does not exist"
       exit 0
     fi
@@ -202,7 +215,7 @@ data:
     DOMAIN_NAME=$(hostname -f | cut -d'.' -f2-)
     SRC_HOST="${K8S_STATEFUL_SET_NAME}-0.${DOMAIN_NAME}"
 
-    echo "Running dsreplication enable"
+    echo "Running dsreplication enable for ${USER_BASE_DN}"
     dsreplication enable \
       --retryTimeoutSeconds ${RETRY_TIMEOUT_SECONDS} \
       --trustAll \
@@ -218,7 +231,7 @@ data:
       --enableDebug --globalDebugLevel verbose
 
     _replEnableResult=$?
-    echo "Replication enable for ${HOSTNAME} result=${_replEnableResult}"
+    echo "Replication enable for ${USER_BASE_DN} result=${_replEnableResult}"
 
     if test ${_replEnableResult} -eq 5; then
       echo "Replication is already enabled for ${USER_BASE_DN} either directly or through a parent base DN"
@@ -231,7 +244,7 @@ data:
       exit ${_replEnableResult}
     fi
 
-    echo "Running dsreplication initialize"
+    echo "Running dsreplication initialize for ${USER_BASE_DN}"
     dsreplication initialize \
       --retryTimeoutSeconds ${RETRY_TIMEOUT_SECONDS} \
       --trustAll \
@@ -245,7 +258,7 @@ data:
       --globalDebugLevel verbose
 
     _replInitResult=$?
-    echo "Replication initialize for ${HOSTNAME} result=${_replInitResult}"
+    echo "Replication initialize for ${USER_BASE_DN} result=${_replInitResult}"
 
     test ${_replInitResult} -eq 0 && echo "${USER_BASE_DN}" >> "${REPL_SETUP_MARKER_FILE}"
     exit ${_replInitResult}
