@@ -49,10 +49,18 @@ check_binaries "kustomize" "kubeseal"
 HAS_REQUIRED_TOOLS=${?}
 test ${HAS_REQUIRED_TOOLS} -ne 0 && exit 1
 
-# The sealed-secrets controller must be deployed to the cluster.
-CERT_FILE=/tmp/cert.pem
-echo "Fetching the sealed secret certificate from the cluster into ${CERT_FILE}"
-kubeseal --fetch-cert --controller-namespace kube-system > "${CERT_FILE}"
+CERT_FILE=${1}
+
+# If the certificate file is not provided, try to get the certificate from the Bitnami sealed secret service.
+# The sealed-secrets controller must be running in the cluster, and it should be possible to access the Kubernetes
+# API server for this to work.
+if test -z "${CERT_FILE}"; then
+  CERT_FILE=$(mktemp)
+  echo "Fetching the sealed secret certificate from the cluster"
+  kubeseal --fetch-cert --controller-namespace kube-system > "${CERT_FILE}"
+fi
+
+echo "Using certificate file ${CERT_FILE} for encrypting secrets"
 
 SEALED_SECRETS_FILE=/tmp/sealed-secrets.yaml
 rm -f "${SEALED_SECRETS_FILE}"
