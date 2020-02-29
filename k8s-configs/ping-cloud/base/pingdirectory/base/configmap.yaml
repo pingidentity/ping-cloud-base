@@ -96,9 +96,9 @@ data:
 
     echo "post-start: starting post-start hook"
 
-    # Remove this hostname from the post-start initialization marker file so the pod isn't prematurely considered ready
+    # Remove the post-start initialization marker file so the pod isn't prematurely considered ready
     POST_START_INIT_MARKER_FILE=/opt/out/instance/config/post-start-init-complete
-    test -f "${POST_START_INIT_MARKER_FILE}" && sed -i.bak -E "/${HOSTNAME}/d" "${POST_START_INIT_MARKER_FILE}"
+    rm -f "${POST_START_INIT_MARKER_FILE}"
 
     echo "post-start: running ldapsearch test on this container (${HOSTNAME})"
     waitUntilLdapUp "localhost" "${LDAPS_PORT}" 'cn=config'
@@ -176,7 +176,15 @@ data:
         test ${licModStatus} -ne 0 && exit ${licModStatus}
       fi
 
-      echo "${HOSTNAME}" >> "${POST_START_INIT_MARKER_FILE}"
+      touch "${POST_START_INIT_MARKER_FILE}"
+      exit 0
+    fi
+
+    REPL_SETUP_MARKER_FILE=/opt/out/instance/config/repl-enabled
+
+    if grep -q "${USER_BASE_DN}" "${REPL_SETUP_MARKER_FILE}"; then
+      echo "post-start: replication is already enabled for ${USER_BASE_DN}"
+      touch "${POST_START_INIT_MARKER_FILE}"
       exit 0
     fi
 
@@ -197,7 +205,7 @@ data:
     # Bail dsreplication if user base entry is not present
     if test "${USER_BASE_DN_EXISTS}" = 'false'; then
       echo "post-start: user base DN ${USER_BASE_DN} does not exist"
-      echo "${HOSTNAME}" >> "${POST_START_INIT_MARKER_FILE}"
+      touch "${POST_START_INIT_MARKER_FILE}"
       exit 0
     fi
 
@@ -224,7 +232,8 @@ data:
 
     if test ${replEnableResult} -eq 5; then
       echo "post-start: replication is already enabled for ${USER_BASE_DN} either directly or through a parent base DN"
-      echo "${HOSTNAME}" >> "${POST_START_INIT_MARKER_FILE}"
+      echo "${USER_BASE_DN}" >> "${REPL_SETUP_MARKER_FILE}"
+      touch "${POST_START_INIT_MARKER_FILE}"
       exit 0
     fi
 
@@ -232,6 +241,8 @@ data:
       echo "post-start: not running dsreplication initialize since enable failed with a non-successful return code"
       exit ${replEnableResult}
     fi
+
+    echo "${USER_BASE_DN}" >> "${REPL_SETUP_MARKER_FILE}"
 
     echo "post-start: running dsreplication initialize for ${USER_BASE_DN}"
     dsreplication initialize \
@@ -249,7 +260,7 @@ data:
     replInitResult=$?
     echo "post-start: replication initialize for ${USER_BASE_DN} status: ${replInitResult}"
 
-    test ${replInitResult} -eq 0 && echo "${HOSTNAME}" >> "${POST_START_INIT_MARKER_FILE}"
+    test ${replInitResult} -eq 0 && touch "${POST_START_INIT_MARKER_FILE}"
     exit ${replInitResult}
 
 ---
@@ -269,7 +280,7 @@ data:
     # Verify that post-start initialization is complete on this host
     echo "readiness: verifying that post-start initialization is complete on ${HOSTNAME}"
     POST_START_INIT_MARKER_FILE=/opt/out/instance/config/post-start-init-complete
-    grep -q "${HOSTNAME}" "${POST_START_INIT_MARKER_FILE}" 2> /dev/null && exit 0 || exit 1
+    test -f  "${POST_START_INIT_MARKER_FILE}" && exit 0 || exit 1
 
 ---
 
@@ -315,8 +326,10 @@ data:
     echo "pre-stop: server removal exited with return code: ${?}"
 
     POST_START_INIT_MARKER_FILE=/opt/out/instance/config/post-start-init-complete
-    echo "pre-stop: removing ${POST_START_INIT_MARKER_FILE} marker file"
-    rm -f "${POST_START_INIT_MARKER_FILE}"
+    REPL_SETUP_MARKER_FILE=/opt/out/instance/config/repl-enabled
+
+    echo "pre-stop: removing ${POST_START_INIT_MARKER_FILE} and ${REPL_SETUP_MARKER_FILE} marker files"
+    rm -f "${POST_START_INIT_MARKER_FILE}" "${REPL_SETUP_MARKER_FILE}"
 
 ---
 
