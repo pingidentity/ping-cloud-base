@@ -1,10 +1,3 @@
-#
-# These ACIs are required for pingfederate grants storage
-#
-dsconfig set-access-control-handler-prop \
-    --add 'global-aci:(targetcontrol="1.2.840.113556.1.4.319")(version 3.0; acl "Allow paging for pingfederate"; allow (read) userdn="ldap:///cn=pingfederate,cn=Root DNs,cn=config";)'  \
-    --add 'global-aci:(targetcontrol="1.2.840.113556.1.4.473")(version 3.0; acl "Allow Server Sort for pingfederate"; allow (read) userdn="ldap:///cn=pingfederate,cn=Root DNs,cn=config";)'
-
 dsconfig set-access-control-handler-prop \
     --add 'global-aci:(target="ldap:///cn=alerts")(targetattr="*||+")(version 3.0; acl "pingdatagovernance access to the alerts backend"; allow(read,search,compare) userdn="ldap:///cn=pingdatagovernance,cn=Root DNs,cn=config";)' \
     --add 'global-aci:(target="ldap:///cn=monitor")(targetattr="*||+")(version 3.0; acl "pingdatagovernance access to the monitor backend"; allow(read,search,compare) userdn="ldap:///cn=Govepingdatagovernance,cn=Root DNs,cn=config";)' \
