@@ -91,10 +91,19 @@ if test -f "${STAGING_DIR}/env_vars"  ; then
     _manageProfileOptions="--profileVariablesFile ${STAGING_DIR}/env_vars "
 fi
 
+# Give manage-profile and the tools it invokes internally all of the available memory to do their processing
+ORIG_UNBOUNDID_JAVA_ARGS=${UNBOUNDID_JAVA_ARGS}
+export UNBOUNDID_JAVA_ARGS="-client -Xmx${MAX_HEAP_SIZE} -Xms${MAX_HEAP_SIZE}"
+
 "${SERVER_BITS_DIR}"/bin/manage-profile replace-profile \
         --serverRoot "${SERVER_ROOT_DIR}" \
         --profile "${STAGING_DIR}/pd.profile" \
         ${_manageProfileOptions} --useEnvironmentVariables \
         --reimportData never
 
-echo "  manage-profile replace-profile returned $?"
+export UNBOUNDID_JAVA_ARGS=${ORIG_UNBOUNDID_JAVA_ARGS}
+
+MANAGE_PROFILE_STATUS=${?}
+echo "manage-profile replace-profile status: ${MANAGE_PROFILE_STATUS}"
+
+test "${MANAGE_PROFILE_STATUS}" -ne 0 && exit 20 || exit 0
