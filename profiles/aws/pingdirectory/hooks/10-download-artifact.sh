@@ -79,8 +79,11 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
                 # Get artifact source location
                 if test "${ARTIFACT_SOURCE}" == "private"; then
                   ARTIFACT_LOCATION=${PRIVATE_BASE_URL}/${ARTIFACT_NAME}/${ARTIFACT_VERSION}
-                else
+                elif test "${ARTIFACT_SOURCE}" == "public"; then
                   ARTIFACT_LOCATION=${PUBLIC_BASE_URL}/${ARTIFACT_NAME}/${ARTIFACT_VERSION}
+                else
+                  echo "${ARTIFACT_NAME} cannot be deployed as the artifact source '${ARTIFACT_SOURCE}' is invalid. "
+                  exit 1
                 fi
 
                 echo "Download Artifact from ${ARTIFACT_LOCATION}"
