@@ -106,4 +106,7 @@ export UNBOUNDID_JAVA_ARGS=${ORIG_UNBOUNDID_JAVA_ARGS}
 MANAGE_PROFILE_STATUS=${?}
 echo "manage-profile replace-profile status: ${MANAGE_PROFILE_STATUS}"
 
-test "${MANAGE_PROFILE_STATUS}" -ne 0 && exit 20 || exit 0
+test "${MANAGE_PROFILE_STATUS}" -ne 0 && exit 20
+
+run_hook "185-apply-tools-properties.sh"
+exit 0

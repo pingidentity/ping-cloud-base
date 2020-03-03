@@ -87,7 +87,7 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
 
                 # Use aws command if ARTIFACT_LOCATION is in s3 format otherwise use curl
                 if ! test ${ARTIFACT_LOCATION#s3} == "${ARTIFACT_LOCATION}"; then
-                  aws s3 cp "${ARTIFACT_LOCATION}/" ${DOWNLOAD_DIR} --recursive
+                  aws s3 cp "${ARTIFACT_LOCATION}/${ARTIFACT_RUNTIME_ZIP}" ${DOWNLOAD_DIR}
                 else
                   # For downloading over https we need to specify the exact file name,
                   # This will only work for standard extensions with a prefix of pingidentity.com
