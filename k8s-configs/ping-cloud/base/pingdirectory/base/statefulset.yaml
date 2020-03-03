@@ -210,4 +210,4 @@ spec:
       storageClassName: pingdirectory-gp2
       resources:
         requests:
-          storage: 5Gi
+          storage: 40Gi
