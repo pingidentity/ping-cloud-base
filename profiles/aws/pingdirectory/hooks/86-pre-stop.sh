@@ -33,8 +33,8 @@ remove-defunct-server --no-prompt \
   --enableDebug --globalDebugLevel verbose
 echo "pre-stop: server removal exited with return code: ${?}"
 
-POST_START_INIT_MARKER_FILE=/opt/out/instance/config/post-start-init-complete
-REPL_SETUP_MARKER_FILE=/opt/out/instance/config/repl-enabled
+POST_START_INIT_MARKER_FILE="${SERVER_ROOT_DIR}"/config/post-start-init-complete
+REPL_INIT_MARKER_FILE="${SERVER_ROOT_DIR}"/config/repl-initialized
 
-echo "pre-stop: removing ${POST_START_INIT_MARKER_FILE} and ${REPL_SETUP_MARKER_FILE} marker files"
-rm -f "${POST_START_INIT_MARKER_FILE}" "${REPL_SETUP_MARKER_FILE}"
+echo "pre-stop: removing ${POST_START_INIT_MARKER_FILE} and ${REPL_INIT_MARKER_FILE} marker files"
+rm -f "${POST_START_INIT_MARKER_FILE}" "${REPL_INIT_MARKER_FILE}"
