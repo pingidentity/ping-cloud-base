@@ -60,6 +60,11 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
           ARTIFACT_SOURCE=$(_artifact '.source')
           ARTIFACT_FILENAME=$(_artifact '.filename')
 
+          # Use default source of public if source is not specified
+          if ( ( test "${ARTIFACT_SOURCE}" == "null" ) || ( test -z ${ARTIFACT_SOURCE} ) ); then
+            ARTIFACT_SOURCE="public"
+          fi
+
           if ( ( test ! "${ARTIFACT_FILENAME}" == "null" ) && ( test ! -z ${ARTIFACT_FILENAME} ) ); then
             ARTIFACT_RUNTIME_ZIP="${ARTIFACT_FILENAME}"
           else
