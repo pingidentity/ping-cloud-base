@@ -52,7 +52,7 @@ metadata:
   name: flux-git-deploy
   namespace: flux
   annotations:
-    sealedsecrets.bitnami.com/managed: true
+    sealedsecrets.bitnami.com/managed: "true"
 type: Opaque
 ---
 apiVersion: v1

@@ -6,5 +6,5 @@ echo "readiness: verifying root DSE access"
 
 # Verify that post-start initialization is complete on this host
 echo "readiness: verifying that post-start initialization is complete on ${HOSTNAME}"
-POST_START_INIT_MARKER_FILE=/opt/out/instance/config/post-start-init-complete
+POST_START_INIT_MARKER_FILE="${SERVER_ROOT_DIR}"/config/post-start-init-complete
 test -f  "${POST_START_INIT_MARKER_FILE}" && exit 0 || exit 1
