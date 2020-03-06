@@ -2,10 +2,10 @@
 # traffic. Since nginx is simply a web proxy and cannot handle proxying anything but HTTPS traffic, this is necessary
 # for the pingdirectory LDAPS server.
 
-# This patch requires a secret object of the name acme-tls-cert to exist. This is usually created by cert-manager,
-# which interacts with Let's encrypt to issue an ACME certificate. For BYOC use cases, the secret may be created
-# declaratively with the tls.crt and tls.key that contains the identity certificate and key in base64-encoded PEM
-# format.
+# This patch requires a secret object of the name pointed by the K8S_ACME_CERT_SECRET_NAME environment variable to
+# exist. This is usually created by cert-manager, which interacts with Let's encrypt to issue an ACME certificate.
+# For BYOC use cases, the secret may be created declaratively with the tls.crt and tls.key that contains the identity
+# certificate and key in base64-encoded PEM format.
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -91,7 +91,7 @@ spec:
             echo "Running periodic fetch script at \$(date)"
 
             SECRET_FILE=\$(mktemp)
-            ${STUNNEL_HOME}/kubectl get secret acme-tls-cert -o yaml 2> /dev/null > \${SECRET_FILE}
+            ${STUNNEL_HOME}/kubectl get secret "${K8S_ACME_CERT_SECRET_NAME}" -o yaml 2> /dev/null > \${SECRET_FILE}
 
             if grep -q 'tls.crt' \${SECRET_FILE}; then
               TEMP_CRT_FILE=\$(mktemp)
