@@ -9,7 +9,7 @@
 function make_api_request()
 {
     curl -k --retry ${API_RETRY_LIMIT} --max-time ${API_TIMEOUT_WAIT} --retry-delay 1 --retry-connrefuse \
-        -u Administrator:${INITIAL_ADMIN_PASSWORD} -H "X-Xsrf-Header: PingFederate " "$@"
+        -u Administrator:${PF_LDAP_PASSWORD} -H "X-Xsrf-Header: PingFederate " "$@"
     if test ! $? -eq 0; then
         echo "Admin API connection refused"
         exit 1
@@ -57,7 +57,7 @@ function obfuscatePassword()
    #
    # Obfuscate the ldap password
    #
-   export PF_LDAP_PASSWORD_OBFUSCATED=$(sh ./obfuscate.sh  ${INITIAL_ADMIN_PASSWORD}| tr -d '\n')
+   export PF_LDAP_PASSWORD_OBFUSCATED=$(sh ./obfuscate.sh  ${PF_LDAP_PASSWORD}| tr -d '\n')
    #
    # Inject obfuscated password into ldap properties file. The password variable is protected with a ${_DOLLAR_}
    # prefix because the file is substituted twice the first pass sets the DN and resets the '$' on the password

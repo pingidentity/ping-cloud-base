@@ -30,6 +30,4 @@
     ${certificateOptions} \
     ${encryptionOption} \
     --rootUserDN "${ROOT_USER_DN}" \
-    --rootUserPasswordFile "${ROOT_USER_PASSWORD_FILE}" \
-    --baseDN "${USER_BASE_DN}" \
-    --addBaseEntry
+    --rootUserPasswordFile "${ROOT_USER_PASSWORD_FILE}"

@@ -1,9 +1,9 @@
 ldap.url=ldap://pingdirectory:${LDAP_PORT}
-ldap.username=cn=pingfederate
+ldap.username=uid=pingfederate,ou=devopsaccount,o=platformconfig
 ldap.password=${_DOLLAR_}{PF_LDAP_PASSWORD_OBFUSCATED}
 ldap.connectTimeout=10000
 ldap.readTimeout=3000
-search.base=ou=people,${USER_BASE_DN}
+search.base=ou=admins,o=platformconfig
 search.filter=(uid={0})
 role.admin=
 role.cryptoManager=
@@ -11,10 +11,10 @@ role.auditor=
 role.userAdmin=
 role.search.user.attribute=isMemberOf
 role.search.attribute=<DN>
-role.search.base=ou=groups,${USER_BASE_DN}
+role.search.base=o=platformconfig
 role.search.subtree=true
 role.search.filter=(member={1})
-role.map.admin=cn=PFAdminGroup,ou=groups,${USER_BASE_DN}
-role.map.cryptoManager=cn=PFCryptoGroup,ou=groups,${USER_BASE_DN}
-role.map.auditor=cn=PFAuditorGroup,ou=groups,${USER_BASE_DN}
-role.map.userAdmin=cn=PFUserAdminGroup,ou=groups,${USER_BASE_DN}
+role.map.admin=cn=pfadmingrp,ou=groups,o=platformconfig
+role.map.cryptoManager=cn=pfcryptoadmingrp,ou=groups,o=platformconfig
+role.map.auditor=cn=pfauditadmingrp,ou=groups,o=platformconfig
+role.map.userAdmin=cn=pfuseradmingrp,ou=groups,o=platformconfig

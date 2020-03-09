@@ -1,0 +1,70 @@
+dn: cn=pfadmingrp,ou=groups,o=platformconfig
+objectClass: groupOfURLs
+objectClass: top
+cn: pfadmingrp
+ou: groups
+memberURL: ldap:///o=platformconfig??sub?(title=PF Admin)
+
+dn: cn=pfcryptoadmingrp,ou=groups,o=platformconfig
+objectClass: groupOfURLs
+objectClass: top
+cn: pfcryptoadmingrp
+ou: groups
+memberURL: ldap:///o=platformconfig??sub?(title=PF Crypto Admin)
+
+dn: cn=pfauditadmingrp,ou=groups,o=platformconfig
+objectClass: groupOfURLs
+objectClass: top
+cn: pfauditadmingrp
+ou: groups
+memberURL: ldap:///o=platformconfig??sub?(title=PF Audit Admin)
+
+dn: cn=pfuseradmingrp,ou=groups,o=platformconfig
+objectClass: groupOfURLs
+objectClass: top
+cn: pfuseradmingrp
+ou: groups
+memberURL: ldap:///o=platformconfig??sub?(title=PF User Admin)
+
+dn: cn=vpnadmingrp,ou=groups,o=platformconfig
+objectClass: groupOfURLs
+objectClass: top
+cn: vpnadmingrp
+ou: groups
+memberURL: ldap:///o=platformconfig??sub?(title=VPN Admin)
+
+dn: cn=pdadmingrp,ou=groups,o=platformconfig
+objectClass: groupOfURLs
+objectClass: top
+cn: pdadmingrp
+ou: groups
+memberURL: ldap:///o=platformconfig??sub?(title=PD Admin)
+
+dn: cn=pdsreadmingrp,ou=groups,o=platformconfig
+objectClass: groupOfURLs
+objectClass: top
+cn: pdsreadmingrp
+ou: groups
+memberURL: ldap:///ou=infraadmin,o=platformconfig??sub?(title=SRE Admin)
+
+dn: cn=monitorRead,ou=groups,o=platformconfig
+objectClass: groupOfURLs
+objectClass: top
+cn: monitorRead
+ou: groups
+memberURL: ldap:///o=platformconfig??sub?(title=monitorRead)
+
+dn: cn=configRead,ou=groups,o=platformconfig
+objectClass: groupOfURLs
+objectClass: top
+cn: configRead
+ou: groups
+memberURL: ldap:///o=platformconfig??sub?(title=configRead)
+
+dn: cn=configWrite,ou=groups,o=platformconfig
+objectClass: groupOfURLs
+objectClass: top
+cn: configWrite
+ou: groups
+memberURL: ldap:///o=platformconfig??sub?(title=configWrite)
+memberURL: ldap:///cn=pdadmingrp,ou=groups,o=platformconfig

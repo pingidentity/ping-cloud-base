@@ -22,22 +22,6 @@ dsconfig create-root-dn-user \
     --set password<${ROOT_USER_PASSWORD_FILE}
 
 #
-# Create a user for pingfederate 
-#
-dsconfig create-root-dn-user \
-  --user-name pingfederate \
-  --set alternate-bind-dn:cn=fed \
-  --set alternate-bind-dn:cn=pf \
-  --set alternate-bind-dn:cn=pingfederate \
-  --set inherit-default-root-privileges:false \
-  --set privilege:password-reset \
-  --set privilege:permit-get-password-policy-state-issues \
-  --set privilege:unindexed-search \
-  --set privilege:config-read \
-  --set is-proxyable:prohibited \
-  --set password<${ROOT_USER_PASSWORD_FILE}
-
-#
 # Create a user for pingdirectoryproxy 
 #
 dsconfig create-root-dn-user \

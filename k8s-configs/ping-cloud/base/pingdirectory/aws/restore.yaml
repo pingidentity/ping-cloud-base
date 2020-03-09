@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pingdirectory-restore
+data:
+  restore.sh: |
+    #!/bin/sh
+    set -e
+
+    # Install kubectl
+    echo "Installing kubectl"
+    curl https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl \
+    -o /usr/local/bin/kubectl
+    
+    chmod +x /usr/local/bin/kubectl
+
+    RESTORE_FILES=
+    SCRIPT="${HOOKS_DIR}"/90-restore-backup-s3.sh
+    LOG_FILE=/tmp/restore.log
+
+    test -z "${BACKUP_RESTORE_POD}" && SERVER="${K8S_STATEFUL_SET_NAME}-0" || SERVER="${BACKUP_RESTORE_POD}"
+
+    echo "Running restore script within ${SERVER} pod"
+    kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" | tee "${LOG_FILE}"
+
+    if test ${?} -eq 0; then
+      RESTORE_FILE=$(tail -1 "${LOG_FILE}")
+      test -z "${RESTORE_FILES}" && RESTORE_FILES="${RESTORE_FILE}" || RESTORE_FILES="${RESTORE_FILES} ${RESTORE_FILE}"
+    else
+      echo "Restore script not found on server ${SERVER}"
+    fi
+
+---
+
+# A manual restore can be performed by deploying this job. It will restore
+# data that was backed up by the periodic backup job to pingdirectory-0. All other servers
+# must initialize the data from pingdirectory-0 via dsreplication initialize-all. This
+# job can also be used to load the data initially from a backup created in
+# another environment, e.g. dev.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pingdirectory-restore
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+spec:
+  ttlSecondsAfterFinished: 0
+  backoffLimit: 5
+  template:
+    spec:
+      serviceAccount: ping-serviceaccount
+      restartPolicy: Never
+      containers:
+      - name: pingdirectory-restore
+        image: pingidentity/pingdirectory:200109-8.0.0.0
+        command:
+        - /opt/in/restore.sh
+        volumeMounts:
+        - name: restore-script
+          mountPath: /opt/in/restore.sh
+          subPath: restore.sh
+        envFrom:
+        - configMapRef:
+            name: pingdirectory-environment-variables
+      volumes:
+      - name: restore-script
+        configMap:
+          name: pingdirectory-restore
+          defaultMode: 0555

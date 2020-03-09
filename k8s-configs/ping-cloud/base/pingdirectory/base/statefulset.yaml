@@ -97,6 +97,16 @@ spec:
             secretKeyRef:
               name: pingdirectory-passwords
               key: root-user-password
+        - name: PF_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingdirectory-passwords
+              key: PF_ADMIN_USER_PASSWORD
+        - name: PF_LDAP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingcommon-passwords
+              key: PF_LDAP_PASSWORD
         envFrom:
         - configMapRef:
             name: pingdirectory-environment-variables
@@ -121,19 +131,10 @@ spec:
         - name: pingdirectory-license
           mountPath: /opt/in/instance/PingDirectory.lic
           subPath: PingDirectory.lic
-        - name: pingdirectory-ready
-          mountPath: /opt/staging/readiness.sh
-          subPath: readiness.sh
-        - name: pingdirectory-pre-stop
-          mountPath: /opt/staging/pre-stop.sh
-          subPath: pre-stop.sh
-        - name: pingdirectory-post-start
-          mountPath: /opt/staging/hooks/80-post-start.sh
-          subPath: 80-post-start.sh
         readinessProbe:
           exec:
             command:
-            - /opt/staging/readiness.sh
+            - /opt/staging/hooks/85-readiness.sh
           # Each PD pod is expected to be ready within 10 minutes. We'll check every 30s.
           periodSeconds: 30
           failureThreshold: 20
@@ -147,7 +148,7 @@ spec:
           preStop:
             exec:
               command:
-              - /opt/staging/pre-stop.sh
+              - /opt/staging/hooks/86-pre-stop.sh
       - name: pingdirectory-statsd-exporter
         image: prom/statsd-exporter:v0.14.1
         args:
@@ -171,18 +172,6 @@ spec:
       - name: pingdirectory-init
         configMap:
           name: pingdirectory-init
-          defaultMode: 0555
-      - name: pingdirectory-pre-stop
-        configMap:
-          name: pingdirectory-pre-stop
-          defaultMode: 0555
-      - name: pingdirectory-ready
-        configMap:
-          name: pingdirectory-ready
-          defaultMode: 0555
-      - name: pingdirectory-post-start
-        configMap:
-          name: pingdirectory-post-start
           defaultMode: 0555
       - name: ssh-id-key-secret
         secret:
@@ -221,4 +210,4 @@ spec:
       storageClassName: pingdirectory-gp2
       resources:
         requests:
-          storage: 5Gi
+          storage: 40Gi

@@ -2,7 +2,7 @@
 <urn:PluginConfiguration isInheritExtendedContractAttributes="false" name="pingdirectory" xmlns:urn="urn:sourceid.org:saml2:adapter:conf">
     <urn:Fields>
         <urn:Field name="LDAP Datastore">LDAP-FA8D375DFAC589A222E13AA059319ABF9823B552</urn:Field>
-        <urn:Field name="Search Base">dc=example,dc=com</urn:Field>
+		  <urn:Field name="Search Base">${USER_BASE_DN}</urn:Field>
         <urn:Field name="Search Filter">(&amp;(objectClass=person)(|(mail=${username})(cn=${username})(uid=${username})))</urn:Field>
         <urn:Field name="Scope of Search">Subtree</urn:Field>
         <urn:Field name="Case-Sensitive Matching">false</urn:Field>

@@ -142,7 +142,7 @@ spec:
         command:
         - controller
         env: []
-        image: quay.io/bitnami/sealed-secrets-controller:v0.9.6
+        image: quay.io/bitnami/sealed-secrets-controller:v0.9.7
         imagePullPolicy: Always
         livenessProbe:
           httpGet:
