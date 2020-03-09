@@ -45,7 +45,7 @@
    aws s3 sync "<local-path>" s3://<bucketName>/pingdirectory/<extension-name>/<extension-version>
    ```
 
-5. When you've uploaded to the S3 bucket the extensions you want to deploy to PingFederate, create a JSON file named `artifact-list.json` specifying the extensions, and using this format:
+5. When you've uploaded to the S3 bucket the extensions you want to deploy to PingDirectory, create a JSON file named `artifact-list.json` specifying the extensions, and using this format:
 
    ```json
    [
