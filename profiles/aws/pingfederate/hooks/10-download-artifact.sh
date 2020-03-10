@@ -60,6 +60,11 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
           ARTIFACT_SOURCE=$(_artifact '.source')
           ARTIFACT_RUNTIME_ZIP=${ARTIFACT_NAME}-${ARTIFACT_VERSION}-runtime.zip
 
+          # Use default source of public if source is not specified
+          if ( ( test "${ARTIFACT_SOURCE}" == "null" ) || ( test -z ${ARTIFACT_SOURCE} ) ); then
+            ARTIFACT_SOURCE="public"
+          fi
+
           # Check to see if artifact name and version are available
           if ( ( test ! "${ARTIFACT_NAME}" == "null" ) && ( test ! -z ${ARTIFACT_NAME} ) ); then
             if ( ( test ! "${ARTIFACT_VERSION}" == "null" ) && ( test ! -z ${ARTIFACT_VERSION} ) ); then
@@ -78,8 +83,11 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
                   # Get artifact source location
                   if test "${ARTIFACT_SOURCE}" == "private"; then
                     ARTIFACT_LOCATION=${PRIVATE_BASE_URL}/${ARTIFACT_NAME}/${ARTIFACT_VERSION}/${ARTIFACT_RUNTIME_ZIP}
-                  else
+                  elif test "${ARTIFACT_SOURCE}" == "public"; then
                     ARTIFACT_LOCATION=${PUBLIC_BASE_URL}/${ARTIFACT_NAME}/${ARTIFACT_VERSION}/${ARTIFACT_RUNTIME_ZIP}
+                  else
+                    echo "${ARTIFACT_NAME} cannot be deployed as the artifact source '${ARTIFACT_SOURCE}' is invalid. "
+                    exit 1
                   fi
 
                   echo "Download Artifact from ${ARTIFACT_LOCATION}"
