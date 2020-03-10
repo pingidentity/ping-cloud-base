@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingaccess
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+      - name: pingaccess
+        resources:
+          limits:
+            memory: 2Gi
+            cpu: 2
+          requests:
+            memory: 2Gi
+            cpu: 2

@@ -59,6 +59,10 @@ spec:
         image:  pingidentity/pingfederate:200109-10.0.0
         imagePullPolicy: Always
         env:
+        # PF edmin should wait for pingdirectory to be ready
+        # A comma-separated list of services for which a particular service must wait
+        - name: WAIT_FOR_SERVICES
+          value: pingdirectory
         - name:  OPERATIONAL_MODE
           value: CLUSTERED_CONSOLE
         - name:  PF_DNS_PING_NAMESPACE
@@ -78,11 +82,11 @@ spec:
             optional: true
         resources:
           requests:
-            memory: "2Gi"
-            cpu: "2"
+            memory: "768Mi"
+            cpu: "1"
           limits:
-            memory: "2Gi"
-            cpu: "2"
+            memory: "768Mi"
+            cpu: "1"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
@@ -193,11 +197,6 @@ spec:
         - name: pingfederate-init
           mountPath: /init.sh
           subPath: init.sh
-        env:
-        # PF engines must wait until the admin is ready
-        # A comma-separated list of services for which a particular service must wait
-        - name: WAIT_FOR_SERVICES
-          value: pingfederate-admin
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
@@ -206,6 +205,10 @@ spec:
         image:  pingidentity/pingfederate:200109-10.0.0
         imagePullPolicy: Always
         env:
+        # PF engines must wait until the admin is ready
+        # A comma-separated list of services for which a particular service must wait
+        - name: WAIT_FOR_SERVICES
+          value: pingfederate-admin
         - name:  OPERATIONAL_MODE
           value: CLUSTERED_ENGINE
         - name:  PF_DNS_PING_NAMESPACE  
@@ -219,11 +222,11 @@ spec:
               key: PF_LDAP_PASSWORD
         resources:
           requests:
-            memory: "2Gi"
-            cpu: "2"
+            memory: "768Mi"
+            cpu: "1"
           limits:
-            memory: "2Gi"
-            cpu: "2"
+            memory: "768Mi"
+            cpu: "1"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
