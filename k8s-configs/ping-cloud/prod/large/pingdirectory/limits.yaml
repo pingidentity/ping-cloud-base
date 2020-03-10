@@ -15,9 +15,6 @@ spec:
           requests:
             memory: 64Gi
             cpu: 14
-        env:
-        - name: MAX_HEAP_SIZE
-          value: 64g
   volumeClaimTemplates:
   - metadata:
       name: out-dir
