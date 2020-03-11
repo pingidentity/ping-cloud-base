@@ -23,6 +23,11 @@ spec:
         class: pingdirectory-server
     spec:
       serviceAccount: ping-serviceaccount
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 9031
+        runAsGroup: 9999
+        fsGroup: 9999
       affinity:
         podAntiAffinity:
           # Add a hard requirement for each PD pod to be deployed to a different node
@@ -48,10 +53,6 @@ spec:
       terminationGracePeriodSeconds: 300
       initContainers:
       - name: pingdirectory-init
-        # FIXME: switch to same user as app
-        securityContext:
-          runAsNonRoot: false
-          runAsUser: 0
         image: curlimages/curl:7.68.0
         imagePullPolicy: Always
         command:
@@ -75,7 +76,7 @@ spec:
           subPath: init.sh
       containers:
       - name: pingdirectory
-        image: pingidentity/pingdirectory:200109-8.0.0.0
+        image: pingidentity/pingdirectory:edge
         imagePullPolicy: Always
         ports:
         - containerPort: 1389
@@ -114,7 +115,7 @@ spec:
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
-          mountPath: /root/.ssh
+          mountPath: /tmp/.ssh
         - name: data-dir
           mountPath: /opt/staging/topology.json
           subPath: topology.json
