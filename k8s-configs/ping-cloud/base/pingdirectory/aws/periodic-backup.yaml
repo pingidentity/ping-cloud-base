@@ -21,7 +21,7 @@ data:
     test -z "${BACKUP_RESTORE_POD}" && SERVER="${K8S_STATEFUL_SET_NAME}-0" || SERVER="${BACKUP_RESTORE_POD}"
 
     echo "Running backup script within ${SERVER} pod"
-    kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && export S3_BACKUP_FILTER_DAY_COUNT=${S3_BACKUP_FILTER_DAY_COUNT} && ${SCRIPT}" | tee "${LOG_FILE}"
+    kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" | tee "${LOG_FILE}"
 
     if test ${?} -eq 0; then
       UPLOAD_FILE=$(tail -1 "${LOG_FILE}")
@@ -58,8 +58,6 @@ spec:
             env:
             - name: BACKUP_RESTORE_POD
               value: $(BACKUP_RESTORE_POD)
-            - name: S3_BACKUP_FILTER_DAY_COUNT
-              value: $(S3_BACKUP_FILTER_DAY_COUNT)
             volumeMounts:
             - name: backup-script
               mountPath: /opt/in/backup.sh
