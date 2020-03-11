@@ -8,7 +8,7 @@ metadata:
     class: pingdirectory-server
 spec:
   serviceName: pingdirectory
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       class: pingdirectory-server
@@ -90,8 +90,6 @@ spec:
             memory: "5Gi"
             cpu: "2"
         env:
-        - name: MAX_HEAP_SIZE
-          value: 4g
         - name: ROOT_USER_PASSWORD
           valueFrom:
             secretKeyRef:

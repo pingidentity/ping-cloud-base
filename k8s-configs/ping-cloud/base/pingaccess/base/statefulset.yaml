@@ -57,10 +57,10 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "1.5Gi"
+            memory: "512Mi"
             cpu: "1"
           limits:
-            memory: "1.5Gi"
+            memory: "512Mi"
             cpu: "1"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
@@ -151,7 +151,7 @@ metadata:
     cluster: pingaccess-cluster
     role: pingaccess-engine
 spec:
-  replicas: 1
+  replicas: 2
   serviceName: pingaccess
   podManagementPolicy: Parallel
   template:
@@ -201,10 +201,10 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "1.5Gi"
+            memory: "512Mi"
             cpu: "1"
           limits:
-            memory: "1.5Gi"
+            memory: "512Mi"
             cpu: "1"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user

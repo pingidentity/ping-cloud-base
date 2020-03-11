@@ -11,6 +11,18 @@ resources:
 - ../../base/pingdirectory/aws
 - ../../base/pingfederate/aws
 
+generatorOptions:
+  disableNameSuffixHash: false
+
+configMapGenerator:
+
+- name: pingdirectory-environment-variables
+  behavior: merge
+  envs:
+  - pingdirectory/env_vars
+
 patchesStrategicMerge:
 - pingdirectory/limits.yaml
-- pingfederate/limits.yaml
+- pingfederate/admin-limits.yaml	
+- pingfederate/engine-limits.yaml	
+- pingfederate/hpa-limits.yaml
