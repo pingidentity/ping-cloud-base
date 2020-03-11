@@ -31,8 +31,8 @@ else
   DAYS=${S3_BACKUP_FILTER_DAY_COUNT-3}
   DAYS_AGO=$(date --date="@$(($(date +%s) - (${DAYS} * 24 * 3600)))" "${FORMAT}")
 
-  echo "S3 filter day count ${S3_BACKUP_FILTER_DAY_COUNT}"
-  echo "S3 filter by ${DAYS_AGO} day(s)"
+  echo "S3 filter by ${S3_BACKUP_FILTER_DAY_COUNT} day(s) ago"
+  echo "S3 filter by date ${DAYS_AGO}"
 
   # Get the name of the latest backup zip file from s3
   DATA_BACKUP_FILE=$( aws s3api list-objects \
