@@ -1,8 +1,0 @@
-#!/usr/bin/env
-
-echo Hello from the baseline server profile 20-restart-sequence.sh.pre hook!
-#
-# Disable swap - this should be in the docker image
-#
-sysctl -w vm.swappiness=0
-

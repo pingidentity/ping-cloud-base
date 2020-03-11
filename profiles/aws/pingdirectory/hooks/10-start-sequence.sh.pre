@@ -3,9 +3,5 @@
 ${VERBOSE} && set -x
 
 . "${HOOKS_DIR}/pingcommon.lib.sh"
-#
-# Disable swap - this should be in the docker image
-#
-sudo sysctl -w vm.swappiness=0
 
 run_hook "10-download-artifact.sh"
