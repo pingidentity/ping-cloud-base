@@ -1,0 +1,123 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stunnel
+data:
+  stunnel.sh: |-
+    #!/bin/sh
+
+    if test "${TLS_TUNNEL_VERSIONS}" = 'null'; then
+      TLS_TUNNEL_VERSIONS='TLSv1.2'
+    elif test "${TLS_TUNNEL_VERSIONS}" != 'TLSv1.2'; then
+      echo "Only TLSv1.2 is currently supported"
+      exit 1
+    fi
+
+    echo "Configuring stunnel environment variables"
+    STUNNEL_HOME=/home/stunnel
+    STUNNEL_CONF_FILE="${STUNNEL_HOME}"/stunnel.conf
+
+    STUNNEL_PID_DIR=/var/run/stunnel
+    STUNNEL_PID_FILE="${STUNNEL_PID_DIR}"/stunnel.pid
+
+    STUNNEL_LOG_DIR=/var/log/stunnel
+    STUNNEL_LOG_FILE="${STUNNEL_LOG_DIR}"/stunnel.log
+
+    STUNNEL_CA_FILE=/etc/ssl/certs/ca-certificates.crt
+
+    STUNNEL_CRT_FILE="${STUNNEL_HOME}"/tls.crt
+    STUNNEL_KEY_FILE="${STUNNEL_HOME}"/tls.key
+
+    echo "Creating initial stunnel key-pair in file ${STUNNEL_CRT_FILE} and ${STUNNEL_KEY_FILE}"
+    openssl req -x509 -nodes -newkey rsa:2048 -days 365 -subj '/CN=stunnel' \
+        -keyout "${STUNNEL_KEY_FILE}" -out "${STUNNEL_CRT_FILE}"
+    chmod 600 "${STUNNEL_KEY_FILE}"
+
+    echo "Setting up stunnel config file ${STUNNEL_CONF_FILE}"
+
+    cat > "${STUNNEL_CONF_FILE}" <<EOF
+    pid = ${STUNNEL_PID_FILE}
+
+    debug = 7
+    output = ${STUNNEL_LOG_FILE}
+
+    cert = ${STUNNEL_CRT_FILE}
+    key = ${STUNNEL_KEY_FILE}
+
+    socket = l:TCP_NODELAY=1
+    socket = r:TCP_NODELAY=1
+
+    CAfile = ${STUNNEL_CA_FILE}
+    verifyChain = no
+
+    foreground = yes
+    client = no
+
+    TIMEOUTbusy = -1
+    TIMEOUTclose = -1
+    TIMEOUTconnect = -1
+    TIMEOUTidle = -1
+
+    [ldaps]
+    accept = 5678
+    connect = localhost:${LDAP_PORT}
+    delay = yes
+    sslVersion = ${TLS_TUNNEL_VERSIONS}
+    EOF
+
+    if test "${TLS_TUNNEL_CIPHER_LIST}" != 'null'; then
+      echo "Configuring TLS ciphers: ${TLS_TUNNEL_CIPHER_LIST}"
+      echo "ciphers = ${TLS_TUNNEL_CIPHER_LIST}" >> "${STUNNEL_CONF_FILE}"
+    fi
+
+    echo "Contents of ${STUNNEL_CONF_FILE}:"
+    cat "${STUNNEL_CONF_FILE}"
+
+    echo "Installing kubectl"
+    wget https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl -P ${STUNNEL_HOME}
+    chmod +x "${STUNNEL_HOME}"/kubectl
+
+    echo "Creating the periodic script to get the ACME certificate"
+    FETCH_CERT_SCRIPT="${STUNNEL_HOME}"/fetch-cert.sh
+
+    cat > "${FETCH_CERT_SCRIPT}" <<EOF
+
+    while true; do
+      echo "Running periodic fetch script at \$(date)"
+
+      SECRET_FILE=\$(mktemp)
+      ${STUNNEL_HOME}/kubectl get secret "${K8S_ACME_CERT_SECRET_NAME}" -o yaml 2> /dev/null > \${SECRET_FILE}
+
+      if grep -q 'tls.crt' \${SECRET_FILE}; then
+        TEMP_CRT_FILE=\$(mktemp)
+        TEMP_KEY_FILE=\$(mktemp)
+
+        grep 'tls.key' \${SECRET_FILE} | cut -d: -f2 | base64 -d > \${TEMP_KEY_FILE}
+        grep 'tls.crt' \${SECRET_FILE} | cut -d: -f2 | base64 -d > \${TEMP_CRT_FILE}
+
+        if ! diff \${TEMP_CRT_FILE} ${STUNNEL_CRT_FILE} > /dev/null; then
+          mv \${TEMP_CRT_FILE} ${STUNNEL_CRT_FILE}
+          mv \${TEMP_KEY_FILE} ${STUNNEL_KEY_FILE}
+
+          PID=\$(pgrep stunnel)
+          echo "Sending stunnel process PID \${PID} the HUP signal"
+          kill -HUP \${PID}
+          echo "stunnel config last reloaded at \$(date)"
+        else
+          echo "Certificate in \${TEMP_CRT_FILE} and ${STUNNEL_CRT_FILE} are the same"
+        fi
+      else
+        echo "TLS key-pair not found in secret"
+      fi
+
+      sleep 60
+    done
+
+    EOF
+
+    echo "Starting periodic certificate update checker in the background"
+    chmod a+x "${FETCH_CERT_SCRIPT}"
+    sh "${FETCH_CERT_SCRIPT}" &
+
+    echo "Starting stunnel"
+    exec stunnel "${STUNNEL_CONF_FILE}"
