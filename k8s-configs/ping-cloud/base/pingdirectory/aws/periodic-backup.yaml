@@ -46,6 +46,10 @@ spec:
       template:
         spec:
           serviceAccount: ping-serviceaccount
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 2222
+            fsGroup: 3333
           restartPolicy: OnFailure
           containers:
           - name: pingdirectory-backup

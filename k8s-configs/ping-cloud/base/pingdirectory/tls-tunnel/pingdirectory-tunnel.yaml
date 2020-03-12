@@ -17,10 +17,9 @@ spec:
       - name: stunnel
         image: dweomer/stunnel
         securityContext:
-          # Run as the stunnel uid and gid
-          runAsNonRoot: true
+          # Run as the stunnel uid
           runAsUser: 100
-          runAsGroup: 101
+          runAsNonRoot: true
         imagePullPolicy: Always
         command:
         - /home/stunnel/stunnel.sh

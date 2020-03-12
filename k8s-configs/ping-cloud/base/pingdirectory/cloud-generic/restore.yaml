@@ -50,11 +50,14 @@ metadata:
     app: ping-cloud
     role: pingdirectory
 spec:
-  ttlSecondsAfterFinished: 0
   backoffLimit: 5
   template:
     spec:
       serviceAccount: ping-serviceaccount
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 2222
+        fsGroup: 3333
       restartPolicy: Never
       containers:
       - name: pingdirectory-restore

@@ -112,9 +112,8 @@ spec:
             name: devops-secret
             optional: true
         volumeMounts:
-        # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
-          mountPath: /tmp/.ssh
+          mountPath: /opt/in/.ssh
         - name: data-dir
           mountPath: /opt/staging/topology.json
           subPath: topology.json

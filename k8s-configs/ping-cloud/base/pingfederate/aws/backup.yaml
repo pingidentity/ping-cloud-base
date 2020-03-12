@@ -5,7 +5,6 @@ kind: Job
 metadata:
   name: pingfederate-backup
 spec:
-  ttlSecondsAfterFinished: 0
   backoffLimit: 5
   template:
     spec:

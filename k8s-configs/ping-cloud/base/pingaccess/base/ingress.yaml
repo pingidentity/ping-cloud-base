@@ -22,7 +22,7 @@ spec:
       - path: /
         backend:
           serviceName: pingaccess
-          servicePort: 443
+          servicePort: 1443
 
 ---
 

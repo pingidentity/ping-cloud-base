@@ -23,12 +23,12 @@ spec:
         lastUpdateReason: "NA"
     spec:
       serviceAccount: ping-serviceaccount
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 2222
+        fsGroup: 3333
       initContainers:
       - name: pingaccess-init
-        # FIXME: switch to same user as app
-        securityContext:
-          runAsNonRoot: false
-          runAsUser: 0
         image: curlimages/curl:7.68.0
         imagePullPolicy: Always
         command:
@@ -52,7 +52,6 @@ spec:
             name: pingaccess-environment-variables
       containers:
       - name: pingaccess
-        # FIXME: switch to stable image before GA
         image: pingidentity/pingaccess:1911-alpine-5.3.2
         imagePullPolicy: Always
         resources:
@@ -63,9 +62,8 @@ spec:
             memory: "512Mi"
             cpu: "1"
         volumeMounts:
-        # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
-          mountPath: /root/.ssh
+          mountPath: /opt/in/.ssh
         - name: data-dir
           mountPath: /usr/local/bin/kubectl
           subPath: kubectl
@@ -163,12 +161,13 @@ spec:
       annotations:
         lastUpdateReason: "NA"
     spec:
+      serviceAccount: ping-serviceaccount
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 2222
+        fsGroup: 3333
       initContainers:
       - name: pingaccess-init
-        # FIXME: switch to same user as app
-        securityContext:
-          runAsNonRoot: false
-          runAsUser: 0
         image: curlimages/curl:7.68.0
         imagePullPolicy: IfNotPresent
         command:
@@ -196,7 +195,6 @@ spec:
             name: pingaccess-environment-variables
       containers:
       - name: pingaccess-engine
-        # FIXME: switch to stable image before GA
         image: pingidentity/pingaccess:1911-alpine-5.3.2
         imagePullPolicy: Always
         resources:
@@ -207,9 +205,8 @@ spec:
             memory: "512Mi"
             cpu: "1"
         volumeMounts:
-        # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
-          mountPath: /root/.ssh
+          mountPath: /opt/in/.ssh
         - name: data-dir
           mountPath: /usr/local/bin/kubectl
           subPath: kubectl
