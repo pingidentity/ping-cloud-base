@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: pingdataconsole
-        image: pingidentity/pingdataconsole:200109
+        image: pingidentity/pingdataconsole:edge
         ports:
         - containerPort: 8080
           name: http

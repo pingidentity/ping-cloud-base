@@ -25,8 +25,8 @@ spec:
       serviceAccount: ping-serviceaccount
       securityContext:
         runAsNonRoot: true
-        runAsUser: 2222
-        fsGroup: 3333
+        runAsUser: 9031
+        fsGroup: 9999
       affinity:
         podAntiAffinity:
           # Add a hard requirement for each PD pod to be deployed to a different node

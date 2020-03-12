@@ -88,12 +88,12 @@ spec:
           serviceAccount: ping-serviceaccount
           securityContext:
             runAsNonRoot: true
-            runAsUser: 2222
-            fsGroup: 3333
+            runAsUser: 9031
+            fsGroup: 9999
           restartPolicy: OnFailure
           containers:
           - name: pingdirectory-backup
-            image: pingidentity/pingdirectory:200109-8.0.0.0
+            image: pingidentity/pingdirectory:edge
             command:
             - /opt/in/backup.sh
             env:
