@@ -55,9 +55,6 @@ spec:
             envFrom:
             - configMapRef:
                 name: pingdirectory-environment-variables
-            env:
-            - name: BACKUP_RESTORE_POD
-              value: $(BACKUP_RESTORE_POD)
             volumeMounts:
             - name: backup-script
               mountPath: /opt/in/backup.sh
