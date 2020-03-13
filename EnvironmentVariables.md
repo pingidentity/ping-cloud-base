@@ -13,6 +13,8 @@ The following charts show the additional environment variables that may be defin
 | ------------- | ------------- | ------------ | -------- |
 | DISABLE_ALL_OLDER_USER_BASE_DN | true | Disables replication on all previous user base DNs. | |
 | K8S_ACME_CERT_SECRET_NAME      | acme-tls-cert | Kubernetes secret object name for the ACME certificate obtained from Let's Encrypt. | |
+| BACKUP_FILE_NAME | No default | User data backup file name within S3. | When running the click ops manual job restore, you can specify desired user data backup file to restore from S3. e.g. data-MM-DD-YYYY.HH.MM.SS.zip  |
+| BACKUP_RESTORE_POD | pingdirectory-0 | PingDirectory server within the topology to backup/restore user data in S3. | When running the click ops manual jobs backup or restore, you can choose server within the topology to backup/restore. |
 
 
 ### v1.1.0
