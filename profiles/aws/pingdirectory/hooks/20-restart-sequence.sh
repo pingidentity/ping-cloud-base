@@ -106,20 +106,15 @@ run_hook "185-apply-tools-properties.sh"
 
 # FIXME: replace-profile has a bug where it may wipe out the user root backend configuration and lose user data added
 # from another server while enabling replication. This code block may be removed when replace-profile is fixed.
-SHORT_HOST_NAME=$(hostname)
-ORDINAL=$(echo ${SHORT_HOST_NAME##*-})
+echo "Configuring ${USER_BACKEND_ID} for base DN ${USER_BASE_DN}"
+dsconfig --no-prompt --offline set-backend-prop \
+  --backend-name "${USER_BACKEND_ID}" \
+  --add "base-dn:${USER_BASE_DN}" \
+  --set enabled:true \
+  --set db-cache-percent:35
+CONFIG_STATUS=${?}
 
-if test "${ORDINAL}" -eq 0; then
-  echo "Configuring ${USER_BACKEND_ID} for base DN ${USER_BASE_DN}"
-  dsconfig --no-prompt --offline set-backend-prop \
-    --backend-name "${USER_BACKEND_ID}" \
-    --add "base-dn:${USER_BASE_DN}" \
-    --set enabled:true \
-    --set db-cache-percent:35
-  CONFIG_STATUS=${?}
-
-  echo "Configure base DN ${USER_BASE_DN} update status: ${CONFIG_STATUS}"
-  test "${CONFIG_STATUS}" -ne 0 && exit ${CONFIG_STATUS}
-fi
+echo "Configure base DN ${USER_BASE_DN} update status: ${CONFIG_STATUS}"
+test "${CONFIG_STATUS}" -ne 0 && exit ${CONFIG_STATUS}
 
 exit 0
