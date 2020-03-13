@@ -21,7 +21,11 @@ data:
     test -z "${BACKUP_RESTORE_POD}" && SERVER="${K8S_STATEFUL_SET_NAME}-0" || SERVER="${BACKUP_RESTORE_POD}"
 
     echo "Running restore script within ${SERVER} pod"
-    kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" | tee "${LOG_FILE}"
+    kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
+        "test -x ${SCRIPT} && \
+            export BACKUP_FILE_NAME=${BACKUP_FILE_NAME} && \
+            export S3_BACKUP_FILTER_DAY_COUNT=${S3_BACKUP_FILTER_DAY_COUNT} && \
+            ${SCRIPT}" | tee "${LOG_FILE}"
 
     if test ${?} -eq 0; then
       RESTORE_FILE=$(tail -1 "${LOG_FILE}")
