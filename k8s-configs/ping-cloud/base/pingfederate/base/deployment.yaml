@@ -82,10 +82,10 @@ spec:
             optional: true
         resources:
           requests:
-            memory: "1Gi"
+            memory: "2Gi"
             cpu: "1"
           limits:
-            memory: "1Gi"
+            memory: "2Gi"
             cpu: "1"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
@@ -222,10 +222,10 @@ spec:
               key: PF_LDAP_PASSWORD
         resources:
           requests:
-            memory: "1Gi"
+            memory: "2Gi"
             cpu: "1"
           limits:
-            memory: "1Gi"
+            memory: "2Gi"
             cpu: "1"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
