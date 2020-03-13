@@ -222,10 +222,10 @@ spec:
               key: PF_LDAP_PASSWORD
         resources:
           requests:
-            memory: "768Mi"
+            memory: "1Gi"
             cpu: "1"
           limits:
-            memory: "768Mi"
+            memory: "1Gi"
             cpu: "1"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user

@@ -12,7 +12,7 @@ resources:
 - ../../base/pingfederate/aws
 
 generatorOptions:
-  disableNameSuffixHash: false
+  disableNameSuffixHash: true
 
 configMapGenerator:
 
