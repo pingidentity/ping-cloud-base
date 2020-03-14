@@ -378,6 +378,7 @@ test ! -z ${ROUTE53_IRSA_ARN} && export ROUTE53_IRSA_ARN_KEY_AND_VALUE="eks.amaz
 
 export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
 CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+test "${CURRENT_GIT_BRANCH}" = 'HEAD' && CURRENT_GIT_BRANCH=$(git describe --tags)
 export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-${CURRENT_GIT_BRANCH}}"
 
 export REGISTRY_NAME="${REGISTRY_NAME:-docker.io}"
