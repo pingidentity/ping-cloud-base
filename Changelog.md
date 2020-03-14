@@ -1,5 +1,24 @@
 # Changelog
 
+### 1.1.1
+
+- Added the ability to override heap size of PingDirectory via MAX_HEAP_SIZE environment variable
+- Added the ability to set TLS versions and ciphers for the LDAPS endpoint via environment variables
+- Added the ability in PingDirectory to automatically enable/initialize replication after baseDN is updated
+- Added the ability to specify the user data backup file to restore from S3
+- Added the ability to specify the PingDirectory server from which to back up user data to S3
+- Fixed PingDirectory extensions to default to public if something incorrect is entered
+- Fixed PingFederate administrative configuration to import on all PingDirectory servers instead of first server only
+- Fixed sealed secrets to not overwrite secrets if they already exist
+
+_Changes:_
+
+- [X] PDO-561 PF administrative configuration (e.g. admin users) were only being imported on the first PD server
+- [X] PDO-564 PD extensions default to public even if something incorrect is entered
+- [X] PDO-568 PD updates to USER_BASE_DN should automatically enable/initialize replication for that baseDN
+- [X] PDO-578 Sealed secrets do not overwrite secrets if they already exist
+- [X] PDO-611 Unable to set TLS version and ciphers for the LDAPS endpoint via environment variables
+
 ### 1.1.0
 
 - Added a Kubernetes CronJob for periodic backup of PingDirectory user data to S3, if using AWS

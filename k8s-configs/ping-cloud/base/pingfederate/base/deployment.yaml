@@ -82,10 +82,10 @@ spec:
             optional: true
         resources:
           requests:
-            memory: "1Gi"
+            memory: "2Gi"
             cpu: "1"
           limits:
-            memory: "1Gi"
+            memory: "2Gi"
             cpu: "1"
         volumeMounts:
         - name: ssh-dir
@@ -221,10 +221,10 @@ spec:
               key: PF_LDAP_PASSWORD
         resources:
           requests:
-            memory: "768Mi"
+            memory: "2Gi"
             cpu: "1"
           limits:
-            memory: "768Mi"
+            memory: "2Gi"
             cpu: "1"
         volumeMounts:
         - name: ssh-dir
