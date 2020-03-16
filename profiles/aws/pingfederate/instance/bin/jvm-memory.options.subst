@@ -5,12 +5,12 @@
 #
 
 #Minimum heap size
--Xms256m
+-Xms${PF_MIN_HEAP}
 #Maximum heap size
--Xmx512m
+-Xmx${PF_MAX_HEAP}
 #Minimum size for the Young Gen space
--XX:NewSize=128m
+-XX:NewSize=${PF_MIN_YGEN}
 #Maximum size for the Young Gen space
--XX:MaxNewSize=256m
+-XX:MaxNewSize=${PF_MIN_YGEN}
 #Use the parallel garbage collector
 -XX:+UseParallelGC
