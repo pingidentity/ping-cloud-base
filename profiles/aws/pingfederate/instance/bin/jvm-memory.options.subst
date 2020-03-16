@@ -11,6 +11,6 @@
 #Minimum size for the Young Gen space
 -XX:NewSize=${PF_MIN_YGEN}
 #Maximum size for the Young Gen space
--XX:MaxNewSize=${PF_MIN_YGEN}
+-XX:MaxNewSize=${PF_MAX_YGEN}
 #Use the parallel garbage collector
 -XX:+UseParallelGC
