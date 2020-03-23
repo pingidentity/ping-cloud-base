@@ -12,8 +12,8 @@ log() {
 
 ########################################################################################################################
 # Generate a self-signed certificate for the provided domain. The subject of the certificate will match the domain name.
-# A wildcard SAN (Subject Alternate Name) will be added as well. For example, for the domain ping-aws.com, the subject
-# name will be "ping-aws.com" and the SAN "*.ping-aws.com". The base64 representation of the certificate and key will be
+# A wildcard SAN (Subject Alternate Name) will be added as well. For example, for the domain foobar.com, the subject
+# name will be "foobar.com" and the SAN "*.foobar.com". The base64 representation of the certificate and key will be
 # exported in environment variables TLS_CRT_BASE64 and TLS_KEY_BASE64, respectively.
 #
 # Arguments

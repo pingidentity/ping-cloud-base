@@ -189,6 +189,19 @@ patchesJson6902:
       path: /metadata/namespace
       value: ${PING_CLOUD_NAMESPACE}
 
+# Configure external-dns to only own the hosted zone for the tenant domain
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Deployment
+    name: external-dns
+    namespace: external-dns
+  patch: |-
+    - op: add
+      path: /spec/template/spec/containers/0/args/-
+      value:
+        --domain-filter=${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}.
+
 ### Logs dashboard ###
 - target:
     group: extensions

@@ -78,3 +78,12 @@ patchesJson6902:
     kind: Certificate
     name: acme-tls-cert
     namespace: cert-manager
+
+# Configure external-dns to only own the hosted zone for the tenant domain
+- path: patches/deployment/external-dns.yaml
+  target:
+    group: extensions
+    version: v1beta1
+    kind: Deployment
+    name: external-dns
+    namespace: external-dns
