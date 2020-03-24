@@ -1,4 +1,2 @@
-SERVER_PROFILE_URL=https://github.com/pingidentity/pingidentity-server-profiles.git
-# FIXME: Change to baseline/pingaccess upon 1.0 release
-SERVER_PROFILE_PATH=pingaccess-cluster
-SERVER_PROFILE_BRANCH=pcpt
+SERVER_PROFILE_BRANCH=${CONFIG_REPO_BRANCH}
+SERVER_PROFILE_PATH=profiles/${CONFIG_PARENT_DIR}/pingaccess

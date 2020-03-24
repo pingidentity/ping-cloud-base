@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: pingfederate-backup
+  name: pingaccess-backup
 data:
   backup-archive-data.sh: |-
     #!/bin/sh
@@ -14,12 +14,12 @@ data:
     chmod +x /usr/local/bin/kubectl
 
     UPLOAD_FILES=
-    SERVER=$(kubectl get pod -l role=${K8S_DEPLOYMENT_NAME_PINGFEDERATE_ADMIN} | sed -n "/${K8S_DEPLOYMENT_NAME_PINGFEDERATE_ADMIN}/p" | awk '{print $1}')
-    SCRIPT="${HOOKS_DIR}"/82-upload-archive-data-s3.sh
+    SERVER="${K8S_STATEFUL_SET_NAME_PINGACCESS}-0"
+    SCRIPT="${HOOKS_DIR}"/90-upload-backup-s3.sh
     LOG_FILE=/tmp/upload.log
 
-    echo "Uploading pingfederate backup data on server ${SERVER}"
-    kubectl exec "${SERVER}" -c pingfederate-admin -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" | tee "${LOG_FILE}"
+    echo "Uploading pingaccess backup data on server ${SERVER}"
+    kubectl exec "${SERVER}" -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" | tee "${LOG_FILE}"
 
     if test ${?} -eq 0; then
       UPLOAD_FILE=$(tail -1 "${LOG_FILE}")
@@ -33,7 +33,7 @@ data:
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: pingfederate-periodic-backup
+  name: pingaccess-periodic-backup
 spec:
   schedule: "*/5 * * * *"
   jobTemplate:
@@ -43,19 +43,19 @@ spec:
           serviceAccount: ping-serviceaccount
           restartPolicy: OnFailure
           containers:
-          - name: pingfederate-backup
-            image: pingidentity/pingfederate:200109-10.0.0
+          - name: pingaccess-backup
+            image: pingidentity/pingaccess:2001-6.0.0
             command:
             - /opt/in/backup-archive-data.sh
             envFrom:
             - configMapRef:
-                name: pingfederate-environment-variables
+                name: pingaccess-environment-variables
             volumeMounts:
-            - name: pingfederate-backup
+            - name: pingaccess-backup
               mountPath: /opt/in/backup-archive-data.sh
               subPath: backup-archive-data.sh
           volumes:
-          - name: pingfederate-backup
+          - name: pingaccess-backup
             configMap:
-              name: pingfederate-backup
+              name: pingaccess-backup
               defaultMode: 0555

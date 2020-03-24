@@ -7,10 +7,8 @@ resources:
 - secret.yaml
 - ingress.yaml
 - service.yaml
+- storage.yaml
 - statefulset.yaml
-
-commonLabels:
-  role: pingaccess
 
 generatorOptions:
   disableNameSuffixHash: true
@@ -19,15 +17,3 @@ configMapGenerator:
 - name: pingaccess-environment-variables
   envs:
   - env_vars
-
-vars:
-- name: K8S_STATEFUL_SET_SERVICE_NAME_PINGACCESS_ADMIN
-  objref:
-    kind: Service
-    name: pingaccess-admin
-    apiVersion: v1
-- name: K8S_STATEFUL_SET_NAME_PINGACCESS
-  objref:
-    kind: StatefulSet
-    name: pingaccess
-    apiVersion: apps/v1

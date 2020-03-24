@@ -1,5 +1,4 @@
-# This service exposes the pingaccess admin, runtime and agent ports to the
-# cluster.
+# This service exposes the pingaccess admin, runtime ports to the cluster.
 
 apiVersion: v1
 kind: Service
@@ -11,10 +10,12 @@ spec:
     name: pingaccess-admin
   - port: 9090
     name: pingaccess-cluster
+  selector:
+    role: pingaccess-admin
 
 ---
 
-# This service exposes the pingaccess runtime engine and agent ports within cluster.
+# This service exposes the pingaccess runtime engine ports within cluster.
 
 apiVersion: v1
 kind: Service
@@ -25,5 +26,5 @@ spec:
     - port: 443
       name: pingaccess-engine
       targetPort: 3000
-    - port: 3030
-      name: pingaccess-agent
+  selector:
+    role: pingaccess-engine
