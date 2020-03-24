@@ -453,7 +453,6 @@ mkdir -p "${CLUSTER_STATE_DIR}"
 
 cp ../.gitignore "${CLUSTER_STATE_DIR}"
 cp -pr ../profiles/aws/. "${CLUSTER_STATE_DIR}"/profiles
-rm -rf "${CLUSTER_STATE_DIR}/profiles/pingaccess"
 
 # Now generate the yaml files for each environment
 ENVIRONMENTS='dev test stage prod'
