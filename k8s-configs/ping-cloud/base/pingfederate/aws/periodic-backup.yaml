@@ -50,9 +50,6 @@ spec:
             envFrom:
             - configMapRef:
                 name: pingfederate-environment-variables
-            - secretRef:
-                name: devops-secret
-                optional: true
             volumeMounts:
             - name: pingfederate-backup
               mountPath: /opt/in/backup-archive-data.sh
