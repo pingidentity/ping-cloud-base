@@ -1,6 +1,7 @@
 [
   {
-    "name": "ExamplePlugin",
-    "version": "1.0.0"
+    "name": "pingdata-extensions",
+    "version": "1.0.0",
+    "filename": "com.pingidentity.pingdata-extensions-1.0.0.zip"
   }
 ]
