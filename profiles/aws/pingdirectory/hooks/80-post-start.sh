@@ -45,6 +45,25 @@ change_user_password() {
 }
 
 ########################################################################################################################
+# Change the passwords of the PF administrator user and the internal user that PF uses to communicate with PD.
+########################################################################################################################
+change_pf_user_passwords() {
+  PASS_FILE=$(mktemp)
+
+  echo "${PF_ADMIN_USER_PASSWORD}" > "${PASS_FILE}"
+  change_user_password 'uid=administrator,ou=admins,o=platformconfig' "${PASS_FILE}"
+  pwdModStatus=$?
+  test ${pwdModStatus} -ne 0 && return ${pwdModStatus}
+
+  echo "${PF_LDAP_PASSWORD}" > "${PASS_FILE}"
+  change_user_password 'uid=pingfederate,ou=devopsaccount,o=platformconfig' "${PASS_FILE}"
+  pwdModStatus=$?
+  test ${pwdModStatus} -ne 0 && return ${pwdModStatus}
+
+  return 0
+}
+
+########################################################################################################################
 # Add the base entry for USER_BASE_DN on the provided server. If no server is provided, then the user base entry will
 # be added on this server.
 #
@@ -73,7 +92,7 @@ o: ${COMPUTED_DOMAIN}
 EOF
   else
     echo "post-start: user base DN must be 1-level deep in one of these formats: dc=<domain>,dc=com or o=<org>,dc=com"
-    exit 80
+    return 80
   fi
 
   # Append some required ACIs to the base entry file. Without these, PF SSO will not work.
@@ -149,7 +168,7 @@ configure_user_backend() {
       --set enabled:true \
       --set db-cache-percent:35
   else
-    echo "post-start: backend ${USER_BACKEND_ID} exists on ${TARGET_HOST} - setting base DN ${USER_BASE_DN} to it"
+    echo "post-start: backend ${USER_BACKEND_ID} exists on ${TARGET_HOST} - adding base DN ${USER_BASE_DN} to it"
     dsconfig --no-prompt set-backend-prop \
       --hostname "${TARGET_HOST}" \
       --backend-name "${USER_BACKEND_ID}" \
@@ -164,24 +183,101 @@ configure_user_backend() {
 }
 
 ########################################################################################################################
-# Change the passwords of the PF administrator user and the internal user that PF uses to communicate with PD.
+# Disable replication for the provided base DN on this server.
+#
+# Arguments
+#   ${1} -> The base DN for which to disable replication.
 ########################################################################################################################
-change_pf_user_passwords() {
-  PASS_FILE=$(mktemp)
+disable_replication_for_dn() {
+  BASE_DN=${1}
 
-  echo "${PF_ADMIN_USER_PASSWORD}" > "${PASS_FILE}"
-  change_user_password 'uid=administrator,ou=admins,o=platformconfig' "${PASS_FILE}"
-  pwdModStatus=$?
-  test ${pwdModStatus} -ne 0 && return ${pwdModStatus}
+  echo "post-start: disabling replication for base DN ${BASE_DN}"
+  dsreplication disable \
+    --retryTimeoutSeconds "${RETRY_TIMEOUT_SECONDS}" \
+    --trustAll \
+    --hostname "${HOSTNAME}" --port "${LDAPS_PORT}" --useSSL \
+    --adminUID "${ADMIN_USER_NAME}" --adminPasswordFile "${ADMIN_USER_PASSWORD_FILE}" \
+    --baseDN "${BASE_DN}" \
+    --no-prompt --ignoreWarnings \
+    --enableDebug --globalDebugLevel verbose
+  replDisableResult=$?
+  echo "post-start: replication disable for ${BASE_DN} status: ${replDisableResult}"
 
-  echo "${PF_LDAP_PASSWORD}" > "${PASS_FILE}"
-  change_user_password 'uid=pingfederate,ou=devopsaccount,o=platformconfig' "${PASS_FILE}"
-  pwdModStatus=$?
-  test ${pwdModStatus} -ne 0 && return ${pwdModStatus}
+  if test ${replDisableResult} -eq 6; then
+    echo "post-start: replication is currently not enabled for base DN ${BASE_DN}"
+  elif test ${replDisableResult} -ne 0; then
+    return ${replDisableResult}
+  fi
 
   return 0
 }
 
+########################################################################################################################
+# Enable replication for the provided base DN on this server.
+#
+# Arguments
+#   ${1} -> The base DN for which to enable replication.
+########################################################################################################################
+enable_replication_for_dn() {
+  BASE_DN=${1}
+
+  echo "post-start: running dsreplication enable for ${BASE_DN=${1}}"
+  dsreplication enable \
+    --retryTimeoutSeconds "${RETRY_TIMEOUT_SECONDS}" \
+    --trustAll \
+    --host1 "${SRC_HOST}" --port1 "${LDAPS_PORT}" --useSSL1 \
+    --bindDN1 "${ROOT_USER_DN}" --bindPasswordFile1 "${ROOT_USER_PASSWORD_FILE}" \
+    --host2 "${HOSTNAME}" --port2 "${LDAPS_PORT}" --useSSL2 \
+    --bindDN2 "${ROOT_USER_DN}" --bindPasswordFile2 "${ROOT_USER_PASSWORD_FILE}" \
+    --replicationPort2 "${REPLICATION_PORT}" \
+    --adminUID "${ADMIN_USER_NAME}" --adminPasswordFile "${ADMIN_USER_PASSWORD_FILE}" \
+    --no-prompt --ignoreWarnings \
+    --baseDN "${BASE_DN}" \
+    --noSchemaReplication \
+    --enableDebug --globalDebugLevel verbose
+  replEnableResult=$?
+  echo "post-start: replication enable for ${BASE_DN} status: ${replEnableResult}"
+
+  return ${replEnableResult}
+}
+
+########################################################################################################################
+# Initialize replication for the provided base DN on this server.
+#
+# Arguments
+#   ${1} -> The base DN for which to initialize replication.
+########################################################################################################################
+initialize_replication_for_dn() {
+  BASE_DN=${1}
+
+  echo "post-start: running dsreplication initialize for ${BASE_DN=${1}}"
+  dsreplication initialize \
+    --retryTimeoutSeconds ${RETRY_TIMEOUT_SECONDS} \
+    --trustAll \
+    --hostSource "${SRC_HOST}" --portSource ${LDAPS_PORT} --useSSLSource \
+    --hostDestination "${HOSTNAME}" --portDestination ${LDAPS_PORT} --useSSLDestination \
+    --baseDN "${BASE_DN=${1}}" \
+    --adminUID "${ADMIN_USER_NAME}" \
+    --adminPasswordFile "${ADMIN_USER_PASSWORD_FILE}" \
+    --no-prompt --ignoreWarnings \
+    --enableDebug \
+    --globalDebugLevel verbose
+  replInitResult=$?
+  echo "post-start: replication initialize for ${BASE_DN} status: ${replInitResult}"
+
+  return ${replInitResult}
+}
+
+########################################################################################################################
+# Stop the container to signal failure with post-start sequence.
+########################################################################################################################
+stop_container() {
+  echo "post-start: stopping the container to signal failure with post-start sequence"
+  stop-server
+}
+
+
+# --- MAIN SCRIPT ---
 echo "post-start: starting post-start hook"
 
 # Remove the post-start initialization marker file so the pod isn't prematurely considered ready
@@ -194,19 +290,19 @@ waitUntilLdapUp "localhost" "${LDAPS_PORT}" 'cn=config'
 # Change PF user passwords
 change_pf_user_passwords
 pwdModStatus=$?
-test ${pwdModStatus} -ne 0 && exit ${pwdModStatus}
+test ${pwdModStatus} -ne 0 && stop_container
 
 SHORT_HOST_NAME=$(hostname)
 ORDINAL=$(echo ${SHORT_HOST_NAME##*-})
 echo "post-start: pod ordinal: ${ORDINAL}"
 
-if test ${ORDINAL} -eq 0; then
+if test "${ORDINAL}" -eq 0; then
   # The request control allows encoded passwords, which is always required for topology admin users
   # ldapmodify allows a --passwordUpdateBehavior allow-pre-encoded-password=true to do the same
   ALLOW_PRE_ENCODED_PW_CONTROL='1.3.6.1.4.1.30221.2.5.51:true::MAOBAf8='
   change_user_password "cn=${ADMIN_USER_NAME}" "${ADMIN_USER_PASSWORD_FILE}" "${ALLOW_PRE_ENCODED_PW_CONTROL}"
   pwdModStatus=$?
-  test ${pwdModStatus} -ne 0 && exit ${pwdModStatus}
+  test ${pwdModStatus} -ne 0 && stop_container
 
   # Update the license file, if necessary
   LICENSE_FILE_PATH="${LICENSE_DIR}/${LICENSE_FILE_NAME}"
@@ -217,13 +313,12 @@ if test ${ORDINAL} -eq 0; then
 
     licModStatus=$?
     echo "post-start: product license update status: ${pwdModStatus}"
-    test ${licModStatus} -ne 0 && exit ${licModStatus}
+    test ${licModStatus} -ne 0 && stop_container
   fi
 
   touch "${POST_START_INIT_MARKER_FILE}"
-  exit 0
+  exit
 fi
-
 
 # --- NOTE ---
 # This assumes that data initialization is only required once for the initial data in the server profile.
@@ -233,103 +328,102 @@ fi
 
 REPL_INIT_MARKER_FILE="${SERVER_ROOT_DIR}"/config/repl-initialized
 
-if grep -q "${USER_BASE_DN}" "${REPL_INIT_MARKER_FILE}"; then
-  echo "post-start: replication is already initialized for ${USER_BASE_DN}"
-  touch "${POST_START_INIT_MARKER_FILE}"
-  exit 0
+# Figure out if replication is already initialized for all requested DNs
+DN_LIST=
+if test -z "${REPLICATION_BASE_DNS}"; then
+  DN_LIST="${USER_BASE_DN}"
+else
+  echo "${REPLICATION_BASE_DNS}" | grep -q "${USER_BASE_DN}"
+  test $? -eq 0 &&
+      DN_LIST="${REPLICATION_BASE_DNS}" ||
+      DN_LIST="${REPLICATION_BASE_DNS};${USER_BASE_DN}"
 fi
+
+DNS_TO_INITIALIZE=$(echo "${DN_LIST}" | tr ';' ' ')
+echo "post-start: replication base DNs: ${DNS_TO_INITIALIZE}"
+
+UNINITIALIZED_DNS=
+for DN in ${DNS_TO_INITIALIZE}; do
+  if grep -q "${DN}" "${REPL_INIT_MARKER_FILE}"; then
+    echo "post-start: replication is already initialized for ${DN}"
+  else
+    test -z "${UNINITIALIZED_DNS}" &&
+        UNINITIALIZED_DNS="${DN}" ||
+        UNINITIALIZED_DNS="${UNINITIALIZED_DNS} ${DN}"
+  fi
+done
+
+# All base DNs are already initialized, so we're good.
+if test -z "${UNINITIALIZED_DNS}"; then
+  echo "post-start: replication is already initialized for all base DNs: ${DNS_TO_INITIALIZE}"
+  touch "${POST_START_INIT_MARKER_FILE}"
+  exit
+fi
+
+echo "post-start: replication will be initialized for base DNs: ${UNINITIALIZED_DNS}"
 
 DOMAIN_NAME=$(hostname -f | cut -d'.' -f2-)
 SRC_HOST="${K8S_STATEFUL_SET_NAME}-0.${DOMAIN_NAME}"
 
-for HOST in "${SRC_HOST}" "${HOSTNAME}"; do
-  # FIXME:
-  # DS-41417: manage-profile replace-profile has a bug today where it won't make any changes to any local-db backends
-  # after setup. When manage-profile replace-profile is fixed, the following call may be removed.
-  configure_user_backend "${HOST}"
-  configBackendStatus=$?
-  test ${configBackendStatus} -ne 0 && exit ${configBackendStatus}
+# For end-user base DNs, allow the option to disable previous DNs from replication. This allows
+# customers to disable the OOTB base DN that is automatically enabled and initialized.
+if test "${DISABLE_ALL_OLDER_USER_BASE_DN}" = 'true'; then
+  ENABLED_DNS=$(ldapsearch --hostname "${TARGET_HOST}" --baseDN 'cn=config' --searchScope sub \
+      "&(ds-cfg-backend-id=${USER_BACKEND_ID})(objectClass=ds-cfg-backend)" ds-cfg-base-dn |
+      grep '^ds-cfg-base-dn' | cut -d: -f2 | tr -d ' ')
 
-  does_base_entry_exist "${HOST}"
-  if test $? -ne 0; then
-    add_base_entry "${HOST}"
-    addStatus=$?
-    test ${addStatus} -ne 0 && exit ${addStatus}
+  for DN in ${ENABLED_DNS}; do
+    if test "${DN}" != "${USER_BASE_DN}"; then
+      disable_replication_for_dn "${DN}"
+      test $? -eq 0 &&
+          sed -i.bak -E "/${DN}/d" "${REPL_INIT_MARKER_FILE}" ||
+          stop_container
+    fi
+  done
+fi
+
+for DN in ${UNINITIALIZED_DNS}; do
+  # FIXME: DS-41417: manage-profile replace-profile has a bug today where it won't make any changes to any local-db
+  # backends after setup. When manage-profile replace-profile is fixed, the following code block may be removed.
+  if test "${DN}" = "${USER_BASE_DN}"; then
+    echo "post-start: user base DN ${USER_BASE_DN} is uninitialized"
+
+    for HOST in "${SRC_HOST}" "${HOSTNAME}"; do
+      configure_user_backend "${HOST}"
+      configBackendStatus=$?
+      test ${configBackendStatus} -ne 0 && stop_container
+
+      does_base_entry_exist "${HOST}"
+      if test $? -ne 0; then
+        add_base_entry "${HOST}"
+        addStatus=$?
+        test ${addStatus} -ne 0 && stop_container
+      fi
+    done
+  fi
+
+  enable_replication_for_dn "${DN}"
+  replEnableResult=$?
+
+  # We will tolerate error code 5. It it likely when the user base DN does not exist on the source server.
+  # For example, this can happen when the user base DN is updated after initial setup.
+  if test ${replEnableResult} -eq 5; then
+    echo "post-start: replication cannot be enabled for ${DN}"
+    continue
+  elif test ${replEnableResult} -ne 0; then
+    echo "post-start: not running dsreplication initialize since enable failed with a non-successful return code"
+    stop_container
+  fi
+
+  initialize_replication_for_dn "${DN}"
+  replInitResult=$?
+
+  if test ${replInitResult} -eq 0; then
+    echo "post-start: adding DN ${DN} to the replication marker file ${REPL_INIT_MARKER_FILE}"
+    echo "${DN}" >> "${REPL_INIT_MARKER_FILE}"
+  else
+    stop_container
   fi
 done
 
-if test "${DISABLE_ALL_OLDER_USER_BASE_DN}" = 'true' && test -f "${REPL_INIT_MARKER_FILE}"; then
-  echo "post-start: disabling replication for older base DNs"
-  dsreplication disable \
-    --retryTimeoutSeconds ${RETRY_TIMEOUT_SECONDS} \
-    --trustAll \
-    --hostname "${HOSTNAME}" --port "${LDAPS_PORT}" --useSSL \
-    --adminUID "${ADMIN_USER_NAME}" --adminPasswordFile "${ADMIN_USER_PASSWORD_FILE}" \
-    --disableAll \
-    --no-prompt --ignoreWarnings \
-    --enableDebug --globalDebugLevel verbose
-  replDisableResult=$?
-
-  echo "post-start: replication disable-all status: ${replDisableResult}"
-  if test ${replDisableResult} -eq 6; then
-    echo "post-start: no base DNs are currently enabled"
-  elif test ${replDisableResult} -ne 0; then
-    exit ${replDisableResult}
-  fi
-
-  rm -f "${REPL_INIT_MARKER_FILE}"
-fi
-
-echo "post-start: running dsreplication enable for ${USER_BASE_DN}"
-dsreplication enable \
-  --retryTimeoutSeconds ${RETRY_TIMEOUT_SECONDS} \
-  --trustAll \
-  --host1 "${SRC_HOST}" --port1 "${LDAPS_PORT}" --useSSL1 \
-  --bindDN1 "${ROOT_USER_DN}" --bindPasswordFile1 "${ROOT_USER_PASSWORD_FILE}" \
-  --host2 "${HOSTNAME}" --port2 "${LDAPS_PORT}" --useSSL2 \
-  --bindDN2 "${ROOT_USER_DN}" --bindPasswordFile2 "${ROOT_USER_PASSWORD_FILE}" \
-  --replicationPort2 "${REPLICATION_PORT}" \
-  --adminUID "${ADMIN_USER_NAME}" --adminPasswordFile "${ADMIN_USER_PASSWORD_FILE}" \
-  --no-prompt --ignoreWarnings \
-  --baseDN "${USER_BASE_DN}" \
-  --noSchemaReplication \
-  --enableDebug --globalDebugLevel verbose
-
-replEnableResult=$?
-echo "post-start: replication enable for ${USER_BASE_DN} status: ${replEnableResult}"
-
-# We will tolerate error code 5. It it likely when the user base DN does not exist on the source server.
-# For example, this can happen when the user base DN is updated after initial setup.
-if test ${replEnableResult} -eq 5; then
-  echo "post-start: replication cannot be enabled for ${USER_BASE_DN}"
-  touch "${POST_START_INIT_MARKER_FILE}"
-  exit 0
-fi
-
-if test ${replEnableResult} -ne 0; then
-  echo "post-start: not running dsreplication initialize since enable failed with a non-successful return code"
-  exit ${replEnableResult}
-fi
-
-echo "post-start: running dsreplication initialize for ${USER_BASE_DN}"
-dsreplication initialize \
-  --retryTimeoutSeconds ${RETRY_TIMEOUT_SECONDS} \
-  --trustAll \
-  --hostSource "${SRC_HOST}" --portSource ${LDAPS_PORT} --useSSLSource \
-  --hostDestination "${HOSTNAME}" --portDestination ${LDAPS_PORT} --useSSLDestination \
-  --baseDN "${USER_BASE_DN}" \
-  --adminUID "${ADMIN_USER_NAME}" \
-  --adminPasswordFile "${ADMIN_USER_PASSWORD_FILE}" \
-  --no-prompt --ignoreWarnings \
-  --enableDebug \
-  --globalDebugLevel verbose
-
-replInitResult=$?
-echo "post-start: replication initialize for ${USER_BASE_DN} status: ${replInitResult}"
-
-if test ${replInitResult} -eq 0; then
-  echo "${USER_BASE_DN}" >> "${REPL_INIT_MARKER_FILE}"
-  touch "${POST_START_INIT_MARKER_FILE}"
-fi
-
-exit ${replInitResult}
+touch "${POST_START_INIT_MARKER_FILE}"
