@@ -3,7 +3,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 - k8s-configs
-- k8s-configs/ping-cloud/base/pingaccess
 
 patchesStrategicMerge:
 
@@ -20,6 +19,7 @@ patchesStrategicMerge:
     PA_ENGINE_PUBLIC_HOSTNAME: pingaccess.${TENANT_DOMAIN}
     PF_ADMIN_PUBLIC_HOSTNAME: pingfederate-admin.${TENANT_DOMAIN}
     PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
+    BACKUP_URL: ${BACKUP_URL}
 - |-
   apiVersion: v1
   kind: ConfigMap
@@ -118,19 +118,6 @@ patchesJson6902:
     group: extensions
     version: v1beta1
     kind: Ingress
-    name: pingaccess-agent-ingress
-  patch: |-
-    - op: replace
-      path: /spec/tls/0/hosts/0
-      value: pingaccess-agent.${TENANT_DOMAIN}
-    - op: replace
-      path: /spec/rules/0/host
-      value: pingaccess-agent.${TENANT_DOMAIN}
-
-- target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
     name: kibana-ingress
     namespace: elastic-stack-logging
   patch: |-
@@ -165,3 +152,16 @@ patchesJson6902:
       path: /metadata/annotations
       value:
         service.beta.kubernetes.io/aws-load-balancer-type: nlb
+
+# Configure external-dns to only own the hosted zone for the tenant domain
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Deployment
+    name: external-dns
+    namespace: external-dns
+  patch: |-
+    - op: add
+      path: /spec/template/spec/containers/0/args/-
+      value:
+        --domain-filter=${TENANT_DOMAIN}.

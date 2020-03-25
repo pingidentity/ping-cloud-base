@@ -1,9 +1,8 @@
 ORCHESTRATION_TYPE=kubernetes
 
-SERVER_PROFILE_URL=https://github.com/pingidentity/pingidentity-server-profiles.git
-# FIXME: Change to baseline/pingaccess upon 1.0 release
-SERVER_PROFILE_PATH=pingaccess-cluster
-SERVER_PROFILE_BRANCH=pcpt
+SERVER_PROFILE_URL=https://github.com/pingidentity/ping-cloud-base.git
+SERVER_PROFILE_PATH=profiles/aws/pingaccess
+SERVER_PROFILE_BRANCH=v1.1-release-branch
 
 # Retry client request to pingaccess admin API up to 10 times. Engine pod uses admin
 # API to retrieve its proper configuration.
@@ -14,3 +13,8 @@ API_TIMEOUT_WAIT=5
 
 ACCEPT_EULA=YES
 PING_IDENTITY_ACCEPT_EULA=YES
+
+K8S_STATEFUL_SET_NAME_PINGACCESS=pingaccess-admin
+K8S_SERVICE_NAME_PINGACCESS_ADMIN=pingaccess-admin
+
+PA_ADMIN_USER_USERNAME=Administrator

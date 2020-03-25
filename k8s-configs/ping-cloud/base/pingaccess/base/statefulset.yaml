@@ -8,6 +8,9 @@ metadata:
     cluster: pingaccess-cluster
     role: pingaccess-admin
 spec:
+  selector:
+    matchLabels:
+      role: pingaccess-admin
   replicas: 1
   serviceName: pingaccess-admin
   updateStrategy:
@@ -51,16 +54,15 @@ spec:
         - configMapRef:
             name: pingaccess-environment-variables
       containers:
-      - name: pingaccess
-        # FIXME: switch to stable image before GA
-        image: pingidentity/pingaccess:1911-alpine-5.3.2
+      - name: pingaccess-admin
+        image: pingidentity/pingaccess:2001-6.0.0
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "512Mi"
+            memory: "2Gi"
             cpu: "1"
           limits:
-            memory: "512Mi"
+            memory: "2Gi"
             cpu: "1"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
@@ -69,12 +71,11 @@ spec:
         - name: data-dir
           mountPath: /usr/local/bin/kubectl
           subPath: kubectl
+        - name: out-dir
+          mountPath: /opt/out
         - name: pingaccess-license
           mountPath: /opt/in/instance/conf/pingaccess.lic
           subPath: pingaccess.lic
-        - name: pingaccess-jwk
-          mountPath: /opt/in/instance/conf/pa.jwk
-          subPath: pa.jwk
         readinessProbe:
           exec:
             command: [ liveness.sh ]
@@ -93,11 +94,16 @@ spec:
           value: CLUSTERED_CONSOLE
         - name: HTTPS_PORT
           value: "9090"
-        - name: INITIAL_ADMIN_PASSWORD
+        - name: DEFAULT_PA_ADMIN_USER_PASSWORD
           valueFrom:
             secretKeyRef:
               name: pingaccess-passwords
-              key: INITIAL_ADMIN_PASSWORD
+              key: DEFAULT_PA_ADMIN_USER_PASSWORD
+        - name: PA_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingaccess-passwords
+              key: PA_ADMIN_USER_PASSWORD
         envFrom:
         - configMapRef:
             name: pingaccess-environment-variables
@@ -123,6 +129,9 @@ spec:
           name: known-hosts-config
           optional: true
           defaultMode: 0644
+      - name: out-dir
+        persistentVolumeClaim:
+          claimName: out-dir
       - name: pingaccess-license
         secret:
           secretName: pingaccess-license
@@ -133,11 +142,16 @@ spec:
           secretName: pingaccess-passwords
           optional: true
           defaultMode: 0400
-      - name: pingaccess-jwk
-        secret:
-          secretName: pingaccess-jwk
-          optional: true
-          defaultMode: 0400
+  volumeClaimTemplates:
+  - metadata:
+      name: out-dir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: pingaccess-gp2
+      resources:
+        requests:
+          storage: 20Gi
 
 ---
 
@@ -151,7 +165,9 @@ metadata:
     cluster: pingaccess-cluster
     role: pingaccess-engine
 spec:
-  replicas: 2
+  selector:
+    matchLabels:
+      role: pingaccess-engine
   serviceName: pingaccess
   podManagementPolicy: Parallel
   template:
@@ -188,23 +204,22 @@ spec:
           mountPath: /init.sh
           subPath: init.sh
         env:
-        # PA engine must wait for the PA admin to be ready
+        # PingAccess engine must wait for the PingAccess admin to be ready
         - name: WAIT_FOR_SERVICES
           value: pingaccess-admin
         envFrom:
         - configMapRef:
             name: pingaccess-environment-variables
       containers:
-      - name: pingaccess-engine
-        # FIXME: switch to stable image before GA
-        image: pingidentity/pingaccess:1911-alpine-5.3.2
+      - name: pingaccess
+        image: pingidentity/pingaccess:2001-6.0.0
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "512Mi"
+            memory: "2Gi"
             cpu: "1"
           limits:
-            memory: "512Mi"
+            memory: "2Gi"
             cpu: "1"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
@@ -216,9 +231,6 @@ spec:
         - name: pingaccess-license
           mountPath: /opt/in/instance/conf/pingaccess.lic
           subPath: pingaccess.lic
-        - name: pingaccess-jwk
-          mountPath: /opt/in/instance/conf/pa.jwk
-          subPath: pa.jwk
         - name: pingaccess-pre-stop
           mountPath: /opt/staging/pre-stop.sh
           subPath: pre-stop.sh
@@ -239,19 +251,14 @@ spec:
               - /opt/staging/pre-stop.sh
         ports:
         - containerPort: 3000
-        - containerPort: 3030
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_ENGINE
-        - name: K8S_STATEFUL_SET_SERVICE_NAME_PINGACCESS_ADMIN
-          value: $(K8S_STATEFUL_SET_SERVICE_NAME_PINGACCESS_ADMIN)
-        - name: K8S_STATEFUL_SET_NAME_PINGACCESS
-          value: $(K8S_STATEFUL_SET_NAME_PINGACCESS)
-        - name: INITIAL_ADMIN_PASSWORD
+        - name: PA_ADMIN_USER_PASSWORD
           valueFrom:
             secretKeyRef:
               name: pingaccess-passwords
-              key: INITIAL_ADMIN_PASSWORD
+              key: PA_ADMIN_USER_PASSWORD
         envFrom:
         - configMapRef:
             name: pingaccess-environment-variables
@@ -285,11 +292,6 @@ spec:
       - name: pingaccess-passwords
         secret:
           secretName: pingaccess-passwords
-          optional: true
-          defaultMode: 0400
-      - name: pingaccess-jwk
-        secret:
-          secretName: pingaccess-jwk
           optional: true
           defaultMode: 0400
       - name: pingaccess-pre-stop

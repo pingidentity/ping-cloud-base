@@ -3,7 +3,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: pingfederate-backup
+  name: pingaccess-backup
 spec:
   ttlSecondsAfterFinished: 0
   backoffLimit: 5
@@ -12,19 +12,19 @@ spec:
       serviceAccount: ping-serviceaccount
       restartPolicy: Never
       containers:
-      - name: pingfederate-backup
-        image: pingidentity/pingfederate:200109-10.0.0
+      - name: pingaccess-backup
+        image: pingidentity/pingaccess:2001-6.0.0
         command:
         - /opt/in/backup-archive-data.sh
         envFrom:
         - configMapRef:
-            name: pingfederate-environment-variables
+            name: pingaccess-environment-variables
         volumeMounts:
-        - name: pingfederate-backup
+        - name: pingaccess-backup
           mountPath: /opt/in/backup-archive-data.sh
           subPath: backup-archive-data.sh
       volumes:
-      - name: pingfederate-backup
+      - name: pingaccess-backup
         configMap:
-          name: pingfederate-backup
+          name: pingaccess-backup
           defaultMode: 0555
