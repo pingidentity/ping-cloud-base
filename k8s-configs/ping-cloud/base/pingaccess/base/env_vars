@@ -2,7 +2,7 @@ ORCHESTRATION_TYPE=kubernetes
 
 SERVER_PROFILE_URL=https://github.com/pingidentity/ping-cloud-base.git
 SERVER_PROFILE_PATH=profiles/aws/pingaccess
-SERVER_PROFILE_BRANCH=v1.1-release-branch
+SERVER_PROFILE_BRANCH=master
 
 # Retry client request to pingaccess admin API up to 10 times. Engine pod uses admin
 # API to retrieve its proper configuration.
