@@ -1,4 +1,11 @@
-- op: add
-  path: /spec/template/spec/containers/0/args/-
+- op: replace
+  path: /spec/template/spec/containers/0/args
   value:
-    --domain-filter=${TENANT_DOMAIN}.
+    - --source=service
+    - --source=ingress
+    - --log-level=debug
+    - --provider=aws
+    - --policy=sync
+    - --aws-zone-type=public
+    - --registry=txt
+    - --domain-filter=${TENANT_DOMAIN}.
