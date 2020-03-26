@@ -29,14 +29,24 @@ data:
     export PATH="${PATH}:/data"
 
     #--- Wait for services if there are any dependent services we must wait on --- #
-if test ! -z "${WAIT_FOR_SERVICES}"; then
-  for SERVICE in "${WAIT_FOR_SERVICES}"; do
-    DEPLOYMENT=$(kubectl get statefulset,deployment -o name | grep "${SERVICE}")
-    NUM_REPLICAS=$(kubectl get ${DEPLOYMENT} -o jsonpath='{.spec.replicas}')
-    TIMEOUT=$((NUM_REPLICAS * 900))
-    kubectl rollout status --timeout ${TIMEOUT}s ${DEPLOYMENT} -w
-  done
-fi
+    if test ! -z "${WAIT_FOR_SERVICES}"; then
+      WAIT_PER_REPLICA=${WAIT_PER_REPLICA:-900}
+
+      for SERVICE in "${WAIT_FOR_SERVICES}"; do
+        DEPLOYMENT=$(kubectl get statefulset,deployment -o name | grep "${SERVICE}$")
+
+        if test -z "${DEPLOYMENT}"; then
+          echo "Service ${SERVICE} does not exist"
+          continue
+        fi
+
+        NUM_REPLICAS=$(kubectl get ${DEPLOYMENT} -o jsonpath='{.spec.replicas}')
+        TIMEOUT=$((NUM_REPLICAS * WAIT_PER_REPLICA))
+
+        echo "Waiting ${TIMEOUT}seconds for ${NUM_REPLICAS} of service ${SERVICE} to be ready"
+        kubectl rollout status --timeout ${TIMEOUT}s ${DEPLOYMENT} -w
+      done
+    fi
 
     #--- Note: this initialization is only needed for PingDirectory ---#
     #--- Generate a dummy topology JSON file so the hook that generates it in the image is not triggered ---#
