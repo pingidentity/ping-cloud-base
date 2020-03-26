@@ -21,6 +21,7 @@ rules:
     - get
     - list
   - apiGroups:
+    - ""
     - "apps"
     - "extensions"
     resources:
@@ -29,6 +30,7 @@ rules:
     verbs:
     - get
     - list
+    - watch
   - apiGroups:
     - ""
     resources:
