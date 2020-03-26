@@ -13,7 +13,7 @@ USER_BACKEND_ID=userRoot
 USER_BASE_DN=dc=example,dc=com
 DISABLE_ALL_OLDER_USER_BASE_DN=true
 
-REPLICATION_BASE_DNS=o=platformconfig
+REPLICATION_BASE_DNS=o=platformconfig;o=appintegrations
 
 LDAP_PORT=1389
 LDAPS_PORT=1636
