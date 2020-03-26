@@ -51,7 +51,7 @@ spec:
         # PA admin must wait for the PF admin to be ready
         # A space-separated list of deployments or statefulsets that this app should wait for
         - name: WAIT_FOR_SERVICES
-          value: pingaccess-admin
+          value: pingfederate-admin
         envFrom:
         - configMapRef:
             name: pingaccess-environment-variables
@@ -168,6 +168,7 @@ spec:
       annotations:
         lastUpdateReason: "NA"
     spec:
+      serviceAccount: ping-serviceaccount
       initContainers:
       - name: pingaccess-init
         # FIXME: switch to same user as app

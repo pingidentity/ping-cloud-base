@@ -12,6 +12,7 @@ spec:
     matchLabels:
       role: pingfederate-admin
   replicas: 1
+  progressDeadlineSeconds: 900
   # Recreate strategy will force admin to completely be removed from cluster
   # and recreate new admin upon deployment. This will avoid error of
   # 2 admins in 1 cluster.
@@ -161,6 +162,7 @@ metadata:
     cluster: pingfederate-cluster
     role: pingfederate-engine
 spec:
+  progressDeadlineSeconds: 900
   selector:
     matchLabels:
       role: pingfederate-engine

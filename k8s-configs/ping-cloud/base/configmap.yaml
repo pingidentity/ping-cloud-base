@@ -11,7 +11,7 @@ metadata:
   name: pingcommon-init
 data:
   init.sh: |-
-    #!/bin/sh -x
+    #!/bin/sh -e
 
     #--- Sleep for the configured initial delay seconds --- #
     SLEEP_SECONDS=${INITIAL_DELAY_SECONDS:-0}
