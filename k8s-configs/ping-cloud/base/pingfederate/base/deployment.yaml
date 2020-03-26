@@ -51,6 +51,10 @@ spec:
         - name: pingfederate-init
           mountPath: /init.sh
           subPath: init.sh
+        env:
+        # PF admin must wait for PD to be ready
+        - name: WAIT_FOR_SERVICES
+          value: pingdirectory
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
@@ -59,10 +63,6 @@ spec:
         image:  pingidentity/pingfederate:200109-10.0.0
         imagePullPolicy: Always
         env:
-        # PF edmin should wait for pingdirectory to be ready
-        # A comma-separated list of services for which a particular service must wait
-        - name: WAIT_FOR_SERVICES
-          value: pingdirectory
         - name:  OPERATIONAL_MODE
           value: CLUSTERED_CONSOLE
         - name:  PF_DNS_PING_NAMESPACE
@@ -119,7 +119,7 @@ spec:
         emptyDir: {}
       - name: pingfederate-init
         configMap:
-          name: pingfederate-init
+          name: pingcommon-init
           defaultMode: 0555
       - name: ssh-id-key-secret
         secret:
@@ -197,6 +197,10 @@ spec:
         - name: pingfederate-init
           mountPath: /init.sh
           subPath: init.sh
+        env:
+        # PF engines must wait until the PF admin is ready
+        - name: WAIT_FOR_SERVICES
+          value: pingfederate-admin
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
@@ -205,10 +209,6 @@ spec:
         image:  pingidentity/pingfederate:200109-10.0.0
         imagePullPolicy: Always
         env:
-        # PF engines must wait until the admin is ready
-        # A comma-separated list of services for which a particular service must wait
-        - name: WAIT_FOR_SERVICES
-          value: pingfederate-admin
         - name:  OPERATIONAL_MODE
           value: CLUSTERED_ENGINE
         - name:  PF_DNS_PING_NAMESPACE  
@@ -265,7 +265,7 @@ spec:
         emptyDir: {}
       - name: pingfederate-init
         configMap:
-          name: pingfederate-init
+          name: pingcommon-init
           defaultMode: 0555
       - name: ssh-id-key-secret
         secret:

@@ -184,7 +184,7 @@ spec:
         emptyDir: {}
       - name: pingdirectory-init
         configMap:
-          name: pingdirectory-init
+          name: pingcommon-init
           defaultMode: 0555
       - name: ssh-id-key-secret
         secret:

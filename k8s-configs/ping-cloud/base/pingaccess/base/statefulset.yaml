@@ -47,6 +47,10 @@ spec:
         - name: pingaccess-init
           mountPath: /init.sh
           subPath: init.sh
+        env:
+        # PA admin must wait for the PF admin to be ready
+        - name: WAIT_FOR_SERVICES
+          value: pingaccess-admin
         envFrom:
         - configMapRef:
             name: pingaccess-environment-variables
@@ -111,7 +115,7 @@ spec:
         emptyDir: {}
       - name: pingaccess-init
         configMap:
-          name: pingaccess-init
+          name: pingcommon-init
           defaultMode: 0555
       - name: ssh-id-key-secret
         secret:
@@ -265,7 +269,7 @@ spec:
         emptyDir: {}
       - name: pingaccess-init
         configMap:
-          name: pingaccess-init
+          name: pingcommon-init
           defaultMode: 0555
       - name: ssh-id-key-secret
         secret:
