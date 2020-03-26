@@ -32,7 +32,7 @@ data:
     if test ! -z "${WAIT_FOR_SERVICES}"; then
       WAIT_PER_REPLICA=${WAIT_PER_REPLICA:-900}
 
-      for SERVICE in "${WAIT_FOR_SERVICES}"; do
+      for SERVICE in ${WAIT_FOR_SERVICES}; do
         DEPLOYMENT=$(kubectl get statefulset,deployment -o name | grep "${SERVICE}$")
 
         if test -z "${DEPLOYMENT}"; then
