@@ -26,7 +26,7 @@ data:
     curl https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl -o /data/kubectl
 
     chmod +x /data/kubectl
-    export PATH="${PATH}:/data"
+    alias kubectl=/data/kubectl
 
     #--- Wait for services if there are any dependent services we must wait on --- #
     if test ! -z "${WAIT_FOR_SERVICES}"; then
@@ -44,7 +44,7 @@ data:
         TIMEOUT=$((NUM_REPLICAS * WAIT_PER_REPLICA))
 
         echo "Waiting ${TIMEOUT}seconds for ${NUM_REPLICAS} of service ${SERVICE} to be ready"
-        kubectl rollout status --timeout ${TIMEOUT}s ${DEPLOYMENT} -w
+        kubectl rollout status --timeout "${TIMEOUT}s" "${DEPLOYMENT}" -w
       done
     fi
 
