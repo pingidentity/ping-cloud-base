@@ -376,8 +376,7 @@ if test "${DISABLE_ALL_OLDER_USER_BASE_DN}" = 'true'; then
     if test "${DN}" != "${USER_BASE_DN}"; then
       disable_replication_for_dn "${DN}"
       test $? -eq 0 &&
-          sed -i.bak -E "/${DN}/d" "${REPL_INIT_MARKER_FILE}" ||
-          stop_container
+          sed -i.bak -E "/${DN}/d" "${REPL_INIT_MARKER_FILE}"
     fi
   done
 fi
