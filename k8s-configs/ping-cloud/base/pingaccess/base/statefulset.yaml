@@ -59,10 +59,10 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "2Gi"
+            memory: "1Gi"
             cpu: "1"
           limits:
-            memory: "2Gi"
+            memory: "1Gi"
             cpu: "1"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
@@ -216,10 +216,10 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "2Gi"
+            memory: "1Gi"
             cpu: "1"
           limits:
-            memory: "2Gi"
+            memory: "1Gi"
             cpu: "1"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
