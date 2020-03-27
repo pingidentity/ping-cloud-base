@@ -11,10 +11,10 @@ data:
     curl https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
     chmod +x /usr/local/bin/kubectl
 
-    PODS=$(kubectl get pods -l role=pingfederate-engine -o json|jq .items[].metadata.name|sed 's/\"//g')
+    PODS=$(kubectl get pods -l role=pingfederate-engine -o json|jq .items[].metadata.name)
     CSD_FILES=
-    for i in $PODS; do
-      SERVER=$i
+    for POD in $PODS; do
+      SERVER=${POD}
       SCRIPT="${HOOKS_DIR}"/84-upload-csd-s3.sh
       LOG_FILE=/tmp/upload.log
 
@@ -37,34 +37,32 @@ data:
 
 # A manual job to upload CSD to s3 - this does the same thing as the recurring task on the server except it may be
 # configured to trigger in reaction to a ClickOps event.
-apiVersion: batch/v1
-kind: Job
+apiVersion: batch/v1beta1
+kind: CronJob
 metadata:
   name: pingfederate-csd-upload
-  labels:
-    app: ping-cloud
-    role: pingfederate-engine
 spec:
-  ttlSecondsAfterFinished: 0
-  backoffLimit: 5
-  template:
+  schedule: "0 * * * *"
+  JobTemplate:
     spec:
-      serviceAccount: ping-serviceaccount
-      restartPolicy: Never
-      containers:
-      - name: pingfederate-csd-uploader
-        image: pingidentity/pingfederate:10.0.1-edge
-        command:
-        - /opt/in/upload.sh
-        volumeMounts:
-        - name: upload-script
-          mountPath: /opt/in/upload.sh
-          subPath: upload.sh
-        envFrom:
-        - configMapRef:
-            name: pingfederate-environment-variables
-      volumes:
-      - name: upload-script
-        configMap:
-          name: pf-upload-script
-          defaultMode: 0555
+      template:
+        spec:
+          serviceAccount: ping-serviceaccount
+          restartPolicy: Never
+          containers:
+          - name: pingfederate-csd-uploader
+            image: pingidentity/pingfederate:10.0.1-edge
+            command:
+            - /opt/in/upload.sh
+            volumeMounts:
+            - name: upload-script
+              mountPath: /opt/in/upload.sh
+              subPath: upload.sh
+            envFrom:
+            - configMapRef:
+                name: pingfederate-environment-variables
+          volumes:
+          - name: upload-script
+            configMap:
+              name: pf-upload-script
+              defaultMode: 0555
