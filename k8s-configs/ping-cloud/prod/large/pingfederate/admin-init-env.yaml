@@ -1,0 +1,12 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pingfederate-admin
+spec:
+  template:
+    spec:
+      initContainers:
+      - name: pingfederate-init
+        env:
+        - name: WAIT_FOR_SERVICES
+          value: pingdirectory

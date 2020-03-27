@@ -23,6 +23,8 @@ configMapGenerator:
 
 patchesStrategicMerge:
 - pingdirectory/limits.yaml
+- pingfederate/admin-init-env.yaml
+- pingfederate/engine-init-env.yaml
 - pingfederate/admin-limits.yaml	
 - pingfederate/engine-limits.yaml	
 - pingfederate/hpa-limits.yaml

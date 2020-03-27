@@ -52,7 +52,7 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image:bitnami/kubectl:1.15.3
+        image: bitnami/kubectl:1.15.3
         imagePullPolicy: Always
         command:
         - /init.sh

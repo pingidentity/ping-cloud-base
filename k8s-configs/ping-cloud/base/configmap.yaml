@@ -21,12 +21,8 @@ data:
     test -f /known_hosts && cp /known_hosts /.ssh
     test -f /id_rsa && cp /id_rsa /.ssh
 
-    # Install kubectl
-    echo "init: installing kubectl"
-    curl https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl -o /data/kubectl
-
-    chmod +x /data/kubectl
-    alias kubectl=/data/kubectl
+    #--- Copy kubectl to the data directory ---#
+    which kubectl | xargs -I {} cp {} /data
 
     #--- Wait for dependent services, if any --- #
     if test ! -z "${WAIT_FOR_SERVICES}"; then
