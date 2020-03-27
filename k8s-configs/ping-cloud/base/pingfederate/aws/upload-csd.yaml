@@ -11,7 +11,7 @@ data:
     curl https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
     chmod +x /usr/local/bin/kubectl
 
-    PODS=$(kubectl get pods -l role=pingfederate-engine -o json|jq .items[].metadata.name)
+    PODS=$(kubectl get pods -l role=pingfederate-engine -o json|jq .items[].metadata.name|sed 's/\"//g')
     CSD_FILES=
     for POD in $PODS; do
       SERVER=${POD}
@@ -43,7 +43,7 @@ metadata:
   name: pingfederate-csd-upload
 spec:
   schedule: "0 * * * *"
-  JobTemplate:
+  jobTemplate:
     spec:
       template:
         spec:
