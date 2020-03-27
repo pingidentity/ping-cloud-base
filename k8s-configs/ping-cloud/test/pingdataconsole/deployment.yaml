@@ -12,6 +12,7 @@ spec:
       annotations:
         lastUpdateTime: "NA"
     spec:
+      serviceAccount: ping-serviceaccount
       containers:
       - name: pingdataconsole
         image: pingidentity/pingdataconsole:200109
