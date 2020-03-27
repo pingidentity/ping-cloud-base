@@ -1,5 +1,5 @@
 ORCHESTRATION_TYPE=kubernetes
-
+#VERBOSE=true
 SERVER_PROFILE_URL=https://github.com/pingidentity/ping-cloud-base.git
 SERVER_PROFILE_PATH=profiles/aws/pingaccess
 SERVER_PROFILE_BRANCH=master
@@ -18,3 +18,9 @@ K8S_STATEFUL_SET_NAME_PINGACCESS=pingaccess-admin
 K8S_SERVICE_NAME_PINGACCESS_ADMIN=pingaccess-admin
 
 PA_ADMIN_USER_USERNAME=Administrator
+
+PA_MIN_HEAP=128m
+PA_MAX_HEAP=256m
+PA_MIN_YGEN=128m
+PA_MAX_YGEN=128m
+PA_GCOPTION=-XX:-UseParallelGC -XX:MinHeapFreeRatio=20 -XX:MaxHeapFreeRatio=40 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90
