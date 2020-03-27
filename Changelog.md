@@ -1,5 +1,19 @@
 # Changelog
 
+### 1.2.0
+
+- Added support for P14C pass-through authentication so customer IAM admins can login to PingFederate using their CAP credentials
+- Reconfigured PingFederate admin authentication to use LDAPS
+- Enabled replication for o=platformconfig and o=appintegrations, where PingFederate administrative data is stored
+
+_Changes:_
+
+- [X] PDO-624 Reconfigure PF admin authentication to use LDAPS
+- [X] PDO-648 Write a pre-parse PingDirectory plugin for P14C pass-through authentication
+- [X] PDO-649 Enable replication for ou=admins,o=platformconfig on ping-cloud-base
+- [X] PDO-650 Add dsconfig to PD server profile for the pre-parse and pass-through auth plugins
+- [X] PDO-678 The appintegrations backend is not being replicated
+
 ### 1.1.1
 
 - Added the ability to override heap size of PingDirectory via MAX_HEAP_SIZE environment variable
