@@ -22,29 +22,41 @@ data:
     test -f /id_rsa && cp /id_rsa /.ssh
 
     # Install kubectl
-    echo "Installing kubectl"
+    echo "init: installing kubectl"
     curl https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl -o /data/kubectl
 
     chmod +x /data/kubectl
     alias kubectl=/data/kubectl
 
-    #--- Wait for services if there are any dependent services we must wait on --- #
+    #--- Wait for dependent services, if any --- #
     if test ! -z "${WAIT_FOR_SERVICES}"; then
-      WAIT_PER_REPLICA=${WAIT_PER_REPLICA:-900}
+      WAIT_FOR_NUM_REPLICAS=${WAIT_FOR_NUM_REPLICAS:-1}
 
-      for SERVICE in ${WAIT_FOR_SERVICES}; do
-        DEPLOYMENT=$(kubectl get statefulset,deployment -o name | grep "${SERVICE}$")
+      for APP in ${WAIT_FOR_SERVICES}; do
+        DEPLOYMENT=$(kubectl get statefulset,deployment -o name | grep "${APP}$")
 
         if test -z "${DEPLOYMENT}"; then
-          echo "Service ${SERVICE} does not exist"
-          continue
+          echo "init: deployment or statefulset ${APP} does not exist"
+          exit 1
         fi
 
-        NUM_REPLICAS=$(kubectl get "${DEPLOYMENT}" -o jsonpath='{.spec.replicas}')
-        TIMEOUT=$((NUM_REPLICAS * WAIT_PER_REPLICA))
+        TOTAL_NUM_REPLICAS=$(kubectl get "${DEPLOYMENT}" -o jsonpath='{.spec.replicas}')
+        if test ${WAIT_FOR_NUM_REPLICAS} -gt ${TOTAL_NUM_REPLICAS}; then
+          echo "init: WAIT_FOR_NUM_REPLICAS must be <= TOTAL_NUM_REPLICAS"
+          exit 1
+        fi
 
-        echo "Waiting ${TIMEOUT} seconds for ${NUM_REPLICAS} replica(s) of ${SERVICE} to be ready"
-        kubectl rollout status --timeout "${TIMEOUT}s" "${DEPLOYMENT}" -w
+        echo "init: waiting for ${WAIT_FOR_NUM_REPLICAS} replicas of ${APP} to be ready"
+
+        while true; do
+          NUM_READY=$(kubectl get "${DEPLOYMENT}" -o jsonpath='{.status.readyReplicas}')
+          if test ! -z ${NUM_READY} && test ${NUM_READY} -ge ${WAIT_FOR_NUM_REPLICAS}; then
+            break
+          fi
+
+          kubectl get "${DEPLOYMENT}"
+          sleep 2s
+        done
       done
     fi
 
