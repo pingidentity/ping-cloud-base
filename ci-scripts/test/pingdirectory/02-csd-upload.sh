@@ -32,7 +32,7 @@ kubectl delete -f "${UPLOAD_JOB}" -n "${NAMESPACE}"
 kubectl apply -f "${UPLOAD_JOB}" -n "${NAMESPACE}"
 
 log "Waiting for CSD upload job to complete"
-kubectl wait --for=condition=complete --timeout=600s job/pingdirectory-csd-upload -n "${NAMESPACE}"
+kubectl wait --for=condition=complete --timeout=900s job/pingdirectory-csd-upload -n "${NAMESPACE}"
 
 log "Expected CSD files:"
 expected_files | tee /tmp/expected.txt
