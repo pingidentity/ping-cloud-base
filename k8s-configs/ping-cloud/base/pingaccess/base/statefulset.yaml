@@ -32,7 +32,7 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: curlimages/curl:7.68.0
+        image: bitnami/kubectl:1.15.3
         imagePullPolicy: Always
         command:
         - /init.sh
@@ -117,7 +117,7 @@ spec:
         emptyDir: {}
       - name: pingaccess-init
         configMap:
-          name: pingaccess-init
+          name: pingcommon-init
           defaultMode: 0555
       - name: ssh-id-key-secret
         secret:
@@ -179,13 +179,14 @@ spec:
       annotations:
         lastUpdateReason: "NA"
     spec:
+      serviceAccount: ping-serviceaccount
       initContainers:
       - name: pingaccess-init
         # FIXME: switch to same user as app
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: curlimages/curl:7.68.0
+        image: bitnami/kubectl:1.15.3
         imagePullPolicy: IfNotPresent
         command:
         - /init.sh
@@ -203,10 +204,6 @@ spec:
         - name: pingaccess-init
           mountPath: /init.sh
           subPath: init.sh
-        env:
-        # PingAccess engine must wait for the PingAccess admin to be ready
-        - name: WAIT_FOR_SERVICES
-          value: pingaccess-admin
         envFrom:
         - configMapRef:
             name: pingaccess-environment-variables
@@ -272,7 +269,7 @@ spec:
         emptyDir: {}
       - name: pingaccess-init
         configMap:
-          name: pingaccess-init
+          name: pingcommon-init
           defaultMode: 0555
       - name: ssh-id-key-secret
         secret:

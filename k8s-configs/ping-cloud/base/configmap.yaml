@@ -2,3 +2,67 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: known-hosts-config
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pingcommon-init
+data:
+  init.sh: |-
+    #!/bin/sh -e
+
+    #--- Sleep for the configured initial delay seconds --- #
+    SLEEP_SECONDS=${INITIAL_DELAY_SECONDS:-0}
+    sleep ${SLEEP_SECONDS}
+
+    #--- Copy SSH configuration files --- #
+    test -f /known_hosts && cp /known_hosts /.ssh
+    test -f /id_rsa && cp /id_rsa /.ssh
+
+    #--- Copy kubectl to the data directory ---#
+    which kubectl | xargs -I {} cp {} /data
+
+    #--- Wait for dependent services, if any --- #
+    if test ! -z "${WAIT_FOR_SERVICES}"; then
+      WAIT_FOR_NUM_REPLICAS=${WAIT_FOR_NUM_REPLICAS:-1}
+
+      for APP in ${WAIT_FOR_SERVICES}; do
+        DEPLOYMENT=$(kubectl get statefulset,deployment -o name | grep "${APP}$")
+
+        if test -z "${DEPLOYMENT}"; then
+          echo "init: deployment or statefulset ${APP} does not exist"
+          exit 1
+        fi
+
+        TOTAL_NUM_REPLICAS=$(kubectl get "${DEPLOYMENT}" -o jsonpath='{.spec.replicas}')
+        if test ${WAIT_FOR_NUM_REPLICAS} -gt ${TOTAL_NUM_REPLICAS}; then
+          echo "init: WAIT_FOR_NUM_REPLICAS must be <= TOTAL_NUM_REPLICAS"
+          exit 1
+        fi
+
+        echo "init: waiting for ${WAIT_FOR_NUM_REPLICAS} replicas of ${APP} to be ready"
+
+        while true; do
+          NUM_READY=$(kubectl get "${DEPLOYMENT}" -o jsonpath='{.status.readyReplicas}')
+          if test ! -z ${NUM_READY} && test ${NUM_READY} -ge ${WAIT_FOR_NUM_REPLICAS}; then
+            break
+          fi
+
+          kubectl get "${DEPLOYMENT}"
+          sleep 2s
+        done
+      done
+    fi
+
+    #--- Note: this initialization is only needed for PingDirectory ---#
+    #--- Generate a dummy topology JSON file so the hook that generates it in the image is not triggered ---#
+    TOPOLOGY_FILE=/data/topology.json
+    cat <<EOF > "${TOPOLOGY_FILE}"
+    {
+          "serverInstances" : []
+    }
+    EOF
+
+    exit 0

@@ -1,14 +1,14 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
-  name: pingaccess-admin
+  name: pingfederate
 spec:
   template:
     spec:
       initContainers:
-      - name: pingaccess-init
+      - name: pingfederate-init
         env:
-        # PA admin must wait for the PF admin to be ready
+        # PF engines must wait until the PF admin is ready
         # A space-separated list of deployments or statefulsets that this app should wait for
         - name: WAIT_FOR_SERVICES
           value: pingfederate-admin
