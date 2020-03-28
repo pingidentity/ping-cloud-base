@@ -1,0 +1,83 @@
+We have been releasing on a monthly cadence. So we have multiple development branches, instead of a single "master"
+branch like some of the other products that have a longer release cycle do, e.g. PingDirectory, which follows a loose
+quarterly release schedule.
+
+We also follow semantic versioning (semver.org), which states:
+
+Given a version number MAJOR.MINOR.PATCH, increment the:
+
+- MAJOR version when you make incompatible API changes,
+- MINOR version when you add functionality in a backwards compatible manner, and
+- PATCH version when you make backwards compatible bug fixes.
+
+This also results in more frequent versions and branches to track those versions.
+
+Git Workflow:
+
+1. When working on a bug or feature, the first thing to determine is the version for which it is targeted. Ask a
+   team member if this is not clear.
+
+2. Find out which branch corresponds to that version in ping-cloud-base on GitLab. Ask a team member if this is
+   not clear.
+
+3. After cloning ping-cloud-base, create a local feature/bug-fix branch. For example, to create a new local feature
+   branch named pdo-288-increase-csd-timeout off of the current tip of the v1.2-release-branch, run these commands:
+
+   git clone git@gitlab.corp.pingidentity.com:ping-cloud-private-tenant/ping-cloud-base.git
+   git checkout v1.2-release-branch              # Switch to the v1.2-release-branch
+   git pull                                      # Get the latest changes from the server
+   git checkout -b pdo-288-increase-csd-timeout  # Create the feature or bug-fix branch
+
+   Note: Use a branch name prefix of "profile-test-" *only* if your change encompasses server profiles. These are
+   protected branches that only the repository maintainer can delete. In the future, when we have immutable images,
+   we will not need server profiles and will get rid of the "profile-test-" protected branch.
+
+4. Make your changes on your local feature branch. Periodically merge the source branch into your local branch. This is
+   especially important for massive changes.
+
+   git stash                         # This is only required if you have uncommitted changes in your branch
+   git checkout v1.2-release-branch  # Switch to the source branch, v1.2-release-branch
+   git pull                          # Fetch and merge the latest updates from the server into v1.2-release-branch
+   git checkout -                    # Switch back to the previous branch, e.g. pdo-288-increase-csd-timeout
+   git stash pop                     # This is only required if you had uncommitted changes
+   git merge v1.2-release-branch     # Merge the changes from the v1.2-release-branch into your feature branch
+
+   At this point, you may have merge conflicts if another developer has updated one or more of the same files that you
+   have. You'll have to resolve them using a three-way merge tool. Most IDEs (e.g. IntelliJ IDEA) have plugins to do
+   this.
+
+5. Repeat step 4 until you're done implementing and testing the feature or bug fix.
+
+6. Push to the server when you're done. GitLab best practices dictate that you only push your changes after you've
+   tested your feature branch, i.e. try not to commit, then push repeatedly. Every push will trigger a pipeline on the
+   server, which will flood the shared CI/CD cluster.
+
+   Note: We currently have a unique situation with the profile-test-* branches. We must push this branch for it to be
+   mirrored onto GitHub and externally available so that your containers running on EKS can clone your branch with your
+   server profile branches. In this case, use a commit message prefix of "[skip pipeline]" to avoid triggering a CI/CD
+   pipeline.
+
+7. When finally done with your changes, commit your last changeset without the "[skip pipeline]" message so that a
+   CI/CD pipeline gets triggered.
+
+8. From the GitLab UI, create a Merge Request. Set the target branch for the merge request to your original source
+   branch, e.g. v1.2-release-branch. Also check the following boxes:
+
+   - "Squash commits when merge request is accepted" to squash all the commits in your feature branch
+   - "Delete source branch when merge request is accepted" to delete the feature branch
+
+   Note: The "Delete source branch when merge request is accepted" checkbox will not be available for protected
+   branches (e.g. profile-test-* branches). In that case, tell the project maintainer to delete it for you after the MR
+   is merged.
+
+   If you'd like a different commit message for the "squashed commit" than the last commit on the branch, then you may
+   do so from the MR interface by clicking on the "Override squash commit message" link.
+
+9. Subscribe to the beluga-notifications slack channel to be notified of MRs. Alternately, you may also post the MR to
+   the pda-dev channel if you'd like a specific subset of the team to review your changes.
+
+10. Incorporate review feedback in your local feature branch and push those up. They will automatically show up in
+    your MR because it is associated with your branch.
+
+11. Resolve all threads in the MR. Once approved and the pipeline passes, you will be able to merge your changes to the
+    target branch by hitting the "Merge" button.
