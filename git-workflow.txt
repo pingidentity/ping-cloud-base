@@ -20,7 +20,7 @@ Git Workflow:
 2. Find out which branch corresponds to that version in ping-cloud-base on GitLab. Ask a team member if this is
    not clear.
 
-3. After cloning ping-cloud-base, create a local feature/bug-fix branch. For example, to create a new local feature
+3. After cloning ping-cloud-base, create a local feature/bug-fix branch. For example, to create a new local bug-fix
    branch named pdo-288-increase-csd-timeout off of the current tip of the v1.2-release-branch, run these commands:
 
    git clone git@gitlab.corp.pingidentity.com:ping-cloud-private-tenant/ping-cloud-base.git
@@ -28,11 +28,7 @@ Git Workflow:
    git pull                                      # Get the latest changes from the server
    git checkout -b pdo-288-increase-csd-timeout  # Create the feature or bug-fix branch
 
-   Note: Use a branch name prefix of "profile-test-" *only* if your change encompasses server profiles. These are
-   protected branches that only the repository maintainer can delete. In the future, when we have immutable images,
-   we will not need server profiles and will get rid of the "profile-test-" protected branch.
-
-4. Make your changes on your local feature branch. Periodically merge the source branch into your local branch. This is
+4. Make your changes on your local branch. Periodically merge the source branch into your local branch. This is
    especially important for massive changes.
 
    git stash                         # This is only required if you have uncommitted changes in your branch
@@ -40,7 +36,7 @@ Git Workflow:
    git pull                          # Fetch and merge the latest updates from the server into v1.2-release-branch
    git checkout -                    # Switch back to the previous branch, e.g. pdo-288-increase-csd-timeout
    git stash pop                     # This is only required if you had uncommitted changes
-   git merge v1.2-release-branch     # Merge the changes from the v1.2-release-branch into your feature branch
+   git merge v1.2-release-branch     # Merge the changes from the v1.2-release-branch into your branch
 
    At this point, you may have merge conflicts if another developer has updated one or more of the same files that you
    have. You'll have to resolve them using a three-way merge tool. Most IDEs (e.g. IntelliJ IDEA) have plugins to do
@@ -48,27 +44,26 @@ Git Workflow:
 
 5. Repeat step 4 until you're done implementing and testing the feature or bug fix.
 
-6. Push to the server when you're done. GitLab best practices dictate that you only push your changes after you've
-   tested your feature branch, i.e. try not to commit, then push repeatedly. Every push will trigger a pipeline on the
-   server, which will flood the shared CI/CD cluster.
+6. Push to the server when you're done. Git best practices dictate that you only push your changes after you've tested
+   your feature branch, i.e. try not to commit, then push repeatedly. Every push will trigger a pipeline on the server,
+   which will flood the shared CI/CD cluster.
 
-   Note: We currently have a unique situation with the profile-test-* branches. We must push this branch for it to be
-   mirrored onto GitHub and externally available so that your containers running on EKS can clone your branch with your
-   server profile branches. In this case, use a commit message prefix of "[skip pipeline]" to avoid triggering a CI/CD
-   pipeline.
+   Note: We currently have a unique situation with server profiles. If your change encompasses server profiles, then
+   you must push your branch for it to be mirrored onto AWS Code Commit so that your containers running on AWS EKS can
+   clone your branch with your server profile changes. In this case, use a commit message prefix of "[skip pipeline]"
+   to avoid triggering a CI/CD pipeline.
 
 7. When finally done with your changes, commit your last changeset without the "[skip pipeline]" message so that a
    CI/CD pipeline gets triggered.
+
+   Note: Without a successful CI/CD pipeline, you will not be able to merge your branch into the target branch on the
+   GitLab server.
 
 8. From the GitLab UI, create a Merge Request. Set the target branch for the merge request to your original source
    branch, e.g. v1.2-release-branch. Also check the following boxes:
 
    - "Squash commits when merge request is accepted" to squash all the commits in your feature branch
    - "Delete source branch when merge request is accepted" to delete the feature branch
-
-   Note: The "Delete source branch when merge request is accepted" checkbox will not be available for protected
-   branches (e.g. profile-test-* branches). In that case, tell the project maintainer to delete it for you after the MR
-   is merged.
 
    If you'd like a different commit message for the "squashed commit" than the last commit on the branch, then you may
    do so from the MR interface by clicking on the "Override squash commit message" link.
@@ -77,7 +72,7 @@ Git Workflow:
    the pda-dev channel if you'd like a specific subset of the team to review your changes.
 
 10. Incorporate review feedback in your local feature branch and push those up. They will automatically show up in
-    your MR because it is associated with your branch.
+    your MR because the MR is associated with your branch.
 
 11. Resolve all threads in the MR. Once approved and the pipeline passes, you will be able to merge your changes to the
     target branch by hitting the "Merge" button.
