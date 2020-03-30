@@ -11,13 +11,7 @@ export CLUSTER_NAME="${EKS_CLUSTER_NAME}"
 export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
 
 export CONFIG_PARENT_DIR=aws
-
-if test "${CI_COMMIT_REF_SLUG#profile-test-}" == "${CI_COMMIT_REF_SLUG}" &&
-   test "${CI_COMMIT_REF_SLUG%-release-branch}" == "${CI_COMMIT_REF_SLUG}"; then
-  export CONFIG_REPO_BRANCH=master
-else
-  export CONFIG_REPO_BRANCH=${CI_COMMIT_REF_NAME}
-fi
+export CONFIG_REPO_BRANCH=${CI_COMMIT_REF_NAME}
 
 export ARTIFACT_REPO_URL=s3://${CLUSTER_NAME}-artifacts-bucket
 export PING_ARTIFACT_REPO_URL=https://ping-artifacts.s3-us-west-2.amazonaws.com
@@ -106,7 +100,7 @@ configure_kube() {
 # Configures the aws CLI to be able to talk to the AWS API server based on the following environment variables:
 #
 #   - AWS_ACCESS_KEY_ID
-#   - AWS_ACCESS_KEY_ID
+#   - AWS_SECRET_ACCESS_KEY
 #   - AWS_DEFAULT_REGION
 #   - AWS_ACCOUNT_ROLE_ARN
 #
@@ -120,7 +114,7 @@ configure_aws() {
     return
   fi
 
-  check_env_vars "AWS_ACCESS_KEY_ID" "AWS_ACCESS_KEY_ID" "AWS_DEFAULT_REGION" "AWS_ACCOUNT_ROLE_ARN"
+  check_env_vars "AWS_ACCESS_KEY_ID" "AWS_SECRET_ACCESS_KEY" "AWS_DEFAULT_REGION" "AWS_ACCOUNT_ROLE_ARN"
   HAS_REQUIRED_VARS=${?}
 
   if test ${HAS_REQUIRED_VARS} -ne 0; then

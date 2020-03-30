@@ -5,6 +5,9 @@
 # This script may be used to set up a development or test environment to verify the Kubernetes and Kustomization yaml
 # files either in their present form or after making some local changes to them.
 #
+# Run the script in the following manner:
+#     source <your-env-variables-file>; CONFIG_REPO_BRANCH=$(git rev-parse --abbrev-ref HEAD) ./dev-env.sh
+#
 # ------------
 # Requirements
 # ------------
