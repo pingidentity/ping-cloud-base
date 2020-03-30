@@ -1,3 +1,2 @@
-SERVER_PROFILE_URL=https://gitlab-machine-user-at-705370621539:f3owwAIY0ajfel3X32RqKyfJKvDktDfrbRPBC8kcL+s=@git-codecommit.us-west-2.amazonaws.com/v1/repos/ping-cloud-base
 SERVER_PROFILE_BRANCH=${CONFIG_REPO_BRANCH}
 SERVER_PROFILE_PATH=profiles/${CONFIG_PARENT_DIR}/pingdirectory
