@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+. "${HOOKS_DIR}/pingcommon.lib.sh"
+
+if ! test -z "${OPERATIONAL_MODE}" && test "${OPERATIONAL_MODE}" = "CLUSTERED_CONSOLE"; then
+  run_hook "90-restore-backup-s3.sh"
+fi
