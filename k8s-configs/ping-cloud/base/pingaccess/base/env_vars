@@ -27,3 +27,7 @@ PA_MAX_HEAP=256m
 PA_MIN_YGEN=128m
 PA_MAX_YGEN=128m
 PA_GCOPTION=-XX:-UseParallelGC -XX:MinHeapFreeRatio=20 -XX:MaxHeapFreeRatio=40 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90
+
+# Valid days for the PingAccess Config Query Listener KeyPair.
+# The default if not specified is 365 days.
+CONFIG_QUERY_KP_VALID_DAYS=365

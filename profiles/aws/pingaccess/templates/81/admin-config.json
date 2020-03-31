@@ -1,0 +1,5 @@
+{
+  "hostPort":"${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9090",
+  "httpProxyId": 0,
+  "httpsProxyId": 0
+}
