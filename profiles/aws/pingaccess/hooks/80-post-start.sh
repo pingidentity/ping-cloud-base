@@ -7,26 +7,24 @@ set -x
 
 if test ! -z "${OPERATIONAL_MODE}" && test "${OPERATIONAL_MODE}" = "CLUSTERED_CONSOLE"; then
   
-  # CERT_FLAG is used as a marker file that 1) tracks if server was initially configured and 2) Reload
-  # admin configuration after creating engines keypair certificate. This should occur only once so the 
-  # marker file will be created after these 2 things occur.
+  # ADMIN_CONFIGURATION_COMPLETE is used as a marker file that tracks if server was initially configured.
   #
-  # If CERT_FLAG does not exist then set initial configuration and reload the configuration by using SIGHUP.
-  CERT_FLAG=${OUT_DIR}/instance/certflag
-  if ! test -f "${CERT_FLAG}"; then
+  # If ADMIN_CONFIGURATION_COMPLETE does not exist then set initial configuration.
+  ADMIN_CONFIGURATION_COMPLETE=${OUT_DIR}/instance/ADMIN_CONFIGURATION_COMPLETE
+  if ! test -f "${ADMIN_CONFIGURATION_COMPLETE}"; then
 
     # Wait until pingaccess admin localhost is available
     pingaccess_admin_wait
 
     run_hook "81-import-initial-configuration.sh"
+    if test ${?} -ne 0; then
+      SERVER_PID=$(pgrep -alf java | grep 'run.properties' | awk '{ print $1; }')
+      kill "${SERVER_PID}"
+    fi
 
-    SERVER=$(ps | pgrep sh | awk '{print $1; exit}')
-
-    touch ${CERT_FLAG}
-
-    echo "Reload PingAccess configuration"
-    kill -SIGHUP "${SERVER}"
-
+    touch ${ADMIN_CONFIGURATION_COMPLETE}
   fi
 
 fi
+
+exit 0

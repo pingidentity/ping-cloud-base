@@ -7,9 +7,6 @@ set -x
 
 initializeS3Configuration
 
-# Wait until pingaccess admin localhost is available
-pingaccess_admin_wait
-
 echo "Uploading to location ${BACKUP_URL}"
 
 DST_DIRECTORY="/tmp/k8s-s3-upload-archive"
