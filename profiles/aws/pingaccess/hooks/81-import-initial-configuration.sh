@@ -3,7 +3,7 @@
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 
-set -x
+set -ex
 
 templates_dir_path=${STAGING_DIR}/templates/81
 
@@ -62,3 +62,5 @@ admin_config_payload=$(envsubst < ${templates_dir_path}/admin-config.json)
 admin_config_response=$(make_api_request -s -X PUT \
     -d "${admin_config_payload}" \
     "https://localhost:9000/pa-admin-api/v3/adminConfig")
+
+exit 0

@@ -57,24 +57,6 @@ function pingaccess_admin_wait() {
 }
 
 ########################################################################################################################
-# Makes curl request to PingAccess admin cluster heartbeat page.
-# If request fails, wait for 3 seconds and try again.
-#
-########################################################################################################################
-function pingaccess_engine_wait() {
-    while true; do
-        curl -ss --silent -o /dev/null -k https://${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9090/pa/heartbeat.ping
-        if ! test $? -eq 0 ; then
-            echo "Adding Engine: Server not started, waiting.."
-            sleep 3
-        else
-            echo "PA started, begin adding engine"
-            break
-        fi
-    done
-}
-
-########################################################################################################################
 # Function to install AWS command line tools
 #
 ########################################################################################################################

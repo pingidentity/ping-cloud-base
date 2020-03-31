@@ -43,7 +43,7 @@ data:
         fi
 
         echo "init: waiting for ${WAIT_FOR_NUM_REPLICAS} replicas of ${APP} to be ready"
-
+    
         while true; do
           NUM_READY=$(kubectl get "${DEPLOYMENT}" -o jsonpath='{.status.readyReplicas}')
           if test ! -z ${NUM_READY} && test ${NUM_READY} -ge ${WAIT_FOR_NUM_REPLICAS}; then
