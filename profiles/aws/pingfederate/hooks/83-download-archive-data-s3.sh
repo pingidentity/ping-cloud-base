@@ -42,7 +42,8 @@ DATA_BACKUP_FILE=$( aws s3api list-objects \
   | tr -d '"' )
 
 # If a backup file in s3 exist
-if ! test -z "${DATA_BACKUP_FILE}"; then
+if ! test -z "${DATA_BACKUP_FILE}" && \
+   ! test "${DATA_BACKUP_FILE}" = 'null'; then
 
   # extract only the file name
   DATA_BACKUP_FILE=${DATA_BACKUP_FILE#${DIRECTORY_NAME}/}
