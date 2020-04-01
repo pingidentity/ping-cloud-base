@@ -16,7 +16,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: pingdirectory-backup
-        image: pingidentity/pingdirectory:200109-8.0.0.0
+        image: pingidentity/pingdirectory:2003-8.0.0.1
         command:
         - /opt/in/backup.sh
         env:

@@ -44,7 +44,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: pingaccess-backup
-            image: pingidentity/pingaccess:2001-6.0.0
+            image: pingidentity/pingaccess:2003-6.0.1
             command:
             - /opt/in/backup-archive-data.sh
             envFrom:
