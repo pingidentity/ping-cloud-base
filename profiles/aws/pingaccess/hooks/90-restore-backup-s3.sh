@@ -26,7 +26,8 @@ if ! test -z "${BACKUP_FILE_NAME}" || ! test -f "${OUT_DIR}"/instance/conf/pa.jw
 
   DATA_BACKUP_FILE=
   DATA_BACKUP_FILE_NAME=$( echo "${BACKUP_FILE_NAME}" | tr -d '"' | tr -d '[:space:]' )
-  if ! test -z "${DATA_BACKUP_FILE_NAME}"; then
+  if ! test -z "${DATA_BACKUP_FILE_NAME}" && \
+     ! test "${DATA_BACKUP_FILE_NAME}" = 'null'; then
 
     echo "Attempting to restore backup from S3 specified by the user: ${DATA_BACKUP_FILE_NAME}"
     DATA_BACKUP_FILE_NAME="${DIRECTORY_NAME}/${DATA_BACKUP_FILE_NAME}"
@@ -58,7 +59,8 @@ if ! test -z "${BACKUP_FILE_NAME}" || ! test -f "${OUT_DIR}"/instance/conf/pa.jw
   fi
 
   # If a backup file in s3 exist
-  if ! test -z "${DATA_BACKUP_FILE}"; then
+  if ! test -z "${DATA_BACKUP_FILE}" && \
+     ! test "${DATA_BACKUP_FILE}" = 'null'; then
 
     # extract only the file name
     DATA_BACKUP_FILE=${DATA_BACKUP_FILE#${DIRECTORY_NAME}/}
