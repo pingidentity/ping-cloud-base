@@ -14,11 +14,12 @@ expected_files() {
 actual_files() {
   BUCKET_URL_NO_PROTOCOL=${LOG_ARCHIVE_URL#s3://}
   BUCKET_NAME=$(echo "${BUCKET_URL_NO_PROTOCOL}" | cut -d/ -f1)
+  DAYS_AGO=1
 
   aws s3api list-objects \
     --bucket "${BUCKET_NAME}" \
     --prefix 'pingdirectory/support-data' \
-    --query "Contents[?contains(Key, \`${NAMESPACE}\`)][].Key" \
+    --query "reverse(sort_by(Contents[?LastModified>='${DAYS_AGO}'], &LastModified))[].Key" \
     --profile "${AWS_PROFILE}" |
   tr -d '",[]' |
   cut -d/ -f2 |
