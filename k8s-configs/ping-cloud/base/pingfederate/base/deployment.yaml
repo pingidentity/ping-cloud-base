@@ -57,7 +57,7 @@ spec:
             name: pingfederate-environment-variables
       containers:
       - name: pingfederate-admin
-        image:  pingidentity/pingfederate:10.0.1-edge
+        image: pingidentity/pingfederate:2003-10.0.1
         imagePullPolicy: Always
         env:
         - name:  OPERATIONAL_MODE
@@ -192,7 +192,7 @@ spec:
             name: pingfederate-environment-variables
       containers:
       - name: pingfederate
-        image:  pingidentity/pingfederate:10.0.1-edge
+        image: pingidentity/pingfederate:2003-10.0.1
         imagePullPolicy: Always
         env:
         - name:  OPERATIONAL_MODE

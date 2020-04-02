@@ -125,7 +125,7 @@ testUrls() {
 ########################################################################################################################
 testUrl() {
   log "Testing URL: ${1}"
-  curl -k --max-time 120 ${1} >/dev/null 2>&1
+  curl -k --max-time 300 ${1} >/dev/null 2>&1
   exit_code=${?}
   log "Command exit code: ${exit_code}"
   return ${exit_code}

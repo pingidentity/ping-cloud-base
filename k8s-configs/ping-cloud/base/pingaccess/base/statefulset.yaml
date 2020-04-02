@@ -55,7 +55,7 @@ spec:
             name: pingaccess-environment-variables
       containers:
       - name: pingaccess-admin
-        image: pingidentity/pingaccess:2001-6.0.0
+        image: pingidentity/pingaccess:2003-6.0.1
         imagePullPolicy: Always
         resources:
           requests:
@@ -210,7 +210,7 @@ spec:
             name: pingaccess-environment-variables
       containers:
       - name: pingaccess
-        image: pingidentity/pingaccess:2001-6.0.0
+        image: pingidentity/pingaccess:2003-6.0.1
         imagePullPolicy: Always
         resources:
           requests:
