@@ -6,9 +6,10 @@
 
 test ! -z ${VERBOSE} && set -x
 
+### Begin - export environment variables ###
+
 export REGION="${AWS_DEFAULT_REGION}"
 export CLUSTER_NAME="${EKS_CLUSTER_NAME}"
-export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
 
 export CONFIG_PARENT_DIR=aws
 export CONFIG_REPO_BRANCH=${CI_COMMIT_REF_NAME}
@@ -22,6 +23,14 @@ export NAMESPACE=ping-cloud-${CI_COMMIT_REF_SLUG}
 export AWS_PROFILE=csg
 
 [[ ${CI_COMMIT_REF_SLUG} != master ]] && export ENVIRONMENT=-${CI_COMMIT_REF_SLUG}
+
+### End - export environment variables ###
+
+# Override environment variables with optional file supplied from the outside
+ENV_VARS_FILE="${1}"
+test ! -z "${ENV_VARS_FILE}" && . "${ENV_VARS_FILE}"
+
+export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
 
 FQDN=${ENVIRONMENT}.${TENANT_DOMAIN}
 

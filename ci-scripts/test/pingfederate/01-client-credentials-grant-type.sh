@@ -1,7 +1,10 @@
 #!/bin/bash
 
+SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
+. "${SCRIPT_HOME}"/../../common.sh "${1}"
+
 # FIXME Data needs preloading to CICD Bucket and OAuth client created 
-echo "test disabled pending new config setup"
+echo "Test disabled pending new config setup"
 exit 0
 
 #
@@ -49,10 +52,6 @@ exit 0
 #
 #
 #curl  -v -k -u "Administrator:2FederateM0re" -H "X-XSRF-Header: PingFederate"  -H "Accept: application/json" -H "content-type: application/json" -d "'${client}'" https://pingfederate-admin-raypf.ping-demo.com:443/pf-admin-api/v1/oauth/clients
-
-
-SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
-. ${SCRIPT_HOME}/../../common.sh
 
 URL="${PINGFEDERATE_AUTH_ENDPOINT}/as/token.oauth2?grant_type=client_credentials&scope="
 log "Attempting to obtain access token from ${URL}"
