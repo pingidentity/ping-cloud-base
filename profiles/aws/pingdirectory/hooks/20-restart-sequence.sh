@@ -15,6 +15,12 @@ test -f "${HOOKS_DIR}/pingdata.lib.sh" && . "${HOOKS_DIR}/pingdata.lib.sh"
 
 echo "Restarting container"
 
+# Before running any ds tools, remove java.properties and re-create it
+# for the current JVM.
+echo "Removing java.properties and resetting args for current JVM"
+rm -f "${SERVER_ROOT_DIR}/config/java.properties"
+dsjavaproperties
+
 # if this hook is provided it can be executed early on
 run_hook "21-update-server-profile.sh"
 
