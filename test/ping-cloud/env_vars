@@ -1,4 +1,4 @@
-SERVER_PROFILE_URL=https://gitlab-machine-user-at-705370621539:f3owwAIY0ajfel3X32RqKyfJKvDktDfrbRPBC8kcL+s=@git-codecommit.us-west-2.amazonaws.com/v1/repos/ping-cloud-base
+SERVER_PROFILE_URL=https://server-profile-user-at-705370621539:8pCzGIXG3k+EOV1hyeTnPoj3aRY8LR3z+C1CSd7iiaQ=@git-codecommit.us-west-2.amazonaws.com/v1/repos/ping-cloud-base
 
 PA_ADMIN_PUBLIC_HOSTNAME=pingaccess-admin${ENVIRONMENT}.${TENANT_DOMAIN}
 PA_ENGINE_PUBLIC_HOSTNAME=pingaccess${ENVIRONMENT}.${TENANT_DOMAIN}
