@@ -70,9 +70,7 @@ if ! test -z "${DATA_BACKUP_FILE}" && \
   echo "Download file name: ${DATA_BACKUP_FILE}"
 
   # Print listed files from drop-in-deployer
-  DST_DIR_CONTENTS=$(mktemp)
-  ls ${OUT_DIR}/instance/server/default/data/drop-in-deployer > ${DST_DIR_CONTENTS}
-  cat ${DST_DIR_CONTENTS}
+  ls ${OUT_DIR}/instance/server/default/data/drop-in-deployer
 
 else
 

@@ -1,23 +1,27 @@
-#
-# This defines the pingfederate runtime engine  deployment.
-#
+# This defines the pingfederate admin statefulset.
+
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: pingfederate
+  name: pingfederate-admin
   labels:
     cluster: pingfederate-cluster
-    role: pingfederate-engine
+    role: pingfederate-admin
 spec:
+  serviceName: pingfederate-admin
   selector:
     matchLabels:
-      role: pingfederate-engine
+      role: pingfederate-admin
+  replicas: 1
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
   template:
     metadata:
-      name: pingfederate-engine
+      name: pingfederate-admin
       labels:
         cluster: pingfederate-cluster
-        role: pingfederate-engine
+        role: pingfederate-admin
       annotations:
         lastUpdateReason: "NA"
     spec:
@@ -50,21 +54,16 @@ spec:
         - configMapRef:
             name: pingfederate-environment-variables
       containers:
-      - name: pingfederate
+      - name: pingfederate-admin
         image: pingidentity/pingfederate:2003-10.0.1
         imagePullPolicy: Always
         env:
         - name: OPERATIONAL_MODE
-          value: CLUSTERED_ENGINE
+          value: CLUSTERED_CONSOLE
         - name: PF_DNS_PING_NAMESPACE
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        - name: PF_ADMIN_USER_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: pingcommon-passwords
-              key: PF_ADMIN_USER_PASSWORD
         - name: PF_LDAP_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -79,10 +78,10 @@ spec:
         resources:
           requests:
             memory: "2Gi"
-            cpu: "1"
+            cpu: "2"
           limits:
             memory: "2Gi"
-            cpu: "1"
+            cpu: "2"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
@@ -90,6 +89,8 @@ spec:
         - name: data-dir
           mountPath: /usr/local/bin/kubectl
           subPath: kubectl
+        - name: out-dir
+          mountPath: /opt/out
         - name: pingfederate-license
           mountPath: /opt/in/instance/server/default/conf/pingfederate.lic
           subPath: pingfederate.lic
@@ -104,7 +105,7 @@ spec:
           periodSeconds: 30
           failureThreshold: 10
         ports:
-        - containerPort: 9031
+        - containerPort: 9999
       volumes:
       - name: ssh-dir
         emptyDir: {}
@@ -124,8 +125,26 @@ spec:
           name: known-hosts-config
           optional: true
           defaultMode: 0644
+      - name: out-dir
+        persistentVolumeClaim:
+          claimName: out-dir
       - name: pingfederate-license
         secret:
           secretName: pingfederate-license
           optional: true
           defaultMode: 0400
+      - name: pingaccess-passwords
+        secret:
+          secretName: pingaccess-passwords
+          optional: true
+          defaultMode: 0400
+  volumeClaimTemplates:
+  - metadata:
+      name: out-dir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: pingfederate-gp2
+      resources:
+        requests:
+          storage: 20Gi

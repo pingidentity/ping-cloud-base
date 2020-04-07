@@ -6,14 +6,19 @@
 # Arguments
 #   $@ -> The URL and additional needed data to make request
 ########################################################################################################################
-function make_api_request()
-{
-    curl -k --retry ${API_RETRY_LIMIT} --max-time ${API_TIMEOUT_WAIT} --retry-delay 1 --retry-connrefuse \
-        -u Administrator:${PF_LDAP_PASSWORD} -H "X-Xsrf-Header: PingFederate " "$@"
-    if test ! $? -eq 0; then
-        echo "Admin API connection refused"
-        exit 1
-    fi
+function make_api_request() {
+  curl -k \
+    --retry "${API_RETRY_LIMIT}" \
+    --max-time "${API_TIMEOUT_WAIT}" \
+    --retry-delay 1 \
+    --retry-connrefused \
+    -u "${PF_ADMIN_USER_USERNAME}:${PF_ADMIN_USER_PASSWORD}" \
+    -H 'X-Xsrf-Header: PingFederate' "$@"
+
+  RESULT=$?
+  echo "Admin API request status: ${RESULT}"
+
+  return "${RESULT}"
 }
 
 ########################################################################################################################
@@ -22,8 +27,7 @@ function make_api_request()
 # Arguments
 #   N/A
 ########################################################################################################################
-function installTools()
-{
+function installTools() {
    if [ -z "$(which aws)" ]; then
       #   
       #  Install AWS platform specific tools
@@ -42,8 +46,10 @@ function installTools()
 # Function to obfuscate LDAP password
 #---------------------------------------------------------------------------------------------
 
-function obfuscatePassword()
-{
+function obfuscatePassword() {
+  currentDir="$(pwd)"
+  cd "${SERVER_ROOT_DIR}/bin"
+
    #
    # Ensure Java home is set
    #
@@ -57,7 +63,7 @@ function obfuscatePassword()
    #
    # Obfuscate the ldap password
    #
-   export PF_LDAP_PASSWORD_OBFUSCATED=$(sh ./obfuscate.sh  ${PF_LDAP_PASSWORD}| tr -d '\n')
+   export PF_LDAP_PASSWORD_OBFUSCATED=$(sh ./obfuscate.sh "${PF_LDAP_PASSWORD}" | tr -d '\n')
    #
    # Inject obfuscated password into ldap properties file. The password variable is protected with a ${_DOLLAR_}
    # prefix because the file is substituted twice the first pass sets the DN and resets the '$' on the password
@@ -66,10 +72,14 @@ function obfuscatePassword()
    mv ldap.properties ldap.properties.subst
    envsubst < ldap.properties.subst > ldap.properties
    rm ldap.properties.subst
+
    PF_LDAP_PASSWORD_OBFUSCATED="${PF_LDAP_PASSWORD_OBFUSCATED:8}"
+
    mv ../server/default/data/pingfederate-ldap-ds.xml ../server/default/data/pingfederate-ldap-ds.xml.subst
    envsubst < ../server/default/data/pingfederate-ldap-ds.xml.subst > ../server/default/data/pingfederate-ldap-ds.xml
    rm ../server/default/data/pingfederate-ldap-ds.xml.subst
+
+   cd "${currentDir}"
 }
 
 ########################################################################################################################
@@ -103,4 +113,3 @@ function initializeS3Configuration() {
     export TARGET_URL="${BACKUP_URL}/${DIRECTORY_NAME}"
   fi
 }
-

@@ -100,7 +100,7 @@ patchesStrategicMerge:
 ### Product passwords ###
 
 # Supported keys:
-# Exported as environment variables: PF_LDAP_PASSWORD
+# Exported as environment variables: PF_ADMIN_USER_PASSWORD, PF_LDAP_PASSWORD
 - |-
   apiVersion: v1
   kind: Secret
@@ -110,7 +110,7 @@ patchesStrategicMerge:
 
 # Supported keys:
 # Mounted as files: root-user-password, admin-user-password, encryption-password
-# Exported as environment variables: PF_ADMIN_USER_PASSWORD, P14C_ENVIRONMENT_ID, P14C_CLIENT_ID, P14C_CLIENT_SECRET
+# Exported as environment variables: P14C_ENVIRONMENT_ID, P14C_CLIENT_ID, P14C_CLIENT_SECRET
 - |-
   apiVersion: v1
   kind: Secret
@@ -181,7 +181,7 @@ patchesJson6902:
 - target:
     group: apps
     version: v1
-    kind: Deployment
+    kind: StatefulSet
     name: pingfederate-admin
   patch: |
     - op: add
