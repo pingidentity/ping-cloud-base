@@ -69,6 +69,11 @@ spec:
             secretKeyRef:
               name: pingcommon-passwords
               key: PF_LDAP_PASSWORD
+        - name: PF_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingcommon-passwords
+              key: PF_ADMIN_USER_PASSWORD
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
