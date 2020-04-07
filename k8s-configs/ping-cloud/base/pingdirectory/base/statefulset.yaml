@@ -147,16 +147,22 @@ spec:
         readinessProbe:
           exec:
             command:
-            - /opt/staging/hooks/85-readiness.sh
-          # Each PD pod is expected to be ready within 10 minutes. We'll check every 30s.
-          periodSeconds: 30
-          failureThreshold: 20
+              - /opt/staging/hooks/85-readiness.sh
+          # Do not start the readiness probe for 3 minutes after starting the
+          # container because PD will never finish its start/restart sequence
+          # before then, in practice. Run the readiness probe every 5 seconds
+          # and tolerate up to 3 failures, so PD cannot falsely be considered
+          # READY for more than 15 seconds in a row.
+          initialDelaySeconds: 180
+          periodSeconds: 5
+          failureThreshold: 3
         livenessProbe:
           exec:
             command: [ liveness.sh ]
           # Health checks will kick in 5 minutes after the pod starts up.
           initialDelaySeconds: 300
           periodSeconds: 30
+          failureThreshold: 3
         lifecycle:
           preStop:
             exec:
