@@ -96,13 +96,15 @@ spec:
         readinessProbe:
           exec:
             command: [ liveness.sh ]
-          periodSeconds: 30
-          failureThreshold: 10
+          initialDelaySeconds: 60
+          periodSeconds: 5
+          failureThreshold: 3
         livenessProbe:
           exec:
             command: [ liveness.sh ]
+          initialDelaySeconds: 60
           periodSeconds: 30
-          failureThreshold: 10
+          failureThreshold: 3
         ports:
         - containerPort: 9031
       volumes:
