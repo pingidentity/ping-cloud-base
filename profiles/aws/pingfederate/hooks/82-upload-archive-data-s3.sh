@@ -24,7 +24,7 @@ mkdir -p ${DST_DIRECTORY}
 
 # Make request to admin API and export latest data
 make_api_request -X GET \
-  https://${PINGFEDERATE_ADMIN_SERVER}:${PINGFEDERATE_ADMIN_PORT}/pf-admin-api/v1/configArchive/export \
+  https://localhost:${PINGFEDERATE_ADMIN_PORT}/pf-admin-api/v1/configArchive/export \
   -o ${DST_DIRECTORY}/${DST_FILE}
 
 # Validate admin API call was successful and that zip isn't corrupted

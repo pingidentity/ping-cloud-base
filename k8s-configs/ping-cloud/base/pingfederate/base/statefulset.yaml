@@ -96,7 +96,8 @@ spec:
           subPath: pingfederate.lic
         readinessProbe:
           exec:
-            command: [ liveness.sh ]
+            command:
+            - /opt/staging/hooks/85-readiness.sh
           periodSeconds: 30
           failureThreshold: 10
         livenessProbe:
