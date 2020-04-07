@@ -113,7 +113,7 @@ spec:
         - name: PF_ADMIN_USER_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: pingdirectory-passwords
+              name: pingcommon-passwords
               key: PF_ADMIN_USER_PASSWORD
         - name: PF_LDAP_PASSWORD
           valueFrom:

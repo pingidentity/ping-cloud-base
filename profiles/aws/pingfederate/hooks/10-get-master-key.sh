@@ -5,83 +5,34 @@ ${VERBOSE} && set -x
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 
+MASTER_KEY_FILE=pf.jwk
+MASTER_KEY_PATH="${SERVER_ROOT_DIR}/server/default/data/${MASTER_KEY_FILE}"
 
 #---------------------------------------------------------------------------------------------
 # Main Script 
 #---------------------------------------------------------------------------------------------
 
-#
-# Run script from known location 
-#
-currentDir="$(pwd)"
-cd /opt/out/instance/bin
+# NOTE: we wait through the WAIT_FOR_SERVICES variable in the engine's init container. So the admin
+# must be running if we're here.
 
-#
-# Setup S3 bucket path components 
-#
-directory="$(echo ${PING_PRODUCT} | tr '[:upper:]' '[:lower:]')"
-target="${BACKUP_URL}/${directory}"
-bucket="${BACKUP_URL#s3://}"
-masterKey="${BACKUP_URL}/${directory}/pf.jwk"
+echo "Fetching master key from the admin server"
 
-#
-# Install AWS tools
-#
-installTools 
+# Fetch the master key from the admin server
+EXPORT_DIR=$(mktemp -d)
+EXPORT_ZIP_FILE="${EXPORT_DIR}/export.zip"
 
-#
-# Wait for Admin node to become ready so we can get configuration. If the engine comes up first
-# and no other engine is already running then it will fail to obtain configuration as it is the
-# first server to join the cluster. Another server joining the cluster does *not* trigger a
-# a fresh attempt to obtain configuration and manual intervention is required to push the
-# configuration from the admin server. This code attempts to minimize the chance of this 
-# happening without completely blocking start-up.
-# 
-# The worst case scenario is an enging scaling event with the admin server down. In this case it
-# could take the full timebox duration before the sever starts when it could get configuration
-# from another engine. The admin server usually starts within 60-90 seconds.
-#
-echo "Waiting up to 3 minutes for admin server to become ready"
-count=180
-while [ "$(kubectl get pods|grep "pingfederate-admin"|awk '{print $2}'|grep "1/1" >/dev/null 2>&1;echo "$?")" != "0" ] &&  [ "${count}" -gt "0" ]; do
-   sleep 1
-   count=$(( count - 1 ))
-done   
+make_api_request -X GET \
+  "https://${PINGFEDERATE_ADMIN_SERVER}:${PINGFEDERATE_ADMIN_PORT}/pf-admin-api/v1/configArchive/export" \
+  -o "${EXPORT_ZIP_FILE}"
 
-#
-# If the Pingfederate folder does not exist in the s3 bucket, create it
-# 
-if [ "$(aws s3 ls ${BACKUP_URL} > /dev/null 2>&1;echo $?)" = "1" ]; then
-   aws s3api put-object --bucket "${bucket}" --key "${directory}/"
-fi
+RESULT=$?
+test "${RESULT}" -ne 0 && exit "${RESULT}"
 
-#
-# We may already have a master key on disk if one was supplied through a secret or the 'in'
-# volume. If that is the case we will use that key during obfuscation. If one does not 
-# exist we check to see if one was previously uploaded to s3
-#
-if ! [ -f ../server/default/data/pf.jwk ]; then
-   echo "No local master key found check s3 for a pre-existing key"
-   result="$(aws s3 ls ${masterKey} > /dev/null 2>&1;echo $?)"
-   if [ "${result}" = "0" ]; then
-      echo "A master key does exist on S3 attempt to retrieve it"
-      if [ "$(aws s3 cp "${masterKey}" ../server/default/data/pf.jwk > /dev/null 2>&1;echo $?)" != "0" ]; then
-         echo "Retrieval was unsuccessful - crash the container to prevent spurious key creation"
-         exit 1
-      else
-         echo "Pre-existing master key found - using it"
-         obfuscatePassword
-      fi
-   elif [ "${result}" != "1" ]; then
-      echo "Unexpected error accessing S3 - crash the container to prevent spurious key creation"
-      aws s3 ls ${masterKey}
-      exit 1
-   else
-      echo "No pre-existing master key found - crash the container to prevent spurious key creation"
-      exit 1
-   fi 
-else
-   echo "A pre-existing master key was found on disk - using it"
-   obfuscatePassword
-fi
-cd "${currentDir}"
+echo "Extracting config export to ${EXPORT_DIR}"
+unzip -o "${EXPORT_ZIP_FILE}" -d "${EXPORT_DIR}"
+
+find "${EXPORT_DIR}" -type f -name "${MASTER_KEY_FILE}" | xargs -I {} cp {} "${MASTER_KEY_PATH}"
+test ! -f "${MASTER_KEY_PATH}" && exit 1
+
+chmod 400 "${MASTER_KEY_PATH}"
+obfuscatePassword

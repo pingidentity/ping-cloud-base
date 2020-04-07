@@ -5,7 +5,6 @@ ${VERBOSE} && set -x
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 test -f "${HOOKS_DIR}/pingdata.lib.sh" && . "${HOOKS_DIR}/pingdata.lib.sh"
 
-export certificateOptions=$(getCertificateOptions)
 export encryptionOption=$(getEncryptionOption)
 export jvmOptions=$(getJvmOptions)
 
