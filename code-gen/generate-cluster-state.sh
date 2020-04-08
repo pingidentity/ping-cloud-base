@@ -376,9 +376,11 @@ export ROUTE53_IRSA_ARN="${ROUTE53_IRSA_ARN}"
 test ! -z ${S3_IRSA_ARN} && export S3_IRSA_ARN_KEY_AND_VALUE="eks.amazonaws.com/role-arn: ${S3_IRSA_ARN}"
 test ! -z ${ROUTE53_IRSA_ARN} && export ROUTE53_IRSA_ARN_KEY_AND_VALUE="eks.amazonaws.com/role-arn: ${ROUTE53_IRSA_ARN}"
 
-export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
+PING_CLOUD_BASE_COMMIT_SHA=$(git rev-parse HEAD)
 CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 test "${CURRENT_GIT_BRANCH}" = 'HEAD' && CURRENT_GIT_BRANCH=$(git describe --tags)
+
+export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
 export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-${CURRENT_GIT_BRANCH}}"
 
 export REGISTRY_NAME="${REGISTRY_NAME:-docker.io}"
@@ -453,6 +455,7 @@ mkdir -p "${CLUSTER_STATE_DIR}"
 
 cp ../.gitignore "${CLUSTER_STATE_DIR}"
 cp -pr ../profiles/aws/. "${CLUSTER_STATE_DIR}"/profiles
+echo "${PING_CLOUD_BASE_COMMIT_SHA}" > "${TARGET_DIR}/pcb-commit-sha.txt"
 
 # Now generate the yaml files for each environment
 ENVIRONMENTS='dev test stage prod'
