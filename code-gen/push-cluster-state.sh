@@ -61,6 +61,7 @@ ALL_ENVIRONMENTS='dev test stage prod'
 ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
 GENERATED_CODE_DIR="${GENERATED_CODE_DIR:-/tmp/sandbox}"
 PUSH_RETRY_COUNT="${PUSH_RETRY_COUNT:-30}"
+PCB_COMMIT_SHA=$(cat "${GENERATED_CODE_DIR}"/pcb-commit-sha.txt)
 
 for ENV in ${ENVIRONMENTS}; do
   echo "Processing ${ENV}"
@@ -95,7 +96,7 @@ for ENV in ${ENVIRONMENTS}; do
   cp -pr "${ENV_CODE_DIR}"/. .
 
   git add .
-  git commit -m 'Initial commit'
+  git commit -m "Initial commit - ping-cloud-base@${PCB_COMMIT_SHA}"
   push_with_retries "${PUSH_RETRY_COUNT}" "${GIT_BRANCH}"
 
   echo
