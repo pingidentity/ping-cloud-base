@@ -5,18 +5,26 @@
 #
 ########################################################################################################################
 function make_api_request() {
-    curl -k \
+    http_code=$(curl -k -o ${OUT_DIR}/api_response.txt -w "%{http_code}" \
          --retry ${API_RETRY_LIMIT} \
          --max-time ${API_TIMEOUT_WAIT} \
          --retry-delay 1 \
          --retry-connrefused \
          -u ${PA_ADMIN_USER_USERNAME}:${PA_ADMIN_USER_PASSWORD} \
-         -H "X-Xsrf-Header: PingAccess " "$@"
+         -H "X-Xsrf-Header: PingAccess " "$@")
 
     if test ! $? -eq 0; then
         echo "Admin API connection refused"
         exit 1
     fi
+
+    if test ${http_code} -ge "300"; then
+        echo "API call returned HTTP status code: ${http_code}"
+        cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
+        exit 1
+    fi
+
+    cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
 }
 
 ########################################################################################################################
@@ -24,12 +32,41 @@ function make_api_request() {
 #
 ########################################################################################################################
 function make_initial_api_request() {
-    curl -k \
+    http_code=$(curl -k -o ${OUT_DIR}/api_response.txt -w "%{http_code}" \
          --retry ${API_RETRY_LIMIT} \
          --max-time ${API_TIMEOUT_WAIT} \
          --retry-delay 1 \
          --retry-connrefused \
          -u ${PA_ADMIN_USER_USERNAME}:${DEFAULT_PA_ADMIN_USER_PASSWORD} \
+         -H "X-Xsrf-Header: PingAccess " "$@")
+
+    if test ! $? -eq 0; then
+        echo "Admin API connection refused"
+        exit 1
+    fi
+
+    if test ${http_code} -ge "300"; then
+        echo "API call returned HTTP status code: ${http_code}"
+        cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
+        exit 1
+    fi
+
+    cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
+}
+
+########################################################################################################################
+# Used for API calls that specify an output file.
+# When using this function the existence of the output file
+# should be used to verify this function succeeded.
+#
+########################################################################################################################
+function make_api_request_download() {
+    curl -k \
+         --retry ${API_RETRY_LIMIT} \
+         --max-time ${API_TIMEOUT_WAIT} \
+         --retry-delay 1 \
+         --retry-connrefused \
+         -u ${PA_ADMIN_USER_USERNAME}:${PA_ADMIN_USER_PASSWORD} \
          -H "X-Xsrf-Header: PingAccess " "$@"
 
     if test ! $? -eq 0; then

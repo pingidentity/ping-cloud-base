@@ -9,9 +9,6 @@ if test ! -z "${OPERATIONAL_MODE}" && test "${OPERATIONAL_MODE}" = "CLUSTERED_EN
 
     echo "This node is an engine..."
 
-    # Wait until pingaccess admin is available
-    pingaccess_engine_wait
-
     # Retrieving CONFIG QUERY id
     OUT=$( make_api_request https://${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9000/pa-admin-api/v3/httpsListeners )
     CONFIG_QUERY_LISTENER_KEYPAIR_ID=$( jq -n "$OUT" | jq '.items[] | select(.name=="CONFIG QUERY") | .keyPairId' )
@@ -49,7 +46,7 @@ if test ! -z "${OPERATIONAL_MODE}" && test "${OPERATIONAL_MODE}" = "CLUSTERED_EN
     # Download Engine Configuration
     echo "ENGINE_ID:"${ENGINE_ID}
     echo "Retrieving the engine config"
-    make_api_request -X POST \
+    make_api_request_download -X POST \
     https://${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9000/pa-admin-api/v3/engines/${ENGINE_ID}/config \
     -o engine-config.zip
 
