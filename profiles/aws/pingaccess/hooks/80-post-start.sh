@@ -16,7 +16,7 @@ if test ! -z "${OPERATIONAL_MODE}" && test "${OPERATIONAL_MODE}" = "CLUSTERED_CO
     # Wait until pingaccess admin localhost is available
     pingaccess_admin_wait
 
-    run_hook "81-import-initial-configuration.sh"
+    sh "${HOOKS_DIR}/81-import-initial-configuration.sh"
     if test ${?} -ne 0; then
       SERVER_PID=$(pgrep -alf java | grep 'run.properties' | awk '{ print $1; }')
       kill "${SERVER_PID}"

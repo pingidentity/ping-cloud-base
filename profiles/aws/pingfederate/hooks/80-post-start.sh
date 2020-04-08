@@ -5,6 +5,11 @@ ${VERBOSE} && set -x
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 
+if test "${OPERATIONAL_MODE}" != "CLUSTERED_CONSOLE"; then
+  echo "post-start: skipping post-start on engine"
+  exit 0
+fi
+
 echo "post-start: starting admin post-start initialization"
 
 # Remove the marker file before running post-start initialization.
@@ -17,12 +22,18 @@ wait_for_server_ready
 
 # Upload a backup right away after starting the server.
 echo "post-start: uploading data backup to s3"
-run_hook "82-upload-archive-data-s3.sh"
+sh "${HOOKS_DIR}/82-upload-archive-data-s3.sh"
 
-if test $? -eq 0; then
+BACKUP_STATUS=${?}
+echo "post-start: data backup status: ${BACKUP_STATUS}"
+
+# Write the marker file if post-start succeeds.
+if test "${BACKUP_STATUS}" -eq 0; then
   touch "${POST_START_INIT_MARKER_FILE}"
   exit 0
 fi
 
+# Kill the container if post-start fails.
 echo "post-start: admin post-start initialization failed"
-exit 80
+SERVER_PID=$(pgrep -alf java | grep 'run.properties' | awk '{ print $1; }')
+kill "${SERVER_PID}"
