@@ -5,16 +5,24 @@
 
 ${VERBOSE} && set -x
 
-echo "Uploading to location ${BACKUP_URL}"
+echo "Uploading to location ${LOG_ARCHIVE_URL}"
 
 initializeS3Configuration
-
-TARGET_URL="${BACKUP_URL%/*}/${DIRECTORY_NAME}"
 
 cd "${OUT_DIR}"
 
 sh ${SERVER_ROOT_DIR}/bin/collect-support-data.sh
 CSD_OUT=$(find . -name support\*zip -type f | sort | tail -1)
+
+BUCKET_URL_NO_PROTOCOL=${LOG_ARCHIVE_URL#s3://}
+BUCKET_NAME=$(echo "${BUCKET_URL_NO_PROTOCOL}" | cut -d/ -f1)
+DIRECTORY_NAME=$(echo ${PING_PRODUCT} | tr '[:upper:]' '[:lower:]')
+
+if test "${LOG_ARCHIVE_URL}" == */${DIRECTORY_NAME}; then
+  TARGET_URL="${LOG_ARCHIVE_URL}"
+else
+  TARGET_URL="${LOG_ARCHIVE_URL%/}/${DIRECTORY_NAME}"
+fi
 
 echo "Creating directory ${DIRECTORY_NAME} under bucket ${BUCKET_NAME}"
 aws s3api put-object --bucket "${BUCKET_NAME}" --key "${DIRECTORY_NAME}"/
