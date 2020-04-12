@@ -32,6 +32,16 @@ function wait_for_server_ready() {
 }
 
 ########################################################################################################################
+# Wait for the local PingFederate admin server to be up and running waiting 3 seconds between each check.
+########################################################################################################################
+function wait_for_server_ready() {
+  while true; do
+    liveness.sh && return 0
+    sleep 3s
+  done
+}
+
+########################################################################################################################
 # Function to install AWS command line tools
 #
 # Arguments
