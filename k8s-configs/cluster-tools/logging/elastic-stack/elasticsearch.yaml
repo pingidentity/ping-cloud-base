@@ -56,6 +56,28 @@ spec:
       labels:
         app: elasticsearch
     spec:
+      affinity:
+        podAntiAffinity:
+          # Add a hard requirement for each elastic-search pod to be deployed to a different node
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - elasticsearch
+            topologyKey: "kubernetes.io/hostname"
+          # Add a soft requirement for each elastic-search pod to be deployed to a different AZ
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - elasticsearch
+              topologyKey: "failure-domain.beta.kubernetes.io/zone"
       containers:
       - name: elasticsearch
         image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
