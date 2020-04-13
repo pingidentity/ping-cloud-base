@@ -1,5 +1,39 @@
-- op: replace
-  path: /metadata/annotations
-  value:
-    service.beta.kubernetes.io/aws-load-balancer-type: nlb
-    external-dns.alpha.kubernetes.io/hostname: pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+kind: Service
+apiVersion: v1
+metadata:
+  name: pingdirectory-0-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pingdirectory-0
+  ports:
+    - protocol: TCP
+      port: 1636
+      targetPort: ldaps
+      name: ldaps
+    - protocol: TCP
+      port: 1989
+      targetPort: repl
+      name: repl
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pingdirectory-1-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pingdirectory-1
+  ports:
+    - protocol: TCP
+      port: 1636
+      targetPort: ldaps
+      name: ldaps
+    - protocol: TCP
+      port: 1989
+      targetPort: repl
+      name: repl

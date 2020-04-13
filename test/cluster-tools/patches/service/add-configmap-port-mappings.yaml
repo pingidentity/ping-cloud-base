@@ -1,0 +1,29 @@
+- op: add
+  path: /data
+  value:
+    6360: "${NAMESPACE}/pingdirectory-0-service:1636"
+    9890: "${NAMESPACE}/pingdirectory-0-service:1989"
+
+    6361: "${NAMESPACE}/pingdirectory-1-service:1636"
+    9891: "${NAMESPACE}/pingdirectory-1-service:1989"
+
+    6362: "${NAMESPACE}/pingdirectory-2-service:1636"
+    9892: "${NAMESPACE}/pingdirectory-2-service:1989"
+
+    6363: "${NAMESPACE}/pingdirectory-3-service:1636"
+    9893: "${NAMESPACE}/pingdirectory-3-service:1989"
+
+    6364: "${NAMESPACE}/pingdirectory-4-service:1636"
+    9894: "${NAMESPACE}/pingdirectory-4-service:1989"
+
+    6365: "${NAMESPACE}/pingdirectory-5-service:1636"
+    9895: "${NAMESPACE}/pingdirectory-5-service:1989"
+
+    6366: "${NAMESPACE}/pingdirectory-6-service:1636"
+    9896: "${NAMESPACE}/pingdirectory-6-service:1989"
+
+    6367: "${NAMESPACE}/pingdirectory-7-service:1636"
+    9897: "${NAMESPACE}/pingdirectory-7-service:1989"
+
+    6368: "${NAMESPACE}/pingdirectory-8-service:1636"
+    9898: "${NAMESPACE}/pingdirectory-8-service:1989"
