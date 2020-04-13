@@ -14,7 +14,7 @@ mkdir -p ${DST_DIRECTORY}
 cd ${DST_DIRECTORY}
 
 # Make request to admin API and backup latest data
-make_api_request -OJ -X GET https://localhost:9000/pa-admin-api/v3/backup
+make_api_request_download -OJ -X GET https://localhost:9000/pa-admin-api/v3/backup
 API_RESULT=${?}
 
 # Get the name of the backup file
