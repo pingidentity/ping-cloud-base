@@ -37,3 +37,150 @@ spec:
       port: 1989
       targetPort: repl
       name: repl
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pingdirectory-2-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pingdirectory-2
+  ports:
+    - protocol: TCP
+      port: 1636
+      targetPort: ldaps
+      name: ldaps
+    - protocol: TCP
+      port: 1989
+      targetPort: repl
+      name: repl
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pingdirectory-3-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pingdirectory-3
+  ports:
+    - protocol: TCP
+      port: 1636
+      targetPort: ldaps
+      name: ldaps
+    - protocol: TCP
+      port: 1989
+      targetPort: repl
+      name: repl
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pingdirectory-4-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pingdirectory-4
+  ports:
+    - protocol: TCP
+      port: 1636
+      targetPort: ldaps
+      name: ldaps
+    - protocol: TCP
+      port: 1989
+      targetPort: repl
+      name: repl
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pingdirectory-5-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pingdirectory-5
+  ports:
+    - protocol: TCP
+      port: 1636
+      targetPort: ldaps
+      name: ldaps
+    - protocol: TCP
+      port: 1989
+      targetPort: repl
+      name: repl
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pingdirectory-6-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pingdirectory-6
+  ports:
+    - protocol: TCP
+      port: 1636
+      targetPort: ldaps
+      name: ldaps
+    - protocol: TCP
+      port: 1989
+      targetPort: repl
+      name: repl
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pingdirectory-7-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pingdirectory-7
+  ports:
+    - protocol: TCP
+      port: 1636
+      targetPort: ldaps
+      name: ldaps
+    - protocol: TCP
+      port: 1989
+      targetPort: repl
+      name: repl
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pingdirectory-8-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pingdirectory-8
+  ports:
+    - protocol: TCP
+      port: 1636
+      targetPort: ldaps
+      name: ldaps
+    - protocol: TCP
+      port: 1989
+      targetPort: repl
+      name: repl
