@@ -68,7 +68,8 @@ change_pf_user_passwords() {
 # be added on this server.
 #
 # Arguments
-#   ${1} ->  The optional target host to which to add the user base entry. Defaults to this server, if not provided.
+#   ${1} -> The optional target host to which to add the user base entry. Defaults to this server, if not provided.
+#   ${2} -> The optional target port. Defaults to the value of the LDAPS_PORT environment variable, if not provided.
 ########################################################################################################################
 add_base_entry() {
   COMPUTED_DOMAIN=$(echo "${USER_BASE_DN}" | sed 's/^dc=\([^,]*\).*/\1/')
@@ -107,10 +108,13 @@ EOF
   cat "${USER_BASE_ENTRY_LDIF}"
 
   TARGET_HOST=${1}
-  test -z "${TARGET_HOST}" && TARGET_HOST=$(hostname)
+  TARGET_PORT=${2}
 
-  echo "post-start: adding user entry in ${USER_BASE_ENTRY_LDIF} on ${TARGET_HOST}"
-  ldapmodify --defaultAdd --hostname "${TARGET_HOST}" --ldifFile "${USER_BASE_ENTRY_LDIF}"
+  test -z "${TARGET_HOST}" && TARGET_HOST=$(hostname)
+  test -z "${TARGET_PORT}" && TARGET_PORT="${LDAPS_PORT}"  
+
+  echo "post-start: adding user entry in ${USER_BASE_ENTRY_LDIF} on ${TARGET_HOST}:${TARGET_PORT}"
+  ldapmodify --defaultAdd --hostname "${TARGET_HOST}" --port "${TARGET_PORT}" --ldifFile "${USER_BASE_ENTRY_LDIF}"
 
   modifyStatus=$?
   echo "post-start: add user base entry status: ${modifyStatus}"
@@ -123,17 +127,22 @@ EOF
 # is checked.
 #
 # Arguments
-#   ${1} ->  The optional target host to check. Defaults to this server, if not provided.
+#   ${1} -> The optional target host to check. Defaults to this server, if not provided.
+#   ${2} -> The optional target port. Defaults to the value of the LDAPS_PORT environment variable, if not provided.
 ########################################################################################################################
 does_base_entry_exist() {
   TARGET_HOST=${1}
+  TARGET_PORT=${2} 
+
   test -z "${TARGET_HOST}" && TARGET_HOST=$(hostname)
+  test -z "${TARGET_PORT}" && TARGET_PORT="${LDAPS_PORT}"
 
   # It may take the user backend a few seconds to initialize after the server is started
   RETRY_COUNT=5
 
   for ATTEMPT in $(seq 1 "${RETRY_COUNT}"); do
-    if ldapsearch --hostname "${TARGET_HOST}" --baseDN "${USER_BASE_DN}" --searchScope base '(&)' 1.1 &> /dev/null; then
+    if ldapsearch --hostname "${TARGET_HOST}" --port "${TARGET_PORT}" \
+           --baseDN "${USER_BASE_DN}" --searchScope base '(&)' 1.1 &> /dev/null; then
       echo "post-start: user base entry ${USER_BASE_DN} exists on ${TARGET_HOST}"
       return 0
     fi
@@ -150,27 +159,31 @@ does_base_entry_exist() {
 # present. If no server is provided, then the user backend on this server will be configured.
 #
 # Arguments
-#   ${1} ->  The optional target host whose user backend to configure. Defaults to this server, if not provided.
+#   ${1} -> The optional target host whose user backend to configure. Defaults to this server, if not provided.
+#   ${2} -> The optional target port. Defaults to the value of the LDAPS_PORT environment variable, if not provided.
 ########################################################################################################################
 configure_user_backend() {
   TARGET_HOST=${1}
+  TARGET_PORT=${2}
+
   test -z "${TARGET_HOST}" && TARGET_HOST=$(hostname)
+  test -z "${TARGET_PORT}" && TARGET_PORT="${LDAPS_PORT}"
 
   # Create the user backend, if it does not exist or update it to the right base DN
   if ! ldapsearch --hostname "${TARGET_HOST}" --baseDN 'cn=config' --searchScope sub \
            "&(ds-cfg-backend-id=${USER_BACKEND_ID})(objectClass=ds-cfg-backend)" 1.1 &> /dev/null; then
-    echo "post-start: backend ${USER_BACKEND_ID} does not exist on ${TARGET_HOST} - creating it"
+    echo "post-start: backend ${USER_BACKEND_ID} does not exist on ${TARGET_HOST}:${TARGET_PORT} - creating it"
     dsconfig --no-prompt create-backend \
-      --hostname "${TARGET_HOST}" \
+      --hostname "${TARGET_HOST}" --port "${TARGET_PORT}" \
       --type local-db \
       --backend-name "${USER_BACKEND_ID}" \
       --set "base-dn:${USER_BASE_DN}" \
       --set enabled:true \
       --set db-cache-percent:35
   else
-    echo "post-start: backend ${USER_BACKEND_ID} exists on ${TARGET_HOST} - adding base DN ${USER_BASE_DN} to it"
+    echo "post-start: backend ${USER_BACKEND_ID} exists on ${TARGET_HOST}:${TARGET_PORT} - adding base DN ${USER_BASE_DN} to it"
     dsconfig --no-prompt set-backend-prop \
-      --hostname "${TARGET_HOST}" \
+      --hostname "${TARGET_HOST}" --port "${TARGET_PORT}" \
       --backend-name "${USER_BACKEND_ID}" \
       --add "base-dn:${USER_BASE_DN}" \
       --set enabled:true \
@@ -225,7 +238,7 @@ enable_replication_for_dn() {
   dsreplication enable \
     --retryTimeoutSeconds "${RETRY_TIMEOUT_SECONDS}" \
     --trustAll \
-    --host1 "${SRC_HOST}" --port1 "${LDAPS_PORT}" --useSSL1 \
+    --host1 "${REPL_SRC_HOST}" --port1 "${REPL_SRC_PORT}" --useSSL1 \
     --bindDN1 "${ROOT_USER_DN}" --bindPasswordFile1 "${ROOT_USER_PASSWORD_FILE}" \
     --host2 "${HOSTNAME}" --port2 "${LDAPS_PORT}" --useSSL2 \
     --bindDN2 "${ROOT_USER_DN}" --bindPasswordFile2 "${ROOT_USER_PASSWORD_FILE}" \
@@ -254,7 +267,7 @@ initialize_replication_for_dn() {
   dsreplication initialize \
     --retryTimeoutSeconds ${RETRY_TIMEOUT_SECONDS} \
     --trustAll \
-    --hostSource "${SRC_HOST}" --portSource ${LDAPS_PORT} --useSSLSource \
+    --hostSource "${REPL_SRC_HOST}" --portSource "${REPL_SRC_PORT}" --useSSLSource \
     --hostDestination "${HOSTNAME}" --portDestination ${LDAPS_PORT} --useSSLDestination \
     --baseDN "${BASE_DN=${1}}" \
     --adminUID "${ADMIN_USER_NAME}" \
@@ -363,12 +376,16 @@ fi
 echo "post-start: replication will be initialized for base DNs: ${UNINITIALIZED_DNS}"
 
 DOMAIN_NAME=$(hostname -f | cut -d'.' -f2-)
-SRC_HOST="${K8S_STATEFUL_SET_NAME}-0.${DOMAIN_NAME}"
+REPL_SRC_HOST=pingdirectory-admin-parent.mini.ping-qual.com
+
+DEFAULT_REPL_SRC_HOST="${K8S_STATEFUL_SET_NAME}-0.${DOMAIN_NAME}"
+REPL_SRC_HOST="${REPL_SRC_HOST:-${DEFAULT_REPL_SRC_HOST}}"
+REPL_SRC_PORT="${REPL_SRC_PORT:-${LDAPS_PORT}}"
 
 # For end-user base DNs, allow the option to disable previous DNs from replication. This allows
 # customers to disable the OOTB base DN that is automatically enabled and initialized.
 if test "${DISABLE_ALL_OLDER_USER_BASE_DN}" = 'true'; then
-  ENABLED_DNS=$(ldapsearch --hostname "${TARGET_HOST}" --baseDN 'cn=config' --searchScope sub \
+  ENABLED_DNS=$(ldapsearch --baseDN 'cn=config' --searchScope sub \
       "&(ds-cfg-backend-id=${USER_BACKEND_ID})(objectClass=ds-cfg-backend)" ds-cfg-base-dn |
       grep '^ds-cfg-base-dn' | cut -d: -f2 | tr -d ' ')
 
@@ -387,14 +404,18 @@ for DN in ${UNINITIALIZED_DNS}; do
   if test "${DN}" = "${USER_BASE_DN}"; then
     echo "post-start: user base DN ${USER_BASE_DN} is uninitialized"
 
-    for HOST in "${SRC_HOST}" "${HOSTNAME}"; do
-      configure_user_backend "${HOST}"
+    for HOST in "${REPL_SRC_HOST}" "${HOSTNAME}"; do
+      test "${HOST}" = "${REPL_SRC_HOST}" &&
+          PORT=${REPL_SRC_PORT} ||
+          PORT=${LDAPS_PORT}
+
+      configure_user_backend "${HOST}" "${PORT}"
       configBackendStatus=$?
       test ${configBackendStatus} -ne 0 && stop_container
 
-      does_base_entry_exist "${HOST}"
+      does_base_entry_exist "${HOST}" "${PORT}"
       if test $? -ne 0; then
-        add_base_entry "${HOST}"
+        add_base_entry "${HOST}" "${PORT}"
         addStatus=$?
         test ${addStatus} -ne 0 && stop_container
       fi
