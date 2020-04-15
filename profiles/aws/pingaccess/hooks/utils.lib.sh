@@ -1,6 +1,26 @@
 #!/usr/bin/env sh
 
 ########################################################################################################################
+# Stop PingAccess server and wait until it is terminated.
+#
+########################################################################################################################
+function stop_server()
+{
+  SERVER_PID=$(pgrep -alf java | grep 'run.properties' | awk '{ print $1; }')
+  kill "${SERVER_PID}"
+  while true; do
+    SERVER_PID=$(pgrep -alf java | grep 'run.properties' | awk '{ print $1; }')
+    if test -z ${SERVER_PID}; then
+        break
+    else
+      echo "waiting for PingAccess to terminate due to error"
+      sleep 3
+    fi
+  done
+  exit 1
+}
+
+########################################################################################################################
 # Makes curl request to PingAccess API using the INITIAL_ADMIN_PASSWORD environment variable.
 #
 ########################################################################################################################
@@ -15,13 +35,13 @@ function make_api_request() {
 
     if test ! $? -eq 0; then
         echo "Admin API connection refused"
-        exit 1
+        stop_server
     fi
 
     if test ${http_code} -ge "300"; then
         echo "API call returned HTTP status code: ${http_code}"
         cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
-        exit 1
+        stop_server
     fi
 
     cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
@@ -42,13 +62,13 @@ function make_initial_api_request() {
 
     if test ! $? -eq 0; then
         echo "Admin API connection refused"
-        exit 1
+        stop_server
     fi
 
     if test ${http_code} -ge "300"; then
         echo "API call returned HTTP status code: ${http_code}"
         cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
-        exit 1
+        stop_server
     fi
 
     cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
@@ -71,7 +91,7 @@ function make_api_request_download() {
 
     if test ! $? -eq 0; then
         echo "Admin API connection refused"
-        exit 1
+        stop_server
     fi
 }
 
@@ -152,10 +172,10 @@ function changePassword() {
   # Validate before attempting to change password
   if test -z "${OLD_PA_ADMIN_USER_PASSWORD}" || test -z "${PA_ADMIN_USER_PASSWORD}"; then
     echo "The old and new passwords cannot be blank"
-    return 1
+    stop_server
   elif test "${OLD_PA_ADMIN_USER_PASSWORD}" = "${PA_ADMIN_USER_PASSWORD}"; then
     echo "old passsword and new password are the same, therefore cannot update passsword"
-    return 1
+    stop_server
   else
     set +x
     # Change the default password.
@@ -177,7 +197,7 @@ function changePassword() {
     fi
 
     echo "error changing password"
-    return ${CHANGE_PASWORD_STATUS}
+    stop_server
   fi
 }
 

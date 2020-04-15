@@ -5,13 +5,6 @@
 
 set -x
 
-function stop_server()
-{
-  SERVER_PID=$(pgrep -alf java | grep 'run.properties' | awk '{ print $1; }')
-  kill "${SERVER_PID}"
-  exit 1
-}
-
 if test "${OPERATIONAL_MODE}" != "CLUSTERED_CONSOLE"; then
   echo "post-start: skipping post-start on engine"
   exit 0
@@ -31,11 +24,6 @@ ADMIN_CONFIGURATION_COMPLETE=${OUT_DIR}/instance/ADMIN_CONFIGURATION_COMPLETE
 if ! test -f "${ADMIN_CONFIGURATION_COMPLETE}"; then
 
   sh "${HOOKS_DIR}/81-import-initial-configuration.sh"
-  # Stop the server if an error has occured upon importing the intial configuration
-  if test ${?} -ne 0; then
-    echo "post-start: admin post-start import-initial-configuration script failed"
-    stop_server
-  fi
 
   touch ${ADMIN_CONFIGURATION_COMPLETE}
 
@@ -43,12 +31,6 @@ if ! test -f "${ADMIN_CONFIGURATION_COMPLETE}"; then
 elif ! test "$(readPasswordFromDisk)" = "${PA_ADMIN_USER_PASSWORD}"; then
 
   changePassword
-
-  # Stop the server if an error has occured changing the password
-  if test ${?} -ne 0; then
-    echo "post-start: admin post-start change password failed"
-    stop_server
-  fi
   
 fi
 
