@@ -37,7 +37,7 @@ function make_initial_api_request() {
          --max-time ${API_TIMEOUT_WAIT} \
          --retry-delay 1 \
          --retry-connrefused \
-         -u ${PA_ADMIN_USER_USERNAME}:${DEFAULT_PA_ADMIN_USER_PASSWORD} \
+         -u ${PA_ADMIN_USER_USERNAME}:${OLD_PA_ADMIN_USER_PASSWORD} \
          -H "X-Xsrf-Header: PingAccess " "$@")
 
     if test ! $? -eq 0; then
@@ -142,4 +142,67 @@ function initializeS3Configuration() {
   else
     export TARGET_URL="${BACKUP_URL}/${DIRECTORY_NAME}"
   fi
+}
+
+########################################################################################################################
+# Function to change password.
+#
+########################################################################################################################
+function changePassword() {
+  # Validate before attempting to change password
+  if test -z "${OLD_PA_ADMIN_USER_PASSWORD}" || test -z "${PA_ADMIN_USER_PASSWORD}"; then
+    echo "The old and new passwords cannot be blank"
+    return 1
+  elif test "${OLD_PA_ADMIN_USER_PASSWORD}" = "${PA_ADMIN_USER_PASSWORD}"; then
+    echo "old passsword and new password are the same, therefore cannot update passsword"
+    return 1
+  else
+    set +x
+    # Change the default password.
+    # Using set +x to suppress shell debugging
+    # because it reveals the new admin password
+    change_password_payload=$(envsubst < ${STAGING_DIR}/templates/81/change_password.json)
+    make_initial_api_request -s -X PUT \
+        -d "${change_password_payload}" \
+        "https://localhost:9000/pa-admin-api/v3/users/1/password" > /dev/null
+    CHANGE_PASWORD_STATUS=${?}
+    set -x
+
+    echo "password change status: ${CHANGE_PASWORD_STATUS}"
+
+    # If no error, write password to disk
+    if test ${CHANGE_PASWORD_STATUS} -eq 0; then
+      createSecretFile
+      return 0
+    fi
+
+    echo "error changing password"
+    return ${CHANGE_PASWORD_STATUS}
+  fi
+}
+
+########################################################################################################################
+# Function to read password within ${OUT_DIR}/secrets/pa-admin-password.
+#
+########################################################################################################################
+function readPasswordFromDisk() {
+  set +x
+  # if file doesn't exist return empty string
+  if ! test -f ${OUT_DIR}/secrets/pa-admin-password; then
+    echo ""
+  else 
+    password=$( cat ${OUT_DIR}/secrets/pa-admin-password )
+    echo ${password}
+  fi
+  set -x
+}
+
+########################################################################################################################
+# Function to write admin password to disk.
+#
+########################################################################################################################
+function createSecretFile() {
+  # make directory if it doesn't exist
+  mkdir -p ${OUT_DIR}/secrets
+  echo "${PA_ADMIN_USER_PASSWORD}" > ${OUT_DIR}/secrets/pa-admin-password
 }

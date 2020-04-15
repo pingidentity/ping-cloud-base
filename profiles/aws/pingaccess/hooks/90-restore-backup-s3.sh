@@ -90,6 +90,13 @@ if ! test -z "${BACKUP_FILE_NAME}" || ! test -f "${OUT_DIR}"/instance/conf/pa.jw
     # Print the filename of the downloaded file from s3
     echo "Downloaded file name: ${DATA_BACKUP_FILE}"
 
+    # If ADMIN_CONFIGURATION_COMPLETE does not exist then set restore configuration.
+    ADMIN_CONFIGURATION_COMPLETE="${OUT_DIR}/instance/ADMIN_CONFIGURATION_COMPLETE"
+    ! test -f "${ADMIN_CONFIGURATION_COMPLETE}" && touch "${ADMIN_CONFIGURATION_COMPLETE}"
+
+    # Write password admin password to disk after successful restore
+    createSecretFile
+
   else
 
     echo "No archive data found"
