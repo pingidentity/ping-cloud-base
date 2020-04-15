@@ -15,7 +15,7 @@ get_admin_user_response=$(curl -k \
      --max-time ${API_TIMEOUT_WAIT} \
      --retry-delay 1 \
      --retry-connrefused \
-     -u ${PA_ADMIN_USER_USERNAME}:${DEFAULT_PA_ADMIN_USER_PASSWORD} \
+     -u ${PA_ADMIN_USER_USERNAME}:${OLD_PA_ADMIN_USER_PASSWORD} \
      -H "X-Xsrf-Header: PingAccess" "https://localhost:9000/pa-admin-api/v3/users/1")
 
 # Verify connecting to the user endpoint using credentials
@@ -43,17 +43,7 @@ if [ 200 = ${http_response_code} ]; then
         echo "Changing the default password..."
         echo "Change password debugging output suppressed"
 
-        set +x
-
-        # Change the default password.
-        # Using set +x to suppress shell debugging
-        # because it reveals the new admin password
-        change_password_payload=$(envsubst < ${templates_dir_path}/change_password.json)
-        make_initial_api_request -s -X PUT \
-            -d "${change_password_payload}" \
-            "https://localhost:9000/pa-admin-api/v3/users/1/password" > /dev/null
-
-        set -x
+        changePassword
 
         # Export CONFIG_QUERY_KP_VALID_DAYS so it will get injected into
         # config-query-keypair.json.  Default to 365 days.
