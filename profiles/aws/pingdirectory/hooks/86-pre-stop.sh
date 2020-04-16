@@ -40,3 +40,8 @@ REPL_INIT_MARKER_FILE="${SERVER_ROOT_DIR}"/config/repl-initialized
 
 echo "pre-stop: removing ${POST_START_INIT_MARKER_FILE} and ${REPL_INIT_MARKER_FILE} marker files"
 rm -f "${POST_START_INIT_MARKER_FILE}" "${REPL_INIT_MARKER_FILE}"
+
+# Tell Kubernetes to delete the persistent volume we were bound to. This makes the above cleanup unnecessary, but
+# we will keep that around in case this fails for some reason.
+echo "pre-stop: remove the persistent volume"
+kubectl delete pvc out-dir-pingdirectory-"${ORDINAL}"

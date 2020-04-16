@@ -22,6 +22,12 @@ rules:
     - list
   - apiGroups:
     - ""
+    resources:
+    - "persistentvolumeclaims"
+    verbs:
+    - delete
+  - apiGroups:
+    - ""
     - "apps"
     - "extensions"
     resources:
