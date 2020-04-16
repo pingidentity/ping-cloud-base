@@ -16,7 +16,7 @@ rm -f "${POST_START_INIT_MARKER_FILE}"
 
 # Wait until pingaccess admin localhost is available
 pingaccess_admin_wait
-  
+
 # ADMIN_CONFIGURATION_COMPLETE is used as a marker file that tracks if server was initially configured.
 #
 # If ADMIN_CONFIGURATION_COMPLETE does not exist then set initial configuration.
@@ -27,8 +27,8 @@ if ! test -f "${ADMIN_CONFIGURATION_COMPLETE}"; then
 
   touch ${ADMIN_CONFIGURATION_COMPLETE}
 
-# Since this isn't initial deployment, check and change the password if from disk is different than the desired value
-elif ! test "$(readPasswordFromDisk)" = "${PA_ADMIN_USER_PASSWORD}"; then
+# Since this isn't initial deployment, change password if from disk is different than the desired value 
+elif test $(comparePasswordDiskWithVariable) -eq 0; then
 
   changePassword
   

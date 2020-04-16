@@ -20,6 +20,7 @@ data:
       exit 0
     fi
 
+    set +x
     # Retrieve Engine ID
     ENGINE_ID=$( curl -k --retry ${API_RETRY_LIMIT} \
                          --max-time ${API_TIMEOUT_WAIT} \
@@ -40,3 +41,4 @@ data:
                          -H "X-Xsrf-Header: PingAccess " \
                          -X DELETE https://${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9000/pa-admin-api/v3/engines/${ENGINE_ID} \
                          > /dev/null
+    set -x
