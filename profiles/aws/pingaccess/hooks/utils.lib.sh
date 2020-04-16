@@ -25,6 +25,7 @@ function stop_server()
 #
 ########################################################################################################################
 function make_api_request() {
+    set +x
     http_code=$(curl -k -o ${OUT_DIR}/api_response.txt -w "%{http_code}" \
          --retry ${API_RETRY_LIMIT} \
          --max-time ${API_TIMEOUT_WAIT} \
@@ -32,6 +33,7 @@ function make_api_request() {
          --retry-connrefused \
          -u ${PA_ADMIN_USER_USERNAME}:${PA_ADMIN_USER_PASSWORD} \
          -H "X-Xsrf-Header: PingAccess " "$@")
+    set -x
 
     if test ! $? -eq 0; then
         echo "Admin API connection refused"
@@ -52,6 +54,7 @@ function make_api_request() {
 #
 ########################################################################################################################
 function make_initial_api_request() {
+    set +x
     http_code=$(curl -k -o ${OUT_DIR}/api_response.txt -w "%{http_code}" \
          --retry ${API_RETRY_LIMIT} \
          --max-time ${API_TIMEOUT_WAIT} \
@@ -59,6 +62,7 @@ function make_initial_api_request() {
          --retry-connrefused \
          -u ${PA_ADMIN_USER_USERNAME}:${OLD_PA_ADMIN_USER_PASSWORD} \
          -H "X-Xsrf-Header: PingAccess " "$@")
+    set -x
 
     if test ! $? -eq 0; then
         echo "Admin API connection refused"
@@ -81,6 +85,7 @@ function make_initial_api_request() {
 #
 ########################################################################################################################
 function make_api_request_download() {
+    set +x
     curl -k \
          --retry ${API_RETRY_LIMIT} \
          --max-time ${API_TIMEOUT_WAIT} \
@@ -88,7 +93,8 @@ function make_api_request_download() {
          --retry-connrefused \
          -u ${PA_ADMIN_USER_USERNAME}:${PA_ADMIN_USER_PASSWORD} \
          -H "X-Xsrf-Header: PingAccess " "$@"
-
+    set -x
+    
     if test ! $? -eq 0; then
         echo "Admin API connection refused"
         stop_server
@@ -169,24 +175,38 @@ function initializeS3Configuration() {
 #
 ########################################################################################################################
 function changePassword() {
+
   # Validate before attempting to change password
-  if test -z "${OLD_PA_ADMIN_USER_PASSWORD}" || test -z "${PA_ADMIN_USER_PASSWORD}"; then
+  set +x
+    if test -z "${OLD_PA_ADMIN_USER_PASSWORD}" || test -z "${PA_ADMIN_USER_PASSWORD}"; then
+      isPasswordEmpty=1
+    else 
+      isPasswordEmpty=0
+    fi
+    if test "${OLD_PA_ADMIN_USER_PASSWORD}" = "${PA_ADMIN_USER_PASSWORD}"; then
+      isPasswordSame=1
+    else
+      isPasswordSame=0
+    fi
+  set -x
+
+  if test ${isPasswordEmpty} -eq 1; then
     echo "The old and new passwords cannot be blank"
     stop_server
-  elif test "${OLD_PA_ADMIN_USER_PASSWORD}" = "${PA_ADMIN_USER_PASSWORD}"; then
+  elif test ${isPasswordSame} -eq 1; then
     echo "old passsword and new password are the same, therefore cannot update passsword"
     stop_server
   else
-    set +x
     # Change the default password.
     # Using set +x to suppress shell debugging
     # because it reveals the new admin password
+    set +x
     change_password_payload=$(envsubst < ${STAGING_DIR}/templates/81/change_password.json)
     make_initial_api_request -s -X PUT \
         -d "${change_password_payload}" \
         "https://localhost:9000/pa-admin-api/v3/users/1/password" > /dev/null
-    CHANGE_PASWORD_STATUS=${?}
     set -x
+    CHANGE_PASWORD_STATUS=${?}
 
     echo "password change status: ${CHANGE_PASWORD_STATUS}"
 
@@ -210,7 +230,7 @@ function readPasswordFromDisk() {
   # if file doesn't exist return empty string
   if ! test -f ${OUT_DIR}/secrets/pa-admin-password; then
     echo ""
-  else 
+  else
     password=$( cat ${OUT_DIR}/secrets/pa-admin-password )
     echo ${password}
   fi
@@ -224,5 +244,23 @@ function readPasswordFromDisk() {
 function createSecretFile() {
   # make directory if it doesn't exist
   mkdir -p ${OUT_DIR}/secrets
+  set +x
   echo "${PA_ADMIN_USER_PASSWORD}" > ${OUT_DIR}/secrets/pa-admin-password
+  set -x
+}
+
+########################################################################################################################
+# Compare passwoord disk secret and desired value (environoment variable).
+# Print 0 if passwords dont match, print 1 if they are the same.
+#
+########################################################################################################################
+function comparePasswordDiskWithVariable() {
+  set +x
+  # if from disk is different than the desired value return false
+  if ! test "$(readPasswordFromDisk)" = "${PA_ADMIN_USER_PASSWORD}"; then
+    echo 0
+  else
+    echo 1
+  fi
+  set -x
 }
