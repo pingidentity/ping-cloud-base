@@ -1,6 +1,26 @@
 #!/usr/bin/env sh
 
 ########################################################################################################################
+# Stop PingAccess server and wait until it is terminated.
+#
+########################################################################################################################
+function stop_server()
+{
+  SERVER_PID=$(pgrep -alf java | grep 'run.properties' | awk '{ print $1; }')
+  kill "${SERVER_PID}"
+  while true; do
+    SERVER_PID=$(pgrep -alf java | grep 'run.properties' | awk '{ print $1; }')
+    if test -z ${SERVER_PID}; then
+        break
+    else
+      echo "waiting for PingAccess to terminate due to error"
+      sleep 3
+    fi
+  done
+  exit 1
+}
+
+########################################################################################################################
 # Makes curl request to PingAccess API using the INITIAL_ADMIN_PASSWORD environment variable.
 #
 ########################################################################################################################
@@ -15,13 +35,13 @@ function make_api_request() {
 
     if test ! $? -eq 0; then
         echo "Admin API connection refused"
-        exit 1
+        stop_server
     fi
 
     if test ${http_code} -ge "300"; then
         echo "API call returned HTTP status code: ${http_code}"
         cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
-        exit 1
+        stop_server
     fi
 
     cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
@@ -37,18 +57,18 @@ function make_initial_api_request() {
          --max-time ${API_TIMEOUT_WAIT} \
          --retry-delay 1 \
          --retry-connrefused \
-         -u ${PA_ADMIN_USER_USERNAME}:${DEFAULT_PA_ADMIN_USER_PASSWORD} \
+         -u ${PA_ADMIN_USER_USERNAME}:${OLD_PA_ADMIN_USER_PASSWORD} \
          -H "X-Xsrf-Header: PingAccess " "$@")
 
     if test ! $? -eq 0; then
         echo "Admin API connection refused"
-        exit 1
+        stop_server
     fi
 
     if test ${http_code} -ge "300"; then
         echo "API call returned HTTP status code: ${http_code}"
         cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
-        exit 1
+        stop_server
     fi
 
     cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
@@ -71,7 +91,7 @@ function make_api_request_download() {
 
     if test ! $? -eq 0; then
         echo "Admin API connection refused"
-        exit 1
+        stop_server
     fi
 }
 
@@ -142,4 +162,67 @@ function initializeS3Configuration() {
   else
     export TARGET_URL="${BACKUP_URL}/${DIRECTORY_NAME}"
   fi
+}
+
+########################################################################################################################
+# Function to change password.
+#
+########################################################################################################################
+function changePassword() {
+  # Validate before attempting to change password
+  if test -z "${OLD_PA_ADMIN_USER_PASSWORD}" || test -z "${PA_ADMIN_USER_PASSWORD}"; then
+    echo "The old and new passwords cannot be blank"
+    stop_server
+  elif test "${OLD_PA_ADMIN_USER_PASSWORD}" = "${PA_ADMIN_USER_PASSWORD}"; then
+    echo "old passsword and new password are the same, therefore cannot update passsword"
+    stop_server
+  else
+    set +x
+    # Change the default password.
+    # Using set +x to suppress shell debugging
+    # because it reveals the new admin password
+    change_password_payload=$(envsubst < ${STAGING_DIR}/templates/81/change_password.json)
+    make_initial_api_request -s -X PUT \
+        -d "${change_password_payload}" \
+        "https://localhost:9000/pa-admin-api/v3/users/1/password" > /dev/null
+    CHANGE_PASWORD_STATUS=${?}
+    set -x
+
+    echo "password change status: ${CHANGE_PASWORD_STATUS}"
+
+    # If no error, write password to disk
+    if test ${CHANGE_PASWORD_STATUS} -eq 0; then
+      createSecretFile
+      return 0
+    fi
+
+    echo "error changing password"
+    stop_server
+  fi
+}
+
+########################################################################################################################
+# Function to read password within ${OUT_DIR}/secrets/pa-admin-password.
+#
+########################################################################################################################
+function readPasswordFromDisk() {
+  set +x
+  # if file doesn't exist return empty string
+  if ! test -f ${OUT_DIR}/secrets/pa-admin-password; then
+    echo ""
+  else 
+    password=$( cat ${OUT_DIR}/secrets/pa-admin-password )
+    echo ${password}
+  fi
+  set -x
+}
+
+########################################################################################################################
+# Function to write admin password to disk.
+#
+########################################################################################################################
+function createSecretFile() {
+  # make directory if it doesn't exist
+  mkdir -p ${OUT_DIR}/secrets
+  echo "${PA_ADMIN_USER_PASSWORD}" > ${OUT_DIR}/secrets/pa-admin-password
 }

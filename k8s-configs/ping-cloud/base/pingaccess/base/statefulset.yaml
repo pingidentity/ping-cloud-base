@@ -97,11 +97,11 @@ spec:
           value: CLUSTERED_CONSOLE
         - name: HTTPS_PORT
           value: "9090"
-        - name: DEFAULT_PA_ADMIN_USER_PASSWORD
+        - name: OLD_PA_ADMIN_USER_PASSWORD
           valueFrom:
             secretKeyRef:
               name: pingaccess-passwords
-              key: DEFAULT_PA_ADMIN_USER_PASSWORD
+              key: OLD_PA_ADMIN_USER_PASSWORD
         - name: PA_ADMIN_USER_PASSWORD
           valueFrom:
             secretKeyRef:
