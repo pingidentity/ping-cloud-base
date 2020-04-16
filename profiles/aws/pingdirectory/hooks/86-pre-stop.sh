@@ -14,7 +14,7 @@ if test ${ORDINAL} -lt ${NUM_REPLICAS}; then
   exit 0
 fi
 
-echo "pre-stop: gettting instance name from config"
+echo "pre-stop: getting instance name from config"
 INSTANCE_NAME=$(dsconfig --no-prompt \
   --useSSL --trustAll \
   --hostname "${HOSTNAME}" --port "${LDAPS_PORT}" \
@@ -24,14 +24,16 @@ INSTANCE_NAME=$(dsconfig --no-prompt \
   awk '{ print $2 }')
 
 echo "pre-stop: removing ${HOSTNAME} (instance name: ${INSTANCE_NAME}) from the topology"
-remove-defunct-server --no-prompt \
-  --serverInstanceName "${INSTANCE_NAME}" \
+dsreplication disable --disableAll \
+  --no-prompt --ignoreWarnings \
   --retryTimeoutSeconds ${RETRY_TIMEOUT_SECONDS} \
-  --ignoreOnline \
-  --bindDN "${ROOT_USER_DN}" \
-  --bindPasswordFile "${ROOT_USER_PASSWORD_FILE}" \
-  --enableDebug --globalDebugLevel verbose
+  --enableDebug --globalDebugLevel verbose \
+  --hostname "${HOSTNAME}" --port "${LDAPS_PORT}" \
+  --adminUID "${ADMIN_USER_NAME}" --adminPasswordFile "${ADMIN_USER_PASSWORD_FILE}"
 echo "pre-stop: server removal exited with return code: ${?}"
+
+echo "pre-stop: removing the replication changelogDb"
+rm -rf "${SERVER_ROOT_DIR}/changelogDb"
 
 POST_START_INIT_MARKER_FILE="${SERVER_ROOT_DIR}"/config/post-start-init-complete
 REPL_INIT_MARKER_FILE="${SERVER_ROOT_DIR}"/config/repl-initialized

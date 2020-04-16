@@ -77,6 +77,9 @@ if ! test -z "${DATA_BACKUP_FILE}" && \
   # Print listed files from user data archive
   ls ${SERVER_RESTORE_DIR}
 
+  echo "Removing changelogDb before restoring user data"
+  rm -rf "${SERVER_ROOT_DIR}/changelogDb"
+
   echo "Restoring to the latest backup under ${SERVER_RESTORE_DIR}"
   restore --task \
     --useSSL --trustAll \
