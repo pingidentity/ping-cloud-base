@@ -24,11 +24,14 @@ ADMIN_CONFIGURATION_COMPLETE=${OUT_DIR}/instance/ADMIN_CONFIGURATION_COMPLETE
 if ! test -f "${ADMIN_CONFIGURATION_COMPLETE}"; then
 
   sh "${HOOKS_DIR}/81-import-initial-configuration.sh"
+  if test $? -ne 0; then
+    exit 1
+  fi
 
   touch ${ADMIN_CONFIGURATION_COMPLETE}
 
-# Since this isn't initial deployment, check and change the password if from disk is different than the desired value
-elif ! test "$(readPasswordFromDisk)" = "${PA_ADMIN_USER_PASSWORD}"; then
+# Since this isn't initial deployment, change password if from disk is different than the desired value.
+elif test $(comparePasswordDiskWithVariable) -eq 0; then
 
   changePassword
   

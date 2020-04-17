@@ -7,6 +7,7 @@
 #   $@ -> The URL and additional needed data to make request
 ########################################################################################################################
 function make_api_request() {
+  set +x
   curl -k \
     --retry "${API_RETRY_LIMIT}" \
     --max-time "${API_TIMEOUT_WAIT}" \
@@ -14,6 +15,7 @@ function make_api_request() {
     --retry-connrefused \
     -u "${PF_ADMIN_USER_USERNAME}:${PF_ADMIN_USER_PASSWORD}" \
     -H 'X-Xsrf-Header: PingFederate' "$@"
+  set -x
 
   RESULT=$?
   echo "Admin API request status: ${RESULT}"
