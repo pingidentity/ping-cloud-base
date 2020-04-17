@@ -18,6 +18,8 @@ rm -f "${POST_START_INIT_MARKER_FILE}"
 
 # Wait until the server is up and running.
 echo "post-start: waiting for admin server to be ready"
+# PDO-825 giving PF more time to load admin API .war file
+sleep 60s
 wait_for_server_ready
 
 # Upload a backup right away after starting the server.
