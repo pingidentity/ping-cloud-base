@@ -16,7 +16,7 @@ rm -f "${POST_START_INIT_MARKER_FILE}"
 
 # Wait until pingaccess admin localhost is available
 pingaccess_admin_wait
-
+  
 # ADMIN_CONFIGURATION_COMPLETE is used as a marker file that tracks if server was initially configured.
 #
 # If ADMIN_CONFIGURATION_COMPLETE does not exist then set initial configuration.
@@ -24,10 +24,13 @@ ADMIN_CONFIGURATION_COMPLETE=${OUT_DIR}/instance/ADMIN_CONFIGURATION_COMPLETE
 if ! test -f "${ADMIN_CONFIGURATION_COMPLETE}"; then
 
   sh "${HOOKS_DIR}/81-import-initial-configuration.sh"
+  if test $? -ne 0; then
+    exit 1
+  fi
 
   touch ${ADMIN_CONFIGURATION_COMPLETE}
 
-# Since this isn't initial deployment, change password if from disk is different than the desired value 
+# Since this isn't initial deployment, change password if from disk is different than the desired value.
 elif test $(comparePasswordDiskWithVariable) -eq 0; then
 
   changePassword

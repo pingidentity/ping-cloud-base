@@ -40,7 +40,7 @@ function make_api_request() {
         stop_server
     fi
 
-    if test ${http_code} -ge "300"; then
+    if test ${http_code} -ne 200; then
         echo "API call returned HTTP status code: ${http_code}"
         cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
         stop_server
@@ -69,7 +69,7 @@ function make_initial_api_request() {
         stop_server
     fi
 
-    if test ${http_code} -ge "300"; then
+    if test ${http_code} -ne 200; then
         echo "API call returned HTTP status code: ${http_code}"
         cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
         stop_server
@@ -94,7 +94,7 @@ function make_api_request_download() {
          -u ${PA_ADMIN_USER_USERNAME}:${PA_ADMIN_USER_PASSWORD} \
          -H "X-Xsrf-Header: PingAccess " "$@"
     set -x
-    
+
     if test ! $? -eq 0; then
         echo "Admin API connection refused"
         stop_server
