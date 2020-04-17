@@ -20,9 +20,9 @@ rm -f "${POST_START_INIT_MARKER_FILE}"
 echo "post-start: waiting for admin server to be ready"
 wait_for_server_ready
 
-# PDO-825 giving PF more time to load admin API .war file
-echo "sleep 60s"
-sleep 60s
+# # PDO-825 giving PF more time to load admin API .war file
+# echo "sleep 60s"
+# sleep 60s
 
 # Upload a backup right away after starting the server.
 echo "post-start: uploading data backup to s3"
