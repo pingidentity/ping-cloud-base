@@ -8,14 +8,14 @@
 ########################################################################################################################
 function make_api_request()
 {
-    #set +x
-    curl -v -k --retry ${API_RETRY_LIMIT} --max-time ${API_TIMEOUT_WAIT} --retry-delay 1 --retry-connrefuse \
+    set +x
+    curl -k --retry ${API_RETRY_LIMIT} --max-time ${API_TIMEOUT_WAIT} --retry-delay 1 --retry-connrefuse \
         -u Administrator:${PF_LDAP_PASSWORD} -H "X-Xsrf-Header: PingFederate " "$@"
-    #set -x
     if test ! $? -eq 0; then
         echo "Admin API connection refused"
         exit 1
     fi
+    set -x
 }
 
 ########################################################################################################################
