@@ -24,6 +24,11 @@ health_check() {
   echo "Health check for ${BASE_DN} status: ${HEALTH_STATUS}"
   return ${HEALTH_STATUS}
 }
+
+# Verify that server is responsive on its LDAP secure port
+echo "readiness: verifying root DSE access"
+/opt/liveness.sh || exit 1
+
 # Verify that server is responsive on its heartbeat endpoint
 echo "readiness: verifying heartbeat endpoint is accessible"
 health_check "o=platformconfig" || exit 1
