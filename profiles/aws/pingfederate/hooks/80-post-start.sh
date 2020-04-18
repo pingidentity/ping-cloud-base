@@ -16,9 +16,9 @@ echo "post-start: starting admin post-start initialization"
 POST_START_INIT_MARKER_FILE="${OUT_DIR}/instance/post-start-init-complete"
 rm -f "${POST_START_INIT_MARKER_FILE}"
 
-# Wait until the server is up and running.
-echo "post-start: waiting for admin server to be ready"
-wait_for_server_ready
+# Wait until the admin API is up and running.
+echo "post-start: waiting for admin API to be ready"
+wait_for_admin_api_endpoint configArchive/export
 
 # Upload a backup right away after starting the server.
 echo "post-start: uploading data backup to s3"
