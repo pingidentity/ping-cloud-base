@@ -31,7 +31,7 @@ if test ! $? -eq 0 || test "$( unzip -t ${DST_DIRECTORY}/${DST_FILE} > /dev/null
   echo "Failed to export archive"
   # Cleanup k8s-s3-upload-archive temp directory
   rm -rf ${DST_DIRECTORY}
-  exit 0
+  exit 1
 fi
 
 BUCKET_URL_NO_PROTOCOL=${BACKUP_URL#s3://}
