@@ -19,6 +19,7 @@ _Changes:_
 - [X] PDO-322 - PA Clustered engine Auto-Scaling Descriptor
 - [X] PDO-376 - PA Periodically backup config
 - [X] PDO-521 - Master Key Delivery Interface for PA
+- [X] PDO-529 - Disable replication for all base DNs on pre-stop
 - [X] PDO-533 - Switch to PA 6.0.1 version
 - [X] PDO-630 - PingAccess - creating and updating engine certificates
 - [X] PDO-631 - Look into removing PingAccess server profile wait functions
@@ -35,11 +36,14 @@ _Changes:_
 - [X] PDO-776 - PingAccess 81-import-initial-configuration script isn't checking to see if keypair already exists
 - [X] PDO-792 - PingAccess upload configuration to S3 after successful deployment
 - [X] PDO-793 - Manual PD Backup fails
+- [X] PDO-794 - Redact log passwords for PingFederate and PingAccess
 - [X] PDO-795 - PW change to PA Causes Issues with Kubernetes
 - [X] PDO-797 - Periodic Upload of PF CSD Logs Failing
 - [X] PDO-810 - Cherry Pick from Master - Update PF deployment automation to upload data.zip to s3 upon start/restart
 - [X] PDO-816 - Upgrade cluster-autoscaler version to 1.14.x
 - [X] PDO-817 - Add pod anti-affinities for each ES pod to be deployed to a separate node and potentially separate AZ
+- [X] PDO-810 - Wait for the admin API to be ready before uploading data to s3
+- [X] PDO-820 - Force pod restart on PA API call failure 
 
 ### 1.2.0
 
