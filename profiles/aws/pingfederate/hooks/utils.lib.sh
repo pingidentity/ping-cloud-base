@@ -1,43 +1,51 @@
 #!/usr/bin/env sh
 
 ########################################################################################################################
-# Makes curl request to PingFederate Admin API to configure.
+# Makes a curl request to the PingFederate Admin API. The HTTP status code from the curl invocation will be
+# stored in the HTTP_CODE variable.
 #
 # Arguments
-#   $@ -> The URL and additional needed data to make request
+#   $@ -> The URL and additional data needed to make the request.
 ########################################################################################################################
 function make_api_request() {
-  curl -k \
+  set +x
+  HTTP_CODE=$(curl -k \
     --retry "${API_RETRY_LIMIT}" \
     --max-time "${API_TIMEOUT_WAIT}" \
     --retry-delay 1 \
     --retry-connrefused \
-    -u "${PF_ADMIN_USER_USERNAME}:${PF_ADMIN_USER_PASSWORD}" \
-    -H 'X-Xsrf-Header: PingFederate' "$@"
-
+    -u "Administrator:${PF_LDAP_PASSWORD}" \
+    -w '%{http_code}' \
+    -H 'X-Xsrf-Header: PingFederate' "$@")
   RESULT=$?
-  echo "Admin API request status: ${RESULT}"
+  ${VERBOSE} && set -x
 
+  echo "Admin API request status: ${RESULT}; HTTP status: ${HTTP_CODE}"
   return "${RESULT}"
 }
 
 ########################################################################################################################
-# Wait for the local PingFederate admin server to be up and running waiting 3 seconds between each check.
+# Wait for the local PingFederate admin API to be up and running waiting 3 seconds between each check.
+#
+# Arguments
+#   ${1} -> The optional endpoint to wait for. If not specified, the function will wait for the version endpoint.
 ########################################################################################################################
-function wait_for_server_ready() {
-  while true; do
-    liveness.sh && return 0
-    sleep 3s
-  done
-}
+function wait_for_admin_api_endpoint() {
+  TIMEOUT=3
+  ENDPOINT="${1:-version}"
+  API_REQUEST_URL="https://localhost:9999/pf-admin-api/v1/${ENDPOINT}"
 
-########################################################################################################################
-# Wait for the local PingFederate admin server to be up and running waiting 3 seconds between each check.
-########################################################################################################################
-function wait_for_server_ready() {
+  echo "Waiting for admin API endpoint at ${API_REQUEST_URL}"
+
   while true; do
-    liveness.sh && return 0
-    sleep 3s
+    make_api_request -X GET "${API_REQUEST_URL}" -o /dev/null 2> /dev/null
+    if test "${HTTP_CODE}" -eq 200; then
+      echo "Admin API endpoint ${ENDPOINT} ready"
+      return 0
+    fi
+
+    echo "Admin API not endpoint ${ENDPOINT} ready - will retry in ${TIMEOUT} seconds"
+    sleep "${TIMEOUT}"
   done
 }
 

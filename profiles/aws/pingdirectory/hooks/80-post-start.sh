@@ -269,7 +269,7 @@ initialize_replication_for_dn() {
     --trustAll \
     --hostSource "${REPL_SRC_HOST}" --portSource "${REPL_SRC_PORT}" --useSSLSource \
     --hostDestination "${HOSTNAME}" --portDestination ${LDAPS_PORT} --useSSLDestination \
-    --baseDN "${BASE_DN=${1}}" \
+    --baseDN "${BASE_DN}" \
     --adminUID "${ADMIN_USER_NAME}" \
     --adminPasswordFile "${ADMIN_USER_PASSWORD_FILE}" \
     --no-prompt --ignoreWarnings \

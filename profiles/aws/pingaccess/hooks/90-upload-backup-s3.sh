@@ -26,7 +26,7 @@ if test ! ${API_RESULT} -eq 0 || test $( unzip -t ${DST_FILE} > /dev/null 2>&1; 
   # Cleanup k8s-s3-upload-archive temp directory
   echo "Failed to export archive"
   rm -rf ${DST_DIRECTORY}
-  exit 0
+  exit 1
 fi
 
 echo "Creating directory ${DIRECTORY_NAME} under bucket ${BUCKET_NAME}"

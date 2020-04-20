@@ -1,5 +1,50 @@
 # Changelog
 
+### 1.3.0
+
+- Added support for PingAccess deployment automation, including initial deployment of a cluster, auto-scaling, 
+  auto-healing of failed admin and engine instances, encrypted backup of the master key for disaster recovery upon 
+  instance and AZ failure
+- Added the ability to capture and upload PingFederate CSD archives to S3, if using AWS  
+- Updated PingDirectory from 8.0.0.0 to 8.0.0.1
+- Updated PingFederate from 10.0.0 to 10.0.1
+- Updated cluster-autoscaler from v1.13.9 to v1.14.4  
+- Added the ability to define service dependencies between Ping application using the WAIT_FOR_SERVICES environment
+  variable
+
+_Changes:_
+
+- [X] PDO-143 - Recover from a disaster that occurs within an existing PingAccess deployment
+- [X] PDO-256 - Create K8s clustered deployment for PingAccess Admin and Engines
+- [X] PDO-322 - PA Clustered engine Auto-Scaling Descriptor
+- [X] PDO-376 - PA Periodically backup config
+- [X] PDO-521 - Master Key Delivery Interface for PA
+- [X] PDO-529 - Disable replication for all base DNs on pre-stop
+- [X] PDO-533 - Switch to PA 6.0.1 version
+- [X] PDO-630 - PingAccess - creating and updating engine certificates
+- [X] PDO-631 - Look into removing PingAccess server profile wait functions
+- [X] PDO-629 - PingAccess is forced to restart upon uploading engines keypair certificate
+- [X] PDO-653 - Extract PingAccess heap sizes into environment variables
+- [X] PDO-701 - Configure PingAccess Engines to use serviceAccount RBAC
+- [X] PDO-723 - WAIT_FOR_SERVICES to define service dependencies
+- [X] PDO-737 - PF CSD logs persistence to S3 bucket
+- [X] PDO-743 - PingAccess crashes upon new deployment
+- [X] PDO-750 - Switch to PF 10.0.1 version
+- [X] PDO-751 - Switch to PD 8.0.0.1 version
+- [X] PDO-752 - PD Pod Image Upgrade Broken Due To Incompatible JVM Settings
+- [X] PDO-771 - Wonky issue where pingdirectory-0 pod somehow lost its password file on upgrade from v1.2.0 to v1.3.0
+- [X] PDO-776 - PingAccess 81-import-initial-configuration script isn't checking to see if keypair already exists
+- [X] PDO-792 - PingAccess upload configuration to S3 after successful deployment
+- [X] PDO-793 - Manual PD Backup fails
+- [X] PDO-794 - Redact log passwords for PingFederate and PingAccess
+- [X] PDO-795 - PW change to PA Causes Issues with Kubernetes
+- [X] PDO-797 - Periodic Upload of PF CSD Logs Failing
+- [X] PDO-810 - Cherry Pick from Master - Update PF deployment automation to upload data.zip to s3 upon start/restart
+- [X] PDO-816 - Upgrade cluster-autoscaler version to 1.14.x
+- [X] PDO-817 - Add pod anti-affinities for each ES pod to be deployed to a separate node and potentially separate AZ
+- [X] PDO-810 - Wait for the admin API to be ready before uploading data to s3
+- [X] PDO-820 - Force pod restart on PA API call failure 
+
 ### 1.2.0
 
 - Added support for P14C pass-through authentication so customer IAM admins can login to PingFederate using their CAP
