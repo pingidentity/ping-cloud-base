@@ -226,6 +226,31 @@ disable_replication_for_dn() {
 }
 
 ########################################################################################################################
+# Enable a LDAPS connection handler at the provided port.
+#
+# Arguments
+#   ${1} -> The port on which to add an LDAPS connection handler.
+########################################################################################################################
+enable_ldap_connection_handler() {
+  PORT=${1}
+
+  echo "post-start: enabling LDAPS connection handler at port ${PORT}"
+  dsconfig --no-prompt create-connection-handler \
+    --handler-name "External LDAPS Connection Handler" \
+    --type ldap \
+    --set enabled:true \
+    --set listen-port:${PORT} \
+    --set use-ssl:true \
+    --set ssl-cert-nickname:server-cert \
+    --set key-manager-provider:JKS \
+    --set trust-manager-provider:JKS
+  result=$?
+  echo "post-start: LDAPS enable at port ${PORT} status: ${result}"
+
+  return "${result}"
+}
+
+########################################################################################################################
 # Enable replication for the provided base DN on this server.
 #
 # Arguments
@@ -238,11 +263,12 @@ enable_replication_for_dn() {
   dsreplication enable \
     --retryTimeoutSeconds "${RETRY_TIMEOUT_SECONDS}" \
     --trustAll \
-    --host1 "${REPL_SRC_HOST}" --port1 "${REPL_SRC_PORT}" --useSSL1 \
+    --host1 "${REPL_SRC_HOST}" --port1 "${REPL_SRC_LDAPS_PORT}" --useSSL1 \
     --bindDN1 "${ROOT_USER_DN}" --bindPasswordFile1 "${ROOT_USER_PASSWORD_FILE}" \
-    --host2 "${HOSTNAME}" --port2 "${LDAPS_PORT}" --useSSL2 \
+    --replicationPort1 "${EXTERNAL_REPLICATION_PORT}" \
+    --host2 "${REPL_DST_HOST}" --port2 "${REPL_DST_LDAPS_PORT}" --useSSL2 \
     --bindDN2 "${ROOT_USER_DN}" --bindPasswordFile2 "${ROOT_USER_PASSWORD_FILE}" \
-    --replicationPort2 "${REPLICATION_PORT}" \
+    --replicationPort2 "${EXTERNAL_REPLICATION_PORT}" \
     --adminUID "${ADMIN_USER_NAME}" --adminPasswordFile "${ADMIN_USER_PASSWORD_FILE}" \
     --no-prompt --ignoreWarnings \
     --baseDN "${BASE_DN}" \
@@ -375,12 +401,33 @@ fi
 
 echo "post-start: replication will be initialized for base DNs: ${UNINITIALIZED_DNS}"
 
-DOMAIN_NAME=$(hostname -f | cut -d'.' -f2-)
-REPL_SRC_HOST=pingdirectory-admin-parent.mini.ping-qual.com
+# Determine the hostnames and ports to use while initializing replication.
+# FIXME: remove these two lines after testing
+PINGDIRECTORY_PARENT_LB_NAME=pingdirectory-admin-parent.mini.ping-qual.com
+PINGDIRECTORY_LB_NAME=pingdirectory-admin-child-0.mini.ping-qual.com
 
-DEFAULT_REPL_SRC_HOST="${K8S_STATEFUL_SET_NAME}-0.${DOMAIN_NAME}"
-REPL_SRC_HOST="${REPL_SRC_HOST:-${DEFAULT_REPL_SRC_HOST}}"
-REPL_SRC_PORT="${REPL_SRC_PORT:-${LDAPS_PORT}}"
+if test -z "${PINGDIRECTORY_PARENT_LB_NAME}" || test -z "${PINGDIRECTORY_LB_NAME}"; then
+  DOMAIN_NAME=$(hostname -f | cut -d'.' -f2-)
+  REPL_SRC_HOST="${K8S_STATEFUL_SET_NAME}-0.${DOMAIN_NAME}"
+  REPL_SRC_LDAPS_PORT="${LDAPS_PORT}"
+  REPL_SRC_REPL_PORT=${REPLICATION_PORT}
+  REPL_DST_HOST="${HOSTNAME}"
+  REPL_DST_LDAPS_PORT="${LDAPS_PORT}"
+  REPL_DST_REPL_PORT=${REPLICATION_PORT}
+else
+  REPL_SRC_HOST="${PINGDIRECTORY_PARENT_LB_NAME}"
+  REPL_SRC_LDAPS_PORT="${LDAPS_PORT}0"
+  REPL_SRC_REPL_PORT="${REPLICATION_PORT}0"
+  REPL_DST_HOST="${PINGDIRECTORY_LB_NAME}"
+  REPL_DST_LDAPS_PORT="${LDAPS_PORT}${ORDINAL}"
+  REPL_DST_REPL_PORT="${REPLICATION_PORT}${ORDINAL}"
+fi
+
+if test ! -z "${PINGDIRECTORY_LB_NAME}"; then
+  # Adding a connection handler for external access
+  EXTERNAL_LDAPS_PORT="${REPLICATION_PORT}${ORDINAL}"
+  echo "post-start: adding an external LDAPS connection handler at port ${EXTERNAL_LDAPS_PORT}"
+fi
 
 # For end-user base DNs, allow the option to disable previous DNs from replication. This allows
 # customers to disable the OOTB base DN that is automatically enabled and initialized.
