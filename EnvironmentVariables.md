@@ -4,6 +4,18 @@ See the [full list](https://github.com/pingidentity/pingidentity-devops-getting-
 
 The following charts show the additional environment variables that may be defined at the Kubernetes layer per release.
 
+### v1.3.0
+
+## PingAccess
+
+| Name          | Default Value | Description  | Comments |
+| ------------- | ------------- | ------------ | -------- |
+| API_RETRY_LIMIT | 10 | The maximum number of times that requests to the PingAccess Admin API are retried upon failure. | |
+| API_TIMEOUT_WAIT | 5 | The response timeout in seconds for requests to the PingAccess Admin API. | |
+| BACKUP_FILE_NAME | No default | Data backup file name within S3. | When running the click ops manual job restore, you can specify desired data backup file to restore from S3. e.g. pa-data-MM-DD-YYYY.HH.MM.SS.zip  |
+| CONFIG_QUERY_KP_VALID_DAYS | 365 | Valid days for the PingAccess Config Query Listener KeyPair. | |
+| VERBOSE | true | Triggers verbose messages in scripts using the set -x option. | |
+
 
 ### v1.1.1
 
@@ -34,6 +46,6 @@ The following charts show the additional environment variables that may be defin
 | Name          | Default Value | Description  | Comments |
 | ------------- | ------------- | ------------ | -------- |
 | BACKUP_URL | No default | The URL of the backup location. If provided, data backups are periodically captured and sent to this URL. | For AWS S3 buckets, it must be an S3 URL, e.g. s3://backups. Also, the PingFederate admin server writes the master key to this location, and the PingFederate engines read it from there. If not set, the PingFederate servers will fail to start. |
-| API_RETRY_LIMIT | 10 | The maximum number of times that requests to the PingFederate Admin API is retried upon failure. | |
+| API_RETRY_LIMIT | 10 | The maximum number of times that requests to the PingFederate Admin API are retried upon failure. | |
 | API_TIMEOUT_WAIT | 5 | The response timeout in seconds for requests to the PingFederate Admin API. | |
 | VERBOSE | true | Triggers verbose messages in scripts using the set -x option. | |
