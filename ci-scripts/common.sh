@@ -57,6 +57,7 @@ PINGACCESS_API=https://pingaccess-admin${FQDN}/pa-admin-api/v3/api-docs
 
 # runtime services:
 PINGACCESS_RUNTIME=https://pingaccess${FQDN}
+PINGACCESS_AGENT=https://pingaccess-agent${FQDN}
 
 # Source some utility methods.
 . ${CI_PROJECT_DIR}/utils.sh
