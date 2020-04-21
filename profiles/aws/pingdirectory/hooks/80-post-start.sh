@@ -267,10 +267,10 @@ enable_replication_for_dn() {
   # Determine the hostnames and ports to use while enabling replication. When in multi-cluster mode, always use the
   # external names and ports.
   if test "${IS_MULTI_CLUSTER}" = 'true'; then
-    REPL_SRC_HOST="${PINGDIRECTORY_PARENT_LB_NAME}"
+    REPL_SRC_HOST="${PD_PARENT_PUBLIC_HOSTNAME}"
     REPL_SRC_LDAPS_PORT="${LDAPS_PORT}0"
     REPL_SRC_REPL_PORT="${REPLICATION_PORT}0"
-    REPL_DST_HOST="${PINGDIRECTORY_LB_NAME}"
+    REPL_DST_HOST="${PD_PUBLIC_HOSTNAME}"
     REPL_DST_LDAPS_PORT="${LDAPS_PORT}${ORDINAL}"
     REPL_DST_REPL_PORT="${REPLICATION_PORT}${ORDINAL}"
   else
@@ -350,7 +350,7 @@ initialize_replication_for_dn() {
   FROM_PORT="${LDAPS_PORT}"
 
   if test "${IS_MULTI_CLUSTER}" = 'true' && test "${ORDINAL}" -eq 0; then
-    FROM_HOST="${PINGDIRECTORY_PARENT_LB_NAME}"
+    FROM_HOST="${PD_PARENT_PUBLIC_HOSTNAME}"
     FROM_PORT="${LDAPS_PORT}0"
   fi
 
@@ -395,15 +395,15 @@ waitUntilLdapUp "localhost" "${LDAPS_PORT}" 'cn=config'
 IS_MULTI_CLUSTER=false
 IS_PARENT_CLUSTER=false
 
-if test ! -z "${PINGDIRECTORY_PARENT_LB_NAME}" && test ! -z "${PINGDIRECTORY_LB_NAME}"; then
+if test ! -z "${PD_PARENT_PUBLIC_HOSTNAME}" && test ! -z "${PD_PUBLIC_HOSTNAME}"; then
   IS_MULTI_CLUSTER=true
-  test "${PINGDIRECTORY_PARENT_LB_NAME}" = "${PINGDIRECTORY_LB_NAME}" && IS_PARENT_CLUSTER=true
+  test "${PD_PARENT_PUBLIC_HOSTNAME}" = "${PD_PUBLIC_HOSTNAME}" && IS_PARENT_CLUSTER=true
 fi
 
 echo "post-start: multi-cluster: ${IS_MULTI_CLUSTER}; parent-cluster: ${IS_PARENT_CLUSTER}"
 
 # Add an LDAPS connection handler for external access, if necessary
-if test ! -z "${PINGDIRECTORY_LB_NAME}"; then
+if test ! -z "${PD_PUBLIC_HOSTNAME}"; then
   EXTERNAL_LDAPS_PORT="${LDAPS_PORT}${ORDINAL}"
   enable_ldap_connection_handler "${EXTERNAL_LDAPS_PORT}"
   test $? -ne 0 && stop_container
