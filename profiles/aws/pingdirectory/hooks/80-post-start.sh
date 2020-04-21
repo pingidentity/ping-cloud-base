@@ -391,6 +391,12 @@ rm -f "${POST_START_INIT_MARKER_FILE}"
 echo "post-start: running ldapsearch test on this container (${HOSTNAME})"
 waitUntilLdapUp "localhost" "${LDAPS_PORT}" 'cn=config'
 
+SHORT_HOST_NAME=$(hostname)
+DOMAIN_NAME=$(hostname -f | cut -d'.' -f2-)
+ORDINAL=$(echo ${SHORT_HOST_NAME##*-})
+
+echo "post-start: pod ordinal: ${ORDINAL}"
+
 # Determine if this a cross-cluster deployment, and if so whether this is the parent cluster.
 IS_MULTI_CLUSTER=false
 IS_PARENT_CLUSTER=false
@@ -412,11 +418,6 @@ fi
 # Change PF user passwords
 change_pf_user_passwords
 test $? -ne 0 && stop_container
-
-SHORT_HOST_NAME=$(hostname)
-DOMAIN_NAME=$(hostname -f | cut -d'.' -f2-)
-ORDINAL=$(echo ${SHORT_HOST_NAME##*-})
-echo "post-start: pod ordinal: ${ORDINAL}"
 
 if test "${ORDINAL}" -eq 0 && test "${IS_PARENT_CLUSTER}" = 'true'; then
   # The request control allows encoded passwords, which is always required for topology admin users
