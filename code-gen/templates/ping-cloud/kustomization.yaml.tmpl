@@ -119,7 +119,7 @@ patchesStrategicMerge:
     name: pingdirectory-passwords
 
 # Supported keys:
-# Exported as environment variables: PA_ADMIN_USER_PASSWORD
+# Exported as environment variables: PA_ADMIN_USER_PASSWORD, OLD_PA_ADMIN_USER_PASSWORD
 - |-
   apiVersion: v1
   kind: Secret
@@ -258,6 +258,20 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingaccess-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+
+# pingaccess agent
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingaccess-agent-ingress
+  patch: |
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingaccess-agent${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingaccess-agent${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
 
 # pingfederate runtime
 - target:

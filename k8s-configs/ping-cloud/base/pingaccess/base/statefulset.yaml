@@ -253,6 +253,7 @@ spec:
               - /opt/staging/pre-stop.sh
         ports:
         - containerPort: 3000
+        - containerPort: 3030
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_ENGINE
