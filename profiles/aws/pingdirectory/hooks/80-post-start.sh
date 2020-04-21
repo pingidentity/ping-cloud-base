@@ -236,7 +236,7 @@ enable_ldap_connection_handler() {
 
   echo "post-start: enabling LDAPS connection handler at port ${PORT}"
   dsconfig --no-prompt create-connection-handler \
-    --handler-name "External LDAPS Connection Handler" \
+    --handler-name "External LDAPS Connection Handler ${PORT}" \
     --type ldap \
     --set enabled:true \
     --set listen-port:${PORT} \
@@ -247,7 +247,7 @@ enable_ldap_connection_handler() {
   result=$?
   echo "post-start: LDAPS enable at port ${PORT} status: ${result}"
 
-  if test ${pwdModStatus} -eq 68; then
+  if test ${result} -eq 68; then
     echo "post-start: LDAPS connection handler already exists at port ${PORT}"
     return 0
   fi
@@ -264,8 +264,8 @@ enable_ldap_connection_handler() {
 enable_replication_for_dn() {
   BASE_DN=${1}
 
-  # Determine the hostnames and ports to use while enabling replication.
-  # When in multi-cluster mode, always use the external names and ports.
+  # Determine the hostnames and ports to use while enabling replication. When in multi-cluster mode, always use the
+  # external names and ports.
   if test "${IS_MULTI_CLUSTER}" = 'true'; then
     REPL_SRC_HOST="${PINGDIRECTORY_PARENT_LB_NAME}"
     REPL_SRC_LDAPS_PORT="${LDAPS_PORT}0"
@@ -289,6 +289,10 @@ enable_replication_for_dn() {
   echo "post-start: using REPL_DST_LDAPS_PORT: ${REPL_DST_LDAPS_PORT}"
   echo "post-start: using REPL_DST_REPL_PORT: ${REPL_DST_REPL_PORT}"
 
+  if test "${IS_MULTI_CLUSTER}" = 'true'; then
+    echo "post-start: wait for the seed server in the parent cluster"
+  fi
+
   # FIXME: DS-41417: manage-profile replace-profile has a bug today where it won't make any changes to any local-db
   # backends after setup. When manage-profile replace-profile is fixed, the following code block may be removed.
   if test "${BASE_DN}" = "${USER_BASE_DN}"; then
@@ -300,14 +304,12 @@ enable_replication_for_dn() {
           PORT=${REPL_DST_LDAPS_PORT}
 
       configure_user_backend "${HOST}" "${PORT}"
-      configBackendStatus=$?
-      test ${configBackendStatus} -ne 0 && stop_container
+      test $? -ne 0 && stop_container
 
       does_base_entry_exist "${HOST}" "${PORT}"
       if test $? -ne 0; then
         add_base_entry "${HOST}" "${PORT}"
-        addStatus=$?
-        test ${addStatus} -ne 0 && stop_container
+        test $? -ne 0 && stop_container
       fi
     done
   fi
@@ -318,10 +320,10 @@ enable_replication_for_dn() {
     --trustAll \
     --host1 "${REPL_SRC_HOST}" --port1 "${REPL_SRC_LDAPS_PORT}" --useSSL1 \
     --bindDN1 "${ROOT_USER_DN}" --bindPasswordFile1 "${ROOT_USER_PASSWORD_FILE}" \
-    --replicationPort1 "${EXTERNAL_REPLICATION_PORT}" \
+    --replicationPort1 "${REPL_SRC_REPL_PORT}" \
     --host2 "${REPL_DST_HOST}" --port2 "${REPL_DST_LDAPS_PORT}" --useSSL2 \
     --bindDN2 "${ROOT_USER_DN}" --bindPasswordFile2 "${ROOT_USER_PASSWORD_FILE}" \
-    --replicationPort2 "${EXTERNAL_REPLICATION_PORT}" \
+    --replicationPort2 "${REPL_DST_REPL_PORT}" \
     --adminUID "${ADMIN_USER_NAME}" --adminPasswordFile "${ADMIN_USER_PASSWORD_FILE}" \
     --no-prompt --ignoreWarnings \
     --baseDN "${BASE_DN}" \
@@ -342,8 +344,8 @@ enable_replication_for_dn() {
 initialize_replication_for_dn() {
   BASE_DN=${1}
 
-  # Initialize the first server in the child cluster from the first server in the parent cluster.
-  # Initialize other servers in the child cluster from the first server within the same cluster.
+  # Initialize the first server in the child cluster from the first server in the parent cluster. Initialize other
+  # servers in the child cluster from the first server within the same cluster.
   FROM_HOST="${K8S_STATEFUL_SET_NAME}-0.${DOMAIN_NAME}"
   FROM_PORT="${LDAPS_PORT}"
 
@@ -409,8 +411,7 @@ fi
 
 # Change PF user passwords
 change_pf_user_passwords
-pwdModStatus=$?
-test ${pwdModStatus} -ne 0 && stop_container
+test $? -ne 0 && stop_container
 
 SHORT_HOST_NAME=$(hostname)
 DOMAIN_NAME=$(hostname -f | cut -d'.' -f2-)
@@ -422,8 +423,7 @@ if test "${ORDINAL}" -eq 0 && test "${IS_PARENT_CLUSTER}" = 'true'; then
   # ldapmodify allows a --passwordUpdateBehavior allow-pre-encoded-password=true to do the same
   ALLOW_PRE_ENCODED_PW_CONTROL='1.3.6.1.4.1.30221.2.5.51:true::MAOBAf8='
   change_user_password "cn=${ADMIN_USER_NAME}" "${ADMIN_USER_PASSWORD_FILE}" "${ALLOW_PRE_ENCODED_PW_CONTROL}"
-  pwdModStatus=$?
-  test ${pwdModStatus} -ne 0 && stop_container
+  test $? -ne 0 && stop_container
 
   # Update the license file, if necessary
   LICENSE_FILE_PATH="${LICENSE_DIR}/${LICENSE_FILE_NAME}"
