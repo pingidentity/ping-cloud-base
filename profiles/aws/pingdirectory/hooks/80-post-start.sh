@@ -247,6 +247,11 @@ enable_ldap_connection_handler() {
   result=$?
   echo "post-start: LDAPS enable at port ${PORT} status: ${result}"
 
+  if test ${pwdModStatus} -eq 68; then
+    echo "post-start: LDAPS connection handler already exists at port ${PORT}"
+    return 0
+  fi
+
   return "${result}"
 }
 
@@ -259,7 +264,55 @@ enable_ldap_connection_handler() {
 enable_replication_for_dn() {
   BASE_DN=${1}
 
-  echo "post-start: running dsreplication enable for ${BASE_DN=${1}}"
+  # Determine the hostnames and ports to use while enabling replication.
+  # When in multi-cluster mode, always use the external names and ports.
+  if test "${IS_MULTI_CLUSTER}" = 'true'; then
+    REPL_SRC_HOST="${PINGDIRECTORY_PARENT_LB_NAME}"
+    REPL_SRC_LDAPS_PORT="${LDAPS_PORT}0"
+    REPL_SRC_REPL_PORT="${REPLICATION_PORT}0"
+    REPL_DST_HOST="${PINGDIRECTORY_LB_NAME}"
+    REPL_DST_LDAPS_PORT="${LDAPS_PORT}${ORDINAL}"
+    REPL_DST_REPL_PORT="${REPLICATION_PORT}${ORDINAL}"
+  else
+    REPL_SRC_HOST="${K8S_STATEFUL_SET_NAME}-0.${DOMAIN_NAME}"
+    REPL_SRC_LDAPS_PORT="${LDAPS_PORT}"
+    REPL_SRC_REPL_PORT=${REPLICATION_PORT}
+    REPL_DST_HOST="${HOSTNAME}"
+    REPL_DST_LDAPS_PORT="${LDAPS_PORT}"
+    REPL_DST_REPL_PORT=${REPLICATION_PORT}
+  fi
+
+  echo "post-start: using REPL_SRC_HOST: ${REPL_SRC_HOST}"
+  echo "post-start: using REPL_SRC_LDAPS_PORT: ${REPL_SRC_LDAPS_PORT}"
+  echo "post-start: using REPL_SRC_REPL_PORT: ${REPL_SRC_REPL_PORT}"
+  echo "post-start: using REPL_DST_HOST: ${REPL_DST_HOST}"
+  echo "post-start: using REPL_DST_LDAPS_PORT: ${REPL_DST_LDAPS_PORT}"
+  echo "post-start: using REPL_DST_REPL_PORT: ${REPL_DST_REPL_PORT}"
+
+  # FIXME: DS-41417: manage-profile replace-profile has a bug today where it won't make any changes to any local-db
+  # backends after setup. When manage-profile replace-profile is fixed, the following code block may be removed.
+  if test "${BASE_DN}" = "${USER_BASE_DN}"; then
+    echo "post-start: user base DN ${USER_BASE_DN} is uninitialized"
+
+    for HOST in "${REPL_SRC_HOST}" "${REPL_DST_HOST}"; do
+      test "${HOST}" = "${REPL_SRC_HOST}" &&
+          PORT=${REPL_SRC_LDAPS_PORT} ||
+          PORT=${REPL_DST_LDAPS_PORT}
+
+      configure_user_backend "${HOST}" "${PORT}"
+      configBackendStatus=$?
+      test ${configBackendStatus} -ne 0 && stop_container
+
+      does_base_entry_exist "${HOST}" "${PORT}"
+      if test $? -ne 0; then
+        add_base_entry "${HOST}" "${PORT}"
+        addStatus=$?
+        test ${addStatus} -ne 0 && stop_container
+      fi
+    done
+  fi
+
+  echo "post-start: running dsreplication enable for ${BASE_DN}"
   dsreplication enable \
     --retryTimeoutSeconds "${RETRY_TIMEOUT_SECONDS}" \
     --trustAll \
@@ -289,11 +342,21 @@ enable_replication_for_dn() {
 initialize_replication_for_dn() {
   BASE_DN=${1}
 
-  echo "post-start: running dsreplication initialize for ${BASE_DN=${1}}"
+  # Initialize the first server in the child cluster from the first server in the parent cluster.
+  # Initialize other servers in the child cluster from the first server within the same cluster.
+  FROM_HOST="${K8S_STATEFUL_SET_NAME}-0.${DOMAIN_NAME}"
+  FROM_PORT="${LDAPS_PORT}"
+
+  if test "${IS_MULTI_CLUSTER}" = 'true' && test "${ORDINAL}" -eq 0; then
+    FROM_HOST="${PINGDIRECTORY_PARENT_LB_NAME}"
+    FROM_PORT="${LDAPS_PORT}0"
+  fi
+
+  echo "post-start: running dsreplication initialize for ${BASE_DN} from ${FROM_HOST}:${FROM_PORT}"
   dsreplication initialize \
     --retryTimeoutSeconds ${RETRY_TIMEOUT_SECONDS} \
     --trustAll \
-    --hostSource "${REPL_SRC_HOST}" --portSource "${REPL_SRC_PORT}" --useSSLSource \
+    --hostSource "${FROM_HOST}" --portSource "${FROM_PORT}" --useSSLSource \
     --hostDestination "${HOSTNAME}" --portDestination ${LDAPS_PORT} --useSSLDestination \
     --baseDN "${BASE_DN}" \
     --adminUID "${ADMIN_USER_NAME}" \
@@ -326,16 +389,35 @@ rm -f "${POST_START_INIT_MARKER_FILE}"
 echo "post-start: running ldapsearch test on this container (${HOSTNAME})"
 waitUntilLdapUp "localhost" "${LDAPS_PORT}" 'cn=config'
 
+# Determine if this a cross-cluster deployment, and if so whether this is the parent cluster.
+IS_MULTI_CLUSTER=false
+IS_PARENT_CLUSTER=false
+
+if test ! -z "${PINGDIRECTORY_PARENT_LB_NAME}" && test ! -z "${PINGDIRECTORY_LB_NAME}"; then
+  IS_MULTI_CLUSTER=true
+  test "${PINGDIRECTORY_PARENT_LB_NAME}" = "${PINGDIRECTORY_LB_NAME}" && IS_PARENT_CLUSTER=true
+fi
+
+echo "post-start: multi-cluster: ${IS_MULTI_CLUSTER}; parent-cluster: ${IS_PARENT_CLUSTER}"
+
+# Add an LDAPS connection handler for external access, if necessary
+if test ! -z "${PINGDIRECTORY_LB_NAME}"; then
+  EXTERNAL_LDAPS_PORT="${LDAPS_PORT}${ORDINAL}"
+  enable_ldap_connection_handler "${EXTERNAL_LDAPS_PORT}"
+  test $? -ne 0 && stop_container
+fi
+
 # Change PF user passwords
 change_pf_user_passwords
 pwdModStatus=$?
 test ${pwdModStatus} -ne 0 && stop_container
 
 SHORT_HOST_NAME=$(hostname)
+DOMAIN_NAME=$(hostname -f | cut -d'.' -f2-)
 ORDINAL=$(echo ${SHORT_HOST_NAME##*-})
 echo "post-start: pod ordinal: ${ORDINAL}"
 
-if test "${ORDINAL}" -eq 0; then
+if test "${ORDINAL}" -eq 0 && test "${IS_PARENT_CLUSTER}" = 'true'; then
   # The request control allows encoded passwords, which is always required for topology admin users
   # ldapmodify allows a --passwordUpdateBehavior allow-pre-encoded-password=true to do the same
   ALLOW_PRE_ENCODED_PW_CONTROL='1.3.6.1.4.1.30221.2.5.51:true::MAOBAf8='
@@ -401,34 +483,6 @@ fi
 
 echo "post-start: replication will be initialized for base DNs: ${UNINITIALIZED_DNS}"
 
-# Determine the hostnames and ports to use while initializing replication.
-# FIXME: remove these two lines after testing
-PINGDIRECTORY_PARENT_LB_NAME=pingdirectory-admin-parent.mini.ping-qual.com
-PINGDIRECTORY_LB_NAME=pingdirectory-admin-child-0.mini.ping-qual.com
-
-if test -z "${PINGDIRECTORY_PARENT_LB_NAME}" || test -z "${PINGDIRECTORY_LB_NAME}"; then
-  DOMAIN_NAME=$(hostname -f | cut -d'.' -f2-)
-  REPL_SRC_HOST="${K8S_STATEFUL_SET_NAME}-0.${DOMAIN_NAME}"
-  REPL_SRC_LDAPS_PORT="${LDAPS_PORT}"
-  REPL_SRC_REPL_PORT=${REPLICATION_PORT}
-  REPL_DST_HOST="${HOSTNAME}"
-  REPL_DST_LDAPS_PORT="${LDAPS_PORT}"
-  REPL_DST_REPL_PORT=${REPLICATION_PORT}
-else
-  REPL_SRC_HOST="${PINGDIRECTORY_PARENT_LB_NAME}"
-  REPL_SRC_LDAPS_PORT="${LDAPS_PORT}0"
-  REPL_SRC_REPL_PORT="${REPLICATION_PORT}0"
-  REPL_DST_HOST="${PINGDIRECTORY_LB_NAME}"
-  REPL_DST_LDAPS_PORT="${LDAPS_PORT}${ORDINAL}"
-  REPL_DST_REPL_PORT="${REPLICATION_PORT}${ORDINAL}"
-fi
-
-if test ! -z "${PINGDIRECTORY_LB_NAME}"; then
-  # Adding a connection handler for external access
-  EXTERNAL_LDAPS_PORT="${REPLICATION_PORT}${ORDINAL}"
-  echo "post-start: adding an external LDAPS connection handler at port ${EXTERNAL_LDAPS_PORT}"
-fi
-
 # For end-user base DNs, allow the option to disable previous DNs from replication. This allows
 # customers to disable the OOTB base DN that is automatically enabled and initialized.
 if test "${DISABLE_ALL_OLDER_USER_BASE_DN}" = 'true'; then
@@ -446,29 +500,6 @@ if test "${DISABLE_ALL_OLDER_USER_BASE_DN}" = 'true'; then
 fi
 
 for DN in ${UNINITIALIZED_DNS}; do
-  # FIXME: DS-41417: manage-profile replace-profile has a bug today where it won't make any changes to any local-db
-  # backends after setup. When manage-profile replace-profile is fixed, the following code block may be removed.
-  if test "${DN}" = "${USER_BASE_DN}"; then
-    echo "post-start: user base DN ${USER_BASE_DN} is uninitialized"
-
-    for HOST in "${REPL_SRC_HOST}" "${HOSTNAME}"; do
-      test "${HOST}" = "${REPL_SRC_HOST}" &&
-          PORT=${REPL_SRC_PORT} ||
-          PORT=${LDAPS_PORT}
-
-      configure_user_backend "${HOST}" "${PORT}"
-      configBackendStatus=$?
-      test ${configBackendStatus} -ne 0 && stop_container
-
-      does_base_entry_exist "${HOST}" "${PORT}"
-      if test $? -ne 0; then
-        add_base_entry "${HOST}" "${PORT}"
-        addStatus=$?
-        test ${addStatus} -ne 0 && stop_container
-      fi
-    done
-  fi
-
   enable_replication_for_dn "${DN}"
   replEnableResult=$?
 
