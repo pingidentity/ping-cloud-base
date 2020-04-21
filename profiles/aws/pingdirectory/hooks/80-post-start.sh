@@ -268,11 +268,11 @@ enable_replication_for_dn() {
   # external names and ports.
   if test "${IS_MULTI_CLUSTER}" = 'true'; then
     REPL_SRC_HOST="${PD_PARENT_PUBLIC_HOSTNAME}"
-    REPL_SRC_LDAPS_PORT="${LDAPS_PORT}0"
-    REPL_SRC_REPL_PORT="${REPLICATION_PORT}0"
+    REPL_SRC_LDAPS_PORT=6360
+    REPL_SRC_REPL_PORT=9890
     REPL_DST_HOST="${PD_PUBLIC_HOSTNAME}"
-    REPL_DST_LDAPS_PORT="${LDAPS_PORT}${ORDINAL}"
-    REPL_DST_REPL_PORT="${REPLICATION_PORT}${ORDINAL}"
+    REPL_DST_LDAPS_PORT="636${ORDINAL}"
+    REPL_DST_REPL_PORT="989${ORDINAL}"
   else
     REPL_SRC_HOST="${K8S_STATEFUL_SET_NAME}-0.${DOMAIN_NAME}"
     REPL_SRC_LDAPS_PORT="${LDAPS_PORT}"
@@ -351,7 +351,7 @@ initialize_replication_for_dn() {
 
   if test "${IS_MULTI_CLUSTER}" = 'true' && test "${ORDINAL}" -eq 0; then
     FROM_HOST="${PD_PARENT_PUBLIC_HOSTNAME}"
-    FROM_PORT="${LDAPS_PORT}0"
+    FROM_PORT=6360
   fi
 
   echo "post-start: running dsreplication initialize for ${BASE_DN} from ${FROM_HOST}:${FROM_PORT}"
@@ -410,7 +410,7 @@ echo "post-start: multi-cluster: ${IS_MULTI_CLUSTER}; parent-cluster: ${IS_PAREN
 
 # Add an LDAPS connection handler for external access, if necessary
 if test ! -z "${PD_PUBLIC_HOSTNAME}"; then
-  EXTERNAL_LDAPS_PORT="${LDAPS_PORT}${ORDINAL}"
+  EXTERNAL_LDAPS_PORT="636${ORDINAL}"
   enable_ldap_connection_handler "${EXTERNAL_LDAPS_PORT}"
   test $? -ne 0 && stop_container
 fi
