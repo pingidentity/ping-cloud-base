@@ -12,7 +12,7 @@ ORIG_UNBOUNDID_JAVA_ARGS="${UNBOUNDID_JAVA_ARGS}"
 HEAP_SIZE_INT=$(echo "${MAX_HEAP_SIZE}" | grep 'g$' | cut -d'g' -f1)
 
 if test ! -z "${HEAP_SIZE_INT}" && test "${HEAP_SIZE_INT}" -ge 4; then
-  NEW_HEAP_SIZE=$((HEAP_SIZE_INT - 2))
+  NEW_HEAP_SIZE=$((HEAP_SIZE_INT - 2))g
   echo "Changing manage-profile heap size to ${NEW_HEAP_SIZE}"
   export UNBOUNDID_JAVA_ARGS="-client -Xmx${NEW_HEAP_SIZE} -Xms${NEW_HEAP_SIZE}"
 fi
