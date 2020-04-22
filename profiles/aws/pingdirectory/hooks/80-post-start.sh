@@ -170,7 +170,7 @@ configure_user_backend() {
   test -z "${TARGET_PORT}" && TARGET_PORT="${LDAPS_PORT}"
 
   # Create the user backend, if it does not exist or update it to the right base DN
-  if ! ldapsearch --hostname "${TARGET_HOST}" --baseDN 'cn=config' --searchScope sub \
+  if ! ldapsearch --hostname "${TARGET_HOST}" "${TARGET_PORT}" --baseDN 'cn=config' --searchScope sub \
            "&(ds-cfg-backend-id=${USER_BACKEND_ID})(objectClass=ds-cfg-backend)" 1.1 &> /dev/null; then
     echo "post-start: backend ${USER_BACKEND_ID} does not exist on ${TARGET_HOST}:${TARGET_PORT} - creating it"
     dsconfig --no-prompt create-backend \
