@@ -30,6 +30,15 @@ if test ! -f "${_pdProfileLicense}" ; then
   cp -af "${_currentLicense}" "${_pdProfileLicense}"
 fi
 
+ORIG_UNBOUNDID_JAVA_ARGS="${UNBOUNDID_JAVA_ARGS}"
+HEAP_SIZE_INT=$(echo "${MAX_HEAP_SIZE}" | grep 'g$' | cut -d'g' -f1)
+
+if test ! -z "${HEAP_SIZE_INT}" && test "${HEAP_SIZE_INT}" -ge 4; then
+  NEW_HEAP_SIZE=$((HEAP_SIZE_INT - 2))
+  echo "Changing manage-profile heap size to ${NEW_HEAP_SIZE}"
+  export UNBOUNDID_JAVA_ARGS="-client -Xmx${NEW_HEAP_SIZE} -Xms${NEW_HEAP_SIZE}"
+fi
+
 echo "Merging changes from new server profile"
 "${SERVER_BITS_DIR}"/bin/manage-profile replace-profile \
     --serverRoot "${SERVER_ROOT_DIR}" \
@@ -39,6 +48,8 @@ echo "Merging changes from new server profile"
 
 MANAGE_PROFILE_STATUS=${?}
 echo "manage-profile replace-profile status: ${MANAGE_PROFILE_STATUS}"
+
+export UNBOUNDID_JAVA_ARGS="${ORIG_UNBOUNDID_JAVA_ARGS}"
 
 test "${MANAGE_PROFILE_STATUS}" -ne 0 && exit 20
 

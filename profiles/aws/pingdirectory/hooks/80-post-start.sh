@@ -266,7 +266,7 @@ enable_replication_for_dn() {
 
   # Determine the hostnames and ports to use while enabling replication. When in multi-cluster mode and not in the
   # parent cluster, use the external names and ports. Otherwise, use internal names and ports.
-  if test "${IS_MULTI_CLUSTER}" = 'true' && test "${IS_PARENT_CLUSTER}" = 'false'; then
+  if test "${IS_MULTI_CLUSTER}" = 'true'; then
     REPL_SRC_HOST="${PD_PARENT_PUBLIC_HOSTNAME}"
     REPL_SRC_LDAPS_PORT=6360
     REPL_SRC_REPL_PORT=9890
@@ -277,7 +277,7 @@ enable_replication_for_dn() {
     REPL_SRC_HOST="${K8S_STATEFUL_SET_NAME}-0.${DOMAIN_NAME}"
     REPL_SRC_LDAPS_PORT="${LDAPS_PORT}"
     REPL_SRC_REPL_PORT=${REPLICATION_PORT}
-    REPL_DST_HOST="${HOSTNAME}"
+    REPL_DST_HOST="${K8S_STATEFUL_SET_NAME}-${ORDINAL}.${DOMAIN_NAME}"
     REPL_DST_LDAPS_PORT="${LDAPS_PORT}"
     REPL_DST_REPL_PORT=${REPLICATION_PORT}
   fi
@@ -290,7 +290,8 @@ enable_replication_for_dn() {
   echo "post-start: using REPL_DST_REPL_PORT: ${REPL_DST_REPL_PORT}"
 
   if test "${IS_MULTI_CLUSTER}" = 'true'; then
-    echo "post-start: wait for the seed server in the parent cluster"
+    echo "post-start: waiting for the seed server in the parent cluster"
+    waitUntilLdapUp "${PD_PARENT_PUBLIC_HOSTNAME}" 6360 'cn=config'
   fi
 
   # FIXME: DS-41417: manage-profile replace-profile has a bug today where it won't make any changes to any local-db
@@ -384,10 +385,6 @@ stop_container() {
 # --- MAIN SCRIPT ---
 echo "post-start: starting post-start hook"
 
-# Remove the post-start initialization marker file so the pod isn't prematurely considered ready
-POST_START_INIT_MARKER_FILE="${SERVER_ROOT_DIR}"/config/post-start-init-complete
-rm -f "${POST_START_INIT_MARKER_FILE}"
-
 echo "post-start: running ldapsearch test on this container (${HOSTNAME})"
 waitUntilLdapUp "localhost" "${LDAPS_PORT}" 'cn=config'
 
@@ -438,7 +435,6 @@ if test "${ORDINAL}" -eq 0 && test "${IS_PARENT_CLUSTER}" = 'true'; then
     test ${licModStatus} -ne 0 && stop_container
   fi
 
-  touch "${POST_START_INIT_MARKER_FILE}"
   exit
 fi
 
@@ -478,7 +474,6 @@ done
 # All base DNs are already initialized, so we're good.
 if test -z "${UNINITIALIZED_DNS}"; then
   echo "post-start: replication is already initialized for all base DNs: ${DNS_TO_INITIALIZE}"
-  touch "${POST_START_INIT_MARKER_FILE}"
   exit
 fi
 
@@ -524,5 +519,3 @@ for DN in ${UNINITIALIZED_DNS}; do
     stop_container
   fi
 done
-
-touch "${POST_START_INIT_MARKER_FILE}"
