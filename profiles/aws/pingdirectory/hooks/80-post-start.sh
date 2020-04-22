@@ -264,9 +264,9 @@ enable_ldap_connection_handler() {
 enable_replication_for_dn() {
   BASE_DN=${1}
 
-  # Determine the hostnames and ports to use while enabling replication. When in multi-cluster mode, always use the
-  # external names and ports.
-  if test "${IS_MULTI_CLUSTER}" = 'true'; then
+  # Determine the hostnames and ports to use while enabling replication. When in multi-cluster mode and not in the
+  # parent cluster, use the external names and ports. Otherwise, use internal names and ports.
+  if test "${IS_MULTI_CLUSTER}" = 'true' && test "${IS_PARENT_CLUSTER}" = 'false'; then
     REPL_SRC_HOST="${PD_PARENT_PUBLIC_HOSTNAME}"
     REPL_SRC_LDAPS_PORT=6360
     REPL_SRC_REPL_PORT=9890
