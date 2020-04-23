@@ -110,7 +110,7 @@ EOF
   TARGET_HOST=${1}
   TARGET_PORT=${2}
 
-  test -z "${TARGET_HOST}" && TARGET_HOST=$(hostname)
+  test -z "${TARGET_HOST}" && TARGET_HOST=$(hostname -f)
   test -z "${TARGET_PORT}" && TARGET_PORT="${LDAPS_PORT}"  
 
   echo "post-start: adding user entry in ${USER_BASE_ENTRY_LDIF} on ${TARGET_HOST}:${TARGET_PORT}"
@@ -134,7 +134,7 @@ does_base_entry_exist() {
   TARGET_HOST=${1}
   TARGET_PORT=${2} 
 
-  test -z "${TARGET_HOST}" && TARGET_HOST=$(hostname)
+  test -z "${TARGET_HOST}" && TARGET_HOST=$(hostname -f)
   test -z "${TARGET_PORT}" && TARGET_PORT="${LDAPS_PORT}"
 
   # It may take the user backend a few seconds to initialize after the server is started
@@ -143,14 +143,14 @@ does_base_entry_exist() {
   for ATTEMPT in $(seq 1 "${RETRY_COUNT}"); do
     if ldapsearch --hostname "${TARGET_HOST}" --port "${TARGET_PORT}" \
            --baseDN "${USER_BASE_DN}" --searchScope base '(&)' 1.1 &> /dev/null; then
-      echo "post-start: user base entry ${USER_BASE_DN} exists on ${TARGET_HOST}"
+      echo "post-start: user base entry ${USER_BASE_DN} exists on ${TARGET_HOST}:${TARGET_PORT}"
       return 0
     fi
-    echo "post-start: attempt #${ATTEMPT} - user base entry ${USER_BASE_DN} does not exist on ${TARGET_HOST}"
+    echo "post-start: attempt #${ATTEMPT} - user base entry ${USER_BASE_DN} does not exist on ${TARGET_HOST}:${TARGET_PORT}"
     sleep 1s
   done
 
-  echo "post-start: user base entry ${USER_BASE_DN} does not exist on ${TARGET_HOST}"
+  echo "post-start: user base entry ${USER_BASE_DN} does not exist on ${TARGET_HOST}:${TARGET_PORT}"
   return 1
 }
 
@@ -166,7 +166,7 @@ configure_user_backend() {
   TARGET_HOST=${1}
   TARGET_PORT=${2}
 
-  test -z "${TARGET_HOST}" && TARGET_HOST=$(hostname)
+  test -z "${TARGET_HOST}" && TARGET_HOST=$(hostname -f)
   test -z "${TARGET_PORT}" && TARGET_PORT="${LDAPS_PORT}"
 
   # Create the user backend, if it does not exist or update it to the right base DN
@@ -191,7 +191,7 @@ configure_user_backend() {
   fi
 
   updateStatus=$?
-  echo "post-start: backend ${USER_BACKEND_ID} update status for ${USER_BASE_DN} on ${TARGET_HOST}: ${updateStatus}"
+  echo "post-start: backend ${USER_BACKEND_ID} update status for ${USER_BASE_DN} on ${TARGET_HOST}:${TARGET_PORT}: ${updateStatus}"
   return ${updateStatus}
 }
 
@@ -226,10 +226,10 @@ disable_replication_for_dn() {
 }
 
 ########################################################################################################################
-# Enable a LDAPS connection handler at the provided port.
+# Enable a LDAPS connection handler at the provided port on localhost.
 #
 # Arguments
-#   ${1} -> The port on which to add an LDAPS connection handler.
+#   ${1} -> The port on which to add an LDAPS connection handler on localhost.
 ########################################################################################################################
 enable_ldap_connection_handler() {
   PORT=${1}
@@ -299,10 +299,9 @@ enable_replication_for_dn() {
   if test "${BASE_DN}" = "${USER_BASE_DN}"; then
     echo "post-start: user base DN ${USER_BASE_DN} is uninitialized"
 
-    for HOST in "${REPL_SRC_HOST}" "${REPL_DST_HOST}"; do
-      test "${HOST}" = "${REPL_SRC_HOST}" &&
-          PORT=${REPL_SRC_LDAPS_PORT} ||
-          PORT=${REPL_DST_LDAPS_PORT}
+    for HOST_PORT in "${REPL_SRC_HOST}:${REPL_SRC_LDAPS_PORT}" "${REPL_DST_HOST}:${REPL_DST_LDAPS_PORT}"; do
+      HOST=${HOST_PORT%:*}
+      PORT=${HOST_PORT#*:}
 
       configure_user_backend "${HOST}" "${PORT}"
       test $? -ne 0 && stop_container
