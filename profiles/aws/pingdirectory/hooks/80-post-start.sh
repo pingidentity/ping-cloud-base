@@ -264,36 +264,6 @@ enable_ldap_connection_handler() {
 enable_replication_for_dn() {
   BASE_DN=${1}
 
-  # Determine the hostnames and ports to use while enabling replication. When in multi-cluster mode and not in the
-  # parent cluster, use the external names and ports. Otherwise, use internal names and ports.
-  if test "${IS_MULTI_CLUSTER}" = 'true'; then
-    REPL_SRC_HOST="${PD_PARENT_PUBLIC_HOSTNAME}"
-    REPL_SRC_LDAPS_PORT=6360
-    REPL_SRC_REPL_PORT=9890
-    REPL_DST_HOST="${PD_PUBLIC_HOSTNAME}"
-    REPL_DST_LDAPS_PORT="636${ORDINAL}"
-    REPL_DST_REPL_PORT="989${ORDINAL}"
-  else
-    REPL_SRC_HOST="${K8S_STATEFUL_SET_NAME}-0.${DOMAIN_NAME}"
-    REPL_SRC_LDAPS_PORT="${LDAPS_PORT}"
-    REPL_SRC_REPL_PORT=${REPLICATION_PORT}
-    REPL_DST_HOST="${K8S_STATEFUL_SET_NAME}-${ORDINAL}.${DOMAIN_NAME}"
-    REPL_DST_LDAPS_PORT="${LDAPS_PORT}"
-    REPL_DST_REPL_PORT=${REPLICATION_PORT}
-  fi
-
-  echo "post-start: using REPL_SRC_HOST: ${REPL_SRC_HOST}"
-  echo "post-start: using REPL_SRC_LDAPS_PORT: ${REPL_SRC_LDAPS_PORT}"
-  echo "post-start: using REPL_SRC_REPL_PORT: ${REPL_SRC_REPL_PORT}"
-  echo "post-start: using REPL_DST_HOST: ${REPL_DST_HOST}"
-  echo "post-start: using REPL_DST_LDAPS_PORT: ${REPL_DST_LDAPS_PORT}"
-  echo "post-start: using REPL_DST_REPL_PORT: ${REPL_DST_REPL_PORT}"
-
-  if test "${IS_MULTI_CLUSTER}" = 'true'; then
-    echo "post-start: waiting for the seed server in the parent cluster"
-    waitUntilLdapUp "${PD_PARENT_PUBLIC_HOSTNAME}" 6360 'cn=config'
-  fi
-
   # FIXME: DS-41417: manage-profile replace-profile has a bug today where it won't make any changes to any local-db
   # backends after setup. When manage-profile replace-profile is fixed, the following code block may be removed.
   if test "${BASE_DN}" = "${USER_BASE_DN}"; then
@@ -493,6 +463,35 @@ if test "${DISABLE_ALL_OLDER_USER_BASE_DN}" = 'true'; then
     fi
   done
 fi
+
+# Determine the hostnames and ports to use while enabling replication. When in multi-cluster mode and not in the
+# parent cluster, use the external names and ports. Otherwise, use internal names and ports.
+if test "${IS_MULTI_CLUSTER}" = 'true'; then
+  REPL_SRC_HOST="${PD_PARENT_PUBLIC_HOSTNAME}"
+  REPL_SRC_LDAPS_PORT=6360
+  REPL_SRC_REPL_PORT=9890
+  REPL_DST_HOST="${PD_PUBLIC_HOSTNAME}"
+  REPL_DST_LDAPS_PORT="636${ORDINAL}"
+  REPL_DST_REPL_PORT="989${ORDINAL}"
+else
+  REPL_SRC_HOST="${K8S_STATEFUL_SET_NAME}-0.${DOMAIN_NAME}"
+  REPL_SRC_LDAPS_PORT="${LDAPS_PORT}"
+  REPL_SRC_REPL_PORT=${REPLICATION_PORT}
+  REPL_DST_HOST="${K8S_STATEFUL_SET_NAME}-${ORDINAL}.${DOMAIN_NAME}"
+  REPL_DST_LDAPS_PORT="${LDAPS_PORT}"
+  REPL_DST_REPL_PORT=${REPLICATION_PORT}
+fi
+
+echo "post-start: using REPL_SRC_HOST: ${REPL_SRC_HOST}"
+echo "post-start: using REPL_SRC_LDAPS_PORT: ${REPL_SRC_LDAPS_PORT}"
+echo "post-start: using REPL_SRC_REPL_PORT: ${REPL_SRC_REPL_PORT}"
+echo "post-start: using REPL_DST_HOST: ${REPL_DST_HOST}"
+echo "post-start: using REPL_DST_LDAPS_PORT: ${REPL_DST_LDAPS_PORT}"
+echo "post-start: using REPL_DST_REPL_PORT: ${REPL_DST_REPL_PORT}"
+
+# Wait for the replication seed server to be up and running before enabling/initializing replication.
+echo "post-start: waiting for the replication seed server ${REPL_SRC_HOST}:${REPL_SRC_LDAPS_PORT}"
+waitUntilLdapUp "${REPL_SRC_HOST}" "${REPL_SRC_LDAPS_PORT}" 'cn=config'
 
 for DN in ${UNINITIALIZED_DNS}; do
   enable_replication_for_dn "${DN}"
