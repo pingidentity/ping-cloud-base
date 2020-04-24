@@ -316,22 +316,28 @@ enable_replication_for_dn() {
 initialize_replication_for_dn() {
   BASE_DN=${1}
 
-  # Initialize the first server in the child cluster from the first server in the parent cluster. Initialize other
-  # servers in the child cluster from the first server within the same cluster.
-  FROM_HOST="${K8S_STATEFUL_SET_NAME}-0.${DOMAIN_NAME}"
-  FROM_PORT="${LDAPS_PORT}"
-
-  if test "${IS_MULTI_CLUSTER}" = 'true' && test "${ORDINAL}" -eq 0; then
-    FROM_HOST="${PD_PARENT_PUBLIC_HOSTNAME}"
+  # If multi-cluster, initialize the first server in the child cluster from the first server in the parent cluster.
+  # Initialize other servers in the child cluster from the first server within the same cluster.
+  if test "${IS_MULTI_CLUSTER}" = 'true'; then
+    test "${ORDINAL}" -eq 0 &&
+        FROM_HOST="${PD_PARENT_PUBLIC_HOSTNAME}" ||
+        FROM_HOST="${PD_PUBLIC_HOSTNAME}"
     FROM_PORT=6360
+    TO_HOST="${PD_PUBLIC_HOSTNAME}"
+    TO_PORT="636${ORDINAL}"
+  else
+    FROM_HOST="${K8S_STATEFUL_SET_NAME}-0.${DOMAIN_NAME}"
+    FROM_PORT="${LDAPS_PORT}"
+    TO_HOST="${K8S_STATEFUL_SET_NAME}-${ORDINAL}.${DOMAIN_NAME}"
+    TO_PORT="${LDAPS_PORT}"
   fi
 
-  echo "post-start: running dsreplication initialize for ${BASE_DN} from ${FROM_HOST}:${FROM_PORT}"
+  echo "post-start: running dsreplication initialize for ${BASE_DN} from ${FROM_HOST}:${FROM_PORT} to ${TO_HOST}:${TO_PORT}"
   dsreplication initialize \
     --retryTimeoutSeconds ${RETRY_TIMEOUT_SECONDS} \
     --trustAll \
     --hostSource "${FROM_HOST}" --portSource "${FROM_PORT}" --useSSLSource \
-    --hostDestination "${HOSTNAME}" --portDestination ${LDAPS_PORT} --useSSLDestination \
+    --hostDestination "${TO_HOST}" --portDestination "${TO_PORT}" --useSSLDestination \
     --baseDN "${BASE_DN}" \
     --adminUID "${ADMIN_USER_NAME}" \
     --adminPasswordFile "${ADMIN_USER_PASSWORD_FILE}" \
@@ -486,7 +492,9 @@ fi
 # Determine the hostnames and ports to use while enabling replication. When in multi-cluster mode and not in the
 # parent cluster, use the external names and ports. Otherwise, use internal names and ports.
 if test "${IS_MULTI_CLUSTER}" = 'true'; then
-  REPL_SRC_HOST="${PD_PARENT_PUBLIC_HOSTNAME}"
+  test "${ORDINAL}" -eq 0 &&
+      REPL_SRC_HOST="${PD_PARENT_PUBLIC_HOSTNAME}" ||
+      REPL_SRC_HOST="${PD_PUBLIC_HOSTNAME}"
   REPL_SRC_LDAPS_PORT=6360
   REPL_SRC_REPL_PORT=9890
   REPL_DST_HOST="${PD_PUBLIC_HOSTNAME}"
