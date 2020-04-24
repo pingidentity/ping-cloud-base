@@ -153,12 +153,15 @@ echo "Initial TENANT_NAME: ${TENANT_NAME}"
 echo "Initial TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Initial ENVIRONMENT: ${ENVIRONMENT}"
 echo "Initial REGION: ${REGION}"
+echo "Initial PD_PARENT_PUBLIC_HOSTNAME: ${PD_PARENT_PUBLIC_HOSTNAME}"
 echo "Initial CONFIG_REPO_BRANCH: ${CONFIG_REPO_BRANCH}"
 echo "Initial CONFIG_PARENT_DIR: ${CONFIG_PARENT_DIR}"
 echo "Initial ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Initial PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 echo "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 echo "Initial BACKUP_URL: ${BACKUP_URL}"
+echo "Initial DEPLOY_FILE: ${DEPLOY_FILE}"
+echo "Initial K8S_CONTEXT: ${K8S_CONTEXT}"
 echo ---
 
 # A script that may be used to set up a dev/test environment against the
@@ -168,12 +171,19 @@ export ENVIRONMENT=-"${ENVIRONMENT:-${USER}}"
 export TENANT_DOMAIN="${TENANT_DOMAIN:-eks-poc.au1.ping-lab.cloud}"
 export TENANT_NAME="${TENANT_NAME:-PingPOC}"
 export REGION="${REGION:-us-east-2}"
+
+export PD_PUBLIC_HOSTNAME=${PD_PARENT_PUBLIC_HOSTNAME:-pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}}
+
 export CONFIG_REPO_BRANCH="${CONFIG_REPO_BRANCH:-master}"
 export CONFIG_PARENT_DIR="${CONFIG_PARENT_DIR:-aws}"
+
 export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
 export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
+
+DEPLOY_FILE=${DEPLOY_FILE:-/tmp/deploy.yaml}
+test -z "${K8S_CONTEXT}" && K8S_CONTEXT=$(kubectl config current-context)
 
 ENVIRONMENT_NO_HYPHEN_PREFIX=$(echo ${ENVIRONMENT#-})
 
@@ -182,12 +192,15 @@ echo "Using TENANT_NAME: ${TENANT_NAME}"
 echo "Using TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Using ENVIRONMENT: ${ENVIRONMENT_NO_HYPHEN_PREFIX}"
 echo "Using REGION: ${REGION}"
+echo "Using PD_PARENT_PUBLIC_HOSTNAME: ${PD_PARENT_PUBLIC_HOSTNAME}"
 echo "Using CONFIG_REPO_BRANCH: ${CONFIG_REPO_BRANCH}"
 echo "Using CONFIG_PARENT_DIR: ${CONFIG_PARENT_DIR}"
 echo "Using ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 echo "Using LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 echo "Using BACKUP_URL: ${BACKUP_URL}"
+echo "Using DEPLOY_FILE: ${DEPLOY_FILE}"
+echo "Using K8S_CONTEXT: ${K8S_CONTEXT}"
 echo ---
 
 export PING_IDENTITY_DEVOPS_USER_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_USER}")
@@ -197,7 +210,6 @@ export CLUSTER_NAME=${TENANT_NAME}
 export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
 
 export NAMESPACE=ping-cloud-${ENVIRONMENT_NO_HYPHEN_PREFIX}
-DEPLOY_FILE=/tmp/deploy.yaml
 
 kustomize build test |
   envsubst '${PING_IDENTITY_DEVOPS_USER_BASE64}
@@ -210,6 +222,7 @@ kustomize build test |
     ${NAMESPACE}
     ${CONFIG_REPO_BRANCH}
     ${CONFIG_PARENT_DIR}
+    ${PD_PARENT_PUBLIC_HOSTNAME}
     ${ARTIFACT_REPO_URL}
     ${PING_ARTIFACT_REPO_URL}
     ${LOG_ARCHIVE_URL}
@@ -218,7 +231,7 @@ sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" ${DEPLOY_FILE
 
 if test "${dryrun}" = 'false'; then
   echo "Deploying ${DEPLOY_FILE} to namespace ${NAMESPACE} for tenant ${TENANT_DOMAIN}"
-  kubectl apply -f ${DEPLOY_FILE}
+  kubectl apply -f "${DEPLOY_FILE}" --context "${K8S_CONTEXT}"
 
   # Print out the ingress objects for logs and the ping stack
   echo
@@ -228,7 +241,7 @@ if test "${dryrun}" = 'false'; then
   # Print out the pingdirectory hostname
   echo
   echo '--- LDAP hostname ---'
-  kubectl get svc pingdirectory-admin -n "${NAMESPACE}" \
+  kubectl get svc ingress-nginx -n ingress-nginx-private \
     -o jsonpath='{.metadata.annotations.external-dns\.alpha\.kubernetes\.io/hostname}'
 
   # Print out the  pods for the ping stack
