@@ -359,7 +359,7 @@ waitUntilLdapUp "localhost" "${LDAPS_PORT}" 'cn=config'
 
 SHORT_HOST_NAME=$(hostname)
 DOMAIN_NAME=$(hostname -f | cut -d'.' -f2-)
-ORDINAL=$(echo ${SHORT_HOST_NAME##*-})
+ORDINAL=${SHORT_HOST_NAME##*-}
 
 echo "post-start: pod ordinal: ${ORDINAL}"
 
@@ -378,6 +378,16 @@ echo "post-start: multi-cluster: ${IS_MULTI_CLUSTER}; parent-cluster: ${IS_PAREN
 if test ! -z "${PD_PUBLIC_HOSTNAME}"; then
   EXTERNAL_LDAPS_PORT="636${ORDINAL}"
   enable_ldap_connection_handler "${EXTERNAL_LDAPS_PORT}"
+  test $? -ne 0 && stop_container
+
+  # Change the hostname in the server instance to the external one
+  dsconfig --no-prompt set-server-instance-prop \
+      --instance-name "${HOSTNAME}" \
+      --set hostname:"${PD_PUBLIC_HOSTNAME}" \
+      --set ldaps-port:"${EXTERNAL_LDAPS_PORT}"
+  result=$?
+  echo "post-start: change hostname/port: ${result}"
+
   test $? -ne 0 && stop_container
 fi
 
