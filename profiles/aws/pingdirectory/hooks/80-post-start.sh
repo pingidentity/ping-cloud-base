@@ -387,7 +387,14 @@ if test ! -z "${PD_PUBLIC_HOSTNAME}"; then
       --set ldaps-port:"${EXTERNAL_LDAPS_PORT}"
   result=$?
   echo "post-start: change hostname/port: ${result}"
+  test $? -ne 0 && stop_container
 
+  dsconfig set-server-instance-listener-prop \
+      --instance-name "${HOSTNAME}" \
+      --listener-name ldap-listener-mirrored-config \
+      --set server-ldap-port:"${EXTERNAL_LDAPS_PORT}"
+  result=$?
+  echo "post-start: change LDAP listener port: ${result}"
   test $? -ne 0 && stop_container
 fi
 
