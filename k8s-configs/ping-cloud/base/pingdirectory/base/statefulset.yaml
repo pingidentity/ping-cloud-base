@@ -82,8 +82,6 @@ spec:
           name: ldap
         - containerPort: 1636
           name: ldaps
-        - containerPort: 8989
-          name: repl
         resources:
           requests:
             memory: "5Gi"
@@ -148,8 +146,7 @@ spec:
           subPath: PingDirectory.lic
         readinessProbe:
           exec:
-            command:
-              - /opt/staging/hooks/85-readiness.sh
+            command: [ liveness.sh ]
           # Do not start the readiness probe for 3 minutes after starting the
           # container because PD will never finish its start/restart sequence
           # before then, in practice. Run the readiness probe every 5 seconds
