@@ -274,12 +274,14 @@ enable_replication_for_dn() {
       PORT=${HOST_PORT#*:}
 
       configure_user_backend "${HOST}" "${PORT}"
-      test $? -ne 0 && stop_container
+      result=$?
+      test ${result} -ne 0 && return ${result}
 
       does_base_entry_exist "${HOST}" "${PORT}"
       if test $? -ne 0; then
         add_base_entry "${HOST}" "${PORT}"
-        test $? -ne 0 && stop_container
+        result=$?
+        test ${result} -ne 0 && return ${result}
       fi
     done
   fi
@@ -347,7 +349,7 @@ initialize_replication_for_dn() {
 ########################################################################################################################
 stop_container() {
   echo "post-start: stopping the container to signal failure with post-start sequence"
-  stop-server
+#  stop-server
 }
 
 
