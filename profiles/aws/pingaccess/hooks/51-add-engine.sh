@@ -21,9 +21,15 @@ if test ! -z "${OPERATIONAL_MODE}" && test "${OPERATIONAL_MODE}" = "CLUSTERED_EN
 
     echo "multi-cluster: ${IS_MULTI_CLUSTER}; parent-cluster: ${IS_PARENT_CLUSTER}"
 
-    test "${IS_MULTI_CLUSTER}" = 'true' &&
-      ADMIN_HOST_PORT="${PA_ADMIN_PUBLIC_HOSTNAME}" ||
+    if test "${IS_MULTI_CLUSTER}" = 'true'; then
+      ADMIN_HOST_PORT="${PA_ADMIN_PUBLIC_HOSTNAME}"
+      ENGINE_NAME="${PA_ENGINE_PUBLIC_HOSTNAME}:300${ORDINAL}"
+    else
       ADMIN_HOST_PORT="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9000"
+      ENGINE_NAME=$(hostname)
+    fi
+
+    pingaccess_admin_wait "${ADMIN_HOST_PORT}"
 
     # Retrieving CONFIG QUERY id
     OUT=$( make_api_request https://${ADMIN_HOST_PORT}/pa-admin-api/v3/httpsListeners )
@@ -43,21 +49,19 @@ if test ! -z "${OPERATIONAL_MODE}" && test "${OPERATIONAL_MODE}" = "CLUSTERED_EN
     echo "ENGINE_CERT_ID:${ENGINE_CERT_ID}"
 
     # Retrieve Engine ID
-    SHORT_HOST_NAME=$(hostname)
     OUT=$( make_api_request https://${ADMIN_HOST_PORT}/pa-admin-api/v3/engines )
     ENGINE_ID=$( jq -n "$OUT" | \
-                 jq --arg SHORT_HOST_NAME "${SHORT_HOST_NAME}" \
-                 '.items[] | select(.name==$SHORT_HOST_NAME) | .id' )
+                 jq --arg ENGINE_NAME "${ENGINE_NAME}" \
+                 '.items[] | select(.name==$ENGINE_NAME) | .id' )
 
     # If engine doesnt exist, then create new engine
     if test -z "${ENGINE_ID}" || test "${ENGINE_ID}" = null ; then
         if test "${IS_MULTI_CLUSTER}" = 'true'; then
-            pingaccess_admin_wait "${ADMIN_HOST_PORT}"
-
             PROXY_PORT=300${ORDINAL}
+
             echo "Adding engine proxy ${PA_ENGINE_PUBLIC_HOSTNAME}:${PROXY_PORT}"
             OUT=$( make_api_request -X POST -d "{
-                \"name\":\"${PA_ENGINE_PUBLIC_HOSTNAME}:${PROXY_PORT}\",
+                \"name\":\"${ENGINE_NAME}\",
                 \"host\": ${PA_ENGINE_PUBLIC_HOSTNAME},
                 \"port\": ${PROXY_PORT},
                 \"requiresAuthentication\": false
@@ -65,14 +69,14 @@ if test ! -z "${OPERATIONAL_MODE}" && test "${OPERATIONAL_MODE}" = "CLUSTERED_EN
             PROXY_ID=$( jq -n "$OUT" | jq '.id' )
 
             OUT=$( make_api_request -X POST -d "{
-                \"name\":\"${SHORT_HOST_NAME}\",
+                \"name\":\"${ENGINE_NAME}\",
                 \"selectedCertificateId\": ${ENGINE_CERT_ID},
                 \"httpsProxyId\": ${PROXY_ID},
                 \"configReplicationEnabled\": true
             }" https://${ADMIN_HOST_PORT}/pa-admin-api/v3/engines )
         else
             OUT=$( make_api_request -X POST -d "{
-                \"name\":\"${SHORT_HOST_NAME}\",
+                \"name\":\"${ENGINE_NAME}\",
                 \"selectedCertificateId\": ${ENGINE_CERT_ID},
                 \"configReplicationEnabled\": true
             }" https://${ADMIN_HOST_PORT}/pa-admin-api/v3/engines )
