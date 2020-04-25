@@ -10,11 +10,11 @@ spec:
   ports:
     - protocol: TCP
       port: 1636
-      targetPort: ldaps
+      targetPort: 6360
       name: ldaps
     - protocol: TCP
-      port: 1989
-      targetPort: repl
+      port: 8989
+      targetPort: 9890
       name: repl
 
 ---
@@ -31,11 +31,11 @@ spec:
   ports:
     - protocol: TCP
       port: 1636
-      targetPort: ldaps
+      targetPort: 6361
       name: ldaps
     - protocol: TCP
-      port: 1989
-      targetPort: repl
+      port: 8989
+      targetPort: 9891
       name: repl
 
 ---
@@ -52,11 +52,11 @@ spec:
   ports:
     - protocol: TCP
       port: 1636
-      targetPort: ldaps
+      targetPort: 6362
       name: ldaps
     - protocol: TCP
-      port: 1989
-      targetPort: repl
+      port: 8989
+      targetPort: 9892
       name: repl
 
 ---
@@ -73,11 +73,11 @@ spec:
   ports:
     - protocol: TCP
       port: 1636
-      targetPort: ldaps
+      targetPort: 6363
       name: ldaps
     - protocol: TCP
-      port: 1989
-      targetPort: repl
+      port: 8989
+      targetPort: 9893
       name: repl
 
 ---
@@ -94,11 +94,11 @@ spec:
   ports:
     - protocol: TCP
       port: 1636
-      targetPort: ldaps
+      targetPort: 6364
       name: ldaps
     - protocol: TCP
-      port: 1989
-      targetPort: repl
+      port: 8989
+      targetPort: 9894
       name: repl
 
 ---
@@ -115,11 +115,11 @@ spec:
   ports:
     - protocol: TCP
       port: 1636
-      targetPort: ldaps
+      targetPort: 6365
       name: ldaps
     - protocol: TCP
-      port: 1989
-      targetPort: repl
+      port: 8989
+      targetPort: 9895
       name: repl
 
 ---
@@ -136,11 +136,11 @@ spec:
   ports:
     - protocol: TCP
       port: 1636
-      targetPort: ldaps
+      targetPort: 6366
       name: ldaps
     - protocol: TCP
-      port: 1989
-      targetPort: repl
+      port: 8989
+      targetPort: 9896
       name: repl
 
 ---
@@ -157,11 +157,11 @@ spec:
   ports:
     - protocol: TCP
       port: 1636
-      targetPort: ldaps
+      targetPort: 6367
       name: ldaps
     - protocol: TCP
-      port: 1989
-      targetPort: repl
+      port: 8989
+      targetPort: 9897
       name: repl
 
 ---
@@ -178,9 +178,9 @@ spec:
   ports:
     - protocol: TCP
       port: 1636
-      targetPort: ldaps
+      targetPort: 6368
       name: ldaps
     - protocol: TCP
-      port: 1989
-      targetPort: repl
+      port: 8989
+      targetPort: 9898
       name: repl
