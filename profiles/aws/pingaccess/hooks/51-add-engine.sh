@@ -3,7 +3,7 @@
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 
-set -x
+"${VERBOSE}" && set -x
 
 if test ! -z "${OPERATIONAL_MODE}" && test "${OPERATIONAL_MODE}" = "CLUSTERED_ENGINE"; then
 
@@ -14,16 +14,16 @@ if test ! -z "${OPERATIONAL_MODE}" && test "${OPERATIONAL_MODE}" = "CLUSTERED_EN
 
     if test ! -z "${PA_ADMIN_PUBLIC_HOSTNAME}" && test ! -z "${PA_ENGINE_PUBLIC_HOSTNAME}"; then
       IS_MULTI_CLUSTER=true
-      DOMAIN_NAME_ADMIN=$(echo "PA_ADMIN_PUBLIC_HOSTNAME" | cut -d'.' -f2-)
-      DOMAIN_NAME_ENGINE=$(echo "PA_ENGINE_PUBLIC_HOSTNAME" | cut -d'.' -f2-)
+      DOMAIN_NAME_ADMIN=$(echo "${PA_ADMIN_PUBLIC_HOSTNAME}" | cut -d'.' -f2-)
+      DOMAIN_NAME_ENGINE=$(echo "${PA_ENGINE_PUBLIC_HOSTNAME}" | cut -d'.' -f2-)
       test "${DOMAIN_NAME_ADMIN}" = "${DOMAIN_NAME_ENGINE}" && IS_PARENT_CLUSTER=true
     fi
 
     echo "multi-cluster: ${IS_MULTI_CLUSTER}; parent-cluster: ${IS_PARENT_CLUSTER}"
 
     test "${IS_MULTI_CLUSTER}" = 'true' &&
-      ADMIN_HOST_PORT="${PA_ADMIN_PUBLIC_HOSTNAME}"
-      ADMIN_HOST_PORT="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9000"||
+      ADMIN_HOST_PORT="${PA_ADMIN_PUBLIC_HOSTNAME}" ||
+      ADMIN_HOST_PORT="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9000"
 
     # Retrieving CONFIG QUERY id
     OUT=$( make_api_request https://${ADMIN_HOST_PORT}/pa-admin-api/v3/httpsListeners )
