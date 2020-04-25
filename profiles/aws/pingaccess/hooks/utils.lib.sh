@@ -33,7 +33,7 @@ function make_api_request() {
          --retry-connrefused \
          -u ${PA_ADMIN_USER_USERNAME}:${PA_ADMIN_USER_PASSWORD} \
          -H "X-Xsrf-Header: PingAccess " "$@")
-    set -x
+    "${VERBOSE}" && set -x
 
     if test ! $? -eq 0; then
         echo "Admin API connection refused"
