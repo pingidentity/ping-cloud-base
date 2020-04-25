@@ -52,8 +52,9 @@ if test ! -z "${OPERATIONAL_MODE}" && test "${OPERATIONAL_MODE}" = "CLUSTERED_EN
     # If engine doesnt exist, then create new engine
     if test -z "${ENGINE_ID}" || test "${ENGINE_ID}" = null ; then
         if test "${IS_MULTI_CLUSTER}" = 'true'; then
-            PROXY_PORT=300${ORDINAL}
+            pingaccess_admin_wait "${ADMIN_HOST_PORT}"
 
+            PROXY_PORT=300${ORDINAL}
             echo "Adding engine proxy ${PA_ENGINE_PUBLIC_HOSTNAME}:${PROXY_PORT}"
             OUT=$( make_api_request -X POST -d "{
                 \"name\":\"${PA_ENGINE_PUBLIC_HOSTNAME}:${PROXY_PORT}\",

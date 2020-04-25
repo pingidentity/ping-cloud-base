@@ -105,12 +105,16 @@ function make_api_request_download() {
 # Makes curl request to localhost PingAccess admin Console heartbeat page.
 # If request fails, wait for 3 seconds and try again.
 #
+# Arguments
+#   ${1} -> Optional host:port. Defaults to localhost:9000
 ########################################################################################################################
 function pingaccess_admin_wait() {
+    HOST_PORT="${1:-localhost:9000}"
+    echo "Waiting for PingAccess admin at ${HOST_PORT}"
     while true; do
-        curl -ss --silent -o /dev/null -k https://localhost:9000/pa/heartbeat.ping 
+        curl -ss --silent -o /dev/null -k https://"${HOST_PORT}"/pa/heartbeat.ping
         if ! test $? -eq 0; then
-            echo "Import Config: Server not started, waiting.."
+            echo "Server not started, waiting.."
             sleep 3
         else
             echo "PA started, begin import"
