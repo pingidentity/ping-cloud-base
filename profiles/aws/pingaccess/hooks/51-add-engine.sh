@@ -32,24 +32,24 @@ if test ! -z "${OPERATIONAL_MODE}" && test "${OPERATIONAL_MODE}" = "CLUSTERED_EN
     pingaccess_admin_wait "${ADMIN_HOST_PORT}"
 
     # Retrieving CONFIG QUERY id
-    OUT=$( make_api_request https://${ADMIN_HOST_PORT}/pa-admin-api/v3/httpsListeners )
+    OUT=$( make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/httpsListeners )
     CONFIG_QUERY_LISTENER_KEYPAIR_ID=$( jq -n "$OUT" | jq '.items[] | select(.name=="CONFIG QUERY") | .keyPairId' )
     echo "CONFIG_QUERY_LISTENER_KEYPAIR_ID:${CONFIG_QUERY_LISTENER_KEYPAIR_ID}"
 
     echo "Retrieving the Key Pair alias..."
-    OUT=$( make_api_request https://${ADMIN_HOST_PORT}/pa-admin-api/v3/keyPairs  )
+    OUT=$( make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/keyPairs  )
     KEYPAIR_ALIAS_NAME=$( jq -n "$OUT" | jq -r '.items[] | select(.id=='${CONFIG_QUERY_LISTENER_KEYPAIR_ID}') | .alias' )
     echo "KEYPAIR_ALIAS_NAME:"${KEYPAIR_ALIAS_NAME}
 
     # Retrieve Engine Cert ID
-    OUT=$( make_api_request https://${ADMIN_HOST_PORT}/pa-admin-api/v3/engines/certificates )
+    OUT=$( make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/engines/certificates )
     ENGINE_CERT_ID=$( jq -n "$OUT" | \
                       jq --arg KEYPAIR_ALIAS_NAME "${KEYPAIR_ALIAS_NAME}" \
                       '.items[] | select(.alias==$KEYPAIR_ALIAS_NAME and .keyPair==true) | .id' )
     echo "ENGINE_CERT_ID:${ENGINE_CERT_ID}"
 
     # Retrieve Engine ID
-    OUT=$( make_api_request https://${ADMIN_HOST_PORT}/pa-admin-api/v3/engines )
+    OUT=$( make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/engines )
     ENGINE_ID=$( jq -n "$OUT" | \
                  jq --arg ENGINE_NAME "${ENGINE_NAME}" \
                  '.items[] | select(.name==$ENGINE_NAME) | .id' )
@@ -65,7 +65,7 @@ if test ! -z "${OPERATIONAL_MODE}" && test "${OPERATIONAL_MODE}" = "CLUSTERED_EN
                 \"host\": ${PA_ENGINE_PUBLIC_HOSTNAME},
                 \"port\": ${PROXY_PORT},
                 \"requiresAuthentication\": false
-            }" https://${ADMIN_HOST_PORT}/pa-admin-api/v3/proxies )
+            }" https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/proxies )
             PROXY_ID=$( jq -n "$OUT" | jq '.id' )
 
             OUT=$( make_api_request -X POST -d "{
@@ -73,14 +73,15 @@ if test ! -z "${OPERATIONAL_MODE}" && test "${OPERATIONAL_MODE}" = "CLUSTERED_EN
                 \"selectedCertificateId\": ${ENGINE_CERT_ID},
                 \"httpsProxyId\": ${PROXY_ID},
                 \"configReplicationEnabled\": true
-            }" https://${ADMIN_HOST_PORT}/pa-admin-api/v3/engines )
+            }" https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/engines )
         else
             OUT=$( make_api_request -X POST -d "{
                 \"name\":\"${ENGINE_NAME}\",
                 \"selectedCertificateId\": ${ENGINE_CERT_ID},
                 \"configReplicationEnabled\": true
-            }" https://${ADMIN_HOST_PORT}/pa-admin-api/v3/engines )
+            }" https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/engines )
         fi
+
         ENGINE_ID=$( jq -n "$OUT" | jq '.id' )
     fi
 
@@ -88,7 +89,7 @@ if test ! -z "${OPERATIONAL_MODE}" && test "${OPERATIONAL_MODE}" = "CLUSTERED_EN
     echo "ENGINE_ID:"${ENGINE_ID}
     echo "Retrieving the engine config"
     make_api_request_download -X POST \
-        https://${ADMIN_HOST_PORT}/pa-admin-api/v3/engines/${ENGINE_ID}/config -o engine-config.zip
+        https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/engines/${ENGINE_ID}/config -o engine-config.zip
 
     # Validate zip
     if test $( unzip -t engine-config.zip > /dev/null 2>&1;echo $?) != 0; then
