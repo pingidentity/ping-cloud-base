@@ -249,9 +249,11 @@ enable_ldap_connection_handler() {
 
   if test ${result} -eq 68; then
     echo "post-start: LDAPS connection handler already exists at port ${PORT}"
+    waitUntilLdapUp localhost "${PORT}" 'cn=config'
     return 0
   fi
 
+  waitUntilLdapUp localhost "${PORT}" 'cn=config'
   return "${result}"
 }
 
@@ -360,7 +362,7 @@ stop_container() {
 echo "post-start: starting post-start hook"
 
 echo "post-start: running ldapsearch test on this container (${HOSTNAME})"
-waitUntilLdapUp "localhost" "${LDAPS_PORT}" 'cn=config'
+waitUntilLdapUp localhost "${LDAPS_PORT}" 'cn=config'
 
 SHORT_HOST_NAME=$(hostname)
 DOMAIN_NAME=$(hostname -f | cut -d'.' -f2-)
