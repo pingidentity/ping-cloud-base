@@ -44,64 +44,75 @@
 # In addition, the following environment variables, if present, will be used for the following purposes:
 #
 # ----------------------------------------------------------------------------------------------------------------------
-# Variable               | Purpose                                            | Default (if not present)
+# Variable                  | Purpose                                            | Default (if not present)
 # ----------------------------------------------------------------------------------------------------------------------
-# TENANT_NAME            | The name of the tenant, e.g. k8s-icecream. If      | PingPOC
-#                        | provided, this value will be used for the cluster  |
-#                        | name and must have the correct case (e.g. PingPOC  |
-#                        | vs. pingpoc). If not provided, this variable is    |
-#                        | not used, and the cluster name defaults to the CDE |
-#                        | name. On AWS, the cluster name is a required       |
-#                        | parameter to Container Insights, an AWS-specific   |
-#                        | logging and monitoring solution, and cluster       |
-#                        | autoscaler, which is used for automatic scaling of |
-#                        | of Kubernetes worker nodes.                        |
-#                        |                                                    |
-# TENANT_DOMAIN          | The tenant's domain, e.g. k8s-icecream.com         | eks-poc.au1.ping-lab.cloud
-#                        |                                                    |
-# ENVIRONMENT            | An environment to isolate the Ping stack into its  | The value of the USER environment
-#                        | own namespace within the Kubernetes cluster. The   | variable.
-#                        | Ping stack is generally deployed to a namespace    |
-#                        | called "ping-cloud". But if ENVIRONMENT is set, it |
-#                        | is used as a name suffix. For example, if it is    |
-#                        | set to "staging", then the namespace will be       |
-#                        | "ping-cloud-staging". This variable is useful not  |
-#                        | just in a shared multi-tenant Kubernetes cluster   |
-#                        | but could also be used to create multiple Ping     |
-#                        | stacks within the same cluster for testing         |
-#                        | purposes. It may be set to an empty string in      |
-#                        | which case, the namespace used for the Ping stack  |
-#                        | will simply be "ping-cloud".                       |
-#                        |                                                    |
-# REGION                 | The region where the tenant environment is         | us-east-2
-#                        | deployed. On AWS, this is a required parameter     |
-#                        | to Container Insights, an AWS-specific logging     |
-#                        | and monitoring solution.                           |
-#                        |                                                    |
-# CONFIG_REPO_BRANCH     | The branch within this repository for server       | master
-#                        | profiles, i.e. configuration.                      |
-#                        |                                                    |
-# CONFIG_PARENT_DIR      | The parent directory for server profiles within    | aws
-#                        | the "profiles" base directory, e.g. dev, aws, etc. |
-#                        |                                                    |
-# ARTIFACT_REPO_URL      | The URL for private plugins (e.g. PF kits, PD      | The string "unused".
-#                        | extensions). If not provided, the Ping stack will  |
-#                        | be provisioned without private plugins. This URL   |
-#                        | must use an s3 scheme, e.g.                        |
-#                        | s3://customer-repo-bucket-name.                    |
-#                        |                                                    |
-# PING_ARTIFACT_REPO_URL | This environment variable can be used to overwrite | https://ping-artifacts.s3-us-west-2.amazonaws.com
-#                        | the default endpoint for public plugins. This URL  |
-#                        | must use an https scheme as shown by the default   |
-#                        | value.                                             |
-#                        |                                                    |
-# LOG_ARCHIVE_URL        | The URL of the log archives. If provided, logs     | The string "unused"
-#                        | are periodically captured and sent to this URL.    |
-#                        |                                                    |
-# BACKUP_URL             | The URL of the backup location. If provided, data  | The string "unused".
-#                        | backups are periodically captured and sent to this |
-#                        | URL. For AWS S3 buckets, it must be an S3 URL,     |
-#                        | e.g. s3://backups.                                 |
+# TENANT_NAME               | The name of the tenant, e.g. k8s-icecream. If      | PingPOC
+#                           | provided, this value will be used for the cluster  |
+#                           | name and must have the correct case (e.g. PingPOC  |
+#                           | vs. pingpoc). If not provided, this variable is    |
+#                           | not used, and the cluster name defaults to the CDE |
+#                           | name. On AWS, the cluster name is a required       |
+#                           | parameter to Container Insights, an AWS-specific   |
+#                           | logging and monitoring solution, and cluster       |
+#                           | autoscaler, which is used for automatic scaling of |
+#                           | of Kubernetes worker nodes.                        |
+#                           |                                                    |
+# TENANT_DOMAIN             | The tenant's domain, e.g. k8s-icecream.com         | eks-poc.au1.ping-lab.cloud
+#                           |                                                    |
+# ENVIRONMENT               | An environment to isolate the Ping stack into its  | The value of the USER environment
+#                           | own namespace within the Kubernetes cluster. The   | variable.
+#                           | Ping stack is generally deployed to a namespace    |
+#                           | called "ping-cloud". But if ENVIRONMENT is set, it |
+#                           | is used as a name suffix. For example, if it is    |
+#                           | set to "staging", then the namespace will be       |
+#                           | "ping-cloud-staging". This variable is useful not  |
+#                           | just in a shared multi-tenant Kubernetes cluster   |
+#                           | but could also be used to create multiple Ping     |
+#                           | stacks within the same cluster for testing         |
+#                           | purposes. It may be set to an empty string in      |
+#                           | which case, the namespace used for the Ping stack  |
+#                           | will simply be "ping-cloud".                       |
+#                           |                                                    |
+# REGION                    | The region where the tenant environment is         | us-east-2
+#                           | deployed. On AWS, this is a required parameter     |
+#                           | to Container Insights, an AWS-specific logging     |
+#                           | and monitoring solution.                           |
+#                           |                                                    |
+# PD_PARENT_PUBLIC_HOSTNAME | The public or external hostname of the             | No default
+#                           | PingDirectory server in the parent cluster if      |
+#                           | deploying across more than one cluster.            |
+#                           |                                                    |
+# CONFIG_REPO_BRANCH        | The branch within this repository for server       | master
+#                           | profiles, i.e. configuration.                      |
+#                           |                                                    |
+# CONFIG_PARENT_DIR         | The parent directory for server profiles within    | aws
+#                           | the "profiles" base directory, e.g. dev, aws, etc. |
+#                           |                                                    |
+# ARTIFACT_REPO_URL         | The URL for private plugins (e.g. PF kits, PD      | The string "unused".
+#                           | extensions). If not provided, the Ping stack will  |
+#                           | be provisioned without private plugins. This URL   |
+#                           | must use an s3 scheme, e.g.                        |
+#                           | s3://customer-repo-bucket-name.                    |
+#                           |                                                    |
+# PING_ARTIFACT_REPO_URL    | This environment variable can be used to overwrite | https://ping-artifacts.s3-us-west-2.amazonaws.com
+#                           | the default endpoint for public plugins. This URL  |
+#                           | must use an https scheme as shown by the default   |
+#                           | value.                                             |
+#                           |                                                    |
+# LOG_ARCHIVE_URL           | The URL of the log archives. If provided, logs     | The string "unused"
+#                           | are periodically captured and sent to this URL.    |
+#                           |                                                    |
+# BACKUP_URL                | The URL of the backup location. If provided, data  | The string "unused".
+#                           | backups are periodically captured and sent to this |
+#                           | URL. For AWS S3 buckets, it must be an S3 URL,     |
+#                           | e.g. s3://backups.                                 |
+#                           |                                                    |
+# DEPLOY_FILE               | The name of the file where the final deployment    | /tmp/deploy.yaml
+#                           | spec is saved before applying it.                  |
+#                           |                                                    |
+# K8S_CONTEXT               | The current Kubernetes context, i.e. cluster.      | The current context as set in
+#                           | spec is saved before applying it.                  | ~/.kube/config or the config file
+#                           |                                                    | to which KUBECONFIG is set.
 ########################################################################################################################
 
 #
@@ -185,7 +196,7 @@ export BACKUP_URL="${BACKUP_URL:-unused}"
 DEPLOY_FILE=${DEPLOY_FILE:-/tmp/deploy.yaml}
 test -z "${K8S_CONTEXT}" && K8S_CONTEXT=$(kubectl config current-context)
 
-ENVIRONMENT_NO_HYPHEN_PREFIX=$(echo ${ENVIRONMENT#-})
+ENVIRONMENT_NO_HYPHEN_PREFIX="${ENVIRONMENT#-}"
 
 # Show the values being used for the relevant environment variables.
 echo "Using TENANT_NAME: ${TENANT_NAME}"

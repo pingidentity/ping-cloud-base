@@ -3,13 +3,13 @@
 echo "pre-stop: starting pre-stop hook"
 
 SHORT_HOST_NAME=$(hostname)
-ORDINAL=$(echo ${SHORT_HOST_NAME##*-})
+ORDINAL=${SHORT_HOST_NAME##*-}
 echo "pre-stop: pod ordinal: ${ORDINAL}"
 
 NUM_REPLICAS=$(kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
 echo "pre-stop: number of replicas: ${NUM_REPLICAS}"
 
-if test ${ORDINAL} -lt ${NUM_REPLICAS}; then
+if test "${ORDINAL}" -lt "${NUM_REPLICAS}"; then
   echo "pre-stop: not removing server since it is still in the topology"
   exit 0
 fi

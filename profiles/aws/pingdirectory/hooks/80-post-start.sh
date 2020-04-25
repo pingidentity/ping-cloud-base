@@ -475,11 +475,12 @@ echo "post-start: replication will be initialized for base DNs: ${UNINITIALIZED_
 # For end-user base DNs, allow the option to disable previous DNs from replication. This allows
 # customers to disable the OOTB base DN that is automatically enabled and initialized.
 if test "${DISABLE_ALL_OLDER_USER_BASE_DN}" = 'true'; then
-  ENABLED_DNS=$(ldapsearch --baseDN 'cn=config' --searchScope sub \
+  ENABLED_USER_BASE_DNS=$(ldapsearch --baseDN 'cn=config' --searchScope sub \
       "&(ds-cfg-backend-id=${USER_BACKEND_ID})(objectClass=ds-cfg-backend)" ds-cfg-base-dn |
       grep '^ds-cfg-base-dn' | cut -d: -f2 | tr -d ' ')
 
-  for DN in ${ENABLED_DNS}; do
+  for DN in ${ENABLED_USER_BASE_DNS}; do
+    # Do not disable the current USER_BASE_DN. All others are candidates.
     if test "${DN}" != "${USER_BASE_DN}"; then
       disable_replication_for_dn "${DN}"
       test $? -eq 0 &&
@@ -513,8 +514,9 @@ echo "post-start: using REPL_DST_HOST: ${REPL_DST_HOST}"
 echo "post-start: using REPL_DST_LDAPS_PORT: ${REPL_DST_LDAPS_PORT}"
 echo "post-start: using REPL_DST_REPL_PORT: ${REPL_DST_REPL_PORT}"
 
+# If in multi-region mode, wait for the replication source and target servers to be up and running through the
+# load balancer before enabling/initializing replication.
 if test "${IS_MULTI_CLUSTER}" = 'true'; then
-  # Wait for the replication seed server to be up and running before enabling/initializing replication.
   echo "post-start: waiting for the replication seed server ${REPL_SRC_HOST}:${REPL_SRC_LDAPS_PORT}"
   waitUntilLdapUp "${REPL_SRC_HOST}" "${REPL_SRC_LDAPS_PORT}" 'cn=config'
 
@@ -529,8 +531,7 @@ for DN in ${UNINITIALIZED_DNS}; do
   # We will tolerate error code 5. It it likely when the user base DN does not exist on the source server.
   # For example, this can happen when the user base DN is updated after initial setup.
   if test ${replEnableResult} -eq 5; then
-    echo "post-start: replication cannot be enabled for ${DN}"
-    continue
+    echo "post-start: replication cannot be enabled for ${DN} or may already be enabled - will try initialization"
   elif test ${replEnableResult} -ne 0; then
     echo "post-start: not running dsreplication initialize since enable failed with a non-successful return code"
     stop_container
