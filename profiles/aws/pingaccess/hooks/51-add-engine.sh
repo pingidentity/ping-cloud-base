@@ -21,12 +21,16 @@ if test ! -z "${OPERATIONAL_MODE}" && test "${OPERATIONAL_MODE}" = "CLUSTERED_EN
 
     echo "multi-cluster: ${IS_MULTI_CLUSTER}; parent-cluster: ${IS_PARENT_CLUSTER}"
 
+    SHORT_HOST_NAME=$(hostname)
+    DOMAIN_NAME=$(hostname -f | cut -d'.' -f2-)
+    ORDINAL=${SHORT_HOST_NAME##*-}
+
     if test "${IS_MULTI_CLUSTER}" = 'true'; then
       ADMIN_HOST_PORT="${PA_ADMIN_PUBLIC_HOSTNAME}"
       ENGINE_NAME="${PA_ENGINE_PUBLIC_HOSTNAME}:300${ORDINAL}"
     else
       ADMIN_HOST_PORT="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9000"
-      ENGINE_NAME=$(hostname)
+      ENGINE_NAME=${SHORT_HOST_NAME}
     fi
 
     pingaccess_admin_wait "${ADMIN_HOST_PORT}"
