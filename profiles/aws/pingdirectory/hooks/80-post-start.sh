@@ -249,11 +249,9 @@ enable_ldap_connection_handler() {
 
   if test ${result} -eq 68; then
     echo "post-start: LDAPS connection handler already exists at port ${PORT}"
-    waitUntilLdapUp localhost "${PORT}" 'cn=config'
     return 0
   fi
 
-  waitUntilLdapUp localhost "${PORT}" 'cn=config'
   return "${result}"
 }
 
@@ -493,9 +491,7 @@ fi
 # Determine the hostnames and ports to use while enabling replication. When in multi-cluster mode and not in the
 # parent cluster, use the external names and ports. Otherwise, use internal names and ports.
 if test "${IS_MULTI_CLUSTER}" = 'true'; then
-  test "${ORDINAL}" -eq 0 &&
-      REPL_SRC_HOST="${PD_PARENT_PUBLIC_HOSTNAME}" ||
-      REPL_SRC_HOST="${PD_PUBLIC_HOSTNAME}"
+  REPL_SRC_HOST="${PD_PARENT_PUBLIC_HOSTNAME}"
   REPL_SRC_LDAPS_PORT=6360
   REPL_SRC_REPL_PORT=9890
   REPL_DST_HOST="${PD_PUBLIC_HOSTNAME}"
@@ -517,9 +513,14 @@ echo "post-start: using REPL_DST_HOST: ${REPL_DST_HOST}"
 echo "post-start: using REPL_DST_LDAPS_PORT: ${REPL_DST_LDAPS_PORT}"
 echo "post-start: using REPL_DST_REPL_PORT: ${REPL_DST_REPL_PORT}"
 
-# Wait for the replication seed server to be up and running before enabling/initializing replication.
-echo "post-start: waiting for the replication seed server ${REPL_SRC_HOST}:${REPL_SRC_LDAPS_PORT}"
-waitUntilLdapUp "${REPL_SRC_HOST}" "${REPL_SRC_LDAPS_PORT}" 'cn=config'
+if test "${IS_MULTI_CLUSTER}" = 'true'; then
+  # Wait for the replication seed server to be up and running before enabling/initializing replication.
+  echo "post-start: waiting for the replication seed server ${REPL_SRC_HOST}:${REPL_SRC_LDAPS_PORT}"
+  waitUntilLdapUp "${REPL_SRC_HOST}" "${REPL_SRC_LDAPS_PORT}" 'cn=config'
+
+  echo "post-start: waiting for the replication target server ${REPL_SRC_HOST}:${REPL_SRC_LDAPS_PORT}"
+  waitUntilLdapUp "${REPL_DST_HOST}" "${REPL_DST_LDAPS_PORT}" 'cn=config'
+fi
 
 for DN in ${UNINITIALIZED_DNS}; do
   enable_replication_for_dn "${DN}"
