@@ -14,7 +14,9 @@ if test ! -z "${OPERATIONAL_MODE}" && test "${OPERATIONAL_MODE}" = "CLUSTERED_EN
 
     if test ! -z "${PA_ADMIN_PUBLIC_HOSTNAME}" && test ! -z "${PA_ENGINE_PUBLIC_HOSTNAME}"; then
       IS_MULTI_CLUSTER=true
-      test "${PA_ADMIN_PUBLIC_HOSTNAME}" = "${PA_ENGINE_PUBLIC_HOSTNAME}" && IS_PARENT_CLUSTER=true
+      DOMAIN_NAME_ADMIN=$(echo "PA_ADMIN_PUBLIC_HOSTNAME" | cut -d'.' -f2-)
+      DOMAIN_NAME_ENGINE=$(echo "PA_ENGINE_PUBLIC_HOSTNAME" | cut -d'.' -f2-)
+      test "${DOMAIN_NAME_ADMIN}" = "${DOMAIN_NAME_ENGINE}" && IS_PARENT_CLUSTER=true
     fi
 
     echo "multi-cluster: ${IS_MULTI_CLUSTER}; parent-cluster: ${IS_PARENT_CLUSTER}"
