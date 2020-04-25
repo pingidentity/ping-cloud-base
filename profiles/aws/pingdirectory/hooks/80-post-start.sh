@@ -318,19 +318,16 @@ initialize_replication_for_dn() {
 
   # If multi-cluster, initialize the first server in the child cluster from the first server in the parent cluster.
   # Initialize other servers in the child cluster from the first server within the same cluster.
-  if test "${IS_MULTI_CLUSTER}" = 'true'; then
-    test "${ORDINAL}" -eq 0 &&
-        FROM_HOST="${PD_PARENT_PUBLIC_HOSTNAME}" ||
-        FROM_HOST="${PD_PUBLIC_HOSTNAME}"
+  if test "${IS_MULTI_CLUSTER}" = 'true' && test "${ORDINAL}" -eq 0; then
+    FROM_HOST="${PD_PARENT_PUBLIC_HOSTNAME}"
     FROM_PORT=6360
-    TO_HOST="${PD_PUBLIC_HOSTNAME}"
-    TO_PORT="636${ORDINAL}"
   else
     FROM_HOST="${K8S_STATEFUL_SET_NAME}-0.${DOMAIN_NAME}"
     FROM_PORT="${LDAPS_PORT}"
-    TO_HOST="${K8S_STATEFUL_SET_NAME}-${ORDINAL}.${DOMAIN_NAME}"
-    TO_PORT="${LDAPS_PORT}"
   fi
+
+  TO_HOST="${K8S_STATEFUL_SET_NAME}-${ORDINAL}.${DOMAIN_NAME}"
+  TO_PORT="${LDAPS_PORT}"
 
   echo "post-start: running dsreplication initialize for ${BASE_DN} from ${FROM_HOST}:${FROM_PORT} to ${TO_HOST}:${TO_PORT}"
   dsreplication initialize \
