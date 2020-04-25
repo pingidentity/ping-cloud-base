@@ -355,7 +355,7 @@ initialize_replication_for_dn() {
 ########################################################################################################################
 stop_container() {
   echo "post-start: stopping the container to signal failure with post-start sequence"
-#  stop-server
+  stop-server
 }
 
 
@@ -429,6 +429,7 @@ if test "${ORDINAL}" -eq 0 && test "${IS_PARENT_CLUSTER}" = 'true'; then
     test ${licModStatus} -ne 0 && stop_container
   fi
 
+  echo "post-start: post-start complete"
   exit
 fi
 
@@ -468,6 +469,7 @@ done
 # All base DNs are already initialized, so we're good.
 if test -z "${UNINITIALIZED_DNS}"; then
   echo "post-start: replication is already initialized for all base DNs: ${DNS_TO_INITIALIZE}"
+  echo "post-start: post-start complete"
   exit
 fi
 
@@ -544,3 +546,5 @@ for DN in ${UNINITIALIZED_DNS}; do
     stop_container
   fi
 done
+
+echo "post-start: post-start complete"
