@@ -56,21 +56,21 @@ OUT=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/engines)
 ENGINE_ID=$(jq -n "${OUT}" | jq --arg ENGINE_NAME "${ENGINE_NAME}" '.items[] | select(.name==$ENGINE_NAME) | .id')
 
 # If engine doesn't exist, then create new engine
-if test -z "${ENGINE_ID}" || test "${ENGINE_ID}" = null ; then
+if test -z "${ENGINE_ID}" || test "${ENGINE_ID}" = 'null'; then
   if test "${IS_MULTI_CLUSTER}" = 'true'; then
-    PROXY_PORT=300${ORDINAL}
+    PROXY_PORT="300${ORDINAL}"
 
     echo "add-engine: adding engine proxy ${PA_ENGINE_PUBLIC_HOSTNAME}:${PROXY_PORT}"
     OUT=$(make_api_request -X POST -d "{
-        \"name\":\"${ENGINE_NAME}\",
-        \"host\": ${PA_ENGINE_PUBLIC_HOSTNAME},
+        \"name\": \"${ENGINE_NAME}\",
+        \"host\": \"${PA_ENGINE_PUBLIC_HOSTNAME}\",
         \"port\": ${PROXY_PORT},
         \"requiresAuthentication\": false
     }" https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/proxies)
     PROXY_ID=$(jq -n "$OUT" | jq '.id')
 
     OUT=$(make_api_request -X POST -d "{
-        \"name\":\"${ENGINE_NAME}\",
+        \"name\": \"${ENGINE_NAME}\",
         \"selectedCertificateId\": ${ENGINE_CERT_ID},
         \"httpsProxyId\": ${PROXY_ID},
         \"configReplicationEnabled\": true
