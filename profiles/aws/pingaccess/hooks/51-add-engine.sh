@@ -61,14 +61,22 @@ if test -z "${ENGINE_ID}" || test "${ENGINE_ID}" = 'null'; then
     PROXY_PORT="300${ORDINAL}"
     PROXY_NAME="${PA_ENGINE_PUBLIC_HOSTNAME}:${PROXY_PORT}"
 
-    echo "add-engine: adding engine proxy ${PROXY_NAME}"
-    OUT=$(make_api_request -X POST -d "{
-        \"name\": \"${PROXY_NAME}\",
-        \"host\": \"${PA_ENGINE_PUBLIC_HOSTNAME}\",
-        \"port\": ${PROXY_PORT},
-        \"requiresAuthentication\": false
-    }" https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/proxies)
-    PROXY_ID=$(jq -n "$OUT" | jq '.id')
+    OUT=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/proxies)
+    PROXY_ID=$(jq -n "${OUT}" | jq --arg PROXY_NAME "${PROXY_NAME}" '.items[] | select(.name==$PROXY_NAME) | .id')
+
+    if test -z "${PROXY_ID}" || test "${PROXY_ID}" = 'null'; then
+      echo "add-engine: adding engine proxy ${PROXY_NAME}"
+      OUT=$(make_api_request -X POST -d "{
+          \"name\": \"${PROXY_NAME}\",
+          \"host\": \"${PA_ENGINE_PUBLIC_HOSTNAME}\",
+          \"port\": ${PROXY_PORT},
+          \"requiresAuthentication\": false
+      }" https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/proxies)
+      PROXY_ID=$(jq -n "$OUT" | jq '.id')
+    else
+      echo "add-engine: proxy ${PROXY_NAME} already exists"
+    fi
+    echo "add-engine: PROXY_ID: ${PROXY_ID}"
 
     OUT=$(make_api_request -X POST -d "{
         \"name\": \"${ENGINE_NAME}\",
