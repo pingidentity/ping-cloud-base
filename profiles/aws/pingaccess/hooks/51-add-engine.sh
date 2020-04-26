@@ -59,10 +59,11 @@ ENGINE_ID=$(jq -n "${OUT}" | jq --arg ENGINE_NAME "${ENGINE_NAME}" '.items[] | s
 if test -z "${ENGINE_ID}" || test "${ENGINE_ID}" = 'null'; then
   if test "${IS_MULTI_CLUSTER}" = 'true'; then
     PROXY_PORT="300${ORDINAL}"
+    PROXY_NAME="${PA_ENGINE_PUBLIC_HOSTNAME}:${PROXY_PORT}"
 
-    echo "add-engine: adding engine proxy ${PA_ENGINE_PUBLIC_HOSTNAME}:${PROXY_PORT}"
+    echo "add-engine: adding engine proxy ${PROXY_NAME}"
     OUT=$(make_api_request -X POST -d "{
-        \"name\": \"${ENGINE_NAME}\",
+        \"name\": \"${PROXY_NAME}\",
         \"host\": \"${PA_ENGINE_PUBLIC_HOSTNAME}\",
         \"port\": ${PROXY_PORT},
         \"requiresAuthentication\": false
