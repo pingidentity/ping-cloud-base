@@ -12,6 +12,17 @@ fi
 
 echo "pre-stop: starting pre-stop hook on engine"
 
+SHORT_HOST_NAME=$(hostname)
+ORDINAL=${SHORT_HOST_NAME##*-}
+
+NUM_REPLICAS=$(kubectl get statefulset "${K8S_STATEFUL_SET_NAME_PINGACCESS}" -o jsonpath='{.spec.replicas}')
+echo "pre-stop: number of replicas: ${NUM_REPLICAS}"
+
+if test "${ORDINAL}" -lt "${NUM_REPLICAS}"; then
+  echo "pre-stop: not removing engine since it is still in the topology"
+  exit 0
+fi
+
 if test -z "${PA_ADMIN_PUBLIC_HOSTNAME}" || test -z "${PA_ENGINE_PUBLIC_HOSTNAME}"; then
   IS_MULTI_CLUSTER=false
 else
