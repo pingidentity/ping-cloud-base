@@ -6,6 +6,7 @@
 ########################################################################################################################
 function stop_server()
 {
+  exit 0
   SERVER_PID=$(pgrep -alf java | grep 'run.properties' | awk '{ print $1; }')
   kill "${SERVER_PID}"
   while true; do
@@ -117,7 +118,7 @@ function pingaccess_admin_wait() {
             echo "Server not started, waiting.."
             sleep 3
         else
-            echo "PA started, begin import"
+            echo "PA started"
             break
         fi
     done
