@@ -6,7 +6,6 @@
 ########################################################################################################################
 function stop_server()
 {
-  exit 0
   SERVER_PID=$(pgrep -alf java | grep 'run.properties' | awk '{ print $1; }')
   kill "${SERVER_PID}"
   while true; do
@@ -34,14 +33,15 @@ function make_api_request() {
          --retry-connrefused \
          -u ${PA_ADMIN_USER_USERNAME}:${PA_ADMIN_USER_PASSWORD} \
          -H "X-Xsrf-Header: PingAccess " "$@")
+    curl_result=$?
     "${VERBOSE}" && set -x
 
-    if test ! $? -eq 0; then
+    if test "${curl_result}" -ne 0; then
         echo "Admin API connection refused"
         stop_server
     fi
 
-    if test ${http_code} -ne 200; then
+    if test "${http_code}" -ne 200; then
         echo "API call returned HTTP status code: ${http_code}"
         cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
         stop_server
