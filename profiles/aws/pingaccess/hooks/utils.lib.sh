@@ -62,15 +62,16 @@ function make_initial_api_request() {
          --retry-delay 1 \
          --retry-connrefused \
          -u ${PA_ADMIN_USER_USERNAME}:${OLD_PA_ADMIN_USER_PASSWORD} \
-         -H "X-Xsrf-Header: PingAccess " "$@")
-    set -x
+         -H 'X-Xsrf-Header: PingAccess' "$@")
+    curl_result=$?
+    "${VERBOSE}" && set -x
 
-    if test ! $? -eq 0; then
+    if test "${curl_result}" -ne 0; then
         echo "Admin API connection refused"
         stop_server
     fi
 
-    if test ${http_code} -ne 200; then
+    if test "${http_code}" -ne 200; then
         echo "API call returned HTTP status code: ${http_code}"
         cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
         stop_server
@@ -94,9 +95,10 @@ function make_api_request_download() {
          --retry-connrefused \
          -u ${PA_ADMIN_USER_USERNAME}:${PA_ADMIN_USER_PASSWORD} \
          -H "X-Xsrf-Header: PingAccess " "$@"
-    set -x
+    curl_result=$?
+    "${VERBOSE}" && set -x
 
-    if test ! $? -eq 0; then
+    if test "${curl_result}" -ne 0; then
         echo "Admin API connection refused"
         stop_server
     fi
@@ -183,17 +185,17 @@ function changePassword() {
 
   # Validate before attempting to change password
   set +x
-    if test -z "${OLD_PA_ADMIN_USER_PASSWORD}" || test -z "${PA_ADMIN_USER_PASSWORD}"; then
-      isPasswordEmpty=1
-    else 
-      isPasswordEmpty=0
-    fi
-    if test "${OLD_PA_ADMIN_USER_PASSWORD}" = "${PA_ADMIN_USER_PASSWORD}"; then
-      isPasswordSame=1
-    else
-      isPasswordSame=0
-    fi
-  set -x
+  if test -z "${OLD_PA_ADMIN_USER_PASSWORD}" || test -z "${PA_ADMIN_USER_PASSWORD}"; then
+    isPasswordEmpty=1
+  else
+    isPasswordEmpty=0
+  fi
+  if test "${OLD_PA_ADMIN_USER_PASSWORD}" = "${PA_ADMIN_USER_PASSWORD}"; then
+    isPasswordSame=1
+  else
+    isPasswordSame=0
+  fi
+  "${VERBOSE}" && set -x
 
   if test ${isPasswordEmpty} -eq 1; then
     echo "The old and new passwords cannot be blank"
@@ -210,8 +212,8 @@ function changePassword() {
     make_initial_api_request -s -X PUT \
         -d "${change_password_payload}" \
         "https://localhost:9000/pa-admin-api/v3/users/1/password" > /dev/null
-    set -x
     CHANGE_PASWORD_STATUS=${?}
+    "${VERBOSE}" && set -x
 
     echo "password change status: ${CHANGE_PASWORD_STATUS}"
 
@@ -239,7 +241,7 @@ function readPasswordFromDisk() {
     password=$( cat ${OUT_DIR}/secrets/pa-admin-password )
     echo ${password}
   fi
-  set -x
+  "${VERBOSE}" && set -x
 }
 
 ########################################################################################################################
@@ -251,7 +253,7 @@ function createSecretFile() {
   mkdir -p ${OUT_DIR}/secrets
   set +x
   echo "${PA_ADMIN_USER_PASSWORD}" > ${OUT_DIR}/secrets/pa-admin-password
-  set -x
+  "${VERBOSE}" && set -x
 }
 
 ########################################################################################################################
@@ -267,5 +269,5 @@ function comparePasswordDiskWithVariable() {
   else
     echo 1
   fi
-  set -x
+  "${VERBOSE}" && set -x
 }
