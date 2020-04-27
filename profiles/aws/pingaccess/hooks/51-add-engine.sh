@@ -93,6 +93,8 @@ if test -z "${ENGINE_ID}" || test "${ENGINE_ID}" = 'null'; then
   fi
 
   ENGINE_ID=$(jq -n "$OUT" | jq '.id')
+else
+  echo "add-engine: engine ${ENGINE_NAME} already exists"
 fi
 
 # Download Engine Configuration.
