@@ -48,6 +48,8 @@ function make_api_request() {
     fi
 
     cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
+
+    return 0
 }
 
 ########################################################################################################################
@@ -78,6 +80,8 @@ function make_initial_api_request() {
     fi
 
     cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
+
+    return 0
 }
 
 ########################################################################################################################
@@ -102,6 +106,8 @@ function make_api_request_download() {
         echo "Admin API connection refused"
         stop_server
     fi
+
+    return 0
 }
 
 ########################################################################################################################
@@ -242,6 +248,7 @@ function readPasswordFromDisk() {
     echo ${password}
   fi
   "${VERBOSE}" && set -x
+  return 0
 }
 
 ########################################################################################################################
@@ -254,6 +261,7 @@ function createSecretFile() {
   set +x
   echo "${PA_ADMIN_USER_PASSWORD}" > ${OUT_DIR}/secrets/pa-admin-password
   "${VERBOSE}" && set -x
+  return 0
 }
 
 ########################################################################################################################
@@ -270,4 +278,5 @@ function comparePasswordDiskWithVariable() {
     echo 1
   fi
   "${VERBOSE}" && set -x
+  return 0
 }
