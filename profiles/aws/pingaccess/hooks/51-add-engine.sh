@@ -78,6 +78,7 @@ if test -z "${ENGINE_ID}" || test "${ENGINE_ID}" = 'null'; then
     fi
     echo "add-engine: PROXY_ID: ${PROXY_ID}"
 
+    echo "add-engine: adding engine ${ENGINE_NAME}"
     OUT=$(make_api_request -X POST -d "{
         \"name\": \"${ENGINE_NAME}\",
         \"selectedCertificateId\": ${ENGINE_CERT_ID},
@@ -98,7 +99,8 @@ else
 fi
 
 # Download Engine Configuration.
-echo "add-engine: retrieving the engine config for engine ${ENGINE_ID}"
+echo "add-engine: ENGINE_ID: ${ENGINE_ID}"
+echo "add-engine: retrieving the engine config for engine"
 make_api_request_download -X POST \
     https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/engines/"${ENGINE_ID}"/config -o engine-config.zip
 
@@ -113,7 +115,7 @@ echo "add-engine: extracting config files to conf folder"
 unzip -o engine-config.zip -d "${OUT_DIR}"/instance
 chmod 400 "${OUT_DIR}"/instance/conf/pa.jwk
 
-echo "add-engine: cleanup zip"
+echo "add-engine: cleaning up zip"
 rm engine-config.zip
 
 echo "add-engine: finished add engine script"
