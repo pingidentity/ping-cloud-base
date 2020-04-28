@@ -90,7 +90,7 @@ function make_initial_api_request() {
 ########################################################################################################################
 function make_api_request_download() {
     set +x
-    http_code=$(curl -k \
+    http_code=$(curl -k -w "%{http_code}" \
          --retry ${API_RETRY_LIMIT} \
          --max-time ${API_TIMEOUT_WAIT} \
          --retry-delay 1 \
