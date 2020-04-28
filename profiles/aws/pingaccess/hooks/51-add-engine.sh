@@ -34,28 +34,32 @@ fi
 
 pingaccess_admin_wait "${ADMIN_HOST_PORT}"
 
-# Retrieving CONFIG QUERY id
+# Retrieving key pair ID.
+echo "add-engine: retrieving the Key Pair ID"
 OUT=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/httpsListeners)
-CONFIG_QUERY_LISTENER_KEYPAIR_ID=$(jq -n "$OUT" | jq '.items[] | select(.name=="CONFIG QUERY") | .keyPairId')
+CONFIG_QUERY_LISTENER_KEYPAIR_ID=$(jq -n "${OUT}" | jq '.items[] | select(.name=="CONFIG QUERY") | .keyPairId')
 echo "add-engine: CONFIG_QUERY_LISTENER_KEYPAIR_ID: ${CONFIG_QUERY_LISTENER_KEYPAIR_ID}"
 
+# Retrieving key pair alias.
 echo "add-engine: retrieving the Key Pair alias"
 OUT=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/keyPairs)
-KEYPAIR_ALIAS_NAME=$(jq -n "$OUT" | jq -r '.items[] | select(.id=='${CONFIG_QUERY_LISTENER_KEYPAIR_ID}') | .alias')
+KEYPAIR_ALIAS_NAME=$(jq -n "${OUT}" | jq -r '.items[] | select(.id=='${CONFIG_QUERY_LISTENER_KEYPAIR_ID}') | .alias')
 echo "add-engine: KEYPAIR_ALIAS_NAME: ${KEYPAIR_ALIAS_NAME}"
 
-# Retrieve Engine Cert ID
+# Retrieve Engine Cert ID.
+echo "add-engine: retrieving the Engine Cert ID"
 OUT=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/engines/certificates)
-ENGINE_CERT_ID=$(jq -n "$OUT" |
+ENGINE_CERT_ID=$(jq -n "${OUT}" |
     jq --arg KEYPAIR_ALIAS_NAME "${KEYPAIR_ALIAS_NAME}" \
         '.items[] | select(.alias==$KEYPAIR_ALIAS_NAME and .keyPair==true) | .id')
 echo "add-engine: ENGINE_CERT_ID: ${ENGINE_CERT_ID}"
 
-# Retrieve Engine ID
+# Retrieve the Engine ID for name.
+echo "add-engine: retrieving the Engine ID for name ${ENGINE_NAME}"
 OUT=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/engines)
-ENGINE_ID=$(jq -n "${OUT}" | jq --arg ENGINE_NAME "${ENGINE_NAME}" '.items[] | select(.name==$ENGINE_NAME) | .id')
+ENGINE_ID=$(jq -n "${OUT}" | jq --arg ENGINE_NAME "${ENGINE_NAME}" '.items[] | select(.name=='${ENGINE_NAME}') | .id')
 
-# If engine doesn't exist, then create new engine
+# If engine doesn't exist, then create new engine.
 if test -z "${ENGINE_ID}" || test "${ENGINE_ID}" = 'null'; then
   OUT=$(make_api_request -X POST -d "{
         \"name\": \"${ENGINE_NAME}\",
@@ -69,13 +73,13 @@ fi
 
 # Download Engine Configuration.
 echo "add-engine: ENGINE_ID: ${ENGINE_ID}"
-echo "add-engine: retrieving the engine config for engine"
+echo "add-engine: retrieving configuration for engine"
 make_api_request_download -X POST \
     https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/engines/"${ENGINE_ID}"/config -o engine-config.zip
 
 # Validate zip.
 echo "add-engine: validating downloaded config archive"
-if test $(unzip -t engine-config.zip &> /dev/null; echo $?) != 0; then
+if test $(unzip -t engine-config.zip &> /dev/null; echo $?) -ne 0; then
   echo "add-engine: failure retrieving config admin zip for engine"
   exit 1
 fi
