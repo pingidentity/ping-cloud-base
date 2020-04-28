@@ -13,7 +13,7 @@ fi
 echo "add-engine: starting add engine script"
 
 ADMIN_HOST_PORT="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9000"
-ENGINE_NAME="${SHORT_HOST_NAME}"
+ENGINE_NAME=$(hostname)
 
 # Retrieving key pair ID.
 echo "add-engine: retrieving the Key Pair ID"
