@@ -83,10 +83,10 @@ spec:
         resources:
           requests:
             memory: "2Gi"
-            cpu: "2"
+            cpu: "1"
           limits:
             memory: "2Gi"
-            cpu: "2"
+            cpu: "1"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
@@ -155,4 +155,4 @@ spec:
       storageClassName: pingfederate-gp2
       resources:
         requests:
-          storage: 20Gi
+          storage: 5Gi
