@@ -43,7 +43,6 @@ function make_api_request() {
 
     if test "${http_code}" -ne 200; then
         echo "API call returned HTTP status code: ${http_code}"
-        cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
         stop_server
     fi
 
@@ -75,7 +74,6 @@ function make_initial_api_request() {
 
     if test "${http_code}" -ne 200; then
         echo "API call returned HTTP status code: ${http_code}"
-        cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
         stop_server
     fi
 
@@ -92,18 +90,23 @@ function make_initial_api_request() {
 ########################################################################################################################
 function make_api_request_download() {
     set +x
-    curl -k \
+    http_code=$(curl -k \
          --retry ${API_RETRY_LIMIT} \
          --max-time ${API_TIMEOUT_WAIT} \
          --retry-delay 1 \
          --retry-connrefused \
          -u ${PA_ADMIN_USER_USERNAME}:${PA_ADMIN_USER_PASSWORD} \
-         -H "X-Xsrf-Header: PingAccess " "$@"
+         -H "X-Xsrf-Header: PingAccess " "$@")
     curl_result=$?
     "${VERBOSE}" && set -x
 
     if test "${curl_result}" -ne 0; then
         echo "Admin API connection refused"
+        stop_server
+    fi
+
+    if test "${http_code}" -ne 200; then
+        echo "API call returned HTTP status code: ${http_code}"
         stop_server
     fi
 
@@ -119,14 +122,14 @@ function make_api_request_download() {
 ########################################################################################################################
 function pingaccess_admin_wait() {
     HOST_PORT="${1:-localhost:9000}"
-    echo "Waiting for PingAccess admin at ${HOST_PORT}"
+    echo "Waiting for admin server at ${HOST_PORT}"
     while true; do
         curl -ss --silent -o /dev/null -k https://"${HOST_PORT}"/pa/heartbeat.ping
         if ! test $? -eq 0; then
-            echo "Server not started, waiting.."
+            echo "Admin server not started, waiting.."
             sleep 3
         else
-            echo "PA started"
+            echo "Admin server started"
             break
         fi
     done

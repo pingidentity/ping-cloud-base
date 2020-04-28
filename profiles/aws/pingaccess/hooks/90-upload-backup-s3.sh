@@ -21,7 +21,7 @@ DST_FILE=$(find ./ -iname \*.zip)
 DST_FILE=${DST_FILE#./}
 
 # Validate admin API call was successful and that zip isn't corrupted
-if test $( unzip -t ${DST_FILE} > /dev/null 2>&1; echo $? ) != 0 ; then
+if test $(unzip -t "${DST_FILE}" &> /dev/null; echo $?) -ne 0 ; then
   # Cleanup k8s-s3-upload-archive temp directory
   echo "Failed to export archive"
   rm -rf ${DST_DIRECTORY}
