@@ -88,7 +88,7 @@ spec:
             command: [ liveness.sh ]
           initialDelaySeconds: 60
           periodSeconds: 30
-          failureThreshold: 3
+          failureThreshold: 4
         ports:
         - containerPort: 9000
         - containerPort: 9090
@@ -242,7 +242,7 @@ spec:
             command: [ liveness.sh ]
           initialDelaySeconds: 60
           periodSeconds: 30
-          failureThreshold: 3
+          failureThreshold: 4
         lifecycle:
           preStop:
             exec:
