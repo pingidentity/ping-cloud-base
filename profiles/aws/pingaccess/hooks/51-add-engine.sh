@@ -38,7 +38,7 @@ echo "add-engine: ENGINE_CERT_ID: ${ENGINE_CERT_ID}"
 # Retrieve the Engine ID for name.
 echo "add-engine: retrieving the Engine ID for name ${ENGINE_NAME}"
 OUT=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/engines)
-ENGINE_ID=$(jq -n "${OUT}" | jq --arg ENGINE_NAME "${ENGINE_NAME}" '.items[] | select(.name=='${ENGINE_NAME}') | .id')
+ENGINE_ID=$(jq -n "${OUT}" | jq --arg ENGINE_NAME "${ENGINE_NAME}" '.items[] | select(.name==$ENGINE_NAME) | .id')
 
 # If engine doesn't exist, then create new engine.
 if test -z "${ENGINE_ID}" || test "${ENGINE_ID}" = 'null'; then
