@@ -1,0 +1,12 @@
+
+#!/usr/bin/env sh
+
+${VERBOSE} && set -x
+
+. "${HOOKS_DIR}/pingcommon.lib.sh"
+
+run_hook "10-download-artifact.sh"
+
+if ! [ -z "${OPERATIONAL_MODE}" ] &&  [ "${OPERATIONAL_MODE}" != "CLUSTERED_ENGINE" ]; then
+	run_hook "10-config-store-overrides.sh"
+fi
