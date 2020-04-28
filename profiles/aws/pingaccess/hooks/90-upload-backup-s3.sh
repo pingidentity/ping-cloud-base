@@ -3,7 +3,7 @@
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 
-set -x
+"${VERBOSE}" && set -x
 
 initializeS3Configuration
 
@@ -15,14 +15,13 @@ cd ${DST_DIRECTORY}
 
 # Make request to admin API and backup latest data
 make_api_request_download -OJ -X GET https://localhost:9000/pa-admin-api/v3/backup
-API_RESULT=${?}
 
 # Get the name of the backup file
 DST_FILE=$(find ./ -iname \*.zip)
 DST_FILE=${DST_FILE#./}
 
 # Validate admin API call was successful and that zip isn't corrupted
-if test ! ${API_RESULT} -eq 0 || test $( unzip -t ${DST_FILE} > /dev/null 2>&1; echo $? ) != 0 ; then
+if test $(unzip -t "${DST_FILE}" &> /dev/null; echo $?) -ne 0 ; then
   # Cleanup k8s-s3-upload-archive temp directory
   echo "Failed to export archive"
   rm -rf ${DST_DIRECTORY}
