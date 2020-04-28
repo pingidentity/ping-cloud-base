@@ -3,7 +3,7 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: pingfederate
 spec:
-  minReplicas: 2
+  minReplicas: 1
   maxReplicas: 8
   scaleTargetRef:
     apiVersion: apps/v1
