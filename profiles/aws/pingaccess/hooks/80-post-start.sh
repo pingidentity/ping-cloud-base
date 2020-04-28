@@ -3,7 +3,7 @@
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 
-set -x
+"${VERBOSE}" && set -x
 
 if test "${OPERATIONAL_MODE}" != "CLUSTERED_CONSOLE"; then
   echo "post-start: skipping post-start on engine"

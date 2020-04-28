@@ -3,7 +3,7 @@
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 
-set -x
+"${VERBOSE}" && set -x
 
 # 1) Specified backup file name by user will be restored 
 #

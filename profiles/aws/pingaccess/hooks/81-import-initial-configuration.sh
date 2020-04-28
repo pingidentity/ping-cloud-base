@@ -3,7 +3,8 @@
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 
-set -ex
+set -e
+"${VERBOSE}" && set -x
 
 templates_dir_path=${STAGING_DIR}/templates/81
 
@@ -18,7 +19,7 @@ get_admin_user_response=$(curl -k \
      --retry-connrefused \
      -u ${PA_ADMIN_USER_USERNAME}:${OLD_PA_ADMIN_USER_PASSWORD} \
      -H "X-Xsrf-Header: PingAccess" "https://localhost:9000/pa-admin-api/v3/users/1")
-set -x
+"${VERBOSE}" && set -x
 
 # Verify connecting to the user endpoint using credentials
 # passed in via env variables.  If this fails with a non-200
