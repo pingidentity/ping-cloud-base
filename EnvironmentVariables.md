@@ -4,6 +4,14 @@ See the [full list](https://github.com/pingidentity/pingidentity-devops-getting-
 
 The following charts show the additional environment variables that may be defined at the Kubernetes layer per release.
 
+### v1.3.1
+
+## PingDirectory
+
+| Name               | Default Value            | Description  | Comments |
+| ------------------ | ------------------------ | ------------ | -------- |
+| BACKENDS_TO_BACKUP | userRoot;appintegrations | A semicolon-separated list of backend IDs for which periodic backups must be taken. | |
+
 ### v1.3.0
 
 ## PingAccess

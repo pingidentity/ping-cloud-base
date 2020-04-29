@@ -80,13 +80,18 @@ if ! test -z "${DATA_BACKUP_FILE}" && \
   echo "Removing changelogDb before restoring user data"
   rm -rf "${SERVER_ROOT_DIR}/changelogDb"
 
-  echo "Restoring to the latest backup under ${SERVER_RESTORE_DIR}"
-  restore --task \
-    --useSSL --trustAll \
-    --port ${LDAPS_PORT} \
-    --bindDN "${ROOT_USER_DN}" \
-    --bindPasswordFile "${ROOT_USER_PASSWORD_FILE}" \
-    --backupDirectory "${SERVER_RESTORE_DIR}"
+  echo "Restoring to the latest backups under ${SERVER_RESTORE_DIR}"
+  BACKEND_DIRS=$(find "${SERVER_RESTORE_DIR}" -name backup.info -exec dirname {} \;)
+
+  for BACKEND_DIR in ${BACKEND_DIRS}; do
+    printf "\n----- Doing a restore from ${BACKEND_DIR} -----\n"
+    restore --task \
+      --useSSL --trustAll \
+      --port ${LDAPS_PORT} \
+      --bindDN "${ROOT_USER_DN}" \
+      --bindPasswordFile "${ROOT_USER_PASSWORD_FILE}" \
+      --backupDirectory "${BACKEND_DIR}"
+  done
 
   # Cleanup
   rm -rf ${SERVER_RESTORE_DIR}
