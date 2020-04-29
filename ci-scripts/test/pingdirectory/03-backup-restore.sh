@@ -65,7 +65,7 @@ RESTORE_POD=$(kubectl get pod -n "${NAMESPACE}" -o name | grep pingdirectory-res
 NUM_SUCCESSFUL=$(kubectl logs -n "${NAMESPACE}" "${RESTORE_POD}" | grep -c "${RESTORE_SUCCESS_MESSAGE}")
 
 if test "${NUM_SUCCESSFUL}" -ne 2; then
-  log "Restore job failed. Logs:"
+  log "Restore job failed. Restore logs:"
   kubectl logs -n "${NAMESPACE}" "${RESTORE_POD}"
   exit 1
 fi
