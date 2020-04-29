@@ -12,9 +12,7 @@ SERVER_BACKUP_DIR="${OUT_DIR}/backup"
 rm -rf "${SERVER_BACKUP_DIR}"
 mkdir -p "${SERVER_BACKUP_DIR}"
 
-APP_INTEGRATIONS_BACKEND_ID='appintegrations'
-BACKENDS="${USER_BACKEND_ID} ${APP_INTEGRATIONS_BACKEND_ID}"
-
+BACKENDS=$(echo "${BACKENDS_TO_BACKUP}" | tr ';' ' ')
 echo "Doing a full backup of backends \"${BACKENDS}\" to ${SERVER_BACKUP_DIR}"
 
 for BACKEND_ID in ${BACKENDS}; do
