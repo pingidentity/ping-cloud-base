@@ -12,15 +12,23 @@ SERVER_BACKUP_DIR="${OUT_DIR}/backup"
 rm -rf "${SERVER_BACKUP_DIR}"
 mkdir -p "${SERVER_BACKUP_DIR}"
 
-echo "Doing a full backup of ${USER_BACKEND_ID} backend to ${SERVER_BACKUP_DIR}"
-backup --task \
-  --useSSL --trustAll \
-  --port ${LDAPS_PORT} \
-  --bindDN "${ROOT_USER_DN}" \
-  --bindPasswordFile "${ROOT_USER_PASSWORD_FILE}" \
-  --backupDirectory "${SERVER_BACKUP_DIR}" \
-  --backendID "${USER_BACKEND_ID}" \
-  --compress
+APP_INTEGRATIONS_BACKEND_ID='appintegrations'
+BACKENDS="${USER_BACKEND_ID} ${APP_INTEGRATIONS_BACKEND_ID}"
+
+echo "Doing a full backup of backends \"${BACKENDS}\" to ${SERVER_BACKUP_DIR}"
+
+for BACKEND_ID in ${BACKENDS}; do
+  BACKEND_BACKUP_DIR="${SERVER_BACKUP_DIR}/${BACKEND_ID}"
+  printf "\n----- Doing a full backup of ${BACKEND_ID} backend to ${BACKEND_BACKUP_DIR} -----\n"
+  backup --task \
+    --useSSL --trustAll \
+    --port ${LDAPS_PORT} \
+    --bindDN "${ROOT_USER_DN}" \
+    --bindPasswordFile "${ROOT_USER_PASSWORD_FILE}" \
+    --backupDirectory "${BACKEND_BACKUP_DIR}" \
+    --backendID "${BACKEND_ID}" \
+    --compress
+done
 
 # Zip backup files and append the current timestamp to zip filename
 cd "${SERVER_BACKUP_DIR}"
