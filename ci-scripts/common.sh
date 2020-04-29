@@ -53,7 +53,8 @@ PINGFEDERATE_OAUTH_PLAYGROUND=https://pingfederate${FQDN}/OAuthPlayground
 # Pingaccess
 # admin services:
 PINGACCESS_CONSOLE=https://pingaccess-admin${FQDN}
-PINGACCESS_API=https://pingaccess-admin${FQDN}/pa-admin-api/v3/api-docs
+PINGACCESS_SWAGGER=https://pingaccess-admin${FQDN}/pa-admin-api/v3/api-docs
+PINGACCESS_API=https://pingaccess-admin${FQDN}/pa-admin-api/v3
 
 # runtime services:
 PINGACCESS_RUNTIME=https://pingaccess${FQDN}
