@@ -10,7 +10,7 @@ The following charts show the additional environment variables that may be defin
 
 | Name               | Default Value            | Description  | Comments |
 | ------------------ | ------------------------ | ------------ | -------- |
-| BACKENDS_TO_BACKUP | userRoot;appintegrations | A comma-separated list of backend IDs for which periodic backups must be taken. | |
+| BACKENDS_TO_BACKUP | userRoot;appintegrations | A semicolon-separated list of backend IDs for which periodic backups must be taken. | |
 
 ### v1.3.0
 
