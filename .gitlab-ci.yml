@@ -33,7 +33,12 @@ deploy:
   - ./ci-scripts/build/deploy.sh
   except:
     variables:
-    - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
+      - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
+  environment:
+    name: ping-cloud-base/$CI_COMMIT_REF_NAME
+    on_stop: cleanup
+    kubernetes:
+      namespace: ping-cloud-$CI_COMMIT_REF_NAME
 
 ## Test stage ##
 pd-tests:
@@ -101,5 +106,12 @@ cleanup:
   script:
   - ./ci-scripts/cleanup/teardown.sh
   except:
+    refs:
+      - master
     variables:
     - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
+  environment:
+    name: ping-cloud-base/$CI_COMMIT_REF_NAME
+    action: stop
+    kubernetes:
+      namespace: ping-cloud-$CI_COMMIT_REF_NAME
