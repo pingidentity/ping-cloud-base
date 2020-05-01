@@ -11,7 +11,7 @@ echo "Restarting container"
 # for the current JVM.
 echo "Re-generating java.properties for current JVM"
 rm -f "${SERVER_ROOT_DIR}/config/java.properties"
-dsjavaproperties
+dsjavaproperties --initialize --jvmTuningParameter AGGRESSIVE --maxHeapSize ${MAX_HEAP_SIZE}
 
 # If this hook is provided it can be executed early on
 run_hook "21-update-server-profile.sh"
