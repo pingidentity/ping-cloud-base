@@ -29,7 +29,7 @@ replaceAndCommit() {
   echo "Changing ${SOURCE_REF} -> ${TARGET_REF} in expected files"
 
   # Replace SERVER_PROFILE_BRANCH variable in product-specific env_vars file
-  PRODUCTS='pingdirectory pingfederate'
+  PRODUCTS='pingdirectory pingfederate pingaccess'
   for PRODUCT in ${PRODUCTS}; do
     sed -i.bak -E "s/(SERVER_PROFILE_BRANCH=).*$/\1${TARGET_REF}/" \
         "k8s-configs/ping-cloud/base/${PRODUCT}/base/env_vars"
