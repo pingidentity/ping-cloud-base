@@ -30,11 +30,13 @@ if test ! -f "${_pdProfileLicense}" ; then
   cp -af "${_currentLicense}" "${_pdProfileLicense}"
 fi
 
+# FIXME: Workaround for DS-41964 - use --replaceFullProfile flag to replace-profile
 echo "Merging changes from new server profile"
 "${SERVER_BITS_DIR}"/bin/manage-profile replace-profile \
     --serverRoot "${SERVER_ROOT_DIR}" \
     --profile "${STAGING_DIR}/pd.profile" \
     --useEnvironmentVariables \
+    --replaceFullProfile \
     --reimportData never
 
 MANAGE_PROFILE_STATUS=${?}
