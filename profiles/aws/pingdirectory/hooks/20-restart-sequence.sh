@@ -42,7 +42,11 @@ echo "Merging changes from new server profile"
 MANAGE_PROFILE_STATUS=${?}
 echo "manage-profile replace-profile status: ${MANAGE_PROFILE_STATUS}"
 
-test "${MANAGE_PROFILE_STATUS}" -ne 0 && exit 20
+if test "${MANAGE_PROFILE_STATUS}" -ne 0; then
+  echo "Contents of manage-profile.log file:"
+  cat "${SERVER_BITS_DIR}/logs/tools/manage-profile.log"
+  exit 20
+fi
 
 run_hook "185-apply-tools-properties.sh"
 
