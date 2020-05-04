@@ -12,6 +12,7 @@ parse_utility_output() {
 set -e
 "${VERBOSE}" && set -x
 
+exit 0
 
 # Using urandom, translate the bytes into alphanumeric chars.  Wrap the chars to fit 32 chars.
 random_password=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
