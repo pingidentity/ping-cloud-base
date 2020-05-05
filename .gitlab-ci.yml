@@ -28,9 +28,9 @@ deploy:
   stage: build
   tags:
   - pd-eks-deploy
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:latest
   script:
-  - ./ci-scripts/build/deploy.sh
+  - /ci-scripts/deploy.sh
   except:
     variables:
       - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
@@ -101,14 +101,16 @@ chaos-tests:
 ## Cleanup stage ##
 cleanup:
   stage: cleanup
+  variables:
+    GIT_STRATEGY: none
   tags:
   - pd-eks-deploy
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:latest
   script:
-  - ./ci-scripts/cleanup/teardown.sh
+  - /ci-scripts/teardown.sh
   except:
     refs:
-      - master
+    - master
     variables:
     - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
   environment:
