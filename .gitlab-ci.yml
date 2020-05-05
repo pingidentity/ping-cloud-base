@@ -37,7 +37,7 @@ deploy:
   environment:
     name: $CI_PROJECT_PATH
     on_stop: stop_review
-  allow_failure: true
+  auto_stop_in: 2 min
 
 stop_review:
   stage: deploy
@@ -58,7 +58,6 @@ stop_review:
   environment:
     name: $CI_PROJECT_PATH
     action: stop
-    auto_stop_in: 2 min
 
 ## Test stage ##
 pd-tests:
