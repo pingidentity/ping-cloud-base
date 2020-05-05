@@ -25,7 +25,7 @@ compile:
 
 ## Build stage ##
 deploy:
-  stage: build
+  stage: deploy
   tags:
   - pd-eks-deploy
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:latest
@@ -35,8 +35,26 @@ deploy:
     variables:
       - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
   environment:
-    name: ping-cloud-base/$CI_COMMIT_REF_NAME
-    on_stop: cleanup
+    name: $CI_PROJECT_PATH
+    on_stop: stop_review
+
+stop_review:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  tags:
+  - pd-eks-deploy
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:latest
+  script:
+  - /ci-scripts/teardown.sh
+  except:
+    refs:
+    - master
+    variables:
+    - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
+  environment:
+    name: $CI_PROJECT_PATH
+    action: stop
 
 ## Test stage ##
 pd-tests:
@@ -111,5 +129,5 @@ cleanup:
     variables:
     - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
   environment:
-    name: ping-cloud-base/$CI_COMMIT_REF_NAME
+    name: $CI_PROJECT_PATH
     action: stop
