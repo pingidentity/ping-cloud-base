@@ -37,6 +37,7 @@ deploy:
   environment:
     name: $CI_PROJECT_PATH
     on_stop: stop_review
+  allow_failure: true
 
 stop_review:
   stage: deploy
