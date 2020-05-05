@@ -30,6 +30,8 @@ echo "manage-profile setup status: ${MANAGE_PROFILE_STATUS}"
 export UNBOUNDID_JAVA_ARGS="${ORIG_UNBOUNDID_JAVA_ARGS}"
 
 if test "${MANAGE_PROFILE_STATUS}" -ne 0; then
+  echo "Contents of manage-profile.log file:"
+  cat "${SERVER_ROOT_DIR}/logs/tools/manage-profile.log"
   test -f /tmp/rejects.ldif && cat /tmp/rejects.ldif
   exit 183
 fi

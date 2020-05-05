@@ -39,11 +39,13 @@ if test ! -z "${HEAP_SIZE_INT}" && test "${HEAP_SIZE_INT}" -ge 4; then
   export UNBOUNDID_JAVA_ARGS="-client -Xmx${NEW_HEAP_SIZE} -Xms${NEW_HEAP_SIZE}"
 fi
 
+# FIXME: Workaround for DS-41964 - use --replaceFullProfile flag to replace-profile
 echo "Merging changes from new server profile"
 "${SERVER_BITS_DIR}"/bin/manage-profile replace-profile \
     --serverRoot "${SERVER_ROOT_DIR}" \
     --profile "${STAGING_DIR}/pd.profile" \
     --useEnvironmentVariables \
+    --replaceFullProfile \
     --reimportData never
 
 MANAGE_PROFILE_STATUS=${?}
@@ -51,7 +53,11 @@ echo "manage-profile replace-profile status: ${MANAGE_PROFILE_STATUS}"
 
 export UNBOUNDID_JAVA_ARGS="${ORIG_UNBOUNDID_JAVA_ARGS}"
 
-test "${MANAGE_PROFILE_STATUS}" -ne 0 && exit 20
+if test "${MANAGE_PROFILE_STATUS}" -ne 0; then
+  echo "Contents of manage-profile.log file:"
+  cat "${SERVER_BITS_DIR}/logs/tools/manage-profile.log"
+  exit 20
+fi
 
 run_hook "185-apply-tools-properties.sh"
 
