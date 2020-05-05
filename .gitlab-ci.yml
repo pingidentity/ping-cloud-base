@@ -36,10 +36,7 @@ deploy:
       - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
   environment:
     name: ping-cloud-base/$CI_COMMIT_REF_NAME
-    url: https://$CI_ENVIRONMENT_SLUG.git.ci-cd.ping-oasis.com
     on_stop: cleanup
-    kubernetes:
-      namespace: ping-cloud-$CI_COMMIT_REF_NAME
 
 ## Test stage ##
 pd-tests:
@@ -116,5 +113,3 @@ cleanup:
   environment:
     name: ping-cloud-base/$CI_COMMIT_REF_NAME
     action: stop
-    kubernetes:
-      namespace: ping-cloud-$CI_COMMIT_REF_NAME
