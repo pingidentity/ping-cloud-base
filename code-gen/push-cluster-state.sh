@@ -7,6 +7,7 @@
 # environment variables, if set.
 #
 #   GENERATED_CODE_DIR -> The TARGET_DIR of generate-cluster-state.sh. Defaults to '/tmp/sandbox', if unset.
+#   REGION_NICK_NAME -> The nick name of the region for which the generated code is applicable.
 #   ENVIRONMENTS -> A space-separated list of environments. Defaults to 'dev test stage prod', if unset. If provided,
 #   it must contain all or a subset of the environments currently created by the generate-cluster-state.sh script, i.e.
 #   dev, test, stage, prod.
@@ -21,18 +22,20 @@
 #   ${1} -> The directory where cluster state code was generated, i.e. the TARGET_DIR to generate-cluster-state.sh.
 #   ${2} -> The environment.
 #   ${3} -> The target directory into which to organize the code to push for the environment.
+#   ${4} -> The nick name for a region, e.g. parent, child-0, child-1, etc.
 ########################################################################################################################
 organize_code_for_environment() {
   GENERATED_CODE_DIR="${1}"
   ENV="${2}"
   ENV_CODE_DIR="${3}"
-  ALL_ENVIRONMENTS=${4}
+  REGION_NICK_NAME="${4}"
 
   cp -pr "${GENERATED_CODE_DIR}"/cluster-state/. "${ENV_CODE_DIR}"
   K8S_DIR="${ENV_CODE_DIR}"/k8s-configs
+  K8S_DIR_FOR_REGION="${K8S_DIR}/${REGION_NICK_NAME}"
 
-  rm -rf "${K8S_DIR:?}"/*
-  cp -pr "${GENERATED_CODE_DIR}"/cluster-state/k8s-configs/"${ENV}"/. "${K8S_DIR}"
+  rm -rf "${K8S_DIR_FOR_REGION:?}"/*
+  cp -pr "${GENERATED_CODE_DIR}"/cluster-state/k8s-configs/"${ENV}"/. "${K8S_DIR_FOR_REGION}"
 }
 
 ########################################################################################################################
