@@ -1,0 +1,58 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+- ../base
+
+patchesStrategicMerge:
+
+# Remove PingAccess admin
+- |-
+  apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    name: pingaccess-admin
+  $patch: delete
+
+- |-
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: pingaccess-admin
+  $patch: delete
+
+- |-
+  apiVersion: extensions/v1beta1
+  kind: Ingress
+  metadata:
+    name: pingaccess-admin-ingress
+  $patch: delete
+
+# Remove PingFederate admin
+- |-
+  apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    name: pingfederate-admin
+  $patch: delete
+
+- |-
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: pingfederate-admin
+  $patch: delete
+
+- |-
+  apiVersion: extensions/v1beta1
+  kind: Ingress
+  metadata:
+    name: pingfederate-admin-ingress
+  $patch: delete
+
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: pingfederate-backup
+  $patch: delete

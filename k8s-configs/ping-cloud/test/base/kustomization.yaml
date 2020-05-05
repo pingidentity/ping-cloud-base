@@ -1,0 +1,15 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+namespace: ping-cloud
+
+commonLabels:
+  app: ping-cloud
+
+resources:
+- ../../base
+- ../../base/pingdirectory/aws
+- ../../base/pingfederate/aws
+- ../../base/pingaccess/aws
+- pingdataconsole
+- httpbin
