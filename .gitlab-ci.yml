@@ -30,7 +30,7 @@ deploy:
   - pd-eks-deploy
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:latest
   script:
-  - /ci-scripts/deploy.sh
+  - exit 1 #/ci-scripts/deploy.sh
   except:
     variables:
       - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
@@ -57,6 +57,7 @@ stop_review:
   environment:
     name: $CI_PROJECT_PATH
     action: stop
+    auto_stop_in: 2 min
 
 ## Test stage ##
 pd-tests:
