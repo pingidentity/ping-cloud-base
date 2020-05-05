@@ -1,7 +1,7 @@
 ## Pipeline stages ##
 stages:
 - compile
-- build
+- deploy
 - test
 - chaos
 - cleanup
