@@ -1,5 +1,23 @@
 # Changelog
 
+### 1.3.1
+
+- Fixed PingAccess engine flapping due to HPA and Flux interfering with each other
+- Fixed PingAccess deployment automation to enable verbose logging only if VERBOSE is true
+- Fixed PingDirectory backup to include PingFederate data under the o=appintegrations backend
+- Fixed PingDirectory rolling update to preserve the server's MAX_HEAP_SIZE setting
+- Fixed PingFederate restore job to not fail if there are too many backup files 
+  
+_Changes:_
+
+- [X] PDO-845 - Purge sessions script purging wrong backend
+- [X] PDO-846 - Setting minReplicas 1 and maxReplicas 2 for PingAccess HPA causes second PA pod to cycle
+- [X] PDO-847 - PF Admin default bootstraping if S3 contains too many files
+- [X] PDO-862 - PA Pod horizontal auto-scale cycling too quickly under load
+- [X] PDO-900 - PA automation - enable verbose logging only if VERBOSE is true
+- [X] PDO-903 - PD backup does not include PF data under o=appintegrations
+- [X] PDO-916 - PD deployment automation: running replace-profile drops JVM heap space down to 384MB  
+
 ### 1.3.0
 
 - Added support for PingAccess deployment automation, including initial deployment of a cluster, auto-scaling, 

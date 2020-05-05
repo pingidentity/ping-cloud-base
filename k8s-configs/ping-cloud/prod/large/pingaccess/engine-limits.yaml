@@ -3,7 +3,6 @@ kind: StatefulSet
 metadata:
   name: pingaccess
 spec:
-  replicas: 6
   template:
     spec:
       containers:

@@ -31,11 +31,29 @@ wait_for_admin_api_endpoint
 #
 cp run.properties.bak run.properties
 #
+# Process General Overrides
+#
+rc=0
+if [ -e "${STAGING_DIR}/data-overrides" ] && [ -d "${STAGING_DIR}/data-overrides" ]; then
+   echo "============================= Applying general static overrides =============================="
+   cd ${STAGING_DIR}/data-overrides
+   for template in $( find "." -type f -iname \*.subst ) ; do
+      echo "    t - ${template}"
+      envsubst < "${template}" > "${template%.subst}"
+      rm -f "${template}"
+   done
+
+   copy_files "${STAGING_DIR}/data-overrides" "${SERVER_ROOT_DIR}/server/default/data"
+   rc=$? 
+   echo "================================  General overrides applied  ================================="
+else
+	echo "No general overrides found to apply"
+fi
+#
 # Apply config store overrides to server. the script is expected to run from the hooks 
 # directory and the config-store overrides directory is expected to be a sibling of hooks
 #
-cd $(dirname $(dirname $0))/config-store
-
+cd "${STAGING_DIR}/config-store"
 if [ $(ls *.json | wc -l) -gt 0 ]; then
    #
    # Overrides exist, process directroy contents in lexicographical order              
@@ -44,7 +62,6 @@ if [ $(ls *.json | wc -l) -gt 0 ]; then
    #
    # Assume Success, we will attempt to process everything to catch all errors in one pass
    #
-   rc=0
    for file in $(ls *.json |sort |tr '$\n' ' '); do
       #
       # Only process files
@@ -205,4 +222,5 @@ while [  "$(netstat -lntp|grep 9999|grep "${pid}/java" >/dev/null 2>&1;echo $?)"
    sleep 1
 done   
 cd ${wd}
+pwd
 exit ${rc}
