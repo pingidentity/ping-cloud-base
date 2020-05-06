@@ -11,6 +11,7 @@ resources:
 - ../base/pingdirectory/aws
 - ../base/pingfederate/aws
 - ../base/pingaccess/aws
+- ../base/aws
 - pingdataconsole
 - httpbin
 
