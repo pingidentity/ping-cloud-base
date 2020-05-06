@@ -9,8 +9,7 @@ initializeS3Configuration
 
 echo "Uploading to location ${BACKUP_URL}"
 
-DST_DIRECTORY="/tmp/k8s-s3-upload-archive"
-mkdir -p ${DST_DIRECTORY}
+DST_DIRECTORY=$(mktemp -d)
 cd ${DST_DIRECTORY}
 
 # Make request to admin API and backup latest data
