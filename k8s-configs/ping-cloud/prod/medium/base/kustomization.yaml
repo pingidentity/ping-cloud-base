@@ -8,6 +8,7 @@ commonLabels:
 
 resources:
 - ../../../base
+- ../../../base/aws
 - ../../../base/pingdirectory/aws
 - ../../../base/pingfederate/aws
 - ../../../base/pingaccess/aws
