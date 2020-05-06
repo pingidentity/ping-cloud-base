@@ -6,7 +6,7 @@ resources:
 
 patchesStrategicMerge:
 
-# Remove PingAccess admin
+# Remove PingAccess parent-related resources
 - |-
   apiVersion: apps/v1
   kind: StatefulSet
@@ -28,7 +28,21 @@ patchesStrategicMerge:
     name: pingaccess-admin-ingress
   $patch: delete
 
-# Remove PingFederate admin
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: pingaccess-backup
+  $patch: delete
+
+- |-
+  apiVersion: batch/v1beta1
+  kind: CronJob
+  metadata:
+    name: pingaccess-periodic-backup
+  $patch: delete
+
+# Remove PingFederate parent-related resources
 - |-
   apiVersion: apps/v1
   kind: StatefulSet
@@ -55,4 +69,27 @@ patchesStrategicMerge:
   kind: ConfigMap
   metadata:
     name: pingfederate-backup
+  $patch: delete
+
+- |-
+  apiVersion: batch/v1beta1
+  kind: CronJob
+  metadata:
+    name: pingfederate-periodic-backup
+  $patch: delete
+
+# Remove PingDirectory parent-related resources
+
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: pingdirectory-backup
+  $patch: delete
+
+- |-
+  apiVersion: batch/v1beta1
+  kind: CronJob
+  metadata:
+    name: pingdirectory-periodic-backup
   $patch: delete
