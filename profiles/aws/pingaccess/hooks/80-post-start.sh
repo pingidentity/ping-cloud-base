@@ -51,4 +51,4 @@ fi
 
 # Kill the container if post-start fails.
 echo "post-start: admin post-start backup failed"
-stop_server
+"${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1

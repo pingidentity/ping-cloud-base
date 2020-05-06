@@ -19,7 +19,10 @@ data:
     LOG_FILE=/tmp/upload.log
 
     echo "Uploading pingaccess backup data on server ${SERVER}"
-    kubectl exec "${SERVER}" -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" | tee "${LOG_FILE}"
+    kubectl exec "${SERVER}" -- sh -c \
+            "test -x ${SCRIPT} && \
+            STOP_SERVER_ON_FAILURE=false \
+            ${SCRIPT}" | tee "${LOG_FILE}"
 
     if test ${?} -eq 0; then
       UPLOAD_FILE=$(tail -1 "${LOG_FILE}")
@@ -35,7 +38,7 @@ kind: CronJob
 metadata:
   name: pingaccess-periodic-backup
 spec:
-  schedule: "*/5 * * * *"
+  schedule: "*/15 * * * *"
   jobTemplate:
     spec:
       template:
