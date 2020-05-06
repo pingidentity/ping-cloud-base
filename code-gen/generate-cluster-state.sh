@@ -193,6 +193,9 @@
 #                        | generated. If the target directory exists, it will |
 #                        | be deleted.                                        |
 #                        |                                                    |
+# IS_PARENT              | A flag indicating whether code is being generated  | true
+#                        | for a parent vs. a child region.                   |
+#                        |
 # IS_BELUGA_ENV          | An optional flag that may be provided to indicate  | false. Only intended for Beluga
 #                        | that the cluster state is being generated for      | developers.
 #                        | testing during Beluga development. If set to true, |
