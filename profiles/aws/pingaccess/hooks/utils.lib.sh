@@ -38,12 +38,12 @@ function make_api_request() {
 
     if test "${curl_result}" -ne 0; then
         echo "Admin API connection refused"
-        stop_server
+        "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
 
     if test "${http_code}" -ne 200; then
         echo "API call returned HTTP status code: ${http_code}"
-        stop_server
+        "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
 
     cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
@@ -69,12 +69,12 @@ function make_initial_api_request() {
 
     if test "${curl_result}" -ne 0; then
         echo "Admin API connection refused"
-        stop_server
+        "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
 
     if test "${http_code}" -ne 200; then
         echo "API call returned HTTP status code: ${http_code}"
-        stop_server
+        "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
 
     cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
@@ -102,12 +102,12 @@ function make_api_request_download() {
 
     if test "${curl_result}" -ne 0; then
         echo "Admin API connection refused"
-        stop_server
+        "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
 
     if test "${http_code}" -ne 200; then
         echo "API call returned HTTP status code: ${http_code}"
-        stop_server
+        "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
 
     return 0
@@ -208,10 +208,10 @@ function changePassword() {
 
   if test ${isPasswordEmpty} -eq 1; then
     echo "The old and new passwords cannot be blank"
-    stop_server
+    "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
   elif test ${isPasswordSame} -eq 1; then
     echo "old passsword and new password are the same, therefore cannot update passsword"
-    stop_server
+    "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
   else
     # Change the default password.
     # Using set +x to suppress shell debugging
@@ -233,7 +233,7 @@ function changePassword() {
     fi
 
     echo "error changing password"
-    stop_server
+    "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
   fi
 }
 
