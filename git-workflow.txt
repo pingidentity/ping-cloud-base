@@ -12,6 +12,32 @@ Given a version number MAJOR.MINOR.PATCH, increment the:
 
 This also results in more frequent versions and branches to track those versions.
 
+Branching and tagging:
+
+Release branches are created after we release a particular version and commit to the next release as a team. They are
+typically created from the HEAD of the master branch, but on rare occasions, they may also be created from any prior
+commit SHA. This decision is based on team input, release schedules and deadlines. Release branches have a pattern of
+"v<major>.<minor>-release-branch", e.g. v1.3-release-branch. Once a release has been qualified by the QA team, the
+release tag is created off of the tip of the release branch. There is a tagging script under the build directory to
+do that.
+
+This release strategy implies that you can develop code for (and potentially deliver) different major/minor versions
+in parallel. For example, you can develop for v1.3.2 and a future v1.4.0 in parallel because they live in separate
+release branches. However, maintenance releases on top of a minor release can only be developed sequentially. For
+example, you cannot push changes for v1.3.3 into the v1.3-release-branch until v1.3.2 has been tagged. Note that
+changes that do not have a known release version may be merged into master.
+
+Once a change has been made to a lower branch, it must be promoted to higher branches. The developer has the choice of
+doing it themselves via the MR workflow (as described in the following section), or may defer it to the release
+engineer to handle it. A release engineer will merge changes from lower branches all the way up into master
+periodically, for example, from v1.3-release-branch -> v1.4-release-branch -> master. Multiple commits may be chained
+to keep the CI pipeline from going berserk. But if it's not a fast-forward merge, and there are merge conflicts, the
+release engineer may request the developer to perform the merge.
+
+Note that the release branches are not long-lived branches. Once a particular version has been made end-of-life, or all
+customers have been upgraded to a new version, the release branches may be deleted. For example, if all PingCloud
+customers have moved onto v1.3.1, the v1.1-release-branch and v1.2-release-branch branches may be deleted.
+
 Git Workflow:
 
 1. When working on a bug or feature, the first thing to determine is the version for which it is targeted. Ask a
@@ -21,22 +47,27 @@ Git Workflow:
    not clear.
 
 3. After cloning ping-cloud-base, create a local feature/bug-fix branch. For example, to create a new local bug-fix
-   branch named pdo-288-increase-csd-timeout off of the current tip of the v1.2-release-branch, run these commands:
+   branch named pdo-288-increase-csd-timeout off of the current tip of the v1.3-release-branch, run these commands:
 
    git clone git@gitlab.corp.pingidentity.com:ping-cloud-private-tenant/ping-cloud-base.git
-   git checkout v1.2-release-branch              # Switch to the v1.2-release-branch
+   git checkout v1.3-release-branch              # Switch to the v1.3-release-branch
    git pull                                      # Get the latest changes from the server
    git checkout -b pdo-288-increase-csd-timeout  # Create the feature or bug-fix branch
+
+   Note: We use branch names to create unique DNS names on Route53 for each environment. DNS names must be 63
+   characters or shorter. So the branch name must not be too long such that it exceeds that limit. The maximum
+   recommended length for the branch name is 40 characters. A best-practice is to use the Jira issue number as the
+   branch name prefix, followed by a short description, e.g. pdo-723-wait-for-services.
 
 4. Make your changes on your local branch. Periodically merge the source branch into your local branch. This is
    especially important for massive changes.
 
    git stash                         # This is only required if you have uncommitted changes in your branch
-   git checkout v1.2-release-branch  # Switch to the source branch, v1.2-release-branch
-   git pull                          # Fetch and merge the latest updates from the server into v1.2-release-branch
+   git checkout v1.3-release-branch  # Switch to the source branch, v1.3-release-branch
+   git pull                          # Fetch and merge the latest updates from the server into v1.3-release-branch
    git checkout -                    # Switch back to the previous branch, e.g. pdo-288-increase-csd-timeout
    git stash pop                     # This is only required if you had uncommitted changes
-   git merge v1.2-release-branch     # Merge the changes from the v1.2-release-branch into your branch
+   git merge v1.3-release-branch     # Merge the changes from the v1.3-release-branch into your branch
 
    At this point, you may have merge conflicts if another developer has updated one or more of the same files that you
    have. You'll have to resolve them using a three-way merge tool. Most IDEs (e.g. IntelliJ IDEA) have plugins to do
@@ -60,7 +91,7 @@ Git Workflow:
    GitLab server.
 
 8. From the GitLab UI, create a Merge Request. Set the target branch for the merge request to your original source
-   branch, e.g. v1.2-release-branch. Also check the following boxes:
+   branch, e.g. v1.3-release-branch. Also check the following boxes:
 
    - "Squash commits when merge request is accepted" to squash all the commits in your feature branch
    - "Delete source branch when merge request is accepted" to delete the feature branch
