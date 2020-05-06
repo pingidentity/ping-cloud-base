@@ -93,6 +93,9 @@ spec:
         - name: pingfederate-license
           mountPath: /opt/in/instance/server/default/conf/pingfederate.lic
           subPath: pingfederate.lic
+        - name: data-dir
+          mountPath: /opt/staging/env_vars
+          subPath: env_vars
         readinessProbe:
           exec:
             command: [ liveness.sh ]

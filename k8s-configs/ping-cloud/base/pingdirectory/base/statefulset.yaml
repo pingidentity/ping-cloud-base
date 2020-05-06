@@ -144,6 +144,9 @@ spec:
         - name: pingdirectory-license
           mountPath: /opt/in/instance/PingDirectory.lic
           subPath: PingDirectory.lic
+        - name: data-dir
+          mountPath: /opt/staging/env_vars
+          subPath: env_vars
         readinessProbe:
           exec:
             command: [ liveness.sh ]

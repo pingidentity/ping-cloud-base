@@ -7,3 +7,6 @@ resources:
 
 commonLabels:
   role: pingdirectory
+
+patchesStrategicMerge:
+- discovery-service.yaml

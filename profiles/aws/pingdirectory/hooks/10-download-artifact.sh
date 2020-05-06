@@ -3,6 +3,8 @@
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 
+test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
+
 ${VERBOSE} && set -x
 
 if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then

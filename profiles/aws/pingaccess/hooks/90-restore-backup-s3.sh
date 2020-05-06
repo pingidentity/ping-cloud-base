@@ -13,6 +13,9 @@
 #    an issue with the EBS volume which the 90-restore-backup-s3.sh restore script
 #    will restore the latest configuration from S3. If this is an initial
 #    deployment the restore scipt will not find any backups within S3.
+
+test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
+
 if ! test -z "${BACKUP_FILE_NAME}" || ! test -f "${OUT_DIR}"/instance/conf/pa.jwk; then
 
   initializeS3Configuration

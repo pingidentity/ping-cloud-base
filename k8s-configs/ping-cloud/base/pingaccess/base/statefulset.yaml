@@ -76,6 +76,9 @@ spec:
         - name: pingaccess-license
           mountPath: /opt/in/instance/conf/pingaccess.lic
           subPath: pingaccess.lic
+        - name: data-dir
+          mountPath: /opt/staging/env_vars
+          subPath: env_vars
         readinessProbe:
           exec:
             command:
@@ -231,6 +234,12 @@ spec:
         - name: pingaccess-license
           mountPath: /opt/in/instance/conf/pingaccess.lic
           subPath: pingaccess.lic
+        - name: pingaccess-pre-stop
+          mountPath: /opt/staging/pre-stop.sh
+          subPath: pre-stop.sh
+        - name: data-dir
+          mountPath: /opt/staging/env_vars
+          subPath: env_vars
         readinessProbe:
           exec:
             command: [ liveness.sh ]
