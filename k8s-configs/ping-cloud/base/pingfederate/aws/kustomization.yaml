@@ -5,3 +5,6 @@ resources:
 - ../base
 - periodic-backup.yaml
 - periodic-csd-upload.yaml
+
+patchesStrategicMerge:
+- discovery-service.yaml

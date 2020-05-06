@@ -5,6 +5,8 @@
 
 "${VERBOSE}" && set -x
 
+test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
+
 initializeS3Configuration
 
 echo "Uploading to location ${BACKUP_URL}"

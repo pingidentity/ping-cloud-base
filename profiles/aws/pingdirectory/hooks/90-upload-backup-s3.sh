@@ -3,6 +3,8 @@ set -e
 
 . "${HOOKS_DIR}/utils.lib.sh"
 
+test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
+
 # Install AWS CLI and set required environment variables for AWS S3 bucket
 initializeS3Configuration
 

@@ -5,6 +5,8 @@
 
 ${VERBOSE} && set -x
 
+test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
+
 # Allow overriding the backup URL with an arg
 test ! -z "${1}" && BACKUP_URL="${1}"
 echo "Uploading to location ${BACKUP_URL}"
