@@ -148,5 +148,3 @@ envvars.sh
 custom-k8s-settings.yaml
 .gitignore
 create_eks_cluster.sh
-
-blah
