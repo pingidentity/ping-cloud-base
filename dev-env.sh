@@ -241,25 +241,26 @@ kustomize build test |
 sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" ${DEPLOY_FILE}
 
 if test "${dryrun}" = 'false'; then
-  echo "Deploying ${DEPLOY_FILE} to namespace ${NAMESPACE} for tenant ${TENANT_DOMAIN}"
+  echo "Deploying ${DEPLOY_FILE} to cluster ${CLUSTER_NAME}, namespace ${NAMESPACE} for tenant ${TENANT_DOMAIN}"
   kubectl apply -f "${DEPLOY_FILE}" --context "${K8S_CONTEXT}"
 
   # Print out the ingress objects for logs and the ping stack
   echo
   echo '--- Ingress URLs ---'
-  kubectl get ingress -A
+  kubectl get ingress -A --context "${K8S_CONTEXT}"
 
   # Print out the pingdirectory hostname
   echo
   echo '--- LDAP hostname ---'
   kubectl get svc ingress-nginx -n ingress-nginx-private \
-    -o jsonpath='{.metadata.annotations.external-dns\.alpha\.kubernetes\.io/hostname}'
+    -o jsonpath='{.metadata.annotations.external-dns\.alpha\.kubernetes\.io/hostname}' \
+    --context "${K8S_CONTEXT}"
 
   # Print out the  pods for the ping stack
   echo
   echo
   echo '--- Pod status ---'
-  kubectl get pods -n "${NAMESPACE}"
+  kubectl get pods -n "${NAMESPACE}" --context "${K8S_CONTEXT}"
 
   echo
   if test "${skipTest}" = 'true'; then
@@ -267,10 +268,12 @@ if test "${dryrun}" = 'false'; then
   else
     echo "Waiting for pods in ${NAMESPACE} to be ready"
 
-    for DEPLOYMENT in $(kubectl get statefulset,deployment -n "${NAMESPACE}" -o name); do
-      NUM_REPLICAS=$(kubectl get "${DEPLOYMENT}" -o jsonpath='{.spec.replicas}' -n "${NAMESPACE}")
+    for DEPLOYMENT in $(kubectl get statefulset,deployment -n "${NAMESPACE}" -o name --context "${K8S_CONTEXT}"); do
+      NUM_REPLICAS=$(kubectl get "${DEPLOYMENT}" -o jsonpath='{.spec.replicas}' \
+          -n "${NAMESPACE}" --context "${K8S_CONTEXT}")
       TIMEOUT=$((NUM_REPLICAS * 900))
-      time kubectl rollout status --timeout "${TIMEOUT}"s "${DEPLOYMENT}" -n "${NAMESPACE}" -w
+      time kubectl rollout status --timeout "${TIMEOUT}"s "${DEPLOYMENT}" \
+          -n "${NAMESPACE}" -w --context "${K8S_CONTEXT}"
     done
 
     echo "Running integration tests"
