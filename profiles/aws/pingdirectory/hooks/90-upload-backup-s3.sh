@@ -42,7 +42,7 @@ zip -r "${DST_FILE_TIMESTAMP}" *
 DST_FILE_LATEST=latest.zip
 cp "$DST_FILE_TIMESTAMP" "$DST_FILE_LATEST" 
 
-echo "Uploading ${SERVER_BACKUP_DIR}/${DST_FILE_LATEST} to ${TARGET_URL}"
+echo "Uploading ${DST_FILE_LATEST} to ${SKBN_CLOUD_PREFIX}/${DST_FILE_LATEST}"
 if ! skbn cp \
   --src "${SKBN_K8S_PREFIX}/${SERVER_BACKUP_DIR}/${DST_FILE_LATEST}" \
   --dst "${SKBN_CLOUD_PREFIX}/${DST_FILE_LATEST}"; then
@@ -53,6 +53,7 @@ fi
 # Print the filename of the uploaded file to cloud storage.
 echo "${DST_FILE_LATEST}"
 
+echo "Uploading ${DST_FILE_TIMESTAMP} to ${SKBN_CLOUD_PREFIX}/${DST_FILE_TIMESTAMP}"
 if ! skbn cp \
   --src "${SKBN_K8S_PREFIX}/${SERVER_BACKUP_DIR}/${DST_FILE_TIMESTAMP}" \
   --dst "${SKBN_CLOUD_PREFIX}/${DST_FILE_TIMESTAMP}"; then
