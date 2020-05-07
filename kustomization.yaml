@@ -168,8 +168,8 @@ patchesJson6902:
 
 # Configure external-dns to only own the hosted zone for the tenant domain
 - target:
-    group: extensions
-    version: v1beta1
+    group: apps
+    version: v1
     kind: Deployment
     name: external-dns
     namespace: external-dns
