@@ -15,17 +15,19 @@ This also results in more frequent versions and branches to track those versions
 Branching and tagging:
 
 Release branches are created after we release a particular version and commit to the next release as a team. They are
-typically created from the HEAD of the master branch, but on rare occasions, they may also be created from any prior
-commit SHA. This decision is based on team input, release schedules and deadlines. Release branches have a pattern of
-"v<major>.<minor>-release-branch", e.g. v1.3-release-branch. Once a release has been qualified by the QA team, the
-release tag is created off of the tip of the release branch. There is a tagging script under the build directory to
-do that.
+always created from the HEAD of the master branch. Release branches have a pattern of "v<major>.<minor>-release-branch",
+e.g. v1.3-release-branch. Once a release has been qualified by the QA team, the release tag is created off of the tip
+of the release branch. There is a tagging script under the build directory to do that.
 
 This release strategy implies that you can develop code for (and potentially deliver) different major/minor versions
 in parallel. For example, you can develop for v1.3.2 and a future v1.4.0 in parallel because they live in separate
 release branches. However, maintenance releases on top of a minor release can only be developed sequentially. For
-example, you cannot push changes for v1.3.3 into the v1.3-release-branch until v1.3.2 has been tagged. Note that
-changes that do not have a known release version may be merged into master.
+example, you cannot push changes for v1.3.3 into the v1.3-release-branch until v1.3.2 has been tagged.
+
+Features that do not have a known release version must be maintained in their own feature branches until they are
+targeted for the next release. It is the developer's responsibility to keep this branch in sync with the master branch
+by performing periodic merges from it. If there are merge conflicts, the developer must reach out to the committer of
+the code that resulted in the conflicts to ensure that the conflicts are resolved correctly.
 
 Once a change has been made to a lower branch, it must be promoted to higher branches. The developer has the choice of
 doing it themselves via the MR workflow (as described in the following section), or may defer it to the release
