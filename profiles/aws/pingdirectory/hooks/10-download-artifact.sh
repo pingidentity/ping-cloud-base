@@ -26,11 +26,6 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
       echo ${ARTIFACT_LIST_JSON} | jq
       if test $(echo $?) == "0"; then
 
-        # Install AWS CLI if the upload location is S3
-        if test ! "${ARTIFACT_REPO_URL#s3}" == "${ARTIFACT_REPO_URL}" -o ! "${PING_ARTIFACT_REPO_URL#s3}" == "${PING_ARTIFACT_REPO_URL}"; then
-          installAwsCliTools
-        fi
-
         DOWNLOAD_DIR="${STAGING_DIR}/pd.profile/server-sdk-extensions"
 
         # Create extensions folder
@@ -95,9 +90,20 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
 
                 echo "Download Artifact from ${ARTIFACT_LOCATION}"
 
-                # Use aws command if ARTIFACT_LOCATION is in s3 format otherwise use curl
+                # Use skbn command if ARTIFACT_LOCATION is cloud storage otherwise use curl
                 if ! test ${ARTIFACT_LOCATION#s3} == "${ARTIFACT_LOCATION}"; then
-                  aws s3 cp "${ARTIFACT_LOCATION}/${ARTIFACT_RUNTIME_ZIP}" ${DOWNLOAD_DIR}
+
+                  # Set required environment variables for skbn
+                  initializeSkbnConfiguration "${ARTIFACT_LOCATION}"
+
+                  echo "Downloading ${SKBN_CLOUD_PREFIX}/${ARTIFACT_RUNTIME_ZIP} to ${DOWNLOAD_DIR}"
+                  if ! skbn cp \
+                    --src "${SKBN_CLOUD_PREFIX}/${ARTIFACT_RUNTIME_ZIP}" \
+                    --dst "${SKBN_K8S_PREFIX}}${DOWNLOAD_DIR}"; then
+        
+                    echo "skbn failed to download ${ARTIFACT_RUNTIME_ZIP} from ${SKBN_CLOUD_PREFIX}"
+                    exit 1
+                  fi
                 else
                   # For downloading over https we need to specify the exact file name,
                   # This will only work for standard extensions with a prefix of pingidentity.com

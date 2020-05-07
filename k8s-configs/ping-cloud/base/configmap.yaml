@@ -24,6 +24,15 @@ data:
     #--- Copy kubectl to the data directory ---#
     which kubectl | xargs -I {} cp {} /data
 
+    #--- Download skbn ---#
+    wget -qO- https://github.com/maorfr/skbn/releases/download/0.5.0/skbn-0.5.0-linux.tar.gz | tar xvz -C .
+    
+    #--- Copy skbn to the data directory ---#
+    if ! mv skbn-0.5.0-linux/skbn /data; then
+      echo "Failed to locate skbn"
+      exit 1
+    fi
+
     #--- Wait for dependent services, if any --- #
     if test ! -z "${WAIT_FOR_SERVICES}"; then
       WAIT_FOR_NUM_REPLICAS=${WAIT_FOR_NUM_REPLICAS:-1}

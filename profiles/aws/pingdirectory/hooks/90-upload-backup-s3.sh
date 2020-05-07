@@ -3,10 +3,12 @@ set -e
 
 . "${HOOKS_DIR}/utils.lib.sh"
 
+
+# Source generated environment variables 
 test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
 
-# Install AWS CLI and set required environment variables for AWS S3 bucket
-initializeS3Configuration
+# Set required environment variables for skbn
+initializeSkbnConfiguration
 
 # This is the backup directory on the server
 SERVER_BACKUP_DIR="${OUT_DIR}/backup"
@@ -32,17 +34,34 @@ done
 
 # Zip backup files and append the current timestamp to zip filename
 cd "${SERVER_BACKUP_DIR}"
-DST_FILE="data-`date +%m-%d-%Y.%H.%M.%S`.zip"
-zip -r ${DST_FILE} *
+DST_FILE_TIMESTAMP="data-$(date +%m-%d-%Y.%H.%M.%S).zip"
+zip -r "${DST_FILE_TIMESTAMP}" *
 
-echo "Creating directory ${DIRECTORY_NAME} under bucket ${BUCKET_NAME}"
-aws s3api put-object --bucket "${BUCKET_NAME}" --key "${DIRECTORY_NAME}"/
+# Two copy of the backup will be pushed to cloud storage.
+# Make a copy: latest.zip
+DST_FILE_LATEST=latest.zip
+cp "$DST_FILE_TIMESTAMP" "$DST_FILE_LATEST" 
 
-echo "Uploading ${SERVER_BACKUP_DIR}/${DST_FILE} to ${TARGET_URL}"
-aws s3 cp "${SERVER_BACKUP_DIR}/${DST_FILE}" "${TARGET_URL}/"
+echo "Uploading ${SERVER_BACKUP_DIR}/${DST_FILE_LATEST} to ${TARGET_URL}"
+if ! skbn cp \
+  --src "${SKBN_K8S_PREFIX}/${SERVER_BACKUP_DIR}/${DST_FILE_LATEST}" \
+  --dst "${SKBN_CLOUD_PREFIX}/${DST_FILE_LATEST}"; then
+  
+  echo "skbn failed to upload ${DST_FILE_LATEST} to ${SKBN_CLOUD_PREFIX}"
+fi 
 
-# Print the filename of the uploaded file to s3
-echo "${DST_FILE}"
+# Print the filename of the uploaded file to cloud storage.
+echo "${DST_FILE_LATEST}"
+
+if ! skbn cp \
+  --src "${SKBN_K8S_PREFIX}/${SERVER_BACKUP_DIR}/${DST_FILE_TIMESTAMP}" \
+  --dst "${SKBN_CLOUD_PREFIX}/${DST_FILE_TIMESTAMP}"; then
+
+  echo "skbn failed to upload ${DST_FILE_TIMESTAMP} to ${SKBN_CLOUD_PREFIX}"
+fi 
+
+# Print the filename of the uploaded file to cloud storage.
+echo "${DST_FILE_TIMESTAMP}"
 
 # Cleanup
 rm -rf "${SERVER_BACKUP_DIR}"
