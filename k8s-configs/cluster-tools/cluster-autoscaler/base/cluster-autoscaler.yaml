@@ -142,7 +142,9 @@ spec:
     spec:
       serviceAccountName: cluster-autoscaler
       containers:
-        - image: k8s.gcr.io/cluster-autoscaler:v1.14.4
+        # FIXME: when the k8s.gcr.io vanity URL works again, change the image tag to reference it from there.
+        # https://github.com/kubernetes/autoscaler/issues/3093
+        - image: us.gcr.io/k8s-artifacts-prod/autoscaling/cluster-autoscaler:v1.16.5
           name: cluster-autoscaler
           resources:
             limits:
