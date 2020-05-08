@@ -59,10 +59,10 @@ kubectl apply -f ${DEPLOY_FILE}
 #     1. PA engine -> PA admin -> PF admin -> PD
 #     2. PF engine -> PF admin -> PD
 #
-# So checking the rollout status of PA and PF engines should be enough after PD is rolled out. We'll give each 2.5
+# So checking the rollout status of the end dependencies should be enough after PD is rolled out. We'll give each 2.5
 # minutes after PD is ready. This should be more than enough time because as soon as pingdirectory-0 is ready, the
 # rollout of the others will begin, and they don't take nearly as much time as a single PD server. So the entire Ping
-# stack must be rolled out in no more than (15 * num of PD replicas + 5) minutes.
+# stack must be rolled out in no more than (15 * num of PD replicas + 2.5 * number of end dependents) minutes.
 
 PD_REPLICA='statefulset.apps/pingdirectory'
 DEPENDENT_REPLICAS='deployment.apps/pingfederate statefulset.apps/pingaccess'
