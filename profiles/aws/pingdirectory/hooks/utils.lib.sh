@@ -1,25 +1,6 @@
 #!/usr/bin/env sh
 
 ########################################################################################################################
-# Function to install AWS command line tools
-#
-########################################################################################################################
-function installAwsCliTools() {
-  if test -z "$(which aws)"; then
-    #   
-    #  Install AWS platform specific tools
-    #
-    echo "Installing AWS CLI tools for S3 support"
-    #
-    # TODO: apk needs to move to the Docker file as the package manager is plaform specific
-    #
-    apk --update add python3
-    pip3 install --no-cache-dir --upgrade pip
-    pip3 install --no-cache-dir --upgrade awscli
-  fi
-}
-
-########################################################################################################################
 # Function sets required environment variables for skbn
 #
 ########################################################################################################################
