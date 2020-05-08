@@ -48,6 +48,7 @@ if ! skbn cp \
   --dst "${SKBN_CLOUD_PREFIX}/${DST_FILE_LATEST}"; then
   
   echo "skbn failed to upload ${DST_FILE_LATEST} to ${SKBN_CLOUD_PREFIX}"
+  exit 1
 fi 
 
 # Print the filename of the uploaded file to cloud storage.
@@ -59,6 +60,7 @@ if ! skbn cp \
   --dst "${SKBN_CLOUD_PREFIX}/${DST_FILE_TIMESTAMP}"; then
 
   echo "skbn failed to upload ${DST_FILE_TIMESTAMP} to ${SKBN_CLOUD_PREFIX}"
+  exit 1
 fi 
 
 # Print the filename of the uploaded file to cloud storage.
