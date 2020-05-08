@@ -64,22 +64,20 @@ kubectl apply -f ${DEPLOY_FILE}
 # rollout of the others will begin, and they don't take nearly as much time as a single PD server. So the entire Ping
 # stack must be rolled out in no more than (15 * num of PD replicas + 5) minutes.
 
-PD_REPLICAS_NAME='statefulset.apps/pingdirectory'
-PF_ENGINE_REPLICAS_NAME='deployment.apps/pingfederate'
-PA_ENGINE_REPLICAS_NAME='statefulset.apps/pingaccess'
+PD_REPLICA='statefulset.apps/pingdirectory'
+DEPENDENT_REPLICAS='deployment.apps/pingfederate statefulset.apps/pingaccess'
 
-NUM_PD_REPLICAS=$(kubectl get "${PD_REPLICAS_NAME}" -o jsonpath='{.spec.replicas}' -n "${NAMESPACE}")
+NUM_PD_REPLICAS=$(kubectl get "${PD_REPLICA}" -o jsonpath='{.spec.replicas}' -n "${NAMESPACE}")
 PD_TIMEOUT_SECONDS=$((NUM_PD_REPLICAS * 900))
-OTHERS_TIMEOUT_SECONDS=150
+DEPENDENT_TIMEOUT_SECONDS=150
 
-echo "Waiting for rollout of ${PD_REPLICAS_NAME} with a timeout of ${PD_TIMEOUT_SECONDS} seconds"
-time kubectl rollout status "${PD_REPLICAS_NAME}" --timeout "${PD_TIMEOUT_SECONDS}s" -n "${NAMESPACE}" -w
+echo "Waiting for rollout of ${PD_REPLICA} with a timeout of ${PD_TIMEOUT_SECONDS} seconds"
+time kubectl rollout status "${PD_REPLICA}" --timeout "${PD_TIMEOUT_SECONDS}s" -n "${NAMESPACE}" -w
 
-echo "Waiting for rollout of ${PF_ENGINE_REPLICAS_NAME} with a timeout of ${OTHERS_TIMEOUT_SECONDS} seconds"
-time kubectl rollout status "${PF_ENGINE_REPLICAS_NAME}" --timeout "${OTHERS_TIMEOUT_SECONDS}s" -n "${NAMESPACE}" -w
-
-echo "Waiting for rollout of ${PA_ENGINE_REPLICAS_NAME} with a timeout of ${OTHERS_TIMEOUT_SECONDS} seconds"
-time kubectl rollout status "${PA_ENGINE_REPLICAS_NAME}" --timeout "${OTHERS_TIMEOUT_SECONDS}s" -n "${NAMESPACE}" -w
+for DEPENDPENT_REPLICA in ${DEPENDENT_REPLICAS}; do
+  echo "Waiting for rollout of ${DEPENDPENT_REPLICA} with a timeout of ${DEPENDENT_TIMEOUT_SECONDS} seconds"
+  time kubectl rollout status "${DEPENDPENT_REPLICA}" --timeout "${DEPENDENT_TIMEOUT_SECONDS}s" -n "${NAMESPACE}" -w
+done
 
 # Print out the ingress objects for logs and the ping stack
 echo
