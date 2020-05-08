@@ -42,4 +42,4 @@ fi
 rm -f "${CSD_OUT}"
 
 # Print the filename so callers can figure out the name of the CSD file that was uploaded.
-echo "Successfully uploaded ${DST_FILE}"
+echo "Uploaded: ${DST_FILE}"

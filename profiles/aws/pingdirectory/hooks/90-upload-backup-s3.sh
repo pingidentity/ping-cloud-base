@@ -52,7 +52,7 @@ if ! skbn cp \
 fi 
 
 # Print the filename of the uploaded file to cloud storage.
-echo "${DST_FILE_LATEST}"
+echo "Uploaded: ${DST_FILE_LATEST}"
 
 echo "Uploading ${DST_FILE_TIMESTAMP} to ${SKBN_CLOUD_PREFIX}/${DST_FILE_TIMESTAMP}"
 if ! skbn cp \
@@ -64,7 +64,7 @@ if ! skbn cp \
 fi 
 
 # Print the filename of the uploaded file to cloud storage.
-echo "${DST_FILE_TIMESTAMP}"
+echo "Uploaded: ${DST_FILE_TIMESTAMP}"
 
 # Cleanup
 rm -rf "${SERVER_BACKUP_DIR}"
