@@ -74,9 +74,9 @@ DEPENDENT_TIMEOUT_SECONDS=150
 echo "Waiting for rollout of ${PD_REPLICA} with a timeout of ${PD_TIMEOUT_SECONDS} seconds"
 time kubectl rollout status "${PD_REPLICA}" --timeout "${PD_TIMEOUT_SECONDS}s" -n "${NAMESPACE}" -w
 
-for DEPENDPENT_REPLICA in ${DEPENDENT_REPLICAS}; do
-  echo "Waiting for rollout of ${DEPENDPENT_REPLICA} with a timeout of ${DEPENDENT_TIMEOUT_SECONDS} seconds"
-  time kubectl rollout status "${DEPENDPENT_REPLICA}" --timeout "${DEPENDENT_TIMEOUT_SECONDS}s" -n "${NAMESPACE}" -w
+for DEPENDENT_REPLICA in ${DEPENDENT_REPLICAS}; do
+  echo "Waiting for rollout of ${DEPENDENT_REPLICA} with a timeout of ${DEPENDENT_TIMEOUT_SECONDS} seconds"
+  time kubectl rollout status "${DEPENDENT_REPLICA}" --timeout "${DEPENDENT_TIMEOUT_SECONDS}s" -n "${NAMESPACE}" -w
 done
 
 # Print out the ingress objects for logs and the ping stack
