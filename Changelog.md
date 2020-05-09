@@ -1,8 +1,8 @@
 # Changelog
 
 ### 1.3.2
-- Fixed PingDirectory deployment automation to always replace the server profile fully so that environment variable
-  changes are honored
+- Fixed PingDirectory deployment automation to replace the server profile fully so that environment variable changes 
+  are always honored
 - Fixed PingAccess deployment automation such that the Backup CronJob does not crash the admin server
 
 _Changes:_
