@@ -1,5 +1,16 @@
 # Changelog
 
+### 1.3.2
+- Fixed PingDirectory deployment automation to always replace the server profile fully so that environment variable
+  changes are honored
+- Fixed PingAccess deployment automation such that the Backup CronJob does not crash the admin server
+
+_Changes:_
+
+- [X] PDO-928 - Workaround for DS-41964: replace-profile does not honor environment variable changes
+- [X] PDO-930 - Output managed-profile logs to the container console on failure
+- [X] PDO-949 - PingAccess backup CronJob does not wait for admin to be ready and crashes admin
+
 ### 1.3.1
 
 - Fixed PingAccess engine flapping due to HPA and Flux interfering with each other
