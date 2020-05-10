@@ -13,9 +13,6 @@ export PATH="${PATH}:${SERVER_ROOT_DIR}/bin:/usr/local/bin:/usr/sbin:/usr/bin:/s
 test ! -z "${1}" && LOG_ARCHIVE_URL="${1}"
 echo "Uploading to location ${LOG_ARCHIVE_URL}"
 
-FORMAT="+%d/%b/%Y:%H:%M:%S %z"
-NOW=$(date "${FORMAT}")
-
 if ! cd "${OUT_DIR}"; then
   echo "Failed to chdir to: ${OUT_DIR}"
   exit 1
@@ -25,7 +22,7 @@ collect-support-data --duration 1h
 CSD_OUT=$(find . -name support\*zip -type f | sort | tail -1)
 
 # Set required environment variables for skbn
-initializeSkbnConfiguration
+initializeSkbnConfiguration "${LOG_ARCHIVE_URL}"
 
 DST_FILE="${OUT_DIR}/$(basename "${CSD_OUT}")"
 
