@@ -36,3 +36,16 @@ function initializeSkbnConfiguration() {
   export SKBN_CLOUD_PREFIX="${BACKUP_URL}"
   export SKBN_K8S_PREFIX="k8s://${METADATA_NS}/${METADATA_PN}/${METADATA_CN}"
 }
+
+########################################################################################################################
+# Function to copy file between cloud storage and k8s
+#
+########################################################################################################################
+function skbnCopy() {
+  SOURCE_FILE="${1}"
+  DESTINATION_FILE="${2}"
+
+  if ! skbn cp --src "$SOURCE_FILE" --dst "${DESTINATION_FILE}"; then
+    return 1
+  fi
+}

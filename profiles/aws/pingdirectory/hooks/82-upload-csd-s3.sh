@@ -29,14 +29,11 @@ initializeSkbnConfiguration
 
 DST_FILE="${OUT_DIR}/$(basename "${CSD_OUT}")"
 
-echo "Uploading ${CSD_OUT} to ${SKBN_CLOUD_PREFIX}/${DST_FILE} at ${NOW}"
-if ! skbn cp \
-  --src "${SKBN_K8S_PREFIX}/${DST_FILE}" \
-  --dst "${SKBN_CLOUD_PREFIX}/${DST_FILE}"; then
-  
-  echo "skbn failed to upload  to ${SKBN_CLOUD_PREFIX}/${DST_FILE}"
+echo "Copying: '${DST_FILE}' to '${SKBN_CLOUD_PREFIX}'"
+
+if ! skbnCopy "${SKBN_K8S_PREFIX}/${DST_FILE}" "${SKBN_CLOUD_PREFIX}/${DST_FILE}"; then
   exit 1
-fi 
+fi
 
 # Remove the CSD file so it is doesn't fill up the server's filesystem.
 rm -f "${CSD_OUT}"

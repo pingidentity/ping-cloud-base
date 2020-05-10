@@ -91,19 +91,17 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
                 echo "Download Artifact from ${ARTIFACT_LOCATION}"
 
                 # Use skbn command if ARTIFACT_LOCATION is cloud storage otherwise use curl
-                if ! test ${ARTIFACT_LOCATION#s3} == "${ARTIFACT_LOCATION}"; then
+                if test ${ARTIFACT_LOCATION#s3} != "${ARTIFACT_LOCATION}"; then
 
                   # Set required environment variables for skbn
                   initializeSkbnConfiguration "${ARTIFACT_LOCATION}"
+                  
+                  echo "Copying: '${ARTIFACT_RUNTIME_ZIP}' to '${SKBN_K8S_PREFIX}'"
 
-                  echo "Downloading ${SKBN_CLOUD_PREFIX}/${ARTIFACT_RUNTIME_ZIP} to ${DOWNLOAD_DIR}"
-                  if ! skbn cp \
-                    --src "${SKBN_CLOUD_PREFIX}/${ARTIFACT_RUNTIME_ZIP}" \
-                    --dst "${SKBN_K8S_PREFIX}}${DOWNLOAD_DIR}"; then
-        
-                    echo "skbn failed to download ${ARTIFACT_RUNTIME_ZIP} from ${SKBN_CLOUD_PREFIX}"
+                  if ! skbnCopy "${SKBN_CLOUD_PREFIX}/${ARTIFACT_RUNTIME_ZIP}" "${SKBN_K8S_PREFIX}}${DOWNLOAD_DIR}"; then
                     exit 1
                   fi
+
                 else
                   # For downloading over https we need to specify the exact file name,
                   # This will only work for standard extensions with a prefix of pingidentity.com

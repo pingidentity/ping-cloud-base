@@ -29,7 +29,7 @@ data:
     
     #--- Copy skbn to the data directory ---#
     if ! mv skbn-0.5.0-linux/skbn /data; then
-      echo "Failed to locate skbn"
+      echo "Failed to locate skbn-0.5.0-linux/skbn"
       exit 1
     fi
 

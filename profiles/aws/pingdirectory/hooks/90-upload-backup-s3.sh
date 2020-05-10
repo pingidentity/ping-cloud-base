@@ -42,29 +42,19 @@ zip -r "${DST_FILE_TIMESTAMP}" *
 DST_FILE_LATEST=latest.zip
 cp "$DST_FILE_TIMESTAMP" "$DST_FILE_LATEST" 
 
-echo "Uploading ${DST_FILE_LATEST} to ${SKBN_CLOUD_PREFIX}/${DST_FILE_LATEST}"
-if ! skbn cp \
-  --src "${SKBN_K8S_PREFIX}/${SERVER_BACKUP_DIR}/${DST_FILE_LATEST}" \
-  --dst "${SKBN_CLOUD_PREFIX}/${DST_FILE_LATEST}"; then
-  
-  echo "skbn failed to upload ${DST_FILE_LATEST} to ${SKBN_CLOUD_PREFIX}"
+echo "Copying: '${DST_FILE_LATEST}' to '${SKBN_CLOUD_PREFIX}'"
+
+if ! skbnCopy "${SKBN_K8S_PREFIX}/${SERVER_BACKUP_DIR}/${DST_FILE_LATEST}" \
+  "${SKBN_CLOUD_PREFIX}/${DST_FILE_LATEST}"; then
   exit 1
-fi 
+fi
 
-# Print the filename of the uploaded file to cloud storage.
-echo "Uploaded: ${DST_FILE_LATEST}"
+echo "Copying: '${DST_FILE_TIMESTAMP}' to '${SKBN_CLOUD_PREFIX}'"
 
-echo "Uploading ${DST_FILE_TIMESTAMP} to ${SKBN_CLOUD_PREFIX}/${DST_FILE_TIMESTAMP}"
-if ! skbn cp \
-  --src "${SKBN_K8S_PREFIX}/${SERVER_BACKUP_DIR}/${DST_FILE_TIMESTAMP}" \
-  --dst "${SKBN_CLOUD_PREFIX}/${DST_FILE_TIMESTAMP}"; then
-
-  echo "skbn failed to upload ${DST_FILE_TIMESTAMP} to ${SKBN_CLOUD_PREFIX}"
+if ! skbnCopy "${SKBN_K8S_PREFIX}/${SERVER_BACKUP_DIR}/${DST_FILE_TIMESTAMP}" \
+  "${SKBN_CLOUD_PREFIX}/${DST_FILE_TIMESTAMP}"; then
   exit 1
-fi 
-
-# Print the filename of the uploaded file to cloud storage.
-echo "Uploaded: ${DST_FILE_TIMESTAMP}"
+fi
 
 # Cleanup
 rm -rf "${SERVER_BACKUP_DIR}"
