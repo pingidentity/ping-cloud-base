@@ -15,7 +15,7 @@ SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 # export CI_COMMIT_REF_SLUG=test
 # export TENANT_DOMAIN=ci-cd.ping-oasis.com
 # export AWS_DEFAULT_REGION=us-west-2
-# export EKS_CLUSTER_NAME=ci-cd-cluster
+# export EKS_CLUSTER_NAME_EKS1_14=karensnavely
 #
 # Then, call this script in this manner: SKIP_CONFIGURE_KUBE=true ./deploy.sh
 #

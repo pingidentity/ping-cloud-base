@@ -2,10 +2,10 @@
 
 # Run this script periodically to clean up any environments that are still left behind on the CI-CD EKS cluster.
 
-EKS_CLUSTER_NAME="${1:-ci-cd-cluster}"
+EKS_CLUSTER_NAME_EKS1_14="${1:-karensnavely}"
 
 # Set the kubectl context to the right cluster
-kubectl config use-context ${EKS_CLUSTER_NAME}
+kubectl config use-context ${EKS_CLUSTER_NAME_EKS1_14}
 
 # Get all namespaces with the desired namespace prefix
 namespace_prefix="ping-cloud-"
@@ -26,7 +26,7 @@ git_branches() {
     grep -v '^master$'
 }
 
-echo "Namespaces in cluster ${EKS_CLUSTER_NAME} w/ prefix ${namespace_prefix}:"
+echo "Namespaces in cluster ${EKS_CLUSTER_NAME_EKS1_14} w/ prefix ${namespace_prefix}:"
 ping_namespaces
 
 echo "Git remote branches:"
