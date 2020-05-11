@@ -5,6 +5,8 @@
 
 ${VERBOSE} && set -x
 
+set -x 
+
 test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
 
 # Allow overriding the backup URL with an arg
