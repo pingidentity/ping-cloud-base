@@ -13,7 +13,7 @@ SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 #
 # export CI_PROJECT_DIR=~/sandbox/devops/ping-cloud-base (change this based on where your checkout tree is)
 # export CI_COMMIT_REF_SLUG=test
-# export TENANT_DOMAIN=ci-cd.ping-oasis.com
+# export TENANT_DOMAIN=karen.ping-demo.com
 # export AWS_DEFAULT_REGION=us-west-2
 # export EKS_CLUSTER_NAME_EKS1_14=karensnavely
 #
