@@ -7,7 +7,7 @@
 test ! -z ${VERBOSE} && set -x
 
 export REGION="${AWS_DEFAULT_REGION}"
-export CLUSTER_NAME="${EKS_CLUSTER_NAME}"
+export CLUSTER_NAME="${EKS_CLUSTER_NAME_EKS1_14}"
 export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
 
 export CONFIG_PARENT_DIR=aws
@@ -56,9 +56,9 @@ PINGACCESS_AGENT=https://pingaccess-agent${FQDN}
 ########################################################################################################################
 # Configures kubectl to be able to talk to the Kubernetes API server based on the following environment variables:
 #
-#   - KUBE_CA_PEM
-#   - KUBE_URL
-#   - EKS_CLUSTER_NAME
+#   - KUBE_CA_PEM_EKS1_14
+#   - KUBE_URL_EKS1_14
+#   - EKS_CLUSTER_NAME_EKS1_14
 #   - AWS_ACCOUNT_ROLE_ARN
 #
 # If the environment variables are not present, then the function will exit with a non-zero return code.
@@ -69,7 +69,7 @@ configure_kube() {
     return
   fi
 
-  check_env_vars "KUBE_CA_PEM" "KUBE_URL" "EKS_CLUSTER_NAME" "AWS_ACCOUNT_ROLE_ARN"
+  check_env_vars "KUBE_CA_PEM_EKS1_14" "KUBE_URL_EKS1_14" "EKS_CLUSTER_NAME_EKS1_14" "AWS_ACCOUNT_ROLE_ARN"
   HAS_REQUIRED_VARS=${?}
 
   if test ${HAS_REQUIRED_VARS} -ne 0; then
@@ -77,24 +77,24 @@ configure_kube() {
   fi
 
   log "Configuring KUBE"
-  echo "${KUBE_CA_PEM}" > "$(pwd)/kube.ca.pem"
+  echo "${KUBE_CA_PEM_EKS1_14}" > "$(pwd)/kube.ca.pem"
 
-  kubectl config set-cluster "${EKS_CLUSTER_NAME}" \
-    --server="${KUBE_URL}" \
+  kubectl config set-cluster "${EKS_CLUSTER_NAME_EKS1_14}" \
+    --server="${KUBE_URL_EKS1_14}" \
     --certificate-authority="$(pwd)/kube.ca.pem"
 
   kubectl config set-credentials aws \
     --exec-command aws-iam-authenticator \
     --exec-api-version client.authentication.k8s.io/v1alpha1 \
     --exec-arg=token \
-    --exec-arg=-i --exec-arg="${EKS_CLUSTER_NAME}" \
+    --exec-arg=-i --exec-arg="${EKS_CLUSTER_NAME_EKS1_14}" \
     --exec-arg=-r --exec-arg="${AWS_ACCOUNT_ROLE_ARN}"
 
-  kubectl config set-context "${EKS_CLUSTER_NAME}" \
-    --cluster="${EKS_CLUSTER_NAME}" \
+  kubectl config set-context "${EKS_CLUSTER_NAME_EKS1_14}" \
+    --cluster="${EKS_CLUSTER_NAME_EKS1_14}" \
     --user=aws
 
-  kubectl config use-context "${EKS_CLUSTER_NAME}"
+  kubectl config use-context "${EKS_CLUSTER_NAME_EKS1_14}"
 }
 
 ########################################################################################################################
