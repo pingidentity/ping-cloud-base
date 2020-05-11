@@ -155,7 +155,7 @@ function initializeSkbnConfiguration() {
   # Check if endpoint is AWS cloud stroage service (S3 bucket)
   case "$BACKUP_URL" in "s3://"*)
     
-    #Set AWS specific variable for skbn
+    # Set AWS specific variable for skbn
     export AWS_REGION=${REGION}
     
     DIRECTORY_NAME=$(echo "${PING_PRODUCT}" | tr '[:upper:]' '[:lower:]')
@@ -167,8 +167,11 @@ function initializeSkbnConfiguration() {
   esac
 
   echo "Getting cluster metadata"
-  echo "DEBUG: $HOSTNAME"
-  METADATA=$(kubectl get "$(kubectl get pod -o name | grep "$HOSTNAME")" \
+  
+  # Get POD name which match the value of HOSTNAME prefix
+  POD="$(echo ${HOSTNAME} | cut -d. -f1)"
+  
+  METADATA=$(kubectl get "$(kubectl get pod -o name | grep "$POD")" \
     -o=jsonpath='{.metadata.namespace},{.metadata.name},{.metadata.labels.role}')
     
   METADATA_NS=$(echo "$METADATA"| cut -d',' -f1)
