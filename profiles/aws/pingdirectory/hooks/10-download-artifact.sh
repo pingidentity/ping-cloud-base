@@ -15,11 +15,6 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
       echo "Private Repo : ${ARTIFACT_REPO_URL}"
       echo "Public Repo  : ${PING_ARTIFACT_REPO_URL}"
 
-      if ! which jq > /dev/null; then
-        echo "Installing jq"
-        pip3 install --no-cache-dir --upgrade jq
-      fi
-
       # Check to see if the artifact list is a valid json string
       echo ${ARTIFACT_LIST_JSON} | jq
       if test $(echo $?) == "0"; then

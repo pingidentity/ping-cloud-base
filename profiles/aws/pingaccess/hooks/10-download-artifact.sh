@@ -10,33 +10,26 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
   ARTIFACT_LIST_JSON=$(cat "${STAGING_DIR}/artifacts/artifact-list.json")
   if test ! -z "${ARTIFACT_LIST_JSON}"; then
     # Check to see if the source S3 bucket(s) are specified
-    if test ! -z "${ARTIFACT_REPO_URL}" -o ! -z "${PING_ARTIFACT_REPO_URL}"; then
+    if test ! -z "${ARTIFACT_REPO_URL}"; then
 
       echo "Private Repo : ${ARTIFACT_REPO_URL}"
-      echo "Public Repo  : ${PING_ARTIFACT_REPO_URL}"
 
       # Check to see if the artifact list is a valid json string
       echo ${ARTIFACT_LIST_JSON} | jq
       if test $(echo $?) == "0"; then
 
         # Install AWS CLI if the upload location is S3
-        if test ! "${ARTIFACT_REPO_URL#s3}" == "${ARTIFACT_REPO_URL}" -o ! "${PING_ARTIFACT_REPO_URL#s3}" == "${PING_ARTIFACT_REPO_URL}"; then
-          installTools
+        if test ! "${ARTIFACT_REPO_URL#s3}" == "${ARTIFACT_REPO_URL}"; then
+          installAwsCliTools
         fi
 
         DOWNLOAD_DIR=$(mktemp -d)
+        UNZIP_DOWNLOAD_DIR=$(mktemp -d)
         DIRECTORY_NAME=$(echo ${PING_PRODUCT} | tr '[:upper:]' '[:lower:]')
-
-        PUBLIC_BASE_URL="${PING_ARTIFACT_REPO_URL}"
-        if test ! -z "${PING_ARTIFACT_REPO_URL}"; then
-          if ! test -z "${PING_ARTIFACT_REPO_URL##*/pingfederate*}"; then
-            PUBLIC_BASE_URL="${PING_ARTIFACT_REPO_URL}/${DIRECTORY_NAME}"
-          fi
-        fi
 
         PRIVATE_BASE_URL="${ARTIFACT_REPO_URL}"
         if test ! -z "${ARTIFACT_REPO_URL}"; then
-          if ! test -z "${ARTIFACT_REPO_URL##*/pingfederate*}"; then
+          if ! test -z "${ARTIFACT_REPO_URL##*/pingaccess*}"; then
             PRIVATE_BASE_URL="${ARTIFACT_REPO_URL}/${DIRECTORY_NAME}"
           fi
         fi
@@ -49,11 +42,17 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
           ARTIFACT_NAME=$(_artifact '.name')
           ARTIFACT_VERSION=$(_artifact '.version')
           ARTIFACT_SOURCE=$(_artifact '.source')
+          ARTIFACT_OPERATION=$(_artifact '.operation')
           ARTIFACT_RUNTIME_ZIP=${ARTIFACT_NAME}-${ARTIFACT_VERSION}-runtime.zip
 
-          # Use default source of public if source is not specified
+          # Use default source of private if source is not specified
           if ( ( test "${ARTIFACT_SOURCE}" == "null" ) || ( test -z ${ARTIFACT_SOURCE} ) ); then
-            ARTIFACT_SOURCE="public"
+            ARTIFACT_SOURCE="private"
+          fi
+
+          # Use default operation of add if operation is not specified
+          if ( ( test "${ARTIFACT_OPERATION}" == "null" ) || ( test -z ${ARTIFACT_OPERATION} ) ); then
+            ARTIFACT_OPERATION="add"
           fi
 
           # Check to see if artifact name and version are available
@@ -61,7 +60,7 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
             if ( ( test ! "${ARTIFACT_VERSION}" == "null" ) && ( test ! -z ${ARTIFACT_VERSION} ) ); then
 
               # Check to see if the Artifact Source URL is available
-              if ( ( test "${ARTIFACT_SOURCE}" == "private" ) && ( test -z ${ARTIFACT_REPO_URL} ) ) || ( ( test "${ARTIFACT_SOURCE}" == "public" ) && ( test -z ${PING_ARTIFACT_REPO_URL} ) ); then
+              if ( ( test "${ARTIFACT_SOURCE}" == "private" ) && ( test -z ${ARTIFACT_REPO_URL} ) ); then
                 echo "${ARTIFACT_NAME} cannot be deployed as the ${ARTIFACT_SOURCE} source repo is not defined. "
                 exit 1
               else
@@ -71,11 +70,16 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
 
                 if test "${ARTIFACT_NAME_COUNT}" == "1"; then
 
+                  # Remove artifact if operation desire is to delete
+                  if test "${ARTIFACT_OPERATION}" == "delete"; then
+                    rm ${OUT_DIR}/instance/lib/${ARTIFACT_NAME}-[0-9]*.jar
+                    echo "Artifact ${ARTIFACT_NAME} successfully removed from server"
+                    continue
+                  fi
+
                   # Get artifact source location
                   if test "${ARTIFACT_SOURCE}" == "private"; then
                     ARTIFACT_LOCATION=${PRIVATE_BASE_URL}/${ARTIFACT_NAME}/${ARTIFACT_VERSION}/${ARTIFACT_RUNTIME_ZIP}
-                  elif test "${ARTIFACT_SOURCE}" == "public"; then
-                    ARTIFACT_LOCATION=${PUBLIC_BASE_URL}/${ARTIFACT_NAME}/${ARTIFACT_VERSION}/${ARTIFACT_RUNTIME_ZIP}
                   else
                     echo "${ARTIFACT_NAME} cannot be deployed as the artifact source '${ARTIFACT_SOURCE}' is invalid. "
                     exit 1
@@ -90,22 +94,39 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
                     curl "${ARTIFACT_LOCATION}" --output ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}
                   fi
 
-                  # Unzip deploy and conf folders from the runtime zip
                   if test $(echo $?) == "0"; then
-                    if ! unzip -o ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP} -d ${OUT_DIR}/instance/server/default
-                    then
+
+                    # Unzip artifact plugin
+                    if ! unzip -o ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP} -d ${UNZIP_DOWNLOAD_DIR}; then
                         echo Artifact ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP} could not be unzipped.
                         exit 1
                     fi
+
+                    # Validate /lib directory is included in the zip and the artifact jar
+                    ! test -d ${UNZIP_DOWNLOAD_DIR}/lib && echo "Artifact required lib directory could not be found." && exit 1
+                    ! test -f ${UNZIP_DOWNLOAD_DIR}/lib/*jar && echo "Artifact required jar file could not be found." && exit 1
+
+                    # Extend the permissions of all detected jars
+                    find ${UNZIP_DOWNLOAD_DIR} -name *.jar -exec chmod 777 {} \;
+
+                    # If exist remove any previous versions of artifact plugin
+                    test -f ${OUT_DIR}/instance/lib/${ARTIFACT_NAME}-[0-9]*.jar && \
+                    rm ${OUT_DIR}/instance/lib/${ARTIFACT_NAME}-[0-9]*.jar
+
+                    # Deploy artifact plugin to server
+                    cp -prf ${UNZIP_DOWNLOAD_DIR}/* ${OUT_DIR}/instance
+
+                    echo "Artifact ${ARTIFACT_RUNTIME_ZIP} successfully deployed"
+
                   else
                     echo "Artifact download failed from ${ARTIFACT_LOCATION}"
                     exit 1
                   fi
 
                   # Cleanup
-                  if test -f "${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}"; then
-                    rm ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}
-                  fi
+                  test -f "${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}" && rm ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}
+                  test -d "${UNZIP_DOWNLOAD_DIR}" && rm -rf "${UNZIP_DOWNLOAD_DIR}"
+
                 else
                   echo "Artifact ${ARTIFACT_NAME} is specified more than once in ${STAGING_DIR}/artifacts/artifact-list.json"
                   exit 1
@@ -123,9 +144,7 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
         done
 
         # Print listed files from deploy and conf
-        ls ${OUT_DIR}/instance/server/default/deploy
-        ls ${OUT_DIR}/instance/server/default/conf/template
-        ls ${OUT_DIR}/instance/server/default/conf/language-packs
+        ls ${OUT_DIR}/instance/lib
 
       else
         echo "Artifacts will not be deployed as could not parse ${STAGING_DIR}/artifacts/artifact-list.json."
