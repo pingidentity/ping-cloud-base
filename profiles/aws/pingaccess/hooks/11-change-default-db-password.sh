@@ -17,6 +17,7 @@ readonly run_properties_file=${SERVER_ROOT_DIR}/conf/run.properties
 # This is the default file and user password string for H2
 readonly pa_h2_default_obf_pw='OBF:AES:23AeD/QrI8yVQKkhNi7kYg==:6fc098ed542fa3e40515062eb5e5117e4659ba8a'
 
+
 # cut -d '=' -f2-  gathers a range of fields (2nd field to the last field -f<from>-<to>) after the first =
 # We're parsing a line like this: pa.jdbc.filepassword=<value with multiple = signs)
 existing_filepasswd=$(cat "${run_properties_file}" | awk '/pa.jdbc.filepassword/' | awk '{print $1}' | cut -d '=' -f2- )
@@ -51,7 +52,7 @@ file_pw_jwe=$(parse_utility_output "${dbfilepasswd_output}")
 sed -i "s/^pa.jdbc.filepassword=.*/pa.jdbc.filepassword=${file_pw_jwe}/" "${run_properties_file}"
 
 echo "Successfully changed the PingAccess H2 database file password from the default and updated the pa.jdbc.filepassword property in run.properties."
-
+echo
 
 echo "Changing the PingAccess H2 user password..."
 
@@ -70,4 +71,20 @@ user_pw_jwe=$(parse_utility_output "${dbuserpasswd_output}")
 sed -i "s/^pa.jdbc.password=.*/pa.jdbc.password=${user_pw_jwe}/" "${run_properties_file}"
 
 echo "Successfully changed the PingAccess H2 user password from the default and updated the pa.jdbc.password property in run.properties."
+
+# PDO-989 - Save the new passwords to a backup file to be restored
+# if the pod gets deleted.
+h2_props_backup="${SERVER_ROOT_DIR}/conf/h2_password_properties.backup"
+echo "Backing up the H2 database password properties to ${h2_props_backup}..."
+
+# Write these 2 properties on separate lines in the backup file
+printf "pa.jdbc.filepassword=${file_pw_jwe}" > "${h2_props_backup}"
+printf '\n' >> "${h2_props_backup}"
+printf "pa.jdbc.password=${user_pw_jwe}" >> "${h2_props_backup}"
+printf '\n' >> "${h2_props_backup}"
+
+echo "Successfully backed up the password properties to ${h2_props_backup}:"
+echo
+cat "${h2_props_backup}"
+
 exit 0
