@@ -21,7 +21,7 @@ function create_shared_secret() {
 
   create_shared_secret_response_code=$(parse_http_response_code "${create_shared_secret_response}")
 
-  if [[ 200 != ${create_shared_secret_response_code} ]]; then
+  if [[ 200 -ne ${create_shared_secret_response_code} ]]; then
     echo "There was a problem creating the shared secret: " ${create_shared_secret_response_code}
     return 1
   else
@@ -53,7 +53,7 @@ function create_agent() {
 
   create_agent_response_code=$(parse_http_response_code "${create_agent_response}")
 
-  if [[ 200 != ${create_agent_response_code} ]]; then
+  if [[ 200 -ne ${create_agent_response_code} ]]; then
     echo "There was a problem creating the agent: " ${create_agent_response_code}
     return 1
   else
@@ -85,7 +85,7 @@ function create_application() {
 
   create_application_response_code=$(parse_http_response_code "${create_application_response}")
 
-  if [[ 200 != ${create_application_response_code} ]]; then
+  if [[ 200 -ne ${create_application_response_code} ]]; then
     echo "There was a problem creating the application: " ${create_application_response_code}
     return 1
   else
@@ -113,7 +113,7 @@ function create_virtual_host() {
 
   create_vhost_response_code=$(parse_http_response_code "${create_vhost_response}")
 
-  if [[ 200 != ${create_vhost_response_code} ]]; then
+  if [[ 200 -ne ${create_vhost_response_code} ]]; then
     echo "There was a problem creating the virtual host: " ${create_vhost_response_code}
     return 1
   else

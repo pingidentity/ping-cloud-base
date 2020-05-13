@@ -18,7 +18,7 @@ function delete_agent() {
 
   delete_agent_response_code=$(parse_http_response_code "${delete_agent_response}")
 
-  if [[ 200 != ${delete_agent_response_code} ]]; then
+  if [[ 200 -ne ${delete_agent_response_code} ]]; then
     echo "There was a problem deleting the agent: " ${delete_agent_response_code}
     return 1
   else
@@ -46,7 +46,7 @@ function delete_application() {
 
   delete_application_response_code=$(parse_http_response_code "${delete_application_response}")
 
-  if [[ 200 != ${delete_application_response_code} ]]; then
+  if [[ 200 -ne ${delete_application_response_code} ]]; then
     echo "There was a problem deleting the application: " ${delete_application_response_code}
     return 1
   else
@@ -74,7 +74,7 @@ function delete_virtual_host() {
 
   delete_virtual_host_response_code=$(parse_http_response_code "${delete_virtual_host_response}")
 
-  if [[ 200 != ${delete_virtual_host_response_code} ]]; then
+  if [[ 200 -ne ${delete_virtual_host_response_code} ]]; then
     echo "There was a problem deleting the virtual host: " ${delete_virtual_host_response_code}
     return 1
   else
