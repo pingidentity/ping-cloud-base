@@ -17,7 +17,7 @@ function send_request_to_agent_port() {
 
   response_code=$(parse_http_response_code "${agent_port_runtime_response}")
 
-  if [[ 277 != ${response_code} ]]; then
+  if [[ 277 -ne ${response_code} ]]; then
     echo "There was a problem contacting the agent port on the engine instance: " ${response_code}
     return 1
   else

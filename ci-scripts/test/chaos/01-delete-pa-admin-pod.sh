@@ -25,7 +25,7 @@ do
 
   response_code=$(parse_http_response_code "${response}")
 
-  if [[ 200 != ${response_code} ]]; then
+  if [[ 200 -ne ${response_code} ]]; then
     echo "Admin server not started, waiting.."
     sleep 15
   else
