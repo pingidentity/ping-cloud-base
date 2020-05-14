@@ -1,0 +1,7 @@
+- op: replace
+  path: /spec/tls/0/hosts/0
+  value: prometheus-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
+
+- op: replace
+  path: /spec/rules/0/host
+  value: prometheus-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}

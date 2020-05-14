@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 
 ########################################################################################################################
 #
@@ -278,7 +278,7 @@ export SKIP_CONFIGURE_AWS=true
 export DEV_TEST_ENV=true
 EOF
 
-  for TEST_DIR in pingaccess pingdirectory pingfederate integration chaos; do
+  for TEST_DIR in pingaccess pingdirectory pingfederate integration chaos monitoring; do
     echo
     echo "=========================================================="
     echo "      Executing tests in directory ${TEST_DIR}            "
