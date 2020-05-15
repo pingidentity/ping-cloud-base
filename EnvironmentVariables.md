@@ -11,6 +11,7 @@ The following charts show the additional environment variables that may be defin
 | Name               | Default Value            | Description  | Comments |
 | ------------------ | ------------------------ | ------------ | -------- |
 | BACKENDS_TO_BACKUP | userRoot;appintegrations | A semicolon-separated list of backend IDs for which periodic backups must be taken. | |
+| LEAVE_DISK_AFTER_SERVER_DELETE | false | A flag indicating that the server's disk must be left around after it has been deleted. | |
 
 ### v1.3.0
 
