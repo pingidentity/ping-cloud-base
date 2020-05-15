@@ -14,7 +14,7 @@ function make_api_request() {
     --max-time "${API_TIMEOUT_WAIT}" \
     --retry-delay 1 \
     --retry-connrefused \
-    -u "Administrator:${PF_LDAP_PASSWORD}" \
+    -u "Administrator:${PF_ADMIN_USER_PASSWORD}" \
     -w '%{http_code}' \
     -H 'X-Xsrf-Header: PingFederate' "$@")
   RESULT=$?
