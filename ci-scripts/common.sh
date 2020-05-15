@@ -37,6 +37,10 @@ FQDN=${ENVIRONMENT}.${TENANT_DOMAIN}
 # Common
 LOGS_CONSOLE=https://logs-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
 
+# Monitoring
+PROMETHEUS=https://prometheus-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
+GRAFANA=https://monitoring-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
+
 # Pingdirectory
 PINGDIRECTORY_CONSOLE=https://pingdataconsole${FQDN}/console
 PINGDIRECTORY_ADMIN=pingdirectory-admin${FQDN}
