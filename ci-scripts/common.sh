@@ -38,8 +38,8 @@ FQDN=${ENVIRONMENT}.${TENANT_DOMAIN}
 LOGS_CONSOLE=https://logs-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
 
 # Monitoring
-PROMETHEUS=http://prometheus-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
-GRAFANA=http://monitoring-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
+PROMETHEUS=https://prometheus-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
+GRAFANA=https://monitoring-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
 
 # Pingdirectory
 PINGDIRECTORY_CONSOLE=https://pingdataconsole${FQDN}/console

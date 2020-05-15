@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
-. "${SCRIPT_HOME}"/../../common.sh "${1}"
+. ${SCRIPT_HOME}/../../common.sh
 
-testUrl "${LOGS_CONSOLE}"
+testUrls ${LOGS_CONSOLE} ${PROMETHEUS} ${GRAFANA}
 exit ${?}
