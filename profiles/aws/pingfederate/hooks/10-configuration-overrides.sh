@@ -14,7 +14,6 @@ ${VERBOSE} && set -x
 #---------------------------------------------------------------------------------------------
 # Main Script
 #---------------------------------------------------------------------------------------------
-
 #
 # Run Pingfederate on localhost interface to complete configuration prior to exposing the
 # admin server to the external environment. This also takes care of cases where a restart
@@ -222,5 +221,4 @@ while [  "$(netstat -lntp|grep 9999|grep "${pid}/java" >/dev/null 2>&1;echo $?)"
    sleep 1
 done   
 cd ${wd}
-pwd
 exit ${rc}
