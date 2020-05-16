@@ -22,7 +22,8 @@ if [ -f "${h2_props_backup}" ]; then
   cat "${h2_props_backup}"
 else
   echo "Could not find the H2 database password properties file: ${h2_props_backup}"
-  exit 1
+  "${HOOKS_DIR}"/11-change-default-db-password.sh
+  exit $?
 fi
 
 echo
