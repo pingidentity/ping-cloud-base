@@ -31,14 +31,14 @@ wait_for_expected_resource_count 1 "${GET_PVC_COMMAND}" 120
 test $? -ne 0 && exit 1
 
 # There should be one unavailable peer.
-wait_for_expected_resource_count 1 "${GET_UNAVAILABLE_PEERS_COMMAND}" 600
+wait_for_expected_resource_count 1 "${GET_UNAVAILABLE_PEERS_COMMAND}" 300
 test $? -ne 0 && exit 1
 
 # Scale back up to 2 replicas and wait for the number of replicas in ready state to go up to 2.
 kubectl scale --replicas=2 "${PD_REPLICA_SET}" -n "${NAMESPACE}"
-wait_for_expected_resource_count 2 "${GET_REPLICAS_COMMAND}" 600
+wait_for_expected_resource_count 2 "${GET_REPLICAS_COMMAND}" 900
 test $? -ne 0 && exit 1
 
 # There should be no unavailable peers.
-wait_for_expected_resource_count 0 "${GET_UNAVAILABLE_PEERS_COMMAND}" 600
+wait_for_expected_resource_count 0 "${GET_UNAVAILABLE_PEERS_COMMAND}" 900
 exit $?
