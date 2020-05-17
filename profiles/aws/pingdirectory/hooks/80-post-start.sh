@@ -206,7 +206,7 @@ set_force_as_master() {
 # Resets the force-as-master flag to false on the source or seed server if REMOVE_SERVER_FROM_TOPOLOGY_FIRST is true.
 ########################################################################################################################
 reset_force_as_master() {
-  if test "${REMOVE_SERVER_FROM_TOPOLOGY_FIRST}"; then
+  if test ! -z "${REMOVE_SERVER_FROM_TOPOLOGY_FIRST}" && test "${REMOVE_SERVER_FROM_TOPOLOGY_FIRST}" = 'true'; then
     echo "post-start: resetting force-as-master to false on ${SRC_HOST} before stopping this server"
     set_force_as_master "${SRC_HOST}" false
   fi
@@ -453,6 +453,8 @@ INSTANCE_NAME=$(dsconfig --no-prompt get-global-configuration-prop \
 # It is possible that the persistent volume where we are tracking replicated DNs is gone. In that case, we must
 # delete this server from the topology registry. Check the source server before proceeding.
 echo "post-start: checking source server to see if this server must first be removed from the topology"
+REMOVE_SERVER_FROM_TOPOLOGY_FIRST=false
+
 if ldapsearch --hostname "${SRC_HOST}" --baseDN 'cn=topology,cn=config' --searchScope sub \
            "(ds-cfg-server-instance-name=${INSTANCE_NAME})" 1.1 &> /dev/null; then
   echo "post-start: the server is partially present in the topology registry and must be removed first"
@@ -481,7 +483,7 @@ echo "post-start: replication will be initialized for base DNs: ${UNINITIALIZED_
 
 # For end-user base DNs, allow the option to disable previous DNs from replication. This allows
 # customers to disable the OOTB base DN that is automatically enabled and initialized.
-if test "${DISABLE_ALL_OLDER_USER_BASE_DN}"; then
+if test ! -z "${DISABLE_ALL_OLDER_USER_BASE_DN}" && test "${DISABLE_ALL_OLDER_USER_BASE_DN}" = 'true'; then
   ENABLED_DNS=$(ldapsearch --hostname "${TARGET_HOST}" --baseDN 'cn=config' --searchScope sub \
       "&(ds-cfg-backend-id=${USER_BACKEND_ID})(objectClass=ds-cfg-backend)" ds-cfg-base-dn |
       grep '^ds-cfg-base-dn' | cut -d: -f2 | tr -d ' ')
