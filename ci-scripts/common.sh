@@ -185,10 +185,9 @@ wait_for_expected_resource_count() {
       break
     fi
 
-    eval "${COMMAND}"
     sleep "${SLEEP_SECONDS}"
-
     TIME_WAITED_SECONDS=$((TIME_WAITED_SECONDS + SLEEP_SECONDS))
+
     if test "${TIME_WAITED_SECONDS}" -ge "${TIMEOUT_SECONDS}"; then
       echo "Expected count ${EXPECTED} but found ${ACTUAL} after ${TIMEOUT_SECONDS} seconds"
       return 1
