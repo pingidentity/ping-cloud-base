@@ -24,11 +24,12 @@ CSD_OUT=$(find . -name support\*zip -type f | sort | tail -1)
 # Set required environment variables for skbn
 initializeSkbnConfiguration "${LOG_ARCHIVE_URL}"
 
-DST_FILE="${OUT_DIR}/$(basename "${CSD_OUT}")"
+DST_FILE="$(basename "${CSD_OUT}")"
+SRC_FILE="${OUT_DIR}/$(basename "${CSD_OUT}")"
 
 echo "Copying: '${DST_FILE}' to '${SKBN_CLOUD_PREFIX}'"
 
-if ! skbnCopy "${SKBN_K8S_PREFIX}/${DST_FILE}" "${SKBN_CLOUD_PREFIX}/${DST_FILE}"; then
+if ! skbnCopy "${SKBN_K8S_PREFIX}/${SRC_FILE}" "${SKBN_CLOUD_PREFIX}/${DST_FILE}"; then
   exit 1
 fi
 

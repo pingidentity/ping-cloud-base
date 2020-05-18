@@ -37,7 +37,7 @@ cd "${SERVER_BACKUP_DIR}"
 DST_FILE_TIMESTAMP="data-$(date +%m-%d-%Y.%H.%M.%S).zip"
 zip -r "${DST_FILE_TIMESTAMP}" *
 
-UPLOAD_DIR="${mktemp -p}"
+UPLOAD_DIR="$(mktemp -d)"
 
 # Two copy of the backup will be pushed to cloud storage.
 # Make a copy: latest.zip
@@ -50,6 +50,9 @@ echo "Copying files in '${UPLOAD_DIR}' to '${SKBN_CLOUD_PREFIX}'"
 if ! skbnCopy "${SKBN_K8S_PREFIX}/${UPLOAD_DIR}" "${SKBN_CLOUD_PREFIX}/"; then
   exit 1
 fi
+
+# STDOUT for CI test
+ls ${UPLOAD_DIR}
 
 # Cleanup
 rm -rf "${SERVER_BACKUP_DIR}"
