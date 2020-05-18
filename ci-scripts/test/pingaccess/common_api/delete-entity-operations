@@ -1,0 +1,85 @@
+#!/bin/bash
+
+function delete_agent() {
+
+  set +x
+
+  password="${1}"
+  endpoint="${2}"
+  agent_id="${3}"
+
+  delete_agent_response=$(curl -k \
+    -i \
+    -s \
+    -u "Administrator:${password}" \
+    -H 'X-Xsrf-Header: PingAccess' \
+    -X DELETE \
+    "${endpoint}/agents/${agent_id}")
+
+  delete_agent_response_code=$(parse_http_response_code "${delete_agent_response}")
+
+  if [[ 200 -ne ${delete_agent_response_code} ]]; then
+    echo "There was a problem deleting the agent: " ${delete_agent_response_code}
+    return 1
+  else
+    echo "${delete_agent_response_code}"
+    return 0
+  fi
+}
+
+
+function delete_application() {
+
+  set +x
+
+  password="${1}"
+  endpoint="${2}"
+  application_id="${3}"
+
+  delete_application_response=$(curl -k \
+    -i \
+    -s \
+    -u "Administrator:${password}" \
+    -H 'X-Xsrf-Header: PingAccess' \
+    -X DELETE \
+    "${endpoint}/applications/${application_id}")
+
+  delete_application_response_code=$(parse_http_response_code "${delete_application_response}")
+
+  if [[ 200 -ne ${delete_application_response_code} ]]; then
+    echo "There was a problem deleting the application: " ${delete_application_response_code}
+    return 1
+  else
+    echo "${delete_application_response_code}"
+    return 0
+  fi
+}
+
+
+function delete_virtual_host() {
+
+  set +x
+
+  password="${1}"
+  endpoint="${2}"
+  virtual_host_id="${3}"
+
+  delete_virtual_host_response=$(curl -k \
+    -i \
+    -s \
+    -u "Administrator:${password}" \
+    -H 'X-Xsrf-Header: PingAccess' \
+    -X DELETE \
+    "${endpoint}/virtualhosts/${virtual_host_id}")
+
+  delete_virtual_host_response_code=$(parse_http_response_code "${delete_virtual_host_response}")
+
+  if [[ 200 -ne ${delete_virtual_host_response_code} ]]; then
+    echo "There was a problem deleting the virtual host: " ${delete_virtual_host_response_code}
+    return 1
+  else
+    echo "${delete_virtual_host_response_code}"
+    return 0
+  fi
+
+}

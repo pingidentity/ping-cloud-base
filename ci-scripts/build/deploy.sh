@@ -53,12 +53,30 @@ sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" ${DEPLOY_FILE
 
 kubectl apply -f ${DEPLOY_FILE}
 
-# Give each pod some time to initialize. The PF, PA apps deploy fast. PD is the
-# long pole and its timeout must be adjusted based on the number of replicas.
-for DEPLOYMENT in $(kubectl get statefulset,deployment -n ${NAMESPACE} -o name); do
-  NUM_REPLICAS=$(kubectl get ${DEPLOYMENT} -o jsonpath='{.spec.replicas}' -n ${NAMESPACE})
-  TIMEOUT=$((${NUM_REPLICAS} * 900))
-  time kubectl rollout status --timeout ${TIMEOUT}s ${DEPLOYMENT} -n ${NAMESPACE} -w
+# A PingDirectory pod can take up to 15 minutes to deploy in the CI/CD cluster. There are two sets of dependencies
+# today from:
+#
+#     1. PA engine -> PA admin -> PF admin -> PD
+#     2. PF engine -> PF admin -> PD
+#
+# So checking the rollout status of the end dependencies should be enough after PD is rolled out. We'll give each 2.5
+# minutes after PD is ready. This should be more than enough time because as soon as pingdirectory-0 is ready, the
+# rollout of the others will begin, and they don't take nearly as much time as a single PD server. So the entire Ping
+# stack must be rolled out in no more than (15 * num of PD replicas + 2.5 * number of end dependents) minutes.
+
+PD_REPLICA='statefulset.apps/pingdirectory'
+DEPENDENT_REPLICAS='deployment.apps/pingfederate statefulset.apps/pingaccess'
+
+NUM_PD_REPLICAS=$(kubectl get "${PD_REPLICA}" -o jsonpath='{.spec.replicas}' -n "${NAMESPACE}")
+PD_TIMEOUT_SECONDS=$((NUM_PD_REPLICAS * 900))
+DEPENDENT_TIMEOUT_SECONDS=150
+
+echo "Waiting for rollout of ${PD_REPLICA} with a timeout of ${PD_TIMEOUT_SECONDS} seconds"
+time kubectl rollout status "${PD_REPLICA}" --timeout "${PD_TIMEOUT_SECONDS}s" -n "${NAMESPACE}" -w
+
+for DEPENDENT_REPLICA in ${DEPENDENT_REPLICAS}; do
+  echo "Waiting for rollout of ${DEPENDENT_REPLICA} with a timeout of ${DEPENDENT_TIMEOUT_SECONDS} seconds"
+  time kubectl rollout status "${DEPENDENT_REPLICA}" --timeout "${DEPENDENT_TIMEOUT_SECONDS}s" -n "${NAMESPACE}" -w
 done
 
 # Print out the ingress objects for logs and the ping stack

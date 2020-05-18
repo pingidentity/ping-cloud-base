@@ -1,7 +1,12 @@
-#!/bin/bash -x
+#!/bin/bash
 
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
-. ${SCRIPT_HOME}/../../common.sh
+. "${SCRIPT_HOME}"/../../common.sh "${1}"
+
+if skipTest "${0}"; then
+  log "Skipping test ${0}"
+  exit 0
+fi
 
 # This is a contrived test for PDO-988. See issue for more details.
 PD_REPLICA_SET='statefulset.apps/pingdirectory'
