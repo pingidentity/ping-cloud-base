@@ -100,35 +100,86 @@ check_env_vars() {
 }
 
 ########################################################################################################################
-# Tests whether the provided URLs are reachable or not
+# Tests whether the provided URLs are reachable or not within a timeout of 2 minutes per URL. Refer to the "testUrl"
+# function docs for more details.
 #
 # Arguments:
 #   ${*} -> The list of URLs to test
+#
 # Returns:
-#   0 on success; non-zero on failure
+#   0 on success; non-zero on curl failure
 ########################################################################################################################
 testUrls() {
-  STATUS=0
-  for URL in ${*}; do
-    ! testUrl "${URL}" && STATUS=1
+  local url status=0
+  for url in ${*}; do
+    ! testUrl "${url}" && status=1
   done
-  return ${STATUS}
+  return ${status}
 }
 
 ########################################################################################################################
-# Tests whether a URL is reachable or not with a timeout of 2 minutes.
+# Tests whether a URL is reachable or not within a timeout of 2 minutes.
 #
 # Arguments:
 #   ${1} -> The URL
+#   ${2} -> Flag indicating whether or not to verify that the HTTP status code is 2xx. Defaults to false. If true,
+#           the username and password specified by environment variables ADMIN_USER and ADMIN_PASS are used for basic
+#           authentication.
+#
 # Returns:
-#   0 on success; non-zero on failure
+#   0 on success; non-zero on curl failure or non-2xx HTTP code
 ########################################################################################################################
 testUrl() {
-  log "Testing URL: ${1}"
-  curl -k --max-time 300 ${1} >/dev/null 2>&1
-  exit_code=${?}
-  log "Command exit code: ${exit_code}"
-  return ${exit_code}
+  local url="${1}"
+  local testHttpCode="${2:-false}"
+  log "Testing URL: ${url}"
+
+  local http_code="$(curl -k --max-time 300 \
+      -w '%{http_code}' "${url}" \
+      -u "${ADMIN_USER}:${ADMIN_PASS}" \
+      -H 'X-Xsrf-Header: PingApp' \
+      -o /dev/null 2>/dev/null)"
+  exit_code=$?
+
+  log "Command exit code: ${exit_code}. HTTP return code: ${http_code}"
+  test "${testHttpCode}" = 'false' && return ${exit_code}
+
+  test "${http_code%??}" -eq 2 &&
+      return 0 ||
+      return "${http_code}"
+}
+
+########################################################################################################################
+# Tests whether the provided URLs are reachable or not within a timeout of 2 minutes per URL. Non-2xx return codes are
+# considered failures. Refer to the "testUrl" function docs for more details.
+#
+# Arguments:
+#   ${*} -> The list of URLs to test
+#
+# Returns:
+#   0 on success; non-zero on curl failure and non-2xx HTTP code
+########################################################################################################################
+testUrlsExpect2xx() {
+  local url status=0
+  for url in ${*}; do
+    ! testUrl "${url}" true && status=1
+  done
+  return ${status}
+}
+
+########################################################################################################################
+# Tests whether a URL is reachable or not within a timeout of 2 minutes. Non-2xx return codes are considered failures.
+# Refer to the "testUrl" function docs for more details.
+#
+# Arguments:
+#   ${1} -> The URL
+#
+# Returns:
+#   0 on success; non-zero on curl failure and non-2xx HTTP code
+########################################################################################################################
+testUrlExpect2xx() {
+  local url="${1}"
+  testUrl "${url}" true
 }
 
 ########################################################################################################################

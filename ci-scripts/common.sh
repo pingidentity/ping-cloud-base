@@ -4,7 +4,7 @@
 # Common variables
 ##################################################################
 
-test ! -z ${VERBOSE} && set -x
+test "${VERBOSE}" && set -x
 
 ### Begin - export environment variables ###
 
@@ -21,6 +21,9 @@ export BACKUP_URL=s3://${CLUSTER_NAME}-backup-bucket
 
 export NAMESPACE=ping-cloud-${CI_COMMIT_REF_SLUG}
 export AWS_PROFILE=csg
+
+export ADMIN_USER=administrator
+export ADMIN_PASS=2FederateM0re
 
 [[ ${CI_COMMIT_REF_SLUG} != master ]] && export ENVIRONMENT=-${CI_COMMIT_REF_SLUG}
 
@@ -57,7 +60,7 @@ PINGFEDERATE_OAUTH_PLAYGROUND=https://pingfederate${FQDN}/OAuthPlayground
 # Pingaccess
 # admin services:
 PINGACCESS_CONSOLE=https://pingaccess-admin${FQDN}
-PINGACCESS_SWAGGER=https://pingaccess-admin${FQDN}/pa-admin-api/v3/api-docs
+PINGACCESS_SWAGGER=https://pingaccess-admin${FQDN}/pa-admin-api/api-docs
 PINGACCESS_API=https://pingaccess-admin${FQDN}/pa-admin-api/v3
 
 # runtime services:
@@ -158,4 +161,35 @@ EOF
   [${AWS_PROFILE}]
   role_arn = ${AWS_ACCOUNT_ROLE_ARN}
 EOF
+}
+
+########################################################################################################################
+# Determine whether to skip the tests in the file with the provided name. If the SKIP_TESTS environment variable is set
+# and contains the name of the file with its parent directory, then that test file will be skipped. For example, to
+# skip the PingDirectory tests in files 03-backup-restore.sh and 20-pd-recovery-on-delete-pv.sh, set SKIP_TESTS to
+# 'pingdirectory/03-backup-restore.sh chaos/20-pd-recovery-on-delete-pv.sh'
+#
+# Arguments
+#   ${1} -> The fully-qualified name of the test file.
+#
+# Returns
+#   0 -> if the test should be skipped; 1 -> if the test should not be skipped.
+########################################################################################################################
+skipTest() {
+  test -z "${SKIP_TESTS}" && return 1
+
+  local test_file="${1}"
+
+  readonly dir_name=$(basename "$(dirname "${test_file}")")
+  readonly file_name=$(basename "${test_file}")
+  readonly test_file_short_name="${dir_name}/${file_name}"
+
+  echo "${SKIP_TESTS}" | grep -q "${test_file_short_name}" &> /dev/null
+
+  if test $? -eq 0; then
+    log "SKIP_TESTS is set to skip test file: ${test_file_short_name}"
+    return 0
+  fi
+
+  return 1
 }

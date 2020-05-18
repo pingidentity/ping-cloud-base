@@ -3,8 +3,13 @@
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 . "${SCRIPT_HOME}"/../../common.sh "${1}"
 
+if skipTest "${0}"; then
+  log "Skipping test ${0}"
+  exit 0
+fi
+
 # FIXME Data needs preloading to CICD Bucket and OAuth client created 
-echo "Test disabled pending new config setup"
+log "Test disabled pending new config setup"
 exit 0
 
 #
