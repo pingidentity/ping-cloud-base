@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: enrichment-cache
+data:
+  # This is a list of what you consider to be normal countries.
+  KnownCountries.yml: |-
+    "United States": "YES"
+    "Canada": "YES"
+
+  # This is a list of what you consider to be malicious countries.
+  MaliciousCountries.yml: |-
+    "Turkey": "YES"
+    "Iran": "YES"
+    "Iraq": "YES"
+    "North Korea": "YES"
+    "Ukraine": "YES"
+
+  # DO NOT CHANGE THIS! This is a template of alien vault IPs list that updates automatically by enrichment service
+  AlienVaultIP.yml: |-
+    "": "YES"
+
+  # DO NOT CHANGE THIS! This is a template of TOR nodes list that updates by automatically enrichment service
+  TorNodes.yml: |-
+    "": "YES"

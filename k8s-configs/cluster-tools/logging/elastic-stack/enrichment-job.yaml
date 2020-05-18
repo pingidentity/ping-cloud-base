@@ -1,0 +1,205 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: enrichment-python-script
+data:
+  enrichment.py: |-
+    #!/usr/bin/python
+    # Author: Ryan Ivis -- Ping Identity
+
+    # Pull Down Tor Nodes / AlienVault Feeds and convert to YAML for Logstash Enrichment
+    # This simple py Script downloads enrichment files and converts them to a Logstash format for enriching logs.
+
+    import urllib2, re
+    import requests
+    import os
+
+    def writeYAML_TOR(url, enrichmentFilePath):
+        torNodes = requests.get(url)
+        rawContent = torNodes.text
+        lineContent = rawContent.splitlines()
+
+        if lineContent:
+            yamlFile = open(enrichmentFilePath, 'w+')
+            for line in lineContent:
+                if line.startswith("ExitAddress"):
+                    splitLine = line.split(" ")
+                    yamlFile.write("\"" + splitLine[1] + "\": \"YES\"" + "\n")
+            yamlFile.close()
+
+    def writeYAML_AV(url, enrichmentFilePath):
+        yamlFile = open(enrichmentFilePath, 'w')
+        html = urllib2.urlopen(url)
+        for line in html.readlines():
+            line = re.sub('\\r|\\n','',line)
+            newLine=line.split(' ', 1)[0]
+            yamlFile.write("\"" + newLine + "\": \"YES\"" + "\n")
+        yamlFile.close()
+
+
+    #Start Script #GRAB 2 FEEDS AND CONVERT TO YAML FOR LOGSTASH
+    #torFeedURL = "https://check.torproject.org/exit-addresses"
+    torFeedURL = os.environ['ENRICHMENT_TOR_FEED_URL']
+
+    #alienvaultFeedURL = "https://reputation.alienvault.com/reputation.generic"
+    alienvaultFeedURL = os.environ['ENRICHMENT_ALIEN_VAULT_FEED_URL']
+
+    enrichmentFilePath_TOR = "/usr/share/elasticsearch/enrichment/TorNodes.yml"
+    enrichmentFilePath_AV = "/usr/share/elasticsearch/enrichment/AlienVaultIP.yml"
+
+    writeYAML_TOR(torFeedURL, enrichmentFilePath_TOR)
+    writeYAML_AV(alienvaultFeedURL, enrichmentFilePath_AV)
+
+    print("Enrichment pull complete.")
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: enrichment-run-script
+data:
+  enrichment-run-script.sh: |-
+    #!/bin/bash
+    # Author: Ryan Ivis -- Ping Identity
+
+    # This installs required dependencies into the configure-es container. 
+    # These are REQUIRED for the enrichment script to work.
+
+    yum install -y epel-release
+    yum install -y python-pip
+    pip install requests
+
+    # AN ENHANCEMENT NEEDS TO OCCUR TO THIS LOGIC TO NEVER WRITE EMPTY YML FILES. IF AN EMPTY FILE IS WRITTEN LOGSTASH CRASHES.
+
+    touch /usr/share/elasticsearch/enrichment/TorNodes.yml
+    touch /usr/share/elasticsearch/enrichment/AlienVaultIP.yml
+
+    echo "Starting enrichment pull..."
+    python /usr/share/elasticsearch/config/bootstrap/enrichment.py
+
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: enrichment-job
+  labels:
+    app: enrichment-job
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: enrichment-job
+  labels:
+    app: enrichment-job
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - namespaces
+  verbs:
+  - get
+  - list
+  - watch
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: enrichment-job
+roleRef:
+  kind: ClusterRole
+  name: enrichment-job
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: enrichment-job
+---
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: enrichment-volume
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: st1
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: enrichment-volume
+spec:
+  storageClassName: enrichment-volume
+  accessModes:
+    - ReadWriteMany
+  volumeMode: Filesystem
+  resources:
+    requests:
+      storage: 100Mi
+---
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: enrichment-job
+spec:
+  # triggers every 10 minutes
+  schedule: "*/10 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccount: enrichment-job
+          restartPolicy: OnFailure
+          initContainers:
+          - name: get-enrichment-volume-data
+            image: busybox
+            command: ['sh', '-c', "cp /mnt/enrichment-cache/* /mnt/enrichment/"]
+            volumeMounts:
+              - mountPath: /mnt/enrichment
+                name: enrichment-volume
+              - mountPath: /mnt/enrichment-cache
+                name: enrichment-cache-files
+          # - name: check-elasticsearch-availability
+          #   image: busybox
+          #   command: ['sh', '-c', "until nslookup elasticsearch.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for elasticsearch; sleep 2; done"]
+          containers:
+          - name: enrichment-service
+            image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
+            workingDir: /usr/share/elasticsearch
+            env:
+              - name:  ENRICHMENT_TOR_FEED_URL
+                value: "https://check.torproject.org/exit-addresses"
+              - name:  ENRICHMENT_ALIEN_VAULT_FEED_URL
+                value: "https://reputation.alienvault.com/reputation.generic"
+            command:
+            - /opt/enrichment-run-script.sh
+            volumeMounts:
+            - name: enrichment-run-script
+              mountPath: /opt/enrichment-run-script.sh
+              subPath: enrichment-run-script.sh
+            - name: enrichment-python-script
+              mountPath: /usr/share/elasticsearch/config/bootstrap/enrichment.py
+              subPath: enrichment.py
+            # - name: enrichment-cache-files
+            #   mountPath: /usr/share/elasticsearch/enrichment-cache
+            - name: enrichment-volume
+              mountPath: /usr/share/elasticsearch/enrichment
+          volumes:
+          - name: enrichment-run-script
+            configMap:
+              name: enrichment-run-script
+              defaultMode: 0555
+          - name: enrichment-python-script
+            configMap:
+              name: enrichment-python-script
+              defaultMode: 0555
+          # - name: enrichment-volume
+          #   persistentVolumeClaim:
+          #     claimName: enrichment-volume
+          - name: enrichment-cache-files
+            configMap:
+              name: enrichment-cache
+              defaultMode: 0555

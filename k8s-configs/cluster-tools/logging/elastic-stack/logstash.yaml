@@ -1,0 +1,257 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: logstash-elastic
+  labels:
+    app: logstash-elastic
+spec:
+  selector:
+    app: logstash-elastic
+  ports:
+    - port: 9600
+      name: rest
+    - port: 20513
+      name: pf-system-in
+    - port: 20514
+      name: pf-audit-in
+    - port: 20515
+      name: pd-directory-in
+    - port: 20516
+      name: pa-system-in
+    - port: 20517
+      name: pa-audit-in
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: logstash-elastic
+  labels:
+    app: logstash-elastic
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: logstash-elastic
+  labels:
+    app: logstash-elastic
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - namespaces
+  verbs:
+  - get
+  - list
+  - watch
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: logstash-elastic
+roleRef:
+  kind: ClusterRole
+  name: logstash-elastic
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: logstash-elastic
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kubernetes-namespace-logging-logstash
+  labels:
+    app: logstash-elastic
+data:
+  # kubernetes-namespace-logging.conf: |
+  #   <match **>
+  #     @type elasticsearch_dynamic
+  #     @id out_es_dynamic
+  #     @log_level info
+  #     include_tag_key true
+  #     host "#{ENV['FLUENT_ELASTICSEARCH_HOST']}"
+  #     port "#{ENV['FLUENT_ELASTICSEARCH_PORT']}"
+  #     path "#{ENV['FLUENT_ELASTICSEARCH_PATH']}"
+  #     scheme "#{ENV['FLUENT_ELASTICSEARCH_SCHEME'] || 'http'}"
+  #     ssl_verify "#{ENV['FLUENT_ELASTICSEARCH_SSL_VERIFY'] || 'true'}"
+  #     ssl_version "#{ENV['FLUENT_ELASTICSEARCH_SSL_VERSION'] || 'TLSv1'}"
+  #     user "#{ENV['FLUENT_ELASTICSEARCH_USER']}"
+  #     password "#{ENV['FLUENT_ELASTICSEARCH_PASSWORD']}"
+  #     reload_connections "#{ENV['FLUENT_ELASTICSEARCH_RELOAD_CONNECTIONS'] || 'false'}"
+  #     reconnect_on_error "#{ENV['FLUENT_ELASTICSEARCH_RECONNECT_ON_ERROR'] || 'true'}"
+  #     reload_on_failure "#{ENV['FLUENT_ELASTICSEARCH_RELOAD_ON_FAILURE'] || 'true'}"
+  #     log_es_400_reason "#{ENV['FLUENT_ELASTICSEARCH_LOG_ES_400_REASON'] || 'false'}"
+  #     logstash_prefix logstash-${record['kubernetes']['namespace_name']}
+  #     logstash_format "#{ENV['FLUENT_ELASTICSEARCH_LOGSTASH_FORMAT'] || 'true'}"
+  #     index_name logstash-${record['kubernetes']['namespace_name']}
+  #     type_name "#{ENV['FLUENT_ELASTICSEARCH_LOGSTASH_TYPE_NAME'] || 'fluentd'}"
+  #     <buffer>
+  #       flush_thread_count "#{ENV['FLUENT_ELASTICSEARCH_BUFFER_FLUSH_THREAD_COUNT'] || '8'}"
+  #       flush_interval "#{ENV['FLUENT_ELASTICSEARCH_BUFFER_FLUSH_INTERVAL'] || '5s'}"
+  #       chunk_limit_size "#{ENV['FLUENT_ELASTICSEARCH_BUFFER_CHUNK_LIMIT_SIZE'] || '2M'}"
+  #       queue_limit_length "#{ENV['FLUENT_ELASTICSEARCH_BUFFER_QUEUE_LIMIT_LENGTH'] || '32'}"
+  #       retry_max_interval "#{ENV['FLUENT_ELASTICSEARCH_BUFFER_RETRY_MAX_INTERVAL'] || '30'}"
+  #       retry_forever true
+  #     </buffer>
+  #   </match>
+
+
+
+
+#   output {
+#     elasticsearch {
+#         index => "MY_TEST_INDEX_%{+YYYY.MM.dd}"
+#         hosts => "${LOGSTASH_ELASTICSEARCH_SCHEME}://${LOGSTASH_ELASTICSEARCH_HOST}:${LOGSTASH_ELASTICSEARCH_PORT}"
+#         user => "${LOGSTASH_ELASTICSEARCH_USER}"
+#         password => "${LOGSTASH_ELASTICSEARCH_PASSWORD}"
+#     }
+# }
+
+  logstash.conf: |
+    input {
+        tcp {
+            id => "pf_system_in"
+            port => 20513
+            add_field => {"log_type" => "PF_System_Log"}
+        }
+        tcp {
+            id => "pf_audit_in"
+            port => 20514
+            add_field => {"log_type" => "PF_Audit_Log"}
+        }
+        file {
+            id => "var_log"
+            path => "/var/log"
+        }
+        file {
+            id => "containers_log"
+            path => "/var/lib/docker/containers"
+        }
+    }
+    filter {
+    }
+    output {
+        elasticsearch {
+            index => "logstash_%{+YYYY.MM.dd}"
+            hosts => "${LOGSTASH_ELASTICSEARCH_SCHEME}://${LOGSTASH_ELASTICSEARCH_HOST}:${LOGSTASH_ELASTICSEARCH_PORT}"
+        }
+        if([log_type] == "PF_Audit_Log"){
+          elasticsearch {
+              id => "pf_audit_out"
+              index => "pf_audit_out_%{+YYYY.MM.dd}"
+              hosts => "${LOGSTASH_ELASTICSEARCH_SCHEME}://${LOGSTASH_ELASTICSEARCH_HOST}:${LOGSTASH_ELASTICSEARCH_PORT}"
+          }
+        }
+        if([log_type] == "PF_System_Log"){
+          elasticsearch {
+              id => "pf_system_out"
+              index => "pf_system_out_%{+YYYY.MM.dd}"
+              hosts => "${LOGSTASH_ELASTICSEARCH_SCHEME}://${LOGSTASH_ELASTICSEARCH_HOST}:${LOGSTASH_ELASTICSEARCH_PORT}"
+          }
+        }
+    }
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: logstash-elastic
+  labels:
+    app: logstash-elastic
+spec:
+  selector:
+    matchLabels:
+      app: logstash-elastic
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: logstash-elastic
+    spec:
+      serviceAccount: logstash-elastic
+      # tolerations:
+      # - key: node-role.kubernetes.io/master
+      #   effect: NoSchedule
+
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+      - name: logstash
+        image: logstash:7.6.2
+        env:
+          - name:  LOGSTASH_ELASTICSEARCH_HOST
+            value: "elasticsearch"
+          - name:  LOGSTASH_ELASTICSEARCH_PORT
+            value: "9200"
+          - name: LOGSTASH_ELASTICSEARCH_SCHEME
+            value: "http"
+          # - name: LOGSTASH_ELASTICSEARCH_USER
+          #   value: "elastic"
+          # - name: LOGSTASH_ELASTICSEARCH_PASSWORD
+          #   value: PASSWORD
+          - name: LS_JAVA_OPTS
+            value: "-Xmx1g -Xms1g"
+          - name: CONFIG_RELOAD_AUTOMATIC
+            value: "true"
+          - name: CONFIG_RELOAD_INTERVAL
+            value: "5s"
+          - name: LOG_FORMAT
+            value: "json"
+          - name: LOG_LEVEL
+            value: "info"
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 100m
+            memory: 1Gi
+        ports:
+          - containerPort: 9600
+            name: rest
+            protocol: TCP
+          - containerPort: 20513
+            name: pf-system-in
+            protocol: TCP
+          - containerPort: 20514
+            name: pf-audit-in
+            protocol: TCP
+          - containerPort: 20515
+            name: pd-directory-in
+            protocol: TCP
+          - containerPort: 20516
+            name: pa-system-in
+            protocol: TCP
+          - containerPort: 20517
+            name: pa-audit-in
+            protocol: TCP
+        volumeMounts:
+        - name: kubernetes-namespace-logging-logstash
+          mountPath: /usr/share/logstash/pipeline
+          readOnly: true
+        - name: varlog
+          mountPath: /var/log
+        - name: varlibdockercontainers
+          mountPath: /var/lib/docker/containers
+          readOnly: true
+        # - name: etclogstash
+        #   mountPath: /etc/logstash
+        #   readOnly: true
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: kubernetes-namespace-logging-logstash
+        configMap:
+          name: kubernetes-namespace-logging-logstash
+      - name: varlog
+        hostPath:
+          path: /var/log
+      - name: varlibdockercontainers
+        hostPath:
+          path: /var/lib/docker/containers
+      # - name: etclogstash
+      #   hostPath:
+      #     path: /etc/logstash
