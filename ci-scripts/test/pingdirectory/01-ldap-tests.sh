@@ -8,7 +8,7 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-if "${DEV_TEST_ENV}" = 'true'; then
+if test "${DEV_TEST_ENV}" = 'true'; then
   if pgrep -f docker > /dev/null; then
     docker run --rm pingidentity/ldap-sdk-tools ldapsearch \
       --terse \
