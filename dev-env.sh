@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 
 ########################################################################################################################
 #
@@ -116,14 +116,18 @@ test -f ~/.pingidentity/devops && . ~/.pingidentity/devops
 # Source some utility methods.
 . utils.sh
 
-declare dryrun="false"
+declare dryrun='false'
+declare skipTest='false'
 
 # Parse Parameters
-while getopts 'n' OPTION
+while getopts 'ns' OPTION
 do
   case ${OPTION} in
     n)
       dryrun='true'
+      ;;
+    s)
+      skipTest='true'
       ;;
     *)
       echo "Usage ${0} [ -n ] n = dry-run"
@@ -225,14 +229,65 @@ if test "${dryrun}" = 'false'; then
   # Print out the pingdirectory hostname
   echo
   echo '--- LDAP hostname ---'
-  kubectl get svc pingdirectory-admin -n ${NAMESPACE} \
+  kubectl get svc pingdirectory-admin -n "${NAMESPACE}" \
     -o jsonpath='{.metadata.annotations.external-dns\.alpha\.kubernetes\.io/hostname}'
 
   # Print out the  pods for the ping stack
   echo
   echo
   echo '--- Pod status ---'
-  kubectl get pods -n ${NAMESPACE}
+  kubectl get pods -n "${NAMESPACE}"
+
+  echo
+  if test "${skipTest}" = 'true'; then
+    echo "Skipping integration tests"
+  else
+    echo "Waiting for pods in ${NAMESPACE} to be ready"
+
+    for DEPLOYMENT in $(kubectl get statefulset,deployment -n "${NAMESPACE}" -o name); do
+      NUM_REPLICAS=$(kubectl get "${DEPLOYMENT}" -o jsonpath='{.spec.replicas}' -n "${NAMESPACE}")
+      TIMEOUT=$((NUM_REPLICAS * 900))
+      time kubectl rollout status --timeout "${TIMEOUT}"s "${DEPLOYMENT}" -n "${NAMESPACE}" -w
+    done
+
+    echo "Running integration tests"
+
+    TEST_ENV_VARS_FILE=$(mktemp)
+    cat > "${TEST_ENV_VARS_FILE}" <<EOF
+export REGION=${REGION}
+export ENVIRONMENT=${ENVIRONMENT}
+
+export NAMESPACE=${NAMESPACE}
+
+export CLUSTER_NAME=${TENANT_NAME}
+export TENANT_DOMAIN=${TENANT_DOMAIN}
+
+export ARTIFACT_REPO_URL=${ARTIFACT_REPO_URL}
+export PING_ARTIFACT_REPO_URL=${PING_ARTIFACT_REPO_URL}
+
+export LOG_ARCHIVE_URL=${LOG_ARCHIVE_URL}
+export BACKUP_URL=${BACKUP_URL}
+
+export CONFIG_REPO_BRANCH=${CONFIG_REPO_BRANCH}
+
+export CI_PROJECT_DIR=${PWD}
+export PROFILE=${AWS_PROFILE:-csg}
+
+export SKIP_CONFIGURE_KUBE=true
+export SKIP_CONFIGURE_AWS=true
+
+export DEV_TEST_ENV=true
+EOF
+
+  for TEST_DIR in pingaccess pingdirectory pingfederate integration chaos; do
+    echo
+    echo "=========================================================="
+    echo "      Executing tests in directory ${TEST_DIR}            "
+    echo "=========================================================="
+    ci-scripts/test/run-test.sh "${TEST_DIR}" "${TEST_ENV_VARS_FILE}"
+  done
+
+  fi
 else
   less "${DEPLOY_FILE}"
 fi
