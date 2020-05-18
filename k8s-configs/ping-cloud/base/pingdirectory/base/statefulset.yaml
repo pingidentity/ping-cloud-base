@@ -183,6 +183,13 @@ spec:
           - mountPath: /tmp/mapping/
             name: pingdirectory-statsd-mapping
             readOnly: false
+        resources:
+          limits:
+            cpu: 100m
+            memory: 300Mi
+          requests:
+            cpu: 100m
+            memory: 300Mi
       volumes:
       - name: ssh-dir
         emptyDir: {}
