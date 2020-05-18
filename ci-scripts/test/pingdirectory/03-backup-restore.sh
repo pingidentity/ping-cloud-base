@@ -23,7 +23,7 @@ actual_files() {
 
   aws s3api list-objects \
     --bucket "${BUCKET_NAME}" \
-    --prefix 'pingdirectory/data-' \
+    --prefix 'pingdirectory/' \
     --query "reverse(sort_by(Contents[?LastModified>='${DAYS_AGO}'], &LastModified))[].Key" \
     --profile "${AWS_PROFILE}" |
   tr -d '",[]' |
