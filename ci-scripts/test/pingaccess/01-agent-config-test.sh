@@ -1,7 +1,12 @@
 #!/bin/bash
 
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
-. ${SCRIPT_HOME}/../../common.sh
+. "${SCRIPT_HOME}"/../../common.sh "${1}"
+
+if skipTest "${0}"; then
+  log "Skipping test ${0}"
+  exit 0
+fi
 
 . ${SCRIPT_HOME}/util/pa_test_utils
 . ${SCRIPT_HOME}/common_api/create-entity-operations
@@ -16,7 +21,7 @@ agent_shared_secret='agent1sharedsecret1234'  # shared secrets must be 22 chars
 pa_engine_host='pingaccess'
 agent_name='agent1'
 
-echo ">>>> Starting ${0} test..."
+log ">>>> Starting ${0} test..."
 set +x
 
 # Create a shared secret
@@ -54,7 +59,7 @@ agent_port_runtime_response=$(send_request_to_agent_port "${agent_name}" "${agen
 [ $? -ne 0 ] && exit 1
 
 set -x
-echo "Request sent to the agent port on pingaccess-0 was successful"
+log "Request sent to the agent port on pingaccess-0 was successful"
 
 set +x
 
@@ -64,7 +69,7 @@ agent_port_runtime_response=$(send_request_to_agent_port "${agent_name}" "${agen
 [ $? -ne 0 ] && exit 1
 
 set -x
-echo "Request sent to the agent port on pingaccess-1 was successful"
+log "Request sent to the agent port on pingaccess-1 was successful"
 
 set +x
 
@@ -85,4 +90,4 @@ delete_virtual_host_response=$(delete_virtual_host "${PA_ADMIN_PASSWORD}" "${PIN
 
 set -x
 
-echo ">>>> ${0} finished..."
+log ">>>> ${0} finished..."
