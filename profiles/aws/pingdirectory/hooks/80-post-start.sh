@@ -183,6 +183,80 @@ configure_user_backend() {
 }
 
 ########################################################################################################################
+# Sets the force-as-master-for-mirrored-data flag in global configuration to the provided value on the specified server.
+#
+# Arguments
+#   ${1} -> The target server on which to set the flag.
+#   ${2} -> The value of the force-as-master flag, i.e. true or false. Defaults to false.
+########################################################################################################################
+set_force_as_master() {
+  TARGET_HOST="${1}"
+  FORCE_FLAG="${2:-false}"
+
+  echo "post-start: setting force-as-master on server ${TARGET_HOST} to ${FORCE_FLAG}"
+  dsconfig --no-prompt --hostname "${TARGET_HOST}" \
+      set-global-configuration-prop --set "force-as-master-for-mirrored-data:${FORCE_FLAG}"
+  status=$?
+
+  echo "post-start: status of setting force-as-master on server ${TARGET_HOST} to ${FORCE_FLAG}: ${status}"
+  return ${status}
+}
+
+########################################################################################################################
+# Resets the force-as-master flag to false on the source or seed server if REMOVE_SERVER_FROM_TOPOLOGY_FIRST is true.
+########################################################################################################################
+reset_force_as_master() {
+  if test ! -z "${REMOVE_SERVER_FROM_TOPOLOGY_FIRST}" && test "${REMOVE_SERVER_FROM_TOPOLOGY_FIRST}" = 'true'; then
+    echo "post-start: resetting force-as-master to false on ${SRC_HOST} before stopping this server"
+    set_force_as_master "${SRC_HOST}" false
+  fi
+}
+
+########################################################################################################################
+# Create a topology file with the seed server and this server. The name of the topology file will be available in
+# the variable TOPOLOGY_FILE after this method is invoked.
+########################################################################################################################
+create_topology_file() {
+  TOPOLOGY_FILE=/tmp/topology.json
+
+  rm -f "${TOPOLOGY_FILE}"
+  manage-topology export --exportFilePath "${TOPOLOGY_FILE}" --complexityLevel expert
+  LOCAL_SERVER_INSTANCE=$(jq --arg INSTANCE_NAME "${INSTANCE_NAME}" \
+      '.serverInstances[] | select(.instanceName == $INSTANCE_NAME)' < "${TOPOLOGY_FILE}")
+
+  rm -f "${TOPOLOGY_FILE}"
+  manage-topology export --hostname "${SRC_HOST}" --exportFilePath "${TOPOLOGY_FILE}" --complexityLevel expert
+  SRC_SERVER_INSTANCE=$(jq --arg INSTANCE_NAME_SRC_HOST "${INSTANCE_NAME_SRC_HOST}" \
+      '.serverInstances[] | select(.instanceName == $INSTANCE_NAME_SRC_HOST)' < "${TOPOLOGY_FILE}")
+
+  echo "{ \"serverInstances\" : [ ${SRC_SERVER_INSTANCE}, ${LOCAL_SERVER_INSTANCE} ] }" > "${TOPOLOGY_FILE}"
+}
+
+########################################################################################################################
+# Removes this server from the replication topology.
+########################################################################################################################
+remove_server_from_topology() {
+  echo "post-start: removing ${HOSTNAME} (instance name: ${INSTANCE_NAME}) from the topology"
+  remove-defunct-server --no-prompt \
+    --retryTimeoutSeconds "${RETRY_TIMEOUT_SECONDS}" \
+    --topologyFilePath "${TOPOLOGY_FILE}" \
+    --serverInstanceName "${INSTANCE_NAME}" \
+    --ignoreOnline \
+    --bindDN "${ROOT_USER_DN}" \
+    --bindPasswordFile "${ROOT_USER_PASSWORD_FILE}" \
+    --enableDebug --globalDebugLevel verbose
+  status=$?
+
+  if test ${status} -ne 0; then
+    echo "post-start: contents of remove-defunct-server.log:"
+    cat "${SERVER_ROOT_DIR}"/logs/tools/remove-defunct-server.log
+  fi
+
+  echo "post-start: server removal exited with return code: ${status}"
+  return ${status}
+}
+
+########################################################################################################################
 # Disable replication for the provided base DN on this server.
 #
 # Arguments
@@ -203,13 +277,17 @@ disable_replication_for_dn() {
   replDisableResult=$?
   echo "post-start: replication disable for ${BASE_DN} status: ${replDisableResult}"
 
-  if test ${replDisableResult} -eq 6; then
-    echo "post-start: replication is currently not enabled for base DN ${BASE_DN}"
-  elif test ${replDisableResult} -ne 0; then
-    return ${replDisableResult}
+  if test ${replDisableResult} -ne 0; then
+    echo "post-start: contents of dsreplication.log:"
+    cat "${SERVER_ROOT_DIR}"/logs/tools/dsreplication.log
+
+    if test ${replDisableResult} -eq 6; then
+      echo "post-start: replication is currently not enabled for base DN ${BASE_DN}"
+      return 0
+    fi
   fi
 
-  return 0
+  return ${replDisableResult}
 }
 
 ########################################################################################################################
@@ -221,7 +299,7 @@ disable_replication_for_dn() {
 enable_replication_for_dn() {
   BASE_DN=${1}
 
-  echo "post-start: running dsreplication enable for ${BASE_DN=${1}}"
+  echo "post-start: running dsreplication enable for ${BASE_DN}"
   dsreplication enable \
     --retryTimeoutSeconds "${RETRY_TIMEOUT_SECONDS}" \
     --trustAll \
@@ -238,6 +316,11 @@ enable_replication_for_dn() {
   replEnableResult=$?
   echo "post-start: replication enable for ${BASE_DN} status: ${replEnableResult}"
 
+  if test ${replEnableResult} -ne 0; then
+    echo "post-start: contents of dsreplication.log:"
+    cat "${SERVER_ROOT_DIR}"/logs/tools/dsreplication.log
+  fi
+
   return ${replEnableResult}
 }
 
@@ -250,12 +333,12 @@ enable_replication_for_dn() {
 initialize_replication_for_dn() {
   BASE_DN=${1}
 
-  echo "post-start: running dsreplication initialize for ${BASE_DN=${1}}"
+  echo "post-start: running dsreplication initialize for ${BASE_DN}"
   dsreplication initialize \
-    --retryTimeoutSeconds ${RETRY_TIMEOUT_SECONDS} \
+    --retryTimeoutSeconds "${RETRY_TIMEOUT_SECONDS}" \
     --trustAll \
-    --hostSource "${SRC_HOST}" --portSource ${LDAPS_PORT} --useSSLSource \
-    --hostDestination "${HOSTNAME}" --portDestination ${LDAPS_PORT} --useSSLDestination \
+    --hostSource "${SRC_HOST}" --portSource "${LDAPS_PORT}" --useSSLSource \
+    --hostDestination "${HOSTNAME}" --portDestination "${LDAPS_PORT}" --useSSLDestination \
     --baseDN "${BASE_DN}" \
     --adminUID "${ADMIN_USER_NAME}" \
     --adminPasswordFile "${ADMIN_USER_PASSWORD_FILE}" \
@@ -265,13 +348,20 @@ initialize_replication_for_dn() {
   replInitResult=$?
   echo "post-start: replication initialize for ${BASE_DN} status: ${replInitResult}"
 
+  if test ${replInitResult} -ne 0; then
+    echo "post-start: contents of dsreplication.log:"
+    cat "${SERVER_ROOT_DIR}"/logs/tools/dsreplication.log
+  fi
+
   return ${replInitResult}
 }
 
 ########################################################################################################################
-# Stop the container to signal failure with post-start sequence.
+# Resets the force-as-master flag to false on the source or seed server if REMOVE_SERVER_FROM_TOPOLOGY_FIRST is true.
+# Then, stop the container to signal failure with the post-start sequence.
 ########################################################################################################################
 stop_container() {
+  reset_force_as_master
   echo "post-start: stopping the container to signal failure with post-start sequence"
   stop-server
 }
@@ -280,20 +370,15 @@ stop_container() {
 # --- MAIN SCRIPT ---
 echo "post-start: starting post-start hook"
 
-# Remove the post-start initialization marker file so the pod isn't prematurely considered ready
-POST_START_INIT_MARKER_FILE="${SERVER_ROOT_DIR}"/config/post-start-init-complete
-rm -f "${POST_START_INIT_MARKER_FILE}"
-
 echo "post-start: running ldapsearch test on this container (${HOSTNAME})"
 waitUntilLdapUp "localhost" "${LDAPS_PORT}" 'cn=config'
 
 # Change PF user passwords
 change_pf_user_passwords
-pwdModStatus=$?
-test ${pwdModStatus} -ne 0 && stop_container
+test $? -ne 0 && stop_container
 
 SHORT_HOST_NAME=$(hostname)
-ORDINAL=$(echo ${SHORT_HOST_NAME##*-})
+ORDINAL=${SHORT_HOST_NAME##*-}
 echo "post-start: pod ordinal: ${ORDINAL}"
 
 if test "${ORDINAL}" -eq 0; then
@@ -301,8 +386,7 @@ if test "${ORDINAL}" -eq 0; then
   # ldapmodify allows a --passwordUpdateBehavior allow-pre-encoded-password=true to do the same
   ALLOW_PRE_ENCODED_PW_CONTROL='1.3.6.1.4.1.30221.2.5.51:true::MAOBAf8='
   change_user_password "cn=${ADMIN_USER_NAME}" "${ADMIN_USER_PASSWORD_FILE}" "${ALLOW_PRE_ENCODED_PW_CONTROL}"
-  pwdModStatus=$?
-  test ${pwdModStatus} -ne 0 && stop_container
+  test $? -ne 0 && stop_container
 
   # Update the license file, if necessary
   LICENSE_FILE_PATH="${LICENSE_DIR}/${LICENSE_FILE_NAME}"
@@ -316,7 +400,6 @@ if test "${ORDINAL}" -eq 0; then
     test ${licModStatus} -ne 0 && stop_container
   fi
 
-  touch "${POST_START_INIT_MARKER_FILE}"
   exit
 fi
 
@@ -344,7 +427,7 @@ echo "post-start: replication base DNs: ${DNS_TO_INITIALIZE}"
 
 UNINITIALIZED_DNS=
 for DN in ${DNS_TO_INITIALIZE}; do
-  if grep -q "${DN}" "${REPL_INIT_MARKER_FILE}"; then
+  if grep -q "${DN}" "${REPL_INIT_MARKER_FILE}" &> /dev/null; then
     echo "post-start: replication is already initialized for ${DN}"
   else
     test -z "${UNINITIALIZED_DNS}" &&
@@ -356,18 +439,51 @@ done
 # All base DNs are already initialized, so we're good.
 if test -z "${UNINITIALIZED_DNS}"; then
   echo "post-start: replication is already initialized for all base DNs: ${DNS_TO_INITIALIZE}"
-  touch "${POST_START_INIT_MARKER_FILE}"
   exit
+fi
+
+LOCALHOST_FULL_NAME=$(hostname -f)
+DOMAIN_NAME=$(echo "${LOCALHOST_FULL_NAME}" | cut -d'.' -f2-)
+SRC_HOST="${K8S_STATEFUL_SET_NAME}-0.${DOMAIN_NAME}"
+
+echo "post-start: getting server instance name from global config"
+INSTANCE_NAME=$(dsconfig --no-prompt get-global-configuration-prop \
+    --property instance-name --script-friendly | awk '{ print $2 }')
+
+# It is possible that the persistent volume where we are tracking replicated DNs is gone. In that case, we must
+# delete this server from the topology registry. Check the source server before proceeding.
+echo "post-start: checking source server to see if this server must first be removed from the topology"
+REMOVE_SERVER_FROM_TOPOLOGY_FIRST=false
+
+if ldapsearch --hostname "${SRC_HOST}" --baseDN 'cn=topology,cn=config' --searchScope sub \
+           "(ds-cfg-server-instance-name=${INSTANCE_NAME})" 1.1 &> /dev/null; then
+  echo "post-start: the server is partially present in the topology registry and must be removed first"
+  REMOVE_SERVER_FROM_TOPOLOGY_FIRST=true
+
+  echo "post-start: getting source server instance name from global config"
+  INSTANCE_NAME_SRC_HOST=$(dsconfig --no-prompt get-global-configuration-prop \
+      --useSSL --trustAll \
+      --hostname "${SRC_HOST}" --port "${LDAPS_PORT}" \
+      --property instance-name --script-friendly | awk '{ print $2 }')
+
+  echo "post-start: creating a topology file with the source server ${SRC_HOST} and this server"
+  create_topology_file
+
+  # Force seed server as the master so the topology registry is guaranteed to be writable. Forgive the failure here
+  # and let it fail downstream if there are topology write failures.
+  echo "post-start: forcing seed server ${SRC_HOST} as topology master"
+  set_force_as_master "${SRC_HOST}" true
+
+  echo "post-start: removing server from the topology"
+  remove_server_from_topology
+  test $? -ne 0 && stop_container
 fi
 
 echo "post-start: replication will be initialized for base DNs: ${UNINITIALIZED_DNS}"
 
-DOMAIN_NAME=$(hostname -f | cut -d'.' -f2-)
-SRC_HOST="${K8S_STATEFUL_SET_NAME}-0.${DOMAIN_NAME}"
-
 # For end-user base DNs, allow the option to disable previous DNs from replication. This allows
 # customers to disable the OOTB base DN that is automatically enabled and initialized.
-if test "${DISABLE_ALL_OLDER_USER_BASE_DN}" = 'true'; then
+if test ! -z "${DISABLE_ALL_OLDER_USER_BASE_DN}" && test "${DISABLE_ALL_OLDER_USER_BASE_DN}" = 'true'; then
   ENABLED_DNS=$(ldapsearch --hostname "${TARGET_HOST}" --baseDN 'cn=config' --searchScope sub \
       "&(ds-cfg-backend-id=${USER_BACKEND_ID})(objectClass=ds-cfg-backend)" ds-cfg-base-dn |
       grep '^ds-cfg-base-dn' | cut -d: -f2 | tr -d ' ')
@@ -389,14 +505,12 @@ for DN in ${UNINITIALIZED_DNS}; do
 
     for HOST in "${SRC_HOST}" "${HOSTNAME}"; do
       configure_user_backend "${HOST}"
-      configBackendStatus=$?
-      test ${configBackendStatus} -ne 0 && stop_container
+      test $? -ne 0 && stop_container
 
       does_base_entry_exist "${HOST}"
       if test $? -ne 0; then
         add_base_entry "${HOST}"
-        addStatus=$?
-        test ${addStatus} -ne 0 && stop_container
+        test $? -ne 0 && stop_container
       fi
     done
   fi
@@ -425,4 +539,5 @@ for DN in ${UNINITIALIZED_DNS}; do
   fi
 done
 
-touch "${POST_START_INIT_MARKER_FILE}"
+# Reset the force-as-master flag to false on the seed server if it was set before.
+reset_force_as_master

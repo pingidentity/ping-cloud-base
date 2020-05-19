@@ -10,6 +10,10 @@ SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 configure_aws
 configure_kube
 
+if test ! -z "${SKIP_TESTS}"; then
+  log "The following tests will be skipped: ${SKIP_TESTS}"
+fi
+
 EXIT_CODE=0
 
 for SCRIPT in $(find "${SCRIPT_HOME}/${TEST_DIR}" -name \*.sh | sort); do

@@ -8,7 +8,7 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-# FIXME Data needs preloading to CICD Bucket and OAuth client created 
+# FIXME Data needs preloading to CICD Bucket and OAuth client created
 log "Test disabled pending new config setup"
 exit 0
 
