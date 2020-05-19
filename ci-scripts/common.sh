@@ -25,6 +25,8 @@ export AWS_PROFILE=csg
 export ADMIN_USER=administrator
 export ADMIN_PASS=2FederateM0re
 
+export PD_SEED_LDAPS_PORT=6360
+
 [[ ${CI_COMMIT_REF_SLUG} != master ]] && export ENVIRONMENT=-${CI_COMMIT_REF_SLUG}
 
 ### End - export environment variables ###
