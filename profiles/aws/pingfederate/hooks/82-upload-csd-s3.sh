@@ -9,39 +9,27 @@ test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
 
 echo "Uploading to location ${LOG_ARCHIVE_URL}"
 
-initializeS3Configuration
+# Set required environment variables for skbn
+initializeSkbnConfiguration "${LOG_ARCHIVE_URL}"
 
-cd "${OUT_DIR}"
-
-sh ${SERVER_ROOT_DIR}/bin/collect-support-data.sh
-CSD_OUT=$(find . -name support\*zip -type f | sort | tail -1)
-
-BUCKET_URL_NO_PROTOCOL=${LOG_ARCHIVE_URL#s3://}
-BUCKET_NAME=$(echo "${BUCKET_URL_NO_PROTOCOL}" | cut -d/ -f1)
-DIRECTORY_NAME=$(echo ${PING_PRODUCT} | tr '[:upper:]' '[:lower:]')
-
-if test "${LOG_ARCHIVE_URL}" == */${DIRECTORY_NAME}; then
-  TARGET_URL="${LOG_ARCHIVE_URL}"
-else
-  TARGET_URL="${LOG_ARCHIVE_URL%/}/${DIRECTORY_NAME}"
+if ! cd "${OUT_DIR}"; then 
+  echo "Failed to chdir: ${OUT_DIR}"
+  exit 1
 fi
 
-echo "Creating directory ${DIRECTORY_NAME} under bucket ${BUCKET_NAME}"
-aws s3api put-object --bucket "${BUCKET_NAME}" --key "${DIRECTORY_NAME}"/
+if ! sh ${SERVER_ROOT_DIR}/bin/collect-support-data.sh; then 
+  echo "Failed to execute:  ${SERVER_ROOT_DIR}/bin/collect-support-data.sh"
+  exit 1
+fi
 
-FORMAT="+%d/%b/%Y:%H:%M:%S %z"
-NOW=$(date "${FORMAT}")
+CSD_OUT=$(find . -name support\*zip -type f | sort | tail -1)
 
-echo "Uploading "${CSD_OUT}" to ${TARGET_URL} at ${NOW}"
-DST_FILE=$(basename "${CSD_OUT}")
-aws s3 cp "${CSD_OUT}" "${TARGET_URL}/${DST_FILE}"
+DST_FILE="$(basename "${CSD_OUT}")"
+SRC_FILE="${OUT_DIR}/$(basename "${CSD_OUT}")"
 
-AWS_API_RESULT="${?}"
+echo "Copying: '${DST_FILE}' to '${SKBN_CLOUD_PREFIX}'"
 
-echo "Upload return code: ${AWS_API_RESULT}"
-
-if [ "${AWS_API_RESULT}" != "0" ]; then
-  echo "Upload was unsuccessful - crash the container"
+if ! skbnCopy "${SKBN_K8S_PREFIX}/${SRC_FILE}" "${SKBN_CLOUD_PREFIX}/${DST_FILE}"; then
   exit 1
 fi
 

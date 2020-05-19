@@ -11,62 +11,46 @@ test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
 test ! -z "${1}" && BACKUP_URL="${1}"
 echo "Uploading to location ${BACKUP_URL}"
 
-# Install AWS CLI if the upload location is S3
-if test "${BACKUP_URL#s3}" == "${BACKUP_URL}"; then
-   echo "Upload location is not S3"
-   exit 1
-else
-   installTools
-fi
+# Set required environment variables for skbn
+initializeSkbnConfiguration
 
 # Create and export archive data into file data.mm-dd-YYYY.HH.MM.SS.zip
-DST_FILE="data-`date +%m-%d-%Y.%H.%M.%S`.zip"
+DST_FILE_TIMESTAMP="data-`date +%m-%d-%Y.%H.%M.%S`.zip"
 DST_DIRECTORY="/tmp/k8s-s3-upload-archive"
 mkdir -p ${DST_DIRECTORY}
 
 # Make request to admin API and export latest data
 make_api_request -X GET \
   https://localhost:${PINGFEDERATE_ADMIN_PORT}/pf-admin-api/v1/configArchive/export \
-  -o ${DST_DIRECTORY}/${DST_FILE}
+  -o ${DST_DIRECTORY}/${DST_FILE_TIMESTAMP}
 
 # Validate admin API call was successful and that zip isn't corrupted
-if test ! $? -eq 0 || test "$( unzip -t ${DST_DIRECTORY}/${DST_FILE} > /dev/null 2>&1;echo $?)" != "0" ; then
+if test ! $? -eq 0 || test "$( unzip -t ${DST_DIRECTORY}/${DST_FILE_TIMESTAMP} > /dev/null 2>&1;echo $?)" != "0" ; then
   echo "Failed to export archive"
   # Cleanup k8s-s3-upload-archive temp directory
   rm -rf ${DST_DIRECTORY}
   exit 1
 fi
 
-BUCKET_URL_NO_PROTOCOL=${BACKUP_URL#s3://}
-BUCKET_NAME=$(echo ${BUCKET_URL_NO_PROTOCOL} | cut -d/ -f1)
-DIRECTORY_NAME=$(echo ${PING_PRODUCT} | tr '[:upper:]' '[:lower:]')
+# Two copy of the backup will be pushed to cloud storage.
+# Make a copy: latest.zip
+DST_FILE_LATEST="latest.zip"
+UPLOAD_DIR="$(mktemp -d)"
 
-echo "Creating directory ${DIRECTORY_NAME} under bucket ${BUCKET_NAME}"
-aws s3api put-object --bucket "${BUCKET_NAME}" --key "${DIRECTORY_NAME}"/
+cp "${DST_DIRECTORY}/$DST_FILE_TIMESTAMP" "${UPLOAD_DIR}/$DST_FILE_LATEST" 
+cp "${DST_DIRECTORY}/$DST_FILE_TIMESTAMP" "${UPLOAD_DIR}/$DST_FILE_TIMESTAMP" 
 
-if test "${BACKUP_URL}" == */pingfederate; then
-  TARGET_URL="${BACKUP_URL}"
-else
-  TARGET_URL="${BACKUP_URL}/${DIRECTORY_NAME}"
-fi
+echo "Copying files to '${SKBN_CLOUD_PREFIX}'"
 
-aws s3 cp "${DST_DIRECTORY}/${DST_FILE}" "${TARGET_URL}/"
-AWS_API_RESULT="${?}"
-
-echo "Upload return code: ${AWS_API_RESULT}"
-
-if [ "${AWS_API_RESULT}" != "0" ]; then
-  echo "Upload was unsuccessful - crash the container"
+if ! skbnCopy "${SKBN_K8S_PREFIX}/${UPLOAD_DIR}/" "${SKBN_CLOUD_PREFIX}/"; then
   exit 1
 fi
-
-# Print the filename of the uploaded file to s3
-echo "Uploaded file name: ${DST_FILE}"
 
 # Print listed files from k8s-s3-upload-archive
 ls ${DST_DIRECTORY}
 
 # Cleanup k8s-s3-upload-archive temp directory
 rm -rf ${DST_DIRECTORY}
+rm -rf "${UPLOAD_DIR}"
 
 exit 0

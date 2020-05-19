@@ -21,11 +21,6 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
       echo ${ARTIFACT_LIST_JSON} | jq
       if test $(echo $?) == "0"; then
 
-        # Install AWS CLI if the upload location is S3
-        if test ! "${ARTIFACT_REPO_URL#s3}" == "${ARTIFACT_REPO_URL}" -o ! "${PING_ARTIFACT_REPO_URL#s3}" == "${PING_ARTIFACT_REPO_URL}"; then
-          installTools
-        fi
-
         DOWNLOAD_DIR=$(mktemp -d)
         DIRECTORY_NAME=$(echo ${PING_PRODUCT} | tr '[:upper:]' '[:lower:]')
 
@@ -85,9 +80,18 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
 
                   echo "Download Artifact from ${ARTIFACT_LOCATION}"
 
-                  # Use aws command if ARTIFACT_LOCATION is in s3 format otherwise use curl
-                  if ! test ${ARTIFACT_LOCATION#s3} == "${ARTIFACT_LOCATION}"; then
-                    aws s3 cp "${ARTIFACT_LOCATION}" ${DOWNLOAD_DIR}
+                  # Use skbn if source is cloud storage otherwise use curl
+                  if test ${ARTIFACT_LOCATION#s3} != "${ARTIFACT_LOCATION}"; then
+
+                    # Set required environment variables for skbn
+                    initializeSkbnConfiguration "${ARTIFACT_LOCATION}"
+
+                    echo "Copying: '${ARTIFACT_LOCATION}' to '${SKBN_K8S_PREFIX}}${DOWNLOAD_DIR}'"
+
+                    if ! skbnCopy "${SKBN_CLOUD_PREFIX}/${ARTIFACT_LOCATION}" "${SKBN_K8S_PREFIX}}${DOWNLOAD_DIR}"; then
+                      exit 1
+                    fi
+
                   else
                     curl "${ARTIFACT_LOCATION}" --output ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}
                   fi
