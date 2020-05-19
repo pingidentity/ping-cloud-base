@@ -116,7 +116,8 @@ test -f ~/.pingidentity/devops && . ~/.pingidentity/devops
 # Source some utility methods.
 . utils.sh
 
-declare dryrun="false"
+declare dryrun='false'
+declare skipTest='false'
 
 # Parse Parameters
 while getopts 'ns' OPTION

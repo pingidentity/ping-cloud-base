@@ -164,10 +164,45 @@ EOF
 }
 
 ########################################################################################################################
+# Wait for the expected count of a resource until the specified timeout.
+#
+# Arguments
+#   ${1} -> The expected count of the resource.
+#   ${2} -> The command to get the actual count of the resource. The execution of the command is expected to return
+#           a number.
+#   ${3} -> Wait timeout in seconds. Default is 2 minutes.
+########################################################################################################################
+wait_for_expected_resource_count() {
+  EXPECTED=${1}
+  COMMAND=${2}
+  TIMEOUT_SECONDS=${3:-120}
+
+  TIME_WAITED_SECONDS=0
+  SLEEP_SECONDS=5
+
+  while true; do
+    ACTUAL=$(eval "${COMMAND}")
+    if test ! -z "${ACTUAL}" && test "${ACTUAL}" -eq "${EXPECTED}"; then
+      break
+    fi
+
+    sleep "${SLEEP_SECONDS}"
+    TIME_WAITED_SECONDS=$((TIME_WAITED_SECONDS + SLEEP_SECONDS))
+
+    if test "${TIME_WAITED_SECONDS}" -ge "${TIMEOUT_SECONDS}"; then
+      echo "Expected count ${EXPECTED} but found ${ACTUAL} after ${TIMEOUT_SECONDS} seconds"
+      return 1
+    fi
+  done
+
+  return 0
+}
+
+########################################################################################################################
 # Determine whether to skip the tests in the file with the provided name. If the SKIP_TESTS environment variable is set
 # and contains the name of the file with its parent directory, then that test file will be skipped. For example, to
 # skip the PingDirectory tests in files 03-backup-restore.sh and 20-pd-recovery-on-delete-pv.sh, set SKIP_TESTS to
-# 'pingdirectory/03-backup-restore.sh chaos/20-pd-recovery-on-delete-pv.sh'
+# 'pingdirectory/03-backup-restore.sh chaos/20-pd-recovery-on-delete-pv.sh'.
 #
 # Arguments
 #   ${1} -> The fully-qualified name of the test file.
