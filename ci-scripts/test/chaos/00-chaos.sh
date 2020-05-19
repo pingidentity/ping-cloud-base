@@ -8,5 +8,4 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-log 'TODO'
 exit 0
