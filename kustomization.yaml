@@ -20,6 +20,7 @@ patchesStrategicMerge:
     PF_ADMIN_PUBLIC_HOSTNAME: pingfederate-admin.${TENANT_DOMAIN}
     PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
     BACKUP_URL: ${BACKUP_URL}
+    REGION: ${REGION}
 - |-
   apiVersion: v1
   kind: ConfigMap
@@ -32,6 +33,7 @@ patchesStrategicMerge:
     PA_ENGINE_PUBLIC_HOSTNAME: pingaccess.${TENANT_DOMAIN}
     PF_ADMIN_PUBLIC_HOSTNAME: pingfederate-admin.${TENANT_DOMAIN}
     PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
+    REGION: ${REGION}
 - |-
   apiVersion: v1
   kind: ConfigMap
@@ -45,6 +47,7 @@ patchesStrategicMerge:
     PF_ADMIN_PUBLIC_HOSTNAME: pingfederate-admin.${TENANT_DOMAIN}
     PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
     BACKUP_URL: ${BACKUP_URL}
+    REGION: ${REGION}
 
 patchesJson6902:
 
@@ -140,6 +143,36 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: logs.${TENANT_DOMAIN}
+
+### Monitoring dashboard ###
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: grafana-ingress
+    namespace: prometheus
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: monitoring${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: monitoring${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+
+### Prometheus Endpoint ###
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: prometheus-ingress
+    namespace: prometheus
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: prometheus${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: prometheus${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
 
 # pingdirectory put ldaps on public and change the host
 - target:

@@ -1,7 +1,12 @@
-#!/bin/bash -x
+#!/bin/bash
 
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
-. ${SCRIPT_HOME}/../../common.sh
+. "${SCRIPT_HOME}"/../../common.sh "${1}"
+
+if skipTest "${0}"; then
+  log "Skipping test ${0}"
+  exit 0
+fi
 
 expected_files() {
   kubectl logs -n "${NAMESPACE}" \
@@ -18,7 +23,7 @@ actual_files() {
 
   aws s3api list-objects \
     --bucket "${BUCKET_NAME}" \
-    --prefix 'pingdirectory/data-' \
+    --prefix 'pingdirectory/' \
     --query "reverse(sort_by(Contents[?LastModified>='${DAYS_AGO}'], &LastModified))[].Key" \
     --profile "${AWS_PROFILE}" |
   tr -d '",[]' |

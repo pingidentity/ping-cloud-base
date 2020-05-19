@@ -35,6 +35,15 @@ patchesJson6902:
     name: grafana-ingress
     namespace: prometheus
 
+# monitoring with prometheus
+- path: patches/ingress/prometheus.yaml
+  target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: prometheus-ingress
+    namespace: prometheus
+
 # Make the admin nodes available externally for test purposes. In general, they
 # will be behind a VPN gateway on all CDEs so only admins have access to them.
 - path: patches/service/ingress-nginx-private.yaml

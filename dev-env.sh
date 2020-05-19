@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 
 ########################################################################################################################
 #
@@ -127,7 +127,8 @@ test -f ~/.pingidentity/devops && . ~/.pingidentity/devops
 # Source some utility methods.
 . utils.sh
 
-declare dryrun="false"
+declare dryrun='false'
+declare skipTest='false'
 
 # Parse Parameters
 while getopts 'ns' OPTION
@@ -305,7 +306,7 @@ export SKIP_CONFIGURE_AWS=true
 export DEV_TEST_ENV=true
 EOF
 
-  for TEST_DIR in pingaccess pingdirectory pingfederate integration; do
+  for TEST_DIR in pingaccess pingdirectory pingfederate integration chaos; do
     echo
     echo "=========================================================="
     echo "      Executing tests in directory ${TEST_DIR}            "

@@ -37,10 +37,11 @@ rm -rf "${SERVER_ROOT_DIR}/changelogDb"
 
 REPL_INIT_MARKER_FILE="${SERVER_ROOT_DIR}"/config/repl-initialized
 
-echo "pre-stop: removing ${REPL_INIT_MARKER_FILE} marker files"
+echo "pre-stop: removing ${REPL_INIT_MARKER_FILE} marker file"
 rm -f "${REPL_INIT_MARKER_FILE}"
 
-# Tell Kubernetes to delete the persistent volume we were bound to. This makes the above cleanup unnecessary, but
-# we will keep that around in case this fails for some reason.
-echo "pre-stop: remove the persistent volume"
-kubectl delete pvc out-dir-pingdirectory-"${ORDINAL}"
+# Conditionally remove the persistent volume to which the pod was bound.
+if test ! "${LEAVE_DISK_AFTER_SERVER_DELETE}"; then
+  echo "pre-stop: remove the persistent volume"
+  kubectl delete pvc out-dir-pingdirectory-"${ORDINAL}"
+fi

@@ -17,19 +17,9 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
       echo "Private Repo : ${ARTIFACT_REPO_URL}"
       echo "Public Repo  : ${PING_ARTIFACT_REPO_URL}"
 
-      if ! which jq > /dev/null; then
-        echo "Installing jq"
-        pip3 install --no-cache-dir --upgrade jq
-      fi
-
       # Check to see if the artifact list is a valid json string
       echo ${ARTIFACT_LIST_JSON} | jq
       if test $(echo $?) == "0"; then
-
-        # Install AWS CLI if the upload location is S3
-        if test ! "${ARTIFACT_REPO_URL#s3}" == "${ARTIFACT_REPO_URL}" -o ! "${PING_ARTIFACT_REPO_URL#s3}" == "${PING_ARTIFACT_REPO_URL}"; then
-          installAwsCliTools
-        fi
 
         DOWNLOAD_DIR="${STAGING_DIR}/pd.profile/server-sdk-extensions"
 
@@ -95,9 +85,18 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
 
                 echo "Download Artifact from ${ARTIFACT_LOCATION}"
 
-                # Use aws command if ARTIFACT_LOCATION is in s3 format otherwise use curl
-                if ! test ${ARTIFACT_LOCATION#s3} == "${ARTIFACT_LOCATION}"; then
-                  aws s3 cp "${ARTIFACT_LOCATION}/${ARTIFACT_RUNTIME_ZIP}" ${DOWNLOAD_DIR}
+                # Use skbn command if ARTIFACT_LOCATION is cloud storage otherwise use curl
+                if test ${ARTIFACT_LOCATION#s3} != "${ARTIFACT_LOCATION}"; then
+
+                  # Set required environment variables for skbn
+                  initializeSkbnConfiguration "${ARTIFACT_LOCATION}"
+                  
+                  echo "Copying: '${ARTIFACT_RUNTIME_ZIP}' to '${SKBN_K8S_PREFIX}'"
+
+                  if ! skbnCopy "${SKBN_CLOUD_PREFIX}/${ARTIFACT_RUNTIME_ZIP}" "${SKBN_K8S_PREFIX}}${DOWNLOAD_DIR}"; then
+                    exit 1
+                  fi
+
                 else
                   # For downloading over https we need to specify the exact file name,
                   # This will only work for standard extensions with a prefix of pingidentity.com
