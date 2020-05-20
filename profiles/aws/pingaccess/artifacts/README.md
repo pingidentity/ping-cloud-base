@@ -14,7 +14,7 @@ When uploading your custom plugin to S3, you must use the following folder struc
 `${ARTIFACT_REPO_URL}/pingaccess/<ARTIFACT_NAME>/<ARTIFACT_VERSION>/<ARTIFACT_NAME>-<ARTIFACT_VERSION>-runtime.zip`
 
 - For example, an artifact zip of the format <ARTIFACT_NAME>-<ARTIFACT_VERSION>.zip would look like:
-    ${ARTIFACT_REPO_BUCKET}/pingaccess/sample-rules/6.0.2/sample-rules-6.0.2-runtime.zip
+    ${ARTIFACT_REPO_URL}/pingaccess/sample-rules/6.0.2/sample-rules-6.0.2-runtime.zip
 
 - The artifact zip, <ARTIFACT_NAME>-<ARTIFACT_VERSION>.zip, must use the following format:
     * /lib/
@@ -32,7 +32,7 @@ through a JSON specification as shown below,
 [
   {
     "name": "<ARTIFACT_1_NAME>",
-    "version": "<ARTIFACT_1_VERSION>".
+    "version": "<ARTIFACT_1_VERSION>",
     "source": "private", (Default is "private")
     "operation": "add" (Default is "add")
   },
@@ -59,7 +59,7 @@ Set the operation to `"delete"` on the JSON specification if you want to delete 
 [
   {
     "name": "<ARTIFACT_1_NAME>",
-    "version": "<ARTIFACT_1_VERSION>".
+    "version": "<ARTIFACT_1_VERSION>",
     "source": "private", (Default is "private")
     "operation": "delete" (Default is "add")
   }
