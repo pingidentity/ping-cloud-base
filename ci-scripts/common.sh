@@ -228,3 +228,51 @@ skipTest() {
 
   return 1
 }
+
+########################################################################################################################
+# Search for password regex pattern within log file.
+#
+# Arguments
+#   ${1} -> Name of server
+#   ${2} -> Regex pattern of all passwords used within server
+#   ${3} -> Temp file used to store logs
+#
+# Returns
+#   0 -> If product password is not found in logs; 1 -> If password was found in logs
+########################################################################################################################
+check_for_password_in_logs() {
+  set +x
+  local server="${1}"
+  local pattern="${2}"
+  local log_file=${3}
+
+  # Search for password within logs
+  local result=$( cat ${log_file} | grep "${pattern}" )
+
+  test -z "${result}" && return 0
+  set -x
+
+  # Password found
+  log "${server}: password(s) found in log file.
+    1) You must resolve this issue. 
+    2) Change all existing passwords. 
+    3) Rerun test"
+  return 1
+}
+
+########################################################################################################################
+# Get last 60min logs from server and write its output to temp file.
+#
+# Arguments
+#   ${1} -> Name of server
+#   ${2} -> Name of pod container
+#   ${3} -> Temp file used to store logs
+#
+########################################################################################################################
+set_log_file() {
+  local server="${1}"
+  local container="${2}"
+  local log_file=${3}
+
+  kubectl logs -n "${NAMESPACE}" "${server}" -c "${container}" --since=60m > ${log_file}
+}
