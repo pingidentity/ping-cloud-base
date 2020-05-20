@@ -83,7 +83,7 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
                   
                     echo "Copying: '${ARTIFACT_RUNTIME_ZIP}' to '${SKBN_K8S_PREFIX}'"
 
-                    if ! skbnCopy "${SKBN_CLOUD_PREFIX}/${ARTIFACT_RUNTIME_ZIP}" "${SKBN_K8S_PREFIX}}${DOWNLOAD_DIR}"; then
+                    if ! skbnCopy "${SKBN_CLOUD_PREFIX}" "${SKBN_K8S_PREFIX}${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}"; then
                       echo "Failed to copy ${ARTIFACT_RUNTIME_ZIP}"
                       exit 1
                     fi
