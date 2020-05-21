@@ -69,7 +69,7 @@ DEPENDENT_REPLICAS='deployment.apps/pingfederate statefulset.apps/pingaccess'
 
 NUM_PD_REPLICAS=$(kubectl get "${PD_REPLICA}" -o jsonpath='{.spec.replicas}' -n "${NAMESPACE}")
 PD_TIMEOUT_SECONDS=$((NUM_PD_REPLICAS * 900))
-DEPENDENT_TIMEOUT_SECONDS=150
+DEPENDENT_TIMEOUT_SECONDS=300
 
 echo "Waiting for rollout of ${PD_REPLICA} with a timeout of ${PD_TIMEOUT_SECONDS} seconds"
 time kubectl rollout status "${PD_REPLICA}" --timeout "${PD_TIMEOUT_SECONDS}s" -n "${NAMESPACE}" -w
