@@ -1184,7 +1184,7 @@
         <Logger name="com.unboundid" level="ERROR" />
         <Logger name="org.apache.http.wire" level="INFO" />
         <Logger name="com.pingidentity.pf.email" level="INFO" />
-        <Logger name="org.sourceid" level="$${env:PF_LOG_LEVEL}" />
+        <Logger name="org.sourceid" level="${PF_LOG_LEVEL}" />
         <Logger name="org.sourceid.saml20.domain.mgmt.impl.DataDeployer" level="DEBUG" />
         <Logger name="org.sourceid.saml20.util.SystemUtil" level="INFO" additivity="false">
             <AppenderRef ref="CONSOLE" />
