@@ -10,6 +10,8 @@ spec:
   ports:
     - port: 9600
       name: rest
+    - port: 20510
+      name: enrichment-in
     - port: 20513
       name: pf-system-in
     - port: 20514
@@ -64,52 +66,15 @@ metadata:
   labels:
     app: logstash-elastic
 data:
-  # kubernetes-namespace-logging.conf: |
-  #   <match **>
-  #     @type elasticsearch_dynamic
-  #     @id out_es_dynamic
-  #     @log_level info
-  #     include_tag_key true
-  #     host "#{ENV['FLUENT_ELASTICSEARCH_HOST']}"
-  #     port "#{ENV['FLUENT_ELASTICSEARCH_PORT']}"
-  #     path "#{ENV['FLUENT_ELASTICSEARCH_PATH']}"
-  #     scheme "#{ENV['FLUENT_ELASTICSEARCH_SCHEME'] || 'http'}"
-  #     ssl_verify "#{ENV['FLUENT_ELASTICSEARCH_SSL_VERIFY'] || 'true'}"
-  #     ssl_version "#{ENV['FLUENT_ELASTICSEARCH_SSL_VERSION'] || 'TLSv1'}"
-  #     user "#{ENV['FLUENT_ELASTICSEARCH_USER']}"
-  #     password "#{ENV['FLUENT_ELASTICSEARCH_PASSWORD']}"
-  #     reload_connections "#{ENV['FLUENT_ELASTICSEARCH_RELOAD_CONNECTIONS'] || 'false'}"
-  #     reconnect_on_error "#{ENV['FLUENT_ELASTICSEARCH_RECONNECT_ON_ERROR'] || 'true'}"
-  #     reload_on_failure "#{ENV['FLUENT_ELASTICSEARCH_RELOAD_ON_FAILURE'] || 'true'}"
-  #     log_es_400_reason "#{ENV['FLUENT_ELASTICSEARCH_LOG_ES_400_REASON'] || 'false'}"
-  #     logstash_prefix logstash-${record['kubernetes']['namespace_name']}
-  #     logstash_format "#{ENV['FLUENT_ELASTICSEARCH_LOGSTASH_FORMAT'] || 'true'}"
-  #     index_name logstash-${record['kubernetes']['namespace_name']}
-  #     type_name "#{ENV['FLUENT_ELASTICSEARCH_LOGSTASH_TYPE_NAME'] || 'fluentd'}"
-  #     <buffer>
-  #       flush_thread_count "#{ENV['FLUENT_ELASTICSEARCH_BUFFER_FLUSH_THREAD_COUNT'] || '8'}"
-  #       flush_interval "#{ENV['FLUENT_ELASTICSEARCH_BUFFER_FLUSH_INTERVAL'] || '5s'}"
-  #       chunk_limit_size "#{ENV['FLUENT_ELASTICSEARCH_BUFFER_CHUNK_LIMIT_SIZE'] || '2M'}"
-  #       queue_limit_length "#{ENV['FLUENT_ELASTICSEARCH_BUFFER_QUEUE_LIMIT_LENGTH'] || '32'}"
-  #       retry_max_interval "#{ENV['FLUENT_ELASTICSEARCH_BUFFER_RETRY_MAX_INTERVAL'] || '30'}"
-  #       retry_forever true
-  #     </buffer>
-  #   </match>
-
-
-
-
-#   output {
-#     elasticsearch {
-#         index => "MY_TEST_INDEX_%{+YYYY.MM.dd}"
-#         hosts => "${LOGSTASH_ELASTICSEARCH_SCHEME}://${LOGSTASH_ELASTICSEARCH_HOST}:${LOGSTASH_ELASTICSEARCH_PORT}"
-#         user => "${LOGSTASH_ELASTICSEARCH_USER}"
-#         password => "${LOGSTASH_ELASTICSEARCH_PASSWORD}"
-#     }
-# }
-
   logstash.conf: |
     input {
+        http {
+            id => "enrichment_in"
+            port => 20510
+            codec => "json"
+            response_code => 200
+            add_field => {"log_type" => "Enrichment_System_Log"}
+        }
         tcp {
             id => "pf_system_in"
             port => 20513
@@ -130,11 +95,70 @@ data:
         }
     }
     filter {
+        #PROCESS PING FED AUDIT LOG
+        #Log4J Pattern Matching from PF and extraction of JSON DATA from the MSG
+        if([log_type] == "PF_Audit_Log"){
+            grok { 
+                match => { 
+                    "message" => [ 
+                        "\A%{SYSLOG5424PRI}%{SYSLOGTIMESTAMP:event_timestamp}%{SPACE}%{SYSLOGPROG} , %{GREEDYDATA:json_data}",
+                        "\A%{SYSLOG5424PRI}%{SYSLOGTIMESTAMP:event_timestamp}%{SPACE}%{SYSLOGPROG}%{SPACE}%{GREEDYDATA:json_data}"
+                        ]
+                }
+            } 
+            #Convert the injested data into Individual Fields for elasticsearch
+            json {
+                source => "json_data"
+            }
+    
+            if([json_data]){
+                #Drop the original as you do not need it at this point.
+                mutate {
+                    remove_field => "[json_data]"
+                }
+    
+                geoip {
+                    source => "ip"
+                }
+
+                # HERE SHOULD BE ENRICHMENT TRANSLATIONS
+            }
+        }
+
+        # PROCESS PING FED SYSTEM LOG
+        # USING LOG4J's ability to output in JSON limits the amount of processing you have to do besides splitting up JSON.
+    
+        if([log_type] == "PF_System_Log"){
+            grok { 
+                match => { 
+                    "message" => [ 
+                        "\A%{SYSLOG5424PRI}%{SYSLOGTIMESTAMP:event_timestamp}%{SPACE}%{SYSLOGPROG} , %{GREEDYDATA:json_data}",
+                        "\A%{SYSLOG5424PRI}%{SYSLOGTIMESTAMP:event_timestamp}%{SPACE}%{SYSLOGPROG}%{SPACE}%{GREEDYDATA:json_data}"
+                        ]
+                }
+            } 
+            json {
+                source => "json_data"
+            }
+    
+            if([json_data]){
+                mutate {
+                    remove_field => "[json_data]"
+                }
+            }   
+        }
     }
     output {
         elasticsearch {
             index => "logstash_%{+YYYY.MM.dd}"
             hosts => "${LOGSTASH_ELASTICSEARCH_SCHEME}://${LOGSTASH_ELASTICSEARCH_HOST}:${LOGSTASH_ELASTICSEARCH_PORT}"
+        }
+        if([log_type] == "Enrichment_System_Log"){
+          elasticsearch {
+              id => "enrichment_out"
+              index => "enrichment_out_%{+YYYY.MM.dd}"
+              hosts => "${LOGSTASH_ELASTICSEARCH_SCHEME}://${LOGSTASH_ELASTICSEARCH_HOST}:${LOGSTASH_ELASTICSEARCH_PORT}"
+          }
         }
         if([log_type] == "PF_Audit_Log"){
           elasticsearch {
@@ -214,6 +238,9 @@ spec:
           - containerPort: 9600
             name: rest
             protocol: TCP
+          - containerPort: 20510
+            name: enrichment-in
+            protocol: TCP
           - containerPort: 20513
             name: pf-system-in
             protocol: TCP
@@ -238,9 +265,9 @@ spec:
         - name: varlibdockercontainers
           mountPath: /var/lib/docker/containers
           readOnly: true
-        # - name: etclogstash
-        #   mountPath: /etc/logstash
-        #   readOnly: true
+        - name: enrichment-volume
+          mountPath: /etc/logstash/enrichment
+          readOnly: true
       terminationGracePeriodSeconds: 30
       volumes:
       - name: kubernetes-namespace-logging-logstash
@@ -252,6 +279,12 @@ spec:
       - name: varlibdockercontainers
         hostPath:
           path: /var/lib/docker/containers
-      # - name: etclogstash
-      #   hostPath:
-      #     path: /etc/logstash
+      # - name: enrichment-volume
+      #   persistentVolumeClaim:
+      #     claimName: enrichment-volume
+      - name: enrichment-volume
+        nfs:
+          # HARDCODED VALUE! SHOULD BE CHANGED TO DYNAMIC!
+          # server: fs-c2e4d068.efs.${REGION}.amazonaws.com
+          server: ${EFS_FILESYSTEM_ID}.efs.${REGION}.amazonaws.com
+          path: /

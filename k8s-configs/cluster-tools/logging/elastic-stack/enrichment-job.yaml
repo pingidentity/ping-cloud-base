@@ -12,45 +12,112 @@ data:
 
     import urllib2, re
     import requests
-    import os
+    import sys, os, time
+
+    def logger(logType, msg):
+        logstash_url = os.environ['LOGSTASH_URL'] + ":" + os.environ['LOGSTASH_ENRICHMENT_PORT']
+        payload = {
+            'type' : logType,
+            'message' : msg
+        }
+        print(logType + "\t" + msg)
+        r = requests.post(logstash_url, json=payload)
 
     def writeYAML_TOR(url, enrichmentFilePath):
         torNodes = requests.get(url)
         rawContent = torNodes.text
+        if rawContent:
+            logger("INFO", "Data was successfully pulled from %s." % url)
+        else:
+            logger("ERROR", "Data pulling from %s was failed." % url)
+            sys.exit(1)
         lineContent = rawContent.splitlines()
 
         if lineContent:
-            yamlFile = open(enrichmentFilePath, 'w+')
+            try:
+                yamlFile = open(enrichmentFilePath, 'w+')
+            except Exception as e:
+                logger("ERROR", "Something went wrong while opening file %s! Traceback: %s" % (enrichmentFilePath, str(e.message)))
+                sys.exit(1)
             for line in lineContent:
                 if line.startswith("ExitAddress"):
                     splitLine = line.split(" ")
                     yamlFile.write("\"" + splitLine[1] + "\": \"YES\"" + "\n")
+            logger("INFO", "File updated successfully: %s" % enrichmentFilePath)
             yamlFile.close()
 
     def writeYAML_AV(url, enrichmentFilePath):
-        yamlFile = open(enrichmentFilePath, 'w')
+        try:
+            yamlFile = open(enrichmentFilePath, 'w+')
+        except Exception as e:
+            logger("ERROR", "Something went wrong while opening file %s! Traceback: %s" % (enrichmentFilePath, str(e.message)))
+            sys.exit(1)
         html = urllib2.urlopen(url)
-        for line in html.readlines():
-            line = re.sub('\\r|\\n','',line)
-            newLine=line.split(' ', 1)[0]
-            yamlFile.write("\"" + newLine + "\": \"YES\"" + "\n")
+        if html:
+            logger("INFO", "Data was successfully pulled from %s." % url)
+        else:
+            logger("ERROR", "Data pulling from %s was failed." % url)
+            sys.exit(1)
+        file = os.path.basename(enrichmentFilePath)
+        try:
+            for line in html.readlines():
+                line = re.sub('\\r|\\n','',line)
+                newLine=line.split(' ', 1)[0]
+                yamlFile.write("\"" + newLine + "\": \"YES\"" + "\n")
+        except Exception as e:
+            logger("ERROR", "%s: Something went wrong while file modification. Traceback: %s" % (file, str(e.message)))
+        else:
+            logger("INFO", "File updated successfully: %s" % file)
         yamlFile.close()
 
+    def getLastModifiedTime(url):
+        file = os.path.basename(url)
+        try:
+            mod_time = time.ctime(os.path.getmtime(url))
+        except Exception as e:
+            logger("ERROR", "%s: Something went wrong while getting file last modification time." % file)
+        else:
+            logger("INFO", "%s: last modified: %s" % (file, mod_time))
+
+    def checkFileSize(url):
+        file = os.path.basename(url)
+        size = os.path.getsize(url)
+        if size:
+            logger("INFO", "%s: size: %s" % (file, str(size)))
+        else:
+            logger("ERROR", "%s: empty file! It might crash Logstash! Aborting." % file)
+            sys.exit(1)
 
     #Start Script #GRAB 2 FEEDS AND CONVERT TO YAML FOR LOGSTASH
-    #torFeedURL = "https://check.torproject.org/exit-addresses"
-    torFeedURL = os.environ['ENRICHMENT_TOR_FEED_URL']
 
-    #alienvaultFeedURL = "https://reputation.alienvault.com/reputation.generic"
-    alienvaultFeedURL = os.environ['ENRICHMENT_ALIEN_VAULT_FEED_URL']
+    # Get source URLs from env vars 
+    try:
+        torFeedURL = os.environ['ENRICHMENT_TOR_FEED_URL']
+        alienvaultFeedURL = os.environ['ENRICHMENT_ALIEN_VAULT_FEED_URL']
+        enrichmentFilePath = os.environ['ENRICHMENT_FILE_PATH']
+    except Exception as e:
+        logger("ERROR", "Error while getting environment variables: %s" % e.message)
+        sys.exit(1)
+    
+    logger("INFO", "Environment variables successfully obtained.")    
 
-    enrichmentFilePath_TOR = "/usr/share/elasticsearch/enrichment/TorNodes.yml"
-    enrichmentFilePath_AV = "/usr/share/elasticsearch/enrichment/AlienVaultIP.yml"
+    enrichmentFilePath_TOR = enrichmentFilePath + "TorNodes.yml"
+    enrichmentFilePath_AV = enrichmentFilePath + "AlienVaultIP.yml"
+    enrichmentFilePath_KC = enrichmentFilePath + "KnownCountries.yml"
+    enrichmentFilePath_MC = enrichmentFilePath + "MaliciousCountries.yml"
+
+    enrichmentFiles = [ enrichmentFilePath_TOR, enrichmentFilePath_AV, enrichmentFilePath_KC, enrichmentFilePath_MC ]
 
     writeYAML_TOR(torFeedURL, enrichmentFilePath_TOR)
     writeYAML_AV(alienvaultFeedURL, enrichmentFilePath_AV)
 
-    print("Enrichment pull complete.")
+    logger("INFO", "Enrichment pull complete.")
+
+    for fileUrl in enrichmentFiles:
+        getLastModifiedTime(fileUrl)
+        checkFileSize(fileUrl)
+
+    logger("INFO", "Enrichment job done!")
 
 ---
 
@@ -79,6 +146,16 @@ data:
     python /usr/share/elasticsearch/config/bootstrap/enrichment.py
 
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: efs-provisioner
+data:
+  file.system.id: ${EFS_FILESYSTEM_ID}
+  aws.region: ${REGION}
+  provisioner.name: kubernetes.io/aws-efs
+  dns.name: ""
+---
 
 apiVersion: v1
 kind: ServiceAccount
@@ -94,15 +171,25 @@ metadata:
   labels:
     app: enrichment-job
 rules:
-- apiGroups:
-  - ""
-  resources:
-  - pods
-  - namespaces
-  verbs:
-  - get
-  - list
-  - watch
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "watch", "update"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["storageclasses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["create", "update", "watch"]
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["create", "update", "watch"]
+
 ---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
@@ -121,23 +208,23 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: enrichment-volume
-provisioner: kubernetes.io/aws-ebs
-parameters:
-  type: st1
+provisioner: kubernetes.io/aws-efs
 ---
 
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: enrichment-volume
+  annotations:
+    volume.beta.kubernetes.io/storage-class: "aws-efs"
 spec:
   storageClassName: enrichment-volume
   accessModes:
     - ReadWriteMany
-  volumeMode: Filesystem
   resources:
     requests:
       storage: 100Mi
+
 ---
 
 apiVersion: batch/v1beta1
@@ -154,17 +241,39 @@ spec:
           serviceAccount: enrichment-job
           restartPolicy: OnFailure
           initContainers:
-          - name: get-enrichment-volume-data
-            image: busybox
-            command: ['sh', '-c', "cp /mnt/enrichment-cache/* /mnt/enrichment/"]
+          - name: efs-provisioner
+            image: quay.io/external_storage/efs-provisioner:latest
+            command: ['sh', '-c', "cp /enrichment-cache/* /enrichment/"]
+            env:
+              - name: FILE_SYSTEM_ID
+                valueFrom:
+                  configMapKeyRef:
+                    name: efs-provisioner
+                    key: file.system.id
+              - name: AWS_REGION
+                valueFrom:
+                  configMapKeyRef:
+                    name: efs-provisioner
+                    key: aws.region
+              - name: DNS_NAME
+                valueFrom:
+                  configMapKeyRef:
+                    name: efs-provisioner
+                    key: dns.name
+                    optional: true
+              - name: PROVISIONER_NAME
+                valueFrom:
+                  configMapKeyRef:
+                    name: efs-provisioner
+                    key: provisioner.name
             volumeMounts:
-              - mountPath: /mnt/enrichment
+              - mountPath: /enrichment
                 name: enrichment-volume
-              - mountPath: /mnt/enrichment-cache
+              - mountPath: /enrichment-cache
                 name: enrichment-cache-files
-          # - name: check-elasticsearch-availability
-          #   image: busybox
-          #   command: ['sh', '-c', "until nslookup elasticsearch.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for elasticsearch; sleep 2; done"]
+          - name: check-elasticsearch-availability
+            image: busybox
+            command: ['sh', '-c', "until nslookup elasticsearch.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for elasticsearch; sleep 2; done"]
           containers:
           - name: enrichment-service
             image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
@@ -174,6 +283,16 @@ spec:
                 value: "https://check.torproject.org/exit-addresses"
               - name:  ENRICHMENT_ALIEN_VAULT_FEED_URL
                 value: "https://reputation.alienvault.com/reputation.generic"
+              - name:  ENRICHMENT_FILE_PATH
+                value: "/usr/share/elasticsearch/enrichment/"
+              - name:  LOGSTASH_URL
+                value: "http://logstash-elastic.elastic-stack-logging.svc.cluster.local"
+              - name:  LOGSTASH_ENRICHMENT_PORT
+                value: "20510"
+              - name:  PYTHONUNBUFFERED
+                value: "1"
+              - name: PYTHONIOENCODING
+                value: "UTF-8"
             command:
             - /opt/enrichment-run-script.sh
             volumeMounts:
@@ -183,8 +302,8 @@ spec:
             - name: enrichment-python-script
               mountPath: /usr/share/elasticsearch/config/bootstrap/enrichment.py
               subPath: enrichment.py
-            # - name: enrichment-cache-files
-            #   mountPath: /usr/share/elasticsearch/enrichment-cache
+            - name: enrichment-cache-files
+              mountPath: /usr/share/elasticsearch/enrichment-cache
             - name: enrichment-volume
               mountPath: /usr/share/elasticsearch/enrichment
           volumes:
@@ -199,7 +318,14 @@ spec:
           # - name: enrichment-volume
           #   persistentVolumeClaim:
           #     claimName: enrichment-volume
+          - name: enrichment-volume
+            nfs:
+              # server: fs-c2e4d068.efs.${REGION}.amazonaws.com
+              server: ${EFS_FILESYSTEM_ID}.efs.${REGION}.amazonaws.com
+              path: /
           - name: enrichment-cache-files
             configMap:
               name: enrichment-cache
               defaultMode: 0555
+
+---
