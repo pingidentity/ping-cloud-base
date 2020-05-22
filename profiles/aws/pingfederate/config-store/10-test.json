@@ -1,0 +1,8 @@
+   {
+      "bundle"  :  "password-rules",
+      "method"  :  "del",
+      "payload" :
+      {
+         "id": "minSpecial"
+      }
+   }
