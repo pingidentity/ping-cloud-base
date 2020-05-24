@@ -176,6 +176,12 @@ patchesJson6902:
       value:
         configMapRef:
           name: pingdirectory-last-update-config
+    - op: replace
+      path: /spec/template/spec/containers/1/resources/limits/memory
+      value: 22Gi
+    - op: replace
+      path: /spec/template/spec/containers/1/resources/requests/memory
+      value: 22Gig
 
 ### Ping Federate Admin Last Update Config Map ###
 - target:
@@ -189,6 +195,19 @@ patchesJson6902:
       value:
         configMapRef:
           name: pingfederate-last-update-config
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/limits/cpu
+      value: 3
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/limits/memory
+      value: 5Gi
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/requests/cpu
+      value: 3
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/requests/memory
+      value: 5Gi
+
 
 ### Ping Federate Engine Last Update Config Map ###
 - target:
@@ -202,6 +221,18 @@ patchesJson6902:
       value:
         configMapRef:
           name: pingfederate-last-update-config
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/limits/cpu
+      value: 3
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/limits/memory
+      value: 5Gi
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/requests/cpu
+      value: 3
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/requests/memory
+      value: 5Gi
 
 ### Ping Access Admin Last Update Config Map ###
 - target:
@@ -215,6 +246,18 @@ patchesJson6902:
       value:
         configMapRef:
           name: pingaccess-last-update-config
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/limits/cpu
+      value: 3
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/limits/memory
+      value: 5Gi
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/requests/cpu
+      value: 3
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/requests/memory
+      value: 5Gi
 
 ### Ping Access Engine Last Update Config Map ###
 - target:
@@ -228,6 +271,18 @@ patchesJson6902:
       value:
         configMapRef:
           name: pingaccess-last-update-config
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/limits/cpu
+      value: 3
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/limits/memory
+      value: 5Gi
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/requests/cpu
+      value: 3
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/requests/memory
+      value: 5Gi
 
 ### Ingress patches ###
 

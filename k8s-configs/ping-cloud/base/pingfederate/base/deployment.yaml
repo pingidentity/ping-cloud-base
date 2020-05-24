@@ -79,11 +79,11 @@ spec:
             optional: true
         resources:
           requests:
-            memory: "2Gi"
-            cpu: "1"
+            memory: "5Gi"
+            cpu: "3"
           limits:
-            memory: "2Gi"
-            cpu: "1"
+            memory: "5Gi"
+            cpu: "3"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
@@ -210,11 +210,11 @@ spec:
               key: PF_LDAP_PASSWORD
         resources:
           requests:
-            memory: "2Gi"
-            cpu: "1"
+            memory: "5Gi"
+            cpu: "3"
           limits:
-            memory: "2Gi"
-            cpu: "1"
+            memory: "5Gi"
+            cpu: "3"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir

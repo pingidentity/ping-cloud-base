@@ -8,7 +8,7 @@ metadata:
     class: pingdirectory-server
 spec:
   serviceName: pingdirectory
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       class: pingdirectory-server
@@ -84,10 +84,10 @@ spec:
           name: ldaps
         resources:
           requests:
-            memory: "5Gi"
+            memory: "22Gi"
             cpu: "2"
           limits:
-            memory: "5Gi"
+            memory: "22Gi"
             cpu: "2"
         env:
         - name: P14C_ENVIRONMENT_ID
