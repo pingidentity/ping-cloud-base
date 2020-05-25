@@ -274,88 +274,86 @@
         <!-- Loggers -->
         <!-- ================ -->
 
-        <AsyncLogger name="org.sourceid.saml20.bindings.BindingLogProxy"
-                     level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="SamlTransaction" />
+        <AsyncLogger name="org.sourceid.saml20.bindings.BindingLogProxy" level="INFO" additivity="false" includeLocation="false">
+            <AppenderRef ref="SamlTransaction" />
         </AsyncLogger>
 
         <Logger name="org.sourceid.websso.profiles.sp.SpAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
+            <AppenderRef ref="SecurityAuditToCEFSyslog-FAILOVER"/>
             <!-- ================ -->
-            <appender-ref ref="SecurityAuditToCEFSyslog"/>
+            <AppenderRef ref="SecurityAuditToCEFSyslog"/>
             <!-- ================ -->
         </Logger>
 
         <Logger name="org.sourceid.websso.profiles.idp.IdpAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
+            <AppenderRef ref="SecurityAuditToCEFSyslog-FAILOVER"/>
             <!-- ================ -->
-            <appender-ref ref="SecurityAuditToCEFSyslog"/>
+            <AppenderRef ref="SecurityAuditToCEFSyslog"/>
             <!-- ================ -->
         </Logger>
 
         <Logger name="org.sourceid.websso.profiles.idp.AsAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
+            <AppenderRef ref="SecurityAuditToCEFSyslog-FAILOVER"/>
             <!-- ================ -->
-            <appender-ref ref="SecurityAuditToCEFSyslog"/>
+            <AppenderRef ref="SecurityAuditToCEFSyslog"/>
             <!-- ================ -->
         </Logger>
 
         <Logger name="org.sourceid.websso.profiles.idp.ClientRegistrationAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="SecurityAudit2File" />
+            <AppenderRef ref="SecurityAudit2File" />
             <!-- ================ -->
-            <appender-ref ref="SecurityAuditToCEFSyslog"/>
+            <AppenderRef ref="SecurityAuditToCEFSyslog"/>
             <!-- ================ -->
         </Logger>
 
         <Logger name="org.sourceid.wstrust.log.STSAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="SecurityAudit2File" />
+            <AppenderRef ref="SecurityAudit2File" />
             <!-- ================ -->
-            <appender-ref ref="SecurityAuditToCEFSyslog"/>
+            <AppenderRef ref="SecurityAuditToCEFSyslog"/>
             <!-- ================ -->
         </Logger>
 
-        <AsyncLogger name="com.pingidentity.provisioner"
-                     level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="ProvisionerLog" />
+        <AsyncLogger name="com.pingidentity.provisioner" level="INFO" additivity="false" includeLocation="false">
+            <AppenderRef ref="ProvisionerLog" />
         </AsyncLogger>
 
         <Logger name="AuditLogger" level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="AdminAudit" />
+            <AppenderRef ref="AdminAudit" />
             <!-- ================ -->
-            <appender-ref ref="SecurityAuditToCEFSyslog"/>
+            <AppenderRef ref="SecurityAuditToCEFSyslog"/>
             <!-- ================ -->
         </Logger>
 
         <Logger name="EventDetailAuditLogger" level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="AdminEventDetailAudit" />
+            <AppenderRef ref="AdminEventDetailAudit" />
             <!-- ================ -->
-            <appender-ref ref="SecurityAuditToCEFSyslog"/>
+            <AppenderRef ref="SecurityAuditToCEFSyslog"/>
             <!-- ================ -->
         </Logger>
 
         <Logger name="AdminApiAuditLogger" level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="AdminApiAudit" />
+            <AppenderRef ref="AdminApiAudit" />
             <!-- ================ -->
-            <appender-ref ref="SecurityAuditToCEFSyslog"/>
+            <AppenderRef ref="SecurityAuditToCEFSyslog"/>
             <!-- ================ -->
         </Logger>
 
         <Logger name="RuntimeApiAuditLogger" level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="RuntimeApiAudit" />
+            <AppenderRef ref="RuntimeApiAudit" />
             <!-- ================ -->
-            <appender-ref ref="SecurityAuditToCEFSyslog"/>
+            <AppenderRef ref="SecurityAuditToCEFSyslog"/>
             <!-- ================ -->
         </Logger>
 
         <Logger name="ProvisionerAuditLogger" level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="OutboundProvisionerEventToCEFSyslog-FAILOVER"/>
+            <AppenderRef ref="OutboundProvisionerEventToCEFSyslog-FAILOVER"/>
             <!-- ================ -->
-            <appender-ref ref="SecurityAuditToCEFSyslog"/>
+            <AppenderRef ref="SecurityAuditToCEFSyslog"/>
             <!-- ================ -->
         </Logger>
 
