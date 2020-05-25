@@ -70,7 +70,7 @@ spec:
             secretKeyRef:
               name: pingcommon-passwords
               key: PF_LDAP_PASSWORD
-        - name: PA_LOG_LEVEL
+        - name: PF_LOG_LEVEL
           value: DEBUG
         - name: SOCKET_HOST
           value: logstash-elastic.elastic-stack-logging.svc.cluster.local
