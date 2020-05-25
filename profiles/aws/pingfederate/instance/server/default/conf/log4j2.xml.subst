@@ -176,6 +176,32 @@
             </Policies>
         </RollingFile>
 
+        <RollingFile name="SecurityAuditToCEFSyslog-FILE" fileName="${sys:pf.log.dir}/audit-cef-syslog-failover.log"
+            filePattern="${sys:pf.log.dir}/audit-cef-syslog-failover.%d{yyyy-MM-dd}.log" >
+            <PatternLayout>
+                <pattern>%escape{CEF}{CEF:0|Ping Identity|PingFederate|%X{pfversion}|%X{event}|%X{event}|0|rt=%d{MMM dd yyyy HH:mm:ss.SSS} duid=%X{subject} src=%X{ip} msg=%X{status} cs1Label=Target Application URL cs1=%X{app} cs2Label=Connection ID cs2=%X{connectionid} cs3Label=Protocol cs3=%X{protocol} dvchost=%X{host} cs4Label=Role cs4=%X{role} externalId=%X{trackingid} cs5Label=SP Local User ID cs5=%X{localuserid} cs6Label=Attributes cs6=%X{attributes} %n}</pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+        </RollingFile>
+        
+        <PingFailover name="SecurityAuditToCEFSyslog-FAILOVER" primary="SecurityAuditToCEFSyslog">
+            <Failovers>
+                <AppenderRef ref="SecurityAuditToCEFSyslog-FILE" />
+                <!-- -->
+                <AppenderRef ref="OutboundProvisionerEventToCEFSyslog-FILE" />
+                <AppenderRef ref="OutboundProvisionerEventToFile" />
+                <AppenderRef ref="RuntimeApiAudit" />
+                <AppenderRef ref="AdminApiAudit" />
+                <AppenderRef ref="AdminEventDetailAudit" />
+                <AppenderRef ref="AdminAudit" />
+                <AppenderRef ref="SecurityAudit2File" />
+                <AppenderRef ref="SamlTransaction" /> 
+                <!-- -->
+            </Failovers>
+        </PingFailover>
+
         <PingFailover name="OutboundProvisionerEventToCEFSyslog-FAILOVER" primary="OutboundProvisionerEventToCEFSyslog">
             <Failovers>
                 <AppenderRef ref="OutboundProvisionerEventToCEFSyslog-FILE" />
@@ -210,21 +236,6 @@
                 </JSONLayout>
             </PingSyslogLayout>
         </Socket>
-
-        <RollingFile name="SecurityAuditToCEFSyslog-FILE" fileName="${sys:pf.log.dir}/audit-cef-syslog-failover.log"
-            filePattern="${sys:pf.log.dir}/audit-cef-syslog-failover.%d{yyyy-MM-dd}.log" >
-            <PatternLayout>
-                <pattern>%escape{CEF}{CEF:0|Ping Identity|PingFederate|%X{pfversion}|%X{event}|%X{event}|0|rt=%d{MMM dd yyyy HH:mm:ss.SSS} duid=%X{subject} src=%X{ip} msg=%X{status} cs1Label=Target Application URL cs1=%X{app} cs2Label=Connection ID cs2=%X{connectionid} cs3Label=Protocol cs3=%X{protocol} dvchost=%X{host} cs4Label=Role cs4=%X{role} externalId=%X{trackingid} cs5Label=SP Local User ID cs5=%X{localuserid} cs6Label=Attributes cs6=%X{attributes} %n}</pattern>
-            </PatternLayout>
-            <Policies>
-                <TimeBasedTriggeringPolicy />
-            </Policies>
-        </RollingFile>
-        <PingFailover name="SecurityAuditToCEFSyslog-FAILOVER" primary="SecurityAuditToCEFSyslog">
-            <Failovers>
-                <AppenderRef ref="SecurityAuditToCEFSyslog-FILE" />
-            </Failovers>
-        </PingFailover>
         
     </Appenders>
     <Loggers>
