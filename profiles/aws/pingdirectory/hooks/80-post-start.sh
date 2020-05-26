@@ -611,7 +611,7 @@ if ldapsearch --hostname "${SEED_HOST}" --port "${SEED_PORT}" --baseDN 'cn=topol
 
   # Force seed server as the master so the topology registry is guaranteed to be writable. Forgive the failure here
   # and let it fail downstream if there are topology write failures.
-  echo "post-start: forcing seed server ${SRC_HOST} as topology master"
+  echo "post-start: forcing seed server ${SEED_HOST}:${SEED_PORT} as topology master"
   set_force_as_master true
 
   echo "post-start: removing server from the topology"

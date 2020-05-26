@@ -35,3 +35,12 @@ if test "${MANAGE_PROFILE_STATUS}" -ne 0; then
   test -f /tmp/rejects.ldif && cat /tmp/rejects.ldif
   exit 183
 fi
+
+INSTANCE_NAME=$(hostname)
+if test ! -z "${PD_PARENT_PUBLIC_HOSTNAME}" && test ! -z "${PD_PUBLIC_HOSTNAME}"; then
+  ORDINAL=${INSTANCE_NAME##*-}
+  INSTANCE_NAME="${PD_PUBLIC_HOSTNAME}-636${ORDINAL}"
+fi
+
+echo "Replacing the instance-name to ${INSTANCE_NAME}"
+sed -i "s/INSTANCE_NAME_PLACE_HOLDER/${INSTANCE_NAME}/g" "${SERVER_ROOT_DIR}"/config/config.ldif

@@ -21,13 +21,13 @@
     --skipPortCheck \
     --licenseKeyFile ${PING_SERVER_ROOT}/PingDirectory.lic \
     --location "${LOCATION}" \
-    --instanceName ${HOSTNAME} \
+    --instanceName INSTANCE_NAME_PLACE_HOLDER \
     --ldapPort ${LDAP_PORT} \
     --ldapsPort ${LDAPS_PORT} \
     --httpsPort ${HTTPS_PORT} \
     --enableStartTLS \
-    ${jvmOptions} \
+    --maxHeapSize "${MAX_HEAP_SIZE}" --jvmTuningParameter AGGRESSIVE \
     --generateSelfSignedCertificate \
-    ${encryptionOption} \
+    --encryptDataWithPassphraseFromFile "${ENCRYPTION_PASSWORD_FILE}" \
     --rootUserDN "${ROOT_USER_DN}" \
     --rootUserPasswordFile "${ROOT_USER_PASSWORD_FILE}"
