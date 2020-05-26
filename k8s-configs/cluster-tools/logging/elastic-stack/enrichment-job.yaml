@@ -271,6 +271,8 @@ spec:
                 name: enrichment-volume
               - mountPath: /enrichment-cache
                 name: enrichment-cache-files
+              - mountPath: /enrichment/templates
+                name: enrichment-search-template-files
           - name: check-elasticsearch-availability
             image: busybox
             command: ['sh', '-c', "until nslookup elasticsearch.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for elasticsearch; sleep 2; done"]
@@ -302,8 +304,8 @@ spec:
             - name: enrichment-python-script
               mountPath: /usr/share/elasticsearch/config/bootstrap/enrichment.py
               subPath: enrichment.py
-            - name: enrichment-cache-files
-              mountPath: /usr/share/elasticsearch/enrichment-cache
+            # - name: enrichment-cache-files
+            #   mountPath: /usr/share/elasticsearch/enrichment-cache
             - name: enrichment-volume
               mountPath: /usr/share/elasticsearch/enrichment
           volumes:
@@ -324,6 +326,10 @@ spec:
               server: ${EFS_FILESYSTEM_ID}.efs.${REGION}.amazonaws.com
               path: /
           - name: enrichment-cache-files
+            configMap:
+              name: enrichment-cache
+              defaultMode: 0555
+          - name: enrichment-search-template-files
             configMap:
               name: enrichment-cache
               defaultMode: 0555

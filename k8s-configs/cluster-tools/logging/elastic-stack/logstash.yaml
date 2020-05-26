@@ -12,6 +12,8 @@ spec:
       name: rest
     - port: 20510
       name: enrichment-in
+    - port: 20512
+      name: pf-provision-in
     - port: 20513
       name: pf-system-in
     - port: 20514
@@ -76,6 +78,11 @@ data:
             add_field => {"log_type" => "Enrichment_System_Log"}
         }
         tcp {
+            id => "pf_provision_in"
+            port => 20512
+            add_field => {"log_type" => "PF_Provisioner_Log"}
+        }
+        tcp {
             id => "pf_system_in"
             port => 20513
             add_field => {"log_type" => "PF_System_Log"}
@@ -121,7 +128,70 @@ data:
                     source => "ip"
                 }
 
-                # HERE SHOULD BE ENRICHMENT TRANSLATIONS
+                #Security Enrichments begin here, ENRICH THE IP ADDRESS DETAIL
+
+                translate {
+                    field => "ip"
+                    destination => "threat_intel"
+                    fallback => "No"
+                    dictionary_path => '/etc/logstash/enrichment/AlienVaultIP.yml'
+                    refresh_behaviour => "replace"
+                }
+    
+                translate {
+                    field => "ip"
+                    destination => "tor_intel"
+                    fallback => "No"
+                    dictionary_path => '/etc/logstash/enrichment/TorNodes.yml'
+                    refresh_behaviour => "replace"
+                }
+    
+                translate {
+                    field => "[geoip][country_name]"
+                    destination => "malicious_country"
+                    fallback => "No"
+                    dictionary_path => '/etc/logstash/enrichment/MaliciousCountries.yml'
+                    refresh_behaviour => "replace"
+                }
+    
+                translate {
+                    field => "[geoip][country_name]"
+                    destination => "known_country"
+                    fallback => "No"
+                    dictionary_path => '/etc/logstash/enrichment/KnownCountries.yml'
+                    refresh_behaviour => "replace"
+                }
+    
+                if([malicious_country] == "No" and [known_country] == "No"){
+                    mutate {
+                        add_field => { "suspicious_country" => "YES" }
+                    }
+                }
+
+                #Query for previous logins in Elasticsearch, if login is found append data to the log
+                #IF A SUCCESSFUL LOGIN OCCURS, Query ES to see if the the attempt was successful in the past to determine distance from previous login.
+    
+                if([status] == "success" and [event] == "AUTHN_ATTEMPT"){
+                    elasticsearch {
+                        index => "pf-audit*"
+                        query_template => "/etc/logstash/enrichment/templates/6hr-1200km-template.json"
+                        #ca_file => "/usr/share/elasticsearch/config/certificates/ca/ca.crt"
+                        hosts => ["${LOGSTASH_ELASTICSEARCH_SCHEME}://${LOGSTASH_ELASTICSEARCH_HOST}:${LOGSTASH_ELASTICSEARCH_PORT}"]
+    
+                        add_field => {"found_distance_alert" => "YES"}
+    
+                        fields => {
+                            "subject" => "found_subject"
+                            "ip" => "found_ip"
+                            "[geoip][country_name]" => "found_country"
+                            "[geoip][city_name]" => "found_city_name"
+                            "[geoip][location][lat]" => "[found_geoip][location][lat]"
+                            "[geoip][location][lon]" => "[found_geoip][location][lon]"
+                        }
+                        #user => elastic
+                        #password => "${ELASTIC_PASSWORD}"
+                    }
+                }
             }
         }
 
@@ -157,6 +227,13 @@ data:
           elasticsearch {
               id => "enrichment_out"
               index => "enrichment_out_%{+YYYY.MM.dd}"
+              hosts => "${LOGSTASH_ELASTICSEARCH_SCHEME}://${LOGSTASH_ELASTICSEARCH_HOST}:${LOGSTASH_ELASTICSEARCH_PORT}"
+          }
+        }
+        if([log_type] == "PF_Provisioner_Log"){
+          elasticsearch {
+              id => "pf_provision_out"
+              index => "pf_provision_out_%{+YYYY.MM.dd}"
               hosts => "${LOGSTASH_ELASTICSEARCH_SCHEME}://${LOGSTASH_ELASTICSEARCH_HOST}:${LOGSTASH_ELASTICSEARCH_PORT}"
           }
         }
@@ -199,7 +276,6 @@ spec:
       # tolerations:
       # - key: node-role.kubernetes.io/master
       #   effect: NoSchedule
-
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
@@ -241,6 +317,9 @@ spec:
           - containerPort: 20510
             name: enrichment-in
             protocol: TCP
+          - containerPort: 20512
+            name: pf-provision-in
+            protocol: TCP
           - containerPort: 20513
             name: pf-system-in
             protocol: TCP
@@ -279,9 +358,6 @@ spec:
       - name: varlibdockercontainers
         hostPath:
           path: /var/lib/docker/containers
-      # - name: enrichment-volume
-      #   persistentVolumeClaim:
-      #     claimName: enrichment-volume
       - name: enrichment-volume
         nfs:
           # HARDCODED VALUE! SHOULD BE CHANGED TO DYNAMIC!

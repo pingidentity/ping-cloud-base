@@ -185,6 +185,44 @@
                 <TimeBasedTriggeringPolicy />
             </Policies>
         </RollingFile>
+
+        <!-- Failovers -->
+
+        <PingFailover name="SecurityAudit2File-FAILOVER" primary="SecurityAuditToCEFSyslog">
+            <Failovers>
+                <AppenderRef ref="SecurityAudit2File" />
+            </Failovers>
+        </PingFailover>
+
+        <PingFailover name="ProvisionerLog-FAILOVER" primary="OutboundProvisionerEventToCEFSyslog">
+            <Failovers>
+                <AppenderRef ref="ProvisionerLog" />
+            </Failovers>
+        </PingFailover>
+
+        <PingFailover name="AdminAudit-FAILOVER" primary="SecurityAuditToCEFSyslog">
+            <Failovers>
+                <AppenderRef ref="AdminAudit" />
+            </Failovers>
+        </PingFailover>
+
+        <PingFailover name="AdminEventDetailAudit-FAILOVER" primary="SecurityAuditToCEFSyslog">
+            <Failovers>
+                <AppenderRef ref="AdminEventDetailAudit" />
+            </Failovers>
+        </PingFailover>
+
+        <PingFailover name="AdminApiAudit-FAILOVER" primary="SecurityAuditToCEFSyslog">
+            <Failovers>
+                <AppenderRef ref="AdminApiAudit" />
+            </Failovers>
+        </PingFailover>
+
+        <PingFailover name="RuntimeApiAuditLogger-FAILOVER" primary="SecurityAuditToCEFSyslog">
+            <Failovers>
+                <AppenderRef ref="RuntimeApiAuditLogger" />
+            </Failovers>
+        </PingFailover>
         
         <PingFailover name="SecurityAuditToCEFSyslog-FAILOVER" primary="SecurityAuditToCEFSyslog">
             <Failovers>
@@ -197,8 +235,15 @@
                 <AppenderRef ref="OutboundProvisionerEventToCEFSyslog-FILE" />
             </Failovers>
         </PingFailover>
+
+        <!-- Socket Appender for Outbound Provisioner Event Logs via TCP Socket -->
+        <Socket name="OutboundProvisionerEventToCEFSyslog" host="${SOCKET_HOST}" port="${SOCKET_PORT_PROVISIONER}" protocol="${SOCKET_PROTOCOL}" ignoreExceptions="false">
+            <PingSyslogLayout>
+                <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" properties="true" />
+            </PingSyslogLayout>
+        </Socket>
         
-        <!-- Socket Appender for Outbound System  Logs via TCP Socket -->
+        <!-- Socket Appender for Outbound System Logs via TCP Socket -->
         <Socket name="OutboundSystemLogsToSyslog" host="${SOCKET_HOST}" port="${SOCKET_PORT_SYSTEM}" protocol="${SOCKET_PROTOCOL}" ignoreExceptions="false">
             <PingSyslogLayout>
                 <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" properties="true" />
@@ -295,44 +340,36 @@
 
         <Logger name="org.sourceid.websso.profiles.idp.ClientRegistrationAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-            <!-- <AppenderRef ref="SecurityAudit2File" /> -->
-            <AppenderRef ref="SecurityAuditToCEFSyslog-FAILOVER"/>
+            <AppenderRef ref="SecurityAudit2File-FAILOVER" />
         </Logger>
 
         <Logger name="org.sourceid.wstrust.log.STSAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-            <!-- <AppenderRef ref="SecurityAudit2File" /> -->
-            <AppenderRef ref="SecurityAuditToCEFSyslog-FAILOVER"/>
+            <AppenderRef ref="SecurityAudit2File-FAILOVER" />
         </Logger>
 
         <AsyncLogger name="com.pingidentity.provisioner" level="INFO" additivity="false" includeLocation="false">
-            <!-- <AppenderRef ref="ProvisionerLog" /> -->
-            <AppenderRef ref="SecurityAuditToCEFSyslog-FAILOVER"/>
+            <AppenderRef ref="ProvisionerLog-FAILOVER" />
         </AsyncLogger>
 
         <Logger name="AuditLogger" level="INFO" additivity="false" includeLocation="false">
-            <!-- <AppenderRef ref="AdminAudit" /> -->
-            <AppenderRef ref="SecurityAuditToCEFSyslog-FAILOVER"/>
+            <AppenderRef ref="AdminAudit-FAILOVER" />
         </Logger>
 
         <Logger name="EventDetailAuditLogger" level="INFO" additivity="false" includeLocation="false">
-            <!-- <AppenderRef ref="AdminEventDetailAudit" /> -->
-            <AppenderRef ref="SecurityAuditToCEFSyslog-FAILOVER"/>
+            <AppenderRef ref="AdminEventDetailAudit-FAILOVER" />
         </Logger>
 
         <Logger name="AdminApiAuditLogger" level="INFO" additivity="false" includeLocation="false">
-            <!-- <AppenderRef ref="AdminApiAudit" /> -->
-            <AppenderRef ref="SecurityAuditToCEFSyslog-FAILOVER"/>
+            <AppenderRef ref="AdminApiAudit-FAILOVER" />
         </Logger>
 
         <Logger name="RuntimeApiAuditLogger" level="INFO" additivity="false" includeLocation="false">
-            <!-- <AppenderRef ref="RuntimeApiAudit" /> -->
-            <AppenderRef ref="SecurityAuditToCEFSyslog-FAILOVER"/>
+            <AppenderRef ref="RuntimeApiAudit-FAILOVER" />
         </Logger>
 
         <Logger name="ProvisionerAuditLogger" level="INFO" additivity="false" includeLocation="false">
-            <!-- <AppenderRef ref="OutboundProvisionerEventToCEFSyslog-FAILOVER"/> -->
-            <AppenderRef ref="SecurityAuditToCEFSyslog-FAILOVER"/>
+            <AppenderRef ref="OutboundProvisionerEventToCEFSyslog-FAILOVER"/>
         </Logger>
 
         <Logger name="com.pingidentity.appserver.jetty.PingFederateInit" level="ERROR" additivity="false" includeLocation="false">

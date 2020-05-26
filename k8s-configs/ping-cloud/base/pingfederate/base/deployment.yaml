@@ -78,6 +78,8 @@ spec:
           value: "20513"
         - name: SOCKET_PORT_AUDIT
           value: "20514"
+        - name: SOCKET_PORT_PROVISIONER
+          value: "20512"
         - name: SOCKET_PROTOCOL
           value: TCP
         envFrom:
