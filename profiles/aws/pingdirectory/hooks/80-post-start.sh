@@ -582,7 +582,7 @@ if test "${IS_MULTI_CLUSTER}" = 'true'; then
   echo "post-start: waiting for the replication seed server ${REPL_SRC_HOST}:${REPL_SRC_LDAPS_PORT}"
   waitUntilLdapUp "${REPL_SRC_HOST}" "${REPL_SRC_LDAPS_PORT}" 'cn=config'
 
-  echo "post-start: waiting for the replication target server ${REPL_SRC_HOST}:${REPL_SRC_LDAPS_PORT}"
+  echo "post-start: waiting for the replication target server ${REPL_DST_HOST}:${REPL_DST_LDAPS_PORT}"
   waitUntilLdapUp "${REPL_DST_HOST}" "${REPL_DST_LDAPS_PORT}" 'cn=config'
 fi
 
