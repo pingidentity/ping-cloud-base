@@ -22,6 +22,7 @@
     --licenseKeyFile ${PING_SERVER_ROOT}/PingDirectory.lic \
     --location "${LOCATION}" \
     --instanceName INSTANCE_NAME_PLACE_HOLDER \
+    --localHostName HOSTNAME_PLACE_HOLDER \
     --ldapPort ${LDAP_PORT} \
     --ldapsPort ${LDAPS_PORT} \
     --httpsPort ${HTTPS_PORT} \

@@ -34,13 +34,18 @@ if test "${MANAGE_PROFILE_STATUS}" -ne 0; then
   cat "${SERVER_ROOT_DIR}/logs/tools/manage-profile.log"
   test -f /tmp/rejects.ldif && cat /tmp/rejects.ldif
   exit 183
-fi
+fis
 
 INSTANCE_NAME=$(hostname)
+FULL_HOSTNAME=$(hostname -f)
+
 if test ! -z "${PD_PARENT_PUBLIC_HOSTNAME}" && test ! -z "${PD_PUBLIC_HOSTNAME}"; then
   ORDINAL=${INSTANCE_NAME##*-}
   INSTANCE_NAME="${PD_PUBLIC_HOSTNAME}-636${ORDINAL}"
+  FULL_HOSTNAME="${PD_PUBLIC_HOSTNAME}"
 fi
 
-echo "Replacing the instance-name to ${INSTANCE_NAME}"
-sed -i "s/INSTANCE_NAME_PLACE_HOLDER/${INSTANCE_NAME}/g" "${SERVER_ROOT_DIR}"/config/config.ldif
+CONFIG_LDIF="${SERVER_ROOT_DIR}"/config/config.ldif
+echo "Replacing hostname and instance-name to ${INSTANCE_NAME}"
+sed -i "s/INSTANCE_NAME_PLACE_HOLDER/${INSTANCE_NAME}/g" "${CONFIG_LDIF}"
+sed -i "s/HOSTNAME_PLACE_HOLDER/${FULL_HOSTNAME}/g" "${CONFIG_LDIF}"
