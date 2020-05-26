@@ -130,68 +130,45 @@ data:
 
                 #Security Enrichments begin here, ENRICH THE IP ADDRESS DETAIL
 
-                translate {
-                    field => "ip"
-                    destination => "threat_intel"
-                    fallback => "No"
-                    dictionary_path => '/etc/logstash/enrichment/AlienVaultIP.yml'
-                    refresh_behaviour => "replace"
-                }
+                # translate {
+                #     field => "ip"
+                #     destination => "threat_intel"
+                #     fallback => "No"
+                #     dictionary_path => '/etc/logstash/enrichment/AlienVaultIP.yml'
+                #     refresh_behaviour => "replace"
+                # }
     
-                translate {
-                    field => "ip"
-                    destination => "tor_intel"
-                    fallback => "No"
-                    dictionary_path => '/etc/logstash/enrichment/TorNodes.yml'
-                    refresh_behaviour => "replace"
-                }
+                # translate {
+                #     field => "ip"
+                #     destination => "tor_intel"
+                #     fallback => "No"
+                #     dictionary_path => '/etc/logstash/enrichment/TorNodes.yml'
+                #     refresh_behaviour => "replace"
+                # }
     
-                translate {
-                    field => "[geoip][country_name]"
-                    destination => "malicious_country"
-                    fallback => "No"
-                    dictionary_path => '/etc/logstash/enrichment/MaliciousCountries.yml'
-                    refresh_behaviour => "replace"
-                }
+                # translate {
+                #     field => "[geoip][country_name]"
+                #     destination => "malicious_country"
+                #     fallback => "No"
+                #     dictionary_path => '/etc/logstash/enrichment/MaliciousCountries.yml'
+                #     refresh_behaviour => "replace"
+                # }
     
-                translate {
-                    field => "[geoip][country_name]"
-                    destination => "known_country"
-                    fallback => "No"
-                    dictionary_path => '/etc/logstash/enrichment/KnownCountries.yml'
-                    refresh_behaviour => "replace"
-                }
+                # translate {
+                #     field => "[geoip][country_name]"
+                #     destination => "known_country"
+                #     fallback => "No"
+                #     dictionary_path => '/etc/logstash/enrichment/KnownCountries.yml'
+                #     refresh_behaviour => "replace"
+                # }
     
-                if([malicious_country] == "No" and [known_country] == "No"){
-                    mutate {
-                        add_field => { "suspicious_country" => "YES" }
-                    }
-                }
+                # if([malicious_country] == "No" and [known_country] == "No"){
+                #     mutate {
+                #         add_field => { "suspicious_country" => "YES" }
+                #     }
+                # }
 
-                #Query for previous logins in Elasticsearch, if login is found append data to the log
-                #IF A SUCCESSFUL LOGIN OCCURS, Query ES to see if the the attempt was successful in the past to determine distance from previous login.
-    
-                if([status] == "success" and [event] == "AUTHN_ATTEMPT"){
-                    elasticsearch {
-                        index => "pf-audit*"
-                        query_template => "/etc/logstash/enrichment/templates/6hr-1200km-template.json"
-                        #ca_file => "/usr/share/elasticsearch/config/certificates/ca/ca.crt"
-                        hosts => ["${LOGSTASH_ELASTICSEARCH_SCHEME}://${LOGSTASH_ELASTICSEARCH_HOST}:${LOGSTASH_ELASTICSEARCH_PORT}"]
-    
-                        add_field => {"found_distance_alert" => "YES"}
-    
-                        fields => {
-                            "subject" => "found_subject"
-                            "ip" => "found_ip"
-                            "[geoip][country_name]" => "found_country"
-                            "[geoip][city_name]" => "found_city_name"
-                            "[geoip][location][lat]" => "[found_geoip][location][lat]"
-                            "[geoip][location][lon]" => "[found_geoip][location][lon]"
-                        }
-                        #user => elastic
-                        #password => "${ELASTIC_PASSWORD}"
-                    }
-                }
+                # HERE SHOULD BE ADDITIONAL FILTERS WHICH RELATED TO PDO-966 SETTING UP LOGSTASH FILTERS SCOPE
             }
         }
 
