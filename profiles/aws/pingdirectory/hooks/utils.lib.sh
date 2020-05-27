@@ -53,3 +53,22 @@ function skbnCopy() {
     return 1
   fi
 }
+
+########################################################################################################################
+# Replace the server's instance name and host name, if multi-cluster.
+########################################################################################################################
+function replace_host_instance_name() {
+  if test ! -z "${PD_PARENT_PUBLIC_HOSTNAME}" && test ! -z "${PD_PUBLIC_HOSTNAME}"; then
+    SHORT_HOST_NAME=$(hostname)
+    ORDINAL=${SHORT_HOST_NAME##*-}
+
+    INSTANCE_NAME="${PD_PUBLIC_HOSTNAME}-636${ORDINAL}"
+    FULL_HOSTNAME="${PD_PUBLIC_HOSTNAME}"
+
+    CONFIG_LDIF="${SERVER_ROOT_DIR}"/config/config.ldif
+
+    echo "Replacing hostname and instance-name to ${FULL_HOSTNAME} and ${INSTANCE_NAME}"
+    sed -i "s/^\(ds-cfg-instance-name: \).*$/\1${INSTANCE_NAME}/g" "${CONFIG_LDIF}"
+    sed -i "s/^\(ds-cfg-hostname: \).*$/\1${FULL_HOSTNAME}/g" "${CONFIG_LDIF}"
+  fi
+}
