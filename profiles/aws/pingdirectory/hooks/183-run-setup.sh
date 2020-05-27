@@ -3,6 +3,8 @@
 ${VERBOSE} && set -x
 
 . "${HOOKS_DIR}/pingcommon.lib.sh"
+. "${HOOKS_DIR}/utils.lib.sh"
+
 test -f "${HOOKS_DIR}/pingdata.lib.sh" && . "${HOOKS_DIR}/pingdata.lib.sh"
 
 export encryptionOption=$(getEncryptionOption)
