@@ -16,6 +16,13 @@ spec:
       containers:
       - name: pingdataconsole
         image: pingidentity/pingdataconsole:2003-8.0.0.1
+        resources:
+          requests:
+            memory: 512Mi
+            cpu: 10m
+          limits:
+            memory: 512Mi
+            cpu: 10m
         ports:
         - containerPort: 8080
           name: http
