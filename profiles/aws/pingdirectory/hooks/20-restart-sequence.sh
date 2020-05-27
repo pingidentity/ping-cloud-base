@@ -69,7 +69,7 @@ if test "${MANAGE_PROFILE_STATUS}" -ne 0; then
   exit 20
 fi
 
-replace_host_instance_name
+replace_instance_name
 
 run_hook "185-apply-tools-properties.sh"
 

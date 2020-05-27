@@ -38,4 +38,4 @@ if test "${MANAGE_PROFILE_STATUS}" -ne 0; then
   exit 183
 fi
 
-replace_host_instance_name
+replace_instance_name

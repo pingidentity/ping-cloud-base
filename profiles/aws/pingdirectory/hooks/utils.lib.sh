@@ -55,20 +55,20 @@ function skbnCopy() {
 }
 
 ########################################################################################################################
-# Replace the server's instance name and host name, if multi-cluster.
+# Replace the server's instance name, if multi-cluster. Instance name must be unique in the topology.
 ########################################################################################################################
-function replace_host_instance_name() {
+function replace_instance_name() {
   if test ! -z "${PD_PARENT_PUBLIC_HOSTNAME}" && test ! -z "${PD_PUBLIC_HOSTNAME}"; then
     SHORT_HOST_NAME=$(hostname)
     ORDINAL=${SHORT_HOST_NAME##*-}
 
     INSTANCE_NAME="${PD_PUBLIC_HOSTNAME}-636${ORDINAL}"
-    FULL_HOSTNAME="${PD_PUBLIC_HOSTNAME}"
-
     CONFIG_LDIF="${SERVER_ROOT_DIR}"/config/config.ldif
 
-    echo "Replacing hostname and instance-name to ${FULL_HOSTNAME} and ${INSTANCE_NAME}"
+    echo "Replacing instance-name to ${INSTANCE_NAME}"
+
+    # FIXME: use dsconfig to do this
     sed -i "s/^\(ds-cfg-instance-name: \).*$/\1${INSTANCE_NAME}/g" "${CONFIG_LDIF}"
-    sed -i "s/^\(ds-cfg-hostname: \).*$/\1${FULL_HOSTNAME}/g" "${CONFIG_LDIF}"
+    sed -i "s/^\(ds-cfg-server-instance-name: \).*$/\1${INSTANCE_NAME}/g" "${CONFIG_LDIF}"
   fi
 }
