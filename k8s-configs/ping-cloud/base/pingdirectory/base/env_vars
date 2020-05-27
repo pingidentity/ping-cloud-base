@@ -6,6 +6,7 @@ SERVER_PROFILE_BRANCH=master
 
 ROOT_USER_PASSWORD_FILE=/usr/local/secrets/root-user-password
 ADMIN_USER_PASSWORD_FILE=/usr/local/secrets/admin-user-password
+ENCRYPTION_PASSWORD_FILE=/usr/local/secrets/encryption-password
 
 LOCATION=Austin
 
@@ -39,3 +40,8 @@ PING_IDENTITY_ACCEPT_EULA=YES
 
 LEAVE_DISK_AFTER_SERVER_DELETE=false
 OPTIMIZE_REPLACE_PROFILE=false
+
+# Leave blank
+TAIL_LOG_FILES=
+# Individual files should be spelled out, globs are unreliable
+K8S_TAIL_LOG_FILES=/opt/out/instance/logs/server.out /opt/out/instance/logs/access /opt/out/instance/logs/change-notifications.log /opt/out/instance/logs/errors /opt/out/instance/logs/failed-ops /opt/out/instance/logs/expensive-write-ops /opt/out/instance/logs/replication /opt/out/instance/logs/config-audit.log

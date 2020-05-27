@@ -1,8 +1,29 @@
-# Enviornment Variables
+# Environment Variables
 
 See the [full list](https://github.com/pingidentity/pingidentity-devops-getting-started/tree/master/docs/docker-images/pingbase) of all the environment variables within the Docker images. You can override these variables at the Kubernetes layer per product.
 
 The following charts show the additional environment variables that may be defined at the Kubernetes layer per release.
+
+### v1.4.0
+
+## PingAccess
+
+| Name               | Default Value            | Description  | Comments |
+| ------------------ | ------------------------ | ------------ | -------- |
+| K8S_TAIL_LOG_FILES | /opt/out/instance/log/pingaccess_engine_audit.log /opt/out/instance/log/pingaccess_api_audit.log /opt/out/instance/log/pingaccess_agent_audit.log /opt/out/instance/log/pingaccess.log | A whitespace separated list of log files to tail to the container standard output. | Do not use wildcards like /path/to/logs/*.log |
+
+## PingDirectory
+
+| Name               | Default Value            | Description  | Comments |
+| ------------------ | ------------------------ | ------------ | -------- |
+| K8S_TAIL_LOG_FILES | /opt/out/instance/logs/server.out /opt/out/instance/logs/access /opt/out/instance/logs/change-notifications.log /opt/out/instance/logs/errors /opt/out/instance/logs/failed-ops /opt/out/instance/logs/expensive-write-ops /opt/out/instance/logs/replication /opt/out/instance/logs/config-audit.log | A whitespace separated list of log files to tail to the container standard output. | Do not use wildcards like /path/to/logs/*.log |
+
+## PingFederate
+
+| Name               | Default Value            | Description  | Comments |
+| ------------------ | ------------------------ | ------------ | -------- |
+| K8S_TAIL_LOG_FILES | /opt/out/instance/log/jvm-garbage-collection.log /opt/out/instance/log/server.log /opt/out/instance/log/init.log /opt/out/instance/log/admin.log /opt/out/instance/log/admin-event-detail.log /opt/out/instance/log/admin-api.log /opt/out/instance/log/runtime-api.log /opt/out/instance/log/transaction.log /opt/out/instance/log/audit.log /opt/out/instance/log/provisioner-audit.log /opt/out/instance/log/provisioner.log | A whitespace separated list of log files to tail to the container standard output. | Do not use wildcards like /path/to/logs/*.log |
+
 
 ### v1.3.1
 
