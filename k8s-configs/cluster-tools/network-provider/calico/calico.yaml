@@ -517,6 +517,13 @@ spec:
       containers:
         - image: quay.io/calico/typha:v3.8.1
           name: calico-typha
+          resources:
+            limits:
+              cpu: 10m
+              memory: 100Mi
+            requests:
+              cpu: 10m
+              memory: 100Mi
           ports:
             - containerPort: 5473
               name: calico-typha
@@ -659,10 +666,12 @@ spec:
             - --logtostderr=true
             - --v=2
           resources:
-            requests:
-              cpu: 10m
             limits:
               cpu: 10m
+              memory: 100Mi
+            requests:
+              cpu: 10m
+              memory: 100Mi
       serviceAccountName: typha-cpha
 
 ---

@@ -8070,8 +8070,12 @@ spec:
               fieldRef:
                 fieldPath: metadata.namespace
           resources:
-            {}
-            
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 10m
+              memory: 32Mi
 
 ---
 # Source: cert-manager/templates/deployment.yaml
@@ -8129,6 +8133,9 @@ spec:
                 fieldPath: metadata.namespace
           resources:
             requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
               cpu: 10m
               memory: 32Mi
             
