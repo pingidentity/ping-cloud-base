@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 
 . "${HOOKS_DIR}/pingcommon.lib.sh"
+. "${HOOKS_DIR}/utils.lib.sh"
 
 test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
 test -f "${HOOKS_DIR}/pingdirectory.lib.sh" && . "${HOOKS_DIR}/pingdirectory.lib.sh"
@@ -450,7 +451,7 @@ echo "post-start: pod ordinal: ${ORDINAL}"
 IS_MULTI_CLUSTER=false
 IS_PARENT_CLUSTER=false
 
-if test ! -z "${PD_PARENT_PUBLIC_HOSTNAME}" && test ! -z "${PD_PUBLIC_HOSTNAME}"; then
+if is_multi_cluster; then
   IS_MULTI_CLUSTER=true
   test "${PD_PARENT_PUBLIC_HOSTNAME}" = "${PD_PUBLIC_HOSTNAME}" && IS_PARENT_CLUSTER=true
 fi

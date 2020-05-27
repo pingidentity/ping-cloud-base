@@ -19,6 +19,15 @@ if test ! -z "${HEAP_SIZE_INT}" && test "${HEAP_SIZE_INT}" -ge 4; then
   export UNBOUNDID_JAVA_ARGS="-client -Xmx${NEW_HEAP_SIZE} -Xms${NEW_HEAP_SIZE}"
 fi
 
+if is_multi_cluster; then
+  SHORT_HOST_NAME=$(hostname)
+  ORDINAL=${SHORT_HOST_NAME##*-}
+  export PD_LDAP_PORT="${LDAPS_PORT}${ORDINAL}"
+else
+  export PD_PUBLIC_HOSTNAME=$(hostname -f)
+  export PD_LDAP_PORT="${LDAPS_PORT}"
+fi
+
 "${SERVER_ROOT_DIR}"/bin/manage-profile setup \
     --profile "${PD_PROFILE}" \
     --useEnvironmentVariables \
@@ -37,5 +46,3 @@ if test "${MANAGE_PROFILE_STATUS}" -ne 0; then
   test -f /tmp/rejects.ldif && cat /tmp/rejects.ldif
   exit 183
 fi
-
-replace_instance_name

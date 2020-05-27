@@ -69,8 +69,6 @@ if test "${MANAGE_PROFILE_STATUS}" -ne 0; then
   exit 20
 fi
 
-replace_instance_name
-
 run_hook "185-apply-tools-properties.sh"
 
 # FIXME: replace-profile has a bug where it may wipe out the user root backend configuration and lose user data added
