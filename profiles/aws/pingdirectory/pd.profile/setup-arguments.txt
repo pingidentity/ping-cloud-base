@@ -23,6 +23,7 @@
     --location "${LOCATION}" \
     --instanceName "${PD_PUBLIC_HOSTNAME}-${PD_LDAP_PORT}" \
     --localHostName "${PD_PUBLIC_HOSTNAME}" \
+    --skipHostnameCheck \
     --ldapPort ${LDAP_PORT} \
     --ldapsPort ${LDAPS_PORT} \
     --httpsPort ${HTTPS_PORT} \
