@@ -6,36 +6,44 @@
 
 test "${VERBOSE}" && set -x
 
-### Begin - export environment variables ###
+# Override environment variables with optional file supplied from the outside
+ENV_VARS_FILE="${1}"
 
-export REGION="${AWS_DEFAULT_REGION}"
-export CLUSTER_NAME="${EKS_CLUSTER_NAME}"
+if test -z "${ENV_VARS_FILE}"; then
+  echo "Using environment variables based on CI variables"
 
-export CONFIG_PARENT_DIR=aws
-export CONFIG_REPO_BRANCH=${CI_COMMIT_REF_NAME}
+  export REGION="${AWS_DEFAULT_REGION}"
+  export CLUSTER_NAME="${EKS_CLUSTER_NAME}"
+  export TENANT_DOMAIN='ci-cd.ping-oasis.com'
 
-export ARTIFACT_REPO_URL=s3://${CLUSTER_NAME}-artifacts-bucket
-export PING_ARTIFACT_REPO_URL=https://ping-artifacts.s3-us-west-2.amazonaws.com
-export LOG_ARCHIVE_URL=s3://${CLUSTER_NAME}-logs-bucket
-export BACKUP_URL=s3://${CLUSTER_NAME}-backup-bucket
+  [[ ${CI_COMMIT_REF_SLUG} != master ]] && export ENVIRONMENT=-${CI_COMMIT_REF_SLUG}
+  export NAMESPACE=ping-cloud-${CI_COMMIT_REF_SLUG}
 
-export NAMESPACE=ping-cloud-${CI_COMMIT_REF_SLUG}
-export AWS_PROFILE=csg
-export LOG_GROUP_NAME="/aws/containerinsights/${CLUSTER_NAME}/application"
+  export CONFIG_PARENT_DIR=aws
+  export CONFIG_REPO_BRANCH=${CI_COMMIT_REF_NAME}
+
+  export ARTIFACT_REPO_URL=s3://${CLUSTER_NAME}-artifacts-bucket
+  export PING_ARTIFACT_REPO_URL=https://ping-artifacts.s3-us-west-2.amazonaws.com
+  export LOG_ARCHIVE_URL=s3://${CLUSTER_NAME}-logs-bucket
+  export BACKUP_URL=s3://${CLUSTER_NAME}-backup-bucket
+
+  export PROJECT_DIR="${CI_PROJECT_DIR}"
+  export AWS_PROFILE=csg
+elif test -f "${ENV_VARS_FILE}"; then
+  echo "Using environment variables defined in file ${ENV_VARS_FILE}"
+  source "${ENV_VARS_FILE}"
+else
+  echo "ENV_VARS_FILE points to a non-existent file: ${ENV_VARS_FILE}"
+  exit 1
+fi
+
 export LOG_SYNC_SECONDS="${LOG_SYNC_SECONDS:-10}"
 
 export ADMIN_USER=administrator
 export ADMIN_PASS=2FederateM0re
 
-[[ ${CI_COMMIT_REF_SLUG} != master ]] && export ENVIRONMENT=-${CI_COMMIT_REF_SLUG}
-
-### End - export environment variables ###
-
-# Override environment variables with optional file supplied from the outside
-ENV_VARS_FILE="${1}"
-test ! -z "${ENV_VARS_FILE}" && . "${ENV_VARS_FILE}"
-
-export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
+export CLUSTER_NAME_LC=$(echo "${CLUSTER_NAME}" | tr '[:upper:]' '[:lower:]')
+export LOG_GROUP_NAME="/aws/containerinsights/${CLUSTER_NAME}/application"
 
 FQDN=${ENVIRONMENT}.${TENANT_DOMAIN}
 
@@ -70,7 +78,7 @@ PINGACCESS_RUNTIME=https://pingaccess${FQDN}
 PINGACCESS_AGENT=https://pingaccess-agent${FQDN}
 
 # Source some utility methods.
-. ${CI_PROJECT_DIR}/utils.sh
+. ${PROJECT_DIR}/utils.sh
 
 ########################################################################################################################
 # Configures kubectl to be able to talk to the Kubernetes API server based on the following environment variables:

@@ -31,7 +31,7 @@ actual_files() {
   sort
 }
 
-BACKUP_JOB="${CI_PROJECT_DIR}/k8s-configs/ping-cloud/base/pingdirectory/aws/backup.yaml"
+BACKUP_JOB="${PROJECT_DIR}/k8s-configs/ping-cloud/base/pingdirectory/aws/backup.yaml"
 
 log "Applying the backup job"
 kubectl delete -f "${BACKUP_JOB}" -n "${NAMESPACE}"
@@ -54,7 +54,7 @@ if ! test -z "${NOT_UPLOADED}"; then
   exit 1
 fi
 
-RESTORE_JOB="${CI_PROJECT_DIR}/k8s-configs/ping-cloud/base/pingdirectory/aws/restore.yaml"
+RESTORE_JOB="${PROJECT_DIR}/k8s-configs/ping-cloud/base/pingdirectory/aws/restore.yaml"
 
 log "Applying the restore job"
 kubectl delete -f "${RESTORE_JOB}" -n "${NAMESPACE}"
