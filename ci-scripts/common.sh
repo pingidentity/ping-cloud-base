@@ -21,6 +21,7 @@ export BACKUP_URL=s3://${CLUSTER_NAME}-backup-bucket
 
 export NAMESPACE=ping-cloud-${CI_COMMIT_REF_SLUG}
 export AWS_PROFILE=csg
+export LOG_GROUP_NAME="/aws/containerinsights/${CLUSTER_NAME}/application"
 
 export ADMIN_USER=administrator
 export ADMIN_PASS=2FederateM0re
@@ -275,4 +276,97 @@ set_log_file() {
   local log_file=${3}
 
   kubectl logs -n "${NAMESPACE}" "${server}" -c "${container}" --since=60m > ${log_file}
+}
+
+########################################################################################################################
+# Compares a sample of logs within Kubernetes and AWS CloudWatch
+#
+# Arguments
+#   ${1} -> Name of log stream within CloudWatch
+#   ${2} -> Full pathname to log file within the container
+#   ${3} -> Name of pod
+#   ${4} -> Name of container within pod
+#   ${5} -> Existence of any value specifies to inverse grep to look for all logs that do not match ${2}.
+#           This is used for default log stream in each product
+#
+# Returns
+#   0 -> If all logs present within Kubernetes are also present within CloudWatch
+#   1 -> If a log entry within Kubernetes does not appear within CloudWatch
+########################################################################################################################
+function log_events_exist() {
+  local log_stream=$1
+  local full_pathname=$2
+  local pod=$3
+  local container=$4
+  local inverse=
+  if [ -n "$5" ]; then
+    inverse="-v "
+  fi
+  local grep_args="${inverse}^${full_pathname}"
+  local temp_log_file=temp_log_file.log
+  local cwatch_log_events=
+
+  # Save current state of logs into a temp file
+  kubectl logs "${pod}" -c "${container}" -n "${NAMESPACE}" |
+    grep $grep_args |
+    tail -100 |
+    # remove all ansi escape sequences, remove all '\' and '-', remove '\r'
+    sed -E 's/'"$(printf '\x1b')"'\[(([0-9]+)(;[0-9]+)*)?[m,K,H,f,J]//g' |
+    sed -E 's/\\//g' |
+    sed -E 's/-//g' |
+    tr -d '\r' > "${temp_log_file}"
+
+  # Let the aws logs catch up to the kubectl logs in temp file
+  sleep 10
+
+  cwatch_log_events=$(aws logs --profile "${AWS_PROFILE}" get-log-events \
+    --log-group-name "${LOG_GROUP_NAME}" \
+    --log-stream-name "${log_stream}" \
+    --no-start-from-head --limit 150 |
+    # Replace groups of 3 and 2 '\' with 1 '\', remove '\r', '\n', replace '\t' with tab spaces,
+    # remove all ansi escape sequences, remove all '\' and '-'
+    sed -E 's/\\{3,}/\\/g' |
+    sed -E 's/\\{1,}/\\/g' |
+    sed -E 's/\\r//g' |
+    sed -E 's/\\n//g' |
+    sed -E 's/\\t/'"$(printf '\t')"'/g' |
+    sed -E 's/\\u001B\[(([0-9]+)(;[0-9]+)*)?[m,K,H,f,J]//g' |
+    sed -E 's/\\//g' |
+    sed -E 's/-//g')
+
+  while read -r event; do
+    count=$(echo "${cwatch_log_events}" | grep -Fc "${event}")
+    if test "${count}" -lt 1; then
+      echo "Event not found: "
+      echo "${event}"
+      rm "${temp_log_file}"
+      return 1
+    fi
+  done< <(cat "${temp_log_file}")
+  rm "${temp_log_file}"
+  return 0
+}
+
+########################################################################################################################
+# Checks for existence of a particular log stream within AWS CloudWatch
+#
+# Arguments
+#   ${1} -> Name of log stream within CloudWatch
+#
+# Returns
+#   0 -> If log stream is present within CloudWatch
+#   1 -> If log stream is not present within CloudWatch
+########################################################################################################################
+function log_streams_exist() {
+  local log_stream_prefixes=$1
+  for log in ${log_stream_prefixes}; do
+    log_stream_count=$(aws logs --profile "${AWS_PROFILE}" describe-log-streams \
+      --log-group-name "${LOG_GROUP_NAME}" \
+      --log-stream-name-prefix "${log}" | jq '.logStreams | length')
+    if test "${log_stream_count}" -lt 1; then
+      echo "Log stream with prefix '$log' not found in CloudWatch"
+      return 1
+    fi
+  done
+  return 0
 }

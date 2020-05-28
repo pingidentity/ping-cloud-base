@@ -35,3 +35,8 @@ PA_GCOPTION=-XX:-UseParallelGC -XX:MinHeapFreeRatio=20 -XX:MaxHeapFreeRatio=40 -
 # Valid days for the PingAccess Config Query Listener KeyPair.
 # The default if not specified is 365 days.
 CONFIG_QUERY_KP_VALID_DAYS=365
+
+# Leave blank
+TAIL_LOG_FILES=
+# Individual files should be spelled out, globs are unreliable
+K8S_TAIL_LOG_FILES=/opt/out/instance/log/pingaccess_engine_audit.log /opt/out/instance/log/pingaccess_api_audit.log /opt/out/instance/log/pingaccess_agent_audit.log /opt/out/instance/log/pingaccess.log
