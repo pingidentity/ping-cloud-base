@@ -70,13 +70,6 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
 
                 if test "${ARTIFACT_NAME_COUNT}" == "1"; then
 
-                  # Remove artifact if operation desire is to delete
-                  if test "${ARTIFACT_OPERATION}" == "delete"; then
-                    rm ${OUT_DIR}/instance/lib/${ARTIFACT_NAME}-[0-9]*.jar
-                    echo "Artifact ${ARTIFACT_NAME} successfully removed from server"
-                    continue
-                  fi
-
                   # Get artifact source location
                   if test "${ARTIFACT_SOURCE}" == "private"; then
                     ARTIFACT_LOCATION=${PRIVATE_BASE_URL}/${ARTIFACT_NAME}/${ARTIFACT_VERSION}/${ARTIFACT_RUNTIME_ZIP}
