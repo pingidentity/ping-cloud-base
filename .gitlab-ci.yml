@@ -8,7 +8,6 @@ stages:
 
 ## Global environment variables ##
 variables:
-  TENANT_DOMAIN: ci-cd.ping-oasis.com
   DELETE_ENV_AFTER_PIPELINE: 'true'
 
 ## Compile stage ##
