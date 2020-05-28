@@ -69,6 +69,13 @@ if test "${MANAGE_PROFILE_STATUS}" -ne 0; then
   exit 20
 fi
 
+# Replace the hostname in config.ldif file, if multi-cluster
+if is_multi_cluster; then
+  CONFIG_LDIF_FILE="${SERVER_ROOT_DIR}"/config/config.ldif
+  echo "setup: replacing the server hostname to ${PD_PUBLIC_HOSTNAME} in ${CONFIG_LDIF_FILE}"
+  sed -i "s/^\(ds-cfg-hostname:\).*$/\1 ${PD_PUBLIC_HOSTNAME}/g" "${CONFIG_LDIF_FILE}"
+fi
+
 run_hook "185-apply-tools-properties.sh"
 
 # FIXME: replace-profile has a bug where it may wipe out the user root backend configuration and lose user data added

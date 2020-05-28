@@ -460,6 +460,11 @@ echo "post-start: multi-cluster: ${IS_MULTI_CLUSTER}; parent-cluster: ${IS_PAREN
 
 # Add an LDAPS connection handler for external access, if necessary
 if test ! -z "${PD_PUBLIC_HOSTNAME}"; then
+  # Set the public hostname in setup.host
+  SERVER_HOST_FILE="${SERVER_ROOT_DIR}"/config/server.host
+  echo "post-start: replacing the server hostname to ${PD_PUBLIC_HOSTNAME} in ${SERVER_HOST_FILE}"
+  echo "hostname=${PD_PUBLIC_HOSTNAME}" > "${SERVER_HOST_FILE}"
+
   EXTERNAL_LDAPS_PORT="636${ORDINAL}"
   enable_ldap_connection_handler "${EXTERNAL_LDAPS_PORT}"
   test $? -ne 0 && stop_container
