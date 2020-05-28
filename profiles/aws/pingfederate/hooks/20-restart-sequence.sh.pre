@@ -15,3 +15,5 @@ fi
 if ! [ -z "${OPERATIONAL_MODE}" ] &&  [ "${OPERATIONAL_MODE}" = "CLUSTERED_ENGINE" ]; then
 	run_hook "10-get-master-key.sh"
 fi
+
+run_hook "100-tail-logs.sh"

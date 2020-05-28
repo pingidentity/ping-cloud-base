@@ -151,6 +151,13 @@ spec:
     spec:
       containers:
       - image: quay.io/coreos/kube-state-metrics:v1.8.0
+        resources:
+          limits:
+            cpu: 50m
+            memory: 100Mi
+          requests:
+            cpu: 50m
+            memory: 100Mi
         livenessProbe:
           httpGet:
             path: /healthz
