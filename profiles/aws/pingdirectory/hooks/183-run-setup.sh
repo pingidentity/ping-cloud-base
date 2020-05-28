@@ -28,9 +28,6 @@ else
   export PD_LDAP_PORT="${LDAPS_PORT}"
 fi
 
-echo "Using public host:port of ${PD_PUBLIC_HOSTNAME}:${PD_LDAP_PORT}"
-echo "hostname=${PD_PUBLIC_HOSTNAME}" > "${SEVER_ROOT_DIR}"/config/server.host
-
 "${SERVER_ROOT_DIR}"/bin/manage-profile setup \
     --profile "${PD_PROFILE}" \
     --useEnvironmentVariables \
@@ -42,6 +39,9 @@ MANAGE_PROFILE_STATUS=${?}
 echo "manage-profile setup status: ${MANAGE_PROFILE_STATUS}"
 
 export UNBOUNDID_JAVA_ARGS="${ORIG_UNBOUNDID_JAVA_ARGS}"
+
+echo "Using public host:port of ${PD_PUBLIC_HOSTNAME}:${PD_LDAP_PORT}"
+echo "hostname=${PD_PUBLIC_HOSTNAME}" > "${SEVER_ROOT_DIR}"/config/server.host
 
 if test "${MANAGE_PROFILE_STATUS}" -ne 0; then
   echo "Contents of manage-profile.log file:"
