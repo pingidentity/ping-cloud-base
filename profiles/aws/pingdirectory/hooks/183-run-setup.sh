@@ -32,7 +32,7 @@ echo "Using public host:port of ${PD_PUBLIC_HOSTNAME}:${PD_LDAP_PORT}"
 echo "hostname=${PD_PUBLIC_HOSTNAME}" > "${SEVER_ROOT_DIR}"/config/server.host
 
 "${SERVER_ROOT_DIR}"/bin/manage-profile setup \
-    --profile "${PD_PROFILE}" \s
+    --profile "${PD_PROFILE}" \
     --useEnvironmentVariables \
     --tempProfileDirectory /tmp \
     --doNotStart \
