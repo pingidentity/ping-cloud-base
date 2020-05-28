@@ -15,7 +15,7 @@ for SIZE in small medium large; do
   log "Building kustomizations for ${SIZE} environment"
 
   export SIZE
-  ${CI_PROJECT_DIR}/code-gen/generate-cluster-state.sh
+  ${PROJECT_DIR}/code-gen/generate-cluster-state.sh
 
   # Verify that all kustomizations are able to be built
   build_kustomizations_in_dir "${TARGET_DIR}"
