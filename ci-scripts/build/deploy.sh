@@ -5,21 +5,6 @@ set -ex
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 . ${SCRIPT_HOME}/../common.sh
 
-#
-# --- Local debugging ---
-#
-# Configure kubectl but only when not in debug mode, which may be used locally for testing.
-# To test locally, export the following environment variables:
-#
-# export CI_PROJECT_DIR=~/sandbox/devops/ping-cloud-base (change this based on where your checkout tree is)
-# export CI_COMMIT_REF_SLUG=test
-# export TENANT_DOMAIN=ci-cd.ping-oasis.com
-# export AWS_DEFAULT_REGION=us-west-2
-# export EKS_CLUSTER_NAME=ci-cd
-#
-# Then, call this script in this manner: SKIP_CONFIGURE_KUBE=true ./deploy.sh
-#
-
 # Configure kube config, unless skipped
 configure_kube
 
@@ -28,7 +13,7 @@ export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEV
 
 # Deploy the configuration to Kubernetes
 DEPLOY_FILE=/tmp/deploy.yaml
-kustomize build "${CI_PROJECT_DIR}"/test |
+kustomize build "${PROJECT_DIR}"/test |
   envsubst '${PING_IDENTITY_DEVOPS_USER_BASE64}
     ${PING_IDENTITY_DEVOPS_KEY_BASE64}
     ${ENVIRONMENT}

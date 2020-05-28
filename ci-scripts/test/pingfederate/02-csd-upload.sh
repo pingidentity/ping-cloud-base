@@ -38,7 +38,7 @@ actual_files() {
   sort
 }
 
-UPLOAD_JOB="${CI_PROJECT_DIR}/k8s-configs/ping-cloud/base/pingfederate/aws/periodic-csd-upload.yaml"
+UPLOAD_JOB="${PROJECT_DIR}/k8s-configs/ping-cloud/base/pingfederate/aws/periodic-csd-upload.yaml"
 
 log "Applying the CSD upload job"
 kubectl delete -f "${UPLOAD_JOB}" -n "${NAMESPACE}"
