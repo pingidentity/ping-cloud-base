@@ -68,6 +68,8 @@ function test_pd_access_log_events_exist() {
     echo "Fail: test_pd_access_log_events_exist"
     exit 1
   fi
+    echo "Pass: test_pd_access_log_events_exist"
+  return 0
 }
 
 function test_pd_errors_log_events_exist() {

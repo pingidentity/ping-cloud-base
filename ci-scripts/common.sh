@@ -22,6 +22,7 @@ export BACKUP_URL=s3://${CLUSTER_NAME}-backup-bucket
 export NAMESPACE=ping-cloud-${CI_COMMIT_REF_SLUG}
 export AWS_PROFILE=csg
 export LOG_GROUP_NAME="/aws/containerinsights/${CLUSTER_NAME}/application"
+export LOG_SYNC_SECONDS="${LOG_SYNC_SECONDS:-10}"
 
 export ADMIN_USER=administrator
 export ADMIN_PASS=2FederateM0re
@@ -317,7 +318,7 @@ function log_events_exist() {
     tr -d '\r' > "${temp_log_file}"
 
   # Let the aws logs catch up to the kubectl logs in temp file
-  sleep 10
+  sleep "${LOG_SYNC_SECONDS}"
 
   cwatch_log_events=$(aws logs --profile "${AWS_PROFILE}" get-log-events \
     --log-group-name "${LOG_GROUP_NAME}" \
