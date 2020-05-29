@@ -50,20 +50,3 @@ and the artifacts within this list will be downloaded from the artifact repo
 and deployed to PingAccess.
 
 - aws/pingaccess/artifacts/artifact-list.json
-
-# Usage - Delete Plugin
-
-Set the operation to `"delete"` on the JSON specification if you want to delete the PingAccesss plugin from the PingAccess deployment,
-
-```
-[
-  {
-    "name": "<ARTIFACT_1_NAME>",
-    "version": "<ARTIFACT_1_VERSION>",
-    "source": "private", (Default is "private")
-    "operation": "delete" (Default is "add")
-  }
-]
-```
-
-- aws/pingaccess/artifacts/artifact-list.json
