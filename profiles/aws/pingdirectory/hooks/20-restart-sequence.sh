@@ -51,6 +51,15 @@ if test "${OPTIMIZE_REPLACE_PROFILE}"; then
   ADDITIONAL_ARGS=
 fi
 
+if is_multi_cluster; then
+  SHORT_HOST_NAME=$(hostname)
+  ORDINAL=${SHORT_HOST_NAME##*-}
+  export PD_LDAP_PORT="636${ORDINAL}"
+else
+  export PD_PUBLIC_HOSTNAME=$(hostname -f)
+  export PD_LDAP_PORT="${LDAPS_PORT}"
+fi
+
 "${SERVER_BITS_DIR}"/bin/manage-profile replace-profile \
     --serverRoot "${SERVER_ROOT_DIR}" \
     --profile "${STAGING_DIR}/pd.profile" \

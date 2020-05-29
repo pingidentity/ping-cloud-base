@@ -622,6 +622,7 @@ fi
 echo "post-start: getting server instance name from global config"
 INSTANCE_NAME=$(dsconfig --no-prompt get-global-configuration-prop \
     --property instance-name --script-friendly | awk '{ print $2 }')
+echo "post-start: server instance name from global config: ${INSTANCE_NAME}"
 
 # It is possible that the persistent volume where we are tracking replicated DNs is gone. In that case, we must
 # delete this server from the topology registry. Check the source server before proceeding.
