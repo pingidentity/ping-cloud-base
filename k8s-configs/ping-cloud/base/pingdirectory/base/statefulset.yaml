@@ -53,7 +53,7 @@ spec:
           runAsNonRoot: false
           runAsUser: 0
         image: bitnami/kubectl:1.15.3
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         command:
         - /init.sh
         envFrom:
@@ -76,7 +76,7 @@ spec:
       containers:
       - name: pingdirectory
         image: pingidentity/pingdirectory:2003-8.0.0.1
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 1389
           name: ldap
