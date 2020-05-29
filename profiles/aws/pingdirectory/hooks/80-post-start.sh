@@ -65,6 +65,17 @@ change_pf_user_passwords() {
 }
 
 ########################################################################################################################
+# Sets the public/external hostname in the server's server.host file, if the PD_PUBLIC_HOSTNAME is set.
+########################################################################################################################
+function set_external_hostname() {
+  if test ! -z "${PD_PUBLIC_HOSTNAME}"; then
+    SERVER_HOST_FILE="${SERVER_ROOT_DIR}"/config/server.host
+    echo "post-start: replacing the server hostname to ${PD_PUBLIC_HOSTNAME} in ${SERVER_HOST_FILE}"
+    echo "hostname=${PD_PUBLIC_HOSTNAME}" > "${SERVER_HOST_FILE}"
+  fi
+}
+
+########################################################################################################################
 # Add the base entry for USER_BASE_DN on the provided server.
 #
 # Arguments
@@ -510,6 +521,9 @@ if test "${ORDINAL}" -eq 0 && test "${IS_PARENT_CLUSTER}" = 'true'; then
     test ${licModStatus} -ne 0 && stop_container
   fi
 
+  # Set the public hostname in setup.host, if necessary
+  set_external_hostname
+
   echo "post-start: post-start complete"
   exit
 fi
@@ -676,11 +690,7 @@ done
 # Reset the force-as-master flag to false on the seed server if it was set before.
 reset_force_as_master
 
-# Set the public hostname in setup.host
-if test ! -z "${PD_PUBLIC_HOSTNAME}"; then
-  SERVER_HOST_FILE="${SERVER_ROOT_DIR}"/config/server.host
-  echo "post-start: replacing the server hostname to ${PD_PUBLIC_HOSTNAME} in ${SERVER_HOST_FILE}"
-  echo "hostname=${PD_PUBLIC_HOSTNAME}" > "${SERVER_HOST_FILE}"
-fi
+# Set the public hostname in setup.host, if necessary
+set_external_hostname
 
 echo "post-start: post-start complete"
