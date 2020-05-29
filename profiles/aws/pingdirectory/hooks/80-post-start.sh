@@ -611,8 +611,9 @@ fi
 echo "post-start: checking source server to see if this server must first be removed from the topology"
 REMOVE_SERVER_FROM_TOPOLOGY_FIRST=false
 
-if ldapsearch --hostname "${SRC_HOST}" --baseDN 'cn=topology,cn=config' --searchScope sub \
-           "(ds-cfg-server-instance-name=${INSTANCE_NAME})" 1.1 2>/dev/null | grep ^dn; then
+if ldapsearch --hostname "${SEED_HOST}" --port "${SEED_PORT}" \
+      --baseDN 'cn=topology,cn=config' --searchScope sub \
+      "(ds-cfg-server-instance-name=${INSTANCE_NAME})" 1.1 2>/dev/null | grep ^dn; then
   echo "post-start: the server is partially present in the topology registry and must be removed first"
   REMOVE_SERVER_FROM_TOPOLOGY_FIRST=true
 
@@ -622,7 +623,7 @@ if ldapsearch --hostname "${SRC_HOST}" --baseDN 'cn=topology,cn=config' --search
       --hostname "${SEED_HOST}" --port "${SEED_PORT}" \
       --property instance-name --script-friendly | awk '{ print $2 }')
 
-  echo "post-start: creating a topology file with the source server ${SRC_HOST} and this server"
+  echo "post-start: creating a topology file with the source server ${SEED_HOST}:${SEED_PORT} and this server"
   create_topology_file
 
   # Force seed server as the master so the topology registry is guaranteed to be writable. Forgive the failure here
