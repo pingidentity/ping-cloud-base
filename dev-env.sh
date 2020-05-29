@@ -270,7 +270,7 @@ export LOG_ARCHIVE_URL=${LOG_ARCHIVE_URL}
 export BACKUP_URL=${BACKUP_URL}
 
 export PROJECT_DIR=${PWD}
-export PROFILE=${AWS_PROFILE:-csg}
+export AWS_PROFILE=${AWS_PROFILE:-csg}
 
 # Other dev-env specific variables
 export SKIP_CONFIGURE_KUBE=true
