@@ -458,6 +458,11 @@ fi
 
 echo "post-start: multi-cluster: ${IS_MULTI_CLUSTER}; parent-cluster: ${IS_PARENT_CLUSTER}"
 
+echo "post-start: getting server instance name from global config"
+INSTANCE_NAME=$(dsconfig --no-prompt get-global-configuration-prop \
+    --property instance-name --script-friendly | awk '{ print $2 }')
+echo "post-start: server instance name from global config: ${INSTANCE_NAME}"
+
 # Add an LDAPS connection handler for external access, if necessary
 if test ! -z "${PD_PUBLIC_HOSTNAME}"; then
   # Set the public hostname in setup.host
@@ -465,46 +470,31 @@ if test ! -z "${PD_PUBLIC_HOSTNAME}"; then
   echo "post-start: replacing the server hostname to ${PD_PUBLIC_HOSTNAME} in ${SERVER_HOST_FILE}"
   echo "hostname=${PD_PUBLIC_HOSTNAME}" > "${SERVER_HOST_FILE}"
 
-  echo "post-start: -- 1. contents of ${SERVER_HOST_FILE}"
-  cat "${SERVER_HOST_FILE}"
-
   EXTERNAL_LDAPS_PORT="636${ORDINAL}"
   enable_ldap_connection_handler "${EXTERNAL_LDAPS_PORT}"
   test $? -ne 0 && stop_container
 
-  echo "post-start: -- 2. contents of ${SERVER_HOST_FILE}"
-  cat "${SERVER_HOST_FILE}"
-
   # Change the hostname in the server instance to the external one
   dsconfig --no-prompt set-server-instance-prop \
-      --instance-name "${HOSTNAME}" \
+      --instance-name "${INSTANCE_NAME}" \
       --set hostname:"${PD_PUBLIC_HOSTNAME}" \
       --set ldaps-port:"${EXTERNAL_LDAPS_PORT}"
   result=$?
   echo "post-start: change hostname/port: ${result}"
   test $? -ne 0 && stop_container
 
-  echo "post-start: -- 3. contents of ${SERVER_HOST_FILE}"
-  cat "${SERVER_HOST_FILE}"
-
   dsconfig --no-prompt set-server-instance-listener-prop \
-      --instance-name "${HOSTNAME}" \
+      --instance-name "${INSTANCE_NAME}" \
       --listener-name ldap-listener-mirrored-config \
       --set server-ldap-port:"${EXTERNAL_LDAPS_PORT}"
   result=$?
   echo "post-start: change LDAP listener port: ${result}"
   test $? -ne 0 && stop_container
-
-  echo "post-start: -- 4. contents of ${SERVER_HOST_FILE}"
-  cat "${SERVER_HOST_FILE}"
 fi
 
 # Change PF user passwords
 change_pf_user_passwords
 test $? -ne 0 && stop_container
-
-echo "post-start: -- 5. contents of ${SERVER_HOST_FILE}"
-cat "${SERVER_HOST_FILE}"
 
 if test "${ORDINAL}" -eq 0 && test "${IS_PARENT_CLUSTER}" = 'true'; then
   # The request control allows encoded passwords, which is always required for topology admin users
@@ -513,9 +503,6 @@ if test "${ORDINAL}" -eq 0 && test "${IS_PARENT_CLUSTER}" = 'true'; then
   change_user_password "cn=${ADMIN_USER_NAME}" "${ADMIN_USER_PASSWORD_FILE}" "${ALLOW_PRE_ENCODED_PW_CONTROL}"
   test $? -ne 0 && stop_container
 
-  echo "post-start: -- 6. contents of ${SERVER_HOST_FILE}"
-  cat "${SERVER_HOST_FILE}"
-
   # Update the license file, if necessary
   LICENSE_FILE_PATH="${LICENSE_DIR}/${LICENSE_FILE_NAME}"
 
@@ -523,23 +510,14 @@ if test "${ORDINAL}" -eq 0 && test "${IS_PARENT_CLUSTER}" = 'true'; then
     echo "post-start: updating product license from file ${LICENSE_FILE_PATH}"
     dsconfig --no-prompt set-license-prop --set "directory-platform-license-key<${LICENSE_FILE_PATH}"
 
-    echo "post-start: -- 7. contents of ${SERVER_HOST_FILE}"
-    cat "${SERVER_HOST_FILE}"
-
     licModStatus=$?
     echo "post-start: product license update status: ${pwdModStatus}"
     test ${licModStatus} -ne 0 && stop_container
-
-    echo "post-start: -- 8. contents of ${SERVER_HOST_FILE}"
-    cat "${SERVER_HOST_FILE}"
   fi
 
   echo "post-start: post-start complete"
   exit
 fi
-
-echo "post-start: -- 9. contents of ${SERVER_HOST_FILE}"
-cat "${SERVER_HOST_FILE}"
 
 # --- NOTE ---
 # This assumes that data initialization is only required once for the initial data in the server profile.
@@ -618,11 +596,6 @@ if test "${IS_MULTI_CLUSTER}" = 'true'; then
   echo "post-start: waiting for the replication target server ${REPL_DST_HOST}:${REPL_DST_LDAPS_PORT}"
   waitUntilLdapUp "${REPL_DST_HOST}" "${REPL_DST_LDAPS_PORT}" 'cn=config'
 fi
-
-echo "post-start: getting server instance name from global config"
-INSTANCE_NAME=$(dsconfig --no-prompt get-global-configuration-prop \
-    --property instance-name --script-friendly | awk '{ print $2 }')
-echo "post-start: server instance name from global config: ${INSTANCE_NAME}"
 
 # It is possible that the persistent volume where we are tracking replicated DNs is gone. In that case, we must
 # delete this server from the topology registry. Check the source server before proceeding.

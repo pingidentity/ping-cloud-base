@@ -40,13 +40,6 @@ echo "setup: using public host:port of ${PD_PUBLIC_HOSTNAME}:${PD_LDAP_PORT}"
 MANAGE_PROFILE_STATUS=${?}
 echo "setup: manage-profile setup status: ${MANAGE_PROFILE_STATUS}"
 
-# Replace the hostname in config.ldif file, if multi-cluster
-if is_multi_cluster; then
-  CONFIG_LDIF_FILE="${SERVER_ROOT_DIR}"/config/config.ldif
-  echo "setup: replacing the server hostname to ${PD_PUBLIC_HOSTNAME} in ${CONFIG_LDIF_FILE}"
-  sed -i "s/^\(ds-cfg-hostname:\).*$/\1 ${PD_PUBLIC_HOSTNAME}/g" "${CONFIG_LDIF_FILE}"
-fi
-
 export UNBOUNDID_JAVA_ARGS="${ORIG_UNBOUNDID_JAVA_ARGS}"
 
 if test "${MANAGE_PROFILE_STATUS}" -ne 0; then
