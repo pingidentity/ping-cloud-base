@@ -465,11 +465,6 @@ echo "post-start: server instance name from global config: ${INSTANCE_NAME}"
 
 # Add an LDAPS connection handler for external access, if necessary
 if test ! -z "${PD_PUBLIC_HOSTNAME}"; then
-  # Set the public hostname in setup.host
-  SERVER_HOST_FILE="${SERVER_ROOT_DIR}"/config/server.host
-  echo "post-start: replacing the server hostname to ${PD_PUBLIC_HOSTNAME} in ${SERVER_HOST_FILE}"
-  echo "hostname=${PD_PUBLIC_HOSTNAME}" > "${SERVER_HOST_FILE}"
-
   EXTERNAL_LDAPS_PORT="636${ORDINAL}"
   enable_ldap_connection_handler "${EXTERNAL_LDAPS_PORT}"
   test $? -ne 0 && stop_container
@@ -680,5 +675,12 @@ done
 
 # Reset the force-as-master flag to false on the seed server if it was set before.
 reset_force_as_master
+
+# Set the public hostname in setup.host
+if test ! -z "${PD_PUBLIC_HOSTNAME}"; then
+  SERVER_HOST_FILE="${SERVER_ROOT_DIR}"/config/server.host
+  echo "post-start: replacing the server hostname to ${PD_PUBLIC_HOSTNAME} in ${SERVER_HOST_FILE}"
+  echo "hostname=${PD_PUBLIC_HOSTNAME}" > "${SERVER_HOST_FILE}"
+fi
 
 echo "post-start: post-start complete"
