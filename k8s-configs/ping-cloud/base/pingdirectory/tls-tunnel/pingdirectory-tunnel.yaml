@@ -21,7 +21,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 100
           runAsGroup: 101
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         command:
         - /home/stunnel/stunnel.sh
         ports:
