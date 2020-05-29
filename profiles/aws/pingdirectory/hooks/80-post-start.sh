@@ -456,7 +456,7 @@ echo "post-start: checking source server to see if this server must first be rem
 REMOVE_SERVER_FROM_TOPOLOGY_FIRST=false
 
 if ldapsearch --hostname "${SRC_HOST}" --baseDN 'cn=topology,cn=config' --searchScope sub \
-           "(ds-cfg-server-instance-name=${INSTANCE_NAME})" 1.1 &> /dev/null; then
+           "(ds-cfg-server-instance-name=${INSTANCE_NAME})" 1.1 2>/dev/null | grep ^dn; then
   echo "post-start: the server is partially present in the topology registry and must be removed first"
   REMOVE_SERVER_FROM_TOPOLOGY_FIRST=true
 
@@ -477,6 +477,8 @@ if ldapsearch --hostname "${SRC_HOST}" --baseDN 'cn=topology,cn=config' --search
   echo "post-start: removing server from the topology"
   remove_server_from_topology
   test $? -ne 0 && stop_container
+else
+  echo "post-start: the server does not already exist in the topology, so does not need to be removed first"
 fi
 
 echo "post-start: replication will be initialized for base DNs: ${UNINITIALIZED_DNS}"
