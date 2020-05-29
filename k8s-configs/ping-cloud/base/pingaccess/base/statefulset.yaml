@@ -33,7 +33,7 @@ spec:
           runAsNonRoot: false
           runAsUser: 0
         image: bitnami/kubectl:1.15.3
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         command:
         - /init.sh
         volumeMounts:
@@ -56,7 +56,7 @@ spec:
       containers:
       - name: pingaccess-admin
         image: pingidentity/pingaccess:2003-6.0.1
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         resources:
           requests:
             memory: "1Gi"
@@ -216,7 +216,7 @@ spec:
       containers:
       - name: pingaccess
         image: pingidentity/pingaccess:2003-6.0.1
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         resources:
           requests:
             memory: "1Gi"
