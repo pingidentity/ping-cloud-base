@@ -312,7 +312,7 @@ function log_events_exist() {
     inverse="-v "
   fi
   local grep_args="${inverse}^${full_pathname}"
-  local temp_log_file=temp_log_file.log
+  local temp_log_file=$(mktemp)
   local cwatch_log_events=
 
   # Save current state of logs into a temp file
