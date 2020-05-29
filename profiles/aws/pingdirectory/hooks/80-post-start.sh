@@ -629,8 +629,17 @@ echo "post-start: server instance name from global config: ${INSTANCE_NAME}"
 echo "post-start: checking source server to see if this server must first be removed from the topology"
 REMOVE_SERVER_FROM_TOPOLOGY_FIRST=false
 
-if ldapsearch --hostname "${SEED_HOST}" --port "${SEED_PORT}" --baseDN 'cn=topology,cn=config' --searchScope sub \
-           "(ds-cfg-server-instance-name=${INSTANCE_NAME})" 1.1 &> /dev/null; then
+SEARCH_OUT=$(ldapsearch --script-friendly --hostname "${SEED_HOST}" --port "${SEED_PORT}" \
+    --baseDN 'cn=topology,cn=config' \
+    --searchScope sub "(ds-cfg-server-instance-name=${INSTANCE_NAME})" 1.1 | grep 'Number of Entries')
+echo "post-start: search output for instance name ${INSTANCE_NAME} on ${SEED_HOST}:${SEED_PORT}"
+
+NUMBER_ENTRIES=0
+if test ! -z "${SEARCH_OUT}"; then
+  NUMBER_ENTRIES=$(echo "${SEARCH_OUT}" | cut -d: -f2)
+fi
+
+if test "${NUMBER_ENTRIES}" -gt 0; then
   echo "post-start: the server is partially present in the topology registry and must be removed first"
   REMOVE_SERVER_FROM_TOPOLOGY_FIRST=true
 
