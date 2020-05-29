@@ -165,7 +165,7 @@ spec:
             - name: ssl-certs
               mountPath: /etc/ssl/certs/ca-certificates.crt
               readOnly: true
-          imagePullPolicy: "Always"
+          imagePullPolicy: IfNotPresent
       volumes:
         - name: ssl-certs
           hostPath:

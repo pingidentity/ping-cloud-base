@@ -7,8 +7,8 @@ spec:
     spec:
       initContainers:
       - name: pingdirectory-discovery-service
-        image: amazon/aws-cli
-        imagePullPolicy: Always
+        image: amazon/aws-cli:2.0.17
+        imagePullPolicy: IfNotPresent
         command:
         - /get_ssm_env_vars.sh
         envFrom:
