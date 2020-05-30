@@ -200,6 +200,9 @@ export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
 export NAMESPACE=ping-cloud-${ENVIRONMENT_NO_HYPHEN_PREFIX}
 DEPLOY_FILE=/tmp/deploy.yaml
 
+export LOG_BUCKET_URL_NO_PROTOCOL=${LOG_ARCHIVE_URL#s3://}
+export LOG_BUCKET_NAME=$(echo "${LOG_BUCKET_URL_NO_PROTOCOL}" | cut -d/ -f1)
+
 kustomize build test |
   envsubst '${PING_IDENTITY_DEVOPS_USER_BASE64}
     ${PING_IDENTITY_DEVOPS_KEY_BASE64}
@@ -213,6 +216,7 @@ kustomize build test |
     ${CONFIG_PARENT_DIR}
     ${ARTIFACT_REPO_URL}
     ${PING_ARTIFACT_REPO_URL}
+    ${LOG_BUCKET_NAME}
     ${LOG_ARCHIVE_URL}
     ${BACKUP_URL}' > ${DEPLOY_FILE}
 sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" ${DEPLOY_FILE}

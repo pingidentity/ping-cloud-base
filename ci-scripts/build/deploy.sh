@@ -11,6 +11,9 @@ configure_kube
 export PING_IDENTITY_DEVOPS_USER_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_USER}")
 export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_KEY}")
 
+export LOG_BUCKET_URL_NO_PROTOCOL=${LOG_ARCHIVE_URL#s3://}
+export LOG_BUCKET_NAME=$(echo "${LOG_BUCKET_URL_NO_PROTOCOL}" | cut -d/ -f1)
+
 # Deploy the configuration to Kubernetes
 DEPLOY_FILE=/tmp/deploy.yaml
 kustomize build "${PROJECT_DIR}"/test |
@@ -26,6 +29,7 @@ kustomize build "${PROJECT_DIR}"/test |
     ${CONFIG_PARENT_DIR}
     ${ARTIFACT_REPO_URL}
     ${PING_ARTIFACT_REPO_URL}
+    ${LOG_BUCKET_NAME}
     ${LOG_ARCHIVE_URL}
     ${BACKUP_URL}' > ${DEPLOY_FILE}
 
