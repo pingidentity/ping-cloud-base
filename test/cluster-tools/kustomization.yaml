@@ -79,7 +79,7 @@ patchesJson6902:
     name: nginx-ingress-controller
     namespace: ingress-nginx-public
 
-- path: patches/deployment/nginx-service.yaml
+- path: patches/service/ingress-nginx-public.yaml
   target:
     version: v1
     kind: Service
