@@ -46,7 +46,7 @@ fi
 echo "Merging changes from new server profile"
 
 ADDITIONAL_ARGS="--replaceFullProfile"
-if test "${OPTIMIZE_REPLACE_PROFILE}"; then
+if "${OPTIMIZE_REPLACE_PROFILE}"; then
   echo "Running replace-profile in optimized mode"
   ADDITIONAL_ARGS=
 fi

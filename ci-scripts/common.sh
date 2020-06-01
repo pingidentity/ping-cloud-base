@@ -37,7 +37,7 @@ else
   exit 1
 fi
 
-export LOG_SYNC_SECONDS="${LOG_SYNC_SECONDS:-10}"
+export LOG_SYNC_SECONDS="${LOG_SYNC_SECONDS:-5}"
 
 export ADMIN_USER=administrator
 export ADMIN_PASS=2FederateM0re
