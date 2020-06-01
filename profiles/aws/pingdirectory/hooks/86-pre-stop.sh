@@ -41,7 +41,7 @@ echo "pre-stop: removing ${REPL_INIT_MARKER_FILE} marker file"
 rm -f "${REPL_INIT_MARKER_FILE}"
 
 # Conditionally remove the persistent volume to which the pod was bound.
-if test ! "${LEAVE_DISK_AFTER_SERVER_DELETE}"; then
+if ! "${LEAVE_DISK_AFTER_SERVER_DELETE}"; then
   echo "pre-stop: remove the persistent volume"
   kubectl delete pvc out-dir-pingdirectory-"${ORDINAL}"
 fi
