@@ -108,9 +108,9 @@ spec:
           failureThreshold: 3
         livenessProbe:
           exec:
-            command: [ liveness.sh ]
-          initialDelaySeconds: 60
-          periodSeconds: 30
+            command: [ /opt/staging/hooks/pf-liveness.sh ]
+          initialDelaySeconds: 300
+          periodSeconds: 60
           failureThreshold: 3
         ports:
         - containerPort: 9999
