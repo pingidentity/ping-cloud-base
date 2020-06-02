@@ -248,3 +248,13 @@ patchesJson6902:
       value: prometheus${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
 
 ${SERVICE_NGINX_PRIVATE_PATCH}
+
+### Edit CloudWatch Logging Configuration ###
+#generatorOptions:
+#  disableNameSuffixHash: false
+#configMapGenerator:
+#  - name: fluentd-config
+#    namespace: amazon-cloudwatch
+#    behavior: merge
+#    files:
+#      - containers.conf
