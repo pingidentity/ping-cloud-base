@@ -1,34 +1,6 @@
 [
   {
-    "name": "OAuthPlayground",
-    "version": "4.2"
-  },
-  {
     "name": "pf-agentless-integration-kit",
     "version": "1.5.2"
-  },
-  {
-    "name": "pf-x509-certificate-integration-kit",
-    "version": "1.2.1"
-  },
-  {
-    "name": "pf-google-cloud-identity-connector",
-    "version": "1.4.1"
-  },
-  {
-    "name": "pf-github-cloud-identity-connector",
-    "version": "1.0"
-  },
-  {
-    "name": "pf-amazon-cloud-identity-connector",
-    "version": "1.0"
-  },
-  {
-    "name": "pf-facebook-cloud-identity-connector",
-    "version": "2.0.1"
-  },
-  {
-    "name": "pf-apple-cloud-identity-connector",
-    "version": "1.0.1"
   }
 ]
