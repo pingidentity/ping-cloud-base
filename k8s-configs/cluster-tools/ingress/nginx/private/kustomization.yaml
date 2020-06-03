@@ -5,6 +5,7 @@ resources:
 - namespace.yaml
 - ../base
 - rbac.yaml
+- hpa.yaml
 
 namespace: ingress-nginx-private
 
