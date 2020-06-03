@@ -21,7 +21,7 @@ mkdir -p ${DST_DIRECTORY}
 
 # Make request to admin API and export latest data
 make_api_request -X GET \
-  https://localhost:${PINGFEDERATE_ADMIN_PORT}/pf-admin-api/v1/configArchive/export \
+  https://localhost:${PF_ADMIN_PORT}/pf-admin-api/v1/configArchive/export \
   -o ${DST_DIRECTORY}/${DST_FILE_TIMESTAMP}
 
 # Validate admin API call was successful and that zip isn't corrupted
@@ -37,8 +37,8 @@ fi
 DST_FILE_LATEST="latest.zip"
 UPLOAD_DIR="$(mktemp -d)"
 
-cp "${DST_DIRECTORY}/$DST_FILE_TIMESTAMP" "${UPLOAD_DIR}/$DST_FILE_LATEST" 
-cp "${DST_DIRECTORY}/$DST_FILE_TIMESTAMP" "${UPLOAD_DIR}/$DST_FILE_TIMESTAMP" 
+cp "${DST_DIRECTORY}/$DST_FILE_TIMESTAMP" "${UPLOAD_DIR}/$DST_FILE_LATEST"
+cp "${DST_DIRECTORY}/$DST_FILE_TIMESTAMP" "${UPLOAD_DIR}/$DST_FILE_TIMESTAMP"
 
 echo "Copying files to '${SKBN_CLOUD_PREFIX}'"
 
