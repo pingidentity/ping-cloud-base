@@ -22,7 +22,7 @@ EXPORT_DIR=$(mktemp -d)
 EXPORT_ZIP_FILE="${EXPORT_DIR}/export.zip"
 
 make_api_request -X GET \
-  "https://${PINGFEDERATE_ADMIN_SERVER}:${PINGFEDERATE_ADMIN_PORT}/pf-admin-api/v1/configArchive/export" \
+  "https://${PINGFEDERATE_ADMIN_SERVER}:${PF_ADMIN_PORT}/pf-admin-api/v1/configArchive/export" \
   -o "${EXPORT_ZIP_FILE}"
 
 RESULT=$?
