@@ -220,6 +220,10 @@ ${PING_IDENTITY_DEVOPS_KEY_BASE64}
 ${TENANT_DOMAIN}
 ${REGION}
 ${SIZE}
+${LETS_ENCRYPT_SERVER}
+${PF_PD_BIND_PORT}
+${PF_PD_BIND_PROTOCOL}
+${PF_PD_BIND_USESSL}
 ${CLUSTER_NAME}
 ${CLUSTER_NAME_LC}
 ${CLUSTER_STATE_REPO_URL}
@@ -475,6 +479,22 @@ for ENV in ${ENVIRONMENTS}; do
       ;;
     prod)
       export KUSTOMIZE_BASE="prod/${SIZE}"
+      ;;
+  esac
+
+  # Update the Let's encrypt server to use staging/production based on environment type.
+  case "${ENV}" in
+    dev | test | stage)
+      export LETS_ENCRYPT_SERVER='https://acme-staging-v02.api.letsencrypt.org/directory'
+      export PF_PD_BIND_PORT=1389
+      export PF_PD_BIND_PROTOCOL=ldap
+      export PF_PD_BIND_USESSL=false
+      ;;
+    prod)
+      export LETS_ENCRYPT_SERVER='https://acme-v02.api.letsencrypt.org/directory'
+      export PF_PD_BIND_PORT=5678
+      export PF_PD_BIND_PROTOCOL=ldaps
+      export PF_PD_BIND_USESSL=true
       ;;
   esac
 

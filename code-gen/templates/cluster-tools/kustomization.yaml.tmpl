@@ -24,6 +24,7 @@ patchesStrategicMerge:
     name: letsencrypt-prod
   spec:
     acme:
+      server: ${LETS_ENCRYPT_SERVER}
       email: ${CLUSTER_NAME_LC}@${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
       solvers:
       - dns01:
