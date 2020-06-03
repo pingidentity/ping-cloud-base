@@ -103,13 +103,13 @@ spec:
           exec:
             command:
             - /opt/staging/hooks/85-readiness.sh
-          initialDelaySeconds: 60
+          initialDelaySeconds: 90
           periodSeconds: 5
           failureThreshold: 3
         livenessProbe:
           exec:
-            command: [ liveness.sh ]
-          initialDelaySeconds: 60
+            command: [ /opt/staging/hooks/99-pf-liveness.sh ]
+          initialDelaySeconds: 90
           periodSeconds: 30
           failureThreshold: 3
         ports:
