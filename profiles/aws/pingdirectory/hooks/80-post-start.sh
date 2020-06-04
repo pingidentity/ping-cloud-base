@@ -521,9 +521,6 @@ if test "${ORDINAL}" -eq 0 && test "${IS_PARENT_CLUSTER}" = 'true'; then
     test ${licModStatus} -ne 0 && stop_container
   fi
 
-  # Set the public hostname in setup.host, if necessary
-  set_external_hostname
-
   echo "post-start: post-start complete"
   exit
 fi
@@ -683,8 +680,5 @@ done
 
 # Reset the force-as-master flag to false on the seed server if it was set before.
 reset_force_as_master
-
-# Set the public hostname in setup.host, if necessary
-set_external_hostname
 
 echo "post-start: post-start complete"
