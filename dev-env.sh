@@ -78,9 +78,18 @@
 #                           | to Container Insights, an AWS-specific logging     |
 #                           | and monitoring solution.                           |
 #                           |                                                    |
-# PD_PARENT_PUBLIC_HOSTNAME | The public or external hostname of the             | No default
+# IS_PARENT                 | Flag indicating whether or not this is the parent  | true
+#                           | Kubernetes cluster or region.                      |
+#                           |                                                    |
+# PD_PARENT_PUBLIC_HOSTNAME | The public or external hostname of the             | pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}
 #                           | PingDirectory server in the parent cluster if      |
 #                           | deploying across more than one cluster.            |
+#                           |                                                    |
+# PF_ADMIN_PUBLIC_HOSTNAME  | The public or external hostname of the             | pingfederate-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+#                           | PingFederate admin server.                         |
+#                           |                                                    |
+# PA_ADMIN_PUBLIC_HOSTNAME  | The public or external hostname of the PingAccess  | pingaccess-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+#                           | admin server.                                      |
 #                           |                                                    |
 # CONFIG_REPO_BRANCH        | The branch within this repository for server       | master
 #                           | profiles, i.e. configuration.                      |
@@ -141,7 +150,7 @@ do
       skipTest='true'
       ;;
     *)
-      echo "Usage ${0} [ -n ] n = dry-run"
+      echo "Usage ${0} [ -ns ] n = dry-run; s = skip-test"
       popd  > /dev/null 2>&1
       exit 1
       ;;
@@ -165,7 +174,10 @@ echo "Initial TENANT_NAME: ${TENANT_NAME}"
 echo "Initial TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Initial ENVIRONMENT: ${ENVIRONMENT}"
 echo "Initial REGION: ${REGION}"
+echo "Initial IS_PARENT: ${IS_PARENT}"
 echo "Initial PD_PARENT_PUBLIC_HOSTNAME: ${PD_PARENT_PUBLIC_HOSTNAME}"
+echo "Initial PF_ADMIN_PUBLIC_HOSTNAME: ${PF_ADMIN_PUBLIC_HOSTNAME}"
+echo "Initial PA_ADMIN_PUBLIC_HOSTNAME: ${PA_ADMIN_PUBLIC_HOSTNAME}"
 echo "Initial CONFIG_REPO_BRANCH: ${CONFIG_REPO_BRANCH}"
 echo "Initial CONFIG_PARENT_DIR: ${CONFIG_PARENT_DIR}"
 echo "Initial ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
@@ -197,12 +209,20 @@ test -z "${K8S_CONTEXT}" && K8S_CONTEXT=$(kubectl config current-context)
 
 ENVIRONMENT_NO_HYPHEN_PREFIX="${ENVIRONMENT#-}"
 
+test -z "${IS_PARENT}" && IS_PARENT=true
+test -z "${PD_PARENT_PUBLIC_HOSTNAME}" && export PD_PARENT_PUBLIC_HOSTNAME=pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+test -z "${PF_ADMIN_PUBLIC_HOSTNAME}" && export PF_ADMIN_PUBLIC_HOSTNAME=pingfederate-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+test -z "${PA_ADMIN_PUBLIC_HOSTNAME}" && export PA_ADMIN_PUBLIC_HOSTNAME=pingaccess-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+
 # Show the values being used for the relevant environment variables.
 echo "Using TENANT_NAME: ${TENANT_NAME}"
 echo "Using TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Using ENVIRONMENT: ${ENVIRONMENT_NO_HYPHEN_PREFIX}"
 echo "Using REGION: ${REGION}"
+echo "Using IS_PARENT: ${IS_PARENT}"
 echo "Using PD_PARENT_PUBLIC_HOSTNAME: ${PD_PARENT_PUBLIC_HOSTNAME}"
+echo "Using PF_ADMIN_PUBLIC_HOSTNAME: ${PF_ADMIN_PUBLIC_HOSTNAME}"
+echo "Using PA_ADMIN_PUBLIC_HOSTNAME: ${PA_ADMIN_PUBLIC_HOSTNAME}"
 echo "Using CONFIG_REPO_BRANCH: ${CONFIG_REPO_BRANCH}"
 echo "Using CONFIG_PARENT_DIR: ${CONFIG_PARENT_DIR}"
 echo "Using ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
@@ -221,7 +241,21 @@ export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
 
 export NAMESPACE=ping-cloud-${ENVIRONMENT_NO_HYPHEN_PREFIX}
 
-kustomize build test |
+# Set the cluster type based on parent or child
+BELUGA_DEV_TEST_DIR=test
+TEST_KUSTOMIZATION="${BELUGA_DEV_TEST_DIR}"/ping-cloud/kustomization.yaml
+
+if "${IS_PARENT}"; then
+  export CLUSTER_TYPE=parent
+  export PF_PA_ADMIN_INGRESS_PATCHES="$(cat "${BELUGA_DEV_TEST_DIR}"/ping-cloud/pf-pa-admin-ingress-patches.yaml)"
+else
+  export CLUSTER_TYPE=child
+fi
+
+envsubst '${CLUSTER_TYPE}
+  ${PF_PA_ADMIN_INGRESS_PATCHES}' < "${TEST_KUSTOMIZATION}".subst > "${TEST_KUSTOMIZATION}"
+
+kustomize build "${BELUGA_DEV_TEST_DIR}" |
   envsubst '${PING_IDENTITY_DEVOPS_USER_BASE64}
     ${PING_IDENTITY_DEVOPS_KEY_BASE64}
     ${ENVIRONMENT}
@@ -233,11 +267,15 @@ kustomize build test |
     ${CONFIG_REPO_BRANCH}
     ${CONFIG_PARENT_DIR}
     ${PD_PARENT_PUBLIC_HOSTNAME}
+    ${PF_ADMIN_PUBLIC_HOSTNAME}
+    ${PA_ADMIN_PUBLIC_HOSTNAME}
     ${ARTIFACT_REPO_URL}
     ${PING_ARTIFACT_REPO_URL}
     ${LOG_ARCHIVE_URL}
-    ${BACKUP_URL}' > ${DEPLOY_FILE}
-sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" ${DEPLOY_FILE}
+    ${BACKUP_URL}' > "${DEPLOY_FILE}"
+
+sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" "${DEPLOY_FILE}"
+rm -f "${TEST_KUSTOMIZATION}"
 
 if test "${dryrun}" = 'false'; then
   echo "Deploying ${DEPLOY_FILE} to cluster ${CLUSTER_NAME}, namespace ${NAMESPACE} for tenant ${TENANT_DOMAIN}"
@@ -288,6 +326,10 @@ export NAMESPACE=${NAMESPACE}
 
 export CONFIG_PARENT_DIR=aws
 export CONFIG_REPO_BRANCH=${CONFIG_REPO_BRANCH}
+
+export PD_PARENT_PUBLIC_HOSTNAME=${PD_PARENT_PUBLIC_HOSTNAME}
+export PF_ADMIN_PUBLIC_HOSTNAME=${PF_ADMIN_PUBLIC_HOSTNAME}
+export PA_ADMIN_PUBLIC_HOSTNAME=${PA_ADMIN_PUBLIC_HOSTNAME}
 
 export ARTIFACT_REPO_URL=${ARTIFACT_REPO_URL}
 export PING_ARTIFACT_REPO_URL=${PING_ARTIFACT_REPO_URL}

@@ -1,0 +1,15 @@
+# pingfederate admin
+- path: patches/ingress/pingfederate-admin.yaml
+  target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingfederate-admin-ingress
+
+# pingaccess admin
+- path: patches/ingress/pingaccess-admin.yaml
+  target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingaccess-admin-ingress
