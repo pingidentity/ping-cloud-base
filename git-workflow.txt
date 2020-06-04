@@ -34,7 +34,8 @@ doing it themselves via the MR workflow (as described in the following section),
 engineer to handle it. A release engineer will merge changes from lower branches all the way up into master
 periodically, for example, from v1.3-release-branch -> v1.4-release-branch -> master. Multiple commits may be chained
 to keep the CI pipeline from going berserk. But if it's not a fast-forward merge, and there are merge conflicts, the
-release engineer may request the developer to perform the merge.
+release engineer may request the developer to perform the merge. See the "Promoting changes from lower to higher
+versions" section below on how to do this, if necessary.
 
 Note that the release branches are not long-lived branches. Once a particular version has been made end-of-life, or all
 customers have been upgraded to a new version, the release branches may be deleted. For example, if all PingCloud
@@ -109,3 +110,42 @@ Git Workflow:
 
 11. Resolve all threads in the MR. Once approved and the pipeline passes, you will be able to merge your changes to the
     target branch by hitting the "Merge" button.
+
+Promoting changes from lower to higher versions:
+
+Note that this workflow is only required if the developer wishes to perform this action by themselves so they have
+complete ownership of a particular feature, or if a release engineer is unable to perform a merge of the changes from
+a lower to a higher branch due to merge conflicts, being on leave, etc.. It is recommended that developers defer this
+to the release engineer as much as possible, especially if they are not comfortable with git workflows.
+
+Warning:
+When promoting changes from lower to higher versions, cherry-picking must be avoided. Instead, a merge to the higher
+version is preferred. This will ensure that the history of the changes made in the lower version's branch is preserved
+and there are no duplicate commit IDs for the same changes - just an extra merge commit. Refer to the following
+document on why cherry-picking should not be part of a normal git workflow:
+
+https://dan.bravender.net/2011/10/20/Why_cherry-picking_should_not_be_part_of_a_normal_git_workflow.html
+
+The following steps explain how to promote a bug-fix/feature (pdo-x) targeted for the v1.4-release-branch into master.
+
+1. Create an MR from pdo-x to v1.4-release-branch using the "Git Workflow" steps above.
+
+2. After the code is reviewed and merged into the v1.4-release-branch, the MR workflow will delete the pdo-x remote
+   branch. Retain your local copy of pdo-x for the merge.
+
+3. Switch to your local copy of master and update it:
+   git checkout master
+   git pull
+
+4. Create a local branch for merging pdo-x into master:
+   git checkout -b pdo-x-master
+
+5. Merge pdo-x into pdo-x-master and push it to remote:
+   git merge pdo-x
+   git push --set-upstream origin pdo-x-master
+
+6. Follow the MR process on GitLab UI requesting to merge pdo-x-master into master.
+
+7. Once the branch has been merged, you may optionally get rid of your local branches:
+   git checkout master
+   git branch -D pdo-x pdo-x-master
