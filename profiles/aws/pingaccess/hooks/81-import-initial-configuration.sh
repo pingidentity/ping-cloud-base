@@ -9,8 +9,7 @@ set -e
 if test -z "${PA_ADMIN_PUBLIC_HOSTNAME}" || test -z "${PA_ENGINE_PUBLIC_HOSTNAME}"; then
   export CLUSTER_CONFIG_HOST_PORT="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9090"
 else
-  DOMAIN_NAME="$(echo "${PA_ADMIN_PUBLIC_HOSTNAME}" | cut -d'.' -f2-)"
-  export CLUSTER_CONFIG_HOST_PORT="pingaccess-cluster.${DOMAIN_NAME}:9090"
+  export CLUSTER_CONFIG_HOST_PORT="${PA_CLUSTER_PUBLIC_HOSTNAME}:9090"
 fi
 
 echo "import-initial-configuration: cluster-config host:port ${CLUSTER_CONFIG_HOST_PORT}"
