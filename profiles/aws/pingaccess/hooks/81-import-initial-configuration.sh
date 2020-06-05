@@ -14,7 +14,7 @@ else
   export CLUSTER_CONFIG_PORT=443
 fi
 
-echo "import-initial-configuration: cluster-config host:port ${CLUSTER_CONFIG_HOST_PORT}"
+echo "import-initial-configuration: cluster-config host:port ${CLUSTER_CONFIG_HOST}:${CLUSTER_CONFIG_PORT}"
 
 templates_dir_path=${STAGING_DIR}/templates/81
 
