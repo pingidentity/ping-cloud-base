@@ -283,3 +283,14 @@ function comparePasswordDiskWithVariable() {
   "${VERBOSE}" && set -x
   return 0
 }
+
+########################################################################################################################
+# Determines if the environment is running in the context of multiple clusters. If both PA_ADMIN_PUBLIC_HOSTNAME and
+# PA_ENGINE_PUBLIC_HOSTNAME, it is assumed to be multi-cluster.
+#
+# Returns
+#   0 if multi-cluster; 1 if not.
+########################################################################################################################
+function is_multi_cluster() {
+  test ! -z "${PA_ADMIN_PUBLIC_HOSTNAME}" && test ! -z "${PA_ENGINE_PUBLIC_HOSTNAME}"
+}

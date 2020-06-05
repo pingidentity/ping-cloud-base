@@ -44,15 +44,6 @@ patchesJson6902:
     name: prometheus-ingress
     namespace: prometheus
 
-# Make the admin nodes available externally for test purposes. In general, they
-# will be behind a VPN gateway on all CDEs so only admins have access to them.
-- path: patches/service/ingress-nginx-private.yaml
-  target:
-    version: v1
-    kind: Service
-    name: ingress-nginx
-    namespace: ingress-nginx-private
-
 # cluster auto-scaler
 - path: patches/deployment/patch-cluster-and-region.yaml
   target:
@@ -62,19 +53,55 @@ patchesJson6902:
     name: cluster-autoscaler
     namespace: kube-system
 
-- path: patches/service/add-service-port-mappings.yaml
+# Add the pingdirectory hostname to the private NLB for ldap access
+# Also, make the admin nodes available externally for test purposes. In general, they
+# will be behind a VPN gateway on all CDEs so only admins have access to them.
+- path: patches/service/add-hostname-to-private-lb.yaml
   target:
     version: v1
     kind: Service
     name: ingress-nginx
     namespace: ingress-nginx-private
 
-- path: patches/service/add-configmap-port-mappings.yaml
+# Open up ports on the private NLB for PD LDAPS/replication and PF/PA admins
+- path: patches/service/add-private-lb-port-mappings.yaml
+  target:
+    version: v1
+    kind: Service
+    name: ingress-nginx
+    namespace: ingress-nginx-private
+
+  # Configure the private nginx controller to receive traffic on the above ports
+- path: patches/service/add-tcp-port-mappings.yaml
   target:
     version: v1
     kind: ConfigMap
     name: tcp-services
     namespace: ingress-nginx-private
+
+# Add kube-dns hostname to the public NLB for service discovery across clusters
+- path: patches/service/add-hostname-to-public-lb.yaml
+  target:
+    version: v1
+    kind: Service
+    name: ingress-nginx
+    namespace: ingress-nginx-public
+
+# Open up ports on the public NLB to expose kube-dns outside of the cluster
+- path: patches/service/add-public-lb-port-mappings.yaml
+  target:
+    version: v1
+    kind: Service
+    name: ingress-nginx
+    namespace: ingress-nginx-public
+
+# Configure the public nginx controller to receive traffic on the above ports
+- path: patches/service/add-udp-port-mappings.yaml
+  target:
+    version: v1
+    kind: ConfigMap
+    name: udp-services
+    namespace: ingress-nginx-public
 
 # Change the default TLS secret for the ingress controllers
 - path: patches/deployment/nginx-controller.yaml

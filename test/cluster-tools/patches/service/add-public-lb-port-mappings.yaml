@@ -1,0 +1,15 @@
+- op: replace
+  path: /spec/ports
+  value:
+    # http and https for the runtimes
+    - name: http
+      port: 80
+      targetPort: http
+    - name: https
+      port: 443
+      targetPort: https
+
+    # open ports to export kube-dns
+    - name: dns
+      port: 53
+      targetPort: 53

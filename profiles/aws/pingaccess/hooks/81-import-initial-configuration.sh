@@ -6,7 +6,7 @@
 set -e
 "${VERBOSE}" && set -x
 
-if test -z "${PA_ADMIN_PUBLIC_HOSTNAME}" || test -z "${PA_ENGINE_PUBLIC_HOSTNAME}"; then
+if is_multi_cluster; then
   export CLUSTER_CONFIG_HOST="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}"
   export CLUSTER_CONFIG_PORT=9090
 else

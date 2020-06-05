@@ -81,7 +81,5 @@ function replace_instance_name() {
 #   0 if multi-cluster; 1 if not.
 ########################################################################################################################
 function is_multi_cluster() {
-  test ! -z "${PD_PARENT_PUBLIC_HOSTNAME}" && test ! -z "${PD_PUBLIC_HOSTNAME}" &&
-    return 0 ||
-    return 1
+  test ! -z "${PD_PARENT_PUBLIC_HOSTNAME}" && test ! -z "${PD_PUBLIC_HOSTNAME}"
 }

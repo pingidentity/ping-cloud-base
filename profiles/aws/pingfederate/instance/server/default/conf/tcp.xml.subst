@@ -55,7 +55,8 @@
 
 
     <dns.DNS_PING
-		 dns_query="${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local" />
+		 dns_query="${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local"
+		 ${DNS_ADDRESS} />
 
 
     <!-- To enable discovery of EC2 instances in AWS dynamically, comment out TCPPING, and uncomment the section below.
@@ -115,6 +116,7 @@
              remove_all_data_on_view_change="true"/>
     -->
 
+    <MULTI_PING async_discovery="true" />
     <MERGE3 min_interval="30000" max_interval="60000" />
     <FD_SOCK start_port="${_DOLLAR_}{pf.cluster.failure.detection.bind.port}" bind_addr="${_DOLLAR_}{pf.cluster.bind.address}"/>
     <FD timeout="10000" max_tries="5"/>

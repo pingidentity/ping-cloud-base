@@ -90,6 +90,35 @@ function obfuscatePassword() {
 }
 
 ########################################################################################################################
+# Determines if the environment is running in the context of multiple clusters. If both PF_ADMIN_PUBLIC_HOSTNAME and
+# PF_ENGINE_PUBLIC_HOSTNAME, it is assumed to be multi-cluster.
+#
+# Returns
+#   0 if multi-cluster; 1 if not.
+########################################################################################################################
+function is_multi_cluster() {
+  test ! -z "${PF_ADMIN_PUBLIC_HOSTNAME}" && test ! -z "${PF_ENGINE_PUBLIC_HOSTNAME}"
+}
+
+########################################################################################################################
+# Set up the tcp.xml file based on whether it is a single-cluster or multi-cluster deployment.
+########################################################################################################################
+function configure_cluster() {
+  local currentDir="$(pwd)"
+  cd "${SERVER_ROOT_DIR}/server/default/conf"
+
+  is_multi_cluster &&
+      export DNS_ADDRESS="dns_address=\"${KUBE_DNS_PUBLIC_NAME}\"" ||
+      export DNS_ADDRESS=
+
+  mv tcp.xml{,.subst}
+  envsubst < tcp.xml.subst > tcp.xml
+  rm -f tcp.xml.subst
+
+  cd "${currentDir}"
+}
+
+########################################################################################################################
 # Function sets required environment variables for skbn
 #
 ########################################################################################################################

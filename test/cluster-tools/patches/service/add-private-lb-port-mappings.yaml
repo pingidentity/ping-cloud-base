@@ -1,7 +1,7 @@
 - op: replace
   path: /spec/ports
   value:
-    # http and https
+    # http and https for the admins
     - name: http
       port: 80
       targetPort: http

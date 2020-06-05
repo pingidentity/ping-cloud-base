@@ -12,19 +12,13 @@ fi
 
 echo "add-engine: starting add engine script"
 
-IS_MULTI_CLUSTER=false
-if test -z "${PA_ADMIN_PUBLIC_HOSTNAME}" || test -z "${PA_ENGINE_PUBLIC_HOSTNAME}"; then
-  IS_MULTI_CLUSTER=false
-else
-  IS_MULTI_CLUSTER=true
-fi
-
+IS_MULTI_CLUSTER=$(is_multi_cluster)
 echo "add-engine: multi-cluster: ${IS_MULTI_CLUSTER}"
 
 SHORT_HOST_NAME=$(hostname)
 ORDINAL=${SHORT_HOST_NAME##*-}
 
-if test "${IS_MULTI_CLUSTER}" = 'true'; then
+if "${IS_MULTI_CLUSTER}"; then
   ADMIN_HOST_PORT="${PA_ADMIN_PUBLIC_HOSTNAME}"
   ENGINE_NAME="${PA_ENGINE_PUBLIC_HOSTNAME}:300${ORDINAL}"
 else
