@@ -81,6 +81,13 @@ if ! test -z "${BACKUP_FILE_NAME}" || ! test -f "${OUT_DIR}"/instance/conf/pa.jw
 
     echo "importing configuration"
 
+    # PDO-1076 - Proactively delete the H2 database password backup file if it exists
+    readonly h2_props_backup="${SERVER_ROOT_DIR}/conf/h2_password_properties.backup"
+    if [ -f "${h2_props_backup}" ]; then
+      echo "Found the H2 database password properties file: ${h2_props_backup}.  Removing this file before unzipping the backup."
+      rm -f "${h2_props_backup}"
+    fi
+
     # Unzip backup configuration
     unzip -o "${SERVER_RESTORE_DIR}/${DST_FILE}" -d ${OUT_DIR}/instance
 
