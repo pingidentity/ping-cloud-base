@@ -78,11 +78,11 @@ spec:
             optional: true
         resources:
           requests:
-            memory: "2Gi"
-            cpu: "1"
+            memory: "4Gi"
+            cpu: "2"
           limits:
-            memory: "2Gi"
-            cpu: "1"
+            memory: "4Gi"
+            cpu: "2"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
