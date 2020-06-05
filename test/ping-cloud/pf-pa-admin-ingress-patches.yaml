@@ -13,3 +13,11 @@
     version: v1beta1
     kind: Ingress
     name: pingaccess-admin-ingress
+
+# pingaccess cluster config
+- path: patches/ingress/pingaccess-cluster.yaml
+  target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingaccess-cluster-ingress

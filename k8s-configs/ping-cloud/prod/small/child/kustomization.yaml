@@ -29,6 +29,13 @@ patchesStrategicMerge:
   $patch: delete
 
 - |-
+  apiVersion: extensions/v1beta1
+  kind: Ingress
+  metadata:
+    name: pingaccess-cluster-ingress
+  $patch: delete
+
+- |-
   apiVersion: v1
   kind: ConfigMap
   metadata:
