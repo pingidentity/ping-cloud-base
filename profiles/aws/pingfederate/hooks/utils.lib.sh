@@ -110,15 +110,9 @@ function configure_cluster() {
   is_multi_cluster &&
       export MULTI_CLUSTER_DNS_PING="<dns.MULTI_CLUSTER_DNS_PING dns_query=\"${PF_ADMIN_PUBLIC_HOSTNAME}\" />"
 
-  echo "configure_cluster: DNS_ADDRESS: ${DNS_ADDRESS}"
-  echo "configure_cluster: contents of tcp.xml before substitution"
-  cat tcp.xml
-
-  set -x
   mv tcp.xml tcp.xml.subst
   envsubst < tcp.xml.subst > tcp.xml
   rm -f tcp.xml.subst
-  set +x
 
   echo "configure_cluster: contents of tcp.xml after substitution"
   cat tcp.xml
