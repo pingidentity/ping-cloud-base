@@ -90,3 +90,10 @@
     - name: repl-pingdiretory-9
       port: 9899
       targetPort: 9899
+
+    # open ports to export pingfederate cluster config service ports
+    - port: 7600
+      targetPort: 7600
+
+    - port: 7700
+      targetPort: 7700

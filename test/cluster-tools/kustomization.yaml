@@ -63,8 +63,8 @@ patchesJson6902:
     name: ingress-nginx
     namespace: ingress-nginx-private
 
-# Open up ports on the private NLB for PD LDAPS/replication and PF/PA admins
-- path: patches/service/add-private-lb-port-mappings.yaml
+# Open up ports on the private NLB for PD LDAPS/replication, PF/PA admins and PF cluster config service
+- path: patches/service/open-private-lb-ports.yaml
   target:
     version: v1
     kind: Service
@@ -72,36 +72,12 @@ patchesJson6902:
     namespace: ingress-nginx-private
 
   # Configure the private nginx controller to receive traffic on the above ports
-- path: patches/service/add-tcp-port-mappings.yaml
+- path: patches/service/add-private-nginx-tcp-port-mappings.yaml
   target:
     version: v1
     kind: ConfigMap
     name: tcp-services
     namespace: ingress-nginx-private
-
-# Add core-dns hostname to the public NLB for service discovery across clusters
-- path: patches/service/add-hostname-to-public-lb.yaml
-  target:
-    version: v1
-    kind: Service
-    name: ingress-nginx
-    namespace: ingress-nginx-public
-
-# Open up ports on the public NLB to expose core-dns outside of the cluster
-- path: patches/service/add-public-lb-port-mappings.yaml
-  target:
-    version: v1
-    kind: Service
-    name: ingress-nginx
-    namespace: ingress-nginx-public
-
-# Configure the public nginx controller to receive traffic on the above ports
-- path: patches/service/add-udp-port-mappings.yaml
-  target:
-    version: v1
-    kind: ConfigMap
-    name: udp-services
-    namespace: ingress-nginx-public
 
 # Change the default TLS secret for the ingress controllers
 - path: patches/deployment/nginx-controller.yaml
