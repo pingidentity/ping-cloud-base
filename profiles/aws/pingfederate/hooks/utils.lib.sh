@@ -116,7 +116,7 @@ function configure_cluster() {
   cat tcp.xml
 
   set -x
-  mv tcp.xml{,.subst}
+  mv tcp.xml tcp.xml.subst
   envsubst < tcp.xml.subst > tcp.xml
   rm -f tcp.xml.subst
   set +x
