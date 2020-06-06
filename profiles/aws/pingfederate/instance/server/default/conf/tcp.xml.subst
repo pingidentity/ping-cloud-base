@@ -56,7 +56,7 @@
 
     <dns.DNS_PING
 		 dns_query="${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local"
-		 ${DNS_ADDRESS} />
+		 ${_DOLLAR_}{DNS_ADDRESS} />
 
 
     <!-- To enable discovery of EC2 instances in AWS dynamically, comment out TCPPING, and uncomment the section below.
