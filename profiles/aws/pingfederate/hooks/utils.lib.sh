@@ -108,7 +108,7 @@ function configure_cluster() {
   cd "${SERVER_ROOT_DIR}/server/default/conf"
 
   is_multi_cluster &&
-      export MULTI_CLUSTER_DNS_PING="<dns.DNS_PING dns_query=\"${PF_ADMIN_PUBLIC_HOSTNAME}\" />"
+      export MULTI_CLUSTER_DNS_PING="<dns.MULTI_CLUSTER_DNS_PING dns_query=\"${PF_ADMIN_PUBLIC_HOSTNAME}\" />"
 
   echo "configure_cluster: DNS_ADDRESS: ${DNS_ADDRESS}"
   echo "configure_cluster: contents of tcp.xml before substitution"
