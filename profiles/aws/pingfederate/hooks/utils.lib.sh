@@ -111,9 +111,18 @@ function configure_cluster() {
       export DNS_ADDRESS="dns_address=\"${KUBE_DNS_PUBLIC_NAME}\"" ||
       export DNS_ADDRESS=
 
+  echo "configure_cluster: DNS_ADDRESS: ${DNS_ADDRESS}"
+  echo "configure_cluster: contents of tcp.xml after substitution"
+  cat tcp.xml
+
+  set -x
   mv tcp.xml{,.subst}
   envsubst < tcp.xml.subst > tcp.xml
   rm -f tcp.xml.subst
+  set +x
+
+  echo "configure_cluster: contents of tcp.xml after substitution"
+  cat tcp.xml
 
   cd "${currentDir}"
 }
