@@ -112,7 +112,7 @@ function configure_cluster() {
       export DNS_ADDRESS=
 
   echo "configure_cluster: DNS_ADDRESS: ${DNS_ADDRESS}"
-  echo "configure_cluster: contents of tcp.xml after substitution"
+  echo "configure_cluster: contents of tcp.xml before substitution"
   cat tcp.xml
 
   set -x
