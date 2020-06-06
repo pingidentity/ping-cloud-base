@@ -108,7 +108,7 @@ function configure_cluster() {
   cd "${SERVER_ROOT_DIR}/server/default/conf"
 
   is_multi_cluster &&
-      export DNS_ADDRESS="dns_address=\"${KUBE_DNS_PUBLIC_NAME}\"" ||
+      export DNS_ADDRESS="dns_address=\"${CORE_DNS_PUBLIC_NAME}\"" ||
       export DNS_ADDRESS=
 
   echo "configure_cluster: DNS_ADDRESS: ${DNS_ADDRESS}"

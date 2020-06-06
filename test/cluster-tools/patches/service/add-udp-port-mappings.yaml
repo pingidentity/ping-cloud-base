@@ -1,4 +1,4 @@
 - op: add
   path: /data
   value:
-    53: "kube-system/kube-dns:53"
+    53: "kube-system/core-dns:53"

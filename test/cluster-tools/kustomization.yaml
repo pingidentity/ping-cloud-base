@@ -79,7 +79,7 @@ patchesJson6902:
     name: tcp-services
     namespace: ingress-nginx-private
 
-# Add kube-dns hostname to the public NLB for service discovery across clusters
+# Add core-dns hostname to the public NLB for service discovery across clusters
 - path: patches/service/add-hostname-to-public-lb.yaml
   target:
     version: v1
@@ -87,7 +87,7 @@ patchesJson6902:
     name: ingress-nginx
     namespace: ingress-nginx-public
 
-# Open up ports on the public NLB to expose kube-dns outside of the cluster
+# Open up ports on the public NLB to expose core-dns outside of the cluster
 - path: patches/service/add-public-lb-port-mappings.yaml
   target:
     version: v1
