@@ -51,8 +51,8 @@ spec:
       targetPort: 7601
     - name: pingfederate-cluster-diag
       protocol: TCP
-      port: 7500
-      targetPort: 7500
+      port: 7700
+      targetPort: 7700
   selector:
      cluster: pingfederate-cluster
 

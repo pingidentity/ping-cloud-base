@@ -96,6 +96,10 @@
       port: 7600
       targetPort: 7600
 
-    - name: pingfederate-cluster-config
+    - name: pingfederate-cluster-mcast
+      port: 7601
+      targetPort: 7601
+
+    - name: pingfederate-cluster-diag
       port: 7700
       targetPort: 7700
