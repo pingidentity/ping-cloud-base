@@ -108,7 +108,8 @@ function configure_cluster() {
   cd "${SERVER_ROOT_DIR}/server/default/conf"
 
   is_multi_cluster &&
-      export MULTI_CLUSTER_DNS_PING="<dns.MULTI_CLUSTER_DNS_PING dns_query=\"${PF_ADMIN_PUBLIC_HOSTNAME}\" />"
+      export DNS_PING_QUERY="${PF_ADMIN_PUBLIC_HOSTNAME}" ||
+      export DNS_PING_QUERY="${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local"
 
   mv tcp.xml tcp.xml.subst
   envsubst < tcp.xml.subst > tcp.xml
