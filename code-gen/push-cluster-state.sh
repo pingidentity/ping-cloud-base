@@ -16,8 +16,7 @@
 
 ########################################################################################################################
 # Organizes the Kubernetes configuration files to push into the cluster state repo for a specific Customer Deployment
-# Environment (CDE). After this function completes, the code for the environment and region will be organized in the
-# directory to which ENV_CODE_DIR points.
+# Environment (CDE).
 #
 # Arguments
 #   ${1} -> The directory where cluster state code was generated, i.e. the TARGET_DIR to generate-cluster-state.sh.
@@ -34,18 +33,24 @@ organize_code_for_environment() {
   local is_parent="${5}"
 
   echo "Organizing code for environment ${env} in directory ${out_dir} for region ${region_name} (parent: ${is_parent})"
+
   if "${is_parent}"; then
-    ENV_CODE_DIR="${out_dir}"
-    cp -pr "${generated_code_dir}"/cluster-state/. "${ENV_CODE_DIR}"
+    # For the parent region, we need to copy everything (i.e. both the k8s-configs and the profiles)
+    # into the cluster state repo.
+
+    # Copy everything under cluster state into the code directory for the environment.
+    cp -pr "${generated_code_dir}"/cluster-state/. "${out_dir}"
+
+    # Remove everything under the k8s-configs because code is initially generated for every CDE under there.
+    local k8s_dir="${out_dir}"/k8s-configs
+    rm -rf "${k8s_dir:?}"/*
+
+    # Copy the environment-specific k8s-configs into it.
+    cp -pr "${generated_code_dir}"/cluster-state/k8s-configs/"${env}"/. "${k8s_dir}"
   else
-    ENV_CODE_DIR="${out_dir}/${region_name}"
+    # For child region, we only need to copy the environment-specific k8s-configs.
+    cp -pr "${generated_code_dir}"/cluster-state/k8s-configs/"${env}"/. "${out_dir}"
   fi
-
-  local k8s_dir="${ENV_CODE_DIR}"/k8s-configs
-  rm -rf "${k8s_dir:?}"
-
-  mkdir -p "${k8s_dir}"
-  cp -pr "${generated_code_dir}"/cluster-state/k8s-configs/"${env}"/. "${k8s_dir}"
 }
 
 ########################################################################################################################
@@ -87,8 +92,8 @@ PCB_COMMIT_SHA=$(cat "${GENERATED_CODE_DIR}"/pcb-commit-sha.txt)
 for ENV in ${ENVIRONMENTS}; do
   echo "Processing ${ENV}"
 
-  OUT_DIR=$(mktemp -d)
-  organize_code_for_environment "${GENERATED_CODE_DIR}" "${ENV}" "${OUT_DIR}" "${REGION_NAME}" "${IS_PARENT}"
+  ENV_CODE_DIR=$(mktemp -d)
+  organize_code_for_environment "${GENERATED_CODE_DIR}" "${ENV}" "${ENV_CODE_DIR}" "${REGION_NAME}" "${IS_PARENT}"
 
   if test "${ENV}" != 'prod'; then
     GIT_BRANCH="${ENV}"
@@ -117,8 +122,9 @@ for ENV in ${ENVIRONMENTS}; do
     rm -rf ./*
     cp -pr "${ENV_CODE_DIR}"/. .
   else
-    rm -rf ./"${REGION_NAME}"
-    cp -pr "${ENV_CODE_DIR}" .
+    K8S_DIR_FOR_CHILD=./k8s-configs/"${REGION_NAME}"
+    rm -rf "${K8S_DIR_FOR_CHILD}"
+    cp -pr "${ENV_CODE_DIR}"/. "${K8S_DIR_FOR_CHILD}"
   fi
 
   git add .
