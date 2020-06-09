@@ -18,7 +18,7 @@ echo "add-engine: multi-cluster: ${IS_MULTI_CLUSTER}"
 SHORT_HOST_NAME=$(hostname)
 ORDINAL=${SHORT_HOST_NAME##*-}
 
-if "${IS_MULTI_CLUSTER}"; then
+if test "${IS_MULTI_CLUSTER}" == "1"; then
   ADMIN_HOST_PORT="${PA_ADMIN_PUBLIC_HOSTNAME}"
   ENGINE_NAME="${PA_ENGINE_PUBLIC_HOSTNAME}:300${ORDINAL}"
 else

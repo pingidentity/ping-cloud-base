@@ -292,5 +292,9 @@ function comparePasswordDiskWithVariable() {
 #   0 if multi-cluster; 1 if not.
 ########################################################################################################################
 function is_multi_cluster() {
-  test ! -z "${PA_ADMIN_PUBLIC_HOSTNAME}" && test ! -z "${PA_ENGINE_PUBLIC_HOSTNAME}"
+  if test ! -z "${PA_ADMIN_PUBLIC_HOSTNAME}" && test ! -z "${PA_ENGINE_PUBLIC_HOSTNAME}"; then
+    echo 1
+  else
+    echo 0
+  fi
 }
