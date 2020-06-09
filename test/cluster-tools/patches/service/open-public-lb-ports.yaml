@@ -1,0 +1,27 @@
+- op: replace
+  path: /spec/ports
+  value:
+    # http and https for the public webapps, e.g. runtimes
+    - name: http
+      port: 80
+      targetPort: http
+    - name: https
+      port: 443
+      targetPort: https
+
+    # open ports to export pingfederate cluster config service ports
+    - name: pingfederate-cluster-diag
+      port: 7500
+      targetPort: 7500
+
+    - name: pingfederate-cluster-bind
+      port: 7600
+      targetPort: 7600
+
+    - name: pingfederate-cluster-mcast
+      port: 7601
+      targetPort: 7601
+
+    - name: pingfederate-cluster-health
+      port: 7700
+      targetPort: 7700

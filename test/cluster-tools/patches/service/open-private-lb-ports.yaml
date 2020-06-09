@@ -1,7 +1,7 @@
 - op: replace
   path: /spec/ports
   value:
-    # http and https for the admins
+    # http and https for the private webapps, e.g. the admins
     - name: http
       port: 80
       targetPort: http
@@ -104,6 +104,6 @@
       port: 7601
       targetPort: 7601
 
-    - name: pingfederate-cluster-comm
+    - name: pingfederate-cluster-health
       port: 7700
       targetPort: 7700

@@ -162,3 +162,147 @@ spec:
       resources:
         requests:
           storage: 5Gi
+
+---
+
+#
+# This defines the pingfederate runtime/engine statefulset.
+#
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingfederate
+  labels:
+    cluster: pingfederate-cluster
+    role: pingfederate-engine
+spec:
+  selector:
+    matchLabels:
+      role: pingfederate-engine
+  serviceName: pingfederate
+  podManagementPolicy: OrderedReady
+  template:
+    metadata:
+      name: pingfederate-engine
+      labels:
+        cluster: pingfederate-cluster
+        role: pingfederate-engine
+      annotations:
+        lastUpdateReason: "NA"
+    spec:
+      serviceAccount: ping-serviceaccount
+      initContainers:
+        - name: pingfederate-init
+          # FIXME: switch to same user as app
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          image: bitnami/kubectl:1.15.3
+          imagePullPolicy: IfNotPresent
+          command:
+            - /init.sh
+          volumeMounts:
+            - name: ssh-dir
+              mountPath: /.ssh
+            - name: data-dir
+              mountPath: /data
+            - name: ssh-id-key-secret
+              mountPath: /id_rsa
+              subPath: id_rsa
+            - name: known-hosts-config
+              mountPath: /known_hosts
+              subPath: known_hosts
+            - name: pingfederate-init
+              mountPath: /init.sh
+              subPath: init.sh
+          envFrom:
+            - configMapRef:
+                name: pingfederate-environment-variables
+      containers:
+        - name: pingfederate
+          image: pingidentity/pingfederate:2003-10.0.1
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: OPERATIONAL_MODE
+              value: CLUSTERED_ENGINE
+            - name: PF_DNS_PING_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: PF_ADMIN_USER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pingcommon-passwords
+                  key: PF_ADMIN_USER_PASSWORD
+            - name: PF_LDAP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pingcommon-passwords
+                  key: PF_LDAP_PASSWORD
+          envFrom:
+            - configMapRef:
+                name: pingfederate-environment-variables
+            - secretRef:
+                name: devops-secret
+                optional: true
+          resources:
+            requests:
+              memory: "4Gi"
+              cpu: "2"
+            limits:
+              memory: "4Gi"
+              cpu: "2"
+          volumeMounts:
+            # FIXME: fix home directory when containers run as non-root user
+            - name: ssh-dir
+              mountPath: /root/.ssh
+            - name: data-dir
+              mountPath: /usr/local/bin/kubectl
+              subPath: kubectl
+            - name: data-dir
+              mountPath: /usr/local/bin/skbn
+              subPath: skbn
+            - name: pingfederate-license
+              mountPath: /opt/in/instance/server/default/conf/pingfederate.lic
+              subPath: pingfederate.lic
+            - name: data-dir
+              mountPath: /opt/staging/env_vars
+              subPath: env_vars
+          readinessProbe:
+            exec:
+              command: [ liveness.sh ]
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+              command: [ liveness.sh ]
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 3
+          ports:
+            - containerPort: 9031
+      volumes:
+        - name: ssh-dir
+          emptyDir: {}
+        - name: data-dir
+          emptyDir: {}
+        - name: pingfederate-init
+          configMap:
+            name: pingcommon-init
+            defaultMode: 0555
+        - name: ssh-id-key-secret
+          secret:
+            secretName: ssh-id-key-secret
+            optional: true
+            defaultMode: 0400
+        - name: known-hosts-config
+          configMap:
+            name: known-hosts-config
+            optional: true
+            defaultMode: 0644
+        - name: pingfederate-license
+          secret:
+            secretName: pingfederate-license
+            optional: true
+            defaultMode: 0400

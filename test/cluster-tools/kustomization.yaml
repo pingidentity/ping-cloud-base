@@ -79,6 +79,22 @@ patchesJson6902:
     name: tcp-services
     namespace: ingress-nginx-private
 
+  # Open up ports on the public NLB for the PF cluster
+- path: patches/service/open-public-lb-ports.yaml
+  target:
+    version: v1
+    kind: Service
+    name: ingress-nginx
+    namespace: ingress-nginx-public
+
+  # Configure the public nginx controller to receive traffic on the above ports
+- path: patches/service/add-public-nginx-tcp-port-mappings.yaml
+  target:
+    version: v1
+    kind: ConfigMap
+    name: tcp-services
+    namespace: ingress-nginx-public
+
 # Change the default TLS secret for the ingress controllers
 - path: patches/deployment/nginx-controller.yaml
   target:

@@ -1,0 +1,8 @@
+- op: add
+  path: /data
+  value:
+    # PingFederate cluster config service ports
+    7500: "${NAMESPACE}/pingfederate-cluster:7500"
+    7600: "${NAMESPACE}/pingfederate-cluster:7600"
+    7601: "${NAMESPACE}/pingfederate-cluster:7601"
+    7700: "${NAMESPACE}/pingfederate-cluster:7700"

@@ -103,7 +103,7 @@ function is_multi_cluster() {
 ########################################################################################################################
 # Set up the tcp.xml file based on whether it is a single-cluster or multi-cluster deployment.
 ########################################################################################################################
-function configure_cluster() {
+function configure_cluster_tcp() {
   local currentDir="$(pwd)"
   cd "${SERVER_ROOT_DIR}/server/default/conf"
 
@@ -117,6 +117,29 @@ function configure_cluster() {
 
   echo "configure_cluster: contents of tcp.xml after substitution"
   cat tcp.xml
+
+  cd "${currentDir}"
+}
+
+########################################################################################################################
+# Set up the run.properties file based on whether it is a single-cluster or multi-cluster deployment.
+########################################################################################################################
+function configure_cluster() {
+  local currentDir="$(pwd)"
+  cd "${SERVER_ROOT_DIR}/bin"
+
+  if is_multi_cluster; then
+    export PF_CLUSTER_BIND_ADDRESS="${PF_ADMIN_PUBLIC_HOSTNAME}"
+  else
+    export PF_CLUSTER_BIND_ADDRESS='NON_LOOPBACK'
+  fi
+
+  mv run.properties run.properties.subst
+  envsubst < run.properties.subst > run.propertiess
+  rm -f run.properties.subst
+
+  echo "configure_cluster: contents of run.properties after substitution"
+  cat run.properties
 
   cd "${currentDir}"
 }

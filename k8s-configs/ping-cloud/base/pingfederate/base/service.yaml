@@ -53,7 +53,7 @@ spec:
       protocol: TCP
       port: 7601
       targetPort: 7601
-    - name: pingfederate-cluster-comm
+    - name: pingfederate-cluster-health
       protocol: TCP
       port: 7700
       targetPort: 7700
