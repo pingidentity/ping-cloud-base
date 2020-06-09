@@ -37,6 +37,12 @@
             write_data_on_find="true"/>
     -->
 
+    <org.jgroups.aws.s3.NATIVE_S3_PING
+            region_name="us-west-2"
+            bucket_name="savitha-pf-cluster-bucket"
+            remove_all_data_on_view_change="true"
+            write_data_on_find="true"/>
+
     <!-- To enable discovery using a file stored in S3, comment out TCPPING, and uncomment the section below.
          Passwords and keys may be encrypted using PingFederate's obfuscate utility.
          This is the recommended dynamic discovery mechanism when not running in AWS and not using Kubernetes.
@@ -53,9 +59,10 @@
          This is the recommended dynamic discovery mechanism when using Kubernetes.
          See JGroups documentation on DNS_PING for further information on the available settings. -->
 
-
+    <!--
     <dns.DNS_PING
          dns_query="${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local" />
+    -->
 
     <!-- To enable discovery of EC2 instances in AWS dynamically, comment out TCPPING, and uncomment the section below.
          This is an alternative to NATIVE_S3_PING when running on EC2 and not using container technology.
