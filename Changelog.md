@@ -11,29 +11,29 @@
 
 _Changes:_
 
-PDO-334 - Deploy PingAccess kits, plugins & jars
-PDO-335 - Update PingAccess kits, plugins & jars
-PDO-337 - Upgrade PingFederate to a later version
-PDO-504 - Allow pre-launch configuration to be customized for PingFederate
-PDO-585 - Change the default PingAccess file and database passwords
-PDO-679 - Expose prometheus outside of EKS
-PDO-790 - PingDirectory sizing changes to reduce cost
-PDO-822 - Clean-up PVCs on PingDirectory pod scale-down
-PDO-842 - Configure Container Insights to capture more logs for all Ping Products
-PDO-988 - Need to find workaround for PingDirectory failing to join topology due to duplicate entries
-PDO-1005 - PingDirectory SDK DEBUG logging should be disabled by default
-PDO-1007 - PingFederate utils method using wrong password when making admin API requests
-PDO-1008 - Add limits to PingDirectory's stats-exporter container
-PDO-1009 - PingFederate log4j2.xml org.sourceid using invalid variable
-PDO-1041 - Set limits on every Beluga deployment/statefulset spec
-PDO-1053 - Inconsistent PingAccess Artifacts between admin and engine pods
-PDO-1054 - Change imagePullPolicy to "ifNotPresent" across the board
-PDO-1058 - PingDirectory 3rd server cannot join the cluster topology
-PDO-1060 - Fix PingFederate liveness probe to better represent server state
-PDO-1061 - Allow NLB(s) to support cross-zone load balancing
-PDO-1067 - PingFederate admin cannot establish a connection to PingDirectory
-PDO-1068 - Set the artifact list to download the useful and common plugins for PingFederate
-PDO-1069 - Default PingFederate runtime pod sizing
+- [X] PDO-334 - Deploy PingAccess kits, plugins & jars
+- [X] PDO-335 - Update PingAccess kits, plugins & jars
+- [X] PDO-337 - Upgrade PingFederate to a later version
+- [X] PDO-504 - Allow pre-launch configuration to be customized for PingFederate
+- [X] PDO-585 - Change the default PingAccess file and database passwords
+- [X] PDO-679 - Expose prometheus outside of EKS
+- [X] PDO-790 - PingDirectory sizing changes to reduce cost
+- [X] PDO-822 - Clean-up PVCs on PingDirectory pod scale-down
+- [X] PDO-842 - Configure Container Insights to capture more logs for all Ping Products
+- [X] PDO-988 - Need to find workaround for PingDirectory failing to join topology due to duplicate entries
+- [X] PDO-1005 - PingDirectory SDK DEBUG logging should be disabled by default
+- [X] PDO-1007 - PingFederate utils method using wrong password when making admin API requests
+- [X] PDO-1008 - Add limits to PingDirectory's stats-exporter container
+- [X] PDO-1009 - PingFederate log4j2.xml org.sourceid using invalid variable
+- [X] PDO-1041 - Set limits on every Beluga deployment/statefulset spec
+- [X] PDO-1053 - Inconsistent PingAccess Artifacts between admin and engine pods
+- [X] PDO-1054 - Change imagePullPolicy to "ifNotPresent" across the board
+- [X] PDO-1058 - PingDirectory 3rd server cannot join the cluster topology
+- [X] PDO-1060 - Fix PingFederate liveness probe to better represent server state
+- [X] PDO-1061 - Allow NLB(s) to support cross-zone load balancing
+- [X] PDO-1067 - PingFederate admin cannot establish a connection to PingDirectory
+- [X] PDO-1068 - Set the artifact list to download the useful and common plugins for PingFederate
+- [X] PDO-1069 - Default PingFederate runtime pod sizing
 
 ### 1.3.2
 - Fixed PingDirectory deployment automation to replace the server profile fully so that environment variable changes 
