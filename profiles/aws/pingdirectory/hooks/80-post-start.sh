@@ -401,7 +401,7 @@ initialize_replication_for_dn() {
 
   # If multi-cluster, initialize the first server in the child cluster from the first server in the parent cluster.
   # Initialize other servers in the child cluster from the first server within the same cluster.
-  if test "${IS_MULTI_CLUSTER}" = 'true' && test "${ORDINAL}" -eq 0; then
+  if "${IS_MULTI_CLUSTER}" && test "${ORDINAL}" -eq 0; then
     FROM_HOST="${PD_PARENT_PUBLIC_HOSTNAME}"
     FROM_PORT=6360
   else
@@ -567,7 +567,7 @@ fi
 
 # Determine the hostnames and ports to use while enabling replication. When in multi-cluster mode and not in the
 # parent cluster, use the external names and ports. Otherwise, use internal names and ports.
-if test "${IS_MULTI_CLUSTER}" = 'true'; then
+if "${IS_MULTI_CLUSTER}"; then
   REPL_SRC_HOST="${PD_PARENT_PUBLIC_HOSTNAME}"
   REPL_SRC_LDAPS_PORT=6360
   REPL_SRC_REPL_PORT=9890
@@ -595,7 +595,7 @@ echo "post-start: using REPL_DST_REPL_PORT: ${REPL_DST_REPL_PORT}"
 
 # If in multi-region mode, wait for the replication source and target servers to be up and running through the
 # load balancer before enabling/initializing replication.
-if test "${IS_MULTI_CLUSTER}" = 'true'; then
+if "${IS_MULTI_CLUSTER}"; then
   echo "post-start: waiting for the replication seed server ${REPL_SRC_HOST}:${REPL_SRC_LDAPS_PORT}"
   waitUntilLdapUp "${REPL_SRC_HOST}" "${REPL_SRC_LDAPS_PORT}" 'cn=config'
 
