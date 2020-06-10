@@ -113,13 +113,21 @@ function get_pod_ordinal() {
 ########################################################################################################################
 # Set up the tcp.xml file based on whether it is a single-cluster or multi-cluster deployment.
 ########################################################################################################################
-function configure_cluster_tcp() {
+function configure_tcp_xml() {
   local currentDir="$(pwd)"
   cd "${SERVER_ROOT_DIR}/server/default/conf"
 
-  is_multi_cluster &&
-      export DNS_PING_QUERY="${PF_ADMIN_PUBLIC_HOSTNAME}" ||
-      export DNS_PING_QUERY="${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local"
+  if is_multi_cluster; then
+    export NATIVE_S3_PING="<org.jgroups.aws.s3.NATIVE_S3_PING \
+            region_name=\"${REGION}\" \
+            bucket_name=\"${CLUSTER_BUCKET_NAME}\" \
+            bucket_prefix=\"${PING_PRODUCT}\" \
+            remove_all_data_on_view_change=\"true\" \
+            write_data_on_find=\"true\" />"
+  else
+    export DNS_PING="<dns.DNS_PING \
+         dns_query="${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local" />"
+  fi
 
   mv tcp.xml tcp.xml.subst
   envsubst < tcp.xml.subst > tcp.xml
@@ -134,15 +142,19 @@ function configure_cluster_tcp() {
 ########################################################################################################################
 # Set up the run.properties file based on whether it is a single-cluster or multi-cluster deployment.
 ########################################################################################################################
-function configure_cluster() {
+function configure_run_props() {
   local currentDir="$(pwd)"
   cd "${SERVER_ROOT_DIR}/bin"
 
   if is_multi_cluster; then
     local ordinal="$(get_pod_ordinal)"
-    export PF_CLUSTER_BIND_ADDRESS="${PF_ADMIN_PUBLIC_HOSTNAME}"
-    export PF_CLUSTER_BIND_ADDRESS="76${ordinal}"
-    export PF_CLUSTER_HEALTH_PORT="77${ordinal}"
+    test -n $(echo "${HOSTNAME}" | grep -c admin) &&
+        local port_suffix=99 ||
+        local port_suffix="${ordinal}"
+
+    export PF_CLUSTER_BIND_ADDRESS="${PF_PUBLIC_HOSTNAME}"
+    export PF_CLUSTER_BIND_ADDRESS="76${port_suffix}"
+    export PF_CLUSTER_HEALTH_PORT="77${port_suffix}"
   else
     export PF_CLUSTER_BIND_ADDRESS='NON_LOOPBACK'
     export PF_CLUSTER_BIND_ADDRESS=7600
@@ -157,6 +169,14 @@ function configure_cluster() {
   cat run.properties
 
   cd "${currentDir}"
+}
+
+########################################################################################################################
+# Set up the run.properties and tcp.xml files based on whether it is a single-cluster or multi-cluster deployment.
+########################################################################################################################
+function configure_cluster() {
+  configure_run_props
+  configure_tcp_xml
 }
 
 ########################################################################################################################
