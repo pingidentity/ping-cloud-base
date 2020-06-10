@@ -133,7 +133,7 @@ function configure_tcp_xml() {
   envsubst < tcp.xml.subst > tcp.xml
   rm -f tcp.xml.subst
 
-  echo "configure_cluster: contents of tcp.xml after substitution"
+  echo "configure_tcp_xml: contents of tcp.xml after substitution"
   cat tcp.xml
 
   cd "${currentDir}"
@@ -145,17 +145,6 @@ function configure_tcp_xml() {
 function configure_run_props() {
   local currentDir="$(pwd)"
   cd "${SERVER_ROOT_DIR}/bin"
-
-  echo "configure_run_props: contents of server bin directory:"
-  ls "${SERVER_ROOT_DIR}/bin"
-
-  if test -f "${SERVER_ROOT_DIR}"/bin/run.properties; then
-    echo "configure_run_props: contents of run.properties before substitution"
-  elif test -f "${SERVER_ROOT_DIR}"/bin/run.properties.subst; then
-    echo "configure_run_props: contents of run.properties before substitution"
-  else
-    echo "configure_run_props: no of run.properties* found"
-  fi
 
   if is_multi_cluster; then
     local ordinal="$(get_pod_ordinal)"
@@ -173,7 +162,7 @@ function configure_run_props() {
   fi
 
   mv run.properties run.properties.subst
-  envsubst < run.properties.subst > run.propertiess
+  envsubst < run.properties.subst > run.properties
   rm -f run.properties.subst
 
   echo "configure_run_props: contents of run.properties after substitution"
