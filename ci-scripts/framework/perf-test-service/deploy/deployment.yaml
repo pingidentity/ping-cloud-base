@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: perf-service
+spec:
+  ports:
+    - name: perf-service
+      port: 8080
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: perf-service
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: perf-service
+    spec:
+      containers:
+      - name: perf-service
+        image: zaphod80013/perf-service
+        resources:
+          requests:
+            memory: 2Gi
+            cpu: 2
+          limits:
+            memory: 2Gi
+            cpu: 2
+        ports:
+        - containerPort: 8080
+
