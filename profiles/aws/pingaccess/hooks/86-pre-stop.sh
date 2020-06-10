@@ -23,18 +23,12 @@ if test "${ORDINAL}" -lt "${NUM_REPLICAS}"; then
   exit 0
 fi
 
-if test -z "${PA_ADMIN_PUBLIC_HOSTNAME}" || test -z "${PA_ENGINE_PUBLIC_HOSTNAME}"; then
-  IS_MULTI_CLUSTER=false
-else
-  IS_MULTI_CLUSTER=true
-fi
-
-echo "pre-stop: multi-cluster: ${IS_MULTI_CLUSTER}"
-
-if test "${IS_MULTI_CLUSTER}" = 'true'; then
+if is_multi_cluster; then
+  echo "pre-stop: multi-cluster"
   ADMIN_HOST_PORT="${PA_ADMIN_PUBLIC_HOSTNAME}"
   ENGINE_NAME="${PA_ENGINE_PUBLIC_HOSTNAME}:300${ORDINAL}"
 else
+  echo "pre-stop: single-cluster"
   ADMIN_HOST_PORT="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9000"
   ENGINE_NAME=$(hostname)
 fi
