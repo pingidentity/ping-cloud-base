@@ -146,6 +146,17 @@ function configure_run_props() {
   local currentDir="$(pwd)"
   cd "${SERVER_ROOT_DIR}/bin"
 
+  echo "configure_run_props: contents of server bin directory:"
+  ls "${SERVER_ROOT_DIR}/bin"
+
+  if test -f "${SERVER_ROOT_DIR}"/bin/run.properties; then
+    echo "configure_run_props: contents of run.properties before substitution"
+  elif test -f "${SERVER_ROOT_DIR}"/bin/run.properties.subst; then
+    echo "configure_run_props: contents of run.properties before substitution"
+  else
+    echo "configure_run_props: no of run.properties* found"
+  fi
+
   if is_multi_cluster; then
     local ordinal="$(get_pod_ordinal)"
     test -n $(echo "${HOSTNAME}" | grep -c admin) &&
@@ -165,7 +176,7 @@ function configure_run_props() {
   envsubst < run.properties.subst > run.propertiess
   rm -f run.properties.subst
 
-  echo "configure_cluster: contents of run.properties after substitution"
+  echo "configure_run_props: contents of run.properties after substitution"
   cat run.properties
 
   cd "${currentDir}"
