@@ -41,18 +41,10 @@ spec:
   publishNotReadyAddresses: true
   clusterIP: None
   ports:
-    - name: pingfederate-cluster-diag
-      protocol: TCP
-      port: 7500
-      targetPort: 7500
     - name: pingfederate-cluster-bind
       protocol: TCP
       port: 7600
       targetPort: 7600
-    - name: pingfederate-cluster-mcast
-      protocol: TCP
-      port: 7601
-      targetPort: 7601
     - name: pingfederate-cluster-health
       protocol: TCP
       port: 7700

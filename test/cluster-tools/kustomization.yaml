@@ -72,7 +72,7 @@ patchesJson6902:
     namespace: ingress-nginx-private
 
   # Configure the private nginx controller to receive traffic on the above ports
-- path: patches/service/add-private-nginx-tcp-port-mappings.yaml
+- path: patches/configmap/add-private-nginx-tcp-port-mappings.yaml
   target:
     version: v1
     kind: ConfigMap
@@ -88,7 +88,7 @@ patchesJson6902:
     namespace: ingress-nginx-public
 
   # Configure the public nginx controller to receive traffic on the above ports
-- path: patches/service/add-public-nginx-tcp-port-mappings.yaml
+- path: patches/configmap/add-public-nginx-tcp-port-mappings.yaml
   target:
     version: v1
     kind: ConfigMap

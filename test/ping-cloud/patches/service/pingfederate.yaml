@@ -1,0 +1,354 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: pinfederate-admin-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pinfederate-admin-0
+  ports:
+    - protocol: TCP
+      port: 7600
+      targetPort: 7600
+      name: bind
+    - protocol: TCP
+      port: 7700
+      targetPort: 7700
+      name: health
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pinfederate-0-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pinfederate-0
+  ports:
+    - protocol: TCP
+      port: 7600
+      targetPort: 7600
+      name: bind
+    - protocol: TCP
+      port: 7700
+      targetPort: 7700
+      name: health
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pinfederate-1-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pinfederate-1
+  ports:
+    - protocol: TCP
+      port: 7600
+      targetPort: 7601
+      name: bind
+    - protocol: TCP
+      port: 7700
+      targetPort: 7701
+      name: health
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pinfederate-2-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pinfederate-2
+  ports:
+    - protocol: TCP
+      port: 7600
+      targetPort: 7602
+      name: bind
+    - protocol: TCP
+      port: 7700
+      targetPort: 7702
+      name: health
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pinfederate-3-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pinfederate-3
+  ports:
+    - protocol: TCP
+      port: 7600
+      targetPort: 7603
+      name: bind
+    - protocol: TCP
+      port: 7700
+      targetPort: 7703
+      name: health
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pinfederate-4-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pinfederate-4
+  ports:
+    - protocol: TCP
+      port: 7600
+      targetPort: 7604
+      name: bind
+    - protocol: TCP
+      port: 7700
+      targetPort: 7704
+      name: health
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pinfederate-5-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pinfederate-5
+  ports:
+    - protocol: TCP
+      port: 7600
+      targetPort: 7605
+      name: bind
+    - protocol: TCP
+      port: 7700
+      targetPort: 7705
+      name: health
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pinfederate-6-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pinfederate-6
+  ports:
+    - protocol: TCP
+      port: 7600
+      targetPort: 7606
+      name: bind
+    - protocol: TCP
+      port: 7700
+      targetPort: 7706
+      name: health
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pinfederate-7-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pinfederate-7
+  ports:
+    - protocol: TCP
+      port: 7600
+      targetPort: 7607
+      name: bind
+    - protocol: TCP
+      port: 7700
+      targetPort: 7707
+      name: health
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pinfederate-8-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pinfederate-8
+  ports:
+    - protocol: TCP
+      port: 7600
+      targetPort: 7608
+      name: bind
+    - protocol: TCP
+      port: 7700
+      targetPort: 7708
+      name: health
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pinfederate-9-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pinfederate-9
+  ports:
+    - protocol: TCP
+      port: 7600
+      targetPort: 7609
+      name: bind
+    - protocol: TCP
+      port: 7700
+      targetPort: 7709
+      name: health
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pinfederate-10-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pinfederate-10
+  ports:
+    - protocol: TCP
+      port: 7600
+      targetPort: 7610
+      name: bind
+    - protocol: TCP
+      port: 7700
+      targetPort: 7710
+      name: health
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pinfederate-11-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pinfederate-11
+  ports:
+    - protocol: TCP
+      port: 7600
+      targetPort: 7611
+      name: bind
+    - protocol: TCP
+      port: 7700
+      targetPort: 7711
+      name: health
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pinfederate-12-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pinfederate-12
+  ports:
+    - protocol: TCP
+      port: 7600
+      targetPort: 7612
+      name: bind
+    - protocol: TCP
+      port: 7700
+      targetPort: 7712
+      name: health
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pinfederate-13-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pinfederate-13
+  ports:
+    - protocol: TCP
+      port: 7600
+      targetPort: 7613
+      name: bind
+    - protocol: TCP
+      port: 7700
+      targetPort: 7713
+      name: health
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pinfederate-14-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pinfederate-14
+  ports:
+    - protocol: TCP
+      port: 7600
+      targetPort: 7614
+      name: bind
+    - protocol: TCP
+      port: 7700
+      targetPort: 7714
+      name: health
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pinfederate-15-service
+  namespace: ${NAMESPACE}
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pinfederate-15
+  ports:
+    - protocol: TCP
+      port: 7600
+      targetPort: 7615
+      name: bind
+    - protocol: TCP
+      port: 7700
+      targetPort: 7715
+      name: health

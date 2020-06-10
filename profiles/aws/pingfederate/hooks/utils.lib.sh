@@ -101,6 +101,16 @@ function is_multi_cluster() {
 }
 
 ########################################################################################################################
+# Returns the pod's ordinal as a 2-digit number. The pod's ordinal will be available in the variable ORDINAL after
+# this function is run.
+########################################################################################################################
+function get_pod_ordinal() {
+  local short_host_name=$(hostname)
+  ORDINAL=${short_host_name##*-}
+  test "${#ORDINAL}" -lt 2 && ORDINAL="0${ORDINAL}"
+}
+
+########################################################################################################################
 # Set up the tcp.xml file based on whether it is a single-cluster or multi-cluster deployment.
 ########################################################################################################################
 function configure_cluster_tcp() {
@@ -129,9 +139,14 @@ function configure_cluster() {
   cd "${SERVER_ROOT_DIR}/bin"
 
   if is_multi_cluster; then
+    local ordinal="$(get_pod_ordinal)"
     export PF_CLUSTER_BIND_ADDRESS="${PF_ADMIN_PUBLIC_HOSTNAME}"
+    export PF_CLUSTER_BIND_ADDRESS="76${ordinal}"
+    export PF_CLUSTER_HEALTH_PORT="77${ordinal}"
   else
     export PF_CLUSTER_BIND_ADDRESS='NON_LOOPBACK'
+    export PF_CLUSTER_BIND_ADDRESS=7600
+    export PF_CLUSTER_HEALTH_PORT=7700
   fi
 
   mv run.properties run.properties.subst

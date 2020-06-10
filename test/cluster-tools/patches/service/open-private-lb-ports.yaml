@@ -83,14 +83,6 @@
       port: 9898
       targetPort: 9898
 
-    # ldaps and replication for pingdirectory-9
-    - name: ldaps-pingdiretory-9
-      port: 6369
-      targetPort: 6369
-    - name: repl-pingdiretory-9
-      port: 9899
-      targetPort: 9899
-
     # open ports to export pingfederate cluster config service ports
     - name: pingfederate-cluster-diag
       port: 7500

@@ -9,19 +9,140 @@
       port: 443
       targetPort: https
 
-    # open ports to export pingfederate cluster config service ports
-    - name: pingfederate-cluster-diag
-      port: 7500
-      targetPort: 7500
+    ## Allow up to 16 PF runtimes per region so no changes are necessary upon scale-up.
 
-    - name: pingfederate-cluster-bind
+    # ldaps and replication for pingfederate-admin-0
+    - name: bind-pingfederate-admin
       port: 7600
       targetPort: 7600
+    - name: health-pingfederate-admin
+      port: 7700
+      targetPort: 7700
 
-    - name: pingfederate-cluster-mcast
-      port: 7601
-      targetPort: 7601
+    # cluster config service ports for pingfederate-0
+    - name: bind-pingfederate-0
+      port: 7600
+      targetPort: 7600
+    - name: health-pingfederate-0
+      port: 7700
+      targetPort: 7700
 
-    - name: pingfederate-cluster-health
+    # cluster config service ports for pingfederate-1
+    - name: bind-pingfederate-1
+      port: 7600
+      targetPort: 7600
+    - name: health-pingfederate-1
+      port: 7700
+      targetPort: 7700
+
+    # cluster config service ports for pingfederate-2
+    - name: bind-pingfederate-2
+      port: 7600
+      targetPort: 7600
+    - name: health-pingfederate-2
+      port: 7700
+      targetPort: 7700
+
+    # cluster config service ports for pingfederate-3
+    - name: bind-pingfederate-3
+      port: 7600
+      targetPort: 7600
+    - name: health-pingfederate-3
+      port: 7700
+      targetPort: 7700
+
+    # cluster config service ports for pingfederate-4
+    - name: bind-pingfederate-4
+      port: 7600
+      targetPort: 7600
+    - name: health-pingfederate-4
+      port: 7700
+      targetPort: 7700
+
+    # cluster config service ports for pingfederate-5
+    - name: bind-pingfederate-5
+      port: 7600
+      targetPort: 7600
+    - name: health-pingfederate-5
+      port: 7700
+      targetPort: 7700
+
+    # cluster config service ports for pingfederate-6
+    - name: bind-pingfederate-6
+      port: 7600
+      targetPort: 7600
+    - name: health-pingfederate-6
+      port: 7700
+      targetPort: 7700
+
+    # cluster config service ports for pingfederate-7
+    - name: bind-pingfederate-7
+      port: 7600
+      targetPort: 7600
+    - name: health-pingfederate-7
+      port: 7700
+      targetPort: 7700
+
+    # cluster config service ports for pingfederate-8
+    - name: bind-pingfederate-8
+      port: 7600
+      targetPort: 7600
+    - name: health-pingfederate-8
+      port: 7700
+      targetPort: 7700
+
+    # cluster config service ports for pingfederate-9
+    - name: bind-pingfederate-9
+      port: 7600
+      targetPort: 7600
+    - name: health-pingfederate-9
+      port: 7700
+      targetPort: 7700
+
+    # cluster config service ports for pingfederate-10
+    - name: bind-pingfederate-10
+      port: 7600
+      targetPort: 7600
+    - name: health-pingfederate-10
+      port: 7700
+      targetPort: 7700
+
+    # cluster config service ports for pingfederate-11
+    - name: bind-pingfederate-11
+      port: 7600
+      targetPort: 7600
+    - name: health-pingfederate-11
+      port: 7700
+      targetPort: 7700
+
+    # cluster config service ports for pingfederate-12
+    - name: bind-pingfederate-12
+      port: 7600
+      targetPort: 7600
+    - name: health-pingfederate-12
+      port: 7700
+      targetPort: 7700
+
+    # cluster config service ports for pingfederate-13
+    - name: bind-pingfederate-13
+      port: 7600
+      targetPort: 7600
+    - name: health-pingfederate-13
+      port: 7700
+      targetPort: 7700
+
+    # cluster config service ports for pingfederate-14
+    - name: bind-pingfederate-14
+      port: 7600
+      targetPort: 7600
+    - name: health-pingfederate-14
+      port: 7700
+      targetPort: 7700
+
+    # cluster config service ports for pingfederate-15
+    - name: bind-pingfederate-15
+      port: 7600
+      targetPort: 7600
+    - name: health-pingfederate-15
       port: 7700
       targetPort: 7700

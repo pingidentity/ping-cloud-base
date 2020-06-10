@@ -30,8 +30,6 @@
     9898: "${NAMESPACE}/pingdirectory-8-service:repl"
 
 
-    # PingFederate cluster config service ports
-    7500: "${NAMESPACE}/pingfederate-cluster:7500"
-    7600: "${NAMESPACE}/pingfederate-cluster:7600"
-    7601: "${NAMESPACE}/pingfederate-cluster:7601"
-    7700: "${NAMESPACE}/pingfederate-cluster:7700"
+    # PingFederate admin cluster config service ports
+    7600: "${NAMESPACE}/pinfederate-admin-service:7600"
+    7700: "${NAMESPACE}/pinfederate-admin-service:7700"
