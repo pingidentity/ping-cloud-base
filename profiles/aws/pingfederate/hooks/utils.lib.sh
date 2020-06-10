@@ -152,10 +152,10 @@ function configure_run_props() {
       export PF_CLUSTER_BIND_PORT=7699
       export PF_CLUSTER_HEALTH_PORT=7799
     else
-      local ordinal="$(get_pod_ordinal)"
+      get_pod_ordinal
       export PF_CLUSTER_BIND_ADDRESS="${PF_ENGINE_PUBLIC_HOSTNAME}"
-      export PF_CLUSTER_BIND_PORT="76${ordinal}"
-      export PF_CLUSTER_HEALTH_PORT="77${ordinal}"
+      export PF_CLUSTER_BIND_PORT="76${ORDINAL}"
+      export PF_CLUSTER_HEALTH_PORT="77${ORDINAL}"
     fi
   else
     export PF_CLUSTER_BIND_ADDRESS='NON_LOOPBACK'
