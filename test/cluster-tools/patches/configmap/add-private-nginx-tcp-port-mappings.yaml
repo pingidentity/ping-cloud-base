@@ -33,3 +33,53 @@
     # PingFederate admin cluster config service ports
     7699: "${NAMESPACE}/pinfederate-admin-service:bind"
     7799: "${NAMESPACE}/pinfederate-admin-service:health"
+
+
+    # PingFederate runtime cluster config service ports
+    7600: "${NAMESPACE}/pinfederate-0-service:bind"
+    7700: "${NAMESPACE}/pinfederate-0-service:health"
+
+    7601: "${NAMESPACE}/pinfederate-1-service:bind"
+    7701: "${NAMESPACE}/pinfederate-1-service:health"
+
+    7602: "${NAMESPACE}/pinfederate-2-service:bind"
+    7702: "${NAMESPACE}/pinfederate-2-service:health"
+
+    7603: "${NAMESPACE}/pinfederate-3-service:bind"
+    7703: "${NAMESPACE}/pinfederate-3-service:health"
+
+    7604: "${NAMESPACE}/pinfederate-4-service:bind"
+    7704: "${NAMESPACE}/pinfederate-4-service:health"
+
+    7605: "${NAMESPACE}/pinfederate-5-service:bind"
+    7705: "${NAMESPACE}/pinfederate-5-service:health"
+
+    7606: "${NAMESPACE}/pinfederate-6-service:bind"
+    7706: "${NAMESPACE}/pinfederate-6-service:health"
+
+    7607: "${NAMESPACE}/pinfederate-7-service:bind"
+    7707: "${NAMESPACE}/pinfederate-7-service:health"
+
+    7608: "${NAMESPACE}/pinfederate-8-service:bind"
+    7708: "${NAMESPACE}/pinfederate-8-service:health"
+
+    7609: "${NAMESPACE}/pinfederate-9-service:bind"
+    7709: "${NAMESPACE}/pinfederate-9-service:health"
+
+    7610: "${NAMESPACE}/pinfederate-10-service:bind"
+    7710: "${NAMESPACE}/pinfederate-10-service:health"
+
+    7611: "${NAMESPACE}/pinfederate-11-service:bind"
+    7711: "${NAMESPACE}/pinfederate-11-service:health"
+
+    7612: "${NAMESPACE}/pinfederate-12-service:bind"
+    7712: "${NAMESPACE}/pinfederate-12-service:health"
+
+    7613: "${NAMESPACE}/pinfederate-13-service:bind"
+    7713: "${NAMESPACE}/pinfederate-13-service:health"
+
+    7614: "${NAMESPACE}/pinfederate-14-service:bind"
+    7714: "${NAMESPACE}/pinfederate-14-service:health"
+
+    7615: "${NAMESPACE}/pinfederate-15-service:bind"
+    7715: "${NAMESPACE}/pinfederate-15-service:health"

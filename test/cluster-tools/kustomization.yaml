@@ -53,9 +53,10 @@ patchesJson6902:
     name: cluster-autoscaler
     namespace: kube-system
 
-# Add the pingdirectory hostname to the private NLB for ldap access
-# Also, make the admin nodes available externally for test purposes. In general, they
-# will be behind a VPN gateway on all CDEs so only admins have access to them.
+# 1. Add the pingdirectory hostname to the private NLB for ldap access
+# 2. Add the pingfederate runtime hostname to the private NLB for the cluster config service
+# 3. Make the admin nodes available externally for test purposes. In general, they
+#    will be behind a VPN gateway on all CDEs so only admins have access to them.
 - path: patches/service/add-hostname-to-private-lb.yaml
   target:
     version: v1
@@ -71,29 +72,13 @@ patchesJson6902:
     name: ingress-nginx
     namespace: ingress-nginx-private
 
-  # Configure the private nginx controller to receive traffic on the above ports
+# Configure the private nginx controller to receive traffic on the above ports
 - path: patches/configmap/add-private-nginx-tcp-port-mappings.yaml
   target:
     version: v1
     kind: ConfigMap
     name: tcp-services
     namespace: ingress-nginx-private
-
-  # Open up ports on the public NLB for the PF cluster
-- path: patches/service/open-public-lb-ports.yaml
-  target:
-    version: v1
-    kind: Service
-    name: ingress-nginx
-    namespace: ingress-nginx-public
-
-  # Configure the public nginx controller to receive traffic on the above ports
-- path: patches/configmap/add-public-nginx-tcp-port-mappings.yaml
-  target:
-    version: v1
-    kind: ConfigMap
-    name: tcp-services
-    namespace: ingress-nginx-public
 
 # Change the default TLS secret for the ingress controllers
 - path: patches/deployment/nginx-controller.yaml

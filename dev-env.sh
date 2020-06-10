@@ -116,6 +116,14 @@
 #                           | URL. For AWS S3 buckets, it must be an S3 URL,     |
 #                           | e.g. s3://backups.                                 |
 #                           |                                                    |
+# CLUSTER_BUCKET_NAME       | The name of the S3 bucket where clustering         | The string "unused". This is a
+#                           | information is stored for all stateful Ping apps.  | required property for multi-cluster
+#                           |                                                    | deployments, which is currently only
+#                           |                                                    | supported on AWS. A bucket with this
+#                           |                                                    | name must exist in every region that
+#                           |                                                    | the clusters span, and bucket syncing
+#                           |                                                    | must be enabled on AWS S3.
+#                           |                                                    |
 # DEPLOY_FILE               | The name of the file where the final deployment    | /tmp/deploy.yaml
 #                           | spec is saved before applying it.                  |
 #                           |                                                    |
@@ -184,6 +192,7 @@ echo "Initial ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Initial PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 echo "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 echo "Initial BACKUP_URL: ${BACKUP_URL}"
+echo "Initial CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
 echo "Initial DEPLOY_FILE: ${DEPLOY_FILE}"
 echo "Initial K8S_CONTEXT: ${K8S_CONTEXT}"
 echo ---
@@ -203,6 +212,7 @@ export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
 export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
+export CLUSTER_BUCKET_NAME="${CLUSTER_BUCKET_NAME:-unused}"
 
 DEPLOY_FILE=${DEPLOY_FILE:-/tmp/deploy.yaml}
 test -z "${K8S_CONTEXT}" && K8S_CONTEXT=$(kubectl config current-context)
@@ -229,6 +239,7 @@ echo "Using ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 echo "Using LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 echo "Using BACKUP_URL: ${BACKUP_URL}"
+echo "Using CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
 echo "Using DEPLOY_FILE: ${DEPLOY_FILE}"
 echo "Using K8S_CONTEXT: ${K8S_CONTEXT}"
 echo ---
@@ -272,7 +283,8 @@ kustomize build "${BELUGA_DEV_TEST_DIR}" |
     ${ARTIFACT_REPO_URL}
     ${PING_ARTIFACT_REPO_URL}
     ${LOG_ARCHIVE_URL}
-    ${BACKUP_URL}' > "${DEPLOY_FILE}"
+    ${BACKUP_URL}
+    ${CLUSTER_BUCKET_NAME}' > "${DEPLOY_FILE}"
 
 sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" "${DEPLOY_FILE}"
 rm -f "${TEST_KUSTOMIZATION}"
