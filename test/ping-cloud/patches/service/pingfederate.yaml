@@ -10,11 +10,11 @@ spec:
   ports:
     - protocol: TCP
       port: 7600
-      targetPort: 7600
+      targetPort: 7699
       name: bind
     - protocol: TCP
       port: 7700
-      targetPort: 7700
+      targetPort: 7799
       name: health
 
 ---

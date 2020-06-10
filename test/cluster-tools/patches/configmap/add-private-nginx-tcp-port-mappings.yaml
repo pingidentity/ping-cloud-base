@@ -31,5 +31,5 @@
 
 
     # PingFederate admin cluster config service ports
-    7600: "${NAMESPACE}/pinfederate-admin-service:7600"
-    7700: "${NAMESPACE}/pinfederate-admin-service:7700"
+    7699: "${NAMESPACE}/pinfederate-admin-service:bind"
+    7799: "${NAMESPACE}/pinfederate-admin-service:health"

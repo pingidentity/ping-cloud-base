@@ -83,19 +83,11 @@
       port: 9898
       targetPort: 9898
 
-    # open ports to export pingfederate cluster config service ports
-    - name: pingfederate-cluster-diag
-      port: 7500
-      targetPort: 7500
+    # open ports to export pingfederate admin cluster config service ports
 
-    - name: pingfederate-cluster-bind
+    - name: bind-pingfederate-admin
       port: 7600
-      targetPort: 7600
-
-    - name: pingfederate-cluster-mcast
-      port: 7601
-      targetPort: 7601
-
-    - name: pingfederate-cluster-health
+      targetPort: 7699
+    - name: health-pingfederate-admin
       port: 7700
-      targetPort: 7700
+      targetPort: 7799
