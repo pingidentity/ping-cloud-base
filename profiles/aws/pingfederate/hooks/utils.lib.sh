@@ -152,12 +152,13 @@ function configure_run_props() {
         local port_suffix=99 ||
         local port_suffix="${ordinal}"
 
-    export PF_CLUSTER_BIND_ADDRESS="${PF_PUBLIC_HOSTNAME}"
-    export PF_CLUSTER_BIND_ADDRESS="76${port_suffix}"
+    # The engine hostname below will work on both admin and engine. On the admin, it'll be set to the same value.
+    export PF_CLUSTER_BIND_ADDRESS="${PF_ENGINE_PUBLIC_HOSTNAME}"
+    export PF_CLUSTER_BIND_PORT="76${port_suffix}"
     export PF_CLUSTER_HEALTH_PORT="77${port_suffix}"
   else
     export PF_CLUSTER_BIND_ADDRESS='NON_LOOPBACK'
-    export PF_CLUSTER_BIND_ADDRESS=7600
+    export PF_CLUSTER_BIND_PORT=7600
     export PF_CLUSTER_HEALTH_PORT=7700
   fi
 
