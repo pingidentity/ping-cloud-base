@@ -147,15 +147,16 @@ function configure_run_props() {
   cd "${SERVER_ROOT_DIR}/bin"
 
   if is_multi_cluster; then
-    local ordinal="$(get_pod_ordinal)"
-    test -n $(echo "${HOSTNAME}" | grep -c admin) &&
-        local port_suffix=99 ||
-        local port_suffix="${ordinal}"
-
-    # The engine hostname below will work on both admin and engine. On the admin, it'll be set to the same value.
-    export PF_CLUSTER_BIND_ADDRESS="${PF_ENGINE_PUBLIC_HOSTNAME}"
-    export PF_CLUSTER_BIND_PORT="76${port_suffix}"
-    export PF_CLUSTER_HEALTH_PORT="77${port_suffix}"
+    if test -n $(echo "${HOSTNAME}" | grep -c admin); then
+      export PF_CLUSTER_BIND_ADDRESS="${PF_ADMIN_PUBLIC_HOSTNAME}"
+      export PF_CLUSTER_BIND_PORT=7699
+      export PF_CLUSTER_HEALTH_PORT=7799
+    else
+      local ordinal="$(get_pod_ordinal)"
+      export PF_CLUSTER_BIND_ADDRESS="${PF_ENGINE_PUBLIC_HOSTNAME}"
+      export PF_CLUSTER_BIND_PORT="76${ordinal}"
+      export PF_CLUSTER_HEALTH_PORT="77${ordinal}"
+    fi
   else
     export PF_CLUSTER_BIND_ADDRESS='NON_LOOPBACK'
     export PF_CLUSTER_BIND_PORT=7600
