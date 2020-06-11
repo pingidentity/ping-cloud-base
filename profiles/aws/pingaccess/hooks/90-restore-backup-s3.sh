@@ -18,9 +18,10 @@ test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
 
 if ! test -z "${BACKUP_FILE_NAME}" || ! test -f "${OUT_DIR}"/instance/conf/pa.jwk; then
 
-  initializeS3Configuration
-
   echo "Restoring from location ${BACKUP_URL}"
+  
+  # Set required environment variables for skbn
+  initializeSkbnConfiguration
 
   # This is the backup directory on the server
   SERVER_RESTORE_DIR="/tmp/restore"
@@ -33,56 +34,32 @@ if ! test -z "${BACKUP_FILE_NAME}" || ! test -f "${OUT_DIR}"/instance/conf/pa.jw
      ! test "${DATA_BACKUP_FILE_NAME}" = 'null'; then
 
     echo "Attempting to restore backup from S3 specified by the user: ${DATA_BACKUP_FILE_NAME}"
-    DATA_BACKUP_FILE_NAME="${DIRECTORY_NAME}/${DATA_BACKUP_FILE_NAME}"
 
-    # Get the specified backup zip file from s3
-    DATA_BACKUP_FILE=$( aws s3api list-objects \
-      --bucket "${BUCKET_NAME}" \
-      --prefix "${DIRECTORY_NAME}/pa-data" \
-      --query "(Contents[?Key=='${DATA_BACKUP_FILE_NAME}'])[0].Key" \
-      | tr -d '"' )
   else
-    # Filter data.zip to most recent uploaded files that occured 3 days ago.
-    # AWS has a 1000 list-object limit per request. This will help filter out older backup files.
-    FORMAT="+%Y-%m-%d"
-    DAYS=${S3_BACKUP_FILTER_DAY_COUNT-3}
-    DAYS_AGO=$(date --date="@$(($(date +%s) - (${DAYS} * 24 * 3600)))" "${FORMAT}")
 
-    echo "S3 filter by ${S3_BACKUP_FILTER_DAY_COUNT} day(s) ago"
-    echo "S3 filter by date ${DAYS_AGO}"
-
-    # Get the name of the latest backup zip file from s3
-    DATA_BACKUP_FILE=$( aws s3api list-objects \
-      --bucket "${BUCKET_NAME}" \
-      --prefix "${DIRECTORY_NAME}/pa-data" \
-      --query "reverse(sort_by(Contents[?LastModified>='${DAYS_AGO}'], &LastModified))[0].Key" \
-      | tr -d '"' )
-
-    echo "Attempting to restore latest uploaded backup from S3: ${DATA_BACKUP_FILE}"
+    echo "Attempting to restore backup from latest backup file in cloud storage."
+    DATA_BACKUP_FILE_NAME="latest.zip"
   fi
 
-  # If a backup file in s3 exist
-  if ! test -z "${DATA_BACKUP_FILE}" && \
-     ! test "${DATA_BACKUP_FILE}" = 'null'; then
+  # Rename s3 backup filename when copying onto pingaccess admin
+  DST_FILE="data.zip"
 
-    # extract only the file name
-    DATA_BACKUP_FILE=${DATA_BACKUP_FILE#${DIRECTORY_NAME}/}
+  echo "Copying: '${DATA_BACKUP_FILE_NAME}' to '${SKBN_K8S_PREFIX}${SERVER_RESTORE_DIR}/${DST_FILE}'"
 
-    # Rename s3 backup filename when copying onto pingfederate admin
-    DST_FILE="data.zip"
+  if ! skbnCopy "${SKBN_CLOUD_PREFIX}/${DATA_BACKUP_FILE_NAME}" "${SKBN_K8S_PREFIX}${SERVER_RESTORE_DIR}/${DST_FILE}"; then
+    echo "No archive data found"
+    exit 1
+  fi
 
-    # Download latest backup file from s3 bucket
-    aws s3 cp "${TARGET_URL}/${DATA_BACKUP_FILE}" "${SERVER_RESTORE_DIR}/${DST_FILE}"
-    AWS_API_RESULT=${?}
+  # Check if file exists
+  if test -f "${SERVER_RESTORE_DIR}/${DST_FILE}"; then
 
-    echo "Download return code: ${AWS_API_RESULT}"
-
-    if test ${AWS_API_RESULT} != 0; then
-      echo "Download was unsuccessful - crash the container"
+    # Validate zip.
+    echo "Validating downloaded backup archive"
+    if test $(unzip -t  "${SERVER_RESTORE_DIR}/${DST_FILE}" &> /dev/null; echo $?) -ne 0; then
+      echo "Failed to valid backup archive to restore"
       exit 1
     fi
-
-    echo "importing configuration"
 
     # PDO-1076 - Proactively delete the H2 database password backup file if it exists
     readonly h2_props_backup="${SERVER_ROOT_DIR}/conf/h2_password_properties.backup"
@@ -92,7 +69,11 @@ if ! test -z "${BACKUP_FILE_NAME}" || ! test -f "${OUT_DIR}"/instance/conf/pa.jw
     fi
 
     # Unzip backup configuration
-    unzip -o "${SERVER_RESTORE_DIR}/${DST_FILE}" -d ${OUT_DIR}/instance
+    unzip -o "${SERVER_RESTORE_DIR}/${DST_FILE}" -d "${OUT_DIR}/instance"
+    echo "importing configuration"
+
+    # Unzip backup configuration
+    unzip -o "${SERVER_RESTORE_DIR}/${DST_FILE}" -d "${OUT_DIR}/instance"
 
     # Remove zip
     rm -rf "${SERVER_RESTORE_DIR}/${DST_FILE}"
@@ -107,9 +88,7 @@ if ! test -z "${BACKUP_FILE_NAME}" || ! test -f "${OUT_DIR}"/instance/conf/pa.jw
     # Write password admin password to disk after successful restore
     createSecretFile
 
-  else
-
+  else 
     echo "No archive data found"
-    
-  fi
+  fi  
 fi
