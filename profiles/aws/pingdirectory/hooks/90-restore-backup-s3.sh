@@ -89,8 +89,7 @@ if ! test -z "${DATA_BACKUP_FILE}" && \
   ENCRYPTION_DB_BACKEND_DIR=
 
   for BACKEND_DIR in ${BACKEND_DIRS}; do
-    echo "${BACKEND_DIR}" | grep -q encryption-settings
-    if test $? -eq 0; then
+    if test "${BACKEND_DIR%encryption-settings}" != "${BACKEND_DIR}"; then
       echo "Found encryption-settings database backend"
       ENCRYPTION_DB_BACKEND_DIR="${BACKEND_DIR}"
     else
@@ -112,7 +111,8 @@ if ! test -z "${DATA_BACKUP_FILE}" && \
       --port ${LDAPS_PORT} \
       --bindDN "${ROOT_USER_DN}" \
       --bindPasswordFile "${ROOT_USER_PASSWORD_FILE}" \
-      --backupDirectory "${BACKEND_DIR}"
+      --backupDirectory "${BACKEND_DIR}" \
+      --ignoreCompatibilityWarnings
   done
 
   # Cleanup
