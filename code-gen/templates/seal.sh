@@ -2,7 +2,7 @@
 
 ##### ----- READ BEFORE RUNNING THE SCRIPT ----- #####
 
-# The following script shows how to seal all the secrets used by ping apps and its supporting cluster tools.
+# The following script shows how to seal all the secrets used by ping apps and their supporting cluster tools.
 # It requires kustomize and kubeseal to be installed.
 
 # It is recommended that all (instead of a subset) of the secrets be sealed at the same time. This ensures that they
@@ -26,8 +26,8 @@ pushd "${SCRIPT_DIR}" &> /dev/null
 ########################################################################################################################
 check_binaries() {
   STATUS=0
-	for TOOL in ${*}; do
-	  which "${TOOL}" &>/dev/null
+  for TOOL in ${*}; do
+    which "${TOOL}" &>/dev/null
     if test ${?} -ne 0; then
       echo "${TOOL} is required but missing"
       STATUS=1

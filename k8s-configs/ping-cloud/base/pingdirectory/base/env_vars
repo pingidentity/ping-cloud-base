@@ -33,7 +33,7 @@ K8S_ACME_CERT_SECRET_NAME=acme-tls-cert
 BACKUP_FILE_NAME=
 BACKUP_RESTORE_POD=pingdirectory-0
 S3_BACKUP_FILTER_DAY_COUNT=3
-BACKENDS_TO_BACKUP=encryption-settings;userRoot;appintegrations
+BACKENDS_TO_BACKUP=encryption-settings;userRoot;appintegrations;platformconfig
 
 ACCEPT_EULA=YES
 PING_IDENTITY_ACCEPT_EULA=YES
