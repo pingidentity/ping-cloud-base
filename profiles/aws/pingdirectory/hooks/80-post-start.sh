@@ -400,7 +400,8 @@ if test "${ORDINAL}" -eq 0; then
     test ${licModStatus} -ne 0 && stop_container
   fi
 
-  exit
+  echo "post-start: post-start complete"
+  exit 0
 fi
 
 # --- NOTE ---
@@ -439,7 +440,8 @@ done
 # All base DNs are already initialized, so we're good.
 if test -z "${UNINITIALIZED_DNS}"; then
   echo "post-start: replication is already initialized for all base DNs: ${DNS_TO_INITIALIZE}"
-  exit
+  echo "post-start: post-start complete"
+  exit 0
 fi
 
 LOCALHOST_FULL_NAME=$(hostname -f)
@@ -543,3 +545,6 @@ done
 
 # Reset the force-as-master flag to false on the seed server if it was set before.
 reset_force_as_master
+
+echo "post-start: post-start complete"
+exit 0
