@@ -8,6 +8,11 @@ test -f "${HOOKS_DIR}/pingdata.lib.sh" && . "${HOOKS_DIR}/pingdata.lib.sh"
 export encryptionOption=$(getEncryptionOption)
 export jvmOptions=$(getJvmOptions)
 
+if test -f "${SECRETS_DIR}"/encryption-settings.pin; then
+  echo "Using the externally provided encryption-setting.pin file"
+  cp "${SECRETS_DIR}"/encryption-settings.pin "${SERVER_ROOT_DIR}"/config
+fi
+
 "${SERVER_ROOT_DIR}"/bin/manage-profile setup \
     --profile "${PD_PROFILE}" \
     --useEnvironmentVariables \
