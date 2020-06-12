@@ -141,7 +141,9 @@ spec:
       - args: []
         command:
         - controller
-        env: []
+        env:
+        - name: SEALED_SECRET_KEY_RENEW_PERIOD
+          value: 0
         image: quay.io/bitnami/sealed-secrets-controller:v0.9.7
         resources:
           limits:
