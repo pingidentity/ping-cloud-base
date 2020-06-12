@@ -38,6 +38,7 @@ else
 fi
 
 export LOG_SYNC_SECONDS="${LOG_SYNC_SECONDS:-5}"
+export CURL_TIMEOUT_SECONDS="${CURL_TIMEOUT_SECONDS:-450}"
 
 export ADMIN_USER=administrator
 export ADMIN_PASS=2FederateM0re

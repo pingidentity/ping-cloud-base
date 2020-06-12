@@ -31,6 +31,11 @@ if test ! -f "${_pdProfileLicense}" ; then
   cp -af "${_currentLicense}" "${_pdProfileLicense}"
 fi
 
+if test -f "${SECRETS_DIR}"/encryption-settings.pin; then
+  echo "Using the externally provided encryption-setting.pin file"
+  cp "${SECRETS_DIR}"/encryption-settings.pin "${PD_PROFILE}"/server-root/pre-setup/config
+fi
+
 # FIXME: Workaround for DS-41964 - use --replaceFullProfile flag to replace-profile
 echo "Merging changes from new server profile"
 
@@ -42,7 +47,7 @@ fi
 
 "${SERVER_BITS_DIR}"/bin/manage-profile replace-profile \
     --serverRoot "${SERVER_ROOT_DIR}" \
-    --profile "${STAGING_DIR}/pd.profile" \
+    --profile "${PD_PROFILE}" \
     --useEnvironmentVariables \
     ${ADDITIONAL_ARGS} \
     --reimportData never
