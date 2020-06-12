@@ -175,7 +175,7 @@ spec:
     matchLabels:
       role: pingaccess-engine
   serviceName: pingaccess
-  podManagementPolicy: Parallel
+  podManagementPolicy: OrderedReady
   template:
     metadata:
       name: pingaccess-engine
