@@ -83,7 +83,29 @@ if ! test -z "${DATA_BACKUP_FILE}" && \
   echo "Restoring to the latest backups under ${SERVER_RESTORE_DIR}"
   BACKEND_DIRS=$(find "${SERVER_RESTORE_DIR}" -name backup.info -exec dirname {} \;)
 
+  # If encryption-settings backend is present in the backups, it must be restored first.
+  # So re-order the backups such that it appears first in the list.
+  ORDERED_BACKEND_DIRS=
+  ENCRYPTION_DB_BACKEND_DIR=
+
   for BACKEND_DIR in ${BACKEND_DIRS}; do
+    echo "${BACKEND_DIR}" | grep -q encryption-settings
+    if test $? -eq 0; then
+      echo "Found encryption-settings database backend"
+      ENCRYPTION_DB_BACKEND_DIR="${BACKEND_DIR}"
+    else
+      test -z "${ORDERED_BACKEND_DIRS}" &&
+          ORDERED_BACKEND_DIRS="${BACKEND_DIR}" ||
+          ORDERED_BACKEND_DIRS="${ORDERED_BACKEND_DIRS} ${BACKEND_DIR}"
+    fi
+  done
+
+  test ! -z "${ENCRYPTION_DB_BACKEND_DIR}" &&
+      ORDERED_BACKEND_DIRS="${ENCRYPTION_DB_BACKEND_DIR} ${ORDERED_BACKEND_DIRS}"
+
+  echo "Restore order of backups: ${ORDERED_BACKEND_DIRS}"
+
+  for BACKEND_DIR in ${ORDERED_BACKEND_DIRS}; do
     printf "\n----- Doing a restore from ${BACKEND_DIR} -----\n"
     restore --task \
       --useSSL --trustAll \
