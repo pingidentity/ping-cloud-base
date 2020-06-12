@@ -142,6 +142,7 @@ spec:
         command:
         - controller
         env:
+        # SEALED_SECRETS_KEY_RENEW_PERIOD=0 is another way to set flag --key-renew-period=0
         - name: SEALED_SECRETS_KEY_RENEW_PERIOD
           value: "0"
         image: quay.io/bitnami/sealed-secrets-controller:v0.9.7
