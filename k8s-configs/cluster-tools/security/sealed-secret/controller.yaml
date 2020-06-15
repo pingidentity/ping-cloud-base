@@ -141,7 +141,11 @@ spec:
       - args: []
         command:
         - controller
-        env: []
+        env:
+        # SEALED_SECRETS_KEY_RENEW_PERIOD=0 is another way to set flag --key-renew-period=0
+        # This turns off the default automatic key renewal that happens every 30 days
+        - name: SEALED_SECRETS_KEY_RENEW_PERIOD
+          value: "0"
         image: quay.io/bitnami/sealed-secrets-controller:v0.9.7
         resources:
           limits:
