@@ -1,0 +1,262 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: logstash-elastic
+  labels:
+    app: logstash-elastic
+spec:
+  selector:
+    app: logstash-elastic
+  ports:
+    - port: 9600
+      name: rest
+    - port: 20510
+      name: enrichment-in
+    - port: 20512
+      name: pf-provision-in
+    - port: 20513
+      name: pf-system-in
+    - port: 20514
+      name: pf-audit-in
+    - port: 20515
+      name: pd-directory-in
+    - port: 20516
+      name: pa-system-in
+    - port: 20517
+      name: pa-audit-in
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: logstash-elastic
+  labels:
+    app: logstash-elastic
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: logstash-elastic
+  labels:
+    app: logstash-elastic
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - namespaces
+  verbs:
+  - get
+  - list
+  - watch
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: logstash-elastic
+roleRef:
+  kind: ClusterRole
+  name: logstash-elastic
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: logstash-elastic
+
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: logstash-elastic
+  labels:
+    app: logstash-elastic
+spec:
+  selector:
+    matchLabels:
+      app: logstash-elastic
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: logstash-elastic
+    spec:
+      serviceAccount: logstash-elastic
+      # tolerations:
+      # - key: node-role.kubernetes.io/master
+      #   effect: NoSchedule
+      #################################
+      initContainers:
+      - name: check-elasticsearch-availability
+        image: busybox
+        workingDir: /scripts
+        command: ['sh', '-c', "until nslookup elasticsearch.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for elasticsearch; sleep 2; done"]
+
+      - name: logstash-init
+        image: busybox
+        workingDir: /scripts
+        command: ["sh", '$(CONTAINER_NAME).sh']
+        env:
+        - name: WAIT_FOR
+          value: "enrichment-bootstrap"
+        - name: CONTAINER_NAME
+          value: "logstash-init"
+        volumeMounts:
+        - name: enrichment-shared-volume
+          mountPath: /enrichment-shared-volume
+          readOnly: false
+        - name: enrichment-scripts
+          mountPath: /scripts
+      ####################################
+      containers:
+      - name: logstash
+        image: logstash:7.6.2
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+        command: ["sh", '/scripts/$(CONTAINER_NAME).sh']
+        env:
+          # - name:  LOGSTASH_ELASTICSEARCH_HOST
+          #   value: "elasticsearch"
+          # - name:  LOGSTASH_ELASTICSEARCH_PORT
+          #   value: "9200"
+          # - name: LOGSTASH_ELASTICSEARCH_SCHEME
+          #   value: "http"
+          - name: LS_JAVA_OPTS
+            value: "-Xmx1g -Xms1g"
+          - name: CONFIG_RELOAD_AUTOMATIC
+            value: "true"
+          - name: CONFIG_RELOAD_INTERVAL
+            value: "5s"
+          - name: LOG_FORMAT
+            value: "json"
+          - name: LOG_LEVEL
+            value: "debug"
+
+          - name: NODE_NAME
+            value: "logstash"
+
+          - name: XPACK_MONITORING_ENABLED
+            value: "true"
+          - name: XPACK_MONITORING_ELASTICSEARCH_HOSTS
+            value: "https://elasticsearch:9200"
+          - name: XPACK_MONITORING_ELASTICSEARCH_URL
+            value: "https://elasticsearch:9200"
+          - name: XPACK_MONITORING_ELASTICSEARCH_SSL_CERTIFICATE_AUTHORITY
+            value: "/enrichment-shared-volume/certs/elasticsearch/elasticsearch.crt"
+          # - name: XPACK_MONITORING_ELASTICSEARCH_USERNAME
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: elasticsearch-secrets
+          #       key: username
+          # - name: XPACK_MONITORING_ELASTICSEARCH_PASSWORD
+          #   valueFrom:
+          #     secretKeyRef:
+          #       name: elasticsearch-secrets
+          #       key: password
+
+          - name: XPACK_MANAGEMENT_ENABLED
+            value: "true"
+          - name: XPACK_MANAGEMENT_ELASTICSEARCH_HOSTS
+            value: "https://elasticsearch:9200"
+          - name: XPACK_MANAGEMENT_ELASTICSEARCH_URL
+            value: "https://elasticsearch:9200"
+          - name: XPACK_MANAGEMENT_ELASTICSEARCH_SSL_CERTIFICATE_AUTHORITY
+            value: "/enrichment-shared-volume/certs/elasticsearch/elasticsearch.crt"
+
+          - name: ELASTIC_USER
+            valueFrom:
+              secretKeyRef:
+                name: elasticsearch-secrets
+                key: username
+          - name: ELASTIC_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: elasticsearch-secrets
+                key: password
+          - name: CERTS_DIR
+            value: "/enrichment-shared-volume/certs"
+
+          - name: CONTAINER_NAME
+            value: "logstash"
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 100m
+            memory: 1Gi
+        ports:
+          - containerPort: 9600
+            name: rest
+            protocol: TCP
+          - containerPort: 20510
+            name: enrichment-in
+            protocol: TCP
+          - containerPort: 20512
+            name: pf-provision-in
+            protocol: TCP
+          - containerPort: 20513
+            name: pf-system-in
+            protocol: TCP
+          - containerPort: 20514
+            name: pf-audit-in
+            protocol: TCP
+          - containerPort: 20515
+            name: pd-directory-in
+            protocol: TCP
+          - containerPort: 20516
+            name: pa-system-in
+            protocol: TCP
+          - containerPort: 20517
+            name: pa-audit-in
+            protocol: TCP
+        volumeMounts:
+        - name: enrichment-logstash-config
+          mountPath: /usr/share/logstash/pipeline
+          readOnly: true
+        - name: enrichment-logstash-yaml-config
+          mountPath: /usr/share/logstash/config
+          readOnly: true
+        - name: varlog
+          mountPath: /var/log
+        - name: varlibdockercontainers
+          mountPath: /var/lib/docker/containers
+          readOnly: true
+        - name: enrichment-shared-volume
+          mountPath: /enrichment-shared-volume
+          readOnly: true
+        - name: enrichment-scripts
+          mountPath: /scripts
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: enrichment-logstash-config
+        configMap:
+          name: enrichment-logstash-config
+      - name: enrichment-logstash-yaml-config
+        configMap:
+          name: enrichment-logstash-yaml-config
+      - name: varlog
+        hostPath:
+          path: /var/log
+      - name: varlibdockercontainers
+        hostPath:
+          path: /var/lib/docker/containers
+      - name: enrichment-shared-volume
+        nfs:
+          # HARDCODED VALUE! SHOULD BE CHANGED TO DYNAMIC!
+          # server: fs-c2e4d068.efs.${REGION}.amazonaws.com
+          server: ${EFS_FILESYSTEM_ID}.efs.${REGION}.amazonaws.com
+          path: /
+      ######################
+      - name: enrichment-cache
+        configMap:
+          name: enrichment-cache
+          defaultMode: 0555
+      - name: enrichment-scripts
+        configMap:
+          name: enrichment-scripts
+          defaultMode: 0555
+      - name: elasticsearch-secrets
+        secret:
+          secretName: elasticsearch-secrets

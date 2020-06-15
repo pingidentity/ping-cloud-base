@@ -1,0 +1,11 @@
+xpack.monitoring.enabled: "${XPACK_MONITORING_ENABLED}"
+xpack.monitoring.elasticsearch.hosts: "${XPACK_MONITORING_ELASTICSEARCH_HOSTS}"
+xpack.monitoring.elasticsearch.username: "${XPACK_MONITORING_ELASTICSEARCH_USERNAME}"
+xpack.monitoring.elasticsearch.password: "${XPACK_MONITORING_ELASTICSEARCH_PASSWORD}"
+xpack.monitoring.elasticsearch.ssl.certificate_authority: "${XPACK_MONITORING_ELASTICSEARCH_SSL_CERTIFICATE_AUTHORITY}"
+xpack.monitoring.elasticsearch.sniffing: true
+
+xpack.management.enabled: "${XPACK_MANAGEMENT_ENABLED}"
+xpack.management.elasticsearch.hosts: "${XPACK_MANAGEMENT_ELASTICSEARCH_HOSTS}"
+xpack.management.elasticsearch.username: "${XPACK_MANAGEMENT_ELASTICSEARCH_USERNAME}"
+xpack.management.elasticsearch.password: "${XPACK_MANAGEMENT_ELASTICSEARCH_PASSWORD}"

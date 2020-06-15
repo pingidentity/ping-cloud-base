@@ -1,0 +1,78 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: enrichment
+  labels:
+    app: enrichment
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: enrichment
+  labels:
+    app: enrichment
+rules:
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "watch", "update"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["storageclasses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "update", "patch"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["create", "update", "watch"]
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["create", "update", "watch"]
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: enrichment
+roleRef:
+  kind: ClusterRole
+  name: enrichment
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: enrichment
+---
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: enrichment-shared-volume
+provisioner: kubernetes.io/aws-efs
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: enrichment-shared-volume
+  annotations:
+    volume.beta.kubernetes.io/storage-class: "aws-efs"
+spec:
+  storageClassName: enrichment-shared-volume
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1Gi
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: efs-provisioner
+data:
+  file.system.id: ${EFS_FILESYSTEM_ID}
+  aws.region: ${REGION}
+  provisioner.name: kubernetes.io/aws-efs
+  dns.name: ${EFS_FILESYSTEM_ID}.efs.${REGION}.amazonaws.com

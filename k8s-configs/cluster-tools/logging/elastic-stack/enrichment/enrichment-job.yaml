@@ -1,0 +1,322 @@
+# apiVersion: batch/v1beta1
+# kind: CronJob
+# metadata:
+#   name: enrichment-job
+# spec:
+#   # triggers every 10 minutes
+#   schedule: "*/10 * * * *"
+#   jobTemplate:
+#     spec:
+#       template:
+#         spec:
+#           serviceAccount: enrichment
+#           restartPolicy: OnFailure
+#           initContainers:
+#           - name: check-elasticsearch-availability
+#             image: busybox
+#             command: ['sh', '-c', "until nslookup elasticsearch.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for elasticsearch; sleep 2; done"]
+#           containers:
+#           - name: enrichment-service
+#             image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
+#             workingDir: /usr/share/elasticsearch
+#             env:
+#               - name:  ENRICHMENT_TOR_FEED_URL
+#                 value: "https://check.torproject.org/exit-addresses"
+#               - name:  ENRICHMENT_ALIEN_VAULT_FEED_URL
+#                 value: "https://reputation.alienvault.com/reputation.generic"
+#               - name:  ENRICHMENT_FILE_PATH
+#                 value: "/usr/share/elasticsearch/enrichment/"
+#               - name:  LOGSTASH_URL
+#                 value: "http://logstash-elastic.elastic-stack-logging.svc.cluster.local"
+#               - name:  LOGSTASH_ENRICHMENT_PORT
+#                 value: "20510"
+#               - name:  PYTHONUNBUFFERED
+#                 value: "1"
+#               - name: PYTHONIOENCODING
+#                 value: "UTF-8"
+#             command:
+#             - /opt/enrichment-run-script.sh
+#             volumeMounts:
+#             - name: enrichment-run-script
+#               mountPath: /opt/enrichment-run-script.sh
+#               subPath: enrichment-run-script.sh
+#             - name: enrichment-python-script
+#               mountPath: /usr/share/elasticsearch/config/bootstrap/enrichment.py
+#               subPath: enrichment.py
+#             # - name: enrichment-cache-files
+#             #   mountPath: /usr/share/elasticsearch/enrichment-cache
+#             - name: enrichment-volume
+#               mountPath: /usr/share/elasticsearch/enrichment
+#           volumes:
+#           - name: enrichment-run-script
+#             configMap:
+#               name: enrichment-run-script
+#               defaultMode: 0555
+#           - name: enrichment-python-script
+#             configMap:
+#               name: enrichment-python-script
+#               defaultMode: 0555
+#           # - name: enrichment-volume
+#           #   persistentVolumeClaim:
+#           #     claimName: enrichment-volume
+#           - name: enrichment-shared-volume
+#             nfs:
+#               server:
+#                 valueFrom:
+#                   configMapKeyRef:
+#                     name: efs-provisioner
+#                     key: dns.name
+#               path: /
+#           - name: enrichment-cache-files
+#             configMap:
+#               name: enrichment-cache
+#               defaultMode: 0555
+#           - name: enrichment-search-template-files
+#             configMap:
+#               name: enrichment-search-template
+#               defaultMode: 0555
+
+# ---
+
+
+
+
+
+
+
+# ---
+# apiVersion: v1
+# kind: Pod
+# metadata:
+#   name: enrichment-bootstrap
+# spec:
+#   restartPolicy: OnFailure
+#   initContainers:
+#   - name: efs-provisioner
+#     image: quay.io/external_storage/efs-provisioner:latest
+#     workingDir: /scripts
+#     command: ["sh", '$(CONTAINER_NAME).sh']
+#     env:
+#       - name: FILE_SYSTEM_ID
+#         valueFrom:
+#           configMapKeyRef:
+#             name: efs-provisioner
+#             key: file.system.id
+#       - name: AWS_REGION
+#         valueFrom:
+#           configMapKeyRef:
+#             name: efs-provisioner
+#             key: aws.region
+#       - name: DNS_NAME
+#         valueFrom:
+#           configMapKeyRef:
+#             name: efs-provisioner
+#             key: dns.name
+#             optional: true
+#       - name: PROVISIONER_NAME
+#         valueFrom:
+#           configMapKeyRef:
+#             name: efs-provisioner
+#             key: provisioner.name
+#       - name: CONTAINER_NAME
+#         value: "efs-provisioner"
+#     volumeMounts:
+#       - mountPath: /enrichment-shared-volume
+#         name: enrichment-shared-volume
+#         readOnly: false
+#       - mountPath: /scripts
+#         name: enrichment-scripts
+
+#   - name: enrichment-basic
+#     image: centos:7
+#     workingDir: /scripts
+#     command: ["sh", '$(CONTAINER_NAME).sh']
+#     env:
+#       - name: WAIT_FOR
+#         value: "efs-provisioner"
+#       - name: CONTAINER_NAME
+#         value: "enrichment-basic"
+#       - name:  ENRICHMENT_TOR_FEED_URL
+#         value: "https://check.torproject.org/exit-addresses"
+#       - name:  ENRICHMENT_ALIEN_VAULT_FEED_URL
+#         value: "https://reputation.alienvault.com/reputation.generic"
+#       - name:  ENRICHMENT_FILEPATH
+#         value: "/enrichment-shared-volume/enrichment-cache/"
+#       - name:  LOG_FILEPATH
+#         value: "/enrichment-shared-volume/logs"
+#       - name:  PYTHONUNBUFFERED
+#         value: "1"
+#       - name: PYTHONIOENCODING
+#         value: "UTF-8"
+#     volumeMounts:
+#       - mountPath: /enrichment-shared-volume
+#         name: enrichment-shared-volume
+#         readOnly: false
+#       - mountPath: /scripts
+#         name: enrichment-scripts
+#       - mountPath: /enrichment-cache
+#         name: enrichment-cache
+#       - mountPath: /enrichment-logstash-search-templates
+#         name: enrichment-logstash-search-templates
+#       - mountPath: /enrichment-elasticsearch-ilm-policies
+#         name: enrichment-elasticsearch-ilm-policies
+#       - mountPath: /enrichment-elasticsearch-index-bootstraps
+#         name: enrichment-elasticsearch-index-bootstraps
+#       - mountPath: /enrichment-elasticsearch-index-templates
+#         name: enrichment-elasticsearch-index-templates
+#       - mountPath: /enrichment-elasticsearch-role-bootstraps
+#         name: enrichment-elasticsearch-role-bootstraps
+#       - mountPath: /enrichment-kibana-config
+#         name: enrichment-kibana-config
+#       - mountPath: /enrichment-logstash-config
+#         name: enrichment-logstash-config
+
+#   - name: enrichment-bootstrap
+#     image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
+#     workingDir: /scripts
+#     command: ["sh", '$(CONTAINER_NAME).sh']
+#     env:
+#       - name: WAIT_FOR
+#         value: "elasticsearch-init"
+#       - name: CONTAINER_NAME
+#         value: "enrichment-bootstrap"
+#       - name: ELASTICSEARCH_URL
+#         value: "http://elasticsearch"
+#       - name: ELASTICSEARCH_PORT
+#         value: "9200"
+#     volumeMounts:
+#       - mountPath: /enrichment-shared-volume
+#         name: enrichment-shared-volume
+#         readOnly: false
+#       - mountPath: /scripts
+#         name: enrichment-scripts
+  
+#   containers:
+#   - name: test-1
+#     image: busybox
+#     workingDir: /scripts
+#     # lifecycle:
+#     #   postStart:
+#     #     exec:
+#     #       command: ["/bin/sh", "-c", './wait-for.sh']
+#     #   preStop:
+#     #     exec:
+#     #       command: ["/bin/sh", "-c", './done.sh']
+#     command: ["sh", '$(CONTAINER_NAME).sh']
+#     env:
+#       - name: WAIT_FOR
+#         value: "enrichment-elasticsearch-indexes-bootstrap"
+#       - name: CONTAINER_NAME
+#         value: "test-1"
+#     volumeMounts:
+#       - mountPath: /enrichment-shared-volume
+#         name: enrichment-shared-volume
+#         readOnly: false
+#       - mountPath: /scripts
+#         name: enrichment-scripts
+
+#   volumes:
+#   - name: enrichment-shared-volume
+#     nfs:
+#       server: ${EFS_FILESYSTEM_ID}.efs.${REGION}.amazonaws.com
+#       path: /
+#   - name: enrichment-scripts
+#     configMap:
+#       name: enrichment-scripts
+#       defaultMode: 0555
+#   - name: enrichment-cache
+#     configMap:
+#       name: enrichment-cache
+#       defaultMode: 0555
+#   - name: enrichment-logstash-search-templates
+#     configMap:
+#       name: enrichment-logstash-search-templates
+#       defaultMode: 0555
+#   - name: enrichment-elasticsearch-ilm-policies
+#     configMap:
+#       name: enrichment-elasticsearch-ilm-policies
+#       defaultMode: 0555
+#   - name: enrichment-elasticsearch-index-bootstraps
+#     configMap:
+#       name: enrichment-elasticsearch-index-bootstraps
+#       defaultMode: 0555
+#   - name: enrichment-elasticsearch-index-templates
+#     configMap:
+#       name: enrichment-elasticsearch-index-templates
+#       defaultMode: 0555
+#   - name: enrichment-elasticsearch-role-bootstraps
+#     configMap:
+#       name: enrichment-elasticsearch-role-bootstraps
+#       defaultMode: 0555
+#   - name: enrichment-kibana-config
+#     configMap:
+#       name: enrichment-kibana-config
+#       defaultMode: 0555
+#   - name: enrichment-logstash-config
+#     configMap:
+#       name: enrichment-logstash-config
+#       defaultMode: 0555
+
+
+# # ---
+# # apiVersion: apps/v1
+# # kind: Deployment
+# # metadata:
+# #   name: test-2
+# # spec:
+# #   replicas: 1
+# #   selector:
+# #     matchLabels:
+# #       name: test-2
+# #   template:
+# #     metadata:
+# #       labels:
+# #         name: test-2
+# #     spec:
+# #       initContainers:
+# #       - name: test-2-init
+# #         image: busybox
+# #         workingDir: /scripts
+# #         command: ["sh", '$(CONTAINER_NAME).sh']
+# #         env:
+# #           - name: WAIT_FOR
+# #             value: "efs-provisioner"
+# #           - name: CONTAINER_NAME
+# #             value: "test-2-init"
+# #         volumeMounts:
+# #           - mountPath: /test
+# #             name: enrichment-shared-volume
+# #             readOnly: false
+# #           - mountPath: /scripts
+# #             name: enrichment-scripts
+
+# #       containers:
+# #       - name: test-2
+# #         image: busybox
+# #         workingDir: /scripts
+# #         command: ["sh", '$(CONTAINER_NAME).sh']
+# #         env:
+# #           - name: WAIT_FOR
+# #             value: "test-1-init"
+# #           - name: CONTAINER_NAME
+# #             value: "test-2"
+# #         volumeMounts:
+# #           - mountPath: /test
+# #             name: enrichment-shared-volume
+# #             readOnly: false
+# #           - mountPath: /scripts
+# #             name: enrichment-scripts
+
+# #       volumes:
+# #       - name: enrichment-shared-volume
+# #         nfs:
+# #           server: ${EFS_FILESYSTEM_ID}.efs.${REGION}.amazonaws.com
+# #             # valueFrom:
+# #             #   configMapKeyRef:
+# #             #     name: efs-provisioner
+# #             #     key: dns.name
+# #           path: /
+# #       - name: enrichment-scripts
+# #         configMap:
+# #           name: enrichment-scripts
+# #           defaultMode: 0555

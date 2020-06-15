@@ -81,6 +81,11 @@ spec:
       containers:
       - name: elasticsearch
         image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
+        workingDir: /scripts
+        command: ["sh", '$(CONTAINER_NAME).sh']
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
         resources:
           limits:
             memory: 2Gi
@@ -98,19 +103,70 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /usr/share/elasticsearch/data
+        - name: enrichment-shared-volume
+          mountPath: /enrichment-shared-volume
+          readOnly: false
+        - name: elasticsearch-certs
+          mountPath: /usr/share/elasticsearch/data/config/certificates
+        - name: enrichment-elasticsearch-yaml-config
+          mountPath: /usr/share/elasticsearch/data/config/elasticsearch.yml
+          subPath: elasticsearch.yml
+          readOnly: false
+        - name: enrichment-scripts
+          mountPath: /scripts
         env:
-          - name: cluster.name
-            value: k8s-logs
-          - name: node.name
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-          - name: discovery.seed_hosts
-            value: "es-cluster-0.elasticsearch,es-cluster-1.elasticsearch,es-cluster-2.elasticsearch"
-          - name: cluster.initial_master_nodes
-            value: "es-cluster-0,es-cluster-1,es-cluster-2"
-          - name: ES_JAVA_OPTS
-            value: "-Xms512m -Xmx512m"
+        - name: CONTAINER_NAME
+          value: "elasticsearch"
+        # - name: cluster.name
+        #   value: k8s-logs
+        # - name: node.name
+        #   valueFrom:
+        #     fieldRef:
+        #       fieldPath: metadata.name
+        # - name: discovery.seed_hosts
+        #   value: "es-cluster-0.elasticsearch,es-cluster-1.elasticsearch,es-cluster-2.elasticsearch"
+        # - name: cluster.initial_master_nodes
+        #   value: "es-cluster-0,es-cluster-1,es-cluster-2"
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+
+        - name: ELASTIC_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elasticsearch-secrets
+              key: password
+        - name: ES_JAVA_OPTS
+          value: "-Xms512m -Xmx512m"
+        # - name: xpack.license.self_generated.type
+        #   value: "trial"
+        # - name: xpack.monitoring.collection.enabled
+        #   value: "true"
+        - name: ES_PATH_CONF
+          value: "/usr/share/elasticsearch/data/config"
+        # - name: xpack.security.enabled
+        #   value: "true"
+        # - name: xpack.security.http.ssl.enabled
+        #   value: "true"
+        # - name: xpack.security.http.ssl.key
+        #   value: "/usr/share/elasticsearch/config/certificates/elasticsearch.key"
+        # - name: xpack.security.http.ssl.certificate_authorities
+        #   value: "/usr/share/elasticsearch/config/certificates/ca.crt"
+        # - name: xpack.security.http.ssl.certificate
+        #   value: "/usr/share/elasticsearch/config/certificates/elasticsearch.crt"
+        # - name: xpack.security.transport.ssl.enabled
+        #   value: "true"
+        # - name: xpack.security.transport.ssl.verification_mode
+        #   value: "certificate"
+        # - name: xpack.security.transport.ssl.certificate_authorities
+        #   value: "/usr/share/elasticsearch/config/certificates/ca.crt"
+        # - name: xpack.security.transport.ssl.certificate
+        #   value: "/usr/share/elasticsearch/config/certificates/elasticsearch.crt"
+        # - name: xpack.security.transport.ssl.key
+        #   value: "/usr/share/elasticsearch/config/certificates/elasticsearch.key"
+        # - name: xpack.security.authc.realms.native.native1.order
+        #   value: "0"
       initContainers:
       - name: fix-permissions
         image: busybox
@@ -130,6 +186,56 @@ spec:
         command: [ "sh", "-c", "ulimit -n 65536" ]
         securityContext:
           privileged: true
+      - name: elasticsearch-init
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
+        workingDir: /scripts
+        command: ["sh", '$(CONTAINER_NAME).sh']
+        # securityContext:
+        #   runAsUser: 1000
+        #   runAsGroup: 1000
+        env:
+        - name: WAIT_FOR
+          value: "enrichment-certs"
+        - name: CONTAINER_NAME
+          value: "elasticsearch-init"
+        - name: ELASTIC_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elasticsearch-secrets
+              key: password
+        - name: ES_PATH_CONF
+          value: "/usr/share/elasticsearch/data/config"
+        volumeMounts:
+        - name: data
+          mountPath: /usr/share/elasticsearch/data
+        - name: enrichment-shared-volume
+          mountPath: /enrichment-shared-volume
+        - name: elasticsearch-certs
+          mountPath: /usr/share/elasticsearch/data/config/certificates
+        - name: enrichment-elasticsearch-yaml-config
+          mountPath: /usr/share/elasticsearch/data/config/elasticsearch.yml
+          subPath: elasticsearch.yml
+          readOnly: true
+        - name: enrichment-scripts
+          mountPath: /scripts
+      volumes:
+        - name: enrichment-shared-volume
+          nfs:
+            server: ${EFS_FILESYSTEM_ID}.efs.${REGION}.amazonaws.com
+            path: /
+        - name: enrichment-scripts
+          configMap:
+            name: enrichment-scripts
+            defaultMode: 0555
+        - name: elasticsearch-secrets
+          secret:
+            secretName: elasticsearch-secrets
+        - name: elasticsearch-certs
+          emptyDir: {}
+        - name: enrichment-elasticsearch-yaml-config
+          configMap:
+            name: enrichment-elasticsearch-yaml-config
+            # defaultMode: 0555
   volumeClaimTemplates:
   - metadata:
       name: data
@@ -141,3 +247,13 @@ spec:
       resources:
         requests:
           storage: 10Gi
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: elasticsearch-secrets
+type: Opaque
+data:
+  username: ${ELASTIC_USER}
+  password: ${ELASTIC_PASSWORD}

@@ -1,0 +1,24 @@
+cluster.name: "k8s-logs"
+node.name: "${NODE_NAME}"
+discovery.seed_hosts: [ "es-cluster-0.elasticsearch", "es-cluster-1.elasticsearch", "es-cluster-2.elasticsearch" ]
+cluster.initial_master_nodes: [ "es-cluster-0", "es-cluster-1", "es-cluster-2" ]
+# discovery.seed_hosts: "es-cluster-0.elasticsearch"
+# cluster.initial_master_nodes: "es-cluster-0"
+
+# network.host: "0.0.0.0"
+xpack.monitoring.collection.enabled: "true"
+xpack.license.self_generated.type: "trial"
+xpack.security.enabled: "true"
+xpack.security.http.ssl.enabled: "true"
+xpack.security.transport.ssl.enabled: "true"
+xpack.security.transport.ssl.verification_mode: "certificate"
+xpack.security.http.ssl.verification_mode: "certificate"
+xpack.security.http.ssl.key: "certificates/elasticsearch.key"
+xpack.security.http.ssl.certificate: "certificates/elasticsearch.crt"
+xpack.security.http.ssl.certificate_authorities: [ "certificates/ca.crt" ] 
+xpack.security.http.ssl.client_authentication: "optional"
+xpack.security.transport.ssl.key: "certificates/elasticsearch.key"
+xpack.security.transport.ssl.certificate: "certificates/elasticsearch.crt" 
+xpack.security.transport.ssl.certificate_authorities: [ "certificates/ca.crt" ]
+
+xpack.security.authc.realms.native.native1.order: 0
