@@ -1,0 +1,77 @@
+#!/bin/bash
+
+# Source the script we're testing
+script_to_test="${PROJECT_DIR}"/profiles/aws/pingaccess/hooks/utils.lib.sh
+. "${script_to_test}"
+
+# Mock this function to avoid
+# a curl networking call and
+# to control the exit code.
+make_initial_api_request() {
+  return 0
+}
+
+createSecretFile() {
+  return 0
+}
+
+# Mock this function call to
+# avoid testing issues with
+# the filesystem.
+function inject_template() {
+  echo "{
+  \"currentPassword\": \"${OLD_PA_ADMIN_USER_PASSWORD}\",
+  \"newPassword\": \"${PA_ADMIN_USER_PASSWORD}\"
+}"
+  return $?;
+}
+
+setUp() {
+  export VERBOSE=false
+  export STOP_SERVER_ON_FAILURE=false
+  export OLD_PA_ADMIN_USER_PASSWORD='2Access'
+  export PA_ADMIN_USER_PASSWORD='2FederateM0re'
+}
+
+oneTimeTearDown() {
+  unset VERBOSE
+  unset STOP_SERVER_ON_FAILURE
+  unset OLD_PA_ADMIN_USER_PASSWORD
+  unset PA_ADMIN_USER_PASSWORD
+}
+
+testOldAndNewPasswordsBlank() {
+  # unset these for this particular test
+  unset OLD_PA_ADMIN_USER_PASSWORD
+  unset PA_ADMIN_USER_PASSWORD
+
+  msg=$(changePassword)
+  exit_code=$?
+
+  assertEquals 1 ${exit_code}
+  assertEquals 'The old and new passwords cannot be blank' "${msg}"
+}
+
+testOldAndNewPasswordsTheSame() {
+  # make this password the same as the old
+  # password for this test
+  export PA_ADMIN_USER_PASSWORD='2Access'
+
+  msg=$(changePassword)
+  exit_code=$?
+
+  assertEquals 1 ${exit_code}
+  assertEquals 'old password and new password are the same, therefore cannot update password' "${msg}"
+}
+
+testChangePasswordHappyPath() {
+
+  msg=$(changePassword)
+  exit_code=$?
+
+  assertEquals 0 ${exit_code}
+  assertEquals 'password change status: 0' "${msg}"
+}
+
+# load shunit
+. ${SHUNIT_PATH}
