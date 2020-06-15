@@ -135,6 +135,13 @@ function pingaccess_admin_wait() {
     done
 }
 
+# A function to help with unit
+# test mocking.
+function inject_template() {
+  echo $(envsubst < ${1})
+  return $?;
+}
+
 ########################################################################################################################
 # Function to change password.
 #
@@ -159,24 +166,24 @@ function changePassword() {
     echo "The old and new passwords cannot be blank"
     "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
   elif test ${isPasswordSame} -eq 1; then
-    echo "old passsword and new password are the same, therefore cannot update passsword"
+    echo "old password and new password are the same, therefore cannot update password"
     "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
   else
     # Change the default password.
     # Using set +x to suppress shell debugging
     # because it reveals the new admin password
     set +x
-    change_password_payload=$(envsubst < ${STAGING_DIR}/templates/81/change_password.json)
+    change_password_payload=$(inject_template ${STAGING_DIR}/templates/81/change_password.json)
     make_initial_api_request -s -X PUT \
         -d "${change_password_payload}" \
         "https://localhost:9000/pa-admin-api/v3/users/1/password" > /dev/null
-    CHANGE_PASWORD_STATUS=${?}
+    CHANGE_PASSWORD_STATUS=${?}
     "${VERBOSE}" && set -x
 
-    echo "password change status: ${CHANGE_PASWORD_STATUS}"
+    echo "password change status: ${CHANGE_PASSWORD_STATUS}"
 
     # If no error, write password to disk
-    if test ${CHANGE_PASWORD_STATUS} -eq 0; then
+    if test ${CHANGE_PASSWORD_STATUS} -eq 0; then
       createSecretFile
       return 0
     fi
@@ -246,10 +253,10 @@ function initializeSkbnConfiguration() {
 
   # Check if endpoint is AWS cloud stroage service (S3 bucket)
   case "$BACKUP_URL" in "s3://"*)
-    
+
     # Set AWS specific variable for skbn
     export AWS_REGION=${REGION}
-    
+
     DIRECTORY_NAME=$(echo "${PING_PRODUCT}" | tr '[:upper:]' '[:lower:]')
 
     if test "${BACKUP_URL}" != */"${DIRECTORY_NAME}"; then
@@ -260,16 +267,16 @@ function initializeSkbnConfiguration() {
 
   echo "Getting cluster metadata"
 
-  # Get prefix of HOSTNAME which match the pod name.  
+  # Get prefix of HOSTNAME which match the pod name.
   POD="$(echo "${HOSTNAME}" | cut -d. -f1)"
-  
+
   METADATA=$(kubectl get "$(kubectl get pod -o name | grep "${POD}")" \
     -o=jsonpath='{.metadata.namespace},{.metadata.name},{.metadata.labels.role}')
-    
+
   METADATA_NS=$(echo "$METADATA"| cut -d',' -f1)
   METADATA_PN=$(echo "$METADATA"| cut -d',' -f2)
   METADATA_CN=$(echo "$METADATA"| cut -d',' -f3)
-  
+
   # Remove suffix for runtime.
   METADATA_CN="${METADATA_CN%-engine}"
 
@@ -288,7 +295,7 @@ function skbnCopy() {
 
   # Check if the number of files to be copied in parallel is defined (0 for full parallelism)
   test ! -z "${3}" && PARALLEL="${3}"
-  
+
   if ! skbn cp --src "$SOURCE" --dst "${DESTINATION}" --parallel "${PARALLEL}"; then
     return 1
   fi

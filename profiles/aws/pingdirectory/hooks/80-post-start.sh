@@ -370,6 +370,10 @@ stop_container() {
 # --- MAIN SCRIPT ---
 echo "post-start: starting post-start hook"
 
+# Remove the post-start initialization marker file so the pod isn't prematurely considered ready
+POST_START_INIT_MARKER_FILE="${SERVER_ROOT_DIR}"/config/post-start-init-complete
+rm -f "${POST_START_INIT_MARKER_FILE}"
+
 echo "post-start: running ldapsearch test on this container (${HOSTNAME})"
 waitUntilLdapUp "localhost" "${LDAPS_PORT}" 'cn=config'
 
@@ -400,6 +404,7 @@ if test "${ORDINAL}" -eq 0; then
     test ${licModStatus} -ne 0 && stop_container
   fi
 
+  touch "${POST_START_INIT_MARKER_FILE}"
   echo "post-start: post-start complete"
   exit 0
 fi
@@ -440,6 +445,8 @@ done
 # All base DNs are already initialized, so we're good.
 if test -z "${UNINITIALIZED_DNS}"; then
   echo "post-start: replication is already initialized for all base DNs: ${DNS_TO_INITIALIZE}"
+
+  touch "${POST_START_INIT_MARKER_FILE}"
   echo "post-start: post-start complete"
   exit 0
 fi
@@ -546,5 +553,6 @@ done
 # Reset the force-as-master flag to false on the seed server if it was set before.
 reset_force_as_master
 
+touch "${POST_START_INIT_MARKER_FILE}"
 echo "post-start: post-start complete"
 exit 0
