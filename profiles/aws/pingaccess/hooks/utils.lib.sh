@@ -141,7 +141,7 @@ function pingaccess_admin_wait() {
 ########################################################################################################################
 function installAwsCliTools() {
   if test -z "$(which aws)"; then
-    #   
+    #
     #  Install AWS platform specific tools
     #
     echo "Installing AWS CLI tools for S3 support"
@@ -186,6 +186,13 @@ function initializeS3Configuration() {
   fi
 }
 
+# A function to help with unit
+# test mocking.
+function inject_template() {
+  echo $(envsubst < ${1})
+  return $?;
+}
+
 ########################################################################################################################
 # Function to change password.
 #
@@ -210,24 +217,24 @@ function changePassword() {
     echo "The old and new passwords cannot be blank"
     "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
   elif test ${isPasswordSame} -eq 1; then
-    echo "old passsword and new password are the same, therefore cannot update passsword"
+    echo "old password and new password are the same, therefore cannot update password"
     "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
   else
     # Change the default password.
     # Using set +x to suppress shell debugging
     # because it reveals the new admin password
     set +x
-    change_password_payload=$(envsubst < ${STAGING_DIR}/templates/81/change_password.json)
+    change_password_payload=$(inject_template ${STAGING_DIR}/templates/81/change_password.json)
     make_initial_api_request -s -X PUT \
         -d "${change_password_payload}" \
         "https://localhost:9000/pa-admin-api/v3/users/1/password" > /dev/null
-    CHANGE_PASWORD_STATUS=${?}
+    CHANGE_PASSWORD_STATUS=${?}
     "${VERBOSE}" && set -x
 
-    echo "password change status: ${CHANGE_PASWORD_STATUS}"
+    echo "password change status: ${CHANGE_PASSWORD_STATUS}"
 
     # If no error, write password to disk
-    if test ${CHANGE_PASWORD_STATUS} -eq 0; then
+    if test ${CHANGE_PASSWORD_STATUS} -eq 0; then
       createSecretFile
       return 0
     fi
