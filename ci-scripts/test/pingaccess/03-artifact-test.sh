@@ -195,7 +195,6 @@ EOF
 # Deploy 2 custom plugins.
 # Script is expected to successfully deploy plugins and exit with the non-status code 0.
 deploy_valid_artifact_test() {
-
   local expected_status_code=0
   local actual_status_code_script=
   local actual_status_code_artifact_deploy=
