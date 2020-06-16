@@ -24,14 +24,17 @@ data:
     #--- Copy kubectl to the data directory ---#
     which kubectl | xargs -I {} cp {} /data
 
-    #--- Download skbn ---#
-    wget -qO- https://github.com/maorfr/skbn/releases/download/0.5.0/skbn-0.5.0-linux.tar.gz | tar xvz -C .
+    #--- Download skbn from ping-artifacts bucket ---#
+    wget -qO /data/skbn https://ping-artifacts.s3-us-west-2.amazonaws.com/pingcommon/skbn/0.5.0/skbn
     
-    #--- Copy skbn to the data directory ---#
-    if ! mv skbn-0.5.0-linux/skbn /data; then
-      echo "Failed to locate skbn-0.5.0-linux/skbn"
+    #--- Check skbn executable in data directory ---#
+    if test ! -f /data/skbn; then
+      echo "Failed to locate /data/skbn"
       exit 1
     fi
+
+    #-- Allowing to execute the skbn
+    chmod +x /data/skbn
 
     #--- Wait for dependent services, if any --- #
     if test ! -z "${WAIT_FOR_SERVICES}"; then

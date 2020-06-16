@@ -259,7 +259,7 @@ function initializeSkbnConfiguration() {
 
     DIRECTORY_NAME=$(echo "${PING_PRODUCT}" | tr '[:upper:]' '[:lower:]')
 
-    if test "${BACKUP_URL}" != */"${DIRECTORY_NAME}"; then
+    if ! $(echo "$BACKUP_URL" | grep -q "/$DIRECTORY_NAME"); then
       BACKUP_URL="${BACKUP_URL}/${DIRECTORY_NAME}"
     fi
 
