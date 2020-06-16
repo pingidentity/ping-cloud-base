@@ -92,6 +92,16 @@ data:
             port => 20514
             add_field => {"log_type" => "PF_Audit_Log"}
         }
+        syslog {
+          id => "pd_directory_in"
+          port => 20515
+          type => syslog
+          add_field => {"log_type" => "PD_Access_Log"}
+          codec => multiline {
+            pattern => "^\s"
+            what => "previous"
+          }
+        }
         file {
             id => "var_log"
             path => "/var/log"
@@ -172,6 +182,75 @@ data:
             }
         }
 
+    # PROCESS PING DIRECTORY LOGS
+    # LOGS ARE SENT IN A CUSTOM FORMAT, AND THIS CONFIG MATCHES AND PARSES THEM.
+
+        if([log_type] == "PD_Access_Log"){
+          kv {
+            source => "[message]"
+            value_split => "="
+          }
+
+          grok {
+            match => { "message" => "\A%{WORD:ldapType} %{GREEDYDATA}" }
+          }
+
+          mutate{
+            gsub => [ 
+                "filter", '"', ""
+            ]
+            gsub => [ 
+                "dn", '"', ""
+            ]
+          }
+
+          geoip {
+            source => "requesterIP"
+          }
+
+        translate {
+            field => "requesterIP"
+            destination => "threat_intel"
+            fallback => "No"
+            dictionary_path => '/etc/logstash/enrichment/AlienVaultIP.yml'
+            refresh_behaviour => "replace"
+        }
+
+        translate {
+            field => "requesterIP"
+            destination => "tor_intel"
+            fallback => "No"
+            dictionary_path => '/etc/logstash/enrichment/TorNodes.yml'
+            refresh_behaviour => "replace"
+        }
+
+        translate {
+            field => "[geoip][country_name]"
+            destination => "malicious_country"
+            fallback => "No"
+            dictionary_path => '/etc/logstash/enrichment/MaliciousCountries.yml'
+            refresh_behaviour => "replace"
+        }
+
+        translate {
+            field => "[geoip][country_name]"
+            destination => "known_country"
+            fallback => "No"
+            dictionary_path => '/etc/logstash/enrichment/KnownCountries.yml'
+            refresh_behaviour => "replace"
+        }
+
+        if([malicious_country] == "No" and [known_country] == "No"){
+            mutate {
+                add_field => { "suspicious_country" => "YES" }
+            }
+        }
+
+        mutate {
+            remove_field => "[message]"
+            remove_field => "[tags]"
+        }
+    }
         # PROCESS PING FED SYSTEM LOG
         # USING LOG4J's ability to output in JSON limits the amount of processing you have to do besides splitting up JSON.
     
