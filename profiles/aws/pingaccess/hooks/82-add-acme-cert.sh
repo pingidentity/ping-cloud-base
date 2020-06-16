@@ -16,13 +16,12 @@ fi
 # Setting public endpoint and port for cert.
 export CLUSTER_CONFIG_HOST="${PA_ADMIN_PUBLIC_HOSTNAME}"
 export CLUSTER_CONFIG_PORT=443
-export ADMIN_HOST_PORT="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9000"
 
 echo "add-acme-cert: cluster-config host:port ${CLUSTER_CONFIG_HOST}:${CLUSTER_CONFIG_PORT}"
 
 # Check if alias for the cert already exists.
-echo "add-acme-cert: checking if certificate with alias '${K8S_ACME_CERT_SECRET_NAME}'"
-OUT=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/certificates?alias=$K8S_ACME_CERT_SECRET_NAME)
+echo "add-acme-cert: checking if certificate with alias '${K8S_ACME_CERT_SECRET_NAME}' already exists"
+OUT=$(make_api_request https://localhost:9000/pa-admin-api/v3/certificates?alias=$K8S_ACME_CERT_SECRET_NAME)
 ALIAS_NAME=$(echo ${OUT} | jq .items[].id)
 
 # Skip if cert with alias already exists.
@@ -44,7 +43,7 @@ fi
 ADD_ACME_CERT_OUT=$(make_api_request -X POST -d "{
         \"alias\": \"${K8S_ACME_CERT_SECRET_NAME}\",
         \"fileData\": \"${ACME_CERT}\"
-    }" https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/certificates)
+    }" https://localhost:9000/pa-admin-api/v3/certificates)
 
 # Get cert status from response body.
 ACME_CERT_STATUS=$(echo ${ADD_ACME_CERT_OUT} | jq -r '.status')
