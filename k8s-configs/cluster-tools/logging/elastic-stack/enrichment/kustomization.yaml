@@ -59,10 +59,11 @@ configMapGenerator:
   files:
   - files/elasticsearch-role-bootstraps/superusers.json
 
-# # Kibana config template
-# - name: enrichment-kibana-config
-#   files:
-#   - files/kibana-config/kib-base.ndjson
+# Kibana config template
+- name: enrichment-kibana-config
+  files:
+  # - files/kibana-config/kib-base.ndjson
+  - files/kibana-config/kibana.yml
 
 # Logstash pipeline configuration file
 - name: enrichment-logstash-config
@@ -87,17 +88,32 @@ configMapGenerator:
 # Scripts that are used for enrichment processing
 - name: enrichment-scripts
   files:
-  - files/scripts/done.sh
-  - files/scripts/efs-provisioner.sh
-  - files/scripts/elasticsearch-init.sh
-  - files/scripts/elasticsearch.sh
-  - files/scripts/kibana-init.sh
-  - files/scripts/logstash-init.sh
-  - files/scripts/enrichment-basic.sh
-  - files/scripts/enrichment-certs.sh
-  - files/scripts/enrichment-bootstrap.sh
-  - files/scripts/enrichment.py
-  - files/scripts/logstash.sh
+  # Common
   - files/scripts/wait-for.sh
   - files/scripts/logger.sh
-  - files/scripts/test-1.sh
+  - files/scripts/done.sh
+  # Enrichment-bootstrap
+  - files/scripts/efs-provisioner.sh
+  - files/scripts/put-bootstrap-logs-to-logstash.sh
+  # Logstash
+  - files/scripts/create-enrichment-cache-files.sh
+  - files/scripts/enrichment.py
+  - files/scripts/logstash.sh
+  # Kibana
+  - files/scripts/get-kibana-config.sh
+  - files/scripts/kibana.sh
+  # Enrichment-job
+  - files/scripts/enrichment-job.sh
+  # Elasticsearch
+  - files/scripts/create-certs.sh
+  - files/scripts/create-passwords.sh
+  - files/scripts/elasticsearch-bootstrap.sh
+  - files/scripts/elasticsearch.sh
+
+  # - files/scripts/elasticsearch.sh
+  # - files/scripts/kibana-init.sh
+  # - files/scripts/logstash-init.sh
+  # - files/scripts/enrichment-basic.sh
+  # - files/scripts/enrichment-certs.sh
+  # - files/scripts/enrichment-bootstrap.sh
+

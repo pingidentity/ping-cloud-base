@@ -6,17 +6,14 @@ logger "INFO" "Creating enrichment volume folders..."
 
 mkdir -p /enrichment-shared-volume/logs \
          /enrichment-shared-volume/tmp \
-         /enrichment-shared-volume/elasticsearch-ilm-policies \
-         /enrichment-shared-volume/elasticsearch-index-bootstraps \
-         /enrichment-shared-volume/elasticsearch-index-templates \
-         /enrichment-shared-volume/elasticsearch-role-bootstraps \
          /enrichment-shared-volume/enrichment-cache \
-         /enrichment-shared-volume/kibana-config \
-         /enrichment-shared-volume/logstash-config \
-         /enrichment-shared-volume/logstash-search-templates \
-         /enrichment-shared-volume/certs-config \
-         /enrichment-shared-volume/certs
+         /enrichment-shared-volume/certs \
+         /enrichment-shared-volume/secrets
+
+chown -r 1000:1000 /enrichment-shared-volume
 
 logger "INFO" "Folders created."
 
 . "/scripts/done.sh"
+
+sleep 9999999999;

@@ -6,12 +6,14 @@ metadata:
 spec:
   restartPolicy: OnFailure
   serviceAccount: enrichment
+
   initContainers:
   - name: efs-provisioner
     image: quay.io/external_storage/efs-provisioner:latest
     imagePullPolicy: IfNotPresent
     workingDir: /scripts
     command: ["sh", '$(CONTAINER_NAME).sh']
+
     env:
       - name: FILE_SYSTEM_ID
         valueFrom:
@@ -36,6 +38,7 @@ spec:
             key: provisioner.name
       - name: CONTAINER_NAME
         value: "efs-provisioner"
+
     volumeMounts:
       - mountPath: /enrichment-shared-volume
         name: enrichment-shared-volume
@@ -43,121 +46,135 @@ spec:
       - mountPath: /scripts
         name: enrichment-scripts
 
-  - name: enrichment-basic
-    image: centos:7
-    workingDir: /scripts
-    command: ["sh", '$(CONTAINER_NAME).sh']
-    env:
-      - name: WAIT_FOR
-        value: "efs-provisioner"
-      - name: CONTAINER_NAME
-        value: "enrichment-basic"
-      - name:  ENRICHMENT_TOR_FEED_URL
-        value: "https://check.torproject.org/exit-addresses"
-      - name:  ENRICHMENT_ALIEN_VAULT_FEED_URL
-        value: "https://reputation.alienvault.com/reputation.generic"
-      - name:  ENRICHMENT_FILEPATH
-        value: "/enrichment-shared-volume/enrichment-cache/"
-      - name:  LOG_FILEPATH
-        value: "/enrichment-shared-volume/logs"
-      - name:  PYTHONUNBUFFERED
-        value: "1"
-      - name: PYTHONIOENCODING
-        value: "UTF-8"
-    volumeMounts:
-      - mountPath: /enrichment-shared-volume
-        name: enrichment-shared-volume
-        readOnly: false
-      - mountPath: /scripts
-        name: enrichment-scripts
-      - mountPath: /enrichment-cache
-        name: enrichment-cache
-      - mountPath: /enrichment-logstash-search-templates
-        name: enrichment-logstash-search-templates
-      - mountPath: /enrichment-elasticsearch-ilm-policies
-        name: enrichment-elasticsearch-ilm-policies
-      - mountPath: /enrichment-elasticsearch-index-bootstraps
-        name: enrichment-elasticsearch-index-bootstraps
-      - mountPath: /enrichment-elasticsearch-index-templates
-        name: enrichment-elasticsearch-index-templates
-      - mountPath: /enrichment-elasticsearch-role-bootstraps
-        name: enrichment-elasticsearch-role-bootstraps
-      - mountPath: /enrichment-kibana-config
-        name: enrichment-kibana-config
-      - mountPath: /enrichment-logstash-config
-        name: enrichment-logstash-config
-      - mountPath: /enrichment-certs-config
-        name: enrichment-certs-config
+  # - name: enrichment-basic
+  #   image: centos:7
+  #   workingDir: /scripts
+  #   command: ["sh", '$(CONTAINER_NAME).sh']
+  #   env:
+  #     - name: WAIT_FOR
+  #       value: "efs-provisioner"
+  #     - name: CONTAINER_NAME
+  #       value: "enrichment-basic"
+  #     - name:  ENRICHMENT_TOR_FEED_URL
+  #       value: "https://check.torproject.org/exit-addresses"
+  #     - name:  ENRICHMENT_ALIEN_VAULT_FEED_URL
+  #       value: "https://reputation.alienvault.com/reputation.generic"
+  #     - name:  ENRICHMENT_FILEPATH
+  #       value: "/enrichment-shared-volume/enrichment-cache/"
+  #     - name:  LOG_FILEPATH
+  #       value: "/enrichment-shared-volume/logs"
+  #     - name:  PYTHONUNBUFFERED
+  #       value: "1"
+  #     - name: PYTHONIOENCODING
+  #       value: "UTF-8"
+  #   volumeMounts:
+  #     - mountPath: /enrichment-shared-volume
+  #       name: enrichment-shared-volume
+  #       readOnly: false
+  #     - mountPath: /scripts
+  #       name: enrichment-scripts
+  #     - mountPath: /enrichment-cache
+  #       name: enrichment-cache
+  #     - mountPath: /enrichment-logstash-search-templates
+  #       name: enrichment-logstash-search-templates
+  #     - mountPath: /enrichment-elasticsearch-ilm-policies
+  #       name: enrichment-elasticsearch-ilm-policies
+  #     - mountPath: /enrichment-elasticsearch-index-bootstraps
+  #       name: enrichment-elasticsearch-index-bootstraps
+  #     - mountPath: /enrichment-elasticsearch-index-templates
+  #       name: enrichment-elasticsearch-index-templates
+  #     - mountPath: /enrichment-elasticsearch-role-bootstraps
+  #       name: enrichment-elasticsearch-role-bootstraps
+  #     - mountPath: /enrichment-kibana-config
+  #       name: enrichment-kibana-config
+  #     - mountPath: /enrichment-logstash-config
+  #       name: enrichment-logstash-config
+  #     - mountPath: /enrichment-certs-config
+  #       name: enrichment-certs-config
 
-  - name: enrichment-certs
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
-    # securityContext:
-    #   runAsUser: 0
-    workingDir: /scripts
-    command: ["sh", '$(CONTAINER_NAME).sh']
-    env:
-      - name: WAIT_FOR
-        value: "enrichment-basic"
-      - name: CONTAINER_NAME
-        value: "enrichment-certs"
-      - name: ELASTIC_PASSWORD
-        valueFrom:
-          secretKeyRef:
-            name: elasticsearch-secrets
-            key: password
-    volumeMounts:
-      - mountPath: /enrichment-shared-volume
-        name: enrichment-shared-volume
-        readOnly: false
-      - mountPath: /scripts
-        name: enrichment-scripts
+  # - name: enrichment-certs
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
+  #   # securityContext:
+  #   #   runAsUser: 0
+  #   workingDir: /scripts
+  #   command: ["sh", '$(CONTAINER_NAME).sh']
+  #   env:
+  #     - name: WAIT_FOR
+  #       value: "enrichment-basic"
+  #     - name: CONTAINER_NAME
+  #       value: "enrichment-certs"
+  #     - name: ELASTIC_PASSWORD
+  #       valueFrom:
+  #         secretKeyRef:
+  #           name: elasticsearch-secrets
+  #           key: password
+  #   volumeMounts:
+  #     - mountPath: /enrichment-shared-volume
+  #       name: enrichment-shared-volume
+  #       readOnly: false
+  #     - mountPath: /scripts
+  #       name: enrichment-scripts
 
-  - name: enrichment-bootstrap
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
-    workingDir: /scripts
-    command: ["sh", '$(CONTAINER_NAME).sh']
-    env:
-      - name: WAIT_FOR
-        value: "elasticsearch-init"
-      - name: CONTAINER_NAME
-        value: "enrichment-bootstrap"
-      - name: ELASTICSEARCH_URL
-        value: "https://elasticsearch"
-      - name: ELASTICSEARCH_PORT
-        value: "9200"
-      - name: KIBANA_URL
-        value: "https://kibana"
-      - name: KIBANA_PORT
-        value: "5601"
-      - name: ELASTIC_USER
-        valueFrom:
-          secretKeyRef:
-            name: elasticsearch-secrets
-            key: username
-      - name: ELASTIC_PASSWORD
-        valueFrom:
-          secretKeyRef:
-            name: elasticsearch-secrets
-            key: password
-    volumeMounts:
-      - mountPath: /enrichment-shared-volume
-        name: enrichment-shared-volume
-        readOnly: false
-      - mountPath: /scripts
-        name: enrichment-scripts
-      # - mountPath: /tmp/elasticsearch-secrets
-      #   name: elasticsearch-secrets
+  # - name: enrichment-bootstrap
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
+  #   workingDir: /scripts
+  #   command: ["sh", '$(CONTAINER_NAME).sh']
+  #   env:
+  #     - name: WAIT_FOR
+  #       value: "elasticsearch-init"
+  #     - name: CONTAINER_NAME
+  #       value: "enrichment-bootstrap"
+  #     - name: NODE_NAME
+  #       valueFrom:
+  #         fieldRef:
+  #           fieldPath: metadata.name
+  #     - name: ELASTICSEARCH_URL
+  #       value: "https://elasticsearch"
+  #     - name: ELASTICSEARCH_PORT
+  #       value: "9200"
+  #     - name: KIBANA_URL
+  #       value: "https://kibana"
+  #     - name: KIBANA_PORT
+  #       value: "5601"
+  #     - name: ELASTIC_USER
+  #       valueFrom:
+  #         secretKeyRef:
+  #           name: elasticsearch-secrets
+  #           key: username
+  #     - name: ELASTIC_PASSWORD
+  #       valueFrom:
+  #         secretKeyRef:
+  #           name: elasticsearch-secrets
+  #           key: password
+  #     - name: DISCOVERY_SEED_HOSTS
+  #       value: "${NODE_NAME}.elasticsearch"
+  #     - name: CLUSTER_INITIAL_MASTER_NODES
+  #       value: "${NODE_NAME}"
+  #   volumeMounts:
+  #     - mountPath: /enrichment-shared-volume
+  #       name: enrichment-shared-volume
+  #       readOnly: false
+  #     - mountPath: /scripts
+  #       name: enrichment-scripts
+  #     # - mountPath: /tmp/elasticsearch-secrets
+  #     #   name: elasticsearch-secrets
   
   containers:
-  - name: test-1
+  - name: put-bootstrap-logs-to-logstash
     image: busybox
     workingDir: /scripts
     command: ["sh", '$(CONTAINER_NAME).sh']
+
     env:
       - name: WAIT_FOR
-        value: "enrichment-bootstrap"
+        value: "logstash"
       - name: CONTAINER_NAME
-        value: "test-1"
+        value: "put-bootstrap-logs-to-logstash"
+      - name: LOGSTASH_URL
+        value: "https://logstash-elastic.elastic-stack-logging.svc.cluster.local"
+      - name: LOGSTASH_PORT
+        value: "20510"
+        
     volumeMounts:
       - mountPath: /enrichment-shared-volume
         name: enrichment-shared-volume
@@ -174,42 +191,42 @@ spec:
     configMap:
       name: enrichment-scripts
       defaultMode: 0555
-  - name: enrichment-cache
-    configMap:
-      name: enrichment-cache
-      defaultMode: 0555
-  - name: enrichment-logstash-search-templates
-    configMap:
-      name: enrichment-logstash-search-templates
-      defaultMode: 0555
-  - name: enrichment-elasticsearch-ilm-policies
-    configMap:
-      name: enrichment-elasticsearch-ilm-policies
-      defaultMode: 0555
-  - name: enrichment-elasticsearch-index-bootstraps
-    configMap:
-      name: enrichment-elasticsearch-index-bootstraps
-      defaultMode: 0555
-  - name: enrichment-elasticsearch-index-templates
-    configMap:
-      name: enrichment-elasticsearch-index-templates
-      defaultMode: 0555
-  - name: enrichment-elasticsearch-role-bootstraps
-    configMap:
-      name: enrichment-elasticsearch-role-bootstraps
-      defaultMode: 0555
-  - name: enrichment-kibana-config
-    configMap:
-      name: enrichment-kibana-config
-      defaultMode: 0555
-  - name: enrichment-logstash-config
-    configMap:
-      name: enrichment-logstash-config
-      defaultMode: 0555
-  - name: enrichment-certs-config
-    configMap:
-      name: enrichment-certs-config
-      defaultMode: 0555
-  - name: elasticsearch-secrets
-    secret:
-      secretName: elasticsearch-secrets
+  # - name: enrichment-cache
+  #   configMap:
+  #     name: enrichment-cache
+  #     defaultMode: 0555
+  # - name: enrichment-logstash-search-templates
+  #   configMap:
+  #     name: enrichment-logstash-search-templates
+  #     defaultMode: 0555
+  # - name: enrichment-elasticsearch-ilm-policies
+  #   configMap:
+  #     name: enrichment-elasticsearch-ilm-policies
+  #     defaultMode: 0555
+  # - name: enrichment-elasticsearch-index-bootstraps
+  #   configMap:
+  #     name: enrichment-elasticsearch-index-bootstraps
+  #     defaultMode: 0555
+  # - name: enrichment-elasticsearch-index-templates
+  #   configMap:
+  #     name: enrichment-elasticsearch-index-templates
+  #     defaultMode: 0555
+  # - name: enrichment-elasticsearch-role-bootstraps
+  #   configMap:
+  #     name: enrichment-elasticsearch-role-bootstraps
+  #     defaultMode: 0555
+  # - name: enrichment-kibana-config
+  #   configMap:
+  #     name: enrichment-kibana-config
+  #     defaultMode: 0555
+  # - name: enrichment-logstash-config
+  #   configMap:
+  #     name: enrichment-logstash-config
+  #     defaultMode: 0555
+  # - name: enrichment-certs-config
+  #   configMap:
+  #     name: enrichment-certs-config
+  #     defaultMode: 0555
+  # - name: elasticsearch-secrets
+  #   secret:
+  #     secretName: elasticsearch-secrets
