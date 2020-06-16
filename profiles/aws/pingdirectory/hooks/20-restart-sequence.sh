@@ -63,6 +63,7 @@ if test "${MANAGE_PROFILE_STATUS}" -ne 0; then
 fi
 
 run_hook "185-apply-tools-properties.sh"
+run_hook "15-encryption-settings.sh"
 
 # FIXME: replace-profile has a bug where it may wipe out the user root backend configuration and lose user data added
 # from another server while enabling replication. This code block may be removed when replace-profile is fixed.
