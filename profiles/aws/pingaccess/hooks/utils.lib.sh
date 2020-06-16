@@ -293,8 +293,26 @@ function comparePasswordDiskWithVariable() {
 ########################################################################################################################
 function is_multi_cluster() {
   if test ! -z "${PA_ADMIN_PUBLIC_HOSTNAME}" && test ! -z "${PA_ENGINE_PUBLIC_HOSTNAME}"; then
-    echo 1
+    echo true
   else
-    echo 0
+    echo false
   fi
+}
+
+########################################################################################################################
+# Determines if the environment is secondary cluster.
+#
+# Returns
+#   true if secondary-cluster; false if not.
+########################################################################################################################
+function is_secondary_cluster() {
+
+  if [ "$(is_multi_cluster)" == true ]; then
+    if ! $(echo $PA_ADMIN_PUBLIC_HOSTNAME | grep -q "$TENANT_DOMAIN"); then
+        echo true
+        return 0
+    fi
+  fi
+
+  echo false
 }

@@ -28,6 +28,11 @@ if ! test -f "${ADMIN_CONFIGURATION_COMPLETE}"; then
     exit 1
   fi
 
+  sh "${HOOKS_DIR}/82-add-acme-cert.sh"
+  if test $? -ne 0; then
+    exit 1
+  fi
+
   touch ${ADMIN_CONFIGURATION_COMPLETE}
 
 # Since this isn't initial deployment, change password if from disk is different than the desired value.
