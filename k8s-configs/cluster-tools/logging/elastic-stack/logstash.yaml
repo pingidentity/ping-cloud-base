@@ -307,6 +307,20 @@ data:
               hosts => "${LOGSTASH_ELASTICSEARCH_SCHEME}://${LOGSTASH_ELASTICSEARCH_HOST}:${LOGSTASH_ELASTICSEARCH_PORT}"
           }
         }
+        if([log_type] == "PD_Access_Log"){
+          elasticsearch {
+            id => "pd_out"
+            index => "pd_out_%{+YYYY.MM.dd}"
+            hosts => "${LOGSTASH_ELASTICSEARCH_SCHEME}://${LOGSTASH_ELASTICSEARCH_HOST}:${LOGSTASH_ELASTICSEARCH_PORT}"
+          }
+        }
+        if([log_type] == "PD_Failed_Ops"){
+          elasticsearch {
+            id => "pd_failed_ops_out"
+            index => "pd_failed_ops_out_%{+YYYY.MM.dd}"
+            hosts => "${LOGSTASH_ELASTICSEARCH_SCHEME}://${LOGSTASH_ELASTICSEARCH_HOST}:${LOGSTASH_ELASTICSEARCH_PORT}"
+          }
+        }
     }
 ---
 apiVersion: apps/v1
