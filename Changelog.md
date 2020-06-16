@@ -1,6 +1,20 @@
 # Changelog
 
+### 1.4.1
+
+- Changed PingAccess 'podManagementPolicy' to 'OrderedReady' to support zero-downtime update of engines
+- Fixed encryption errors encountered while restoring PingDirectory user and operational data from backups
+- Disabled automatic key renewal on the Bitnami sealed-secrets controller 
+
+_Changes:_
+
+- [X] PDO-1083 - PingAccess podManagementPolicy 'Parallel' tears down all engines at the same time
+- [X] PDO-1089 - Attempt to restore backups made after changing encryption-password for PingDirectory fails
+- [X] PDO-1092 - CI/CD cluster's capacity reduced by half due to PingFederate limit changes in base
+- [X] PDO-1095 - Bitnami sealed-secrets controller rotates keys every 30 days 
+
 ### 1.4.0
+
 - Updated Container Insights to silo each product log file into log streams
 - Allow pre-launch configuration to be customized for PingFederate
 - Added support for in-place upgrade of the PingFederate admin server
@@ -36,6 +50,7 @@ _Changes:_
 - [X] PDO-1069 - Default PingFederate runtime pod sizing
 
 ### 1.3.2
+
 - Fixed PingDirectory deployment automation to replace the server profile fully so that environment variable changes 
   are always honored
 - Fixed PingAccess deployment automation such that the Backup CronJob does not crash the admin server
