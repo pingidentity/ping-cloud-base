@@ -15,6 +15,7 @@ createSecretFile() {
   return 0
 }
 
+
 # Mock this function call to
 # avoid testing issues with
 # the filesystem.

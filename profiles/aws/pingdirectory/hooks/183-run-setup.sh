@@ -32,6 +32,8 @@ if test "${MANAGE_PROFILE_STATUS}" -ne 0; then
   exit 183
 fi
 
+run_hook "15-encryption-settings.sh"
+
 echo "Configuring ${USER_BACKEND_ID} for base DN ${USER_BASE_DN}"
 dsconfig --no-prompt --offline set-backend-prop \
   --backend-name "${USER_BACKEND_ID}" \
