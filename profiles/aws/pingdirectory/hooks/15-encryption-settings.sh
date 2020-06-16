@@ -23,7 +23,7 @@ for PASS in ${ENCRYPTION_PASSWORDS}; do
   OUTPUT=$(encryption-settings create \
       --cipher-algorithm AES \
       --key-length-bits 128 \
-      --set-preferred --passphrase-file "${PASS_FILE}" 2>&1)
+      --passphrase-file "${PASS_FILE}" 2>&1)
   echo "encryption-settings: ${OUTPUT}"
 done
 
