@@ -135,6 +135,14 @@ function pingaccess_admin_wait() {
     done
 }
 
+# A function to help with unit
+# test mocking.  Please do not
+# delete!
+function inject_template() {
+  echo $(envsubst < ${1})
+  return $?;
+}
+
 ########################################################################################################################
 # Function to change password.
 #
