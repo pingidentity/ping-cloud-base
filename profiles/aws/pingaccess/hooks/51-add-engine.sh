@@ -28,7 +28,7 @@ if [ "${IS_MULTI_CLUSTER}" == true ]; then
   fi
 
   ADMIN_HOST_PORT="${PA_ADMIN_PUBLIC_HOSTNAME}"
-  ENGINE_NAME="${PA_ENGINE_PUBLIC_HOSTNAME}-${REGION}:300${ORDINAL}"
+  ENGINE_NAME="${PA_ENGINE_PUBLIC_HOSTNAME}:300${ORDINAL}"
 
   # Retrieve Engine Cert ID.
   echo "add-engine: retrieving the Engine Cert ID"
@@ -38,7 +38,7 @@ if [ "${IS_MULTI_CLUSTER}" == true ]; then
 
 else
   ADMIN_HOST_PORT="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9000"
-  ENGINE_NAME="${SHORT_HOST_NAME}-${REGION}"
+  ENGINE_NAME="${SHORT_HOST_NAME}"
 
   pingaccess_admin_wait "${ADMIN_HOST_PORT}"
 
