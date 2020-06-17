@@ -12,16 +12,16 @@ fi
 
 echo "add-engine: starting add engine script"
 
-IS_MULTI_CLUSTER=$(is_multi_cluster)
+IS_SECONDARY_CLUSTER=$(is_secondary_cluster)
 
-echo "add-engine: multi-cluster: ${IS_MULTI_CLUSTER}"
+echo "add-engine: secondary-cluster: ${IS_SECONDARY_CLUSTER}"
 
 SHORT_HOST_NAME=$(hostname)
 ORDINAL=${SHORT_HOST_NAME##*-}
 
-if [ "${IS_MULTI_CLUSTER}" == true ]; then
+if [ "${IS_SECONDARY_CLUSTER}" == true ]; then
 
-  # multi-region PA runtime should use cert and alias name of the cert added to PA admin is value of K8S_ACME_CERT_SECRET_NAME.
+  # Secondary cluster PA runtime should use cert and alias name of the cert added to PA admin is value of K8S_ACME_CERT_SECRET_NAME.
   if test -z "${K8S_ACME_CERT_SECRET_NAME}"; then
       echo "add-engine: K8S_ACME_CERT_SECRET_NAME is not set"
       exit 1
