@@ -310,6 +310,7 @@ function is_secondary_cluster() {
   if [ "$(is_multi_cluster)" == true ]; then
     if ! $(echo $PA_ADMIN_PUBLIC_HOSTNAME | grep -q "$TENANT_DOMAIN"); then
         echo true
+        return 0
     fi
   fi
 
