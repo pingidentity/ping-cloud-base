@@ -31,10 +31,12 @@ if test ! -f "${_pdProfileLicense}" ; then
   cp -af "${_currentLicense}" "${_pdProfileLicense}"
 fi
 
-if test -f "${SECRETS_DIR}"/encryption-settings.pin; then
-  echo "Using the externally provided encryption-setting.pin file"
-  cp "${SECRETS_DIR}"/encryption-settings.pin "${PD_PROFILE}"/server-root/pre-setup/config
-fi
+test -f "${SECRETS_DIR}"/encryption-settings.pin &&
+  ENCRYPTION_PIN_FILE="${SECRETS_DIR}"/encryption-settings.pin ||
+  ENCRYPTION_PIN_FILE="${SECRETS_DIR}"/encryption-password
+
+echo "Using ${ENCRYPTION_PIN_FILE} as the encryption-setting.pin file"
+cp "${ENCRYPTION_PIN_FILE}" "${PD_PROFILE}"/server-root/pre-setup/config
 
 # FIXME: Workaround for DS-41964 - use --replaceFullProfile flag to replace-profile
 echo "Merging changes from new server profile"
@@ -62,6 +64,7 @@ if test "${MANAGE_PROFILE_STATUS}" -ne 0; then
 fi
 
 run_hook "185-apply-tools-properties.sh"
+run_hook "15-encryption-settings.sh"
 
 # FIXME: replace-profile has a bug where it may wipe out the user root backend configuration and lose user data added
 # from another server while enabling replication. This code block may be removed when replace-profile is fixed.

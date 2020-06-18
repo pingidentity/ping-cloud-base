@@ -380,3 +380,38 @@ function log_streams_exist() {
   done
   return 0
 }
+
+function find_shunit_dir() {
+  # use egrep here or find will always return 0
+  find . -type d -name "shunit*" | egrep '.*'
+}
+
+function find_shunit_symlink() {
+  # use egrep here or find will always return 0
+  find . -type l -name shunit | egrep '.*'
+}
+
+function prepareShunit() {
+
+  # Check to see if shunit2 is ready
+  pushd "${PROJECT_DIR}"/ci-scripts/test/shunit > /dev/null
+
+  shunit_dir_name=$(find_shunit_dir)
+  shunit_dir_found=$?
+
+  echo
+  if [[ ${shunit_dir_found} -eq 0 ]]; then
+    echo "Found ${shunit_dir_name}.  Skipping shunit configuration."
+  else
+    echo "shunit not found.  Unpacking it..."
+
+    unzip shunit*.zip 1>/dev/null
+    shunit_dir_name=$(find_shunit_dir)
+
+    echo "Unpacking of ${shunit_dir_name} complete."
+  fi
+
+  popd > /dev/null
+
+  return 0
+}

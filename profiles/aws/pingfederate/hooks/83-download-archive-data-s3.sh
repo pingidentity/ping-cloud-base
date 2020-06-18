@@ -29,7 +29,7 @@ DOWNLOAD_DIR="${OUT_DIR}/instance/server/default/data/drop-in-deployer"
 # Rename backup filename when copying onto pingfederate admin
 DST_FILE="data.zip"
 
-echo "Copying: '${DATA_BACKUP_FILE_NAME}' to '${SKBN_K8S_PREFIX}}${DOWNLOAD_DIR}'"
+echo "Copying: '${DATA_BACKUP_FILE_NAME}' to '${SKBN_K8S_PREFIX}${DOWNLOAD_DIR}'"
 
 if ! skbnCopy "${SKBN_CLOUD_PREFIX}/${DATA_BACKUP_FILE_NAME}" "${SKBN_K8S_PREFIX}${DOWNLOAD_DIR}/${DST_FILE}"; then
   exit 1

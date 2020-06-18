@@ -35,10 +35,11 @@ echo "pre-stop: server removal exited with return code: ${?}"
 echo "pre-stop: removing the replication changelogDb"
 rm -rf "${SERVER_ROOT_DIR}/changelogDb"
 
+POST_START_INIT_MARKER_FILE="${SERVER_ROOT_DIR}"/config/post-start-init-complete
 REPL_INIT_MARKER_FILE="${SERVER_ROOT_DIR}"/config/repl-initialized
 
-echo "pre-stop: removing ${REPL_INIT_MARKER_FILE} marker file"
-rm -f "${REPL_INIT_MARKER_FILE}"
+echo "pre-stop: removing ${POST_START_INIT_MARKER_FILE} and ${REPL_INIT_MARKER_FILE} marker files"
+rm -f "${POST_START_INIT_MARKER_FILE}" "${REPL_INIT_MARKER_FILE}"
 
 # Conditionally remove the persistent volume to which the pod was bound.
 if ! "${LEAVE_DISK_AFTER_SERVER_DELETE}"; then
