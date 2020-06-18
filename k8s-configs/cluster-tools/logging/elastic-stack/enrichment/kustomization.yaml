@@ -68,16 +68,6 @@ configMapGenerator:
   # - files/kibana-config/kib-base.ndjson
   - files/kibana-config/kibana.yml
 
-# Logstash pipeline configuration file
-- name: enrichment-logstash-config
-  files:
-  - files/logstash-config/logstash.conf
-
-  # Logstash yaml configuration file
-- name: enrichment-logstash-yaml-config
-  files:
-  - files/logstash-config/logstash.yml
-
 # Logstash search templates
 - name: enrichment-logstash-search-templates
   files:
