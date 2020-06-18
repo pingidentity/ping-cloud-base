@@ -14,7 +14,7 @@ MASTER_KEY_PATH="${SERVER_ROOT_DIR}/server/default/data/${MASTER_KEY_FILE}"
 
 # NOTE: we wait through the WAIT_FOR_SERVICES variable in the engine's init container. So the admin
 # must be running if we're here.
-
+set -x
 echo "Fetching master key from the admin server"
 
 # Fetch the master key from the admin server
@@ -39,3 +39,5 @@ test ! -f "${MASTER_KEY_PATH}" && exit 1
 
 chmod 400 "${MASTER_KEY_PATH}"
 obfuscatePassword
+
+set +x
