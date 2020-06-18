@@ -13,4 +13,4 @@ dsconfig create-log-publisher \
     --set include-instance-name:true  \
     --set include-requester-ip-address:true  \
     --set server-port:20515  \
-    --set server-host-name:logstash-elastic
+    --set server-host-name:logstash-elastic.elastic-stack-logging
