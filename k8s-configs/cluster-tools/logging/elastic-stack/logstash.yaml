@@ -542,7 +542,7 @@ spec:
 
       containers:
       - name: logstash
-        image: antonklyba/logstash:6.8.10.26
+        image: antonklyba/logstash:6.8.10.27
         
         securityContext:
           runAsUser: 0
