@@ -4,16 +4,20 @@ source /scripts/logger.sh
 
 logger "INFO" "Creating enrichment volume folders..."
 
-mkdir -p /enrichment-shared-volume/logs \
-         /enrichment-shared-volume/tmp \
-         /enrichment-shared-volume/enrichment-cache \
-         /enrichment-shared-volume/certs \
-         /enrichment-shared-volume/secrets
+dirs_path=/enrichment-shared-volume
 
-chown -r 1000:1000 /enrichment-shared-volume
+set -- "logs" "enrichment-cache" "certs" "secrets"
+while [ $# -gt 0 ]
+do        
+    mkdir -p $dirs_path/$1
+    if [ -d "$dirs_path/$1" ]; then
+        logger "INFO" "Folder $dirs_path/$1 exist."
+    else
+        logger "ERROR" "Folder $dirs_path/$1 not exist."
+    fi
+    shift;
+done
 
-logger "INFO" "Folders created."
+chown -R 1000:1000 /enrichment-shared-volume
 
 . "/scripts/done.sh"
-
-sleep 9999999999;

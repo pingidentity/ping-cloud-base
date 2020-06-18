@@ -38,6 +38,9 @@ configMapGenerator:
   - files/elasticsearch-index-bootstraps/pd-failed-ops.json
   - files/elasticsearch-index-bootstraps/pf-audit.json
   - files/elasticsearch-index-bootstraps/pf-system.json
+  - files/elasticsearch-index-bootstraps/logstash.json
+  - files/elasticsearch-index-bootstraps/enrichment.json
+  - files/elasticsearch-index-bootstraps/pf-provision.json
 
 # Elasticsearch yaml configuration
 - name: enrichment-elasticsearch-yaml-config
@@ -89,12 +92,12 @@ configMapGenerator:
 - name: enrichment-scripts
   files:
   # Common
-  - files/scripts/wait-for.sh
   - files/scripts/logger.sh
   - files/scripts/done.sh
+  - files/scripts/install-dependencies.sh
   # Enrichment-bootstrap
   - files/scripts/efs-provisioner.sh
-  - files/scripts/put-bootstrap-logs-to-logstash.sh
+  - files/scripts/put-logs-to-logstash.sh
   # Logstash
   - files/scripts/create-enrichment-cache-files.sh
   - files/scripts/enrichment.py
@@ -109,11 +112,4 @@ configMapGenerator:
   - files/scripts/create-passwords.sh
   - files/scripts/elasticsearch-bootstrap.sh
   - files/scripts/elasticsearch.sh
-
-  # - files/scripts/elasticsearch.sh
-  # - files/scripts/kibana-init.sh
-  # - files/scripts/logstash-init.sh
-  # - files/scripts/enrichment-basic.sh
-  # - files/scripts/enrichment-certs.sh
-  # - files/scripts/enrichment-bootstrap.sh
 

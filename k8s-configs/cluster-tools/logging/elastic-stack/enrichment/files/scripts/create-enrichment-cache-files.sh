@@ -2,26 +2,18 @@
 
 source /scripts/logger.sh
 
-. "/scripts/wait-for.sh"
-
 logger "INFO" "Copying mounted configmaps data into correspond folders started."
 
 cp /enrichment-cache/* /enrichment-shared-volume/enrichment-cache/
 
-# HERE SHOULD BE A COPIED FILES CHECK
+if [ "$(ls -A /enrichment-shared-volume/enrichment-cache/)" ]; then
+    logger "INFO" "Files was copied successfully."
+else
+    logger "ERROR" "Enrichment files wasn't copied, something went wrong."
+    exit 1
+fi
 
-logger "INFO" "Files was copied successfully."
-
-# This installs required dependencies into the configure-es container. 
-# These are REQUIRED for the enrichment script to work.
-
-logger "INFO" "Dependencies installation started."
-
-yum install -y epel-release
-yum install -y python-pip
-pip install requests
-
-logger "INFO" "Dependencies installation done."
+. "/scripts/install-dependencies.sh"
 
 logger "INFO" "Starting enrichment script running..."
 python /scripts/enrichment.py

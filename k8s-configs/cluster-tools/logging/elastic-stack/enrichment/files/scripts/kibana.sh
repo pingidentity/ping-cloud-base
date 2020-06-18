@@ -2,8 +2,7 @@
 
 source /scripts/logger.sh
 
-export ELASTICSEARCH_USERNAME=kibana_system
-export ELASTICSEARCH_PASSWORD=`cat /enrichment-shared-volume/passwords/kibana`
+logger "INFO" "Starting Kibana..."
 
 /usr/share/kibana/bin/kibana
 

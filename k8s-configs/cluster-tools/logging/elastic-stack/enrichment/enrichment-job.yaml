@@ -17,7 +17,7 @@ spec:
           - name: enrichment-job
             image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
             workingDir: /scripts
-            command: [ "sh", "-c", "${CONTAINER_NAME}" ]
+            command: ["sh", '$(CONTAINER_NAME).sh']
 
             securityContext:
               privileged: true
@@ -31,6 +31,10 @@ spec:
               value: "https://reputation.alienvault.com/reputation.generic"
             - name:  ENRICHMENT_FILEPATH
               value: "/enrichment-shared-volume/enrichment-cache/"
+            - name: LOGSTASH_URL
+              value: "http://logstash-elastic"
+            - name: LOGSTASH_PORT
+              value: "20510"
             - name:  LOG_FILEPATH
               value: "/enrichment-shared-volume/logs"
             - name:  PYTHONUNBUFFERED

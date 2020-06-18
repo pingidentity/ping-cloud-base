@@ -1,20 +1,10 @@
 cluster.name: "k8s-logs"
 node.name: "${NODE_NAME}"
+network.host: "0.0.0.0"
 discovery.seed_hosts: "${DISCOVERY_SEED_HOSTS}"
 cluster.initial_master_nodes: "${CLUSTER_INITIAL_MASTER_NODES}"
 xpack.monitoring.collection.enabled: "true"
 xpack.license.self_generated.type: "trial"
-xpack.security.enabled: "true"
-xpack.security.http.ssl.enabled: "true"
-xpack.security.transport.ssl.enabled: "true"
-xpack.security.transport.ssl.verification_mode: "certificate"
-xpack.security.http.ssl.verification_mode: "certificate"
-xpack.security.http.ssl.key: "certificates/${NODE_NAME}/${NODE_NAME}.key"
-xpack.security.http.ssl.certificate: "certificates/${NODE_NAME}/${NODE_NAME}.crt"
-xpack.security.http.ssl.certificate_authorities: [ "certificates/ca/ca.crt" ] 
-xpack.security.http.ssl.client_authentication: "optional"
-xpack.security.transport.ssl.key: "certificates/${NODE_NAME}/${NODE_NAME}.key"
-xpack.security.transport.ssl.certificate: "certificates/${NODE_NAME}/${NODE_NAME}.crt" 
-xpack.security.transport.ssl.certificate_authorities: [ "certificates/ca/ca.crt" ]
-
-xpack.security.authc.realms.native.native1.order: 0
+xpack.security.enabled: "${XPACK_SECURITY_ENABLED}"
+xpack.security.http.ssl.enabled: "${XPACK_SECURITY_HTTP_SSL_ENABLED}"
+xpack.security.transport.ssl.enabled: "${XPACK_SECURITY_TRANSPORT_SSL_ENABLED}"

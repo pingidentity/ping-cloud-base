@@ -76,8 +76,25 @@ spec:
           value: "efs-provisioner"
         - name: CONTAINER_NAME
           value: "create-certs"
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: DISCOVERY_SEED_HOSTS
+          value: "${NODE_NAME}.elasticsearch"
+        - name: CLUSTER_INITIAL_MASTER_NODES
+          value: "${NODE_NAME}"
+          ### Security disabled
+        - name: XPACK_SECURITY_ENABLED
+          value: "false"
+        - name: XPACK_SECURITY_HTTP_SSL_ENABLED
+          value: "false"
+        - name: XPACK_SECURITY_TRANSPORT_SSL_ENABLED
+          value: "false"
+          ###
         - name: ES_PATH_CONF
           value: "/usr/share/elasticsearch/config"
+
 
         volumeMounts:
         - name: data
@@ -113,15 +130,20 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        - name: ES_PATH_CONF
-          value: "/usr/share/elasticsearch/data/config"
         - name: DISCOVERY_SEED_HOSTS
           value: "${NODE_NAME}.elasticsearch"
         - name: CLUSTER_INITIAL_MASTER_NODES
           value: "${NODE_NAME}"
-        # CHANGE THIS!
-        - name: ELASTIC_PASSWORD
-          value: "passwd"
+          ### Security disabled
+        - name: XPACK_SECURITY_ENABLED
+          value: "false"
+        - name: XPACK_SECURITY_HTTP_SSL_ENABLED
+          value: "false"
+        - name: XPACK_SECURITY_TRANSPORT_SSL_ENABLED
+          value: "false"
+          ###
+        - name: ES_PATH_CONF
+          value: "/usr/share/elasticsearch/data/config"
 
         volumeMounts:
         - name: data
@@ -140,55 +162,6 @@ spec:
           readOnly: true
         - name: enrichment-scripts
           mountPath: /scripts
-
-      - name: elasticsearch-bootstrap
-        image: docker.elastic.co/elasticsearch/elasticsearch:7.1.1
-        workingDir: /scripts
-        command: ["sh", '$(CONTAINER_NAME).sh']
-
-        # securityContext:
-        #   runAsUser: 1000
-        #   runAsGroup: 1000
-
-        env:
-        - name: CONTAINER_NAME
-          value: "elasticsearch-bootstrap"
-        - name: NODE_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
-        - name: ES_PATH_CONF
-          value: "/usr/share/elasticsearch/data/config"
-        - name: DISCOVERY_SEED_HOSTS
-          value: "${NODE_NAME}.elasticsearch"
-        - name: CLUSTER_INITIAL_MASTER_NODES
-          value: "${NODE_NAME}"
-
-        volumeMounts:
-        - name: data
-          mountPath: /usr/share/elasticsearch/data
-          readOnly: false
-        - name: enrichment-shared-volume
-          mountPath: /enrichment-shared-volume
-          readOnly: false
-        - name: enrichment-elasticsearch-yaml-config
-          mountPath: /usr/share/elasticsearch/data/config/elasticsearch.yml
-          subPath: elasticsearch.yml
-          readOnly: true
-        - name: enrichment-certs-config
-          mountPath: /usr/share/elasticsearch/data/config/instances.yml
-          subPath: instances.yml
-          readOnly: true
-        - name: enrichment-scripts
-          mountPath: /scripts
-        - name: enrichment-elasticsearch-ilm-policies
-          mountPath: /usr/share/elasticsearch/data/ilm-policies
-        - name: enrichment-elasticsearch-index-bootstraps
-          mountPath: /usr/share/elasticsearch/data/index-bootstraps
-        - name: enrichment-elasticsearch-index-templates
-          mountPath: /usr/share/elasticsearch/data/index-templates
-        - name: enrichment-elasticsearch-role-bootstraps
-          mountPath: /usr/share/elasticsearch/data/role-bootstraps
 
       containers:
       - name: elasticsearch
@@ -223,24 +196,22 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
+          ### Security disabled
+        - name: XPACK_SECURITY_ENABLED
+          value: "false"
+        - name: XPACK_SECURITY_HTTP_SSL_ENABLED
+          value: "false"
+        - name: XPACK_SECURITY_TRANSPORT_SSL_ENABLED
+          value: "false"
+          ###
         - name: DISCOVERY_SEED_HOSTS
           value: "es-cluster-0.elasticsearch,es-cluster-1.elasticsearch,es-cluster-2.elasticsearch"
         - name: CLUSTER_INITIAL_MASTER_NODES
-          value: "es-cluster-0,es-cluster-1,es-cluster-1"
+          value: "es-cluster-0,es-cluster-1,es-cluster-2"
         - name: ES_JAVA_OPTS
           value: "-Xms512m -Xmx512m"
         - name: ES_PATH_CONF
           value: "/usr/share/elasticsearch/data/config"
-        # - name: ELASTIC_USER
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: elasticsearch-secrets
-        #       key: username
-        # - name: ELASTIC_PASSWORD
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: elasticsearch-secrets
-        #       key: password
 
         volumeMounts:
         - name: data
@@ -248,8 +219,6 @@ spec:
         - name: enrichment-shared-volume
           mountPath: /enrichment-shared-volume
           readOnly: false
-        - name: elasticsearch-certs
-          mountPath: /usr/share/elasticsearch/data/config/certificates
         - name: enrichment-elasticsearch-yaml-config
           mountPath: /usr/share/elasticsearch/data/config/elasticsearch.yml
           subPath: elasticsearch.yml
@@ -342,13 +311,3 @@ parameters:
   fsType: ext4
 mountOptions:
   - discard
-
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: elasticsearch-secrets
-type: Opaque
-data:
-  username: ${ELASTIC_USER}
-  password: ${ELASTIC_PASSWORD}

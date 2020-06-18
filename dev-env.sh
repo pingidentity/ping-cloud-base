@@ -215,8 +215,6 @@ kustomize build test |
     ${PING_ARTIFACT_REPO_URL}
     ${LOG_ARCHIVE_URL}
     ${EFS_FILESYSTEM_ID}
-    ${ELASTIC_USER}
-    ${ELASTIC_PASSWORD}
     ${BACKUP_URL}' > ${DEPLOY_FILE}
 sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" ${DEPLOY_FILE}
 

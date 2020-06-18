@@ -1,0 +1,7 @@
+{
+  "aliases": {
+    "pf-provision": {
+      "is_write_index": true
+    }
+  }
+}

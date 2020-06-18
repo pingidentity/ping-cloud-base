@@ -6,12 +6,11 @@
 import urllib2, re
 import requests
 import sys, os, time
-# from datetime import date
 
 def logger(logType, msg):
     currentDateTime = str(time.strftime("%Y-%m-%d %T", time.localtime()))
     containerName = os.environ['CONTAINER_NAME']
-    logEntry = logType + "\t" + currentDateTime + "\t" + containerName + "\t" + msg
+    logEntry = logType + "\t" + currentDateTime + "\t" + containerName + "\t" + msg + "\n"
     print(logEntry)
     logFileFullPath = os.environ['LOG_FILEPATH'] + "/" + containerName + "_" + str(time.strftime("%d.%m.%Y", time.localtime())) + ".log"
     try:

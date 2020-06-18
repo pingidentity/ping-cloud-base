@@ -16,6 +16,11 @@ spec:
         app: kibana
     spec:
       initContainers:
+
+      - name: check-elasticsearch-availability
+        image: busybox
+        command: ['sh', '-c', "until nslookup elasticsearch.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for elasticsearch; sleep 2; done"]
+
       - name: get-kibana-config
         image: busybox
         workingDir: /scripts
@@ -34,15 +39,13 @@ spec:
         - name: enrichment-scripts
           mountPath: /scripts
 
-      - name: check-elasticsearch-availability
-        image: busybox
-        command: ['sh', '-c', "until nslookup elasticsearch.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for elasticsearch; sleep 2; done"]
-
       containers:
       - name: kibana
         image: docker.elastic.co/kibana/kibana:7.2.0
 
         env:
+        - name: WAIT_FOR
+          value: "elasticsearch-bootstrap"
         - name: CONTAINER_NAME
           value: "kibana"
         - name: SERVER_NAME
@@ -52,29 +55,7 @@ spec:
         - name: SERVER_PORT
           value: "5601"
         - name: ELASTICSEARCH_HOSTS
-          value: https://elasticsearch:9200
-        - name: XPACK_MONITORING_ENABLED
-          value: "true"
-        - name: SERVER_SSL_ENABLED
-          value: "true"
-        - name: ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES
-          value: "/enrichment-shared-volume/certs/ca/ca.crt"
-        - name: SERVER_SSL_CERTIFICATE
-          value: "/enrichment-shared-volume/certs/kibana/kibana.crt"
-        - name: SERVER_SSL_KEY
-          value: "/enrichment-shared-volume/certs/kibana/kibana.key"
-        - name: CERTS_DIR
-          value: "/enrichment-shared-volume/certs"
-        # - name: ELASTICSEARCH_USERNAME
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: elasticsearch-secrets
-        #       key: username
-        # - name: ELASTICSEARCH_PASSWORD
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: elasticsearch-secrets
-        #       key: password
+          value: http://elasticsearch:9200
 
         resources:
           limits:
@@ -85,15 +66,15 @@ spec:
             cpu: 100m
 
         ports:
-        - containerPort: 5601
-          name: http
+        - name: http
+          containerPort: 5601
 
         volumeMounts:
           - mountPath: /enrichment-shared-volume
             name: enrichment-shared-volume
             readOnly: false
           - name: enrichment-kibana-config
-            mountPath: /usr/share/kibana/config
+            mountPath: /usr/share/kibana/config/kibana.yml
             subPath: kibana.yml
 
 
@@ -109,7 +90,6 @@ spec:
         - name: enrichment-kibana-config
           configMap:
             name: enrichment-kibana-config
-            defaultMode: 0555
 
 ---
 # This service exposes the Kibana http port to the cluster.
