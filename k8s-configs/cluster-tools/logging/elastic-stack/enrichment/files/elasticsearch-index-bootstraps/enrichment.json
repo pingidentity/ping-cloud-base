@@ -1,7 +1,0 @@
-{
-  "aliases": {
-    "enrichment": {
-      "is_write_index": true
-    }
-  }
-}

@@ -1,4 +1,0 @@
-server.name: "${SERVER_NAME}"
-server.host: "${SERVER_HOST}"
-server.port: "${SERVER_PORT}"
-elasticsearch.hosts: "${ELASTICSEARCH_HOSTS}"

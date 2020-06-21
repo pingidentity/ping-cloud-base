@@ -1,8 +1,0 @@
-instances:
-  - name: "elasticsearch"
-  - name: "es-cluster-0"
-  - name: "es-cluster-1"
-  - name: "es-cluster-2" 
-  - name: "kibana"
-  - name: "logstash"
-

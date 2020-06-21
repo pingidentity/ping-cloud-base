@@ -53,6 +53,7 @@ data:
          }
       }
     }
+
   containers.conf: |
     input {
       file {
@@ -75,6 +76,7 @@ data:
         }
       }
     }
+
   systemd.conf: |
     input {
       journald {
@@ -104,6 +106,7 @@ data:
         }
       }
     }
+
   ping_apps.conf: |
     input {
         http {
