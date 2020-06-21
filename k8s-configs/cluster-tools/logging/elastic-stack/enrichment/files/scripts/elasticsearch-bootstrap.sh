@@ -4,18 +4,10 @@ source /scripts/logger.sh
 
 # Simple script to load elasticsearch templates, ilm, policies, and all other required objects into the healthy cluster.
 
-es_status="red"
+export SERVICE_URL=$ELASTICSEARCH_URL
+export SERVICE_PORT=$ELASTICSEARCH_PORT
 
-logger "INFO" "Starting ElasticSearch Bootstrapping Process..."
-
-#Wait for ElasticSearch API to go Green before importing templates
-while [ "$es_status" != "green" ]
-do
-  logger "INFO" "Status Not Green Yet"
-  sleep 3
-  health=$(curl -s --insecure $ELASTICSEARCH_URL:$ELASTICSEARCH_PORT/_cluster/health)
-  es_status=$(expr "$health" : '.*"status":"\([^"]*\)"')
-done
+. "/scripts/check-service-availability.sh"
 
 #Load in Index Lifecycle polices
 logger "INFO" "Loading! -- ElasticSearch ILM Policies"
@@ -27,7 +19,7 @@ do
 
   logger "INFO" "Processing file name $n "
 
-  curl -X PUT "$ELASTICSEARCH_URL:$ELASTICSEARCH_PORT/_ilm/policy/$n?pretty" --insecure -H 'Content-Type: application/json' -d"@$f"
+  curl -s -X PUT "$ELASTICSEARCH_URL:$ELASTICSEARCH_PORT/_ilm/policy/$n?pretty" --insecure -H 'Content-Type: application/json' -d"@$f"
 
 done
 
@@ -41,7 +33,7 @@ do
 
   logger "INFO" "Processing file name $n "
 
-  curl -X PUT "$ELASTICSEARCH_URL:$ELASTICSEARCH_PORT/_template/$n?pretty" --insecure -H 'Content-Type: application/json' -d"@$f"
+  curl -s -X PUT "$ELASTICSEARCH_URL:$ELASTICSEARCH_PORT/_template/$n?pretty" --insecure -H 'Content-Type: application/json' -d"@$f"
 
 done
 
@@ -55,7 +47,7 @@ do
 
   logger "INFO" "Processing file name $n "
 
-  curl -X PUT "$ELASTICSEARCH_URL:$ELASTICSEARCH_PORT/$n-000001?pretty" --insecure -H 'Content-Type: application/json' -d"@$f"
+  curl -s -X PUT "$ELASTICSEARCH_URL:$ELASTICSEARCH_PORT/$n-000001?pretty" --insecure -H 'Content-Type: application/json' -d"@$f"
 
 done
 
@@ -75,4 +67,4 @@ done
 
 logger "INFO" "Bootstrap Execution completed."
 
-. "/scripts/done.sh"
+logger "INFO" "$CONTAINER_NAME: Job done!"

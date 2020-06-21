@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: enrichment-certs-config
+data:
+  instances.yml: |
+    instances:
+    - name: "elasticsearch"
+    - name: "es-cluster-0"
+    - name: "es-cluster-1"
+    - name: "es-cluster-2" 
+    - name: "kibana"
+    - name: "logstash"

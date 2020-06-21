@@ -64,16 +64,15 @@ spec:
           privileged: true
 
       - name: create-certs
-        image: docker.elastic.co/elasticsearch/elasticsearch:7.1.1
+        image: 7es7/enrichment-bootstrap:latest
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
 
         securityContext:
-          privileged: true
+          runAsUser: 0
+          runAsGroup: 0
 
         env:
-        - name: WAIT_FOR
-          value: "efs-provisioner"
         - name: CONTAINER_NAME
           value: "create-certs"
         - name: NODE_NAME
@@ -93,7 +92,7 @@ spec:
           value: "false"
           ###
         - name: ES_PATH_CONF
-          value: "/usr/share/elasticsearch/config"
+          value: "/usr/share/elasticsearch/data/config"
 
 
         volumeMounts:
@@ -104,24 +103,22 @@ spec:
           mountPath: /enrichment-shared-volume
           readOnly: false
         - name: enrichment-elasticsearch-yaml-config
-          mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+          mountPath: /usr/share/elasticsearch/data/config/elasticsearch.yml
           subPath: elasticsearch.yml
           readOnly: true
         - name: enrichment-certs-config
-          mountPath: /usr/share/elasticsearch/config/instances.yml
+          mountPath: /usr/share/elasticsearch/data/config/instances.yml
           subPath: instances.yml
           readOnly: true
-        - name: enrichment-scripts
-          mountPath: /scripts
 
       - name: create-passwords
-        image: docker.elastic.co/elasticsearch/elasticsearch:7.1.1
+        image: 7es7/enrichment-bootstrap:latest
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
 
-        # securityContext:
-        #   runAsUser: 1000
-        #   runAsGroup: 1000
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
 
         env:
         - name: CONTAINER_NAME
@@ -160,14 +157,10 @@ spec:
           mountPath: /usr/share/elasticsearch/data/config/instances.yml
           subPath: instances.yml
           readOnly: true
-        - name: enrichment-scripts
-          mountPath: /scripts
 
       containers:
       - name: elasticsearch
-        image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
-        workingDir: /scripts
-        command: ["sh", '$(CONTAINER_NAME).sh']
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
 
         securityContext:
           runAsUser: 1000
@@ -223,18 +216,12 @@ spec:
           mountPath: /usr/share/elasticsearch/data/config/elasticsearch.yml
           subPath: elasticsearch.yml
           readOnly: false
-        - name: enrichment-scripts
-          mountPath: /scripts
 
       volumes:
         - name: enrichment-shared-volume
           nfs:
             server: ${EFS_FILESYSTEM_ID}.efs.${REGION}.amazonaws.com
             path: /
-        - name: enrichment-scripts
-          configMap:
-            name: enrichment-scripts
-            defaultMode: 0555
         - name: enrichment-elasticsearch-yaml-config
           configMap:
             name: enrichment-elasticsearch-yaml-config

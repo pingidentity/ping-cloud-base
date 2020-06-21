@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: enrichment-kibana-config
+data:
+  kibana.yml: |
+    server.name: "${SERVER_NAME}"
+    server.host: "${SERVER_HOST}"
+    server.port: "${SERVER_PORT}"
+    elasticsearch.hosts: "${ELASTICSEARCH_HOSTS}"
+
+  kib-base.ndjson: |
+    {}

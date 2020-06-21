@@ -478,6 +478,7 @@ data:
         }
       }
     }
+
 ---
 apiVersion: apps/v1
 kind: DaemonSet
@@ -501,12 +502,22 @@ spec:
       serviceAccount: logstash-elastic
       initContainers:
 
-      - name: check-elasticsearch-availability
-        image: busybox
-        command: ['sh', '-c', "until nslookup elasticsearch.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for elasticsearch; sleep 2; done"]
+      - name: check-service-availability
+        image: 7es7/enrichment-bootstrap:latest
+        command: ["sh", '$(CONTAINER_NAME).sh']
+
+        env:
+        - name: CONTAINER_NAME
+          value: "check-service-availability"
+        - name: SERVICE_URL
+          value: "http://elasticsearch"
+        - name: SERVICE_PORT
+          value: "9200"
+        - name: DESIRED_STATUS
+          value: "green"
 
       - name: create-enrichment-cache-files
-        image: centos:7
+        image: 7es7/enrichment-bootstrap:latest
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
 
@@ -514,8 +525,6 @@ spec:
           privileged: true
 
         env:
-        - name: WAIT_FOR
-          value: "efs-provisioner"
         - name: CONTAINER_NAME
           value: "create-enrichment-cache-files"
         - name:  ENRICHMENT_TOR_FEED_URL
@@ -524,8 +533,6 @@ spec:
           value: "https://reputation.alienvault.com/reputation.generic"
         - name:  ENRICHMENT_FILEPATH
           value: "/enrichment-shared-volume/enrichment-cache/"
-        - name:  LOG_FILEPATH
-          value: "/enrichment-shared-volume/logs"
         - name:  PYTHONUNBUFFERED
           value: "1"
         - name: PYTHONIOENCODING
@@ -535,8 +542,6 @@ spec:
         - name: enrichment-shared-volume
           mountPath: /enrichment-shared-volume
           readOnly: false
-        - name: enrichment-scripts
-          mountPath: /scripts
         - name: enrichment-cache
           mountPath: /enrichment-cache
 
@@ -550,8 +555,6 @@ spec:
           privileged: true
 
         env:
-          - name: WAIT_FOR
-            value: "elasticsearch-bootstrap"
           - name: CONTAINER_NAME
             value: "logstash"
           - name: NODE_NAME
@@ -626,8 +629,6 @@ spec:
         - name: enrichment-shared-volume
           mountPath: /enrichment-shared-volume
           readOnly: false
-        - name: enrichment-scripts
-          mountPath: /scripts
 
       terminationGracePeriodSeconds: 30
 
@@ -651,10 +652,6 @@ spec:
       - name: enrichment-cache
         configMap:
           name: enrichment-cache
-          defaultMode: 0555
-      - name: enrichment-scripts
-        configMap:
-          name: enrichment-scripts
           defaultMode: 0555
 
 ---

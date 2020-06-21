@@ -15,7 +15,7 @@ spec:
           containers:
 
           - name: enrichment-job
-            image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
+            image: 7es7/enrichment-bootstrap:latest
             workingDir: /scripts
             command: ["sh", '$(CONTAINER_NAME).sh']
 
@@ -35,8 +35,6 @@ spec:
               value: "http://logstash-elastic"
             - name: LOGSTASH_PORT
               value: "20510"
-            - name:  LOG_FILEPATH
-              value: "/enrichment-shared-volume/logs"
             - name:  PYTHONUNBUFFERED
               value: "1"
             - name: PYTHONIOENCODING
@@ -46,15 +44,9 @@ spec:
             - name: enrichment-shared-volume
               mountPath: /enrichment-shared-volume
               readOnly: false
-            - name: enrichment-scripts
-              mountPath: /scripts
 
           volumes:
           - name: enrichment-shared-volume
             nfs:
               server: ${EFS_FILESYSTEM_ID}.efs.${REGION}.amazonaws.com
               path: /
-          - name: enrichment-scripts
-            configMap:
-              name: enrichment-scripts
-              defaultMode: 0555

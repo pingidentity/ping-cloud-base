@@ -17,18 +17,26 @@ spec:
     spec:
       initContainers:
 
-      - name: check-elasticsearch-availability
-        image: busybox
-        command: ['sh', '-c', "until nslookup elasticsearch.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for elasticsearch; sleep 2; done"]
+      - name: check-service-availability
+        image: 7es7/enrichment-bootstrap:latest
+        command: ["sh", '$(CONTAINER_NAME).sh']
+
+        env:
+        - name: CONTAINER_NAME
+          value: "check-service-availability"
+        - name: SERVICE_URL
+          value: "http://elasticsearch"
+        - name: SERVICE_PORT
+          value: "9200"
+        - name: DESIRED_STATUS
+          value: "green"
 
       - name: get-kibana-config
-        image: busybox
+        image: 7es7/enrichment-bootstrap:latest
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
 
         env:
-        - name: WAIT_FOR
-          value: "create-certs-and-creds"
         - name: CONTAINER_NAME
           value: "get-kibana-config"
 
@@ -36,16 +44,12 @@ spec:
         - name: enrichment-shared-volume
           mountPath: /enrichment-shared-volume
           readOnly: false
-        - name: enrichment-scripts
-          mountPath: /scripts
 
       containers:
       - name: kibana
         image: docker.elastic.co/kibana/kibana:7.2.0
 
         env:
-        - name: WAIT_FOR
-          value: "elasticsearch-bootstrap"
         - name: CONTAINER_NAME
           value: "kibana"
         - name: SERVER_NAME
@@ -83,10 +87,6 @@ spec:
           nfs:
             server: ${EFS_FILESYSTEM_ID}.efs.${REGION}.amazonaws.com
             path: /
-        - name: enrichment-scripts
-          configMap:
-            name: enrichment-scripts
-            defaultMode: 0555
         - name: enrichment-kibana-config
           configMap:
             name: enrichment-kibana-config

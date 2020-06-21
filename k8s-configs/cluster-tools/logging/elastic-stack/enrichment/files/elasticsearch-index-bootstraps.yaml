@@ -1,0 +1,86 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: enrichment-elasticsearch-index-bootstraps
+data:
+  enrichment.json: |
+    {
+        "aliases": {
+            "enrichment": {
+                "is_write_index": true
+            }
+        }
+    }
+
+  logstash.json: |
+    {
+        "aliases": {
+            "logstash": {
+                "is_write_index": true
+            }
+        }
+    }
+
+  pa-audit.json: |
+    {
+        "aliases": {
+            "pa-audit": {
+                "is_write_index": true
+            }
+        }
+    }
+
+  pa-system.json: |
+    {
+        "aliases": {
+            "pa-system": {
+                "is_write_index": true
+            }
+        }
+    }
+
+  pd-access.json: |
+    {
+        "aliases": {
+            "pd-access": {
+                "is_write_index": true
+            }
+        }
+    }
+
+  pd-failed-ops.json: |
+    {
+        "aliases": {
+            "pd-failed-ops": {
+                "is_write_index": true
+            }
+        }
+    }
+
+  pf-audit.json: |
+    {
+        "aliases": {
+            "pf-audit": {
+                "is_write_index": true
+            }
+        }
+    }
+
+  pf-provision.json: |
+    {
+        "aliases": {
+            "pf-provision": {
+                "is_write_index": true
+            }
+        }
+    }
+
+  pf-system.json: |
+    {
+        "aliases": {
+            "pf-system": {
+                "is_write_index": true
+            }
+        }
+    }

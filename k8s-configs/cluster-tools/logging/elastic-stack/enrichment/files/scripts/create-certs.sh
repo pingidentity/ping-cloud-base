@@ -2,6 +2,11 @@
 
 source /scripts/logger.sh
 
-logger "INFO" "This is a placeholder of elasticsearch/create-certs script execution.";
+. "/scripts/create-symlinks.sh"
 
-. "/scripts/done.sh"
+chown -R 1000:1000 /enrichment-shared-volume;
+chown -R 1000:1000 /usr/share/elasticsearch/data;
+
+# HERE SHOULD BE SSL CERTIFICATIONS CREATION
+
+logger "INFO" "$CONTAINER_NAME: Job done!"

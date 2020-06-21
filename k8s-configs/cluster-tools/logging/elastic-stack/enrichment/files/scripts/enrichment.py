@@ -8,17 +8,14 @@ import requests
 import sys, os, time
 
 def logger(logType, msg):
-    currentDateTime = str(time.strftime("%Y-%m-%d %T", time.localtime()))
-    containerName = os.environ['CONTAINER_NAME']
-    logEntry = logType + "\t" + currentDateTime + "\t" + containerName + "\t" + msg + "\n"
-    print(logEntry)
-    logFileFullPath = os.environ['LOG_FILEPATH'] + "/" + containerName + "_" + str(time.strftime("%d.%m.%Y", time.localtime())) + ".log"
-    try:
-        logFile = open(logFileFullPath, 'a')
-        logFile.write(logEntry)
-        logFile.close()
-    except Exception as e:
-        print("ERROR\t" + currentDateTime + "\t" + "Error while trying to write log entry into file.")
+    currentDateTime = str(time.strftime("%Y-%m-%dZ%T.%f", time.localtime()))
+    logEntry = currentDateTime + "\t" + msg + "\n"
+    if logType in ["INFO", "WARNING"]:
+        print(logEntry)
+    elif logType in ["ERROR"]:
+        print(logEntry, file=sys.stderr)
+    else:
+        print("Wrong log type received!", file=sys.stderr)
 
 def writeYAML_TOR(url, enrichmentFilePath):
     torNodes = requests.get(url)

@@ -4,102 +4,103 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 namespace: elastic-stack-logging
 
 resources:
+- files
 - enrichment-resources.yaml
 - enrichment-job.yaml
 - enrichment-bootstrap.yaml
 
-generatorOptions:
-  disableNameSuffixHash: true
+# generatorOptions:
+#   disableNameSuffixHash: true
 
-configMapGenerator:
-# These configmaps are used for providing different templates and predefined values that will be used during enrichment.
-# WARNING! If you added some new file to files/ folder or any of subfolders, you should add it's path to correspond configmap.
+# configMapGenerator:
+# # These configmaps are used for providing different templates and predefined values that will be used during enrichment.
+# # WARNING! If you added some new file to files/ folder or any of subfolders, you should add it's path to correspond configmap.
 
-# Enrichment cache files - lists of malicious/known countries, known TOR nodes IPs and so
-- name: enrichment-cache
-  files:
-  - files/enrichment-cache/AlienVaultIP.yml
-  - files/enrichment-cache/KnownCountries.yml
-  - files/enrichment-cache/MaliciousCountries.yml
-  - files/enrichment-cache/TorNodes.yml
+# # Enrichment cache files - lists of malicious/known countries, known TOR nodes IPs and so
+# - name: enrichment-cache
+#   files:
+#   - files/enrichment-cache/AlienVaultIP.yml
+#   - files/enrichment-cache/KnownCountries.yml
+#   - files/enrichment-cache/MaliciousCountries.yml
+#   - files/enrichment-cache/TorNodes.yml
 
-# Elasticsearch ILM policies templates
-- name: enrichment-elasticsearch-ilm-policies
-  files:
-  - files/elasticsearch-ilm-policies/ping-2-day-retention.json
-  - files/elasticsearch-ilm-policies/ping-7-day-retention.json
+# # Elasticsearch ILM policies templates
+# - name: enrichment-elasticsearch-ilm-policies
+#   files:
+#   - files/elasticsearch-ilm-policies/ping-2-day-retention.json
+#   - files/elasticsearch-ilm-policies/ping-7-day-retention.json
 
-# Elasticsearch indexes bootstrap files
-- name: enrichment-elasticsearch-index-bootstraps
-  files:
-  - files/elasticsearch-index-bootstraps/pa-audit.json
-  - files/elasticsearch-index-bootstraps/pa-system.json
-  - files/elasticsearch-index-bootstraps/pd-access.json
-  - files/elasticsearch-index-bootstraps/pd-failed-ops.json
-  - files/elasticsearch-index-bootstraps/pf-audit.json
-  - files/elasticsearch-index-bootstraps/pf-system.json
-  - files/elasticsearch-index-bootstraps/logstash.json
-  - files/elasticsearch-index-bootstraps/enrichment.json
-  - files/elasticsearch-index-bootstraps/pf-provision.json
+# # Elasticsearch indexes bootstrap files
+# - name: enrichment-elasticsearch-index-bootstraps
+#   files:
+#   - files/elasticsearch-index-bootstraps/pa-audit.json
+#   - files/elasticsearch-index-bootstraps/pa-system.json
+#   - files/elasticsearch-index-bootstraps/pd-access.json
+#   - files/elasticsearch-index-bootstraps/pd-failed-ops.json
+#   - files/elasticsearch-index-bootstraps/pf-audit.json
+#   - files/elasticsearch-index-bootstraps/pf-system.json
+#   - files/elasticsearch-index-bootstraps/logstash.json
+#   - files/elasticsearch-index-bootstraps/enrichment.json
+#   - files/elasticsearch-index-bootstraps/pf-provision.json
 
-# Elasticsearch yaml configuration
-- name: enrichment-elasticsearch-yaml-config
-  files:
-  - files/elasticsearch-yaml-config/elasticsearch.yml
+# # Elasticsearch yaml configuration
+# - name: enrichment-elasticsearch-yaml-config
+#   files:
+#   - files/elasticsearch-yaml-config/elasticsearch.yml
 
-# Elasticsearch indexes templates
-- name: enrichment-elasticsearch-index-templates
-  files:
-  - files/elasticsearch-index-templates/pa-audit-template.json
-  - files/elasticsearch-index-templates/pa-system-template.json
-  - files/elasticsearch-index-templates/pd-failed-ops.json
-  - files/elasticsearch-index-templates/pd-access-template.json
-  - files/elasticsearch-index-templates/pf-audit-template.json
-  - files/elasticsearch-index-templates/pf-system-template.json
+# # Elasticsearch indexes templates
+# - name: enrichment-elasticsearch-index-templates
+#   files:
+#   - files/elasticsearch-index-templates/pa-audit-template.json
+#   - files/elasticsearch-index-templates/pa-system-template.json
+#   - files/elasticsearch-index-templates/pd-failed-ops.json
+#   - files/elasticsearch-index-templates/pd-access-template.json
+#   - files/elasticsearch-index-templates/pf-audit-template.json
+#   - files/elasticsearch-index-templates/pf-system-template.json
 
-# Enrichment role bootstrap file
-- name: enrichment-elasticsearch-role-bootstraps
-  files:
-  - files/elasticsearch-role-bootstraps/superusers.json
+# # Enrichment role bootstrap file
+# - name: enrichment-elasticsearch-role-bootstraps
+#   files:
+#   - files/elasticsearch-role-bootstraps/superusers.json
 
-# Kibana config template
-- name: enrichment-kibana-config
-  files:
-  # - files/kibana-config/kib-base.ndjson
-  - files/kibana-config/kibana.yml
+# # Kibana config template
+# - name: enrichment-kibana-config
+#   files:
+#   # - files/kibana-config/kib-base.ndjson
+#   - files/kibana-config/kibana.yml
 
-# Logstash search templates
-- name: enrichment-logstash-search-templates
-  files:
-  - files/logstash-search-templates/6hr-1200km-template.json
+# # Logstash search templates
+# - name: enrichment-logstash-search-templates
+#   files:
+#   - files/logstash-search-templates/6hr-1200km-template.json
 
-# Logstash search templates
-- name: enrichment-certs-config
-  files:
-  - files/certs-config/instances.yml
+# # Logstash search templates
+# - name: enrichment-certs-config
+#   files:
+#   - files/certs-config/instances.yml
 
-# Scripts that are used for enrichment processing
-- name: enrichment-scripts
-  files:
-  # Common
-  - files/scripts/logger.sh
-  - files/scripts/done.sh
-  - files/scripts/install-dependencies.sh
-  # Enrichment-bootstrap
-  - files/scripts/efs-provisioner.sh
-  - files/scripts/put-logs-to-logstash.sh
-  # Logstash
-  - files/scripts/create-enrichment-cache-files.sh
-  - files/scripts/enrichment.py
-  - files/scripts/logstash.sh
-  # Kibana
-  - files/scripts/get-kibana-config.sh
-  - files/scripts/kibana.sh
-  # Enrichment-job
-  - files/scripts/enrichment-job.sh
-  # Elasticsearch
-  - files/scripts/create-certs.sh
-  - files/scripts/create-passwords.sh
-  - files/scripts/elasticsearch-bootstrap.sh
-  - files/scripts/elasticsearch.sh
+# # Scripts that are used for enrichment processing
+# - name: enrichment-scripts
+#   files:
+#   # Common
+#   - files/scripts/logger.sh
+#   - files/scripts/done.sh
+#   - files/scripts/install-dependencies.sh
+#   # Enrichment-bootstrap
+#   - files/scripts/efs-provisioner.sh
+#   - files/scripts/put-logs-to-logstash.sh
+#   # Logstash
+#   - files/scripts/create-enrichment-cache-files.sh
+#   - files/scripts/enrichment.py
+#   - files/scripts/logstash.sh
+#   # Kibana
+#   - files/scripts/get-kibana-config.sh
+#   - files/scripts/kibana.sh
+#   # Enrichment-job
+#   - files/scripts/enrichment-job.sh
+#   # Elasticsearch
+#   - files/scripts/create-certs.sh
+#   - files/scripts/create-passwords.sh
+#   - files/scripts/elasticsearch-bootstrap.sh
+#   - files/scripts/elasticsearch.sh
 

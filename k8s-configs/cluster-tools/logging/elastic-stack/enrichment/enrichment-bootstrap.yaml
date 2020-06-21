@@ -43,11 +43,14 @@ spec:
       - mountPath: /enrichment-shared-volume
         name: enrichment-shared-volume
         readOnly: false
-      - mountPath: /scripts
-        name: enrichment-scripts
+      - name: efs-provisioner-script
+        mountPath: /scripts/efs-provisioner.sh
+        subPath: efs-provisioner.sh
+
+  containers:
 
   - name: elasticsearch-bootstrap
-    image: centos:7
+    image: 7es7/enrichment-bootstrap:latest
     workingDir: /scripts
     command: ["sh", '$(CONTAINER_NAME).sh']
 
@@ -63,13 +66,13 @@ spec:
       value: "9200"
     - name: ES_PATH_CONF
       value: "/usr/share/elasticsearch/config"
+    - name: DESIRED_STATUS
+      value: "green"
 
     volumeMounts:
     - name: enrichment-shared-volume
       mountPath: /enrichment-shared-volume
       readOnly: false
-    - name: enrichment-scripts
-      mountPath: /scripts
     - name: enrichment-elasticsearch-ilm-policies
       mountPath: /usr/share/elasticsearch/data/ilm-policies
     - name: enrichment-elasticsearch-index-bootstraps
@@ -79,41 +82,14 @@ spec:
     - name: enrichment-elasticsearch-role-bootstraps
       mountPath: /usr/share/elasticsearch/data/role-bootstraps
 
-  - name: check-logstash-availability
-    image: busybox
-    command: ['sh', '-c', "until nslookup logstash-elastic.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for elasticsearch; sleep 2; done"]
-
-  containers:
-  - name: put-logs-to-logstash
-    image: centos:7
-    workingDir: /scripts
-    command: [ "./$(CONTAINER_NAME).sh", "-a" ]
-
-    env:
-      - name: WAIT_FOR
-        value: "logstash"
-      - name: CONTAINER_NAME
-        value: "put-logs-to-logstash"
-      - name: LOGSTASH_URL
-        value: "http://logstash-elastic"
-      - name: LOGSTASH_PORT
-        value: "20510"
-        
-    volumeMounts:
-      - mountPath: /enrichment-shared-volume
-        name: enrichment-shared-volume
-        readOnly: false
-      - mountPath: /scripts
-        name: enrichment-scripts
-
   volumes:
   - name: enrichment-shared-volume
     nfs:
       server: ${EFS_FILESYSTEM_ID}.efs.${REGION}.amazonaws.com
       path: /
-  - name: enrichment-scripts
+  - name: efs-provisioner-script
     configMap:
-      name: enrichment-scripts
+      name: efs-provisioner-script
       defaultMode: 0555
   - name: enrichment-elasticsearch-yaml-config
     configMap:
@@ -133,3 +109,27 @@ spec:
   - name: enrichment-elasticsearch-role-bootstraps
     configMap:
       name: enrichment-elasticsearch-role-bootstraps
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: efs-provisioner-script
+data:
+  efs-provisioner.sh: |
+    #!/usr/bin/env sh
+    echo "$(date +'%FT%T.%3N')\tCreating enrichment volume folders..." >&1
+    dirs_path=/enrichment-shared-volume
+    set -- "logs" "enrichment-cache" "certs" "secrets"
+    while [ $# -gt 0 ]
+    do        
+        mkdir -p $dirs_path/$1
+        if [ -d "$dirs_path/$1" ]; then
+            echo "$(date +'%FT%T.%3N')\tFolder $dirs_path/$1 exist." >&1
+        else
+            echo "$(date +'%FT%T.%3N')\tFolder $dirs_path/$1 not exist." >&2
+        fi
+        shift;
+    done
+    chown -R 1000:1000 /enrichment-shared-volume
+    echo "$(date +'%FT%T.%3N')\t$CONTAINER_NAME: Job done!" >&1
