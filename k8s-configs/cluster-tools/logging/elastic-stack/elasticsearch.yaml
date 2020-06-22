@@ -64,7 +64,7 @@ spec:
           privileged: true
 
       - name: create-certs
-        image: 7es7/enrichment-bootstrap:latest
+        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:latest
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
 
@@ -112,7 +112,7 @@ spec:
           readOnly: true
 
       - name: create-passwords
-        image: 7es7/enrichment-bootstrap:latest
+        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:latest
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
 

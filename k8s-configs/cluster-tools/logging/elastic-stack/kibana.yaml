@@ -18,7 +18,7 @@ spec:
       initContainers:
 
       - name: check-service-availability
-        image: 7es7/enrichment-bootstrap:latest
+        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:latest
         command: ["sh", '$(CONTAINER_NAME).sh']
 
         env:
@@ -32,7 +32,7 @@ spec:
           value: "green"
 
       - name: get-kibana-config
-        image: 7es7/enrichment-bootstrap:latest
+        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:latest
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
 
@@ -47,7 +47,7 @@ spec:
 
       containers:
       - name: kibana
-        image: docker.elastic.co/kibana/kibana:7.2.0
+        image: docker.elastic.co/kibana/kibana:7.6.0
 
         env:
         - name: CONTAINER_NAME
