@@ -16,6 +16,9 @@ resources:
 
 patchesStrategicMerge:
 
+### All secrets used by supporting tools ###
+- secrets.yaml
+
 ### Lets encrypt ACME certificate issuer for the cluster ###
 - |-
   apiVersion: certmanager.k8s.io/v1alpha1
@@ -84,18 +87,6 @@ patchesStrategicMerge:
           configMap:
             name: flux-ssh-config
             defaultMode: 0644
-
-### Deploy key to the cluster state repo ###
-- |-
-  apiVersion: v1
-  kind: Secret
-  type: Opaque
-  metadata:
-    name: flux-git-deploy
-    namespace: flux
-  data:
-    identity: |
-      ${SSH_ID_KEY_BASE64}
 
 ### Cloud-watch logging and monitoring ###
 - |-

@@ -7,9 +7,10 @@
 
 test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
 
-initializeS3Configuration
-
 echo "Uploading to location ${BACKUP_URL}"
+
+# Set required environment variables for skbn
+initializeSkbnConfiguration
 
 DST_DIRECTORY=$(mktemp -d)
 cd ${DST_DIRECTORY}
@@ -29,26 +30,26 @@ if test $(unzip -t "${DST_FILE}" &> /dev/null; echo $?) -ne 0 ; then
   exit 1
 fi
 
-echo "Creating directory ${DIRECTORY_NAME} under bucket ${BUCKET_NAME}"
-aws s3api put-object --bucket "${BUCKET_NAME}" --key "${DIRECTORY_NAME}"/
+UPLOAD_DIR="$(mktemp -d)"
 
-aws s3 cp "${DST_DIRECTORY}/${DST_FILE}" "${TARGET_URL}/"
-AWS_API_RESULT=${?}
+# Two copy of the backup will be pushed to cloud storage.
+# Make a copy: latest.zip
+DST_FILE_LATEST="latest.zip"
+DST_FILE_TIMESTAMP="data-$(date +%m-%d-%Y.%H.%M.%S).zip"
 
-echo "Upload return code: ${AWS_API_RESULT}"
+cp "${DST_FILE}" "${UPLOAD_DIR}/${DST_FILE_TIMESTAMP}"
+cp "${DST_FILE}" "${UPLOAD_DIR}/${DST_FILE_LATEST}"
 
-if test ${AWS_API_RESULT} != 0; then
-  echo "Upload was unsuccessful - crash the container"
+echo "Copying files to '${SKBN_CLOUD_PREFIX}'"
+
+if ! skbnCopy "${SKBN_K8S_PREFIX}/${UPLOAD_DIR}" "${SKBN_CLOUD_PREFIX}"; then
+  echo "Failed to upload files in ${UPLOAD_DIR}"
   exit 1
 fi
 
-# Print the filename of the uploaded file to s3
-echo "Uploaded file name: ${DST_FILE}"
-
-# Print listed files from k8s-s3-upload-archive
-DST_DIR_CONTENTS=$(mktemp)
-ls ${DST_DIRECTORY} > ${DST_DIR_CONTENTS}
-cat ${DST_DIR_CONTENTS}
+# List files in k8s-s3-upload-archive
+ls "${DST_DIRECTORY}"
 
 # Cleanup k8s-s3-upload-archive temp directory
-rm -rf ${DST_DIRECTORY}
+rm -rf "${DST_DIRECTORY}"
+rm -rf "${UPLOAD_DIR}"

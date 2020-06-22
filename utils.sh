@@ -134,7 +134,7 @@ testUrl() {
   local testHttpCode="${2:-false}"
   log "Testing URL: ${url}"
 
-  local http_code="$(curl -k --max-time 300 \
+  local http_code="$(curl -k --max-time "${CURL_TIMEOUT_SECONDS}" \
       -w '%{http_code}' "${url}" \
       -u "${ADMIN_USER}:${ADMIN_PASS}" \
       -H 'X-Xsrf-Header: PingApp' \

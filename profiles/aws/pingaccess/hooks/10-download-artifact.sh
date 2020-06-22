@@ -9,7 +9,7 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
   # Check to see if the artifact file is empty
   ARTIFACT_LIST_JSON=$(cat "${STAGING_DIR}/artifacts/artifact-list.json")
   if test ! -z "${ARTIFACT_LIST_JSON}"; then
-    # Check to see if the source S3 bucket(s) are specified
+    # Check to see if the source is specified
     if test ! -z "${ARTIFACT_REPO_URL}"; then
 
       echo "Private Repo : ${ARTIFACT_REPO_URL}"
@@ -17,11 +17,6 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
       # Check to see if the artifact list is a valid json string
       echo ${ARTIFACT_LIST_JSON} | jq
       if test $(echo $?) == "0"; then
-
-        # Install AWS CLI if the upload location is S3
-        if test ! "${ARTIFACT_REPO_URL#s3}" == "${ARTIFACT_REPO_URL}"; then
-          installAwsCliTools
-        fi
 
         DOWNLOAD_DIR=$(mktemp -d)
         UNZIP_DOWNLOAD_DIR=$(mktemp -d)
@@ -80,9 +75,19 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
 
                   echo "Download Artifact from ${ARTIFACT_LOCATION}"
 
-                  # Use aws command if ARTIFACT_LOCATION is in s3 format otherwise use curl
+                  # Use skbn command if ARTIFACT_LOCATION is in s3 format otherwise use curl
                   if ! test ${ARTIFACT_LOCATION#s3} == "${ARTIFACT_LOCATION}"; then
-                    aws s3 cp "${ARTIFACT_LOCATION}" ${DOWNLOAD_DIR}
+
+                    # Set required environment variables for skbn
+                    initializeSkbnConfiguration "${ARTIFACT_LOCATION}"
+
+                    echo "Copying: '${ARTIFACT_RUNTIME_ZIP}' to '${SKBN_K8S_PREFIX}'"
+
+                    if ! skbnCopy "${SKBN_CLOUD_PREFIX}" "${SKBN_K8S_PREFIX}${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}"; then
+                      echo "Failed to copy ${ARTIFACT_RUNTIME_ZIP}"
+                      exit 1
+                    fi
+
                   else
                     curl "${ARTIFACT_LOCATION}" --output ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}
                   fi

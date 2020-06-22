@@ -135,55 +135,12 @@ function pingaccess_admin_wait() {
     done
 }
 
-########################################################################################################################
-# Function to install AWS command line tools
-#
-########################################################################################################################
-function installAwsCliTools() {
-  if test -z "$(which aws)"; then
-    #   
-    #  Install AWS platform specific tools
-    #
-    echo "Installing AWS CLI tools for S3 support"
-    #
-    # TODO: apk needs to move to the Docker file as the package manager is plaform specific
-    #
-    apk --update add python3
-    pip3 install --no-cache-dir --upgrade pip
-    pip3 install --no-cache-dir --upgrade awscli
-  fi
-}
-
-########################################################################################################################
-# Function calls installAwsCliTools() and sets required environment variables for AWS S3 bucket
-#
-########################################################################################################################
-function initializeS3Configuration() {
-  unset BUCKET_URL_NO_PROTOCOL
-  unset BUCKET_NAME
-  unset DIRECTORY_NAME
-  unset TARGET_URL
-
-  # Allow overriding the backup URL with an arg
-  test ! -z "${1}" && BACKUP_URL="${1}"
-
-  # Install AWS CLI if the upload location is S3
-  if test "${BACKUP_URL#s3}" == "${BACKUP_URL}"; then
-    echo "Upload location is not S3"
-    exit 1
-  else
-    installAwsCliTools
-  fi
-
-  export BUCKET_URL_NO_PROTOCOL=${BACKUP_URL#s3://}
-  export BUCKET_NAME=$(echo "${BUCKET_URL_NO_PROTOCOL}" | cut -d/ -f1)
-  export DIRECTORY_NAME=$(echo "${PING_PRODUCT}" | tr '[:upper:]' '[:lower:]')
-
-  if test "${BACKUP_URL}" == */"${DIRECTORY_NAME}"; then
-    export TARGET_URL="${BACKUP_URL}"
-  else
-    export TARGET_URL="${BACKUP_URL}/${DIRECTORY_NAME}"
-  fi
+# A function to help with unit
+# test mocking.  Please do not
+# delete!
+function inject_template() {
+  echo $(envsubst < ${1})
+  return $?;
 }
 
 ########################################################################################################################
@@ -210,24 +167,24 @@ function changePassword() {
     echo "The old and new passwords cannot be blank"
     "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
   elif test ${isPasswordSame} -eq 1; then
-    echo "old passsword and new password are the same, therefore cannot update passsword"
+    echo "old password and new password are the same, therefore cannot update password"
     "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
   else
     # Change the default password.
     # Using set +x to suppress shell debugging
     # because it reveals the new admin password
     set +x
-    change_password_payload=$(envsubst < ${STAGING_DIR}/templates/81/change_password.json)
+    change_password_payload=$(inject_template ${STAGING_DIR}/templates/81/change_password.json)
     make_initial_api_request -s -X PUT \
         -d "${change_password_payload}" \
         "https://localhost:9000/pa-admin-api/v3/users/1/password" > /dev/null
-    CHANGE_PASWORD_STATUS=${?}
+    CHANGE_PASSWORD_STATUS=${?}
     "${VERBOSE}" && set -x
 
-    echo "password change status: ${CHANGE_PASWORD_STATUS}"
+    echo "password change status: ${CHANGE_PASSWORD_STATUS}"
 
     # If no error, write password to disk
-    if test ${CHANGE_PASWORD_STATUS} -eq 0; then
+    if test ${CHANGE_PASSWORD_STATUS} -eq 0; then
       createSecretFile
       return 0
     fi
@@ -283,6 +240,68 @@ function comparePasswordDiskWithVariable() {
   "${VERBOSE}" && set -x
   return 0
 }
+
+#########################################################################################################################
+# Function sets required environment variables for skbn
+#
+########################################################################################################################
+function initializeSkbnConfiguration() {
+  unset SKBN_CLOUD_PREFIX
+  unset SKBN_K8S_PREFIX
+
+  # Allow overriding the backup URL with an arg
+  test ! -z "${1}" && BACKUP_URL="${1}"
+
+  # Check if endpoint is AWS cloud stroage service (S3 bucket)
+  case "$BACKUP_URL" in "s3://"*)
+
+    # Set AWS specific variable for skbn
+    export AWS_REGION=${REGION}
+
+    DIRECTORY_NAME=$(echo "${PING_PRODUCT}" | tr '[:upper:]' '[:lower:]')
+
+    if ! $(echo "$BACKUP_URL" | grep -q "/$DIRECTORY_NAME"); then
+      BACKUP_URL="${BACKUP_URL}/${DIRECTORY_NAME}"
+    fi
+
+  esac
+
+  echo "Getting cluster metadata"
+
+  # Get prefix of HOSTNAME which match the pod name.
+  POD="$(echo "${HOSTNAME}" | cut -d. -f1)"
+
+  METADATA=$(kubectl get "$(kubectl get pod -o name | grep "${POD}")" \
+    -o=jsonpath='{.metadata.namespace},{.metadata.name},{.metadata.labels.role}')
+
+  METADATA_NS=$(echo "$METADATA"| cut -d',' -f1)
+  METADATA_PN=$(echo "$METADATA"| cut -d',' -f2)
+  METADATA_CN=$(echo "$METADATA"| cut -d',' -f3)
+
+  # Remove suffix for runtime.
+  METADATA_CN="${METADATA_CN%-engine}"
+
+  export SKBN_CLOUD_PREFIX="${BACKUP_URL}"
+  export SKBN_K8S_PREFIX="k8s://${METADATA_NS}/${METADATA_PN}/${METADATA_CN}"
+}
+
+########################################################################################################################
+# Function to copy file(s) between cloud storage and k8s
+#
+########################################################################################################################
+function skbnCopy() {
+  PARALLEL="0"
+  SOURCE="${1}"
+  DESTINATION="${2}"
+
+  # Check if the number of files to be copied in parallel is defined (0 for full parallelism)
+  test ! -z "${3}" && PARALLEL="${3}"
+
+  if ! skbn cp --src "$SOURCE" --dst "${DESTINATION}" --parallel "${PARALLEL}"; then
+    return 1
+  fi
+}
+
 
 ########################################################################################################################
 # Determines if the environment is running in the context of multiple clusters. If both PA_ADMIN_PUBLIC_HOSTNAME and
