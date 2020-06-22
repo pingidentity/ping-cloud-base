@@ -47,8 +47,8 @@ if ! skbnCopy "${SKBN_K8S_PREFIX}/${UPLOAD_DIR}" "${SKBN_CLOUD_PREFIX}"; then
   exit 1
 fi
 
-# List files in k8s-s3-upload-archive
-ls "${DST_DIRECTORY}"
+# STDOUT all the files in one line for integration test
+ls ${UPLOAD_DIR} | xargs
 
 # Cleanup k8s-s3-upload-archive temp directory
 rm -rf "${DST_DIRECTORY}"
