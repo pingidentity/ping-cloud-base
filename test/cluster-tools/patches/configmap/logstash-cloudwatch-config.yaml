@@ -18,7 +18,7 @@ data:
         awslogs {
           region => "${REGION}"
           log_group_name => "/aws/containerinsights/${CLUSTER_NAME}/application"
-          log_stream_name => "misc"
+          log_stream_name => "%{log_type}_%{host}"
         }
       }
     }
