@@ -71,6 +71,9 @@ spec:
         - name: data-dir
           mountPath: /usr/local/bin/kubectl
           subPath: kubectl
+        - name: data-dir
+          mountPath: /usr/local/bin/skbn
+          subPath: skbn
         - name: out-dir
           mountPath: /opt/out
         - name: pingaccess-license
@@ -175,7 +178,7 @@ spec:
     matchLabels:
       role: pingaccess-engine
   serviceName: pingaccess
-  podManagementPolicy: Parallel
+  podManagementPolicy: OrderedReady
   template:
     metadata:
       name: pingaccess-engine
@@ -231,6 +234,9 @@ spec:
         - name: data-dir
           mountPath: /usr/local/bin/kubectl
           subPath: kubectl
+        - name: data-dir
+          mountPath: /usr/local/bin/skbn
+          subPath: skbn
         - name: pingaccess-license
           mountPath: /opt/in/instance/conf/pingaccess.lic
           subPath: pingaccess.lic

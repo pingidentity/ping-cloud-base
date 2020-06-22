@@ -78,11 +78,11 @@ spec:
             optional: true
         resources:
           requests:
-            memory: "4Gi"
-            cpu: "2"
+            memory: "2Gi"
+            cpu: "1"
           limits:
-            memory: "4Gi"
-            cpu: "2"
+            memory: "2Gi"
+            cpu: "1"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
@@ -99,6 +99,8 @@ spec:
         - name: data-dir
           mountPath: /opt/staging/env_vars
           subPath: env_vars
+        - mountPath: /etc/podinfo
+          name: podinfo          
         readinessProbe:
           exec:
             command: [ liveness.sh ]
@@ -114,6 +116,25 @@ spec:
         ports:
         - containerPort: 9031
       volumes:
+      - name: podinfo
+        downwardAPI:
+          items:
+            - path: labels
+              fieldRef:
+                fieldPath: metadata.labels
+            - path: annotations
+              fieldRef:
+                fieldPath: metadata.annotations
+            - path: cpu_limit
+              resourceFieldRef:
+                containerName: pingfederate
+                divisor: 1m
+                resource: limits.cpu
+            - path: cpu_request
+              resourceFieldRef:
+                containerName: pingfederate
+                divisor: 1m
+                resource: requests.cpu
       - name: ssh-dir
         emptyDir: {}
       - name: data-dir

@@ -301,7 +301,7 @@ if test "${dryrun}" = 'false'; then
 
   echo
   if test "${skipTest}" = 'true'; then
-    echo "Skipping integration tests"
+    echo "Skipping integration and unit tests"
   else
     echo "Waiting for pods in ${NAMESPACE} to be ready"
 
@@ -313,7 +313,6 @@ if test "${dryrun}" = 'false'; then
           -n "${NAMESPACE}" -w --context "${K8S_CONTEXT}"
     done
 
-    echo "Running integration tests"
 
     TEST_ENV_VARS_FILE=$(mktemp)
     cat > "${TEST_ENV_VARS_FILE}" <<EOF
@@ -345,13 +344,23 @@ export SKIP_CONFIGURE_AWS=true
 
 export DEV_TEST_ENV=true
 EOF
-
-  for TEST_DIR in pingaccess pingdirectory pingfederate integration chaos; do
+  echo "Running unit tests"
+  for unit_test_dir in common pingaccess ci-script-tests; do
     echo
     echo "=========================================================="
-    echo "      Executing tests in directory ${TEST_DIR}            "
+    echo "      Executing unit tests in directory: ${unit_test_dir}            "
     echo "=========================================================="
-    ci-scripts/test/run-test.sh "${TEST_DIR}" "${TEST_ENV_VARS_FILE}"
+    ci-scripts/test/unit/run-unit-test.sh "${unit_test_dir}" "${TEST_ENV_VARS_FILE}"
+  done
+  echo
+
+  echo "Running integration tests"
+  for integration_test_dir in common pingaccess pingdirectory pingfederate chaos; do
+    echo
+    echo "=========================================================="
+    echo "      Executing tests in directory: ${integration_test_dir}            "
+    echo "=========================================================="
+    ci-scripts/test/integration/run-test.sh "${integration_test_dir}" "${TEST_ENV_VARS_FILE}"
   done
 
   fi

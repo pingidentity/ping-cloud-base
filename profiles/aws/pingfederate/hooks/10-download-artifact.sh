@@ -88,7 +88,7 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
 
                     echo "Copying: '${ARTIFACT_LOCATION}' to '${SKBN_K8S_PREFIX}}${DOWNLOAD_DIR}'"
 
-                    if ! skbnCopy "${SKBN_CLOUD_PREFIX}/${ARTIFACT_LOCATION}" "${SKBN_K8S_PREFIX}}${DOWNLOAD_DIR}"; then
+                    if ! skbnCopy "${SKBN_CLOUD_PREFIX}/${ARTIFACT_LOCATION}" "${SKBN_K8S_PREFIX}${DOWNLOAD_DIR}"; then
                       exit 1
                     fi
 

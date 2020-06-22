@@ -227,6 +227,10 @@ ${LETS_ENCRYPT_SERVER}
 ${PF_PD_BIND_PORT}
 ${PF_PD_BIND_PROTOCOL}
 ${PF_PD_BIND_USESSL}
+${PF_MIN_HEAP}
+${PF_MAX_HEAP}
+${PF_MIN_YGEN}
+${PF_MAX_YGEN}
 ${CLUSTER_NAME}
 ${CLUSTER_NAME_LC}
 ${CLUSTER_STATE_REPO_URL}
@@ -498,6 +502,22 @@ for ENV in ${ENVIRONMENTS}; do
       export PF_PD_BIND_PORT=5678
       export PF_PD_BIND_PROTOCOL=ldaps
       export PF_PD_BIND_USESSL=true
+      ;;
+  esac
+
+  # Update the PF JVM limits based on environment.
+  case "${ENV}" in
+    dev | test)
+      export PF_MIN_HEAP=1536m
+      export PF_MAX_HEAP=1536m
+      export PF_MIN_YGEN=768m
+      export PF_MAX_YGEN=768m
+      ;;
+    stage | prod)
+      export PF_MIN_HEAP=3072m
+      export PF_MAX_HEAP=3072m
+      export PF_MIN_YGEN=1536m
+      export PF_MAX_YGEN=1536m
       ;;
   esac
 

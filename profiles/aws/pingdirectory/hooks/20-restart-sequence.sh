@@ -42,6 +42,13 @@ if test ! -z "${HEAP_SIZE_INT}" && test "${HEAP_SIZE_INT}" -ge 4; then
   export UNBOUNDID_JAVA_ARGS="-client -Xmx${NEW_HEAP_SIZE} -Xms${NEW_HEAP_SIZE}"
 fi
 
+test -f "${SECRETS_DIR}"/encryption-settings.pin &&
+  ENCRYPTION_PIN_FILE="${SECRETS_DIR}"/encryption-settings.pin ||
+  ENCRYPTION_PIN_FILE="${SECRETS_DIR}"/encryption-password
+
+echo "Using ${ENCRYPTION_PIN_FILE} as the encryption-setting.pin file"
+cp "${ENCRYPTION_PIN_FILE}" "${PD_PROFILE}"/server-root/pre-setup/config
+
 # FIXME: Workaround for DS-41964 - use --replaceFullProfile flag to replace-profile
 echo "Merging changes from new server profile"
 
@@ -62,7 +69,7 @@ fi
 
 "${SERVER_BITS_DIR}"/bin/manage-profile replace-profile \
     --serverRoot "${SERVER_ROOT_DIR}" \
-    --profile "${STAGING_DIR}/pd.profile" \
+    --profile "${PD_PROFILE}" \
     --useEnvironmentVariables \
     ${ADDITIONAL_ARGS} \
     --reimportData never
@@ -79,6 +86,7 @@ if test "${MANAGE_PROFILE_STATUS}" -ne 0; then
 fi
 
 run_hook "185-apply-tools-properties.sh"
+run_hook "15-encryption-settings.sh"
 
 # FIXME: replace-profile has a bug where it may wipe out the user root backend configuration and lose user data added
 # from another server while enabling replication. This code block may be removed when replace-profile is fixed.

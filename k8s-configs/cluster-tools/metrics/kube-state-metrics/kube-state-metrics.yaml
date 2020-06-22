@@ -4,7 +4,7 @@ kind: ClusterRoleBinding
 metadata:
   labels:
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: v1.8.0
+    app.kubernetes.io/version: v1.9.5
   name: kube-state-metrics
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -22,7 +22,7 @@ kind: ClusterRole
 metadata:
   labels:
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: v1.8.0
+    app.kubernetes.io/version: v1.9.5
   name: kube-state-metrics
 rules:
 - apiGroups:
@@ -135,7 +135,7 @@ kind: Deployment
 metadata:
   labels:
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: v1.8.0
+    app.kubernetes.io/version: v1.9.5
   name: kube-state-metrics
   namespace: kube-system
 spec:
@@ -147,10 +147,10 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: kube-state-metrics
-        app.kubernetes.io/version: v1.8.0
+        app.kubernetes.io/version: v1.9.5
     spec:
       containers:
-      - image: quay.io/coreos/kube-state-metrics:v1.8.0
+      - image: quay.io/coreos/kube-state-metrics:v1.9.5
         resources:
           limits:
             cpu: 50m
@@ -185,7 +185,7 @@ kind: ServiceAccount
 metadata:
   labels:
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: v1.8.0
+    app.kubernetes.io/version: v1.9.5
   name: kube-state-metrics
   namespace: kube-system
 
@@ -196,7 +196,7 @@ kind: Service
 metadata:
   labels:
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: v1.8.0
+    app.kubernetes.io/version: v1.9.5
   name: kube-state-metrics
   namespace: kube-system
 spec:
