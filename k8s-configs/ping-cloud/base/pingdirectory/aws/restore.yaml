@@ -25,14 +25,20 @@ data:
         "test -x ${SCRIPT} && \
             export BACKUP_FILE_NAME=${BACKUP_FILE_NAME} && \
             export S3_BACKUP_FILTER_DAY_COUNT=${S3_BACKUP_FILTER_DAY_COUNT} && \
-            ${SCRIPT}" | tee "${LOG_FILE}"
+            ${SCRIPT}"> "${LOG_FILE}"
 
     if test ${?} -eq 0; then
+      # Sending logs to STDOUT
+      cat ${LOG_FILE}
       RESTORE_FILE=$(tail -1 "${LOG_FILE}")
       test -z "${RESTORE_FILES}" && RESTORE_FILES="${RESTORE_FILE}" || RESTORE_FILES="${RESTORE_FILES} ${RESTORE_FILE}"
     else
       echo "Restore script not found on server ${SERVER}"
     fi
+
+    # Print the names of the uploaded files so callers know exactly what was uploaded
+    echo "The following files were restored:"
+    echo "${RESTORE_FILES}"
 
 ---
 
