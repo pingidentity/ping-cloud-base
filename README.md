@@ -126,3 +126,4 @@ direct invocation from kubectl does not work at the moment.
 ~~kubectl apply -k .~~
 
 
+
