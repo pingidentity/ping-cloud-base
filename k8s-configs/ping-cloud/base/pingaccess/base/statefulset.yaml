@@ -27,6 +27,28 @@ spec:
     spec:
       serviceAccount: ping-serviceaccount
       initContainers:
+      - name: pingaccess-restore
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/geoff/init-pa-restore
+        imagePullPolicy: Always
+        env:
+        - name: MOUNT_DIR
+          value: /mount
+        volumeMounts:
+        - name: mount-dir
+          mountPath: /mount
+        securityContext:
+          fsGroup: identity
+      - name: apply-server-profile
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/geoff/init-apply-profile
+        imagePullPolicy: Always
+        env:
+        - name: MOUNT_DIR
+          value: /mount
+        volumeMounts:
+          - name: mount-dir
+            mountPath: /mount
+        securityContext:
+          fsGroup: identity
       - name: pingaccess-init
         # FIXME: switch to same user as app
         securityContext:
@@ -55,8 +77,8 @@ spec:
             name: pingaccess-environment-variables
       containers:
       - name: pingaccess-admin
-        image: pingidentity/pingaccess:2003-6.0.1
-        imagePullPolicy: IfNotPresent
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/geoff/pingaccess
+        imagePullPolicy: Always
         resources:
           requests:
             memory: "1Gi"
@@ -71,17 +93,11 @@ spec:
         - name: data-dir
           mountPath: /usr/local/bin/kubectl
           subPath: kubectl
-        - name: data-dir
-          mountPath: /usr/local/bin/skbn
-          subPath: skbn
-        - name: out-dir
-          mountPath: /opt/out
         - name: pingaccess-license
           mountPath: /opt/in/instance/conf/pingaccess.lic
           subPath: pingaccess.lic
-        - name: data-dir
-          mountPath: /opt/staging/env_vars
-          subPath: env_vars
+        - name: mount-dir
+          mountPath: /mount
         readinessProbe:
           exec:
             command:
@@ -99,6 +115,8 @@ spec:
         - containerPort: 9000
         - containerPort: 9090
         env:
+        - name: MOUNT_DIR
+          value: /mount    
         - name: OPERATIONAL_MODE
           value: CLUSTERED_CONSOLE
         - name: HTTPS_PORT
@@ -138,9 +156,9 @@ spec:
           name: known-hosts-config
           optional: true
           defaultMode: 0644
-      - name: out-dir
+      - name: mount-dir
         persistentVolumeClaim:
-          claimName: out-dir
+          claimName: mount-dir
       - name: pingaccess-license
         secret:
           secretName: pingaccess-license
@@ -153,7 +171,7 @@ spec:
           defaultMode: 0400
   volumeClaimTemplates:
   - metadata:
-      name: out-dir
+      name: mount-dir
     spec:
       accessModes:
       - ReadWriteOnce

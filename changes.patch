@@ -1,0 +1,1584 @@
+diff --git a/ci-scripts/test/pingaccess/change-default-db-password-test.sh b/ci-scripts/test/pingaccess/change-default-db-password-test.sh
+deleted file mode 100755
+index c748b0c..0000000
+--- a/ci-scripts/test/pingaccess/change-default-db-password-test.sh
++++ /dev/null
+@@ -1,50 +0,0 @@
+-#!/bin/bash
+-
+-function parse_password() {
+-  printf "${1}" | awk "/${2}/" | awk '{print $1}' | cut -d '=' -f2-
+-}
+-
+-echo ">>>> Starting ${0} test..."
+-
+-# This is the default file and user password string for H2 --> "2Access"
+-readonly pa_h2_default_obf_pw='OBF:AES:23AeD/QrI8yVQKkhNi7kYg==:6fc098ed542fa3e40515062eb5e5117e4659ba8a'
+-
+-readonly run_properties=$(kubectl exec pingaccess-admin-0 \
+-                          -n "${NAMESPACE}" -c pingaccess-admin \
+-                          -- cat out/instance/conf/run.properties)
+-
+-dbfilepassword=$(parse_password "${run_properties}" 'pa.jdbc.filepassword')
+-#echo
+-#echo "New pa.jdbc.filepassword is: ${dbfilepassword}"
+-#echo
+-if [ -z "${dbfilepassword}" ]; then
+-  echo "dbfilepassword should NOT be empty!"
+-  exit 1
+-fi
+-
+-if [ "${pa_h2_default_obf_pw}" == "${dbfilepassword}" ];then
+-    echo "The pa.jdbc.filepassword should NOT be the default!"
+-    exit 1
+-  else
+-    echo "The pa.jdbc.filepassword was correctly changed from the default."
+-fi
+-
+-
+-dbuserpassword=$(parse_password "${run_properties}" 'pa.jdbc.password')
+-#echo
+-#echo "New pa.jdbc.password is: ${dbuserpassword}"
+-#echo
+-if [ -z "${dbuserpassword}" ]; then
+-  echo "dbuserpassword should NOT be empty!"
+-  exit 1
+-fi
+-
+-if [ "${pa_h2_default_obf_pw}" == "${dbuserpassword}" ];then
+-    echo "The pa.jdbc.password should NOT be the default!"
+-    exit 1
+-  else
+-    echo "The pa.jdbc.password was correctly changed from the default."
+-fi
+-
+-echo ">>>> ${0} finished..."
+-exit 0
+diff --git a/ci-scripts/test/pingdirectory/02-csd-upload.sh b/ci-scripts/test/pingdirectory/02-csd-upload.sh
+index 7f877db..95b0cdf 100755
+--- a/ci-scripts/test/pingdirectory/02-csd-upload.sh
++++ b/ci-scripts/test/pingdirectory/02-csd-upload.sh
+@@ -54,4 +54,4 @@ if ! test -z "${NOT_UPLOADED}"; then
+   exit 1
+ fi
+ 
+-exit 0
++exit 0
+\ No newline at end of file
+diff --git a/ci-scripts/test/pingdirectory/03-backup-restore.sh b/ci-scripts/test/pingdirectory/03-backup-restore.sh
+index b1cd012..5fa6bfb 100755
+--- a/ci-scripts/test/pingdirectory/03-backup-restore.sh
++++ b/ci-scripts/test/pingdirectory/03-backup-restore.sh
+@@ -23,7 +23,7 @@ actual_files() {
+ 
+   aws s3api list-objects \
+     --bucket "${BUCKET_NAME}" \
+-    --prefix 'pingdirectory/' \
++    --prefix 'pingdirectory/data-' \
+     --query "reverse(sort_by(Contents[?LastModified>='${DAYS_AGO}'], &LastModified))[].Key" \
+     --profile "${AWS_PROFILE}" |
+   tr -d '",[]' |
+diff --git a/code-gen/templates/ping-cloud/env_vars.tmpl b/code-gen/templates/ping-cloud/env_vars.tmpl
+index b2b55d9..5472d63 100644
+--- a/code-gen/templates/ping-cloud/env_vars.tmpl
++++ b/code-gen/templates/ping-cloud/env_vars.tmpl
+@@ -9,7 +9,6 @@ ARTIFACT_REPO_URL=${ARTIFACT_REPO_URL}
+ PING_ARTIFACT_REPO_URL=${PING_ARTIFACT_REPO_URL}
+ LOG_ARCHIVE_URL=${LOG_ARCHIVE_URL}
+ BACKUP_URL=${BACKUP_URL}
+-REGION=${REGION}
+ 
+ ENVIRONMENT_TYPE=${ENVIRONMENT_TYPE}
+ 
+diff --git a/git-workflow.txt b/git-workflow.txt
+index dfc7f22..bbf31f6 100644
+--- a/git-workflow.txt
++++ b/git-workflow.txt
+@@ -12,34 +12,6 @@ Given a version number MAJOR.MINOR.PATCH, increment the:
+ 
+ This also results in more frequent versions and branches to track those versions.
+ 
+-Branching and tagging:
+-
+-Release branches are created after we release a particular version and commit to the next release as a team. They are
+-always created from the HEAD of the master branch. Release branches have a pattern of "v<major>.<minor>-release-branch",
+-e.g. v1.3-release-branch. Once a release has been qualified by the QA team, the release tag is created off of the tip
+-of the release branch. There is a tagging script under the build directory to do that.
+-
+-This release strategy implies that you can develop code for (and potentially deliver) different major/minor versions
+-in parallel. For example, you can develop for v1.3.2 and a future v1.4.0 in parallel because they live in separate
+-release branches. However, maintenance releases on top of a minor release can only be developed sequentially. For
+-example, you cannot push changes for v1.3.3 into the v1.3-release-branch until v1.3.2 has been tagged.
+-
+-Features that do not have a known release version must be maintained in their own feature branches until they are
+-targeted for the next release. It is the developer's responsibility to keep this branch in sync with the master branch
+-by performing periodic merges from it. If there are merge conflicts, the developer must reach out to the committer of
+-the code that resulted in the conflicts to ensure that the conflicts are resolved correctly.
+-
+-Once a change has been made to a lower branch, it must be promoted to higher branches. The developer has the choice of
+-doing it themselves via the MR workflow (as described in the following section), or may defer it to the release
+-engineer to handle it. A release engineer will merge changes from lower branches all the way up into master
+-periodically, for example, from v1.3-release-branch -> v1.4-release-branch -> master. Multiple commits may be chained
+-to keep the CI pipeline from going berserk. But if it's not a fast-forward merge, and there are merge conflicts, the
+-release engineer may request the developer to perform the merge.
+-
+-Note that the release branches are not long-lived branches. Once a particular version has been made end-of-life, or all
+-customers have been upgraded to a new version, the release branches may be deleted. For example, if all PingCloud
+-customers have moved onto v1.3.1, the v1.1-release-branch and v1.2-release-branch branches may be deleted.
+-
+ Git Workflow:
+ 
+ 1. When working on a bug or feature, the first thing to determine is the version for which it is targeted. Ask a
+@@ -49,27 +21,22 @@ Git Workflow:
+    not clear.
+ 
+ 3. After cloning ping-cloud-base, create a local feature/bug-fix branch. For example, to create a new local bug-fix
+-   branch named pdo-288-increase-csd-timeout off of the current tip of the v1.3-release-branch, run these commands:
++   branch named pdo-288-increase-csd-timeout off of the current tip of the v1.2-release-branch, run these commands:
+ 
+    git clone git@gitlab.corp.pingidentity.com:ping-cloud-private-tenant/ping-cloud-base.git
+-   git checkout v1.3-release-branch              # Switch to the v1.3-release-branch
++   git checkout v1.2-release-branch              # Switch to the v1.2-release-branch
+    git pull                                      # Get the latest changes from the server
+    git checkout -b pdo-288-increase-csd-timeout  # Create the feature or bug-fix branch
+ 
+-   Note: We use branch names to create unique DNS names on Route53 for each environment. DNS names must be 63
+-   characters or shorter. So the branch name must not be too long such that it exceeds that limit. The maximum
+-   recommended length for the branch name is 40 characters. A best-practice is to use the Jira issue number as the
+-   branch name prefix, followed by a short description, e.g. pdo-723-wait-for-services.
+-
+ 4. Make your changes on your local branch. Periodically merge the source branch into your local branch. This is
+    especially important for massive changes.
+ 
+    git stash                         # This is only required if you have uncommitted changes in your branch
+-   git checkout v1.3-release-branch  # Switch to the source branch, v1.3-release-branch
+-   git pull                          # Fetch and merge the latest updates from the server into v1.3-release-branch
++   git checkout v1.2-release-branch  # Switch to the source branch, v1.2-release-branch
++   git pull                          # Fetch and merge the latest updates from the server into v1.2-release-branch
+    git checkout -                    # Switch back to the previous branch, e.g. pdo-288-increase-csd-timeout
+    git stash pop                     # This is only required if you had uncommitted changes
+-   git merge v1.3-release-branch     # Merge the changes from the v1.3-release-branch into your branch
++   git merge v1.2-release-branch     # Merge the changes from the v1.2-release-branch into your branch
+ 
+    At this point, you may have merge conflicts if another developer has updated one or more of the same files that you
+    have. You'll have to resolve them using a three-way merge tool. Most IDEs (e.g. IntelliJ IDEA) have plugins to do
+@@ -93,7 +60,7 @@ Git Workflow:
+    GitLab server.
+ 
+ 8. From the GitLab UI, create a Merge Request. Set the target branch for the merge request to your original source
+-   branch, e.g. v1.3-release-branch. Also check the following boxes:
++   branch, e.g. v1.2-release-branch. Also check the following boxes:
+ 
+    - "Squash commits when merge request is accepted" to squash all the commits in your feature branch
+    - "Delete source branch when merge request is accepted" to delete the feature branch
+diff --git a/k8s-configs/cluster-tools/cluster-autoscaler/base/cluster-autoscaler.yaml b/k8s-configs/cluster-tools/cluster-autoscaler/base/cluster-autoscaler.yaml
+index 9829ef7..fa5ea41 100644
+--- a/k8s-configs/cluster-tools/cluster-autoscaler/base/cluster-autoscaler.yaml
++++ b/k8s-configs/cluster-tools/cluster-autoscaler/base/cluster-autoscaler.yaml
+@@ -142,9 +142,7 @@ spec:
+     spec:
+       serviceAccountName: cluster-autoscaler
+       containers:
+-        # FIXME: when the k8s.gcr.io vanity URL works again, change the image tag to reference it from there.
+-        # https://github.com/kubernetes/autoscaler/issues/3093
+-        - image: us.gcr.io/k8s-artifacts-prod/autoscaling/cluster-autoscaler:v1.16.5
++        - image: k8s.gcr.io/cluster-autoscaler:v1.14.4
+           name: cluster-autoscaler
+           resources:
+             limits:
+diff --git a/k8s-configs/ping-cloud/base/aws/configmap.yaml b/k8s-configs/ping-cloud/base/aws/configmap.yaml
+deleted file mode 100644
+index 6388043..0000000
+--- a/k8s-configs/ping-cloud/base/aws/configmap.yaml
++++ /dev/null
+@@ -1,52 +0,0 @@
+-apiVersion: v1
+-kind: ConfigMap
+-metadata:
+-  name: discovery-service
+-data:
+-  get_ssm_env_vars.sh: |-
+-    #!/bin/sh
+-
+-    # Verify that the mandatory variable is set.
+-    if test -z "${REGION}"; then
+-      echo "REGION environment variable must be set"
+-      exit 1
+-    fi
+-
+-    echo "AWSCLI VERSON: $(aws --version)" 
+-    echo "AWS_REGION: ${REGION}"
+-
+-    # Query aws endpoint to get value associated with the key.
+-    get_ssm_val() {
+-      if ! ssm_val="$(aws ssm --region "${REGION}"  get-parameters \
+-                --names "$1" \
+-                --query 'Parameters[*].Value' \
+-                --output text)"; then
+-        echo "$ssm_val"
+-        return 1
+-      fi
+-      echo "$ssm_val"
+-    }
+-
+-    # Check all the environment variables 
+-    get_ssm_key() {
+-      for i in $(printenv); do
+-        key=${i%=*}
+-        val=${i#*=}
+-        case "$val" in "ssm://"*)
+-          if ! ssm_rv=$(get_ssm_val "${val#ssm:/}"); then
+-            return 1
+-          fi 
+-          echo "$key=$ssm_rv" >>"/config/env_vars"
+-        esac
+-      done
+-    }
+-
+-    echo "# Start Discovery Service" >>"/config/env_vars"
+-
+-    if ! get_ssm_key; then
+-      exit 1
+-    fi
+-
+-    echo "# End Discovery Service" >>"/config/env_vars"
+-    
+-    exit 0
+diff --git a/k8s-configs/ping-cloud/base/aws/kustomization.yaml b/k8s-configs/ping-cloud/base/aws/kustomization.yaml
+deleted file mode 100644
+index 66d6bf7..0000000
+--- a/k8s-configs/ping-cloud/base/aws/kustomization.yaml
++++ /dev/null
+@@ -1,5 +0,0 @@
+-kind: Kustomization
+-apiVersion: kustomize.config.k8s.io/v1beta1
+-
+-resources:
+-- configmap.yaml
+\ No newline at end of file
+diff --git a/k8s-configs/ping-cloud/base/configmap.yaml b/k8s-configs/ping-cloud/base/configmap.yaml
+index 6b7c88e..c708e45 100644
+--- a/k8s-configs/ping-cloud/base/configmap.yaml
++++ b/k8s-configs/ping-cloud/base/configmap.yaml
+@@ -24,15 +24,6 @@ data:
+     #--- Copy kubectl to the data directory ---#
+     which kubectl | xargs -I {} cp {} /data
+ 
+-    #--- Download skbn ---#
+-    wget -qO- https://github.com/maorfr/skbn/releases/download/0.5.0/skbn-0.5.0-linux.tar.gz | tar xvz -C .
+-    
+-    #--- Copy skbn to the data directory ---#
+-    if ! mv skbn-0.5.0-linux/skbn /data; then
+-      echo "Failed to locate skbn-0.5.0-linux/skbn"
+-      exit 1
+-    fi
+-
+     #--- Wait for dependent services, if any --- #
+     if test ! -z "${WAIT_FOR_SERVICES}"; then
+       WAIT_FOR_NUM_REPLICAS=${WAIT_FOR_NUM_REPLICAS:-1}
+diff --git a/k8s-configs/ping-cloud/base/pingaccess/aws/discovery-service.yaml b/k8s-configs/ping-cloud/base/pingaccess/aws/discovery-service.yaml
+deleted file mode 100644
+index f2b61bf..0000000
+--- a/k8s-configs/ping-cloud/base/pingaccess/aws/discovery-service.yaml
++++ /dev/null
+@@ -1,56 +0,0 @@
+-apiVersion: apps/v1
+-kind: StatefulSet
+-metadata:
+-  name: pingaccess-admin
+-spec:
+-  template:
+-    spec:
+-      initContainers:
+-      - name: pingaccess-discovery-service
+-        image: amazon/aws-cli
+-        imagePullPolicy: Always
+-        command:
+-        - /get_ssm_env_vars.sh
+-        envFrom:
+-        - configMapRef:
+-            name: pingaccess-environment-variables
+-        volumeMounts:
+-        - name: data-dir
+-          mountPath: /config
+-        - name: discovery-service
+-          mountPath: /get_ssm_env_vars.sh
+-          subPath: get_ssm_env_vars.sh
+-      volumes:
+-      - name: discovery-service
+-        configMap:
+-          name: discovery-service
+-          defaultMode: 0555
+----
+-
+-apiVersion: apps/v1
+-kind: StatefulSet
+-metadata:
+-  name: pingaccess
+-spec:
+-  template:
+-    spec:
+-      initContainers:
+-      - name: pingaccess-discovery-service
+-        image: amazon/aws-cli
+-        imagePullPolicy: Always
+-        command:
+-        - /get_ssm_env_vars.sh
+-        envFrom:
+-        - configMapRef:
+-            name: pingaccess-environment-variables
+-        volumeMounts:
+-        - name: data-dir
+-          mountPath: /config
+-        - name: discovery-service
+-          mountPath: /get_ssm_env_vars.sh
+-          subPath: get_ssm_env_vars.sh
+-      volumes:
+-      - name: discovery-service
+-        configMap:
+-          name: discovery-service
+-          defaultMode: 0555
+diff --git a/k8s-configs/ping-cloud/base/pingaccess/aws/kustomization.yaml b/k8s-configs/ping-cloud/base/pingaccess/aws/kustomization.yaml
+index 80b06ba..e7cf52a 100644
+--- a/k8s-configs/ping-cloud/base/pingaccess/aws/kustomization.yaml
++++ b/k8s-configs/ping-cloud/base/pingaccess/aws/kustomization.yaml
+@@ -3,7 +3,4 @@ apiVersion: kustomize.config.k8s.io/v1beta1
+ 
+ resources:
+ - ../base
+-- periodic-backup.yaml
+-
+-patchesStrategicMerge:
+-- discovery-service.yaml
++- periodic-backup.yaml
+\ No newline at end of file
+diff --git a/k8s-configs/ping-cloud/base/pingaccess/base/statefulset.yaml b/k8s-configs/ping-cloud/base/pingaccess/base/statefulset.yaml
+index 81241f8..96737ad 100644
+--- a/k8s-configs/ping-cloud/base/pingaccess/base/statefulset.yaml
++++ b/k8s-configs/ping-cloud/base/pingaccess/base/statefulset.yaml
+@@ -76,9 +76,6 @@ spec:
+         - name: pingaccess-license
+           mountPath: /opt/in/instance/conf/pingaccess.lic
+           subPath: pingaccess.lic
+-        - name: data-dir
+-          mountPath: /opt/staging/env_vars
+-          subPath: env_vars
+         readinessProbe:
+           exec:
+             command:
+@@ -237,9 +234,6 @@ spec:
+         - name: pingaccess-pre-stop
+           mountPath: /opt/staging/pre-stop.sh
+           subPath: pre-stop.sh
+-        - name: data-dir
+-          mountPath: /opt/staging/env_vars
+-          subPath: env_vars
+         readinessProbe:
+           exec:
+             command: [ liveness.sh ]
+diff --git a/k8s-configs/ping-cloud/base/pingdirectory/aws/discovery-service.yaml b/k8s-configs/ping-cloud/base/pingdirectory/aws/discovery-service.yaml
+deleted file mode 100644
+index a22cce3..0000000
+--- a/k8s-configs/ping-cloud/base/pingdirectory/aws/discovery-service.yaml
++++ /dev/null
+@@ -1,27 +0,0 @@
+-apiVersion: apps/v1
+-kind: StatefulSet
+-metadata:
+-  name: pingdirectory
+-spec:
+-  template:
+-    spec:
+-      initContainers:
+-      - name: pingdirectory-discovery-service
+-        image: amazon/aws-cli
+-        imagePullPolicy: Always
+-        command:
+-        - /get_ssm_env_vars.sh
+-        envFrom:
+-        - configMapRef:
+-            name: pingdirectory-environment-variables
+-        volumeMounts:
+-        - name: data-dir
+-          mountPath: /config
+-        - name: discovery-service
+-          mountPath: /get_ssm_env_vars.sh
+-          subPath: get_ssm_env_vars.sh
+-      volumes:
+-      - name: discovery-service
+-        configMap:
+-          name: discovery-service
+-          defaultMode: 0555
+diff --git a/k8s-configs/ping-cloud/base/pingdirectory/aws/kustomization.yaml b/k8s-configs/ping-cloud/base/pingdirectory/aws/kustomization.yaml
+index f134fac..de13a83 100644
+--- a/k8s-configs/ping-cloud/base/pingdirectory/aws/kustomization.yaml
++++ b/k8s-configs/ping-cloud/base/pingdirectory/aws/kustomization.yaml
+@@ -6,7 +6,4 @@ resources:
+ - periodic-backup.yaml
+ 
+ commonLabels:
+-  role: pingdirectory
+-
+-patchesStrategicMerge:
+-- discovery-service.yaml
+\ No newline at end of file
++  role: pingdirectory
+\ No newline at end of file
+diff --git a/k8s-configs/ping-cloud/base/pingdirectory/base/statefulset.yaml b/k8s-configs/ping-cloud/base/pingdirectory/base/statefulset.yaml
+index 2dc0ebd..cfedcb7 100644
+--- a/k8s-configs/ping-cloud/base/pingdirectory/base/statefulset.yaml
++++ b/k8s-configs/ping-cloud/base/pingdirectory/base/statefulset.yaml
+@@ -136,9 +136,6 @@ spec:
+         - name: data-dir
+           mountPath: /usr/local/bin/kubectl
+           subPath: kubectl
+-        - name: data-dir
+-          mountPath: /usr/local/bin/skbn
+-          subPath: skbn
+         - name: out-dir
+           mountPath: /opt/out
+         - name: pingdirectory-passwords
+@@ -147,9 +144,6 @@ spec:
+         - name: pingdirectory-license
+           mountPath: /opt/in/instance/PingDirectory.lic
+           subPath: PingDirectory.lic
+-        - name: data-dir
+-          mountPath: /opt/staging/env_vars
+-          subPath: env_vars
+         readinessProbe:
+           exec:
+             command:
+diff --git a/k8s-configs/ping-cloud/base/pingfederate/aws/discovery-service.yaml b/k8s-configs/ping-cloud/base/pingfederate/aws/discovery-service.yaml
+deleted file mode 100644
+index 98d30dc..0000000
+--- a/k8s-configs/ping-cloud/base/pingfederate/aws/discovery-service.yaml
++++ /dev/null
+@@ -1,57 +0,0 @@
+-apiVersion: apps/v1
+-kind: StatefulSet
+-metadata:
+-  name: pingfederate-admin
+-spec:
+-  template:
+-    spec:
+-      initContainers:
+-      - name: pingfederate-discovery-service
+-        image: amazon/aws-cli
+-        imagePullPolicy: Always
+-        command:
+-        - /get_ssm_env_vars.sh
+-        envFrom:
+-        - configMapRef:
+-            name: pingfederate-environment-variables
+-        volumeMounts:
+-        - name: data-dir
+-          mountPath: /config
+-        - name: discovery-service
+-          mountPath: /get_ssm_env_vars.sh
+-          subPath: get_ssm_env_vars.sh
+-      volumes:
+-      - name: discovery-service
+-        configMap:
+-          name: discovery-service
+-          defaultMode: 0555
+-
+----
+-
+-apiVersion: apps/v1
+-kind: Deployment
+-metadata:
+-  name: pingfederate
+-spec:
+-  template:
+-    spec:
+-      initContainers:
+-      - name: pingfederate-discovery-service
+-        image: amazon/aws-cli
+-        imagePullPolicy: Always
+-        command:
+-        - /get_ssm_env_vars.sh
+-        envFrom:
+-        - configMapRef:
+-            name: pingfederate-environment-variables
+-        volumeMounts:
+-        - name: data-dir
+-          mountPath: /config
+-        - name: discovery-service
+-          mountPath: /get_ssm_env_vars.sh
+-          subPath: get_ssm_env_vars.sh
+-      volumes:
+-      - name: discovery-service
+-        configMap:
+-          name: discovery-service
+-          defaultMode: 0555
+diff --git a/k8s-configs/ping-cloud/base/pingfederate/aws/kustomization.yaml b/k8s-configs/ping-cloud/base/pingfederate/aws/kustomization.yaml
+index 940c1fe..a4b9a30 100644
+--- a/k8s-configs/ping-cloud/base/pingfederate/aws/kustomization.yaml
++++ b/k8s-configs/ping-cloud/base/pingfederate/aws/kustomization.yaml
+@@ -4,7 +4,4 @@ apiVersion: kustomize.config.k8s.io/v1beta1
+ resources:
+ - ../base
+ - periodic-backup.yaml
+-- periodic-csd-upload.yaml
+-
+-patchesStrategicMerge:
+-- discovery-service.yaml
+\ No newline at end of file
++- periodic-csd-upload.yaml
+\ No newline at end of file
+diff --git a/k8s-configs/ping-cloud/base/pingfederate/base/deployment.yaml b/k8s-configs/ping-cloud/base/pingfederate/base/deployment.yaml
+index a63aab6..3537e2d 100644
+--- a/k8s-configs/ping-cloud/base/pingfederate/base/deployment.yaml
++++ b/k8s-configs/ping-cloud/base/pingfederate/base/deployment.yaml
+@@ -90,15 +90,9 @@ spec:
+         - name: data-dir
+           mountPath: /usr/local/bin/kubectl
+           subPath: kubectl
+-        - name: data-dir
+-          mountPath: /usr/local/bin/skbn
+-          subPath: skbn
+         - name: pingfederate-license
+           mountPath: /opt/in/instance/server/default/conf/pingfederate.lic
+           subPath: pingfederate.lic
+-        - name: data-dir
+-          mountPath: /opt/staging/env_vars
+-          subPath: env_vars
+         readinessProbe:
+           exec:
+             command: [ liveness.sh ]
+@@ -136,4 +130,4 @@ spec:
+         secret:
+           secretName: pingfederate-license
+           optional: true
+-          defaultMode: 0400
+\ No newline at end of file
++          defaultMode: 0400
+diff --git a/k8s-configs/ping-cloud/base/pingfederate/base/statefulset.yaml b/k8s-configs/ping-cloud/base/pingfederate/base/statefulset.yaml
+index ef38f1e..887efb2 100644
+--- a/k8s-configs/ping-cloud/base/pingfederate/base/statefulset.yaml
++++ b/k8s-configs/ping-cloud/base/pingfederate/base/statefulset.yaml
+@@ -94,17 +94,11 @@ spec:
+         - name: data-dir
+           mountPath: /usr/local/bin/kubectl
+           subPath: kubectl
+-        - name: data-dir
+-          mountPath: /usr/local/bin/skbn
+-          subPath: skbn
+         - name: out-dir
+           mountPath: /opt/out
+         - name: pingfederate-license
+           mountPath: /opt/in/instance/server/default/conf/pingfederate.lic
+           subPath: pingfederate.lic
+-        - name: data-dir
+-          mountPath: /opt/staging/env_vars
+-          subPath: env_vars
+         readinessProbe:
+           exec:
+             command:
+diff --git a/k8s-configs/ping-cloud/prod/large/kustomization.yaml b/k8s-configs/ping-cloud/prod/large/kustomization.yaml
+index 7c10631..78e7a0a 100644
+--- a/k8s-configs/ping-cloud/prod/large/kustomization.yaml
++++ b/k8s-configs/ping-cloud/prod/large/kustomization.yaml
+@@ -11,7 +11,6 @@ resources:
+ - ../../base/pingdirectory/aws
+ - ../../base/pingfederate/aws
+ - ../../base/pingaccess/aws
+-- ../../base/aws
+ 
+ generatorOptions:
+   disableNameSuffixHash: true
+diff --git a/k8s-configs/ping-cloud/prod/medium/kustomization.yaml b/k8s-configs/ping-cloud/prod/medium/kustomization.yaml
+index a518c09..9178bce 100644
+--- a/k8s-configs/ping-cloud/prod/medium/kustomization.yaml
++++ b/k8s-configs/ping-cloud/prod/medium/kustomization.yaml
+@@ -11,7 +11,6 @@ resources:
+ - ../../base/pingdirectory/aws
+ - ../../base/pingfederate/aws
+ - ../../base/pingaccess/aws
+-- ../../base/aws
+ 
+ generatorOptions:
+   disableNameSuffixHash: true
+diff --git a/k8s-configs/ping-cloud/prod/small/kustomization.yaml b/k8s-configs/ping-cloud/prod/small/kustomization.yaml
+index a518c09..9178bce 100644
+--- a/k8s-configs/ping-cloud/prod/small/kustomization.yaml
++++ b/k8s-configs/ping-cloud/prod/small/kustomization.yaml
+@@ -11,7 +11,6 @@ resources:
+ - ../../base/pingdirectory/aws
+ - ../../base/pingfederate/aws
+ - ../../base/pingaccess/aws
+-- ../../base/aws
+ 
+ generatorOptions:
+   disableNameSuffixHash: true
+diff --git a/k8s-configs/ping-cloud/test/kustomization.yaml b/k8s-configs/ping-cloud/test/kustomization.yaml
+index 4568ba8..8e8f2e2 100644
+--- a/k8s-configs/ping-cloud/test/kustomization.yaml
++++ b/k8s-configs/ping-cloud/test/kustomization.yaml
+@@ -11,7 +11,6 @@ resources:
+ - ../base/pingdirectory/aws
+ - ../base/pingfederate/aws
+ - ../base/pingaccess/aws
+-- ../base/aws
+ - pingdataconsole
+ - httpbin
+ 
+diff --git a/kustomization.yaml b/kustomization.yaml
+index 8cdbf8b..bf1354f 100644
+--- a/kustomization.yaml
++++ b/kustomization.yaml
+@@ -20,7 +20,6 @@ patchesStrategicMerge:
+     PF_ADMIN_PUBLIC_HOSTNAME: pingfederate-admin.${TENANT_DOMAIN}
+     PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
+     BACKUP_URL: ${BACKUP_URL}
+-    REGION: ${REGION}
+ - |-
+   apiVersion: v1
+   kind: ConfigMap
+@@ -33,7 +32,6 @@ patchesStrategicMerge:
+     PA_ENGINE_PUBLIC_HOSTNAME: pingaccess.${TENANT_DOMAIN}
+     PF_ADMIN_PUBLIC_HOSTNAME: pingfederate-admin.${TENANT_DOMAIN}
+     PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
+-    REGION: ${REGION}
+ - |-
+   apiVersion: v1
+   kind: ConfigMap
+@@ -47,7 +45,6 @@ patchesStrategicMerge:
+     PF_ADMIN_PUBLIC_HOSTNAME: pingfederate-admin.${TENANT_DOMAIN}
+     PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
+     BACKUP_URL: ${BACKUP_URL}
+-    REGION: ${REGION}
+ 
+ patchesJson6902:
+ 
+diff --git a/profiles/aws/pingaccess/hooks/90-restore-backup-s3.sh b/profiles/aws/pingaccess/hooks/90-restore-backup-s3.sh
+index c421d92..3d5e13c 100755
+--- a/profiles/aws/pingaccess/hooks/90-restore-backup-s3.sh
++++ b/profiles/aws/pingaccess/hooks/90-restore-backup-s3.sh
+@@ -13,9 +13,6 @@
+ #    an issue with the EBS volume which the 90-restore-backup-s3.sh restore script
+ #    will restore the latest configuration from S3. If this is an initial
+ #    deployment the restore scipt will not find any backups within S3.
+-
+-test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
+-
+ if ! test -z "${BACKUP_FILE_NAME}" || ! test -f "${OUT_DIR}"/instance/conf/pa.jwk; then
+ 
+   initializeS3Configuration
+diff --git a/profiles/aws/pingaccess/hooks/90-upload-backup-s3.sh b/profiles/aws/pingaccess/hooks/90-upload-backup-s3.sh
+index 315d512..9d87a7c 100755
+--- a/profiles/aws/pingaccess/hooks/90-upload-backup-s3.sh
++++ b/profiles/aws/pingaccess/hooks/90-upload-backup-s3.sh
+@@ -5,8 +5,6 @@
+ 
+ "${VERBOSE}" && set -x
+ 
+-test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
+-
+ initializeS3Configuration
+ 
+ echo "Uploading to location ${BACKUP_URL}"
+diff --git a/profiles/aws/pingdirectory/hooks/10-download-artifact.sh b/profiles/aws/pingdirectory/hooks/10-download-artifact.sh
+index 18412a9..d25517c 100755
+--- a/profiles/aws/pingdirectory/hooks/10-download-artifact.sh
++++ b/profiles/aws/pingdirectory/hooks/10-download-artifact.sh
+@@ -3,8 +3,6 @@
+ . "${HOOKS_DIR}/pingcommon.lib.sh"
+ . "${HOOKS_DIR}/utils.lib.sh"
+ 
+-test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
+-
+ ${VERBOSE} && set -x
+ 
+ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
+@@ -21,6 +19,11 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
+       echo ${ARTIFACT_LIST_JSON} | jq
+       if test $(echo $?) == "0"; then
+ 
++        # Install AWS CLI if the upload location is S3
++        if test ! "${ARTIFACT_REPO_URL#s3}" == "${ARTIFACT_REPO_URL}" -o ! "${PING_ARTIFACT_REPO_URL#s3}" == "${PING_ARTIFACT_REPO_URL}"; then
++          installAwsCliTools
++        fi
++
+         DOWNLOAD_DIR="${STAGING_DIR}/pd.profile/server-sdk-extensions"
+ 
+         # Create extensions folder
+@@ -85,18 +88,9 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
+ 
+                 echo "Download Artifact from ${ARTIFACT_LOCATION}"
+ 
+-                # Use skbn command if ARTIFACT_LOCATION is cloud storage otherwise use curl
+-                if test ${ARTIFACT_LOCATION#s3} != "${ARTIFACT_LOCATION}"; then
+-
+-                  # Set required environment variables for skbn
+-                  initializeSkbnConfiguration "${ARTIFACT_LOCATION}"
+-                  
+-                  echo "Copying: '${ARTIFACT_RUNTIME_ZIP}' to '${SKBN_K8S_PREFIX}'"
+-
+-                  if ! skbnCopy "${SKBN_CLOUD_PREFIX}/${ARTIFACT_RUNTIME_ZIP}" "${SKBN_K8S_PREFIX}}${DOWNLOAD_DIR}"; then
+-                    exit 1
+-                  fi
+-
++                # Use aws command if ARTIFACT_LOCATION is in s3 format otherwise use curl
++                if ! test ${ARTIFACT_LOCATION#s3} == "${ARTIFACT_LOCATION}"; then
++                  aws s3 cp "${ARTIFACT_LOCATION}/${ARTIFACT_RUNTIME_ZIP}" ${DOWNLOAD_DIR}
+                 else
+                   # For downloading over https we need to specify the exact file name,
+                   # This will only work for standard extensions with a prefix of pingidentity.com
+diff --git a/profiles/aws/pingdirectory/hooks/20-restart-sequence.sh b/profiles/aws/pingdirectory/hooks/20-restart-sequence.sh
+index 592b729..893bb64 100755
+--- a/profiles/aws/pingdirectory/hooks/20-restart-sequence.sh
++++ b/profiles/aws/pingdirectory/hooks/20-restart-sequence.sh
+@@ -3,7 +3,6 @@
+ ${VERBOSE} && set -x
+ 
+ . "${HOOKS_DIR}/pingcommon.lib.sh"
+-test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
+ test -f "${HOOKS_DIR}/pingdata.lib.sh" && . "${HOOKS_DIR}/pingdata.lib.sh"
+ 
+ echo "Restarting container"
+diff --git a/profiles/aws/pingdirectory/hooks/82-upload-csd-s3.sh b/profiles/aws/pingdirectory/hooks/82-upload-csd-s3.sh
+index cd19632..5bf8a06 100755
+--- a/profiles/aws/pingdirectory/hooks/82-upload-csd-s3.sh
++++ b/profiles/aws/pingdirectory/hooks/82-upload-csd-s3.sh
+@@ -2,10 +2,6 @@
+ 
+ ${VERBOSE} && set -x
+ 
+-. "${HOOKS_DIR}/utils.lib.sh"
+-
+-test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
+-
+ # Set PATH - since this is executed from within the server process, it may not have all we need on the path
+ export PATH="${PATH}:${SERVER_ROOT_DIR}/bin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${JAVA_HOME}/bin"
+ 
+@@ -13,28 +9,46 @@ export PATH="${PATH}:${SERVER_ROOT_DIR}/bin:/usr/local/bin:/usr/sbin:/usr/bin:/s
+ test ! -z "${1}" && LOG_ARCHIVE_URL="${1}"
+ echo "Uploading to location ${LOG_ARCHIVE_URL}"
+ 
+-if ! cd "${OUT_DIR}"; then
+-  echo "Failed to chdir to: ${OUT_DIR}"
+-  exit 1
++# Install AWS CLI if the upload location is S3
++if test "${LOG_ARCHIVE_URL#s3}" == "${LOG_ARCHIVE_URL}"; then
++  echo "Upload location is not S3"
++  exit 0
++elif ! which aws > /dev/null; then
++  echo "Installing AWS CLI"
++  apk --update add python3
++  pip3 install --no-cache-dir --upgrade pip
++  pip3 install --no-cache-dir --upgrade awscli
+ fi
+ 
++FORMAT="+%d/%b/%Y:%H:%M:%S %z"
++NOW=$(date "${FORMAT}")
++
++cd "${OUT_DIR}"
++
+ collect-support-data --duration 1h
+ CSD_OUT=$(find . -name support\*zip -type f | sort | tail -1)
+ 
+-# Set required environment variables for skbn
+-initializeSkbnConfiguration "${LOG_ARCHIVE_URL}"
++BUCKET_URL_NO_PROTOCOL=${LOG_ARCHIVE_URL#s3://}
++BUCKET_NAME=$(echo ${BUCKET_URL_NO_PROTOCOL} | cut -d/ -f1)
+ 
+-DST_FILE="$(basename "${CSD_OUT}")"
+-SRC_FILE="${OUT_DIR}/$(basename "${CSD_OUT}")"
++DIRECTORY_NAME=$(echo ${PING_PRODUCT} | tr '[:upper:]' '[:lower:]')
++echo "Creating directory ${DIRECTORY_NAME} under bucket ${BUCKET_NAME}"
++aws s3api put-object --bucket "${BUCKET_NAME}" --key "${DIRECTORY_NAME}"/
+ 
+-echo "Copying: '${DST_FILE}' to '${SKBN_CLOUD_PREFIX}'"
+-
+-if ! skbnCopy "${SKBN_K8S_PREFIX}/${SRC_FILE}" "${SKBN_CLOUD_PREFIX}/${DST_FILE}"; then
+-  exit 1
++if test "${LOG_ARCHIVE_URL}" == */pingdirectory; then
++  TARGET_URL="${LOG_ARCHIVE_URL}"
++else
++  TARGET_URL="${LOG_ARCHIVE_URL}/${DIRECTORY_NAME}"
+ fi
+ 
++echo "Uploading "${CSD_OUT}" to ${TARGET_URL} at ${NOW}"
++DST_FILE=$(basename "${CSD_OUT}")
++aws s3 cp "${CSD_OUT}" "${TARGET_URL}/${DST_FILE}"
++
++echo "Upload return code: ${?}"
++
+ # Remove the CSD file so it is doesn't fill up the server's filesystem.
+ rm -f "${CSD_OUT}"
+ 
+ # Print the filename so callers can figure out the name of the CSD file that was uploaded.
+-echo "${DST_FILE}"
++echo "${DST_FILE}"
+\ No newline at end of file
+diff --git a/profiles/aws/pingdirectory/hooks/90-restore-backup-s3.sh b/profiles/aws/pingdirectory/hooks/90-restore-backup-s3.sh
+index 41f6ad4..8baec2a 100755
+--- a/profiles/aws/pingdirectory/hooks/90-restore-backup-s3.sh
++++ b/profiles/aws/pingdirectory/hooks/90-restore-backup-s3.sh
+@@ -3,81 +3,101 @@ set -e
+ 
+ . "${HOOKS_DIR}/utils.lib.sh"
+ 
+-test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
+-
+-# Set required environment variables for skbn
+-initializeSkbnConfiguration
++# Install AWS CLI and set required environment variables for AWS S3 bucket
++initializeS3Configuration
+ 
+ # This is the backup directory on the server
+ SERVER_RESTORE_DIR="/tmp/restore"
+ 
+ rm -rf "${SERVER_RESTORE_DIR}"
++mkdir -p "${SERVER_RESTORE_DIR}"
+ 
+-if ! mkdir -p "${SERVER_RESTORE_DIR}"; then 
+-  echo "Failed to create dir: ${SERVER_RESTORE_DIR}"
+-  exit 1
+-fi 
+-
++DATA_BACKUP_FILE=
+ DATA_BACKUP_FILE_NAME=$( echo "${BACKUP_FILE_NAME}" | tr -d '"' )
+ if ! test -z "${DATA_BACKUP_FILE_NAME}" && \
+    ! test "${DATA_BACKUP_FILE_NAME}" = 'null'; then
+ 
+-  echo "Attempting to restore backup from cloud storage specified by the user: ${DATA_BACKUP_FILE_NAME}"
++  echo "Attempting to restore backup from S3 specified by the user: ${DATA_BACKUP_FILE_NAME}"
++  DATA_BACKUP_FILE_NAME="${DIRECTORY_NAME}/${DATA_BACKUP_FILE_NAME}"
++  # Get the specified backup zip file from s3
++  DATA_BACKUP_FILE=$( aws s3api list-objects \
++    --bucket "${BUCKET_NAME}" \
++    --prefix "${DIRECTORY_NAME}/data" \
++    --query "(Contents[?Key=='${DATA_BACKUP_FILE_NAME}'])[0].Key" \
++    | tr -d '"' )
+ else
+-  echo "Attempting to restore backup from latest backup file in cloud storage."
+-  DATA_BACKUP_FILE_NAME="latest.zip"
++  # Filter data.zip to most recent uploaded files that occured 3 days ago.
++  # AWS has a 1000 list-object limit per request. This will help filter out older backup files.
++  FORMAT="+%Y-%m-%d"
++  DAYS=${S3_BACKUP_FILTER_DAY_COUNT-3}
++  DAYS_AGO=$(date --date="@$(($(date +%s) - (${DAYS} * 24 * 3600)))" "${FORMAT}")
++
++  echo "S3 filter by ${S3_BACKUP_FILTER_DAY_COUNT} day(s) ago"
++  echo "S3 filter by date ${DAYS_AGO}"
++
++  # Get the name of the latest backup zip file from s3
++  DATA_BACKUP_FILE=$( aws s3api list-objects \
++    --bucket "${BUCKET_NAME}" \
++    --prefix "${DIRECTORY_NAME}/data" \
++    --query "reverse(sort_by(Contents[?LastModified>='${DAYS_AGO}'], &LastModified))[0].Key" \
++    | tr -d '"' )
++
++  echo "Attempting to restore latest uploaded backup from S3: ${DATA_BACKUP_FILE}"
+ fi
+ 
+-echo "Copying: '${DATA_BACKUP_FILE_NAME}' to '${SKBN_K8S_PREFIX}${SERVER_RESTORE_DIR}/${DATA_BACKUP_FILE_NAME}'"
++# If a backup file in s3 exists
++if ! test -z "${DATA_BACKUP_FILE}" && \
++   ! test "${DATA_BACKUP_FILE}" = 'null'; then
+ 
+-if ! skbnCopy "${SKBN_CLOUD_PREFIX}/${DATA_BACKUP_FILE_NAME}" "${SKBN_K8S_PREFIX}${SERVER_RESTORE_DIR}/${DATA_BACKUP_FILE_NAME}"; then
+-  exit 1
+-fi
++  # Extract only the file name
++  DATA_BACKUP_FILE=${DATA_BACKUP_FILE#${DIRECTORY_NAME}/}
+ 
+-if ! cd ${SERVER_RESTORE_DIR}; then 
+-  echo "Failed to chdir to ${SERVER_RESTORE_DIR}"
+-  exit 1
+-fi 
+-
+-# Unzip archive user data
+-if ! unzip -o "${DATA_BACKUP_FILE_NAME}"; then 
+-  echo "Failed to unzip ${DATA_BACKUP_FILE_NAME}"
+-  exit 1
+-fi 
+-
+-# Remove zip
+-if ! rm -rf "${DATA_BACKUP_FILE_NAME}"; then 
+-  echo "Failed to cleanup ${DATA_BACKUP_FILE_NAME}"
+-  exit 1
+-fi
++  # Download latest backup file from s3 bucket
++  aws s3 cp ${TARGET_URL}/${DATA_BACKUP_FILE} ${SERVER_RESTORE_DIR}/${DATA_BACKUP_FILE}
++  AWS_API_RESULT=${?}
+ 
+-# Print listed files from user data archive
+-if ! ls ${SERVER_RESTORE_DIR}; then
+-  echo "Failed to list ${SERVER_RESTORE_DIR}"
+-  exit 1
+-fi 
++  echo "Download return code: ${AWS_API_RESULT}"
+ 
+-if test -f "${SERVER_ROOT_DIR}/changelogDb"; then
+-  echo "Removing changelogDb before restoring user data"
+-  
+-  if ! rm -rf "${SERVER_ROOT_DIR}/changelogDb"; then
+-    echo "Failed to remove ${SERVER_RESTORE_DIR}/changelogDb"
++  if test ${AWS_API_RESULT} -ne 0; then
++    echo "Download was unsuccessful - crash the container"
+     exit 1
+   fi
+-fi 
+-
+-echo "Restoring to the latest backups under ${SERVER_RESTORE_DIR}"
+-BACKEND_DIRS=$(find "${SERVER_RESTORE_DIR}" -name backup.info -exec dirname {} \;)
+-
+-for BACKEND_DIR in ${BACKEND_DIRS}; do
+-  printf "\n----- Doing a restore from ${BACKEND_DIR} -----\n"
+-  restore --task \
+-    --useSSL --trustAll \
+-    --port ${LDAPS_PORT} \
+-    --bindDN "${ROOT_USER_DN}" \
+-    --bindPasswordFile "${ROOT_USER_PASSWORD_FILE}" \
+-    --backupDirectory "${BACKEND_DIR}"
+-done
+-
+-# Cleanup
+-rm -rf ${SERVER_RESTORE_DIR}
+\ No newline at end of file
++
++  cd ${SERVER_RESTORE_DIR}
++
++  # Unzip archive user data
++  unzip -o "${DATA_BACKUP_FILE}"
++
++  # Remove zip
++  rm -rf "${DATA_BACKUP_FILE}"
++
++  # Print the filename of the downloaded file from s3
++  echo "Downloaded file name: ${DATA_BACKUP_FILE}"
++
++  # Print listed files from user data archive
++  ls ${SERVER_RESTORE_DIR}
++
++  echo "Removing changelogDb before restoring user data"
++  rm -rf "${SERVER_ROOT_DIR}/changelogDb"
++
++  echo "Restoring to the latest backups under ${SERVER_RESTORE_DIR}"
++  BACKEND_DIRS=$(find "${SERVER_RESTORE_DIR}" -name backup.info -exec dirname {} \;)
++
++  for BACKEND_DIR in ${BACKEND_DIRS}; do
++    printf "\n----- Doing a restore from ${BACKEND_DIR} -----\n"
++    restore --task \
++      --useSSL --trustAll \
++      --port ${LDAPS_PORT} \
++      --bindDN "${ROOT_USER_DN}" \
++      --bindPasswordFile "${ROOT_USER_PASSWORD_FILE}" \
++      --backupDirectory "${BACKEND_DIR}"
++  done
++
++  # Cleanup
++  rm -rf ${SERVER_RESTORE_DIR}
++
++else
++
++  echo "No archive user data found"
++  
++fi
+\ No newline at end of file
+diff --git a/profiles/aws/pingdirectory/hooks/90-upload-backup-s3.sh b/profiles/aws/pingdirectory/hooks/90-upload-backup-s3.sh
+index aa06c4d..1f41a09 100755
+--- a/profiles/aws/pingdirectory/hooks/90-upload-backup-s3.sh
++++ b/profiles/aws/pingdirectory/hooks/90-upload-backup-s3.sh
+@@ -3,12 +3,8 @@ set -e
+ 
+ . "${HOOKS_DIR}/utils.lib.sh"
+ 
+-
+-# Source generated environment variables 
+-test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
+-
+-# Set required environment variables for skbn
+-initializeSkbnConfiguration
++# Install AWS CLI and set required environment variables for AWS S3 bucket
++initializeS3Configuration
+ 
+ # This is the backup directory on the server
+ SERVER_BACKUP_DIR="${OUT_DIR}/backup"
+@@ -34,26 +30,17 @@ done
+ 
+ # Zip backup files and append the current timestamp to zip filename
+ cd "${SERVER_BACKUP_DIR}"
+-DST_FILE_TIMESTAMP="data-$(date +%m-%d-%Y.%H.%M.%S).zip"
+-zip -r "${DST_FILE_TIMESTAMP}" *
+-
+-UPLOAD_DIR="$(mktemp -d)"
++DST_FILE="data-`date +%m-%d-%Y.%H.%M.%S`.zip"
++zip -r ${DST_FILE} *
+ 
+-# Two copy of the backup will be pushed to cloud storage.
+-# Make a copy: latest.zip
+-DST_FILE_LATEST=latest.zip
+-cp "$DST_FILE_TIMESTAMP" "${UPLOAD_DIR}/${DST_FILE_TIMESTAMP}"
+-cp "$DST_FILE_TIMESTAMP" "${UPLOAD_DIR}/${DST_FILE_LATEST}"
++echo "Creating directory ${DIRECTORY_NAME} under bucket ${BUCKET_NAME}"
++aws s3api put-object --bucket "${BUCKET_NAME}" --key "${DIRECTORY_NAME}"/
+ 
+-echo "Copying files in '${UPLOAD_DIR}' to '${SKBN_CLOUD_PREFIX}'"
++echo "Uploading ${SERVER_BACKUP_DIR}/${DST_FILE} to ${TARGET_URL}"
++aws s3 cp "${SERVER_BACKUP_DIR}/${DST_FILE}" "${TARGET_URL}/"
+ 
+-if ! skbnCopy "${SKBN_K8S_PREFIX}/${UPLOAD_DIR}" "${SKBN_CLOUD_PREFIX}/"; then
+-  exit 1
+-fi
+-
+-# STDOUT for CI test
+-ls ${UPLOAD_DIR}
++# Print the filename of the uploaded file to s3
++echo "${DST_FILE}"
+ 
+ # Cleanup
+-rm -rf "${SERVER_BACKUP_DIR}"
+-rm -rf "${UPLOAD_DIR}"
+\ No newline at end of file
++rm -rf "${SERVER_BACKUP_DIR}"
+\ No newline at end of file
+diff --git a/profiles/aws/pingdirectory/hooks/utils.lib.sh b/profiles/aws/pingdirectory/hooks/utils.lib.sh
+index 5ed2f9a..b6c6659 100755
+--- a/profiles/aws/pingdirectory/hooks/utils.lib.sh
++++ b/profiles/aws/pingdirectory/hooks/utils.lib.sh
+@@ -1,55 +1,52 @@
+ #!/usr/bin/env sh
+ 
+ ########################################################################################################################
+-# Function sets required environment variables for skbn
++# Function to install AWS command line tools
+ #
+ ########################################################################################################################
+-function initializeSkbnConfiguration() {
+-  unset SKBN_CLOUD_PREFIX
+-  unset SKBN_K8S_PREFIX
+-
+-  # Allow overriding the backup URL with an arg
+-  test ! -z "${1}" && BACKUP_URL="${1}"
+-
+-  # Check if endpoint is AWS cloud stroage service (S3 bucket)
+-  case "$BACKUP_URL" in "s3://"*)
+-    
+-    # Set AWS specific variable for skbn
+-    export AWS_REGION=${REGION}
+-    
+-    DIRECTORY_NAME=$(echo "${PING_PRODUCT}" | tr '[:upper:]' '[:lower:]')
+-
+-    if test "${BACKUP_URL}" != */"${DIRECTORY_NAME}"; then
+-      BACKUP_URL="${BACKUP_URL}/${DIRECTORY_NAME}"
+-    fi
+-
+-  esac
+-
+-  echo "Getting cluster metadata"
+-  METADATA=$(kubectl get "$(kubectl get pod -o name | grep "${HOSTNAME}")" \
+-    -o=jsonpath='{.metadata.namespace},{.metadata.name},{.metadata.labels.role}')
+-    
+-  METADATA_NS=$(echo "${METADATA}"| cut -d',' -f1)
+-  METADATA_PN=$(echo "${METADATA}"| cut -d',' -f2)
+-  METADATA_CN=$(echo "${METADATA}"| cut -d',' -f3)
+-
+-  export SKBN_CLOUD_PREFIX="${BACKUP_URL}"
+-  export SKBN_K8S_PREFIX="k8s://${METADATA_NS}/${METADATA_PN}/${METADATA_CN}"
++function installAwsCliTools() {
++  if test -z "$(which aws)"; then
++    #   
++    #  Install AWS platform specific tools
++    #
++    echo "Installing AWS CLI tools for S3 support"
++    #
++    # TODO: apk needs to move to the Docker file as the package manager is plaform specific
++    #
++    apk --update add python3
++    pip3 install --no-cache-dir --upgrade pip
++    pip3 install --no-cache-dir --upgrade awscli
++  fi
+ }
+ 
+ ########################################################################################################################
+-# Function to copy file(s) between cloud storage and k8s
++# Function calls installAwsCliTools() and sets required environment variables for AWS S3 bucket
+ #
+ ########################################################################################################################
+-function skbnCopy() {
+-  PARALLEL="0"
+-  SOURCE="${1}"
+-  DESTINATION="${2}"
++function initializeS3Configuration() {
++  unset BUCKET_URL_NO_PROTOCOL
++  unset BUCKET_NAME
++  unset DIRECTORY_NAME
++  unset TARGET_URL
++
++  # Allow overriding the backup URL with an arg
++  test ! -z "${1}" && BACKUP_URL="${1}"
+ 
+-  # Check if the number of files to be copied in parallel is defined (0 for full parallelism)
+-  test ! -z "${3}" && PARALLEL="${3}"
+-  
+-  if ! skbn cp --src "$SOURCE" --dst "${DESTINATION}" --parallel "${PARALLEL}"; then
+-    return 1
++  # Install AWS CLI if the upload location is S3
++  if test "${BACKUP_URL#s3}" == "${BACKUP_URL}"; then
++    echo "Upload location is not S3"
++    exit 1
++  else
++    installAwsCliTools
+   fi
+-}
++
++  export BUCKET_URL_NO_PROTOCOL=${BACKUP_URL#s3://}
++  export BUCKET_NAME=$(echo "${BUCKET_URL_NO_PROTOCOL}" | cut -d/ -f1)
++  export DIRECTORY_NAME=$(echo "${PING_PRODUCT}" | tr '[:upper:]' '[:lower:]')
++
++  if test "${BACKUP_URL}" == */"${DIRECTORY_NAME}"; then
++    export TARGET_URL="${BACKUP_URL}"
++  else
++    export TARGET_URL="${BACKUP_URL}/${DIRECTORY_NAME}"
++  fi
++}
+\ No newline at end of file
+diff --git a/profiles/aws/pingfederate/hooks/10-download-artifact.sh b/profiles/aws/pingfederate/hooks/10-download-artifact.sh
+index ed9143b..b968a44 100644
+--- a/profiles/aws/pingfederate/hooks/10-download-artifact.sh
++++ b/profiles/aws/pingfederate/hooks/10-download-artifact.sh
+@@ -5,8 +5,6 @@
+ 
+ ${VERBOSE} && set -x
+ 
+-test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
+-
+ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
+   # Check to see if the artifact file is empty
+   ARTIFACT_LIST_JSON=$(cat "${STAGING_DIR}/artifacts/artifact-list.json")
+@@ -21,6 +19,11 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
+       echo ${ARTIFACT_LIST_JSON} | jq
+       if test $(echo $?) == "0"; then
+ 
++        # Install AWS CLI if the upload location is S3
++        if test ! "${ARTIFACT_REPO_URL#s3}" == "${ARTIFACT_REPO_URL}" -o ! "${PING_ARTIFACT_REPO_URL#s3}" == "${PING_ARTIFACT_REPO_URL}"; then
++          installTools
++        fi
++
+         DOWNLOAD_DIR=$(mktemp -d)
+         DIRECTORY_NAME=$(echo ${PING_PRODUCT} | tr '[:upper:]' '[:lower:]')
+ 
+@@ -80,18 +83,9 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
+ 
+                   echo "Download Artifact from ${ARTIFACT_LOCATION}"
+ 
+-                  # Use skbn if source is cloud storage otherwise use curl
+-                  if test ${ARTIFACT_LOCATION#s3} != "${ARTIFACT_LOCATION}"; then
+-
+-                    # Set required environment variables for skbn
+-                    initializeSkbnConfiguration "${ARTIFACT_LOCATION}"
+-
+-                    echo "Copying: '${ARTIFACT_LOCATION}' to '${SKBN_K8S_PREFIX}}${DOWNLOAD_DIR}'"
+-
+-                    if ! skbnCopy "${SKBN_CLOUD_PREFIX}/${ARTIFACT_LOCATION}" "${SKBN_K8S_PREFIX}}${DOWNLOAD_DIR}"; then
+-                      exit 1
+-                    fi
+-
++                  # Use aws command if ARTIFACT_LOCATION is in s3 format otherwise use curl
++                  if ! test ${ARTIFACT_LOCATION#s3} == "${ARTIFACT_LOCATION}"; then
++                    aws s3 cp "${ARTIFACT_LOCATION}" ${DOWNLOAD_DIR}
+                   else
+                     curl "${ARTIFACT_LOCATION}" --output ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}
+                   fi
+diff --git a/profiles/aws/pingfederate/hooks/82-upload-archive-data-s3.sh b/profiles/aws/pingfederate/hooks/82-upload-archive-data-s3.sh
+index ca81119..f170fcf 100755
+--- a/profiles/aws/pingfederate/hooks/82-upload-archive-data-s3.sh
++++ b/profiles/aws/pingfederate/hooks/82-upload-archive-data-s3.sh
+@@ -5,52 +5,66 @@
+ 
+ ${VERBOSE} && set -x
+ 
+-test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
+-
+ # Allow overriding the backup URL with an arg
+ test ! -z "${1}" && BACKUP_URL="${1}"
+ echo "Uploading to location ${BACKUP_URL}"
+ 
+-# Set required environment variables for skbn
+-initializeSkbnConfiguration
++# Install AWS CLI if the upload location is S3
++if test "${BACKUP_URL#s3}" == "${BACKUP_URL}"; then
++   echo "Upload location is not S3"
++   exit 1
++else
++   installTools
++fi
+ 
+ # Create and export archive data into file data.mm-dd-YYYY.HH.MM.SS.zip
+-DST_FILE_TIMESTAMP="data-`date +%m-%d-%Y.%H.%M.%S`.zip"
++DST_FILE="data-`date +%m-%d-%Y.%H.%M.%S`.zip"
+ DST_DIRECTORY="/tmp/k8s-s3-upload-archive"
+ mkdir -p ${DST_DIRECTORY}
+ 
+ # Make request to admin API and export latest data
+ make_api_request -X GET \
+   https://localhost:${PINGFEDERATE_ADMIN_PORT}/pf-admin-api/v1/configArchive/export \
+-  -o ${DST_DIRECTORY}/${DST_FILE_TIMESTAMP}
++  -o ${DST_DIRECTORY}/${DST_FILE}
+ 
+ # Validate admin API call was successful and that zip isn't corrupted
+-if test ! $? -eq 0 || test "$( unzip -t ${DST_DIRECTORY}/${DST_FILE_TIMESTAMP} > /dev/null 2>&1;echo $?)" != "0" ; then
++if test ! $? -eq 0 || test "$( unzip -t ${DST_DIRECTORY}/${DST_FILE} > /dev/null 2>&1;echo $?)" != "0" ; then
+   echo "Failed to export archive"
+   # Cleanup k8s-s3-upload-archive temp directory
+   rm -rf ${DST_DIRECTORY}
+   exit 1
+ fi
+ 
+-# Two copy of the backup will be pushed to cloud storage.
+-# Make a copy: latest.zip
+-DST_FILE_LATEST="latest.zip"
+-UPLOAD_DIR="$(mktemp -d)"
++BUCKET_URL_NO_PROTOCOL=${BACKUP_URL#s3://}
++BUCKET_NAME=$(echo ${BUCKET_URL_NO_PROTOCOL} | cut -d/ -f1)
++DIRECTORY_NAME=$(echo ${PING_PRODUCT} | tr '[:upper:]' '[:lower:]')
++
++echo "Creating directory ${DIRECTORY_NAME} under bucket ${BUCKET_NAME}"
++aws s3api put-object --bucket "${BUCKET_NAME}" --key "${DIRECTORY_NAME}"/
+ 
+-cp "${DST_DIRECTORY}/$DST_FILE_TIMESTAMP" "${UPLOAD_DIR}/$DST_FILE_LATEST" 
+-cp "${DST_DIRECTORY}/$DST_FILE_TIMESTAMP" "${UPLOAD_DIR}/$DST_FILE_TIMESTAMP" 
++if test "${BACKUP_URL}" == */pingfederate; then
++  TARGET_URL="${BACKUP_URL}"
++else
++  TARGET_URL="${BACKUP_URL}/${DIRECTORY_NAME}"
++fi
++
++aws s3 cp "${DST_DIRECTORY}/${DST_FILE}" "${TARGET_URL}/"
++AWS_API_RESULT="${?}"
+ 
+-echo "Copying files to '${SKBN_CLOUD_PREFIX}'"
++echo "Upload return code: ${AWS_API_RESULT}"
+ 
+-if ! skbnCopy "${SKBN_K8S_PREFIX}/${UPLOAD_DIR}/" "${SKBN_CLOUD_PREFIX}/"; then
++if [ "${AWS_API_RESULT}" != "0" ]; then
++  echo "Upload was unsuccessful - crash the container"
+   exit 1
+ fi
+ 
++# Print the filename of the uploaded file to s3
++echo "Uploaded file name: ${DST_FILE}"
++
+ # Print listed files from k8s-s3-upload-archive
+ ls ${DST_DIRECTORY}
+ 
+ # Cleanup k8s-s3-upload-archive temp directory
+ rm -rf ${DST_DIRECTORY}
+-rm -rf "${UPLOAD_DIR}"
+ 
+-exit 0
++exit 0
+\ No newline at end of file
+diff --git a/profiles/aws/pingfederate/hooks/82-upload-csd-s3.sh b/profiles/aws/pingfederate/hooks/82-upload-csd-s3.sh
+index a1eebd1..d8b6971 100755
+--- a/profiles/aws/pingfederate/hooks/82-upload-csd-s3.sh
++++ b/profiles/aws/pingfederate/hooks/82-upload-csd-s3.sh
+@@ -5,31 +5,41 @@
+ 
+ ${VERBOSE} && set -x
+ 
+-test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
+-
+ echo "Uploading to location ${LOG_ARCHIVE_URL}"
+ 
+-# Set required environment variables for skbn
+-initializeSkbnConfiguration "${LOG_ARCHIVE_URL}"
++initializeS3Configuration
+ 
+-if ! cd "${OUT_DIR}"; then 
+-  echo "Failed to chdir: ${OUT_DIR}"
+-  exit 1
+-fi
++cd "${OUT_DIR}"
+ 
+-if ! sh ${SERVER_ROOT_DIR}/bin/collect-support-data.sh; then 
+-  echo "Failed to execute:  ${SERVER_ROOT_DIR}/bin/collect-support-data.sh"
+-  exit 1
++sh ${SERVER_ROOT_DIR}/bin/collect-support-data.sh
++CSD_OUT=$(find . -name support\*zip -type f | sort | tail -1)
++
++BUCKET_URL_NO_PROTOCOL=${LOG_ARCHIVE_URL#s3://}
++BUCKET_NAME=$(echo "${BUCKET_URL_NO_PROTOCOL}" | cut -d/ -f1)
++DIRECTORY_NAME=$(echo ${PING_PRODUCT} | tr '[:upper:]' '[:lower:]')
++
++if test "${LOG_ARCHIVE_URL}" == */${DIRECTORY_NAME}; then
++  TARGET_URL="${LOG_ARCHIVE_URL}"
++else
++  TARGET_URL="${LOG_ARCHIVE_URL%/}/${DIRECTORY_NAME}"
+ fi
+ 
+-CSD_OUT=$(find . -name support\*zip -type f | sort | tail -1)
++echo "Creating directory ${DIRECTORY_NAME} under bucket ${BUCKET_NAME}"
++aws s3api put-object --bucket "${BUCKET_NAME}" --key "${DIRECTORY_NAME}"/
++
++FORMAT="+%d/%b/%Y:%H:%M:%S %z"
++NOW=$(date "${FORMAT}")
++
++echo "Uploading "${CSD_OUT}" to ${TARGET_URL} at ${NOW}"
++DST_FILE=$(basename "${CSD_OUT}")
++aws s3 cp "${CSD_OUT}" "${TARGET_URL}/${DST_FILE}"
+ 
+-DST_FILE="$(basename "${CSD_OUT}")"
+-SRC_FILE="${OUT_DIR}/$(basename "${CSD_OUT}")"
++AWS_API_RESULT="${?}"
+ 
+-echo "Copying: '${DST_FILE}' to '${SKBN_CLOUD_PREFIX}'"
++echo "Upload return code: ${AWS_API_RESULT}"
+ 
+-if ! skbnCopy "${SKBN_K8S_PREFIX}/${SRC_FILE}" "${SKBN_CLOUD_PREFIX}/${DST_FILE}"; then
++if [ "${AWS_API_RESULT}" != "0" ]; then
++  echo "Upload was unsuccessful - crash the container"
+   exit 1
+ fi
+ 
+diff --git a/profiles/aws/pingfederate/hooks/83-download-archive-data-s3.sh b/profiles/aws/pingfederate/hooks/83-download-archive-data-s3.sh
+index 11be2e7..6c7fe2f 100644
+--- a/profiles/aws/pingfederate/hooks/83-download-archive-data-s3.sh
++++ b/profiles/aws/pingfederate/hooks/83-download-archive-data-s3.sh
+@@ -5,42 +5,95 @@
+ 
+ ${VERBOSE} && set -x
+ 
+-test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
+-
+ # Allow overriding the backup URL with an arg
+ test ! -z "${1}" && BACKUP_URL="${1}"
+ echo "Downloading from location ${BACKUP_URL}"
+ 
+-# Set required environment variables for skbn
+-initializeSkbnConfiguration
++# Install AWS CLI if the upload location is S3
++if test "${BACKUP_URL#s3}" == "${BACKUP_URL}"; then
++   echo "Upload location is not S3"
++   exit 1
++else
++   installTools
++fi
++
++BUCKET_URL_NO_PROTOCOL=${BACKUP_URL#s3://}
++BUCKET_NAME=$(echo ${BUCKET_URL_NO_PROTOCOL} | cut -d/ -f1)
+ 
+-DATA_BACKUP_FILE_NAME=$( echo "${BACKUP_FILE_NAME}" | tr -d '"' )
+-if ! test -z "${DATA_BACKUP_FILE_NAME}" && \
+-   ! test "${DATA_BACKUP_FILE_NAME}" = 'null'; then
++DIRECTORY_NAME=$(echo ${PING_PRODUCT} | tr '[:upper:]' '[:lower:]')
+ 
+-  echo "Attempting to restore backup from cloud storage specified by the user: ${DATA_BACKUP_FILE_NAME}"
++if test "${BACKUP_URL}" == */"${DIRECTORY_NAME}"; then
++  TARGET_URL="${BACKUP_URL}"
+ else
+-  echo "Attempting to restore backup from latest backup file in cloud storage."
+-  DATA_BACKUP_FILE_NAME="latest.zip"
++  TARGET_URL="${BACKUP_URL}/${DIRECTORY_NAME}"
+ fi
+ 
+-DOWNLOAD_DIR="${OUT_DIR}/instance/server/default/data/drop-in-deployer"
++# Filter data.zip to most recent uploaded files that occured 1 day ago.
++# AWS has a 1000 list-object limit per request. This will help filter out older backup files.
++FORMAT="+%Y-%m-%d"
++DAYS=${S3_BACKUP_FILTER_DAY_COUNT:-1}
++DAYS_AGO=$(date --date="@$(($(date +%s) - (${DAYS} * 24 * 3600)))" "${FORMAT}")
+ 
+-# Rename backup filename when copying onto pingfederate admin
++echo "S3 filter by ${DAYS} day(s) ago"
++echo "S3 filter by date ${DAYS_AGO}"
++
++# Check and verify that there is a backup file within S3 bucket
++BUCKET_FILES=
++API_RETRY_ATTEMPTS=${API_RETRY_LIMIT:-10}
++while test ${API_RETRY_ATTEMPTS} -gt 0; do
++  BUCKET_FILES=$( aws s3api list-objects \
++  --bucket "${BUCKET_NAME}" \
++  --prefix "${DIRECTORY_NAME}/data" \
++  --query '(Contents[?LastModified>=`${DAYS_AGO}`].{Key: Key, LastModified: LastModified})' \
++  --output json )
++  AWS_ERROR_STATUS=${?}
++
++  if test ${AWS_ERROR_STATUS} -ne 0; then
++    API_RETRY_ATTEMPTS=$((${API_RETRY_ATTEMPTS}-1))
++    echo "Error occured with aws s3api CLI - will retry ${API_RETRY_ATTEMPTS}"
++    sleep 2s
++  else
++    break
++  fi
++done
++
++if test ${API_RETRY_ATTEMPTS} -eq 0; then
++  echo "Exceeded attempts of connecting to s3 bucket: ${BUCKET_NAME}"
++  echo "Error code: ${AWS_ERROR_STATUS}"
++  exit 1
++fi
++
++# If at least 1 backup file was found in the bucket, sort by LastModified and get the latest file that was uploaded to s3
++if ! test -z "${BUCKET_FILES}" && ! test "${BUCKET_FILES}" = 'null'; then
++  DATA_BACKUP_FILE=$( echo "${BUCKET_FILES}" | jq .[] | jq -s -c -r 'sort_by(.LastModified) | reverse | .[0] | .Key')
++else
++  echo "No archive data found"
++  exit 0
++fi
++
++# extract only the file name
++DATA_BACKUP_FILE=${DATA_BACKUP_FILE#${DIRECTORY_NAME}/}
++
++# Rename s3 backup filename when copying onto pingfederate admin
+ DST_FILE="data.zip"
+ 
+-echo "Copying: '${DATA_BACKUP_FILE_NAME}' to '${SKBN_K8S_PREFIX}}${DOWNLOAD_DIR}'"
++# Download latest backup file from s3 bucket
++aws s3 cp "${TARGET_URL}/${DATA_BACKUP_FILE}" "${OUT_DIR}/instance/server/default/data/drop-in-deployer/${DST_FILE}"
++AWS_API_RESULT="${?}"
++
++echo "Download return code: ${AWS_API_RESULT}"
+ 
+-if ! skbnCopy "${SKBN_CLOUD_PREFIX}/${DATA_BACKUP_FILE_NAME}" "${SKBN_K8S_PREFIX}${DOWNLOAD_DIR}/${DST_FILE}"; then
++if [ "${AWS_API_RESULT}" != "0" ]; then
++  echo "Download was unsuccessful - crash the container"
+   exit 1
+ fi
+ 
+-unzip -o "${DOWNLOAD_DIR}/${DST_FILE}" \
++unzip -o "${OUT_DIR}/instance/server/default/data/drop-in-deployer/${DST_FILE}" \
+     pf.jwk \
+     -d "${OUT_DIR}/instance/server/default/data"
+ 
+-# Print the filename of the downloaded file from cloud storage.
++# Print the filename of the downloaded file from s3
+ echo "Download file name: ${DATA_BACKUP_FILE}"
+ 
+ # Print listed files from drop-in-deployer
+-ls ${DOWNLOAD_DIR}
+\ No newline at end of file
++ls ${OUT_DIR}/instance/server/default/data/drop-in-deployer
+\ No newline at end of file
+diff --git a/profiles/aws/pingfederate/hooks/utils.lib.sh b/profiles/aws/pingfederate/hooks/utils.lib.sh
+index d9db8c8..4da84f3 100644
+--- a/profiles/aws/pingfederate/hooks/utils.lib.sh
++++ b/profiles/aws/pingfederate/hooks/utils.lib.sh
+@@ -49,6 +49,27 @@ function wait_for_admin_api_endpoint() {
+   done
+ }
+ 
++########################################################################################################################
++# Function to install AWS command line tools
++#
++# Arguments
++#   N/A
++########################################################################################################################
++function installTools() {
++   if [ -z "$(which aws)" ]; then
++      #   
++      #  Install AWS platform specific tools
++      #
++      echo "Installing AWS CLI tools for S3 support"
++      #
++      # TODO: apk needs to move to the Docker file as the package manager is plaform specific
++      #
++      apk --update add python3
++      pip3 install --no-cache-dir --upgrade pip
++      pip3 install --no-cache-dir --upgrade awscli
++   fi
++}
++
+ #---------------------------------------------------------------------------------------------
+ # Function to obfuscate LDAP password
+ #---------------------------------------------------------------------------------------------
+@@ -90,62 +111,33 @@ function obfuscatePassword() {
+ }
+ 
+ ########################################################################################################################
+-# Function sets required environment variables for skbn
++# Function calls installTools() and sets required environment variables for AWS S3 bucket
+ #
+ ########################################################################################################################
+-function initializeSkbnConfiguration() {
+-  unset SKBN_CLOUD_PREFIX
+-  unset SKBN_K8S_PREFIX
++function initializeS3Configuration() {
++  unset BUCKET_URL_NO_PROTOCOL
++  unset BUCKET_NAME
++  unset DIRECTORY_NAME
++  unset TARGET_URL
+ 
+   # Allow overriding the backup URL with an arg
+   test ! -z "${1}" && BACKUP_URL="${1}"
+ 
+-  # Check if endpoint is AWS cloud stroage service (S3 bucket)
+-  case "$BACKUP_URL" in "s3://"*)
+-    
+-    # Set AWS specific variable for skbn
+-    export AWS_REGION=${REGION}
+-    
+-    DIRECTORY_NAME=$(echo "${PING_PRODUCT}" | tr '[:upper:]' '[:lower:]')
+-
+-    if test "${BACKUP_URL}" != */"${DIRECTORY_NAME}"; then
+-      BACKUP_URL="${BACKUP_URL}/${DIRECTORY_NAME}"
+-    fi
++  # Install AWS CLI if the upload location is S3
++  if test "${BACKUP_URL#s3}" == "${BACKUP_URL}"; then
++    echo "Upload location is not S3"
++    exit 1
++  else
++    installTools
++  fi
+ 
+-  esac
+-
+-  echo "Getting cluster metadata"
+-
+-  # Get prefix of HOSTNAME which match the pod name.  
+-  POD="$(echo "${HOSTNAME}" | cut -d. -f1)"
+-  
+-  METADATA=$(kubectl get "$(kubectl get pod -o name | grep "${POD}")" \
+-    -o=jsonpath='{.metadata.namespace},{.metadata.name},{.metadata.labels.role}')
+-    
+-  METADATA_NS=$(echo "$METADATA"| cut -d',' -f1)
+-  METADATA_PN=$(echo "$METADATA"| cut -d',' -f2)
+-  METADATA_CN=$(echo "$METADATA"| cut -d',' -f3)
+-  
+-  # Remove suffix for PF runtime.
+-  METADATA_CN="${METADATA_CN%-engine}"
+-
+-  export SKBN_CLOUD_PREFIX="${BACKUP_URL}"
+-  export SKBN_K8S_PREFIX="k8s://${METADATA_NS}/${METADATA_PN}/${METADATA_CN}"
+-}
++  export BUCKET_URL_NO_PROTOCOL=${BACKUP_URL#s3://}
++  export BUCKET_NAME=$(echo "${BUCKET_URL_NO_PROTOCOL}" | cut -d/ -f1)
++  export DIRECTORY_NAME=$(echo "${PING_PRODUCT}" | tr '[:upper:]' '[:lower:]')
+ 
+-########################################################################################################################
+-# Function to copy file(s) between cloud storage and k8s
+-#
+-########################################################################################################################
+-function skbnCopy() {
+-  PARALLEL="0"
+-  SOURCE="${1}"
+-  DESTINATION="${2}"
+-
+-  # Check if the number of files to be copied in parallel is defined (0 for full parallelism)
+-  test ! -z "${3}" && PARALLEL="${3}"
+-  
+-  if ! skbn cp --src "$SOURCE" --dst "${DESTINATION}" --parallel "${PARALLEL}"; then
+-    return 1
++  if test "${BACKUP_URL}" == */"${DIRECTORY_NAME}"; then
++    export TARGET_URL="${BACKUP_URL}"
++  else
++    export TARGET_URL="${BACKUP_URL}/${DIRECTORY_NAME}"
+   fi
+ }
+diff --git a/test/ping-cloud/env_vars b/test/ping-cloud/env_vars
+index cb5fec7..1177602 100644
+--- a/test/ping-cloud/env_vars
++++ b/test/ping-cloud/env_vars
+@@ -8,5 +8,4 @@ PF_ENGINE_PUBLIC_HOSTNAME=pingfederate${ENVIRONMENT}.${TENANT_DOMAIN}
+ ARTIFACT_REPO_URL=${ARTIFACT_REPO_URL}
+ PING_ARTIFACT_REPO_URL=${PING_ARTIFACT_REPO_URL}
+ LOG_ARCHIVE_URL=${LOG_ARCHIVE_URL}
+-BACKUP_URL=${BACKUP_URL}
+-REGION=${REGION}
+\ No newline at end of file
++BACKUP_URL=${BACKUP_URL}
+\ No newline at end of file
