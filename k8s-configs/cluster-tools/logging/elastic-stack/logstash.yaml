@@ -506,7 +506,7 @@ spec:
       initContainers:
 
       - name: check-service-availability
-        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:latest
+        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0
         command: ["sh", '$(CONTAINER_NAME).sh']
 
         env:
@@ -520,7 +520,7 @@ spec:
           value: "green"
 
       - name: create-enrichment-cache-files
-        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:latest
+        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
 
