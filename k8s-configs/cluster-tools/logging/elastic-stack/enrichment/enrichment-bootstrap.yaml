@@ -9,7 +9,7 @@ spec:
 
   initContainers:
   - name: efs-provisioner
-    image: quay.io/external_storage/efs-provisioner:latest
+    image: quay.io/external_storage/efs-provisioner:v2.4.0
     imagePullPolicy: IfNotPresent
     workingDir: /scripts
     command: ["sh", '$(CONTAINER_NAME).sh']
