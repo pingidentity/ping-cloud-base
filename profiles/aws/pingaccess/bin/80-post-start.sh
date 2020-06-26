@@ -37,18 +37,19 @@ elif test $(comparePasswordDiskWithVariable) -eq 0; then
   
 fi
 
+# TODO: call backup cronjob instead of doing it manually
 # Upload a backup right away after starting the server.
-sh "${MOUNT_DIR}/bin/90-upload-backup-s3.sh"
-BACKUP_STATUS=${?}
+#sh "${MOUNT_DIR}/bin/90-upload-backup-s3.sh"
+#BACKUP_STATUS=${?}
 
-echo "post-start: data backup status: ${BACKUP_STATUS}"
+#echo "post-start: data backup status: ${BACKUP_STATUS}"
 
 # Write the marker file if post-start succeeds.
-if test "${BACKUP_STATUS}" -eq 0; then
+#if test "${BACKUP_STATUS}" -eq 0; then
   touch "${POST_START_INIT_MARKER_FILE}"
   exit 0
-fi
+#fi
 
 # Kill the container if post-start fails.
-echo "post-start: admin post-start backup failed"
-"${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
+#echo "post-start: admin post-start backup failed"
+#"${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1

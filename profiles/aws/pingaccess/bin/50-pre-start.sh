@@ -4,8 +4,10 @@
 
 echo "OPERATIONAL_MODE:"${OPERATIONAL_MODE}
 
+run_hook "11-change-default-db-password.sh"
+
 if test ! -z "${OPERATIONAL_MODE}" && test "${OPERATIONAL_MODE}" = "CLUSTERED_ENGINE"; then
-  sh "${HOOKS_DIR}/51-add-engine.sh"
+  sh "${MOUNT_DIR}/bin/51-add-engine.sh"
   if test $? -ne 0; then
     exit 1
   fi

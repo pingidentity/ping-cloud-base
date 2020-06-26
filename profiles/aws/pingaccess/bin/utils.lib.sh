@@ -1,26 +1,6 @@
 #!/usr/bin/env sh
 
 ########################################################################################################################
-# Stop PingAccess server and wait until it is terminated.
-#
-########################################################################################################################
-function stop_server()
-{
-  SERVER_PID=$(pgrep -alf java | grep 'run.properties' | awk '{ print $1; }')
-  kill "${SERVER_PID}"
-  while true; do
-    SERVER_PID=$(pgrep -alf java | grep 'run.properties' | awk '{ print $1; }')
-    if test -z ${SERVER_PID}; then
-        break
-    else
-      echo "waiting for PingAccess to terminate due to error"
-      sleep 3
-    fi
-  done
-  exit 1
-}
-
-########################################################################################################################
 # Makes curl request to PingAccess API using the INITIAL_ADMIN_PASSWORD environment variable.
 #
 ########################################################################################################################
@@ -239,65 +219,4 @@ function comparePasswordDiskWithVariable() {
   fi
   "${VERBOSE}" && set -x
   return 0
-}
-
-#########################################################################################################################
-# Function sets required environment variables for skbn
-#
-########################################################################################################################
-function initializeSkbnConfiguration() {
-  unset SKBN_CLOUD_PREFIX
-  unset SKBN_K8S_PREFIX
-
-  # Allow overriding the backup URL with an arg
-  test ! -z "${1}" && BACKUP_URL="${1}"
-
-  # Check if endpoint is AWS cloud stroage service (S3 bucket)
-  case "$BACKUP_URL" in "s3://"*)
-
-    # Set AWS specific variable for skbn
-    export AWS_REGION=${REGION}
-
-    DIRECTORY_NAME=$(echo "${PING_PRODUCT}" | tr '[:upper:]' '[:lower:]')
-
-    if ! $(echo "$BACKUP_URL" | grep -q "/$DIRECTORY_NAME"); then
-      BACKUP_URL="${BACKUP_URL}/${DIRECTORY_NAME}"
-    fi
-
-  esac
-
-  echo "Getting cluster metadata"
-
-  # Get prefix of HOSTNAME which match the pod name.
-  POD="$(echo "${HOSTNAME}" | cut -d. -f1)"
-
-  METADATA=$(kubectl get "$(kubectl get pod -o name | grep "${POD}")" \
-    -o=jsonpath='{.metadata.namespace},{.metadata.name},{.metadata.labels.role}')
-
-  METADATA_NS=$(echo "$METADATA"| cut -d',' -f1)
-  METADATA_PN=$(echo "$METADATA"| cut -d',' -f2)
-  METADATA_CN=$(echo "$METADATA"| cut -d',' -f3)
-
-  # Remove suffix for runtime.
-  METADATA_CN="${METADATA_CN%-engine}"
-
-  export SKBN_CLOUD_PREFIX="${BACKUP_URL}"
-  export SKBN_K8S_PREFIX="k8s://${METADATA_NS}/${METADATA_PN}/${METADATA_CN}"
-}
-
-########################################################################################################################
-# Function to copy file(s) between cloud storage and k8s
-#
-########################################################################################################################
-function skbnCopy() {
-  PARALLEL="0"
-  SOURCE="${1}"
-  DESTINATION="${2}"
-
-  # Check if the number of files to be copied in parallel is defined (0 for full parallelism)
-  test ! -z "${3}" && PARALLEL="${3}"
-
-  if ! skbn cp --src "$SOURCE" --dst "${DESTINATION}" --parallel "${PARALLEL}"; then
-    return 1
-  fi
 }

@@ -66,8 +66,8 @@ if test $(unzip -t engine-config.zip &> /dev/null; echo $?) -ne 0; then
 fi
 
 echo "add-engine: extracting config files to conf folder"
-unzip -o engine-config.zip -d "${OUT_DIR}"/instance
-chmod 400 "${OUT_DIR}"/instance/conf/pa.jwk
+unzip -o engine-config.zip -d "${MOUNT_DIR}"/data
+chmod 400 "${MOUNT_DIR}"/conf/pa.jwk
 
 echo "add-engine: cleaning up zip"
 rm engine-config.zip
