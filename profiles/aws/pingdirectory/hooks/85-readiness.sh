@@ -2,7 +2,7 @@
 
 # Verify that server is responsive on its LDAP secure port
 echo "readiness: verifying root DSE access"
-/opt/liveness.sh || exit 1
+/app/liveness.sh || exit 1
 
 # Verify that post-start initialization is complete on this host
 echo "readiness: verifying that post-start initialization is complete on ${HOSTNAME}"
