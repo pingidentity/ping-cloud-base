@@ -9,6 +9,7 @@ metadata:
   name: pingaccess-ingress
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     kubernetes.io/ingress.class: nginx-public
 spec:
   tls:
@@ -37,6 +38,7 @@ metadata:
   name: pingaccess-admin-ingress
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     kubernetes.io/ingress.class: nginx-private
     # Possible fix for some 502 failures on admin assets and api requests.
     nginx.ingress.kubernetes.io/service-upstream: "true"
@@ -64,6 +66,7 @@ metadata:
   name: pingaccess-agent-ingress
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     kubernetes.io/ingress.class: nginx-public
 spec:
   tls:
