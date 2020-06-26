@@ -9,6 +9,7 @@ metadata:
   name: pingfederate-ingress
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     kubernetes.io/ingress.class: nginx-public
 spec:
   tls:
@@ -34,6 +35,7 @@ metadata:
   name: pingfederate-admin-ingress
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     kubernetes.io/ingress.class: nginx-private
 spec:
   tls:
