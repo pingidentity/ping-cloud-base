@@ -2,7 +2,7 @@
 
 # Verify that server is responsive on its heartbeat endpoint
 echo "readiness: verifying heartbeat endpoint is accessible"
-/opt/liveness.sh || exit 1
+/app/liveness.sh || exit 1
 
 # Verify that post-start initialization is complete on this host
 echo "readiness: verifying that post-start initialization is complete on ${HOSTNAME}"
