@@ -11,7 +11,7 @@ if test "${OPERATIONAL_MODE}" != "CLUSTERED_CONSOLE"; then
 fi
 
 # Remove the marker file before running post-start initialization.
-POST_START_INIT_MARKER_FILE="${OUT_DIR}/instance/post-start-init-complete"
+POST_START_INIT_MARKER_FILE="${MOUNT_DIR}/data/post-start-init-complete"
 rm -f "${POST_START_INIT_MARKER_FILE}"
 
 # Wait until pingaccess admin localhost is available
@@ -20,10 +20,10 @@ pingaccess_admin_wait
 # ADMIN_CONFIGURATION_COMPLETE is used as a marker file that tracks if server was initially configured.
 #
 # If ADMIN_CONFIGURATION_COMPLETE does not exist then set initial configuration.
-ADMIN_CONFIGURATION_COMPLETE=${OUT_DIR}/instance/ADMIN_CONFIGURATION_COMPLETE
+ADMIN_CONFIGURATION_COMPLETE=${MOUNT_DIR}/data/ADMIN_CONFIGURATION_COMPLETE
 if ! test -f "${ADMIN_CONFIGURATION_COMPLETE}"; then
 
-  sh "${HOOKS_DIR}/81-import-initial-configuration.sh"
+  sh "${MOUNT_DIR}/bin/81-import-initial-configuration.sh"
   if test $? -ne 0; then
     exit 1
   fi
@@ -38,7 +38,7 @@ elif test $(comparePasswordDiskWithVariable) -eq 0; then
 fi
 
 # Upload a backup right away after starting the server.
-sh "${HOOKS_DIR}/90-upload-backup-s3.sh"
+sh "${MOUNT_DIR}/bin/90-upload-backup-s3.sh"
 BACKUP_STATUS=${?}
 
 echo "post-start: data backup status: ${BACKUP_STATUS}"
