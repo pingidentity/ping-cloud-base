@@ -158,7 +158,6 @@ function configure_run_props() {
       export PF_CLUSTER_HEALTH_PORT="77${ORDINAL}"
     fi
   else
-    export PF_CLUSTER_BIND_ADDRESS='NON_LOOPBACK'
     export PF_CLUSTER_BIND_PORT=7600
     export PF_CLUSTER_HEALTH_PORT=7700
   fi
@@ -177,7 +176,7 @@ function configure_run_props() {
 # Set up the run.properties and tcp.xml files based on whether it is a single-cluster or multi-cluster deployment.
 ########################################################################################################################
 function configure_cluster() {
-  configure_run_props
+#  configure_run_props
   configure_tcp_xml
 }
 
