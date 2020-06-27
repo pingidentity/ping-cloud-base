@@ -1,7 +1,9 @@
 #!/usr/bin/env sh
 
+_curDir=$(dirname $0)
+
 . "${HOOKS_DIR}/pingcommon.lib.sh"
-. "${HOOKS_DIR}/utils.lib.sh"
+. "${_curDir}/utils.lib.sh"
 
 parse_utility_output() {
 
