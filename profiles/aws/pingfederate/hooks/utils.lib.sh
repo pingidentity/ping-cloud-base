@@ -140,43 +140,9 @@ function configure_tcp_xml() {
 }
 
 ########################################################################################################################
-# Set up the run.properties file based on whether it is a single-cluster or multi-cluster deployment.
-########################################################################################################################
-function configure_run_props() {
-  local currentDir="$(pwd)"
-  cd "${SERVER_ROOT_DIR}/bin"
-
-  if is_multi_cluster; then
-    if test -n $(echo "${HOSTNAME}" | grep -c admin); then
-      export PF_CLUSTER_BIND_ADDRESS="${PF_ADMIN_PUBLIC_HOSTNAME}"
-      export PF_CLUSTER_BIND_PORT=7699
-      export PF_CLUSTER_HEALTH_PORT=7799
-    else
-      get_pod_ordinal
-      export PF_CLUSTER_BIND_ADDRESS="${PF_ENGINE_PUBLIC_HOSTNAME}"
-      export PF_CLUSTER_BIND_PORT="76${ORDINAL}"
-      export PF_CLUSTER_HEALTH_PORT="77${ORDINAL}"
-    fi
-  else
-    export PF_CLUSTER_BIND_PORT=7600
-    export PF_CLUSTER_HEALTH_PORT=7700
-  fi
-
-  mv run.properties run.properties.subst
-  envsubst < run.properties.subst > run.properties
-  rm -f run.properties.subst
-
-  echo "configure_run_props: contents of run.properties after substitution"
-  cat run.properties
-
-  cd "${currentDir}"
-}
-
-########################################################################################################################
-# Set up the run.properties and tcp.xml files based on whether it is a single-cluster or multi-cluster deployment.
+# Set up tcp.xml based on whether it is a single-cluster or multi-cluster deployment.
 ########################################################################################################################
 function configure_cluster() {
-#  configure_run_props
   configure_tcp_xml
 }
 
