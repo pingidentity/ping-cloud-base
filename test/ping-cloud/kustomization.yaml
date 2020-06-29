@@ -3,20 +3,32 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 - ../../k8s-configs/ping-cloud/test
+- pingaccess/admin-ingress.yaml
+- pingfederate/admin-ingress.yaml
+- pingdataconsole/ingress.yaml
 
 configMapGenerator:
+# Pingaccess-was
+- name: pingaccess-was-environment-variables
+  behavior: merge
+  envs:
+  - env_vars
+  - pingaccess-was/env_vars
+
 # Pingaccess
 - name: pingaccess-environment-variables
   behavior: merge
   envs:
   - env_vars
   - pingaccess/env_vars
+
 # Pingfederate
 - name: pingfederate-environment-variables
   behavior: merge
   envs:
   - env_vars
   - pingfederate/env_vars
+
 # Pingdirectory
 - name: pingdirectory-environment-variables
   behavior: merge
@@ -25,14 +37,6 @@ configMapGenerator:
   - pingdirectory/env_vars
 
 patchesJson6902:
-# pingdata
-- path: patches/ingress/pingdataconsole.yaml
-  target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: pingdataconsole-ingress
-
 # pingfederate runtime
 - path: patches/ingress/pingfederate.yaml
   target:
@@ -41,13 +45,21 @@ patchesJson6902:
     kind: Ingress
     name: pingfederate-ingress
 
-# pingfederate admin
-- path: patches/ingress/pingfederate-admin.yaml
+# pingaccess was runtime
+- path: patches/ingress/pingaccess-was.yaml
   target:
     group: extensions
     version: v1beta1
     kind: Ingress
-    name: pingfederate-admin-ingress
+    name: pingaccess-was-ingress
+
+# pingaccess was admin
+- path: patches/ingress/pingaccess-was-admin.yaml
+  target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingaccess-was-admin-ingress
 
 # pingaccess runtime
 - path: patches/ingress/pingaccess.yaml
@@ -56,14 +68,6 @@ patchesJson6902:
     version: v1beta1
     kind: Ingress
     name: pingaccess-ingress
-
-# pingaccess admin
-- path: patches/ingress/pingaccess-admin.yaml
-  target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: pingaccess-admin-ingress
 
 # pingaccess agent
 - path: patches/ingress/pingaccess-agent.yaml

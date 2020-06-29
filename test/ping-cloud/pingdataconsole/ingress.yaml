@@ -8,15 +8,16 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: pingdataconsole-ingress
+  namespace: ${NAMESPACE}
   annotations:
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     kubernetes.io/ingress.class: nginx-private
 spec:
   tls:
   - hosts:
-    - pingdataconsole-dev.ping-demo.com
+    - pingdataconsole${ENVIRONMENT}.${TENANT_DOMAIN}
   rules:
-  - host: pingdataconsole-dev.ping-demo.com
+  - host: pingdataconsole${ENVIRONMENT}.${TENANT_DOMAIN}
     http:
       paths:
         # This rule gives external access to the pingdirectory console

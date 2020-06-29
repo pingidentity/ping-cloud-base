@@ -3,85 +3,103 @@ set -e
 
 . "${HOOKS_DIR}/utils.lib.sh"
 
-# Install AWS CLI and set required environment variables for AWS S3 bucket
-initializeS3Configuration
+test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
+
+# Set required environment variables for skbn
+initializeSkbnConfiguration
 
 # This is the backup directory on the server
 SERVER_RESTORE_DIR="/tmp/restore"
 
 rm -rf "${SERVER_RESTORE_DIR}"
-mkdir -p "${SERVER_RESTORE_DIR}"
 
-DATA_BACKUP_FILE=
-DATA_BACKUP_FILE_NAME=$( echo "${BACKUP_FILE_NAME}" | tr -d '"' )
-if ! test -z "${DATA_BACKUP_FILE_NAME}"; then
-
-  DATA_BACKUP_FILE_NAME="${DIRECTORY_NAME}/${DATA_BACKUP_FILE_NAME}"
-  # Get the specified backup zip file from s3
-  DATA_BACKUP_FILE=$( aws s3api list-objects \
-    --bucket "${BUCKET_NAME}" \
-    --prefix "${DIRECTORY_NAME}/data" \
-    --query "(Contents[?Key=='${DATA_BACKUP_FILE_NAME}'])[0].Key" \
-    | tr -d '"' )
-else
-  # Filter data.zip to most recent uploaded files that occured 3 days ago.
-  # AWS has a 1000 list-object limit per request. This will help filter out older backup files.
-  FORMAT="+%Y-%m-%d"
-  DAYS=${S3_BACKUP_FILTER_DAY_COUNT-3}
-  DAYS_AGO=$(date --date="@$(($(date +%s) - (${DAYS} * 24 * 3600)))" "${FORMAT}")
-
-  # Get the name of the latest backup zip file from s3
-  DATA_BACKUP_FILE=$( aws s3api list-objects \
-    --bucket "${BUCKET_NAME}" \
-    --prefix "${DIRECTORY_NAME}/data" \
-    --query "reverse(sort_by(Contents[?LastModified>='${DAYS_AGO}'], &LastModified))[0].Key" \
-    | tr -d '"' )
+if ! mkdir -p "${SERVER_RESTORE_DIR}"; then
+  echo "Failed to create dir: ${SERVER_RESTORE_DIR}"
+  exit 1
 fi
 
-# If a backup file in s3 exists
-if ! test -z "${DATA_BACKUP_FILE}"; then
+DATA_BACKUP_FILE_NAME=$( echo "${BACKUP_FILE_NAME}" | tr -d '"' )
+if ! test -z "${DATA_BACKUP_FILE_NAME}" && \
+   ! test "${DATA_BACKUP_FILE_NAME}" = 'null'; then
 
-  # Extract only the file name
-  DATA_BACKUP_FILE=${DATA_BACKUP_FILE#${DIRECTORY_NAME}/}
+  echo "Attempting to restore backup from cloud storage specified by the user: ${DATA_BACKUP_FILE_NAME}"
+else
+  echo "Attempting to restore backup from latest backup file in cloud storage."
+  DATA_BACKUP_FILE_NAME="latest.zip"
+fi
 
-  # Download latest backup file from s3 bucket
-  aws s3 cp ${TARGET_URL}/${DATA_BACKUP_FILE} ${SERVER_RESTORE_DIR}/${DATA_BACKUP_FILE}
-  AWS_API_RESULT=${?}
+echo "Copying: '${DATA_BACKUP_FILE_NAME}' to '${SKBN_K8S_PREFIX}${SERVER_RESTORE_DIR}/${DATA_BACKUP_FILE_NAME}'"
 
-  echo "Download return code: ${AWS_API_RESULT}"
+if ! skbnCopy "${SKBN_CLOUD_PREFIX}/${DATA_BACKUP_FILE_NAME}" "${SKBN_K8S_PREFIX}${SERVER_RESTORE_DIR}/${DATA_BACKUP_FILE_NAME}"; then
+  exit 1
+fi
 
-  if test ${AWS_API_RESULT} -ne 0; then
-    echo "Download was unsuccessful - crash the container"
+if ! cd ${SERVER_RESTORE_DIR}; then
+  echo "Failed to chdir to ${SERVER_RESTORE_DIR}"
+  exit 1
+fi
+
+# Unzip archive user data
+if ! unzip -o "${DATA_BACKUP_FILE_NAME}"; then
+  echo "Failed to unzip ${DATA_BACKUP_FILE_NAME}"
+  exit 1
+fi
+
+# Remove zip
+if ! rm -rf "${DATA_BACKUP_FILE_NAME}"; then
+  echo "Failed to cleanup ${DATA_BACKUP_FILE_NAME}"
+  exit 1
+fi
+
+# Print listed files from user data archive
+if ! ls ${SERVER_RESTORE_DIR}; then
+  echo "Failed to list ${SERVER_RESTORE_DIR}"
+  exit 1
+fi
+
+if test -f "${SERVER_ROOT_DIR}/changelogDb"; then
+  echo "Removing changelogDb before restoring user data"
+
+  if ! rm -rf "${SERVER_ROOT_DIR}/changelogDb"; then
+    echo "Failed to remove ${SERVER_RESTORE_DIR}/changelogDb"
     exit 1
   fi
+fi
 
-  cd ${SERVER_RESTORE_DIR}
+echo "Restoring to the latest backups under ${SERVER_RESTORE_DIR}"
+BACKEND_DIRS=$(find "${SERVER_RESTORE_DIR}" -name backup.info -exec dirname {} \;)
 
-  # Unzip archive user data
-  unzip -o "${DATA_BACKUP_FILE}"
+# If encryption-settings backend is present in the backups, it must be restored first.
+# So re-order the backups such that it appears first in the list.
+ORDERED_BACKEND_DIRS=
+ENCRYPTION_DB_BACKEND_DIR=
 
-  # Remove zip
-  rm -rf "${DATA_BACKUP_FILE}"
+for BACKEND_DIR in ${BACKEND_DIRS}; do
+  if test "${BACKEND_DIR%encryption-settings}" != "${BACKEND_DIR}"; then
+    echo "Found encryption-settings database backend"
+    ENCRYPTION_DB_BACKEND_DIR="${BACKEND_DIR}"
+  else
+    test -z "${ORDERED_BACKEND_DIRS}" &&
+        ORDERED_BACKEND_DIRS="${BACKEND_DIR}" ||
+        ORDERED_BACKEND_DIRS="${ORDERED_BACKEND_DIRS} ${BACKEND_DIR}"
+  fi
+done
 
-  # Print the filename of the downloaded file from s3
-  echo "Downloaded file name: ${DATA_BACKUP_FILE}"
+test ! -z "${ENCRYPTION_DB_BACKEND_DIR}" &&
+    ORDERED_BACKEND_DIRS="${ENCRYPTION_DB_BACKEND_DIR} ${ORDERED_BACKEND_DIRS}"
 
-  # Print listed files from user data archive
-  ls ${SERVER_RESTORE_DIR}
+echo "Restore order of backups: ${ORDERED_BACKEND_DIRS}"
 
-  echo "Restoring to the latest backup under ${SERVER_RESTORE_DIR}"
+for BACKEND_DIR in ${ORDERED_BACKEND_DIRS}; do
+  printf "\n----- Doing a restore from ${BACKEND_DIR} -----\n"
   restore --task \
     --useSSL --trustAll \
     --port ${LDAPS_PORT} \
     --bindDN "${ROOT_USER_DN}" \
     --bindPasswordFile "${ROOT_USER_PASSWORD_FILE}" \
-    --backupDirectory "${SERVER_RESTORE_DIR}"
+    --backupDirectory "${BACKEND_DIR}" \
+    --ignoreCompatibilityWarnings
+done
 
-  # Cleanup
-  rm -rf ${SERVER_RESTORE_DIR}
-
-else
-
-  echo "No archive user data found"
-  
-fi
+# Cleanup
+rm -rf ${SERVER_RESTORE_DIR}

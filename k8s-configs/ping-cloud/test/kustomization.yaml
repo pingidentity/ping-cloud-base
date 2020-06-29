@@ -11,6 +11,7 @@ resources:
 - ../base/pingdirectory/aws
 - ../base/pingfederate/aws
 - ../base/pingaccess/aws
+- ../base/pingaccess-was/aws
 - ../base/aws
 - pingdataconsole
 - httpbin
@@ -20,3 +21,4 @@ patchesStrategicMerge:
 - pingfederate/engine-init-env.yaml
 - pingaccess/admin-init-env.yaml
 - pingaccess/engine-init-env.yaml
+- pingaccess-was/engine-init-env.yaml
