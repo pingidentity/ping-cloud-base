@@ -414,3 +414,7 @@ pa.cluster.serverstate.replicationIntervalMilliseconds=1000
 
 # mbean settings
 pa.mbean.site.connection.pool.enable=false
+
+
+#database connection
+pa.jdbc.url=jdbc:h2:${jdbc.mountdir}/data/PingAccess;CIPHER=AES;TRACE_LEVEL_SYSTEM_OUT=0;ALLOW_LITERALS=NUMBERS
