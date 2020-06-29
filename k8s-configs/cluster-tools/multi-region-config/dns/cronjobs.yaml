@@ -24,7 +24,7 @@ spec:
             name: get-core-dns-endpoints
             env:
               - name: TENANT_DOMAIN
-                value: surajch.ping-demo.com
+                value: mpeterson.ping-demo.com
             volumeMounts:
             - mountPath: /opt/get_core_dns_endpoints.sh
               name: get-core-dns-endpoints
@@ -39,7 +39,7 @@ spec:
             name: put-core-dns-endpoints
             env:
               - name: TENANT_DOMAIN
-                value: surajch.ping-demo.com
+                value: mpeterson.ping-demo.com
               - name: AWS_REGION
                 value: us-west-2
             volumeMounts:
@@ -73,5 +73,5 @@ spec:
             name: put-core-dns-endpoints
           - emptyDir: {}
             name: data-dir
-  schedule: 0/15 * * * *
+  schedule: 0/1 * * * *
 

@@ -1,0 +1,185 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+  name: get-core-dns-endpoints
+  namespace: kube-system
+data:
+  get_core_dns_endpoints.sh: |-
+    #!/bin/sh
+
+    echo 'Installing kubectl...'
+    curl -sS \
+         --max-time 10 \
+         --retry 5 \
+         --retry-delay 0 \
+         --retry-max-time 40 \
+         https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
+    [ $? -ne 0 ] && exit 1
+
+    chmod +x /usr/local/bin/kubectl
+    [ $? -ne 0 ] && exit 1
+    echo 'kubectl installation complete.'
+
+    # Fetch the underlying coredns pod IP addresses from kube-dns
+    current_endpoints=$(kubectl get endpoints  -n kube-system kube-dns  -o jsonpath='{.subsets[*].addresses[*].ip}')
+    echo 'Fetching kube-dns endpoints...'
+    echo "Current kube-dns endpoints: $current_endpoints"
+
+    # Fetch the current entries for the record set
+    record_set="core-dns-endpoints.${TENANT_DOMAIN}."
+    nslookup_record_set_results=$(nslookup -type=txt ${record_set} | grep ${record_set} | cut -d= -f2 | tr -d '"')
+    echo "nslookup results for $record_set: $nslookup_record_set_results"
+
+    # Save the IP addresses to be retrieved later
+    ip_file="/config/core-dns-endpoints"
+    echo "NO UPDATE"> $ip_file
+
+    for ip in $current_endpoints
+    do
+        # Compare the endpoint IPs to the published AWS
+        # record set for this domain
+        if ! echo "$nslookup_record_set_results" | grep -q $ip; then
+
+          # Clobber the whole file with new IPs
+          echo $current_endpoints> $ip_file
+          echo 'Config file /config/core-dns-endpoints successfully updated.'
+          exit 0
+        fi
+    done
+
+    echo 'No changes to /config/core-dns-endpoints needed.'
+    exit 0
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+  name: put-core-dns-endpoints
+  namespace: kube-system
+data:
+  put_core_dns_endpoints.py: |-
+    import sys
+    import os
+    import boto3
+
+    r53_client = boto3.client('route53')
+
+    def get_hosted_zone_id(domain_name):
+
+        print('Get route 53 hosted zone id...')
+        response = r53_client.list_hosted_zones()
+        hosted_zones = response['HostedZones']
+        for zones in hosted_zones:
+            if zones['Name'].rstrip('.') == domain_name.rstrip('.'):
+                return zones['Id'].rstrip('.')
+
+    # Update route 53 hosted zone resource record sets.
+    def update_resource_record_sets(zone_id, domain_name, endpoints):
+
+        rrs_name = f"core-dns-endpoints.{domain_name}."
+        print(f"Updating {rrs_name} to point to {endpoints}...")
+
+        response = r53_client.change_resource_record_sets(
+            HostedZoneId=zone_id,
+            ChangeBatch={
+                'Changes': [
+                    {
+                        'Action': 'UPSERT',
+                        'ResourceRecordSet': {
+                            'Name': rrs_name,
+                            'Type': 'TXT',
+                            'TTL': 300,
+                            'ResourceRecords': [{'Value': f"\"{endpoints}\""}],
+                        },
+                    }
+                ]
+            },
+        )
+
+        print(response)
+
+        response_metadata = response['ResponseMetadata']
+        http_status_code = response_metadata['HTTPStatusCode']
+        return 200 == http_status_code
+
+    def main():
+
+        domain_name = os.environ.get('TENANT_DOMAIN', 'mpeterson.ping-demo.com.')
+        print(f"Updating Route53 domain {domain_name} with changes to core-dns-endpoints...")
+
+        try:
+            with open('/config/core-dns-endpoints') as endpoint_file:
+                endpoints = endpoint_file.read().strip()
+            print(f"Reading IPs addresses from /config/core-dns-endpoints: {endpoints}")
+
+            if endpoints and endpoints != 'NO UPDATE':
+                zone_id = get_hosted_zone_id(domain_name)
+                if zone_id:
+                    success = update_resource_record_sets(zone_id, domain_name, endpoints)
+                    if not success:
+                        print(f"Unable to update record set for {domain_name}")
+                else:
+                    print(f"Unable to find Hosted Zone Id for domain {domain_name}, exiting with an error!")
+                    sys.exit(1)
+            else:
+                print(f"No changes were found in the config file /config/core-dns-endpoints to update")
+        except FileNotFoundError:
+            print('Unable to find core-dns-endpoints in /confg dir, exiting with an error!')
+            sys.exit(1)
+        except Exception as error:
+            print(f'Error: {error}')
+            sys.exit(1)
+        
+        print('Execution completed successfully.')
+
+    if __name__ == '__main__':
+        main()
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+  name: get-multi-region-domains
+  namespace: kube-system
+data:
+  get_multi_region_domains.py: |-
+    import sys
+    import os
+    import dns.resolver
+
+
+    def get_dns_txt_value(domain_name):
+        return dns.resolver.query(domain_name,"TXT").response.answer[0][-1].strings[0]
+
+    def main():
+        hostname_ip = {}
+        domain_name = f"multi-region-domains.{os.environ.get('TENANT_DOMAIN', 'mpeterson.ping-demo.com.')}"
+        
+        try:
+            # Get list of multi region dns name.
+            tenant_names = str(get_dns_txt_value(domain_name)).split("\'")[1]
+
+            for tenant_name in tenant_names.split():
+                endpoints = get_dns_txt_value(f"core-dns-endpoints.{tenant_name.rstrip('.')}")
+                if endpoints:
+                    hostname_ip[tenant_name] = endpoints
+                
+        except Exception as error:
+            print(f'Error: {error}')
+            sys.exit(1)
+
+        # TODO: Convert dic to core-dns configmap 
+        print(hostname_ip)
+
+        print('Execution completed successfully.')
+
+    if __name__ == '__main__':
+        main()
+
