@@ -1,0 +1,46 @@
+
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  annotations: {}
+  labels:
+    name: kube-dns-role-binding
+  name: kube-dns-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kube-dns
+subjects:
+- kind: ServiceAccount
+  name: kube-dns-serviceaccount
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  annotations: {}
+  labels:
+    name: kube-dns
+  name: kube-dns
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - endpoints
+  - services
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+  - update
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations: {}
+  labels:
+    name: kube-dns-serviceaccount
+  name: kube-dns-serviceaccount
+  namespace: kube-system

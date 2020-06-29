@@ -9,3 +9,4 @@ resources:
 - metrics
 - monitoring
 - security
+- core-dns
