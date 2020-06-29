@@ -18,10 +18,10 @@ spec:
             app: publish-core-dns-endpoints
         spec:
           initContainers:
-          - command:
-            - /opt/get_core_dns_endpoints.sh
+          - name: get-core-dns-endpoints
             image: pingidentity/pingfederate:2003-10.0.1
-            name: get-core-dns-endpoints
+            command:
+            - /opt/get_core_dns_endpoints.sh
             env:
               - name: TENANT_DOMAIN
                 value: mpeterson.ping-demo.com
@@ -31,12 +31,11 @@ spec:
               subPath: get_core_dns_endpoints.sh
             - mountPath: /config
               name: data-dir
-          containers:
-          - command: 
+          - name: put-core-dns-endpoints
+            image: sthapa7/ping-cloud-aws:0.1
+            command:
             - /bin/python3
             - /opt/put_core_dns_endpoints.py
-            image: sthapa7/ping-cloud-aws:0.1
-            name: put-core-dns-endpoints
             env:
               - name: TENANT_DOMAIN
                 value: mpeterson.ping-demo.com
@@ -49,6 +48,24 @@ spec:
             - mountPath: /config/core-dns-endpoints
               name: data-dir
               subPath: core-dns-endpoints
+          containers:
+          - name: get-multi-region-domains
+            image: sthapa7/ping-cloud-aws:0.1
+            command:
+              - /bin/python3
+              - /opt/get_multi_region_domains.py
+            env:
+              - name: TENANT_DOMAIN
+                value: mpeterson.ping-demo.com
+              - name: AWS_REGION
+                value: us-west-2
+            volumeMounts:
+              - mountPath: /opt/get_multi_region_domains.py
+                name: get-multi-region-domains
+                subPath: get_multi_region_domains.py
+              - mountPath: /config/core-dns-endpoints
+                name: data-dir
+                subPath: core-dns-endpoints
           restartPolicy: OnFailure
           serviceAccount: kube-dns-serviceaccount
           volumes:
@@ -60,6 +77,10 @@ spec:
               defaultMode: 365
               name: put-core-dns-endpoints
             name: put-core-dns-endpoints
+          - configMap:
+              defaultMode: 365
+              name: get_multi_region_domains
+            name: get-multi-region-domains
           restartPolicy: OnFailure
           serviceAccount: kube-dns-serviceaccount
           volumes:
@@ -71,6 +92,27 @@ spec:
               defaultMode: 365
               name: put-core-dns-endpoints
             name: put-core-dns-endpoints
+          - configMap:
+              defaultMode: 365
+              name: get-multi-region-domains
+            name: get-multi-region-domains
+          - emptyDir: {}
+            name: data-dir
+          restartPolicy: OnFailure
+          serviceAccount: kube-dns-serviceaccount
+          volumes:
+          - configMap:
+              defaultMode: 365
+              name: get-core-dns-endpoints
+            name: get-core-dns-endpoints
+          - configMap:
+              defaultMode: 365
+              name: put-core-dns-endpoints
+            name: put-core-dns-endpoints
+          - configMap:
+              defaultMode: 365
+              name: get-multi-region-domains
+            name: get-multi-region-domains
           - emptyDir: {}
             name: data-dir
   schedule: 0/1 * * * *
