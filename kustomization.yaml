@@ -49,6 +49,15 @@ patchesStrategicMerge:
     BACKUP_URL: ${BACKUP_URL}
     REGION: ${REGION}
 
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: core-dns-environment-variables
+  data:
+    TENANT_DOMAIN: ${TENANT_DOMAIN}
+    REGION: ${REGION}
+
 patchesJson6902:
 
 # Ingress
@@ -211,3 +220,4 @@ patchesJson6902:
       path: /spec/template/spec/containers/0/args/-
       value:
         --domain-filter=${TENANT_DOMAIN}.
+
