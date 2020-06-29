@@ -156,7 +156,7 @@ data:
     def main():
         hostname_ip = {}
         domain_name = f"multi-region-domains.{os.environ.get('TENANT_DOMAIN', 'mpeterson.ping-demo.com.')}"
-        print("in get_multi_region"
+        print("in get_multi_region")
         
 
     if __name__ == '__main__':
