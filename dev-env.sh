@@ -91,6 +91,9 @@
 # PA_ADMIN_PUBLIC_HOSTNAME  | The public or external hostname of the PingAccess  | pingaccess-admin${ENVIRONMENT}.${TENANT_DOMAIN}
 #                           | admin server.                                      |
 #                           |                                                    |
+# PA_CLUSTER_PUBLIC_HOSTNAME| The public or external hostname of the PingAccess  | pingaccess-cluster{ENVIRONMENT}.${TENANT_DOMAIN}
+#                           | cluster communication service.                     |
+#                           |                                                    |
 # CONFIG_REPO_BRANCH        | The branch within this repository for server       | master
 #                           | profiles, i.e. configuration.                      |
 #                           |                                                    |
@@ -186,6 +189,7 @@ echo "Initial IS_PARENT: ${IS_PARENT}"
 echo "Initial PD_PARENT_PUBLIC_HOSTNAME: ${PD_PARENT_PUBLIC_HOSTNAME}"
 echo "Initial PF_ADMIN_PUBLIC_HOSTNAME: ${PF_ADMIN_PUBLIC_HOSTNAME}"
 echo "Initial PA_ADMIN_PUBLIC_HOSTNAME: ${PA_ADMIN_PUBLIC_HOSTNAME}"
+echo "Initial PA_CLUSTER_PUBLIC_HOSTNAME: ${PA_CLUSTER_PUBLIC_HOSTNAME}"
 echo "Initial CONFIG_REPO_BRANCH: ${CONFIG_REPO_BRANCH}"
 echo "Initial CONFIG_PARENT_DIR: ${CONFIG_PARENT_DIR}"
 echo "Initial ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
@@ -223,6 +227,7 @@ test -z "${IS_PARENT}" && IS_PARENT=true
 test -z "${PD_PARENT_PUBLIC_HOSTNAME}" && export PD_PARENT_PUBLIC_HOSTNAME=pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}
 test -z "${PF_ADMIN_PUBLIC_HOSTNAME}" && export PF_ADMIN_PUBLIC_HOSTNAME=pingfederate-admin${ENVIRONMENT}.${TENANT_DOMAIN}
 test -z "${PA_ADMIN_PUBLIC_HOSTNAME}" && export PA_ADMIN_PUBLIC_HOSTNAME=pingaccess-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+test -z "${PA_CLUSTER_PUBLIC_HOSTNAME}" && export PA_CLUSTER_PUBLIC_HOSTNAME=pingaccess-cluster${ENVIRONMENT}.${TENANT_DOMAIN}
 
 # Show the values being used for the relevant environment variables.
 echo "Using TENANT_NAME: ${TENANT_NAME}"
@@ -233,6 +238,7 @@ echo "Using IS_PARENT: ${IS_PARENT}"
 echo "Using PD_PARENT_PUBLIC_HOSTNAME: ${PD_PARENT_PUBLIC_HOSTNAME}"
 echo "Using PF_ADMIN_PUBLIC_HOSTNAME: ${PF_ADMIN_PUBLIC_HOSTNAME}"
 echo "Using PA_ADMIN_PUBLIC_HOSTNAME: ${PA_ADMIN_PUBLIC_HOSTNAME}"
+echo "Using PA_CLUSTER_PUBLIC_HOSTNAME: ${PA_CLUSTER_PUBLIC_HOSTNAME}"
 echo "Using CONFIG_REPO_BRANCH: ${CONFIG_REPO_BRANCH}"
 echo "Using CONFIG_PARENT_DIR: ${CONFIG_PARENT_DIR}"
 echo "Using ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
@@ -280,6 +286,7 @@ kustomize build "${BELUGA_DEV_TEST_DIR}" |
     ${PD_PARENT_PUBLIC_HOSTNAME}
     ${PF_ADMIN_PUBLIC_HOSTNAME}
     ${PA_ADMIN_PUBLIC_HOSTNAME}
+    ${PA_CLUSTER_PUBLIC_HOSTNAME}
     ${ARTIFACT_REPO_URL}
     ${PING_ARTIFACT_REPO_URL}
     ${LOG_ARCHIVE_URL}
@@ -341,6 +348,7 @@ export CONFIG_REPO_BRANCH=${CONFIG_REPO_BRANCH}
 export PD_PARENT_PUBLIC_HOSTNAME=${PD_PARENT_PUBLIC_HOSTNAME}
 export PF_ADMIN_PUBLIC_HOSTNAME=${PF_ADMIN_PUBLIC_HOSTNAME}
 export PA_ADMIN_PUBLIC_HOSTNAME=${PA_ADMIN_PUBLIC_HOSTNAME}
+export PA_CLUSTER_PUBLIC_HOSTNAME=${PA_CLUSTER_PUBLIC_HOSTNAME}
 
 export ARTIFACT_REPO_URL=${ARTIFACT_REPO_URL}
 export PING_ARTIFACT_REPO_URL=${PING_ARTIFACT_REPO_URL}

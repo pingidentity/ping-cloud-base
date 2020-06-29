@@ -25,6 +25,7 @@ if test -z "${ENV_VARS_FILE}"; then
   export PD_PARENT_PUBLIC_HOSTNAME=pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}
   export PF_ADMIN_PUBLIC_HOSTNAME=pingfederate-admin${ENVIRONMENT}.${TENANT_DOMAIN}
   export PA_ADMIN_PUBLIC_HOSTNAME=pingaccess-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+  export PA_CLUSTER_PUBLIC_HOSTNAME=pingaccess-cluster${ENVIRONMENT}.${TENANT_DOMAIN}
 
   export ARTIFACT_REPO_URL=s3://${CLUSTER_NAME}-artifacts-bucket
   export PING_ARTIFACT_REPO_URL=https://ping-artifacts.s3-us-west-2.amazonaws.com

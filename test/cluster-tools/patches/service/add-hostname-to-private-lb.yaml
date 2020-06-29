@@ -2,4 +2,4 @@
   path: /metadata/annotations
   value:
     service.beta.kubernetes.io/aws-load-balancer-type: nlb
-    external-dns.alpha.kubernetes.io/hostname: pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN},pingfederate${ENVIRONMENT}.${TENANT_DOMAIN}
+    external-dns.alpha.kubernetes.io/hostname: pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}
