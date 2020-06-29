@@ -7,11 +7,11 @@ set -e
 "${VERBOSE}" && set -x
 
 if is_multi_cluster; then
-  export CLUSTER_CONFIG_HOST="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}"
-  export CLUSTER_CONFIG_PORT=9090
-else
   export CLUSTER_CONFIG_HOST="${PA_CLUSTER_PUBLIC_HOSTNAME}"
   export CLUSTER_CONFIG_PORT=443
+else
+  export CLUSTER_CONFIG_HOST="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}"
+  export CLUSTER_CONFIG_PORT=9090
 fi
 
 echo "import-initial-configuration: cluster-config host:port ${CLUSTER_CONFIG_HOST}:${CLUSTER_CONFIG_PORT}"
