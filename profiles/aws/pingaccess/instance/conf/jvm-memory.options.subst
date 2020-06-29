@@ -13,10 +13,10 @@
 #Minimum size for the Young Gen space
 #-XX:NewSize=${PA_MIN_YGEN}
 #Maximum size for the Young Gen space
-#-XX:MaxNewSize=${PA_MIN_YGEN}
+#-XX:MaxNewSize=${PA_MAX_YGEN}
 #Use the parallel garbage collector
 #${PA_GCOPTION}
 #
 # Sidestep GTE bug in run.sh
 #
--Xms${PA_MIN_HEAP} -Xmx${PA_MAX_HEAP} -XX:NewSize=${PA_MIN_YGEN} -XX:MaxNewSize=${PA_MIN_YGEN} ${PA_GCOPTION}
+-Xms${PA_MIN_HEAP} -Xmx${PA_MAX_HEAP} -XX:NewSize=${PA_MIN_YGEN} -XX:MaxNewSize=${PA_MAX_YGEN} ${PA_GCOPTION}
