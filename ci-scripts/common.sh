@@ -78,6 +78,15 @@ PINGACCESS_API=https://pingaccess-admin${FQDN}/pa-admin-api/v3
 PINGACCESS_RUNTIME=https://pingaccess${FQDN}
 PINGACCESS_AGENT=https://pingaccess-agent${FQDN}
 
+# PingAccess WAS
+# admin services:
+PINGACCESS_WAS_CONSOLE=https://pingaccess-was-admin${FQDN}
+PINGACCESS_WAS_SWAGGER=https://pingaccess-was-admin${FQDN}/pa-admin-api/api-docs
+PINGACCESS_WAS_API=https://pingaccess-was-admin${FQDN}/pa-admin-api/v3
+
+# runtime services:
+PINGACCESS_WAS_RUNTIME=https://pingaccess-was${FQDN}
+
 # Source some utility methods.
 . ${PROJECT_DIR}/utils.sh
 

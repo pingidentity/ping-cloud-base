@@ -11,7 +11,7 @@ function initializeSkbnConfiguration() {
   # Allow overriding the backup URL with an arg
   test ! -z "${1}" && BACKUP_URL="${1}"
 
-  # Check if endpoint is AWS cloud stroage service (S3 bucket)
+  # Check if endpoint is AWS cloud storage service (S3 bucket)
   case "$BACKUP_URL" in "s3://"*)
     
     # Set AWS specific variable for skbn

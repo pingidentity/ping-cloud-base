@@ -6,7 +6,6 @@ metadata:
   name: pingaccess-backup
   labels:
     cluster: pingaccess-cluster
-    role: pingaccess
 spec:
   ttlSecondsAfterFinished: 0
   backoffLimit: 5

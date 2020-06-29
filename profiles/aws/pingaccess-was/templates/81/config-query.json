@@ -1,0 +1,6 @@
+{
+  "name": "CONFIG QUERY",
+  "useServerCipherSuiteOrder": false,
+  "keyPairId": ${CONFIG_QUERY_KEYPAIR_ID},
+  "restartRequired": false
+}

@@ -1,0 +1,11 @@
+# Update this environment variable to trigger updates to the PA WAS servers
+LAST_UPDATE_REASON=NA
+
+SERVER_PROFILE_PATH=profiles/pingaccess-was
+
+PA_MIN_HEAP=512m
+PA_MAX_HEAP=512m
+PA_MIN_YGEN=256m
+PA_MAX_YGEN=256m
+PA_GCOPTION=-XX:+UseParallelGC
+
