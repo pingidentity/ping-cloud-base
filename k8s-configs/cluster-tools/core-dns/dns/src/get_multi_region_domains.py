@@ -4,7 +4,8 @@ import dns.resolver
 
 
 def get_dns_txt_value(domain_name):
-    return dns.resolver.query(domain_name,"TXT").response.answer[0][-1].strings[0]
+    return dns.resolver.query(domain_name, "TXT").response.answer[0][-1].strings[0]
+
 
 def main():
     hostname_ip = {}
@@ -12,22 +13,24 @@ def main():
 
     try:
         # Get list of multi region dns name.
-        tenant_names = str(get_dns_txt_value(domain_name)).split("\'")[1]
+        tenant_names = str(get_dns_txt_value(domain_name)).split("'")[1]
 
         for tenant_name in tenant_names.split():
-            endpoints = get_dns_txt_value(f"core-dns-endpoints.{tenant_name.rstrip('.')}")
+            endpoints = get_dns_txt_value(
+                f"core-dns-endpoints.{tenant_name.rstrip('.')}"
+            )
             if endpoints:
                 hostname_ip[tenant_name] = endpoints
 
     except Exception as error:
-        print(f'Error: {error}')
+        print(f"Error: {error}")
         sys.exit(1)
 
     # TODO: Convert dic to core-dns configmap
     print(hostname_ip)
 
-    print('Execution completed successfully.')
+    print("Execution completed successfully.")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
-

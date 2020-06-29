@@ -2,24 +2,4 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-- rbac.yaml
-- cronjobs.yaml
-
-configMapGenerator:
-- name: get-core-dns-endpoints
-  namespace: kube-system
-  files:
-  - scripts/get_core_dns_endpoints.sh
-
-- name: put-core-dns-endpoints
-  namespace: kube-system
-  files:
-  - src/put_core_dns_endpoints.py
-
-- name: get-multi-region-domains
-  namespace: kube-system
-  files:
-  - src/get_multi_region_domains.py
-
-generatorOptions:
-  disableNameSuffixHash: true
+- dns

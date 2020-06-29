@@ -1,0 +1,42 @@
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  labels:
+    app: ping-cloud
+  name: publish-core-dns-endpoints
+  namespace: kube-system
+spec:
+  jobTemplate:
+    metadata:
+      labels:
+        app: publish-core-dns-endpoints
+    spec:
+      template:
+        metadata:
+          labels:
+            app: publish-core-dns-endpoints
+        spec:
+          containers:
+          - command: 
+            - /bin/python3
+            - /opt/publish_endpoints.py
+            image: sthapa7/ping-cloud-aws:0.3
+            name: publish-core-dns-endpoints
+            envFrom:
+              - configMapRef:
+                  name: core-dns-environment-variables
+            volumeMounts:
+            - mountPath: /opt/publish_endpoints.py
+              name: publish-core-dns-endpoints
+              subPath: publish_endpoints.py
+          restartPolicy: OnFailure
+          serviceAccount: kube-dns-serviceaccount
+          volumes:
+          - configMap:
+              defaultMode: 365
+              name: publish-core-dns-endpoints
+            name: publish-core-dns-endpoints
+          restartPolicy: OnFailure
+          serviceAccount: kube-dns-serviceaccount
+  schedule: 0/15 * * * *
