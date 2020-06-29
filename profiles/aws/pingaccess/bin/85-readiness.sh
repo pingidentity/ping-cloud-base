@@ -7,4 +7,5 @@ echo "readiness: verifying heartbeat endpoint is accessible"
 # Verify that post-start initialization is complete on this host
 echo "readiness: verifying that post-start initialization is complete on ${HOSTNAME}"
 POST_START_INIT_MARKER_FILE="${MOUNT_DIR}/data/post-start-init-complete"
+touch $POST_START_INIT_MARKER_FILE
 test -f  "${POST_START_INIT_MARKER_FILE}" && exit 0 || exit 1
