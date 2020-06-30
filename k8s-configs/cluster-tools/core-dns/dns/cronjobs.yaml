@@ -7,6 +7,7 @@ metadata:
   name: publish-core-dns-endpoints
   namespace: kube-system
 spec:
+  schedule: 0/15 * * * *
   jobTemplate:
     metadata:
       labels:
@@ -30,13 +31,28 @@ spec:
             - mountPath: /opt/publish_endpoints.py
               name: publish-core-dns-endpoints
               subPath: publish_endpoints.py
+            - mountPath: /opt/core-dns-templates.zip
+              name: core-dns-templates
+              subPath: core-dns-templates.zip
+            # We should be able to remove hostname-ip
+            - mountPath: /opt/hostname-ip.txt
+              name: hostname-ip
+              subPath: hostname-ip.txt
           restartPolicy: OnFailure
           serviceAccount: kube-dns-serviceaccount
           volumes:
-          - configMap:
+          - name: publish-core-dns-endpoints
+            configMap:
               defaultMode: 365
               name: publish-core-dns-endpoints
-            name: publish-core-dns-endpoints
+          - name: core-dns-templates
+            configMap:
+              defaultMode: 365
+              name: core-dns-templates
+          # We should be able to remove hostname-ip
+          - name: hostname-ip
+            configMap:
+              defaultMode: 365
+              name: hostname-ip
           restartPolicy: OnFailure
           serviceAccount: kube-dns-serviceaccount
-  schedule: 0/15 * * * *

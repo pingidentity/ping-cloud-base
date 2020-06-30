@@ -35,6 +35,9 @@ rules:
   - list
   - watch
   - update
+  - create
+  - update
+  - patch
 ---
 apiVersion: v1
 kind: ServiceAccount

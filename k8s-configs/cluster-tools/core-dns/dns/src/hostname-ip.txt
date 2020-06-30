@@ -1,0 +1,2 @@
+ping-cloud-mpeterson.svc.cluster.local:10.61.12.32
+ping-cloud-mpetersonsecondary.svc.cluster.local:10.62.44.189
