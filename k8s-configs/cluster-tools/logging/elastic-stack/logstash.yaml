@@ -540,36 +540,6 @@ spec:
       serviceAccount: logstash-elastic
       initContainers:
 
-      # - name: create-certs
-      #   image: 7es7/enrichment-bootstrap:latest
-      #   workingDir: /scripts
-      #   command: ["sh", '$(CONTAINER_NAME).sh']
-
-      #   securityContext:
-      #     runAsUser: 0
-      #     runAsGroup: 0
-
-      #   env:
-      #   - name: CONTAINER_NAME
-      #     value: "create-certs"
-      #   - name: CERTS_DIR
-      #     value: "/enrichment-shared-volume/certs"
-      #   - name: ES_PATH_CONF
-      #     value: "/usr/share/elasticsearch/data/config"
-      #   - name: POD_NAME
-      #     valueFrom:
-      #       fieldRef:
-      #         fieldPath: metadata.name
-      #   - name: POD_IP
-      #     valueFrom:
-      #       fieldRef:
-      #         fieldPath: status.podIP
-
-      #   volumeMounts:
-      #   - name: enrichment-shared-volume
-      #     mountPath: /enrichment-shared-volume
-      #     readOnly: false
-
       - name: check-service-availability
         image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.1
         command: ["sh", '$(CONTAINER_NAME).sh']
@@ -644,31 +614,6 @@ spec:
           privileged: true
 
         env:
-          # - name: CONTAINER_NAME
-          #   value: "logstash"
-          # - name: LS_JAVA_OPTS
-          #   value: "-Xmx1g -Xms1g"
-          # - name: CONFIG_RELOAD_AUTOMATIC
-          #   value: "true"
-          # - name: CONFIG_RELOAD_INTERVAL
-          #   value: "5s"
-          # - name: LOG_FORMAT
-          #   value: "json"
-          # - name: LOG_LEVEL
-          #   value: "info"
-          # - name: LOGSTASH_ELASTICSEARCH_URL
-          #   value: "http://elasticsearch"
-          # - name: LOGSTASH_ELASTICSEARCH_PORT
-          #   value: "9200"
-          # - name: PIPELINE_BATCH_DELAY
-          #   value: "500"
-          # - name: PIPELINE_BATCH_SIZE
-          #   value: "1500"
-          # - name: NODE_NAME
-          #   valueFrom:
-          #     fieldRef:
-          #       fieldPath: spec.nodeName
-
 
           - name: CONTAINER_NAME
             value: "logstash"
@@ -718,8 +663,6 @@ spec:
                 key: LOGSTASH_PASSWORD_B64
           - name: XPACK_MONITORING_ELASTICSEARCH_SSL_CERTIFICATE_AUTHORITY
             value: "$(CERTS_DIR)/ca/ca.crt"
-          # - name: xpack.monitoring.elasticsearch.sniffing
-          #   value: "true"
           - name: XPACK_MANAGEMENT_ENABLED
             value: "true"
           - name: XPACK_MANAGEMENT_ELASTICSEARCH_HOSTS

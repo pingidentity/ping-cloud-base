@@ -47,56 +47,6 @@ spec:
         mountPath: /scripts/efs-provisioner.sh
         subPath: efs-provisioner.sh
 
-  # - name: create-ca
-  #   image: 7es7/enrichment-bootstrap:latest
-  #   workingDir: /scripts
-  #   command: ["sh", '$(CONTAINER_NAME).sh']
-
-  #   securityContext:
-  #     runAsUser: 0
-  #     runAsGroup: 0
-
-  #   env:
-  #   - name: CONTAINER_NAME
-  #     value: "create-ca"
-  #   - name: CERTS_DIR
-  #     value: "/enrichment-shared-volume/certs"
-
-  #   volumeMounts:
-  #   - name: enrichment-shared-volume
-  #     mountPath: /enrichment-shared-volume
-  #     readOnly: false
-
-  # - name: create-certs
-  #   image: 7es7/enrichment-bootstrap:latest
-  #   workingDir: /scripts
-  #   command: ["sh", '$(CONTAINER_NAME).sh']
-
-  #   securityContext:
-  #     runAsUser: 0
-  #     runAsGroup: 0
-
-  #   env:
-  #   - name: CONTAINER_NAME
-  #     value: "create-certs"
-  #   - name: CERTS_DIR
-  #     value: "/enrichment-shared-volume/certs"
-  #   - name: ES_PATH_CONF
-  #     value: "/usr/share/elasticsearch/data/config"
-  #   - name: POD_NAME
-  #     valueFrom:
-  #       fieldRef:
-  #         fieldPath: metadata.name
-  #   - name: POD_IP
-  #     valueFrom:
-  #       fieldRef:
-  #         fieldPath: status.podIP
-
-  #   volumeMounts:
-  #   - name: enrichment-shared-volume
-  #     mountPath: /enrichment-shared-volume
-  #     readOnly: false
-
   containers:
 
   - name: elasticsearch-bootstrap
@@ -136,8 +86,6 @@ spec:
       value: "green"
 
     volumeMounts:
-    # - name: data
-    #   mountPath: /usr/share/elasticsearch/data
     - name: enrichment-shared-volume
       mountPath: /enrichment-shared-volume
       readOnly: false

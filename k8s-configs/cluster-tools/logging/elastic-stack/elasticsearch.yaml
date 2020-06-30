@@ -120,20 +120,6 @@ spec:
           value: "http://127.0.0.1"
         - name: CHECK_SERVICE_PORT
           value: "9200"
-        # - name: CHECK_SERVICE_USER
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: elk-secrets
-        #       key: ELASTIC_USER_B64
-        # - name: CHECK_SERVICE_PASSWORD
-        #   valueFrom:
-        #     secretKeyRef:
-        #       name: elk-secrets
-        #       key: ELASTIC_PASSWORD_B64
-        # - name: CERTS_DIR
-        #   value: "/enrichment-shared-volume/certs"
-        # - name: CHECK_SERVICE_CERT
-        #   value: "elasticsearch"
         - name: DESIRED_STATUS
           value: "green"
 
@@ -214,28 +200,6 @@ spec:
           protocol: TCP
 
         env:
-        # - name: CONTAINER_NAME
-        #   value: "elasticsearch"
-        # - name: NODE_NAME
-        #   valueFrom:
-        #     fieldRef:
-        #       fieldPath: metadata.name
-        #   ### Security disabled
-        # - name: XPACK_SECURITY_ENABLED
-        #   value: "false"
-        # - name: XPACK_SECURITY_HTTP_SSL_ENABLED
-        #   value: "false"
-        # - name: XPACK_SECURITY_TRANSPORT_SSL_ENABLED
-        #   value: "false"
-        #   ###
-        # - name: DISCOVERY_SEED_HOSTS
-        #   value: "es-cluster-0.elasticsearch,es-cluster-1.elasticsearch,es-cluster-2.elasticsearch"
-        # - name: CLUSTER_INITIAL_MASTER_NODES
-        #   value: "es-cluster-0,es-cluster-1,es-cluster-2"
-        # - name: ES_JAVA_OPTS
-        #   value: "-Xms512m -Xmx512m"
-        # - name: ES_PATH_CONF
-        #   value: "/usr/share/elasticsearch/data/config"
 
         - name: CONTAINER_NAME
           value: "elasticsearch"
@@ -264,9 +228,6 @@ spec:
               fieldPath: status.podIP
         - name: discovery.seed_hosts
           value: "es-cluster-0"
-          # value: "es-cluster-0.elasticsearch,es-cluster-1.elasticsearch,es-cluster-2.elasticsearch"
-        # - name: cluster.initial_master_nodes
-        #   value: "es-cluster-0,es-cluster-1,es-cluster-2"
         - name: xpack.monitoring.collection.enabled
           value: "true"
         - name: xpack.license.self_generated.type
@@ -280,10 +241,6 @@ spec:
           value: "certificate"
         - name: xpack.security.http.ssl.client_authentication
           value: "optional"
-        # - name: xpack.security.http.ssl.key
-        #   value: "certs/$(POD_NAME)/$(POD_NAME).key"
-        # - name: xpack.security.http.ssl.certificate
-        #   value: "certs/$(POD_NAME)/$(POD_NAME).crt"
         - name: xpack.security.http.ssl.key
           value: "certs/elasticsearch/elasticsearch.key"
         - name: xpack.security.http.ssl.certificate
@@ -297,10 +254,6 @@ spec:
           value: "certificate"
         - name: xpack.security.transport.ssl.client_authentication
           value: "optional"
-        # - name: xpack.security.transport.ssl.key
-        #   value: "certs/$(POD_NAME)/$(POD_NAME).key"
-        # - name: xpack.security.transport.ssl.certificate
-        #   value: "certs/$(POD_NAME)/$(POD_NAME).crt" 
         - name: xpack.security.transport.ssl.key
           value: "certs/elasticsearch/elasticsearch.key"
         - name: xpack.security.transport.ssl.certificate
@@ -317,10 +270,6 @@ spec:
         - name: enrichment-shared-volume
           mountPath: /enrichment-shared-volume
           readOnly: false
-        # - name: enrichment-elasticsearch-yaml-config
-        #   mountPath: /usr/share/elasticsearch/data/config/elasticsearch.yml
-        #   subPath: elasticsearch.yml
-        #   readOnly: false
 
       volumes:
         - name: enrichment-shared-volume
