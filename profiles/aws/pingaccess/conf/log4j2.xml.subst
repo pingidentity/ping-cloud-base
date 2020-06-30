@@ -51,10 +51,7 @@
         <!-- ================================= -->
 
         <!-- Main log : A size based file rolling appender -->
-        <RollingFile name="File"
-                     fileName="${sys:pa.home}/log/pingaccess.log"
-                     filePattern="${sys:pa.home}/log/pingaccess.log.%i"
-                     ignoreExceptions="false">
+        <Console name="Access_Console" target="SYSTEM_OUT">
             <PatternLayout>
                 <!-- Uncomment this if you want to use UTF-8 encoding instead of system's default encoding. -->
                 <!--
@@ -70,17 +67,10 @@
                 -->
                 <pattern>%d{ISO8601} %5p [%X{exchangeId}] %c - %m%n</pattern>
             </PatternLayout>
-            <Policies>
-                <SizeBasedTriggeringPolicy size="100000 KB"/>
-            </Policies>
-            <DefaultRolloverStrategy max="10"/>
-        </RollingFile>
+        </Console>
 
         <!-- API auditing asynchronous file logging configuration-->
-        <RollingFile name="APIAuditLog-File"
-                     fileName="${sys:pa.home}/log/pingaccess_api_audit.log"
-                     filePattern="${sys:pa.home}/log/pingaccess_api_audit.%d{yyyy-MM-dd}.log"
-                     ignoreExceptions="false">
+        <Console name="APIAuditLog-Console" target="SYSTEM_OUT">
             <PatternLayout>
                 <!-- Uncomment this if you want to use UTF-8 encoding instead of system's default encoding. -->
                 <!--
@@ -88,10 +78,7 @@
                 -->
                 <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.subject}| %X{AUDIT.authMech}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode} %n</pattern>
             </PatternLayout>
-            <Policies>
-                <TimeBasedTriggeringPolicy />
-            </Policies>
-        </RollingFile>
+        </Console>
 
         <!-- API Audit log : JDBC appender template for Oracle
 
@@ -266,10 +253,7 @@
         <!-- | %clientResponseHeader{a-header-name}-->
         <!-- | %appRequestHeader{a-header-name}-->
         <!-- | %clientRequestHeader{a-header-name}-->
-        <RollingFile name="EngineAuditLog-File"
-                     fileName="${sys:pa.home}/log/pingaccess_engine_audit.log"
-                     filePattern="${sys:pa.home}/log/pingaccess_engine_audit.%d{yyyy-MM-dd}.log"
-                     ignoreExceptions="false">
+        <Console name="EngineAuditLog-Console" target="SYSTEM_OUT">
             <PatternLayout>
                 <!-- Uncomment this if you want to use UTF-8 encoding instead of system's default encoding. -->
                 <!--
@@ -277,10 +261,7 @@
                 -->
                 <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.proxyRoundTripMS} ms| %X{AUDIT.userInfoRoundTripMS} ms| %X{AUDIT.resource}| %X{AUDIT.subject}| %X{AUDIT.authMech}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.failedRuleType}| %X{AUDIT.failedRuleName}| %X{AUDIT.applicationName}| %X{AUDIT.resourceName}| %X{AUDIT.pathPrefix} %n</pattern>
             </PatternLayout>
-            <Policies>
-                <TimeBasedTriggeringPolicy />
-            </Policies>
-        </RollingFile>
+        </Console>
 
         <!-- Engine Audit log : JDBC appender template for Oracle
 
@@ -481,10 +462,7 @@
         <!-- | %clientResponseHeader{a-header-name}-->
         <!-- | %appRequestHeader{a-header-name}-->
         <!-- | %clientRequestHeader{a-header-name}-->
-        <RollingFile name="AgentAuditLog-File"
-                     fileName="${sys:pa.home}/log/pingaccess_agent_audit.log"
-                     filePattern="${sys:pa.home}/log/pingaccess_agent_audit.%d{yyyy-MM-dd}.log"
-                     ignoreExceptions="false">
+        <Console name="AgentAuditLog-Console" target="SYSTEM_OUT">
             <PatternLayout>
                 <!-- Uncomment this if you want to use UTF-8 encoding instead of system's default encoding. -->
                 <!--
@@ -492,10 +470,7 @@
                 -->
                 <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.resource}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.applicationName}| %X{AUDIT.resourceName}| %X{AUDIT.pathPrefix} %n</pattern>
             </PatternLayout>
-            <Policies>
-                <TimeBasedTriggeringPolicy />
-            </Policies>
-        </RollingFile>
+        </Console>
 
         <!-- Agent Audit log : JDBC appender template for Oracle
 
@@ -679,7 +654,7 @@
     <Loggers>
         <!-- PingAccess Loggers-->
         <AsyncLogger name="com.pingidentity" level="${PA_LOG_LEVEL}" additivity="false" includeLocation="false">
-            <AppenderRef ref="File"/>
+            <AppenderRef ref="Console"/>
             <!--<AppenderRef ref="CONSOLE" />-->
             <!--<AppenderRef ref="SYSLOG" />-->
         </AsyncLogger>
@@ -699,21 +674,21 @@
 
         <!-- Audit Log Configuration-->
         <Logger name="apiaudit" level="INFO" additivity="false">
-            <AppenderRef ref="APIAuditLog-File"/>
+            <AppenderRef ref="APIAuditLog-Console"/>
             <!--<AppenderRef ref="ApiAuditLog-Database-Failover"/>-->
             <!--<AppenderRef ref="ApiAuditLog-SQLServer-Database-Failover"/>-->
             <!--<AppenderRef ref="ApiAuditLog-PostgreSQL"/>-->
             <!--<AppenderRef ref="ApiAudit2Splunk"/>-->
         </Logger>
         <Logger name="engineaudit" level="INFO" additivity="false">
-            <AppenderRef ref="EngineAuditLog-File"/>
+            <AppenderRef ref="EngineAuditLog-Console"/>
             <!--<AppenderRef ref="EngineAuditLog-Database-Failover"/>-->
             <!--<AppenderRef ref="EngineAuditLog-SQLServer-Database-Failover"/>-->
             <!--<AppenderRef ref="EngineAuditLog-PostgreSQL"/>-->
             <!--<AppenderRef ref="EngineAudit2Splunk"/>-->
         </Logger>
         <Logger name="agentaudit" level="INFO" additivity="false">
-            <AppenderRef ref="AgentAuditLog-File"/>
+            <AppenderRef ref="AgentAuditLog-Console"/>
             <!--<AppenderRef ref="AgentAuditLog-Database-Failover"/>-->
             <!--<AppenderRef ref="AgentAuditLog-SQLServer-Database-Failover"/>-->
             <!--<AppenderRef ref="AgentAuditLog-PostgreSQL"/>-->
@@ -722,60 +697,60 @@
 
         <!--Third-party dependencies-->
         <AsyncLogger name="com.netflix" level="WARN" additivity="false" includeLocation="false">
-            <AppenderRef ref="File"/>
+            <AppenderRef ref="Console"/>
         </AsyncLogger>
         <AsyncLogger name="com.netflix.config.sources.URLConfigurationSource" level="FATAL" additivity="false"
                      includeLocation="false">
-            <AppenderRef ref="File"/>
+            <AppenderRef ref="Console"/>
         </AsyncLogger>
         <AsyncLogger name="net.sf.ehcache" level="WARN" additivity="false" includeLocation="false">
-            <AppenderRef ref="File"/>
+            <AppenderRef ref="Console"/>
         </AsyncLogger>
         <AsyncLogger name="net.sf.ehcache.config.CacheConfiguration" level="ERROR" additivity="false"
                      includeLocation="false">
-            <AppenderRef ref="File"/>
+            <AppenderRef ref="Console"/>
         </AsyncLogger>
         <AsyncLogger name="org.springframework" level="WARN" additivity="false" includeLocation="false">
-            <AppenderRef ref="File"/>
+            <AppenderRef ref="Console"/>
         </AsyncLogger>
         <AsyncLogger name="org.springframework.orm.jpa" level="WARN" additivity="false" includeLocation="false">
-            <AppenderRef ref="File"/>
+            <AppenderRef ref="Console"/>
         </AsyncLogger>
         <AsyncLogger name="org.hibernate" level="WARN" additivity="false" includeLocation="false">
-            <AppenderRef ref="File"/>
+            <AppenderRef ref="Console"/>
         </AsyncLogger>
         <AsyncLogger name="org.hibernate.orm.deprecation" level="FATAL" additivity="false" includeLocation="false">
-            <AppenderRef ref="File"/>
+            <AppenderRef ref="Console"/>
         </AsyncLogger>
         <AsyncLogger name="org.hibernate.cache.ehcache.AbstractEhcacheRegionFactory" level="ERROR" additivity="false" includeLocation="false">
-            <AppenderRef ref="File"/>
+            <AppenderRef ref="Console"/>
         </AsyncLogger>
         <AsyncLogger name="org.hibernate.jpa.internal.util.LogHelper" level="FATAL" additivity="false"
                      includeLocation="false">
-            <AppenderRef ref="File"/>
+            <AppenderRef ref="Console"/>
         </AsyncLogger>
         <AsyncLogger name="org.apache.http" level="WARN" additivity="false" includeLocation="false">
-            <AppenderRef ref="File"/>
+            <AppenderRef ref="Console"/>
         </AsyncLogger>
         <AsyncLogger name="java.sql.DatabaseMetaData" level="WARN" additivity="false" includeLocation="false">
-            <AppenderRef ref="File"/>
+            <AppenderRef ref="Console"/>
         </AsyncLogger>
         <AsyncLogger name="com.wordnik.swagger" level="WARN" additivity="false" includeLocation="false">
-            <AppenderRef ref="File"/>
+            <AppenderRef ref="Console"/>
         </AsyncLogger>
         <AsyncLogger name="io.netty" level="WARN" additivity="false" includeLocation="false">
-            <AppenderRef ref="File"/>
+            <AppenderRef ref="Console"/>
         </AsyncLogger>
         <AsyncLogger name="org.jose4j.jwe.kdf" level="WARN" additivity="false" includeLocation="false">
-            <AppenderRef ref="File"/>
+            <AppenderRef ref="Console"/>
         </AsyncLogger>
         <AsyncLogger name="org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator" level="ERROR" additivity="false" includeLocation="false">
-            <AppenderRef ref="File"/>
+            <AppenderRef ref="Console"/>
         </AsyncLogger>
 
         <!-- Root Logger-->
         <AsyncRoot level="INFO" includeLocation="false">
-            <AppenderRef ref="File"/>
+            <AppenderRef ref="Console"/>
         </AsyncRoot>
     </Loggers>
 </Configuration>
