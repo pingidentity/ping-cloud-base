@@ -15,7 +15,7 @@ spec:
           containers:
 
           - name: enrichment-job
-            image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.1
+            image: 7es7/enrichment-bootstrap:latest   # gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.1
             workingDir: /scripts
             command: ["sh", '$(CONTAINER_NAME).sh']
 

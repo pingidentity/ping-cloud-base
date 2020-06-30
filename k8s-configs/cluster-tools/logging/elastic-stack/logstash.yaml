@@ -541,7 +541,7 @@ spec:
       initContainers:
 
       - name: check-service-availability
-        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.1
+        image: 7es7/enrichment-bootstrap:latest   # gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.1
         command: ["sh", '$(CONTAINER_NAME).sh']
 
         env:
@@ -576,7 +576,7 @@ spec:
             mountPath: /enrichment-shared-volume
 
       - name: create-enrichment-cache-files
-        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.1
+        image: 7es7/enrichment-bootstrap:latest   # gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.1
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
 
@@ -617,10 +617,10 @@ spec:
 
           - name: CONTAINER_NAME
             value: "logstash"
-          - name: LS_JAVA_OPTS
-            value: "-Xmx1g -Xms1g"
           - name: CERTS_DIR
             value: "/enrichment-shared-volume/certs"
+          - name: LS_JAVA_OPTS
+            value: "-Xmx1g -Xms1g -Djavax.net.ssl.trustStore=$(CERTS_DIR)/truststore.jks -Djavax.net.ssl.trustStorePassword=changeit"
           - name: node.name
             valueFrom:
               fieldRef:
