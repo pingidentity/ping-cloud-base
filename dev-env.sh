@@ -176,6 +176,13 @@ export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
 
+export ELASTIC_USER_B64=$(printf ${ELASTIC_USER_PLAIN} | base64)
+export ELASTIC_PASSWORD_B64=$(printf ${ELASTIC_PASSWORD_PLAIN} | base64)
+export LOGSTASH_USER_B64=$(printf ${LOGSTASH_USER_PLAIN} | base64)
+export LOGSTASH_PASSWORD_B64=$(printf ${LOGSTASH_PASSWORD_PLAIN} | base64)
+export KIBANA_USER_B64=$(printf ${KIBANA_USER_PLAIN} | base64)
+export KIBANA_PASSWORD_B64=$(printf ${KIBANA_PASSWORD_PLAIN} | base64)
+
 ENVIRONMENT_NO_HYPHEN_PREFIX=$(echo ${ENVIRONMENT#-})
 
 # Show the values being used for the relevant environment variables.
@@ -215,6 +222,12 @@ kustomize build test |
     ${PING_ARTIFACT_REPO_URL}
     ${LOG_ARCHIVE_URL}
     ${EFS_FILESYSTEM_ID}
+    ${ELASTIC_USER_B64}
+    ${ELASTIC_PASSWORD_B64}
+    ${LOGSTASH_USER_B64}
+    ${LOGSTASH_PASSWORD_B64}
+    ${KIBANA_USER_B64}
+    ${KIBANA_PASSWORD_B64}
     ${BACKUP_URL}' > ${DEPLOY_FILE}
 sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" ${DEPLOY_FILE}
 

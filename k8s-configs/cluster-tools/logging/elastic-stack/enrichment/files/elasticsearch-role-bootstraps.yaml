@@ -4,11 +4,20 @@ kind: ConfigMap
 metadata:
   name: enrichment-elasticsearch-role-bootstraps
 data:
-  superusers.json: |
+  kibana.json: |
     {
-    "roles" : [ "superuser", "kibana_admin" ],
-    "rules" : { "field" : {
-        "groups" : "cn=ESAdminGroup,ou=Groups,dc=example,dc=com" 
-    } },
-    "enabled": true
+      "roles" : [ "kibana_admin" ],
+      "rules" : { "field" : {
+        "username" : "kibana" 
+      } },
+      "enabled": true
+    }
+
+  logstash.json: |
+    {
+      "roles" : [ "logstash_admin" ],
+      "rules" : { "field" : {
+        "username" : "logstash_system" 
+      } },
+      "enabled": true
     }

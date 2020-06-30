@@ -38,6 +38,7 @@ spec:
               topologyKey: "failure-domain.beta.kubernetes.io/zone"
 
       initContainers:
+
       - name: fix-permissions
         image: busybox
         command: [ "sh", "-c", "chown -R 1000:1000 /usr/share/elasticsearch/data" ]
@@ -64,7 +65,7 @@ spec:
           privileged: true
 
       - name: create-certs
-        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:latest
+        image: 7es7/enrichment-bootstrap:latest
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
 
@@ -75,25 +76,18 @@ spec:
         env:
         - name: CONTAINER_NAME
           value: "create-certs"
-        - name: NODE_NAME
+        - name: CERTS_DIR
+          value: "/enrichment-shared-volume/certs"
+        - name: ES_PATH_CONF
+          value: "/usr/share/elasticsearch/data/config"
+        - name: POD_NAME
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        - name: DISCOVERY_SEED_HOSTS
-          value: "${NODE_NAME}.elasticsearch"
-        - name: CLUSTER_INITIAL_MASTER_NODES
-          value: "${NODE_NAME}"
-          ### Security disabled
-        - name: XPACK_SECURITY_ENABLED
-          value: "false"
-        - name: XPACK_SECURITY_HTTP_SSL_ENABLED
-          value: "false"
-        - name: XPACK_SECURITY_TRANSPORT_SSL_ENABLED
-          value: "false"
-          ###
-        - name: ES_PATH_CONF
-          value: "/usr/share/elasticsearch/data/config"
-
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
 
         volumeMounts:
         - name: data
@@ -102,17 +96,13 @@ spec:
         - name: enrichment-shared-volume
           mountPath: /enrichment-shared-volume
           readOnly: false
-        - name: enrichment-elasticsearch-yaml-config
-          mountPath: /usr/share/elasticsearch/data/config/elasticsearch.yml
-          subPath: elasticsearch.yml
-          readOnly: true
         - name: enrichment-certs-config
           mountPath: /usr/share/elasticsearch/data/config/instances.yml
           subPath: instances.yml
           readOnly: true
 
       - name: create-passwords
-        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:latest
+        image: 7es7/enrichment-bootstrap:latest
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
 
@@ -123,24 +113,73 @@ spec:
         env:
         - name: CONTAINER_NAME
           value: "create-passwords"
-        - name: NODE_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
-        - name: DISCOVERY_SEED_HOSTS
-          value: "${NODE_NAME}.elasticsearch"
-        - name: CLUSTER_INITIAL_MASTER_NODES
-          value: "${NODE_NAME}"
-          ### Security disabled
-        - name: XPACK_SECURITY_ENABLED
-          value: "false"
-        - name: XPACK_SECURITY_HTTP_SSL_ENABLED
-          value: "false"
-        - name: XPACK_SECURITY_TRANSPORT_SSL_ENABLED
-          value: "false"
-          ###
         - name: ES_PATH_CONF
           value: "/usr/share/elasticsearch/data/config"
+
+        - name: CHECK_SERVICE_URL
+          value: "http://127.0.0.1"
+        - name: CHECK_SERVICE_PORT
+          value: "9200"
+        # - name: CHECK_SERVICE_USER
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: elk-secrets
+        #       key: ELASTIC_USER_B64
+        # - name: CHECK_SERVICE_PASSWORD
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: elk-secrets
+        #       key: ELASTIC_PASSWORD_B64
+        # - name: CERTS_DIR
+        #   value: "/enrichment-shared-volume/certs"
+        # - name: CHECK_SERVICE_CERT
+        #   value: "elasticsearch"
+        - name: DESIRED_STATUS
+          value: "green"
+
+        - name: network.host
+          value: "127.0.0.1"
+        - name: discovery.type
+          value: "single-node"
+        - name: xpack.license.self_generated.type
+          value: "trial"
+        - name: xpack.security.enabled
+          value: "true"
+        - name: xpack.security.authc.anonymous.username
+          value: "anonymous_user"
+        - name: xpack.security.authc.anonymous.roles
+          value: "superuser"
+
+        - name: ELASTIC_USER
+          valueFrom:
+            secretKeyRef:
+              name: elk-secrets
+              key: ELASTIC_USER_B64
+        - name: ELASTIC_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elk-secrets
+              key: ELASTIC_PASSWORD_B64
+        - name: LOGSTASH_USER
+          valueFrom:
+            secretKeyRef:
+              name: elk-secrets
+              key: LOGSTASH_USER_B64
+        - name: LOGSTASH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elk-secrets
+              key: LOGSTASH_PASSWORD_B64
+        - name: KIBANA_USER
+          valueFrom:
+            secretKeyRef:
+              name: elk-secrets
+              key: KIBANA_USER_B64
+        - name: KIBANA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elk-secrets
+              key: KIBANA_PASSWORD_B64
 
         volumeMounts:
         - name: data
@@ -149,14 +188,6 @@ spec:
         - name: enrichment-shared-volume
           mountPath: /enrichment-shared-volume
           readOnly: false
-        - name: enrichment-elasticsearch-yaml-config
-          mountPath: /usr/share/elasticsearch/data/config/elasticsearch.yml
-          subPath: elasticsearch.yml
-          readOnly: true
-        - name: enrichment-certs-config
-          mountPath: /usr/share/elasticsearch/data/config/instances.yml
-          subPath: instances.yml
-          readOnly: true
 
       containers:
       - name: elasticsearch
@@ -183,28 +214,102 @@ spec:
           protocol: TCP
 
         env:
+        # - name: CONTAINER_NAME
+        #   value: "elasticsearch"
+        # - name: NODE_NAME
+        #   valueFrom:
+        #     fieldRef:
+        #       fieldPath: metadata.name
+        #   ### Security disabled
+        # - name: XPACK_SECURITY_ENABLED
+        #   value: "false"
+        # - name: XPACK_SECURITY_HTTP_SSL_ENABLED
+        #   value: "false"
+        # - name: XPACK_SECURITY_TRANSPORT_SSL_ENABLED
+        #   value: "false"
+        #   ###
+        # - name: DISCOVERY_SEED_HOSTS
+        #   value: "es-cluster-0.elasticsearch,es-cluster-1.elasticsearch,es-cluster-2.elasticsearch"
+        # - name: CLUSTER_INITIAL_MASTER_NODES
+        #   value: "es-cluster-0,es-cluster-1,es-cluster-2"
+        # - name: ES_JAVA_OPTS
+        #   value: "-Xms512m -Xmx512m"
+        # - name: ES_PATH_CONF
+        #   value: "/usr/share/elasticsearch/data/config"
+
         - name: CONTAINER_NAME
           value: "elasticsearch"
-        - name: NODE_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
-          ### Security disabled
-        - name: XPACK_SECURITY_ENABLED
-          value: "false"
-        - name: XPACK_SECURITY_HTTP_SSL_ENABLED
-          value: "false"
-        - name: XPACK_SECURITY_TRANSPORT_SSL_ENABLED
-          value: "false"
-          ###
-        - name: DISCOVERY_SEED_HOSTS
-          value: "es-cluster-0.elasticsearch,es-cluster-1.elasticsearch,es-cluster-2.elasticsearch"
-        - name: CLUSTER_INITIAL_MASTER_NODES
-          value: "es-cluster-0,es-cluster-1,es-cluster-2"
         - name: ES_JAVA_OPTS
           value: "-Xms512m -Xmx512m"
         - name: ES_PATH_CONF
           value: "/usr/share/elasticsearch/data/config"
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+
+        - name: cluster.name
+          value: "k8s-logs"
+        - name: node.name
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: network.publish_host
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: network.host
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: discovery.seed_hosts
+          value: "es-cluster-0"
+          # value: "es-cluster-0.elasticsearch,es-cluster-1.elasticsearch,es-cluster-2.elasticsearch"
+        # - name: cluster.initial_master_nodes
+        #   value: "es-cluster-0,es-cluster-1,es-cluster-2"
+        - name: xpack.monitoring.collection.enabled
+          value: "true"
+        - name: xpack.license.self_generated.type
+          value: "trial"
+        - name: xpack.security.enabled
+          value: "true"
+
+        - name: xpack.security.http.ssl.enabled
+          value: "true"
+        - name: xpack.security.http.ssl.verification_mode
+          value: "certificate"
+        - name: xpack.security.http.ssl.client_authentication
+          value: "optional"
+        # - name: xpack.security.http.ssl.key
+        #   value: "certs/$(POD_NAME)/$(POD_NAME).key"
+        # - name: xpack.security.http.ssl.certificate
+        #   value: "certs/$(POD_NAME)/$(POD_NAME).crt"
+        - name: xpack.security.http.ssl.key
+          value: "certs/elasticsearch/elasticsearch.key"
+        - name: xpack.security.http.ssl.certificate
+          value: "certs/elasticsearch/elasticsearch.crt"
+        - name: xpack.security.http.ssl.certificate_authorities
+          value: "certs/ca/ca.crt" 
+
+        - name: xpack.security.transport.ssl.enabled
+          value: "true"
+        - name: xpack.security.transport.ssl.verification_mode
+          value: "certificate"
+        - name: xpack.security.transport.ssl.client_authentication
+          value: "optional"
+        # - name: xpack.security.transport.ssl.key
+        #   value: "certs/$(POD_NAME)/$(POD_NAME).key"
+        # - name: xpack.security.transport.ssl.certificate
+        #   value: "certs/$(POD_NAME)/$(POD_NAME).crt" 
+        - name: xpack.security.transport.ssl.key
+          value: "certs/elasticsearch/elasticsearch.key"
+        - name: xpack.security.transport.ssl.certificate
+          value: "certs/elasticsearch/elasticsearch.crt"
+        - name: xpack.security.transport.ssl.certificate_authorities
+          value: "certs/ca/ca.crt"
+
+        - name: xpack.security.authc.realms.native.native1.order
+          value: "0"
 
         volumeMounts:
         - name: data
@@ -212,10 +317,10 @@ spec:
         - name: enrichment-shared-volume
           mountPath: /enrichment-shared-volume
           readOnly: false
-        - name: enrichment-elasticsearch-yaml-config
-          mountPath: /usr/share/elasticsearch/data/config/elasticsearch.yml
-          subPath: elasticsearch.yml
-          readOnly: false
+        # - name: enrichment-elasticsearch-yaml-config
+        #   mountPath: /usr/share/elasticsearch/data/config/elasticsearch.yml
+        #   subPath: elasticsearch.yml
+        #   readOnly: false
 
       volumes:
         - name: enrichment-shared-volume
@@ -298,3 +403,17 @@ parameters:
   fsType: ext4
 mountOptions:
   - discard
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: elk-secrets
+type: Opaque
+data:
+  ELASTIC_USER_B64: ${ELASTIC_USER_B64}
+  ELASTIC_PASSWORD_B64: ${ELASTIC_PASSWORD_B64}
+  LOGSTASH_USER_B64: ${LOGSTASH_USER_B64}
+  LOGSTASH_PASSWORD_B64: ${LOGSTASH_PASSWORD_B64}
+  KIBANA_USER_B64: ${KIBANA_USER_B64}
+  KIBANA_PASSWORD_B64: ${KIBANA_PASSWORD_B64}

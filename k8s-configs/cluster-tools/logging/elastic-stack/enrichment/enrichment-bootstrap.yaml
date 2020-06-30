@@ -47,6 +47,56 @@ spec:
         mountPath: /scripts/efs-provisioner.sh
         subPath: efs-provisioner.sh
 
+  # - name: create-ca
+  #   image: 7es7/enrichment-bootstrap:latest
+  #   workingDir: /scripts
+  #   command: ["sh", '$(CONTAINER_NAME).sh']
+
+  #   securityContext:
+  #     runAsUser: 0
+  #     runAsGroup: 0
+
+  #   env:
+  #   - name: CONTAINER_NAME
+  #     value: "create-ca"
+  #   - name: CERTS_DIR
+  #     value: "/enrichment-shared-volume/certs"
+
+  #   volumeMounts:
+  #   - name: enrichment-shared-volume
+  #     mountPath: /enrichment-shared-volume
+  #     readOnly: false
+
+  # - name: create-certs
+  #   image: 7es7/enrichment-bootstrap:latest
+  #   workingDir: /scripts
+  #   command: ["sh", '$(CONTAINER_NAME).sh']
+
+  #   securityContext:
+  #     runAsUser: 0
+  #     runAsGroup: 0
+
+  #   env:
+  #   - name: CONTAINER_NAME
+  #     value: "create-certs"
+  #   - name: CERTS_DIR
+  #     value: "/enrichment-shared-volume/certs"
+  #   - name: ES_PATH_CONF
+  #     value: "/usr/share/elasticsearch/data/config"
+  #   - name: POD_NAME
+  #     valueFrom:
+  #       fieldRef:
+  #         fieldPath: metadata.name
+  #   - name: POD_IP
+  #     valueFrom:
+  #       fieldRef:
+  #         fieldPath: status.podIP
+
+  #   volumeMounts:
+  #   - name: enrichment-shared-volume
+  #     mountPath: /enrichment-shared-volume
+  #     readOnly: false
+
   containers:
 
   - name: elasticsearch-bootstrap
@@ -60,16 +110,34 @@ spec:
     env:
     - name: CONTAINER_NAME
       value: "elasticsearch-bootstrap"
-    - name: ELASTICSEARCH_URL
-      value: "http://elasticsearch"
-    - name: ELASTICSEARCH_PORT
-      value: "9200"
     - name: ES_PATH_CONF
-      value: "/usr/share/elasticsearch/config"
+      value: "/usr/share/elasticsearch/data/config"
+    - name: CHECK_SERVICE_URL
+      value: "https://elasticsearch"
+    - name: CHECK_SERVICE_PORT
+      value: "9200"
+    - name: CHECK_SERVICE_USER
+      valueFrom:
+        secretKeyRef:
+          name: elk-secrets
+          key: ELASTIC_USER_B64
+    - name: CHECK_SERVICE_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: elk-secrets
+          key: ELASTIC_PASSWORD_B64
+    - name: CERTS_DIR
+      value: "/enrichment-shared-volume/certs"
+    - name: CHECK_SERVICE_CERT
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
     - name: DESIRED_STATUS
       value: "green"
 
     volumeMounts:
+    # - name: data
+    #   mountPath: /usr/share/elasticsearch/data
     - name: enrichment-shared-volume
       mountPath: /enrichment-shared-volume
       readOnly: false
@@ -120,7 +188,7 @@ data:
     #!/usr/bin/env sh
     echo "$(date +'%FT%T.%3N')\tCreating enrichment volume folders..." >&1
     dirs_path=/enrichment-shared-volume
-    set -- "logs" "enrichment-cache" "certs" "secrets"
+    set -- "enrichment-cache" "certs"
     while [ $# -gt 0 ]
     do        
         mkdir -p $dirs_path/$1

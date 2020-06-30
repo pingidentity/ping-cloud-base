@@ -415,69 +415,104 @@ data:
 
     output {
         elasticsearch {
-            index => "logstash_%{+YYYY.MM.dd}"
+            # index => "logstash_%{+YYYY.MM.dd}"
+            ssl => true
+            ssl_certificate_verification => true
+            cacert => "${CERTS_DIR}/ca/ca.crt"
             hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
             sniffing => false
             ilm_enabled => true
             ilm_rollover_alias => "logstash"
             ilm_policy => "ping-2-day-retention"
+            user => "${LOGSTASH_ELASTICSEARCH_USER}"
+            password => "${LOGSTASH_ELASTICSEARCH_PASSWORD}"
         }
         if([log_type] == "Enrichment_System_Log"){
             elasticsearch {
                 id => "enrichment_out"
                 # index => "enrichment_out_%{+YYYY.MM.dd}"
+                ssl => true
+                ssl_certificate_verification => true
+                cacert => "${CERTS_DIR}/ca/ca.crt"
                 hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
                 ilm_enabled => true
                 ilm_rollover_alias => "enrichment"
                 ilm_policy => "ping-2-day-retention"
+                user => "${LOGSTASH_ELASTICSEARCH_USER}"
+                password => "${LOGSTASH_ELASTICSEARCH_PASSWORD}"
             }
         }
         if([log_type] == "PF_Provisioner_Log"){
             elasticsearch {
                 id => "pf_provision_out"
                 # index => "pf_provision_out_%{+YYYY.MM.dd}"
+                ssl => true
+                ssl_certificate_verification => true
+                cacert => "${CERTS_DIR}/ca/ca.crt"
                 hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
                 ilm_enabled => true
                 ilm_rollover_alias => "pf-provision"
                 ilm_policy => "ping-2-day-retention"
+                user => "${LOGSTASH_ELASTICSEARCH_USER}"
+                password => "${LOGSTASH_ELASTICSEARCH_PASSWORD}"
             }
         }
         if([log_type] == "PF_Audit_Log"){
             elasticsearch {
                 id => "pf_audit_out"
                 # index => "pf_audit_out_%{+YYYY.MM.dd}"
+                ssl => true
+                ssl_certificate_verification => true
+                cacert => "${CERTS_DIR}/ca/ca.crt"
                 hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
                 ilm_enabled => true
                 ilm_rollover_alias => "pf-audit"
                 ilm_policy => "ping-2-day-retention"
+                user => "${LOGSTASH_ELASTICSEARCH_USER}"
+                password => "${LOGSTASH_ELASTICSEARCH_PASSWORD}"
             }
         }
         if([log_type] == "PF_System_Log"){
             elasticsearch {
                 id => "pf_system_out"
                 # index => "pf_system_out_%{+YYYY.MM.dd}"
+                ssl => true
+                ssl_certificate_verification => true
+                cacert => "${CERTS_DIR}/ca/ca.crt"
                 hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
                 ilm_enabled => true
                 ilm_rollover_alias => "pf-system"
                 ilm_policy => "ping-2-day-retention"
+                user => "${LOGSTASH_ELASTICSEARCH_USER}"
+                password => "${LOGSTASH_ELASTICSEARCH_PASSWORD}"
             }
         }
         if([log_type] == "PD_Access_Log"){
           elasticsearch {
             id => "pd_out"
+            ssl => true
+            ssl_certificate_verification => true
+            cacert => "${CERTS_DIR}/ca/ca.crt"
             hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
             ilm_enabled => true
             ilm_rollover_alias => "pd-access"
             ilm_policy => "ping-2-day-retention"
+            user => "${LOGSTASH_ELASTICSEARCH_USER}"
+            password => "${LOGSTASH_ELASTICSEARCH_PASSWORD}"
           }
       }
       if([log_type] == "PD_Failed_Ops"){
         elasticsearch {
             id => "pd_failed_ops_out"
+            ssl => true
+            ssl_certificate_verification => true
+            cacert => "${CERTS_DIR}/ca/ca.crt"
             hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
             ilm_enabled => true
             ilm_rollover_alias => "pd-failed-ops"
             ilm_policy => "ping-2-day-retention"
+            user => "${LOGSTASH_ELASTICSEARCH_USER}"
+            password => "${LOGSTASH_ELASTICSEARCH_PASSWORD}"
         }
       }
     }
@@ -505,19 +540,70 @@ spec:
       serviceAccount: logstash-elastic
       initContainers:
 
+      # - name: create-certs
+      #   image: 7es7/enrichment-bootstrap:latest
+      #   workingDir: /scripts
+      #   command: ["sh", '$(CONTAINER_NAME).sh']
+
+      #   securityContext:
+      #     runAsUser: 0
+      #     runAsGroup: 0
+
+      #   env:
+      #   - name: CONTAINER_NAME
+      #     value: "create-certs"
+      #   - name: CERTS_DIR
+      #     value: "/enrichment-shared-volume/certs"
+      #   - name: ES_PATH_CONF
+      #     value: "/usr/share/elasticsearch/data/config"
+      #   - name: POD_NAME
+      #     valueFrom:
+      #       fieldRef:
+      #         fieldPath: metadata.name
+      #   - name: POD_IP
+      #     valueFrom:
+      #       fieldRef:
+      #         fieldPath: status.podIP
+
+      #   volumeMounts:
+      #   - name: enrichment-shared-volume
+      #     mountPath: /enrichment-shared-volume
+      #     readOnly: false
+
       - name: check-service-availability
-        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:latest
+        image: 7es7/enrichment-bootstrap:latest
         command: ["sh", '$(CONTAINER_NAME).sh']
 
         env:
         - name: CONTAINER_NAME
           value: "check-service-availability"
-        - name: SERVICE_URL
-          value: "http://elasticsearch"
-        - name: SERVICE_PORT
+
+        - name: CHECK_SERVICE_URL
+          value: "https://elasticsearch"
+        - name: CHECK_SERVICE_PORT
           value: "9200"
+        - name: CHECK_SERVICE_USER
+          valueFrom:
+            secretKeyRef:
+              name: elk-secrets
+              key: LOGSTASH_USER_B64
+        - name: CHECK_SERVICE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elk-secrets
+              key: LOGSTASH_PASSWORD_B64
+        - name: CERTS_DIR
+          value: "/enrichment-shared-volume/certs"
+        - name: CHECK_SERVICE_CERT
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
         - name: DESIRED_STATUS
           value: "green"
+
+        volumeMounts:
+          - name: enrichment-shared-volume
+            mountPath: /enrichment-shared-volume
 
       - name: create-enrichment-cache-files
         image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:latest
@@ -558,12 +644,56 @@ spec:
           privileged: true
 
         env:
+          # - name: CONTAINER_NAME
+          #   value: "logstash"
+          # - name: LS_JAVA_OPTS
+          #   value: "-Xmx1g -Xms1g"
+          # - name: CONFIG_RELOAD_AUTOMATIC
+          #   value: "true"
+          # - name: CONFIG_RELOAD_INTERVAL
+          #   value: "5s"
+          # - name: LOG_FORMAT
+          #   value: "json"
+          # - name: LOG_LEVEL
+          #   value: "info"
+          # - name: LOGSTASH_ELASTICSEARCH_URL
+          #   value: "http://elasticsearch"
+          # - name: LOGSTASH_ELASTICSEARCH_PORT
+          #   value: "9200"
+          # - name: PIPELINE_BATCH_DELAY
+          #   value: "500"
+          # - name: PIPELINE_BATCH_SIZE
+          #   value: "1500"
+          # - name: NODE_NAME
+          #   valueFrom:
+          #     fieldRef:
+          #       fieldPath: spec.nodeName
+
+
           - name: CONTAINER_NAME
-            value: "logstash"
-          - name: NODE_NAME
             value: "logstash"
           - name: LS_JAVA_OPTS
             value: "-Xmx1g -Xms1g"
+          - name: CERTS_DIR
+            value: "/enrichment-shared-volume/certs"
+          - name: node.name
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: LOGSTASH_ELASTICSEARCH_URL
+            value: "http://elasticsearch"
+          - name: LOGSTASH_ELASTICSEARCH_PORT
+            value: "9200"
+          - name: LOGSTASH_ELASTICSEARCH_USER
+            valueFrom:
+              secretKeyRef:
+                name: elk-secrets
+                key: LOGSTASH_USER_B64
+          - name: LOGSTASH_ELASTICSEARCH_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: elk-secrets
+                key: LOGSTASH_PASSWORD_B64
           - name: CONFIG_RELOAD_AUTOMATIC
             value: "true"
           - name: CONFIG_RELOAD_INTERVAL
@@ -572,18 +702,43 @@ spec:
             value: "json"
           - name: LOG_LEVEL
             value: "info"
-          - name: LOGSTASH_ELASTICSEARCH_URL
-            value: "http://elasticsearch"
-          - name: LOGSTASH_ELASTICSEARCH_PORT
-            value: "9200"
+          - name: XPACK_MONITORING_ENABLED
+            value: "true"
+          - name: XPACK_MONITORING_ELASTICSEARCH_HOSTS
+            value: "https://elasticsearch:9200"
+          - name: XPACK_MONITORING_ELASTICSEARCH_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: elk-secrets
+                key: LOGSTASH_USER_B64
+          - name: XPACK_MONITORING_ELASTICSEARCH_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: elk-secrets
+                key: LOGSTASH_PASSWORD_B64
+          - name: XPACK_MONITORING_ELASTICSEARCH_SSL_CERTIFICATE_AUTHORITY
+            value: "$(CERTS_DIR)/ca/ca.crt"
+          # - name: xpack.monitoring.elasticsearch.sniffing
+          #   value: "true"
+          - name: XPACK_MANAGEMENT_ENABLED
+            value: "true"
+          - name: XPACK_MANAGEMENT_ELASTICSEARCH_HOSTS
+            value: "https://elasticsearch:9200"
+          - name: XPACK_MANAGEMENT_ELASTICSEARCH_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: elk-secrets
+                key: LOGSTASH_USER_B64
+          - name: XPACK_MANAGEMENT_ELASTICSEARCH_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: elk-secrets
+                key: LOGSTASH_PASSWORD_B64
           - name: PIPELINE_BATCH_DELAY
             value: "500"
           - name: PIPELINE_BATCH_SIZE
             value: "1500"
-          - name: NODE_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: spec.nodeName
+
         resources:
           limits:
             memory: 2Gi
