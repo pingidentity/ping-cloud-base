@@ -51,8 +51,8 @@ if ! skbnCopy "${SKBN_K8S_PREFIX}/${UPLOAD_DIR}" "${SKBN_CLOUD_PREFIX}/"; then
   exit 1
 fi
 
-# STDOUT for CI test
-ls ${UPLOAD_DIR}
+# STDOUT all the files in one line for integration test
+ls ${UPLOAD_DIR} | xargs
 
 # Cleanup
 rm -rf "${SERVER_BACKUP_DIR}"
