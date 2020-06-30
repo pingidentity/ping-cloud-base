@@ -1,0 +1,21 @@
+### Engine only Bootstrap Configuration
+engine.admin.configuration.host=${adminHost}
+engine.admin.configuration.port=${adminPort}
+engine.admin.configuration.userid=${engineID}
+engine.replicas.configuration.hostports=${replicas}
+
+engine.admin.configuration.keypair=${engineKeyPair} 
+engine.admin.configuration.bootstrap.truststore=${adminCertificates}
+
+pa.http.client.proxy.enabled=${httpClientProxyEnabled}
+pa.http.client.proxy.host=${httpClientProxyHost}
+pa.http.client.proxy.port=${httpClientProxyPort}
+pa.http.client.proxy.requireAuthentication=${httpClientProxyAuth}
+pa.http.client.proxy.username=${httpClientProxyUsername}
+pa.http.client.proxy.password=${httpClientProxyPassword}
+pa.https.client.proxy.enabled=${httpsClientProxyEnabled}
+pa.https.client.proxy.host=${httpsClientProxyHost}
+pa.https.client.proxy.port=${httpsClientProxyPort}
+pa.https.client.proxy.requireAuthentication=${httpsClientProxyAuth}
+pa.https.client.proxy.username=${httpsClientProxyUsername}
+pa.https.client.proxy.password=${httpsClientProxyPassword}
