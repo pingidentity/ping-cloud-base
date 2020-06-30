@@ -9,7 +9,7 @@ spec:
   - port: 9000
     name: pingaccess-admin
   - port: 9090
-    name: pingaccess-cluster
+    name: pingaccess-config-query
   selector:
     role: pingaccess-admin
 

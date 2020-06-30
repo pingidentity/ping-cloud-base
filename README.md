@@ -85,6 +85,15 @@ https://pingaccess-admin.k8s-icecream.ping-devops.com/pa-admin-api/v3/api-docs/
 Pingaccess runtime endpoint:
 https://pingaccess.k8s-icecream.ping-devops.com
 
+Pingaccess WAS console:
+https://pingaccess-was-admin.k8s-icecream.ping-devops.com
+
+Pingaccess WAS API:
+https://pingaccess-was-admin.k8s-icecream.ping-devops.com/pa-admin-api/v3/api-docs/
+
+Pingaccess WAS runtime endpoint:
+https://pingaccess-was.k8s-icecream.ping-devops.com
+
 Kibana console:
 https://logs.k8s-icecream.ping-devops.com
 ```

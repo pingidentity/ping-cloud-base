@@ -1,5 +1,21 @@
 # Changelog
 
+### 1.4.2
+
+- Fixed ingresses to force HTTP traffic to be redirected to HTTPS
+- Fixed a data loss issue in PingFederate admin that was caused by switching it to use a persistent disk
+- Fixed a typo in PingDirectory's BACKENDS_TO_BACKUP environment variable
+- Fixed the base DN to point to the right backend in PingDirectory's purge-sessions script
+
+_Changes:_
+
+- [X] PDO-845 - PingDirectory purge-sessions script set up to use incorrect DN for the backend to be purged
+- [X] PDO-1119 - Data loss caused by switching PingFederate admin to use a persistent disk
+- [X] PDO-1123 - Fix typo in PingDirectory BACKENDS_TO_BACKUP environment variable
+- [X] PDO-1124 - HTTP ingress traffic should be redirected to use HTTPS  
+
+# Changelog
+
 ### 1.4.1
 
 - Changed PingAccess 'podManagementPolicy' to 'OrderedReady' to support zero-downtime update of engines

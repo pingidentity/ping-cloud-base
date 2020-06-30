@@ -629,15 +629,6 @@ for ENV in ${ENVIRONMENTS}; do
     rm -f "${PD_FILE_TO_PATCH}"
   fi
 
-  # If it's a dev/test environment, then the pingdataconsole ingress must be kustomized.
-  CONSOLE_FILE_TO_PATCH="${ENV_DIR}/ping-cloud/pingdataconsole-ingress-patch.yaml.tmpl"
-  if test "${ENV}" = 'test' || test "${ENV}" = 'dev'; then
-    export PING_DATA_CONSOLE_INGRESS_PATCH=$(patch_remove_file "${CONSOLE_FILE_TO_PATCH}")
-  else
-    export PING_DATA_CONSOLE_INGRESS_PATCH=''
-    rm -f "${CONSOLE_FILE_TO_PATCH}"
-  fi
-
   ### End special handling ###
 
   substitute_vars "${ENV_DIR}"

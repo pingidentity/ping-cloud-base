@@ -2,11 +2,25 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-- k8s-configs
+- test
 
 patchesStrategicMerge:
 
 # DEVOPS user/key
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+   name: pingaccess-was-environment-variables
+  data:
+    PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}
+    PING_IDENTITY_DEVOPS_KEY: ${PING_IDENTITY_DEVOPS_KEY}
+    PA_ADMIN_PUBLIC_HOSTNAME: pingaccess-admin.${TENANT_DOMAIN}
+    PA_ENGINE_PUBLIC_HOSTNAME: pingaccess.${TENANT_DOMAIN}
+    PF_ADMIN_PUBLIC_HOSTNAME: pingfederate-admin.${TENANT_DOMAIN}
+    PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
+    BACKUP_URL: ${BACKUP_URL}
+    REGION: ${REGION}
 - |-
   apiVersion: v1
   kind: ConfigMap
@@ -57,6 +71,7 @@ patchesJson6902:
     version: v1beta1
     kind: Ingress
     name: pingdataconsole-ingress
+    namespace: ${NAMESPACE}
   patch: |-
     - op: replace
       path: /spec/tls/0/hosts/0
@@ -83,6 +98,7 @@ patchesJson6902:
     version: v1beta1
     kind: Ingress
     name: pingfederate-admin-ingress
+    namespace: ${NAMESPACE}
   patch: |-
     - op: replace
       path: /spec/tls/0/hosts/0
@@ -90,6 +106,32 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingfederate-admin.${TENANT_DOMAIN}
+
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingaccess-was-ingress
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingaccess-was.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingaccess-was.${TENANT_DOMAIN}
+
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingaccess-was-admin-ingress
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingaccess-was-admin.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingaccess-was-admin.${TENANT_DOMAIN}
 
 - target:
     group: extensions
@@ -109,6 +151,7 @@ patchesJson6902:
     version: v1beta1
     kind: Ingress
     name: pingaccess-admin-ingress
+    namespace: ${NAMESPACE}
   patch: |-
     - op: replace
       path: /spec/tls/0/hosts/0
