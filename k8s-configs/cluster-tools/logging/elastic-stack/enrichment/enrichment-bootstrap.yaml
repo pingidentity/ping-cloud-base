@@ -9,7 +9,7 @@ spec:
 
   initContainers:
   - name: efs-provisioner
-    image: quay.io/external_storage/efs-provisioner:latest
+    image: quay.io/external_storage/efs-provisioner:v2.4.0
     imagePullPolicy: IfNotPresent
     workingDir: /scripts
     command: ["sh", '$(CONTAINER_NAME).sh']
@@ -100,7 +100,7 @@ spec:
   containers:
 
   - name: elasticsearch-bootstrap
-    image: 7es7/enrichment-bootstrap:latest
+    image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.1
     workingDir: /scripts
     command: ["sh", '$(CONTAINER_NAME).sh']
 

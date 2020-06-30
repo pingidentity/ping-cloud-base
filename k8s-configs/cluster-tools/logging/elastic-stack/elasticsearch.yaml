@@ -65,7 +65,7 @@ spec:
           privileged: true
 
       - name: create-certs
-        image: 7es7/enrichment-bootstrap:latest
+        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.1
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
 
@@ -102,7 +102,7 @@ spec:
           readOnly: true
 
       - name: create-passwords
-        image: 7es7/enrichment-bootstrap:latest
+        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.1
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
 
@@ -191,7 +191,7 @@ spec:
 
       containers:
       - name: elasticsearch
-        image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.8.0
 
         securityContext:
           runAsUser: 1000

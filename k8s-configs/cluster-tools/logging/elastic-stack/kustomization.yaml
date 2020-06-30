@@ -10,3 +10,4 @@ resources:
 - elasticsearch.yaml
 - kibana.yaml
 - logstash.yaml
+- kibana_dashboards.yaml

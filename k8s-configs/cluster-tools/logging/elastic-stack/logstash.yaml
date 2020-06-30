@@ -571,7 +571,7 @@ spec:
       #     readOnly: false
 
       - name: check-service-availability
-        image: 7es7/enrichment-bootstrap:latest
+        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.1
         command: ["sh", '$(CONTAINER_NAME).sh']
 
         env:
@@ -606,7 +606,7 @@ spec:
             mountPath: /enrichment-shared-volume
 
       - name: create-enrichment-cache-files
-        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:latest
+        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.1
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
 
