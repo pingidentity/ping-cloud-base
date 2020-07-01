@@ -39,8 +39,7 @@ if [ 200 = ${http_response_code} ]; then
 
         # Accept EULA
         echo "Accepting the EULA..."
-        # eula already updated after server profile import
-        eula_payload=$(cat ${templates_dir_path}/eula.json)
+        eula_payload=$(envsubst < ${templates_dir_path}/eula.json)
         make_initial_api_request -s -X PUT \
             -d "${eula_payload}" \
             "https://localhost:9000/pa-admin-api/v3/users/1" > /dev/null

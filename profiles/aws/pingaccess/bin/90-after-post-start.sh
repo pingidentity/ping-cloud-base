@@ -4,4 +4,4 @@
 
 _curDir=$(dirname $0)
 
-run_hook "91-post-start.sh" $_curDir
+run_hook "91-post-start-init.sh" $_curDir
