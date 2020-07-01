@@ -6,7 +6,8 @@
 ########################################################################################################################
 function make_api_request() {
     set +x
-    http_code=$(curl -k -o ${OUT_DIR}/api_response.txt -w "%{http_code}" \
+    tmpDir=$(mktemp -p -d ${MOUNT_DIR})
+    http_code=$(curl -k -o ${tmpDir}/api_response.txt -w "%{http_code}" \
          --retry ${API_RETRY_LIMIT} \
          --max-time ${API_TIMEOUT_WAIT} \
          --retry-delay 1 \
@@ -26,7 +27,7 @@ function make_api_request() {
         "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
 
-    cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
+    cat ${tmpDir}/api_response.txt && rm -rf ${tmpDir}
 
     return 0
 }
@@ -37,7 +38,8 @@ function make_api_request() {
 ########################################################################################################################
 function make_initial_api_request() {
     set +x
-    http_code=$(curl -k -o ${OUT_DIR}/api_response.txt -w "%{http_code}" \
+    tmpDir=$(mktemp -p -d ${MOUNT_DIR})
+    http_code=$(curl -k -o ${tempDir}/api_response.txt -w "%{http_code}" \
          --retry ${API_RETRY_LIMIT} \
          --max-time ${API_TIMEOUT_WAIT} \
          --retry-delay 1 \
@@ -57,7 +59,7 @@ function make_initial_api_request() {
         "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
 
-    cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
+    cat ${tempDir}/api_response.txt && rm -rf ${tmpDir}
 
     return 0
 }
@@ -154,7 +156,7 @@ function changePassword() {
     # Using set +x to suppress shell debugging
     # because it reveals the new admin password
     set +x
-    change_password_payload=$(inject_template ${STAGING_DIR}/templates/81/change_password.json)
+    change_password_payload=$(inject_template ${MOUNT_DIR}/templates/81/change_password.json)
     make_initial_api_request -s -X PUT \
         -d "${change_password_payload}" \
         "https://localhost:9000/pa-admin-api/v3/users/1/password" > /dev/null
@@ -175,16 +177,16 @@ function changePassword() {
 }
 
 ########################################################################################################################
-# Function to read password within ${OUT_DIR}/secrets/pa-admin-password.
+# Function to read password within ${MOUNT_DIR}/secrets/pa-admin-password.
 #
 ########################################################################################################################
 function readPasswordFromDisk() {
   set +x
   # if file doesn't exist return empty string
-  if ! test -f ${OUT_DIR}/secrets/pa-admin-password; then
+  if ! test -f ${MOUNT_DIR}/secrets/pa-admin-password; then
     echo ""
   else
-    password=$( cat ${OUT_DIR}/secrets/pa-admin-password )
+    password=$( cat ${MOUNT_DIR}/secrets/pa-admin-password )
     echo ${password}
   fi
   "${VERBOSE}" && set -x
@@ -197,9 +199,9 @@ function readPasswordFromDisk() {
 ########################################################################################################################
 function createSecretFile() {
   # make directory if it doesn't exist
-  mkdir -p ${OUT_DIR}/secrets
+  mkdir -p ${MOUNT_DIR}/secrets
   set +x
-  echo "${PA_ADMIN_USER_PASSWORD}" > ${OUT_DIR}/secrets/pa-admin-password
+  echo "${PA_ADMIN_USER_PASSWORD}" > ${MOUNT_DIR}/secrets/pa-admin-password
   "${VERBOSE}" && set -x
   return 0
 }
