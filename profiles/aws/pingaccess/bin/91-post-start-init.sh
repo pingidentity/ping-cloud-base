@@ -36,7 +36,9 @@ if ! test -f "${ADMIN_CONFIGURATION_COMPLETE}"; then
 elif test $(comparePasswordDiskWithVariable) -eq 0; then
 
   changePassword
-  
+
+else
+  echo "post-start-init not needed. skipping..."
 fi
 
 # TODO: update this to kick off the backup cronjob
