@@ -6,7 +6,7 @@
 ########################################################################################################################
 function make_api_request() {
     set +x
-    tmpDir=$(mktemp -p -d ${MOUNT_DIR})
+    tmpDir=$(mktemp -d -p ${MOUNT_DIR})
     http_code=$(curl -k -o ${tmpDir}/api_response.txt -w "%{http_code}" \
          --retry ${API_RETRY_LIMIT} \
          --max-time ${API_TIMEOUT_WAIT} \
@@ -38,7 +38,7 @@ function make_api_request() {
 ########################################################################################################################
 function make_initial_api_request() {
     set +x
-    tmpDir=$(mktemp -p -d ${MOUNT_DIR})
+    tmpDir=$(mktemp -d -p ${MOUNT_DIR})
     http_code=$(curl -k -o ${tempDir}/api_response.txt -w "%{http_code}" \
          --retry ${API_RETRY_LIMIT} \
          --max-time ${API_TIMEOUT_WAIT} \
