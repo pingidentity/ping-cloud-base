@@ -15,7 +15,7 @@ if ! [ -z "${OPERATIONAL_MODE}" ] &&  [ "${OPERATIONAL_MODE}" != "CLUSTERED_ENGI
 fi
 
 if ! [ -z "${OPERATIONAL_MODE}" ] &&  [ "${OPERATIONAL_MODE}" = "CLUSTERED_ENGINE" ]; then
-   run_hook "10-get-master-key.sh"
+   run_hook "10-get-configuration.sh"
    run_hook "10-set-engine-threads.sh"
 fi
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Source the script we're testing
-script_to_test="${PROJECT_DIR}"/profiles/aws/pingaccess/hooks/utils.lib.sh
+script_to_test="${PROJECT_DIR}"/profiles/aws/pingfederate/hooks/utils.lib.sh
 . "${script_to_test}"
 
 # Mock up the curl responses
@@ -42,6 +42,36 @@ oneTimeTearDown() {
   unset STOP_SERVER_ON_FAILURE
 }
 
+##### Begin Tests: Make API requests and expect JSON response #####
+testMakeApiRequestOk() {
+  make_api_request 'ok'
+  exit_code=$?
+
+  assertEquals 0 ${exit_code}
+}
+
+testMakeApiRequestUnauthorized() {
+  set +x
+  msg=$(make_api_request 'unauthorized')
+  exit_code=$?
+
+  assertEquals 1 ${exit_code}
+  assertEquals 'API call returned HTTP status code: 401' "${msg}"
+}
+
+testMakeApiRequestConnError() {
+  msg=$(make_api_request 'conn_error')
+  exit_code=$?
+
+  # The returned status code here is 127 despite
+  # returned status code 1 in the function.  Bug?
+  assertEquals 1 ${exit_code}
+  assertEquals 'Admin API connection refused' "${msg}"
+}
+##### End Tests: Make API requests and expect JSON response #####
+
+
+##### Begin Tests: Make API Requests and expect file download #####
 testMakeApiRequestDownloadOk() {
   make_api_request_download 'ok'
   exit_code=$?
@@ -51,8 +81,6 @@ testMakeApiRequestDownloadOk() {
 
 testMakeApiRequestDownloadUnauthorized() {
   set +x
-  # Execute in a subshell since this
-  # case will exit 1 (rather than return 1)
   msg=$(make_api_request_download 'unauthorized')
   exit_code=$?
 
@@ -61,17 +89,15 @@ testMakeApiRequestDownloadUnauthorized() {
 }
 
 testMakeApiRequestDownloadConnError() {
-
-  # Execute in a subshell since this
-  # case will exit 1 (rather than return 1)
   msg=$(make_api_request_download 'conn_error')
   exit_code=$?
 
-  # The exit code here is 127 despite
-  # exit 1 in the function.  Bug?
+  # The returned status code here is 127 despite
+  # returned status code 1 in the function.  Bug?
   assertEquals 1 ${exit_code}
   assertEquals 'Admin API connection refused' "${msg}"
 }
+##### End Tests: Make API Requests and expect file download #####
 
 # load shunit
 . ${SHUNIT_PATH}
