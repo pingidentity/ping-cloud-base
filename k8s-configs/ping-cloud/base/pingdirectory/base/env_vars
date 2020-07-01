@@ -7,6 +7,8 @@ SERVER_PROFILE_BRANCH=master
 ROOT_USER_PASSWORD_FILE=/usr/local/secrets/root-user-password
 ADMIN_USER_PASSWORD_FILE=/usr/local/secrets/admin-user-password
 ENCRYPTION_PASSWORD_FILE=/usr/local/secrets/encryption-password
+ADS_CRT_FILE=/usr/local/secrets/ads.crt
+ADS_KEY_FILE=/usr/local/secrets/ads.key
 
 LOCATION=Austin
 
