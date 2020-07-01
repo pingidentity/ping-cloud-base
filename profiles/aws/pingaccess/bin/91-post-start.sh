@@ -25,7 +25,7 @@ pingaccess_admin_wait
 ADMIN_CONFIGURATION_COMPLETE=${OUT_DIR}/instance/ADMIN_CONFIGURATION_COMPLETE
 if ! test -f "${ADMIN_CONFIGURATION_COMPLETE}"; then
 
-  sh "${_curDir}/81-import-initial-configuration.sh"
+  sh "${_curDir}/92-import-initial-configuration.sh"
   if test $? -ne 0; then
     exit 1
   fi
