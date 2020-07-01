@@ -22,7 +22,7 @@ pingaccess_admin_wait
 # ADMIN_CONFIGURATION_COMPLETE is used as a marker file that tracks if server was initially configured.
 #
 # If ADMIN_CONFIGURATION_COMPLETE does not exist then set initial configuration.
-ADMIN_CONFIGURATION_COMPLETE=${OUT_DIR}/instance/ADMIN_CONFIGURATION_COMPLETE
+ADMIN_CONFIGURATION_COMPLETE=${MOUNT_DIR}/data/ADMIN_CONFIGURATION_COMPLETE
 if ! test -f "${ADMIN_CONFIGURATION_COMPLETE}"; then
 
   sh "${_curDir}/92-import-initial-configuration.sh"
