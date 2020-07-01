@@ -8,7 +8,7 @@ _curDir=$(dirname $0)
 set -e
 "${VERBOSE}" && set -x
 
-templates_dir_path=${MOUNT_DIR}/templates/81
+templates_dir_path=${MOUNT_DIR}/templates/92
 
 # Fetch using the -i flag to get the HTTP response
 # headers as well
@@ -39,7 +39,8 @@ if [ 200 = ${http_response_code} ]; then
 
         # Accept EULA
         echo "Accepting the EULA..."
-        eula_payload=$(envsubst < ${templates_dir_path}/eula.json)
+        # eula already updated after server profile import
+        eula_payload=$(cat ${templates_dir_path}/eula.json)
         make_initial_api_request -s -X PUT \
             -d "${eula_payload}" \
             "https://localhost:9000/pa-admin-api/v3/users/1" > /dev/null
