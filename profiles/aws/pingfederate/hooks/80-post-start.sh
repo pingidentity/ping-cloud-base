@@ -20,15 +20,20 @@ rm -f "${POST_START_INIT_MARKER_FILE}"
 echo "post-start: waiting for admin API to be ready"
 wait_for_admin_api_endpoint configArchive/export
 
+# Replicate admin changes to engine(s)
+echo "post-start: Replicating admin changes to engine(s)"
+sh "${HOOKS_DIR}/95-replicate-engines.sh"
+REPLICATION_STATUS=${?}
+echo "post-start: engine replication status: ${REPLICATION_STATUS}"
+
 # Upload a backup right away after starting the server.
 echo "post-start: uploading data backup to s3"
 sh "${HOOKS_DIR}/82-upload-archive-data-s3.sh"
-
 BACKUP_STATUS=${?}
 echo "post-start: data backup status: ${BACKUP_STATUS}"
 
 # Write the marker file if post-start succeeds.
-if test "${BACKUP_STATUS}" -eq 0; then
+if test "${BACKUP_STATUS}" -eq 0 && test "${REPLICATION_STATUS}" -eq 0; then
   touch "${POST_START_INIT_MARKER_FILE}"
   exit 0
 fi
