@@ -75,7 +75,7 @@ spec:
           subPath: init.sh
       containers:
       - name: pingdirectory
-        image: 574076504146.dkr.ecr.us-east-1.amazonaws.com/pingdirectory:8.1.0.0-alpine-az11-DS-42439
+        image: gcr.io/ping-identity/pingdirectory:8.1.0.0-alpine-az11-DS-42439
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 1389
