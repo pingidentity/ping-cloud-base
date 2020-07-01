@@ -25,7 +25,7 @@ pingaccess_admin_wait
 ADMIN_CONFIGURATION_COMPLETE=${OUT_DIR}/instance/ADMIN_CONFIGURATION_COMPLETE
 if ! test -f "${ADMIN_CONFIGURATION_COMPLETE}"; then
 
-  sh "${HOOKS_DIR}/81-import-initial-configuration.sh"
+  sh "${_curDir}/81-import-initial-configuration.sh"
   if test $? -ne 0; then
     exit 1
   fi
@@ -39,18 +39,19 @@ elif test $(comparePasswordDiskWithVariable) -eq 0; then
   
 fi
 
+# TODO: update this to kick off the backup cronjob
 # Upload a backup right away after starting the server.
-sh "${HOOKS_DIR}/90-upload-backup-s3.sh"
-BACKUP_STATUS=${?}
+#sh "${HOOKS_DIR}/90-upload-backup-s3.sh"
+#BACKUP_STATUS=${?}
 
-echo "post-start: data backup status: ${BACKUP_STATUS}"
+#echo "post-start: data backup status: ${BACKUP_STATUS}"
 
-# Write the marker file if post-start succeeds.
-if test "${BACKUP_STATUS}" -eq 0; then
+## Write the marker file if post-start succeeds.
+#if test "${BACKUP_STATUS}" -eq 0; then
   touch "${POST_START_INIT_MARKER_FILE}"
   exit 0
-fi
+#fi
 
 # Kill the container if post-start fails.
-echo "post-start: admin post-start backup failed"
-"${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
+#echo "post-start: admin post-start backup failed"
+#"${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
