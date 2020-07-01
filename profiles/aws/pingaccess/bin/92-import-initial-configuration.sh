@@ -6,7 +6,8 @@ _curDir=$(dirname $0)
 . "${_curDir}/utils.lib.sh"
 
 set -e
-"${VERBOSE}" && set -x
+#"${VERBOSE}" && set -x
+set -x
 
 templates_dir_path=${MOUNT_DIR}/templates/92
 
