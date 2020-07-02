@@ -7,14 +7,6 @@ data:
   instances.yml: |
     instances:
     - name: "elasticsearch"
-      ip:
-        - "127.0.0.1"
     - name: "enrichment-bootstrap"
-      ip:
-        - "127.0.0.1"
     - name: "kibana"
-      ip:
-        - "127.0.0.1"
     - name: "logstash"
-      ip:
-        - "127.0.0.1"

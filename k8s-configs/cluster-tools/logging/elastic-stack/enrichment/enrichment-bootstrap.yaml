@@ -8,6 +8,7 @@ spec:
   serviceAccount: enrichment
 
   initContainers:
+
   - name: efs-provisioner
     image: quay.io/external_storage/efs-provisioner:v2.4.0
     imagePullPolicy: IfNotPresent
@@ -15,29 +16,29 @@ spec:
     command: ["sh", '$(CONTAINER_NAME).sh']
 
     env:
-      - name: FILE_SYSTEM_ID
-        valueFrom:
-          configMapKeyRef:
-            name: efs-provisioner
-            key: file.system.id
-      - name: AWS_REGION
-        valueFrom:
-          configMapKeyRef:
-            name: efs-provisioner
-            key: aws.region
-      - name: DNS_NAME
-        valueFrom:
-          configMapKeyRef:
-            name: efs-provisioner
-            key: dns.name
-            optional: true
-      - name: PROVISIONER_NAME
-        valueFrom:
-          configMapKeyRef:
-            name: efs-provisioner
-            key: provisioner.name
-      - name: CONTAINER_NAME
-        value: "efs-provisioner"
+    - name: FILE_SYSTEM_ID
+      valueFrom:
+        configMapKeyRef:
+          name: efs-provisioner
+          key: file.system.id
+    - name: AWS_REGION
+      valueFrom:
+        configMapKeyRef:
+          name: efs-provisioner
+          key: aws.region
+    - name: DNS_NAME
+      valueFrom:
+        configMapKeyRef:
+          name: efs-provisioner
+          key: dns.name
+          optional: true
+    - name: PROVISIONER_NAME
+      valueFrom:
+        configMapKeyRef:
+          name: efs-provisioner
+          key: provisioner.name
+    - name: CONTAINER_NAME
+      value: "efs-provisioner"
 
     volumeMounts:
       - mountPath: /enrichment-shared-volume
@@ -46,6 +47,109 @@ spec:
       - name: efs-provisioner-script
         mountPath: /scripts/efs-provisioner.sh
         subPath: efs-provisioner.sh
+
+  - name: create-certs
+    image: 7es7/enrichment-bootstrap:latest   # gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.1
+    workingDir: /scripts
+    command: ["sh", '$(CONTAINER_NAME).sh']
+
+    securityContext:
+      runAsUser: 0
+      runAsGroup: 0
+
+    env:
+    - name: CONTAINER_NAME
+      value: "create-certs"
+    - name: CERTS_DIR
+      value: "/enrichment-shared-volume/certs"
+    - name: ES_PATH_CONF
+      value: "/usr/share/elasticsearch/data/config"
+
+    volumeMounts:
+    - name: enrichment-shared-volume
+      mountPath: /enrichment-shared-volume
+      readOnly: false
+    - name: enrichment-certs-config
+      mountPath: /usr/share/elasticsearch/data/config/instances.yml
+      subPath: instances.yml
+      readOnly: true
+
+
+  - name: user-management
+    image: 7es7/enrichment-bootstrap:latest   # gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.1
+    workingDir: /scripts
+    command: ["sh", '$(CONTAINER_NAME).sh']
+
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+
+    env:
+    - name: CONTAINER_NAME
+      value: "user-management"
+    # Service checking related env vars
+    - name: CHECK_SERVICE_URL
+      value: "https://elasticsearch"
+    - name: CHECK_SERVICE_PORT
+      value: "9200"
+    - name: CHECK_SERVICE_USER
+      valueFrom:
+        secretKeyRef:
+          name: elk-secrets
+          key: ELASTIC_BOOTSTRAP_USER_B64
+    - name: CHECK_SERVICE_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: elk-secrets
+          key: ELASTIC_BOOTSTRAP_PASSWORD_B64
+    - name: CERTS_DIR
+      value: "/enrichment-shared-volume/certs"
+    - name: CHECK_SERVICE_CERT
+      value: "enrichment-bootstrap"
+    - name: DESIRED_STATUS
+      value: "green"
+    # Users credentials
+    - name: ELASTIC_USER
+      valueFrom:
+        secretKeyRef:
+          name: elk-secrets
+          key: ELASTIC_USER_B64
+    - name: ELASTIC_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: elk-secrets
+          key: ELASTIC_PASSWORD_B64
+    - name: ELASTIC_ROLES
+      value: "superuser"
+    - name: LOGSTASH_USER
+      valueFrom:
+        secretKeyRef:
+          name: elk-secrets
+          key: LOGSTASH_USER_B64
+    - name: LOGSTASH_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: elk-secrets
+          key: LOGSTASH_PASSWORD_B64
+    - name: LOGSTASH_ROLES
+      value: "superuser"
+    - name: KIBANA_USER
+      valueFrom:
+        secretKeyRef:
+          name: elk-secrets
+          key: KIBANA_USER_B64
+    - name: KIBANA_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: elk-secrets
+          key: KIBANA_PASSWORD_B64
+    - name: KIBANA_ROLES
+      value: "superuser"
+
+    volumeMounts:
+    - name: enrichment-shared-volume
+      mountPath: /enrichment-shared-volume
+      readOnly: false
 
   containers:
 
@@ -62,6 +166,7 @@ spec:
       value: "elasticsearch-bootstrap"
     - name: ES_PATH_CONF
       value: "/usr/share/elasticsearch/data/config"
+    # Service checking related env vars
     - name: CHECK_SERVICE_URL
       value: "https://elasticsearch"
     - name: CHECK_SERVICE_PORT
@@ -79,9 +184,7 @@ spec:
     - name: CERTS_DIR
       value: "/enrichment-shared-volume/certs"
     - name: CHECK_SERVICE_CERT
-      valueFrom:
-        fieldRef:
-          fieldPath: metadata.name
+      value: "enrichment-bootstrap"
     - name: DESIRED_STATUS
       value: "green"
 
@@ -95,8 +198,6 @@ spec:
       mountPath: /usr/share/elasticsearch/data/index-bootstraps
     - name: enrichment-elasticsearch-index-templates
       mountPath: /usr/share/elasticsearch/data/index-templates
-    - name: enrichment-elasticsearch-role-bootstraps
-      mountPath: /usr/share/elasticsearch/data/role-bootstraps
 
   volumes:
   - name: enrichment-shared-volume
@@ -122,9 +223,6 @@ spec:
   - name: enrichment-elasticsearch-index-templates
     configMap:
       name: enrichment-elasticsearch-index-templates
-  - name: enrichment-elasticsearch-role-bootstraps
-    configMap:
-      name: enrichment-elasticsearch-role-bootstraps
 
 ---
 apiVersion: v1

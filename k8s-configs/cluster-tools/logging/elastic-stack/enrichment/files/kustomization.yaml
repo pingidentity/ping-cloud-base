@@ -8,8 +8,7 @@ resources:
 - elasticsearch-ilm-policies.yaml
 - elasticsearch-index-bootstraps.yaml
 - elasticsearch-index-templates.yaml
-- elasticsearch-role-bootstraps.yaml
 - elasticsearch-yaml-config.yaml
 - enrichment-cache.yaml
-- kibana-config.yaml
+- kibana-dashboards.yaml
 - logstash-search-templates.yaml

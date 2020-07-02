@@ -22,44 +22,28 @@ spec:
         command: ["sh", '$(CONTAINER_NAME).sh']
 
         env:
-        - name: CONTAINER_NAME
-          value: "check-service-availability"
-
-        - name: CHECK_SERVICE_URL
-          value: "https://elasticsearch"
-        - name: CHECK_SERVICE_PORT
-          value: "9200"
-        - name: CHECK_SERVICE_USER
-          valueFrom:
-            secretKeyRef:
-              name: elk-secrets
-              key: KIBANA_USER_B64
-        - name: CHECK_SERVICE_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: elk-secrets
-              key: KIBANA_PASSWORD_B64
-        - name: CERTS_DIR
-          value: "/enrichment-shared-volume/certs"
-        - name: CHECK_SERVICE_CERT
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
-        - name: DESIRED_STATUS
-          value: "green"
-
-        volumeMounts:
-          - name: enrichment-shared-volume
-            mountPath: /enrichment-shared-volume
-
-      - name: get-kibana-config
-        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:latest
-        workingDir: /scripts
-        command: ["sh", '$(CONTAINER_NAME).sh']
-
-        env:
-        - name: CONTAINER_NAME
-          value: "get-kibana-config"
+          - name: CONTAINER_NAME
+            value: "check-service-availability"
+          - name: CHECK_SERVICE_URL
+            value: "https://elasticsearch"
+          - name: CHECK_SERVICE_PORT
+            value: "9200"
+          - name: CHECK_SERVICE_USER
+            valueFrom:
+              secretKeyRef:
+                name: elk-secrets
+                key: KIBANA_USER_B64
+          - name: CHECK_SERVICE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: elk-secrets
+                key: KIBANA_PASSWORD_B64
+          - name: CERTS_DIR
+            value: "/enrichment-shared-volume/certs"
+          - name: CHECK_SERVICE_CERT
+            value: "kibana"
+          - name: DESIRED_STATUS
+            value: "green"
 
         volumeMounts:
         - name: enrichment-shared-volume
@@ -70,55 +54,61 @@ spec:
       - name: kibana
         image: docker.elastic.co/kibana/kibana:7.8.0
 
+        ports:
+        - containerPort: 5601
+          name: http
+
         env:
-        - name: CONTAINER_NAME
-          value: "kibana"
-        - name: CERTS_DIR
-          value: "/enrichment-shared-volume/certs"
-        - name: POD_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
-        - name: SERVER_NAME
-          value: "ping-kibana"
-        - name: SERVER_HOST
-          value: "127.0.0.1"
-        - name: SERVER_PORT
-          value: "5601"
-        - name: ELASTICSEARCH_HOSTS
-          value: "https://elasticsearch:9200"
-        - name: ELASTICSEARCH_USERNAME
-          valueFrom:
-            secretKeyRef:
-              name: elk-secrets
-              key: KIBANA_USER_B64
-        - name: ELASTICSEARCH_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: elk-secrets
-              key: KIBANA_PASSWORD_B64
-
-        - name: XPACK_MONITORING_ENABLED
-          value: "true"
-        - name: XPACK_MONITORING_ELASTICSEARCH_URL
-          value: "https://elasticsearch:9200"
-        - name: XPACK_MONITORING_ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES
-          value: "$(CERTS_DIR)/ca/ca.crt"
-
-        - name: SERVER_SSL_ENABLED
-          value: "true"
-        - name: SERVER_SSL_CERTIFICATE
-          value: "$(CERTS_DIR)/kibana/kibana.crt"
-        - name: SERVER_SSL_KEY
-          value: "$(CERTS_DIR)/kibana/kibana.key"
-        - name: ELASTICSEARCH_SSL_VERIFICATIONMODE
-          value: "none"
-        - name: ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES
-          value: "$(CERTS_DIR)/ca/ca.crt"
-        - name: ELASTICSEARCH_SSL_CERTIFICATE
-          value: "$(CERTS_DIR)/kibana/kibana.crt"
-        - name: ELASTICSEARCH_SSL_KEY
-          value: "$(CERTS_DIR)/kibana/kibana.key"
+          - name: CONTAINER_NAME
+            value: "kibana"
+          - name: CERTS_DIR
+            value: "/enrichment-shared-volume/certs"
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: SERVER_NAME
+            value: "ping-kibana"
+          - name: SERVER_HOST
+            value: "127.0.0.1"
+          - name: SERVER_PORT
+            value: "5601"
+          - name: ELASTICSEARCH_HOSTS
+            value: "https://elasticsearch:9200"
+          - name: ELASTICSEARCH_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: elk-secrets
+                key: KIBANA_USER_B64
+          - name: ELASTICSEARCH_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: elk-secrets
+                key: KIBANA_PASSWORD_B64
+  
+          - name: XPACK_MONITORING_ENABLED
+            value: "true"
+          - name: XPACK_MONITORING_ELASTICSEARCH_URL
+            value: "https://elasticsearch:9200"
+          - name: XPACK_MONITORING_ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES
+            value: "$(CERTS_DIR)/ca/ca.crt"
+  
+          # - name: SERVER_SSL_ENABLED
+          #   value: "true"
+          # - name: SERVER_SSL_CERTIFICATE
+          #   value: "$(CERTS_DIR)/kibana/kibana.crt"
+          # - name: SERVER_SSL_KEY
+          #   value: "$(CERTS_DIR)/kibana/kibana.key"
+          - name: ELASTICSEARCH_SSL_VERIFICATIONMODE
+            value: "certificate"
+          - name: ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES
+            value: "$(CERTS_DIR)/ca/ca.crt"
+          - name: ELASTICSEARCH_SSL_CERTIFICATE
+            value: "$(CERTS_DIR)/elasticsearch/elasticsearch.crt"
+            # value: "$(CERTS_DIR)/kibana/kibana.crt"
+          - name: ELASTICSEARCH_SSL_KEY
+            value: "$(CERTS_DIR)/elasticsearch/elasticsearch.key"
+            # value: "$(CERTS_DIR)/kibana/kibana.key"
 
         resources:
           limits:
@@ -128,20 +118,16 @@ spec:
             memory: 512Mi
             cpu: 100m
 
-        ports:
-        - name: http
-          containerPort: 5601
-
         volumeMounts:
-          - mountPath: /enrichment-shared-volume
-            name: enrichment-shared-volume
-            readOnly: false
+        - mountPath: /enrichment-shared-volume
+          name: enrichment-shared-volume
+          readOnly: false
 
       volumes:
-        - name: enrichment-shared-volume
-          nfs:
-            server: ${EFS_FILESYSTEM_ID}.efs.${REGION}.amazonaws.com
-            path: /
+      - name: enrichment-shared-volume
+        nfs:
+          server: fs-c2e4d068.efs.us-west-2.amazonaws.com
+          path: /
 
 ---
 # This service exposes the Kibana http port to the cluster.
@@ -157,43 +143,44 @@ spec:
     name: http
   selector:
     app: kibana
----
+
+# ---
 # apiVersion: batch/v1
 # kind: Job
 # metadata:
 #   name: kibana-dashboard-upload
 # spec:
-#   template:
-#     spec: 
-#       containers:
-#       - name: kibana-dashboard-upload
-#         image: 7es7/enrichment-bootstrap:latest   # gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.1
-#         workingDir: /scripts
-#         command: ["sh", '$(CONTAINER_NAME).sh']
+# template:
+#   spec: 
+#     containers:
+#     - name: kibana-dashboard-upload
+#       image: 7es7/enrichment-bootstrap:latest   # gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.1
+#       workingDir: /scripts
+#       command: ["sh", '$(CONTAINER_NAME).sh']
 
-#         securityContext:
-#           privileged: true
+#       securityContext:
+#         privileged: true
 
-#         volumeMounts: 
-#         - name: kibana-dashboard-pa
-#           mountPath: /scripts/dashboards/pa.ndjson
-#         - name: kibana-dashboard-pd
-#           mountPath: /scripts/dashboards/pd.ndjson
-#         - name: kibana-dashboard-pf
-#           mountPath: /scripts/dashboards/pf.ndjson
-#         - name: kibana-dashboard-pf-basic
-#           mountPath: /scripts/dashboards/pf-basic.ndjson
-
-#       volumes:
+#       volumeMounts: 
 #       - name: kibana-dashboard-pa
-#         configMap:
-#           name: kibana-dashboard-pa 
+#         mountPath: /scripts/dashboards/pa.ndjson
 #       - name: kibana-dashboard-pd
-#         configMap:
-#           name: kibana-dashboard-pd 
+#         mountPath: /scripts/dashboards/pd.ndjson
 #       - name: kibana-dashboard-pf
-#         configMap:
-#           name: kibana-dashboard-pf
+#         mountPath: /scripts/dashboards/pf.ndjson
 #       - name: kibana-dashboard-pf-basic
-#         configMap:
-#           name: kibana-dashboard-pf-basic
+#         mountPath: /scripts/dashboards/pf-basic.ndjson
+
+#     volumes:
+#     - name: kibana-dashboard-pa
+#       configMap:
+#         name: kibana-dashboard-pa 
+#     - name: kibana-dashboard-pd
+#       configMap:
+#         name: kibana-dashboard-pd 
+#     - name: kibana-dashboard-pf
+#       configMap:
+#         name: kibana-dashboard-pf
+#     - name: kibana-dashboard-pf-basic
+#       configMap:
+#         name: kibana-dashboard-pf-basic
