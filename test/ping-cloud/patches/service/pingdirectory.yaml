@@ -10,7 +10,7 @@ spec:
   ports:
     - protocol: TCP
       port: 1636
-      targetPort: 5678
+      targetPort: 6360
       name: ldaps
     - protocol: TCP
       port: 8989
@@ -31,7 +31,7 @@ spec:
   ports:
     - protocol: TCP
       port: 1636
-      targetPort: 5678
+      targetPort: 6361
       name: ldaps
     - protocol: TCP
       port: 8989
@@ -52,7 +52,7 @@ spec:
   ports:
     - protocol: TCP
       port: 1636
-      targetPort: 5678
+      targetPort: 6362
       name: ldaps
     - protocol: TCP
       port: 8989
@@ -73,7 +73,7 @@ spec:
   ports:
     - protocol: TCP
       port: 1636
-      targetPort: 5678
+      targetPort: 6363
       name: ldaps
     - protocol: TCP
       port: 8989
@@ -94,7 +94,7 @@ spec:
   ports:
     - protocol: TCP
       port: 1636
-      targetPort: 5678
+      targetPort: 6364
       name: ldaps
     - protocol: TCP
       port: 8989
@@ -115,7 +115,7 @@ spec:
   ports:
     - protocol: TCP
       port: 1636
-      targetPort: 5678
+      targetPort: 6365
       name: ldaps
     - protocol: TCP
       port: 8989
@@ -136,7 +136,7 @@ spec:
   ports:
     - protocol: TCP
       port: 1636
-      targetPort: 5678
+      targetPort: 6366
       name: ldaps
     - protocol: TCP
       port: 8989
@@ -157,7 +157,7 @@ spec:
   ports:
     - protocol: TCP
       port: 1636
-      targetPort: 5678
+      targetPort: 6367
       name: ldaps
     - protocol: TCP
       port: 8989
@@ -178,7 +178,7 @@ spec:
   ports:
     - protocol: TCP
       port: 1636
-      targetPort: 5678
+      targetPort: 6368
       name: ldaps
     - protocol: TCP
       port: 8989
