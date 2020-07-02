@@ -37,7 +37,7 @@ function make_api_request() {
 #
 ########################################################################################################################
 function make_initial_api_request() {
-    #set +x #TODO: uncomment this line
+    set +x
     tmpDir=$(mktemp -d -p ${MOUNT_DIR})
     http_code=$(curl -k -o ${tmpDir}/api_response.txt -w "%{http_code}" \
          --retry ${API_RETRY_LIMIT} \
@@ -155,8 +155,7 @@ function changePassword() {
     # Change the default password.
     # Using set +x to suppress shell debugging
     # because it reveals the new admin password
-    #TODO: uncomment the next line
-    #set +x
+    set +x
     change_password_payload=$(inject_template ${MOUNT_DIR}/templates/92/change_password.json)
     make_initial_api_request -s -X PUT \
         -d "${change_password_payload}" \
