@@ -39,7 +39,7 @@ function make_api_request() {
 function make_initial_api_request() {
     #set +x #TODO: uncomment this line
     tmpDir=$(mktemp -d -p ${MOUNT_DIR})
-    http_code=$(curl -k -o ${tempDir}/api_response.txt -w "%{http_code}" \
+    http_code=$(curl -k -o ${tmpDir}/api_response.txt -w "%{http_code}" \
          --retry ${API_RETRY_LIMIT} \
          --max-time ${API_TIMEOUT_WAIT} \
          --retry-delay 1 \
@@ -59,7 +59,7 @@ function make_initial_api_request() {
         "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
 
-    cat ${tempDir}/api_response.txt && rm -rf ${tmpDir}
+    cat ${tmpDir}/api_response.txt && rm -rf ${tmpDir}
 
     return 0
 }
