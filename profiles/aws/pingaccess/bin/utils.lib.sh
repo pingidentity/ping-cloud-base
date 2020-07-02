@@ -37,7 +37,7 @@ function make_api_request() {
 #
 ########################################################################################################################
 function make_initial_api_request() {
-    set +x
+    #set +x #TODO: uncomment this line
     tmpDir=$(mktemp -d -p ${MOUNT_DIR})
     http_code=$(curl -k -o ${tempDir}/api_response.txt -w "%{http_code}" \
          --retry ${API_RETRY_LIMIT} \
