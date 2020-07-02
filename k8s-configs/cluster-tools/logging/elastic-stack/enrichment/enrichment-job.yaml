@@ -16,6 +16,7 @@ spec:
 
           - name: enrichment-job
             image: 7es7/enrichment-bootstrap:latest   # gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.1
+            imagePullPolicy: Always
             workingDir: /scripts
             command: ["sh", '$(CONTAINER_NAME).sh']
 
