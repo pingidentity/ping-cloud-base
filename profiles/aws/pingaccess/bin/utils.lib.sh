@@ -155,7 +155,8 @@ function changePassword() {
     # Change the default password.
     # Using set +x to suppress shell debugging
     # because it reveals the new admin password
-    set +x
+    #TODO: uncomment the next line
+    #set +x
     change_password_payload=$(inject_template ${MOUNT_DIR}/templates/81/change_password.json)
     make_initial_api_request -s -X PUT \
         -d "${change_password_payload}" \
