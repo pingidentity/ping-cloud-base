@@ -34,7 +34,8 @@ kustomize build "${DEV_CLUSTER_STATE_DIR}" |
     ${ARTIFACT_REPO_URL}
     ${PING_ARTIFACT_REPO_URL}
     ${LOG_ARCHIVE_URL}
-    ${BACKUP_URL}' > "${DEPLOY_FILE}"
+    ${BACKUP_URL}
+    ${CLUSTER_BUCKET_NAME}' > "${DEPLOY_FILE}"
 
 log "Deploy file contents:"
 cat "${DEPLOY_FILE}"
