@@ -259,20 +259,10 @@ export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
 export NAMESPACE=ping-cloud-${ENVIRONMENT_NO_HYPHEN_PREFIX}
 
 # Set the cluster type based on parent or child
-BELUGA_DEV_TEST_DIR=test
-TEST_KUSTOMIZATION="${BELUGA_DEV_TEST_DIR}"/ping-cloud/kustomization.yaml
+DEV_CLUSTER_STATE_DIR=test
+! "${IS_PARENT}" && CLUSTER_TYPE='child'
 
-if "${IS_PARENT}"; then
-  export CLUSTER_TYPE=parent
-  export PF_PA_ADMIN_INGRESS_PATCHES="$(cat "${BELUGA_DEV_TEST_DIR}"/ping-cloud/pf-pa-admin-ingress-patches.yaml)"
-else
-  export CLUSTER_TYPE=child
-fi
-
-envsubst '${CLUSTER_TYPE}
-  ${PF_PA_ADMIN_INGRESS_PATCHES}' < "${TEST_KUSTOMIZATION}".subst > "${TEST_KUSTOMIZATION}"
-
-kustomize build "${BELUGA_DEV_TEST_DIR}" |
+kustomize build "${DEV_CLUSTER_STATE_DIR}/${CLUSTER_TYPE}" |
   envsubst '${PING_IDENTITY_DEVOPS_USER_BASE64}
     ${PING_IDENTITY_DEVOPS_KEY_BASE64}
     ${ENVIRONMENT}
@@ -294,7 +284,6 @@ kustomize build "${BELUGA_DEV_TEST_DIR}" |
     ${CLUSTER_BUCKET_NAME}' > "${DEPLOY_FILE}"
 
 sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" "${DEPLOY_FILE}"
-rm -f "${TEST_KUSTOMIZATION}"
 
 if test "${dryrun}" = 'false'; then
   echo "Deploying ${DEPLOY_FILE} to cluster ${CLUSTER_NAME}, namespace ${NAMESPACE} for tenant ${TENANT_DOMAIN}"

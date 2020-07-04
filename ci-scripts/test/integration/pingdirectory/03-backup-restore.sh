@@ -62,8 +62,8 @@ kubectl apply -f "${RESTORE_JOB}" -n "${NAMESPACE}"
 log "Waiting for the restore job to complete"
 kubectl wait --for=condition=complete --timeout=900s job/pingdirectory-restore -n "${NAMESPACE}"
 
-# We expect the appintegrations and userRoot backends to be restored successfully
-NUM_EXPECTED=2
+# We expect 3 backends to be restored successfully
+NUM_EXPECTED=3
 RESTORE_SUCCESS_MESSAGE='Restore task .* has been successfully completed'
 RESTORE_POD=$(kubectl get pod -n "${NAMESPACE}" -o name | grep pingdirectory-restore)
 NUM_SUCCESSFUL=$(kubectl logs -n "${NAMESPACE}" "${RESTORE_POD}" | grep -c "${RESTORE_SUCCESS_MESSAGE}")

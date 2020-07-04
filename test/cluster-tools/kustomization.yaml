@@ -2,115 +2,328 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-# These are AWS-specific and not included in the out-of-the-box cluster tools.
-- ../../k8s-configs/cluster-tools/cert-manager/route53
-- ../../k8s-configs/cluster-tools/cluster-autoscaler
-- ../../k8s-configs/cluster-tools/monitoring/container-insights
-
-# These are cloud-agnostic cluster tools.
 - ../../k8s-configs/cluster-tools
 
 patchesStrategicMerge:
-- patches/clusterissuer/letsencrypt-issuer.yaml
-- patches/certificate/acme-tls-cert.yaml
-- patches/configmap/cluster-info.yaml
-- patches/configmap/cwagentconfig.yaml
+- |-
+  apiVersion: certmanager.k8s.io/v1alpha1
+  kind: ClusterIssuer
+  metadata:
+    name: letsencrypt-prod
+  spec:
+    acme:
+      server: https://acme-staging-v02.api.letsencrypt.org/directory
+      email: ${CLUSTER_NAME_LC}@${TENANT_DOMAIN}
+      solvers:
+      - dns01:
+          route53:
+            region: ${REGION}
+        selector:
+          dnsZones:
+          - '${TENANT_DOMAIN}'
+
+- |-
+  apiVersion: certmanager.k8s.io/v1alpha1
+  kind: Certificate
+  metadata:
+    name: acme-tls-cert
+    namespace: cert-manager
+  spec:
+    dnsNames:
+      - '*.${TENANT_DOMAIN}'
+    commonName: ${TENANT_DOMAIN}
+
+- |-
+  apiVersion: v1
+  data:
+    cluster.name: ${CLUSTER_NAME}
+    logs.region: ${REGION}
+  kind: ConfigMap
+  metadata:
+    name: cluster-info
+    namespace: amazon-cloudwatch
+
+- |-
+  apiVersion: v1
+  data:
+    # Configuration is in Json format. No matter what configure change you make,
+    # please keep the Json blob valid.
+    cwagentconfig.json: |
+      {
+        "agent": {
+          "region": "${REGION}"
+        },
+        "logs": {
+          "metrics_collected": {
+            "kubernetes": {
+              "cluster_name": "${CLUSTER_NAME}",
+              "metrics_collection_interval": 60
+            }
+          },
+          "force_flush_interval": 5
+        }
+      }
+  kind: ConfigMap
+  metadata:
+    name: cwagentconfig
+    namespace: amazon-cloudwatch
 
 patchesJson6902:
 # logs
-- path: patches/ingress/logs.yaml
-  target:
+- target:
     group: extensions
     version: v1beta1
     kind: Ingress
     name: kibana-ingress
     namespace: elastic-stack-logging
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: logs-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: logs-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
 
 # monitoring with grafana
-- path: patches/ingress/grafana.yaml
-  target:
+- target:
     group: extensions
     version: v1beta1
     kind: Ingress
     name: grafana-ingress
     namespace: prometheus
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: monitoring-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: monitoring-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
 
-# monitoring with prometheus
-- path: patches/ingress/prometheus.yaml
-  target:
+  # monitoring with prometheus
+- target:
     group: extensions
     version: v1beta1
     kind: Ingress
     name: prometheus-ingress
     namespace: prometheus
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: prometheus-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: prometheus-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
 
 # cluster auto-scaler
-- path: patches/deployment/patch-cluster-and-region.yaml
-  target:
+- target:
     group: apps
     version: v1
     kind: Deployment
     name: cluster-autoscaler
     namespace: kube-system
+  patch: |-
+    - op: add
+      path: /spec/template/spec/containers/0/command/-
+      value:
+        --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/${CLUSTER_NAME}
+    - op: add
+      path: /spec/template/spec/containers/0/env
+      value:
+        - name: AWS_REGION
+          value: ${REGION}
 
-# 1. Add the pingdirectory hostname to the private NLB for ldap access
-# 2. Add the pingfederate runtime hostname to the private NLB for the cluster config service
-# 3. Make the admin nodes available externally for test purposes. In general, they
+# 1. Make the admin nodes available externally for test purposes. In general, they
 #    will be behind a VPN gateway on all CDEs so only admins have access to them.
-- path: patches/service/add-hostname-to-private-lb.yaml
-  target:
+# 2. Add the pingdirectory hostname to the private NLB for cluster communication.
+# 3. Open up ports on the private NLB for PF/PA admins and PD clustering.
+- target:
     version: v1
     kind: Service
     name: ingress-nginx
     namespace: ingress-nginx-private
+  patch: |-
+    - op: replace
+      path: /metadata/annotations
+      value:
+        service.beta.kubernetes.io/aws-load-balancer-type: nlb
+        external-dns.alpha.kubernetes.io/hostname: pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}
 
-# Open up ports on the private NLB for PD LDAPS/replication, PF/PA admins and PF cluster config service
-- path: patches/service/open-private-lb-ports.yaml
-  target:
-    version: v1
-    kind: Service
-    name: ingress-nginx
-    namespace: ingress-nginx-private
+    - op: replace
+      path: /spec/ports
+      value:
+        # http and https for the private webapps, e.g. the admins
+        - name: http
+          port: 80
+          targetPort: http
+        - name: https
+          port: 443
+          targetPort: https
+
+        ## Allow up to 9 PD servers per region so no changes are necessary when the replica count is changed.
+
+        # ldaps and replication for pingdirectory-0
+        - name: ldaps-pingdiretory-0
+          port: 6360
+          targetPort: 6360
+        - name: repl-pingdiretory-0
+          port: 9890
+          targetPort: 9890
+
+        # ldaps and replication for pingdirectory-1
+        - name: ldaps-pingdiretory-1
+          port: 6361
+          targetPort: 6361
+        - name: repl-pingdiretory-1
+          port: 9891
+          targetPort: 9891
+
+        # ldaps and replication for pingdirectory-2
+        - name: ldaps-pingdiretory-2
+          port: 6362
+          targetPort: 6362
+        - name: repl-pingdiretory-2
+          port: 9892
+          targetPort: 9892
+
+        # ldaps and replication for pingdirectory-3
+        - name: ldaps-pingdiretory-3
+          port: 6363
+          targetPort: 6363
+        - name: repl-pingdiretory-3
+          port: 9893
+          targetPort: 9893
+
+        # ldaps and replication for pingdirectory-4
+        - name: ldaps-pingdiretory-4
+          port: 6364
+          targetPort: 6364
+        - name: repl-pingdiretory-4
+          port: 9894
+          targetPort: 9894
+
+        # ldaps and replication for pingdirectory-5
+        - name: ldaps-pingdiretory-5
+          port: 6365
+          targetPort: 6365
+        - name: repl-pingdiretory-5
+          port: 9895
+          targetPort: 9895
+
+        # ldaps and replication for pingdirectory-6
+        - name: ldaps-pingdiretory-6
+          port: 6366
+          targetPort: 6366
+        - name: repl-pingdiretory-6
+          port: 9896
+          targetPort: 9896
+
+        # ldaps and replication for pingdirectory-7
+        - name: ldaps-pingdiretory-7
+          port: 6367
+          targetPort: 6367
+        - name: repl-pingdiretory-7
+          port: 9897
+          targetPort: 9897
+
+        # ldaps and replication for pingdirectory-8
+        - name: ldaps-pingdiretory-8
+          port: 6368
+          targetPort: 6368
+        - name: repl-pingdiretory-8
+          port: 9898
+          targetPort: 9898
 
 # Configure the private nginx controller to receive traffic on the above ports
-- path: patches/configmap/add-private-nginx-tcp-port-mappings.yaml
-  target:
+- target:
     version: v1
     kind: ConfigMap
     name: tcp-services
     namespace: ingress-nginx-private
+  patch: |-
+    - op: add
+      path: /data
+      value:
+        # PingDirectory LDAPS and replication ports
+        6360: "${NAMESPACE}/pingdirectory-0-service:ldaps"
+        9890: "${NAMESPACE}/pingdirectory-0-service:repl"
+
+        6361: "${NAMESPACE}/pingdirectory-1-service:ldaps"
+        9891: "${NAMESPACE}/pingdirectory-1-service:repl"
+
+        6362: "${NAMESPACE}/pingdirectory-2-service:ldaps"
+        9892: "${NAMESPACE}/pingdirectory-2-service:repl"
+
+        6363: "${NAMESPACE}/pingdirectory-3-service:ldaps"
+        9893: "${NAMESPACE}/pingdirectory-3-service:repl"
+
+        6364: "${NAMESPACE}/pingdirectory-4-service:ldaps"
+        9894: "${NAMESPACE}/pingdirectory-4-service:repl"
+
+        6365: "${NAMESPACE}/pingdirectory-5-service:ldaps"
+        9895: "${NAMESPACE}/pingdirectory-5-service:repl"
+
+        6366: "${NAMESPACE}/pingdirectory-6-service:ldaps"
+        9896: "${NAMESPACE}/pingdirectory-6-service:repl"
+
+        6367: "${NAMESPACE}/pingdirectory-7-service:ldaps"
+        9897: "${NAMESPACE}/pingdirectory-7-service:repl"
+
+        6368: "${NAMESPACE}/pingdirectory-8-service:ldaps"
+        9898: "${NAMESPACE}/pingdirectory-8-service:repl"
 
 # Change the default TLS secret for the ingress controllers
-- path: patches/deployment/nginx-controller.yaml
-  target:
+- target:
     group: apps
     version: v1
     kind: Deployment
     name: nginx-ingress-controller
     namespace: ingress-nginx-private
+  patch: |-
+    - op: add
+      path: /spec/template/spec/containers/0/args/-
+      value:
+        --default-ssl-certificate=${NAMESPACE}/acme-tls-cert
 
-- path: patches/deployment/nginx-controller.yaml
-  target:
+- target:
     group: apps
     version: v1
     kind: Deployment
     name: nginx-ingress-controller
     namespace: ingress-nginx-public
+  patch: |-
+    - op: add
+      path: /spec/template/spec/containers/0/args/-
+      value:
+        --default-ssl-certificate=${NAMESPACE}/acme-tls-cert
 
 # Change the namespace of the ACME certificate to the ping-cloud namespace
-- path: patches/certificate/change-cert-namespace.yaml
-  target:
+- target:
     group: certmanager.k8s.io
     version: v1alpha1
     kind: Certificate
     name: acme-tls-cert
     namespace: cert-manager
+  patch: |-
+    - op: replace
+      path: /metadata/namespace
+      value: ${NAMESPACE}
 
 # Configure external-dns to only own the hosted zone for the tenant domain
-- path: patches/deployment/external-dns.yaml
-  target:
+- target:
     group: apps
     version: v1
     kind: Deployment
     name: external-dns
     namespace: external-dns
+  patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/args
+      value:
+        - --source=service
+        - --source=ingress
+        - --log-level=debug
+        - --provider=aws
+        - --policy=sync
+        - --aws-zone-type=public
+        - --registry=txt
+        - --domain-filter=${TENANT_DOMAIN}.

@@ -2,12 +2,6 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-# These resources are specific to AWS at the moment and not included in the out-of-the-box configuration.
-- ${K8S_GIT_URL}/k8s-configs/cluster-tools/cert-manager/route53?ref=${K8S_GIT_BRANCH}
-- ${K8S_GIT_URL}/k8s-configs/cluster-tools/cluster-autoscaler/aws?ref=${K8S_GIT_BRANCH}
-- ${K8S_GIT_URL}/k8s-configs/cluster-tools/monitoring/container-insights?ref=${K8S_GIT_BRANCH}
-
-# This includes all the generic cloud-agnostic tools, like ingress, logging, service discovery, etc.
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools?ref=${K8S_GIT_BRANCH}
 
 # Include flux CD here so flux can update itself in the future

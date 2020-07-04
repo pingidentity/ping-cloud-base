@@ -12,14 +12,30 @@ PD_REPLICA_SET='statefulset.apps/pingdirectory'
 
 GET_REPLICAS_COMMAND="kubectl get ${PD_REPLICA_SET} -o jsonpath='{.status.readyReplicas}' -n ${NAMESPACE}"
 GET_PVC_COMMAND="kubectl get pvc -n ${NAMESPACE} -o name | grep -c out-dir-pingdirectory"
+
+GET_NUM_PEERS_COMMAND="kubectl exec pingdirectory-0 -c pingdirectory -n ${NAMESPACE} -- \\
+    ldapsearch --terse --baseDN 'cn=monitor' --searchScope sub \\
+    '&(objectClass=ds-mirrored-subtree-monitor-entry)(subtree-base-dn=cn=Topology,cn=config)' \\
+    num-peers | grep '^num-peers' | cut -d' ' -f2"
 GET_UNAVAILABLE_PEERS_COMMAND="kubectl exec pingdirectory-0 -c pingdirectory -n ${NAMESPACE} -- \\
     ldapsearch --terse --baseDN 'cn=monitor' --searchScope sub \\
     '&(objectClass=ds-mirrored-subtree-monitor-entry)(subtree-base-dn=cn=Topology,cn=config)' \\
     unavailable-peer-count | grep '^unavailable-peer-count' | cut -d' ' -f2"
 
 # Verify that there are 2 replicas to begin.
-CURRENT_NUM_REPLICAS=$(eval "${GET_REPLICAS_COMMAND}")
-test "${CURRENT_NUM_REPLICAS}" -ne 2 && exit 1
+log "Verifying that there are 2 PD replicas running"
+wait_for_expected_resource_count 2 "${GET_REPLICAS_COMMAND}" 300
+test $? -ne 0 && exit 1
+
+# Verify that there is 1 peer server of pingdirectory-0 in the PD replication topology.
+log "Verifying that there is 1 peer of server 0 in the topology"
+wait_for_expected_resource_count 1 "${GET_NUM_PEERS_COMMAND}" 300
+test $? -ne 0 && exit 1
+
+# Verify that there are 0 unavailable peers.
+log "Verifying that there are no unavailable peers in the topology"
+wait_for_expected_resource_count 0 "${GET_UNAVAILABLE_PEERS_COMMAND}" 300
+test $? -ne 0 && exit 1
 
 # Get rid of the pre-stop hook script from pingdirectory-1 so it is not removed from the PD replication topology.
 log "Verify that the pre-stop hook is present on pingdirectory-1"

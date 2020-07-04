@@ -12,18 +12,11 @@ export PING_IDENTITY_DEVOPS_USER_BASE64=$(base64_no_newlines "${PING_IDENTITY_DE
 export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_KEY}")
 
 # Set the cluster-type to "parent" - we only have one CI/CD cluster.
-BELUGA_DEV_TEST_DIR="${PROJECT_DIR}"/test
-TEST_KUSTOMIZATION="${BELUGA_DEV_TEST_DIR}"/ping-cloud/kustomization.yaml
-
-export CLUSTER_TYPE=parent
-export PF_PA_ADMIN_INGRESS_PATCHES="$(cat "${BELUGA_DEV_TEST_DIR}"/ping-cloud/pf-pa-admin-ingress-patches.yaml)"
-
-envsubst '${CLUSTER_TYPE}
-    ${PF_PA_ADMIN_INGRESS_PATCHES}' < "${TEST_KUSTOMIZATION}".subst > "${TEST_KUSTOMIZATION}"
+DEV_CLUSTER_STATE_DIR="${PROJECT_DIR}"/test
 
 # Deploy the configuration to Kubernetes
 DEPLOY_FILE=/tmp/deploy.yaml
-kustomize build "${BELUGA_DEV_TEST_DIR}" |
+kustomize build "${DEV_CLUSTER_STATE_DIR}" |
   envsubst '${PING_IDENTITY_DEVOPS_USER_BASE64}
     ${PING_IDENTITY_DEVOPS_KEY_BASE64}
     ${ENVIRONMENT}
@@ -42,8 +35,6 @@ kustomize build "${BELUGA_DEV_TEST_DIR}" |
     ${PING_ARTIFACT_REPO_URL}
     ${LOG_ARCHIVE_URL}
     ${BACKUP_URL}' > "${DEPLOY_FILE}"
-
-rm -f "${TEST_KUSTOMIZATION}"
 
 log "Deploy file contents:"
 cat "${DEPLOY_FILE}"
