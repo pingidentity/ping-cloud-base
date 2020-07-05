@@ -15,7 +15,6 @@ patchesStrategicMerge:
 - patches/certificate/acme-tls-cert.yaml
 - patches/configmap/cluster-info.yaml
 - patches/configmap/cwagentconfig.yaml
-- patches/configmap/logstash-cloudwatch-config.yaml
 
 patchesJson6902:
 # logs

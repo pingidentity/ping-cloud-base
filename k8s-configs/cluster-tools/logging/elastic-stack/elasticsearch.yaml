@@ -68,7 +68,7 @@ spec:
 
       
       - name: set-bootstrap-password
-        image: 7es7/enrichment-bootstrap:latest   # gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.1
+        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.4
         imagePullPolicy: Always
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
@@ -97,7 +97,7 @@ spec:
 
 
       - name: wait-for-available-certs
-        image: 7es7/enrichment-bootstrap:latest
+        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.4
         imagePullPolicy: Always
         command: ["sh", '$(CONTAINER_NAME).sh']
 
@@ -165,9 +165,9 @@ spec:
         - name: XPACK_SECURITY_HTTP_SSL_CLIENT_AUTHENTICATION
           value: "optional"
         - name: XPACK_SECURITY_HTTP_SSL_KEY
-          value: "certs/elasticsearch/elasticsearch.key"
+          value: "certs/elasticsearch-http/elasticsearch-http.key"
         - name: XPACK_SECURITY_HTTP_SSL_CERTIFICATE
-          value: "certs/elasticsearch/elasticsearch.crt"
+          value: "certs/elasticsearch-http/elasticsearch-http.crt"
         - name: XPACK_SECURITY_HTTP_SSL_CERTIFICATE_AUTHORITIES
           value: "certs/ca/ca.crt" 
         # ES transport layer settings

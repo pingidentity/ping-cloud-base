@@ -49,7 +49,7 @@ spec:
         subPath: efs-provisioner.sh
 
   - name: create-certs
-    image: 7es7/enrichment-bootstrap:latest   # gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.1
+    image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.4
     imagePullPolicy: Always
     workingDir: /scripts
     command: ["sh", '$(CONTAINER_NAME).sh']
@@ -73,6 +73,10 @@ spec:
     - name: enrichment-certs-config
       mountPath: /usr/share/elasticsearch/data/config/instances.yml
       subPath: instances.yml
+      readOnly: true
+    - name: enrichment-certs-config
+      mountPath: /usr/share/elasticsearch/data/config/instances-http.yml
+      subPath: instances-http.yml
       readOnly: true
 
 
@@ -156,7 +160,7 @@ spec:
   containers:
 
   - name: elasticsearch-bootstrap
-    image: 7es7/enrichment-bootstrap:latest   # gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.1
+    image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.4
     imagePullPolicy: Always
     workingDir: /scripts
     command: ["sh", '$(CONTAINER_NAME).sh']

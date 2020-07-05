@@ -8,5 +8,10 @@ data:
     instances:
     - name: "elasticsearch"
     - name: "enrichment-bootstrap"
-    - name: "kibana"
     - name: "logstash"
+  instances-http.yml: |
+    instances:
+    - name: "elasticsearch-http"
+      dns:
+      - "elasticsearch"
+    - name: "logs-${CLUSTER_NAME}.${TENANT_DOMAIN}"
