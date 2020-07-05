@@ -12,8 +12,7 @@ patchesStrategicMerge:
     name: letsencrypt-prod
   spec:
     acme:
-      # FIXME: switch back to Let's encrypt staging server after incorporating Suraj's PA clustering fixes
-      server: https://acme-v02.api.letsencrypt.org/directory
+      server: https://acme-staging-v02.api.letsencrypt.org/directory
       email: ${CLUSTER_NAME_LC}@${TENANT_DOMAIN}
       solvers:
       - dns01:
