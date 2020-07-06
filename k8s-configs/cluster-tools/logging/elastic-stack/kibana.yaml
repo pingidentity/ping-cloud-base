@@ -94,12 +94,6 @@ spec:
           - name: XPACK_MONITORING_ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES
             value: "$(CERTS_DIR)/ca/ca.crt"
   
-            #          - name: SERVER_SSL_ENABLED
-            #            value: "true"
-            #          - name: SERVER_SSL_CERTIFICATE
-            #            value: "$(CERTS_DIR)/logs-${CLUSTER_NAME}.${TENANT_DOMAIN}/logs-${CLUSTER_NAME}.${TENANT_DOMAIN}.crt"
-            #          - name: SERVER_SSL_KEY
-            #            value: "$(CERTS_DIR)/logs-${CLUSTER_NAME}.${TENANT_DOMAIN}/logs-${CLUSTER_NAME}.${TENANT_DOMAIN}.key"
           - name: ELASTICSEARCH_SSL_VERIFICATIONMODE
             value: "certificate"
           - name: ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES
@@ -148,6 +142,24 @@ spec:
    template:
      spec:
        restartPolicy: OnFailure
+       initContainers:
+       - name: wait-for-kibana
+         image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.4
+         imagePullPolicy: Always
+         command: ["sh", "-c", "until $(curl -u ${KIBANA_USER}:${KIBANA_PASSWORD} --output /dev/null --silent --fail ${KIBANA_HOST}:5601/api/status); do echo 'waiting for kibana API' && sleep 1; done"]
+         env:
+         - name: KIBANA_USER 
+           valueFrom:
+             secretKeyRef:
+               name: elk-secrets
+               key: ELASTIC_USER_B64
+         - name: KIBANA_PASSWORD
+           valueFrom:
+             secretKeyRef:
+               name: elk-secrets
+               key: ELASTIC_PASSWORD_B64
+         - name: KIBANA_HOST
+           value: "http://kibana"
        containers:
        - name: kibana-dashboard-upload
          image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.4
@@ -167,6 +179,8 @@ spec:
              secretKeyRef:
                name: elk-secrets
                key: ELASTIC_PASSWORD_B64
+         - name: KIBANA_HOST
+           value: "http://kibana"
 
          securityContext:
            privileged: true
@@ -175,12 +189,16 @@ spec:
          volumeMounts: 
          - name: kibana-dashboard-pa
            mountPath: /scripts/dashboards/pa.ndjson
+           subPath: pa.ndjson
          - name: kibana-dashboard-pd
            mountPath: /scripts/dashboards/pd.ndjson
+           subPath: pd.ndjson
          - name: kibana-dashboard-pf
            mountPath: /scripts/dashboards/pf.ndjson
+           subPath: pf.ndjson
          - name: kibana-dashboard-pf-basic
            mountPath: /scripts/dashboards/pf-basic.ndjson
+           subPath: pf-basic.ndjson
 
        volumes:
        - name: kibana-dashboard-pa

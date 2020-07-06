@@ -417,7 +417,6 @@ data:
 
     output {
         elasticsearch {
-            # index => "logstash_%{+YYYY.MM.dd}"
             cacert => "${CERTS_DIR}/ca/ca.crt"
             hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
             sniffing => false
@@ -431,7 +430,6 @@ data:
         if([log_type] == "Enrichment_System_Log"){
             elasticsearch {
                 id => "enrichment_out"
-                # index => "enrichment_out_%{+YYYY.MM.dd}"
                 cacert => "${CERTS_DIR}/ca/ca.crt"
                 hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
                 ilm_enabled => true
@@ -445,7 +443,6 @@ data:
         if([log_type] == "PF_Provisioner_Log"){
             elasticsearch {
                 id => "pf_provision_out"
-                # index => "pf_provision_out_%{+YYYY.MM.dd}"
                 cacert => "${CERTS_DIR}/ca/ca.crt"
                 hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
                 ilm_enabled => true
@@ -459,7 +456,6 @@ data:
         if([log_type] == "PF_Audit_Log"){
             elasticsearch {
                 id => "pf_audit_out"
-                # index => "pf_audit_out_%{+YYYY.MM.dd}"
                 cacert => "${CERTS_DIR}/ca/ca.crt"
                 hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
                 ilm_enabled => true
@@ -473,7 +469,6 @@ data:
         if([log_type] == "PF_System_Log"){
             elasticsearch {
                 id => "pf_system_out"
-                # index => "pf_system_out_%{+YYYY.MM.dd}"
                 cacert => "${CERTS_DIR}/ca/ca.crt"
                 hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
                 ilm_enabled => true
@@ -658,22 +653,6 @@ data:
                  key: LOGSTASH_PASSWORD_B64
            - name: XPACK_MONITORING_ELASTICSEARCH_SSL_CERTIFICATE_AUTHORITY
              value: "$(CERTS_DIR)/ca/ca.crt"
-             #           - name: XPACK_MANAGEMENT_ENABLED
-             #             value: "true"
-             #           - name: XPACK_MANAGEMENT_ELASTICSEARCH_HOSTS
-             #             value: "https://elasticsearch:9200"
-             #           - name: XPACK_MANAGEMENT_ELASTICSEARCH_USERNAME
-             #             valueFrom:
-             #               secretKeyRef:
-             #                 name: elk-secrets
-             #                 key: LOGSTASH_USER_B64
-             #           - name: XPACK_MANAGEMENT_ELASTICSEARCH_PASSWORD
-             #             valueFrom:
-             #               secretKeyRef:
-             #                 name: elk-secrets
-             #                 key: LOGSTASH_PASSWORD_B64
-             #           - name: XPACK_MANAGEMENT_ELASTICSEARCH_SSL_CERTIFICATE_AUTHORITY
-             #             value: "$(CERTS_DIR)/ca/ca.crt"
            - name: PIPELINE_BATCH_DELAY
              value: "500"
            - name: PIPELINE_BATCH_SIZE

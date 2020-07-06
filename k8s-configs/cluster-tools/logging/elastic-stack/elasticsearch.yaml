@@ -156,7 +156,6 @@ spec:
           value: "/usr/share/elasticsearch/data/config"
         - name: ES_JAVA_OPTS
           value: "-Xms512m -Xmx512m"
-          # value: "-Xms512m -Xmx512m -Djavax.net.ssl.trustStore=$(ES_PATH_CONF)/certs/truststore.jks -Djavax.net.ssl.trustStorePassword=changeit -Djavax.net.ssl.keyStore=$(ES_PATH_CONF)/elasticsearch.keystore"
         # ES SSL settings
         - name: XPACK_SECURITY_HTTP_SSL_ENABLED
           value: "true"
@@ -169,20 +168,6 @@ spec:
         - name: XPACK_SECURITY_HTTP_SSL_CERTIFICATE
           value: "certs/elasticsearch-http/elasticsearch-http.crt"
         - name: XPACK_SECURITY_HTTP_SSL_CERTIFICATE_AUTHORITIES
-          value: "certs/ca/ca.crt" 
-        # ES transport layer settings
-        - name: XPACK_SECURITY_TRANSPORT_SSL_ENABLED
-          value: "false"
-          # value: "true"
-        - name: XPACK_SECURITY_TRANSPORT_SSL_VERIFICATION_MODE
-          value: "certificate"
-        - name: XPACK_SECURITY_TRANSPORT_SSL_CLIENT_AUTHENTICATION
-          value: "optional"
-        - name: XPACK_SECURITY_TRANSPORT_SSL_KEY
-          value: "certs/elasticsearch/elasticsearch.key"
-        - name: XPACK_SECURITY_TRANSPORT_SSL_CERTIFICATE
-          value: "certs/elasticsearch/elasticsearch.crt"
-        - name: XPACK_SECURITY_TRANSPORT_SSL_CERTIFICATE_AUTHORITIES
           value: "certs/ca/ca.crt" 
 
         volumeMounts:
@@ -215,7 +200,7 @@ spec:
       storageClassName: elasticsearch-gp2
       resources:
         requests:
-          storage: 10Gi
+          storage: 40Gi
 
 ---
 kind: Service
