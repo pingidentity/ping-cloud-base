@@ -26,29 +26,46 @@ spec:
         lastUpdateReason: "NA"
     spec:
       serviceAccount: ping-serviceaccount
+      securityContext:
+        fsGroup: 9999
       initContainers:
-      - name: pingaccess-restore
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/geoff/init-pa-restore
-        imagePullPolicy: Always
-        env:
-        - name: MOUNT_DIR
-          value: /mount
+      - name: delete-mount-contents
+        image: alpine:3.12
         volumeMounts:
-        - name: mount-dir
-          mountPath: /mount
-        securityContext:
-          fsGroup: identity
+          - name: mount-dir
+            mountPath: /mount
+        command: ['sh', '-c', 'rm -rf /mount/*']
       - name: apply-server-profile
         image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/geoff/init-apply-profile
         imagePullPolicy: Always
         env:
         - name: MOUNT_DIR
           value: /mount
+        - name: OPERATIONAL_MODE
+          value: CLUSTERED_CONSOLE  
+        - name: SERVER_PROFILE_URL
+          value: ${CONFIG_REPO_URL}
+        - name: SERVER_PROFILE_PATH
+          value: profiles/aws/pingaccess
+        - name: SERVER_PROFILE_BRANCH
+          value: modularize
+        envFrom:
+        - configMapRef:
+            name: pingaccess-environment-variables
         volumeMounts:
           - name: mount-dir
             mountPath: /mount
-        securityContext:
-          fsGroup: identity
+      - name: pingaccess-restore
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/geoff/init-pa-restore
+        imagePullPolicy: Always
+        env:
+        - name: BACKUP_URL
+          value: ${LOG_ARCHIVE_URL}
+        - name: MOUNT_DIR
+          value: /mount
+        volumeMounts:
+        - name: mount-dir
+          mountPath: /mount
       - name: pingaccess-init
         # FIXME: switch to same user as app
         securityContext:
@@ -94,20 +111,20 @@ spec:
           mountPath: /usr/local/bin/kubectl
           subPath: kubectl
         - name: pingaccess-license
-          mountPath: /opt/in/instance/conf/pingaccess.lic
+          mountPath: /mount/conf/pingaccess.lic
           subPath: pingaccess.lic
         - name: mount-dir
           mountPath: /mount
         readinessProbe:
           exec:
             command:
-              - /opt/staging/hooks/85-readiness.sh
+              - /mount/bin/85-readiness.sh
           initialDelaySeconds: 60
           periodSeconds: 5
           failureThreshold: 3
         livenessProbe:
           exec:
-            command: [ liveness.sh ]
+            command: [ /app/liveness.sh ]
           initialDelaySeconds: 60
           periodSeconds: 30
           failureThreshold: 3
@@ -207,7 +224,15 @@ spec:
         lastUpdateReason: "NA"
     spec:
       serviceAccount: ping-serviceaccount
+      securityContext:
+        fsGroup: 9999
       initContainers:
+      - name: delete-mount-contents
+        image: alpine:3.12
+        volumeMounts:
+          - name: mount-dir
+            mountPath: /mount
+        command: ['sh', '-c', 'rm -rf /mount/*'] 
       - name: pingaccess-init
         # FIXME: switch to same user as app
         securityContext:
@@ -236,8 +261,8 @@ spec:
             name: pingaccess-environment-variables
       containers:
       - name: pingaccess
-        image: pingidentity/pingaccess:2003-6.0.1
-        imagePullPolicy: IfNotPresent
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/geoff/pingaccess
+        imagePullPolicy: Always
         resources:
           requests:
             memory: "1Gi"
@@ -256,7 +281,7 @@ spec:
           mountPath: /usr/local/bin/skbn
           subPath: skbn
         - name: pingaccess-license
-          mountPath: /opt/in/instance/conf/pingaccess.lic
+          mountPath: /mount/conf/pingaccess.lic
           subPath: pingaccess.lic
         - name: pingaccess-pre-stop
           mountPath: /opt/staging/pre-stop.sh
@@ -264,15 +289,17 @@ spec:
         - name: data-dir
           mountPath: /opt/staging/env_vars
           subPath: env_vars
+        - name: mount-dir
+          mountPath: /mount
         readinessProbe:
           exec:
-            command: [ liveness.sh ]
+            command: [ /app/liveness.sh ]
           initialDelaySeconds: 60
           periodSeconds: 5
           failureThreshold: 3
         livenessProbe:
           exec:
-            command: [ liveness.sh ]
+            command: [ /app/liveness.sh ]
           initialDelaySeconds: 60
           periodSeconds: 30
           failureThreshold: 3
@@ -285,8 +312,16 @@ spec:
         - containerPort: 3000
         - containerPort: 3030
         env:
+        - name: VERBOSE
+          value: "true"
+        - name: PA_CONSOLE_HOST
+          value: pingaccess-admin
+        - name: MOUNT_DIR
+          value: /mount
         - name: OPERATIONAL_MODE
           value: CLUSTERED_ENGINE
+        - name: PA_LOG_LEVEL
+          value: TRACE
         - name: PA_ADMIN_USER_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -331,3 +366,16 @@ spec:
         configMap:
           name: pingaccess-pre-stop
           defaultMode: 0555
+      - name: mount-dir
+        persistentVolumeClaim:
+          claimName: mount-dir
+  volumeClaimTemplates:
+  - metadata:
+      name: mount-dir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: pingaccess-gp2
+      resources:
+        requests:
+          storage: 5Gi
