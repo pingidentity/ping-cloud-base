@@ -253,7 +253,22 @@ data:
       @id in_tail_pingaccess_container_logs
       @label @pacontainers
       path /var/log/containers/pingaccess*.log
+      exclude_path ["/var/log/containers/pingaccess-was*.log"]
       pos_file /var/log/pingaccess-containers.log.pos
+      tag kubernetes.*
+      read_from_head true
+      <parse>
+        @type json
+        time_format %Y-%m-%dT%H:%M:%S.%NZ
+      </parse>
+    </source>
+
+    <source>
+      @type tail
+      @id in_tail_pingaccess_was_container_logs
+      @label @pawascontainers
+      path /var/log/containers/pingaccess-was*.log
+      pos_file /var/log/pingaccess-was-containers.log.pos
       tag kubernetes.*
       read_from_head true
       <parse>
@@ -528,6 +543,64 @@ data:
           key log
           pattern /^\/opt\/out\/instance\/log\/pingaccess_agent_audit/
           tag temp.pingaccess_agent_audit_logs
+        </rule>
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/log\/pingaccess/
+          tag temp.pingaccess_logs
+        </rule>
+        <rule>
+          key log
+          pattern /^(.+)$/
+          tag temp.unmatched_logs
+        </rule>
+      </match>
+
+      <match temp.unmatched_logs>
+        @type relabel
+        @label @normal
+      </match>
+
+      <match temp.**>
+        @type rewrite_tag_filter
+        remove_tag_prefix temp
+        <rule>
+          key stream_name
+          pattern /^(.+)$/
+          tag ${tag}.$1
+        </rule>
+      </match>
+
+      <match **>
+        @type relabel
+        @label @tagstream
+      </match>
+    </label>
+
+    <label @pawascontainers>
+      <filter **>
+        @type kubernetes_metadata
+      </filter>
+
+      <filter **>
+        @type record_transformer
+        enable_ruby true
+        <record>
+          stream_name ${record["kubernetes"]["pod_name"]}_${record["kubernetes"]["namespace_name"]}_${record["kubernetes"]["container_name"]}
+        </record>
+      </filter>
+
+      <match kubernetes.**>
+        @type rewrite_tag_filter
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/log\/pingaccess_engine_audit/
+          tag temp.pingaccess_engine_audit_logs
+        </rule>
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/log\/pingaccess_api_audit/
+          tag temp.pingaccess_api_audit_logs
         </rule>
         <rule>
           key log
