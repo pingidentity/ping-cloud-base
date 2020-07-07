@@ -1,6 +1,26 @@
 #!/usr/bin/env sh
 
 ########################################################################################################################
+# Stop PingAccess server and wait until it is terminated.
+#
+########################################################################################################################
+function stop_server()
+{
+  SERVER_PID=$(pgrep -alf java | grep 'run.properties' | awk '{ print $1; }')
+  kill "${SERVER_PID}"
+  while true; do
+    SERVER_PID=$(pgrep -alf java | grep 'run.properties' | awk '{ print $1; }')
+    if test -z ${SERVER_PID}; then
+        break
+    else
+      echo "waiting for PingAccess to terminate due to error"
+      sleep 3
+    fi
+  done
+  exit 1
+}
+
+########################################################################################################################
 # Makes curl request to PingAccess API using the INITIAL_ADMIN_PASSWORD environment variable.
 #
 ########################################################################################################################
