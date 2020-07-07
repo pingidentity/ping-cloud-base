@@ -6,7 +6,18 @@
 set -e
 "${VERBOSE}" && set -x
 
+<<<<<<< HEAD
 export_cluster_config_host_port
+=======
+if test "$(is_multi_cluster)" == "1"; then
+  export CLUSTER_CONFIG_HOST="${PA_ADMIN_PUBLIC_HOSTNAME}"
+  export CLUSTER_CONFIG_PORT=443
+else
+  export CLUSTER_CONFIG_HOST="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}"
+  export CLUSTER_CONFIG_PORT=9090
+fi
+
+>>>>>>> f6587c9d... Updates to fix is_multi_cluster condition and replaced PA_CLUSTER_PUBLIC_HOSTNAME with PA_ADMIN_PUBLIC_HOSTNAME
 echo "import-initial-configuration: cluster-config host:port ${CLUSTER_CONFIG_HOST}:${CLUSTER_CONFIG_PORT}"
 
 templates_dir_path=${STAGING_DIR}/templates/81

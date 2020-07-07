@@ -311,6 +311,7 @@ function skbnCopy() {
 #   0 if multi-cluster; 1 if not.
 ########################################################################################################################
 function is_multi_cluster() {
+<<<<<<< HEAD
   test ! -z "${PA_ADMIN_PUBLIC_HOSTNAME}" && test ! -z "${PA_ENGINE_PUBLIC_HOSTNAME}"
 }
 
@@ -341,4 +342,29 @@ function update_admin_config_host_port() {
   admin_config_response=$(make_api_request -s -X PUT \
       -d "${admin_config_payload}" \
       "https://localhost:9000/pa-admin-api/v3/adminConfig")
+=======
+  if test ! -z "${PA_ADMIN_PUBLIC_HOSTNAME}" && test ! -z "${PA_ENGINE_PUBLIC_HOSTNAME}"; then
+    echo true
+  else
+    echo false
+  fi
+}
+
+########################################################################################################################
+# Determines if the environment is secondary cluster.
+#
+# Returns
+#   true if secondary-cluster; false if not.
+########################################################################################################################
+function is_secondary_cluster() {
+
+  if [ "$(is_multi_cluster)" == true ]; then
+    if ! $(echo $PA_ADMIN_PUBLIC_HOSTNAME | grep -q "$TENANT_DOMAIN"); then
+        echo true
+        return 0
+    fi
+  fi
+
+  echo false
+>>>>>>> f6587c9d... Updates to fix is_multi_cluster condition and replaced PA_CLUSTER_PUBLIC_HOSTNAME with PA_ADMIN_PUBLIC_HOSTNAME
 }

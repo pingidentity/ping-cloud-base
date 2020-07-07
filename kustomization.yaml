@@ -22,6 +22,7 @@ patchesStrategicMerge:
     PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
     BACKUP_URL: ${BACKUP_URL}
     REGION: ${REGION}
+    TENANT_DOMAIN: ${TENANT_DOMAIN}
 - |-
   apiVersion: v1
   kind: ConfigMap
