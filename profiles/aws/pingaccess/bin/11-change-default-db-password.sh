@@ -14,7 +14,7 @@ parse_utility_output() {
 set -e
 "${VERBOSE}" && set -x
 
-readonly run_properties_file=${SERVER_ROOT_DIR}/conf/run.properties
+readonly run_properties_file=${MOUNT_DIR}/conf/run.properties
 
 # This is the default file and user password string for H2
 readonly pa_h2_default_obf_pw='OBF:AES:23AeD/QrI8yVQKkhNi7kYg==:6fc098ed542fa3e40515062eb5e5117e4659ba8a'
@@ -40,7 +40,7 @@ random_password=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1
 echo "Changing the PingAccess H2 database file password..."
 
 # Use the dbfilepasswd utility to change the H2 password
-dbfilepasswd_output=$(sh "${SERVER_ROOT_DIR}/bin/dbfilepasswd.sh" '2Access' "${random_password}")
+dbfilepasswd_output=$(sh "${MOUNT_DIR}/bin/dbfilepasswd.sh" '2Access' "${random_password}")
 
 dbfilepasswd_output_code=$?
 if [ $? -ne 0 ]; then
@@ -59,7 +59,7 @@ echo
 echo "Changing the PingAccess H2 user password..."
 
 # Use the dbuserpasswd utility to change the H2 user password
-dbuserpasswd_output=$(sh "${SERVER_ROOT_DIR}/bin/dbuserpasswd.sh" "${random_password}" '2Access' "${random_password}")
+dbuserpasswd_output=$(sh "${MOUNT_DIR}/bin/dbuserpasswd.sh" "${random_password}" '2Access' "${random_password}")
 
 dbuserpasswd_output_code=$?
 if [ $? -ne 0 ]; then
@@ -76,7 +76,7 @@ echo "Successfully changed the PingAccess H2 user password from the default and 
 
 # PDO-989 - Save the new passwords to a backup file to be restored
 # if the pod gets deleted.
-h2_props_backup="${SERVER_ROOT_DIR}/conf/h2_password_properties.backup"
+h2_props_backup="${MOUNT_DIR}/conf/h2_password_properties.backup"
 echo "Backing up the H2 database password properties to ${h2_props_backup}..."
 
 # Write these 2 properties on separate lines in the backup file

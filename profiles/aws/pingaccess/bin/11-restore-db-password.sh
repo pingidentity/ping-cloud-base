@@ -14,8 +14,8 @@ print_differences() {
 
 "${VERBOSE}" && set -x
 
-readonly run_properties_file=${SERVER_ROOT_DIR}/conf/run.properties
-readonly h2_props_backup="${SERVER_ROOT_DIR}/conf/h2_password_properties.backup"
+readonly run_properties_file=${MOUNT_DIR}/conf/run.properties
+readonly h2_props_backup="${MOUNT_DIR}/conf/h2_password_properties.backup"
 
 # Look for the h2_props_backup file
 if [ -f "${h2_props_backup}" ]; then
@@ -24,7 +24,7 @@ if [ -f "${h2_props_backup}" ]; then
   cat "${h2_props_backup}"
 else
   echo "Could not find the H2 database password properties file: ${h2_props_backup}"
-  "${HOOKS_DIR}"/11-change-default-db-password.sh
+  "${MOUNT_DIR}"/bin/11-change-default-db-password.sh
   exit $?
 fi
 

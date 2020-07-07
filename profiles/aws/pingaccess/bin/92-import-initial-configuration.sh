@@ -19,7 +19,7 @@ get_admin_user_response=$(curl -k \
      --max-time ${API_TIMEOUT_WAIT} \
      --retry-delay 1 \
      --retry-connrefused \
-     -u ${PA_ADMIN_USER_USERNAME}:${OLD_PA_ADMIN_USER_PASSWORD} \
+     -u ${PA_ADMIN_USER_USERNAME}:${PA_ADMIN_USER_PASSWORD} \
      -H "X-Xsrf-Header: PingAccess" "https://localhost:9000/pa-admin-api/v3/users/1")
 "${VERBOSE}" && set -x
 
