@@ -20,7 +20,7 @@ DST_DIRECTORY="/tmp/k8s-s3-upload-archive"
 mkdir -p ${DST_DIRECTORY}
 
 # Make request to admin API and export latest data
-make_api_request -X GET \
+make_api_request_download -X GET \
   https://localhost:${PF_ADMIN_PORT}/pf-admin-api/v1/configArchive/export \
   -o ${DST_DIRECTORY}/${DST_FILE_TIMESTAMP}
 

@@ -10,7 +10,7 @@ data:
     echo "Installing kubectl"
     curl https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl \
     -o /usr/local/bin/kubectl
-    
+
     chmod +x /usr/local/bin/kubectl
 
     UPLOAD_FILES=
@@ -19,11 +19,9 @@ data:
     LOG_FILE=/tmp/upload.log
 
     echo "Uploading pingaccess backup data on server ${SERVER}"
-
     kubectl exec "${SERVER}" -- sh -c \
             "test -x ${SCRIPT} && \
             STOP_SERVER_ON_FAILURE=false \
-            ${SCRIPT}" | tee "${LOG_FILE}"
             ${SCRIPT}"> "${LOG_FILE}"
 
     if test ${?} -eq 0; then

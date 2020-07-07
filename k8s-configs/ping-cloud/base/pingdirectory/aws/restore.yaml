@@ -39,7 +39,6 @@ data:
     # Print the names of the uploaded files so callers know exactly what was uploaded
     echo "The following files were restored:"
     echo "${RESTORE_FILES}"
-
 ---
 
 # A manual restore can be performed by deploying this job. It will restore
