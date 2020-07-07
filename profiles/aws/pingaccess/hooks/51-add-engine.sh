@@ -15,8 +15,12 @@ echo "add-engine: starting add engine script"
 SHORT_HOST_NAME=$(hostname)
 ORDINAL=${SHORT_HOST_NAME##*-}
 
+<<<<<<< HEAD
 if is_multi_cluster; then
   echo "add-engine: multi-cluster"
+=======
+if test "${IS_MULTI_CLUSTER}" == "1"; then
+>>>>>>> 56d17c3b... [skip pipeline] update to fix return value for is_multi_cluster function
   ADMIN_HOST_PORT="${PA_ADMIN_PUBLIC_HOSTNAME}"
   ENGINE_NAME="${PA_ENGINE_PUBLIC_HOSTNAME}:300${ORDINAL}"
 else
