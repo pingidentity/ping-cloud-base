@@ -14,4 +14,3 @@ data:
     - name: "elasticsearch-http"
       dns:
       - "elasticsearch"
-    - name: "logs-${CLUSTER_NAME}.${TENANT_DOMAIN}"
