@@ -1,5 +1,13 @@
 # Changelog
 
+### 1.4.3
+
+- Resolved an issue prevent access to server profiles
+
+_Changes:_
+
+- [X] PDO-1150 - Need variable replacement added for new secrets.yaml files so need .tmpl extension added in ping-cloud-base
+
 ### 1.4.2
 
 - Fixed ingresses to force HTTP traffic to be redirected to HTTPS
@@ -13,8 +21,6 @@ _Changes:_
 - [X] PDO-1119 - Data loss caused by switching PingFederate admin to use a persistent disk
 - [X] PDO-1123 - Fix typo in PingDirectory BACKENDS_TO_BACKUP environment variable
 - [X] PDO-1124 - HTTP ingress traffic should be redirected to use HTTPS  
-
-# Changelog
 
 ### 1.4.1
 
