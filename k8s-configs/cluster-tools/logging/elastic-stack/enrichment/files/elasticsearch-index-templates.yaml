@@ -5,807 +5,807 @@ metadata:
 data:
   enrichment-template.json: |
     {
-    "order": 1,
-    "index_patterns": [
+      "order": 1,
+      "index_patterns": [
         "enrichment*"
-    ],
-    "settings": {
+      ],
+      "settings": {
         "number_of_shards": 1,
         "number_of_replicas": 1,
         "index.lifecycle.name": "ping-2-day-retention",
         "index.lifecycle.rollover_alias": "enrichment"
-    },
-    "mappings": {
+      },
+      "mappings": {
         "properties": {
-        "event_type": {
+          "event_type": {
             "type": "keyword"
-        },
-        "event_timestamp": {
+          },
+          "event_timestamp": {
             "type": "date"
-        },
-        "producer_name": {
+          },
+          "producer_name": {
             "type": "keyword"
-        },
-        "event_message": {
+          },
+          "event_message": {
             "type": "text"
+          }
         }
-        }
-    }
+      }
     }
 
   pa-audit-template.json: |
     {
-    "order": 1,
-    "index_patterns": [
+      "order": 1,
+      "index_patterns": [
         "pa-audit*"
-    ],
-    "settings": {
+      ],
+      "settings": {
         "number_of_shards": 1,
         "number_of_replicas": 1,
         "index.lifecycle.name": "ping-2-day-retention",
         "index.lifecycle.rollover_alias": "pa-audit"
-    },
-    "mappings": {
+      },
+      "mappings": {
         "properties": {
-        "geoip": {
+          "geoip": {
             "dynamic": true,
             "properties": {
-            "ip": {
+              "ip": {
                 "type": "ip"
-            },
-            "latitude": {
+              },
+              "latitude": {
                 "type": "half_float"
-            },
-            "location": {
+              },
+              "location": {
                 "type": "geo_point"
-            },
-            "longitude": {
+              },
+              "longitude": {
                 "type": "half_float"
+              }
             }
-            }
-        },
-        "roundTripMS": {
+          },
+          "roundTripMS": {
             "type": "long",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "date": {
+          },
+          "date": {
             "type": "date"
-        },
-        "responseCode": {
+          },
+          "responseCode": {
             "type": "long",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
+          }
         }
-        }
-    }
+      }
     }
 
   pa-system-template.json: |
     {
-    "order": 1,
-    "index_patterns": [
+      "order": 1,
+      "index_patterns": [
         "pa-system*"
-    ],
-    "settings": {
+      ],
+      "settings": {
         "number_of_shards": 1,
         "number_of_replicas": 1,
         "index.lifecycle.name": "ping-2-day-retention",
         "index.lifecycle.rollover_alias": "pa-system"
-    },
-    "mappings": {
+      },
+      "mappings": {
         "properties": {
-        "geoip": {
+          "geoip": {
             "dynamic": true,
             "properties": {
-            "ip": {
+              "ip": {
                 "type": "ip"
-            },
-            "latitude": {
+              },
+              "latitude": {
                 "type": "half_float"
-            },
-            "location": {
+              },
+              "location": {
                 "type": "geo_point"
-            },
-            "longitude": {
+              },
+              "longitude": {
                 "type": "half_float"
+              }
             }
-            }
+          }
         }
-        }
-    }
+      }
     }
 
   pd-access-template.json: |
     {
-    "order": 1,
-    "index_patterns": [
+      "order": 1,
+      "index_patterns": [
         "pd-access*"
-    ],
-    "settings": {
+      ],
+      "settings": {
         "number_of_shards": 1,
         "number_of_replicas": 1,
         "index.lifecycle.name": "ping-2-day-retention",
         "index.lifecycle.rollover_alias": "pd-access"
-    },
-    "mappings": {
+      },
+      "mappings": {
         "properties": {
-        "@timestamp": {
+          "@timestamp": {
             "type": "date"
-        },
-        "@version": {
+          },
+          "@version": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "additionalInfo": {
+          },
+          "additionalInfo": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "attrs": {
+          },
+          "attrs": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "authDN": {
+          },
+          "authDN": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "authFailureID": {
+          },
+          "authFailureID": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "authFailureReason": {
+          },
+          "authFailureReason": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "authType": {
+          },
+          "authType": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "base": {
+          },
+          "base": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "clientConnectionPolicy": {
+          },
+          "clientConnectionPolicy": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "conn": {
+          },
+          "conn": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "dn": {
+          },
+          "dn": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "entriesReturned": {
+          },
+          "entriesReturned": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "etime": {
+          },
+          "etime": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "facility": {
+          },
+          "facility": {
             "type": "long"
-        },
-        "facility_label": {
+          },
+          "facility_label": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "filter": {
+          },
+          "filter": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "host": {
+          },
+          "host": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "instanceName": {
+          },
+          "instanceName": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "ldapType": {
+          },
+          "ldapType": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "log_type": {
+          },
+          "log_type": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "logsource": {
+          },
+          "logsource": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "msgID": {
+          },
+          "msgID": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "op": {
+          },
+          "op": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "opPurpose": {
+          },
+          "opPurpose": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "preAuthZUsedPrivileges": {
+          },
+          "preAuthZUsedPrivileges": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "priority": {
+          },
+          "priority": {
             "type": "long"
-        },
-        "qtime": {
+          },
+          "qtime": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "requestOID": {
+          },
+          "requestOID": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "requestType": {
+          },
+          "requestType": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "requesterIP": {
+          },
+          "requesterIP": {
             "type": "ip",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "resultCode": {
+          },
+          "resultCode": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "resultCodeName": {
+          },
+          "resultCodeName": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "scope": {
+          },
+          "scope": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "severity": {
+          },
+          "severity": {
             "type": "long"
-        },
-        "severity_label": {
+          },
+          "severity_label": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "threadID": {
+          },
+          "threadID": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "threat_intel": {
+          },
+          "threat_intel": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "timestamp": {
+          },
+          "timestamp": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "tor_intel": {
+          },
+          "tor_intel": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "type": {
+          },
+          "type": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "usingAdminSessionWorkerThread": {
+          },
+          "usingAdminSessionWorkerThread": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "version": {
+          },
+          "version": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
+          }
         }
-        }
-    }
+      }
     }
 
   pd-failed-ops.json: |
     {
-    "order": 1,
-    "index_patterns": [
+      "order": 1,
+      "index_patterns": [
         "pd-failed-ops*"
-    ],
-    "settings": {
+      ],
+      "settings": {
         "number_of_shards": 1,
         "number_of_replicas": 1,
         "index.lifecycle.name": "ping-2-day-retention",     
         "index.lifecycle.rollover_alias": "pd-failed-ops"   
-    },
-    "mappings": {
+      },
+      "mappings": {
         "properties": {
-        "geoip": {
+          "geoip": {
             "dynamic": true,
             "properties": {
-            "ip": {
+              "ip": {
                 "type": "ip"
-            },
-            "latitude": {
+              },
+              "latitude": {
                 "type": "half_float"
-            },
-            "location": {
+              },
+              "location": {
                 "type": "geo_point"
-            },
-            "longitude": {
+              },
+              "longitude": {
                 "type": "half_float"
+              }
             }
-            }
+          }
         }
-        }
-    }
+      }
     }
 
   pf-audit-template.json: |
     {
-    "order": 1,
-    "index_patterns": [
+      "order": 1,
+      "index_patterns": [
         "pf-audit*"
-    ],
-    "settings": {
+      ],
+      "settings": {
         "number_of_shards": 1,
         "number_of_replicas": 1,
         "index.lifecycle.name": "ping-2-day-retention",     
         "index.lifecycle.rollover_alias": "pf-audit"   
-    },
-    "mappings": {
+      },
+      "mappings": {
         "properties": {
-        "adapterid": {
+          "adapterid": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "app": {
+          },
+          "app": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "company_name": {
+          },
+          "company_name": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "connectionid": {
+          },
+          "connectionid": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "event_time": {
+          },
+          "event_time": {
             "type": "text"
-        },
-        "facility": {
+          },
+          "facility": {
             "type": "long"
-        },
-        "facility_label": {
+          },
+          "facility_label": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "host": {
+          },
+          "host": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "host_name": {
+          },
+          "host_name": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "ip": {
+          },
+          "ip": {
             "type": "ip",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "log_type": {
+          },
+          "log_type": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "long_log_timestamp": {
+          },
+          "long_log_timestamp": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "message": {
+          },
+          "message": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "priority": {
+          },
+          "priority": {
             "type": "long"
-        },
-        "product_name": {
+          },
+          "product_name": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "protocol": {
+          },
+          "protocol": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "severity": {
+          },
+          "severity": {
             "type": "long"
-        },
-        "severity_label": {
+          },
+          "severity_label": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "status": {
+          },
+          "status": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "subject": {
+          },
+          "subject": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "tags": {
+          },
+          "tags": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "trackingid": {
+          },
+          "trackingid": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "type": {
+          },
+          "type": {
             "type": "text",
             "fields": {
-            "keyword": {
+              "keyword": {
                 "type": "keyword",
                 "ignore_above": 256
+              }
             }
-            }
-        },
-        "geoip": {
+          },
+          "geoip": {
             "dynamic": true,
             "properties": {
-            "ip": {
+              "ip": {
                 "type": "ip"
-            },
-            "latitude": {
+              },
+              "latitude": {
                 "type": "half_float"
-            },
-            "location": {
+              },
+              "location": {
                 "type": "geo_point"
-            },
-            "longitude": {
+              },
+              "longitude": {
                 "type": "half_float"
+              }
             }
-            }
-        },
-        "found_geoip": {
+          },
+          "found_geoip": {
             "dynamic": true,
             "properties": {
-            "ip": {
+              "ip": {
                 "type": "ip"
-            },
-            "latitude": {
+              },
+              "latitude": {
                 "type": "half_float"
-            },
-            "location": {
+              },
+              "location": {
                 "type": "geo_point"
-            },
-            "longitude": {
+              },
+              "longitude": {
                 "type": "half_float"
+              }
             }
-            }
+          }
         }
-        }
-    }
+      }
     }
 
   pf-system-template.json: |
     {
-    "order": 1,
-    "index_patterns": [
+      "order": 1,
+      "index_patterns": [
         "pf-system*"
-    ],
-    "settings": {
+      ],
+      "settings": {
         "number_of_shards": 1,
         "number_of_replicas": 1,
         "index.lifecycle.name": "ping-2-day-retention",     
         "index.lifecycle.rollover_alias": "pf-system"   
-    },
-    "mappings": {
+      },
+      "mappings": {
         "properties": {
-        "geoip": {
+          "geoip": {
             "dynamic": true,
             "properties": {
-            "ip": {
+              "ip": {
                 "type": "ip"
-            },
-            "latitude": {
+              },
+              "latitude": {
                 "type": "half_float"
-            },
-            "location": {
+              },
+              "location": {
                 "type": "geo_point"
-            },
-            "longitude": {
+              },
+              "longitude": {
                 "type": "half_float"
+              }
             }
-            }
+          }
         }
-        }
-    }
+      }
     }
