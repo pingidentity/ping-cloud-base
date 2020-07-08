@@ -16,6 +16,7 @@ set +x
 get_admin_user_response=""
 http_response_code=""
 while test -z $get_admin_user_response || test $http_response_code -ne 200; do
+    sleep 5000
     get_admin_user_response=$(curl -k \
      -i \
      --retry ${API_RETRY_LIMIT} \
