@@ -15,7 +15,7 @@ templates_dir_path=${MOUNT_DIR}/templates/92
 set +x
 get_admin_user_response=""
 http_response_code=""
-while test -z $get_admin_user_response || test $http_response_code -ne 200; then
+while test -z $get_admin_user_response || test $http_response_code -ne 200; do
     get_admin_user_response=$(curl -k \
      -i \
      --retry ${API_RETRY_LIMIT} \
