@@ -19,7 +19,7 @@ get_admin_user_response=$(curl -k \
      --max-time ${API_TIMEOUT_WAIT} \
      --retry-delay 1 \
      --retry-connrefused \
-     -u ${PA_ADMIN_USER_USERNAME}:${OLD_PA_ADMIN_USER_PASSWORD} \
+     -u ${PA_ADMIN_USER_USERNAME}:${PA_ADMIN_USER_PASSWORD} \
      -H "X-Xsrf-Header: PingAccess" "https://localhost:9000/pa-admin-api/v3/users/1")
 "${VERBOSE}" && set -x
 
@@ -43,12 +43,6 @@ if [ 200 = ${http_response_code} ]; then
         make_initial_api_request -s -X PUT \
             -d "${eula_payload}" \
             "https://localhost:9000/pa-admin-api/v3/users/1" > /dev/null
-
-
-        echo "Changing the default password..."
-        echo "Change password debugging output suppressed"
-
-        changePassword
 
         # Export CONFIG_QUERY_KP_VALID_DAYS so it will get injected into
         # config-query-keypair.json.  Default to 365 days.
