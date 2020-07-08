@@ -110,9 +110,9 @@ spec:
         - name: data-dir
           mountPath: /usr/local/bin/kubectl
           subPath: kubectl
-        - name: pingaccess-license
-          mountPath: /mount/conf/pingaccess.lic
-          subPath: pingaccess.lic
+#        - name: pingaccess-license
+#          mountPath: /mount/conf/pingaccess.lic
+#          subPath: pingaccess.lic
         - name: mount-dir
           mountPath: /mount
         readinessProbe:
@@ -176,11 +176,11 @@ spec:
       - name: mount-dir
         persistentVolumeClaim:
           claimName: mount-dir
-      - name: pingaccess-license
-        secret:
-          secretName: pingaccess-license
-          optional: true
-          defaultMode: 0400
+#      - name: pingaccess-license
+#        secret:
+#          secretName: pingaccess-license
+#          optional: true
+#          defaultMode: 0400
       - name: pingaccess-passwords
         secret:
           secretName: pingaccess-passwords
@@ -232,7 +232,27 @@ spec:
         volumeMounts:
           - name: mount-dir
             mountPath: /mount
-        command: ['sh', '-c', 'rm -rf /mount/*'] 
+        command: ['sh', '-c', 'rm -rf /mount/*']
+      - name: apply-server-profile
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/geoff/init-apply-profile
+        imagePullPolicy: Always
+        env:
+        - name: MOUNT_DIR
+          value: /mount
+        - name: OPERATIONAL_MODE
+          value: CLUSTERED_ENGINE
+        - name: SERVER_PROFILE_URL
+          value: ${CONFIG_REPO_URL}
+        - name: SERVER_PROFILE_PATH
+          value: profiles/aws/pingaccess
+        - name: SERVER_PROFILE_BRANCH
+          value: modularize
+        envFrom:
+        - configMapRef:
+            name: pingaccess-environment-variables
+        volumeMounts:
+          - name: mount-dir
+            mountPath: /mount
       - name: pingaccess-init
         # FIXME: switch to same user as app
         securityContext:
@@ -296,13 +316,13 @@ spec:
             command: [ /app/liveness.sh ]
           initialDelaySeconds: 60
           periodSeconds: 5
-          failureThreshold: 3
+          failureThreshold: 300 #TODO: orig was 3
         livenessProbe:
           exec:
             command: [ /app/liveness.sh ]
           initialDelaySeconds: 60
           periodSeconds: 30
-          failureThreshold: 3
+          failureThreshold: 300 # TODO: orig was 3
         lifecycle:
           preStop:
             exec:
