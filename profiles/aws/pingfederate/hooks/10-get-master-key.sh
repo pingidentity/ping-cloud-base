@@ -21,8 +21,11 @@ echo "Fetching master key from the admin server"
 EXPORT_DIR=$(mktemp -d)
 EXPORT_ZIP_FILE="${EXPORT_DIR}/export.zip"
 
+PF_ADMIN_HOST_PORT="${PINGFEDERATE_ADMIN_SERVER}:${PF_ADMIN_PORT}"
+is_multi_cluster && PF_ADMIN_HOST_PORT="${PF_ADMIN_PUBLIC_HOSTNAME}"
+
 make_api_request -X GET \
-  "https://${PINGFEDERATE_ADMIN_SERVER}:${PF_ADMIN_PORT}/pf-admin-api/v1/configArchive/export" \
+  "https://${PF_ADMIN_HOST_PORT}/pf-admin-api/v1/configArchive/export" \
   -o "${EXPORT_ZIP_FILE}"
 
 RESULT=$?

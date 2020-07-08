@@ -22,10 +22,16 @@ if test -z "${ENV_VARS_FILE}"; then
   export CONFIG_PARENT_DIR=aws
   export CONFIG_REPO_BRANCH=${CI_COMMIT_REF_NAME}
 
+  export PD_PARENT_PUBLIC_HOSTNAME=pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+  export PF_ADMIN_PUBLIC_HOSTNAME=pingfederate-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+  export PA_ADMIN_PUBLIC_HOSTNAME=pingaccess-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+  export PA_CLUSTER_PUBLIC_HOSTNAME=pingaccess-cluster${ENVIRONMENT}.${TENANT_DOMAIN}
+
   export ARTIFACT_REPO_URL=s3://${CLUSTER_NAME}-artifacts-bucket
   export PING_ARTIFACT_REPO_URL=https://ping-artifacts.s3-us-west-2.amazonaws.com
   export LOG_ARCHIVE_URL=s3://${CLUSTER_NAME}-logs-bucket
   export BACKUP_URL=s3://${CLUSTER_NAME}-backup-bucket
+  export CLUSTER_BUCKET_NAME="${CLUSTER_NAME}-cluster-bucket"
 
   export PROJECT_DIR="${CI_PROJECT_DIR}"
   export AWS_PROFILE=csg
@@ -42,6 +48,8 @@ export CURL_TIMEOUT_SECONDS="${CURL_TIMEOUT_SECONDS:-450}"
 
 export ADMIN_USER=administrator
 export ADMIN_PASS=2FederateM0re
+
+export PD_SEED_LDAPS_PORT=6360
 
 export CLUSTER_NAME_LC=$(echo "${CLUSTER_NAME}" | tr '[:upper:]' '[:lower:]')
 export LOG_GROUP_NAME="/aws/containerinsights/${CLUSTER_NAME}/application"

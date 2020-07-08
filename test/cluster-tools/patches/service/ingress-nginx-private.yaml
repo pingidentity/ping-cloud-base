@@ -1,4 +1,0 @@
-- op: replace
-  path: /metadata/annotations
-  value:
-    service.beta.kubernetes.io/aws-load-balancer-type: nlb

@@ -1,0 +1,12 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+- ../base
+
+patchesStrategicMerge:
+- pingfederate/admin-init-env.yaml
+- pingfederate/engine-init-env.yaml
+
+- pingaccess/admin-init-env.yaml
+- pingaccess/engine-init-env.yaml

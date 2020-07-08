@@ -58,6 +58,30 @@ spec:
 
 ---
 
+# This defines the ingress for the pingaccess cluster config service
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: pingaccess-cluster-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    kubernetes.io/ingress.class: nginx-private
+spec:
+  tls:
+    - hosts:
+        - pingaccess-cluster-dev.ping-demo.com
+  rules:
+    - host: pingaccess-cluster-dev.ping-demo.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: pingaccess-admin
+              servicePort: 9090
+
+---
+
 # This defines the ingress for the pingaccess agent services.
 
 apiVersion: extensions/v1beta1
