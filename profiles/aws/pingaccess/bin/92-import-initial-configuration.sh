@@ -12,13 +12,14 @@ templates_dir_path=${MOUNT_DIR}/templates/92
 
 # Fetch using the -i flag to get the HTTP response
 # headers as well
-#set +x
-get_admin_user_response=""
-http_response_code=""
-while test -z $get_admin_user_response || test $http_response_code -ne 200; do
-    echo "in while"
-    sleep 5000
-    get_admin_user_response=$(curl -k \
+# set +x
+
+while test $(curl -k -s -o /dev/null -w '%{http_code}' -u ${PA_ADMIN_USER_USERNAME}:${PA_ADMIN_USER_PASSWORD} -H "X-Xsrf-Header: PingAccess" "https://localhost:9000/pa-admin-api/v3/users/1") -ne 200; do
+    echo "Sleeping 30 second waiting for the password to change."
+    sleep 30
+done
+
+get_admin_user_response=$(curl -k \
      -i \
      --retry ${API_RETRY_LIMIT} \
      --max-time ${API_TIMEOUT_WAIT} \
@@ -26,15 +27,12 @@ while test -z $get_admin_user_response || test $http_response_code -ne 200; do
      --retry-connrefused \
      -u ${PA_ADMIN_USER_USERNAME}:${PA_ADMIN_USER_PASSWORD} \
      -H "X-Xsrf-Header: PingAccess" "https://localhost:9000/pa-admin-api/v3/users/1")
-     http_response_code=$(printf "${get_admin_user_response}" | awk '/HTTP/' | awk '{print $2}')
-done
-echo "Starting import of initial configuration."
 "${VERBOSE}" && set -x
 
 # Verify connecting to the user endpoint using credentials
 # passed in via env variables.  If this fails with a non-200
 # HTTP response then skip the configuration import.
-
+http_response_code=$(printf "${get_admin_user_response}" | awk '/HTTP/' | awk '{print $2}')
 echo "${http_response_code}"
 if [ 200 = ${http_response_code} ]; then
 
