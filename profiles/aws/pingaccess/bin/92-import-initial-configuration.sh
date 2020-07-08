@@ -27,6 +27,7 @@ while test -z $get_admin_user_response || test $http_response_code -ne 200; do
      -H "X-Xsrf-Header: PingAccess" "https://localhost:9000/pa-admin-api/v3/users/1")
      http_response_code=$(printf "${get_admin_user_response}" | awk '/HTTP/' | awk '{print $2}')
 done
+echo "Starting import of initial configuration."
 "${VERBOSE}" && set -x
 
 # Verify connecting to the user endpoint using credentials
