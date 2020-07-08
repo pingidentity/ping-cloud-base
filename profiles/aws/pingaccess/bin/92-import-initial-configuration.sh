@@ -7,6 +7,7 @@ _curDir=$(dirname $0)
 
 set -e
 "${VERBOSE}" && set -x
+set -x
 
 templates_dir_path=${MOUNT_DIR}/templates/92
 
