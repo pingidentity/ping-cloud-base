@@ -12,10 +12,11 @@ templates_dir_path=${MOUNT_DIR}/templates/92
 
 # Fetch using the -i flag to get the HTTP response
 # headers as well
-set +x
+#set +x
 get_admin_user_response=""
 http_response_code=""
 while test -z $get_admin_user_response || test $http_response_code -ne 200; do
+    echo "in while"
     sleep 5000
     get_admin_user_response=$(curl -k \
      -i \
