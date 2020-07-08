@@ -6,7 +6,14 @@
 set -e
 "${VERBOSE}" && set -x
 
-export_cluster_config_host_port
+if test "$(is_multi_cluster)" == "1"; then
+  export CLUSTER_CONFIG_HOST="${PA_ADMIN_PUBLIC_HOSTNAME}"
+  export CLUSTER_CONFIG_PORT=443
+else
+  export CLUSTER_CONFIG_HOST="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}"
+  export CLUSTER_CONFIG_PORT=9090
+fi
+
 echo "import-initial-configuration: cluster-config host:port ${CLUSTER_CONFIG_HOST}:${CLUSTER_CONFIG_PORT}"
 
 templates_dir_path=${STAGING_DIR}/templates/81
@@ -96,6 +103,12 @@ if [ 200 = ${http_response_code} ]; then
                 -d "${config_query_payload}" \
                 "https://localhost:9000/pa-admin-api/v3/httpsListeners/${config_query_listener_id}")
 
+            # Update admin config host
+            echo "Updating the host and port of the Admin Config..."
+            admin_config_payload=$(envsubst < ${templates_dir_path}/admin-config.json)
+            admin_config_response=$(make_api_request -s -X PUT \
+                -d "${admin_config_payload}" \
+                "https://localhost:9000/pa-admin-api/v3/adminConfig")
          else
 
             echo "Keypair ${CONFIG_QUERY_KP_ALIAS} already exists.  Skipping configuration of the Keypair, the Config Query HTTPS Listener, and the Admin Config."

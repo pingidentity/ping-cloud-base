@@ -28,6 +28,11 @@ if ! test -f "${ADMIN_CONFIGURATION_COMPLETE}"; then
     exit 1
   fi
 
+  sh "${HOOKS_DIR}/82-add-acme-cert.sh"
+  if test $? -ne 0; then
+    exit 1
+  fi
+
   touch ${ADMIN_CONFIGURATION_COMPLETE}
 
 # Since this isn't initial deployment, change password if from disk is different than the desired value.
@@ -36,10 +41,6 @@ elif test $(comparePasswordDiskWithVariable) -eq 0; then
   changePassword
   
 fi
-
-# Update admin config host and port
-echo "post-start: updating the admin config host port"
-update_admin_config_host_port
 
 # Upload a backup right away after starting the server.
 sh "${HOOKS_DIR}/90-upload-backup-s3.sh"

@@ -342,3 +342,36 @@ function update_admin_config_host_port() {
       -d "${admin_config_payload}" \
       "https://localhost:9000/pa-admin-api/v3/adminConfig")
 }
+
+########################################################################################################################
+# Determines if the environment is running in the context of multiple clusters. If both PA_ADMIN_PUBLIC_HOSTNAME and
+# PA_ENGINE_PUBLIC_HOSTNAME, it is assumed to be multi-cluster.
+#
+# Returns
+#   0 if multi-cluster; 1 if not.
+########################################################################################################################
+function is_multi_cluster() {
+  if test ! -z "${PA_ADMIN_PUBLIC_HOSTNAME}" && test ! -z "${PA_ENGINE_PUBLIC_HOSTNAME}"; then
+    echo true
+  else
+    echo false
+  fi
+}
+
+########################################################################################################################
+# Determines if the environment is secondary cluster.
+#
+# Returns
+#   true if secondary-cluster; false if not.
+########################################################################################################################
+function is_secondary_cluster() {
+
+  if [ "$(is_multi_cluster)" == true ]; then
+    if ! $(echo $PA_ADMIN_PUBLIC_HOSTNAME | grep -q "$TENANT_DOMAIN"); then
+        echo true
+        return 0
+    fi
+  fi
+
+  echo false
+}
