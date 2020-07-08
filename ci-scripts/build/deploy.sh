@@ -58,7 +58,7 @@ kubectl apply -f "${DEPLOY_FILE}"
 # stack must be rolled out in no more than (15 * num of PD replicas + 2.5 * number of end dependents) minutes.
 
 PD_REPLICA='statefulset.apps/pingdirectory'
-DEPENDENT_REPLICAS='deployment.apps/pingfederate statefulset.apps/pingaccess'
+DEPENDENT_REPLICAS='statefulset.apps/pingfederate statefulset.apps/pingaccess'
 
 NUM_PD_REPLICAS=$(kubectl get "${PD_REPLICA}" -o jsonpath='{.spec.replicas}' -n "${NAMESPACE}")
 PD_TIMEOUT_SECONDS=$((NUM_PD_REPLICAS * 900))
