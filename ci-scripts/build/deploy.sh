@@ -11,9 +11,12 @@ configure_kube
 export PING_IDENTITY_DEVOPS_USER_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_USER}")
 export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_KEY}")
 
+# Set the cluster-type to "parent" - we only have one CI/CD cluster.
+DEV_CLUSTER_STATE_DIR="${PROJECT_DIR}"/test
+
 # Deploy the configuration to Kubernetes
 DEPLOY_FILE=/tmp/deploy.yaml
-kustomize build "${PROJECT_DIR}"/test |
+kustomize build "${DEV_CLUSTER_STATE_DIR}" |
   envsubst '${PING_IDENTITY_DEVOPS_USER_BASE64}
     ${PING_IDENTITY_DEVOPS_KEY_BASE64}
     ${ENVIRONMENT}
@@ -24,19 +27,24 @@ kustomize build "${PROJECT_DIR}"/test |
     ${NAMESPACE}
     ${CONFIG_REPO_BRANCH}
     ${CONFIG_PARENT_DIR}
+    ${PD_PARENT_PUBLIC_HOSTNAME}
+    ${PF_ADMIN_PUBLIC_HOSTNAME}
+    ${PA_ADMIN_PUBLIC_HOSTNAME}
+    ${PA_CLUSTER_PUBLIC_HOSTNAME}
     ${ARTIFACT_REPO_URL}
     ${PING_ARTIFACT_REPO_URL}
     ${LOG_ARCHIVE_URL}
-    ${BACKUP_URL}' > ${DEPLOY_FILE}
+    ${BACKUP_URL}
+    ${CLUSTER_BUCKET_NAME}' > "${DEPLOY_FILE}"
 
 log "Deploy file contents:"
-cat ${DEPLOY_FILE}
+cat "${DEPLOY_FILE}"
 
 # Append the branch name to the ping-cloud namespace to make it unique. It's
 # okay for the common cluster tools to just be deployed once to the cluster.
-sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" ${DEPLOY_FILE}
+sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" "${DEPLOY_FILE}"
 
-kubectl apply -f ${DEPLOY_FILE}
+kubectl apply -f "${DEPLOY_FILE}"
 
 # A PingDirectory pod can take up to 15 minutes to deploy in the CI/CD cluster. There are two sets of dependencies
 # today from:
@@ -50,7 +58,7 @@ kubectl apply -f ${DEPLOY_FILE}
 # stack must be rolled out in no more than (15 * num of PD replicas + 2.5 * number of end dependents) minutes.
 
 PD_REPLICA='statefulset.apps/pingdirectory'
-DEPENDENT_REPLICAS='deployment.apps/pingfederate statefulset.apps/pingaccess'
+DEPENDENT_REPLICAS='statefulset.apps/pingfederate statefulset.apps/pingaccess'
 
 NUM_PD_REPLICAS=$(kubectl get "${PD_REPLICA}" -o jsonpath='{.spec.replicas}' -n "${NAMESPACE}")
 PD_TIMEOUT_SECONDS=$((NUM_PD_REPLICAS * 900))
@@ -72,11 +80,11 @@ kubectl get ingress -A
 # Print out the pingdirectory hostname
 echo
 echo '--- LDAP hostname ---'
-kubectl get svc pingdirectory-admin -n ${NAMESPACE} \
+kubectl get svc ingress-nginx -n ingress-nginx-private \
   -o jsonpath='{.metadata.annotations.external-dns\.alpha\.kubernetes\.io/hostname}'
 
 # Print out the  pods for the ping stack
 echo
 echo
 echo '--- Pod status ---'
-kubectl get pods -n ${NAMESPACE}
+kubectl get pods -n "${NAMESPACE}"

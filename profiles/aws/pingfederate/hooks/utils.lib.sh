@@ -90,6 +90,63 @@ function obfuscatePassword() {
 }
 
 ########################################################################################################################
+# Determines if the environment is running in the context of multiple clusters. If both PF_ADMIN_PUBLIC_HOSTNAME and
+# PF_ENGINE_PUBLIC_HOSTNAME, it is assumed to be multi-cluster.
+#
+# Returns
+#   0 if multi-cluster; 1 if not.
+########################################################################################################################
+function is_multi_cluster() {
+  test ! -z "${PF_ADMIN_PUBLIC_HOSTNAME}" && test ! -z "${PF_ENGINE_PUBLIC_HOSTNAME}"
+}
+
+########################################################################################################################
+# Returns the pod's ordinal as a 2-digit number. The pod's ordinal will be available in the variable ORDINAL after
+# this function is run.
+########################################################################################################################
+function get_pod_ordinal() {
+  local short_host_name=$(hostname)
+  ORDINAL=${short_host_name##*-}
+  test "${#ORDINAL}" -lt 2 && ORDINAL="0${ORDINAL}"
+}
+
+########################################################################################################################
+# Set up the tcp.xml file based on whether it is a single-cluster or multi-cluster deployment.
+########################################################################################################################
+function configure_tcp_xml() {
+  local currentDir="$(pwd)"
+  cd "${SERVER_ROOT_DIR}/server/default/conf"
+
+  if is_multi_cluster; then
+    export NATIVE_S3_PING="<org.jgroups.aws.s3.NATIVE_S3_PING \
+            region_name=\"${REGION}\" \
+            bucket_name=\"${CLUSTER_BUCKET_NAME}\" \
+            bucket_prefix=\"${PING_PRODUCT}\" \
+            remove_all_data_on_view_change=\"true\" \
+            write_data_on_find=\"true\" />"
+  else
+    export DNS_PING="<dns.DNS_PING \
+         dns_query="${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local" />"
+  fi
+
+  mv tcp.xml tcp.xml.subst
+  envsubst < tcp.xml.subst > tcp.xml
+  rm -f tcp.xml.subst
+
+  echo "configure_tcp_xml: contents of tcp.xml after substitution"
+  cat tcp.xml
+
+  cd "${currentDir}"
+}
+
+########################################################################################################################
+# Set up tcp.xml based on whether it is a single-cluster or multi-cluster deployment.
+########################################################################################################################
+function configure_cluster() {
+  configure_tcp_xml
+}
+
+########################################################################################################################
 # Function sets required environment variables for skbn
 #
 ########################################################################################################################

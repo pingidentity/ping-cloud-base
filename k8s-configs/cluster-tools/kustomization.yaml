@@ -2,6 +2,8 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
+- cert-manager
+- cluster-autoscaler
 - network-provider
 - service-discovery
 - ingress

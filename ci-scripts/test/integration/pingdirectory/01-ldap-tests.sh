@@ -12,7 +12,7 @@ if test "${DEV_TEST_ENV}" = 'true'; then
     docker run --rm pingidentity/ldap-sdk-tools ldapsearch \
       --terse \
       --hostname "${PINGDIRECTORY_ADMIN}" \
-      --port 636 \
+      --port "${PD_SEED_LDAPS_PORT}" \
       --bindDN 'cn=administrator' \
       --bindPassword '2FederateM0re' \
       --useSSL \
@@ -26,7 +26,7 @@ else
   /opt/tools/ldapsearch \
     --terse \
     --hostname "${PINGDIRECTORY_ADMIN}" \
-    --port 636 \
+    --port "${PD_SEED_LDAPS_PORT}" \
     --bindDN 'cn=administrator' \
     --bindPassword '2FederateM0re' \
     --useSSL \

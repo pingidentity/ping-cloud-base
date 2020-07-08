@@ -35,9 +35,192 @@ metadata:
 spec:
   externalTrafficPolicy: Local
   type: LoadBalancer
-  ports:
-  - port: 636
-    name: ldaps
-    targetPort: ldaps
   selector:
     class: pingdirectory-server
+  ports:
+  - name: ldaps
+    port: 636
+    targetPort: ldaps
+
+---
+
+# Cluster IP service for each pingdirectory pod in this cluster
+# We allow a maximum of 9 per cluster, which should be more than sufficient even for the large customers
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pingdirectory-0-service
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pingdirectory-0
+  ports:
+    - protocol: TCP
+      port: 1636
+      targetPort: 6360
+      name: ldaps
+    - protocol: TCP
+      port: 8989
+      targetPort: 9890
+      name: repl
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pingdirectory-1-service
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pingdirectory-1
+  ports:
+    - protocol: TCP
+      port: 1636
+      targetPort: 6361
+      name: ldaps
+    - protocol: TCP
+      port: 8989
+      targetPort: 9891
+      name: repl
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pingdirectory-2-service
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pingdirectory-2
+  ports:
+    - protocol: TCP
+      port: 1636
+      targetPort: 6362
+      name: ldaps
+    - protocol: TCP
+      port: 8989
+      targetPort: 9892
+      name: repl
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pingdirectory-3-service
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pingdirectory-3
+  ports:
+    - protocol: TCP
+      port: 1636
+      targetPort: 6363
+      name: ldaps
+    - protocol: TCP
+      port: 8989
+      targetPort: 9893
+      name: repl
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pingdirectory-4-service
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pingdirectory-4
+  ports:
+    - protocol: TCP
+      port: 1636
+      targetPort: 6364
+      name: ldaps
+    - protocol: TCP
+      port: 8989
+      targetPort: 9894
+      name: repl
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pingdirectory-5-service
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pingdirectory-5
+  ports:
+    - protocol: TCP
+      port: 1636
+      targetPort: 6365
+      name: ldaps
+    - protocol: TCP
+      port: 8989
+      targetPort: 9895
+      name: repl
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pingdirectory-6-service
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pingdirectory-6
+  ports:
+    - protocol: TCP
+      port: 1636
+      targetPort: 6366
+      name: ldaps
+    - protocol: TCP
+      port: 8989
+      targetPort: 9896
+      name: repl
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pingdirectory-7-service
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pingdirectory-7
+  ports:
+    - protocol: TCP
+      port: 1636
+      targetPort: 6367
+      name: ldaps
+    - protocol: TCP
+      port: 8989
+      targetPort: 9897
+      name: repl
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pingdirectory-8-service
+spec:
+  type: ClusterIP
+  selector:
+    statefulset.kubernetes.io/pod-name: pingdirectory-8
+  ports:
+    - protocol: TCP
+      port: 1636
+      targetPort: 6368
+      name: ldaps
+    - protocol: TCP
+      port: 8989
+      targetPort: 9898
+      name: repl

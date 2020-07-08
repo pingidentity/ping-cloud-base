@@ -4,13 +4,14 @@
 # contents of the remote branches corresponding to the different Customer Deployment Environments with new state.
 
 # NOTE: This script must be run from the root of the cluster state repo clone directory. It acts on the following
-# environment variables, if set.
+# environment variables.
 #
 #   GENERATED_CODE_DIR -> The TARGET_DIR of generate-cluster-state.sh. Defaults to '/tmp/sandbox', if unset.
+#   REGION_NAME -> The name of the region for which the generated code is applicable. This parameter is required.
 #   ENVIRONMENTS -> A space-separated list of environments. Defaults to 'dev test stage prod', if unset. If provided,
 #   it must contain all or a subset of the environments currently created by the generate-cluster-state.sh script, i.e.
 #   dev, test, stage, prod.
-#   PUSH_RETRY_COUNT -> The number to times to try pushing to the cluster state repo with a 2s sleep between each
+#   PUSH_RETRY_COUNT -> The number of times to try pushing to the cluster state repo with a 2s sleep between each
 #   attempt to avoid IAM permission to repo sync issue.
 
 ########################################################################################################################
@@ -20,19 +21,36 @@
 # Arguments
 #   ${1} -> The directory where cluster state code was generated, i.e. the TARGET_DIR to generate-cluster-state.sh.
 #   ${2} -> The environment.
-#   ${3} -> The target directory into which to organize the code to push for the environment.
+#   ${3} -> The output empty directory into which to organize the code to push for the environment and region.
+#   ${4} -> The name for a region, e.g. parent, child-0, child-1, etc.
+#   ${5} -> Flag indicating whether or not the provided region is the parent.
 ########################################################################################################################
 organize_code_for_environment() {
-  GENERATED_CODE_DIR="${1}"
-  ENV="${2}"
-  ENV_CODE_DIR="${3}"
-  ALL_ENVIRONMENTS=${4}
+  local generated_code_dir="${1}"
+  local env="${2}"
+  local out_dir="${3}"
+  local region_name="${4}"
+  local is_parent="${5}"
 
-  cp -pr "${GENERATED_CODE_DIR}"/cluster-state/. "${ENV_CODE_DIR}"
-  K8S_DIR="${ENV_CODE_DIR}"/k8s-configs
+  echo "Organizing code for environment ${env} in directory ${out_dir} for region ${region_name} (parent: ${is_parent})"
 
-  rm -rf "${K8S_DIR:?}"/*
-  cp -pr "${GENERATED_CODE_DIR}"/cluster-state/k8s-configs/"${ENV}"/. "${K8S_DIR}"
+  if "${is_parent}"; then
+    # For the parent region, we need to copy everything (i.e. both the k8s-configs and the profiles)
+    # into the cluster state repo.
+
+    # Copy everything under cluster state into the code directory for the environment.
+    cp -pr "${generated_code_dir}"/cluster-state/. "${out_dir}"
+
+    # Remove everything under the k8s-configs because code is initially generated for every CDE under there.
+    local k8s_dir="${out_dir}"/k8s-configs
+    rm -rf "${k8s_dir:?}"/*
+
+    # Copy the environment-specific k8s-configs into it.
+    cp -pr "${generated_code_dir}"/cluster-state/k8s-configs/"${env}"/. "${k8s_dir}"
+  else
+    # For child region, we only need to copy the environment-specific k8s-configs.
+    cp -pr "${generated_code_dir}"/cluster-state/k8s-configs/"${env}"/. "${out_dir}"
+  fi
 }
 
 ########################################################################################################################
@@ -43,23 +61,31 @@ organize_code_for_environment() {
 #   ${2} -> The git branch to push to on origin.
 ########################################################################################################################
 push_with_retries() {
-  RETRY_COUNT=${1}
-  GIT_BRANCH=${2}
+  local retry_count=${1}
+  local git_branch=${2}
+  local attempt=1
 
-  for ATTEMPT in $(seq 1 "${RETRY_COUNT}"); do
-    echo "Attempt #${ATTEMPT} pushing to server"
-    git push --set-upstream origin "${GIT_BRANCH}" && return 0
+  for attempt in $(seq 1 "${retry_count}"); do
+    echo "Attempt #${attempt} pushing to server"
+    git push --set-upstream origin "${git_branch}" && return 0
     sleep 2s
   done
 
-  echo "Unable to push to server branch ${GIT_BRANCH} after ${RETRY_COUNT} attempts"
+  echo "Unable to push to server branch ${git_branch} after ${retry_count} attempts"
   return 1
 }
 
 ### Script start ###
+if test -z "${REGION_NAME}" || test -z "${IS_PARENT}"; then
+  echo "REGION_NAME and IS_PARENT are required variables"
+  exit 1
+fi
+
 ALL_ENVIRONMENTS='dev test stage prod'
+
 ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
 GENERATED_CODE_DIR="${GENERATED_CODE_DIR:-/tmp/sandbox}"
+
 PUSH_RETRY_COUNT="${PUSH_RETRY_COUNT:-30}"
 PCB_COMMIT_SHA=$(cat "${GENERATED_CODE_DIR}"/pcb-commit-sha.txt)
 
@@ -67,7 +93,7 @@ for ENV in ${ENVIRONMENTS}; do
   echo "Processing ${ENV}"
 
   ENV_CODE_DIR=$(mktemp -d)
-  organize_code_for_environment "${GENERATED_CODE_DIR}" "${ENV}" "${ENV_CODE_DIR}"
+  organize_code_for_environment "${GENERATED_CODE_DIR}" "${ENV}" "${ENV_CODE_DIR}" "${REGION_NAME}" "${IS_PARENT}"
 
   if test "${ENV}" != 'prod'; then
     GIT_BRANCH="${ENV}"
@@ -92,11 +118,17 @@ for ENV in ${ENVIRONMENTS}; do
     git pull
   fi
 
-  rm -rf ./*
-  cp -pr "${ENV_CODE_DIR}"/. .
+  if "${IS_PARENT}"; then
+    rm -rf ./*
+    cp -pr "${ENV_CODE_DIR}"/. .
+  else
+    K8S_DIR_FOR_CHILD=./k8s-configs/"${REGION_NAME}"
+    rm -rf "${K8S_DIR_FOR_CHILD}"
+    cp -pr "${ENV_CODE_DIR}"/. "${K8S_DIR_FOR_CHILD}"
+  fi
 
   git add .
-  git commit -m "Initial commit - ping-cloud-base@${PCB_COMMIT_SHA}"
+  git commit -m "Initial commit of code for ${REGION_NAME} - ping-cloud-base@${PCB_COMMIT_SHA}"
   push_with_retries "${PUSH_RETRY_COUNT}" "${GIT_BRANCH}"
 
   echo

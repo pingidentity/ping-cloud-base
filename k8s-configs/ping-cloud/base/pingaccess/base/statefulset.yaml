@@ -94,7 +94,7 @@ spec:
             command: [ liveness.sh ]
           initialDelaySeconds: 60
           periodSeconds: 30
-          failureThreshold: 3
+          failureThreshold: 4
         ports:
         - containerPort: 9000
         - containerPort: 9090
@@ -240,9 +240,6 @@ spec:
         - name: pingaccess-license
           mountPath: /opt/in/instance/conf/pingaccess.lic
           subPath: pingaccess.lic
-        - name: pingaccess-pre-stop
-          mountPath: /opt/staging/pre-stop.sh
-          subPath: pre-stop.sh
         - name: data-dir
           mountPath: /opt/staging/env_vars
           subPath: env_vars
@@ -257,12 +254,12 @@ spec:
             command: [ liveness.sh ]
           initialDelaySeconds: 60
           periodSeconds: 30
-          failureThreshold: 3
+          failureThreshold: 4
         lifecycle:
           preStop:
             exec:
               command:
-              - /opt/staging/pre-stop.sh
+              - /opt/staging/hooks/86-pre-stop.sh
         ports:
         - containerPort: 3000
         - containerPort: 3030
@@ -309,7 +306,3 @@ spec:
           secretName: pingaccess-passwords
           optional: true
           defaultMode: 0400
-      - name: pingaccess-pre-stop
-        configMap:
-          name: pingaccess-pre-stop
-          defaultMode: 0555

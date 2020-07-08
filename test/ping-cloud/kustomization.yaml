@@ -11,12 +11,14 @@ configMapGenerator:
   envs:
   - env_vars
   - pingaccess/env_vars
+
 # Pingfederate
 - name: pingfederate-environment-variables
   behavior: merge
   envs:
   - env_vars
   - pingfederate/env_vars
+
 # Pingdirectory
 - name: pingdirectory-environment-variables
   behavior: merge
@@ -26,59 +28,132 @@ configMapGenerator:
 
 patchesJson6902:
 # pingdata
-- path: patches/ingress/pingdataconsole.yaml
-  target:
+- target:
     group: extensions
     version: v1beta1
     kind: Ingress
     name: pingdataconsole-ingress
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingdataconsole${ENVIRONMENT}.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingdataconsole${ENVIRONMENT}.${TENANT_DOMAIN}
 
 # pingfederate runtime
-- path: patches/ingress/pingfederate.yaml
-  target:
+- target:
     group: extensions
     version: v1beta1
     kind: Ingress
     name: pingfederate-ingress
-
-# pingfederate admin
-- path: patches/ingress/pingfederate-admin.yaml
-  target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: pingfederate-admin-ingress
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingfederate${ENVIRONMENT}.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingfederate${ENVIRONMENT}.${TENANT_DOMAIN}
 
 # pingaccess runtime
-- path: patches/ingress/pingaccess.yaml
-  target:
+- target:
     group: extensions
     version: v1beta1
     kind: Ingress
     name: pingaccess-ingress
-
-# pingaccess admin
-- path: patches/ingress/pingaccess-admin.yaml
-  target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: pingaccess-admin-ingress
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingaccess${ENVIRONMENT}.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingaccess${ENVIRONMENT}.${TENANT_DOMAIN}
 
 # pingaccess agent
-- path: patches/ingress/pingaccess-agent.yaml
-  target:
+- target:
     group: extensions
     version: v1beta1
     kind: Ingress
     name: pingaccess-agent-ingress
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingaccess-agent${ENVIRONMENT}.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingaccess-agent${ENVIRONMENT}.${TENANT_DOMAIN}
 
-# pingdirectory put ldaps on public and change the host
-- path: patches/service/pingdirectory.yaml
-  target:
-    version: v1
-    kind: Service
-    name: pingdirectory-admin
+# pingfederate admin
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingfederate-admin-ingress
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingfederate-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingfederate-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+
+# pingaccess admin
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingaccess-admin-ingress
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingaccess-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingaccess-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+
+# pingaccess cluster config
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingaccess-cluster-ingress
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingaccess-cluster${ENVIRONMENT}.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingaccess-cluster${ENVIRONMENT}.${TENANT_DOMAIN}
+
+# FIXME: add this once PDO-1114 is implemented
+# pingdirectory put ldaps on public and change the hostname
+#- target:
+#    version: v1
+#    kind: Service
+#    name: pingdirectory-admin
+#  patch: |-
+#    - op: replace
+#      path: /metadata/annotations
+#      value:
+#        service.beta.kubernetes.io/aws-load-balancer-type: nlb
+#        external-dns.alpha.kubernetes.io/hostname: pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}
 
 patchesStrategicMerge:
-- patches/secret/devops-secret.yaml
+- |-
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: devops-secret
+  data:
+    PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER_BASE64}
+    PING_IDENTITY_DEVOPS_KEY: ${PING_IDENTITY_DEVOPS_KEY_BASE64}
+    GIT_USER: Z2l0bGFiLW1hY2hpbmUtdXNlci1hdC03MDUzNzA2MjE1Mzk=
+    GIT_PASS: ZjNvd3dBSVkwYWpmZWwzWDMyUnFLeWZKS3ZEa3REZnJiUlBCQzhrY0wrcz0=
+
+# FIXME: remove this once PDO-1114 is implemented
+- |-
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: pingdirectory-admin
+  $patch: delete

@@ -5,7 +5,7 @@
   "alias":"${CONFIG_QUERY_KP_ALIAS}",
   "organization":"Ping Identity",
   "validDays":${CONFIG_QUERY_KP_VALID_DAYS},
-  "commonName":"${K8S_SERVICE_NAME_PINGACCESS_ADMIN}",
+  "commonName":"${CLUSTER_CONFIG_HOST}",
   "country":"US",
   "signatureAlgorithm":"SHA256withRSA"
 }

@@ -301,3 +301,77 @@ function skbnCopy() {
     return 1
   fi
 }
+
+
+########################################################################################################################
+# Determines if the environment is running in the context of multiple clusters. If both PA_ADMIN_PUBLIC_HOSTNAME and
+# PA_ENGINE_PUBLIC_HOSTNAME, it is assumed to be multi-cluster.
+#
+# Returns
+#   0 if multi-cluster; 1 if not.
+########################################################################################################################
+function is_multi_cluster() {
+  test ! -z "${PA_ADMIN_PUBLIC_HOSTNAME}" && test ! -z "${PA_ENGINE_PUBLIC_HOSTNAME}"
+}
+
+########################################################################################################################
+# Export the values for the CLUSTER_CONFIG_HOST and CLUSTER_CONFIG_PORT environment variables to be used for
+# substitution in JSON payloads to the admin API based on single vs. multi cluster.
+########################################################################################################################
+function export_cluster_config_host_port() {
+  if is_multi_cluster; then
+    export CLUSTER_CONFIG_HOST="${PA_CLUSTER_PUBLIC_HOSTNAME}"
+    export CLUSTER_CONFIG_PORT=443
+  else
+    export CLUSTER_CONFIG_HOST="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}"
+    export CLUSTER_CONFIG_PORT=9090
+  fi
+}
+
+########################################################################################################################
+# Update the PA admin's host:port to be set in every engine's bootstrap.properties file.
+########################################################################################################################
+function update_admin_config_host_port() {
+  local templates_dir_path="${STAGING_DIR}/templates/81"
+
+  # Substitute the right values into the admin-config.json file based on single or multi cluster.
+  export_cluster_config_host_port
+  admin_config_payload=$(envsubst < "${templates_dir_path}"/admin-config.json)
+
+  admin_config_response=$(make_api_request -s -X PUT \
+      -d "${admin_config_payload}" \
+      "https://localhost:9000/pa-admin-api/v3/adminConfig")
+}
+
+########################################################################################################################
+# Determines if the environment is running in the context of multiple clusters. If both PA_ADMIN_PUBLIC_HOSTNAME and
+# PA_ENGINE_PUBLIC_HOSTNAME, it is assumed to be multi-cluster.
+#
+# Returns
+#   0 if multi-cluster; 1 if not.
+########################################################################################################################
+function is_multi_cluster() {
+  if test ! -z "${PA_ADMIN_PUBLIC_HOSTNAME}" && test ! -z "${PA_ENGINE_PUBLIC_HOSTNAME}"; then
+    echo true
+  else
+    echo false
+  fi
+}
+
+########################################################################################################################
+# Determines if the environment is secondary cluster.
+#
+# Returns
+#   true if secondary-cluster; false if not.
+########################################################################################################################
+function is_secondary_cluster() {
+
+  if [ "$(is_multi_cluster)" == true ]; then
+    if ! $(echo $PA_ADMIN_PUBLIC_HOSTNAME | grep -q "$TENANT_DOMAIN"); then
+        echo true
+        return 0
+    fi
+  fi
+
+  echo false
+}

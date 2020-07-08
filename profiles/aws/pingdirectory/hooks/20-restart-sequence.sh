@@ -3,6 +3,8 @@
 ${VERBOSE} && set -x
 
 . "${HOOKS_DIR}/pingcommon.lib.sh"
+. "${HOOKS_DIR}/utils.lib.sh"
+
 test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
 test -f "${HOOKS_DIR}/pingdata.lib.sh" && . "${HOOKS_DIR}/pingdata.lib.sh"
 
@@ -31,6 +33,15 @@ if test ! -f "${_pdProfileLicense}" ; then
   cp -af "${_currentLicense}" "${_pdProfileLicense}"
 fi
 
+ORIG_UNBOUNDID_JAVA_ARGS="${UNBOUNDID_JAVA_ARGS}"
+HEAP_SIZE_INT=$(echo "${MAX_HEAP_SIZE}" | grep 'g$' | cut -d'g' -f1)
+
+if test ! -z "${HEAP_SIZE_INT}" && test "${HEAP_SIZE_INT}" -ge 4; then
+  NEW_HEAP_SIZE=$((HEAP_SIZE_INT - 2))g
+  echo "Changing manage-profile heap size to ${NEW_HEAP_SIZE}"
+  export UNBOUNDID_JAVA_ARGS="-client -Xmx${NEW_HEAP_SIZE} -Xms${NEW_HEAP_SIZE}"
+fi
+
 test -f "${SECRETS_DIR}"/encryption-settings.pin &&
   ENCRYPTION_PIN_FILE="${SECRETS_DIR}"/encryption-settings.pin ||
   ENCRYPTION_PIN_FILE="${SECRETS_DIR}"/encryption-password
@@ -47,6 +58,15 @@ if "${OPTIMIZE_REPLACE_PROFILE}"; then
   ADDITIONAL_ARGS=
 fi
 
+if is_multi_cluster; then
+  SHORT_HOST_NAME=$(hostname)
+  ORDINAL=${SHORT_HOST_NAME##*-}
+  export PD_LDAP_PORT="636${ORDINAL}"
+else
+  export PD_PUBLIC_HOSTNAME=$(hostname -f)
+  export PD_LDAP_PORT="${LDAPS_PORT}"
+fi
+
 "${SERVER_BITS_DIR}"/bin/manage-profile replace-profile \
     --serverRoot "${SERVER_ROOT_DIR}" \
     --profile "${PD_PROFILE}" \
@@ -56,6 +76,8 @@ fi
 
 MANAGE_PROFILE_STATUS=${?}
 echo "manage-profile replace-profile status: ${MANAGE_PROFILE_STATUS}"
+
+export UNBOUNDID_JAVA_ARGS="${ORIG_UNBOUNDID_JAVA_ARGS}"
 
 if test "${MANAGE_PROFILE_STATUS}" -ne 0; then
   echo "Contents of manage-profile.log file:"

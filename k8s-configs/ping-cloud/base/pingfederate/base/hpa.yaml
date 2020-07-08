@@ -7,6 +7,6 @@ spec:
   maxReplicas: 8
   scaleTargetRef:
     apiVersion: apps/v1
-    kind: Deployment
+    kind: StatefulSet
     name: pingfederate
   targetCPUUtilizationPercentage: 70
