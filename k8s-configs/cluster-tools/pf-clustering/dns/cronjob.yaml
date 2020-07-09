@@ -1,0 +1,49 @@
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  labels:
+    app: ping-cloud
+  name: publish-pf-cluster-ip-addrs
+  namespace: ping-cloud-mpeterson
+spec:
+  schedule: 0/1 * * * *
+  jobTemplate:
+    metadata:
+      labels:
+        app: publish-pf-cluster-ip-addrs
+    spec:
+      template:
+        metadata:
+          labels:
+            app: publish-pf-cluster-ip-addrs
+        spec:
+          containers:
+            - command:
+                - /bin/python3
+                - /opt/publish_pf_cluster_ip_addrs.py
+              image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/mpeterson/ping-cloud-tools:latest
+              imagePullPolicy: Always
+              name: publish-pf-cluster-ip-addrs
+              envFrom:
+                - configMapRef:
+                    name: pf-cluster-env-vars
+              volumeMounts:
+                - mountPath: /opt/publish_pf_cluster_ip_addrs.py
+                  name: publish-pf-cluster-ip-addrs
+                  subPath: publish_pf_cluster_ip_addrs.py
+                - mountPath: /opt/common/
+                  name: common
+          restartPolicy: OnFailure
+          serviceAccount: pf-cluster-ip-addrs-serviceaccount
+          volumes:
+            - name: publish-pf-cluster-ip-addrs
+              configMap:
+                defaultMode: 365
+                name: publish-pf-cluster-ip-addrs
+            - name: common
+              configMap:
+                defaultMode: 365
+                name: common
+          restartPolicy: OnFailure
+          serviceAccount: pf-cluster-ip-addrs-serviceaccount

@@ -1,0 +1,28 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+  - rbac.yaml
+  - cronjob.yaml
+
+namespace: ping-cloud
+
+configMapGenerator:
+  - name: publish-pf-cluster-ip-addrs
+    files:
+      - src/publish_pf_cluster_ip_addrs.py
+
+  - name: pf-cluster-env-vars
+    envs:
+      - env_vars
+
+  - name: common
+    files:
+      - src/common/__init__.py
+      - src/common/core_dns_logging.py
+      - src/common/dig.py
+      - src/common/k8s.py
+      - src/common/route_53.py
+
+generatorOptions:
+  disableNameSuffixHash: true
