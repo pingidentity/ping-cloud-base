@@ -7,7 +7,7 @@ metadata:
   name: publish-core-dns-endpoints
   namespace: kube-system
 spec:
-  schedule: 0/15 * * * *
+  schedule: 0/6 * * * *
   jobTemplate:
     metadata:
       labels:
@@ -19,11 +19,12 @@ spec:
             app: publish-core-dns-endpoints
         spec:
           containers:
-          - command: 
+          - name: publish-core-dns-endpoints
+            command:
             - /bin/python3
             - /opt/publish_endpoints.py
-            image: sthapa7/ping-cloud-aws:0.6
-            name: publish-core-dns-endpoints
+            image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/mpeterson/ping-cloud-tools:latest
+            imagePullPolicy: Always
             envFrom:
               - configMapRef:
                   name: core-dns-environment-variables
@@ -31,13 +32,14 @@ spec:
             - mountPath: /opt/publish_endpoints.py
               name: publish-core-dns-endpoints
               subPath: publish_endpoints.py
-            - mountPath: /opt/core-dns-templates.zip
-              name: core-dns-templates
-              subPath: core-dns-templates.zip
-            # We should be able to remove hostname-ip
-            - mountPath: /opt/hostname-ip.txt
-              name: hostname-ip
-              subPath: hostname-ip.txt
+            - mountPath: /opt/common/
+              name: common
+            - mountPath: /opt/templates/
+              name: kustomize-templates
+            - mountPath: /opt/templates/patch/base/
+              name: kustomize-templates-patch-base
+            - mountPath: /opt/templates/patch/overlay/
+              name: kustomize-templates-patch-overlay
           restartPolicy: OnFailure
           serviceAccount: kube-dns-serviceaccount
           volumes:
@@ -45,14 +47,21 @@ spec:
             configMap:
               defaultMode: 365
               name: publish-core-dns-endpoints
-          - name: core-dns-templates
+          - name: common
             configMap:
               defaultMode: 365
-              name: core-dns-templates
-          # We should be able to remove hostname-ip
-          - name: hostname-ip
+              name: common
+          - name: kustomize-templates
             configMap:
               defaultMode: 365
-              name: hostname-ip
+              name: kustomize-templates
+          - name: kustomize-templates-patch-base
+            configMap:
+              defaultMode: 365
+              name: kustomize-templates-patch-base
+          - name: kustomize-templates-patch-overlay
+            configMap:
+              defaultMode: 365
+              name: kustomize-templates-patch-overlay
           restartPolicy: OnFailure
           serviceAccount: kube-dns-serviceaccount

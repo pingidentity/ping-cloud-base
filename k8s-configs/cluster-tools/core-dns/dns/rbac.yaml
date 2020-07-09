@@ -30,6 +30,8 @@ rules:
   - endpoints
   - services
   - configmaps
+  - namespaces
+  - pods
   verbs:
   - get
   - list
