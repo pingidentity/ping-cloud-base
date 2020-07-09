@@ -20,7 +20,7 @@
     --acceptLicense \
     --skipPortCheck \
     --licenseKeyFile ${PING_SERVER_ROOT}/PingDirectory.lic \
-    --location "${LOCATION}" \
+    --location "${REGION}" \
     --instanceName "${PD_PUBLIC_HOSTNAME}-${PD_LDAP_PORT}" \
     --ldapPort ${LDAP_PORT} \
     --ldapsPort ${LDAPS_PORT} \
@@ -30,4 +30,6 @@
     --generateSelfSignedCertificate \
     --encryptDataWithPassphraseFromFile "${ENCRYPTION_PASSWORD_FILE}" \
     --rootUserDN "${ROOT_USER_DN}" \
-    --rootUserPasswordFile "${ROOT_USER_PASSWORD_FILE}"
+    --rootUserPasswordFile "${ROOT_USER_PASSWORD_FILE}" \
+    --interServerCertPEMFile "${ADS_CRT_FILE}" \
+    --interServerCertPrivateKeyFile "${ADS_KEY_FILE}"

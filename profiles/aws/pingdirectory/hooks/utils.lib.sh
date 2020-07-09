@@ -107,3 +107,59 @@ function is_primary_cluster() {
 function is_secondary_cluster() {
   ! is_primary_cluster
 }
+
+########################################################################################################################
+# Get LDIF for the base entry of USER_BASE_DN and return the LDIF file as stdout
+########################################################################################################################
+get_base_entry_ldif() {
+  COMPUTED_DOMAIN=$(echo "${USER_BASE_DN}" | sed 's/^dc=\([^,]*\).*/\1/')
+  COMPUTED_ORG=$(echo "${USER_BASE_DN}" | sed 's/^o=\([^,]*\).*/\1/')
+
+  USER_BASE_ENTRY_LDIF=$(mktemp)
+
+  if ! test "${USER_BASE_DN}" = "${COMPUTED_DOMAIN}"; then
+    cat > "${USER_BASE_ENTRY_LDIF}" <<EOF
+dn: ${USER_BASE_DN}
+objectClass: top
+objectClass: domain
+dc: ${COMPUTED_DOMAIN}
+EOF
+  elif ! test "${USER_BASE_DN}" = "${COMPUTED_ORG}"; then
+    cat > "${USER_BASE_ENTRY_LDIF}" <<EOF
+dn: ${USER_BASE_DN}
+objectClass: top
+objectClass: organization
+o: ${COMPUTED_DOMAIN}
+EOF
+  else
+    echo "User base DN must be 1-level deep in one of these formats: dc=<domain>,dc=com or o=<org>,dc=com"
+    return 80
+  fi
+
+  # Append some required ACIs to the base entry file. Without these, PF SSO will not work.
+  cat >> "${USER_BASE_ENTRY_LDIF}" <<EOF
+aci: (targetattr!="userPassword")(version 3.0; acl "Allow anonymous read access for anyone"; allow (read,search,compare) userdn="ldap:///anyone";)
+aci: (targetattr!="userPassword")(version 3.0; acl "Allow self-read access to all user attributes except the password"; allow (read,search,compare) userdn="ldap:///self";)
+aci: (targetattr="*")(version 3.0; acl "Allow users to update their own entries"; allow (write) userdn="ldap:///self";)
+aci: (targetattr="*")(version 3.0; acl "Grant full access for the admin user"; allow (all) userdn="ldap:///uid=admin,${USER_BASE_DN}";)
+EOF
+
+  echo "${USER_BASE_ENTRY_LDIF}"
+}
+
+########################################################################################################################
+# Add the base entry of USER_BASE_DN if it needs to be added
+########################################################################################################################
+add_base_entry_if_needed()
+{
+  REPL_INIT_MARKER_FILE="${SERVER_ROOT_DIR}"/config/repl-initialized
+
+  if grep -q "${USER_BASE_DN}" "${REPL_INIT_MARKER_FILE}" &> /dev/null; then
+    echo "Replication base DN ${DN} already added."
+  else
+    USER_BASE_ENTRY_LDIF=$(get_base_entry_ldif)
+    echo "Adding replication base DN ${USER_BASE_DN} with contents:"
+    cat "${USER_BASE_ENTRY_LDIF}"
+    import-ldif -n userRoot -F -l "${USER_BASE_ENTRY_LDIF}"
+  fi
+}

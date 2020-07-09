@@ -81,6 +81,16 @@ if test "${MANAGE_PROFILE_STATUS}" -ne 0; then
 fi
 
 echo "restart-sequence: updating tools.properties"
+
+# Enable replication offline. In the common case where nothing has changed
+# the following should exit quickly without making any changes.
+"${HOOKS_DIR}"/185-offline-enable-wrapper.sh
+
+# Replicated base DNs must exist before starting the server now that
+# replication is enabled before start since otherwise a generation ID of -1
+# would be generated, which breaks replication.
+add_base_entry_if_needed
+
 run_hook "185-apply-tools-properties.sh"
 
 echo "restart-sequence: updating encryption settings"

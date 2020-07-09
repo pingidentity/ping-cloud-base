@@ -14,32 +14,6 @@ if test "${ORDINAL}" -lt "${NUM_REPLICAS}"; then
   exit 0
 fi
 
-echo "pre-stop: getting instance name from config"
-INSTANCE_NAME=$(dsconfig --no-prompt \
-  --useSSL --trustAll \
-  --hostname "${HOSTNAME}" --port "${LDAPS_PORT}" \
-  get-global-configuration-prop \
-  --property instance-name \
-  --script-friendly |
-  awk '{ print $2 }')
-
-echo "pre-stop: removing ${HOSTNAME} (instance name: ${INSTANCE_NAME}) from the topology"
-dsreplication disable --disableAll \
-  --no-prompt --ignoreWarnings \
-  --retryTimeoutSeconds ${RETRY_TIMEOUT_SECONDS} \
-  --enableDebug --globalDebugLevel verbose \
-  --hostname "${HOSTNAME}" --port "${LDAPS_PORT}" \
-  --adminUID "${ADMIN_USER_NAME}" --adminPasswordFile "${ADMIN_USER_PASSWORD_FILE}"
-echo "pre-stop: server removal exited with return code: ${?}"
-
-echo "pre-stop: removing the replication changelogDb"
-rm -rf "${SERVER_ROOT_DIR}/changelogDb"
-
-REPL_INIT_MARKER_FILE="${SERVER_ROOT_DIR}"/config/repl-initialized
-
-echo "pre-stop: removing ${REPL_INIT_MARKER_FILE} marker file"
-rm -f "${REPL_INIT_MARKER_FILE}"
-
 # Conditionally remove the persistent volume to which the pod was bound.
 if ! "${LEAVE_DISK_AFTER_SERVER_DELETE}"; then
   echo "pre-stop: remove the persistent volume"
