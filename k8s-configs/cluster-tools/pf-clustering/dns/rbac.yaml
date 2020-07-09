@@ -1,0 +1,39 @@
+
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    name: pf-cluster-ip-addrs-role-binding
+  name: pf-cluster-ip-addrs-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: pf-cluster-ip-addrs
+subjects:
+- kind: ServiceAccount
+  name: pf-cluster-ip-addrs-serviceaccount
+  namespace: ping-cloud-mpeterson
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  labels:
+    name: pf-cluster-ip-addrs
+  name: pf-cluster-ip-addrs
+rules:
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs:
+  - '*'
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  annotations: {}
+  labels:
+    name: pf-cluster-ip-addrs-serviceaccount
+  name: pf-cluster-ip-addrs-serviceaccount
+  namespace: ping-cloud-mpeterson
