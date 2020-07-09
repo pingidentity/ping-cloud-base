@@ -1,0 +1,228 @@
+#!/usr/local/bin/python3
+
+import boto3
+import pydig
+import logging
+import sys
+import os
+import botocore
+from tabulate import tabulate
+import pprint
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
+# boto3.set_stream_logger('', logging.DEBUG)
+
+custom_retries = {'total_max_attempts': 5, 'max_attempts': 5, 'mode': 'adaptive'}
+botocore_config = botocore.config.Config(retries=custom_retries)
+r53_client = boto3.client("route53", config=botocore_config)
+
+
+def fetch_cluster_domain_names(name):
+    logger.info(f"Fetching domain names from {name}...")
+    records = pydig.query(name, 'TXT')
+
+    processed_domain_names = []
+    for record in records:
+        domain_names = record.split(',')
+
+        for name in domain_names:
+            processed_domain_names.append(name.replace("\"", "").replace(" ", ""))
+
+    logger.info("Retrieved the following domain names:")
+    for processed_domain_name in processed_domain_names:
+        logger.info(processed_domain_name)
+
+    print()
+
+    return processed_domain_names
+
+
+def create_fqdns(domain_names):
+    pingfederate_admin = 'pingfederate-admin-0.pingfederate-admin'
+    pingfederate_cluster = 'pingfederate-cluster'
+
+    fqdns = []
+    for name in domain_names:
+        fqdns.append(f"{pingfederate_admin}.{name}")
+        fqdns.append(f"{pingfederate_cluster}.{name}")
+
+    logger.info("PingFederate domain names to query:")
+    for fqdn in fqdns:
+        logger.info(fqdn)
+
+    print()
+
+    return fqdns
+
+
+def fetch_name_to_ip_address(names, query_description):
+    logger.info(query_description)
+
+    name_to_ip_addrs = {}
+    for name in names:
+        record = pydig.query(name, 'A')
+        name_to_ip_addrs[name] = record
+
+    logger.info("Dig query results: ")
+
+    # tabulate behaves better after this processing
+    sorted_names_to_addrs = sorted(name_to_ip_addrs.items())
+    logger.info(tabulate(sorted_names_to_addrs, headers=["FQDNs", "IPs"]))
+    print()
+
+    return name_to_ip_addrs
+
+
+def build_resource_records(name_to_ip_addrs):
+    # Filter out duplicates
+    unique_ip_addrs = set()
+    for name, ip_addrs in name_to_ip_addrs.items():
+        for ip_addr in ip_addrs:
+            unique_ip_addrs.add(ip_addr)
+
+    resource_records = []
+    for unique_ip_addr in unique_ip_addrs:
+        value = {'Value': unique_ip_addr}
+        resource_records.append(value)
+
+    logger.info("Gathering IP addresses for a record set: %s", resource_records)
+    return resource_records
+
+
+def dict_to_set_values(dictionary):
+    result_set = set()
+    for key, values in dictionary.items():
+        for value in values:
+            result_set.add(value)
+
+    return result_set
+
+
+def route53_requires_update(existing_r53_ip_addrs, name_to_ip_addrs):
+    r53_set = dict_to_set_values(existing_r53_ip_addrs)
+    coredns_set = dict_to_set_values(name_to_ip_addrs)
+
+    # Subtract each set to detect differences between them
+    r53_records = r53_set.difference(coredns_set)
+    kubernetes_records = coredns_set.difference(r53_set)
+
+    # Calculate the length to determine whether
+    # an update is needed
+    r53_records_length = len(r53_records)
+    kubernetes_records_length = len(kubernetes_records)
+
+    if r53_records_length > 0:
+        printable_r53_records = {"Route 53 Records not currently in Kubernetes Core DNS": r53_records}
+        logger.info(tabulate(printable_r53_records.items(), headers=["Record Type", "IPs"]))
+        print()
+
+    if kubernetes_records_length > 0:
+        printable_k8s_records = {"K8s Records not currently in Route 53": kubernetes_records}
+        logger.info(tabulate(printable_k8s_records.items(), headers=["Record Type", "IPs"]))
+        print()
+
+    if r53_records_length > 0 or kubernetes_records_length > 0:
+        return True
+
+    logger.info("Route 53 is up-to-date with the correct IP addresses")
+    return False
+
+
+def update_route53(hosted_zone_id, hosted_zone, name_to_ip_addrs):
+    identifier = 'pf-cluster-ip-addrs'
+    name = identifier + hosted_zone
+
+    existing_r53_ip_addrs = fetch_name_to_ip_address([name],
+                                                     "Query AWS Route 53 DNS to get published PingFederate cluster IP addresses")
+
+    # Compare the PingFederate cluster addresses K8s knows about to the PingFederate
+    # cluster addresses published earlier to Route 53 to see if Route 53 needs
+    # to be refreshed.
+    requires_update = route53_requires_update(existing_r53_ip_addrs, name_to_ip_addrs)
+    if requires_update:
+        logger.info("Route 53 requires an update to record set '%s'", name)
+
+        comment = 'PingFederate Cluster IPs'
+        resource_records = build_resource_records(name_to_ip_addrs)
+
+        response = r53_client.change_resource_record_sets(
+            HostedZoneId=hosted_zone_id,
+            ChangeBatch={
+                'Comment': comment,
+                'Changes': [
+                    {
+                        'Action': 'UPSERT',
+                        'ResourceRecordSet': {
+                            'Name': name,
+                            'Type': 'A',
+                            'SetIdentifier': identifier,
+                            'Region': 'us-west-2',
+                            'TTL': 300,
+                            'ResourceRecords': resource_records
+                        }
+                    }
+                ]
+            })
+
+        logger.info("Route 53 record set change response: ")
+        pprint.pprint(response)
+
+
+def log_env_vars():
+    logger.info("Environment variables:")
+    sorted_env_vars = sorted(os.environ.items())
+    logger.info(tabulate(sorted_env_vars, headers=["Name", "Value"]))
+
+
+def main():
+    # Assumptions:
+    # - passed a list of cluster names
+    # - passed a boolean isPrimary?
+    #
+    # 1) Query kubernetes nameserver for local names:
+    #  - if deployment: dig pingfederate-service?  pingfederate-cluster contains all pf endpoints
+    #  - if stateful set:
+    #    - if isPrimary: dig pingfederate-admin-0
+    #    - loop: dig pingfederate-0...pingfederate-n
+    # 2) Query local k8s dns for each other region:
+    #  - if deployment: dig pingfederate-service.namespace?  pingfederate-cluster.namespace contains all pf endpoints
+    #  - if stateful set:
+    #    - dig pingfederate-admin-0
+    #    - loop: dig pingfederate-0...pingfederate-n
+    # 3) Combine all FQDNs + IPs
+    # 4) Update route53
+    script_name = 'publish_pf_cluster_ip_addrs'
+    logger.info('Starting %s...', script_name)
+
+    log_env_vars()
+
+    # namespace = 'ping-cloud-mpeterson'
+    # local_cluster_domain_name = 'ping-cloud-mpeterson.svc.cluster.local'
+    hosted_zone_id = 'Z05532981SIN5R8Q3ZF9A'
+    hosted_zone = '.mpeterson.ping-demo.com.'
+    k8s_cluster_names = 'k8s-cluster-names'
+
+    # cluster_domain_names = ['ping-cloud-mpeterson.svc.cluster.local', 'ping-cloud-mpetersonsecondary.svc.cluster.local']
+    # cluster_domain_names = ['ping-cloud-mpeterson.svc.cluster.local']
+
+    cluster_domain_names = fetch_cluster_domain_names(k8s_cluster_names + hosted_zone)
+
+    fqdns = create_fqdns(cluster_domain_names)
+
+    name_to_ip_addrs = fetch_name_to_ip_address(fqdns,
+                                                "Query Kubernetes Core DNS to get PingFederate cluster IP addresses")
+
+    update_route53(hosted_zone_id, hosted_zone, name_to_ip_addrs)
+
+    logger.info('%s processing complete', script_name)
+
+
+if __name__ == "__main__":
+    main()

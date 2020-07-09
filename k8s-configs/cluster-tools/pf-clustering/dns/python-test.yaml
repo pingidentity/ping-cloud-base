@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pf-cluster-ip-addrs
+  labels:
+    app: pf-cluster-ip-addrs
+spec:
+  containers:
+    - name: pf-cluster-ip-addrs
+      image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/mpeterson/ping-cloud-tools:latest
+      imagePullPolicy: Always
+      envFrom:
+        - configMapRef:
+            name: pf-cluster-env-vars
+      volumeMounts:
+        - mountPath: /opt/publish_pf_cluster_ip_addrs.py
+          name: publish-pf-cluster-ip-addrs
+          subPath: publish_pf_cluster_ip_addrs.py
+  restartPolicy: OnFailure
+  serviceAccount: pf-cluster-ip-addrs-serviceaccount
+  volumes:
+    - name: publish-pf-cluster-ip-addrs
+      configMap:
+        defaultMode: 365
+        name: publish-pf-cluster-ip-addrs
+  serviceAccount: pf-cluster-ip-addrs-serviceaccount
