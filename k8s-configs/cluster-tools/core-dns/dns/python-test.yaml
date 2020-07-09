@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: python-test
+  labels:
+    app: ping-cloud
+spec:
+  selector:
+    matchLabels:
+      role: python-test
+  replicas: 1
+  serviceName: python-test
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
+  template:
+    metadata:
+      name: python-test
+      labels:
+        role: python-test
+      annotations:
+        lastUpdateReason: "NA"
+    spec:
+      serviceAccount: kube-dns-serviceaccount
+      containers:
+      - name: publish-core-dns-endpoints
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/mpeterson/ping-cloud-tools:latest
+        imagePullPolicy: Always
+        envFrom:
+          - configMapRef:
+              name: core-dns-environment-variables
+        volumeMounts:
+          - mountPath: /opt/publish_endpoints.py
+            name: publish-core-dns-endpoints
+            subPath: publish_endpoints.py
+          - mountPath: /opt/common/
+            name: common
+          - mountPath: /opt/templates/
+            name: kustomize-templates
+          - mountPath: /opt/templates/patch/base/
+            name: kustomize-templates-patch-base
+          - mountPath: /opt/templates/patch/overlay/
+            name: kustomize-templates-patch-overlay
+      volumes:
+        - name: publish-core-dns-endpoints
+          configMap:
+            defaultMode: 0777
+            name: publish-core-dns-endpoints
+        - name: common
+          configMap:
+            defaultMode: 365
+            name: common
+        - name: kustomize-templates
+          configMap:
+            defaultMode: 365
+            name: kustomize-templates
+        - name: kustomize-templates-patch-base
+          configMap:
+            defaultMode: 365
+            name: kustomize-templates-patch-base
+        - name: kustomize-templates-patch-overlay
+          configMap:
+            defaultMode: 365
+            name: kustomize-templates-patch-overlay
+  volumeClaimTemplates:
+    - metadata:
+        name: out-dir
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        storageClassName: pingaccess-gp2
+        resources:
+          requests:
+            storage: 1Gi
+
+

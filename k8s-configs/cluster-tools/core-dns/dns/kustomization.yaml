@@ -3,6 +3,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 - rbac.yaml
+- python-test.yaml
 - cronjobs.yaml
 
 namespace: kube-system
@@ -16,9 +17,31 @@ configMapGenerator:
   envs:
     - env_vars
 
-- name: core-dns-templates
+- name: common
   files:
-  - src/core-dns-templates.zip
+    - src/common/__init__.py
+    - src/common/core_dns_logging.py
+    - src/common/dig.py
+    - src/common/k8s.py
+    - src/common/route_53.py
+    - src/common/templates.py
+
+- name: kustomize-templates
+  files:
+    - src/templates/add-forward-routes-coredns.txt
+    - src/templates/forward-route-template.yaml
+    - src/templates/reset-coredns.yaml
+
+- name: kustomize-templates-patch-base
+  files:
+    - src/templates/patch/base/coredns.yaml
+    - src/templates/patch/base/kustomization.yaml
+
+- name: kustomize-templates-patch-overlay
+  files:
+    - src/templates/patch/overlay/coredns.yaml
+    - src/templates/patch/overlay/kustomization.yaml
+
 
 generatorOptions:
   disableNameSuffixHash: true

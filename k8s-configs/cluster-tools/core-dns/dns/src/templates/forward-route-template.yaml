@@ -1,0 +1,6 @@
+$hostname:53 {
+        errors
+        cache 30
+        forward . $ip_address
+        reload
+    }
