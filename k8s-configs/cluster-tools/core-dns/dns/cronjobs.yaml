@@ -7,7 +7,7 @@ metadata:
   name: publish-core-dns-endpoints
   namespace: kube-system
 spec:
-  schedule: 0/15 * * * *
+  schedule: 0/1 * * * *
   jobTemplate:
     metadata:
       labels:
