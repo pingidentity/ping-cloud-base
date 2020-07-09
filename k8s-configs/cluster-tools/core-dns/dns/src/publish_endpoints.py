@@ -1,51 +1,103 @@
 import sys
 import os
+import logging
 import subprocess
-import boto3
-import dns.resolver
+import time
 import zipfile
+import boto3
+import pydig
 
-from shutil import copyfile, move
+logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+
+# Delays for 15 seconds, give some time for pod to be ready before making any api calls to AWS.
+# This is temporary and can be removed later.
+time.sleep(15)
 
 r53_client = boto3.client("route53")
 
 
-def kubectl(*args):
+def exec_kubectl(*args):
     """
-    Execute command and return STDOUT
+    Execute kubectl command and return STDOUT
     """
     cmd_out = subprocess.run(
         ["kubectl"] + list(args),
         universal_newlines=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
+        check=True,
     )
     if cmd_out.returncode:
-        print(f"Error: {cmd_out.stderr}")
-        sys.exit(cmd_out.returncode)
+        raise Exception(f"exec_kubectl: {cmd_out.stderr}")
+
+    logging.info(f"exec_kubectl: {cmd_out.stdout}")
 
     return cmd_out.stdout
+
+
+def get_namespace(namespace_prefix):
+    """
+    Check and return existing k8s namespace matching the prefix
+    """
+
+    namespace = None
+
+    namespaces = exec_kubectl("get", "ns", "-o" "jsonpath='{.items[*].metadata.name}'",)
+    namespace_list = namespaces.split()
+
+    for name in namespace_list:
+        if name.startswith(namespace_prefix):
+            namespace = name
+            break
+
+    logging.info(f"get_namespace: {namespace}")
+
+    return namespace
+
+
+def strip_txt_val(value):
+    """
+    Strip string value
+    """
+    stripped_value = str(value).replace("'", "")
+    stripped_value = str(value).replace('"', "")
+
+    return stripped_value.strip()
 
 
 def get_dns_txt_value(domain_name):
     """
     Query and return TXT record of given domain name.
     """
-    try:
-        return dns.resolver.query(domain_name, "TXT").response.answer[0][-1].strings[0]
-    except dns.exception.DNSException:
-        return None
+    txt_list = []
+    answers = pydig.query(f"{domain_name}", "TXT")
+    for rdata in answers:
+        rdata = strip_txt_val(rdata)
+        for txt_string in rdata.split():
+            txt_list.append(strip_txt_val(txt_string))
+
+    if not answers:
+        logging.warning(f"Unable to resolve: {domain_name}")
+    else:
+        logging.info(f"get_dns_txt_value: {domain_name}: {''.join(txt_list)}")
+
+    return txt_list
 
 
 def get_hosted_zone_id(domain_name):
     """
     Get route 53 hosted zone id.
     """
+    zone_id = None
     response = r53_client.list_hosted_zones()
     hosted_zones = response["HostedZones"]
     for zones in hosted_zones:
         if zones["Name"].rstrip(".") == domain_name.rstrip("."):
-            return zones["Id"].rstrip(".")
+            zone_id = zones["Id"].rstrip(".")
+
+    logging.info(f"get_hosted_zone_id: {domain_name}: {zone_id}")
+
+    return zone_id
 
 
 def update_resource_record_sets(
@@ -54,7 +106,7 @@ def update_resource_record_sets(
     """
     Update route 53 hosted zone resource record sets.
     """
-    return r53_client.change_resource_record_sets(
+    response = r53_client.change_resource_record_sets(
         HostedZoneId=zone_id,
         ChangeBatch={
             "Changes": [
@@ -64,176 +116,266 @@ def update_resource_record_sets(
                         "Name": rrs_name,
                         "Type": rrs_type,
                         "TTL": rrs_ttl,
-                        "ResourceRecords": [{"Value": f'"{rrs_records}"'}],
+                        "ResourceRecords": [{"Value": rrs_records}],
                     },
                 }
             ]
         },
     )
 
+    logging.info(f"update_resource_record_set: {response}")
 
-# get_data() should return entries
-# from a call to the other clusters
-# in the same format as what's in
-# hostname-ip.txt.  Once that's
-# replaced, we can remove that file
-# and ConfigMap entry.
-def get_data():
-    print()
-    print("Retrieving DNS data...")
+    return response
 
-    hostname_ip_file = open('/opt/hostname-ip.txt', 'r')
-    lines = hostname_ip_file.readlines()
 
-    print("Retrived the data:")
-    print(lines)
+def read_file(file_path):
+    """
+    Read and return file content
+    """
+    try:
+        fh = open(file_path, "r")
+    except Exception as Error:
+        raise Exception(f"read_file:{Error}")
 
-    return lines
+    file_content = fh.read()
+    fh.close()
 
-def parse_dns_data(lines):
-    dns_hostname_ip_addrs = {}
+    logging.info(f"read_file: {file_path}: {file_content}")
 
-    for line in lines:
-        key_value = line.strip().split(":")
-        dns_hostname_ip_addrs[key_value[0].strip()] = key_value[1].strip()
+    return file_content
 
-    print()
-    print("Processing DNS entries...")
-    for k, v in dns_hostname_ip_addrs.items(): print(k,v)
 
-    return dns_hostname_ip_addrs
+def write_file(file_path, data):
+    """
+    Write content to a file
+    """
+    try:
+        fh = open(file_path, "w")
+    except Exception as Error:
+        raise Exception(f"write_file:{Error}")
 
-def get_template(path):
-    f = open(path, 'r')
-    template = f.read()
-    f.close()
+    fh.write(data)
+    fh.close()
 
-    return template
+    logging.info(f"write_file: {file_path}: {data}")
 
-def write_file(path, data):
-    f = open(path, 'w')
-    f.writelines(data)
-    f.close()
 
-def create_kube_dns_forward_routes(current_cluster_domain_name, dns_hostname_ip_addrs):
-    print()
+def get_forward_routes_config(domain_endpoint_list):
+    """
+    Generate and return core-dns forward route config
+    """
     forward_routes = []
-    template = get_template('/opt/templates/forward-route-template.yaml')
-    for k, v in dns_hostname_ip_addrs.items():
-        if current_cluster_domain_name not in k:
-            processed_template = template.replace('$hostname', k).replace('$ip_address', v)
-            forward_routes.append(processed_template)
+    template = """
+    hostname:53 {
+        errors
+        cache 30
+        forward . ip_address
+        reload
+    }
+    """
+    for hostname, ips in domain_endpoint_list:
+        ips.sort()
+        processed_template = template.replace("hostname", hostname).replace(
+            "ip_address", " ".join(ips)
+        )
+        forward_routes.append(processed_template)
 
-    forward_routes = ''.join(forward_routes)
-    print("These are the new yaml kube-dns ConfigMap routes:")
-    print(forward_routes)
+    forward_routes = "".join(forward_routes)
+
+    logging.info(f"get_forward_route_config: {forward_routes}")
+
     return forward_routes
 
-def merge_kube_dns_forward_routes(forward_routes):
-    template = get_template('/opt/templates/add-forward-routes-coredns.txt')
-    processed_template = template.replace('$forward_routes', forward_routes)
+
+def merge_configmap(configmap_template, forward_route_config):
+    """
+    Merge configmap
+    """
+
+    processed_template = configmap_template.replace(
+        "$forward_routes", forward_route_config
+    )
+
+    logging.info(f"merge_configmap: {processed_template}")
 
     return processed_template
 
-def update_core_dns():
 
-    # We need to get the current cluster domain name from somewhere else
-    current_cluster_domain_name = 'ping-cloud-mpeterson.svc.cluster.local'
-    target_coredns_file = '/opt/templates/patch/overlay/coredns.yaml'
-    overlay_path = '/opt/templates/patch/overlay'
+def get_templates(template_file_path, target_path):
+    """
+    Extract .zip file and return its contents
+    """
 
-    lines = get_data()
-    dns_hostname_ip_addrs = parse_dns_data(lines)
-    forward_routes = create_kube_dns_forward_routes(current_cluster_domain_name, dns_hostname_ip_addrs)
-    print()
-    print('Resetting kube-config ConfigMap...')
+    try:
+        with zipfile.ZipFile(template_file_path, "r") as zip_ref:
+            zip_ref.extractall(f"{target_path}/")
+    except Exception:
+        raise Exception(f"Failed to extract {template_file_path}")
 
-    # Overwrite the target_coredns_file with the default
-    # configuration to reset the ConfigMap
-    copyfile('/opt/templates/reset-coredns.yaml', target_coredns_file)
+    template_files = os.listdir(f"{target_path}/")
 
-    # Apply the changes to reset our local cluster kube-dns ConfigMap
-    reset_response = subprocess.run(["kubectl", "apply", "-k", overlay_path, "-n" "kube-system"])
-    print(reset_response)
+    logging.info(f"get_templates: {template_files}")
+
+    return template_files
+
+
+def publish_endpoints(namespace, domain_name):
+    """
+    Check and update R53 with latest endpoints
+    """
+
+    # Get current endpoints
+    current_endpoints = (
+        exec_kubectl(
+            "get",
+            "endpoints",
+            "-n" "kube-system",
+            "kube-dns",
+            "-o" "jsonpath='{.subsets[*].addresses[*].ip}'",
+        )
+        .strip("'")
+        .split()
+    )
+    if not current_endpoints:
+        raise ValueError("Unable to get current endpoint details, aborting")
+
+    logging.info(f"Current endpoints: {current_endpoints}")
+
+    # Use k8s namespace in r53 to store core-dns endpoint details
+    endpoint_domain = f"{namespace}-endpoints.{domain_name}"
+
+    # Check & get endpoints detail stored in r53
+    r53_endpoints = get_dns_txt_value(endpoint_domain)
+
+    # Check endpoint details stored in R53 with current endpoint, skip if its same.
+    if r53_endpoints:
+        logging.info(f"r53_recordset: {r53_endpoints}")
+
+        if set(current_endpoints) == set(r53_endpoints):
+            logging.info("Endpoints are up to date no update required, skipping.")
+
+        else:
+            # Get hosted zone id matching the domain name
+            zone_id = get_hosted_zone_id(domain_name)
+            if zone_id is None:
+                raise ValueError(
+                    f"Unable to find Hosted Zone Id for domain {domain_name}, aborting"
+                )
+
+            str_current_endpoints = " ".join('"%s"' % ip for ip in current_endpoints)
+
+            logging.info(
+                f"Updating {endpoint_domain} to point to {str_current_endpoints}"
+            )
+
+            # Update R53 recordset with latest endpoint details.
+            update_resource_record_sets(
+                zone_id,
+                "UPSERT",
+                f"{endpoint_domain}",
+                "TXT",
+                60,
+                str_current_endpoints,
+            )
+
+
+def update_core_dns(parent_domain_name):
+    """
+    Update core-dns config map with forward route
+    """
+    source_dir = os.path.dirname(os.path.realpath(__file__))
+    target_path = "/tmp/core-dns"
+    template_source = f"{source_dir}/core-dns-templates.zip"
+    coredns_file = f"{target_path}/templates/patch/overlay/coredns.yaml"
+    overlay_path = f"{target_path}/templates/patch/overlay"
+    forward_route_template = f"{target_path}/templates/add-forward-routes-coredns.txt"
+
+    # Get template files
+    template_files = get_templates(template_source, target_path)
+    if not template_files:
+        raise Exception("Failed to get template files")
+
+    # multi-cluster-domains recordset in parent r53 hold,
+    # - dns name of all child/secondary cluster endpoint
+    # - TXT record
+    multi_cluster_domains = get_dns_txt_value(
+        f"multi-cluster-domains.{parent_domain_name}"
+    )
+
+    domain_endpoint_list = {}
+
+    # Get endpoint details of all child/secondary clusters
+    for domain_name in multi_cluster_domains:
+        ns = domain_name.split("-endpoints.")[0]
+        domain_endpoint_list[f"{ns}.svc.cluster.local"] = get_dns_txt_value(domain_name)
+
+    # Sort by key so update to configMap is consistent
+    domain_endpoint_list = sorted(domain_endpoint_list.items())
+
+    # Get forward route config
+    forward_route_config = get_forward_routes_config(domain_endpoint_list)
+
+    logging.info(forward_route_config)
+
+    configmap_template = read_file(forward_route_template)
 
     # Merge the forward_routes into a parameterized coredns.yaml file
-    merged_kube_dns_configmap = merge_kube_dns_forward_routes(forward_routes)
-    write_file('/tmp/coredns.yaml', merged_kube_dns_configmap)
+    configmap_content = merge_configmap(configmap_template, forward_route_config)
 
-    # Overwrite the target_coredns_file with the new routes
-    # and apply the changes with kustomize to the kube-dns
-    # ConfigMap. This could probably be done in a single write
-    # operation to avoid creating a temp file.
-    move('/tmp/coredns.yaml', target_coredns_file)
-    publish_response = subprocess.run(["kubectl", "apply", "-k", overlay_path, "-n" "kube-system"])
-    print(publish_response)
+    # Write configMap config to a file.
+    write_file(coredns_file, configmap_content)
 
-    print("Processing Complete.")
-
+    # update core dns configmap
+    exec_kubectl("apply", "-k", overlay_path, "-n", "kube-system")
 
 
 def main():
-    """ Check endpoint config file and update Route53 """
+    """
+    main()
 
-    if "TENANT_DOMAIN" in os.environ:
-        domain_name = os.environ.get("TENANT_DOMAIN")
-    else:
-        print("Environment variable 'TENANT_DOMAIN' is not set, aborting")
-        sys.exit(1)
+    Required:
+        - TENANT_DOMAIN: Environment variable
+        - PARENT_TENANT_DOMAIN: Environment variable
 
-    record_set = f"core-dns-endpoints.{domain_name}"
-
-    r53_endpoints = get_dns_txt_value(record_set)
-    if r53_endpoints:
-        r53_endpoints = str(r53_endpoints).split("'")[1].split()
-
+    OPTIONAL:
+        - NAMESPACE_PREFIX: Environment variable, defaults to 'ping-cloud'
+    """
     try:
-        current_endpoints = (
-            kubectl(
-                "get",
-                "endpoints",
-                "-n" "kube-system",
-                "kube-dns",
-                "-o" "jsonpath='{.subsets[*].addresses[*].ip}'",
-            )
-            .strip("'")
-            .split()
-        )
-        print(f"Current endpoints: {current_endpoints}")
-
-        if r53_endpoints:
-            print(f"r53 endpoints: {r53_endpoints}")
-
-            if set(current_endpoints) == set(r53_endpoints):
-                print("Endpoints are up to date. no update required, skipping.")
-                sys.exit(0)
-
-        zone_id = get_hosted_zone_id(domain_name)
-        if zone_id:
-            str_current_endpoints = " ".join(map(str, current_endpoints))
-            print(f"Updating {record_set} to point to {str_current_endpoints}")
-            update_resource_record_sets(
-                zone_id, "UPSERT", f"{record_set}", "TXT", 60, str_current_endpoints
-            )
+        if "PARENT_TENANT_DOMAIN" in os.environ:
+            parent_domain_name = os.environ.get("PARENT_TENANT_DOMAIN")
         else:
-            print(f"Unable to find Hosted Zone Id for domain {domain_name}, aborting")
-            sys.exit(1)
+            raise ValueError(
+                "Environment variable 'PARENT_TENANT_DOMAIN' is not set, aborting"
+            )
 
-        print("Prepping files...")
-        with zipfile.ZipFile("/opt/core-dns-templates.zip", 'r') as zip_ref:
-            zip_ref.extractall("/opt/")
+        if "TENANT_DOMAIN" in os.environ:
+            domain_name = os.environ.get("TENANT_DOMAIN")
+        else:
+            raise ValueError(
+                "Environment variable 'TENANT_DOMAIN' is not set, aborting"
+            )
 
-        print("Found these files:")
-        files = os.listdir("/opt/")
-        print(files)
+        if "NAMESPACE_PREFIX" in os.environ:
+            ns_prefix = os.environ.get("NAMESPACE_PREFIX")
+        else:
+            ns_prefix = "ping-cloud"
 
-        update_core_dns()
+        # Check if namespace with prefix (eg:- ping-cloud) exists.
+        namespace = get_namespace(ns_prefix)
+        if namespace is None:
+            raise ValueError(f"Unable to find namespace with given prefix: {ns_prefix}")
+
+        # Check and update R53 with latest endpoints if required
+        publish_endpoints(namespace, domain_name)
+
+        # Update core dns configMap with forward route
+        update_core_dns(parent_domain_name)
 
     except Exception as error:
-        print(f"Error: {error}")
+        logging.error(error)
         sys.exit(1)
 
-    print("Execution completed successfully.")
+    logging.info("Execution completed successfully.")
 
 
 if __name__ == "__main__":

@@ -20,9 +20,5 @@ configMapGenerator:
   files:
   - src/core-dns-templates.zip
 
-# We should be able to remove hostname-ip
-- name: hostname-ip
-  files:
-  - src/hostname-ip.txt
 generatorOptions:
   disableNameSuffixHash: true

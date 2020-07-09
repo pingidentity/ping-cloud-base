@@ -16,6 +16,16 @@ resources:
 
 patchesStrategicMerge:
 
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: core-dns-environment-variables
+  data:
+    REGION: ${REGION}
+    TENANT_DOMAIN: ${TENANT_DOMAIN}
+    PARENT_TENANT_DOMAIN: ${PARENT_TENANT_DOMAIN}
+
 ### All secrets used by supporting tools ###
 - secrets.yaml
 

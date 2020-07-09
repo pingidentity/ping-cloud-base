@@ -22,7 +22,7 @@ spec:
           - command: 
             - /bin/python3
             - /opt/publish_endpoints.py
-            image: sthapa7/ping-cloud-aws:0.3
+            image: sthapa7/ping-cloud-aws:0.6
             name: publish-core-dns-endpoints
             envFrom:
               - configMapRef:
