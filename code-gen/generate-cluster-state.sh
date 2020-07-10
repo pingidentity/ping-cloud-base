@@ -522,20 +522,20 @@ for ENV in ${ENVIRONMENTS}; do
   if test "${IS_BELUGA_ENV}" != 'true'; then
     case "${ENV}" in
       dev)
-        export LOG_ARCHIVE_URL=${DEV_LOG_ARCHIVE_URL:-${LOG_ARCHIVE_URL}}
-        export BACKUP_URL=${DEV_BACKUP_URL:-${BACKUP_URL}}
+        test "${DEV_LOG_ARCHIVE_URL}" != "unused" && export LOG_ARCHIVE_URL=${DEV_LOG_ARCHIVE_URL}
+        test "${DEV_BACKUP_URL}" != "unused" && export BACKUP_URL=${DEV_BACKUP_URL}
         ;;
       test)
-        export LOG_ARCHIVE_URL=${TEST_LOG_ARCHIVE_URL:-${LOG_ARCHIVE_URL}}
-        export BACKUP_URL=${TEST_BACKUP_URL:-${BACKUP_URL}}
+        test "${TEST_LOG_ARCHIVE_URL}" != "unused" && export LOG_ARCHIVE_URL=${TEST_LOG_ARCHIVE_URL}
+        test "${TEST_BACKUP_URL}" != "unused" && export BACKUP_URL=${TEST_BACKUP_URL}
         ;;
       stage)
-        export LOG_ARCHIVE_URL=${STAGE_LOG_ARCHIVE_URL:-${LOG_ARCHIVE_URL}}
-        export BACKUP_URL=${STAGE_BACKUP_URL:-${BACKUP_URL}}
+        test "${STAGE_LOG_ARCHIVE_URL}" != "unused" && export LOG_ARCHIVE_URL=${STAGE_LOG_ARCHIVE_URL}
+        test "${STAGE_BACKUP_URL}" != "unused" && export BACKUP_URL=${STAGE_BACKUP_URL}
         ;;
       prod)
-        export LOG_ARCHIVE_URL=${PROD_LOG_ARCHIVE_URL:-${LOG_ARCHIVE_URL}}
-        export BACKUP_URL=${PROD_BACKUP_URL:-${BACKUP_URL}}
+        test "${PROD_LOG_ARCHIVE_URL}" != "unused" && export LOG_ARCHIVE_URL=${PROD_LOG_ARCHIVE_URL}
+        test "${PROD_BACKUP_URL}" != "unused" && export BACKUP_URL=${PROD_BACKUP_URL}
         ;;
     esac
   fi
