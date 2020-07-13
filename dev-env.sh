@@ -81,7 +81,7 @@
 # IS_PARENT                 | Flag indicating whether or not this is the parent  | true
 #                           | Kubernetes cluster or region.                      |
 #                           |                                                    |
-# PD_PARENT_PUBLIC_HOSTNAME | The public or external hostname of the             | pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+# PD_PRIMARY_PUBLIC_HOSTNAME | The public or external hostname of the             | pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}
 #                           | PingDirectory server in the parent cluster if      |
 #                           | deploying across more than one cluster.            |
 #                           |                                                    |
@@ -186,7 +186,7 @@ echo "Initial TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Initial ENVIRONMENT: ${ENVIRONMENT}"
 echo "Initial REGION: ${REGION}"
 echo "Initial IS_PARENT: ${IS_PARENT}"
-echo "Initial PD_PARENT_PUBLIC_HOSTNAME: ${PD_PARENT_PUBLIC_HOSTNAME}"
+echo "Initial PD_PRIMARY_PUBLIC_HOSTNAME: ${PD_PRIMARY_PUBLIC_HOSTNAME}"
 echo "Initial PF_ADMIN_PUBLIC_HOSTNAME: ${PF_ADMIN_PUBLIC_HOSTNAME}"
 echo "Initial PA_ADMIN_PUBLIC_HOSTNAME: ${PA_ADMIN_PUBLIC_HOSTNAME}"
 echo "Initial PA_CLUSTER_PUBLIC_HOSTNAME: ${PA_CLUSTER_PUBLIC_HOSTNAME}"
@@ -224,7 +224,7 @@ test -z "${K8S_CONTEXT}" && K8S_CONTEXT=$(kubectl config current-context)
 ENVIRONMENT_NO_HYPHEN_PREFIX="${ENVIRONMENT#-}"
 
 test -z "${IS_PARENT}" && IS_PARENT=true
-test -z "${PD_PARENT_PUBLIC_HOSTNAME}" && export PD_PARENT_PUBLIC_HOSTNAME=pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+test -z "${PD_PRIMARY_PUBLIC_HOSTNAME}" && export PD_PRIMARY_PUBLIC_HOSTNAME=pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}
 test -z "${PF_ADMIN_PUBLIC_HOSTNAME}" && export PF_ADMIN_PUBLIC_HOSTNAME=pingfederate-admin${ENVIRONMENT}.${TENANT_DOMAIN}
 test -z "${PA_ADMIN_PUBLIC_HOSTNAME}" && export PA_ADMIN_PUBLIC_HOSTNAME=pingaccess-admin${ENVIRONMENT}.${TENANT_DOMAIN}
 test -z "${PA_CLUSTER_PUBLIC_HOSTNAME}" && export PA_CLUSTER_PUBLIC_HOSTNAME=pingaccess-cluster${ENVIRONMENT}.${TENANT_DOMAIN}
@@ -235,7 +235,7 @@ echo "Using TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Using ENVIRONMENT: ${ENVIRONMENT_NO_HYPHEN_PREFIX}"
 echo "Using REGION: ${REGION}"
 echo "Using IS_PARENT: ${IS_PARENT}"
-echo "Using PD_PARENT_PUBLIC_HOSTNAME: ${PD_PARENT_PUBLIC_HOSTNAME}"
+echo "Using PD_PRIMARY_PUBLIC_HOSTNAME: ${PD_PRIMARY_PUBLIC_HOSTNAME}"
 echo "Using PF_ADMIN_PUBLIC_HOSTNAME: ${PF_ADMIN_PUBLIC_HOSTNAME}"
 echo "Using PA_ADMIN_PUBLIC_HOSTNAME: ${PA_ADMIN_PUBLIC_HOSTNAME}"
 echo "Using PA_CLUSTER_PUBLIC_HOSTNAME: ${PA_CLUSTER_PUBLIC_HOSTNAME}"
@@ -273,7 +273,7 @@ kustomize build "${DEV_CLUSTER_STATE_DIR}/${CLUSTER_TYPE}" |
     ${NAMESPACE}
     ${CONFIG_REPO_BRANCH}
     ${CONFIG_PARENT_DIR}
-    ${PD_PARENT_PUBLIC_HOSTNAME}
+    ${PD_PRIMARY_PUBLIC_HOSTNAME}
     ${PF_ADMIN_PUBLIC_HOSTNAME}
     ${PA_ADMIN_PUBLIC_HOSTNAME}
     ${PA_CLUSTER_PUBLIC_HOSTNAME}
@@ -334,7 +334,7 @@ export NAMESPACE=${NAMESPACE}
 export CONFIG_PARENT_DIR=aws
 export CONFIG_REPO_BRANCH=${CONFIG_REPO_BRANCH}
 
-export PD_PARENT_PUBLIC_HOSTNAME=${PD_PARENT_PUBLIC_HOSTNAME}
+export PD_PRIMARY_PUBLIC_HOSTNAME=${PD_PRIMARY_PUBLIC_HOSTNAME}
 export PF_ADMIN_PUBLIC_HOSTNAME=${PF_ADMIN_PUBLIC_HOSTNAME}
 export PA_ADMIN_PUBLIC_HOSTNAME=${PA_ADMIN_PUBLIC_HOSTNAME}
 export PA_CLUSTER_PUBLIC_HOSTNAME=${PA_CLUSTER_PUBLIC_HOSTNAME}

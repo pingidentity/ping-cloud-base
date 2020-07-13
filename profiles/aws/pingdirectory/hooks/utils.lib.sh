@@ -74,12 +74,12 @@ function replace_instance_name() {
 }
 
 ########################################################################################################################
-# Determines if the environment is running in the context of multiple clusters. If both PD_PARENT_PUBLIC_HOSTNAME and
+# Determines if the environment is running in the context of multiple clusters. If both PD_PRIMARY_PUBLIC_HOSTNAME and
 # PD_PUBLIC_HOSTNAME, it is assumed to be multi-cluster.
 #
 # Returns
 #   0 if multi-cluster; 1 if not.
 ########################################################################################################################
 function is_multi_cluster() {
-  test ! -z "${PD_PARENT_PUBLIC_HOSTNAME}" && test ! -z "${PD_PUBLIC_HOSTNAME}"
+  test ! -z "${PD_PRIMARY_PUBLIC_HOSTNAME}" && test ! -z "${PD_PUBLIC_HOSTNAME}"
 }
