@@ -90,24 +90,17 @@ function obfuscatePassword() {
 }
 
 ########################################################################################################################
-# Determines if the environment is running in the context of multiple clusters. If both PF_ADMIN_PUBLIC_HOSTNAME and
-# PF_ENGINE_PUBLIC_HOSTNAME, it is assumed to be multi-cluster.
-#
-# Returns
-#   0 if multi-cluster; 1 if not.
+# Determines if the environment is set up in the primary cluster.
 ########################################################################################################################
-function is_multi_cluster() {
-  test ! -z "${PF_ADMIN_PUBLIC_HOSTNAME}" && test ! -z "${PF_ENGINE_PUBLIC_HOSTNAME}"
+function is_primary_cluster() {
+  test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"
 }
 
 ########################################################################################################################
-# Returns the pod's ordinal as a 2-digit number. The pod's ordinal will be available in the variable ORDINAL after
-# this function is run.
+# Determines if the environment is set up in a secondary cluster.
 ########################################################################################################################
-function get_pod_ordinal() {
-  local short_host_name=$(hostname)
-  ORDINAL=${short_host_name##*-}
-  test "${#ORDINAL}" -lt 2 && ORDINAL="0${ORDINAL}"
+function is_secondary_cluster() {
+  test ! is_primary_cluster
 }
 
 ########################################################################################################################
@@ -117,9 +110,9 @@ function configure_tcp_xml() {
   local currentDir="$(pwd)"
   cd "${SERVER_ROOT_DIR}/server/default/conf"
 
-  if is_multi_cluster; then
+  if "${IS_MULTI_CLUSTER}"; then
     export NATIVE_S3_PING="<org.jgroups.aws.s3.NATIVE_S3_PING \
-            region_name=\"${REGION}\" \
+            region_name=\"${PRIMARY_REGION}\" \
             bucket_name=\"${CLUSTER_BUCKET_NAME}\" \
             bucket_prefix=\"${PING_PRODUCT}\" \
             remove_all_data_on_view_change=\"true\" \
@@ -159,10 +152,10 @@ function initializeSkbnConfiguration() {
 
   # Check if endpoint is AWS cloud stroage service (S3 bucket)
   case "$BACKUP_URL" in "s3://"*)
-    
+
     # Set AWS specific variable for skbn
     export AWS_REGION=${REGION}
-    
+
     DIRECTORY_NAME=$(echo "${PING_PRODUCT}" | tr '[:upper:]' '[:lower:]')
 
     if ! $(echo "$BACKUP_URL" | grep -q "/$DIRECTORY_NAME"); then
@@ -173,16 +166,16 @@ function initializeSkbnConfiguration() {
 
   echo "Getting cluster metadata"
 
-  # Get prefix of HOSTNAME which match the pod name.  
+  # Get prefix of HOSTNAME which match the pod name.
   POD="$(echo "${HOSTNAME}" | cut -d. -f1)"
-  
+
   METADATA=$(kubectl get "$(kubectl get pod -o name | grep "${POD}")" \
     -o=jsonpath='{.metadata.namespace},{.metadata.name},{.metadata.labels.role}')
-    
+
   METADATA_NS=$(echo "$METADATA"| cut -d',' -f1)
   METADATA_PN=$(echo "$METADATA"| cut -d',' -f2)
   METADATA_CN=$(echo "$METADATA"| cut -d',' -f3)
-  
+
   # Remove suffix for PF runtime.
   METADATA_CN="${METADATA_CN%-engine}"
 
@@ -201,7 +194,7 @@ function skbnCopy() {
 
   # Check if the number of files to be copied in parallel is defined (0 for full parallelism)
   test ! -z "${3}" && PARALLEL="${3}"
-  
+
   if ! skbn cp --src "$SOURCE" --dst "${DESTINATION}" --parallel "${PARALLEL}"; then
     return 1
   fi

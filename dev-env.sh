@@ -118,10 +118,7 @@
 # CLUSTER_BUCKET_NAME       | The name of the S3 bucket where clustering         | The string "unused". This is a
 #                           | information is stored for all stateful Ping apps.  | required property for multi-cluster
 #                           |                                                    | deployments, which is currently only
-#                           |                                                    | supported on AWS. A bucket with this
-#                           |                                                    | name must exist in every region that
-#                           |                                                    | the clusters span, and bucket syncing
-#                           |                                                    | must be enabled on AWS S3.
+#                           |                                                    | supported on AWS.
 #                           |                                                    |
 # DEPLOY_FILE               | The name of the file where the final deployment    | /tmp/deploy.yaml
 #                           | spec is saved before applying it.                  |
@@ -177,6 +174,13 @@ if test ${HAS_REQUIRED_TOOLS} -ne 0 || test ${HAS_REQUIRED_VARS} -ne 0; then
 fi
 
 test -z "${IS_MULTI_CLUSTER}" && IS_MULTI_CLUSTER=false
+if "${IS_MULTI_CLUSTER}"; then
+  check_env_vars "CLUSTER_BUCKET_NAME"
+  if test $? -ne 0; then
+    popd
+    exit 1
+  fi
+fi
 
 # Show initial values for relevant environment variables.
 echo "Initial TENANT_NAME: ${TENANT_NAME}"
@@ -186,13 +190,13 @@ echo "Initial REGION: ${REGION}"
 echo "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 echo "Initial PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
 echo "Initial PRIMARY_REGION: ${PRIMARY_REGION}"
+echo "Initial CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
 echo "Initial CONFIG_REPO_BRANCH: ${CONFIG_REPO_BRANCH}"
 echo "Initial CONFIG_PARENT_DIR: ${CONFIG_PARENT_DIR}"
 echo "Initial ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Initial PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 echo "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 echo "Initial BACKUP_URL: ${BACKUP_URL}"
-echo "Initial CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
 echo "Initial DEPLOY_FILE: ${DEPLOY_FILE}"
 echo "Initial K8S_CONTEXT: ${K8S_CONTEXT}"
 echo ---
@@ -208,6 +212,7 @@ export REGION="${REGION:-us-east-2}"
 
 export PRIMARY_TENANT_DOMAIN="${PRIMARY_TENANT_DOMAIN:-${TENANT_DOMAIN}}"
 export PRIMARY_REGION="${PRIMARY_REGION:-${REGION}}"
+export CLUSTER_BUCKET_NAME="${CLUSTER_BUCKET_NAME}"
 
 export CONFIG_REPO_BRANCH="${CONFIG_REPO_BRANCH:-master}"
 export CONFIG_PARENT_DIR="${CONFIG_PARENT_DIR:-aws}"
@@ -216,7 +221,6 @@ export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
 export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
-export CLUSTER_BUCKET_NAME="${CLUSTER_BUCKET_NAME:-unused}"
 
 DEPLOY_FILE=${DEPLOY_FILE:-/tmp/deploy.yaml}
 test -z "${K8S_CONTEXT}" && K8S_CONTEXT=$(kubectl config current-context)

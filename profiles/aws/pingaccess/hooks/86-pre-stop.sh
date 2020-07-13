@@ -23,7 +23,7 @@ if test "${ORDINAL}" -lt "${NUM_REPLICAS}"; then
   exit 0
 fi
 
-if is_multi_cluster; then
+if "${IS_MULTI_CLUSTER}"; then
   echo "pre-stop: multi-cluster"
   ADMIN_HOST_PORT="${PA_ADMIN_PUBLIC_HOSTNAME}"
   ENGINE_NAME="${PA_ENGINE_PUBLIC_HOSTNAME}:300${ORDINAL}"

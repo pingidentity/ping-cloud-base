@@ -302,24 +302,12 @@ function skbnCopy() {
   fi
 }
 
-
-########################################################################################################################
-# Determines if the environment is running in the context of multiple clusters. If both PA_ADMIN_PUBLIC_HOSTNAME and
-# PA_ENGINE_PUBLIC_HOSTNAME, it is assumed to be multi-cluster.
-#
-# Returns
-#   0 if multi-cluster; 1 if not.
-########################################################################################################################
-function is_multi_cluster() {
-  test ! -z "${PA_ADMIN_PUBLIC_HOSTNAME}" && test ! -z "${PA_ENGINE_PUBLIC_HOSTNAME}"
-}
-
 ########################################################################################################################
 # Export the values for the CLUSTER_CONFIG_HOST and CLUSTER_CONFIG_PORT environment variables to be used for
 # substitution in JSON payloads to the admin API based on single vs. multi cluster.
 ########################################################################################################################
 function export_cluster_config_host_port() {
-  if is_multi_cluster; then
+  if "${IS_MULTI_CLUSTER}"; then
     export CLUSTER_CONFIG_HOST="${PA_CLUSTER_PUBLIC_HOSTNAME}"
     export CLUSTER_CONFIG_PORT=443
   else
@@ -344,34 +332,15 @@ function update_admin_config_host_port() {
 }
 
 ########################################################################################################################
-# Determines if the environment is running in the context of multiple clusters. If both PA_ADMIN_PUBLIC_HOSTNAME and
-# PA_ENGINE_PUBLIC_HOSTNAME, it is assumed to be multi-cluster.
-#
-# Returns
-#   0 if multi-cluster; 1 if not.
+# Determines if the environment is set up in the primary cluster.
 ########################################################################################################################
-function is_multi_cluster() {
-  if test ! -z "${PA_ADMIN_PUBLIC_HOSTNAME}" && test ! -z "${PA_ENGINE_PUBLIC_HOSTNAME}"; then
-    echo true
-  else
-    echo false
-  fi
+function is_primary_cluster() {
+  test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"
 }
 
 ########################################################################################################################
-# Determines if the environment is secondary cluster.
-#
-# Returns
-#   true if secondary-cluster; false if not.
+# Determines if the environment is set up in a secondary cluster.
 ########################################################################################################################
 function is_secondary_cluster() {
-
-  if [ "$(is_multi_cluster)" == true ]; then
-    if ! $(echo $PA_ADMIN_PUBLIC_HOSTNAME | grep -q "$TENANT_DOMAIN"); then
-        echo true
-        return 0
-    fi
-  fi
-
-  echo false
+  test ! is_primary_cluster
 }

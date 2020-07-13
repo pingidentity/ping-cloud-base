@@ -456,18 +456,7 @@ SHORT_HOST_NAME=$(hostname)
 DOMAIN_NAME=$(hostname -f | cut -d'.' -f2-)
 ORDINAL=${SHORT_HOST_NAME##*-}
 
-echo "post-start: pod ordinal: ${ORDINAL}"
-
-# Determine if this a cross-cluster deployment, and if so whether this is the primary cluster.
-IS_MULTI_CLUSTER=false
-IS_PRIMARY_CLUSTER=false
-
-if is_multi_cluster; then
-  IS_MULTI_CLUSTER=true
-  test "${PD_PRIMARY_PUBLIC_HOSTNAME}" = "${PD_PUBLIC_HOSTNAME}" && IS_PRIMARY_CLUSTER=true
-fi
-
-echo "post-start: multi-cluster: ${IS_MULTI_CLUSTER}; primary-cluster: ${IS_PRIMARY_CLUSTER}"
+echo "post-start: pod ordinal: ${ORDINAL}; multi-cluster: ${IS_MULTI_CLUSTER}"
 
 echo "post-start: getting server instance name from global config"
 INSTANCE_NAME=$(dsconfig --no-prompt get-global-configuration-prop \
@@ -502,7 +491,7 @@ fi
 change_pf_user_passwords
 test $? -ne 0 && stop_container
 
-if test "${ORDINAL}" -eq 0 && test "${IS_PRIMARY_CLUSTER}" = 'true'; then
+if test "${ORDINAL}" -eq 0 && is_primary_cluster; then
   # The request control allows encoded passwords, which is always required for topology admin users
   # ldapmodify allows a --passwordUpdateBehavior allow-pre-encoded-password=true to do the same
   ALLOW_PRE_ENCODED_PW_CONTROL='1.3.6.1.4.1.30221.2.5.51:true::MAOBAf8='

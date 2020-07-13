@@ -58,7 +58,7 @@ if "${OPTIMIZE_REPLACE_PROFILE}"; then
   ADDITIONAL_ARGS=
 fi
 
-if is_multi_cluster; then
+if "${IS_MULTI_CLUSTER}"; then
   SHORT_HOST_NAME=$(hostname)
   ORDINAL=${SHORT_HOST_NAME##*-}
   export PD_LDAP_PORT="636${ORDINAL}"

@@ -6,7 +6,7 @@
 set -e
 "${VERBOSE}" && set -x
 
-if test "$(is_multi_cluster)" == "1"; then
+if "${IS_MULTI_CLUSTER}"; then
   export CLUSTER_CONFIG_HOST="${PA_ADMIN_PUBLIC_HOSTNAME}"
   export CLUSTER_CONFIG_PORT=443
 else
