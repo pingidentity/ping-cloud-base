@@ -329,7 +329,6 @@ if test "${dryrun}" = 'false'; then
           -n "${NAMESPACE}" -w --context "${K8S_CONTEXT}"
     done
 
-
     TEST_ENV_VARS_FILE=$(mktemp)
     cat > "${TEST_ENV_VARS_FILE}" <<EOF
 export CLUSTER_NAME=${TENANT_NAME}
@@ -363,24 +362,25 @@ export SKIP_CONFIGURE_AWS=true
 
 export DEV_TEST_ENV=true
 EOF
-  echo "Running unit tests"
-  for unit_test_dir in common pingaccess ci-script-tests; do
-    echo
-    echo "=========================================================="
-    echo "      Executing unit tests in directory: ${unit_test_dir}            "
-    echo "=========================================================="
-    ci-scripts/test/unit/run-unit-test.sh "${unit_test_dir}" "${TEST_ENV_VARS_FILE}"
-  done
-  echo
 
-  echo "Running integration tests"
-  for integration_test_dir in common pingaccess pingdirectory pingfederate chaos; do
+    echo "Running unit tests"
+    for unit_test_dir in common pingaccess ci-script-tests; do
+      echo
+      echo "=========================================================="
+      echo "      Executing unit tests in directory: ${unit_test_dir}            "
+      echo "=========================================================="
+      ci-scripts/test/unit/run-unit-test.sh "${unit_test_dir}" "${TEST_ENV_VARS_FILE}"
+    done
     echo
-    echo "=========================================================="
-    echo "      Executing tests in directory: ${integration_test_dir}            "
-    echo "=========================================================="
-    ci-scripts/test/integration/run-test.sh "${integration_test_dir}" "${TEST_ENV_VARS_FILE}"
-  done
+
+    echo "Running integration tests"
+    for integration_test_dir in common pingaccess pingdirectory pingfederate chaos; do
+      echo
+      echo "=========================================================="
+      echo "      Executing tests in directory: ${integration_test_dir}            "
+      echo "=========================================================="
+      ci-scripts/test/integration/run-test.sh "${integration_test_dir}" "${TEST_ENV_VARS_FILE}"
+    done
 
   fi
 else
