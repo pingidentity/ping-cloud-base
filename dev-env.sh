@@ -258,7 +258,7 @@ export NAMESPACE=ping-cloud-${ENVIRONMENT_NO_HYPHEN_PREFIX}
 DEV_CLUSTER_STATE_DIR=test
 
 if "${IS_MULTI_CLUSTER}" && test "${TENANT_DOMAIN}" != "${PRIMARY_TENANT_DOMAIN}"; then
-  CLUSTER_TYPE=child
+  CLUSTER_TYPE=secondary
 fi
 
 kustomize build "${DEV_CLUSTER_STATE_DIR}/${CLUSTER_TYPE}" |

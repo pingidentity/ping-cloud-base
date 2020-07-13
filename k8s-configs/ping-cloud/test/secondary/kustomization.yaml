@@ -6,7 +6,7 @@ resources:
 
 patchesStrategicMerge:
 
-# Remove PingAccess parent-related resources
+# Remove PingAccess primary-cluster resources
 - |-
   apiVersion: apps/v1
   kind: StatefulSet
@@ -49,7 +49,7 @@ patchesStrategicMerge:
     name: pingaccess-periodic-backup
   $patch: delete
 
-# Remove PingFederate parent-related resources
+# Remove PingFederate primary-cluster resources
 - |-
   apiVersion: apps/v1
   kind: StatefulSet
@@ -85,7 +85,7 @@ patchesStrategicMerge:
     name: pingfederate-periodic-backup
   $patch: delete
 
-# Remove PingDirectory parent-related resources
+# Remove PingDirectory primary-cluster resources
 
 - |-
   apiVersion: v1
