@@ -11,7 +11,7 @@ configure_kube
 export PING_IDENTITY_DEVOPS_USER_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_USER}")
 export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_KEY}")
 
-DEV_CLUSTER_STATE_DIR="${PROJECT_DIR}"/test
+DEV_CLUSTER_STATE_DIR="${PROJECT_DIR}"/dev-cluster-state
 
 # Deploy the configuration to Kubernetes
 DEPLOY_FILE=/tmp/deploy.yaml

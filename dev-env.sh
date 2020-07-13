@@ -255,7 +255,7 @@ export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
 export NAMESPACE=ping-cloud-${ENVIRONMENT_NO_HYPHEN_PREFIX}
 
 # Set the cluster type based on primary or secondary.
-DEV_CLUSTER_STATE_DIR=test
+DEV_CLUSTER_STATE_DIR=dev-cluster-state
 
 if "${IS_MULTI_CLUSTER}" && test "${TENANT_DOMAIN}" != "${PRIMARY_TENANT_DOMAIN}"; then
   CLUSTER_TYPE=secondary
