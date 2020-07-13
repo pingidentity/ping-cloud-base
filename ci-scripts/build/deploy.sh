@@ -11,7 +11,6 @@ configure_kube
 export PING_IDENTITY_DEVOPS_USER_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_USER}")
 export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_KEY}")
 
-# Set the cluster-type to "parent" - we only have one CI/CD cluster.
 DEV_CLUSTER_STATE_DIR="${PROJECT_DIR}"/test
 
 # Deploy the configuration to Kubernetes
@@ -21,16 +20,14 @@ kustomize build "${DEV_CLUSTER_STATE_DIR}" |
     ${PING_IDENTITY_DEVOPS_KEY_BASE64}
     ${ENVIRONMENT}
     ${TENANT_DOMAIN}
+    ${PRIMARY_TENANT_DOMAIN}
     ${CLUSTER_NAME}
     ${CLUSTER_NAME_LC}
     ${REGION}
+    ${PRIMARY_REGION}
     ${NAMESPACE}
     ${CONFIG_REPO_BRANCH}
     ${CONFIG_PARENT_DIR}
-    ${PD_PRIMARY_PUBLIC_HOSTNAME}
-    ${PF_ADMIN_PUBLIC_HOSTNAME}
-    ${PA_ADMIN_PUBLIC_HOSTNAME}
-    ${PA_CLUSTER_PUBLIC_HOSTNAME}
     ${ARTIFACT_REPO_URL}
     ${PING_ARTIFACT_REPO_URL}
     ${LOG_ARCHIVE_URL}

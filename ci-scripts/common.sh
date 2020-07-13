@@ -12,20 +12,19 @@ ENV_VARS_FILE="${1}"
 if test -z "${ENV_VARS_FILE}"; then
   echo "Using environment variables based on CI variables"
 
-  export REGION="${AWS_DEFAULT_REGION}"
   export CLUSTER_NAME="${EKS_CLUSTER_NAME}"
+
+  export REGION="${AWS_DEFAULT_REGION}"
   export TENANT_DOMAIN='ci-cd.ping-oasis.com'
+
+  export PRIMARY_REGION="${REGION}"
+  export PRIMARY_TENANT_DOMAIN="${TENANT_DOMAIN}"
 
   [[ ${CI_COMMIT_REF_SLUG} != master ]] && export ENVIRONMENT=-${CI_COMMIT_REF_SLUG}
   export NAMESPACE=ping-cloud-${CI_COMMIT_REF_SLUG}
 
   export CONFIG_PARENT_DIR=aws
   export CONFIG_REPO_BRANCH=${CI_COMMIT_REF_NAME}
-
-  export PD_PRIMARY_PUBLIC_HOSTNAME=pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}
-  export PF_ADMIN_PUBLIC_HOSTNAME=pingfederate-admin${ENVIRONMENT}.${TENANT_DOMAIN}
-  export PA_ADMIN_PUBLIC_HOSTNAME=pingaccess-admin${ENVIRONMENT}.${TENANT_DOMAIN}
-  export PA_CLUSTER_PUBLIC_HOSTNAME=pingaccess-cluster${ENVIRONMENT}.${TENANT_DOMAIN}
 
   export ARTIFACT_REPO_URL=s3://${CLUSTER_NAME}-artifacts-bucket
   export PING_ARTIFACT_REPO_URL=https://ping-artifacts.s3-us-west-2.amazonaws.com

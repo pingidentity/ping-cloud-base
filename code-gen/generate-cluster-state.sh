@@ -87,6 +87,15 @@
 #                        | to Container Insights, an AWS-specific logging     |
 #                        | and monitoring solution.                           |
 #                        |                                                    |
+# IS_MULTI_CLUSTER       | Flag indicating whether or not this is a           | false
+#                        | multi-cluster deployment.                          |
+#                        |                                                    |
+# PRIMARY_TENANT_DOMAIN  | In multi-cluster environments, the primary domain. | Same as TENANT_DOMAIN.
+#                        | Only used if IS_MULTI_CLUSTER is true.             |
+#                        |                                                    |
+# PRIMARY_REGION         | In multi-cluster environments, the primary region. | Same as REGION.
+#                        | Only used if IS_MULTI_CLUSTER is true.             |
+#                        |                                                    |
 # SIZE                   | Size of the environment, which pertains to the     | small
 #                        | number of user identities. Legal values are        |
 #                        | small, medium or large.                            |
@@ -192,9 +201,6 @@
 # TARGET_DIR             | The directory where the manifest files will be     | /tmp/sandbox
 #                        | generated. If the target directory exists, it will |
 #                        | be deleted.                                        |
-#                        |                                                    |
-# IS_PARENT              | A flag indicating whether code is being generated  | true
-#                        | for a parent vs. a child region.                   |
 #                        |
 # IS_BELUGA_ENV          | An optional flag that may be provided to indicate  | false. Only intended for Beluga
 #                        | that the cluster state is being generated for      | developers.
@@ -222,6 +228,8 @@ VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
 ${PING_IDENTITY_DEVOPS_KEY_BASE64}
 ${TENANT_DOMAIN}
 ${REGION}
+${PRIMARY_TENANT_DOMAIN}
+${PRIMARY_REGION}
 ${SIZE}
 ${LETS_ENCRYPT_SERVER}
 ${PF_PD_BIND_PORT}
@@ -319,11 +327,18 @@ if test ${HAS_REQUIRED_TOOLS} -ne 0 || test ${HAS_REQUIRED_VARS} -ne 0; then
   exit 1
 fi
 
+test -z "${IS_MULTI_CLUSTER}" && IS_MULTI_CLUSTER=false
+
 # Print out the values provided used for each variable.
 echo "Initial TENANT_NAME: ${TENANT_NAME}"
+echo "Initial SIZE: ${SIZE}"
+
 echo "Initial TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Initial REGION: ${REGION}"
-echo "Initial SIZE: ${SIZE}"
+
+echo "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
+echo "Initial PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
+echo "Initial PRIMARY_REGION: ${PRIMARY_REGION}"
 
 echo "Initial CLUSTER_STATE_REPO_URL: ${CLUSTER_STATE_REPO_URL}"
 
@@ -359,10 +374,15 @@ echo ---
 
 # Use defaults for other variables, if not present.
 export TENANT_NAME="${TENANT_NAME:-PingPOC}"
+export SIZE="${SIZE:-small}"
+
 TENANT_DOMAIN_NO_DOT_SUFFIX="${TENANT_DOMAIN%.}"
 export TENANT_DOMAIN="${TENANT_DOMAIN_NO_DOT_SUFFIX:-eks-poc.au1.ping-lab.cloud}"
 export REGION="${REGION:-us-east-2}"
-export SIZE="${SIZE:-small}"
+
+PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX="${PRIMARY_TENANT_DOMAIN%.}"
+export PRIMARY_TENANT_DOMAIN="${PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX:-${TENANT_DOMAIN}}"
+export PRIMARY_REGION="${PRIMARY_REGION:-${REGION}}"
 
 export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL:-git@github.com:pingidentity/ping-cloud-base.git}"
 
@@ -404,9 +424,14 @@ export IS_BELUGA_ENV="${IS_BELUGA_ENV}"
 
 # Print out the values being used for each variable.
 echo "Using TENANT_NAME: ${TENANT_NAME}"
+echo "Using SIZE: ${SIZE}"
+
 echo "Using TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Using REGION: ${REGION}"
-echo "Using SIZE: ${SIZE}"
+
+echo "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
+echo "Using PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
+echo "Using PRIMARY_REGION: ${PRIMARY_REGION}"
 
 echo "Using CLUSTER_STATE_REPO_URL: ${CLUSTER_STATE_REPO_URL}"
 
