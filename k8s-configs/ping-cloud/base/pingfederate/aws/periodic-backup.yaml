@@ -15,7 +15,7 @@ data:
 
     UPLOAD_FILES=
     SERVER=$(kubectl get pod -l role=${K8S_DEPLOYMENT_NAME_PINGFEDERATE_ADMIN} | sed -n "/${K8S_DEPLOYMENT_NAME_PINGFEDERATE_ADMIN}/p" | awk '{print $1}')
-    SCRIPT="${HOOKS_DIR}"/82-upload-archive-data-s3.sh
+    SCRIPT="${HOOKS_DIR}"/90-upload-backup-s3.sh
     LOG_FILE=/tmp/upload.log
 
     echo "Uploading pingfederate backup data on server ${SERVER}"

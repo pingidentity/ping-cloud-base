@@ -28,7 +28,6 @@ if ! test -z "${BACKUP_FILE_NAME}" || ! test -f "${OUT_DIR}"/instance/conf/pa.jw
   rm -rf "${SERVER_RESTORE_DIR}"
   mkdir -p "${SERVER_RESTORE_DIR}"
 
-  DATA_BACKUP_FILE=
   DATA_BACKUP_FILE_NAME=$( echo "${BACKUP_FILE_NAME}" | tr -d '"' | tr -d '[:space:]' )
   if ! test -z "${DATA_BACKUP_FILE_NAME}" && \
      ! test "${DATA_BACKUP_FILE_NAME}" = 'null'; then
@@ -47,7 +46,7 @@ if ! test -z "${BACKUP_FILE_NAME}" || ! test -f "${OUT_DIR}"/instance/conf/pa.jw
   echo "Copying: '${DATA_BACKUP_FILE_NAME}' to '${SKBN_K8S_PREFIX}${SERVER_RESTORE_DIR}/${DST_FILE}'"
 
   if ! skbnCopy "${SKBN_CLOUD_PREFIX}/${DATA_BACKUP_FILE_NAME}" "${SKBN_K8S_PREFIX}${SERVER_RESTORE_DIR}/${DST_FILE}"; then
-    echo "No archive data found"
+    echo "Cannot locate s3 bucket ${SKBN_CLOUD_PREFIX}/${DATA_BACKUP_FILE_NAME}"
     exit 1
   fi
 
@@ -79,7 +78,7 @@ if ! test -z "${BACKUP_FILE_NAME}" || ! test -f "${OUT_DIR}"/instance/conf/pa.jw
     rm -rf "${SERVER_RESTORE_DIR}/${DST_FILE}"
 
     # Print the filename of the downloaded file from s3
-    echo "Downloaded file name: ${DATA_BACKUP_FILE}"
+    echo "Downloaded file name: ${DATA_BACKUP_FILE_NAME}"
 
     # If ADMIN_CONFIGURATION_COMPLETE does not exist then set restore configuration.
     ADMIN_CONFIGURATION_COMPLETE="${OUT_DIR}/instance/ADMIN_CONFIGURATION_COMPLETE"

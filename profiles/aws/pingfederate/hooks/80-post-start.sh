@@ -28,7 +28,7 @@ echo "post-start: engine replication status: ${REPLICATION_STATUS}"
 
 # Upload a backup right away after starting the server.
 echo "post-start: uploading data backup to s3"
-sh "${HOOKS_DIR}/82-upload-archive-data-s3.sh"
+sh "${HOOKS_DIR}/90-upload-backup-s3.sh"
 BACKUP_STATUS=${?}
 echo "post-start: data backup status: ${BACKUP_STATUS}"
 

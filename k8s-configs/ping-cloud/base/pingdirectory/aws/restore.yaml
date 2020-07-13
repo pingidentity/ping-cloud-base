@@ -24,7 +24,6 @@ data:
     kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
         "test -x ${SCRIPT} && \
             export BACKUP_FILE_NAME=${BACKUP_FILE_NAME} && \
-            export S3_BACKUP_FILTER_DAY_COUNT=${S3_BACKUP_FILTER_DAY_COUNT} && \
             ${SCRIPT}"> "${LOG_FILE}"
 
     if test ${?} -eq 0; then
