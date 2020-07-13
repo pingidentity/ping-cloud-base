@@ -306,6 +306,9 @@ function skbnCopy() {
 # Export values for PingAccess configuration settings based on single vs. multi cluster.
 ########################################################################################################################
 function export_config_settings() {
+  SHORT_HOST_NAME=$(hostname)
+  ORDINAL=${SHORT_HOST_NAME##*-}
+
   if is_multi_cluster; then
     MULTI_CLUSTER=true
     export CLUSTER_CONFIG_HOST="${PA_CLUSTER_PUBLIC_HOSTNAME}"
@@ -317,7 +320,7 @@ function export_config_settings() {
     export CLUSTER_CONFIG_HOST="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}"
     export CLUSTER_CONFIG_PORT=9090
     export ADMIN_HOST_PORT="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9000"
-    export ENGINE_NAME=$(hostname)
+    export ENGINE_NAME=${SHORT_HOST_NAME}
   fi
 
   echo "MULTI_CLUSTER - ${MULTI_CLUSTER}"

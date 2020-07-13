@@ -15,7 +15,9 @@ echo "add-engine: starting add engine script"
 echo "add-engine: pingaccess config settings"
 export_config_settings
 
-is_secondary_cluster && IS_SECONDARY_CLUSTER=true
+is_secondary_cluster &&
+  IS_SECONDARY_CLUSTER=true ||
+  IS_SECONDARY_CLUSTER=false
 echo "add-engine: secondary-cluster: ${IS_SECONDARY_CLUSTER}"
 
 SHORT_HOST_NAME=$(hostname)
