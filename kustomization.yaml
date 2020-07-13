@@ -98,7 +98,7 @@ patchesJson6902:
     version: v1beta1
     kind: Ingress
     name: pingfederate-admin-ingress
-    namespace: ${NAMESPACE}
+    #namespace: ${NAMESPACE} fixme uncomment
   patch: |-
     - op: replace
       path: /spec/tls/0/hosts/0
@@ -151,7 +151,7 @@ patchesJson6902:
     version: v1beta1
     kind: Ingress
     name: pingaccess-admin-ingress
-    namespace: ${NAMESPACE}
+    #namespace: ${NAMESPACE} fixme uncomment
   patch: |-
     - op: replace
       path: /spec/tls/0/hosts/0
