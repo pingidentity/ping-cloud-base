@@ -65,17 +65,6 @@ change_pf_user_passwords() {
 }
 
 ########################################################################################################################
-# Sets the public/external hostname in the server's server.host file, if the PD_PUBLIC_HOSTNAME is set.
-########################################################################################################################
-function set_external_hostname() {
-  if test ! -z "${PD_PUBLIC_HOSTNAME}"; then
-    SERVER_HOST_FILE="${SERVER_ROOT_DIR}"/config/server.host
-    echo "post-start: replacing the server hostname to ${PD_PUBLIC_HOSTNAME} in ${SERVER_HOST_FILE}"
-    echo "hostname=${PD_PUBLIC_HOSTNAME}" > "${SERVER_HOST_FILE}"
-  fi
-}
-
-########################################################################################################################
 # Add the base entry for USER_BASE_DN on the provided server.
 #
 # Arguments
@@ -401,7 +390,7 @@ initialize_replication_for_dn() {
 
   # If multi-cluster, initialize the first server in the secondary cluster from the first server in the primary cluster.
   # Initialize other servers in the secondary cluster from the first server within the same cluster.
-  if "${IS_MULTI_CLUSTER}" && test "${ORDINAL}" -eq 0; then
+  if is_multi_cluster && test "${ORDINAL}" -eq 0; then
     FROM_HOST="${PD_PRIMARY_PUBLIC_HOSTNAME}"
     FROM_PORT=6360
   else
@@ -556,7 +545,7 @@ fi
 
 # Determine the hostnames and ports to use while enabling replication. When in multi-cluster mode and not in the
 # primary cluster, use the external names and ports. Otherwise, use internal names and ports.
-if "${IS_MULTI_CLUSTER}"; then
+if is_multi_cluster; then
   REPL_SRC_HOST="${PD_PRIMARY_PUBLIC_HOSTNAME}"
   REPL_SRC_LDAPS_PORT=6360
   REPL_SRC_REPL_PORT=9890
@@ -584,7 +573,7 @@ echo "post-start: using REPL_DST_REPL_PORT: ${REPL_DST_REPL_PORT}"
 
 # If in multi-region mode, wait for the replication source and target servers to be up and running through the
 # load balancer before enabling/initializing replication.
-if "${IS_MULTI_CLUSTER}"; then
+if is_multi_cluster; then
   echo "post-start: waiting for the replication seed server ${REPL_SRC_HOST}:${REPL_SRC_LDAPS_PORT}"
   waitUntilLdapUp "${REPL_SRC_HOST}" "${REPL_SRC_LDAPS_PORT}" 'cn=config'
 

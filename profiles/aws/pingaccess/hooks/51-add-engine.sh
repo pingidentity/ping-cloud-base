@@ -12,8 +12,10 @@ fi
 
 echo "add-engine: starting add engine script"
 
-IS_SECONDARY_CLUSTER=$(is_secondary_cluster)
+echo "add-engine: pingaccess config settings"
+export_config_settings
 
+is_secondary_cluster && IS_SECONDARY_CLUSTER=true
 echo "add-engine: secondary-cluster: ${IS_SECONDARY_CLUSTER}"
 
 SHORT_HOST_NAME=$(hostname)
@@ -27,9 +29,6 @@ if [ "${IS_SECONDARY_CLUSTER}" == true ]; then
       exit 1
   fi
 
-  ADMIN_HOST_PORT="${PA_ADMIN_PUBLIC_HOSTNAME}"
-  ENGINE_NAME="${PA_ENGINE_PUBLIC_HOSTNAME}:300${ORDINAL}"
-
   # Retrieve Engine Cert ID.
   echo "add-engine: retrieving the Engine Cert ID"
   OUT=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/engines/certificates)
@@ -37,8 +36,6 @@ if [ "${IS_SECONDARY_CLUSTER}" == true ]; then
   echo "add-engine: ENGINE_CERT_ID: ${ENGINE_CERT_ID}"
 
 else
-  ADMIN_HOST_PORT="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9000"
-  ENGINE_NAME="${SHORT_HOST_NAME}"
 
   pingaccess_admin_wait "${ADMIN_HOST_PORT}"
 

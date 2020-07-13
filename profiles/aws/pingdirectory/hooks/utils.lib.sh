@@ -55,26 +55,39 @@ function skbnCopy() {
 }
 
 ########################################################################################################################
-# Replace the server's instance name, if multi-cluster. Instance name must be unique in the topology.
+# Export values for PingDirectory configuration settings based on single vs. multi cluster.
 ########################################################################################################################
-function replace_instance_name() {
-  if "${IS_MULTI_CLUSTER}"; then
+function export_config_settings() {
+  if is_multi_cluster; then
+    MULTI_CLUSTER=true
     SHORT_HOST_NAME=$(hostname)
     ORDINAL=${SHORT_HOST_NAME##*-}
-
-    INSTANCE_NAME="${PD_PUBLIC_HOSTNAME}-636${ORDINAL}"
-    CONFIG_LDIF="${SERVER_ROOT_DIR}"/config/config.ldif
-
-    echo "Replacing instance-name to ${INSTANCE_NAME}"
-
-    # FIXME: use dsconfig to do this
-    sed -i "s/^\(ds-cfg-instance-name: \).*$/\1${INSTANCE_NAME}/g" "${CONFIG_LDIF}"
-    sed -i "s/^\(ds-cfg-server-instance-name: \).*$/\1${INSTANCE_NAME}/g" "${CONFIG_LDIF}"
+    export PD_LDAP_PORT="636${ORDINAL}"
+  else
+    MULTI_CLUSTER=false
+    export PD_PUBLIC_HOSTNAME=$(hostname -f)
+    export PD_LDAP_PORT="${LDAPS_PORT}"
   fi
+
+  echo "MULTI_CLUSTER - ${MULTI_CLUSTER}"
+  echo "LDAP_HOST_PORT - ${PD_PUBLIC_HOSTNAME}:${PD_LDAP_PORT}"
+}
+
+########################################################################################################################
+# Determines if the environment is running in the context of multiple clusters.
+#
+# Returns
+#   true if multi-cluster; false if not.
+########################################################################################################################
+function is_multi_cluster() {
+  test ! -z "${IS_MULTI_CLUSTER}" && "${IS_MULTI_CLUSTER}"
 }
 
 ########################################################################################################################
 # Determines if the environment is set up in the primary cluster.
+#
+# Returns
+#   true if primary cluster; false if not.
 ########################################################################################################################
 function is_primary_cluster() {
   test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"
@@ -82,6 +95,9 @@ function is_primary_cluster() {
 
 ########################################################################################################################
 # Determines if the environment is set up in a secondary cluster.
+#
+# Returns
+#   true if secondary cluster; false if not.
 ########################################################################################################################
 function is_secondary_cluster() {
   test ! is_primary_cluster

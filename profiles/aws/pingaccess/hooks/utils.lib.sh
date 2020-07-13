@@ -303,17 +303,27 @@ function skbnCopy() {
 }
 
 ########################################################################################################################
-# Export the values for the CLUSTER_CONFIG_HOST and CLUSTER_CONFIG_PORT environment variables to be used for
-# substitution in JSON payloads to the admin API based on single vs. multi cluster.
+# Export values for PingAccess configuration settings based on single vs. multi cluster.
 ########################################################################################################################
-function export_cluster_config_host_port() {
-  if "${IS_MULTI_CLUSTER}"; then
+function export_config_settings() {
+  if is_multi_cluster; then
+    MULTI_CLUSTER=true
     export CLUSTER_CONFIG_HOST="${PA_CLUSTER_PUBLIC_HOSTNAME}"
     export CLUSTER_CONFIG_PORT=443
+    export ADMIN_HOST_PORT="${PA_ADMIN_PUBLIC_HOSTNAME}"
+    export ENGINE_NAME="${PA_ENGINE_PUBLIC_HOSTNAME}:300${ORDINAL}"
   else
+    MULTI_CLUSTER=false
     export CLUSTER_CONFIG_HOST="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}"
     export CLUSTER_CONFIG_PORT=9090
+    export ADMIN_HOST_PORT="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9000"
+    export ENGINE_NAME=$(hostname)
   fi
+
+  echo "MULTI_CLUSTER - ${MULTI_CLUSTER}"
+  echo "CLUSTER_CONFIG_HOST_PORT - ${CLUSTER_CONFIG_HOST}:${CLUSTER_CONFIG_PORT}"
+  echo "ADMIN_HOST_PORT - ${ADMIN_HOST_PORT}"
+  echo "ENGINE_NAME - ${ENGINE_NAME}"
 }
 
 ########################################################################################################################
@@ -322,8 +332,10 @@ function export_cluster_config_host_port() {
 function update_admin_config_host_port() {
   local templates_dir_path="${STAGING_DIR}/templates/81"
 
+  # Export the correct config settings based on single vs. multi cluster.
+  export_config_settings
+
   # Substitute the right values into the admin-config.json file based on single or multi cluster.
-  export_cluster_config_host_port
   admin_config_payload=$(envsubst < "${templates_dir_path}"/admin-config.json)
 
   admin_config_response=$(make_api_request -s -X PUT \
@@ -332,7 +344,20 @@ function update_admin_config_host_port() {
 }
 
 ########################################################################################################################
+# Determines if the environment is running in the context of multiple clusters.
+#
+# Returns
+#   true if multi-cluster; false if not.
+########################################################################################################################
+function is_multi_cluster() {
+  test ! -z "${IS_MULTI_CLUSTER}" && "${IS_MULTI_CLUSTER}"
+}
+
+########################################################################################################################
 # Determines if the environment is set up in the primary cluster.
+#
+# Returns
+#   true if primary cluster; false if not.
 ########################################################################################################################
 function is_primary_cluster() {
   test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"
@@ -340,6 +365,9 @@ function is_primary_cluster() {
 
 ########################################################################################################################
 # Determines if the environment is set up in a secondary cluster.
+#
+# Returns
+#   true if secondary cluster; false if not.
 ########################################################################################################################
 function is_secondary_cluster() {
   test ! is_primary_cluster

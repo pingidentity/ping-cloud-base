@@ -8,26 +8,30 @@ ${VERBOSE} && set -x
 test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
 test -f "${HOOKS_DIR}/pingdata.lib.sh" && . "${HOOKS_DIR}/pingdata.lib.sh"
 
-echo "Restarting container"
+echo "restart-sequence: restarting container"
+
+echo "restart-sequence: PingDirectory config settings"
+export_config_settings
 
 # Before running any ds tools, remove java.properties and re-create it
 # for the current JVM.
-echo "Re-generating java.properties for current JVM"
+echo "restart-sequence: re-generating java.properties for current JVM"
 rm -f "${SERVER_ROOT_DIR}/config/java.properties"
 dsjavaproperties --initialize --jvmTuningParameter AGGRESSIVE --maxHeapSize ${MAX_HEAP_SIZE}
 
 # If this hook is provided it can be executed early on
+echo "restart-sequence: updating server profile"
 run_hook "21-update-server-profile.sh"
 
 export encryptionOption=$(getEncryptionOption)
 export jvmOptions=$(getJvmOptions)
 
-echo "Checking license file"
+echo "restart-sequence: checking license file"
 _currentLicense="${LICENSE_DIR}/${LICENSE_FILE_NAME}"
 _pdProfileLicense="${STAGING_DIR}/pd.profile/server-root/pre-setup/${LICENSE_FILE_NAME}"
 
 if test ! -f "${_pdProfileLicense}" ; then
-  echo "Copying in license from existing install."
+  echo "restart-sequence: copying in license from existing install."
   echo "  ${_currentLicense} ==> "
   echo "    ${_pdProfileLicense}"
   cp -af "${_currentLicense}" "${_pdProfileLicense}"
@@ -38,7 +42,7 @@ HEAP_SIZE_INT=$(echo "${MAX_HEAP_SIZE}" | grep 'g$' | cut -d'g' -f1)
 
 if test ! -z "${HEAP_SIZE_INT}" && test "${HEAP_SIZE_INT}" -ge 4; then
   NEW_HEAP_SIZE=$((HEAP_SIZE_INT - 2))g
-  echo "Changing manage-profile heap size to ${NEW_HEAP_SIZE}"
+  echo "restart-sequence: changing manage-profile heap size to ${NEW_HEAP_SIZE}"
   export UNBOUNDID_JAVA_ARGS="-client -Xmx${NEW_HEAP_SIZE} -Xms${NEW_HEAP_SIZE}"
 fi
 
@@ -46,25 +50,16 @@ test -f "${SECRETS_DIR}"/encryption-settings.pin &&
   ENCRYPTION_PIN_FILE="${SECRETS_DIR}"/encryption-settings.pin ||
   ENCRYPTION_PIN_FILE="${SECRETS_DIR}"/encryption-password
 
-echo "Using ${ENCRYPTION_PIN_FILE} as the encryption-setting.pin file"
+echo "restart-sequence: using ${ENCRYPTION_PIN_FILE} as the encryption-setting.pin file"
 cp "${ENCRYPTION_PIN_FILE}" "${PD_PROFILE}"/server-root/pre-setup/config
 
 # FIXME: Workaround for DS-41964 - use --replaceFullProfile flag to replace-profile
-echo "Merging changes from new server profile"
+echo "restart-sequence: merging changes from new server profile"
 
 ADDITIONAL_ARGS="--replaceFullProfile"
 if "${OPTIMIZE_REPLACE_PROFILE}"; then
-  echo "Running replace-profile in optimized mode"
+  echo "restart-sequence: running replace-profile in optimized mode"
   ADDITIONAL_ARGS=
-fi
-
-if "${IS_MULTI_CLUSTER}"; then
-  SHORT_HOST_NAME=$(hostname)
-  ORDINAL=${SHORT_HOST_NAME##*-}
-  export PD_LDAP_PORT="636${ORDINAL}"
-else
-  export PD_PUBLIC_HOSTNAME=$(hostname -f)
-  export PD_LDAP_PORT="${LDAPS_PORT}"
 fi
 
 "${SERVER_BITS_DIR}"/bin/manage-profile replace-profile \
@@ -75,22 +70,25 @@ fi
     --reimportData never
 
 MANAGE_PROFILE_STATUS=${?}
-echo "manage-profile replace-profile status: ${MANAGE_PROFILE_STATUS}"
+echo "restart-sequence: manage-profile replace-profile status: ${MANAGE_PROFILE_STATUS}"
 
 export UNBOUNDID_JAVA_ARGS="${ORIG_UNBOUNDID_JAVA_ARGS}"
 
 if test "${MANAGE_PROFILE_STATUS}" -ne 0; then
-  echo "Contents of manage-profile.log file:"
+  echo "restart-sequence: contents of manage-profile.log file:"
   cat "${SERVER_BITS_DIR}/logs/tools/manage-profile.log"
   exit 20
 fi
 
+echo "restart-sequence: updating tools.properties"
 run_hook "185-apply-tools-properties.sh"
+
+echo "restart-sequence: updating encryption settings"
 run_hook "15-encryption-settings.sh"
 
 # FIXME: replace-profile has a bug where it may wipe out the user root backend configuration and lose user data added
 # from another server while enabling replication. This code block may be removed when replace-profile is fixed.
-echo "Configuring ${USER_BACKEND_ID} for base DN ${USER_BASE_DN}"
+echo "restart-sequence: configuring ${USER_BACKEND_ID} for base DN ${USER_BASE_DN}"
 dsconfig --no-prompt --offline set-backend-prop \
   --backend-name "${USER_BACKEND_ID}" \
   --add "base-dn:${USER_BASE_DN}" \
@@ -98,7 +96,7 @@ dsconfig --no-prompt --offline set-backend-prop \
   --set db-cache-percent:35
 CONFIG_STATUS=${?}
 
-echo "Configure base DN ${USER_BASE_DN} update status: ${CONFIG_STATUS}"
+echo "restart-sequence: configure base DN ${USER_BASE_DN} update status: ${CONFIG_STATUS}"
 test "${CONFIG_STATUS}" -ne 0 && exit ${CONFIG_STATUS}
 
 exit 0

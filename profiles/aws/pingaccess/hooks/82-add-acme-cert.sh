@@ -14,10 +14,8 @@ if test -z "${K8S_ACME_CERT_SECRET_NAME}"; then
 fi 
 
 # Setting public endpoint and port for cert.
-export CLUSTER_CONFIG_HOST="${PA_ADMIN_PUBLIC_HOSTNAME}"
-export CLUSTER_CONFIG_PORT=443
-
-echo "add-acme-cert: cluster-config host:port ${CLUSTER_CONFIG_HOST}:${CLUSTER_CONFIG_PORT}"
+echo "add-acme-cert: pingaccess config settings"
+export_config_settings
 
 # Check if alias for the cert already exists.
 echo "add-acme-cert: checking if certificate with alias '${K8S_ACME_CERT_SECRET_NAME}' already exists"

@@ -90,7 +90,36 @@ function obfuscatePassword() {
 }
 
 ########################################################################################################################
+# Export values for PingFederate configuration settings based on single vs. multi cluster.
+########################################################################################################################
+function export_config_settings() {
+  if is_multi_cluster; then
+    MULTI_CLUSTER=true
+    export PF_ADMIN_HOST_PORT="${PF_ADMIN_PUBLIC_HOSTNAME}"
+  else
+    MULTI_CLUSTER=false
+    export PF_ADMIN_HOST_PORT="${PINGFEDERATE_ADMIN_SERVER}:${PF_ADMIN_PORT}"
+  fi
+
+  echo "MULTI_CLUSTER - ${MULTI_CLUSTER}"
+  echo "PF_ADMIN_HOST_PORT - ${PF_ADMIN_HOST_PORT}"
+}
+
+########################################################################################################################
+# Determines if the environment is running in the context of multiple clusters.
+#
+# Returns
+#   true if multi-cluster; false if not.
+########################################################################################################################
+function is_multi_cluster() {
+  test ! -z "${IS_MULTI_CLUSTER}" && "${IS_MULTI_CLUSTER}"
+}
+
+########################################################################################################################
 # Determines if the environment is set up in the primary cluster.
+#
+# Returns
+#   true if primary cluster; false if not.
 ########################################################################################################################
 function is_primary_cluster() {
   test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"
@@ -98,6 +127,9 @@ function is_primary_cluster() {
 
 ########################################################################################################################
 # Determines if the environment is set up in a secondary cluster.
+#
+# Returns
+#   true if secondary cluster; false if not.
 ########################################################################################################################
 function is_secondary_cluster() {
   test ! is_primary_cluster
@@ -110,7 +142,7 @@ function configure_tcp_xml() {
   local currentDir="$(pwd)"
   cd "${SERVER_ROOT_DIR}/server/default/conf"
 
-  if "${IS_MULTI_CLUSTER}"; then
+  if is_multi_cluster; then
     export NATIVE_S3_PING="<org.jgroups.aws.s3.NATIVE_S3_PING \
             region_name=\"${PRIMARY_REGION}\" \
             bucket_name=\"${CLUSTER_BUCKET_NAME}\" \
