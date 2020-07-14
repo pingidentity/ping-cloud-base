@@ -12,10 +12,12 @@ fi
 
 echo "add-engine: starting add engine script"
 
+echo "add-engine: pingaccess config settings"
+export_config_settings
+
 is_secondary_cluster &&
   IS_SECONDARY_CLUSTER=true ||
   IS_SECONDARY_CLUSTER=false
-
 echo "add-engine: secondary-cluster: ${IS_SECONDARY_CLUSTER}"
 
 SHORT_HOST_NAME=$(hostname)
@@ -29,9 +31,6 @@ if [ "${IS_SECONDARY_CLUSTER}" == true ]; then
       exit 1
   fi
 
-  ADMIN_HOST_PORT="${PA_ADMIN_PUBLIC_HOSTNAME}"
-  ENGINE_NAME="${PA_ENGINE_PUBLIC_HOSTNAME}:300${ORDINAL}"
-
   # Retrieve Engine Cert ID.
   echo "add-engine: retrieving the Engine Cert ID"
   OUT=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/engines/certificates)
@@ -39,8 +38,6 @@ if [ "${IS_SECONDARY_CLUSTER}" == true ]; then
   echo "add-engine: ENGINE_CERT_ID: ${ENGINE_CERT_ID}"
 
 else
-  ADMIN_HOST_PORT="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9000"
-  ENGINE_NAME="${SHORT_HOST_NAME}"
 
   pingaccess_admin_wait "${ADMIN_HOST_PORT}"
 
@@ -105,7 +102,7 @@ if [ "${IS_SECONDARY_CLUSTER}" == true ]; then
     echo "add-engine: failed to update admin port"
     exit 1
   fi 
-  if ! sed -i "s/engine.admin.configuration.host.*/engine.admin.configuration.host=${PA_ADMIN_PUBLIC_HOSTNAME}/g" /opt/out/instance/conf/bootstrap.properties; then
+  if ! sed -i "s/engine.admin.configuration.host.*/engine.admin.configuration.host=${PA_CLUSTER_PUBLIC_HOSTNAME}/g" /opt/out/instance/conf/bootstrap.properties; then
     echo "add-engine: failed to update admin host"
     exit 1
   fi 
