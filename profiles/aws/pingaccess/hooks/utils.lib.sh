@@ -362,14 +362,16 @@ function is_multi_cluster() {
 # Determines if the environment is secondary cluster.
 #
 # Returns
-#   true if secondary-cluster; false if not.
+#   true if sub-cluster; false if not.
 ########################################################################################################################
-function is_secondary_cluster() {
-
-  if [ "$(is_multi_cluster)" == true ]; then
-    if ! $(echo $PA_ADMIN_PUBLIC_HOSTNAME | grep -q "$TENANT_DOMAIN"); then
-        echo true
-        return 0
+function is_sub_cluster() {
+  is_multi_cluster=$(is_multi_cluster)
+  if [ "${is_multi_cluster}" = "true" ]; then
+    ADMIN_TENANT_DOMAIN=$(echo "$PA_ADMIN_PUBLIC_HOSTNAME" | cut -d. -f2- )
+    ENGINE_TENANT_DOMAIN=$(echo "$PA_ENGINE_PUBLIC_HOSTNAME" | cut -d. -f2- )
+    if [ "$ADMIN_TENANT_DOMAIN" != "$ENGINE_TENANT_DOMAIN" ]; then
+      echo true
+      return 0
     fi
   fi
 
