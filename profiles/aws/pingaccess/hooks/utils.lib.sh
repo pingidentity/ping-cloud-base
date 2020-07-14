@@ -303,6 +303,20 @@ function skbnCopy() {
 }
 
 ########################################################################################################################
+# Update the PA admin's host:port to be set in every engine's bootstrap.properties file.
+########################################################################################################################
+function update_admin_config_host_port() {
+  local templates_dir_path="${STAGING_DIR}/templates/81"
+
+  # Substitute the right values into the admin-config.json file based on single or multi cluster.
+  admin_config_payload=$(envsubst < "${templates_dir_path}"/admin-config.json)
+
+  admin_config_response=$(make_api_request -s -X PUT \
+      -d "${admin_config_payload}" \
+      "https://localhost:9000/pa-admin-api/v3/adminConfig")
+}
+
+########################################################################################################################
 # Export values for PingAccess configuration settings based on single vs. multi cluster.
 ########################################################################################################################
 function export_config_settings() {
@@ -313,7 +327,9 @@ function export_config_settings() {
     MULTI_CLUSTER=true
     export CLUSTER_CONFIG_HOST="${PA_CLUSTER_PUBLIC_HOSTNAME}"
     export CLUSTER_CONFIG_PORT=443
-    export ADMIN_HOST_PORT="${PA_ADMIN_PUBLIC_HOSTNAME}:443"
+    is_secondary_cluster &&
+      export ADMIN_HOST_PORT="${PA_ADMIN_PUBLIC_HOSTNAME}:443" ||
+      export ADMIN_HOST_PORT="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9000"
     export ENGINE_NAME="${PA_ENGINE_PUBLIC_HOSTNAME}:300${ORDINAL}"
   else
     MULTI_CLUSTER=false
@@ -327,20 +343,6 @@ function export_config_settings() {
   echo "CLUSTER_CONFIG_HOST_PORT - ${CLUSTER_CONFIG_HOST}:${CLUSTER_CONFIG_PORT}"
   echo "ADMIN_HOST_PORT - ${ADMIN_HOST_PORT}"
   echo "ENGINE_NAME - ${ENGINE_NAME}"
-}
-
-########################################################################################################################
-# Update the PA admin's host:port to be set in every engine's bootstrap.properties file.
-########################################################################################################################
-function update_admin_config_host_port() {
-  local templates_dir_path="${STAGING_DIR}/templates/81"
-
-  # Substitute the right values into the admin-config.json file based on single or multi cluster.
-  admin_config_payload=$(envsubst < "${templates_dir_path}"/admin-config.json)
-
-  admin_config_response=$(make_api_request -s -X PUT \
-      -d "${admin_config_payload}" \
-      "https://localhost:9000/pa-admin-api/v3/adminConfig")
 }
 
 ########################################################################################################################
