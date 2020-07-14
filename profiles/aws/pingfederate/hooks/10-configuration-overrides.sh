@@ -37,13 +37,17 @@ function applyGeneralOverrides()
    if [ -e "${STAGING_DIR}/data-overrides" ] && [ -d "${STAGING_DIR}/data-overrides" ]; then
       echo "============================= Applying general static overrides =============================="
       cd ${STAGING_DIR}/data-overrides
+      echo "Directory: $(pwd)"
+      rm ./README.txt
+      echo "Processing Template Files"
       for template in $( find "." -type f -iname \*.subst ) ; do
          echo "    t - ${template}"
          envsubst < "${template}" > "${template%.subst}"
          rm -f "${template}"
       done
+      echo "Copying override files"
+      ( find . -type f -exec cp -avfL --parents '{}' "${SERVER_ROOT_DIR}/server/default/data" \; )
 
-      copy_files "${STAGING_DIR}/data-overrides" "${SERVER_ROOT_DIR}/server/default/data"
       rc=$? 
       echo "================================  General overrides applied  ================================="
    else
@@ -57,7 +61,7 @@ function applyConfigStoreOverrides()
 {
    rc=0
    cd "${STAGING_DIR}/config-store"
-   if [ $(ls *.json | wc -l) -gt 0 ]; then
+   if [ $(ls *.json  2>/dev/null| wc -l) -gt 0 ]; then
       #
       # Overrides exist, process directroy contents in lexicographical order              
       #
@@ -219,6 +223,8 @@ function applyConfigStoreOverrides()
          fi
       done
       echo "===========================  Config store static overrides applied ==========================="
+   else
+       echo "No config store static overrides found to applied"
    fi
    return ${rc}
 }
@@ -272,6 +278,8 @@ if [ ${hasGeneralOverride} -eq 1 ] || [ ${hasConfigStoreOverride} -eq 1 ]; then
    rc2=$?
    stopServer
    rc=$(echo "( ${rc1} * 10) + ${rc2}"|bc)
+else
+   echo "No data or config store overrides found to applied - Do nothing"   
 fi
 
 cd ${wd}
