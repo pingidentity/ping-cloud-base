@@ -6,6 +6,10 @@ resources:
 
 patchesStrategicMerge:
 
+# Overwrite WAIT_FOR_SERVICES as admin exists in primary cluster
+- pingfederate/engine-init-env.yaml
+- pingaccess/engine-init-env.yaml
+
 # Remove PingAccess parent-related resources
 - |-
   apiVersion: apps/v1

@@ -1,0 +1,13 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingfederate
+spec:
+  template:
+    spec:
+      initContainers:
+      - name: pingfederate-init
+        env:
+        # Overwrite default value to wait for admin as admin do not exist in sub cluster.
+        - name: WAIT_FOR_SERVICES
+          value: ''
