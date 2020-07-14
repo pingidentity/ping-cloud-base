@@ -14,6 +14,7 @@ PRODUCT_NAME="pingdirectory"
 NUM_REPLICAS=$(kubectl get statefulset "${PRODUCT_NAME}" -o jsonpath='{.spec.replicas}' -n "${NAMESPACE}")
 NUM_REPLICAS=$((NUM_REPLICAS - 1))
 
+STATUS=0
 while test ${NUM_REPLICAS} -gt -1; do
 
     SERVER="${PRODUCT_NAME}-${NUM_REPLICAS}"
