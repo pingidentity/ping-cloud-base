@@ -11,7 +11,7 @@ metadata:
   name: pingcommon-init
 data:
   init.sh: |-
-    #!/bin/sh -e
+    #!/bin/sh
 
     #--- Sleep for the configured initial delay seconds ---#
     SLEEP_SECONDS=${INITIAL_DELAY_SECONDS:-0}
@@ -56,31 +56,32 @@ data:
     for APP in ${WAIT_FOR_SERVICES}; do
       #--- Wait over protocol for multi-cluster deployments ---#
       if test ! -z "${IS_MULTI_CLUSTER}" && "${IS_MULTI_CLUSTER}"; then
-        case "${APP}" in
-          pingdirectory)
-            URL=${PD_PRIMARY_PUBLIC_HOSTNAME}:6360
-            ;;
+        while true; do
+          case "${APP}" in
+            pingdirectory)
+              URL=${PD_PRIMARY_PUBLIC_HOSTNAME}:6360
+              ;;
 
-          pingfederate-admin)
-            URL=${PF_ADMIN_PUBLIC_HOSTNAME}/pingfederate/app
-            ;;
+            pingfederate-admin)
+              URL=${PF_ADMIN_PUBLIC_HOSTNAME}/pingfederate/app
+              ;;
 
-          pingaccess-admin)
-            URL=${PA_ADMIN_PUBLIC_HOSTNAME}
-            ;;
-        esac
+            pingaccess-admin)
+              URL=${PA_ADMIN_PUBLIC_HOSTNAME}
+              ;;
+          esac
 
-        wget --quiet --spider --tries 5 \
-            --no-check-certificate \
-            --connect-timeout 1 --read-timeout 1 \
-            https://"${URL}"
+          wget --quiet --spider --tries 5 \
+              --no-check-certificate \
+              --connect-timeout 1 --read-timeout 1 \
+              https://"${URL}"
+          test $? -eq 0 && break
 
-        if test $? -ne 0; then
-          echo "init: '${URL}' unreachable"
-          exit 1
-        fi
+          echo "init: ${APP} URL '${URL}' unreachable. Will try again in 2 seconds."
+          sleep 2s
+        done
 
-        # Continue to the next service to wait on
+        # Continue to the next app to wait on.
         continue
       fi
 
@@ -104,6 +105,7 @@ data:
           break
         fi
 
+        echo "init: ${APP} not ready. Will try again in 2 seconds."
         kubectl get "${DEPLOYMENT}"
         sleep 2s
       done
