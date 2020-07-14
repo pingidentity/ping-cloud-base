@@ -10,6 +10,7 @@ stages:
 ## Global environment variables ##
 variables:
   DELETE_ENV_AFTER_PIPELINE: 'true'
+  EFS_FILESYSTEM_ID: 'fs-5a31e45f'
 
 ## Compile stage ##
 compile:
