@@ -375,5 +375,5 @@ function is_primary_cluster() {
 #   true if secondary cluster; false if not.
 ########################################################################################################################
 function is_secondary_cluster() {
-  test ! is_primary_cluster
+  ! is_primary_cluster
 }
