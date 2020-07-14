@@ -13,10 +13,6 @@ if test -z "${K8S_ACME_CERT_SECRET_NAME}"; then
     exit 0
 fi 
 
-# Setting public endpoint and port for cert.
-echo "add-acme-cert: pingaccess config settings"
-export_config_settings
-
 # Check if alias for the cert already exists.
 echo "add-acme-cert: checking if certificate with alias '${K8S_ACME_CERT_SECRET_NAME}' already exists"
 OUT=$(make_api_request https://localhost:9000/pa-admin-api/v3/certificates?alias=$K8S_ACME_CERT_SECRET_NAME)
