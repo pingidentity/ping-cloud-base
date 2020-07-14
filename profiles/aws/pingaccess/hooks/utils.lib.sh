@@ -325,7 +325,7 @@ function export_config_settings() {
 
   if is_multi_cluster; then
     MULTI_CLUSTER=true
-    export CLUSTER_CONFIG_HOST="${PA_CLUSTER_PUBLIC_HOSTNAME}"
+    export CLUSTER_CONFIG_HOST="${PA_ADMIN_PUBLIC_HOSTNAME}"
     export CLUSTER_CONFIG_PORT=443
     is_secondary_cluster &&
       export ADMIN_HOST_PORT="${PA_ADMIN_PUBLIC_HOSTNAME}:443" ||
