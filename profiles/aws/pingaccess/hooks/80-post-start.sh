@@ -22,12 +22,15 @@ pingaccess_admin_wait
 # If ADMIN_CONFIGURATION_COMPLETE does not exist then set initial configuration.
 ADMIN_CONFIGURATION_COMPLETE=${OUT_DIR}/instance/ADMIN_CONFIGURATION_COMPLETE
 if ! test -f "${ADMIN_CONFIGURATION_COMPLETE}"; then
+  echo "post-start: ${ADMIN_CONFIGURATION_COMPLETE} not present"
 
+  echo "post-start: Starting hook: ${HOOKS_DIR}/81-import-initial-configuration.sh"
   sh "${HOOKS_DIR}/81-import-initial-configuration.sh"
   if test $? -ne 0; then
     exit 1
   fi
 
+  echo "post-start: Starting hook: ${HOOKS_DIR}/82-add-acme-cert.sh"
   sh "${HOOKS_DIR}/82-add-acme-cert.sh"
   if test $? -ne 0; then
     exit 1
@@ -38,11 +41,15 @@ if ! test -f "${ADMIN_CONFIGURATION_COMPLETE}"; then
 # Since this isn't initial deployment, change password if from disk is different than the desired value.
 elif test $(comparePasswordDiskWithVariable) -eq 0; then
 
+  echo "post-start: changing PA admin password"
   changePassword
-  
+
+else
+  echo "post-start: not changing PA admin password"
 fi
 
 # Upload a backup right away after starting the server.
+echo "post-start: Starting hook: ${HOOKS_DIR}/90-upload-backup-s3.sh"
 sh "${HOOKS_DIR}/90-upload-backup-s3.sh"
 BACKUP_STATUS=${?}
 

@@ -313,7 +313,7 @@ function export_config_settings() {
     MULTI_CLUSTER=true
     export CLUSTER_CONFIG_HOST="${PA_CLUSTER_PUBLIC_HOSTNAME}"
     export CLUSTER_CONFIG_PORT=443
-    export ADMIN_HOST_PORT="${PA_ADMIN_PUBLIC_HOSTNAME}"
+    export ADMIN_HOST_PORT="${PA_ADMIN_PUBLIC_HOSTNAME}:443"
     export ENGINE_NAME="${PA_ENGINE_PUBLIC_HOSTNAME}:300${ORDINAL}"
   else
     MULTI_CLUSTER=false
@@ -334,9 +334,6 @@ function export_config_settings() {
 ########################################################################################################################
 function update_admin_config_host_port() {
   local templates_dir_path="${STAGING_DIR}/templates/81"
-
-  # Export the correct config settings based on single vs. multi cluster.
-  export_config_settings
 
   # Substitute the right values into the admin-config.json file based on single or multi cluster.
   admin_config_payload=$(envsubst < "${templates_dir_path}"/admin-config.json)

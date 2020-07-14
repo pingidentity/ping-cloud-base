@@ -98,10 +98,8 @@ if [ 200 = ${http_response_code} ]; then
 
             # Update admin config host
             echo "Updating the host and port of the Admin Config..."
-            admin_config_payload=$(envsubst < ${templates_dir_path}/admin-config.json)
-            admin_config_response=$(make_api_request -s -X PUT \
-                -d "${admin_config_payload}" \
-                "https://localhost:9000/pa-admin-api/v3/adminConfig")
+            update_admin_config_host_port
+
          else
 
             echo "Keypair ${CONFIG_QUERY_KP_ALIAS} already exists.  Skipping configuration of the Keypair, the Config Query HTTPS Listener, and the Admin Config."
