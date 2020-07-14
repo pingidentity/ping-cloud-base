@@ -15,17 +15,12 @@ echo "add-engine: starting add engine script"
 echo "add-engine: pingaccess config settings"
 export_config_settings
 
-is_secondary_cluster &&
-  IS_SECONDARY_CLUSTER=true ||
-  IS_SECONDARY_CLUSTER=false
-echo "add-engine: secondary-cluster: ${IS_SECONDARY_CLUSTER}"
-
 SHORT_HOST_NAME=$(hostname)
 ORDINAL=${SHORT_HOST_NAME##*-}
 
-if [ "${IS_SECONDARY_CLUSTER}" == true ]; then
+if is_multi_cluster; then
 
-  # Secondary cluster PA runtime should use cert and alias name of the cert added to PA admin is value of K8S_ACME_CERT_SECRET_NAME.
+  # Multi-cluster PA engines should use cert and alias name of the cert added to PA admin with value of K8S_ACME_CERT_SECRET_NAME.
   if test -z "${K8S_ACME_CERT_SECRET_NAME}"; then
       echo "add-engine: K8S_ACME_CERT_SECRET_NAME is not set"
       exit 1
@@ -97,7 +92,7 @@ echo "add-engine: extracting config files to conf folder"
 unzip -o engine-config.zip -d "${OUT_DIR}"/instance
 chmod 400 "${OUT_DIR}"/instance/conf/pa.jwk
 
-if [ "${IS_SECONDARY_CLUSTER}" == true ]; then
+if is_multi_cluster; then
   if ! sed -i 's/engine.admin.configuration.port.*/engine.admin.configuration.port=443/g' /opt/out/instance/conf/bootstrap.properties; then
     echo "add-engine: failed to update admin port"
     exit 1
