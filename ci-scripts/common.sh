@@ -335,6 +335,14 @@ function log_events_exist() {
     sed -E 's/-//g' |
     tr -d '\r' > "${temp_log_file}"
 
+  echo "POD LOG CONTENT"
+  cat < "${temp_log_file}"
+  echo "-------------------------"
+  echo "Profile: ${AWS_PROFILE}"
+  echo "Group:   ${LOG_GROUP_NAME}"
+  echo "Stream:  ${log_stream}"
+  echo "-------------------------"
+
   # Let the aws logs catch up to the kubectl logs in temp file
   sleep "${LOG_SYNC_SECONDS}"
 
@@ -352,7 +360,11 @@ function log_events_exist() {
     sed -E 's/\\u001B\[(([0-9]+)(;[0-9]+)*)?[m,K,H,f,J]//g' |
     sed -E 's/\\//g' |
     sed -E 's/-//g')
-
+  
+  echo "CLOUDWATCH CONTENT"
+  echo "${cwatch_log_events}"
+  echo "-------------------------"
+  
   while read -r event; do
     count=$(echo "${cwatch_log_events}" | grep -Fc "${event}")
     if test "${count}" -lt 1; then
