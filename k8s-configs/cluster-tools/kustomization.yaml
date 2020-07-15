@@ -10,3 +10,4 @@ resources:
 - monitoring
 - security
 - core-dns
+- pf-clustering

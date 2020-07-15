@@ -8,18 +8,14 @@ import os
 import botocore
 from tabulate import tabulate
 import pprint
-from common import core_dns_logging, route_53, dig, k8s
 
-DEBUG = core_dns_logging.LogLevel.DEBUG
-WARNING = core_dns_logging.LogLevel.WARNING
-ERROR = core_dns_logging.LogLevel.ERROR
-
-verbose = True if "VERBOSE" in os.environ else False 
-
-logger = core_dns_logging.CoreDnsLogger(verbose)
-dig_mgr = dig.DigManager(logger)
-k8s_mgr = k8s.K8sManager(logger)
-hosted_zone_mgr = route_53.HostedZoneManager(logger)
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+handler = logging.StreamHandler(sys.stdout)
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 # boto3.set_stream_logger('', logging.DEBUG)
 
