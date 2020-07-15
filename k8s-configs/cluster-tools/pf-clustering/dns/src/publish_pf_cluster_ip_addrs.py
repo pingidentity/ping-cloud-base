@@ -45,15 +45,14 @@ r53_client = boto3.client("route53", config=botocore_config)
 #     return processed_domain_names
 
 
-def create_fqdns(domain_to_ips):
+def create_fqdns(domains):
     pingfederate_admin = 'pingfederate-admin-0.pingfederate-admin'
     pingfederate_cluster = 'pingfederate-cluster'
 
     fqdns = []
-    for domain in domain_to_ips.keys():
-
-        fqdns.append(f"{pingfederate_admin}.{domain}")
-        fqdns.append(f"{pingfederate_cluster}.{domain}")
+    for hostname, ips in domains:
+        fqdns.append(f"{pingfederate_admin}.{hostname}")
+        fqdns.append(f"{pingfederate_cluster}.{hostname}")
 
     logger.log("PingFederate domain names to query:")
     for fqdn in fqdns:
