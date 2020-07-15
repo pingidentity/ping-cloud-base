@@ -265,33 +265,11 @@ export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
 export NAMESPACE=ping-cloud-${ENVIRONMENT_NO_HYPHEN_PREFIX}
 
 # Set the cluster type based on primary or secondary.
-DEV_CLUSTER_STATE_DIR=dev-cluster-state
+"${IS_MULTI_CLUSTER}" && test "${TENANT_DOMAIN}" != "${PRIMARY_TENANT_DOMAIN}" &&
+  CLUSTER_TYPE=secondary ||
+  CLUSTER_TYPE=
 
-if "${IS_MULTI_CLUSTER}" && test "${TENANT_DOMAIN}" != "${PRIMARY_TENANT_DOMAIN}"; then
-  CLUSTER_TYPE=secondary
-fi
-
-kustomize build "${DEV_CLUSTER_STATE_DIR}/${CLUSTER_TYPE}" |
-  envsubst '${PING_IDENTITY_DEVOPS_USER_BASE64}
-    ${PING_IDENTITY_DEVOPS_KEY_BASE64}
-    ${ENVIRONMENT}
-    ${IS_MULTI_CLUSTER}
-    ${CLUSTER_BUCKET_NAME}
-    ${REGION}
-    ${PRIMARY_REGION}
-    ${TENANT_DOMAIN}
-    ${PRIMARY_TENANT_DOMAIN}
-    ${CLUSTER_NAME}
-    ${CLUSTER_NAME_LC}
-    ${NAMESPACE}
-    ${CONFIG_REPO_BRANCH}
-    ${CONFIG_PARENT_DIR}
-    ${ARTIFACT_REPO_URL}
-    ${PING_ARTIFACT_REPO_URL}
-    ${LOG_ARCHIVE_URL}
-    ${BACKUP_URL}' > "${DEPLOY_FILE}"
-
-sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" "${DEPLOY_FILE}"
+build_dev_deploy_file "${DEPLOY_FILE}" "${CLUSTER_TYPE}"
 
 if test "${dryrun}" = 'false'; then
   echo "Deploying ${DEPLOY_FILE} to cluster ${CLUSTER_NAME}, namespace ${NAMESPACE} for tenant ${TENANT_DOMAIN}"

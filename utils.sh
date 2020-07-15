@@ -273,3 +273,66 @@ build_kustomizations_in_dir() {
 
   return ${STATUS}
 }
+
+########################################################################################################################
+# Substitute variables in all files in the provided directory.
+#
+# Arguments
+#   $1 -> The directory that contains the files where variables must be substituted.
+########################################################################################################################
+
+# The list of variables in the template files that will be substituted.
+VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
+${PING_IDENTITY_DEVOPS_KEY_BASE64}
+${ENVIRONMENT}
+${IS_MULTI_CLUSTER}
+${CLUSTER_BUCKET_NAME}
+${REGION}
+${PRIMARY_REGION}
+${TENANT_DOMAIN}
+${PRIMARY_TENANT_DOMAIN}
+${CLUSTER_NAME}
+${CLUSTER_NAME_LC}
+${NAMESPACE}
+${CONFIG_REPO_BRANCH}
+${CONFIG_PARENT_DIR}
+${ARTIFACT_REPO_URL}
+${PING_ARTIFACT_REPO_URL}
+${LOG_ARCHIVE_URL}
+${BACKUP_URL}'
+
+substitute_vars() {
+  local subst_dir=$1
+
+  for file in $(find "${subst_dir}" -type f); do
+    local old_file="${file}.bak"
+    cp "${file}" "${old_file}"
+    envsubst "${VARS}" < "${old_file}" > "${file}"
+    rm -f "${old_file}"
+  done
+}
+
+########################################################################################################################
+# Build the full Kubernetes yaml file for the dev and CI/CD environments.
+#
+# Arguments
+#   $1 -> The output filename that will contain the full manifest when the function is done.
+#   $2 -> Optional cluster type argument value of "secondary". Empty string implies primary cluster.
+########################################################################################################################
+build_dev_deploy_file() {
+  local deploy_file=$1
+  local cluster_type=$2
+
+  local build_dir='build-dir'
+  rm -rf "${build_dir}"
+
+  local dev_cluster_state_dir='dev-cluster-state'
+  cp -pr "${dev_cluster_state_dir}" "${build_dir}"
+
+  substitute_vars "${build_dir}"
+  kustomize build "${build_dir}/${cluster_type}" > "${deploy_file}"
+  rm -rf "${build_dir}"
+
+  test ! -z "${NAMESPACE}" && test "${NAMESPACE}" != 'ping-cloud' &&
+      sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" "${deploy_file}"
+}
