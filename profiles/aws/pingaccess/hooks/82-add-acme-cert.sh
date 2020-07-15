@@ -11,7 +11,9 @@ set -e
 if test -z "${K8S_ACME_CERT_SECRET_NAME}"; then
     echo "add-acme-cert: K8S_ACME_CERT_SECRET_NAME is not set skipping"
     exit 0
-fi 
+fi
+
+# FIXME: this needs to not just check if the ACME cert already exists but also whether the tls.crt has changed.
 
 # Check if alias for the cert already exists.
 echo "add-acme-cert: checking if certificate with alias '${K8S_ACME_CERT_SECRET_NAME}' already exists"

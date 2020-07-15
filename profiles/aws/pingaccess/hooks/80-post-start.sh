@@ -10,13 +10,16 @@ if test "${OPERATIONAL_MODE}" != "CLUSTERED_CONSOLE"; then
   exit 0
 fi
 
+echo "post-start: pingaccess config settings"
+export_config_settings
+
 # Remove the marker file before running post-start initialization.
 POST_START_INIT_MARKER_FILE="${OUT_DIR}/instance/post-start-init-complete"
 rm -f "${POST_START_INIT_MARKER_FILE}"
 
 # Wait until pingaccess admin localhost is available
 pingaccess_admin_wait
-  
+
 # ADMIN_CONFIGURATION_COMPLETE is used as a marker file that tracks if server was initially configured.
 #
 # If ADMIN_CONFIGURATION_COMPLETE does not exist then set initial configuration.
@@ -26,12 +29,6 @@ if ! test -f "${ADMIN_CONFIGURATION_COMPLETE}"; then
 
   echo "post-start: Starting hook: ${HOOKS_DIR}/81-import-initial-configuration.sh"
   sh "${HOOKS_DIR}/81-import-initial-configuration.sh"
-  if test $? -ne 0; then
-    exit 1
-  fi
-
-  echo "post-start: Starting hook: ${HOOKS_DIR}/82-add-acme-cert.sh"
-  sh "${HOOKS_DIR}/82-add-acme-cert.sh"
   if test $? -ne 0; then
     exit 1
   fi
@@ -47,6 +44,14 @@ elif test $(comparePasswordDiskWithVariable) -eq 0; then
 else
   echo "post-start: not changing PA admin password"
 fi
+
+# Update the admin config host
+echo "Updating the host and port of the Admin Config..."
+update_admin_config_host_port
+
+echo "post-start: Starting hook: ${HOOKS_DIR}/82-add-acme-cert.sh"
+sh "${HOOKS_DIR}/82-add-acme-cert.sh"
+test $? -ne 0 && exit 1
 
 # Upload a backup right away after starting the server.
 echo "post-start: Starting hook: ${HOOKS_DIR}/90-upload-backup-s3.sh"

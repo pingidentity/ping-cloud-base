@@ -96,10 +96,6 @@ if [ 200 = ${http_response_code} ]; then
                 -d "${config_query_payload}" \
                 "https://localhost:9000/pa-admin-api/v3/httpsListeners/${config_query_listener_id}")
 
-            # Update admin config host
-            echo "Updating the host and port of the Admin Config..."
-            update_admin_config_host_port
-
          else
 
             echo "Keypair ${CONFIG_QUERY_KP_ALIAS} already exists.  Skipping configuration of the Keypair, the Config Query HTTPS Listener, and the Admin Config."
