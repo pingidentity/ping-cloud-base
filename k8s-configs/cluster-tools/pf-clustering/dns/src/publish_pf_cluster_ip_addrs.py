@@ -17,32 +17,11 @@ dig_mgr = dig.DigManager(logger)
 k8s_mgr = k8s.K8sManager(logger)
 # hosted_zone_mgr = route_53.HostedZoneManager(logger)
 
-
 # boto3.set_stream_logger('', logging.DEBUG)
 
 custom_retries = {'total_max_attempts': 5, 'max_attempts': 5, 'mode': 'adaptive'}
 botocore_config = botocore.config.Config(retries=custom_retries)
 r53_client = boto3.client("route53", config=botocore_config)
-
-
-# def fetch_cluster_domain_names(name):
-#     logger.info(f"Fetching domain names from {name}...")
-#     records = pydig.query(name, 'TXT')
-
-#     processed_domain_names = []
-#     for record in records:
-#         domain_names = record.split(',')
-
-#         for name in domain_names:
-#             processed_domain_names.append(name.replace("\"", "").replace(" ", ""))
-
-#     logger.info("Retrieved the following domain names:")
-#     for processed_domain_name in processed_domain_names:
-#         logger.info(processed_domain_name)
-
-#     print()
-
-#     return processed_domain_names
 
 
 def create_fqdns(domains):
@@ -63,24 +42,6 @@ def create_fqdns(domains):
     return fqdns
 
 
-# def fetch_name_to_ip_address(names, query_description):
-#     logger.log(query_description)
-
-#     name_to_ip_addrs = {}
-#     for name in names:
-#         record = pydig.query(name, 'A')
-#         name_to_ip_addrs[name] = record
-
-#     logger.info("Dig query results: ")
-
-#     # tabulate behaves better after this processing
-#     sorted_names_to_addrs = sorted(name_to_ip_addrs.items())
-#     logger.info(tabulate(sorted_names_to_addrs, headers=["FQDNs", "IPs"]))
-#     print()
-
-#     return name_to_ip_addrs
-
-
 def build_resource_records(name_to_ip_addrs):
     # Filter out duplicates
     unique_ip_addrs = set()
@@ -93,7 +54,7 @@ def build_resource_records(name_to_ip_addrs):
         value = {'Value': unique_ip_addr}
         resource_records.append(value)
 
-    logger.info("Gathering IP addresses for a record set: %s", resource_records)
+    logger.log("Gathering IP addresses for a record set: %s", resource_records)
     return resource_records
 
 
@@ -216,28 +177,15 @@ def main():
     logger.log("Starting...")
     logger.log_env_vars()
 
-    # ping-cloud-mpeterson
     namespace = validate_namespace()
-
-    # mpeterson.ping-demo.com
     domain_name = validate_tenant_domain()
 
-    # namespace = 'ping-cloud-mpeterson'
-    # local_cluster_domain_name = 'ping-cloud-mpeterson.svc.cluster.local'
     hosted_zone_id = 'Z05532981SIN5R8Q3ZF9A'
     hosted_zone = '.mpeterson.ping-demo.com.'
-    # k8s_cluster_names = 'k8s-cluster-names'
 
-    # cluster_domain_names = ['ping-cloud-mpeterson.svc.cluster.local', 'ping-cloud-mpetersonsecondary.svc.cluster.local']
-    # cluster_domain_names = ['ping-cloud-mpeterson.svc.cluster.local']
-
-    # cluster_domain_names = fetch_cluster_domain_names(k8s_cluster_names + hosted_zone)
     domains = dig_mgr.get_domain_endpoints(namespace, domain_name)
-
     fqdns = create_fqdns(domains)
-
     name_to_ip_addrs = dig_mgr.fetch_name_to_ip_address(fqdns, "Query Kubernetes Core DNS to get PingFederate cluster IP addresses")
-
     update_route53(hosted_zone_id, hosted_zone, name_to_ip_addrs)
 
     logger.log("Execution completed successfully.")
