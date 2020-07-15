@@ -54,31 +54,31 @@ def create_fqdns(domain_names):
         fqdns.append(f"{pingfederate_admin}.{name}")
         fqdns.append(f"{pingfederate_cluster}.{name}")
 
-    logger.info("PingFederate domain names to query:")
+    logger.log("PingFederate domain names to query:")
     for fqdn in fqdns:
-        logger.info(fqdn)
+        logger.log(fqdn)
 
     print()
 
     return fqdns
 
 
-def fetch_name_to_ip_address(names, query_description):
-    logger.info(query_description)
+# def fetch_name_to_ip_address(names, query_description):
+#     logger.log(query_description)
 
-    name_to_ip_addrs = {}
-    for name in names:
-        record = pydig.query(name, 'A')
-        name_to_ip_addrs[name] = record
+#     name_to_ip_addrs = {}
+#     for name in names:
+#         record = pydig.query(name, 'A')
+#         name_to_ip_addrs[name] = record
 
-    logger.info("Dig query results: ")
+#     logger.info("Dig query results: ")
 
-    # tabulate behaves better after this processing
-    sorted_names_to_addrs = sorted(name_to_ip_addrs.items())
-    logger.info(tabulate(sorted_names_to_addrs, headers=["FQDNs", "IPs"]))
-    print()
+#     # tabulate behaves better after this processing
+#     sorted_names_to_addrs = sorted(name_to_ip_addrs.items())
+#     logger.info(tabulate(sorted_names_to_addrs, headers=["FQDNs", "IPs"]))
+#     print()
 
-    return name_to_ip_addrs
+#     return name_to_ip_addrs
 
 
 def build_resource_records(name_to_ip_addrs):
@@ -121,18 +121,18 @@ def route53_requires_update(existing_r53_ip_addrs, name_to_ip_addrs):
 
     if r53_records_length > 0:
         printable_r53_records = {"Route 53 Records not currently in Kubernetes Core DNS": r53_records}
-        logger.info(tabulate(printable_r53_records.items(), headers=["Record Type", "IPs"]))
+        logger.log(tabulate(printable_r53_records.items(), headers=["Record Type", "IPs"]))
         print()
 
     if kubernetes_records_length > 0:
         printable_k8s_records = {"K8s Records not currently in Route 53": kubernetes_records}
-        logger.info(tabulate(printable_k8s_records.items(), headers=["Record Type", "IPs"]))
+        logger.log(tabulate(printable_k8s_records.items(), headers=["Record Type", "IPs"]))
         print()
 
     if r53_records_length > 0 or kubernetes_records_length > 0:
         return True
 
-    logger.info("Route 53 is up-to-date with the correct IP addresses")
+    logger.log("Route 53 is up-to-date with the correct IP addresses")
     return False
 
 
@@ -140,15 +140,15 @@ def update_route53(hosted_zone_id, hosted_zone, name_to_ip_addrs):
     identifier = 'pf-cluster-ip-addrs'
     name = identifier + hosted_zone
 
-    existing_r53_ip_addrs = fetch_name_to_ip_address([name],
-                                                     "Query AWS Route 53 DNS to get published PingFederate cluster IP addresses")
+    existing_r53_ip_addrs = dig_mgr.fetch_name_to_ip_address([name],
+                                                             "Query AWS Route 53 DNS to get published PingFederate cluster IP addresses")
 
     # Compare the PingFederate cluster addresses K8s knows about to the PingFederate
     # cluster addresses published earlier to Route 53 to see if Route 53 needs
     # to be refreshed.
     requires_update = route53_requires_update(existing_r53_ip_addrs, name_to_ip_addrs)
     if requires_update:
-        logger.info("Route 53 requires an update to record set '%s'", name)
+        logger.log("Route 53 requires an update to record set '%s'", name)
 
         comment = 'PingFederate Cluster IPs'
         resource_records = build_resource_records(name_to_ip_addrs)
@@ -172,7 +172,7 @@ def update_route53(hosted_zone_id, hosted_zone, name_to_ip_addrs):
                 ]
             })
 
-        logger.info("Route 53 record set change response: ")
+        logger.log("Route 53 record set change response: ")
         pprint.pprint(response)
 
 
