@@ -45,14 +45,15 @@ r53_client = boto3.client("route53", config=botocore_config)
 #     return processed_domain_names
 
 
-def create_fqdns(domain_names):
+def create_fqdns(domain_to_ips):
     pingfederate_admin = 'pingfederate-admin-0.pingfederate-admin'
     pingfederate_cluster = 'pingfederate-cluster'
 
     fqdns = []
-    for name in domain_names:
-        fqdns.append(f"{pingfederate_admin}.{name}")
-        fqdns.append(f"{pingfederate_cluster}.{name}")
+    for domain in domain_to_ips.keys():
+
+        fqdns.append(f"{pingfederate_admin}.{domain}")
+        fqdns.append(f"{pingfederate_cluster}.{domain}")
 
     logger.log("PingFederate domain names to query:")
     for fqdn in fqdns:
@@ -140,8 +141,7 @@ def update_route53(hosted_zone_id, hosted_zone, name_to_ip_addrs):
     identifier = 'pf-cluster-ip-addrs'
     name = identifier + hosted_zone
 
-    existing_r53_ip_addrs = dig_mgr.fetch_name_to_ip_address([name],
-                                                             "Query AWS Route 53 DNS to get published PingFederate cluster IP addresses")
+    existing_r53_ip_addrs = dig_mgr.fetch_name_to_ip_address([name], "Query AWS Route 53 DNS to get published PingFederate cluster IP addresses")
 
     # Compare the PingFederate cluster addresses K8s knows about to the PingFederate
     # cluster addresses published earlier to Route 53 to see if Route 53 needs
@@ -237,8 +237,7 @@ def main():
 
     fqdns = create_fqdns(domains)
 
-    name_to_ip_addrs = fetch_name_to_ip_address(fqdns,
-                                                "Query Kubernetes Core DNS to get PingFederate cluster IP addresses")
+    name_to_ip_addrs = dig_mgr.fetch_name_to_ip_address(fqdns, "Query Kubernetes Core DNS to get PingFederate cluster IP addresses")
 
     update_route53(hosted_zone_id, hosted_zone, name_to_ip_addrs)
 
