@@ -20,7 +20,7 @@ data:
     xpack.security.http.ssl.certificate_authorities: [ "${XPACK_SECURITY_HTTP_SSL_CERTIFICATE_AUTHORITIES}" ] 
     xpack.security.http.ssl.client_authentication: "${XPACK_SECURITY_HTTP_SSL_CLIENT_AUTHENTICATION}"
     xpack.security.authc.realms.native.native1.order: 0
-    xpack.security.transport.ssl.enable: "${XPACK_SECURITY_TRANSPORT_SSL_ENABLED}"
+    xpack.security.transport.ssl.enabled: "${XPACK_SECURITY_TRANSPORT_SSL_ENABLED}"
     xpack.security.transport.ssl.key: "${XPACK_SECURITY_TRANSPORT_SSL_KEY}"
     xpack.security.transport.ssl.certificate: "${XPACK_SECURITY_TRANSPORT_SSL_CERTIFICATE}"
     xpack.security.transport.ssl.certificate_authorities: [ "${XPACK_SECURITY_TRANSPORT_SSL_CERTIFICATE_AUTHORITIES}" ]
