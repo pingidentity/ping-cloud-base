@@ -15,6 +15,14 @@ configMapGenerator:
   - name: pf-cluster-env-vars
     envs:
       - env_vars
+      -
+  - name: common
+    files:
+      - ../../core-dns/dns/src/common/__init__.py
+      - ../../core-dns/dns/src/common/core_dns_logging.py
+      - ../../core-dns/dns/src/common/dig.py
+      - ../../core-dns/dns/src/common/k8s.py
+      - ../../core-dns/dns/src/common/route_53.py
 
 generatorOptions:
   disableNameSuffixHash: true
