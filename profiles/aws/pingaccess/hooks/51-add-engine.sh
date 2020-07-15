@@ -18,6 +18,7 @@ echo "add-engine: secondary-cluster: ${is_sub_cluster}"
 
 SHORT_HOST_NAME=$(hostname)
 ORDINAL=${SHORT_HOST_NAME##*-}
+ENGINE_NAME="${PA_ENGINE_PUBLIC_HOSTNAME}:300${ORDINAL}"
 
 if [ "${is_sub_cluster}" == true ]; then
 
@@ -28,7 +29,6 @@ if [ "${is_sub_cluster}" == true ]; then
   fi
 
   ADMIN_HOST_PORT="${PA_ADMIN_PUBLIC_HOSTNAME}"
-  ENGINE_NAME="${PA_ENGINE_PUBLIC_HOSTNAME}:300${ORDINAL}"
 
   # Retrieve Engine Cert ID.
   echo "add-engine: retrieving the Engine Cert ID"
@@ -38,7 +38,6 @@ if [ "${is_sub_cluster}" == true ]; then
 
 else
   ADMIN_HOST_PORT="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9000"
-  ENGINE_NAME="${SHORT_HOST_NAME}"
 
   pingaccess_admin_wait "${ADMIN_HOST_PORT}"
 
