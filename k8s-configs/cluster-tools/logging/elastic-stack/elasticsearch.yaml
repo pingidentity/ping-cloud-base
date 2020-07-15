@@ -171,6 +171,8 @@ spec:
           value: "certs/ca/ca.crt" 
         - name: XPACK_SECURITY_TRANSPORT_SSL_ENABLED
           value: "true"
+        - name: XPACK_SECURITY_TRANSPORT_SSL_VERIFICATION_MODE
+          value: "certificate"
         - name: XPACK_SECURITY_TRANSPORT_SSL_KEY
           value: "certs/elasticsearch/elasticsearch.key"
         - name: XPACK_SECURITY_TRANSPORT_SSL_CERTIFICATE
