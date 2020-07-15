@@ -15,7 +15,7 @@ configMapGenerator:
   - name: pf-cluster-env-vars
     envs:
       - env_vars
-      -
+
   - name: common
     files:
       - ../../core-dns/dns/src/common/__init__.py
