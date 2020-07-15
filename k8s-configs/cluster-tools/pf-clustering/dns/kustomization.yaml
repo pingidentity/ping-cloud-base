@@ -16,5 +16,13 @@ configMapGenerator:
     envs:
       - env_vars
 
+  - name: common
+    files:
+      - src/common/__init__.py
+      - src/common/core_dns_logging.py
+      - src/common/dig.py
+      - src/common/k8s.py
+      - src/common/route_53.py
+
 generatorOptions:
   disableNameSuffixHash: true

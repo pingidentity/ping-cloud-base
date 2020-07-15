@@ -1,21 +1,22 @@
-#!/usr/local/bin/python3
-
 import boto3
 import pydig
-import logging
-import sys
 import os
 import botocore
 from tabulate import tabulate
 import pprint
+from common import core_dns_logging, dig, k8s
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-handler = logging.StreamHandler(sys.stdout)
-handler.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+DEBUG = core_dns_logging.LogLevel.DEBUG
+WARNING = core_dns_logging.LogLevel.WARNING
+ERROR = core_dns_logging.LogLevel.ERROR
+
+verbose = True if "VERBOSE" in os.environ else False 
+
+logger = core_dns_logging.CoreDnsLogger(verbose)
+dig_mgr = dig.DigManager(logger)
+k8s_mgr = k8s.K8sManager(logger)
+# hosted_zone_mgr = route_53.HostedZoneManager(logger)
+
 
 # boto3.set_stream_logger('', logging.DEBUG)
 
@@ -24,24 +25,24 @@ botocore_config = botocore.config.Config(retries=custom_retries)
 r53_client = boto3.client("route53", config=botocore_config)
 
 
-def fetch_cluster_domain_names(name):
-    logger.info(f"Fetching domain names from {name}...")
-    records = pydig.query(name, 'TXT')
+# def fetch_cluster_domain_names(name):
+#     logger.info(f"Fetching domain names from {name}...")
+#     records = pydig.query(name, 'TXT')
 
-    processed_domain_names = []
-    for record in records:
-        domain_names = record.split(',')
+#     processed_domain_names = []
+#     for record in records:
+#         domain_names = record.split(',')
 
-        for name in domain_names:
-            processed_domain_names.append(name.replace("\"", "").replace(" ", ""))
+#         for name in domain_names:
+#             processed_domain_names.append(name.replace("\"", "").replace(" ", ""))
 
-    logger.info("Retrieved the following domain names:")
-    for processed_domain_name in processed_domain_names:
-        logger.info(processed_domain_name)
+#     logger.info("Retrieved the following domain names:")
+#     for processed_domain_name in processed_domain_names:
+#         logger.info(processed_domain_name)
 
-    print()
+#     print()
 
-    return processed_domain_names
+#     return processed_domain_names
 
 
 def create_fqdns(domain_names):
@@ -175,10 +176,25 @@ def update_route53(hosted_zone_id, hosted_zone, name_to_ip_addrs):
         pprint.pprint(response)
 
 
-def log_env_vars():
-    logger.info("Environment variables:")
-    sorted_env_vars = sorted(os.environ.items())
-    logger.info(tabulate(sorted_env_vars, headers=["Name", "Value"]))
+def validate_tenant_domain():
+    if "TENANT_DOMAIN" in os.environ:
+        domain_name = os.environ.get("TENANT_DOMAIN")
+        logger.log(f"TENANT_DOMAIN is {domain_name}")
+        return domain_name
+    else:
+        raise ValueError("Environment variable 'TENANT_DOMAIN' is required but not found.  Exiting...")
+
+
+def validate_namespace():
+    namespace_prefix = os.environ.get("NAMESPACE_PREFIX") if "NAMESPACE_PREFIX" in os.environ else "ping-cloud"
+    logger.log(f"NAMESPACE_PREFIX is {namespace_prefix}")
+
+    # Check if namespace with prefix (eg:- ping-cloud) exists.
+    namespace = k8s_mgr.get_namespace(namespace_prefix)
+    if namespace is None:
+        raise ValueError(f"Unable to find namespace with given prefix: {namespace_prefix}")
+    
+    return namespace
 
 
 def main():
@@ -198,30 +214,35 @@ def main():
     #    - loop: dig pingfederate-0...pingfederate-n
     # 3) Combine all FQDNs + IPs
     # 4) Update route53
-    script_name = 'publish_pf_cluster_ip_addrs'
-    logger.info('Starting %s...', script_name)
+    logger.log("Starting...")
+    logger.log_env_vars()
 
-    log_env_vars()
+    # ping-cloud-mpeterson
+    namespace = validate_namespace()
+
+    # mpeterson.ping-demo.com
+    domain_name = validate_tenant_domain()
 
     # namespace = 'ping-cloud-mpeterson'
     # local_cluster_domain_name = 'ping-cloud-mpeterson.svc.cluster.local'
     hosted_zone_id = 'Z05532981SIN5R8Q3ZF9A'
     hosted_zone = '.mpeterson.ping-demo.com.'
-    k8s_cluster_names = 'k8s-cluster-names'
+    # k8s_cluster_names = 'k8s-cluster-names'
 
     # cluster_domain_names = ['ping-cloud-mpeterson.svc.cluster.local', 'ping-cloud-mpetersonsecondary.svc.cluster.local']
     # cluster_domain_names = ['ping-cloud-mpeterson.svc.cluster.local']
 
-    cluster_domain_names = fetch_cluster_domain_names(k8s_cluster_names + hosted_zone)
+    # cluster_domain_names = fetch_cluster_domain_names(k8s_cluster_names + hosted_zone)
+    domains = dig_mgr.get_domain_endpoints(namespace, domain_name)
 
-    fqdns = create_fqdns(cluster_domain_names)
+    fqdns = create_fqdns(domains)
 
     name_to_ip_addrs = fetch_name_to_ip_address(fqdns,
                                                 "Query Kubernetes Core DNS to get PingFederate cluster IP addresses")
 
     update_route53(hosted_zone_id, hosted_zone, name_to_ip_addrs)
 
-    logger.info('%s processing complete', script_name)
+    logger.log("Execution completed successfully.")
 
 
 if __name__ == "__main__":

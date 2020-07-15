@@ -32,6 +32,8 @@ spec:
                 - mountPath: /opt/publish_pf_cluster_ip_addrs.py
                   name: publish-pf-cluster-ip-addrs
                   subPath: publish_pf_cluster_ip_addrs.py
+                - mountPath: /opt/common/
+                  name: common
           restartPolicy: OnFailure
           serviceAccount: pf-cluster-ip-addrs-serviceaccount
           volumes:
@@ -39,5 +41,9 @@ spec:
               configMap:
                 defaultMode: 365
                 name: publish-pf-cluster-ip-addrs
+            - name: common
+              configMap:
+                defaultMode: 365
+                name: common
           restartPolicy: OnFailure
           serviceAccount: pf-cluster-ip-addrs-serviceaccount
