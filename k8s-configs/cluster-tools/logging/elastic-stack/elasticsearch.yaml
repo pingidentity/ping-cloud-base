@@ -172,9 +172,9 @@ spec:
         - name: XPACK_SECURITY_TRANSPORT_SSL_ENABLED
           value: "true"
         - name: XPACK_SECURITY_TRANSPORT_SSL_KEY
-          value: "certs/elasticsearch-http/elasticsearch.key"
+          value: "certs/elasticsearch/elasticsearch.key"
         - name: XPACK_SECURITY_TRANSPORT_SSL_CERTIFICATE
-          value: "certs/elasticsearch-http/elasticsearch.crt"
+          value: "certs/elasticsearch/elasticsearch.crt"
         - name: XPACK_SECURITY_TRANSPORT_SSL_CERTIFICATE_AUTHORITIES
           value: "certs/ca/ca.crt"
 
