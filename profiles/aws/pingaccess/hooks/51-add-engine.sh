@@ -18,9 +18,9 @@ export_config_settings
 SHORT_HOST_NAME=$(hostname)
 ORDINAL=${SHORT_HOST_NAME##*-}
 
-if is_multi_cluster; then
+if is_secondary_cluster; then
 
-  # Multi-cluster PA engines should use cert and alias name of the cert added to PA admin with value of K8S_ACME_CERT_SECRET_NAME.
+  # Secondary-cluster PA engines should use cert and alias name of the cert added to PA admin with value of K8S_ACME_CERT_SECRET_NAME.
   if test -z "${K8S_ACME_CERT_SECRET_NAME}"; then
       echo "add-engine: K8S_ACME_CERT_SECRET_NAME is not set"
       exit 1
