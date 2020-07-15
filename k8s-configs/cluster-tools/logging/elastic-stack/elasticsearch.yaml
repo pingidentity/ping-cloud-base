@@ -176,7 +176,7 @@ spec:
         - name: XPACK_SECURITY_TRANSPORT_SSL_CERTIFICATE
           value: "certs/elasticsearch-http/elasticsearch-http.crt"
         - name: XPACK_SECURITY_TRANSPORT_SSL_CERTIFICATE_AUTHORITIES
-          values: "certs/ca/ca.crt"
+          value: "certs/ca/ca.crt"
 
 
         volumeMounts:
