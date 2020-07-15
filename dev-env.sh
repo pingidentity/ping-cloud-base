@@ -198,7 +198,7 @@ export CLUSTER_NAME=${TENANT_NAME}
 export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
 
 export NAMESPACE=ping-cloud-${ENVIRONMENT_NO_HYPHEN_PREFIX}
-DEPLOY_FILE=/tmp/deploy.yaml
+#DEPLOY_FILE=/tmp/deploy.yaml
 
 kustomize build test |
   envsubst '${PING_IDENTITY_DEVOPS_USER_BASE64}

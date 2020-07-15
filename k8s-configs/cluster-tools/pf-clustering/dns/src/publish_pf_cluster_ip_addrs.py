@@ -4,7 +4,7 @@ import os
 import botocore
 from tabulate import tabulate
 import pprint
-from common import core_dns_logging, dig, k8s
+from common import core_dns_logging, route_53, dig, k8s
 
 DEBUG = core_dns_logging.LogLevel.DEBUG
 WARNING = core_dns_logging.LogLevel.WARNING
@@ -15,7 +15,7 @@ verbose = True if "VERBOSE" in os.environ else False
 logger = core_dns_logging.CoreDnsLogger(verbose)
 dig_mgr = dig.DigManager(logger)
 k8s_mgr = k8s.K8sManager(logger)
-# hosted_zone_mgr = route_53.HostedZoneManager(logger)
+hosted_zone_mgr = route_53.HostedZoneManager(logger)
 
 # boto3.set_stream_logger('', logging.DEBUG)
 
@@ -97,7 +97,7 @@ def route53_requires_update(existing_r53_ip_addrs, name_to_ip_addrs):
     return False
 
 
-def update_route53(hosted_zone_id, hosted_zone, name_to_ip_addrs):
+def update_route53(domain_name, name_to_ip_addrs):
     identifier = 'pf-cluster-ip-addrs'
     name = identifier + hosted_zone
 
@@ -112,6 +112,17 @@ def update_route53(hosted_zone_id, hosted_zone, name_to_ip_addrs):
 
         comment = 'PingFederate Cluster IPs'
         resource_records = build_resource_records(name_to_ip_addrs)
+
+        # Get hosted zone id matching the domain name
+        # hosted_zone_id = hosted_zone_mgr.fetch_hosted_zone_id(domain_name)
+
+        # hosted_zone_mgr.update_resource_record_sets(
+        #     hosted_zone_id,
+        #     f"{endpoint_domain}",
+        #     60,
+        #     kube_dns_endpoints,
+        #     "Multi-Region Kubernetes DNS IPs"
+        # )
 
         response = r53_client.change_resource_record_sets(
             HostedZoneId=hosted_zone_id,
@@ -156,37 +167,59 @@ def validate_namespace():
     
     return namespace
 
+# Goal:
+#
+# The objective of this script is to collate the IP addresses of the PingFederate Admin 
+# and all of the PingFederate engines across all regions and publish them as an A record
+# to the AWS Route 53 Hosted Zone for the local region:
+#
+# pf-cluster-ip-addrs.mpeterson.ping-demo.com.   10.62.32.34
+#                                                10.62.6.188
+#                                                10.62.29.125 
+#
+# Each PingFederate engine then will look for pf-cluster-ip-addrs in it's own Hosted Zone
+# and pass all of the known IPs it's own JGroups so it can join the cluster.
+#
+#
+# Assumptions:
+# - Route 53 has a TXT record entry like this:
+#
+#   multi-cluster-domains.ping-cloud-mpeterson.mpeterson.ping-demo.com ->
+#         "ping-cloud-mpetersonsecondary-endpoints.mpetersonsecondary.ping-demo.com"
+#         "ping-cloud-mpeterson-endpoints.mpeterson.ping-demo.com"
+#
+# 1) Query the local AWS Route 53 Hosted Zone to get all of the TXT entries for multi-cluster-domains.ping-cloud-mpeterson.mpeterson.ping-demo.com.
+#    * This tells the script how many regions there are
+#
+# 2) Use Dig to query the coredns forwarding routes to get the IPs for all non-local clusters.  For example,
+#    if this cronjob is running in the primary region it would look up the core :
+#    ping-cloud-mpetersonsecondary-endpoints.mpetersonsecondary.ping-demo.com  ['10.62.21.243', '10.62.61.37']
 
+# 1) Query kubernetes nameserver for local names:
+#  - if deployment: dig pingfederate-service?  pingfederate-cluster contains all pf endpoints
+#  - if stateful set:
+#    - if isPrimary: dig pingfederate-admin-0
+#    - loop: dig pingfederate-0...pingfederate-n
+#
+# 2) Query local k8s dns for each other region:
+#  - if deployment: dig pingfederate-service.namespace?  pingfederate-cluster.namespace contains all pf endpoints
+#  - if stateful set:
+#    - dig pingfederate-admin-0
+#    - loop: dig pingfederate-0...pingfederate-n
+# 3) Combine all FQDNs + IPs
+# 4) Update route53
 def main():
-    # Assumptions:
-    # - passed a list of cluster names
-    # - passed a boolean isPrimary?
-    #
-    # 1) Query kubernetes nameserver for local names:
-    #  - if deployment: dig pingfederate-service?  pingfederate-cluster contains all pf endpoints
-    #  - if stateful set:
-    #    - if isPrimary: dig pingfederate-admin-0
-    #    - loop: dig pingfederate-0...pingfederate-n
-    # 2) Query local k8s dns for each other region:
-    #  - if deployment: dig pingfederate-service.namespace?  pingfederate-cluster.namespace contains all pf endpoints
-    #  - if stateful set:
-    #    - dig pingfederate-admin-0
-    #    - loop: dig pingfederate-0...pingfederate-n
-    # 3) Combine all FQDNs + IPs
-    # 4) Update route53
+    
     logger.log("Starting...")
     logger.log_env_vars()
 
     namespace = validate_namespace()
     domain_name = validate_tenant_domain()
 
-    hosted_zone_id = 'Z05532981SIN5R8Q3ZF9A'
-    hosted_zone = '.mpeterson.ping-demo.com.'
-
     domains = dig_mgr.get_domain_endpoints(namespace, domain_name)
     fqdns = create_fqdns(domains)
     name_to_ip_addrs = dig_mgr.fetch_name_to_ip_address(fqdns, "Query Kubernetes Core DNS to get PingFederate cluster IP addresses")
-    update_route53(hosted_zone_id, hosted_zone, name_to_ip_addrs)
+    update_route53(domain_name, name_to_ip_addrs)
 
     logger.log("Execution completed successfully.")
 
