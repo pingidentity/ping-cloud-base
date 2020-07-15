@@ -7,6 +7,9 @@ data:
   instances.yml: |
     instances:
     - name: "elasticsearch"
+      dns:
+      - "elasticsearch"
+      - "es-cluster-0.elasticsearch"
     - name: "enrichment-bootstrap"
     - name: "logstash"
   instances-http.yml: |
