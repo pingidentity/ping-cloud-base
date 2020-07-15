@@ -39,7 +39,7 @@ kustomize build "${PROJECT_DIR}"/test |
     ${BACKUP_URL}' > ${DEPLOY_FILE}
 
 log "Deploy file contents:"
-cat ${DEPLOY_FILE}
+#cat ${DEPLOY_FILE}
 
 # Append the branch name to the ping-cloud namespace to make it unique. It's
 # okay for the common cluster tools to just be deployed once to the cluster.
