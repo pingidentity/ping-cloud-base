@@ -69,7 +69,12 @@ function export_config_settings() {
     export PD_LDAP_PORT="${LDAPS_PORT}"
   fi
 
+  is_primary_cluster &&
+    PRIMARY_CLUSTER=true ||
+    PRIMARY_CLUSTER=false
+
   echo "MULTI_CLUSTER - ${MULTI_CLUSTER}"
+  echo "PRIMARY_CLUSTER - ${PRIMARY_CLUSTER}"
   echo "LDAP_HOST_PORT - ${PD_PUBLIC_HOSTNAME}:${PD_LDAP_PORT}"
 }
 

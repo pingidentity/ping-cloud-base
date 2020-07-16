@@ -101,7 +101,12 @@ function export_config_settings() {
     export PF_ADMIN_HOST_PORT="${PINGFEDERATE_ADMIN_SERVER}:${PF_ADMIN_PORT}"
   fi
 
+  is_primary_cluster &&
+    PRIMARY_CLUSTER=true ||
+    PRIMARY_CLUSTER=false
+
   echo "MULTI_CLUSTER - ${MULTI_CLUSTER}"
+  echo "PRIMARY_CLUSTER - ${PRIMARY_CLUSTER}"
   echo "PF_ADMIN_HOST_PORT - ${PF_ADMIN_HOST_PORT}"
 }
 
