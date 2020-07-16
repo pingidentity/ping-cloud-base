@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex
+set -x
 
 # Source common environment variables
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
@@ -16,9 +16,6 @@ export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEV
 # Deploy the configuration to Kubernetes
 DEPLOY_FILE=/tmp/deploy.yaml
 build_dev_deploy_file "${DEPLOY_FILE}"
-
-log "Deploy file contents:"
-#cat "${DEPLOY_FILE}"
 
 kubectl apply -f "${DEPLOY_FILE}"
 
