@@ -332,19 +332,22 @@ function export_config_settings() {
   fi
 
   if is_secondary_cluster; then
+    PRIMARY_CLUSTER=false
     export ADMIN_HOST_PORT="${PA_ADMIN_PUBLIC_HOSTNAME}:443"
     export CLUSTER_CONFIG_HOST="${PA_CLUSTER_PUBLIC_HOSTNAME}"
     export CLUSTER_CONFIG_PORT=443
   else
+    PRIMARY_CLUSTER=true
     export ADMIN_HOST_PORT="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9000"
     export CLUSTER_CONFIG_HOST="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}"
     export CLUSTER_CONFIG_PORT=9090
   fi
 
   echo "MULTI_CLUSTER - ${MULTI_CLUSTER}"
+  echo "PRIMARY_CLUSTER - ${PRIMARY_CLUSTER}"
+  echo "ENGINE_NAME - ${ENGINE_NAME}"
   echo "CLUSTER_CONFIG_HOST_PORT - ${CLUSTER_CONFIG_HOST}:${CLUSTER_CONFIG_PORT}"
   echo "ADMIN_HOST_PORT - ${ADMIN_HOST_PORT}"
-  echo "ENGINE_NAME - ${ENGINE_NAME}"
 }
 
 ########################################################################################################################
