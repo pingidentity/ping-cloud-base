@@ -7,24 +7,33 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-# Custom Plugins
-SAMPLE_RULES="sample-rules"
-SAMPLE_RULES_VERSION="6.0.2"
-SAMPLE_SITE_AUTH="sample-site-authenticators"
-SAMPLE_SITE_AUTH_VERSION="6.0.2"
-SAMPLE_SITE_AUTH_VERSION_UPGRADE="6.0.3"
+oneTimeSetUp() {
+  readonly SAMPLE_RULES="sample-rules"
+  readonly SAMPLE_RULES_VERSION="6.0.2"
+  readonly SAMPLE_SITE_AUTH="sample-site-authenticators"
+  readonly SAMPLE_SITE_AUTH_VERSION="6.0.2"
+  readonly SAMPLE_SITE_AUTH_VERSION_UPGRADE="6.0.3"
+  readonly PRODUCT_NAME=pingaccess
 
-TEMP_FILE=$(mktemp)
-PRODUCT_NAME=pingaccess
-SERVER=
-CONTAINER=
+  TEMP_FILE=$(mktemp)
+
+  ENGINE_SERVERS=$( kubectl get pod -o name -n "${NAMESPACE}" -l role=${PRODUCT_NAME}-engine | grep ${PRODUCT_NAME} | cut -d/ -f2)
+
+  # Prepend admin server to list of runtime engine servers.
+  SERVERS="${PRODUCT_NAME}-admin-0 ${ENGINE_SERVERS}"
+}
+
+oneTimeTearDown() {
+  unset SERVERS
+  unset ENGINE_SERVERS
+  unset TEMP_FILE
+}
 
 # Helper Methods
 set_artifact_list_json_file() {
   kubectl cp ${TEMP_FILE} "${SERVER}":/opt/staging/artifacts/artifact-list.json  -c "${CONTAINER}" -n "${NAMESPACE}"
   kubectl exec "${SERVER}" -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c "cat /opt/staging/artifacts/artifact-list.json"
 }
-
 run_artifact_script() {
   # Set ARTIFACT_REPO_URL to "s3://ci-cd-artifacts-bucket" before running artifact script.
   # This bucket will always maintain the custom plugins to execute test.
@@ -33,7 +42,6 @@ run_artifact_script() {
     /opt/staging/hooks/10-download-artifact.sh" > /dev/null 2>&1
   return ${?}
 }
-
 cleanup_artifacts() {
   kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c \
     "rm /opt/out/instance/lib/${SAMPLE_RULES}-${SAMPLE_RULES_VERSION}.jar" > /dev/null 2>&1
@@ -46,260 +54,274 @@ cleanup_artifacts() {
 
 # Validate when artifact JSON is an empty list.
 # Script is expected to ignore JSON and exit with the non-status code 0.
-empty_json_test() {
+testEmptyJson() {
   local expected_status_code=0
   local actual_status_code=
 
   log "Test empty JSON list"
+  for SERVER in ${SERVERS}; do
 
-  cat > ${TEMP_FILE} <<-EOF
-  []
+    # Set the container name.
+    test "${SERVER}" == "${PRODUCT_NAME}-admin-0" && CONTAINER="${PRODUCT_NAME}-admin" || CONTAINER="${PRODUCT_NAME}"
+
+    log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
+
+    cat > ${TEMP_FILE} <<-EOF
+    []
 EOF
 
-  # Set file to empty list.
-  set_artifact_list_json_file
-  
-  # Run artifact script and capture actual status code from script.
-  run_artifact_script
-  actual_status_code=${?}
+    # Set file to empty list.
+    set_artifact_list_json_file
+    
+    # Run artifact script and capture actual status code from script.
+    run_artifact_script
+    actual_status_code=${?}
 
-  # Return 0 if the actual status code from an empty JSON is equal to the expected.
-  test ${actual_status_code} -eq ${expected_status_code} && return 0
+    assertEquals "empty_json_test test failed" ${actual_status_code} ${expected_status_code}
 
-  log "empty_json_test test failed"
-  return 1
+  done
 }
 
 # Validate when artifact JSON is invalid.
 # Script is expected to terminate and exit with the error code 1.
-invalid_json_test() {
+testInvalidJson() {
   local expected_status_code=1
   local actual_status_code=
 
   log "Test invalid JSON"
+  for SERVER in ${SERVERS}; do
 
-  cat > ${TEMP_FILE} <<-EOF
-  [{"name" "${SAMPLE_RULES}"}]
+    # Set the container name.
+    test "${SERVER}" == "${PRODUCT_NAME}-admin-0" && CONTAINER="${PRODUCT_NAME}-admin" || CONTAINER="${PRODUCT_NAME}"
+
+    log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
+
+    cat > ${TEMP_FILE} <<-EOF
+    [{"name" "${SAMPLE_RULES}"}]
 EOF
 
-  # Set file to invalid JSON.
-  set_artifact_list_json_file
+    # Set file to invalid JSON.
+    set_artifact_list_json_file
 
-  # Run artifact script and capture actual status code from script.
-  run_artifact_script
-  actual_status_code=${?}
+    # Run artifact script and capture actual status code from script.
+    run_artifact_script
+    actual_status_code=${?}
 
-  # Return 0 if the actual status code from an invalid JSON is is equal to the expected.
-  test ${actual_status_code} -eq ${expected_status_code} && return 0
+    # Return 0 if the actual status code from an invalid JSON is is equal to the expected.
+    assertEquals "invalid_json_test failed" ${actual_status_code} ${expected_status_code}
 
-  log "invalid_json_test failed"
-  return 1
+  done
 }
 
 # Validate when artifact JSON has duplicates.
 # Script is expected to terminate and exit with the error code 1.
-duplicate_json_test() {
+testDuplicateJson() {
   local expected_status_code=1
   local actual_status_code=
 
   log "Test duplicate artifacts"
+  for SERVER in ${SERVERS}; do
 
-  cat > ${TEMP_FILE} <<-EOF
-  [
-    {
-      "name": "${SAMPLE_RULES}",
-      "version": "${SAMPLE_RULES_VERSION}"
-    },
-    {
-      "name": "${SAMPLE_RULES}",
-      "version": "${SAMPLE_RULES_VERSION}"
-    }
-  ]
+    # Set the container name.
+    test "${SERVER}" == "${PRODUCT_NAME}-admin-0" && CONTAINER="${PRODUCT_NAME}-admin" || CONTAINER="${PRODUCT_NAME}"
+
+    log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
+
+    cat > ${TEMP_FILE} <<-EOF
+    [
+      {
+        "name": "${SAMPLE_RULES}",
+        "version": "${SAMPLE_RULES_VERSION}"
+      },
+      {
+        "name": "${SAMPLE_RULES}",
+        "version": "${SAMPLE_RULES_VERSION}"
+      }
+    ]
 EOF
 
-  # Set file with duplicate artifacts.
-  set_artifact_list_json_file
+    # Set file with duplicate artifacts.
+    set_artifact_list_json_file
 
-  # Run artifact script and capture actual status code from script.
-  run_artifact_script
-  actual_status_code=${?}
+    # Run artifact script and capture actual status code from script.
+    run_artifact_script
+    actual_status_code=${?}
 
-  # Return 0 if the actual status code of duplicates in JSON is equal to the expected.
-  test ${actual_status_code} -eq ${expected_status_code} && return 0
+    # Return 0 if the actual status code of duplicates in JSON is equal to the expected.
+    assertEquals "duplicate_json_test failed" ${actual_status_code} ${expected_status_code}
 
-  log "duplicate_json_test failed"
-  return 1
+  done
 }
 
 # Validate when artifact JSON is missing plugin name.
 # Script is expected to terminate and exit with the error code 1.
-missing_name_json_test() {
+testMissingNameJson() {
   local expected_status_code=1
   local actual_status_code=
 
   log "Test missing artifact name in JSON"
+  for SERVER in ${SERVERS}; do
 
-  cat > ${TEMP_FILE} <<-EOF
-  [
-    {
-      "version": "${SAMPLE_RULES_VERSION}"
-    }
-  ]
+    # Set the container name.
+    test "${SERVER}" == "${PRODUCT_NAME}-admin-0" && CONTAINER="${PRODUCT_NAME}-admin" || CONTAINER="${PRODUCT_NAME}"
+
+    log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
+
+    cat > ${TEMP_FILE} <<-EOF
+    [
+      {
+        "version": "${SAMPLE_RULES_VERSION}"
+      }
+    ]
 EOF
 
-  # Set file without artifact name.
-  set_artifact_list_json_file
+    # Set file without artifact name.
+    set_artifact_list_json_file
 
-  # Run artifact script and capture actual status code from script.
-  run_artifact_script
-  actual_status_code=${?}
+    # Run artifact script and capture actual status code from script.
+    run_artifact_script
+    actual_status_code=${?}
 
-  # Return 0 if the actual status code of missing name in JSON is equal to the expected.
-  test ${actual_status_code} -eq ${expected_status_code} && return 0
+    # Return 0 if the actual status code of missing name in JSON is equal to the expected.
+    assertEquals "missing_name_json_test failed" ${actual_status_code} ${expected_status_code}
 
-  log "missing_name_json_test failed"
-  return 1
+  done
 }
 
 # Validate when artifact JSON is missing plugin version.
 # Script is expected to terminate and exit with the error code 1.
-missing_version_json_test() {
+testMissingVersionJson() {
   local expected_status_code=1
   local actual_status_code=
 
   log "Test missing artifact version in JSON"
+  for SERVER in ${SERVERS}; do
 
-  cat > ${TEMP_FILE} <<-EOF
-  [
-    {
-      "name": "${SAMPLE_RULES}"
-    }
-  ]
+    # Set the container name.
+    test "${SERVER}" == "${PRODUCT_NAME}-admin-0" && CONTAINER="${PRODUCT_NAME}-admin" || CONTAINER="${PRODUCT_NAME}"
+
+    log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
+
+    cat > ${TEMP_FILE} <<-EOF
+    [
+      {
+        "name": "${SAMPLE_RULES}"
+      }
+    ]
 EOF
 
-  # Set file without artifact version.
-  set_artifact_list_json_file
+    # Set file without artifact version.
+    set_artifact_list_json_file
 
-  # Run artifact script and capture actual status code from script.
-  run_artifact_script
-  actual_status_code=${?}
+    # Run artifact script and capture actual status code from script.
+    run_artifact_script
+    actual_status_code=${?}
 
-  # Return 0 if the actual status code of missing version in JSON is equal to the expected.
-  test ${actual_status_code} -eq ${expected_status_code} && return 0
+    # Return 0 if the actual status code of missing version in JSON is equal to the expected.
+    assertEquals "missing_version_json_test failed" ${actual_status_code} ${expected_status_code}
 
-  log "missing_version_json_test failed"
-  return 1
+  done
 }
 
 # Deploy 2 custom plugins.
 # Script is expected to successfully deploy plugins and exit with the non-status code 0.
-deploy_valid_artifact_test() {
+testDeployValidArtifact() {
   local expected_status_code=0
   local actual_status_code_script=
   local actual_status_code_artifact_deploy=
 
   log "Test valid artifact deployment"
+  for SERVER in ${SERVERS}; do
 
-  cat > ${TEMP_FILE} <<-EOF
-  [
-    {
-      "name": "${SAMPLE_RULES}",
-      "version": "${SAMPLE_RULES_VERSION}"
-    },
-    {
-      "name": "${SAMPLE_SITE_AUTH}",
-      "version": "${SAMPLE_SITE_AUTH_VERSION}"
-    }
-  ]
+    # Set the container name.
+    test "${SERVER}" == "${PRODUCT_NAME}-admin-0" && CONTAINER="${PRODUCT_NAME}-admin" || CONTAINER="${PRODUCT_NAME}"
+
+    log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
+
+    cat > ${TEMP_FILE} <<-EOF
+    [
+      {
+        "name": "${SAMPLE_RULES}",
+        "version": "${SAMPLE_RULES_VERSION}"
+      },
+      {
+        "name": "${SAMPLE_SITE_AUTH}",
+        "version": "${SAMPLE_SITE_AUTH_VERSION}"
+      }
+    ]
 EOF
 
-  # Cleanup custom artifacts from /opt/out/instance/lib.
-  cleanup_artifacts
+    # Cleanup custom artifacts from /opt/out/instance/lib.
+    cleanup_artifacts
 
-  # Set file to valid artifact plugins.
-  set_artifact_list_json_file
+    # Set file to valid artifact plugins.
+    set_artifact_list_json_file
 
-  # Run artifact script and capture actual status code from script.
-  run_artifact_script
-  actual_status_code_script=${?}
+    # Run artifact script and capture actual status code from script.
+    run_artifact_script
+    actual_status_code_script=${?}
 
-  # Search for artifact plugin in /lib directory and capture status code.
-  kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c \
-  "test -f /opt/out/instance/lib/${SAMPLE_RULES}-${SAMPLE_RULES_VERSION}.jar && 
-   test -f /opt/out/instance/lib/${SAMPLE_SITE_AUTH}-${SAMPLE_SITE_AUTH_VERSION}.jar" > /dev/null 2>&1
-  actual_status_code_artifact_deploy=${?}
+    # Search for artifact plugin in /lib directory and capture status code.
+    kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c \
+    "test -f /opt/out/instance/lib/${SAMPLE_RULES}-${SAMPLE_RULES_VERSION}.jar && 
+    test -f /opt/out/instance/lib/${SAMPLE_SITE_AUTH}-${SAMPLE_SITE_AUTH_VERSION}.jar" > /dev/null 2>&1
+    actual_status_code_artifact_deploy=${?}
 
-  # Return 0 if the actual status code of deploying valid artifacts is equal to the expected.
-  test ${actual_status_code_script} -eq ${expected_status_code} && 
-  test ${actual_status_code_artifact_deploy} -eq ${expected_status_code} && return 0
+    # Return 0 if the actual status code of deploying valid artifacts is equal to the expected.
+    assertEquals ${actual_status_code_script} ${expected_status_code}
+    assertEquals ${actual_status_code_artifact_deploy} ${expected_status_code}
 
-  log "deploy_valid_artifact_test failed"
-  return 1
+  done
 }
 
 # Upgrade custom plugin.
 # Script is expected to successfully upgrade plugin and exit with the non-status code 0.
-upgrade_artifact_test() {
-
+testUpgradeArtifactTest() {
   local expected_status_code=0
   local actual_status_code_script=
   local actual_status_code_artifact_deploy=
 
   log "Test upgrade artifact deployment"
+  for SERVER in ${SERVERS}; do
 
-  cat > ${TEMP_FILE} <<-EOF
-  [
-    {
-      "name": "${SAMPLE_SITE_AUTH}",
-      "version": "${SAMPLE_SITE_AUTH_VERSION_UPGRADE}"
-    }
-  ]
+    # Set the container name.
+    test "${SERVER}" == "${PRODUCT_NAME}-admin-0" && CONTAINER="${PRODUCT_NAME}-admin" || CONTAINER="${PRODUCT_NAME}"
+
+    log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
+
+    cat > ${TEMP_FILE} <<-EOF
+    [
+      {
+        "name": "${SAMPLE_SITE_AUTH}",
+        "version": "${SAMPLE_SITE_AUTH_VERSION_UPGRADE}"
+      }
+    ]
 EOF
 
-  # Set file to upgraded artifact plugin.
-  set_artifact_list_json_file
+    # Set file to upgraded artifact plugin.
+    set_artifact_list_json_file
 
-  # Run artifact script and capture actual status code from script.
-  run_artifact_script
-  actual_status_code_script=${?}
+    # Run artifact script and capture actual status code from script.
+    run_artifact_script
+    actual_status_code_script=${?}
 
-  # Search for upgraded artifact plugin in /lib directory and capture status code.
-  kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c \
-    "test -f /opt/out/instance/lib/${SAMPLE_SITE_AUTH}-${SAMPLE_SITE_AUTH_VERSION_UPGRADE}.jar" > /dev/null 2>&1
-  actual_status_code_artifact_deploy=${?}
+    # Search for upgraded artifact plugin in /lib directory and capture status code.
+    kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c \
+      "test -f /opt/out/instance/lib/${SAMPLE_SITE_AUTH}-${SAMPLE_SITE_AUTH_VERSION_UPGRADE}.jar" > /dev/null 2>&1
+    actual_status_code_artifact_deploy=${?}
 
-  # Return 0 if the actual status code of upgrading artifact is equal to the expected.
-  test ${actual_status_code_script} -eq ${expected_status_code} && 
-  test ${actual_status_code_artifact_deploy} -eq ${expected_status_code} && return 0
+    # Return 0 if the actual status code of upgrading artifact is equal to the expected.
+    assertEquals ${actual_status_code_script} ${expected_status_code}
+    assertEquals ${actual_status_code_artifact_deploy} ${expected_status_code}
 
-  log "upgrade_artifact_test failed"
-  return 1
+  done
 }
 
-ENGINE_SERVERS=$( kubectl get pod -o name -n "${NAMESPACE}" -l role=${PRODUCT_NAME}-engine | grep ${PRODUCT_NAME} | cut -d/ -f2)
+# When arguments are passed to a script you must
+# consume all of them before shunit is invoked
+# or your script won't run.  For integration
+# tests, you need this line.
+shift $#
 
-# Prepend admin server to list of runtime engine servers.
-SERVERS="${PRODUCT_NAME}-admin-0 ${ENGINE_SERVERS}"
-
-STATUS=0
-for SERVER in ${SERVERS}; do
-
-  # Set the container name.
-  test "${SERVER}" == "${PRODUCT_NAME}-admin-0" && CONTAINER="${PRODUCT_NAME}-admin" || CONTAINER="${PRODUCT_NAME}"
-
-  log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
-
-  invalid_json_test; test ${?} -ne 0 && STATUS=1
-  duplicate_json_test; test ${?} -ne 0 && STATUS=1
-  missing_name_json_test; test ${?} -ne 0 && STATUS=1
-  missing_version_json_test; test ${?} -ne 0 && STATUS=1
-  empty_json_test; test ${?} -ne 0 && STATUS=1
-  deploy_valid_artifact_test; test ${?} -ne 0 && STATUS=1
-  upgrade_artifact_test; test ${?} -ne 0 && STATUS=1
-
-done
-
-rm ${TEMP_FILE}
-# Fail if any of the tests above fails within any server.
-test ${STATUS} -ne 0 && exit ${STATUS}
-log "${PRODUCT_NAME} artifact-test.sh passed"
+# load shunit
+. ${SHUNIT_PATH}
