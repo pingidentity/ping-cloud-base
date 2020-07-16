@@ -18,7 +18,7 @@ DEPLOY_FILE=/tmp/deploy.yaml
 build_dev_deploy_file "${DEPLOY_FILE}"
 
 log "Deploy file contents:"
-cat "${DEPLOY_FILE}"
+#cat "${DEPLOY_FILE}"
 
 kubectl apply -f "${DEPLOY_FILE}"
 
