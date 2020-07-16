@@ -59,7 +59,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: pingdirectory-csd-uploader
-        image: pingidentity/pingdirectory:2003-8.0.0.1
+        image: pingidentity/pingdirectory:2006-8.1.0.0
         command:
         - /opt/in/upload.sh
         volumeMounts:

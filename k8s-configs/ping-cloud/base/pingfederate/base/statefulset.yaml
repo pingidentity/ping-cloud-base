@@ -55,7 +55,7 @@ spec:
             name: pingfederate-environment-variables
       containers:
       - name: pingfederate-admin
-        image: pingidentity/pingfederate:2003-10.0.1
+        image: pingidentity/pingfederate:2006-10.0.4
         imagePullPolicy: IfNotPresent
         env:
         - name: OPERATIONAL_MODE
