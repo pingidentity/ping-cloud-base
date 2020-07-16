@@ -92,6 +92,17 @@ echo "add-engine: extracting config files to conf folder"
 unzip -o engine-config.zip -d "${OUT_DIR}"/instance
 chmod 400 "${OUT_DIR}"/instance/conf/pa.jwk
 
+if is_secondary_cluster; then
+  if ! sed -i 's/engine.admin.configuration.port.*/engine.admin.configuration.port=443/g' /opt/out/instance/conf/bootstrap.properties; then
+    echo "add-engine: failed to update admin port"
+    exit 1
+  fi
+  if ! sed -i "s/engine.admin.configuration.host.*/engine.admin.configuration.host=${PA_ADMIN_PUBLIC_HOSTNAME}/g" /opt/out/instance/conf/bootstrap.properties; then
+    echo "add-engine: failed to update admin host"
+    exit 1
+  fi
+fi
+
 echo "add-engine: cleaning up zip"
 rm engine-config.zip
 
