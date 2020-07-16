@@ -156,7 +156,7 @@ function configure_tcp_xml() {
             write_data_on_find=\"true\" />"
   else
     export DNS_PING="<dns.DNS_PING \
-         dns_query="${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local" />"
+         dns_query=\"${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local\" />"
   fi
 
   mv tcp.xml tcp.xml.subst
