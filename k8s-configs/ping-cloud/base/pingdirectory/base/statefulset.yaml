@@ -75,7 +75,7 @@ spec:
           subPath: init.sh
       containers:
       - name: pingdirectory
-        image: pingidentity/pingdirectory:2003-8.0.0.1
+        image: pingidentity/pingdirectory:2006-8.1.0.0
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 1389
