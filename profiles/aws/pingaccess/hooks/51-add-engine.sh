@@ -93,7 +93,7 @@ unzip -o engine-config.zip -d "${OUT_DIR}"/instance
 chmod 400 "${OUT_DIR}"/instance/conf/pa.jwk
 
 if is_secondary_cluster; then
-  if ! sed -i 's/engine.admin.configuration.port.*/engine.admin.configuration.port=443/g' /opt/out/instance/conf/bootstrap.properties; then
+  if ! sed -i "s/engine.admin.configuration.port.*/engine.admin.configuration.port=${CLUSTER_CONFIG_PORT}/g" /opt/out/instance/conf/bootstrap.properties; then
     echo "add-engine: failed to update admin port"
     exit 1
   fi
