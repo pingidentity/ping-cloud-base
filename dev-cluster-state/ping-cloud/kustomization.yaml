@@ -111,20 +111,6 @@ patchesJson6902:
       path: /spec/rules/0/host
       value: pingaccess-admin${ENVIRONMENT}.${TENANT_DOMAIN}
 
-# pingaccess cluster config
-- target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: pingaccess-cluster-ingress
-  patch: |-
-    - op: replace
-      path: /spec/tls/0/hosts/0
-      value: pingaccess-cluster${ENVIRONMENT}.${TENANT_DOMAIN}
-    - op: replace
-      path: /spec/rules/0/host
-      value: pingaccess-cluster${ENVIRONMENT}.${TENANT_DOMAIN}
-
 # FIXME: add this once PDO-1114 is implemented
 # pingdirectory put ldaps on public and change the hostname
 #- target:
