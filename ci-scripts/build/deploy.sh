@@ -5,44 +5,17 @@ set -ex
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 . ${SCRIPT_HOME}/../common.sh
 
+pushd "${PROJECT_DIR}"
+
 # Configure kube config, unless skipped
 configure_kube
 
 export PING_IDENTITY_DEVOPS_USER_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_USER}")
 export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_KEY}")
 
-# Set the cluster-type to "parent" - we only have one CI/CD cluster.
-DEV_CLUSTER_STATE_DIR="${PROJECT_DIR}"/test
-
 # Deploy the configuration to Kubernetes
 DEPLOY_FILE=/tmp/deploy.yaml
-kustomize build "${DEV_CLUSTER_STATE_DIR}" |
-  envsubst '${PING_IDENTITY_DEVOPS_USER_BASE64}
-    ${PING_IDENTITY_DEVOPS_KEY_BASE64}
-    ${ENVIRONMENT}
-    ${TENANT_DOMAIN}
-    ${CLUSTER_NAME}
-    ${CLUSTER_NAME_LC}
-    ${REGION}
-    ${NAMESPACE}
-    ${CONFIG_REPO_BRANCH}
-    ${CONFIG_PARENT_DIR}
-    ${PD_PARENT_PUBLIC_HOSTNAME}
-    ${PF_ADMIN_PUBLIC_HOSTNAME}
-    ${PA_ADMIN_PUBLIC_HOSTNAME}
-    ${PA_CLUSTER_PUBLIC_HOSTNAME}
-    ${ARTIFACT_REPO_URL}
-    ${PING_ARTIFACT_REPO_URL}
-    ${LOG_ARCHIVE_URL}
-    ${BACKUP_URL}
-    ${CLUSTER_BUCKET_NAME}' > "${DEPLOY_FILE}"
-
-log "Deploy file contents:"
-cat "${DEPLOY_FILE}"
-
-# Append the branch name to the ping-cloud namespace to make it unique. It's
-# okay for the common cluster tools to just be deployed once to the cluster.
-sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" "${DEPLOY_FILE}"
+build_dev_deploy_file "${DEPLOY_FILE}"
 
 kubectl apply -f "${DEPLOY_FILE}"
 
@@ -88,3 +61,5 @@ echo
 echo
 echo '--- Pod status ---'
 kubectl get pods -n "${NAMESPACE}"
+
+popd  > /dev/null 2>&1

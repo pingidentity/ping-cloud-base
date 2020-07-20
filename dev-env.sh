@@ -57,8 +57,6 @@
 #                           | autoscaler, which is used for automatic scaling of |
 #                           | of Kubernetes worker nodes.                        |
 #                           |                                                    |
-# TENANT_DOMAIN             | The tenant's domain, e.g. k8s-icecream.com         | eks-poc.au1.ping-lab.cloud
-#                           |                                                    |
 # ENVIRONMENT               | An environment to isolate the Ping stack into its  | The value of the USER environment
 #                           | own namespace within the Kubernetes cluster. The   | variable.
 #                           | Ping stack is generally deployed to a namespace    |
@@ -73,26 +71,24 @@
 #                           | which case, the namespace used for the Ping stack  |
 #                           | will simply be "ping-cloud".                       |
 #                           |                                                    |
+# TENANT_DOMAIN             | The tenant's domain, e.g. k8s-icecream.com         | eks-poc.au1.ping-lab.cloud
+#                           |                                                    |
 # REGION                    | The region where the tenant environment is         | us-east-2
 #                           | deployed. On AWS, this is a required parameter     |
 #                           | to Container Insights, an AWS-specific logging     |
 #                           | and monitoring solution.                           |
 #                           |                                                    |
-# IS_PARENT                 | Flag indicating whether or not this is the parent  | true
-#                           | Kubernetes cluster or region.                      |
+# IS_MULTI_CLUSTER          | Flag indicating whether or not this is a           | false
+#                           | multi-cluster deployment.                          |
 #                           |                                                    |
-# PD_PARENT_PUBLIC_HOSTNAME | The public or external hostname of the             | pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}
-#                           | PingDirectory server in the parent cluster if      |
-#                           | deploying across more than one cluster.            |
+# PRIMARY_TENANT_DOMAIN     | The tenant's domain in the primary region.         | Same as TENANT_DOMAIN.
+#                           | Only used if IS_MULTI_CLUSTER is true.             |
 #                           |                                                    |
-# PF_ADMIN_PUBLIC_HOSTNAME  | The public or external hostname of the             | pingfederate-admin${ENVIRONMENT}.${TENANT_DOMAIN}
-#                           | PingFederate admin server.                         |
-#                           |                                                    |
-# PA_ADMIN_PUBLIC_HOSTNAME  | The public or external hostname of the PingAccess  | pingaccess-admin${ENVIRONMENT}.${TENANT_DOMAIN}
-#                           | admin server.                                      |
-#                           |                                                    |
-# PA_CLUSTER_PUBLIC_HOSTNAME| The public or external hostname of the PingAccess  | pingaccess-cluster{ENVIRONMENT}.${TENANT_DOMAIN}
-#                           | cluster communication service.                     |
+# PRIMARY_REGION            | The region where the tenant's primary environment  | Same as REGION.
+#                           | is deployed. On AWS, this is a required parameter  |
+#                           | to Container Insights, an AWS-specific logging     |
+#                           | and monitoring solution.                           |
+#                           | Only used if IS_MULTI_CLUSTER is true.             |
 #                           |                                                    |
 # CONFIG_REPO_BRANCH        | The branch within this repository for server       | master
 #                           | profiles, i.e. configuration.                      |
@@ -122,10 +118,7 @@
 # CLUSTER_BUCKET_NAME       | The name of the S3 bucket where clustering         | The string "unused". This is a
 #                           | information is stored for all stateful Ping apps.  | required property for multi-cluster
 #                           |                                                    | deployments, which is currently only
-#                           |                                                    | supported on AWS. A bucket with this
-#                           |                                                    | name must exist in every region that
-#                           |                                                    | the clusters span, and bucket syncing
-#                           |                                                    | must be enabled on AWS S3.
+#                           |                                                    | supported on AWS.
 #                           |                                                    |
 # DEPLOY_FILE               | The name of the file where the final deployment    | /tmp/deploy.yaml
 #                           | spec is saved before applying it.                  |
@@ -180,23 +173,34 @@ if test ${HAS_REQUIRED_TOOLS} -ne 0 || test ${HAS_REQUIRED_VARS} -ne 0; then
   exit 1
 fi
 
+test -z "${IS_MULTI_CLUSTER}" && IS_MULTI_CLUSTER=false
+if "${IS_MULTI_CLUSTER}"; then
+  check_env_vars "CLUSTER_BUCKET_NAME"
+  if test $? -ne 0; then
+    popd
+    exit 1
+  fi
+fi
+
 # Show initial values for relevant environment variables.
 echo "Initial TENANT_NAME: ${TENANT_NAME}"
-echo "Initial TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Initial ENVIRONMENT: ${ENVIRONMENT}"
+
+echo "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
+echo "Initial CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
 echo "Initial REGION: ${REGION}"
-echo "Initial IS_PARENT: ${IS_PARENT}"
-echo "Initial PD_PARENT_PUBLIC_HOSTNAME: ${PD_PARENT_PUBLIC_HOSTNAME}"
-echo "Initial PF_ADMIN_PUBLIC_HOSTNAME: ${PF_ADMIN_PUBLIC_HOSTNAME}"
-echo "Initial PA_ADMIN_PUBLIC_HOSTNAME: ${PA_ADMIN_PUBLIC_HOSTNAME}"
-echo "Initial PA_CLUSTER_PUBLIC_HOSTNAME: ${PA_CLUSTER_PUBLIC_HOSTNAME}"
+echo "Initial PRIMARY_REGION: ${PRIMARY_REGION}"
+echo "Initial TENANT_DOMAIN: ${TENANT_DOMAIN}"
+echo "Initial PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
+
 echo "Initial CONFIG_REPO_BRANCH: ${CONFIG_REPO_BRANCH}"
 echo "Initial CONFIG_PARENT_DIR: ${CONFIG_PARENT_DIR}"
+
 echo "Initial ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Initial PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 echo "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 echo "Initial BACKUP_URL: ${BACKUP_URL}"
-echo "Initial CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
+
 echo "Initial DEPLOY_FILE: ${DEPLOY_FILE}"
 echo "Initial K8S_CONTEXT: ${K8S_CONTEXT}"
 echo ---
@@ -204,10 +208,17 @@ echo ---
 # A script that may be used to set up a dev/test environment against the
 # current cluster. Must have the GTE devops user and key exported as
 # environment variables.
-export ENVIRONMENT=-"${ENVIRONMENT:-${USER}}"
-export TENANT_DOMAIN="${TENANT_DOMAIN:-eks-poc.au1.ping-lab.cloud}"
 export TENANT_NAME="${TENANT_NAME:-PingPOC}"
+export ENVIRONMENT=-"${ENVIRONMENT:-${USER}}"
+
+export IS_MULTI_CLUSTER="${IS_MULTI_CLUSTER}"
+export CLUSTER_BUCKET_NAME="${CLUSTER_BUCKET_NAME}"
+
 export REGION="${REGION:-us-east-2}"
+export PRIMARY_REGION="${PRIMARY_REGION:-${REGION}}"
+
+export TENANT_DOMAIN="${TENANT_DOMAIN:-eks-poc.au1.ping-lab.cloud}"
+export PRIMARY_TENANT_DOMAIN="${PRIMARY_TENANT_DOMAIN:-${TENANT_DOMAIN}}"
 
 export CONFIG_REPO_BRANCH="${CONFIG_REPO_BRANCH:-master}"
 export CONFIG_PARENT_DIR="${CONFIG_PARENT_DIR:-aws}"
@@ -216,36 +227,31 @@ export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
 export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
-export CLUSTER_BUCKET_NAME="${CLUSTER_BUCKET_NAME:-unused}"
 
 DEPLOY_FILE=${DEPLOY_FILE:-/tmp/deploy.yaml}
 test -z "${K8S_CONTEXT}" && K8S_CONTEXT=$(kubectl config current-context)
 
 ENVIRONMENT_NO_HYPHEN_PREFIX="${ENVIRONMENT#-}"
 
-test -z "${IS_PARENT}" && IS_PARENT=true
-test -z "${PD_PARENT_PUBLIC_HOSTNAME}" && export PD_PARENT_PUBLIC_HOSTNAME=pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}
-test -z "${PF_ADMIN_PUBLIC_HOSTNAME}" && export PF_ADMIN_PUBLIC_HOSTNAME=pingfederate-admin${ENVIRONMENT}.${TENANT_DOMAIN}
-test -z "${PA_ADMIN_PUBLIC_HOSTNAME}" && export PA_ADMIN_PUBLIC_HOSTNAME=pingaccess-admin${ENVIRONMENT}.${TENANT_DOMAIN}
-test -z "${PA_CLUSTER_PUBLIC_HOSTNAME}" && export PA_CLUSTER_PUBLIC_HOSTNAME=pingaccess-cluster${ENVIRONMENT}.${TENANT_DOMAIN}
-
 # Show the values being used for the relevant environment variables.
 echo "Using TENANT_NAME: ${TENANT_NAME}"
-echo "Using TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Using ENVIRONMENT: ${ENVIRONMENT_NO_HYPHEN_PREFIX}"
+
+echo "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
+echo "Using CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
 echo "Using REGION: ${REGION}"
-echo "Using IS_PARENT: ${IS_PARENT}"
-echo "Using PD_PARENT_PUBLIC_HOSTNAME: ${PD_PARENT_PUBLIC_HOSTNAME}"
-echo "Using PF_ADMIN_PUBLIC_HOSTNAME: ${PF_ADMIN_PUBLIC_HOSTNAME}"
-echo "Using PA_ADMIN_PUBLIC_HOSTNAME: ${PA_ADMIN_PUBLIC_HOSTNAME}"
-echo "Using PA_CLUSTER_PUBLIC_HOSTNAME: ${PA_CLUSTER_PUBLIC_HOSTNAME}"
+echo "Using PRIMARY_REGION: ${PRIMARY_REGION}"
+echo "Using TENANT_DOMAIN: ${TENANT_DOMAIN}"
+echo "Using PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
+
 echo "Using CONFIG_REPO_BRANCH: ${CONFIG_REPO_BRANCH}"
 echo "Using CONFIG_PARENT_DIR: ${CONFIG_PARENT_DIR}"
+
 echo "Using ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 echo "Using LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 echo "Using BACKUP_URL: ${BACKUP_URL}"
-echo "Using CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
+
 echo "Using DEPLOY_FILE: ${DEPLOY_FILE}"
 echo "Using K8S_CONTEXT: ${K8S_CONTEXT}"
 echo ---
@@ -258,32 +264,12 @@ export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
 
 export NAMESPACE=ping-cloud-${ENVIRONMENT_NO_HYPHEN_PREFIX}
 
-# Set the cluster type based on parent or child
-DEV_CLUSTER_STATE_DIR=test
-! "${IS_PARENT}" && CLUSTER_TYPE='child'
+# Set the cluster type based on primary or secondary.
+"${IS_MULTI_CLUSTER}" && test "${TENANT_DOMAIN}" != "${PRIMARY_TENANT_DOMAIN}" &&
+  CLUSTER_TYPE=secondary ||
+  CLUSTER_TYPE=
 
-kustomize build "${DEV_CLUSTER_STATE_DIR}/${CLUSTER_TYPE}" |
-  envsubst '${PING_IDENTITY_DEVOPS_USER_BASE64}
-    ${PING_IDENTITY_DEVOPS_KEY_BASE64}
-    ${ENVIRONMENT}
-    ${TENANT_DOMAIN}
-    ${CLUSTER_NAME}
-    ${CLUSTER_NAME_LC}
-    ${REGION}
-    ${NAMESPACE}
-    ${CONFIG_REPO_BRANCH}
-    ${CONFIG_PARENT_DIR}
-    ${PD_PARENT_PUBLIC_HOSTNAME}
-    ${PF_ADMIN_PUBLIC_HOSTNAME}
-    ${PA_ADMIN_PUBLIC_HOSTNAME}
-    ${PA_CLUSTER_PUBLIC_HOSTNAME}
-    ${ARTIFACT_REPO_URL}
-    ${PING_ARTIFACT_REPO_URL}
-    ${LOG_ARCHIVE_URL}
-    ${BACKUP_URL}
-    ${CLUSTER_BUCKET_NAME}' > "${DEPLOY_FILE}"
-
-sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" "${DEPLOY_FILE}"
+build_dev_deploy_file "${DEPLOY_FILE}" "${CLUSTER_TYPE}"
 
 if test "${dryrun}" = 'false'; then
   echo "Deploying ${DEPLOY_FILE} to cluster ${CLUSTER_NAME}, namespace ${NAMESPACE} for tenant ${TENANT_DOMAIN}"
@@ -321,23 +307,24 @@ if test "${dryrun}" = 'false'; then
           -n "${NAMESPACE}" -w --context "${K8S_CONTEXT}"
     done
 
-
     TEST_ENV_VARS_FILE=$(mktemp)
     cat > "${TEST_ENV_VARS_FILE}" <<EOF
-export REGION=${REGION}
 export CLUSTER_NAME=${TENANT_NAME}
+
+export IS_MULTI_CLUSTER=${IS_MULTI_CLUSTER}
+export CLUSTER_BUCKET_NAME=${CLUSTER_BUCKET_NAME}
+
+export REGION=${REGION}
+export PRIMARY_REGION=${PRIMARY_REGION}
+
 export TENANT_DOMAIN=${TENANT_DOMAIN}
+export PRIMARY_TENANT_DOMAIN=${PRIMARY_TENANT_DOMAIN}
 
 export ENVIRONMENT=${ENVIRONMENT}
 export NAMESPACE=${NAMESPACE}
 
 export CONFIG_PARENT_DIR=aws
 export CONFIG_REPO_BRANCH=${CONFIG_REPO_BRANCH}
-
-export PD_PARENT_PUBLIC_HOSTNAME=${PD_PARENT_PUBLIC_HOSTNAME}
-export PF_ADMIN_PUBLIC_HOSTNAME=${PF_ADMIN_PUBLIC_HOSTNAME}
-export PA_ADMIN_PUBLIC_HOSTNAME=${PA_ADMIN_PUBLIC_HOSTNAME}
-export PA_CLUSTER_PUBLIC_HOSTNAME=${PA_CLUSTER_PUBLIC_HOSTNAME}
 
 export ARTIFACT_REPO_URL=${ARTIFACT_REPO_URL}
 export PING_ARTIFACT_REPO_URL=${PING_ARTIFACT_REPO_URL}
@@ -353,24 +340,25 @@ export SKIP_CONFIGURE_AWS=true
 
 export DEV_TEST_ENV=true
 EOF
-  echo "Running unit tests"
-  for unit_test_dir in common pingaccess ci-script-tests; do
-    echo
-    echo "=========================================================="
-    echo "      Executing unit tests in directory: ${unit_test_dir}            "
-    echo "=========================================================="
-    ci-scripts/test/unit/run-unit-test.sh "${unit_test_dir}" "${TEST_ENV_VARS_FILE}"
-  done
-  echo
 
-  echo "Running integration tests"
-  for integration_test_dir in common pingaccess pingdirectory pingfederate chaos; do
+    echo "Running unit tests"
+    for unit_test_dir in common pingaccess ci-script-tests; do
+      echo
+      echo "=========================================================="
+      echo "      Executing unit tests in directory: ${unit_test_dir}            "
+      echo "=========================================================="
+      ci-scripts/test/unit/run-unit-test.sh "${unit_test_dir}" "${TEST_ENV_VARS_FILE}"
+    done
     echo
-    echo "=========================================================="
-    echo "      Executing tests in directory: ${integration_test_dir}            "
-    echo "=========================================================="
-    ci-scripts/test/integration/run-test.sh "${integration_test_dir}" "${TEST_ENV_VARS_FILE}"
-  done
+
+    echo "Running integration tests"
+    for integration_test_dir in common pingaccess pingdirectory pingfederate chaos; do
+      echo
+      echo "=========================================================="
+      echo "      Executing tests in directory: ${integration_test_dir}            "
+      echo "=========================================================="
+      ci-scripts/test/integration/run-test.sh "${integration_test_dir}" "${TEST_ENV_VARS_FILE}"
+    done
 
   fi
 else

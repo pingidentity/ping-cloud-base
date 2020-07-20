@@ -23,15 +23,8 @@ if test "${ORDINAL}" -lt "${NUM_REPLICAS}"; then
   exit 0
 fi
 
-if is_multi_cluster; then
-  echo "pre-stop: multi-cluster"
-  ADMIN_HOST_PORT="${PA_ADMIN_PUBLIC_HOSTNAME}"
-  ENGINE_NAME="${PA_ENGINE_PUBLIC_HOSTNAME}:300${ORDINAL}"
-else
-  echo "pre-stop: single-cluster"
-  ADMIN_HOST_PORT="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9000"
-  ENGINE_NAME=$(hostname)
-fi
+echo "pre-stop: pingaccess config settings"
+export_config_settings
 
 # Retrieve Engine ID for engine name.
 echo "pre-stop: removing engine ID for name ${ENGINE_NAME}"

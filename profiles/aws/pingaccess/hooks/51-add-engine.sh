@@ -12,23 +12,19 @@ fi
 
 echo "add-engine: starting add engine script"
 
-IS_SECONDARY_CLUSTER=$(is_secondary_cluster)
-
-echo "add-engine: secondary-cluster: ${IS_SECONDARY_CLUSTER}"
+echo "add-engine: pingaccess config settings"
+export_config_settings
 
 SHORT_HOST_NAME=$(hostname)
 ORDINAL=${SHORT_HOST_NAME##*-}
 
-if [ "${IS_SECONDARY_CLUSTER}" == true ]; then
+if is_secondary_cluster; then
 
-  # Secondary cluster PA runtime should use cert and alias name of the cert added to PA admin is value of K8S_ACME_CERT_SECRET_NAME.
+  # Secondary-cluster PA engines should use cert and alias name of the cert added to PA admin with value of K8S_ACME_CERT_SECRET_NAME.
   if test -z "${K8S_ACME_CERT_SECRET_NAME}"; then
       echo "add-engine: K8S_ACME_CERT_SECRET_NAME is not set"
       exit 1
   fi
-
-  ADMIN_HOST_PORT="${PA_ADMIN_PUBLIC_HOSTNAME}"
-  ENGINE_NAME="${PA_ENGINE_PUBLIC_HOSTNAME}:300${ORDINAL}"
 
   # Retrieve Engine Cert ID.
   echo "add-engine: retrieving the Engine Cert ID"
@@ -37,8 +33,6 @@ if [ "${IS_SECONDARY_CLUSTER}" == true ]; then
   echo "add-engine: ENGINE_CERT_ID: ${ENGINE_CERT_ID}"
 
 else
-  ADMIN_HOST_PORT="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9000"
-  ENGINE_NAME="${SHORT_HOST_NAME}"
 
   pingaccess_admin_wait "${ADMIN_HOST_PORT}"
 
@@ -98,15 +92,15 @@ echo "add-engine: extracting config files to conf folder"
 unzip -o engine-config.zip -d "${OUT_DIR}"/instance
 chmod 400 "${OUT_DIR}"/instance/conf/pa.jwk
 
-if [ "${IS_SECONDARY_CLUSTER}" == true ]; then
-  if ! sed -i 's/engine.admin.configuration.port.*/engine.admin.configuration.port=443/g' /opt/out/instance/conf/bootstrap.properties; then
+if is_secondary_cluster; then
+  if ! sed -i "s/engine.admin.configuration.port.*/engine.admin.configuration.port=${CLUSTER_CONFIG_PORT}/g" /opt/out/instance/conf/bootstrap.properties; then
     echo "add-engine: failed to update admin port"
     exit 1
-  fi 
-  if ! sed -i "s/engine.admin.configuration.host.*/engine.admin.configuration.host=${PA_ADMIN_PUBLIC_HOSTNAME}/g" /opt/out/instance/conf/bootstrap.properties; then
+  fi
+  if ! sed -i "s/engine.admin.configuration.host.*/engine.admin.configuration.host=${CLUSTER_CONFIG_HOST}/g" /opt/out/instance/conf/bootstrap.properties; then
     echo "add-engine: failed to update admin host"
     exit 1
-  fi 
+  fi
 fi
 
 echo "add-engine: cleaning up zip"

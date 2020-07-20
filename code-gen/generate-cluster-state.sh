@@ -87,6 +87,19 @@
 #                        | to Container Insights, an AWS-specific logging     |
 #                        | and monitoring solution.                           |
 #                        |                                                    |
+# IS_MULTI_CLUSTER       | Flag indicating whether or not this is a           | false
+#                        | multi-cluster deployment.                          |
+#                        |                                                    |
+# PRIMARY_TENANT_DOMAIN  | In multi-cluster environments, the primary domain. | Same as TENANT_DOMAIN.
+#                        | Only used if IS_MULTI_CLUSTER is true.             |
+#                        |                                                    |
+# PRIMARY_REGION         | In multi-cluster environments, the primary region. | Same as REGION.
+#                        | Only used if IS_MULTI_CLUSTER is true.             |
+#                        |                                                    |
+# CLUSTER_BUCKET_NAME    | The name of the S3 bucket where clustering         | No default. Required if IS_MULTI_CLUSTER
+#                        | information is maintained. Only used if            | is true.
+#                        | IS_MULTI_CLUSTER is true.                          |
+#                        |                                                    |
 # SIZE                   | Size of the environment, which pertains to the     | small
 #                        | number of user identities. Legal values are        |
 #                        | small, medium or large.                            |
@@ -192,9 +205,6 @@
 # TARGET_DIR             | The directory where the manifest files will be     | /tmp/sandbox
 #                        | generated. If the target directory exists, it will |
 #                        | be deleted.                                        |
-#                        |                                                    |
-# IS_PARENT              | A flag indicating whether code is being generated  | true
-#                        | for a parent vs. a child region.                   |
 #                        |
 # IS_BELUGA_ENV          | An optional flag that may be provided to indicate  | false. Only intended for Beluga
 #                        | that the cluster state is being generated for      | developers.
@@ -220,8 +230,12 @@
 # The list of variables in the template files that will be substituted.
 VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
 ${PING_IDENTITY_DEVOPS_KEY_BASE64}
-${TENANT_DOMAIN}
+${IS_MULTI_CLUSTER}
+${CLUSTER_BUCKET_NAME}
 ${REGION}
+${PRIMARY_REGION}
+${TENANT_DOMAIN}
+${PRIMARY_TENANT_DOMAIN}
 ${SIZE}
 ${LETS_ENCRYPT_SERVER}
 ${PF_PD_BIND_PORT}
@@ -235,6 +249,7 @@ ${CLUSTER_NAME}
 ${CLUSTER_NAME_LC}
 ${CLUSTER_STATE_REPO_URL}
 ${CLUSTER_STATE_REPO_BRANCH}
+${CLUSTER_STATE_REPO_PATH}
 ${ARTIFACT_REPO_URL}
 ${PING_ARTIFACT_REPO_URL}
 ${LOG_ARCHIVE_URL}
@@ -319,11 +334,25 @@ if test ${HAS_REQUIRED_TOOLS} -ne 0 || test ${HAS_REQUIRED_VARS} -ne 0; then
   exit 1
 fi
 
+test -z "${IS_MULTI_CLUSTER}" && IS_MULTI_CLUSTER=false
+if "${IS_MULTI_CLUSTER}"; then
+  check_env_vars "CLUSTER_BUCKET_NAME"
+  if test $? -ne 0; then
+    popd
+    exit 1
+  fi
+fi
+
 # Print out the values provided used for each variable.
 echo "Initial TENANT_NAME: ${TENANT_NAME}"
-echo "Initial TENANT_DOMAIN: ${TENANT_DOMAIN}"
-echo "Initial REGION: ${REGION}"
 echo "Initial SIZE: ${SIZE}"
+
+echo "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
+echo "Initial CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
+echo "Initial REGION: ${REGION}"
+echo "Initial PRIMARY_REGION: ${PRIMARY_REGION}"
+echo "Initial TENANT_DOMAIN: ${TENANT_DOMAIN}"
+echo "Initial PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
 
 echo "Initial CLUSTER_STATE_REPO_URL: ${CLUSTER_STATE_REPO_URL}"
 
@@ -359,10 +388,19 @@ echo ---
 
 # Use defaults for other variables, if not present.
 export TENANT_NAME="${TENANT_NAME:-PingPOC}"
+export SIZE="${SIZE:-small}"
+
+export IS_MULTI_CLUSTER="${IS_MULTI_CLUSTER}"
+export CLUSTER_BUCKET_NAME="${CLUSTER_BUCKET_NAME}"
+
+export REGION="${REGION:-us-east-2}"
+export PRIMARY_REGION="${PRIMARY_REGION:-${REGION}}"
+
 TENANT_DOMAIN_NO_DOT_SUFFIX="${TENANT_DOMAIN%.}"
 export TENANT_DOMAIN="${TENANT_DOMAIN_NO_DOT_SUFFIX:-eks-poc.au1.ping-lab.cloud}"
-export REGION="${REGION:-us-east-2}"
-export SIZE="${SIZE:-small}"
+
+PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX="${PRIMARY_TENANT_DOMAIN%.}"
+export PRIMARY_TENANT_DOMAIN="${PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX:-${TENANT_DOMAIN}}"
 
 export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL:-git@github.com:pingidentity/ping-cloud-base.git}"
 
@@ -404,9 +442,14 @@ export IS_BELUGA_ENV="${IS_BELUGA_ENV}"
 
 # Print out the values being used for each variable.
 echo "Using TENANT_NAME: ${TENANT_NAME}"
-echo "Using TENANT_DOMAIN: ${TENANT_DOMAIN}"
-echo "Using REGION: ${REGION}"
 echo "Using SIZE: ${SIZE}"
+
+echo "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
+echo "Using CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
+echo "Using REGION: ${REGION}"
+echo "Using PRIMARY_REGION: ${PRIMARY_REGION}"
+echo "Using TENANT_DOMAIN: ${TENANT_DOMAIN}"
+echo "Using PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
 
 echo "Using CLUSTER_STATE_REPO_URL: ${CLUSTER_STATE_REPO_URL}"
 
@@ -474,6 +517,8 @@ ENVIRONMENTS='dev test stage prod'
 for ENV in ${ENVIRONMENTS}; do
   # Export all the environment variables required for envsubst
   test "${ENV}" = prod && export CLUSTER_STATE_REPO_BRANCH=master || export CLUSTER_STATE_REPO_BRANCH=${ENV}
+  test "${REGION}" != "${PRIMARY_REGION}" || test "${TENANT_DOMAIN}" != "${PRIMARY_TENANT_DOMAIN}" &&
+      export CLUSTER_STATE_REPO_PATH="${REGION}"
   export ENVIRONMENT_TYPE=${ENV}
 
   # The base URL for kustomization files and environment will be different for each CDE.
@@ -560,6 +605,7 @@ for ENV in ${ENVIRONMENTS}; do
   echo ---
   echo "For environment ${ENV}, using variable values:"
   echo "CLUSTER_STATE_REPO_BRANCH: ${CLUSTER_STATE_REPO_BRANCH}"
+  echo "CLUSTER_STATE_REPO_PATH: ${CLUSTER_STATE_REPO_PATH}"
   echo "ENVIRONMENT_TYPE: ${ENVIRONMENT_TYPE}"
   echo "KUSTOMIZE_BASE: ${KUSTOMIZE_BASE}"
   echo "CLUSTER_NAME: ${CLUSTER_NAME}"

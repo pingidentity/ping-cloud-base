@@ -302,32 +302,6 @@ function skbnCopy() {
   fi
 }
 
-
-########################################################################################################################
-# Determines if the environment is running in the context of multiple clusters. If both PA_ADMIN_PUBLIC_HOSTNAME and
-# PA_ENGINE_PUBLIC_HOSTNAME, it is assumed to be multi-cluster.
-#
-# Returns
-#   0 if multi-cluster; 1 if not.
-########################################################################################################################
-function is_multi_cluster() {
-  test ! -z "${PA_ADMIN_PUBLIC_HOSTNAME}" && test ! -z "${PA_ENGINE_PUBLIC_HOSTNAME}"
-}
-
-########################################################################################################################
-# Export the values for the CLUSTER_CONFIG_HOST and CLUSTER_CONFIG_PORT environment variables to be used for
-# substitution in JSON payloads to the admin API based on single vs. multi cluster.
-########################################################################################################################
-function export_cluster_config_host_port() {
-  if is_multi_cluster; then
-    export CLUSTER_CONFIG_HOST="${PA_CLUSTER_PUBLIC_HOSTNAME}"
-    export CLUSTER_CONFIG_PORT=443
-  else
-    export CLUSTER_CONFIG_HOST="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}"
-    export CLUSTER_CONFIG_PORT=9090
-  fi
-}
-
 ########################################################################################################################
 # Update the PA admin's host:port to be set in every engine's bootstrap.properties file.
 ########################################################################################################################
@@ -335,7 +309,6 @@ function update_admin_config_host_port() {
   local templates_dir_path="${STAGING_DIR}/templates/81"
 
   # Substitute the right values into the admin-config.json file based on single or multi cluster.
-  export_cluster_config_host_port
   admin_config_payload=$(envsubst < "${templates_dir_path}"/admin-config.json)
 
   admin_config_response=$(make_api_request -s -X PUT \
@@ -344,34 +317,65 @@ function update_admin_config_host_port() {
 }
 
 ########################################################################################################################
-# Determines if the environment is running in the context of multiple clusters. If both PA_ADMIN_PUBLIC_HOSTNAME and
-# PA_ENGINE_PUBLIC_HOSTNAME, it is assumed to be multi-cluster.
-#
-# Returns
-#   0 if multi-cluster; 1 if not.
+# Export values for PingAccess configuration settings based on single vs. multi cluster.
 ########################################################################################################################
-function is_multi_cluster() {
-  if test ! -z "${PA_ADMIN_PUBLIC_HOSTNAME}" && test ! -z "${PA_ENGINE_PUBLIC_HOSTNAME}"; then
-    echo true
+function export_config_settings() {
+  SHORT_HOST_NAME=$(hostname)
+  ORDINAL=${SHORT_HOST_NAME##*-}
+
+  if is_multi_cluster; then
+    MULTI_CLUSTER=true
+    export ENGINE_NAME="${PA_ENGINE_PUBLIC_HOSTNAME}:300${ORDINAL}"
   else
-    echo false
+    MULTI_CLUSTER=false
+    export ENGINE_NAME=${SHORT_HOST_NAME}
   fi
+
+  if is_secondary_cluster; then
+    PRIMARY_CLUSTER=false
+    export ADMIN_HOST_PORT="${PA_ADMIN_PUBLIC_HOSTNAME}:443"
+    export CLUSTER_CONFIG_HOST="${PA_ADMIN_PUBLIC_HOSTNAME}"
+    export CLUSTER_CONFIG_PORT=443
+  else
+    PRIMARY_CLUSTER=true
+    export ADMIN_HOST_PORT="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9000"
+    export CLUSTER_CONFIG_HOST="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}"
+    export CLUSTER_CONFIG_PORT=9090
+  fi
+
+  echo "MULTI_CLUSTER - ${MULTI_CLUSTER}"
+  echo "PRIMARY_CLUSTER - ${PRIMARY_CLUSTER}"
+  echo "ENGINE_NAME - ${ENGINE_NAME}"
+  echo "CLUSTER_CONFIG_HOST_PORT - ${CLUSTER_CONFIG_HOST}:${CLUSTER_CONFIG_PORT}"
+  echo "ADMIN_HOST_PORT - ${ADMIN_HOST_PORT}"
 }
 
 ########################################################################################################################
-# Determines if the environment is secondary cluster.
+# Determines if the environment is running in the context of multiple clusters.
 #
 # Returns
-#   true if secondary-cluster; false if not.
+#   true if multi-cluster; false if not.
+########################################################################################################################
+function is_multi_cluster() {
+  test ! -z "${IS_MULTI_CLUSTER}" && "${IS_MULTI_CLUSTER}"
+}
+
+########################################################################################################################
+# Determines if the environment is set up in the primary cluster.
+#
+# Returns
+#   true if primary cluster; false if not.
+########################################################################################################################
+function is_primary_cluster() {
+  test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"
+}
+
+########################################################################################################################
+# Determines if the environment is set up in a secondary cluster.
+#
+# Returns
+#   true if secondary cluster; false if not.
 ########################################################################################################################
 function is_secondary_cluster() {
-
-  if [ "$(is_multi_cluster)" == true ]; then
-    if ! $(echo $PA_ADMIN_PUBLIC_HOSTNAME | grep -q "$TENANT_DOMAIN"); then
-        echo true
-        return 0
-    fi
-  fi
-
-  echo false
+  ! is_primary_cluster
 }

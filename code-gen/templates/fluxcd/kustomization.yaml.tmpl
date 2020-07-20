@@ -33,7 +33,7 @@ patchesStrategicMerge:
           - --git-poll-interval=60s
           - --git-url=${CLUSTER_STATE_REPO_URL}
           - --git-branch=${CLUSTER_STATE_REPO_BRANCH}
-          - --git-path=k8s-configs
+          - --git-path=k8s-configs/${CLUSTER_STATE_REPO_PATH}
           volumeMounts:
           - name: ssh-config
             mountPath: /root/.ssh

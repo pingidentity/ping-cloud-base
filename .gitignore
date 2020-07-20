@@ -151,3 +151,6 @@ create_eks_cluster.sh
 
 # shunit unzipped files
 ci-scripts/test/shunit/shunit2-2.1.x/
+
+# Temporary directory used to kustomize/build the dev cluster state
+build-dir
