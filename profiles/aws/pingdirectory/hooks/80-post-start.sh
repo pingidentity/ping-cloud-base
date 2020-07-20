@@ -65,17 +65,6 @@ change_pf_user_passwords() {
 }
 
 ########################################################################################################################
-# Sets the public/external hostname in the server's server.host file, if the PD_PUBLIC_HOSTNAME is set.
-########################################################################################################################
-function set_external_hostname() {
-  if test ! -z "${PD_PUBLIC_HOSTNAME}"; then
-    SERVER_HOST_FILE="${SERVER_ROOT_DIR}"/config/server.host
-    echo "post-start: replacing the server hostname to ${PD_PUBLIC_HOSTNAME} in ${SERVER_HOST_FILE}"
-    echo "hostname=${PD_PUBLIC_HOSTNAME}" > "${SERVER_HOST_FILE}"
-  fi
-}
-
-########################################################################################################################
 # Add the base entry for USER_BASE_DN on the provided server.
 #
 # Arguments
@@ -399,10 +388,10 @@ enable_replication_for_dn() {
 initialize_replication_for_dn() {
   BASE_DN=${1}
 
-  # If multi-cluster, initialize the first server in the child cluster from the first server in the parent cluster.
-  # Initialize other servers in the child cluster from the first server within the same cluster.
-  if "${IS_MULTI_CLUSTER}" && test "${ORDINAL}" -eq 0; then
-    FROM_HOST="${PD_PARENT_PUBLIC_HOSTNAME}"
+  # If multi-cluster, initialize the first server in the secondary cluster from the first server in the primary cluster.
+  # Initialize other servers in the secondary cluster from the first server within the same cluster.
+  if is_multi_cluster && test "${ORDINAL}" -eq 0; then
+    FROM_HOST="${PD_PRIMARY_PUBLIC_HOSTNAME}"
     FROM_PORT=6360
   else
     FROM_HOST="${K8S_STATEFUL_SET_NAME}-0.${DOMAIN_NAME}"
@@ -456,18 +445,7 @@ SHORT_HOST_NAME=$(hostname)
 DOMAIN_NAME=$(hostname -f | cut -d'.' -f2-)
 ORDINAL=${SHORT_HOST_NAME##*-}
 
-echo "post-start: pod ordinal: ${ORDINAL}"
-
-# Determine if this a cross-cluster deployment, and if so whether this is the parent cluster.
-IS_MULTI_CLUSTER=false
-IS_PARENT_CLUSTER=false
-
-if is_multi_cluster; then
-  IS_MULTI_CLUSTER=true
-  test "${PD_PARENT_PUBLIC_HOSTNAME}" = "${PD_PUBLIC_HOSTNAME}" && IS_PARENT_CLUSTER=true
-fi
-
-echo "post-start: multi-cluster: ${IS_MULTI_CLUSTER}; parent-cluster: ${IS_PARENT_CLUSTER}"
+echo "post-start: pod ordinal: ${ORDINAL}; multi-cluster: ${IS_MULTI_CLUSTER}"
 
 echo "post-start: getting server instance name from global config"
 INSTANCE_NAME=$(dsconfig --no-prompt get-global-configuration-prop \
@@ -502,7 +480,7 @@ fi
 change_pf_user_passwords
 test $? -ne 0 && stop_container
 
-if test "${ORDINAL}" -eq 0 && test "${IS_PARENT_CLUSTER}" = 'true'; then
+if test "${ORDINAL}" -eq 0 && is_primary_cluster; then
   # The request control allows encoded passwords, which is always required for topology admin users
   # ldapmodify allows a --passwordUpdateBehavior allow-pre-encoded-password=true to do the same
   ALLOW_PRE_ENCODED_PW_CONTROL='1.3.6.1.4.1.30221.2.5.51:true::MAOBAf8='
@@ -566,9 +544,9 @@ if test -z "${UNINITIALIZED_DNS}"; then
 fi
 
 # Determine the hostnames and ports to use while enabling replication. When in multi-cluster mode and not in the
-# parent cluster, use the external names and ports. Otherwise, use internal names and ports.
-if "${IS_MULTI_CLUSTER}"; then
-  REPL_SRC_HOST="${PD_PARENT_PUBLIC_HOSTNAME}"
+# primary cluster, use the external names and ports. Otherwise, use internal names and ports.
+if is_multi_cluster; then
+  REPL_SRC_HOST="${PD_PRIMARY_PUBLIC_HOSTNAME}"
   REPL_SRC_LDAPS_PORT=6360
   REPL_SRC_REPL_PORT=9890
   REPL_DST_HOST="${PD_PUBLIC_HOSTNAME}"
@@ -595,7 +573,7 @@ echo "post-start: using REPL_DST_REPL_PORT: ${REPL_DST_REPL_PORT}"
 
 # If in multi-region mode, wait for the replication source and target servers to be up and running through the
 # load balancer before enabling/initializing replication.
-if "${IS_MULTI_CLUSTER}"; then
+if is_multi_cluster; then
   echo "post-start: waiting for the replication seed server ${REPL_SRC_HOST}:${REPL_SRC_LDAPS_PORT}"
   waitUntilLdapUp "${REPL_SRC_HOST}" "${REPL_SRC_LDAPS_PORT}" 'cn=config'
 

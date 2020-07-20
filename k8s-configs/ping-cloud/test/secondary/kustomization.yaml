@@ -2,11 +2,11 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-- ../../ping-cloud
+- ../base
 
 patchesStrategicMerge:
 
-# Remove PingAccess parent-related resources
+# Remove PingAccess primary-cluster resources
 - |-
   apiVersion: apps/v1
   kind: StatefulSet
@@ -29,13 +29,6 @@ patchesStrategicMerge:
   $patch: delete
 
 - |-
-  apiVersion: extensions/v1beta1
-  kind: Ingress
-  metadata:
-    name: pingaccess-cluster-ingress
-  $patch: delete
-
-- |-
   apiVersion: v1
   kind: ConfigMap
   metadata:
@@ -49,7 +42,7 @@ patchesStrategicMerge:
     name: pingaccess-periodic-backup
   $patch: delete
 
-# Remove PingFederate parent-related resources
+# Remove PingFederate primary-cluster resources
 - |-
   apiVersion: apps/v1
   kind: StatefulSet
@@ -85,7 +78,7 @@ patchesStrategicMerge:
     name: pingfederate-periodic-backup
   $patch: delete
 
-# Remove PingDirectory parent-related resources
+# Remove PingDirectory primary-cluster resources
 
 - |-
   apiVersion: v1

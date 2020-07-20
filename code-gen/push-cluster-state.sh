@@ -22,20 +22,20 @@
 #   ${1} -> The directory where cluster state code was generated, i.e. the TARGET_DIR to generate-cluster-state.sh.
 #   ${2} -> The environment.
 #   ${3} -> The output empty directory into which to organize the code to push for the environment and region.
-#   ${4} -> The name for a region, e.g. parent, child-0, child-1, etc.
-#   ${5} -> Flag indicating whether or not the provided region is the parent.
+#   ${4} -> The name for a region, e.g. primary, secondary-0, secondary-1, etc.
+#   ${5} -> Flag indicating whether or not the provided region is the primary region.
 ########################################################################################################################
 organize_code_for_environment() {
   local generated_code_dir="${1}"
   local env="${2}"
   local out_dir="${3}"
   local region_name="${4}"
-  local is_parent="${5}"
+  local is_primary="${5}"
 
-  echo "Organizing code for environment ${env} in directory ${out_dir} for region ${region_name} (parent: ${is_parent})"
+  echo "Organizing code for environment ${env} in directory ${out_dir} for region ${region_name} (primary: ${is_primary})"
 
-  if "${is_parent}"; then
-    # For the parent region, we need to copy everything (i.e. both the k8s-configs and the profiles)
+  if "${is_primary}"; then
+    # For the primary region, we need to copy everything (i.e. both the k8s-configs and the profiles)
     # into the cluster state repo.
 
     # Copy everything under cluster state into the code directory for the environment.
@@ -48,7 +48,7 @@ organize_code_for_environment() {
     # Copy the environment-specific k8s-configs into it.
     cp -pr "${generated_code_dir}"/cluster-state/k8s-configs/"${env}"/. "${k8s_dir}"
   else
-    # For child region, we only need to copy the environment-specific k8s-configs.
+    # For secondary regions, we only need to copy the environment-specific k8s-configs.
     cp -pr "${generated_code_dir}"/cluster-state/k8s-configs/"${env}"/. "${out_dir}"
   fi
 }
@@ -76,8 +76,8 @@ push_with_retries() {
 }
 
 ### Script start ###
-if test -z "${REGION_NAME}" || test -z "${IS_PARENT}"; then
-  echo "REGION_NAME and IS_PARENT are required variables"
+if test -z "${REGION_NAME}" || test -z "${IS_PRIMARY}"; then
+  echo "REGION_NAME and IS_PRIMARY are required variables"
   exit 1
 fi
 
@@ -93,7 +93,7 @@ for ENV in ${ENVIRONMENTS}; do
   echo "Processing ${ENV}"
 
   ENV_CODE_DIR=$(mktemp -d)
-  organize_code_for_environment "${GENERATED_CODE_DIR}" "${ENV}" "${ENV_CODE_DIR}" "${REGION_NAME}" "${IS_PARENT}"
+  organize_code_for_environment "${GENERATED_CODE_DIR}" "${ENV}" "${ENV_CODE_DIR}" "${REGION_NAME}" "${IS_PRIMARY}"
 
   if test "${ENV}" != 'prod'; then
     GIT_BRANCH="${ENV}"
@@ -118,13 +118,13 @@ for ENV in ${ENVIRONMENTS}; do
     git pull
   fi
 
-  if "${IS_PARENT}"; then
+  if "${IS_PRIMARY}"; then
     rm -rf ./*
     cp -pr "${ENV_CODE_DIR}"/. .
   else
-    K8S_DIR_FOR_CHILD=./k8s-configs/"${REGION_NAME}"
-    rm -rf "${K8S_DIR_FOR_CHILD}"
-    cp -pr "${ENV_CODE_DIR}"/. "${K8S_DIR_FOR_CHILD}"
+    K8S_DIR_FOR_SECONDARY=./k8s-configs/"${REGION_NAME}"
+    rm -rf "${K8S_DIR_FOR_SECONDARY}"
+    cp -pr "${ENV_CODE_DIR}"/. "${K8S_DIR_FOR_SECONDARY}"
   fi
 
   git add .

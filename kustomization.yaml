@@ -15,14 +15,12 @@ patchesStrategicMerge:
   data:
     PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}
     PING_IDENTITY_DEVOPS_KEY: ${PING_IDENTITY_DEVOPS_KEY}
+    BACKUP_URL: ${BACKUP_URL}
     PA_ADMIN_PUBLIC_HOSTNAME: pingaccess-admin.${TENANT_DOMAIN}
-    PA_CLUSTER_PUBLIC_HOSTNAME: pingaccess-cluster.${TENANT_DOMAIN}
     PA_ENGINE_PUBLIC_HOSTNAME: pingaccess.${TENANT_DOMAIN}
     PF_ADMIN_PUBLIC_HOSTNAME: pingfederate-admin.${TENANT_DOMAIN}
     PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
-    BACKUP_URL: ${BACKUP_URL}
     REGION: ${REGION}
-    TENANT_DOMAIN: ${TENANT_DOMAIN}
 - |-
   apiVersion: v1
   kind: ConfigMap
@@ -32,7 +30,6 @@ patchesStrategicMerge:
     PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}
     PING_IDENTITY_DEVOPS_KEY: ${PING_IDENTITY_DEVOPS_KEY}
     PA_ADMIN_PUBLIC_HOSTNAME: pingaccess-admin.${TENANT_DOMAIN}
-    PA_CLUSTER_PUBLIC_HOSTNAME: pingaccess-cluster.${TENANT_DOMAIN}
     PA_ENGINE_PUBLIC_HOSTNAME: pingaccess.${TENANT_DOMAIN}
     PF_ADMIN_PUBLIC_HOSTNAME: pingfederate-admin.${TENANT_DOMAIN}
     PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
@@ -45,12 +42,11 @@ patchesStrategicMerge:
   data:
     PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}
     PING_IDENTITY_DEVOPS_KEY: ${PING_IDENTITY_DEVOPS_KEY}
+    BACKUP_URL: ${BACKUP_URL}
     PA_ADMIN_PUBLIC_HOSTNAME: pingaccess-admin.${TENANT_DOMAIN}
-    PA_CLUSTER_PUBLIC_HOSTNAME: pingaccess-cluster.${TENANT_DOMAIN}
     PA_ENGINE_PUBLIC_HOSTNAME: pingaccess.${TENANT_DOMAIN}
     PF_ADMIN_PUBLIC_HOSTNAME: pingfederate-admin.${TENANT_DOMAIN}
     PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
-    BACKUP_URL: ${BACKUP_URL}
     REGION: ${REGION}
 
 patchesJson6902:
@@ -107,19 +103,6 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingaccess.${TENANT_DOMAIN}
-
-- target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: pingaccess-cluster-ingress
-  patch: |-
-    - op: replace
-      path: /spec/tls/0/hosts/0
-      value: pingaccess-cluster.${TENANT_DOMAIN}
-    - op: replace
-      path: /spec/rules/0/host
-      value: pingaccess-cluster.${TENANT_DOMAIN}
 
 - target:
     group: extensions

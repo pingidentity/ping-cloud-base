@@ -11,13 +11,9 @@ set -e
 if test -z "${K8S_ACME_CERT_SECRET_NAME}"; then
     echo "add-acme-cert: K8S_ACME_CERT_SECRET_NAME is not set skipping"
     exit 0
-fi 
+fi
 
-# Setting public endpoint and port for cert.
-export CLUSTER_CONFIG_HOST="${PA_ADMIN_PUBLIC_HOSTNAME}"
-export CLUSTER_CONFIG_PORT=443
-
-echo "add-acme-cert: cluster-config host:port ${CLUSTER_CONFIG_HOST}:${CLUSTER_CONFIG_PORT}"
+# FIXME: this needs to not just check if the ACME cert already exists but also whether the tls.crt has changed.
 
 # Check if alias for the cert already exists.
 echo "add-acme-cert: checking if certificate with alias '${K8S_ACME_CERT_SECRET_NAME}' already exists"
@@ -49,7 +45,7 @@ ADD_ACME_CERT_OUT=$(make_api_request -X POST -d "{
 ACME_CERT_STATUS=$(echo ${ADD_ACME_CERT_OUT} | jq -r '.status')
 
 # Exit 1: if ACME_CERT_STATUS is not set or not equal to string 'Valid'.
-if test -z "${ACME_CERT_STATUS}" || "${ACME_CERT_STATUS}" != 'Valid'; then
+if test -z "${ACME_CERT_STATUS}" || test "${ACME_CERT_STATUS}" != 'Valid'; then
   echo "add-acme-cert: failed to get correct cert status: ${ACME_CERT_STATUS}"
   exit 1
 fi 

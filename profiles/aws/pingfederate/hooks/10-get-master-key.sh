@@ -15,14 +15,14 @@ MASTER_KEY_PATH="${SERVER_ROOT_DIR}/server/default/data/${MASTER_KEY_FILE}"
 # NOTE: we wait through the WAIT_FOR_SERVICES variable in the engine's init container. So the admin
 # must be running if we're here.
 
-echo "Fetching master key from the admin server"
+echo "get-master-key: fetching master key from the admin server"
 
 # Fetch the master key from the admin server
 EXPORT_DIR=$(mktemp -d)
 EXPORT_ZIP_FILE="${EXPORT_DIR}/export.zip"
 
-PF_ADMIN_HOST_PORT="${PINGFEDERATE_ADMIN_SERVER}:${PF_ADMIN_PORT}"
-is_multi_cluster && PF_ADMIN_HOST_PORT="${PF_ADMIN_PUBLIC_HOSTNAME}"
+echo "get-master-key: PingFederate config settings"
+export_config_settings
 
 make_api_request -X GET \
   "https://${PF_ADMIN_HOST_PORT}/pf-admin-api/v1/configArchive/export" \
@@ -31,7 +31,7 @@ make_api_request -X GET \
 RESULT=$?
 test "${RESULT}" -ne 0 && exit "${RESULT}"
 
-echo "Extracting config export to ${EXPORT_DIR}"
+echo "get-master-key: extracting config export to ${EXPORT_DIR}"
 unzip -o "${EXPORT_ZIP_FILE}" -d "${EXPORT_DIR}"
 
 find "${EXPORT_DIR}" -type f -name "${MASTER_KEY_FILE}" | xargs -I {} cp {} "${MASTER_KEY_PATH}"
