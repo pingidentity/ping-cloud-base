@@ -5,7 +5,6 @@ import os
 from tabulate import tabulate
 from enum import Enum
 
-# logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 class LogLevel(Enum):
     INFO = 1

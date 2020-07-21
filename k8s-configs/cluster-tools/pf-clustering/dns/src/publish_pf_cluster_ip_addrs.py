@@ -17,11 +17,13 @@ dig_mgr = dig.DigManager(logger)
 k8s_mgr = k8s.K8sManager(logger)
 hosted_zone_mgr = route_53.HostedZoneManager(logger)
 
-# boto3.set_stream_logger('', logging.DEBUG)
-
 custom_retries = {'total_max_attempts': 5, 'max_attempts': 5, 'mode': 'adaptive'}
 botocore_config = botocore.config.Config(retries=custom_retries)
 r53_client = boto3.client("route53", config=botocore_config)
+
+
+def create_endpoints_domain_name(namespace, domain_name):
+    return f"{namespace}-endpoints.{domain_name}"
 
 
 def create_fqdns(domains):
@@ -110,38 +112,16 @@ def update_route53(domain_name, name_to_ip_addrs):
     if requires_update:
         logger.log("Route 53 requires an update to record set '%s'", name)
 
-        comment = 'PingFederate Cluster IPs'
-        resource_records = build_resource_records(name_to_ip_addrs)
-
         # Get hosted zone id matching the domain name
-        # hosted_zone_id = hosted_zone_mgr.fetch_hosted_zone_id(domain_name)
+        hosted_zone_id = hosted_zone_mgr.fetch_hosted_zone_id(domain_name)
 
-        # hosted_zone_mgr.update_resource_record_sets(
-        #     hosted_zone_id,
-        #     f"{endpoint_domain}",
-        #     60,
-        #     kube_dns_endpoints,
-        #     "Multi-Region Kubernetes DNS IPs"
-        # )
-
-        response = r53_client.change_resource_record_sets(
-            HostedZoneId=hosted_zone_id,
-            ChangeBatch={
-                'Comment': comment,
-                'Changes': [
-                    {
-                        'Action': 'UPSERT',
-                        'ResourceRecordSet': {
-                            'Name': name,
-                            'Type': 'A',
-                            'SetIdentifier': identifier,
-                            'Region': 'us-west-2',
-                            'TTL': 300,
-                            'ResourceRecords': resource_records
-                        }
-                    }
-                ]
-            })
+        # Update R53 recordset with latest PF IP addresses.
+        hosted_zone_mgr.update_type_a_resource_record_sets(
+            hosted_zone_id,
+            f"{name}",
+            name_to_ip_addrs,
+            "PingFederate Cluster IPs"
+        )
 
         logger.log("Route 53 record set change response: ")
         pprint.pprint(response)
@@ -216,7 +196,7 @@ def main():
     namespace = validate_namespace()
     domain_name = validate_tenant_domain()
 
-    domains = dig_mgr.get_domain_endpoints(namespace, domain_name)
+    domains = dig_mgr.get_k8s_domain_to_ip_mappings(namespace, domain_name)
     fqdns = create_fqdns(domains)
     name_to_ip_addrs = dig_mgr.fetch_name_to_ip_address(fqdns, "Query Kubernetes Core DNS to get PingFederate cluster IP addresses")
     update_route53(domain_name, name_to_ip_addrs)

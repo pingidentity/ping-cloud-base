@@ -1,4 +1,6 @@
 import pydig
+import os
+import time
 from tabulate import tabulate
 from common import core_dns_logging 
 
@@ -14,22 +16,47 @@ class DigManager():
         self.logger = logger
 
 
-    def __fetch_all_cluster_fqdns(self, fqdn, query_description):
+    def __query(self, fqdn, type):
+        retry_in_secs =  os.environ.get("DNS_RESOLUTION_RETRY_SECS") if "DNS_RESOLUTION_RETRY_SECS" in os.environ else 30
+        for i in range(0, 3):
+            try:
+                record = pydig.query(fqdn, type)
+                if record:
+                    # TODO remove
+                    self.logger.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4")
+                    self.logger.log(f"Found entry {record}") 
+                    self.logger.log("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4")
+
+                    return record
+                else:
+                    self.logger.log(f"Record not found for {fqdn}", WARNING)
+            except Exception as error:
+                self.logger.log(f"Error retrieving records for {fqdn}", ERROR)
+
+            self.logger.log(f"Retrying query in {retry_in_secs} seconds...")
+            time.sleep(int(retry_in_secs))
+
+        return None
+
+
+    def fetch_txt_records(self, fqdn, query_description):
         self.logger.log(query_description)
 
-        multi_cluster_domains = []
-        record = pydig.query(fqdn, 'TXT')
+        records = []
+        record = self.__query(fqdn, 'TXT')
         if record:
             for line in record:
-                # self.logger.log(f"line = {line}")
                 replaced_line = str(line).replace('"', "")
-                # self.logger.log(f"replaced_line = {replaced_line}")
                 stripped_line = replaced_line.strip()
-                # self.logger.log(f"stripped_line = {stripped_line}")
                 for domain in stripped_line.split():
-                    multi_cluster_domains.append(domain.strip())
+                    records.append(domain.strip())
             
-        self.logger.log(f"Dig query results for {fqdn}: {multi_cluster_domains}")
+        self.logger.log(f"Dig query results for {fqdn}: {records}")
+        return records 
+
+
+    def fetch_all_cluster_fqdns(self, fqdn, query_description):
+        multi_cluster_domains = self.fetch_txt_records(fqdn, query_description)
         if len(multi_cluster_domains) > 0:
             return multi_cluster_domains
         else:
@@ -41,7 +68,7 @@ class DigManager():
 
         name_to_ip_addrs = {}
         for name in names:
-            record = pydig.query(name, 'A')
+            record = self.__query(name, 'A')
             if record:
                 self.logger.log(f"record = {record}")
                 name_to_ip_addrs[name] = record
@@ -61,36 +88,49 @@ class DigManager():
 
         return name_to_ip_addrs
 
+    
+    def create_multi_cluster_domain_name(self, namespace, domain_name):
+        return f"multi-cluster-domains.{namespace}.{domain_name}."
 
-    def get_domain_endpoints(self, namespace, domain_name):
+
+    def get_k8s_domain_to_ip_mappings(self, namespace, domain_name, filter=lambda x, y: True):
 
         # The multi-cluster-domains recordset in the local
         # Hosted Zone holds a TXT record of all the clusters
         # (regions)
-        name =  f"multi-cluster-domains.{namespace}.{domain_name}."
-        multi_cluster_domains = self.__fetch_all_cluster_fqdns(
+        name = self.create_multi_cluster_domain_name(namespace, domain_name)
+        multi_cluster_domains = self.fetch_all_cluster_fqdns(
                         name,
                         f"Query the local AWS Route 53 Hosted Zone to get all of the TXT entries for {name}"
         )
 
+        # Use the TXT records to look up the Core DNS IPs of other clusters
         domain_to_ips = {}
-
-        # Get endpoint details of all clusters
         for domain_name in multi_cluster_domains:
-            self.logger.log(f"The domain-name is: {domain_name}", DEBUG)
+
             ns = domain_name.split("-endpoints.")[0]
-            self.logger.log(f"Deriving the namespace {ns}", DEBUG)
-            # Omit the current domain since
-            # K8s forwarding entries should
-            # only contain routes to other
-            # domains
-            if ns != namespace:
-                name_to_ip_addrs = self.fetch_name_to_ip_address([domain_name], "Query to get the XXXXXXX")
+            self.logger.log(f"Using the Route 53 domain name '{domain_name}' to derive the namespace '{ns}'")
+
+            # Omit the current namespace
+            # since this method is trying
+            # to find the Core DNS IP 
+            # addressess for other clusters
+            # via Route 53
+            if filter(ns, namespace):
+                # TODO: refactor logs
+                self.logger.log("0000000000000000000000000000000000000000000000000000000000000000000")
+                self.logger.log(f"domain_name: {domain_name}, namespace: {namespace}")
+                self.logger.log("0000000000000000000000000000000000000000000000000000000000000000000")
+                name_to_ip_addrs = self.fetch_name_to_ip_address([domain_name], f"Query to get the Core DNS IP addresses for {domain_name}")
+
+                # Using the namespace, derive the Kubernetes
+                # domain name and set it as the key in a dict
+                # to the list of Core DNS IP addresses 
                 if name_to_ip_addrs:
                     domain_to_ips[f"{ns}.svc.cluster.local"] = name_to_ip_addrs.get(domain_name)
-
+                
         # Sort by key so update to configMap is consistent
         domain_to_ips = sorted(domain_to_ips.items())
         self.logger.log(f"Domain to IP address mappings: {domain_to_ips}")
 
-        return domain_to_ips 
+        return domain_to_ips

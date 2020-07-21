@@ -14,8 +14,10 @@ class K8sManager():
 
     def __init__(self, logger):
         self.logger = logger
+        self.kube_dns_endpoints = None
 
         # Initialize kubernetes client
+        # to use the creds of the pod
         config.load_incluster_config()
         self.k8s_client = client.CoreV1Api()
 
@@ -31,21 +33,24 @@ class K8sManager():
 
         return None
 
-    
-    def fetch_kube_dns_endpoints(self):
-        self.logger.log("Getting the IP addresses of coredns pods from kube-dns endpoints...")
+
+    def get_kube_dns_endpoints(self):
 
         kube_dns_endpoints = []
         try:
+            self.logger.log("Getting the IP addresses of the Core DNS pods from kube-dns endpoints...")
             v1_endpoints_list = self.k8s_client.list_namespaced_endpoints('kube-system',
                                                                     pretty='pretty_example', 
                                                                     label_selector='k8s-app=kube-dns')
+
             for v1_endpoints in v1_endpoints_list.items:
                 v1_endpoints_subsets = v1_endpoints.subsets
                 for v1_endpoint_subset in v1_endpoints_subsets:
                     v1_endpoint_addresses = v1_endpoint_subset.addresses
                     for v1_endpoint_address in v1_endpoint_addresses:
                         kube_dns_endpoints.append(v1_endpoint_address.ip)
+            
+            self.logger.log(f"Found the kube-dns endpoints: {kube_dns_endpoints}")
 
         except ApiException as e:
             self.logger.log("Exception when calling CoreV1Api->list_namespaced_endpoints: %s\n" % e, ERROR)
@@ -54,7 +59,22 @@ class K8sManager():
         if not kube_dns_endpoints:
             raise ValueError("Unable to get local kube-dns endpoint details")
 
-        self.logger.log(f"Found the kube-dns endpoints: {kube_dns_endpoints}")
+        return kube_dns_endpoints
+
+    
+    def fetch_kube_dns_endpoints(self):
+
+        if not self.kube_dns_endpoints is None:
+            self.logger.log(f"Found the local cluster Core DNS IP addresses {self.kube_dns_endpoints} in the cache")
+            return self.kube_dns_endpoints
+        else:
+            self.logger.log("Did not find the local cluster Core DNS IP addresses in the cache.")
+
+        kube_dns_endpoints = self.get_kube_dns_endpoints()
+
+        self.logger.log("Storing the local cluster Core DNS IP addresses in the cache.")
+        self.kube_dns_endpoints = kube_dns_endpoints
+
         return kube_dns_endpoints
 
 
