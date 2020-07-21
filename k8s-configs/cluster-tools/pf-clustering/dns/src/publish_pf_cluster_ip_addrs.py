@@ -44,20 +44,19 @@ def create_fqdns(domains):
     return fqdns
 
 
-def build_resource_records(name_to_ip_addrs):
-    # Filter out duplicates
+def get_ip_addrs(name_to_ip_addrs):
+    # remove?
+    logger.log("name_to_ip_addrs:")
+    logger.log(name_to_ip_addrs)
     unique_ip_addrs = set()
+
     for name, ip_addrs in name_to_ip_addrs.items():
         for ip_addr in ip_addrs:
+            logger.log(f"ip_addr: {ip_addr}")
             unique_ip_addrs.add(ip_addr)
 
-    resource_records = []
-    for unique_ip_addr in unique_ip_addrs:
-        value = {'Value': unique_ip_addr}
-        resource_records.append(value)
-
-    logger.log("Gathering IP addresses for a record set: %s", resource_records)
-    return resource_records
+    logger.log(f"Gathering IP addresses: {unique_ip_addrs}")
+    return list(unique_ip_addrs)
 
 
 def dict_to_set_values(dictionary):
@@ -99,9 +98,10 @@ def route53_requires_update(existing_r53_ip_addrs, name_to_ip_addrs):
     return False
 
 
-def update_route53(domain_name, name_to_ip_addrs):
+def update_route53(namespace, domain_name, name_to_ip_addrs):
     identifier = 'pf-cluster-ip-addrs'
-    name = identifier + hosted_zone
+    name = f"{identifier}.{namespace}.{domain_name}" 
+    logger.log(f"The identifier is: {name}")
 
     existing_r53_ip_addrs = dig_mgr.fetch_name_to_ip_address([name], "Query AWS Route 53 DNS to get published PingFederate cluster IP addresses")
 
@@ -110,16 +110,18 @@ def update_route53(domain_name, name_to_ip_addrs):
     # to be refreshed.
     requires_update = route53_requires_update(existing_r53_ip_addrs, name_to_ip_addrs)
     if requires_update:
-        logger.log("Route 53 requires an update to record set '%s'", name)
+        logger.log(f"Route 53 requires an update to record set '{name}'")
 
         # Get hosted zone id matching the domain name
         hosted_zone_id = hosted_zone_mgr.fetch_hosted_zone_id(domain_name)
 
+        ip_addrs = get_ip_addrs(name_to_ip_addrs)
+
         # Update R53 recordset with latest PF IP addresses.
-        hosted_zone_mgr.update_type_a_resource_record_sets(
+        response = hosted_zone_mgr.update_type_a_resource_record_sets(
             hosted_zone_id,
             f"{name}",
-            name_to_ip_addrs,
+            ip_addrs,
             "PingFederate Cluster IPs"
         )
 
@@ -199,7 +201,7 @@ def main():
     domains = dig_mgr.get_k8s_domain_to_ip_mappings(namespace, domain_name)
     fqdns = create_fqdns(domains)
     name_to_ip_addrs = dig_mgr.fetch_name_to_ip_address(fqdns, "Query Kubernetes Core DNS to get PingFederate cluster IP addresses")
-    update_route53(domain_name, name_to_ip_addrs)
+    update_route53(namespace, domain_name, name_to_ip_addrs)
 
     logger.log("Execution completed successfully.")
 

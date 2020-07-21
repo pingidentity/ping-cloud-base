@@ -3,7 +3,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 - rbac.yaml
-- python-test.yaml
 - cronjobs.yaml
 
 namespace: kube-system
