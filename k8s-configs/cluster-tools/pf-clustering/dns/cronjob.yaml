@@ -7,7 +7,7 @@ metadata:
   name: publish-pf-cluster-ip-addrs
   namespace: ping-cloud-mpeterson
 spec:
-  schedule: 0/1 * * * *
+  schedule: 0/8 * * * *
   jobTemplate:
     metadata:
       labels:
