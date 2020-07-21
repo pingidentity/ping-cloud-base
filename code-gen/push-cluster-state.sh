@@ -120,12 +120,13 @@ for ENV in ${ENVIRONMENTS}; do
 
   if "${IS_PRIMARY}"; then
     rm -rf ./*
-    cp -pr "${ENV_CODE_DIR}"/. .
-  else
-    K8S_DIR_FOR_SECONDARY=./k8s-configs/"${REGION_NAME}"
-    rm -rf "${K8S_DIR_FOR_SECONDARY}"
-    cp -pr "${ENV_CODE_DIR}"/. "${K8S_DIR_FOR_SECONDARY}"
+    mkdir -p base
+    cp -pr "${ENV_CODE_DIR}"/. base
   fi
+
+  K8S_DIR_FOR_REGION=./k8s-configs/"${REGION_NAME}"
+  rm -rf "${K8S_DIR_FOR_REGION}"
+  cp -pr "${ENV_CODE_DIR}"/. "${K8S_DIR_FOR_REGION}"
 
   git add .
   git commit -m "Initial commit of code for ${REGION_NAME} - ping-cloud-base@${PCB_COMMIT_SHA}"

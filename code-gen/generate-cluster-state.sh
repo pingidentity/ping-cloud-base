@@ -520,8 +520,8 @@ ENVIRONMENTS='dev test stage prod'
 for ENV in ${ENVIRONMENTS}; do
   # Export all the environment variables required for envsubst
   test "${ENV}" = prod && export CLUSTER_STATE_REPO_BRANCH=master || export CLUSTER_STATE_REPO_BRANCH=${ENV}
-  test "${REGION}" != "${PRIMARY_REGION}" || test "${TENANT_DOMAIN}" != "${PRIMARY_TENANT_DOMAIN}" &&
-      export CLUSTER_STATE_REPO_PATH="${REGION}"
+  export CLUSTER_STATE_REPO_PATH="${REGION}"
+
   export ENVIRONMENT_TYPE=${ENV}
 
   # The base URL for kustomization files and environment will be different for each CDE.
