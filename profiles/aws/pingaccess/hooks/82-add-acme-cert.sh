@@ -3,6 +3,7 @@
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 
+exit 0
 
 set -e
 "${VERBOSE}" && set -x
