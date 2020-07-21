@@ -93,3 +93,33 @@ patchesStrategicMerge:
   metadata:
     name: pingdirectory-periodic-backup
   $patch: delete
+
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: pingaccess-environment-variables
+  data:
+    PD_PRIMARY_PUBLIC_HOSTNAME: ${PD_PRIMARY_PUBLIC_HOSTNAME}
+    PF_ADMIN_PUBLIC_HOSTNAME: ${PF_ADMIN_PUBLIC_HOSTNAME}
+    PA_ADMIN_PUBLIC_HOSTNAME: ${PA_ADMIN_PUBLIC_HOSTNAME}
+
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: pingfederate-environment-variables
+  data:
+    PD_PRIMARY_PUBLIC_HOSTNAME: ${PD_PRIMARY_PUBLIC_HOSTNAME}
+    PF_ADMIN_PUBLIC_HOSTNAME: ${PF_ADMIN_PUBLIC_HOSTNAME}
+    PA_ADMIN_PUBLIC_HOSTNAME: ${PA_ADMIN_PUBLIC_HOSTNAME}
+
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: pingdirectory-environment-variables
+  data:
+    PD_PRIMARY_PUBLIC_HOSTNAME: ${PD_PRIMARY_PUBLIC_HOSTNAME}
+    PF_ADMIN_PUBLIC_HOSTNAME: ${PF_ADMIN_PUBLIC_HOSTNAME}
+    PA_ADMIN_PUBLIC_HOSTNAME: ${PA_ADMIN_PUBLIC_HOSTNAME}
