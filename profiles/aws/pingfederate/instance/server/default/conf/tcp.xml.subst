@@ -55,7 +55,7 @@
 
 
     <dns.DNS_PING
-		 dns_query="pf-cluster-ip-addrs.mpeterson.ping-demo.com" />
+		 dns_query="pf-cluster-ip-addrs.${NAMESPACE_PREFIX}.${TENANT_NAME}.ping-demo.com" />
 
 
     <!-- To enable discovery of EC2 instances in AWS dynamically, comment out TCPPING, and uncomment the section below.
