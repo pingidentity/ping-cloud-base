@@ -149,10 +149,10 @@ spec:
         image: quay.io/bitnami/sealed-secrets-controller:v0.9.7
         resources:
           limits:
-            cpu: 10m
+            cpu: 500m
             memory: 100Mi
           requests:
-            cpu: 10m
+            cpu: 500m
             memory: 100Mi
         imagePullPolicy: IfNotPresent
         livenessProbe:
