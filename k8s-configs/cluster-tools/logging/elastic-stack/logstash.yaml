@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -14,7 +15,7 @@ data:
             add_field => { "stream_name" => "host.dmesg_${NODE_NAME}"}
             add_field => { "log_group" => "host" }
             start_position => "beginning"
-            sincedb_path => "/enrichment-shared-volume/${NODE_NAME}_dmegs_sincedb" 
+            sincedb_path => "/logstash-sincedb-files/${NODE_NAME}_dmegs_sincedb" 
         }
         file {
             id => "secure_log"
@@ -23,7 +24,7 @@ data:
             add_field => { "log_type" => "syslog" }
             add_field => { "log_group" => "host" }
             start_position => "beginning"
-            sincedb_path => "/enrichment-shared-volume/${NODE_NAME}_secure_sincedb" 
+            sincedb_path => "/logstash-sincedb-files/${NODE_NAME}_secure_sincedb" 
         }
         file {
             id => "messages"
@@ -32,7 +33,7 @@ data:
             add_field => { "stream_name" => "host.messages_${NODE_NAME}"}
             add_field => { "log_group" => "host" }
             start_position => "beginning"
-            sincedb_path => "/enrichment-shared-volume/${NODE_NAME}_messages_sincedb" 
+            sincedb_path => "/logstash-sincedb-files/${NODE_NAME}_messages_sincedb" 
         }
     }
     filter {
@@ -48,9 +49,9 @@ data:
         mutate {
           copy => {"syslog_message" => "message" }
         }
-         date {
-           match => [ "timestamp", "MMM  d HH:mm:ss", "MMM dd HH:mm:ss" ]
-         }
+        date {
+          match => [ "timestamp", "MMM  d HH:mm:ss", "MMM dd HH:mm:ss" ]
+        }
       }
     }
 
@@ -62,7 +63,7 @@ data:
         add_field => { "log_type" => "json" }
         add_field => { "log_group" => "application" }
         start_position => "beginning"
-        sincedb_path => "/enrichment-shared-volume/${NODE_NAME}_application_sincedb" 
+        sincedb_path => "/logstash-sincedb-files/${NODE_NAME}_application_sincedb" 
       }
     }
     filter {
@@ -175,7 +176,7 @@ data:
                     field => "ip"
                     destination => "threat_intel"
                     fallback => "No"
-                    dictionary_path => '/enrichment-shared-volume/enrichment-cache/AlienVaultIP.yml'
+                    dictionary_path => '/enrichment-cache-files/AlienVaultIP.yml'
                     refresh_behaviour => "replace"
                 }
 
@@ -183,7 +184,7 @@ data:
                     field => "ip"
                     destination => "tor_intel"
                     fallback => "No"
-                    dictionary_path => '/enrichment-shared-volume/enrichment-cache/TorNodes.yml'
+                    dictionary_path => '/enrichment-cache-files/TorNodes.yml'
                     refresh_behaviour => "replace"
                 }
 
@@ -191,7 +192,7 @@ data:
                     field => "[geoip][country_name]"
                     destination => "malicious_country"
                     fallback => "No"
-                    dictionary_path => '/enrichment-shared-volume/enrichment-cache/MaliciousCountries.yml'
+                    dictionary_path => '/enrichment-cache-files/MaliciousCountries.yml'
                     refresh_behaviour => "replace"
                 }
 
@@ -199,7 +200,7 @@ data:
                     field => "[geoip][country_name]"
                     destination => "known_country"
                     fallback => "No"
-                    dictionary_path => '/enrichment-shared-volume/enrichment-cache/KnownCountries.yml'
+                    dictionary_path => '/enrichment-cache-files/KnownCountries.yml'
                     refresh_behaviour => "replace"
                 }
 
@@ -219,7 +220,6 @@ data:
                         hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
                         user => "${LOGSTASH_ELASTICSEARCH_USER}"
                         password => "${LOGSTASH_ELASTICSEARCH_PASSWORD}"
-                        ca_file => "${CERTS_DIR}/ca/ca.crt"
                         add_field => {"found_distance_alert" => "YES"}
 
                         fields => {
@@ -232,8 +232,6 @@ data:
                         }
                     }
                 }
-
-
             }
         }
 
@@ -290,7 +288,7 @@ data:
                 field => "requesterIP"
                 destination => "threat_intel"
                 fallback => "No"
-                dictionary_path => '/enrichment-shared-volume/enrichment-cache/AlienVaultIP.yml'
+                dictionary_path => '/enrichment-cache-files/AlienVaultIP.yml'
                 refresh_behaviour => "replace"
             }
 
@@ -298,7 +296,7 @@ data:
                 field => "requesterIP"
                 destination => "tor_intel"
                 fallback => "No"
-                dictionary_path => '/enrichment-shared-volume/enrichment-cache/TorNodes.yml'
+                dictionary_path => '/enrichment-cache-files/TorNodes.yml'
                 refresh_behaviour => "replace"
             }
 
@@ -306,7 +304,7 @@ data:
                 field => "[geoip][country_name]"
                 destination => "malicious_country"
                 fallback => "No"
-                dictionary_path => '/enrichment-shared-volume/enrichment-cache/MaliciousCountries.yml'
+                dictionary_path => '/enrichment-cache-files/MaliciousCountries.yml'
                 refresh_behaviour => "replace"
             }
 
@@ -314,7 +312,7 @@ data:
                 field => "[geoip][country_name]"
                 destination => "known_country"
                 fallback => "No"
-                dictionary_path => '/enrichment-shared-volume/enrichment-cache/KnownCountries.yml'
+                dictionary_path => '/enrichment-cache-files/KnownCountries.yml'
                 refresh_behaviour => "replace"
             }
 
@@ -358,7 +356,7 @@ data:
                     field => "client"
                     destination => "threat_intel"
                     fallback => "No"
-                    dictionary_path => '/enrichment-shared-volume/enrichment-cache/AlienVaultIP.yml'
+                    dictionary_path => '/enrichment-cache-files/AlienVaultIP.yml'
                     refresh_behaviour => "replace"
                 }
 
@@ -366,7 +364,7 @@ data:
                     field => "client"
                     destination => "tor_intel"
                     fallback => "No"
-                    dictionary_path => '/enrichment-shared-volume/enrichment-cache/TorNodes.yml'
+                    dictionary_path => '/enrichment-cache-files/TorNodes.yml'
                     refresh_behaviour => "replace"
                 }
 
@@ -374,7 +372,7 @@ data:
                     field => "[geoip][country_name]"
                     destination => "malicious_country"
                     fallback => "No"
-                    dictionary_path => '/enrichment-shared-volume/enrichment-cache/MaliciousCountries.yml'
+                    dictionary_path => '/enrichment-cache-files/MaliciousCountries.yml'
                     refresh_behaviour => "replace"
                 }
 
@@ -382,7 +380,7 @@ data:
                     field => "[geoip][country_name]"
                     destination => "known_country"
                     fallback => "No"
-                    dictionary_path => '/enrichment-shared-volume/enrichment-cache/KnownCountries.yml'
+                    dictionary_path => '/enrichment-cache-files/KnownCountries.yml'
                     refresh_behaviour => "replace"
                 }
 
@@ -417,7 +415,6 @@ data:
 
     output {
         elasticsearch {
-            cacert => "${CERTS_DIR}/ca/ca.crt"
             hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
             sniffing => false
             ilm_enabled => true
@@ -425,314 +422,309 @@ data:
             ilm_policy => "ping-2-day-retention"
             user => "${LOGSTASH_ELASTICSEARCH_USER}"
             password => "${LOGSTASH_ELASTICSEARCH_PASSWORD}"
-            ssl_certificate_verification => false
         }
         if([log_type] == "Enrichment_System_Log"){
             elasticsearch {
                 id => "enrichment_out"
-                cacert => "${CERTS_DIR}/ca/ca.crt"
                 hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
                 ilm_enabled => true
                 ilm_rollover_alias => "enrichment"
                 ilm_policy => "ping-2-day-retention"
                 user => "${LOGSTASH_ELASTICSEARCH_USER}"
                 password => "${LOGSTASH_ELASTICSEARCH_PASSWORD}"
-                ssl_certificate_verification => false
             }
         }
         if([log_type] == "PF_Provisioner_Log"){
             elasticsearch {
                 id => "pf_provision_out"
-                cacert => "${CERTS_DIR}/ca/ca.crt"
                 hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
                 ilm_enabled => true
                 ilm_rollover_alias => "pf-provision"
                 ilm_policy => "ping-2-day-retention"
                 user => "${LOGSTASH_ELASTICSEARCH_USER}"
                 password => "${LOGSTASH_ELASTICSEARCH_PASSWORD}"
-                ssl_certificate_verification => false
             }
         }
         if([log_type] == "PF_Audit_Log"){
             elasticsearch {
                 id => "pf_audit_out"
-                cacert => "${CERTS_DIR}/ca/ca.crt"
                 hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
                 ilm_enabled => true
                 ilm_rollover_alias => "pf-audit"
                 ilm_policy => "ping-2-day-retention"
                 user => "${LOGSTASH_ELASTICSEARCH_USER}"
                 password => "${LOGSTASH_ELASTICSEARCH_PASSWORD}"
-                ssl_certificate_verification => false
             }
         }
         if([log_type] == "PF_System_Log"){
             elasticsearch {
                 id => "pf_system_out"
-                cacert => "${CERTS_DIR}/ca/ca.crt"
                 hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
                 ilm_enabled => true
                 ilm_rollover_alias => "pf-system"
                 ilm_policy => "ping-2-day-retention"
                 user => "${LOGSTASH_ELASTICSEARCH_USER}"
                 password => "${LOGSTASH_ELASTICSEARCH_PASSWORD}"
-                ssl_certificate_verification => false
             }
         }
         if([log_type] == "PD_Access_Log"){
           elasticsearch {
             id => "pd_out"
-            cacert => "${CERTS_DIR}/ca/ca.crt"
             hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
             ilm_enabled => true
             ilm_rollover_alias => "pd-access"
             ilm_policy => "ping-2-day-retention"
             user => "${LOGSTASH_ELASTICSEARCH_USER}"
             password => "${LOGSTASH_ELASTICSEARCH_PASSWORD}"
-            ssl_certificate_verification => false
           }
       }
       if([log_type] == "PD_Failed_Ops"){
         elasticsearch {
             id => "pd_failed_ops_out"
-            cacert => "${CERTS_DIR}/ca/ca.crt"
             hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
             ilm_enabled => true
             ilm_rollover_alias => "pd-failed-ops"
             ilm_policy => "ping-2-day-retention"
             user => "${LOGSTASH_ELASTICSEARCH_USER}"
             password => "${LOGSTASH_ELASTICSEARCH_PASSWORD}"
-            ssl_certificate_verification => false
         }
       }
     }
 
 ---
- apiVersion: apps/v1
- kind: DaemonSet
- metadata:
-   name: logstash-elastic
-   labels:
-     app: logstash-elastic
- spec:
-   selector:
-     matchLabels:
-       app: logstash-elastic
-   updateStrategy:
-     type: RollingUpdate
-     rollingUpdate:
-       maxUnavailable: 1
-   template:
-     metadata:
-       labels:
-         app: logstash-elastic
-     spec:
-       serviceAccount: logstash-elastic
-       initContainers:
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: logstash-elastic
+  labels:
+    app: logstash-elastic
+spec:
+  selector:
+    matchLabels:
+      app: logstash-elastic
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: logstash-elastic
+    spec:
+      serviceAccount: logstash-elastic
+      initContainers:
 
-       - name: check-service-availability
-         image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.4
-         imagePullPolicy: Always
-         command: ["sh", '$(CONTAINER_NAME).sh']
+      - name: check-service-availability
+        # image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.4
+        image: 7es7/enrichment-bootstrap-efsless:latest
+        imagePullPolicy: Always
+        command: ["sh", '$(CONTAINER_NAME).sh']
 
-         env:
-         - name: CONTAINER_NAME
-           value: "check-service-availability"
+        env:
+        - name: CONTAINER_NAME
+          value: "check-service-availability"
 
-         - name: CHECK_SERVICE_URL
-           value: "https://elasticsearch"
-         - name: CHECK_SERVICE_PORT
-           value: "9200"
-         - name: CHECK_SERVICE_USER
-           valueFrom:
-             secretKeyRef:
-               name: elk-secrets
-               key: LOGSTASH_USER_B64
-         - name: CHECK_SERVICE_PASSWORD
-           valueFrom:
-             secretKeyRef:
-               name: elk-secrets
-               key: LOGSTASH_PASSWORD_B64
-         - name: CERTS_DIR
-           value: "/enrichment-shared-volume/certs"
-         - name: CHECK_SERVICE_CERT
-           value: "logstash"
-         - name: DESIRED_STATUS
-           value: "green"
+        - name: CHECK_SERVICE_URL
+          value: "http://elasticsearch"
+        - name: CHECK_SERVICE_PORT
+          value: "9200"
+        - name: CHECK_SERVICE_USER
+          valueFrom:
+            secretKeyRef:
+              name: elk-secrets
+              key: LOGSTASH_USER_B64
+        - name: CHECK_SERVICE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elk-secrets
+              key: LOGSTASH_PASSWORD_B64
+        - name: DESIRED_STATUS
+          value: "green"
 
-         volumeMounts:
-           - name: enrichment-shared-volume
-             mountPath: /enrichment-shared-volume
+      - name: create-enrichment-cache-files
+        # image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.4
+        image: 7es7/enrichment-bootstrap-efsless:latest
+        imagePullPolicy: Always
+        workingDir: /scripts
+        command: ["sh", '$(CONTAINER_NAME).sh']
 
-       - name: create-enrichment-cache-files
-         image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.4
-         imagePullPolicy: Always
-         workingDir: /scripts
-         command: ["sh", '$(CONTAINER_NAME).sh']
+        securityContext:
+          privileged: true
 
-         securityContext:
-           privileged: true
+        env:
+        - name: CONTAINER_NAME
+          value: "create-enrichment-cache-files"
+        - name:  ENRICHMENT_TOR_FEED_URL
+          value: "https://check.torproject.org/exit-addresses"
+        - name:  ENRICHMENT_ALIEN_VAULT_FEED_URL
+          value: "https://reputation.alienvault.com/reputation.generic"
+        - name:  ENRICHMENT_FILEPATH
+          value: "/enrichment-cache-files/"
+        - name:  PYTHONUNBUFFERED
+          value: "1"
+        - name: PYTHONIOENCODING
+          value: "UTF-8"
 
-         env:
-         - name: CONTAINER_NAME
-           value: "create-enrichment-cache-files"
-         - name:  ENRICHMENT_TOR_FEED_URL
-           value: "https://check.torproject.org/exit-addresses"
-         - name:  ENRICHMENT_ALIEN_VAULT_FEED_URL
-           value: "https://reputation.alienvault.com/reputation.generic"
-         - name:  ENRICHMENT_FILEPATH
-           value: "/enrichment-shared-volume/enrichment-cache/"
-         - name:  PYTHONUNBUFFERED
-           value: "1"
-         - name: PYTHONIOENCODING
-           value: "UTF-8"
+        volumeMounts:
+        - name: enrichment-cache
+          mountPath: /enrichment-cache
+        - name: enrichment-cache-files
+          mountPath: /enrichment-cache-files
 
-         volumeMounts:
-         - name: enrichment-shared-volume
-           mountPath: /enrichment-shared-volume
-           readOnly: false
-         - name: enrichment-cache
-           mountPath: /enrichment-cache
+      containers:
+      - name: logstash
+        image: gcr.io/ping-identity/ping-cloud-logstash/ping-cloud-logstash:7.8.0.1
+      
+        securityContext:
+          runAsUser: 0
+          runAsGroup: 1000
+          privileged: true
 
-       containers:
-       - name: logstash
-         image: gcr.io/ping-identity/ping-cloud-logstash/ping-cloud-logstash:7.8.0.1
-       
-         securityContext:
-           runAsUser: 0
-           runAsGroup: 1000
-           privileged: true
+        env:
 
-         env:
+          - name: CONTAINER_NAME
+            value: "logstash"
+          - name: LS_JAVA_OPTS
+            value: "-Xmx1g -Xms1g"
+          - name: NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: LOGSTASH_ELASTICSEARCH_URL
+            value: "http://elasticsearch"
+          - name: LOGSTASH_ELASTICSEARCH_PORT
+            value: "9200"
+          - name: LOGSTASH_ELASTICSEARCH_USER
+            valueFrom:
+              secretKeyRef:
+                name: elk-secrets
+                key: ELASTIC_USER_B64
+          - name: LOGSTASH_ELASTICSEARCH_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: elk-secrets
+                key: ELASTIC_PASSWORD_B64
+          - name: CONFIG_RELOAD_AUTOMATIC
+            value: "true"
+          - name: CONFIG_RELOAD_INTERVAL
+            value: "5s"
+          - name: LOG_FORMAT
+            value: "json"
+          - name: LOG_LEVEL
+            value: "info"
+          - name: PIPELINE_BATCH_DELAY
+            value: "500"
+          - name: PIPELINE_BATCH_SIZE
+            value: "1500"
 
-           - name: CONTAINER_NAME
-             value: "logstash"
-           - name: CERTS_DIR
-             value: "/enrichment-shared-volume/certs"
-           - name: LS_JAVA_OPTS
-             value: "-Xmx1g -Xms1g"
-           - name: NODE_NAME
-             valueFrom:
-               fieldRef:
-                 fieldPath: spec.nodeName
-           - name: LOGSTASH_ELASTICSEARCH_URL
-             value: "https://elasticsearch"
-           - name: LOGSTASH_ELASTICSEARCH_PORT
-             value: "9200"
-           - name: LOGSTASH_ELASTICSEARCH_USER
-             valueFrom:
-               secretKeyRef:
-                 name: elk-secrets
-                 key: ELASTIC_USER_B64
-           - name: LOGSTASH_ELASTICSEARCH_PASSWORD
-             valueFrom:
-               secretKeyRef:
-                 name: elk-secrets
-                 key: ELASTIC_PASSWORD_B64
-           - name: CONFIG_RELOAD_AUTOMATIC
-             value: "true"
-           - name: CONFIG_RELOAD_INTERVAL
-             value: "5s"
-           - name: LOG_FORMAT
-             value: "json"
-           - name: LOG_LEVEL
-             value: "info"
-           - name: XPACK_MONITORING_ENABLED
-             value: "true"
-           - name: XPACK_MONITORING_ELASTICSEARCH_HOSTS
-             value: "https://elasticsearch:9200"
-           - name: XPACK_MONITORING_ELASTICSEARCH_USERNAME
-             valueFrom:
-               secretKeyRef:
-                 name: elk-secrets
-                 key: LOGSTASH_USER_B64
-           - name: XPACK_MONITORING_ELASTICSEARCH_PASSWORD
-             valueFrom:
-               secretKeyRef:
-                 name: elk-secrets
-                 key: LOGSTASH_PASSWORD_B64
-           - name: XPACK_MONITORING_ELASTICSEARCH_SSL_CERTIFICATE_AUTHORITY
-             value: "$(CERTS_DIR)/ca/ca.crt"
-           - name: PIPELINE_BATCH_DELAY
-             value: "500"
-           - name: PIPELINE_BATCH_SIZE
-             value: "1500"
+        resources:
+          limits:
+            memory: 2Gi
+          requests:
+            cpu: 150m
+            memory: 1Gi
 
-         resources:
-           limits:
-             memory: 2Gi
-           requests:
-             cpu: 150m
-             memory: 1Gi
+        ports:
+          - containerPort: 9600
+            name: rest
+            protocol: TCP
+          - containerPort: 20510
+            name: enrichment-in
+            protocol: TCP
+          - containerPort: 20512
+            name: pf-provision-in
+            protocol: TCP
+          - containerPort: 20513
+            name: pf-system-in
+            protocol: TCP
+          - containerPort: 20514
+            name: pf-audit-in
+            protocol: TCP
+          - containerPort: 20515
+            name: pd-tcp
+            protocol: TCP
+          - containerPort: 20515
+            name: pd-udp
+            protocol: UDP
+          - containerPort: 20516
+            name: pa-system-in
+            protocol: TCP
+          - containerPort: 20517
+            name: pa-audit-in
+            protocol: TCP
 
-         ports:
-           - containerPort: 9600
-             name: rest
-             protocol: TCP
-           - containerPort: 20510
-             name: enrichment-in
-             protocol: TCP
-           - containerPort: 20512
-             name: pf-provision-in
-             protocol: TCP
-           - containerPort: 20513
-             name: pf-system-in
-             protocol: TCP
-           - containerPort: 20514
-             name: pf-audit-in
-             protocol: TCP
-           - containerPort: 20515
-             name: pd-tcp
-             protocol: TCP
-           - containerPort: 20515
-             name: pd-udp
-             protocol: UDP
-           - containerPort: 20516
-             name: pa-system-in
-             protocol: TCP
-           - containerPort: 20517
-             name: pa-audit-in
-             protocol: TCP
+        volumeMounts:
+        - name: enrichment-logstash-config
+          mountPath: /usr/share/logstash/pipeline
+          readOnly: true
+        - name: enrichment-logstash-search-templates
+          mountPath: /etc/logstash/templates
+          readOnly: true
+        - name: varlog
+          mountPath: /var/log
+        - name: varlibdockercontainers
+          mountPath: /var/lib/docker/containers
+          readOnly: true
+        - name: enrichment-cache-files
+          mountPath: /enrichment-cache-files
+          readOnly: false
+        - name: logstash-sincedb-files
+          mountPath: /logstash-sincedb-files
+          readOnly: false
 
-         volumeMounts:
-         - name: enrichment-logstash-config
-           mountPath: /usr/share/logstash/pipeline
-           readOnly: true
-         - name: enrichment-logstash-search-templates
-           mountPath: /etc/logstash/templates
-           readOnly: true
-         - name: varlog
-           mountPath: /var/log
-         - name: varlibdockercontainers
-           mountPath: /var/lib/docker/containers
-           readOnly: true
-         - name: enrichment-shared-volume
-           mountPath: /enrichment-shared-volume
-           readOnly: false
+      # Sidecar enrichment container which updates Logstash dictionaries
+      - name: enrichment-sidecar
+        # image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.4
+        image: 7es7/enrichment-bootstrap-efsless:latest
+        imagePullPolicy: Always
+        workingDir: /scripts
+        command: ["sh", '$(CONTAINER_NAME).sh']
 
-       terminationGracePeriodSeconds: 30
+        env:
+        - name: CONTAINER_NAME
+          value: "enrichment-sidecar"
+        - name:  ENRICHMENT_TOR_FEED_URL
+          value: "https://check.torproject.org/exit-addresses"
+        - name:  ENRICHMENT_ALIEN_VAULT_FEED_URL
+          value: "https://reputation.alienvault.com/reputation.generic"
+        - name:  ENRICHMENT_FILEPATH
+          value: "/enrichment-cache-files/"
+        - name:  ENRICHMENT_DELAY_SECONDS
+          value: "600"
+        - name:  PYTHONUNBUFFERED
+          value: "1"
+        - name: PYTHONIOENCODING
+          value: "UTF-8"
+        
+        volumeMounts:
+        - name: enrichment-cache-files
+          mountPath: /enrichment-cache-files
+          readOnly: false
 
-       volumes:
-       - name: enrichment-logstash-config
-         configMap:
-           name: enrichment-logstash-config
-       - name: enrichment-logstash-search-templates
-         configMap:
-           name: enrichment-logstash-search-templates
-       - name: varlog
-         hostPath:
-           path: /var/log
-       - name: varlibdockercontainers
-         hostPath:
-           path: /var/lib/docker/containers
-       - name: enrichment-shared-volume
-         nfs:
-           server: ${EFS_FILESYSTEM_ID}.efs.${REGION}.amazonaws.com
-           path: /
-       - name: enrichment-cache
-         configMap:
-           name: enrichment-cache
-           defaultMode: 0555
+      terminationGracePeriodSeconds: 30
+
+      volumes:
+      - name: enrichment-logstash-config
+        configMap:
+          name: enrichment-logstash-config
+      - name: enrichment-logstash-search-templates
+        configMap:
+          name: enrichment-logstash-search-templates
+      - name: varlog
+        hostPath:
+          path: /var/log
+      - name: varlibdockercontainers
+        hostPath:
+          path: /var/lib/docker/containers
+      - name: enrichment-cache
+        configMap:
+          name: enrichment-cache
+          defaultMode: 0555
+      - name: enrichment-cache-files
+        emptyDir: {}
+      - name: logstash-sincedb-files
+        hostPath:
+          path: /logstash-sincedb-files
 
 ---
 kind: Service

@@ -68,7 +68,8 @@ spec:
 
       
       - name: set-bootstrap-password
-        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.4
+        # image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.4
+        image: 7es7/enrichment-bootstrap-efsless:latest
         imagePullPolicy: Always
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
@@ -82,8 +83,6 @@ spec:
           value: "set-bootstrap-password"
         - name: ES_PATH_CONF
           value: "/usr/share/elasticsearch/data/config"
-        - name: CERTS_DIR
-          value: "/enrichment-shared-volume/certs"
         - name: ELASTIC_BOOTSTRAP_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -94,23 +93,6 @@ spec:
         - name: data
           mountPath: /usr/share/elasticsearch/data
           readOnly: false
-
-
-      - name: wait-for-available-certs
-        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.4
-        imagePullPolicy: Always
-        command: ["sh", '$(CONTAINER_NAME).sh']
-
-        env:
-        - name: CONTAINER_NAME
-          value: "create-certs"
-        - name: CERTS_DIR
-          value: "/enrichment-shared-volume/certs"
-
-        volumeMounts:
-        - name: enrichment-shared-volume
-          mountPath: /enrichment-shared-volume
-
 
       containers:
 
@@ -144,59 +126,28 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        # X-Pack security enabled
+        # X-Pack security disabled
         - name: XPACK_SECURITY_ENABLED
-          value: "true"
+          value: "false"
         # List of ES nodes to be searched for making a cluster
         - name: DISCOVERY_SEED_HOSTS
-          value: "es-cluster-0.elasticsearch"
+          value: "es-cluster-0.elasticsearch,es-cluster-1.elasticsearch,es-cluster-2.elasticsearch"
         - name: CLUSTER_INITIAL_MASTER_NODES
-          value: "es-cluster-0"
+          value: "es-cluster-0,es-cluster-1,es-cluster-2"
         - name: ES_PATH_CONF
           value: "/usr/share/elasticsearch/data/config"
         - name: ES_JAVA_OPTS
           value: "-Xms512m -Xmx512m"
-        # ES SSL settings
-        - name: XPACK_SECURITY_HTTP_SSL_ENABLED
-          value: "true"
-        - name: XPACK_SECURITY_HTTP_SSL_VERIFICATION_MODE
-          value: "certificate"
-        - name: XPACK_SECURITY_HTTP_SSL_CLIENT_AUTHENTICATION
-          value: "optional"
-        - name: XPACK_SECURITY_HTTP_SSL_KEY
-          value: "certs/elasticsearch-http/elasticsearch-http.key"
-        - name: XPACK_SECURITY_HTTP_SSL_CERTIFICATE
-          value: "certs/elasticsearch-http/elasticsearch-http.crt"
-        - name: XPACK_SECURITY_HTTP_SSL_CERTIFICATE_AUTHORITIES
-          value: "certs/ca/ca.crt" 
-        - name: XPACK_SECURITY_TRANSPORT_SSL_ENABLED
-          value: "true"
-        - name: XPACK_SECURITY_TRANSPORT_SSL_VERIFICATION_MODE
-          value: "certificate"
-        - name: XPACK_SECURITY_TRANSPORT_SSL_KEY
-          value: "certs/elasticsearch/elasticsearch.key"
-        - name: XPACK_SECURITY_TRANSPORT_SSL_CERTIFICATE
-          value: "certs/elasticsearch/elasticsearch.crt"
-        - name: XPACK_SECURITY_TRANSPORT_SSL_CERTIFICATE_AUTHORITIES
-          value: "certs/ca/ca.crt"
-
 
         volumeMounts:
         - name: data
           mountPath: /usr/share/elasticsearch/data
-          readOnly: false
-        - name: enrichment-shared-volume
-          mountPath: /enrichment-shared-volume
           readOnly: false
         - name: enrichment-elasticsearch-yaml-config
           mountPath: /usr/share/elasticsearch/data/config/elasticsearch.yml
           subPath: elasticsearch.yml
 
       volumes:
-        - name: enrichment-shared-volume
-          nfs:
-            server: ${EFS_FILESYSTEM_ID}.efs.${REGION}.amazonaws.com
-            path: /
         - name: enrichment-elasticsearch-yaml-config
           configMap:
             name: enrichment-elasticsearch-yaml-config

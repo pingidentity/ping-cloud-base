@@ -18,7 +18,8 @@ spec:
       initContainers:
 
       - name: check-service-availability
-        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.4
+        # image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.4
+        image: 7es7/enrichment-bootstrap-efsless:latest
         imagePullPolicy: Always
         command: ["sh", '$(CONTAINER_NAME).sh']
 
@@ -26,7 +27,7 @@ spec:
           - name: CONTAINER_NAME
             value: "check-service-availability"
           - name: CHECK_SERVICE_URL
-            value: "https://elasticsearch"
+            value: "http://elasticsearch"
           - name: CHECK_SERVICE_PORT
             value: "9200"
           - name: CHECK_SERVICE_USER
@@ -39,17 +40,8 @@ spec:
               secretKeyRef:
                 name: elk-secrets
                 key: KIBANA_PASSWORD_B64
-          - name: CERTS_DIR
-            value: "/enrichment-shared-volume/certs"
-          - name: CHECK_SERVICE_CERT
-            value: "kibana"
           - name: DESIRED_STATUS
             value: "green"
-
-        volumeMounts:
-        - name: enrichment-shared-volume
-          mountPath: /enrichment-shared-volume
-          readOnly: false
 
       containers:
       - name: kibana
@@ -62,8 +54,6 @@ spec:
         env:
           - name: CONTAINER_NAME
             value: "kibana"
-          - name: CERTS_DIR
-            value: "/enrichment-shared-volume/certs"
           - name: POD_NAME
             valueFrom:
               fieldRef:
@@ -75,7 +65,7 @@ spec:
           - name: SERVER_PORT
             value: "5601"
           - name: ELASTICSEARCH_HOSTS
-            value: "https://elasticsearch:9200"
+            value: "http://elasticsearch:9200"
           - name: ELASTICSEARCH_USERNAME
             valueFrom:
               secretKeyRef:
@@ -86,18 +76,8 @@ spec:
               secretKeyRef:
                 name: elk-secrets
                 key: KIBANA_PASSWORD_B64
-  
           - name: XPACK_MONITORING_ENABLED
-            value: "true"
-          - name: XPACK_MONITORING_ELASTICSEARCH_URL
-            value: "https://elasticsearch:9200"
-          - name: XPACK_MONITORING_ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES
-            value: "$(CERTS_DIR)/ca/ca.crt"
-  
-          - name: ELASTICSEARCH_SSL_VERIFICATIONMODE
-            value: "certificate"
-          - name: ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES
-            value: "$(CERTS_DIR)/ca/ca.crt"
+            value: "false"
 
         resources:
           limits:
@@ -106,17 +86,6 @@ spec:
           requests:
             memory: 512Mi
             cpu: 100m
-
-        volumeMounts:
-        - mountPath: /enrichment-shared-volume
-          name: enrichment-shared-volume
-          readOnly: false
-
-      volumes:
-      - name: enrichment-shared-volume
-        nfs:
-          server: ${EFS_FILESYSTEM_ID}.efs.${REGION}.amazonaws.com
-          path: /
 
 ---
 # This service exposes the Kibana http port to the cluster.
@@ -134,82 +103,84 @@ spec:
     app: kibana
 
 ---
- apiVersion: batch/v1
- kind: Job
- metadata:
-   name: kibana-dashboard-upload
- spec:
-   template:
-     spec:
-       restartPolicy: OnFailure
-       initContainers:
-       - name: wait-for-kibana
-         image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.4
-         imagePullPolicy: Always
-         command: ["sh", "-c", "until $(curl -u ${KIBANA_USER}:${KIBANA_PASSWORD} --output /dev/null --silent --fail ${KIBANA_HOST}:5601/api/status); do echo 'waiting for kibana API' && sleep 1; done"]
-         env:
-         - name: KIBANA_USER 
-           valueFrom:
-             secretKeyRef:
-               name: elk-secrets
-               key: ELASTIC_USER_B64
-         - name: KIBANA_PASSWORD
-           valueFrom:
-             secretKeyRef:
-               name: elk-secrets
-               key: ELASTIC_PASSWORD_B64
-         - name: KIBANA_HOST
-           value: "http://kibana"
-       containers:
-       - name: kibana-dashboard-upload
-         image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.4
-         imagePullPolicy: Always
-         workingDir: /scripts
-         command: ["sh", '$(CONTAINER_NAME).sh']
-         env:
-         - name: CONTAINER_NAME
-           value: 'kibana-dashboard-upload'
-         - name: KIBANA_USER 
-           valueFrom:
-             secretKeyRef:
-               name: elk-secrets
-               key: ELASTIC_USER_B64
-         - name: KIBANA_PASSWORD
-           valueFrom:
-             secretKeyRef:
-               name: elk-secrets
-               key: ELASTIC_PASSWORD_B64
-         - name: KIBANA_HOST
-           value: "http://kibana"
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kibana-dashboard-upload
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      initContainers:
+      - name: wait-for-kibana
+        # image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.4
+        image: 7es7/enrichment-bootstrap-efsless:latest
+        imagePullPolicy: Always
+        command: ["sh", "-c", "until $(curl -u ${KIBANA_USER}:${KIBANA_PASSWORD} --output /dev/null --silent --fail ${KIBANA_HOST}:5601/api/status); do echo 'waiting for kibana API' && sleep 1; done"]
+        env:
+        - name: KIBANA_USER 
+          valueFrom:
+            secretKeyRef:
+              name: elk-secrets
+              key: ELASTIC_USER_B64
+        - name: KIBANA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elk-secrets
+              key: ELASTIC_PASSWORD_B64
+        - name: KIBANA_HOST
+          value: "http://kibana"
+      containers:
+      - name: kibana-dashboard-upload
+        # image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.4
+        image: 7es7/enrichment-bootstrap-efsless:latest
+        imagePullPolicy: Always
+        workingDir: /scripts
+        command: ["sh", '$(CONTAINER_NAME).sh']
+        env:
+        - name: CONTAINER_NAME
+          value: 'kibana-dashboard-upload'
+        - name: KIBANA_USER 
+          valueFrom:
+            secretKeyRef:
+              name: elk-secrets
+              key: ELASTIC_USER_B64
+        - name: KIBANA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elk-secrets
+              key: ELASTIC_PASSWORD_B64
+        - name: KIBANA_HOST
+          value: "http://kibana"
 
-         securityContext:
-           privileged: true
-           runAsUser: 1000
-           runAsGroup: 1000
-         volumeMounts: 
-         - name: kibana-dashboard-pa
-           mountPath: /scripts/dashboards/pa.ndjson
-           subPath: pa.ndjson
-         - name: kibana-dashboard-pd
-           mountPath: /scripts/dashboards/pd.ndjson
-           subPath: pd.ndjson
-         - name: kibana-dashboard-pf
-           mountPath: /scripts/dashboards/pf.ndjson
-           subPath: pf.ndjson
-         - name: kibana-dashboard-pf-basic
-           mountPath: /scripts/dashboards/pf-basic.ndjson
-           subPath: pf-basic.ndjson
+        securityContext:
+          privileged: true
+          runAsUser: 1000
+          runAsGroup: 1000
+        volumeMounts: 
+        - name: kibana-dashboard-pa
+          mountPath: /scripts/dashboards/pa.ndjson
+          subPath: pa.ndjson
+        - name: kibana-dashboard-pd
+          mountPath: /scripts/dashboards/pd.ndjson
+          subPath: pd.ndjson
+        - name: kibana-dashboard-pf
+          mountPath: /scripts/dashboards/pf.ndjson
+          subPath: pf.ndjson
+        - name: kibana-dashboard-pf-basic
+          mountPath: /scripts/dashboards/pf-basic.ndjson
+          subPath: pf-basic.ndjson
 
-       volumes:
-       - name: kibana-dashboard-pa
-         configMap:
-           name: kibana-dashboard-pa 
-       - name: kibana-dashboard-pd
-         configMap:
-           name: kibana-dashboard-pd 
-       - name: kibana-dashboard-pf
-         configMap:
-           name: kibana-dashboard-pf
-       - name: kibana-dashboard-pf-basic
-         configMap:
-           name: kibana-dashboard-pf-basic
+      volumes:
+      - name: kibana-dashboard-pa
+        configMap:
+          name: kibana-dashboard-pa 
+      - name: kibana-dashboard-pd
+        configMap:
+          name: kibana-dashboard-pd 
+      - name: kibana-dashboard-pf
+        configMap:
+          name: kibana-dashboard-pf
+      - name: kibana-dashboard-pf-basic
+        configMap:
+          name: kibana-dashboard-pf-basic

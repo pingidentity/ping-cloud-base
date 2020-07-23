@@ -6,6 +6,5 @@ namespace: elastic-stack-logging
 resources:
 - files
 - enrichment-resources.yaml
-- enrichment-job.yaml
 - enrichment-bootstrap.yaml
 
