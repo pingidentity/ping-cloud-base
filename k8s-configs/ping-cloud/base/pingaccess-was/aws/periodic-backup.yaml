@@ -44,7 +44,7 @@ kind: CronJob
 metadata:
   name: pingaccess-was-periodic-backup
 spec:
-  schedule: "*/15 * * * *"
+  schedule: "0 * * * *"
   jobTemplate:
     spec:
       template:
@@ -53,7 +53,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: pingaccess-was-backup
-            image: pingidentity/pingaccess:2003-6.0.1
+            image: pingidentity/pingaccess:2006-6.1.0
             command:
             - /opt/in/backup-archive-data.sh
             envFrom:

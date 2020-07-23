@@ -1,0 +1,7 @@
+- op: replace
+  path: "/metadata/annotations"
+  value:
+    nginx.ingress.kubernetes.io/enable-modsecurity: "true"
+    nginx.ingress.kubernetes.io/enable-owasp-core-rules : "true"
+    prometheus.io/port: "10254"
+    prometheus.io/scrape: "true"

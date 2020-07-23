@@ -1,3 +1,0 @@
-dsconfig set-backend-prop \
-    --backend-name "${USER_BACKEND_ID}" \
-    --set compact-common-parent-dn:ou=people,${USER_BASE_DN}

@@ -3,8 +3,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 - ../../k8s-configs/ping-cloud/test
-- pingaccess/admin-ingress.yaml
-- pingfederate/admin-ingress.yaml
 - pingdataconsole/ingress.yaml
 
 configMapGenerator:
@@ -45,6 +43,14 @@ patchesJson6902:
     kind: Ingress
     name: pingfederate-ingress
 
+# pingfederate admin todo remove
+- path: patches/ingress/pingfederate-admin.yaml
+  target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingfederate-admin-ingress
+
 # pingaccess was runtime
 - path: patches/ingress/pingaccess-was.yaml
   target:
@@ -68,6 +74,14 @@ patchesJson6902:
     version: v1beta1
     kind: Ingress
     name: pingaccess-ingress
+
+# pingaccess admin #todo remove
+- path: patches/ingress/pingaccess-admin.yaml
+  target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingaccess-admin-ingress
 
 # pingaccess agent
 - path: patches/ingress/pingaccess-agent.yaml

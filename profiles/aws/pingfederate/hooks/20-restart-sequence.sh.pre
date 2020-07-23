@@ -7,7 +7,7 @@ ${VERBOSE} && set -x
 run_hook "10-download-artifact.sh"
 
 if ! [ -z "${OPERATIONAL_MODE}" ] &&  [ "${OPERATIONAL_MODE}" != "CLUSTERED_ENGINE" ]; then
-   run_hook "83-download-archive-data-s3.sh"
+   run_hook "90-restore-backup-s3.sh"
    run_hook "10-setup-master-key.sh"
    run_hook "10-set-engine-threads.sh"
    run_hook "10-configuration-overrides.sh"
