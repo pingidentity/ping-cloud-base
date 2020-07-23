@@ -41,3 +41,17 @@ spec:
     targetPort: ldaps
   selector:
     class: pingdirectory-server
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: pingdirectory-http
+spec:
+  ports:
+  - port: 1443
+    name: https
+    targetPort: https
+  selector:
+    class: pingdirectory-server

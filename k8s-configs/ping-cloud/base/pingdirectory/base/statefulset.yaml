@@ -82,6 +82,8 @@ spec:
           name: ldap
         - containerPort: 1636
           name: ldaps
+        - containerPort: 1443
+          name: https
         resources:
           requests:
             memory: "5Gi"
