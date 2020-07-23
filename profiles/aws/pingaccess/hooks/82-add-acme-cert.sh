@@ -35,10 +35,36 @@ if test -z "${ACME_CERT}"; then
     exit 1
 fi
 
+# Get base64 encoded acme cert from k8s secret.
+ACME_CERT=$(kubectl get secret acme-tls-cert -o json | jq -r '.data | .["tls.crt"]')
+
+# Exit with error if unable to retrieve cert.
+if test -z "${ACME_CERT}"; then
+    echo "add-acme-cert: no certificate found with secret object name ${K8S_ACME_CERT_SECRET_NAME}"
+    exit 1
+fi
+
+# Create temp dir to extract all the certificate in certificate chain
+TMP_DIR="$(mktemp -d)"
+
+# Decode and write all the certificate to a file in numerical order
+# The SSL certificate chain order consists of root certificates and intermediate certificates
+OUT=$(echo ${ACME_CERT} | base64 -d | awk -v tmp="${TMP_DIR}" 'BEGIN {c=0;} /BEGIN CERT/{c++} { print > tmp "/" c ".pem"}')
+
+# Get the certificate file name with highest numerical (intermediate certificate) and encode it
+INTERMEDIATE_CERT=$(ls -d ${TMP_DIR}/* | tail -1 | xargs cat | base64)
+
+# Exit with error if unable to retrieve certificate from temp path.
+if test -z "${INTERMEDIATE_CERT}"; then
+    ls -l "${TMP_DIR}/*"
+    echo "add-acme-cert: unable to locate any cert file in temp dir path"
+    exit 1
+fi
+
 # Added cert to PA admin.
 ADD_ACME_CERT_OUT=$(make_api_request -X POST -d "{
         \"alias\": \"${K8S_ACME_CERT_SECRET_NAME}\",
-        \"fileData\": \"${ACME_CERT}\"
+        \"fileData\": \"${INTERMEDIATE_CERT}\"
     }" https://localhost:9000/pa-admin-api/v3/certificates)
 
 # Get cert status from response body.
@@ -51,5 +77,8 @@ if test -z "${ACME_CERT_STATUS}" || test "${ACME_CERT_STATUS}" != 'Valid'; then
 fi 
 
 echo "add-acme-cert: successfully added acme cert to PA admin with alias ${K8S_ACME_CERT_SECRET_NAME}"
+
+# Cleanup 
+rm -rf ${TMP_DIR}
 
 exit 0
