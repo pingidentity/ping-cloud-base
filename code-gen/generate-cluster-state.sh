@@ -220,6 +220,16 @@
 #                        | and hosted zone in their Ping IAM account role.    |
 ########################################################################################################################
 
+
+#### SCRIPT START ####
+
+# Ensure that this script works from any working directory.
+SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
+pushd "${SCRIPT_HOME}"
+
+# Source some utility methods.
+. ../utils.sh
+
 ########################################################################################################################
 # Substitute variables in all template files in the provided directory.
 #
@@ -313,13 +323,6 @@ patch_remove_file() {
 
   rm -rf "${TMP_DIR}"
 }
-
-# Ensure that this script works from any working directory.
-SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
-pushd "${SCRIPT_HOME}"
-
-# Source some utility methods.
-. ../utils.sh
 
 # Checking required tools and environment variables.
 check_binaries "openssl" "ssh-keygen" "ssh-keyscan" "base64" "envsubst" "git"
