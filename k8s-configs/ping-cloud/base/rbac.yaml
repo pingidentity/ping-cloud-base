@@ -43,7 +43,13 @@ rules:
     - "pods/exec"
     verbs:
     - create
-
+  - apiGroups:
+    - "certmanager.k8s.io"
+    resources:
+    - certificates
+    verbs:
+    - get
+    - list
 ---
 
 apiVersion: rbac.authorization.k8s.io/v1beta1

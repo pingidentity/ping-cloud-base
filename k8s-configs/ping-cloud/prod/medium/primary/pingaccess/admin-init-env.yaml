@@ -12,3 +12,5 @@ spec:
         # A space-separated list of deployments or statefulsets that this app should wait for
         - name: WAIT_FOR_SERVICES
           value: pingfederate-admin
+        - name: WAIT_FOR_CERT
+          value: "true"

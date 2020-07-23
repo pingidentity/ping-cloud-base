@@ -45,6 +45,32 @@ data:
     }
     EOF
 
+    #--- Check if the value of IS_MULTI_CLUSTER is true ---#
+    if $(echo "${IS_MULTI_CLUSTER}" | grep -qi "true"); then
+      echo "IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
+
+      #--- Check acme certificate status, if WAIT_FOR_CERT=true ---#
+      if $(echo "${WAIT_FOR_CERT}" | grep -qi "true"); then
+        echo "WAIT_FOR_CERT: ${WAIT_FOR_CERT}"
+
+        # Initial certificate is issued by cert-manager which need to go through validation process
+        # Once validated,
+        #   - The root and intermediate certificate will be issued
+        #   - The status of the certificate will be updated to True
+        while true; do
+          CERT_STATUS=$(kubectl get cert "${K8S_ACME_CERT_SECRET_NAME}" --no-headers | awk '{print $2}')
+
+          if test -z "${CERT_STATUS}" || test "${CERT_STATUS}" != 'True'; then
+            echo "Status of certificate ${K8S_ACME_CERT_SECRET_NAME} is not True, Will try again in 2 seconds."
+            sleep 2s
+          else
+            echo "Status of certificate ${K8S_ACME_CERT_SECRET_NAME}: ${CERT_STATUS}"
+            break
+          fi
+        done
+      fi
+    fi
+
     #--- Wait for dependent services, if any ---#
     test -z "${WAIT_FOR_SERVICES}" && exit 0
 
