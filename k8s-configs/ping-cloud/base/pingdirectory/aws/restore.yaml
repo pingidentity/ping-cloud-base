@@ -20,6 +20,9 @@ data:
 
     test -z "${BACKUP_RESTORE_POD}" && SERVER="${K8S_STATEFUL_SET_NAME}-0" || SERVER="${BACKUP_RESTORE_POD}"
 
+    NUM_REPLICAS=$(kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
+    echo "restore: number of replicas: ${NUM_REPLICAS}"
+
     DN_LIST=
     if test -z "${REPLICATION_BASE_DNS}"; then
       DN_LIST="${USER_BASE_DN}"
@@ -32,14 +35,16 @@ data:
     fi
     DNS_LIST=$(echo "${DN_LIST}" | tr ';' ' ')
     
-    echo "Executing pre-initialization from within ${SERVER} pod for DNs: ${DNS_LIST}"
-    for DN in ${DNS_LIST}; do
-      kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
-        "dsreplication pre-external-initialization \
-          --retryTimeoutSeconds \"${RETRY_TIMEOUT_SECONDS}\" \
-          --baseDN \"${DN}\" \
-          --no-prompt --ignoreWarnings"
-    done
+    if test ${NUM_REPLICAS} -gt 1; then
+      echo "Executing pre-initialization from within ${SERVER} pod for DNs: ${DNS_LIST}"
+      for DN in ${DNS_LIST}; do
+        kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
+          "dsreplication pre-external-initialization \
+            --retryTimeoutSeconds \"${RETRY_TIMEOUT_SECONDS}\" \
+            --baseDN \"${DN}\" \
+            --no-prompt --ignoreWarnings"
+      done
+    fi
 
     echo "Running restore script within ${SERVER} pod"
     kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
@@ -56,23 +61,27 @@ data:
       echo "Restore script not found on server ${SERVER}"
     fi
 
-    echo "Initializing replication from within ${SERVER} pod for DNs: ${DN_LIST} "
-    for DN in ${DNS_LIST}; do
-      kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
-        "dsreplication initialize-all \
-          --retryTimeoutSeconds \"${RETRY_TIMEOUT_SECONDS}\" \
-          --baseDN \"${DN}\" \
-          --no-prompt --ignoreWarnings"
-    done
+    if test ${NUM_REPLICAS} -gt 1; then
+      echo "Initializing replication from within ${SERVER} pod for DNs: ${DN_LIST} "
+      for DN in ${DNS_LIST}; do
+        kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
+          "dsreplication initialize-all \
+            --retryTimeoutSeconds \"${RETRY_TIMEOUT_SECONDS}\" \
+            --baseDN \"${DN}\" \
+            --no-prompt --ignoreWarnings"
+      done
+    fi
 
-    echo "Executing post-initialization from within ${SERVER} pod for DNs: ${DNS_LIST}"
-    for DN in ${DNS_LIST}; do
-      kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
-        "dsreplication post-external-initialization \
-          --retryTimeoutSeconds \"${RETRY_TIMEOUT_SECONDS}\" \
-          --baseDN \"${DN}\" \
-          --no-prompt --ignoreWarnings"
-    done
+    if test ${NUM_REPLICAS} -gt 1; then
+      echo "Executing post-initialization from within ${SERVER} pod for DNs: ${DNS_LIST}"
+      for DN in ${DNS_LIST}; do
+        kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
+          "dsreplication post-external-initialization \
+            --retryTimeoutSeconds \"${RETRY_TIMEOUT_SECONDS}\" \
+            --baseDN \"${DN}\" \
+            --no-prompt --ignoreWarnings"
+      done
+    fi
 
     # Print the names of the uploaded files so callers know exactly what was uploaded
     echo "The following files were restored:"
