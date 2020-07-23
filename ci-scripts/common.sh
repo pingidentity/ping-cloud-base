@@ -57,6 +57,7 @@ GRAFANA=https://monitoring-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
 
 # Pingdirectory
 PINGDIRECTORY_CONSOLE=https://pingdataconsole${FQDN}/console
+PINGDIRECTORY_API=https://pingdirectory${FQDN}
 PINGDIRECTORY_ADMIN=pingdirectory-admin${FQDN}
 
 # Pingfederate
