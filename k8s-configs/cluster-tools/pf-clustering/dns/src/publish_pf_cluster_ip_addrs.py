@@ -44,7 +44,7 @@ def create_fqdns(domains):
     return fqdns
 
 
-def get_ip_addrs(name_to_ip_addrs):
+def get_ip_addrs(name_to_ip_addrs: dict) -> list:
     # remove?
     logger.log("name_to_ip_addrs:")
     logger.log(name_to_ip_addrs)
@@ -59,7 +59,7 @@ def get_ip_addrs(name_to_ip_addrs):
     return list(unique_ip_addrs)
 
 
-def dict_to_set_values(dictionary):
+def dict_to_set_values(dictionary: dict) -> set:
     result_set = set()
     for key, values in dictionary.items():
         for value in values:
@@ -98,7 +98,7 @@ def route53_requires_update(existing_r53_ip_addrs, name_to_ip_addrs):
     return False
 
 
-def update_route53(namespace, domain_name, name_to_ip_addrs):
+def update_route53(namespace: str, domain_name: str, name_to_ip_addrs: str):
     identifier = 'pf-cluster-ip-addrs'
     name = f"{identifier}.{namespace}.{domain_name}" 
     logger.log(f"The identifier is: {name}")
@@ -129,7 +129,7 @@ def update_route53(namespace, domain_name, name_to_ip_addrs):
         pprint.pprint(response)
 
 
-def validate_tenant_domain():
+def validate_tenant_domain() -> str:
     if "TENANT_DOMAIN" in os.environ:
         domain_name = os.environ.get("TENANT_DOMAIN")
         logger.log(f"TENANT_DOMAIN is {domain_name}")
@@ -138,7 +138,7 @@ def validate_tenant_domain():
         raise ValueError("Environment variable 'TENANT_DOMAIN' is required but not found.  Exiting...")
 
 
-def validate_namespace():
+def validate_namespace() -> str:
     namespace_prefix = os.environ.get("NAMESPACE_PREFIX") if "NAMESPACE_PREFIX" in os.environ else "ping-cloud"
     logger.log(f"NAMESPACE_PREFIX is {namespace_prefix}")
 

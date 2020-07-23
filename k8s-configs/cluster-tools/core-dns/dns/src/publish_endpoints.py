@@ -17,11 +17,11 @@ template_mgr = templates.TemplateManager(logger)
 hosted_zone_mgr = route_53.HostedZoneManager(logger)
 
 
-def create_endpoints_domain_name(namespace, domain_name):
+def create_endpoints_domain_name(namespace: str, domain_name: str) -> str:
     return f"{namespace}-endpoints.{domain_name}"
 
 
-def publish_local_coredns_endpoints_to_aws(namespace, domain_name):
+def publish_local_coredns_endpoints_to_aws(namespace: str, domain_name: str):
 
     endpoint_domain = create_endpoints_domain_name(namespace, domain_name)
 
@@ -80,16 +80,17 @@ def update_core_dns(namespace, domain_name):
         logger.log("No Kubernetes domains to update.  Exiting.")
 
 
-def validate_tenant_domain():
+def validate_tenant_domain() -> str: 
     if "TENANT_DOMAIN" in os.environ:
         domain_name = os.environ.get("TENANT_DOMAIN")
-        logger.log(f"TENANT_DOMAIN is {domain_name}")
-        return domain_name
-    else:
-        raise ValueError("Environment variable 'TENANT_DOMAIN' is required but not found.  Exiting...")
+        if domain_name:
+            logger.log(f"TENANT_DOMAIN is {domain_name}")
+            return domain_name
+    
+    raise ValueError("Environment variable 'TENANT_DOMAIN' is required but not found.  Exiting...")
 
 
-def validate_namespace():
+def validate_namespace() -> str:
     namespace_prefix = os.environ.get("NAMESPACE_PREFIX") if "NAMESPACE_PREFIX" in os.environ else "ping-cloud"
     logger.log(f"NAMESPACE_PREFIX is {namespace_prefix}")
 
@@ -101,7 +102,7 @@ def validate_namespace():
     return namespace
 
 
-def create_multi_cluster_domain_entry(namespace, domain_name, name):
+def create_multi_cluster_domain_entry(namespace: str, domain_name: str, name):
 
     endpoints_domain_name = create_endpoints_domain_name(namespace, domain_name)
     logger.log(f"Creating a single default TXT entry '{name}' -> '{endpoints_domain_name}'...")
