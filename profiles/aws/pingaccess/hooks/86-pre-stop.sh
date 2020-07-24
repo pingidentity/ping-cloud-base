@@ -5,6 +5,8 @@
 
 "${VERBOSE}" && set -x
 
+export_environment_variables
+
 if test ! "${OPERATIONAL_MODE}" = "CLUSTERED_ENGINE"; then
   echo "pre-stop: skipping pre-stop on admin"
   exit

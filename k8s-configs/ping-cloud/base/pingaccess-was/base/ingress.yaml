@@ -15,17 +15,17 @@ metadata:
     kubernetes.io/ingress.class: nginx-public
 spec:
   tls:
-  - hosts:
-    - pingaccess-was-dev.ping-demo.com
+    - hosts:
+        - pingaccess-was-dev.ping-demo.com
   rules:
-  - host: pingaccess-was-dev.ping-demo.com
-    http:
-      paths:
-      # This rule gives external access to the pingaccess-was runtime service
-      - path: /
-        backend:
-          serviceName: pingaccess-was
-          servicePort: 443
+    - host: pingaccess-was-dev.ping-demo.com
+      http:
+        paths:
+          # This rule gives external access to the pingaccess-was runtime service
+          - path: /
+            backend:
+              serviceName: pingaccess-was
+              servicePort: 443
 
 ---
 

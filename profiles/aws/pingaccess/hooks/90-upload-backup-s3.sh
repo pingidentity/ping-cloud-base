@@ -5,12 +5,14 @@
 
 "${VERBOSE}" && set -x
 
+export_environment_variables
+
 test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
 
 echo "Uploading to location ${BACKUP_URL}"
 
 # Set required environment variables for skbn
-initializeSkbnConfiguration
+initializeSkbnConfiguration "${PA_DATA_BACKUP_URL}"
 
 DST_DIRECTORY=$(mktemp -d)
 cd ${DST_DIRECTORY}

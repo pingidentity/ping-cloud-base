@@ -43,10 +43,12 @@ function make_api_request() {
 
     if test "${http_code}" -ne 200; then
         echo "API call returned HTTP status code: ${http_code}"
+        cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
         "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
 
     cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
+    echo ""
 
     return 0
 }
@@ -299,5 +301,28 @@ function skbnCopy() {
 
   if ! skbn cp --src "$SOURCE" --dst "${DESTINATION}" --parallel "${PARALLEL}"; then
     return 1
+  fi
+}
+
+########################################################################################################################
+# Function to check if container is pingaccess-was
+#
+########################################################################################################################
+function isPingaccessWas() {
+  test "${K8S_STATEFUL_SET_NAME_PINGACCESS_WAS}"
+}
+
+########################################################################################################################
+# Function to export different environment variables depending
+# on if container is pingaccess-was or pingaccess
+#
+########################################################################################################################
+function export_environment_variables() {
+  if isPingaccessWas; then
+    export K8S_STATEFUL_SET_NAME_PINGACCESS="${K8S_STATEFUL_SET_NAME_PINGACCESS_WAS}"
+    export K8S_SERVICE_NAME_PINGACCESS_ADMIN="${K8S_SERVICE_NAME_PINGACCESS_WAS_ADMIN}"
+    export PA_DATA_BACKUP_URL="${BACKUP_URL}/pingaccess-was"
+  else
+    export PA_DATA_BACKUP_URL=
   fi
 }
