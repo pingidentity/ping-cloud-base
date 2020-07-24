@@ -5,6 +5,8 @@
 
 "${VERBOSE}" && set -x
 
+export_environment_variables
+
 # 1) Specified backup file name by user will be restored 
 #
 # OR
@@ -21,7 +23,7 @@ if ! test -z "${BACKUP_FILE_NAME}" || ! test -f "${OUT_DIR}"/instance/conf/pa.jw
   echo "Restoring from location ${BACKUP_URL}"
   
   # Set required environment variables for skbn
-  initializeSkbnConfiguration
+  initializeSkbnConfiguration "${PA_DATA_BACKUP_URL}"
 
   # This is the backup directory on the server
   SERVER_RESTORE_DIR="/tmp/restore"

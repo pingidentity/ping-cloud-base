@@ -28,6 +28,13 @@ if ! test -f "${ADMIN_CONFIGURATION_COMPLETE}"; then
     exit 1
   fi
 
+  if isPingaccessWas; then
+    sh "${HOOKS_DIR}/82-configure-p14c-token-provider.sh"
+    if test $? -ne 0; then
+      exit 1
+    fi
+  fi
+
   touch ${ADMIN_CONFIGURATION_COMPLETE}
 
 # Since this isn't initial deployment, change password if from disk is different than the desired value.

@@ -10,6 +10,8 @@ if test ! "${OPERATIONAL_MODE}" = "CLUSTERED_ENGINE"; then
   exit
 fi
 
+export_environment_variables
+
 echo "add-engine: starting add engine script"
 
 ADMIN_HOST_PORT="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9000"

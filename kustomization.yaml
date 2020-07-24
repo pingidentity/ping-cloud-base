@@ -133,6 +133,7 @@ patchesJson6902:
       path: /spec/rules/0/host
       value: pingaccess-was.${TENANT_DOMAIN}
 
+
 - target:
     group: extensions
     version: v1beta1

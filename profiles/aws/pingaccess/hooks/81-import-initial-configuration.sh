@@ -6,6 +6,7 @@
 set -e
 "${VERBOSE}" && set -x
 
+export_environment_variables
 templates_dir_path=${STAGING_DIR}/templates/81
 
 # Fetch using the -i flag to get the HTTP response

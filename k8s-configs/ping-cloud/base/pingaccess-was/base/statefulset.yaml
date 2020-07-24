@@ -113,6 +113,21 @@ spec:
             secretKeyRef:
               name: pingaccess-was-passwords
               key: PA_ADMIN_USER_PASSWORD
+        - name: P14C_ISSUER
+          valueFrom:
+            secretKeyRef:
+              name: pingaccess-was-passwords
+              key: P14C_ISSUER
+        - name: P14C_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: pingaccess-was-passwords
+              key: P14C_CLIENT_ID
+        - name: P14C_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: pingaccess-was-passwords
+              key: P14C_CLIENT_SECRET
         envFrom:
         - configMapRef:
             name: pingaccess-was-environment-variables
