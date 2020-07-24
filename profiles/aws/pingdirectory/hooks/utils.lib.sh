@@ -26,7 +26,11 @@ function initializeSkbnConfiguration() {
   esac
 
   echo "Getting cluster metadata"
-  METADATA=$(kubectl get "$(kubectl get pod -o name | grep "${HOSTNAME}")" \
+
+  # Get prefix of HOSTNAME which match the pod name.
+  export POD="$(echo "${HOSTNAME}" | cut -d. -f1)"
+
+  METADATA=$(kubectl get "$(kubectl get pod -o name | grep "${POD}")" \
     -o=jsonpath='{.metadata.namespace},{.metadata.name},{.metadata.labels.role}')
     
   METADATA_NS=$(echo "${METADATA}"| cut -d',' -f1)
