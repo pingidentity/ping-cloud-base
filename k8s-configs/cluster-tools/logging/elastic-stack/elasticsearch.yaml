@@ -68,8 +68,8 @@ spec:
 
       
       - name: set-bootstrap-password
-        # image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.4
-        image: 7es7/enrichment-bootstrap-efsless:latest
+        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.5-test
+        
         imagePullPolicy: Always
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
@@ -122,22 +122,26 @@ spec:
         env:
         - name: CONTAINER_NAME
           value: "elasticsearch"
-        - name: NODE_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
-        # X-Pack security disabled
-        - name: XPACK_SECURITY_ENABLED
-          value: "false"
-        # List of ES nodes to be searched for making a cluster
-        - name: DISCOVERY_SEED_HOSTS
-          value: "es-cluster-0.elasticsearch,es-cluster-1.elasticsearch,es-cluster-2.elasticsearch"
-        - name: CLUSTER_INITIAL_MASTER_NODES
-          value: "es-cluster-0,es-cluster-1,es-cluster-2"
         - name: ES_PATH_CONF
           value: "/usr/share/elasticsearch/data/config"
         - name: ES_JAVA_OPTS
           value: "-Xms512m -Xmx512m"
+        - name: node.name
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: cluster.name
+          value: "k8s-logs"
+        - name: network.host
+          value: "0.0.0.0"
+        - name: discovery.seed_hosts
+          value: "es-cluster-0.elasticsearch"
+        - name: cluster.initial_master_nodes
+          value: "es-cluster-0"
+        - name: xpack.license.self_generated.type
+          value: "trial"
+        - name: xpack.security.enabled
+          value: "false"
 
         volumeMounts:
         - name: data

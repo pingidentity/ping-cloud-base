@@ -515,8 +515,8 @@ spec:
       initContainers:
 
       - name: check-service-availability
-        # image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.4
-        image: 7es7/enrichment-bootstrap-efsless:latest
+        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.5-test
+        
         imagePullPolicy: Always
         command: ["sh", '$(CONTAINER_NAME).sh']
 
@@ -542,8 +542,8 @@ spec:
           value: "green"
 
       - name: create-enrichment-cache-files
-        # image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.4
-        image: 7es7/enrichment-bootstrap-efsless:latest
+        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.5-test
+        
         imagePullPolicy: Always
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
@@ -674,8 +674,8 @@ spec:
 
       # Sidecar enrichment container which updates Logstash dictionaries
       - name: enrichment-sidecar
-        # image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.4
-        image: 7es7/enrichment-bootstrap-efsless:latest
+        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.5-test
+        
         imagePullPolicy: Always
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
