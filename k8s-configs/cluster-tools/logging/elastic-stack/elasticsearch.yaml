@@ -147,14 +147,6 @@ spec:
         - name: data
           mountPath: /usr/share/elasticsearch/data
           readOnly: false
-        - name: enrichment-elasticsearch-yaml-config
-          mountPath: /usr/share/elasticsearch/data/config/elasticsearch.yml
-          subPath: elasticsearch.yml
-
-      volumes:
-        - name: enrichment-elasticsearch-yaml-config
-          configMap:
-            name: enrichment-elasticsearch-yaml-config
             
   volumeClaimTemplates:
   - metadata:
