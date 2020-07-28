@@ -106,20 +106,7 @@ patchesJson6902:
       path: /spec/rules/0/host
       value: pingfederate.${TENANT_DOMAIN}
 
-- target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: pingfederate-admin-ingress
-    #namespace: ${NAMESPACE} fixme uncomment
-  patch: |-
-    - op: replace
-      path: /spec/tls/0/hosts/0
-      value: pingfederate-admin.${TENANT_DOMAIN}
-    - op: replace
-      path: /spec/rules/0/host
-      value: pingfederate-admin.${TENANT_DOMAIN}
-
+# PingFederate Admin Hostname and PingAccess Admin Hostname
 - target:
     group: extensions
     version: v1beta1
@@ -127,11 +114,17 @@ patchesJson6902:
     name: pingaccess-was-ingress
   patch: |-
     - op: replace
+      path: /spec/tls/0/hosts/1
+      value: pingfederate-admin.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/1/host
+      value: pingfederate-admin.${TENANT_DOMAIN}
+    - op: replace
       path: /spec/tls/0/hosts/0
-      value: pingaccess-was.${TENANT_DOMAIN}
+      value: pingaccess-admin.${TENANT_DOMAIN}
     - op: replace
       path: /spec/rules/0/host
-      value: pingaccess-was.${TENANT_DOMAIN}
+      value: pingaccess-admin.${TENANT_DOMAIN}
 
 
 - target:
@@ -159,20 +152,6 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingaccess.${TENANT_DOMAIN}
-
-- target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: pingaccess-admin-ingress
-    #namespace: ${NAMESPACE} fixme uncomment
-  patch: |-
-    - op: replace
-      path: /spec/tls/0/hosts/0
-      value: pingaccess-admin.${TENANT_DOMAIN}
-    - op: replace
-      path: /spec/rules/0/host
-      value: pingaccess-admin.${TENANT_DOMAIN}
 
 - target:
     group: extensions

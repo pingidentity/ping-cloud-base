@@ -191,6 +191,26 @@ patchesJson6902:
 
 ### Ingress patches ###
 
+# PingAccess admin and PingFederate admin through PingAccess-WAS
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingaccess-was-ingress
+  patch: |
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingaccess-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingaccess-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/tls/0/hosts/1
+      value: pingfederate-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/1/host
+      value: pingfederate-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+
 # pingaccess runtime
 - target:
     group: extensions
@@ -204,21 +224,6 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingaccess${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-
-# pingaccess admin todo remove me
-- target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: pingaccess-admin-ingress
-  patch: |
-    - op: replace
-      path: /spec/tls/0/hosts/0
-      value: pingaccess-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-    - op: replace
-      path: /spec/rules/0/host
-      value: pingaccess-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-
 
 # pingaccess agent
 - target:
@@ -234,21 +239,6 @@ patchesJson6902:
       path: /spec/rules/0/host
       value: pingaccess-agent${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
 
-# pingaccess was runtime
-- target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: pingaccess-was-ingress
-  patch: |
-    - op: replace
-      path: /spec/tls/0/hosts/0
-      value: pingaccess-was${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-    - op: replace
-      path: /spec/rules/0/host
-      value: pingaccess-was${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-
-
 # pingaccess was admin
 - target:
     group: extensions
@@ -262,20 +252,6 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingaccess-was-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-
-# pingfederate admin todo remove me
-- target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: pingfederate-admin-ingress
-  patch: |
-    - op: replace
-      path: /spec/tls/0/hosts/0
-      value: pingfederate-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-    - op: replace
-      path: /spec/rules/0/host
-      value: pingfederate-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
 
 # pingfederate runtime
 - target:
