@@ -33,6 +33,12 @@ if ! test -f "${ADMIN_CONFIGURATION_COMPLETE}"; then
     if test $? -ne 0; then
       exit 1
     fi
+
+    sh "${HOOKS_DIR}/83-configure-initial-pa-was.sh"
+    if test $? -ne 0; then
+      exit 1
+    fi
+
   fi
 
   touch ${ADMIN_CONFIGURATION_COMPLETE}

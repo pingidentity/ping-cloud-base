@@ -13,15 +13,26 @@ metadata:
     nginx.ingress.kubernetes.io/enable-modsecurity: "true"
     nginx.ingress.kubernetes.io/enable-owasp-core-rules : "true"
     kubernetes.io/ingress.class: nginx-public
+    # Possible fix for some 502 failures on admin assets and api requests.
+    nginx.ingress.kubernetes.io/service-upstream: "true"
 spec:
   tls:
     - hosts:
-        - pingaccess-was-dev.ping-demo.com
+        - pingaccess-admin-dev.ping-demo.com
+        - pingfederate-admin-dev.ping-demo.com
   rules:
-    - host: pingaccess-was-dev.ping-demo.com
+    - host: pingaccess-admin-dev.ping-demo.com
       http:
         paths:
-          # This rule gives external access to the pingaccess-was runtime service
+          # This rule gives external access to the PingAccess admin service
+          - path: /
+            backend:
+              serviceName: pingaccess-was
+              servicePort: 443
+    - host: pingfederate-admin-dev.ping-demo.com
+      http:
+        paths:
+          # This rule gives external access to the PingFederate admin service
           - path: /
             backend:
               serviceName: pingaccess-was
