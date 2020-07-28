@@ -28,14 +28,17 @@ testAgentConfig() {
   agent_name='agent1'
 
   # Create a shared secret
+  echo "${PA_ADMIN_PASSWORD}" "${PINGACCESS_API}" "${agent_shared_secret}"
   create_shared_secret_response=$(create_shared_secret "${PA_ADMIN_PASSWORD}" "${PINGACCESS_API}" "${agent_shared_secret}")
   [ $? -ne 0 ] && exit 1
 
+  echo "create_shared_secret_response ${create_shared_secret_response}"
   shared_secret_id=$(parse_value_from_response "${create_shared_secret_response}" 'id')
 
   # Check to see if the virtual host exists using search criteria of *:443
   get_virtual_host_response=$(get_virtual_host_by_host_port "${PA_ADMIN_PASSWORD}" "${PINGACCESS_API}" '*%3A443')
 
+  echo "get_virtual_host_response ${get_virtual_host_response}"
   virtual_host_hostname=$(parse_value_from_array_response "${get_virtual_host_response}" 'host')
   virtual_host_port=$(parse_value_from_array_response "${get_virtual_host_response}" 'port')
   virtual_host_id=$(parse_value_from_array_response "${get_virtual_host_response}" 'id')
@@ -59,6 +62,7 @@ testAgentConfig() {
   get_application_response=$(get_application_by_name "${PA_ADMIN_PASSWORD}" "${PINGACCESS_API}" 'app1')
 
   # If the app exists, then delete it
+  echo "get_application_response ${get_application_response}"
   application_id=$(parse_value_from_array_response "${get_application_response}" 'id')
   if [[ "${application_id}" != '' ]]; then
 
@@ -74,6 +78,7 @@ testAgentConfig() {
   get_agent_response=$(get_agent_by_name "${PA_ADMIN_PASSWORD}" "${PINGACCESS_API}" 'agent1')
 
   # If the agent exists, then delete it
+  echo "get_agent_response ${get_agent_response}"
   agent_id=$(parse_value_from_array_response "${get_agent_response}" 'id')
   if [[ "${agent_id}" != '' ]]; then
 
@@ -91,9 +96,11 @@ testAgentConfig() {
   agent_id=$(parse_value_from_response "${create_agent_response}" 'id')
 
   # Create an app
+  echo "agent_id ${agent_id}"
   create_application_response=$(create_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_API}" "${agent_id}" "${virtual_host_id}")
   [ $? -ne 0 ] && exit 1
 
+  echo "create_application_response ${create_application_response}"
   application_id=$(parse_value_from_response "${create_application_response}" 'id')
 
   # sleep 3 seconds to allow the config
@@ -110,6 +117,7 @@ testAgentConfig() {
 
   ### Use kubectl exec to connect to the ping-admin-0 instance and verify
   ### the agent port on pingaccess-1 is listening
+  echo "agent_port_runtime_response ${agent_port_runtime_response}"
   agent_port_runtime_response=$(send_request_to_agent_port "${agent_name}" "${agent_shared_secret}" 'pingaccess-1' "${NAMESPACE}")
   [ $? -ne 0 ] && exit 1
 
