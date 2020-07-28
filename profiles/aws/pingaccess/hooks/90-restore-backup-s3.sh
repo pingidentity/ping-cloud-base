@@ -7,7 +7,7 @@
 
 export_environment_variables
 
-# 1) Specified backup file name by user will be restored 
+# 1) Specified backup file name by user will be restored
 #
 # OR
 #
