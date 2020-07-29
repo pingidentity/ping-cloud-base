@@ -15,6 +15,7 @@ ENGINE_SERVERS=$( kubectl get pod -o name -n "${NAMESPACE}" -l role=${PRODUCT_NA
 
 # Prepend admin server to list of runtime engine servers
 SERVERS="${PRODUCT_NAME}-admin-0 ${ENGINE_SERVERS}"
+STATUS=0
 for SERVER in ${SERVERS}; do
 
     # Set the container name

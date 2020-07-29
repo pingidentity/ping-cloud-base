@@ -25,7 +25,7 @@ function initializeSkbnConfiguration() {
 
   esac
 
-  echo "Getting cluster metadata"
+  beluga_log "Getting cluster metadata"
 
   # Get prefix of HOSTNAME which match the pod name.
   export POD="$(echo "${HOSTNAME}" | cut -d. -f1)"
@@ -56,4 +56,17 @@ function skbnCopy() {
   if ! skbn cp --src "$SOURCE" --dst "${DESTINATION}" --parallel "${PARALLEL}"; then
     return 1
   fi
+}
+
+########################################################################################################################
+# Standard log function.
+#
+########################################################################################################################
+function beluga_log() {
+  local format="+%Y-%m-%d:%Hh:%Mm:%Ss" # yyyy-mm-dd:00h:00m:00s
+  local timestamp=$( date "${format}" )
+  local message="${1}"
+  local file_name=$(basename "${0}")
+
+  echo "${timestamp} ${file_name}: ${message}"
 }

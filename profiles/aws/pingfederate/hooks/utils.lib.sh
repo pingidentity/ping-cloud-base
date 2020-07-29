@@ -20,12 +20,12 @@ function make_api_request() {
   "${VERBOSE}" && set -x
 
   if test "${curl_result}" -ne 0; then
-    echo "Admin API connection refused"
+    beluga_log "Admin API connection refused"
     return ${curl_result}
   fi
 
   if test "${http_code}" -ne 200; then
-    echo "API call returned HTTP status code: ${http_code}"
+    beluga_log "API call returned HTTP status code: ${http_code}"
     return 1
   fi
 
@@ -56,16 +56,16 @@ function make_api_request_download() {
   "${VERBOSE}" && set -x
 
   if test "${curl_result}" -ne 0; then
-    echo "Admin API connection refused"
+    beluga_log "Admin API connection refused"
     return ${curl_result}
   fi
 
   if test "${http_code}" -ne 200; then
-    echo "API call returned HTTP status code: ${http_code}"
+    beluga_log "API call returned HTTP status code: ${http_code}"
     return 1
   fi
 
-  echo "Admin API request status: ${curl_result}; HTTP status: ${http_code}"
+  beluga_log "Admin API request status: ${curl_result}; HTTP status: ${http_code}"
   return ${curl_result}
 }
 
@@ -80,7 +80,7 @@ function wait_for_admin_api_endpoint() {
   ENDPOINT="${1:-version}"
   API_REQUEST_URL="https://localhost:9999/pf-admin-api/v1/${ENDPOINT}"
 
-  echo "Waiting for admin API endpoint at ${API_REQUEST_URL}"
+  beluga_log "Waiting for admin API endpoint at ${API_REQUEST_URL}"
 
   while true; do
     http_code=$(curl -k \
@@ -95,11 +95,11 @@ function wait_for_admin_api_endpoint() {
       -o /dev/null 2> /dev/null
     )
     if test "${http_code}" -eq 200; then
-      echo "Admin API endpoint ${ENDPOINT} ready"
+      beluga_log "Admin API endpoint ${ENDPOINT} ready"
       return 0
     fi
 
-    echo "Admin API not endpoint ${ENDPOINT} ready - will retry in ${TIMEOUT} seconds"
+    beluga_log "Admin API not endpoint ${ENDPOINT} ready - will retry in ${TIMEOUT} seconds"
     sleep "${TIMEOUT}"
   done
 }
@@ -169,7 +169,7 @@ function initializeSkbnConfiguration() {
 
   esac
 
-  echo "Getting cluster metadata"
+  beluga_log "Getting cluster metadata"
 
   # Get prefix of HOSTNAME which match the pod name.  
   export POD="$(echo "${HOSTNAME}" | cut -d. -f1)"
@@ -203,4 +203,17 @@ function skbnCopy() {
   if ! skbn cp --src "$SOURCE" --dst "${DESTINATION}" --parallel "${PARALLEL}"; then
     return 1
   fi
+}
+
+########################################################################################################################
+# Standard log function.
+#
+########################################################################################################################
+function beluga_log() {
+  local format="+%Y-%m-%d:%Hh:%Mm:%Ss" # yyyy-mm-dd:00h:00m:00s
+  local timestamp=$( date "${format}" )
+  local message="${1}"
+  local file_name=$(basename "${0}")
+
+  echo "${timestamp} ${file_name}: ${message}"
 }

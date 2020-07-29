@@ -9,7 +9,7 @@ export_environment_variables
 
 test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
 
-echo "Uploading to location ${BACKUP_URL}"
+beluga_log "Uploading to location ${BACKUP_URL}"
 
 # Set required environment variables for skbn
 initializeSkbnConfiguration "${PA_DATA_BACKUP_URL}"
@@ -27,7 +27,7 @@ DST_FILE=${DST_FILE#./}
 # Validate admin API call was successful and that zip isn't corrupted
 if test $(unzip -t "${DST_FILE}" &> /dev/null; echo $?) -ne 0 ; then
   # Cleanup k8s-s3-upload-archive temp directory
-  echo "Failed to export archive"
+  beluga_log "Failed to export archive"
   rm -rf ${DST_DIRECTORY}
   exit 1
 fi
@@ -42,10 +42,10 @@ DST_FILE_TIMESTAMP="data-$(date +%m-%d-%Y.%H.%M.%S).zip"
 cp "${DST_FILE}" "${UPLOAD_DIR}/${DST_FILE_TIMESTAMP}"
 cp "${DST_FILE}" "${UPLOAD_DIR}/${DST_FILE_LATEST}"
 
-echo "Copying files to '${SKBN_CLOUD_PREFIX}'"
+beluga_log "Copying files to '${SKBN_CLOUD_PREFIX}'"
 
 if ! skbnCopy "${SKBN_K8S_PREFIX}/${UPLOAD_DIR}" "${SKBN_CLOUD_PREFIX}"; then
-  echo "Failed to upload files in ${UPLOAD_DIR}"
+  beluga_log "Failed to upload files in ${UPLOAD_DIR}"
   exit 1
 fi
 

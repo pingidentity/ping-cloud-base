@@ -12,11 +12,11 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
     # Check to see if the source is specified
     if test ! -z "${ARTIFACT_REPO_URL}"; then
 
-      echo "Private Repo : ${ARTIFACT_REPO_URL}"
+      beluga_log "Private Repo : ${ARTIFACT_REPO_URL}"
 
       # Check to see if the artifact list is a valid json string
-      echo ${ARTIFACT_LIST_JSON} | jq
-      if test $(echo $?) == "0"; then
+      beluga_log "${ARTIFACT_LIST_JSON}"
+      if test $(echo ${ARTIFACT_LIST_JSON} | jq >/dev/null 2>&1; echo $?) == "0"; then
 
         DOWNLOAD_DIR=$(mktemp -d)
         UNZIP_DOWNLOAD_DIR=$(mktemp -d)
@@ -56,7 +56,7 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
 
               # Check to see if the Artifact Source URL is available
               if ( ( test "${ARTIFACT_SOURCE}" == "private" ) && ( test -z ${ARTIFACT_REPO_URL} ) ); then
-                echo "${ARTIFACT_NAME} cannot be deployed as the ${ARTIFACT_SOURCE} source repo is not defined. "
+                beluga_log "${ARTIFACT_NAME} cannot be deployed as the ${ARTIFACT_SOURCE} source repo is not defined. "
                 exit 1
               else
                 # Make sure there aren't any duplicate entries for the artifact.
@@ -69,11 +69,11 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
                   if test "${ARTIFACT_SOURCE}" == "private"; then
                     ARTIFACT_LOCATION=${PRIVATE_BASE_URL}/${ARTIFACT_NAME}/${ARTIFACT_VERSION}/${ARTIFACT_RUNTIME_ZIP}
                   else
-                    echo "${ARTIFACT_NAME} cannot be deployed as the artifact source '${ARTIFACT_SOURCE}' is invalid. "
+                    beluga_log "${ARTIFACT_NAME} cannot be deployed as the artifact source '${ARTIFACT_SOURCE}' is invalid. "
                     exit 1
                   fi
 
-                  echo "Download Artifact from ${ARTIFACT_LOCATION}"
+                  beluga_log "Download Artifact from ${ARTIFACT_LOCATION}"
 
                   # Use skbn command if ARTIFACT_LOCATION is in s3 format otherwise use curl
                   if ! test ${ARTIFACT_LOCATION#s3} == "${ARTIFACT_LOCATION}"; then
@@ -81,10 +81,10 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
                     # Set required environment variables for skbn
                     initializeSkbnConfiguration "${ARTIFACT_LOCATION}"
                   
-                    echo "Copying: '${ARTIFACT_RUNTIME_ZIP}' to '${SKBN_K8S_PREFIX}'"
+                    beluga_log "Copying: '${ARTIFACT_RUNTIME_ZIP}' to '${SKBN_K8S_PREFIX}'"
 
                     if ! skbnCopy "${SKBN_CLOUD_PREFIX}" "${SKBN_K8S_PREFIX}${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}"; then
-                      echo "Failed to copy ${ARTIFACT_RUNTIME_ZIP}"
+                      beluga_log "Failed to copy ${ARTIFACT_RUNTIME_ZIP}"
                       exit 1
                     fi
 
@@ -96,13 +96,13 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
 
                     # Unzip artifact plugin
                     if ! unzip -o ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP} -d ${UNZIP_DOWNLOAD_DIR}; then
-                        echo Artifact ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP} could not be unzipped.
+                        beluga_log Artifact ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP} could not be unzipped.
                         exit 1
                     fi
 
                     # Validate /lib directory is included in the zip and the artifact jar
-                    ! test -d ${UNZIP_DOWNLOAD_DIR}/lib && echo "Artifact required lib directory could not be found." && exit 1
-                    ! test -f ${UNZIP_DOWNLOAD_DIR}/lib/*jar && echo "Artifact required jar file could not be found." && exit 1
+                    ! test -d ${UNZIP_DOWNLOAD_DIR}/lib && beluga_log "Artifact required lib directory could not be found." && exit 1
+                    ! test -f ${UNZIP_DOWNLOAD_DIR}/lib/*jar && beluga_log "Artifact required jar file could not be found." && exit 1
 
                     # Extend the permissions of all detected jars
                     find ${UNZIP_DOWNLOAD_DIR} -name *.jar -exec chmod 777 {} \;
@@ -114,10 +114,10 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
                     # Deploy artifact plugin to server
                     cp -prf ${UNZIP_DOWNLOAD_DIR}/* ${OUT_DIR}/instance
 
-                    echo "Artifact ${ARTIFACT_RUNTIME_ZIP} successfully deployed"
+                    beluga_log "Artifact ${ARTIFACT_RUNTIME_ZIP} successfully deployed"
 
                   else
-                    echo "Artifact download failed from ${ARTIFACT_LOCATION}"
+                    beluga_log "Artifact download failed from ${ARTIFACT_LOCATION}"
                     exit 1
                   fi
 
@@ -126,16 +126,16 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
                   test -d "${UNZIP_DOWNLOAD_DIR}" && rm -rf "${UNZIP_DOWNLOAD_DIR}"
 
                 else
-                  echo "Artifact ${ARTIFACT_NAME} is specified more than once in ${STAGING_DIR}/artifacts/artifact-list.json"
+                  beluga_log "Artifact ${ARTIFACT_NAME} is specified more than once in ${STAGING_DIR}/artifacts/artifact-list.json"
                   exit 1
                 fi
               fi
             else
-              echo "Artifact Version for ${ARTIFACT_NAME} could not be retrieved from ${STAGING_DIR}/artifacts/artifact-list.json"
+              beluga_log "Artifact Version for ${ARTIFACT_NAME} could not be retrieved from ${STAGING_DIR}/artifacts/artifact-list.json"
               exit 1
             fi
           else
-            echo "Missing Artifact Name within ${STAGING_DIR}/artifacts/artifact-list.json"
+            beluga_log "Missing Artifact Name within ${STAGING_DIR}/artifacts/artifact-list.json"
             exit 1
           fi
 
@@ -145,18 +145,18 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
         ls ${OUT_DIR}/instance/lib
 
       else
-        echo "Artifacts will not be deployed as could not parse ${STAGING_DIR}/artifacts/artifact-list.json."
+        beluga_log "Artifacts will not be deployed as could not parse ${STAGING_DIR}/artifacts/artifact-list.json."
         exit 1
       fi
     else
-      echo "Artifacts will not be deployed as the environment variable ARTIFACT_REPO_URL and PING_ARTIFACT_REPO_URL are empty."
+      beluga_log "Artifacts will not be deployed as the environment variable ARTIFACT_REPO_URL and PING_ARTIFACT_REPO_URL are empty."
       exit 0
     fi
   else
-    echo "Artifacts will not be deployed as ${STAGING_DIR}/artifacts/artifact-list.json is empty."
+    beluga_log "Artifacts will not be deployed as ${STAGING_DIR}/artifacts/artifact-list.json is empty."
     exit 0
   fi
 else
-  echo "Artifacts will not be deployed as ${STAGING_DIR}/artifacts/artifact-list.json doesn't exist."
+  beluga_log "Artifacts will not be deployed as ${STAGING_DIR}/artifacts/artifact-list.json doesn't exist."
   exit 0
 fi

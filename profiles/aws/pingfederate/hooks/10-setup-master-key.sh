@@ -17,9 +17,9 @@ ${VERBOSE} && set -x
 
 MASTER_KEY_PATH="${SERVER_ROOT_DIR}/server/default/data/pf.jwk"
 if ! test -f "${MASTER_KEY_PATH}"; then
-  echo "No pre-existing master key found - obfuscate will create one"
+  beluga_log "No pre-existing master key found - obfuscate will create one"
 else
-  echo "A pre-existing master key was found on disk - using it"
+  beluga_log "A pre-existing master key was found on disk - using it"
 fi
 
 obfuscatePassword

@@ -13,7 +13,7 @@ function stop_server()
     if test -z ${SERVER_PID}; then
         break
     else
-      echo "waiting for PingAccess to terminate due to error"
+      beluga_log "waiting for PingAccess to terminate due to error"
       sleep 3
     fi
   done
@@ -37,12 +37,12 @@ function make_api_request() {
     "${VERBOSE}" && set -x
 
     if test "${curl_result}" -ne 0; then
-        echo "Admin API connection refused"
+        beluga_log "Admin API connection refused"
         "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
 
     if test "${http_code}" -ne 200; then
-        echo "API call returned HTTP status code: ${http_code}"
+        beluga_log "API call returned HTTP status code: ${http_code}"
         cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
         "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
@@ -70,12 +70,12 @@ function make_initial_api_request() {
     "${VERBOSE}" && set -x
 
     if test "${curl_result}" -ne 0; then
-        echo "Admin API connection refused"
+        beluga_log "Admin API connection refused"
         "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
 
     if test "${http_code}" -ne 200; then
-        echo "API call returned HTTP status code: ${http_code}"
+        beluga_log "API call returned HTTP status code: ${http_code}"
         "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
 
@@ -103,12 +103,12 @@ function make_api_request_download() {
     "${VERBOSE}" && set -x
 
     if test "${curl_result}" -ne 0; then
-        echo "Admin API connection refused"
+        beluga_log "Admin API connection refused"
         "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
 
     if test "${http_code}" -ne 200; then
-        echo "API call returned HTTP status code: ${http_code}"
+        beluga_log "API call returned HTTP status code: ${http_code}"
         "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
 
@@ -124,14 +124,14 @@ function make_api_request_download() {
 ########################################################################################################################
 function pingaccess_admin_wait() {
     HOST_PORT="${1:-localhost:9000}"
-    echo "Waiting for admin server at ${HOST_PORT}"
+    beluga_log "Waiting for admin server at ${HOST_PORT}"
     while true; do
         curl -ss --silent -o /dev/null -k https://"${HOST_PORT}"/pa/heartbeat.ping
         if ! test $? -eq 0; then
-            echo "Admin server not started, waiting.."
+            beluga_log "Admin server not started, waiting.."
             sleep 3
         else
-            echo "Admin server started"
+            beluga_log "Admin server started"
             break
         fi
     done
@@ -166,10 +166,10 @@ function changePassword() {
   "${VERBOSE}" && set -x
 
   if test ${isPasswordEmpty} -eq 1; then
-    echo "The old and new passwords cannot be blank"
+    beluga_log "The old and new passwords cannot be blank"
     "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
   elif test ${isPasswordSame} -eq 1; then
-    echo "old password and new password are the same, therefore cannot update password"
+    beluga_log "old password and new password are the same, therefore cannot update password"
     "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
   else
     # Change the default password.
@@ -183,7 +183,7 @@ function changePassword() {
     CHANGE_PASSWORD_STATUS=${?}
     "${VERBOSE}" && set -x
 
-    echo "password change status: ${CHANGE_PASSWORD_STATUS}"
+    beluga_log "password change status: ${CHANGE_PASSWORD_STATUS}"
 
     # If no error, write password to disk
     if test ${CHANGE_PASSWORD_STATUS} -eq 0; then
@@ -191,7 +191,7 @@ function changePassword() {
       return 0
     fi
 
-    echo "error changing password"
+    beluga_log "error changing password"
     "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
   fi
 }
@@ -268,7 +268,7 @@ function initializeSkbnConfiguration() {
 
   esac
 
-  echo "Getting cluster metadata"
+  beluga_log "Getting cluster metadata"
 
   # Get prefix of HOSTNAME which match the pod name.
   export POD="$(echo "${HOSTNAME}" | cut -d. -f1)"
@@ -325,4 +325,17 @@ function export_environment_variables() {
   else
     export PA_DATA_BACKUP_URL=
   fi
+}
+
+########################################################################################################################
+# Standard log function.
+#
+########################################################################################################################
+function beluga_log() {
+  local format="+%Y-%m-%d:%Hh:%Mm:%Ss" # yyyy-mm-dd:00h:00m:00s
+  local timestamp=$( date "${format}" )
+  local message="${1}"
+  local file_name=$(basename "${0}")
+
+  echo "${timestamp} ${file_name}: ${message}"
 }

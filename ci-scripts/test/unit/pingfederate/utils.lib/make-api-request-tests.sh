@@ -56,7 +56,7 @@ testMakeApiRequestUnauthorized() {
   exit_code=$?
 
   assertEquals 1 ${exit_code}
-  assertEquals 'API call returned HTTP status code: 401' "${msg}"
+  assertContains "${msg}" 'API call returned HTTP status code: 401'
 }
 
 testMakeApiRequestConnError() {
@@ -66,7 +66,7 @@ testMakeApiRequestConnError() {
   # The returned status code here is 127 despite
   # returned status code 1 in the function.  Bug?
   assertEquals 1 ${exit_code}
-  assertEquals 'Admin API connection refused' "${msg}"
+  assertContains "${msg}" 'Admin API connection refused'
 }
 ##### End Tests: Make API requests and expect JSON response #####
 
@@ -85,7 +85,7 @@ testMakeApiRequestDownloadUnauthorized() {
   exit_code=$?
 
   assertEquals 1 ${exit_code}
-  assertEquals 'API call returned HTTP status code: 401' "${msg}"
+  assertContains "${msg}" 'API call returned HTTP status code: 401'
 }
 
 testMakeApiRequestDownloadConnError() {
@@ -95,7 +95,7 @@ testMakeApiRequestDownloadConnError() {
   # The returned status code here is 127 despite
   # returned status code 1 in the function.  Bug?
   assertEquals 1 ${exit_code}
-  assertEquals 'Admin API connection refused' "${msg}"
+  assertContains "${msg}" 'Admin API connection refused'
 }
 ##### End Tests: Make API Requests and expect file download #####
 
