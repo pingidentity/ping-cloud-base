@@ -233,14 +233,140 @@ patchesJson6902:
       path: /spec/rules/0/host
       value: prometheus${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
 
-${SERVICE_NGINX_PRIVATE_PATCH}
+### Ingress nginx private ###
+- target:
+    version: v1
+    kind: Service
+    name: ingress-nginx
+    namespace: ingress-nginx-private
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+      value: pingdirectory-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
 
-### Edit CloudWatch Logging Configuration ###
-#generatorOptions:
-#  disableNameSuffixHash: false
-#configMapGenerator:
-#  - name: fluentd-config
-#    namespace: amazon-cloudwatch
-#    behavior: merge
-#    files:
-#      - containers.conf
+    # Open up ports on the private NLB for PF/PA admins and PD clustering.
+    - op: replace
+      path: /spec/ports
+      value:
+        # http and https for the private webapps, e.g. the admins
+        - name: http
+          port: 80
+          targetPort: http
+        - name: https
+          port: 443
+          targetPort: https
+
+        # TODO: determine if only the replication port requires to be open
+        ## Allow up to 9 PD servers per region so no changes are necessary when the replica count is changed.
+
+        # ldaps and replication for pingdirectory-0
+        - name: ldaps-pingdirectory-0
+          port: 6360
+          targetPort: 6360
+        - name: repl-pingdirectory-0
+          port: 9890
+          targetPort: 9890
+
+        # ldaps and replication for pingdirectory-1
+        - name: ldaps-pingdirectory-1
+          port: 6361
+          targetPort: 6361
+        - name: repl-pingdirectory-1
+          port: 9891
+          targetPort: 9891
+
+        # ldaps and replication for pingdirectory-2
+        - name: ldaps-pingdirectory-2
+          port: 6362
+          targetPort: 6362
+        - name: repl-pingdirectory-2
+          port: 9892
+          targetPort: 9892
+
+        # ldaps and replication for pingdirectory-3
+        - name: ldaps-pingdirectory-3
+          port: 6363
+          targetPort: 6363
+        - name: repl-pingdirectory-3
+          port: 9893
+          targetPort: 9893
+
+        # ldaps and replication for pingdirectory-4
+        - name: ldaps-pingdirectory-4
+          port: 6364
+          targetPort: 6364
+        - name: repl-pingdirectory-4
+          port: 9894
+          targetPort: 9894
+
+        # ldaps and replication for pingdirectory-5
+        - name: ldaps-pingdirectory-5
+          port: 6365
+          targetPort: 6365
+        - name: repl-pingdirectory-5
+          port: 9895
+          targetPort: 9895
+
+        # ldaps and replication for pingdirectory-6
+        - name: ldaps-pingdirectory-6
+          port: 6366
+          targetPort: 6366
+        - name: repl-pingdirectory-6
+          port: 9896
+          targetPort: 9896
+
+        # ldaps and replication for pingdirectory-7
+        - name: ldaps-pingdirectory-7
+          port: 6367
+          targetPort: 6367
+        - name: repl-pingdirectory-7
+          port: 9897
+          targetPort: 9897
+
+        # ldaps and replication for pingdirectory-8
+        - name: ldaps-pingdirectory-8
+          port: 6368
+          targetPort: 6368
+        - name: repl-pingdirectory-8
+          port: 9898
+          targetPort: 9898
+
+# Configure the private nginx controller to receive traffic on the above ports
+- target:
+    version: v1
+    kind: ConfigMap
+    name: tcp-services
+    namespace: ingress-nginx-private
+  patch: |-
+    - op: add
+      path: /data
+      value:
+        # PingDirectory LDAPS and replication ports
+        6360: "${PING_CLOUD_NAMESPACE}/pingdirectory-0-service:ldaps"
+        9890: "${PING_CLOUD_NAMESPACE}/pingdirectory-0-service:repl"
+
+        6361: "${PING_CLOUD_NAMESPACE}/pingdirectory-1-service:ldaps"
+        9891: "${PING_CLOUD_NAMESPACE}/pingdirectory-1-service:repl"
+
+        6362: "${PING_CLOUD_NAMESPACE}/pingdirectory-2-service:ldaps"
+        9892: "${PING_CLOUD_NAMESPACE}/pingdirectory-2-service:repl"
+
+        6363: "${PING_CLOUD_NAMESPACE}/pingdirectory-3-service:ldaps"
+        9893: "${PING_CLOUD_NAMESPACE}/pingdirectory-3-service:repl"
+
+        6364: "${PING_CLOUD_NAMESPACE}/pingdirectory-4-service:ldaps"
+        9894: "${PING_CLOUD_NAMESPACE}/pingdirectory-4-service:repl"
+
+        6365: "${PING_CLOUD_NAMESPACE}/pingdirectory-5-service:ldaps"
+        9895: "${PING_CLOUD_NAMESPACE}/pingdirectory-5-service:repl"
+
+        6366: "${PING_CLOUD_NAMESPACE}/pingdirectory-6-service:ldaps"
+        9896: "${PING_CLOUD_NAMESPACE}/pingdirectory-6-service:repl"
+
+        6367: "${PING_CLOUD_NAMESPACE}/pingdirectory-7-service:ldaps"
+        9897: "${PING_CLOUD_NAMESPACE}/pingdirectory-7-service:repl"
+
+        6368: "${PING_CLOUD_NAMESPACE}/pingdirectory-8-service:ldaps"
+        9898: "${PING_CLOUD_NAMESPACE}/pingdirectory-8-service:repl"
+
+${SERVICE_NGINX_PRIVATE_PATCH}

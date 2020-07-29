@@ -119,10 +119,8 @@ patchesJson6902:
 #    name: pingdirectory-admin
 #  patch: |-
 #    - op: replace
-#      path: /metadata/annotations
-#      value:
-#        service.beta.kubernetes.io/aws-load-balancer-type: nlb
-#        external-dns.alpha.kubernetes.io/hostname: pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+#      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+#      value: pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}
 
 patchesStrategicMerge:
 - |-
