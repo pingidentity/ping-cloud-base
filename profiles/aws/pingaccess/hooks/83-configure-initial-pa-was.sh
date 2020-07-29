@@ -36,6 +36,33 @@ create_pf_virtual_host() {
   create_virtual_host
 }
 
+create_kibana_virtual_host() {
+  export VHOST_ID=21
+  export VHOST_HOST="${KIBANA_PUBLIC_HOSTNAME}"
+  export VHOST_PORT=443
+
+  echo "configure-pa-was: Creating Kibana Virtual Host"
+  create_virtual_host
+}
+
+create_grafana_virtual_host() {
+  export VHOST_ID=22
+  export VHOST_HOST="${GRAFANA_PUBLIC_HOSTNAME}"
+  export VHOST_PORT=443
+
+  echo "configure-pa-was: Creating Grafana Virtual Host"
+  create_virtual_host
+}
+
+create_prometheus_virtual_host() {
+  export VHOST_ID=23
+  export VHOST_HOST="${PROMETHEUS_PUBLIC_HOSTNAME}"
+  export VHOST_PORT=443
+
+  echo "configure-pa-was: Creating Prometheus Virtual Host"
+  create_virtual_host
+}
+
 create_virtual_host() {
   local vhost_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/vhost-payload.json)
   local resource=virtualhosts
@@ -48,6 +75,7 @@ create_pa_site() {
   export SITE_ID=10
   export SITE_NAME="PingAccess Admin Console"
   export SITE_TARGET="pingaccess-admin:9000"
+  export SITE_SECURE=true
 
   echo "configure-pa-was: Creating PA Site"
   create_site
@@ -57,8 +85,39 @@ create_pf_site() {
   export SITE_ID=20
   export SITE_NAME="PingFederate Admin Console"
   export SITE_TARGET="pingfederate-admin:9999"
+  export SITE_SECURE=true
 
   echo "configure-pa-was: Creating PF Site"
+  create_site
+}
+
+create_kibana_site() {
+  export SITE_ID=21
+  export SITE_NAME="Kibana"
+  export SITE_TARGET="kibana.elastic-stack-logging:5601"
+  export SITE_SECURE=false
+
+  echo "configure-pa-was: Creating Kibana Site"
+  create_site
+}
+
+create_grafana_site() {
+  export SITE_ID=22
+  export SITE_NAME="Grafana"
+  export SITE_TARGET="grafana.prometheus:3000"
+  export SITE_SECURE=false
+
+  echo "configure-pa-was: Creating Grafana Site"
+  create_site
+}
+
+create_prometheus_site() {
+  export SITE_ID=23
+  export SITE_NAME="Prometheus"
+  export SITE_TARGET="prometheus.prometheus:9090"
+  export SITE_SECURE=false
+
+  echo "configure-pa-was: Creating Prometheus Site"
   create_site
 }
 
@@ -67,7 +126,7 @@ create_site() {
   local resource=sites
 
   create_entity "${site_payload}" "${resource}"
-  unset SITE_ID SITE_NAME SITE_TARGET
+  unset SITE_ID SITE_NAME SITE_TARGET SITE_SECURE
 }
 
 create_pa_application() {
@@ -89,6 +148,39 @@ create_pf_application() {
   export SITE_ID=20
 
   echo "configure-pa-was: Creating PF Application"
+  create_application
+}
+
+create_kibana_application() {
+  export APP_ID=21
+  export APP_NAME="Kibana App"
+  export APP_DESCRIPTION="Kibana Web Application"
+  export VIRTUAL_HOST_ID=21
+  export SITE_ID=21
+
+  echo "configure-pa-was: Creating Kibana Application"
+  create_application
+}
+
+create_grafana_application() {
+  export APP_ID=22
+  export APP_NAME="Grafana App"
+  export APP_DESCRIPTION="Grafana Web Application"
+  export VIRTUAL_HOST_ID=22
+  export SITE_ID=22
+
+  echo "configure-pa-was: Creating Grafana Application"
+  create_application
+}
+
+create_prometheus_application() {
+  export APP_ID=23
+  export APP_NAME="Prometheus App"
+  export APP_DESCRIPTION="Prometheus Web Application"
+  export VIRTUAL_HOST_ID=23
+  export SITE_ID=23
+
+  echo "configure-pa-was: Creating Prometheus Application"
   create_application
 }
 
@@ -122,9 +214,18 @@ is_production_environment() {
 create_web_session
 create_pa_virtual_host
 create_pf_virtual_host
+create_kibana_virtual_host
+create_grafana_virtual_host
+create_prometheus_virtual_host
 create_pa_site
 create_pf_site
+create_kibana_site
+create_grafana_site
+create_prometheus_site
 create_pa_application
 create_pf_application
+create_kibana_application
+create_grafana_application
+create_prometheus_application
 
 echo "configure-pa-was: Configuration complete"

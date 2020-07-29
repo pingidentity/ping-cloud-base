@@ -8,12 +8,8 @@ if skipTest "${0}"; then
 fi
 
 testUrls() {
-  # FIXME: re-add httpbin test when server profile is fixed
-  testUrlsExpect2xx "${PINGACCESS_CONSOLE}" "${PINGACCESS_API}/version" "${PINGACCESS_SWAGGER}"
-  assertEquals 0 $?
-
-  testUrls "${PINGACCESS_AGENT}"  #"${PINGACCESS_RUNTIME}"/anything
-  assertEquals 0 $?
+    testUrlsExpect2xx "${PINGACCESS_WAS_CONSOLE}" "${PINGACCESS_WAS_API}/version" "${PINGACCESS_WAS_SWAGGER}"
+    assertEquals 0 $?
 }
 
 # When arguments are passed to a script you must

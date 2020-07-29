@@ -4,7 +4,7 @@
   "targets": [
     "${SITE_TARGET}"
   ],
-  "secure": true,
+  "secure": ${SITE_SECURE},
   "trustedCertificateGroupId": 2,
   "sendPaCookie": true,
   "useTargetHostHeader": false,

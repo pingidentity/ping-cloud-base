@@ -20,6 +20,10 @@ spec:
     - hosts:
         - pingaccess-admin-dev.ping-demo.com
         - pingfederate-admin-dev.ping-demo.com
+        - monitoring-dev.ping-demo.com
+        - prometheus-dev.ping-demo.com
+        - logs-dev.ping-demo.com
+
   rules:
     - host: pingaccess-admin-dev.ping-demo.com
       http:
@@ -33,6 +37,30 @@ spec:
       http:
         paths:
           # This rule gives external access to the PingFederate admin service
+          - path: /
+            backend:
+              serviceName: pingaccess-was
+              servicePort: 443
+    - host: monitoring-dev.ping-demo.com
+      http:
+        paths:
+          # This rule allows external access to Grafana via the pingaccess-was runtime service
+          - path: /
+            backend:
+              serviceName: pingaccess-was
+              servicePort: 443
+    - host: prometheus-dev.ping-demo.com
+      http:
+        paths:
+          # This rule allows external access to Prometheus via the pingaccess-was runtime service
+          - path: /
+            backend:
+              serviceName: pingaccess-was
+              servicePort: 443
+    - host: logs-dev.ping-demo.com
+      http:
+        paths:
+          # This rule allows external access to Kibana via the pingaccess-was runtime service
           - path: /
             backend:
               serviceName: pingaccess-was

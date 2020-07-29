@@ -1,0 +1,53 @@
+#!/bin/bash
+
+function get_site() {
+
+  set +x
+
+  password="${1}"
+  endpoint="${2}"
+  id="${3}"
+
+  get_site_response=$(curl -k \
+    -i \
+    -s \
+    -u "Administrator:${password}" \
+    -H 'X-Xsrf-Header: PingAccess' \
+    "${endpoint}/sites/${id}")
+
+  get_site_response_code=$(parse_http_response_code "${get_site_response}")
+
+  if [[ 200 -ne ${get_site_response_code} ]]; then
+      echo "There was a problem getting the site: " ${get_site_response_code}
+      return 1
+  else
+      echo "${get_site_response}"
+      return 0
+  fi
+}
+
+function get_virtual_host() {
+
+  set +x
+
+  password="${1}"
+  endpoint="${2}"
+  id="${3}"
+
+  get_virtual_host_response=$(curl -k \
+    -i \
+    -s \
+    -u "Administrator:${password}" \
+    -H 'X-Xsrf-Header: PingAccess' \
+    "${endpoint}/virtualhosts/${id}")
+
+  get_virtual_host_response_code=$(parse_http_response_code "${get_virtual_host_response}")
+
+  if [[ 200 -ne ${get_virtual_host_response_code} ]]; then
+      echo "There was a problem getting the virtual host: " ${get_virtual_host_response_code}
+      return 1
+  else
+      echo "${get_virtual_host_response}"
+      return 0
+  fi
+}
