@@ -6,7 +6,7 @@
 "${VERBOSE}" && set -x
 
 if test "${OPERATIONAL_MODE}" != "CLUSTERED_CONSOLE"; then
-  echo "post-start: skipping post-start on engine"
+  beluga_log "post-start: skipping post-start on engine"
   exit 0
 fi
 
@@ -54,7 +54,7 @@ fi
 sh "${HOOKS_DIR}/90-upload-backup-s3.sh"
 BACKUP_STATUS=${?}
 
-echo "post-start: data backup status: ${BACKUP_STATUS}"
+beluga_log "post-start: data backup status: ${BACKUP_STATUS}"
 
 # Write the marker file if post-start succeeds.
 if test "${BACKUP_STATUS}" -eq 0; then
@@ -63,5 +63,5 @@ if test "${BACKUP_STATUS}" -eq 0; then
 fi
 
 # Kill the container if post-start fails.
-echo "post-start: admin post-start backup failed"
+beluga_log "post-start: admin post-start backup failed"
 "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1

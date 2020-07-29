@@ -9,7 +9,7 @@ test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
 
 # Allow overriding the backup URL with an arg
 test ! -z "${1}" && BACKUP_URL="${1}"
-echo "Uploading to location ${BACKUP_URL}"
+beluga_log "Uploading to location ${BACKUP_URL}"
 
 # Set required environment variables for skbn
 initializeSkbnConfiguration
@@ -26,7 +26,7 @@ make_api_request_download -X GET \
 
 # Validate admin API call was successful and that zip isn't corrupted
 if test ! $? -eq 0 || test "$( unzip -t ${DST_DIRECTORY}/${DST_FILE_TIMESTAMP} > /dev/null 2>&1;echo $?)" != "0" ; then
-  echo "Failed to export archive"
+  beluga_log "Failed to export archive"
   # Cleanup k8s-s3-upload-archive temp directory
   rm -rf ${DST_DIRECTORY}
   exit 1
@@ -40,7 +40,7 @@ UPLOAD_DIR="$(mktemp -d)"
 cp "${DST_DIRECTORY}/$DST_FILE_TIMESTAMP" "${UPLOAD_DIR}/$DST_FILE_LATEST"
 cp "${DST_DIRECTORY}/$DST_FILE_TIMESTAMP" "${UPLOAD_DIR}/$DST_FILE_TIMESTAMP"
 
-echo "Copying files to '${SKBN_CLOUD_PREFIX}'"
+beluga_log "Copying files to '${SKBN_CLOUD_PREFIX}'"
 
 if ! skbnCopy "${SKBN_K8S_PREFIX}/${UPLOAD_DIR}/" "${SKBN_CLOUD_PREFIX}/"; then
   exit 1

@@ -56,38 +56,38 @@ get_installed_version() {
 # Check if it's necessary to run the upgrade tool
 # Compare version in /opt/server with current version of server under /opt/out/instance to make the call
 get_image_version
-echo "Image version is: ${IMAGE_VERSION}"
+beluga_log "Image version is: ${IMAGE_VERSION}"
 
 get_installed_version
-echo "Installed version is: ${INSTALLED_VERSION}"
+beluga_log "Installed version is: ${INSTALLED_VERSION}"
 
 if test $(format_version "${IMAGE_VERSION}") -gt $(format_version "${INSTALLED_VERSION}"); then
   # PingFederate requires that the source and target installation have the directory name "pingfederate"
   # More info here: https://docs.pingidentity.com/bundle/pingfederate-93/page/tit1564003034981.html
-  echo "Changing the name of the source and target directories to 'pingfederate'"
+  beluga_log "Changing the name of the source and target directories to 'pingfederate'"
 
   OLD_SERVER_ROOT_DIR="${OUT_DIR}/pingfederate"
   rm -rf "${OLD_SERVER_ROOT_DIR}"
-  echo "Copying ${SERVER_ROOT_DIR} to ${OLD_SERVER_ROOT_DIR}"
+  beluga_log "Copying ${SERVER_ROOT_DIR} to ${OLD_SERVER_ROOT_DIR}"
   cp -pr "${SERVER_ROOT_DIR}" "${OLD_SERVER_ROOT_DIR}"
 
   NEW_SERVER_ROOT_DIR="/opt/pingfederate"
   rm -rf "${NEW_SERVER_ROOT_DIR}"
-  echo "Copying ${SERVER_BITS_DIR} to ${NEW_SERVER_ROOT_DIR}"
+  beluga_log "Copying ${SERVER_BITS_DIR} to ${NEW_SERVER_ROOT_DIR}"
   cp -pr "${SERVER_BITS_DIR}" "${NEW_SERVER_ROOT_DIR}"
 
-  echo "Upgrading from ${INSTALLED_VERSION} -> ${IMAGE_VERSION}"
-  echo "Running upgrade.sh from ${NEW_SERVER_ROOT_DIR} against source server at ${OLD_SERVER_ROOT_DIR}"
+  beluga_log "Upgrading from ${INSTALLED_VERSION} -> ${IMAGE_VERSION}"
+  beluga_log "Running upgrade.sh from ${NEW_SERVER_ROOT_DIR} against source server at ${OLD_SERVER_ROOT_DIR}"
   sh "${NEW_SERVER_ROOT_DIR}/upgrade/bin/upgrade.sh" "${OLD_SERVER_ROOT_DIR}"
 
   UPGRADE_STATUS=${?}
-  echo "Upgrade from ${INSTALLED_VERSION} -> ${IMAGE_VERSION}: ${UPGRADE_STATUS}"
+  beluga_log "Upgrade from ${INSTALLED_VERSION} -> ${IMAGE_VERSION}: ${UPGRADE_STATUS}"
   test "${UPGRADE_STATUS}" -ne 0 && exit "${UPGRADE_STATUS}"
 
-  echo "Moving new server root at ${NEW_SERVER_ROOT_DIR} to original server root at ${SERVER_ROOT_DIR}"
+  beluga_log "Moving new server root at ${NEW_SERVER_ROOT_DIR} to original server root at ${SERVER_ROOT_DIR}"
   rm -rf "${SERVER_ROOT_DIR}"
   rm -rf "${OLD_SERVER_ROOT_DIR}"
   mv "${NEW_SERVER_ROOT_DIR}" "${SERVER_ROOT_DIR}"
 else
-  echo "Not running upgrade because image version is not newer than installed version"
+  beluga_log "Not running upgrade because image version is not newer than installed version"
 fi
