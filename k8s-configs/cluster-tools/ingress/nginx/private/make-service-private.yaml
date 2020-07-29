@@ -1,5 +1,3 @@
 - op: add
-  path: /metadata/annotations
-  value:
-    service.beta.kubernetes.io/aws-load-balancer-type: nlb
-    service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0
+  path: /metadata/annotations/service.beta.kubernetes.io~1aws-load-balancer-internal
+  value: 0.0.0.0/0

@@ -5,7 +5,5 @@
     name: ingress-nginx
     namespace: ingress-nginx-private
   patch: |-
-    - op: replace
-      path: /metadata/annotations
-      value:
-        service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    - op: remove
+      path: /metadata/annotations/service.beta.kubernetes.io/aws-load-balancer-internal

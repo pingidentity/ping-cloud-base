@@ -181,10 +181,8 @@ patchesJson6902:
     name: pingdirectory-admin
   patch: |-
     - op: replace
-      path: /metadata/annotations
-      value:
-        service.beta.kubernetes.io/aws-load-balancer-type: nlb
-        external-dns.alpha.kubernetes.io/hostname: pingdirectory-admin.${TENANT_DOMAIN}
+      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+      value: pingdirectory-admin.${TENANT_DOMAIN}
 
 # Make the admin nodes available externally for test purposes. In general, they
 # will be behind a VPN gateway on all CDEs so only admins have access to them.
@@ -194,10 +192,8 @@ patchesJson6902:
     name: ingress-nginx
     namespace: ingress-nginx-private
   patch: |-
-    - op: replace
-      path: /metadata/annotations
-      value:
-        service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    - op: remove
+      path: /metadata/annotations/service.beta.kubernetes.io~1aws-load-balancer-internal
 
 # Configure external-dns to only own the hosted zone for the tenant domain
 - target:

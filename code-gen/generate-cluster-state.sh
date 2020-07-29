@@ -480,6 +480,18 @@ export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEV
 SCRIPT_HOME=$(cd $(dirname ${0}) 2> /dev/null; pwd)
 TEMPLATES_HOME="${SCRIPT_HOME}/templates"
 
+test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}" &&
+  IS_PRIMARY=true ||
+  IS_PRIMARY=false
+
+if "${IS_PRIMARY}"; then
+  TOOLS_TEMPLATES_HOME="${TEMPLATES_HOME}"/cluster-tools
+  PING_CLOUD_TEMPLATES_HOME="${TEMPLATES_HOME}"/ping-cloud
+else
+  TOOLS_TEMPLATES_HOME="${TEMPLATES_HOME}"/secondary/cluster-tools
+  PING_CLOUD_TEMPLATES_HOME="${TEMPLATES_HOME}"/secondary/ping-cloud
+fi
+
 # Generate an SSH key pair for flux CD.
 if test -z "${SSH_ID_PUB_FILE}" && test -z "${SSH_ID_KEY_FILE}"; then
   echo 'Generating key-pair for SSH access'
@@ -520,8 +532,7 @@ ENVIRONMENTS='dev test stage prod'
 for ENV in ${ENVIRONMENTS}; do
   # Export all the environment variables required for envsubst
   test "${ENV}" = prod && export CLUSTER_STATE_REPO_BRANCH=master || export CLUSTER_STATE_REPO_BRANCH=${ENV}
-  test "${REGION}" != "${PRIMARY_REGION}" || test "${TENANT_DOMAIN}" != "${PRIMARY_TENANT_DOMAIN}" &&
-      export CLUSTER_STATE_REPO_PATH="${REGION}"
+  ! "${IS_PRIMARY}" && export CLUSTER_STATE_REPO_PATH="${REGION}"
   export ENVIRONMENT_TYPE=${ENV}
 
   # The base URL for kustomization files and environment will be different for each CDE.
@@ -634,8 +645,8 @@ for ENV in ${ENVIRONMENTS}; do
   ENV_DIR="${K8S_CONFIGS_DIR}/${ENV}"
   mkdir -p "${ENV_DIR}"
 
-  cp -r "${TEMPLATES_HOME}"/cluster-tools "${ENV_DIR}"
-  cp -r "${TEMPLATES_HOME}"/ping-cloud "${ENV_DIR}"
+  cp -r "${TOOLS_TEMPLATES_HOME}" "${ENV_DIR}"
+  cp -r "${PING_CLOUD_TEMPLATES_HOME}" "${ENV_DIR}"
 
   # Copy the base files into the environment directory
   find "${TEMPLATES_HOME}" -type f -maxdepth 1 | xargs -I {} cp {} "${ENV_DIR}"
@@ -653,6 +664,7 @@ for ENV in ${ENVIRONMENTS}; do
   PD_FILE_TO_PATCH="${ENV_DIR}/ping-cloud/pingdirectory-ldap-endpoint-patch.yaml.tmpl"
 
   NAMESPACE_COMMENT="# All ping resources will live in the ${PING_CLOUD_NAMESPACE} namespace"
+
   if test "${IS_BELUGA_ENV}" = 'true'; then
     export PING_CLOUD_NAMESPACE_RESOURCE="${NAMESPACE_COMMENT}
 - namespace.yaml"
