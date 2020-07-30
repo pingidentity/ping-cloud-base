@@ -46,6 +46,8 @@ export ADMIN_PASS=2FederateM0re
 export CLUSTER_NAME_LC=$(echo "${CLUSTER_NAME}" | tr '[:upper:]' '[:lower:]')
 export LOG_GROUP_NAME="/aws/containerinsights/${CLUSTER_NAME}/application"
 
+SKIP_TESTS="pingaccess/01-agent-config-test.sh"
+
 FQDN=${ENVIRONMENT}.${TENANT_DOMAIN}
 
 # Common
