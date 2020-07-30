@@ -5,6 +5,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: pingdirectory
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: pingdirectory-cluster-dev.ping-demo.com
 spec:
   publishNotReadyAddresses: true
   ports:
@@ -14,6 +16,9 @@ spec:
   - port: 1636
     name: ldaps
     targetPort: ldaps
+  - port: 8989
+    name: repl
+    targetPort: repl
   - port: 9102
     name: metrics
   clusterIP: None

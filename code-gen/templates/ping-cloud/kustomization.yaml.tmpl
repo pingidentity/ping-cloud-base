@@ -223,6 +223,34 @@ patchesJson6902:
       path: /spec/rules/0/host
       value: pingfederate-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
 
+# Set a hostname for all the headless services so their endpoint IPs are published to Route53
+- target:
+    version: v1
+    kind: Service
+    name: pingdirectory
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+      value: pingdirectory-cluster${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+
+- target:
+    version: v1
+    kind: Service
+    name: pingfederate-cluster
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+      value: pingfederate-cluster${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+
+- target:
+    version: v1
+    kind: Service
+    name: pingaccess-admin
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+      value: pingaccess-cluster${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+
 # FIXME: add this once PDO-1114 is implemented
 ## pingdirectory admin
 #- target:
