@@ -288,7 +288,9 @@ EOF
   echo
 
   echo "Running integration tests"
-  for integration_test_dir in common pingaccess pingdirectory pingfederate chaos; do
+#  for integration_test_dir in common pingaccess pingaccess-was pingdirectory pingfederate chaos; do
+#  for integration_test_dir in common pingaccess pingdirectory pingfederate chaos; do
+  for integration_test_dir in pingaccess-was pingaccess pingfederate; do
     echo
     echo "=========================================================="
     echo "      Executing tests in directory: ${integration_test_dir}            "

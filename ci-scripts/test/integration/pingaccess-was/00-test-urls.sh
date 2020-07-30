@@ -7,9 +7,14 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-testUrls() {
-    testUrlsExpect2xx "${PINGACCESS_WAS_CONSOLE}" "${PINGACCESS_WAS_API}/version" "${PINGACCESS_WAS_SWAGGER}"
-    assertEquals 0 $?
+testPaWasUrls() {
+  testUrlsExpect2xx "${PINGACCESS_WAS_CONSOLE}" "${PINGACCESS_WAS_API}/version" "${PINGACCESS_WAS_SWAGGER}"
+  assertEquals 0 $?
+}
+
+testPaWasProtectedAppUrls() {
+  testUrls "${LOGS_CONSOLE}" "${PROMETHEUS}" "${GRAFANA}"
+  assertEquals 0 $?
 }
 
 # When arguments are passed to a script you must

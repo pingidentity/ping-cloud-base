@@ -12,8 +12,8 @@ testUrls() {
   testUrlsExpect2xx "${PINGACCESS_CONSOLE}" "${PINGACCESS_API}/version" "${PINGACCESS_SWAGGER}"
   assertEquals 0 $?
 
-  testUrls "${PINGACCESS_AGENT}"  #"${PINGACCESS_RUNTIME}"/anything
-  assertEquals 0 $?
+#  testUrls "${PINGACCESS_AGENT}"  #"${PINGACCESS_RUNTIME}"/anything
+#  assertEquals 0 $?
 }
 
 # When arguments are passed to a script you must
