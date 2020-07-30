@@ -55,7 +55,7 @@ spec:
             name: pingaccess-was-environment-variables
       containers:
       - name: pingaccess-was-admin
-        image: pingidentity/pingaccess:2006-6.1.0
+        image: pingidentity/pingaccess:2006.1-6.1.0
         imagePullPolicy: IfNotPresent
         resources:
           requests:
@@ -247,7 +247,7 @@ spec:
             name: pingaccess-was-environment-variables
       containers:
       - name: pingaccess-was
-        image: pingidentity/pingaccess:2006-6.1.0
+        image: pingidentity/pingaccess:2006.1-6.1.0
         imagePullPolicy: IfNotPresent
         resources:
           requests:

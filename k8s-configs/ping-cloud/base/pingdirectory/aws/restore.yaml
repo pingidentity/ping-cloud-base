@@ -109,7 +109,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: pingdirectory-restore
-        image: pingidentity/pingdirectory:2006-8.1.0.0
+        image: pingidentity/pingdirectory:2006.1-8.1.0.1
         command:
         - /opt/in/restore.sh
         volumeMounts:
