@@ -9,6 +9,7 @@ fi
 if ! test -z "${OPERATIONAL_MODE}" && test "${OPERATIONAL_MODE}" = "CLUSTERED_CONSOLE"; then
   run_hook "90-restore-backup-s3.sh"
   run_hook "11-restore-db-password.sh"
+  run_hook "22-upgrade-server.sh"
 fi
 
 run_hook "100-tail-logs.sh"
