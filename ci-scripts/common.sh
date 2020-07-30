@@ -8,6 +8,7 @@ test "${VERBOSE}" && set -x
 
 # Override environment variables with optional file supplied from the outside
 ENV_VARS_FILE="${1}"
+SKIP_TESTS="pingaccess/01-agent-config-test.sh chaos/01-delete-pa-admin-pod.sh"
 
 if test -z "${ENV_VARS_FILE}"; then
   echo "Using environment variables based on CI variables"
@@ -63,7 +64,9 @@ PINGDIRECTORY_ADMIN=pingdirectory-admin${FQDN}
 # Pingfederate
 # admin services:
 PINGFEDERATE_CONSOLE=https://pingfederate-admin${FQDN}/pingfederate/app
-PINGFEDERATE_API=https://pingfederate-admin${FQDN}/pingfederate/app/pf-admin-api/api-docs
+
+# The / on the end is required to avoid a 302
+PINGFEDERATE_API=https://pingfederate-admin${FQDN}/pf-admin-api/api-docs/
 
 # runtime services:
 PINGFEDERATE_AUTH_ENDPOINT=https://pingfederate${FQDN}
@@ -336,14 +339,6 @@ function log_events_exist() {
     sed -E 's/-//g' |
     tr -d '\r' > "${temp_log_file}"
 
-  echo "POD LOG CONTENT"
-  cat < "${temp_log_file}"
-  echo "-------------------------"
-  echo "Profile: ${AWS_PROFILE}"
-  echo "Group:   ${LOG_GROUP_NAME}"
-  echo "Stream:  ${log_stream}"
-  echo "-------------------------"
-
   # Let the aws logs catch up to the kubectl logs in temp file
   sleep "${LOG_SYNC_SECONDS}"
 
@@ -361,10 +356,6 @@ function log_events_exist() {
     sed -E 's/\\u001B\[(([0-9]+)(;[0-9]+)*)?[m,K,H,f,J]//g' |
     sed -E 's/\\//g' |
     sed -E 's/-//g')
-  
-  echo "CLOUDWATCH CONTENT"
-  echo "${cwatch_log_events}"
-  echo "-------------------------"
   
   while read -r event; do
     count=$(echo "${cwatch_log_events}" | grep -Fc "${event}")

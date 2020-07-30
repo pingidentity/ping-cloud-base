@@ -64,7 +64,7 @@ testEmptyJson() {
     # Set the container name.
     test "${SERVER}" == "${PRODUCT_NAME}-admin-0" && CONTAINER="${PRODUCT_NAME}-admin" || CONTAINER="${PRODUCT_NAME}"
 
-    log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
+#    log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
 
     cat > ${TEMP_FILE} <<-EOF
     []
@@ -94,7 +94,7 @@ testInvalidJson() {
     # Set the container name.
     test "${SERVER}" == "${PRODUCT_NAME}-admin-0" && CONTAINER="${PRODUCT_NAME}-admin" || CONTAINER="${PRODUCT_NAME}"
 
-    log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
+#    log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
 
     cat > ${TEMP_FILE} <<-EOF
     [{"name" "${SAMPLE_RULES}"}]
@@ -125,7 +125,7 @@ testDuplicateJson() {
     # Set the container name.
     test "${SERVER}" == "${PRODUCT_NAME}-admin-0" && CONTAINER="${PRODUCT_NAME}-admin" || CONTAINER="${PRODUCT_NAME}"
 
-    log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
+#    log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
 
     cat > ${TEMP_FILE} <<-EOF
     [
@@ -165,7 +165,7 @@ testMissingNameJson() {
     # Set the container name.
     test "${SERVER}" == "${PRODUCT_NAME}-admin-0" && CONTAINER="${PRODUCT_NAME}-admin" || CONTAINER="${PRODUCT_NAME}"
 
-    log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
+#    log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
 
     cat > ${TEMP_FILE} <<-EOF
     [
@@ -200,7 +200,7 @@ testMissingVersionJson() {
     # Set the container name.
     test "${SERVER}" == "${PRODUCT_NAME}-admin-0" && CONTAINER="${PRODUCT_NAME}-admin" || CONTAINER="${PRODUCT_NAME}"
 
-    log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
+#    log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
 
     cat > ${TEMP_FILE} <<-EOF
     [
@@ -236,7 +236,7 @@ testDeployValidArtifact() {
     # Set the container name.
     test "${SERVER}" == "${PRODUCT_NAME}-admin-0" && CONTAINER="${PRODUCT_NAME}-admin" || CONTAINER="${PRODUCT_NAME}"
 
-    log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
+#    log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
 
     cat > ${TEMP_FILE} <<-EOF
     [
@@ -287,7 +287,7 @@ testUpgradeArtifactTest() {
     # Set the container name.
     test "${SERVER}" == "${PRODUCT_NAME}-admin-0" && CONTAINER="${PRODUCT_NAME}-admin" || CONTAINER="${PRODUCT_NAME}"
 
-    log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
+#    log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
 
     cat > ${TEMP_FILE} <<-EOF
     [

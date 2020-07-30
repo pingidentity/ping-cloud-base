@@ -12,12 +12,13 @@ setUp() {
   . ${SCRIPT_HOME}/runtime/send-request-to-agent-port
 }
 
+if skipTest "${0}"; then
+  log "Skipping test ${0}"
+  exit 0
+fi
+
 testAgentConfig() {
 
-  if skipTest "${0}"; then
-    log "Skipping test ${0}"
-    exit 0
-  fi
 
   export templates_dir_path=${SCRIPT_HOME}/templates
 

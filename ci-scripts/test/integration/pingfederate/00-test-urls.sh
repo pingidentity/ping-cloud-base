@@ -7,5 +7,5 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-testUrls ${PINGFEDERATE_CONSOLE} ${PINGFEDERATE_API} ${PINGFEDERATE_OAUTH_PLAYGROUND}
+testUrls ${PINGFEDERATE_CONSOLE} ${PINGFEDERATE_API}
 exit ${?}
