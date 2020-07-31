@@ -3,7 +3,6 @@
   value:
     - --source=service
     - --source=ingress
-    - --log-level=debug
     - --provider=aws
     - --policy=sync
     - --aws-zone-type=public
