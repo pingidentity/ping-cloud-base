@@ -147,7 +147,7 @@ function configure_tcp_xml() {
   local currentDir="$(pwd)"
   cd "${SERVER_ROOT_DIR}/server/default/conf"
 
-  if is_multi_cluster; then
+  if is_secondary_cluster; then
     export TCP_PING="<TCPPING \
         initial_hosts=\"${PF_CLUSTER_PUBLIC_HOSTNAME}[7600]\" />"
   else
