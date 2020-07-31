@@ -148,11 +148,8 @@ function configure_tcp_xml() {
   cd "${SERVER_ROOT_DIR}/server/default/conf"
 
   if is_multi_cluster; then
-    export TCP_PING="<TCP bind_port=\"7600\" />\n \
-    <TCPPING initial_hosts=\"pingfederate-cluster-savithaganapathi.${PRIMARY_TENANT_DOMAIN}[7600]\" \
-        port_range=\"3\"
-        timeout=\"3000\"
-        num_initial_members=\"1\" />"
+    export TCP_PING="<TCPPING \
+        initial_hosts=\"pingfederate-cluster-savithaganapathi.${PRIMARY_TENANT_DOMAIN}[7600]\" port_range=\"3\" />"
   else
     export DNS_PING="<dns.DNS_PING \
          dns_query=\"${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local\" />"
