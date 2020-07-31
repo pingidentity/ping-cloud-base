@@ -148,12 +148,11 @@ function configure_tcp_xml() {
   cd "${SERVER_ROOT_DIR}/server/default/conf"
 
   if is_multi_cluster; then
-    export NATIVE_S3_PING="<org.jgroups.aws.s3.NATIVE_S3_PING \
-            region_name=\"${PRIMARY_REGION}\" \
-            bucket_name=\"${CLUSTER_BUCKET_NAME}\" \
-            bucket_prefix=\"${PING_PRODUCT}\" \
-            remove_all_data_on_view_change=\"true\" \
-            write_data_on_find=\"true\" />"
+    export TCP_PING="<TCP bind_port=\"7600\" /> \
+    <TCPPING initial_hosts=\"pingfederate-cluster-savithaganapathi${PRIMARY_TENANT_DOMAIN}[7600]\" \
+        port_range=\"3\"
+        timeout=\"3000\"
+        num_initial_members=\"1\" />"
   else
     export DNS_PING="<dns.DNS_PING \
          dns_query=\"${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local\" />"
