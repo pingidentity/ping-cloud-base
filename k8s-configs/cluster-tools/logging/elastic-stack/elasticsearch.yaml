@@ -205,3 +205,4 @@ parameters:
   fsType: ext4
 mountOptions:
   - discard
+allowVolumeExpansion: true

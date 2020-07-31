@@ -45,3 +45,23 @@ data:
             }
         }
     }
+  ping-logstash-policy.json: |
+    {
+      "policy": {
+        "phases": {
+          "hot": {
+            "actions": {
+              "rollover": {
+                "max_age": "1d"
+              }
+            }
+          },
+          "delete": {
+            "min_age": "30d",
+            "actions": {
+              "delete": {}
+            }
+          }
+        }
+      }
+    }
