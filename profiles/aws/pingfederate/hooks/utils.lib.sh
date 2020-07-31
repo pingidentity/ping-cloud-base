@@ -149,8 +149,7 @@ function configure_tcp_xml() {
 
   if is_multi_cluster; then
     export TCP_PING="<TCPPING \
-        initial_hosts=\"pingfederate-admin-0.pingfederate-cluster-savithaganapathi.${PRIMARY_TENANT_DOMAIN}[7600]\" \
-        port_range=\"3\" />"
+        initial_hosts=\"${PF_CLUSTER_PUBLIC_HOSTNAME}[7600]\" />"
   else
     export DNS_PING="<dns.DNS_PING \
          dns_query=\"${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local\" />"
