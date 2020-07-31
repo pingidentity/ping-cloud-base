@@ -198,18 +198,45 @@ patchesJson6902:
     kind: Ingress
     name: pingaccess-was-ingress
   patch: |
+    # PingAccess admin through PingAccess-WAS
     - op: replace
       path: /spec/tls/0/hosts/0
       value: pingaccess-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
     - op: replace
       path: /spec/rules/0/host
       value: pingaccess-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+
+    # PingFederate admin through PingAccess-WAS
     - op: replace
       path: /spec/tls/0/hosts/1
       value: pingfederate-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
     - op: replace
       path: /spec/rules/1/host
       value: pingfederate-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+
+    # Grafana to pingaccess was runtime
+    - op: replace
+      path: /spec/tls/0/hosts/2
+      value: monitoring${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/2/host
+      value: monitoring${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+
+    # Prometheus to pingaccess was runtime
+    - op: replace
+      path: /spec/tls/0/hosts/3
+      value: prometheus${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/3/host
+      value: prometheus${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+
+    # Kibana pingaccess was runtime
+    - op: replace
+      path: /spec/tls/0/hosts/4
+      value: logs${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/4/host
+      value: logs${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
 
 # pingaccess runtime
 - target:

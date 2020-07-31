@@ -194,51 +194,6 @@ patchesJson6902:
       value:
         --domain-filter=${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}.
 
-### Logs dashboard ###
-- target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: kibana-ingress
-    namespace: elastic-stack-logging
-  patch: |-
-    - op: replace
-      path: /spec/tls/0/hosts/0
-      value: logs${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-    - op: replace
-      path: /spec/rules/0/host
-      value: logs${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-
-### Monitoring dashboard ###
-- target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: grafana-ingress
-    namespace: prometheus
-  patch: |-
-    - op: replace
-      path: /spec/tls/0/hosts/0
-      value: monitoring${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-    - op: replace
-      path: /spec/rules/0/host
-      value: monitoring${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-
-### Prometheus Endpoint ###
-- target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: prometheus-ingress
-    namespace: prometheus
-  patch: |-
-    - op: replace
-      path: /spec/tls/0/hosts/0
-      value: prometheus${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-    - op: replace
-      path: /spec/rules/0/host
-      value: prometheus${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-
 ${SERVICE_NGINX_PRIVATE_PATCH}
 
 ### Edit CloudWatch Logging Configuration ###

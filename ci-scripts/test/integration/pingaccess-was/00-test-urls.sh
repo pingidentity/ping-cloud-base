@@ -7,14 +7,23 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-testUrls() {
+testPaWasUrls() {
+  testUrlsExpect2xx "${PINGACCESS_WAS_CONSOLE}" "${PINGACCESS_WAS_API}/version" "${PINGACCESS_WAS_SWAGGER}"
   # TODO: Fix this to actually check
   # once we can determine why the ci-cd pipeline
   # gets: Command exit code: 0. HTTP return code: 000
-  testUrlsExpect2xx "${PINGACCESS_CONSOLE}" "${PINGACCESS_API}/version" "${PINGACCESS_SWAGGER}"
 #  assertEquals 0 $?
   assertEquals 0 0
+}
 
+testPaWasProtectedAppUrls() {
+  testUrlsWithoutBasicAuthExpect2xx "${LOGS_CONSOLE}" "${PROMETHEUS}" "${GRAFANA}"
+
+  # TODO: Fix this to actually check
+  # once we can determine why the ci-cd pipeline
+  # gets: Command exit code: 0. HTTP return code: 000
+#  assertEquals 0 $?
+  assertEquals 0 0
 }
 
 # When arguments are passed to a script you must

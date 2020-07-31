@@ -17,33 +17,6 @@ patchesStrategicMerge:
 - patches/configmap/cwagentconfig.yaml
 
 patchesJson6902:
-# logs
-- path: patches/ingress/logs.yaml
-  target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: kibana-ingress
-    namespace: elastic-stack-logging
-
-# monitoring with grafana
-- path: patches/ingress/grafana.yaml
-  target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: grafana-ingress
-    namespace: prometheus
-
-# monitoring with prometheus
-- path: patches/ingress/prometheus.yaml
-  target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: prometheus-ingress
-    namespace: prometheus
-
 # Make the admin nodes available externally for test purposes. In general, they
 # will be behind a VPN gateway on all CDEs so only admins have access to them.
 - path: patches/service/ingress-nginx-private.yaml

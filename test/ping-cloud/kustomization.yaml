@@ -59,6 +59,14 @@ patchesJson6902:
     kind: Ingress
     name: pingaccess-was-admin-ingress
 
+# pingaccess was runtime
+- path: patches/ingress/pingaccess-was.yaml
+  target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingaccess-was-ingress
+
 # pingaccess runtime
 - path: patches/ingress/pingaccess.yaml
   target:
