@@ -775,6 +775,20 @@ data:
       }
     }
 
+  logstash-template.json: |
+    {
+      "order": 1,
+      "index_patterns": [
+        "logstash-*"
+      ],
+      "settings": {
+        "number_of_shards": 1,
+        "number_of_replicas": 1,
+        "index.lifecycle.name": "ping-logstash-policy",
+        "index.lifecycle.rollover_alias": "logstash"
+      }
+    }
+
   pf-system-template.json: |
     {
       "order": 1,
