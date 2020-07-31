@@ -49,12 +49,10 @@ export LOG_GROUP_NAME="/aws/containerinsights/${CLUSTER_NAME}/application"
 
 FQDN=${ENVIRONMENT}.${TENANT_DOMAIN}
 
-# Common
-LOGS_CONSOLE=https://logs-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
-
 # Monitoring
-PROMETHEUS=https://prometheus-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
-GRAFANA=https://monitoring-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
+LOGS_CONSOLE=https://logs-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}/app/kibana
+PROMETHEUS=https://prometheus-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}/graph
+GRAFANA=https://monitoring-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}/login
 
 # Pingdirectory
 PINGDIRECTORY_CONSOLE=https://pingdataconsole${FQDN}/console
@@ -65,7 +63,7 @@ PINGDIRECTORY_ADMIN=pingdirectory-admin${FQDN}
 # admin services:
 PINGFEDERATE_CONSOLE=https://pingfederate-admin${FQDN}/pingfederate/app
 
-# The / on the end is required to avoid a 302
+# The trailing / is required to avoid a 302
 PINGFEDERATE_API=https://pingfederate-admin${FQDN}/pf-admin-api/api-docs/
 
 # runtime services:
@@ -84,8 +82,9 @@ PINGACCESS_AGENT=https://pingaccess-agent${FQDN}
 
 # PingAccess WAS
 # admin services:
+# The trailing / is required to avoid a 302
+PINGACCESS_WAS_SWAGGER=https://pingaccess-was-admin${FQDN}/pa-admin-api/api-docs/
 PINGACCESS_WAS_CONSOLE=https://pingaccess-was-admin${FQDN}
-PINGACCESS_WAS_SWAGGER=https://pingaccess-was-admin${FQDN}/pa-admin-api/api-docs
 PINGACCESS_WAS_API=https://pingaccess-was-admin${FQDN}/pa-admin-api/v3
 
 # runtime services:

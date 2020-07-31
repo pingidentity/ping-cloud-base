@@ -16,3 +16,9 @@ function parse_value_from_array_response() {
   local json=$(printf "${1}" | awk '/\{.*\}/')
   jq -n "${json}" | jq '.items' | jq '.[]' | jq --arg pattern "${2}" '.[$pattern]'
 }
+
+function strip_double_quotes() {
+  temp="${1%\"}"
+  temp="${temp#\"}"
+  echo ${temp}
+}

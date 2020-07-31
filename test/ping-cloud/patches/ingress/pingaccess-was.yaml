@@ -1,0 +1,26 @@
+# Grafana
+- op: replace
+  path: /spec/tls/0/hosts/2
+  value: monitoring${ENVIRONMENT}.${TENANT_DOMAIN}
+
+- op: replace
+  path: /spec/rules/2/host
+  value: monitoring${ENVIRONMENT}.${TENANT_DOMAIN}
+
+# Prometheus
+- op: replace
+  path: /spec/tls/0/hosts/3
+  value: prometheus${ENVIRONMENT}.${TENANT_DOMAIN}
+
+- op: replace
+  path: /spec/rules/3/host
+  value: prometheus${ENVIRONMENT}.${TENANT_DOMAIN}
+
+# Kibana
+- op: replace
+  path: /spec/tls/0/hosts/4
+  value: kibana${ENVIRONMENT}.${TENANT_DOMAIN}
+
+- op: replace
+  path: /spec/rules/4/host
+  value: logs${ENVIRONMENT}.${TENANT_DOMAIN}
