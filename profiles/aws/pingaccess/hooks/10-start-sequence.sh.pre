@@ -12,4 +12,8 @@ if ! test -z "${OPERATIONAL_MODE}" && test "${OPERATIONAL_MODE}" = "CLUSTERED_CO
   run_hook "11-change-default-db-password.sh"
 fi
 
+if ! test -z "${OPERATIONAL_MODE}" && test "${OPERATIONAL_MODE}" = "CLUSTERED_ENGINE"; then
+  run_hook "22-upgrade-server.sh"
+fi
+
 run_hook "100-tail-logs.sh"
