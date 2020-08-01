@@ -22,7 +22,7 @@
             bind_addr="${_DOLLAR_}{pf.cluster.bind.address}"
             log_discard_msgs="false"/>
 
-    ${_DOLLAR_}{TCP_PING}
+    ${_DOLLAR_}{TCP_GOSSIP_PING}
     ${_DOLLAR_}{DNS_PING}
 
     <MULTI_PING async_discovery="true" />

@@ -147,13 +147,13 @@ function configure_tcp_xml() {
   local currentDir="$(pwd)"
   cd "${SERVER_ROOT_DIR}/server/default/conf"
 
-  if is_secondary_cluster; then
-    export TCP_PING="<TCPPING \
+  if is_multi_cluster; then
+    export TCP_GOSSIP_PING="<TCPGOSSIP \
         initial_hosts=\"${PF_CLUSTER_PUBLIC_HOSTNAME}[7600]\" />"
-  else
-    export DNS_PING="<dns.DNS_PING \
-         dns_query=\"${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local\" />"
   fi
+
+  export DNS_PING="<dns.DNS_PING \
+       dns_query=\"${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local\" />"
 
   mv tcp.xml tcp.xml.subst
   envsubst < tcp.xml.subst > tcp.xml
