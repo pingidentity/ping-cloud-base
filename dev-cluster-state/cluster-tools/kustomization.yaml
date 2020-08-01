@@ -317,14 +317,7 @@ patchesJson6902:
     name: external-dns
     namespace: external-dns
   patch: |-
-    - op: replace
-      path: /spec/template/spec/containers/0/args
+    - op: add
+      path: /spec/template/spec/containers/0/args/-
       value:
-        - --source=service
-        - --source=ingress
-        - --log-level=debug
-        - --provider=aws
-        - --policy=sync
-        - --aws-zone-type=public
-        - --registry=txt
-        - --domain-filter=${TENANT_DOMAIN}.
+        --domain-filter=${TENANT_DOMAIN}.
