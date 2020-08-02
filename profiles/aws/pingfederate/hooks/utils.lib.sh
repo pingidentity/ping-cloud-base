@@ -148,12 +148,20 @@ function configure_tcp_xml() {
   cd "${SERVER_ROOT_DIR}/server/default/conf"
 
   if is_multi_cluster; then
-    export TCP_GOSSIP_PING="<TCPGOSSIP \
-        initial_hosts=\"${PF_CLUSTER_PUBLIC_HOSTNAME}[7600]\" />"
+    if is_primary_cluster; then
+      INITIAL_HOSTS="${PINGFEDERATE_ADMIN_SERVER}-0.${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local"
+    else
+      INITIAL_HOSTS="${PINGFEDERATE_ADMIN_SERVER}-0.${PF_CLUSTER_PUBLIC_HOSTNAME}"
+    fi
+    export JGROUPS_DISCOVERY_PROTOCOL="<TCPPING \
+        initial_hosts=\"${INITIAL_HOSTS}[7600]\" \
+        port_range=\"0\" \
+        timeout=\"5000\" \
+        num_initial_members="1" />"
+  else
+    export JGROUPS_DISCOVERY_PROTOCOL="<dns.DNS_PING \
+         dns_query=\"${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local\" />"
   fi
-
-  export DNS_PING="<dns.DNS_PING \
-       dns_query=\"${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local\" />"
 
   mv tcp.xml tcp.xml.subst
   envsubst < tcp.xml.subst > tcp.xml

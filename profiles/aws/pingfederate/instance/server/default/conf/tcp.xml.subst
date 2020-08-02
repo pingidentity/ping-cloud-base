@@ -22,10 +22,9 @@
             bind_addr="${_DOLLAR_}{pf.cluster.bind.address}"
             log_discard_msgs="false"/>
 
-    ${_DOLLAR_}{TCP_GOSSIP_PING}
-    ${_DOLLAR_}{DNS_PING}
+    ${_DOLLAR_}{JGROUPS_DISCOVERY_PROTOCOL}
 
-    <MULTI_PING async_discovery="true" />
+    <MULTI_PING async_discovery="false" />
     <MERGE3 min_interval="30000" max_interval="60000" />
     <FD_SOCK start_port="${_DOLLAR_}{pf.cluster.failure.detection.bind.port}" bind_addr="${_DOLLAR_}{pf.cluster.bind.address}"/>
     <FD timeout="10000" max_tries="5"/>
