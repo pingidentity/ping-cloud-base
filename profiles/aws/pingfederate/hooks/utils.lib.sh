@@ -157,7 +157,7 @@ function configure_tcp_xml() {
         initial_hosts=\"${INITIAL_HOSTS}[7600]\" \
         port_range=\"0\" \
         timeout=\"5000\" \
-        num_initial_members="1" />"
+        num_initial_members=\"1\" />"
   else
     export JGROUPS_DISCOVERY_PROTOCOL="<dns.DNS_PING \
          dns_query=\"${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local\" />"
