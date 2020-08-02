@@ -147,18 +147,17 @@ function configure_tcp_xml() {
   local currentDir="$(pwd)"
   cd "${SERVER_ROOT_DIR}/server/default/conf"
 
+  PF_CLUSTER_PRIMARY_HOSTNAME="${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local"
+
   if is_multi_cluster; then
-    if is_primary_cluster; then
-      INITIAL_HOSTS="${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local"
-    else
+    is_primary_cluster &&
+      INITIAL_HOSTS="${PF_CLUSTER_PRIMARY_HOSTNAME}" ||
       INITIAL_HOSTS="${PF_CLUSTER_PUBLIC_HOSTNAME}"
-    fi
-    export JGROUPS_DISCOVERY_PROTOCOL="<TCPPING \
-        initial_hosts=\"${INITIAL_HOSTS}[7600]\" \
-        port_range=\"0\" />"
+    export JGROUPS_DISCOVERY_PROTOCOL=\
+        "<TCPPING initial_hosts=\"${INITIAL_HOSTS}[7600]\" port_range=\"0\" />"
   else
-    export JGROUPS_DISCOVERY_PROTOCOL="<dns.DNS_PING \
-         dns_query=\"${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local\" />"
+    export JGROUPS_DISCOVERY_PROTOCOL=\
+        "<dns.DNS_PING dns_query=\"${PF_CLUSTER_PRIMARY_HOSTNAME}\" />"
   fi
 
   mv tcp.xml tcp.xml.subst
