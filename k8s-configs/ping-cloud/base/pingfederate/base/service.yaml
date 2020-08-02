@@ -34,9 +34,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  name: pingfederate-cluster
   annotations:
     service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
-  name: pingfederate-cluster
+    external-dns.alpha.kubernetes.io/hostname: pingfederate-cluster-dev.ping-demo.com
 spec:
   publishNotReadyAddresses: true
   clusterIP: None
@@ -51,27 +52,4 @@ spec:
       targetPort: 7700
   selector:
      cluster: pingfederate-cluster
----
-#
-# This is the PingFederate cluster communication service to be used for multi-cluster deployments.
-#
-apiVersion: v1
-kind: Service
-metadata:
-  name: pingfederate-cluster-comm
-  annotations:
-    external-dns.alpha.kubernetes.io/hostname: pingfederate-cluster-dev.ping-demo.com
-spec:
-  clusterIP: None
-  ports:
-    - name: pingfederate-cluster-bind
-      protocol: TCP
-      port: 7600
-      targetPort: 7600
-    - name: pingfederate-cluster-health
-      protocol: TCP
-      port: 7700
-      targetPort: 7700
-  selector:
-    role: pingfederate-admin
 
