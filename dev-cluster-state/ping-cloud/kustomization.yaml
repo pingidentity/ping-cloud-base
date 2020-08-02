@@ -124,7 +124,7 @@ patchesJson6902:
 - target:
     version: v1
     kind: Service
-    name: pingfederate-cluster-comm
+    name: pingfederate-cluster
   patch: |-
     - op: replace
       path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
