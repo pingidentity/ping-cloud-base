@@ -149,9 +149,9 @@ function configure_tcp_xml() {
 
   if is_multi_cluster; then
     if is_primary_cluster; then
-      INITIAL_HOSTS="${PINGFEDERATE_ADMIN_SERVER}-0.${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local"
+      INITIAL_HOSTS="${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local"
     else
-      INITIAL_HOSTS="${PINGFEDERATE_ADMIN_SERVER}-0.${PF_CLUSTER_PUBLIC_HOSTNAME}"
+      INITIAL_HOSTS="${PF_CLUSTER_PUBLIC_HOSTNAME}"
     fi
     export JGROUPS_DISCOVERY_PROTOCOL="<TCPPING \
         initial_hosts=\"${INITIAL_HOSTS}[7600]\" \
