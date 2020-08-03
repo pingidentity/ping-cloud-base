@@ -14,18 +14,22 @@ curl() {
   # in the list
   arg=${@: -1}
 
+  local curl_result http_status
   case "${arg}" in
-  'ok')
-    echo 200
-    return 0
-    ;;
-  'unauthorized')
-    echo 401
-    return 0
-    ;;
-  'conn_error')
-    return 1
+    'ok')
+      http_status=200
+      curl_result=0
+      ;;
+    'unauthorized')
+      http_status=401
+      curl_result=0
+      ;;
+    'conn_error')
+      curl_result=1
   esac
+
+  echo "${http_status}"
+  return "${curl_result}"
 }
 
 oneTimeSetUp() {
@@ -53,7 +57,7 @@ testMakeApiRequestDownloadUnauthorized() {
   exit_code=$?
 
   assertEquals 1 ${exit_code}
-  assertEquals 'API call returned HTTP status code: 401' "${msg}"
+  assertContains "${msg}" 'API call returned HTTP status code: 401'
 }
 
 testMakeApiRequestDownloadConnError() {
@@ -66,7 +70,7 @@ testMakeApiRequestDownloadConnError() {
   # The exit code here is 127 despite
   # exit 1 in the function.  Bug?
   assertEquals 1 ${exit_code}
-  assertEquals 'Admin API connection refused' "${msg}"
+  assertContains "${msg}" 'Admin API connection refused' 
 }
 
 # load shunit

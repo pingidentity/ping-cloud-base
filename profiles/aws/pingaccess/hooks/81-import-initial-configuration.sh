@@ -6,7 +6,9 @@
 set -e
 "${VERBOSE}" && set -x
 
-echo "import-initial-configuration: pingaccess config settings"
+export_environment_variables
+
+beluga_log "import-initial-configuration: pingaccess config settings"
 export_config_settings
 
 templates_dir_path=${STAGING_DIR}/templates/81
@@ -28,7 +30,7 @@ get_admin_user_response=$(curl -k \
 # passed in via env variables.  If this fails with a non-200
 # HTTP response then skip the configuration import.
 http_response_code=$(printf "${get_admin_user_response}" | awk '/HTTP/' | awk '{print $2}')
-echo "${http_response_code}"
+beluga_log "${http_response_code}"
 if [ 200 = ${http_response_code} ]; then
 
     admin_user_json=$(printf "${get_admin_user_response}" | awk '/firstLogin/' | awk '{print $0}')
@@ -39,15 +41,15 @@ if [ 200 = ${http_response_code} ]; then
     if [ 'true' = ${first_login} ]; then
 
         # Accept EULA
-        echo "Accepting the EULA..."
+        beluga_log "Accepting the EULA..."
         eula_payload=$(envsubst < ${templates_dir_path}/eula.json)
         make_initial_api_request -s -X PUT \
             -d "${eula_payload}" \
             "https://localhost:9000/pa-admin-api/v3/users/1" > /dev/null
 
 
-        echo "Changing the default password..."
-        echo "Change password debugging output suppressed"
+        beluga_log "Changing the default password..."
+        beluga_log "Change password debugging output suppressed"
 
         changePassword
 
@@ -55,7 +57,7 @@ if [ 200 = ${http_response_code} ]; then
         # config-query-keypair.json.  Default to 365 days.
         export CONFIG_QUERY_KP_VALID_DAYS=${CONFIG_QUERY_KP_VALID_DAYS:-365}
 
-        echo "Check to see if the Config Query Keypair already exists..."
+        beluga_log "Check to see if the Config Query Keypair already exists..."
 
         # Export CONFIG_QUERY_KP_ALIAS so it will get injected into
         # config-query-keypair.json.
@@ -75,7 +77,7 @@ if [ 200 = ${http_response_code} ]; then
         if [ "${config_query_keypair_alias}" = 'null' ]; then
 
             # Generate a new keypair for the config query listener
-            echo "Creating a Config Query KeyPair..."
+            beluga_log "Creating a Config Query KeyPair..."
             config_query_keypair_payload=$(envsubst < ${templates_dir_path}/config-query-keypair.json)
             create_config_query_keypair_response=$(make_api_request -s -d \
                 "${config_query_keypair_payload}" \
@@ -90,7 +92,7 @@ if [ 200 = ${http_response_code} ]; then
             config_query_listener_id=$(jq -n "${https_listeners_response}" | jq '.items[] | select(.name=="CONFIG QUERY") | .id')
 
             # Update CONFIG QUERY HTTPS Listener with with the new keypair
-            echo "Updating the Config Query HTTPS Listener with the new KeyPair id..."
+            beluga_log "Updating the Config Query HTTPS Listener with the new KeyPair id..."
             config_query_payload=$(envsubst < ${templates_dir_path}/config-query.json)
             config_query_response=$(make_api_request -s -X PUT \
                 -d "${config_query_payload}" \
@@ -98,15 +100,15 @@ if [ 200 = ${http_response_code} ]; then
 
          else
 
-            echo "Keypair ${CONFIG_QUERY_KP_ALIAS} already exists.  Skipping configuration of the Keypair, the Config Query HTTPS Listener, and the Admin Config."
+            beluga_log "Keypair ${CONFIG_QUERY_KP_ALIAS} already exists.  Skipping configuration of the Keypair, the Config Query HTTPS Listener, and the Admin Config."
 
          fi
     else
-        echo "PingAccess has already been configured.  Exiting without making configuration changes."
+        beluga_log "PingAccess has already been configured.  Exiting without making configuration changes."
     fi
 
 else
-     echo "Received a ${http_response_code} when checking the user endpoint.  Exiting without making configuration changes."
+     beluga_log "Received a ${http_response_code} when checking the user endpoint.  Exiting without making configuration changes."
 fi
 
 exit 0

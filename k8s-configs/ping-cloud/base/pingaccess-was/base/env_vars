@@ -1,0 +1,40 @@
+ORCHESTRATION_TYPE=kubernetes
+#VERBOSE=true
+SERVER_PROFILE_URL=https://github.com/pingidentity/ping-cloud-base.git
+SERVER_PROFILE_PATH=profiles/aws/pingaccess
+SERVER_PROFILE_BRANCH=master
+
+# Force stop the admin to terminate upon failure. See all references to stop_server
+# function in server profile for more details.
+STOP_SERVER_ON_FAILURE=true
+
+# Retry client request to pingaccess-was admin API up to 10 times. Engine pod uses admin
+# API to retrieve its proper configuration.
+API_RETRY_LIMIT=10
+
+# Seconds client request will wait for response from API.
+API_TIMEOUT_WAIT=5
+
+BACKUP_FILE_NAME=
+
+ACCEPT_EULA=YES
+PING_IDENTITY_ACCEPT_EULA=YES
+
+K8S_STATEFUL_SET_NAME_PINGACCESS_WAS=pingaccess-was-admin
+K8S_SERVICE_NAME_PINGACCESS_WAS_ADMIN=pingaccess-was-admin
+PA_ADMIN_USER_USERNAME=Administrator
+
+PA_MIN_HEAP=128m
+PA_MAX_HEAP=256m
+PA_MIN_YGEN=128m
+PA_MAX_YGEN=128m
+PA_GCOPTION=-XX:-UseParallelGC -XX:MinHeapFreeRatio=20 -XX:MaxHeapFreeRatio=40 -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90
+
+# Valid days for the PingAccess Config Query Listener KeyPair.
+# The default if not specified is 365 days.
+CONFIG_QUERY_KP_VALID_DAYS=365
+
+# Leave blank
+TAIL_LOG_FILES=
+# Individual files should be spelled out, globs are unreliable
+K8S_TAIL_LOG_FILES=/opt/out/instance/log/pingaccess_engine_audit.log /opt/out/instance/log/pingaccess_api_audit.log /opt/out/instance/log/pingaccess.log

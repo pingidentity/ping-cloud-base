@@ -8062,7 +8062,6 @@ spec:
           image: "quay.io/jetstack/cert-manager-cainjector:v0.10.1"
           imagePullPolicy: IfNotPresent
           args:
-          - --v=2
           - --leader-election-namespace=$(POD_NAMESPACE)
           env:
           - name: POD_NAMESPACE
@@ -8117,7 +8116,6 @@ spec:
           image: "quay.io/jetstack/cert-manager-controller:v0.10.1"
           imagePullPolicy: IfNotPresent
           args:
-          - --v=2
           - --cluster-resource-namespace=$(POD_NAMESPACE)
           - --leader-election-namespace=$(POD_NAMESPACE)
           - --webhook-namespace=$(POD_NAMESPACE)

@@ -11,7 +11,7 @@ function initializeSkbnConfiguration() {
   # Allow overriding the backup URL with an arg
   test ! -z "${1}" && BACKUP_URL="${1}"
 
-  # Check if endpoint is AWS cloud stroage service (S3 bucket)
+  # Check if endpoint is AWS cloud storage service (S3 bucket)
   case "$BACKUP_URL" in "s3://"*)
     
     # Set AWS specific variable for skbn
@@ -25,8 +25,12 @@ function initializeSkbnConfiguration() {
 
   esac
 
-  echo "Getting cluster metadata"
-  METADATA=$(kubectl get "$(kubectl get pod -o name | grep "${HOSTNAME}")" \
+  beluga_log "Getting cluster metadata"
+
+  # Get prefix of HOSTNAME which match the pod name.
+  export POD="$(echo "${HOSTNAME}" | cut -d. -f1)"
+
+  METADATA=$(kubectl get "$(kubectl get pod -o name | grep "${POD}")" \
     -o=jsonpath='{.metadata.namespace},{.metadata.name},{.metadata.labels.role}')
     
   METADATA_NS=$(echo "${METADATA}"| cut -d',' -f1)
@@ -106,4 +110,16 @@ function is_primary_cluster() {
 ########################################################################################################################
 function is_secondary_cluster() {
   ! is_primary_cluster
+}
+########################################################################################################################
+# Standard log function.
+#
+########################################################################################################################
+function beluga_log() {
+  local format="+%Y-%m-%d:%Hh:%Mm:%Ss" # yyyy-mm-dd:00h:00m:00s
+  local timestamp=$( date "${format}" )
+  local message="${1}"
+  local file_name=$(basename "${0}")
+
+  echo "${timestamp} ${file_name}: ${message}"
 }

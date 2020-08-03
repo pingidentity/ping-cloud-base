@@ -14,7 +14,7 @@ SERVER_RESTORE_DIR="/tmp/restore"
 rm -rf "${SERVER_RESTORE_DIR}"
 
 if ! mkdir -p "${SERVER_RESTORE_DIR}"; then
-  echo "Failed to create dir: ${SERVER_RESTORE_DIR}"
+  beluga_log "Failed to create dir: ${SERVER_RESTORE_DIR}"
   exit 1
 fi
 
@@ -22,51 +22,52 @@ DATA_BACKUP_FILE_NAME=$( echo "${BACKUP_FILE_NAME}" | tr -d '"' )
 if ! test -z "${DATA_BACKUP_FILE_NAME}" && \
    ! test "${DATA_BACKUP_FILE_NAME}" = 'null'; then
 
-  echo "Attempting to restore backup from cloud storage specified by the user: ${DATA_BACKUP_FILE_NAME}"
+  beluga_log "Attempting to restore backup from cloud storage specified by the user: ${DATA_BACKUP_FILE_NAME}"
 else
-  echo "Attempting to restore backup from latest backup file in cloud storage."
+  beluga_log "Attempting to restore backup from latest backup file in cloud storage."
   DATA_BACKUP_FILE_NAME="latest.zip"
 fi
 
-echo "Copying: '${DATA_BACKUP_FILE_NAME}' to '${SKBN_K8S_PREFIX}${SERVER_RESTORE_DIR}/${DATA_BACKUP_FILE_NAME}'"
+beluga_log "Copying: '${DATA_BACKUP_FILE_NAME}' to '${SKBN_K8S_PREFIX}${SERVER_RESTORE_DIR}/${DATA_BACKUP_FILE_NAME}'"
 
 if ! skbnCopy "${SKBN_CLOUD_PREFIX}/${DATA_BACKUP_FILE_NAME}" "${SKBN_K8S_PREFIX}${SERVER_RESTORE_DIR}/${DATA_BACKUP_FILE_NAME}"; then
+  beluga_log "Cannot locate s3 bucket ${SKBN_CLOUD_PREFIX}/${DATA_BACKUP_FILE_NAME}"
   exit 1
 fi
 
 if ! cd ${SERVER_RESTORE_DIR}; then
-  echo "Failed to chdir to ${SERVER_RESTORE_DIR}"
+  beluga_log "Failed to chdir to ${SERVER_RESTORE_DIR}"
   exit 1
 fi
 
 # Unzip archive user data
 if ! unzip -o "${DATA_BACKUP_FILE_NAME}"; then
-  echo "Failed to unzip ${DATA_BACKUP_FILE_NAME}"
+  beluga_log "Failed to unzip ${DATA_BACKUP_FILE_NAME}"
   exit 1
 fi
 
 # Remove zip
 if ! rm -rf "${DATA_BACKUP_FILE_NAME}"; then
-  echo "Failed to cleanup ${DATA_BACKUP_FILE_NAME}"
+  beluga_log "Failed to cleanup ${DATA_BACKUP_FILE_NAME}"
   exit 1
 fi
 
 # Print listed files from user data archive
 if ! ls ${SERVER_RESTORE_DIR}; then
-  echo "Failed to list ${SERVER_RESTORE_DIR}"
+  beluga_log "Failed to list ${SERVER_RESTORE_DIR}"
   exit 1
 fi
 
 if test -f "${SERVER_ROOT_DIR}/changelogDb"; then
-  echo "Removing changelogDb before restoring user data"
+  beluga_log "Removing changelogDb before restoring user data"
 
   if ! rm -rf "${SERVER_ROOT_DIR}/changelogDb"; then
-    echo "Failed to remove ${SERVER_RESTORE_DIR}/changelogDb"
+    beluga_log "Failed to remove ${SERVER_RESTORE_DIR}/changelogDb"
     exit 1
   fi
 fi
 
-echo "Restoring to the latest backups under ${SERVER_RESTORE_DIR}"
+beluga_log "Restoring to the latest backups under ${SERVER_RESTORE_DIR}"
 BACKEND_DIRS=$(find "${SERVER_RESTORE_DIR}" -name backup.info -exec dirname {} \;)
 
 # If encryption-settings backend is present in the backups, it must be restored first.
@@ -76,7 +77,7 @@ ENCRYPTION_DB_BACKEND_DIR=
 
 for BACKEND_DIR in ${BACKEND_DIRS}; do
   if test "${BACKEND_DIR%encryption-settings}" != "${BACKEND_DIR}"; then
-    echo "Found encryption-settings database backend"
+    beluga_log "Found encryption-settings database backend"
     ENCRYPTION_DB_BACKEND_DIR="${BACKEND_DIR}"
   else
     test -z "${ORDERED_BACKEND_DIRS}" &&
@@ -88,7 +89,7 @@ done
 test ! -z "${ENCRYPTION_DB_BACKEND_DIR}" &&
     ORDERED_BACKEND_DIRS="${ENCRYPTION_DB_BACKEND_DIR} ${ORDERED_BACKEND_DIRS}"
 
-echo "Restore order of backups: ${ORDERED_BACKEND_DIRS}"
+beluga_log "Restore order of backups: ${ORDERED_BACKEND_DIRS}"
 
 for BACKEND_DIR in ${ORDERED_BACKEND_DIRS}; do
   printf "\n----- Doing a restore from ${BACKEND_DIR} -----\n"

@@ -50,7 +50,7 @@ testOldAndNewPasswordsBlank() {
   exit_code=$?
 
   assertEquals 1 ${exit_code}
-  assertEquals 'The old and new passwords cannot be blank' "${msg}"
+  assertContains "${msg}" 'The old and new passwords cannot be blank'
 }
 
 testOldAndNewPasswordsTheSame() {
@@ -62,7 +62,7 @@ testOldAndNewPasswordsTheSame() {
   exit_code=$?
 
   assertEquals 1 ${exit_code}
-  assertEquals 'old password and new password are the same, therefore cannot update password' "${msg}"
+  assertContains "${msg}" 'old password and new password are the same, therefore cannot update password'
 }
 
 testChangePasswordHappyPath() {
@@ -71,7 +71,7 @@ testChangePasswordHappyPath() {
   exit_code=$?
 
   assertEquals 0 ${exit_code}
-  assertEquals 'password change status: 0' "${msg}"
+  assertContains "${msg}" 'password change status: 0'
 }
 
 # load shunit

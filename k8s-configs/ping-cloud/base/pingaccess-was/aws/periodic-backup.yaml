@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pingaccess-was-backup
+data:
+  backup-archive-data.sh: |-
+    #!/bin/sh
+
+    # Install kubectl
+    echo "Installing kubectl"
+    curl https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl \
+    -o /usr/local/bin/kubectl
+
+    chmod +x /usr/local/bin/kubectl
+
+    UPLOAD_FILES=
+    SERVER="${K8S_STATEFUL_SET_NAME_PINGACCESS_WAS}-0"
+    SCRIPT="${HOOKS_DIR}"/90-upload-backup-s3.sh
+    LOG_FILE=/tmp/upload.log
+
+    echo "Uploading pingaccess backup data on server ${SERVER}"
+    kubectl exec "${SERVER}" -- sh -c \
+            "test -x ${SCRIPT} && \
+            STOP_SERVER_ON_FAILURE=false \
+            ${SCRIPT}"> "${LOG_FILE}"
+
+    if test ${?} -eq 0; then
+      # Sending logs to STDOUT
+      cat ${LOG_FILE}
+      UPLOAD_FILE=$(tail -1 "${LOG_FILE}")
+      test -z "${UPLOAD_FILES}" && UPLOAD_FILES="${UPLOAD_FILE}" || UPLOAD_FILES="${UPLOAD_FILES} ${UPLOAD_FILE}"
+    else
+      echo "Upload script not found on server ${SERVER}"
+    fi
+
+    # Print the names of the uploaded files so callers know exactly what was uploaded
+    echo "The following files were uploaded:"
+    echo "${UPLOAD_FILES}"
+
+---
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: pingaccess-was-periodic-backup
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccount: ping-serviceaccount
+          restartPolicy: OnFailure
+          containers:
+          - name: pingaccess-was-backup
+            image: pingidentity/pingaccess:2006.1-6.1.0
+            command:
+            - /opt/in/backup-archive-data.sh
+            envFrom:
+            - configMapRef:
+                name: pingaccess-was-environment-variables
+            volumeMounts:
+            - name: pingaccess-was-backup
+              mountPath: /opt/in/backup-archive-data.sh
+              subPath: backup-archive-data.sh
+          volumes:
+          - name: pingaccess-was-backup
+            configMap:
+              name: pingaccess-was-backup
+              defaultMode: 0555

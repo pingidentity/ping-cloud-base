@@ -53,11 +53,11 @@ spec:
           image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.26.1
           resources:
             limits:
-              cpu: 500m
-              memory: 256Mi
+              cpu: 1000m
+              memory: 500Mi
             requests:
-              cpu: 500m
-              memory: 256Mi
+              cpu: 1000m
+              memory: 500Mi
           args:
             - /nginx-ingress-controller
             - --configmap=$(POD_NAMESPACE)/nginx-configuration

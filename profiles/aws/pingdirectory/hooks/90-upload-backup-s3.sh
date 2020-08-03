@@ -17,7 +17,7 @@ rm -rf "${SERVER_BACKUP_DIR}"
 mkdir -p "${SERVER_BACKUP_DIR}"
 
 BACKENDS=$(echo "${BACKENDS_TO_BACKUP}" | tr ';' ' ')
-echo "Doing a full backup of backends \"${BACKENDS}\" to ${SERVER_BACKUP_DIR}"
+beluga_log "Doing a full backup of backends \"${BACKENDS}\" to ${SERVER_BACKUP_DIR}"
 
 for BACKEND_ID in ${BACKENDS}; do
   BACKEND_BACKUP_DIR="${SERVER_BACKUP_DIR}/${BACKEND_ID}"
@@ -45,14 +45,14 @@ DST_FILE_LATEST=latest.zip
 cp "$DST_FILE_TIMESTAMP" "${UPLOAD_DIR}/${DST_FILE_TIMESTAMP}"
 cp "$DST_FILE_TIMESTAMP" "${UPLOAD_DIR}/${DST_FILE_LATEST}"
 
-echo "Copying files in '${UPLOAD_DIR}' to '${SKBN_CLOUD_PREFIX}'"
+beluga_log "Copying files in '${UPLOAD_DIR}' to '${SKBN_CLOUD_PREFIX}'"
 
 if ! skbnCopy "${SKBN_K8S_PREFIX}/${UPLOAD_DIR}" "${SKBN_CLOUD_PREFIX}/"; then
   exit 1
 fi
 
-# STDOUT for CI test
-ls ${UPLOAD_DIR}
+# STDOUT all the files in one line for integration test
+ls ${UPLOAD_DIR} | xargs
 
 # Cleanup
 rm -rf "${SERVER_BACKUP_DIR}"

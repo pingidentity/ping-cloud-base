@@ -229,3 +229,17 @@ spec:
       port: 8989
       targetPort: 9898
       name: repl
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: pingdirectory-http
+spec:
+  ports:
+  - port: 1443
+    name: https
+    targetPort: https
+  selector:
+    class: pingdirectory-server

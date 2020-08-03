@@ -8,6 +8,7 @@ test "${VERBOSE}" && set -x
 
 # Override environment variables with optional file supplied from the outside
 ENV_VARS_FILE="${1}"
+SKIP_TESTS="pingaccess/01-agent-config-test.sh chaos/01-delete-pa-admin-pod.sh"
 
 if test -z "${ENV_VARS_FILE}"; then
   echo "Using environment variables based on CI variables"
@@ -55,21 +56,21 @@ export LOG_GROUP_NAME="/aws/containerinsights/${CLUSTER_NAME}/application"
 
 FQDN=${ENVIRONMENT}.${TENANT_DOMAIN}
 
-# Common
-LOGS_CONSOLE=https://logs-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
-
 # Monitoring
-PROMETHEUS=https://prometheus-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
-GRAFANA=https://monitoring-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
+LOGS_CONSOLE=https://logs-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}/app/kibana
+PROMETHEUS=https://prometheus-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}/graph
+GRAFANA=https://monitoring-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}/login
 
 # Pingdirectory
-PINGDIRECTORY_CONSOLE=https://pingdataconsole${FQDN}/console
+PINGDIRECTORY_API=https://pingdirectory${FQDN}
 PINGDIRECTORY_ADMIN=pingdirectory-admin${FQDN}
 
 # Pingfederate
 # admin services:
 PINGFEDERATE_CONSOLE=https://pingfederate-admin${FQDN}/pingfederate/app
-PINGFEDERATE_API=https://pingfederate-admin${FQDN}/pingfederate/app/pf-admin-api/api-docs
+
+# The trailing / is required to avoid a 302
+PINGFEDERATE_API=https://pingfederate-admin${FQDN}/pf-admin-api/api-docs/
 
 # runtime services:
 PINGFEDERATE_AUTH_ENDPOINT=https://pingfederate${FQDN}
@@ -84,6 +85,16 @@ PINGACCESS_API=https://pingaccess-admin${FQDN}/pa-admin-api/v3
 # runtime services:
 PINGACCESS_RUNTIME=https://pingaccess${FQDN}
 PINGACCESS_AGENT=https://pingaccess-agent${FQDN}
+
+# PingAccess WAS
+# admin services:
+# The trailing / is required to avoid a 302
+PINGACCESS_WAS_SWAGGER=https://pingaccess-was-admin${FQDN}/pa-admin-api/api-docs/
+PINGACCESS_WAS_CONSOLE=https://pingaccess-was-admin${FQDN}
+PINGACCESS_WAS_API=https://pingaccess-was-admin${FQDN}/pa-admin-api/v3
+
+# runtime services:
+PINGACCESS_WAS_RUNTIME=https://pingaccess-was${FQDN}
 
 # Source some utility methods.
 . ${PROJECT_DIR}/utils.sh
@@ -350,7 +361,7 @@ function log_events_exist() {
     sed -E 's/\\u001B\[(([0-9]+)(;[0-9]+)*)?[m,K,H,f,J]//g' |
     sed -E 's/\\//g' |
     sed -E 's/-//g')
-
+  
   while read -r event; do
     count=$(echo "${cwatch_log_events}" | grep -Fc "${event}")
     if test "${count}" -lt 1; then

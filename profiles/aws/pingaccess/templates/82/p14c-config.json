@@ -1,0 +1,6 @@
+{
+  "issuer": "${P14C_ISSUER}",
+  "trustedCertificateGroupId": 2,
+  "useProxy": false,
+  "description": "P14C token provider configuration"
+}
