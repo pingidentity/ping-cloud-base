@@ -1,9 +1,13 @@
 SERVER_PROFILE_URL=https://server-profile-user-at-705370621539:8pCzGIXG3k+EOV1hyeTnPoj3aRY8LR3z+C1CSd7iiaQ=@git-codecommit.us-west-2.amazonaws.com/v1/repos/ping-cloud-base
 
-# Ping admin configuration required for clustering
+# Ping admin configuration required for admin access and clustering
 PD_PRIMARY_PUBLIC_HOSTNAME=pingdirectory-admin${ENVIRONMENT}.${PRIMARY_TENANT_DOMAIN}
 PF_ADMIN_PUBLIC_HOSTNAME=pingfederate-admin${ENVIRONMENT}.${PRIMARY_TENANT_DOMAIN}
 PA_ADMIN_PUBLIC_HOSTNAME=pingaccess-admin${ENVIRONMENT}.${PRIMARY_TENANT_DOMAIN}
+
+PD_CLUSTER_PUBLIC_HOSTNAME=pingdirectory-cluster${ENVIRONMENT}.${PRIMARY_TENANT_DOMAIN}
+PF_CLUSTER_PUBLIC_HOSTNAME=pingfederate-cluster${ENVIRONMENT}.${PRIMARY_TENANT_DOMAIN}
+PA_CLUSTER_PUBLIC_HOSTNAME=pingaccess-cluster${ENVIRONMENT}.${PRIMARY_TENANT_DOMAIN}
 
 # Ping engine hostname variables
 PD_PUBLIC_HOSTNAME=pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}
