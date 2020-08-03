@@ -147,10 +147,17 @@ function configure_tcp_xml() {
   local currentDir="$(pwd)"
   cd "${SERVER_ROOT_DIR}/server/default/conf"
 
-  is_secondary_cluster &&
-      INITIAL_HOSTS="${PF_CLUSTER_PUBLIC_HOSTNAME}" ||
-      INITIAL_HOSTS="${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local"
-  export JGROUPS_DISCOVERY_PROTOCOL="<TCPPING initial_hosts=\"${INITIAL_HOSTS}[7600]\" />"
+  if is_multi_cluster; then
+    export JGROUPS_DISCOVERY_PROTOCOL="<org.jgroups.aws.s3.NATIVE_S3_PING \
+        region_name=\"${PRIMARY_REGION}\" \
+        bucket_name=\"${CLUSTER_BUCKET_NAME}\" \
+        bucket_prefix=\"${PING_PRODUCT}\" \
+        remove_all_data_on_view_change=\"true\" \
+        write_data_on_find=\"true\" />"
+  else
+    export JGROUPS_DISCOVERY_PROTOCOL="<dns.DNS_PING \
+        dns_query=\"${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local\" />"
+  fi
 
   mv tcp.xml tcp.xml.subst
   envsubst < tcp.xml.subst > tcp.xml
