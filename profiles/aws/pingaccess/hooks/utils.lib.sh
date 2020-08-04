@@ -13,7 +13,7 @@ function stop_server()
     if test -z ${SERVER_PID}; then
         break
     else
-      echo "waiting for PingAccess to terminate due to error"
+      beluga_log "waiting for PingAccess to terminate due to error"
       sleep 3
     fi
   done
@@ -21,7 +21,7 @@ function stop_server()
 }
 
 ########################################################################################################################
-# Makes curl request to PingAccess API using the INITIAL_ADMIN_PASSWORD environment variable.
+# Makes curl request to PingAccess API using the PA_ADMIN_USER_PASSWORD environment variable.
 #
 ########################################################################################################################
 function make_api_request() {
@@ -37,16 +37,18 @@ function make_api_request() {
     "${VERBOSE}" && set -x
 
     if test "${curl_result}" -ne 0; then
-        echo "Admin API connection refused"
+        beluga_log "Admin API connection refused"
         "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
 
     if test "${http_code}" -ne 200; then
-        echo "API call returned HTTP status code: ${http_code}"
+        beluga_log "API call returned HTTP status code: ${http_code}"
+        cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
         "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
 
     cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
+    echo ""
 
     return 0
 }
@@ -68,12 +70,12 @@ function make_initial_api_request() {
     "${VERBOSE}" && set -x
 
     if test "${curl_result}" -ne 0; then
-        echo "Admin API connection refused"
+        beluga_log "Admin API connection refused"
         "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
 
     if test "${http_code}" -ne 200; then
-        echo "API call returned HTTP status code: ${http_code}"
+        beluga_log "API call returned HTTP status code: ${http_code}"
         "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
 
@@ -101,12 +103,12 @@ function make_api_request_download() {
     "${VERBOSE}" && set -x
 
     if test "${curl_result}" -ne 0; then
-        echo "Admin API connection refused"
+        beluga_log "Admin API connection refused"
         "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
 
     if test "${http_code}" -ne 200; then
-        echo "API call returned HTTP status code: ${http_code}"
+        beluga_log "API call returned HTTP status code: ${http_code}"
         "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
 
@@ -122,14 +124,14 @@ function make_api_request_download() {
 ########################################################################################################################
 function pingaccess_admin_wait() {
     HOST_PORT="${1:-localhost:9000}"
-    echo "Waiting for admin server at ${HOST_PORT}"
+    beluga_log "Waiting for admin server at ${HOST_PORT}"
     while true; do
         curl -ss --silent -o /dev/null -k https://"${HOST_PORT}"/pa/heartbeat.ping
         if ! test $? -eq 0; then
-            echo "Admin server not started, waiting.."
+            beluga_log "Admin server not started, waiting.."
             sleep 3
         else
-            echo "Admin server started"
+            beluga_log "Admin server started"
             break
         fi
     done
@@ -164,10 +166,10 @@ function changePassword() {
   "${VERBOSE}" && set -x
 
   if test ${isPasswordEmpty} -eq 1; then
-    echo "The old and new passwords cannot be blank"
+    beluga_log "The old and new passwords cannot be blank"
     "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
   elif test ${isPasswordSame} -eq 1; then
-    echo "old password and new password are the same, therefore cannot update password"
+    beluga_log "old password and new password are the same, therefore cannot update password"
     "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
   else
     # Change the default password.
@@ -181,7 +183,7 @@ function changePassword() {
     CHANGE_PASSWORD_STATUS=${?}
     "${VERBOSE}" && set -x
 
-    echo "password change status: ${CHANGE_PASSWORD_STATUS}"
+    beluga_log "password change status: ${CHANGE_PASSWORD_STATUS}"
 
     # If no error, write password to disk
     if test ${CHANGE_PASSWORD_STATUS} -eq 0; then
@@ -189,7 +191,7 @@ function changePassword() {
       return 0
     fi
 
-    echo "error changing password"
+    beluga_log "error changing password"
     "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
   fi
 }
@@ -225,7 +227,7 @@ function createSecretFile() {
 }
 
 ########################################################################################################################
-# Compare passwoord disk secret and desired value (environoment variable).
+# Compare password disk secret and desired value (environment variable).
 # Print 0 if passwords dont match, print 1 if they are the same.
 #
 ########################################################################################################################
@@ -252,7 +254,7 @@ function initializeSkbnConfiguration() {
   # Allow overriding the backup URL with an arg
   test ! -z "${1}" && BACKUP_URL="${1}"
 
-  # Check if endpoint is AWS cloud stroage service (S3 bucket)
+  # Check if endpoint is AWS cloud storage service (S3 bucket)
   case "$BACKUP_URL" in "s3://"*)
 
     # Set AWS specific variable for skbn
@@ -266,10 +268,10 @@ function initializeSkbnConfiguration() {
 
   esac
 
-  echo "Getting cluster metadata"
+  beluga_log "Getting cluster metadata"
 
   # Get prefix of HOSTNAME which match the pod name.
-  POD="$(echo "${HOSTNAME}" | cut -d. -f1)"
+  export POD="$(echo "${HOSTNAME}" | cut -d. -f1)"
 
   METADATA=$(kubectl get "$(kubectl get pod -o name | grep "${POD}")" \
     -o=jsonpath='{.metadata.namespace},{.metadata.name},{.metadata.labels.role}')
@@ -320,12 +322,15 @@ function update_admin_config_host_port() {
 # Export values for PingAccess configuration settings based on single vs. multi cluster.
 ########################################################################################################################
 function export_config_settings() {
+  # First export environment variables based on PA or PA-WAS.
+  export_environment_variables
+
   SHORT_HOST_NAME=$(hostname)
   ORDINAL=${SHORT_HOST_NAME##*-}
 
   if is_multi_cluster; then
     MULTI_CLUSTER=true
-    export ENGINE_NAME="${PA_ENGINE_PUBLIC_HOSTNAME}:300${ORDINAL}"
+    export ENGINE_NAME="${ENGINE_PUBLIC_HOST_NAME}:300${ORDINAL}"
   else
     MULTI_CLUSTER=false
     export ENGINE_NAME=${SHORT_HOST_NAME}
@@ -333,13 +338,13 @@ function export_config_settings() {
 
   if is_secondary_cluster; then
     PRIMARY_CLUSTER=false
-    export ADMIN_HOST_PORT="${PA_ADMIN_PUBLIC_HOSTNAME}:443"
-    export CLUSTER_CONFIG_HOST="${PA_ADMIN_PUBLIC_HOSTNAME}"
+    export ADMIN_HOST_PORT="${ADMIN_PUBLIC_HOST_NAME}:443"
+    export CLUSTER_CONFIG_HOST="${ADMIN_PUBLIC_HOST_NAME}"
     export CLUSTER_CONFIG_PORT=443
   else
     PRIMARY_CLUSTER=true
-    export ADMIN_HOST_PORT="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}:9000"
-    export CLUSTER_CONFIG_HOST="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}"
+    export ADMIN_HOST_PORT="${K8S_SERVICE_NAME_ADMIN}:9000"
+    export CLUSTER_CONFIG_HOST="${K8S_SERVICE_NAME_ADMIN}"
     export CLUSTER_CONFIG_PORT=9090
   fi
 
@@ -378,4 +383,50 @@ function is_primary_cluster() {
 ########################################################################################################################
 function is_secondary_cluster() {
   ! is_primary_cluster
+}
+
+########################################################################################################################
+# Function to check if container is pingaccess-was
+#
+########################################################################################################################
+function isPingaccessWas() {
+  test "${K8S_STATEFUL_SET_NAME_PINGACCESS_WAS}"
+}
+
+########################################################################################################################
+# Function to export different environment variables depending
+# on if container is pingaccess-was or pingaccess
+#
+########################################################################################################################
+function export_environment_variables() {
+  if isPingaccessWas; then
+    export K8S_STATEFUL_SET_NAME="${K8S_STATEFUL_SET_NAME_PINGACCESS_WAS}"
+    export K8S_SERVICE_NAME_ADMIN="${K8S_SERVICE_NAME_PINGACCESS_WAS_ADMIN}"
+
+    export ADMIN_PUBLIC_HOST_NAME="${PA_WAS_ADMIN_PUBLIC_HOSTNAME}"
+    export ENGINE_PUBLIC_HOST_NAME="${PA_WAS_ENGINE_PUBLIC_HOSTNAME}"
+
+    export PA_DATA_BACKUP_URL="${BACKUP_URL}/pingaccess-was"
+  else
+    export K8S_STATEFUL_SET_NAME="${K8S_STATEFUL_SET_NAME_PINGACCESS}"
+    export K8S_SERVICE_NAME_ADMIN="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}"
+
+    export ADMIN_PUBLIC_HOST_NAME="${PA_ADMIN_PUBLIC_HOSTNAME}"
+    export ENGINE_PUBLIC_HOST_NAME="${PA_ENGINE_PUBLIC_HOSTNAME}"
+
+    export PA_DATA_BACKUP_URL=
+  fi
+}
+
+########################################################################################################################
+# Standard log function.
+#
+########################################################################################################################
+function beluga_log() {
+  local format="+%Y-%m-%d:%Hh:%Mm:%Ss" # yyyy-mm-dd:00h:00m:00s
+  local timestamp=$( date "${format}" )
+  local message="${1}"
+  local file_name=$(basename "${0}")
+
+  echo "${timestamp} ${file_name}: ${message}"
 }

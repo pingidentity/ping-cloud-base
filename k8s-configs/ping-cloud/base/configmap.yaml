@@ -45,6 +45,8 @@ data:
     }
     EOF
 
+    ### FIXME: move wait-for-services into a separate script/init-container ###
+
     #--- Wait for dependent services, if any ---#
     test -z "${WAIT_FOR_SERVICES}" && exit 0
 
@@ -54,23 +56,31 @@ data:
     WAIT_FOR_NUM_REPLICAS=${WAIT_FOR_NUM_REPLICAS:-1}
 
     for APP in ${WAIT_FOR_SERVICES}; do
-      #--- Wait over protocol for multi-cluster deployments ---#
-      if test ! -z "${IS_MULTI_CLUSTER}" && "${IS_MULTI_CLUSTER}"; then
+      #--- Wait over the external network in secondary clusters ---#
+      if test "${TENANT_DOMAIN}" != "${PRIMARY_TENANT_DOMAIN}"; then
         while true; do
           case "${APP}" in
             pingdirectory)
-              URL=${PD_PRIMARY_PUBLIC_HOSTNAME}:6360
+              #URL=pingdirectory-0.${PD_CLUSTER_PUBLIC_HOSTNAME}:1636
               ;;
 
             pingfederate-admin)
-              URL=${PF_ADMIN_PUBLIC_HOSTNAME}/pingfederate/app
+              URL=${PINGFEDERATE_ADMIN_SERVER}-0.${PF_CLUSTER_PUBLIC_HOSTNAME}:${PF_ADMIN_PORT}/pingfederate/app
               ;;
 
             pingaccess-admin)
-              URL=${PA_ADMIN_PUBLIC_HOSTNAME}
+              URL=${PA_ADMIN_SERVER}-0.${PA_CLUSTER_PUBLIC_HOSTNAME}:${PA_ADMIN_PORT}
+              ;;
+
+            pingaccess-was-admin)
+              URL=${PA_ADMIN_SERVER}-0.${PA_WAS_CLUSTER_PUBLIC_HOSTNAME}:${PA_ADMIN_PORT}
               ;;
           esac
 
+          ### FIXME: this is just here for the PD case which doesn't work with wget ###
+          test -z "${URL}" && break
+
+          ### FIXME: use "nc -vz host:port" instead of "wget" ###
           wget --quiet --spider --tries 5 \
               --no-check-certificate \
               --connect-timeout 1 --read-timeout 1 \

@@ -664,7 +664,6 @@ spec:
             - --configmap=calico-typha-horizontal-autoscaler
             - --target=deployment/calico-typha
             - --logtostderr=true
-            - --v=2
           resources:
             limits:
               cpu: 10m

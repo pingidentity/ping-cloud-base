@@ -11,10 +11,10 @@ export PATH="${PATH}:${SERVER_ROOT_DIR}/bin:/usr/local/bin:/usr/sbin:/usr/bin:/s
 
 # Allow overriding the log archive URL with an arg
 test ! -z "${1}" && LOG_ARCHIVE_URL="${1}"
-echo "Uploading to location ${LOG_ARCHIVE_URL}"
+beluga_log "Uploading to location ${LOG_ARCHIVE_URL}"
 
 if ! cd "${OUT_DIR}"; then
-  echo "Failed to chdir to: ${OUT_DIR}"
+  beluga_log "Failed to chdir to: ${OUT_DIR}"
   exit 1
 fi
 
@@ -27,7 +27,7 @@ initializeSkbnConfiguration "${LOG_ARCHIVE_URL}"
 DST_FILE="$(basename "${CSD_OUT}")"
 SRC_FILE="${OUT_DIR}/$(basename "${CSD_OUT}")"
 
-echo "Copying: '${DST_FILE}' to '${SKBN_CLOUD_PREFIX}'"
+beluga_log "Copying: '${DST_FILE}' to '${SKBN_CLOUD_PREFIX}'"
 
 if ! skbnCopy "${SKBN_K8S_PREFIX}/${SRC_FILE}" "${SKBN_CLOUD_PREFIX}/${DST_FILE}"; then
   exit 1

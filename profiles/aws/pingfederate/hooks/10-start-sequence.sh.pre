@@ -13,13 +13,13 @@ run_hook "10-download-artifact.sh"
 if ! [ -z "${OPERATIONAL_MODE}" ] &&  [ "${OPERATIONAL_MODE}" != "CLUSTERED_ENGINE" ]; then
    # See if data backup is present on s3 - we check this even for the startup case so updates of existing customers that
    # had been using Kubernetes Deployment objects for the PingFederate admin still function correctly.
-   run_hook "83-download-archive-data-s3.sh"
+   run_hook "90-restore-backup-s3.sh"
    run_hook "10-setup-master-key.sh"
    run_hook "10-set-engine-threads.sh"
 fi
 
 if ! [ -z "${OPERATIONAL_MODE}" ] &&  [ "${OPERATIONAL_MODE}" = "CLUSTERED_ENGINE" ]; then
-   run_hook "10-get-master-key.sh"
+   run_hook "10-get-configuration.sh"
    run_hook "10-set-engine-threads.sh"
 fi
 

@@ -14,12 +14,12 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
     # Check to see if the source S3 bucket(s) are specified
     if test ! -z "${ARTIFACT_REPO_URL}" -o ! -z "${PING_ARTIFACT_REPO_URL}"; then
 
-      echo "Private Repo : ${ARTIFACT_REPO_URL}"
-      echo "Public Repo  : ${PING_ARTIFACT_REPO_URL}"
+      beluga_log "Private Repo : ${ARTIFACT_REPO_URL}"
+      beluga_log "Public Repo  : ${PING_ARTIFACT_REPO_URL}"
 
       # Check to see if the artifact list is a valid json string
-      echo ${ARTIFACT_LIST_JSON} | jq
-      if test $(echo $?) == "0"; then
+      beluga_log "${ARTIFACT_LIST_JSON}"
+      if test $(echo ${ARTIFACT_LIST_JSON} | jq >/dev/null 2>&1; echo $?) == "0"; then
 
         DOWNLOAD_DIR="${STAGING_DIR}/pd.profile/server-sdk-extensions"
 
@@ -69,7 +69,7 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
 
               # Check to see if the Artifact Source URL is available
               if ( ( test "${ARTIFACT_SOURCE}" == "private" ) && ( test -z ${ARTIFACT_REPO_URL} ) ) || ( ( test "${ARTIFACT_SOURCE}" == "public" ) && ( test -z ${PING_ARTIFACT_REPO_URL} ) ); then
-                echo "${ARTIFACT_NAME} cannot be deployed as the ${ARTIFACT_SOURCE} source repo is not defined. "
+                beluga_log "${ARTIFACT_NAME} cannot be deployed as the ${ARTIFACT_SOURCE} source repo is not defined. "
                 exit 1
               else
 
@@ -79,11 +79,11 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
                 elif test "${ARTIFACT_SOURCE}" == "public"; then
                   ARTIFACT_LOCATION=${PUBLIC_BASE_URL}/${ARTIFACT_NAME}/${ARTIFACT_VERSION}
                 else
-                  echo "${ARTIFACT_NAME} cannot be deployed as the artifact source '${ARTIFACT_SOURCE}' is invalid. "
+                  beluga_log "${ARTIFACT_NAME} cannot be deployed as the artifact source '${ARTIFACT_SOURCE}' is invalid. "
                   exit 1
                 fi
 
-                echo "Download Artifact from ${ARTIFACT_LOCATION}"
+                beluga_log "Download Artifact from ${ARTIFACT_LOCATION}"
 
                 # Use skbn command if ARTIFACT_LOCATION is cloud storage otherwise use curl
                 if test ${ARTIFACT_LOCATION#s3} != "${ARTIFACT_LOCATION}"; then
@@ -91,7 +91,7 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
                   # Set required environment variables for skbn
                   initializeSkbnConfiguration "${ARTIFACT_LOCATION}"
                   
-                  echo "Copying: '${ARTIFACT_RUNTIME_ZIP}' to '${SKBN_K8S_PREFIX}'"
+                  beluga_log "Copying: '${ARTIFACT_RUNTIME_ZIP}' to '${SKBN_K8S_PREFIX}'"
 
                   if ! skbnCopy "${SKBN_CLOUD_PREFIX}/${ARTIFACT_RUNTIME_ZIP}" "${SKBN_K8S_PREFIX}${DOWNLOAD_DIR}"; then
                     exit 1
@@ -100,21 +100,21 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
                 else
                   # For downloading over https we need to specify the exact file name,
                   # This will only work for standard extensions with a prefix of pingidentity.com
-                  curl -f "${ARTIFACT_LOCATION}/${ARTIFACT_RUNTIME_ZIP}" --output ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP} && echo "Artifact successfully downloaded." || exit 1
+                  curl -f "${ARTIFACT_LOCATION}/${ARTIFACT_RUNTIME_ZIP}" --output ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP} && beluga_log "Artifact successfully downloaded." || exit 1
                 fi
 
                 if test $(echo $?) != "0"; then
-                  echo "Artifact download failed from ${ARTIFACT_LOCATION}"
+                  beluga_log "Artifact download failed from ${ARTIFACT_LOCATION}"
                   exit 1
                 fi
 
               fi
             else
-              echo "Artifact Version for ${ARTIFACT_NAME} could not be retrieved from ${STAGING_DIR}/artifacts/artifact-list.json"
+              beluga_log "Artifact Version for ${ARTIFACT_NAME} could not be retrieved from ${STAGING_DIR}/artifacts/artifact-list.json"
               exit 1
             fi
           else
-            echo "Missing Artifact Name within ${STAGING_DIR}/artifacts/artifact-list.json"
+            beluga_log "Missing Artifact Name within ${STAGING_DIR}/artifacts/artifact-list.json"
             exit 1
           fi
 
@@ -124,19 +124,19 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
         ls ${DOWNLOAD_DIR}
 
       else
-        echo "Artifacts will not be deployed as could not parse ${STAGING_DIR}/artifacts/artifact-list.json."
+        beluga_log "Artifacts will not be deployed as could not parse ${STAGING_DIR}/artifacts/artifact-list.json."
         exit 1
       fi
     else
-      echo "Artifacts will not be deployed as the environment variable ARTIFACT_REPO_URL and PING_ARTIFACT_REPO_URL are empty."
+      beluga_log "Artifacts will not be deployed as the environment variable ARTIFACT_REPO_URL and PING_ARTIFACT_REPO_URL are empty."
       exit 0
     fi
   else
-    echo "Artifacts will not be deployed as ${STAGING_DIR}/artifacts/artifact-list.json is empty."
+    beluga_log "Artifacts will not be deployed as ${STAGING_DIR}/artifacts/artifact-list.json is empty."
     exit 0
   fi
 else
-  echo "Artifacts will not be deployed as ${STAGING_DIR}/artifacts/artifact-list.json doesn't exist."
+  beluga_log "Artifacts will not be deployed as ${STAGING_DIR}/artifacts/artifact-list.json doesn't exist."
   exit 0
 fi
 

@@ -69,50 +69,6 @@ patchesStrategicMerge:
     namespace: amazon-cloudwatch
 
 patchesJson6902:
-# logs
-- target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: kibana-ingress
-    namespace: elastic-stack-logging
-  patch: |-
-    - op: replace
-      path: /spec/tls/0/hosts/0
-      value: logs-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
-    - op: replace
-      path: /spec/rules/0/host
-      value: logs-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
-
-# monitoring with grafana
-- target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: grafana-ingress
-    namespace: prometheus
-  patch: |-
-    - op: replace
-      path: /spec/tls/0/hosts/0
-      value: monitoring-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
-    - op: replace
-      path: /spec/rules/0/host
-      value: monitoring-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
-
-  # monitoring with prometheus
-- target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: prometheus-ingress
-    namespace: prometheus
-  patch: |-
-    - op: replace
-      path: /spec/tls/0/hosts/0
-      value: prometheus-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
-    - op: replace
-      path: /spec/rules/0/host
-      value: prometheus-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}
 
 # cluster auto-scaler
 - target:

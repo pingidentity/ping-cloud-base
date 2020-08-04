@@ -19,7 +19,7 @@ change_user_password() {
   NEW_PASSWORD_FILE="${2}"
   CONTROL="${3}"
 
-  echo "post-start: resetting password for user DN: ${USER_DN}"
+  beluga_log "resetting password for user DN: ${USER_DN}"
   if test -z "${CONTROL}"; then
     ldappasswordmodify \
       --authzID "dn:${USER_DN}" \
@@ -32,7 +32,7 @@ change_user_password() {
   fi
 
   pwdModStatus=$?
-  echo "post-start: password reset for DN ${USER_DN} status: ${pwdModStatus}"
+  beluga_log "password reset for DN ${USER_DN} status: ${pwdModStatus}"
 
   # The following exit codes are acceptable:
   # 0 -> success
@@ -65,34 +65,6 @@ change_pf_user_passwords() {
 }
 
 ########################################################################################################################
-# Check if the base entry for USER_BASE_DN exists on the provided server.
-#
-# Arguments
-#   ${1} -> The target host to check.
-#   ${2} -> The target port.
-########################################################################################################################
-does_base_entry_exist() {
-  TARGET_HOST=${1}
-  TARGET_PORT=${2}
-
-  # It may take the user backend a few seconds to initialize after the server is started
-  RETRY_COUNT=5
-
-  for ATTEMPT in $(seq 1 "${RETRY_COUNT}"); do
-    if ldapsearch --hostname "${TARGET_HOST}" --port "${TARGET_PORT}" \
-           --baseDN "${USER_BASE_DN}" --searchScope base '(&)' 1.1 &> /dev/null; then
-      echo "post-start: user base entry ${USER_BASE_DN} exists on ${TARGET_HOST}:${TARGET_PORT}"
-      return 0
-    fi
-    echo "post-start: attempt #${ATTEMPT} - user base entry ${USER_BASE_DN} does not exist on ${TARGET_HOST}:${TARGET_PORT}"
-    sleep 1s
-  done
-
-  echo "post-start: user base entry ${USER_BASE_DN} does not exist on ${TARGET_HOST}:${TARGET_PORT}"
-  return 1
-}
-
-########################################################################################################################
 # Enable a LDAPS connection handler at the provided port on localhost.
 #
 # Arguments
@@ -101,7 +73,7 @@ does_base_entry_exist() {
 enable_ldap_connection_handler() {
   PORT=${1}
 
-  echo "post-start: enabling LDAPS connection handler at port ${PORT}"
+  beluga_log "enabling LDAPS connection handler at port ${PORT}"
   dsconfig --no-prompt create-connection-handler \
     --handler-name "External LDAPS Connection Handler ${PORT}" \
     --type ldap \
@@ -112,10 +84,10 @@ enable_ldap_connection_handler() {
     --set key-manager-provider:JKS \
     --set trust-manager-provider:JKS
   result=$?
-  echo "post-start: LDAPS enable at port ${PORT} status: ${result}"
+  beluga_log "LDAPS enable at port ${PORT} status: ${result}"
 
   if test ${result} -eq 68; then
-    echo "post-start: LDAPS connection handler already exists at port ${PORT}"
+    beluga_log "LDAPS connection handler already exists at port ${PORT}"
     return 0
   fi
 
@@ -144,7 +116,7 @@ initialize_replication_for_dn() {
   TO_HOST="${K8S_STATEFUL_SET_NAME}-${ORDINAL}.${DOMAIN_NAME}"
   TO_PORT="${LDAPS_PORT}"
 
-  echo "post-start: running dsreplication initialize for ${BASE_DN} from ${FROM_HOST}:${FROM_PORT} to ${TO_HOST}:${TO_PORT}"
+  beluga_log "running dsreplication initialize for ${BASE_DN} from ${FROM_HOST}:${FROM_PORT} to ${TO_HOST}:${TO_PORT}"
   dsreplication initialize \
     --retryTimeoutSeconds "${RETRY_TIMEOUT_SECONDS}" \
     --trustAll \
@@ -157,10 +129,10 @@ initialize_replication_for_dn() {
     --enableDebug \
     --globalDebugLevel verbose
   replInitResult=$?
-  echo "post-start: replication initialize for ${BASE_DN} status: ${replInitResult}"
+  beluga_log "replication initialize for ${BASE_DN} status: ${replInitResult}"
 
   if test ${replInitResult} -ne 0; then
-    echo "post-start: contents of dsreplication.log:"
+    beluga_log "contents of dsreplication.log:"
     cat "${SERVER_ROOT_DIR}"/logs/tools/dsreplication.log
   fi
 
@@ -172,27 +144,27 @@ initialize_replication_for_dn() {
 # Then, stop the container to signal failure with the post-start sequence.
 ########################################################################################################################
 stop_container() {
-  echo "post-start: stopping the container to signal failure with post-start sequence"
+  beluga_log "stopping the container to signal failure with post-start sequence"
   stop-server
 }
 
 
 # --- MAIN SCRIPT ---
-echo "post-start: starting post-start hook"
+beluga_log "starting post-start hook"
 
-echo "post-start: running ldapsearch test on this container (${HOSTNAME})"
+beluga_log "running ldapsearch test on this container (${HOSTNAME})"
 waitUntilLdapUp localhost "${LDAPS_PORT}" 'cn=config'
 
 SHORT_HOST_NAME=$(hostname)
 DOMAIN_NAME=$(hostname -f | cut -d'.' -f2-)
 ORDINAL=${SHORT_HOST_NAME##*-}
 
-echo "post-start: pod ordinal: ${ORDINAL}; multi-cluster: ${IS_MULTI_CLUSTER}"
+beluga_log "pod ordinal: ${ORDINAL}; multi-cluster: ${IS_MULTI_CLUSTER}"
 
-echo "post-start: getting server instance name from global config"
+beluga_log "getting server instance name from global config"
 INSTANCE_NAME=$(dsconfig --no-prompt get-global-configuration-prop \
     --property instance-name --script-friendly | awk '{ print $2 }')
-echo "post-start: server instance name from global config: ${INSTANCE_NAME}"
+beluga_log "server instance name from global config: ${INSTANCE_NAME}"
 
 # Add an LDAPS connection handler for external access, if necessary
 if test ! -z "${PD_PUBLIC_HOSTNAME}"; then
@@ -205,7 +177,7 @@ if test ! -z "${PD_PUBLIC_HOSTNAME}"; then
       --instance-name "${INSTANCE_NAME}" \
       --set ldaps-port:"${EXTERNAL_LDAPS_PORT}"
   result=$?
-  echo "post-start: change hostname/port: ${result}"
+  beluga_log "change hostname/port: ${result}"
   test $? -ne 0 && stop_container
 
   dsconfig --no-prompt set-server-instance-listener-prop \
@@ -213,7 +185,7 @@ if test ! -z "${PD_PUBLIC_HOSTNAME}"; then
       --listener-name ldap-listener-mirrored-config \
       --set server-ldap-port:"${EXTERNAL_LDAPS_PORT}"
   result=$?
-  echo "post-start: change LDAP listener port: ${result}"
+  beluga_log "change LDAP listener port: ${result}"
   test $? -ne 0 && stop_container
 fi
 
@@ -231,16 +203,16 @@ test $? -ne 0 && stop_container
 LICENSE_FILE_PATH="${LICENSE_DIR}/${LICENSE_FILE_NAME}"
 
 if test -f "${LICENSE_FILE_PATH}"; then
-  echo "post-start: updating product license from file ${LICENSE_FILE_PATH}"
+  beluga_log "updating product license from file ${LICENSE_FILE_PATH}"
   dsconfig --no-prompt set-license-prop --set "directory-platform-license-key<${LICENSE_FILE_PATH}"
 
   licModStatus=$?
-  echo "post-start: product license update status: ${pwdModStatus}"
+  beluga_log "product license update status: ${pwdModStatus}"
   test ${licModStatus} -ne 0 && stop_container
 fi
 
 if test "${ORDINAL}" -eq 0 && is_primary_cluster; then
-  echo "post-start: post-start complete"
+  beluga_log "post-start complete"
   exit
 fi
 
@@ -264,12 +236,12 @@ else
 fi
 
 DNS_TO_INITIALIZE=$(echo "${DN_LIST}" | tr ';' ' ')
-echo "post-start: replication base DNs: ${DNS_TO_INITIALIZE}"
+beluga_log "replication base DNs: ${DNS_TO_INITIALIZE}"
 
 UNINITIALIZED_DNS=
 for DN in ${DNS_TO_INITIALIZE}; do
   if grep -q "${DN}" "${REPL_INIT_MARKER_FILE}" &> /dev/null; then
-    echo "post-start: replication is already initialized for ${DN}"
+    beluga_log "replication is already initialized for ${DN}"
   else
     test -z "${UNINITIALIZED_DNS}" &&
         UNINITIALIZED_DNS="${DN}" ||
@@ -279,12 +251,12 @@ done
 
 # All base DNs are already initialized, so we're good.
 if test -z "${UNINITIALIZED_DNS}"; then
-  echo "post-start: replication is already initialized for all base DNs: ${DNS_TO_INITIALIZE}"
-  echo "post-start: post-start complete"
+  beluga_log "replication is already initialized for all base DNs: ${DNS_TO_INITIALIZE}"
+  beluga_log "post-start complete"
   exit
 fi
 
-# Determine the hostnames and ports to use while enabling replication. When in multi-cluster mode and not in the
+# Determine the hostnames and ports to use while initializing replication. When in multi-cluster mode and not in the
 # primary cluster, use the external names and ports. Otherwise, use internal names and ports.
 if is_multi_cluster; then
   REPL_SRC_HOST="${PD_PRIMARY_PUBLIC_HOSTNAME}"
@@ -305,40 +277,40 @@ fi
 SEED_HOST="${REPL_SRC_HOST}"
 SEED_PORT="${REPL_SRC_LDAPS_PORT}"
 
-echo "post-start: using REPL_SRC_HOST: ${REPL_SRC_HOST}"
-echo "post-start: using REPL_SRC_LDAPS_PORT: ${REPL_SRC_LDAPS_PORT}"
-echo "post-start: using REPL_SRC_REPL_PORT: ${REPL_SRC_REPL_PORT}"
-echo "post-start: using REPL_DST_HOST: ${REPL_DST_HOST}"
-echo "post-start: using REPL_DST_LDAPS_PORT: ${REPL_DST_LDAPS_PORT}"
-echo "post-start: using REPL_DST_REPL_PORT: ${REPL_DST_REPL_PORT}"
+beluga_log "using REPL_SRC_HOST: ${REPL_SRC_HOST}"
+beluga_log "using REPL_SRC_LDAPS_PORT: ${REPL_SRC_LDAPS_PORT}"
+beluga_log "using REPL_SRC_REPL_PORT: ${REPL_SRC_REPL_PORT}"
+beluga_log "using REPL_DST_HOST: ${REPL_DST_HOST}"
+beluga_log "using REPL_DST_LDAPS_PORT: ${REPL_DST_LDAPS_PORT}"
+beluga_log "using REPL_DST_REPL_PORT: ${REPL_DST_REPL_PORT}"
 
 # If in multi-region mode, wait for the replication source and target servers to be up and running through the
-# load balancer before enabling/initializing replication.
+# load balancer before initializing replication.
 if is_multi_cluster; then
-  echo "post-start: waiting for the replication seed server ${REPL_SRC_HOST}:${REPL_SRC_LDAPS_PORT}"
+  beluga_log "waiting for the replication seed server ${REPL_SRC_HOST}:${REPL_SRC_LDAPS_PORT}"
   waitUntilLdapUp "${REPL_SRC_HOST}" "${REPL_SRC_LDAPS_PORT}" 'cn=config'
 
-  echo "post-start: waiting for the replication target server ${REPL_DST_HOST}:${REPL_DST_LDAPS_PORT}"
+  beluga_log "waiting for the replication target server ${REPL_DST_HOST}:${REPL_DST_LDAPS_PORT}"
   waitUntilLdapUp "${REPL_DST_HOST}" "${REPL_DST_LDAPS_PORT}" 'cn=config'
 fi
 
 # It is possible that the persistent volume where we are tracking replicated DNs is gone. In that case, we must
 # delete this server from the topology registry. Check the source server before proceeding.
-echo "post-start: checking source server to see if this server must first be removed from the topology"
+beluga_log "checking source server to see if this server must first be removed from the topology"
 REMOVE_SERVER_FROM_TOPOLOGY_FIRST=false
 
-echo "post-start: replication will be initialized for base DNs: ${UNINITIALIZED_DNS}"
+beluga_log "replication will be initialized for base DNs: ${UNINITIALIZED_DNS}"
 
 for DN in ${UNINITIALIZED_DNS}; do
   initialize_replication_for_dn "${DN}"
   replInitResult=$?
 
   if test ${replInitResult} -eq 0; then
-    echo "post-start: adding DN ${DN} to the replication marker file ${REPL_INIT_MARKER_FILE}"
+    beluga_log "adding DN ${DN} to the replication marker file ${REPL_INIT_MARKER_FILE}"
     echo "${DN}" >> "${REPL_INIT_MARKER_FILE}"
   else
     stop_container
   fi
 done
 
-echo "post-start: post-start complete"
+beluga_log "post-start complete"

@@ -12,6 +12,7 @@ resources:
 - ../../../base/pingdirectory/aws
 - ../../../base/pingfederate/aws
 - ../../../base/pingaccess/aws
+- ../../../base/pingaccess-was/aws
 
 generatorOptions:
   disableNameSuffixHash: true
@@ -24,5 +25,13 @@ configMapGenerator:
 
 patchesStrategicMerge:
 - pingdirectory/limits.yaml
+
+- pingfederate/engine-init-env.yaml
 - pingfederate/hpa-limits.yaml
+- pingfederate/engine-limits.yaml
+
+- pingaccess/engine-init-env.yaml
 - pingaccess/hpa-limits.yaml
+
+- pingaccess-was/engine-init-env.yaml
+- pingaccess-was/engine-limits.yaml

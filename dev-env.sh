@@ -283,6 +283,8 @@ if test "${dryrun}" = 'false'; then
   # Print out the pingdirectory hostname
   echo
   echo '--- LDAP hostname ---'
+
+  # FIXME: when PDO-1114 is fixed, this will need to change
   kubectl get svc ingress-nginx -n ingress-nginx-private \
     -o jsonpath='{.metadata.annotations.external-dns\.alpha\.kubernetes\.io/hostname}' \
     --context "${K8S_CONTEXT}"

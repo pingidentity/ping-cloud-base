@@ -11,10 +11,10 @@ cd /opt/out/instance/etc
 mv  jetty-runtime.xml jetty-runtime.xml.subst
 CPUMIN=$(cat /etc/podinfo/cpu_request)
 CPUMAX=$(cat /etc/podinfo/cpu_limit)
-echo "Processor Allocation: Requested: ${CPUMIN}m Limit: ${CPUMAX}m"
+beluga_log "Processor Allocation: Requested: ${CPUMIN}m Limit: ${CPUMAX}m"
 export THREADMIN=$(echo " 12 * ${CPUMIN} / 1000"|bc)
 export THREADMAX=$(echo " 25 * ${CPUMAX} / 1000"|bc)
-echo "Jetty Runtime Thread Allocation: Min: ${THREADMIN} Max: ${THREADMAX}"
+beluga_log "Jetty Runtime Thread Allocation: Min: ${THREADMIN} Max: ${THREADMAX}"
 envsubst < jetty-runtime.xml.subst > jetty-runtime.xml
 cd "${wd}"
 exit 0

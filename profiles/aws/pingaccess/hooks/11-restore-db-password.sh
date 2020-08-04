@@ -17,17 +17,17 @@ readonly h2_props_backup="${SERVER_ROOT_DIR}/conf/h2_password_properties.backup"
 
 # Look for the h2_props_backup file
 if [ -f "${h2_props_backup}" ]; then
-  echo "Found the H2 database password properties file: ${h2_props_backup} with the properties:"
+  beluga_log "Found the H2 database password properties file: ${h2_props_backup} with the properties:"
   echo
   cat "${h2_props_backup}"
 else
-  echo "Could not find the H2 database password properties file: ${h2_props_backup}"
+  beluga_log "Could not find the H2 database password properties file: ${h2_props_backup}"
   "${HOOKS_DIR}"/11-change-default-db-password.sh
   exit $?
 fi
 
 echo
-echo "Restoring the password properties from ${h2_props_backup} to ${run_properties_file}..."
+beluga_log "Restoring the password properties from ${h2_props_backup} to ${run_properties_file}..."
 
 # Save existing to print the difference later
 existing_filepassword=$(cat "${run_properties_file}" | awk '/pa.jdbc.filepassword/' | awk '{print $0}')
@@ -44,8 +44,8 @@ sed -i "s/^pa.jdbc.filepassword=.*/${dbfilepassword_line}/" "${run_properties_fi
 sed -i "s/^pa.jdbc.password=.*/${dbuserpassword_line}/" "${run_properties_file}"
 
 echo
-echo $(print_differences 'pa.jdbc.filepassword' "${existing_filepassword}" "${dbfilepassword_line}")
+beluga_log $(print_differences 'pa.jdbc.filepassword' "${existing_filepassword}" "${dbfilepassword_line}")
 echo
-echo $(print_differences 'pa.jdbc.password' "${existing_dbuserpassword}" "${dbuserpassword_line}")
+beluga_log $(print_differences 'pa.jdbc.password' "${existing_dbuserpassword}" "${dbuserpassword_line}")
 
 exit 0
