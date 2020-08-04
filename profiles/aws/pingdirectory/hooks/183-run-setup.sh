@@ -51,6 +51,14 @@ if test "${MANAGE_PROFILE_STATUS}" -ne 0; then
   exit 183
 fi
 
+# Enable replication offline.
+"${HOOKS_DIR}"/185-offline-enable-wrapper.sh
+
+# Replicated base DNs must exist before starting the server now that
+# replication is enabled before start since otherwise a generation ID of -1
+# would be generated, which breaks replication.
+add_base_entry_if_needed
+
 run_hook "15-encryption-settings.sh"
 
 echo "run-setup: configuring ${USER_BACKEND_ID} for base DN ${USER_BASE_DN}"

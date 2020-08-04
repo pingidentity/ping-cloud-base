@@ -10,8 +10,6 @@ ENCRYPTION_PASSWORD_FILE=/usr/local/secrets/encryption-password
 ADS_CRT_FILE=/usr/local/secrets/ads.crt
 ADS_KEY_FILE=/usr/local/secrets/ads.key
 
-LOCATION=Austin
-
 USER_BACKEND_ID=userRoot
 USER_BASE_DN=dc=example,dc=com
 DISABLE_ALL_OLDER_USER_BASE_DN=true
@@ -47,3 +45,6 @@ OPTIMIZE_REPLACE_PROFILE=false
 TAIL_LOG_FILES=
 # Individual files should be spelled out, globs are unreliable
 K8S_TAIL_LOG_FILES=/opt/out/instance/logs/server.out /opt/out/instance/logs/access /opt/out/instance/logs/change-notifications.log /opt/out/instance/logs/errors /opt/out/instance/logs/failed-ops /opt/out/instance/logs/expensive-write-ops /opt/out/instance/logs/replication /opt/out/instance/logs/config-audit.log
+
+# This JSON file must exist for multi-region.
+TOPOLOGY_DESCRIPTOR_JSON=/opt/staging/topology/descriptor.json
