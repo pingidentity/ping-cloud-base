@@ -36,7 +36,6 @@ patchesStrategicMerge:
 - pingaccess/admin-limits.yaml	
 - pingaccess/engine-limits.yaml	
 - pingaccess/hpa-limits.yaml
-- pingaccess-was/admin-init-env.yaml
 - pingaccess-was/engine-init-env.yaml
 - pingaccess-was/admin-limits.yaml
 - pingaccess-was/engine-limits.yaml

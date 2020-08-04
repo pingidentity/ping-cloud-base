@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 
 . "${HOOKS_DIR}/pingcommon.lib.sh"
+. "${HOOKS_DIR}/utils.lib.sh"
 
 if ! isPingaccessWas; then
   run_hook "10-download-artifact.sh"
