@@ -105,7 +105,7 @@ spec:
               mountPath: /opt/in/backup-csd-data.sh
               subPath: backup-csd-data.sh
           volumes:
-          - name: pingfederate-admin-periodic-csd-upload
+          - name: pingfederate-periodic-csd-upload
             configMap:
               name: pingfederate-periodic-csd-upload
               defaultMode: 0555
