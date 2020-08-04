@@ -42,7 +42,8 @@ testChangePasswordNetworkError() {
   exit_code=$?
 
   assertEquals 1 ${exit_code}
-  assertContains 'password change status: 1 error changing password' "${msg}"
+  assertContains "${msg}" 'password change status: 1'
+  assertContains "${msg}" 'error changing password'
 }
 
 # load shunit

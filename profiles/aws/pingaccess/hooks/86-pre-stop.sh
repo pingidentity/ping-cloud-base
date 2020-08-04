@@ -12,10 +12,13 @@ fi
 
 echo "pre-stop: starting pre-stop hook on engine"
 
+# Export config settings based on PA or PA-WAS, multi-region vs. single-region, etc.
+export_config_settings
+
 SHORT_HOST_NAME=$(hostname)
 ORDINAL=${SHORT_HOST_NAME##*-}
 
-NUM_REPLICAS=$(kubectl get statefulset "${K8S_STATEFUL_SET_NAME_PINGACCESS}" -o jsonpath='{.spec.replicas}')
+NUM_REPLICAS=$(kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
 echo "pre-stop: number of replicas: ${NUM_REPLICAS}"
 
 if test "${ORDINAL}" -lt "${NUM_REPLICAS}"; then

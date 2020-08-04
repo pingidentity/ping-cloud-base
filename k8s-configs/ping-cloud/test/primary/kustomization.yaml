@@ -6,7 +6,7 @@ resources:
 
 patchesStrategicMerge:
 - pingfederate/admin-init-env.yaml
-- pingfederate/engine-init-env.yaml
 
 - pingaccess/admin-init-env.yaml
-- pingaccess/engine-init-env.yaml
+
+- pingaccess-was/admin-limits.yaml

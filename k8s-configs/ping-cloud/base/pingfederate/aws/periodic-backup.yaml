@@ -15,19 +15,24 @@ data:
 
     UPLOAD_FILES=
     SERVER=$(kubectl get pod -l role=${K8S_DEPLOYMENT_NAME_PINGFEDERATE_ADMIN} | sed -n "/${K8S_DEPLOYMENT_NAME_PINGFEDERATE_ADMIN}/p" | awk '{print $1}')
-    SCRIPT="${HOOKS_DIR}"/82-upload-archive-data-s3.sh
+    SCRIPT="${HOOKS_DIR}"/90-upload-backup-s3.sh
     LOG_FILE=/tmp/upload.log
 
     echo "Uploading pingfederate backup data on server ${SERVER}"
-    kubectl exec "${SERVER}" -c pingfederate-admin -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" | tee "${LOG_FILE}"
+    kubectl exec "${SERVER}" -c pingfederate-admin -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" >"${LOG_FILE}"
 
     if test ${?} -eq 0; then
+      # Sending logs to STDOUT
+      cat ${LOG_FILE}
       UPLOAD_FILE=$(tail -1 "${LOG_FILE}")
       test -z "${UPLOAD_FILES}" && UPLOAD_FILES="${UPLOAD_FILE}" || UPLOAD_FILES="${UPLOAD_FILES} ${UPLOAD_FILE}"
     else
       echo "Upload script not found on server ${SERVER}"
     fi
 
+    # Print the names of the uploaded files so callers know exactly what was uploaded
+    echo "The following files were uploaded:"
+    echo "${UPLOAD_FILES}"
 ---
 
 apiVersion: batch/v1beta1

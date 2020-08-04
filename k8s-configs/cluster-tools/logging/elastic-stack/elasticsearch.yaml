@@ -1,45 +1,3 @@
-kind: Service
-apiVersion: v1
-metadata:
-  name: elasticsearch
-  labels:
-    app: elasticsearch
-spec:
-  selector:
-    app: elasticsearch
-  clusterIP: None
-  ports:
-    - port: 9200
-      name: rest
-    - port: 9300
-      name: inter-node
----
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: elasticsearch-io1
-  labels:
-    app: elasticsearch
-provisioner: kubernetes.io/aws-ebs
-parameters:
-  type: io1
-  fsType: ext4
-  iopsPerGB: "50"
-mountOptions:
-  - discard
----
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  name: elasticsearch-gp2
-  labels:
-    app: elasticsearch
-provisioner: kubernetes.io/aws-ebs
-parameters:
-  type: gp2
-  fsType: ext4
-mountOptions:
-  - discard
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -78,9 +36,73 @@ spec:
                   values:
                   - elasticsearch
               topologyKey: "failure-domain.beta.kubernetes.io/zone"
+
+      initContainers:
+
+      - name: fix-permissions
+        image: busybox
+        command: [ "sh", "-c", "chown -R 1000:1000 /usr/share/elasticsearch/data" ]
+
+        securityContext:
+          privileged: true
+
+        volumeMounts:
+        - name: data
+          mountPath: /usr/share/elasticsearch/data
+
+
+      - name: increase-vm-max-map
+        image: busybox
+        command: [ "sysctl", "-w", "vm.max_map_count=262144" ]
+
+        securityContext:
+          privileged: true
+
+
+      - name: increase-fd-ulimit
+        image: busybox
+        command: [ "sh", "-c", "ulimit -n 65536" ]
+
+        securityContext:
+          privileged: true
+
+      
+      - name: set-bootstrap-password
+        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.5
+        
+        imagePullPolicy: Always
+        workingDir: /scripts
+        command: ["sh", '$(CONTAINER_NAME).sh']
+
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+
+        env:
+        - name: CONTAINER_NAME
+          value: "set-bootstrap-password"
+        - name: ES_PATH_CONF
+          value: "/usr/share/elasticsearch/data/config"
+        - name: ELASTIC_BOOTSTRAP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elk-secrets
+              key: ELASTIC_BOOTSTRAP_PASSWORD_B64
+
+        volumeMounts:
+        - name: data
+          mountPath: /usr/share/elasticsearch/data
+          readOnly: false
+
       containers:
+
       - name: elasticsearch
-        image: docker.elastic.co/elasticsearch/elasticsearch:7.2.0
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.8.0
+
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+
         resources:
           limits:
             memory: 2Gi
@@ -88,6 +110,7 @@ spec:
           requests:
             memory: 512Mi
             cpu: 100m
+
         ports:
         - containerPort: 9200
           name: rest
@@ -95,41 +118,36 @@ spec:
         - containerPort: 9300
           name: inter-node
           protocol: TCP
-        volumeMounts:
-        - name: data
-          mountPath: /usr/share/elasticsearch/data
+
         env:
-          - name: cluster.name
-            value: k8s-logs
-          - name: node.name
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-          - name: discovery.seed_hosts
-            value: "es-cluster-0.elasticsearch,es-cluster-1.elasticsearch,es-cluster-2.elasticsearch"
-          - name: cluster.initial_master_nodes
-            value: "es-cluster-0,es-cluster-1,es-cluster-2"
-          - name: ES_JAVA_OPTS
-            value: "-Xms512m -Xmx512m"
-      initContainers:
-      - name: fix-permissions
-        image: busybox
-        command: [ "sh", "-c", "chown -R 1000:1000 /usr/share/elasticsearch/data" ]
-        securityContext:
-          privileged: true
+        - name: CONTAINER_NAME
+          value: "elasticsearch"
+        - name: ES_PATH_CONF
+          value: "/usr/share/elasticsearch/data/config"
+        - name: ES_JAVA_OPTS
+          value: "-Xms512m -Xmx512m"
+        - name: node.name
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: cluster.name
+          value: "k8s-logs"
+        - name: network.host
+          value: "0.0.0.0"
+        - name: discovery.seed_hosts
+          value: "es-cluster-0.elasticsearch"
+        - name: cluster.initial_master_nodes
+          value: "es-cluster-0"
+        - name: xpack.license.self_generated.type
+          value: "trial"
+        - name: xpack.security.enabled
+          value: "false"
+
         volumeMounts:
         - name: data
           mountPath: /usr/share/elasticsearch/data
-      - name: increase-vm-max-map
-        image: busybox
-        command: [ "sysctl", "-w", "vm.max_map_count=262144" ]
-        securityContext:
-          privileged: true
-      - name: increase-fd-ulimit
-        image: busybox
-        command: [ "sh", "-c", "ulimit -n 65536" ]
-        securityContext:
-          privileged: true
+          readOnly: false
+            
   volumeClaimTemplates:
   - metadata:
       name: data
@@ -140,4 +158,51 @@ spec:
       storageClassName: elasticsearch-gp2
       resources:
         requests:
-          storage: 10Gi
+          storage: 40Gi
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: elasticsearch
+  labels:
+    app: elasticsearch
+spec:
+  selector:
+    app: elasticsearch
+  clusterIP: None
+  ports:
+    - port: 9200
+      name: rest
+    - port: 9300
+      name: inter-node
+
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: elasticsearch-io1
+  labels:
+    app: elasticsearch
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: io1
+  fsType: ext4
+  iopsPerGB: "50"
+mountOptions:
+  - discard
+
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: elasticsearch-gp2
+  labels:
+    app: elasticsearch
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: gp2
+  fsType: ext4
+mountOptions:
+  - discard
+allowVolumeExpansion: true

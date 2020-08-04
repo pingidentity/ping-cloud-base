@@ -82,6 +82,8 @@ spec:
           name: ldap
         - containerPort: 1636
           name: ldaps
+        - containerPort: 1443
+          name: https
         - containerPort: 8989
           name: repl
         resources:

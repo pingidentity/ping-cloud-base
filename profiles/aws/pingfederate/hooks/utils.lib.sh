@@ -2,26 +2,71 @@
 
 ########################################################################################################################
 # Makes a curl request to the PingFederate Admin API. The HTTP status code from the curl invocation will be
-# stored in the HTTP_CODE variable.
+# stored in the http_code variable.
 #
 # Arguments
 #   $@ -> The URL and additional data needed to make the request.
 ########################################################################################################################
 function make_api_request() {
   set +x
-  HTTP_CODE=$(curl -k \
+  http_code=$(curl -k -o ${OUT_DIR}/api_response.txt -w "%{http_code}" \
+        --retry ${API_RETRY_LIMIT} \
+        --max-time ${API_TIMEOUT_WAIT} \
+        --retry-delay 1 \
+        --retry-connrefused \
+        -u ${PF_ADMIN_USER_USERNAME}:${PF_ADMIN_USER_PASSWORD} \
+        -H 'X-Xsrf-Header: PingFederate' "$@")
+  curl_result=$?
+  "${VERBOSE}" && set -x
+
+  if test "${curl_result}" -ne 0; then
+    beluga_log "Admin API connection refused"
+    return ${curl_result}
+  fi
+
+  if test "${http_code}" -ne 200; then
+    beluga_log "API call returned HTTP status code: ${http_code}"
+    return 1
+  fi
+
+  cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
+
+  return 0
+}
+
+########################################################################################################################
+# Used for API calls that specify an output file.
+# When using this function the existence of the output file
+# should be used to verify this function succeeded.
+#
+# Arguments
+#   $@ -> The URL and additional data needed to make the request.
+########################################################################################################################
+function make_api_request_download() {
+  set +x
+  http_code=$(curl -k \
     --retry "${API_RETRY_LIMIT}" \
     --max-time "${API_TIMEOUT_WAIT}" \
     --retry-delay 1 \
     --retry-connrefused \
-    -u "Administrator:${PF_ADMIN_USER_PASSWORD}" \
+    -u ${PF_ADMIN_USER_USERNAME}:${PF_ADMIN_USER_PASSWORD} \
     -w '%{http_code}' \
     -H 'X-Xsrf-Header: PingFederate' "$@")
-  RESULT=$?
-  ${VERBOSE} && set -x
+  curl_result=$?
+  "${VERBOSE}" && set -x
 
-  echo "Admin API request status: ${RESULT}; HTTP status: ${HTTP_CODE}"
-  return "${RESULT}"
+  if test "${curl_result}" -ne 0; then
+    beluga_log "Admin API connection refused"
+    return ${curl_result}
+  fi
+
+  if test "${http_code}" -ne 200; then
+    beluga_log "API call returned HTTP status code: ${http_code}"
+    return 1
+  fi
+
+  beluga_log "Admin API request status: ${curl_result}; HTTP status: ${http_code}"
+  return ${curl_result}
 }
 
 ########################################################################################################################
@@ -35,16 +80,26 @@ function wait_for_admin_api_endpoint() {
   ENDPOINT="${1:-version}"
   API_REQUEST_URL="https://localhost:9999/pf-admin-api/v1/${ENDPOINT}"
 
-  echo "Waiting for admin API endpoint at ${API_REQUEST_URL}"
+  beluga_log "Waiting for admin API endpoint at ${API_REQUEST_URL}"
 
   while true; do
-    make_api_request -X GET "${API_REQUEST_URL}" -o /dev/null 2> /dev/null
-    if test "${HTTP_CODE}" -eq 200; then
-      echo "Admin API endpoint ${ENDPOINT} ready"
+    http_code=$(curl -k \
+      --retry "${API_RETRY_LIMIT}" \
+      --max-time "${API_TIMEOUT_WAIT}" \
+      --retry-delay 1 \
+      --retry-connrefused \
+      -u ${PF_ADMIN_USER_USERNAME}:${PF_ADMIN_USER_PASSWORD} \
+      -w '%{http_code}' \
+      -H 'X-Xsrf-Header: PingFederate' \
+      -X GET "${API_REQUEST_URL}" \
+      -o /dev/null 2> /dev/null
+    )
+    if test "${http_code}" -eq 200; then
+      beluga_log "Admin API endpoint ${ENDPOINT} ready"
       return 0
     fi
 
-    echo "Admin API not endpoint ${ENDPOINT} ready - will retry in ${TIMEOUT} seconds"
+    beluga_log "Admin API not endpoint ${ENDPOINT} ready - will retry in ${TIMEOUT} seconds"
     sleep "${TIMEOUT}"
   done
 }
@@ -187,7 +242,7 @@ function initializeSkbnConfiguration() {
   # Allow overriding the backup URL with an arg
   test ! -z "${1}" && BACKUP_URL="${1}"
 
-  # Check if endpoint is AWS cloud stroage service (S3 bucket)
+  # Check if endpoint is AWS cloud storage service (S3 bucket)
   case "$BACKUP_URL" in "s3://"*)
 
     # Set AWS specific variable for skbn
@@ -201,11 +256,11 @@ function initializeSkbnConfiguration() {
 
   esac
 
-  echo "Getting cluster metadata"
+  beluga_log "Getting cluster metadata"
 
-  # Get prefix of HOSTNAME which match the pod name.
-  POD="$(echo "${HOSTNAME}" | cut -d. -f1)"
-
+  # Get prefix of HOSTNAME which match the pod name.  
+  export POD="$(echo "${HOSTNAME}" | cut -d. -f1)"
+  
   METADATA=$(kubectl get "$(kubectl get pod -o name | grep "${POD}")" \
     -o=jsonpath='{.metadata.namespace},{.metadata.name},{.metadata.labels.role}')
 
@@ -235,4 +290,17 @@ function skbnCopy() {
   if ! skbn cp --src "$SOURCE" --dst "${DESTINATION}" --parallel "${PARALLEL}"; then
     return 1
   fi
+}
+
+########################################################################################################################
+# Standard log function.
+#
+########################################################################################################################
+function beluga_log() {
+  local format="+%Y-%m-%d:%Hh:%Mm:%Ss" # yyyy-mm-dd:00h:00m:00s
+  local timestamp=$( date "${format}" )
+  local message="${1}"
+  local file_name=$(basename "${0}")
+
+  echo "${timestamp} ${file_name}: ${message}"
 }

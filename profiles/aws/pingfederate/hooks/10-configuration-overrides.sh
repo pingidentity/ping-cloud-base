@@ -35,19 +35,23 @@ function applyGeneralOverrides()
 {
    rc=0
    if [ -e "${STAGING_DIR}/data-overrides" ] && [ -d "${STAGING_DIR}/data-overrides" ]; then
-      echo "============================= Applying general static overrides =============================="
+      beluga_log "============================= Applying general static overrides =============================="
       cd ${STAGING_DIR}/data-overrides
+      beluga_log "Directory: $(pwd)"
+      rm ./README.txt
+      beluga_log "Processing Template Files"
       for template in $( find "." -type f -iname \*.subst ) ; do
-         echo "    t - ${template}"
+         beluga_log "    t - ${template}"
          envsubst < "${template}" > "${template%.subst}"
          rm -f "${template}"
       done
+      beluga_log "Copying override files"
+      ( find . -type f -exec cp -avfL --parents '{}' "${SERVER_ROOT_DIR}/server/default/data" \; )
 
-      copy_files "${STAGING_DIR}/data-overrides" "${SERVER_ROOT_DIR}/server/default/data"
       rc=$? 
-      echo "================================  General overrides applied  ================================="
+      beluga_log "================================  General overrides applied  ================================="
    else
-      echo "============================ No general overrides found to apply ============================="
+      beluga_log "============================ No general overrides found to apply ============================="
    fi
    return ${rc}
 }
@@ -57,11 +61,11 @@ function applyConfigStoreOverrides()
 {
    rc=0
    cd "${STAGING_DIR}/config-store"
-   if [ $(ls *.json | wc -l) -gt 0 ]; then
+   if [ $(ls *.json  2>/dev/null| wc -l) -gt 0 ]; then
       #
       # Overrides exist, process directroy contents in lexicographical order              
       #
-      echo "==========================  Applying config store static overrides ==========================="
+      beluga_log "==========================  Applying config store static overrides ==========================="
       #
       # Assume Success, we will attempt to process everything to catch all errors in one pass
       #
@@ -200,16 +204,16 @@ function applyConfigStoreOverrides()
                         ;; 
                   esac
                
-                  echo "${separator}"
-                  echo "Processing Override: ${file}"
-                  echo "Bundle:              ${target}"
-                  echo "Id:                  ${id}"
-                  echo "Operation:           ${method}"
-                  echo "Payload:             $(echo "${payload}" | tr '$\n' ' ')"
-                  echo ""
-                  echo "HTTP Response code:  ${result}"
-                  echo "Old Value:           ${oldValue}"
-                  echo "New Value:           ${newValue}"
+                  beluga_log "${separator}"
+                  beluga_log "Processing Override: ${file}"
+                  beluga_log "Bundle:              ${target}"
+                  beluga_log "Id:                  ${id}"
+                  beluga_log "Operation:           ${method}"
+                  beluga_log "Payload:             $(echo "${payload}" | tr '$\n' ' ')"
+                  beluga_log ""
+                  beluga_log "HTTP Response code:  ${result}"
+                  beluga_log "Old Value:           ${oldValue}"
+                  beluga_log "New Value:           ${newValue}"
                   separator="----------------------------------------------------------------------------------------------"
                fi
             fi
@@ -218,7 +222,9 @@ function applyConfigStoreOverrides()
             break
          fi
       done
-      echo "===========================  Config store static overrides applied ==========================="
+      beluga_log "===========================  Config store static overrides applied ==========================="
+   else
+       beluga_log "No config store static overrides found to applied"
    fi
    return ${rc}
 }
@@ -232,7 +238,7 @@ function stopServer()
    cd /opt/out/instance/bin
    pid=$(cat pingfederate.pid)
    kill ${pid}
-   echo "Waiting for PingFederate to shutdown" 
+   beluga_log "Waiting for PingFederate to shutdown" 
    while [  "$(netstat -lntp|grep 9999|grep "${pid}/java" >/dev/null 2>&1;echo $?)" = "0" ]; do
       sleep 1
    done
@@ -272,6 +278,8 @@ if [ ${hasGeneralOverride} -eq 1 ] || [ ${hasConfigStoreOverride} -eq 1 ]; then
    rc2=$?
    stopServer
    rc=$(echo "( ${rc1} * 10) + ${rc2}"|bc)
+else
+   beluga_log "No data or config store overrides found to applied - Do nothing"   
 fi
 
 cd ${wd}

@@ -1,0 +1,12 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+namespace: elastic-stack-logging
+
+resources:
+- elasticsearch-ilm-policies.yaml
+- elasticsearch-index-bootstraps.yaml
+- elasticsearch-index-templates.yaml
+- enrichment-cache.yaml
+- kibana-dashboards.yaml
+- logstash-search-templates.yaml

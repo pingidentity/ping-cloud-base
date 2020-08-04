@@ -12,6 +12,13 @@ configMapGenerator:
   - env_vars
   - pingaccess/env_vars
 
+# Pingaccess
+- name: pingaccess-was-environment-variables
+  behavior: merge
+  envs:
+  - env_vars
+  - pingaccess-was/env_vars
+
 # Pingfederate
 - name: pingfederate-environment-variables
   behavior: merge
@@ -27,19 +34,21 @@ configMapGenerator:
   - pingdirectory/env_vars
 
 patchesJson6902:
-# pingdata
+
+# pingdirectory HTTP
 - target:
     group: extensions
     version: v1beta1
     kind: Ingress
-    name: pingdataconsole-ingress
+    name: pingdirectory-http-ingress
   patch: |-
     - op: replace
       path: /spec/tls/0/hosts/0
-      value: pingdataconsole${ENVIRONMENT}.${TENANT_DOMAIN}
+      value: pingdirectory${ENVIRONMENT}.${TENANT_DOMAIN}
+
     - op: replace
       path: /spec/rules/0/host
-      value: pingdataconsole${ENVIRONMENT}.${TENANT_DOMAIN}
+      value: pingdirectory${ENVIRONMENT}.${TENANT_DOMAIN}
 
 # pingfederate runtime
 - target:
@@ -83,33 +92,66 @@ patchesJson6902:
       path: /spec/rules/0/host
       value: pingaccess-agent${ENVIRONMENT}.${TENANT_DOMAIN}
 
-# pingfederate admin
+# pingaccess was admin
 - target:
     group: extensions
     version: v1beta1
     kind: Ingress
-    name: pingfederate-admin-ingress
+    name: pingaccess-was-admin-ingress
   patch: |-
     - op: replace
       path: /spec/tls/0/hosts/0
-      value: pingfederate-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+      value: pingaccess-was-admin${ENVIRONMENT}.${TENANT_DOMAIN}
     - op: replace
       path: /spec/rules/0/host
+      value: pingaccess-was-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+
+# pingaccess was runtime
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingaccess-was-ingress
+  patch: |-
+    # pingaccess admin through PA-WAS engines
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingaccess-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingaccess-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+
+    # pingfederate admin through PA-WAS engines
+    - op: replace
+      path: /spec/tls/0/hosts/1
+      value: pingfederate-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/1/host
       value: pingfederate-admin${ENVIRONMENT}.${TENANT_DOMAIN}
 
-# pingaccess admin
-- target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: pingaccess-admin-ingress
-  patch: |-
+    # Grafana through PA-WAS engines
     - op: replace
-      path: /spec/tls/0/hosts/0
-      value: pingaccess-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+      path: /spec/tls/0/hosts/2
+      value: monitoring${ENVIRONMENT}.${TENANT_DOMAIN}
     - op: replace
-      path: /spec/rules/0/host
-      value: pingaccess-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+      path: /spec/rules/2/host
+      value: monitoring${ENVIRONMENT}.${TENANT_DOMAIN}
+
+    # Prometheus through PA-WAS engines
+    - op: replace
+      path: /spec/tls/0/hosts/3
+      value: prometheus${ENVIRONMENT}.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/3/host
+      value: prometheus${ENVIRONMENT}.${TENANT_DOMAIN}
+
+    # Kibana through PA-WAS engines
+    - op: replace
+      path: /spec/tls/0/hosts/4
+      value: kibana${ENVIRONMENT}.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/4/host
+      value: logs${ENVIRONMENT}.${TENANT_DOMAIN}
 
 # Set a hostname for all the headless services so their endpoint IPs are published to Route53
 - target:
@@ -138,6 +180,15 @@ patchesJson6902:
     - op: replace
       path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
       value: pingaccess-cluster${ENVIRONMENT}.${TENANT_DOMAIN}
+
+- target:
+    version: v1
+    kind: Service
+    name: pingaccess-was-admin
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+      value: pingaccess-was-cluster${ENVIRONMENT}.${TENANT_DOMAIN}
 
 # FIXME: add this once PDO-1114 is implemented
 # pingdirectory put ldaps on public and change the hostname

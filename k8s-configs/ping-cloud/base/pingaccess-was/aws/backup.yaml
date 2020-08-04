@@ -1,0 +1,32 @@
+# A manual backup job - this does the same thing as the CronJob except it may be configured to be triggered in reaction
+# to a ClickOps event.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pingaccess-was-backup
+  labels:
+    cluster: pingaccess-was-cluster
+spec:
+  ttlSecondsAfterFinished: 0
+  backoffLimit: 5
+  template:
+    spec:
+      serviceAccount: ping-serviceaccount
+      restartPolicy: Never
+      containers:
+      - name: pingaccess-was-backup
+        image: pingidentity/pingaccess:2006.1-6.1.0
+        command:
+        - /opt/in/backup-archive-data.sh
+        envFrom:
+        - configMapRef:
+            name: pingaccess-was-environment-variables
+        volumeMounts:
+        - name: pingaccess-was-backup
+          mountPath: /opt/in/backup-archive-data.sh
+          subPath: backup-archive-data.sh
+      volumes:
+      - name: pingaccess-was-backup
+        configMap:
+          name: pingaccess-was-backup
+          defaultMode: 0555
