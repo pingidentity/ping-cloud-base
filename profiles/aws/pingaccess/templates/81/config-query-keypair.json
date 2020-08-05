@@ -7,5 +7,11 @@
   "validDays":${CONFIG_QUERY_KP_VALID_DAYS},
   "commonName":"${CLUSTER_CONFIG_HOST}",
   "country":"US",
-  "signatureAlgorithm":"SHA256withRSA"
+  "signatureAlgorithm":"SHA256withRSA",
+  "subjectAlternativeNames": [
+    {
+      "name": "dNSName",
+      "value": "${PA_CLUSTER_PUBLIC_HOSTNAME}"
+    }
+  ]
 }
