@@ -21,7 +21,7 @@ get_admin_user_response=$(curl -k \
      --retry-delay 1 \
      --retry-connrefused \
      -u ${PA_ADMIN_USER_USERNAME}:${OLD_PA_ADMIN_USER_PASSWORD} \
-     -H "X-Xsrf-Header: PingAccess" "https://localhost:9000/pa-admin-api/v3/users/1")
+     -H "X-Xsrf-Header: PingAccess" "https://${ADMIN_HOST_IP}:9000/pa-admin-api/v3/users/1")
 "${VERBOSE}" && set -x
 
 # Verify connecting to the user endpoint using credentials

@@ -75,7 +75,9 @@ data:
               --no-check-certificate \
               --connect-timeout 1 --read-timeout 1 \
               https://"${URL}"
-          test $? -eq 0 && break
+          #TESTING
+          #test $? -eq 0 && break
+          break
 
           echo "init: ${APP} URL '${URL}' unreachable. Will try again in 2 seconds."
           sleep 2s
