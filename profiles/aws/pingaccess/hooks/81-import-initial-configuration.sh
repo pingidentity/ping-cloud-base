@@ -4,7 +4,8 @@
 . "${HOOKS_DIR}/utils.lib.sh"
 
 set -e
-"${VERBOSE}" && set -x
+
+set -x
 
 echo "import-initial-configuration: pingaccess config settings"
 export_config_settings
@@ -13,7 +14,6 @@ templates_dir_path=${STAGING_DIR}/templates/81
 
 # Fetch using the -i flag to get the HTTP response
 # headers as well
-set +x
 get_admin_user_response=$(curl -k \
      -i \
      --retry ${API_RETRY_LIMIT} \
@@ -21,7 +21,7 @@ get_admin_user_response=$(curl -k \
      --retry-delay 1 \
      --retry-connrefused \
      -u ${PA_ADMIN_USER_USERNAME}:${OLD_PA_ADMIN_USER_PASSWORD} \
-     -H "X-Xsrf-Header: PingAccess" "https://${ADMIN_HOST_IP}:9000/pa-admin-api/v3/users/1")
+     -H "X-Xsrf-Header: PingAccess" "https://10.104.228.64:9000/pa-admin-api/v3/users/1")
 "${VERBOSE}" && set -x
 
 # Verify connecting to the user endpoint using credentials
