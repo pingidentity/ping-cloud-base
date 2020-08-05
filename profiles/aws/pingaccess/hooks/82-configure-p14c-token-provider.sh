@@ -11,7 +11,7 @@ is_previously_configured() {
   local create_tp_settings_response=$(make_api_request "https://localhost:9000/pa-admin-api/v3/tokenProvider/settings")
   local token_provider=$(jq -n "${create_tp_settings_response}" | jq '.type')
 
-  if test "${token_provider}" = "PingOneForCustomers"; then
+  if test "${token_provider}" = '"PingOneForCustomers"'; then
     beluga_log "configure-p14c: p14c already configured, exiting"
     return 0
   else
