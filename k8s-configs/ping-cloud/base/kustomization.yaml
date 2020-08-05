@@ -1,8 +1,18 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
+
+configMapGenerator:
+- name: pingcommon-init
+  files:
+  - scripts/init-container.sh
+  - scripts/wait-for-services.sh
+  - scripts/utils.lib.sh
+
 resources:
 - namespace.yaml
 - rbac.yaml
 - secret.yaml
-- configmap.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
