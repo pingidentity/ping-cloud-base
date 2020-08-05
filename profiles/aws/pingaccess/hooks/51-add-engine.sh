@@ -97,11 +97,13 @@ if is_secondary_cluster; then
     echo "add-engine: failed to update admin port"
     exit 1
   fi
-  if ! sed -i "s/engine.admin.configuration.host.*/engine.admin.configuration.host=${CLUSTER_CONFIG_HOST}/g" /opt/out/instance/conf/bootstrap.properties; then
+  if ! sed -i "s/engine.admin.configuration.host.*/engine.admin.configuration.host=${PA_CLUSTER_PUBLIC_HOSTNAME}/g" /opt/out/instance/conf/bootstrap.properties; then
     echo "add-engine: failed to update admin host"
     exit 1
   fi
 fi
+
+
 
 echo "add-engine: cleaning up zip"
 rm engine-config.zip
