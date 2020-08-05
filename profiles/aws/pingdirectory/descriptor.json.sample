@@ -10,22 +10,26 @@
 		"hostname": "<public-hostname>",
 		"replicas": <number-of-replicas-in-region>
 	},
-        ...
+    ...
 }
 
 # region-name - the region where the local Kubernetes cluster is located
-# hostname - the public or DNS hostname of the load balancer that's in front of the PD servers in that region
+# hostname - the public or DNS hostname of the Kubernetes headless service that's in front of the PD servers in that region
 # replicas - the number of servers in the replication topology in that region
 
 For example:
 
 {
-	"us-west-1": {
-		"hostname": "pingdirectory-admin.prod-refinitiv.us1.ping.cloud",
+	"us-west-2": {
+		"hostname": "pingdirectory-admin.foo1.bar1",
 		"replicas": 6
 	},
 	"eu-west-1": {
-		"hostname": "pingdirectory-admin.prod-refinitiv.eu1.ping.cloud",
+		"hostname": "pingdirectory-admin.foo2.bar2",
 		"replicas": 3
 	}
 }
+
+# The above descriptor implies that PD server hostnames will be:
+# pingdirectory-0.foo1.bar1 and pingdirectory-1.foo1.bar1 for region us-west-2, and
+# pingdirectory-0.foo2.bar2 and pingdirectory-1.foo2.bar2 for region eu-west-1

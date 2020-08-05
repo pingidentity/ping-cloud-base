@@ -64,8 +64,21 @@ but is required for multi-region." 1>&2
   echo "Topology descriptor JSON \"${TOPOLOGY_DESCRIPTOR_JSON}\":"
   cat "${TOPOLOGY_DESCRIPTOR_JSON}"
 
-  # For multi-region the hostnames are the same (per region), but the ports are different.
-  PD_LDAP_PORT_INC=1
+  # For multi-region:
+  # If using NLB to route traffic between the regions, the hostnames will be the same (per region), but the ports will
+  # be different. If using VPC peering (i.e. creating a super network of the subnets) for routing traffic between the
+  # regions, then each PD server will have a unique hostname but may use the same port.
+
+  # NOTE: If using NLB, then corresponding changes may be required to the 80-post-start.sh script to export port 6360,
+  # 6361, etc. on each server in a region. Since we have VPC peering in Ping Cloud, all servers can use the same LDAPS
+  # port, i.e. 1636 (so we don't expose 636${ORDINAL} anymore. The PD_LDAP_PORT and PD_REPL_PORT are set in
+  # utils.lib.sh. Only the port increment is set in this script.
+
+  # NLB settings:
+  # PD_PORT_INC=1
+
+  # VPC peer settings (same as single-region case):
+  PD_PORT_INC=0
 else
   # Single-region
 
@@ -95,11 +108,13 @@ EOF
   cat "${TOPOLOGY_DESCRIPTOR_JSON}"
 
   # For single region the hostnames are different, but the ports are the same.
-  PD_LDAP_PORT_INC=0
+  PD_PORT_INC=0
 fi
 
-# The basis for the LDAP port number to use.
-PD_LDAP_PORT_BASE=$((PD_LDAP_PORT - PD_LDAP_PORT_INC*ORDINAL))
+# The basis for the LDAP(S) and replication port numbers to use.
+PD_LDAP_PORT_BASE=$((PD_LDAP_PORT - PD_PORT_INC * ORDINAL))
+PD_LDAPS_PORT_BASE=$((PD_LDAPS_PORT - PD_PORT_INC * ORDINAL))
+REPL_PORT_BASE=$((PD_REPL_PORT - PD_PORT_INC * ORDINAL))
 
 # Build a template for offline-enable.sh configuration.
 # TODO: This could be a permanent file somewhere, but where?
@@ -138,17 +153,17 @@ jq -n --arg     descriptor_json "${TOPOLOGY_DESCRIPTOR_JSON}" \
       --arg     inst_root       "${SERVER_ROOT_DIR}"          \
       --arg     local_region    "${REGION}"                   \
       --argjson local_ordinal   "${ORDINAL}"                  \
-      --argjson inst_base       "${PD_LDAP_PORT_BASE}"        \
-      --argjson inst_inc        "${PD_LDAP_PORT_INC}"         \
+      --argjson inst_base       "${PD_LDAPS_PORT_BASE}"       \
+      --argjson inst_inc        "${PD_PORT_INC}"              \
       --argjson repl_id_base    1000                          \
       --argjson repl_id_rinc    1000                          \
       --argjson repl_id_inc     100                           \
-      --argjson ldap_port_base "${LDAP_PORT}"                 \
-      --argjson ldap_port_inc   0                             \
-      --argjson ldaps_port_base 6360                          \
-      --argjson ldaps_port_inc  1                             \
-      --argjson repl_port_base  9890                          \
-      --argjson repl_port_inc   1                             \
+      --argjson ldap_port_base  "${PD_LDAP_PORT_BASE}"        \
+      --argjson ldap_port_inc   "${PD_PORT_INC}"              \
+      --argjson ldaps_port_base "${PD_LDAPS_PORT_BASE}"       \
+      --argjson ldaps_port_inc  "${PD_PORT_INC}"              \
+      --argjson repl_port_base  "${PD_REPL_PORT_BASE}"        \
+      --argjson repl_port_inc   "${PD_PORT_INC}"              \
       --arg     ads_truststore  "${SERVER_ROOT_DIR}"/config/ads-truststore \
       --arg     admin_user      "${ADMIN_USER_NAME}"          \
       --arg     admin_pass_file "${ADMIN_USER_PASSWORD_FILE}" \

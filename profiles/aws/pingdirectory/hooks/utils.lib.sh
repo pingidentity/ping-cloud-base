@@ -66,11 +66,27 @@ function export_config_settings() {
     MULTI_CLUSTER=true
     SHORT_HOST_NAME=$(hostname)
     ORDINAL=${SHORT_HOST_NAME##*-}
-    export PD_LDAP_PORT="636${ORDINAL}"
+
+    # If going over the NLB, we'd need to use distinct ports. But with VPC peering and
+    # direct addressing, all PD servers can use the same LDAP and replication ports.
+    export PD_LDAP_HOST="${PD_CLUSTER_PUBLIC_HOSTNAME}"
+
+    # NLB settings:
+    # export PD_LDAP_PORT="389${ORDINAL}"
+    # export PD_LDAPS_PORT="636${ORDINAL}"
+    # export PD_REPL_PORT="989${ORDINAL}"
+
+    # VPC peer settings (same as single-region case):
+    export PD_LDAP_PORT="${LDAP_PORT}"
+    export PD_LDAPS_PORT="${LDAPS_PORT}"
+    export PD_REPL_PORT="${REPLICATION_PORT}"
   else
     MULTI_CLUSTER=false
-    export PD_PUBLIC_HOSTNAME=$(hostname -f)
-    export PD_LDAP_PORT="${LDAPS_PORT}"
+    export PD_LDAP_HOST="$(hostname -f)"
+
+    export PD_LDAP_PORT="${LDAP_PORT}"
+    export PD_LDAPS_PORT="${LDAPS_PORT}"
+    export PD_REPL_PORT="${REPLICATION_PORT}"
   fi
 
   is_primary_cluster &&
@@ -79,7 +95,10 @@ function export_config_settings() {
 
   echo "MULTI_CLUSTER - ${MULTI_CLUSTER}"
   echo "PRIMARY_CLUSTER - ${PRIMARY_CLUSTER}"
-  echo "LDAP_HOST_PORT - ${PD_PUBLIC_HOSTNAME}:${PD_LDAP_PORT}"
+  echo "PD_LDAP_HOST - ${PD_LDAP_HOST}"
+  echo "LDAP_PORT - ${PD_LDAP_PORT}"
+  echo "PD_LDAPS_PORT - ${PD_LDAPS_PORT}"
+  echo "REPL_PORT - ${PD_REPL_PORT}"
 }
 
 ########################################################################################################################
