@@ -105,16 +105,13 @@ initialize_replication_for_dn() {
 
   # If multi-cluster, initialize the first server in the secondary cluster from the first server in the primary cluster.
   # Initialize other servers in the secondary cluster from the first server within the same cluster.
-  if is_multi_cluster && test "${ORDINAL}" -eq 0; then
-    FROM_HOST="${PD_PRIMARY_PUBLIC_HOSTNAME}"
-    FROM_PORT=6360
-  else
+  is_multi_cluster && test "${ORDINAL}" -eq 0 &&
+    FROM_HOST="${K8S_STATEFUL_SET_NAME}-0.${PD_CLUSTER_PUBLIC_HOSTNAME}" ||
     FROM_HOST="${K8S_STATEFUL_SET_NAME}-0.${DOMAIN_NAME}"
-    FROM_PORT="${LDAPS_PORT}"
-  fi
+  FROM_PORT="${PD_LDAPS_PORT}"
 
   TO_HOST="${K8S_STATEFUL_SET_NAME}-${ORDINAL}.${DOMAIN_NAME}"
-  TO_PORT="${LDAPS_PORT}"
+  TO_PORT="${PD_LDAPS_PORT}"
 
   beluga_log "running dsreplication initialize for ${BASE_DN} from ${FROM_HOST}:${FROM_PORT} to ${TO_HOST}:${TO_PORT}"
   dsreplication initialize \
@@ -258,21 +255,15 @@ fi
 
 # Determine the hostnames and ports to use while initializing replication. When in multi-cluster mode and not in the
 # primary cluster, use the external names and ports. Otherwise, use internal names and ports.
-if is_multi_cluster; then
-  REPL_SRC_HOST="${PD_PRIMARY_PUBLIC_HOSTNAME}"
-  REPL_SRC_LDAPS_PORT=6360
-  REPL_SRC_REPL_PORT=9890
-  REPL_DST_HOST="${PD_PUBLIC_HOSTNAME}"
-  REPL_DST_LDAPS_PORT="636${ORDINAL}"
-  REPL_DST_REPL_PORT="989${ORDINAL}"
-else
+is_secondary_cluster &&
+  REPL_SRC_HOST="${PD_LDAP_HOST}" ||
   REPL_SRC_HOST="${K8S_STATEFUL_SET_NAME}-0.${DOMAIN_NAME}"
-  REPL_SRC_LDAPS_PORT="${LDAPS_PORT}"
-  REPL_SRC_REPL_PORT=${REPLICATION_PORT}
-  REPL_DST_HOST="${K8S_STATEFUL_SET_NAME}-${ORDINAL}.${DOMAIN_NAME}"
-  REPL_DST_LDAPS_PORT="${LDAPS_PORT}"
-  REPL_DST_REPL_PORT=${REPLICATION_PORT}
-fi
+
+REPL_SRC_LDAPS_PORT=${PD_LDAPS_PORT}
+REPL_SRC_REPL_PORT=${PD_REPL_PORT}
+REPL_DST_HOST="$(hostname -f)"
+REPL_DST_LDAPS_PORT="${PD_LDAPS_PORT}"
+REPL_DST_REPL_PORT=${PD_REPL_PORT}
 
 SEED_HOST="${REPL_SRC_HOST}"
 SEED_PORT="${REPL_SRC_LDAPS_PORT}"

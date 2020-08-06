@@ -69,7 +69,7 @@ function export_config_settings() {
 
     # If going over the NLB, we'd need to use distinct ports. But with VPC peering and
     # direct addressing, all PD servers can use the same LDAP and replication ports.
-    export PD_LDAP_HOST="${PD_CLUSTER_PUBLIC_HOSTNAME}"
+    export PD_LDAP_HOST="${K8S_STATEFUL_SET_NAME}-0.${PD_CLUSTER_PUBLIC_HOSTNAME}"
 
     # NLB settings:
     # export PD_LDAP_PORT="389${ORDINAL}"

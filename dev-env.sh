@@ -81,6 +81,14 @@
 # IS_MULTI_CLUSTER          | Flag indicating whether or not this is a           | false
 #                           | multi-cluster deployment.                          |
 #                           |                                                    |
+# TOPOLOGY_DESCRIPTOR_FILE  | A mandatory file that must be provided in          | No default.
+#                           | multi-cluster deployments to specify the region    |
+#                           | and the hostname to use for cluster communication  |
+#                           | and the number of replicas in that region. A       |
+#                           | sample desriptor.json file is provided in the      |
+#                           | pingdirectory profiles under profiles/aws/         |
+#                           | pingdirectory/topoology/descriptor.json.sample.    |
+#                           |                                                    |
 # PRIMARY_TENANT_DOMAIN     | The tenant's domain in the primary region.         | Same as TENANT_DOMAIN.
 #                           | Only used if IS_MULTI_CLUSTER is true.             |
 #                           |                                                    |
@@ -177,7 +185,12 @@ test -z "${IS_MULTI_CLUSTER}" && IS_MULTI_CLUSTER=false
 if "${IS_MULTI_CLUSTER}"; then
   check_env_vars "CLUSTER_BUCKET_NAME"
   if test $? -ne 0; then
-    popd
+    popd > /dev/null 2>&1
+    exit 1
+  fi
+  if test -z "${TOPOLOGY_DESCRIPTOR_FILE}" || test  ! -f "${TOPOLOGY_DESCRIPTOR_FILE}"; then
+    echo "For multi-cluster deployments, TOPOLOGY_DESCRIPTOR_FILE must be set to point to a topology descriptor file"
+    popd > /dev/null 2>&1
     exit 1
   fi
 fi
@@ -187,6 +200,7 @@ echo "Initial TENANT_NAME: ${TENANT_NAME}"
 echo "Initial ENVIRONMENT: ${ENVIRONMENT}"
 
 echo "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
+echo "Initial TOPOLOGY_DESCRIPTOR_FILE: ${TOPOLOGY_DESCRIPTOR_FILE}"
 echo "Initial CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
 echo "Initial REGION: ${REGION}"
 echo "Initial PRIMARY_REGION: ${PRIMARY_REGION}"
@@ -238,6 +252,7 @@ echo "Using TENANT_NAME: ${TENANT_NAME}"
 echo "Using ENVIRONMENT: ${ENVIRONMENT_NO_HYPHEN_PREFIX}"
 
 echo "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
+echo "Using TOPOLOGY_DESCRIPTOR_FILE: ${TOPOLOGY_DESCRIPTOR_FILE}"
 echo "Using CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
 echo "Using REGION: ${REGION}"
 echo "Using PRIMARY_REGION: ${PRIMARY_REGION}"
@@ -268,6 +283,15 @@ export NAMESPACE=ping-cloud-${ENVIRONMENT_NO_HYPHEN_PREFIX}
 "${IS_MULTI_CLUSTER}" && test "${TENANT_DOMAIN}" != "${PRIMARY_TENANT_DOMAIN}" &&
   CLUSTER_TYPE=secondary ||
   CLUSTER_TYPE=
+
+if "${IS_MULTI_CLUSTER}"; then
+  test "${TENANT_DOMAIN}" != "${PRIMARY_TENANT_DOMAIN}" &&
+    CLUSTER_TYPE=secondary ||
+    CLUSTER_TYPE=
+  export TOPOLOGY_DESCRIPTOR=$(tr -d '[:space:]' < "${TOPOLOGY_DESCRIPTOR_FILE}")
+else
+  export TOPOLOGY_DESCRIPTOR='{}'
+fi
 
 build_dev_deploy_file "${DEPLOY_FILE}" "${CLUSTER_TYPE}"
 
