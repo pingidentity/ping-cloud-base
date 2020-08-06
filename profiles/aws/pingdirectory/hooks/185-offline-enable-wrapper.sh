@@ -19,7 +19,7 @@ get_hostname_with_ordinal() {
 
   hostname_ordinal=$(echo ${hostname} | sed "s/^\([^-]*-\)${ordinal}\(\..*\)$/\1\${ordinal}\2/g")
   if [ "${hostname_ordinal}" = "${hostname}" ]; then
-    echo "185-offline-enable-wrapper.sh: Hostname \"${hostname}\" does not contain ordinal \"${ordinal}\"." 1>&2
+    beluga_log "Hostname '${hostname}' does not contain ordinal '${ordinal}'" 1>&2
     exit 1
   fi
   echo "${hostname_ordinal}"
@@ -56,12 +56,11 @@ if is_multi_cluster; then
   # Multi-region
 
   # For multi-region the descriptor file must exist.
-  if [ ! -f "${TOPOLOGY_DESCRIPTOR_JSON}" ]; then
-    echo "185-offline-enable-wrapper.sh: Topology descriptor JSON \"${TOPOLOGY_DESCRIPTOR_JSON}\" does not exist, \
-but is required for multi-region." 1>&2
+  if [ ! -f "${TOPOLOGY_DESCRIPTOR_JSON}" ] || [ -s "${TOPOLOGY_DESCRIPTOR_JSON}" ]; then
+    beluga_log "${TOPOLOGY_DESCRIPTOR_JSON} file is required in multi-cluster mode but does not exist or is empty"
     exit 1
   fi
-  echo "Topology descriptor JSON \"${TOPOLOGY_DESCRIPTOR_JSON}\":"
+  beluga_log "Topology descriptor JSON file '${TOPOLOGY_DESCRIPTOR_JSON}' contents:"
   cat "${TOPOLOGY_DESCRIPTOR_JSON}"
 
   # For multi-region the hostnames are the same (per region), but the ports are different.
@@ -70,9 +69,8 @@ else
   # Single-region
 
   # For single-region it's possible to generate a descriptor if one does not exist.
-  if [ ! -f "${TOPOLOGY_DESCRIPTOR_JSON}" ]; then
-    echo "185-offline-enable-wrapper.sh: Topology descriptor JSON \"${TOPOLOGY_DESCRIPTOR_JSON}\" does not exist. \
-Creating with contents:"
+  if [ ! -f "${TOPOLOGY_DESCRIPTOR_JSON}" ] || [ -s "${TOPOLOGY_DESCRIPTOR_JSON}" ]; then
+    beluga_log "${TOPOLOGY_DESCRIPTOR_JSON} does not exist or is empty in single-cluster mode. Creating with contents:"
     LOCAL_HOSTNAME=$(hostname -f)
     LOCAL_HOSTNAME_TEMPLATE=$(get_hostname_with_ordinal "${LOCAL_HOSTNAME}" "${ORDINAL}")
 
@@ -90,7 +88,7 @@ Creating with contents:"
 }
 EOF
   else
-    echo "185-offline-enable-wrapper.sh: Topology descriptor JSON \"${TOPOLOGY_DESCRIPTOR_JSON}\" already exists:"
+    beluga_log "${TOPOLOGY_DESCRIPTOR_JSON} already exists:"
   fi
   cat "${TOPOLOGY_DESCRIPTOR_JSON}"
 
