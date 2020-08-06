@@ -118,6 +118,9 @@ stop_container() {
 # --- MAIN SCRIPT ---
 beluga_log "starting post-start hook"
 
+# TODO: remove after debugging offline-enable
+exit 0
+
 beluga_log "running ldapsearch test on this container (${HOSTNAME})"
 waitUntilLdapUp localhost "${LDAPS_PORT}" 'cn=config'
 
