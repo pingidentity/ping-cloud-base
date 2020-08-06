@@ -266,6 +266,7 @@ patchesJson6902:
       value: ${NAMESPACE}
 
 # Configure external-dns to only own the hosted zone for the tenant domain
+# Also, change its update policy to "sync" so records are cleaned up in dev hosted zones
 - target:
     group: apps
     version: v1
@@ -273,7 +274,14 @@ patchesJson6902:
     name: external-dns
     namespace: external-dns
   patch: |-
-    - op: add
-      path: /spec/template/spec/containers/0/args/-
+    - op: replace
+      path: /spec/template/spec/containers/0/args
       value:
-        --domain-filter=${TENANT_DOMAIN}.
+        - --source=service
+        - --source=ingress
+        - --provider=aws
+        - --policy=sync
+        - --aws-zone-type=public
+        - --registry=txt
+        - --publish-internal-services
+        - --domain-filter=${TENANT_DOMAIN}.
