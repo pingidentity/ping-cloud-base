@@ -68,6 +68,9 @@ spec:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
           mountPath: /root/.ssh
+        - name: topology-descriptor
+          mountPath: /opt/staging/topology/descriptor.json
+          subPath: descriptor.json
         - name: data-dir
           mountPath: /usr/local/bin/kubectl
           subPath: kubectl
@@ -128,6 +131,11 @@ spec:
         configMap:
           name: pingcommon-init
           defaultMode: 0555
+      - name: topology-descriptor
+        configMap:
+          name: topology-descriptor
+          optional: true
+          defaultMode: 0644
       - name: ssh-id-key-secret
         secret:
           secretName: ssh-id-key-secret
@@ -231,6 +239,9 @@ spec:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
           mountPath: /root/.ssh
+        - name: topology-descriptor
+          mountPath: /opt/staging/topology/descriptor.json
+          subPath: descriptor.json
         - name: data-dir
           mountPath: /usr/local/bin/kubectl
           subPath: kubectl
@@ -286,6 +297,11 @@ spec:
         configMap:
           name: pingcommon-init
           defaultMode: 0555
+      - name: topology-descriptor
+        configMap:
+          name: topology-descriptor
+          optional: true
+          defaultMode: 0644
       - name: ssh-id-key-secret
         secret:
           secretName: ssh-id-key-secret

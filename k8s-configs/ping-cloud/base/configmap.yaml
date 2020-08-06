@@ -8,6 +8,13 @@ metadata:
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  name: topology-descriptor
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
   name: pingcommon-init
 data:
   init.sh: |-
