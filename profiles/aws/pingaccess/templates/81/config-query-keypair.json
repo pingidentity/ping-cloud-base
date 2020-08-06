@@ -10,10 +10,6 @@
   "subjectAlternativeNames": [
     {
       "name": "dNSName",
-      "value": "${CLUSTER_CONFIG_HOST}"
-    },
-    {
-      "name": "dNSName",
       "value": "${PA_CLUSTER_PUBLIC_HOSTNAME}"
     }
   ]
