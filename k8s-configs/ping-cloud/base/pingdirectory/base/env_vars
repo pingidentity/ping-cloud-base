@@ -6,6 +6,8 @@ SERVER_PROFILE_BRANCH=master
 
 REGION=us-west-2
 
+SECRETS_DIR=/usr/local/secrets
+
 ROOT_USER_PASSWORD_FILE=/usr/local/secrets/root-user-password
 ADMIN_USER_PASSWORD_FILE=/usr/local/secrets/admin-user-password
 ENCRYPTION_PASSWORD_FILE=/usr/local/secrets/encryption-password
