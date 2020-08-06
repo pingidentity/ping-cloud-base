@@ -9,11 +9,11 @@
   "signatureAlgorithm":"SHA256withRSA",
   "subjectAlternativeNames": [
     {
-      "name": "dNSName",
+      "name": "primary",
       "value": "${CLUSTER_CONFIG_HOST}"
     },
     {
-      "name": "dNSName",
+      "name": "secondary",
       "value": "${PA_CLUSTER_PUBLIC_HOSTNAME}"
     }
   ]
