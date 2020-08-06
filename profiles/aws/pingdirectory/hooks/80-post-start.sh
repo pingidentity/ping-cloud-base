@@ -65,36 +65,6 @@ change_pf_user_passwords() {
 }
 
 ########################################################################################################################
-# Enable a LDAPS connection handler at the provided port on localhost.
-#
-# Arguments
-#   ${1} -> The port on which to add an LDAPS connection handler on localhost.
-########################################################################################################################
-enable_ldap_connection_handler() {
-  PORT=${1}
-
-  beluga_log "enabling LDAPS connection handler at port ${PORT}"
-  dsconfig --no-prompt create-connection-handler \
-    --handler-name "External LDAPS Connection Handler ${PORT}" \
-    --type ldap \
-    --set enabled:true \
-    --set listen-port:${PORT} \
-    --set use-ssl:true \
-    --set ssl-cert-nickname:server-cert \
-    --set key-manager-provider:JKS \
-    --set trust-manager-provider:JKS
-  result=$?
-  beluga_log "LDAPS enable at port ${PORT} status: ${result}"
-
-  if test ${result} -eq 68; then
-    beluga_log "LDAPS connection handler already exists at port ${PORT}"
-    return 0
-  fi
-
-  return "${result}"
-}
-
-########################################################################################################################
 # Initialize replication for the provided base DN on this server.
 #
 # Arguments
@@ -137,8 +107,7 @@ initialize_replication_for_dn() {
 }
 
 ########################################################################################################################
-# Resets the force-as-master flag to false on the source or seed server if REMOVE_SERVER_FROM_TOPOLOGY_FIRST is true.
-# Then, stop the container to signal failure with the post-start sequence.
+# Stop the container to signal failure with the post-start sequence.
 ########################################################################################################################
 stop_container() {
   beluga_log "stopping the container to signal failure with post-start sequence"
@@ -152,39 +121,10 @@ beluga_log "starting post-start hook"
 beluga_log "running ldapsearch test on this container (${HOSTNAME})"
 waitUntilLdapUp localhost "${LDAPS_PORT}" 'cn=config'
 
-SHORT_HOST_NAME=$(hostname)
-DOMAIN_NAME=$(hostname -f | cut -d'.' -f2-)
-ORDINAL=${SHORT_HOST_NAME##*-}
+beluga_log "exporting config settings"
+export_config_settings
 
 beluga_log "pod ordinal: ${ORDINAL}; multi-cluster: ${IS_MULTI_CLUSTER}"
-
-beluga_log "getting server instance name from global config"
-INSTANCE_NAME=$(dsconfig --no-prompt get-global-configuration-prop \
-    --property instance-name --script-friendly | awk '{ print $2 }')
-beluga_log "server instance name from global config: ${INSTANCE_NAME}"
-
-# Add an LDAPS connection handler for external access, if necessary
-if test ! -z "${PD_PUBLIC_HOSTNAME}"; then
-  EXTERNAL_LDAPS_PORT="636${ORDINAL}"
-  enable_ldap_connection_handler "${EXTERNAL_LDAPS_PORT}"
-  test $? -ne 0 && stop_container
-
-  # Change the port, but not the hostname.
-  dsconfig --no-prompt set-server-instance-prop \
-      --instance-name "${INSTANCE_NAME}" \
-      --set ldaps-port:"${EXTERNAL_LDAPS_PORT}"
-  result=$?
-  beluga_log "change hostname/port: ${result}"
-  test $? -ne 0 && stop_container
-
-  dsconfig --no-prompt set-server-instance-listener-prop \
-      --instance-name "${INSTANCE_NAME}" \
-      --listener-name ldap-listener-mirrored-config \
-      --set server-ldap-port:"${EXTERNAL_LDAPS_PORT}"
-  result=$?
-  beluga_log "change LDAP listener port: ${result}"
-  test $? -ne 0 && stop_container
-fi
 
 # Change PF user passwords
 change_pf_user_passwords
@@ -196,6 +136,7 @@ ALLOW_PRE_ENCODED_PW_CONTROL='1.3.6.1.4.1.30221.2.5.51:true::MAOBAf8='
 change_user_password "cn=${ADMIN_USER_NAME}" "${ADMIN_USER_PASSWORD_FILE}" "${ALLOW_PRE_ENCODED_PW_CONTROL}"
 test $? -ne 0 && stop_container
 
+# TODO: test if replace-profile can handle this.
 # Update the license file, if necessary
 LICENSE_FILE_PATH="${LICENSE_DIR}/${LICENSE_FILE_NAME}"
 
@@ -252,43 +193,6 @@ if test -z "${UNINITIALIZED_DNS}"; then
   beluga_log "post-start complete"
   exit
 fi
-
-# Determine the hostnames and ports to use while initializing replication. When in multi-cluster mode and not in the
-# primary cluster, use the external names and ports. Otherwise, use internal names and ports.
-is_secondary_cluster &&
-  REPL_SRC_HOST="${PD_LDAP_HOST}" ||
-  REPL_SRC_HOST="${K8S_STATEFUL_SET_NAME}-0.${DOMAIN_NAME}"
-
-REPL_SRC_LDAPS_PORT=${PD_LDAPS_PORT}
-REPL_SRC_REPL_PORT=${PD_REPL_PORT}
-REPL_DST_HOST="$(hostname -f)"
-REPL_DST_LDAPS_PORT="${PD_LDAPS_PORT}"
-REPL_DST_REPL_PORT=${PD_REPL_PORT}
-
-SEED_HOST="${REPL_SRC_HOST}"
-SEED_PORT="${REPL_SRC_LDAPS_PORT}"
-
-beluga_log "using REPL_SRC_HOST: ${REPL_SRC_HOST}"
-beluga_log "using REPL_SRC_LDAPS_PORT: ${REPL_SRC_LDAPS_PORT}"
-beluga_log "using REPL_SRC_REPL_PORT: ${REPL_SRC_REPL_PORT}"
-beluga_log "using REPL_DST_HOST: ${REPL_DST_HOST}"
-beluga_log "using REPL_DST_LDAPS_PORT: ${REPL_DST_LDAPS_PORT}"
-beluga_log "using REPL_DST_REPL_PORT: ${REPL_DST_REPL_PORT}"
-
-# If in multi-region mode, wait for the replication source and target servers to be up and running through the
-# load balancer before initializing replication.
-if is_multi_cluster; then
-  beluga_log "waiting for the replication seed server ${REPL_SRC_HOST}:${REPL_SRC_LDAPS_PORT}"
-  waitUntilLdapUp "${REPL_SRC_HOST}" "${REPL_SRC_LDAPS_PORT}" 'cn=config'
-
-  beluga_log "waiting for the replication target server ${REPL_DST_HOST}:${REPL_DST_LDAPS_PORT}"
-  waitUntilLdapUp "${REPL_DST_HOST}" "${REPL_DST_LDAPS_PORT}" 'cn=config'
-fi
-
-# It is possible that the persistent volume where we are tracking replicated DNs is gone. In that case, we must
-# delete this server from the topology registry. Check the source server before proceeding.
-beluga_log "checking source server to see if this server must first be removed from the topology"
-REMOVE_SERVER_FROM_TOPOLOGY_FIRST=false
 
 beluga_log "replication will be initialized for base DNs: ${UNINITIALIZED_DNS}"
 

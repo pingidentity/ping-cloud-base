@@ -6,31 +6,11 @@
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 
-########################################################################################################################
-# Find the ordinal in a hostname and return that hostname with the ordinal replaced with "${ordinal}".
-#
-# Arguments
-#   ${1} -> The hostname containing an ordinal.
-#   ${2} -> The ordinal to look far (an integer).
-########################################################################################################################
-get_hostname_with_ordinal() {
-  local hostname="${1}"
-  local ordinal="${2}"
-
-  hostname_ordinal=$(echo ${hostname} | sed "s/^\([^-]*-\)${ordinal}\(\..*\)$/\1\${ordinal}\2/g")
-  if [ "${hostname_ordinal}" = "${hostname}" ]; then
-    beluga_log "Hostname '${hostname}' does not contain ordinal '${ordinal}'" 1>&2
-    exit 1
-  fi
-  echo "${hostname_ordinal}"
-}
+beluga_log "exporting config settings"
+export_config_settings
 
 # This a wrapper for 185-offline-enable.sh. To enable replication offline call
 # this script without any arguments.
-
-# A zero base number that identifies this pod (typically appended to the name).
-SHORT_HOST_NAME=$(hostname)
-ORDINAL=${SHORT_HOST_NAME##*-}
 
 # The total number of replicating pods.
 NUM_REPLICAS=$(kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
@@ -51,7 +31,6 @@ fi
 # spaces.
 DNS_TO_INITIALIZE=$(echo "${DN_LIST}" | tr ';' ' ')
 
-# Hostnames and ports are a function fo multi-cluster.
 if is_multi_cluster; then
   # Multi-region
 
@@ -60,42 +39,27 @@ if is_multi_cluster; then
     beluga_log "${TOPOLOGY_DESCRIPTOR_JSON} file is required in multi-cluster mode but does not exist or is empty"
     exit 1
   fi
+
   beluga_log "Topology descriptor JSON file '${TOPOLOGY_DESCRIPTOR_JSON}' contents:"
   cat "${TOPOLOGY_DESCRIPTOR_JSON}"
-
-  # For multi-region:
-  # If using NLB to route traffic between the regions, the hostnames will be the same (per region), but the ports will
-  # be different. If using VPC peering (i.e. creating a super network of the subnets) for routing traffic between the
-  # regions, then each PD server will have a unique hostname but may use the same port.
-
-  # NOTE: If using NLB, then corresponding changes may be required to the 80-post-start.sh script to export port 6360,
-  # 6361, etc. on each server in a region. Since we have VPC peering in Ping Cloud, all servers can use the same LDAPS
-  # port, i.e. 1636 (so we don't expose 636${ORDINAL} anymore. The PD_LDAP_PORT and PD_REPL_PORT are set in
-  # utils.lib.sh. Only the port increment is set in this script.
 
   # NLB settings:
   # PD_PORT_INC=1
 
   # VPC peer settings (same as single-region case):
   PD_PORT_INC=0
+
 else
   # Single-region
 
   # For single-region it's possible to generate a descriptor if one does not exist.
   if [ ! -f "${TOPOLOGY_DESCRIPTOR_JSON}" ] || [ -s "${TOPOLOGY_DESCRIPTOR_JSON}" ]; then
     beluga_log "${TOPOLOGY_DESCRIPTOR_JSON} does not exist or is empty in single-cluster mode. Creating with contents:"
-    LOCAL_HOSTNAME=$(hostname -f)
-    LOCAL_HOSTNAME_TEMPLATE=$(get_hostname_with_ordinal "${LOCAL_HOSTNAME}" "${ORDINAL}")
 
-    NUM_REPLICAS=$(kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
-
-    mkdir -p $(dirname "${TOPOLOGY_DESCRIPTOR_JSON}")
-    # TODO: Consider using "jq" for more robust escaping of special characters.
-    # TODO: Is it ok that the hostname is not really the hostname, but has "${ordinal}" in it?
     cat <<EOF > "${TOPOLOGY_DESCRIPTOR_JSON}"
 {
     "${REGION}": {
-        "hostname": "${LOCAL_HOSTNAME_TEMPLATE}",
+        "hostname": "${PD_CLUSTER_DOMAIN_NAME}",
         "replicas": ${NUM_REPLICAS}
     }
 }
@@ -103,16 +67,17 @@ EOF
   else
     beluga_log "${TOPOLOGY_DESCRIPTOR_JSON} already exists:"
   fi
+
   cat "${TOPOLOGY_DESCRIPTOR_JSON}"
 
-  # For single region the hostnames are different, but the ports are the same.
+  # For single region, the hostnames are different, but the ports are the same.
   PD_PORT_INC=0
 fi
 
 # The basis for the LDAP(S) and replication port numbers to use.
 PD_LDAP_PORT_BASE=$((PD_LDAP_PORT - PD_PORT_INC * ORDINAL))
 PD_LDAPS_PORT_BASE=$((PD_LDAPS_PORT - PD_PORT_INC * ORDINAL))
-REPL_PORT_BASE=$((PD_REPL_PORT - PD_PORT_INC * ORDINAL))
+PD_REPL_PORT_BASE=$((PD_REPL_PORT - PD_PORT_INC * ORDINAL))
 
 # Build a template for offline-enable.sh configuration.
 # TODO: This could be a permanent file somewhere, but where?
@@ -152,7 +117,7 @@ jq -n --arg     descriptor_json "${TOPOLOGY_DESCRIPTOR_JSON}" \
       --arg     local_region    "${REGION}"                   \
       --argjson local_ordinal   "${ORDINAL}"                  \
       --argjson inst_base       "${PD_LDAPS_PORT_BASE}"       \
-      --argjson inst_inc        "${PD_PORT_INC}"              \
+      --argjson inst_inc        1                             \
       --argjson repl_id_base    1000                          \
       --argjson repl_id_rinc    1000                          \
       --argjson repl_id_inc     100                           \

@@ -62,14 +62,22 @@ function skbnCopy() {
 # Export values for PingDirectory configuration settings based on single vs. multi cluster.
 ########################################################################################################################
 function export_config_settings() {
-  if is_multi_cluster; then
-    MULTI_CLUSTER=true
-    SHORT_HOST_NAME=$(hostname)
-    ORDINAL=${SHORT_HOST_NAME##*-}
+  export SHORT_HOST_NAME=$(hostname)
+  export ORDINAL=${SHORT_HOST_NAME##*-}
+  export LOCAL_DOMAIN_NAME="$(hostname -f | cut -d'.' -f2-)"
 
-    # If going over the NLB, we'd need to use distinct ports. But with VPC peering and
-    # direct addressing, all PD servers can use the same LDAP and replication ports.
-    export PD_LDAP_HOST="${K8S_STATEFUL_SET_NAME}-0.${PD_CLUSTER_PUBLIC_HOSTNAME}"
+  # For multi-region:
+  # If using NLB to route traffic between the regions, the hostnames will be the same per region (i.e. that of the NLB),
+  # but the ports will be different. If using VPC peering (i.e. creating a super network of the subnets) for routing
+  # traffic between the regions, then each PD server will be directly addressable, and so will have a unique hostname
+  # and may use the same port.
+
+  # NOTE: If using NLB, then corresponding changes will be required to the 80-post-start.sh script to export port 6360,
+  # 6361, etc. on each server in a region. Since we have VPC peering in Ping Cloud, all servers can use the same LDAPS
+  # port, i.e. 1636, so we don't expose 636${ORDINAL} anymore.
+
+  if is_multi_cluster; then
+    export MULTI_CLUSTER=true
 
     # NLB settings:
     # export PD_LDAP_PORT="389${ORDINAL}"
@@ -80,25 +88,34 @@ function export_config_settings() {
     export PD_LDAP_PORT="${LDAP_PORT}"
     export PD_LDAPS_PORT="${LDAPS_PORT}"
     export PD_REPL_PORT="${REPLICATION_PORT}"
+
+    export PD_CLUSTER_DOMAIN_NAME="${PD_CLUSTER_PUBLIC_HOSTNAME}"
+    if is_primary_cluster; then
+      export PD_SEED_LDAP_HOST="${K8S_STATEFUL_SET_NAME}-0.${LOCAL_DOMAIN_NAME}"
+      export PRIMARY_CLUSTER=true
+    else
+      export PD_SEED_LDAP_HOST="${K8S_STATEFUL_SET_NAME}-0.${PD_CLUSTER_DOMAIN_NAME}"
+      export PRIMARY_CLUSTER=false
+    fi
   else
-    MULTI_CLUSTER=false
-    export PD_LDAP_HOST="$(hostname -f)"
+    export MULTI_CLUSTER=false
+    export PRIMARY_CLUSTER=true
 
     export PD_LDAP_PORT="${LDAP_PORT}"
     export PD_LDAPS_PORT="${LDAPS_PORT}"
     export PD_REPL_PORT="${REPLICATION_PORT}"
-  fi
 
-  is_primary_cluster &&
-    PRIMARY_CLUSTER=true ||
-    PRIMARY_CLUSTER=false
+    export PD_CLUSTER_DOMAIN_NAME="${LOCAL_DOMAIN_NAME}"
+    export PD_SEED_LDAP_HOST="${K8S_STATEFUL_SET_NAME}-0.${PD_CLUSTER_DOMAIN_NAME}"
+  fi
 
   echo "MULTI_CLUSTER - ${MULTI_CLUSTER}"
   echo "PRIMARY_CLUSTER - ${PRIMARY_CLUSTER}"
-  echo "PD_LDAP_HOST - ${PD_LDAP_HOST}"
-  echo "LDAP_PORT - ${PD_LDAP_PORT}"
+  echo "PD_LDAP_PORT - ${PD_LDAP_PORT}"
   echo "PD_LDAPS_PORT - ${PD_LDAPS_PORT}"
-  echo "REPL_PORT - ${PD_REPL_PORT}"
+  echo "PD_REPL_PORT - ${PD_REPL_PORT}"
+  echo "PD_CLUSTER_DOMAIN_NAME - ${PD_CLUSTER_DOMAIN_NAME}"
+  echo "PD_SEED_LDAP_HOST - ${PD_SEED_LDAP_HOST}"
 }
 
 ########################################################################################################################
