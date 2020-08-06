@@ -10,7 +10,7 @@
   "signatureAlgorithm":"SHA256withRSA",
   "subjectAlternativeNames": [
     {
-      "name": "otherName",
+      "name": "dNSName",
       "value": "${PA_CLUSTER_PUBLIC_HOSTNAME}"
     },
     {
