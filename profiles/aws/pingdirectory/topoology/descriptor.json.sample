@@ -3,33 +3,35 @@
 
 {
 	"<region>": {
-		"hostname": "<public-hostname>",
+		"hostname": "<external-dns-name>",
 		"replicas": <number-of-replicas-in-region>
 	},
 	"<region>": {
-		"hostname": "<public-hostname>",
+		"hostname": "<external-dns-name>",
 		"replicas": <number-of-replicas-in-region>
 	},
     ...
 }
 
 # region-name - the region where the local Kubernetes cluster is located
-# hostname - the public or DNS hostname of the Kubernetes headless service that's in front of the PD servers in that region
+# external-dns-name - the external DNS hostname of the Kubernetes headless service that's in front of the servers in that region
 # replicas - the number of servers in the replication topology in that region
 
 For example:
 
 {
 	"us-west-2": {
-		"hostname": "pingdirectory-admin.foo1.bar1",
+		"hostname": "pingdirectory-cluster.foo1.bar1",
 		"replicas": 6
 	},
 	"eu-west-1": {
-		"hostname": "pingdirectory-admin.foo2.bar2",
+		"hostname": "pingdirectory-cluster.foo2.bar2",
 		"replicas": 3
 	}
 }
 
-# The above descriptor implies that PD server hostnames will be:
-# pingdirectory-0.foo1.bar1 and pingdirectory-1.foo1.bar1 for region us-west-2, and
-# pingdirectory-0.foo2.bar2 and pingdirectory-1.foo2.bar2 for region eu-west-1
+# The above descriptor implies that PingDirectory server hostnames will be:
+#   - pingdirectory-0.pingdirectory-cluster.foo1.bar1, pingdirectory-1.pingdirectory-cluster.foo1.bar1, etc. (6 total)
+#     in region us-west-2
+#   - pingdirectory-0.pingdirectory-cluster.foo2.bar2, pingdirectory-1.pingdirectory-cluster.foo2.bar2, etc. (3 total)
+#     in region eu-west-1

@@ -82,12 +82,14 @@
 #                           | multi-cluster deployment.                          |
 #                           |                                                    |
 # TOPOLOGY_DESCRIPTOR_FILE  | A mandatory file that must be provided in          | No default.
-#                           | multi-cluster deployments to specify the region    |
-#                           | and the hostname to use for cluster communication  |
-#                           | and the number of replicas in that region. A       |
-#                           | sample desriptor.json file is provided in the      |
+#                           | multi-cluster dev environments. This file must     |
+#                           | specify the region and the hostname to use for     |
+#                           | cluster communication and the number of replicas   |
+#                           | in that region. A sample file is provided in the   |
 #                           | pingdirectory profiles under profiles/aws/         |
 #                           | pingdirectory/topoology/descriptor.json.sample.    |
+#                           | This file will be mounted into the Ping containers |
+#                           | at /opt/staging/topology/descriptor.json           |
 #                           |                                                    |
 # PRIMARY_TENANT_DOMAIN     | The tenant's domain in the primary region.         | Same as TENANT_DOMAIN.
 #                           | Only used if IS_MULTI_CLUSTER is true.             |
@@ -188,7 +190,7 @@ if "${IS_MULTI_CLUSTER}"; then
     popd > /dev/null 2>&1
     exit 1
   fi
-  if test -z "${TOPOLOGY_DESCRIPTOR_FILE}" || test  ! -f "${TOPOLOGY_DESCRIPTOR_FILE}"; then
+  if test -z "${TOPOLOGY_DESCRIPTOR_FILE}" || test ! -f "${TOPOLOGY_DESCRIPTOR_FILE}"; then
     echo "For multi-cluster deployments, TOPOLOGY_DESCRIPTOR_FILE must be set to point to a topology descriptor file"
     popd > /dev/null 2>&1
     exit 1
@@ -285,12 +287,8 @@ export NAMESPACE=ping-cloud-${ENVIRONMENT_NO_HYPHEN_PREFIX}
   CLUSTER_TYPE=
 
 if "${IS_MULTI_CLUSTER}"; then
-  test "${TENANT_DOMAIN}" != "${PRIMARY_TENANT_DOMAIN}" &&
-    CLUSTER_TYPE=secondary ||
-    CLUSTER_TYPE=
+  test "${TENANT_DOMAIN}" != "${PRIMARY_TENANT_DOMAIN}" && CLUSTER_TYPE=secondary
   export TOPOLOGY_DESCRIPTOR=$(tr -d '[:space:]' < "${TOPOLOGY_DESCRIPTOR_FILE}")
-else
-  export TOPOLOGY_DESCRIPTOR='{}'
 fi
 
 build_dev_deploy_file "${DEPLOY_FILE}" "${CLUSTER_TYPE}"
