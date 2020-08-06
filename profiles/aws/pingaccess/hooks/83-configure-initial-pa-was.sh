@@ -8,6 +8,18 @@
 TEMPLATES_DIR_PATH=${STAGING_DIR}/templates/83
 ENDPOINT="https://localhost:9000/pa-admin-api/v3"
 
+is_previously_configured() {
+  local get_applications_response=$(make_api_request "${ENDPOINT}"/applications)
+  local applications_count=$(jq -n "${get_applications_response}" | jq '.items | length')
+
+  if test "${applications_count}" -ge 5; then
+    beluga_log "pa-was already configured, exiting"
+    return 0
+  else
+    return 1
+  fi
+}
+
 create_web_session() {
   local web_session_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/web-session-payload.json)
   local resource=webSessions
@@ -210,7 +222,7 @@ is_production_environment() {
   test "${ENVIRONMENT_TYPE}"
 }
 
-
+is_previously_configured && exit 0
 create_web_session
 create_pa_virtual_host
 create_pf_virtual_host
