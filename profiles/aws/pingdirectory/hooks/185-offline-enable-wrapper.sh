@@ -116,7 +116,7 @@ jq -n --arg     descriptor_json "${TOPOLOGY_DESCRIPTOR_JSON}" \
       --arg     inst_root       "${SERVER_ROOT_DIR}"          \
       --arg     local_region    "${REGION}"                   \
       --argjson local_ordinal   "${ORDINAL}"                  \
-      --argjson inst_base       "${PD_LDAPS_PORT_BASE}"       \
+      --argjson inst_base       0                             \
       --argjson inst_inc        1                             \
       --argjson repl_id_base    1000                          \
       --argjson repl_id_rinc    1000                          \

@@ -424,6 +424,7 @@ for region in ${regions}; do
 
     # Hostnames with "${ordinal}", if any, are replaced with the correct ordinal.
     hostname=$(export ordinal; echo "${hostname_template}" | envsubst)
+    hostname="${K8S_STATEFUL_SET_NAME}"-${inst_num}.${hostname}
 
     replica_ids=""
     # Replication IDs base given by ordinal.
