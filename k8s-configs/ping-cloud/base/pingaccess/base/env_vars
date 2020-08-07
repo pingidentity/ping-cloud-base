@@ -6,8 +6,6 @@ SERVER_PROFILE_BRANCH=master
 
 REGION=us-west-2
 
-SECRETS_DIR=/usr/local/secrets
-
 PA_ADMIN_SERVER=pingaccess-admin
 PA_ADMIN_PORT=9000
 
