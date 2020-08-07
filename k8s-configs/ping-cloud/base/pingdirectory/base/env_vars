@@ -5,6 +5,7 @@ SERVER_PROFILE_PATH=profiles/aws/pingdirectory
 SERVER_PROFILE_BRANCH=master
 
 REGION=us-west-2
+LOCATION=Austin
 
 ROOT_USER_PASSWORD_FILE=/usr/local/secrets/root-user-password
 ADMIN_USER_PASSWORD_FILE=/usr/local/secrets/admin-user-password
@@ -49,3 +50,5 @@ K8S_TAIL_LOG_FILES=/opt/out/instance/logs/server.out /opt/out/instance/logs/acce
 
 # This JSON file must exist for multi-region.
 TOPOLOGY_DESCRIPTOR_JSON=/opt/staging/topology/descriptor.json
+
+SECRETS_DIR=/usr/local/secrets

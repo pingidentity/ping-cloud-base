@@ -13,18 +13,55 @@ is_previously_configured() {
   local applications_count=$(jq -n "${get_applications_response}" | jq '.items | length')
 
   if test "${applications_count}" -ge 5; then
-    beluga_log "pa-was already configured, exiting"
+    beluga_log "pa-was already configured"
     return 0
   else
     return 1
   fi
 }
 
+p14c_credentials_changed() {
+  get_web_session_clientId
+
+  if test "${CLIENT_ID}" != "${P14C_CLIENT_ID}"; then
+    beluga_log "P14C credentials changed"
+    return 0
+  else
+    beluga_log "P14C credentials unchanged"
+    return 1
+  fi
+}
+
+get_web_session_clientId() {
+  local resource=webSessions
+  local id=10
+  CLIENT_ID= # Global scope
+
+  beluga_log "Getting Web Session"
+  local response=$(get_entity "${resource}" "${id}")
+  beluga_log "make_api_request response..."
+  beluga_log "${response}"
+
+  CLIENT_ID=$(jq -n "${response}" | jq '.clientCredentials["clientId"]')
+  CLIENT_ID=$(strip_double_quotes "${CLIENT_ID}")
+}
+
+update_web_session() {
+  local web_session_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/web-session-payload.json)
+  local resource=webSessions
+  local id=10
+
+  beluga_log "Updating Web Session"
+  set +x  # Hide P14C client secret in logs
+  update_entity "${web_session_payload}" "${resource}" "${id}"
+  "${VERBOSE}" && set -x
+}
+
 create_web_session() {
   local web_session_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/web-session-payload.json)
   local resource=webSessions
 
-  beluga_log "configure-pa-was: Creating Web Session"
+  beluga_log "Creating Web Session"
   set +x  # Hide P14C client secret in logs
   create_entity "${web_session_payload}" "${resource}"
   "${VERBOSE}" && set -x
@@ -35,7 +72,7 @@ create_pa_virtual_host() {
   export VHOST_HOST="${PA_ADMIN_PUBLIC_HOSTNAME}"
   export VHOST_PORT=443
 
-  beluga_log "configure-pa-was: Creating PA Virtual Host"
+  beluga_log "Creating PA Virtual Host"
   create_virtual_host
 }
 
@@ -44,7 +81,7 @@ create_pf_virtual_host() {
   export VHOST_HOST="${PF_ADMIN_PUBLIC_HOSTNAME}"
   export VHOST_PORT=443
 
-  beluga_log "configure-pa-was: Creating PF Virtual Host"
+  beluga_log "Creating PF Virtual Host"
   create_virtual_host
 }
 
@@ -53,7 +90,7 @@ create_kibana_virtual_host() {
   export VHOST_HOST="${KIBANA_PUBLIC_HOSTNAME}"
   export VHOST_PORT=443
 
-  beluga_log "configure-pa-was: Creating Kibana Virtual Host"
+  beluga_log "Creating Kibana Virtual Host"
   create_virtual_host
 }
 
@@ -62,7 +99,7 @@ create_grafana_virtual_host() {
   export VHOST_HOST="${GRAFANA_PUBLIC_HOSTNAME}"
   export VHOST_PORT=443
 
-  beluga_log "configure-pa-was: Creating Grafana Virtual Host"
+  beluga_log "Creating Grafana Virtual Host"
   create_virtual_host
 }
 
@@ -71,7 +108,7 @@ create_prometheus_virtual_host() {
   export VHOST_HOST="${PROMETHEUS_PUBLIC_HOSTNAME}"
   export VHOST_PORT=443
 
-  beluga_log "configure-pa-was: Creating Prometheus Virtual Host"
+  beluga_log "Creating Prometheus Virtual Host"
   create_virtual_host
 }
 
@@ -89,7 +126,7 @@ create_pa_site() {
   export SITE_TARGET="pingaccess-admin:9000"
   export SITE_SECURE=true
 
-  beluga_log "configure-pa-was: Creating PA Site"
+  beluga_log "Creating PA Site"
   create_site
 }
 
@@ -99,7 +136,7 @@ create_pf_site() {
   export SITE_TARGET="pingfederate-admin:9999"
   export SITE_SECURE=true
 
-  beluga_log "configure-pa-was: Creating PF Site"
+  beluga_log "Creating PF Site"
   create_site
 }
 
@@ -109,7 +146,7 @@ create_kibana_site() {
   export SITE_TARGET="kibana.elastic-stack-logging:5601"
   export SITE_SECURE=false
 
-  beluga_log "configure-pa-was: Creating Kibana Site"
+  beluga_log "Creating Kibana Site"
   create_site
 }
 
@@ -119,7 +156,7 @@ create_grafana_site() {
   export SITE_TARGET="grafana.prometheus:3000"
   export SITE_SECURE=false
 
-  beluga_log "configure-pa-was: Creating Grafana Site"
+  beluga_log "Creating Grafana Site"
   create_site
 }
 
@@ -129,7 +166,7 @@ create_prometheus_site() {
   export SITE_TARGET="prometheus.prometheus:9090"
   export SITE_SECURE=false
 
-  beluga_log "configure-pa-was: Creating Prometheus Site"
+  beluga_log "Creating Prometheus Site"
   create_site
 }
 
@@ -148,7 +185,7 @@ create_pa_application() {
   export VIRTUAL_HOST_ID=10
   export SITE_ID=10
 
-  beluga_log "configure-pa-was: Creating PA Application"
+  beluga_log "Creating PA Application"
   create_application
 }
 
@@ -159,7 +196,7 @@ create_pf_application() {
   export VIRTUAL_HOST_ID=20
   export SITE_ID=20
 
-  beluga_log "configure-pa-was: Creating PF Application"
+  beluga_log "Creating PF Application"
   create_application
 }
 
@@ -170,7 +207,7 @@ create_kibana_application() {
   export VIRTUAL_HOST_ID=21
   export SITE_ID=21
 
-  beluga_log "configure-pa-was: Creating Kibana Application"
+  beluga_log "Creating Kibana Application"
   create_application
 }
 
@@ -181,7 +218,7 @@ create_grafana_application() {
   export VIRTUAL_HOST_ID=22
   export SITE_ID=22
 
-  beluga_log "configure-pa-was: Creating Grafana Application"
+  beluga_log "Creating Grafana Application"
   create_application
 }
 
@@ -192,7 +229,7 @@ create_prometheus_application() {
   export VIRTUAL_HOST_ID=23
   export SITE_ID=23
 
-  beluga_log "configure-pa-was: Creating Prometheus Application"
+  beluga_log "Creating Prometheus Application"
   create_application
 }
 
@@ -214,15 +251,37 @@ create_entity() {
   local payload="${1}"
   local resource="${2}"
 
-  beluga_log "configure-pa-was: make_api_request response..."
+  beluga_log "make_api_request response..."
   make_api_request -s -X POST -d "${payload}" "${ENDPOINT}"/"${resource}"
+}
+
+update_entity() {
+  local payload="${1}"
+  local resource="${2}"
+  local id="${3}"
+
+  beluga_log "make_api_request response..."
+  make_api_request -s -X PUT -d "${payload}" "${ENDPOINT}"/"${resource}"/"${id}"
+}
+
+get_entity() {
+  local resource="${1}"
+  local id="${2}"
+
+  make_api_request "${ENDPOINT}"/"${resource}"/"${id}"
 }
 
 is_production_environment() {
   test "${ENVIRONMENT_TYPE}"
 }
 
-is_previously_configured && exit 0
+if is_previously_configured; then
+  if p14c_credentials_changed; then
+    update_web_session
+  fi
+  exit 0
+fi
+
 create_web_session
 create_pa_virtual_host
 create_pf_virtual_host
@@ -240,4 +299,4 @@ create_kibana_application
 create_grafana_application
 create_prometheus_application
 
-beluga_log "configure-pa-was: Configuration complete"
+beluga_log "Configuration complete"

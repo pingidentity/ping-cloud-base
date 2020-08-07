@@ -10,7 +10,7 @@ if test "${OPERATIONAL_MODE}" != "CLUSTERED_CONSOLE"; then
   exit 0
 fi
 
-echo "post-start: pingaccess config settings"
+beluga_log "pingaccess config settings"
 export_config_settings
 
 # Remove the marker file before running post-start initialization.
@@ -25,9 +25,9 @@ pingaccess_admin_wait
 # If ADMIN_CONFIGURATION_COMPLETE does not exist then set initial configuration.
 ADMIN_CONFIGURATION_COMPLETE=${OUT_DIR}/instance/ADMIN_CONFIGURATION_COMPLETE
 if ! test -f "${ADMIN_CONFIGURATION_COMPLETE}"; then
-  echo "post-start: ${ADMIN_CONFIGURATION_COMPLETE} not present"
+  beluga_log "${ADMIN_CONFIGURATION_COMPLETE} not present"
 
-  echo "post-start: Starting hook: ${HOOKS_DIR}/81-import-initial-configuration.sh"
+  beluga_log "Starting hook: ${HOOKS_DIR}/81-import-initial-configuration.sh"
   sh "${HOOKS_DIR}/81-import-initial-configuration.sh"
   if test $? -ne 0; then
     exit 1
@@ -48,14 +48,31 @@ if ! test -f "${ADMIN_CONFIGURATION_COMPLETE}"; then
 
   touch ${ADMIN_CONFIGURATION_COMPLETE}
 
-# Since this isn't initial deployment, change password if from disk is different than the desired value.
-elif test $(comparePasswordDiskWithVariable) -eq 0; then
-
-  echo "post-start: changing PA admin password"
-  changePassword
-
 else
-  echo "post-start: not changing PA admin password"
+
+  # Since this isn't initial deployment, change password if from disk is different than the desired value.
+  if test $(comparePasswordDiskWithVariable) -eq 0; then
+    beluga_log "changing PA admin password"
+    changePassword
+  else
+    beluga_log "not changing PA admin password"
+  fi
+
+  # If P14C environment variables have changed, update the config with new values
+  if isPingaccessWas; then
+    beluga_log "Starting hook: ${HOOKS_DIR}/82-configure-p14c-token-provider.sh"
+    sh "${HOOKS_DIR}/82-configure-p14c-token-provider.sh"
+    if test $? -ne 0; then
+      exit 1
+    fi
+
+    beluga_log "Starting hook: ${HOOKS_DIR}/83-configure-initial-pa-was.sh"
+    sh "${HOOKS_DIR}/83-configure-initial-pa-was.sh"
+    if test $? -ne 0; then
+      exit 1
+    fi
+  fi
+
 fi
 
 # Update the admin config host
@@ -67,7 +84,7 @@ sh "${HOOKS_DIR}/82-add-acme-cert.sh"
 test $? -ne 0 && exit 1
 
 # Upload a backup right away after starting the server.
-echo "post-start: Starting hook: ${HOOKS_DIR}/90-upload-backup-s3.sh"
+beluga_log "Starting hook: ${HOOKS_DIR}/90-upload-backup-s3.sh"
 sh "${HOOKS_DIR}/90-upload-backup-s3.sh"
 BACKUP_STATUS=${?}
 

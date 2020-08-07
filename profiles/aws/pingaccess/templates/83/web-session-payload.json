@@ -19,10 +19,6 @@
     }
   },
   "scopes": [
-    "address",
-    "email",
-    "phone",
-    "profile",
     "account_type"
   ],
   "audience": "ping",
