@@ -149,6 +149,7 @@ def validate_namespace() -> str:
     
     return namespace
 
+
 # Goal:
 #
 # The objective of this script is to collate the IP addresses of the PingFederate Admin 
@@ -200,7 +201,8 @@ def main():
 
     domains = dig_mgr.get_k8s_domain_to_ip_mappings(namespace, domain_name)
     fqdns = create_fqdns(domains)
-    name_to_ip_addrs = dig_mgr.fetch_name_to_ip_address(fqdns, "Query Kubernetes Core DNS to get PingFederate cluster IP addresses")
+    name_to_ip_addrs = dig_mgr.fetch_name_to_ip_address(fqdns, "Query Kubernetes Core DNS to get PingFederate cluster "
+                                                               "IP addresses")
     update_route53(namespace, domain_name, name_to_ip_addrs)
 
     logger.log("Execution completed successfully.")
