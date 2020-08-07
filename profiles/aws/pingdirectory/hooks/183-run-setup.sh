@@ -52,7 +52,7 @@ if test "${MANAGE_PROFILE_STATUS}" -ne 0; then
 fi
 
 # Enable replication offline.
-"${HOOKS_DIR}"/185-offline-enable-wrapper.sh
+# "${HOOKS_DIR}"/185-offline-enable-wrapper.sh
 
 # Replicated base DNs must exist before starting the server now that
 # replication is enabled before start since otherwise a generation ID of -1
