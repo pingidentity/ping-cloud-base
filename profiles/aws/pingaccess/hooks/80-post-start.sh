@@ -43,11 +43,26 @@ if ! test -f "${ADMIN_CONFIGURATION_COMPLETE}"; then
 
   touch ${ADMIN_CONFIGURATION_COMPLETE}
 
-# Since this isn't initial deployment, change password if from disk is different than the desired value.
-elif test $(comparePasswordDiskWithVariable) -eq 0; then
+else
 
-  changePassword
-  
+  # Since this isn't initial deployment, change password if from disk is different than the desired value.
+  if test $(comparePasswordDiskWithVariable) -eq 0; then
+    changePassword
+  fi
+
+  # If P14C environment variables have changed, update the config with new values
+  if isPingaccessWas; then
+    sh "${HOOKS_DIR}/82-configure-p14c-token-provider.sh"
+    if test $? -ne 0; then
+      exit 1
+    fi
+
+    sh "${HOOKS_DIR}/83-configure-initial-pa-was.sh"
+    if test $? -ne 0; then
+      exit 1
+    fi
+  fi
+
 fi
 
 # Upload a backup right away after starting the server.
