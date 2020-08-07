@@ -167,18 +167,18 @@ if [ -z "${cert_base64}" ]; then
 fi
 
 cat <<EOF > "${template}"
-dn: cn=\${hostname}-\${inst_num},cn=Server Instances,cn=Topology,cn=config
+dn: cn=\${hostname},cn=Server Instances,cn=Topology,cn=config
 changeType: add
 objectClass: ds-cfg-branch
 objectClass: ds-mirrored-object
 objectClass: top
 objectClass: ds-cfg-server-instance
 objectClass: ds-cfg-data-store-server-instance
-cn: \${hostname}-\${inst_num}
+cn: \${hostname}
 ds-cfg-server-root: ${inst_root}
 ds-cfg-server-version: ${version}
-ds-cfg-cluster-name: cluster_\${hostname}-\${inst_num}
-ds-cfg-server-instance-name: \${hostname}-\${inst_num}
+ds-cfg-cluster-name: cluster_\${hostname}
+ds-cfg-server-instance-name: \${hostname}
 ds-cfg-inter-server-certificate:: ${cert_base64}
 ds-cfg-server-instance-location: \${region}
 ds-cfg-hostname: \${hostname}
@@ -277,8 +277,9 @@ for region in ${regions}; do
 
     # More sophisticated quoting could be done, but won't be needed unless
     # unusual characters are used for the name.
-    si_cn="${hostname}-${inst_num}"
+    si_cn="${hostname}"
     replication_members="${replication_members} ${si_cn}"
+
     si_dn="cn=${si_cn},cn=Server Instances,cn=Topology,cn=config"
     si_dn_quoted=$(escape_regex "${si_dn}") # Quoted for regex.
 
