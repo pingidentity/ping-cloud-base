@@ -35,13 +35,10 @@ if is_multi_cluster; then
   # Multi-region
 
   # For multi-region the descriptor file must exist.
-  if [ ! -f "${TOPOLOGY_DESCRIPTOR_JSON}" ] || [ -s "${TOPOLOGY_DESCRIPTOR_JSON}" ]; then
+  if [ ! -f "${TOPOLOGY_DESCRIPTOR_JSON}" ] || [ ! -s "${TOPOLOGY_DESCRIPTOR_JSON}" ]; then
     beluga_log "${TOPOLOGY_DESCRIPTOR_JSON} file is required in multi-cluster mode but does not exist or is empty"
     exit 1
   fi
-
-  beluga_log "Topology descriptor JSON file '${TOPOLOGY_DESCRIPTOR_JSON}' contents:"
-  cat "${TOPOLOGY_DESCRIPTOR_JSON}"
 
   # NLB settings:
   # PD_PORT_INC=1
@@ -53,8 +50,8 @@ else
   # Single-region
 
   # For single-region it's possible to generate a descriptor if one does not exist.
-  if [ ! -f "${TOPOLOGY_DESCRIPTOR_JSON}" ] || [ -s "${TOPOLOGY_DESCRIPTOR_JSON}" ]; then
-    beluga_log "${TOPOLOGY_DESCRIPTOR_JSON} does not exist or is empty in single-cluster mode. Creating with contents:"
+  if [ ! -f "${TOPOLOGY_DESCRIPTOR_JSON}" ] || [ ! -s "${TOPOLOGY_DESCRIPTOR_JSON}" ]; then
+    beluga_log "${TOPOLOGY_DESCRIPTOR_JSON} does not exist or is empty in single-cluster mode - creating it"
 
     cat <<EOF > "${TOPOLOGY_DESCRIPTOR_JSON}"
 {
@@ -68,11 +65,13 @@ EOF
     beluga_log "${TOPOLOGY_DESCRIPTOR_JSON} already exists:"
   fi
 
-  cat "${TOPOLOGY_DESCRIPTOR_JSON}"
-
   # For single region, the hostnames are different, but the ports are the same.
   PD_PORT_INC=0
 fi
+
+beluga_log "Topology descriptor JSON file '${TOPOLOGY_DESCRIPTOR_JSON}' contents:"
+cat "${TOPOLOGY_DESCRIPTOR_JSON}"
+echo
 
 # The basis for the LDAP(S) and replication port numbers to use.
 PD_LDAP_PORT_BASE=$((PD_LDAP_PORT - PD_PORT_INC * ORDINAL))
