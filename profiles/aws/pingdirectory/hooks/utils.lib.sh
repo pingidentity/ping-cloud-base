@@ -109,6 +109,23 @@ function export_config_settings() {
     export PD_SEED_LDAP_HOST="${K8S_STATEFUL_SET_NAME}-0.${PD_CLUSTER_DOMAIN_NAME}"
   fi
 
+  export LOCAL_INSTANCE_NAME="${K8S_STATEFUL_SET_NAME}-${ORDINAL}.${PD_CLUSTER_DOMAIN_NAME}-${ORDINAL}"
+
+  # Figure out the list of DNs to initialize replication on
+  DN_LIST=
+  if test -z "${REPLICATION_BASE_DNS}"; then
+    DN_LIST="${USER_BASE_DN}"
+  else
+    echo "${REPLICATION_BASE_DNS}" | grep -q "${USER_BASE_DN}"
+    test $? -eq 0 &&
+        DN_LIST="${REPLICATION_BASE_DNS}" ||
+        DN_LIST="${REPLICATION_BASE_DNS};${USER_BASE_DN}"
+  fi
+
+  # A space separated list of base DNs to enable. Note that this does not support
+  # spaces.
+  export DNS_TO_INITIALIZE=$(echo "${DN_LIST}" | tr ';' ' ')
+
   echo "MULTI_CLUSTER - ${MULTI_CLUSTER}"
   echo "PRIMARY_CLUSTER - ${PRIMARY_CLUSTER}"
   echo "PD_LDAP_PORT - ${PD_LDAP_PORT}"
@@ -116,6 +133,8 @@ function export_config_settings() {
   echo "PD_REPL_PORT - ${PD_REPL_PORT}"
   echo "PD_CLUSTER_DOMAIN_NAME - ${PD_CLUSTER_DOMAIN_NAME}"
   echo "PD_SEED_LDAP_HOST - ${PD_SEED_LDAP_HOST}"
+  echo "LOCAL_INSTANCE_NAME - ${LOCAL_INSTANCE_NAME}"
+  echo "DNS_TO_INITIALIZE - ${DNS_TO_INITIALIZE}"
 }
 
 ########################################################################################################################

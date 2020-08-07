@@ -1,12 +1,10 @@
 #!/usr/bin/env sh
 
-# Copyright 2020 Ping Identity Corporation
-# All Rights Reserved.
-
 # The definitive version of this script is in the "pingdirectory" git repo in
 # this directory:
 #   tests/unit-tests/resource/offline-enable.sh
-# Please make any changes there run its unit test:
+#
+# Please make any changes there and run its unit test:
 #  ./build.sh -Dtest.classes=OfflineEnableTest test
 
 # This can be used to enable replication offline without using
@@ -665,29 +663,8 @@ for group in replication-servers all-servers; do
     ${set_member_args}
 done
 
-# If an ads_truststore was specified then copy it into place. Note that this
-# was needed prior to DS-42439, and in external instances of test
-# OfflineEnableTest where "setup" is not run, which is needed for DS-42439.
-if [ ! -z ${ads_truststore} ]; then
-  log "Copying truststore if needed."
-  if [ ! -f "${ads_truststore}" ]; then
-    fatal "ads_truststore \"${ads_truststore}\" specified does not exist."
-  fi
-
-  # Only copy it if it is different.
-  if ! diff -q "${ads_truststore}" "${inst_root}/config" &> /dev/null; then
-    # It's different, so copy the file.
-    cp -f "${ads_truststore}"   "${inst_root}/config"
-    cp -f "${ads_truststore}.pin" "${inst_root}/config"
-    log "Truststore \"${ads_truststore}\" copied."
-  else
-    # It's the same.
-    log "Truststore \"${ads_truststore}\" not changed. Not copied."
-  fi
-fi
-
 # Restore the original header.
-log "Restoring the orignal header."
+log "Restoring the original header."
 conf_no_header="${tmp_dir}/conf-no-header.ldif"
 sed -n '/^[^#]/,$p' < "${conf}" > "${conf_no_header}"
 cat "${header}" "${conf_no_header}" > "${conf}"

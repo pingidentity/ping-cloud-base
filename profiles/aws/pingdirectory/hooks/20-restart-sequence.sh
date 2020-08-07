@@ -10,7 +10,7 @@ test -f "${HOOKS_DIR}/pingdata.lib.sh" && . "${HOOKS_DIR}/pingdata.lib.sh"
 
 beluga_log "Restarting container"
 
-echo "restart-sequence: PingDirectory config settings"
+beluga_log "exporting config settings"
 export_config_settings
 
 # Before running any ds tools, remove java.properties and re-create it
