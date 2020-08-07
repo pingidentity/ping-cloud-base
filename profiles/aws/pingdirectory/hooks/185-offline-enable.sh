@@ -244,23 +244,10 @@ check_int "repl_port_inc"   0 "${max_port_inc}"
 
 check_json_object "${descriptor_json}"
 
-# Determine the local hostname and count.
-local_hostname_template=$(jq -r ".[\"${local_region}\"].hostname" "${descriptor_json}")
-# Hostnames with "${ordinal}", if any, are replaced with the correct ordinal.
-local_hostname=$(export ordinal=${local_ordinal}; echo "${local_hostname_template}" | envsubst)
-local_count=$(jq -r ".[\"${local_region}\"].replicas" "${descriptor_json}")
-
-if [ ${local_ordinal} -ge ${local_count} ]; then
-  fatal "Local ordinal \"${local_ordinal}\" must be less than count \
-\"${count}\"."
-fi
-
 # Special value "none" to not change ads_truststore.
 if [ "${ads_truststore}" = "none" ]; then
   ads_truststore=""
-fi
-
-if [ ! -f "${ads_truststore}" ]; then
+elif [ ! -f "${ads_truststore}" ]; then
   fatal "ads_truststore \"${ads_truststore}\" does not exist."
 fi
 
@@ -291,8 +278,8 @@ if [ ! -z ${ads_truststore} ]; then
     --keystore-password-file "${ads_truststore}".pin --alias ads-certificate \
     --output-file "${cert}" --output-format PEM
 else
-  log "\"ads_truststore\" not specified - new certificates will not be added."
-  true > "${cert}"
+  log "\"ads_truststore\" not specified - using cert file ${ADS_CRT_FILE}."
+  cp "${ADS_CRT_FILE}" "${cert}"
 fi
 
 # Convert the contents of "${cert}" to a single line base 64 encoded string
@@ -314,6 +301,28 @@ then
   fatal "Regions file \"${regions_file}\" contains a space."
 fi
 regions=$(cat "${regions_file}")
+
+for region in ${regions}; do
+  hostname_from_json_file=$(jq -r ".[\"${region}\"].hostname" "${descriptor_json}")
+  if $(echo "${hostname_from_json_file}" | grep -q "${TENANT_DOMAIN}"); then
+    local_region=${region}
+    break
+  fi
+done
+
+# Determine the local hostname and count.
+local_hostname_template=$(jq -r ".[\"${local_region}\"].hostname" "${descriptor_json}")
+# Hostnames with "${ordinal}", if any, are replaced with the correct ordinal.
+local_hostname=$(export ordinal=${local_ordinal}; echo "${local_hostname_template}" | envsubst)
+local_hostname="${K8S_STATEFUL_SET_NAME}"-${local_ordinal}.${local_hostname}
+local_count=$(jq -r ".[\"${local_region}\"].replicas" "${descriptor_json}")
+
+log "local_hostname: ${local_hostname}"
+
+if [ ${local_ordinal} -ge ${local_count} ]; then
+  fatal "Local ordinal \"${local_ordinal}\" must be less than count \
+\"${count}\"."
+fi
 
 # Extract the local server instance base entry. It will be used as a
 # template for the other instances.
@@ -451,7 +460,7 @@ for region in ${regions}; do
     fi
 
     # Save the local version of the IDs for later if both the ordinal and the region match the local values.
-    if [ ${ordinal} -eq ${local_ordinal} ] && [ ${region} = ${local_region} ] ; then
+    if [ ${ordinal} -eq ${local_ordinal} ] && $(echo "${hostname}" | grep -q "${TENANT_DOMAIN}") ; then
       expected_local_inst_num=${inst_num}
       local_replica_ids=${replica_ids}
       local_server_id=${server_id}
@@ -649,10 +658,12 @@ for replication_member in ${replication_members}; do
 done
 
 # Add the instances created to a group of replication servers.
-log "${verb} replication groups for members: ${replication_members}."
-"${dsconfig}" -n --offline --suppressMirroredDataChecks "${subcommand}" \
-  --group-name replication-servers \
-  ${set_member_args}
+for group in replication-servers all-servers; do
+  log "${verb} ${group} group for members: ${replication_members}."
+  "${dsconfig}" -n --offline --suppressMirroredDataChecks "${subcommand}" \
+    --group-name "${group}" \
+    ${set_member_args}
+done
 
 # If an ads_truststore was specified then copy it into place. Note that this
 # was needed prior to DS-42439, and in external instances of test

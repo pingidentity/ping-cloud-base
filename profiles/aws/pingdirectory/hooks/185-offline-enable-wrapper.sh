@@ -126,7 +126,7 @@ jq -n --arg     descriptor_json "${TOPOLOGY_DESCRIPTOR_JSON}" \
       --argjson ldaps_port_inc  "${PD_PORT_INC}"              \
       --argjson repl_port_base  "${PD_REPL_PORT_BASE}"        \
       --argjson repl_port_inc   "${PD_PORT_INC}"              \
-      --arg     ads_truststore  "${SERVER_ROOT_DIR}"/config/ads-truststore \
+      --arg     ads_truststore  'none'                        \
       --arg     admin_user      "${ADMIN_USER_NAME}"          \
       --arg     admin_pass_file "${ADMIN_USER_PASSWORD_FILE}" \
       -f "${offline_enable_template}" > "${offline_enable_config}"
@@ -135,13 +135,9 @@ echo "${offline_enable_config}:"
 cat  "${offline_enable_config}"
 
 # Enable replication offline before the instances are started.
-set -x
-date
 cp -f "${SERVER_ROOT_DIR}/config/config.ldif" "${SERVER_ROOT_DIR}/config/config.ldif.before"
 "${HOOKS_DIR}"/185-offline-enable.sh -v "${offline_enable_config}" ${DNS_TO_INITIALIZE}
 cp -f "${SERVER_ROOT_DIR}/config/config.ldif" "${SERVER_ROOT_DIR}/config/config.ldif.after"
-date
-set +x
 
 # Remove temporary files.
 rm -f "${offline_enable_template}" "${offline_enable_config}"
