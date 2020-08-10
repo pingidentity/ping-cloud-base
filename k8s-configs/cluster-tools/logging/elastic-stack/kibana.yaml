@@ -78,6 +78,8 @@ spec:
                 key: KIBANA_PASSWORD_B64
           - name: XPACK_MONITORING_ENABLED
             value: "false"
+          - name: LOGGING_QUIET
+            value: "true"
 
         resources:
           limits:
