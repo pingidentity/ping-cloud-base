@@ -72,16 +72,6 @@ spec:
               key: PF_LDAP_PASSWORD
         - name: PF_LOG_LEVEL
           value: DEBUG
-        - name: SOCKET_HOST
-          value: logstash-elastic.elastic-stack-logging.svc.cluster.local
-        - name: SOCKET_PORT_SYSTEM
-          value: "20513"
-        - name: SOCKET_PORT_AUDIT
-          value: "20514"
-        - name: SOCKET_PORT_PROVISIONER
-          value: "20512"
-        - name: SOCKET_PROTOCOL
-          value: TCP
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
