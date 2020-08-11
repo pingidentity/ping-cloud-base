@@ -17,7 +17,7 @@ else
           ;;
 
           pingfederate-admin)
-          HOST_PORT=${PF_CLUSTER_PUBLIC_HOSTNAME}:9999
+          HOST_PORT=${PF_CLUSTER_PUBLIC_HOSTNAME}:7600
           ;;
 
           pingaccess-admin)
@@ -35,7 +35,7 @@ else
           ;;
 
           pingfederate-admin)
-          HOST_PORT=${APP}:9999
+          HOST_PORT=${APP}:7600
           ;;
 
           pingaccess-admin)
