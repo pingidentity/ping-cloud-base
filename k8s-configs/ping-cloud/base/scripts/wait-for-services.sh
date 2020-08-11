@@ -34,7 +34,7 @@ else
           HOST_PORT=${APP}:1636
           ;;
 
-          pingfederate-admin)
+          pingfederate-cluster)
           HOST_PORT=${APP}:7600
           ;;
 
