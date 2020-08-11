@@ -188,7 +188,6 @@ patchesJson6902:
       value: pingaccess-was-admin.${TENANT_DOMAIN}
 
 # pingdirectory put ldaps on public and change the host
-# FIXME: uncomment this when PDO-1114 is fixed.
 - target:
     version: v1
     kind: Service

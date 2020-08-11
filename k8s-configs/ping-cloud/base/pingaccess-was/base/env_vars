@@ -5,6 +5,7 @@ SERVER_PROFILE_PATH=profiles/aws/pingaccess
 SERVER_PROFILE_BRANCH=master
 
 REGION=us-west-2
+
 PA_ADMIN_SERVER=pingaccess-was-admin
 PA_ADMIN_PORT=9000
 

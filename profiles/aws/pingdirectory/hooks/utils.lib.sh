@@ -62,24 +62,91 @@ function skbnCopy() {
 # Export values for PingDirectory configuration settings based on single vs. multi cluster.
 ########################################################################################################################
 function export_config_settings() {
+  export SHORT_HOST_NAME=$(hostname)
+  export ORDINAL=${SHORT_HOST_NAME##*-}
+  export LOCAL_DOMAIN_NAME="$(hostname -f | cut -d'.' -f2-)"
+
+  # For multi-region:
+  # If using NLB to route traffic between the regions, the hostnames will be the same per region (i.e. that of the NLB),
+  # but the ports will be different. If using VPC peering (i.e. creating a super network of the subnets) for routing
+  # traffic between the regions, then each PD server will be directly addressable, and so will have a unique hostname
+  # and may use the same port.
+
+  # NOTE: If using NLB, then corresponding changes will be required to the 80-post-start.sh script to export port 6360,
+  # 6361, etc. on each server in a region. Since we have VPC peering in Ping Cloud, all servers can use the same LDAPS
+  # port, i.e. 1636, so we don't expose 636${ORDINAL} anymore.
+
   if is_multi_cluster; then
-    MULTI_CLUSTER=true
-    SHORT_HOST_NAME=$(hostname)
-    ORDINAL=${SHORT_HOST_NAME##*-}
-    export PD_LDAP_PORT="636${ORDINAL}"
+    export MULTI_CLUSTER=true
+    is_primary_cluster &&
+      export PRIMARY_CLUSTER=true ||
+      export PRIMARY_CLUSTER=false
+
+    # NLB settings:
+    # export PD_HTTPS_PORT="443"
+    # export PD_LDAP_PORT="389${ORDINAL}"
+    # export PD_LDAPS_PORT="636${ORDINAL}"
+    # export PD_REPL_PORT="989${ORDINAL}"
+
+    # VPC peer settings (same as single-region case):
+    export PD_HTTPS_PORT="${HTTPS_PORT}"
+    export PD_LDAP_PORT="${LDAP_PORT}"
+    export PD_LDAPS_PORT="${LDAPS_PORT}"
+    export PD_REPL_PORT="${REPLICATION_PORT}"
+
+    export PD_CLUSTER_DOMAIN_NAME="${PD_CLUSTER_PUBLIC_HOSTNAME}"
   else
-    MULTI_CLUSTER=false
-    export PD_PUBLIC_HOSTNAME=$(hostname -f)
-    export PD_LDAP_PORT="${LDAPS_PORT}"
+    export MULTI_CLUSTER=false
+    export PRIMARY_CLUSTER=true
+
+    export PD_HTTPS_PORT="${HTTPS_PORT}"
+    export PD_LDAP_PORT="${LDAP_PORT}"
+    export PD_LDAPS_PORT="${LDAPS_PORT}"
+    export PD_REPL_PORT="${REPLICATION_PORT}"
+
+    export PD_CLUSTER_DOMAIN_NAME="${LOCAL_DOMAIN_NAME}"
   fi
 
-  is_primary_cluster &&
-    PRIMARY_CLUSTER=true ||
-    PRIMARY_CLUSTER=false
+  export PD_SEED_LDAP_HOST="${K8S_STATEFUL_SET_NAME}-0.${PD_CLUSTER_DOMAIN_NAME}"
+  export LOCAL_HOST_NAME="${K8S_STATEFUL_SET_NAME}-${ORDINAL}.${PD_CLUSTER_DOMAIN_NAME}"
+  export LOCAL_INSTANCE_NAME="${LOCAL_HOST_NAME}"
 
-  echo "MULTI_CLUSTER - ${MULTI_CLUSTER}"
-  echo "PRIMARY_CLUSTER - ${PRIMARY_CLUSTER}"
-  echo "LDAP_HOST_PORT - ${PD_PUBLIC_HOSTNAME}:${PD_LDAP_PORT}"
+  # Figure out the list of DNs to initialize replication on
+  DN_LIST=
+  if test -z "${REPLICATION_BASE_DNS}"; then
+    DN_LIST="${USER_BASE_DN}"
+  else
+    echo "${REPLICATION_BASE_DNS}" | grep -q "${USER_BASE_DN}"
+    test $? -eq 0 &&
+        DN_LIST="${REPLICATION_BASE_DNS}" ||
+        DN_LIST="${REPLICATION_BASE_DNS};${USER_BASE_DN}"
+  fi
+
+  export DNS_TO_ENABLE=$(echo "${DN_LIST}" | tr ';' ' ')
+  export REPL_INIT_MARKER_FILE="${SERVER_ROOT_DIR}"/config/repl-initialized
+  export POST_START_INIT_MARKER_FILE="${SERVER_ROOT_DIR}"/config/post-start-init-complete
+
+  export UNINITIALIZED_DNS=
+  for DN in ${DNS_TO_ENABLE}; do
+    if ! grep -q "${DN}" "${REPL_INIT_MARKER_FILE}" &> /dev/null; then
+      test -z "${UNINITIALIZED_DNS}" &&
+          export UNINITIALIZED_DNS="${DN}" ||
+          export UNINITIALIZED_DNS="${UNINITIALIZED_DNS} ${DN}"
+    fi
+  done
+
+  beluga_log "MULTI_CLUSTER - ${MULTI_CLUSTER}"
+  beluga_log "PRIMARY_CLUSTER - ${PRIMARY_CLUSTER}"
+  beluga_log "PD_HTTPS_PORT - ${PD_HTTPS_PORT}"
+  beluga_log "PD_LDAP_PORT - ${PD_LDAP_PORT}"
+  beluga_log "PD_LDAPS_PORT - ${PD_LDAPS_PORT}"
+  beluga_log "PD_REPL_PORT - ${PD_REPL_PORT}"
+  beluga_log "PD_CLUSTER_DOMAIN_NAME - ${PD_CLUSTER_DOMAIN_NAME}"
+  beluga_log "PD_SEED_LDAP_HOST - ${PD_SEED_LDAP_HOST}"
+  beluga_log "LOCAL_HOST_NAME - ${LOCAL_HOST_NAME}"
+  beluga_log "LOCAL_INSTANCE_NAME - ${LOCAL_INSTANCE_NAME}"
+  beluga_log "DNS_TO_ENABLE - ${DNS_TO_ENABLE}"
+  beluga_log "UNINITIALIZED_DNS - ${UNINITIALIZED_DNS}"
 }
 
 ########################################################################################################################
@@ -149,7 +216,7 @@ objectClass: organization
 o: ${COMPUTED_DOMAIN}
 EOF
   else
-    echo "User base DN must be 1-level deep in one of these formats: dc=<domain>,dc=com or o=<org>,dc=com"
+    beluga_log "User base DN must be 1-level deep in one of these formats: dc=<domain>,dc=com or o=<org>,dc=com"
     return 80
   fi
 
@@ -167,16 +234,55 @@ EOF
 ########################################################################################################################
 # Add the base entry of USER_BASE_DN if it needs to be added
 ########################################################################################################################
-add_base_entry_if_needed()
-{
-  REPL_INIT_MARKER_FILE="${SERVER_ROOT_DIR}"/config/repl-initialized
-
+add_base_entry_if_needed() {
   if grep -q "${USER_BASE_DN}" "${REPL_INIT_MARKER_FILE}" &> /dev/null; then
-    echo "Replication base DN ${DN} already added."
+    beluga_log "Replication base DN ${USER_BASE_DN} already added"
+    return 0
   else
-    USER_BASE_ENTRY_LDIF=$(get_base_entry_ldif)
-    echo "Adding replication base DN ${USER_BASE_DN} with contents:"
-    cat "${USER_BASE_ENTRY_LDIF}"
-    import-ldif -n userRoot -F -l "${USER_BASE_ENTRY_LDIF}"
+    base_entry_ldif=$(get_base_entry_ldif)
+    get_entry_status=$?
+    beluga_log "get user base entry status: ${get_entry_status}"
+    test ${get_entry_status} -ne 0 && return ${get_entry_status}
+
+    beluga_log "Adding replication base DN ${USER_BASE_DN} with contents:"
+    cat "${base_entry_ldif}"
+
+    import-ldif -n "${USER_BACKEND_ID}" -F -l "${base_entry_ldif}"
+    import_status=$?
+    beluga_log "import user base entry status: ${import_status}"
+    return ${import_status}
   fi
+}
+
+########################################################################################################################
+# Enable the replication sub-system in offline mode.
+########################################################################################################################
+offline_enable_replication() {
+  # The userRoot backend must be configured for the user base DN, if it changed
+  # between restart of the container.
+  beluga_log "configuring ${USER_BACKEND_ID} for base DN ${USER_BASE_DN}"
+  dsconfig --no-prompt --offline set-backend-prop \
+    --backend-name "${USER_BACKEND_ID}" \
+    --add "base-dn:${USER_BASE_DN}" \
+    --set enabled:true \
+    --set db-cache-percent:35
+  config_status=$?
+  beluga_log "configure base DN ${USER_BASE_DN} update status: ${config_status}"
+  test ${config_status} -ne 0 && return ${config_status}
+
+  # Replicated base DNs must exist before starting the server now that
+  # replication is enabled before start. Otherwise a generation ID of -1
+  # would be generated, which breaks replication.
+  add_base_entry_if_needed
+  add_base_entry_status=$?
+  beluga_log "add base DN ${USER_BASE_DN} status: ${add_base_entry_status}"
+  test ${add_base_entry_status} -ne 0 && return ${add_base_entry_status}
+
+  # Enable replication offline.
+  "${HOOKS_DIR}"/185-offline-enable-wrapper.sh
+  enable_status=$?
+  beluga_log "offline replication enable status: ${enable_status}"
+  test ${enable_status} -ne 0 && return ${enable_status}
+
+  return 0
 }

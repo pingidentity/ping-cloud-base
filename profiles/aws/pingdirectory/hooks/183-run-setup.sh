@@ -7,7 +7,9 @@ ${VERBOSE} && set -x
 
 test -f "${HOOKS_DIR}/pingdata.lib.sh" && . "${HOOKS_DIR}/pingdata.lib.sh"
 
-beluga_log "run-setup: PingDirectory config settings"
+beluga_log "initial launch of container"
+
+beluga_log "exporting config settings"
 export_config_settings
 
 export encryptionOption=$(getEncryptionOption)
@@ -51,26 +53,16 @@ if test "${MANAGE_PROFILE_STATUS}" -ne 0; then
   exit 183
 fi
 
-# Enable replication offline.
-"${HOOKS_DIR}"/185-offline-enable-wrapper.sh
-
-# Replicated base DNs must exist before starting the server now that
-# replication is enabled before start since otherwise a generation ID of -1
-# would be generated, which breaks replication.
-add_base_entry_if_needed
-
+beluga_log "updating encryption settings"
 run_hook "15-encryption-settings.sh"
 
-beluga_log "run-setup: configuring ${USER_BACKEND_ID} for base DN ${USER_BASE_DN}"
-dsconfig --no-prompt --offline set-backend-prop \
-  --backend-name "${USER_BACKEND_ID}" \
-  --add "base-dn:${USER_BASE_DN}" \
-  --set enabled:true \
-  --set db-cache-percent:35
-CONFIG_STATUS=${?}
+beluga_log "enabling the replication sub-system in offline mode"
+offline_enable_replication
+enable_replication_status=$?
+if test ${enable_replication_status} -ne 0; then
+  beluga_log "replication enable failed with status: ${enable_replication_status}"
+  exit ${enable_replication_status}
+fi
 
-beluga_log "run-setup: configure base DN ${USER_BASE_DN} update status: ${CONFIG_STATUS}"
-test "${CONFIG_STATUS}" -ne 0 && exit ${CONFIG_STATUS}
-
-beluga_log "run-setup: server install complete"
+beluga_log "server install complete"
 exit 0
