@@ -35,7 +35,7 @@ spec:
         image: bitnami/kubectl:1.15.3
         imagePullPolicy: IfNotPresent
         command:
-        - /init.sh
+        - /init-container.sh
         volumeMounts:
         - name: ssh-dir
           mountPath: /.ssh
@@ -48,8 +48,30 @@ spec:
           mountPath: /known_hosts
           subPath: known_hosts
         - name: pingaccess-was-init
-          mountPath: /init.sh
-          subPath: init.sh
+          mountPath: /init-container.sh
+          subPath: init-container.sh
+        - name: pingaccess-was-init
+          mountPath: /utils.lib.sh
+          subPath: utils.lib.sh
+        envFrom:
+        - configMapRef:
+            name: pingaccess-was-environment-variables
+      - name: wait-for-services
+        # FIXME: switch to same user as app
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        image: busybox:1.32
+        imagePullPolicy: IfNotPresent
+        command:
+        - /wait-for-services.sh
+        volumeMounts:
+        - name: pingaccess-was-init
+          mountPath: /utils.lib.sh
+          subPath: utils.lib.sh
+        - name: pingaccess-was-init
+          mountPath: /wait-for-services.sh
+          subPath: wait-for-services.sh
         envFrom:
         - configMapRef:
             name: pingaccess-was-environment-variables
@@ -227,7 +249,7 @@ spec:
         image: bitnami/kubectl:1.15.3
         imagePullPolicy: IfNotPresent
         command:
-        - /init.sh
+        - /init-container.sh
         volumeMounts:
         - name: ssh-dir
           mountPath: /.ssh
@@ -240,8 +262,30 @@ spec:
           mountPath: /known_hosts
           subPath: known_hosts
         - name: pingaccess-was-init
-          mountPath: /init.sh
-          subPath: init.sh
+          mountPath: /init-container.sh
+          subPath: init-container.sh
+        - name: pingaccess-was-init
+          mountPath: /utils.lib.sh
+          subPath: utils.lib.sh
+        envFrom:
+        - configMapRef:
+            name: pingaccess-was-environment-variables
+      - name: wait-for-services
+        # FIXME: switch to same user as app
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        image: busybox:1.32
+        imagePullPolicy: IfNotPresent
+        command:
+        - /wait-for-services.sh
+        volumeMounts:
+        - name: pingaccess-was-init
+          mountPath: /utils.lib.sh
+          subPath: utils.lib.sh
+        - name: pingaccess-was-init
+          mountPath: /wait-for-services.sh
+          subPath: wait-for-services.sh
         envFrom:
         - configMapRef:
             name: pingaccess-was-environment-variables

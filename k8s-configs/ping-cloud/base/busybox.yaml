@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: busybux
+spec:
+  replicas: 1
+  serviceName: pingaccess-admin
+  template:
+    spec:
+      serviceAccount: ping-serviceaccount
+      containers:
+      - name: pingaccess-discovery-service
+        image: busybox
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/sh", "-ec", "while :; do echo '.'; sleep 90 ; done"]
+        envFrom:
+        - configMapRef:
+            name: pingaccess-environment-variables
+        volumeMounts:
+        - name: init-test
+          mountPath: /init-container.sh
+          subPath: init-container.sh
+        - name: init-test
+          mountPath: /utils.lib.sh
+          subPath: utils.lib.sh
+        - name: data-dir
+          mountPath: /data
+      volumes:
+      - name: init-test
+        configMap:
+          name: init-test
+          defaultMode: 0555
+      - name: data-dir
+        emptyDir: {}
