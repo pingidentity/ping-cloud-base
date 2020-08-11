@@ -63,13 +63,27 @@ cat > "${offline_enable_config}" <<EOF
 }
 EOF
 
-beluga_log "Offline enable configuration:"
+beluga_log "offline enable configuration:"
 cat "${offline_enable_config}"
 
 # Enable replication offline before the instances are started.
 cp -f "${SERVER_ROOT_DIR}/config/config.ldif" "${SERVER_ROOT_DIR}/config/config.ldif.before"
+
 "${HOOKS_DIR}"/185-offline-enable.sh "${offline_enable_config}" ${DNS_TO_ENABLE}
+offline_enable_status=$?
+
+if test ${offline_enable_status} -ne 0; then
+  beluga_log "offline enable failed"
+
+  # Remove temporary files.
+  rm -f "${offline_enable_config}"
+
+  exit ${offline_enable_status}
+fi
+
 cp -f "${SERVER_ROOT_DIR}/config/config.ldif" "${SERVER_ROOT_DIR}/config/config.ldif.after"
 
 # Remove temporary files.
 rm -f "${offline_enable_config}"
+
+beluga_log "offline enable complete"

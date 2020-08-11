@@ -295,6 +295,9 @@ for region in ${regions}; do
       echo "ds-cfg-replication-domain-server-id: ${replica_id}" >> "${mods}"
     done
 
+    # Add a new line after each server instance entry
+    echo >> "${mods}"
+
     ordinal=$((ordinal + 1))
   done
 done
