@@ -43,3 +43,9 @@ TAIL_LOG_FILES=
 K8S_TAIL_LOG_FILES=/opt/out/instance/log/jvm-garbage-collection.log /opt/out/instance/log/server.log /opt/out/instance/log/init.log /opt/out/instance/log/admin.log /opt/out/instance/log/admin-event-detail.log /opt/out/instance/log/admin-api.log /opt/out/instance/log/runtime-api.log /opt/out/instance/log/transaction.log /opt/out/instance/log/audit.log /opt/out/instance/log/provisioner-audit.log /opt/out/instance/log/provisioner.log
 
 SECRETS_DIR=/usr/local/secrets
+
+SOCKET_HOST=logstash-elastic.elastic-stack-logging.svc.cluster.local
+SOCKET_PORT_SYSTEM=20513
+SOCKET_PORT_AUDIT=20514
+SOCKET_PORT_PROVISIONER=20512
+SOCKET_PROTOCOL=TCP
