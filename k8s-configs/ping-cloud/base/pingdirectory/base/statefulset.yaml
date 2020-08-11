@@ -159,7 +159,8 @@ spec:
           subPath: env_vars
         readinessProbe:
           exec:
-            command: [ liveness.sh ]
+            command:
+              - /opt/staging/hooks/85-readiness.sh
           # Do not start the readiness probe for 3 minutes after starting the
           # container because PD will never finish its start/restart sequence
           # before then, in practice. Run the readiness probe every 5 seconds

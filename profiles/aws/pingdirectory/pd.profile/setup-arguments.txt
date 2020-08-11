@@ -19,9 +19,9 @@
     --verbose \
     --acceptLicense \
     --skipPortCheck \
-    --licenseKeyFile ${PING_SERVER_ROOT}/PingDirectory.lic \
+    --licenseKeyFile "${LICENSE_DIR}/${LICENSE_FILE_NAME}" \
     --location "${REGION}" \
-    --instanceName "${PD_PUBLIC_HOSTNAME}-${PD_LDAP_PORT}" \
+    --instanceName "${LOCAL_INSTANCE_NAME}" \
     --ldapPort ${LDAP_PORT} \
     --ldapsPort ${LDAPS_PORT} \
     --httpsPort ${HTTPS_PORT} \

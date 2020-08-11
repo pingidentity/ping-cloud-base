@@ -8,10 +8,13 @@ ${VERBOSE} && set -x
 test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
 test -f "${HOOKS_DIR}/pingdata.lib.sh" && . "${HOOKS_DIR}/pingdata.lib.sh"
 
-beluga_log "Restarting container"
+beluga_log "restarting container"
 
-echo "restart-sequence: PingDirectory config settings"
+beluga_log "exporting config settings"
 export_config_settings
+
+# Remove the post-start initialization marker file so the pod isn't prematurely considered ready
+rm -f "${POST_START_INIT_MARKER_FILE}"
 
 # Before running any ds tools, remove java.properties and re-create it
 # for the current JVM.
@@ -42,7 +45,7 @@ HEAP_SIZE_INT=$(echo "${MAX_HEAP_SIZE}" | grep 'g$' | cut -d'g' -f1)
 
 if test ! -z "${HEAP_SIZE_INT}" && test "${HEAP_SIZE_INT}" -ge 4; then
   NEW_HEAP_SIZE=$((HEAP_SIZE_INT - 2))g
-  echo "restart-sequence: changing manage-profile heap size to ${NEW_HEAP_SIZE}"
+  beluga_log "changing manage-profile heap size to ${NEW_HEAP_SIZE}"
   export UNBOUNDID_JAVA_ARGS="-client -Xmx${NEW_HEAP_SIZE} -Xms${NEW_HEAP_SIZE}"
 fi
 
@@ -53,7 +56,6 @@ test -f "${SECRETS_DIR}"/encryption-settings.pin &&
 beluga_log "Using ${ENCRYPTION_PIN_FILE} as the encryption-setting.pin file"
 cp "${ENCRYPTION_PIN_FILE}" "${PD_PROFILE}"/server-root/pre-setup/config
 
-# FIXME: Workaround for DS-41964 - use --replaceFullProfile flag to replace-profile
 beluga_log "Merging changes from new server profile"
 
 ADDITIONAL_ARGS="--replaceFullProfile"
@@ -80,33 +82,19 @@ if test "${MANAGE_PROFILE_STATUS}" -ne 0; then
   exit 20
 fi
 
-beluga_log "restart-sequence: updating tools.properties"
-
-# Enable replication offline. In the common case where nothing has changed
-# the following should exit quickly without making any changes.
-"${HOOKS_DIR}"/185-offline-enable-wrapper.sh
-
-# Replicated base DNs must exist before starting the server now that
-# replication is enabled before start since otherwise a generation ID of -1
-# would be generated, which breaks replication.
-add_base_entry_if_needed
-
+beluga_log "updating tools.properties"
 run_hook "185-apply-tools-properties.sh"
 
 beluga_log "updating encryption settings"
 run_hook "15-encryption-settings.sh"
 
-# FIXME: replace-profile has a bug where it may wipe out the user root backend configuration and lose user data added
-# from another server while enabling replication. This code block may be removed when replace-profile is fixed.
-beluga_log "Configuring ${USER_BACKEND_ID} for base DN ${USER_BASE_DN}"
-dsconfig --no-prompt --offline set-backend-prop \
-  --backend-name "${USER_BACKEND_ID}" \
-  --add "base-dn:${USER_BASE_DN}" \
-  --set enabled:true \
-  --set db-cache-percent:35
-CONFIG_STATUS=${?}
+beluga_log "enabling the replication sub-system in offline mode"
+offline_enable_replication
+enable_replication_status=$?
+if test ${enable_replication_status} -ne 0; then
+  beluga_log "replication enable failed with status: ${enable_replication_status}"
+  exit ${enable_replication_status}
+fi
 
-beluga_log "Configure base DN ${USER_BASE_DN} update status: ${CONFIG_STATUS}"
-test "${CONFIG_STATUS}" -ne 0 && exit ${CONFIG_STATUS}
-
+beluga_log "restart sequence done"
 exit 0

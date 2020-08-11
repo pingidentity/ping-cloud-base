@@ -9,9 +9,7 @@ test "${VERBOSE}" && set -x
 # Override environment variables with optional file supplied from the outside
 ENV_VARS_FILE="${1}"
 SKIP_TESTS="pingaccess/01-agent-config-test.sh \
-  chaos/01-delete-pa-admin-pod.sh \
-  chaos/20-pd-recovery-on-delete-pv.sh \
-  pingdirectory/03-backup-restore.sh"
+  chaos/01-delete-pa-admin-pod.sh"
 
 if test -z "${ENV_VARS_FILE}"; then
   echo "Using environment variables based on CI variables"
@@ -52,7 +50,7 @@ export CURL_TIMEOUT_SECONDS="${CURL_TIMEOUT_SECONDS:-450}"
 export ADMIN_USER=administrator
 export ADMIN_PASS=2FederateM0re
 
-export PD_SEED_LDAPS_PORT=6360
+export PD_SEED_LDAPS_PORT=636
 
 export CLUSTER_NAME_LC=$(echo "${CLUSTER_NAME}" | tr '[:upper:]' '[:lower:]')
 export LOG_GROUP_NAME="/aws/containerinsights/${CLUSTER_NAME}/application"

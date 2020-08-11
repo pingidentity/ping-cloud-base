@@ -190,16 +190,17 @@ patchesJson6902:
       path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
       value: pingaccess-was-cluster${ENVIRONMENT}.${TENANT_DOMAIN}
 
-# FIXME: add this once PDO-1114 is implemented
 # pingdirectory put ldaps on public and change the hostname
-#- target:
-#    version: v1
-#    kind: Service
-#    name: pingdirectory-admin
-#  patch: |-
-#    - op: replace
-#      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
-#      value: pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+- target:
+    version: v1
+    kind: Service
+    name: pingdirectory-admin
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+      value: pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+    - op: remove
+      path: /metadata/annotations/service.beta.kubernetes.io~1aws-load-balancer-internal
 
 patchesStrategicMerge:
 - |-
@@ -221,11 +222,3 @@ patchesStrategicMerge:
   data:
     descriptor.json: |-
       ${TOPOLOGY_DESCRIPTOR}
-
-# FIXME: remove this once PDO-1114 is implemented
-- |-
-  apiVersion: v1
-  kind: Service
-  metadata:
-    name: pingdirectory-admin
-  $patch: delete

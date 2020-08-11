@@ -345,17 +345,14 @@ patchesJson6902:
       path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
       value: pingaccess-was-cluster${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
 
-# FIXME: add this once PDO-1114 is implemented
-## pingdirectory admin
-#- target:
-#    version: v1
-#    kind: Service
-#    name: pingdirectory-admin
-#  patch: |-
-#    - op: replace
-#      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
-#      value: pingdirectory-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+# pingdirectory admin
+- target:
+    version: v1
+    kind: Service
+    name: pingdirectory-admin
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+      value: pingdirectory-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
 
 ${PING_DIRECTORY_LDAP_ENDPOINT_PATCH}
-
-${PING_DATA_CONSOLE_INGRESS_PATCH}
