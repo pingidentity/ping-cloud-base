@@ -205,13 +205,11 @@ function configure_tcp_xml() {
   local currentDir="$(pwd)"
   cd "${SERVER_ROOT_DIR}/server/default/conf"
 
-  if is_secondary_cluster; then
-    export JGROUPS_DISCOVERY_PROTOCOL="<dns.DNS_PING \
-        dns_query=\"${PF_CLUSTER_PUBLIC_HOSTNAME}\" />"
-  else
-    export JGROUPS_DISCOVERY_PROTOCOL="<dns.DNS_PING \
-        dns_query=\"${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local\" />"
-  fi
+  is_secondary_cluster &&
+    DNS_PING_DNS_QUERY="${PF_CLUSTER_PUBLIC_HOSTNAME}" ||
+    DNS_PING_DNS_QUERY="${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local"
+
+  export JGROUPS_DISCOVERY_PROTOCOL="<dns.DNS_PING dns_query=\"${DNS_PING_DNS_QUERY}\" />"
 
   mv tcp.xml tcp.xml.subst
   envsubst < tcp.xml.subst > tcp.xml
