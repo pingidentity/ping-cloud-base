@@ -26,7 +26,7 @@ echo "get-master-key: PingFederate config settings"
 export_config_settings
 
 make_api_request_download -X GET \
-  "https://${PINGFEDERATE_ADMIN_SERVER}:${PF_ADMIN_PORT}/pf-admin-api/v1/configArchive/export" \
+  "https://${PF_ADMIN_HOST_PORT}/pf-admin-api/v1/configArchive/export" \
   -o "${EXPORT_ZIP_FILE}"
 
 RESULT=$?
