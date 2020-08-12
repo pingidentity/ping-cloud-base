@@ -16,7 +16,7 @@ class DigManager():
         self.logger = logger
 
 
-    def __query(self, fqdn, type):
+    def __query(self, fqdn: str, type: str) -> str:
         retry_in_secs =  os.environ.get("DNS_RESOLUTION_RETRY_SECS") if "DNS_RESOLUTION_RETRY_SECS" in os.environ else 30
         for i in range(0, 3):
             try:
