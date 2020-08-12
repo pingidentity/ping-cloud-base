@@ -25,7 +25,7 @@ class DigManager():
         return ""
 
 
-    def __get_retry_secs(self) -> float:
+    def get_retry_secs(self) -> float:
         env_var = self.__get_dns_resolution_var()
         if env_var is not "":
             try:
@@ -38,7 +38,7 @@ class DigManager():
 
     def __query(self, fqdn: str, type: str) -> str:
 
-        retry_in_secs = self.__get_retry_secs()
+        retry_in_secs = self.get_retry_secs()
         for i in range(0, 3):
             try:
                 record = pydig.query(fqdn, type)
