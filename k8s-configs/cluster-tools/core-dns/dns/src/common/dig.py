@@ -39,7 +39,7 @@ class DigManager():
         return None
 
 
-    def fetch_txt_records(self, fqdn, query_description):
+    def fetch_txt_records(self, fqdn: str, query_description: str) -> list:
         self.logger.log(query_description)
 
         records = []
@@ -55,7 +55,7 @@ class DigManager():
         return records 
 
 
-    def fetch_all_cluster_fqdns(self, fqdn, query_description):
+    def fetch_all_cluster_fqdns(self, fqdn: str, query_description: str) -> list:
         multi_cluster_domains = self.fetch_txt_records(fqdn, query_description)
         if len(multi_cluster_domains) > 0:
             return multi_cluster_domains
@@ -63,7 +63,7 @@ class DigManager():
             raise ValueError(f"{fqdn} must have at least one FQDN TXT value")
 
 
-    def fetch_name_to_ip_address(self, names, query_description):
+    def fetch_name_to_ip_address(self, names: list, query_description: str) -> dict:
         self.logger.log(query_description)
 
         name_to_ip_addrs = {}
@@ -89,11 +89,11 @@ class DigManager():
         return name_to_ip_addrs
 
     
-    def create_multi_cluster_domain_name(self, namespace, domain_name):
+    def create_multi_cluster_domain_name(self, namespace: str, domain_name: str) -> str:
         return f"multi-cluster-domains.{namespace}.{domain_name}."
 
 
-    def get_k8s_domain_to_ip_mappings(self, namespace, domain_name, filter=lambda x, y: True):
+    def get_k8s_domain_to_ip_mappings(self, namespace: str, domain_name: str, filter=lambda x, y: True) -> list:
 
         # The multi-cluster-domains recordset in the local
         # Hosted Zone holds a TXT record of all the clusters
