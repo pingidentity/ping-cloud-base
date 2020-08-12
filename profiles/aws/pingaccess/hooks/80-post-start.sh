@@ -30,18 +30,18 @@ if ! test -f "${ADMIN_CONFIGURATION_COMPLETE}"; then
   beluga_log "Starting hook: ${HOOKS_DIR}/81-import-initial-configuration.sh"
   sh "${HOOKS_DIR}/81-import-initial-configuration.sh"
   if test $? -ne 0; then
-    exit 1
+    "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
   fi
 
   if isPingaccessWas; then
     sh "${HOOKS_DIR}/82-configure-p14c-token-provider.sh"
     if test $? -ne 0; then
-      exit 1
+      "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
 
     sh "${HOOKS_DIR}/83-configure-initial-pa-was.sh"
     if test $? -ne 0; then
-      exit 1
+      "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
 
   fi
@@ -63,13 +63,13 @@ else
     beluga_log "Starting hook: ${HOOKS_DIR}/82-configure-p14c-token-provider.sh"
     sh "${HOOKS_DIR}/82-configure-p14c-token-provider.sh"
     if test $? -ne 0; then
-      exit 1
+      "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
 
     beluga_log "Starting hook: ${HOOKS_DIR}/83-configure-initial-pa-was.sh"
     sh "${HOOKS_DIR}/83-configure-initial-pa-was.sh"
     if test $? -ne 0; then
-      exit 1
+      "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
     fi
   fi
 

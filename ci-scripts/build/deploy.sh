@@ -24,6 +24,7 @@ kubectl apply -f "${DEPLOY_FILE}"
 #
 #     1. PA engine -> PA admin -> PF admin -> PD
 #     2. PF engine -> PF admin -> PD
+#     3. PA WAS engine -> PA WAS admin
 #
 # So checking the rollout status of the end dependencies should be enough after PD is rolled out. We'll give each 2.5
 # minutes after PD is ready. This should be more than enough time because as soon as pingdirectory-0 is ready, the
@@ -31,7 +32,7 @@ kubectl apply -f "${DEPLOY_FILE}"
 # stack must be rolled out in no more than (15 * num of PD replicas + 2.5 * number of end dependents) minutes.
 
 PD_REPLICA='statefulset.apps/pingdirectory'
-DEPENDENT_REPLICAS='statefulset.apps/pingfederate statefulset.apps/pingaccess'
+OTHER_PING_APP_REPLICAS='deployment.apps/pingfederate statefulset.apps/pingaccess statefulset.apps/pingaccess-was'
 
 NUM_PD_REPLICAS=$(kubectl get "${PD_REPLICA}" -o jsonpath='{.spec.replicas}' -n "${NAMESPACE}")
 PD_TIMEOUT_SECONDS=$((NUM_PD_REPLICAS * 900))
@@ -40,7 +41,7 @@ DEPENDENT_TIMEOUT_SECONDS=300
 echo "Waiting for rollout of ${PD_REPLICA} with a timeout of ${PD_TIMEOUT_SECONDS} seconds"
 time kubectl rollout status "${PD_REPLICA}" --timeout "${PD_TIMEOUT_SECONDS}s" -n "${NAMESPACE}" -w
 
-for DEPENDENT_REPLICA in ${DEPENDENT_REPLICAS}; do
+for DEPENDENT_REPLICA in ${OTHER_PING_APP_REPLICAS}; do
   echo "Waiting for rollout of ${DEPENDENT_REPLICA} with a timeout of ${DEPENDENT_TIMEOUT_SECONDS} seconds"
   time kubectl rollout status "${DEPENDENT_REPLICA}" --timeout "${DEPENDENT_TIMEOUT_SECONDS}s" -n "${NAMESPACE}" -w
 done
