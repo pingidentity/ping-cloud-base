@@ -1,6 +1,15 @@
 {
   "keySize": 2048,
-  "subjectAlternativeNames":[],
+  "subjectAlternativeNames":[
+    {
+      "name": "dNSName",
+      "value": "${CLUSTER_CONFIG_HOST}"
+    },
+    {
+      "name": "dNSName",
+      "value": "${PA_CLUSTER_PUBLIC_HOSTNAME}"
+    }
+  ],
   "keyAlgorithm":"RSA",
   "alias":"${CONFIG_QUERY_KP_ALIAS}",
   "organization":"Ping Identity",
