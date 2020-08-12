@@ -37,7 +37,8 @@ def publish_local_coredns_endpoints_to_aws(namespace: str, domain_name: str):
    
     # Compare the 2 records
     if r53_endpoint_ip_addrs and set(kube_dns_endpoints) == set(r53_endpoint_ip_addrs):
-        logger.log("The Kubernetes DNS IPs match the Route 53 IPs.  Both records are up-to-date no changes are required.")
+        logger.log("The Kubernetes DNS IPs match the Route 53 IPs.  Both records are up-to-date no changes are "
+                   "required.")
 
     else:
         logger.log(f"The Kubernetes DNS IP addresses {kube_dns_endpoints} are different than the Route 53 IP addresses {r53_endpoint_ip_addrs}")
