@@ -42,6 +42,9 @@ PING_IDENTITY_ACCEPT_EULA=YES
 LEAVE_DISK_AFTER_SERVER_DELETE=false
 OPTIMIZE_REPLACE_PROFILE=false
 
+PD_CLUSTER_PRIVATE_HOSTNAME=pingdirectory
+PD_CLUSTER_PORT=1636
+
 # Leave blank
 TAIL_LOG_FILES=
 # Individual files should be spelled out, globs are unreliable

@@ -13,37 +13,37 @@ else
     if test "${TENANT_DOMAIN}" != "${PRIMARY_TENANT_DOMAIN}"; then
       case "${APP}" in
           pingdirectory)
-          HOST_PORT=${PD_CLUSTER_PUBLIC_HOSTNAME}:1636
+          HOST_PORT=${PD_CLUSTER_PUBLIC_HOSTNAME}:${PD_CLUSTER_PORT}
           ;;
 
-          pingfederate-admin)
-          HOST_PORT=${PF_CLUSTER_PUBLIC_HOSTNAME}:7600
+          pingfederate-cluster)
+          HOST_PORT=${PF_CLUSTER_PUBLIC_HOSTNAME}:${PF_CLUSTER_PORT}
           ;;
 
           pingaccess-admin)
-          HOST_PORT=${PA_CLUSTER_PUBLIC_HOSTNAME}:9090
+          HOST_PORT=${PA_CLUSTER_PUBLIC_HOSTNAME}:${PA_CLUSTER_PORT}
           ;;
 
           pingaccess-was-admin)
-          HOST_PORT=${PA_WAS_CLUSTER_PUBLIC_HOSTNAME}:9090
+          HOST_PORT=${PA_WAS_CLUSTER_PUBLIC_HOSTNAME}:${PA_WAS_CLUSTER_PORT}
           ;;
       esac
     else
       case "${APP}" in
           pingdirectory)
-          HOST_PORT=${APP}:1636
+          HOST_PORT=${PD_CLUSTER_PRIVATE_HOSTNAME}:${PD_CLUSTER_PORT}
           ;;
 
           pingfederate-cluster)
-          HOST_PORT=${APP}:7600
+          HOST_PORT=${PF_CLUSTER_PRIVATE_HOSTNAME}:${PF_CLUSTER_PORT}
           ;;
 
           pingaccess-admin)
-          HOST_PORT=${APP}:9090
+          HOST_PORT=${PA_CLUSTER_PRIVATE_HOSTNAME}:${PA_CLUSTER_PORT}
           ;;
 
           pingaccess-was-admin)
-          HOST_PORT=${APP}:9090
+          HOST_PORT=${PA_WAS_CLUSTER_PRIVATE_HOSTNAME}:${PA_WAS_CLUSTER_PORT}
           ;;
       esac
     fi 
