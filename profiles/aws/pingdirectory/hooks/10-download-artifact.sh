@@ -108,6 +108,12 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
                   exit 1
                 fi
 
+                # Validate zip.
+                beluga_log "Validating downloaded artifact file"
+                if test $(unzip -t  "${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}" &> /dev/null; echo $?) -ne 0; then
+                  beluga_log "Failed to validate downloaded artifact file"
+                  exit 1
+                fi
               fi
             else
               beluga_log "Artifact Version for ${ARTIFACT_NAME} could not be retrieved from ${STAGING_DIR}/artifacts/artifact-list.json"
