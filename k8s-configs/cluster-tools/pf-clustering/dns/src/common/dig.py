@@ -16,8 +16,29 @@ class DigManager():
         self.logger = logger
 
 
-    def __query(self, fqdn, type):
-        retry_in_secs =  os.environ.get("DNS_RESOLUTION_RETRY_SECS") if "DNS_RESOLUTION_RETRY_SECS" in os.environ else 30
+    def __get_dns_resolution_var(self) -> str:
+        if "DNS_RESOLUTION_RETRY_SECS" in os.environ:
+            env_var = os.environ.get("DNS_RESOLUTION_RETRY_SECS")
+            if env_var:
+                return env_var
+
+        return ""
+
+
+    def get_retry_secs(self) -> float:
+        env_var = self.__get_dns_resolution_var()
+        if env_var is not "":
+            try:
+                return float(env_var)
+            except ValueError:
+                self.logger.log(f"DNS_RESOLUTION_RETRY_SECS was not a number '{env_var}'.  Defaulting to 30 secs.", WARNING)
+
+        return 30
+
+
+    def __query(self, fqdn: str, type: str) -> str:
+
+        retry_in_secs = self.get_retry_secs()
         for i in range(0, 3):
             try:
                 record = pydig.query(fqdn, type)
@@ -34,12 +55,12 @@ class DigManager():
                 self.logger.log(f"Error retrieving records for {fqdn}", ERROR)
 
             self.logger.log(f"Retrying query in {retry_in_secs} seconds...")
-            time.sleep(int(retry_in_secs))
+            time.sleep(retry_in_secs)
 
-        return None
+        return '' 
 
 
-    def fetch_txt_records(self, fqdn, query_description):
+    def fetch_txt_records(self, fqdn: str, query_description: str) -> list:
         self.logger.log(query_description)
 
         records = []
@@ -55,7 +76,7 @@ class DigManager():
         return records 
 
 
-    def fetch_all_cluster_fqdns(self, fqdn, query_description):
+    def fetch_all_cluster_fqdns(self, fqdn: str, query_description: str) -> list:
         multi_cluster_domains = self.fetch_txt_records(fqdn, query_description)
         if len(multi_cluster_domains) > 0:
             return multi_cluster_domains
@@ -63,7 +84,7 @@ class DigManager():
             raise ValueError(f"{fqdn} must have at least one FQDN TXT value")
 
 
-    def fetch_name_to_ip_address(self, names, query_description):
+    def fetch_name_to_ip_address(self, names: list, query_description: str) -> dict:
         self.logger.log(query_description)
 
         name_to_ip_addrs = {}
@@ -89,11 +110,11 @@ class DigManager():
         return name_to_ip_addrs
 
     
-    def create_multi_cluster_domain_name(self, namespace, domain_name):
+    def create_multi_cluster_domain_name(self, namespace: str, domain_name: str) -> str:
         return f"multi-cluster-domains.{namespace}.{domain_name}."
 
 
-    def get_k8s_domain_to_ip_mappings(self, namespace, domain_name, filter=lambda x, y: True):
+    def get_k8s_domain_to_ip_mappings(self, namespace: str, domain_name: str, filter=lambda x, y: True) -> list:
 
         # The multi-cluster-domains recordset in the local
         # Hosted Zone holds a TXT record of all the clusters
