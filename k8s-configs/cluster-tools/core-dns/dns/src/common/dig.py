@@ -16,8 +16,29 @@ class DigManager():
         self.logger = logger
 
 
+    def __get_dns_resolution_var(self) -> str:
+        if "DNS_RESOLUTION_RETRY_SECS" in os.environ:
+            env_var = os.environ.get("DNS_RESOLUTION_RETRY_SECS")
+            if env_var:
+                return env_var
+
+        return ""
+
+
+    def __get_retry_secs(self) -> float:
+        env_var = self.__get_dns_resolution_var()
+        if env_var is not "":
+            try:
+                return float(env_var)
+            except ValueError:
+                self.logger.log(f"DNS_RESOLUTION_RETRY_SECS was not a number '{env_var}'.  Defaulting to 30 secs.", WARNING)
+
+        return 30
+
+
     def __query(self, fqdn: str, type: str) -> str:
-        retry_in_secs =  os.environ.get("DNS_RESOLUTION_RETRY_SECS") if "DNS_RESOLUTION_RETRY_SECS" in os.environ else 30
+
+        retry_in_secs = self.__get_retry_secs()
         for i in range(0, 3):
             try:
                 record = pydig.query(fqdn, type)
@@ -34,9 +55,9 @@ class DigManager():
                 self.logger.log(f"Error retrieving records for {fqdn}", ERROR)
 
             self.logger.log(f"Retrying query in {retry_in_secs} seconds...")
-            time.sleep(int(retry_in_secs))
+            time.sleep(retry_in_secs)
 
-        return None
+        return '' 
 
 
     def fetch_txt_records(self, fqdn: str, query_description: str) -> list:
