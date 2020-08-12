@@ -79,10 +79,6 @@ fi
 echo "Updating the host and port of the Admin Config..."
 update_admin_config_host_port
 
-echo "post-start: Starting hook: ${HOOKS_DIR}/82-add-acme-cert.sh"
-sh "${HOOKS_DIR}/82-add-acme-cert.sh"
-test $? -ne 0 && exit 1
-
 # Upload a backup right away after starting the server.
 beluga_log "Starting hook: ${HOOKS_DIR}/90-upload-backup-s3.sh"
 sh "${HOOKS_DIR}/90-upload-backup-s3.sh"

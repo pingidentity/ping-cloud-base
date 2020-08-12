@@ -6,7 +6,7 @@ spec:
   template:
     spec:
       initContainers:
-      - name: pingaccess-was-init
+      - name: wait-for-services
         env:
         # PA WAS engine must wait for the PA WAS admin to be ready
         # A space-separated list of deployments or statefulsets that this app should wait for

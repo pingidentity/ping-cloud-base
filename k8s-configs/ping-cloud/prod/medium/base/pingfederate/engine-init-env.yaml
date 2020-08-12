@@ -6,9 +6,9 @@ spec:
   template:
     spec:
       initContainers:
-      - name: pingfederate-init
+      - name: wait-for-services
         env:
         # PF engines must wait until the PF admin is ready
         # A space-separated list of deployments or statefulsets that this app should wait for
         - name: WAIT_FOR_SERVICES
-          value: pingfederate-admin
+          value: pingfederate-cluster
