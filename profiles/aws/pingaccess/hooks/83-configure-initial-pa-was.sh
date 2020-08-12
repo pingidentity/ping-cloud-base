@@ -13,11 +13,48 @@ is_previously_configured() {
   local applications_count=$(jq -n "${get_applications_response}" | jq '.items | length')
 
   if test "${applications_count}" -ge 5; then
-    beluga_log "pa-was already configured, exiting"
+    beluga_log "pa-was already configured"
     return 0
   else
     return 1
   fi
+}
+
+p14c_credentials_changed() {
+  get_web_session_clientId
+
+  if test "${CLIENT_ID}" != "${P14C_CLIENT_ID}"; then
+    beluga_log "P14C credentials changed"
+    return 0
+  else
+    beluga_log "P14C credentials unchanged"
+    return 1
+  fi
+}
+
+get_web_session_clientId() {
+  local resource=webSessions
+  local id=10
+  CLIENT_ID= # Global scope
+
+  beluga_log "Getting Web Session"
+  local response=$(get_entity "${resource}" "${id}")
+  beluga_log "make_api_request response..."
+  beluga_log "${response}"
+
+  CLIENT_ID=$(jq -n "${response}" | jq '.clientCredentials["clientId"]')
+  CLIENT_ID=$(strip_double_quotes "${CLIENT_ID}")
+}
+
+update_web_session() {
+  local web_session_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/web-session-payload.json)
+  local resource=webSessions
+  local id=10
+
+  beluga_log "Updating Web Session"
+  set +x  # Hide P14C client secret in logs
+  update_entity "${web_session_payload}" "${resource}" "${id}"
+  "${VERBOSE}" && set -x
 }
 
 create_web_session() {
@@ -238,7 +275,13 @@ is_production_environment() {
   test "${ENVIRONMENT_TYPE}"
 }
 
-is_previously_configured && exit 0
+if is_previously_configured; then
+  if p14c_credentials_changed; then
+    update_web_session
+  fi
+  exit 0
+fi
+
 create_web_session
 create_pa_virtual_host
 create_pf_virtual_host

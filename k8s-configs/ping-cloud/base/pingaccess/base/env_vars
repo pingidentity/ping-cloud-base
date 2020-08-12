@@ -9,9 +9,6 @@ REGION=us-west-2
 PA_ADMIN_SERVER=pingaccess-admin
 PA_ADMIN_PORT=9000
 
-PA_CLUSTER_PRIVATE_HOSTNAME=pingaccess-admin
-PA_CLUSTER_PORT=9090
-
 # Force stop the admin to terminate upon failure. See all references to stop_server
 # function in server profile for more details.
 STOP_SERVER_ON_FAILURE=true
@@ -50,3 +47,9 @@ TAIL_LOG_FILES=
 K8S_TAIL_LOG_FILES=/opt/out/instance/log/pingaccess_engine_audit.log /opt/out/instance/log/pingaccess_api_audit.log /opt/out/instance/log/pingaccess_agent_audit.log /opt/out/instance/log/pingaccess.log
 
 SECRETS_DIR=/usr/local/secrets
+
+# wait-for-services
+PF_CLUSTER_PRIVATE_HOSTNAME=pingfederate-cluster
+PF_CLUSTER_PORT=7600
+PA_CLUSTER_PRIVATE_HOSTNAME=pingaccess-admin
+PA_CLUSTER_PORT=9090
