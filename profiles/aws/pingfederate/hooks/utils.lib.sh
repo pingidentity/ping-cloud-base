@@ -150,15 +150,18 @@ function obfuscatePassword() {
 function export_config_settings() {
   if is_multi_cluster; then
     MULTI_CLUSTER=true
-    export PF_ADMIN_HOST_PORT="${PF_ADMIN_PUBLIC_HOSTNAME}"
+    if is_primary_cluster; then
+      PRIMARY_CLUSTER=true
+      export PF_ADMIN_HOST_PORT="${PINGFEDERATE_ADMIN_SERVER}:${PF_ADMIN_PORT}"
+    else
+      PRIMARY_CLUSTER=false
+      export PF_ADMIN_HOST_PORT="${PF_ADMIN_PUBLIC_HOSTNAME}"
+    fi
   else
     MULTI_CLUSTER=false
+    PRIMARY_CLUSTER=true
     export PF_ADMIN_HOST_PORT="${PINGFEDERATE_ADMIN_SERVER}:${PF_ADMIN_PORT}"
   fi
-
-  is_primary_cluster &&
-    PRIMARY_CLUSTER=true ||
-    PRIMARY_CLUSTER=false
 
   echo "MULTI_CLUSTER - ${MULTI_CLUSTER}"
   echo "PRIMARY_CLUSTER - ${PRIMARY_CLUSTER}"
