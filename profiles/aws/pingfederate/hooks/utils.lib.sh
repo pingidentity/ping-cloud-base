@@ -205,13 +205,9 @@ function configure_tcp_xml() {
   local currentDir="$(pwd)"
   cd "${SERVER_ROOT_DIR}/server/default/conf"
 
-  if is_multi_cluster; then
-    export JGROUPS_DISCOVERY_PROTOCOL="<org.jgroups.aws.s3.NATIVE_S3_PING \
-        region_name=\"${PRIMARY_REGION}\" \
-        bucket_name=\"${CLUSTER_BUCKET_NAME}\" \
-        bucket_prefix=\"${PING_PRODUCT}\" \
-        remove_all_data_on_view_change=\"true\" \
-        write_data_on_find=\"true\" />"
+  if is_secondary_cluster; then
+    export JGROUPS_DISCOVERY_PROTOCOL="<dns.DNS_PING \
+        dns_query=\"${PF_CLUSTER_PUBLIC_HOSTNAME}\" />"
   else
     export JGROUPS_DISCOVERY_PROTOCOL="<dns.DNS_PING \
         dns_query=\"${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local\" />"
