@@ -7,7 +7,7 @@
     },
     {
       "name": "dNSName",
-      "value": "${PA_CLUSTER_PUBLIC_HOSTNAME}"
+      "value": "${CLUSTER_PUBLIC_HOSTNAME}"
     }
   ],
   "keyAlgorithm":"RSA",
