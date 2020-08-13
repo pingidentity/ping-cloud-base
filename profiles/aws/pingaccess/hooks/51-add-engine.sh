@@ -19,45 +19,27 @@ export_config_settings
 SHORT_HOST_NAME=$(hostname)
 ORDINAL=${SHORT_HOST_NAME##*-}
 
-if is_secondary_cluster; then
+pingaccess_admin_wait "${ADMIN_HOST_PORT}"
 
-  # Secondary-cluster PA engines should use cert and alias name of the cert added to PA admin with value of K8S_ACME_CERT_SECRET_NAME.
-  if test -z "${K8S_ACME_CERT_SECRET_NAME}"; then
-      beluga_log "add-engine: K8S_ACME_CERT_SECRET_NAME is not set"
-      exit 1
-  fi
+# Retrieving key pair ID.
+beluga_log "add-engine: retrieving the Key Pair ID"
+OUT=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/httpsListeners)
+CONFIG_QUERY_LISTENER_KEYPAIR_ID=$(jq -n "${OUT}" | jq '.items[] | select(.name=="CONFIG QUERY") | .keyPairId')
+beluga_log "add-engine: CONFIG_QUERY_LISTENER_KEYPAIR_ID: ${CONFIG_QUERY_LISTENER_KEYPAIR_ID}"
 
-  # Retrieve Engine Cert ID.
-  beluga_log "add-engine: retrieving the Engine Cert ID"
-  OUT=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/engines/certificates)
-  ENGINE_CERT_ID=$(jq -n "${OUT}" | jq --arg b "${K8S_ACME_CERT_SECRET_NAME}" -r '.items[] | select(.alias==$b and .trustedCertificate==true) | .id')
-  beluga_log "add-engine: ENGINE_CERT_ID: ${ENGINE_CERT_ID}"
+# Retrieving key pair alias.
+beluga_log "add-engine: retrieving the Key Pair alias"
+OUT=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/keyPairs)
+KEYPAIR_ALIAS_NAME=$(jq -n "${OUT}" | jq -r '.items[] | select(.id=='${CONFIG_QUERY_LISTENER_KEYPAIR_ID}') | .alias')
+beluga_log "add-engine: KEYPAIR_ALIAS_NAME: ${KEYPAIR_ALIAS_NAME}"
 
-else
-
-  pingaccess_admin_wait "${ADMIN_HOST_PORT}"
-
-  # Retrieving key pair ID.
-  beluga_log "add-engine: retrieving the Key Pair ID"
-  OUT=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/httpsListeners)
-  CONFIG_QUERY_LISTENER_KEYPAIR_ID=$(jq -n "${OUT}" | jq '.items[] | select(.name=="CONFIG QUERY") | .keyPairId')
-  beluga_log "add-engine: CONFIG_QUERY_LISTENER_KEYPAIR_ID: ${CONFIG_QUERY_LISTENER_KEYPAIR_ID}"
-
-  # Retrieving key pair alias.
-  beluga_log "add-engine: retrieving the Key Pair alias"
-  OUT=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/keyPairs)
-  KEYPAIR_ALIAS_NAME=$(jq -n "${OUT}" | jq -r '.items[] | select(.id=='${CONFIG_QUERY_LISTENER_KEYPAIR_ID}') | .alias')
-  beluga_log "add-engine: KEYPAIR_ALIAS_NAME: ${KEYPAIR_ALIAS_NAME}"
-
-  # Retrieve Engine Cert ID.
-  beluga_log "add-engine: retrieving the Engine Cert ID"
-  OUT=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/engines/certificates)
-  ENGINE_CERT_ID=$(jq -n "${OUT}" |
-      jq --arg KEYPAIR_ALIAS_NAME "${KEYPAIR_ALIAS_NAME}" \
-          '.items[] | select(.alias==$KEYPAIR_ALIAS_NAME and .keyPair==true) | .id')
-  beluga_log "add-engine: ENGINE_CERT_ID: ${ENGINE_CERT_ID}"
-
-fi
+# Retrieve Engine Cert ID.
+beluga_log "add-engine: retrieving the Engine Cert ID"
+OUT=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/engines/certificates)
+ENGINE_CERT_ID=$(jq -n "${OUT}" |
+    jq --arg KEYPAIR_ALIAS_NAME "${KEYPAIR_ALIAS_NAME}" \
+        '.items[] | select(.alias==$KEYPAIR_ALIAS_NAME and .keyPair==true) | .id')
+beluga_log "add-engine: ENGINE_CERT_ID: ${ENGINE_CERT_ID}"
 
 # Retrieve the Engine ID for name.
 beluga_log "add-engine: retrieving the Engine ID for name ${ENGINE_NAME}"
@@ -98,7 +80,7 @@ if is_secondary_cluster; then
     beluga_log "add-engine: failed to update admin port"
     exit 1
   fi
-  if ! sed -i "s/engine.admin.configuration.host.*/engine.admin.configuration.host=${CLUSTER_CONFIG_HOST}/g" /opt/out/instance/conf/bootstrap.properties; then
+  if ! sed -i "s/engine.admin.configuration.host.*/engine.admin.configuration.host=${CLUSTER_PUBLIC_HOSTNAME}/g" /opt/out/instance/conf/bootstrap.properties; then
     beluga_log "add-engine: failed to update admin host"
     exit 1
   fi
