@@ -47,3 +47,5 @@ TAIL_LOG_FILES=
 K8S_TAIL_LOG_FILES=/opt/out/instance/log/pingaccess_engine_audit.log /opt/out/instance/log/pingaccess_api_audit.log /opt/out/instance/log/pingaccess_agent_audit.log /opt/out/instance/log/pingaccess.log
 
 SECRETS_DIR=/usr/local/secrets
+
+TOPOLOGY_DESCRIPTOR_JSON=/opt/staging/topology/descriptor.json
