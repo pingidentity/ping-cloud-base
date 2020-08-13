@@ -27,7 +27,7 @@ class DigTests(unittest.TestCase):
 
     def test_dns_retry_sec_happy_path(self):
         self.dig_mgr.__get_dns_resolution_var = MagicMock(return_value = "60")
-        retry_secs = self.dig_mgr.__get_retry_secs()
+        retry_secs = self.dig_mgr.get_retry_secs()
         self.assertEqual(60, retry_secs, 'The retry_secs should be 60 seconds but was not')
 
 
