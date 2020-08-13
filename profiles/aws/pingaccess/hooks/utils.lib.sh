@@ -409,6 +409,8 @@ function export_environment_variables() {
     export CLUSTER_PUBLIC_HOSTNAME="${PA_WAS_CLUSTER_PUBLIC_HOSTNAME}"
 
     export PA_DATA_BACKUP_URL="${BACKUP_URL}/pingaccess-was"
+
+    export CONFIG_QUERY_TEMPLATE="config-query-keypair-pa-was.json"
   else
     export K8S_STATEFUL_SET_NAME="${K8S_STATEFUL_SET_NAME_PINGACCESS}"
     export K8S_SERVICE_NAME_ADMIN="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}"
@@ -419,6 +421,8 @@ function export_environment_variables() {
     export CLUSTER_PUBLIC_HOSTNAME="${PA_CLUSTER_PUBLIC_HOSTNAME}"
 
     export PA_DATA_BACKUP_URL=
+
+    export CONFIG_QUERY_TEMPLATE="config-query-keypair.json"
   fi
 }
 

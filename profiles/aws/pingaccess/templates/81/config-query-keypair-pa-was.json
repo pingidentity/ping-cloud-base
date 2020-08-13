@@ -1,0 +1,11 @@
+{
+  "keySize": 2048,
+  "subjectAlternativeNames":[],
+  "keyAlgorithm":"RSA",
+  "alias":"${CONFIG_QUERY_KP_ALIAS}",
+  "organization":"Ping Identity",
+  "validDays":${CONFIG_QUERY_KP_VALID_DAYS},
+  "commonName":"${CLUSTER_CONFIG_HOST}",
+  "country":"US",
+  "signatureAlgorithm":"SHA256withRSA"
+}
