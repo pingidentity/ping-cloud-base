@@ -54,7 +54,7 @@ spec:
           runAsUser: 0
         image: bitnami/kubectl:1.15.3
         imagePullPolicy: IfNotPresent
-        command: 
+        command:
         - /init-container.sh
         envFrom:
         - configMapRef:

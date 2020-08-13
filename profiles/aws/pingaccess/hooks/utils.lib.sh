@@ -347,7 +347,7 @@ function export_config_settings() {
   fi
 
   export CLUSTER_CONFIG_PORT=9090
-  
+
   echo "MULTI_CLUSTER - ${MULTI_CLUSTER}"
   echo "PRIMARY_CLUSTER - ${PRIMARY_CLUSTER}"
   echo "ENGINE_NAME - ${ENGINE_NAME}"
@@ -417,7 +417,7 @@ function export_environment_variables() {
     export ENGINE_PUBLIC_HOST_NAME="${PA_ENGINE_PUBLIC_HOSTNAME}"
 
     export CLUSTER_PUBLIC_HOSTNAME="${PA_CLUSTER_PUBLIC_HOSTNAME}"
-    
+
     export PA_DATA_BACKUP_URL=
   fi
 }
