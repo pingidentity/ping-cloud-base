@@ -5,6 +5,9 @@ ${VERBOSE} && set -x
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 
+echo "export config settings"
+export_config_settings
+
 echo "pre-restart: configure the PF cluster"
 configure_cluster
 
