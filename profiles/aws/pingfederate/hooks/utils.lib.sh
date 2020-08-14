@@ -156,7 +156,7 @@ function export_config_settings() {
     MULTI_CLUSTER=true
     if is_primary_cluster; then
       PRIMARY_CLUSTER=true
-      export PF_ADMIN_HOST="${PINGFEDERATE_ADMIN_SERVER}.${LOCAL_DOMAIN_NAME}.svc.cluster.local"
+      export PF_ADMIN_HOST="${PINGFEDERATE_ADMIN_SERVER}-0.${LOCAL_DOMAIN_NAME}"
     else
       PRIMARY_CLUSTER=false
       export PF_ADMIN_HOST="${PF_CLUSTER_PUBLIC_HOSTNAME}"
@@ -164,14 +164,14 @@ function export_config_settings() {
   else
     MULTI_CLUSTER=false
     PRIMARY_CLUSTER=true
-    export PF_ADMIN_HOST="${PINGFEDERATE_ADMIN_SERVER}.${LOCAL_DOMAIN_NAME}.svc.cluster.local"
+    export PF_ADMIN_HOST="${PINGFEDERATE_ADMIN_SERVER}-0.${LOCAL_DOMAIN_NAME}"
   fi
 
   export PF_ADMIN_HOST_PORT="${PF_ADMIN_HOST}:${PF_ADMIN_PORT}"
 
-  echo "MULTI_CLUSTER - ${MULTI_CLUSTER}"
-  echo "PRIMARY_CLUSTER - ${PRIMARY_CLUSTER}"
-  echo "PF_ADMIN_HOST_PORT - ${PF_ADMIN_HOST_PORT}"
+  beluga_log "MULTI_CLUSTER - ${MULTI_CLUSTER}"
+  beluga_log "PRIMARY_CLUSTER - ${PRIMARY_CLUSTER}"
+  beluga_log "PF_ADMIN_HOST_PORT - ${PF_ADMIN_HOST_PORT}"
 }
 
 ########################################################################################################################
@@ -217,7 +217,7 @@ function configure_tcp_xml() {
   envsubst < tcp.xml.subst > tcp.xml
   rm -f tcp.xml.subst
 
-  echo "configure_tcp_xml: contents of tcp.xml after substitution"
+  beluga_log "configure_tcp_xml: contents of tcp.xml after substitution"
   cat tcp.xml
 
   cd "${currentDir}"
