@@ -55,7 +55,7 @@ spec:
         image: bitnami/kubectl:1.15.3
         imagePullPolicy: IfNotPresent
         command:
-        - /init.sh
+        - /copy-dependencies.sh
         envFrom:
         - configMapRef:
             name: pingdirectory-environment-variables
@@ -71,8 +71,30 @@ spec:
           mountPath: /known_hosts
           subPath: known_hosts
         - name: pingdirectory-init
-          mountPath: /init.sh
-          subPath: init.sh
+          mountPath: /copy-dependencies.sh
+          subPath: copy-dependencies.sh
+        - name: pingdirectory-init
+          mountPath: /utils.lib.sh
+          subPath: utils.lib.sh
+      - name: wait-for-services
+        # FIXME: switch to same user as app
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        image: busybox:1.32
+        imagePullPolicy: IfNotPresent
+        command:
+        - /wait-for-services.sh
+        envFrom:
+        - configMapRef:
+            name: pingdirectory-environment-variables
+        volumeMounts:
+        - name: pingdirectory-init
+          mountPath: /utils.lib.sh
+          subPath: utils.lib.sh
+        - name: pingdirectory-init
+          mountPath: /wait-for-services.sh
+          subPath: wait-for-services.sh
       containers:
       - name: pingdirectory
         image: pingidentity/pingdirectory:2006.1-8.1.0.1

@@ -338,15 +338,15 @@ function export_config_settings() {
 
   if is_secondary_cluster; then
     PRIMARY_CLUSTER=false
-    export ADMIN_HOST_PORT="${ADMIN_PUBLIC_HOST_NAME}:443"
+    export ADMIN_HOST_PORT="${PA_CLUSTER_PUBLIC_HOSTNAME}:9000"
     export CLUSTER_CONFIG_HOST="${ADMIN_PUBLIC_HOST_NAME}"
-    export CLUSTER_CONFIG_PORT=443
   else
     PRIMARY_CLUSTER=true
     export ADMIN_HOST_PORT="${K8S_SERVICE_NAME_ADMIN}:9000"
     export CLUSTER_CONFIG_HOST="${K8S_SERVICE_NAME_ADMIN}"
-    export CLUSTER_CONFIG_PORT=9090
   fi
+
+  export CLUSTER_CONFIG_PORT=9090
 
   echo "MULTI_CLUSTER - ${MULTI_CLUSTER}"
   echo "PRIMARY_CLUSTER - ${PRIMARY_CLUSTER}"
@@ -406,6 +406,8 @@ function export_environment_variables() {
     export ADMIN_PUBLIC_HOST_NAME="${PA_WAS_ADMIN_PUBLIC_HOSTNAME}"
     export ENGINE_PUBLIC_HOST_NAME="${PA_WAS_ENGINE_PUBLIC_HOSTNAME}"
 
+    export CLUSTER_PUBLIC_HOSTNAME="${PA_WAS_CLUSTER_PUBLIC_HOSTNAME}"
+
     export PA_DATA_BACKUP_URL="${BACKUP_URL}/pingaccess-was"
   else
     export K8S_STATEFUL_SET_NAME="${K8S_STATEFUL_SET_NAME_PINGACCESS}"
@@ -413,6 +415,8 @@ function export_environment_variables() {
 
     export ADMIN_PUBLIC_HOST_NAME="${PA_ADMIN_PUBLIC_HOSTNAME}"
     export ENGINE_PUBLIC_HOST_NAME="${PA_ENGINE_PUBLIC_HOSTNAME}"
+
+    export CLUSTER_PUBLIC_HOSTNAME="${PA_CLUSTER_PUBLIC_HOSTNAME}"
 
     export PA_DATA_BACKUP_URL=
   fi
