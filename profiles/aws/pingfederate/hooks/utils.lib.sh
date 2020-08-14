@@ -78,7 +78,7 @@ function make_api_request_download() {
 function wait_for_admin_api_endpoint() {
   TIMEOUT=3
   ENDPOINT="${1:-version}"
-  API_REQUEST_URL="https://localhost:9999/pf-admin-api/v1/${ENDPOINT}"
+  API_REQUEST_URL="https://${PF_ADMIN_HOST_PORT}/pf-admin-api/v1/${ENDPOINT}"
 
   beluga_log "Waiting for admin API endpoint at ${API_REQUEST_URL}"
 
@@ -148,20 +148,26 @@ function obfuscatePassword() {
 # Export values for PingFederate configuration settings based on single vs. multi cluster.
 ########################################################################################################################
 function export_config_settings() {
+  export SHORT_HOST_NAME=$(hostname)
+  export ORDINAL=${SHORT_HOST_NAME##*-}
+  export LOCAL_DOMAIN_NAME="$(hostname -f | cut -d'.' -f2-)"
+
   if is_multi_cluster; then
     MULTI_CLUSTER=true
     if is_primary_cluster; then
       PRIMARY_CLUSTER=true
-      export PF_ADMIN_HOST_PORT="${PINGFEDERATE_ADMIN_SERVER}:${PF_ADMIN_PORT}"
+      export PF_ADMIN_HOST="${PINGFEDERATE_ADMIN_SERVER}.${LOCAL_DOMAIN_NAME}.svc.cluster.local"
     else
       PRIMARY_CLUSTER=false
-      export PF_ADMIN_HOST_PORT="${PF_ADMIN_PUBLIC_HOSTNAME}"
+      export PF_ADMIN_HOST="${PF_CLUSTER_PUBLIC_HOSTNAME}"
     fi
   else
     MULTI_CLUSTER=false
     PRIMARY_CLUSTER=true
-    export PF_ADMIN_HOST_PORT="${PINGFEDERATE_ADMIN_SERVER}:${PF_ADMIN_PORT}"
+    export PF_ADMIN_HOST="${PINGFEDERATE_ADMIN_SERVER}.${LOCAL_DOMAIN_NAME}.svc.cluster.local"
   fi
+
+  export PF_ADMIN_HOST_PORT="${PF_ADMIN_HOST}:${PF_ADMIN_PORT}"
 
   echo "MULTI_CLUSTER - ${MULTI_CLUSTER}"
   echo "PRIMARY_CLUSTER - ${PRIMARY_CLUSTER}"
@@ -205,14 +211,7 @@ function configure_tcp_xml() {
   local currentDir="$(pwd)"
   cd "${SERVER_ROOT_DIR}/server/default/conf"
 
-  if is_secondary_cluster; then
-    DNS_PING_DNS_QUERY="${PINGFEDERATE_ADMIN_SERVER}.${PF_CLUSTER_PUBLIC_HOSTNAME}"
-  else
-    LOCAL_DOMAIN_NAME="$(hostname -f | cut -d'.' -f2-)"
-    DNS_PING_DNS_QUERY="${PINGFEDERATE_ADMIN_SERVER}.${LOCAL_DOMAIN_NAME}.svc.cluster.local"
-  fi
-
-  export JGROUPS_DISCOVERY_PROTOCOL="<dns.DNS_PING dns_query=\"${DNS_PING_DNS_QUERY}\" />"
+  export JGROUPS_DISCOVERY_PROTOCOL="<dns.DNS_PING dns_query=\"${PF_ADMIN_HOST}\" />"
 
   mv tcp.xml tcp.xml.subst
   envsubst < tcp.xml.subst > tcp.xml

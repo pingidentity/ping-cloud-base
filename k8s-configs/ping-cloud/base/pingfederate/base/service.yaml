@@ -52,4 +52,5 @@ spec:
       targetPort: 7700
   selector:
      cluster: pingfederate-cluster
+     role: pingfederate-engine
 
