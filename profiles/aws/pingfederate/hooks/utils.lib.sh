@@ -172,7 +172,7 @@ function export_config_settings() {
   # the service may not be ready yet.
   SHORT_HOST_NAME=$(hostname)
   echo "${PINGFEDERATE_ADMIN_SERVER}" | grep -qi "${SHORT_HOST_NAME}"
-  $? -eq 0 && export PF_ADMIN_HOST=localhost
+  test $? -eq 0 && export PF_ADMIN_HOST=localhost
 
   export PF_ADMIN_HOST_PORT="${PF_ADMIN_HOST}:${PF_ADMIN_PORT}"
 
