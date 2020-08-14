@@ -14,7 +14,10 @@ DEPLOYER_PATH="${SERVER_ROOT_DIR}/server/default/data/drop-in-deployer"
 #---------------------------------------------------------------------------------------------
 
 # NOTE: we wait through the WAIT_FOR_SERVICES variable in the engine's init container. So the admin
-# must be running if we're here.
+# must be running if we're here. We'll wait for the admin API specifically to ensure it's up.
+
+beluga_log "waiting for admin API to be ready"
+wait_for_admin_api_endpoint configArchive/export
 
 beluga_log "Fetching configuration and master key from the admin server"
 
