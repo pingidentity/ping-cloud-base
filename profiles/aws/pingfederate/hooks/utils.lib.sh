@@ -170,8 +170,8 @@ function export_config_settings() {
 
   # On the admin server itself, use localhost for the PF admin hostname because
   # the service may not be ready yet.
-  SHORT_HOST_NAME=$(hostname)
-  echo "${PINGFEDERATE_ADMIN_SERVER}" | grep -qi "${SHORT_HOST_NAME}"
+  SHORT_HOST_NAME="$(hostname)"
+  echo "${SHORT_HOST_NAME}" | grep -qi "${PINGFEDERATE_ADMIN_SERVER}"
   test $? -eq 0 && export PF_ADMIN_HOST=localhost
 
   export PF_ADMIN_HOST_PORT="${PF_ADMIN_HOST}:${PF_ADMIN_PORT}"
