@@ -148,16 +148,14 @@ function obfuscatePassword() {
 # Export values for PingFederate configuration settings based on single vs. multi cluster.
 ########################################################################################################################
 function export_config_settings() {
-  export SHORT_HOST_NAME=$(hostname)
-  export ORDINAL=${SHORT_HOST_NAME##*-}
-  export LOCAL_DOMAIN_NAME="$(hostname -f | cut -d'.' -f2-)"
+  K8S_SUB_DOMAIN_NAME="${PF_DNS_PING_NAMESPACE}.svc.cluster.local"
 
   if is_multi_cluster; then
     MULTI_CLUSTER=true
     if is_primary_cluster; then
       PRIMARY_CLUSTER=true
-      export PF_ADMIN_HOST="${PINGFEDERATE_ADMIN_SERVER}-0.${LOCAL_DOMAIN_NAME}"
-      export PF_CLUSTER_HOST="${PF_CLUSTER_PRIVATE_HOSTNAME}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local"
+      export PF_ADMIN_HOST="${PINGFEDERATE_ADMIN_SERVER}.${K8S_SUB_DOMAIN_NAME}"
+      export PF_CLUSTER_HOST="${PF_CLUSTER_PRIVATE_HOSTNAME}.${K8S_SUB_DOMAIN_NAME}"
     else
       PRIMARY_CLUSTER=false
       export PF_ADMIN_HOST="${PF_CLUSTER_PUBLIC_HOSTNAME}"
@@ -166,9 +164,15 @@ function export_config_settings() {
   else
     MULTI_CLUSTER=false
     PRIMARY_CLUSTER=true
-    export PF_ADMIN_HOST="${PINGFEDERATE_ADMIN_SERVER}-0.${LOCAL_DOMAIN_NAME}"
-    export PF_CLUSTER_HOST="${PF_CLUSTER_PRIVATE_HOSTNAME}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local"
+    export PF_ADMIN_HOST="${PINGFEDERATE_ADMIN_SERVER}.${K8S_SUB_DOMAIN_NAME}"
+    export PF_CLUSTER_HOST="${PF_CLUSTER_PRIVATE_HOSTNAME}.${K8S_SUB_DOMAIN_NAME}"
   fi
+
+  # On the admin server itself, use localhost for the PF admin hostname because
+  # the service may not be ready yet.
+  SHORT_HOST_NAME=$(hostname)
+  echo "${PINGFEDERATE_ADMIN_SERVER}" | grep -qi "${SHORT_HOST_NAME}"
+  $? -eq 0 && export PF_ADMIN_HOST=localhost
 
   export PF_ADMIN_HOST_PORT="${PF_ADMIN_HOST}:${PF_ADMIN_PORT}"
 
