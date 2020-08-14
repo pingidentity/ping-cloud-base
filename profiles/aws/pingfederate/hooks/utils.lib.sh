@@ -211,6 +211,7 @@ function configure_tcp_xml() {
   local currentDir="$(pwd)"
   cd "${SERVER_ROOT_DIR}/server/default/conf"
 
+  export_config_settings
   export JGROUPS_DISCOVERY_PROTOCOL="<dns.DNS_PING dns_query=\"${PF_ADMIN_HOST}\" />"
 
   mv tcp.xml tcp.xml.subst
