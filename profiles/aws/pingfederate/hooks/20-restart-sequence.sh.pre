@@ -8,9 +8,6 @@ ${VERBOSE} && set -x
 echo "export config settings"
 export_config_settings
 
-echo "pre-restart: configure the PF cluster"
-configure_cluster
-
 run_hook "10-download-artifact.sh"
 
 if ! [ -z "${OPERATIONAL_MODE}" ] &&  [ "${OPERATIONAL_MODE}" != "CLUSTERED_ENGINE" ]; then
@@ -25,5 +22,8 @@ if ! [ -z "${OPERATIONAL_MODE}" ] &&  [ "${OPERATIONAL_MODE}" = "CLUSTERED_ENGIN
    run_hook "10-get-configuration.sh"
    run_hook "10-set-engine-threads.sh"
 fi
+
+echo "pre-start: configure the PF cluster"
+configure_cluster
 
 run_hook "100-tail-logs.sh"

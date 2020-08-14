@@ -211,11 +211,7 @@ function configure_tcp_xml() {
   local currentDir="$(pwd)"
   cd "${SERVER_ROOT_DIR}/server/default/conf"
 
-  export_config_settings
-  beluga_log "PF_ADMIN_HOST =======> ${PF_ADMIN_HOST}"
-
   export JGROUPS_DISCOVERY_PROTOCOL="<dns.DNS_PING dns_query=\"${PF_ADMIN_HOST}\" />"
-  beluga_log "JGROUPS_DISCOVERY_PROTOCOL =======> ${JGROUPS_DISCOVERY_PROTOCOL}"
 
   mv tcp.xml tcp.xml.subst
   envsubst < tcp.xml.subst > tcp.xml
