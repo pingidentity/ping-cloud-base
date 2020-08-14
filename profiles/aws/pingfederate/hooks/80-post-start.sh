@@ -12,8 +12,10 @@ fi
 
 beluga_log "post-start: starting admin post-start initialization"
 
+echo "export config settings"
+export_config_settings
+
 # Remove the marker file before running post-start initialization.
-POST_START_INIT_MARKER_FILE="${OUT_DIR}/instance/post-start-init-complete"
 rm -f "${POST_START_INIT_MARKER_FILE}"
 
 # Wait until the admin API is up and running.

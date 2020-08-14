@@ -175,6 +175,7 @@ function export_config_settings() {
   test $? -eq 0 && export PF_ADMIN_HOST=localhost
 
   export PF_ADMIN_HOST_PORT="${PF_ADMIN_HOST}:${PF_ADMIN_PORT}"
+  export POST_START_INIT_MARKER_FILE="${OUT_DIR}/instance/post-start-init-complete"
 
   beluga_log "MULTI_CLUSTER - ${MULTI_CLUSTER}"
   beluga_log "PRIMARY_CLUSTER - ${PRIMARY_CLUSTER}"
