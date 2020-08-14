@@ -157,20 +157,24 @@ function export_config_settings() {
     if is_primary_cluster; then
       PRIMARY_CLUSTER=true
       export PF_ADMIN_HOST="${PINGFEDERATE_ADMIN_SERVER}-0.${LOCAL_DOMAIN_NAME}"
+      export PF_CLUSTER_HOST="${PF_CLUSTER_PRIVATE_HOSTNAME}.${LOCAL_DOMAIN_NAME}"
     else
       PRIMARY_CLUSTER=false
       export PF_ADMIN_HOST="${PF_CLUSTER_PUBLIC_HOSTNAME}"
+      export PF_CLUSTER_HOST="${PF_CLUSTER_PUBLIC_HOSTNAME}"
     fi
   else
     MULTI_CLUSTER=false
     PRIMARY_CLUSTER=true
     export PF_ADMIN_HOST="${PINGFEDERATE_ADMIN_SERVER}-0.${LOCAL_DOMAIN_NAME}"
+    export PF_CLUSTER_HOST="${PF_CLUSTER_PRIVATE_HOSTNAME}.${LOCAL_DOMAIN_NAME}"
   fi
 
   export PF_ADMIN_HOST_PORT="${PF_ADMIN_HOST}:${PF_ADMIN_PORT}"
 
   beluga_log "MULTI_CLUSTER - ${MULTI_CLUSTER}"
   beluga_log "PRIMARY_CLUSTER - ${PRIMARY_CLUSTER}"
+  beluga_log "PF_CLUSTER_HOST - ${PF_CLUSTER_HOST}"
   beluga_log "PF_ADMIN_HOST_PORT - ${PF_ADMIN_HOST_PORT}"
 }
 
@@ -211,7 +215,7 @@ function configure_tcp_xml() {
   local currentDir="$(pwd)"
   cd "${SERVER_ROOT_DIR}/server/default/conf"
 
-  export JGROUPS_DISCOVERY_PROTOCOL="<dns.DNS_PING dns_query=\"${PF_ADMIN_HOST}\" />"
+  export JGROUPS_DISCOVERY_PROTOCOL="<dns.DNS_PING dns_query=\"${PF_CLUSTER_HOST}\" />"
 
   mv tcp.xml tcp.xml.subst
   envsubst < tcp.xml.subst > tcp.xml
