@@ -30,7 +30,7 @@ class CoreDnsLogger:
         logger.addHandler(handler)
         self.logger = logger
 
-    def log(self, message, log_level=LogLevel.INFO):
+    def log(self, message, log_level=LogLevel.INFO) -> None:
         func = inspect.currentframe().f_back.f_code
         if log_level == LogLevel.DEBUG:
             self.logger.debug("%s - %s" % (func.co_name, message))
@@ -50,7 +50,7 @@ class CoreDnsLogger:
                 message
             ))
 
-    def log_env_vars(self):
+    def log_env_vars(self) -> None:
         self.log("Environment variables:", LogLevel.DEBUG)
         self.log(tabulate(sorted(os.environ.items()), headers=["Name", "Value"]), LogLevel.DEBUG)
 

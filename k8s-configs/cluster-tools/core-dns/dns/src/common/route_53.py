@@ -10,7 +10,7 @@ ERROR = core_dns_logging.LogLevel.ERROR
 
 class HostedZoneManager:
 
-    def __init__(self, logger):
+    def __init__(self, logger: core_dns_logging) -> None:
         self.logger = logger
         self.zone_id_cache = None
 
@@ -20,7 +20,7 @@ class HostedZoneManager:
         botocore_config = botocore.config.Config(retries=custom_retries)
         self.r53_client = boto3.client("route53", config=botocore_config)
 
-    def build_resource_records(self, entries):
+    def build_resource_records(self, entries: list) -> list:
         # Filter out duplicates
         unique_entries = set()
         for entry in entries:
@@ -34,7 +34,7 @@ class HostedZoneManager:
         self.logger.log(f"Building Resource Records: {resource_records}")
         return resource_records
 
-    def __get_hosted_zone_id(self, response, domain_name):
+    def __get_hosted_zone_id(self, response: dict, domain_name: str) -> str:
         zone_id = None
 
         # Drill into the response to get the Hosted Zone Id
@@ -51,7 +51,7 @@ class HostedZoneManager:
 
         return zone_id
 
-    def fetch_hosted_zone_id(self, domain_name):
+    def fetch_hosted_zone_id(self, domain_name: str) -> str:
         """
         Get route 53 hosted zone id.
         """
@@ -72,7 +72,12 @@ class HostedZoneManager:
 
         return zone_id
 
-    def update_resource_record_sets(self, hosted_zone_id, rrs_name, comment, record_type, resource_records):
+    def update_resource_record_sets(self,
+                                    hosted_zone_id: str,
+                                    rrs_name: str,
+                                    comment: str,
+                                    record_type: str,
+                                    resource_records: list) -> dict:
         """
         Update route 53 hosted zone resource record sets.
         """

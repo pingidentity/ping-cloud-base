@@ -20,7 +20,7 @@ def create_endpoints_domain_name(namespace: str, domain_name: str) -> str:
     return f"{namespace}-endpoints.{domain_name}"
 
 
-def publish_local_coredns_endpoints_to_aws(namespace: str, domain_name: str):
+def publish_local_coredns_endpoints_to_aws(namespace: str, domain_name: str) -> None:
     endpoint_domain = create_endpoints_domain_name(namespace, domain_name)
 
     # Look up the K8s Core DNS IPs stored in Route 53
@@ -56,7 +56,7 @@ def publish_local_coredns_endpoints_to_aws(namespace: str, domain_name: str):
         )
 
 
-def update_core_dns(namespace, domain_name):
+def update_core_dns(namespace: str, domain_name: str) -> None:
     """
     Update core-dns config map with forwarding routes
     """
@@ -103,7 +103,7 @@ def validate_namespace() -> str:
     return namespace
 
 
-def create_multi_cluster_domain_entry(namespace: str, domain_name: str, name):
+def create_multi_cluster_domain_entry(namespace: str, domain_name: str, name: str) -> None:
     endpoints_domain_name = create_endpoints_domain_name(namespace, domain_name)
     logger.log(f"Creating a single default TXT entry '{name}' -> '{endpoints_domain_name}'...")
 
@@ -120,7 +120,7 @@ def create_multi_cluster_domain_entry(namespace: str, domain_name: str, name):
         resource_records)
 
 
-def validate_multi_cluster_domain_entry(namespace, domain_name):
+def validate_multi_cluster_domain_entry(namespace: str, domain_name: str) -> None:
     multi_cluster_domains = []
     name = dig.create_multi_cluster_domain_name(namespace, domain_name)
     try:

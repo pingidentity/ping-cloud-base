@@ -24,7 +24,7 @@ def get_dns_resolution_var() -> str:
 
 class DigManager:
 
-    def __init__(self, logger):
+    def __init__(self, logger: core_dns_logging) -> None:
         self.logger = logger
 
     def get_retry_secs(self) -> float:
@@ -110,7 +110,7 @@ class DigManager:
     def get_k8s_domain_to_ip_mappings(self,
                                       namespace: str,
                                       domain_name: str,
-                                      ns_filter=lambda x, y: True) -> list:
+                                      ns_filter=lambda x, y: True) -> dict:
 
         # The multi-cluster-domains recordset in the local
         # Hosted Zone holds a TXT record of all the clusters
@@ -139,7 +139,8 @@ class DigManager:
                 self.logger.log(f"domain_name: {domain_name}, namespace: {namespace}")
                 self.logger.log("0000000000000000000000000000000000000000000000000000000000000000000")
                 name_to_ip_addrs = self.fetch_name_to_ip_address([domain_name],
-                                                                 f"Query to get the Core DNS IP addresses for {domain_name}")
+                                                                 f"Query to get the Core DNS IP addresses "
+                                                                 "for {domain_name}")
 
                 # Using the namespace, derive the Kubernetes
                 # domain name and set it as the key in a dict

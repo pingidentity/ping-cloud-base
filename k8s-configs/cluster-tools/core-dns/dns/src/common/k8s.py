@@ -20,7 +20,7 @@ class K8sManager:
         config.load_incluster_config()
         self.k8s_client = client.CoreV1Api()
 
-    def get_namespace(self, namespace_prefix):
+    def get_namespace(self, namespace_prefix: str) -> str:
         self.logger.log(f"Querying Kubernetes to get a namespace with the prefix: {namespace_prefix}")
         namespaces = self.k8s_client.list_namespace(watch=False)
         for namespace in namespaces.items:
@@ -29,9 +29,10 @@ class K8sManager:
                 self.logger.log(f"Found the local cluster namespace: {name}")
                 return name
 
+        # TODO: Return '' here instead?
         return None
 
-    def get_kube_dns_endpoints(self):
+    def get_kube_dns_endpoints(self) -> list:
 
         kube_dns_endpoints = []
         try:
@@ -58,7 +59,7 @@ class K8sManager:
 
         return kube_dns_endpoints
 
-    def fetch_kube_dns_endpoints(self):
+    def fetch_kube_dns_endpoints(self) -> list:
 
         if self.kube_dns_endpoints is None:
             self.logger.log("Did not find the local cluster Core DNS IP addresses in the cache.")
@@ -72,7 +73,7 @@ class K8sManager:
 
         return kube_dns_endpoints
 
-    def exec_kubectl(self, *args):
+    def exec_kubectl(self, *args) -> None:
         """
         Execute kubectl command and return STDOUT
         """
@@ -87,5 +88,3 @@ class K8sManager:
             raise Exception(f"exec_kubectl: {cmd_out.stderr}")
 
         self.logger.log(f"exec_kubectl: {cmd_out.stdout}")
-
-        return cmd_out.stdout
