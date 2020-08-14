@@ -157,7 +157,7 @@ function export_config_settings() {
     if is_primary_cluster; then
       PRIMARY_CLUSTER=true
       export PF_ADMIN_HOST="${PINGFEDERATE_ADMIN_SERVER}-0.${LOCAL_DOMAIN_NAME}"
-      export PF_CLUSTER_HOST="${PF_CLUSTER_PRIVATE_HOSTNAME}.${LOCAL_DOMAIN_NAME}"
+      export PF_CLUSTER_HOST="${PF_CLUSTER_PRIVATE_HOSTNAME}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local"
     else
       PRIMARY_CLUSTER=false
       export PF_ADMIN_HOST="${PF_CLUSTER_PUBLIC_HOSTNAME}"
@@ -167,7 +167,7 @@ function export_config_settings() {
     MULTI_CLUSTER=false
     PRIMARY_CLUSTER=true
     export PF_ADMIN_HOST="${PINGFEDERATE_ADMIN_SERVER}-0.${LOCAL_DOMAIN_NAME}"
-    export PF_CLUSTER_HOST="${PF_CLUSTER_PRIVATE_HOSTNAME}.${LOCAL_DOMAIN_NAME}"
+    export PF_CLUSTER_HOST="${PF_CLUSTER_PRIVATE_HOSTNAME}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local"
   fi
 
   export PF_ADMIN_HOST_PORT="${PF_ADMIN_HOST}:${PF_ADMIN_PORT}"
