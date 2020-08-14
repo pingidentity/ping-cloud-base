@@ -1,14 +1,12 @@
-import os
 import shutil
-from common import core_dns_logging 
+from common import core_dns_logging
 
 DEBUG = core_dns_logging.LogLevel.DEBUG
 WARNING = core_dns_logging.LogLevel.WARNING
 ERROR = core_dns_logging.LogLevel.ERROR
 
 
-class TemplateManager():
-
+class TemplateManager:
 
     def __init__(self, logger):
         self.logger = logger
@@ -28,7 +26,6 @@ class TemplateManager():
         logger.log(f"Copying {self.source_coredns_file} to {self.target_coredns_file}")
         shutil.copyfile(f"{self.source_coredns_file}", f"{self.target_coredns_file}")
 
-
     def __read_file(self, file_path):
         """
         Read and return file content
@@ -38,11 +35,10 @@ class TemplateManager():
             fh = open(file_path, "r")
             file_content = fh.read()
             fh.close()
-            
+
             return file_content
         except Exception as Error:
             raise Exception(f"There was an error reading the file {file_path}:{Error}")
-
 
     def __write_file(self, file_path, data):
         """
@@ -55,7 +51,6 @@ class TemplateManager():
             fh.close()
         except Exception as Error:
             raise Exception(f"There was an error writing the file {file_path}:{Error}")
-
 
     def __create_kube_dns_forward_routes(self, k8s_domains_to_ip_addrs, source_templates):
         print()
@@ -71,7 +66,6 @@ class TemplateManager():
         self.logger.log(f"Coredns forwarding routes: {forward_routes}")
         return forward_routes
 
-
     def __process_template(self, forward_route_config, source_templates):
         """
         Merge configmap
@@ -82,10 +76,10 @@ class TemplateManager():
 
         return processed_template
 
-
     def apply_forwarding_kustomizations(self, k8s_domains_to_ip_addrs):
 
-        forward_route_config = self.__create_kube_dns_forward_routes(k8s_domains_to_ip_addrs, self.source_forward_route_template_file)
+        forward_route_config = self.__create_kube_dns_forward_routes(k8s_domains_to_ip_addrs,
+                                                                     self.source_forward_route_template_file)
 
         # Merge the forward_routes into a parameterized coredns.yaml file
         merged_config_map = self.__process_template(forward_route_config, self.source_templates)
@@ -93,8 +87,7 @@ class TemplateManager():
         # Output merged config to the writable coredns.yaml 
         self.__write_file(f"{self.target_coredns_file}", merged_config_map)
 
-        return self.target_overlay_path 
-    
+        return self.target_overlay_path
 
     def reset_kustomization(self):
         # Overwrite the coredns yaml file with the baseline reset file.
@@ -104,11 +97,9 @@ class TemplateManager():
         self.logger.log("Copying the reset file into position...")
         shutil.copyfile(f"{self.source_reset_file}", f"{self.target_coredns_file}")
 
-        return self.target_overlay_path 
+        return self.target_overlay_path
 
-
-
-# def parse_dns_data(lines):
+    # def parse_dns_data(lines):
 #     dns_hostname_ip_addrs = {}
 
 #     for line in lines:
@@ -187,4 +178,3 @@ class TemplateManager():
 #     print(publish_response)
 
 #     print("Processing Complete.")
-

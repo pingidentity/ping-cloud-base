@@ -1,5 +1,4 @@
 import sys
-import boto3
 import os
 import time
 from common import core_dns_logging, route_53, dig, k8s, templates
@@ -8,7 +7,7 @@ DEBUG = core_dns_logging.LogLevel.DEBUG
 WARNING = core_dns_logging.LogLevel.WARNING
 ERROR = core_dns_logging.LogLevel.ERROR
 
-verbose = True if "VERBOSE" in os.environ else False 
+verbose = True if "VERBOSE" in os.environ else False
 
 logger = core_dns_logging.CoreDnsLogger(verbose)
 dig_mgr = dig.DigManager(logger)
@@ -22,26 +21,27 @@ def create_endpoints_domain_name(namespace: str, domain_name: str) -> str:
 
 
 def publish_local_coredns_endpoints_to_aws(namespace: str, domain_name: str):
-
     endpoint_domain = create_endpoints_domain_name(namespace, domain_name)
 
     # Look up the K8s Core DNS IPs stored in Route 53
     r53_endpoints = dig_mgr.fetch_name_to_ip_address([endpoint_domain],
-                                                     f"Query the AWS Route 53 domain '{endpoint_domain}' to get Core DNS IP addresses")
+                                                     f"Query the AWS Route 53 domain '{endpoint_domain}' "
+                                                     "to get Core DNS IP addresses")
 
     # Get just the IPs
-    r53_endpoint_ip_addrs = r53_endpoints.get(endpoint_domain)
+    r53_endpoint_ip_addresses = r53_endpoints.get(endpoint_domain)
 
     # Fetch the K8s Core DNS IPs for the local cluster
     kube_dns_endpoints = k8s_mgr.fetch_kube_dns_endpoints()
-   
+
     # Compare the 2 records
-    if r53_endpoint_ip_addrs and set(kube_dns_endpoints) == set(r53_endpoint_ip_addrs):
+    if r53_endpoint_ip_addresses and set(kube_dns_endpoints) == set(r53_endpoint_ip_addresses):
         logger.log("The Kubernetes DNS IPs match the Route 53 IPs.  Both records are up-to-date no changes are "
                    "required.")
 
     else:
-        logger.log(f"The Kubernetes DNS IP addresses {kube_dns_endpoints} are different than the Route 53 IP addresses {r53_endpoint_ip_addrs}")
+        logger.log(f"The Kubernetes DNS IP addresses {kube_dns_endpoints} are different than "
+                   "the Route 53 IP addresses {r53_endpoint_ip_addresses}")
         logger.log("Updating the Route 53 entries...")
 
         # Get hosted zone id matching the domain name
@@ -81,13 +81,13 @@ def update_core_dns(namespace, domain_name):
         logger.log("No Kubernetes domains to update.  Exiting.")
 
 
-def validate_tenant_domain() -> str: 
+def validate_tenant_domain() -> str:
     if "TENANT_DOMAIN" in os.environ:
         domain_name = os.environ.get("TENANT_DOMAIN")
         if domain_name:
             logger.log(f"TENANT_DOMAIN is {domain_name}")
             return domain_name
-    
+
     raise ValueError("Environment variable 'TENANT_DOMAIN' is required but not found.  Exiting...")
 
 
@@ -99,12 +99,11 @@ def validate_namespace() -> str:
     namespace = k8s_mgr.get_namespace(namespace_prefix)
     if namespace is None:
         raise ValueError(f"Unable to find namespace with given prefix: {namespace_prefix}")
-    
+
     return namespace
 
 
 def create_multi_cluster_domain_entry(namespace: str, domain_name: str, name):
-
     endpoints_domain_name = create_endpoints_domain_name(namespace, domain_name)
     logger.log(f"Creating a single default TXT entry '{name}' -> '{endpoints_domain_name}'...")
 
@@ -114,7 +113,7 @@ def create_multi_cluster_domain_entry(namespace: str, domain_name: str, name):
 
     # Update R53 recordset with latest endpoint details.
     hosted_zone_mgr.update_resource_record_sets(
-        hosted_zone_id, 
+        hosted_zone_id,
         f"{name}",
         "Multi-Region Cluster Entries",
         "TXT",
@@ -122,10 +121,9 @@ def create_multi_cluster_domain_entry(namespace: str, domain_name: str, name):
 
 
 def validate_multi_cluster_domain_entry(namespace, domain_name):
-
-    multi_cluster_domains = [] 
+    multi_cluster_domains = []
+    name = dig.create_multi_cluster_domain_name(namespace, domain_name)
     try:
-        name = dig_mgr.create_multi_cluster_domain_name(namespace, domain_name)
         multi_cluster_domains = dig_mgr.fetch_txt_records(
             name,
             f"Query the local AWS Route 53 Hosted Zone to verify TXT entries exist for {name}"
@@ -138,7 +136,7 @@ def validate_multi_cluster_domain_entry(namespace, domain_name):
         create_multi_cluster_domain_entry(namespace, domain_name, name)
         logger.log("Waiting for Route 53 changes to take effect...")
         time.sleep(90)
-        
+
 
 # At a high level this CronJob is doing 2 things:
 #

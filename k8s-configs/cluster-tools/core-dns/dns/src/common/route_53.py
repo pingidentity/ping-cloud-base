@@ -1,24 +1,24 @@
 import boto3
 import pprint
 import botocore
-from common import core_dns_logging 
+from common import core_dns_logging
 
 DEBUG = core_dns_logging.LogLevel.DEBUG
 WARNING = core_dns_logging.LogLevel.WARNING
 ERROR = core_dns_logging.LogLevel.ERROR
 
 
-class HostedZoneManager():
-
+class HostedZoneManager:
 
     def __init__(self, logger):
         self.logger = logger
         self.zone_id_cache = None
 
         custom_retries = {'total_max_attempts': 10, 'mode': 'adaptive'}
+
+        # TODO: Is this config working?
         botocore_config = botocore.config.Config(retries=custom_retries)
         self.r53_client = boto3.client("route53", config=botocore_config)
-
 
     def build_resource_records(self, entries):
         # Filter out duplicates
@@ -33,7 +33,6 @@ class HostedZoneManager():
 
         self.logger.log(f"Building Resource Records: {resource_records}")
         return resource_records
-
 
     def __get_hosted_zone_id(self, response, domain_name):
         zone_id = None
@@ -52,17 +51,16 @@ class HostedZoneManager():
 
         return zone_id
 
-
     def fetch_hosted_zone_id(self, domain_name):
         """
         Get route 53 hosted zone id.
         """
-        if not self.zone_id_cache is None:
+        if self.zone_id_cache is None:
+            self.logger.log("Did not find the Hosted Zone Id in the cache.")
+        else:
             # Return on a cache hit
             self.logger.log(f"Found the Hosted Zone Id '{self.zone_id_cache}' in the cache")
             return self.zone_id_cache
-        else:
-            self.logger.log("Did not find the Hosted Zone Id in the cache.")
 
         self.logger.log("Retrieving all of the Hosted Zones...")
         response = self.r53_client.list_hosted_zones()
@@ -73,9 +71,8 @@ class HostedZoneManager():
         self.zone_id_cache = zone_id
 
         return zone_id
-    
 
-    def update_resource_record_sets(self, hosted_zone_id, rrs_name, comment, type, resource_records):
+    def update_resource_record_sets(self, hosted_zone_id, rrs_name, comment, record_type, resource_records):
         """
         Update route 53 hosted zone resource record sets.
         """
@@ -89,7 +86,7 @@ class HostedZoneManager():
                         'Action': 'UPSERT',
                         'ResourceRecordSet': {
                             'Name': rrs_name,
-                            'Type': type,
+                            'Type': record_type,
                             'TTL': 60,
                             'ResourceRecords': resource_records
                         }
@@ -102,8 +99,6 @@ class HostedZoneManager():
 
         return response
 
-
     def update_type_a_resource_record_sets(self, hosted_zone_id, rrs_name, ip_addrs, comment):
         resource_records = self.build_resource_records(ip_addrs)
         return self.update_resource_record_sets(hosted_zone_id, rrs_name, comment, 'A', resource_records)
-

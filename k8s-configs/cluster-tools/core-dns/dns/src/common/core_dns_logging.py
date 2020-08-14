@@ -13,8 +13,7 @@ class LogLevel(Enum):
     ERROR = 4
 
 
-class CoreDnsLogger():
-
+class CoreDnsLogger:
 
     def __init__(self, verbose):
         logger = logging.getLogger()
@@ -31,27 +30,25 @@ class CoreDnsLogger():
         logger.addHandler(handler)
         self.logger = logger
 
-
     def log(self, message, log_level=LogLevel.INFO):
         func = inspect.currentframe().f_back.f_code
         if log_level == LogLevel.DEBUG:
             self.logger.debug("%s - %s" % (func.co_name, message))
         elif log_level == LogLevel.WARNING:
             self.logger.warning("%s - %s" % (
-            func.co_name,
-            message
-        ))
+                func.co_name,
+                message
+            ))
         elif log_level == LogLevel.ERROR:
             self.logger.error("%s - %s" % (
-            func.co_name,
-            message
-        ))
+                func.co_name,
+                message
+            ))
         else:
             self.logger.info("%s - %s" % (
                 func.co_name,
                 message
-        ))
-    
+            ))
 
     def log_env_vars(self):
         self.log("Environment variables:", LogLevel.DEBUG)
