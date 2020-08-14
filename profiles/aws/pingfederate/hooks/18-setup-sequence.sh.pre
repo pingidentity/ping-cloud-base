@@ -1,9 +1,11 @@
-
 #!/usr/bin/env sh
 
 ${VERBOSE} && set -x
 
 . "${HOOKS_DIR}/pingcommon.lib.sh"
+
+echo "export config settings"
+export_config_settings
 
 run_hook "10-download-artifact.sh"
 
