@@ -205,9 +205,12 @@ function configure_tcp_xml() {
   local currentDir="$(pwd)"
   cd "${SERVER_ROOT_DIR}/server/default/conf"
 
-  is_secondary_cluster &&
-    DNS_PING_DNS_QUERY="${PF_CLUSTER_PUBLIC_HOSTNAME}" ||
-    DNS_PING_DNS_QUERY="${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local"
+  if is_secondary_cluster; then
+    DNS_PING_DNS_QUERY="${PINGFEDERATE_ADMIN_SERVER}.${PF_CLUSTER_PUBLIC_HOSTNAME}"
+  else
+    LOCAL_DOMAIN_NAME="$(hostname -f | cut -d'.' -f2-)"
+    DNS_PING_DNS_QUERY="${PINGFEDERATE_ADMIN_SERVER}.${LOCAL_DOMAIN_NAME}.svc.cluster.local"
+  fi
 
   export JGROUPS_DISCOVERY_PROTOCOL="<dns.DNS_PING dns_query=\"${DNS_PING_DNS_QUERY}\" />"
 
