@@ -5,7 +5,13 @@
 
 ${VERBOSE} && set -x
 
-OUT=$( make_api_request -X GET https://localhost:9999/pf-admin-api/v1/cluster/status )
+echo "export config settings"
+export_config_settings
+
+beluga_log "waiting for admin API to be ready"
+wait_for_admin_api_endpoint cluster/status
+
+OUT=$( make_api_request -X GET "https://${PF_ADMIN_HOST_PORT}/pf-admin-api/v1/cluster/status" )
 test ${?} -ne 0 && beluga_log "Failed GET request => /cluster/status" && exit 1
 
 # Exit script if replication isn't required.
@@ -21,7 +27,7 @@ test "${IS_REPLICATION_REQUIRED}" != "true" && beluga_log "No replication needed
 #             up it will replicate its changes to the running engines.
 
 beluga_log "Beginning to replicate the engine(s)"
-make_api_request -X POST https://localhost:9999/pf-admin-api/v1/cluster/replicate
+make_api_request -X POST "https://${PF_ADMIN_HOST_PORT}/pf-admin-api/v1/cluster/replicate"
 test ${?} -ne 0 && beluga_log "Could not replicate, failed POST request => /cluster/replicate" && exit 1
 beluga_log "Replication to engine(s) was successful"
 
