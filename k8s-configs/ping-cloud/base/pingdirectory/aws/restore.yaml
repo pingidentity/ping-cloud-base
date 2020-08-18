@@ -110,7 +110,7 @@ metadata:
     role: pingdirectory
 spec:
   ttlSecondsAfterFinished: 0
-  backoffLimit: 5
+  backoffLimit: 0
   template:
     spec:
       serviceAccount: ping-serviceaccount
