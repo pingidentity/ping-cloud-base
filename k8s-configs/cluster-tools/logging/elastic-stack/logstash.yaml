@@ -142,6 +142,16 @@ data:
             what => "previous"
           }
         }
+        tcp {
+          id => "pa_system_in"
+          port => 20516
+          add_field => {"log_type" => "PA_System_Log"}
+        }
+        tcp {
+            id => "pa_audit_in"
+            port => 20517
+            add_field => {"log_type" => "PA_Audit_Log"}
+        }
     }
     filter {
         #PROCESS PING FED AUDIT LOG
@@ -488,6 +498,28 @@ data:
             user => "${LOGSTASH_ELASTICSEARCH_USER}"
             password => "${LOGSTASH_ELASTICSEARCH_PASSWORD}"
         }
+      }
+      if([log_type] == "PA_Audit_Log"){
+        elasticsearch {
+            id => "pa_audit_out"
+            hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
+            ilm_enabled => true
+            ilm_rollover_alias => "pa-audit"
+            ilm_policy => "ping-2-day-retention"
+            user => "${LOGSTASH_ELASTICSEARCH_USER}"
+            password => "${LOGSTASH_ELASTICSEARCH_PASSWORD}"
+        }
+      }
+      if([log_type] == "PA_System_Log"){
+          elasticsearch {
+              id => "pa_system_out"
+              hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
+              ilm_enabled => true
+              ilm_rollover_alias => "pa-system"
+              ilm_policy => "ping-2-day-retention"
+              user => "${LOGSTASH_ELASTICSEARCH_USER}"
+              password => "${LOGSTASH_ELASTICSEARCH_PASSWORD}"
+          }
       }
     }
 

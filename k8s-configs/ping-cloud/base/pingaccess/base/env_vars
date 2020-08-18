@@ -48,6 +48,13 @@ K8S_TAIL_LOG_FILES=/opt/out/instance/log/pingaccess_engine_audit.log /opt/out/in
 
 SECRETS_DIR=/usr/local/secrets
 
+SOCKET_HOST=logstash-elastic.elastic-stack-logging.svc.cluster.local
+PA_LOG_LEVEL=INFO
+SOCKET_PORT_SYSTEM=20513
+SOCKET_PORT_AUDIT=20514
+SOCKET_PORT_PROVISIONER=20512
+SOCKET_PROTOCOL=TCP
+
 # wait-for-services
 PA_CLUSTER_PRIVATE_HOSTNAME=pingaccess-admin
 PA_CLUSTER_PORT=9090

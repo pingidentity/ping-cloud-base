@@ -7,7 +7,7 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-declare -a UPLOAD_CSD_JOB_NAMES=("pingfederate-periodic-csd-upload" "pingfederate-admin-periodic-csd-upload")
+declare -a UPLOAD_CSD_JOB_NAMES=("pingaccess-periodic-csd-upload" "pingaccess-admin-periodic-csd-upload")
 
 expected_files() {
   UPLOAD_CSD_JOB_PODS=$(kubectl get pod -o name -n "${NAMESPACE}" -o name | grep "${UPLOAD_CSD_JOB_NAME}" | cut -d/ -f2)
@@ -24,7 +24,7 @@ actual_files() {
   BUCKET_URL_NO_PROTOCOL=${LOG_ARCHIVE_URL#s3://}
   BUCKET_NAME=$(echo "${BUCKET_URL_NO_PROTOCOL}" | cut -d/ -f1)
 
-  DIRECTORY_NAME=pingfederate
+  DIRECTORY_NAME=pingaccess
 
   UPLOAD_CSD_JOB_POD_PREFIX=$(echo "${UPLOAD_CSD_JOB_NAME}" | sed 's/-periodic-csd-upload$//')
   CURRENT_DATE=$(date +"%Y%m%d")
@@ -36,7 +36,7 @@ actual_files() {
     cut -c 32- | 
     xargs basename | 
     sort |
-    if [[ "$UPLOAD_CSD_JOB_POD_PREFIX" == "pingfederate" ]];
+    if [[ "$UPLOAD_CSD_JOB_POD_PREFIX" == "pingaccess" ]];
     then 
         cat | grep -v "admin"
     else
@@ -44,7 +44,7 @@ actual_files() {
     fi
 }
 
-UPLOAD_JOBS="${PROJECT_DIR}/k8s-configs/ping-cloud/base/pingfederate/aws/periodic-csd-upload.yaml"
+UPLOAD_JOBS="${PROJECT_DIR}/k8s-configs/ping-cloud/base/pingaccess/aws/periodic-csd-upload.yaml"
 
 log "Applying the CSD upload job"
 kubectl delete -f "${UPLOAD_JOBS}" -n "${NAMESPACE}"

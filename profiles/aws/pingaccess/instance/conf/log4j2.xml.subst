@@ -665,15 +665,43 @@
         <!-- ================================================= -->
         <!-- To use, uncomment the appenderRef under "com.pingidentity" Logger -->
 
-        <!-- Syslog events - Custom pattern
-        <Socket name="SYSLOG" host="localhost" port="514" protocol="UDP">
-            <PingSyslogLayout facility="LOCAL0">
-                <PatternLayout>
-                    <pattern>%d{ABSOLUTE} %5p %c:%L - %m%n</pattern>
-                </PatternLayout>
+        <!-- The below two sockets are used as socket connections to send logstash logs directly over pre-defined ports and protocols -->
+        <Socket name="SYSLOG" host="${SOCKET_HOST}" port="${SOCKET_PORT_SYSTEM}" protocol="${SOCKET_PROTOCOL}">
+            <PingSyslogLayout facility="LOCAL0"> 
+                <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" properties="true" />
             </PingSyslogLayout>
         </Socket>
-        -->
+
+        <Socket name="SYSLOG_AUDIT" host="${SOCKET_HOST}" port="${SOCKET_PORT_AUDIT}" protocol="${SOCKET_PROTOCOL}">
+            <PingSyslogLayout>
+              <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" >
+                <KeyValuePair key="date" value="$${date:yyyy-MM-dd'T'HH:mm:ssZ}"/>  
+                <KeyValuePair key="exchangeId" value="$${ctx:exchangeId:-}"/>
+                <KeyValuePair key="trackingId" value="$${ctx:AUDIT.trackingId:-}"/>
+                <KeyValuePair key="roundTripMS" value="$${ctx:AUDIT.roundTripMS:-}"/>
+                <KeyValuePair key="subject" value="$${ctx:AUDIT.subject:-}"/>
+                <KeyValuePair key="authMech" value="$${ctx:AUDIT.authMech:-}"/>
+                <KeyValuePair key="client" value="$${ctx:AUDIT.client:-}"/>
+                <KeyValuePair key="method" value="$${ctx:AUDIT.method:-}"/>
+                <KeyValuePair key="requestUri" value="$${ctx:AUDIT.requestUri:-}"/>
+                <KeyValuePair key="responseCode" value="$${ctx:AUDIT.responseCode:-}"/>
+
+		<KeyValuePair key="applicationID" value="$${ctx:AUDIT.applicationID:-}"/>
+		<KeyValuePair key="applicationName" value="$${ctx:AUDIT.applicationName:-}"/>
+		<KeyValuePair key="resourceName" value="$${ctx:AUDIT.resourceName:-}"/>
+		<KeyValuePair key="failedRuleName" value="$${ctx:AUDIT.failedRuleName:-}"/>
+		<KeyValuePair key="failedRuleName" value="$${ctx:AUDIT.failedRuleName:-}"/>
+		<KeyValuePair key="failedRuleType" value="$${ctx:AUDIT.failedRuleType:-}"/>
+		<KeyValuePair key="failedRuleClass" value="$${ctx:AUDIT.failedRuleClass:-}"/>
+		<KeyValuePair key="failedRuleSetName" value="$${ctx:AUDIT.failedRuleSetName:-}"/>
+		<KeyValuePair key="targetHost" value="$${ctx:AUDIT.targetHost:-}"/>
+		<KeyValuePair key="proxyRoundTripMS" value="$${ctx:AUDIT.proxyRoundTripMS:-}"/>
+		<KeyValuePair key="userInfoRoundTripMS" value="$${ctx:AUDIT.userInfoRoundTripMS:-}"/>
+		<KeyValuePair key="siteUnavailableInfo" value="$${ctx:AUDIT.siteUnavailableInfo:-}"/>
+              </JSONLayout>
+            </PingSyslogLayout>
+        </Socket>
+
     </Appenders>
 
     <Loggers>
@@ -681,7 +709,7 @@
         <AsyncLogger name="com.pingidentity" level="${PA_LOG_LEVEL}" additivity="false" includeLocation="false">
             <AppenderRef ref="File"/>
             <!--<AppenderRef ref="CONSOLE" />-->
-            <!--<AppenderRef ref="SYSLOG" />-->
+            <AppenderRef ref="SYSLOG" />
         </AsyncLogger>
 
         <!-- Logs details/ordering of service proxies -->
@@ -698,22 +726,25 @@
         -->
 
         <!-- Audit Log Configuration-->
-        <Logger name="apiaudit" level="INFO" additivity="false">
+        <Logger name="apiaudit" level="${PA_LOG_LEVEL}" additivity="false">
             <AppenderRef ref="APIAuditLog-File"/>
+            <AppenderRef ref="SYSLOG_AUDIT"/>
             <!--<AppenderRef ref="ApiAuditLog-Database-Failover"/>-->
             <!--<AppenderRef ref="ApiAuditLog-SQLServer-Database-Failover"/>-->
             <!--<AppenderRef ref="ApiAuditLog-PostgreSQL"/>-->
             <!--<AppenderRef ref="ApiAudit2Splunk"/>-->
         </Logger>
-        <Logger name="engineaudit" level="INFO" additivity="false">
+        <Logger name="engineaudit" level="${PA_LOG_LEVEL}" additivity="false">
             <AppenderRef ref="EngineAuditLog-File"/>
+            <AppenderRef ref="SYSLOG_AUDIT"/>
             <!--<AppenderRef ref="EngineAuditLog-Database-Failover"/>-->
             <!--<AppenderRef ref="EngineAuditLog-SQLServer-Database-Failover"/>-->
             <!--<AppenderRef ref="EngineAuditLog-PostgreSQL"/>-->
             <!--<AppenderRef ref="EngineAudit2Splunk"/>-->
         </Logger>
-        <Logger name="agentaudit" level="INFO" additivity="false">
+        <Logger name="agentaudit" level="${PA_LOG_LEVEL}" additivity="false">
             <AppenderRef ref="AgentAuditLog-File"/>
+            <AppenderRef ref="SYSLOG_AUDIT"/>
             <!--<AppenderRef ref="AgentAuditLog-Database-Failover"/>-->
             <!--<AppenderRef ref="AgentAuditLog-SQLServer-Database-Failover"/>-->
             <!--<AppenderRef ref="AgentAuditLog-PostgreSQL"/>-->
@@ -776,6 +807,7 @@
         <!-- Root Logger-->
         <AsyncRoot level="INFO" includeLocation="false">
             <AppenderRef ref="File"/>
+            <AppenderRef ref="SYSLOG" />
         </AsyncRoot>
     </Loggers>
 </Configuration>
