@@ -71,6 +71,13 @@ patchesStrategicMerge:
     name: pingaccess-was-periodic-backup
   $patch: delete
 
+- |-
+  apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    name: pingaccess-was
+  $patch: delete
+
 # Remove PingFederate primary-cluster resources
 - |-
   apiVersion: apps/v1
