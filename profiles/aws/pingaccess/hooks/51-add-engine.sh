@@ -12,10 +12,6 @@ fi
 
 beluga_log "add-engine: starting add engine script"
 
-# Export config settings based on PA or PA-WAS, multi-region vs. single-region, etc.
-beluga_log "add-engine: pingaccess config settings"
-export_config_settings
-
 SHORT_HOST_NAME=$(hostname)
 ORDINAL=${SHORT_HOST_NAME##*-}
 

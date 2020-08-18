@@ -2,9 +2,6 @@
 
 . "${HOOKS_DIR}/utils.lib.sh"
 
-beluga_log "exporting config settings"
-export_config_settings
-
 # Verify that server is responsive on its LDAP secure port
 beluga_log "verifying root DSE access"
 /opt/liveness.sh || exit 1

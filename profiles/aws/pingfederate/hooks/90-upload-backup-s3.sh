@@ -19,9 +19,12 @@ DST_FILE_TIMESTAMP="data-`date +%m-%d-%Y.%H.%M.%S`.zip"
 DST_DIRECTORY="/tmp/k8s-s3-upload-archive"
 mkdir -p ${DST_DIRECTORY}
 
+beluga_log "waiting for admin API to be ready"
+wait_for_admin_api_endpoint configArchive/export
+
 # Make request to admin API and export latest data
 make_api_request_download -X GET \
-  https://localhost:${PF_ADMIN_PORT}/pf-admin-api/v1/configArchive/export \
+  "https://${PF_ADMIN_HOST_PORT}/pf-admin-api/v1/configArchive/export" \
   -o ${DST_DIRECTORY}/${DST_FILE_TIMESTAMP}
 
 # Validate admin API call was successful and that zip isn't corrupted

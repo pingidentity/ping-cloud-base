@@ -378,7 +378,7 @@ EOF
     log
 
     log "Running integration tests"
-    for integration_test_dir in common pingaccess pingdirectory pingfederate chaos; do
+    for integration_test_dir in common pingaccess pingaccess-was pingdirectory pingfederate chaos; do
       log
       log "=========================================================="
       log "      Executing tests in directory: ${integration_test_dir}            "

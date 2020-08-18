@@ -1,9 +1,9 @@
-
 #!/usr/bin/env sh
 
 ${VERBOSE} && set -x
 
 . "${HOOKS_DIR}/pingcommon.lib.sh"
+. "${HOOKS_DIR}/utils.lib.sh"
 
 run_hook "10-download-artifact.sh"
 
