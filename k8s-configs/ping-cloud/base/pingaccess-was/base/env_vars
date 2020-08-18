@@ -49,5 +49,11 @@ K8S_TAIL_LOG_FILES=/opt/out/instance/log/pingaccess_engine_audit.log /opt/out/in
 SECRETS_DIR=/usr/local/secrets
 
 # wait-for-services
+PA_CLUSTER_PRIVATE_HOSTNAME=pingaccess-admin
+PA_CLUSTER_PORTS=9090 9000
 PA_WAS_CLUSTER_PRIVATE_HOSTNAME=pingaccess-was-admin
-PA_WAS_CLUSTER_PORT=9090
+PA_WAS_CLUSTER_PORT=9090 9000
+PF_CLUSTER_PRIVATE_HOSTNAME=pingfederate-cluster
+PF_CLUSTER_PORTS=7600 9999
+PD_CLUSTER_PRIVATE_HOSTNAME=pingdirectory
+PD_CLUSTER_PORTS=8989 1389 1636 5678

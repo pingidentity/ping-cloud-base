@@ -18,52 +18,67 @@ else
     if test "${TENANT_DOMAIN}" != "${PRIMARY_TENANT_DOMAIN}"; then
       case "${APP}" in
           pingdirectory)
-          HOST_PORT=${PD_CLUSTER_PUBLIC_HOSTNAME}:${PD_CLUSTER_PORT}
+          HOSTNAME=${PD_CLUSTER_PUBLIC_HOSTNAME}
+          PORTS=${PD_CLUSTER_PORTS}
           ;;
 
           pingfederate-cluster)
-          HOST_PORT=${PF_CLUSTER_PUBLIC_HOSTNAME}:${PF_CLUSTER_PORT}
+          HOSTNAME=${PF_CLUSTER_PUBLIC_HOSTNAME}
+          PORTS=${PF_CLUSTER_PORTS}
           ;;
 
           pingaccess-admin)
-          HOST_PORT=${PA_CLUSTER_PUBLIC_HOSTNAME}:${PA_CLUSTER_PORT}
+          HOSTNAME=${PA_CLUSTER_PUBLIC_HOSTNAME}
+          PORTS=${PA_CLUSTER_PORTS}
           ;;
 
           pingaccess-was-admin)
-          HOST_PORT=${PA_WAS_CLUSTER_PUBLIC_HOSTNAME}:${PA_WAS_CLUSTER_PORT}
+          HOSTNAME=${PA_WAS_CLUSTER_PUBLIC_HOSTNAME}
+          PORTS=${PA_WAS_CLUSTER_PORTS}
           ;;
       esac
     else
       case "${APP}" in
           pingdirectory)
-          HOST_PORT=${PD_CLUSTER_PRIVATE_HOSTNAME}:${PD_CLUSTER_PORT}
+          HOSTNAME=${PD_CLUSTER_PRIVATE_HOSTNAME}
+          PORTS=${PD_CLUSTER_PORTS}
           ;;
 
           pingfederate-cluster)
-          HOST_PORT=${PF_CLUSTER_PRIVATE_HOSTNAME}:${PF_CLUSTER_PORT}
+          HOSTNAME=${PF_CLUSTER_PRIVATE_HOSTNAME}
+          PORTS=${PF_CLUSTER_PORTS}
           ;;
 
           pingaccess-admin)
-          HOST_PORT=${PA_CLUSTER_PRIVATE_HOSTNAME}:${PA_CLUSTER_PORT}
+          HOSTNAME=${PA_CLUSTER_PRIVATE_HOSTNAME}
+          PORTS=${PA_CLUSTER_PORTS}
           ;;
 
           pingaccess-was-admin)
-          HOST_PORT=${PA_WAS_CLUSTER_PRIVATE_HOSTNAME}:${PA_WAS_CLUSTER_PORT}
+          HOSTNAME=${PA_WAS_CLUSTER_PRIVATE_HOSTNAME}
+          PORTS=${PA_WAS_CLUSTER_PORTS}
           ;;
       esac
     fi
 
     while true; do
-      if test -z "${HOST_PORT}"; then
+      if test -z "${HOSTNAME}" || test -z "${PORTS}"; then
         break
       fi
 
-      if nc -z -v -w 2 "${HOST_PORT}"; then
+      for PORT in ${PORTS}
+      do
+        if nc -z -v -w 2 "${PORT}"; then
+          PORTS=$(echo "${PORTS}" | sed "s/${PORT}//g")
+        else
+          beluga_log "init: ${APP} Host:'${HOSTNAME}' Port:'${PORT}' unreachable. Will try again in 2 seconds."
+          sleep 2s
+        fi
+      done
+
+      if test -z "${PORTS}"; then
         break
       fi
-
-      beluga_log "init: ${APP} Host '${HOST_PORT}' unreachable. Will try again in 2 seconds."
-      sleep 2s
     done
   done
 fi
