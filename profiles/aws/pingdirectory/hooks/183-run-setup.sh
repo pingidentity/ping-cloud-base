@@ -9,9 +9,6 @@ test -f "${HOOKS_DIR}/pingdata.lib.sh" && . "${HOOKS_DIR}/pingdata.lib.sh"
 
 beluga_log "initial launch of container"
 
-beluga_log "exporting config settings"
-export_config_settings
-
 export encryptionOption=$(getEncryptionOption)
 export jvmOptions=$(getJvmOptions)
 

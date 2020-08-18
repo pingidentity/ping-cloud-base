@@ -78,7 +78,7 @@ function make_api_request_download() {
 function wait_for_admin_api_endpoint() {
   TIMEOUT=3
   ENDPOINT="${1:-version}"
-  API_REQUEST_URL="https://localhost:9999/pf-admin-api/v1/${ENDPOINT}"
+  API_REQUEST_URL="https://${PF_ADMIN_HOST_PORT}/pf-admin-api/v1/${ENDPOINT}"
 
   beluga_log "Waiting for admin API endpoint at ${API_REQUEST_URL}"
 
@@ -127,19 +127,23 @@ function obfuscatePassword() {
    #
    export PF_LDAP_PASSWORD_OBFUSCATED=$(sh ./obfuscate.sh "${PF_LDAP_PASSWORD}" | tr -d '\n')
    #
-   # Inject obfuscated password into ldap properties file. The password variable is protected with a ${_DOLLAR_}
-   # prefix because the file is substituted twice the first pass sets the DN and resets the '$' on the password
-   # variable so it's a legitimate candidate for substitution on this, the second pass.
-   #
-   mv ldap.properties ldap.properties.subst
-   envsubst < ldap.properties.subst > ldap.properties
-   rm ldap.properties.subst
+   # Inject obfuscated password into ldap properties file.
+   vars='${PF_PD_BIND_PROTOCOL}
+${PF_PD_BIND_USESSL}
+${PD_CLUSTER_DOMAIN_NAME}
+${PD_CLUSTER_PRIVATE_HOSTNAME}
+${PF_PD_BIND_PORT}
+${PF_LDAP_PASSWORD_OBFUSCATED}'
+
+   envsubst "${vars}" \
+      < "${STAGING_DIR}/templates/ldap.properties" \
+      > ldap.properties
 
    PF_LDAP_PASSWORD_OBFUSCATED="${PF_LDAP_PASSWORD_OBFUSCATED:8}"
 
-   mv ../server/default/data/pingfederate-ldap-ds.xml ../server/default/data/pingfederate-ldap-ds.xml.subst
-   envsubst < ../server/default/data/pingfederate-ldap-ds.xml.subst > ../server/default/data/pingfederate-ldap-ds.xml
-   rm ../server/default/data/pingfederate-ldap-ds.xml.subst
+   envsubst "${vars}" \
+      < "${STAGING_DIR}/templates/pingfederate-ldap-ds.xml" \
+      > ../server/default/data/pingfederate-ldap-ds.xml
 
    cd "${currentDir}"
 }
@@ -148,24 +152,43 @@ function obfuscatePassword() {
 # Export values for PingFederate configuration settings based on single vs. multi cluster.
 ########################################################################################################################
 function export_config_settings() {
+  K8S_SUB_DOMAIN_NAME="${PF_DNS_PING_NAMESPACE}.svc.cluster.local"
+
   if is_multi_cluster; then
     MULTI_CLUSTER=true
     if is_primary_cluster; then
       PRIMARY_CLUSTER=true
-      export PF_ADMIN_HOST_PORT="${PINGFEDERATE_ADMIN_SERVER}:${PF_ADMIN_PORT}"
+      export PF_ADMIN_HOST="${PINGFEDERATE_ADMIN_SERVER}-0.${K8S_SERVICE_NAME_PINGFEDERATE_ADMIN}.${K8S_SUB_DOMAIN_NAME}"
+      export PF_CLUSTER_DOMAIN_NAME="${PF_CLUSTER_PRIVATE_HOSTNAME}.${K8S_SUB_DOMAIN_NAME}"
+      export PD_CLUSTER_DOMAIN_NAME="${PD_CLUSTER_PRIVATE_HOSTNAME}.${K8S_SUB_DOMAIN_NAME}"
     else
       PRIMARY_CLUSTER=false
-      export PF_ADMIN_HOST_PORT="${PF_ADMIN_PUBLIC_HOSTNAME}"
+      export PF_ADMIN_HOST="${PINGFEDERATE_ADMIN_SERVER}-0.${PF_CLUSTER_PUBLIC_HOSTNAME}"
+      export PF_CLUSTER_DOMAIN_NAME="${PF_CLUSTER_PUBLIC_HOSTNAME}"
+      export PD_CLUSTER_DOMAIN_NAME="${PD_CLUSTER_PUBLIC_HOSTNAME}"
     fi
   else
     MULTI_CLUSTER=false
     PRIMARY_CLUSTER=true
-    export PF_ADMIN_HOST_PORT="${PINGFEDERATE_ADMIN_SERVER}:${PF_ADMIN_PORT}"
+    export PF_ADMIN_HOST="${PINGFEDERATE_ADMIN_SERVER}-0.${K8S_SERVICE_NAME_PINGFEDERATE_ADMIN}.${K8S_SUB_DOMAIN_NAME}"
+    export PF_CLUSTER_DOMAIN_NAME="${PF_CLUSTER_PRIVATE_HOSTNAME}.${K8S_SUB_DOMAIN_NAME}"
+    export PD_CLUSTER_DOMAIN_NAME="${PD_CLUSTER_PRIVATE_HOSTNAME}.${K8S_SUB_DOMAIN_NAME}"
   fi
 
-  echo "MULTI_CLUSTER - ${MULTI_CLUSTER}"
-  echo "PRIMARY_CLUSTER - ${PRIMARY_CLUSTER}"
-  echo "PF_ADMIN_HOST_PORT - ${PF_ADMIN_HOST_PORT}"
+  # On the admin server itself, use localhost for the PF admin hostname because
+  # the service may not be ready yet.
+  SHORT_HOST_NAME="$(hostname)"
+  echo "${SHORT_HOST_NAME}" | grep -qi "${PINGFEDERATE_ADMIN_SERVER}"
+  test $? -eq 0 && export PF_ADMIN_HOST=localhost
+
+  export PF_ADMIN_HOST_PORT="${PF_ADMIN_HOST}:${PF_ADMIN_PORT}"
+  export POST_START_INIT_MARKER_FILE="${OUT_DIR}/instance/post-start-init-complete"
+
+  beluga_log "MULTI_CLUSTER - ${MULTI_CLUSTER}"
+  beluga_log "PRIMARY_CLUSTER - ${PRIMARY_CLUSTER}"
+  beluga_log "PF_ADMIN_HOST_PORT - ${PF_ADMIN_HOST_PORT}"
+  beluga_log "PF_CLUSTER_DOMAIN_NAME - ${PF_CLUSTER_DOMAIN_NAME}"
+  beluga_log "PD_CLUSTER_DOMAIN_NAME - ${PD_CLUSTER_DOMAIN_NAME}"
 }
 
 ########################################################################################################################
@@ -214,14 +237,14 @@ function configure_tcp_xml() {
         write_data_on_find=\"true\" />"
   else
     export JGROUPS_DISCOVERY_PROTOCOL="<dns.DNS_PING \
-        dns_query=\"${PF_DNS_PING_CLUSTER}.${PF_DNS_PING_NAMESPACE}.svc.cluster.local\" />"
+        dns_query=\"${PF_CLUSTER_DOMAIN_NAME}\" />"
   fi
 
-  mv tcp.xml tcp.xml.subst
-  envsubst < tcp.xml.subst > tcp.xml
-  rm -f tcp.xml.subst
+  envsubst '${JGROUPS_DISCOVERY_PROTOCOL}' \
+      < "${STAGING_DIR}/templates/tcp.xml" \
+      > tcp.xml
 
-  echo "configure_tcp_xml: contents of tcp.xml after substitution"
+  beluga_log "configure_tcp_xml: contents of tcp.xml after substitution"
   cat tcp.xml
 
   cd "${currentDir}"
@@ -296,14 +319,23 @@ function skbnCopy() {
 }
 
 ########################################################################################################################
-# Standard log function.
+# Logs the provided message at the provided log level. Default log level is INFO, if not provided.
 #
+# Arguments
+#   $1 -> The log message.
+#   $2 -> Optional log level. Default is INFO.
 ########################################################################################################################
 function beluga_log() {
-  local format="+%Y-%m-%d:%Hh:%Mm:%Ss" # yyyy-mm-dd:00h:00m:00s
-  local timestamp=$( date "${format}" )
-  local message="${1}"
-  local file_name=$(basename "${0}")
+  file_name="$(basename "$0")"
+  message="$1"
+  test -z "$2" && log_level='INFO' || log_level="$2"
 
-  echo "${timestamp} ${file_name}: ${message}"
+  format='+%Y-%m-%d %H:%M:%S'
+  timestamp="$(TZ=UTC date "${format}")"
+
+  echo "${file_name}: ${timestamp} ${log_level} ${message}"
 }
+
+# These are needed by every script - so export them when this script is sourced.
+beluga_log "export config settings"
+export_config_settings

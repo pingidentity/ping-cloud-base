@@ -10,9 +10,6 @@ if test "${OPERATIONAL_MODE}" != "CLUSTERED_CONSOLE"; then
   exit 0
 fi
 
-beluga_log "pingaccess config settings"
-export_config_settings
-
 # Remove the marker file before running post-start initialization.
 POST_START_INIT_MARKER_FILE="${OUT_DIR}/instance/post-start-init-complete"
 rm -f "${POST_START_INIT_MARKER_FILE}"

@@ -6,10 +6,6 @@
 set -e
 "${VERBOSE}" && set -x
 
-# Export config settings based on PA or PA-WAS, multi-region vs. single-region, etc.
-beluga_log "import-initial-configuration: pingaccess config settings"
-export_config_settings
-
 templates_dir_path=${STAGING_DIR}/templates/81
 
 # Fetch using the -i flag to get the HTTP response

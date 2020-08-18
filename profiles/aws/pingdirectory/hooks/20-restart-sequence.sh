@@ -10,9 +10,6 @@ test -f "${HOOKS_DIR}/pingdata.lib.sh" && . "${HOOKS_DIR}/pingdata.lib.sh"
 
 beluga_log "restarting container"
 
-beluga_log "exporting config settings"
-export_config_settings
-
 # Remove the post-start initialization marker file so the pod isn't prematurely considered ready
 rm -f "${POST_START_INIT_MARKER_FILE}"
 

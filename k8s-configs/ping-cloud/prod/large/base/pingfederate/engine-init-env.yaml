@@ -11,4 +11,4 @@ spec:
         # PF engines must wait until the PF admin is ready
         # A space-separated list of deployments or statefulsets that this app should wait for
         - name: WAIT_FOR_SERVICES
-          value: pingfederate-cluster
+          value: "pingfederate-cluster pingdirectory"

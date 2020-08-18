@@ -277,9 +277,6 @@ function process_engine()
 # Main Script
 #---------------------------------------------------------------------------------------------
 
-# Export config settings based on PA or PA-WAS, multi-region vs. single-region, etc.
-export_config_settings
-
 #
 # Figure out what kind of server we are.
 #

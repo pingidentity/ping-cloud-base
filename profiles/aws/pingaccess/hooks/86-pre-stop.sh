@@ -12,9 +12,6 @@ fi
 
 echo "pre-stop: starting pre-stop hook on engine"
 
-# Export config settings based on PA or PA-WAS, multi-region vs. single-region, etc.
-export_config_settings
-
 SHORT_HOST_NAME=$(hostname)
 ORDINAL=${SHORT_HOST_NAME##*-}
 
@@ -25,9 +22,6 @@ if test "${ORDINAL}" -lt "${NUM_REPLICAS}"; then
   echo "pre-stop: not removing engine since it is still in the topology"
   exit 0
 fi
-
-echo "pre-stop: pingaccess config settings"
-export_config_settings
 
 # Retrieve Engine ID for engine name.
 echo "pre-stop: removing engine ID for name ${ENGINE_NAME}"

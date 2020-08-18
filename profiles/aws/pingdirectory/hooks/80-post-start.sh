@@ -156,9 +156,6 @@ rm -f "${POST_START_INIT_MARKER_FILE}"
 beluga_log "running ldapsearch test on this container (${HOSTNAME})"
 waitUntilLdapUp localhost "${LDAPS_PORT}" 'cn=config'
 
-beluga_log "exporting config settings"
-export_config_settings
-
 beluga_log "pod ordinal: ${ORDINAL}; multi-cluster: ${IS_MULTI_CLUSTER}"
 
 # Change PF user passwords
