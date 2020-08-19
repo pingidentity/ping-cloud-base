@@ -60,6 +60,8 @@ spec:
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_CONSOLE
+        - name: AUTHENTICATION_MODE
+          value: LDAP
         - name: PF_DNS_PING_NAMESPACE
           valueFrom:
             fieldRef:
