@@ -6,6 +6,7 @@
 ${VERBOSE} && set -x
 
 test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
+test -f "${STAGING_DIR}/ds_env_vars" && . "${STAGING_DIR}/ds_env_vars"
 
 if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
   # Check to see if the artifact file is empty

@@ -5,9 +5,10 @@
 
 "${VERBOSE}" && set -x
 
-export_environment_variables
-
 test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
+test -f "${STAGING_DIR}/ds_env_vars" && . "${STAGING_DIR}/ds_env_vars"
+
+export_environment_variables
 
 beluga_log "Uploading to location ${BACKUP_URL}"
 

@@ -6,6 +6,7 @@ set -e
 
 # Source generated environment variables 
 test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
+test -f "${STAGING_DIR}/ds_env_vars" && . "${STAGING_DIR}/ds_env_vars"
 
 # Set required environment variables for skbn
 initializeSkbnConfiguration

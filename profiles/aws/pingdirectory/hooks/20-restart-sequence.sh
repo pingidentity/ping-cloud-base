@@ -5,6 +5,7 @@ ${VERBOSE} && set -x
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
+test -f "${STAGING_DIR}/ds_env_vars" && . "${STAGING_DIR}/ds_env_vars"
 test -f "${HOOKS_DIR}/pingdata.lib.sh" && . "${HOOKS_DIR}/pingdata.lib.sh"
 
 beluga_log "Restarting container"

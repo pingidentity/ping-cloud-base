@@ -5,8 +5,6 @@
 
 "${VERBOSE}" && set -x
 
-export_environment_variables
-
 # 1) Specified backup file name by user will be restored
 #
 # OR
@@ -17,6 +15,9 @@ export_environment_variables
 #    deployment the restore scipt will not find any backups within S3.
 
 test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
+test -f "${STAGING_DIR}/ds_env_vars" && . "${STAGING_DIR}/ds_env_vars"
+
+export_environment_variables
 
 if ! test -z "${BACKUP_FILE_NAME}" || ! test -f "${OUT_DIR}"/instance/conf/pa.jwk; then
 

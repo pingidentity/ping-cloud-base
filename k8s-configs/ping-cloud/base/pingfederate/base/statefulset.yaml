@@ -103,8 +103,8 @@ spec:
           mountPath: /opt/in/instance/server/default/conf/pingfederate.lic
           subPath: pingfederate.lic
         - name: data-dir
-          mountPath: /opt/staging/env_vars
-          subPath: env_vars
+          mountPath: /opt/staging/ds_env_vars
+          subPath: ds_env_vars
         - mountPath: /etc/podinfo
           name: podinfo
         readinessProbe:

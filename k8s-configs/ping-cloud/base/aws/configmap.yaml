@@ -36,17 +36,17 @@ data:
           if ! ssm_rv=$(get_ssm_val "${val#ssm:/}"); then
             return 1
           fi 
-          echo "$key=$ssm_rv" >>"/config/env_vars"
+          echo "$key=$ssm_rv" >>"/config/ds_env_vars"
         esac
       done
     }
 
-    echo "# Start Discovery Service" >>"/config/env_vars"
+    echo "# Start Discovery Service" >>"/config/ds_env_vars"
 
     if ! get_ssm_key; then
       exit 1
     fi
 
-    echo "# End Discovery Service" >>"/config/env_vars"
+    echo "# End Discovery Service" >>"/config/ds_env_vars"
     
     exit 0
