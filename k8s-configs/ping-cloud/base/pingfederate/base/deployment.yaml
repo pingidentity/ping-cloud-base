@@ -56,6 +56,8 @@ spec:
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_ENGINE
+        - name: AUTHENTICATION_MODE
+          value: none
         - name: PF_DNS_PING_NAMESPACE
           valueFrom:
             fieldRef:
