@@ -193,10 +193,8 @@ function beluga_log() {
   file_name="$(basename "$0")"
   message="$1"
   test -z "$2" && log_level='INFO' || log_level="$2"
-
   format='+%Y-%m-%d %H:%M:%S'
   timestamp="$(TZ=UTC date "${format}")"
-
   echo "${file_name}: ${timestamp} ${log_level} ${message}"
 }
 
