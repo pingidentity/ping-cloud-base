@@ -3,10 +3,6 @@ set -e
 
 . "${HOOKS_DIR}/utils.lib.sh"
 
-
-# Source generated environment variables 
-test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
-
 # Set required environment variables for skbn
 initializeSkbnConfiguration
 
