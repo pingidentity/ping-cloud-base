@@ -5,9 +5,6 @@
 
 "${VERBOSE}" && set -x
 
-# Export config settings based on PA or PA-WAS, multi-region vs. single-region, etc.
-export_config_settings
-
 # 1) Specified backup file name by user will be restored
 #
 # OR

@@ -5,9 +5,6 @@
 
 "${VERBOSE}" && set -x
 
-# Export config settings based on PA or PA-WAS, multi-region vs. single-region, etc.
-export_config_settings
-
 test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
 
 beluga_log "Uploading to location ${BACKUP_URL}"

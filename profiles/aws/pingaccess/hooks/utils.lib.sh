@@ -338,7 +338,7 @@ function export_config_settings() {
 
   if is_secondary_cluster; then
     PRIMARY_CLUSTER=false
-    export ADMIN_HOST_PORT="${PA_CLUSTER_PUBLIC_HOSTNAME}:9000"
+    export ADMIN_HOST_PORT="${CLUSTER_PUBLIC_HOSTNAME}:9000"
     export CLUSTER_CONFIG_HOST="${ADMIN_PUBLIC_HOST_NAME}"
   else
     PRIMARY_CLUSTER=true
@@ -423,16 +423,21 @@ function export_environment_variables() {
 }
 
 ########################################################################################################################
-# Standard log function.
+# Logs the provided message at the provided log level. Default log level is INFO, if not provided.
 #
+# Arguments
+#   $1 -> The log message.
+#   $2 -> Optional log level. Default is INFO.
 ########################################################################################################################
 function beluga_log() {
-  local format="+%Y-%m-%d:%Hh:%Mm:%Ss" # yyyy-mm-dd:00h:00m:00s
-  local timestamp=$( date "${format}" )
-  local message="${1}"
-  local file_name=$(basename "${0}")
+  file_name="$(basename "$0")"
+  message="$1"
+  test -z "$2" && log_level='INFO' || log_level="$2"
 
-  echo "${timestamp} ${file_name}: ${message}"
+  format='+%Y-%m-%d %H:%M:%S'
+  timestamp="$(TZ=UTC date "${format}")"
+
+  echo "${file_name}: ${timestamp} ${log_level} ${message}"
 }
 
 ########################################################################################################################
@@ -444,3 +449,7 @@ function strip_double_quotes() {
   temp="${temp#\"}"
   echo "${temp}"
 }
+
+# These are needed by every script - so export them when this script is sourced.
+beluga_log "export config settings"
+export_config_settings

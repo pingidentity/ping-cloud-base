@@ -12,7 +12,7 @@ configMapGenerator:
   - env_vars
   - pingaccess/env_vars
 
-# Pingaccess
+# Pingaccess WAS
 - name: pingaccess-was-environment-variables
   behavior: merge
   envs:

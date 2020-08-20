@@ -6,9 +6,6 @@
 # This a wrapper for 185-offline-enable.sh. To enable replication offline, call
 # this script without any arguments.
 
-beluga_log "exporting config settings"
-export_config_settings
-
 # The total number of replicating pods.
 NUM_REPLICAS=$(kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
 
