@@ -68,9 +68,13 @@ change_pf_user_passwords() {
 #
 # Arguments
 #   ${1} -> The base DN for which to initialize replication.
+#   ${2} -> An optional timeout (in seconds) for the dsreplication initialize command. If not provided, then a timeout
+#           of 0 is assumed, which implies no retries. This argument is intended only for internal use from within the
+#           function.
 ########################################################################################################################
 initialize_server_for_dn() {
   BASE_DN=${1}
+  TIMEOUT_SECONDS=${2:-0}
 
   # Initialize the first server in the secondary cluster from the first server in the primary cluster.
   # Initialize all other servers from the first server within the same cluster.
@@ -87,6 +91,7 @@ initialize_server_for_dn() {
     --trustAll \
     --hostSource "${FROM_HOST}" --portSource "${FROM_PORT}" --useSSLSource \
     --hostDestination "${TO_HOST}" --portDestination "${TO_PORT}" --useSSLDestination \
+    --retryTimeoutSeconds "${TIMEOUT_SECONDS}" \
     --baseDN "${BASE_DN}" \
     --adminUID "${ADMIN_USER_NAME}" \
     --adminPasswordFile "${ADMIN_USER_PASSWORD_FILE}" \
@@ -96,9 +101,22 @@ initialize_server_for_dn() {
   replInitResult=$?
   beluga_log "replication initialize for ${BASE_DN} status: ${replInitResult}"
 
+  # Tolerate return code 7 - this means that the base DN does not exist on the source server.
+  # When the source server is rolled out, it'll initialize replication to all servers for all DNs.
+  if test ${replInitResult} -eq 7; then
+    beluga_log "base DN does not exist on this server - the seed server will initialize this server when it's rolled"
+    return 0
+  fi
+
   if test ${replInitResult} -ne 0; then
     beluga_log "contents of dsreplication.log:"
     cat "${SERVER_ROOT_DIR}"/logs/tools/dsreplication.log
+
+    # If it was an initial call to initialize, then try to initialize again with a retry timeout.
+    if test "${TIMEOUT_SECONDS}" -eq 0 && test "${RETRY_TIMEOUT_SECONDS}" -ne 0; then
+      initialize_server_for_dn "${BASE_DN}" "${RETRY_TIMEOUT_SECONDS}"
+      replInitResult=$?
+    fi
   fi
 
   return ${replInitResult}
@@ -214,9 +232,7 @@ for DN in ${UNINITIALIZED_DNS}; do
   ${command_to_run} "${DN}"
   replInitResult=$?
 
-  # Tolerate return code 7 - this means that the base DN does not exist on the source server.
-  # When the source server is rolled out, it'll initialize replication to all servers for all DNs.
-  if test ${replInitResult} -eq 0 || test ${replInitResult} -eq 7; then
+  if test ${replInitResult} -eq 0; then
     beluga_log "adding DN ${DN} to the replication marker file ${REPL_INIT_MARKER_FILE}"
     echo "${DN}" >> "${REPL_INIT_MARKER_FILE}"
   else
