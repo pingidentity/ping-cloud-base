@@ -105,16 +105,18 @@ spec:
           name: podinfo          
         readinessProbe:
           exec:
-            command: [ liveness.sh ]
+            command: [ /opt/staging/hooks/99-pf-engine-liveness.sh ]
           initialDelaySeconds: 60
           periodSeconds: 5
           failureThreshold: 3
+          timeoutSeconds: 5
         livenessProbe:
           exec:
-            command: [ liveness.sh ]
+            command: [ /opt/staging/hooks/99-pf-engine-liveness.sh ]
           initialDelaySeconds: 60
           periodSeconds: 30
           failureThreshold: 3
+          timeoutSeconds: 5
         ports:
         - containerPort: 9031
       volumes:
