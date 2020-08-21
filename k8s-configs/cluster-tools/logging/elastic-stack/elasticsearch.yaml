@@ -18,7 +18,7 @@ data:
     appender.rolling.layout.type = ESJsonLayout
     appender.rolling.layout.type_name = server
 
-    rootLogger.level = ${env:LOG_LEVEL:-info}
+    rootLogger.level = ${env:LOG_LEVEL:-warn}
     rootLogger.appenderRef.rolling.ref = rolling
 
     appender.deprecation_rolling.type = Console
