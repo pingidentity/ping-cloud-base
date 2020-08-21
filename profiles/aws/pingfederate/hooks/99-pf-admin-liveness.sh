@@ -9,7 +9,8 @@ get_version_response_code=$(curl -k \
   -s \
   -S \
   -w '%{response_code}' \
-  -u ${PF_ADMIN_USER_USERNAME}:${PF_ADMIN_USER_PASSWORD} \
+  --max-time 2 \
+  -u "${PF_ADMIN_USER_USERNAME}:${PF_ADMIN_USER_PASSWORD}" \
   -H 'X-Xsrf-Header: PingFederate' \
   -o /dev/null \
   "${version_endpoint}")
