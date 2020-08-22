@@ -77,6 +77,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="transaction.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
 
         <!-- Security Audit log for Splunk: A time/date based rolling appender
@@ -162,11 +171,20 @@
                 %parameter{parameter-name} - HTTP request parameter value for the given HTTP request parameter name
                 %trackedparameter{parameter-name} - Values for a configured tracked parameter that was stored at the start of the transaction
                 -->
-                <pattern>%d trackingid=&quot;%X{trackingid}&quot; event=%X{event} subject=&quot;%X{subject}&quot; ip=%X{ip} app=%X{app} connectionid=%X{connectionid} protocol=&quot;%X{protocol}&quot; pfhost=%X{host} role=%X{role} status=%X{status} adapterid=%X{adapterid} description=&quot;%X{description}&quot; responsetime=%X{responsetime} inmessagetype=&quot;%X{inmessagetype}&quot; %n</pattern>
+                <pattern>%d| %X{trackingid}| %X{event}| %X{subject}| %X{ip} | %X{app}| %X{connectionid}| %X{protocol}| %X{host}| %X{role}| %X{status}| %X{adapterid}| %X{description}| %X{responsetime} %n</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="audit.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
 
         <!-- Admin Audit log : A time/date based rolling appender -->
@@ -182,6 +200,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="admin.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
 
         <!-- Admin Event Detail Audit log : A time/date based rolling appender -->
@@ -189,12 +216,23 @@
                      filePattern="${sys:pf.log.dir}/admin-event-detail.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <PatternLayout>
-
+                <!-- Uncomment this if you want to use UTF-8 encoding instead
+                    of system's default encoding.
+                <charset>UTF-8</charset> -->
                 <pattern>%X{eventdetailid} | %X{filename} | %X{delta} | line %X{position} | %m%n</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="admin-event-detail.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
 
         <!-- Admin API Audit log : A time/date based rolling appender -->
@@ -222,8 +260,18 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="admin-api.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
 
+        <!-- Runtime API Audit log : A time/date based rolling appender -->
         <RollingFile name="RuntimeApiAudit" fileName="${sys:pf.log.dir}/runtime-api.log"
                      filePattern="${sys:pf.log.dir}/runtime-api.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
@@ -248,6 +296,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="runtime-api.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
 
         <!-- Provisioner log : A time/date based rolling appender -->
@@ -260,6 +317,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
 
         <!-- Outbound provisioner audit log: A time/date based rolling appender -->
@@ -287,6 +353,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner-audit.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
 
         <!-- Outbound provisioner audit log for Splunk: A time/date based
@@ -311,6 +386,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner-audit-splunk.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         -->
 
@@ -350,6 +434,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="server-oracle-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="ServerLogToOracleDB-FAILOVER" primary="ServerLogToOracleDB" retryIntervalSeconds="60">
             <Failovers>
@@ -394,6 +487,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="server-sqlserver-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="ServerLogToSQLServerDB-FAILOVER" primary="ServerLogToSQLServerDB" retryIntervalSeconds="60">
             <Failovers>
@@ -438,6 +540,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="server-mysql-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="ServerLogToMySQLDB-FAILOVER" primary="ServerLogToMySQLDB" retryIntervalSeconds="60">
             <Failovers>
@@ -482,6 +593,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="server-postgresql-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="ServerLogToPostgreSQLDB-FAILOVER" primary="ServerLogToPostgreSQLDB" retryIntervalSeconds="60">
             <Failovers>
@@ -520,6 +640,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner-oracle-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="ProvisionerLogToOracleDB-FAILOVER" primary="ProvisionerLogToOracleDB" retryIntervalSeconds="60">
             <Failovers>
@@ -558,6 +687,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner-sqlserver-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="ProvisionerLogToSQLServerDB-FAILOVER" primary="ProvisionerLogToSQLServerDB" retryIntervalSeconds="60">
             <Failovers>
@@ -596,6 +734,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner-mysql-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="ProvisionerLogToMySQLDB-FAILOVER" primary="ProvisionerLogToMySQLDB" retryIntervalSeconds="60">
             <Failovers>
@@ -634,6 +781,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner-postgresql-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="ProvisionerLogToPostgreSQLDB-FAILOVER" primary="ProvisionerLogToPostgreSQLDB" retryIntervalSeconds="60">
             <Failovers>
@@ -675,6 +831,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner-audit-oracle-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="OutboundProvisionerEventToOracleDB-FAILOVER" primary="OutboundProvisionerEventToOracleDB" retryIntervalSeconds="60">
             <Failovers>
@@ -716,6 +881,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner-audit-sqlserver-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="OutboundProvisionerEventToSQLServerDB-FAILOVER" primary="OutboundProvisionerEventToSQLServerDB" retryIntervalSeconds="60">
             <Failovers>
@@ -757,6 +931,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner-audit-mysql-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="OutboundProvisionerEventToMySQLDB-FAILOVER" primary="OutboundProvisionerEventToMySQLDB" retryIntervalSeconds="60">
             <Failovers>
@@ -798,6 +981,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner-audit-postgresql-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="OutboundProvisionerEventToPostgreSQLDB-FAILOVER" primary="OutboundProvisionerEventToPostgreSQLDB" retryIntervalSeconds="60">
             <Failovers>
@@ -823,14 +1015,14 @@
         "Set up the Outbound provisioner audit logger" section (defined below in this configuration file)
         before the appender can be used:
         -->
-
-        <!-- Socket Appender for Outbound Provisioner Event Logs via TCP Socket -->
-        <Socket name="OutboundProvisionerEventToCEFSyslog" host="${SOCKET_HOST}" port="${SOCKET_PORT_PROVISIONER}" protocol="${SOCKET_PROTOCOL}" ignoreExceptions="false">
+        <!--
+        <Socket name="OutboundProvisionerEventToCEFSyslog" host="{syslog.host}" port="{syslog.port}" protocol="{syslog.protocol}" ignoreExceptions="false">
             <PingSyslogLayout>
-                <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" properties="true" />
+                <PatternLayout>
+                <pattern>%escape{CEF}{CEF:0|Ping Identity|PingFederate|%X{pfversion}|%X{event_type}|%X{event_type}|0|rt=%d{MMM dd yyyy HH:mm:ss.SSS} cs1Label=Cycle ID cs1=%X{cycle_id} cs2Label=Channel ID cs2=%X{channel_id} cs3Label=Event type cs3=%X{event_type} cs4Label=Source ID cs4=%X{source_id} cs5Label=Target ID cs5=%X{target_id} cs6Label=Was Event Successful cs6=%X{is_success} cs7Label=Failure Cause cs7=%X{non_success_cause} %n}</pattern>
+                </PatternLayout>
             </PingSyslogLayout>
         </Socket>
-
         <RollingFile name="OutboundProvisionerEventToCEFSyslog-FILE" fileName="${sys:pf.log.dir}/provisioner-audit-cef-syslog-failover.log"
             filePattern="${sys:pf.log.dir}/provisioner-audit-cef-syslog-failover.%d{yyyy-MM-dd}.log" >
             <PatternLayout>
@@ -839,13 +1031,22 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner-audit-cef-syslog-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
-
         <PingFailover name="OutboundProvisionerEventToCEFSyslog-FAILOVER" primary="OutboundProvisionerEventToCEFSyslog">
             <Failovers>
                 <AppenderRef ref="OutboundProvisionerEventToCEFSyslog-FILE" />
             </Failovers>
         </PingFailover>
+        -->
 
         <!-- Outbound provisioner audit log for CEFFile: A time/date based rolling appender
 
@@ -863,6 +1064,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner-audit-cef.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         -->
 
@@ -909,6 +1119,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="audit-oracle-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="SecurityAuditToOracleDB-FAILOVER" primary="SecurityAuditToOracleDB" retryIntervalSeconds="60">
             <Failovers>
@@ -960,6 +1179,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="audit-sqlserver-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="SecurityAuditToSQLServerDB-FAILOVER" primary="SecurityAuditToSQLServerDB" retryIntervalSeconds="60">
             <Failovers>
@@ -1011,6 +1239,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="audit-mysql-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="SecurityAuditToMySQLDB-FAILOVER" primary="SecurityAuditToMySQLDB" retryIntervalSeconds="60">
             <Failovers>
@@ -1062,6 +1299,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="audit-postgresql-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="SecurityAuditToPostgreSQLDB-FAILOVER" primary="SecurityAuditToPostgreSQLDB" retryIntervalSeconds="60">
             <Failovers>
@@ -1091,29 +1337,14 @@
         org.sourceid.wstrust.log.STSAuditLogger (when PingFederate is acting as a Security Token Service)
         org.sourceid.websso.profiles.idp.AsAuditLogger (when PingFederate is acting as an OAuth Authorization Server)
         -->
-
-        <!-- Socket Appender for Outbound Security Audit Logs via TCP Socket -->
-        <Socket name="SecurityAuditToCEFSyslog" host="${SOCKET_HOST}" port="${SOCKET_PORT_AUDIT}" protocol="${SOCKET_PROTOCOL}" ignoreExceptions="false">
+        <!--
+        <Socket name="SecurityAuditToCEFSyslog" host="{syslog.host}" port="{syslog.port}" protocol="{syslog.protocol}" ignoreExceptions="false">
             <PingSyslogLayout>
-                <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" >
-                    <KeyValuePair key="dateTimeStamp" value="$${date:yyyy-MM-dd HH:mm:ss,S}"/>
-                    <KeyValuePair key="trackingid" value="$${ctx:trackingid:-}"/>
-                    <KeyValuePair key="event" value="$${ctx:event:-}"/>
-                    <KeyValuePair key="subject" value="$${ctx:subject:-}"/>
-                    <KeyValuePair key="ip" value="$${ctx:ip:-}"/>
-                    <KeyValuePair key="app" value="$${ctx:app:-}"/>
-                    <KeyValuePair key="connectionid" value="$${ctx:connectionid:-}"/>
-                    <KeyValuePair key="protocol" value="$${ctx:protocol:-}"/>
-                    <KeyValuePair key="host" value="$${ctx:host:-}"/>
-                    <KeyValuePair key="role" value="$${ctx:role:-}"/>
-                    <KeyValuePair key="status" value="$${ctx:status:-}"/>
-                    <KeyValuePair key="adapterid" value="$${ctx:adapterid:-}"/>
-                    <KeyValuePair key="description" value="$${ctx:description:-}"/>
-                    <KeyValuePair key="responsetime" value="$${ctx:responsetime:-}"/>
-                </JSONLayout>
+                <PatternLayout>
+                    <pattern>%escape{CEF}{CEF:0|Ping Identity|PingFederate|%X{pfversion}|%X{event}|%X{event}|0|rt=%d{MMM dd yyyy HH:mm:ss.SSS} duid=%X{subject} src=%X{ip} msg=%X{status} cs1Label=Target Application URL cs1=%X{app} cs2Label=Connection ID cs2=%X{connectionid} cs3Label=Protocol cs3=%X{protocol} dvchost=%X{host} cs4Label=Role cs4=%X{role} externalId=%X{trackingid} cs5Label=SP Local User ID cs5=%X{localuserid} cs6Label=Attributes cs6=%X{attributes} %n}</pattern>
+                </PatternLayout>
             </PingSyslogLayout>
         </Socket>
-
         <RollingFile name="SecurityAuditToCEFSyslog-FILE" fileName="${sys:pf.log.dir}/audit-cef-syslog-failover.log"
             filePattern="${sys:pf.log.dir}/audit-cef-syslog-failover.%d{yyyy-MM-dd}.log" >
             <PatternLayout>
@@ -1122,13 +1353,22 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="audit-cef-syslog-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
-
         <PingFailover name="SecurityAuditToCEFSyslog-FAILOVER" primary="SecurityAuditToCEFSyslog">
             <Failovers>
                 <AppenderRef ref="SecurityAuditToCEFSyslog-FILE" />
             </Failovers>
         </PingFailover>
+        -->
 
         <!-- Security Audit log : CEF Formatted file appender
 
@@ -1153,6 +1393,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="audit-cef.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         -->
 
@@ -1185,52 +1434,8 @@
          destinationBindingName="topic/MyErrorsTopic"/>
         -->
 
-        <!-- Other failovers that essentially needed for proper working of enrichment service -->
-
-        <!-- Socket Appender for Outbound System Logs via TCP Socket -->
-        <Socket name="OutboundSystemLogsToSyslog" host="${SOCKET_HOST}" port="${SOCKET_PORT_SYSTEM}" protocol="${SOCKET_PROTOCOL}" ignoreExceptions="false">
-            <PingSyslogLayout>
-                <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" properties="true" />
-            </PingSyslogLayout>
-        </Socket>
-
-        <PingFailover name="SecurityAudit2File-FAILOVER" primary="SecurityAuditToCEFSyslog">
-            <Failovers>
-                <AppenderRef ref="SecurityAudit2File" />
-            </Failovers>
-        </PingFailover>
-
-        <PingFailover name="ProvisionerLog-FAILOVER" primary="OutboundProvisionerEventToCEFSyslog">
-            <Failovers>
-                <AppenderRef ref="ProvisionerLog" />
-            </Failovers>
-        </PingFailover>
-
-        <PingFailover name="AdminAudit-FAILOVER" primary="SecurityAuditToCEFSyslog">
-            <Failovers>
-                <AppenderRef ref="AdminAudit" />
-            </Failovers>
-        </PingFailover>
-
-        <PingFailover name="AdminEventDetailAudit-FAILOVER" primary="SecurityAuditToCEFSyslog">
-            <Failovers>
-                <AppenderRef ref="AdminEventDetailAudit" />
-            </Failovers>
-        </PingFailover>
-
-        <PingFailover name="AdminApiAudit-FAILOVER" primary="SecurityAuditToCEFSyslog">
-            <Failovers>
-                <AppenderRef ref="AdminApiAudit" />
-            </Failovers>
-        </PingFailover>
-
-        <PingFailover name="RuntimeApiAuditLogger-FAILOVER" primary="SecurityAuditToCEFSyslog">
-            <Failovers>
-                <AppenderRef ref="RuntimeApiAuditLogger" />
-            </Failovers>
-        </PingFailover>
-        
     </Appenders>
+
     <Loggers>
 
         <!-- ================ -->
@@ -1302,8 +1507,9 @@
         <!-- Loggers -->
         <!-- ================ -->
 
-        <AsyncLogger name="org.sourceid.saml20.bindings.BindingLogProxy" level="INFO" additivity="false" includeLocation="false">
-            <AppenderRef ref="SamlTransaction" />
+        <AsyncLogger name="org.sourceid.saml20.bindings.BindingLogProxy"
+                     level="INFO" additivity="false" includeLocation="false">
+            <appender-ref ref="SamlTransaction" />
         </AsyncLogger>
 
         <!--
@@ -1320,18 +1526,17 @@
             Each must be the only appender referenced in the logger org.sourceid.websso.profiles.sp.SpAuditLogger.
             If one of these appenders is added, remove the existing reference to "SecurityAudit2File".
         -->
-
         <Logger name="org.sourceid.websso.profiles.sp.SpAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-            <AppenderRef ref="SecurityAuditToCEFSyslog-FAILOVER"/>
+            <appender-ref ref="SecurityAudit2File" />
             <!--
-                <AppenderRef ref="SecurityAuditToSQLServerDB-FAILOVER"/>
-                <AppenderRef ref="SecurityAuditToOracleDB-FAILOVER"/>
-                <AppenderRef ref="SecurityAuditToCEFSyslog-FAILOVER"/>
-                <AppenderRef ref="SecurityAuditToCEFFile"/>
-                <AppenderRef ref="SecurityAuditToMySQLDB-FAILOVER"/>
-                <AppenderRef ref="SecurityAuditToPostgreSQLDB-FAILOVER" />
-                <AppenderRef ref="SecurityAudit2Splunk"/>
+                <appender-ref ref="SecurityAuditToSQLServerDB-FAILOVER"/>
+                <appender-ref ref="SecurityAuditToOracleDB-FAILOVER"/>
+                <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
+                <appender-ref ref="SecurityAuditToCEFFile"/>
+                <appender-ref ref="SecurityAuditToMySQLDB-FAILOVER"/>
+                <appender-ref ref="SecurityAuditToPostgreSQLDB-FAILOVER" />
+                <appender-ref ref="SecurityAudit2Splunk"/>
             -->
         </Logger>
 
@@ -1351,15 +1556,15 @@
         -->
         <Logger name="org.sourceid.websso.profiles.idp.IdpAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-            <AppenderRef ref="SecurityAuditToCEFSyslog-FAILOVER"/>
+            <appender-ref ref="SecurityAudit2File" />
             <!--
-                <AppenderRef ref="SecurityAuditToCEFSyslog-FAILOVER"/>
-                <AppenderRef ref="SecurityAuditToCEFFile"/>
-                <AppenderRef ref="SecurityAuditToMySQLDB-FAILOVER"/>
-                <AppenderRef ref="SecurityAuditToPostgreSQLDB-FAILOVER" />
-                <AppenderRef ref="SecurityAuditToSQLServerDB-FAILOVER"/>
-                <AppenderRef ref="SecurityAuditToOracleDB-FAILOVER"/>
-                <AppenderRef ref="SecurityAudit2Splunk"/>
+                <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
+                <appender-ref ref="SecurityAuditToCEFFile"/>
+                <appender-ref ref="SecurityAuditToMySQLDB-FAILOVER"/>
+                <appender-ref ref="SecurityAuditToPostgreSQLDB-FAILOVER" />
+                <appender-ref ref="SecurityAuditToSQLServerDB-FAILOVER"/>
+                <appender-ref ref="SecurityAuditToOracleDB-FAILOVER"/>
+                <appender-ref ref="SecurityAudit2Splunk"/>
             -->
         </Logger>
 
@@ -1379,15 +1584,15 @@
         -->
         <Logger name="org.sourceid.websso.profiles.idp.AsAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-            <AppenderRef ref="SecurityAuditToCEFSyslog-FAILOVER"/>
+            <appender-ref ref="SecurityAudit2File" />
             <!--
-                <AppenderRef ref="SecurityAuditToCEFSyslog-FAILOVER"/>
-                <AppenderRef ref="SecurityAuditToCEFFile"/>
-                <AppenderRef ref="SecurityAuditToMySQLDB-FAILOVER"/>
-                <AppenderRef ref="SecurityAuditToPostgreSQLDB-FAILOVER" />
-                <AppenderRef ref="SecurityAuditToSQLServerDB-FAILOVER"/>
-                <AppenderRef ref="SecurityAuditToOracleDB-FAILOVER"/>
-                <AppenderRef ref="SecurityAudit2Splunk"/>
+                <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
+                <appender-ref ref="SecurityAuditToCEFFile"/>
+                <appender-ref ref="SecurityAuditToMySQLDB-FAILOVER"/>
+                <appender-ref ref="SecurityAuditToPostgreSQLDB-FAILOVER" />
+                <appender-ref ref="SecurityAuditToSQLServerDB-FAILOVER"/>
+                <appender-ref ref="SecurityAuditToOracleDB-FAILOVER"/>
+                <appender-ref ref="SecurityAudit2Splunk"/>
             -->
         </Logger>
 
@@ -1406,14 +1611,14 @@
         -->
         <Logger name="org.sourceid.websso.profiles.idp.ClientRegistrationAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-            <AppenderRef ref="SecurityAudit2File-FAILOVER" />
+            <appender-ref ref="SecurityAudit2File" />
             <!--
-                <AppenderRef ref="SecurityAuditToCEFSyslog-FAILOVER"/>
-                <AppenderRef ref="SecurityAuditToCEFFile"/>
-                <AppenderRef ref="SecurityAuditToMySQLDB-FAILOVER"/>
-                <AppenderRef ref="SecurityAuditToSQLServerDB-FAILOVER"/>
-                <AppenderRef ref="SecurityAuditToOracleDB-FAILOVER"/>
-                <AppenderRef ref="SecurityAudit2Splunk"/>
+                <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
+                <appender-ref ref="SecurityAuditToCEFFile"/>
+                <appender-ref ref="SecurityAuditToMySQLDB-FAILOVER"/>
+                <appender-ref ref="SecurityAuditToSQLServerDB-FAILOVER"/>
+                <appender-ref ref="SecurityAuditToOracleDB-FAILOVER"/>
+                <appender-ref ref="SecurityAudit2Splunk"/>
             -->
         </Logger>
 
@@ -1433,15 +1638,15 @@
         -->
         <Logger name="org.sourceid.wstrust.log.STSAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-            <AppenderRef ref="SecurityAudit2File-FAILOVER" />
+            <appender-ref ref="SecurityAudit2File" />
             <!--
-                <AppenderRef ref="SecurityAuditToCEFSyslog-FAILOVER"/>
-                <AppenderRef ref="SecurityAuditToCEFFile"/>
-                <AppenderRef ref="SecurityAuditToMySQLDB-FAILOVER"/>
-                <AppenderRef ref="SecurityAuditToPostgreSQLDB-FAILOVER" />
-                <AppenderRef ref="SecurityAuditToSQLServerDB-FAILOVER"/>
-                <AppenderRef ref="SecurityAuditToOracleDB-FAILOVER"/>
-                <AppenderRef ref="SecurityAudit2Splunk"/>
+                <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
+                <appender-ref ref="SecurityAuditToCEFFile"/>
+                <appender-ref ref="SecurityAuditToMySQLDB-FAILOVER"/>
+                <appender-ref ref="SecurityAuditToPostgreSQLDB-FAILOVER" />
+                <appender-ref ref="SecurityAuditToSQLServerDB-FAILOVER"/>
+                <appender-ref ref="SecurityAuditToOracleDB-FAILOVER"/>
+                <appender-ref ref="SecurityAudit2Splunk"/>
             -->
         </Logger>
 
@@ -1458,31 +1663,32 @@
             Each must be the only appender referenced in the logger com.pingidentity.provisioner.
             If one of these appenders is added, remove the existing reference to "ProvisionerLog" and "CONSOLE-PROVISIONER".
         -->
-        <AsyncLogger name="com.pingidentity.provisioner" level="INFO" additivity="false" includeLocation="false">
-            <AppenderRef ref="ProvisionerLog-FAILOVER" />
+        <AsyncLogger name="com.pingidentity.provisioner"
+                     level="INFO" additivity="false" includeLocation="false">
+            <appender-ref ref="ProvisionerLog" />
             <!--
-                <AppenderRef ref="CONSOLE-PROVISIONER" />
-                <AppenderRef ref="ProvisionerLogToOracleDB-FAILOVER"/>
-                <AppenderRef ref="ProvisionerLogToSQLServerDB-FAILOVER"/>
-                <AppenderRef ref="ProvisionerLogToMySQLDB-FAILOVER"/>
-                <AppenderRef ref="ProvisionerLogToPostgreSQLDB-FAILOVER" />
+                <appender-ref ref="CONSOLE-PROVISIONER" />
+                <appender-ref ref="ProvisionerLogToOracleDB-FAILOVER"/>
+                <appender-ref ref="ProvisionerLogToSQLServerDB-FAILOVER"/>
+                <appender-ref ref="ProvisionerLogToMySQLDB-FAILOVER"/>
+                <appender-ref ref="ProvisionerLogToPostgreSQLDB-FAILOVER" />
             -->
         </AsyncLogger>
 
         <Logger name="AuditLogger" level="INFO" additivity="false" includeLocation="false">
-            <AppenderRef ref="AdminAudit-FAILOVER" />
+            <appender-ref ref="AdminAudit" />
         </Logger>
 
         <Logger name="EventDetailAuditLogger" level="INFO" additivity="false" includeLocation="false">
-            <AppenderRef ref="AdminEventDetailAudit-FAILOVER" />
+            <appender-ref ref="AdminEventDetailAudit" />
         </Logger>
 
         <Logger name="AdminApiAuditLogger" level="INFO" additivity="false" includeLocation="false">
-            <AppenderRef ref="AdminApiAudit-FAILOVER" />
+            <appender-ref ref="AdminApiAudit" />
         </Logger>
 
         <Logger name="RuntimeApiAuditLogger" level="INFO" additivity="false" includeLocation="false">
-            <AppenderRef ref="RuntimeApiAudit-FAILOVER" />
+            <appender-ref ref="RuntimeApiAudit" />
         </Logger>
 
         <!-- Log xml content before parsing-->
@@ -1516,15 +1722,15 @@
         -->
 
         <Logger name="ProvisionerAuditLogger" level="INFO" additivity="false" includeLocation="false">
-            <AppenderRef ref="OutboundProvisionerEventToCEFSyslog-FAILOVER"/>
+            <appender-ref ref="OutboundProvisionerEventToFile" />
             <!--
-            <AppenderRef ref="OutboundProvisionerEventToSQLServerDB-FAILOVER"/>
-            <AppenderRef ref="OutboundProvisionerEventToOracleDB-FAILOVER"/>
-            <AppenderRef ref="OutboundProvisionerEventToMySQLDB-FAILOVER"/>
-            <AppenderRef ref="OutboundProvisionerEventToPostgreSQLDB-FAILOVER"/>
-            <AppenderRef ref="OutboundProvisionerEventToCEFSyslog-FAILOVER"/>
-            <AppenderRef ref="OutboundProvisionerEventToCEFFile"/>
-            <AppenderRef ref="OutboundProvisionerEventToSplunk"/>
+            <appender-ref ref="OutboundProvisionerEventToSQLServerDB-FAILOVER"/>
+            <appender-ref ref="OutboundProvisionerEventToOracleDB-FAILOVER"/>
+            <appender-ref ref="OutboundProvisionerEventToMySQLDB-FAILOVER"/>
+            <appender-ref ref="OutboundProvisionerEventToPostgreSQLDB-FAILOVER"/>
+            <appender-ref ref="OutboundProvisionerEventToCEFSyslog-FAILOVER"/>
+            <appender-ref ref="OutboundProvisionerEventToCEFFile"/>
+            <appender-ref ref="OutboundProvisionerEventToSplunk"/>
             -->
         </Logger>
 
@@ -1546,10 +1752,9 @@
 
             For database logging, comment the <AsyncRoot> block and uncomment the <Root> block.
         -->
-        <AsyncRoot level="INFO" includeLocation="false">
-            <AppenderRef ref="OutboundSystemLogsToSyslog" />
+		  <AsyncRoot level="${PF_LOG_LEVEL}" includeLocation="false">
+            <!-- <AppenderRef ref="CONSOLE" /> -->
             <AppenderRef ref="FILE" />
-            <AppenderRef ref="CONSOLE" />
         </AsyncRoot>
 
         <!--

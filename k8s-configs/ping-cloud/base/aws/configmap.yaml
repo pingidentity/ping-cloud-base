@@ -6,6 +6,9 @@ data:
   get_ssm_env_vars.sh: |-
     #!/bin/sh
 
+    # Configuration file to share environment variables with main container.
+    CONFIG_FILE='/config/ds_env_vars'
+
     # Verify that the mandatory variable is set.
     if test -z "${REGION}"; then
       echo "REGION environment variable must be set"
@@ -36,17 +39,17 @@ data:
           if ! ssm_rv=$(get_ssm_val "${val#ssm:/}"); then
             return 1
           fi 
-          echo "$key=$ssm_rv" >>"/config/env_vars"
+          echo "$key=$ssm_rv" >>"${CONFIG_FILE}"
         esac
       done
     }
 
-    echo "# Start Discovery Service" >>"/config/env_vars"
+    echo "# Start Discovery Service" >>"${CONFIG_FILE}"
 
     if ! get_ssm_key; then
       exit 1
     fi
 
-    echo "# End Discovery Service" >>"/config/env_vars"
-    
+    echo "# End Discovery Service" >>"${CONFIG_FILE}"
+
     exit 0

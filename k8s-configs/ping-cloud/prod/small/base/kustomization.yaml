@@ -24,6 +24,7 @@ configMapGenerator:
   - pingdirectory/env_vars
 
 patchesStrategicMerge:
+- pingdirectory/wait-for-service.yaml
 - pingdirectory/limits.yaml
 
 - pingfederate/engine-init-env.yaml

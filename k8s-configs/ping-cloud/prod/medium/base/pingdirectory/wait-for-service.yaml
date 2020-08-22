@@ -1,0 +1,14 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingdirectory
+spec:
+  template:
+    spec:
+      initContainers:
+      - name: wait-for-services
+        env:
+        # PD servers in secondary (that are not pingdirectory-0) must wait for pingdirectory-0 in primary.
+        # This is ignored by pingdirectory servers in primary.
+        - name: WAIT_FOR_SERVICES
+          value: pingdirectory

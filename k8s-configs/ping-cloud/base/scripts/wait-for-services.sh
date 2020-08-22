@@ -13,12 +13,16 @@ else
   beluga_log "Checking dependent service(s): ${WAIT_FOR_SERVICES}"
 
   for APP in ${WAIT_FOR_SERVICES}; do
-    if test "${TENANT_DOMAIN}" != "${PRIMARY_TENANT_DOMAIN}"; then
+    if is_secondary_cluster; then
       case "${APP}" in
         pingdirectory)
-          HOST_PORT_LIST="\
-            ${PD_CLUSTER_PUBLIC_HOSTNAME}:${PD_CLUSTER_PORT} \
-            ${PD_ADMIN_SERVER_NAME}.${PD_CLUSTER_PUBLIC_HOSTNAME}:${PD_ADMIN_WAIT_PORT}"
+          # In secondary clusters, only non-pingdirectory servers and pingdirectory-0 need to wait on pingdirectory-0
+          # in primary. Secondary non-0 pingdirectory won't be started until pingdirectory-0 is Ready within its own
+          # cluster because they run in a StatefulSet with 'OrderedReady' pod management policy.
+          ! is_a_pingdirectory_server || is_pingdirectory_server0 &&
+              HOST_PORT_LIST="\
+                ${PD_CLUSTER_PUBLIC_HOSTNAME}:${PD_CLUSTER_PORT} \
+                ${PD_ADMIN_SERVER_NAME}.${PD_CLUSTER_PUBLIC_HOSTNAME}:${PD_ADMIN_WAIT_PORT}"
           ;;
 
         pingfederate-cluster)
@@ -41,9 +45,12 @@ else
     else
       case "${APP}" in
         pingdirectory)
-          HOST_PORT_LIST="\
-            ${PD_CLUSTER_PRIVATE_HOSTNAME}:${PD_CLUSTER_PORT} \
-            ${PD_ADMIN_SERVER_NAME}.${PD_ADMIN_SERVICE_NAME}:${PD_ADMIN_WAIT_PORT}"
+          # In the primary cluster, pingdirectory servers don't need to wait on pingdirectory-0. Being in a
+          # StatefulSet with 'OrderReady' pod management policy guarantees it.
+          ! is_a_pingdirectory_server &&
+              HOST_PORT_LIST="\
+                ${PD_CLUSTER_PRIVATE_HOSTNAME}:${PD_CLUSTER_PORT} \
+                ${PD_ADMIN_SERVER_NAME}.${PD_ADMIN_SERVICE_NAME}:${PD_ADMIN_WAIT_PORT}"
           ;;
 
         pingfederate-cluster)
@@ -66,7 +73,7 @@ else
 
     if test -z "${HOST_PORT_LIST}"; then
       beluga_log "No services to wait for"
-      break
+      continue
     fi
 
     for HOST_PORT in ${HOST_PORT_LIST}; do

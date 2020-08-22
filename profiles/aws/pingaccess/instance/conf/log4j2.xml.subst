@@ -2,7 +2,7 @@
 
 <!--
   ~ ****************************************************
-  ~  Copyright (C) 2017 Ping Identity Corporation
+  ~  Copyright (C) 2020 Ping Identity Corporation
   ~  All rights reserved.
   ~
   ~  The contents of this file are the property of Ping Identity Corporation.
@@ -73,7 +73,7 @@
             <Policies>
                 <SizeBasedTriggeringPolicy size="100000 KB"/>
             </Policies>
-            <DefaultRolloverStrategy max="10"/>
+            <DefaultRolloverStrategy max="10" />
         </RollingFile>
 
         <!-- API auditing asynchronous file logging configuration-->
@@ -91,6 +91,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pa.home}/log">
+                    <IfFileName glob="pingaccess_api_audit.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
 
         <!-- API Audit log : JDBC appender template for Oracle
@@ -280,6 +289,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pa.home}/log">
+                    <IfFileName glob="pingaccess_engine_audit.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
 
         <!-- Engine Audit log : JDBC appender template for Oracle
@@ -495,6 +513,16 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pa.home}/log">
+                    <IfFileName glob="pingaccess_agent_audit.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
+
         </RollingFile>
 
         <!-- Agent Audit log : JDBC appender template for Oracle
