@@ -48,6 +48,8 @@ actual_files | tee /tmp/actual.txt
 log "Verifying that the expected files were uploaded"
 NOT_UPLOADED=$(comm -23 /tmp/expected.txt /tmp/actual.txt)
 
+sleep 10
+
 if ! test -z "${NOT_UPLOADED}"; then
   log "The following files were not uploaded: ${NOT_UPLOADED}"
   exit 1

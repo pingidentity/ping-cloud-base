@@ -29,7 +29,7 @@ CSD_OUT=$(find . -name support\*zip -type f | sort | tail -1)
 # Extracting datetime part and converting to <YYYYMMDDHHMM> format
 DST_FILE_DATETIME="$(basename "${CSD_OUT}" .zip | grep -o '[^-]*$' | sed 's/..$//')"
 # Extracting CSD file prefix
-DST_FILE_PREFIX="$(basename "${CSD_OUT}" .zip | sed "s/-${DST_FILE_DATETIME}//")"
+DST_FILE_PREFIX="$(basename "${CSD_OUT}" .zip | sed "s/-${DST_FILE_DATETIME}..//")"
 
 DST_FILE="${DST_FILE_DATETIME}-${DST_FILE_PREFIX}.zip"
 SRC_FILE="${OUT_DIR}/$(basename "${CSD_OUT}")"

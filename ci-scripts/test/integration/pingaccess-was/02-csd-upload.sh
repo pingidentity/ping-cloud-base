@@ -66,6 +66,8 @@ do
     log "Verifying that the expected files were uploaded"
     NOT_UPLOADED=$(comm -23 /tmp/${UPLOAD_CSD_JOB_NAME}-expected.txt /tmp/${UPLOAD_CSD_JOB_NAME}-actual.txt)
 
+    sleep 10
+    
     if ! test -z "${NOT_UPLOADED}"; then
     log "The following files were not uploaded: ${NOT_UPLOADED}"
     exit 1

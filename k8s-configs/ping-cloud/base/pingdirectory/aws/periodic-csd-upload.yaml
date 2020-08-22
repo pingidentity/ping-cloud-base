@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: upload-script
+  name: pingdirectory-periodic-csd-upload
 data:
-  upload.sh: |-
+  backup-csd-data.sh: |-
     #!/bin/sh
 
     # Install kubectl
@@ -23,7 +23,7 @@ data:
       LOG_FILE=/tmp/upload.log
 
       echo "Uploading CSD on server ${SERVER}"
-      kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}"> "${LOG_FILE}"
+      kubectl exec "${SERVER}" -c "${CSD_CONTAINER_NAME}" -- sh -c "chmod +x ${SCRIPT} && test -x ${SCRIPT} && ${SCRIPT}"> "${LOG_FILE}"
 
       if test ${?} -eq 0; then
         # Sending logs to STDOUT
@@ -40,37 +40,38 @@ data:
     echo "${CSD_FILES}"
 
 ---
-
-# A manual job to upload CSD to s3 - this does the same thing as the recurring task on the server except it may be
-# configured to trigger in reaction to a ClickOps event.
-apiVersion: batch/v1
-kind: Job
+apiVersion: batch/v1beta1
+kind: CronJob
 metadata:
-  name: pingdirectory-csd-upload
+  name: pingdirectory-periodic-csd-upload
   labels:
     app: ping-cloud
     role: pingdirectory
 spec:
-  ttlSecondsAfterFinished: 0
-  backoffLimit: 5
-  template:
+  schedule: "0 * * * *"
+  jobTemplate:
     spec:
-      serviceAccount: ping-serviceaccount
-      restartPolicy: Never
-      containers:
-      - name: pingdirectory-csd-uploader
-        image: pingidentity/pingdirectory:2006.1-8.1.0.1
-        command:
-        - /opt/in/upload.sh
-        volumeMounts:
-        - name: upload-script
-          mountPath: /opt/in/upload.sh
-          subPath: upload.sh
-        envFrom:
-        - configMapRef:
-            name: pingdirectory-environment-variables
-      volumes:
-      - name: upload-script
-        configMap:
-          name: upload-script
-          defaultMode: 0555
+      template:
+        spec:
+          serviceAccount: ping-serviceaccount
+          restartPolicy: OnFailure
+          containers:
+          - name: pingdirectory-periodic-csd-upload
+            image: pingidentity/pingdirectory:2006.1-8.1.0.1
+            command:
+            - /opt/in/backup-csd-data.sh
+            env:
+            - name: CSD_CONTAINER_NAME
+              value: "pingdirectory"
+            envFrom:
+            - configMapRef:
+                name: pingdirectory-environment-variables
+            volumeMounts:
+            - name: pingdirectory-periodic-csd-upload
+              mountPath: /opt/in/backup-csd-data.sh
+              subPath: backup-csd-data.sh
+          volumes:
+          - name: pingdirectory-periodic-csd-upload
+            configMap:
+              name: pingdirectory-periodic-csd-upload
+              defaultMode: 0555

@@ -22,7 +22,7 @@ data:
       LOG_FILE=/tmp/upload.log
 
       echo "Uploading CSD on server ${SERVER}"
-      kubectl exec "${SERVER}" -c "${CSD_CONTAINER_NAME}" -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" >"${LOG_FILE}"
+      kubectl exec "${SERVER}" -c "${CSD_CONTAINER_NAME}" -- sh -c "chmod +x ${SCRIPT} && test -x ${SCRIPT} && ${SCRIPT}" >"${LOG_FILE}"
  
       if test ${?} -eq 0; then
         # Sending logs to STDOUT
