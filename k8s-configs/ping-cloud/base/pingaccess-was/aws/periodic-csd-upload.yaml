@@ -58,7 +58,7 @@ spec:
             - /opt/in/backup-csd-data.sh
             env:
             - name: CSD_POD_ROLE
-              value: "pingaccess-was"
+              value: "pingaccess-was-engine"
             - name: CSD_CONTAINER_NAME
               value: "pingaccess-was"
             envFrom:

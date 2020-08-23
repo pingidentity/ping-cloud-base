@@ -27,14 +27,7 @@ fi
 
 CSD_OUT=$(find . -name support\*zip -type f | sort | tail -1)
 
-# Change CSD file which will be uploaded to S3 for matching <YYYYMMDDHHMM>-support-data-ping-<CONTAINER_NAME>.zip
-
-# Extracting datetime part and converting to <YYYYMMDDHHMM> format
-DST_FILE_DATETIME="$(basename "${CSD_OUT}" .zip | grep -o '[^-]*$' | sed 's/..$//')"
-# Extracting CSD file prefix
-DST_FILE_PREFIX="$(basename "${CSD_OUT}" .zip | sed "s/-${DST_FILE_DATETIME}..//")"
-
-DST_FILE="${DST_FILE_DATETIME}-${DST_FILE_PREFIX}.zip"
+DST_FILE="$(basename "${CSD_OUT}")"
 SRC_FILE="${OUT_DIR}/$(basename "${CSD_OUT}")"
 
 beluga_log "Copying: '${DST_FILE}' to '${SKBN_CLOUD_PREFIX}'"
