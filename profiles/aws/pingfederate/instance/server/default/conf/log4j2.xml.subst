@@ -65,7 +65,7 @@
 
         <!-- SAML Transaction log : A time/date based rolling appender -->
         <RollingFile name="SamlTransaction" fileName="${sys:pf.log.dir}/transaction.log"
-                     filePattern="${sys:pf.log.dir}/transaction.%i.log"
+                     filePattern="${sys:pf.log.dir}/transaction.log.%i"
                      ignoreExceptions="false">
             <PatternLayout>
                 <!-- Uncomment this if you want to use UTF-8 encoding instead
@@ -109,7 +109,7 @@
         -->
 
         <RollingFile name="SecurityAudit2File" fileName="${sys:pf.log.dir}/audit.log"
-                     filePattern="${sys:pf.log.dir}/audit.%i.log"
+                     filePattern="${sys:pf.log.dir}/audit.log.%i"
                      ignoreExceptions="false">
             <PatternLayout>
                 <!-- Uncomment this if you want to use UTF-8 encoding instead
