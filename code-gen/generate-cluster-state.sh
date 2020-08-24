@@ -288,6 +288,7 @@ ${KUSTOMIZE_BASE}
 ${PING_CLOUD_NAMESPACE_RESOURCE}
 ${PING_DIRECTORY_LDAP_ENDPOINT_PATCH}
 ${SERVICE_NGINX_PRIVATE_PATCH}
+${REMOVE_FROM_SECONDARY_PATCH}
 ${DELETE_PING_CLOUD_NAMESPACE_PATCH_MERGE}'
 
 substitute_vars() {
@@ -478,11 +479,14 @@ export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEV
 
 SCRIPT_HOME=$(cd $(dirname ${0}) 2> /dev/null; pwd)
 TEMPLATES_HOME="${SCRIPT_HOME}/templates"
-BASE_DIR="${TEMPLATES_HOME}/base"
 
-test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}" &&
-  REGION_DIR="${TEMPLATES_HOME}/primary" ||
-  REGION_DIR="${TEMPLATES_HOME}/secondary"
+BASE_DIR="${TEMPLATES_HOME}/base"
+BASE_TOOLS_REL_DIR="base/cluster-tools"
+BASE_PING_CLOUD_REL_DIR="base/ping-cloud"
+
+REGION_DIR="${TEMPLATES_HOME}/region"
+REGION_TOOLS_REL_DIR="${REGION}/cluster-tools"
+REGION_PING_CLOUD_REL_DIR="${REGION}/ping-cloud"
 
 # Generate an SSH key pair for flux CD.
 if test -z "${SSH_ID_PUB_FILE}" && test -z "${SSH_ID_KEY_FILE}"; then
@@ -653,8 +657,11 @@ for ENV in ${ENVIRONMENTS}; do
   #   - The namespace for the ping stack for the environment to be created and
   #     the stock ping-cloud namespace to be deleted.
   #
-  NGINX_FILE_TO_PATCH="${ENV_DIR}/cluster-tools/service-nginx-private-patch.yaml.tmpl"
-  PD_FILE_TO_PATCH="${ENV_DIR}/ping-cloud/pingdirectory-ldap-endpoint-patch.yaml.tmpl"
+
+  NGINX_FILE_TO_PATCH="${ENV_DIR}/${BASE_TOOLS_REL_DIR}/service-nginx-private-patch.yaml.tmpl"
+  PD_FILE_TO_PATCH="${ENV_DIR}/${BASE_PING_CLOUD_REL_DIR}/pingdirectory-ldap-endpoint-patch.yaml.tmpl"
+  SECONDARY_REGION_PATCH="${ENV_DIR}/${REGION_PING_CLOUD_REL_DIR}/remove-from-secondary-patch.yaml"
+  NAMESPACE_PATCH="${ENV_DIR}/${BASE_PING_CLOUD_REL_DIR}/namespace.yaml.tmpl"
 
   NAMESPACE_COMMENT="# All ping resources will live in the ${PING_CLOUD_NAMESPACE} namespace"
 
@@ -677,13 +684,19 @@ for ENV in ${ENVIRONMENTS}; do
   else
     export PING_CLOUD_NAMESPACE_RESOURCE="${NAMESPACE_COMMENT}"
     export DELETE_PING_CLOUD_NAMESPACE_PATCH_MERGE=''
-    rm -f "${ENV_DIR}"/ping-cloud/namespace.yaml.tmpl
+    rm -f "${NAMESPACE_PATCH}"
 
     export SERVICE_NGINX_PRIVATE_PATCH=''
     rm -f "${NGINX_FILE_TO_PATCH}"
 
     export PING_DIRECTORY_LDAP_ENDPOINT_PATCH=''
     rm -f "${PD_FILE_TO_PATCH}"
+  fi
+
+  if test "${TENANT_DOMAIN}" != "${PRIMARY_TENANT_DOMAIN}"; then
+    export REMOVE_FROM_SECONDARY_PATCH=$(patch_remove_file "${SECONDARY_REGION_PATCH}")
+  else
+    rm -f "${SECONDARY_REGION_PATCH}"
   fi
 
   ### End special handling ###
