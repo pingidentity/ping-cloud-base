@@ -1,0 +1,20 @@
+{
+  "id": ${SITE_ID},
+  "name": "${SITE_NAME}",
+  "targets": [
+    "${SITE_TARGET}"
+  ],
+  "secure": ${SITE_SECURE},
+  "trustedCertificateGroupId": 2,
+  "sendPaCookie": true,
+  "useTargetHostHeader": false,
+  "keepAliveTimeout": 0,
+  "maxConnections": -1,
+  "maxWebSocketConnections": -1,
+  "siteAuthenticatorIds": [],
+  "skipHostnameVerification": true,
+  "expectedHostname": null,
+  "availabilityProfileId": 1,
+  "loadBalancingStrategyId": 0,
+  "useProxy": false
+}

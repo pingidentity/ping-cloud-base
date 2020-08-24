@@ -35,6 +35,11 @@ configMapGenerator:
   envs:
   - pingaccess/env_vars
 
+# Create the config maps that hold the variable for triggering updates of PA WAS servers
+- name: pingaccess-was-last-update-config
+  envs:
+  - pingaccess-was/env_vars
+
 # Pingdirectory
 - name: pingdirectory-environment-variables
   behavior: merge
@@ -55,6 +60,13 @@ configMapGenerator:
   envs:
   - env_vars
   - pingaccess/env_vars
+
+# PingAccess WAS
+- name: pingaccess-was-environment-variables
+  behavior: merge
+  envs:
+  - env_vars
+  - pingaccess-was/env_vars
 
 patchesStrategicMerge:
 
@@ -86,7 +98,7 @@ ${DELETE_PING_CLOUD_NAMESPACE_PATCH_MERGE}
 
 patchesJson6902:
 
-### Ping Directory Last Update Config Map ###
+### PingDirectory Last Update Config Map ###
 - target:
     group: apps
     version: v1
@@ -99,7 +111,7 @@ patchesJson6902:
         configMapRef:
           name: pingdirectory-last-update-config
 
-### Ping Federate Admin Last Update Config Map ###
+### PingFederate Admin Last Update Config Map ###
 - target:
     group: apps
     version: v1
@@ -112,7 +124,7 @@ patchesJson6902:
         configMapRef:
           name: pingfederate-last-update-config
 
-### Ping Federate Engine Last Update Config Map ###
+### PingFederate Engine Last Update Config Map ###
 - target:
     group: apps
     version: v1
@@ -125,7 +137,7 @@ patchesJson6902:
         configMapRef:
           name: pingfederate-last-update-config
 
-### Ping Access Admin Last Update Config Map ###
+### PingAccess Admin Last Update Config Map ###
 - target:
     group: apps
     version: v1
@@ -138,7 +150,7 @@ patchesJson6902:
         configMapRef:
           name: pingaccess-last-update-config
 
-### Ping Access Engine Last Update Config Map ###
+### PingAccess Engine Last Update Config Map ###
 - target:
     group: apps
     version: v1
@@ -151,7 +163,80 @@ patchesJson6902:
         configMapRef:
           name: pingaccess-last-update-config
 
+### PingAccess WAS Admin Last Update Config Map ###
+- target:
+    group: apps
+    version: v1
+    kind: StatefulSet
+    name: pingaccess-was-admin
+  patch: |
+    - op: add
+      path: /spec/template/spec/containers/0/envFrom/-
+      value:
+        configMapRef:
+          name: pingaccess-was-last-update-config
+
+### PingAccess WAS Engine Last Update Config Map ###
+- target:
+    group: apps
+    version: v1
+    kind: StatefulSet
+    name: pingaccess-was
+  patch: |
+    - op: add
+      path: /spec/template/spec/containers/0/envFrom/-
+      value:
+        configMapRef:
+          name: pingaccess-was-last-update-config
+
 ### Ingress patches ###
+
+# PingAccess admin and PingFederate admin through PingAccess-WAS
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingaccess-was-ingress
+  patch: |
+    # PingAccess admin through PingAccess-WAS
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingaccess-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingaccess-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+
+    # PingFederate admin through PingAccess-WAS
+    - op: replace
+      path: /spec/tls/0/hosts/1
+      value: pingfederate-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/1/host
+      value: pingfederate-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+
+    # Grafana to pingaccess was runtime
+    - op: replace
+      path: /spec/tls/0/hosts/2
+      value: monitoring${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/2/host
+      value: monitoring${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+
+    # Prometheus to pingaccess was runtime
+    - op: replace
+      path: /spec/tls/0/hosts/3
+      value: prometheus${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/3/host
+      value: prometheus${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+
+    # Kibana pingaccess was runtime
+    - op: replace
+      path: /spec/tls/0/hosts/4
+      value: logs${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/4/host
+      value: logs${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
 
 # pingaccess runtime
 - target:
@@ -167,20 +252,6 @@ patchesJson6902:
       path: /spec/rules/0/host
       value: pingaccess${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
 
-# pingaccess admin
-- target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: pingaccess-admin-ingress
-  patch: |
-    - op: replace
-      path: /spec/tls/0/hosts/0
-      value: pingaccess-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-    - op: replace
-      path: /spec/rules/0/host
-      value: pingaccess-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-
 # pingaccess agent
 - target:
     group: extensions
@@ -194,6 +265,20 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingaccess-agent${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+
+# pingaccess was admin
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingaccess-was-admin-ingress
+  patch: |
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingaccess-was-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingaccess-was-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
 
 # pingfederate runtime
 - target:
@@ -209,31 +294,65 @@ patchesJson6902:
       path: /spec/rules/0/host
       value: pingfederate${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
 
-# pingfederate admin
+# pingdirectory HTTP
 - target:
     group: extensions
     version: v1beta1
     kind: Ingress
-    name: pingfederate-admin-ingress
+    name: pingdirectory-http-ingress
   patch: |
     - op: replace
       path: /spec/tls/0/hosts/0
-      value: pingfederate-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+      value: pingdirectory${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
     - op: replace
       path: /spec/rules/0/host
-      value: pingfederate-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+      value: pingdirectory${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
 
-# FIXME: add this once PDO-1114 is implemented
-## pingdirectory admin
-#- target:
-#    version: v1
-#    kind: Service
-#    name: pingdirectory-admin
-#  patch: |-
-#    - op: replace
-#      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
-#      value: pingdirectory-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+# Set a hostname for all the headless services so their endpoint IPs are published to Route53
+- target:
+    version: v1
+    kind: Service
+    name: pingdirectory
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+      value: pingdirectory-cluster${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+
+- target:
+    version: v1
+    kind: Service
+    name: pingfederate-cluster
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+      value: pingfederate-cluster${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+
+- target:
+    version: v1
+    kind: Service
+    name: pingaccess-admin
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+      value: pingaccess-cluster${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+
+- target:
+    version: v1
+    kind: Service
+    name: pingaccess-was-admin
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+      value: pingaccess-was-cluster${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+
+# pingdirectory admin
+- target:
+    version: v1
+    kind: Service
+    name: pingdirectory-admin
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+      value: pingdirectory-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
 
 ${PING_DIRECTORY_LDAP_ENDPOINT_PATCH}
-
-${PING_DATA_CONSOLE_INGRESS_PATCH}

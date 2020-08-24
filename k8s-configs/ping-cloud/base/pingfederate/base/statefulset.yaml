@@ -35,7 +35,7 @@ spec:
         image: bitnami/kubectl:1.15.3
         imagePullPolicy: IfNotPresent
         command:
-        - /init.sh
+        - /copy-dependencies.sh
         volumeMounts:
         - name: ssh-dir
           mountPath: /.ssh
@@ -48,18 +48,42 @@ spec:
           mountPath: /known_hosts
           subPath: known_hosts
         - name: pingfederate-init
-          mountPath: /init.sh
-          subPath: init.sh
+          mountPath: /copy-dependencies.sh
+          subPath: copy-dependencies.sh
+        - name: pingfederate-init
+          mountPath: /utils.lib.sh
+          subPath: utils.lib.sh
+        envFrom:
+        - configMapRef:
+            name: pingfederate-environment-variables
+      - name: wait-for-services
+        # FIXME: switch to same user as app
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        image: busybox:1.32
+        imagePullPolicy: IfNotPresent
+        command:
+        - /wait-for-services.sh
+        volumeMounts:
+        - name: pingfederate-init
+          mountPath: /utils.lib.sh
+          subPath: utils.lib.sh
+        - name: pingfederate-init
+          mountPath: /wait-for-services.sh
+          subPath: wait-for-services.sh
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
       containers:
       - name: pingfederate-admin
-        image: pingidentity/pingfederate:2003-10.0.1
+        image: pingidentity/pingfederate:2006.1-10.0.4
         imagePullPolicy: IfNotPresent
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_CONSOLE
+        - name: AUTHENTICATION_MODE
+          value: LDAP
         - name: PF_DNS_PING_NAMESPACE
           valueFrom:
             fieldRef:
@@ -91,6 +115,9 @@ spec:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
           mountPath: /root/.ssh
+        - name: topology-descriptor
+          mountPath: /opt/staging/topology/descriptor.json
+          subPath: descriptor.json
         - name: data-dir
           mountPath: /usr/local/bin/kubectl
           subPath: kubectl
@@ -103,23 +130,24 @@ spec:
           mountPath: /opt/in/instance/server/default/conf/pingfederate.lic
           subPath: pingfederate.lic
         - name: data-dir
-          mountPath: /opt/staging/env_vars
-          subPath: env_vars
+          mountPath: /opt/staging/ds_env_vars
+          subPath: ds_env_vars
         - mountPath: /etc/podinfo
           name: podinfo
         readinessProbe:
           exec:
-            command:
-            - /opt/staging/hooks/85-readiness.sh
+            command: [ /opt/staging/hooks/85-pf-admin-readiness.sh ]
           initialDelaySeconds: 90
           periodSeconds: 5
           failureThreshold: 3
+          timeoutSeconds: 5
         livenessProbe:
           exec:
-            command: [ /opt/staging/hooks/99-pf-liveness.sh ]
+            command: [ /opt/staging/hooks/99-pf-admin-liveness.sh ]
           initialDelaySeconds: 90
           periodSeconds: 30
           failureThreshold: 3
+          timeoutSeconds: 5
         ports:
         - containerPort: 9999
       volumes:
@@ -150,6 +178,11 @@ spec:
         configMap:
           name: pingcommon-init
           defaultMode: 0555
+      - name: topology-descriptor
+        configMap:
+          name: topology-descriptor
+          optional: true
+          defaultMode: 0644
       - name: ssh-id-key-secret
         secret:
           secretName: ssh-id-key-secret
@@ -221,7 +254,7 @@ spec:
         image: bitnami/kubectl:1.15.3
         imagePullPolicy: IfNotPresent
         command:
-        - /init.sh
+        - /copy-dependencies.sh
         volumeMounts:
         - name: ssh-dir
           mountPath: /.ssh
@@ -234,18 +267,42 @@ spec:
           mountPath: /known_hosts
           subPath: known_hosts
         - name: pingfederate-init
-          mountPath: /init.sh
-          subPath: init.sh
+          mountPath: /copy-dependencies.sh
+          subPath: copy-dependencies.sh
+        - name: pingfederate-init
+          mountPath: /utils.lib.sh
+          subPath: utils.lib.sh
+        envFrom:
+        - configMapRef:
+            name: pingfederate-environment-variables
+      - name: wait-for-services
+        # FIXME: switch to same user as app
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        image: busybox:1.32
+        imagePullPolicy: IfNotPresent
+        command:
+        - /wait-for-services.sh
+        volumeMounts:
+        - name: pingfederate-init
+          mountPath: /utils.lib.sh
+          subPath: utils.lib.sh
+        - name: pingfederate-init
+          mountPath: /wait-for-services.sh
+          subPath: wait-for-services.sh
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
       containers:
       - name: pingfederate
-        image: pingidentity/pingfederate:2003-10.0.1
+        image: pingidentity/pingfederate:2006.1-10.0.4
         imagePullPolicy: IfNotPresent
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_ENGINE
+        - name: AUTHENTICATION_MODE
+          value: none
         - name: PF_DNS_PING_NAMESPACE
           valueFrom:
             fieldRef:
@@ -277,6 +334,9 @@ spec:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
           mountPath: /root/.ssh
+        - name: topology-descriptor
+          mountPath: /opt/staging/topology/descriptor.json
+          subPath: descriptor.json
         - name: data-dir
           mountPath: /usr/local/bin/kubectl
           subPath: kubectl
@@ -287,22 +347,24 @@ spec:
           mountPath: /opt/in/instance/server/default/conf/pingfederate.lic
           subPath: pingfederate.lic
         - name: data-dir
-          mountPath: /opt/staging/env_vars
-          subPath: env_vars
+          mountPath: /opt/staging/ds_env_vars
+          subPath: ds_env_vars
         - mountPath: /etc/podinfo
           name: podinfo
         readinessProbe:
           exec:
-            command: [ liveness.sh ]
+            command: [ /opt/staging/hooks/99-pf-engine-liveness.sh ]
           initialDelaySeconds: 60
           periodSeconds: 5
           failureThreshold: 3
+          timeoutSeconds: 5
         livenessProbe:
           exec:
-            command: [ liveness.sh ]
+            command: [ /opt/staging/hooks/99-pf-engine-liveness.sh ]
           initialDelaySeconds: 60
           periodSeconds: 30
           failureThreshold: 3
+          timeoutSeconds: 5
         ports:
         - containerPort: 9031
       volumes:
@@ -333,6 +395,11 @@ spec:
         configMap:
           name: pingcommon-init
           defaultMode: 0555
+      - name: topology-descriptor
+        configMap:
+          name: topology-descriptor
+          optional: true
+          defaultMode: 0644
       - name: ssh-id-key-secret
         secret:
           secretName: ssh-id-key-secret

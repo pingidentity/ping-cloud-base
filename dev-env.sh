@@ -81,6 +81,16 @@
 # IS_MULTI_CLUSTER          | Flag indicating whether or not this is a           | false
 #                           | multi-cluster deployment.                          |
 #                           |                                                    |
+# TOPOLOGY_DESCRIPTOR_FILE  | An optional file that may be provided in           | No default. If not provided, a
+#                           | multi-cluster dev environments. This file must     | descriptor file containing the
+#                           | specify the region and the hostname to use for     | server in the local cluster will
+#                           | cluster communication and the number of replicas   | be created and used.
+#                           | in that region. A sample file is provided in the   |
+#                           | pingdirectory profiles under profiles/aws/         |
+#                           | pingdirectory/topoology/descriptor.json.sample.    |
+#                           | This file will be mounted into the Ping containers |
+#                           | at /opt/staging/topology/descriptor.json           |
+#                           |                                                    |
 # PRIMARY_TENANT_DOMAIN     | The tenant's domain in the primary region.         | Same as TENANT_DOMAIN.
 #                           | Only used if IS_MULTI_CLUSTER is true.             |
 #                           |                                                    |
@@ -143,6 +153,9 @@ test -f ~/.pingidentity/devops && . ~/.pingidentity/devops
 declare dryrun='false'
 declare skipTest='false'
 
+LOG_FILE=/tmp/dev-env.log
+rm -f "${LOG_FILE}"
+
 # Parse Parameters
 while getopts 'ns' OPTION
 do
@@ -177,33 +190,34 @@ test -z "${IS_MULTI_CLUSTER}" && IS_MULTI_CLUSTER=false
 if "${IS_MULTI_CLUSTER}"; then
   check_env_vars "CLUSTER_BUCKET_NAME"
   if test $? -ne 0; then
-    popd
+    popd > /dev/null 2>&1
     exit 1
   fi
 fi
 
 # Show initial values for relevant environment variables.
-echo "Initial TENANT_NAME: ${TENANT_NAME}"
-echo "Initial ENVIRONMENT: ${ENVIRONMENT}"
+log "Initial TENANT_NAME: ${TENANT_NAME}"
+log "Initial ENVIRONMENT: ${ENVIRONMENT}"
 
-echo "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
-echo "Initial CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
-echo "Initial REGION: ${REGION}"
-echo "Initial PRIMARY_REGION: ${PRIMARY_REGION}"
-echo "Initial TENANT_DOMAIN: ${TENANT_DOMAIN}"
-echo "Initial PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
+log "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
+log "Initial TOPOLOGY_DESCRIPTOR_FILE: ${TOPOLOGY_DESCRIPTOR_FILE}"
+log "Initial CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
+log "Initial REGION: ${REGION}"
+log "Initial PRIMARY_REGION: ${PRIMARY_REGION}"
+log "Initial TENANT_DOMAIN: ${TENANT_DOMAIN}"
+log "Initial PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
 
-echo "Initial CONFIG_REPO_BRANCH: ${CONFIG_REPO_BRANCH}"
-echo "Initial CONFIG_PARENT_DIR: ${CONFIG_PARENT_DIR}"
+log "Initial CONFIG_REPO_BRANCH: ${CONFIG_REPO_BRANCH}"
+log "Initial CONFIG_PARENT_DIR: ${CONFIG_PARENT_DIR}"
 
-echo "Initial ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
-echo "Initial PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
-echo "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
-echo "Initial BACKUP_URL: ${BACKUP_URL}"
+log "Initial ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
+log "Initial PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
+log "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
+log "Initial BACKUP_URL: ${BACKUP_URL}"
 
-echo "Initial DEPLOY_FILE: ${DEPLOY_FILE}"
-echo "Initial K8S_CONTEXT: ${K8S_CONTEXT}"
-echo ---
+log "Initial DEPLOY_FILE: ${DEPLOY_FILE}"
+log "Initial K8S_CONTEXT: ${K8S_CONTEXT}"
+log ---
 
 # A script that may be used to set up a dev/test environment against the
 # current cluster. Must have the GTE devops user and key exported as
@@ -234,27 +248,28 @@ test -z "${K8S_CONTEXT}" && K8S_CONTEXT=$(kubectl config current-context)
 ENVIRONMENT_NO_HYPHEN_PREFIX="${ENVIRONMENT#-}"
 
 # Show the values being used for the relevant environment variables.
-echo "Using TENANT_NAME: ${TENANT_NAME}"
-echo "Using ENVIRONMENT: ${ENVIRONMENT_NO_HYPHEN_PREFIX}"
+log "Using TENANT_NAME: ${TENANT_NAME}"
+log "Using ENVIRONMENT: ${ENVIRONMENT_NO_HYPHEN_PREFIX}"
 
-echo "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
-echo "Using CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
-echo "Using REGION: ${REGION}"
-echo "Using PRIMARY_REGION: ${PRIMARY_REGION}"
-echo "Using TENANT_DOMAIN: ${TENANT_DOMAIN}"
-echo "Using PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
+log "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
+log "Using TOPOLOGY_DESCRIPTOR_FILE: ${TOPOLOGY_DESCRIPTOR_FILE}"
+log "Using CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
+log "Using REGION: ${REGION}"
+log "Using PRIMARY_REGION: ${PRIMARY_REGION}"
+log "Using TENANT_DOMAIN: ${TENANT_DOMAIN}"
+log "Using PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
 
-echo "Using CONFIG_REPO_BRANCH: ${CONFIG_REPO_BRANCH}"
-echo "Using CONFIG_PARENT_DIR: ${CONFIG_PARENT_DIR}"
+log "Using CONFIG_REPO_BRANCH: ${CONFIG_REPO_BRANCH}"
+log "Using CONFIG_PARENT_DIR: ${CONFIG_PARENT_DIR}"
 
-echo "Using ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
-echo "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
-echo "Using LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
-echo "Using BACKUP_URL: ${BACKUP_URL}"
+log "Using ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
+log "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
+log "Using LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
+log "Using BACKUP_URL: ${BACKUP_URL}"
 
-echo "Using DEPLOY_FILE: ${DEPLOY_FILE}"
-echo "Using K8S_CONTEXT: ${K8S_CONTEXT}"
-echo ---
+log "Using DEPLOY_FILE: ${DEPLOY_FILE}"
+log "Using K8S_CONTEXT: ${K8S_CONTEXT}"
+log ---
 
 export PING_IDENTITY_DEVOPS_USER_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_USER}")
 export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_KEY}")
@@ -269,42 +284,53 @@ export NAMESPACE=ping-cloud-${ENVIRONMENT_NO_HYPHEN_PREFIX}
   CLUSTER_TYPE=secondary ||
   CLUSTER_TYPE=
 
+if "${IS_MULTI_CLUSTER}"; then
+  test "${TENANT_DOMAIN}" != "${PRIMARY_TENANT_DOMAIN}" && CLUSTER_TYPE=secondary
+  if test -f "${TOPOLOGY_DESCRIPTOR_FILE}"; then
+    export TOPOLOGY_DESCRIPTOR=$(tr -d '[:space:]' < "${TOPOLOGY_DESCRIPTOR_FILE}")
+  else
+    log "WARNING!!! TOPOLOGY_DESCRIPTOR_FILE not provided or does not exist in multi-cluster mode"
+    log "WARNING!!! Only the servers in the local cluster will be considered part of the topology"
+    echo ---
+  fi
+fi
+
 build_dev_deploy_file "${DEPLOY_FILE}" "${CLUSTER_TYPE}"
 
 if test "${dryrun}" = 'false'; then
-  echo "Deploying ${DEPLOY_FILE} to cluster ${CLUSTER_NAME}, namespace ${NAMESPACE} for tenant ${TENANT_DOMAIN}"
-  kubectl apply -f "${DEPLOY_FILE}" --context "${K8S_CONTEXT}"
+  log "Deploying ${DEPLOY_FILE} to cluster ${CLUSTER_NAME}, namespace ${NAMESPACE} for tenant ${TENANT_DOMAIN}"
+  kubectl apply -f "${DEPLOY_FILE}" --context "${K8S_CONTEXT}" | tee -a "${LOG_FILE}"
 
   # Print out the ingress objects for logs and the ping stack
-  echo
-  echo '--- Ingress URLs ---'
-  kubectl get ingress -A --context "${K8S_CONTEXT}"
+  log
+  log '--- Ingress URLs ---' | tee -a "${LOG_FILE}"
+  kubectl get ingress -A --context "${K8S_CONTEXT}" | tee -a "${LOG_FILE}"
 
   # Print out the pingdirectory hostname
-  echo
-  echo '--- LDAP hostname ---'
-  kubectl get svc ingress-nginx -n ingress-nginx-private \
+  log
+  log '--- LDAP hostname ---'
+  kubectl get svc pingdirectory-admin -n "${NAMESPACE}" \
     -o jsonpath='{.metadata.annotations.external-dns\.alpha\.kubernetes\.io/hostname}' \
-    --context "${K8S_CONTEXT}"
+    --context "${K8S_CONTEXT}" | tee -a "${LOG_FILE}"
 
   # Print out the  pods for the ping stack
-  echo
-  echo
-  echo '--- Pod status ---'
-  kubectl get pods -n "${NAMESPACE}" --context "${K8S_CONTEXT}"
+  log
+  log
+  log '--- Pod status ---'
+  kubectl get pods -n "${NAMESPACE}" --context "${K8S_CONTEXT}" | tee -a "${LOG_FILE}"
 
-  echo
+  log
   if test "${skipTest}" = 'true'; then
-    echo "Skipping integration and unit tests"
+    log "Skipping integration and unit tests"
   else
-    echo "Waiting for pods in ${NAMESPACE} to be ready"
+    log "Waiting for pods in ${NAMESPACE} to be ready"
 
     for DEPLOYMENT in $(kubectl get statefulset,deployment -n "${NAMESPACE}" -o name --context "${K8S_CONTEXT}"); do
       NUM_REPLICAS=$(kubectl get "${DEPLOYMENT}" -o jsonpath='{.spec.replicas}' \
           -n "${NAMESPACE}" --context "${K8S_CONTEXT}")
       TIMEOUT=$((NUM_REPLICAS * 900))
       time kubectl rollout status --timeout "${TIMEOUT}"s "${DEPLOYMENT}" \
-          -n "${NAMESPACE}" -w --context "${K8S_CONTEXT}"
+          -n "${NAMESPACE}" -w --context "${K8S_CONTEXT}" | tee -a "${LOG_FILE}"
     done
 
     TEST_ENV_VARS_FILE=$(mktemp)
@@ -341,22 +367,22 @@ export SKIP_CONFIGURE_AWS=true
 export DEV_TEST_ENV=true
 EOF
 
-    echo "Running unit tests"
+    log "Running unit tests"
     for unit_test_dir in common pingaccess ci-script-tests; do
-      echo
-      echo "=========================================================="
-      echo "      Executing unit tests in directory: ${unit_test_dir}            "
-      echo "=========================================================="
+      log
+      log "=========================================================="
+      log "      Executing unit tests in directory: ${unit_test_dir}            "
+      log "=========================================================="
       ci-scripts/test/unit/run-unit-test.sh "${unit_test_dir}" "${TEST_ENV_VARS_FILE}"
     done
-    echo
+    log
 
-    echo "Running integration tests"
-    for integration_test_dir in common pingaccess pingdirectory pingfederate chaos; do
-      echo
-      echo "=========================================================="
-      echo "      Executing tests in directory: ${integration_test_dir}            "
-      echo "=========================================================="
+    log "Running integration tests"
+    for integration_test_dir in common pingaccess pingaccess-was pingdirectory pingfederate chaos; do
+      log
+      log "=========================================================="
+      log "      Executing tests in directory: ${integration_test_dir}            "
+      log "=========================================================="
       ci-scripts/test/integration/run-test.sh "${integration_test_dir}" "${TEST_ENV_VARS_FILE}"
     done
 

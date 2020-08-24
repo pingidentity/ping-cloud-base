@@ -5,13 +5,10 @@ ${VERBOSE} && set -x
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 
-echo "pre-restart: configure the PF cluster"
-configure_cluster
-
 run_hook "10-download-artifact.sh"
 
 if ! [ -z "${OPERATIONAL_MODE}" ] &&  [ "${OPERATIONAL_MODE}" != "CLUSTERED_ENGINE" ]; then
-   run_hook "83-download-archive-data-s3.sh"
+   run_hook "90-restore-backup-s3.sh"
    run_hook "10-setup-master-key.sh"
    run_hook "10-set-engine-threads.sh"
    run_hook "10-configuration-overrides.sh"
@@ -19,8 +16,11 @@ if ! [ -z "${OPERATIONAL_MODE}" ] &&  [ "${OPERATIONAL_MODE}" != "CLUSTERED_ENGI
 fi
 
 if ! [ -z "${OPERATIONAL_MODE}" ] &&  [ "${OPERATIONAL_MODE}" = "CLUSTERED_ENGINE" ]; then
-   run_hook "10-get-master-key.sh"
+   run_hook "10-get-configuration.sh"
    run_hook "10-set-engine-threads.sh"
 fi
+
+beluga_log "pre-start: configure the PF cluster"
+configure_cluster
 
 run_hook "100-tail-logs.sh"

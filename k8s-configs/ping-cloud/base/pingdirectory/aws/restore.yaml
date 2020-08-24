@@ -20,20 +20,80 @@ data:
 
     test -z "${BACKUP_RESTORE_POD}" && SERVER="${K8S_STATEFUL_SET_NAME}-0" || SERVER="${BACKUP_RESTORE_POD}"
 
+    NUM_REPLICAS=$(kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
+    echo "restore: number of replicas: ${NUM_REPLICAS}"
+
+    DN_LIST=
+    if test -z "${REPLICATION_BASE_DNS}"; then
+      DN_LIST="${USER_BASE_DN}"
+    else
+      if echo "${REPLICATION_BASE_DNS}" | grep -q "${USER_BASE_DN}"; then
+        DN_LIST="${REPLICATION_BASE_DNS}"
+      else
+        DN_LIST="${REPLICATION_BASE_DNS};${USER_BASE_DN}"
+      fi
+    fi
+    DNS_LIST=$(echo "${DN_LIST}" | tr ';' ' ')
+    
+    pause_replication () {
+      if "${PAUSE_REPLICATION_BEFORE_RESTORE}" && test ${NUM_REPLICAS} -gt 1; then
+        echo "Executing pre-initialization from within ${SERVER} pod for DNs: ${DNS_LIST}"
+        for DN in ${DNS_LIST}; do
+          kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
+            "dsreplication pre-external-initialization \
+              --retryTimeoutSeconds \"${RETRY_TIMEOUT_SECONDS}\" \
+              --baseDN \"${DN}\" \
+              --no-prompt --ignoreWarnings"
+        done
+      fi
+    }
+
+    resume_replication() {
+      if "${PAUSE_REPLICATION_BEFORE_RESTORE}" && test ${NUM_REPLICAS} -gt 1; then
+        echo "Initializing replication from within ${SERVER} pod for DNs: ${DN_LIST} "
+        for DN in ${DNS_LIST}; do
+          kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
+            "dsreplication initialize-all \
+              --retryTimeoutSeconds \"${RETRY_TIMEOUT_SECONDS}\" \
+              --baseDN \"${DN}\" \
+              --no-prompt --ignoreWarnings"
+        done
+
+        echo "Executing post-initialization from within ${SERVER} pod for DNs: ${DNS_LIST}"
+        for DN in ${DNS_LIST}; do
+          kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
+            "dsreplication post-external-initialization \
+              --retryTimeoutSeconds \"${RETRY_TIMEOUT_SECONDS}\" \
+              --baseDN \"${DN}\" \
+              --no-prompt --ignoreWarnings"
+        done
+      fi
+    }
+
+    # This guarantees that resume_replication is always run, even if the restore job exits due to an error
+    trap "resume_replication" EXIT
+
+    pause_replication
+
     echo "Running restore script within ${SERVER} pod"
     kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
         "test -x ${SCRIPT} && \
             export BACKUP_FILE_NAME=${BACKUP_FILE_NAME} && \
-            export S3_BACKUP_FILTER_DAY_COUNT=${S3_BACKUP_FILTER_DAY_COUNT} && \
-            ${SCRIPT}" | tee "${LOG_FILE}"
+            ${SCRIPT}"> "${LOG_FILE}"
 
     if test ${?} -eq 0; then
+      # Sending logs to STDOUT
+      cat ${LOG_FILE}
       RESTORE_FILE=$(tail -1 "${LOG_FILE}")
       test -z "${RESTORE_FILES}" && RESTORE_FILES="${RESTORE_FILE}" || RESTORE_FILES="${RESTORE_FILES} ${RESTORE_FILE}"
     else
       echo "Restore script not found on server ${SERVER}"
     fi
 
+
+    # Print the names of the uploaded files so callers know exactly what was uploaded
+    echo "The following files were restored:"
+    echo "${RESTORE_FILES}"
 ---
 
 # A manual restore can be performed by deploying this job. It will restore
@@ -50,14 +110,14 @@ metadata:
     role: pingdirectory
 spec:
   ttlSecondsAfterFinished: 0
-  backoffLimit: 5
+  backoffLimit: 0
   template:
     spec:
       serviceAccount: ping-serviceaccount
       restartPolicy: Never
       containers:
       - name: pingdirectory-restore
-        image: pingidentity/pingdirectory:2003-8.0.0.1
+        image: pingidentity/pingdirectory:2006.1-8.1.0.1
         command:
         - /opt/in/restore.sh
         volumeMounts:

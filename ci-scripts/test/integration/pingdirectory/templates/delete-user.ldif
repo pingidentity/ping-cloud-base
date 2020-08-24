@@ -1,0 +1,2 @@
+dn: cn=john.0,ou=People,dc=example,dc=com
+dn: ou=People,dc=example,dc=com

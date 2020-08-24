@@ -11,18 +11,12 @@ kind: ClusterRole
 metadata:
   name: external-dns
 rules:
-- apiGroups: [""]
-  resources: ["services"]
-  verbs: ["get","watch","list"]
-- apiGroups: [""]
-  resources: ["pods"]
-  verbs: ["get","watch","list"]
-- apiGroups: ["extensions"]
-  resources: ["ingresses"]
-  verbs: ["get","watch","list"]
-- apiGroups: [""]
-  resources: ["nodes"]
-  verbs: ["list","watch"]
+- apiGroups: [ "" ]
+  resources: [ "services", "endpoints", "nodes", "pods" ]
+  verbs: [ "get", "watch", "list" ]
+- apiGroups: [ "extensions" ]
+  resources: [ "ingresses" ]
+  verbs: [ "get", "watch", "list" ]
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
@@ -55,19 +49,19 @@ spec:
       serviceAccountName: external-dns
       containers:
       - name: external-dns
-        image: registry.opensource.zalan.do/teapot/external-dns:v0.7.0
+        image: registry.opensource.zalan.do/teapot/external-dns:v0.7.2
         resources:
           limits:
-            cpu: 10m
-            memory: 100Mi
+            cpu: 500m
+            memory: 512Mi
           requests:
-            cpu: 10m
-            memory: 100Mi
+            cpu: 300m
+            memory: 256Mi
         args:
         - --source=service
         - --source=ingress
-        - --log-level=debug
         - --provider=aws
         - --policy=upsert-only # would prevent ExternalDNS from deleting any records, omit to enable full synchronization
         - --aws-zone-type=public # only look at public hosted zones (valid values are public, private or no value for both)
         - --registry=txt
+        - --publish-internal-services

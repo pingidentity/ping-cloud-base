@@ -1,0 +1,27 @@
+
+# This defines the ingress for the pingdirectory REST API and SCIM service
+
+# NOTE: it will only work if an ingress controller (e.g. nginx) is running on
+# your cluster.
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: pingdirectory-http-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    kubernetes.io/ingress.class: nginx-private
+spec:
+  tls:
+  - hosts:
+    - pingdirectory-dev.ping-demo.com
+  rules:
+  - host: pingdirectory-dev.ping-demo.com
+    http:
+      paths:
+      # This rule gives external access to the pingdirectory REST API and SCIM service
+      - path: /
+        backend:
+          serviceName: pingdirectory-http
+          servicePort: 1443

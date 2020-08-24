@@ -6,12 +6,9 @@
 "${VERBOSE}" && set -x
 
 if test "${OPERATIONAL_MODE}" != "CLUSTERED_CONSOLE"; then
-  echo "post-start: skipping post-start on engine"
+  beluga_log "post-start: skipping post-start on engine"
   exit 0
 fi
-
-echo "post-start: pingaccess config settings"
-export_config_settings
 
 # Remove the marker file before running post-start initialization.
 POST_START_INIT_MARKER_FILE="${OUT_DIR}/instance/post-start-init-complete"
@@ -25,40 +22,66 @@ pingaccess_admin_wait
 # If ADMIN_CONFIGURATION_COMPLETE does not exist then set initial configuration.
 ADMIN_CONFIGURATION_COMPLETE=${OUT_DIR}/instance/ADMIN_CONFIGURATION_COMPLETE
 if ! test -f "${ADMIN_CONFIGURATION_COMPLETE}"; then
-  echo "post-start: ${ADMIN_CONFIGURATION_COMPLETE} not present"
+  beluga_log "${ADMIN_CONFIGURATION_COMPLETE} not present"
 
-  echo "post-start: Starting hook: ${HOOKS_DIR}/81-import-initial-configuration.sh"
+  beluga_log "Starting hook: ${HOOKS_DIR}/81-import-initial-configuration.sh"
   sh "${HOOKS_DIR}/81-import-initial-configuration.sh"
   if test $? -ne 0; then
-    exit 1
+    "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
+  fi
+
+  if isPingaccessWas; then
+    sh "${HOOKS_DIR}/82-configure-p14c-token-provider.sh"
+    if test $? -ne 0; then
+      "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
+    fi
+
+    sh "${HOOKS_DIR}/83-configure-initial-pa-was.sh"
+    if test $? -ne 0; then
+      "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
+    fi
+
   fi
 
   touch ${ADMIN_CONFIGURATION_COMPLETE}
 
-# Since this isn't initial deployment, change password if from disk is different than the desired value.
-elif test $(comparePasswordDiskWithVariable) -eq 0; then
-
-  echo "post-start: changing PA admin password"
-  changePassword
-
 else
-  echo "post-start: not changing PA admin password"
+
+  # Since this isn't initial deployment, change password if from disk is different than the desired value.
+  if test $(comparePasswordDiskWithVariable) -eq 0; then
+    beluga_log "changing PA admin password"
+    changePassword
+  else
+    beluga_log "not changing PA admin password"
+  fi
+
+  # If P14C environment variables have changed, update the config with new values
+  if isPingaccessWas; then
+    beluga_log "Starting hook: ${HOOKS_DIR}/82-configure-p14c-token-provider.sh"
+    sh "${HOOKS_DIR}/82-configure-p14c-token-provider.sh"
+    if test $? -ne 0; then
+      "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
+    fi
+
+    beluga_log "Starting hook: ${HOOKS_DIR}/83-configure-initial-pa-was.sh"
+    sh "${HOOKS_DIR}/83-configure-initial-pa-was.sh"
+    if test $? -ne 0; then
+      "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
+    fi
+  fi
+
 fi
 
 # Update the admin config host
 echo "Updating the host and port of the Admin Config..."
 update_admin_config_host_port
 
-echo "post-start: Starting hook: ${HOOKS_DIR}/82-add-acme-cert.sh"
-sh "${HOOKS_DIR}/82-add-acme-cert.sh"
-test $? -ne 0 && exit 1
-
 # Upload a backup right away after starting the server.
-echo "post-start: Starting hook: ${HOOKS_DIR}/90-upload-backup-s3.sh"
+beluga_log "Starting hook: ${HOOKS_DIR}/90-upload-backup-s3.sh"
 sh "${HOOKS_DIR}/90-upload-backup-s3.sh"
 BACKUP_STATUS=${?}
 
-echo "post-start: data backup status: ${BACKUP_STATUS}"
+beluga_log "post-start: data backup status: ${BACKUP_STATUS}"
 
 # Write the marker file if post-start succeeds.
 if test "${BACKUP_STATUS}" -eq 0; then
@@ -67,5 +90,5 @@ if test "${BACKUP_STATUS}" -eq 0; then
 fi
 
 # Kill the container if post-start fails.
-echo "post-start: admin post-start backup failed"
+beluga_log "post-start: admin post-start backup failed"
 "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1

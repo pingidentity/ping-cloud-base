@@ -22,13 +22,6 @@ patchesStrategicMerge:
   $patch: delete
 
 - |-
-  apiVersion: extensions/v1beta1
-  kind: Ingress
-  metadata:
-    name: pingaccess-admin-ingress
-  $patch: delete
-
-- |-
   apiVersion: v1
   kind: ConfigMap
   metadata:
@@ -40,6 +33,49 @@ patchesStrategicMerge:
   kind: CronJob
   metadata:
     name: pingaccess-periodic-backup
+  $patch: delete
+
+# Remove PingAccess WAS primary-cluster resources
+- |-
+  apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    name: pingaccess-was-admin
+  $patch: delete
+
+- |-
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: pingaccess-was-admin
+  $patch: delete
+
+- |-
+  apiVersion: extensions/v1beta1
+  kind: Ingress
+  metadata:
+    name: pingaccess-was-admin-ingress
+  $patch: delete
+
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: pingaccess-was-backup
+  $patch: delete
+
+- |-
+  apiVersion: batch/v1beta1
+  kind: CronJob
+  metadata:
+    name: pingaccess-was-periodic-backup
+  $patch: delete
+
+- |-
+  apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    name: pingaccess-was
   $patch: delete
 
 # Remove PingFederate primary-cluster resources
@@ -55,13 +91,6 @@ patchesStrategicMerge:
   kind: Service
   metadata:
     name: pingfederate-admin
-  $patch: delete
-
-- |-
-  apiVersion: extensions/v1beta1
-  kind: Ingress
-  metadata:
-    name: pingfederate-admin-ingress
   $patch: delete
 
 - |-

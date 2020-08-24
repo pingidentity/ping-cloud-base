@@ -19,9 +19,9 @@
     --verbose \
     --acceptLicense \
     --skipPortCheck \
-    --licenseKeyFile ${PING_SERVER_ROOT}/PingDirectory.lic \
-    --location "${LOCATION}" \
-    --instanceName "${PD_PUBLIC_HOSTNAME}-${PD_LDAP_PORT}" \
+    --licenseKeyFile "${LICENSE_DIR}/${LICENSE_FILE_NAME}" \
+    --location "${REGION}" \
+    --instanceName "${LOCAL_INSTANCE_NAME}" \
     --ldapPort ${LDAP_PORT} \
     --ldapsPort ${LDAPS_PORT} \
     --httpsPort ${HTTPS_PORT} \
@@ -30,4 +30,6 @@
     --generateSelfSignedCertificate \
     --encryptDataWithPassphraseFromFile "${ENCRYPTION_PASSWORD_FILE}" \
     --rootUserDN "${ROOT_USER_DN}" \
-    --rootUserPasswordFile "${ROOT_USER_PASSWORD_FILE}"
+    --rootUserPasswordFile "${ROOT_USER_PASSWORD_FILE}" \
+    --interServerCertPEMFile "${ADS_CRT_FILE}" \
+    --interServerCertPrivateKeyFile "${ADS_KEY_FILE}"

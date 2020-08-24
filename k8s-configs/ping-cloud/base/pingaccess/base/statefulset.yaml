@@ -35,7 +35,7 @@ spec:
         image: bitnami/kubectl:1.15.3
         imagePullPolicy: IfNotPresent
         command:
-        - /init.sh
+        - /copy-dependencies.sh
         volumeMounts:
         - name: ssh-dir
           mountPath: /.ssh
@@ -48,14 +48,36 @@ spec:
           mountPath: /known_hosts
           subPath: known_hosts
         - name: pingaccess-init
-          mountPath: /init.sh
-          subPath: init.sh
+          mountPath: /copy-dependencies.sh
+          subPath: copy-dependencies.sh
+        - name: pingaccess-init
+          mountPath: /utils.lib.sh
+          subPath: utils.lib.sh
+        envFrom:
+        - configMapRef:
+            name: pingaccess-environment-variables
+      - name: wait-for-services
+        # FIXME: switch to same user as app
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        image: busybox:1.32
+        imagePullPolicy: IfNotPresent
+        command:
+        - /wait-for-services.sh
+        volumeMounts:
+        - name: pingaccess-init
+          mountPath: /utils.lib.sh
+          subPath: utils.lib.sh
+        - name: pingaccess-init
+          mountPath: /wait-for-services.sh
+          subPath: wait-for-services.sh
         envFrom:
         - configMapRef:
             name: pingaccess-environment-variables
       containers:
       - name: pingaccess-admin
-        image: pingidentity/pingaccess:2003-6.0.1
+        image: pingidentity/pingaccess:2006.1-6.1.0
         imagePullPolicy: IfNotPresent
         resources:
           requests:
@@ -68,6 +90,9 @@ spec:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
           mountPath: /root/.ssh
+        - name: topology-descriptor
+          mountPath: /opt/staging/topology/descriptor.json
+          subPath: descriptor.json
         - name: data-dir
           mountPath: /usr/local/bin/kubectl
           subPath: kubectl
@@ -80,8 +105,8 @@ spec:
           mountPath: /opt/in/instance/conf/pingaccess.lic
           subPath: pingaccess.lic
         - name: data-dir
-          mountPath: /opt/staging/env_vars
-          subPath: env_vars
+          mountPath: /opt/staging/ds_env_vars
+          subPath: ds_env_vars
         readinessProbe:
           exec:
             command:
@@ -128,6 +153,11 @@ spec:
         configMap:
           name: pingcommon-init
           defaultMode: 0555
+      - name: topology-descriptor
+        configMap:
+          name: topology-descriptor
+          optional: true
+          defaultMode: 0644
       - name: ssh-id-key-secret
         secret:
           secretName: ssh-id-key-secret
@@ -198,7 +228,7 @@ spec:
         image: bitnami/kubectl:1.15.3
         imagePullPolicy: IfNotPresent
         command:
-        - /init.sh
+        - /copy-dependencies.sh
         volumeMounts:
         - name: ssh-dir
           mountPath: /.ssh
@@ -211,14 +241,36 @@ spec:
           mountPath: /known_hosts
           subPath: known_hosts
         - name: pingaccess-init
-          mountPath: /init.sh
-          subPath: init.sh
+          mountPath: /copy-dependencies.sh
+          subPath: copy-dependencies.sh
+        - name: pingaccess-init
+          mountPath: /utils.lib.sh
+          subPath: utils.lib.sh
+        envFrom:
+        - configMapRef:
+            name: pingaccess-environment-variables
+      - name: wait-for-services
+        # FIXME: switch to same user as app
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        image: busybox:1.32
+        imagePullPolicy: IfNotPresent
+        command:
+        - /wait-for-services.sh
+        volumeMounts:
+        - name: pingaccess-init
+          mountPath: /utils.lib.sh
+          subPath: utils.lib.sh
+        - name: pingaccess-init
+          mountPath: /wait-for-services.sh
+          subPath: wait-for-services.sh
         envFrom:
         - configMapRef:
             name: pingaccess-environment-variables
       containers:
       - name: pingaccess
-        image: pingidentity/pingaccess:2003-6.0.1
+        image: pingidentity/pingaccess:2006.1-6.1.0
         imagePullPolicy: IfNotPresent
         resources:
           requests:
@@ -231,6 +283,9 @@ spec:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
           mountPath: /root/.ssh
+        - name: topology-descriptor
+          mountPath: /opt/staging/topology/descriptor.json
+          subPath: descriptor.json
         - name: data-dir
           mountPath: /usr/local/bin/kubectl
           subPath: kubectl
@@ -241,8 +296,8 @@ spec:
           mountPath: /opt/in/instance/conf/pingaccess.lic
           subPath: pingaccess.lic
         - name: data-dir
-          mountPath: /opt/staging/env_vars
-          subPath: env_vars
+          mountPath: /opt/staging/ds_env_vars
+          subPath: ds_env_vars
         readinessProbe:
           exec:
             command: [ liveness.sh ]
@@ -286,6 +341,11 @@ spec:
         configMap:
           name: pingcommon-init
           defaultMode: 0555
+      - name: topology-descriptor
+        configMap:
+          name: topology-descriptor
+          optional: true
+          defaultMode: 0644
       - name: ssh-id-key-secret
         secret:
           secretName: ssh-id-key-secret

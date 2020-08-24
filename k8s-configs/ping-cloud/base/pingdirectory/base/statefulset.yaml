@@ -55,7 +55,7 @@ spec:
         image: bitnami/kubectl:1.15.3
         imagePullPolicy: IfNotPresent
         command:
-        - /init.sh
+        - /copy-dependencies.sh
         envFrom:
         - configMapRef:
             name: pingdirectory-environment-variables
@@ -71,17 +71,43 @@ spec:
           mountPath: /known_hosts
           subPath: known_hosts
         - name: pingdirectory-init
-          mountPath: /init.sh
-          subPath: init.sh
+          mountPath: /copy-dependencies.sh
+          subPath: copy-dependencies.sh
+        - name: pingdirectory-init
+          mountPath: /utils.lib.sh
+          subPath: utils.lib.sh
+      - name: wait-for-services
+        # FIXME: switch to same user as app
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        image: busybox:1.32
+        imagePullPolicy: IfNotPresent
+        command:
+        - /wait-for-services.sh
+        envFrom:
+        - configMapRef:
+            name: pingdirectory-environment-variables
+        volumeMounts:
+        - name: pingdirectory-init
+          mountPath: /utils.lib.sh
+          subPath: utils.lib.sh
+        - name: pingdirectory-init
+          mountPath: /wait-for-services.sh
+          subPath: wait-for-services.sh
       containers:
       - name: pingdirectory
-        image: pingidentity/pingdirectory:2003-8.0.0.1
+        image: pingidentity/pingdirectory:2006.1-8.1.0.1
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 1389
           name: ldap
         - containerPort: 1636
           name: ldaps
+        - containerPort: 1443
+          name: https
+        - containerPort: 8989
+          name: repl
         resources:
           requests:
             memory: "5Gi"
@@ -130,6 +156,9 @@ spec:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
           mountPath: /root/.ssh
+        - name: topology-descriptor
+          mountPath: /opt/staging/topology/descriptor.json
+          subPath: descriptor.json
         - name: data-dir
           mountPath: /opt/staging/topology.json
           subPath: topology.json
@@ -148,11 +177,12 @@ spec:
           mountPath: /opt/in/instance/PingDirectory.lic
           subPath: PingDirectory.lic
         - name: data-dir
-          mountPath: /opt/staging/env_vars
-          subPath: env_vars
+          mountPath: /opt/staging/ds_env_vars
+          subPath: ds_env_vars
         readinessProbe:
           exec:
-            command: [ liveness.sh ]
+            command:
+              - /opt/staging/hooks/85-readiness.sh
           # Do not start the readiness probe for 3 minutes after starting the
           # container because PD will never finish its start/restart sequence
           # before then, in practice. Run the readiness probe every 5 seconds
@@ -204,6 +234,11 @@ spec:
         configMap:
           name: pingcommon-init
           defaultMode: 0555
+      - name: topology-descriptor
+        configMap:
+          name: topology-descriptor
+          optional: true
+          defaultMode: 0644
       - name: ssh-id-key-secret
         secret:
           secretName: ssh-id-key-secret

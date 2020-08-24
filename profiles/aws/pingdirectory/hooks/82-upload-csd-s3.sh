@@ -4,17 +4,15 @@ ${VERBOSE} && set -x
 
 . "${HOOKS_DIR}/utils.lib.sh"
 
-test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
-
 # Set PATH - since this is executed from within the server process, it may not have all we need on the path
 export PATH="${PATH}:${SERVER_ROOT_DIR}/bin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${JAVA_HOME}/bin"
 
 # Allow overriding the log archive URL with an arg
 test ! -z "${1}" && LOG_ARCHIVE_URL="${1}"
-echo "Uploading to location ${LOG_ARCHIVE_URL}"
+beluga_log "Uploading to location ${LOG_ARCHIVE_URL}"
 
 if ! cd "${OUT_DIR}"; then
-  echo "Failed to chdir to: ${OUT_DIR}"
+  beluga_log "Failed to chdir to: ${OUT_DIR}"
   exit 1
 fi
 
@@ -27,7 +25,7 @@ initializeSkbnConfiguration "${LOG_ARCHIVE_URL}"
 DST_FILE="$(basename "${CSD_OUT}")"
 SRC_FILE="${OUT_DIR}/$(basename "${CSD_OUT}")"
 
-echo "Copying: '${DST_FILE}' to '${SKBN_CLOUD_PREFIX}'"
+beluga_log "Copying: '${DST_FILE}' to '${SKBN_CLOUD_PREFIX}'"
 
 if ! skbnCopy "${SKBN_K8S_PREFIX}/${SRC_FILE}" "${SKBN_CLOUD_PREFIX}/${DST_FILE}"; then
   exit 1

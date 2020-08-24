@@ -16,5 +16,4 @@ USER_BASE_DN | pingdirectory/env_vars
 OPERATIONAL_MODE | pingfederate/cluster/deployment.yaml
  | pingfederate/cluster/statefulset.yaml
 PF_DNS_PING_CLUSTER |  pingfederate/cluster/env_vars
-PF_DNS_PING_NAMESPACE | pingfederate/cluster/deployment.yaml
- | pingfederate/cluster/statefulset.yaml
+PF_DNS_PING_NAMESPACE | pingfederate/cluster/statefulset.yaml

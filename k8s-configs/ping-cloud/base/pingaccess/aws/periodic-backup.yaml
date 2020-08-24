@@ -22,14 +22,20 @@ data:
     kubectl exec "${SERVER}" -- sh -c \
             "test -x ${SCRIPT} && \
             STOP_SERVER_ON_FAILURE=false \
-            ${SCRIPT}" | tee "${LOG_FILE}"
+            ${SCRIPT}"> "${LOG_FILE}"
 
     if test ${?} -eq 0; then
+      # Sending logs to STDOUT
+      cat ${LOG_FILE}
       UPLOAD_FILE=$(tail -1 "${LOG_FILE}")
       test -z "${UPLOAD_FILES}" && UPLOAD_FILES="${UPLOAD_FILE}" || UPLOAD_FILES="${UPLOAD_FILES} ${UPLOAD_FILE}"
     else
       echo "Upload script not found on server ${SERVER}"
     fi
+    
+    # Print the names of the uploaded files so callers know exactly what was uploaded
+    echo "The following files were uploaded:"
+    echo "${UPLOAD_FILES}"
 
 ---
 
@@ -38,7 +44,7 @@ kind: CronJob
 metadata:
   name: pingaccess-periodic-backup
 spec:
-  schedule: "*/15 * * * *"
+  schedule: "0 * * * *"
   jobTemplate:
     spec:
       template:
@@ -47,7 +53,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: pingaccess-backup
-            image: pingidentity/pingaccess:2003-6.0.1
+            image: pingidentity/pingaccess:2006.1-6.1.0
             command:
             - /opt/in/backup-archive-data.sh
             envFrom:

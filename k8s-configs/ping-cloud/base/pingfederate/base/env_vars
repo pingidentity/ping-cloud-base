@@ -8,10 +8,13 @@ SERVER_PROFILE_URL=https://github.com/pingidentity/ping-cloud-base.git
 SERVER_PROFILE_PATH=profiles/aws/pingfederate
 SERVER_PROFILE_BRANCH=master
 
+REGION=us-west-2
+
 ACCEPT_EULA=YES
 PING_IDENTITY_ACCEPT_EULA=YES
 
 K8S_DEPLOYMENT_NAME_PINGFEDERATE_ADMIN=pingfederate-admin
+K8S_SERVICE_NAME_PINGFEDERATE_ADMIN=pingfederate-admin
 
 PINGFEDERATE_ADMIN_SERVER=pingfederate-admin
 PF_ADMIN_PORT=9999
@@ -19,7 +22,8 @@ PF_ADMIN_USER_USERNAME=administrator
 
 API_RETRY_LIMIT=10
 API_TIMEOUT_WAIT=5
-S3_BACKUP_FILTER_DAY_COUNT=1
+
+BACKUP_FILE_NAME=
 
 LDAP_PORT=1389
 LDAPS_PORT=1636
@@ -38,3 +42,25 @@ PF_PD_BIND_USESSL=false
 TAIL_LOG_FILES=
 # Individual files should be spelled out, globs are unreliable
 K8S_TAIL_LOG_FILES=/opt/out/instance/log/jvm-garbage-collection.log /opt/out/instance/log/server.log /opt/out/instance/log/init.log /opt/out/instance/log/admin.log /opt/out/instance/log/admin-event-detail.log /opt/out/instance/log/admin-api.log /opt/out/instance/log/runtime-api.log /opt/out/instance/log/transaction.log /opt/out/instance/log/audit.log /opt/out/instance/log/provisioner-audit.log /opt/out/instance/log/provisioner.log
+
+SECRETS_DIR=/usr/local/secrets
+
+SOCKET_HOST=logstash-elastic.elastic-stack-logging.svc.cluster.local
+SOCKET_PORT_SYSTEM=20513
+SOCKET_PORT_AUDIT=20514
+SOCKET_PORT_PROVISIONER=20512
+SOCKET_PROTOCOL=TCP
+
+# FIXME: these are redundant across services - DRY
+# wait-for-services
+PA_CLUSTER_PRIVATE_HOSTNAME=pingaccess-admin
+PA_CLUSTER_PORT=9090
+
+PA_WAS_CLUSTER_PRIVATE_HOSTNAME=pingaccess-was-admin
+PA_WAS_CLUSTER_PORT=9090
+
+PF_CLUSTER_PRIVATE_HOSTNAME=pingfederate-cluster
+PF_CLUSTER_PORT=7600
+
+PD_CLUSTER_PRIVATE_HOSTNAME=pingdirectory
+PD_CLUSTER_PORT=8989

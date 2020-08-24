@@ -1,0 +1,31 @@
+{
+  "id": 10,
+  "name": "P14C Session",
+  "idleTimeoutInMinutes": 60,
+  "enableRefreshUser": true,
+  "refreshUserInfoClaimsInterval": 60,
+  "sessionTimeoutInMinutes": 240,
+  "cacheUserAttributes": true,
+  "pkceChallengeType": "SHA256",
+  "requestPreservationType": "POST",
+  "webStorageType": "SessionStorage",
+  "sendRequestedUrlToProvider": true,
+  "oidcLoginType": "Code",
+  "validateSessionIsAlive": false,
+  "clientCredentials": {
+    "clientId": "${P14C_CLIENT_ID}",
+    "clientSecret": {
+      "value": "${P14C_CLIENT_SECRET}"
+    }
+  },
+  "scopes": [
+    "account_type"
+  ],
+  "audience": "ping",
+  "cookieDomain": "",
+  "cookieType": "Encrypted",
+  "httpOnlyCookie": true,
+  "secureCookie": true,
+  "sameSite": "Lax",
+  "pfsessionStateCacheInSeconds": 60
+}

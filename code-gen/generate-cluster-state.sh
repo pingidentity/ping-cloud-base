@@ -286,7 +286,6 @@ ${ENVIRONMENT_TYPE}
 ${PING_CLOUD_NAMESPACE}
 ${KUSTOMIZE_BASE}
 ${PING_CLOUD_NAMESPACE_RESOURCE}
-${PING_DATA_CONSOLE_INGRESS_PATCH}
 ${PING_DIRECTORY_LDAP_ENDPOINT_PATCH}
 ${SERVICE_NGINX_PRIVATE_PATCH}
 ${DELETE_PING_CLOUD_NAMESPACE_PATCH_MERGE}'
@@ -585,20 +584,20 @@ for ENV in ${ENVIRONMENTS}; do
   if test "${IS_BELUGA_ENV}" != 'true'; then
     case "${ENV}" in
       dev)
-        export LOG_ARCHIVE_URL=${DEV_LOG_ARCHIVE_URL:-${LOG_ARCHIVE_URL}}
-        export BACKUP_URL=${DEV_BACKUP_URL:-${BACKUP_URL}}
+        test "${DEV_LOG_ARCHIVE_URL}" != "unused" && export LOG_ARCHIVE_URL=${DEV_LOG_ARCHIVE_URL}
+        test "${DEV_BACKUP_URL}" != "unused" && export BACKUP_URL=${DEV_BACKUP_URL}
         ;;
       test)
-        export LOG_ARCHIVE_URL=${TEST_LOG_ARCHIVE_URL:-${LOG_ARCHIVE_URL}}
-        export BACKUP_URL=${TEST_BACKUP_URL:-${BACKUP_URL}}
+        test "${TEST_LOG_ARCHIVE_URL}" != "unused" && export LOG_ARCHIVE_URL=${TEST_LOG_ARCHIVE_URL}
+        test "${TEST_BACKUP_URL}" != "unused" && export BACKUP_URL=${TEST_BACKUP_URL}
         ;;
       stage)
-        export LOG_ARCHIVE_URL=${STAGE_LOG_ARCHIVE_URL:-${LOG_ARCHIVE_URL}}
-        export BACKUP_URL=${STAGE_BACKUP_URL:-${BACKUP_URL}}
+        test "${STAGE_LOG_ARCHIVE_URL}" != "unused" && export LOG_ARCHIVE_URL=${STAGE_LOG_ARCHIVE_URL}
+        test "${STAGE_BACKUP_URL}" != "unused" && export BACKUP_URL=${STAGE_BACKUP_URL}
         ;;
       prod)
-        export LOG_ARCHIVE_URL=${PROD_LOG_ARCHIVE_URL:-${LOG_ARCHIVE_URL}}
-        export BACKUP_URL=${PROD_BACKUP_URL:-${BACKUP_URL}}
+        test "${PROD_LOG_ARCHIVE_URL}" != "unused" && export LOG_ARCHIVE_URL=${PROD_LOG_ARCHIVE_URL}
+        test "${PROD_BACKUP_URL}" != "unused" && export BACKUP_URL=${PROD_BACKUP_URL}
         ;;
     esac
   fi
@@ -692,15 +691,6 @@ for ENV in ${ENVIRONMENTS}; do
 
     export PING_DIRECTORY_LDAP_ENDPOINT_PATCH=''
     rm -f "${PD_FILE_TO_PATCH}"
-  fi
-
-  # If it's a dev/test environment, then the pingdataconsole ingress must be kustomized.
-  CONSOLE_FILE_TO_PATCH="${ENV_DIR}/ping-cloud/pingdataconsole-ingress-patch.yaml.tmpl"
-  if test "${ENV}" = 'test' || test "${ENV}" = 'dev'; then
-    export PING_DATA_CONSOLE_INGRESS_PATCH=$(patch_remove_file "${CONSOLE_FILE_TO_PATCH}")
-  else
-    export PING_DATA_CONSOLE_INGRESS_PATCH=''
-    rm -f "${CONSOLE_FILE_TO_PATCH}"
   fi
 
   ### End special handling ###

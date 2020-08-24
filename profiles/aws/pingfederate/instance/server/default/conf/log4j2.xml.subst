@@ -77,6 +77,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="transaction.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
 
         <!-- Security Audit log for Splunk: A time/date based rolling appender
@@ -167,6 +176,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="audit.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
 
         <!-- Admin Audit log : A time/date based rolling appender -->
@@ -182,6 +200,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="admin.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
 
         <!-- Admin Event Detail Audit log : A time/date based rolling appender -->
@@ -197,6 +224,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="admin-event-detail.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
 
         <!-- Admin API Audit log : A time/date based rolling appender -->
@@ -224,6 +260,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="admin-api.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
 
         <!-- Runtime API Audit log : A time/date based rolling appender -->
@@ -251,6 +296,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="runtime-api.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
 
         <!-- Provisioner log : A time/date based rolling appender -->
@@ -263,6 +317,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
 
         <!-- Outbound provisioner audit log: A time/date based rolling appender -->
@@ -290,6 +353,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner-audit.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
 
         <!-- Outbound provisioner audit log for Splunk: A time/date based
@@ -314,6 +386,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner-audit-splunk.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         -->
 
@@ -353,6 +434,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="server-oracle-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="ServerLogToOracleDB-FAILOVER" primary="ServerLogToOracleDB" retryIntervalSeconds="60">
             <Failovers>
@@ -397,6 +487,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="server-sqlserver-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="ServerLogToSQLServerDB-FAILOVER" primary="ServerLogToSQLServerDB" retryIntervalSeconds="60">
             <Failovers>
@@ -441,6 +540,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="server-mysql-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="ServerLogToMySQLDB-FAILOVER" primary="ServerLogToMySQLDB" retryIntervalSeconds="60">
             <Failovers>
@@ -485,6 +593,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="server-postgresql-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="ServerLogToPostgreSQLDB-FAILOVER" primary="ServerLogToPostgreSQLDB" retryIntervalSeconds="60">
             <Failovers>
@@ -523,6 +640,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner-oracle-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="ProvisionerLogToOracleDB-FAILOVER" primary="ProvisionerLogToOracleDB" retryIntervalSeconds="60">
             <Failovers>
@@ -561,6 +687,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner-sqlserver-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="ProvisionerLogToSQLServerDB-FAILOVER" primary="ProvisionerLogToSQLServerDB" retryIntervalSeconds="60">
             <Failovers>
@@ -599,6 +734,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner-mysql-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="ProvisionerLogToMySQLDB-FAILOVER" primary="ProvisionerLogToMySQLDB" retryIntervalSeconds="60">
             <Failovers>
@@ -637,6 +781,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner-postgresql-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="ProvisionerLogToPostgreSQLDB-FAILOVER" primary="ProvisionerLogToPostgreSQLDB" retryIntervalSeconds="60">
             <Failovers>
@@ -678,6 +831,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner-audit-oracle-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="OutboundProvisionerEventToOracleDB-FAILOVER" primary="OutboundProvisionerEventToOracleDB" retryIntervalSeconds="60">
             <Failovers>
@@ -719,6 +881,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner-audit-sqlserver-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="OutboundProvisionerEventToSQLServerDB-FAILOVER" primary="OutboundProvisionerEventToSQLServerDB" retryIntervalSeconds="60">
             <Failovers>
@@ -760,6 +931,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner-audit-mysql-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="OutboundProvisionerEventToMySQLDB-FAILOVER" primary="OutboundProvisionerEventToMySQLDB" retryIntervalSeconds="60">
             <Failovers>
@@ -801,6 +981,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner-audit-postgresql-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="OutboundProvisionerEventToPostgreSQLDB-FAILOVER" primary="OutboundProvisionerEventToPostgreSQLDB" retryIntervalSeconds="60">
             <Failovers>
@@ -842,6 +1031,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner-audit-cef-syslog-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="OutboundProvisionerEventToCEFSyslog-FAILOVER" primary="OutboundProvisionerEventToCEFSyslog">
             <Failovers>
@@ -866,6 +1064,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner-audit-cef.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         -->
 
@@ -912,6 +1119,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="audit-oracle-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="SecurityAuditToOracleDB-FAILOVER" primary="SecurityAuditToOracleDB" retryIntervalSeconds="60">
             <Failovers>
@@ -963,6 +1179,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="audit-sqlserver-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="SecurityAuditToSQLServerDB-FAILOVER" primary="SecurityAuditToSQLServerDB" retryIntervalSeconds="60">
             <Failovers>
@@ -1014,6 +1239,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="audit-mysql-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="SecurityAuditToMySQLDB-FAILOVER" primary="SecurityAuditToMySQLDB" retryIntervalSeconds="60">
             <Failovers>
@@ -1065,6 +1299,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="audit-postgresql-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="SecurityAuditToPostgreSQLDB-FAILOVER" primary="SecurityAuditToPostgreSQLDB" retryIntervalSeconds="60">
             <Failovers>
@@ -1110,6 +1353,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="audit-cef-syslog-failover.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         <PingFailover name="SecurityAuditToCEFSyslog-FAILOVER" primary="SecurityAuditToCEFSyslog">
             <Failovers>
@@ -1141,6 +1393,15 @@
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="audit-cef.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="5" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
         -->
 

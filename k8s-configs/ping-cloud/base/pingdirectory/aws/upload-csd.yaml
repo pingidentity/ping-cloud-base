@@ -23,9 +23,11 @@ data:
       LOG_FILE=/tmp/upload.log
 
       echo "Uploading CSD on server ${SERVER}"
-      kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" | tee "${LOG_FILE}"
+      kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}"> "${LOG_FILE}"
 
       if test ${?} -eq 0; then
+        # Sending logs to STDOUT
+        cat ${LOG_FILE}
         CSD_FILE=$(tail -1 "${LOG_FILE}")
         test -z "${CSD_FILES}" && CSD_FILES="${CSD_FILE}" || CSD_FILES="${CSD_FILES} ${CSD_FILE}"
       else
@@ -57,7 +59,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: pingdirectory-csd-uploader
-        image: pingidentity/pingdirectory:2003-8.0.0.1
+        image: pingidentity/pingdirectory:2006.1-8.1.0.1
         command:
         - /opt/in/upload.sh
         volumeMounts:

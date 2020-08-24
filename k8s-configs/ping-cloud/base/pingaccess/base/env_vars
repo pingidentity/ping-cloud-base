@@ -4,6 +4,11 @@ SERVER_PROFILE_URL=https://github.com/pingidentity/ping-cloud-base.git
 SERVER_PROFILE_PATH=profiles/aws/pingaccess
 SERVER_PROFILE_BRANCH=master
 
+REGION=us-west-2
+
+PA_ADMIN_SERVER=pingaccess-admin
+PA_ADMIN_PORT=9000
+
 # Force stop the admin to terminate upon failure. See all references to stop_server
 # function in server profile for more details.
 STOP_SERVER_ON_FAILURE=true
@@ -15,7 +20,6 @@ API_RETRY_LIMIT=10
 # Seconds client request will wait for response from API.
 API_TIMEOUT_WAIT=5
 
-S3_BACKUP_FILTER_DAY_COUNT=3
 BACKUP_FILE_NAME=
 
 ACCEPT_EULA=YES
@@ -41,3 +45,19 @@ CONFIG_QUERY_KP_VALID_DAYS=365
 TAIL_LOG_FILES=
 # Individual files should be spelled out, globs are unreliable
 K8S_TAIL_LOG_FILES=/opt/out/instance/log/pingaccess_engine_audit.log /opt/out/instance/log/pingaccess_api_audit.log /opt/out/instance/log/pingaccess_agent_audit.log /opt/out/instance/log/pingaccess.log
+
+SECRETS_DIR=/usr/local/secrets
+
+# FIXME: these are redundant across services - DRY
+# wait-for-services
+PA_CLUSTER_PRIVATE_HOSTNAME=pingaccess-admin
+PA_CLUSTER_PORT=9090
+
+PA_WAS_CLUSTER_PRIVATE_HOSTNAME=pingaccess-was-admin
+PA_WAS_CLUSTER_PORT=9090
+
+PF_CLUSTER_PRIVATE_HOSTNAME=pingfederate-cluster
+PF_CLUSTER_PORT=7600
+
+PD_CLUSTER_PRIVATE_HOSTNAME=pingdirectory
+PD_CLUSTER_PORT=8989

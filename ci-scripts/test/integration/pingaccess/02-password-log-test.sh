@@ -25,9 +25,8 @@ testPasswordLog() {
     # Set the container name
     test "${SERVER}" == "${PRODUCT_NAME}-admin-0" && CONTAINER="${PRODUCT_NAME}-admin" || CONTAINER="${PRODUCT_NAME}"
 
-    log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
+    # log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
 
-    set +x
     # Set temp log file
     set_log_file "${SERVER}" "${CONTAINER}" ${TEMP_LOG_FILE}
 
@@ -46,7 +45,7 @@ testPasswordLog() {
     for CURRENT_PASSWORD in ${OLD_PA_ADMIN_USER_PASSWORD} \
                             ${PA_ADMIN_USER_PASSWORD} \
                             ${GIT_PASS} \
-                            $PA_ADMIN_PASSWORD_INITIAL} \
+                            ${PA_ADMIN_PASSWORD_INITIAL} \
                             ${PA_ADMIN_PASSWORD}; do
       if ! test -z "${CURRENT_PASSWORD}"; then
           test -z "${PATTERN}" && PATTERN="${CURRENT_PASSWORD}" || PATTERN="${PATTERN}\|${CURRENT_PASSWORD}"
@@ -59,7 +58,6 @@ testPasswordLog() {
       check_for_password_in_logs "${SERVER}" "${PATTERN}" ${TEMP_LOG_FILE}
       TEST_RESULT=${?}
     fi
-    set -x
 
     # Fail test if error occured within check_for_password_in_logs function
     test "${TEST_RESULT}" == "1" && exit 1

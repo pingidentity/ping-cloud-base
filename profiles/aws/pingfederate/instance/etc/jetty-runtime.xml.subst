@@ -285,7 +285,7 @@
                 <Set name="host"><SystemProperty name="pf.engine.bind.address" default="0.0.0.0"/></Set>
                 <Set name="port"><SystemProperty name="pf.https.port" default="9031" /></Set>
                 <Set name="idleTimeout">30000</Set>
-                <Set name="soLingerTime"><Property name="http.soLingerTime" default="-1"/></Set>
+                <Set name="soLingerTime"><Property name="http.soLingerTime" default="120000"/></Set>
                 <Set name="acceptorPriorityDelta"><Property name="ssl.acceptorPriorityDelta" default="0"/></Set>
                 <Set name="acceptQueueSize">512</Set>
             </New>
@@ -321,7 +321,7 @@
                 <Set name="host"><SystemProperty name="pf.engine.bind.address" default="0.0.0.0"/></Set>
                 <Set name="port"><SystemProperty name="pf.secondary.https.port" default="-1" /></Set>
                 <Set name="idleTimeout">30000</Set>
-                <Set name="soLingerTime"><Property name="http.soLingerTime" default="-1"/></Set>
+                <Set name="soLingerTime"><Property name="http.soLingerTime" default="120000"/></Set>
                 <Set name="acceptorPriorityDelta"><Property name="ssl.acceptorPriorityDelta" default="0"/></Set>
                 <Set name="acceptQueueSize">512</Set>
             </New>
@@ -358,7 +358,7 @@
                 <Set name="host"><SystemProperty name="pf.engine.bind.address" default="0.0.0.0" /></Set>
                 <Set name="port"><SystemProperty name="pf.http.port" default="-1" /></Set>
                 <Set name="idleTimeout">30000</Set>
-                <Set name="soLingerTime"><Property name="http.soLingerTime" default="-1"/></Set>
+                <Set name="soLingerTime"><Property name="http.soLingerTime" default="120000"/></Set>
                 <Set name="acceptorPriorityDelta"><Property name="http.acceptorPriorityDelta" default="0" /></Set>
                 <Set name="acceptQueueSize">512</Set>
             </New>
@@ -410,7 +410,7 @@
                                 <New id="RequestLogImpl" class="org.eclipse.jetty.server.NCSARequestLog">
                                     <Set name="filename"><SystemProperty name="pf.log.dir" default="."/>/yyyy_mm_dd.request.log</Set>
                                     <Set name="filenameDateFormat">yyyy_MM_dd</Set>
-                                    <Set name="retainDays">90</Set>
+                                    <Set name="retainDays">10</Set>
                                     <Set name="append">true</Set>
                                     <Set name="extended">false</Set>
                                     <Set name="logCookies">false</Set>
