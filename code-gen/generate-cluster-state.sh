@@ -519,7 +519,7 @@ mkdir -p "${FLUXCD_DIR}"
 mkdir -p "${CLUSTER_STATE_DIR}"
 
 cp ../.gitignore "${CLUSTER_STATE_DIR}"
-cp "${TEMPLATES_HOME}/seal.sh" "${CLUSTER_STATE_DIR}"
+cp "${TEMPLATES_HOME}/seal.sh" "${K8S_CONFIGS_DIR}"
 
 cp -pr ../profiles/aws/. "${CLUSTER_STATE_DIR}"/profiles
 echo "${PING_CLOUD_BASE_COMMIT_SHA}" > "${TARGET_DIR}/pcb-commit-sha.txt"
