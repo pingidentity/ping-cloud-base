@@ -71,15 +71,15 @@
                 <pattern>%d{ISO8601} %5p [%X{exchangeId}] %c - %m%n</pattern>
             </PatternLayout>
             <Policies>
-                <SizeBasedTriggeringPolicy size="100000 KB"/>
+                <SizeBasedTriggeringPolicy size="100 MB" />
             </Policies>
-            <DefaultRolloverStrategy max="10" />
+            <DefaultRolloverStrategy max="4" />
         </RollingFile>
 
         <!-- API auditing asynchronous file logging configuration-->
         <RollingFile name="APIAuditLog-File"
                      fileName="${sys:pa.home}/log/pingaccess_api_audit.log"
-                     filePattern="${sys:pa.home}/log/pingaccess_api_audit.%d{yyyy-MM-dd}.log"
+                     filePattern="${sys:pa.home}/log/pingaccess_api_audit.log.%i"
                      ignoreExceptions="false">
             <PatternLayout>
                 <!-- Uncomment this if you want to use UTF-8 encoding instead of system's default encoding. -->
@@ -89,17 +89,9 @@
                 <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.subject}| %X{AUDIT.authMech}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode} %n</pattern>
             </PatternLayout>
             <Policies>
-                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="100 MB" />
             </Policies>
-            <DefaultRolloverStrategy>
-                <Delete basePath="${sys:pa.home}/log">
-                    <IfFileName glob="pingaccess_api_audit.*.log">
-                        <IfAny>
-                            <IfAccumulatedFileCount exceeds="5" />
-                        </IfAny>
-                    </IfFileName>
-                </Delete>
-            </DefaultRolloverStrategy>
+            <DefaultRolloverStrategy max="4" />
         </RollingFile>
 
         <!-- API Audit log : JDBC appender template for Oracle
@@ -277,7 +269,7 @@
         <!-- | %clientRequestHeader{a-header-name}-->
         <RollingFile name="EngineAuditLog-File"
                      fileName="${sys:pa.home}/log/pingaccess_engine_audit.log"
-                     filePattern="${sys:pa.home}/log/pingaccess_engine_audit.%d{yyyy-MM-dd}.log"
+                     filePattern="${sys:pa.home}/log/pingaccess_engine_audit.log.%i"
                      ignoreExceptions="false">
             <PatternLayout>
                 <!-- Uncomment this if you want to use UTF-8 encoding instead of system's default encoding. -->
@@ -287,17 +279,9 @@
                 <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.proxyRoundTripMS} ms| %X{AUDIT.userInfoRoundTripMS} ms| %X{AUDIT.resource}| %X{AUDIT.subject}| %X{AUDIT.authMech}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.failedRuleType}| %X{AUDIT.failedRuleName}| %X{AUDIT.applicationName}| %X{AUDIT.resourceName}| %X{AUDIT.pathPrefix} %n</pattern>
             </PatternLayout>
             <Policies>
-                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="100 MB" />
             </Policies>
-            <DefaultRolloverStrategy>
-                <Delete basePath="${sys:pa.home}/log">
-                    <IfFileName glob="pingaccess_engine_audit.*.log">
-                        <IfAny>
-                            <IfAccumulatedFileCount exceeds="5" />
-                        </IfAny>
-                    </IfFileName>
-                </Delete>
-            </DefaultRolloverStrategy>
+            <DefaultRolloverStrategy max="4" />
         </RollingFile>
 
         <!-- Engine Audit log : JDBC appender template for Oracle
@@ -501,7 +485,7 @@
         <!-- | %clientRequestHeader{a-header-name}-->
         <RollingFile name="AgentAuditLog-File"
                      fileName="${sys:pa.home}/log/pingaccess_agent_audit.log"
-                     filePattern="${sys:pa.home}/log/pingaccess_agent_audit.%d{yyyy-MM-dd}.log"
+                     filePattern="${sys:pa.home}/log/pingaccess_agent_audit.log.%i"
                      ignoreExceptions="false">
             <PatternLayout>
                 <!-- Uncomment this if you want to use UTF-8 encoding instead of system's default encoding. -->
@@ -511,18 +495,9 @@
                 <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.resource}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.applicationName}| %X{AUDIT.resourceName}| %X{AUDIT.pathPrefix} %n</pattern>
             </PatternLayout>
             <Policies>
-                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="100 MB" />
             </Policies>
-            <DefaultRolloverStrategy>
-                <Delete basePath="${sys:pa.home}/log">
-                    <IfFileName glob="pingaccess_agent_audit.*.log">
-                        <IfAny>
-                            <IfAccumulatedFileCount exceeds="5" />
-                        </IfAny>
-                    </IfFileName>
-                </Delete>
-            </DefaultRolloverStrategy>
-
+            <DefaultRolloverStrategy max="4" />
         </RollingFile>
 
         <!-- Agent Audit log : JDBC appender template for Oracle
