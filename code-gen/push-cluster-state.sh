@@ -8,6 +8,7 @@
 #
 #   GENERATED_CODE_DIR -> The TARGET_DIR of generate-cluster-state.sh. Defaults to '/tmp/sandbox', if unset.
 #   REGION_NAME -> The name of the region for which the generated code is applicable. This parameter is required.
+#   IS_PRIMARY -> A flag indicating whether or not this is the primary region.
 #   ENVIRONMENTS -> A space-separated list of environments. Defaults to 'dev test stage prod', if unset. If provided,
 #   it must contain all or a subset of the environments currently created by the generate-cluster-state.sh script, i.e.
 #   dev, test, stage, prod.
@@ -120,13 +121,24 @@ for ENV in ${ENVIRONMENTS}; do
 
   if "${IS_PRIMARY}"; then
     rm -rf ./*
-    mkdir -p base
-    cp -pr "${ENV_CODE_DIR}"/. base
+
+    # Copy the profiles directory and other base files, which is common for all regions.
+    # We copy . (dot) so that hidden files (like .gitignore) are also copied over.
+    cp -pr "${ENV_CODE_DIR}"/. .
+
+    # Copy the k8s-configs into common code for all regions.
+    rm -rf ./k8s-configs
+    K8S_DIR_FOR_ALL_REGIONS="k8s-configs/base"
+
+    mkdir -p "${K8S_DIR_FOR_ALL_REGIONS}"
+    cp -pr "${ENV_CODE_DIR}"/k8s-configs/. "${K8S_DIR_FOR_ALL_REGIONS}"
   fi
 
-  K8S_DIR_FOR_REGION=./k8s-configs/"${REGION_NAME}"
+  K8S_DIR_FOR_REGION="k8s-configs/${REGION_NAME}"
   rm -rf "${K8S_DIR_FOR_REGION}"
-  cp -pr "${ENV_CODE_DIR}"/. "${K8S_DIR_FOR_REGION}"
+
+  mkdir "${K8S_DIR_FOR_REGION}"
+  touch "${K8S_DIR_FOR_REGION}"/env_vars
 
   git add .
   git commit -m "Initial commit of code for ${REGION_NAME} - ping-cloud-base@${PCB_COMMIT_SHA}"
