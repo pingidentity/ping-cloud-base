@@ -34,6 +34,7 @@ organize_code_for_environment() {
   local is_primary="${5}"
 
   echo "Organizing code for environment ${env} in directory ${out_dir} for region ${region_name} (primary: ${is_primary})"
+  local k8s_dir="${out_dir}"/k8s-configs
 
   if "${is_primary}"; then
     # For the primary region, we need to copy everything (i.e. both the k8s-configs and the profiles)
@@ -43,15 +44,11 @@ organize_code_for_environment() {
     cp -pr "${generated_code_dir}"/cluster-state/. "${out_dir}"
 
     # Remove everything under the k8s-configs because code is initially generated for every CDE under there.
-    local k8s_dir="${out_dir}"/k8s-configs
     rm -rf "${k8s_dir:?}"/*
-
-    # Copy the environment-specific k8s-configs into it.
-    cp -pr "${generated_code_dir}"/cluster-state/k8s-configs/"${env}"/. "${k8s_dir}"
-  else
-    # For secondary regions, we only need to copy the environment-specific k8s-configs.
-    cp -pr "${generated_code_dir}"/cluster-state/k8s-configs/"${env}"/. "${out_dir}"
   fi
+
+  # Copy the environment-specific k8s-configs.
+  cp -pr "${generated_code_dir}"/cluster-state/k8s-configs/"${env}"/. "${k8s_dir}"
 }
 
 ########################################################################################################################
@@ -82,7 +79,7 @@ if test -z "${REGION_NAME}" || test -z "${IS_PRIMARY}"; then
   exit 1
 fi
 
-ALL_ENVIRONMENTS='dev test stage prod'
+ALL_ENVIRONMENTS='dev'
 
 ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
 GENERATED_CODE_DIR="${GENERATED_CODE_DIR:-/tmp/sandbox}"
@@ -119,26 +116,29 @@ for ENV in ${ENVIRONMENTS}; do
     git pull
   fi
 
+  K8S_CONFIGS_DIR='k8s-configs'
+
   if "${IS_PRIMARY}"; then
+    # Clean-up
+    echo "Cleaning up ${PWD}"
     rm -rf ./*
+    mkdir -p "${K8S_CONFIGS_DIR}"
 
-    # Copy the profiles directory and other base files, which is common for all regions.
-    # We copy . (dot) so that hidden files (like .gitignore) are also copied over.
-    cp -pr "${ENV_CODE_DIR}"/. .
+    # Copy the base files into the environment directory.
+    echo "Copying base files from ${ENV_CODE_DIR} to ${PWD}"
+    find "${ENV_CODE_DIR}" -type f -maxdepth 1 | xargs -I {} cp {} ./
 
-    # Copy the k8s-configs into common code for all regions.
-    rm -rf ./k8s-configs
-    K8S_DIR_FOR_ALL_REGIONS="k8s-configs/base"
+    # Copy the profiles directory.
+    echo "Copying ${ENV_CODE_DIR}/profiles to ${PWD}"
+    cp -pr "${ENV_CODE_DIR}"/profiles ./
 
-    mkdir -p "${K8S_DIR_FOR_ALL_REGIONS}"
-    cp -pr "${ENV_CODE_DIR}"/k8s-configs/. "${K8S_DIR_FOR_ALL_REGIONS}"
+    # Copy the k8s-configs/base directory, which is common code for all regions.
+    echo "Copying ${ENV_CODE_DIR}/${K8S_CONFIGS_DIR}/base to ${K8S_CONFIGS_DIR}"
+    cp -pr "${ENV_CODE_DIR}/${K8S_CONFIGS_DIR}/base" "${K8S_CONFIGS_DIR}/"
   fi
 
-  K8S_DIR_FOR_REGION="k8s-configs/${REGION_NAME}"
-  rm -rf "${K8S_DIR_FOR_REGION}"
-
-  mkdir "${K8S_DIR_FOR_REGION}"
-  touch "${K8S_DIR_FOR_REGION}"/env_vars
+  echo "Copying ${ENV_CODE_DIR}/${K8S_CONFIGS_DIR}/${REGION_NAME} to ${K8S_CONFIGS_DIR}"
+  cp -pr "${ENV_CODE_DIR}/${K8S_CONFIGS_DIR}/${REGION_NAME}" "${K8S_CONFIGS_DIR}/"
 
   git add .
   git commit -m "Initial commit of code for ${REGION_NAME} - ping-cloud-base@${PCB_COMMIT_SHA}"

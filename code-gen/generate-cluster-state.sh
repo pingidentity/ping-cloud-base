@@ -478,18 +478,11 @@ export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEV
 
 SCRIPT_HOME=$(cd $(dirname ${0}) 2> /dev/null; pwd)
 TEMPLATES_HOME="${SCRIPT_HOME}/templates"
+BASE_DIR="${TEMPLATES_HOME}/base"
 
 test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}" &&
-  IS_PRIMARY=true ||
-  IS_PRIMARY=false
-
-if "${IS_PRIMARY}"; then
-  TOOLS_TEMPLATES_HOME="${TEMPLATES_HOME}"/cluster-tools
-  PING_CLOUD_TEMPLATES_HOME="${TEMPLATES_HOME}"/ping-cloud
-else
-  TOOLS_TEMPLATES_HOME="${TEMPLATES_HOME}"/secondary/cluster-tools
-  PING_CLOUD_TEMPLATES_HOME="${TEMPLATES_HOME}"/secondary/ping-cloud
-fi
+  REGION_DIR="${TEMPLATES_HOME}/primary" ||
+  REGION_DIR="${TEMPLATES_HOME}/secondary"
 
 # Generate an SSH key pair for flux CD.
 if test -z "${SSH_ID_PUB_FILE}" && test -z "${SSH_ID_KEY_FILE}"; then
@@ -645,8 +638,8 @@ for ENV in ${ENVIRONMENTS}; do
   ENV_DIR="${K8S_CONFIGS_DIR}/${ENV}"
   mkdir -p "${ENV_DIR}"
 
-  cp -r "${TOOLS_TEMPLATES_HOME}" "${ENV_DIR}"
-  cp -r "${PING_CLOUD_TEMPLATES_HOME}" "${ENV_DIR}"
+  cp -r "${BASE_DIR}" "${ENV_DIR}"
+  cp -r "${REGION_DIR}/." "${ENV_DIR}/${REGION}"
 
   # Copy the base files into the environment directory
   find "${TEMPLATES_HOME}" -type f -maxdepth 1 | xargs -I {} cp {} "${ENV_DIR}"
