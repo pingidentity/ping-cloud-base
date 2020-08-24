@@ -2,7 +2,7 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-- ../../cluster-tools
+- ../../base/cluster-tools
 - sealed-secrets.yaml
 
 patchesStrategicMerge:
