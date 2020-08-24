@@ -1,5 +1,3 @@
-patchesStrategicMerge:
-
 # Remove PingAccess primary-cluster resources
 - |-
   apiVersion: apps/v1

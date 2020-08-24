@@ -3,3 +3,9 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 - ../../cluster-tools
+- sealed-secrets.yaml
+
+patchesStrategicMerge:
+
+### All secrets used by supporting tools ###
+- secrets.yaml

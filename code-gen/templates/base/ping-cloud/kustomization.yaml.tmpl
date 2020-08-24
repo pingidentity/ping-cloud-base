@@ -6,6 +6,7 @@ namespace: ${PING_CLOUD_NAMESPACE}
 resources:
 ${PING_CLOUD_NAMESPACE_RESOURCE}
 - ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}?ref=${K8S_GIT_BRANCH}
+- sealed-secrets.yaml
 
 images:
 - name: pingidentity/pingdirectory
