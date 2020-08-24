@@ -86,13 +86,6 @@
   $patch: delete
 
 - |-
-  apiVersion: extensions/v1beta1
-  kind: Ingress
-  metadata:
-    name: pingfederate-admin-ingress
-  $patch: delete
-
-- |-
   apiVersion: v1
   kind: ConfigMap
   metadata:
