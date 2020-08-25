@@ -370,10 +370,30 @@ export_variable() {
 
   if test -z "${env_file}" || test -z "${var}"; then
     log 'env_file or var not provided'
-    return
+    return 1
   fi
 
   local nv="${var}=\"${val}\""
   eval "export ${nv}"
   echo "${nv}" >> "${env_file}"
+
+  return 0
+}
+
+########################################################################################################################
+# Add the provided variable and its value to the provided environment file, followed by a newline.
+#
+# Arguments
+#   $1 -> The name of the file to which the variable and value should be added as a key-value pair.
+#   $2 -> The name of the variable.
+#   $3 -> The value of the variable.
+########################################################################################################################
+export_variable_ln() {
+  export_variable "$1" "$2" "$3"
+  test $? -ne 0 && return 1
+
+  local env_file=$1
+  echo >> "${env_file}"
+
+  return 0
 }
