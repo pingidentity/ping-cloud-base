@@ -354,3 +354,26 @@ build_dev_deploy_file() {
   test ! -z "${NAMESPACE}" && test "${NAMESPACE}" != 'ping-cloud' &&
       sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" "${deploy_file}"
 }
+
+########################################################################################################################
+# Add the provided variable and its value to the provided environment file.
+#
+# Arguments
+#   $1 -> The name of the file to which the variable and value should be added as a key-value pair.
+#   $2 -> The name of the variable.
+#   $3 -> The value of the variable.
+########################################################################################################################
+export_variable() {
+  local env_file=$1
+  local var=$2
+  local val=$3
+
+  if test -z "${env_file}" || test -z "${var}"; then
+    log 'env_file or var not provided'
+    return
+  fi
+
+  local nv="${var}=\"${val}\""
+  eval "export ${nv}"
+  echo "${nv}" >> "${env_file}"
+}

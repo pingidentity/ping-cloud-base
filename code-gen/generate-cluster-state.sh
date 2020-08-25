@@ -220,12 +220,11 @@
 #                        | and hosted zone in their Ping IAM account role.    |
 ########################################################################################################################
 
-
 #### SCRIPT START ####
 
 # Ensure that this script works from any working directory.
-SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
-pushd "${SCRIPT_HOME}"
+SCRIPT_HOME=$(cd $(dirname ${0}) 2>/dev/null; pwd)
+pushd "${SCRIPT_HOME}" >/dev/null 2>&1
 
 # Source some utility methods.
 . ../utils.sh
@@ -333,7 +332,7 @@ HAS_REQUIRED_VARS=${?}
 
 if test ${HAS_REQUIRED_TOOLS} -ne 0 || test ${HAS_REQUIRED_VARS} -ne 0; then
   # Go back to previous working directory, if different, before exiting.
-  popd
+  popd >/dev/null 2>&1
   exit 1
 fi
 
@@ -341,7 +340,7 @@ test -z "${IS_MULTI_CLUSTER}" && IS_MULTI_CLUSTER=false
 if "${IS_MULTI_CLUSTER}"; then
   check_env_vars "CLUSTER_BUCKET_NAME"
   if test $? -ne 0; then
-    popd
+    popd >/dev/null 2>&1
     exit 1
   fi
 fi
@@ -390,52 +389,59 @@ echo "Initial IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
 echo ---
 
 # Use defaults for other variables, if not present.
-export TENANT_NAME="${TENANT_NAME:-PingPOC}"
-export SIZE="${SIZE:-small}"
+CD_COMMON_VARS=$(mktemp)
+echo "Writing CD common variables to file '${CD_COMMON_VARS}'"
 
-export IS_MULTI_CLUSTER="${IS_MULTI_CLUSTER}"
-export CLUSTER_BUCKET_NAME="${CLUSTER_BUCKET_NAME}"
+export_variable "${CD_COMMON_VARS}" TENANT_NAME "${TENANT_NAME:-PingPOC}"
+export_variable "${CD_COMMON_VARS}" SIZE "${SIZE:-small}"
 
-export REGION="${REGION:-us-east-2}"
-export PRIMARY_REGION="${PRIMARY_REGION:-${REGION}}"
+export_variable "${CD_COMMON_VARS}" IS_MULTI_CLUSTER "${IS_MULTI_CLUSTER}"
+export_variable "${CD_COMMON_VARS}" CLUSTER_BUCKET_NAME "${CLUSTER_BUCKET_NAME}"
+
+export_variable "${CD_COMMON_VARS}" REGION "${REGION:-us-east-2}"
+export_variable "${CD_COMMON_VARS}" PRIMARY_REGION "${PRIMARY_REGION:-${REGION}}"
 
 TENANT_DOMAIN_NO_DOT_SUFFIX="${TENANT_DOMAIN%.}"
-export TENANT_DOMAIN="${TENANT_DOMAIN_NO_DOT_SUFFIX:-eks-poc.au1.ping-lab.cloud}"
+export_variable "${CD_COMMON_VARS}" TENANT_DOMAIN "${TENANT_DOMAIN_NO_DOT_SUFFIX:-eks-poc.au1.ping-lab.cloud}"
 
 PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX="${PRIMARY_TENANT_DOMAIN%.}"
-export PRIMARY_TENANT_DOMAIN="${PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX:-${TENANT_DOMAIN}}"
+export_variable "${CD_COMMON_VARS}" PRIMARY_TENANT_DOMAIN "${PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX:-${TENANT_DOMAIN}}"
 
-export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL:-git@github.com:pingidentity/ping-cloud-base.git}"
+export_variable "${CD_COMMON_VARS}" CLUSTER_STATE_REPO_URL \
+  "${CLUSTER_STATE_REPO_URL:-git@github.com:pingidentity/ping-cloud-base.git}"
 
-export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
-export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
+export_variable "${CD_COMMON_VARS}" ARTIFACT_REPO_URL "${ARTIFACT_REPO_URL:-unused}"
+export_variable "${CD_COMMON_VARS}" PING_ARTIFACT_REPO_URL \
+  "${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
 
-export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
-export DEV_LOG_ARCHIVE_URL="${DEV_LOG_ARCHIVE_URL:-unused}"
-export TEST_LOG_ARCHIVE_URL="${TEST_LOG_ARCHIVE_URL:-unused}"
-export STAGE_LOG_ARCHIVE_URL="${STAGE_LOG_ARCHIVE_URL:-unused}"
-export PROD_LOG_ARCHIVE_URL="${PROD_LOG_ARCHIVE_URL:-unused}"
+export_variable "${CD_COMMON_VARS}" LOG_ARCHIVE_URL "${LOG_ARCHIVE_URL:-unused}"
+export_variable "${CD_COMMON_VARS}" DEV_LOG_ARCHIVE_URL "${DEV_LOG_ARCHIVE_URL:-unused}"
+export_variable "${CD_COMMON_VARS}" TEST_LOG_ARCHIVE_URL "${TEST_LOG_ARCHIVE_URL:-unused}"
+export_variable "${CD_COMMON_VARS}" STAGE_LOG_ARCHIVE_URL "${STAGE_LOG_ARCHIVE_URL:-unused}"
+export_variable "${CD_COMMON_VARS}" PROD_LOG_ARCHIVE_URL "${PROD_LOG_ARCHIVE_URL:-unused}"
 
-export BACKUP_URL="${BACKUP_URL:-unused}"
-export DEV_BACKUP_URL="${DEV_BACKUP_URL:-unused}"
-export TEST_BACKUP_URL="${TEST_BACKUP_URL:-unused}"
-export STAGE_BACKUP_URL="${STAGE_BACKUP_URL:-unused}"
-export PROD_BACKUP_URL="${PROD_BACKUP_URL:-unused}"
+export_variable "${CD_COMMON_VARS}" BACKUP_URL "${BACKUP_URL:-unused}"
+export_variable "${CD_COMMON_VARS}" DEV_BACKUP_URL "${DEV_BACKUP_URL:-unused}"
+export_variable "${CD_COMMON_VARS}" TEST_BACKUP_URL "${TEST_BACKUP_URL:-unused}"
+export_variable "${CD_COMMON_VARS}" STAGE_BACKUP_URL "${STAGE_BACKUP_URL:-unused}"
+export_variable "${CD_COMMON_VARS}" PROD_BACKUP_URL "${PROD_BACKUP_URL:-unused}"
 
-export S3_IRSA_ARN="${S3_IRSA_ARN}"
-export ROUTE53_IRSA_ARN="${ROUTE53_IRSA_ARN}"
+export_variable "${CD_COMMON_VARS}" S3_IRSA_ARN "${S3_IRSA_ARN}"
+export_variable "${CD_COMMON_VARS}" ROUTE53_IRSA_ARN "${ROUTE53_IRSA_ARN}"
 
-test ! -z ${S3_IRSA_ARN} && export S3_IRSA_ARN_KEY_AND_VALUE="eks.amazonaws.com/role-arn: ${S3_IRSA_ARN}"
-test ! -z ${ROUTE53_IRSA_ARN} && export ROUTE53_IRSA_ARN_KEY_AND_VALUE="eks.amazonaws.com/role-arn: ${ROUTE53_IRSA_ARN}"
+test ! -z "${S3_IRSA_ARN}" &&
+  export_variable "${CD_COMMON_VARS}" S3_IRSA_ARN_KEY_AND_VALUE "eks.amazonaws.com/role-arn: ${S3_IRSA_ARN}"
+test ! -z "${ROUTE53_IRSA_ARN}" &&
+  export_variable "${CD_COMMON_VARS}" ROUTE53_IRSA_ARN_KEY_AND_VALUE "eks.amazonaws.com/role-arn: ${ROUTE53_IRSA_ARN}"
 
 PING_CLOUD_BASE_COMMIT_SHA=$(git rev-parse HEAD)
 CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 test "${CURRENT_GIT_BRANCH}" = 'HEAD' && CURRENT_GIT_BRANCH=$(git describe --tags)
 
-export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
-export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-${CURRENT_GIT_BRANCH}}"
+export_variable "${CD_COMMON_VARS}" K8S_GIT_URL "${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
+export_variable "${CD_COMMON_VARS}" K8S_GIT_BRANCH "${K8S_GIT_BRANCH:-${CURRENT_GIT_BRANCH}}"
 
-export REGISTRY_NAME="${REGISTRY_NAME:-docker.io}"
+export_variable "${CD_COMMON_VARS}" REGISTRY_NAME "${REGISTRY_NAME:-docker.io}"
 
 export SSH_ID_PUB_FILE="${SSH_ID_PUB_FILE}"
 export SSH_ID_KEY_FILE="${SSH_ID_KEY_FILE}"
@@ -477,9 +483,7 @@ echo ---
 export PING_IDENTITY_DEVOPS_USER_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_USER}")
 export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_KEY}")
 
-SCRIPT_HOME=$(cd $(dirname ${0}) 2> /dev/null; pwd)
 TEMPLATES_HOME="${SCRIPT_HOME}/templates"
-
 BASE_DIR="${TEMPLATES_HOME}/base"
 BASE_TOOLS_REL_DIR="base/cluster-tools"
 BASE_PING_CLOUD_REL_DIR="base/ping-cloud"
@@ -504,7 +508,7 @@ fi
 # Get the known hosts contents for the cluster state repo host to pass it into flux.
 parse_url "${CLUSTER_STATE_REPO_URL}"
 echo "Obtaining known_hosts contents for cluster state repo host: ${URL_HOST}"
-export KNOWN_HOSTS_CLUSTER_STATE_REPO=$(ssh-keyscan -H "${URL_HOST}" 2> /dev/null)
+export_variable "${CD_COMMON_VARS}" KNOWN_HOSTS_CLUSTER_STATE_REPO "$(ssh-keyscan -H "${URL_HOST}" 2>/dev/null)"
 
 # Delete existing target directory and re-create it
 rm -rf "${TARGET_DIR}"
@@ -516,7 +520,7 @@ CLUSTER_STATE_DIR="${TARGET_DIR}/cluster-state"
 K8S_CONFIGS_DIR="${CLUSTER_STATE_DIR}/k8s-configs"
 
 mkdir -p "${FLUXCD_DIR}"
-mkdir -p "${CLUSTER_STATE_DIR}"
+mkdir -p "${K8S_CONFIGS_DIR}"
 
 cp ../.gitignore "${CLUSTER_STATE_DIR}"
 cp "${TEMPLATES_HOME}/seal.sh" "${K8S_CONFIGS_DIR}"
@@ -528,54 +532,59 @@ echo "${PING_CLOUD_BASE_COMMIT_SHA}" > "${TARGET_DIR}/pcb-commit-sha.txt"
 ENVIRONMENTS='dev test stage prod'
 
 for ENV in ${ENVIRONMENTS}; do
-  # Export all the environment variables required for envsubst
-  test "${ENV}" = prod && export CLUSTER_STATE_REPO_BRANCH=master || export CLUSTER_STATE_REPO_BRANCH=${ENV}
-  export CLUSTER_STATE_REPO_PATH="${REGION}"
+  CD_ENV_VARS="$(mktemp)"
+  cat "${CD_COMMON_VARS}" >"${CD_ENV_VARS}"
 
-  export ENVIRONMENT_TYPE=${ENV}
+  # Export all the environment variables required for envsubst
+  test "${ENV}" = 'prod' &&
+    export_variable "${CD_ENV_VARS}" CLUSTER_STATE_REPO_BRANCH master ||
+    export_variable "${CD_ENV_VARS}" CLUSTER_STATE_REPO_BRANCH "${ENV}"
+
+  export_variable "${CD_ENV_VARS}" CLUSTER_STATE_REPO_PATH "${REGION}"
+  export_variable "${CD_ENV_VARS}" ENVIRONMENT_TYPE "${ENV}"
 
   # The base URL for kustomization files and environment will be different for each CDE.
   case "${ENV}" in
     dev | test)
-      export KUSTOMIZE_BASE='test'
+      export_variable "${CD_ENV_VARS}" KUSTOMIZE_BASE 'test'
       ;;
     stage)
-      export KUSTOMIZE_BASE='prod/small'
+      export_variable "${CD_ENV_VARS}" KUSTOMIZE_BASE 'prod/small'
       ;;
     prod)
-      export KUSTOMIZE_BASE="prod/${SIZE}"
+      export_variable "${CD_ENV_VARS}" KUSTOMIZE_BASE "prod/${SIZE}"
       ;;
   esac
 
   # Update the Let's encrypt server to use staging/production based on environment type.
   case "${ENV}" in
     dev | test | stage)
-      export LETS_ENCRYPT_SERVER='https://acme-staging-v02.api.letsencrypt.org/directory'
-      export PF_PD_BIND_PORT=1389
-      export PF_PD_BIND_PROTOCOL=ldap
-      export PF_PD_BIND_USESSL=false
+      export_variable "${CD_ENV_VARS}" LETS_ENCRYPT_SERVER 'https://acme-staging-v02.api.letsencrypt.org/directory'
+      export_variable "${CD_ENV_VARS}" PF_PD_BIND_PORT 1389
+      export_variable "${CD_ENV_VARS}" PF_PD_BIND_PROTOCOL ldap
+      export_variable "${CD_ENV_VARS}" PF_PD_BIND_USESSL false
       ;;
     prod)
-      export LETS_ENCRYPT_SERVER='https://acme-v02.api.letsencrypt.org/directory'
-      export PF_PD_BIND_PORT=5678
-      export PF_PD_BIND_PROTOCOL=ldaps
-      export PF_PD_BIND_USESSL=true
+      export_variable "${CD_ENV_VARS}" LETS_ENCRYPT_SERVER 'https://acme-v02.api.letsencrypt.org/directory'
+      export_variable "${CD_ENV_VARS}" PF_PD_BIND_PORT 5678
+      export_variable "${CD_ENV_VARS}" PF_PD_BIND_PROTOCOL ldaps
+      export_variable "${CD_ENV_VARS}" PF_PD_BIND_USESSL true
       ;;
   esac
 
   # Update the PF JVM limits based on environment.
   case "${ENV}" in
     dev | test)
-      export PF_MIN_HEAP=1536m
-      export PF_MAX_HEAP=1536m
-      export PF_MIN_YGEN=768m
-      export PF_MAX_YGEN=768m
+      export_variable "${CD_ENV_VARS}" PF_MIN_HEAP 1536m
+      export_variable "${CD_ENV_VARS}" PF_MAX_HEAP 1536m
+      export_variable "${CD_ENV_VARS}" PF_MIN_YGEN 768m
+      export_variable "${CD_ENV_VARS}" PF_MAX_YGEN 768m
       ;;
     stage | prod)
-      export PF_MIN_HEAP=3072m
-      export PF_MAX_HEAP=3072m
-      export PF_MIN_YGEN=1536m
-      export PF_MAX_YGEN=1536m
+      export_variable "${CD_ENV_VARS}" PF_MIN_HEAP 3072m
+      export_variable "${CD_ENV_VARS}" PF_MAX_HEAP 3072m
+      export_variable "${CD_ENV_VARS}" PF_MIN_YGEN 1536m
+      export_variable "${CD_ENV_VARS}" PF_MAX_YGEN 1536m
       ;;
   esac
 
@@ -583,39 +592,49 @@ for ENV in ${ENVIRONMENTS}; do
   if test "${IS_BELUGA_ENV}" != 'true'; then
     case "${ENV}" in
       dev)
-        test "${DEV_LOG_ARCHIVE_URL}" != "unused" && export LOG_ARCHIVE_URL=${DEV_LOG_ARCHIVE_URL}
-        test "${DEV_BACKUP_URL}" != "unused" && export BACKUP_URL=${DEV_BACKUP_URL}
+        test "${DEV_LOG_ARCHIVE_URL}" != "unused" &&
+          export_variable "${CD_ENV_VARS}" LOG_ARCHIVE_URL "${DEV_LOG_ARCHIVE_URL}"
+        test "${DEV_BACKUP_URL}" != "unused" &&
+          export_variable "${CD_ENV_VARS}" BACKUP_URL "${DEV_BACKUP_URL}"
         ;;
       test)
-        test "${TEST_LOG_ARCHIVE_URL}" != "unused" && export LOG_ARCHIVE_URL=${TEST_LOG_ARCHIVE_URL}
-        test "${TEST_BACKUP_URL}" != "unused" && export BACKUP_URL=${TEST_BACKUP_URL}
+        test "${TEST_LOG_ARCHIVE_URL}" != "unused" &&
+          export_variable "${CD_ENV_VARS}" LOG_ARCHIVE_URL "${TEST_LOG_ARCHIVE_URL}"
+        test "${TEST_BACKUP_URL}" != "unused" &&
+          export_variable "${CD_ENV_VARS}" BACKUP_URL "${TEST_BACKUP_URL}"
         ;;
       stage)
-        test "${STAGE_LOG_ARCHIVE_URL}" != "unused" && export LOG_ARCHIVE_URL=${STAGE_LOG_ARCHIVE_URL}
-        test "${STAGE_BACKUP_URL}" != "unused" && export BACKUP_URL=${STAGE_BACKUP_URL}
+        test "${STAGE_LOG_ARCHIVE_URL}" != "unused" &&
+          export_variable "${CD_ENV_VARS}" LOG_ARCHIVE_URL "${STAGE_LOG_ARCHIVE_URL}"
+        test "${STAGE_BACKUP_URL}" != "unused" &&
+          export_variable "${CD_ENV_VARS}" BACKUP_URL "${STAGE_BACKUP_URL}"
         ;;
       prod)
-        test "${PROD_LOG_ARCHIVE_URL}" != "unused" && export LOG_ARCHIVE_URL=${PROD_LOG_ARCHIVE_URL}
-        test "${PROD_BACKUP_URL}" != "unused" && export BACKUP_URL=${PROD_BACKUP_URL}
+        test "${PROD_LOG_ARCHIVE_URL}" != "unused" &&
+          export_variable "${CD_ENV_VARS}" LOG_ARCHIVE_URL "${PROD_LOG_ARCHIVE_URL}"
+        test "${PROD_BACKUP_URL}" != "unused" &&
+          export_variable "${CD_ENV_VARS}" BACKUP_URL "${PROD_BACKUP_URL}"
         ;;
     esac
   fi
 
   if test "${IS_BELUGA_ENV}" = 'true'; then
-    export CLUSTER_NAME="${TENANT_NAME}"
-    export PING_CLOUD_NAMESPACE="ping-cloud-${ENV}"
-    export DNS_RECORD_SUFFIX="-${ENV}"
-    export DNS_DOMAIN_PREFIX=''
+    export_variable "${CD_ENV_VARS}" CLUSTER_NAME "${TENANT_NAME}"
+    export_variable "${CD_ENV_VARS}" PING_CLOUD_NAMESPACE "ping-cloud-${ENV}"
+    export_variable "${CD_ENV_VARS}" DNS_RECORD_SUFFIX "-${ENV}"
+    export_variable "${CD_ENV_VARS}" DNS_DOMAIN_PREFIX ''
   else
-    export CLUSTER_NAME="${ENV}"
-    export PING_CLOUD_NAMESPACE='ping-cloud'
-    export DNS_RECORD_SUFFIX=''
-    export DNS_DOMAIN_PREFIX="${ENV}-"
+    export_variable "${CD_ENV_VARS}" CLUSTER_NAME "${ENV}"
+    export_variable "${CD_ENV_VARS}" PING_CLOUD_NAMESPACE 'ping-cloud'
+    export_variable "${CD_ENV_VARS}" DNS_RECORD_SUFFIX ''
+    export_variable "${CD_ENV_VARS}" DNS_DOMAIN_PREFIX "${ENV}-"
   fi
 
-  export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
+  CLUSTER_NAME_LC="$(echo "${CLUSTER_NAME}" | tr '[:upper:]' '[:lower:]')"
+  export_variable "${CD_ENV_VARS}" CLUSTER_NAME_LC "${CLUSTER_NAME_LC}"
 
   echo ---
+  echo "Writing CD ${ENV}-specific variables to file '${CD_ENV_VARS}'"
   echo "For environment ${ENV}, using variable values:"
   echo "CLUSTER_STATE_REPO_BRANCH: ${CLUSTER_STATE_REPO_BRANCH}"
   echo "CLUSTER_STATE_REPO_PATH: ${CLUSTER_STATE_REPO_PATH}"
@@ -709,7 +728,7 @@ done
 cp -p push-cluster-state.sh "${TARGET_DIR}"
 
 # Go back to previous working directory, if different
-popd > /dev/null
+popd >/dev/null 2>&1
 
 echo
 echo '------------------------'
