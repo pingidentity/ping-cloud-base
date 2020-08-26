@@ -356,13 +356,17 @@ build_dev_deploy_file() {
 }
 
 ########################################################################################################################
-# Add the provided variable and its value to the provided environment file.
+# Add the provided variable and its value to the provided environment file. Also, export it as an environment variable.
 #
 # Arguments
 #   $1 -> The name of the file to which the variable and value should be added as a key-value pair.
 #   $2 -> The name of the variable.
 #   $3 -> The value of the variable.
 #   $4 -> Flag indicating whether or not to wrap value in between quotes.
+#
+# Returns
+#   0 -> if the variable was exported and written to the file.
+#   1 -> if the environment file or variable name is empty.
 ########################################################################################################################
 export_variable() {
   local env_file="$1"
@@ -381,20 +385,25 @@ export_variable() {
     local nv="${var}=${val}"
   fi
 
-  eval "export ${nv}"
   echo "${nv}" >> "${env_file}"
+  eval "export ${nv}"
 
   return 0
 }
 
 ########################################################################################################################
-# Add the provided variable and its value to the provided environment file, followed by a newline.
+# Add the provided variable and its value to the provided environment file, followed by a newline. Also, export it as
+# an environment variable.
 #
 # Arguments
 #   $1 -> The name of the file to which the variable and value should be added as a key-value pair.
 #   $2 -> The name of the variable.
 #   $3 -> The value of the variable.
 #   $4 -> Flag indicating whether or not to wrap value in between quotes.
+#
+# Returns
+#   0 -> if the variable was exported and written to the file.
+#   1 -> if the environment file or variable name is empty.
 ########################################################################################################################
 export_variable_ln() {
   export_variable "$1" "$2" "$3" "$4"

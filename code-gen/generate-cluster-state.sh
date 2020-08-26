@@ -418,10 +418,8 @@ export PROD_BACKUP_URL="${PROD_BACKUP_URL:-unused}"
 export S3_IRSA_ARN="${S3_IRSA_ARN}"
 export ROUTE53_IRSA_ARN="${ROUTE53_IRSA_ARN}"
 
-test ! -z "${S3_IRSA_ARN}" &&
-  export S3_IRSA_ARN_KEY_AND_VALUE="eks.amazonaws.com/role-arn: ${S3_IRSA_ARN}"
-test ! -z "${ROUTE53_IRSA_ARN}" &&
-  export ROUTE53_IRSA_ARN_KEY_AND_VALUE="eks.amazonaws.com/role-arn: ${ROUTE53_IRSA_ARN}"
+test ! -z "${S3_IRSA_ARN}" && export S3_IRSA_ARN_KEY_AND_VALUE="eks.amazonaws.com/role-arn: ${S3_IRSA_ARN}"
+test ! -z "${ROUTE53_IRSA_ARN}" && export ROUTE53_IRSA_ARN_KEY_AND_VALUE="eks.amazonaws.com/role-arn: ${ROUTE53_IRSA_ARN}"
 
 PING_CLOUD_BASE_COMMIT_SHA=$(git rev-parse HEAD)
 CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
