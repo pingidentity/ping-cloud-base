@@ -5,6 +5,31 @@ resources:
 - ../../base/ping-cloud
 - sealed-secrets.yaml
 
+generatorOptions:
+  disableNameSuffixHash: false
+
+configMapGenerator:
+
+# Create the config maps that hold the variable for triggering updates of PD servers
+- name: pingdirectory-last-update-config
+  envs:
+  - pingdirectory/env_vars
+
+# Create the config maps that hold the variable for triggering updates of PF servers
+- name: pingfederate-last-update-config
+  envs:
+  - pingfederate/env_vars
+
+# Create the config maps that hold the variable for triggering updates of PA servers
+- name: pingaccess-last-update-config
+  envs:
+  - pingaccess/env_vars
+
+# Create the config maps that hold the variable for triggering updates of PA WAS servers
+- name: pingaccess-was-last-update-config
+  envs:
+  - pingaccess-was/env_vars
+
 patchesStrategicMerge:
 
 ### All secrets used by supporting tools ###

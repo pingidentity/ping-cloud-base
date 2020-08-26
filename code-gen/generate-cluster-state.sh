@@ -239,50 +239,12 @@ pushd "${SCRIPT_HOME}" >/dev/null 2>&1
 # The list of variables in the template files that will be substituted.
 VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
 ${PING_IDENTITY_DEVOPS_KEY_BASE64}
-${IS_MULTI_CLUSTER}
-${CLUSTER_BUCKET_NAME}
-${REGION}
-${PRIMARY_REGION}
-${TENANT_DOMAIN}
-${PRIMARY_TENANT_DOMAIN}
-${SIZE}
-${LETS_ENCRYPT_SERVER}
-${PF_PD_BIND_PORT}
-${PF_PD_BIND_PROTOCOL}
-${PF_PD_BIND_USESSL}
-${PF_MIN_HEAP}
-${PF_MAX_HEAP}
-${PF_MIN_YGEN}
-${PF_MAX_YGEN}
-${CLUSTER_NAME}
-${CLUSTER_NAME_LC}
-${CLUSTER_STATE_REPO_URL}
-${CLUSTER_STATE_REPO_BRANCH}
-${CLUSTER_STATE_REPO_PATH}
-${ARTIFACT_REPO_URL}
-${PING_ARTIFACT_REPO_URL}
-${LOG_ARCHIVE_URL}
-${DEV_LOG_ARCHIVE_URL}
-${TEST_LOG_ARCHIVE_URL}
-${STAGE_LOG_ARCHIVE_URL}
-${PROD_LOG_ARCHIVE_URL}
-${BACKUP_URL}
-${DEV_BACKUP_URL}
-${TEST_BACKUP_URL}
-${STAGE_BACKUP_URL}
-${PROD_BACKUP_URL}
+${SSH_ID_PUB}
+${SSH_ID_KEY_BASE64}
 ${S3_IRSA_ARN_KEY_AND_VALUE}
 ${ROUTE53_IRSA_ARN_KEY_AND_VALUE}
 ${K8S_GIT_URL}
 ${K8S_GIT_BRANCH}
-${REGISTRY_NAME}
-${SSH_ID_PUB}
-${SSH_ID_KEY_BASE64}
-${KNOWN_HOSTS_CLUSTER_STATE_REPO}
-${DNS_RECORD_SUFFIX}
-${DNS_DOMAIN_PREFIX}
-${ENVIRONMENT_TYPE}
-${PING_CLOUD_NAMESPACE}
 ${KUSTOMIZE_BASE}
 ${PING_CLOUD_NAMESPACE_RESOURCE}
 ${PING_DIRECTORY_LDAP_ENDPOINT_PATCH}
@@ -321,6 +283,39 @@ patch_remove_file() {
   cat "${TMP_DIR}/${FILE_NO_TMPL_EXT}"
 
   rm -rf "${TMP_DIR}"
+}
+
+########################################################################################################################
+# Add some derived environment variables to end of the provided environment file.
+#
+# Arguments
+#   ${1} -> The name of the environment file.
+########################################################################################################################
+add_derived_variables() {
+  local env_file="$1"
+  cat >> "${env_file}" <<EOF
+
+# Ping admin configuration required for admin access and clustering
+PD_PRIMARY_PUBLIC_HOSTNAME=pingdirectory-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${PRIMARY_TENANT_DOMAIN}
+PF_ADMIN_PUBLIC_HOSTNAME=pingfederate-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${PRIMARY_TENANT_DOMAIN}
+PA_ADMIN_PUBLIC_HOSTNAME=pingaccess-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${PRIMARY_TENANT_DOMAIN}
+PA_WAS_ADMIN_PUBLIC_HOSTNAME=pingaccess-was-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${PRIMARY_TENANT_DOMAIN}
+
+PD_CLUSTER_PUBLIC_HOSTNAME=pingdirectory-cluster${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${PRIMARY_TENANT_DOMAIN}
+PF_CLUSTER_PUBLIC_HOSTNAME=pingfederate-cluster${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${PRIMARY_TENANT_DOMAIN}
+PA_CLUSTER_PUBLIC_HOSTNAME=pingaccess-cluster${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${PRIMARY_TENANT_DOMAIN}
+PA_WAS_CLUSTER_PUBLIC_HOSTNAME=pingaccess-was-cluster${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${PRIMARY_TENANT_DOMAIN}
+
+# Ping engine hostname variables
+PD_PUBLIC_HOSTNAME=pingdirectory-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+PF_ENGINE_PUBLIC_HOSTNAME=pingfederate${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+PA_ENGINE_PUBLIC_HOSTNAME=pingaccess${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+PA_WAS_ENGINE_PUBLIC_HOSTNAME=pingaccess-was${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+
+PROMETHEUS_PUBLIC_HOSTNAME=prometheus${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+GRAFANA_PUBLIC_HOSTNAME=monitoring${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+KIBANA_PUBLIC_HOSTNAME=logs${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+EOF
 }
 
 # Checking required tools and environment variables.
@@ -432,8 +427,8 @@ PING_CLOUD_BASE_COMMIT_SHA=$(git rev-parse HEAD)
 CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 test "${CURRENT_GIT_BRANCH}" = 'HEAD' && CURRENT_GIT_BRANCH=$(git describe --tags)
 
-export_variable "${CD_COMMON_VARS}" K8S_GIT_URL "${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
-export_variable_ln "${CD_COMMON_VARS}" K8S_GIT_BRANCH "${K8S_GIT_BRANCH:-${CURRENT_GIT_BRANCH}}"
+export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
+export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-${CURRENT_GIT_BRANCH}}"
 
 export_variable_ln "${CD_COMMON_VARS}" REGISTRY_NAME "${REGISTRY_NAME:-docker.io}"
 
@@ -502,7 +497,7 @@ fi
 # Get the known hosts contents for the cluster state repo host to pass it into flux.
 parse_url "${CLUSTER_STATE_REPO_URL}"
 echo "Obtaining known_hosts contents for cluster state repo host: ${URL_HOST}"
-export_variable_ln "${CD_COMMON_VARS}" KNOWN_HOSTS_CLUSTER_STATE_REPO "$(ssh-keyscan -H "${URL_HOST}" 2>/dev/null)"
+export_variable_ln "${CD_COMMON_VARS}" KNOWN_HOSTS_CLUSTER_STATE_REPO "$(ssh-keyscan -H "${URL_HOST}" 2>/dev/null)" true
 
 # Delete existing target directory and re-create it
 rm -rf "${TARGET_DIR}"
@@ -543,13 +538,13 @@ for ENV in ${ENVIRONMENTS}; do
   # The base URL for kustomization files and environment will be different for each CDE.
   case "${ENV}" in
     dev | test)
-      export_variable_ln "${CD_ENV_VARS}" KUSTOMIZE_BASE 'test'
+      export KUSTOMIZE_BASE='test'
       ;;
     stage)
-      export_variable_ln "${CD_ENV_VARS}" KUSTOMIZE_BASE 'prod/small'
+      export KUSTOMIZE_BASE='prod/small'
       ;;
     prod)
-      export_variable_ln "${CD_ENV_VARS}" KUSTOMIZE_BASE "prod/${SIZE}"
+      export KUSTOMIZE_BASE="prod/${SIZE}"
       ;;
   esac
 
@@ -584,6 +579,8 @@ for ENV in ${ENVIRONMENTS}; do
       export_variable_ln "${CD_ENV_VARS}" PF_MAX_YGEN 1536m
       ;;
   esac
+
+  # FIXME: PA/PA-WAS heap settings should be made variables
 
   # Adjust the logs and backup URLs based on environment type.
   case "${ENV}" in
@@ -638,7 +635,9 @@ for ENV in ${ENVIRONMENTS}; do
   fi
 
   CLUSTER_NAME_LC="$(echo "${CLUSTER_NAME}" | tr '[:upper:]' '[:lower:]')"
-  export_variable_ln "${CD_ENV_VARS}" CLUSTER_NAME_LC "${CLUSTER_NAME_LC}"
+  export_variable "${CD_ENV_VARS}" CLUSTER_NAME_LC "${CLUSTER_NAME_LC}"
+
+  add_derived_variables "${CD_ENV_VARS}"
 
   echo ---
   echo "Writing CD ${ENV}-specific variables to file '${CD_ENV_VARS}'"
@@ -663,7 +662,7 @@ for ENV in ${ENVIRONMENTS}; do
   cp "${TEMPLATES_HOME}"/fluxcd/* "${ENV_FLUX_DIR}"
 
   substitute_vars "${ENV_FLUX_DIR}"
-  cp "${CD_ENV_VARS}" "${ENV_FLUX_DIR}/cd_env_vars"
+  cp "${CD_ENV_VARS}" "${ENV_FLUX_DIR}/env_vars"
 
   # Copy the shared cluster tools and Ping yaml templates into their target directories
   echo "Generating tools and ping yaml"
@@ -672,8 +671,8 @@ for ENV in ${ENVIRONMENTS}; do
   mkdir -p "${ENV_DIR}"
 
   cp -r "${BASE_DIR}" "${ENV_DIR}"
-  cp "${CD_ENV_VARS}" "${ENV_DIR}/base/cd_env_vars"
   cp -r "${REGION_DIR}/." "${ENV_DIR}/${REGION}"
+  cp "${CD_ENV_VARS}" "${ENV_DIR}/${REGION}/env_vars"
 
   # Copy the base files into the environment directory
   find "${TEMPLATES_HOME}" -type f -maxdepth 1 | xargs -I {} cp {} "${ENV_DIR}"
@@ -726,6 +725,7 @@ for ENV in ${ENVIRONMENTS}; do
   if test "${TENANT_DOMAIN}" != "${PRIMARY_TENANT_DOMAIN}"; then
     export REMOVE_FROM_SECONDARY_PATCH=$(patch_remove_file "${SECONDARY_REGION_PATCH}")
   else
+    export REMOVE_FROM_SECONDARY_PATCH=''
     rm -f "${SECONDARY_REGION_PATCH}"
   fi
 

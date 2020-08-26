@@ -362,18 +362,25 @@ build_dev_deploy_file() {
 #   $1 -> The name of the file to which the variable and value should be added as a key-value pair.
 #   $2 -> The name of the variable.
 #   $3 -> The value of the variable.
+#   $4 -> Flag indicating whether or not to wrap value in between quotes.
 ########################################################################################################################
 export_variable() {
-  local env_file=$1
-  local var=$2
-  local val=$3
+  local env_file="$1"
+  local var="$2"
+  local val="$3"
+  local quote="${4:-false}"
 
   if test -z "${env_file}" || test -z "${var}"; then
     log 'env_file or var not provided'
     return 1
   fi
 
-  local nv="${var}=\"${val}\""
+  if "${quote}"; then
+    local nv="${var}=\"${val}\""
+  else
+    local nv="${var}=${val}"
+  fi
+
   eval "export ${nv}"
   echo "${nv}" >> "${env_file}"
 
@@ -387,9 +394,10 @@ export_variable() {
 #   $1 -> The name of the file to which the variable and value should be added as a key-value pair.
 #   $2 -> The name of the variable.
 #   $3 -> The value of the variable.
+#   $4 -> Flag indicating whether or not to wrap value in between quotes.
 ########################################################################################################################
 export_variable_ln() {
-  export_variable "$1" "$2" "$3"
+  export_variable "$1" "$2" "$3" "$4"
   test $? -ne 0 && return 1
 
   local env_file=$1

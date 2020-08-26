@@ -140,6 +140,9 @@ spec:
         - name: tools-dir
           mountPath: /usr/local/bin/envsubst
           subPath: envsubst
+        - name: flux-command
+          mountPath: /usr/local/bin/flux-command.sh
+          subPath: flux-command.sh
       serviceAccountName: flux
       volumes:
       - name: git-key
@@ -151,6 +154,10 @@ spec:
       - name: git-keygen
         emptyDir:
           medium: Memory
+      - name: flux-command
+        configMap:
+          name: flux-command
+          defaultMode: 0555
 ---
 apiVersion: apps/v1
 kind: Deployment
