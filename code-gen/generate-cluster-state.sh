@@ -512,7 +512,8 @@ mkdir -p "${FLUXCD_DIR}"
 mkdir -p "${K8S_CONFIGS_DIR}"
 
 cp ../.gitignore "${CLUSTER_STATE_DIR}"
-cp "${TEMPLATES_HOME}/seal.sh" "${K8S_CONFIGS_DIR}"
+cp ../k8s-configs/cluster-tools/git-ops/flux/flux-command.sh "${K8S_CONFIGS_DIR}"
+find "${TEMPLATES_HOME}" -type f -maxdepth 1 | xargs -I {} cp {} "${K8S_CONFIGS_DIR}"
 
 cp -pr ../profiles/aws/. "${CLUSTER_STATE_DIR}"/profiles
 echo "${PING_CLOUD_BASE_COMMIT_SHA}" > "${TARGET_DIR}/pcb-commit-sha.txt"
@@ -674,9 +675,6 @@ for ENV in ${ENVIRONMENTS}; do
   cp -r "${REGION_DIR}/." "${ENV_DIR}/${REGION}"
   cp "${CD_ENV_VARS}" "${ENV_DIR}/${REGION}/env_vars"
 
-  # Copy the base files into the environment directory
-  find "${TEMPLATES_HOME}" -type f -maxdepth 1 | xargs -I {} cp {} "${ENV_DIR}"
-
   ### Start some special-handling based on BELUGA environment and CDE type ###
 
   # If Beluga environment, we want:
@@ -723,10 +721,9 @@ for ENV in ${ENVIRONMENTS}; do
   fi
 
   if test "${TENANT_DOMAIN}" != "${PRIMARY_TENANT_DOMAIN}"; then
-    export REMOVE_FROM_SECONDARY_PATCH=$(patch_remove_file "${SECONDARY_REGION_PATCH}")
+    export REMOVE_FROM_SECONDARY_PATCH='- remove-from-secondary-patch.yaml'
   else
     export REMOVE_FROM_SECONDARY_PATCH=''
-    rm -f "${SECONDARY_REGION_PATCH}"
   fi
 
   ### End special handling ###

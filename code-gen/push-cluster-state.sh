@@ -15,6 +15,12 @@
 #   PUSH_RETRY_COUNT -> The number of times to try pushing to the cluster state repo with a 2s sleep between each
 #   attempt to avoid IAM permission to repo sync issue.
 
+# Global variables
+K8S_CONFIGS_DIR='k8s-configs'
+CLUSTER_STATE_DIR='cluster-state'
+PROFILES_DIR='profiles'
+BASE_DIR='base'
+
 ########################################################################################################################
 # Organizes the Kubernetes configuration files to push into the cluster state repo for a specific Customer Deployment
 # Environment (CDE).
@@ -34,21 +40,21 @@ organize_code_for_environment() {
   local is_primary="${5}"
 
   echo "Organizing code for environment ${env} in directory ${out_dir} for region ${region_name} (primary: ${is_primary})"
-  local k8s_dir="${out_dir}"/k8s-configs
+  local k8s_dir="${out_dir}/${K8S_CONFIGS_DIR}"
 
   if "${is_primary}"; then
     # For the primary region, we need to copy everything (i.e. both the k8s-configs and the profiles)
     # into the cluster state repo.
 
     # Copy everything under cluster state into the code directory for the environment.
-    cp -pr "${generated_code_dir}"/cluster-state/. "${out_dir}"
+    cp -pr "${generated_code_dir}/${CLUSTER_STATE_DIR}"/. "${out_dir}"
 
     # Remove everything under the k8s-configs because code is initially generated for every CDE under there.
     rm -rf "${k8s_dir:?}"/*
   fi
 
   # Copy the environment-specific k8s-configs.
-  cp -pr "${generated_code_dir}"/cluster-state/k8s-configs/"${env}"/. "${k8s_dir}"
+  cp -pr "${generated_code_dir}/${CLUSTER_STATE_DIR}/${K8S_CONFIGS_DIR}/${env}"/. "${k8s_dir}"
 }
 
 ########################################################################################################################
@@ -116,8 +122,6 @@ for ENV in ${ENVIRONMENTS}; do
     git pull
   fi
 
-  K8S_CONFIGS_DIR='k8s-configs'
-
   if "${IS_PRIMARY}"; then
     # Clean-up
     echo "Cleaning up ${PWD}"
@@ -125,20 +129,29 @@ for ENV in ${ENVIRONMENTS}; do
     mkdir -p "${K8S_CONFIGS_DIR}"
 
     # Copy the base files into the environment directory.
-    echo "Copying base files from ${ENV_CODE_DIR} to ${PWD}"
-    find "${ENV_CODE_DIR}" -type f -maxdepth 1 | xargs -I {} cp {} ./
+    src_dir="${ENV_CODE_DIR}"
+    echo "Copying base files from ${src_dir} to ${PWD}"
+    find "${src_dir}" -type f -maxdepth 1 | xargs -I {} cp {} ./
 
     # Copy the profiles directory.
-    echo "Copying ${ENV_CODE_DIR}/profiles to ${PWD}"
-    cp -pr "${ENV_CODE_DIR}"/profiles ./
+    src_dir="${ENV_CODE_DIR}/${PROFILES_DIR}"
+    echo "Copying ${src_dir} to ${PWD}"
+    cp -pr "${src_dir}" ./
+
+    # Copy bases files into the k8s-configs directory.
+    src_dir="${GENERATED_CODE_DIR}/${CLUSTER_STATE_DIR}/${K8S_CONFIGS_DIR}"
+    echo "Copying base files from ${src_dir} to ${K8S_CONFIGS_DIR}"
+    find "${src_dir}" -type f -maxdepth 1 | xargs -I {} cp {} "${K8S_CONFIGS_DIR}"
 
     # Copy the k8s-configs/base directory, which is common code for all regions.
-    echo "Copying ${ENV_CODE_DIR}/${K8S_CONFIGS_DIR}/base to ${K8S_CONFIGS_DIR}"
-    cp -pr "${ENV_CODE_DIR}/${K8S_CONFIGS_DIR}/base" "${K8S_CONFIGS_DIR}/"
+    src_dir="${ENV_CODE_DIR}/${K8S_CONFIGS_DIR}/${BASE_DIR}"
+    echo "Copying ${src_dir} to ${K8S_CONFIGS_DIR}"
+    cp -pr "${src_dir}" "${K8S_CONFIGS_DIR}/"
   fi
 
-  echo "Copying ${ENV_CODE_DIR}/${K8S_CONFIGS_DIR}/${REGION_NAME} to ${K8S_CONFIGS_DIR}"
-  cp -pr "${ENV_CODE_DIR}/${K8S_CONFIGS_DIR}/${REGION_NAME}" "${K8S_CONFIGS_DIR}/"
+  src_dir="${ENV_CODE_DIR}/${K8S_CONFIGS_DIR}/${REGION_NAME}"
+  echo "Copying ${src_dir} to ${K8S_CONFIGS_DIR}"
+  cp -pr "${src_dir}" "${K8S_CONFIGS_DIR}/"
 
   git add .
   git commit -m "Initial commit of code for ${REGION_NAME} - ping-cloud-base@${PCB_COMMIT_SHA}"
