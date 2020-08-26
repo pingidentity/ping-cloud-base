@@ -241,16 +241,9 @@ VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
 ${PING_IDENTITY_DEVOPS_KEY_BASE64}
 ${SSH_ID_PUB}
 ${SSH_ID_KEY_BASE64}
-${S3_IRSA_ARN_KEY_AND_VALUE}
-${ROUTE53_IRSA_ARN_KEY_AND_VALUE}
 ${K8S_GIT_URL}
 ${K8S_GIT_BRANCH}
-${KUSTOMIZE_BASE}
-${PING_CLOUD_NAMESPACE_RESOURCE}
-${PING_DIRECTORY_LDAP_ENDPOINT_PATCH}
-${SERVICE_NGINX_PRIVATE_PATCH}
-${REMOVE_FROM_SECONDARY_PATCH}
-${DELETE_PING_CLOUD_NAMESPACE_PATCH_MERGE}'
+${KUSTOMIZE_BASE}'
 
 substitute_vars() {
   SUBST_DIR=${1}
@@ -619,15 +612,14 @@ for ENV in ${ENVIRONMENTS}; do
         export_variable_ln "${CD_ENV_VARS}" BACKUP_URL "${PROD_BACKUP_URL}" ||
         export_variable_ln "${CD_ENV_VARS}" BACKUP_URL "${BACKUP_URL:-unused}"
       ;;
-    esac
+  esac
 
+  export_variable_ln "${CD_ENV_VARS}" PING_CLOUD_NAMESPACE 'ping-cloud'
   if "${IS_BELUGA_ENV}"; then
-    export_variable_ln "${CD_ENV_VARS}" PING_CLOUD_NAMESPACE "ping-cloud-${ENV}"
     export_variable "${CD_ENV_VARS}" DNS_RECORD_SUFFIX "-${ENV}"
     export_variable_ln "${CD_ENV_VARS}" DNS_DOMAIN_PREFIX ''
     export_variable "${CD_ENV_VARS}" CLUSTER_NAME "${TENANT_NAME}"
   else
-    export_variable_ln "${CD_ENV_VARS}" PING_CLOUD_NAMESPACE 'ping-cloud'
     export_variable "${CD_ENV_VARS}" DNS_RECORD_SUFFIX ''
     export_variable_ln "${CD_ENV_VARS}" DNS_DOMAIN_PREFIX "${ENV}-"
     export_variable "${CD_ENV_VARS}" CLUSTER_NAME "${ENV}"
@@ -673,60 +665,14 @@ for ENV in ${ENVIRONMENTS}; do
   cp -r "${REGION_DIR}/." "${ENV_DIR}/${REGION}"
   cp "${CD_ENV_VARS}" "${ENV_DIR}/${REGION}/env_vars"
 
-  ### Start some special-handling based on BELUGA environment and CDE type ###
-
-  # If Beluga environment, we want:
-  #
-  #   - All URLs to land on a public subnet, so a VPN/bridge network is not
-  #     required to access them.
-  #   - The namespace for the ping stack for the environment to be created and
-  #     the stock ping-cloud namespace to be deleted.
-  #
-
-  NGINX_FILE_TO_PATCH="${ENV_DIR}/${BASE_TOOLS_REL_DIR}/service-nginx-private-patch.yaml.tmpl"
-  PD_FILE_TO_PATCH="${ENV_DIR}/${BASE_PING_CLOUD_REL_DIR}/pingdirectory-ldap-endpoint-patch.yaml.tmpl"
-  SECONDARY_REGION_PATCH="${ENV_DIR}/${REGION_PING_CLOUD_REL_DIR}/remove-from-secondary-patch.yaml"
-  NAMESPACE_PATCH="${ENV_DIR}/${BASE_PING_CLOUD_REL_DIR}/namespace.yaml.tmpl"
-
-  NAMESPACE_COMMENT="# All ping resources will live in the ${PING_CLOUD_NAMESPACE} namespace"
-
-  if "${IS_BELUGA_ENV}"; then
-    export PING_CLOUD_NAMESPACE_RESOURCE="${NAMESPACE_COMMENT}
-- namespace.yaml"
-
-    export DELETE_PING_CLOUD_NAMESPACE_PATCH_MERGE='### Delete ping-cloud namespace ###
-
-- |-
-  apiVersion: v1
-  kind: Namespace
-  metadata:
-    name: ping-cloud
-  $patch: delete'
-
-    export SERVICE_NGINX_PRIVATE_PATCH=$(patch_remove_file "${NGINX_FILE_TO_PATCH}")
-    export PING_DIRECTORY_LDAP_ENDPOINT_PATCH=$(patch_remove_file "${PD_FILE_TO_PATCH}")
-
-  else
-    export PING_CLOUD_NAMESPACE_RESOURCE="${NAMESPACE_COMMENT}"
-    export DELETE_PING_CLOUD_NAMESPACE_PATCH_MERGE=''
-    rm -f "${NAMESPACE_PATCH}"
-
-    export SERVICE_NGINX_PRIVATE_PATCH=''
-    rm -f "${NGINX_FILE_TO_PATCH}"
-
-    export PING_DIRECTORY_LDAP_ENDPOINT_PATCH=''
-    rm -f "${PD_FILE_TO_PATCH}"
-  fi
-
-  if test "${TENANT_DOMAIN}" != "${PRIMARY_TENANT_DOMAIN}"; then
-    export REMOVE_FROM_SECONDARY_PATCH='- remove-from-secondary-patch.yaml'
-  else
-    export REMOVE_FROM_SECONDARY_PATCH=''
-  fi
-
-  ### End special handling ###
-
   substitute_vars "${ENV_DIR}"
+
+  # Regional enablement - add admins, backups, etc. to primary.
+  if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
+    PRIMARY_PING_KUST_FILE="${ENV_DIR}/${REGION}/ping-cloud/kustomization.yaml"
+    sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/' "${PRIMARY_PING_KUST_FILE}"
+    rm -f "${PRIMARY_PING_KUST_FILE}.bak"
+  fi
 done
 
 cp -p push-cluster-state.sh "${TARGET_DIR}"

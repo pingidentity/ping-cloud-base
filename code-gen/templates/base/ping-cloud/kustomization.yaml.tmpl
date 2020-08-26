@@ -4,7 +4,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 namespace: ${PING_CLOUD_NAMESPACE}
 
 resources:
-${PING_CLOUD_NAMESPACE_RESOURCE}
 - ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}?ref=${K8S_GIT_BRANCH}
 
 images:
@@ -36,9 +35,6 @@ patchesStrategicMerge:
     name: ping-serviceaccount
     annotations:
       purpose: service-account-for-ping-cloud-stack
-      ${S3_IRSA_ARN_KEY_AND_VALUE}
-
-${DELETE_PING_CLOUD_NAMESPACE_PATCH_MERGE}
 
 patchesJson6902:
 
@@ -298,5 +294,3 @@ patchesJson6902:
     - op: replace
       path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
       value: pingdirectory-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-
-${PING_DIRECTORY_LDAP_ENDPOINT_PATCH}

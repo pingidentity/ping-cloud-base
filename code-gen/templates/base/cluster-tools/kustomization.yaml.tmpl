@@ -49,7 +49,6 @@ patchesStrategicMerge:
     namespace: external-dns
     annotations:
       purpose: service-account-for-external-dns
-      ${ROUTE53_IRSA_ARN_KEY_AND_VALUE}
 
 ### Additional args to the flux deployment object ###
 - |-
@@ -184,5 +183,3 @@ patchesJson6902:
       path: /spec/template/spec/containers/0/args/-
       value:
         --domain-filter=${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}.
-
-${SERVICE_NGINX_PRIVATE_PATCH}
