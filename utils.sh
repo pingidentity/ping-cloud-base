@@ -298,8 +298,8 @@ build_kustomizations_in_dir() {
 #   $1 -> The directory that contains the files where variables must be substituted.
 ########################################################################################################################
 
-# The list of variables in the template files that will be substituted.
-VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
+# The list of variables in the template files that will be substituted by default.
+DEFAULT_VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
 ${PING_IDENTITY_DEVOPS_KEY_BASE64}
 ${ENVIRONMENT}
 ${IS_MULTI_CLUSTER}
@@ -321,11 +321,12 @@ ${BACKUP_URL}'
 
 substitute_vars() {
   local subst_dir=$1
+  local vars="${2:-${DEFAULT_VARS}}"
 
   for file in $(find "${subst_dir}" -type f); do
     local old_file="${file}.bak"
     cp "${file}" "${old_file}"
-    envsubst "${VARS}" < "${old_file}" > "${file}"
+    envsubst "${vars}" < "${old_file}" > "${file}"
     rm -f "${old_file}"
   done
 }

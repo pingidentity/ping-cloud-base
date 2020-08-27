@@ -236,25 +236,15 @@ pushd "${SCRIPT_HOME}" >/dev/null 2>&1
 #   ${1} -> The directory that contains the template files.
 ########################################################################################################################
 
-# The list of variables in the template files that will be substituted.
+# The list of variables in the template files that will be substituted by default.
 # Note only secret variables are substituted. Environments variables are just written to a file and
 # substituted at runtime by the continuous delivery tool running in cluster.
-VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
+DEFAULT_VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
 ${PING_IDENTITY_DEVOPS_KEY_BASE64}
 ${SSH_ID_PUB}
 ${SSH_ID_KEY_BASE64}'
 
-substitute_vars() {
-  SUBST_DIR=${1}
-  for FILE in $(find "${SUBST_DIR}" -type f); do
-    EXTENSION="${FILE##*.}"
-    if test "${EXTENSION}" = 'tmpl'; then
-      TARGET_FILE="${FILE%.*}"
-      envsubst "${VARS}" < "${FILE}" > "${TARGET_FILE}"
-      rm -f "${FILE}"
-    fi
-  done
-}
+VARS="${VARS:-${DEFAULT_VARS}}"
 
 ########################################################################################################################
 # Add some derived environment variables to end of the provided environment file.
@@ -405,7 +395,7 @@ export SSH_ID_PUB_FILE="${SSH_ID_PUB_FILE}"
 export SSH_ID_KEY_FILE="${SSH_ID_KEY_FILE}"
 
 export TARGET_DIR="${TARGET_DIR:-/tmp/sandbox}"
-export IS_BELUGA_ENV="${IS_BELUGA_ENV}"
+export IS_BELUGA_ENV="${IS_BELUGA_ENV:-false}"
 
 # Print out the values being used for each variable.
 echo "Using TENANT_NAME: ${TENANT_NAME}"
@@ -630,7 +620,7 @@ for ENV in ${ENVIRONMENTS}; do
 
   cp "${TEMPLATES_HOME}"/fluxcd/* "${ENV_FLUX_DIR}"
 
-  substitute_vars "${ENV_FLUX_DIR}"
+  substitute_vars "${ENV_FLUX_DIR}" "${VARS}"
   cp "${CD_ENV_VARS}" "${ENV_FLUX_DIR}/env_vars"
 
   # Copy the shared cluster tools and Ping yaml templates into their target directories
@@ -643,7 +633,7 @@ for ENV in ${ENVIRONMENTS}; do
   cp -r "${REGION_DIR}/." "${ENV_DIR}/${REGION}"
   cp "${CD_ENV_VARS}" "${ENV_DIR}/${REGION}/env_vars"
 
-  substitute_vars "${ENV_DIR}"
+  substitute_vars "${ENV_DIR}" "${VARS}"
 
   # Regional enablement - add admins, backups, etc. to primary.
   if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then

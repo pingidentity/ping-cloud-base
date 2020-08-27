@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
-. ${SCRIPT_HOME}/../common.sh
+. ${SCRIPT_HOME}/../common.sh "${1}"
 
 STATUS=0
 
@@ -12,7 +12,7 @@ build_kustomizations_in_dir "${PING_CLOUD_BASE_DIR}"
 STATUS=${?}
 
 # All kustomizations in base test directory
-PING_CLOUD_TEST_DIR="${PROJECT_DIR}/test"
+PING_CLOUD_TEST_DIR="${PROJECT_DIR}/dev-cluster-state"
 
 build_kustomizations_in_dir "${PING_CLOUD_TEST_DIR}"
 BUILD_RESULT=${?}
