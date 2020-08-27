@@ -148,7 +148,7 @@ echo '------------------------'
 echo '|  Next steps to take  |'
 echo '------------------------'
 echo "- Run the following commands from a region's directory:"
-echo "      cd \${REGION_DIR} # e.g. cd us-west-2"
+echo "      cd ${REGION_DIR} # e.g. cd us-west-2"
 echo "      test -f ${CLUSTER_SECRETS_FILE} && cp ${CLUSTER_SECRETS_FILE} cluster-tools/secrets.yaml"
 echo "      test -f ${PING_SECRETS_FILE} && cp ${PING_SECRETS_FILE} ping-cloud/secrets.yaml"
 echo "      test -f ${SEALED_SECRETS_FILE} && cp ${SEALED_SECRETS_FILE} sealed-secrets.yaml"
@@ -156,7 +156,7 @@ echo "      ../flux-command.sh > /tmp/deploy.yaml"
 echo "      grep 'kind: Secret' /tmp/deploy.yaml # should not have any hits"
 echo "      grep 'kind: SealedSecret' /tmp/deploy.yaml # should have hits"
 echo "- Push all modified files into the cluster state repo"
-echo "- Run this script for each CDE branch in the order - dev, test, stage, prod, if not already done"
+echo "- Run this script for each CDE branch and region directory in the order - dev, test, stage, prod"
 echo "- IMPORTANT: create a backup of the Bitnami service's master key using PingCloud docs"
 
 popd &> /dev/null
