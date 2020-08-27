@@ -237,13 +237,12 @@ pushd "${SCRIPT_HOME}" >/dev/null 2>&1
 ########################################################################################################################
 
 # The list of variables in the template files that will be substituted.
+# Note only secret variables are substituted. Environments variables are just written to a file and
+# substituted at runtime by the continuous delivery tool running in cluster.
 VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
 ${PING_IDENTITY_DEVOPS_KEY_BASE64}
 ${SSH_ID_PUB}
-${SSH_ID_KEY_BASE64}
-${K8S_GIT_URL}
-${K8S_GIT_BRANCH}
-${KUSTOMIZE_BASE}'
+${SSH_ID_KEY_BASE64}'
 
 substitute_vars() {
   SUBST_DIR=${1}
@@ -255,27 +254,6 @@ substitute_vars() {
       rm -f "${FILE}"
     fi
   done
-}
-
-########################################################################################################################
-# Remove the file from its current location, substitute the variables in it using corresponding environment variables
-# and print its final contents to stdout.
-#
-# Arguments
-#   ${1} -> The name of the file to patch and remove.
-########################################################################################################################
-patch_remove_file() {
-  FILE_TO_PATCH="${1}"
-  FILE_NO_TMPL_EXT=${FILE_TO_PATCH%.tmpl}
-  FILE_NO_TMPL_EXT=$(basename "${FILE_NO_TMPL_EXT}")
-
-  TMP_DIR=$(mktemp -d)
-  mv "${FILE_TO_PATCH}" "${TMP_DIR}"
-  substitute_vars "${TMP_DIR}"
-
-  cat "${TMP_DIR}/${FILE_NO_TMPL_EXT}"
-
-  rm -rf "${TMP_DIR}"
 }
 
 ########################################################################################################################
@@ -418,8 +396,8 @@ PING_CLOUD_BASE_COMMIT_SHA=$(git rev-parse HEAD)
 CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 test "${CURRENT_GIT_BRANCH}" = 'HEAD' && CURRENT_GIT_BRANCH=$(git describe --tags)
 
-export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
-export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-${CURRENT_GIT_BRANCH}}"
+export_variable "${CD_COMMON_VARS}" K8S_GIT_URL "${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
+export_variable_ln "${CD_COMMON_VARS}" K8S_GIT_BRANCH "${K8S_GIT_BRANCH:-${CURRENT_GIT_BRANCH}}"
 
 export_variable_ln "${CD_COMMON_VARS}" REGISTRY_NAME "${REGISTRY_NAME:-docker.io}"
 
@@ -530,13 +508,13 @@ for ENV in ${ENVIRONMENTS}; do
   # The base URL for kustomization files and environment will be different for each CDE.
   case "${ENV}" in
     dev | test)
-      export KUSTOMIZE_BASE='test'
+      export_variable_ln "${CD_ENV_VARS}" KUSTOMIZE_BASE 'test'
       ;;
     stage)
-      export KUSTOMIZE_BASE='prod/small'
+      export_variable_ln "${CD_ENV_VARS}" KUSTOMIZE_BASE 'prod/small'
       ;;
     prod)
-      export KUSTOMIZE_BASE="prod/${SIZE}"
+      export_variable_ln "${CD_ENV_VARS}" KUSTOMIZE_BASE "prod/${SIZE}"
       ;;
   esac
 

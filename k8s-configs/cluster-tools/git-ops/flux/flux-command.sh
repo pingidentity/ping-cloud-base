@@ -1,6 +1,8 @@
-#!/bin/sh
+#!/bin/sh -e
 
-set -e
+# This script copies the kustomization templates into a temporary directory, performs substitution into them usin
+# environment variables defined in an env_vars file and builds the uber deploy.yaml file. It is run by flux on
+# every poll interval.
 
 LOG_FILE=/tmp/flux-command.log
 
@@ -12,7 +14,7 @@ LOG_FILE=/tmp/flux-command.log
 ########################################################################################################################
 log() {
   msg="$1"
-  echo "${msg}" >"${LOG_FILE}"
+  echo "${msg}" >> "${LOG_FILE}"
 }
 
 ########################################################################################################################
@@ -24,16 +26,7 @@ log() {
 ########################################################################################################################
 substitute_vars() {
   env_file="$1"
-  if test ! -f "${env_file}"; then
-    log "flux-command: env_file '${env_file}' does not exist"
-    return 1
-  fi
-
   subst_dir="$2"
-  if test ! -d "${subst_dir}"; then
-    log "flux-command: subst_dir '${subst_dir}' does not exist"
-    return 1
-  fi
 
   log "flux-command: substituting variables in '${env_file}' in directory ${subst_dir}"
 
@@ -42,9 +35,7 @@ substitute_vars() {
   log "flux-command: substituting variables '${vars}'"
 
   # Export the environment variables
-  set -a
-  source "${env_file}"
-  set +a
+  set -a; . "${env_file}"; set +a
 
   for file in $(find "${subst_dir}" -type f); do
     old_file="${file}.bak"
@@ -53,39 +44,84 @@ substitute_vars() {
     envsubst "${vars}" < "${old_file}" > "${file}"
     rm -f "${old_file}"
   done
-
-  return 0
 }
 
 ########################################################################################################################
-# Change back to the previous directory on exit. If non-zero exit, then print the log file to stdout first.
+# Check if the provided directories exist.
+#
+# Arguments
+#   ${*} -> The list of directories to check for existence.
+#
+# Returns
+#   0 -> if all directories exist.
+#   1 -> if one or more directories are missing.
 ########################################################################################################################
-change_dir_to_previous() {
+do_dirs_exist() {
+  status=0
+  for dir in ${*}; do
+    if test ! -d "${dir}"; then
+      log "expected directory '${dir}' does not exist under ${TARGET_DIR_FULL}"
+      status=1
+    fi
+  done
+  return ${status}
+}
+
+########################################################################################################################
+# Clean up on exit. If non-zero exit, then print the log file to stdout before deleting it. Change back to the previous
+# directory. Delete the kustomize build directory, if it exists.
+########################################################################################################################
+cleanup() {
   test $? -ne 0 && cat "${LOG_FILE}"
+  rm -f "${LOG_FILE}"
   cd - >/dev/null 2>&1
+  test ! -z "${TMP_DIR}" && rm -rf "${TMP_DIR}"
 }
 
 # Main script
-trap "change_dir_to_previous" EXIT
-
 TARGET_DIR="${1:-.}"
-TARGET_DIR_FULL="$(cd "${TARGET_DIR}"; pwd)"
+cd "${TARGET_DIR}" >/dev/null 2>&1
 
-cd "${TARGET_DIR_FULL}" >/dev/null 2>&1
+# Trap all exit codes from here on so cleanup is run
+trap "cleanup" EXIT
 
+# Get short and full directory names of the target directory
+TARGET_DIR_FULL="$(pwd)"
+TARGET_DIR_SHORT="$(basename "${TARGET_DIR_FULL}")"
+
+# Directory paths relative to TARGET_DIR
 TOOLS_DIR='cluster-tools'
 PING_CLOUD_DIR='ping-cloud'
-BASE_DIR='base'
+BASE_DIR='../base'
 
-if test ! -d "${TOOLS_DIR}" && test ! -d "${PING_CLOUD_DIR}"; then
-  log "flux-command: expected directories ${TOOLS_DIR} and/or ${PING_CLOUD_DIR} not present under ${TARGET_DIR_FULL}"
-  exit 1
+# Check for expected sub-directories in the target directory
+do_dirs_exist "${TOOLS_DIR}" "${PING_CLOUD_DIR}"
+test $? -ne 0 && exit 1
+
+# Perform substitution and build in a temporary directory
+TMP_DIR="$(mktemp -d)"
+BUILD_DIR="${TMP_DIR}/${TARGET_DIR_SHORT}"
+
+# Copy contents of target directory into temporary directory
+log "flux-command: copying templates into '${TMP_DIR}'"
+cp -pr "${TARGET_DIR_FULL}" "${TMP_DIR}"
+test -d "${BASE_DIR}" && cp -pr "${BASE_DIR}" "${TMP_DIR}"
+
+# If there's an environment file, then perform substitution
+if test -f 'env_vars'; then
+  # Perform the substitutions in a sub-shell so it doesn't pollute the current shell.
+  log "flux-command: substituting env_vars into templates"
+  (cd "${BUILD_DIR}"; substitute_vars env_vars .; test -d "${BASE_DIR}" && substitute_vars env_vars "${BASE_DIR}")
+  test $? -ne 0 && exit 1
 fi
 
-substitute_vars env_vars .
-substitute_vars env_vars ../"${BASE_DIR}"
-
-log "flux-command: running 'kustomize build' on '${TARGET_DIR_FULL}'"
-kustomize build --load_restrictor LoadRestrictionsNone .
+# Build the uber deploy yaml
+if test -z "${OUT_DIR}" || test ! -d "${OUT_DIR}"; then
+  log "flux-command: generating uber yaml file from '${BUILD_DIR}' to stdout"
+  kustomize build --load_restrictor LoadRestrictionsNone "${BUILD_DIR}"
+else
+  log "flux-command: generating yaml files from '${BUILD_DIR}' to '${OUT_DIR}'"
+  kustomize build --load_restrictor LoadRestrictionsNone "${BUILD_DIR}" --output "${OUT_DIR}"
+fi
 
 exit 0

@@ -36,6 +36,20 @@ check_binaries() {
   return ${STATUS}
 }
 
+########################################################################################################################
+# Prints script usage.
+########################################################################################################################
+usage() {
+  echo "Usage: ./seal.sh <REGION_DIR> [<CERT_FILE>]"
+  echo
+  echo "  REGION_DIR - the directory containing the specs for a particular region, relative to this script."
+  echo "  CERT_FILE  - a file containing the PEM-encoded encryption key, i.e. the public key of the sealed secrets"
+  echo "               controller. If the CERT_FILE is not provided, then kubeseal will be run against the current"
+  echo "               cluster to try to obtain the public key of the sealed secrets controller running on it."
+  echo
+  echo "Example: ./seal.sh us-west-2 /tmp/encryption.key"
+}
+
 ####################
 #   Start script   #
 ####################
@@ -45,12 +59,18 @@ check_binaries "kustomize" "kubeseal"
 HAS_REQUIRED_TOOLS=${?}
 test ${HAS_REQUIRED_TOOLS} -ne 0 && exit 1
 
+REGION_DIR="$1"
+if test -z "${REGION_DIR}" || test ! -d "${REGION_DIR}"; then
+  usage
+  exit 1
+fi
+
 echo "-----------------------------------------------------------------------------------------------------------------"
 echo "Read the 'READ BEFORE RUNNING THE SCRIPT' section at the top of this script"
 echo "-----------------------------------------------------------------------------------------------------------------"
 
 OUT_DIR=$(mktemp -d)
-kustomize build --output "${OUT_DIR}"
+OUT_DIR="${OUT_DIR}" "${SCRIPT_DIR}"/flux-command.sh "${REGION_DIR}"
 
 YAML_FILES=$(find "${OUT_DIR}" -type f | xargs grep -rl 'kind: Secret')
 if test -z "${YAML_FILES}"; then
@@ -58,14 +78,14 @@ if test -z "${YAML_FILES}"; then
   exit 0
 fi
 
-CERT_FILE=${1}
+CERT_FILE="$2"
 
 # If the certificate file is not provided, try to get the certificate from the Bitnami sealed secret service.
 # The sealed-secrets controller must be running in the cluster, and it should be possible to access the Kubernetes
 # API server for this to work.
 if test -z "${CERT_FILE}"; then
   CERT_FILE=$(mktemp)
-  echo "Fetching the sealed secret certificate from the cluster"
+  echo "Fetching the sealed secret certificate from the current cluster context"
   kubeseal --fetch-cert --controller-namespace kube-system > "${CERT_FILE}"
 fi
 
@@ -127,11 +147,12 @@ echo
 echo '------------------------'
 echo '|  Next steps to take  |'
 echo '------------------------'
-echo "- Run the following commands:"
+echo "- Run the following commands from a region's directory:"
+echo "      cd \${REGION_DIR} # e.g. cd us-west-2"
 echo "      test -f ${CLUSTER_SECRETS_FILE} && cp ${CLUSTER_SECRETS_FILE} cluster-tools/secrets.yaml"
 echo "      test -f ${PING_SECRETS_FILE} && cp ${PING_SECRETS_FILE} ping-cloud/secrets.yaml"
 echo "      test -f ${SEALED_SECRETS_FILE} && cp ${SEALED_SECRETS_FILE} sealed-secrets.yaml"
-echo "      kustomize build > /tmp/deploy.yaml"
+echo "      ../flux-command.sh > /tmp/deploy.yaml"
 echo "      grep 'kind: Secret' /tmp/deploy.yaml # should not have any hits"
 echo "      grep 'kind: SealedSecret' /tmp/deploy.yaml # should have hits"
 echo "- Push all modified files into the cluster state repo"
