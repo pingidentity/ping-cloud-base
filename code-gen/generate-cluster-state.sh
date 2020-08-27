@@ -620,8 +620,13 @@ for ENV in ${ENVIRONMENTS}; do
 
   cp "${TEMPLATES_HOME}"/fluxcd/* "${ENV_FLUX_DIR}"
 
-  substitute_vars "${ENV_FLUX_DIR}" "${VARS}"
-  cp "${CD_ENV_VARS}" "${ENV_FLUX_DIR}/env_vars"
+  # Create a list of variables to substitute for flux CD
+  FLUX_VARS=/tmp/flux_vars
+  cp "${CD_ENV_VARS}" "${FLUX_VARS}"
+  export_variable "${FLUX_VARS}" SSH_ID_KEY_BASE64 "${SSH_ID_KEY_BASE64}"
+
+  vars="$(grep -Ev "^$|#" "${FLUX_VARS}" | cut -d= -f1 | awk '{ print "\$\{" $1 "\}" }')"
+  substitute_vars "${ENV_FLUX_DIR}" "${vars}"
 
   # Copy the shared cluster tools and Ping yaml templates into their target directories
   echo "Generating tools and ping yaml"
