@@ -153,6 +153,7 @@ ds-cfg-ldap-port: \${ldap_port}
 ds-cfg-ldaps-port: \${ldaps_port}
 ds-cfg-https-port: \${https_port}
 ds-cfg-replication-port: \${repl_port}
+createTimestamp: 0
 EOF
 
 # Modifications to be applied to config.ldif.
@@ -180,6 +181,7 @@ objectClass: ds-cfg-branch
 objectClass: ds-mirrored-object
 objectClass: top
 cn: Server Instances
+createTimestamp: 0
 
 EOF
 
@@ -308,6 +310,7 @@ ds-cfg-gateway-priority: 5
 ds-cfg-replication-port: ${local_repl_port}
 ds-cfg-replication-purge-minimum-retain-count: 1000
 ds-cfg-replication-purge-delay: 86400 s
+createTimestamp: 0
 
 EOF
 fi
@@ -378,6 +381,7 @@ objectClass: ds-cfg-replication-domain
 ds-cfg-server-id: ${local_replica_id}
 cn: ${escaped_base_dn}
 ds-cfg-base-dn: ${base_dn}
+createTimestamp: 0
 EOF
   fi
 
