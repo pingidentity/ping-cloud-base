@@ -2,6 +2,7 @@
 
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
+. "${HOOKS_DIR}/utils.offline-enable.sh"
 
 # This script is an adaptation of the definitive version of this script is in the "pingdirectory"
 # git repo in this directory:
@@ -48,60 +49,31 @@
 #   cn=Server Groups,cn=Topology,cn=config
 #   cn=all-servers,cn=Server Groups,cn=Topology,cn=config
 
+# Functions
+
+cleanUp() {
+  # Remove temporary directory.
+  rm -rf "${tmp_dir}"
+}
+
 # Globals
 
 bname="${0##*/}"
 tmp_dir=$(mktemp -td "${bname}.XXXXXXXXXX")
 
-# The configuration parameters passed to this script via a JSON configuration file.
-params="descriptor_json \
-  inst_root \
-  hostname_prefix \
-  local_tenant_domain \
-  local_region \
-  local_num_replicas \
-  local_ordinal \
-  repl_id_base \
-  repl_id_rinc \
-  repl_id_inc \
-  https_port_base \
-  ldap_port_base \
-  ldaps_port_base \
-  repl_port_base \
-  port_inc \
-  ads_crt_file \
-  admin_user \
-  admin_pass_file"
-
-# Functions
-
-# Escape base DNs so that they can appear in LDIF.
-escape_dn() {
-  local dn="$1"
-  echo "${dn}" | tr ',=' "__"
-}
-
-# Escape strings so that they can appear in grep.
-escape_regex() {
-  local str="$1"
-  echo "${str}" | sed 's/\([.^$]\)/\\\1/g'
-}
-
 ### Main Entry ###
+
+# This guarantees that cleanUp will always run, even if this script exits due to an error
+trap "cleanUp" EXIT
 
 config_json="$1"
 
 # After the following shift the base DNs will be in position parameters $1, $2 ...
 shift
 
-for param in ${params}; do
-  value=$(jq -r ".${param}" "${config_json}")
-  if [ -z "${value}" ] || [ "${value}" = 'null' ]; then
-    beluga_log "Parameter '${param}' is missing from configuration file '${config_json}'"
-    exit 1
-  fi
-  eval $param=\"\${value}\"
-done
+# Verify that required parameters were injected into script.
+verifyParams
+test $? -ne 0 && beluga_log "Parameter checked failed" && exit 1
 
 beluga_log "Begin for '${inst_root}'"
 
@@ -125,40 +97,20 @@ cert_base64=$(/bin/base64 < "${ads_crt_file}" | tr -d \\012)
 header="${tmp_dir}/header.txt"
 sed -n "/^#/,/^[^#]/p" < "${conf}" | grep "^#" > "${header}"
 
+# Validate that descriptor.json has proper JSON syntax.
+validateDescriptorJsonSyntax
+test $? -ne 0 && beluga_log "Invalid descriptor.json file" && exit 1
+
+# Get the region name(s) from JSON descriptor file, and write it to regions.txt: global variable ${regions_file}.
+# Verify that each region has a region name without spaces, hostname, and replica count.
 regions_file="${tmp_dir}/regions.txt"
-jq -r 'keys_unsorted | .[]' "${descriptor_json}" > "${regions_file}"
+verifyDescriptorJsonSchema
+test $? -ne 0 && beluga_log "Invalid content within descriptor.json file" && exit 1
 
-if grep -q ' ' "${regions_file}"; then
-  beluga_log "Regions file '${regions_file}' contains a space"
-  exit 1
-fi
-
-regions=$(cat "${regions_file}")
-for region in ${regions}; do
-  hostname_from_desc_file=$(jq -r ".[\"${region}\"].hostname" "${descriptor_json}")
-  if test "${region}" = "${local_region}" ||
-    $(echo "${hostname_from_desc_file}" | grep -qi "${local_tenant_domain}"); then
-    local_region="${region}"
-    local_hostname="${hostname_from_desc_file}"
-    local_count=$(jq -r ".[\"${local_region}\"].replicas" "${descriptor_json}")
-    break
-  fi
-done
-
-if [ -z "${local_hostname}" ]; then
-  beluga_log "Hostname for local cluster does not exist in the topology descriptor file"
-  exit 1
-fi
-
-if [ "${local_num_replicas}" -ne "${local_count}" ]; then
-  beluga_log "Mismatch in replicas for ${region} - expected: ${local_num_replicas}, actual: ${local_count}"
-  exit 1
-fi
-
-# Determine the number of local replicas
-beluga_log "local_region: ${local_region}"
-beluga_log "local_hostname: ${local_hostname}"
-beluga_log "local_count: ${local_count}"
+# Find and set the region name, hostname, and replica count of current PD server.
+# Set global variables ${local_region}, ${local_hostname}, ${local_count}.
+setLocalRegion
+test $? -ne 0 && beluga_log "Unable to detect local region for PD server" && exit 1
 
 # Extract the local server instance base entry. It will be used as a
 # template for the other instances.
@@ -233,6 +185,7 @@ EOF
 
 # Members of the replication group.
 replication_members=""
+regions=$(cat "${regions_file}")
 for region in ${regions}; do
   # Get the hostname for this region.
   hostname=$(jq -r ".[\"${region}\"].hostname" "${descriptor_json}")
@@ -518,7 +471,7 @@ beluga_log "applying dsconfig from file ${config_batch_file}:"
 cat "${config_batch_file}"
 dsconfig --no-prompt --offline --suppressMirroredDataChecks --batch-file "${config_batch_file}"
 if test $? -ne 0; then
-  beluga_log "error applying dsconfig commands in ${config_batch_file}"
+  beluga_log "error applying dsconfig commands in ${config_batch_file}"  
   exit 1
 fi
 
