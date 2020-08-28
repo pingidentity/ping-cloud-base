@@ -67,14 +67,14 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # Variable               | Purpose                                            | Default (if not present)
 # ----------------------------------------------------------------------------------------------------------------------
-# TENANT_NAME            | The name of the tenant, e.g. k8s-icecream. If      | PingPOC
+# TENANT_NAME            | The name of the tenant, e.g. k8s-icecream. If      | ci-cd
 #                        | provided, this value will be used for the cluster  |
-#                        | name and must have the correct case (e.g. PingPOC  |
-#                        | vs. pingpoc). If not provided, this variable is    |
+#                        | name and must have the correct case (e.g. ci-cd    |
+#                        | vs. CI-CD). If not provided, this variable is      |
 #                        | not used, and the cluster name defaults to the CDE |
 #                        | name.                                              |
 #                        |                                                    |
-# TENANT_DOMAIN          | The tenant's domain suffix that's common to all    | eks-poc.au1.ping-lab.cloud
+# TENANT_DOMAIN          | The tenant's domain suffix that's common to all    | ci-cd.ping-oasis.com
 #                        | CDEs e.g. k8s-icecream.com. The tenant domain in   |
 #                        | each CDE is assumed to have the CDE name as the    |
 #                        | prefix, followed by a hyphen. For example, for the |
@@ -82,7 +82,7 @@
 #                        | assumed to be stage-k8s-icecream.com and a hosted  |
 #                        | zone assumed to exist on Route53 for that domain.  |
 #                        |                                                    |
-# REGION                 | The region where the tenant environment is         | us-east-2
+# REGION                 | The region where the tenant environment is         | us-west-2
 #                        | deployed. For PCPT, this is a required parameter   |
 #                        | to Container Insights, an AWS-specific logging     |
 #                        | and monitoring solution.                           |
@@ -348,7 +348,7 @@ echo ---
 CD_COMMON_VARS=$(mktemp)
 echo "Writing CD common variables to file '${CD_COMMON_VARS}'"
 
-export_variable "${CD_COMMON_VARS}" TENANT_NAME "${TENANT_NAME:-PingPOC}"
+export_variable "${CD_COMMON_VARS}" TENANT_NAME "${TENANT_NAME:-ci-cd}"
 export_variable_ln "${CD_COMMON_VARS}" SIZE "${SIZE:-small}"
 
 export_variable "${CD_COMMON_VARS}" IS_MULTI_CLUSTER "${IS_MULTI_CLUSTER}"
@@ -358,7 +358,7 @@ export_variable "${CD_COMMON_VARS}" REGION "${REGION:-us-east-2}"
 export_variable_ln "${CD_COMMON_VARS}" PRIMARY_REGION "${PRIMARY_REGION:-${REGION}}"
 
 TENANT_DOMAIN_NO_DOT_SUFFIX="${TENANT_DOMAIN%.}"
-export_variable "${CD_COMMON_VARS}" TENANT_DOMAIN "${TENANT_DOMAIN_NO_DOT_SUFFIX:-eks-poc.au1.ping-lab.cloud}"
+export_variable "${CD_COMMON_VARS}" TENANT_DOMAIN "${TENANT_DOMAIN_NO_DOT_SUFFIX:-ci-cd.ping-oasis.com}"
 PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX="${PRIMARY_TENANT_DOMAIN%.}"
 export_variable_ln "${CD_COMMON_VARS}" PRIMARY_TENANT_DOMAIN "${PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX:-${TENANT_DOMAIN}}"
 
@@ -622,7 +622,6 @@ for ENV in ${ENVIRONMENTS}; do
 
   # Create a list of variables to substitute for flux CD
   vars="$(grep -Ev "^$|#" "${CD_ENV_VARS}" | (cut -d= -f1; echo SSH_ID_KEY_BASE64) | awk '{ print "${" $1 "}" }')"
-  echo "Environment variables before fluxcd substitution"
   substitute_vars "${ENV_FLUX_DIR}" "${vars}"
 
   # Copy the shared cluster tools and Ping yaml templates into their target directories

@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-# This script copies the kustomization templates into a temporary directory, performs substitution into them usin
+# This script copies the kustomization templates into a temporary directory, performs substitution into them using
 # environment variables defined in an env_vars file and builds the uber deploy.yaml file. It is run by flux on
 # every poll interval.
 
