@@ -384,7 +384,7 @@ test ! -z "${ROUTE53_IRSA_ARN}" && export ROUTE53_IRSA_ARN_KEY_AND_VALUE="eks.am
 
 PING_CLOUD_BASE_COMMIT_SHA=$(git rev-parse HEAD)
 CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-test "${CURRENT_GIT_BRANCH}" = 'HEAD' && CURRENT_GIT_BRANCH=$(git describe --tags)
+test "${CURRENT_GIT_BRANCH}" = 'HEAD' && CURRENT_GIT_BRANCH=$(git describe --tags --always)
 
 export_variable "${CD_COMMON_VARS}" K8S_GIT_URL "${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
 export_variable_ln "${CD_COMMON_VARS}" K8S_GIT_BRANCH "${K8S_GIT_BRANCH:-${CURRENT_GIT_BRANCH}}"
@@ -622,7 +622,9 @@ for ENV in ${ENVIRONMENTS}; do
 
   # Create a list of variables to substitute for flux CD
   vars="$(grep -Ev "^$|#" "${CD_ENV_VARS}" | (cut -d= -f1; echo SSH_ID_KEY_BASE64) | awk '{ print "\$\{" $1 "\}" }')"
+  set -x
   substitute_vars "${ENV_FLUX_DIR}" "${vars}"
+  set +x
 
   # Copy the shared cluster tools and Ping yaml templates into their target directories
   echo "Generating tools and ping yaml"

@@ -15,9 +15,9 @@ SKIP_TESTS="pingaccess/01-agent-config-test.sh \
 if test -z "${ENV_VARS_FILE}"; then
   echo "Using environment variables based on CI variables"
 
-  export CLUSTER_NAME="${EKS_CLUSTER_NAME}"
+  export CLUSTER_NAME="${EKS_CLUSTER_NAME:-ci-cd}"
 
-  export REGION="${AWS_DEFAULT_REGION}"
+  export REGION="${AWS_DEFAULT_REGION:-us-west-2}"
   export TENANT_DOMAIN='ci-cd.ping-oasis.com'
 
   export PRIMARY_REGION="${REGION}"
@@ -27,7 +27,7 @@ if test -z "${ENV_VARS_FILE}"; then
   export NAMESPACE=ping-cloud-${CI_COMMIT_REF_SLUG}
 
   export CONFIG_PARENT_DIR=aws
-  export CONFIG_REPO_BRANCH=${CI_COMMIT_REF_NAME}
+  export CONFIG_REPO_BRANCH=${CI_COMMIT_REF_NAME:-master}
 
   export ARTIFACT_REPO_URL=s3://${CLUSTER_NAME}-artifacts-bucket
   export PING_ARTIFACT_REPO_URL=https://ping-artifacts.s3-us-west-2.amazonaws.com
