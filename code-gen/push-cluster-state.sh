@@ -85,7 +85,7 @@ if test -z "${REGION_NAME}" || test -z "${IS_PRIMARY}"; then
   exit 1
 fi
 
-ALL_ENVIRONMENTS='dev'
+ALL_ENVIRONMENTS='dev test stage prod'
 
 ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
 GENERATED_CODE_DIR="${GENERATED_CODE_DIR:-/tmp/sandbox}"

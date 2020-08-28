@@ -31,7 +31,7 @@ substitute_vars() {
   log "flux-command: substituting variables in '${env_file}' in directory ${subst_dir}"
 
   # Create a list of variables to substitute
-  vars="$(grep -Ev "^$|#" "${env_file}" | cut -d= -f1 | awk '{ print "\$\{" $1 "\}" }')"
+  vars="$(grep -Ev "^$|#" "${env_file}" | cut -d= -f1 | awk '{ print "${" $1 "}" }')"
   log "flux-command: substituting variables '${vars}'"
 
   # Export the environment variables
