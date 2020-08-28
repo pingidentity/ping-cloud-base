@@ -118,7 +118,7 @@ fi
 # Build the uber deploy yaml
 if test -z "${OUT_DIR}" || test ! -d "${OUT_DIR}"; then
   log "flux-command: generating uber yaml file from '${BUILD_DIR}' to stdout"
-  kustomize build --load_restrictor LoadRestrictionsNone "${BUILD_DIR}"
+  kustomize build --load_restrictor none "${BUILD_DIR}"
 else
   log "flux-command: generating yaml files from '${BUILD_DIR}' to '${OUT_DIR}'"
   kustomize build --load_restrictor none "${BUILD_DIR}" --output "${OUT_DIR}"
