@@ -622,9 +622,9 @@ for ENV in ${ENVIRONMENTS}; do
 
   # Create a list of variables to substitute for flux CD
   vars="$(grep -Ev "^$|#" "${CD_ENV_VARS}" | (cut -d= -f1; echo SSH_ID_KEY_BASE64) | awk '{ print "\$\{" $1 "\}" }')"
-  set -x
+  echo "Environment variables before fluxcd substitution"
+  env
   substitute_vars "${ENV_FLUX_DIR}" "${vars}"
-  set +x
 
   # Copy the shared cluster tools and Ping yaml templates into their target directories
   echo "Generating tools and ping yaml"
