@@ -87,7 +87,7 @@
 #                           | cluster communication and the number of replicas   | be created and used.
 #                           | in that region. A sample file is provided in the   |
 #                           | pingdirectory profiles under profiles/aws/         |
-#                           | pingdirectory/topoology/descriptor.json.sample.    |
+#                           | pingdirectory/topology/descriptor.json.sample.    |
 #                           | This file will be mounted into the Ping containers |
 #                           | at /opt/staging/topology/descriptor.json           |
 #                           |                                                    |

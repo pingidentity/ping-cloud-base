@@ -1,0 +1,10 @@
+{
+	"primary": {
+		"hostname": "primary.domain.com",
+		"replicas": 1
+	},
+	"primary": {
+		"hostname": "secondary.domain.com",
+		"replicas": 1
+	}
+}
