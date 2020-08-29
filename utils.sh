@@ -279,7 +279,7 @@ build_kustomizations_in_dir() {
     KUSTOMIZATION_DIR=$(dirname ${KUSTOMIZATION_FILE})
 
     log "Processing kustomization.yaml in ${KUSTOMIZATION_DIR}"
-    kustomize build "${KUSTOMIZATION_DIR}" 1> /dev/null
+    kustomize build --load_restrictor none "${KUSTOMIZATION_DIR}" 1> /dev/null
     BUILD_RESULT=${?}
     log "Build result for directory ${KUSTOMIZATION_DIR}: ${BUILD_RESULT}"
 
@@ -349,7 +349,7 @@ build_dev_deploy_file() {
   cp -pr "${dev_cluster_state_dir}" "${build_dir}"
 
   substitute_vars "${build_dir}"
-  kustomize build "${build_dir}/${cluster_type}" > "${deploy_file}"
+  kustomize build --load_restrictor none "${build_dir}/${cluster_type}" > "${deploy_file}"
   rm -rf "${build_dir}"
 
   test ! -z "${NAMESPACE}" && test "${NAMESPACE}" != 'ping-cloud' &&
