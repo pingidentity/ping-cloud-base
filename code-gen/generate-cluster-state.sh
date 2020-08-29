@@ -87,6 +87,13 @@
 #                        | to Container Insights, an AWS-specific logging     |
 #                        | and monitoring solution.                           |
 #                        |                                                    |
+# REGION_NICK_NAME       | An optional nick name for the region. For example, | Same as REGION.
+#                        | this variable may be set to a unique name in       |
+#                        | multi-cluster deployments which live in the same   |
+#                        | region. The nick name will be used as the name of  |
+#                        | the region-specific code directory in the cluster  |
+#                        | state repo.                                        |
+#                        |                                                    |
 # IS_MULTI_CLUSTER       | Flag indicating whether or not this is a           | false
 #                        | multi-cluster deployment.                          |
 #                        |                                                    |
@@ -260,6 +267,7 @@ echo "Initial SIZE: ${SIZE}"
 echo "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 echo "Initial CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
 echo "Initial REGION: ${REGION}"
+echo "Initial REGION_NICK_NAME: ${REGION_NICK_NAME}"
 echo "Initial PRIMARY_REGION: ${PRIMARY_REGION}"
 echo "Initial TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Initial PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
@@ -295,6 +303,7 @@ export_variable "${CD_COMMON_VARS}" IS_MULTI_CLUSTER "${IS_MULTI_CLUSTER}"
 export_variable_ln "${CD_COMMON_VARS}" CLUSTER_BUCKET_NAME "${CLUSTER_BUCKET_NAME}"
 
 export_variable "${CD_COMMON_VARS}" REGION "${REGION:-us-east-2}"
+export_variable "${CD_COMMON_VARS}" REGION_NICK_NAME "${REGION_NICK_NAME:-${REGION}}"
 export_variable_ln "${CD_COMMON_VARS}" PRIMARY_REGION "${PRIMARY_REGION:-${REGION}}"
 
 TENANT_DOMAIN_NO_DOT_SUFFIX="${TENANT_DOMAIN%.}"
@@ -333,6 +342,7 @@ echo "Using SIZE: ${SIZE}"
 echo "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 echo "Using CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
 echo "Using REGION: ${REGION}"
+echo "Using REGION_NICK_NAME: ${REGION_NICK_NAME}"
 echo "Using PRIMARY_REGION: ${PRIMARY_REGION}"
 echo "Using TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Using PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
@@ -363,8 +373,8 @@ BASE_TOOLS_REL_DIR="base/cluster-tools"
 BASE_PING_CLOUD_REL_DIR="base/ping-cloud"
 
 REGION_DIR="${TEMPLATES_HOME}/region"
-REGION_TOOLS_REL_DIR="${REGION}/cluster-tools"
-REGION_PING_CLOUD_REL_DIR="${REGION}/ping-cloud"
+REGION_TOOLS_REL_DIR="${REGION_NICK_NAME}/cluster-tools"
+REGION_PING_CLOUD_REL_DIR="${REGION_NICK_NAME}/ping-cloud"
 
 # Generate an SSH key pair for flux CD.
 if test -z "${SSH_ID_PUB_FILE}" && test -z "${SSH_ID_KEY_FILE}"; then
@@ -417,7 +427,7 @@ for ENV in ${ENVIRONMENTS}; do
   test "${ENV}" = 'prod' &&
     export_variable "${CD_ENV_VARS}" CLUSTER_STATE_REPO_BRANCH 'master' ||
     export_variable "${CD_ENV_VARS}" CLUSTER_STATE_REPO_BRANCH "${ENV}"
-  export_variable_ln "${CD_ENV_VARS}" CLUSTER_STATE_REPO_PATH "${REGION}"
+  export_variable_ln "${CD_ENV_VARS}" CLUSTER_STATE_REPO_PATH "${REGION_NICK_NAME}"
 
   export_variable "${CD_ENV_VARS}" ENVIRONMENT_TYPE "${ENV}"
 
@@ -513,14 +523,14 @@ for ENV in ${ENVIRONMENTS}; do
   mkdir -p "${ENV_DIR}"
 
   cp -r "${BASE_DIR}" "${ENV_DIR}"
-  cp -r "${REGION_DIR}/." "${ENV_DIR}/${REGION}"
-  cp "${CD_ENV_VARS}" "${ENV_DIR}/${REGION}/env_vars"
+  cp -r "${REGION_DIR}/." "${ENV_DIR}/${REGION_NICK_NAME}"
+  cp "${CD_ENV_VARS}" "${ENV_DIR}/${REGION_NICK_NAME}/env_vars"
 
   substitute_vars "${ENV_DIR}" "${VARS}"
 
   # Regional enablement - add admins, backups, etc. to primary.
   if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
-    PRIMARY_PING_KUST_FILE="${ENV_DIR}/${REGION}/ping-cloud/kustomization.yaml"
+    PRIMARY_PING_KUST_FILE="${ENV_DIR}/${REGION_PING_CLOUD_REL_DIR}/kustomization.yaml"
     sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/' "${PRIMARY_PING_KUST_FILE}"
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
   fi

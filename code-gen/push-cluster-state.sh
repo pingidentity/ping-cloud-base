@@ -7,10 +7,7 @@
 # environment variables.
 #
 #   GENERATED_CODE_DIR -> The TARGET_DIR of generate-cluster-state.sh. Defaults to '/tmp/sandbox', if unset.
-#   REGION_NAME -> The nick name of the region for which the generated code is applicable. This parameter is required.
-#       Note that it does not need to match the actual region name, e.g. "us-west-2". Rather, it's a nick name for the
-#       region's code directory (e.g. us2) in the cluster state repo. The region name must be unique for every region.
-#   IS_PRIMARY -> A flag indicating whether or not this is the primary region.
+#   IS_PRIMARY -> A flag indicating whether or not this is the primary region. Defaults to false, if unset.
 #   ENVIRONMENTS -> A space-separated list of environments. Defaults to 'dev test stage prod', if unset. If provided,
 #       it must contain all or a subset of the environments currently created by the generate-cluster-state.sh script,
 #       i.e. dev, test, stage, prod.
@@ -31,22 +28,20 @@ BASE_DIR='base'
 #   ${1} -> The directory where cluster state code was generated, i.e. the TARGET_DIR to generate-cluster-state.sh.
 #   ${2} -> The environment.
 #   ${3} -> The output empty directory into which to organize the code to push for the environment and region.
-#   ${4} -> The nick name for a region, e.g. us2, eu1, gso1, etc.
-#   ${5} -> Flag indicating whether or not the provided region is the primary region.
+#   ${4} -> Flag indicating whether or not the provided region is the primary region.
 ########################################################################################################################
 organize_code_for_environment() {
   local generated_code_dir="${1}"
   local env="${2}"
   local out_dir="${3}"
-  local region_nick_name="${4}"
-  local is_primary="${5}"
+  local is_primary="${4}"
 
   local dst_k8s_dir="${out_dir}/${K8S_CONFIGS_DIR}"
   local src_env_dir="${generated_code_dir}/${CLUSTER_STATE_DIR}/${K8S_CONFIGS_DIR}/${env}"
   local region="$(ls "${src_env_dir}" | grep -v "${BASE_DIR}")"
 
   "${is_primary}" && type='primary' || type='secondary'
-  echo "Organizing code for '${env}' into '${out_dir}' for ${type} region '${region}' ('${region_nick_name}')"
+  echo "Organizing code for environment '${env}' into '${out_dir}' for ${type} region '${region}'"
 
   if "${is_primary}"; then
     # For the primary region, we need to copy everything (i.e. both the k8s-configs and the profiles)
@@ -61,12 +56,6 @@ organize_code_for_environment() {
 
   # Copy the environment-specific k8s-configs.
   cp -pr "${src_env_dir}"/. "${dst_k8s_dir}"
-
-  # Rename to the region nick name if it is different than the region name in the cluster state repo.
-  if test "${region}" != "${region_nick_name}"; then
-    echo "Renaming region directory from '${region}' to '${region_nick_name}' under '${dst_k8s_dir}'"
-    mv "${dst_k8s_dir}/${region}" "${dst_k8s_dir}/${region_nick_name}"
-  fi
 }
 
 ########################################################################################################################
@@ -92,15 +81,11 @@ push_with_retries() {
 }
 
 ### Script start ###
-if test -z "${REGION_NAME}" || test -z "${IS_PRIMARY}"; then
-  echo "REGION_NAME and IS_PRIMARY are required variables"
-  exit 1
-fi
-
 ALL_ENVIRONMENTS='dev test stage prod'
-
 ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
+
 GENERATED_CODE_DIR="${GENERATED_CODE_DIR:-/tmp/sandbox}"
+IS_PRIMARY="${IS_PRIMARY:-false}"
 
 PUSH_RETRY_COUNT="${PUSH_RETRY_COUNT:-30}"
 PCB_COMMIT_SHA=$(cat "${GENERATED_CODE_DIR}"/pcb-commit-sha.txt)
@@ -109,7 +94,7 @@ for ENV in ${ENVIRONMENTS}; do
   echo "Processing ${ENV}"
 
   ENV_CODE_DIR=$(mktemp -d)
-  organize_code_for_environment "${GENERATED_CODE_DIR}" "${ENV}" "${ENV_CODE_DIR}" "${REGION_NAME}" "${IS_PRIMARY}"
+  organize_code_for_environment "${GENERATED_CODE_DIR}" "${ENV}" "${ENV_CODE_DIR}" "${IS_PRIMARY}"
 
   if test "${ENV}" != 'prod'; then
     GIT_BRANCH="${ENV}"
@@ -161,12 +146,17 @@ for ENV in ${ENVIRONMENTS}; do
     cp -pr "${src_dir}" "${K8S_CONFIGS_DIR}/"
   fi
 
-  src_dir="${ENV_CODE_DIR}/${K8S_CONFIGS_DIR}/${REGION_NAME}"
+  region="$(ls "${ENV_CODE_DIR}/${K8S_CONFIGS_DIR}" | grep -v "${BASE_DIR}")"
+  src_dir="${ENV_CODE_DIR}/${K8S_CONFIGS_DIR}/${region}"
+
   echo "Copying ${src_dir} to ${K8S_CONFIGS_DIR}"
   cp -pr "${src_dir}" "${K8S_CONFIGS_DIR}/"
 
+  commit_msg="Initial commit of code for environment '${ENV}' in region '${region}' - ping-cloud-base@${PCB_COMMIT_SHA}"
+  echo "${commit_msg}"
+
   git add .
-  git commit -m "Initial commit of code for ${REGION_NAME} - ping-cloud-base@${PCB_COMMIT_SHA}"
+  git commit -m "${commit_msg}"
   push_with_retries "${PUSH_RETRY_COUNT}" "${GIT_BRANCH}"
 
   echo
