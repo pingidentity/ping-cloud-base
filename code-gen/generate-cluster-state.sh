@@ -255,6 +255,8 @@ VARS="${VARS:-${DEFAULT_VARS}}"
 add_derived_variables() {
   local env_file="$1"
   cat >> "${env_file}" <<EOF
+SERVER_PROFILE_URL=${CLUSTER_STATE_REPO_URL}
+SERVER_PROFILE_BRANCH=${CLUSTER_STATE_REPO_BRANCH}
 
 # Ping admin configuration required for admin access and clustering
 PD_PRIMARY_PUBLIC_HOSTNAME=pingdirectory-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${PRIMARY_TENANT_DOMAIN}
@@ -594,7 +596,7 @@ for ENV in ${ENVIRONMENTS}; do
   fi
 
   CLUSTER_NAME_LC="$(echo "${CLUSTER_NAME}" | tr '[:upper:]' '[:lower:]')"
-  export_variable "${CD_ENV_VARS}" CLUSTER_NAME_LC "${CLUSTER_NAME_LC}"
+  export_variable_ln "${CD_ENV_VARS}" CLUSTER_NAME_LC "${CLUSTER_NAME_LC}"
 
   add_derived_variables "${CD_ENV_VARS}"
 
