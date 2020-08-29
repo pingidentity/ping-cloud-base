@@ -216,15 +216,15 @@ SERVER_PROFILE_URL=\${CLUSTER_STATE_REPO_URL}
 SERVER_PROFILE_BRANCH=\${CLUSTER_STATE_REPO_BRANCH}
 
 # Ping admin configuration required for admin access and clustering
-PD_PRIMARY_PUBLIC_HOSTNAME=pingdirectory-admin.\${DNS_ZONE}
-PF_ADMIN_PUBLIC_HOSTNAME=pingfederate-admin.\${DNS_ZONE}
-PA_ADMIN_PUBLIC_HOSTNAME=pingaccess-admin.\${DNS_ZONE}
-PA_WAS_ADMIN_PUBLIC_HOSTNAME=pingaccess-was-admin.\${DNS_ZONE}
+PD_PRIMARY_PUBLIC_HOSTNAME=pingdirectory-admin.\${PRIMARY_DNS_ZONE}
+PF_ADMIN_PUBLIC_HOSTNAME=pingfederate-admin.\${PRIMARY_DNS_ZONE}
+PA_ADMIN_PUBLIC_HOSTNAME=pingaccess-admin.\${PRIMARY_DNS_ZONE}
+PA_WAS_ADMIN_PUBLIC_HOSTNAME=pingaccess-was-admin.\${PRIMARY_DNS_ZONE}
 
-PD_CLUSTER_PUBLIC_HOSTNAME=pingdirectory-cluster.\${DNS_ZONE}
-PF_CLUSTER_PUBLIC_HOSTNAME=pingfederate-cluster.\${DNS_ZONE}
-PA_CLUSTER_PUBLIC_HOSTNAME=pingaccess-cluster.\${DNS_ZONE}
-PA_WAS_CLUSTER_PUBLIC_HOSTNAME=pingaccess-was-cluster.\${DNS_ZONE}
+PD_CLUSTER_PUBLIC_HOSTNAME=pingdirectory-cluster.\${PRIMARY_DNS_ZONE}
+PF_CLUSTER_PUBLIC_HOSTNAME=pingfederate-cluster.\${PRIMARY_DNS_ZONE}
+PA_CLUSTER_PUBLIC_HOSTNAME=pingaccess-cluster.\${PRIMARY_DNS_ZONE}
+PA_WAS_CLUSTER_PUBLIC_HOSTNAME=pingaccess-was-cluster.\${PRIMARY_DNS_ZONE}
 
 # Ping engine hostname variables
 PD_PUBLIC_HOSTNAME=pingdirectory-admin.\${DNS_ZONE}
@@ -479,10 +479,12 @@ for ENV in ${ENVIRONMENTS}; do
   # FIXME: PA/PA-WAS heap settings should be made variables
 
   if "${IS_BELUGA_ENV}"; then
-    export_variable_ln "${CD_ENV_VARS}" DNS_ZONE "${TENANT_DOMAIN}"
+    export_variable "${CD_ENV_VARS}" DNS_ZONE "\${TENANT_DOMAIN}"
+    export_variable_ln "${CD_ENV_VARS}" PRIMARY_DNS_ZONE "\${PRIMARY_TENANT_DOMAIN}"
     export_variable "${CD_ENV_VARS}" CLUSTER_NAME "${TENANT_NAME}"
   else
-    export_variable_ln "${CD_ENV_VARS}" DNS_ZONE "${ENV}-${TENANT_DOMAIN}"
+    export_variable "${CD_ENV_VARS}" DNS_ZONE "\${ENV}-\${TENANT_DOMAIN}"
+    export_variable_ln "${CD_ENV_VARS}" PRIMARY_DNS_ZONE "\${ENV}-\${PRIMARY_TENANT_DOMAIN}"
     export_variable "${CD_ENV_VARS}" CLUSTER_NAME "${ENV}"
   fi
 
@@ -501,6 +503,7 @@ for ENV in ${ENVIRONMENTS}; do
   echo "CLUSTER_NAME: ${CLUSTER_NAME}"
   echo "PING_CLOUD_NAMESPACE: ${PING_CLOUD_NAMESPACE}"
   echo "DNS_ZONE: ${DNS_ZONE}"
+  echo "PRIMARY_DNS_ZONE: ${PRIMARY_DNS_ZONE}"
   echo "LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
   echo "BACKUP_URL: ${BACKUP_URL}"
 
