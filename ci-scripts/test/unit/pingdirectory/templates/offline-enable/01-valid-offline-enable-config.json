@@ -1,0 +1,20 @@
+{
+  "descriptor_json"     : "/opt/staging/topology/descriptor.json",
+  "inst_root"           : "/opt/out/instance",
+  "hostname_prefix"     : "pingdirectory",
+  "local_tenant_domain" : "local.domain.com",
+  "local_region"        : "us-west-2",
+  "local_num_replicas"  : 1,
+  "local_ordinal"       : 0,
+  "repl_id_base"        : 1000,
+  "repl_id_rinc"        : 1000,
+  "repl_id_inc"         : 100,
+  "https_port_base"     : 1443,
+  "ldap_port_base"      : 1389,
+  "ldaps_port_base"     : 1636,
+  "repl_port_base"      : 8989,
+  "port_inc"            : 0,
+  "ads_crt_file"        : "/usr/local/secrets/ads.crt",
+  "admin_user"          : "admin",
+  "admin_pass_file"     : "/usr/local/secrets/admin-user-password"
+}

@@ -1,5 +1,63 @@
 # Changelog
 
+### 1.5.0
+
+- Added Pingaccess-WAS deployment
+- Enabled SIEM for PingDirectory
+- Created Discovery Service for variable discovery across regions
+- Setup use of SKBN to replace AWS specific implementation
+
+_Changes:_
+
+- [X] PDO-366 - Create K8s Deployment for internal PingAccess
+- [X] PDO-458 - Fixed PF pods not getting configuration from admin when spun up
+- [X] PDO-748 - Protect PF Admin UI
+- [X] PDO-749 - Configure P14C to generate tokens that PA WAS can consume
+- [X] PDO-753 - Set up PA Internal to allow P14C to act as Token Provider for PingCloud Web/API Security
+- [X] PDO-754 - Store P14C Token Provider Creds in PingCloud within the CDE
+- [X] PDO-757 - Protect PA Customer Admin UI
+- [X] PDO-812 - Protect Prometheus Endpoint
+- [X] PDO-839 - Discovery Service (Environment Variables for Backup & Log AWS S3 Buckets)
+- [X] PDO-857 - Edit PD Restore script to use pre/post external initialization of replication in place of scale down/up used currently
+- [X] PDO-870 - Creating Kibana dashboards
+- [X] PDO-944 - PD - Use skbn to restore and backup data/log from k8s to s3 bucket
+- [X] PDO-955 - Fixed dashboards in Grafana broken with EKS upgrade
+- [X] PDO-959 - Update ping-cloud-base to support EKS v1.16
+- [X] PDO-961 - PF- Use skbn to download artifact/archive and upload csd logs
+- [X] PDO-962 - Migration to logstash (instead fluentd)
+- [X] PDO-963 - Porting fluentd configs to logstash format
+- [X] PDO-965 - Setting up PD log collection
+- [X] PDO-966 - Setting up logstash filters
+- [X] PDO-968 - Setting up logstash outputs (including client-side SIEM env)
+- [X] PDO-969 - Creating enrichment service
+- [X] PDO-973 - Creating Bootstrap engine
+- [X] PDO-975 - Protect Grafana Endpoint
+- [X] PDO-976 - Expose PD REST API
+- [X] PDO-977 - Expose PD SCIM API
+- [X] PDO-987 - PA - Use skbn to download and restore backup
+- [X] PDO-1001 - Default PF Admins to Audit Only
+- [X] PDO-1002 - Configure PA WAS hardware and scaling requirements for multi-region
+- [X] PDO-1014 - Host skbn executables on AWS object storage service (S3 bucket)
+- [X] PDO-1022 - PF - Recover to a specified recovery point
+- [X] PDO-1037 - Fixed default PF thread count incorrect
+- [X] PDO-1045 - Elastic stack improvements
+- [X] PDO-1086 - Fixed PingFederate tried to start before a temporary instance had fully shut down.
+- [X] PDO-1087 - Synchronize supported features for PA and PF backup/restore
+- [X] PDO-1137 - Fixed Sealed-Secrets-Controller fails to generate xls cert resulting in inability to seal/unseal secrets stored for our deployment in New Launch environments
+- [X] PDO-1188 - Fixed logging in 10-configuration-overrides to provide better diagnostic information.
+- [X] PDO-1193 - 1.5: Update PD Docker Images to specified docker image and product version
+- [X] PDO-1194 - 1.5: Update PF Docker Images to specified docker image and product version
+- [X] PDO-1195 - 1.5: Update PA Docker Images to specified docker image and product version
+- [X] PDO-1197 - 1.5: PA upgrade with existing data is busted due to Docker image update
+- [X] PDO-1213 - Update critical dependencies for the v1.5 release
+- [X] PDO-1223 - Logging improvements to deployment automation hook scripts
+- [X] PDO-1251 - external-dns application log level
+- [X] PDO-1293 - Fixed PF Pods not responding to requests
+- [X] PDO-1303 - Fixed PF_LOG_LEVEL should be set to INFO by default and be overridable
+- [X] PDO-1318 - Fixed probe/liveness timeouts
+- [X] PDO-1320 - Fixed PF/PA audit log rotation
+- [X] PDO-1322 - Fixed PF pods become unresponsive during endurance
+
 ### 1.4.3
 
 - Resolved an issue prevent access to server profiles
