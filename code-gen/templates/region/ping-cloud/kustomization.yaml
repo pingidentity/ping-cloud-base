@@ -29,6 +29,34 @@ configMapGenerator:
   envs:
   - pingaccess-was/env_vars
 
+# Pingdirectory
+- name: pingdirectory-environment-variables
+  behavior: merge
+  envs:
+  - ../env_vars
+  - pingdirectory/env_vars
+
+# Pingfederate
+- name: pingfederate-environment-variables
+  behavior: merge
+  envs:
+  - ../env_vars
+  - pingfederate/env_vars
+
+# PingAccess
+- name: pingaccess-environment-variables
+  behavior: merge
+  envs:
+  - ../env_vars
+  - pingaccess/env_vars
+
+# PingAccess WAS
+- name: pingaccess-was-environment-variables
+  behavior: merge
+  envs:
+  - ../env_vars
+  - pingaccess-was/env_vars
+
 patchesStrategicMerge:
 
 ### All secrets used by supporting tools ###
