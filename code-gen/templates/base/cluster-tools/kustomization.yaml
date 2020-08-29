@@ -19,14 +19,14 @@ patchesStrategicMerge:
   spec:
     acme:
       server: ${LETS_ENCRYPT_SERVER}
-      email: ${CLUSTER_NAME_LC}@${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+      email: ${CLUSTER_NAME_LC}@${DNS_ZONE}
       solvers:
       - dns01:
           route53:
             region: ${REGION}
         selector:
           dnsZones:
-          - ${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+          - ${DNS_ZONE}
 
 ### Lets encrypt ACME certificate for all endpoints ###
 - |-
@@ -37,8 +37,8 @@ patchesStrategicMerge:
     namespace: cert-manager
   spec:
     dnsNames:
-    - '*.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}'
-    commonName: ${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+    - '*.${DNS_ZONE}'
+    commonName: ${DNS_ZONE}
 
 ### External DNS service account ###
 - |-
@@ -182,4 +182,4 @@ patchesJson6902:
     - op: add
       path: /spec/template/spec/containers/0/args/-
       value:
-        --domain-filter=${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}.
+        --domain-filter=${DNS_ZONE}.

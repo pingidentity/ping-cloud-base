@@ -7,13 +7,15 @@
 # environment variables.
 #
 #   GENERATED_CODE_DIR -> The TARGET_DIR of generate-cluster-state.sh. Defaults to '/tmp/sandbox', if unset.
-#   REGION_NAME -> The name of the region for which the generated code is applicable. This parameter is required.
+#   REGION_NAME -> The nick name of the region for which the generated code is applicable. This parameter is required.
+#       Note that it does not need to match the actual region name, e.g. "us-west-2". Rather, it's a nick name for the
+#       region's code directory (e.g. us2) in the cluster state repo. The region name must be unique for every region.
 #   IS_PRIMARY -> A flag indicating whether or not this is the primary region.
 #   ENVIRONMENTS -> A space-separated list of environments. Defaults to 'dev test stage prod', if unset. If provided,
-#   it must contain all or a subset of the environments currently created by the generate-cluster-state.sh script, i.e.
-#   dev, test, stage, prod.
+#       it must contain all or a subset of the environments currently created by the generate-cluster-state.sh script,
+#       i.e. dev, test, stage, prod.
 #   PUSH_RETRY_COUNT -> The number of times to try pushing to the cluster state repo with a 2s sleep between each
-#   attempt to avoid IAM permission to repo sync issue.
+#       attempt to avoid IAM permission to repo sync issue.
 
 # Global variables
 K8S_CONFIGS_DIR='k8s-configs'
@@ -29,18 +31,22 @@ BASE_DIR='base'
 #   ${1} -> The directory where cluster state code was generated, i.e. the TARGET_DIR to generate-cluster-state.sh.
 #   ${2} -> The environment.
 #   ${3} -> The output empty directory into which to organize the code to push for the environment and region.
-#   ${4} -> The name for a region, e.g. primary, secondary-0, secondary-1, etc.
+#   ${4} -> The nick name for a region, e.g. us2, eu1, gso1, etc.
 #   ${5} -> Flag indicating whether or not the provided region is the primary region.
 ########################################################################################################################
 organize_code_for_environment() {
   local generated_code_dir="${1}"
   local env="${2}"
   local out_dir="${3}"
-  local region_name="${4}"
+  local region_nick_name="${4}"
   local is_primary="${5}"
 
-  echo "Organizing code for environment ${env} in directory ${out_dir} for region ${region_name} (primary: ${is_primary})"
-  local k8s_dir="${out_dir}/${K8S_CONFIGS_DIR}"
+  local dst_k8s_dir="${out_dir}/${K8S_CONFIGS_DIR}"
+  local src_env_dir="${generated_code_dir}/${CLUSTER_STATE_DIR}/${K8S_CONFIGS_DIR}/${env}"
+  local region="$(ls "${src_env_dir}" | grep -v "${BASE_DIR}")"
+
+  "${is_primary}" && type='primary' || type='secondary'
+  echo "Organizing code for '${env}' into '${out_dir}' for ${type} region '${region}' ('${region_nick_name}')"
 
   if "${is_primary}"; then
     # For the primary region, we need to copy everything (i.e. both the k8s-configs and the profiles)
@@ -50,11 +56,17 @@ organize_code_for_environment() {
     cp -pr "${generated_code_dir}/${CLUSTER_STATE_DIR}"/. "${out_dir}"
 
     # Remove everything under the k8s-configs because code is initially generated for every CDE under there.
-    rm -rf "${k8s_dir:?}"/*
+    rm -rf "${dst_k8s_dir:?}"/*
   fi
 
   # Copy the environment-specific k8s-configs.
-  cp -pr "${generated_code_dir}/${CLUSTER_STATE_DIR}/${K8S_CONFIGS_DIR}/${env}"/. "${k8s_dir}"
+  cp -pr "${src_env_dir}"/. "${dst_k8s_dir}"
+
+  # Rename to the region nick name if it is different than the region name in the cluster state repo.
+  if test "${region}" != "${region_nick_name}"; then
+    echo "Renaming region directory from '${region}' to '${region_nick_name}' under '${dst_k8s_dir}'"
+    mv "${dst_k8s_dir}/${region}" "${dst_k8s_dir}/${region_nick_name}"
+  fi
 }
 
 ########################################################################################################################

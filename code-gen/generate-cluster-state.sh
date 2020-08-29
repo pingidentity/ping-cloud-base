@@ -78,7 +78,7 @@
 #                        | CDEs e.g. k8s-icecream.com. The tenant domain in   |
 #                        | each CDE is assumed to have the CDE name as the    |
 #                        | prefix, followed by a hyphen. For example, for the |
-#                        | above prefix, the tenant domain for stage is       |
+#                        | above suffix, the tenant domain for stage is       |
 #                        | assumed to be stage-k8s-icecream.com and a hosted  |
 #                        | zone assumed to exist on Route53 for that domain.  |
 #                        |                                                    |
@@ -117,65 +117,15 @@
 #                        | must use an https scheme as shown by the default   |
 #                        | value.                                             |
 #                        |                                                    |
-# LOG_ARCHIVE_URL        | The URL of the log archives. If provided, logs are | The string "unused". Only applies to
-#                        | periodically captured and sent to this URL. For    | Beluga environments. See IS_BELUGA_ENV
-#                        | AWS S3 buckets, it must be an S3 URL, e.g.         | variable below.
+# LOG_ARCHIVE_URL        | The URL of the log archives. If provided, logs are | The string "unused".
+#                        | periodically captured and sent to this URL. For    |
+#                        | AWS S3 buckets, it must be an S3 URL, e.g.         |
 #                        | s3://logs.                                         |
 #                        |                                                    |
-# DEV_LOG_ARCHIVE_URL    | The URL of the log archives for the dev CDE. If    | The string "unused".
-#                        | provided, logs are periodically captured and sent  |
-#                        | to this URL. For AWS S3 buckets, it must be an S3  |
-#                        | URL, e.g. s3://dev-logs.                           |
-#                        |                                                    |
-# TEST_LOG_ARCHIVE_URL   | The URL of the log archives for the test CDE. If   | The string "unused".
-#                        | provided, logs are periodically captured and sent  |
-#                        | to this URL. For AWS S3 buckets, it must be an S3  |
-#                        | URL, e.g. s3://test-logs.                          |
-#                        |                                                    |
-# STAGE_LOG_ARCHIVE_URL  | The URL of the log archives for the stage CDE. If  | The string "unused".
-#                        | provided, logs are periodically captured and sent  |
-#                        | to this URL. For AWS S3 buckets, it must be an S3  |
-#                        | URL, e.g. s3://stage-logs.                         |
-#                        |                                                    |
-# PROD_LOG_ARCHIVE_URL   | The URL of the log archives for the prod CDE. If   | The string "unused".
-#                        | provided, logs are periodically captured and sent  |
-#                        | to this URL. For AWS S3 buckets, it must be an S3  |
-#                        | URL, e.g. s3://prod-logs.                          |
-#                        |                                                    |
-# BACKUP_URL             | The URL of the backup location. If provided, data  | The string "unused". Only applies to
-#                        | backups are periodically captured and sent to this | Beluga environments. See IS_BELUGA_ENV
-#                        | URL. For AWS S3 buckets, it must be an S3 URL,     | variable below.
+# BACKUP_URL             | The URL of the backup location. If provided, data  | The string "unused".
+#                        | backups are periodically captured and sent to this |
+#                        | URL. For AWS S3 buckets, it must be an S3 URL,     |
 #                        | e.g. s3://backups.                                 |
-#                        |                                                    |
-# DEV_BACKUP_URL         | The URL of the backup location for the dev CDE.    | The string "unused".
-#                        | If provided, data backups are periodically         |
-#                        | captured and sent to this URL. For AWS S3 buckets, |
-#                        | it must be an S3 URL, e.g. s3://dev-backups.       |
-#                        |                                                    |
-# TEST_BACKUP_URL        | The URL of the backup location for the test CDE.   | The string "unused".
-#                        | If provided, data backups are periodically         |
-#                        | captured and sent to this URL. For AWS S3 buckets, |
-#                        | it must be an S3 URL, e.g. s3://test-backups.      |
-#                        |                                                    |
-# STAGE_BACKUP_URL       | The URL of the backup location for the stage CDE.  | The string "unused".
-#                        | If provided, data backups are periodically         |
-#                        | captured and sent to this URL. For AWS S3 buckets, |
-#                        | it must be an S3 URL, e.g. s3://stage-backups.     |
-#                        |                                                    |
-# PROD_BACKUP_URL        | The URL of the backup location for the prod CDE.   | The string "unused".
-#                        | If provided, data backups are periodically         |
-#                        | captured and sent to this URL. For AWS S3 buckets, |
-#                        | it must be an S3 URL, e.g. s3://prod-backups.      |
-#                        |                                                    |
-# S3_IRSA_ARN            | The ARN of the IAM role that maps to the           | No default
-#                        | Kubernetes '*:ping-serviceaccount' service         |
-#                        | account, allowing it read/write access to S3       |
-#                        | buckets.                                           |
-#                        |                                                    |
-# ROUTE53_IRSA_ARN       | The ARN of the IAM role that maps to the           | No default
-#                        | Kubernetes 'external-dns:external-dns' service     |
-#                        | account, allowing it read/write access to Route53  |
-#                        | hosted zones.                                      |
 #                        |                                                    |
 # K8S_GIT_URL            | The Git URL of the Kubernetes base manifest files. | https://github.com/pingidentity/ping-cloud-base
 #                        |                                                    |
@@ -255,29 +205,29 @@ VARS="${VARS:-${DEFAULT_VARS}}"
 add_derived_variables() {
   local env_file="$1"
   cat >> "${env_file}" <<EOF
-SERVER_PROFILE_URL=${CLUSTER_STATE_REPO_URL}
-SERVER_PROFILE_BRANCH=${CLUSTER_STATE_REPO_BRANCH}
+SERVER_PROFILE_URL=\${CLUSTER_STATE_REPO_URL}
+SERVER_PROFILE_BRANCH=\${CLUSTER_STATE_REPO_BRANCH}
 
 # Ping admin configuration required for admin access and clustering
-PD_PRIMARY_PUBLIC_HOSTNAME=pingdirectory-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${PRIMARY_TENANT_DOMAIN}
-PF_ADMIN_PUBLIC_HOSTNAME=pingfederate-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${PRIMARY_TENANT_DOMAIN}
-PA_ADMIN_PUBLIC_HOSTNAME=pingaccess-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${PRIMARY_TENANT_DOMAIN}
-PA_WAS_ADMIN_PUBLIC_HOSTNAME=pingaccess-was-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${PRIMARY_TENANT_DOMAIN}
+PD_PRIMARY_PUBLIC_HOSTNAME=pingdirectory-admin.\${DNS_ZONE}
+PF_ADMIN_PUBLIC_HOSTNAME=pingfederate-admin.\${DNS_ZONE}
+PA_ADMIN_PUBLIC_HOSTNAME=pingaccess-admin.\${DNS_ZONE}
+PA_WAS_ADMIN_PUBLIC_HOSTNAME=pingaccess-was-admin.\${DNS_ZONE}
 
-PD_CLUSTER_PUBLIC_HOSTNAME=pingdirectory-cluster${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${PRIMARY_TENANT_DOMAIN}
-PF_CLUSTER_PUBLIC_HOSTNAME=pingfederate-cluster${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${PRIMARY_TENANT_DOMAIN}
-PA_CLUSTER_PUBLIC_HOSTNAME=pingaccess-cluster${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${PRIMARY_TENANT_DOMAIN}
-PA_WAS_CLUSTER_PUBLIC_HOSTNAME=pingaccess-was-cluster${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${PRIMARY_TENANT_DOMAIN}
+PD_CLUSTER_PUBLIC_HOSTNAME=pingdirectory-cluster.\${DNS_ZONE}
+PF_CLUSTER_PUBLIC_HOSTNAME=pingfederate-cluster.\${DNS_ZONE}
+PA_CLUSTER_PUBLIC_HOSTNAME=pingaccess-cluster.\${DNS_ZONE}
+PA_WAS_CLUSTER_PUBLIC_HOSTNAME=pingaccess-was-cluster.\${DNS_ZONE}
 
 # Ping engine hostname variables
-PD_PUBLIC_HOSTNAME=pingdirectory-admin${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-PF_ENGINE_PUBLIC_HOSTNAME=pingfederate${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-PA_ENGINE_PUBLIC_HOSTNAME=pingaccess${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-PA_WAS_ENGINE_PUBLIC_HOSTNAME=pingaccess-was${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+PD_PUBLIC_HOSTNAME=pingdirectory-admin.\${DNS_ZONE}
+PF_ENGINE_PUBLIC_HOSTNAME=pingfederate.\${DNS_ZONE}
+PA_ENGINE_PUBLIC_HOSTNAME=pingaccess.\${DNS_ZONE}
+PA_WAS_ENGINE_PUBLIC_HOSTNAME=pingaccess-was.\${DNS_ZONE}
 
-PROMETHEUS_PUBLIC_HOSTNAME=prometheus${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-GRAFANA_PUBLIC_HOSTNAME=monitoring${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
-KIBANA_PUBLIC_HOSTNAME=logs${DNS_RECORD_SUFFIX}.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+PROMETHEUS_PUBLIC_HOSTNAME=prometheus.\${DNS_ZONE}
+GRAFANA_PUBLIC_HOSTNAME=monitoring.\${DNS_ZONE}
+KIBANA_PUBLIC_HOSTNAME=logs.\${DNS_ZONE}
 EOF
 }
 
@@ -320,19 +270,7 @@ echo "Initial ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Initial PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 
 echo "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
-echo "Initial DEV_LOG_ARCHIVE_URL: ${DEV_LOG_ARCHIVE_URL}"
-echo "Initial TEST_LOG_ARCHIVE_URL: ${TEST_LOG_ARCHIVE_URL}"
-echo "Initial STAGE_LOG_ARCHIVE_URL: ${STAGE_LOG_ARCHIVE_URL}"
-echo "Initial PROD_LOG_ARCHIVE_URL: ${PROD_LOG_ARCHIVE_URL}"
-
 echo "Initial BACKUP_URL: ${BACKUP_URL}"
-echo "Initial DEV_BACKUP_URL: ${DEV_BACKUP_URL}"
-echo "Initial TEST_BACKUP_URL: ${TEST_BACKUP_URL}"
-echo "Initial STAGE_BACKUP_URL: ${STAGE_BACKUP_URL}"
-echo "Initial PROD_BACKUP_URL: ${PROD_BACKUP_URL}"
-
-echo "Initial S3_IRSA_ARN: ${S3_IRSA_ARN}"
-echo "Initial ROUTE53_IRSA_ARN: ${ROUTE53_IRSA_ARN}"
 
 echo "Initial K8S_GIT_URL: ${K8S_GIT_URL}"
 echo "Initial K8S_GIT_BRANCH: ${K8S_GIT_BRANCH}"
@@ -347,7 +285,7 @@ echo "Initial IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
 echo ---
 
 # Use defaults for other variables, if not present.
-CD_COMMON_VARS=$(mktemp)
+CD_COMMON_VARS="$(mktemp)"
 echo "Writing CD common variables to file '${CD_COMMON_VARS}'"
 
 export_variable "${CD_COMMON_VARS}" TENANT_NAME "${TENANT_NAME:-ci-cd}"
@@ -368,21 +306,10 @@ export_variable "${CD_COMMON_VARS}" ARTIFACT_REPO_URL "${ARTIFACT_REPO_URL:-unus
 export_variable_ln "${CD_COMMON_VARS}" PING_ARTIFACT_REPO_URL \
   "${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
 
-export DEV_LOG_ARCHIVE_URL="${DEV_LOG_ARCHIVE_URL:-unused}"
-export TEST_LOG_ARCHIVE_URL="${TEST_LOG_ARCHIVE_URL:-unused}"
-export STAGE_LOG_ARCHIVE_URL="${STAGE_LOG_ARCHIVE_URL:-unused}"
-export PROD_LOG_ARCHIVE_URL="${PROD_LOG_ARCHIVE_URL:-unused}"
+export_variable "${CD_COMMON_VARS}" LOG_ARCHIVE_URL "${LOG_ARCHIVE_URL:-unused}"
+export_variable_ln "${CD_COMMON_VARS}" BACKUP_URL "${BACKUP_URL:-unused}"
 
-export DEV_BACKUP_URL="${DEV_BACKUP_URL:-unused}"
-export TEST_BACKUP_URL="${TEST_BACKUP_URL:-unused}"
-export STAGE_BACKUP_URL="${STAGE_BACKUP_URL:-unused}"
-export PROD_BACKUP_URL="${PROD_BACKUP_URL:-unused}"
-
-export S3_IRSA_ARN="${S3_IRSA_ARN}"
-export ROUTE53_IRSA_ARN="${ROUTE53_IRSA_ARN}"
-
-test ! -z "${S3_IRSA_ARN}" && export S3_IRSA_ARN_KEY_AND_VALUE="eks.amazonaws.com/role-arn: ${S3_IRSA_ARN}"
-test ! -z "${ROUTE53_IRSA_ARN}" && export ROUTE53_IRSA_ARN_KEY_AND_VALUE="eks.amazonaws.com/role-arn: ${ROUTE53_IRSA_ARN}"
+export_variable_ln "${CD_COMMON_VARS}" PING_CLOUD_NAMESPACE 'ping-cloud'
 
 PING_CLOUD_BASE_COMMIT_SHA=$(git rev-parse HEAD)
 CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -414,9 +341,6 @@ echo "Using CLUSTER_STATE_REPO_URL: ${CLUSTER_STATE_REPO_URL}"
 
 echo "Using ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
-
-echo "Using S3_IRSA_ARN: ${S3_IRSA_ARN}"
-echo "Using ROUTE53_IRSA_ARN: ${ROUTE53_IRSA_ARN}"
 
 echo "Using K8S_GIT_URL: ${K8S_GIT_URL}"
 echo "Using K8S_GIT_BRANCH: ${K8S_GIT_BRANCH}"
@@ -487,11 +411,11 @@ export_variable "${CD_COMMON_VARS}" CLUSTER_STATE_REPO_URL \
 
 for ENV in ${ENVIRONMENTS}; do
   CD_ENV_VARS="$(mktemp)"
-  cat "${CD_COMMON_VARS}" >"${CD_ENV_VARS}"
+  cp "${CD_COMMON_VARS}" "${CD_ENV_VARS}"
 
   # Export all the environment variables required for envsubst
   test "${ENV}" = 'prod' &&
-    export_variable "${CD_ENV_VARS}" CLUSTER_STATE_REPO_BRANCH master ||
+    export_variable "${CD_ENV_VARS}" CLUSTER_STATE_REPO_BRANCH 'master' ||
     export_variable "${CD_ENV_VARS}" CLUSTER_STATE_REPO_BRANCH "${ENV}"
   export_variable_ln "${CD_ENV_VARS}" CLUSTER_STATE_REPO_PATH "${REGION}"
 
@@ -544,54 +468,11 @@ for ENV in ${ENVIRONMENTS}; do
 
   # FIXME: PA/PA-WAS heap settings should be made variables
 
-  # Adjust the logs and backup URLs based on environment type.
-  case "${ENV}" in
-    dev)
-      test "${DEV_LOG_ARCHIVE_URL}" != "unused" &&
-        export_variable "${CD_ENV_VARS}" LOG_ARCHIVE_URL "${DEV_LOG_ARCHIVE_URL}" ||
-        export_variable "${CD_ENV_VARS}" LOG_ARCHIVE_URL "${LOG_ARCHIVE_URL:-unused}"
-
-      test "${DEV_BACKUP_URL}" != "unused" &&
-        export_variable_ln "${CD_ENV_VARS}" BACKUP_URL "${DEV_BACKUP_URL}" ||
-        export_variable_ln "${CD_ENV_VARS}" BACKUP_URL "${BACKUP_URL:-unused}"
-      ;;
-    test)
-      test "${TEST_LOG_ARCHIVE_URL}" != "unused" &&
-        export_variable "${CD_ENV_VARS}" LOG_ARCHIVE_URL "${TEST_LOG_ARCHIVE_URL}" ||
-        export_variable "${CD_ENV_VARS}" LOG_ARCHIVE_URL "${LOG_ARCHIVE_URL:-unused}"
-
-      test "${TEST_BACKUP_URL}" != "unused" &&
-        export_variable_ln "${CD_ENV_VARS}" BACKUP_URL "${TEST_BACKUP_URL}" ||
-        export_variable_ln "${CD_ENV_VARS}" BACKUP_URL "${BACKUP_URL:-unused}"
-      ;;
-    stage)
-      test "${STAGE_LOG_ARCHIVE_URL}" != "unused" &&
-        export_variable "${CD_ENV_VARS}" LOG_ARCHIVE_URL "${STAGE_LOG_ARCHIVE_URL}" ||
-        export_variable "${CD_ENV_VARS}" LOG_ARCHIVE_URL "${LOG_ARCHIVE_URL:-unused}"
-
-      test "${STAGE_BACKUP_URL}" != "unused" &&
-        export_variable_ln "${CD_ENV_VARS}" BACKUP_URL "${STAGE_BACKUP_URL}" ||
-        export_variable_ln "${CD_ENV_VARS}" BACKUP_URL "${BACKUP_URL:-unused}"
-      ;;
-    prod)
-      test "${PROD_LOG_ARCHIVE_URL}" != "unused" &&
-        export_variable "${CD_ENV_VARS}" LOG_ARCHIVE_URL "${PROD_LOG_ARCHIVE_URL}" ||
-        export_variable "${CD_ENV_VARS}" LOG_ARCHIVE_URL "${LOG_ARCHIVE_URL:-unused}"
-
-      test "${PROD_BACKUP_URL}" != "unused" &&
-        export_variable_ln "${CD_ENV_VARS}" BACKUP_URL "${PROD_BACKUP_URL}" ||
-        export_variable_ln "${CD_ENV_VARS}" BACKUP_URL "${BACKUP_URL:-unused}"
-      ;;
-  esac
-
-  export_variable_ln "${CD_ENV_VARS}" PING_CLOUD_NAMESPACE 'ping-cloud'
   if "${IS_BELUGA_ENV}"; then
-    export_variable "${CD_ENV_VARS}" DNS_RECORD_SUFFIX "-${ENV}"
-    export_variable_ln "${CD_ENV_VARS}" DNS_DOMAIN_PREFIX ''
+    export_variable_ln "${CD_ENV_VARS}" DNS_ZONE "${TENANT_DOMAIN}"
     export_variable "${CD_ENV_VARS}" CLUSTER_NAME "${TENANT_NAME}"
   else
-    export_variable "${CD_ENV_VARS}" DNS_RECORD_SUFFIX ''
-    export_variable_ln "${CD_ENV_VARS}" DNS_DOMAIN_PREFIX "${ENV}-"
+    export_variable_ln "${CD_ENV_VARS}" DNS_ZONE "${ENV}-${TENANT_DOMAIN}"
     export_variable "${CD_ENV_VARS}" CLUSTER_NAME "${ENV}"
   fi
 
@@ -609,8 +490,7 @@ for ENV in ${ENVIRONMENTS}; do
   echo "KUSTOMIZE_BASE: ${KUSTOMIZE_BASE}"
   echo "CLUSTER_NAME: ${CLUSTER_NAME}"
   echo "PING_CLOUD_NAMESPACE: ${PING_CLOUD_NAMESPACE}"
-  echo "DNS_RECORD_SUFFIX: ${DNS_RECORD_SUFFIX}"
-  echo "DNS_DOMAIN_PREFIX: ${DNS_DOMAIN_PREFIX}"
+  echo "DNS_ZONE: ${DNS_ZONE}"
   echo "LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
   echo "BACKUP_URL: ${BACKUP_URL}"
 
