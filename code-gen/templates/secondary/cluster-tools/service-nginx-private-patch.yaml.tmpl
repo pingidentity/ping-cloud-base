@@ -1,9 +1,0 @@
-### Ingress nginx private ###
-- target:
-    version: v1
-    kind: Service
-    name: ingress-nginx
-    namespace: ingress-nginx-private
-  patch: |-
-    - op: remove
-      path: /metadata/annotations/service.beta.kubernetes.io~1aws-load-balancer-internal

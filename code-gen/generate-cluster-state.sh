@@ -67,25 +67,32 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # Variable               | Purpose                                            | Default (if not present)
 # ----------------------------------------------------------------------------------------------------------------------
-# TENANT_NAME            | The name of the tenant, e.g. k8s-icecream. If      | PingPOC
+# TENANT_NAME            | The name of the tenant, e.g. k8s-icecream. If      | ci-cd
 #                        | provided, this value will be used for the cluster  |
-#                        | name and must have the correct case (e.g. PingPOC  |
-#                        | vs. pingpoc). If not provided, this variable is    |
+#                        | name and must have the correct case (e.g. ci-cd    |
+#                        | vs. CI-CD). If not provided, this variable is      |
 #                        | not used, and the cluster name defaults to the CDE |
 #                        | name.                                              |
 #                        |                                                    |
-# TENANT_DOMAIN          | The tenant's domain suffix that's common to all    | eks-poc.au1.ping-lab.cloud
+# TENANT_DOMAIN          | The tenant's domain suffix that's common to all    | ci-cd.ping-oasis.com
 #                        | CDEs e.g. k8s-icecream.com. The tenant domain in   |
 #                        | each CDE is assumed to have the CDE name as the    |
 #                        | prefix, followed by a hyphen. For example, for the |
-#                        | above prefix, the tenant domain for stage is       |
+#                        | above suffix, the tenant domain for stage is       |
 #                        | assumed to be stage-k8s-icecream.com and a hosted  |
 #                        | zone assumed to exist on Route53 for that domain.  |
 #                        |                                                    |
-# REGION                 | The region where the tenant environment is         | us-east-2
+# REGION                 | The region where the tenant environment is         | us-west-2
 #                        | deployed. For PCPT, this is a required parameter   |
 #                        | to Container Insights, an AWS-specific logging     |
 #                        | and monitoring solution.                           |
+#                        |                                                    |
+# REGION_NICK_NAME       | An optional nick name for the region. For example, | Same as REGION.
+#                        | this variable may be set to a unique name in       |
+#                        | multi-cluster deployments which live in the same   |
+#                        | region. The nick name will be used as the name of  |
+#                        | the region-specific code directory in the cluster  |
+#                        | state repo.                                        |
 #                        |                                                    |
 # IS_MULTI_CLUSTER       | Flag indicating whether or not this is a           | false
 #                        | multi-cluster deployment.                          |
@@ -117,65 +124,15 @@
 #                        | must use an https scheme as shown by the default   |
 #                        | value.                                             |
 #                        |                                                    |
-# LOG_ARCHIVE_URL        | The URL of the log archives. If provided, logs are | The string "unused". Only applies to
-#                        | periodically captured and sent to this URL. For    | Beluga environments. See IS_BELUGA_ENV
-#                        | AWS S3 buckets, it must be an S3 URL, e.g.         | variable below.
+# LOG_ARCHIVE_URL        | The URL of the log archives. If provided, logs are | The string "unused".
+#                        | periodically captured and sent to this URL. For    |
+#                        | AWS S3 buckets, it must be an S3 URL, e.g.         |
 #                        | s3://logs.                                         |
 #                        |                                                    |
-# DEV_LOG_ARCHIVE_URL    | The URL of the log archives for the dev CDE. If    | The string "unused".
-#                        | provided, logs are periodically captured and sent  |
-#                        | to this URL. For AWS S3 buckets, it must be an S3  |
-#                        | URL, e.g. s3://dev-logs.                           |
-#                        |                                                    |
-# TEST_LOG_ARCHIVE_URL   | The URL of the log archives for the test CDE. If   | The string "unused".
-#                        | provided, logs are periodically captured and sent  |
-#                        | to this URL. For AWS S3 buckets, it must be an S3  |
-#                        | URL, e.g. s3://test-logs.                          |
-#                        |                                                    |
-# STAGE_LOG_ARCHIVE_URL  | The URL of the log archives for the stage CDE. If  | The string "unused".
-#                        | provided, logs are periodically captured and sent  |
-#                        | to this URL. For AWS S3 buckets, it must be an S3  |
-#                        | URL, e.g. s3://stage-logs.                         |
-#                        |                                                    |
-# PROD_LOG_ARCHIVE_URL   | The URL of the log archives for the prod CDE. If   | The string "unused".
-#                        | provided, logs are periodically captured and sent  |
-#                        | to this URL. For AWS S3 buckets, it must be an S3  |
-#                        | URL, e.g. s3://prod-logs.                          |
-#                        |                                                    |
-# BACKUP_URL             | The URL of the backup location. If provided, data  | The string "unused". Only applies to
-#                        | backups are periodically captured and sent to this | Beluga environments. See IS_BELUGA_ENV
-#                        | URL. For AWS S3 buckets, it must be an S3 URL,     | variable below.
+# BACKUP_URL             | The URL of the backup location. If provided, data  | The string "unused".
+#                        | backups are periodically captured and sent to this |
+#                        | URL. For AWS S3 buckets, it must be an S3 URL,     |
 #                        | e.g. s3://backups.                                 |
-#                        |                                                    |
-# DEV_BACKUP_URL         | The URL of the backup location for the dev CDE.    | The string "unused".
-#                        | If provided, data backups are periodically         |
-#                        | captured and sent to this URL. For AWS S3 buckets, |
-#                        | it must be an S3 URL, e.g. s3://dev-backups.       |
-#                        |                                                    |
-# TEST_BACKUP_URL        | The URL of the backup location for the test CDE.   | The string "unused".
-#                        | If provided, data backups are periodically         |
-#                        | captured and sent to this URL. For AWS S3 buckets, |
-#                        | it must be an S3 URL, e.g. s3://test-backups.      |
-#                        |                                                    |
-# STAGE_BACKUP_URL       | The URL of the backup location for the stage CDE.  | The string "unused".
-#                        | If provided, data backups are periodically         |
-#                        | captured and sent to this URL. For AWS S3 buckets, |
-#                        | it must be an S3 URL, e.g. s3://stage-backups.     |
-#                        |                                                    |
-# PROD_BACKUP_URL        | The URL of the backup location for the prod CDE.   | The string "unused".
-#                        | If provided, data backups are periodically         |
-#                        | captured and sent to this URL. For AWS S3 buckets, |
-#                        | it must be an S3 URL, e.g. s3://prod-backups.      |
-#                        |                                                    |
-# S3_IRSA_ARN            | The ARN of the IAM role that maps to the           | No default
-#                        | Kubernetes '*:ping-serviceaccount' service         |
-#                        | account, allowing it read/write access to S3       |
-#                        | buckets.                                           |
-#                        |                                                    |
-# ROUTE53_IRSA_ARN       | The ARN of the IAM role that maps to the           | No default
-#                        | Kubernetes 'external-dns:external-dns' service     |
-#                        | account, allowing it read/write access to Route53  |
-#                        | hosted zones.                                      |
 #                        |                                                    |
 # K8S_GIT_URL            | The Git URL of the Kubernetes base manifest files. | https://github.com/pingidentity/ping-cloud-base
 #                        |                                                    |
@@ -220,12 +177,11 @@
 #                        | and hosted zone in their Ping IAM account role.    |
 ########################################################################################################################
 
-
 #### SCRIPT START ####
 
 # Ensure that this script works from any working directory.
-SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
-pushd "${SCRIPT_HOME}"
+SCRIPT_HOME=$(cd $(dirname ${0}) 2>/dev/null; pwd)
+pushd "${SCRIPT_HOME}" >/dev/null 2>&1
 
 # Source some utility methods.
 . ../utils.sh
@@ -237,90 +193,49 @@ pushd "${SCRIPT_HOME}"
 #   ${1} -> The directory that contains the template files.
 ########################################################################################################################
 
-# The list of variables in the template files that will be substituted.
-VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
+# The list of variables in the template files that will be substituted by default.
+# Note only secret variables are substituted. Environments variables are just written to a file and
+# substituted at runtime by the continuous delivery tool running in cluster.
+DEFAULT_VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
 ${PING_IDENTITY_DEVOPS_KEY_BASE64}
-${IS_MULTI_CLUSTER}
-${CLUSTER_BUCKET_NAME}
-${REGION}
-${PRIMARY_REGION}
-${TENANT_DOMAIN}
-${PRIMARY_TENANT_DOMAIN}
-${SIZE}
-${LETS_ENCRYPT_SERVER}
-${PF_PD_BIND_PORT}
-${PF_PD_BIND_PROTOCOL}
-${PF_PD_BIND_USESSL}
-${PF_MIN_HEAP}
-${PF_MAX_HEAP}
-${PF_MIN_YGEN}
-${PF_MAX_YGEN}
-${CLUSTER_NAME}
-${CLUSTER_NAME_LC}
-${CLUSTER_STATE_REPO_URL}
-${CLUSTER_STATE_REPO_BRANCH}
-${CLUSTER_STATE_REPO_PATH}
-${ARTIFACT_REPO_URL}
-${PING_ARTIFACT_REPO_URL}
-${LOG_ARCHIVE_URL}
-${DEV_LOG_ARCHIVE_URL}
-${TEST_LOG_ARCHIVE_URL}
-${STAGE_LOG_ARCHIVE_URL}
-${PROD_LOG_ARCHIVE_URL}
-${BACKUP_URL}
-${DEV_BACKUP_URL}
-${TEST_BACKUP_URL}
-${STAGE_BACKUP_URL}
-${PROD_BACKUP_URL}
-${S3_IRSA_ARN_KEY_AND_VALUE}
-${ROUTE53_IRSA_ARN_KEY_AND_VALUE}
-${K8S_GIT_URL}
-${K8S_GIT_BRANCH}
-${REGISTRY_NAME}
 ${SSH_ID_PUB}
-${SSH_ID_KEY_BASE64}
-${KNOWN_HOSTS_CLUSTER_STATE_REPO}
-${DNS_RECORD_SUFFIX}
-${DNS_DOMAIN_PREFIX}
-${ENVIRONMENT_TYPE}
-${PING_CLOUD_NAMESPACE}
-${KUSTOMIZE_BASE}
-${PING_CLOUD_NAMESPACE_RESOURCE}
-${PING_DIRECTORY_LDAP_ENDPOINT_PATCH}
-${SERVICE_NGINX_PRIVATE_PATCH}
-${DELETE_PING_CLOUD_NAMESPACE_PATCH_MERGE}'
+${SSH_ID_KEY_BASE64}'
 
-substitute_vars() {
-  SUBST_DIR=${1}
-  for FILE in $(find "${SUBST_DIR}" -type f); do
-    EXTENSION="${FILE##*.}"
-    if test "${EXTENSION}" = 'tmpl'; then
-      TARGET_FILE="${FILE%.*}"
-      envsubst "${VARS}" < "${FILE}" > "${TARGET_FILE}"
-      rm -f "${FILE}"
-    fi
-  done
-}
+VARS="${VARS:-${DEFAULT_VARS}}"
 
 ########################################################################################################################
-# Remove the file from its current location, substitute the variables in it using corresponding environment variables
-# and print its final contents to stdout.
+# Add some derived environment variables to end of the provided environment file.
 #
 # Arguments
-#   ${1} -> The name of the file to patch and remove.
+#   ${1} -> The name of the environment file.
 ########################################################################################################################
-patch_remove_file() {
-  FILE_TO_PATCH="${1}"
-  FILE_NO_TMPL_EXT=${FILE_TO_PATCH%.tmpl}
-  FILE_NO_TMPL_EXT=$(basename "${FILE_NO_TMPL_EXT}")
+add_derived_variables() {
+  local env_file="$1"
+  cat >> "${env_file}" <<EOF
+SERVER_PROFILE_URL=\${CLUSTER_STATE_REPO_URL}
+SERVER_PROFILE_BRANCH=\${CLUSTER_STATE_REPO_BRANCH}
 
-  TMP_DIR=$(mktemp -d)
-  mv "${FILE_TO_PATCH}" "${TMP_DIR}"
-  substitute_vars "${TMP_DIR}"
+# Ping admin configuration required for admin access and clustering
+PD_PRIMARY_PUBLIC_HOSTNAME=pingdirectory-admin.\${PRIMARY_DNS_ZONE}
+PF_ADMIN_PUBLIC_HOSTNAME=pingfederate-admin.\${PRIMARY_DNS_ZONE}
+PA_ADMIN_PUBLIC_HOSTNAME=pingaccess-admin.\${PRIMARY_DNS_ZONE}
+PA_WAS_ADMIN_PUBLIC_HOSTNAME=pingaccess-was-admin.\${PRIMARY_DNS_ZONE}
 
-  cat "${TMP_DIR}/${FILE_NO_TMPL_EXT}"
+PD_CLUSTER_PUBLIC_HOSTNAME=pingdirectory-cluster.\${PRIMARY_DNS_ZONE}
+PF_CLUSTER_PUBLIC_HOSTNAME=pingfederate-cluster.\${PRIMARY_DNS_ZONE}
+PA_CLUSTER_PUBLIC_HOSTNAME=pingaccess-cluster.\${PRIMARY_DNS_ZONE}
+PA_WAS_CLUSTER_PUBLIC_HOSTNAME=pingaccess-was-cluster.\${PRIMARY_DNS_ZONE}
 
-  rm -rf "${TMP_DIR}"
+# Ping engine hostname variables
+PD_PUBLIC_HOSTNAME=pingdirectory-admin.\${DNS_ZONE}
+PF_ENGINE_PUBLIC_HOSTNAME=pingfederate.\${DNS_ZONE}
+PA_ENGINE_PUBLIC_HOSTNAME=pingaccess.\${DNS_ZONE}
+PA_WAS_ENGINE_PUBLIC_HOSTNAME=pingaccess-was.\${DNS_ZONE}
+
+PROMETHEUS_PUBLIC_HOSTNAME=prometheus.\${DNS_ZONE}
+GRAFANA_PUBLIC_HOSTNAME=monitoring.\${DNS_ZONE}
+KIBANA_PUBLIC_HOSTNAME=logs.\${DNS_ZONE}
+EOF
 }
 
 # Checking required tools and environment variables.
@@ -332,7 +247,7 @@ HAS_REQUIRED_VARS=${?}
 
 if test ${HAS_REQUIRED_TOOLS} -ne 0 || test ${HAS_REQUIRED_VARS} -ne 0; then
   # Go back to previous working directory, if different, before exiting.
-  popd
+  popd >/dev/null 2>&1
   exit 1
 fi
 
@@ -340,7 +255,7 @@ test -z "${IS_MULTI_CLUSTER}" && IS_MULTI_CLUSTER=false
 if "${IS_MULTI_CLUSTER}"; then
   check_env_vars "CLUSTER_BUCKET_NAME"
   if test $? -ne 0; then
-    popd
+    popd >/dev/null 2>&1
     exit 1
   fi
 fi
@@ -352,6 +267,7 @@ echo "Initial SIZE: ${SIZE}"
 echo "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 echo "Initial CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
 echo "Initial REGION: ${REGION}"
+echo "Initial REGION_NICK_NAME: ${REGION_NICK_NAME}"
 echo "Initial PRIMARY_REGION: ${PRIMARY_REGION}"
 echo "Initial TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Initial PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
@@ -362,19 +278,7 @@ echo "Initial ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Initial PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 
 echo "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
-echo "Initial DEV_LOG_ARCHIVE_URL: ${DEV_LOG_ARCHIVE_URL}"
-echo "Initial TEST_LOG_ARCHIVE_URL: ${TEST_LOG_ARCHIVE_URL}"
-echo "Initial STAGE_LOG_ARCHIVE_URL: ${STAGE_LOG_ARCHIVE_URL}"
-echo "Initial PROD_LOG_ARCHIVE_URL: ${PROD_LOG_ARCHIVE_URL}"
-
 echo "Initial BACKUP_URL: ${BACKUP_URL}"
-echo "Initial DEV_BACKUP_URL: ${DEV_BACKUP_URL}"
-echo "Initial TEST_BACKUP_URL: ${TEST_BACKUP_URL}"
-echo "Initial STAGE_BACKUP_URL: ${STAGE_BACKUP_URL}"
-echo "Initial PROD_BACKUP_URL: ${PROD_BACKUP_URL}"
-
-echo "Initial S3_IRSA_ARN: ${S3_IRSA_ARN}"
-echo "Initial ROUTE53_IRSA_ARN: ${ROUTE53_IRSA_ARN}"
 
 echo "Initial K8S_GIT_URL: ${K8S_GIT_URL}"
 echo "Initial K8S_GIT_BRANCH: ${K8S_GIT_BRANCH}"
@@ -389,58 +293,47 @@ echo "Initial IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
 echo ---
 
 # Use defaults for other variables, if not present.
-export TENANT_NAME="${TENANT_NAME:-PingPOC}"
-export SIZE="${SIZE:-small}"
+CD_COMMON_VARS="$(mktemp)"
+echo "Writing CD common variables to file '${CD_COMMON_VARS}'"
 
-export IS_MULTI_CLUSTER="${IS_MULTI_CLUSTER}"
-export CLUSTER_BUCKET_NAME="${CLUSTER_BUCKET_NAME}"
+export_variable "${CD_COMMON_VARS}" TENANT_NAME "${TENANT_NAME:-ci-cd}"
+export_variable_ln "${CD_COMMON_VARS}" SIZE "${SIZE:-small}"
 
-export REGION="${REGION:-us-east-2}"
-export PRIMARY_REGION="${PRIMARY_REGION:-${REGION}}"
+export_variable "${CD_COMMON_VARS}" IS_MULTI_CLUSTER "${IS_MULTI_CLUSTER}"
+export_variable_ln "${CD_COMMON_VARS}" CLUSTER_BUCKET_NAME "${CLUSTER_BUCKET_NAME}"
+
+export_variable "${CD_COMMON_VARS}" REGION "${REGION:-us-east-2}"
+export_variable "${CD_COMMON_VARS}" REGION_NICK_NAME "${REGION_NICK_NAME:-${REGION}}"
+export_variable_ln "${CD_COMMON_VARS}" PRIMARY_REGION "${PRIMARY_REGION:-${REGION}}"
 
 TENANT_DOMAIN_NO_DOT_SUFFIX="${TENANT_DOMAIN%.}"
-export TENANT_DOMAIN="${TENANT_DOMAIN_NO_DOT_SUFFIX:-eks-poc.au1.ping-lab.cloud}"
-
+export_variable "${CD_COMMON_VARS}" TENANT_DOMAIN "${TENANT_DOMAIN_NO_DOT_SUFFIX:-ci-cd.ping-oasis.com}"
 PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX="${PRIMARY_TENANT_DOMAIN%.}"
-export PRIMARY_TENANT_DOMAIN="${PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX:-${TENANT_DOMAIN}}"
+export_variable_ln "${CD_COMMON_VARS}" PRIMARY_TENANT_DOMAIN "${PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX:-${TENANT_DOMAIN}}"
 
-export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL:-git@github.com:pingidentity/ping-cloud-base.git}"
+export_variable "${CD_COMMON_VARS}" ARTIFACT_REPO_URL "${ARTIFACT_REPO_URL:-unused}"
+export_variable_ln "${CD_COMMON_VARS}" PING_ARTIFACT_REPO_URL \
+  "${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
 
-export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
-export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
+export_variable "${CD_COMMON_VARS}" LOG_ARCHIVE_URL "${LOG_ARCHIVE_URL:-unused}"
+export_variable_ln "${CD_COMMON_VARS}" BACKUP_URL "${BACKUP_URL:-unused}"
 
-export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
-export DEV_LOG_ARCHIVE_URL="${DEV_LOG_ARCHIVE_URL:-unused}"
-export TEST_LOG_ARCHIVE_URL="${TEST_LOG_ARCHIVE_URL:-unused}"
-export STAGE_LOG_ARCHIVE_URL="${STAGE_LOG_ARCHIVE_URL:-unused}"
-export PROD_LOG_ARCHIVE_URL="${PROD_LOG_ARCHIVE_URL:-unused}"
-
-export BACKUP_URL="${BACKUP_URL:-unused}"
-export DEV_BACKUP_URL="${DEV_BACKUP_URL:-unused}"
-export TEST_BACKUP_URL="${TEST_BACKUP_URL:-unused}"
-export STAGE_BACKUP_URL="${STAGE_BACKUP_URL:-unused}"
-export PROD_BACKUP_URL="${PROD_BACKUP_URL:-unused}"
-
-export S3_IRSA_ARN="${S3_IRSA_ARN}"
-export ROUTE53_IRSA_ARN="${ROUTE53_IRSA_ARN}"
-
-test ! -z ${S3_IRSA_ARN} && export S3_IRSA_ARN_KEY_AND_VALUE="eks.amazonaws.com/role-arn: ${S3_IRSA_ARN}"
-test ! -z ${ROUTE53_IRSA_ARN} && export ROUTE53_IRSA_ARN_KEY_AND_VALUE="eks.amazonaws.com/role-arn: ${ROUTE53_IRSA_ARN}"
+export_variable_ln "${CD_COMMON_VARS}" PING_CLOUD_NAMESPACE 'ping-cloud'
 
 PING_CLOUD_BASE_COMMIT_SHA=$(git rev-parse HEAD)
 CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-test "${CURRENT_GIT_BRANCH}" = 'HEAD' && CURRENT_GIT_BRANCH=$(git describe --tags)
+test "${CURRENT_GIT_BRANCH}" = 'HEAD' && CURRENT_GIT_BRANCH=$(git describe --tags --always)
 
-export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
-export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-${CURRENT_GIT_BRANCH}}"
+export_variable "${CD_COMMON_VARS}" K8S_GIT_URL "${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
+export_variable_ln "${CD_COMMON_VARS}" K8S_GIT_BRANCH "${K8S_GIT_BRANCH:-${CURRENT_GIT_BRANCH}}"
 
-export REGISTRY_NAME="${REGISTRY_NAME:-docker.io}"
+export_variable_ln "${CD_COMMON_VARS}" REGISTRY_NAME "${REGISTRY_NAME:-docker.io}"
 
 export SSH_ID_PUB_FILE="${SSH_ID_PUB_FILE}"
 export SSH_ID_KEY_FILE="${SSH_ID_KEY_FILE}"
 
 export TARGET_DIR="${TARGET_DIR:-/tmp/sandbox}"
-export IS_BELUGA_ENV="${IS_BELUGA_ENV}"
+export IS_BELUGA_ENV="${IS_BELUGA_ENV:-false}"
 
 # Print out the values being used for each variable.
 echo "Using TENANT_NAME: ${TENANT_NAME}"
@@ -449,6 +342,7 @@ echo "Using SIZE: ${SIZE}"
 echo "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 echo "Using CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
 echo "Using REGION: ${REGION}"
+echo "Using REGION_NICK_NAME: ${REGION_NICK_NAME}"
 echo "Using PRIMARY_REGION: ${PRIMARY_REGION}"
 echo "Using TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Using PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
@@ -457,9 +351,6 @@ echo "Using CLUSTER_STATE_REPO_URL: ${CLUSTER_STATE_REPO_URL}"
 
 echo "Using ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
-
-echo "Using S3_IRSA_ARN: ${S3_IRSA_ARN}"
-echo "Using ROUTE53_IRSA_ARN: ${ROUTE53_IRSA_ARN}"
 
 echo "Using K8S_GIT_URL: ${K8S_GIT_URL}"
 echo "Using K8S_GIT_BRANCH: ${K8S_GIT_BRANCH}"
@@ -476,20 +367,14 @@ echo ---
 export PING_IDENTITY_DEVOPS_USER_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_USER}")
 export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_KEY}")
 
-SCRIPT_HOME=$(cd $(dirname ${0}) 2> /dev/null; pwd)
 TEMPLATES_HOME="${SCRIPT_HOME}/templates"
+BASE_DIR="${TEMPLATES_HOME}/base"
+BASE_TOOLS_REL_DIR="base/cluster-tools"
+BASE_PING_CLOUD_REL_DIR="base/ping-cloud"
 
-test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}" &&
-  IS_PRIMARY=true ||
-  IS_PRIMARY=false
-
-if "${IS_PRIMARY}"; then
-  TOOLS_TEMPLATES_HOME="${TEMPLATES_HOME}"/cluster-tools
-  PING_CLOUD_TEMPLATES_HOME="${TEMPLATES_HOME}"/ping-cloud
-else
-  TOOLS_TEMPLATES_HOME="${TEMPLATES_HOME}"/secondary/cluster-tools
-  PING_CLOUD_TEMPLATES_HOME="${TEMPLATES_HOME}"/secondary/ping-cloud
-fi
+REGION_DIR="${TEMPLATES_HOME}/region"
+REGION_TOOLS_REL_DIR="${REGION_NICK_NAME}/cluster-tools"
+REGION_PING_CLOUD_REL_DIR="${REGION_NICK_NAME}/ping-cloud"
 
 # Generate an SSH key pair for flux CD.
 if test -z "${SSH_ID_PUB_FILE}" && test -z "${SSH_ID_KEY_FILE}"; then
@@ -507,7 +392,7 @@ fi
 # Get the known hosts contents for the cluster state repo host to pass it into flux.
 parse_url "${CLUSTER_STATE_REPO_URL}"
 echo "Obtaining known_hosts contents for cluster state repo host: ${URL_HOST}"
-export KNOWN_HOSTS_CLUSTER_STATE_REPO=$(ssh-keyscan -H "${URL_HOST}" 2> /dev/null)
+export_variable_ln "${CD_COMMON_VARS}" KNOWN_HOSTS_CLUSTER_STATE_REPO "$(ssh-keyscan -H "${URL_HOST}" 2>/dev/null)" true
 
 # Delete existing target directory and re-create it
 rm -rf "${TARGET_DIR}"
@@ -519,103 +404,97 @@ CLUSTER_STATE_DIR="${TARGET_DIR}/cluster-state"
 K8S_CONFIGS_DIR="${CLUSTER_STATE_DIR}/k8s-configs"
 
 mkdir -p "${FLUXCD_DIR}"
-mkdir -p "${CLUSTER_STATE_DIR}"
+mkdir -p "${K8S_CONFIGS_DIR}"
 
 cp ../.gitignore "${CLUSTER_STATE_DIR}"
+cp ../k8s-configs/cluster-tools/git-ops/flux/flux-command.sh "${K8S_CONFIGS_DIR}"
+find "${TEMPLATES_HOME}" -type f -maxdepth 1 | xargs -I {} cp {} "${K8S_CONFIGS_DIR}"
+
 cp -pr ../profiles/aws/. "${CLUSTER_STATE_DIR}"/profiles
 echo "${PING_CLOUD_BASE_COMMIT_SHA}" > "${TARGET_DIR}/pcb-commit-sha.txt"
 
 # Now generate the yaml files for each environment
 ENVIRONMENTS='dev test stage prod'
 
+export_variable "${CD_COMMON_VARS}" CLUSTER_STATE_REPO_URL \
+  "${CLUSTER_STATE_REPO_URL:-git@github.com:pingidentity/ping-cloud-base.git}"
+
 for ENV in ${ENVIRONMENTS}; do
+  CD_ENV_VARS="$(mktemp)"
+  cp "${CD_COMMON_VARS}" "${CD_ENV_VARS}"
+
   # Export all the environment variables required for envsubst
-  test "${ENV}" = prod && export CLUSTER_STATE_REPO_BRANCH=master || export CLUSTER_STATE_REPO_BRANCH=${ENV}
-  ! "${IS_PRIMARY}" && export CLUSTER_STATE_REPO_PATH="${REGION}"
-  export ENVIRONMENT_TYPE=${ENV}
+  test "${ENV}" = 'prod' &&
+    export_variable "${CD_ENV_VARS}" CLUSTER_STATE_REPO_BRANCH 'master' ||
+    export_variable "${CD_ENV_VARS}" CLUSTER_STATE_REPO_BRANCH "${ENV}"
+  export_variable_ln "${CD_ENV_VARS}" CLUSTER_STATE_REPO_PATH "${REGION_NICK_NAME}"
+
+  export_variable "${CD_ENV_VARS}" ENVIRONMENT_TYPE "${ENV}"
 
   # The base URL for kustomization files and environment will be different for each CDE.
   case "${ENV}" in
     dev | test)
-      export KUSTOMIZE_BASE='test'
+      export_variable_ln "${CD_ENV_VARS}" KUSTOMIZE_BASE 'test'
       ;;
     stage)
-      export KUSTOMIZE_BASE='prod/small'
+      export_variable_ln "${CD_ENV_VARS}" KUSTOMIZE_BASE 'prod/small'
       ;;
     prod)
-      export KUSTOMIZE_BASE="prod/${SIZE}"
+      export_variable_ln "${CD_ENV_VARS}" KUSTOMIZE_BASE "prod/${SIZE}"
       ;;
   esac
 
   # Update the Let's encrypt server to use staging/production based on environment type.
   case "${ENV}" in
     dev | test | stage)
-      export LETS_ENCRYPT_SERVER='https://acme-staging-v02.api.letsencrypt.org/directory'
-      export PF_PD_BIND_PORT=1389
-      export PF_PD_BIND_PROTOCOL=ldap
-      export PF_PD_BIND_USESSL=false
+      export_variable_ln "${CD_ENV_VARS}" LETS_ENCRYPT_SERVER 'https://acme-staging-v02.api.letsencrypt.org/directory'
+      export_variable "${CD_ENV_VARS}" PF_PD_BIND_PORT 1389
+      export_variable "${CD_ENV_VARS}" PF_PD_BIND_PROTOCOL ldap
+      export_variable_ln "${CD_ENV_VARS}" PF_PD_BIND_USESSL false
       ;;
     prod)
-      export LETS_ENCRYPT_SERVER='https://acme-v02.api.letsencrypt.org/directory'
-      export PF_PD_BIND_PORT=5678
-      export PF_PD_BIND_PROTOCOL=ldaps
-      export PF_PD_BIND_USESSL=true
+      export_variable_ln "${CD_ENV_VARS}" LETS_ENCRYPT_SERVER 'https://acme-v02.api.letsencrypt.org/directory'
+      export_variable "${CD_ENV_VARS}" PF_PD_BIND_PORT 5678
+      export_variable "${CD_ENV_VARS}" PF_PD_BIND_PROTOCOL ldaps
+      export_variable_ln "${CD_ENV_VARS}" PF_PD_BIND_USESSL true
       ;;
   esac
 
   # Update the PF JVM limits based on environment.
   case "${ENV}" in
     dev | test)
-      export PF_MIN_HEAP=1536m
-      export PF_MAX_HEAP=1536m
-      export PF_MIN_YGEN=768m
-      export PF_MAX_YGEN=768m
+      export_variable "${CD_ENV_VARS}" PF_MIN_HEAP 1536m
+      export_variable "${CD_ENV_VARS}" PF_MAX_HEAP 1536m
+      export_variable "${CD_ENV_VARS}" PF_MIN_YGEN 768m
+      export_variable_ln "${CD_ENV_VARS}" PF_MAX_YGEN 768m
       ;;
     stage | prod)
-      export PF_MIN_HEAP=3072m
-      export PF_MAX_HEAP=3072m
-      export PF_MIN_YGEN=1536m
-      export PF_MAX_YGEN=1536m
+      export_variable "${CD_ENV_VARS}" PF_MIN_HEAP 3072m
+      export_variable "${CD_ENV_VARS}" PF_MAX_HEAP 3072m
+      export_variable "${CD_ENV_VARS}" PF_MIN_YGEN 1536m
+      export_variable_ln "${CD_ENV_VARS}" PF_MAX_YGEN 1536m
       ;;
   esac
 
-  # If not Beluga environment, adjust the logs and backup URLs based on environment type.
-  if test "${IS_BELUGA_ENV}" != 'true'; then
-    case "${ENV}" in
-      dev)
-        test "${DEV_LOG_ARCHIVE_URL}" != "unused" && export LOG_ARCHIVE_URL=${DEV_LOG_ARCHIVE_URL}
-        test "${DEV_BACKUP_URL}" != "unused" && export BACKUP_URL=${DEV_BACKUP_URL}
-        ;;
-      test)
-        test "${TEST_LOG_ARCHIVE_URL}" != "unused" && export LOG_ARCHIVE_URL=${TEST_LOG_ARCHIVE_URL}
-        test "${TEST_BACKUP_URL}" != "unused" && export BACKUP_URL=${TEST_BACKUP_URL}
-        ;;
-      stage)
-        test "${STAGE_LOG_ARCHIVE_URL}" != "unused" && export LOG_ARCHIVE_URL=${STAGE_LOG_ARCHIVE_URL}
-        test "${STAGE_BACKUP_URL}" != "unused" && export BACKUP_URL=${STAGE_BACKUP_URL}
-        ;;
-      prod)
-        test "${PROD_LOG_ARCHIVE_URL}" != "unused" && export LOG_ARCHIVE_URL=${PROD_LOG_ARCHIVE_URL}
-        test "${PROD_BACKUP_URL}" != "unused" && export BACKUP_URL=${PROD_BACKUP_URL}
-        ;;
-    esac
-  fi
+  # FIXME: PA/PA-WAS heap settings should be made variables
 
-  if test "${IS_BELUGA_ENV}" = 'true'; then
-    export CLUSTER_NAME="${TENANT_NAME}"
-    export PING_CLOUD_NAMESPACE="ping-cloud-${ENV}"
-    export DNS_RECORD_SUFFIX="-${ENV}"
-    export DNS_DOMAIN_PREFIX=''
+  if "${IS_BELUGA_ENV}"; then
+    export_variable "${CD_ENV_VARS}" DNS_ZONE "\${TENANT_DOMAIN}"
+    export_variable_ln "${CD_ENV_VARS}" PRIMARY_DNS_ZONE "\${PRIMARY_TENANT_DOMAIN}"
+    export_variable "${CD_ENV_VARS}" CLUSTER_NAME "${TENANT_NAME}"
   else
-    export CLUSTER_NAME="${ENV}"
-    export PING_CLOUD_NAMESPACE='ping-cloud'
-    export DNS_RECORD_SUFFIX=''
-    export DNS_DOMAIN_PREFIX="${ENV}-"
+    export_variable "${CD_ENV_VARS}" DNS_ZONE "\${ENV}-\${TENANT_DOMAIN}"
+    export_variable_ln "${CD_ENV_VARS}" PRIMARY_DNS_ZONE "\${ENV}-\${PRIMARY_TENANT_DOMAIN}"
+    export_variable "${CD_ENV_VARS}" CLUSTER_NAME "${ENV}"
   fi
 
-  export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
+  CLUSTER_NAME_LC="$(echo "${CLUSTER_NAME}" | tr '[:upper:]' '[:lower:]')"
+  export_variable_ln "${CD_ENV_VARS}" CLUSTER_NAME_LC "${CLUSTER_NAME_LC}"
+
+  add_derived_variables "${CD_ENV_VARS}"
 
   echo ---
+  echo "Writing CD ${ENV}-specific variables to file '${CD_ENV_VARS}'"
   echo "For environment ${ENV}, using variable values:"
   echo "CLUSTER_STATE_REPO_BRANCH: ${CLUSTER_STATE_REPO_BRANCH}"
   echo "CLUSTER_STATE_REPO_PATH: ${CLUSTER_STATE_REPO_PATH}"
@@ -623,8 +502,8 @@ for ENV in ${ENVIRONMENTS}; do
   echo "KUSTOMIZE_BASE: ${KUSTOMIZE_BASE}"
   echo "CLUSTER_NAME: ${CLUSTER_NAME}"
   echo "PING_CLOUD_NAMESPACE: ${PING_CLOUD_NAMESPACE}"
-  echo "DNS_RECORD_SUFFIX: ${DNS_RECORD_SUFFIX}"
-  echo "DNS_DOMAIN_PREFIX: ${DNS_DOMAIN_PREFIX}"
+  echo "DNS_ZONE: ${DNS_ZONE}"
+  echo "PRIMARY_DNS_ZONE: ${PRIMARY_DNS_ZONE}"
   echo "LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
   echo "BACKUP_URL: ${BACKUP_URL}"
 
@@ -636,7 +515,9 @@ for ENV in ${ENVIRONMENTS}; do
 
   cp "${TEMPLATES_HOME}"/fluxcd/* "${ENV_FLUX_DIR}"
 
-  substitute_vars "${ENV_FLUX_DIR}"
+  # Create a list of variables to substitute for flux CD
+  vars="$(grep -Ev "^$|#" "${CD_ENV_VARS}" | (cut -d= -f1; echo SSH_ID_KEY_BASE64) | awk '{ print "${" $1 "}" }')"
+  substitute_vars "${ENV_FLUX_DIR}" "${vars}"
 
   # Copy the shared cluster tools and Ping yaml templates into their target directories
   echo "Generating tools and ping yaml"
@@ -644,63 +525,24 @@ for ENV in ${ENVIRONMENTS}; do
   ENV_DIR="${K8S_CONFIGS_DIR}/${ENV}"
   mkdir -p "${ENV_DIR}"
 
-  cp -r "${TOOLS_TEMPLATES_HOME}" "${ENV_DIR}"
-  cp -r "${PING_CLOUD_TEMPLATES_HOME}" "${ENV_DIR}"
+  cp -r "${BASE_DIR}" "${ENV_DIR}"
+  cp -r "${REGION_DIR}/." "${ENV_DIR}/${REGION_NICK_NAME}"
+  cp "${CD_ENV_VARS}" "${ENV_DIR}/${REGION_NICK_NAME}/env_vars"
 
-  # Copy the base files into the environment directory
-  find "${TEMPLATES_HOME}" -type f -maxdepth 1 | xargs -I {} cp {} "${ENV_DIR}"
+  substitute_vars "${ENV_DIR}" "${VARS}"
 
-  ### Start some special-handling based on BELUGA environment and CDE type ###
-
-  # If Beluga environment, we want:
-  #
-  #   - All URLs to land on a public subnet, so a VPN/bridge network is not
-  #     required to access them.
-  #   - The namespace for the ping stack for the environment to be created and
-  #     the stock ping-cloud namespace to be deleted.
-  #
-  NGINX_FILE_TO_PATCH="${ENV_DIR}/cluster-tools/service-nginx-private-patch.yaml.tmpl"
-  PD_FILE_TO_PATCH="${ENV_DIR}/ping-cloud/pingdirectory-ldap-endpoint-patch.yaml.tmpl"
-
-  NAMESPACE_COMMENT="# All ping resources will live in the ${PING_CLOUD_NAMESPACE} namespace"
-
-  if test "${IS_BELUGA_ENV}" = 'true'; then
-    export PING_CLOUD_NAMESPACE_RESOURCE="${NAMESPACE_COMMENT}
-- namespace.yaml"
-
-    export DELETE_PING_CLOUD_NAMESPACE_PATCH_MERGE='### Delete ping-cloud namespace ###
-
-- |-
-  apiVersion: v1
-  kind: Namespace
-  metadata:
-    name: ping-cloud
-  $patch: delete'
-
-    export SERVICE_NGINX_PRIVATE_PATCH=$(patch_remove_file "${NGINX_FILE_TO_PATCH}")
-    export PING_DIRECTORY_LDAP_ENDPOINT_PATCH=$(patch_remove_file "${PD_FILE_TO_PATCH}")
-
-  else
-    export PING_CLOUD_NAMESPACE_RESOURCE="${NAMESPACE_COMMENT}"
-    export DELETE_PING_CLOUD_NAMESPACE_PATCH_MERGE=''
-    rm -f "${ENV_DIR}"/ping-cloud/namespace.yaml.tmpl
-
-    export SERVICE_NGINX_PRIVATE_PATCH=''
-    rm -f "${NGINX_FILE_TO_PATCH}"
-
-    export PING_DIRECTORY_LDAP_ENDPOINT_PATCH=''
-    rm -f "${PD_FILE_TO_PATCH}"
+  # Regional enablement - add admins, backups, etc. to primary.
+  if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
+    PRIMARY_PING_KUST_FILE="${ENV_DIR}/${REGION_PING_CLOUD_REL_DIR}/kustomization.yaml"
+    sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/' "${PRIMARY_PING_KUST_FILE}"
+    rm -f "${PRIMARY_PING_KUST_FILE}.bak"
   fi
-
-  ### End special handling ###
-
-  substitute_vars "${ENV_DIR}"
 done
 
 cp -p push-cluster-state.sh "${TARGET_DIR}"
 
 # Go back to previous working directory, if different
-popd > /dev/null
+popd >/dev/null 2>&1
 
 echo
 echo '------------------------'

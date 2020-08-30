@@ -7,12 +7,18 @@
 # environment variables.
 #
 #   GENERATED_CODE_DIR -> The TARGET_DIR of generate-cluster-state.sh. Defaults to '/tmp/sandbox', if unset.
-#   REGION_NAME -> The name of the region for which the generated code is applicable. This parameter is required.
+#   IS_PRIMARY -> A flag indicating whether or not this is the primary region. Defaults to false, if unset.
 #   ENVIRONMENTS -> A space-separated list of environments. Defaults to 'dev test stage prod', if unset. If provided,
-#   it must contain all or a subset of the environments currently created by the generate-cluster-state.sh script, i.e.
-#   dev, test, stage, prod.
+#       it must contain all or a subset of the environments currently created by the generate-cluster-state.sh script,
+#       i.e. dev, test, stage, prod.
 #   PUSH_RETRY_COUNT -> The number of times to try pushing to the cluster state repo with a 2s sleep between each
-#   attempt to avoid IAM permission to repo sync issue.
+#       attempt to avoid IAM permission to repo sync issue.
+
+# Global variables
+K8S_CONFIGS_DIR='k8s-configs'
+CLUSTER_STATE_DIR='cluster-state'
+PROFILES_DIR='profiles'
+BASE_DIR='base'
 
 ########################################################################################################################
 # Organizes the Kubernetes configuration files to push into the cluster state repo for a specific Customer Deployment
@@ -22,35 +28,34 @@
 #   ${1} -> The directory where cluster state code was generated, i.e. the TARGET_DIR to generate-cluster-state.sh.
 #   ${2} -> The environment.
 #   ${3} -> The output empty directory into which to organize the code to push for the environment and region.
-#   ${4} -> The name for a region, e.g. primary, secondary-0, secondary-1, etc.
-#   ${5} -> Flag indicating whether or not the provided region is the primary region.
+#   ${4} -> Flag indicating whether or not the provided region is the primary region.
 ########################################################################################################################
 organize_code_for_environment() {
   local generated_code_dir="${1}"
   local env="${2}"
   local out_dir="${3}"
-  local region_name="${4}"
-  local is_primary="${5}"
+  local is_primary="${4}"
 
-  echo "Organizing code for environment ${env} in directory ${out_dir} for region ${region_name} (primary: ${is_primary})"
+  local dst_k8s_dir="${out_dir}/${K8S_CONFIGS_DIR}"
+  local src_env_dir="${generated_code_dir}/${CLUSTER_STATE_DIR}/${K8S_CONFIGS_DIR}/${env}"
+  local region="$(ls "${src_env_dir}" | grep -v "${BASE_DIR}")"
+
+  "${is_primary}" && type='primary' || type='secondary'
+  echo "Organizing code for environment '${env}' into '${out_dir}' for ${type} region '${region}'"
 
   if "${is_primary}"; then
     # For the primary region, we need to copy everything (i.e. both the k8s-configs and the profiles)
     # into the cluster state repo.
 
     # Copy everything under cluster state into the code directory for the environment.
-    cp -pr "${generated_code_dir}"/cluster-state/. "${out_dir}"
+    cp -pr "${generated_code_dir}/${CLUSTER_STATE_DIR}"/. "${out_dir}"
 
     # Remove everything under the k8s-configs because code is initially generated for every CDE under there.
-    local k8s_dir="${out_dir}"/k8s-configs
-    rm -rf "${k8s_dir:?}"/*
-
-    # Copy the environment-specific k8s-configs into it.
-    cp -pr "${generated_code_dir}"/cluster-state/k8s-configs/"${env}"/. "${k8s_dir}"
-  else
-    # For secondary regions, we only need to copy the environment-specific k8s-configs.
-    cp -pr "${generated_code_dir}"/cluster-state/k8s-configs/"${env}"/. "${out_dir}"
+    rm -rf "${dst_k8s_dir:?}"/*
   fi
+
+  # Copy the environment-specific k8s-configs.
+  cp -pr "${src_env_dir}"/. "${dst_k8s_dir}"
 }
 
 ########################################################################################################################
@@ -76,15 +81,11 @@ push_with_retries() {
 }
 
 ### Script start ###
-if test -z "${REGION_NAME}" || test -z "${IS_PRIMARY}"; then
-  echo "REGION_NAME and IS_PRIMARY are required variables"
-  exit 1
-fi
-
 ALL_ENVIRONMENTS='dev test stage prod'
-
 ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
+
 GENERATED_CODE_DIR="${GENERATED_CODE_DIR:-/tmp/sandbox}"
+IS_PRIMARY="${IS_PRIMARY:-false}"
 
 PUSH_RETRY_COUNT="${PUSH_RETRY_COUNT:-30}"
 PCB_COMMIT_SHA=$(cat "${GENERATED_CODE_DIR}"/pcb-commit-sha.txt)
@@ -93,7 +94,7 @@ for ENV in ${ENVIRONMENTS}; do
   echo "Processing ${ENV}"
 
   ENV_CODE_DIR=$(mktemp -d)
-  organize_code_for_environment "${GENERATED_CODE_DIR}" "${ENV}" "${ENV_CODE_DIR}" "${REGION_NAME}" "${IS_PRIMARY}"
+  organize_code_for_environment "${GENERATED_CODE_DIR}" "${ENV}" "${ENV_CODE_DIR}" "${IS_PRIMARY}"
 
   if test "${ENV}" != 'prod'; then
     GIT_BRANCH="${ENV}"
@@ -119,16 +120,43 @@ for ENV in ${ENVIRONMENTS}; do
   fi
 
   if "${IS_PRIMARY}"; then
+    # Clean-up
+    echo "Cleaning up ${PWD}"
     rm -rf ./*
-    cp -pr "${ENV_CODE_DIR}"/. .
-  else
-    K8S_DIR_FOR_SECONDARY=./k8s-configs/"${REGION_NAME}"
-    rm -rf "${K8S_DIR_FOR_SECONDARY}"
-    cp -pr "${ENV_CODE_DIR}"/. "${K8S_DIR_FOR_SECONDARY}"
+    mkdir -p "${K8S_CONFIGS_DIR}"
+
+    # Copy the base files into the environment directory.
+    src_dir="${ENV_CODE_DIR}"
+    echo "Copying base files from ${src_dir} to ${PWD}"
+    find "${src_dir}" -type f -maxdepth 1 | xargs -I {} cp {} ./
+
+    # Copy the profiles directory.
+    src_dir="${ENV_CODE_DIR}/${PROFILES_DIR}"
+    echo "Copying ${src_dir} to ${PWD}"
+    cp -pr "${src_dir}" ./
+
+    # Copy bases files into the k8s-configs directory.
+    src_dir="${GENERATED_CODE_DIR}/${CLUSTER_STATE_DIR}/${K8S_CONFIGS_DIR}"
+    echo "Copying base files from ${src_dir} to ${K8S_CONFIGS_DIR}"
+    find "${src_dir}" -type f -maxdepth 1 | xargs -I {} cp {} "${K8S_CONFIGS_DIR}"
+
+    # Copy the k8s-configs/base directory, which is common code for all regions.
+    src_dir="${ENV_CODE_DIR}/${K8S_CONFIGS_DIR}/${BASE_DIR}"
+    echo "Copying ${src_dir} to ${K8S_CONFIGS_DIR}"
+    cp -pr "${src_dir}" "${K8S_CONFIGS_DIR}/"
   fi
 
+  region="$(ls "${ENV_CODE_DIR}/${K8S_CONFIGS_DIR}" | grep -v "${BASE_DIR}")"
+  src_dir="${ENV_CODE_DIR}/${K8S_CONFIGS_DIR}/${region}"
+
+  echo "Copying ${src_dir} to ${K8S_CONFIGS_DIR}"
+  cp -pr "${src_dir}" "${K8S_CONFIGS_DIR}/"
+
+  commit_msg="Initial commit of code for environment '${ENV}' in region '${region}' - ping-cloud-base@${PCB_COMMIT_SHA}"
+  echo "${commit_msg}"
+
   git add .
-  git commit -m "Initial commit of code for ${REGION_NAME} - ping-cloud-base@${PCB_COMMIT_SHA}"
+  git commit -m "${commit_msg}"
   push_with_retries "${PUSH_RETRY_COUNT}" "${GIT_BRANCH}"
 
   echo

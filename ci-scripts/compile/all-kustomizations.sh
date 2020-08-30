@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
-. ${SCRIPT_HOME}/../common.sh
+. ${SCRIPT_HOME}/../common.sh "${1}"
 
 STATUS=0
 
@@ -11,8 +11,8 @@ PING_CLOUD_BASE_DIR="${PROJECT_DIR}/k8s-configs"
 build_kustomizations_in_dir "${PING_CLOUD_BASE_DIR}"
 STATUS=${?}
 
-# All kustomizations in base test directory
-PING_CLOUD_TEST_DIR="${PROJECT_DIR}/test"
+# All kustomizations in dev cluster state directory
+PING_CLOUD_TEST_DIR="${PROJECT_DIR}/dev-cluster-state"
 
 build_kustomizations_in_dir "${PING_CLOUD_TEST_DIR}"
 BUILD_RESULT=${?}
@@ -21,7 +21,7 @@ test ${STATUS} -eq 0 && STATUS=${BUILD_RESULT}
 # Root kustomization.yaml file
 log "Building root ${PROJECT_DIR} kustomization.yaml"
 
-kustomize build "${PROJECT_DIR}" 1> /dev/null
+kustomize build --load_restrictor none "${PROJECT_DIR}" 1> /dev/null
 BUILD_RESULT=${?}
 test ${STATUS} -eq 0 && STATUS=${BUILD_RESULT}
 
