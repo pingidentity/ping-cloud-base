@@ -86,6 +86,16 @@ spec:
       labels:
         name: flux
     spec:
+      initContainers:
+      - name: add-envsubst
+        image: pingidentity/pingtoolkit:2006-1.0.0
+        command:
+        - sh
+        - -c
+        - cp /usr/local/bin/envsubst /tools
+        volumeMounts:
+        - name: tools-dir
+          mountPath: /tools
       containers:
       - args:
         - --memcached-service=
@@ -116,26 +126,38 @@ spec:
           timeoutSeconds: 5
         resources:
           requests:
-            cpu: 50m
-            memory: 64Mi
+            cpu: 500m
+            memory: 512Mi
           limits:
-            cpu: 300m
-            memory: 256Mi
+            cpu: 500m
+            memory: 512Mi
         volumeMounts:
         - mountPath: /etc/fluxd/ssh
           name: git-key
           readOnly: true
         - mountPath: /var/fluxd/keygen
           name: git-keygen
+        - name: tools-dir
+          mountPath: /usr/local/bin/envsubst
+          subPath: envsubst
+        - name: flux-command
+          mountPath: /usr/local/bin/flux-command.sh
+          subPath: flux-command.sh
       serviceAccountName: flux
       volumes:
       - name: git-key
         secret:
           defaultMode: 256
           secretName: flux-git-deploy
-      - emptyDir:
+      - name: tools-dir
+        emptyDir: {}
+      - name: git-keygen
+        emptyDir:
           medium: Memory
-        name: git-keygen
+      - name: flux-command
+        configMap:
+          name: flux-command
+          defaultMode: 0555
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -160,10 +182,10 @@ spec:
         image: memcached:1.5.20
         resources:
           requests:
-            cpu: 100m
+            cpu: 500m
             memory: 512Mi
           limits:
-            cpu: 100m
+            cpu: 500m
             memory: 512Mi
         imagePullPolicy: IfNotPresent
         name: memcached

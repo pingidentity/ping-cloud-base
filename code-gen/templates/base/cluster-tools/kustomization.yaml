@@ -10,9 +10,6 @@ resources:
 
 patchesStrategicMerge:
 
-### All secrets used by supporting tools ###
-- secrets.yaml
-
 ### Lets encrypt ACME certificate issuer for the cluster ###
 - |-
   apiVersion: certmanager.k8s.io/v1alpha1
@@ -22,14 +19,14 @@ patchesStrategicMerge:
   spec:
     acme:
       server: ${LETS_ENCRYPT_SERVER}
-      email: ${CLUSTER_NAME_LC}@${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+      email: ${CLUSTER_NAME_LC}@${DNS_ZONE}
       solvers:
       - dns01:
           route53:
             region: ${REGION}
         selector:
           dnsZones:
-          - ${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+          - ${DNS_ZONE}
 
 ### Lets encrypt ACME certificate for all endpoints ###
 - |-
@@ -40,8 +37,8 @@ patchesStrategicMerge:
     namespace: cert-manager
   spec:
     dnsNames:
-    - '*.${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}'
-    commonName: ${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}
+    - '*.${DNS_ZONE}'
+    commonName: ${DNS_ZONE}
 
 ### External DNS service account ###
 - |-
@@ -52,7 +49,6 @@ patchesStrategicMerge:
     namespace: external-dns
     annotations:
       purpose: service-account-for-external-dns
-      ${ROUTE53_IRSA_ARN_KEY_AND_VALUE}
 
 ### Additional args to the flux deployment object ###
 - |-
@@ -186,6 +182,4 @@ patchesJson6902:
     - op: add
       path: /spec/template/spec/containers/0/args/-
       value:
-        --domain-filter=${DNS_DOMAIN_PREFIX}${TENANT_DOMAIN}.
-
-${SERVICE_NGINX_PRIVATE_PATCH}
+        --domain-filter=${DNS_ZONE}.

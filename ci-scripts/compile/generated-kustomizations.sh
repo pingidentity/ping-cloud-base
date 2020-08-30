@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
-. ${SCRIPT_HOME}/../common.sh
+. ${SCRIPT_HOME}/../common.sh "${1}"
 
 # Generate the code first
 export TENANT_NAME="${EKS_CLUSTER_NAME}"
@@ -11,11 +11,52 @@ export TARGET_DIR=/tmp/sandbox
 
 STATUS=0
 
+VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
+${PING_IDENTITY_DEVOPS_KEY_BASE64}
+${TENANT_DOMAIN}
+${REGION}
+${SIZE}
+${LETS_ENCRYPT_SERVER}
+${PF_PD_BIND_PORT}
+${PF_PD_BIND_PROTOCOL}
+${PF_PD_BIND_USESSL}
+${PF_MIN_HEAP}
+${PF_MAX_HEAP}
+${PF_MIN_YGEN}
+${PF_MAX_YGEN}
+${CLUSTER_NAME}
+${CLUSTER_NAME_LC}
+${CLUSTER_STATE_REPO_URL}
+${CLUSTER_STATE_REPO_BRANCH}
+${ARTIFACT_REPO_URL}
+${PING_ARTIFACT_REPO_URL}
+${LOG_ARCHIVE_URL}
+${DEV_LOG_ARCHIVE_URL}
+${TEST_LOG_ARCHIVE_URL}
+${STAGE_LOG_ARCHIVE_URL}
+${PROD_LOG_ARCHIVE_URL}
+${BACKUP_URL}
+${DEV_BACKUP_URL}
+${TEST_BACKUP_URL}
+${STAGE_BACKUP_URL}
+${PROD_BACKUP_URL}
+${K8S_GIT_URL}
+${K8S_GIT_BRANCH}
+${REGISTRY_NAME}
+${SSH_ID_PUB}
+${SSH_ID_KEY_BASE64}
+${KNOWN_HOSTS_CLUSTER_STATE_REPO}
+${DNS_RECORD_SUFFIX}
+${DNS_DOMAIN_PREFIX}
+${ENVIRONMENT_TYPE}
+${PING_CLOUD_NAMESPACE}
+${KUSTOMIZE_BASE}'
+
 for SIZE in small medium large; do
   log "Building kustomizations for ${SIZE} environment"
 
   export SIZE
-  ${PROJECT_DIR}/code-gen/generate-cluster-state.sh
+  VARS="${VARS}" "${PROJECT_DIR}/code-gen/generate-cluster-state.sh"
 
   # Verify that all kustomizations are able to be built
   build_kustomizations_in_dir "${TARGET_DIR}"

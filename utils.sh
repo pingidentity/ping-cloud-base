@@ -279,7 +279,7 @@ build_kustomizations_in_dir() {
     KUSTOMIZATION_DIR=$(dirname ${KUSTOMIZATION_FILE})
 
     log "Processing kustomization.yaml in ${KUSTOMIZATION_DIR}"
-    kustomize build "${KUSTOMIZATION_DIR}" 1> /dev/null
+    kustomize build --load_restrictor none "${KUSTOMIZATION_DIR}" 1> /dev/null
     BUILD_RESULT=${?}
     log "Build result for directory ${KUSTOMIZATION_DIR}: ${BUILD_RESULT}"
 
@@ -298,8 +298,8 @@ build_kustomizations_in_dir() {
 #   $1 -> The directory that contains the files where variables must be substituted.
 ########################################################################################################################
 
-# The list of variables in the template files that will be substituted.
-VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
+# The list of variables in the template files that will be substituted by default.
+DEFAULT_VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
 ${PING_IDENTITY_DEVOPS_KEY_BASE64}
 ${ENVIRONMENT}
 ${IS_MULTI_CLUSTER}
@@ -321,11 +321,12 @@ ${BACKUP_URL}'
 
 substitute_vars() {
   local subst_dir=$1
+  local vars="${2:-${DEFAULT_VARS}}"
 
   for file in $(find "${subst_dir}" -type f); do
     local old_file="${file}.bak"
     cp "${file}" "${old_file}"
-    envsubst "${VARS}" < "${old_file}" > "${file}"
+    envsubst "${vars}" < "${old_file}" > "${file}"
     rm -f "${old_file}"
   done
 }
@@ -348,9 +349,69 @@ build_dev_deploy_file() {
   cp -pr "${dev_cluster_state_dir}" "${build_dir}"
 
   substitute_vars "${build_dir}"
-  kustomize build "${build_dir}/${cluster_type}" > "${deploy_file}"
+  kustomize build --load_restrictor none "${build_dir}/${cluster_type}" > "${deploy_file}"
   rm -rf "${build_dir}"
 
   test ! -z "${NAMESPACE}" && test "${NAMESPACE}" != 'ping-cloud' &&
       sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" "${deploy_file}"
+}
+
+########################################################################################################################
+# Add the provided variable and its value to the provided environment file. Also, export it as an environment variable.
+#
+# Arguments
+#   $1 -> The name of the file to which the variable and value should be added as a key-value pair.
+#   $2 -> The name of the variable.
+#   $3 -> The value of the variable.
+#   $4 -> Flag indicating whether or not to wrap value in between quotes.
+#
+# Returns
+#   0 -> if the variable was exported and written to the file.
+#   1 -> if the environment file or variable name is empty.
+########################################################################################################################
+export_variable() {
+  local env_file="$1"
+  local var="$2"
+  local val="$3"
+  local quote="${4:-false}"
+
+  if test -z "${env_file}" || test -z "${var}"; then
+    log 'env_file or var not provided'
+    return 1
+  fi
+
+  if "${quote}"; then
+    local nv="${var}=\"${val}\""
+  else
+    local nv="${var}=${val}"
+  fi
+
+  echo "${nv}" >> "${env_file}"
+  eval "export ${nv}"
+
+  return 0
+}
+
+########################################################################################################################
+# Add the provided variable and its value to the provided environment file, followed by a newline. Also, export it as
+# an environment variable.
+#
+# Arguments
+#   $1 -> The name of the file to which the variable and value should be added as a key-value pair.
+#   $2 -> The name of the variable.
+#   $3 -> The value of the variable.
+#   $4 -> Flag indicating whether or not to wrap value in between quotes.
+#
+# Returns
+#   0 -> if the variable was exported and written to the file.
+#   1 -> if the environment file or variable name is empty.
+########################################################################################################################
+export_variable_ln() {
+  export_variable "$1" "$2" "$3" "$4"
+  test $? -ne 0 && return 1
+
+  local env_file=$1
+  echo >> "${env_file}"
+
+  return 0
 }
