@@ -69,7 +69,7 @@ function verifyDescriptorJsonSchema() {
 
   # Verify no duplicate keys. Use jq to filter out duplicate keys and compare against descriptor.json.
   jq -r '.' "${descriptor_json}"  > "${regions_file}"
-  jq -S . "${descriptor_json}" | diff "${regions_file}" -
+  diff -w "${descriptor_json}" "${regions_file}" > /dev/null
   test $? -ne 0 && beluga_log "descriptor.json contains duplicate keys" && return 1
 
   # Verify there is at least 1 region name within descriptor.json file
