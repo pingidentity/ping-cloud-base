@@ -13,7 +13,7 @@ if [ ! -f "${TOPOLOGY_DESCRIPTOR_JSON}" ] || [ ! -s "${TOPOLOGY_DESCRIPTOR_JSON}
   beluga_log "${TOPOLOGY_DESCRIPTOR_JSON} does not exist or is empty - creating it"
 
   DESCRIPTOR_FILE=$(mktemp)
-  cat <<EOF > "${DESCRIPTOR_FILE}"
+  tr -d '[:space:]' <<EOF > "${DESCRIPTOR_FILE}"
 {
   "${REGION}": {
     "hostname": "${PD_CLUSTER_DOMAIN_NAME}",
