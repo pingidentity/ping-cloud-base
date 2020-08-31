@@ -198,7 +198,6 @@ pushd "${SCRIPT_HOME}" >/dev/null 2>&1
 # substituted at runtime by the continuous delivery tool running in cluster.
 DEFAULT_VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
 ${PING_IDENTITY_DEVOPS_KEY_BASE64}
-${SSH_ID_PUB}
 ${SSH_ID_KEY_BASE64}'
 
 VARS="${VARS:-${DEFAULT_VARS}}"
@@ -483,8 +482,8 @@ for ENV in ${ENVIRONMENTS}; do
     export_variable_ln "${CD_ENV_VARS}" PRIMARY_DNS_ZONE "\${PRIMARY_TENANT_DOMAIN}"
     export_variable "${CD_ENV_VARS}" CLUSTER_NAME "${TENANT_NAME}"
   else
-    export_variable "${CD_ENV_VARS}" DNS_ZONE "\${ENV}-\${TENANT_DOMAIN}"
-    export_variable_ln "${CD_ENV_VARS}" PRIMARY_DNS_ZONE "\${ENV}-\${PRIMARY_TENANT_DOMAIN}"
+    export_variable "${CD_ENV_VARS}" DNS_ZONE "\${ENVIRONMENT_TYPE}-\${TENANT_DOMAIN}"
+    export_variable_ln "${CD_ENV_VARS}" PRIMARY_DNS_ZONE "\${ENVIRONMENT_TYPE}-\${PRIMARY_TENANT_DOMAIN}"
     export_variable "${CD_ENV_VARS}" CLUSTER_NAME "${ENV}"
   fi
 
