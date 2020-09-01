@@ -6,9 +6,6 @@ resources:
 # Deploy cert-manager as part of the bootstrap process so that it's running before its CRD resources are created
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/cert-manager/base?ref=${K8S_GIT_BRANCH}
 
-# Deploy the network provider so that flux is able to talk to the Kubernetes API server under all circumstances
-- ${K8S_GIT_URL}/k8s-configs/cluster-tools/network-provider?ref=${K8S_GIT_BRANCH}
-
 # Deploy flux
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/git-ops?ref=${K8S_GIT_BRANCH}
 - known-hosts-config.yaml
