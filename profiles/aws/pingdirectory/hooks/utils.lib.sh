@@ -271,7 +271,8 @@ offline_enable_replication() {
     --backend-name "${USER_BACKEND_ID}" \
     --add "base-dn:${USER_BASE_DN}" \
     --set enabled:true \
-    --set db-cache-percent:35
+    --set db-cache-percent:35 \
+    --set import-thread-count:1
   config_status=$?
   beluga_log "configure base DN ${USER_BASE_DN} update status: ${config_status}"
   test ${config_status} -ne 0 && return ${config_status}
