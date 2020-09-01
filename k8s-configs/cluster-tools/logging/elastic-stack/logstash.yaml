@@ -611,7 +611,7 @@ spec:
           - name: LOG_FORMAT
             value: "json"
           - name: LOG_LEVEL
-            value: "info"
+            value: "warn"
           - name: PIPELINE_BATCH_DELAY
             value: "500"
           - name: PIPELINE_BATCH_SIZE
