@@ -200,6 +200,19 @@ if test -z "${UNINITIALIZED_DNS}"; then
   exit
 fi
 
+if ! "${INITIALIZE_REPLICATION_DATA}"; then
+  beluga_log "not initializing replication data because INITIALIZE_REPLICATION_DATA is false"
+
+  for DN in ${UNINITIALIZED_DNS}; do
+    beluga_log "adding DN ${DN} to the replication marker file ${REPL_INIT_MARKER_FILE}"
+    echo "${DN}" >> "${REPL_INIT_MARKER_FILE}"
+  done
+
+  touch "${POST_START_INIT_MARKER_FILE}"
+  beluga_log "post-start complete"
+  exit
+fi
+
 if test "${ORDINAL}" -eq 0 && is_primary_cluster; then
   beluga_log "seed server in the primary cluster"
 
@@ -219,7 +232,7 @@ if test "${ORDINAL}" -eq 0 && is_primary_cluster; then
     # replication data must be initialized to all servers from the primary server. The individual
     # servers cannot initialize themselves because the rollout happens in reverse order, and the
     # user base DN will not exist on the servers that haven't been rolled out yet.
-    beluga_log "restart - replication will be initialized to all servers for base DNs: ${UNINITIALIZED_DNS}"
+    beluga_log "restart - data will be initialized from seed server to all servers for base DNs: ${UNINITIALIZED_DNS}"
     command_to_run="initialize_all_servers_for_dn"
   fi
 else
