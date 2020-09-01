@@ -61,6 +61,12 @@ cleanUp() {
 bname="${0##*/}"
 tmp_dir=$(mktemp -td "${bname}.XXXXXXXXXX")
 
+# Generalized Time Syntax: https://tools.ietf.org/html/rfc4517#section-3.3.13
+generalized_date=`date -u +%Y%m%d`
+generalized_time=`date -u +%H%M%S`
+generalized_fraction_seconds=`date -u +%s`
+generalized_timestamp="${generalized_date}${generalized_time}.${generalized_fraction_seconds: -3}Z"
+
 ### Main Entry ###
 
 # This guarantees that cleanUp will always run, even if this script exits due to an error
@@ -153,6 +159,7 @@ ds-cfg-ldap-port: \${ldap_port}
 ds-cfg-ldaps-port: \${ldaps_port}
 ds-cfg-https-port: \${https_port}
 ds-cfg-replication-port: \${repl_port}
+createTimestamp: ${generalized_timestamp}
 EOF
 
 # Modifications to be applied to config.ldif.
@@ -180,6 +187,7 @@ objectClass: ds-cfg-branch
 objectClass: ds-mirrored-object
 objectClass: top
 cn: Server Instances
+createTimestamp: ${generalized_timestamp}
 
 EOF
 
@@ -308,6 +316,7 @@ ds-cfg-gateway-priority: 5
 ds-cfg-replication-port: ${local_repl_port}
 ds-cfg-replication-purge-minimum-retain-count: 1000
 ds-cfg-replication-purge-delay: 86400 s
+createTimestamp: ${generalized_timestamp}
 
 EOF
 fi
@@ -378,6 +387,7 @@ objectClass: ds-cfg-replication-domain
 ds-cfg-server-id: ${local_replica_id}
 cn: ${escaped_base_dn}
 ds-cfg-base-dn: ${base_dn}
+createTimestamp: ${generalized_timestamp}
 EOF
   fi
 
