@@ -540,9 +540,9 @@ spec:
       initContainers:
 
       - name: check-service-availability
-        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.5
+        image: pingcloud-docker.jfrog.io/pingidentity/ping-cloud-enrichment-bootstrap:1.0.0
         
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         command: ["sh", '$(CONTAINER_NAME).sh']
 
         env:
@@ -567,9 +567,9 @@ spec:
           value: "green"
 
       - name: create-enrichment-cache-files
-        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.5
+        image: pingcloud-docker.jfrog.io/pingidentity/ping-cloud-enrichment-bootstrap:1.0.0
         
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
 
@@ -598,8 +598,8 @@ spec:
 
       containers:
       - name: logstash
-        image: gcr.io/ping-identity/ping-cloud-logstash/ping-cloud-logstash:7.8.0.1
-      
+        image: pingcloud-docker.jfrog.io/pingidentity/ping-cloud-logstash:1.0.0
+        imagePullPolicy: IfNotPresent
         securityContext:
           runAsUser: 0
           runAsGroup: 1000
@@ -699,9 +699,9 @@ spec:
 
       # Sidecar enrichment container which updates Logstash dictionaries
       - name: enrichment-sidecar
-        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.5
+        image: pingcloud-docker.jfrog.io/pingidentity/ping-cloud-enrichment-bootstrap:1.0.0
         
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
 
