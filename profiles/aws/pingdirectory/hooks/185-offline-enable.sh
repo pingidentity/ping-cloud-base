@@ -56,6 +56,15 @@ cleanUp() {
   rm -rf "${tmp_dir}"
 }
 
+# Use this function for logging within offline-enable.sh.
+# This will making logging compatible within PingCloud and PingDirectory codebase.
+offline_log() {
+  if [ "$(type -t beluga_log)" = "beluga_log" ]; then
+    beluga_log $1 && exit 0
+  fi
+  echo $1 && exit 0
+}
+
 # Globals
 
 bname="${0##*/}"
@@ -79,9 +88,9 @@ shift
 
 # Verify that required parameters were injected into script.
 verifyParams
-test $? -ne 0 && beluga_log "Parameter checked failed" && exit 1
+test $? -ne 0 && offline_log "Parameter checked failed" && exit 1
 
-beluga_log "Begin for '${inst_root}'"
+offline_log "Begin for '${inst_root}'"
 
 # Paths relative to the install directory.
 conf="${inst_root}/config/config.ldif"
@@ -93,7 +102,7 @@ version=$(grep "^# *version *=" "${conf}" | sed "s/^.*=//g")
 # suitable for an LDIF "::" attribute. Note that this specifically does not
 # use PD's "base64" since that has a different syntax.
 if [ ! -f "${ads_crt_file}" ] || [ ! -s "${ads_crt_file}" ]; then
-  beluga_log "A certificate is needed for new local server instance, but none was specified"
+  offline_log "A certificate is needed for new local server instance, but none was specified"
   exit 1
 fi
 cert_base64=$(/bin/base64 < "${ads_crt_file}" | tr -d \\012)
@@ -105,18 +114,18 @@ sed -n "/^#/,/^[^#]/p" < "${conf}" | grep "^#" > "${header}"
 
 # Validate that descriptor.json has proper JSON syntax.
 validateDescriptorJsonSyntax
-test $? -ne 0 && beluga_log "Invalid descriptor.json file" && exit 1
+test $? -ne 0 && offline_log "Invalid descriptor.json file" && exit 1
 
 # Get the region name(s) from JSON descriptor file, and write it to regions.txt: global variable ${regions_file}.
 # Verify that each region has a region name without spaces, hostname, and replica count.
 regions_file="${tmp_dir}/regions.txt"
 verifyDescriptorJsonSchema
-test $? -ne 0 && beluga_log "Invalid content within descriptor.json file" && exit 1
+test $? -ne 0 && offline_log "Invalid content within descriptor.json file" && exit 1
 
 # Find and set the region name, hostname, and replica count of current PD server.
 # Set global variables ${local_region}, ${local_hostname}, ${local_count}.
 setLocalRegion
-test $? -ne 0 && beluga_log "Unable to detect local region for PD server" && exit 1
+test $? -ne 0 && offline_log "Unable to detect local region for PD server" && exit 1
 
 # Extract the local server instance base entry. It will be used as a
 # template for the other instances.
@@ -126,7 +135,7 @@ template="${tmp_dir}/template.ldif"
 # So prepend the hostname_prefix to the hostname from the descriptor file.
 if [ "${port_inc}" -eq 0 ]; then
   if [ -z "${hostname_prefix}" ]; then
-    beluga_log "hostname_prefix must be specified when port_inc is 0"
+    offline_log "hostname_prefix must be specified when port_inc is 0"
     exit 1
   fi
   ds_cfg_hostname="${hostname_prefix}-\${ordinal}.\${hostname}"
@@ -169,7 +178,7 @@ rm -f "${mods}"
 # Remove all existing server instances
 si_top_dn="cn=Server Instances,cn=Topology,cn=config"
 
-beluga_log "Removing all existing server instances"
+offline_log "Removing all existing server instances"
 grep -i "^dn:.*${si_top_dn}$" < "${conf}" | tac |
 while read -r dn; do
   cat <<EOF >> "${mods}"
@@ -179,7 +188,7 @@ changeType: delete
 EOF
 done
 
-beluga_log "Creating top level server instance DN '${si_top_dn}'"
+offline_log "Creating top level server instance DN '${si_top_dn}'"
 cat <<EOF >> "${mods}"
 dn: cn=Server Instances,cn=Topology,cn=config
 changeType: add
@@ -207,7 +216,7 @@ for region in ${regions}; do
     region_index=$(set -- $(grep -nxF "${region}" "${regions_file}" | tr : ' '); echo $1)
     region_index=$((region_index - 1)) # zero based
     if [ "$region_index" -eq -1 ]; then
-      beluga_log "Unable to find region '${region}' in '${regions_file}'"
+      offline_log "Unable to find region '${region}' in '${regions_file}'"
       exit 1
     fi
 
@@ -265,11 +274,11 @@ done
 
 # Make sure the inst number calculation is consistent. This should not fail.
 if [ "${local_ordinal}" -ne "${expected_local_ordinal}" ]; then
-  beluga_log "local_ordinal=${local_ordinal} is not equal to expected_local_ordinal=${expected_local_ordinal}"
+  offline_log "local_ordinal=${local_ordinal} is not equal to expected_local_ordinal=${expected_local_ordinal}"
   exit 1
 fi
 
-beluga_log "Replacing local server instance name to '${si_top_dn}'"
+offline_log "Replacing local server instance name to '${si_top_dn}'"
 cat <<EOF >> "${mods}"
 
 dn: cn=config
@@ -289,7 +298,7 @@ repl_port=$((repl_port_base + port_inc * local_ordinal))
 rs_dn="cn=replication server,cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config"
 
 if grep -qi "^ *dn: *${rs_dn}$" < "${conf}"; then
-  beluga_log "Updating existing replication entries for replication server DN '${rs_dn}'"
+  offline_log "Updating existing replication entries for replication server DN '${rs_dn}'"
   cat << EOF >> "${mods}"
 
 dn: ${rs_dn}
@@ -302,7 +311,7 @@ ds-cfg-replication-port: ${local_repl_port}
 
 EOF
 else
-  beluga_log "Adding new replication entries for replication server DN '${rs_dn}'"
+  offline_log "Adding new replication entries for replication server DN '${rs_dn}'"
   cat << EOF >> "${mods}"
 
 dn: ${rs_dn}
@@ -321,7 +330,7 @@ createTimestamp: ${generalized_timestamp}
 EOF
 fi
 
-beluga_log "removing DNs no longer being replicated"
+offline_log "removing DNs no longer being replicated"
 domains_dn='cn=domains,cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config'
 
 grep -i "^dn:.*${domains_dn}$" < "${conf}" |
@@ -345,7 +354,7 @@ while read -r dn; do
   "${is_replicated}" && continue
 
   # DN is no longer being replicated - must remove
-  beluga_log "'${dn}' is no longer being replicated - will remove"
+  offline_log "'${dn}' is no longer being replicated - will remove"
   cat >> "${mods}" << EOF
 ${dn}
 changeType: delete
@@ -362,7 +371,7 @@ for base_dn in "$@"; do
   local_replica_id=$(set -- ${local_replica_ids}; eval echo \${$((replica_index + 1))})
 
   if grep -qi "^ *dn: *${domain_dn}$" < "${conf}"; then
-    beluga_log "Updating existing replication domain ${base_dn}."
+    offline_log "Updating existing replication domain ${base_dn}."
     cat << EOF >> "${mods}"
 
 dn: ${domain_dn}
@@ -377,7 +386,7 @@ replace: ds-cfg-base-dn
 ds-cfg-base-dn: ${base_dn}
 EOF
   else
-    beluga_log "Adding new replication domain ${base_dn}."
+    offline_log "Adding new replication domain ${base_dn}."
     cat << EOF >> "${mods}"
 
 dn: ${domain_dn}
@@ -396,13 +405,13 @@ done
 
 # Apply the list of modifications above to the configuration in order to produce
 # a new configuration.
-beluga_log "Modifications being applied from ${mods} LDIF file:"
+offline_log "Modifications being applied from ${mods} LDIF file:"
 cat "${mods}"
 
-beluga_log "Calling ldifmodify for mods '${mods}'"
+offline_log "Calling ldifmodify for mods '${mods}'"
 ldifmodify -s "${conf}" -m "${mods}" -t "${conf}.new"
 if test $? -ne 0; then
-  beluga_log "error applying modifications in ${mods}"
+  offline_log "error applying modifications in ${mods}"
   exit 1
 fi
 
@@ -420,19 +429,19 @@ lines_removed=$((lines_with - lines_without))
 
 if [ ${lines_removed} -gt 0 ]; then
   mv -f "${conf_no_zero_ports}" "${conf}"
-  beluga_log "Removed ${lines_removed} zero (unused) ports from ${conf}."
+  offline_log "Removed ${lines_removed} zero (unused) ports from ${conf}."
 else
-  beluga_log "There are no zero (unused) ports in ${conf}."
+  offline_log "There are no zero (unused) ports in ${conf}."
 fi
 
 config_batch_file="${tmp_dir}/batch.dsconfig"
 
 admin_dn="cn=admin,cn=Topology Admin Users,cn=Topology,cn=config"
 if grep -qi "^ *dn: *${admin_dn}$" < "${conf}"; then
-  beluga_log "Admin user 'admin' already exists."
+  offline_log "Admin user 'admin' already exists."
 else
   # Create the topology admin user with the password from admin_pass_file.
-  beluga_log "Creating topology admin user 'admin'"
+  offline_log "Creating topology admin user 'admin'"
   cat > "${config_batch_file}" <<EOF
 dsconfig create-topology-admin-user \\
   --user-name "${admin_user}" \\
@@ -451,12 +460,12 @@ for group in replication-servers all-servers; do
 
   if grep -qi "^ *dn: *${group_dn}$" < "${conf}"; then
     # The group already exists.
-    beluga_log "group '${group}' already exists"
+    offline_log "group '${group}' already exists"
     subcommand="set-server-group-prop"
     verb="Updating"
   else
     # Create a new group.
-    beluga_log "group '${group}' does not already exist - creating"
+    offline_log "group '${group}' does not already exist - creating"
     subcommand="create-server-group"
     verb="Creating"
   fi
@@ -468,7 +477,7 @@ for group in replication-servers all-servers; do
     ordinal=$((ordinal + 1))
   done
 
-  beluga_log "${verb} '${group}' group with members: ${replication_members}."
+  offline_log "${verb} '${group}' group with members: ${replication_members}."
   cat >> "${config_batch_file}" <<EOF
 dsconfig ${subcommand} \\
   --group-name "${group}" \\
@@ -477,16 +486,16 @@ dsconfig ${subcommand} \\
 EOF
 done
 
-beluga_log "applying dsconfig from file ${config_batch_file}:"
+offline_log "applying dsconfig from file ${config_batch_file}:"
 cat "${config_batch_file}"
 dsconfig --no-prompt --offline --suppressMirroredDataChecks --batch-file "${config_batch_file}"
 if test $? -ne 0; then
-  beluga_log "error applying dsconfig commands in ${config_batch_file}"  
+  offline_log "error applying dsconfig commands in ${config_batch_file}"  
   exit 1
 fi
 
 # Restore the original header.
-beluga_log "restoring the original header"
+offline_log "restoring the original header"
 conf_no_header="${tmp_dir}/conf-no-header.ldif"
 
 sed -n '/^[^#]/,$p' < "${conf}" > "${conf_no_header}"
@@ -495,4 +504,4 @@ cat "${header}" "${conf_no_header}" > "${conf}"
 # The preferred permissions.
 chmod 600 "${conf}"
 
-beluga_log "End for '${inst_root}'"
+offline_log "End for '${inst_root}'"
