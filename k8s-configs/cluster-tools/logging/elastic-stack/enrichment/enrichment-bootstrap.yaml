@@ -11,9 +11,9 @@ spec:
       initContainers:
 
       - name: user-management
-        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.5
+        image: pingcloud-docker.jfrog.io/pingidentity/ping-cloud-enrichment-bootstrap:1.0.0
         
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
 
@@ -82,9 +82,9 @@ spec:
       containers:
 
       - name: elasticsearch-bootstrap
-        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.5
+        image: pingcloud-docker.jfrog.io/pingidentity/ping-cloud-enrichment-bootstrap:1.0.0
         
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
 

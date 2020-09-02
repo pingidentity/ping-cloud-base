@@ -72,8 +72,32 @@ data:
           source => "path"
           target => "kubernetes"
         }
+        json {
+          source => "message"
+        }
         mutate {
-          add_field => { "stream_name" => "%{[kubernetes][pod]}_%{[kubernetes][namespace]}_%{[kubernetes][container_name]}_%{[kubernetes][container_id]}" }
+          replace => {"message" => "%{log}"}
+        }
+        if ([kubernetes][container_name] == "pingfederate") {
+          if ([log] =~ "server-SIEM.log") {
+            mutate {
+              replace => { "log_type" => "PF_System_Log" }
+            }
+          } else if ([log] =~ "audit-SIEM.log") {
+            mutate {
+              replace => { "log_type" => "PF_Audit_Log" }
+            }
+          } else if ([log] =~ "provisioner-SIEM.log") {
+            mutate {
+              replace => { "log_type" => "PF_Provisioner_Log"}
+            } else {
+              grok {
+                  match => {
+                    message => ["%{GREEDYDATA:log_name}\.log %{GREEDYDATA:message}"]
+                  }
+              }
+            }
+          }
         }
       }
     }
@@ -117,21 +141,6 @@ data:
             response_code => 200
             add_field => {"log_type" => "Enrichment_System_Log"}
         }
-        tcp {
-            id => "pf_provision_in"
-            port => 20512
-            add_field => {"log_type" => "PF_Provisioner_Log"}
-        }
-        tcp {
-            id => "pf_system_in"
-            port => 20513
-            add_field => {"log_type" => "PF_System_Log"}
-        }
-        tcp {
-            id => "pf_audit_in"
-            port => 20514
-            add_field => {"log_type" => "PF_Audit_Log"}
-        }
         syslog {
           id => "pd_directory_in"
           port => 20515
@@ -149,10 +158,7 @@ data:
         if([log_type] == "PF_Audit_Log"){
             grok {
                 match => {
-                    "message" => [
-                        "\A%{SYSLOG5424PRI}%{SYSLOGTIMESTAMP:event_timestamp}%{SPACE}%{SYSLOGPROG} , %{GREEDYDATA:json_data}",
-                        "\A%{SYSLOG5424PRI}%{SYSLOGTIMESTAMP:event_timestamp}%{SPACE}%{SYSLOGPROG}%{SPACE}%{GREEDYDATA:json_data}"
-                        ]
+                  "log" => [ "%{GREEDYDATA:log_name} <%{NUMBER:trackingID}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z]{1,15}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             #Convert the injested data into Individual Fields for elasticsearch
@@ -164,6 +170,8 @@ data:
                 #Drop the original as you do not need it at this point.
                 mutate {
                     remove_field => "[json_data]"
+                    remove_field => "[log]"
+                    remove_field => "[pod_name]"
                 }
 
                 geoip {
@@ -241,10 +249,7 @@ data:
         if([log_type] == "PF_System_Log"){
             grok {
                 match => {
-                    "message" => [
-                        "\A%{SYSLOG5424PRI}%{SYSLOGTIMESTAMP:event_timestamp}%{SPACE}%{SYSLOGPROG} , %{GREEDYDATA:json_data}",
-                        "\A%{SYSLOG5424PRI}%{SYSLOGTIMESTAMP:event_timestamp}%{SPACE}%{SYSLOGPROG}%{SPACE}%{GREEDYDATA:json_data}"
-                        ]
+                  "log" => [ "%{GREEDYDATA:log_name} <%{NUMBER:trackingID}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z]{1,15}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
@@ -254,7 +259,27 @@ data:
             if([json_data]){
                 mutate {
                     remove_field => "[json_data]"
+                    remove_field => "[log]"
+                    remove_field => "[pod_name]"
                 }
+            }
+        }
+        
+        if([log_type] == "PF_Provisioner_Log"){
+            grok {
+                match => {
+                  "log" => [ "%{GREEDYDATA:log_name} <%{NUMBER:trackingID}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z]{1,15}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                }
+            }
+            json {
+              source => "json_data"
+            }
+            if([json_data]) {
+              mutate {
+                remove_field => "[json_data]"
+                remove_field => "[log]"
+                remove_field => "[pod_name]"
+              }
             }
         }
 
@@ -515,9 +540,9 @@ spec:
       initContainers:
 
       - name: check-service-availability
-        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.5
+        image: pingcloud-docker.jfrog.io/pingidentity/ping-cloud-enrichment-bootstrap:1.0.0
         
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         command: ["sh", '$(CONTAINER_NAME).sh']
 
         env:
@@ -542,9 +567,9 @@ spec:
           value: "green"
 
       - name: create-enrichment-cache-files
-        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.5
+        image: pingcloud-docker.jfrog.io/pingidentity/ping-cloud-enrichment-bootstrap:1.0.0
         
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
 
@@ -573,8 +598,8 @@ spec:
 
       containers:
       - name: logstash
-        image: gcr.io/ping-identity/ping-cloud-logstash/ping-cloud-logstash:7.8.0.1
-      
+        image: pingcloud-docker.jfrog.io/pingidentity/ping-cloud-logstash:1.0.0
+        imagePullPolicy: IfNotPresent
         securityContext:
           runAsUser: 0
           runAsGroup: 1000
@@ -674,9 +699,9 @@ spec:
 
       # Sidecar enrichment container which updates Logstash dictionaries
       - name: enrichment-sidecar
-        image: gcr.io/ping-identity/ping-cloud-enrichment-bootstrap/ping-cloud-enrichment-bootstrap:7.8.0.5
+        image: pingcloud-docker.jfrog.io/pingidentity/ping-cloud-enrichment-bootstrap:1.0.0
         
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
 

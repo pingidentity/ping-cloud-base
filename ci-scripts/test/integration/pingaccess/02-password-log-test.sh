@@ -2,12 +2,12 @@
 
 . "${PROJECT_DIR}"/ci-scripts/common.sh "${1}"
 
-testPasswordLog() {
+if skipTest "${0}"; then
+  log "Skipping test ${0}"
+  exit 0
+fi
 
-  if skipTest "${0}"; then
-    log "Skipping test ${0}"
-    exit 0
-  fi
+testPasswordLog() {
 
   TEMP_LOG_FILE=$(mktemp)
   PRODUCT_NAME=pingaccess
