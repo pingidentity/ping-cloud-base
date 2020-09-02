@@ -5,6 +5,8 @@
 
 ${VERBOSE} && set -x
 
+test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
+
 beluga_log "Uploading to location ${LOG_ARCHIVE_URL}"
 
 # Set required environment variables for skbn
