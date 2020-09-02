@@ -75,6 +75,18 @@
             </Policies>
             <DefaultRolloverStrategy max="4" />
         </RollingFile>
+        <RollingFile name="File4SIEM"
+                     fileName="${sys:pa.home}/log/pingaccess-SIEM.log"
+                     filePattern="${sys:pa.home}/log/pingaccess-SIEM.log.%i"
+                     ignoreExceptions="false">
+            <PingSyslogLayout facility="LOCAL0"> 
+                <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" properties="true" />
+            </PingSyslogLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="100 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="4" />
+        </RollingFile>
 
         <!-- API auditing asynchronous file logging configuration-->
         <RollingFile name="APIAuditLog-File"
@@ -88,6 +100,29 @@
                 -->
                 <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.subject}| %X{AUDIT.authMech}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode} %n</pattern>
             </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="100 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="4" />
+        </RollingFile>
+        <RollingFile name="Audit4SIEMFile"
+                     fileName="${sys:pa.home}/log/pingaccess_SIEM_audit.log"
+                     filePattern="${sys:pa.home}/log/pingaccess_SIEM_audit.log.%i"
+                     ignoreExceptions="false">
+            <PingSyslogLayout>
+              <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" >
+                <KeyValuePair key="date" value="$${date:yyyy-MM-dd'T'HH:mm:ssZ}"/>  
+                <KeyValuePair key="exchangeId" value="$${ctx:exchangeId:-}"/>
+                <KeyValuePair key="trackingId" value="$${ctx:AUDIT.trackingId:-}"/>
+                <KeyValuePair key="roundTripMS" value="$${ctx:AUDIT.roundTripMS:-}"/>
+                <KeyValuePair key="subject" value="$${ctx:AUDIT.subject:-}"/>
+                <KeyValuePair key="authMech" value="$${ctx:AUDIT.authMech:-}"/>
+                <KeyValuePair key="client" value="$${ctx:AUDIT.client:-}"/>
+                <KeyValuePair key="method" value="$${ctx:AUDIT.method:-}"/>
+                <KeyValuePair key="requestUri" value="$${ctx:AUDIT.requestUri:-}"/>
+                <KeyValuePair key="responseCode" value="$${ctx:AUDIT.responseCode:-}"/>
+              </JSONLayout>
+            </PingSyslogLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="100 MB" />
             </Policies>
@@ -683,6 +718,7 @@
         <!-- PingAccess Loggers-->
         <AsyncLogger name="com.pingidentity" level="${PA_LOG_LEVEL}" additivity="false" includeLocation="false">
             <AppenderRef ref="File"/>
+            <AppenderRef ref="File4SIEM" />
             <!--<AppenderRef ref="CONSOLE" />-->
             <!--<AppenderRef ref="SYSLOG" />-->
         </AsyncLogger>
@@ -703,6 +739,7 @@
         <!-- Audit Log Configuration-->
         <Logger name="apiaudit" level="INFO" additivity="false">
             <AppenderRef ref="APIAuditLog-File"/>
+            <AppenderRef ref="Audit4SIEMFile" />
             <!--<AppenderRef ref="ApiAuditLog-Database-Failover"/>-->
             <!--<AppenderRef ref="ApiAuditLog-SQLServer-Database-Failover"/>-->
             <!--<AppenderRef ref="ApiAuditLog-PostgreSQL"/>-->
@@ -710,6 +747,7 @@
         </Logger>
         <Logger name="engineaudit" level="INFO" additivity="false">
             <AppenderRef ref="EngineAuditLog-File"/>
+            <AppenderRef ref="Audit4SIEMFile" />
             <!--<AppenderRef ref="EngineAuditLog-Database-Failover"/>-->
             <!--<AppenderRef ref="EngineAuditLog-SQLServer-Database-Failover"/>-->
             <!--<AppenderRef ref="EngineAuditLog-PostgreSQL"/>-->
@@ -717,6 +755,7 @@
         </Logger>
         <Logger name="agentaudit" level="INFO" additivity="false">
             <AppenderRef ref="AgentAuditLog-File"/>
+            <AppenderRef ref="Audit4SIEMFile" />
             <!--<AppenderRef ref="AgentAuditLog-Database-Failover"/>-->
             <!--<AppenderRef ref="AgentAuditLog-SQLServer-Database-Failover"/>-->
             <!--<AppenderRef ref="AgentAuditLog-PostgreSQL"/>-->
