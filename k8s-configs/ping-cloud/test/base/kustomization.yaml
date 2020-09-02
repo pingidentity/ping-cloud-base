@@ -13,8 +13,6 @@ resources:
 - ../../base/pingfederate/aws
 - ../../base/pingaccess/aws
 - ../../base/pingaccess-was/aws
-- pingdataconsole
-- httpbin
 
 patchesStrategicMerge:
 - pingdirectory/wait-for-service.yaml
