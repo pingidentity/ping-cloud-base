@@ -200,14 +200,9 @@ if test -z "${UNINITIALIZED_DNS}"; then
   exit
 fi
 
+# If we're told to not initialize data, then skip it
 if ! "${INITIALIZE_REPLICATION_DATA}"; then
   beluga_log "not initializing replication data because INITIALIZE_REPLICATION_DATA is false"
-
-  for DN in ${UNINITIALIZED_DNS}; do
-    beluga_log "adding DN ${DN} to the replication marker file ${REPL_INIT_MARKER_FILE}"
-    echo "${DN}" >> "${REPL_INIT_MARKER_FILE}"
-  done
-
   touch "${POST_START_INIT_MARKER_FILE}"
   beluga_log "post-start complete"
   exit
