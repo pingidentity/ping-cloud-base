@@ -75,18 +75,13 @@
             </Policies>
             <DefaultRolloverStrategy max="4" />
         </RollingFile>
-        <RollingFile name="File4SIEM"
-                     fileName="${sys:pa.home}/log/pingaccess-SIEM.log"
-                     filePattern="${sys:pa.home}/log/pingaccess-SIEM.log.%i"
-                     ignoreExceptions="false">
+        <Console name="File4SIEM" target="SYSTEM_OUT">
             <PingSyslogLayout facility="LOCAL0"> 
-                <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" properties="true" />
+                <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" properties="true">
+                    <KeyValuePair key="log_purpose" value="System_SIEM"/>
+                </JSONLayout>
             </PingSyslogLayout>
-            <Policies>
-                <SizeBasedTriggeringPolicy size="100 MB" />
-            </Policies>
-            <DefaultRolloverStrategy max="4" />
-        </RollingFile>
+        </Console>
 
         <!-- API auditing asynchronous file logging configuration-->
         <RollingFile name="APIAuditLog-File"
@@ -105,12 +100,10 @@
             </Policies>
             <DefaultRolloverStrategy max="4" />
         </RollingFile>
-        <RollingFile name="Audit4SIEMFile"
-                     fileName="${sys:pa.home}/log/pingaccess_SIEM_audit.log"
-                     filePattern="${sys:pa.home}/log/pingaccess_SIEM_audit.log.%i"
-                     ignoreExceptions="false">
+        <Console name="Audit4SIEMFile" target="SYSTEM_OUT">
             <PingSyslogLayout>
               <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" >
+                <KeyValuePair key="log_purpose" value="Audit_SIEM"/>
                 <KeyValuePair key="date" value="$${date:yyyy-MM-dd'T'HH:mm:ssZ}"/>  
                 <KeyValuePair key="exchangeId" value="$${ctx:exchangeId:-}"/>
                 <KeyValuePair key="trackingId" value="$${ctx:AUDIT.trackingId:-}"/>
@@ -123,11 +116,7 @@
                 <KeyValuePair key="responseCode" value="$${ctx:AUDIT.responseCode:-}"/>
               </JSONLayout>
             </PingSyslogLayout>
-            <Policies>
-                <SizeBasedTriggeringPolicy size="100 MB" />
-            </Policies>
-            <DefaultRolloverStrategy max="4" />
-        </RollingFile>
+        </Console>
 
         <!-- API Audit log : JDBC appender template for Oracle
 

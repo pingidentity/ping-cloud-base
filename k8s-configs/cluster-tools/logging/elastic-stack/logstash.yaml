@@ -78,7 +78,7 @@ data:
         mutate {
           replace => {"message" => "%{log}"}
         }
-        if ([kubernetes][container_name] == "pingfederate") {
+        if ([kubernetes][container_name] =~ "pingfederate") {
           if ([log] =~ "server-SIEM.log") {
             mutate {
               replace => { "log_type" => "PF_System_Log" }
@@ -110,12 +110,12 @@ data:
             }
           }
         }
-        if ([kubernetes][container_name] == "pingaccess") {
-          if [log] =~ "pingaccess-SIEM.log") {
+        if ([kubernetes][container_name] =~ "pingaccess") {
+          if ([log] =~ "System_SIEM") {
             mutate {
               replace => { "log_type" => "PA_System_Log" }
             }
-          } else if ([log] =~ "pingaccess_SIEM_audit.log") {
+          } else if ([log] =~ "Audit_SIEM"){
               mutate {
                 replace => { "log_type" => "PA_Audit_Log" }
               }
@@ -171,16 +171,6 @@ data:
             codec => "json"
             response_code => 200
             add_field => {"log_type" => "Enrichment_System_Log"}
-        }
-        syslog {
-          id => "pd_directory_in"
-          port => 20515
-          type => syslog
-          add_field => {"log_type" => "PD_Access_Log"}
-          codec => multiline {
-            pattern => "^\s"
-            what => "previous"
-          }
         }
     }
     filter {
@@ -390,7 +380,7 @@ data:
         if([log_type] == "PA_Audit_Log"){
             grok {
                 match => {
-                  "message" => [ "%{GREEDYDATA:log_name} <%{NUMBER:trackingID}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z]{1,15}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}"]
+                  "message" => [ "<%{NUMBER:trackingID}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z]{1,15}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}"]
                 }
             }
             json {
@@ -448,10 +438,7 @@ data:
         if([log_type] == "PA_System_Log"){
             grok {
                 match => {
-                    "message" => [
-                        "\A%{SYSLOG5424PRI}%{SYSLOGTIMESTAMP:event_timestamp}%{SPACE}%{SYSLOGPROG} , %{GREEDYDATA:json_data}",
-                        "\A%{SYSLOG5424PRI}%{SYSLOGTIMESTAMP:event_timestamp}%{SPACE}%{SYSLOGPROG}%{SPACE}%{GREEDYDATA:json_data}"
-                        ]
+                    "message" => [ "<%{NUMBER:trackingID}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z]{1,15}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
@@ -537,6 +524,28 @@ data:
             hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
             ilm_enabled => true
             ilm_rollover_alias => "pd-failed-ops"
+            ilm_policy => "ping-2-day-retention"
+            user => "${LOGSTASH_ELASTICSEARCH_USER}"
+            password => "${LOGSTASH_ELASTICSEARCH_PASSWORD}"
+        }
+      }
+      if([log_type] == "PA_System_Log"){
+        elasticsearch {
+            id => "pa_system_out"
+            hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
+            ilm_enabled => true
+            ilm_rollover_alias => "pa-system"
+            ilm_policy => "ping-2-day-retention"
+            user => "${LOGSTASH_ELASTICSEARCH_USER}"
+            password => "${LOGSTASH_ELASTICSEARCH_PASSWORD}"
+        }
+      }
+      if([log_type] == "PA_Audit_Log"){
+        elasticsearch {
+            id => "pa_audit_out"
+            hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
+            ilm_enabled => true
+            ilm_rollover_alias => "pa-audit"
             ilm_policy => "ping-2-day-retention"
             user => "${LOGSTASH_ELASTICSEARCH_USER}"
             password => "${LOGSTASH_ELASTICSEARCH_PASSWORD}"
@@ -684,27 +693,6 @@ spec:
           - containerPort: 20510
             name: enrichment-in
             protocol: TCP
-          - containerPort: 20512
-            name: pf-provision-in
-            protocol: TCP
-          - containerPort: 20513
-            name: pf-system-in
-            protocol: TCP
-          - containerPort: 20514
-            name: pf-audit-in
-            protocol: TCP
-          - containerPort: 20515
-            name: pd-tcp
-            protocol: TCP
-          - containerPort: 20515
-            name: pd-udp
-            protocol: UDP
-          - containerPort: 20516
-            name: pa-system-in
-            protocol: TCP
-          - containerPort: 20517
-            name: pa-audit-in
-            protocol: TCP
 
         volumeMounts:
         - name: enrichment-logstash-config
@@ -794,21 +782,6 @@ spec:
       name: rest
     - port: 20510
       name: enrichment-in
-    - port: 20512
-      name: pf-provision-in
-    - port: 20513
-      name: pf-system-in
-    - port: 20514
-      name: pf-audit-in
-    - port: 20515
-      name: pd-tcp
-    - port: 20515
-      protocol: UDP
-      name: pd-udp
-    - port: 20516
-      name: pa-system-in
-    - port: 20517
-      name: pa-audit-in
 
 ---
 apiVersion: v1
