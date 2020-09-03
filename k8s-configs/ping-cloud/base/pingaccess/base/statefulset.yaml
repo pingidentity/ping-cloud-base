@@ -219,6 +219,19 @@ spec:
         lastUpdateReason: "NA"
     spec:
       serviceAccount: ping-serviceaccount
+      affinity:
+        podAntiAffinity:
+          # Add a soft requirement for each PA runtime pod to be deployed to a different AZ
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: role
+                      operator: In
+                      values:
+                        - pingaccess-engine
+                topologyKey: "failure-domain.beta.kubernetes.io/zone"
       initContainers:
       - name: pingaccess-init
         # FIXME: switch to same user as app
