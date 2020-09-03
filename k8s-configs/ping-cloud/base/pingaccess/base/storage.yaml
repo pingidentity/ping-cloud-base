@@ -5,6 +5,7 @@ kind: StorageClass
 metadata:
   name: pingaccess-gp2
 provisioner: kubernetes.io/aws-ebs
+volumeBindingMode: WaitForFirstConsumer
 parameters:
   type: gp2
   fsType: ext4
