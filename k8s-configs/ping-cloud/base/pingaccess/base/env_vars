@@ -8,6 +8,7 @@ REGION=us-west-2
 
 PA_ADMIN_SERVER=pingaccess-admin
 PA_ADMIN_PORT=9000
+PA_ENGINE_PORT=3000
 
 # Force stop the admin to terminate upon failure. See all references to stop_server
 # function in server profile for more details.

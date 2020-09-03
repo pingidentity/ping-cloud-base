@@ -3,7 +3,7 @@
 . "${HOOKS_DIR}/utils.lib.sh"
 
 version_endpoint="https://localhost:${PF_ADMIN_PORT}/pf-admin-api/v1/version"
-beluga_log "Starting PingFederate liveness probe.  Waiting for Admin API endpoint at ${version_endpoint}"
+beluga_log "Starting PingFederate Admin liveness probe.  Waiting for Admin API endpoint at ${version_endpoint}"
 
 get_version_response_code=$(curl -k \
   -s \
