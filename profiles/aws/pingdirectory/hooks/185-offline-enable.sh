@@ -79,7 +79,7 @@ shift
 
 # Verify that required parameters were injected into script.
 verifyParams
-test $? -ne 0 && beluga_log "Parameter checked failed" && exit 1
+test $? -ne 0 && exit 1
 
 beluga_log "Begin for '${inst_root}'"
 
@@ -93,7 +93,7 @@ version=$(grep "^# *version *=" "${conf}" | sed "s/^.*=//g")
 # suitable for an LDIF "::" attribute. Note that this specifically does not
 # use PD's "base64" since that has a different syntax.
 if [ ! -f "${ads_crt_file}" ] || [ ! -s "${ads_crt_file}" ]; then
-  beluga_log "A certificate is needed for new local server instance, but none was specified"
+  beluga_error "A certificate is needed for new local server instance, but none was specified"
   exit 1
 fi
 cert_base64=$(/bin/base64 < "${ads_crt_file}" | tr -d \\012)
@@ -105,18 +105,18 @@ sed -n "/^#/,/^[^#]/p" < "${conf}" | grep "^#" > "${header}"
 
 # Validate that descriptor.json has proper JSON syntax.
 validateDescriptorJsonSyntax
-test $? -ne 0 && beluga_log "Invalid descriptor.json file" && exit 1
+test $? -ne 0 && exit 1
 
 # Get the region name(s) from JSON descriptor file, and write it to regions.txt: global variable ${regions_file}.
 # Verify that each region has a region name without spaces, hostname, and replica count.
 regions_file="${tmp_dir}/regions.txt"
 verifyDescriptorJsonSchema
-test $? -ne 0 && beluga_log "Invalid content within descriptor.json file" && exit 1
+test $? -ne 0 && exit 1
 
 # Find and set the region name, hostname, and replica count of current PD server.
 # Set global variables ${local_region}, ${local_hostname}, ${local_count}.
 setLocalRegion
-test $? -ne 0 && beluga_log "Unable to detect local region for PD server" && exit 1
+test $? -ne 0 && exit 1
 
 # Extract the local server instance base entry. It will be used as a
 # template for the other instances.
@@ -126,7 +126,7 @@ template="${tmp_dir}/template.ldif"
 # So prepend the hostname_prefix to the hostname from the descriptor file.
 if [ "${port_inc}" -eq 0 ]; then
   if [ -z "${hostname_prefix}" ]; then
-    beluga_log "hostname_prefix must be specified when port_inc is 0"
+    beluga_error "hostname_prefix must be specified when port_inc is 0"
     exit 1
   fi
   ds_cfg_hostname="${hostname_prefix}-\${ordinal}.\${hostname}"
@@ -207,7 +207,7 @@ for region in ${regions}; do
     region_index=$(set -- $(grep -nxF "${region}" "${regions_file}" | tr : ' '); echo $1)
     region_index=$((region_index - 1)) # zero based
     if [ "$region_index" -eq -1 ]; then
-      beluga_log "Unable to find region '${region}' in '${regions_file}'"
+      beluga_error "Unable to find region '${region}' in '${regions_file}'"
       exit 1
     fi
 
@@ -265,7 +265,7 @@ done
 
 # Make sure the inst number calculation is consistent. This should not fail.
 if [ "${local_ordinal}" -ne "${expected_local_ordinal}" ]; then
-  beluga_log "local_ordinal=${local_ordinal} is not equal to expected_local_ordinal=${expected_local_ordinal}"
+  beluga_error "local_ordinal=${local_ordinal} is not equal to expected_local_ordinal=${expected_local_ordinal}"
   exit 1
 fi
 
@@ -402,7 +402,7 @@ cat "${mods}"
 beluga_log "Calling ldifmodify for mods '${mods}'"
 ldifmodify -s "${conf}" -m "${mods}" -t "${conf}.new"
 if test $? -ne 0; then
-  beluga_log "error applying modifications in ${mods}"
+  beluga_error "error applying modifications in ${mods}"
   exit 1
 fi
 
@@ -481,7 +481,7 @@ beluga_log "applying dsconfig from file ${config_batch_file}:"
 cat "${config_batch_file}"
 dsconfig --no-prompt --offline --suppressMirroredDataChecks --batch-file "${config_batch_file}"
 if test $? -ne 0; then
-  beluga_log "error applying dsconfig commands in ${config_batch_file}"  
+  beluga_error "error applying dsconfig commands in ${config_batch_file}"  
   exit 1
 fi
 
