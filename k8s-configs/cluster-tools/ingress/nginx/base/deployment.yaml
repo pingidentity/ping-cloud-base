@@ -54,10 +54,10 @@ spec:
           resources:
             limits:
               cpu: 1000m
-              memory: 500Mi
+              memory: 1Gi
             requests:
               cpu: 1000m
-              memory: 500Mi
+              memory: 1Gi
           args:
             - /nginx-ingress-controller
             - --configmap=$(POD_NAMESPACE)/nginx-configuration
