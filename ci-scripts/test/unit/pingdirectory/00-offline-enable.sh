@@ -12,6 +12,9 @@ is_multi_cluster() {
 beluga_log() {
   return 0
 }
+beluga_error() {
+  return 0
+}
 
 setUp() {
   # Mock empty files for script to avoid no directory exist error.

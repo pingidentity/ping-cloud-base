@@ -337,6 +337,16 @@ function beluga_log() {
   echo "${file_name}: ${timestamp} ${log_level} ${message}"
 }
 
+########################################################################################################################
+# Logs the provided message and set the log level to ERROR.
+#
+# Arguments
+#   $1 -> The log message.
+########################################################################################################################
+function beluga_error() {
+  beluga_log "$1" 'ERROR'
+}
+
 # These are needed by every script - so export them when this script is sourced.
 beluga_log "export config settings"
 export_config_settings

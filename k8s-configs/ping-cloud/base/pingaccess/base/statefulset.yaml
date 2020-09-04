@@ -109,17 +109,18 @@ spec:
           subPath: ds_env_vars
         readinessProbe:
           exec:
-            command:
-              - /opt/staging/hooks/85-readiness.sh
+            command: [ /opt/staging/hooks/85-pa-admin-readiness.sh ]
           initialDelaySeconds: 60
           periodSeconds: 5
           failureThreshold: 3
+          timeoutSeconds: 5
         livenessProbe:
           exec:
-            command: [ liveness.sh ]
+            command: [ /opt/staging/hooks/99-pa-admin-liveness.sh ]
           initialDelaySeconds: 60
           periodSeconds: 30
           failureThreshold: 4
+          timeoutSeconds: 5
         ports:
         - containerPort: 9000
         - containerPort: 9090
@@ -219,6 +220,19 @@ spec:
         lastUpdateReason: "NA"
     spec:
       serviceAccount: ping-serviceaccount
+      affinity:
+        podAntiAffinity:
+          # Add a soft requirement for each PA runtime pod to be deployed to a different AZ
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: role
+                      operator: In
+                      values:
+                        - pingaccess-engine
+                topologyKey: "failure-domain.beta.kubernetes.io/zone"
       initContainers:
       - name: pingaccess-init
         # FIXME: switch to same user as app
@@ -300,16 +314,18 @@ spec:
           subPath: ds_env_vars
         readinessProbe:
           exec:
-            command: [ liveness.sh ]
+            command: [ /opt/staging/hooks/99-pa-engine-liveness.sh ]
           initialDelaySeconds: 60
           periodSeconds: 5
           failureThreshold: 3
+          timeoutSeconds: 5
         livenessProbe:
           exec:
-            command: [ liveness.sh ]
+            command: [ /opt/staging/hooks/99-pa-engine-liveness.sh ]
           initialDelaySeconds: 60
           periodSeconds: 30
           failureThreshold: 4
+          timeoutSeconds: 5
         lifecycle:
           preStop:
             exec:

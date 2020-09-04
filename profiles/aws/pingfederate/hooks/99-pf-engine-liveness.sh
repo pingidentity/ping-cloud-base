@@ -4,7 +4,7 @@
 
 heartbeat_endpoint="https://localhost:${PF_ENGINE_PORT}/pf/heartbeat.ping"
 
-beluga_log "Starting PingFederate liveness probe.  Waiting for heartbeat endpoint at ${heartbeat_endpoint}"
+beluga_log "Starting PingFederate Engine liveness probe.  Waiting for heartbeat endpoint at ${heartbeat_endpoint}"
 
 get_url_response_code=$(curl -k \
   -s \
@@ -16,9 +16,9 @@ get_url_response_code=$(curl -k \
 exit_code=$?
 
 if test ${exit_code} -eq 0 && test 200 -eq ${get_url_response_code}; then
-  beluga_log "PingFederate heartbeat endpoint ready"
+  beluga_log "PingFederate Engine heartbeat endpoint ready"
   exit 0
 else
-  beluga_log "PingFederate heartbeat endpoint NOT ready"
+  beluga_log "PingFederate Engine heartbeat endpoint NOT ready"
   exit 1
 fi

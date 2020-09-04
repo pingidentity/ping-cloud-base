@@ -39,7 +39,7 @@ function verifyParams() {
   for param in ${params}; do
     local value=$(jq -r ".${param}" "${config_json}")
     if [ -z "${value}" ] || [ "${value}" = 'null' ]; then
-      beluga_log "Parameter '${param}' is missing from configuration file '${config_json}'"
+      beluga_error "Parameter '${param}' is missing from configuration file '${config_json}'"
       return 1
     fi
     eval $param=\"\${value}\"
@@ -51,11 +51,11 @@ function validateDescriptorJsonSyntax() {
   beluga_log "Validate the descriptor.json syntax"
 
   # Verify file isn't empty
-  ! test -s "${descriptor_json}" && beluga_log "descriptor.json is empty" && return 1
+  ! test -s "${descriptor_json}" && beluga_error "descriptor.json is empty" && return 1
 
   # Verify JSON is parsable
   local json_str=$( cat "${descriptor_json}" )
-  test $(jq -n "${json_str}" > /dev/null 2>&1; echo $?) != "0" && beluga_log "Invalid JSON descriptor file" && return 1
+  test $(jq -n "${json_str}" > /dev/null 2>&1; echo $?) != "0" && beluga_error "Invalid JSON descriptor file" && return 1
   return 0
 }
 
@@ -70,31 +70,31 @@ function verifyDescriptorJsonSchema() {
   # Verify no duplicate keys. Use jq to filter out duplicate keys and compare against descriptor.json.
   jq -r . "${descriptor_json}" | tr -d '[:space:]' > "${regions_file}"
   diff -waB "${descriptor_json}" "${regions_file}" > /dev/null
-  test $? -ne 0 && beluga_log "descriptor.json contains duplicate keys" && return 1
+  test $? -ne 0 && beluga_error "descriptor.json contains duplicate keys" && return 1
 
   # Verify there is at least 1 region name within descriptor.json file
-  test $(jq -r '(keys_unsorted|length)' "${descriptor_json}") -lt 1 && beluga_log "No regions found within \
+  test $(jq -r '(keys_unsorted|length)' "${descriptor_json}") -lt 1 && beluga_error "No regions found within \
     descriptor file: ${descriptor_json}" && return 1
 
   jq -r 'keys_unsorted | .[]' "${descriptor_json}" > "${regions_file}"
 
   # Verify spaces are not included in region names
-  test $( grep -q ' ' "${regions_file}" ) && beluga_log "There is at least 1 region name that contains \
+  test $( grep -q ' ' "${regions_file}" ) && beluga_error "There is at least 1 region name that contains \
     a space within descriptor file: ${descriptor_json}" && return 1
 
   for region in $(cat "${regions_file}"); do
 
     # Verify hostname is included
     local hostname=$(jq -r ".[\"${region}\"].hostname" "${descriptor_json}")
-    (test $? -ne 0 || test -z "${hostname}") && beluga_log "Empty hostname within descriptor file: ${descriptor_json}" && return 1
+    (test $? -ne 0 || test -z "${hostname}") && beluga_error "Empty hostname within descriptor file: ${descriptor_json}" && return 1
 
     # Verify replica count is included and is a number
     local count=$(jq -r ".[\"${region}\"].replicas" "${descriptor_json}")
-    (test $? -ne 0 || test -z "${count}") && beluga_log "Empty replica count within descriptor file: ${descriptor_json}" && return 1
+    (test $? -ne 0 || test -z "${count}") && beluga_error "Empty replica count within descriptor file: ${descriptor_json}" && return 1
 
     echo "${count}" | egrep -iq '^[0-9]'
     test $? -ne 0 && 
-      beluga_log "Invalid replica count within descriptor file: ${descriptor_json}. Replica count, ${count}, must \
+      beluga_error "Invalid replica count within descriptor file: ${descriptor_json}. Replica count, ${count}, must \
         match the regex: /^[0-9]/" && return 1
   done
 
@@ -116,12 +116,12 @@ function setLocalRegion() {
   done
 
   if [ -z "${local_hostname}" ]; then
-    beluga_log "Hostname for local cluster does not exist in the topology descriptor file"
+    beluga_log "Hostname for local cluster does not exist in the topology descriptor file" "ERROR"
     return 1
   fi
 
   if [ "${local_num_replicas}" -ne "${local_count}" ]; then
-    beluga_log "Mismatch in replicas for ${region} - expected: ${local_num_replicas}, actual: ${local_count}"
+    beluga_log "Mismatch in replicas for ${region} - expected: ${local_num_replicas}, actual: ${local_count}" "ERROR"
     return 1
   fi
 

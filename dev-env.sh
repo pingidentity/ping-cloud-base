@@ -378,10 +378,10 @@ EOF
     log
 
     log "Running integration tests"
-    for integration_test_dir in common pingaccess pingaccess-was pingdirectory pingfederate chaos; do
+    for integration_test_dir in pingaccess pingaccess-was pingdirectory pingfederate chaos; do
       log
       log "=========================================================="
-      log "      Executing tests in directory: ${integration_test_dir}            "
+      log "      Executing integration tests in directory: ${integration_test_dir}            "
       log "=========================================================="
       ci-scripts/test/integration/run-test.sh "${integration_test_dir}" "${TEST_ENV_VARS_FILE}"
     done

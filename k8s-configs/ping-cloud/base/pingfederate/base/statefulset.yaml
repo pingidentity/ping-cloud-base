@@ -245,6 +245,19 @@ spec:
         lastUpdateReason: "NA"
     spec:
       serviceAccount: ping-serviceaccount
+      affinity:
+        podAntiAffinity:
+          # Add a soft requirement for each PF runtime pod to be deployed to a different AZ
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: role
+                      operator: In
+                      values:
+                        - pingfederate-engine
+                topologyKey: "failure-domain.beta.kubernetes.io/zone"
       initContainers:
       - name: pingfederate-init
         # FIXME: switch to same user as app

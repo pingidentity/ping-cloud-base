@@ -63,16 +63,13 @@
             <DefaultRolloverStrategy max="4" />
         </RollingFile>
 
-        <RollingFile name="FILE-SIEM" fileName="${sys:pf.log.dir}/server-SIEM.log"
-                     filePattern="${sys:pf.log.dir}/server-SIEM.log.%i" ignoreExceptions="false">
+        <Console name="CONSOLE-SIEM" >
             <PingSyslogLayout>
-                <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" properties="true" />
+                <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" properties="true">
+                    <KeyValuePair key="log_purpose" value="System_SIEM" />
+                </JSONLayout>
             </PingSyslogLayout>
-            <Policies>
-                <SizeBasedTriggeringPolicy size="100 MB" />
-            </Policies>
-            <DefaultRolloverStrategy max="4" />
-        </RollingFile>
+        </Console>
         <!-- SAML Transaction log : A time/date based rolling appender -->
         <RollingFile name="SamlTransaction" fileName="${sys:pf.log.dir}/transaction.log"
                      filePattern="${sys:pf.log.dir}/transaction.log.%i"
@@ -180,9 +177,7 @@
             <DefaultRolloverStrategy max="4" />
         </RollingFile>
 
-        <RollingFile name="SecurityAudit2File4SIEM" fileName="${sys:pf.log.dir}/audit-SIEM.log"
-            filePattern="${sys:pf.log.dir}/audit-SIEM.log.%i"
-                     ignoreExceptions="false">
+        <Console name="SecurityAudit2Console4SIEM" >
             <PingSyslogLayout>
                 <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" >
                     <KeyValuePair key="dateTimeStamp" value="$${date:yyyy-MM-dd HH:mm:ss,S}"/>
@@ -199,13 +194,10 @@
                     <KeyValuePair key="adapterid" value="$${ctx:adapterid:-}"/>
                     <KeyValuePair key="description" value="$${ctx:description:-}"/>
                     <KeyValuePair key="responsetime" value="$${ctx:responsetime:-}"/>
+                    <KeyValuePair key="log_purpose" value="Audit_SIEM" />
                 </JSONLayout>
             </PingSyslogLayout>
-            <Policies>
-                <SizeBasedTriggeringPolicy size="100 MB" />
-            </Policies>
-            <DefaultRolloverStrategy max="4" />
-        </RollingFile>
+        </Console>
         <!-- Admin Audit log : A time/date based rolling appender -->
         <RollingFile name="AdminAudit" fileName="${sys:pf.log.dir}/admin.log"
                      filePattern="${sys:pf.log.dir}/admin.%d{yyyy-MM-dd}.log"
@@ -347,25 +339,16 @@
             </DefaultRolloverStrategy>
         </RollingFile>
 
-        <RollingFile name="ProvisionerLogForSIEM" fileName="${sys:pf.log.dir}/provisioner-SIEM.log"
-                     filePattern="${sys:pf.log.dir}/provisioner-SIEM.%d{yyyy-MM-dd}.log"
-                     ignoreExceptions="false">
+        <Console name="ProvisionerLogForSIEM" >
             <PingSyslogLayout>
-                <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" properties="true" />
+                <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" properties="true">
+                    <KeyValuePair key="log_purpose" value="Provisioner_SIEM"/>
+                </JSONLayout>
             </PingSyslogLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
-            <DefaultRolloverStrategy>
-                <Delete basePath="${sys:pf.log.dir}">
-                    <IfFileName glob="provisioner-SIEM.*.log">
-                        <IfAny>
-                            <IfAccumulatedFileCount exceeds="1" />
-                        </IfAny>
-                    </IfFileName>
-                </Delete>
-            </DefaultRolloverStrategy>
-        </RollingFile>
+        </Console>
         <!-- Outbound provisioner audit log: A time/date based rolling appender -->
         <RollingFile name="OutboundProvisionerEventToFile"
                      fileName="${sys:pf.log.dir}/provisioner-audit.log"
@@ -1488,7 +1471,7 @@
         <Logger name="org.sourceid.saml20.util.SystemUtil" level="INFO" additivity="false">
             <AppenderRef ref="CONSOLE" />
             <AppenderRef ref="FILE" />
-            <AppenderRef ref="FILE-SIEM" />
+            <AppenderRef ref="CONSOLE-SIEM" />
         </Logger>
         <!--
             Uncomment HttpRequestHeaderFilter logger for logging of all HTTP request header values
@@ -1522,7 +1505,7 @@
         <Logger name="com.pingidentity.common.util.ErrorHandler" level="INFO" additivity="false">
             <AppenderRef ref="CONSOLE" />
             <AppenderRef ref="FILE" />
-            <AppenderRef ref="FILE-SIEM" />
+            <AppenderRef ref="CONSOLE-SIEM" />
         </Logger>
         <Logger name="com.pingidentity.appserver.jetty" level="INFO" />
         <Logger name="org.apache" level="INFO" />
@@ -1569,7 +1552,7 @@
         <Logger name="org.sourceid.websso.profiles.sp.SpAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
             <appender-ref ref="SecurityAudit2File" />
-            <appender-ref ref="SecurityAudit2File4SIEM" />    
+            <appender-ref ref="SecurityAudit2Console4SIEM" />    
             <!--
                 <appender-ref ref="SecurityAuditToSQLServerDB-FAILOVER"/>
                 <appender-ref ref="SecurityAuditToOracleDB-FAILOVER"/>
@@ -1598,7 +1581,7 @@
         <Logger name="org.sourceid.websso.profiles.idp.IdpAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
             <appender-ref ref="SecurityAudit2File" />
-            <appender-ref ref="SecurityAudit2File4SIEM" />    
+            <appender-ref ref="SecurityAudit2Console4SIEM" />    
             <!--
                 <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
                 <appender-ref ref="SecurityAuditToCEFFile"/>
@@ -1627,7 +1610,7 @@
         <Logger name="org.sourceid.websso.profiles.idp.AsAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
             <appender-ref ref="SecurityAudit2File" />
-            <appender-ref ref="SecurityAudit2File4SIEM" />    
+            <appender-ref ref="SecurityAudit2Console4SIEM" />    
             <!--
                 <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
                 <appender-ref ref="SecurityAuditToCEFFile"/>
@@ -1655,7 +1638,7 @@
         <Logger name="org.sourceid.websso.profiles.idp.ClientRegistrationAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
             <appender-ref ref="SecurityAudit2File" />
-            <appender-ref ref="SecurityAudit2File4SIEM" />    
+            <appender-ref ref="SecurityAudit2Console4SIEM" />    
             <!--
                 <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
                 <appender-ref ref="SecurityAuditToCEFFile"/>
@@ -1683,7 +1666,7 @@
         <Logger name="org.sourceid.wstrust.log.STSAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
             <appender-ref ref="SecurityAudit2File" />
-            <appender-ref ref="SecurityAudit2File4SIEM" />    
+            <appender-ref ref="SecurityAudit2Console4SIEM" />    
             <!--
                 <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
                 <appender-ref ref="SecurityAuditToCEFFile"/>
@@ -1802,7 +1785,7 @@
 		  <AsyncRoot level="${PF_LOG_LEVEL}" includeLocation="false">
             <!-- <AppenderRef ref="CONSOLE" /> -->
             <AppenderRef ref="FILE" />
-            <AppenderRef ref="FILE-SIEM" />
+            <AppenderRef ref="CONSOLE-SIEM" />
         </AsyncRoot>
 
         <!--

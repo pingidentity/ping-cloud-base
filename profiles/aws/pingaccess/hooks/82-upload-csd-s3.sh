@@ -17,7 +17,7 @@ if ! cd "${OUT_DIR}"; then
   exit 1
 fi
 
-if ! sh ${SERVER_ROOT_DIR}/bin/collect-support-data.sh; then 
+if ! sh ${SERVER_ROOT_DIR}/bin/collect-support-data.sh --adminApiPassword "${PA_ADMIN_USER_PASSWORD}"; then
   beluga_log "Failed to execute:  ${SERVER_ROOT_DIR}/bin/collect-support-data.sh"
   exit 1
 fi
