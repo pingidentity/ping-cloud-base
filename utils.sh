@@ -415,3 +415,42 @@ export_variable_ln() {
 
   return 0
 }
+
+########################################################################################################################
+# Add the provided string as a simple comment to the specified file.
+#
+# Arguments
+#   $1 -> The name of the file to which the comment must be written.
+#   $2 -> The comment to write to the file.
+########################################################################################################################
+add_comment_to_file() {
+  local file="$1"
+  local comment="$2"
+  echo "# ${comment}" >> "${file}"
+}
+
+########################################################################################################################
+# Add a comment header to the specified file.
+#
+# Arguments
+#   $1 -> The name of the file to which the comment header must be written.
+########################################################################################################################
+add_header_to_file() {
+  local file="$1"
+  echo "############################################################" >> "${file}"
+}
+
+########################################################################################################################
+# Add the provided string as a comment header to the specified file.
+#
+# Arguments
+#   $1 -> The name of the file to which the comment must be written.
+#   $2 -> The comment to write to the file as a header.
+########################################################################################################################
+add_comment_header_to_file() {
+  local file="$1"
+  local comment="$2"
+  add_header_to_file "${file}"
+  add_comment_to_file "${file}" "${comment}"
+  add_header_to_file "${file}"
+}

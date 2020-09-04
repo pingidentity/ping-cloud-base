@@ -156,16 +156,30 @@ initialize_all_servers_for_dn() {
 }
 
 ########################################################################################################################
-# Stop the container to signal failure with the post-start sequence.
+# Perform finalization on exit.
+# - On non-zero exit, stop the container to signal failure with the post-start sequence.
+# - On success:
+#   - Add the marker file signaling that post-start is complete
+#   - Start tailing all log files
 ########################################################################################################################
-stop_container() {
-  beluga_log "stopping the container to signal failure with post-start sequence"
-  stop-server
+finalize() {
+  if test $? -ne 0; then
+    beluga_log "stopping the container to signal failure with post-start sequence"
+    stop-server
+  fi
+
+  touch "${POST_START_INIT_MARKER_FILE}"
+  beluga_log "post-start complete"
+
+  run_hook "100-tail-logs.sh"
 }
 
 
 # --- MAIN SCRIPT ---
 beluga_log "starting post-start hook"
+
+# Trap all exit codes from here on so finalization is run
+trap "finalize" EXIT
 
 # Remove the post-start initialization marker file so the pod isn't prematurely considered ready
 rm -f "${POST_START_INIT_MARKER_FILE}"
@@ -177,13 +191,13 @@ beluga_log "pod ordinal: ${ORDINAL}; multi-cluster: ${IS_MULTI_CLUSTER}"
 
 # Change PF user passwords
 change_pf_user_passwords
-test $? -ne 0 && stop_container
+test $? -ne 0 && exit 1
 
 # The request control allows encoded passwords, which is always required for topology admin users
 # ldapmodify allows a --passwordUpdateBehavior allow-pre-encoded-password=true to do the same
 ALLOW_PRE_ENCODED_PW_CONTROL='1.3.6.1.4.1.30221.2.5.51:true::MAOBAf8='
 change_user_password "cn=${ADMIN_USER_NAME}" "${ADMIN_USER_PASSWORD_FILE}" "${ALLOW_PRE_ENCODED_PW_CONTROL}"
-test $? -ne 0 && stop_container
+test $? -ne 0 && exit 1
 
 # --- NOTE ---
 # This assumes that data initialization is only required once for the initial data in the server profile.
@@ -195,17 +209,13 @@ test $? -ne 0 && stop_container
 # All base DNs are already initialized, so we're good.
 if test -z "${UNINITIALIZED_DNS}"; then
   beluga_log "replication is already initialized for all base DNs: ${DNS_TO_ENABLE}"
-  touch "${POST_START_INIT_MARKER_FILE}"
-  beluga_log "post-start complete"
-  exit
+  exit 0
 fi
 
 # If we're told to not initialize data, then skip it
 if ! "${INITIALIZE_REPLICATION_DATA}"; then
   beluga_log "not initializing replication data because INITIALIZE_REPLICATION_DATA is false"
-  touch "${POST_START_INIT_MARKER_FILE}"
-  beluga_log "post-start complete"
-  exit
+  exit 0
 fi
 
 if test "${ORDINAL}" -eq 0 && is_primary_cluster; then
@@ -219,9 +229,7 @@ if test "${ORDINAL}" -eq 0 && is_primary_cluster; then
       echo "${DN}" >> "${REPL_INIT_MARKER_FILE}"
     done
 
-    touch "${POST_START_INIT_MARKER_FILE}"
-    beluga_log "post-start complete"
-    exit
+    exit 0
   else
     # If the USER_BASE_DN changes (e.g. from dc=example,dc=com to dc=refinitiv,dc=com), then
     # replication data must be initialized to all servers from the primary server. The individual
@@ -244,9 +252,8 @@ for DN in ${UNINITIALIZED_DNS}; do
     beluga_log "adding DN ${DN} to the replication marker file ${REPL_INIT_MARKER_FILE}"
     echo "${DN}" >> "${REPL_INIT_MARKER_FILE}"
   else
-    stop_container
+    exit 1
   fi
 done
 
-touch "${POST_START_INIT_MARKER_FILE}"
-beluga_log "post-start complete"
+exit 0
