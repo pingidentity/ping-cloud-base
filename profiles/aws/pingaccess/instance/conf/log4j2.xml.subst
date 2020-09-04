@@ -76,7 +76,7 @@
             <DefaultRolloverStrategy max="4" />
         </RollingFile>
         <Console name="File4SIEM" target="SYSTEM_OUT">
-            <PingSyslogLayout facility="LOCAL0"> 
+            <PingSyslogLayout facility="LOCAL0" format="System_SIEM TIMESTAMP PROP(HOSTNAME) MESSAGE"> 
                 <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" properties="true">
                     <KeyValuePair key="log_purpose" value="System_SIEM"/>
                 </JSONLayout>
@@ -101,7 +101,7 @@
             <DefaultRolloverStrategy max="4" />
         </RollingFile>
         <Console name="Audit4SIEMFile" target="SYSTEM_OUT">
-            <PingSyslogLayout>
+            <PingSyslogLayout format="Audit_SIEM TIMESTAMP PROP(HOSTNAME) MESSAGE">
               <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" >
                 <KeyValuePair key="log_purpose" value="Audit_SIEM"/>
                 <KeyValuePair key="date" value="$${date:yyyy-MM-dd'T'HH:mm:ssZ}"/>  
