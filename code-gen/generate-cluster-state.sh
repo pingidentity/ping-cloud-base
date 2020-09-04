@@ -210,10 +210,16 @@ VARS="${VARS:-${DEFAULT_VARS}}"
 ########################################################################################################################
 add_derived_variables() {
   local env_file="$1"
+
+  add_comment_header_to_file "${CD_ENV_VARS}" 'Server profile variables'
   cat >> "${env_file}" <<EOF
 SERVER_PROFILE_URL=\${CLUSTER_STATE_REPO_URL}
 SERVER_PROFILE_BRANCH=\${CLUSTER_STATE_REPO_BRANCH}
 
+EOF
+
+  add_comment_header_to_file "${CD_ENV_VARS}" 'Public hostnames'
+  cat >> "${env_file}" <<EOF
 # Ping admin configuration required for admin access and clustering
 PD_PRIMARY_PUBLIC_HOSTNAME=pingdirectory-admin.\${PRIMARY_DNS_ZONE}
 PF_ADMIN_PUBLIC_HOSTNAME=pingfederate-admin.\${PRIMARY_DNS_ZONE}
@@ -295,37 +301,56 @@ echo ---
 CD_COMMON_VARS="$(mktemp)"
 echo "Writing CD common variables to file '${CD_COMMON_VARS}'"
 
+add_comment_header_to_file "${CD_COMMON_VARS}" 'The tenant name and size'
 export_variable "${CD_COMMON_VARS}" TENANT_NAME "${TENANT_NAME:-ci-cd}"
 export_variable_ln "${CD_COMMON_VARS}" SIZE "${SIZE:-small}"
 
-export_variable "${CD_COMMON_VARS}" IS_MULTI_CLUSTER "${IS_MULTI_CLUSTER}"
+add_comment_header_to_file "${CD_COMMON_VARS}" 'Multi-region parameters'
+export_variable_ln "${CD_COMMON_VARS}" IS_MULTI_CLUSTER "${IS_MULTI_CLUSTER}"
+
+add_comment_to_file "${CD_COMMON_VARS}" 'S3 bucket name for PingFederate adaptive clustering'
 export_variable_ln "${CD_COMMON_VARS}" CLUSTER_BUCKET_NAME "${CLUSTER_BUCKET_NAME}"
 
+add_comment_to_file "${CD_COMMON_VARS}" 'Region name, nick name and primary region name'
+add_comment_to_file "${CD_COMMON_VARS}" 'REGION and PRIMARY_REGION must be valid AWS region names'
+add_comment_to_file "${CD_COMMON_VARS}" 'Primary region should have the same value for REGION and PRIMARY_REGION'
 export_variable "${CD_COMMON_VARS}" REGION "${REGION:-us-east-2}"
 export_variable "${CD_COMMON_VARS}" REGION_NICK_NAME "${REGION_NICK_NAME:-${REGION}}"
 export_variable_ln "${CD_COMMON_VARS}" PRIMARY_REGION "${PRIMARY_REGION:-${REGION}}"
 
+add_comment_to_file "${CD_COMMON_VARS}" 'Tenant domain and primary tenant domain suffix for customer for region'
+add_comment_to_file "${CD_COMMON_VARS}" 'Primary region should have the same value for TENANT_DOMAIN and PRIMARY_TENANT_DOMAIN'
 TENANT_DOMAIN_NO_DOT_SUFFIX="${TENANT_DOMAIN%.}"
 export_variable "${CD_COMMON_VARS}" TENANT_DOMAIN "${TENANT_DOMAIN_NO_DOT_SUFFIX:-ci-cd.ping-oasis.com}"
 PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX="${PRIMARY_TENANT_DOMAIN%.}"
 export_variable_ln "${CD_COMMON_VARS}" PRIMARY_TENANT_DOMAIN "${PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX:-${TENANT_DOMAIN}}"
 
-export_variable "${CD_COMMON_VARS}" ARTIFACT_REPO_URL "${ARTIFACT_REPO_URL:-unused}"
+add_comment_header_to_file "${CD_COMMON_VARS}" 'S3 buckets'
+
+add_comment_to_file "${CD_COMMON_VARS}" 'Customer-specific artifacts URL for region'
+export_variable_ln "${CD_COMMON_VARS}" ARTIFACT_REPO_URL "${ARTIFACT_REPO_URL:-unused}"
+
+add_comment_to_file "${CD_COMMON_VARS}" 'Ping-hosted common artifacts URL'
 export_variable_ln "${CD_COMMON_VARS}" PING_ARTIFACT_REPO_URL \
   "${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
 
+add_comment_to_file "${CD_COMMON_VARS}" 'Customer-specific log and backup URLs for region'
 export_variable "${CD_COMMON_VARS}" LOG_ARCHIVE_URL "${LOG_ARCHIVE_URL:-unused}"
 export_variable_ln "${CD_COMMON_VARS}" BACKUP_URL "${BACKUP_URL:-unused}"
 
+add_comment_header_to_file "${CD_COMMON_VARS}" 'Miscellaneous ping-cloud-base variables'
+add_comment_to_file "${CD_COMMON_VARS}" 'Namespace where Ping apps are deployed'
 export_variable_ln "${CD_COMMON_VARS}" PING_CLOUD_NAMESPACE 'ping-cloud'
 
 PING_CLOUD_BASE_COMMIT_SHA=$(git rev-parse HEAD)
 CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 test "${CURRENT_GIT_BRANCH}" = 'HEAD' && CURRENT_GIT_BRANCH=$(git describe --tags --always)
 
+add_comment_to_file "${CD_COMMON_VARS}" 'The ping-cloud-base git URL and branch for base Kubernetes manifests'
 export_variable "${CD_COMMON_VARS}" K8S_GIT_URL "${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
 export_variable_ln "${CD_COMMON_VARS}" K8S_GIT_BRANCH "${K8S_GIT_BRANCH:-${CURRENT_GIT_BRANCH}}"
 
+add_comment_to_file "${CD_COMMON_VARS}" 'The name of the Docker image registry'
 export_variable_ln "${CD_COMMON_VARS}" REGISTRY_NAME "${REGISTRY_NAME:-docker.io}"
 
 export SSH_ID_PUB_FILE="${SSH_ID_PUB_FILE}"
@@ -391,6 +416,9 @@ fi
 # Get the known hosts contents for the cluster state repo host to pass it into flux.
 parse_url "${CLUSTER_STATE_REPO_URL}"
 echo "Obtaining known_hosts contents for cluster state repo host: ${URL_HOST}"
+
+add_comment_header_to_file "${CD_COMMON_VARS}" 'Cluster state repo details'
+add_comment_to_file "${CD_COMMON_VARS}" 'The known-hosts file to trust the cluster state repo server for git/ssh cloning'
 export_variable_ln "${CD_COMMON_VARS}" KNOWN_HOSTS_CLUSTER_STATE_REPO "$(ssh-keyscan -H "${URL_HOST}" 2>/dev/null)" true
 
 # Delete existing target directory and re-create it
@@ -428,7 +456,12 @@ for ENV in ${ENVIRONMENTS}; do
     export_variable "${CD_ENV_VARS}" CLUSTER_STATE_REPO_BRANCH "${ENV}"
   export_variable_ln "${CD_ENV_VARS}" CLUSTER_STATE_REPO_PATH "${REGION_NICK_NAME}"
 
-  export_variable "${CD_ENV_VARS}" ENVIRONMENT_TYPE "${ENV}"
+  add_comment_header_to_file "${CD_ENV_VARS}" 'Environment-specific variables'
+  add_comment_to_file "${CD_ENV_VARS}" 'Used by server profile hooks'
+  export_variable_ln "${CD_ENV_VARS}" ENVIRONMENT_TYPE "${ENV}"
+
+  add_comment_to_file "${CD_ENV_VARS}" 'Used by Kubernetes manifests'
+  export_variable "${CD_ENV_VARS}" ENV "${ENV}"
 
   # The base URL for kustomization files and environment will be different for each CDE.
   case "${ENV}" in
@@ -444,15 +477,25 @@ for ENV in ${ENVIRONMENTS}; do
   esac
 
   # Update the Let's encrypt server to use staging/production based on environment type.
+  add_comment_header_to_file "${CD_ENV_VARS}" 'Lets Encrypt server'
   case "${ENV}" in
     dev | test | stage)
       export_variable_ln "${CD_ENV_VARS}" LETS_ENCRYPT_SERVER 'https://acme-staging-v02.api.letsencrypt.org/directory'
+      ;;
+    prod)
+      export_variable_ln "${CD_ENV_VARS}" LETS_ENCRYPT_SERVER 'https://acme-v02.api.letsencrypt.org/directory'
+      ;;
+  esac
+
+  # Set PF variables based on ENV
+  add_comment_header_to_file "${CD_ENV_VARS}" 'PingFederate variables for environment'
+  case "${ENV}" in
+    dev | test | stage)
       export_variable "${CD_ENV_VARS}" PF_PD_BIND_PORT 1389
       export_variable "${CD_ENV_VARS}" PF_PD_BIND_PROTOCOL ldap
       export_variable_ln "${CD_ENV_VARS}" PF_PD_BIND_USESSL false
       ;;
     prod)
-      export_variable_ln "${CD_ENV_VARS}" LETS_ENCRYPT_SERVER 'https://acme-v02.api.letsencrypt.org/directory'
       export_variable "${CD_ENV_VARS}" PF_PD_BIND_PORT 5678
       export_variable "${CD_ENV_VARS}" PF_PD_BIND_PROTOCOL ldaps
       export_variable_ln "${CD_ENV_VARS}" PF_PD_BIND_USESSL true
@@ -477,18 +520,24 @@ for ENV in ${ENVIRONMENTS}; do
 
   # FIXME: PA/PA-WAS heap settings should be made variables
 
+  add_comment_header_to_file "${CD_ENV_VARS}" 'Cluster name variables'
   if "${IS_BELUGA_ENV}"; then
-    export_variable "${CD_ENV_VARS}" DNS_ZONE "\${TENANT_DOMAIN}"
-    export_variable_ln "${CD_ENV_VARS}" PRIMARY_DNS_ZONE "\${PRIMARY_TENANT_DOMAIN}"
     export_variable "${CD_ENV_VARS}" CLUSTER_NAME "${TENANT_NAME}"
   else
-    export_variable "${CD_ENV_VARS}" DNS_ZONE "\${ENVIRONMENT_TYPE}-\${TENANT_DOMAIN}"
-    export_variable_ln "${CD_ENV_VARS}" PRIMARY_DNS_ZONE "\${ENVIRONMENT_TYPE}-\${PRIMARY_TENANT_DOMAIN}"
     export_variable "${CD_ENV_VARS}" CLUSTER_NAME "${ENV}"
   fi
 
   CLUSTER_NAME_LC="$(echo "${CLUSTER_NAME}" | tr '[:upper:]' '[:lower:]')"
   export_variable_ln "${CD_ENV_VARS}" CLUSTER_NAME_LC "${CLUSTER_NAME_LC}"
+
+  add_comment_header_to_file "${CD_ENV_VARS}" 'DNS zones'
+  if "${IS_BELUGA_ENV}"; then
+    export_variable "${CD_ENV_VARS}" DNS_ZONE "\${TENANT_DOMAIN}"
+    export_variable_ln "${CD_ENV_VARS}" PRIMARY_DNS_ZONE "\${PRIMARY_TENANT_DOMAIN}"
+  else
+    export_variable "${CD_ENV_VARS}" DNS_ZONE "\${ENV}-\${TENANT_DOMAIN}"
+    export_variable_ln "${CD_ENV_VARS}" PRIMARY_DNS_ZONE "\${ENV}-\${PRIMARY_TENANT_DOMAIN}"
+  fi
 
   add_derived_variables "${CD_ENV_VARS}"
 
