@@ -23,7 +23,7 @@ actual_files() {
   BUCKET_URL_NO_PROTOCOL=${LOG_ARCHIVE_URL#s3://}
   BUCKET_NAME=$(echo "${BUCKET_URL_NO_PROTOCOL}" | cut -d/ -f1)
   DAYS_AGO=1
-  DIRECTORY_NAME=pingfederate
+  DIRECTORY_NAME=pingaccess
 
   aws s3api list-objects \
     --bucket "${BUCKET_NAME}" \
@@ -35,10 +35,10 @@ actual_files() {
   sort
 }
 
-testPingFederateRuntimeCsdUpload() {
+testPingAccessRuntimeCsdUpload() {
 
-    UPLOAD_CSD_JOB_NAME=pingfederate-periodic-csd-upload
-    UPLOAD_JOB="${PROJECT_DIR}/k8s-configs/ping-cloud/base/pingfederate/aws/periodic-csd-upload.yaml"
+    UPLOAD_CSD_JOB_NAME=pingaccess-periodic-csd-upload
+    UPLOAD_JOB="${PROJECT_DIR}/k8s-configs/ping-cloud/base/pingaccess/aws/periodic-csd-upload.yaml"
 
     log "Applying the CSD upload job"
     kubectl delete -f "${UPLOAD_JOB}" -n "${NAMESPACE}"
@@ -49,7 +49,7 @@ testPingFederateRuntimeCsdUpload() {
     kubectl wait --for=condition=complete --timeout=900s job.batch/${UPLOAD_CSD_JOB_NAME} -n "${NAMESPACE}"
 
     log "Expected CSD files:"
-    expected_files ${UPLOAD_CSD_JOB_NAME} | tee /tmp/expected.txt
+    expected_files "${UPLOAD_CSD_JOB_NAME}" | tee /tmp/expected.txt
 
     log "Actual CSD files:"
     actual_files | tee /tmp/actual.txt
@@ -67,10 +67,10 @@ testPingFederateRuntimeCsdUpload() {
     assertEquals 0 0
 }
 
-testPingFederateAdminCsdUpload() {
+testPingAccessAdminCsdUpload() {
 
-    UPLOAD_CSD_JOB_NAME=pingfederate-admin-periodic-csd-upload
-    UPLOAD_JOB="${PROJECT_DIR}/k8s-configs/ping-cloud/base/pingfederate/aws/periodic-csd-upload.yaml"
+    UPLOAD_CSD_JOB_NAME=pingaccess-admin-periodic-csd-upload
+    UPLOAD_JOB="${PROJECT_DIR}/k8s-configs/ping-cloud/base/pingaccess/aws/periodic-csd-upload.yaml"
 
     log "Applying the CSD upload job"
     kubectl delete -f "${UPLOAD_JOB}" -n "${NAMESPACE}"
