@@ -66,6 +66,7 @@ function verifyDescriptorJsonSchema() {
 
   beluga_log "Verifying descriptor.json content"
   cat "${descriptor_json}"
+  echo
 
   # Verify no duplicate keys. Use jq to filter out duplicate keys and compare against descriptor.json.
   jq -r . "${descriptor_json}" | tr -d '[:space:]' > "${regions_file}"
@@ -116,12 +117,41 @@ function setLocalRegion() {
   done
 
   if [ -z "${local_hostname}" ]; then
-    beluga_log "Hostname for local cluster does not exist in the topology descriptor file" "ERROR"
+    beluga_error "Hostname for local cluster does not exist in the topology descriptor file"
     return 1
   fi
 
+  if is_multi_cluster; then
+    # Retrieve short name of local_hostname
+    local local_short_name="${local_hostname%.${TENANT_DOMAIN}}"
+    if [ -z "${local_short_name}" ]; then
+      beluga_error "Unable to find short name from local server in descriptor file: ${local_hostname}"
+      return 1
+    fi
+
+    # Retrieve short name of PD cluster public hostname
+    local pd_cluster_public_short_name="${PD_CLUSTER_PUBLIC_HOSTNAME%.${PRIMARY_TENANT_DOMAIN}}"
+    if [ -z "${pd_cluster_public_short_name}" ]; then
+      beluga_error "Unable to find short name from PD cluster public hostname: ${PD_CLUSTER_PUBLIC_HOSTNAME}"
+      return 1
+    fi
+
+    # Both short names must match in order to establish a successful connection for multi-region
+    if [ "${local_short_name}" != "${pd_cluster_public_short_name}" ]; then
+      beluga_error "Local server short name from descriptor file '${local_short_name}' does not match the short \
+        name of the PD_CLUSTER_PUBLIC_HOSTNAME '${pd_cluster_public_short_name}'"
+      return 1
+    fi
+  else
+    # The local domain name must match the local hostname that is within the descriptor file
+    if [ "${local_hostname}" != "${LOCAL_DOMAIN_NAME}" ]; then
+      beluga_error "Local server from descriptor file '${local_hostname}' does not match the local domain of server '${LOCAL_DOMAIN_NAME}'"
+      return 1
+    fi
+  fi
+
   if [ "${local_num_replicas}" -ne "${local_count}" ]; then
-    beluga_log "Mismatch in replicas for ${region} - expected: ${local_num_replicas}, actual: ${local_count}" "ERROR"
+    beluga_error "Mismatch in replicas for ${region} - expected: ${local_num_replicas}, actual: ${local_count}"
     return 1
   fi
 
