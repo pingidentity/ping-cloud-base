@@ -4,6 +4,27 @@ See the [full list](https://github.com/pingidentity/pingidentity-devops-getting-
 
 The following charts show the additional environment variables that may be defined at the Kubernetes layer per release.
 
+### v1.6.0
+
+## PingAccess
+
+| Name               | Default Value            | Description  | Comments |
+| ------------------ | ------------------------ | ------------ | -------- |
+| RESTORE_BACKUP | true | A flag to skip the attempt to restore a backup from s3 bucket | Set value to false to ignore the attempt to restore backup |
+
+## PingAccess WAS
+
+| Name               | Default Value            | Description  | Comments |
+| ------------------ | ------------------------ | ------------ | -------- |
+| RESTORE_BACKUP | true | A flag to skip the attempt to restore a backup from s3 bucket | Set value to false to ignore the attempt to restore backup |
+
+## PingFederate
+
+| Name               | Default Value            | Description  | Comments |
+| ------------------ | ------------------------ | ------------ | -------- |
+| RESTORE_BACKUP | true | A flag to skip the attempt to restore a backup from s3 bucket | Set value to false to ignore the attempt to restore backup |
+
+
 ### v1.4.0
 
 ## PingAccess
