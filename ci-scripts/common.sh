@@ -313,11 +313,10 @@ set_log_file() {
 #
 # Arguments
 #   ${1} -> Name of log stream within CloudWatch
-#   ${2} -> Full pathname to log file within the container
+#   ${2} -> Full pathname to log file within the container, unused for default log stream tests
 #   ${3} -> Name of pod
 #   ${4} -> Name of container within pod
-#   ${5} -> Existence of any value specifies to inverse grep to look for all logs that do not match ${2}.
-#           This is used for default log stream in each product
+#   ${5} -> A flag indicating whether or not to run the default log stream test
 #
 # Returns
 #   0 -> If all logs present within Kubernetes are also present within CloudWatch
@@ -328,23 +327,32 @@ function log_events_exist() {
   local full_pathname=$2
   local pod=$3
   local container=$4
-  local inverse=
-  if [ -n "$5" ]; then
-    inverse="-v "
-  fi
-  local grep_args="${inverse}^${full_pathname}"
+  local default="${5:-false}"
   local temp_log_file=$(mktemp)
   local cwatch_log_events=
 
-  # Save current state of logs into a temp file
-  kubectl logs "${pod}" -c "${container}" -n "${NAMESPACE}" |
-    grep $grep_args |
-    tail -100 |
-    # remove all ansi escape sequences, remove all '\' and '-', remove '\r'
-    sed -E 's/'"$(printf '\x1b')"'\[(([0-9]+)(;[0-9]+)*)?[m,K,H,f,J]//g' |
-    sed -E 's/\\//g' |
-    sed -E 's/-//g' |
-    tr -d '\r' > "${temp_log_file}"
+  if "${default}"; then
+    # Save current state of logs into a temp file
+    kubectl logs "${pod}" -c "${container}" -n "${NAMESPACE}" |
+      # Filter out logs that belong to specific log file or that originate from SIEM logs not sent to CW
+      grep -vE "^(/opt/out/instance/log|<[0-9]+>)" |
+      tail -50 |
+      # remove all ansi escape sequences, remove all '\' and '-', remove '\r'
+      sed -E 's/'"$(printf '\x1b')"'\[(([0-9]+)(;[0-9]+)*)?[m,K,H,f,J]//g' |
+      sed -E 's/\\//g' |
+      sed -E 's/-//g' |
+      tr -d '\r' > "${temp_log_file}"
+  else
+    # Save current state of logs into a temp file
+    kubectl logs "${pod}" -c "${container}" -n "${NAMESPACE}" |
+      grep ^"${full_pathname}" |
+      tail -50 |
+      # remove all ansi escape sequences, remove all '\' and '-', remove '\r'
+      sed -E 's/'"$(printf '\x1b')"'\[(([0-9]+)(;[0-9]+)*)?[m,K,H,f,J]//g' |
+      sed -E 's/\\//g' |
+      sed -E 's/-//g' |
+      tr -d '\r' > "${temp_log_file}"
+  fi
 
   # Let the aws logs catch up to the kubectl logs in temp file
   sleep "${LOG_SYNC_SECONDS}"

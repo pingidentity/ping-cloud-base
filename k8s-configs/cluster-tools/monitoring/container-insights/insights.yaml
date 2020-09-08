@@ -433,6 +433,11 @@ data:
         @type rewrite_tag_filter
         <rule>
           key log
+          pattern /^\<[0-9]+\>/
+          tag clear
+        </rule>
+        <rule>
+          key log
           pattern /^\/opt\/out\/instance\/log\/admin-api/
           tag temp.admin_api_logs
         </rule>
@@ -491,6 +496,10 @@ data:
           pattern /^(.+)$/
           tag temp.unmatched_logs
         </rule>
+      </match>
+
+      <match clear>
+        @type null
       </match>
 
       <match temp.unmatched_logs>
