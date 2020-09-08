@@ -123,14 +123,14 @@ function setLocalRegion() {
 
   if is_multi_cluster; then
     # Retrieve short name of local_hostname
-    local local_short_name="${local_hostname%.${TENANT_DOMAIN}}"
+    local local_short_name="${local_hostname%%.*}"
     if [ -z "${local_short_name}" ]; then
       beluga_error "Unable to find short name from local server in descriptor file: ${local_hostname}"
       return 1
     fi
 
     # Retrieve short name of PD cluster public hostname
-    local pd_cluster_public_short_name="${PD_CLUSTER_PUBLIC_HOSTNAME%.${PRIMARY_TENANT_DOMAIN}}"
+    local pd_cluster_public_short_name="${PD_CLUSTER_PUBLIC_HOSTNAME%%.*}"
     if [ -z "${pd_cluster_public_short_name}" ]; then
       beluga_error "Unable to find short name from PD cluster public hostname: ${PD_CLUSTER_PUBLIC_HOSTNAME}"
       return 1
