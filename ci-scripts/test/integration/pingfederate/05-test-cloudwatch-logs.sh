@@ -7,22 +7,10 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-readonly PF_LOG_STREAM_SUFFIX="pingfederate-admin-0_${NAMESPACE}_pingfederate-admin"
-readonly PF_ENGINE_POD=$(kubectl get pod -o name -n "${NAMESPACE}" -l role=pingfederate-engine | head -1 | cut -d/ -f2)
-readonly PF_ENGINE_LOG_STREAM_SUFFIX="${PF_ENGINE_POD}_${NAMESPACE}_pingfederate"
-
-function main() {
-  local status=0
-  test_pf_log_streams_exist; test $? -ne 0 && status=1
-  test_pf_jvm_garbage_collection_log_events_exist; test $? -ne 0 && status=1
-  test_pf_server_log_events_exist; test $? -ne 0 && status=1
-  test_pf_init_log_events_exist; test $? -ne 0 && status=1
-  test_pf_admin_log_events_exist; test $? -ne 0 && status=1
-  test_pf_admin_api_log_events_exist; test $? -ne 0 && status=1
-  test_pf_provisioner_log_events_exist; test $? -ne 0 && status=1
-  test_pf_default_log_events_exist; test $? -ne 0 && status=1
-  echo "Finished $0 with status: ${status}"
-  return "${status}"
+oneTimeSetUp() {
+  readonly PF_LOG_STREAM_SUFFIX="pingfederate-admin-0_${NAMESPACE}_pingfederate-admin"
+  readonly PF_ENGINE_POD=$(kubectl get pod -o name -n "${NAMESPACE}" -l role=pingfederate-engine | head -1 | cut -d/ -f2)
+  readonly PF_ENGINE_LOG_STREAM_SUFFIX="${PF_ENGINE_POD}_${NAMESPACE}_pingfederate"
 }
 
 # Log streams are prefixed with the format of <log_name>_logs
@@ -32,13 +20,13 @@ function main() {
 
 function test_pf_log_streams_exist() {
   local log_stream_prefixes="jvm_garbage_collection server init admin_logs admin_api provisioner_logs"
-  echo "Running: test_pf_log_streams_exist"
+
+  local success=0
   if ! log_streams_exist "${log_stream_prefixes}"; then
-    echo "Fail: test_pf_log_streams_exist"
-    return 1
+    success=1
   fi
-  echo "Pass: test_pf_log_streams_exist"
-  return 0
+
+  assertEquals 0 ${success}
 }
 
 function test_pf_jvm_garbage_collection_log_events_exist() {
@@ -46,13 +34,13 @@ function test_pf_jvm_garbage_collection_log_events_exist() {
   local full_pathname=/opt/out/instance/log/jvm-garbage-collection.log
   local pod=pingfederate-admin-0
   local container=pingfederate-admin
-  echo "Running: test_pf_jvm_garbage_collection_log_events_exist"
+
+  local success=0
   if ! log_events_exist "${log_stream}" "${full_pathname}" "${pod}" "${container}"; then
-    echo "Fail: test_pf_jvm_garbage_collection_log_events_exist"
-    return 1
+    success=1
   fi
-  echo "Pass: test_pf_jvm_garbage_collection_log_events_exist"
-  return 0
+
+  assertEquals 0 ${success}
 }
 
 function test_pf_server_log_events_exist() {
@@ -60,13 +48,13 @@ function test_pf_server_log_events_exist() {
   local full_pathname=/opt/out/instance/log/server.log
   local pod=pingfederate-admin-0
   local container=pingfederate-admin
-  echo "Running: test_pf_server_log_events_exist"
+
+  local success=0
   if ! log_events_exist "${log_stream}" "${full_pathname}" "${pod}" "${container}"; then
-    echo "Fail: test_pf_server_log_events_exist"
-    return 1
+    success=1
   fi
-  echo "Pass: test_pf_server_log_events_exist"
-  return 0
+
+  assertEquals 0 ${success}
 }
 
 function test_pf_init_log_events_exist() {
@@ -74,13 +62,13 @@ function test_pf_init_log_events_exist() {
   local full_pathname=/opt/out/instance/log/init.log
   local pod=pingfederate-admin-0
   local container=pingfederate-admin
-  echo "Running: test_pf_init_log_events_exist"
+
+  local success=0
   if ! log_events_exist "${log_stream}" "${full_pathname}" "${pod}" "${container}"; then
-    echo "Fail: test_pf_init_log_events_exist"
-    return 1
+    success=1
   fi
-  echo "Pass: test_pf_init_log_events_exist"
-  return 0
+
+  assertEquals 0 ${success}
 }
 
 function test_pf_admin_log_events_exist() {
@@ -88,13 +76,13 @@ function test_pf_admin_log_events_exist() {
   local full_pathname=/opt/out/instance/log/admin.log
   local pod=pingfederate-admin-0
   local container=pingfederate-admin
-  echo "Running: test_pf_admin_log_events_exist"
+
+  local success=0
   if ! log_events_exist "${log_stream}" "${full_pathname}" "${pod}" "${container}"; then
-    echo "Fail: test_pf_admin_log_events_exist"
-    return 1
+    success=1
   fi
-  echo "Pass: test_pf_admin_log_events_exist"
-  return 0
+
+  assertEquals 0 ${success}
 }
 
 function test_pf_admin_api_log_events_exist() {
@@ -102,13 +90,13 @@ function test_pf_admin_api_log_events_exist() {
   local full_pathname=/opt/out/instance/log/admin-api.log
   local pod=pingfederate-admin-0
   local container=pingfederate-admin
-  echo "Running: test_pf_admin_api_log_events_exist"
+
+  local success=0
   if ! log_events_exist "${log_stream}" "${full_pathname}" "${pod}" "${container}"; then
-    echo "Fail: test_pf_admin_api_log_events_exist"
-    return 1
+    success=1
   fi
-  echo "Pass: test_pf_admin_api_log_events_exist"
-  return 0
+
+  assertEquals 0 ${success}
 }
 
 function test_pf_provisioner_log_events_exist() {
@@ -116,29 +104,35 @@ function test_pf_provisioner_log_events_exist() {
   local full_pathname=/opt/out/instance/log/provisioner.log
   local pod=pingfederate-admin-0
   local container=pingfederate-admin
-  echo "Running: test_pf_provisioner_log_events_exist"
+
+  local success=0
   if ! log_events_exist "${log_stream}" "${full_pathname}" "${pod}" "${container}"; then
-    echo "Fail: test_pf_provisioner_log_events_exist"
-    return 1
+    success=1
   fi
-  echo "Pass: test_pf_provisioner_log_events_exist"
-  return 0
+
+  assertEquals 0 ${success}
 }
 
 function test_pf_default_log_events_exist() {
   local log_stream="$PF_LOG_STREAM_SUFFIX"
-  local full_pathname=/opt/out/instance/log/
+  local full_pathname=unused_placeholder_variable
   local pod=pingfederate-admin-0
   local container=pingfederate-admin
-  local inverse=true
-  echo "Running: test_pf_default_log_events_exist"
-  if ! log_events_exist "${log_stream}" "${full_pathname}" "${pod}" "${container}" "${inverse}"; then
-    echo "Fail: test_pf_default_log_events_exist"
-    return 1
+  local default=true
+
+  local success=0
+  if ! log_events_exist "${log_stream}" "${full_pathname}" "${pod}" "${container}" "${default}"; then
+    success=1
   fi
-  echo "Pass: test_pf_default_log_events_exist"
-  return 0
+
+  assertEquals 0 ${success}
 }
 
-main "$@"
-exit $?
+# When arguments are passed to a script you must
+# consume all of them before shunit is invoked
+# or your script won't run.  For integration
+# tests, you need this line.
+shift $#
+
+# load shunit
+. ${SHUNIT_PATH}

@@ -14,7 +14,7 @@ oneTimeSetUp() {
 testPaWasLogStreamsExist() {
   local log_stream_prefixes="pingaccess_api_audit pingaccess_logs"
 
-  success=0
+  local success=0
   if ! log_streams_exist "${log_stream_prefixes}"; then
     success=1
   fi
@@ -28,7 +28,7 @@ testPaWasPingaccessLogEventsExist() {
   local pod=pingaccess-was-admin-0
   local container=pingaccess-was-admin
 
-  success=0
+  local success=0
   if ! log_events_exist "${log_stream}" "${full_pathname}" "${pod}" "${container}"; then
     success=1
   fi
@@ -42,7 +42,7 @@ testPaWasApiAuditLogEventsExist() {
   local pod=pingaccess-was-admin-0
   local container=pingaccess-was-admin
 
-  success=0
+  local success=0
   if ! log_events_exist "${log_stream}" "${full_pathname}" "${pod}" "${container}"; then
     success=1
   fi
@@ -52,13 +52,13 @@ testPaWasApiAuditLogEventsExist() {
 
 testPaWasDefaultLogEventsExist() {
   local log_stream="$PA_WAS_ADMIN_LOG_STREAM_SUFFIX"
-  local full_pathname=/opt/out/instance/log
+  local full_pathname=unused_placeholder_variable
   local pod=pingaccess-was-admin-0
   local container=pingaccess-was-admin
-  local inverse=true
+  local default=true
 
-  success=0
-  if ! log_events_exist "${log_stream}" "${full_pathname}" "${pod}" "${container}" "${inverse}"; then
+  local success=0
+  if ! log_events_exist "${log_stream}" "${full_pathname}" "${pod}" "${container}" "${default}"; then
     success=1
   fi
 
