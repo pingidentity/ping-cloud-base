@@ -577,7 +577,7 @@ for ENV in ${ENVIRONMENTS}; do
   cp -r "${REGION_DIR}/." "${ENV_DIR}/${REGION_NICK_NAME}"
   cp "${CD_ENV_VARS}" "${ENV_DIR}/${REGION_NICK_NAME}/env_vars"
 
-  substitute_vars "${ENV_DIR}" "${VARS}"
+  substitute_vars "${ENV_DIR}" "${VARS}" orig-secrets.yaml
 
   # Regional enablement - add admins, backups, etc. to primary.
   if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
