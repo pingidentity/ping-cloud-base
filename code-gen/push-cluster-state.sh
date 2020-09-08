@@ -13,6 +13,7 @@
 #       i.e. dev, test, stage, prod.
 #   PUSH_RETRY_COUNT -> The number of times to try pushing to the cluster state repo with a 2s sleep between each
 #       attempt to avoid IAM permission to repo sync issue.
+#   PUSH_TO_SERVER -> A flag indicating whether or not to push the code to the remote server. Defaults to true.
 
 # Global variables
 K8S_CONFIGS_DIR='k8s-configs'
@@ -88,6 +89,7 @@ GENERATED_CODE_DIR="${GENERATED_CODE_DIR:-/tmp/sandbox}"
 IS_PRIMARY="${IS_PRIMARY:-false}"
 
 PUSH_RETRY_COUNT="${PUSH_RETRY_COUNT:-30}"
+PUSH_TO_SERVER="${PUSH_TO_SERVER:-true}"
 PCB_COMMIT_SHA=$(cat "${GENERATED_CODE_DIR}"/pcb-commit-sha.txt)
 
 for ENV in ${ENVIRONMENTS}; do
@@ -157,7 +159,12 @@ for ENV in ${ENVIRONMENTS}; do
 
   git add .
   git commit -m "${commit_msg}"
-  push_with_retries "${PUSH_RETRY_COUNT}" "${GIT_BRANCH}"
+
+  if "${PUSH_TO_SERVER}"; then
+    push_with_retries "${PUSH_RETRY_COUNT}" "${GIT_BRANCH}"
+  else
+    echo "Not pushing changes to the server for branch '${GIT_BRANCH}'"
+  fi
 
   echo
   echo ---

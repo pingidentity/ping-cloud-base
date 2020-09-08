@@ -296,6 +296,8 @@ build_kustomizations_in_dir() {
 #
 # Arguments
 #   $1 -> The directory that contains the files where variables must be substituted.
+#   $2 -> The variables to be substituted. Check DEFAULT_VARS below for the expected format.
+#   $3 -> Optional comma-separated filenames to exclude from substitution.
 ########################################################################################################################
 
 # The list of variables in the template files that will be substituted by default.
@@ -320,10 +322,22 @@ ${LOG_ARCHIVE_URL}
 ${BACKUP_URL}'
 
 substitute_vars() {
-  local subst_dir=$1
-  local vars="${2:-${DEFAULT_VARS}}"
+  local subst_dir="$1"
+  local vars="$2"
+  local excluded_filenames="$3"
 
   for file in $(find "${subst_dir}" -type f); do
+    exclude_file=false
+    if test ! -z "${excluded_filenames}"; then
+      for excluded_filename in ${excluded_filenames}; do
+        if $(echo "${file}" | grep -qi "${excluded_filename}$"); then
+          exclude_file=true
+          break
+        fi
+      done
+    fi
+    "${exclude_file}" && continue
+
     local old_file="${file}.bak"
     cp "${file}" "${old_file}"
     envsubst "${vars}" < "${old_file}" > "${file}"
@@ -348,7 +362,7 @@ build_dev_deploy_file() {
   local dev_cluster_state_dir='dev-cluster-state'
   cp -pr "${dev_cluster_state_dir}" "${build_dir}"
 
-  substitute_vars "${build_dir}"
+  substitute_vars "${build_dir}" "${DEFAULT_VARS}"
   kustomize build --load_restrictor none "${build_dir}/${cluster_type}" > "${deploy_file}"
   rm -rf "${build_dir}"
 

@@ -15,7 +15,7 @@ oneTimeSetUp() {
 testPaLogStreamsExist() {
   local log_stream_prefixes="pingaccess_api_audit pingaccess_agent_audit pingaccess_logs"
 
-  success=0
+  local success=0
   if ! log_streams_exist "${log_stream_prefixes}"; then
     success=1
   fi
@@ -29,7 +29,7 @@ testPaPingaccessLogEventsExist() {
   local pod=pingaccess-admin-0
   local container=pingaccess-admin
 
-  success=0
+  local success=0
   if ! log_events_exist "${log_stream}" "${full_pathname}" "${pod}" "${container}"; then
     success=1
   fi
@@ -43,7 +43,7 @@ testPaAgentAuditLogEventsExist() {
   local pod=pingaccess-0
   local container=pingaccess
 
-  success=0
+  local success=0
   if ! log_events_exist "${log_stream}" "${full_pathname}" "${pod}" "${container}"; then
     success=1
   fi
@@ -57,7 +57,7 @@ testPaApiAuditLogEventsExist() {
   local pod=pingaccess-admin-0
   local container=pingaccess-admin
 
-  success=0
+  local success=0
   if ! log_events_exist "${log_stream}" "${full_pathname}" "${pod}" "${container}"; then
     success=1
   fi
@@ -67,13 +67,13 @@ testPaApiAuditLogEventsExist() {
 
 testPaDefaultLogEventsExist() {
   local log_stream="$PA_ADMIN_LOG_STREAM_SUFFIX"
-  local full_pathname=/opt/out/instance/log
+  local full_pathname=unused_placeholder_variable
   local pod=pingaccess-admin-0
   local container=pingaccess-admin
-  local inverse=true
+  local default=true
 
-  success=0
-  if ! log_events_exist "${log_stream}" "${full_pathname}" "${pod}" "${container}" "${inverse}"; then
+  local success=0
+  if ! log_events_exist "${log_stream}" "${full_pathname}" "${pod}" "${container}" "${default}"; then
     success=1
   fi
 
