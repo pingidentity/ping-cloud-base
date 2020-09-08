@@ -5,6 +5,12 @@
 
 "${VERBOSE}" && set -x
 
+# Do not proceed to attempt to restore a backup from s3 if RESTORE_BACKUP set to false
+if $(echo "${RESTORE_BACKUP}" | grep -iq "false"); then
+  beluga_log "RESTORE_BACKUP is false, skipping..."
+  exit 0
+fi
+
 # 1) Specified backup file name by user will be restored
 #
 # OR
