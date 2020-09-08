@@ -10,8 +10,8 @@ test ! -z "${1}" && BACKUP_URL="${1}"
 
 # Do not proceed to attempt to restore a backup from s3 if RESTORE_BACKUP set to false
 if $(echo "${RESTORE_BACKUP}" | grep -iq "false"); then
-    beluga_log "RESTORE_BACKUP is false, skipping..."
-    exit 0
+  beluga_log "RESTORE_BACKUP is false, skipping..."
+  exit 0
 fi
 
 beluga_log "Downloading from location ${BACKUP_URL}"
