@@ -6,13 +6,40 @@
 # This a wrapper for 185-offline-enable.sh. To enable replication offline, call
 # this script without any arguments.
 
+########################################################################################################################
+# Validate that the provided file is present, non-empty and has valid JSON.
+#
+# Arguments:
+#   $1 -> The file to validate.
+#
+# Returns:
+#   0 -> If the file is valid; 1 -> otherwise.
+########################################################################################################################
+function is_valid_json_file() {
+  local json_file="$1"
+  test ! -f "${json_file}" && return 1
+
+  local tmp_file="$(mktemp)"
+  tr -d '[:space:]' < "${json_file}" > "${tmp_file}"
+  test ! -s "${tmp_file}" && return 1
+
+  jq empty < "${tmp_file}" &> /dev/null
+  return $?
+}
+
 # The total number of replicating pods.
 NUM_REPLICAS=$(kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
 
-if [ ! -f "${TOPOLOGY_DESCRIPTOR_JSON}" ] || [ ! -s "${TOPOLOGY_DESCRIPTOR_JSON}" ]; then
-  beluga_log "${TOPOLOGY_DESCRIPTOR_JSON} does not exist or is empty - creating it"
+if is_valid_json_file "${TOPOLOGY_DESCRIPTOR_JSON}"; then
+  DESCRIPTOR_FILE="${TOPOLOGY_DESCRIPTOR_JSON}"
+elif is_valid_json_file "${TOPOLOGY_DESCRIPTOR_PROFILES_JSON}"; then
+  DESCRIPTOR_FILE="${TOPOLOGY_DESCRIPTOR_PROFILES_JSON}"
+fi
 
-  DESCRIPTOR_FILE=$(mktemp)
+if test -z "${DESCRIPTOR_FILE}"; then
+  DESCRIPTOR_FILE="$(mktemp)"
+  beluga_log "Topology descriptor file does not exist or is empty - creating it at ${DESCRIPTOR_FILE}"
+
   tr -d '[:space:]' <<EOF > "${DESCRIPTOR_FILE}"
 {
   "${REGION}": {
@@ -23,12 +50,19 @@ if [ ! -f "${TOPOLOGY_DESCRIPTOR_JSON}" ] || [ ! -s "${TOPOLOGY_DESCRIPTOR_JSON}
 EOF
 
   if is_multi_cluster; then
-    beluga_log "WARNING!!! ${TOPOLOGY_DESCRIPTOR_JSON} not provided or is empty in multi-cluster mode"
+    beluga_log "WARNING!!! Topology descriptor file not provided or is empty in multi-cluster mode"
     beluga_log "WARNING!!! only the servers in the local cluster will be considered part of the topology"
   fi
 else
-  DESCRIPTOR_FILE="${TOPOLOGY_DESCRIPTOR_JSON}"
-  beluga_log "${TOPOLOGY_DESCRIPTOR_JSON} already exists - using it"
+  beluga_log "${DESCRIPTOR_FILE} already exists - using it"
+
+  beluga_log "Topology descriptor JSON file '${DESCRIPTOR_FILE}' original contents:"
+  cat "${DESCRIPTOR_FILE}"
+
+  beluga_log "Substituting variables in '${DESCRIPTOR_FILE}' file"
+  TMP_FILE="$(mktemp)"
+  envsubst < "${DESCRIPTOR_FILE}" > "${TMP_FILE}"
+  DESCRIPTOR_FILE="${TMP_FILE}"
 fi
 
 beluga_log "Topology descriptor JSON file '${DESCRIPTOR_FILE}' contents:"

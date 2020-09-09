@@ -69,8 +69,8 @@ function verifyDescriptorJsonSchema() {
   echo
 
   # Verify no duplicate keys. Use jq to filter out duplicate keys and compare against descriptor.json.
-  jq -r . "${descriptor_json}" | tr -d '[:space:]' > "${regions_file}"
-  diff -waB "${descriptor_json}" "${regions_file}" > /dev/null
+  jq -r . "${descriptor_json}" | tr -d '[:space:]' | sort > "${regions_file}"
+  tr -d '[:space:]' < "${descriptor_json}" | sort | diff -waB "${regions_file}" - > /dev/null
   test $? -ne 0 && beluga_error "descriptor.json contains duplicate keys" && return 1
 
   # Verify there is at least 1 region name within descriptor.json file
@@ -123,14 +123,14 @@ function setLocalRegion() {
 
   if is_multi_cluster; then
     # Retrieve short name of local_hostname
-    local local_short_name="${local_hostname%.${TENANT_DOMAIN}}"
+    local local_short_name="${local_hostname%%.*}"
     if [ -z "${local_short_name}" ]; then
       beluga_error "Unable to find short name from local server in descriptor file: ${local_hostname}"
       return 1
     fi
 
     # Retrieve short name of PD cluster public hostname
-    local pd_cluster_public_short_name="${PD_CLUSTER_PUBLIC_HOSTNAME%.${PRIMARY_TENANT_DOMAIN}}"
+    local pd_cluster_public_short_name="${PD_CLUSTER_PUBLIC_HOSTNAME%%.*}"
     if [ -z "${pd_cluster_public_short_name}" ]; then
       beluga_error "Unable to find short name from PD cluster public hostname: ${PD_CLUSTER_PUBLIC_HOSTNAME}"
       return 1
