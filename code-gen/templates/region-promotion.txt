@@ -32,24 +32,27 @@ secondary-1: us-east-1
 Promote a region from secondary to primary
 ==========================================
 
-1. Edit an existing secondary region's top-level env_vars file (e.g. k8s-configs/us-west-2/env_vars).
+1. Open an SRE ticket to make this region's cluster state repo the new primary. This will entail changing the
+   background code sync to mirror from this new primary cluster state repo to the other secondary cluster state repos.
+
+2. Edit an existing secondary region's top-level env_vars file (e.g. k8s-configs/us-west-2/env_vars).
    - Set PRIMARY_REGION to the same value as that region's REGION variable.
    - Set PRIMARY_TENANT_DOMAIN to the same value as that region's TENANT_DOMAIN variable.
    - Set the CLUSTER_BUCKET_NAME to an S3 bucket in this region. Open an SRE ticket to create this bucket if it does
      not already exist.
 
-2. Edit the region's ping-cloud/kustomization.yaml file (e.g. k8s-configs/us-west-2/ping-cloud/kustomization.yaml).
+3. Edit the region's ping-cloud/kustomization.yaml file (e.g. k8s-configs/us-west-2/ping-cloud/kustomization.yaml).
    Comment out the `remove-from-secondary-patch.yaml` patch in the `patchesStrategicMerge` section.
 
-3. Edit each app's env_vars file (e.g. PD's env_vars would be at
+4. Edit each app's env_vars file (e.g. PD's env_vars would be at
    k8s-configs/us-west-2/ping-cloud/pingdirectory/env_vars). Change the LAST_UPDATE_REASON environment variable to
    something meaningful, e.g. "Promoting region to primary".
 
-4. Push the changes up to the server and wait for all Ping applications to be re-rolled.
+5. Push the changes up to the server and wait for all Ping applications to be re-rolled.
 
-5. When the rollout is complete, this region will become the new primary.
+6. When the rollout is complete, this region will become the new primary.
 
-6. Verify that data backups work for every Ping application.
+7. Verify that data backups work for every Ping application.
 
 ===============================================================
 Change the other secondary clusters to point to the new primary

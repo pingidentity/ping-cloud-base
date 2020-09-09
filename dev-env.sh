@@ -78,6 +78,13 @@
 #                           | to Container Insights, an AWS-specific logging     |
 #                           | and monitoring solution.                           |
 #                           |                                                    |
+# REGION_NICK_NAME          | An optional nick name for the region. For example, | Same as REGION.
+#                           | this variable may be set to a unique name in       |
+#                           | multi-cluster deployments which live in the same   |
+#                           | region. The nick name will be used as the name of  |
+#                           | the region-specific code directory in the cluster  |
+#                           | state repo.                                        |
+#                           |                                                    |
 # IS_MULTI_CLUSTER          | Flag indicating whether or not this is a           | false
 #                           | multi-cluster deployment.                          |
 #                           |                                                    |
@@ -87,9 +94,9 @@
 #                           | cluster communication and the number of replicas   | be created and used.
 #                           | in that region. A sample file is provided in the   |
 #                           | pingdirectory profiles under profiles/aws/         |
-#                           | pingdirectory/topology/descriptor.json.sample.    |
+#                           | pingdirectory/topology/descriptor.json.sample.     |
 #                           | This file will be mounted into the Ping containers |
-#                           | at /opt/staging/topology/descriptor.json           |
+#                           | at /opt/staging/topology/descriptor.json.          |
 #                           |                                                    |
 # PRIMARY_TENANT_DOMAIN     | The tenant's domain in the primary region.         | Same as TENANT_DOMAIN.
 #                           | Only used if IS_MULTI_CLUSTER is true.             |
@@ -203,6 +210,7 @@ log "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 log "Initial TOPOLOGY_DESCRIPTOR_FILE: ${TOPOLOGY_DESCRIPTOR_FILE}"
 log "Initial CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
 log "Initial REGION: ${REGION}"
+log "Initial REGION_NICK_NAME: ${REGION_NICK_NAME}"
 log "Initial PRIMARY_REGION: ${PRIMARY_REGION}"
 log "Initial TENANT_DOMAIN: ${TENANT_DOMAIN}"
 log "Initial PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
@@ -229,6 +237,7 @@ export IS_MULTI_CLUSTER="${IS_MULTI_CLUSTER}"
 export CLUSTER_BUCKET_NAME="${CLUSTER_BUCKET_NAME}"
 
 export REGION="${REGION:-us-east-2}"
+export REGION_NICK_NAME="${REGION_NICK_NAME:-${REGION}}"
 export PRIMARY_REGION="${PRIMARY_REGION:-${REGION}}"
 
 export TENANT_DOMAIN="${TENANT_DOMAIN:-eks-poc.au1.ping-lab.cloud}"
@@ -255,6 +264,7 @@ log "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 log "Using TOPOLOGY_DESCRIPTOR_FILE: ${TOPOLOGY_DESCRIPTOR_FILE}"
 log "Using CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
 log "Using REGION: ${REGION}"
+log "Using REGION_NICK_NAME: ${REGION_NICK_NAME}"
 log "Using PRIMARY_REGION: ${PRIMARY_REGION}"
 log "Using TENANT_DOMAIN: ${TENANT_DOMAIN}"
 log "Using PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
@@ -341,6 +351,7 @@ export IS_MULTI_CLUSTER=${IS_MULTI_CLUSTER}
 export CLUSTER_BUCKET_NAME=${CLUSTER_BUCKET_NAME}
 
 export REGION=${REGION}
+export REGION_NICK_NAME=${REGION_NICK_NAME}
 export PRIMARY_REGION=${PRIMARY_REGION}
 
 export TENANT_DOMAIN=${TENANT_DOMAIN}
