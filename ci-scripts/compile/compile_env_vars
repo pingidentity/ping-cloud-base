@@ -6,6 +6,7 @@ IS_MULTI_CLUSTER=false
 CLUSTER_BUCKET_NAME=${CLUSTER_NAME}-cluster-bucket
 
 REGION=us-west-2
+REGION_NICK_NAME=primary
 PRIMARY_REGION=${REGION}
 
 TENANT_DOMAIN=ci-cd.ping-oasis.com

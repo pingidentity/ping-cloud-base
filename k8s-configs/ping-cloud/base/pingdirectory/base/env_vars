@@ -52,6 +52,7 @@ K8S_TAIL_LOG_FILES=/opt/out/instance/logs/access /opt/out/instance/logs/change-n
 
 # This JSON file must exist for multi-region.
 TOPOLOGY_DESCRIPTOR_JSON=/opt/staging/topology/descriptor.json
+TOPOLOGY_DESCRIPTOR_PROFILES_JSON=/opt/staging/topology/descriptor-profiles.json
 
 SECRETS_DIR=/usr/local/secrets
 
