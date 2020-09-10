@@ -301,9 +301,8 @@ echo ---
 CD_COMMON_VARS="$(mktemp)"
 echo "Writing CD common variables to file '${CD_COMMON_VARS}'"
 
-add_comment_header_to_file "${CD_COMMON_VARS}" 'The tenant name and size'
-export_variable "${CD_COMMON_VARS}" TENANT_NAME "${TENANT_NAME:-ci-cd}"
-export_variable_ln "${CD_COMMON_VARS}" SIZE "${SIZE:-small}"
+export TENANT_NAME="${TENANT_NAME:-ci-cd}"
+export SIZE="${SIZE:-small}"
 
 add_comment_header_to_file "${CD_COMMON_VARS}" 'Multi-region parameters'
 export_variable_ln "${CD_COMMON_VARS}" IS_MULTI_CLUSTER "${IS_MULTI_CLUSTER}"
