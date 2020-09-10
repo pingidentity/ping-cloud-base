@@ -18,13 +18,8 @@
 function is_valid_json_file() {
   local json_file="$1"
   test ! -f "${json_file}" && return 1
-
-  local tmp_file="$(mktemp)"
-  tr -d '[:space:]' < "${json_file}" > "${tmp_file}"
-  test ! -s "${tmp_file}" && return 1
-
-  jq empty < "${tmp_file}" &> /dev/null
-  return $?
+  num_keys="$(jq -r '(keys|length)' "${json_file}")"
+  test $? -eq 0 && test "${num_keys}" -gt 0
 }
 
 # The total number of replicating pods.

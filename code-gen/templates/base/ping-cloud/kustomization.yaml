@@ -12,6 +12,18 @@ images:
 - name: pingidentity/pingaccess
   newName: ${REGISTRY_NAME}/pingidentity/pingaccess
 
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+
+### PD topology descriptor.json file. Only required in multi-region deployments. ###
+### Refer to profiles/pingdirectory/topology/descriptor-profiles.json.sample for more details. ###
+- name: topology-descriptor
+  behavior: merge
+  files:
+  - descriptor.json
+
 patchesStrategicMerge:
 
 ### Ping app known_hosts file ###

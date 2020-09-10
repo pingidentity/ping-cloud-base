@@ -64,15 +64,5 @@ patchesStrategicMerge:
 ### All secrets used by supporting tools ###
 - secrets.yaml
 
-### PD topology descriptor.json file. Only required in multi-region deployments. ###
-### Refer to profiles/pingdirectory/topology/descriptor-profiles.json.sample for a sample file. ###
-- |-
-  apiVersion: v1
-  kind: ConfigMap
-  metadata:
-    name: topology-descriptor
-  data:
-    descriptor.json: |
-
 ### Regional enablement - remove admins, backups, etc. from secondary ###
 - ../../base/ping-cloud/remove-from-secondary-patch.yaml
