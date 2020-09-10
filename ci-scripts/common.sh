@@ -45,7 +45,9 @@ else
   exit 1
 fi
 
+# Timing
 export LOG_SYNC_SECONDS="${LOG_SYNC_SECONDS:-5}"
+export UPLOAD_TIMEOUT_SECONDS="${UPLOAD_TIMEOUT_SECONDS:-20}"
 export CURL_TIMEOUT_SECONDS="${CURL_TIMEOUT_SECONDS:-450}"
 
 export ADMIN_USER=administrator
@@ -442,4 +444,80 @@ function prepareShunit() {
   popd > /dev/null
 
   return 0
+}
+
+########################################################################################################################
+# Verifies that the files listed in the expected.txt file are uploaded to S3 in the ${1} directory. Retries up to the
+# timeout specified in the UPLOAD_TIMEOUT_SECONDS variable.
+#
+# Arguments
+#   ${1} -> Name of the product directory within S3
+########################################################################################################################
+verify_upload_with_timeout() {
+  local directory_name="${1}"
+  local expected_files=/tmp/expected.txt
+  local actual_files=/tmp/actual.txt
+
+  local iteration=0
+  while true; do
+    # sleep for 2 seconds before verifying the upload
+    sleep 2
+
+    # update iteration count
+    iteration=$((iteration + 1))
+
+    log "Actual files in iteration ${iteration}:"
+    actual_files "${directory_name}" | tee "${actual_files}"
+
+    log "Verifying that the expected files were uploaded in iteration ${iteration}:"
+    local not_uploaded=$(comm -23 "${expected_files}" "${actual_files}")
+
+    # success
+    test -z "${not_uploaded}" && return 0
+
+    # timeout
+    local waited_seconds=$((iteration * 2))
+    if test "${waited_seconds}" -ge "${UPLOAD_TIMEOUT_SECONDS}"; then
+      log "The following files were not uploaded: ${not_uploaded} after a timeout of ${UPLOAD_TIMEOUT_SECONDS} seconds"
+      return 1
+    fi
+  done
+}
+
+########################################################################################################################
+# Searches AWS s3 bucket and returns CSD support-data files found
+#
+# Arguments
+#   ${1} -> Name of the product directory within S3
+########################################################################################################################
+actual_files() {
+  local directory_name="${1}"
+  local bucket_url_no_protocol=${LOG_ARCHIVE_URL#s3://}
+  local bucket_name=$(echo "${bucket_url_no_protocol}" | cut -d/ -f1)
+  local days_ago=1
+
+  aws s3api list-objects \
+    --bucket "${bucket_name}" \
+    --prefix "${directory_name}/support-data" \
+    --query "reverse(sort_by(Contents[?LastModified>='${days_ago}'], &LastModified))[].Key" \
+    --profile "${AWS_PROFILE}" |
+  tr -d '",[]' |
+  cut -d/ -f2 |
+  sort
+}
+
+########################################################################################################################
+# Searches CSD upload job logs and returns CSD support-data files found
+#
+# Arguments
+#   ${1} -> The upload CSD job name
+########################################################################################################################
+expected_files() {
+  local upload_csd_job_pods=$(kubectl get pod -o name -n "${NAMESPACE}" | grep "${1}" | cut -d/ -f2)
+  for upload_csd_job_pod in $upload_csd_job_pods; do
+    kubectl logs -n "${NAMESPACE}" ${upload_csd_job_pod} |
+    tail -1 |
+    tr ' ' '\n' |
+    sort
+  done
 }
