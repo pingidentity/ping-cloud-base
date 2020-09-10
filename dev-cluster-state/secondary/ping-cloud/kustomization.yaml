@@ -35,6 +35,13 @@ patchesStrategicMerge:
     name: pingaccess-periodic-backup
   $patch: delete
 
+- |-
+  apiVersion: batch/v1beta1
+  kind: CronJob
+  metadata:
+    name: pingaccess-admin-periodic-csd-upload
+  $patch: delete
+
 # Remove PingAccess WAS primary-cluster resources
 - |-
   apiVersion: apps/v1
@@ -105,6 +112,13 @@ patchesStrategicMerge:
   kind: CronJob
   metadata:
     name: pingfederate-periodic-backup
+  $patch: delete
+
+- |-
+  apiVersion: batch/v1beta1
+  kind: CronJob
+  metadata:
+    name: pingfederate-admin-periodic-csd-upload
   $patch: delete
 
 # Remove PingDirectory primary-cluster resources
