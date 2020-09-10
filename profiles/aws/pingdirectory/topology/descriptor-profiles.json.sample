@@ -1,9 +1,11 @@
-# This file shows a sample of a PingDirectory topology descriptor file that's required in the multi-region case.
+# This file shows samples of a PingDirectory topology descriptor file that's required in multi-region deployments.
+# It should be omitted in single-region deployments.
 
 # NOTE:
-# - If provided externally through a Kubernetes configmap (preferred), then its name must be descriptor.json
-# - If provided through server profiles (i.e. in this directory), then its name must be descriptor-profiles.json
-# - If both are provided, then the descriptor file provided through the configmap will be used.
+# - If provided externally through the 'topology-descriptor' ConfigMap (see k8s-configs/base/ping-cloud/descriptor.json),
+#   then its name must be descriptor.json.
+# - If provided through server profiles (i.e. in this directory), then its name must be descriptor-profiles.json.
+# - If both are provided, then the descriptor file provided through the ConfigMap will be used.
 
 # The general format should be:
 
