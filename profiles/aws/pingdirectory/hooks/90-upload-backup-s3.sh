@@ -1,5 +1,4 @@
 #!/bin/sh
-set -e
 
 . "${HOOKS_DIR}/utils.lib.sh"
 
