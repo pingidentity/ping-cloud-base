@@ -9,7 +9,6 @@ parse_utility_output() {
   printf "${1}" | awk '/OBF/' | awk '{print $0}'
 }
 
-set -e
 "${VERBOSE}" && set -x
 
 readonly run_properties_file=${SERVER_ROOT_DIR}/conf/run.properties
