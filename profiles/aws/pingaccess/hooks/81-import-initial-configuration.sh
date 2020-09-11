@@ -3,7 +3,6 @@
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 
-set -e
 "${VERBOSE}" && set -x
 
 templates_dir_path=${STAGING_DIR}/templates/81
