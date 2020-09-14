@@ -5,9 +5,12 @@ ${VERBOSE} && set -x
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 
+cleanUp() {
+  rm -rf "${EXPORT_DIR}"
+}
+
 MASTER_KEY_FILE=pf.jwk
 MASTER_KEY_PATH="${SERVER_ROOT_DIR}/server/default/data/${MASTER_KEY_FILE}"
-DEPLOYER_PATH="${SERVER_ROOT_DIR}/server/default/data/drop-in-deployer"
 
 #---------------------------------------------------------------------------------------------
 # Main Script 
@@ -24,6 +27,8 @@ beluga_log "Fetching configuration and master key from the admin server"
 EXPORT_DIR=$(mktemp -d)
 EXPORT_ZIP_FILE="${EXPORT_DIR}/data.zip"
 
+# Force cleanUp function to run, upon exit of script or error below
+trap "cleanUp" EXIT
 
 make_api_request_download -X GET \
   "https://${PF_ADMIN_HOST_PORT}/pf-admin-api/v1/configArchive/export" \
@@ -43,6 +48,3 @@ find "${EXPORT_DIR}" -type f -name "${MASTER_KEY_FILE}" | xargs -I {} cp {} "${M
 test ! -f "${MASTER_KEY_PATH}" && beluga_log "Unable to locate master key" && exit 1
 chmod 400 "${MASTER_KEY_PATH}"
 obfuscatePassword
-
-# Deploy engine configuration using drop-in-deployer
-cp "${EXPORT_ZIP_FILE}" "${DEPLOYER_PATH}"
