@@ -172,6 +172,9 @@ spec:
         - name: kibana-dashboard-pf-basic
           mountPath: /scripts/dashboards/pf-basic.ndjson
           subPath: pf-basic.ndjson
+        - name: kibana-logstash-index-pattern
+          mountPath: /scripts/dashboards/kibana-logstash-index-pattern.ndjson
+          subPath: kibana-logstash-index-pattern.ndjson
 
       volumes:
       - name: kibana-dashboard-pa
@@ -186,3 +189,6 @@ spec:
       - name: kibana-dashboard-pf-basic
         configMap:
           name: kibana-dashboard-pf-basic
+      - name: kibana-logstash-index-pattern
+        configMap:
+          name: kibana-logstash-index-pattern
