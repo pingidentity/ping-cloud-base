@@ -90,7 +90,8 @@ data:
           } else if ([log] =~ "Provisioner_SIEM") {
             mutate {
               replace => { "log_type" => "PF_Provisioner_Log"}
-            } else {
+            }
+          } else {
               grok {
                   match => {
                     message => ["%{GREEDYDATA:log_name}\.log %{GREEDYDATA:message}"]
@@ -100,7 +101,6 @@ data:
           }
         }
       }
-    }
 
   systemd.conf: |
     input {
