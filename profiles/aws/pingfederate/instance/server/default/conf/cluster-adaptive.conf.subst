@@ -30,7 +30,7 @@ rebalance.rpc.timeout=5000
 # The node group identifier cannot contain whitespace, but all other characters
 # are allowed. It is recommended to use a short string, such as a single
 # character, to reduce the size of tokens that include this value.
-node.group.id=
+node.group.id=${REGION}
 
 # Determines whether user sessions are replicated asynchronously to other node
 # groups. This includes adapter session attributes, authentication sessions and
