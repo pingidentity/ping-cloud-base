@@ -121,33 +121,25 @@ function setLocalRegion() {
     return 1
   fi
 
-  if is_multi_cluster; then
-    # Retrieve short name of local_hostname
-    local local_short_name="${local_hostname%%.*}"
-    if [ -z "${local_short_name}" ]; then
-      beluga_error "Unable to find short name from local server in descriptor file: ${local_hostname}"
-      return 1
-    fi
+  # Retrieve short name of local_hostname
+  local local_short_name="${local_hostname%%.*}"
+  if [ -z "${local_short_name}" ]; then
+    beluga_error "Unable to find short name from local server in descriptor file: ${local_hostname}"
+    return 1
+  fi
 
-    # Retrieve short name of PD cluster public hostname
-    local pd_cluster_public_short_name="${PD_CLUSTER_PUBLIC_HOSTNAME%%.*}"
-    if [ -z "${pd_cluster_public_short_name}" ]; then
-      beluga_error "Unable to find short name from PD cluster public hostname: ${PD_CLUSTER_PUBLIC_HOSTNAME}"
-      return 1
-    fi
+  # Retrieve short name of PD cluster domain name
+  local pd_cluster_domain_short_name="${PD_CLUSTER_DOMAIN_NAME%%.*}"
+  if [ -z "${pd_cluster_domain_short_name}" ]; then
+    beluga_error "Unable to find short name from PD cluster domain name: ${PD_CLUSTER_DOMAIN_NAME}"
+    return 1
+  fi
 
-    # Both short names must match in order to establish a successful connection for multi-region
-    if [ "${local_short_name}" != "${pd_cluster_public_short_name}" ]; then
-      beluga_error "Local server short name from descriptor file '${local_short_name}' does not match the short \
-        name of the PD_CLUSTER_PUBLIC_HOSTNAME '${pd_cluster_public_short_name}'"
-      return 1
-    fi
-  else
-    # The local domain name must match the local hostname that is within the descriptor file
-    if [ "${local_hostname}" != "${LOCAL_DOMAIN_NAME}" ]; then
-      beluga_error "Local server from descriptor file '${local_hostname}' does not match the local domain of server '${LOCAL_DOMAIN_NAME}'"
-      return 1
-    fi
+  # Both short names must match in order to establish a successful connection for multi-region
+  if [ "${local_short_name}" != "${pd_cluster_domain_short_name}" ]; then
+    beluga_error "Local server short name from descriptor file '${local_short_name}' does not match the short \
+      name of the PD_CLUSTER_DOMAIN_NAME '${pd_cluster_domain_short_name}'"
+    return 1
   fi
 
   if [ "${local_num_replicas}" -ne "${local_count}" ]; then
