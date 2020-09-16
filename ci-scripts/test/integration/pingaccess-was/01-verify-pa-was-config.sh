@@ -21,58 +21,55 @@ oneTimeSetUp() {
 
 testWebSession() {
   response=$(get_web_session "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "10")
-  assertEquals 0 $?
+  assertEquals "Response value was ${response}" 0 $?
 
   name=$(parse_value_from_response "${response}" 'name')
-  assertEquals 'P14C Session' "$(strip_double_quotes "${name}")"
+  assertEquals "Name value was ${name}" 'P14C Session' "$(strip_double_quotes "${name}")"
 }
 
 testPaSite() {
   response=$(get_site "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "10")
-  assertEquals 0 $?
+  assertEquals "Response value was ${response}" 0 $?
 
   name=$(parse_value_from_response "${response}" 'name')
-  assertEquals 'PingAccess Admin Console' "$(strip_double_quotes "${name}")"
+  assertEquals "Name value was ${name}" 'PingAccess Admin Console' "$(strip_double_quotes "${name}")"
 }
 
 testPfSite() {
   response=$(get_site "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "20")
-  assertEquals 0 $?
+  assertEquals "Response value was ${response}" 0 $?
 
   name=$(parse_value_from_response "${response}" 'name')
-  assertEquals 'PingFederate Admin Console' "$(strip_double_quotes "${name}")"
+  assertEquals "Name value was ${name}" 'PingFederate Admin Console' "$(strip_double_quotes "${name}")"
 }
 
 testKibanaSite() {
-
   response=$(get_site "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "21")
-  assertEquals 0 $?
+  assertEquals "Response value was ${response}" 0 $?
 
   name=$(parse_value_from_response "${response}" 'name')
-  assertEquals 'Kibana' "$(strip_double_quotes "${name}")"
+  assertEquals "Name value was ${name}" 'Kibana' "$(strip_double_quotes "${name}")"
 }
 
 testGrafanaSite() {
-
   response=$(get_site "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "22")
-  assertEquals 0 $?
+  assertEquals "Response value was ${response}" 0 $?
 
   name=$(parse_value_from_response "${response}" 'name')
-  assertEquals 'Grafana' "$(strip_double_quotes "${name}")"
+  assertEquals "Name value was ${name}" 'Grafana' "$(strip_double_quotes "${name}")"
 }
 
 testPrometheusSite() {
-
   response=$(get_site "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "23")
-  assertEquals 0 $?
+  assertEquals "Response value was ${response}" 0 $?
 
   name=$(parse_value_from_response "${response}" 'name')
-  assertEquals 'Prometheus' "$(strip_double_quotes "${name}")"
+  assertEquals "Name value was ${name}" 'Prometheus' "$(strip_double_quotes "${name}")"
 }
 
 testPaVirtualHost() {
   response=$(get_virtual_host "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "10")
-  assertEquals 0 $?
+  assertEquals "Response value was ${response}" 0 $?
 
   host=$(parse_value_from_response "${response}" 'host')
   stripped_host=$(strip_double_quotes "${host}")
@@ -86,7 +83,7 @@ testPaVirtualHost() {
 
 testPfVirtualHost() {
   response=$(get_virtual_host "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "20")
-  assertEquals 0 $?
+  assertEquals "Response value was ${response}" 0 $?
 
   host=$(parse_value_from_response "${response}" 'host')
   stripped_host=$(strip_double_quotes "${host}")
@@ -100,7 +97,7 @@ testPfVirtualHost() {
 
 testKibanaVirtualHost() {
   response=$(get_virtual_host "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "21")
-  assertEquals 0 $?
+  assertEquals "Response value was ${response}" 0 $?
 
   host=$(parse_value_from_response "${response}" 'host')
   stripped_host=$(strip_double_quotes "${host}")
@@ -114,7 +111,7 @@ testKibanaVirtualHost() {
 
 testGrafanaVirtualHost() {
   response=$(get_virtual_host "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "22")
-  assertEquals 0 $?
+  assertEquals "Response value was ${response}" 0 $?
 
   host=$(parse_value_from_response "${response}" 'host')
   stripped_host=$(strip_double_quotes "${host}")
@@ -128,7 +125,7 @@ testGrafanaVirtualHost() {
 
 testPrometheusVirtualHost() {
   response=$(get_virtual_host "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "23")
-  assertEquals 0 $?
+  assertEquals "Response value was ${response}" 0 $?
 
   host=$(parse_value_from_response "${response}" 'host')
   stripped_host=$(strip_double_quotes "${host}")
@@ -142,42 +139,50 @@ testPrometheusVirtualHost() {
 
 testPaApplication() {
   response=$(get_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "10")
-  assertEquals 0 $?
+  assertEquals "Response value was ${response}" 0 $?
 
   name=$(parse_value_from_response "${response}" 'name')
-  assertEquals 'PingAccess App' "$(strip_double_quotes "${name}")"
+  assertEquals "Name value was ${name}" 'PingAccess App' "$(strip_double_quotes "${name}")"
 }
 
 testPfApplication() {
   response=$(get_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "20")
-  assertEquals 0 $?
+  assertEquals "Response value was ${response}" 0 $?
 
   name=$(parse_value_from_response "${response}" 'name')
-  assertEquals 'PingFederate App' "$(strip_double_quotes "${name}")"
+  assertEquals "Name value was ${name}" 'PingFederate App' "$(strip_double_quotes "${name}")"
 }
 
 testKibanaApplication() {
   response=$(get_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "21")
-  assertEquals 0 $?
+  assertEquals "Response value was ${response}" 0 $?
 
   name=$(parse_value_from_response "${response}" 'name')
-  assertEquals 'Kibana App' "$(strip_double_quotes "${name}")"
+  assertEquals "Name value was ${name}" 'Kibana App' "$(strip_double_quotes "${name}")"
 }
 
 testGrafanaApplication() {
   response=$(get_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "22")
-  assertEquals 0 $?
+  assertEquals "Response value was ${response}" 0 $?
 
   name=$(parse_value_from_response "${response}" 'name')
-  assertEquals 'Grafana App' "$(strip_double_quotes "${name}")"
+  assertEquals "Name value was ${name}" 'Grafana App' "$(strip_double_quotes "${name}")"
 }
 
 testPrometheusApplication() {
   response=$(get_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "23")
-  assertEquals 0 $?
+  assertEquals "Response value was ${response}" 0 $?
 
   name=$(parse_value_from_response "${response}" 'name')
-  assertEquals 'Prometheus App' "$(strip_double_quotes "${name}")"
+  assertEquals "Name value was ${name}" 'Prometheus App' "$(strip_double_quotes "${name}")"
+}
+
+testUpdatedApplicationReservedPath() {
+  response=$(get_entity "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}/applications/reserved")
+  assertEquals "Response value was ${response}" 0 $?
+
+  context_root=$(parse_value_from_response "${response}" 'contextRoot')
+  assertEquals '/pa-was' "$(strip_double_quotes "${context_root}")"
 }
 
 # When arguments are passed to a script you must

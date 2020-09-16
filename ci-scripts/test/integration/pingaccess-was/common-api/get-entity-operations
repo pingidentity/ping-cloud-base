@@ -1,5 +1,29 @@
 #!/bin/bash
 
+function get_entity() {
+
+  password="${1}"
+  context_path="${2}"
+  type="${3}"
+
+  response=$(curl -k \
+    -i \
+    -s \
+    -u "Administrator:${password}" \
+    -H 'X-Xsrf-Header: PingAccess' \
+    "${context_path}")
+
+  response_code=$(parse_http_response_code "${response}")
+
+  if [[ 200 -ne ${response_code} ]]; then
+      echo "There was a problem getting the ${type}: " ${response_code}
+      return 1
+  else
+      echo "${response}"
+      return 0
+  fi
+}
+
 function get_site() {
 
   password="${1}"

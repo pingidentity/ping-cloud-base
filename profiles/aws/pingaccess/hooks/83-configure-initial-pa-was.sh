@@ -57,6 +57,14 @@ update_web_session() {
   "${VERBOSE}" && set -x
 }
 
+update_application_reserved_endpoint() {
+  local application_reserved_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/application-reserved-payload.json)
+  local resource='applications/reserved'
+
+  beluga_log "Updating Web Session"
+  update_entity "${application_reserved_payload}" "${resource}"
+}
+
 create_web_session() {
   local web_session_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/web-session-payload.json)
   local resource=webSessions
@@ -260,8 +268,15 @@ update_entity() {
   local resource="${2}"
   local id="${3}"
 
+  local context_path=""
+  if test -z "${id}";then
+    context_path="${ENDPOINT}"/"${resource}"
+  else
+    context_path="${ENDPOINT}"/"${resource}"/"${id}"
+  fi
+
   beluga_log "make_api_request response..."
-  make_api_request -s -X PUT -d "${payload}" "${ENDPOINT}"/"${resource}"/"${id}"
+  make_api_request -s -X PUT -d "${payload}" "${context_path}"
 }
 
 get_entity() {
@@ -274,6 +289,12 @@ get_entity() {
 is_production_environment() {
   test "${ENVIRONMENT_TYPE}"
 }
+
+# PDO-1432 - Always update the reserved
+# endpoint from /pa to /pa-was so that
+# WAS archives don't reset this value
+# and break the WAS liveness probe.
+update_application_reserved_endpoint
 
 if is_previously_configured; then
   if p14c_credentials_changed; then

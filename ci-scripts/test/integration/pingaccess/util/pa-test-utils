@@ -2,7 +2,7 @@
 
 function parse_http_response_code() {
   set +x
-  printf "${1}"| awk '/HTTP/' | awk '{print $2}'
+  printf "${1}"| head -n 1 | awk '/HTTP/' | awk '{print $2}'
 }
 
 function parse_value_from_response() {
