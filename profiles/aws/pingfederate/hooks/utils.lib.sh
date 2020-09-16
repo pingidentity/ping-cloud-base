@@ -232,18 +232,17 @@ function configure_tcp_xml() {
   cd "${SERVER_ROOT_DIR}/server/default/conf"
 
   if is_multi_cluster; then
-    export JGROUPS_DISCOVERY_PROTOCOL="<org.jgroups.aws.s3.NATIVE_S3_PING \
+    export S3_PING_PROTOCOL="<org.jgroups.aws.s3.NATIVE_S3_PING \
         region_name=\"${PRIMARY_REGION}\" \
         bucket_name=\"${CLUSTER_BUCKET_NAME}\" \
         bucket_prefix=\"${PING_PRODUCT}\" \
         remove_all_data_on_view_change=\"true\" \
         write_data_on_find=\"true\" />"
-  else
-    export JGROUPS_DISCOVERY_PROTOCOL="<dns.DNS_PING \
-        dns_query=\"${PF_CLUSTER_DOMAIN_NAME}\" />"
   fi
 
-  envsubst '${JGROUPS_DISCOVERY_PROTOCOL}' \
+  export DNS_PING_PROTOCOL="<dns.DNS_PING dns_query=\"${PF_CLUSTER_DOMAIN_NAME}\" />"
+
+  envsubst '${S3_PING_PROTOCOL} ${DNS_PING_PROTOCOL}' \
       < "${STAGING_DIR}/templates/tcp.xml" \
       > tcp.xml
 
@@ -257,6 +256,19 @@ function configure_tcp_xml() {
 # Set up tcp.xml based on whether it is a single-cluster or multi-cluster deployment.
 ########################################################################################################################
 function configure_cluster() {
+  # Copy customer native-s3-ping, if present.
+  # See PDO-1438 for details. Here's the customization to native S3 ping:
+  # https://github.com/jgroups-extras/native-s3-ping/pull/83/files
+  CUSTOM_NATIVE_S3_PING_JAR='/opt/staging/native-s3-ping.jar'
+  if test -f "${CUSTOM_NATIVE_S3_PING_JAR}"; then
+    TARGET_FILE="${SERVER_ROOT_DIR}"/server/default/lib/native-s3-ping.jar
+    beluga_log "Copying '${CUSTOM_NATIVE_S3_PING_JAR}' to '${TARGET_FILE}'"
+
+    mv "${TARGET_FILE}" "${TARGET_FILE}".bak
+    cp "${CUSTOM_NATIVE_S3_PING_JAR}" "${TARGET_FILE}"
+  fi
+
+  # Configure the tcp.xml file for service discovery.
   configure_tcp_xml
 }
 

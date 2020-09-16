@@ -124,6 +124,9 @@ spec:
         - name: data-dir
           mountPath: /usr/local/bin/skbn
           subPath: skbn
+        - name: data-dir
+          mountPath: /opt/staging/native-s3-ping.jar
+          subPath: native-s3-ping.jar
         - name: out-dir
           mountPath: /opt/out
         - name: pingfederate-license
@@ -356,6 +359,9 @@ spec:
         - name: data-dir
           mountPath: /usr/local/bin/skbn
           subPath: skbn
+        - name: data-dir
+          mountPath: /opt/staging/native-s3-ping.jar
+          subPath: native-s3-ping.jar
         - name: pingfederate-license
           mountPath: /opt/in/instance/server/default/conf/pingfederate.lic
           subPath: pingfederate.lic
