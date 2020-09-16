@@ -64,6 +64,20 @@ patchesJson6902:
       path: /spec/rules/0/host
       value: pingfederate${ENVIRONMENT}.${TENANT_DOMAIN}
 
+# pingfederate admin api
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingfederate-admin-ingress
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingfederate-admin-api${ENVIRONMENT}.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingfederate-admin-api${ENVIRONMENT}.${TENANT_DOMAIN}
+
 # pingaccess runtime
 - target:
     group: extensions
@@ -77,6 +91,20 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingaccess${ENVIRONMENT}.${TENANT_DOMAIN}
+
+# pingaccess admin api
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingaccess-admin-ingress
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingaccess-admin-api${ENVIRONMENT}.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingaccess-admin-api${ENVIRONMENT}.${TENANT_DOMAIN}
 
 # pingaccess agent
 - target:

@@ -202,6 +202,20 @@ patchesJson6902:
       path: /spec/rules/0/host
       value: pingaccess.${DNS_ZONE}
 
+# pingaccess admin api
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingaccess-admin-ingress
+  patch: |
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingaccess-admin-api.${DNS_ZONE}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingaccess-admin-api.${DNS_ZONE}
+
 # pingaccess agent
 - target:
     group: extensions
@@ -243,6 +257,20 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingfederate.${DNS_ZONE}
+
+# pingfederate admin api
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingfederate-admin-ingress
+  patch: |
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingfederate-admin-api.${DNS_ZONE}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingfederate-admin-api.${DNS_ZONE}
 
 # pingdirectory HTTP
 - target:
