@@ -955,6 +955,8 @@ spec:
         - name: fluentd-cloudwatch
           image: fluent/fluentd-kubernetes-daemonset:v1.7.3-debian-cloudwatch-1.0
           env:
+            - name: FLUENTD_OPT
+              value: "-qq"
             - name: REGION
               valueFrom:
                 configMapKeyRef:
