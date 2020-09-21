@@ -2,5 +2,13 @@
   {
     "name": "pf-agentless-integration-kit",
     "version": "1.5.2"
+  },
+  {
+    "name": "pf-stub-plugins",
+    "version": "1.0.0"
+  },
+  {
+    "name": "OAuthPlayground",
+    "version": "4.2"
   }
 ]
