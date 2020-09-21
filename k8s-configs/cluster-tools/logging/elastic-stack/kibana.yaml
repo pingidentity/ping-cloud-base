@@ -133,6 +133,11 @@ spec:
         - name: KIBANA_HOST
           value: "http://kibana"
       containers:
+      - name: create-logstash-index
+        image: pingcloud-docker.jfrog.io/pingidentity/ping-cloud-enrichment-bootstrap:1.0.0
+        imagePullPolicy: IfNotPresent
+        command: ["sh", "-c", "curl -X POST 'http://kibana:5601/api/saved_objects/index-pattern/logstash-*'  -H 'kbn-xsrf: true' -H 'Content-Type: application/json' -d '{\"attributes\": { \"title\": \"logstash*\", \"timeFieldName\": \"@timestamp\" } }' "]
+
       - name: kibana-dashboard-upload
         image: pingcloud-docker.jfrog.io/pingidentity/ping-cloud-enrichment-bootstrap:1.0.0
         
@@ -172,9 +177,6 @@ spec:
         - name: kibana-dashboard-pf-basic
           mountPath: /scripts/dashboards/pf-basic.ndjson
           subPath: pf-basic.ndjson
-        - name: kibana-logstash-index-pattern
-          mountPath: /scripts/dashboards/kibana-logstash-index-pattern.ndjson
-          subPath: kibana-logstash-index-pattern.ndjson
 
       volumes:
       - name: kibana-dashboard-pa
@@ -189,6 +191,3 @@ spec:
       - name: kibana-dashboard-pf-basic
         configMap:
           name: kibana-dashboard-pf-basic
-      - name: kibana-logstash-index-pattern
-        configMap:
-          name: kibana-logstash-index-pattern
