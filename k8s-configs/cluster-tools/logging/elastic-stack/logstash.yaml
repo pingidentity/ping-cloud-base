@@ -99,6 +99,14 @@ data:
               }
             }
           }
+        if ([kubernetes][container_name] == "pingdirectory") {
+          if ([log] =~ "/opt/out/instance/logs/access") {
+            mutate {
+              replace => { "log_type" => "PD_Access_Log" }
+              remove_field => "[log]"
+            }
+          }
+        }
         }
       }
 
@@ -140,16 +148,6 @@ data:
             codec => "json"
             response_code => 200
             add_field => {"log_type" => "Enrichment_System_Log"}
-        }
-        syslog {
-          id => "pd_directory_in"
-          port => 20515
-          type => syslog
-          add_field => {"log_type" => "PD_Access_Log"}
-          codec => multiline {
-            pattern => "^\s"
-            what => "previous"
-          }
         }
     }
     filter {
@@ -293,7 +291,7 @@ data:
             }
 
             grok {
-                match => { "message" => "\A%{WORD:ldapType} %{GREEDYDATA}" }
+                match => { "message" => "%{WORD:log_name} \[%{GREEDYDATA:date}\] %{GREEDYDATA}" }
             }
 
             mutate{
@@ -656,21 +654,6 @@ spec:
           - containerPort: 20510
             name: enrichment-in
             protocol: TCP
-          - containerPort: 20512
-            name: pf-provision-in
-            protocol: TCP
-          - containerPort: 20513
-            name: pf-system-in
-            protocol: TCP
-          - containerPort: 20514
-            name: pf-audit-in
-            protocol: TCP
-          - containerPort: 20515
-            name: pd-tcp
-            protocol: TCP
-          - containerPort: 20515
-            name: pd-udp
-            protocol: UDP
           - containerPort: 20516
             name: pa-system-in
             protocol: TCP
@@ -766,17 +749,6 @@ spec:
       name: rest
     - port: 20510
       name: enrichment-in
-    - port: 20512
-      name: pf-provision-in
-    - port: 20513
-      name: pf-system-in
-    - port: 20514
-      name: pf-audit-in
-    - port: 20515
-      name: pd-tcp
-    - port: 20515
-      protocol: UDP
-      name: pd-udp
     - port: 20516
       name: pa-system-in
     - port: 20517
