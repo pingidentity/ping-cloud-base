@@ -320,13 +320,11 @@ export_variable "${CD_COMMON_VARS}" REGION "${REGION:-us-east-2}"
 export_variable "${CD_COMMON_VARS}" REGION_NICK_NAME "${REGION_NICK_NAME:-${REGION}}"
 export_variable_ln "${CD_COMMON_VARS}" PRIMARY_REGION "${PRIMARY_REGION:-${REGION}}"
 
-add_comment_to_file "${CD_COMMON_VARS}" 'Tenant domain and primary tenant domain suffix for customer for region'
+add_comment_to_file "${CD_COMMON_VARS}" 'Local, global and primary tenant domain suffix for customer for region'
 add_comment_to_file "${CD_COMMON_VARS}" 'Primary region should have the same value for TENANT_DOMAIN and PRIMARY_TENANT_DOMAIN'
-TENANT_DOMAIN_NO_DOT_SUFFIX="${TENANT_DOMAIN%.}"
 
+TENANT_DOMAIN_NO_DOT_SUFFIX="${TENANT_DOMAIN%.}"
 export_variable "${CD_COMMON_VARS}" TENANT_DOMAIN "${TENANT_DOMAIN_NO_DOT_SUFFIX:-ci-cd.ping-oasis.com}"
-PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX="${PRIMARY_TENANT_DOMAIN%.}"
-export_variable_ln "${CD_COMMON_VARS}" PRIMARY_TENANT_DOMAIN "${PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX:-${TENANT_DOMAIN}}"
 
 if "${IS_BELUGA_ENV}"; then
   export_variable "${CD_COMMON_VARS}" GLOBAL_TENANT_DOMAIN "global.${TENANT_DOMAIN}"
@@ -335,6 +333,9 @@ else
   TENANT_DOMAIN_NO_REGION="$(echo "${TENANT_DOMAIN}" | cut -d. -f3)"
   export_variable "${CD_COMMON_VARS}" GLOBAL_TENANT_DOMAIN "global.${CUSTOMER}.${TENANT_DOMAIN_NO_REGION}"
 fi
+
+PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX="${PRIMARY_TENANT_DOMAIN%.}"
+export_variable_ln "${CD_COMMON_VARS}" PRIMARY_TENANT_DOMAIN "${PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX:-${TENANT_DOMAIN}}"
 
 add_comment_header_to_file "${CD_COMMON_VARS}" 'S3 buckets'
 
