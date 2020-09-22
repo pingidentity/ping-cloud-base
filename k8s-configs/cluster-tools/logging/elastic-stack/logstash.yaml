@@ -291,7 +291,7 @@ data:
             }
 
             grok {
-                match => { "message" => "%{WORD:log_name} \[%{GREEDYDATA:date}\] %{GREEDYDATA}" }
+                match => { "message" => "%{WORD:log_name} \[%{GREEDYDATA:date}\] %{WORD:ldapType} %{GREEDYDATA}" }
             }
 
             mutate{
