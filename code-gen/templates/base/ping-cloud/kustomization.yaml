@@ -203,10 +203,10 @@ patchesJson6902:
       value: pingaccess.${DNS_ZONE}
 
     # PingAccess global ingress
-    - op: replace
+    - op: add
       path: /spec/tls/0/hosts/1
       value: pa.${ENV}.${GLOBAL_TENANT_DOMAIN}
-    - op: replace
+    - op: add
       path: /spec/rules/1/host
       value: pa.${ENV}.${GLOBAL_TENANT_DOMAIN}
 
@@ -267,10 +267,10 @@ patchesJson6902:
       value: pingfederate.${DNS_ZONE}
 
     # PingFederate global ingress
-    - op: replace
+    - op: add
       path: /spec/tls/0/hosts/1
       value: pf.${ENV}.${GLOBAL_TENANT_DOMAIN}
-    - op: replace
+    - op: add
       path: /spec/rules/1/host
       value: pf.${ENV}.${GLOBAL_TENANT_DOMAIN}
 
