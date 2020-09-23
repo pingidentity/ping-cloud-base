@@ -22,6 +22,7 @@ if test -z "${ENV_VARS_FILE}"; then
 
   export PRIMARY_REGION="${REGION}"
   export PRIMARY_TENANT_DOMAIN="${TENANT_DOMAIN}"
+  export GLOBAL_TENANT_DOMAIN="${GLOBAL_TENANT_DOMAIN:-$(echo "${TENANT_DOMAIN}"|sed -e "s/[^.]*.\(.*\)/global.\1/")}"
 
   [[ ${CI_COMMIT_REF_SLUG} != master ]] && export ENVIRONMENT=-${CI_COMMIT_REF_SLUG}
   export NAMESPACE=ping-cloud-${CI_COMMIT_REF_SLUG}
