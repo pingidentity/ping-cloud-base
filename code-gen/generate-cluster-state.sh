@@ -301,6 +301,7 @@ echo ---
 CD_COMMON_VARS="$(mktemp)"
 echo "Writing CD common variables to file '${CD_COMMON_VARS}'"
 
+export IS_BELUGA_ENV="${IS_BELUGA_ENV:-false}"
 export TENANT_NAME="${TENANT_NAME:-ci-cd}"
 export SIZE="${SIZE:-small}"
 
@@ -308,6 +309,7 @@ add_comment_header_to_file "${CD_COMMON_VARS}" 'Multi-region parameters'
 export_variable_ln "${CD_COMMON_VARS}" IS_MULTI_CLUSTER "${IS_MULTI_CLUSTER}"
 
 add_comment_to_file "${CD_COMMON_VARS}" 'S3 bucket name for PingFederate adaptive clustering'
+add_comment_to_file "${CD_COMMON_VARS}" 'Only required in multi-cluster environments'
 export_variable_ln "${CD_COMMON_VARS}" CLUSTER_BUCKET_NAME "${CLUSTER_BUCKET_NAME}"
 
 add_comment_to_file "${CD_COMMON_VARS}" 'Region name, nick name and primary region name'
@@ -323,6 +325,13 @@ TENANT_DOMAIN_NO_DOT_SUFFIX="${TENANT_DOMAIN%.}"
 export_variable "${CD_COMMON_VARS}" TENANT_DOMAIN "${TENANT_DOMAIN_NO_DOT_SUFFIX:-ci-cd.ping-oasis.com}"
 PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX="${PRIMARY_TENANT_DOMAIN%.}"
 export_variable_ln "${CD_COMMON_VARS}" PRIMARY_TENANT_DOMAIN "${PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX:-${TENANT_DOMAIN}}"
+
+add_comment_to_file "${CD_COMMON_VARS}" 'Region independent URL used for DNS failover/routing'   
+if "${IS_BELUGA_ENV}"; then
+   export_variable "${CD_COMMON_VARS}" GLOBAL_TENANT_DOMAIN "global.${TENANT_DOMAIN}"
+else
+   export_variable "${CD_COMMON_VARS}" GLOBAL_TENANT_DOMAIN "$(echo "${TENANT_DOMAIN}"|sed -e "s/\([^.]*\).[^.]*.\(.*\)/global.\1.\2/")"
+fi
 
 add_comment_header_to_file "${CD_COMMON_VARS}" 'S3 buckets'
 
@@ -356,7 +365,6 @@ export SSH_ID_PUB_FILE="${SSH_ID_PUB_FILE}"
 export SSH_ID_KEY_FILE="${SSH_ID_KEY_FILE}"
 
 export TARGET_DIR="${TARGET_DIR:-/tmp/sandbox}"
-export IS_BELUGA_ENV="${IS_BELUGA_ENV:-false}"
 
 # Print out the values being used for each variable.
 echo "Using TENANT_NAME: ${TENANT_NAME}"
