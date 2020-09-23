@@ -8,6 +8,9 @@ initializeSkbnConfiguration
 # This is the backup directory on the server
 SERVER_BACKUP_DIR="${OUT_DIR}/backup"
 
+LDAPS_PORT=1636
+ROOT_USER_DN=cn=administrator
+
 rm -rf "${SERVER_BACKUP_DIR}"
 mkdir -p "${SERVER_BACKUP_DIR}"
 

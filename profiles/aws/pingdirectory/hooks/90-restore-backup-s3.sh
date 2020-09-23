@@ -8,6 +8,9 @@ initializeSkbnConfiguration
 # This is the backup directory on the server
 SERVER_RESTORE_DIR="/tmp/restore"
 
+LDAPS_PORT=1636
+ROOT_USER_DN=cn=administrator
+
 rm -rf "${SERVER_RESTORE_DIR}"
 
 if ! mkdir -p "${SERVER_RESTORE_DIR}"; then
