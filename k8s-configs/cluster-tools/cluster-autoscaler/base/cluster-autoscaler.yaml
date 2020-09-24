@@ -155,8 +155,8 @@ spec:
               memory: 300Mi
           command:
             - ./cluster-autoscaler
-            - --v=4
-            - --stderrthreshold=info
+            - --v=0
+            - --stderrthreshold=error
             - --skip-nodes-with-local-storage=false
             - --expander=least-waste
             - --balance-similar-node-groups
