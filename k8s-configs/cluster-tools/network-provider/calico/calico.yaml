@@ -45,7 +45,7 @@ spec:
               value: "eni"
             # Enable felix info logging.
             - name: FELIX_LOGSEVERITYSCREEN
-              value: "info"
+              value: "Warning"
             # Don't enable BGP.
             - name: CALICO_NETWORKING_BACKEND
               value: "none"
