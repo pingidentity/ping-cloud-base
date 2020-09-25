@@ -69,9 +69,15 @@
 #                           | stacks within the same cluster for testing         |
 #                           | purposes. It may be set to an empty string in      |
 #                           | which case, the namespace used for the Ping stack  |
-#                           | will simply be "ping-cloud".                       |
+#                           | will be "ping-cloud-$USER".                        |
 #                           |                                                    |
-# TENANT_DOMAIN             | The tenant's domain, e.g. k8s-icecream.com         | eks-poc.au1.ping-lab.cloud
+# TENANT_DOMAIN             | The tenant's domain, e.g. us1.poc.ping.cloud       | us1.poc.ping.cloud
+#                           |                                                    |
+# GLOBAL_TENANT_DOMAIN      | Region-independent URL used for DNS failover/      | Replaces the first segment of
+#                           | routing.                                           | the TENANT_DOMAIN value with the
+#                           |                                                    | string "global". For example, it will
+#                           |                                                    | default to "global.poc.ping.com" for
+#                           |                                                    | tenant domain "us1.poc.ping.cloud".
 #                           |                                                    |
 # REGION                    | The region where the tenant environment is         | us-east-2
 #                           | deployed. On AWS, this is a required parameter     |
@@ -241,7 +247,7 @@ export REGION="${REGION:-us-east-2}"
 export REGION_NICK_NAME="${REGION_NICK_NAME:-${REGION}}"
 export PRIMARY_REGION="${PRIMARY_REGION:-${REGION}}"
 
-export TENANT_DOMAIN="${TENANT_DOMAIN:-eks-poc.au1.ping-lab.cloud}"
+export TENANT_DOMAIN="${TENANT_DOMAIN:-us1.poc.ping.cloud}"
 export PRIMARY_TENANT_DOMAIN="${PRIMARY_TENANT_DOMAIN:-${TENANT_DOMAIN}}"
 export GLOBAL_TENANT_DOMAIN="${GLOBAL_TENANT_DOMAIN:-$(echo "${TENANT_DOMAIN}"|sed -e "s/[^.]*.\(.*\)/global.\1/")}"
 
