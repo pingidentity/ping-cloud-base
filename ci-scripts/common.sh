@@ -18,6 +18,7 @@ if test -z "${ENV_VARS_FILE}"; then
   export CLUSTER_NAME="${EKS_CLUSTER_NAME:-ci-cd}"
 
   export REGION="${AWS_DEFAULT_REGION:-us-west-2}"
+  export REGION_NICK_NAME=${REGION}
   export TENANT_DOMAIN='ci-cd.ping-oasis.com'
 
   export PRIMARY_REGION="${REGION}"
