@@ -112,7 +112,7 @@ function export_config_settings() {
 
   export PD_SEED_LDAP_HOST="${K8S_STATEFUL_SET_NAME}-0.${PD_CLUSTER_DOMAIN_NAME}"
   export LOCAL_HOST_NAME="${K8S_STATEFUL_SET_NAME}-${ORDINAL}.${PD_CLUSTER_DOMAIN_NAME}"
-  export LOCAL_INSTANCE_NAME="${LOCAL_HOST_NAME}"
+  export LOCAL_INSTANCE_NAME="${K8S_STATEFUL_SET_NAME}-${ORDINAL}-${REGION_NICK_NAME}"
 
   # Figure out the list of DNs to initialize replication on
   DN_LIST=

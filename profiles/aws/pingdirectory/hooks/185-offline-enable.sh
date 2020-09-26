@@ -124,18 +124,13 @@ template="${tmp_dir}/template.ldif"
 
 # If the port increment is 0, then that means that the names of the servers are unique.
 # So prepend the hostname_prefix to the hostname from the descriptor file.
+ds_cfg_server_instance_name="${hostname_prefix}-\${ordinal}-\${region}"
+local_inst_name="${hostname_prefix}-${local_ordinal}-${local_region}"
+
 if [ "${port_inc}" -eq 0 ]; then
-  if [ -z "${hostname_prefix}" ]; then
-    beluga_error "hostname_prefix must be specified when port_inc is 0"
-    exit 1
-  fi
   ds_cfg_hostname="${hostname_prefix}-\${ordinal}.\${hostname}"
-  ds_cfg_server_instance_name="${hostname_prefix}-\${ordinal}.\${hostname}"
-  local_inst_name="${hostname_prefix}-${local_ordinal}.${local_hostname}"
 else
   ds_cfg_hostname="\${hostname}"
-  ds_cfg_server_instance_name="\${hostname}-\${ordinal}"
-  local_inst_name="${local_hostname}-${local_ordinal}"
 fi
 
 cat <<EOF > "${template}"
@@ -165,6 +160,21 @@ EOF
 # Modifications to be applied to config.ldif.
 mods="${tmp_dir}/mods.ldif"
 rm -f "${mods}"
+
+# Remove all-servers and replication-servers groups.
+groups='replication-servers all-servers'
+
+beluga_log "Deleting server groups: ${groups}"
+for group in ${groups}; do
+  group_dn="cn=${group},cn=Server Groups,cn=Topology,cn=config"
+  if grep -qi "^ *dn: *${group_dn}$" < "${conf}"; then
+    cat <<EOF >> "${mods}"
+dn: ${group_dn}
+changeType: delete
+
+EOF
+fi
+done
 
 # Remove all existing server instances
 si_top_dn="cn=Server Instances,cn=Topology,cn=config"
@@ -244,9 +254,7 @@ for region in ${regions}; do
 
     # More sophisticated quoting could be done, but won't be needed unless
     # unusual characters are used for the name.
-    [ "${port_inc}" -eq 0 ] &&
-      si_cn="${hostname_prefix}-${ordinal}.${hostname}" ||
-      si_cn="${hostname}-${ordinal}"
+    si_cn="${hostname_prefix}-${ordinal}-${region}"
     replication_members="${replication_members} ${si_cn}"
 
     # Subshell to avoid polluting environment variables.
@@ -446,7 +454,7 @@ EOF
 fi
 
 # Add the instances created to a group of replication servers.
-for group in replication-servers all-servers; do
+for group in ${groups}; do
   group_dn="cn=${group},cn=Server Groups,cn=Topology,cn=config"
 
   if grep -qi "^ *dn: *${group_dn}$" < "${conf}"; then
