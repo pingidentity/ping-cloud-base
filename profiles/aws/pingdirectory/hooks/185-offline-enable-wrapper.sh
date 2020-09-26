@@ -37,7 +37,7 @@ if test -z "${DESCRIPTOR_FILE}"; then
 
   tr -d '[:space:]' <<EOF > "${DESCRIPTOR_FILE}"
 {
-  "${REGION}": {
+  "${REGION_NICK_NAME}": {
     "hostname": "${PD_CLUSTER_DOMAIN_NAME}",
     "replicas": ${NUM_REPLICAS}
   }
@@ -72,7 +72,7 @@ cat > "${offline_enable_config}" <<EOF
   "inst_root"           : "${SERVER_ROOT_DIR}",
   "hostname_prefix"     : "${K8S_STATEFUL_SET_NAME}",
   "local_tenant_domain" : "${TENANT_DOMAIN}",
-  "local_region"        : "${REGION}",
+  "local_region"        : "${REGION_NICK_NAME}",
   "local_num_replicas"  : ${NUM_REPLICAS},
   "local_ordinal"       : ${ORDINAL},
   "repl_id_base"        : 1000,
