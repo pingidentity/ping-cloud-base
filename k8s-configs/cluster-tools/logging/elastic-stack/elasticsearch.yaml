@@ -172,34 +172,6 @@ spec:
         securityContext:
           privileged: true
 
-      
-      - name: set-bootstrap-password
-        image: pingcloud-docker.jfrog.io/pingidentity/ping-cloud-enrichment-bootstrap:1.0.0
-        
-        imagePullPolicy: IfNotPresent
-        workingDir: /scripts
-        command: ["sh", '$(CONTAINER_NAME).sh']
-
-        securityContext:
-          runAsUser: 1000
-          runAsGroup: 1000
-
-        env:
-        - name: CONTAINER_NAME
-          value: "set-bootstrap-password"
-        - name: ES_PATH_CONF
-          value: "/usr/share/elasticsearch/data/config"
-        - name: ELASTIC_BOOTSTRAP_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: elk-secrets
-              key: ELASTIC_BOOTSTRAP_PASSWORD_B64
-
-        volumeMounts:
-        - name: data
-          mountPath: /usr/share/elasticsearch/data
-          readOnly: false
-
       containers:
 
       - name: elasticsearch
