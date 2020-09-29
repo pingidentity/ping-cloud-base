@@ -1,5 +1,59 @@
 # Changelog
 
+### 1.6.0
+
+- Added multi-region support of PD, PF, and PA
+
+_Changes:_
+
+- [X] PDO-685 - Deploy PD in each region
+- [X] PDO-686 - Deploy PF in primary region
+- [X] PDO-687 - Deploy PF in secondary region
+- [X] PDO-688 - Deploy PA in primary region
+- [X] PDO-690 - Deploy PA in secondary region
+- [X] PDO-884 - Update generate-cluster-state.sh script to support multiple clusters
+- [X] PDO-885 - Update push-cluster-state.sh script to support multiple clusters
+- [X] PDO-886 - Update flux configuration to point to the correct directories within the cluster-state-repo for each cluster
+- [X] PDO-999 - Discovery Service - update generate-cluster-state script to remove variables with cde prefix
+- [X] PDO-1202 - PingFederate admin now creates and upload CSD regularly
+- [X] PDO-1203 - PingAccess admin/runtime now creates and upload CSD regularly
+- [X] PDO-1227 - Leveraged topology-aware volume provisioning for all StatefulSets
+- [X] PDO-1228 - Added soft affinity to PA/PF Engines for multi-region
+- [X] PDO-1242 - Enabled cluster communication between peered VPCs
+- [X] PDO-1252 - Added log level to elastic-stack application
+- [X] PDO-1259 - Removed PingDataConsole
+- [X] PDO-1262 - Added custom log function, beluga_log, to server profile hooks
+- [X] PDO-1270 - Verify config changes can occur with backups and not be deleted from S3 for PF and PA admins
+- [X] PDO-1273 - PingDirectory - update offline-enable to use cluster communication over peered-VPC vs. NLB
+- [X] PDO-1277 - PA - update hook scripts of admin and runtimes for runtimes in secondary cluster to join admin using keypair
+- [X] PDO-1276 - Update pingcommon initContainer for PD/PF/PA/PA-WAS
+- [X] PDO-1304 - Removed PA-WAS from secondary region
+- [X] PDO-1309 - Update wait-for-service initContainer to check multiple ports for PD/PF/PA/PA-WAS
+- [X] PDO-1311 - Fixed issue with warnings about env_vars file during container startup
+- [X] PDO-1317 - Increased Cert Manager resources to handle multi-region deployments
+- [X] PDO-1321 - Force PingDirectory in secondary region to wait for PingDirectory in primary region
+- [X] PDO-1331 - Created a customized hook script to support PA/PA-WAS admin and runtime liveness probe
+- [X] PDO-1332 - Fixed issue with PF pods becoming unresponsive during endurance
+- [X] PDO-1334 - Added Web Application Firewall in for PF/PA Admin UIs
+- [X] PDO-1335 - Added Web Application Firewall in for Kibana, Grafana, Prometheus
+- [X] PDO-1345 - Update PingCloud to use custom log stash images
+- [X] PDO-1346 - Fixed SIEM for PF
+- [X] PDO-1349 - Removed Calico
+- [X] PDO-1352 - Increased PA Admin requests/limits to enable successful PA version upgrades for dev/test cde environments
+- [X] PDO-1383 - Added logic to verify provided PD hostname before deploying to multi-region
+- [X] PDO-1386 - Fixed issue with SIEM logging incorrectly and being sent to CloudWatch
+- [X] PDO-1391 - Added missing index-pattern for Logstash in ELK
+- [X] PDO-1396 - Added DNS_PING with MULTI_PING to the groups stack for added reliability
+- [X] PDO-1412 - Removed the logic in server profile hook that explicitly copies config archive to PF engine drop-in-deployer directory
+- [X] PDO-1432 - Fixed incompatibility between PA Admin SSO and PA-WAS
+- [X] PDO-1435 - Fixed Logstash errors in pods
+- [X] PDO-1440 - Fixed Logstash errors in Kibana
+- [X] PDO-1453 - Added logic to Fluentd container to only log at error level
+- [X] PDO-1467 - Fixed multi-region global url into ingress service so multi-region failover works
+- [X] PDO-1468 - Fixed PD periodic backups from failing
+- [X] PDO-1474 - PD - fixed replace-profile errors when transitioning from single to multi-cluster
+- [X] PDO-1480 - After initial launch, scaling up a PD server does not initialize replication data
+
 ### 1.5.0
 
 - Added Pingaccess-WAS deployment
