@@ -7,78 +7,6 @@ spec:
   template:
     spec:
       serviceAccount: enrichment
-
-      initContainers:
-
-      - name: user-management
-        image: pingcloud-docker.jfrog.io/pingidentity/ping-cloud-enrichment-bootstrap:1.0.0
-        
-        imagePullPolicy: IfNotPresent
-        workingDir: /scripts
-        command: ["sh", '$(CONTAINER_NAME).sh']
-
-        securityContext:
-          runAsUser: 1000
-          runAsGroup: 1000
-
-        env:
-        - name: CONTAINER_NAME
-          value: "user-management"
-        # Service checking related env vars
-        - name: CHECK_SERVICE_URL
-          value: "http://elasticsearch"
-        - name: CHECK_SERVICE_PORT
-          value: "9200"
-        - name: CHECK_SERVICE_USER
-          valueFrom:
-            secretKeyRef:
-              name: elk-secrets
-              key: ELASTIC_BOOTSTRAP_USER_B64
-        - name: CHECK_SERVICE_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: elk-secrets
-              key: ELASTIC_BOOTSTRAP_PASSWORD_B64
-        - name: DESIRED_STATUS
-          value: "green"
-        # Users credentials
-        - name: ELASTIC_USER
-          valueFrom:
-            secretKeyRef:
-              name: elk-secrets
-              key: ELASTIC_USER_B64
-        - name: ELASTIC_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: elk-secrets
-              key: ELASTIC_PASSWORD_B64
-        - name: ELASTIC_ROLES
-          value: "superuser"
-        - name: LOGSTASH_USER
-          valueFrom:
-            secretKeyRef:
-              name: elk-secrets
-              key: LOGSTASH_USER_B64
-        - name: LOGSTASH_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: elk-secrets
-              key: LOGSTASH_PASSWORD_B64
-        - name: LOGSTASH_ROLES
-          value: "superuser"
-        - name: KIBANA_USER
-          valueFrom:
-            secretKeyRef:
-              name: elk-secrets
-              key: KIBANA_USER_B64
-        - name: KIBANA_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: elk-secrets
-              key: KIBANA_PASSWORD_B64
-        - name: KIBANA_ROLES
-          value: "superuser"
-
       containers:
 
       - name: elasticsearch-bootstrap
@@ -101,16 +29,6 @@ spec:
           value: "http://elasticsearch"
         - name: CHECK_SERVICE_PORT
           value: "9200"
-        - name: CHECK_SERVICE_USER
-          valueFrom:
-            secretKeyRef:
-              name: elk-secrets
-              key: ELASTIC_USER_B64
-        - name: CHECK_SERVICE_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: elk-secrets
-              key: ELASTIC_PASSWORD_B64
         - name: DESIRED_STATUS
           value: "green"
 
