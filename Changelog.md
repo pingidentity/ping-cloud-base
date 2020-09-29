@@ -3,6 +3,10 @@
 ### 1.6.0
 
 - Added multi-region support of PD, PF, and PA
+- Added periodic CSD uploads for PF admin, PA admin/engine
+- Leveraged topology-aware volume provisioning for all StatefulSets
+- Added Web Application Firewall to PF/PA admin UIs, Kibana, Grafana and Prometheus
+- Added SIEM for PingFederate
 
 _Changes:_
 
