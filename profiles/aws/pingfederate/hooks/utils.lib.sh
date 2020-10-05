@@ -359,6 +359,16 @@ function beluga_error() {
   beluga_log "$1" 'ERROR'
 }
 
+########################################################################################################################
+# Logs the provided message and set the log level to WARN.
+#
+# Arguments
+#   $1 -> The log message.
+########################################################################################################################
+function beluga_warn() {
+  beluga_log "$1" 'WARN'
+}
+
 # These are needed by every script - so export them when this script is sourced.
 beluga_log "export config settings"
 export_config_settings
