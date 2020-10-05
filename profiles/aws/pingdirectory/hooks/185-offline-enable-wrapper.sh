@@ -19,16 +19,23 @@ function is_valid_json_file() {
   local json_file="$1"
   test ! -f "${json_file}" && return 1
   num_keys="$(jq -r '(keys|length)' "${json_file}")"
-  test $? -eq 0 && test "${num_keys}" -gt 0
+  test $? -eq 0 && test ! -z "${num_keys}" && test "${num_keys}" -gt 0
 }
 
 # The total number of replicating pods.
 NUM_REPLICAS=$(kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
 
-if is_valid_json_file "${TOPOLOGY_DESCRIPTOR_JSON}"; then
-  DESCRIPTOR_FILE="${TOPOLOGY_DESCRIPTOR_JSON}"
-elif is_valid_json_file "${TOPOLOGY_DESCRIPTOR_PROFILES_JSON}"; then
-  DESCRIPTOR_FILE="${TOPOLOGY_DESCRIPTOR_PROFILES_JSON}"
+if is_multi_cluster; then
+  if is_valid_json_file "${TOPOLOGY_DESCRIPTOR_JSON}"; then
+    DESCRIPTOR_FILE="${TOPOLOGY_DESCRIPTOR_JSON}"
+  elif is_valid_json_file "${TOPOLOGY_DESCRIPTOR_PROFILES_JSON}"; then
+    DESCRIPTOR_FILE="${TOPOLOGY_DESCRIPTOR_PROFILES_JSON}"
+  fi
+else
+  if is_valid_json_file "${TOPOLOGY_DESCRIPTOR_JSON}" ||
+     is_valid_json_file "${TOPOLOGY_DESCRIPTOR_PROFILES_JSON}"; then
+     beluga_warn 'In single-cluster mode, the user-provided topology descriptor file will be ignored'
+  fi
 fi
 
 if test -z "${DESCRIPTOR_FILE}"; then
@@ -45,8 +52,8 @@ if test -z "${DESCRIPTOR_FILE}"; then
 EOF
 
   if is_multi_cluster; then
-    beluga_log "WARNING!!! Topology descriptor file not provided or is empty in multi-cluster mode"
-    beluga_log "WARNING!!! only the servers in the local cluster will be considered part of the topology"
+    beluga_warn 'Topology descriptor file not provided or is empty in multi-cluster mode'
+    beluga_warn 'Only the servers in the local cluster will be considered part of the topology'
   fi
 else
   beluga_log "${DESCRIPTOR_FILE} already exists - using it"
