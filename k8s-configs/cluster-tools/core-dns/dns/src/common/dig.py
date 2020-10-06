@@ -29,7 +29,7 @@ class DigManager:
 
     def get_retry_secs(self) -> float:
         env_var = get_dns_resolution_var()
-        if env_var is not "":
+        if env_var != "":
             try:
                 return float(env_var)
             except ValueError:

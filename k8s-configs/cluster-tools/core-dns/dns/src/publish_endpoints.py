@@ -163,10 +163,7 @@ def main():
 
     try:
 
-        # ping-cloud-mpeterson
         namespace = validate_namespace()
-
-        # mpeterson.ping-demo.com
         domain_name = validate_tenant_domain()
 
         # Test to make sure the Hosted Zone has a
