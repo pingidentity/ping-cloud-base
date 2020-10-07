@@ -356,6 +356,9 @@ spec:
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_ENGINE
+          # Needed to resolve variable in run.properies, has no effect on an engine.
+        - name: CONFIG_EXPORT_MODE
+          value: MASTER_KEY
         - name: PA_ADMIN_USER_PASSWORD
           valueFrom:
             secretKeyRef:

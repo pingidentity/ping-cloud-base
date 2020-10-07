@@ -130,7 +130,7 @@ spec:
           # Development only: you can set this to PORTABLE_INSECURE to make an
           # exported configuration independent of the system that created it.
         - name: CONFIG_EXPORT_MODE
-          value: MASTER_KEY
+          value: PORTABLE_INSECURE
         - name: HTTPS_PORT
           value: "9090"
         - name: OLD_PA_ADMIN_USER_PASSWORD
@@ -341,6 +341,9 @@ spec:
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_ENGINE
+          # Needed to resolve variable in run.properies, has no effect on an engine.
+        - name: CONFIG_EXPORT_MODE
+          value: MASTER_KEY
         - name: PA_ADMIN_USER_PASSWORD
           valueFrom:
             secretKeyRef:
