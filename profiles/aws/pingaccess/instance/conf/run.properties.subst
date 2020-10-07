@@ -57,7 +57,7 @@ admin.ui.max.sessions=100
 #                       Warning: This allows the exported data to be imported anywhere, including another cluster with
 #                       a different master key. However, including the encryption key with the data allows sensitive
 #                       information to be decrypted and may present a significant security risk.
-admin.export.encryption.mode=MASTER_KEY
+admin.export.encryption.mode=${CONFIG_EXPORT_MODE}
 
 #-------------------------------------------------------------------------------
 # Availability Profile Defaults
