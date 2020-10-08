@@ -107,8 +107,46 @@ data:
             }
           }
         }
+        if ([kubernetes][container_name] == "pingaccess") {
+          if ([log] =~ "System_SIEM") {
+            mutate {
+              replace => { "log_type" => "PA_System_Log" }
+            }
+          }
+          else if ([log] =~ "Audit_SIEM") {
+            mutate {
+              replace => { "log_type" => "PA_Audit_Log" }
+            }
+          } 
+          else {
+            grok {
+                match => {
+                  message => ["%{GREEDYDATA:log_name}\.log %{GREEDYDATA:message}"]
+                }
+            }
+          }
+        }
+        if ([kubernetes][container_name] =~ "pingaccess-was") {
+          if ([log] =~ "System_SIEM") {
+            mutate {
+              replace => { "log_type" => "PA_WAS_System_Log" }
+            }
+          }
+          else if ([log] =~ "Audit_SIEM") {
+            mutate {
+              replace => { "log_type" => "PA_WAS_Audit_Log" }
+            }
+          } 
+          else {
+            grok {
+                match => {
+                  message => ["%{GREEDYDATA:log_name}\.log %{GREEDYDATA:message}"]
+                }
+            }
+          }
         }
       }
+    }
 
   systemd.conf: |
     input {
@@ -352,13 +390,10 @@ data:
         # PROCESS PING ACCESS AUDIT LOG
         # PING ACCESS IS SENDING IN LOG4J FORMAT (JSON), SO PARSING IS MUCH LIKE PING FED.
 
-        if([log_type] == "PA_Audit_Log"){
+        if([log_type] == "PA_Audit_Log" or [log_type] == "PA_WAS_Audit_Log"){
             grok {
                 match => {
-                    "message" => [
-                        "\A%{SYSLOG5424PRI}%{SYSLOGTIMESTAMP:event_timestamp}%{SPACE}%{SYSLOGPROG} , %{GREEDYDATA:json_data}",
-                        "\A%{SYSLOG5424PRI}%{SYSLOGTIMESTAMP:event_timestamp}%{SPACE}%{SYSLOGPROG}%{SPACE}%{GREEDYDATA:json_data}"
-                        ]
+                    "message" => [ "<%{NUMBER:trackingID}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
@@ -413,13 +448,10 @@ data:
             }
         }
 
-        if([log_type] == "PA_System_Log"){
+        if([log_type] == "PA_System_Log" or [log_type] == "PA_WAS_System_Log"){
             grok {
                 match => {
-                    "message" => [
-                        "\A%{SYSLOG5424PRI}%{SYSLOGTIMESTAMP:event_timestamp}%{SPACE}%{SYSLOGPROG} , %{GREEDYDATA:json_data}",
-                        "\A%{SYSLOG5424PRI}%{SYSLOGTIMESTAMP:event_timestamp}%{SPACE}%{SYSLOGPROG}%{SPACE}%{GREEDYDATA:json_data}"
-                        ]
+                    "message" => [ "<%{NUMBER:trackingID}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
@@ -494,6 +526,42 @@ data:
             ilm_enabled => true
             ilm_rollover_alias => "pd-failed-ops"
             ilm_policy => "ping-2-day-retention"
+        }
+      }
+      if([log_type] == "PA_System_Log"){
+        elasticsearch {
+          id => "pa_system_out"
+          hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
+          ilm_enabled => true
+          ilm_rollover_alias => "pa-system"
+          ilm_policy => "ping-2-day-retention"
+        }
+      }
+      if([log_type] == "PA_Audit_Log"){
+        elasticsearch {
+          id => "pa_audit_out"
+          hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
+          ilm_enabled => true
+          ilm_rollover_alias => "pa-audit"
+          ilm_policy => "ping-2-day-retention"
+        }
+      }
+      if([log_type] == "PA_WAS_System_Log"){
+        elasticsearch {
+          id => "pa_was_system_out"
+          hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
+          ilm_enabled => true
+          ilm_rollover_alias => "pa-was-system"
+          ilm_policy => "ping-2-day-retention"
+        }
+      }
+      if([log_type] == "PA_WAS_Audit_Log"){
+        elasticsearch {
+          id => "pa_was_audit_out"
+          hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
+          ilm_enabled => true
+          ilm_rollover_alias => "pa-was-audit"
+          ilm_policy => "ping-2-day-retention"
         }
       }
     }
