@@ -137,6 +137,9 @@ spec:
         - name: kibana-dashboard-pf-basic
           mountPath: /scripts/dashboards/pf-basic.ndjson
           subPath: pf-basic.ndjson
+        - name: kibana-dashboard-pa-was-basic
+          mountPath: /scripts/dashboards/pa-was-basic.ndjson
+          subPath: pa-was-basic.ndjson
 
       volumes:
       - name: kibana-dashboard-pa
@@ -151,3 +154,6 @@ spec:
       - name: kibana-dashboard-pf-basic
         configMap:
           name: kibana-dashboard-pf-basic
+      - name: kibana-dashboard-pa-was-basic
+        configMap:
+          name: kibana-dashboard-pa-was-basic
