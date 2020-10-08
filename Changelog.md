@@ -1,5 +1,15 @@
 # Changelog
 
+### 1.6.1
+
+- Updated PingDirectory image to 8.1.0.2 so replication initialization does not lock down a new server
+- Ignoring PingDirectory topology descriptor file in single-region environments
+
+_Changes:_
+
+- [X] PDO-1393: update PingDirectory image to 8.1.0.2 so replication initialization does not lock down a new server
+- [X] PDO-1494: Ignore PingDirectory topology descriptor file in single-region environments
+
 ### 1.6.0
 
 - Added multi-region support of PD, PF, and PA
