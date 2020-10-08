@@ -53,7 +53,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: pingdirectory-backup
-            image: pingidentity/pingdirectory:2006.1-8.1.0.1
+            image: pingcloud-docker.jfrog.io/pingidentity/pingdirectory:2006.1-8.1.0.2
             command:
             - /opt/in/backup.sh
             envFrom:
