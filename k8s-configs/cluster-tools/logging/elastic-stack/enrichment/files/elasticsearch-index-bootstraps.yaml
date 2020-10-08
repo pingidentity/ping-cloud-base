@@ -40,6 +40,23 @@ data:
         }
     }
 
+  pa-was-system.json: |
+    {
+        "aliases": {
+            "pa-was-system": {
+                "is_write_index": true
+            }
+        }
+    }
+
+  pa-was-audit.json: |
+    {
+        "aliases": {
+            "pa-was-audit": {
+                "is_write_index": true
+            }
+        }
+    }
   pd-access.json: |
     {
         "aliases": {
