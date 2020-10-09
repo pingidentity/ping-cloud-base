@@ -11,6 +11,7 @@ beluga_log "initial launch of container"
 
 export encryptionOption=$(getEncryptionOption)
 export jvmOptions=$(getJvmOptions)
+export LICENSE_KEY_FILE="${LICENSE_DIR}/${LICENSE_FILE_NAME}"
 
 ORIG_UNBOUNDID_JAVA_ARGS="${UNBOUNDID_JAVA_ARGS}"
 HEAP_SIZE_INT=$(echo "${MAX_HEAP_SIZE}" | grep 'g$' | cut -d'g' -f1)
