@@ -25,6 +25,11 @@ run_hook "21-update-server-profile.sh"
 export encryptionOption=$(getEncryptionOption)
 export jvmOptions=$(getJvmOptions)
 
+EXTERNAL_LICENSE_FILE_NAME="${IN_DIR}/instance/${LICENSE_FILE_NAME}"
+test -f "${EXTERNAL_LICENSE_FILE_NAME}" &&
+  export LICENSE_KEY_FILE="${EXTERNAL_LICENSE_FILE_NAME}" ||
+  export LICENSE_KEY_FILE="${LICENSE_DIR}/${LICENSE_FILE_NAME}"
+
 beluga_log "Checking license file"
 _currentLicense="${LICENSE_DIR}/${LICENSE_FILE_NAME}"
 _pdProfileLicense="${STAGING_DIR}/pd.profile/server-root/pre-setup/${LICENSE_FILE_NAME}"

@@ -4,11 +4,13 @@
 
 - Updated PingDirectory image to 8.1.0.2 so replication initialization does not lock down a new server
 - Ignoring PingDirectory topology descriptor file in single-region environments
+- Fixed ability to update PingDirectory license after initial launch
 
 _Changes:_
 
 - [X] PDO-1393: update PingDirectory image to 8.1.0.2 so replication initialization does not lock down a new server
 - [X] PDO-1494: Ignore PingDirectory topology descriptor file in single-region environments
+- [X] PDO-1514: Unable to update PingDirectory license after initial launch
 
 ### 1.6.0
 
