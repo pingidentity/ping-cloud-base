@@ -30,16 +30,10 @@ test -f "${EXTERNAL_LICENSE_FILE_NAME}" &&
   export LICENSE_KEY_FILE="${EXTERNAL_LICENSE_FILE_NAME}" ||
   export LICENSE_KEY_FILE="${LICENSE_DIR}/${LICENSE_FILE_NAME}"
 
-beluga_log "Checking license file"
-_currentLicense="${LICENSE_DIR}/${LICENSE_FILE_NAME}"
-_pdProfileLicense="${STAGING_DIR}/pd.profile/server-root/pre-setup/${LICENSE_FILE_NAME}"
-
-if test ! -f "${_pdProfileLicense}" ; then
-  beluga_log "Copying in license from existing install."
-  beluga_log "  ${_currentLicense} ==> "
-  beluga_log "    ${_pdProfileLicense}"
-  cp -af "${_currentLicense}" "${_pdProfileLicense}"
-fi
+# Copy the license file into the PD profiles directory. Otherwise, replace-profile cannot detect if it has changed.
+beluga_log "Copying the license key into the PD profiles directory"
+PD_PROFILE_LICENSE_FILE="${STAGING_DIR}/pd.profile/server-root/pre-setup/${LICENSE_FILE_NAME}"
+cp -af "${LICENSE_KEY_FILE}" "${PD_PROFILE_LICENSE_FILE}"
 
 ORIG_UNBOUNDID_JAVA_ARGS="${UNBOUNDID_JAVA_ARGS}"
 HEAP_SIZE_INT=$(echo "${MAX_HEAP_SIZE}" | grep 'g$' | cut -d'g' -f1)
