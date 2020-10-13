@@ -364,7 +364,7 @@ function log_events_exist() {
   cwatch_log_events=$(aws logs --profile "${AWS_PROFILE}" get-log-events \
     --log-group-name "${LOG_GROUP_NAME}" \
     --log-stream-name "${log_stream}" \
-    --no-start-from-head --limit 150 |
+    --no-start-from-head --limit 500 |
     # Replace groups of 3 and 2 '\' with 1 '\', remove '\r', '\n', replace '\t' with tab spaces,
     # remove all ansi escape sequences, remove all '\' and '-'
     sed -E 's/\\{3,}/\\/g' |
