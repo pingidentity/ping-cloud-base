@@ -111,7 +111,20 @@ test -d "${BASE_DIR}" && cp -pr "${BASE_DIR}" "${TMP_DIR}"
 if test -f 'env_vars'; then
   # Perform the substitutions in a sub-shell so it doesn't pollute the current shell.
   log "flux-command: substituting env_vars into templates"
-  (cd "${BUILD_DIR}"; substitute_vars env_vars .; test -d "${BASE_DIR}" && substitute_vars env_vars "${BASE_DIR}")
+  (
+    cd "${BUILD_DIR}"
+
+    BASE_ENV_VARS="${BASE_DIR}"/env_vars
+    env_vars_file=env_vars
+
+    if test -f "${BASE_ENV_VARS}"; then
+      env_vars_file="$(mktemp)"
+      cat env_vars "${BASE_ENV_VARS}" > "${env_vars_file}"
+    fi
+
+    substitute_vars "${env_vars_file}" .
+    substitute_vars "${env_vars_file}" "${BASE_DIR}"
+  )
   test $? -ne 0 && exit 1
 fi
 

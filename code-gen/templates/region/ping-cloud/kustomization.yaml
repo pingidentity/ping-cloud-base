@@ -35,6 +35,7 @@ configMapGenerator:
 - name: pingdirectory-environment-variables
   behavior: merge
   envs:
+  - ../../base/env_vars
   - ../env_vars
   - pingdirectory/env_vars
 
@@ -42,6 +43,7 @@ configMapGenerator:
 - name: pingfederate-environment-variables
   behavior: merge
   envs:
+  - ../../base/env_vars
   - ../env_vars
   - pingfederate/env_vars
 
@@ -49,6 +51,7 @@ configMapGenerator:
 - name: pingaccess-environment-variables
   behavior: merge
   envs:
+  - ../../base/env_vars
   - ../env_vars
   - pingaccess/env_vars
 
@@ -56,6 +59,7 @@ configMapGenerator:
 - name: pingaccess-was-environment-variables
   behavior: merge
   envs:
+  - ../../base/env_vars
   - ../env_vars
   - pingaccess-was/env_vars
 
