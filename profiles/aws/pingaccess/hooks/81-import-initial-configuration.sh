@@ -6,6 +6,7 @@
 "${VERBOSE}" && set -x
 
 templates_dir_path=${STAGING_DIR}/templates/81
+PINGACCESS_ADMIN_API_ENDPOINT="https://localhost:9000/pa-admin-api/v3"
 
 # Fetch using the -i flag to get the HTTP response
 # headers as well
@@ -17,7 +18,7 @@ get_admin_user_response=$(curl -k \
      --retry-delay 1 \
      --retry-connrefused \
      -u ${PA_ADMIN_USER_USERNAME}:${OLD_PA_ADMIN_USER_PASSWORD} \
-     -H "X-Xsrf-Header: PingAccess" "https://localhost:9000/pa-admin-api/v3/users/1")
+     -H "X-Xsrf-Header: PingAccess" "${PINGACCESS_ADMIN_API_ENDPOINT}/users/1")
 "${VERBOSE}" && set -x
 
 # Verify connecting to the user endpoint using credentials
@@ -39,8 +40,8 @@ if [ 200 = ${http_response_code} ]; then
         eula_payload=$(envsubst < ${templates_dir_path}/eula.json)
         make_initial_api_request -s -X PUT \
             -d "${eula_payload}" \
-            "https://localhost:9000/pa-admin-api/v3/users/1" > /dev/null
-
+            "${PINGACCESS_ADMIN_API_ENDPOINT}/users/1" > /dev/null
+        test $? -ne 0 && exit 1
 
         beluga_log "Changing the default password..."
         beluga_log "Change password debugging output suppressed"
@@ -56,7 +57,9 @@ if [ 200 = ${http_response_code} ]; then
         # Export CONFIG_QUERY_KP_ALIAS so it will get injected into
         # config-query-keypair.json.
         export CONFIG_QUERY_KP_ALIAS='pingaccess-config-query'
-        get_config_query_keypair_response=$(make_api_request -s "https://localhost:9000/pa-admin-api/v3/keyPairs")
+        get_config_query_keypair_response=$(make_api_request -s "${PINGACCESS_ADMIN_API_ENDPOINT}/keyPairs")
+        test $? -ne 0 && exit 1
+
         config_query_keypair=$(jq -n "${get_config_query_keypair_response}" \
             | jq --arg cq_kp_alias "${CONFIG_QUERY_KP_ALIAS}" '.items[] | select(.alias == $cq_kp_alias)')
         config_query_keypair_alias=$(jq -n "${config_query_keypair}" | jq -r '.alias')
@@ -75,14 +78,17 @@ if [ 200 = ${http_response_code} ]; then
             config_query_keypair_payload=$(envsubst < ${templates_dir_path}/config-query-keypair.json)
             create_config_query_keypair_response=$(make_api_request -s -d \
                 "${config_query_keypair_payload}" \
-                "https://localhost:9000/pa-admin-api/v3/keyPairs/generate")
+                "${PINGACCESS_ADMIN_API_ENDPOINT}/keyPairs/generate")
+            test $? -ne 0 && exit 1
 
             # Export CONFIG_QUERY_KEYPAIR_ID so it will get injected into
             # config-query.json.
             export CONFIG_QUERY_KEYPAIR_ID=$(jq -n "${create_config_query_keypair_response}" | jq '.id')
 
             # Retrieving CONFIG QUERY id
-            https_listeners_response=$(make_api_request -s "https://localhost:9000/pa-admin-api/v3/httpsListeners")
+            https_listeners_response=$(make_api_request -s "${PINGACCESS_ADMIN_API_ENDPOINT}/httpsListeners")
+            test $? -ne 0 && exit 1
+
             config_query_listener_id=$(jq -n "${https_listeners_response}" | jq '.items[] | select(.name=="CONFIG QUERY") | .id')
 
             # Update CONFIG QUERY HTTPS Listener with with the new keypair
@@ -90,7 +96,8 @@ if [ 200 = ${http_response_code} ]; then
             config_query_payload=$(envsubst < ${templates_dir_path}/config-query.json)
             config_query_response=$(make_api_request -s -X PUT \
                 -d "${config_query_payload}" \
-                "https://localhost:9000/pa-admin-api/v3/httpsListeners/${config_query_listener_id}")
+                "${PINGACCESS_ADMIN_API_ENDPOINT}/httpsListeners/${config_query_listener_id}")
+            test $? -ne 0 && exit 1
 
          else
 

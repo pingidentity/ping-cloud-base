@@ -15,6 +15,7 @@ cd ${DST_DIRECTORY}
 
 # Make request to admin API and backup latest data
 make_api_request_download -OJ -X GET https://localhost:9000/pa-admin-api/v3/backup
+test $? -ne 0 && exit 1
 
 # Get the name of the backup file
 DST_FILE=$(find ./ -iname \*.zip)

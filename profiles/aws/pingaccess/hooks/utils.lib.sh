@@ -9,10 +9,10 @@ test -f "${STAGING_DIR}/ds_env_vars" && . "${STAGING_DIR}/ds_env_vars"
 ########################################################################################################################
 function stop_server()
 {
-  SERVER_PID=$(pgrep -alf java | grep 'run.properties' | awk '{ print $1; }')
+  SERVER_PID=$(pgrep -alf java | grep 'run.properties' | awk '{ print $1 }')
   kill "${SERVER_PID}"
   while true; do
-    SERVER_PID=$(pgrep -alf java | grep 'run.properties' | awk '{ print $1; }')
+    SERVER_PID=$(pgrep -alf java | grep 'run.properties' | awk '{ print $1 }')
     if test -z ${SERVER_PID}; then
         break
     else
@@ -41,13 +41,13 @@ function make_api_request() {
 
     if test "${curl_result}" -ne 0; then
         beluga_log "Admin API connection refused"
-        "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
+        return 1
     fi
 
     if test "${http_code}" -ne 200; then
         beluga_log "API call returned HTTP status code: ${http_code}"
         cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
-        "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
+        return 1
     fi
 
     cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
@@ -74,12 +74,12 @@ function make_initial_api_request() {
 
     if test "${curl_result}" -ne 0; then
         beluga_log "Admin API connection refused"
-        "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
+        return 1
     fi
 
     if test "${http_code}" -ne 200; then
         beluga_log "API call returned HTTP status code: ${http_code}"
-        "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
+        return 1
     fi
 
     cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
@@ -107,12 +107,12 @@ function make_api_request_download() {
 
     if test "${curl_result}" -ne 0; then
         beluga_log "Admin API connection refused"
-        "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
+        return 1
     fi
 
     if test "${http_code}" -ne 200; then
         beluga_log "API call returned HTTP status code: ${http_code}"
-        "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
+        return 1
     fi
 
     return 0
@@ -170,10 +170,10 @@ function changePassword() {
 
   if test ${isPasswordEmpty} -eq 1; then
     beluga_log "The old and new passwords cannot be blank"
-    "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
+    return 1
   elif test ${isPasswordSame} -eq 1; then
     beluga_log "old password and new password are the same, therefore cannot update password"
-    "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
+    return 1
   else
     # Change the default password.
     # Using set +x to suppress shell debugging
@@ -195,7 +195,7 @@ function changePassword() {
     fi
 
     beluga_log "error changing password"
-    "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
+    return 1
   fi
 }
 

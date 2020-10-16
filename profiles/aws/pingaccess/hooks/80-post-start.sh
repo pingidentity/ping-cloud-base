@@ -27,18 +27,18 @@ if ! test -f "${ADMIN_CONFIGURATION_COMPLETE}"; then
   beluga_log "Starting hook: ${HOOKS_DIR}/81-import-initial-configuration.sh"
   sh "${HOOKS_DIR}/81-import-initial-configuration.sh"
   if test $? -ne 0; then
-    "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
+    stop_server
   fi
 
   if isPingaccessWas; then
     sh "${HOOKS_DIR}/82-configure-p14c-token-provider.sh"
     if test $? -ne 0; then
-      "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
+      stop_server
     fi
 
     sh "${HOOKS_DIR}/83-configure-initial-pa-was.sh"
     if test $? -ne 0; then
-      "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
+      stop_server
     fi
 
   fi
@@ -50,7 +50,9 @@ else
   # Since this isn't initial deployment, change password if from disk is different than the desired value.
   if test $(comparePasswordDiskWithVariable) -eq 0; then
     beluga_log "changing PA admin password"
-    changePassword
+    if ! changePassword; then
+      stop_server
+    fi
   else
     beluga_log "not changing PA admin password"
   fi
@@ -60,13 +62,13 @@ else
     beluga_log "Starting hook: ${HOOKS_DIR}/82-configure-p14c-token-provider.sh"
     sh "${HOOKS_DIR}/82-configure-p14c-token-provider.sh"
     if test $? -ne 0; then
-      "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
+      stop_server
     fi
 
     beluga_log "Starting hook: ${HOOKS_DIR}/83-configure-initial-pa-was.sh"
     sh "${HOOKS_DIR}/83-configure-initial-pa-was.sh"
     if test $? -ne 0; then
-      "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
+      stop_server
     fi
   fi
 
@@ -91,4 +93,4 @@ fi
 
 # Kill the container if post-start fails.
 beluga_log "post-start: admin post-start backup failed"
-"${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
+stop_server
