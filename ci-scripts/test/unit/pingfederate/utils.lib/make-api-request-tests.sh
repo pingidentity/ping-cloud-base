@@ -34,12 +34,10 @@ curl() {
 
 oneTimeSetUp() {
   export VERBOSE=false
-  export STOP_SERVER_ON_FAILURE=false
 }
 
 oneTimeTearDown() {
   unset VERBOSE
-  unset STOP_SERVER_ON_FAILURE
 }
 
 ##### Begin Tests: Make API requests and expect JSON response #####

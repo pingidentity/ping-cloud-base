@@ -24,14 +24,12 @@ function inject_template() {
 
 setUp() {
   export VERBOSE=false
-  export STOP_SERVER_ON_FAILURE=false
   export OLD_PA_ADMIN_USER_PASSWORD='2Access'
   export PA_ADMIN_USER_PASSWORD='2FederateM0re'
 }
 
 oneTimeTearDown() {
   unset VERBOSE
-  unset STOP_SERVER_ON_FAILURE
   unset OLD_PA_ADMIN_USER_PASSWORD
   unset PA_ADMIN_USER_PASSWORD
 }

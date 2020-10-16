@@ -10,10 +10,6 @@ PA_ADMIN_SERVER=pingaccess-admin
 PA_ADMIN_PORT=9000
 PA_ENGINE_PORT=3000
 
-# Force stop the admin to terminate upon failure. See all references to stop_server
-# function in server profile for more details.
-STOP_SERVER_ON_FAILURE=true
-
 # Retry client request to pingaccess admin API up to 10 times. Engine pod uses admin
 # API to retrieve its proper configuration.
 API_RETRY_LIMIT=10

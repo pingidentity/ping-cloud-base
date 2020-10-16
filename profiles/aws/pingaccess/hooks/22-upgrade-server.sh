@@ -66,12 +66,12 @@ function api_put()
 
    if test "${curl_result}" -ne 0; then
         beluga_log "Admin API connection refused"
-       "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
+        return 1
    fi
 
    if test "${http_code}" -ne 200; then
-       beluga_log "API call returned HTTP status code: ${http_code}"
-       "${STOP_SERVER_ON_FAILURE}" && stop_server || exit 1
+        beluga_log "API call returned HTTP status code: ${http_code}"
+        return 1
    fi
 
    cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
@@ -84,6 +84,7 @@ function api_put()
 #---------------------------------------------------------------------------------------------
 function process_admin()
 {
+   local pingaccess_admin_api_endpoint="https://localhost:${PINGACCESS_ADMIN_SERVICE_PORT}/pa-admin-api/v3"
    #
    # Check if it's necessary to run the upgrade tool. Compare version in /opt/server with current 
    # version of server under /opt/out/instance to make the call.
@@ -113,10 +114,16 @@ function process_admin()
       # old instance now running, if this is the admin server disable key rotation 
       #
       beluga_log "Disabling key rotation to prevent invalidating active sessions during upgrade"
-      original=$(make_api_request "https://localhost:${PINGACCESS_ADMIN_SERVICE_PORT}/pa-admin-api/v3/authTokenManagement" | tr -s ' '| tr '\n' ' ')
+      original=$(make_api_request "${pingaccess_admin_api_endpoint}/authTokenManagement")
+      test $? -ne 0 && return 1
+      
+      original=$(echo "${original}" | tr -s ' '| tr '\n' ' ')
       payload="$(echo "${original}" | jq -r ".keyRollEnabled |= false" | tr -s ' '|tr -d '\n' )"
-      payload=$(api_put "https://localhost:${PINGACCESS_ADMIN_SERVICE_PORT}/pa-admin-api/v3/authTokenManagement" "${payload}")
-      payload=$(make_api_request "https://localhost:${PINGACCESS_ADMIN_SERVICE_PORT}/pa-admin-api/v3/authTokenManagement")
+      payload=$(api_put "${pingaccess_admin_api_endpoint}/authTokenManagement" "${payload}")
+      test $? -ne 0 && return 1
+
+      payload=$(make_api_request "${pingaccess_admin_api_endpoint}/authTokenManagement")
+      test $? -ne 0 && return 1
    
       #
       # copy New server into place
@@ -203,7 +210,8 @@ function process_admin()
          # Re-enable key rotation following failed upgrade attempt
          #
          beluga_log "Upgrade failed: Re-enabling key rotation"
-         payload=$(api_put "https://localhost:${PINGACCESS_ADMIN_SERVICE_PORT}/pa-admin-api/v3/authTokenManagement" "${original}")
+         payload=$(api_put "${pingaccess_admin_api_endpoint}/authTokenManagement" "${original}")
+         test $? -ne 0 && return 1
       fi
 
       #
@@ -227,6 +235,7 @@ function process_admin()
 #---------------------------------------------------------------------------------------------
 function process_engine()
 {
+   local pingaccess_admin_api_endpoint="https://${ADMIN_HOST_PORT}/pa-admin-api/v3"
    rc=0
 
    #
@@ -238,7 +247,10 @@ function process_engine()
    #
    # Establish running version of the admin server
    #
-   INSTALLED_ADMIN=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/version| jq -r .version)
+   INSTALLED_ADMIN=$(make_api_request "${pingaccess_admin_api_endpoint}/version")
+   test $? -ne 0 && return 1
+
+   INSTALLED_ADMIN=$(jq -n "${INSTALLED_ADMIN}" | jq -r .version)
 
    #
    # Are the admin and Engine running the same version? 
@@ -247,20 +259,26 @@ function process_engine()
       #
       # Yes, get engine details
       #
-      engines=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/engines)
+      engines=$(make_api_request "${pingaccess_admin_api_endpoint}/engines")
+      test $? -ne 0 && return 1
+
       engineId=$(jq -n "${engines}" | jq -r --arg ENGINE_NAME "$(hostname)" '.items[] | select(.name==$ENGINE_NAME) | .id')
       if [ -n "${engineId}" ] && [ "${engineId}" != "null" ]; then
          #
          # Pre-existing engine, check replication state.
          #
-         engine=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/engines/${engineId})
+         engine=$(make_api_request "${pingaccess_admin_api_endpoint}/engines/${engineId}")
+         test $? -ne 0 && return 1
+
          state=$(jq -n "${engine}" | jq -r ".configReplicationEnabled")
          #
          # If replication is disabled then re-enable it
          #
          if [ "${state}" = "false" ]; then
             engine=$(echo "${engine}" | jq -r ".configReplicationEnabled |= true" | tr -s ' '|tr -d '\n' )
-            engine=$(api_put "https://${ADMIN_HOST_PORT}/pa-admin-api/v3/engines/${engineId}" "${engine}")
+            engine=$(api_put "${pingaccess_admin_api_endpoint}/engines/${engineId}" "${engine}")
+            test $? -ne 0 && return 1
+
             beluga_log "Configuration replication re-enabled for $(hostname)"
          fi   
       fi   

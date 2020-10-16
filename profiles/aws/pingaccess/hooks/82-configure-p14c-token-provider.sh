@@ -6,9 +6,12 @@
 "${VERBOSE}" && set -x
 
 TEMPLATES_DIR_PATH=${STAGING_DIR}/templates/82
+PINGACCESS_ADMIN_API_ENDPOINT="https://localhost:9000/pa-admin-api/v3"
 
 is_previously_configured() {
-  local create_tp_settings_response=$(make_api_request "https://localhost:9000/pa-admin-api/v3/tokenProvider/settings")
+  local create_tp_settings_response=$(make_api_request "${PINGACCESS_ADMIN_API_ENDPOINT}/tokenProvider/settings")
+  test $? -ne 0 && return 1
+
   local token_provider=$(jq -n "${create_tp_settings_response}" | jq '.type')
 
   if test "${token_provider}" = '"PingOneForCustomers"'; then
@@ -33,7 +36,8 @@ p14c_credentials_changed() {
 
 get_p14c_issuer() {
   ISSUER= # Global scope
-  local get_p14c_response=$(make_api_request "https://localhost:9000/pa-admin-api/v3/pingone/customers")
+  local get_p14c_response=$(make_api_request "${PINGACCESS_ADMIN_API_ENDPOINT}/pingone/customers")
+  test $? -ne 0 && return 1
 
   ISSUER=$(jq -n "${get_p14c_response}" | jq '.issuer')
   ISSUER=$(strip_double_quotes "${ISSUER}")
@@ -46,7 +50,8 @@ add_p14c_credentials() {
   beluga_log "make_api_request response..."
   make_api_request -s -X PUT \
       -d "${p14c_config}" \
-      "https://localhost:9000/pa-admin-api/v3/pingone/customers"
+      "${PINGACCESS_ADMIN_API_ENDPOINT}/pingone/customers"  
+  return $?
 }
 
 set_p14c_as_token_provider() {
@@ -56,14 +61,22 @@ set_p14c_as_token_provider() {
   beluga_log "make_api_request response..."
   make_api_request -s -X PUT \
       -d "${token_provider_config}" \
-      "https://localhost:9000/pa-admin-api/v3/tokenProvider/settings"
+      "${PINGACCESS_ADMIN_API_ENDPOINT}/tokenProvider/settings"
+  return $?
 }
 
 if is_previously_configured && ! p14c_credentials_changed; then
   exit 0
 fi
 
-add_p14c_credentials
-set_p14c_as_token_provider
+if ! add_p14c_credentials; then
+  beluga_error "Failed to add P14C credentials"
+  exit 1
+fi
+
+if ! set_p14c_as_token_provider; then
+  beluga_error "Failed to add P14C as a token provider"
+  exit 1
+fi
 
 beluga_log "Configuration complete"

@@ -1,0 +1,5 @@
+{
+    "name": "${ENGINE_NAME}",
+    "selectedCertificateId": "${ENGINE_CERT_ID}",
+    "configReplicationEnabled": true
+}

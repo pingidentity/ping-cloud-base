@@ -10,6 +10,8 @@ ENDPOINT="https://localhost:9000/pa-admin-api/v3"
 
 is_previously_configured() {
   local get_applications_response=$(make_api_request "${ENDPOINT}"/applications)
+  test $? -ne 0 && return 1
+
   local applications_count=$(jq -n "${get_applications_response}" | jq '.items | length')
 
   if test "${applications_count}" -ge 5; then
@@ -261,6 +263,7 @@ create_entity() {
 
   beluga_log "make_api_request response..."
   make_api_request -s -X POST -d "${payload}" "${ENDPOINT}"/"${resource}"
+  return ${?}
 }
 
 update_entity() {
@@ -277,6 +280,7 @@ update_entity() {
 
   beluga_log "make_api_request response..."
   make_api_request -s -X PUT -d "${payload}" "${context_path}"
+  return ${?}
 }
 
 get_entity() {
@@ -284,6 +288,7 @@ get_entity() {
   local id="${2}"
 
   make_api_request "${ENDPOINT}"/"${resource}"/"${id}"
+  return ${?}
 }
 
 is_production_environment() {
