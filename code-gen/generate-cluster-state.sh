@@ -418,10 +418,7 @@ TEMPLATES_HOME="${SCRIPT_HOME}/templates"
 BASE_DIR="${TEMPLATES_HOME}/base"
 BASE_TOOLS_REL_DIR="base/cluster-tools"
 BASE_PING_CLOUD_REL_DIR="base/ping-cloud"
-
 REGION_DIR="${TEMPLATES_HOME}/region"
-REGION_TOOLS_REL_DIR="${REGION_NICK_NAME}/cluster-tools"
-REGION_PING_CLOUD_REL_DIR="${REGION_NICK_NAME}/ping-cloud"
 
 # Generate an SSH key pair for flux CD.
 if test -z "${SSH_ID_PUB_FILE}" && test -z "${SSH_ID_KEY_FILE}"; then
@@ -541,7 +538,20 @@ for ENV in ${ENVIRONMENTS}; do
       ;;
   esac
 
-  # FIXME: PA/PA-WAS heap settings should be made variables
+  # Set PA variables
+  add_comment_header_to_file "${CDE_BASE_ENV_VARS}" 'PingAccess variables for environment'
+
+  export_variable "${CDE_BASE_ENV_VARS}" PA_WAS_MIN_HEAP 2048m
+  export_variable "${CDE_BASE_ENV_VARS}" PA_WAS_MAX_HEAP 2048m
+  export_variable "${CDE_BASE_ENV_VARS}" PA_WAS_MIN_YGEN 1024m
+  export_variable "${CDE_BASE_ENV_VARS}" PA_WAS_MAX_YGEN 1024m
+  export_variable_ln "${CDE_BASE_ENV_VARS}" PA_WAS_GCOPTION '-XX:+UseParallelGC'
+
+  export_variable "${CDE_BASE_ENV_VARS}" PA_MIN_HEAP 512m
+  export_variable "${CDE_BASE_ENV_VARS}" PA_MAX_HEAP 512m
+  export_variable "${CDE_BASE_ENV_VARS}" PA_MIN_YGEN 256m
+  export_variable "${CDE_BASE_ENV_VARS}" PA_MAX_YGEN 256m
+  export_variable_ln "${CDE_BASE_ENV_VARS}" PA_GCOPTION '-XX:+UseParallelGC'
 
   add_comment_header_to_file "${CDE_BASE_ENV_VARS}" 'Cluster name variables'
   if "${IS_BELUGA_ENV}"; then
@@ -603,7 +613,7 @@ for ENV in ${ENVIRONMENTS}; do
 
   # Regional enablement - add admins, backups, etc. to primary.
   if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
-    PRIMARY_PING_KUST_FILE="${ENV_DIR}/${REGION_PING_CLOUD_REL_DIR}/kustomization.yaml"
+    PRIMARY_PING_KUST_FILE="${ENV_DIR}/${REGION_NICK_NAME}/kustomization.yaml"
     sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/' "${PRIMARY_PING_KUST_FILE}"
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
   fi

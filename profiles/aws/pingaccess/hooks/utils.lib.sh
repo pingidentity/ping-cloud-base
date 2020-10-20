@@ -412,6 +412,13 @@ function export_environment_variables() {
     export CLUSTER_PUBLIC_HOSTNAME="${PA_WAS_CLUSTER_PUBLIC_HOSTNAME}"
 
     export PA_DATA_BACKUP_URL="${BACKUP_URL}/pingaccess-was"
+
+    # If PA_WAS heap settings are defined, then prefer those over the PA ones.
+    export PA_MIN_HEAP="${PA_WAS_MIN_HEAP:-${PA_MIN_HEAP}}"
+    export PA_MAX_HEAP="${PA_WAS_MAX_HEAP:-${PA_MAX_HEAP}}"
+    export PA_MIN_YGEN="${PA_WAS_MIN_YGEN:-${PA_MIN_YGEN}}"
+    export PA_MAX_YGEN="${PA_WAS_MAX_YGEN:-${PA_MAX_YGEN}}"
+    export PA_GCOPTION="${PA_WAS_GCOPTION:-${PA_GCOPTION}}"
   else
     export K8S_STATEFUL_SET_NAME="${K8S_STATEFUL_SET_NAME_PINGACCESS}"
     export K8S_SERVICE_NAME_ADMIN="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}"
