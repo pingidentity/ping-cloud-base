@@ -12,9 +12,6 @@ images:
 - name: pingidentity/pingaccess
   newName: ${REGISTRY_NAME}/pingidentity/pingaccess
 
-generatorOptions:
-  disableNameSuffixHash: true
-
 configMapGenerator:
 
 ### PD topology descriptor.json file. Only required in multi-region deployments. ###

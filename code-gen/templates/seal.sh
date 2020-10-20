@@ -40,14 +40,13 @@ check_binaries() {
 # Prints script usage.
 ########################################################################################################################
 usage() {
-  echo "Usage: ./seal.sh <REGION_DIR> [<CERT_FILE>]"
+  echo "Usage: ./seal.sh [<CERT_FILE>]"
   echo
-  echo "  REGION_DIR - the directory containing the specs for a particular region, relative to this script."
   echo "  CERT_FILE  - a file containing the PEM-encoded encryption key, i.e. the public key of the sealed secrets"
   echo "               controller. If the CERT_FILE is not provided, then kubeseal will be run against the current"
   echo "               cluster to try to obtain the public key of the sealed secrets controller running on it."
   echo
-  echo "Example: ./seal.sh us-west-2 /tmp/encryption.key"
+  echo "Example: ./seal.sh /tmp/encryption.key"
 }
 
 ####################
@@ -59,18 +58,15 @@ check_binaries "kustomize" "kubeseal"
 HAS_REQUIRED_TOOLS=${?}
 test ${HAS_REQUIRED_TOOLS} -ne 0 && exit 1
 
-REGION_DIR="$1"
-if test -z "${REGION_DIR}" || test ! -d "${REGION_DIR}"; then
-  usage
-  exit 1
-fi
-
 echo "-----------------------------------------------------------------------------------------------------------------"
 echo "Read the 'READ BEFORE RUNNING THE SCRIPT' section at the top of this script"
 echo "-----------------------------------------------------------------------------------------------------------------"
 
+# Run flux-command.sh with an OUT_DIR so each k8s resource is written to a separate file. Also, give it a fake
+# REGION_NICK_NAME and TENANT_DOMAIN because all secrets exist in base, and without these variables, "kustomize build"
+# will fail when invoked from within flux-command.sh.
 OUT_DIR=$(mktemp -d)
-OUT_DIR="${OUT_DIR}" "${SCRIPT_DIR}"/flux-command.sh "${REGION_DIR}"
+OUT_DIR="${OUT_DIR}" REGION_NICK_NAME=base TENANT_DOMAIN=base.ping-cloud.com "${SCRIPT_DIR}"/flux-command.sh base
 
 YAML_FILES=$(find "${OUT_DIR}" -type f | xargs grep -rl 'kind: Secret')
 if test -z "${YAML_FILES}"; then
@@ -78,7 +74,7 @@ if test -z "${YAML_FILES}"; then
   exit 0
 fi
 
-CERT_FILE="$2"
+CERT_FILE="$1"
 
 # If the certificate file is not provided, try to get the certificate from the Bitnami sealed secret service.
 # The sealed-secrets controller must be running in the cluster, and it should be possible to access the Kubernetes
@@ -100,22 +96,14 @@ echo "Using certificate file ${CERT_FILE} for encrypting secrets"
 SEALED_SECRETS_FILE=/tmp/sealed-secrets.yaml
 rm -f "${SEALED_SECRETS_FILE}"
 
-PING_SECRETS_FILE=/tmp/ping-secrets.yaml
-rm -f "${PING_SECRETS_FILE}"
-
-CLUSTER_SECRETS_FILE=/tmp/cluster-secrets.yaml
-rm -f "${CLUSTER_SECRETS_FILE}"
+SECRETS_FILE=/tmp/ping-secrets.yaml
+rm -f "${SECRETS_FILE}"
 
 for FILE in ${YAML_FILES}; do
   NAME=$(grep 'name:' "${FILE}" | cut -d: -f2 | tr -d '[:space:]')
   NAMESPACE=$(grep 'namespace:' "${FILE}" | cut -d: -f2 | tr -d '[:space:]')
 
-  # Append/add a patch to delete the secret to the patches file.
-  test "${NAMESPACE#ping-cloud}" != "${NAMESPACE}" &&
-      PATCH_FILE="${PING_SECRETS_FILE}" ||
-      PATCH_FILE="${CLUSTER_SECRETS_FILE}"
-
-  cat >> "${PATCH_FILE}" <<EOF
+  cat >> "${SECRETS_FILE}" <<EOF
 apiVersion: v1
 kind: Secret
 metadata:
@@ -147,12 +135,11 @@ echo
 echo '------------------------'
 echo '|  Next steps to take  |'
 echo '------------------------'
-echo "- Run the following commands from a region's directory:"
-echo "      cd ${REGION_DIR} # e.g. cd us-west-2"
-echo "      test -f ${CLUSTER_SECRETS_FILE} && cp ${CLUSTER_SECRETS_FILE} cluster-tools/secrets.yaml"
-echo "      test -f ${PING_SECRETS_FILE} && cp ${PING_SECRETS_FILE} ping-cloud/secrets.yaml"
-echo "      test -f ${SEALED_SECRETS_FILE} && cp ${SEALED_SECRETS_FILE} sealed-secrets.yaml"
-echo "      ../flux-command.sh > /tmp/deploy.yaml"
+echo "- Run the following commands from the k8s-configs directory:"
+echo "      cd k8s-configs"
+echo "      test -f ${SECRETS_FILE} && cp ${SECRETS_FILE} base/secrets.yaml"
+echo "      test -f ${SEALED_SECRETS_FILE} && cp ${SEALED_SECRETS_FILE} base/sealed-secrets.yaml"
+echo "      ./flux-command.sh \${REGION_DIR} > /tmp/deploy.yaml"
 echo "      grep 'kind: Secret' /tmp/deploy.yaml # should not have any hits"
 echo "      grep 'kind: SealedSecret' /tmp/deploy.yaml # should have hits"
 echo "- Push all modified files into the cluster state repo"
