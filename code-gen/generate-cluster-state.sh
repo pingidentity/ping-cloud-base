@@ -320,15 +320,15 @@ export_variable "${REGION_ENV_VARS}" REGION "${REGION}"
 export_variable_ln "${REGION_ENV_VARS}" REGION_NICK_NAME "${REGION_NICK_NAME:-${REGION}}"
 
 add_comment_to_file "${REGION_ENV_VARS}" 'Tenant domain for customer for region'
-export_variable "${REGION_ENV_VARS}" TENANT_DOMAIN "${TENANT_DOMAIN}"
+export_variable_ln "${REGION_ENV_VARS}" TENANT_DOMAIN "${TENANT_DOMAIN}"
+
+add_comment_to_file "${REGION_ENV_VARS}" 'S3 bucket name for PingFederate adaptive clustering'
+add_comment_to_file "${REGION_ENV_VARS}" 'Only required in multi-cluster environments'
+export_variable "${REGION_ENV_VARS}" CLUSTER_BUCKET_NAME "${CLUSTER_BUCKET_NAME}"
 
 ### Base environment variables ###
 add_comment_header_to_file "${BASE_ENV_VARS}" 'Multi-region parameters'
 export_variable_ln "${BASE_ENV_VARS}" IS_MULTI_CLUSTER "${IS_MULTI_CLUSTER}"
-
-add_comment_to_file "${BASE_ENV_VARS}" 'S3 bucket name for PingFederate adaptive clustering'
-add_comment_to_file "${BASE_ENV_VARS}" 'Only required in multi-cluster environments'
-export_variable_ln "${BASE_ENV_VARS}" CLUSTER_BUCKET_NAME "${CLUSTER_BUCKET_NAME}"
 
 add_comment_to_file "${BASE_ENV_VARS}" 'Primary region name - must be a valid AWS region name'
 add_comment_to_file "${BASE_ENV_VARS}" 'Primary region should have the same value for REGION and PRIMARY_REGION'
