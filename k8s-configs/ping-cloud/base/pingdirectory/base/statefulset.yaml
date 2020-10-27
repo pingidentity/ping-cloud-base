@@ -108,10 +108,6 @@ spec:
           name: https
         - containerPort: 8989
           name: repl
-        resources:
-          requests:
-            memory: "5Gi"
-            cpu: "2"
         env:
         - name: P14C_ENVIRONMENT_ID
           valueFrom:
@@ -215,13 +211,6 @@ spec:
           - mountPath: /tmp/mapping/
             name: pingdirectory-statsd-mapping
             readOnly: false
-        resources:
-          limits:
-            cpu: 100m
-            memory: 300Mi
-          requests:
-            cpu: 100m
-            memory: 300Mi
       volumes:
       - name: ssh-dir
         emptyDir: {}

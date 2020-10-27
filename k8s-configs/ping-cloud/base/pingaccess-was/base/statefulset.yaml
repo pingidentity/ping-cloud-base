@@ -79,13 +79,6 @@ spec:
       - name: pingaccess-was-admin
         image: pingidentity/pingaccess:2006.1-6.1.0
         imagePullPolicy: IfNotPresent
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "1"
-          limits:
-            memory: "1Gi"
-            cpu: "1"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
@@ -302,13 +295,6 @@ spec:
       - name: pingaccess-was
         image: pingidentity/pingaccess:2006.1-6.1.0
         imagePullPolicy: IfNotPresent
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "1"
-          limits:
-            memory: "1Gi"
-            cpu: "1"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
