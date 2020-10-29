@@ -64,9 +64,6 @@ spec:
           mountPath: /.ssh
         - name: data-dir
           mountPath: /data
-        - name: ssh-id-key-secret
-          mountPath: /id_rsa
-          subPath: id_rsa
         - name: known-hosts-config
           mountPath: /known_hosts
           subPath: known_hosts
@@ -148,6 +145,9 @@ spec:
             name: pingdirectory-environment-variables
         - secretRef:
             name: devops-secret
+            optional: true
+        - secretRef:
+            name: git-auth-cred
             optional: true
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
@@ -236,11 +236,6 @@ spec:
           name: topology-descriptor
           optional: true
           defaultMode: 0644
-      - name: ssh-id-key-secret
-        secret:
-          secretName: ssh-id-key-secret
-          optional: true
-          defaultMode: 0400
       - name: known-hosts-config
         configMap:
           name: known-hosts-config

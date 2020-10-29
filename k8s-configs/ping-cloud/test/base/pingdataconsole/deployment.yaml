@@ -30,3 +30,6 @@ spec:
         - secretRef:
             name: devops-secret
             optional: true
+        - secretRef:
+            name: git-auth-cred
+            optional: true

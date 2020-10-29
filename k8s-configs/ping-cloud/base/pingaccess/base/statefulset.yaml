@@ -41,9 +41,6 @@ spec:
           mountPath: /.ssh
         - name: data-dir
           mountPath: /data
-        - name: ssh-id-key-secret
-          mountPath: /id_rsa
-          subPath: id_rsa
         - name: known-hosts-config
           mountPath: /known_hosts
           subPath: known_hosts
@@ -145,6 +142,9 @@ spec:
         - secretRef:
             name: devops-secret
             optional: true
+        - secretRef:
+            name: git-auth-cred
+            optional: true
       volumes:
       - name: ssh-dir
         emptyDir: {}
@@ -159,11 +159,6 @@ spec:
           name: topology-descriptor
           optional: true
           defaultMode: 0644
-      - name: ssh-id-key-secret
-        secret:
-          secretName: ssh-id-key-secret
-          optional: true
-          defaultMode: 0400
       - name: known-hosts-config
         configMap:
           name: known-hosts-config
@@ -248,9 +243,6 @@ spec:
           mountPath: /.ssh
         - name: data-dir
           mountPath: /data
-        - name: ssh-id-key-secret
-          mountPath: /id_rsa
-          subPath: id_rsa
         - name: known-hosts-config
           mountPath: /known_hosts
           subPath: known_hosts
@@ -348,6 +340,9 @@ spec:
         - secretRef:
             name: devops-secret
             optional: true
+        - secretRef:
+            name: git-auth-cred
+            optional: true
       volumes:
       - name: ssh-dir
         emptyDir: {}
@@ -362,11 +357,6 @@ spec:
           name: topology-descriptor
           optional: true
           defaultMode: 0644
-      - name: ssh-id-key-secret
-        secret:
-          secretName: ssh-id-key-secret
-          optional: true
-          defaultMode: 0400
       - name: known-hosts-config
         configMap:
           name: known-hosts-config
