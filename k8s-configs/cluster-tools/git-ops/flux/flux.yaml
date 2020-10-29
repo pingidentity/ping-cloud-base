@@ -131,6 +131,9 @@ spec:
           limits:
             cpu: 500m
             memory: 512Mi
+        envFrom:
+        - secretRef:
+            name: flux-git-deploy
         volumeMounts:
         - mountPath: /etc/fluxd/ssh
           name: git-key

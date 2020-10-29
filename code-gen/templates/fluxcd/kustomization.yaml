@@ -8,7 +8,6 @@ resources:
 
 # Deploy flux
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/git-ops?ref=${K8S_GIT_BRANCH}
-- known-hosts-config.yaml
 
 patchesStrategicMerge:
 
@@ -40,7 +39,7 @@ patchesStrategicMerge:
             name: flux-ssh-config
             defaultMode: 0644
 
-### Deploy key to the cluster state repo ###
+### Basic auth credentials to the cluster state repo ###
 - |-
   apiVersion: v1
   kind: Secret
@@ -49,5 +48,4 @@ patchesStrategicMerge:
     name: flux-git-deploy
     namespace: flux
   data:
-    identity: |
-      ${SSH_ID_KEY_BASE64}
+    GIT_AUTH_CRED: ${GIT_AUTH_CRED_BASE64}

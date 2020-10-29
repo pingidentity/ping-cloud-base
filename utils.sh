@@ -200,8 +200,9 @@ testUrlExpect2xx() {
 }
 
 ########################################################################################################################
-# Parses the provided URL and exports its components into the environment variables URL_PROTOCOL, URL_USER, URL_PASS,
-# URL_HOST, URL_PORT and URL_PART. All but the URL_HOST are optional. See example URLs below.
+# Parses the provided URL and exports its components into the environment variables URL_SCHEME, URL_USER, URL_PASS,
+# URL_HOST, URL_PORT and URL_PART. All but the URL_HOST are optional. All output variables listed above will be unset
+# when this function is called. See example URLs below:
 #
 # Arguments
 #   ${1} -> The URL from which to parse the host. Example URLs:
@@ -213,16 +214,20 @@ testUrlExpect2xx() {
 #   ${2} -> Debug mode. If true, prints the parsed values for protocol, username, password, host, port and path.
 ########################################################################################################################
 parse_url() {
+  # Unset all output variables first.
+  unset URL_SCHEME URL_USER URL_PASS URL_HOST URL_PORT URL_PART
+
   URL="${1}"
   DEBUG="${2}"
 
   # Extract the protocol.
   if [[ "${URL}" =~ '://' ]]; then
-    export URL_PROTOCOL=$(echo "${URL}" | sed -e 's|^\(.*://\).*|\1|g')
+    URL_PROTOCOL=$(echo "${URL}" | sed -e 's|^\(.*://\).*|\1|g')
     URL_NO_PROTOCOL=$(echo "${URL}" | sed -e "s|${URL_PROTOCOL}||g")
+    export URL_SCHEME=$(echo "${URL_PROTOCOL}" | sed -e 's|^\(.*\)://$|\1|g')
   else
-    export URL_PROTOCOL=
     URL_NO_PROTOCOL="${URL}"
+    export URL_SCHEME=
   fi
 
   # Extract the user and password (if any).
@@ -249,7 +254,7 @@ parse_url() {
 
   if test "${DEBUG}" = 'true'; then
     echo "URL: ${URL}"
-    echo "URL_PROTOCOL: ${URL_PROTOCOL}"
+    echo "URL_SCHEME: ${URL_SCHEME}"
 
     echo "URL_USER: ${URL_USER}"
     echo "URL_PASS: ${URL_PASS}"
