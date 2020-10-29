@@ -422,6 +422,8 @@ BASE_TOOLS_REL_DIR="base/cluster-tools"
 BASE_PING_CLOUD_REL_DIR="base/ping-cloud"
 REGION_DIR="${TEMPLATES_HOME}/region"
 
+export GIT_AUTH_CRED_BASE64=$(echo "${GIT_AUTH_CRED}" | base64)
+
 # Delete existing target directory and re-create it
 rm -rf "${TARGET_DIR}"
 mkdir -p "${TARGET_DIR}"

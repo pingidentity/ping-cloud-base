@@ -6,7 +6,6 @@ resources:
 
 # Include flux CD here so flux can update itself in the future
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/git-ops?ref=${K8S_GIT_BRANCH}
-- known-hosts-config.yaml
 
 patchesStrategicMerge:
 
@@ -69,14 +68,6 @@ patchesStrategicMerge:
           - --git-url=${CLUSTER_STATE_REPO_URL}
           - --git-branch=${CLUSTER_STATE_REPO_BRANCH}
           - --git-path=k8s-configs/${CLUSTER_STATE_REPO_PATH}
-          volumeMounts:
-          - name: ssh-config
-            mountPath: /root/.ssh
-        volumes:
-        - name: ssh-config
-          configMap:
-            name: flux-ssh-config
-            defaultMode: 0644
 
 ### Cloud-watch logging and monitoring ###
 - |-
