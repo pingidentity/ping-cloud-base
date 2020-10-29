@@ -412,7 +412,6 @@ echo "Using GIT_AUTH_CRED: ${GIT_AUTH_CRED_FOR_LOG}"
 
 echo "Using TARGET_DIR: ${TARGET_DIR}"
 echo "Using IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
-echo ---
 
 export PING_IDENTITY_DEVOPS_USER_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_USER}")
 export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_KEY}")
@@ -551,10 +550,10 @@ for ENV in ${ENVIRONMENTS}; do
   add_comment_header_to_file "${CDE_BASE_ENV_VARS}" 'DNS zones'
   if "${IS_BELUGA_ENV}"; then
     export_variable "${CDE_BASE_ENV_VARS}" DNS_ZONE "\${TENANT_DOMAIN}"
-    export_variable "${CDE_BASE_ENV_VARS}" PRIMARY_DNS_ZONE "\${PRIMARY_TENANT_DOMAIN}"
+    export_variable_ln "${CDE_BASE_ENV_VARS}" PRIMARY_DNS_ZONE "\${PRIMARY_TENANT_DOMAIN}"
   else
     export_variable "${CDE_BASE_ENV_VARS}" DNS_ZONE "\${ENV}-\${TENANT_DOMAIN}"
-    export_variable "${CDE_BASE_ENV_VARS}" PRIMARY_DNS_ZONE "\${ENV}-\${PRIMARY_TENANT_DOMAIN}"
+    export_variable_ln "${CDE_BASE_ENV_VARS}" PRIMARY_DNS_ZONE "\${ENV}-\${PRIMARY_TENANT_DOMAIN}"
   fi
 
   add_derived_variables "${CDE_BASE_ENV_VARS}"
