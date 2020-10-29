@@ -38,14 +38,3 @@ patchesStrategicMerge:
           configMap:
             name: flux-ssh-config
             defaultMode: 0644
-
-### Basic auth credentials to the cluster state repo ###
-- |-
-  apiVersion: v1
-  kind: Secret
-  type: Opaque
-  metadata:
-    name: flux-git-deploy
-    namespace: flux
-  data:
-    GIT_AUTH_CRED: ${GIT_AUTH_CRED_BASE64}
