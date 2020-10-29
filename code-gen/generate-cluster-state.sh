@@ -165,10 +165,22 @@
 #                        | SSH_ID_PUB_FILE must also be provided and          |
 #                        | correspond to this private key.                    |
 #                        |                                                    |
+# TLS_CRT_FILE           | The file containing the TLS cert (in PEM format)   | No default
+#                        | used for sealing/encrypting application secrets.   |
+#                        | If not provided, a new cert/key will be generated  |
+#                        | by the script. If provided, the TLS_KEY_FILE must  |
+#                        | also be provided and correspond to this cert.      |
+#                        |                                                    |
+# TLS_KEY_FILE           | The file containing the TLS key (in PEM format)    | No default
+#                        | used for sealing/encrypting application secrets.   |
+#                        | If not provided, a new cert/key will be generated  |
+#                        | by the script. If provided, the TLS_CRT_FILE must  |
+#                        | also be provided and correspond to this key.       |
+#                        |                                                    |
 # TARGET_DIR             | The directory where the manifest files will be     | /tmp/sandbox
 #                        | generated. If the target directory exists, it will |
 #                        | be deleted.                                        |
-#                        |
+#                        |                                                    |
 # IS_BELUGA_ENV          | An optional flag that may be provided to indicate  | false. Only intended for Beluga
 #                        | that the cluster state is being generated for      | developers.
 #                        | testing during Beluga development. If set to true, |
@@ -204,6 +216,7 @@ pushd "${SCRIPT_HOME}" >/dev/null 2>&1
 # substituted at runtime by the continuous delivery tool running in cluster.
 DEFAULT_VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
 ${PING_IDENTITY_DEVOPS_KEY_BASE64}
+${TLS_CRT_PEM}
 ${SSH_ID_KEY_BASE64}'
 
 VARS="${VARS:-${DEFAULT_VARS}}"
@@ -299,6 +312,8 @@ echo "Initial REGISTRY_NAME: ${REGISTRY_NAME}"
 
 echo "Initial SSH_ID_PUB_FILE: ${SSH_ID_PUB_FILE}"
 echo "Initial SSH_ID_KEY_FILE: ${SSH_ID_KEY_FILE}"
+echo "Initial TLS_CRT_FILE: ${TLS_CRT_FILE}"
+echo "Initial TLS_KEY_FILE: ${TLS_KEY_FILE}"
 
 echo "Initial TARGET_DIR: ${TARGET_DIR}"
 echo "Initial IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
@@ -377,6 +392,8 @@ export_variable_ln "${BASE_ENV_VARS}" REGISTRY_NAME "${REGISTRY_NAME:-docker.io}
 
 export SSH_ID_PUB_FILE="${SSH_ID_PUB_FILE}"
 export SSH_ID_KEY_FILE="${SSH_ID_KEY_FILE}"
+export TLS_CRT_FILE="${TLS_CRT_FILE}"
+export TLS_KEY_FILE="${TLS_KEY_FILE}"
 
 export TARGET_DIR="${TARGET_DIR:-/tmp/sandbox}"
 
@@ -406,6 +423,8 @@ echo "Using REGISTRY_NAME: ${REGISTRY_NAME}"
 
 echo "Using SSH_ID_PUB_FILE: ${SSH_ID_PUB_FILE}"
 echo "Using SSH_ID_KEY_FILE: ${SSH_ID_KEY_FILE}"
+echo "Using TLS_CRT_FILE: ${TLS_CRT_FILE}"
+echo "Using TLS_KEY_FILE: ${TLS_KEY_FILE}"
 
 echo "Using TARGET_DIR: ${TARGET_DIR}"
 echo "Using IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
@@ -431,6 +450,19 @@ else
   echo 'Using provided key-pair for SSH access'
   export SSH_ID_PUB=$(cat "${SSH_ID_PUB_FILE}")
   export SSH_ID_KEY_BASE64=$(base64_no_newlines "${SSH_ID_KEY_FILE}")
+fi
+
+# TLS cert/key for encrypting application secrets
+if test -z "${TLS_CRT_FILE}" && test -z "${TLS_KEY_FILE}"; then
+  echo 'Generating TLS cert/key for encrypting application secrets'
+  generate_tls_cert "${GLOBAL_TENANT_DOMAIN}"
+elif test -z "${TLS_CRT_FILE}" || test -z "${TLS_KEY_FILE}"; then
+  echo 'Provide TLS cert/key files via TLS_CRT_FILE/TLS_KEY_FILE env vars, or omit both for TLS cert to be generated'
+  exit 1
+else
+  echo 'Using provided TLS cert/key for encrypting application secrets'
+  export TLS_CRT_PEM=$(cat "${TLS_CRT_FILE}")
+  export TLS_KEY_PEM=$(cat "${TLS_KEY_FILE}")
 fi
 
 # Get the known hosts contents for the cluster state repo host to pass it into flux.
@@ -593,6 +625,8 @@ for ENV in ${ENVIRONMENTS}; do
   mkdir -p "${ENV_FLUX_DIR}"
 
   cp "${TEMPLATES_HOME}"/fluxcd/* "${ENV_FLUX_DIR}"
+  echo "${TLS_CRT_PEM}" > "${ENV_FLUX_DIR}"/tls.crt
+  echo "${TLS_KEY_PEM}" > "${ENV_FLUX_DIR}"/tls.key
 
   # Create a list of variables to substitute for flux CD
   vars="$(grep -Ev "^$|#" "${CDE_BASE_ENV_VARS}" | (cut -d= -f1; echo SSH_ID_KEY_BASE64) | awk '{ print "${" $1 "}" }')"
@@ -616,6 +650,30 @@ for ENV in ${ENVIRONMENTS}; do
     PRIMARY_PING_KUST_FILE="${ENV_DIR}/${REGION_NICK_NAME}/kustomization.yaml"
     sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/' "${PRIMARY_PING_KUST_FILE}"
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
+  fi
+done
+
+# Seal all secrets with the encryption/sealing cert
+substitute_vars "${K8S_CONFIGS_DIR}" "${VARS}" orig-secrets.yaml
+
+for ENV in ${ENVIRONMENTS}; do
+  DEV_ENV_DIR="${K8S_CONFIGS_DIR}/dev"
+  if test "${ENV}" = 'dev'; then
+    echo ---
+    echo "Encrypting secrets for environment 'dev'"
+    pushd "${DEV_ENV_DIR}" >/dev/null 2>&1
+
+    cp ../flux-command.sh ../sealing-key.crt ../seal.sh .
+    UPDATE_MANIFESTS=true QUIET=true ./seal.sh sealing-key.crt
+    rm -f flux-command.sh sealing-key.crt seal.sh
+
+    popd >/dev/null 2>&1
+  else
+    echo "Using encrypted secrets from environment 'dev' for '${ENV}'"
+    ENV_DIR="${K8S_CONFIGS_DIR}/${ENV}"
+
+    cp "${DEV_ENV_DIR}/base/secrets.yaml" "${ENV_DIR}/base/secrets.yaml"
+    cp "${DEV_ENV_DIR}/base/sealed-secrets.yaml" "${ENV_DIR}/base/sealed-secrets.yaml"
   fi
 done
 
