@@ -25,7 +25,7 @@ generate_tls_cert() {
   CERTS_DIR=$(mktemp -d)
   cd "${CERTS_DIR}"
   DOMAIN=${1}
-  openssl req -x509 -nodes -newkey rsa:4096 -days 3650 -sha256 \
+  openssl req -x509 -nodes -newkey rsa:4096 -days 36500 -sha256 \
     -out tls.crt -keyout tls.key \
     -subj "/CN=${DOMAIN}" \
     -reqexts SAN -extensions SAN \
