@@ -23,17 +23,6 @@ configMapGenerator:
 
 patchesStrategicMerge:
 
-### Ping app known_hosts file ###
-
-- |-
-  apiVersion: v1
-  kind: ConfigMap
-  metadata:
-    name: known-hosts-config
-  data:
-    known_hosts: |
-      ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
-
 ### Ping cloud stack service account ###
 - |-
   apiVersion: v1
