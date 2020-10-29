@@ -135,9 +135,6 @@ spec:
         - secretRef:
             name: flux-git-deploy
         volumeMounts:
-        - mountPath: /etc/fluxd/ssh
-          name: git-key
-          readOnly: true
         - mountPath: /var/fluxd/keygen
           name: git-keygen
         - name: tools-dir
@@ -148,10 +145,6 @@ spec:
           subPath: flux-command.sh
       serviceAccountName: flux
       volumes:
-      - name: git-key
-        secret:
-          defaultMode: 256
-          secretName: flux-git-deploy
       - name: tools-dir
         emptyDir: {}
       - name: git-keygen
