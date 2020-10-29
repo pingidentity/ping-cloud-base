@@ -157,6 +157,18 @@
 #                        | by the Ping stack. This can be Docker hub, ECR     |
 #                        | (1111111111.dkr.ecr.us-east-2.amazonaws.com), etc. |
 #                        |                                                    |
+# TLS_CRT_FILE           | The file containing the TLS cert (in PEM format)   | No default
+#                        | used for sealing/encrypting application secrets.   |
+#                        | If not provided, a new cert/key will be generated  |
+#                        | by the script. If provided, the TLS_KEY_FILE must  |
+#                        | also be provided and correspond to this cert.      |
+#                        |                                                    |
+# TLS_KEY_FILE           | The file containing the TLS key (in PEM format)    | No default
+#                        | used for sealing/encrypting application secrets.   |
+#                        | If not provided, a new cert/key will be generated  |
+#                        | by the script. If provided, the TLS_CRT_FILE must  |
+#                        | also be provided and correspond to this key.       |
+#                        |                                                    |
 # TARGET_DIR             | The directory where the manifest files will be     | /tmp/sandbox
 #                        | generated. If the target directory exists, it will |
 #                        | be deleted.                                        |
@@ -196,6 +208,7 @@ pushd "${SCRIPT_HOME}" >/dev/null 2>&1
 # substituted at runtime by the continuous delivery tool running in cluster.
 DEFAULT_VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
 ${PING_IDENTITY_DEVOPS_KEY_BASE64}
+${TLS_CRT_PEM}
 ${SSH_ID_KEY_BASE64}'
 
 VARS="${VARS:-${DEFAULT_VARS}}"
@@ -303,6 +316,8 @@ echo "Initial REGISTRY_NAME: ${REGISTRY_NAME}"
 
 test "${GIT_AUTH_CRED}" && GIT_AUTH_CRED_FOR_LOG="<redacted>"
 echo "Initial GIT_AUTH_CRED: ${GIT_AUTH_CRED_FOR_LOG}"
+echo "Initial TLS_CRT_FILE: ${TLS_CRT_FILE}"
+echo "Initial TLS_KEY_FILE: ${TLS_KEY_FILE}"
 
 echo "Initial TARGET_DIR: ${TARGET_DIR}"
 echo "Initial IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
@@ -381,6 +396,8 @@ export_variable_ln "${BASE_ENV_VARS}" REGISTRY_NAME "${REGISTRY_NAME:-docker.io}
 
 export GIT_AUTH_CRED="${GIT_AUTH_CRED}"
 test "${GIT_AUTH_CRED}" && CLUSTER_STATE_REPO_URL="${URL_SCHEME}://\${GIT_AUTH_CRED}@${URL_HOST}/${URL_PATH}"
+export TLS_CRT_FILE="${TLS_CRT_FILE}"
+export TLS_KEY_FILE="${TLS_KEY_FILE}"
 
 export TARGET_DIR="${TARGET_DIR:-/tmp/sandbox}"
 
@@ -409,6 +426,8 @@ echo "Using K8S_GIT_BRANCH: ${K8S_GIT_BRANCH}"
 echo "Using REGISTRY_NAME: ${REGISTRY_NAME}"
 
 echo "Using GIT_AUTH_CRED: ${GIT_AUTH_CRED_FOR_LOG}"
+echo "Using TLS_CRT_FILE: ${TLS_CRT_FILE}"
+echo "Using TLS_KEY_FILE: ${TLS_KEY_FILE}"
 
 echo "Using TARGET_DIR: ${TARGET_DIR}"
 echo "Using IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
@@ -423,6 +442,19 @@ BASE_PING_CLOUD_REL_DIR="base/ping-cloud"
 REGION_DIR="${TEMPLATES_HOME}/region"
 
 export GIT_AUTH_CRED_BASE64=$(echo "${GIT_AUTH_CRED}" | base64)
+
+# TLS cert/key for encrypting application secrets
+if test -z "${TLS_CRT_FILE}" && test -z "${TLS_KEY_FILE}"; then
+  echo 'Generating TLS cert/key for encrypting application secrets'
+  generate_tls_cert "${GLOBAL_TENANT_DOMAIN}"
+elif test -z "${TLS_CRT_FILE}" || test -z "${TLS_KEY_FILE}"; then
+  echo 'Provide TLS cert/key files via TLS_CRT_FILE/TLS_KEY_FILE env vars, or omit both for TLS cert to be generated'
+  exit 1
+else
+  echo 'Using provided TLS cert/key for encrypting application secrets'
+  export TLS_CRT_PEM=$(cat "${TLS_CRT_FILE}")
+  export TLS_KEY_PEM=$(cat "${TLS_KEY_FILE}")
+fi
 
 # Delete existing target directory and re-create it
 rm -rf "${TARGET_DIR}"
@@ -577,6 +609,8 @@ for ENV in ${ENVIRONMENTS}; do
   mkdir -p "${ENV_FLUX_DIR}"
 
   cp "${TEMPLATES_HOME}"/fluxcd/* "${ENV_FLUX_DIR}"
+  echo "${TLS_CRT_PEM}" > "${ENV_FLUX_DIR}"/tls.crt
+  echo "${TLS_KEY_PEM}" > "${ENV_FLUX_DIR}"/tls.key
 
   # Create a list of variables to substitute for flux CD
   vars="$(grep -Ev "^$|#" "${CDE_BASE_ENV_VARS}" | (cut -d= -f1; echo SSH_ID_KEY_BASE64) | awk '{ print "${" $1 "}" }')"
@@ -600,6 +634,30 @@ for ENV in ${ENVIRONMENTS}; do
     PRIMARY_PING_KUST_FILE="${ENV_DIR}/${REGION_NICK_NAME}/kustomization.yaml"
     sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/' "${PRIMARY_PING_KUST_FILE}"
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
+  fi
+done
+
+# Seal all secrets with the encryption/sealing cert
+substitute_vars "${K8S_CONFIGS_DIR}" "${VARS}" orig-secrets.yaml
+
+for ENV in ${ENVIRONMENTS}; do
+  DEV_ENV_DIR="${K8S_CONFIGS_DIR}/dev"
+  if test "${ENV}" = 'dev'; then
+    echo ---
+    echo "Encrypting secrets for environment 'dev'"
+    pushd "${DEV_ENV_DIR}" >/dev/null 2>&1
+
+    cp ../flux-command.sh ../sealing-key.crt ../seal.sh .
+    UPDATE_MANIFESTS=true QUIET=true ./seal.sh sealing-key.crt
+    rm -f flux-command.sh sealing-key.crt seal.sh
+
+    popd >/dev/null 2>&1
+  else
+    echo "Using encrypted secrets from environment 'dev' for '${ENV}'"
+    ENV_DIR="${K8S_CONFIGS_DIR}/${ENV}"
+
+    cp "${DEV_ENV_DIR}/base/secrets.yaml" "${ENV_DIR}/base/secrets.yaml"
+    cp "${DEV_ENV_DIR}/base/sealed-secrets.yaml" "${ENV_DIR}/base/sealed-secrets.yaml"
   fi
 done
 

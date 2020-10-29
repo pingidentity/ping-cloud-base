@@ -6,8 +6,24 @@ resources:
 # Deploy cert-manager as part of the bootstrap process so that it's running before its CRD resources are created
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/cert-manager/base?ref=${K8S_GIT_BRANCH}
 
+# Deploy sealed-secrets controller so it's up and ready before ping-cloud namespace is created
+- ${K8S_GIT_URL}/k8s-configs/cluster-tools/security?ref=${K8S_GIT_BRANCH}
+
 # Deploy flux
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/git-ops?ref=${K8S_GIT_BRANCH}
+
+generatorOptions:
+  labels:
+    sealedsecrets.bitnami.com/sealed-secrets-key: active
+
+secretGenerator:
+- name: sealed-secrets-key
+  namespace: kube-system
+  behavior: create
+  files:
+  - tls.crt
+  - tls.key
+  type: "kubernetes.io/tls"
 
 patchesStrategicMerge:
 
