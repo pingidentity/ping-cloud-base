@@ -209,7 +209,7 @@ pushd "${SCRIPT_HOME}" >/dev/null 2>&1
 DEFAULT_VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
 ${PING_IDENTITY_DEVOPS_KEY_BASE64}
 ${TLS_CRT_PEM}
-${SSH_ID_KEY_BASE64}'
+${GIT_AUTH_CRED_BASE64}'
 
 VARS="${VARS:-${DEFAULT_VARS}}"
 
@@ -613,7 +613,7 @@ for ENV in ${ENVIRONMENTS}; do
   echo "${TLS_KEY_PEM}" > "${ENV_FLUX_DIR}"/tls.key
 
   # Create a list of variables to substitute for flux CD
-  vars="$(grep -Ev "^$|#" "${CDE_BASE_ENV_VARS}" | (cut -d= -f1; echo SSH_ID_KEY_BASE64) | awk '{ print "${" $1 "}" }')"
+  vars="$(grep -Ev "^$|#" "${CDE_BASE_ENV_VARS}" | (cut -d= -f1; echo GIT_AUTH_CRED_BASE64) | awk '{ print "${" $1 "}" }')"
   substitute_vars "${ENV_FLUX_DIR}" "${vars}"
 
   # Copy the shared cluster tools and Ping yaml templates into their target directories
