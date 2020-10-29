@@ -58,23 +58,29 @@ check_binaries "kustomize" "kubeseal"
 HAS_REQUIRED_TOOLS=${?}
 test ${HAS_REQUIRED_TOOLS} -ne 0 && exit 1
 
-echo "-----------------------------------------------------------------------------------------------------------------"
-echo "Read the 'READ BEFORE RUNNING THE SCRIPT' section at the top of this script"
-echo "-----------------------------------------------------------------------------------------------------------------"
+CERT_FILE="$1"
+BUILD_DIR="${BUILD_DIR:-base}"
+UPDATE_MANIFESTS="${UPDATE_MANIFESTS:-false}"
+QUIET="${QUIET:-false}"
+
+if ! "${QUIET}"; then
+  echo "---------------------------------------------------------------------------------------------------------------"
+  echo "Read the 'READ BEFORE RUNNING THE SCRIPT' section at the top of this script"
+  echo "---------------------------------------------------------------------------------------------------------------"
+fi
 
 # Run flux-command.sh with an OUT_DIR so each k8s resource is written to a separate file. Also, give it a fake
 # REGION_NICK_NAME and TENANT_DOMAIN because all secrets exist in base, and without these variables, "kustomize build"
 # will fail when invoked from within flux-command.sh.
 OUT_DIR=$(mktemp -d)
-OUT_DIR="${OUT_DIR}" REGION_NICK_NAME=base TENANT_DOMAIN=base.ping-cloud.com "${SCRIPT_DIR}"/flux-command.sh base
+OUT_DIR="${OUT_DIR}" REGION_NICK_NAME=base TENANT_DOMAIN=base.ping-cloud.com \
+    "${SCRIPT_DIR}"/flux-command.sh "${BUILD_DIR}"
 
 YAML_FILES=$(find "${OUT_DIR}" -type f | xargs grep -rl 'kind: Secret')
 if test -z "${YAML_FILES}"; then
   echo "No secrets found to seal"
   exit 0
 fi
-
-CERT_FILE="$1"
 
 # If the certificate file is not provided, try to get the certificate from the Bitnami sealed secret service.
 # The sealed-secrets controller must be running in the cluster, and it should be possible to access the Kubernetes
@@ -85,12 +91,15 @@ if test -z "${CERT_FILE}"; then
   kubeseal --fetch-cert --controller-namespace kube-system > "${CERT_FILE}"
 fi
 
-echo "-----------------------------------------------------------------------------------------------------------------"
-echo "WARNING!!! Ensure that ${CERT_FILE} contains the public key of the Bitnami sealed secret service running in your "
-echo "cluster. It may be obtained by running the following command on the management node:"
-echo
-echo "kubeseal --fetch-cert --controller-namespace kube-system"
-echo "-----------------------------------------------------------------------------------------------------------------"
+if ! "${QUIET}"; then
+  echo "---------------------------------------------------------------------------------------------------------------"
+  echo "WARNING!!! Ensure that ${CERT_FILE} contains the public key of the Bitnami sealed secret service running in    "
+  echo "your cluster. It may be obtained by running the following command on the management node:"
+  echo
+  echo "kubeseal --fetch-cert --controller-namespace kube-system"
+  echo "---------------------------------------------------------------------------------------------------------------"
+fi
+
 echo "Using certificate file ${CERT_FILE} for encrypting secrets"
 
 SEALED_SECRETS_FILE=/tmp/sealed-secrets.yaml
@@ -131,19 +140,24 @@ EOF
   fi
 done
 
-echo
-echo '------------------------'
-echo '|  Next steps to take  |'
-echo '------------------------'
-echo "- Run the following commands from the k8s-configs directory:"
-echo "      cd k8s-configs"
-echo "      test -f ${SECRETS_FILE} && cp ${SECRETS_FILE} base/secrets.yaml"
-echo "      test -f ${SEALED_SECRETS_FILE} && cp ${SEALED_SECRETS_FILE} base/sealed-secrets.yaml"
-echo "      ./flux-command.sh \${REGION_DIR} > /tmp/deploy.yaml"
-echo "      grep 'kind: Secret' /tmp/deploy.yaml # should not have any hits"
-echo "      grep 'kind: SealedSecret' /tmp/deploy.yaml # should have hits"
-echo "- Push all modified files into the cluster state repo"
-echo "- Run this script for each CDE branch and region directory in the order - dev, test, stage, prod"
-echo "- IMPORTANT: create a backup of the Bitnami service's master key using PingCloud docs"
+if "${UPDATE_MANIFESTS}"; then
+  test -f "${SECRETS_FILE}" && cp "${SECRETS_FILE}" "${BUILD_DIR}/secrets.yaml"
+  test -f "${SEALED_SECRETS_FILE}" && cp "${SEALED_SECRETS_FILE}" "${BUILD_DIR}/sealed-secrets.yaml"
+else
+  echo
+  echo '------------------------'
+  echo '|  Next steps to take  |'
+  echo '------------------------'
+  echo "- Run the following commands from the k8s-configs directory:"
+  echo "      cd k8s-configs"
+  echo "      test -f ${SECRETS_FILE} && cp ${SECRETS_FILE} ${BUILD_DIR}/secrets.yaml"
+  echo "      test -f ${SEALED_SECRETS_FILE} && cp ${SEALED_SECRETS_FILE} ${BUILD_DIR}/sealed-secrets.yaml"
+  echo "      ./flux-command.sh \${REGION_DIR} > /tmp/deploy.yaml"
+  echo "      grep 'kind: Secret' /tmp/deploy.yaml # should not have any hits"
+  echo "      grep 'kind: SealedSecret' /tmp/deploy.yaml # should have hits"
+  echo "- Push all modified files into the cluster state repo"
+  echo "- Run this script for each CDE branch and region directory in the order - dev, test, stage, prod"
+  echo "- IMPORTANT: create a backup of the Bitnami service's master key using PingCloud docs"
+fi
 
 popd &> /dev/null
