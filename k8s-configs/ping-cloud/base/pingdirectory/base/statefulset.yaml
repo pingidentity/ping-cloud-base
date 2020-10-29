@@ -60,13 +60,8 @@ spec:
         - configMapRef:
             name: pingdirectory-environment-variables
         volumeMounts:
-        - name: ssh-dir
-          mountPath: /.ssh
         - name: data-dir
           mountPath: /data
-        - name: known-hosts-config
-          mountPath: /known_hosts
-          subPath: known_hosts
         - name: pingdirectory-init
           mountPath: /copy-dependencies.sh
           subPath: copy-dependencies.sh
@@ -150,9 +145,6 @@ spec:
             name: git-auth-cred
             optional: true
         volumeMounts:
-        # FIXME: fix home directory when containers run as non-root user
-        - name: ssh-dir
-          mountPath: /root/.ssh
         - name: topology-descriptor
           mountPath: /opt/staging/topology/descriptor.json
           subPath: descriptor.json
@@ -223,8 +215,6 @@ spec:
             cpu: 100m
             memory: 300Mi
       volumes:
-      - name: ssh-dir
-        emptyDir: {}
       - name: data-dir
         emptyDir: {}
       - name: pingdirectory-init
@@ -234,11 +224,6 @@ spec:
       - name: topology-descriptor
         configMap:
           name: topology-descriptor
-          optional: true
-          defaultMode: 0644
-      - name: known-hosts-config
-        configMap:
-          name: known-hosts-config
           optional: true
           defaultMode: 0644
       - name: out-dir

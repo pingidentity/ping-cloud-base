@@ -37,13 +37,8 @@ spec:
         command:
         - /copy-dependencies.sh
         volumeMounts:
-        - name: ssh-dir
-          mountPath: /.ssh
         - name: data-dir
           mountPath: /data
-        - name: known-hosts-config
-          mountPath: /known_hosts
-          subPath: known_hosts
         - name: pingfederate-init
           mountPath: /copy-dependencies.sh
           subPath: copy-dependencies.sh
@@ -112,9 +107,6 @@ spec:
             memory: "2Gi"
             cpu: "1"
         volumeMounts:
-        # FIXME: fix home directory when containers run as non-root user
-        - name: ssh-dir
-          mountPath: /root/.ssh
         - name: topology-descriptor
           mountPath: /opt/staging/topology/descriptor.json
           subPath: descriptor.json
@@ -173,8 +165,6 @@ spec:
                 containerName: pingfederate-admin
                 divisor: 1m
                 resource: requests.cpu
-      - name: ssh-dir
-        emptyDir: {}
       - name: data-dir
         emptyDir: {}
       - name: pingfederate-init
@@ -184,11 +174,6 @@ spec:
       - name: topology-descriptor
         configMap:
           name: topology-descriptor
-          optional: true
-          defaultMode: 0644
-      - name: known-hosts-config
-        configMap:
-          name: known-hosts-config
           optional: true
           defaultMode: 0644
       - name: out-dir
@@ -267,13 +252,8 @@ spec:
         command:
         - /copy-dependencies.sh
         volumeMounts:
-        - name: ssh-dir
-          mountPath: /.ssh
         - name: data-dir
           mountPath: /data
-        - name: known-hosts-config
-          mountPath: /known_hosts
-          subPath: known_hosts
         - name: pingfederate-init
           mountPath: /copy-dependencies.sh
           subPath: copy-dependencies.sh
@@ -342,9 +322,6 @@ spec:
             memory: "4Gi"
             cpu: "2"
         volumeMounts:
-        # FIXME: fix home directory when containers run as non-root user
-        - name: ssh-dir
-          mountPath: /root/.ssh
         - name: topology-descriptor
           mountPath: /opt/staging/topology/descriptor.json
           subPath: descriptor.json
@@ -401,8 +378,6 @@ spec:
                 containerName: pingfederate
                 divisor: 1m
                 resource: requests.cpu
-      - name: ssh-dir
-        emptyDir: {}
       - name: data-dir
         emptyDir: {}
       - name: pingfederate-init
@@ -412,11 +387,6 @@ spec:
       - name: topology-descriptor
         configMap:
           name: topology-descriptor
-          optional: true
-          defaultMode: 0644
-      - name: known-hosts-config
-        configMap:
-          name: known-hosts-config
           optional: true
           defaultMode: 0644
       - name: pingfederate-license
