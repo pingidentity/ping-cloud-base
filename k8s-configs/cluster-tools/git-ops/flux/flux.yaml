@@ -107,6 +107,7 @@ spec:
         - --git-email=flux@example.com
         - --listen-metrics=:3031
         - --git-poll-interval=60s
+        - --git-readonly
         image: docker.io/fluxcd/flux:1.21.0
         imagePullPolicy: IfNotPresent
         livenessProbe:
