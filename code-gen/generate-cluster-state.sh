@@ -396,7 +396,7 @@ add_comment_to_file "${BASE_ENV_VARS}" 'The name of the Docker image registry'
 export_variable_ln "${BASE_ENV_VARS}" REGISTRY_NAME "${REGISTRY_NAME:-docker.io}"
 
 export GIT_AUTH_CRED="${GIT_AUTH_CRED}"
-export GIT_AUTH_CRED_BASE64=$(echo "${GIT_AUTH_CRED}" | base64)
+export GIT_AUTH_CRED_BASE64=$(echo -n "${GIT_AUTH_CRED}" | base64)
 
 export TLS_CRT_FILE="${TLS_CRT_FILE}"
 export TLS_KEY_FILE="${TLS_KEY_FILE}"
