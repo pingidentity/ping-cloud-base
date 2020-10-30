@@ -1,0 +1,1 @@
+echo "${GIT_AUTH_CRED}"
