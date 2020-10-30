@@ -133,6 +133,8 @@ spec:
             cpu: 500m
             memory: 512Mi
         env:
+        - name: GIT_PROXY_COMMAND
+          value: 'GIT_TERMINAL_PROMPT=1 git'
         - name: GIT_ASKPASS
           value: git-ask-pass.sh
         envFrom:
