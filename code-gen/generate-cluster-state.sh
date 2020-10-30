@@ -215,8 +215,10 @@ REPO_VARS="${REPO_VARS:-${DEFAULT_VARS}}"
 
 FLUX_VARS='${K8S_GIT_URL}
 ${K8S_GIT_BRANCH}
+${CLUSTER_STATE_REPO_URL}
 ${CLUSTER_STATE_REPO_BRANCH}
-${CLUSTER_STATE_REPO_PATH}'
+${CLUSTER_STATE_REPO_PATH}
+${GIT_AUTH_CRED_BASE64}'
 
 ########################################################################################################################
 # Add some derived environment variables to end of the provided environment file.
@@ -282,7 +284,7 @@ if "${IS_MULTI_CLUSTER}"; then
 fi
 
 parse_url "${CLUSTER_STATE_REPO_URL}"
-if test "${URL_USER}" || test "${URL_PASS}"; then
+if test "${URL_PASS}"; then
   echo 'CLUSTER_STATE_REPO_URL should not contain authentication info'
   exit 1
 fi

@@ -47,3 +47,14 @@ patchesStrategicMerge:
           - --git-url=${CLUSTER_STATE_REPO_URL}
           - --git-branch=${CLUSTER_STATE_REPO_BRANCH}
           - --git-path=k8s-configs/${CLUSTER_STATE_REPO_PATH}
+
+### Git auth credential to the cluster state repo ###
+- |-
+  apiVersion: v1
+  kind: Secret
+  type: Opaque
+  metadata:
+    name: flux-git-deploy
+    namespace: flux
+  data:
+    GIT_AUTH_CRED: ${GIT_AUTH_CRED_BASE64}
