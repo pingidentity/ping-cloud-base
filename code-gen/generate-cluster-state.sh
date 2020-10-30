@@ -671,7 +671,6 @@ echo '------------------------'
 echo '|  Next steps to take  |'
 echo '------------------------'
 echo "1) Run ${TARGET_DIR}/push-cluster-state.sh to push the generated code into the tenant cluster-state repo:"
-echo "${CLUSTER_STATE_REPO_URL}"
 echo
 echo "3) Deploy flux onto each CDE by navigating to ${TARGET_DIR}/fluxcd and running:"
 echo 'kustomize build | kubectl apply -f -'
