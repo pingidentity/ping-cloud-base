@@ -23,6 +23,10 @@ fi
 beluga_log "Updating skbn permission"
 chmod +x /data/skbn
 
+beluga_log "Generating git-ask-pass"
+echo 'echo "${GIT_AUTH_CRED}"' > /data/git-ask-pass.sh
+chmod +x /data/git-ask-pass.sh
+
 beluga_log "Generate a dummy topology JSON file so the hook that generates it in the image is not triggered"
 
 TOPOLOGY_FILE=/data/topology.json

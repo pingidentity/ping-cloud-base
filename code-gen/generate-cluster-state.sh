@@ -115,17 +115,17 @@
 #                        | number of user identities. Legal values are        |
 #                        | small, medium or large.                            |
 #                        |                                                    |
-# CLUSTER_STATE_REPO_URL | The URL of the cluster-state repo. The URL should  | No default
-#                        | not contain any authentication information.        |
-#                        | Instead, authentication, if required, should be    |
-#                        | specified through the GIT_AUTH_CRED variable.      |
+# CLUSTER_STATE_REPO_URL | The URL of the cluster-state repo. If auth is      | No default
+#                        | required, then the URL should not contain the      |
+#                        | password or token. Instead, the password or token  |
+#                        | should be specified through the GIT_AUTH_CRED      |
+#                        | variable. The URL may include a username though,   |
+#                        | e.g. https://user@github.com/cluster-state-repo.   |
 #                        |                                                    |
-# GIT_AUTH_CRED          | Optional Git auth credential to clone the cluster  | No default
-#                        | state repo in the format "user:pass" or            |
-#                        | "oauth-token". The GIT_AUTH_CRED will be inserted  |
-#                        | into the CLUSTER_STATE_REPO_URL. For example:      |
-#                        | https://<user:pass>@github.com/cluster-state-repo  |
-#                        | or https://<token>@github.com/cluster-state-repo.  |
+# GIT_AUTH_CRED          | Optional Git auth credential (password or token)   | No default
+#                        | to clone the cluster state repo. The GIT_AUTH_CRED |
+#                        | will be inserted into CLUSTER_STATE_REPO_URL, e.g. |
+#                        | https://user<:pass>@github.com/cluster-state-repo. |
 #                        |                                                    |
 # ARTIFACT_REPO_URL      | The URL for plugins (e.g. PF kits, PD extensions). | The string "unused".
 #                        | If not provided, the Ping stack will be            |
@@ -215,7 +215,6 @@ REPO_VARS="${REPO_VARS:-${DEFAULT_VARS}}"
 
 FLUX_VARS='${K8S_GIT_URL}
 ${K8S_GIT_BRANCH}
-${CLUSTER_STATE_REPO_URL_EX}
 ${CLUSTER_STATE_REPO_BRANCH}
 ${CLUSTER_STATE_REPO_PATH}'
 
@@ -229,21 +228,11 @@ add_derived_variables() {
   local env_file="$1"
 
   add_comment_header_to_file "${env_file}" 'Server profile variables'
-  if test "${GIT_AUTH_CRED}"; then
-    cat >> "${env_file}" <<EOF
-SERVER_PROFILE_URL_REDACT=true
-SERVER_PROFILE_URL=${URL_SCHEME}://\${GIT_AUTH_CRED}@${URL_HOST}/${URL_PATH}
-SERVER_PROFILE_BRANCH=\${CLUSTER_STATE_REPO_BRANCH}
-
-EOF
-  else
   cat >> "${env_file}" <<EOF
-SERVER_PROFILE_URL_REDACT=false
-SERVER_PROFILE_URL=${URL_SCHEME}://${URL_HOST}/${URL_PATH}
+SERVER_PROFILE_URL=\${CLUSTER_STATE_REPO_URL}
 SERVER_PROFILE_BRANCH=\${CLUSTER_STATE_REPO_BRANCH}
 
 EOF
-  fi
 
   add_comment_header_to_file "${env_file}" 'Public hostnames'
   cat >> "${env_file}" <<EOF
@@ -406,13 +395,6 @@ export_variable_ln "${BASE_ENV_VARS}" REGISTRY_NAME "${REGISTRY_NAME:-docker.io}
 
 export GIT_AUTH_CRED="${GIT_AUTH_CRED}"
 export GIT_AUTH_CRED_BASE64=$(echo "${GIT_AUTH_CRED}" | base64)
-
-if test "${GIT_AUTH_CRED}"; then
-  CLUSTER_STATE_REPO_URL="${URL_SCHEME}://\\\${GIT_AUTH_CRED}@${URL_HOST}/${URL_PATH}"
-  export CLUSTER_STATE_REPO_URL_EX="${URL_SCHEME}://${GIT_AUTH_CRED}@${URL_HOST}/${URL_PATH}"
-else
-  export CLUSTER_STATE_REPO_URL_EX="${CLUSTER_STATE_REPO_URL}"
-fi
 
 export TLS_CRT_FILE="${TLS_CRT_FILE}"
 export TLS_KEY_FILE="${TLS_KEY_FILE}"

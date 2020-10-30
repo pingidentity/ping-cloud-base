@@ -16,3 +16,4 @@ configMapGenerator:
 - name: flux-command
   files:
   - flux-command.sh
+  - git-ask-pass.sh
