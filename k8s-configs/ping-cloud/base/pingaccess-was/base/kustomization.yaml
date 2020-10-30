@@ -15,3 +15,7 @@ configMapGenerator:
 - name: pingaccess-was-environment-variables
   envs:
   - env_vars
+
+patchesStrategicMerge:
+    - admin-limits.yaml
+    - engine-init-env.yaml

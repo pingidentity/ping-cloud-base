@@ -99,6 +99,11 @@ spec:
       - name: pingdirectory
         image: pingcloud-docker.jfrog.io/pingidentity/pingdirectory:2006.1-8.1.0.2
         imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: 2
+          limits:
+            memory: 7Gi
         ports:
         - containerPort: 1389
           name: ldap
@@ -262,4 +267,4 @@ spec:
       storageClassName: pingdirectory-gp2
       resources:
         requests:
-          storage: 40Gi
+          storage: 20Gi

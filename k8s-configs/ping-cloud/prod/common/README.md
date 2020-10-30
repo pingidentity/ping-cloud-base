@@ -1,0 +1,3 @@
+This `common` directory contains configurations that are shared across all *Prod* PingCloud deployment stages (stage/prod) and sizes (x-small/small/medium/large/etc).
+
+Any new k8s components that are not to be applied for dev/test deployments should be included as resources within this folder. If a change needs to be made that alters a component created in the `base` directory, a patch should be used.

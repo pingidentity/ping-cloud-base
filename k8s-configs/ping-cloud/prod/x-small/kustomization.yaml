@@ -19,3 +19,4 @@ patchesStrategicMerge:
 - pingaccess/hpa-limits.yaml
 
 - pingaccess-was/engine-limits.yaml
+

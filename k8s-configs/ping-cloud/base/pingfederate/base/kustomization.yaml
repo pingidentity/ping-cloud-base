@@ -16,3 +16,7 @@ configMapGenerator:
 - name: pingfederate-environment-variables
   envs:
   - env_vars
+
+patchesStrategicMerge:
+    - admin-limits.yaml
+    - engine-init-env.yaml  

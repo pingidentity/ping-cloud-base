@@ -19,3 +19,6 @@ configMapGenerator:
 - name: pingdirectory-environment-variables
   envs:
   - env_vars
+
+patchesStrategicMerge:
+    - wait-for-service.yaml
