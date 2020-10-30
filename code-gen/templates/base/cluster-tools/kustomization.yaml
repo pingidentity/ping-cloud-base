@@ -65,9 +65,12 @@ patchesStrategicMerge:
           - --manifest-generation=true
           - --listen-metrics=:3031
           - --git-poll-interval=60s
-          - --git-url=${CLUSTER_STATE_REPO_URL}
+          - --git-url=$(CLUSTER_STATE_REPO_URL)
           - --git-branch=${CLUSTER_STATE_REPO_BRANCH}
           - --git-path=k8s-configs/${CLUSTER_STATE_REPO_PATH}
+          env:
+          - name: CLUSTER_STATE_REPO_URL
+            value: ${CLUSTER_STATE_REPO_URL}
 
 ### Cloud-watch logging and monitoring ###
 - |-

@@ -395,7 +395,7 @@ add_comment_to_file "${BASE_ENV_VARS}" 'The name of the Docker image registry'
 export_variable_ln "${BASE_ENV_VARS}" REGISTRY_NAME "${REGISTRY_NAME:-docker.io}"
 
 export GIT_AUTH_CRED="${GIT_AUTH_CRED}"
-test "${GIT_AUTH_CRED}" && CLUSTER_STATE_REPO_URL="${URL_SCHEME}://\${GIT_AUTH_CRED}@${URL_HOST}/${URL_PATH}"
+test "${GIT_AUTH_CRED}" && CLUSTER_STATE_REPO_URL="${URL_SCHEME}://\\${GIT_AUTH_CRED}@${URL_HOST}/${URL_PATH}"
 export TLS_CRT_FILE="${TLS_CRT_FILE}"
 export TLS_KEY_FILE="${TLS_KEY_FILE}"
 
