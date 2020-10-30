@@ -115,7 +115,7 @@
 #                        | number of user identities. Legal values are        |
 #                        | small, medium or large.                            |
 #                        |                                                    |
-# CLUSTER_STATE_REPO_URL | The URL of the cluster-state repo. The URL should  | https://github.com/pingidentity/ping-cloud-base
+# CLUSTER_STATE_REPO_URL | The URL of the cluster-state repo. The URL should  | No default
 #                        | not contain any authentication information.        |
 #                        | Instead, authentication, if required, should be    |
 #                        | specified through the GIT_AUTH_CRED variable.      |
@@ -211,7 +211,13 @@ ${PING_IDENTITY_DEVOPS_KEY_BASE64}
 ${TLS_CRT_PEM}
 ${GIT_AUTH_CRED_BASE64}'
 
-VARS="${VARS:-${DEFAULT_VARS}}"
+REPO_VARS="${REPO_VARS:-${DEFAULT_VARS}}"
+
+FLUX_VARS='${K8S_GIT_URL}
+${K8S_GIT_BRANCH}
+${CLUSTER_STATE_REPO_URL_EX}
+${CLUSTER_STATE_REPO_BRANCH}
+${CLUSTER_STATE_REPO_PATH}'
 
 ########################################################################################################################
 # Add some derived environment variables to end of the provided environment file.
@@ -226,14 +232,18 @@ add_derived_variables() {
   if test "${GIT_AUTH_CRED}"; then
     cat >> "${env_file}" <<EOF
 SERVER_PROFILE_URL_REDACT=true
-EOF
-  fi
-
-  cat >> "${env_file}" <<EOF
-SERVER_PROFILE_URL=\${CLUSTER_STATE_REPO_URL}
+SERVER_PROFILE_URL=${URL_SCHEME}://\${GIT_AUTH_CRED}@${URL_HOST}/${URL_PATH}
 SERVER_PROFILE_BRANCH=\${CLUSTER_STATE_REPO_BRANCH}
 
 EOF
+  else
+  cat >> "${env_file}" <<EOF
+SERVER_PROFILE_URL_REDACT=false
+SERVER_PROFILE_URL=${URL_SCHEME}://${URL_HOST}/${URL_PATH}
+SERVER_PROFILE_BRANCH=\${CLUSTER_STATE_REPO_BRANCH}
+
+EOF
+  fi
 
   add_comment_header_to_file "${env_file}" 'Public hostnames'
   cat >> "${env_file}" <<EOF
@@ -264,7 +274,7 @@ EOF
 check_binaries "openssl" "ssh-keygen" "ssh-keyscan" "base64" "envsubst" "git"
 HAS_REQUIRED_TOOLS=${?}
 
-check_env_vars "PING_IDENTITY_DEVOPS_USER" "PING_IDENTITY_DEVOPS_KEY"
+check_env_vars "PING_IDENTITY_DEVOPS_USER" "PING_IDENTITY_DEVOPS_KEY" "CLUSTER_STATE_REPO_URL"
 HAS_REQUIRED_VARS=${?}
 
 if test ${HAS_REQUIRED_TOOLS} -ne 0 || test ${HAS_REQUIRED_VARS} -ne 0; then
@@ -395,7 +405,15 @@ add_comment_to_file "${BASE_ENV_VARS}" 'The name of the Docker image registry'
 export_variable_ln "${BASE_ENV_VARS}" REGISTRY_NAME "${REGISTRY_NAME:-docker.io}"
 
 export GIT_AUTH_CRED="${GIT_AUTH_CRED}"
-test "${GIT_AUTH_CRED}" && CLUSTER_STATE_REPO_URL="${URL_SCHEME}://\\${GIT_AUTH_CRED}@${URL_HOST}/${URL_PATH}"
+export GIT_AUTH_CRED_BASE64=$(echo "${GIT_AUTH_CRED}" | base64)
+
+if test "${GIT_AUTH_CRED}"; then
+  CLUSTER_STATE_REPO_URL="${URL_SCHEME}://\\\${GIT_AUTH_CRED}@${URL_HOST}/${URL_PATH}"
+  export CLUSTER_STATE_REPO_URL_EX="${URL_SCHEME}://${GIT_AUTH_CRED}@${URL_HOST}/${URL_PATH}"
+else
+  export CLUSTER_STATE_REPO_URL_EX="${CLUSTER_STATE_REPO_URL}"
+fi
+
 export TLS_CRT_FILE="${TLS_CRT_FILE}"
 export TLS_KEY_FILE="${TLS_KEY_FILE}"
 
@@ -441,8 +459,6 @@ BASE_TOOLS_REL_DIR="base/cluster-tools"
 BASE_PING_CLOUD_REL_DIR="base/ping-cloud"
 REGION_DIR="${TEMPLATES_HOME}/region"
 
-export GIT_AUTH_CRED_BASE64=$(echo "${GIT_AUTH_CRED}" | base64)
-
 # TLS cert/key for encrypting application secrets
 if test -z "${TLS_CRT_FILE}" && test -z "${TLS_KEY_FILE}"; then
   echo 'Generating TLS cert/key for encrypting application secrets'
@@ -479,8 +495,7 @@ echo "${PING_CLOUD_BASE_COMMIT_SHA}" > "${TARGET_DIR}/pcb-commit-sha.txt"
 ENVIRONMENTS='dev test stage prod'
 
 add_comment_header_to_file "${BASE_ENV_VARS}" 'Cluster state repo details'
-export_variable "${BASE_ENV_VARS}" CLUSTER_STATE_REPO_URL \
-  "${CLUSTER_STATE_REPO_URL:-git@github.com:pingidentity/ping-cloud-base.git}"
+export_variable "${BASE_ENV_VARS}" CLUSTER_STATE_REPO_URL "${CLUSTER_STATE_REPO_URL}"
 export_variable "${BASE_ENV_VARS}" CLUSTER_STATE_REPO_PATH "\${REGION_NICK_NAME}"
 
 for ENV in ${ENVIRONMENTS}; do
@@ -613,8 +628,7 @@ for ENV in ${ENVIRONMENTS}; do
   echo "${TLS_KEY_PEM}" > "${ENV_FLUX_DIR}"/tls.key
 
   # Create a list of variables to substitute for flux CD
-  vars="$(grep -Ev "^$|#" "${CDE_BASE_ENV_VARS}" | (cut -d= -f1; echo GIT_AUTH_CRED_BASE64) | awk '{ print "${" $1 "}" }')"
-  substitute_vars "${ENV_FLUX_DIR}" "${vars}"
+  substitute_vars "${ENV_FLUX_DIR}" "${FLUX_VARS}"
 
   # Copy the shared cluster tools and Ping yaml templates into their target directories
   echo "Generating tools and ping yaml"
@@ -627,7 +641,7 @@ for ENV in ${ENVIRONMENTS}; do
   cp "${CDE_BASE_ENV_VARS}" "${ENV_DIR}/base/env_vars"
   cp "${REGION_ENV_VARS}" "${ENV_DIR}/${REGION_NICK_NAME}/env_vars"
 
-  substitute_vars "${ENV_DIR}" "${VARS}" orig-secrets.yaml
+  substitute_vars "${ENV_DIR}" "${REPO_VARS}" orig-secrets.yaml
 
   # Regional enablement - add admins, backups, etc. to primary.
   if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
@@ -638,7 +652,7 @@ for ENV in ${ENVIRONMENTS}; do
 done
 
 # Seal all secrets with the encryption/sealing cert
-substitute_vars "${K8S_CONFIGS_DIR}" "${VARS}" orig-secrets.yaml
+substitute_vars "${K8S_CONFIGS_DIR}" "${REPO_VARS}" orig-secrets.yaml
 
 for ENV in ${ENVIRONMENTS}; do
   DEV_ENV_DIR="${K8S_CONFIGS_DIR}/dev"
@@ -670,7 +684,7 @@ echo
 echo '------------------------'
 echo '|  Next steps to take  |'
 echo '------------------------'
-echo "1) Run ${TARGET_DIR}/push-cluster-state.sh to push the generated code into the tenant cluster-state repo:"
+echo "1) Run ${TARGET_DIR}/push-cluster-state.sh to push the generated code into cluster-state repo for ${REGION}"
 echo
-echo "3) Deploy flux onto each CDE by navigating to ${TARGET_DIR}/fluxcd and running:"
+echo "2) Deploy flux onto each CDE by navigating to ${TARGET_DIR}/fluxcd and running:"
 echo 'kustomize build | kubectl apply -f -'

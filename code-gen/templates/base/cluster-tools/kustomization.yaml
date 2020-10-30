@@ -63,6 +63,7 @@ patchesStrategicMerge:
         - name: flux
           args:
           - --manifest-generation=true
+          - --git-readonly
           - --listen-metrics=:3031
           - --git-poll-interval=60s
           - --git-url=$(CLUSTER_STATE_REPO_URL)
