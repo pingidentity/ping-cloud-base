@@ -66,9 +66,12 @@ patchesStrategicMerge:
           - --git-readonly
           - --listen-metrics=:3031
           - --git-poll-interval=60s
-          - --git-url=${CLUSTER_STATE_REPO_URL}
+          - --git-url=$(FLUX_GIT_URL)
           - --git-branch=${CLUSTER_STATE_REPO_BRANCH}
           - --git-path=k8s-configs/${CLUSTER_STATE_REPO_PATH}
+        - env:
+          - name: FLUX_GIT_URL
+            value: https://$(GIT_AUTH_STR)/${GIT_URL_NO_AUTH}
 
 ### Cloud-watch logging and monitoring ###
 - |-

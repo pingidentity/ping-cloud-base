@@ -202,13 +202,34 @@ testUrlExpect2xx() {
 }
 
 ########################################################################################################################
-# Parses the provided URL and exports its components into the environment variables URL_SCHEME, URL_USER, URL_PASS,
-# URL_HOST, URL_PORT and URL_PART. All but the URL_HOST are optional. All output variables listed above will be unset
-# when this function is called. See example URLs below:
+# Parses the provided URL and exports its components into the environment variables URL_NO_SCHEME, URL_NO_AUTH,
+# URL_SCHEME, URL_USER, URL_PASS, URL_HOST, URL_PORT and URL_PATH. All but the URL_HOST are optional.
+# All output variables listed above will be unset when this function is called.
+#
+#   URL_NO_SCHEME - The URL without the scheme (excluding the leading /)
+#   URL_NO_AUTH - The URL without the scheme or authentication info (excluding the leading /)
+#   URL_SCHEME - The scheme used, e.g. https or ssh
+#   URL_USER - The username part of the authentication info, if present
+#   URL_PASS - The password part of the authentication info, if present
+#   URL_HOST - The hostname in the URL
+#   URL_PORT - The port, if present
+#   URL_PATH - The remainder of the URL after the port (excluding the leading /)
+#
+# For example, for the URL https://user:pass@github.com:443/ping-cloud/cluster-state-repo.git, the parsed variables
+# will have the following values:
+
+#   URL_NO_SCHEME: user:pass@github.com/ping-cloud/cluster-state-repo.git
+#   URL_NO_AUTH: https://github.com:443/ping-cloud/cluster-state-repo.git
+#   URL_SCHEME: https
+#   URL_USER: user
+#   URL_PASS: pass
+#   URL_HOST: github.com
+#   URL_PORT: 443
+#   URL_PATH: minigans/savitha-ping-stack.git
 #
 # Arguments
 #   ${1} -> The URL from which to parse the host. Example URLs:
-#             - git@github.com:savitha-ping/savitha-ping-stack.git
+#             - git@github.com/savitha-ping/savitha-ping-stack.git
 #             - https://github.com/savitha-ping/savitha-ping-stack.git
 #             - ssh://APKAVPNHKJ3QM5XNXNWM@git-codecommit.ap-southeast-2.amazonaws.com/v1/repos/cluster-state-repo
 #             - sftp://user@host.net/some/random/path
@@ -217,23 +238,31 @@ testUrlExpect2xx() {
 ########################################################################################################################
 parse_url() {
   # Unset all output variables first.
-  unset URL_SCHEME URL_USER URL_PASS URL_HOST URL_PORT URL_PART
+  unset URL_NO_SCHEME URL_NO_AUTH URL_SCHEME URL_USER URL_PASS URL_HOST URL_PORT URL_PATH
 
-  URL="${1}"
+  export URL="${1}"
   DEBUG="${2}"
 
   # Extract the protocol.
   if [[ "${URL}" =~ '://' ]]; then
-    URL_PROTOCOL=$(echo "${URL}" | sed -e 's|^\(.*://\).*|\1|g')
-    URL_NO_PROTOCOL=$(echo "${URL}" | sed -e "s|${URL_PROTOCOL}||g")
+    export URL_PROTOCOL=$(echo "${URL}" | sed -e 's|^\(.*://\).*|\1|g')
+    export URL_NO_SCHEME=$(echo "${URL}" | sed -e "s|${URL_PROTOCOL}||g")
     export URL_SCHEME=$(echo "${URL_PROTOCOL}" | sed -e 's|^\(.*\)://$|\1|g')
   else
-    URL_NO_PROTOCOL="${URL}"
+    export URL_PROTOCOL="${URL}"
+    export URL_NO_SCHEME="${URL}"
     export URL_SCHEME=
   fi
 
+  if [[ "${URL_NO_SCHEME}" =~ '@' ]]; then
+    URL_AUTH=$(echo "${URL_NO_SCHEME}" | sed -e 's|^\(.*@\).*|\1|g')
+    export URL_NO_AUTH=$(echo "${URL_NO_SCHEME}" | sed -e "s|${URL_AUTH}||g")
+  else
+    export URL_NO_AUTH="${URL_NO_SCHEME}"
+  fi
+
   # Extract the user and password (if any).
-  URL_USER_PASS=$(echo ${URL_NO_PROTOCOL} | grep @ | cut -d@ -f1)
+  URL_USER_PASS=$(echo ${URL_NO_SCHEME} | grep @ | cut -d@ -f1)
   export URL_PASS=$(echo "${URL_USER_PASS}" | grep : | cut -d: -f2)
   if test -n "${URL_PASS}"; then
     export URL_USER=$(echo "${URL_USER_PASS}" | grep : | cut -d: -f1)
@@ -242,7 +271,7 @@ parse_url() {
   fi
 
   # Extract the host.
-  URL_HOST_PORT=$(echo "${URL_NO_PROTOCOL}" | sed -e "s|${URL_USER_PASS}@||g" | cut -d/ -f1)
+  URL_HOST_PORT=$(echo "${URL_NO_SCHEME}" | sed -e "s|${URL_USER_PASS}@||g" | cut -d/ -f1)
   export URL_PORT=$(echo "${URL_HOST_PORT}" | grep : | cut -d: -f2)
 
   if test -n "${URL_PORT}"; then
@@ -252,10 +281,12 @@ parse_url() {
   fi
 
   # Extract the path (if any).
-  export URL_PATH=$(echo "${URL_NO_PROTOCOL}" | grep / | cut -d/ -f2-)
+  export URL_PATH=$(echo "${URL_NO_SCHEME}" | grep / | cut -d/ -f2-)
 
   if test "${DEBUG}" = 'true'; then
-    echo "URL: ${URL}"
+    echo "URL_NO_SCHEME: ${URL_NO_SCHEME}"
+    echo "URL_NO_AUTH: ${URL_NO_AUTH}"
+
     echo "URL_SCHEME: ${URL_SCHEME}"
 
     echo "URL_USER: ${URL_USER}"

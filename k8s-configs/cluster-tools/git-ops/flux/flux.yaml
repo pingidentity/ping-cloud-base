@@ -132,11 +132,6 @@ spec:
           limits:
             cpu: 500m
             memory: 512Mi
-        env:
-        - name: GIT_PROXY_COMMAND
-          value: 'GIT_TERMINAL_PROMPT=1 git'
-        - name: GIT_ASKPASS
-          value: git-ask-pass.sh
         envFrom:
         - secretRef:
             name: flux-git-deploy
@@ -149,9 +144,6 @@ spec:
         - name: flux-command
           mountPath: /usr/local/bin/flux-command.sh
           subPath: flux-command.sh
-        - name: flux-command
-          mountPath: /usr/local/bin/git-ask-pass.sh
-          subPath: git-ask-pass.sh
       serviceAccountName: flux
       volumes:
       - name: tools-dir
