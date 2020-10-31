@@ -69,7 +69,7 @@ patchesStrategicMerge:
           - --git-url=$(FLUX_GIT_URL)
           - --git-branch=${CLUSTER_STATE_REPO_BRANCH}
           - --git-path=k8s-configs/${CLUSTER_STATE_REPO_PATH}
-        - env:
+          env:
           - name: FLUX_GIT_URL
             value: https://$(GIT_AUTH_STR)/${GIT_URL_NO_AUTH}
 
