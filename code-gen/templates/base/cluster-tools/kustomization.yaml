@@ -71,7 +71,7 @@ patchesStrategicMerge:
           - --git-path=k8s-configs/${CLUSTER_STATE_REPO_PATH}
           env:
           - name: FLUX_GIT_URL
-            value: https://$(GIT_AUTH_STR)/${GIT_URL_NO_AUTH}
+            value: https://$(GIT_AUTH_CRED)/${GIT_URL_NO_AUTH}
 
 ### Cloud-watch logging and monitoring ###
 - |-

@@ -122,10 +122,9 @@
 #                        |                                                    |
 # GIT_AUTH_CRED          | Optional Git auth credential to clone the cluster  | No default
 #                        | state repo in the format "user:pass" or            |
-#                        | "oauth-token". The GIT_AUTH_CRED will be inserted  |
+#                        | "oauth:token". The GIT_AUTH_CRED will be inserted  |
 #                        | into the CLUSTER_STATE_REPO_URL. For example:      |
-#                        | https://<user:pass>@github.com/cluster-state-repo  |
-#                        | or https://<token>@github.com/cluster-state-repo.  |
+#                        | https://<user:pass>@github.com/cluster-state-repo. |
 #                        |                                                    |
 # ARTIFACT_REPO_URL      | The URL for plugins (e.g. PF kits, PD extensions). | The string "unused".
 #                        | If not provided, the Ping stack will be            |
@@ -210,7 +209,7 @@ DEFAULT_VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
 ${PING_IDENTITY_DEVOPS_KEY_BASE64}
 ${TLS_CRT_PEM}
 ${GIT_URL_NO_AUTH}
-${GIT_AUTH_STR_BASE64}
+${GIT_AUTH_PASS_BASE64}
 ${GIT_AUTH_CRED_BASE64}'
 
 REPO_VARS="${REPO_VARS:-${DEFAULT_VARS}}"
@@ -220,7 +219,7 @@ ${K8S_GIT_BRANCH}
 ${GIT_URL_NO_AUTH}
 ${CLUSTER_STATE_REPO_BRANCH}
 ${CLUSTER_STATE_REPO_PATH}
-${GIT_AUTH_STR_BASE64}'
+${GIT_AUTH_CRED_BASE64}'
 
 ########################################################################################################################
 # Add some derived environment variables to end of the provided environment file.
@@ -296,7 +295,7 @@ if "${IS_MULTI_CLUSTER}"; then
 fi
 
 parse_url "${CLUSTER_STATE_REPO_URL}"
-if test "${URL_PASS}"; then
+if test "${URL_USER}" || test "${URL_PASS}"; then
   echo 'CLUSTER_STATE_REPO_URL should not contain authentication info'
   exit 1
 fi
@@ -408,10 +407,8 @@ add_comment_to_file "${BASE_ENV_VARS}" 'The name of the Docker image registry'
 export_variable_ln "${BASE_ENV_VARS}" REGISTRY_NAME "${REGISTRY_NAME:-docker.io}"
 
 export GIT_URL_NO_AUTH="${URL_NO_AUTH}"
-test "${GIT_AUTH_CRED}" && GIT_AUTH_STR="${URL_USER}:${URL_PASS}"
-export GIT_AUTH_STR_BASE64="$(echo "${GIT_AUTH_STR}" | base64)"
-
-export GIT_AUTH_CRED_BASE64=$(echo -n "${GIT_AUTH_CRED}" | base64)
+export GIT_AUTH_CRED_BASE64="$(echo -n "${GIT_AUTH_CRED}" | base64)"
+export GIT_AUTH_PASS_BASE64=$(echo -n "${GIT_AUTH_CRED}" | cut -d: -f2 | base64)
 
 export TLS_CRT_FILE="${TLS_CRT_FILE}"
 export TLS_KEY_FILE="${TLS_KEY_FILE}"
