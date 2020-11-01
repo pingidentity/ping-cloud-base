@@ -234,7 +234,7 @@ add_derived_variables() {
   if test "${GIT_AUTH_CRED}"; then
     cat >> "${env_file}" <<EOF
 SERVER_PROFILE_URL_REDACT=true
-SERVER_PROFILE_URL=${URL_SCHEME}://${URL_USER}@${URL_HOST}/${URL_PATH}
+SERVER_PROFILE_URL=${URL_SCHEME}://${GIT_AUTH_USER}@${URL_HOST}/${URL_PATH}
 SERVER_PROFILE_BRANCH=\${CLUSTER_STATE_REPO_BRANCH}
 
 EOF
@@ -408,7 +408,8 @@ export_variable_ln "${BASE_ENV_VARS}" REGISTRY_NAME "${REGISTRY_NAME:-docker.io}
 
 export GIT_URL_NO_AUTH="${URL_NO_AUTH}"
 export GIT_AUTH_CRED_BASE64="$(echo -n "${GIT_AUTH_CRED}" | base64)"
-export GIT_AUTH_PASS_BASE64=$(echo -n "${GIT_AUTH_CRED}" | cut -d: -f2 | base64)
+export GIT_AUTH_USER="$(echo -n "${GIT_AUTH_CRED}" | cut -d: -f1)"
+export GIT_AUTH_PASS_BASE64="$(echo -n "${GIT_AUTH_CRED}" | cut -d: -f2 | base64)"
 
 export TLS_CRT_FILE="${TLS_CRT_FILE}"
 export TLS_KEY_FILE="${TLS_KEY_FILE}"
