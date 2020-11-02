@@ -130,7 +130,7 @@ EOF
 
     # Append the sealed secret to the sealed secrets file.
     ! test -f "${SEALED_SECRETS_FILE}" && printf "\n\n" > "${SEALED_SECRETS_FILE}"
-    kubeseal --cert "${CERT_FILE}" -o yaml < "${FILE}" >> "${SEALED_SECRETS_FILE}"
+    kubeseal --cert "${CERT_FILE}" -o yaml --allow-empty-data < "${FILE}" >> "${SEALED_SECRETS_FILE}"
     echo --- >> "${SEALED_SECRETS_FILE}"
 
     # Replace ping-cloud-* namespace to just ping-cloud because it is the default in the kustomization base.

@@ -208,18 +208,18 @@ pushd "${SCRIPT_HOME}" >/dev/null 2>&1
 DEFAULT_VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
 ${PING_IDENTITY_DEVOPS_KEY_BASE64}
 ${TLS_CRT_PEM}
-${GIT_URL_NO_AUTH}
+${FLUX_GIT_URL}
 ${GIT_AUTH_PASS_BASE64}
-${GIT_AUTH_STR_BASE64}'
+${GIT_AUTH_CRED_BASE64}'
 
 REPO_VARS="${REPO_VARS:-${DEFAULT_VARS}}"
 
 FLUX_VARS='${K8S_GIT_URL}
 ${K8S_GIT_BRANCH}
-${GIT_URL_NO_AUTH}
+${FLUX_GIT_URL}
 ${CLUSTER_STATE_REPO_BRANCH}
 ${CLUSTER_STATE_REPO_PATH}
-${GIT_AUTH_STR_BASE64}'
+${GIT_AUTH_CRED_BASE64}'
 
 ########################################################################################################################
 # Add some derived environment variables to end of the provided environment file.
@@ -406,10 +406,12 @@ export_variable_ln "${BASE_ENV_VARS}" K8S_GIT_BRANCH "${K8S_GIT_BRANCH:-${CURREN
 add_comment_to_file "${BASE_ENV_VARS}" 'The name of the Docker image registry'
 export_variable_ln "${BASE_ENV_VARS}" REGISTRY_NAME "${REGISTRY_NAME:-docker.io}"
 
-export GIT_URL_NO_AUTH="${URL_NO_AUTH}"
-test "${GIT_AUTH_CRED}" && export GIT_AUTH_STR_BASE64="$(echo -n "${GIT_AUTH_CRED}@" | base64)"
 export GIT_AUTH_USER="$(echo -n "${GIT_AUTH_CRED}" | cut -d: -f1)"
 export GIT_AUTH_PASS_BASE64="$(echo -n "${GIT_AUTH_CRED}" | cut -d: -f2 | base64)"
+export GIT_AUTH_CRED_BASE64="$(echo -n "${GIT_AUTH_CRED}" | base64)"
+test "${GIT_AUTH_CRED}" &&
+    export FLUX_GIT_URL="${URL_SCHEME}://\$(GIT_AUTH_CRED)@${URL_NO_AUTH}" ||
+    export FLUX_GIT_URL="${CLUSTER_STATE_REPO_URL}"
 
 export TLS_CRT_FILE="${TLS_CRT_FILE}"
 export TLS_KEY_FILE="${TLS_KEY_FILE}"
