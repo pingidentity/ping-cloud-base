@@ -44,12 +44,9 @@ patchesStrategicMerge:
           - --git-readonly
           - --listen-metrics=:3031
           - --git-poll-interval=60s
-          - --git-url=$(FLUX_GIT_URL)
+          - --git-url=https://$(GIT_AUTH_CRED)/${GIT_URL_NO_AUTH}
           - --git-branch=${CLUSTER_STATE_REPO_BRANCH}
           - --git-path=k8s-configs/${CLUSTER_STATE_REPO_PATH}
-          env:
-          - name: FLUX_GIT_URL
-            value: https://$(GIT_AUTH_CRED)/${GIT_URL_NO_AUTH}
 
 ### Git auth credential to the cluster state repo ###
 - |-
