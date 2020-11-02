@@ -274,7 +274,7 @@ EOF
 }
 
 # Checking required tools and environment variables.
-check_binaries "openssl" "ssh-keygen" "ssh-keyscan" "base64" "envsubst" "git"
+check_binaries "openssl" "base64" "envsubst" "git"
 HAS_REQUIRED_TOOLS=${?}
 
 check_env_vars "PING_IDENTITY_DEVOPS_USER" "PING_IDENTITY_DEVOPS_KEY" "CLUSTER_STATE_REPO_URL"
@@ -407,8 +407,8 @@ export_variable_ln "${BASE_ENV_VARS}" K8S_GIT_BRANCH "${K8S_GIT_BRANCH:-${CURREN
 add_comment_to_file "${BASE_ENV_VARS}" 'The name of the Docker image registry'
 export_variable_ln "${BASE_ENV_VARS}" REGISTRY_NAME "${REGISTRY_NAME:-docker.io}"
 
-export GIT_AUTH_USER_BASE64="$(echo -n "${GIT_AUTH_CRED}" | cut -d: -f1 | base64)"
-export GIT_AUTH_PASS_BASE64="$(echo -n "${GIT_AUTH_CRED}" | cut -d: -f2 | base64)"
+export GIT_AUTH_USER_BASE64="$(echo -n "${GIT_AUTH_CRED}" | cut -d: -f1 | tr -d '\n' | base64)"
+export GIT_AUTH_PASS_BASE64="$(echo -n "${GIT_AUTH_CRED}" | cut -d: -f2 | tr -d '\n' | base64)"
 export GIT_AUTH_CRED_BASE64="$(echo -n "${GIT_AUTH_CRED}" | base64)"
 test "${GIT_AUTH_CRED}" &&
     export FLUX_GIT_URL="${URL_SCHEME}://\$(GIT_AUTH_CRED)@${URL_NO_AUTH}" ||
