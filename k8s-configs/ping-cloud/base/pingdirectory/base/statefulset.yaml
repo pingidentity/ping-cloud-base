@@ -157,9 +157,6 @@ spec:
         - name: data-dir
           mountPath: /usr/local/bin/skbn
           subPath: skbn
-        - name: data-dir
-          mountPath: /usr/local/bin/git-ask-pass.sh
-          subPath: git-ask-pass.sh
         - name: out-dir
           mountPath: /opt/out
         - name: pingdirectory-passwords

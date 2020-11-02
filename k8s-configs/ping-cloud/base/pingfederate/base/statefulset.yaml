@@ -117,9 +117,6 @@ spec:
           mountPath: /usr/local/bin/skbn
           subPath: skbn
         - name: data-dir
-          mountPath: /usr/local/bin/git-ask-pass.sh
-          subPath: git-ask-pass.sh
-        - name: data-dir
           mountPath: /opt/staging/native-s3-ping.jar
           subPath: native-s3-ping.jar
         - name: out-dir
@@ -334,9 +331,6 @@ spec:
         - name: data-dir
           mountPath: /usr/local/bin/skbn
           subPath: skbn
-        - name: data-dir
-          mountPath: /usr/local/bin/git-ask-pass.sh
-          subPath: git-ask-pass.sh
         - name: data-dir
           mountPath: /opt/staging/native-s3-ping.jar
           subPath: native-s3-ping.jar
