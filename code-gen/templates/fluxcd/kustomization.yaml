@@ -44,7 +44,7 @@ patchesStrategicMerge:
           - --git-readonly
           - --listen-metrics=:3031
           - --git-poll-interval=60s
-          - --git-url=https://$(GIT_AUTH_CRED)/${GIT_URL_NO_AUTH}
+          - --git-url=https://$(GIT_AUTH_STR)${GIT_URL_NO_AUTH}
           - --git-branch=${CLUSTER_STATE_REPO_BRANCH}
           - --git-path=k8s-configs/${CLUSTER_STATE_REPO_PATH}
 
@@ -57,4 +57,4 @@ patchesStrategicMerge:
     name: flux-git-deploy
     namespace: flux
   data:
-    GIT_AUTH_CRED: ${GIT_AUTH_CRED_BASE64}
+    GIT_AUTH_STR: ${GIT_AUTH_STR_BASE64}
