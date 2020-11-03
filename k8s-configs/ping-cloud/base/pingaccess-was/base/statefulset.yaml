@@ -48,8 +48,6 @@ spec:
         envFrom:
         - configMapRef:
             name: pingaccess-was-environment-variables
-        - secretRef:
-            name: git-auth-cred
       - name: wait-for-services
         # FIXME: switch to same user as app
         securityContext:
