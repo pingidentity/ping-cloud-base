@@ -109,8 +109,9 @@ spec:
         - containerPort: 8989
           name: repl
         resources:
+          limits:
+            memory: "7Gi"
           requests:
-            memory: "5Gi"
             cpu: "2"
         env:
         - name: P14C_ENVIRONMENT_ID

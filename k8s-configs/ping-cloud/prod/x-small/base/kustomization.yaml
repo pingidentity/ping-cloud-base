@@ -1,0 +1,38 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+namespace: ping-cloud
+
+commonLabels:
+  app: ping-cloud
+
+resources:
+- ../../../base
+- ../../../base/aws
+- ../../../base/pingdirectory/aws
+- ../../../base/pingfederate/aws
+- ../../../base/pingaccess/aws
+- ../../../base/pingaccess-was/aws
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+- name: pingdirectory-environment-variables
+  behavior: merge
+  envs:
+  - pingdirectory/env_vars
+
+patchesStrategicMerge:
+- pingdirectory/wait-for-service.yaml
+- pingdirectory/limits.yaml
+
+- pingfederate/engine-init-env.yaml
+- pingfederate/hpa-limits.yaml
+- pingfederate/engine-limits.yaml
+
+- pingaccess/engine-init-env.yaml
+- pingaccess/hpa-limits.yaml
+
+- pingaccess-was/engine-init-env.yaml
+- pingaccess-was/engine-limits.yaml
