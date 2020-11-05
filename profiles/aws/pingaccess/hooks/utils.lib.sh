@@ -20,7 +20,6 @@ function stop_server()
       sleep 3
     fi
   done
-  exit 1
 }
 
 ########################################################################################################################
@@ -402,6 +401,11 @@ function isPingaccessWas() {
 #
 ########################################################################################################################
 function export_environment_variables() {
+
+  # Common marker files
+  export ADMIN_CONFIGURATION_COMPLETE="${SERVER_ROOT_DIR}/ADMIN_CONFIGURATION_COMPLETE"
+  export POST_START_INIT_MARKER_FILE="${SERVER_ROOT_DIR}/post-start-init-complete"
+
   if isPingaccessWas; then
     export K8S_STATEFUL_SET_NAME="${K8S_STATEFUL_SET_NAME_PINGACCESS_WAS}"
     export K8S_SERVICE_NAME_ADMIN="${K8S_SERVICE_NAME_PINGACCESS_WAS_ADMIN}"
@@ -469,6 +473,50 @@ function strip_double_quotes() {
   local temp="${1%\"}"
   temp="${temp#\"}"
   echo "${temp}"
+}
+
+########################################################################################################################
+# Format version for numeric comparison.
+#
+# Arguments
+#   ${1} -> The version string, e.g. 10.0.0.
+########################################################################################################################
+format_version() {
+  printf "%03d%03d%03d%03d" $(echo "${1}" | tr '.' ' ')
+}
+
+########################################################################################################################
+# Get the version of the Pingaccess server in the provided directory.
+#
+# Arguments
+#   ${1} -> The target directory containing server bits.
+########################################################################################################################
+get_version() {
+  local target_dir="${1}"
+
+  local scratch_dir=$(mktemp -d)
+  find "${target_dir}" -name pingaccess-admin-ui*.jar | xargs -I {} cp {} "${scratch_dir}"
+
+  cd "${scratch_dir}"
+  unzip pingaccess-admin-ui*.jar &> /dev/null
+  VERSION=$(grep version META-INF/maven/com.pingidentity.pingaccess/pingaccess-admin-ui/pom.properties | cut -d= -f2)
+  cd - &> /dev/null
+}
+
+########################################################################################################################
+# Get the version of the Pingaccess server packaged in the image.
+########################################################################################################################
+get_image_version() {
+  get_version "${SERVER_BITS_DIR}"
+  IMAGE_VERSION="${VERSION}"
+}
+
+########################################################################################################################
+# Get the currently installed version of the Pingaccess server.
+########################################################################################################################
+get_installed_version() {
+  get_version "${SERVER_ROOT_DIR}"
+  INSTALLED_VERSION="${VERSION}"
 }
 
 # These are needed by every script - so export them when this script is sourced.
