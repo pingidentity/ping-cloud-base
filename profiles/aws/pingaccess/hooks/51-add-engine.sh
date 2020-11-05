@@ -17,6 +17,20 @@ ORDINAL=${SHORT_HOST_NAME##*-}
 
 pingaccess_admin_wait "${ADMIN_HOST_PORT}"
 
+# Establish which PA version this image is running.
+IMAGE_VERSION=
+get_image_version
+beluga_log "Engine Image version is: ${IMAGE_VERSION}"
+
+# Establish running version of the admin server.
+INSTALLED_ADMIN=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/version | jq -r .version)
+
+# Are the admin and Engine running the same version?
+if test $(format_version "${IMAGE_VERSION}") -ne $(format_version "${INSTALLED_ADMIN}"); then
+  beluga_error "FATAL ERROR ILLEGAL STATE VERSION MISMATCH: Engine version ${IMAGE_VERSION} Admin Version ${INSTALLED_ADMIN}"
+  exit 1
+fi
+
 # Retrieving key pair ID.
 beluga_log "add-engine: retrieving the Key Pair ID"
 OUT=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/httpsListeners)
@@ -40,7 +54,8 @@ beluga_log "add-engine: ENGINE_CERT_ID: ${ENGINE_CERT_ID}"
 # Retrieve the Engine ID for name.
 beluga_log "add-engine: retrieving the Engine ID for name ${ENGINE_NAME}"
 OUT=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/engines)
-ENGINE_ID=$(jq -n "${OUT}" | jq --arg ENGINE_NAME "${ENGINE_NAME}" '.items[] | select(.name==$ENGINE_NAME) | .id')
+ENGINE=$(jq -n "${OUT}" | jq --arg ENGINE_NAME "${ENGINE_NAME}" '.items[] | select(.name==$ENGINE_NAME)')
+ENGINE_ID=$(jq -n "${ENGINE}" | jq -r ".id")
 
 # If engine doesn't exist, then create new engine.
 if test -z "${ENGINE_ID}" || test "${ENGINE_ID}" = 'null'; then
@@ -52,6 +67,16 @@ if test -z "${ENGINE_ID}" || test "${ENGINE_ID}" = 'null'; then
   ENGINE_ID=$(jq -n "${OUT}" | jq '.id')
 else
   beluga_log "add-engine: engine ${ENGINE_NAME} already exists"
+
+  # Check replication state.
+  ENGINE_REP_STATE=$(jq -n "${ENGINE}" | jq -r ".configReplicationEnabled")
+
+  # If replication is disabled then re-enable it.
+  if [ "${ENGINE_REP_STATE}" = "false" ]; then
+    ENGINE=$(echo "${ENGINE}" | jq -r ".configReplicationEnabled |= true" | tr -s ' '| tr -d '\n' )
+    make_api_request -X PUT -d "${ENGINE}" https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/engines/${ENGINE_ID} > /dev/null
+    beluga_log "Configuration replication re-enabled for ${ENGINE_NAME}"
+  fi
 fi
 
 # Download Engine Configuration.
