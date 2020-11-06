@@ -119,7 +119,7 @@ pf.https.port=9031
 # authentication or for SAML back-channel authentication, you must use this
 # port for security reasons (or use a similarly configured new listener,
 # with either "WantClientAuth" or "NeedClientAuth" set to "true".
-pf.secondary.https.port=-1
+pf.secondary.https.port=1234
 
 #
 # This property defines the IP address over which the PingFederate server
