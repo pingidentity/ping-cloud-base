@@ -1,13 +1,15 @@
 #!/usr/bin/env sh
 ${VERBOSE} && set -x
 
-. "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
+. "${HOOKS_DIR}/util/config-query-keypair-utils.sh"
 
 if test ! "${OPERATIONAL_MODE}" = "CLUSTERED_CONSOLE"; then
   beluga_log "upgrade: skipping upgrade on engine"
   exit
 fi
+
+templates_dir_path="${STAGING_DIR}"/templates/81
 
 #---------------------------------------------------------------------------------------------
 # Process Possible Admin Upgrade
@@ -41,6 +43,9 @@ function process_admin()
       #
       "${SERVER_ROOT_DIR}"/bin/run.sh &
       pingaccess_admin_wait
+
+      # Upgrade the keypair on the Config Query HTTPS Listener
+      upgrade_config_query_listener_keypair "${templates_dir_path}"
 
       #
       # old instance now running, if this is the admin server disable key rotation 
