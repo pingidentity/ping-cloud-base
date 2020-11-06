@@ -1,0 +1,18 @@
+{
+  "id": 6,
+  "serialNumber": "01:75:94:5C:A5:59",
+  "alias": "non-hook-script-generated-alias",
+  "subjectDn": "CN=pingfederate-admin, O=PingIdentity, C=US",
+  "subjectCn": "pingfederate-admin",
+  "issuerDn": "CN=pingfederate-admin, O=PingIdentity, C=US",
+  "validFrom": 1604511901000,
+  "expires": 1636047901000,
+  "signatureAlgorithm": "SHA256withRSA",
+  "status": "Valid",
+  "sha1sum": "8c82db8dbe3b2622a33f8b453da0669c18de5295",
+  "md5sum": "7f7ae7d35f434b69a06b9196278671ab",
+  "subjectAlternativeNames": null,
+  "csrPending": false,
+  "hsmProviderId": 0,
+  "chainCertificates": []
+}
