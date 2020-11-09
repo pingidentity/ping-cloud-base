@@ -46,6 +46,7 @@ function process_admin()
 
       # Upgrade the keypair on the Config Query HTTPS Listener
       upgrade_config_query_listener_keypair "${templates_dir_path}"
+      test $? -ne 0 && return 1
 
       #
       # old instance now running, if this is the admin server disable key rotation 
