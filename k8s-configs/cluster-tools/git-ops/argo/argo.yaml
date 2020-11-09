@@ -2451,8 +2451,6 @@ metadata:
     app.kubernetes.io/part-of: argocd
   name: argocd-secret
 type: Opaque
-data:
-  admin.password: "JDJhJDEwJGE4RXB4UjBjWkNBdnNHSEp0R2Fidi51TUhrWE9NQkoyTEpOSnRIc0MwUG8vZ1NpWFFCWmhP"
 ---
 apiVersion: v1
 kind: Secret
