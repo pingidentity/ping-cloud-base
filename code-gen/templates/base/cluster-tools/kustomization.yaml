@@ -2,10 +2,15 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
+
+# Include the CD tool here so it can update itself in the future
+- ${K8S_GIT_URL}/k8s-configs/cluster-tools/git-ops?ref=${K8S_GIT_BRANCH}
+
+# Deploy the rest of the cluster tools
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools?ref=${K8S_GIT_BRANCH}
 
-# Include flux CD here so flux can update itself in the future
-- ${K8S_GIT_URL}/k8s-configs/cluster-tools/git-ops?ref=${K8S_GIT_BRANCH}
+# Kick off the CD applications
+- argo-application.yaml
 
 patchesStrategicMerge:
 
@@ -48,27 +53,6 @@ patchesStrategicMerge:
     namespace: external-dns
     annotations:
       purpose: service-account-for-external-dns
-
-### Additional args to the flux deployment object ###
-- |-
-  apiVersion: apps/v1
-  kind: Deployment
-  metadata:
-    name: flux
-    namespace: flux
-  spec:
-    template:
-      spec:
-        containers:
-        - name: flux
-          args:
-          - --manifest-generation=true
-          - --git-readonly
-          - --listen-metrics=:3031
-          - --git-poll-interval=60s
-          - --git-url=${FLUX_GIT_URL}
-          - --git-branch=${CLUSTER_STATE_REPO_BRANCH}
-          - --git-path=k8s-configs/${CLUSTER_STATE_REPO_PATH}
 
 ### Cloud-watch logging and monitoring ###
 - |-

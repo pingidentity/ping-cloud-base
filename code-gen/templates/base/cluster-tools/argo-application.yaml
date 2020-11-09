@@ -1,0 +1,15 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ping-cloud-${CLUSTER_STATE_REPO_BRANCH}
+  namespace: argocd
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: k8s-configs/${CLUSTER_STATE_REPO_PATH}
+    repoURL: ${FLUX_GIT_URL}
+    targetRevision: ${CLUSTER_STATE_REPO_BRANCH}
+    plugin:
+      name: argo-command

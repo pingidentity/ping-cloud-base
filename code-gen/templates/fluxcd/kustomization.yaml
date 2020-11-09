@@ -3,14 +3,17 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 
+# Deploy the CD tool
+- ${K8S_GIT_URL}/k8s-configs/cluster-tools/git-ops?ref=${K8S_GIT_BRANCH}
+
 # Deploy cert-manager as part of the bootstrap process so that it's running before its CRD resources are created
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/cert-manager/base?ref=${K8S_GIT_BRANCH}
 
 # Deploy sealed-secrets controller so it's up and ready before ping-cloud namespace is created
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/security?ref=${K8S_GIT_BRANCH}
 
-# Deploy flux
-- ${K8S_GIT_URL}/k8s-configs/cluster-tools/git-ops?ref=${K8S_GIT_BRANCH}
+# Deploy the CD application
+- argo-application.yaml
 
 generatorOptions:
   labels:
@@ -27,34 +30,13 @@ secretGenerator:
 
 patchesStrategicMerge:
 
-### Additional args to the flux deployment object ###
-- |-
-  apiVersion: apps/v1
-  kind: Deployment
-  metadata:
-    name: flux
-    namespace: flux
-  spec:
-    template:
-      spec:
-        containers:
-        - name: flux
-          args:
-          - --manifest-generation=true
-          - --git-readonly
-          - --listen-metrics=:3031
-          - --git-poll-interval=60s
-          - --git-url=${FLUX_GIT_URL}
-          - --git-branch=${CLUSTER_STATE_REPO_BRANCH}
-          - --git-path=k8s-configs/${CLUSTER_STATE_REPO_PATH}
-
 ### Git auth credential to the cluster state repo ###
 - |-
   apiVersion: v1
   kind: Secret
   type: Opaque
   metadata:
-    name: flux-git-deploy
-    namespace: flux
+    name: argo-git-deploy
+    namespace: argocd
   data:
     GIT_AUTH_CRED: ${GIT_AUTH_CRED_BASE64}
