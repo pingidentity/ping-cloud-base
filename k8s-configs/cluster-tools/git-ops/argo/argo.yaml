@@ -2452,7 +2452,7 @@ metadata:
   name: argocd-secret
 type: Opaque
 data:
-  admin.password: MkZlZGVyYXRlTTByZQo=
+  admin.password: "$2a$10$a8EpxR0cZCAvsGHJtGabv.uMHkXOMBJ2LJNJtHsC0Po/gSiXQBZhO"
 ---
 apiVersion: v1
 kind: Secret
