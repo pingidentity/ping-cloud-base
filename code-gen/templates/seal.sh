@@ -109,8 +109,8 @@ SECRETS_FILE=/tmp/ping-secrets.yaml
 rm -f "${SECRETS_FILE}"
 
 for FILE in ${YAML_FILES}; do
-  NAME=$(grep 'name:' "${FILE}" | cut -d: -f2 | tr -d '[:space:]')
-  NAMESPACE=$(grep 'namespace:' "${FILE}" | cut -d: -f2 | tr -d '[:space:]')
+  NAME=$(grep '^  name:' "${FILE}" | cut -d: -f2 | tr -d '[:space:]')
+  NAMESPACE=$(grep '^  namespace:' "${FILE}" | cut -d: -f2 | tr -d '[:space:]')
 
   cat >> "${SECRETS_FILE}" <<EOF
 apiVersion: v1
@@ -129,9 +129,9 @@ EOF
     echo "Creating sealed secret for \"${NAMESPACE}:${NAME}\""
 
     # Append the sealed secret to the sealed secrets file.
-    ! test -f "${SEALED_SECRETS_FILE}" && printf "\n\n" > "${SEALED_SECRETS_FILE}"
     kubeseal --cert "${CERT_FILE}" -o yaml --allow-empty-data < "${FILE}" >> "${SEALED_SECRETS_FILE}"
     echo --- >> "${SEALED_SECRETS_FILE}"
+    echo >> "${SEALED_SECRETS_FILE}"
 
     # Replace ping-cloud-* namespace to just ping-cloud because it is the default in the kustomization base.
     echo -n "${NAMESPACE}" | grep '^ping-cloud' &> /dev/null && NAMESPACE=ping-cloud
