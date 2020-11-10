@@ -2400,6 +2400,14 @@ data:
     - name: argo-command
       generate:
         command: [ "argo-command.sh" ]
+  repositories: |
+    - url: https://github.com/pingidentity/ping-cloud-base
+      passwordSecret:
+        name: argo-git-deploy
+        key: GIT_USER
+      usernameSecret:
+        name: argo-git-deploy
+        key: GIT_PASS
 ---
 apiVersion: v1
 kind: ConfigMap

@@ -495,6 +495,7 @@ echo "${PING_CLOUD_BASE_COMMIT_SHA}" > "${TARGET_DIR}/pcb-commit-sha.txt"
 ENVIRONMENTS='dev test stage prod'
 
 add_comment_header_to_file "${BASE_ENV_VARS}" 'Cluster state repo details'
+export_variable "${BASE_ENV_VARS}" CLUSTER_STATE_REPO_URL "${CLUSTER_STATE_REPO_URL}"
 export_variable "${BASE_ENV_VARS}" CLUSTER_STATE_REPO_PATH "\${REGION_NICK_NAME}"
 
 for ENV in ${ENVIRONMENTS}; do

@@ -92,6 +92,17 @@ patchesStrategicMerge:
 
 patchesJson6902:
 
+### Cluster state repo URL for the CD tool ###
+- target:
+    version: v1
+    kind: ConfigMap
+    name: argocd-cm
+    namespace: argocd
+  patch: |
+    - op: replace
+      path: /data/repositories/0/url
+      value: ${CLUSTER_STATE_REPO_URL}
+
 ### Change the default TLS secret for the ingress controllers ###
 - target:
     group: apps
