@@ -2396,11 +2396,11 @@ metadata:
     app.kubernetes.io/part-of: argocd
   name: argocd-cm
 data:
-  configManagementPlugins: |
+  configManagementPlugins:
     - name: argo-command
       generate:
         command: [ "argo-command.sh" ]
-  repositories: |
+  repositories:
     - url: https://github.com/pingidentity/ping-cloud-base
       passwordSecret:
         name: argo-git-deploy
