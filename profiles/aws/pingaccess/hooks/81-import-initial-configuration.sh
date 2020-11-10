@@ -29,11 +29,14 @@ function configure_config_query_listener() {
         export CONFIG_QUERY_KP_VALID_DAYS=${CONFIG_QUERY_KP_VALID_DAYS:-365}
 
         beluga_log "Creating a new keypair..."
-        generate_keypair "${templates_dir_path}/config-query-keypair.json"
+        local keypair_id=$(generate_keypair "${templates_dir_path}/config-query-keypair.json")
+        test $? -ne 0 && return 1
+
         beluga_log "New keypair successfully created with the id: ${keypair_id}"
 
         local config_query_listener_id=$(get_config_query_listener_id)
         update_listener_keypair ${keypair_id} ${config_query_listener_id} "${templates_dir_path}/config-query.json"
+        test $? -ne 0 && return 1
 
         # Clean up the global variables
         unset CONFIG_QUERY_KP_ALIAS
@@ -87,6 +90,7 @@ if [ 200 = ${http_response_code} ]; then
         # Configure the Config Query HttpsListener
         # with a keypair
         configure_config_query_listener
+        test $? -ne 0 && return 1
 
     else
         beluga_log "PingAccess has already been configured.  Exiting without making configuration changes."

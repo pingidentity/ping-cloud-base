@@ -23,35 +23,15 @@ get_keypair_by_id() {
 
 # Mock the call to generate a new keypair
 generate_keypair() {
-    echo 5
-}
-
-# Mock the call to get the listener id
-get_config_query_listener_id() {
-    echo 4
-}
-
-# Need to mock this call since you can only
-# mock make_api_request once.
-get_config_query_listener_id() {
-    echo 4
-}
-
-# mock the api call update the listener keypair
-make_api_request() {
-    updated_listener=$(cat "${resources_dir}"/updated-https-listener.json)
-    echo "${updated_listener}"
+    exit 1
 }
 
 # Here, test the logic all the way through to when the https listener is
 # updated with the new keypair
-testUpgradeSucceedsWhenKeypairMissingSan() {
+testUpgradeExitsWhenGenerateKeypairFails() {
     local templates_dir_path="${PROJECT_DIR}"/profiles/aws/pingaccess/templates/81
-    logs=$(upgrade_config_query_listener_keypair "${templates_dir_path}")
-
-    # Look for the message indicating the upgrade was skipped
-    message="Successfully upgraded the Config Query HTTPS Listener to use a Keypair with a Subject Alt Name."
-    assertContains "Given the mock functions in this test, the upgrade should have succeeded." "${logs}" "${message}"
+    response=$(upgrade_config_query_listener_keypair "${templates_dir_path}")
+    assertEquals "Given the mock generate_keypair in this test, the upgrade should have failed with 1." 1 $?
 }
 
 # load shunit
