@@ -49,25 +49,14 @@ patchesJson6902:
     kind: ConfigMap
     name: argocd-cm
     namespace: argocd
-  patch: |-
-    - op: replace
-      path: /data/repositories/0/url
-      value: ${CLUSTER_STATE_REPO_URL}
-
-### Cluster state repo URL for the CD tool ###
-#- target:
-#    version: v1
-#    kind: ConfigMap
-#    name: argocd-cm
-#    namespace: argocd
-#  patch: |
-#    - op: replace
-#      path: /data/repositories
-#      value:
-#        - url: ${CLUSTER_STATE_REPO_URL}
-#          passwordSecret:
-#            name: argo-git-deploy
-#            key: GIT_USER
-#          usernameSecret:
-#            name: argo-git-deploy
-#            key: GIT_PASS
+  patch: |
+    - op: add
+      path: /data/repositories
+      value:
+        - url: ${CLUSTER_STATE_REPO_URL}
+          passwordSecret:
+            name: argo-git-deploy
+            key: GIT_USER
+          usernameSecret:
+            name: argo-git-deploy
+            key: GIT_PASS
