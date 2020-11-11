@@ -103,12 +103,22 @@ patchesJson6902:
       path: /data/repositories
       value: |
         - url: ${CLUSTER_STATE_REPO_URL}
+          type: git
           passwordSecret:
             name: argo-git-deploy
             key: GIT_USER
           usernameSecret:
             name: argo-git-deploy
             key: GIT_PASS
+
+        - passwordSecret:
+            key: password
+            name: repo-3513882424
+          type: git
+          url: https://github.com/minigans/savitha-ping-stack.git
+          usernameSecret:
+            key: username
+            name: repo-3513882424
 
 ### Change the default TLS secret for the ingress controllers ###
 - target:
