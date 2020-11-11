@@ -2607,6 +2607,8 @@ spec:
             - "20"
             - --operation-processors
             - "10"
+            - --app-resync
+            - "60"
           image: argoproj/argocd:v1.7.8
           imagePullPolicy: Always
           livenessProbe:

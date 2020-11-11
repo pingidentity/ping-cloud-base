@@ -4,6 +4,8 @@ metadata:
   name: ping-cloud-${CLUSTER_STATE_REPO_BRANCH}
   namespace: argocd
 spec:
+  syncPolicy:
+    automated: {}
   destination:
     server: https://kubernetes.default.svc
   project: default
