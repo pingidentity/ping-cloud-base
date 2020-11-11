@@ -52,7 +52,7 @@ patchesJson6902:
   patch: |
     - op: add
       path: /data/repositories
-      value:
+      value: |
         - url: ${CLUSTER_STATE_REPO_URL}
           passwordSecret:
             name: argo-git-deploy
