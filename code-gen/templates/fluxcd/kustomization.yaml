@@ -56,9 +56,9 @@ patchesJson6902:
       value: |
         - url: ${CLUSTER_STATE_REPO_URL}
           type: git
-          passwordSecret:
+          usernameSecret:
             name: argo-git-deploy
             key: GIT_USER
-          usernameSecret:
+          passwordSecret:
             name: argo-git-deploy
             key: GIT_PASS
