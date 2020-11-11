@@ -35,8 +35,8 @@
 #    └── test
 #
 # Deploying the manifests under the fluxcd directory for a specific environment will bootstrap the cluster with a
-# Continuous Delivery tool called flux. Once flux is deployed to the cluster, it will deploy the rest of the ping stack
-# and supporting tools for that environment. More details on flux may be found here: https://docs.fluxcd.io/
+# Continuous Delivery tool. Once the CD tool is deployed to the cluster, it will deploy the rest of the ping stack
+# and supporting tools for that environment.
 #
 # ------------
 # Requirements
@@ -213,7 +213,7 @@ ${GIT_AUTH_PASS_BASE64}'
 
 REPO_VARS="${REPO_VARS:-${DEFAULT_VARS}}"
 
-FLUX_VARS='${K8S_GIT_URL}
+GIT_CD_VARS='${K8S_GIT_URL}
 ${K8S_GIT_BRANCH}
 ${CLUSTER_STATE_REPO_URL}
 ${CLUSTER_STATE_REPO_BRANCH}
@@ -473,15 +473,15 @@ rm -rf "${TARGET_DIR}"
 mkdir -p "${TARGET_DIR}"
 
 # Next build up the directory structure of the cluster-state repo
-FLUXCD_DIR="${TARGET_DIR}/fluxcd"
+GIT_CD_DIR="${TARGET_DIR}/fluxcd"
 CLUSTER_STATE_DIR="${TARGET_DIR}/cluster-state"
 K8S_CONFIGS_DIR="${CLUSTER_STATE_DIR}/k8s-configs"
 
-mkdir -p "${FLUXCD_DIR}"
+mkdir -p "${GIT_CD_DIR}"
 mkdir -p "${K8S_CONFIGS_DIR}"
 
 cp ../.gitignore "${CLUSTER_STATE_DIR}"
-cp ../k8s-configs/cluster-tools/git-ops/flux/flux-command.sh "${K8S_CONFIGS_DIR}"
+cp ../k8s-configs/cluster-tools/git-ops/git-ops-command.sh "${K8S_CONFIGS_DIR}"
 find "${TEMPLATES_HOME}" -type f -maxdepth 1 | xargs -I {} cp {} "${K8S_CONFIGS_DIR}"
 
 cp -pr ../profiles/aws/. "${CLUSTER_STATE_DIR}"/profiles
@@ -613,18 +613,18 @@ for ENV in ${ENVIRONMENTS}; do
   echo "LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
   echo "BACKUP_URL: ${BACKUP_URL}"
 
-  # Build the flux kustomization file for each environment
-  echo "Generating flux yaml"
+  # Build the kustomization file for the CD tool for each environment
+  echo "Generating CD tool yaml"
 
-  ENV_FLUX_DIR="${FLUXCD_DIR}/${ENV}"
-  mkdir -p "${ENV_FLUX_DIR}"
+  ENV_GIT_CD_DIR="${GIT_CD_DIR}/${ENV}"
+  mkdir -p "${ENV_GIT_CD_DIR}"
 
-  cp "${TEMPLATES_HOME}"/fluxcd/* "${ENV_FLUX_DIR}"
-  echo "${TLS_CRT_PEM}" > "${ENV_FLUX_DIR}"/tls.crt
-  echo "${TLS_KEY_PEM}" > "${ENV_FLUX_DIR}"/tls.key
+  cp "${TEMPLATES_HOME}"/fluxcd/* "${ENV_GIT_CD_DIR}"
+  echo "${TLS_CRT_PEM}" > "${ENV_GIT_CD_DIR}"/tls.crt
+  echo "${TLS_KEY_PEM}" > "${ENV_GIT_CD_DIR}"/tls.key
 
-  # Create a list of variables to substitute for flux CD
-  substitute_vars "${ENV_FLUX_DIR}" "${FLUX_VARS}"
+  # Create a list of variables to substitute for the CD tool
+  substitute_vars "${ENV_GIT_CD_DIR}" "${GIT_CD_VARS}"
 
   # Copy the shared cluster tools and Ping yaml templates into their target directories
   echo "Generating tools and ping yaml"
@@ -657,9 +657,9 @@ for ENV in ${ENVIRONMENTS}; do
     echo "Encrypting secrets for environment 'dev'"
     pushd "${DEV_ENV_DIR}" >/dev/null 2>&1
 
-    cp ../flux-command.sh ../sealing-key.crt ../seal.sh .
+    cp ../git-ops-command.sh ../sealing-key.crt ../seal.sh .
     UPDATE_MANIFESTS=true QUIET=true ./seal.sh sealing-key.crt
-    rm -f flux-command.sh sealing-key.crt seal.sh
+    rm -f git-ops-command.sh sealing-key.crt seal.sh
 
     popd >/dev/null 2>&1
   else
@@ -682,5 +682,5 @@ echo '|  Next steps to take  |'
 echo '------------------------'
 echo "1) Run ${TARGET_DIR}/push-cluster-state.sh to push the generated code into cluster-state repo for ${REGION}"
 echo
-echo "2) Deploy flux onto each CDE by navigating to ${TARGET_DIR}/fluxcd and running:"
+echo "2) Deploy the CD tool onto each CDE by navigating to ${TARGET_DIR}/fluxcd and running:"
 echo 'kustomize build | kubectl apply -f -'

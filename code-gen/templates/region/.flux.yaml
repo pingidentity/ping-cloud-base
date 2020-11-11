@@ -1,4 +1,0 @@
-version: 1
-commandUpdated:
-  generators:
-    - command: flux-command.sh

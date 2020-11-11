@@ -9,7 +9,7 @@ resources:
 # Deploy the rest of the cluster tools
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools?ref=${K8S_GIT_BRANCH}
 
-# Kick off the CD applications
+# Deploy the CD application
 - argo-application.yaml
 
 patchesStrategicMerge:
@@ -92,7 +92,7 @@ patchesStrategicMerge:
 
 patchesJson6902:
 
-### Cluster state repo URL for the CD tool ###
+### Cluster state repo URL and auth configuration for the CD tool ###
 - target:
     version: v1
     kind: ConfigMap

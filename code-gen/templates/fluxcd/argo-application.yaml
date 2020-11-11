@@ -14,4 +14,4 @@ spec:
     repoURL: ${CLUSTER_STATE_REPO_URL}
     targetRevision: ${CLUSTER_STATE_REPO_BRANCH}
     plugin:
-      name: argo-command
+      name: git-ops-command
