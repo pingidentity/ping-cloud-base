@@ -2459,11 +2459,9 @@ kind: Secret
 metadata:
   name: argo-git-deploy
   namespace: flux
-  labels:
-    app.kubernetes.io/name: argo-git-deploy
-    app.kubernetes.io/part-of: argocd
   annotations:
     sealedsecrets.bitnami.com/managed: "true"
+    managed-by: argocd.argoproj.io
 type: Opaque
 ---
 apiVersion: v1
