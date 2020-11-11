@@ -1,0 +1,29 @@
+{
+  "id":5,
+  "serialNumber":"01:75:8F:97:6A:77",
+  "alias":"pingaccess-config-query",
+  "subjectDn":"CN=pingaccess-admin, O=Ping Identity, C=US",
+  "subjectCn":"pingaccess-admin",
+  "issuerDn":"CN=pingaccess-admin, O=Ping Identity, C=US",
+  "validFrom":1604431866000,
+  "expires":1635967866000,
+  "signatureAlgorithm":"SHA256withRSA",
+  "status":"Valid",
+  "sha1sum":"9a87c73574cfefe413fa3119b61a9c0ced08a3f9",
+  "md5sum":"2988048abeb92742a36cf58578b0f1d4",
+  "subjectAlternativeNames":[
+    {
+      "name":"dNSName",
+      "value":"pingaccess-admin"
+    },
+    {
+      "name":"dNSName",
+      "value":"pingaccess-cluster-pingcloud.ping-cloud.ping-demo.com"
+    }
+  ],
+  "csrPending":false,
+  "hsmProviderId":0,
+  "chainCertificates":[
+
+  ]
+}

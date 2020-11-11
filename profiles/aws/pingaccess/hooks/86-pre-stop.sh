@@ -12,18 +12,6 @@ fi
 
 echo "pre-stop: starting pre-stop hook on engine"
 
-SHORT_HOST_NAME=$(hostname)
-ORDINAL=${SHORT_HOST_NAME##*-}
-PINGACCESS_ADMIN_API_ENDPOINT="https://${ADMIN_HOST_PORT}/pa-admin-api/v3"
-
-NUM_REPLICAS=$(kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
-echo "pre-stop: number of replicas: ${NUM_REPLICAS}"
-
-if test "${ORDINAL}" -lt "${NUM_REPLICAS}"; then
-  echo "pre-stop: not removing engine since it is still in the topology"
-  exit 0
-fi
-
 # Retrieve Engine ID for engine name.
 echo "pre-stop: removing engine ID for name ${ENGINE_NAME}"
 ENGINES=$(make_api_request "${PINGACCESS_ADMIN_API_ENDPOINT}/engines")
