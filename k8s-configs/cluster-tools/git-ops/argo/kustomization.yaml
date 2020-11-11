@@ -5,11 +5,3 @@ namespace: argocd
 
 resources:
 - argo.yaml
-
-generatorOptions:
-  disableNameSuffixHash: true
-
-configMapGenerator:
-- name: argo-command
-  files:
-  - argo-command.sh

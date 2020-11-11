@@ -3,3 +3,11 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 - argo
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+- name: git-ops-command
+  files:
+  - git-ops-command.sh

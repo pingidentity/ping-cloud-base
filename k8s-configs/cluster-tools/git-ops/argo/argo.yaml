@@ -2397,9 +2397,9 @@ metadata:
   name: argocd-cm
 data:
   configManagementPlugins: |
-    - name: argo-command
+    - name: git-ops-command
       generate:
-        command: [ "argo-command.sh" ]
+        command: [ "git-ops-command.sh" ]
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -2458,7 +2458,6 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: argo-git-deploy
-  namespace: flux
   annotations:
     sealedsecrets.bitnami.com/managed: "true"
     managed-by: argocd.argoproj.io
@@ -2767,9 +2766,9 @@ spec:
               name: gpg-keys
             - mountPath: /app/config/gpg/keys
               name: gpg-keyring
-            - name: argo-command
-              mountPath: /usr/local/bin/argo-command.sh
-              subPath: argo-command.sh
+            - name: git-ops-command
+              mountPath: /usr/local/bin/git-ops-command.sh
+              subPath: git-ops-command.sh
             - name: tools-dir
               mountPath: /usr/local/bin/envsubst
               subPath: envsubst
@@ -2787,9 +2786,9 @@ spec:
           name: gpg-keyring
         - name: tools-dir
           emptyDir: {}
-        - name: argo-command
+        - name: git-ops-command
           configMap:
-            name: argo-command
+            name: git-ops-command
             defaultMode: 0555
 ---
 apiVersion: apps/v1
