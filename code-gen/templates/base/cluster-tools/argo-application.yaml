@@ -9,7 +9,7 @@ spec:
   project: default
   source:
     path: k8s-configs/${CLUSTER_STATE_REPO_PATH}
-    repoURL: ${FLUX_GIT_URL}
+    repoURL: ${CLUSTER_STATE_REPO_URL}
     targetRevision: ${CLUSTER_STATE_REPO_BRANCH}
     plugin:
       name: argo-command
