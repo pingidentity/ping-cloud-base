@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: ping-cloud-${CLUSTER_STATE_REPO_BRANCH}
+  name: "ping-cloud-${CLUSTER_STATE_REPO_BRANCH}-${REGION_NICK_NAME}"
   namespace: argocd
 spec:
   syncPolicy:
