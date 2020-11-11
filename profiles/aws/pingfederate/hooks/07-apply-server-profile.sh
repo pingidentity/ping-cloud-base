@@ -14,7 +14,7 @@
 # restart run plans. This change enforces giving precedence to the local profile over the remote one. To do 
 # this it will reapply the local profile over the staging area and recall the 05-expand-templates.sh
 # 
-# There will still be a slight descrepancy in that on start templates will already have been expanded once
+# There will still be a slight discrepancy in that on start templates will already have been expanded once
 # but provided the variable values do not change between calls the process should be idempotent. 
 #
 # In adition to addressing the issue outlined above this custom hook enforces behavior specific to 

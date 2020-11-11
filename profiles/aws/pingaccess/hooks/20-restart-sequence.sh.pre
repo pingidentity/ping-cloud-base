@@ -3,13 +3,14 @@
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 
-if ! isPingaccessWas; then
-  run_hook "10-download-artifact.sh"
-fi
-
 if ! test -z "${OPERATIONAL_MODE}" && test "${OPERATIONAL_MODE}" = "CLUSTERED_CONSOLE"; then
   run_hook "11-restore-db-password.sh"
   run_hook "22-upgrade-server.sh"
+fi
+
+if ! isPingaccessWas; then
+  # PDO-1498,PDO-1503: Run download-artifact after upgrade
+  run_hook "10-download-artifact.sh"
 fi
 
 run_hook "100-tail-logs.sh"

@@ -143,6 +143,10 @@
             </Array>
         </Set>
         <Set name="delayDispatchUntilContent"><Property name="jetty.delayDispatchUntilContent" default="false" /></Set>
+         <!-- This customizer should run first, to ensure the request thread uses the current active service set  -->
+        <Call name="addCustomizer">
+            <Arg><New class="com.pingidentity.appserver.jetty.server.customizer.RuntimeServiceSetCustomizer"/></Arg>
+        </Call>
         <Call name="addCustomizer">
             <Arg>
                 <New class="com.pingidentity.appserver.jetty.server.customizer.RequestTimestampCustomizer" />

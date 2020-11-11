@@ -1,0 +1,32 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "name": "ADMIN",
+      "keyPairId": 1,
+      "useServerCipherSuiteOrder": true,
+      "restartRequired": true
+    },
+    {
+      "id": 2,
+      "name": "ENGINE",
+      "keyPairId": 2,
+      "useServerCipherSuiteOrder": true,
+      "restartRequired": false
+    },
+    {
+      "id": 3,
+      "name": "AGENT",
+      "keyPairId": 3,
+      "useServerCipherSuiteOrder": true,
+      "restartRequired": true
+    },
+    {
+      "id": 4,
+      "name": "CONFIG QUERY",
+      "keyPairId": 6,
+      "useServerCipherSuiteOrder": false,
+      "restartRequired": false
+    }
+  ]
+}

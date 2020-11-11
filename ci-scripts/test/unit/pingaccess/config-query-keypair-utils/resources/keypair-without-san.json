@@ -1,0 +1,18 @@
+{
+  "id": 5,
+  "serialNumber": "01:75:94:54:11:50",
+  "alias": "pingaccess-config-query",
+  "subjectDn": "CN=pingaccess-admin, O=Ping Identity, C=US",
+  "subjectCn": "pingaccess-admin",
+  "issuerDn": "CN=pingaccess-admin, O=Ping Identity, C=US",
+  "validFrom": 1604511338000,
+  "expires": 1636047338000,
+  "signatureAlgorithm": "SHA256withRSA",
+  "status": "Valid",
+  "sha1sum": "5132f94bdd09ced55348bea2d8b69473b8d321c0",
+  "md5sum": "2e178fa5afefd8c4bf6d243931667142",
+  "subjectAlternativeNames": null,
+  "csrPending": false,
+  "hsmProviderId": 0,
+  "chainCertificates": []
+}
