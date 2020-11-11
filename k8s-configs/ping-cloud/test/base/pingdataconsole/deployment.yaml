@@ -15,7 +15,7 @@ spec:
       serviceAccount: ping-serviceaccount
       containers:
       - name: pingdataconsole
-        image: pingidentity/pingdataconsole:2006.1-8.1.0.0
+        image: pingcloud-mirror.jfrog.io/pingidentity/pingdataconsole:2006.1-8.1.0.0
         resources:
           requests:
             memory: 512Mi
