@@ -88,7 +88,7 @@ spec:
     spec:
       initContainers:
       - name: add-envsubst
-        image: pingidentity/pingtoolkit:2006-1.0.0
+        image: pingcloud-mirror.jfrog.io/pingidentity/pingtoolkit:2006-1.0.0
         command:
         - sh
         - -c
