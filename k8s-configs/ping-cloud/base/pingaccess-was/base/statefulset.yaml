@@ -223,7 +223,7 @@ spec:
   selector:
     matchLabels:
       role: pingaccess-was-engine
-  replicas: 1
+  replicas: 2
   serviceName: pingaccess-was
   podManagementPolicy: OrderedReady
   template:
