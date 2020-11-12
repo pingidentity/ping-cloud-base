@@ -1,0 +1,13 @@
+HTTP/1.1 200 OK
+date: Thu, 15 Oct 2020 22:48:40 GMT
+content-length: 345
+content-type: application/json
+cache-control: no-cache,no-store,max-age=0
+pragma: no-cache
+expires: 0
+X-Frame-Options: DENY
+X-XSS-Protection: 1; mode=block
+X-Content-Type-Options: nosniff
+Content-Security-Policy: default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self' data:;
+
+{"items":[{"id":1,"name":"PA Admin","targets":["pa-admin:80"],"secure":false,"trustedCertificateGroupId":0,"sendPaCookie":true,"useTargetHostHeader":false,"keepAliveTimeout":0,"maxConnections":-1,"maxWebSocketConnections":-1,"siteAuthenticatorIds":[],"skipHostnameVerification":false,"expectedHostname":null,"availabilityProfileId":1,"loadBalancingStrategyId":0,"useProxy":false}]}

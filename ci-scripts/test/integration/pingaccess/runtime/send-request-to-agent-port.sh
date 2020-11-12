@@ -1,6 +1,9 @@
 #!/bin/bash
 
-function send_request_to_agent_port() {
+. "${PROJECT_DIR}"/utils.sh
+. "${PROJECT_DIR}"/ci-scripts/test/integration/pingaccess/util/pa-test-utils.sh
+
+send_request_to_agent_port() {
 
   set +x
 
@@ -18,10 +21,10 @@ function send_request_to_agent_port() {
   response_code=$(parse_http_response_code "${agent_port_runtime_response}")
 
   if [[ 277 -ne ${response_code} ]]; then
-    echo "There was a problem contacting the agent port on the engine instance: " ${response_code}
+    log "There was a problem contacting the agent port on the engine instance:"
+    log "${agent_port_runtime_response}"
     return 1
-  else
-    echo "${response_code}"
-    return 0
   fi
+
+  return 0
 }
