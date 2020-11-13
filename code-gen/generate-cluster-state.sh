@@ -113,9 +113,9 @@
 #                        | information is maintained. Only used if            | is true.
 #                        | IS_MULTI_CLUSTER is true.                          |
 #                        |                                                    |
-# SIZE                   | Size of the environment, which pertains to the     | small
+# SIZE                   | Size of the environment, which pertains to the     | x-small
 #                        | number of user identities. Legal values are        |
-#                        | small, medium or large.                            |
+#                        | x-small, small, medium or large.                   |
 #                        |                                                    |
 # CLUSTER_STATE_REPO_URL | The URL of the cluster-state repo.                 | https://github.com/pingidentity/ping-cloud-base
 #                        |                                                    |
@@ -325,7 +325,7 @@ REGION_ENV_VARS="$(mktemp)}"
 
 export IS_BELUGA_ENV="${IS_BELUGA_ENV:-false}"
 export TENANT_NAME="${TENANT_NAME:-ci-cd}"
-export SIZE="${SIZE:-small}"
+export SIZE="${SIZE:-x-small}"
 
 ### Region-specific environment variables ###
 add_comment_header_to_file "${REGION_ENV_VARS}" 'Region-specific parameters'
@@ -521,7 +521,7 @@ for ENV in ${ENVIRONMENTS}; do
       export_variable_ln "${CDE_BASE_ENV_VARS}" KUSTOMIZE_BASE 'test'
       ;;
     stage)
-      export_variable_ln "${CDE_BASE_ENV_VARS}" KUSTOMIZE_BASE 'prod/small'
+      export_variable_ln "${CDE_BASE_ENV_VARS}" KUSTOMIZE_BASE 'prod/x-small'
       ;;
     prod)
       export_variable_ln "${CDE_BASE_ENV_VARS}" KUSTOMIZE_BASE "prod/${SIZE}"
