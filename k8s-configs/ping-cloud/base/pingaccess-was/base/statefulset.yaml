@@ -79,13 +79,6 @@ spec:
       - name: pingaccess-was-admin
         image: pingcloud-mirror.jfrog.io/pingidentity/pingaccess:2010-6.1.3
         imagePullPolicy: IfNotPresent
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "1"
-          limits:
-            memory: "1Gi"
-            cpu: "1"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
@@ -223,7 +216,7 @@ spec:
   selector:
     matchLabels:
       role: pingaccess-was-engine
-  replicas: 2
+  replicas: 1
   serviceName: pingaccess-was
   podManagementPolicy: OrderedReady
   template:
@@ -302,13 +295,6 @@ spec:
       - name: pingaccess-was
         image: pingcloud-mirror.jfrog.io/pingidentity/pingaccess:2010-6.1.3
         imagePullPolicy: IfNotPresent
-        resources:
-          requests:
-            memory: "1Gi"
-            cpu: "1"
-          limits:
-            memory: "1Gi"
-            cpu: "1"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
