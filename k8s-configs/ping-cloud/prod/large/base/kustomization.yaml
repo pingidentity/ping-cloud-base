@@ -27,6 +27,7 @@ patchesStrategicMerge:
 - pingdirectory/wait-for-service.yaml
 - pingdirectory/limits.yaml
 
+- pingfederate/admin-limits.yaml
 - pingfederate/engine-init-env.yaml
 - pingfederate/hpa-limits.yaml
 - pingfederate/engine-limits.yaml
