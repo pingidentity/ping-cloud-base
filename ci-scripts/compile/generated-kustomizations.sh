@@ -52,7 +52,7 @@ ${ENVIRONMENT_TYPE}
 ${PING_CLOUD_NAMESPACE}
 ${KUSTOMIZE_BASE}'
 
-for SIZE in small medium large; do
+for SIZE in x-small small medium large; do
   log "Building kustomizations for ${SIZE} environment"
 
   export SIZE

@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingdirectory
+spec:
+  replicas: 3
+  template:
+    spec:
+      containers:
+      - name: pingdirectory
+        resources:
+          limits:
+            memory: 7Gi
+          requests:
+            cpu: 2
+  volumeClaimTemplates:
+  - metadata:
+      name: out-dir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: pingdirectory-gp2
+      resources:
+        requests:
+          storage: 50Gi
