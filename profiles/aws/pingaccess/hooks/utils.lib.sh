@@ -16,7 +16,7 @@ function stop_server()
     if test -z ${SERVER_PID}; then
         break
     else
-      beluga_log "waiting for PingAccess to terminate due to error"
+      beluga_log "Waiting for PingAccess to terminate"
       sleep 3
     fi
   done
