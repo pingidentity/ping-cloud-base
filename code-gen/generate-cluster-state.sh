@@ -382,6 +382,7 @@ export_variable_ln "${BASE_ENV_VARS}" PING_CLOUD_NAMESPACE 'ping-cloud'
 PING_CLOUD_BASE_COMMIT_SHA=$(git rev-parse HEAD)
 CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 test "${CURRENT_GIT_BRANCH}" = 'HEAD' && CURRENT_GIT_BRANCH=$(git describe --tags --always)
+export CLUSTER_STATE_REPO_URL=${CLUSTER_STATE_REPO_URL:-https://github.com/pingidentity/ping-cloud-base}
 
 add_comment_to_file "${BASE_ENV_VARS}" 'The ping-cloud-base git URL and branch for base Kubernetes manifests'
 export_variable "${BASE_ENV_VARS}" K8S_GIT_URL "${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
@@ -495,8 +496,7 @@ echo "${PING_CLOUD_BASE_COMMIT_SHA}" > "${TARGET_DIR}/pcb-commit-sha.txt"
 # Now generate the yaml files for each environment
 ENVIRONMENTS='dev test stage prod'
 
-export_variable "${BASE_ENV_VARS}" CLUSTER_STATE_REPO_URL \
-  "${CLUSTER_STATE_REPO_URL:-git@github.com:pingidentity/ping-cloud-base.git}"
+export_variable "${BASE_ENV_VARS}" CLUSTER_STATE_REPO_URL "${CLUSTER_STATE_REPO_URL}"
 export_variable "${BASE_ENV_VARS}" CLUSTER_STATE_REPO_PATH "\${REGION_NICK_NAME}"
 
 for ENV in ${ENVIRONMENTS}; do
