@@ -560,6 +560,21 @@ data:
         </rule>
         <rule>
           key log
+          pattern /^\/opt\/out\/instance\/upgrade\/log\/audit/
+          tag temp.pingaccess_upgrade_audit_logs
+        </rule>
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/upgrade\/log\/upgrade_status/
+          tag temp.pingaccess_upgrade_status_logs
+        </rule>
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/upgrade\/log\/upgrade/
+          tag temp.pingaccess_upgrade_logs
+        </rule>
+        <rule>
+          key log
           pattern /^(.+)$/
           tag temp.unmatched_logs
         </rule>
@@ -615,6 +630,21 @@ data:
           key log
           pattern /^\/opt\/out\/instance\/log\/pingaccess/
           tag temp.pingaccess_logs
+        </rule>
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/upgrade\/log\/audit/
+          tag temp.pingaccess_upgrade_audit_logs
+        </rule>
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/upgrade\/log\/upgrade_status/
+          tag temp.pingaccess_upgrade_status_logs
+        </rule>
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/upgrade\/log\/upgrade/
+          tag temp.pingaccess_upgrade_logs
         </rule>
         <rule>
           key log
