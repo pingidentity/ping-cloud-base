@@ -41,7 +41,7 @@ if test -z "${ENV_VARS_FILE}"; then
   export AWS_PROFILE=csg
 elif test -f "${ENV_VARS_FILE}"; then
   echo "Using environment variables defined in file ${ENV_VARS_FILE}"
-  source "${ENV_VARS_FILE}"
+  set -a; source "${ENV_VARS_FILE}"; set +a
 else
   echo "ENV_VARS_FILE points to a non-existent file: ${ENV_VARS_FILE}"
   exit 1
