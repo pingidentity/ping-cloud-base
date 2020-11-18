@@ -8,8 +8,7 @@ test "${VERBOSE}" && set -x
 
 # Override environment variables with optional file supplied from the outside
 ENV_VARS_FILE="${1}"
-SKIP_TESTS="${SKIP_TESTS:-pingaccess/01-agent-config-test.sh \
-  pingdirectory/03-backup-restore.sh \
+SKIP_TESTS="${SKIP_TESTS:-pingdirectory/03-backup-restore.sh \
   chaos/01-delete-pa-admin-pod.sh}"
 
 if test -z "${ENV_VARS_FILE}"; then

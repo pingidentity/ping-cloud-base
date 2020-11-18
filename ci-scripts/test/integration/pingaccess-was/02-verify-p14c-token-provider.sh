@@ -11,10 +11,10 @@ oneTimeSetUp() {
 
   # Using the pa-test-utils in the pingaccess
   # directory to avoid duplication.
-  . ${PROJECT_DIR}/ci-scripts/test/integration/pingaccess/util/pa-test-utils
+  . ${PROJECT_DIR}/ci-scripts/test/integration/pingaccess/util/pa-test-utils.sh
 
   SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
-  . ${SCRIPT_HOME}/common-api/get-entity-operations
+  . ${SCRIPT_HOME}/common-api/get-entity-operations.sh
 
   export PA_ADMIN_PASSWORD=2FederateM0re
 }
