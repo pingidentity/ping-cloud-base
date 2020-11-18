@@ -296,7 +296,7 @@ add_irsa_variables() {
 
   add_comment_header_to_file "${CDE_BASE_ENV_VARS}" 'IRSA - IAM role for service accounts'
   add_comment_to_file "${CDE_BASE_ENV_VARS}" 'Used by ping product pods'
-  export_variable_ln "${CDE_BASE_ENV_VARS}" IRSA_PING_ANNOTATION_KEY_VALUE "${IRSA_PING_ANNOTATION_KEY_VALUE}"
+  export_variable_ln "${CDE_BASE_ENV_VARS}" IRSA_PING_ANNOTATION_KEY_VALUE "${IRSA_PING_ANNOTATION_KEY_VALUE}" true
 }
 
 # Checking required tools and environment variables.
