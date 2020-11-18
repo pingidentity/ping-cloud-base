@@ -9,5 +9,6 @@ patchesStrategicMerge:
 - pingfederate/admin-limits.yaml
 
 - pingaccess/admin-init-env.yaml
+- pingaccess/admin-limits.yaml
 
 - pingaccess-was/admin-limits.yaml
