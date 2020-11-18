@@ -42,6 +42,7 @@ patchesStrategicMerge:
     name: ping-serviceaccount
     annotations:
       purpose: service-account-for-ping-cloud-stack
+      eks.amazonaws.com/role-arn: ${IRSA_PING}
 
 patchesJson6902:
 

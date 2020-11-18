@@ -16,7 +16,7 @@ if test ! -f /data/kubectl; then
 fi
 
 beluga_log "Downloading skbn from ping-artifacts bucket"
-wget -qO /data/skbn https://ping-artifacts.s3-us-west-2.amazonaws.com/pingcommon/skbn/0.5.0/skbn
+wget -qO /data/skbn https://ping-artifacts.s3-us-west-2.amazonaws.com/pingcommon/skbn/0.5.1/skbn
 
 beluga_log "Checking skbn executable in data directory"
 if test ! -f /data/skbn; then
