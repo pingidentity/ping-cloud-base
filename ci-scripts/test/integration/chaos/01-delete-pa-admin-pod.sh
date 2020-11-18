@@ -7,7 +7,7 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-. "${PROJECT_DIR}"/ci-scripts/test/integration/pingaccess/util/pa-test-utils
+. "${PROJECT_DIR}"/ci-scripts/test/integration/pingaccess/util/pa-test-utils.sh
 
 testDeletePaAdmin() {
 

@@ -1,6 +1,9 @@
 #!/bin/bash
 
-function get_virtual_host_by_host_port() {
+. "${PROJECT_DIR}"/ci-scripts/test/integration/pingaccess/util/pa-test-utils.sh
+. "${PROJECT_DIR}"/ci-scripts/test/integration/pingaccess/common-api/log-response.sh
+
+get_virtual_host_by_host_port() {
 
   set +x
 
@@ -15,18 +18,17 @@ function get_virtual_host_by_host_port() {
     -H 'X-Xsrf-Header: PingAccess' \
     "${endpoint}/virtualhosts?virtualHost=${host_port}")
 
-  get_virtual_hosts_response_code=$(parse_http_response_code "${get_virtual_hosts_response}")
+  log_curl_exit $? "${endpoint}"
+  exit_code=$?
+  test ${exit_code} -ne 0 && return ${exit_code}
 
-  if [[ 200 -ne ${get_virtual_hosts_response_code} ]]; then
-    echo "There was a problem getting the virtual host: " ${get_virtual_hosts_response_code}
-    return 1
-  else
-    echo "${get_virtual_hosts_response}"
-    return 0
-  fi
+  get_virtual_hosts_response_code=$(parse_http_response_code "${get_virtual_hosts_response}")
+  log_response ${get_virtual_hosts_response_code} "${get_virtual_hosts_response}" "There was a problem getting the virtual host:"
+
+  return $?
 }
 
-function get_agent_by_name() {
+get_agent_by_name() {
 
   set +x
 
@@ -41,18 +43,17 @@ function get_agent_by_name() {
     -H 'X-Xsrf-Header: PingAccess' \
     "${endpoint}/agents?name=${name}")
 
-  get_agent_response_code=$(parse_http_response_code "${get_agent_response}")
+  log_curl_exit $? "${endpoint}"
+  exit_code=$?
+  test ${exit_code} -ne 0 && return ${exit_code}
 
-  if [[ 200 -ne ${get_agent_response_code} ]]; then
-    echo "There was a problem getting the agent: " ${get_agent_response_code}
-    return 1
-  else
-    echo "${get_agent_response}"
-    return 0
-  fi
+  get_agent_response_code=$(parse_http_response_code "${get_agent_response}")
+  log_response ${get_agent_response_code} "${get_agent_response}" "There was a problem getting the agent:"
+
+  return $?
 }
 
-function get_application_by_name() {
+get_application_by_name() {
 
   set +x
 
@@ -67,13 +68,12 @@ function get_application_by_name() {
     -H 'X-Xsrf-Header: PingAccess' \
     "${endpoint}/applications?name=${name}")
 
-  get_app_response_code=$(parse_http_response_code "${get_app_response}")
+  log_curl_exit $? "${endpoint}"
+  exit_code=$?
+  test ${exit_code} -ne 0 && return ${exit_code}
 
-  if [[ 200 -ne ${get_app_response_code} ]]; then
-    echo "There was a problem getting the application: " ${get_app_response_code}
-    return 1
-  else
-    echo "${get_app_response}"
-    return 0
-  fi
+  get_app_response_code=$(parse_http_response_code "${get_app_response}")
+  log_response ${get_app_response_code} "${get_app_response}" "There was a problem getting the application:"
+
+  return $?
 }

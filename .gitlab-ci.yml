@@ -42,7 +42,7 @@ common-unit-tests:
     - pd-eks-deploy
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
-    - ./ci-scripts/test/unit/run-unit-test.sh common
+    - ./ci-scripts/test/unit/run-unit-tests.sh common
   except:
     variables:
       - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
@@ -53,7 +53,7 @@ pd-unit-tests:
     - pd-eks-deploy
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
-    - ./ci-scripts/test/unit/run-unit-test.sh pingdirectory
+    - ./ci-scripts/test/unit/run-unit-tests.sh pingdirectory
   except:
     variables:
       - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
@@ -64,7 +64,7 @@ pf-unit-tests:
     - pd-eks-deploy
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
-    - ./ci-scripts/test/unit/run-unit-test.sh pingfederate
+    - ./ci-scripts/test/unit/run-unit-tests.sh pingfederate
   except:
     variables:
       - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
@@ -75,7 +75,7 @@ pa-unit-tests:
     - pd-eks-deploy
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
-    - ./ci-scripts/test/unit/run-unit-test.sh pingaccess
+    - ./ci-scripts/test/unit/run-unit-tests.sh pingaccess
   except:
     variables:
       - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
@@ -86,7 +86,7 @@ ci-script-unit-tests:
     - pd-eks-deploy
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
-    - ./ci-scripts/test/unit/run-unit-test.sh ci-script-tests
+    - ./ci-scripts/test/unit/run-unit-tests.sh ci-script-tests
   except:
     variables:
       - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
@@ -98,7 +98,7 @@ pd-integration-tests:
   - pd-eks-deploy
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
-  - ./ci-scripts/test/integration/run-test.sh pingdirectory
+  - ./ci-scripts/test/integration/run-integration-tests.sh pingdirectory
   except:
     variables:
     - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
@@ -109,7 +109,7 @@ pf-integration-tests:
   - pd-eks-deploy
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
-  - ./ci-scripts/test/integration/run-test.sh pingfederate
+  - ./ci-scripts/test/integration/run-integration-tests.sh pingfederate
   except:
     variables:
     - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
@@ -120,7 +120,7 @@ pa-integration-tests:
     - pd-eks-deploy
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
-    - ./ci-scripts/test/integration/run-test.sh pingaccess
+    - ./ci-scripts/test/integration/run-integration-tests.sh pingaccess
   except:
     variables:
       - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
@@ -131,7 +131,7 @@ pa-was-integration-tests:
     - pd-eks-deploy
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
-    - ./ci-scripts/test/integration/run-test.sh pingaccess-was
+    - ./ci-scripts/test/integration/run-integration-tests.sh pingaccess-was
   except:
     variables:
       - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
@@ -142,7 +142,7 @@ common-integration-tests:
     - pd-eks-deploy
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
-    - ./ci-scripts/test/integration/run-test.sh common
+    - ./ci-scripts/test/integration/run-integration-tests.sh common
   except:
     variables:
       - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
@@ -154,7 +154,7 @@ chaos-tests:
   - pd-eks-deploy
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
-  - ./ci-scripts/test/integration/run-test.sh chaos
+  - ./ci-scripts/test/integration/run-integration-tests.sh chaos
   except:
     variables:
     - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/

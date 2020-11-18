@@ -1,6 +1,6 @@
 #!/bin/bash
 
-script_to_test="${PROJECT_DIR}"/ci-scripts/test/integration/pingaccess/util/pa-test-utils
+script_to_test="${PROJECT_DIR}"/ci-scripts/test/integration/pingaccess/util/pa-test-utils.sh
 . "${script_to_test}"
 
 readonly resources_dir="${PROJECT_DIR}"/ci-scripts/test/unit/ci-script-tests/pingaccess/util/pa-test-utils/resources
@@ -11,8 +11,8 @@ testParseHttpResponseCode() {
   response_code=$(parse_http_response_code "${four_twenty_curl_response}")
   exit_code=$?
 
-  assertEquals 0 ${exit_code}
-  assertEquals 422 ${response_code}
+  assertEquals "The function parse_http_response_code returned a non-zero exit code when passed the input text \"${four_twenty_curl_response}\"." 0 ${exit_code}
+  assertEquals "The function parse_http_response_code did not return an expected 422 response code when passed the input text \"${four_twenty_curl_response}\"." 422 ${response_code}
 }
 
 testParseValueFromResponse() {
