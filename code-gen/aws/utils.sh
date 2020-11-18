@@ -5,6 +5,9 @@
 #
 # Arguments
 #   $1 -> SSM key path
+#
+#  Returns
+#   0 on success; 1 if the aws ssm call fails or the key does not exist.
 ########################################################################################################################
 get_ssm_value() {
   local ssm_key="$1"
