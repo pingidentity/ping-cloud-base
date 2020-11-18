@@ -62,7 +62,8 @@ ${PRIMARY_DNS_ZONE}
 ${ENVIRONMENT_TYPE}
 ${ENV}
 ${PING_CLOUD_NAMESPACE}
-${KUSTOMIZE_BASE}'
+${KUSTOMIZE_BASE}
+${IRSA_PING_ANNOTATION_KEY_VALUE}'
 
 for SIZE in x-small small medium large; do
   log "Building kustomizations for ${SIZE} environment"
