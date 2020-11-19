@@ -2,6 +2,7 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
+- aws-node
 - cert-manager
 - cluster-autoscaler
 - service-discovery
