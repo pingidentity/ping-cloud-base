@@ -194,7 +194,7 @@
 #                        | Beluga developers only have access to one domain   |
 #                        | and hosted zone in their Ping IAM account role.    |
 #                        |                                                    |
-# PING_CDE_ACCOUNT_IDS   | The SSM path prefix which stores CDE account IDs   | No default
+# PING_CDE_ACCOUNT_IDS   | The SSM path prefix which stores CDE account IDs   | The string "unused".
 #                        | of the Ping Cloud customers. The environment type  |
 #                        | is appended to the key path before the value is    |
 #                        | retrieved from the SSM endpoint. The IAM role with |
@@ -286,13 +286,20 @@ add_irsa_variables() {
   local ssm_path_prefix="$2"
   local env="$3"
 
-  if ! ssm_value=$(get_ssm_value "${ssm_path_prefix}/${env}"); then
-    echo "Error: ${ssm_value}"
-    exit 1
-  fi
+  # Default empty string
+  IRSA_PING_ANNOTATION_KEY_VALUE=''
 
-  # IRSA for ping product pods. The role name is predefined as a part of the interface contract.
-  IRSA_PING_ANNOTATION_KEY_VALUE="eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role/irsa-ping"
+  if [ "${ssm_path_prefix}" != "unused" ]; then
+
+    # Getting value from ssm parameter store.
+    if ! ssm_value=$(get_ssm_value "${ssm_path_prefix}/${env}"); then
+      echo "Error: ${ssm_value}"
+      exit 1
+    fi
+
+    # IRSA for ping product pods. The role name is predefined as a part of the interface contract.
+    IRSA_PING_ANNOTATION_KEY_VALUE="eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role/irsa-ping"
+  fi
 
   add_comment_header_to_file "${CDE_BASE_ENV_VARS}" 'IRSA - IAM role for service accounts'
   add_comment_to_file "${CDE_BASE_ENV_VARS}" 'Used by ping product pods'
@@ -644,10 +651,8 @@ for ENV in ${ENVIRONMENTS}; do
 
   add_derived_variables "${CDE_BASE_ENV_VARS}"
 
-  # Add IRSA variables if PING_CDE_ACCOUNT_IDS is defined.
-  if ! test -z "${PING_CDE_ACCOUNT_IDS}"; then
-    add_irsa_variables "${CDE_BASE_ENV_VARS}" "${PING_CDE_ACCOUNT_IDS}" "${ENV}"
-  fi
+  export PING_CDE_ACCOUNT_IDS="${PING_CDE_ACCOUNT_IDS:-unused}"
+  add_irsa_variables "${CDE_BASE_ENV_VARS}" "${PING_CDE_ACCOUNT_IDS}" "${ENV}"
 
   echo ---
   echo "For environment ${ENV}, using variable values:"
