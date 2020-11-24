@@ -1,0 +1,12 @@
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: delegator
+spec:
+  minReplicas: 2
+  maxReplicas: 8
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: delegator
+  targetCPUUtilizationPercentage: 70

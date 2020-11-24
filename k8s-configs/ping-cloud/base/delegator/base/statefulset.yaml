@@ -1,0 +1,167 @@
+# This defines the pingaccess engine deployment.
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: delegator
+  labels:
+    cluster: delegator-server
+spec:
+  replicas: 2
+  serviceName: delegator
+  selector:
+    matchLabels:
+      class: delegator-server
+  podManagementPolicy: OrderedReady
+  template:
+    metadata:
+      annotations:
+        lastUpdateReason: "NA"
+      labels:
+        class: delegator-server
+    spec:
+      serviceAccount: ping-serviceaccount
+      # affinity:
+      #   podAntiAffinity:
+      #     # Add a soft requirement for each PA runtime pod to be deployed to a different AZ
+      #     preferredDuringSchedulingIgnoredDuringExecution:
+      #       - weight: 1
+      #         podAffinityTerm:
+      #           labelSelector:
+      #             matchExpressions:
+      #               - key: role
+      #                 operator: In
+      #                 values:
+      #                   - pingaccess-engine
+      #           topologyKey: "failure-domain.beta.kubernetes.io/zone"
+      initContainers:
+      - name: delegator-init
+        # FIXME: switch to same user as app
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        image: bitnami/kubectl:1.15.3
+        imagePullPolicy: IfNotPresent
+        command:
+        - /copy-dependencies.sh
+        volumeMounts:
+        - name: ssh-dir
+          mountPath: /.ssh
+        - name: data-dir
+          mountPath: /data
+        - name: ssh-id-key-secret
+          mountPath: /id_rsa
+          subPath: id_rsa
+        - name: known-hosts-config
+          mountPath: /known_hosts
+          subPath: known_hosts
+        - name: delegator-init
+          mountPath: /copy-dependencies.sh
+          subPath: copy-dependencies.sh
+        - name: delegator-init
+          mountPath: /utils.lib.sh
+          subPath: utils.lib.sh
+        envFrom:
+        - configMapRef:
+            name: delegator-environment-variables
+      # - name: wait-for-services
+      #   # FIXME: switch to same user as app
+      #   securityContext:
+      #     runAsNonRoot: false
+      #     runAsUser: 0
+      #   image: busybox:1.32
+      #   imagePullPolicy: IfNotPresent
+      #   command:
+      #   - /wait-for-services.sh
+      #   volumeMounts:
+      #   - name: pingaccess-init
+      #     mountPath: /utils.lib.sh
+      #     subPath: utils.lib.sh
+      #   - name: pingaccess-init
+      #     mountPath: /wait-for-services.sh
+      #     subPath: wait-for-services.sh
+        # envFrom:
+        # - configMapRef:
+        #     name: pingaccess-environment-variables
+      containers:
+      - name: delegator
+        image: pingidentity/pingdelegator:2010-4.2.1
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
+        volumeMounts:
+        # FIXME: fix home directory when containers run as non-root user
+        - name: ssh-dir
+          mountPath: /root/.ssh
+        - name: topology-descriptor
+          mountPath: /opt/staging/topology/descriptor.json
+          subPath: descriptor.json
+        - name: data-dir
+          mountPath: /usr/local/bin/kubectl
+          subPath: kubectl
+      #   readinessProbe:
+      #     exec:
+      #       command: [ /opt/staging/hooks/99-pa-engine-liveness.sh ]
+      #     initialDelaySeconds: 60
+      #     periodSeconds: 5
+      #     failureThreshold: 3
+      #     timeoutSeconds: 5
+      #   livenessProbe:
+      #     exec:
+      #       command: [ /opt/staging/hooks/99-pa-engine-liveness.sh ]
+      #     initialDelaySeconds: 60
+      #     periodSeconds: 30
+      #     failureThreshold: 4
+      #     timeoutSeconds: 5
+        ports:
+        - containerPort: 6443
+      #   env:
+      #   - name: OPERATIONAL_MODE
+      #     value: CLUSTERED_ENGINE
+      #   - name: PA_ADMIN_USER_PASSWORD
+      #     valueFrom:
+      #       secretKeyRef:
+      #         name: pingaccess-passwords
+      #         key: PA_ADMIN_USER_PASSWORD
+        envFrom:
+        - configMapRef:
+            name: delegator-environment-variables
+      volumes:
+      - name: ssh-dir
+        emptyDir: {}
+      - name: data-dir
+        emptyDir: {}
+      - name: delegator-init
+        configMap:
+          name: pingcommon-init
+          defaultMode: 0555
+      - name: topology-descriptor
+        configMap:
+          name: topology-descriptor
+          optional: true
+          defaultMode: 0644
+      - name: ssh-id-key-secret
+        secret:
+          secretName: ssh-id-key-secret
+          optional: true
+          defaultMode: 0400
+      - name: known-hosts-config
+        configMap:
+          name: known-hosts-config
+          optional: true
+          defaultMode: 0644
+      - name: delegator-license
+        secret:
+          secretName: delegator-license
+          optional: true
+          defaultMode: 0400
+      - name: delegator-passwords
+        secret:
+          secretName: delegator-passwords
+          optional: true
+          defaultMode: 0400

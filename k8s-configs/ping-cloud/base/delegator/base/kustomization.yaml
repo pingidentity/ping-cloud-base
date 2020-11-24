@@ -1,0 +1,17 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+- hpa.yaml
+- secret.yaml
+# - ingress.yaml
+- service.yaml
+- statefulset.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+- name: delegator-environment-variables
+  envs:
+  - env_vars
