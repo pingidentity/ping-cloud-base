@@ -6,6 +6,6 @@ metadata:
   name: pingdelegator
 spec:
   ports:
-    - port: 443
+    - port: 6443
       name: pingdelegator-admin
       targetPort: 6443

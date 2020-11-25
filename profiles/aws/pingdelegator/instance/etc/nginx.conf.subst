@@ -18,6 +18,7 @@ http {
                       '"${DOLLAR}http_user_agent" "${DOLLAR}http_x_forwarded_for"';
 
     access_log  ${SERVER_ROOT_DIR}/log/access.log  main;
+    error_log   ${SERVER_ROOT_DIR}/log/error.log warn;
 
     sendfile        on;
     #tcp_nopush     on;

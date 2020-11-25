@@ -24,7 +24,7 @@ spec:
       - path: /
         backend:
           serviceName: pingdelegator
-          servicePort: 443
+          servicePort: 6443
 
 ---
 

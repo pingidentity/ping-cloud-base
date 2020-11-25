@@ -1,5 +1,5 @@
 ORCHESTRATION_TYPE=kubernetes
-VERBOSE=true
+VERBOSE=false
 SERVER_PROFILE_URL=https://github.com/pingidentity/ping-cloud-base.git
 SERVER_PROFILE_PATH=profiles/aws/delegator
 SERVER_PROFILE_BRANCH=master
@@ -34,7 +34,6 @@ SECRETS_DIR=/usr/local/secrets
 #PD_DELEGATOR_PUBLIC_HOSTNAME=localhost
 #PD_DELEGATOR_HTTP_PORT=6080
 #PD_DELEGATOR_HTTPS_PORT=6443
-PD_DELEGATOR_HTTPS_PORT=443
 
 #-- Container uid/gid and uname/gname that are required for nginx
 PING_CONTAINER_PRIVILEGED=false
@@ -51,6 +50,7 @@ PING_CONTAINER_GNAME=nginx
 #-- NOTE: If using port 443 along with a base URL with no specified port, set to
 #-- an empty string.
 #PF_ENGINE_PUBLIC_PORT=9031
+PF_ENGINE_PUBLIC_PORT=443
 
 #-- The client id that was set up with Ping Federate for Ping Delegator.
 #PF_DELEGATOR_CLIENTID=dadmin
@@ -59,8 +59,8 @@ PING_CONTAINER_GNAME=nginx
 #PD_ENGINE_PUBLIC_HOSTNAME=localhost
 
 #-- The HTTPS port for the DS instance the app will be interfacing with.
+#PD_ENGINE_PUBLIC_PORT=443
 PD_ENGINE_PUBLIC_PORT=443
-#PD_ENGINE_PUBLIC_PORT=1443
 
 #-- The length of time (in minutes) until the session will require a new login attempt
 PD_DELEGATOR_TIMEOUT_LENGTH_MINS=30
