@@ -1,5 +1,5 @@
 ORCHESTRATION_TYPE=kubernetes
-#VERBOSE=true
+VERBOSE=true
 SERVER_PROFILE_URL=https://github.com/pingidentity/ping-cloud-base.git
 SERVER_PROFILE_PATH=profiles/aws/delegator
 SERVER_PROFILE_BRANCH=master
@@ -10,9 +10,6 @@ PA_ADMIN_SERVER=pingaccess-admin
 PA_ADMIN_PORT=9000
 PA_ENGINE_PORT=3000
 
-#ACCEPT_EULA=YES
-#PING_IDENTITY_ACCEPT_EULA=YES
-
 K8S_ACME_CERT_SECRET_NAME=acme-tls-cert
 
 # Leave blank
@@ -20,7 +17,7 @@ TAIL_LOG_FILES=
 # Individual files should be spelled out, globs are unreliable
 K8S_TAIL_LOG_FILES=
 
-#SECRETS_DIR=/usr/local/secrets
+SECRETS_DIR=/usr/local/secrets
 
 # FIXME: these are redundant across services - DRY
 # wait-for-services
@@ -34,8 +31,8 @@ PD_CLUSTER_PRIVATE_HOSTNAME=pingdirectory
 PD_CLUSTER_PORT=8989
 
 
-PD_DELEGATOR_PUBLIC_HOSTNAME=localhost
-PD_DELEGATOR_HTTP_PORT=6080
+#PD_DELEGATOR_PUBLIC_HOSTNAME=localhost
+#PD_DELEGATOR_HTTP_PORT=6080
 PD_DELEGATOR_HTTPS_PORT=6443
 
 #-- Container uid/gid and uname/gname that are required for nginx
@@ -46,7 +43,8 @@ PING_CONTAINER_UNAME=nginx
 PING_CONTAINER_GNAME=nginx
 
 #-- The hostname for the public Ping Federate instance used for SSO.
-PF_ENGINE_PUBLIC_HOSTNAME=localhost
+# Beluga already sets
+#PF_ENGINE_PUBLIC_HOSTNAME=localhost
 
 #-- The port for the public Ping Federate instance used for SSO.
 #-- NOTE: If using port 443 along with a base URL with no specified port, set to
@@ -57,7 +55,7 @@ PF_ENGINE_PUBLIC_PORT=9031
 PF_DELEGATOR_CLIENTID=dadmin
 
 #-- The hostname for the DS instance the app will be interfacing with.
-PD_ENGINE_PUBLIC_HOSTNAME=localhost
+#PD_ENGINE_PUBLIC_HOSTNAME=localhost
 
 #-- The HTTPS port for the DS instance the app will be interfacing with.
 PD_ENGINE_PUBLIC_PORT=1443
@@ -79,7 +77,6 @@ PD_DELEGATOR_DADMIN_API_NAMESPACE=
 #-- Set to true if the "profile" scope is supported for the Delegated Admin OIDC client on
 #-- PingFederate and you wish to use it to show the current user's name in the navigation.
 PD_DELEGATOR_PROFILE_SCOPE_ENABLED=false
-
 
 STARTUP_COMMAND=nginx
 STARTUP_FOREGROUND_OPTS=-c /opt/out/instance/etc/nginx.conf
