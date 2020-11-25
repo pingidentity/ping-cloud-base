@@ -33,6 +33,13 @@ configMapGenerator:
   - env_vars
   - pingdirectory/env_vars
 
+# Pingdelegator
+- name: pingdelegator-environment-variables
+  behavior: merge
+  envs:
+  - env_vars
+  - pingdelegator/env_vars
+
 patchesJson6902:
 
 # pingdirectory HTTP

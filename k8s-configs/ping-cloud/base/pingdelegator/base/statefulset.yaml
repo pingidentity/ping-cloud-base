@@ -3,22 +3,22 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: delegator
+  name: pingdelegator
   labels:
-    cluster: delegator-server
+    cluster: pingdelegator-server
 spec:
   replicas: 2
-  serviceName: delegator
+  serviceName: pingdelegator
   selector:
     matchLabels:
-      class: delegator-server
+      class: pingdelegator-server
   podManagementPolicy: OrderedReady
   template:
     metadata:
       annotations:
         lastUpdateReason: "NA"
       labels:
-        class: delegator-server
+        class: pingdelegator-server
     spec:
       serviceAccount: ping-serviceaccount
       # affinity:
@@ -35,7 +35,7 @@ spec:
       #                   - pingaccess-engine
       #           topologyKey: "failure-domain.beta.kubernetes.io/zone"
       initContainers:
-      - name: delegator-init
+      - name: pingdelegator-init
         # FIXME: switch to same user as app
         securityContext:
           runAsNonRoot: false
@@ -55,15 +55,15 @@ spec:
         - name: known-hosts-config
           mountPath: /known_hosts
           subPath: known_hosts
-        - name: delegator-init
+        - name: pingdelegator-init
           mountPath: /copy-dependencies.sh
           subPath: copy-dependencies.sh
-        - name: delegator-init
+        - name: pingdelegator-init
           mountPath: /utils.lib.sh
           subPath: utils.lib.sh
         envFrom:
         - configMapRef:
-            name: delegator-environment-variables
+            name: pingdelegator-environment-variables
       # - name: wait-for-services
       #   # FIXME: switch to same user as app
       #   securityContext:
@@ -84,7 +84,7 @@ spec:
         # - configMapRef:
         #     name: pingaccess-environment-variables
       containers:
-      - name: delegator
+      - name: pingdelegator
         image: pingidentity/pingdelegator:2010-4.2.1
         imagePullPolicy: IfNotPresent
         resources:
@@ -130,13 +130,13 @@ spec:
       #         key: PA_ADMIN_USER_PASSWORD
         envFrom:
         - configMapRef:
-            name: delegator-environment-variables
+            name: pingdelegator-environment-variables
       volumes:
       - name: ssh-dir
         emptyDir: {}
       - name: data-dir
         emptyDir: {}
-      - name: delegator-init
+      - name: pingdelegator-init
         configMap:
           name: pingcommon-init
           defaultMode: 0555
@@ -155,13 +155,13 @@ spec:
           name: known-hosts-config
           optional: true
           defaultMode: 0644
-      - name: delegator-license
+      - name: pingdelegator-license
         secret:
-          secretName: delegator-license
+          secretName: pingdelegator-license
           optional: true
           defaultMode: 0400
-      - name: delegator-passwords
+      - name: pingdelegator-passwords
         secret:
-          secretName: delegator-passwords
+          secretName: pingdelegator-passwords
           optional: true
           defaultMode: 0400

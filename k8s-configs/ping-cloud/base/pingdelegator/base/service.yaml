@@ -1,0 +1,11 @@
+# This service exposes the pingdelegator ports within cluster.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: pingdelegator
+spec:
+  ports:
+    - port: 443
+      name: pingdelegator-admin
+      targetPort: 6443
