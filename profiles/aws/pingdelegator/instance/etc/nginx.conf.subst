@@ -10,7 +10,6 @@ events {
 }
 
 http {
-    include ${SERVER_ROOT_DIR}/etc/conf.d/*.conf;
     include       /etc/nginx/mime.types;
     default_type  application/octet-stream;
 
@@ -24,6 +23,8 @@ http {
     #tcp_nopush     on;
     keepalive_timeout  65;
     #gzip  on;
+
+    include ${SERVER_ROOT_DIR}/etc/conf.d/*.conf;
 }
 
 daemon off;
