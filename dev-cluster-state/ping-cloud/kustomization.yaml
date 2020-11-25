@@ -269,14 +269,14 @@ patchesJson6902:
       path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
       value: pingaccess-was-cluster${ENVIRONMENT}.${TENANT_DOMAIN}
 
-- target:
-    version: v1
-    kind: Service
-    name: pingdelegator
-  patch: |-
-    - op: replace
-      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
-      value: pingdelegator-cluster${ENVIRONMENT}.${TENANT_DOMAIN}
+# - target:
+#     version: v1
+#     kind: Service
+#     name: pingdelegator
+#   patch: |-
+#     - op: replace
+#       path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+#       value: pingdelegator-cluster${ENVIRONMENT}.${TENANT_DOMAIN}
 
 # pingdirectory put ldaps on public and change the hostname
 - target:
