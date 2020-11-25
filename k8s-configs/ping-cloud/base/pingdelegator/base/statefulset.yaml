@@ -1,4 +1,4 @@
-# This defines the pingaccess engine deployment.
+# This defines the pingdelegator deployment.
 
 apiVersion: apps/v1
 kind: StatefulSet
@@ -104,30 +104,22 @@ spec:
         - name: data-dir
           mountPath: /usr/local/bin/kubectl
           subPath: kubectl
-      #   readinessProbe:
-      #     exec:
-      #       command: [ /opt/staging/hooks/99-pa-engine-liveness.sh ]
-      #     initialDelaySeconds: 60
-      #     periodSeconds: 5
-      #     failureThreshold: 3
-      #     timeoutSeconds: 5
-      #   livenessProbe:
-      #     exec:
-      #       command: [ /opt/staging/hooks/99-pa-engine-liveness.sh ]
-      #     initialDelaySeconds: 60
-      #     periodSeconds: 30
-      #     failureThreshold: 4
-      #     timeoutSeconds: 5
+        readinessProbe:
+          exec:
+            command: [ /opt/staging/hooks/99-liveness.sh ]
+          initialDelaySeconds: 60
+          periodSeconds: 5
+          failureThreshold: 3
+          timeoutSeconds: 5
+        livenessProbe:
+          exec:
+            command: [ /opt/staging/hooks/99-liveness.sh ]
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          failureThreshold: 4
+          timeoutSeconds: 5
         ports:
         - containerPort: 6443
-      #   env:
-      #   - name: OPERATIONAL_MODE
-      #     value: CLUSTERED_ENGINE
-      #   - name: PA_ADMIN_USER_PASSWORD
-      #     valueFrom:
-      #       secretKeyRef:
-      #         name: pingaccess-passwords
-      #         key: PA_ADMIN_USER_PASSWORD
         envFrom:
         - configMapRef:
             name: pingdelegator-environment-variables
