@@ -91,6 +91,8 @@ spec:
         - name: server-profile
           mountPath: /opt/staging/hooks/02-get-remote-server-profile.sh.pre
           subPath: 02-get-remote-server-profile.sh.pre
+        - name: persistent-storage
+          mountPath: /repo
         - name: ssh-dir
           mountPath: /root/.ssh
         - name: topology-descriptor
@@ -149,6 +151,9 @@ spec:
             name: devops-secret
             optional: true
       volumes:
+      - name: persistent-storage
+        persistentVolumeClaim:
+          claimName: efs-claim
       - name: server-profile
         configMap:
           name: server-profile
@@ -302,6 +307,8 @@ spec:
             cpu: "1"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
+        - name: persistent-storage
+          mountPath: /repo
         - name: server-profile
           mountPath: /opt/staging/hooks/02-get-remote-server-profile.sh.pre
           subPath: 02-get-remote-server-profile.sh.pre
@@ -359,6 +366,9 @@ spec:
             name: devops-secret
             optional: true
       volumes:
+      - name: persistent-storage
+        persistentVolumeClaim:
+          claimName: efs-claim 
       - name: server-profile
         configMap:
           name: server-profile

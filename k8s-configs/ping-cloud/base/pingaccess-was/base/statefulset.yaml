@@ -326,6 +326,8 @@ spec:
         - name: server-profile
           mountPath: /opt/staging/hooks/02-get-remote-server-profile.sh.pre
           subPath: 02-get-remote-server-profile.sh.pre
+        - name: persistent-storage
+          mountPath: /repo
         - name: ssh-dir
           mountPath: /root/.ssh
         - name: topology-descriptor
@@ -379,6 +381,9 @@ spec:
             name: devops-secret
             optional: true
       volumes:
+      - name: persistent-storage
+        persistentVolumeClaim:
+          claimName: efs-claim
       - name: server-profile
         configMap:
           name: server-profile
