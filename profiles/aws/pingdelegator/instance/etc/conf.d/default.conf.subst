@@ -1,19 +1,19 @@
 server {
+    listen ${PD_DELEGATOR_HTTP_PORT};
     server_name ${PD_DELEGATOR_PUBLIC_HOSTNAME};
-    listen ${PD_DELEGATOR_HTTP_PORT} default_server;
     return 301 https://$host$request_uri;
 }
 
 server {
     # Enable HTTP/2
+    listen localhost:${PD_DELEGATOR_HTTPS_PORT} ssl http2 default_server;
     server_name  ${PD_DELEGATOR_PUBLIC_HOSTNAME};
-    listen ${PD_DELEGATOR_HTTPS_PORT} ssl http2 default_server;
+    root   ${SERVER_ROOT_DIR}/html;
 
     ssl_certificate ${CERTIFICATE_FILE};
     ssl_certificate_key ${CERTIFICATE_KEY_FILE};
 
     location / {
-        root   ${SERVER_ROOT_DIR}/html;
         index  index.html;
     }
 }
