@@ -88,6 +88,9 @@ spec:
             cpu: "2"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
+        - name: server-profile
+          mountPath: /opt/staging/hooks/02-get-remote-server-profile.sh.pre
+          subPath: 02-get-remote-server-profile.sh.pre
         - name: ssh-dir
           mountPath: /root/.ssh
         - name: topology-descriptor
@@ -146,6 +149,10 @@ spec:
             name: devops-secret
             optional: true
       volumes:
+      - name: server-profile
+        configMap:
+          name: server-profile
+          defaultMode: 0644
       - name: ssh-dir
         emptyDir: {}
       - name: data-dir
@@ -295,6 +302,9 @@ spec:
             cpu: "1"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
+        - name: server-profile
+          mountPath: /opt/staging/hooks/02-get-remote-server-profile.sh.pre
+          subPath: 02-get-remote-server-profile.sh.pre
         - name: ssh-dir
           mountPath: /root/.ssh
         - name: topology-descriptor
@@ -349,6 +359,10 @@ spec:
             name: devops-secret
             optional: true
       volumes:
+      - name: server-profile
+        configMap:
+          name: server-profile
+          defaultMode: 0644
       - name: ssh-dir
         emptyDir: {}
       - name: data-dir
