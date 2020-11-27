@@ -7,17 +7,13 @@
 server {
     # Enable HTTP/2
     listen ${PD_DELEGATOR_HTTPS_PORT} ssl http2 default_server;
-    server_name  ${PD_DELEGATOR_PUBLIC_HOSTNAME};
+    server_name  localhost;
 
     ssl_certificate ${CERTIFICATE_FILE};
     ssl_certificate_key ${CERTIFICATE_KEY_FILE};
 
     location / {
-        return 301 https://$host/delegator;
+        root   ${SERVER_ROOT_DIR}/html;
+        index  index.html;
     }
-
-    #location / {
-    #    root   ${SERVER_ROOT_DIR}/html;
-    #    index  index.html;
-    #}
 }

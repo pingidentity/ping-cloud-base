@@ -18,9 +18,9 @@ http {
     access_log  ${SERVER_ROOT_DIR}/log/access.log  main;
 
     sendfile        on;
-    #tcp_nopush     on;
     keepalive_timeout  65;
     #gzip  on;
+    #tcp_nopush     on;
 
     include ${SERVER_ROOT_DIR}/etc/conf.d/*.conf;
 }
