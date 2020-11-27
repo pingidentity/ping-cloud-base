@@ -12,8 +12,8 @@ server {
     ssl_certificate ${CERTIFICATE_FILE};
     ssl_certificate_key ${CERTIFICATE_KEY_FILE};
 
-    location = / {
-        return 301 /delegator;
+    location / {
+        return 301 https://$host/delegator;
     }
 
     #location / {
