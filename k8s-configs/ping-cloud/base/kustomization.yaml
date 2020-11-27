@@ -11,6 +11,10 @@ configMapGenerator:
   - scripts/wait-for-services.sh
   - scripts/utils.lib.sh
 
+- name: server-profile
+  files:
+  - scripts/02-get-remote-server-profile.sh.pre
+
 resources:
 - namespace.yaml
 - rbac.yaml

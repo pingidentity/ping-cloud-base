@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+set -x
+
+ls -la /repo
+
+# cp -af ${SERVER_PROFILE_DIR}/${SERVER_PROFILE_PATH}/. "${STAGING_DIR}"
+
+cp -af /repo/profiles/pingaccess/. "/opt/staging"
+
+ls -al /opt/staging
