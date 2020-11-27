@@ -12,8 +12,12 @@ server {
     ssl_certificate ${CERTIFICATE_FILE};
     ssl_certificate_key ${CERTIFICATE_KEY_FILE};
 
-    location / {
-        root   ${SERVER_ROOT_DIR}/html;
-        index  index.html;
+    location = / {
+        return 301 /delegator;
     }
+
+    #location / {
+    #    root   ${SERVER_ROOT_DIR}/html;
+    #    index  index.html;
+    #}
 }
