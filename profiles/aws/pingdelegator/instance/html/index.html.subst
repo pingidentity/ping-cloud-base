@@ -4,6 +4,6 @@
     </head>
 
     <script>
-        window.location.replace = 'https://' + '${PD_DELEGATOR_PUBLIC_HOSTNAME}' + '/delegator';
+        window.location.replace('https://' + '${PD_DELEGATOR_PUBLIC_HOSTNAME}' + '/delegator');
     </script>
 </html>
