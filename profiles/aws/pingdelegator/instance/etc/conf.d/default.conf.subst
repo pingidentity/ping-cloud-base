@@ -5,7 +5,7 @@
 
 server {
     # Enable HTTP/2
-    listen  ${PD_DELEGATOR_HTTP_PORT} ssl http2 default_server;
+    listen  ${PD_DELEGATOR_HTTPS_PORT} ssl http2 default_server;
     server_name  ${HOST_TEST};
 
     ssl_certificate ${CERTIFICATE_FILE};
