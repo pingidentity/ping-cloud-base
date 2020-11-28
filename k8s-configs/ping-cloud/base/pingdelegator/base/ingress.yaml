@@ -11,6 +11,9 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/app-root: /delegator
+    # Possible fix for some 502 failures on admin assets and api requests.
+    nginx.ingress.kubernetes.io/service-upstream: "true"
     kubernetes.io/ingress.class: nginx-public
 spec:
   tls:
