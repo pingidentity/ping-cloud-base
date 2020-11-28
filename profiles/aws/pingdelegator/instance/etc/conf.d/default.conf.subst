@@ -1,6 +1,5 @@
 server {
     listen ${PD_DELEGATOR_HTTP_PORT};
-    server_name ${HOST_TEST};
     return 301 https://$host$request_uri;
 }
 
