@@ -1,13 +1,13 @@
-#server {
-#    listen ${PD_DELEGATOR_HTTP_PORT};
-#    server_name ${PD_DELEGATOR_PUBLIC_HOSTNAME};
-#    return 301 https://$host$request_uri;
-#}
+server {
+    listen ${PD_DELEGATOR_HTTP_PORT};
+    server_name ${HOST_TEST};
+    return 301 https://$host$request_uri;
+}
 
 server {
     # Enable HTTP/2
-    listen  6443 ssl http2 default_server;
-    server_name  pingdelegator;
+    listen  ${PD_DELEGATOR_HTTP_PORT} ssl http2 default_server;
+    server_name  ${HOST_TEST};
 
     ssl_certificate ${CERTIFICATE_FILE};
     ssl_certificate_key ${CERTIFICATE_KEY_FILE};
@@ -21,8 +21,21 @@ server {
     #    root   ${SERVER_ROOT_DIR}/html;
     #}
 
-    location / {
-        root   ${SERVER_ROOT_DIR}/html;
+    # define error page
+    error_page 404 /404.html;
+
+    # error page location redirect 301
+    location /404.html {
+        root ${SERVER_ROOT_DIR}/html;
+        internal;
+    }
+
+    location /delegator {
+        root   ${SERVER_ROOT_DIR}/html/delegator;
         index  index.html;
+    }
+
+    location / {
+        proxy_pass https://$host:${PD_DELEGATOR_HTTP_PORT}/delegator;
     }
 }
