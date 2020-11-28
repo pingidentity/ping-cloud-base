@@ -6,8 +6,8 @@
 
 server {
     # Enable HTTP/2
-    listen  ${PD_DELEGATOR_HTTPS_PORT} ssl http2 default_server;
-    server_name  localhost;
+    listen  443 ssl http2 default_server;
+    server_name  pingdelegator;
 
     ssl_certificate ${CERTIFICATE_FILE};
     ssl_certificate_key ${CERTIFICATE_KEY_FILE};
