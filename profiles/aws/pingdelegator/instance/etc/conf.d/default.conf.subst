@@ -12,14 +12,12 @@ server {
     ssl_certificate ${CERTIFICATE_FILE};
     ssl_certificate_key ${CERTIFICATE_KEY_FILE};
 
-    # serve static files
-    location ~ ^/(images|javascript|js|css|flash|media|static)/  {
-      root   ${SERVER_ROOT_DIR}/html/delegator;
+    # If /delegator isn't the desired endpoint, force redirect to delegator endpoint
+    location ~ ^/(?!(delegator)) {
+        rewrite ^/(.*)$ https://$host/delegator permanent;
     }
 
-    location / {
-        #proxy_pass      http://127.0.0.1:${PD_DELEGATOR_HTTPS_PORT}/delegator;
-        #index index.html;
-        rewrite ^/(.*)$ https://localhost:${PD_DELEGATOR_HTTPS_PORT}/delegator/$1 permanent;
+    location /delegator {
+        root   ${SERVER_ROOT_DIR}/html/delegator;
     }
 }
