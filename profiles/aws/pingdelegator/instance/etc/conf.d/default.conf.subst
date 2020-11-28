@@ -18,6 +18,8 @@ server {
     }
 
     location / {
-        proxy_pass      http://127.0.0.1:${PD_DELEGATOR_HTTPS_PORT}/delegator;
+        #proxy_pass      http://127.0.0.1:${PD_DELEGATOR_HTTPS_PORT}/delegator;
+        #index index.html;
+        rewrite ^/(.*)$ https://localhost:${PD_DELEGATOR_HTTPS_PORT}/delegator/$1 permanent;
     }
 }
