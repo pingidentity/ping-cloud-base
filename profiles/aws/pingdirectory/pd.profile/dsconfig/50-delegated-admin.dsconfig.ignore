@@ -1,7 +1,7 @@
-#dsconfig create-web-application-extension \
-#    --extension-name Delegator \
-#    --set base-context-path:/delegator \
-#    --set document-root-directory:webapps/delegator/app
+dsconfig create-web-application-extension \
+    --extension-name Delegator \
+    --set base-context-path:/delegator \
+    --set document-root-directory:webapps/delegator/app
 
 dsconfig set-connection-handler-prop \
     --handler-name "HTTPS Connection Handler" \
