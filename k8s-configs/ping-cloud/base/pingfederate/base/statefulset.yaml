@@ -127,6 +127,9 @@ spec:
         - name: data-dir
           mountPath: /opt/staging/native-s3-ping.jar
           subPath: native-s3-ping.jar
+        - name: data-dir
+          mountPath: /opt/staging/jmx_prometheus_javaagent-0.14.0.jar
+          subPath: jmx_prometheus_javaagent-0.14.0.jar
         - name: out-dir
           mountPath: /opt/out
         - name: pingfederate-license
@@ -362,6 +365,9 @@ spec:
         - name: data-dir
           mountPath: /opt/staging/native-s3-ping.jar
           subPath: native-s3-ping.jar
+        - name: data-dir
+          mountPath: /opt/staging/jmx_prometheus_javaagent-0.14.0.jar
+          subPath: jmx_prometheus_javaagent-0.14.0.jar
         - name: pingfederate-license
           mountPath: /opt/in/instance/server/default/conf/pingfederate.lic
           subPath: pingfederate.lic
