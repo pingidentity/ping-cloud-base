@@ -25,6 +25,8 @@ spec:
   ports:
   - port: 9031
     name: pingfederate-runtime
+  - port: 8080
+    name: metrics
   selector:
     role: pingfederate-engine
 ---    

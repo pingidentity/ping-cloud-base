@@ -386,6 +386,7 @@ spec:
           timeoutSeconds: 5
         ports:
         - containerPort: 9031
+        - containerPort: 8080
       volumes:
       - name: podinfo
         downwardAPI:

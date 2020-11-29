@@ -31,5 +31,7 @@ spec:
       targetPort: 3000
     - port: 3030
       name: pingaccess-agent
+    - port: 8080
+      name: metrics
   selector:
     role: pingaccess-engine

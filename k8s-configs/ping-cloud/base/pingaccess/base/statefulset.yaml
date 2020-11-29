@@ -334,6 +334,7 @@ spec:
         ports:
         - containerPort: 3000
         - containerPort: 3030
+        - containerPort: 8080
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_ENGINE

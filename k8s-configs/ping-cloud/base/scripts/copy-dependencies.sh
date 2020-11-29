@@ -48,6 +48,20 @@ if test ! -f "${DST_FILE}"; then
     exit 1
 fi
 
+beluga_log 'Downloading JMX prometheus Java Agent from ping-artifacts-test bucket'
+
+unset DST_FILE
+
+DST_FILE='/data/jmx_prometheus_javaagent-0.14.0.jar'
+wget -qO "${DST_FILE}" \
+    https://ping-artifacts-test.s3-us-west-2.amazonaws.com/pingcommon/jmx-prometheus-javaagent/0.14.0/jmx_prometheus_javaagent-0.14.0.jar
+
+beluga_log 'Checking for jmx_prometheus_javaagent jar file in data directory'
+if test ! -f "${DST_FILE}"; then
+    beluga_log "Failed to locate '${{DST_FILE}'" 'ERROR'
+    exit 1
+fi
+
 beluga_log "Execution completed successfully"
 
 exit 0
