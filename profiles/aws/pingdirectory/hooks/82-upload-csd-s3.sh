@@ -38,7 +38,7 @@ DST_FILE_POSTFIX="$(echo "${DST_FILE_BASENAME}" | sed 's/-'"${DST_FILE_PREFIX}"'
 # As far as S3 allows users to search files only by prefix, CSD filename should be turned according following template to make it more convenient:
 #
 #   202009032030-support-data-ds-8.1.0.1-pingdirectory-0.zip
-
+#
 DST_FILE="$(echo "${DST_FILE_PREFIX}-${DST_FILE_POSTFIX}.zip")"
 
 SRC_FILE="${OUT_DIR}/$(basename "${CSD_OUT}")"
