@@ -25,6 +25,7 @@ spec:
   tls:
   - hosts:
     - pingfederate-dev.ping-demo.com
+    secretName: pingfederate-server-cert
   rules:
   - host: pingfederate-dev.ping-demo.com
     http:
