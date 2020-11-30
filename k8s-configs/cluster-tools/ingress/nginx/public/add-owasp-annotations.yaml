@@ -9,7 +9,7 @@
     nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
 
     # Create the secret containing the trusted ca certificates
-    nginx.ingress.kubernetes.io/auth-tls-secret: "pingcloud/ca-secret"
+    nginx.ingress.kubernetes.io/auth-tls-secret: "ping-cloud-chrisschaffer/ca-secret"
     # Specify the verification depth in the client certificates chain
     nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
     # Specify an error page to be redirected to verification errors
