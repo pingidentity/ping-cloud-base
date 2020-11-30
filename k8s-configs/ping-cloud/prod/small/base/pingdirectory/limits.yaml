@@ -9,6 +9,9 @@ spec:
       containers:
       - name: pingdirectory
         resources:
+          limits:
+            memory: 16Gi
+            cpu: 2
           requests:
             memory: 16Gi
             cpu: 2

@@ -193,6 +193,14 @@
 #                        | as documented above. This flag exists because the  |
 #                        | Beluga developers only have access to one domain   |
 #                        | and hosted zone in their Ping IAM account role.    |
+#                        |                                                    |
+# PING_CDE_ACCOUNT_IDS   | The SSM path prefix which stores CDE account IDs   | The string "unused".
+#                        | of the Ping Cloud customers. The environment type  |
+#                        | is appended to the key path before the value is    |
+#                        | retrieved from the SSM endpoint. The IAM role with |
+#                        | the AWS account ID must be added as an annotation  |
+#                        | to the corresponding Kubernetes service account to |
+#                        | enable IRSA (IAM Role for Service Accounts).       |
 ########################################################################################################################
 
 #### SCRIPT START ####
@@ -203,6 +211,9 @@ pushd "${SCRIPT_HOME}" >/dev/null 2>&1
 
 # Source some utility methods.
 . ../utils.sh
+
+# Source aws specific utility methods.
+. ./aws/utils.sh
 
 ########################################################################################################################
 # Substitute variables in all template files in the provided directory.
@@ -259,11 +270,45 @@ PA_WAS_ENGINE_PUBLIC_HOSTNAME=pingaccess-was.\${DNS_ZONE}
 PROMETHEUS_PUBLIC_HOSTNAME=prometheus.\${DNS_ZONE}
 GRAFANA_PUBLIC_HOSTNAME=monitoring.\${DNS_ZONE}
 KIBANA_PUBLIC_HOSTNAME=logs.\${DNS_ZONE}
+
 EOF
 }
 
+########################################################################################################################
+# Add IRSA as an environment variable to end of the provided environment file.
+#
+# Arguments
+#   ${1} -> The name of the environment file.
+#   ${2} -> The SSM path prefix.
+#   ${3} -> The environment name.
+########################################################################################################################
+add_irsa_variables() {
+  local env_file="$1"
+  local ssm_path_prefix="$2"
+  local env="$3"
+
+  # Default empty string
+  IRSA_PING_ANNOTATION_KEY_VALUE=''
+
+  if [ "${ssm_path_prefix}" != "unused" ]; then
+
+    # Getting value from ssm parameter store.
+    if ! ssm_value=$(get_ssm_value "${ssm_path_prefix}/${env}"); then
+      echo "Error: ${ssm_value}"
+      exit 1
+    fi
+
+    # IRSA for ping product pods. The role name is predefined as a part of the interface contract.
+    IRSA_PING_ANNOTATION_KEY_VALUE="eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role/irsa-ping"
+  fi
+
+  add_comment_header_to_file "${CDE_BASE_ENV_VARS}" 'IRSA - IAM role for service accounts'
+  add_comment_to_file "${CDE_BASE_ENV_VARS}" 'Used by ping product pods'
+  export_variable_ln "${CDE_BASE_ENV_VARS}" IRSA_PING_ANNOTATION_KEY_VALUE "${IRSA_PING_ANNOTATION_KEY_VALUE}" true
+}
+
 # Checking required tools and environment variables.
-check_binaries "openssl" "ssh-keygen" "ssh-keyscan" "base64" "envsubst" "git"
+check_binaries "openssl" "ssh-keygen" "ssh-keyscan" "base64" "envsubst" "git" "aws"
 HAS_REQUIRED_TOOLS=${?}
 
 check_env_vars "PING_IDENTITY_DEVOPS_USER" "PING_IDENTITY_DEVOPS_KEY"
@@ -606,6 +651,9 @@ for ENV in ${ENVIRONMENTS}; do
   fi
 
   add_derived_variables "${CDE_BASE_ENV_VARS}"
+
+  export PING_CDE_ACCOUNT_IDS="${PING_CDE_ACCOUNT_IDS:-unused}"
+  add_irsa_variables "${CDE_BASE_ENV_VARS}" "${PING_CDE_ACCOUNT_IDS}" "${ENV}"
 
   echo ---
   echo "For environment ${ENV}, using variable values:"

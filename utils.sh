@@ -140,14 +140,14 @@ testUrl() {
   log "Testing URL: ${url} with basic auth set to ${use_basic_auth}"
 
   if [[ "${use_basic_auth}" = true ]];then
-    local http_code="$(curl -k --max-time "${CURL_TIMEOUT_SECONDS}" \
+    http_code="$(curl -k --max-time "${CURL_TIMEOUT_SECONDS}" \
       -w '%{http_code}' "${url}" \
       -u "${ADMIN_USER}:${ADMIN_PASS}" \
       -H 'X-Xsrf-Header: PingAccess' \
       -o /dev/null 2>/dev/null)"
     exit_code=$?
   else
-    local http_code="$(curl -k --max-time "${CURL_TIMEOUT_SECONDS}" \
+    http_code="$(curl -k --max-time "${CURL_TIMEOUT_SECONDS}" \
       -w '%{http_code}' "${url}" \
       -o /dev/null 2>/dev/null)"
     exit_code=$?

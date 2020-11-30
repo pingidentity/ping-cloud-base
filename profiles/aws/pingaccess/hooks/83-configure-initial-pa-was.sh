@@ -82,7 +82,7 @@ create_pa_virtual_host() {
   export VHOST_HOST="${PA_ADMIN_PUBLIC_HOSTNAME}"
   export VHOST_PORT=443
 
-  beluga_log "Creating PA Virtual Host"
+  beluga_log "Creating PingAccess Admin Virtual Host: ${PA_ADMIN_PUBLIC_HOSTNAME}"
   create_virtual_host
 }
 
@@ -91,7 +91,7 @@ create_pf_virtual_host() {
   export VHOST_HOST="${PF_ADMIN_PUBLIC_HOSTNAME}"
   export VHOST_PORT=443
 
-  beluga_log "Creating PF Virtual Host"
+  beluga_log "Creating PingFederate Admin Virtual Host: ${PF_ADMIN_PUBLIC_HOSTNAME}"
   create_virtual_host
 }
 
@@ -100,7 +100,7 @@ create_kibana_virtual_host() {
   export VHOST_HOST="${KIBANA_PUBLIC_HOSTNAME}"
   export VHOST_PORT=443
 
-  beluga_log "Creating Kibana Virtual Host"
+  beluga_log "Creating Kibana Virtual Host: ${KIBANA_PUBLIC_HOSTNAME}"
   create_virtual_host
 }
 
@@ -109,7 +109,7 @@ create_grafana_virtual_host() {
   export VHOST_HOST="${GRAFANA_PUBLIC_HOSTNAME}"
   export VHOST_PORT=443
 
-  beluga_log "Creating Grafana Virtual Host"
+  beluga_log "Creating Grafana Virtual Host: ${GRAFANA_PUBLIC_HOSTNAME}"
   create_virtual_host
 }
 
@@ -118,7 +118,7 @@ create_prometheus_virtual_host() {
   export VHOST_HOST="${PROMETHEUS_PUBLIC_HOSTNAME}"
   export VHOST_PORT=443
 
-  beluga_log "Creating Prometheus Virtual Host"
+  beluga_log "Creating Prometheus Virtual Host: ${PROMETHEUS_PUBLIC_HOSTNAME}"
   create_virtual_host
 }
 
