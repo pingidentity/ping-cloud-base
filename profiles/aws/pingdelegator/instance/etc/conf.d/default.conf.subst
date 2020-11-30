@@ -1,40 +1,26 @@
-#server {
-#    listen ${PD_DELEGATOR_HTTP_PORT};
-#    return 301 https://$host$request_uri;
-#}
-
 server {
     # Enable HTTP/2
-    listen  ${PD_DELEGATOR_HTTPS_PORT} ssl http2 default_server;
-    server_name  ${HOST_TEST};
+    listen  ${PD_DELEGATOR_HTTPS_PORT} ssl http2;
+    server_name  localhost;
 
     ssl_certificate ${CERTIFICATE_FILE};
     ssl_certificate_key ${CERTIFICATE_KEY_FILE};
 
-    # If /delegator isn't the desired endpoint, force redirect to delegator endpoint
-    #location ~ ^/(?!(delegator)) {
-    #    rewrite ^/(.*)$ https://$host/delegator permanent;
-    #}
+    # Custom Error Page
+    error_page 404 /404.html;
 
-    #location /delegator {
-    #    root   ${SERVER_ROOT_DIR}/html;
-    #}
-
-    # define error page
-    #error_page 404 /404.html;
-
-    # error page location redirect 301
-    #location /404.html {
-    #    root ${SERVER_ROOT_DIR}/html;
-    #    internal;
-    #}
-
-    location /delegator {
-        root   ${SERVER_ROOT_DIR}/html/delegator;
-        index  index.html;
+    location /404.html {
+        root ${SERVER_ROOT_DIR}/html;
+        internal;
     }
 
     location / {
-        proxy_pass https://$host:${PD_DELEGATOR_HTTP_PORT}/delegator;
+        root ${SERVER_ROOT_DIR}/html;
+        try_files $uri $uri/index.html $uri/ =404;
+
+        # The first $uri matches the uri exactly
+        # The second $uri/index.html matches a directory containing the index.html where the last element of the path matches the directory name, with no trailing slash
+        # The third $uri/ matches the directory
+        # The fourth =404 returns the 404 error page if none of the preceding patterns match.
     }
 }

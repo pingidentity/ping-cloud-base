@@ -83,5 +83,3 @@ PD_DELEGATOR_PROFILE_SCOPE_ENABLED=false
 #STARTUP_COMMAND=nginx
 #STARTUP_FOREGROUND_OPTS=-c /opt/out/instance/etc/nginx.conf
 #STARTUP_BACKGROUND_OPTS=-c /opt/out/instance/etc/nginx.conf
-
-ROOT_LOCATION=index.html
