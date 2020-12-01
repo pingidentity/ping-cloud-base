@@ -273,6 +273,8 @@ fi
 trap 'kill $PID; wait $PID; cat </dev/null 2>/dev/null >$RUNFILE' 1 2 3 6
 trap 'kill -9 $PID; cat </dev/null >$RUNFILE 2>/dev/null' 15
 
+sleep 999999999
+
 STATUS=10
 while [ $STATUS -eq 10 ]
 do
