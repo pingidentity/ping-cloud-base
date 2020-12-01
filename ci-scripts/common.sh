@@ -508,7 +508,6 @@ actual_files() {
   sort
 }
 
-
 ########################################################################################################################
 # Searches CSD upload job logs and returns CSD support-data files found
 #
