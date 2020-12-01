@@ -194,7 +194,7 @@
 #                        | Beluga developers only have access to one domain   |
 #                        | and hosted zone in their Ping IAM account role.    |
 #                        |                                                    |
-# PING_CDE_ACCOUNT_IDS   | The SSM path prefix which stores CDE account IDs   | The string "unused".
+# ACCOUNT_ID_PATH_PREFIX | The SSM path prefix which stores CDE account IDs   | The string "unused".
 #                        | of the Ping Cloud customers. The environment type  |
 #                        | is appended to the key path before the value is    |
 #                        | retrieved from the SSM endpoint. The IAM role with |
@@ -652,8 +652,8 @@ for ENV in ${ENVIRONMENTS}; do
 
   add_derived_variables "${CDE_BASE_ENV_VARS}"
 
-  export PING_CDE_ACCOUNT_IDS="${PING_CDE_ACCOUNT_IDS:-unused}"
-  add_irsa_variables "${CDE_BASE_ENV_VARS}" "${PING_CDE_ACCOUNT_IDS}" "${ENV}"
+  export ACCOUNT_ID_PATH_PREFIX="${ACCOUNT_ID_PATH_PREFIX:-unused}"
+  add_irsa_variables "${CDE_BASE_ENV_VARS}" "${ACCOUNT_ID_PATH_PREFIX}" "${ENV}"
 
   echo ---
   echo "For environment ${ENV}, using variable values:"
