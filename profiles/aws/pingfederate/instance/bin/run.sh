@@ -295,7 +295,7 @@ do
       -Dpf.java.opts="$JAVA_OPTS -Drun.properties=$runprops" \
       -Dpf.classpath="$PF_CLASSPATH" \
       -classpath "$PF_CLASSPATH" \
-      -javaagent:/opt/staging/jmx_prometheus_javaagent-0.14.0.jar=8080:/opt/out/instance/bin/jmx_export_config.yaml \
+      -javaagent:"/opt/staging/jmx_prometheus_javaagent-0.14.0.jar=8080:/opt/out/instance/bin/jmx_export_config.yaml" \
       org.pingidentity.RunPF "$@" &
    PID=$!
    /bin/echo $PID 2>/dev/null >"$RUNFILE"
