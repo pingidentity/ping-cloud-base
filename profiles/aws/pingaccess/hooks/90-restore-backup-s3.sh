@@ -11,6 +11,54 @@ if $(echo "${RESTORE_BACKUP}" | grep -iq "false"); then
   exit 0
 fi
 
+prepare_for_restore() {
+
+    # PDO-1076 - Proactively delete the H2 database password backup file if it exists
+    readonly h2_props_backup="${SERVER_ROOT_DIR}/conf/h2_password_properties.backup"
+    if [ -f "${h2_props_backup}" ]; then
+      beluga_log "Found the H2 database password properties file: ${h2_props_backup}.  Removing this file before unzipping the backup."
+      rm -f "${h2_props_backup}"
+    fi
+}
+
+restore_backup() {
+    local server_restore_dir="${1}"
+    local dst_file="${2}"
+
+    zip_file="${server_restore_dir}/${dst_file}"
+
+    # Unzip backup configuration
+    beluga_log "Unzipping configuration..."
+    unzip -o "${zip_file}" -d "${server_restore_dir}/"
+
+    # Remove zip
+    beluga_log "Removing the zip file ${zip_file}..."
+    rm -rf "${zip_file}"
+
+    local restore_conf_dir="${server_restore_dir}/conf"
+    local restore_data_dir="${server_restore_dir}/data"
+
+    local jvm_memory_options="jvm-memory.options"
+    echo
+    beluga_log "Copying files from ${restore_conf_dir} to ${OUT_DIR}/instance/conf/"
+    for file in ${restore_conf_dir}/*; do
+        if test "${file##/*/}" = "${jvm_memory_options}"; then
+            beluga_log "Not copying file: ${file} to the conf directory"
+        else
+            beluga_log "Copying file: ${file} to ${OUT_DIR}/instance/conf/"
+            cp "${file}" "${OUT_DIR}/instance/conf/"
+        fi
+    done
+    echo
+
+    beluga_log "Copying files from ${restore_data_dir} to ${OUT_DIR}/instance/data/"
+    for FILE in ${restore_data_dir}/*; do
+        beluga_log "Copying file: ${FILE} to ${OUT_DIR}/instance/data/"
+        cp "${FILE}" "${OUT_DIR}/instance/data/"
+    done
+    echo
+}
+
 # 1) Specified backup file name by user will be restored
 #
 # OR
@@ -58,29 +106,15 @@ if ! test -z "${BACKUP_FILE_NAME}" || ! test -f "${OUT_DIR}"/instance/conf/pa.jw
   if test -f "${SERVER_RESTORE_DIR}/${DST_FILE}"; then
 
     # Validate zip.
-    beluga_log "Validating downloaded backup archive"
+    beluga_log "Validating downloaded backup archive: ${SERVER_RESTORE_DIR}/${DST_FILE}"
     if test $(unzip -t  "${SERVER_RESTORE_DIR}/${DST_FILE}" &> /dev/null; echo $?) -ne 0; then
       beluga_log "Failed to validate backup archive to restore"
       exit 1
     fi
 
-    # PDO-1076 - Proactively delete the H2 database password backup file if it exists
-    readonly h2_props_backup="${SERVER_ROOT_DIR}/conf/h2_password_properties.backup"
-    if [ -f "${h2_props_backup}" ]; then
-      beluga_log "Found the H2 database password properties file: ${h2_props_backup}.  Removing this file before unzipping the backup."
-      rm -f "${h2_props_backup}"
-    fi
+    prepare_for_restore
 
-    beluga_log "importing configuration"
-
-    # Unzip backup configuration
-    unzip -o "${SERVER_RESTORE_DIR}/${DST_FILE}" -d "${OUT_DIR}/instance"
-
-    # Remove zip
-    rm -rf "${SERVER_RESTORE_DIR}/${DST_FILE}"
-
-    # Print the filename of the downloaded file from s3
-    beluga_log "Downloaded file name: ${DATA_BACKUP_FILE_NAME}"
+    restore_backup "${SERVER_RESTORE_DIR}" "${DST_FILE}"
 
     # If ADMIN_CONFIGURATION_COMPLETE does not exist then set restore configuration.
     ADMIN_CONFIGURATION_COMPLETE="${OUT_DIR}/instance/ADMIN_CONFIGURATION_COMPLETE"

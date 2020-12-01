@@ -6,7 +6,7 @@ spec:
   template:
     spec:
       containers:
-      - name: pingaccess-was-admin
+      - name: pingaccess-admin
         resources:
           limits:
             memory: 1Gi
