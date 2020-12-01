@@ -273,8 +273,6 @@ fi
 trap 'kill $PID; wait $PID; cat </dev/null 2>/dev/null >$RUNFILE' 1 2 3 6
 trap 'kill -9 $PID; cat </dev/null >$RUNFILE 2>/dev/null' 15
 
-sleep 99999999
-
 STATUS=10
 while [ $STATUS -eq 10 ]
 do
@@ -297,7 +295,7 @@ do
       -Dpf.java.opts="$JAVA_OPTS -Drun.properties=$runprops" \
       -Dpf.classpath="$PF_CLASSPATH" \
       -classpath "$PF_CLASSPATH" \
-      -javaagent:/opt/staging/jmx_prometheus_javaagent-0.14.0.jar=8080:${PF_HOME_ESC}/bin/jmx_export_config.yaml \
+      -javaagent:"/opt/staging/jmx_prometheus_javaagent-0.14.0.jar=8080:${PF_HOME_ESC}/bin/jmx_export_config.yaml" \
       org.pingidentity.RunPF "$@" &
    PID=$!
    /bin/echo $PID 2>/dev/null >"$RUNFILE"
