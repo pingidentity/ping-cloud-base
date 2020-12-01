@@ -54,7 +54,7 @@ unset DST_FILE
 
 DST_FILE='/data/jmx_prometheus_javaagent-0.14.0.jar'
 wget -qO "${DST_FILE}" \
-    https://ping-artifacts-test.s3-us-west-2.amazonaws.com/pingcommon/jmx-prometheus-javaagent/0.14.0/jmx_prometheus_javaagent-0.14.0.jar
+    https://ping-artifacts-test.s3.us-east-1.amazonaws.com/pingcommon/jmx-prometheus-javaagent/0.14.0/jmx_prometheus_javaagent-0.14.0.jar
 
 beluga_log 'Checking for jmx_prometheus_javaagent jar file in data directory'
 if test ! -f "${DST_FILE}"; then
