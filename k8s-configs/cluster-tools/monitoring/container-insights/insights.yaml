@@ -438,6 +438,11 @@ data:
         </rule>
         <rule>
           key log
+          pattern /^\/opt\/out\/instance\/log\/admin-api.*127\.0\.0\.1\| GET\| \/version\| 200/
+          tag clear
+        </rule>
+        <rule>
+          key log
           pattern /^\/opt\/out\/instance\/log\/admin-api/
           tag temp.admin_api_logs
         </rule>
@@ -540,6 +545,11 @@ data:
         @type rewrite_tag_filter
         <rule>
           key log
+          pattern /^\/opt\/out\/instance\/log\/pingaccess_api_audit.*127\.0\.0\.1\| GET\| \/pa-admin-api\/v3\/version\| 200/
+          tag pa_clear
+        </rule>
+        <rule>
+          key log
           pattern /^\/opt\/out\/instance\/log\/pingaccess_engine_audit/
           tag temp.pingaccess_engine_audit_logs
         </rule>
@@ -580,6 +590,10 @@ data:
         </rule>
       </match>
 
+      <match pa_clear>
+        @type null
+      </match>
+
       <match temp.unmatched_logs>
         @type relabel
         @label @normal
@@ -618,6 +632,11 @@ data:
         @type rewrite_tag_filter
         <rule>
           key log
+          pattern /^\/opt\/out\/instance\/log\/pingaccess_api_audit.*127\.0\.0\.1\| GET\| \/pa-admin-api\/v3\/version\| 200/
+          tag pawas_clear
+        </rule>
+        <rule>
+          key log
           pattern /^\/opt\/out\/instance\/log\/pingaccess_engine_audit/
           tag temp.pingaccess_engine_audit_logs
         </rule>
@@ -651,6 +670,10 @@ data:
           pattern /^(.+)$/
           tag temp.unmatched_logs
         </rule>
+      </match>
+
+      <match pawas_clear>
+        @type null
       </match>
 
       <match temp.unmatched_logs>
