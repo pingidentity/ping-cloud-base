@@ -8,9 +8,16 @@ spec:
       containers:
       - name: pingaccess-admin
         resources:
+<<<<<<< HEAD
           limits:
             memory: "4Gi"
             cpu: "2"
           requests:
+=======
+          requests:
+            memory: "4Gi"
+            cpu: "2"
+          limits:
+>>>>>>> origin/master
             memory: "4Gi"
             cpu: "2"
