@@ -108,6 +108,12 @@ spec:
           name: https
         - containerPort: 8989
           name: repl
+        resources:
+          limits:
+            memory: "1Gi"
+          requests:
+            memory: "1Gi"
+            cpu: "700m"
         env:
         - name: P14C_ENVIRONMENT_ID
           valueFrom:

@@ -79,6 +79,12 @@ spec:
       - name: pingfederate-admin
         image: pingcloud-mirror.jfrog.io/pingidentity/pingfederate:2010-10.1.2
         imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: "1Gi"
+          requests:
+            cpu: "20m"
+            memory: "500Mi"
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_CONSOLE
@@ -307,6 +313,12 @@ spec:
       - name: pingfederate
         image: pingcloud-mirror.jfrog.io/pingidentity/pingfederate:2010-10.1.2
         imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: "1Gi"
+          requests:
+            cpu: "20m"
+            memory: "500Mi"
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_ENGINE
