@@ -2,5 +2,10 @@
   {
     "name": "pf-agentless-integration-kit",
     "version": "1.5.2"
+  },
+  {
+    "name": "pf-x509-certificate-integration-kit",
+    "version": "1.2.1",
+    "source": "public"
   }
 ]
