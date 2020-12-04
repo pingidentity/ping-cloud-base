@@ -1,5 +1,39 @@
 # Changelog
 
+### 1.7.0
+
+- GSA images can now be pulled via the JFrog registry instead of DockerHub to prevent throttling limits
+- Added PA log collection for SIEM
+- Automated deployment of PA and PF customer license keys
+- Updated PA-WAS, PF, and PA
+- Reduced logging noise
+
+_Changes:_
+
+- [X] PDO-1357 Rename PD CSD Exports to an easily retrievable name
+- [X] PDO-1362 PA log Collection for SIEM
+- [X] PDO-1376 Rewrite SIEM filters for PD to work with log files
+- [X] PDO-1385 Always import PA admin config query key-pair on start/restart
+- [X] PDO-1389 Remove unused secrets for Kibana, Grafana, and Prometheus from ping-cloud-base
+- [X] PDO-1421 Automate deploying the customer license key for PingFederate
+- [X] PDO-1425 Automate deploying the customer license key for PingAccess
+- [X] PDO-1426 Automate configuring PingAccess customer templates
+- [X] PDO-1469 Reduce config duplication on multi-region deployments
+- [X] PDO-1481 Update cluster-autoscaler image url and decrease log level
+- [X] PDO-1482 Decrease cloudwatch-agent log level
+- [X] PDO-1487 Fix 00-ditstructure and 20-plugin-purge-sessions.dsconfig mismatch
+- [X] PDO-1493 Fix GLOBAL_TENANT_DOMAIN regardless of how customer is named in the cluster-state-repo
+- [X] PDO-1497 Upgrade PF to 10.1.2
+- [X] PDO-1498 Upgrade PA to 6.1.3
+- [X] PDO-1503 Upgrade PA-WAS to 6.13
+- [X] PDO-1515 Remove similar log messages from Ping product health checks
+- [X] PDO-1519 Move secrets to base directory since all regions must share secrets for an environment
+- [X] PDO-1522 Replace missing memory limits on PD pods and adjust MAX_HEAP_SIZE defaults
+- [X] PDO-1543 Fix CLUSTER_BUCKET_NAME is not the same between regions for multi-region environments
+- [X] PDO-1567 Pull GSA images from Frog registry
+- [X] PDO-1571 Update flux so it only has read-only access to the repo
+- [X] PDO-1572 Add PA upgrade logs to its own log stream
+
 ### 1.6.1
 
 - Updated PingDirectory image to 8.1.0.2 so replication initialization does not lock down a new server
