@@ -112,7 +112,7 @@ spec:
           limits:
             memory: "1Gi"
           requests:
-            memory: "1Gi"
+            memory: "512Gi"
             cpu: "700m"
         env:
         - name: P14C_ENVIRONMENT_ID
