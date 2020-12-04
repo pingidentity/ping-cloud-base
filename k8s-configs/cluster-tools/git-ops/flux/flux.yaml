@@ -108,6 +108,7 @@ spec:
         - --listen-metrics=:3031
         - --git-poll-interval=60s
         - --git-readonly
+        - --registry-disable-scanning
         image: docker.io/fluxcd/flux:1.21.0
         imagePullPolicy: IfNotPresent
         livenessProbe:

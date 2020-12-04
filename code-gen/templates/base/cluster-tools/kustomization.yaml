@@ -70,6 +70,7 @@ patchesStrategicMerge:
           - --git-branch=${CLUSTER_STATE_REPO_BRANCH}
           - --git-path=k8s-configs/${CLUSTER_STATE_REPO_PATH}
           - --git-readonly
+          - --registry-disable-scanning
           volumeMounts:
           - name: ssh-config
             mountPath: /root/.ssh

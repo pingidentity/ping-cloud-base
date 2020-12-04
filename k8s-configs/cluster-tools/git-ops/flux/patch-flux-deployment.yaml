@@ -16,3 +16,4 @@ spec:
         - --git-branch=master
         - --git-path=k8s-configs/ping-cloud/test
         - --git-readonly
+        - --registry-disable-scanning
