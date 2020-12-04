@@ -33,6 +33,7 @@ _Changes:_
 - [X] PDO-1567 Pull GSA images from Frog registry
 - [X] PDO-1571 Update flux so it only has read-only access to the repo
 - [X] PDO-1572 Add PA upgrade logs to its own log stream
+- [X] PDO-1622 Update flux to not cache docker images
 
 ### 1.6.1
 
