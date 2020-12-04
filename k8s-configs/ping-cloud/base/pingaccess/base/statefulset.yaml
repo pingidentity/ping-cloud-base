@@ -290,7 +290,7 @@ spec:
             memory: "1Gi"
           requests:
             cpu: "80m"
-            memory: "500Mi"
+            memory: "256Mi"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir

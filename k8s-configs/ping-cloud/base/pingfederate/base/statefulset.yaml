@@ -84,7 +84,7 @@ spec:
             memory: "1Gi"
           requests:
             cpu: "20m"
-            memory: "500Mi"
+            memory: "256Mi"
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_CONSOLE
@@ -318,7 +318,7 @@ spec:
             memory: "1Gi"
           requests:
             cpu: "20m"
-            memory: "500Mi"
+            memory: "256Mi"
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_ENGINE
