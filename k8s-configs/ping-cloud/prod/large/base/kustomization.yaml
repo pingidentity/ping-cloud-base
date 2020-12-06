@@ -9,6 +9,7 @@ commonLabels:
 resources:
 - ../../../base
 - ../../../base/aws
+<<<<<<< HEAD
 - ../../../base/pingdirectory/aws
 - ../../../base/pingfederate/aws
 - ../../../base/pingaccess/aws
@@ -36,3 +37,5 @@ patchesStrategicMerge:
 
 - pingaccess-was/engine-init-env.yaml
 - pingaccess-was/engine-limits.yaml
+=======
+>>>>>>> [skip pipeline] PDO-1576 add more granular control on all PingCloud base products

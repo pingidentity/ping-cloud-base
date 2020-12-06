@@ -34,6 +34,9 @@ PING_CLOUD_NAMESPACE=${PING_CLOUD_NAMESPACE}
 K8S_GIT_URL=${K8S_GIT_URL}
 K8S_GIT_BRANCH=${K8S_GIT_BRANCH}
 
+# The ping-cloud-base git URL and branch to support upgrades at the product level
+K8S_GIT_BRANCH_UPGRADE=
+
 # The name of the Docker image registry
 REGISTRY_NAME=${REGISTRY_NAME}
 
@@ -130,7 +133,7 @@ PA_WAS_ENGINE_PUBLIC_HOSTNAME=pingaccess-was.${DNS_ZONE}
 PROMETHEUS_PUBLIC_HOSTNAME=prometheus.${DNS_ZONE}
 GRAFANA_PUBLIC_HOSTNAME=monitoring.${DNS_ZONE}
 KIBANA_PUBLIC_HOSTNAME=logs.${DNS_ZONE}
-ARGOCD_PUBLIC_HOSTNAME: argocd.${DNS_ZONE}
+ARGOCD_PUBLIC_HOSTNAME=argocd.${DNS_ZONE}
 
 ############################################################
 # IRSA - IAM role for service accounts
