@@ -9,16 +9,3 @@ commonLabels:
 resources:
 - ../../base
 - ../../base/aws
-- ../../base/pingdirectory/aws
-- ../../base/pingfederate/aws
-- ../../base/pingaccess/aws
-- ../../base/pingaccess-was/aws
-
-patchesStrategicMerge:
-- pingdirectory/wait-for-service.yaml
-
-- pingfederate/engine-init-env.yaml
-
-- pingaccess/engine-init-env.yaml
-
-- pingaccess-was/engine-init-env.yaml
