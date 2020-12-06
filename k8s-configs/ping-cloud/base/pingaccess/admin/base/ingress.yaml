@@ -1,0 +1,28 @@
+# This defines the private ingress for the pingaccess admin service
+
+# NOTE: it will only work if an ingress controller (e.g. nginx) is running on
+# your cluster.
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: pingaccess-admin-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    kubernetes.io/ingress.class: nginx-private
+    # Possible fix for some 502 failures on admin assets and api requests.
+    nginx.ingress.kubernetes.io/service-upstream: "true"
+spec:
+  tls:
+    - hosts:
+        - pingaccess-admin-api-dev.ping-demo.com
+  rules:
+    - host: pingaccess-admin-api-dev.ping-demo.com
+      http:
+        paths:
+          # This rule gives internal access to the pingaccess admin services.
+          - path: /
+            backend:
+              serviceName: pingaccess-admin
+              servicePort: 9000

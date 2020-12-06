@@ -1,0 +1,28 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+namespace: ping-cloud
+
+commonLabels:
+  app: ping-cloud
+
+resources:
+- ../../base/pingdirectory/aws
+
+patchesStrategicMerge:
+- wait-for-service.yaml
+
+patchesJson6902:
+
+# Removes the node affinity and toleration from dev/test environments because nodes in these environments don't have
+# the corresponding taints, and we want to pack as many pods into as few nodes as possible in these lower environments.
+- target:
+    group: apps
+    version: v1
+    kind: StatefulSet
+    name: pingdirectory
+  patch: |
+    - op: remove
+      path: /spec/template/spec/affinity/nodeAffinity
+    - op: remove
+      path: /spec/template/spec/tolerations

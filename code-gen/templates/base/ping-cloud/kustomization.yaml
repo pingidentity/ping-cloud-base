@@ -2,15 +2,38 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
+# PingCloud common resources
 - ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}?ref=${K8S_GIT_BRANCH}
+#- ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/base?ref=${K8S_GIT_BRANCH}
 
-images:
-- name: pingidentity/pingdirectory
-  newName: ${REGISTRY_NAME}/pingidentity/pingdirectory
-- name: pingidentity/pingfederate
-  newName: ${REGISTRY_NAME}/pingidentity/pingfederate
-- name: pingidentity/pingaccess
-  newName: ${REGISTRY_NAME}/pingidentity/pingaccess
+# PingAccess common shared and deployment resources
+- pingaccess
+- pingaccess/admin
+- pingaccess/engine
+
+# PingAccess WAS common shared and deployment resources
+- pingaccess-was
+- pingaccess-was/admin
+- pingaccess-was/engine
+
+# PingFederate common shared and deployment resources
+- pingfederate
+- pingfederate/admin
+- pingfederate/engine
+
+# PingDirectory common shared and deployment resources
+- pingdirectory
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+#images:
+#  - name: pingidentity/pingdirectory
+#    newName: ${REGISTRY_NAME}/pingidentity/pingdirectory
+#  - name: pingidentity/pingfederate
+#    newName: ${REGISTRY_NAME}/pingidentity/pingfederate
+#  - name: pingidentity/pingaccess
+#    newName: ${REGISTRY_NAME}/pingidentity/pingaccess
 
 configMapGenerator:
 
@@ -19,7 +42,7 @@ configMapGenerator:
 - name: topology-descriptor
   behavior: merge
   files:
-  - descriptor.json
+  - pingdirectory/descriptor.json
 
 patchesStrategicMerge:
 
@@ -43,6 +66,11 @@ patchesStrategicMerge:
     annotations:
       purpose: service-account-for-ping-cloud-stack
       ${IRSA_PING_ANNOTATION_KEY_VALUE}
+
+
+
+## Below was all deleted in pdo-1578
+####
 
 patchesJson6902:
 

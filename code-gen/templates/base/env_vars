@@ -34,6 +34,9 @@ PING_CLOUD_NAMESPACE=${PING_CLOUD_NAMESPACE}
 K8S_GIT_URL=${K8S_GIT_URL}
 K8S_GIT_BRANCH=${K8S_GIT_BRANCH}
 
+# The ping-cloud-base git URL and branch to support upgrades at the product level
+K8S_GIT_BRANCH_UPGRADE=
+
 # The name of the Docker image registry
 REGISTRY_NAME=${REGISTRY_NAME}
 

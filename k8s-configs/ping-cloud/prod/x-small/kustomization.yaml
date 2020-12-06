@@ -1,5 +1,20 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
+namespace: ping-cloud
+
+commonLabels:
+  app: ping-cloud
+
 resources:
-- primary
+- base
+- pingaccess
+- pingaccess/engine
+- pingaccess/admin
+- pingaccess-was
+- pingaccess-was/engine
+- pingaccess-was/admin
+- pingfederate
+- pingfederate/engine
+- pingfederate/admin
+- pingdirectory
