@@ -14,7 +14,7 @@ metadata:
     # Enable client certificate authentication
     nginx.ingress.kubernetes.io/auth-tls-verify-client: "on"
     # Create the secret containing the trusted ca certificates
-    nginx.ingress.kubernetes.io/auth-tls-secret: "ping-cloud-chrisschaffer/pingfederate-ca-and-server-cert"
+    nginx.ingress.kubernetes.io/auth-tls-secret: "ping-cloud-chrisschaffer/pingfederate-ca-cert"
     # Specify the verification depth in the client certificates chain
     nginx.ingress.kubernetes.io/auth-tls-verify-depth: "1"
     # Specify an error page to be redirected to verification errors
@@ -25,7 +25,7 @@ spec:
   tls:
   - hosts:
     - pingfederate-dev.ping-demo.com
-    secretName: pingfederate-ca-and-server-cert
+    secretName: pingfederate-server-cert
   rules:
   - host: pingfederate-dev.ping-demo.com
     http:
