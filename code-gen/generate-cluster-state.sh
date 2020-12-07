@@ -364,8 +364,9 @@ add_comment_to_file "${REGION_ENV_VARS}" 'Region name and nick name. REGION must
 export_variable "${REGION_ENV_VARS}" REGION "${REGION}"
 export_variable_ln "${REGION_ENV_VARS}" REGION_NICK_NAME "${REGION_NICK_NAME:-${REGION}}"
 
-add_comment_to_file "${REGION_ENV_VARS}" 'Tenant domain for customer for region'
-export_variable_ln "${REGION_ENV_VARS}" TENANT_DOMAIN "${TENANT_DOMAIN}"
+add_comment_to_file "${REGION_ENV_VARS}" 'Tenant domain suffix for customer for region'
+TENANT_DOMAIN_NO_DOT_SUFFIX="${TENANT_DOMAIN%.}"
+export_variable_ln "${REGION_ENV_VARS}" TENANT_DOMAIN "${TENANT_DOMAIN_NO_DOT_SUFFIX}"
 
 add_comment_to_file "${REGION_ENV_VARS}" 'S3 bucket name for PingFederate adaptive clustering'
 add_comment_to_file "${REGION_ENV_VARS}" 'Only required in multi-cluster environments'
@@ -382,15 +383,16 @@ export_variable_ln "${BASE_ENV_VARS}" PRIMARY_REGION "${PRIMARY_REGION:-${REGION
 add_comment_to_file "${BASE_ENV_VARS}" 'Tenant domain suffix for customer for region'
 add_comment_to_file "${BASE_ENV_VARS}" 'Primary region should have the same value for TENANT_DOMAIN and PRIMARY_TENANT_DOMAIN'
 PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX="${PRIMARY_TENANT_DOMAIN%.}"
-export_variable_ln "${BASE_ENV_VARS}" PRIMARY_TENANT_DOMAIN "${PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX:-${TENANT_DOMAIN}}"
+export_variable_ln "${BASE_ENV_VARS}" PRIMARY_TENANT_DOMAIN "${PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX:-${TENANT_DOMAIN_NO_DOT_SUFFIX}}"
 
 add_comment_to_file "${BASE_ENV_VARS}" 'Region-independent URL used for DNS failover/routing'
 if "${IS_BELUGA_ENV}"; then
-  DERIVED_GLOBAL_TENANT_DOMAIN="global.${TENANT_DOMAIN}"
+  DERIVED_GLOBAL_TENANT_DOMAIN="global.${TENANT_DOMAIN_NO_DOT_SUFFIX}"
 else
-  DERIVED_GLOBAL_TENANT_DOMAIN="$(echo "${TENANT_DOMAIN}" | sed -e "s/\([^.]*\).[^.]*.\(.*\)/global.\1.\2/")"
+  DERIVED_GLOBAL_TENANT_DOMAIN="$(echo "${TENANT_DOMAIN_NO_DOT_SUFFIX}" | sed -e "s/\([^.]*\).[^.]*.\(.*\)/global.\1.\2/")"
 fi
-export_variable_ln "${BASE_ENV_VARS}" GLOBAL_TENANT_DOMAIN "${GLOBAL_TENANT_DOMAIN:-${DERIVED_GLOBAL_TENANT_DOMAIN}}"
+GLOBAL_TENANT_DOMAIN_NO_DOT_SUFFIX="${GLOBAL_TENANT_DOMAIN%.}"
+export_variable_ln "${BASE_ENV_VARS}" GLOBAL_TENANT_DOMAIN "${GLOBAL_TENANT_DOMAIN_NO_DOT_SUFFIX:-${DERIVED_GLOBAL_TENANT_DOMAIN}}"
 
 add_comment_header_to_file "${BASE_ENV_VARS}" 'S3 buckets'
 
