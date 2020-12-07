@@ -272,21 +272,6 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingfederate.${DNS_ZONE}
-    # PingFederate global ingress
-    - op: add
-      path: /spec/tls/0/hosts/-
-      value: pf.${ENV}.${GLOBAL_TENANT_DOMAIN}
-    - op: add
-      path: /spec/rules/-
-      value:
-        host: pf.${ENV}.${GLOBAL_TENANT_DOMAIN}
-        http:
-          paths:
-          # This rule gives external access to the global pingfederate runtime service
-          - path: /
-            backend:
-              serviceName: pingfederate
-              servicePort: 9031
 
 # pingfederate admin api
 - target:
