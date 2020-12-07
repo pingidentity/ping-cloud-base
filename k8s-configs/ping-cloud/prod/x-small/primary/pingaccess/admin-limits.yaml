@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: pingaccess-was-admin
+  name: pingaccess-admin
 spec:
   template:
     spec:
