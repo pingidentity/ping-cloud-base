@@ -66,11 +66,11 @@ patchesJson6902:
     # PingFederate global ingress
     - op: add
       path: /spec/tls/0/hosts/-
-      value: pf${ENVIRONMENT}.${GLOBAL_TENANT_DOMAIN}
+      value: pf${ENVIRONMENT}.${TENANT_DOMAIN}
     - op: add
       path: /spec/rules/-
       value:
-        host: pf${ENVIRONMENT}.${GLOBAL_TENANT_DOMAIN}
+        host: pf${ENVIRONMENT}.${TENANT_DOMAIN}
         http:
           paths:
           # This rule gives external access to the global pingfederate runtime service
