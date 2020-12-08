@@ -1478,9 +1478,7 @@
             WARNING: This is intended for debugging purposes only. Sensitive information, such as passwords, may be
             logged with this Logger.
         -->
-        <!--
         <Logger name="org.sourceid.servlet.filter.HttpRequestHeaderFilter" level="TRACE" />
-        -->
         <!--
             Uncomment HttpRequestParameterFilter logger for logging of all HTTP request parameter values
             WARNING: This is intended for debugging purposes only. Sensitive information, such as passwords, may be
