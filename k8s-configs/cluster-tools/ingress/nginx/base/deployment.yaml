@@ -31,8 +31,6 @@ spec:
       annotations:
         prometheus.io/port: "10254"
         prometheus.io/scrape: "true"
-        nginx.ingress.kubernetes.io/configuration-snippet: |
-          proxy_set_header ssl-client-cert $ssl_client_raw_cert;
     spec:
       # wait up to five minutes for the drain of connections
       terminationGracePeriodSeconds: 300
