@@ -22,7 +22,7 @@ metadata:
     # Specify if certificates are passed to upstream server
     nginx.ingress.kubernetes.io/auth-tls-pass-certificate-to-upstream: "true"
     nginx.ingress.kubernetes.io/configuration-snippet: |
-      proxy_set_header ssl-client-cert $ssl_client_raw_cert;
+      proxy_set_header X-SSL-Client-Cert $ssl_client_raw_cert;
 spec:
   tls:
   - hosts:
