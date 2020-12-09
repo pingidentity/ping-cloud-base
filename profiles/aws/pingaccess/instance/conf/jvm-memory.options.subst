@@ -19,4 +19,4 @@
 #
 # Sidestep GTE bug in run.sh
 #
--Xms${PA_MIN_HEAP} -Xmx${PA_MAX_HEAP} -XX:NewSize=${PA_MIN_YGEN} -XX:MaxNewSize=${PA_MAX_YGEN} ${PA_GCOPTION}
+-Xms${_DOLLAR_}{PA_MIN_HEAP} -Xmx${_DOLLAR_}{PA_MAX_HEAP} -XX:NewSize=${_DOLLAR_}{PA_MIN_YGEN} -XX:MaxNewSize=${_DOLLAR_}{PA_MAX_YGEN} ${_DOLLAR_}{PA_GCOPTION}

@@ -12,4 +12,5 @@ if ! isPingaccessWas; then
   run_hook "10-download-artifact.sh"
 fi
 
+run_hook "15-update-jvm-settings.sh"
 run_hook "100-tail-logs.sh"
