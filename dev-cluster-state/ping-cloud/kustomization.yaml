@@ -76,8 +76,8 @@ patchesJson6902:
           # This rule gives external access to the global pingfederate runtime service
           - path: /
             backend:
-              serviceName: http-svc
-              servicePort: 80
+              serviceName: pingfederate
+              servicePort: 9031
 
 # pingfederate admin api
 - target:
