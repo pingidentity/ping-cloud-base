@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: stunnel
-        image: dweomer/stunnel
+        image: pingcloud-mirror.jfrog.io/dweomer/stunnel
         securityContext:
           # Run as the stunnel uid and gid
           runAsNonRoot: true
