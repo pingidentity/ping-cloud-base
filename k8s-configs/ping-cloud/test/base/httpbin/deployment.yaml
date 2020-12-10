@@ -10,7 +10,7 @@ spec:
     spec:
       containers:
       - name: httpbin
-        image: kennethreitz/httpbin
+        image: pingcloud-mirror.jfrog.io/kennethreitz/httpbin
         resources:
           requests:
             memory: 100Mi
