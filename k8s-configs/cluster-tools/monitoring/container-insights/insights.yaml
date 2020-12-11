@@ -170,6 +170,8 @@ spec:
             path: /dev/disk/
       terminationGracePeriodSeconds: 60
       serviceAccountName: cloudwatch-agent
+      tolerations:   
+      - operator: Exists
 
 ---
 
@@ -1070,3 +1072,5 @@ spec:
         - name: dmesg
           hostPath:
             path: /var/log/dmesg
+      tolerations:   
+      - operator: Exists
