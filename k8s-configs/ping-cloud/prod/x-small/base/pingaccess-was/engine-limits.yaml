@@ -9,9 +9,9 @@ spec:
       - name: pingaccess-was
         resources:
           limits:
-            memory: 1Gi
+            memory: 3Gi
             cpu: 1
           requests:
-            memory: 1Gi
+            memory: 3Gi
             cpu: 1
   replicas: 1
