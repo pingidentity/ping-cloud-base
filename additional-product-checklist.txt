@@ -10,3 +10,8 @@ PingAccess WAS
 When configuring a new product to be protected by PingAccess WAS we need to make a change in determining whether or not
 the configuration completely successfully. In 83-configure-initial-pa-was.sh file we should alter the
 is_previously_configured function to account for the extra application now being protected.
+
+DaemonSets
+PingDirectory pods are scheduled to run on nodes with the taint "pingidentity.com/pd-only=true:NoSchedule". Every new
+DaemonSet in the stack will need to add a toleration for this taint at the very minimum or be configured to tolerate all
+taints.
