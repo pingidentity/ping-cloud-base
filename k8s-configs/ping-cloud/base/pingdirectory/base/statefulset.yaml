@@ -49,7 +49,7 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: pingidentity.com/pd-only
+              - key: pingidentity.com/pd
                 operator: In
                 values:
                 - "true"
