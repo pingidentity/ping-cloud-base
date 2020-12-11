@@ -766,6 +766,9 @@ spec:
         hostPath:
           path: /logstash-sincedb-files
 
+      tolerations:   
+      - operator: Exists
+
 ---
 kind: Service
 apiVersion: v1
