@@ -7,7 +7,7 @@ spec:
     spec:
       initContainers:
       - name: pingaccess-discovery-service
-        image: amazon/aws-cli:2.0.17
+        image: pingcloud-mirror.jfrog.io/amazon/aws-cli:2.0.17
         imagePullPolicy: IfNotPresent
         command:
         - /get_ssm_env_vars.sh
@@ -36,7 +36,7 @@ spec:
     spec:
       initContainers:
       - name: pingaccess-discovery-service
-        image: amazon/aws-cli:2.0.17
+        image: pingcloud-mirror.jfrog.io/amazon/aws-cli:2.0.17
         imagePullPolicy: IfNotPresent
         command:
         - /get_ssm_env_vars.sh

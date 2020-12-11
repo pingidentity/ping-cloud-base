@@ -52,7 +52,7 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: bitnami/kubectl:1.15.3
+        image: pingcloud-mirror.jfrog.io/bitnami/kubectl:1.15.3
         imagePullPolicy: IfNotPresent
         command:
         - /copy-dependencies.sh
@@ -81,7 +81,7 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: busybox:1.32
+        image: pingcloud-mirror.jfrog.io/busybox:1.32
         imagePullPolicy: IfNotPresent
         command:
         - /wait-for-services.sh
@@ -204,7 +204,7 @@ spec:
               command:
               - /opt/staging/hooks/86-pre-stop.sh
       - name: pingdirectory-statsd-exporter
-        image: prom/statsd-exporter:v0.14.1
+        image: pingcloud-mirror.jfrog.io/prom/statsd-exporter:v0.14.1
         args:
         - "--statsd.mapping-config=/tmp/mapping/pingdirectory-statsd-mapping.yml"
         - "--statsd.listen-udp=:8125"

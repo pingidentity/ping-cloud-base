@@ -102,7 +102,7 @@ spec:
     spec:
       containers:
         - name: cloudwatch-agent
-          image: amazon/cloudwatch-agent:1.230621.0
+          image: pingcloud-mirror.jfrog.io/amazon/cloudwatch-agent:1.230621.0
           #ports:
           #  - containerPort: 8125
           #    hostPort: 8125
@@ -1002,7 +1002,7 @@ spec:
       # See https://github.com/fluent/fluentd-kubernetes-daemonset/issues/90
       initContainers:
         - name: copy-fluentd-config
-          image: busybox
+          image: pingcloud-mirror.jfrog.io/busybox:1.32
           command: ['sh', '-c', 'cp /config-volume/..data/* /fluentd/etc']
           volumeMounts:
             - name: config-volume
@@ -1010,11 +1010,11 @@ spec:
             - name: fluentdconf
               mountPath: /fluentd/etc
         - name: update-log-driver
-          image: busybox
+          image: pingcloud-mirror.jfrog.io/busybox:1.32
           command: ['sh','-c','']
       containers:
         - name: fluentd-cloudwatch
-          image: fluent/fluentd-kubernetes-daemonset:v1.7.3-debian-cloudwatch-1.0
+          image: pingcloud-mirror.jfrog.io/fluent/fluentd-kubernetes-daemonset:v1.7.3-debian-cloudwatch-1.0
           env:
             - name: FLUENTD_OPT
               value: "-qq"
