@@ -503,9 +503,10 @@ actual_files() {
 
   aws s3api list-objects \
     --bucket "${bucket_name}" \
-    --prefix "${directory_name}/support-data" \
+    --prefix "${directory_name}/" \
     --query "reverse(sort_by(Contents[?LastModified>='${days_ago}'], &LastModified))[].Key" \
     --profile "${AWS_PROFILE}" |
+  grep support-data |
   tr -d '",[]' |
   cut -d/ -f2 |
   sort
