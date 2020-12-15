@@ -106,13 +106,14 @@ for ENV in ${ENVIRONMENTS}; do
       git checkout "${GIT_BRANCH}"
       git pull
     else
-      # Check if the branch exists locally. If so, switch to master first and then delete it.
+      # Check if the branch exists locally. If so, switch to master first and get a clean checkout of it.
       if git rev-parse --verify "${GIT_BRANCH}" &> /dev/null; then
         git restore .
         git checkout master
-        git branch -D "${GIT_BRANCH}"
+        git checkout "${GIT_BRANCH}"
+      else
+        git checkout -b "${GIT_BRANCH}"
       fi
-      git checkout -b "${GIT_BRANCH}"
     fi
   else
     GIT_BRANCH=master

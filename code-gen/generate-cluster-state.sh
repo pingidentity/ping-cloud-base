@@ -502,6 +502,7 @@ K8S_CONFIGS_DIR="${CLUSTER_STATE_DIR}/k8s-configs"
 mkdir -p "${FLUXCD_DIR}"
 mkdir -p "${K8S_CONFIGS_DIR}"
 
+cp ../update-cluster-state.sh "${CLUSTER_STATE_DIR}"
 cp ../.gitignore "${CLUSTER_STATE_DIR}"
 cp ../k8s-configs/cluster-tools/git-ops/flux/flux-command.sh "${K8S_CONFIGS_DIR}"
 find "${TEMPLATES_HOME}" -type f -maxdepth 1 | xargs -I {} cp {} "${K8S_CONFIGS_DIR}"
@@ -510,7 +511,8 @@ cp -pr ../profiles/aws/. "${CLUSTER_STATE_DIR}"/profiles
 echo "${PING_CLOUD_BASE_COMMIT_SHA}" > "${TARGET_DIR}/pcb-commit-sha.txt"
 
 # Now generate the yaml files for each environment
-ENVIRONMENTS='dev test stage prod'
+ALL_ENVIRONMENTS='dev test stage prod'
+ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
 
 export_variable "${BASE_ENV_VARS}" CLUSTER_STATE_REPO_URL "${CLUSTER_STATE_REPO_URL}"
 export_variable "${BASE_ENV_VARS}" CLUSTER_STATE_REPO_PATH "\${REGION_NICK_NAME}"
@@ -533,13 +535,13 @@ for ENV in ${ENVIRONMENTS}; do
 
   # The base URL for kustomization files and environment will be different for each CDE.
   case "${ENV}" in
-    dev | test)
+    *dev | *test)
       export_variable_ln "${CDE_BASE_ENV_VARS}" KUSTOMIZE_BASE 'test'
       ;;
-    stage)
+    *stage)
       export_variable_ln "${CDE_BASE_ENV_VARS}" KUSTOMIZE_BASE 'prod/x-small'
       ;;
-    prod)
+    *prod)
       export_variable_ln "${CDE_BASE_ENV_VARS}" KUSTOMIZE_BASE "prod/${SIZE}"
       ;;
   esac
@@ -547,10 +549,10 @@ for ENV in ${ENVIRONMENTS}; do
   # Update the Let's encrypt server to use staging/production based on environment type.
   add_comment_header_to_file "${CDE_BASE_ENV_VARS}" 'Lets Encrypt server'
   case "${ENV}" in
-    dev | test | stage)
+    *dev | *test | *stage)
       export_variable_ln "${CDE_BASE_ENV_VARS}" LETS_ENCRYPT_SERVER 'https://acme-staging-v02.api.letsencrypt.org/directory'
       ;;
-    prod)
+    *prod)
       export_variable_ln "${CDE_BASE_ENV_VARS}" LETS_ENCRYPT_SERVER 'https://acme-v02.api.letsencrypt.org/directory'
       ;;
   esac
@@ -558,12 +560,12 @@ for ENV in ${ENVIRONMENTS}; do
   # Set PF variables based on ENV
   add_comment_header_to_file "${CDE_BASE_ENV_VARS}" 'PingFederate variables for environment'
   case "${ENV}" in
-    dev | test | stage)
+    *dev | *test | *stage)
       export_variable "${CDE_BASE_ENV_VARS}" PF_PD_BIND_PORT 1389
       export_variable "${CDE_BASE_ENV_VARS}" PF_PD_BIND_PROTOCOL ldap
       export_variable_ln "${CDE_BASE_ENV_VARS}" PF_PD_BIND_USESSL false
       ;;
-    prod)
+    *prod)
       export_variable "${CDE_BASE_ENV_VARS}" PF_PD_BIND_PORT 5678
       export_variable "${CDE_BASE_ENV_VARS}" PF_PD_BIND_PROTOCOL ldaps
       export_variable_ln "${CDE_BASE_ENV_VARS}" PF_PD_BIND_USESSL true
@@ -572,13 +574,13 @@ for ENV in ${ENVIRONMENTS}; do
 
   # Update the PF JVM limits based on environment.
   case "${ENV}" in
-    dev | test)
+    *dev | *test)
       export_variable "${CDE_BASE_ENV_VARS}" PF_MIN_HEAP 1536m
       export_variable "${CDE_BASE_ENV_VARS}" PF_MAX_HEAP 1536m
       export_variable "${CDE_BASE_ENV_VARS}" PF_MIN_YGEN 768m
       export_variable_ln "${CDE_BASE_ENV_VARS}" PF_MAX_YGEN 768m
       ;;
-    stage | prod)
+    *stage | *prod)
       export_variable "${CDE_BASE_ENV_VARS}" PF_MIN_HEAP 3072m
       export_variable "${CDE_BASE_ENV_VARS}" PF_MAX_HEAP 3072m
       export_variable "${CDE_BASE_ENV_VARS}" PF_MIN_YGEN 1536m
@@ -605,7 +607,7 @@ for ENV in ${ENVIRONMENTS}; do
   if "${IS_BELUGA_ENV}"; then
     export_variable "${CDE_BASE_ENV_VARS}" CLUSTER_NAME "${TENANT_NAME}"
   else
-    export_variable "${CDE_BASE_ENV_VARS}" CLUSTER_NAME "${ENV}"
+    export_variable "${CDE_BASE_ENV_VARS}" CLUSTER_NAME "${ENV##*-}"
   fi
 
   CLUSTER_NAME_LC="$(echo "${CLUSTER_NAME}" | tr '[:upper:]' '[:lower:]')"
