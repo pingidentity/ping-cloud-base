@@ -154,6 +154,7 @@ for REGION_DIR in ${REGION_DIRS}; do
     export TARGET_DIR="${TENANT_CODE_DIR}/${REGION_DIR}"
     export TENANT_NAME='ping-cloud-customer'
     export SIZE="${KUSTOMIZE_BASE#*/}"
+    export K8S_GIT_BRANCH="${NEW_VERSION}"
 
     # Generate code now that we have set all the required environment variables
     echo "=====> Generating code for region '${REGION_DIR}' into '${TARGET_DIR}' for branches '${NEW_BRANCHES}'"

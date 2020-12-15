@@ -522,16 +522,19 @@ for ENV in ${ENVIRONMENTS}; do
   cp "${BASE_ENV_VARS}" "${CDE_BASE_ENV_VARS}"
 
   # Export all the environment variables required for envsubst
-  test "${ENV}" = 'prod' &&
+  ENV_SUFFIX="${ENV##*-}"
+  test "${ENV_SUFFIX}" = 'master' && ENV_SUFFIX='prod'
+
+  test "${ENV_SUFFIX}" = 'prod' &&
     export_variable_ln "${CDE_BASE_ENV_VARS}" CLUSTER_STATE_REPO_BRANCH 'master' ||
-    export_variable_ln "${CDE_BASE_ENV_VARS}" CLUSTER_STATE_REPO_BRANCH "${ENV}"
+    export_variable_ln "${CDE_BASE_ENV_VARS}" CLUSTER_STATE_REPO_BRANCH "${ENV_SUFFIX}"
 
   add_comment_header_to_file "${CDE_BASE_ENV_VARS}" 'Environment-specific variables'
   add_comment_to_file "${CDE_BASE_ENV_VARS}" 'Used by server profile hooks'
-  export_variable_ln "${CDE_BASE_ENV_VARS}" ENVIRONMENT_TYPE "${ENV}"
+  export_variable_ln "${CDE_BASE_ENV_VARS}" ENVIRONMENT_TYPE "${ENV_SUFFIX}"
 
   add_comment_to_file "${CDE_BASE_ENV_VARS}" 'Used by Kubernetes manifests'
-  export_variable "${CDE_BASE_ENV_VARS}" ENV "${ENV}"
+  export_variable "${CDE_BASE_ENV_VARS}" ENV "${ENV_SUFFIX}"
 
   # The base URL for kustomization files and environment will be different for each CDE.
   case "${ENV}" in
