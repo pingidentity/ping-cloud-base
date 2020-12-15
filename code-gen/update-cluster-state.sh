@@ -196,7 +196,7 @@ for REGION_DIR in ${REGION_DIRS_SORTED}; do
   TARGET_DIR="${TENANT_CODE_DIR}/${REGION_DIR}"
   echo "=====> Generated code directory for ${TYPE} region '${REGION_DIR}': ${TARGET_DIR}"
 
-  echo "=====> Creating branches for ${TYPE} region '${REGION_DIR}' : ${NEW_BRANCHES}"
+  echo "=====> Creating branches for ${TYPE} region '${REGION_DIR}': ${NEW_BRANCHES}"
   GENERATED_CODE_DIR="${TARGET_DIR}" \
       IS_PRIMARY=${IS_PRIMARY} \
       ENVIRONMENTS="${NEW_BRANCHES}" \
