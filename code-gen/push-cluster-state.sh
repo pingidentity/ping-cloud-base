@@ -97,6 +97,7 @@ for ENV in ${ENVIRONMENTS}; do
 
   ENV_CODE_DIR=$(mktemp -d)
   ENV_SUFFIX="${ENV##*-}"
+  test "${ENV_SUFFIX}" = 'master' && ENV_SUFFIX='prod'
 
   organize_code_for_environment "${GENERATED_CODE_DIR}" "${ENV_SUFFIX}" "${ENV_CODE_DIR}" "${IS_PRIMARY}"
 
