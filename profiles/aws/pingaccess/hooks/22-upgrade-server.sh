@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 ${VERBOSE} && set -x
 
+. "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 . "${HOOKS_DIR}/util/config-query-keypair-utils.sh"
 
@@ -42,6 +43,7 @@ function process_admin()
       #
       # start old instance, and wait for it to be ready
       #
+      run_hook "15-update-jvm-settings.sh"
       "${SERVER_ROOT_DIR}"/bin/run.sh &
       pingaccess_admin_wait
 
