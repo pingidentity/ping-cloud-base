@@ -370,7 +370,10 @@ export_variable_ln "${REGION_ENV_VARS}" TENANT_DOMAIN "${TENANT_DOMAIN_NO_DOT_SU
 
 add_comment_to_file "${REGION_ENV_VARS}" 'S3 bucket name for PingFederate adaptive clustering'
 add_comment_to_file "${REGION_ENV_VARS}" 'Only required in multi-cluster environments'
-export_variable "${REGION_ENV_VARS}" CLUSTER_BUCKET_NAME "${CLUSTER_BUCKET_NAME}"
+export_variable_ln "${REGION_ENV_VARS}" CLUSTER_BUCKET_NAME "${CLUSTER_BUCKET_NAME}"
+
+add_comment_to_file "${REGION_ENV_VARS}" 'Customer-specific artifacts URL for region'
+export_variable "${REGION_ENV_VARS}" ARTIFACT_REPO_URL "${ARTIFACT_REPO_URL:-unused}"
 
 ### Base environment variables ###
 add_comment_header_to_file "${BASE_ENV_VARS}" 'Multi-region parameters'
@@ -395,9 +398,6 @@ GLOBAL_TENANT_DOMAIN_NO_DOT_SUFFIX="${GLOBAL_TENANT_DOMAIN%.}"
 export_variable_ln "${BASE_ENV_VARS}" GLOBAL_TENANT_DOMAIN "${GLOBAL_TENANT_DOMAIN_NO_DOT_SUFFIX:-${DERIVED_GLOBAL_TENANT_DOMAIN}}"
 
 add_comment_header_to_file "${BASE_ENV_VARS}" 'S3 buckets'
-
-add_comment_to_file "${BASE_ENV_VARS}" 'Customer-specific artifacts URL for region'
-export_variable_ln "${BASE_ENV_VARS}" ARTIFACT_REPO_URL "${ARTIFACT_REPO_URL:-unused}"
 
 add_comment_to_file "${BASE_ENV_VARS}" 'Ping-hosted common artifacts URL'
 export_variable_ln "${BASE_ENV_VARS}" PING_ARTIFACT_REPO_URL \
