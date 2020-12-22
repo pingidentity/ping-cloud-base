@@ -96,29 +96,29 @@ for ENV in ${ENVIRONMENTS}; do
   echo "Processing ${ENV}"
 
   ENV_CODE_DIR=$(mktemp -d)
-  organize_code_for_environment "${GENERATED_CODE_DIR}" "${ENV}" "${ENV_CODE_DIR}" "${IS_PRIMARY}"
+  ENV_SUFFIX="${ENV##*-}"
+  test "${ENV_SUFFIX}" = 'master' && ENV_SUFFIX='prod'
 
-  if test "${ENV}" != 'prod'; then
-    GIT_BRANCH="${ENV}"
-    # Check if the branch exists on remote. If so, switch to it and pull the latest code from it.
-    if git ls-remote --quiet --heads | grep "${GIT_BRANCH}" &> /dev/null; then
-      git restore .
-      git checkout "${GIT_BRANCH}"
-      git pull
-    else
-      # Check if the branch exists locally. If so, switch to master first and then delete it.
-      if git rev-parse --verify "${GIT_BRANCH}" &> /dev/null; then
-        git restore .
-        git checkout master
-        git branch -D "${GIT_BRANCH}"
-      fi
-      git checkout -b "${GIT_BRANCH}"
-    fi
-  else
-    GIT_BRANCH=master
-    git restore .
+  organize_code_for_environment "${GENERATED_CODE_DIR}" "${ENV_SUFFIX}" "${ENV_CODE_DIR}" "${IS_PRIMARY}"
+
+  test "${ENV}" = 'prod' &&
+      GIT_BRANCH=master ||
+      GIT_BRANCH="${ENV}"
+
+  git restore .
+
+  # Check if the branch exists on remote. If so, switch to it and pull the latest code from it.
+  if git ls-remote --quiet --heads | grep "${GIT_BRANCH}" &> /dev/null; then
     git checkout "${GIT_BRANCH}"
-    git pull
+    git pull -X theirs
+
+  # Otherwise, check if the branch exists locally. If so, get a clean checkout of it.
+  elif git rev-parse --verify "${GIT_BRANCH}" &> /dev/null; then
+    git checkout "${GIT_BRANCH}"
+
+  # Otherwise, create it.
+  else
+    git checkout -b "${GIT_BRANCH}"
   fi
 
   if "${IS_PRIMARY}"; then
@@ -158,7 +158,7 @@ for ENV in ${ENVIRONMENTS}; do
   echo "${commit_msg}"
 
   git add .
-  git commit -m "${commit_msg}"
+  git commit --allow-empty -m "${commit_msg}"
 
   if "${PUSH_TO_SERVER}"; then
     push_with_retries "${PUSH_RETRY_COUNT}" "${GIT_BRANCH}"
