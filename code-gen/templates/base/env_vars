@@ -48,6 +48,12 @@ CLUSTER_STATE_REPO_PATH=${CLUSTER_STATE_REPO_PATH}
 CLUSTER_STATE_REPO_BRANCH=${CLUSTER_STATE_REPO_BRANCH}
 
 ############################################################
+# Server profile variables
+############################################################
+SERVER_PROFILE_URL=${SERVER_PROFILE_URL}
+SERVER_PROFILE_BRANCH=${SERVER_PROFILE_BRANCH}
+
+############################################################
 # Environment-specific variables
 ############################################################
 # Used by server profile hooks
@@ -100,12 +106,6 @@ CLUSTER_NAME_LC=${CLUSTER_NAME_LC}
 ############################################################
 DNS_ZONE=${DNS_ZONE}
 PRIMARY_DNS_ZONE=${PRIMARY_DNS_ZONE}
-
-############################################################
-# Server profile variables
-############################################################
-SERVER_PROFILE_URL=${SERVER_PROFILE_URL}
-SERVER_PROFILE_BRANCH=${SERVER_PROFILE_BRANCH}
 
 ############################################################
 # Public hostnames
