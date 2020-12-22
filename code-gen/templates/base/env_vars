@@ -44,7 +44,7 @@ REGISTRY_NAME=${REGISTRY_NAME}
 KNOWN_HOSTS_CLUSTER_STATE_REPO="${KNOWN_HOSTS_CLUSTER_STATE_REPO}"
 
 CLUSTER_STATE_REPO_URL=${CLUSTER_STATE_REPO_URL}
-CLUSTER_STATE_REPO_PATH=${REGION_NICK_NAME}
+CLUSTER_STATE_REPO_PATH=${CLUSTER_STATE_REPO_PATH}
 CLUSTER_STATE_REPO_BRANCH=${CLUSTER_STATE_REPO_BRANCH}
 
 ############################################################
@@ -98,14 +98,14 @@ CLUSTER_NAME_LC=${CLUSTER_NAME_LC}
 ############################################################
 # DNS zones
 ############################################################
-DNS_ZONE=${TENANT_DOMAIN}
-PRIMARY_DNS_ZONE=${PRIMARY_TENANT_DOMAIN}
+DNS_ZONE=${DNS_ZONE}
+PRIMARY_DNS_ZONE=${PRIMARY_DNS_ZONE}
 
 ############################################################
 # Server profile variables
 ############################################################
-SERVER_PROFILE_URL=${CLUSTER_STATE_REPO_URL}
-SERVER_PROFILE_BRANCH=${CLUSTER_STATE_REPO_BRANCH}
+SERVER_PROFILE_URL=${SERVER_PROFILE_URL}
+SERVER_PROFILE_BRANCH=${SERVER_PROFILE_BRANCH}
 
 ############################################################
 # Public hostnames

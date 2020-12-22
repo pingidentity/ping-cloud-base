@@ -299,7 +299,7 @@ build_kustomizations_in_dir() {
 # Arguments
 #   $1 -> The directory that contains the files where variables must be substituted.
 #   $2 -> The variables to be substituted. Check DEFAULT_VARS below for the expected format.
-#   $3 -> Optional comma-separated filenames to include for substitution. If not provided, environment variables in all
+#   $3 -> Optional space-separated filenames to include for substitution. If not provided, environment variables in all
 #         template files in the provided directory will be substituted.
 ########################################################################################################################
 
@@ -329,14 +329,15 @@ ${BACKUP_URL}'
 substitute_vars() {
   local subst_dir="$1"
   local vars="$2"
-  local included_filenames="$3"
+  local included_filenames="${@:3}"
 
   for file in $(find "${subst_dir}" -type f); do
     include_file=true
     if test "${included_filenames}"; then
       include_file=false
       for included_filename in ${included_filenames}; do
-        if $(echo "${file}" | grep -qi "${included_filename}$"); then
+        file_basename="$(basename "${file}")"
+        if $(echo "${file_basename}" | grep -qi "^${included_filename}$"); then
           include_file=true
           break
         fi

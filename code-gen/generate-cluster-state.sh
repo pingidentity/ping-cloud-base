@@ -275,9 +275,7 @@ BOOTSTRAP_VARS='${K8S_GIT_URL}
 ${K8S_GIT_BRANCH}
 ${CLUSTER_STATE_REPO_URL}
 ${CLUSTER_STATE_REPO_BRANCH}
-${CLUSTER_STATE_REPO_PATH}
 ${REGION_NICK_NAME}
-${PING_CLOUD_NAMESPACE}
 ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
 ${SSH_ID_KEY_BASE64}'
 
@@ -285,9 +283,21 @@ ${SSH_ID_KEY_BASE64}'
 # Export some derived environment variables.
 ########################################################################################################################
 add_derived_variables() {
+  # The directory within the cluster state repo for the region's manifest files.
+  export CLUSTER_STATE_REPO_PATH=\${REGION_NICK_NAME}
+
   # Server profile URL and branch. The directory is in each app's env_vars file.
   export SERVER_PROFILE_URL=\${CLUSTER_STATE_REPO_URL}
   export SERVER_PROFILE_BRANCH=\${CLUSTER_STATE_REPO_BRANCH}
+
+  # Zone for this region and the primary region
+  if "${IS_BELUGA_ENV}"; then
+    export DNS_ZONE="\${TENANT_DOMAIN}"
+    export PRIMARY_DNS_ZONE="\${PRIMARY_TENANT_DOMAIN}"
+  else
+    export DNS_ZONE="\${ENV}-\${TENANT_DOMAIN}"
+    export PRIMARY_DNS_ZONE="\${ENV}-\${PRIMARY_TENANT_DOMAIN}"
+  fi
 
   # Ping admin configuration required for admin access and clustering
   PD_PRIMARY_PUBLIC_HOSTNAME=pingdirectory-admin.\${PRIMARY_DNS_ZONE}
@@ -532,7 +542,6 @@ ALL_ENVIRONMENTS='dev test stage prod'
 ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
 
 export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL}"
-export CLUSTER_STATE_REPO_PATH="\${REGION_NICK_NAME}"
 
 for ENV in ${ENVIRONMENTS}; do
   # Export all the environment variables required for envsubst
@@ -616,14 +625,6 @@ for ENV in ${ENVIRONMENTS}; do
   CLUSTER_NAME_LC="$(echo "${CLUSTER_NAME}" | tr '[:upper:]' '[:lower:]')"
   export CLUSTER_NAME_LC="${CLUSTER_NAME_LC}"
 
-  if "${IS_BELUGA_ENV}"; then
-    export DNS_ZONE="\${TENANT_DOMAIN}"
-    export PRIMARY_DNS_ZONE="\${PRIMARY_TENANT_DOMAIN}"
-  else
-    export DNS_ZONE="\${ENV}-\${TENANT_DOMAIN}"
-    export PRIMARY_DNS_ZONE="\${ENV}-\${PRIMARY_TENANT_DOMAIN}"
-  fi
-
   add_derived_variables
   add_irsa_variables "${ACCOUNT_ID_PATH_PREFIX:-unused}" "${ENV}"
 
@@ -659,7 +660,7 @@ for ENV in ${ENVIRONMENTS}; do
   cp -r "${BASE_DIR}" "${ENV_DIR}"
   cp -r "${REGION_DIR}/." "${ENV_DIR}/${REGION_NICK_NAME}"
 
-  substitute_vars "${ENV_DIR}" "${REPO_VARS}" "secrets.yaml,env_vars"
+  substitute_vars "${ENV_DIR}" "${REPO_VARS}" secrets.yaml env_vars
 
   # Regional enablement - add admins, backups, etc. to primary.
   if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
