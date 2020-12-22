@@ -299,7 +299,8 @@ build_kustomizations_in_dir() {
 # Arguments
 #   $1 -> The directory that contains the files where variables must be substituted.
 #   $2 -> The variables to be substituted. Check DEFAULT_VARS below for the expected format.
-#   $3 -> Optional comma-separated filenames to exclude from substitution.
+#   $3 -> Optional comma-separated filenames to include for substitution. If not provided, environment variables in all
+#         template files in the provided directory will be substituted.
 ########################################################################################################################
 
 # The list of variables in the template files that will be substituted by default.
@@ -328,19 +329,20 @@ ${BACKUP_URL}'
 substitute_vars() {
   local subst_dir="$1"
   local vars="$2"
-  local excluded_filenames="$3"
+  local included_filenames="$3"
 
   for file in $(find "${subst_dir}" -type f); do
-    exclude_file=false
-    if test ! -z "${excluded_filenames}"; then
-      for excluded_filename in ${excluded_filenames}; do
-        if $(echo "${file}" | grep -qi "${excluded_filename}$"); then
-          exclude_file=true
+    include_file=true
+    if test "${included_filenames}"; then
+      include_file=false
+      for included_filename in ${included_filenames}; do
+        if $(echo "${file}" | grep -qi "${included_filename}$"); then
+          include_file=true
           break
         fi
       done
     fi
-    "${exclude_file}" && continue
+    "${include_file}" || continue
 
     local old_file="${file}.bak"
     cp "${file}" "${old_file}"
@@ -432,43 +434,4 @@ export_variable_ln() {
   echo >> "${env_file}"
 
   return 0
-}
-
-########################################################################################################################
-# Add the provided string as a simple comment to the specified file.
-#
-# Arguments
-#   $1 -> The name of the file to which the comment must be written.
-#   $2 -> The comment to write to the file.
-########################################################################################################################
-add_comment_to_file() {
-  local file="$1"
-  local comment="$2"
-  echo "# ${comment}" >> "${file}"
-}
-
-########################################################################################################################
-# Add a comment header to the specified file.
-#
-# Arguments
-#   $1 -> The name of the file to which the comment header must be written.
-########################################################################################################################
-add_header_to_file() {
-  local file="$1"
-  echo "############################################################" >> "${file}"
-}
-
-########################################################################################################################
-# Add the provided string as a comment header to the specified file.
-#
-# Arguments
-#   $1 -> The name of the file to which the comment must be written.
-#   $2 -> The comment to write to the file as a header.
-########################################################################################################################
-add_comment_header_to_file() {
-  local file="$1"
-  local comment="$2"
-  add_header_to_file "${file}"
-  add_comment_to_file "${file}" "${comment}"
-  add_header_to_file "${file}"
 }

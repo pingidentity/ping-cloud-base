@@ -1,0 +1,16 @@
+############################################################
+# Region-specific parameters
+############################################################
+# Region name and nick name. REGION must be valid AWS region name.
+REGION=${REGION}
+REGION_NICK_NAME=${REGION_NICK_NAME}
+
+# Tenant domain suffix for customer for region
+TENANT_DOMAIN=${TENANT_DOMAIN}
+
+# S3 bucket name for PingFederate adaptive clustering
+# Only required in multi-cluster environments
+CLUSTER_BUCKET_NAME=${CLUSTER_BUCKET_NAME}
+
+# Customer-specific artifacts URL for region
+ARTIFACT_REPO_URL=${ARTIFACT_REPO_URL}
