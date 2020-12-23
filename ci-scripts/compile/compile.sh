@@ -3,7 +3,9 @@
 # To test all kustomization.yaml files locally, run this script as follows from within this directory:
 #     ./compile.sh compile_env_vars
 #
-# NOTE: Change CONFIG_REPO_BRANCH to the name of the branch under test in compile_env_vars
+# NOTES:
+# - Set K8S_GIT_URL to a mirror of ping-cloud-base that has the manifest files to be tested in compile_env_vars.
+# - Run the script from the branch under test. This will ensure that the K8S_GIT_BRANCH variable is set correctly.
 
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 . ${SCRIPT_HOME}/../common.sh "${1}"

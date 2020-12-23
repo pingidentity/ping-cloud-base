@@ -12,15 +12,14 @@ export TARGET_DIR=/tmp/sandbox
 STATUS=0
 
 for SIZE in x-small small medium large; do
-  log "Building kustomizations for ${SIZE} environment"
+  log "Building cluster state code for size '${SIZE}'"
 
-  export SIZE
-  "${PROJECT_DIR}/code-gen/generate-cluster-state.sh"
+  SIZE="${SIZE}" "${PROJECT_DIR}/code-gen/generate-cluster-state.sh"
 
   # Verify that all kustomizations are able to be built
-  build_kustomizations_in_dir "${TARGET_DIR}"
+  build_generated_code "${TARGET_DIR}"
   BUILD_STATUS=${?}
-  log "Build result for ${SIZE} kustomizations: ${BUILD_RESULT}"
+  log "Build result for cluster state code for size '${SIZE}': ${BUILD_RESULT}"
 
   test ${STATUS} -eq 0 && STATUS=${BUILD_RESULT}
 done
