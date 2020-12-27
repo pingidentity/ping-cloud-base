@@ -27,6 +27,10 @@ spec:
     name: pingfederate-runtime
   - port: 8080
     name: metrics
+  - port: 9103
+    name: pingfederate-collectd-tcp
+  - port: 8126
+    name: pingfederate-collectd-udp
   selector:
     role: pingfederate-engine
 ---    

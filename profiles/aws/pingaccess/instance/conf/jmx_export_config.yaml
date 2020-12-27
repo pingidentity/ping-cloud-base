@@ -2,6 +2,6 @@
     startDelaySeconds: 0
     lowercaseOutputName: false
     lowercaseOutputLabelNames: false
-    whitelistObjectNames: ["org.eclipse.jetty.server.handler:type=statisticshandler,*", "org.eclipse.jetty.server:type=connectorstatistics,*", "pingaccess:*"]
+    whitelistObjectNames: ["com.pingidentity.pa:*", "pingaccess:*"]
     rules:
       - pattern: ".*xx"  
