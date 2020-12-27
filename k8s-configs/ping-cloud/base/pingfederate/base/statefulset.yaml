@@ -626,7 +626,7 @@ spec:
       - name: pingfederate-collectd-exporter
         ### SHOULD BE UPLOADED TO PING REPO AND CHANGED!
         image: quay.io/signalfuse/collectd
-        entrypoint:
+        command:
         - "collectd-init.sh:"
         ports:
           - containerPort: 9103
