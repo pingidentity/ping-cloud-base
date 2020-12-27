@@ -103,7 +103,8 @@ metadata:
 data:
   collectd-init.sh: |-
     #!/bin/sh
-    /bin/collectd_exporter --web.collectd-push-path="" &
+    python /opt/collectd/collectd-web/localhost/runserver.py &
+    /bin/collectd_exporter &
     while :
     do
       python /opt/collect-heartbeat.py
@@ -123,7 +124,6 @@ data:
     import requests
     import urllib3
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-
     NAME = 'ping_identity'
     VERBOSE_LOGGING = False
     DEFAULT_HEARTBEAT_URL = 'https://127.0.0.1:8080/pf/heartbeat.ping'
@@ -146,24 +146,19 @@ data:
       'response.time.statistics.mean': ('response_time_statistics_mean', 'gauge'),
       'response.time.statistics.90.percentile': ('response_tim_statistics_90_percentile', 'gauge')
     }
-
     METRIC_NA = {
         'N/A': ('0.00')
     }
-
     HEADER = {
         'Accept': "Content-Type,Authorization,Cache-Control",
         'Content-Type': "application/json",
         'X-Xsrf-Header': "PingIdentity",
         'Cache-Control': "no-cache"
     }
-
-
     def configure_callback(conf):
         # global CONFIGS ### HEARTBEAT_URL
         # CONFIGS = []
         VERBOSE_LOGGING = False
-
         for node in conf.children:
             if node.key == "url":
                 heartbeat_url = node.values[0]
@@ -173,13 +168,11 @@ data:
                 product_type = node.values[0]
             else:
                 logger('warn', 'Unknown config key: %s' % node.key)
-
         CONFIGS.append({
             'url': heartbeat_url,
             'type': instance_type,
             'product': product_type
         })
-
     def get_stats(conf):
         _conf = conf
         stats = dict()
@@ -191,20 +184,14 @@ data:
         except Exception as e:
             logger('warn', "Unable to retrieve stats: %s" % e.message)
             return stats
-
         return stats["items"]
-
-
     def read_callback():
         logger('verb', "beginning read_callback")
-
         for conf in CONFIGS:
             info = get_stats(conf)
-
             if not info:
                 logger('warn', "%s: No data received" % NAME)
                 return
-
             for collectd_data in info:
                 for key, value in collectd_data.items():
                     if key in METRIC_TYPES:
@@ -214,8 +201,6 @@ data:
                         val.type_instance = conf['type'] + "." + key_root
                         val.values = [ clean_value ]
                         val.dispatch()
-
-
     def logger(t, msg):
         if t == 'err':
             collectd.error('%s: %s' % (NAME, msg))
@@ -625,12 +610,13 @@ spec:
 
       - name: pingfederate-collectd-exporter
         ### SHOULD BE UPLOADED TO PING REPO AND CHANGED!
-        image: quay.io/signalfuse/collectd
+        image: 7es7/collectd-exporter:latest
+        imagePullPolicy: Always
         command:
-        - "collectd-init.sh:"
+        - /etc/collectd/collectd-init.sh
         ports:
           - containerPort: 9103
-            name: pingfederate-collectd-tcp
+            name: pf-collectd-tcp
             protocol: TCP
           - containerPort: 8126
             protocol: UDP
@@ -707,8 +693,8 @@ spec:
       - name: collectd-init
         configMap:
           name: collectd-init
-          defaultMode: 0644
+          defaultMode: 0555
       - name: collect-heartbeat
         configMap:
           name: collect-heartbeat
-          defaultMode: 0644
+          defaultMode: 0555

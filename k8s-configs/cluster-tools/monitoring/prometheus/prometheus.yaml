@@ -64,7 +64,7 @@ data:
       relabel_configs:
       - source_labels: [__meta_kubernetes_endpoint_port_name, __meta_kubernetes_service_name]
         action: keep
-        regex: pingfederate-collectd-tcp;pingfederate
+        regex: pf-collectd-tcp;pingfederate
       - source_labels: [__meta_kubernetes_pod_name]
         action: replace
         target_label: instance
