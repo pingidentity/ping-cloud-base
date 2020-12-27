@@ -1,6 +1,7 @@
 #!/usr/bin/env sh
 ${VERBOSE} && set -x
 
+. "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 . "${HOOKS_DIR}/util/config-query-keypair-utils.sh"
 
@@ -16,6 +17,7 @@ templates_dir_path="${STAGING_DIR}"/templates/81
 #---------------------------------------------------------------------------------------------
 function process_admin()
 {
+   local pingaccess_admin_api_endpoint="https://localhost:${PA_ADMIN_PORT}/pa-admin-api/v3"
    #
    # Check if it's necessary to run the upgrade tool. Compare version in /opt/server with current 
    # version of server under /opt/out/instance to make the call.
@@ -41,6 +43,7 @@ function process_admin()
       #
       # start old instance, and wait for it to be ready
       #
+      run_hook "15-update-jvm-settings.sh"
       "${SERVER_ROOT_DIR}"/bin/run.sh &
       pingaccess_admin_wait
 
@@ -52,10 +55,16 @@ function process_admin()
       # old instance now running, if this is the admin server disable key rotation 
       #
       beluga_log "Disabling key rotation to prevent invalidating active sessions during upgrade"
-      local original=$(make_api_request "https://localhost:${PA_ADMIN_PORT}/pa-admin-api/v3/authTokenManagement" | tr -s ' '| tr '\n' ' ')
+
+      original=$(make_api_request "${pingaccess_admin_api_endpoint}/authTokenManagement")
+      test $? -ne 0 && return 1
+
+      original=$(echo "${original}" | tr -s ' '| tr '\n' ' ')
       local  payload="$(echo "${original}" | jq -r ".keyRollEnabled |= false" | tr -s ' '|tr -d '\n' )"
       make_api_request -X PUT -d "${payload}" \
-         "https://localhost:${PA_ADMIN_PORT}/pa-admin-api/v3/authTokenManagement" > /dev/null
+         "${pingaccess_admin_api_endpoint}/authTokenManagement" > /dev/null
+      test $? -ne 0 && return 1
+
       #
       # copy New server into place
       #
@@ -65,6 +74,14 @@ function process_admin()
       # Copy /jvm-memory.options file to new install
       #
       cp "${SERVER_ROOT_DIR}"/conf/jvm-memory.options "${NEW_INSTANCE_DIR}"/conf
+
+      #
+      # PDO-1426 removed restore backup configuration from S3 upon container restart.
+      # Therefore, we need to copy /h2_password_properties.backup file to new install
+      #
+      if [ -f "${SERVER_ROOT_DIR}"/conf/h2_password_properties.backup ]; then
+         cp "${SERVER_ROOT_DIR}"/conf/h2_password_properties.backup "${NEW_INSTANCE_DIR}"/conf
+      fi
 
       #
       # Navigate to upgrade utility directory in new server
@@ -133,7 +150,7 @@ function process_admin()
       #
       # If upgrade was successful move new server into place. 
       #
-      if [ "${rc}" = "0" ]; then
+      if [ ${rc} -eq 0 ]; then
          #
          # Delete and recreate server instance directory
          #
@@ -148,24 +165,25 @@ function process_admin()
          # Re-enable key rotation following failed upgrade attempt
          #
          beluga_log "Upgrade failed: Re-enabling key rotation"
+
          make_api_request -X PUT -d "${original}" \
-            "https://localhost:${PA_ADMIN_PORT}/pa-admin-api/v3/authTokenManagement" > /dev/null
+            "${pingaccess_admin_api_endpoint}/authTokenManagement" > /dev/null
+         test $? -ne 0 && return 1
       fi
 
       #
       # Clear admin user for upgrade
       #
-      export PA_SOURCE_API_USERNAME=""
+      unset PA_SOURCE_API_USERNAME
 
       #
       # Clear password for source server
       #
-      export PA_SOURCE_API_PASSWORD=""
+      unset PA_SOURCE_API_PASSWORD
 
    else
       beluga_log "Not running upgrade because image version is not newer than installed version"
    fi
-
    return ${rc}
 }
 

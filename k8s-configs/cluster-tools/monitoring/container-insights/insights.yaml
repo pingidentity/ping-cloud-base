@@ -102,7 +102,7 @@ spec:
     spec:
       containers:
         - name: cloudwatch-agent
-          image: amazon/cloudwatch-agent:1.230621.0
+          image: pingcloud-mirror.jfrog.io/amazon/cloudwatch-agent:1.230621.0
           #ports:
           #  - containerPort: 8125
           #    hostPort: 8125
@@ -170,6 +170,8 @@ spec:
             path: /dev/disk/
       terminationGracePeriodSeconds: 60
       serviceAccountName: cloudwatch-agent
+      tolerations:   
+      - operator: Exists
 
 ---
 
@@ -438,6 +440,11 @@ data:
         </rule>
         <rule>
           key log
+          pattern /^\/opt\/out\/instance\/log\/admin-api.*127\.0\.0\.1\| GET\| \/version\| 200/
+          tag clear
+        </rule>
+        <rule>
+          key log
           pattern /^\/opt\/out\/instance\/log\/admin-api/
           tag temp.admin_api_logs
         </rule>
@@ -540,6 +547,11 @@ data:
         @type rewrite_tag_filter
         <rule>
           key log
+          pattern /^\/opt\/out\/instance\/log\/pingaccess_api_audit.*127\.0\.0\.1\| GET\| \/pa-admin-api\/v3\/version\| 200/
+          tag pa_clear
+        </rule>
+        <rule>
+          key log
           pattern /^\/opt\/out\/instance\/log\/pingaccess_engine_audit/
           tag temp.pingaccess_engine_audit_logs
         </rule>
@@ -580,6 +592,10 @@ data:
         </rule>
       </match>
 
+      <match pa_clear>
+        @type null
+      </match>
+
       <match temp.unmatched_logs>
         @type relabel
         @label @normal
@@ -618,6 +634,11 @@ data:
         @type rewrite_tag_filter
         <rule>
           key log
+          pattern /^\/opt\/out\/instance\/log\/pingaccess_api_audit.*127\.0\.0\.1\| GET\| \/pa-admin-api\/v3\/version\| 200/
+          tag pawas_clear
+        </rule>
+        <rule>
+          key log
           pattern /^\/opt\/out\/instance\/log\/pingaccess_engine_audit/
           tag temp.pingaccess_engine_audit_logs
         </rule>
@@ -651,6 +672,10 @@ data:
           pattern /^(.+)$/
           tag temp.unmatched_logs
         </rule>
+      </match>
+
+      <match pawas_clear>
+        @type null
       </match>
 
       <match temp.unmatched_logs>
@@ -979,7 +1004,7 @@ spec:
       # See https://github.com/fluent/fluentd-kubernetes-daemonset/issues/90
       initContainers:
         - name: copy-fluentd-config
-          image: busybox
+          image: pingcloud-mirror.jfrog.io/busybox:1.32
           command: ['sh', '-c', 'cp /config-volume/..data/* /fluentd/etc']
           volumeMounts:
             - name: config-volume
@@ -987,11 +1012,11 @@ spec:
             - name: fluentdconf
               mountPath: /fluentd/etc
         - name: update-log-driver
-          image: busybox
+          image: pingcloud-mirror.jfrog.io/busybox:1.32
           command: ['sh','-c','']
       containers:
         - name: fluentd-cloudwatch
-          image: fluent/fluentd-kubernetes-daemonset:v1.7.3-debian-cloudwatch-1.0
+          image: pingcloud-mirror.jfrog.io/fluent/fluentd-kubernetes-daemonset:v1.7.3-debian-cloudwatch-1.0
           env:
             - name: FLUENTD_OPT
               value: "-qq"
@@ -1047,3 +1072,5 @@ spec:
         - name: dmesg
           hostPath:
             path: /var/log/dmesg
+      tolerations:   
+      - operator: Exists

@@ -14,6 +14,8 @@ beluga_log "add-engine: starting add engine script"
 
 SHORT_HOST_NAME=$(hostname)
 ORDINAL=${SHORT_HOST_NAME##*-}
+PINGACCESS_ADMIN_API_ENDPOINT="https://${ADMIN_HOST_PORT}/pa-admin-api/v3"
+TEMPLATES_DIR_PATH=${STAGING_DIR}/templates/51
 
 pingaccess_admin_wait "${ADMIN_HOST_PORT}"
 
@@ -33,38 +35,51 @@ fi
 
 # Retrieving key pair ID.
 beluga_log "add-engine: retrieving the Key Pair ID"
-OUT=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/httpsListeners)
-CONFIG_QUERY_LISTENER_KEYPAIR_ID=$(jq -n "${OUT}" | jq '.items[] | select(.name=="CONFIG QUERY") | .keyPairId')
+HTTPS_LISTENERS=$(make_api_request "${PINGACCESS_ADMIN_API_ENDPOINT}/httpsListeners")
+test $? -ne 0 && exit 1
+
+CONFIG_QUERY_LISTENER_KEYPAIR_ID=$(jq -n "${HTTPS_LISTENERS}" | jq '.items[] | select(.name=="CONFIG QUERY") | .keyPairId')
 beluga_log "add-engine: CONFIG_QUERY_LISTENER_KEYPAIR_ID: ${CONFIG_QUERY_LISTENER_KEYPAIR_ID}"
 
 # Retrieving key pair alias.
 beluga_log "add-engine: retrieving the Key Pair alias"
-OUT=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/keyPairs)
-KEYPAIR_ALIAS_NAME=$(jq -n "${OUT}" | jq -r '.items[] | select(.id=='${CONFIG_QUERY_LISTENER_KEYPAIR_ID}') | .alias')
+KEY_PAIRS=$(make_api_request "${PINGACCESS_ADMIN_API_ENDPOINT}/keyPairs")
+test $? -ne 0 && exit 1
+
+KEYPAIR_ALIAS_NAME=$(jq -n "${KEY_PAIRS}" | jq -r '.items[] | select(.id=='${CONFIG_QUERY_LISTENER_KEYPAIR_ID}') | .alias')
 beluga_log "add-engine: KEYPAIR_ALIAS_NAME: ${KEYPAIR_ALIAS_NAME}"
 
 # Retrieve Engine Cert ID.
 beluga_log "add-engine: retrieving the Engine Cert ID"
-OUT=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/engines/certificates)
-ENGINE_CERT_ID=$(jq -n "${OUT}" |
+ENGINE_CERTIFICATES=$(make_api_request "${PINGACCESS_ADMIN_API_ENDPOINT}/engines/certificates")
+test $? -ne 0 && exit 1
+
+# Export ENGINE_CERT_ID so it will get injected into
+# new-engine.json.
+export ENGINE_CERT_ID=$(jq -n "${ENGINE_CERTIFICATES}" |
     jq --arg KEYPAIR_ALIAS_NAME "${KEYPAIR_ALIAS_NAME}" \
         '.items[] | select(.alias==$KEYPAIR_ALIAS_NAME and .keyPair==true) | .id')
 beluga_log "add-engine: ENGINE_CERT_ID: ${ENGINE_CERT_ID}"
 
 # Retrieve the Engine ID for name.
 beluga_log "add-engine: retrieving the Engine ID for name ${ENGINE_NAME}"
-OUT=$(make_api_request https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/engines)
-ENGINE=$(jq -n "${OUT}" | jq --arg ENGINE_NAME "${ENGINE_NAME}" '.items[] | select(.name==$ENGINE_NAME)')
+ENGINES=$(make_api_request "${PINGACCESS_ADMIN_API_ENDPOINT}/engines")
+test $? -ne 0 && exit 1
+
+ENGINE=$(jq -n "${ENGINES}" | jq --arg ENGINE_NAME "${ENGINE_NAME}" '.items[] | select(.name==$ENGINE_NAME)')
 ENGINE_ID=$(jq -n "${ENGINE}" | jq -r ".id")
 
 # If engine doesn't exist, then create new engine.
 if test -z "${ENGINE_ID}" || test "${ENGINE_ID}" = 'null'; then
-  OUT=$(make_api_request -X POST -d "{
-        \"name\": \"${ENGINE_NAME}\",
-        \"selectedCertificateId\": ${ENGINE_CERT_ID},
-        \"configReplicationEnabled\": true
-    }" https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/engines)
-  ENGINE_ID=$(jq -n "${OUT}" | jq '.id')
+
+  beluga_log "add-engine: engine ${ENGINE_NAME} doesn't exist. Creating engine now."
+
+  new_engine_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/new-engine.json)
+
+  NEW_ENGINE=$(make_api_request -X POST -d "${new_engine_payload}" "${PINGACCESS_ADMIN_API_ENDPOINT}/engines")
+  test $? -ne 0 && exit 1
+
+  ENGINE_ID=$(jq -n "${NEW_ENGINE}" | jq '.id')
 else
   beluga_log "add-engine: engine ${ENGINE_NAME} already exists"
 
@@ -73,8 +88,13 @@ else
 
   # If replication is disabled then re-enable it.
   if [ "${ENGINE_REP_STATE}" = "false" ]; then
+
     ENGINE=$(echo "${ENGINE}" | jq -r ".configReplicationEnabled |= true" | tr -s ' '| tr -d '\n' )
-    make_api_request -X PUT -d "${ENGINE}" https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/engines/${ENGINE_ID} > /dev/null
+
+    make_api_request -X PUT -d "${ENGINE}" \
+      "${PINGACCESS_ADMIN_API_ENDPOINT}/engines/${ENGINE_ID}" > /dev/null
+    test $? -ne 0 && exit 1
+    
     beluga_log "Configuration replication re-enabled for ${ENGINE_NAME}"
   fi
 fi
@@ -83,7 +103,8 @@ fi
 beluga_log "add-engine: ENGINE_ID: ${ENGINE_ID}"
 beluga_log "add-engine: retrieving configuration for engine"
 make_api_request_download -X POST \
-    https://"${ADMIN_HOST_PORT}"/pa-admin-api/v3/engines/"${ENGINE_ID}"/config -o engine-config.zip
+    "${PINGACCESS_ADMIN_API_ENDPOINT}/engines/${ENGINE_ID}/config" -o engine-config.zip
+test $? -ne 0 && exit 1
 
 # Validate zip.
 beluga_log "add-engine: validating downloaded config archive"

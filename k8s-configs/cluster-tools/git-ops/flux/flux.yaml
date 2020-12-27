@@ -107,7 +107,9 @@ spec:
         - --git-email=flux@example.com
         - --listen-metrics=:3031
         - --git-poll-interval=60s
-        image: docker.io/fluxcd/flux:1.17.0
+        - --git-readonly
+        - --registry-disable-scanning
+        image: pingcloud-mirror.jfrog.io/fluxcd/flux:1.21.0
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -179,7 +181,7 @@ spec:
         - -m 512
         - -I 5m
         - -p 11211
-        image: memcached:1.5.20
+        image: pingcloud-mirror.jfrog.io/memcached:1.5.20
         resources:
           requests:
             cpu: 500m

@@ -34,12 +34,10 @@ curl() {
 
 oneTimeSetUp() {
   export VERBOSE=false
-  export STOP_SERVER_ON_FAILURE=false
 }
 
 oneTimeTearDown() {
   unset VERBOSE
-  unset STOP_SERVER_ON_FAILURE
 }
 
 testMakeApiRequestDownloadOk() {

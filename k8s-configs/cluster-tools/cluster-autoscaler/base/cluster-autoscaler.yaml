@@ -142,9 +142,7 @@ spec:
     spec:
       serviceAccountName: cluster-autoscaler
       containers:
-        # FIXME: when the k8s.gcr.io vanity URL works again, change the image tag to reference it from there.
-        # https://github.com/kubernetes/autoscaler/issues/3093
-        - image: us.gcr.io/k8s-artifacts-prod/autoscaling/cluster-autoscaler:v1.16.5
+        - image: k8s.gcr.io/autoscaling/cluster-autoscaler:v1.16.7
           name: cluster-autoscaler
           resources:
             limits:
@@ -155,7 +153,7 @@ spec:
               memory: 300Mi
           command:
             - ./cluster-autoscaler
-            - --v=4
+            - --v=1
             - --stderrthreshold=info
             - --skip-nodes-with-local-storage=false
             - --expander=least-waste

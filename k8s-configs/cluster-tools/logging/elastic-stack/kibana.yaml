@@ -30,16 +30,6 @@ spec:
             value: "http://elasticsearch"
           - name: CHECK_SERVICE_PORT
             value: "9200"
-          - name: CHECK_SERVICE_USER
-            valueFrom:
-              secretKeyRef:
-                name: elk-secrets
-                key: KIBANA_USER_B64
-          - name: CHECK_SERVICE_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: elk-secrets
-                key: KIBANA_PASSWORD_B64
           - name: DESIRED_STATUS
             value: "green"
 
@@ -66,16 +56,6 @@ spec:
             value: "5601"
           - name: ELASTICSEARCH_HOSTS
             value: "http://elasticsearch:9200"
-          - name: ELASTICSEARCH_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: elk-secrets
-                key: KIBANA_USER_B64
-          - name: ELASTICSEARCH_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: elk-secrets
-                key: KIBANA_PASSWORD_B64
           - name: XPACK_MONITORING_ENABLED
             value: "false"
           - name: LOGGING_QUIET
@@ -118,18 +98,8 @@ spec:
         image: pingcloud-docker.jfrog.io/pingidentity/ping-cloud-enrichment-bootstrap:1.0.0
         
         imagePullPolicy: IfNotPresent
-        command: ["sh", "-c", "until $(curl -u ${KIBANA_USER}:${KIBANA_PASSWORD} --output /dev/null --silent --fail ${KIBANA_HOST}:5601/api/status); do echo 'waiting for kibana API' && sleep 1; done"]
+        command: ["sh", "-c", "until $(curl --output /dev/null --silent --fail ${KIBANA_HOST}:5601/api/status); do echo 'waiting for kibana API' && sleep 1; done"]
         env:
-        - name: KIBANA_USER 
-          valueFrom:
-            secretKeyRef:
-              name: elk-secrets
-              key: ELASTIC_USER_B64
-        - name: KIBANA_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: elk-secrets
-              key: ELASTIC_PASSWORD_B64
         - name: KIBANA_HOST
           value: "http://kibana"
       containers:
@@ -147,16 +117,6 @@ spec:
         env:
         - name: CONTAINER_NAME
           value: 'kibana-dashboard-upload'
-        - name: KIBANA_USER 
-          valueFrom:
-            secretKeyRef:
-              name: elk-secrets
-              key: ELASTIC_USER_B64
-        - name: KIBANA_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: elk-secrets
-              key: ELASTIC_PASSWORD_B64
         - name: KIBANA_HOST
           value: "http://kibana"
 
@@ -177,6 +137,9 @@ spec:
         - name: kibana-dashboard-pf-basic
           mountPath: /scripts/dashboards/pf-basic.ndjson
           subPath: pf-basic.ndjson
+        - name: kibana-dashboard-pa-was-basic
+          mountPath: /scripts/dashboards/pa-was-basic.ndjson
+          subPath: pa-was-basic.ndjson
 
       volumes:
       - name: kibana-dashboard-pa
@@ -191,3 +154,6 @@ spec:
       - name: kibana-dashboard-pf-basic
         configMap:
           name: kibana-dashboard-pf-basic
+      - name: kibana-dashboard-pa-was-basic
+        configMap:
+          name: kibana-dashboard-pa-was-basic

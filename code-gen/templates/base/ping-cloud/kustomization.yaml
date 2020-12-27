@@ -12,9 +12,6 @@ images:
 - name: pingidentity/pingaccess
   newName: ${REGISTRY_NAME}/pingidentity/pingaccess
 
-generatorOptions:
-  disableNameSuffixHash: true
-
 configMapGenerator:
 
 ### PD topology descriptor.json file. Only required in multi-region deployments. ###
@@ -45,6 +42,7 @@ patchesStrategicMerge:
     name: ping-serviceaccount
     annotations:
       purpose: service-account-for-ping-cloud-stack
+      ${IRSA_PING_ANNOTATION_KEY_VALUE}
 
 patchesJson6902:
 

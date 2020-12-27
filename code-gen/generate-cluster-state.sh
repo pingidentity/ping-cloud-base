@@ -113,9 +113,9 @@
 #                        | information is maintained. Only used if            | is true.
 #                        | IS_MULTI_CLUSTER is true.                          |
 #                        |                                                    |
-# SIZE                   | Size of the environment, which pertains to the     | small
+# SIZE                   | Size of the environment, which pertains to the     | x-small
 #                        | number of user identities. Legal values are        |
-#                        | small, medium or large.                            |
+#                        | x-small, small, medium or large.                   |
 #                        |                                                    |
 # CLUSTER_STATE_REPO_URL | The URL of the cluster-state repo.                 | https://github.com/pingidentity/ping-cloud-base
 #                        |                                                    |
@@ -168,7 +168,7 @@
 # TARGET_DIR             | The directory where the manifest files will be     | /tmp/sandbox
 #                        | generated. If the target directory exists, it will |
 #                        | be deleted.                                        |
-#                        |
+#                        |                                                    |
 # IS_BELUGA_ENV          | An optional flag that may be provided to indicate  | false. Only intended for Beluga
 #                        | that the cluster state is being generated for      | developers.
 #                        | testing during Beluga development. If set to true, |
@@ -181,6 +181,14 @@
 #                        | as documented above. This flag exists because the  |
 #                        | Beluga developers only have access to one domain   |
 #                        | and hosted zone in their Ping IAM account role.    |
+#                        |                                                    |
+# ACCOUNT_ID_PATH_PREFIX | The SSM path prefix which stores CDE account IDs   | The string "unused".
+#                        | of the Ping Cloud customers. The environment type  |
+#                        | is appended to the key path before the value is    |
+#                        | retrieved from the SSM endpoint. The IAM role with |
+#                        | the AWS account ID must be added as an annotation  |
+#                        | to the corresponding Kubernetes service account to |
+#                        | enable IRSA (IAM Role for Service Accounts).       |
 ########################################################################################################################
 
 #### SCRIPT START ####
@@ -191,6 +199,9 @@ pushd "${SCRIPT_HOME}" >/dev/null 2>&1
 
 # Source some utility methods.
 . ../utils.sh
+
+# Source aws specific utility methods.
+. ./aws/utils.sh
 
 ########################################################################################################################
 # Substitute variables in all template files in the provided directory.
@@ -246,11 +257,45 @@ PA_WAS_ENGINE_PUBLIC_HOSTNAME=pingaccess-was.\${DNS_ZONE}
 PROMETHEUS_PUBLIC_HOSTNAME=prometheus.\${DNS_ZONE}
 GRAFANA_PUBLIC_HOSTNAME=monitoring.\${DNS_ZONE}
 KIBANA_PUBLIC_HOSTNAME=logs.\${DNS_ZONE}
+
 EOF
 }
 
+########################################################################################################################
+# Add IRSA as an environment variable to end of the provided environment file.
+#
+# Arguments
+#   ${1} -> The name of the environment file.
+#   ${2} -> The SSM path prefix.
+#   ${3} -> The environment name.
+########################################################################################################################
+add_irsa_variables() {
+  local env_file="$1"
+  local ssm_path_prefix="$2"
+  local env="$3"
+
+  # Default empty string
+  IRSA_PING_ANNOTATION_KEY_VALUE=''
+
+  if [ "${ssm_path_prefix}" != "unused" ]; then
+
+    # Getting value from ssm parameter store.
+    if ! ssm_value=$(get_ssm_value "${ssm_path_prefix}/${env}"); then
+      echo "Error: ${ssm_value}"
+      exit 1
+    fi
+
+    # IRSA for ping product pods. The role name is predefined as a part of the interface contract.
+    IRSA_PING_ANNOTATION_KEY_VALUE="eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role/irsa-ping"
+  fi
+
+  add_comment_header_to_file "${CDE_BASE_ENV_VARS}" 'IRSA - IAM role for service accounts'
+  add_comment_to_file "${CDE_BASE_ENV_VARS}" 'Used by ping product pods'
+  export_variable_ln "${CDE_BASE_ENV_VARS}" IRSA_PING_ANNOTATION_KEY_VALUE "${IRSA_PING_ANNOTATION_KEY_VALUE}" true
+}
+
 # Checking required tools and environment variables.
-check_binaries "openssl" "ssh-keygen" "ssh-keyscan" "base64" "envsubst" "git"
+check_binaries "openssl" "ssh-keygen" "ssh-keyscan" "base64" "envsubst" "git" "aws"
 HAS_REQUIRED_TOOLS=${?}
 
 check_env_vars "PING_IDENTITY_DEVOPS_USER" "PING_IDENTITY_DEVOPS_KEY"
@@ -310,7 +355,7 @@ REGION_ENV_VARS="$(mktemp)}"
 
 export IS_BELUGA_ENV="${IS_BELUGA_ENV:-false}"
 export TENANT_NAME="${TENANT_NAME:-ci-cd}"
-export SIZE="${SIZE:-small}"
+export SIZE="${SIZE:-x-small}"
 
 ### Region-specific environment variables ###
 add_comment_header_to_file "${REGION_ENV_VARS}" 'Region-specific parameters'
@@ -319,12 +364,16 @@ add_comment_to_file "${REGION_ENV_VARS}" 'Region name and nick name. REGION must
 export_variable "${REGION_ENV_VARS}" REGION "${REGION}"
 export_variable_ln "${REGION_ENV_VARS}" REGION_NICK_NAME "${REGION_NICK_NAME:-${REGION}}"
 
-add_comment_to_file "${REGION_ENV_VARS}" 'Tenant domain for customer for region'
-export_variable_ln "${REGION_ENV_VARS}" TENANT_DOMAIN "${TENANT_DOMAIN}"
+add_comment_to_file "${REGION_ENV_VARS}" 'Tenant domain suffix for customer for region'
+TENANT_DOMAIN_NO_DOT_SUFFIX="${TENANT_DOMAIN%.}"
+export_variable_ln "${REGION_ENV_VARS}" TENANT_DOMAIN "${TENANT_DOMAIN_NO_DOT_SUFFIX}"
 
 add_comment_to_file "${REGION_ENV_VARS}" 'S3 bucket name for PingFederate adaptive clustering'
 add_comment_to_file "${REGION_ENV_VARS}" 'Only required in multi-cluster environments'
-export_variable "${REGION_ENV_VARS}" CLUSTER_BUCKET_NAME "${CLUSTER_BUCKET_NAME}"
+export_variable_ln "${REGION_ENV_VARS}" CLUSTER_BUCKET_NAME "${CLUSTER_BUCKET_NAME}"
+
+add_comment_to_file "${REGION_ENV_VARS}" 'Customer-specific artifacts URL for region'
+export_variable "${REGION_ENV_VARS}" ARTIFACT_REPO_URL "${ARTIFACT_REPO_URL:-unused}"
 
 ### Base environment variables ###
 add_comment_header_to_file "${BASE_ENV_VARS}" 'Multi-region parameters'
@@ -337,20 +386,18 @@ export_variable_ln "${BASE_ENV_VARS}" PRIMARY_REGION "${PRIMARY_REGION:-${REGION
 add_comment_to_file "${BASE_ENV_VARS}" 'Tenant domain suffix for customer for region'
 add_comment_to_file "${BASE_ENV_VARS}" 'Primary region should have the same value for TENANT_DOMAIN and PRIMARY_TENANT_DOMAIN'
 PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX="${PRIMARY_TENANT_DOMAIN%.}"
-export_variable_ln "${BASE_ENV_VARS}" PRIMARY_TENANT_DOMAIN "${PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX:-${TENANT_DOMAIN}}"
+export_variable_ln "${BASE_ENV_VARS}" PRIMARY_TENANT_DOMAIN "${PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX:-${TENANT_DOMAIN_NO_DOT_SUFFIX}}"
 
 add_comment_to_file "${BASE_ENV_VARS}" 'Region-independent URL used for DNS failover/routing'
 if "${IS_BELUGA_ENV}"; then
-  DERIVED_GLOBAL_TENANT_DOMAIN="global.${TENANT_DOMAIN}"
+  DERIVED_GLOBAL_TENANT_DOMAIN="global.${TENANT_DOMAIN_NO_DOT_SUFFIX}"
 else
-  DERIVED_GLOBAL_TENANT_DOMAIN="$(echo "${TENANT_DOMAIN}" | sed -e "s/\([^.]*\).[^.]*.\(.*\)/global.\1.\2/")"
+  DERIVED_GLOBAL_TENANT_DOMAIN="$(echo "${TENANT_DOMAIN_NO_DOT_SUFFIX}" | sed -e "s/\([^.]*\).[^.]*.\(.*\)/global.\1.\2/")"
 fi
-export_variable_ln "${BASE_ENV_VARS}" GLOBAL_TENANT_DOMAIN "${GLOBAL_TENANT_DOMAIN:-${DERIVED_GLOBAL_TENANT_DOMAIN}}"
+GLOBAL_TENANT_DOMAIN_NO_DOT_SUFFIX="${GLOBAL_TENANT_DOMAIN%.}"
+export_variable_ln "${BASE_ENV_VARS}" GLOBAL_TENANT_DOMAIN "${GLOBAL_TENANT_DOMAIN_NO_DOT_SUFFIX:-${DERIVED_GLOBAL_TENANT_DOMAIN}}"
 
 add_comment_header_to_file "${BASE_ENV_VARS}" 'S3 buckets'
-
-add_comment_to_file "${BASE_ENV_VARS}" 'Customer-specific artifacts URL for region'
-export_variable_ln "${BASE_ENV_VARS}" ARTIFACT_REPO_URL "${ARTIFACT_REPO_URL:-unused}"
 
 add_comment_to_file "${BASE_ENV_VARS}" 'Ping-hosted common artifacts URL'
 export_variable_ln "${BASE_ENV_VARS}" PING_ARTIFACT_REPO_URL \
@@ -367,6 +414,7 @@ export_variable_ln "${BASE_ENV_VARS}" PING_CLOUD_NAMESPACE 'ping-cloud'
 PING_CLOUD_BASE_COMMIT_SHA=$(git rev-parse HEAD)
 CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 test "${CURRENT_GIT_BRANCH}" = 'HEAD' && CURRENT_GIT_BRANCH=$(git describe --tags --always)
+export CLUSTER_STATE_REPO_URL=${CLUSTER_STATE_REPO_URL:-https://github.com/pingidentity/ping-cloud-base}
 
 add_comment_to_file "${BASE_ENV_VARS}" 'The ping-cloud-base git URL and branch for base Kubernetes manifests'
 export_variable "${BASE_ENV_VARS}" K8S_GIT_URL "${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
@@ -404,8 +452,9 @@ echo "Using K8S_GIT_BRANCH: ${K8S_GIT_BRANCH}"
 
 echo "Using REGISTRY_NAME: ${REGISTRY_NAME}"
 
-echo "Using SSH_ID_PUB_FILE: ${SSH_ID_PUB_FILE}"
-echo "Using SSH_ID_KEY_FILE: ${SSH_ID_KEY_FILE}"
+AUTO_GENERATED_STR='<auto-generated>'
+echo "Using SSH_ID_PUB_FILE: ${SSH_ID_PUB_FILE:-${AUTO_GENERATED_STR}}"
+echo "Using SSH_ID_KEY_FILE: ${SSH_ID_KEY_FILE:-${AUTO_GENERATED_STR}}"
 
 echo "Using TARGET_DIR: ${TARGET_DIR}"
 echo "Using IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
@@ -418,10 +467,7 @@ TEMPLATES_HOME="${SCRIPT_HOME}/templates"
 BASE_DIR="${TEMPLATES_HOME}/base"
 BASE_TOOLS_REL_DIR="base/cluster-tools"
 BASE_PING_CLOUD_REL_DIR="base/ping-cloud"
-
 REGION_DIR="${TEMPLATES_HOME}/region"
-REGION_TOOLS_REL_DIR="${REGION_NICK_NAME}/cluster-tools"
-REGION_PING_CLOUD_REL_DIR="${REGION_NICK_NAME}/ping-cloud"
 
 # Generate an SSH key pair for flux CD.
 if test -z "${SSH_ID_PUB_FILE}" && test -z "${SSH_ID_KEY_FILE}"; then
@@ -456,6 +502,7 @@ K8S_CONFIGS_DIR="${CLUSTER_STATE_DIR}/k8s-configs"
 mkdir -p "${FLUXCD_DIR}"
 mkdir -p "${K8S_CONFIGS_DIR}"
 
+cp ./update-cluster-state-wrapper.sh "${CLUSTER_STATE_DIR}"
 cp ../.gitignore "${CLUSTER_STATE_DIR}"
 cp ../k8s-configs/cluster-tools/git-ops/flux/flux-command.sh "${K8S_CONFIGS_DIR}"
 find "${TEMPLATES_HOME}" -type f -maxdepth 1 | xargs -I {} cp {} "${K8S_CONFIGS_DIR}"
@@ -466,8 +513,7 @@ echo "${PING_CLOUD_BASE_COMMIT_SHA}" > "${TARGET_DIR}/pcb-commit-sha.txt"
 # Now generate the yaml files for each environment
 ENVIRONMENTS='dev test stage prod'
 
-export_variable "${BASE_ENV_VARS}" CLUSTER_STATE_REPO_URL \
-  "${CLUSTER_STATE_REPO_URL:-git@github.com:pingidentity/ping-cloud-base.git}"
+export_variable "${BASE_ENV_VARS}" CLUSTER_STATE_REPO_URL "${CLUSTER_STATE_REPO_URL}"
 export_variable "${BASE_ENV_VARS}" CLUSTER_STATE_REPO_PATH "\${REGION_NICK_NAME}"
 
 for ENV in ${ENVIRONMENTS}; do
@@ -492,7 +538,7 @@ for ENV in ${ENVIRONMENTS}; do
       export_variable_ln "${CDE_BASE_ENV_VARS}" KUSTOMIZE_BASE 'test'
       ;;
     stage)
-      export_variable_ln "${CDE_BASE_ENV_VARS}" KUSTOMIZE_BASE 'prod/small'
+      export_variable_ln "${CDE_BASE_ENV_VARS}" KUSTOMIZE_BASE 'prod/x-small'
       ;;
     prod)
       export_variable_ln "${CDE_BASE_ENV_VARS}" KUSTOMIZE_BASE "prod/${SIZE}"
@@ -541,7 +587,20 @@ for ENV in ${ENVIRONMENTS}; do
       ;;
   esac
 
-  # FIXME: PA/PA-WAS heap settings should be made variables
+  # Set PA variables
+  add_comment_header_to_file "${CDE_BASE_ENV_VARS}" 'PingAccess variables for environment'
+
+  export_variable "${CDE_BASE_ENV_VARS}" PA_WAS_MIN_HEAP 2048m
+  export_variable "${CDE_BASE_ENV_VARS}" PA_WAS_MAX_HEAP 2048m
+  export_variable "${CDE_BASE_ENV_VARS}" PA_WAS_MIN_YGEN 1024m
+  export_variable "${CDE_BASE_ENV_VARS}" PA_WAS_MAX_YGEN 1024m
+  export_variable_ln "${CDE_BASE_ENV_VARS}" PA_WAS_GCOPTION '-XX:+UseParallelGC'
+
+  export_variable "${CDE_BASE_ENV_VARS}" PA_MIN_HEAP 512m
+  export_variable "${CDE_BASE_ENV_VARS}" PA_MAX_HEAP 512m
+  export_variable "${CDE_BASE_ENV_VARS}" PA_MIN_YGEN 256m
+  export_variable "${CDE_BASE_ENV_VARS}" PA_MAX_YGEN 256m
+  export_variable_ln "${CDE_BASE_ENV_VARS}" PA_GCOPTION '-XX:+UseParallelGC'
 
   add_comment_header_to_file "${CDE_BASE_ENV_VARS}" 'Cluster name variables'
   if "${IS_BELUGA_ENV}"; then
@@ -563,6 +622,9 @@ for ENV in ${ENVIRONMENTS}; do
   fi
 
   add_derived_variables "${CDE_BASE_ENV_VARS}"
+
+  export ACCOUNT_ID_PATH_PREFIX="${ACCOUNT_ID_PATH_PREFIX:-unused}"
+  add_irsa_variables "${CDE_BASE_ENV_VARS}" "${ACCOUNT_ID_PATH_PREFIX}" "${ENV}"
 
   echo ---
   echo "For environment ${ENV}, using variable values:"
@@ -603,7 +665,7 @@ for ENV in ${ENVIRONMENTS}; do
 
   # Regional enablement - add admins, backups, etc. to primary.
   if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
-    PRIMARY_PING_KUST_FILE="${ENV_DIR}/${REGION_PING_CLOUD_REL_DIR}/kustomization.yaml"
+    PRIMARY_PING_KUST_FILE="${ENV_DIR}/${REGION_NICK_NAME}/kustomization.yaml"
     sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/' "${PRIMARY_PING_KUST_FILE}"
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
   fi
