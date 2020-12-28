@@ -45,7 +45,7 @@ data:
     /usr/sbin/nginx -c /opt/nginx.conf
     while :
     do
-      curl -k "https://localhost:9031/$SERVICE_SHORTNAME/heartbeat.ping" > /tmp/data/data.json
+      curl -k "https://localhost:$SERVICE_PORT/$SERVICE_SHORTNAME/heartbeat.ping" > /tmp/data/data.json
       sleep 5
     done
 

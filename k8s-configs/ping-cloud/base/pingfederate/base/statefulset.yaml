@@ -401,6 +401,8 @@ spec:
         env:
           - name: SERVICE_SHORTNAME
             value: pf
+          - name: SERVICE_PORT
+            value: "9031"
         ports:
           - containerPort: 8079
             name: pf-heartbeat

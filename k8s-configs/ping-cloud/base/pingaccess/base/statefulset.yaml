@@ -363,6 +363,8 @@ spec:
         env:
           - name: SERVICE_SHORTNAME
             value: pa
+          - name: SERVICE_PORT
+            value: "3000"
         ports:
           - containerPort: 8079
             name: pa-heartbeat
