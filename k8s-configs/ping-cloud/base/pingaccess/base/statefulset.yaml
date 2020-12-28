@@ -419,15 +419,15 @@ spec:
           secretName: pingaccess-passwords
           optional: true
           defaultMode: 0400
-      - name: pf-exporter-config
+      - name: pa-exporter-config
         configMap:
-          name: pf-exporter-config
+          name: pa-exporter-config
           defaultMode: 0644
-      - name: pf-nginx-conf
+      - name: pa-nginx-conf
         configMap:
-          name: pf-nginx-conf
+          name: pa-nginx-conf
           defaultMode: 0555
-      - name: pf-collect-heartbeat
+      - name: pa-collect-heartbeat
         configMap:
-          name: pf-collect-heartbeat
+          name: pa-collect-heartbeat
           defaultMode: 0555

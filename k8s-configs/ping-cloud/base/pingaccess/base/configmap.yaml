@@ -6,11 +6,6 @@ data:
   config.yml: |-
     ---
     metrics:
-    - name: metric_pingaccess_idp_session_registry_session_map_size
-      path: $.items[*]."idp.session.registry.session.map.size"+
-      labels:
-        environment: pingaccess
-        source: heartbeat
     - name: metric_pingaccess_response_concurrency_statistics_90_percentile
       path: $.items[*]."response.concurrency.statistics.90.percentile"+
       labels:
@@ -23,26 +18,6 @@ data:
         source: heartbeat
     - name: metric_pingaccess_response_time_statistics_90_percentile
       path: $.items[*]."response.time.statistics.90.percentile"+
-      labels:
-        environment: pingaccess
-        source: heartbeat
-    - name: metric_pingaccess_session_state_attribute_map_size
-      path: $.items[*]."session.state.attribute.map.size"+
-      labels:
-        environment: pingaccess
-        source: heartbeat
-    - name: metric_pingaccess_sp_session_registry_session_map_size
-      path: $.items[*]."sp.session.registry.session.map.size"+
-      labels:
-        environment: pingaccess
-        source: heartbeat
-    - name: metric_pingaccess_total_failed_transactions
-      path: $.items[*]."total.failed.transactions"+
-      labels:
-        environment: pingaccess
-        source: heartbeat
-    - name: metric_pingaccess_total_transactions
-      path: $.items[*]."total.transactions"+
       labels:
         environment: pingaccess
         source: heartbeat
