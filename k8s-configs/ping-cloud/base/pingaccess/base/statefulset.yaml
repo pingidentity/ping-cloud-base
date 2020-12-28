@@ -370,15 +370,9 @@ spec:
             name: pa-heartbeat
             protocol: TCP
         volumeMounts:
-          - mountPath: /opt/nginx.conf
-            subPath: nginx.conf
-            name: pa-nginx-conf
           - mountPath: /opt/config.yml
             subPath: config.yml
             name: pa-exporter-config
-          - mountPath: /opt/collect-heartbeat.sh
-            subPath: collect-heartbeat.sh
-            name: pa-collect-heartbeat
         resources:
           limits:
             cpu: 100m
@@ -425,11 +419,3 @@ spec:
         configMap:
           name: pa-exporter-config
           defaultMode: 0644
-      - name: pa-nginx-conf
-        configMap:
-          name: pa-nginx-conf
-          defaultMode: 0555
-      - name: pa-collect-heartbeat
-        configMap:
-          name: pa-collect-heartbeat
-          defaultMode: 0555

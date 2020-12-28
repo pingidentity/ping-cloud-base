@@ -408,15 +408,9 @@ spec:
             name: pf-heartbeat
             protocol: TCP
         volumeMounts:
-          - mountPath: /opt/nginx.conf
-            subPath: nginx.conf
-            name: pf-nginx-conf
           - mountPath: /opt/config.yml
             subPath: config.yml
             name: pf-exporter-config
-          - mountPath: /opt/collect-heartbeat.sh
-            subPath: collect-heartbeat.sh
-            name: pf-collect-heartbeat
         resources:
           limits:
             cpu: 100m
@@ -477,11 +471,3 @@ spec:
         configMap:
           name: pf-exporter-config
           defaultMode: 0644
-      - name: pf-nginx-conf
-        configMap:
-          name: pf-nginx-conf
-          defaultMode: 0555
-      - name: pf-collect-heartbeat
-        configMap:
-          name: pf-collect-heartbeat
-          defaultMode: 0555
