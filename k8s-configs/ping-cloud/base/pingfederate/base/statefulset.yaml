@@ -1,219 +1,5 @@
 # This defines the pingfederate admin statefulset.
 
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: collectd-conf
-data:
-  collectd.conf: |-
-    /etc/collectd/collectd.conf
-    # Install:
-    #  You can usually install with apt-get or yum
-
-    # Documentation:
-    #   https://collectd.org/documentation.shtml
-
-    # System modifications:
-    #   None
-
-    # Config file modifications:
-    #   If you want to use a custom source name, change
-    #   the "Hostname" paramter and set
-    #
-    #     FQDNLookup false
-    #
-    #   Make sure TypesDB points to a valid file:
-    #
-    #     which /usr/share/collectd/types.db
-    #
-    #   Create the directory managed_config and put
-    #   extra config files there:
-    #
-    #     mkdir /etc/collectd.d/managed_config
-    #
-
-    TypesDB "/usr/share/collectd/types.db"
-
-    #   If you use the Hostname parameter, you
-    #   must quote ("...") the second argument
-
-    %%%HOSTNAME%%%
-
-    Interval %%%INTERVAL%%%
-    Timeout 2
-    ReadThreads 5
-    WriteQueueLimitHigh 500000
-    WriteQueueLimitLow  400000
-    CollectInternalStats true
-
-    LoadPlugin logfile
-
-    <Plugin logfile>
-            LogLevel "info"
-            File "stdout"
-            Timestamp true
-            PrintSeverity false
-    </Plugin>
-
-    LoadPlugin write_http
-    <Plugin write_http>
-      <Node "collectd_exporter">
-        URL "http://localhost:9103"
-        Format "JSON"
-        StoreRates false
-      </Node>
-    </Plugin>
-
-    %%%CPU%%%
-
-    %%%CPUFREQ%%%
-
-    %%%DF%%%
-
-    %%%DISK%%%
-
-    %%%INTERFACE%%%
-
-    %%%LOAD%%%
-
-    %%%MEMORY%%%
-
-    %%%PROTOCOLS%%%
-
-    %%%VMEM%%%
-
-    %%%UPTIME%%%
-
-    %%%AGENT_PROCESS_STATS%%%
-
-    CollectInternalStats true
-
-    # Note: You will get warnings on startup if you have no *.conf files.
-    #       This is ok: CollectD will still start.
-    Include "/etc/collectd/managed_config/*.conf"
-
-    Include "/etc/collectd/filtering_config/*.conf"
-
----
-
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: collectd-init
-data:
-  collectd-init.sh: |-
-    #!/bin/sh
-    python /opt/collectd/collectd-web/localhost/runserver.py &
-    /bin/collectd_exporter &
-    while :
-    do
-      python /opt/collect-heartbeat.py
-      sleep 5
-    done
-
----
-
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: collect-heartbeat
-data:
-  collect-heartbeat.py: |-
-    import collectd
-    import json
-    import requests
-    import urllib3
-    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-    NAME = 'ping_identity'
-    VERBOSE_LOGGING = False
-    DEFAULT_HEARTBEAT_URL = 'https://127.0.0.1:8080/pf/heartbeat.ping'
-    DEFAULT_INSTANCE = 'engine'
-    DEFAULT_PRODUCT = 'federate'
-    CONFIGS = []
-    METRIC_TYPES = {
-      'cpu.load': ('cpu_load', 'gauge'),
-      'total.jvm.memory': ('jvm_total_memory', 'gauge'),
-      'free.jvm.memory': ('jvm_free_memory', 'gauge'),
-      'used.jvm.memory': ('jvm_used_memory', 'gauge'),
-      'total.physical.system.memory': ('device_total_memory', 'gauge'),
-      'total.free.system.memory': ('device_free_memory', 'gauge'),
-      'total.used.system.memory': ('device_used_memory', 'gauge'),
-      'number.of.cpus': ('total_cores', 'gauge'),
-      'open.client.connections': ('current_open_connections', 'gauge'),
-      'number.of.applications': ('number_of_applications', 'gauge'),
-      'number.of.virtual.hosts': ('number_of_virtual_hosts', 'gauge'),
-      'response.concurrency.statistics.mean': ('response_concurrency_statistics_mean', 'gauge'),
-      'response.time.statistics.mean': ('response_time_statistics_mean', 'gauge'),
-      'response.time.statistics.90.percentile': ('response_tim_statistics_90_percentile', 'gauge')
-    }
-    METRIC_NA = {
-        'N/A': ('0.00')
-    }
-    HEADER = {
-        'Accept': "Content-Type,Authorization,Cache-Control",
-        'Content-Type': "application/json",
-        'X-Xsrf-Header': "PingIdentity",
-        'Cache-Control': "no-cache"
-    }
-    def configure_callback(conf):
-        # global CONFIGS ### HEARTBEAT_URL
-        # CONFIGS = []
-        VERBOSE_LOGGING = False
-        for node in conf.children:
-            if node.key == "url":
-                heartbeat_url = node.values[0]
-            elif node.key == "type":
-                instance_type = node.values[0]
-            elif node.key == "product":
-                product_type = node.values[0]
-            else:
-                logger('warn', 'Unknown config key: %s' % node.key)
-        CONFIGS.append({
-            'url': heartbeat_url,
-            'type': instance_type,
-            'product': product_type
-        })
-    def get_stats(conf):
-        _conf = conf
-        stats = dict()
-        # logger('info', "HEARTBEAT_URL: %s" % HEARTBEAT_URL )
-        try:
-            r = requests.request('GET', _conf['url'], headers=HEADER, verify=False)
-            stats = r.json()
-            # stats = json.loads(r.content)
-        except Exception as e:
-            logger('warn', "Unable to retrieve stats: %s" % e.message)
-            return stats
-        return stats["items"]
-    def read_callback():
-        logger('verb', "beginning read_callback")
-        for conf in CONFIGS:
-            info = get_stats(conf)
-            if not info:
-                logger('warn', "%s: No data received" % NAME)
-                return
-            for collectd_data in info:
-                for key, value in collectd_data.items():
-                    if key in METRIC_TYPES:
-                        key_root, val_type = METRIC_TYPES[key]
-                        clean_value = '0.00' if value.split(' ')[0] == 'N/A' else  value.split(' ')[0]
-                        val = collectd.Values(plugin=NAME, type=val_type, plugin_instance="ping-" + conf['product'])
-                        val.type_instance = conf['type'] + "." + key_root
-                        val.values = [ clean_value ]
-                        val.dispatch()
-    def logger(t, msg):
-        if t == 'err':
-            collectd.error('%s: %s' % (NAME, msg))
-        elif t == 'warn':
-            collectd.warning('%s: %s' % (NAME, msg))
-        elif t == 'verb':
-            if VERBOSE_LOGGING:
-                collectd.info('%s: %s' % (NAME, msg))
-        else:
-            collectd.notice('%s: %s' % (NAME, msg))
-
----
-
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -608,28 +394,27 @@ spec:
         - containerPort: 9031
         - containerPort: 8080
 
-      - name: pingfederate-collectd-exporter
+      - name: pingfederate-heartbeat-exporter
         ### SHOULD BE UPLOADED TO PING REPO AND CHANGED!
-        image: 7es7/collectd-exporter:latest
+        image: 7es7/json_exporter:latest
         imagePullPolicy: Always
-        command:
-        - /etc/collectd/collectd-init.sh
+        env:
+          - name: SERVICE_SHORTNAME
+            value: pf
         ports:
-          - containerPort: 9103
-            name: pf-collectd-tcp
+          - containerPort: 8079
+            name: pf-heartbeat
             protocol: TCP
-          - containerPort: 8126
-            protocol: UDP
         volumeMounts:
-          - mountPath: /etc/collectd/collectd.conf
-            subPath: collectd.conf
-            name: collectd-conf
-          - mountPath: /etc/collectd/collectd-init.sh
-            subPath: collectd-init.sh
-            name: collectd-init
-          - mountPath: /opt/collect-heartbeat.py
-            subPath: collect-heartbeat.py
-            name: collect-heartbeat
+          - mountPath: /opt/nginx.conf
+            subPath: nginx.conf
+            name: pf-nginx-conf
+          - mountPath: /opt/config.yml
+            subPath: config.yml
+            name: pf-exporter-config
+          - mountPath: /opt/collect-heartbeat.sh
+            subPath: collect-heartbeat.sh
+            name: pf-collect-heartbeat
         resources:
           limits:
             cpu: 100m
@@ -686,15 +471,15 @@ spec:
           secretName: pingfederate-license
           optional: true
           defaultMode: 0400
-      - name: collectd-conf
+      - name: pf-exporter-config
         configMap:
-          name: collectd-conf
+          name: pf-exporter-config
           defaultMode: 0644
-      - name: collectd-init
+      - name: pf-nginx-conf
         configMap:
-          name: collectd-init
+          name: pf-nginx-conf
           defaultMode: 0555
-      - name: collect-heartbeat
+      - name: pf-collect-heartbeat
         configMap:
-          name: collect-heartbeat
+          name: pf-collect-heartbeat
           defaultMode: 0555

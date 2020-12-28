@@ -355,6 +355,36 @@ spec:
         - secretRef:
             name: devops-secret
             optional: true
+
+      - name: pingaccess-heartbeat-exporter
+        ### SHOULD BE UPLOADED TO PING REPO AND CHANGED!
+        image: 7es7/json_exporter:latest
+        imagePullPolicy: Always
+        env:
+          - name: SERVICE_SHORTNAME
+            value: pa
+        ports:
+          - containerPort: 8079
+            name: pa-heartbeat
+            protocol: TCP
+        volumeMounts:
+          - mountPath: /opt/nginx.conf
+            subPath: nginx.conf
+            name: pa-nginx-conf
+          - mountPath: /opt/config.yml
+            subPath: config.yml
+            name: pa-exporter-config
+          - mountPath: /opt/collect-heartbeat.sh
+            subPath: collect-heartbeat.sh
+            name: pa-collect-heartbeat
+        resources:
+          limits:
+            cpu: 100m
+            memory: 300Mi
+          requests:
+            cpu: 100m
+            memory: 300Mi
+
       volumes:
       - name: ssh-dir
         emptyDir: {}
@@ -389,3 +419,15 @@ spec:
           secretName: pingaccess-passwords
           optional: true
           defaultMode: 0400
+      - name: pf-exporter-config
+        configMap:
+          name: pf-exporter-config
+          defaultMode: 0644
+      - name: pf-nginx-conf
+        configMap:
+          name: pf-nginx-conf
+          defaultMode: 0555
+      - name: pf-collect-heartbeat
+        configMap:
+          name: pf-collect-heartbeat
+          defaultMode: 0555

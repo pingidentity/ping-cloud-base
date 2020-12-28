@@ -27,10 +27,8 @@ spec:
     name: pingfederate-runtime
   - port: 8080
     name: metrics
-  - port: 9103
-    name: pf-collectd-tcp
-  - port: 8126
-    name: pf-collectd-udp
+  - port: 8079
+    name: pf-heartbeat
   selector:
     role: pingfederate-engine
 ---    

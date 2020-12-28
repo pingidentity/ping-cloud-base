@@ -8,6 +8,7 @@ resources:
 - service.yaml
 - ingress.yaml
 - hpa.yaml
+- configmap.yaml
 
 generatorOptions:
   disableNameSuffixHash: true

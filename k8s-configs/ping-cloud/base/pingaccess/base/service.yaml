@@ -13,6 +13,8 @@ spec:
     name: pingaccess-admin
   - port: 9090
     name: pingaccess-cluster
+  - port: 8079
+    name: pa-heartbeat
   selector:
     role: pingaccess-admin
 
