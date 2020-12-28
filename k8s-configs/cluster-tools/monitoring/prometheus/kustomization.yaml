@@ -5,3 +5,8 @@ resources:
 - namespace.yaml
 - grafana.yaml
 - prometheus.yaml
+
+configMapGenerator:
+- name: grafana-environment-variables
+  envs:
+  - env_vars

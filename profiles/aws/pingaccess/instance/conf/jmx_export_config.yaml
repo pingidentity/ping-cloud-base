@@ -4,4 +4,4 @@
     lowercaseOutputLabelNames: false
     whitelistObjectNames: ["com.pingidentity.pa:*", "pingaccess:*"]
     rules:
-      - pattern: ".*xx"  
+      - pattern: ".*"

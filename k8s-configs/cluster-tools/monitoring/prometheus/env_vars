@@ -1,0 +1,7 @@
+# These values should be changed for security purposes and added to .gitignore to prevent credentials leakage!
+
+# Grafana admin username
+GF_ADMIN_USERNAME=admin
+
+# Grafana admin password
+GF_ADMIN_PASSWORD=2FederateM0re
