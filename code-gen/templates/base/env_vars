@@ -1,0 +1,138 @@
+############################################################
+# Multi-region parameters
+############################################################
+IS_MULTI_CLUSTER=${IS_MULTI_CLUSTER}
+
+# Primary region name - must be a valid AWS region name
+# Primary region should have the same value for REGION and PRIMARY_REGION
+PRIMARY_REGION=${PRIMARY_REGION}
+
+# Tenant domain suffix for customer for region
+# Primary region should have the same value for TENANT_DOMAIN and PRIMARY_TENANT_DOMAIN
+PRIMARY_TENANT_DOMAIN=${PRIMARY_TENANT_DOMAIN}
+
+# Region-independent URL used for DNS failover/routing
+GLOBAL_TENANT_DOMAIN=${GLOBAL_TENANT_DOMAIN}
+
+############################################################
+# S3 buckets
+############################################################
+# Ping-hosted common artifacts URL
+PING_ARTIFACT_REPO_URL=${PING_ARTIFACT_REPO_URL}
+
+# Customer-specific log and backup URLs for region
+LOG_ARCHIVE_URL=${LOG_ARCHIVE_URL}
+BACKUP_URL=${BACKUP_URL}
+
+############################################################
+# Miscellaneous ping-cloud-base variables
+############################################################
+# Namespace where Ping apps are deployed
+PING_CLOUD_NAMESPACE=${PING_CLOUD_NAMESPACE}
+
+# The ping-cloud-base git URL and branch for base Kubernetes manifests
+K8S_GIT_URL=${K8S_GIT_URL}
+K8S_GIT_BRANCH=${K8S_GIT_BRANCH}
+
+# The name of the Docker image registry
+REGISTRY_NAME=${REGISTRY_NAME}
+
+############################################################
+# Cluster state repo details
+############################################################
+# The known-hosts file to trust the cluster state repo server for git/ssh cloning
+KNOWN_HOSTS_CLUSTER_STATE_REPO="${KNOWN_HOSTS_CLUSTER_STATE_REPO}"
+
+CLUSTER_STATE_REPO_URL=${CLUSTER_STATE_REPO_URL}
+CLUSTER_STATE_REPO_PATH=${CLUSTER_STATE_REPO_PATH}
+CLUSTER_STATE_REPO_BRANCH=${CLUSTER_STATE_REPO_BRANCH}
+
+############################################################
+# Server profile variables
+############################################################
+SERVER_PROFILE_URL=${SERVER_PROFILE_URL}
+SERVER_PROFILE_BRANCH=${SERVER_PROFILE_BRANCH}
+
+############################################################
+# Environment-specific variables
+############################################################
+# Used by server profile hooks
+ENVIRONMENT_TYPE=${ENV}
+
+# Used by Kubernetes manifests
+ENV=${ENV}
+KUSTOMIZE_BASE=${KUSTOMIZE_BASE}
+
+############################################################
+# Lets Encrypt server
+############################################################
+LETS_ENCRYPT_SERVER=${LETS_ENCRYPT_SERVER}
+
+############################################################
+# PingFederate variables for environment
+############################################################
+PF_PD_BIND_PORT=${PF_PD_BIND_PORT}
+PF_PD_BIND_PROTOCOL=${PF_PD_BIND_PROTOCOL}
+PF_PD_BIND_USESSL=${PF_PD_BIND_USESSL}
+
+PF_MIN_HEAP=${PF_MIN_HEAP}
+PF_MAX_HEAP=${PF_MAX_HEAP}
+PF_MIN_YGEN=${PF_MIN_YGEN}
+PF_MAX_YGEN=${PF_MAX_YGEN}
+
+############################################################
+# PingAccess variables for environment
+############################################################
+PA_WAS_MIN_HEAP=${PA_WAS_MIN_HEAP}
+PA_WAS_MAX_HEAP=${PA_WAS_MAX_HEAP}
+PA_WAS_MIN_YGEN=${PA_WAS_MIN_YGEN}
+PA_WAS_MAX_YGEN=${PA_WAS_MAX_YGEN}
+PA_WAS_GCOPTION=${PA_WAS_GCOPTION}
+
+PA_MIN_HEAP=${PA_MIN_HEAP}
+PA_MAX_HEAP=${PA_MAX_HEAP}
+PA_MIN_YGEN=${PA_MIN_YGEN}
+PA_MAX_YGEN=${PA_MAX_YGEN}
+PA_GCOPTION=${PA_GCOPTION}
+
+############################################################
+# Cluster name variables
+############################################################
+CLUSTER_NAME=${CLUSTER_NAME}
+CLUSTER_NAME_LC=${CLUSTER_NAME_LC}
+
+############################################################
+# DNS zones
+############################################################
+DNS_ZONE=${DNS_ZONE}
+PRIMARY_DNS_ZONE=${PRIMARY_DNS_ZONE}
+
+############################################################
+# Public hostnames
+############################################################
+# Ping admin configuration required for admin access and clustering
+PD_PRIMARY_PUBLIC_HOSTNAME=pingdirectory-admin.${PRIMARY_DNS_ZONE}
+PF_ADMIN_PUBLIC_HOSTNAME=pingfederate-admin.${PRIMARY_DNS_ZONE}
+PA_ADMIN_PUBLIC_HOSTNAME=pingaccess-admin.${PRIMARY_DNS_ZONE}
+PA_WAS_ADMIN_PUBLIC_HOSTNAME=pingaccess-was-admin.${PRIMARY_DNS_ZONE}
+
+PD_CLUSTER_PUBLIC_HOSTNAME=pingdirectory-cluster.${PRIMARY_DNS_ZONE}
+PF_CLUSTER_PUBLIC_HOSTNAME=pingfederate-cluster.${PRIMARY_DNS_ZONE}
+PA_CLUSTER_PUBLIC_HOSTNAME=pingaccess-cluster.${PRIMARY_DNS_ZONE}
+PA_WAS_CLUSTER_PUBLIC_HOSTNAME=pingaccess-was-cluster.${PRIMARY_DNS_ZONE}
+
+# Ping engine hostname variables
+PD_PUBLIC_HOSTNAME=pingdirectory-admin.${DNS_ZONE}
+PF_ENGINE_PUBLIC_HOSTNAME=pingfederate.${DNS_ZONE}
+PA_ENGINE_PUBLIC_HOSTNAME=pingaccess.${DNS_ZONE}
+PA_WAS_ENGINE_PUBLIC_HOSTNAME=pingaccess-was.${DNS_ZONE}
+
+PROMETHEUS_PUBLIC_HOSTNAME=prometheus.${DNS_ZONE}
+GRAFANA_PUBLIC_HOSTNAME=monitoring.${DNS_ZONE}
+KIBANA_PUBLIC_HOSTNAME=logs.${DNS_ZONE}
+
+############################################################
+# IRSA - IAM role for service accounts
+############################################################
+# Used by ping product pods
+IRSA_PING_ANNOTATION_KEY_VALUE="${IRSA_PING_ANNOTATION_KEY_VALUE}"
