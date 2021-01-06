@@ -106,14 +106,14 @@ spec:
           subPath: kubectl
         readinessProbe:
           exec:
-            command: [ /opt/staging/hooks/99-liveness.sh ]
+            command: [ liveness.sh ]
           initialDelaySeconds: 60
           periodSeconds: 5
           failureThreshold: 3
           timeoutSeconds: 5
         livenessProbe:
           exec:
-            command: [ /opt/staging/hooks/99-liveness.sh ]
+            command: [ liveness.sh ]
           initialDelaySeconds: 60
           periodSeconds: 30
           failureThreshold: 4
