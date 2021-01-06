@@ -14,35 +14,35 @@ spec:
   template:
     spec:
       containers:
-      - name: stunnel
-        image: pingcloud-mirror.jfrog.io/dweomer/stunnel
-        securityContext:
-          # Run as the stunnel uid and gid
-          runAsNonRoot: true
-          runAsUser: 100
-          runAsGroup: 101
-        imagePullPolicy: IfNotPresent
-        command:
-        - /home/stunnel/stunnel.sh
-        ports:
-        - containerPort: 5678
-          name: stunnel
-        resources:
-          requests:
-            memory: "4Gi"
-            cpu: "1"
-          limits:
-            memory: "4Gi"
-            cpu: "1"
-        envFrom:
-        - configMapRef:
-            name: pingdirectory-environment-variables
-        volumeMounts:
         - name: stunnel
-          mountPath: /home/stunnel/stunnel.sh
-          subPath: stunnel.sh
+          image: pingcloud-mirror.jfrog.io/dweomer/stunnel
+          securityContext:
+            # Run as the stunnel uid and gid
+            runAsNonRoot: true
+            runAsUser: 100
+            runAsGroup: 101
+          imagePullPolicy: IfNotPresent
+          command:
+            - /home/stunnel/stunnel.sh
+          ports:
+            - containerPort: 5678
+              name: stunnel
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "20m"
+            limits:
+              memory: "64Mi"
+              cpu: "200m"
+          envFrom:
+            - configMapRef:
+                name: pingdirectory-environment-variables
+          volumeMounts:
+            - name: stunnel
+              mountPath: /home/stunnel/stunnel.sh
+              subPath: stunnel.sh
       volumes:
-      - name: stunnel
-        configMap:
-          name: stunnel
-          defaultMode: 0555
+        - name: stunnel
+          configMap:
+            name: stunnel
+            defaultMode: 0555

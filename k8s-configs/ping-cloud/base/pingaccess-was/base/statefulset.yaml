@@ -81,8 +81,8 @@ spec:
         imagePullPolicy: IfNotPresent
         resources:
           requests:
-            memory: "1Gi"
-            cpu: "1"
+            memory: "256Mi"
+            cpu: "20m"
           limits:
             memory: "1Gi"
             cpu: "1"
@@ -223,7 +223,7 @@ spec:
   selector:
     matchLabels:
       role: pingaccess-was-engine
-  replicas: 2
+  replicas: 1
   serviceName: pingaccess-was
   podManagementPolicy: OrderedReady
   template:
@@ -304,11 +304,11 @@ spec:
         imagePullPolicy: IfNotPresent
         resources:
           requests:
-            memory: "1Gi"
-            cpu: "1"
+            memory: "256Mi"
+            cpu: "20m"
           limits:
             memory: "1Gi"
-            cpu: "1"
+            cpu: 1
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir

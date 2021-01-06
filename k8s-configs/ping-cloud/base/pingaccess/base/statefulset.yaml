@@ -81,11 +81,11 @@ spec:
         imagePullPolicy: IfNotPresent
         resources:
           requests:
-            memory: "4Gi"
-            cpu: "2"
+            memory: "500Mi"
+            cpu: "20m"
           limits:
-            memory: "4Gi"
-            cpu: "2"
+            memory: "1Gi"
+            cpu: "1"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
@@ -288,8 +288,8 @@ spec:
         imagePullPolicy: IfNotPresent
         resources:
           requests:
-            memory: "1Gi"
-            cpu: "1"
+            memory: "256Mi"
+            cpu: "80m"
           limits:
             memory: "1Gi"
             cpu: "1"

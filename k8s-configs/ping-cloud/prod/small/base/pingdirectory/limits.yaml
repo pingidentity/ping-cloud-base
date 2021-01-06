@@ -11,10 +11,25 @@ spec:
         resources:
           limits:
             memory: 16Gi
-            cpu: 2
           requests:
             memory: 16Gi
             cpu: 2
+      - name: stunnel
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "1"
+          limits:
+            memory: "4Gi"
+            cpu: "1"
+      - name: pingdirectory-statsd-exporter
+        resources:
+          limits:
+            cpu: 100m
+            memory: 300Mi
+          requests:
+            cpu: 100m
+            memory: 300Mi
   volumeClaimTemplates:
   - metadata:
       name: out-dir
