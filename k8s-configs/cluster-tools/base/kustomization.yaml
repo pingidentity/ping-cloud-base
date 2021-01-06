@@ -1,0 +1,12 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+- cert-manager
+- cluster-autoscaler
+- service-discovery
+- ingress
+- logging
+- metrics
+- monitoring
+- security

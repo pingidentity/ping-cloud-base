@@ -504,7 +504,7 @@ mkdir -p "${K8S_CONFIGS_DIR}"
 
 cp ./update-cluster-state-wrapper.sh "${CLUSTER_STATE_DIR}"
 cp ../.gitignore "${CLUSTER_STATE_DIR}"
-cp ../k8s-configs/cluster-tools/git-ops/flux/flux-command.sh "${K8S_CONFIGS_DIR}"
+cp ../k8s-configs/cluster-tools/base/git-ops/flux/flux-command.sh "${K8S_CONFIGS_DIR}"
 find "${TEMPLATES_HOME}" -type f -maxdepth 1 | xargs -I {} cp {} "${K8S_CONFIGS_DIR}"
 
 cp -pr ../profiles/aws/. "${CLUSTER_STATE_DIR}"/profiles
@@ -574,10 +574,10 @@ for ENV in ${ENVIRONMENTS}; do
   # Update the PF JVM limits based on environment.
   case "${ENV}" in
     dev | test)
-      export_variable "${CDE_BASE_ENV_VARS}" PF_MIN_HEAP 1536m
-      export_variable "${CDE_BASE_ENV_VARS}" PF_MAX_HEAP 1536m
-      export_variable "${CDE_BASE_ENV_VARS}" PF_MIN_YGEN 768m
-      export_variable_ln "${CDE_BASE_ENV_VARS}" PF_MAX_YGEN 768m
+      export_variable "${CDE_BASE_ENV_VARS}" PF_MIN_HEAP 1024m
+      export_variable "${CDE_BASE_ENV_VARS}" PF_MAX_HEAP 1024m
+      export_variable "${CDE_BASE_ENV_VARS}" PF_MIN_YGEN 512m
+      export_variable_ln "${CDE_BASE_ENV_VARS}" PF_MAX_YGEN 512m
       ;;
     stage | prod)
       export_variable "${CDE_BASE_ENV_VARS}" PF_MIN_HEAP 3072m
@@ -590,10 +590,20 @@ for ENV in ${ENVIRONMENTS}; do
   # Set PA variables
   add_comment_header_to_file "${CDE_BASE_ENV_VARS}" 'PingAccess variables for environment'
 
-  export_variable "${CDE_BASE_ENV_VARS}" PA_WAS_MIN_HEAP 2048m
-  export_variable "${CDE_BASE_ENV_VARS}" PA_WAS_MAX_HEAP 2048m
-  export_variable "${CDE_BASE_ENV_VARS}" PA_WAS_MIN_YGEN 1024m
-  export_variable "${CDE_BASE_ENV_VARS}" PA_WAS_MAX_YGEN 1024m
+  case "${ENV}" in
+    dev | test)
+      export_variable "${CDE_BASE_ENV_VARS}" PA_WAS_MIN_HEAP 1024m
+      export_variable "${CDE_BASE_ENV_VARS}" PA_WAS_MAX_HEAP 1024m
+      export_variable "${CDE_BASE_ENV_VARS}" PA_WAS_MIN_YGEN 512m
+      export_variable "${CDE_BASE_ENV_VARS}" PA_WAS_MAX_YGEN 512m
+      ;;
+    stage | prod)
+      export_variable "${CDE_BASE_ENV_VARS}" PA_WAS_MIN_HEAP 2048m
+      export_variable "${CDE_BASE_ENV_VARS}" PA_WAS_MAX_HEAP 2048m
+      export_variable "${CDE_BASE_ENV_VARS}" PA_WAS_MIN_YGEN 1024m
+      export_variable "${CDE_BASE_ENV_VARS}" PA_WAS_MAX_YGEN 1024m
+      ;;
+    esac
   export_variable_ln "${CDE_BASE_ENV_VARS}" PA_WAS_GCOPTION '-XX:+UseParallelGC'
 
   export_variable "${CDE_BASE_ENV_VARS}" PA_MIN_HEAP 512m
