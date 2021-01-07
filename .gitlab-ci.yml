@@ -2,6 +2,7 @@
 stages:
   - compile
   - build
+  - publish-profiles
   - deploy
   - unit-test
   - integration-test
@@ -45,9 +46,20 @@ build-profile-zips:
       - profiles/aws/*/*.zip
     expire_in: 1 week
 
+## Publish-profiles stage ##
+publish-profile-zips:
+  stage: publish-profiles
+  dependencies:
+    - build-profile-zips
+  tags:
+    - pd-eks-deploy
+  image: amazon/aws-cli
+  script:
+    - aws s3 cp --exclude "*" --include "*.zip" --recursive profiles/aws/ s3://ping-artifacts-dev/profiles --dry-run
+
 ## Deploy stage ##
 deploy:
-  stage: build
+  stage: deploy
   tags:
     - pd-eks-deploy
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
@@ -56,16 +68,6 @@ deploy:
   except:
     variables:
       - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
-
-publish-profile-zips:
-  stage: deploy
-  dependencies:
-    - build-profile-zips
-  tags:
-    - pd-eks-deploy
-  image: amazon/aws-cli
-  script:
-    - aws s3 cp --exclude "*" --include "*.zip" --recursive profiles/aws/ s3://ping-artifacts-dev/profiles --dry-run
 
 ## Unit Test stage ##
 common-unit-tests:
