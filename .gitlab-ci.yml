@@ -29,8 +29,9 @@ build-profile-zips:
   stage: build
   tags:
     - pd-eks-deploy
-  image: ubuntu
+  image: alpine
   script:
+    - apk add --update zip
     - cd profiles/aws/pingfederate
     - zip pingfederate-profile-$CI_COMMIT_REF_NAME.zip **/*
     - cd -
