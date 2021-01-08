@@ -57,6 +57,7 @@ publish-profile-zips:
     name: amazon/aws-cli
     entrypoint: [""]
   script:
+    - ./ci-scripts/build/configure_s3.sh
     - aws s3 cp --exclude "*" --include "*.zip" --recursive profiles/aws/ s3://ping-artifacts-dev/profiles
 
 ## Deploy stage ##
