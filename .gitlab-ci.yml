@@ -55,8 +55,7 @@ publish-profile-zips:
     - pd-eks-deploy
   image:
     name: amazon/aws-cli
-    entrypoint:
-      - /bin/sh
+    entrypoint: [""]
   script:
     - aws s3 cp --exclude "*" --include "*.zip" --recursive profiles/aws/ s3://ping-artifacts-dev/profiles --dry-run
 
