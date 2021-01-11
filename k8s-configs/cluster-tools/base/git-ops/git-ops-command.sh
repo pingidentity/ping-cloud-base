@@ -1,10 +1,10 @@
 #!/bin/sh -e
 
 # This script copies the kustomization templates into a temporary directory, performs substitution into them using
-# environment variables defined in an env_vars file and builds the uber deploy.yaml file. It is run by flux on
+# environment variables defined in an env_vars file and builds the uber deploy.yaml file. It is run by the CD tool on
 # every poll interval.
 
-LOG_FILE=/tmp/flux-command.log
+LOG_FILE=/tmp/git-ops-command.log
 
 ########################################################################################################################
 # Add the provided message to LOG_FILE.
@@ -28,11 +28,11 @@ substitute_vars() {
   env_file="$1"
   subst_dir="$2"
 
-  log "flux-command: substituting variables in '${env_file}' in directory ${subst_dir}"
+  log "git-ops-command: substituting variables in '${env_file}' in directory ${subst_dir}"
 
   # Create a list of variables to substitute
   vars="$(grep -Ev "^$|#" "${env_file}" | cut -d= -f1 | awk '{ print "${" $1 "}" }')"
-  log "flux-command: substituting variables '${vars}'"
+  log "git-ops-command: substituting variables '${vars}'"
 
   # Export the environment variables
   set -a; . "${env_file}"; set +a
@@ -78,14 +78,14 @@ TMP_DIR="$(mktemp -d)"
 BUILD_DIR="${TMP_DIR}/${TARGET_DIR_SHORT}"
 
 # Copy contents of target directory into temporary directory
-log "flux-command: copying templates into '${TMP_DIR}'"
+log "git-ops-command: copying templates into '${TMP_DIR}'"
 cp -pr "${TARGET_DIR_FULL}" "${TMP_DIR}"
 test -d "${BASE_DIR}" && cp -pr "${BASE_DIR}" "${TMP_DIR}"
 
 # If there's an environment file, then perform substitution
 if test -f 'env_vars'; then
   # Perform the substitutions in a sub-shell so it doesn't pollute the current shell.
-  log "flux-command: substituting env_vars into templates"
+  log "git-ops-command: substituting env_vars into templates"
   (
     cd "${BUILD_DIR}"
 
@@ -105,10 +105,10 @@ fi
 
 # Build the uber deploy yaml
 if test -z "${OUT_DIR}" || test ! -d "${OUT_DIR}"; then
-  log "flux-command: generating uber yaml file from '${BUILD_DIR}' to stdout"
+  log "git-ops-command: generating uber yaml file from '${BUILD_DIR}' to stdout"
   kustomize build --load_restrictor none "${BUILD_DIR}"
 else
-  log "flux-command: generating yaml files from '${BUILD_DIR}' to '${OUT_DIR}'"
+  log "git-ops-command: generating yaml files from '${BUILD_DIR}' to '${OUT_DIR}'"
   kustomize build --load_restrictor none "${BUILD_DIR}" --output "${OUT_DIR}"
 fi
 
