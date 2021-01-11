@@ -27,22 +27,7 @@ replaceAndCommit() {
   REF_TYPE=${3}
 
   echo "Changing ${SOURCE_REF} -> ${TARGET_REF} in expected files"
-
-  # Replace SERVER_PROFILE_BRANCH variable in product-specific env_vars file
-  PRODUCTS='pingdirectory pingfederate pingaccess pingaccess-was'
-  for PRODUCT in ${PRODUCTS}; do
-    sed -i.bak -E "s/(SERVER_PROFILE_BRANCH=).*$/\1${TARGET_REF}/" \
-        "k8s-configs/ping-cloud/base/${PRODUCT}/base/env_vars"
-  done
-
-  # Verify references
-  echo ---
-  for PRODUCT in ${PRODUCTS}; do
-    FILE="k8s-configs/ping-cloud/base/${PRODUCT}/base/env_vars"
-    echo "Verifying file ${FILE}"
-    grep "${TARGET_REF}" "${FILE}"
-  done
-  echo ---
+  git grep -l "${SOURCE_REF}" | xargs sed -i.bak "s/${SOURCE_REF}/${TARGET_REF}/g"
 
   echo "Committing changes for new ${REF_TYPE} ${TARGET_REF}"
   git add .
