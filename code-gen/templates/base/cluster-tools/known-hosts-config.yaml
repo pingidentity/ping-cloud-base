@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: flux-ssh-config
-  namespace: flux
-data:
-  known_hosts: |-
-    ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
