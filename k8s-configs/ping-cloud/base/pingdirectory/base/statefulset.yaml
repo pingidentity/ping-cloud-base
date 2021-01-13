@@ -45,6 +45,7 @@ spec:
                       values:
                         - pingdirectory
                 topologyKey: "failure-domain.beta.kubernetes.io/zone"
+        # this does not apply in dev/test and is removed via kustomize
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
@@ -53,6 +54,7 @@ spec:
                     operator: In
                     values:
                       - "true"
+      # this does not apply in dev/test and is removed via kustomize
       tolerations:
         - key: "pingidentity.com/pd-only"
           operator: "Equal"
