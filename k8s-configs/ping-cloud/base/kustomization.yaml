@@ -1,6 +1,7 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
+
 generatorOptions:
   disableNameSuffixHash: true
 
@@ -16,3 +17,4 @@ resources:
 - rbac.yaml
 - secret.yaml
 - configmap.yaml
+- pingcloud-metadata

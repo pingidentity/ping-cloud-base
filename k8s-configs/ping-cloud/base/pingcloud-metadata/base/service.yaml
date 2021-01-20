@@ -1,0 +1,15 @@
+#
+# This service exposes the pingcloud-metadata port to the cluster.
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: metadata
+  labels:
+    role: metadata
+spec:
+  ports:
+  - port: 5000
+    targetPort: 5000
+  selector:
+    role: pingcloud-metadata
