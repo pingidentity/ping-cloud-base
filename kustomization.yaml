@@ -79,6 +79,19 @@ patchesJson6902:
     group: extensions
     version: v1beta1
     kind: Ingress
+    name: metadata-ingress
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: metadata.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: metadata.${TENANT_DOMAIN}
+
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
     name: pingdirectory-http-ingress
   patch: |-
     - op: replace

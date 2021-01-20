@@ -65,6 +65,12 @@ configMapGenerator:
   - env_vars
   - pingaccess-was/env_vars
 
+# Pingcloud-metadata
+- name: pingcloud-metadata-environment-variables
+  behavior: merge
+  envs:
+  - ../base/env_vars
+
 patchesStrategicMerge:
 
 ### Regional enablement - remove admins, backups, etc. from secondary ###

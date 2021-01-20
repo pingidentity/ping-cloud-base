@@ -1,0 +1,57 @@
+#
+# This defines the pingcloud-metadata deployment.
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pingcloud-metadata
+  labels:
+    role: pingcloud-metadata
+spec:
+  selector:
+    matchLabels:
+      role: pingcloud-metadata
+  template:
+    metadata:
+      name: pingcloud-metadata
+      labels:
+        role: pingcloud-metadata
+    spec:
+      serviceAccount: ping-serviceaccount
+      containers:
+      - name: pingcloud-metadata
+        image: public.ecr.aws/r2h3l6e4/pingidentity/pingcloud-metadata:v0.1
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        envFrom:
+        - configMapRef:
+            name: pingcloud-metadata-environment-variables
+        resources:
+          limits:
+            memory: "400Mi"
+            cpu: "200m"
+          requests:
+            memory: "400Mi"
+            cpu: "200m"
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          failureThreshold: 3
+          successThreshold: 1
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          failureThreshold: 3
+          successThreshold: 1
+        ports:
+        - containerPort: 5000

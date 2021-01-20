@@ -314,6 +314,20 @@ patchesJson6902:
       path: /spec/rules/0/host
       value: pingdirectory.${DNS_ZONE}
 
+# pingcloud-metadata ingress
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: metadata-ingress
+  patch: |
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: metadata.${DNS_ZONE}
+    - op: replace
+      path: /spec/rules/0/host
+      value: metadata.${DNS_ZONE}
+
 # Set a hostname for all the headless services so their endpoint IPs are published to Route53
 - target:
     version: v1
