@@ -12,7 +12,6 @@ resources:
 - ../../../base/pingdirectory/aws
 - ../../../base/pingfederate/aws
 - ../../../base/pingaccess/aws
-- ../../../base/pingaccess-was/aws
 
 generatorOptions:
   disableNameSuffixHash: true
