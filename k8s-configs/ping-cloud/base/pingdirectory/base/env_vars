@@ -1,6 +1,7 @@
 ORCHESTRATION_TYPE=kubernetes
 #VERBOSE=true
-SERVER_PROFILE_URL=https://github.com/pingidentity/ping-cloud-base.git
+# Only set this if there is a profile customization. (PDO-1739)
+#SERVER_PROFILE_URL=https://github.com/pingidentity/ping-cloud-base.git
 SERVER_PROFILE_PATH=profiles/aws/pingdirectory
 SERVER_PROFILE_BRANCH=master
 

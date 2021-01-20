@@ -27,7 +27,6 @@
 # │       ├── prod
 # │       ├── stage
 # │       └── test
-# │   └── profiles
 # └── fluxcd
 #    ├── dev
 #    ├── prod
@@ -236,9 +235,6 @@ ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
 ${CLUSTER_STATE_REPO_URL}
 ${CLUSTER_STATE_REPO_BRANCH}
 ${CLUSTER_STATE_REPO_PATH}
-${SERVER_PROFILE_URL}
-${SERVER_PROFILE_BRANCH}
-${SERVER_PROFILE_PATH}
 ${ENV}
 ${ENVIRONMENT_TYPE}
 ${KUSTOMIZE_BASE}
@@ -285,10 +281,6 @@ ${SSH_ID_KEY_BASE64}'
 add_derived_variables() {
   # The directory within the cluster state repo for the region's manifest files.
   export CLUSTER_STATE_REPO_PATH=\${REGION_NICK_NAME}
-
-  # Server profile URL and branch. The directory is in each app's env_vars file.
-  export SERVER_PROFILE_URL=\${CLUSTER_STATE_REPO_URL}
-  export SERVER_PROFILE_BRANCH=\${CLUSTER_STATE_REPO_BRANCH}
 
   # Zone for this region and the primary region
   if "${IS_BELUGA_ENV}"; then
@@ -514,7 +506,6 @@ cp ../.gitignore "${CLUSTER_STATE_DIR}"
 cp ../k8s-configs/cluster-tools/base/git-ops/git-ops-command.sh "${K8S_CONFIGS_DIR}"
 find "${TEMPLATES_HOME}" -type f -maxdepth 1 | xargs -I {} cp {} "${K8S_CONFIGS_DIR}"
 
-cp -pr ../profiles/aws/. "${CLUSTER_STATE_DIR}"/profiles
 echo "${PING_CLOUD_BASE_COMMIT_SHA}" > "${TARGET_DIR}/pcb-commit-sha.txt"
 
 # Now generate the yaml files for each environment

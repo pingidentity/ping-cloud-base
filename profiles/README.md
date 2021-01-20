@@ -1,6 +1,9 @@
 # Development Notes
 
-Use the following steps for testing server profiles during development. 
+Server Profiles are being built into the image process going forward. The SERVER_PROFILE_URL is used to specifically 
+override defaults. 
+
+Use the following steps for customizing server profiles during development. 
 
 1. Create a local branch and make your server profile changes in that branch.
 
