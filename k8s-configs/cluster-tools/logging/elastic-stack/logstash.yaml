@@ -519,6 +519,13 @@ data:
             json {
                 source => "json_data"
             }
+            if([json_data]){
+                mutate {
+                    remove_field => "[json_data]"
+                    remove_field => "[log]"
+                    remove_field => "[pod_name]"
+                }
+            }
         }
 
         if([log_type] == "PA_Admin_System_Log" or [log_type] == "PA_WAS_Admin_System_Log"){
@@ -529,6 +536,13 @@ data:
             }
             json {
                 source => "json_data"
+            }
+            if([json_data]){
+                mutate {
+                    remove_field => "[json_data]"
+                    remove_field => "[log]"
+                    remove_field => "[pod_name]"
+                }
             }
         }
 
@@ -541,6 +555,13 @@ data:
             json {
                 source => "json_data"
             }
+            if([json_data]){
+                mutate {
+                    remove_field => "[json_data]"
+                    remove_field => "[log]"
+                    remove_field => "[pod_name]"
+                }
+            }
         }
 
         if([log_type] == "PA_Admin_Audit_Log" or [log_type] == "PA_WAS_Admin_Audit_Log"){
@@ -552,6 +573,13 @@ data:
             json {
                 source => "json_data"
             }
+            if([json_data]){
+                mutate {
+                    remove_field => "[json_data]"
+                    remove_field => "[log]"
+                    remove_field => "[pod_name]"
+                }
+            }
         }
 
         if([log_type] == "PF_Admin_Audit_Log" or [log_type] == "PF_Admin_Audit_API_Log" ){
@@ -562,6 +590,13 @@ data:
             }
             json {
                 source => "json_data"
+            }
+            if([json_data]){
+                mutate {
+                    remove_field => "[json_data]"
+                    remove_field => "[log]"
+                    remove_field => "[pod_name]"
+                }
             }
         }
 

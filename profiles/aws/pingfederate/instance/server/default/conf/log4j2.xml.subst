@@ -288,10 +288,10 @@
                     <KeyValuePair key="dateTimeStamp" value="$${date:yyyy-MM-dd HH:mm:ss,S}"/>
                     <KeyValuePair key="user" value="$${ctx:api.user:-}" />
                     <KeyValuePair key="authtype" value="$${ctx:api.authtype:-}" />
-                    <KeyValuePair key="clientip" value="$${ctx:api.clientip" />
-                    <KeyValuePair key="httpmethod" value="$${ctx:api.httpmethod" />
-                    <KeyValuePair key="url" value="$${ctx:api.url" />
-                    <KeyValuePair key="status" value="$${ctx:api.status" />
+                    <KeyValuePair key="clientip" value="$${ctx:api.clientip:-}" />
+                    <KeyValuePair key="httpmethod" value="$${ctx:api.httpmethod:-}" />
+                    <KeyValuePair key="url" value="$${ctx:api.url:-}" />
+                    <KeyValuePair key="status" value="$${ctx:api.status:-}" />
                     <KeyValuePair key="log_purpose" value="AdminApiAuditSIEM" />
                 </JSONLayout>
             </PingSyslogLayout>
