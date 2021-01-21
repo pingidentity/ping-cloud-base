@@ -231,6 +231,14 @@ patchesJson6902:
       path: /spec/rules/4/host
       value: logs${ENVIRONMENT}.${TENANT_DOMAIN}
 
+    # Argo CD through PA-WAS engines
+    - op: replace
+      path: /spec/tls/0/hosts/5
+      value: argocd${ENVIRONMENT}.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/5/host
+      value: argocd${ENVIRONMENT}.${TENANT_DOMAIN}
+
 # metadata
 - target:
     group: extensions

@@ -67,6 +67,14 @@ testPrometheusSite() {
   assertEquals "Name value was ${name}" 'Prometheus' "$(strip_double_quotes "${name}")"
 }
 
+testArgocdSite() {
+  response=$(get_site "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "23")
+  assertEquals "Response value was ${response}" 0 $?
+
+  name=$(parse_value_from_response "${response}" 'name')
+  assertEquals "Name value was ${name}" 'Argo CD' "$(strip_double_quotes "${name}")"
+}
+
 testPaVirtualHost() {
   response=$(get_virtual_host "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "10")
   assertEquals "Response value was ${response}" 0 $?
@@ -137,6 +145,20 @@ testPrometheusVirtualHost() {
   fi
 }
 
+testArgocdVirtualHost() {
+  response=$(get_virtual_host "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "23")
+  assertEquals "Response value was ${response}" 0 $?
+
+  host=$(parse_value_from_response "${response}" 'host')
+  stripped_host=$(strip_double_quotes "${host}")
+
+  if [[ ${stripped_host} =~ ^argocd.* ]]; then
+    assertContains "${stripped_host}" 'argocd'
+  else
+    fail 'The Argo CD virtual host should have a host value starting with argocd'
+  fi
+}
+
 testPaApplication() {
   response=$(get_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "10")
   assertEquals "Response value was ${response}" 0 $?
@@ -175,6 +197,14 @@ testPrometheusApplication() {
 
   name=$(parse_value_from_response "${response}" 'name')
   assertEquals "Name value was ${name}" 'Prometheus App' "$(strip_double_quotes "${name}")"
+}
+
+testArgocdApplication() {
+  response=$(get_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "24")
+  assertEquals "Response value was ${response}" 0 $?
+
+  name=$(parse_value_from_response "${response}" 'name')
+  assertEquals "Name value was ${name}" 'Argo CD App' "$(strip_double_quotes "${name}")"
 }
 
 testUpdatedApplicationReservedPath() {

@@ -31,6 +31,7 @@ spec:
         - monitoring-dev.ping-demo.com
         - prometheus-dev.ping-demo.com
         - logs-dev.ping-demo.com
+        - argocd-dev.ping-demo.com
 
   rules:
     - host: pingaccess-admin-dev.ping-demo.com
@@ -69,6 +70,14 @@ spec:
       http:
         paths:
           # This rule allows external access to Kibana via the pingaccess-was runtime service
+          - path: /
+            backend:
+              serviceName: pingaccess-was
+              servicePort: 443
+    - host: argocd-dev.ping-demo.com
+      http:
+        paths:
+          # This rule allows external access to Argo CD via the pingaccess-was runtime service
           - path: /
             backend:
               serviceName: pingaccess-was
