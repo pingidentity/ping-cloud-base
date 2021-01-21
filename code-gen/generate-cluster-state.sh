@@ -21,17 +21,17 @@
 # For example, the script produces a directory structure as shown below (Directories greater than a depth of 3 and
 # files within the directories are omitted for brevity):
 #
-# ├── cluster-state
-# │   └── k8s-configs
-# │       ├── dev
-# │       ├── prod
-# │       ├── stage
-# │       └── test
-# └── fluxcd
-#    ├── dev
-#    ├── prod
-#    ├── stage
-#    └── test
+# \cluster-state
+#   \k8s-configs
+#     \dev
+#     \prod
+#     \stage
+#     \test
+#   \fluxcd
+#     \dev
+#     \prod
+#     \stage
+#     \test
 #
 # Deploying the manifests under the fluxcd directory for a specific environment will bootstrap the cluster with a
 # Continuous Delivery tool. Once the CD tool is deployed to the cluster, it will deploy the rest of the ping stack
