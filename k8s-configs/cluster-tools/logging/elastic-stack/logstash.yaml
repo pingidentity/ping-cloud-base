@@ -251,7 +251,7 @@ data:
         if([log_type] == "PF_Audit_Log"){
             grok {
                 match => {
-                  "log" => [ "<%{NUMBER:trackingID}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                  "log" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             #Convert the injested data into Individual Fields for elasticsearch
@@ -340,7 +340,7 @@ data:
         if([log_type] == "PF_System_Log"){
             grok {
                 match => {
-                  "log" => [ "<%{NUMBER:trackingID}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                  "log" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
@@ -359,7 +359,7 @@ data:
         if([log_type] == "PF_Provisioner_Log"){
             grok {
                 match => {
-                  "log" => [ "<%{NUMBER:trackingID}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                  "log" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
@@ -450,7 +450,7 @@ data:
         if([log_type] == "PA_Audit_Log" or [log_type] == "PA_WAS_Audit_Log"){
             grok {
                 match => {
-                    "message" => [ "<%{NUMBER:trackingID}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
@@ -459,7 +459,7 @@ data:
 
             if([json_data]){
                 mutate {
-                    remove_field => "[json_data]"
+                    remove_field => "[json_data]" 
                 }
                 geoip {
                     source => "client"
@@ -508,7 +508,7 @@ data:
         if([log_type] == "PA_System_Log" or [log_type] == "PA_WAS_System_Log"){
             grok {
                 match => {
-                    "message" => [ "<%{NUMBER:trackingID}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
@@ -519,7 +519,7 @@ data:
         if([log_type] == "PA_Admin_System_Log" or [log_type] == "PA_WAS_Admin_System_Log"){
             grok {
                 match => {
-                    "message" => [ "<%{NUMBER:trackingID}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
@@ -530,7 +530,7 @@ data:
         if([log_type] == "PF_Admin_System_Log"){
             grok {
                 match => {
-                    "message" => [ "<%{NUMBER:trackingID}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
@@ -541,7 +541,7 @@ data:
         if([log_type] == "PA_Admin_Audit_Log" or [log_type] == "PA_WAS_Admin_Audit_Log"){
             grok {
                 match => {
-                    "message" => [ "<%{NUMBER:trackingID}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
@@ -552,7 +552,7 @@ data:
         if([log_type] == "PF_Admin_Audit_Log"){
             grok {
                 match => {
-                    "message" => [ "<%{NUMBER:trackingID}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
