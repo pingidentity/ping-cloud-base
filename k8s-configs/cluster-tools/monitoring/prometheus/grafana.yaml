@@ -6,7 +6,7 @@ metadata:
   name: grafana-datasources
   namespace: prometheus
 data:
-  prometheus.yaml: |-
+  datasources.yaml: |-
     {
         "apiVersion": 1,
         "datasources": [
@@ -16,7 +16,127 @@ data:
                 "type": "prometheus",
                 "url": "http://prometheus.prometheus.svc.cluster.local:9090",
                 "version": 1
-            }
+            },
+            {
+                "access": "proxy",
+                "name": "ES-PF-Audit",
+                "type": "elasticsearch",
+                "typeLogoUrl": "public/app/plugins/datasource/elasticsearch/img/elasticsearch.svg",
+                "url": "http://elasticsearch.elastic-stack-logging.svc.cluster.local:9200",
+                "database": "pf-audit",
+                "password": "",
+                "user": "",
+                "basicAuth": false,
+                "isDefault": false,
+                "jsonData": {
+                    "esVersion": 70,
+                    "logLevelField": "",
+                    "logMessageField": "",
+                    "maxConcurrentShardRequests": 5,
+                    "timeField": "@timestamp"
+                },
+                "readOnly": false
+            },
+            {
+                "access": "proxy",
+                "name": "ES-PA-Audit",
+                "type": "elasticsearch",
+                "typeLogoUrl": "public/app/plugins/datasource/elasticsearch/img/elasticsearch.svg",
+                "url": "http://elasticsearch.elastic-stack-logging.svc.cluster.local:9200",
+                "database": "pa-audit",
+                "password": "",
+                "user": "",
+                "basicAuth": false,
+                "isDefault": false,
+                "jsonData": {
+                    "esVersion": 70,
+                    "logLevelField": "",
+                    "logMessageField": "",
+                    "maxConcurrentShardRequests": 5,
+                    "timeField": "@timestamp"
+                },
+                "readOnly": false
+            },
+            {
+                "access": "proxy",
+                "name": "ES-PF-Admin-Audit",
+                "type": "elasticsearch",
+                "typeLogoUrl": "public/app/plugins/datasource/elasticsearch/img/elasticsearch.svg",
+                "url": "http://elasticsearch.elastic-stack-logging.svc.cluster.local:9200",
+                "database": "pf-admin-audit",
+                "password": "",
+                "user": "",
+                "basicAuth": false,
+                "isDefault": false,
+                "jsonData": {
+                    "esVersion": 70,
+                    "logLevelField": "",
+                    "logMessageField": "",
+                    "maxConcurrentShardRequests": 5,
+                    "timeField": "@timestamp"
+                },
+                "readOnly": false
+            },
+            {
+                "access": "proxy",
+                "name": "ES-PA-Admin-Audit",
+                "type": "elasticsearch",
+                "typeLogoUrl": "public/app/plugins/datasource/elasticsearch/img/elasticsearch.svg",
+                "url": "http://elasticsearch.elastic-stack-logging.svc.cluster.local:9200",
+                "database": "pa-admin-audit",
+                "password": "",
+                "user": "",
+                "basicAuth": false,
+                "isDefault": false,
+                "jsonData": {
+                    "esVersion": 70,
+                    "logLevelField": "",
+                    "logMessageField": "",
+                    "maxConcurrentShardRequests": 5,
+                    "timeField": "@timestamp"
+                },
+                "readOnly": false
+            },
+            {
+                "access": "proxy",
+                "name": "ES-PF-Admin-System",
+                "type": "elasticsearch",
+                "typeLogoUrl": "public/app/plugins/datasource/elasticsearch/img/elasticsearch.svg",
+                "url": "http://elasticsearch.elastic-stack-logging.svc.cluster.local:9200",
+                "database": "pf-admin-system",
+                "password": "",
+                "user": "",
+                "basicAuth": false,
+                "isDefault": false,
+                "jsonData": {
+                    "esVersion": 70,
+                    "logLevelField": "",
+                    "logMessageField": "",
+                    "maxConcurrentShardRequests": 5,
+                    "timeField": "@timestamp"
+                },
+                "readOnly": false
+            },
+            {
+                "access": "proxy",
+                "name": "ES-PA-Admin-System",
+                "type": "elasticsearch",
+                "typeLogoUrl": "public/app/plugins/datasource/elasticsearch/img/elasticsearch.svg",
+                "url": "http://elasticsearch.elastic-stack-logging.svc.cluster.local:9200",
+                "database": "pa-admin-system",
+                "password": "",
+                "user": "",
+                "basicAuth": false,
+                "isDefault": false,
+                "jsonData": {
+                    "esVersion": 70,
+                    "logLevelField": "",
+                    "logMessageField": "",
+                    "maxConcurrentShardRequests": 5,
+                    "timeField": "@timestamp"
+                },
+                "readOnly": false
+            },
         ]
     }
 
@@ -1577,10 +1697,10 @@ data:
     ;disable_initial_admin_creation = false
 
     # default admin user, created on startup
-    ;admin_user = admin
+    ;admin_user = ${GF_ADMIN_USERNAME}
 
     # default admin password, can be changed before first start of grafana,  or in profile settings
-    ;admin_password = admin
+    ;admin_password = ${GF_ADMIN_PASSWORD}
 
     # used for signing
     ;secret_key = SW2YcwTIb9zpOOhoPsMm
@@ -2098,6 +2218,16 @@ spec:
             value: "3000"
           - name: GF_INSTALL_PLUGINS
             value: "grafana-kubernetes-app"
+          - name: GF_ADMIN_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: grafana-passwords
+                key: GF_ADMIN_USERNAME
+          - name: GF_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: grafana-passwords
+                key: GF_ADMIN_PASSWORD
       restartPolicy: Always
       volumes:
         - emptyDir: {}
@@ -2128,3 +2258,16 @@ spec:
   - port: 3000
     name: grafana
   clusterIP: None
+
+---
+
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: grafana-passwords
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+data:
+  GF_ADMIN_USERNAME: YWRtaW4=
+  GF_ADMIN_PASSWORD: MkZlZGVyYXRlTTByZQ==
