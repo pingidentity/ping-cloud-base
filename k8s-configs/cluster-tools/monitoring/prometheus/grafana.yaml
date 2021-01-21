@@ -333,13 +333,13 @@ data:
     #################################### Security ####################################
     [security]
     # disable creation of admin user on first start of grafana
-    ;disable_initial_admin_creation = false
+    disable_initial_admin_creation = false
 
     # default admin user, created on startup
-    ;admin_user = ${GF_ADMIN_USERNAME}
+    admin_user = ${GF_ADMIN_USERNAME}
 
     # default admin password, can be changed before first start of grafana,  or in profile settings
-    ;admin_password = ${GF_ADMIN_PASSWORD}
+    admin_password = ${GF_ADMIN_PASSWORD}
 
     # used for signing
     ;secret_key = SW2YcwTIb9zpOOhoPsMm
@@ -905,6 +905,7 @@ kind: Secret
 type: Opaque
 metadata:
   name: grafana-passwords
+  namespace: prometheus
   annotations:
     sealedsecrets.bitnami.com/managed: "true"
 data:
