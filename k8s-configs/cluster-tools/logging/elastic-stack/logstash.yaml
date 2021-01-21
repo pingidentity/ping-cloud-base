@@ -665,7 +665,6 @@ data:
           ilm_policy => "ping-2-day-retention"
         }
       }
-      ##########
       if([log_type] == "PF_Admin_Audit_Log"){
           elasticsearch {
               id => "pf_admin_audit_out"
