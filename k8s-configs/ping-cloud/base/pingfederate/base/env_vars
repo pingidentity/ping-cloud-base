@@ -4,7 +4,7 @@ PF_DNS_PING_CLUSTER=pingfederate-cluster
 PF_DNS_PING_NAMESPACE=placeholder
 #VERBOSE=true
 # Only set this if there is a profile customization. (PDO-1739)
-#SERVER_PROFILE_URL=https://github.com/pingidentity/ping-cloud-base.git
+#SERVER_PROFILE_URL=https://github.com/repos/your-custom-server-profiles
 SERVER_PROFILE_PATH=profiles/aws/pingfederate
 SERVER_PROFILE_BRANCH=master
 
