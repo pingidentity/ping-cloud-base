@@ -705,7 +705,7 @@ data:
           ilm_policy => "ping-2-day-retention"
         }
       }
-      if([log_type] == "PF_Admin_Audit_Log"){
+      if([log_type] == "PF_Admin_Audit_Log" or [log_type] == "PF_Admin_Audit_API_Log"){
           elasticsearch {
               id => "pf_admin_audit_out"
               hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
