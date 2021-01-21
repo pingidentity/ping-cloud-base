@@ -1,9 +1,8 @@
 # Development Notes
 
 Server Profiles are being built into the image process going forward. The SERVER_PROFILE_URL is used to specifically 
-override defaults. You can find the original profiles to extend upon here: https://gitlab.corp.pingidentity.com/ping-cloud-private-tenant/ping-cloud-docker/-/tree/master/pingcloud-profiles
+override defaults. You can find the new profiles here: https://gitlab.corp.pingidentity.com/ping-cloud-private-tenant/ping-cloud-docker/-/tree/master/pingcloud-profiles
 
-Use the following steps for customizing server profiles during development. 
 
 1. Create a local branch and make your server profile changes in that branch.
 
