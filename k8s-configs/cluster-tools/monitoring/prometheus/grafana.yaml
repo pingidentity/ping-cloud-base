@@ -136,7 +136,7 @@ data:
                     "timeField": "@timestamp"
                 },
                 "readOnly": false
-            },
+            }
         ]
     }
 
