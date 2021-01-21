@@ -32,6 +32,7 @@
 #     \prod
 #     \stage
 #     \test
+#   \profiles
 #
 # Deploying the manifests under the fluxcd directory for a specific environment will bootstrap the cluster with a
 # Continuous Delivery tool. Once the CD tool is deployed to the cluster, it will deploy the rest of the ping stack
