@@ -5,7 +5,7 @@ resources:
 - namespace.yaml
 - grafana.yaml
 - prometheus.yaml
-
+- grafana-dashboards.yaml
 configMapGenerator:
 - name: grafana-environment-variables
   envs:
