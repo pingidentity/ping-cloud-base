@@ -336,10 +336,10 @@ data:
     disable_initial_admin_creation = false
 
     # default admin user, created on startup
-    admin_user = ${GF_ADMIN_USERNAME}
+    ;admin_user = admin 
 
     # default admin password, can be changed before first start of grafana,  or in profile settings
-    admin_password = ${GF_ADMIN_PASSWORD}
+    ;admin_password = admin 
 
     # used for signing
     ;secret_key = SW2YcwTIb9zpOOhoPsMm
@@ -451,7 +451,7 @@ data:
     ;token_rotation_interval_minutes = 10
 
     # Set to true to disable (hide) the login form, useful if you use OAuth, defaults to false
-    ;disable_login_form = false
+    disable_login_form = true
 
     # Set to true to disable the signout link in the side menu. useful if you use auth.proxy, defaults to false
     ;disable_signout_menu = false
@@ -466,14 +466,14 @@ data:
     #################################### Anonymous Auth ######################
     [auth.anonymous]
     # enable anonymous access
-    enabled = false
+    enabled = true
 
     # specify organization name that should be used for unauthenticated users
-    ;org_name = Main Org.
+    org_name = Main Org.
 
     # specify role for unauthenticated users
     # ONLY FOR TESTING PURPOSES! SHOULD BE CHANGED TO VIEWER!
-    org_role = Viewer
+    org_role = Admin
 
     #################################### Github Auth ##########################
     [auth.github]
@@ -857,16 +857,6 @@ spec:
             value: "3000"
           - name: GF_INSTALL_PLUGINS
             value: "grafana-kubernetes-app"
-          - name: GF_ADMIN_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: grafana-passwords
-                key: GF_ADMIN_USERNAME
-          - name: GF_ADMIN_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: grafana-passwords
-                key: GF_ADMIN_PASSWORD
       restartPolicy: Always
       volumes:
         - emptyDir: {}
@@ -898,16 +888,3 @@ spec:
     name: grafana
   clusterIP: None
 
----
-
-apiVersion: v1
-kind: Secret
-type: Opaque
-metadata:
-  name: grafana-passwords
-  namespace: prometheus
-  annotations:
-    sealedsecrets.bitnami.com/managed: "true"
-data:
-  GF_ADMIN_USERNAME: YWRtaW4=
-  GF_ADMIN_PASSWORD: MkZlZGVyYXRlTTByZQ==
