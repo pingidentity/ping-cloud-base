@@ -7,4 +7,4 @@ commonLabels:
   app: ping-cloud
 
 resources:
-- test
+- base

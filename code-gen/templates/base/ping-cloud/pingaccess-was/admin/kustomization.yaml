@@ -9,9 +9,6 @@ images:
 - name: pingidentity/pingaccess
   newName: ${REGISTRY_NAME}/pingidentity/pingaccess
 
-generatorOptions:
-  disableNameSuffixHash: true
-
 patchesJson6902:
 
 ### PingAccess WAS Admin Last Update Config Map ###

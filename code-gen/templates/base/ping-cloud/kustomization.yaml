@@ -3,28 +3,22 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 # PingCloud common resources
-- ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/base?ref=${K8S_GIT_BRANCH}
+- base
 
-# PingAccess common shared and deployment resources
-- pingaccess
+# PingAccess admin and engine resources
 - pingaccess/admin
 - pingaccess/engine
 
-# PingAccess WAS common shared and deployment resources
-- pingaccess-was
+# PingAccess WAS admin and engine resources
 - pingaccess-was/admin
 - pingaccess-was/engine
 
-# PingFederate common shared and deployment resources
-- pingfederate
+# PingFederate admin and engine resources
 - pingfederate/admin
 - pingfederate/engine
 
-# PingDirectory common shared and deployment resources
+# PingDirectory resources
 - pingdirectory
-
-generatorOptions:
-  disableNameSuffixHash: true
 
 configMapGenerator:
 

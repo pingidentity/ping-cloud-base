@@ -9,9 +9,6 @@ commonLabels:
 resources:
 - ../../../base/pingdirectory/aws
 
-generatorOptions:
-  disableNameSuffixHash: true
-
 configMapGenerator:
 - name: pingdirectory-environment-variables
   behavior: merge

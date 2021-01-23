@@ -5,9 +5,6 @@ resources:
 - ../base
 - configmap.yaml
 
-generatorOptions:
-  disableNameSuffixHash: true
-
 configMapGenerator:
 
 - name: pingdirectory-environment-variables
