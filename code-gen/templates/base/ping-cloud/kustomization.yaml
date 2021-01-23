@@ -186,6 +186,14 @@ patchesJson6902:
       path: /spec/rules/4/host
       value: logs.${DNS_ZONE}
 
+    # Argo CD pingaccess was runtime
+    - op: replace
+      path: /spec/tls/0/hosts/5
+      value: argocd.${DNS_ZONE}
+    - op: replace
+      path: /spec/rules/5/host
+      value: argocd.${DNS_ZONE}
+
 # pingaccess runtime
 - target:
     group: extensions

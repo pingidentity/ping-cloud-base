@@ -130,6 +130,15 @@ create_virtual_host() {
   unset VHOST_ID VHOST_HOST VHOST_PORT
 }
 
+create_argocd_virtual_host() {
+  export VHOST_ID=24
+  export VHOST_HOST="${ARGOCD_PUBLIC_HOSTNAME}"
+  export VHOST_PORT=443
+
+  beluga_log "Creating Argo CD Virtual Host: ${ARGOCD_PUBLIC_HOSTNAME}"
+  create_virtual_host
+}
+
 create_pa_site() {
   export SITE_ID=10
   export SITE_NAME="PingAccess Admin Console"
@@ -179,6 +188,17 @@ create_prometheus_site() {
   beluga_log "Creating Prometheus Site"
   create_site
 }
+
+create_argocd_site() {
+  export SITE_ID=24
+  export SITE_NAME="Argo CD"
+  export SITE_TARGET="argocd-server:443"
+  export SITE_SECURE=false
+
+  beluga_log "Creating Argo CD Site"
+  create_site
+}
+
 
 create_site() {
   local site_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/site-payload.json)
@@ -240,6 +260,17 @@ create_prometheus_application() {
   export SITE_ID=23
 
   beluga_log "Creating Prometheus Application"
+  create_application
+}
+
+create_argocd_application() {
+  export APP_ID=24
+  export APP_NAME="Argo CD App"
+  export APP_DESCRIPTION="Argo CD Web Application"
+  export VIRTUAL_HOST_ID=24
+  export SITE_ID=24
+
+  beluga_log "Creating Argo CD Application"
   create_application
 }
 
@@ -314,15 +345,18 @@ create_pf_virtual_host
 create_kibana_virtual_host
 create_grafana_virtual_host
 create_prometheus_virtual_host
+create_argocd_virtual_host
 create_pa_site
 create_pf_site
 create_kibana_site
 create_grafana_site
 create_prometheus_site
+create_argocd_site
 create_pa_application
 create_pf_application
 create_kibana_application
 create_grafana_application
 create_prometheus_application
+create_argocd_application
 
 beluga_log "Configuration complete"
