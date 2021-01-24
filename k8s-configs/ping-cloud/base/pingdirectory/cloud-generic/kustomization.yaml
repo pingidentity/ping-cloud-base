@@ -1,6 +1,11 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
+namespace: ping-cloud
+
+commonLabels:
+  app: ping-cloud
+
 resources:
 - secret.yaml
 - configmap.yaml
@@ -8,9 +13,6 @@ resources:
 - statefulset.yaml
 - service.yaml
 - ingress.yaml
-
-commonLabels:
-  role: pingdirectory
 
 generatorOptions:
   disableNameSuffixHash: true
