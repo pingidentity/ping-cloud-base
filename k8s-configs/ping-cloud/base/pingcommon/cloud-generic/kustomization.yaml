@@ -16,4 +16,4 @@ resources:
 - rbac.yaml
 - secret.yaml
 - configmap.yaml
-- pingcloud-metadata
+#- pingcloud-metadata
