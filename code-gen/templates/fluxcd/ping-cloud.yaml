@@ -3,6 +3,8 @@
 
 apiVersion: v1
 kind: Namespace
+labels:
+  app: ${PING_CLOUD_NAMESPACE}
 metadata:
   name: ${PING_CLOUD_NAMESPACE}
 
