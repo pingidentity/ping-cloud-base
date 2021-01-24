@@ -68,5 +68,3 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingaccess-agent.${DNS_ZONE}
-
-

@@ -81,8 +81,5 @@ configMapGenerator:
 patchesStrategicMerge:
 
 ### Regional enablement - remove admins, backups, etc. from secondary ###
-### These patch should be commented out on the primary region ###
-- ../base/ping-cloud/pingaccess/remove-from-secondary-patch.yaml
-- ../base/ping-cloud/pingaccess-was/remove-from-secondary-patch.yaml
-- ../base/ping-cloud/pingdirectory/remove-from-secondary-patch.yaml
-- ../base/ping-cloud/pingfederate/remove-from-secondary-patch.yaml
+### This patch should be commented out on the primary region ###
+- ../base/ping-cloud/remove-from-secondary-patch.yaml
