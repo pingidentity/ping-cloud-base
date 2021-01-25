@@ -1,0 +1,44 @@
+# This file separates the Ping applications into their individual components so that the apps may be rolled out in
+# proper dependency order when their versions are changing.
+
+# For example, pingaccess-was-admin should be upgraded before pingaccess-was engines, so 2 separate rollouts are
+# necessary. On the 1st rollout, comment out the "- pingaccess-was/engine" line, and on the 2nd rollout, uncomment it.
+# It's okay to leave the "- pingaccess-was/admin" uncommented out on the 2nd rollout since its deployment should be
+# idempotent. After all the application are updated, reset this file back to its original contents.
+
+# NOTE: Before upgrading Beluga from one version to another, the default poll interval of the CD tool may temporarily
+# need to be increased so that it doesn't interfere with changes that are still being made to the cluster-state-repo:
+#
+#   - Use the APP_RESYNC_SECONDS environment variable in k8s-configs/base/cluster-tools/kustomization.yaml to increase
+#     the sync interval of the CD tool.
+#   - Wait for the CD replicas to be rolled out.
+#   - Update the cluster-state-repo to the new Beluga version.
+#   - Make changes to this file to roll out the app updates in the right order.
+#   - Reset the APP_RESYNC_SECONDS to the original default of "60" seconds.
+#   - Continue making changes to this file until all apps are updated.
+
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+
+# PingCloud common resources
+- pingcommon # Should always be included
+
+# PingDirectory resources
+- pingdirectory
+
+# PingAccess common, admin and engine resources
+- pingaccess/common # Should always be included on PA admin or engine update
+- pingaccess/admin
+- pingaccess/engine
+
+# PingAccess WAS common, admin and engine resources
+- pingaccess-was/common # Should always be included on PA-WAS admin or engine update
+- pingaccess-was/admin
+- pingaccess-was/engine
+
+# PingFederate common, admin and engine resources
+- pingfederate/common # Should always be included on PF admin or engine update
+- pingfederate/admin
+- pingfederate/engine

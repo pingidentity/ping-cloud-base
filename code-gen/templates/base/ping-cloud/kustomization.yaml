@@ -2,33 +2,15 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-# PingCloud common resources
-- pingcommon
 
-# PingDirectory resources
-- pingdirectory
+# This will roll out updates to all Ping applications in one fell swoop. This is preferred for simple updates as it's
+# faster. However, when Ping application versions are changing between Beluga versions, a more granular rollout may be
+# necessary to maintain app dependencies. Refer to the following section on how to do that.
+- ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}?ref=${K8S_GIT_BRANCH}
 
-# The following Ping applications are divided into their individual components to facilitate phased rollouts of
-# applications that depend on each other. For example, pingaccess-was admin should be updated before pingaccess-was
-# engines, so 2 separate rollouts are necessary. On the 1st rollout, comment out the "- pingaccess-was/engine" line,
-# and on the 2nd rollout, uncomment it. It's okay to leave the "- pingaccess-was/admin" uncommented out on the 2nd
-# rollout since its deployment should be idempotent. After all the application are updated, make sure to include all
-# applications in subsequent rollouts.
-
-# PingAccess common, admin and engine resources
-- pingaccess/common
-- pingaccess/admin
-- pingaccess/engine
-
-# PingAccess WAS common, admin and engine resources
-- pingaccess-was/common
-- pingaccess-was/admin
-- pingaccess-was/engine
-
-# PingFederate common, admin and engine resources
-- pingfederate/common
-- pingfederate/admin
-- pingfederate/engine
+# For granular rollout of applications, comment out the above line in lieu of the one below. When all applications
+# are rolled out in the appropriate dependency order, reset the change back to how it was.
+# - granular-rollout.yaml
 
 configMapGenerator:
 

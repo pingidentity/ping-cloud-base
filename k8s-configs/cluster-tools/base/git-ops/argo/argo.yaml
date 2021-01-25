@@ -2764,7 +2764,10 @@ spec:
         - --operation-processors
         - "10"
         - --app-resync
-        - "60"
+        - "$(APP_RESYNC_SECONDS)"
+        env:
+        - name: APP_RESYNC_SECONDS
+          value: "60"
         image: argoproj/argocd:v1.8.1
         imagePullPolicy: Always
         livenessProbe:
