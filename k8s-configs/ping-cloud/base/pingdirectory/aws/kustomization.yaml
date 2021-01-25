@@ -5,6 +5,7 @@ namespace: ping-cloud
 
 commonLabels:
   app: ping-cloud
+  role: pingdirectory
 
 resources:
 - ../cloud-generic
