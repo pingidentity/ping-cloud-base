@@ -537,10 +537,7 @@ for ENV in ${ENVIRONMENTS}; do
     dev | test)
       export KUSTOMIZE_BASE='test'
       ;;
-    stage)
-      export KUSTOMIZE_BASE='prod/x-small'
-      ;;
-    prod)
+    stage | prod)
       export KUSTOMIZE_BASE="prod/${SIZE}"
       ;;
   esac
