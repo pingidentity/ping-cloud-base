@@ -1,6 +1,6 @@
-We have been releasing on a monthly cadence. So we have multiple development branches, instead of a single "master"
-branch like some of the other products that have a longer release cycle do, e.g. PingDirectory, which follows a loose
-quarterly release schedule.
+We have approximately been releasing on a monthly cadence and sometimes have to work on minor releases concurrently. So
+we have multiple release branches, instead of a single "master" branch like some of the other products that have a
+longer release cycle do, e.g. PingDirectory, which follows a loose quarterly release schedule.
 
 We also follow semantic versioning (semver.org), which states:
 
@@ -63,7 +63,7 @@ Git Workflow:
    branch name prefix, followed by a short description, e.g. pdo-723-wait-for-services.
 
 4. Make your changes on your local branch. Periodically merge the source branch into your local branch. This is
-   especially important for massive changes.
+   especially important for massive changes, which should be generally avoided but do happen on rare occasions.
 
    git stash                         # This is only required if you have uncommitted changes in your branch
    git checkout v1.3-release-branch  # Switch to the source branch, v1.3-release-branch
@@ -103,7 +103,8 @@ Git Workflow:
    do so from the MR interface by clicking on the "Override squash commit message" link.
 
 9. Subscribe to the beluga-notifications slack channel to be notified of MRs. Alternately, you may also post the MR to
-   the pda-dev channel if you'd like a specific subset of the team to review your changes.
+   the pda-dev channel, for example, if you'd like a specific subset of the team to review your changes or you need the
+   MR reviewed urgently.
 
 10. Incorporate review feedback in your local feature branch and push those up. They will automatically show up in
     your MR because the MR is associated with your branch.
