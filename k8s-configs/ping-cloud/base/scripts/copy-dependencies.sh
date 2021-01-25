@@ -44,7 +44,7 @@ wget -qO "${DST_FILE}" \
 
 beluga_log 'Checking for native-s3-ping.jar in data directory'
 if test ! -f "${DST_FILE}"; then
-    beluga_log "Failed to locate '${{DST_FILE}'" 'ERROR'
+    beluga_log "Failed to locate '${DST_FILE}'" 'ERROR'
     exit 1
 fi
 
@@ -58,7 +58,7 @@ wget -qO "${DST_FILE}" \
 
 beluga_log 'Checking for jmx_prometheus_javaagent jar file in data directory'
 if test ! -f "${DST_FILE}"; then
-    beluga_log "Failed to locate '${{DST_FILE}'" 'ERROR'
+    beluga_log "Failed to locate '${DST_FILE}'" 'ERROR'
     exit 1
 fi
 
