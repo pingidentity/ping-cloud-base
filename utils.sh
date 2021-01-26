@@ -415,6 +415,7 @@ build_bootstrap_code() {
 # The list of variables in the template files that will be substituted by default.
 DEFAULT_VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
 ${PING_IDENTITY_DEVOPS_KEY_BASE64}
+${GENERATED_LDAP_PASSWORD}
 ${ENVIRONMENT}
 ${IS_MULTI_CLUSTER}
 ${CLUSTER_BUCKET_NAME}

@@ -55,8 +55,9 @@ change_pf_user_passwords() {
   pwdModStatus=$?
   test ${pwdModStatus} -ne 0 && return ${pwdModStatus}
 
-  echo "${GENERATED_LDAP_PASSWORD}" > "${PASS_FILE}"s
-  change_user_password 'uid=pingfederate,ou=devopsaccount,o=platformconfig' "${PASS_FILE}"
+  PASS_FILE_2=$(mktemp)
+  echo "${GENERATED_LDAP_PASSWORD}" > "${PASS_FILE_2}"
+  change_user_password 'uid=pingfederate,ou=devopsaccount,o=platformconfig' "${PASS_FILE_2}"
   pwdModStatus=$?
   test ${pwdModStatus} -ne 0 && return ${pwdModStatus}
 
