@@ -2,7 +2,7 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-- ../../k8s-configs/ping-cloud/test
+- ../../k8s-configs/ping-cloud
 
 configMapGenerator:
 # Pingaccess
@@ -65,7 +65,6 @@ patchesJson6902:
     - op: replace
       path: /spec/tls/0/hosts/0
       value: pingdirectory${ENVIRONMENT}.${TENANT_DOMAIN}
-
     - op: replace
       path: /spec/rules/0/host
       value: pingdirectory${ENVIRONMENT}.${TENANT_DOMAIN}
@@ -238,21 +237,6 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/5/host
       value: argocd${ENVIRONMENT}.${TENANT_DOMAIN}
-
-# metadata
-- target:
-    group: extensions
-    version: v1beta1
-    kind: Ingress
-    name: metadata-ingress
-  patch: |-
-    - op: replace
-      path: /spec/tls/0/hosts/0
-      value: metadata${ENVIRONMENT}.${TENANT_DOMAIN}
-
-    - op: replace
-      path: /spec/rules/0/host
-      value: metadata${ENVIRONMENT}.${TENANT_DOMAIN}
 
 # Set a hostname for all the headless services so their endpoint IPs are published to Route53
 - target:

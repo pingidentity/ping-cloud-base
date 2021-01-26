@@ -1,0 +1,20 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+namespace: ping-cloud
+
+commonLabels:
+  app: ping-cloud
+
+resources:
+- configmap-csd-upload.yaml
+- secret-license.yaml
+- secret-passwords.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+- name: pingfederate-environment-variables
+  envs:
+  - env_vars

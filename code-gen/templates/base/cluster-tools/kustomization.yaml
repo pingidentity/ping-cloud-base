@@ -14,6 +14,22 @@ resources:
 
 patchesStrategicMerge:
 
+### Update the ArgoCD polling interval ###
+- |-
+  apiVersion: apps/v1
+  kind: StatefulSet
+  metadata:
+    name: argocd-application-controller
+    namespace: argocd
+  spec:
+    template:
+      spec:
+        containers:
+        - name: argocd-application-controller
+          env:
+          - name: APP_RESYNC_SECONDS
+            value: "60"
+
 ### Lets encrypt ACME certificate issuer for the cluster ###
 - |-
   apiVersion: certmanager.k8s.io/v1alpha1
