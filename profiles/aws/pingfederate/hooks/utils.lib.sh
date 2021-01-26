@@ -128,7 +128,7 @@ function obfuscatePassword() {
    #
    # Obfuscate the ldap password
    #
-   export PF_LDAP_PASSWORD_OBFUSCATED=$(sh ./obfuscate.sh "${PF_LDAP_PASSWORD}" | tr -d '\n')
+   export PF_LDAP_PASSWORD_OBFUSCATED=$(sh ./obfuscate.sh "${GENERATED_LDAP_PASSWORD}" | tr -d '\n')
    #
    # Inject obfuscated password into ldap properties file.
    vars='${PF_PD_BIND_PROTOCOL}

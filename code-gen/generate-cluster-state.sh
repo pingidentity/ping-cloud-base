@@ -215,6 +215,7 @@ pushd "${SCRIPT_HOME}" >/dev/null 2>&1
 # file and substituted at runtime by the continuous delivery tool running in cluster.
 DEFAULT_VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
 ${PING_IDENTITY_DEVOPS_KEY_BASE64}
+${GENERATED_LDAP_PASSWORD}
 ${SSH_ID_KEY_BASE64}
 ${IS_MULTI_CLUSTER}
 ${CLUSTER_BUCKET_NAME}
@@ -470,6 +471,7 @@ echo ---
 
 export PING_IDENTITY_DEVOPS_USER_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_USER}")
 export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_KEY}")
+export GENERATED_LDAP_PASSWORD=$(LC_CTYPE=C tr -dc A-Za-z0-9 < /dev/urandom | head -c 32 | xargs)
 
 TEMPLATES_HOME="${SCRIPT_HOME}/templates"
 BASE_DIR="${TEMPLATES_HOME}/base"
