@@ -345,7 +345,9 @@ build_cluster_state_code() {
   log "Building cluster state code in directory ${DIR}"
 
   BASE_DIRS=$(find "${DIR}" -name base -type d)
-  FLUX_CMD="$(find "${DIR}" -name flux-command.sh -type f)"
+
+  GIT_OPS_CMD_NAME='git-ops-command.sh'
+  GIT_OPS_CMD="$(find "${DIR}" -name "${GIT_OPS_CMD_NAME}" -type f)"
 
   for BASE_DIR in ${BASE_DIRS}; do
     DIR_NAME="$(dirname "${BASE_DIR}")"
@@ -355,12 +357,12 @@ build_cluster_state_code() {
     log "Processing manifests for region '${REGION}' and CDE '${CDE}'"
     cd "${BASE_DIR}"/..
 
-    cp "${FLUX_CMD}" .
-    ./flux-command.sh "${REGION}" > /dev/null
+    cp "${GIT_OPS_CMD}" .
+    ./"${GIT_OPS_CMD_NAME}" "${REGION}" > /dev/null
     BUILD_RESULT=$?
     log "Build result for manifests for region '${REGION}' and CDE '${CDE}': ${BUILD_RESULT}"
 
-    rm -f ./flux-command.sh
+    rm -f "${GIT_OPS_CMD_NAME}"
     cd - &>/dev/null
 
     test ${STATUS} -eq 0 && STATUS=${BUILD_RESULT}

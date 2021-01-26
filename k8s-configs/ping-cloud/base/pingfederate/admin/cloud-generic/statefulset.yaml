@@ -1,0 +1,221 @@
+# This defines the pingfederate admin statefulset.
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingfederate-admin
+  labels:
+    cluster: pingfederate-cluster
+    role: pingfederate-admin
+spec:
+  serviceName: pingfederate-admin
+  selector:
+    matchLabels:
+      role: pingfederate-admin
+  replicas: 1
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
+  template:
+    metadata:
+      name: pingfederate-admin
+      labels:
+        cluster: pingfederate-cluster
+        role: pingfederate-admin
+      annotations:
+        lastUpdateReason: "NA"
+    spec:
+      serviceAccount: ping-serviceaccount
+      initContainers:
+      - name: pingfederate-init
+        # FIXME: switch to same user as app
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        image: pingcloud-mirror.jfrog.io/bitnami/kubectl:1.15.3
+        imagePullPolicy: IfNotPresent
+        command:
+        - /copy-dependencies.sh
+        volumeMounts:
+        - name: ssh-dir
+          mountPath: /.ssh
+        - name: data-dir
+          mountPath: /data
+        - name: ssh-id-key-secret
+          mountPath: /id_rsa
+          subPath: id_rsa
+        - name: known-hosts-config
+          mountPath: /known_hosts
+          subPath: known_hosts
+        - name: pingfederate-init
+          mountPath: /copy-dependencies.sh
+          subPath: copy-dependencies.sh
+        - name: pingfederate-init
+          mountPath: /utils.lib.sh
+          subPath: utils.lib.sh
+        envFrom:
+        - configMapRef:
+            name: pingfederate-environment-variables
+      - name: wait-for-services
+        # FIXME: switch to same user as app
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        image: pingcloud-mirror.jfrog.io/busybox:1.32
+        imagePullPolicy: IfNotPresent
+        command:
+        - /wait-for-services.sh
+        volumeMounts:
+        - name: pingfederate-init
+          mountPath: /utils.lib.sh
+          subPath: utils.lib.sh
+        - name: pingfederate-init
+          mountPath: /wait-for-services.sh
+          subPath: wait-for-services.sh
+        envFrom:
+        - configMapRef:
+            name: pingfederate-environment-variables
+      containers:
+      - name: pingfederate-admin
+        image: pingcloud-mirror.jfrog.io/pingidentity/pingfederate:2010-10.1.2
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: OPERATIONAL_MODE
+          value: CLUSTERED_CONSOLE
+        - name: AUTHENTICATION_MODE
+          value: LDAP
+        - name: PF_DNS_PING_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PF_LDAP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingcommon-passwords
+              key: PF_LDAP_PASSWORD
+        - name: PF_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingcommon-passwords
+              key: PF_ADMIN_USER_PASSWORD
+        envFrom:
+        - configMapRef:
+            name: pingfederate-environment-variables
+        - secretRef:
+            name: devops-secret
+            optional: true
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "20m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
+        volumeMounts:
+        # FIXME: fix home directory when containers run as non-root user
+        - name: ssh-dir
+          mountPath: /root/.ssh
+        - name: topology-descriptor
+          mountPath: /opt/staging/topology/descriptor.json
+          subPath: descriptor.json
+        - name: data-dir
+          mountPath: /usr/local/bin/kubectl
+          subPath: kubectl
+        - name: data-dir
+          mountPath: /usr/local/bin/skbn
+          subPath: skbn
+        - name: data-dir
+          mountPath: /opt/staging/native-s3-ping.jar
+          subPath: native-s3-ping.jar
+        - name: out-dir
+          mountPath: /opt/out
+        - name: pingfederate-license
+          mountPath: /opt/in/instance/server/default/conf/pingfederate.lic
+          subPath: pingfederate.lic
+        - name: data-dir
+          mountPath: /opt/staging/ds_env_vars
+          subPath: ds_env_vars
+        - mountPath: /etc/podinfo
+          name: podinfo
+        readinessProbe:
+          exec:
+            command: [ /opt/staging/hooks/85-pf-admin-readiness.sh ]
+          initialDelaySeconds: 90
+          periodSeconds: 5
+          failureThreshold: 3
+          timeoutSeconds: 5
+        livenessProbe:
+          exec:
+            command: [ /opt/staging/hooks/99-pf-admin-liveness.sh ]
+          initialDelaySeconds: 90
+          periodSeconds: 30
+          failureThreshold: 3
+          timeoutSeconds: 5
+        ports:
+        - containerPort: 9999
+      volumes:
+      - name: podinfo
+        downwardAPI:
+          items:
+            - path: labels
+              fieldRef:
+                fieldPath: metadata.labels
+            - path: annotations
+              fieldRef:
+                fieldPath: metadata.annotations
+            - path: cpu_limit
+              resourceFieldRef:
+                containerName: pingfederate-admin
+                divisor: 1m
+                resource: limits.cpu
+            - path: cpu_request
+              resourceFieldRef:
+                containerName: pingfederate-admin
+                divisor: 1m
+                resource: requests.cpu
+      - name: ssh-dir
+        emptyDir: {}
+      - name: data-dir
+        emptyDir: {}
+      - name: pingfederate-init
+        configMap:
+          name: pingcommon-init
+          defaultMode: 0555
+      - name: topology-descriptor
+        configMap:
+          name: topology-descriptor
+          optional: true
+          defaultMode: 0644
+      - name: ssh-id-key-secret
+        secret:
+          secretName: ssh-id-key-secret
+          optional: true
+          defaultMode: 0400
+      - name: known-hosts-config
+        configMap:
+          name: known-hosts-config
+          optional: true
+          defaultMode: 0644
+      - name: out-dir
+        persistentVolumeClaim:
+          claimName: out-dir
+      - name: pingfederate-license
+        secret:
+          secretName: pingfederate-license
+          optional: true
+          defaultMode: 0400
+      - name: pingaccess-passwords
+        secret:
+          secretName: pingaccess-passwords
+          optional: true
+          defaultMode: 0400
+  volumeClaimTemplates:
+  - metadata:
+      name: out-dir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: pingfederate-gp2
+      resources:
+        requests:
+          storage: 20Gi

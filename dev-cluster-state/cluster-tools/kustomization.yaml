@@ -99,6 +99,7 @@ patchesJson6902:
       value:
         --default-ssl-certificate=${NAMESPACE}/acme-tls-cert
 
+# Update nginx replica count to support dev-env and CI/CD workloads.
 - target:
     group: autoscaling
     version: v1
