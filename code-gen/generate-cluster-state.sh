@@ -537,10 +537,7 @@ for ENV in ${ENVIRONMENTS}; do
     dev | test)
       export KUSTOMIZE_BASE='test'
       ;;
-    stage)
-      export KUSTOMIZE_BASE='prod/x-small'
-      ;;
-    prod)
+    stage | prod)
       export KUSTOMIZE_BASE="prod/${SIZE}"
       ;;
   esac
@@ -572,10 +569,10 @@ for ENV in ${ENVIRONMENTS}; do
   # Update the PF JVM limits based on environment.
   case "${ENV}" in
     dev | test)
-      export PF_MIN_HEAP=1024m
-      export PF_MAX_HEAP=1024m
-      export PF_MIN_YGEN=512m
-      export PF_MAX_YGEN=512m
+      export PF_MIN_HEAP=256m
+      export PF_MAX_HEAP=512m
+      export PF_MIN_YGEN=128m
+      export PF_MAX_YGEN=256m
       ;;
     stage | prod)
       export PF_MIN_HEAP=3072m
