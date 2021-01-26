@@ -19,9 +19,9 @@ for SIZE in x-small small medium large; do
   # Verify that all kustomizations are able to be built
   build_generated_code "${TARGET_DIR}"
   BUILD_STATUS=${?}
-  log "Build result for cluster state code for size '${SIZE}': ${BUILD_RESULT}"
+  log "Build result for cluster state code for size '${SIZE}': ${BUILD_STATUS}"
 
-  test ${STATUS} -eq 0 && STATUS=${BUILD_RESULT}
+  test ${STATUS} -eq 0 && STATUS=${BUILD_STATUS}
 done
 
 exit ${STATUS}

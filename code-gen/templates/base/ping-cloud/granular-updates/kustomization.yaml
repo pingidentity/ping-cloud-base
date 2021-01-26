@@ -1,0 +1,41 @@
+# This file separates the Ping applications into their individual components so that the apps may be rolled out in
+# proper dependency order, especially when their versions are changing.
+
+# For example, pingaccess-was-admin should be upgraded before pingaccess-was engines, so 2 separate rollouts are
+# necessary. On the 1st rollout, comment out the "pingaccess-was/engine" line, and on the 2nd rollout, uncomment it.
+# It's okay to leave the "pingaccess-was/admin" uncommented out on the 2nd rollout since its deployment should be
+# idempotent. After all the application are updated, reset this file back to its original contents.
+
+# NOTE: Before upgrading Beluga from one version to another, the default poll interval of the CD tool may temporarily
+# need to be increased so that it doesn't interfere with changes that are still being made to the cluster-state-repo.
+# So the steps should be:
+#
+#   - Update the APP_RESYNC_SECONDS environment variable in k8s-configs/base/cluster-tools/kustomization.yaml to
+#     increase the sync interval of the CD tool.
+#   - Wait for the CD replicas to be rolled out.
+#   - Update the cluster-state-repo to the new Beluga version. Refer to the upgrade doc for the Beluga release for
+#     more details.
+#   - Make changes to this file to roll out the app updates in the right order.
+#   - Reset the APP_RESYNC_SECONDS to the original default of "60" seconds. To make it immediately effective, issue
+#     a sync to the CD tool.
+#   - Continue making changes to this file until all apps are updated.
+
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+
+# PingDirectory resources
+- ../pingdirectory/server
+
+# PingAccess WAS admin and engine resources
+- ../pingaccess-was/admin
+- ../pingaccess-was/engine
+
+# PingAccess admin and engine resources
+- ../pingaccess/admin
+- ../pingaccess/engine
+
+# PingFederate admin and engine resources
+- ../pingfederate/admin
+- ../pingfederate/engine
