@@ -263,7 +263,6 @@ DEPLOY_FILE=${DEPLOY_FILE:-/tmp/deploy.yaml}
 test -z "${K8S_CONTEXT}" && K8S_CONTEXT=$(kubectl config current-context)
 
 export GENERATED_LDAP_PASSWORD=$(LC_CTYPE=C tr -dc A-Za-z0-9 < /dev/urandom | head -c 32 | xargs)
-export GENERATED_LDAP_PASSWORD_BASE64=$(base64_no_newlines "${GENERATED_LDAP_PASSWORD}")
 
 ENVIRONMENT_NO_HYPHEN_PREFIX="${ENVIRONMENT#-}"
 
