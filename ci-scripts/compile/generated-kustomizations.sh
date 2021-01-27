@@ -74,9 +74,9 @@ for SIZE in x-small small medium large; do
   # Verify that all kustomizations are able to be built
   build_kustomizations_in_dir "${TARGET_DIR}"
   BUILD_STATUS=${?}
-  log "Build result for ${SIZE} kustomizations: ${BUILD_STATUS}"
- 
-  test ${STATUS} -eq 0 && STATUS=${BUILD_STATUS}
+  log "Build result for ${SIZE} kustomizations: ${BUILD_RESULT}"
+
+  test ${STATUS} -eq 0 && STATUS=${BUILD_RESULT}
 done
- 
+
 exit ${STATUS}
