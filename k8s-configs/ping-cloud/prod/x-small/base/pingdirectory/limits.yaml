@@ -12,6 +12,7 @@ spec:
           limits:
             memory: 4500Mi
           requests:
+            memory: 4500Mi
             cpu: 2
       - name: stunnel
         resources:
