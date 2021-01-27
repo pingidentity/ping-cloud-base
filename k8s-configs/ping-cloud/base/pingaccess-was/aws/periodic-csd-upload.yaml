@@ -99,7 +99,7 @@ spec:
               value: "pingaccess-was-admin"
             envFrom:
             - configMapRef:
-                name: pingaccess-environment-variables
+                name: pingaccess-was-environment-variables
             volumeMounts:
             - name: pingaccess-was-admin-periodic-csd-upload
               mountPath: /opt/in/backup-csd-data.sh
