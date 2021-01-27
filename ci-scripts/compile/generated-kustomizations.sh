@@ -77,6 +77,6 @@ for SIZE in x-small small medium large; do
   log "Build result for ${SIZE} kustomizations: ${BUILD_STATUS}"
  
   test ${STATUS} -eq 0 && STATUS=${BUILD_STATUS}
- done
+done
  
- exit ${STATUS}
+exit ${STATUS}
