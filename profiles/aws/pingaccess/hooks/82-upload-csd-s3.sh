@@ -7,6 +7,9 @@ ${VERBOSE} && set -x
 
 test -f "${STAGING_DIR}/env_vars" && . "${STAGING_DIR}/env_vars"
 
+#Fix trying to inject prometheus JMX exporter to CSD process
+unset JAVA_OPTS
+
 beluga_log "Uploading to location ${LOG_ARCHIVE_URL}"
 
 # Set required environment variables for skbn
