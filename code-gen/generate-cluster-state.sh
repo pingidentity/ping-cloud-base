@@ -323,7 +323,7 @@ add_irsa_variables() {
     fi
 
     # IRSA for ping product pods. The role name is predefined as a part of the interface contract.
-    IRSA_PING_ANNOTATION_KEY_VALUE="eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role/irsa-ping"
+    IRSA_PING_ANNOTATION_KEY_VALUE="eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role/pcpt/irsa-roles/irsa-ping"
   fi
 
   export IRSA_PING_ANNOTATION_KEY_VALUE="${IRSA_PING_ANNOTATION_KEY_VALUE}"
