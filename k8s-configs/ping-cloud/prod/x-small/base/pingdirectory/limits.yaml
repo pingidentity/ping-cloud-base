@@ -17,10 +17,10 @@ spec:
       - name: stunnel
         resources:
           limits:
-            memory: 500m
+            memory: 500Mi
             cpu: 1
           requests:
-            memory: 500m
+            memory: 500Mi
             cpu: 1
       - name: pingdirectory-statsd-exporter
         resources:
