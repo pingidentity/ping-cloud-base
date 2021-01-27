@@ -9,9 +9,9 @@ spec:
       - name: pingfederate-admin
         resources:
           limits:
-            memory: "4Gi"
+            memory: "1Gi"
             cpu: 1
           requests:
-            memory: "4Gi"
+            memory: "1Gi"
             cpu: 1
 
