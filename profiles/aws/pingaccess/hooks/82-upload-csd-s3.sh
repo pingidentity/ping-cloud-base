@@ -24,6 +24,25 @@ fi
 
 CSD_OUT=$(find . -name support\*zip -type f | sort | tail -1)
 
+# collect-support-data in PingAccess outputs a file with a name like:
+#
+#   support-data-pingaccess-0-20200903203030Z-zip
+
+# For consistency, with the other production csd zip files, strip the
+# last 2 digits and the Zulu time indicator with ..Z-zip to have YYYYMMDDHHMM-formatted datetime.
+DST_FILE_BASENAME="$(basename "${CSD_OUT}" .zip | sed 's/..Z-zip//')"
+# Obtain datetime prefix and CSD filename postfix
+DST_FILE_PREFIX="$(echo "${DST_FILE_BASENAME}" | sed 's/.*-//')"
+DST_FILE_POSTFIX="$(echo "${DST_FILE_BASENAME}" | sed 's/-'"${DST_FILE_PREFIX}"'//g')"
+# DST_FILE_POSTFIX="$(echo "${DST_FILE_BASENAME}" | sed 's/.\{13\}$//')"
+
+# As far as S3 allows users to search files only by prefix, CSD filename should be turned according following template to make it more convenient:
+#
+#   202009032030-support-data-pingaccess-0.zip
+#
+
+
+
 DST_FILE="$(basename "${CSD_OUT}" .zip | sed 's/..$/.zip/')"
 SRC_FILE="${OUT_DIR}/$(basename "${CSD_OUT}")"
 
