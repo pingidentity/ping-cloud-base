@@ -89,6 +89,22 @@ $patch: delete
 
 ---
 
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: pingaccess-was-periodic-csd-upload
+$patch: delete
+
+---
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: pingaccess-was-admin-periodic-csd-upload
+$patch: delete
+
+---
+
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
