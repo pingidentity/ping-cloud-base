@@ -8,6 +8,7 @@ commonLabels:
 
 resources:
 - configmap-csd-upload.yaml
+- configmap-heartbeat-exporter.yaml
 - secret-license.yaml
 - secret-passwords.yaml
 

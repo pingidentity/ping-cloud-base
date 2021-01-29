@@ -282,6 +282,20 @@
             </DefaultRolloverStrategy>
         </RollingFile>
 
+        <Console name="AdminApiAudit2Console" >
+            <PingSyslogLayout>
+                <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" >
+                    <KeyValuePair key="dateTimeStamp" value="$${date:yyyy-MM-dd HH:mm:ss,S}"/>
+                    <KeyValuePair key="user" value="$${ctx:api.user:-}" />
+                    <KeyValuePair key="authtype" value="$${ctx:api.authtype:-}" />
+                    <KeyValuePair key="clientip" value="$${ctx:api.clientip:-}" />
+                    <KeyValuePair key="httpmethod" value="$${ctx:api.httpmethod:-}" />
+                    <KeyValuePair key="url" value="$${ctx:api.url:-}" />
+                    <KeyValuePair key="status" value="$${ctx:api.status:-}" />
+                    <KeyValuePair key="log_purpose" value="AdminApiAuditSIEM" />
+                </JSONLayout>
+            </PingSyslogLayout>
+        </Console>
         <!-- Runtime API Audit log : A time/date based rolling appender -->
         <RollingFile name="RuntimeApiAudit" fileName="${sys:pf.log.dir}/runtime-api.log"
                      filePattern="${sys:pf.log.dir}/runtime-api.%d{yyyy-MM-dd}.log"
@@ -1715,6 +1729,7 @@
 
         <Logger name="AdminApiAuditLogger" level="INFO" additivity="false" includeLocation="false">
             <appender-ref ref="AdminApiAudit" />
+            <appender-ref ref="AdminApiAudit2Console" />
         </Logger>
 
         <Logger name="RuntimeApiAuditLogger" level="INFO" additivity="false" includeLocation="false">
