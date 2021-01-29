@@ -12,7 +12,7 @@ beluga_log "Uploading to location ${LOG_ARCHIVE_URL}"
 # Set required environment variables for skbn
 initializeSkbnConfiguration "${LOG_ARCHIVE_URL}"
 
-if ! cd "${OUT_DIR}"; then 
+if ! cd "${OUT_DIR}"; then
   beluga_log "Failed to chdir: ${OUT_DIR}"
   exit 1
 fi
@@ -42,8 +42,8 @@ DST_FILE_POSTFIX="$(echo "${DST_FILE_BASENAME}" | sed 's/-'"${DST_FILE_PREFIX}"'
 #
 
 
-
-DST_FILE="$(basename "${CSD_OUT}" .zip | sed 's/..$/.zip/')"
+DST_FILE="$(echo "${DST_FILE_PREFIX}-${DST_FILE_POSTFIX}.zip")"
+#DST_FILE="$(basename "${CSD_OUT}" .zip | sed 's/..$/.zip/')"
 SRC_FILE="${OUT_DIR}/$(basename "${CSD_OUT}")"
 
 beluga_log "Copying: '${DST_FILE}' to '${SKBN_CLOUD_PREFIX}'"
