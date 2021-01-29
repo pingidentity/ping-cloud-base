@@ -9,5 +9,9 @@ spec:
   ports:
   - port: 9031
     name: pingfederate-runtime
+  - port: 8080
+    name: metrics
+  - port: 8079
+    name: pf-heartbeat
   selector:
     role: pingfederate-engine

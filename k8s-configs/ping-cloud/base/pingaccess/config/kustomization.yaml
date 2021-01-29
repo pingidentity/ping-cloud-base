@@ -10,6 +10,7 @@ resources:
 - secret-license.yaml
 - secret-passwords.yaml
 - configmap-csd-upload.yaml
+- configmap-heartbeat-exporter.yaml
 
 generatorOptions:
   disableNameSuffixHash: true

@@ -109,6 +109,9 @@ spec:
         - name: data-dir
           mountPath: /usr/local/bin/skbn
           subPath: skbn
+        - name: data-dir
+          mountPath: /opt/staging/jmx_prometheus_javaagent-0.14.0.jar
+          subPath: jmx_prometheus_javaagent-0.14.0.jar
         - name: pingaccess-license
           mountPath: /opt/in/instance/conf/pingaccess.lic
           subPath: pingaccess.lic
@@ -137,6 +140,7 @@ spec:
         ports:
         - containerPort: 3000
         - containerPort: 3030
+        - containerPort: 8080
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_ENGINE
@@ -151,6 +155,32 @@ spec:
         - secretRef:
             name: devops-secret
             optional: true
+      
+      - name: pingaccess-heartbeat-exporter
+        ### SHOULD BE UPLOADED TO PING REPO AND CHANGED!
+        image: 7es7/json_exporter:latest
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: SERVICE_SHORTNAME
+            value: pa
+          - name: SERVICE_PORT
+            value: "3000"
+        ports:
+          - containerPort: 8079
+            name: pa-heartbeat
+            protocol: TCP
+        volumeMounts:
+          - mountPath: /opt/config.yml
+            subPath: config.yml
+            name: pa-exporter-config
+        resources:
+          limits:
+            cpu: 100m
+            memory: 300Mi
+          requests:
+            cpu: 100m
+            memory: 300Mi
+
       volumes:
       - name: ssh-dir
         emptyDir: {}
@@ -185,3 +215,7 @@ spec:
           secretName: pingaccess-passwords
           optional: true
           defaultMode: 0400
+      - name: pa-exporter-config
+        configMap:
+          name: pa-exporter-config
+          defaultMode: 0644

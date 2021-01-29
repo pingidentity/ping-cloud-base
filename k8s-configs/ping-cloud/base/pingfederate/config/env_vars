@@ -69,3 +69,4 @@ PD_CLUSTER_PORT=8989
 # - Set this to false
 # - 90-restore-backup-s3.sh script exit before proceeding if value is false
 RESTORE_BACKUP=true
+JAVA_AGENT_OPTS=-javaagent:/opt/staging/jmx_prometheus_javaagent-0.14.0.jar=8080:/opt/out/instance/bin/jmx_export_config.yaml

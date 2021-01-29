@@ -295,6 +295,7 @@ do
       -Dpf.java.opts="$JAVA_OPTS -Drun.properties=$runprops" \
       -Dpf.classpath="$PF_CLASSPATH" \
       -classpath "$PF_CLASSPATH" \
+      $JAVA_AGENT_OPTS \
       org.pingidentity.RunPF "$@" &
    PID=$!
    /bin/echo $PID 2>/dev/null >"$RUNFILE"
