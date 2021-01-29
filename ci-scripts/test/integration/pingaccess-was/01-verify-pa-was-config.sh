@@ -68,7 +68,7 @@ testPrometheusSite() {
 }
 
 testArgocdSite() {
-  response=$(get_site "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "23")
+  response=$(get_site "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "24")
   assertEquals "Response value was ${response}" 0 $?
 
   name=$(parse_value_from_response "${response}" 'name')
@@ -146,7 +146,7 @@ testPrometheusVirtualHost() {
 }
 
 testArgocdVirtualHost() {
-  response=$(get_virtual_host "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "23")
+  response=$(get_virtual_host "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "24")
   assertEquals "Response value was ${response}" 0 $?
 
   host=$(parse_value_from_response "${response}" 'host')
