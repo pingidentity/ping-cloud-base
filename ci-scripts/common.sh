@@ -62,9 +62,9 @@ export LOG_GROUP_NAME="/aws/containerinsights/${CLUSTER_NAME}/application"
 FQDN=${ENVIRONMENT}.${TENANT_DOMAIN}
 
 # Monitoring
-LOGS_CONSOLE=https://logs-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}/app/kibana
-PROMETHEUS=https://prometheus-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}/graph
-GRAFANA=https://monitoring-${CLUSTER_NAME_LC}.${TENANT_DOMAIN}/login
+LOGS_CONSOLE=https://logs${FQDN}/app/kibana
+PROMETHEUS=https://prometheus${FQDN}
+GRAFANA=https://monitoring${FQDN}
 
 # Pingdirectory
 PINGDIRECTORY_API=https://pingdirectory${FQDN}

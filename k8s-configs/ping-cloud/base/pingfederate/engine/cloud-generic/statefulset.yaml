@@ -136,6 +136,9 @@ spec:
           mountPath: /usr/local/bin/skbn
           subPath: skbn
         - name: data-dir
+          mountPath: /opt/staging/jmx_prometheus_javaagent-0.14.0.jar
+          subPath: jmx_prometheus_javaagent-0.14.0.jar
+        - name: data-dir
           mountPath: /opt/staging/native-s3-ping.jar
           subPath: native-s3-ping.jar
         - name: pingfederate-license
@@ -162,6 +165,33 @@ spec:
           timeoutSeconds: 5
         ports:
         - containerPort: 9031
+        - containerPort: 8080
+
+      - name: pingfederate-heartbeat-exporter
+        ### SHOULD BE UPLOADED TO PING REPO AND CHANGED!
+        image: 7es7/json_exporter:latest
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: SERVICE_SHORTNAME
+            value: pf
+          - name: SERVICE_PORT
+            value: "9031"
+        ports:
+          - containerPort: 8079
+            name: pf-heartbeat
+            protocol: TCP
+        volumeMounts:
+          - mountPath: /opt/config.yml
+            subPath: config.yml
+            name: pf-exporter-config
+        resources:
+          limits:
+            cpu: 100m
+            memory: 300Mi
+          requests:
+            cpu: 100m
+            memory: 300Mi
+
       volumes:
       - name: podinfo
         downwardAPI:
@@ -210,3 +240,7 @@ spec:
           secretName: pingfederate-license
           optional: true
           defaultMode: 0400
+      - name: pf-exporter-config
+        configMap:
+          name: pf-exporter-config
+          defaultMode: 0644

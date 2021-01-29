@@ -11,5 +11,9 @@ spec:
       targetPort: 3000
     - port: 3030
       name: pingaccess-agent
+    - port: 8080
+      name: metrics
+    - port: 8079
+      name: pa-heartbeat
   selector:
     role: pingaccess-engine
