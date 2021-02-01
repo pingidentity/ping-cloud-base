@@ -131,9 +131,3 @@ PROMETHEUS_PUBLIC_HOSTNAME=prometheus.${DNS_ZONE}
 GRAFANA_PUBLIC_HOSTNAME=monitoring.${DNS_ZONE}
 KIBANA_PUBLIC_HOSTNAME=logs.${DNS_ZONE}
 ARGOCD_PUBLIC_HOSTNAME=argocd.${DNS_ZONE}
-
-############################################################
-# IRSA - IAM role for service accounts
-############################################################
-# Used by ping product pods
-IRSA_PING_ANNOTATION_KEY_VALUE="${IRSA_PING_ANNOTATION_KEY_VALUE}"
