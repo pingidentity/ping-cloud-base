@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: pingaccess-admin-periodic-csd-upload
 spec:
-  schedule: "0 * * * *"
+  schedule: "*/3 * * * *"
   jobTemplate:
     spec:
       template:
