@@ -259,6 +259,9 @@ export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
 
+export PF_ADMIN_API_PWD=$(openssl rand -base64 24)
+echo "Using PF ADMIN API PWD: ${PF_ADMIN_API_PWD}"
+
 DEPLOY_FILE=${DEPLOY_FILE:-/tmp/deploy.yaml}
 test -z "${K8S_CONTEXT}" && K8S_CONTEXT=$(kubectl config current-context)
 
@@ -313,6 +316,7 @@ if "${IS_MULTI_CLUSTER}"; then
     echo ---
   fi
 fi
+
 
 build_dev_deploy_file "${DEPLOY_FILE}" "${CLUSTER_TYPE}"
 

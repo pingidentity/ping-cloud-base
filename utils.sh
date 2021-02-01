@@ -433,14 +433,22 @@ ${TOPOLOGY_DESCRIPTOR}
 ${ARTIFACT_REPO_URL}
 ${PING_ARTIFACT_REPO_URL}
 ${LOG_ARCHIVE_URL}
-${BACKUP_URL}'
+${BACKUP_URL}
+${PF_ADMIN_API_PWD}'
 
 substitute_vars() {
   local subst_dir="$1"
+
+  echo "Subst dir"
+  echo ${subst_dir}
+
   local vars="$2"
+  echo ${vars}
   local included_filenames="${@:3}"
+  echo ${included_filenames}
 
   for file in $(find "${subst_dir}" -type f); do
+    echo "File ${file}"
     include_file=true
     if test "${included_filenames}"; then
       include_file=false
@@ -453,7 +461,7 @@ substitute_vars() {
       done
     fi
     "${include_file}" || continue
-
+    echo "envsubst on file ${file}"
     local old_file="${file}.bak"
     cp "${file}" "${old_file}"
     envsubst "${vars}" < "${old_file}" > "${file}"
@@ -480,6 +488,12 @@ build_dev_deploy_file() {
 
   substitute_vars "${build_dir}" "${DEFAULT_VARS}"
   kustomize build --load_restrictor none "${build_dir}/${cluster_type}" > "${deploy_file}"
+
+  local old_deploy_file="${deploy_file}.bak"
+  cp "${deploy_file}" "${old_deploy_file}"
+  echo "PF_ADMIN_API_PWD ${PF_ADMIN_API_PWD}"
+  envsubst '$PF_ADMIN_API_PWD' < "${old_deploy_file}" > "${deploy_file}"
+
   rm -rf "${build_dir}"
 
   test ! -z "${NAMESPACE}" && test "${NAMESPACE}" != 'ping-cloud' &&

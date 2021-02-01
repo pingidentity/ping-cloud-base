@@ -71,6 +71,7 @@ patchesStrategicMerge:
     PA_ENGINE_PUBLIC_HOSTNAME: pingaccess.${TENANT_DOMAIN}
     PF_ADMIN_PUBLIC_HOSTNAME: pingfederate-admin.${TENANT_DOMAIN}
     PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
+    PF_ADMIN_API_PWD: ${PF_ADMIN_API_PWD}
     REGION: ${REGION}
 
 patchesJson6902:
