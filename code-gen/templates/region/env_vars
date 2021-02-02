@@ -14,3 +14,9 @@ CLUSTER_BUCKET_NAME=${CLUSTER_BUCKET_NAME}
 
 # Customer-specific artifacts URL for region
 ARTIFACT_REPO_URL=${ARTIFACT_REPO_URL}
+
+############################################################
+# IRSA - IAM role for service accounts
+############################################################
+# Used by ping product pods
+IRSA_PING_ANNOTATION_KEY_VALUE="${IRSA_PING_ANNOTATION_KEY_VALUE}"
