@@ -21,7 +21,7 @@ testPingAccessWasAdminCsdUpload() {
 
 csd_upload() {
   local upload_csd_job_name="${1}"
-  local upload_job="${PROJECT_DIR}/k8s-configs/ping-cloud/base/pingaccess-was/admin/aws/periodic-csd-upload.yaml"
+  local upload_job="${PROJECT_DIR}/k8s-configs/ping-cloud/base/pingaccess-was/aws/periodic-csd-upload.yaml"
 
   log "Applying the CSD upload job"
   kubectl delete -f "${upload_job}" -n "${NAMESPACE}"
