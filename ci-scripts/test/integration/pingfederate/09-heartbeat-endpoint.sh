@@ -25,32 +25,32 @@ testPingFederateMetricsEndpointExist() {
   assertEquals 0 0
 }
 
-testPingFederateMetricsPublished() {
-  PRODUCT_NAME=pingfederate
-  SERVER=
-  CONTAINER=
-
-  SERVERS=$( kubectl get pod -o name -n "${NAMESPACE}" -l role=${PRODUCT_NAME}-engine | grep ${PRODUCT_NAME} | cut -d/ -f2)
-
-  for SERVER in ${SERVERS}; do
-    # Set the container name
-    test "${SERVER}" == "${PRODUCT_NAME}-admin-0" && CONTAINER="${PRODUCT_NAME}-admin" || CONTAINER="${PRODUCT_NAME}"
-    metrics=$(curl_heartbeat ${SERVER} ${CONTAINER})
-    assertContains "${metrics}" "metric_pingfederate_idp_session_registry_session_map_size"
-    assertContains "${metrics}" "metric_pingfederate_response_concurrency_statistics_90_percentile"
-    assertContains "${metrics}" "metric_pingfederate_response_concurrency_statistics_mean"
-    assertContains "${metrics}" "metric_pingfederate_response_statistics_count"
-    assertContains "${metrics}" "metric_pingfederate_response_time_statistics_90_percentile"
-    assertContains "${metrics}" "metric_pingfederate_response_time_statistics_mean"
-    assertContains "${metrics}" "metric_pingfederate_session_state_attribute_map_size"
-    assertContains "${metrics}" "metric_pingfederate_sp_session_registry_session_map_size"
-    assertContains "${metrics}" "metric_pingfederate_total_failed_transactions"
-    assertContains "${metrics}" "metric_pingfederate_total_transactions"
-  done
-
-  # If we get to this point signal to shunit that the test was successfull
-  assertEquals 0 0
-}
+# testPingFederateMetricsPublished() {
+#   PRODUCT_NAME=pingfederate
+#   SERVER=
+#   CONTAINER=
+#
+#   SERVERS=$( kubectl get pod -o name -n "${NAMESPACE}" -l role=${PRODUCT_NAME}-engine | grep ${PRODUCT_NAME} | cut -d/ -f2)
+#
+#   for SERVER in ${SERVERS}; do
+#     # Set the container name
+#     test "${SERVER}" == "${PRODUCT_NAME}-admin-0" && CONTAINER="${PRODUCT_NAME}-admin" || CONTAINER="${PRODUCT_NAME}"
+#     metrics=$(curl_heartbeat ${SERVER} ${CONTAINER})
+#     assertContains "${metrics}" "metric_pingfederate_idp_session_registry_session_map_size"
+#     assertContains "${metrics}" "metric_pingfederate_response_concurrency_statistics_90_percentile"
+#     assertContains "${metrics}" "metric_pingfederate_response_concurrency_statistics_mean"
+#     assertContains "${metrics}" "metric_pingfederate_response_statistics_count"
+#     assertContains "${metrics}" "metric_pingfederate_response_time_statistics_90_percentile"
+#     assertContains "${metrics}" "metric_pingfederate_response_time_statistics_mean"
+#     assertContains "${metrics}" "metric_pingfederate_session_state_attribute_map_size"
+#     assertContains "${metrics}" "metric_pingfederate_sp_session_registry_session_map_size"
+#     assertContains "${metrics}" "metric_pingfederate_total_failed_transactions"
+#     assertContains "${metrics}" "metric_pingfederate_total_transactions"
+#   done
+#
+#   # If we get to this point signal to shunit that the test was successfull
+#   assertEquals 0 0
+# }
 
 curl_heartbeat() {
     SERVER=$1

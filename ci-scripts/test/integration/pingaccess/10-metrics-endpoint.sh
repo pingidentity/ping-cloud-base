@@ -23,22 +23,22 @@ testPingAccessMetricsEndpointExist() {
   done
 }
 
-testPingAccessMetricsPublished() {
-  PRODUCT_NAME=pingaccess
-  SERVER=
-  CONTAINER=
-
-  ENGINE_SERVERS=$( kubectl get pod -o name -n "${NAMESPACE}" -l role=${PRODUCT_NAME}-engine | grep ${PRODUCT_NAME} | cut -d/ -f2)
-  SERVERS="${PRODUCT_NAME}-admin-0 ${ENGINE_SERVERS}"
-
-  for SERVER in ${SERVERS}; do
-    # Set the container name
-    test "${SERVER}" == "${PRODUCT_NAME}-admin-0" && CONTAINER="${PRODUCT_NAME}-admin" || CONTAINER="${PRODUCT_NAME}"
-    metrics=$(curl_metrics ${SERVER} ${CONTAINER})
-    assertContains "${metrics}" "org_eclipse_jetty_server_handler_statisticshandler_requestTimeMean"
-    assertContains "${metrics}" "org_eclipse_jetty_server_handler_statisticshandler_requests"
-  done
-}
+# testPingAccessMetricsPublished() {
+#   PRODUCT_NAME=pingaccess
+#   SERVER=
+#   CONTAINER=
+#
+#   ENGINE_SERVERS=$( kubectl get pod -o name -n "${NAMESPACE}" -l role=${PRODUCT_NAME}-engine | grep ${PRODUCT_NAME} | cut -d/ -f2)
+#   SERVERS="${PRODUCT_NAME}-admin-0 ${ENGINE_SERVERS}"
+#
+#   for SERVER in ${SERVERS}; do
+#     # Set the container name
+#     test "${SERVER}" == "${PRODUCT_NAME}-admin-0" && CONTAINER="${PRODUCT_NAME}-admin" || CONTAINER="${PRODUCT_NAME}"
+#     metrics=$(curl_metrics ${SERVER} ${CONTAINER})
+#     assertContains "${metrics}" "org_eclipse_jetty_server_handler_statisticshandler_requestTimeMean"
+#     assertContains "${metrics}" "org_eclipse_jetty_server_handler_statisticshandler_requests"
+#   done
+# }
 
 curl_metrics() {
     SERVER=$1

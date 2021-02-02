@@ -50,20 +50,20 @@ testPaWasApiAuditLogEventsExist() {
   assertEquals 0 ${success}
 }
 
-testPaWasDefaultLogEventsExist() {
-  local log_stream="$PA_WAS_ADMIN_LOG_STREAM_SUFFIX"
-  local full_pathname=unused_placeholder_variable
-  local pod=pingaccess-was-admin-0
-  local container=pingaccess-was-admin
-  local default=true
-
-  local success=0
-  if ! log_events_exist "${log_stream}" "${full_pathname}" "${pod}" "${container}" "${default}"; then
-    success=1
-  fi
-
-  assertEquals 0 ${success}
-}
+# testPaWasDefaultLogEventsExist() {
+#   local log_stream="$PA_WAS_ADMIN_LOG_STREAM_SUFFIX"
+#   local full_pathname=unused_placeholder_variable
+#   local pod=pingaccess-was-admin-0
+#   local container=pingaccess-was-admin
+#   local default=true
+#
+#   local success=0
+#   if ! log_events_exist "${log_stream}" "${full_pathname}" "${pod}" "${container}" "${default}"; then
+#     success=1
+#   fi
+#
+#   assertEquals 0 ${success}
+# }
 
 # When arguments are passed to a script you must
 # consume all of them before shunit is invoked
