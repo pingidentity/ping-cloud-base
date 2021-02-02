@@ -34,7 +34,7 @@ csd_upload() {
   log "Expected CSD files:"
   expected_files "${upload_csd_job_name}" | tee /tmp/expected.txt
 
-  if ! verify_upload_with_timeout "pingaccess"; then
+  if ! verify_upload_with_timeout "pingaccess-was"; then
     return 1
   fi
   return 0
