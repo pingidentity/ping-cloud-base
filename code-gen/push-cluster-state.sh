@@ -22,24 +22,45 @@ PROFILES_DIR='profiles'
 BASE_DIR='base'
 
 ########################################################################################################################
+# Delete all files and directories under the provided directory. All hidden files and directories directly under the
+# provided directory will be left intact.
+#
+# Arguments
+#   ${1} -> The directory to clean up.
+########################################################################################################################
+dir_deep_clean() {
+  dir="$1"
+  if test -d "${dir}"; then
+    echo "Contents of directory ${dir} before deletion:"
+    find "${dir}" -mindepth 1 -maxdepth 1
+    find "${dir}" -mindepth 1 -maxdepth 1 -not -path "${dir}/.*" -exec rm -rf {} +
+    echo "Contents of directory ${dir} after deletion:"
+    find "${dir}" -mindepth 1 -maxdepth 1
+  fi
+}
+
+########################################################################################################################
 # Organizes the Kubernetes configuration files to push into the cluster state repo for a specific Customer Deployment
 # Environment (CDE).
 #
 # Arguments
 #   ${1} -> The directory where cluster state code was generated, i.e. the TARGET_DIR to generate-cluster-state.sh.
-#   ${2} -> The environment.
-#   ${3} -> The output empty directory into which to organize the code to push for the environment and region.
-#   ${4} -> Flag indicating whether or not the provided region is the primary region.
+#   ${2} -> The name of the directory under which the sources for the environment may be found in generated code.
+#   ${3} -> The environment type, i.e. dev, test, stage or prod.
+#   ${4} -> The output empty directory into which to organize the code to push for the environment and region.
+#   ${5} -> Flag indicating whether or not the provided region is the primary region.
 ########################################################################################################################
 organize_code_for_environment() {
-  local generated_code_dir="${1}"
-  local env="${2}"
-  local out_dir="${3}"
-  local is_primary="${4}"
+  generated_code_dir="${1}"
+  src_rel_dir_for_env="${2}"
+  env="${3}"
+  out_dir="${4}"
+  is_primary="${5}"
 
-  local dst_k8s_dir="${out_dir}/${K8S_CONFIGS_DIR}"
-  local src_env_dir="${generated_code_dir}/${CLUSTER_STATE_DIR}/${K8S_CONFIGS_DIR}/${env}"
-  local region="$(ls "${src_env_dir}" | grep -v "${BASE_DIR}")"
+  dst_k8s_dir="${out_dir}/${K8S_CONFIGS_DIR}"
+  src_env_dir="${generated_code_dir}/${CLUSTER_STATE_DIR}/${K8S_CONFIGS_DIR}/${src_rel_dir_for_env}"
+  # shellcheck disable=SC2010
+  region="$(ls "${src_env_dir}" | grep -v "${BASE_DIR}")"
 
   "${is_primary}" && type='primary' || type='secondary'
   echo "Organizing code for environment '${env}' into '${out_dir}' for ${type} region '${region}'"
@@ -67,9 +88,9 @@ organize_code_for_environment() {
 #   ${2} -> The git branch to push to on origin.
 ########################################################################################################################
 push_with_retries() {
-  local retry_count=${1}
-  local git_branch=${2}
-  local attempt=1
+  retry_count=${1}
+  git_branch=${2}
+  attempt=1
 
   for attempt in $(seq 1 "${retry_count}"); do
     echo "Attempt #${attempt} pushing to server"
@@ -92,45 +113,66 @@ PUSH_RETRY_COUNT="${PUSH_RETRY_COUNT:-30}"
 PUSH_TO_SERVER="${PUSH_TO_SERVER:-true}"
 PCB_COMMIT_SHA=$(cat "${GENERATED_CODE_DIR}"/pcb-commit-sha.txt)
 
-for ENV in ${ENVIRONMENTS}; do
-  echo "Processing ${ENV}"
+# The ENVIRONMENTS variable can either be the CDE names (e.g. dev, test, stage, prod) or the branch names (e.g.
+# v1.8.0-dev, v1.8.0-test, v1.8.0-stage, v1.8.0-master). It will be the CDE names on initial seeding of the cluster
+# state repo. On upgrade of the cluster state repo it will be the branch names. We must handle both cases. Note that
+# the 'prod' environment will have a branch name suffix of 'master'.
+for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
+  test "${ENV_OR_BRANCH}" = 'prod' &&
+      GIT_BRANCH='master' ||
+      GIT_BRANCH="${ENV_OR_BRANCH}"
+  DEFAULT_CDE_BRANCH="${GIT_BRANCH##*-}"
+
+  ENV_OR_BRANCH_SUFFIX="${ENV_OR_BRANCH##*-}"
+  test "${ENV_OR_BRANCH_SUFFIX}" = 'master' &&
+      ENV='prod' ||
+      ENV="${ENV_OR_BRANCH_SUFFIX}"
+
+  echo "Processing branch '${GIT_BRANCH}' for CDE '${ENV}' and default CDE branch '${DEFAULT_CDE_BRANCH}"
 
   ENV_CODE_DIR=$(mktemp -d)
-  ENV_SUFFIX="${ENV##*-}"
-  test "${ENV_SUFFIX}" = 'master' && ENV_SUFFIX='prod'
+  organize_code_for_environment "${GENERATED_CODE_DIR}" "${ENV_OR_BRANCH}" "${ENV}" "${ENV_CODE_DIR}" "${IS_PRIMARY}"
 
-  organize_code_for_environment "${GENERATED_CODE_DIR}" "${ENV_SUFFIX}" "${ENV_CODE_DIR}" "${IS_PRIMARY}"
-
-  test "${ENV}" = 'prod' &&
-      GIT_BRANCH=master ||
-      GIT_BRANCH="${ENV}"
-
+  # Revert both staged and untracked files.
+  git restore --staged .
   git restore .
 
   # Check if the branch exists on remote. If so, switch to it and pull the latest code from it.
-  if git ls-remote --quiet --heads | grep "${GIT_BRANCH}" &> /dev/null; then
+  if git ls-remote --quiet --heads &> /dev/null | grep -q "${GIT_BRANCH}" 2> /dev/null; then
+    echo "Branch ${GIT_BRANCH} exists on server. Checking out latest code from server."
     git checkout "${GIT_BRANCH}"
     git pull -X theirs
 
-  # Otherwise, check if the branch exists locally. If so, get a clean checkout of it.
+  # Otherwise, check if the branch exists locally. If so, switch to it.
   elif git rev-parse --verify "${GIT_BRANCH}" &> /dev/null; then
+    echo "Branch ${GIT_BRANCH} exists locally but not on server. Switching to it."
     git checkout "${GIT_BRANCH}"
 
   # Otherwise, create it.
   else
+    # Attempt to create the branch from its default CDE branch name.
+    echo "Branch ${GIT_BRANCH} does not exist locally or on the server. Creating it."
+
+    if git rev-parse --verify "${DEFAULT_CDE_BRANCH}" &> /dev/null; then
+      echo "Switching to branch ${DEFAULT_CDE_BRANCH} before creating ${GIT_BRANCH}"
+      git checkout --quiet "${DEFAULT_CDE_BRANCH}"
+    else
+      echo "WARN: Default CDE branch ${DEFAULT_CDE_BRANCH} does not exist for branch ${GIT_BRANCH}"
+    fi
+
     git checkout -b "${GIT_BRANCH}"
   fi
 
   if "${IS_PRIMARY}"; then
     # Clean-up
     echo "Cleaning up ${PWD}"
-    rm -rf ./*
+    dir_deep_clean "${PWD}"
     mkdir -p "${K8S_CONFIGS_DIR}"
 
     # Copy the base files into the environment directory.
     src_dir="${ENV_CODE_DIR}"
     echo "Copying base files from ${src_dir} to ${PWD}"
-    find "${src_dir}" -type f -maxdepth 1 | xargs -I {} cp {} ./
+    find "${src_dir}" -type f -maxdepth 1 -exec cp {} ./ \;
 
     # Copy the profiles directory.
     src_dir="${ENV_CODE_DIR}/${PROFILES_DIR}"
@@ -140,7 +182,7 @@ for ENV in ${ENVIRONMENTS}; do
     # Copy bases files into the k8s-configs directory.
     src_dir="${GENERATED_CODE_DIR}/${CLUSTER_STATE_DIR}/${K8S_CONFIGS_DIR}"
     echo "Copying base files from ${src_dir} to ${K8S_CONFIGS_DIR}"
-    find "${src_dir}" -type f -maxdepth 1 | xargs -I {} cp {} "${K8S_CONFIGS_DIR}"
+    find "${src_dir}" -type f -maxdepth 1 -exec cp {} "${K8S_CONFIGS_DIR}" \;
 
     # Copy the k8s-configs/base directory, which is common code for all regions.
     src_dir="${ENV_CODE_DIR}/${K8S_CONFIGS_DIR}/${BASE_DIR}"
@@ -148,6 +190,7 @@ for ENV in ${ENVIRONMENTS}; do
     cp -pr "${src_dir}" "${K8S_CONFIGS_DIR}/"
   fi
 
+  # shellcheck disable=SC2010
   region="$(ls "${ENV_CODE_DIR}/${K8S_CONFIGS_DIR}" | grep -v "${BASE_DIR}")"
   src_dir="${ENV_CODE_DIR}/${K8S_CONFIGS_DIR}/${region}"
 
