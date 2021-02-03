@@ -35,10 +35,10 @@ execute_test_scripts() {
     echo
 
     # Calculate and track the combined results of all tests
-    # using an OR operation.  If any of the test_results return
-    # a 1 then all_tests_passed will return a 1 to report a
-    # failure in the suites.
+    # PDO-1803 - change this for part 1
+#     test_file_failures=$((${test_file_failures} + ${test_result}))
     test_file_failures=$((${all_tests_passed} + ${test_result}))
+
   done
 
   return ${test_file_failures}

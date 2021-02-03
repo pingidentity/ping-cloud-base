@@ -6,6 +6,6 @@
 #
 # pdo-1388 - Reorder the filename to make it more easily searchable:  <#4>-<#3>-<#1>.zip
 # Transformation: support-data-ping-pingfederate-1-2021012520153000.zip => 20210125201530-pingfederate-1-support-data.zip
-function transform_csd_filename() {
+transform_csd_filename() {
     echo ${1} | sed -n "s/\(support-data\)-\(ping\)-\(.*\)-\([0-9]\{12\}\)\([0-9]\{2\}\)/\4-\3-\1.zip/p"
 }

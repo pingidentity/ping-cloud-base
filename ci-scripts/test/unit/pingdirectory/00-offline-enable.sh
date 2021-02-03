@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Source the script we're testing
-script_to_test="${PROJECT_DIR}"/profiles/aws/pingdirectory/hooks/utils.offline-enable.sh
+script_to_test="${HOOKS_DIR}"/utils.offline-enable.sh
 
 # Mock functions that are used in utils.offline-enable.sh.
 is_multi_cluster() {

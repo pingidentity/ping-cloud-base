@@ -1,15 +1,13 @@
 #!/bin/bash
 
 # Source the script we're testing
-script_to_test="${PROJECT_DIR}"/profiles/aws/pingfederate/hooks/utils.lib.sh
+script_to_test="${HOOKS_DIR}"/utils.lib.sh
 . "${script_to_test}"
 
 # Mock up the curl responses
 # when it's called from the
 # make_api_request function.
 curl() {
-  set +x
-
   # get the last arg
   # in the list
   arg=${@: -1}
@@ -32,6 +30,14 @@ curl() {
   return "${curl_result}"
 }
 
+cat() {
+  return 0
+}
+
+rm() {
+  return 0
+}
+
 oneTimeSetUp() {
   export VERBOSE=false
 }
@@ -49,7 +55,6 @@ testMakeApiRequestOk() {
 }
 
 testMakeApiRequestUnauthorized() {
-  set +x
   msg=$(make_api_request 'unauthorized')
   exit_code=$?
 
@@ -78,7 +83,6 @@ testMakeApiRequestDownloadOk() {
 }
 
 testMakeApiRequestDownloadUnauthorized() {
-  set +x
   msg=$(make_api_request_download 'unauthorized')
   exit_code=$?
 

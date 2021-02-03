@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Source support libs referenced by the tested script
-. "${PROJECT_DIR}"/profiles/aws/pingfederate/hooks/utils.lib.sh
+. "${HOOKS_DIR}"/utils.lib.sh
 
 # Source the script we're testing
-script_to_test="${PROJECT_DIR}"/profiles/aws/pingfederate/hooks/util/upload-csd-s3-utils.sh
+script_to_test="${HOOKS_DIR}"/util/upload-csd-s3-utils.sh
 . "${script_to_test}"
 
 

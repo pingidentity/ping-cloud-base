@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Source support libs referenced by the tested script
-. "${PROJECT_DIR}"/profiles/aws/pingdirectory/hooks/utils.lib.sh
-. "${PROJECT_DIR}"/profiles/aws/pingdirectory/hooks/util/upload-csd-s3-utils.sh
+. "${HOOKS_DIR}"/utils.lib.sh
+. "${HOOKS_DIR}"/util/upload-csd-s3-utils.sh
 
 kubectl() {
   echo ""
@@ -25,18 +25,16 @@ stat() {
 }
 
 oneTimeSetUp() {
-  export HOOKS_DIR="${PROJECT_DIR}"/profiles/aws/pingdirectory/hooks
   export VERBOSE=false
 }
 
 oneTimeTearDown() {
-  unset HOOKS_DIR
   unset VERBOSE
 }
 
 testUploadPingDirectoryCsdSupportDataEmpty() {
 
-  script_to_test="${PROJECT_DIR}"/profiles/aws/pingdirectory/hooks/82-upload-csd-s3.sh
+  script_to_test="${HOOKS_DIR}"/82-upload-csd-s3.sh
   result=$(. "${script_to_test}")
 
   assertEquals "Expected an exit code of 1 but the script returned with a different code with a result of:  $result" 1 $?
