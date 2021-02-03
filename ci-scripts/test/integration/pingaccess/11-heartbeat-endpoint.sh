@@ -22,24 +22,24 @@ testPingAccessMetricsEndpointExist() {
   done
 }
 
-testPingAccessMetricsPublished() {
-  PRODUCT_NAME=pingaccess
-  SERVER=
-  CONTAINER=
-
-  SERVERS=$( kubectl get pod -o name -n "${NAMESPACE}" -l role=${PRODUCT_NAME}-engine | grep ${PRODUCT_NAME} | cut -d/ -f2)
-
-  for SERVER in ${SERVERS}; do
-    # Set the container name
-    test "${SERVER}" == "${PRODUCT_NAME}-admin-0" && CONTAINER="${PRODUCT_NAME}-admin" || CONTAINER="${PRODUCT_NAME}"
-    metrics=$(curl_heartbeat ${SERVER} ${CONTAINER})
-    assertContains "${metrics}" "metric_pingaccess_response_concurrency_statistics_90_percentile"
-    assertContains "${metrics}" "metric_pingaccess_response_concurrency_statistics_mean"
-    assertContains "${metrics}" "metric_pingaccess_response_statistics_count"
-    assertContains "${metrics}" "metric_pingaccess_response_time_statistics_90_percentile"
-    assertContains "${metrics}" "metric_pingaccess_response_time_statistics_mean"
-  done
-}
+# testPingAccessMetricsPublished() {
+#   PRODUCT_NAME=pingaccess
+#   SERVER=
+#   CONTAINER=
+#
+#   SERVERS=$( kubectl get pod -o name -n "${NAMESPACE}" -l role=${PRODUCT_NAME}-engine | grep ${PRODUCT_NAME} | cut -d/ -f2)
+#
+#   for SERVER in ${SERVERS}; do
+#     # Set the container name
+#     test "${SERVER}" == "${PRODUCT_NAME}-admin-0" && CONTAINER="${PRODUCT_NAME}-admin" || CONTAINER="${PRODUCT_NAME}"
+#     metrics=$(curl_heartbeat ${SERVER} ${CONTAINER})
+#     assertContains "${metrics}" "metric_pingaccess_response_concurrency_statistics_90_percentile"
+#     assertContains "${metrics}" "metric_pingaccess_response_concurrency_statistics_mean"
+#     assertContains "${metrics}" "metric_pingaccess_response_statistics_count"
+#     assertContains "${metrics}" "metric_pingaccess_response_time_statistics_90_percentile"
+#     assertContains "${metrics}" "metric_pingaccess_response_time_statistics_mean"
+#   done
+# }
 
 curl_heartbeat() {
     SERVER=$1

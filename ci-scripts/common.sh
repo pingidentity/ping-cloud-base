@@ -9,7 +9,8 @@ test "${VERBOSE}" && set -x
 # Override environment variables with optional file supplied from the outside
 ENV_VARS_FILE="${1}"
 SKIP_TESTS="${SKIP_TESTS:-pingdirectory/03-backup-restore.sh \
-  chaos/01-delete-pa-admin-pod.sh}"
+  chaos/01-delete-pa-admin-pod.sh \
+  pingfederate/09-heartbeat-endpoint.sh}"
 
 if test -z "${ENV_VARS_FILE}"; then
   echo "Using environment variables based on CI variables"

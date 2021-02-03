@@ -9,26 +9,28 @@ fi
 
 testPingAccessRuntimeCsdUpload() {
   local upload_csd_job_name=pingaccess-periodic-csd-upload
-  csd_upload "${upload_csd_job_name}"
+  local path="${PROJECT_DIR}/k8s-configs/ping-cloud/base/pingaccess/engine/aws/periodic-csd-upload.yaml"
+  csd_upload "${upload_csd_job_name}" "${path}"
   assertEquals 0 $?
 }
 
 testPingAccessAdminCsdUpload() {
   local upload_csd_job_name=pingaccess-admin-periodic-csd-upload
-  csd_upload "${upload_csd_job_name}"
+  local path="${PROJECT_DIR}/k8s-configs/ping-cloud/base/pingaccess/admin/aws/periodic-csd-upload.yaml"
+  csd_upload "${upload_csd_job_name}" "${path}"
   assertEquals 0 $?
 }
 
 csd_upload() {
   local upload_csd_job_name="${1}"
-  local upload_job="${PROJECT_DIR}/k8s-configs/ping-cloud/base/pingaccess/aws/periodic-csd-upload.yaml"
+  local upload_job="${2}"
 
   log "Applying the CSD upload job"
   kubectl delete -f "${upload_job}" -n "${NAMESPACE}"
   kubectl apply -f "${upload_job}" -n "${NAMESPACE}"
   kubectl create job --from=cronjob/${upload_csd_job_name} ${upload_csd_job_name} -n "${NAMESPACE}"
 
-  log "Waiting for CSD upload job to complete"
+  log "Waiting for CSD upload job to complete..."
   kubectl wait --for=condition=complete --timeout=900s job.batch/${upload_csd_job_name} -n "${NAMESPACE}"
 
   log "Expected CSD files:"
