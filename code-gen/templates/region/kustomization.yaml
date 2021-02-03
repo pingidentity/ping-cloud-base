@@ -72,6 +72,7 @@ configMapGenerator:
   - env_vars
   - pingaccess-was/env_vars
 
+
 # Pingcloud-metadata
 - name: pingcloud-metadata-environment-variables
   behavior: merge
