@@ -380,15 +380,34 @@ export DEV_TEST_ENV=true
 EOF
 
     log "Running unit tests"
+    unit_test_failures=0
     for unit_test_dir in common ci-script-tests pingaccess pingfederate pingdirectory; do
       log
-      log "=========================================================="
+      log "==============================================================================================="
       log "      Executing unit tests in directory: ${unit_test_dir}            "
-      log "=========================================================="
+      log "==============================================================================================="
+
       ci-scripts/test/unit/run-unit-tests.sh "${unit_test_dir}" "${TEST_ENV_VARS_FILE}"
+      test_result=$?
+
+      unit_test_failures=$((${unit_test_failures} + ${test_result}))
+
+      # Immediately exit if there's a test failure
+      if test ${unit_test_failures} -gt 0; then
+        break
+      fi
     done
     log
 
+    if test ${unit_test_failures} -ne 0; then
+      RED='\033[0;31m'
+      NO_COLOR='\033[0m'
+      # Use printf to print in color
+      printf '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n'
+      printf "Unit Test Failures: ${RED} ${unit_test_failures} Unit test(s) failed.  See details above.  Exiting...${NO_COLOR}\n"
+      printf '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n'
+      exit 1
+    fi
 
     log "Waiting for pods in ${NAMESPACE} to be ready..."
 
@@ -402,14 +421,35 @@ EOF
 
 
     log "Running integration tests"
+    integration_test_failures=0
     for integration_test_dir in pingaccess pingaccess-was pingdirectory pingfederate pingcloud-metadata chaos; do
       log
-      log "=========================================================="
+      log "==============================================================================================="
       log "      Executing integration tests in directory: ${integration_test_dir}            "
-      log "=========================================================="
-      ci-scripts/test/integration/run-integration-tests.sh "${integration_test_dir}" "${TEST_ENV_VARS_FILE}"
-    done
+      log "==============================================================================================="
 
+      ci-scripts/test/integration/run-integration-tests.sh "${integration_test_dir}" "${TEST_ENV_VARS_FILE}"
+      test_result=$?
+
+      integration_test_failures=$((${integration_test_failures} + ${test_result}))
+
+      # Immediately exit if there's a test failure
+      # PDO-1803 - Uncomment this
+#       if test ${integration_test_failures} -gt 0; then
+#         break
+#       fi
+    done
+    log
+
+    if test ${integration_test_failures} -ne 0; then
+      RED='\033[0;31m'
+      NO_COLOR='\033[0m'
+      # Use printf to print in color
+      printf '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n'
+      printf "Integration Test Failures: ${RED} ${integration_test_failures} Integration test(s) failed.  See details above.  Exiting...${NO_COLOR}\n"
+      printf '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n'
+      exit 1
+    fi
   fi
 else
   less "${DEPLOY_FILE}"

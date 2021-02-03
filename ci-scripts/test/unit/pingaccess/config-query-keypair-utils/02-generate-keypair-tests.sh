@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Source support libs referenced by the tested script
-. "${PROJECT_DIR}"/profiles/aws/pingaccess/hooks/utils.lib.sh
+. "${HOOKS_DIR}"/utils.lib.sh
 
 # Source the script we're testing
-script_to_test="${PROJECT_DIR}"/profiles/aws/pingaccess/hooks/util/config-query-keypair-utils.sh
+script_to_test="${HOOKS_DIR}"/util/config-query-keypair-utils.sh
 . "${script_to_test}"
 
 templates_dir_path="${PROJECT_DIR}"/profiles/aws/pingaccess/templates/81
