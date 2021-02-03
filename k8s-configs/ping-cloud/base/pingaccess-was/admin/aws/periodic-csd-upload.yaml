@@ -24,11 +24,11 @@ spec:
             - configMapRef:
                 name: pingaccess-was-environment-variables
             volumeMounts:
-            - name: pingaccess-was-admin-periodic-csd-upload
+            - name: pingaccess-periodic-csd-upload
               mountPath: /opt/in/backup-csd-data.sh
               subPath: backup-csd-data.sh
           volumes:
-          - name: pingaccess-was-admin-periodic-csd-upload
+          - name: pingaccess-periodic-csd-upload
             configMap:
-              name: pingaccess-was-periodic-csd-upload
+              name: pingaccess-periodic-csd-upload
               defaultMode: 0555
