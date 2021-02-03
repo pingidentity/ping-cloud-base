@@ -1,0 +1,26 @@
+bin/dsconfig create-local-db-index \
+  --backend-name userRoot \
+  --index-name pf-authn-session-group-hashed-session-id \
+  --set index-type:equality
+
+bin/dsconfig create-local-db-index \
+  --backend-name userRoot \
+  --index-name pf-authn-session-group-user-ids \
+  --set index-type:equality
+
+bin/dsconfig create-local-db-index \
+  --backend-name userRoot \
+  --index-name pf-authn-session-group-expiry-time \
+  --set index-type:ordering
+
+bin/dsconfig create-local-db-index \
+  --backend-name userRoot \
+  --index-name pf-authn-session-group-last-activity-time \
+  --set index-type:ordering
+
+bin/rebuild-index \
+  --baseDN "dc=example,dc=com" \
+  --index pf-authn-session-group-hashed-session-id \
+  --index pf-authn-session-group-user-ids \
+  --index pf-authn-session-group-expiry-time \
+  --index pf-authn-session-group-last-activity-time
