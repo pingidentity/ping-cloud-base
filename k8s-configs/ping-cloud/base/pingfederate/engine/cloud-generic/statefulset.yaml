@@ -168,8 +168,7 @@ spec:
         - containerPort: 8080
 
       - name: pingfederate-heartbeat-exporter
-        ### SHOULD BE UPLOADED TO PING REPO AND CHANGED!
-        image: 7es7/json_exporter:latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-tools/prometheus-json-exporter:v1.0.0
         imagePullPolicy: IfNotPresent
         env:
           - name: SERVICE_SHORTNAME
