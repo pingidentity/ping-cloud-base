@@ -210,6 +210,7 @@ set_env_vars() {
     cp "${env_file}" "${env_file_bak}"
 
     # FIXME: escape variable values with spaces in the future. For now, LAST_UPDATE_REASON is the only one with spaces.
+    # The PS/GSO teams have been informed to quote the string if it has spaces or escape the quotes.
     # Remove LAST_UPDATE_REASON because it has spaces. The source will fail otherwise.
     sed -i.bak '/^LAST_UPDATE_REASON=.*$/d' "${env_file_bak}"
     rm -f "${env_file_bak}".bak
@@ -520,8 +521,7 @@ print_readme() {
   echo "  kustomization.yaml. Use the '*secrets.yaml.old' files as a reference to fix up the"
   echo "  new ones in the following manner:"
   echo
-  echo "    - Secrets that are new in '${NEW_VERSION}' must be configured and"
-  echo "      re-sealed."
+  echo "    - Secrets that are new in '${NEW_VERSION}' must be configured and re-sealed."
   echo
   echo "    - Secrets that are no longer used in '${NEW_VERSION}' should be removed,"
   echo "      but having them around will not cause any problems. The '${ORIG_SECRETS_FILE_NAME}'"
