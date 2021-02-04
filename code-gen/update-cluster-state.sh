@@ -639,6 +639,7 @@ trap 'finalize' EXIT
 # Update log file.
 LOG_DIR="${LOG_DIR:-/tmp}"
 LOG_FILE="${LOG_DIR}/update.log"
+rm -f "${LOG_FILE}"
 echo "=====> Update log file: ${LOG_FILE}"
 
 # Save the the script name to include in log messages.
