@@ -1,5 +1,8 @@
 #!/bin/bash -e
 
+# If VERBOSE is true, then output line-by-line execution
+"${VERBOSE:-false}" && set -x
+
 # This script may be used to upgrade an existing cluster state repo. It is designed to be non-destructive in that it
 # won't push any changes to the server. Instead, it will set up a parallel branch for every CDE branch corresponding to
 # the environments specified through the ENVIRONMENTS environment variable. For example, if the new version is v1.7.1,
@@ -86,6 +89,9 @@ ${REGISTRY_NAME}
 ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
 ${CLUSTER_STATE_REPO_URL}
 ${CLUSTER_STATE_REPO_BRANCH}
+${CLUSTER_STATE_REPO_PATH_DERIVED}
+${SERVER_PROFILE_URL_DERIVED}
+${SERVER_PROFILE_BRANCH_DERIVED}
 ${ENV}
 ${ENVIRONMENT_TYPE}
 ${KUSTOMIZE_BASE}
@@ -110,8 +116,26 @@ ${PA_GCOPTION}
 ${CLUSTER_NAME}
 ${CLUSTER_NAME_LC}
 ${DNS_ZONE}
+${DNS_ZONE_DERIVED}
 ${PRIMARY_DNS_ZONE}
+${PRIMARY_DNS_ZONE_DERIVED}
 ${IRSA_PING_ANNOTATION_KEY_VALUE}'
+
+########################################################################################################################
+# Export some derived environment variables.
+########################################################################################################################
+add_derived_variables() {
+  # The directory within the cluster state repo for the region's manifest files.
+  export CLUSTER_STATE_REPO_PATH_DERIVED="\${REGION_NICK_NAME}"
+
+  # Server profile URL and branch. The directory is in each app's env_vars file.
+  export SERVER_PROFILE_URL_DERIVED="\${CLUSTER_STATE_REPO_URL}"
+  export SERVER_PROFILE_BRANCH_DERIVED="\${CLUSTER_STATE_REPO_BRANCH}"
+
+  # Zone for this region and the primary region.
+  export DNS_ZONE_DERIVED="\${DNS_ZONE}"
+  export PRIMARY_DNS_ZONE_DERIVED="\${PRIMARY_DNS_ZONE}"
+}
 
 ########################################################################################################################
 # Prints a log message prepended with the name of the current script to stdout.
@@ -717,6 +741,9 @@ BASE_ENV_VARS="${K8S_CONFIGS_DIR}/${BASE_DIR}/${ENV_VARS_FILE_NAME}"
 # Get the minimum required ping-cloud secrets (currently, the devops user/key and SSH git key).
 get_min_required_secrets
 
+# Add some derived environment variables for substitution.
+add_derived_variables
+
 # For each environment:
 #   - Generate code for all its regions
 #   - Push code for all its regions into new branches
@@ -801,27 +828,27 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
 
       # For every env_vars file in the new version, populate the old values into an env_vars.old file.
       set -x
-      env_vars_files="$(find "${TARGET_DIR}" -name "${ENV_VARS_FILE_NAME}" -type f)"
+      ENV_VARS_FILES="$(find "${TARGET_DIR}" -name "${ENV_VARS_FILE_NAME}" -type f)"
 
-      for env_var_file in ${env_vars_files}; do # Loop for env_vars.old
-        dir_name="$(dirname "${env_var_file}")"
-        dir_name="${dir_name##*/}"
+      for ENV_VARS_FILE in ${ENV_VARS_FILES}; do # Loop for env_vars.old
+        DIR_NAME="$(dirname "${ENV_VARS_FILE}")"
+        DIR_NAME="${DIR_NAME##*/}"
 
-        if test "${dir_name}" = "${BASE_DIR}"; then
+        if test "${DIR_NAME}" = "${BASE_DIR}"; then
           if "${IS_PRIMARY}"; then
-            env_var_template="${NEW_PING_CLOUD_BASE_REPO}/${TEMPLATES_BASE_DIR}/${ENV_VARS_FILE_NAME}"
+            ENV_VARS_TEMPLATE="${NEW_PING_CLOUD_BASE_REPO}/${TEMPLATES_BASE_DIR}/${ENV_VARS_FILE_NAME}"
           fi
-        elif test "${dir_name}" = "${REGION_DIR}"; then
-          env_var_template="${NEW_PING_CLOUD_BASE_REPO}/${TEMPLATES_REGION_DIR}/${ENV_VARS_FILE_NAME}"
+        elif test "${DIR_NAME}" = "${REGION_DIR}"; then
+          ENV_VARS_TEMPLATE="${NEW_PING_CLOUD_BASE_REPO}/${TEMPLATES_REGION_DIR}/${ENV_VARS_FILE_NAME}"
         else
           # Ignore the env_vars under ping app-specific directories.
           continue
         fi
 
-        old_env_var_file="${env_var_file}".old
-        log "Creating '${old_env_var_file}' for region '${REGION_DIR}' and branch '${NEW_BRANCH}'"
+        OLD_ENV_VARS_FILE="${ENV_VARS_FILE}".old
+        log "Creating '${OLD_ENV_VARS_FILE}' for region '${REGION_DIR}' and branch '${NEW_BRANCH}'"
 
-        envsubst "${ENV_VARS_TO_SUBST}" < "${env_var_template}" > "${old_env_var_file}"
+        envsubst "${ENV_VARS_TO_SUBST}" < "${ENV_VARS_TEMPLATE}" > "${OLD_ENV_VARS_FILE}"
       done # Loop for env_vars.old
 
       set +x
