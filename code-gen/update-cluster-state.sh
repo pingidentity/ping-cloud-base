@@ -46,19 +46,19 @@ HANDLE_CHANGED_K8S_CONFIGS="${HANDLE_CHANGED_K8S_CONFIGS:-true}"
 #     find "${K8S_CONFIGS_DIR}" -type f -exec basename {} + | sort -u   # Run this command on each tag
 #     cat v1.7-k8s-files v1.8-k8s-files | sort -u                       # Create a union of the k8s files
 
-known_k8s_files=' .flux.yaml \
-argo-application.yaml \
-custom-patches.yaml \
-descriptor.json \
-env_vars \
-flux-command.sh \
-git-ops-command.sh \
-known-hosts-config.yaml \
-kustomization.yaml \
-orig-secrets.yaml \
-region-promotion.txt \
-remove-from-secondary-patch.yaml \
-seal.sh'
+known_k8s_files='@.flux.yaml \
+@argo-application.yaml \
+@custom-patches.yaml \
+@descriptor.json \
+@env_vars \
+@flux-command.sh \
+@git-ops-command.sh \
+@known-hosts-config.yaml \
+@kustomization.yaml \
+@orig-secrets.yaml \
+@region-promotion.txt \
+@remove-from-secondary-patch.yaml \
+@seal.sh'
 
 ########################################################################################################################
 # Prints a log message prepended with the name of the current script to stdout.
@@ -320,7 +320,7 @@ handle_changed_k8s_configs() {
 
   for new_file in ${new_files}; do
     new_file_basename="$(basename "${new_file}")"
-    if echo "${known_k8s_files}" | grep -q " ${new_file_basename}"; then
+    if echo "${known_k8s_files}" | grep -q "@${new_file_basename}"; then
       log "Ignoring file ${DEFAULT_CDE_BRANCH}:${new_file} since it is a Beluga-owned file"
       continue
     fi
