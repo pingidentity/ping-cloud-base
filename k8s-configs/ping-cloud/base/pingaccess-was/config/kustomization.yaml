@@ -9,6 +9,7 @@ commonLabels:
 resources:
 - secret-license.yaml
 - secret-passwords.yaml
+- configmap-csd-upload.yaml
 
 generatorOptions:
   disableNameSuffixHash: true
