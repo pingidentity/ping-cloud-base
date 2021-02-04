@@ -735,6 +735,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
         export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY}"
         set -x
         QUIET=true \
+            TARGET_DIR="${TARGET_DIR}" \
             LAST_UPDATE_REASON="Updating cluster-state-repo to version ${NEW_VERSION}" \
             K8S_GIT_URL="${PING_CLOUD_BASE_REPO_URL}" \
             K8S_GIT_BRANCH="${NEW_VERSION}" \
