@@ -97,6 +97,30 @@ $patch: delete
 
 ---
 
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: pingaccess-was-admin-periodic-csd-upload
+$patch: delete
+
+---
+
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: pingaccess-was-periodic-csd-upload
+$patch: delete
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pingaccess-was-periodic-csd-upload
+$patch: delete
+
+---
+
 ################################################
 #                PingFederate
 ################################################

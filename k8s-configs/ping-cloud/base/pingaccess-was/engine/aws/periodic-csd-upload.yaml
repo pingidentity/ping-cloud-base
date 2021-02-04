@@ -30,5 +30,5 @@ spec:
           volumes:
           - name: pingaccess-periodic-csd-upload
             configMap:
-              name: pingaccess-periodic-csd-upload
+              name: pingaccess-was-periodic-csd-upload
               defaultMode: 0555

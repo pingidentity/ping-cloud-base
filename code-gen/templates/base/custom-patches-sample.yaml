@@ -1,0 +1,183 @@
+################################################
+#               Nginx public
+################################################
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nginx-ingress-controller
+  namespace: ingress-nginx-public
+spec:
+  minReplicas: 3
+  maxReplicas: 3
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nginx-ingress-controller
+  targetCPUUtilizationPercentage: 70
+
+---
+
+################################################
+#              Nginx private
+################################################
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nginx-ingress-controller
+  namespace: ingress-nginx-private
+spec:
+  minReplicas: 1
+  maxReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: nginx-ingress-controller
+  targetCPUUtilizationPercentage: 70
+
+---
+
+################################################
+#                PingDirectory
+################################################
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingdirectory
+  namespace: ping-cloud
+spec:
+  replicas: 3
+  template:
+    spec:
+      containers:
+      - name: pingdirectory
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
+
+---
+
+################################################
+#               PingAccess-WAS
+################################################
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingaccess-was-admin
+  namespace: ping-cloud
+spec:
+  template:
+    spec:
+      containers:
+      - name: pingaccess-was-admin
+         resources:
+           requests:
+             memory: "1Gi"
+             cpu: "1"
+           limits:
+             memory: "1Gi"
+             cpu: "1"
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingaccess-was
+  namespace: ping-cloud
+spec:
+  template:
+    spec:
+      containers:
+      - name: pingaccess-was
+         resources:
+           requests:
+             memory: "1Gi"
+             cpu: "1"
+           limits:
+             memory: "1Gi"
+             cpu: "1"
+
+---
+
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: pingfederate
+  namespace: ping-cloud
+spec:
+  minReplicas: 1
+  maxReplicas: 2
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: pingfederate
+  targetCPUUtilizationPercentage: 70
+
+---
+
+################################################
+#                PingAccess
+################################################
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingaccess-admin
+  namespace: ping-cloud
+spec:
+  template:
+    spec:
+      containers:
+      - name: pingaccess-admin
+         resources:
+           requests:
+             memory: "1Gi"
+             cpu: "1"
+           limits:
+             memory: "1Gi"
+             cpu: "1"
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingaccess
+  namespace: ping-cloud
+spec:
+  template:
+    spec:
+      containers:
+      - name: pingaccess
+         resources:
+           requests:
+             memory: "1Gi"
+             cpu: "1"
+           limits:
+             memory: "1Gi"
+             cpu: "1"
+
+---
+
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: pingaccess
+  namespace: ping-cloud
+spec:
+  minReplicas: 1
+  maxReplicas: 2
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: pingaccess
+  targetCPUUtilizationPercentage: 70
+
+---
+
