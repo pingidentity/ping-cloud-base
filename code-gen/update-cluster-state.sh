@@ -460,7 +460,7 @@ print_readme() {
     echo "- All Kubernetes customizations under '${K8S_CONFIGS_DIR}' have been migrated"
     echo "  to the '${CUSTOM_RESOURCES_REL_DIR}' directory."
     echo
-    echo "    - Any future customizations should only be made under this directory."
+    echo "    - New custom resources should only be added under this directory."
     echo
     echo "    - Similarly, patches to out-of-the-box resources should only go"
     echo "      into '${CUSTOM_PATCHES_REL_FILE_NAME}'."
@@ -507,8 +507,12 @@ print_readme() {
   echo "      git checkout <new-cde-branch>"
   echo "      git branch -m <default-cde-branch>"
   echo
+  echo "- Create SRE tickets for platform upgrades for ${NEW_BRANCH}, e.g."
+  echo "  ASG fixes, EKS upgrades, etc."
+  echo
   echo "- Run any required commands from the management node to prepare the"
-  echo "  platform for the upgrade."
+  echo "  cluster for ${NEW_BRANCH}, e.g. delete flux, elastic-stack-logging"
+  echo "  namespaces, etc."
   echo
   echo "- Push the newly migrated CDE branches to the server."
 }
