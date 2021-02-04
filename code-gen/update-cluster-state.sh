@@ -750,9 +750,6 @@ BASE_ENV_VARS="${K8S_CONFIGS_DIR}/${BASE_DIR}/${ENV_VARS_FILE_NAME}"
 # Get the minimum required ping-cloud secrets (currently, the devops user/key and SSH git key).
 get_min_required_secrets
 
-# Add some derived environment variables for substitution.
-add_derived_variables
-
 # For each environment:
 #   - Generate code for all its regions
 #   - Push code for all its regions into new branches
@@ -838,6 +835,9 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
       # For every env_vars file in the new version, populate the old values into an env_vars.old file.
       set -x
       ENV_VARS_FILES="$(find "${TARGET_DIR}" -name "${ENV_VARS_FILE_NAME}" -type f)"
+
+      # Add some derived environment variables for substitution.
+      add_derived_variables
 
       for ENV_VARS_FILE in ${ENV_VARS_FILES}; do # Loop for env_vars.old
         DIR_NAME="$(dirname "${ENV_VARS_FILE}")"
