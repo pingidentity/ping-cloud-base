@@ -94,7 +94,6 @@ set_env_vars() {
   if test -f "${env_file}"; then
     set -a
     # shellcheck disable=SC1090
-    set -x
     source "$1"
     set +a
   fi
@@ -713,6 +712,9 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
       # base. This will ensure that derived variables are set correctly.
       set_env_vars "${REGION_ENV_VARS}"
       for ENV_VARS_FILE in ${APP_ENV_VARS_FILES}; do
+        # FIXME: fix this in a better way in the future.
+        # If there are spaces in variable values, the source command fails. For now, only LAST_UPDATE_REASON has spaces.
+        sed '/^LAST_UPDATE_REASON=.*$/d' "${ENV_VARS_FILE}"
         set_env_vars "${ENV_VARS_FILE}"
       done
       set_env_vars "${BASE_ENV_VARS}"
