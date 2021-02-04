@@ -115,7 +115,9 @@ ${PA_MAX_YGEN}
 ${PA_GCOPTION}
 ${CLUSTER_NAME}
 ${CLUSTER_NAME_LC}
+${DNS_ZONE}
 ${DNS_ZONE_DERIVED}
+${PRIMARY_DNS_ZONE}
 ${PRIMARY_DNS_ZONE_DERIVED}
 ${IRSA_PING_ANNOTATION_KEY_VALUE}'
 
@@ -133,6 +135,15 @@ add_derived_variables() {
   # Zone for this region and the primary region.
   export DNS_ZONE_DERIVED="\${DNS_ZONE}"
   export PRIMARY_DNS_ZONE_DERIVED="\${PRIMARY_DNS_ZONE}"
+
+  # Zone for this region and the primary region
+  if "${IS_BELUGA_ENV:-false}"; then
+    export DNS_ZONE="\${TENANT_DOMAIN}"
+    export PRIMARY_DNS_ZONE="\${PRIMARY_TENANT_DOMAIN}"
+  else
+    export DNS_ZONE="\${ENV}-\${TENANT_DOMAIN}"
+    export PRIMARY_DNS_ZONE="\${ENV}-\${PRIMARY_TENANT_DOMAIN}"
+  fi
 }
 
 ########################################################################################################################
