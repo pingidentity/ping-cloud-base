@@ -833,7 +833,6 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
       fi
 
       # For every env_vars file in the new version, populate the old values into an env_vars.old file.
-      set -x
       ENV_VARS_FILES="$(find "${TARGET_DIR}" -name "${ENV_VARS_FILE_NAME}" -type f)"
 
       # Add some derived environment variables for substitution.
@@ -856,11 +855,15 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
 
         OLD_ENV_VARS_FILE="${ENV_VARS_FILE}".old
         log "Creating '${OLD_ENV_VARS_FILE}' for region '${REGION_DIR}' and branch '${NEW_BRANCH}'"
-
         envsubst "${ENV_VARS_TO_SUBST}" < "${ENV_VARS_TEMPLATE}" > "${OLD_ENV_VARS_FILE}"
-      done # Loop for env_vars.old
 
-      set +x
+        # If there are no differences between env_vars and env_vars.old, delete the old one.
+        if diff -q "${ENV_VARS_FILE}" "${OLD_ENV_VARS_FILE}"; then
+          log "No difference found between ${ENV_VARS_FILE} and ${OLD_ENV_VARS_FILE} - removing the old one"
+          rm -f "${OLD_ENV_VARS_FILE}"
+        fi
+
+      done # Loop for env_vars.old
     )
   done # REGION loop for generate
 
