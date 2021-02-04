@@ -637,7 +637,7 @@ finalize() {
 trap 'finalize' EXIT
 
 # Update log file.
-LOG_DIR="${LOG_DIR:-'/tmp'}"
+LOG_DIR="${LOG_DIR:-/tmp}"
 LOG_FILE="${LOG_DIR}/update.log"
 echo "=====> Update log file: ${LOG_FILE}"
 
