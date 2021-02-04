@@ -340,9 +340,10 @@ handle_changed_k8s_configs() {
     # Copy them from the default CDE under a different name that has the a '.old' suffix.
     if test "${new_file_basename}" = "${SECRETS_FILE_NAME}" ||
        test  "${new_file_basename}" = "${SEALED_SECRETS_FILE_NAME}"; then
-      log "Copying ${DEFAULT_CDE_BRANCH}:${new_file} into ${K8S_CONFIGS_DIR}/${BASE_DIR}"
 
       old_secret_file="${K8S_CONFIGS_DIR}/${BASE_DIR}/${new_file_basename}.old"
+      log "Appending ${DEFAULT_CDE_BRANCH}:${new_file} to ${old_secret_file}"
+
       git show "${DEFAULT_CDE_BRANCH}:${new_file}" >> "${old_secret_file}"
       echo >> "${old_secret_file}"
 
