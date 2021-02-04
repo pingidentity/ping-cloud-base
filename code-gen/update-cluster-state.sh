@@ -843,9 +843,11 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
         DIR_NAME="${DIR_NAME##*/}"
 
         if test "${DIR_NAME}" = "${BASE_DIR}"; then
-          if "${IS_PRIMARY}"; then
-            ENV_VARS_TEMPLATE="${NEW_PING_CLOUD_BASE_REPO}/${TEMPLATES_BASE_DIR}/${ENV_VARS_FILE_NAME}"
+          # Only generate base env_vars.old for primary region.
+          if ! "${IS_PRIMARY}"; then
+            continue
           fi
+          ENV_VARS_TEMPLATE="${NEW_PING_CLOUD_BASE_REPO}/${TEMPLATES_BASE_DIR}/${ENV_VARS_FILE_NAME}"
         elif test "${DIR_NAME}" = "${REGION_DIR}"; then
           ENV_VARS_TEMPLATE="${NEW_PING_CLOUD_BASE_REPO}/${TEMPLATES_REGION_DIR}/${ENV_VARS_FILE_NAME}"
         else
