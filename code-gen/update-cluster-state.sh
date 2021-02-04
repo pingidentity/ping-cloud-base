@@ -21,6 +21,11 @@ K8S_CONFIGS_DIR='k8s-configs'
 PROFILES_DIR='profiles'
 BASE_DIR='base'
 
+CODE_GEN_DIR='code-gen'
+TEMPLATES_DIR='templates'
+TEMPLATES_BASE_DIR="${CODE_GEN_DIR}/${TEMPLATES_DIR}/${BASE_DIR}"
+TEMPLATES_REGION_DIR="${CODE_GEN_DIR}/${TEMPLATES_DIR}/region"
+
 CUSTOM_RESOURCES_REL_DIR="${K8S_CONFIGS_DIR}/${BASE_DIR}/custom-resources"
 CUSTOM_PATCHES_REL_FILE_NAME="${K8S_CONFIGS_DIR}/${BASE_DIR}/custom-patches.yaml"
 
@@ -34,8 +39,8 @@ CLUSTER_STATE_REPO='cluster-state-repo'
 PING_CLOUD_BASE='ping-cloud-base'
 PING_CLOUD_DEFAULT_DEVOPS_USER='pingcloudpt-licensing@pingidentity.com'
 
-HANDLE_CHANGED_PROFILES="${HANDLE_CHANGED_PROFILES:-true}"
-HANDLE_CHANGED_K8S_CONFIGS="${HANDLE_CHANGED_K8S_CONFIGS:-true}"
+# If true, reset to the OOTB cluster state for the new version, i.e. perform no migration.
+RESET_TO_DEFAULT="${RESET_TO_DEFAULT:-false}"
 
 # FIXME: obtain the list of known k8s files between the old and new versions dynamically
 
@@ -46,7 +51,7 @@ HANDLE_CHANGED_K8S_CONFIGS="${HANDLE_CHANGED_K8S_CONFIGS:-true}"
 #     find "${K8S_CONFIGS_DIR}" -type f -exec basename {} + | sort -u   # Run this command on each tag
 #     cat v1.7-k8s-files v1.8-k8s-files | sort -u                       # Create a union of the k8s files
 
-known_k8s_files='@.flux.yaml \
+known_k8s_files="@.flux.yaml \
 @argo-application.yaml \
 @custom-patches.yaml \
 @descriptor.json \
@@ -58,7 +63,55 @@ known_k8s_files='@.flux.yaml \
 @orig-secrets.yaml \
 @region-promotion.txt \
 @remove-from-secondary-patch.yaml \
-@seal.sh'
+@seal.sh"
+
+# The list of variables to substitute in env_vars.old files.
+# shellcheck disable=SC2016
+ENV_VARS_TO_SUBST='${IS_MULTI_CLUSTER}
+${CLUSTER_BUCKET_NAME}
+${REGION}
+${REGION_NICK_NAME}
+${PRIMARY_REGION}
+${TENANT_DOMAIN}
+${PRIMARY_TENANT_DOMAIN}
+${GLOBAL_TENANT_DOMAIN}
+${ARTIFACT_REPO_URL}
+${PING_ARTIFACT_REPO_URL}
+${LOG_ARCHIVE_URL}
+${BACKUP_URL}
+${PING_CLOUD_NAMESPACE}
+${K8S_GIT_URL}
+${K8S_GIT_BRANCH}
+${REGISTRY_NAME}
+${KNOWN_HOSTS_CLUSTER_STATE_REPO}
+${CLUSTER_STATE_REPO_URL}
+${CLUSTER_STATE_REPO_BRANCH}
+${ENV}
+${ENVIRONMENT_TYPE}
+${KUSTOMIZE_BASE}
+${LETS_ENCRYPT_SERVER}
+${PF_PD_BIND_PORT}
+${PF_PD_BIND_PROTOCOL}
+${PF_PD_BIND_USESSL}
+${PF_MIN_HEAP}
+${PF_MAX_HEAP}
+${PF_MIN_YGEN}
+${PF_MAX_YGEN}
+${PA_WAS_MIN_HEAP}
+${PA_WAS_MAX_HEAP}
+${PA_WAS_MIN_YGEN}
+${PA_WAS_MAX_YGEN}
+${PA_WAS_GCOPTION}
+${PA_MIN_HEAP}
+${PA_MAX_HEAP}
+${PA_MIN_YGEN}
+${PA_MAX_YGEN}
+${PA_GCOPTION}
+${CLUSTER_NAME}
+${CLUSTER_NAME_LC}
+${DNS_ZONE}
+${PRIMARY_DNS_ZONE}
+${IRSA_PING_ANNOTATION_KEY_VALUE}'
 
 ########################################################################################################################
 # Prints a log message prepended with the name of the current script to stdout.
@@ -401,12 +454,22 @@ print_readme() {
   echo "  They contain cluster state valid for ${NEW_VERSION}."
   echo
 
+  echo "- All environment variables have been reset to the default for ${NEW_VERSION}."
+  echo
+  echo "    - The ${ENV_VARS_FILE} have been copied over from the default CDE branch"
+  echo "      with a suffix of '.old', but they are not sourced from kustomization.yaml."
+  echo
+  echo "    - Use the ${ENV_VARS_FILE}.old files as a reference to fix up any"
+  echo "      discrepancies in the new ${ENV_VARS_FILE}."
+  echo
+  echo "    - WARNING: changing app JVM settings will required related changes to the"
+  echo "      replica set of the apps. Make those changes in the custom-patches.yaml file."
+  echo
+
   if "${ALL_MIN_SECRETS_FOUND}"; then
-    echo "- All environment variables and the minimum required secrets have been"
-    echo "  migrated to the new CDE branches."
+    echo "- All secrets have been reset to the default for ${NEW_VERSION}."
   else
-    echo "- All environment variables have been migrated to the new CDE branches, but the"
-    echo "  minimum required secrets could not be migrated because they were unavailable."
+    echo "- All but the following secrets have been reset to the default for ${NEW_VERSION}"
     echo
     echo "    - The PING_IDENTITY_DEVOPS_KEY contains a fake key. If using devops licenses,"
     echo "      it must be updated to the key for '${PING_CLOUD_DEFAULT_DEVOPS_USER}'."
@@ -418,9 +481,9 @@ print_readme() {
   fi
   echo
   echo "- The '${SECRETS_FILE_NAME}' and '${SEALED_SECRETS_FILE_NAME}' files have been copied over"
-  echo "  from the default CDE branch with a suffix of '.old', but they are not sourced"
-  echo "  from the kustomization.yaml file. The new '${SECRETS_FILE_NAME}' and '${SEALED_SECRETS_FILE_NAME}'"
-  echo "  files must be fixed using the '*.old' ones as a reference in the following manner:"
+  echo "  from the default CDE branch with a suffix of '.old', but they are not sourced from"
+  echo "  kustomization.yaml. Use the '*secrets.yaml.old' files as a reference to fix up the"
+  echo "  new ones in the following manner:"
   echo
   echo "    - Secrets that are new in '${NEW_VERSION}' must be configured and"
   echo "      re-sealed."
@@ -705,7 +768,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
       TARGET_DIR="${TENANT_CODE_DIR}/${REGION_DIR}"
 
       # Generate code now that we have set all the required environment variables
-      log "Generating code for region '${REGION_DIR}' for branch '${NEW_BRANCH}' into '${TARGET_DIR}'"
+      log "Generating code for region '${REGION_DIR}' and branch '${NEW_BRANCH}' into '${TARGET_DIR}'"
       (
         export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY}"
         set -x
@@ -718,14 +781,47 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
             PING_IDENTITY_DEVOPS_USER="${PING_IDENTITY_DEVOPS_USER}" \
             SSH_ID_PUB_FILE="${ID_RSA_FILE}" \
             SSH_ID_KEY_FILE="${ID_RSA_FILE}" \
-            "${NEW_PING_CLOUD_BASE_REPO}/code-gen/generate-cluster-state.sh"
+            "${NEW_PING_CLOUD_BASE_REPO}/${CODE_GEN_DIR}/generate-cluster-state.sh"
       )
-      log "Done generating code for region '${REGION_DIR}' for branch '${NEW_BRANCH}' into '${TARGET_DIR}'"
+      log "Done generating code for region '${REGION_DIR}' and branch '${NEW_BRANCH}' into '${TARGET_DIR}'"
 
       # Persist the primary region's directory name for later use.
+      IS_PRIMARY=false
       if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
+        IS_PRIMARY=true
         echo "${REGION_DIR}" > "${PRIMARY_REGION_DIR_FILE}"
       fi
+
+      # Do not create env_vars.old files if resetting to the OOTB cluster state.
+      if "${RESET_TO_DEFAULT}"; then
+        log "Not creating env_vars.old because migration was explicitly skipped"
+        # shellcheck disable=SC2106
+        continue
+      fi
+
+      # For every env_vars file in the new version, populate the old values into an env_vars.old file.
+      env_vars_files="$(find "${TARGET_DIR}" -name "${ENV_VARS_FILE}" -type f)"
+
+      for env_var_file in ${env_vars_files}; do
+        dir_name="$(dirname "${env_var_file}")"
+        dir_name="${dir_name##*/}"
+
+        if test "${dir_name}" = "${BASE_DIR}"; then
+          if "${IS_PRIMARY}"; then
+            env_var_template="${NEW_PING_CLOUD_BASE_REPO}/${TEMPLATES_BASE_DIR}/${ENV_VARS_FILE}"
+          fi
+        elif test "${dir_name}" = "${REGION_DIR}"; then
+          env_var_template="${NEW_PING_CLOUD_BASE_REPO}/${TEMPLATES_REGION_DIR}/${ENV_VARS_FILE}"
+        else
+          # Ignore the env_vars under ping app-specific directories.
+          continue
+        fi
+
+        old_env_var_file="${env_var_file}".old
+        log "Creating '${old_env_var_file}' for region '${REGION_DIR}' and branch '${NEW_BRANCH}'"
+
+        envsubst "${ENV_VARS_TO_SUBST}" < "${env_var_template}" > "${old_env_var_file}"
+      done
     )
   done # REGION loop for generate
 
@@ -757,34 +853,32 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
     fi
 
     TARGET_DIR="${TENANT_CODE_DIR}/${REGION_DIR}"
-    log "Generated code directory for ${TYPE} region '${REGION_DIR}' for CDE '${ENV}': ${TARGET_DIR}"
+    log "Generated code directory for ${TYPE} region '${REGION_DIR}' and CDE '${ENV}': ${TARGET_DIR}"
 
-    log "Creating branch for ${TYPE} region '${REGION_DIR}' for CDE '${ENV}': ${NEW_BRANCH}"
+    log "Creating branch for ${TYPE} region '${REGION_DIR}' and CDE '${ENV}': ${NEW_BRANCH}"
     (
       set -x;
       GENERATED_CODE_DIR="${TARGET_DIR}" \
            IS_PRIMARY=${IS_PRIMARY} \
            ENVIRONMENTS="${NEW_BRANCH}" \
            PUSH_TO_SERVER=false \
-           "${NEW_PING_CLOUD_BASE_REPO}/code-gen/push-cluster-state.sh"
+           "${NEW_PING_CLOUD_BASE_REPO}/${CODE_GEN_DIR}/push-cluster-state.sh"
      )
-    log "Done creating branch for ${TYPE} region '${REGION_DIR}' for CDE '${ENV}': ${NEW_BRANCH}"
+    log "Done creating branch for ${TYPE} region '${REGION_DIR}' and CDE '${ENV}': ${NEW_BRANCH}"
   done # REGION loop for push
 
-  # Copy profiles files that were deleted or renamed from the default CDE branch into its new branch.
-  HANDLE_CHANGED_PROFILES="${HANDLE_CHANGED_PROFILES:-true}"
-  if "${HANDLE_CHANGED_PROFILES}"; then
-    handle_changed_profiles "${NEW_BRANCH}"
+  # If requested, copy profiles files that were deleted or renamed from the default CDE branch into its new branch.
+  if "${RESET_TO_DEFAULT}"; then
+    log "Not migrating '${PROFILES_DIR}' because migration was explicitly skipped"
   else
-    log "Not automatically resolving diffs in '${PROFILES_DIR}' - any diffs must be resolved manually"
+    handle_changed_profiles "${NEW_BRANCH}"
   fi
 
-  # Copy new k8s-configs files from the default CDE branches into their corresponding new branches.
-  HANDLE_CHANGED_K8S_CONFIGS="${HANDLE_CHANGED_K8S_CONFIGS:-true}"
-  if "${HANDLE_CHANGED_K8S_CONFIGS}"; then
-    handle_changed_k8s_configs "${NEW_BRANCH}"
+  # If requested, copy new k8s-configs files from the default CDE branches into their corresponding new branches.
+  if "${RESET_TO_DEFAULT}"; then
+    log "Not migrating '${K8S_CONFIGS_DIR}' because migration was explicitly skipped"
   else
-    log "Not automatically resolving diffs in '${K8S_CONFIGS_DIR}' - any diffs must be resolved manually"
+    handle_changed_k8s_configs "${NEW_BRANCH}"
   fi
 
   echo
