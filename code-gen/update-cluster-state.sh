@@ -92,7 +92,7 @@ check_binaries() {
 set_env_vars() {
   env_file="$1"
   if test -f "${env_file}"; then
-    env_file_bak="${env_file}"{,.bak}
+    env_file_bak="${env_file}".bak
     cp "${env_file}" "${env_file_bak}"
 
     # FIXME: escape variable values with spaces in the future. For now, LAST_UPDATE_REASON is the only one with spaces.
@@ -181,7 +181,7 @@ get_ping_cloud_secrets_file() {
   fi
 
   # Get the full path of the secrets.yaml file that has all ping-cloud secrets.
-  secrets_yaml="$(find . -name "${SECRETS_FILE_NAME}" | head -1)"
+  secrets_yaml="$(git grep -e PING_IDENTITY_DEVOPS | grep -v '\$' | head -1 | cut -d: -f1)"
 
   # If found, copy it to the provided output file in JSON format.
   # NOTE: it's safer to use kubectl here than a YAML parser like yq, whose options vary by version of the tool, OS, etc.
