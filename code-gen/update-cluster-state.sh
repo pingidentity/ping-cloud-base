@@ -45,6 +45,9 @@ PING_CLOUD_DEFAULT_DEVOPS_USER='pingcloudpt-licensing@pingidentity.com'
 # If true, reset to the OOTB cluster state for the new version, i.e. perform no migration.
 RESET_TO_DEFAULT="${RESET_TO_DEFAULT:-false}"
 
+# Update log file.
+LOG_FILE="$(mktemp)/update.log"
+
 # FIXME: obtain the list of known k8s files between the old and new versions dynamically
 
 # List of k8s files not to copy over. These are OOTB k8s config files for a Beluga release and not customized by
@@ -153,7 +156,7 @@ add_derived_variables() {
 #   $1 -> The log message.
 ########################################################################################################################
 log() {
-  echo "=====> ${SCRIPT_NAME} $1"
+  echo "=====> ${SCRIPT_NAME} $1" 2>&1 | tee "${LOG_FILE}"
 }
 
 ########################################################################################################################
@@ -636,6 +639,9 @@ finalize() {
 # Trap all exit codes to detect non-zero exit codes and log on it.
 trap 'finalize' EXIT
 
+# Print out the update log file.
+log "Update log file: ${LOG_FILE}"
+
 # Save the the script name to include in log messages.
 SCRIPT_NAME="$(basename "$0")"
 
@@ -908,7 +914,6 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
            PUSH_TO_SERVER=false \
            "${NEW_PING_CLOUD_BASE_REPO}/${CODE_GEN_DIR}/push-cluster-state.sh"
      )
-    log "Done creating branch for ${TYPE} region '${REGION_DIR}' and CDE '${ENV}': ${NEW_BRANCH}"
   done # REGION loop for push
 
   # If requested, copy profiles files that were deleted or renamed from the default CDE branch into its new branch.
