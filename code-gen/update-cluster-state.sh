@@ -456,11 +456,11 @@ print_readme() {
 
   echo "- All environment variables have been reset to the default for ${NEW_VERSION}."
   echo
-  echo "    - The ${ENV_VARS_FILE} have been copied over from the default CDE branch"
+  echo "    - The ${ENV_VARS_FILE_NAME} have been copied over from the default CDE branch"
   echo "      with a suffix of '.old', but they are not sourced from kustomization.yaml."
   echo
-  echo "    - Use the ${ENV_VARS_FILE}.old files as a reference to fix up any"
-  echo "      discrepancies in the new ${ENV_VARS_FILE}."
+  echo "    - Use the ${ENV_VARS_FILE_NAME}.old files as a reference to fix up any"
+  echo "      discrepancies in the new ${ENV_VARS_FILE_NAME}."
   echo
   echo "    - WARNING: changing app JVM settings will required related changes to the"
   echo "      replica set of the apps. Make those changes in the custom-patches.yaml file."
@@ -809,10 +809,10 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
 
         if test "${dir_name}" = "${BASE_DIR}"; then
           if "${IS_PRIMARY}"; then
-            env_var_template="${NEW_PING_CLOUD_BASE_REPO}/${TEMPLATES_BASE_DIR}/${ENV_VARS_FILE}"
+            env_var_template="${NEW_PING_CLOUD_BASE_REPO}/${TEMPLATES_BASE_DIR}/${ENV_VARS_FILE_NAME}"
           fi
         elif test "${dir_name}" = "${REGION_DIR}"; then
-          env_var_template="${NEW_PING_CLOUD_BASE_REPO}/${TEMPLATES_REGION_DIR}/${ENV_VARS_FILE}"
+          env_var_template="${NEW_PING_CLOUD_BASE_REPO}/${TEMPLATES_REGION_DIR}/${ENV_VARS_FILE_NAME}"
         else
           # Ignore the env_vars under ping app-specific directories.
           continue
