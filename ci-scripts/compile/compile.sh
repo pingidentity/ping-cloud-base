@@ -16,7 +16,10 @@ STATUS=0
 for SCRIPT in ${SCRIPTS}; do
   log "Running script ${SCRIPT}"
   ${SCRIPT} "${1}"
+
   RESULT=${?}
+  log "Result of script ${SCRIPT}: ${RESULT}"
+
   test ${STATUS} -eq 0 && STATUS=${RESULT}
 done
 

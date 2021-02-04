@@ -1,15 +1,13 @@
 #!/bin/bash
 
 # Source the script we're testing
-script_to_test="${PROJECT_DIR}"/profiles/aws/pingaccess/hooks/utils.lib.sh
+script_to_test="${HOOKS_DIR}"/utils.lib.sh
 . "${script_to_test}"
 
 # Mock up the curl responses
 # when it's called from the
 # make_api_request function.
 curl() {
-  set +x
-
   # get the last arg
   # in the list
   arg=${@: -1}

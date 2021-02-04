@@ -99,6 +99,21 @@ patchesJson6902:
       value:
         --default-ssl-certificate=${NAMESPACE}/acme-tls-cert
 
+# Update nginx replica count to support dev-env and CI/CD workloads.
+- target:
+    group: autoscaling
+    version: v1
+    kind: HorizontalPodAutoscaler       
+    name: nginx-ingress-controller
+    namespace: ingress-nginx-public
+  patch: |-
+    - op: replace
+      path: /spec/minReplicas
+      value: 3
+    - op: replace
+      path: /spec/maxReplicas
+      value: 3  
+
 # Cluster auto-scaler
 - target:
     group: apps

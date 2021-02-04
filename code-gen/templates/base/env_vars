@@ -44,20 +44,20 @@ REGISTRY_NAME=${REGISTRY_NAME}
 KNOWN_HOSTS_CLUSTER_STATE_REPO="${KNOWN_HOSTS_CLUSTER_STATE_REPO}"
 
 CLUSTER_STATE_REPO_URL=${CLUSTER_STATE_REPO_URL}
-CLUSTER_STATE_REPO_PATH=${CLUSTER_STATE_REPO_PATH}
+CLUSTER_STATE_REPO_PATH=${CLUSTER_STATE_REPO_PATH_DERIVED}
 CLUSTER_STATE_REPO_BRANCH=${CLUSTER_STATE_REPO_BRANCH}
 
 ############################################################
 # Server profile variables
 ############################################################
-SERVER_PROFILE_URL=${SERVER_PROFILE_URL}
-SERVER_PROFILE_BRANCH=${SERVER_PROFILE_BRANCH}
+SERVER_PROFILE_URL=${SERVER_PROFILE_URL_DERIVED}
+SERVER_PROFILE_BRANCH=${SERVER_PROFILE_BRANCH_DERIVED}
 
 ############################################################
 # Environment-specific variables
 ############################################################
 # Used by server profile hooks
-ENVIRONMENT_TYPE=${ENV}
+ENVIRONMENT_TYPE=${ENVIRONMENT_TYPE}
 
 # Used by Kubernetes manifests
 ENV=${ENV}
@@ -111,28 +111,23 @@ PRIMARY_DNS_ZONE=${PRIMARY_DNS_ZONE}
 # Public hostnames
 ############################################################
 # Ping admin configuration required for admin access and clustering
-PD_PRIMARY_PUBLIC_HOSTNAME=pingdirectory-admin.${PRIMARY_DNS_ZONE}
-PF_ADMIN_PUBLIC_HOSTNAME=pingfederate-admin.${PRIMARY_DNS_ZONE}
-PA_ADMIN_PUBLIC_HOSTNAME=pingaccess-admin.${PRIMARY_DNS_ZONE}
-PA_WAS_ADMIN_PUBLIC_HOSTNAME=pingaccess-was-admin.${PRIMARY_DNS_ZONE}
+PD_PRIMARY_PUBLIC_HOSTNAME=pingdirectory-admin.${PRIMARY_DNS_ZONE_DERIVED}
+PF_ADMIN_PUBLIC_HOSTNAME=pingfederate-admin.${PRIMARY_DNS_ZONE_DERIVED}
+PA_ADMIN_PUBLIC_HOSTNAME=pingaccess-admin.${PRIMARY_DNS_ZONE_DERIVED}
+PA_WAS_ADMIN_PUBLIC_HOSTNAME=pingaccess-was-admin.${PRIMARY_DNS_ZONE_DERIVED}
 
-PD_CLUSTER_PUBLIC_HOSTNAME=pingdirectory-cluster.${PRIMARY_DNS_ZONE}
-PF_CLUSTER_PUBLIC_HOSTNAME=pingfederate-cluster.${PRIMARY_DNS_ZONE}
-PA_CLUSTER_PUBLIC_HOSTNAME=pingaccess-cluster.${PRIMARY_DNS_ZONE}
-PA_WAS_CLUSTER_PUBLIC_HOSTNAME=pingaccess-was-cluster.${PRIMARY_DNS_ZONE}
+PD_CLUSTER_PUBLIC_HOSTNAME=pingdirectory-cluster.${PRIMARY_DNS_ZONE_DERIVED}
+PF_CLUSTER_PUBLIC_HOSTNAME=pingfederate-cluster.${PRIMARY_DNS_ZONE_DERIVED}
+PA_CLUSTER_PUBLIC_HOSTNAME=pingaccess-cluster.${PRIMARY_DNS_ZONE_DERIVED}
+PA_WAS_CLUSTER_PUBLIC_HOSTNAME=pingaccess-was-cluster.${PRIMARY_DNS_ZONE_DERIVED}
 
 # Ping engine hostname variables
-PD_PUBLIC_HOSTNAME=pingdirectory-admin.${DNS_ZONE}
-PF_ENGINE_PUBLIC_HOSTNAME=pingfederate.${DNS_ZONE}
-PA_ENGINE_PUBLIC_HOSTNAME=pingaccess.${DNS_ZONE}
-PA_WAS_ENGINE_PUBLIC_HOSTNAME=pingaccess-was.${DNS_ZONE}
+PD_PUBLIC_HOSTNAME=pingdirectory-admin.${DNS_ZONE_DERIVED}
+PF_ENGINE_PUBLIC_HOSTNAME=pingfederate.${DNS_ZONE_DERIVED}
+PA_ENGINE_PUBLIC_HOSTNAME=pingaccess.${DNS_ZONE_DERIVED}
+PA_WAS_ENGINE_PUBLIC_HOSTNAME=pingaccess-was.${DNS_ZONE_DERIVED}
 
-PROMETHEUS_PUBLIC_HOSTNAME=prometheus.${DNS_ZONE}
-GRAFANA_PUBLIC_HOSTNAME=monitoring.${DNS_ZONE}
-KIBANA_PUBLIC_HOSTNAME=logs.${DNS_ZONE}
-
-############################################################
-# IRSA - IAM role for service accounts
-############################################################
-# Used by ping product pods
-IRSA_PING_ANNOTATION_KEY_VALUE="${IRSA_PING_ANNOTATION_KEY_VALUE}"
+PROMETHEUS_PUBLIC_HOSTNAME=prometheus.${DNS_ZONE_DERIVED}
+GRAFANA_PUBLIC_HOSTNAME=monitoring.${DNS_ZONE_DERIVED}
+KIBANA_PUBLIC_HOSTNAME=logs.${DNS_ZONE_DERIVED}
+ARGOCD_PUBLIC_HOSTNAME=argocd.${DNS_ZONE_DERIVED}

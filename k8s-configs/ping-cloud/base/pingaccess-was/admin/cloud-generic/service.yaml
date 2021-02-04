@@ -1,0 +1,17 @@
+# This service exposes the pingaccess-was admin and runtime ports to the cluster.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: pingaccess-was-admin
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: pingaccess-was-cluster-dev.ping-demo.com
+spec:
+  clusterIP: None
+  ports:
+  - port: 9000
+    name: pingaccess-was-admin
+  - port: 9090
+    name: pingaccess-was-config-query
+  selector:
+    role: pingaccess-was-admin

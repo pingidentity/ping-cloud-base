@@ -67,7 +67,7 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # Variable               | Purpose                                            | Default (if not present)
 # ----------------------------------------------------------------------------------------------------------------------
-# TENANT_NAME            | The name of the tenant, e.g. k8s-icecream. If      | ci-cd
+# TENANT_NAME            | The name of the tenant, e.g. k8s-icecream. If      | ping-cloud-customer
 #                        | provided, this value will be used for the cluster  |
 #                        | name and must have the correct case (e.g. ci-cd    |
 #                        | vs. CI-CD). If not provided, this variable is      |
@@ -197,6 +197,9 @@
 SCRIPT_HOME=$(cd $(dirname ${0}) 2>/dev/null; pwd)
 pushd "${SCRIPT_HOME}" >/dev/null 2>&1
 
+# Quiet mode where instructional messages are omitted.
+QUIET="${QUIET:-false}"
+
 # Source some utility methods.
 . ../utils.sh
 
@@ -235,9 +238,9 @@ ${REGISTRY_NAME}
 ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
 ${CLUSTER_STATE_REPO_URL}
 ${CLUSTER_STATE_REPO_BRANCH}
-${CLUSTER_STATE_REPO_PATH}
-${SERVER_PROFILE_URL}
-${SERVER_PROFILE_BRANCH}
+${CLUSTER_STATE_REPO_PATH_DERIVED}
+${SERVER_PROFILE_URL_DERIVED}
+${SERVER_PROFILE_BRANCH_DERIVED}
 ${SERVER_PROFILE_PATH}
 ${ENV}
 ${ENVIRONMENT_TYPE}
@@ -263,7 +266,10 @@ ${PA_GCOPTION}
 ${CLUSTER_NAME}
 ${CLUSTER_NAME_LC}
 ${DNS_ZONE}
+${DNS_ZONE_DERIVED}
 ${PRIMARY_DNS_ZONE}
+${PRIMARY_DNS_ZONE_DERIVED}
+${LAST_UPDATE_REASON}
 ${IRSA_PING_ANNOTATION_KEY_VALUE}'
 
 # Variables to replace within the generated cluster state code
@@ -284,20 +290,15 @@ ${SSH_ID_KEY_BASE64}'
 ########################################################################################################################
 add_derived_variables() {
   # The directory within the cluster state repo for the region's manifest files.
-  export CLUSTER_STATE_REPO_PATH=\${REGION_NICK_NAME}
+  export CLUSTER_STATE_REPO_PATH_DERIVED="\${REGION_NICK_NAME}"
 
   # Server profile URL and branch. The directory is in each app's env_vars file.
-  export SERVER_PROFILE_URL=\${CLUSTER_STATE_REPO_URL}
-  export SERVER_PROFILE_BRANCH=\${CLUSTER_STATE_REPO_BRANCH}
+  export SERVER_PROFILE_URL_DERIVED="\${CLUSTER_STATE_REPO_URL}"
+  export SERVER_PROFILE_BRANCH_DERIVED="\${CLUSTER_STATE_REPO_BRANCH}"
 
-  # Zone for this region and the primary region
-  if "${IS_BELUGA_ENV}"; then
-    export DNS_ZONE="\${TENANT_DOMAIN}"
-    export PRIMARY_DNS_ZONE="\${PRIMARY_TENANT_DOMAIN}"
-  else
-    export DNS_ZONE="\${ENV}-\${TENANT_DOMAIN}"
-    export PRIMARY_DNS_ZONE="\${ENV}-\${PRIMARY_TENANT_DOMAIN}"
-  fi
+  # Zone for this region and the primary region.
+  export DNS_ZONE_DERIVED="\${DNS_ZONE}"
+  export PRIMARY_DNS_ZONE_DERIVED="\${PRIMARY_DNS_ZONE}"
 }
 
 ########################################################################################################################
@@ -323,7 +324,7 @@ add_irsa_variables() {
     fi
 
     # IRSA for ping product pods. The role name is predefined as a part of the interface contract.
-    IRSA_PING_ANNOTATION_KEY_VALUE="eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role/irsa-ping"
+    IRSA_PING_ANNOTATION_KEY_VALUE="eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role/pcpt/irsa-roles/irsa-ping"
   fi
 
   export IRSA_PING_ANNOTATION_KEY_VALUE="${IRSA_PING_ANNOTATION_KEY_VALUE}"
@@ -342,7 +343,10 @@ if test ${HAS_REQUIRED_TOOLS} -ne 0 || test ${HAS_REQUIRED_VARS} -ne 0; then
   exit 1
 fi
 
-test -z "${IS_MULTI_CLUSTER}" && IS_MULTI_CLUSTER=false
+if test -z "${IS_MULTI_CLUSTER}"; then
+  IS_MULTI_CLUSTER=false
+fi
+
 if "${IS_MULTI_CLUSTER}"; then
   check_env_vars "CLUSTER_BUCKET_NAME"
   if test $? -ne 0; then
@@ -386,7 +390,7 @@ echo ---
 
 # Use defaults for other variables, if not present.
 export IS_BELUGA_ENV="${IS_BELUGA_ENV:-false}"
-export TENANT_NAME="${TENANT_NAME:-ci-cd}"
+export TENANT_NAME="${TENANT_NAME:-ping-cloud-customer}"
 export SIZE="${SIZE:-x-small}"
 
 ### Region-specific environment variables ###
@@ -398,6 +402,8 @@ export TENANT_DOMAIN="${TENANT_DOMAIN_NO_DOT_SUFFIX}"
 
 export CLUSTER_BUCKET_NAME="${CLUSTER_BUCKET_NAME}"
 export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
+
+export LAST_UPDATE_REASON="${LAST_UPDATE_REASON:-NA}"
 
 ### Base environment variables ###
 export IS_MULTI_CLUSTER="${IS_MULTI_CLUSTER}"
@@ -423,7 +429,9 @@ export PING_CLOUD_NAMESPACE='ping-cloud'
 
 PING_CLOUD_BASE_COMMIT_SHA=$(git rev-parse HEAD)
 CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-test "${CURRENT_GIT_BRANCH}" = 'HEAD' && CURRENT_GIT_BRANCH=$(git describe --tags --always)
+if test "${CURRENT_GIT_BRANCH}" = 'HEAD'; then
+  CURRENT_GIT_BRANCH=$(git describe --tags --always)
+fi
 export CLUSTER_STATE_REPO_URL=${CLUSTER_STATE_REPO_URL:-https://github.com/pingidentity/ping-cloud-base}
 
 export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
@@ -494,7 +502,7 @@ fi
 parse_url "${CLUSTER_STATE_REPO_URL}"
 echo "Obtaining known_hosts contents for cluster state repo host: ${URL_HOST}"
 
-export KNOWN_HOSTS_CLUSTER_STATE_REPO="$(ssh-keyscan -H "${URL_HOST}" 2>/dev/null)"
+export KNOWN_HOSTS_CLUSTER_STATE_REPO="${KNOWN_HOSTS_CLUSTER_STATE_REPO:-$(ssh-keyscan -H "${URL_HOST}" 2>/dev/null)}"
 
 # Delete existing target directory and re-create it
 rm -rf "${TARGET_DIR}"
@@ -526,24 +534,32 @@ ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
 
 export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL}"
 
-for ENV in ${ENVIRONMENTS}; do
-  # Export all the environment variables required for envsubst
-  test "${ENV}" = 'prod' &&
-    export CLUSTER_STATE_REPO_BRANCH='master' ||
-    export CLUSTER_STATE_REPO_BRANCH="${ENV}"
+# The ENVIRONMENTS variable can either be the CDE names (e.g. dev, test, stage, prod) or the branch names (e.g.
+# v1.8.0-dev, v1.8.0-test, v1.8.0-stage, v1.8.0-master). We must handle both cases. Note that the 'prod' environment
+# will have a branch name suffix of 'master'.
+for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
+  test "${ENV_OR_BRANCH}" = 'prod' &&
+      GIT_BRANCH='master' ||
+      GIT_BRANCH="${ENV_OR_BRANCH}"
 
-  export ENVIRONMENT_TYPE="${ENV}"
+  ENV_OR_BRANCH_SUFFIX="${ENV_OR_BRANCH##*-}"
+  test "${ENV_OR_BRANCH_SUFFIX}" = 'master' &&
+      ENV='prod' ||
+      ENV="${ENV_OR_BRANCH_SUFFIX}"
+
+  # Export all the environment variables required for envsubst
   export ENV="${ENV}"
+  export ENVIRONMENT_TYPE="${ENV}"
+
+  # Set the cluster state repo branch to the default CDE branch, i.e. dev, test, stage or master.
+  export CLUSTER_STATE_REPO_BRANCH="${GIT_BRANCH##*-}"
 
   # The base URL for kustomization files and environment will be different for each CDE.
   case "${ENV}" in
     dev | test)
       export KUSTOMIZE_BASE='test'
       ;;
-    stage)
-      export KUSTOMIZE_BASE='prod/x-small'
-      ;;
-    prod)
+    stage | prod)
       export KUSTOMIZE_BASE="prod/${SIZE}"
       ;;
   esac
@@ -551,10 +567,10 @@ for ENV in ${ENVIRONMENTS}; do
   # Update the Let's encrypt server to use staging/production based on environment type.
   case "${ENV}" in
     dev | test | stage)
-      export LETS_ENCRYPT_SERVER='https://acme-staging-v02.api.letsencrypt.org/directory'
+      export LETS_ENCRYPT_SERVER="${LETS_ENCRYPT_SERVER:-https://acme-staging-v02.api.letsencrypt.org/directory}"
       ;;
     prod)
-      export LETS_ENCRYPT_SERVER='https://acme-v02.api.letsencrypt.org/directory'
+      export LETS_ENCRYPT_SERVER="${LETS_ENCRYPT_SERVER:-https://acme-v02.api.letsencrypt.org/directory}"
       ;;
   esac
 
@@ -575,10 +591,10 @@ for ENV in ${ENVIRONMENTS}; do
   # Update the PF JVM limits based on environment.
   case "${ENV}" in
     dev | test)
-      export PF_MIN_HEAP=1024m
-      export PF_MAX_HEAP=1024m
-      export PF_MIN_YGEN=512m
-      export PF_MAX_YGEN=512m
+      export PF_MIN_HEAP=256m
+      export PF_MAX_HEAP=512m
+      export PF_MIN_YGEN=128m
+      export PF_MAX_YGEN=256m
       ;;
     stage | prod)
       export PF_MIN_HEAP=3072m
@@ -611,9 +627,18 @@ for ENV in ${ENVIRONMENTS}; do
   export PA_MAX_YGEN=256m
   export PA_GCOPTION='-XX:+UseParallelGC'
 
+  # Zone for this region and the primary region
+  if "${IS_BELUGA_ENV}"; then
+    export DNS_ZONE="\${TENANT_DOMAIN}"
+    export PRIMARY_DNS_ZONE="\${PRIMARY_TENANT_DOMAIN}"
+  else
+    export DNS_ZONE="\${ENV}-\${TENANT_DOMAIN}"
+    export PRIMARY_DNS_ZONE="\${ENV}-\${PRIMARY_TENANT_DOMAIN}"
+  fi
+
   "${IS_BELUGA_ENV}" &&
       export CLUSTER_NAME="${TENANT_NAME}" ||
-      export CLUSTER_NAME="${ENV##*-}"
+      export CLUSTER_NAME="${ENV}"
 
   CLUSTER_NAME_LC="$(echo "${CLUSTER_NAME}" | tr '[:upper:]' '[:lower:]')"
   export CLUSTER_NAME_LC="${CLUSTER_NAME_LC}"
@@ -636,7 +661,8 @@ for ENV in ${ENVIRONMENTS}; do
   # Build the kustomization file for the bootstrap tools for each environment
   echo "Generating bootstrap yaml"
 
-  ENV_BOOTSTRAP_DIR="${BOOTSTRAP_DIR}/${ENV}"
+  # The code for an environment is generated under a directory of the same name as what's provided in ENVIRONMENTS.
+  ENV_BOOTSTRAP_DIR="${BOOTSTRAP_DIR}/${ENV_OR_BRANCH}"
   mkdir -p "${ENV_BOOTSTRAP_DIR}"
 
   cp "${TEMPLATES_HOME}/${BOOTSTRAP_SHORT_DIR}"/* "${ENV_BOOTSTRAP_DIR}"
@@ -647,7 +673,7 @@ for ENV in ${ENVIRONMENTS}; do
   # Copy the shared cluster tools and Ping yaml templates into their target directories
   echo "Generating tools and ping yaml"
 
-  ENV_DIR="${K8S_CONFIGS_DIR}/${ENV}"
+  ENV_DIR="${K8S_CONFIGS_DIR}/${ENV_OR_BRANCH}"
   mkdir -p "${ENV_DIR}"
 
   cp -r "${BASE_DIR}" "${ENV_DIR}"
@@ -668,15 +694,17 @@ cp -p push-cluster-state.sh "${TARGET_DIR}"
 # Go back to previous working directory, if different
 popd >/dev/null 2>&1
 
-echo
-echo '------------------------'
-echo '|  Next steps to take  |'
-echo '------------------------'
-echo "1) Run ${TARGET_DIR}/push-cluster-state.sh to push the generated code into the tenant cluster-state repo:"
-echo "${CLUSTER_STATE_REPO_URL}"
-echo
-echo "2) Add the following identity as the deploy key on the cluster-state (rw), if not already added:"
-echo "${SSH_ID_PUB}"
-echo
-echo "3) Deploy bootstrap files onto each CDE by navigating to ${BOOTSTRAP_DIR} and running:"
-echo 'kustomize build | kubectl apply -f -'
+if ! "${QUIET}"; then
+  echo
+  echo '------------------------'
+  echo '|  Next steps to take  |'
+  echo '------------------------'
+  echo "1) Run ${TARGET_DIR}/push-cluster-state.sh to push the generated code into the tenant cluster-state repo:"
+  echo "${CLUSTER_STATE_REPO_URL}"
+  echo
+  echo "2) Add the following identity as the deploy key on the cluster-state (rw), if not already added:"
+  echo "${SSH_ID_PUB}"
+  echo
+  echo "3) Deploy bootstrap files onto each CDE by navigating to ${BOOTSTRAP_DIR} and running:"
+  echo 'kustomize build | kubectl apply -f -'
+fi

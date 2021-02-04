@@ -50,7 +50,7 @@
         <Console name="CONSOLE-SIEM" target="SYSTEM_OUT">
             <PingSyslogLayout>
                 <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" properties="true">
-                    <KeyValuePair key="log_purpose" value="System_SIEM" />
+                    <KeyValuePair key="logPurpose" value="System_SIEM" />
                 </JSONLayout>
             </PingSyslogLayout>
         </Console>
@@ -69,7 +69,7 @@
                 <KeyValuePair key="resource" value="$${ctx:AUDIT.resource:-}"/>    
                 <KeyValuePair key="requestUri" value="$${ctx:AUDIT.requestUri:-}"/>
                 <KeyValuePair key="responseCode" value="$${ctx:AUDIT.responseCode:-}"/>
-                <KeyValuePair key="log_purpose" value="Audit_SIEM" />
+                <KeyValuePair key="logPurpose" value="Audit_SIEM" />
               </JSONLayout>
             </PingSyslogLayout>
         </Console>

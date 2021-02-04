@@ -1,4 +1,11 @@
-# Remove PingAccess primary-cluster resources
+#
+# Removes primary-cluster resources for each application
+#
+
+################################################
+#                  PingAccess
+################################################
+
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -39,7 +46,9 @@ $patch: delete
 
 ---
 
-# Remove PingAccess WAS primary-cluster resources
+################################################
+#               PingAccess-WAS
+################################################
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -88,7 +97,9 @@ $patch: delete
 
 ---
 
-# Remove PingFederate primary-cluster resources
+################################################
+#                PingFederate
+################################################
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -129,7 +140,9 @@ $patch: delete
 
 ---
 
-# Remove PingDirectory primary-cluster resources
+################################################
+#                PingDirectory
+################################################
 
 apiVersion: v1
 kind: ConfigMap

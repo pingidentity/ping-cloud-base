@@ -35,10 +35,10 @@ execute_test_scripts() {
     echo
 
     # Calculate and track the combined results of all tests
-    # using an OR operation.  If any of the test_results return
-    # a 1 then all_tests_passed will return a 1 to report a
-    # failure in the suites.
+    # PDO-1803 - change this for part 1
+#     test_file_failures=$((${test_file_failures} + ${test_result}))
     test_file_failures=$((${all_tests_passed} + ${test_result}))
+
   done
 
   return ${test_file_failures}
@@ -57,14 +57,14 @@ log "Running prerequisite scripts..."
 # To be found by the regex, scripts must be:
 # - under the ci-script-tests, common or ping-prefixed directories (no matter how deep)
 # - must be prefixed with at least a 2-digit number to be found and must end with .sh
-execute_test_scripts "${SCRIPT_HOME}/${TEST_DIR}/prerequisites" '(chaos|ping[a-zA-Z-]*)\/prerequisites\/[0-9][0-9]+.*\.sh'
+execute_test_scripts "${SCRIPT_HOME}/${TEST_DIR}/prerequisites" '(chaos|ping[a-zA-Z-]*|monitoring)\/prerequisites\/[0-9][0-9]+.*\.sh'
 exit_code=$?
 
 NO_COLOR='\033[0m' # No Color
 if test ${exit_code} -eq 0; then
   GREEN='\033[0;32m'
   # Use printf to print in color
-  printf '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n'
+  printf '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n'
   printf "Prerequisite Test Summary: ${GREEN}All prerequisite tests in ${TEST_DIR} completed successfully ${NO_COLOR}\n"
   printf '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n'
 else
@@ -89,7 +89,7 @@ log "Running test scripts..."
 # To be found by the regex, scripts must be:
 # - under the ci-script-tests, common or ping-prefixed directories (no matter how deep)
 # - must be prefixed with at least a 2-digit number to be found and must end with .sh
-execute_test_scripts "${SCRIPT_HOME}/${TEST_DIR}" '(chaos|ping[a-zA-Z-]*)\/[0-9][0-9]+.*\.sh'
+execute_test_scripts "${SCRIPT_HOME}/${TEST_DIR}" '(chaos|ping[a-zA-Z-]*|monitoring)\/[0-9][0-9]+.*\.sh'
 exit_code=$?
 
 if test ${exit_code} -eq 0; then

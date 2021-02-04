@@ -9,31 +9,14 @@ generatorOptions:
 
 configMapGenerator:
 
+# Pingdirectory
 # Create the config maps that hold the variable for triggering updates of PD servers
 - name: pingdirectory-last-update-config
   namespace: ${PING_CLOUD_NAMESPACE}
   envs:
   - pingdirectory/env_vars
 
-# Create the config maps that hold the variable for triggering updates of PF servers
-- name: pingfederate-last-update-config
-  namespace: ${PING_CLOUD_NAMESPACE}
-  envs:
-  - pingfederate/env_vars
-
-# Create the config maps that hold the variable for triggering updates of PA servers
-- name: pingaccess-last-update-config
-  namespace: ${PING_CLOUD_NAMESPACE}
-  envs:
-  - pingaccess/env_vars
-
-# Create the config maps that hold the variable for triggering updates of PA WAS servers
-- name: pingaccess-was-last-update-config
-  namespace: ${PING_CLOUD_NAMESPACE}
-  envs:
-  - pingaccess-was/env_vars
-
-# Pingdirectory
+# Merge all env_vars into Pingdirectory common environment variables configmap
 - name: pingdirectory-environment-variables
   behavior: merge
   envs:
@@ -41,7 +24,15 @@ configMapGenerator:
   - env_vars
   - pingdirectory/env_vars
 
+
 # Pingfederate
+# Create the config maps that hold the variable for triggering updates of PF servers
+- name: pingfederate-last-update-config
+  namespace: ${PING_CLOUD_NAMESPACE}
+  envs:
+  - pingfederate/env_vars
+
+# Merge all env_vars into Pingfederate common environment variables configmap
 - name: pingfederate-environment-variables
   behavior: merge
   envs:
@@ -49,7 +40,15 @@ configMapGenerator:
   - env_vars
   - pingfederate/env_vars
 
+
 # PingAccess
+# Create the config maps that hold the variable for triggering updates of PA servers
+- name: pingaccess-last-update-config
+  namespace: ${PING_CLOUD_NAMESPACE}
+  envs:
+  - pingaccess/env_vars
+
+# Merge all env_vars into PingAccess common environment variables configmap
 - name: pingaccess-environment-variables
   behavior: merge
   envs:
@@ -57,13 +56,28 @@ configMapGenerator:
   - env_vars
   - pingaccess/env_vars
 
+
 # PingAccess WAS
+# Create the config maps that hold the variable for triggering updates of PA WAS servers
+- name: pingaccess-was-last-update-config
+  namespace: ${PING_CLOUD_NAMESPACE}
+  envs:
+  - pingaccess-was/env_vars
+
+# Merge all env_vars into PingAccess WAS common environment variables configmap
 - name: pingaccess-was-environment-variables
   behavior: merge
   envs:
   - ../base/env_vars
   - env_vars
   - pingaccess-was/env_vars
+
+
+# Pingcloud-metadata
+- name: pingcloud-metadata-environment-variables
+  behavior: merge
+  envs:
+  - ../base/env_vars
 
 patchesStrategicMerge:
 

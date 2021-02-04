@@ -1,0 +1,34 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: pingaccess-was-admin-periodic-csd-upload
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccount: ping-serviceaccount
+          restartPolicy: OnFailure
+          containers:
+          - name: pingaccess-was-admin-periodic-csd-upload
+            image: pingcloud-mirror.jfrog.io/pingidentity/pingaccess:2010-6.1.3
+            command:
+            - /opt/in/backup-csd-data.sh
+            env:
+            - name: CSD_POD_ROLE
+              value: "pingaccess-was-admin"
+            - name: CSD_CONTAINER_NAME
+              value: "pingaccess-was-admin"
+            envFrom:
+            - configMapRef:
+                name: pingaccess-was-environment-variables
+            volumeMounts:
+            - name: pingaccess-periodic-csd-upload
+              mountPath: /opt/in/backup-csd-data.sh
+              subPath: backup-csd-data.sh
+          volumes:
+          - name: pingaccess-periodic-csd-upload
+            configMap:
+              name: pingaccess-periodic-csd-upload
+              defaultMode: 0555

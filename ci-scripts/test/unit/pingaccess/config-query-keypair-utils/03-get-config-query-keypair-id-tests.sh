@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Source the script we're testing
-script_to_test="${PROJECT_DIR}"/profiles/aws/pingaccess/hooks/util/config-query-keypair-utils.sh
+script_to_test="${HOOKS_DIR}"/util/config-query-keypair-utils.sh
 . "${script_to_test}"
 
 readonly resources_dir="${PROJECT_DIR}"/ci-scripts/test/unit/pingaccess/config-query-keypair-utils/resources

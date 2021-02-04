@@ -66,7 +66,7 @@
         <Console name="CONSOLE-SIEM" >
             <PingSyslogLayout>
                 <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" properties="true">
-                    <KeyValuePair key="log_purpose" value="System_SIEM" />
+                    <KeyValuePair key="logPurpose" value="System_SIEM" />
                 </JSONLayout>
             </PingSyslogLayout>
         </Console>
@@ -181,20 +181,20 @@
             <PingSyslogLayout>
                 <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" >
                     <KeyValuePair key="dateTimeStamp" value="$${date:yyyy-MM-dd HH:mm:ss,S}"/>
-                    <KeyValuePair key="trackingid" value="$${ctx:trackingid:-}"/>
+                    <KeyValuePair key="trackingId" value="$${ctx:trackingid:-}"/>
                     <KeyValuePair key="event" value="$${ctx:event:-}"/>
                     <KeyValuePair key="subject" value="$${ctx:subject:-}"/>
                     <KeyValuePair key="ip" value="$${ctx:ip:-}"/>
                     <KeyValuePair key="app" value="$${ctx:app:-}"/>
-                    <KeyValuePair key="connectionid" value="$${ctx:connectionid:-}"/>
+                    <KeyValuePair key="connectionId" value="$${ctx:connectionid:-}"/>
                     <KeyValuePair key="protocol" value="$${ctx:protocol:-}"/>
                     <KeyValuePair key="host" value="$${ctx:host:-}"/>
                     <KeyValuePair key="role" value="$${ctx:role:-}"/>
                     <KeyValuePair key="status" value="$${ctx:status:-}"/>
-                    <KeyValuePair key="adapterid" value="$${ctx:adapterid:-}"/>
+                    <KeyValuePair key="adapterId" value="$${ctx:adapterid:-}"/>
                     <KeyValuePair key="description" value="$${ctx:description:-}"/>
-                    <KeyValuePair key="responsetime" value="$${ctx:responsetime:-}"/>
-                    <KeyValuePair key="log_purpose" value="Audit_SIEM" />
+                    <KeyValuePair key="responseTime" value="$${ctx:responsetime:-}"/>
+                    <KeyValuePair key="logPurpose" value="Audit_SIEM" />
                 </JSONLayout>
             </PingSyslogLayout>
         </Console>
@@ -282,6 +282,20 @@
             </DefaultRolloverStrategy>
         </RollingFile>
 
+        <Console name="AdminApiAudit2Console" >
+            <PingSyslogLayout>
+                <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" >
+                    <KeyValuePair key="dateTimeStamp" value="$${date:yyyy-MM-dd HH:mm:ss,S}"/>
+                    <KeyValuePair key="user" value="$${ctx:api.user:-}" />
+                    <KeyValuePair key="authType" value="$${ctx:api.authtype:-}" />
+                    <KeyValuePair key="clientIp" value="$${ctx:api.clientip:-}" />
+                    <KeyValuePair key="httpMethod" value="$${ctx:api.httpmethod:-}" />
+                    <KeyValuePair key="url" value="$${ctx:api.url:-}" />
+                    <KeyValuePair key="status" value="$${ctx:api.status:-}" />
+                    <KeyValuePair key="logPurpose" value="AdminApiAuditSIEM" />
+                </JSONLayout>
+            </PingSyslogLayout>
+        </Console>
         <!-- Runtime API Audit log : A time/date based rolling appender -->
         <RollingFile name="RuntimeApiAudit" fileName="${sys:pf.log.dir}/runtime-api.log"
                      filePattern="${sys:pf.log.dir}/runtime-api.%d{yyyy-MM-dd}.log"
@@ -342,7 +356,7 @@
         <Console name="ProvisionerLogForSIEM" >
             <PingSyslogLayout>
                 <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" properties="true">
-                    <KeyValuePair key="log_purpose" value="Provisioner_SIEM"/>
+                    <KeyValuePair key="logPurpose" value="Provisioner_SIEM"/>
                 </JSONLayout>
             </PingSyslogLayout>
             <Policies>
@@ -1715,6 +1729,7 @@
 
         <Logger name="AdminApiAuditLogger" level="INFO" additivity="false" includeLocation="false">
             <appender-ref ref="AdminApiAudit" />
+            <appender-ref ref="AdminApiAudit2Console" />
         </Logger>
 
         <Logger name="RuntimeApiAuditLogger" level="INFO" additivity="false" includeLocation="false">

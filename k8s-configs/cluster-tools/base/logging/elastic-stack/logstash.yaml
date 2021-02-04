@@ -145,6 +145,68 @@ data:
             }
           }
         }
+        if ([kubernetes][container_name] == "pingaccess-admin") {
+          if ([log] =~ "System_SIEM") {
+            mutate {
+              replace => { "log_type" => "PA_Admin_System_Log" }
+            }
+          }
+          else if ([log] =~ "Audit_SIEM") {
+            mutate {
+              replace => { "log_type" => "PA_Admin_Audit_Log" }
+            }
+          } 
+          else {
+            grok {
+                match => {
+                  message => ["%{GREEDYDATA:log_name}\.log %{GREEDYDATA:message}"]
+                }
+            }
+          }
+        }
+        if ([kubernetes][container_name] == "pingaccess-was-admin") {
+          if ([log] =~ "System_SIEM") {
+            mutate {
+              replace => { "log_type" => "PA_WAS_Admin_System_Log" }
+            }
+          }
+          else if ([log] =~ "Audit_SIEM") {
+            mutate {
+              replace => { "log_type" => "PA_WAS_Admin_Audit_Log" }
+            }
+          } 
+          else {
+            grok {
+                match => {
+                  message => ["%{GREEDYDATA:log_name}\.log %{GREEDYDATA:message}"]
+                }
+            }
+          }
+        }
+        if ([kubernetes][container_name] == "pingfederate-admin") {
+          if ([log] =~ "System_SIEM") {
+            mutate {
+              replace => { "log_type" => "PF_Admin_System_Log" }
+            }
+          }
+          else if ([log] =~ "Audit_SIEM") {
+            mutate {
+              replace => { "log_type" => "PF_Admin_Audit_Log" }
+            }
+          }
+          else if ([log] =~ "AdminApiAuditSIEM") {
+            mutate {
+              replace => { "log_type" => "PF_Admin_Audit_API_Log"}
+            }
+          }
+          else {
+            grok {
+                match => {
+                  message => ["%{GREEDYDATA:log_name}\.log %{GREEDYDATA:message}"]
+                }
+            }
+          }
+        }
       }
     }
 
@@ -194,7 +256,7 @@ data:
         if([log_type] == "PF_Audit_Log"){
             grok {
                 match => {
-                  "log" => [ "<%{NUMBER:trackingID}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                  "log" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             #Convert the injested data into Individual Fields for elasticsearch
@@ -283,7 +345,7 @@ data:
         if([log_type] == "PF_System_Log"){
             grok {
                 match => {
-                  "log" => [ "<%{NUMBER:trackingID}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                  "log" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
@@ -302,7 +364,7 @@ data:
         if([log_type] == "PF_Provisioner_Log"){
             grok {
                 match => {
-                  "log" => [ "<%{NUMBER:trackingID}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                  "log" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
@@ -393,7 +455,7 @@ data:
         if([log_type] == "PA_Audit_Log" or [log_type] == "PA_WAS_Audit_Log"){
             grok {
                 match => {
-                    "message" => [ "<%{NUMBER:trackingID}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
@@ -402,7 +464,7 @@ data:
 
             if([json_data]){
                 mutate {
-                    remove_field => "[json_data]"
+                    remove_field => "[json_data]" 
                 }
                 geoip {
                     source => "client"
@@ -451,11 +513,90 @@ data:
         if([log_type] == "PA_System_Log" or [log_type] == "PA_WAS_System_Log"){
             grok {
                 match => {
-                    "message" => [ "<%{NUMBER:trackingID}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
                 source => "json_data"
+            }
+            if([json_data]){
+                mutate {
+                    remove_field => "[json_data]"
+                    remove_field => "[log]"
+                    remove_field => "[pod_name]"
+                }
+            }
+        }
+
+        if([log_type] == "PA_Admin_System_Log" or [log_type] == "PA_WAS_Admin_System_Log"){
+            grok {
+                match => {
+                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                }
+            }
+            json {
+                source => "json_data"
+            }
+            if([json_data]){
+                mutate {
+                    remove_field => "[json_data]"
+                    remove_field => "[log]"
+                    remove_field => "[pod_name]"
+                }
+            }
+        }
+
+        if([log_type] == "PF_Admin_System_Log"){
+            grok {
+                match => {
+                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                }
+            }
+            json {
+                source => "json_data"
+            }
+            if([json_data]){
+                mutate {
+                    remove_field => "[json_data]"
+                    remove_field => "[log]"
+                    remove_field => "[pod_name]"
+                }
+            }
+        }
+
+        if([log_type] == "PA_Admin_Audit_Log" or [log_type] == "PA_WAS_Admin_Audit_Log"){
+            grok {
+                match => {
+                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                }
+            }
+            json {
+                source => "json_data"
+            }
+            if([json_data]){
+                mutate {
+                    remove_field => "[json_data]"
+                    remove_field => "[log]"
+                    remove_field => "[pod_name]"
+                }
+            }
+        }
+
+        if([log_type] == "PF_Admin_Audit_Log" or [log_type] == "PF_Admin_Audit_API_Log" ){
+            grok {
+                match => {
+                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                }
+            }
+            json {
+                source => "json_data"
+            }
+            if([json_data]){
+                mutate {
+                    remove_field => "[json_data]"
+                    remove_field => "[log]"
+                    remove_field => "[pod_name]"
+                }
             }
         }
 
@@ -564,6 +705,60 @@ data:
           ilm_policy => "ping-2-day-retention"
         }
       }
+      if([log_type] == "PF_Admin_Audit_Log" or [log_type] == "PF_Admin_Audit_API_Log"){
+          elasticsearch {
+              id => "pf_admin_audit_out"
+              hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
+              ilm_enabled => true
+              ilm_rollover_alias => "pf-admin-audit"
+              ilm_policy => "ping-2-day-retention"
+          }
+      }
+      if([log_type] == "PF_Admin_System_Log"){
+          elasticsearch {
+              id => "pf_admin_system_out"
+              hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
+              ilm_enabled => true
+              ilm_rollover_alias => "pf-admin-system"
+              ilm_policy => "ping-2-day-retention"
+          }
+      }
+      if([log_type] == "PA_Admin_System_Log"){
+        elasticsearch {
+          id => "pa_admin_system_out"
+          hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
+          ilm_enabled => true
+          ilm_rollover_alias => "pa-admin-system"
+          ilm_policy => "ping-2-day-retention"
+        }
+      }
+      if([log_type] == "PA_Admin_Audit_Log"){
+        elasticsearch {
+          id => "pa_admin_audit_out"
+          hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
+          ilm_enabled => true
+          ilm_rollover_alias => "pa-admin-audit"
+          ilm_policy => "ping-2-day-retention"
+        }
+      }
+      if([log_type] == "PA_WAS_Admin_System_Log"){
+        elasticsearch {
+          id => "pa_was_admin_system_out"
+          hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
+          ilm_enabled => true
+          ilm_rollover_alias => "pa-was-admin-system"
+          ilm_policy => "ping-2-day-retention"
+        }
+      }
+      if([log_type] == "PA_WAS_Admin_Audit_Log"){
+        elasticsearch {
+          id => "pa_was_admin_audit_out"
+          hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
+          ilm_enabled => true
+          ilm_rollover_alias => "pa-was-admin-audit"
+          ilm_policy => "ping-2-day-retention"
+        }
+      }
     }
 
 ---
@@ -590,7 +785,7 @@ spec:
       initContainers:
 
       - name: check-service-availability
-        image: pingcloud-docker.jfrog.io/pingidentity/ping-cloud-enrichment-bootstrap:1.0.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-tools/enrichment-bootstrap:7.8.0-v1.0.1
         
         imagePullPolicy: IfNotPresent
         command: ["sh", '$(CONTAINER_NAME).sh']
@@ -607,7 +802,7 @@ spec:
           value: "green"
 
       - name: create-enrichment-cache-files
-        image: pingcloud-docker.jfrog.io/pingidentity/ping-cloud-enrichment-bootstrap:1.0.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-tools/enrichment-bootstrap:7.8.0-v1.0.1
         
         imagePullPolicy: IfNotPresent
         workingDir: /scripts
@@ -638,7 +833,7 @@ spec:
 
       containers:
       - name: logstash
-        image: pingcloud-docker.jfrog.io/pingidentity/ping-cloud-logstash:1.0.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-tools/logstash:7.8.0-v1.0.0
         imagePullPolicy: IfNotPresent
         securityContext:
           runAsUser: 0
@@ -714,7 +909,7 @@ spec:
 
       # Sidecar enrichment container which updates Logstash dictionaries
       - name: enrichment-sidecar
-        image: pingcloud-docker.jfrog.io/pingidentity/ping-cloud-enrichment-bootstrap:1.0.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-tools/enrichment-bootstrap:7.8.0-v1.0.1
         
         imagePullPolicy: IfNotPresent
         workingDir: /scripts

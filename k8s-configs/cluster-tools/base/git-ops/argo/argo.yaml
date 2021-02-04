@@ -2468,7 +2468,7 @@ spec:
       - command:
         - /shared/argocd-util
         - rundex
-        image: quay.io/dexidp/dex:v2.25.0
+        image: pingcloud-virtual.jfrog.io/dexidp/dex:v2.25.0
         imagePullPolicy: Always
         name: dex
         ports:
@@ -2484,7 +2484,7 @@ spec:
         - -n
         - /usr/local/bin/argocd-util
         - /shared
-        image: argoproj/argocd:v1.8.1
+        image: pingcloud-virtual.jfrog.io/argoproj/argocd:v1.8.1
         imagePullPolicy: Always
         name: copyutil
         volumeMounts:
@@ -2533,7 +2533,7 @@ spec:
         - ""
         - --appendonly
         - "no"
-        image: redis:5.0.10-alpine
+        image: pingcloud-virtual.jfrog.io/redis:5.0.10-alpine
         imagePullPolicy: Always
         name: redis
         ports:
@@ -2582,7 +2582,7 @@ spec:
 
       # Installs custom tools
       - name: install-custom-tools
-        image: python:3.7.3-slim
+        image: pingcloud-virtual.jfrog.io/python:3.9.1-slim
         command: [ "install-custom-tools.sh" ]
         volumeMounts:
         - name: tools-dir
@@ -2598,7 +2598,7 @@ spec:
         - argocd-repo-server
         - --redis
         - argocd-redis:6379
-        image: argoproj/argocd:v1.8.1
+        image: pingcloud-virtual.jfrog.io/argoproj/argocd:v1.8.1
         imagePullPolicy: Always
         name: argocd-repo-server
         ports:
@@ -2694,7 +2694,7 @@ spec:
         - argocd-server
         - --staticassets
         - /shared/app
-        image: argoproj/argocd:v1.8.1
+        image: pingcloud-virtual.jfrog.io/argoproj/argocd:v1.8.1
         imagePullPolicy: Always
         name: argocd-server
         ports:
@@ -2764,8 +2764,11 @@ spec:
         - --operation-processors
         - "10"
         - --app-resync
-        - "60"
-        image: argoproj/argocd:v1.8.1
+        - "$(APP_RESYNC_SECONDS)"
+        env:
+        - name: APP_RESYNC_SECONDS
+          value: "60"
+        image: pingcloud-virtual.jfrog.io/argoproj/argocd:v1.8.1
         imagePullPolicy: Always
         livenessProbe:
           httpGet:
