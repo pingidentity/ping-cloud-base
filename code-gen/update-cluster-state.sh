@@ -29,7 +29,6 @@ SECRETS_FILE_NAME='secrets.yaml'
 ORIG_SECRETS_FILE_NAME='orig-secrets.yaml'
 SEALED_SECRETS_FILE_NAME='sealed-secrets.yaml'
 
-CLUSTER_STATE='cluster-state'
 CLUSTER_STATE_REPO='cluster-state-repo'
 
 PING_CLOUD_BASE='ping-cloud-base'
@@ -172,7 +171,7 @@ get_ping_cloud_secrets_file() {
   fi
 
   # Get the full path of the secrets.yaml file that has all ping-cloud secrets.
-  secrets_yaml="$(git ls-files --full-name '*/ping-cloud/secrets.yaml' | head -1)"
+  secrets_yaml="$(find . -name "${SECRETS_FILE_NAME}" | head -1)"
 
   # If found, copy it to the provided output file in JSON format.
   # NOTE: it's safer to use kubectl here than a YAML parser like yq, whose options vary by version of the tool, OS, etc.
@@ -540,11 +539,15 @@ finalize() {
   exit_code="$?"
   if test "${exit_code}" -ne 0; then
     echo
-    echo "${SCRIPT_NAME} failed with exit code ${exit_code}"
+    echo "ERROR!!! ${SCRIPT_NAME} failed with exit code ${exit_code}"
     echo
     echo 'Grab the output of the script and reach out to the Beluga team'
     echo 'for support with updating the cluster-state-repo'
+    exit "${exit_code}"
   fi
+
+  # Go back to previous git branch.
+  git checkout --quiet "${CURRENT_BRANCH}"
 }
 
 ### SCRIPT START ###
@@ -616,17 +619,17 @@ log "Validating that '${CLUSTER_STATE_REPO}' has branches for environments: '${E
 
 for ENV in ${ENVIRONMENTS}; do
   test "${ENV}" = 'prod' &&
-      BRANCH='master' ||
-      BRANCH="${ENV}"
+      DEFAULT_CDE_BRANCH='master' ||
+      DEFAULT_CDE_BRANCH="${ENV}"
 
-  log "Validating that '${CLUSTER_STATE_REPO}' has branch: '${BRANCH}'"
-  git checkout --quiet "${BRANCH}"
+  log "Validating that '${CLUSTER_STATE_REPO}' has branch: '${DEFAULT_CDE_BRANCH}'"
+  git checkout --quiet "${DEFAULT_CDE_BRANCH}"
   if test $? -ne 0; then
-    log "CDE branch '${BRANCH}' does not exist in '${CLUSTER_STATE_REPO}'"
+    log "CDE branch '${DEFAULT_CDE_BRANCH}' does not exist in '${CLUSTER_STATE_REPO}'"
     REPO_STATUS=1
   fi
 
-  NEW_BRANCH="${NEW_VERSION}-${BRANCH}"
+  NEW_BRANCH="${NEW_VERSION}-${DEFAULT_CDE_BRANCH}"
   test "${NEW_BRANCHES}" &&
       NEW_BRANCHES="${NEW_BRANCHES} ${NEW_BRANCH}" ||
       NEW_BRANCHES="${NEW_BRANCH}"
@@ -660,136 +663,129 @@ fi
 # NOTE: This entire block of code is being run from the cluster-state-repo directory. All non-absolute paths are
 # relative to this directory.
 
-# Switch to the master branch - the environment variables are mostly the same across CDEs. The only differences are
-# the ones that generate-cluster-state.sh already knows how to handle when it's provided with the expected environment
-# variables.
-log "Switching to master branch of cluster-state-repo to determine deployed regions"
-git checkout --quiet master
-
-# Get the names of all the regional directories. Note that this may not be the actual region, rather it's the nick
-# name of the region.
-REGION_DIRS="$(find "${K8S_CONFIGS_DIR}" \
-    -mindepth 1 -maxdepth 1 \
-    -type d \( ! -name "${BASE_DIR}" \) \
-    -exec basename {} \;)"
-log "'${CLUSTER_STATE_REPO}' has the following region directories:"
-echo "${REGION_DIRS}"
-
 # The base environment variables file that's common to all regions.
 BASE_ENV_VARS="${K8S_CONFIGS_DIR}/${BASE_DIR}/${ENV_VARS_FILE_NAME}"
-
-# Code for this customer will be generated in the following directory. Each region will get its own sub-directory
-# under this directory.
-TENANT_CODE_DIR="$(mktemp -d)"
-
-# The file into which the primary region directory name will be stored for later use.
-PRIMARY_REGION_DIR_FILE="$(mktemp)"
 
 # Get the minimum required ping-cloud secrets (currently, the devops user/key and SSH git key).
 get_min_required_secrets
 
-for REGION_DIR in ${REGION_DIRS}; do
-  # Perform the code generation in a sub-shell so it doesn't pollute the current shell with environment variables.
-  (
-    # Common environment variables for the region
-    REGION_ENV_VARS="${K8S_CONFIGS_DIR}/${REGION_DIR}/${ENV_VARS_FILE_NAME}"
+# For each environment:
+#   - Generate code for all its regions
+#   - Push code for all its regions into new branches
+for ENV in ${ENVIRONMENTS}; do # ENV loop
+  test "${ENV}" = 'prod' &&
+      DEFAULT_CDE_BRANCH='master' ||
+      DEFAULT_CDE_BRANCH="${ENV}"
 
-    # App-specific environment variables for the region
-    APP_ENV_VARS_FILES="$(find "${K8S_CONFIGS_DIR}/${REGION_DIR}" -type f -mindepth 2 -name "${ENV_VARS_FILE_NAME}")"
+  NEW_BRANCH="${NEW_VERSION}-${DEFAULT_CDE_BRANCH}"
 
-    # Set the environment variables in the order: region-specific, app-specific (within the region directories),
-    # base. This will ensure that derived variables are set correctly.
-    set_env_vars "${REGION_ENV_VARS}"
-    for ENV_VARS_FILE in ${APP_ENV_VARS_FILES}; do
-      set_env_vars "${ENV_VARS_FILE}"
-    done
-    set_env_vars "${BASE_ENV_VARS}"
+  log "Switching to branch ${DEFAULT_CDE_BRANCH} to determine deployed regions"
+  git checkout --quiet "${DEFAULT_CDE_BRANCH}"
 
-    # Set the TARGET_DIR to the right directory for the region.
-    export TARGET_DIR="${TENANT_CODE_DIR}/${REGION_DIR}"
+  # Get the names of all the regional directories. Note that this may not be the actual region, rather it's the nick
+  # name of the region.
+  REGION_DIRS="$(find "${K8S_CONFIGS_DIR}" \
+      -mindepth 1 -maxdepth 1 \
+      -type d \( ! -name "${BASE_DIR}" \) \
+      -exec basename {} \;)"
 
-    # Generate code now that we have set all the required environment variables
-    log "Generating code for region '${REGION_DIR}' into '${TARGET_DIR}' for branches '${NEW_BRANCHES}'"
+  log "Environment '${ENV}' has the following region directories:"
+  echo "${REGION_DIRS}"
+
+  # Code for this environment will be generated in the following directory. Each region will get its own sub-directory
+  # under this directory.
+  TENANT_CODE_DIR="$(mktemp -d)"
+
+  # The file into which the primary region directory name will be stored for later use.
+  PRIMARY_REGION_DIR_FILE="$(mktemp)"
+
+  for REGION_DIR in ${REGION_DIRS}; do # REGION loop
+    # Perform the code generation in a sub-shell so it doesn't pollute the current shell with environment variables.
     (
-      export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY}"
-      set -x
-      QUIET=true \
-          LAST_UPDATE_REASON="Updating cluster-state-repo to version ${NEW_VERSION}" \
-          K8S_GIT_URL="${PING_CLOUD_BASE_REPO_URL}" \
-          K8S_GIT_BRANCH="${NEW_VERSION}" \
-          ENVIRONMENTS="${NEW_BRANCHES}" \
-          PING_IDENTITY_DEVOPS_USER="${PING_IDENTITY_DEVOPS_USER}" \
-          SSH_ID_PUB_FILE="${ID_RSA_FILE}" \
-          SSH_ID_KEY_FILE="${ID_RSA_FILE}" \
-          "${NEW_PING_CLOUD_BASE_REPO}/code-gen/generate-cluster-state.sh"
-    )
-    log "Done generating code for region '${REGION_DIR}' into '${TARGET_DIR}' for branches '${NEW_BRANCHES}'"
+      # Common environment variables for the region
+      REGION_ENV_VARS="${K8S_CONFIGS_DIR}/${REGION_DIR}/${ENV_VARS_FILE_NAME}"
 
-    # Persist the primary region's directory name for later use.
-    if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
-      echo "${REGION_DIR}" > "${PRIMARY_REGION_DIR_FILE}"
+      # App-specific environment variables for the region
+      APP_ENV_VARS_FILES="$(find "${K8S_CONFIGS_DIR}/${REGION_DIR}" -type f -mindepth 2 -name "${ENV_VARS_FILE_NAME}")"
+
+      # Set the environment variables in the order: region-specific, app-specific (within the region directories),
+      # base. This will ensure that derived variables are set correctly.
+      set_env_vars "${REGION_ENV_VARS}"
+      for ENV_VARS_FILE in ${APP_ENV_VARS_FILES}; do
+        set_env_vars "${ENV_VARS_FILE}"
+      done
+      set_env_vars "${BASE_ENV_VARS}"
+
+      # Set the TARGET_DIR to the right directory for the region.
+      TARGET_DIR="${TENANT_CODE_DIR}/${REGION_DIR}"
+
+      # Generate code now that we have set all the required environment variables
+      log "Generating code for region '${REGION_DIR}' for branch '${NEW_BRANCH}' into '${TARGET_DIR}'"
+      (
+        export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY}"
+        set -x
+        QUIET=true \
+            LAST_UPDATE_REASON="Updating cluster-state-repo to version ${NEW_VERSION}" \
+            K8S_GIT_URL="${PING_CLOUD_BASE_REPO_URL}" \
+            K8S_GIT_BRANCH="${NEW_VERSION}" \
+            ENVIRONMENTS="${NEW_BRANCH}" \
+            PING_IDENTITY_DEVOPS_USER="${PING_IDENTITY_DEVOPS_USER}" \
+            SSH_ID_PUB_FILE="${ID_RSA_FILE}" \
+            SSH_ID_KEY_FILE="${ID_RSA_FILE}" \
+            "${NEW_PING_CLOUD_BASE_REPO}/code-gen/generate-cluster-state.sh"
+      )
+      log "Done generating code for region '${REGION_DIR}' for branch '${NEW_BRANCH}' into '${TARGET_DIR}'"
+
+      # Persist the primary region's directory name for later use.
+      if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
+        echo "${REGION_DIR}" > "${PRIMARY_REGION_DIR_FILE}"
+      fi
+    )
+  done # REGION loop
+
+  # Determine the primary region. If we can't, then error out.
+  PRIMARY_REGION_DIR="$(cat "${PRIMARY_REGION_DIR_FILE}")"
+  if test "${PRIMARY_REGION_DIR}"; then
+    log "Primary region directory for CDE '${ENV}': '${PRIMARY_REGION_DIR}'"
+  else
+    log "Primary region is unknown for CDE '${ENV}'"
+    exit 1
+  fi
+
+  # Sort the regions such that the primary region is first in order.
+  REGION_DIRS_SORTED="${PRIMARY_REGION_DIR}"
+  for REGION_DIR in ${REGION_DIRS}; do # REGION sort loop
+    if test "${PRIMARY_REGION_DIR}" != "${REGION_DIR}"; then
+      REGION_DIRS_SORTED="${REGION_DIRS_SORTED} ${REGION_DIR}"
+    fi
+  done # REGION sort loop
+
+  log "Region directories in sorted order for CDE '${ENV}': ${REGION_DIRS_SORTED}"
+  for REGION_DIR in ${REGION_DIRS_SORTED}; do
+    if test "${PRIMARY_REGION_DIR}" = "${REGION_DIR}"; then
+      IS_PRIMARY=true
+      TYPE='primary'
+    else
+      IS_PRIMARY=false
+      TYPE='secondary'
     fi
 
-    # We must preserve the size for each CDE for existing customers by contract. So fix it up in generated code.
-    for NEW_BRANCH in ${NEW_BRANCHES}; do
-      OLD_BRANCH="${NEW_BRANCH##*-}"
-      test "${OLD_BRANCH}" = 'master' &&
-          CDE='prod' ||
-          CDE="${OLD_BRANCH}"
+    TARGET_DIR="${TENANT_CODE_DIR}/${REGION_DIR}"
+    log "Generated code directory for ${TYPE} region '${REGION_DIR}' for CDE '${ENV}': ${TARGET_DIR}"
 
-      git checkout --quiet "${OLD_BRANCH}"
-      ENV_VARS_FILE="${TARGET_DIR}/${CLUSTER_STATE}/${K8S_CONFIGS_DIR}/${NEW_BRANCH}/${BASE_DIR}/${ENV_VARS_FILE_NAME}"
+    log "Creating branch for ${TYPE} region '${REGION_DIR}' for CDE '${ENV}': ${NEW_BRANCH}"
+    (
+      set -x;
+      GENERATED_CODE_DIR="${TARGET_DIR}" \
+           IS_PRIMARY=${IS_PRIMARY} \
+           ENVIRONMENTS="${NEW_BRANCH}" \
+           PUSH_TO_SERVER=false \
+           "${NEW_PING_CLOUD_BASE_REPO}/code-gen/push-cluster-state.sh"
+     )
+    log "Done creating branch for ${TYPE} region '${REGION_DIR}' for CDE '${ENV}': ${NEW_BRANCH}"
+  done
 
-      log "Fixing variables for environment ${CDE} for region ${REGION_DIR} in generated code"
-      search_and_replace_env_var KUSTOMIZE_BASE "${ENV_VARS_FILE}" true
-    done
-
-    # Get back to master before processing the next region, if any.
-    git checkout --quiet master
-  )
-done
-
-# Determine the primary region. If we can't, then error out.
-PRIMARY_REGION_DIR="$(cat "${PRIMARY_REGION_DIR_FILE}")"
-if test "${PRIMARY_REGION_DIR}"; then
-  log "Primary region directory for customer: '${PRIMARY_REGION_DIR}'"
-else
-  log "Primary region is unknown for customer"
-  exit 1
-fi
-
-# Sort the regions such that the primary region is first in order.
-REGION_DIRS_SORTED="${PRIMARY_REGION_DIR}"
-for REGION_DIR in ${REGION_DIRS}; do
-  if test "${PRIMARY_REGION_DIR}" != "${REGION_DIR}"; then
-    REGION_DIRS_SORTED="${REGION_DIRS_SORTED} ${REGION_DIR}"
-  fi
-done
-
-log "Region directories in sorted order: ${REGION_DIRS_SORTED}"
-for REGION_DIR in ${REGION_DIRS_SORTED}; do
-  if test "${PRIMARY_REGION_DIR}" = "${REGION_DIR}"; then
-    IS_PRIMARY=true
-    TYPE='primary'
-  else
-    IS_PRIMARY=false
-    TYPE='secondary'
-  fi
-
-  TARGET_DIR="${TENANT_CODE_DIR}/${REGION_DIR}"
-  log "Generated code directory for ${TYPE} region '${REGION_DIR}': ${TARGET_DIR}"
-
-  log "Creating branches for ${TYPE} region '${REGION_DIR}': ${NEW_BRANCHES}"
-  (
-    set -x;
-    GENERATED_CODE_DIR="${TARGET_DIR}" \
-         IS_PRIMARY=${IS_PRIMARY} \
-         ENVIRONMENTS="${NEW_BRANCHES}" \
-         PUSH_TO_SERVER=false \
-         "${NEW_PING_CLOUD_BASE_REPO}/code-gen/push-cluster-state.sh"
-   )
-  log "Done creating branches for ${TYPE} region '${REGION_DIR}': ${NEW_BRANCHES}"
-done
+done # ENV loop
 
 # Copy profiles files that were deleted or renamed from the default CDE branch into its new branch.
 HANDLE_CHANGED_PROFILES="${HANDLE_CHANGED_PROFILES:-true}"
@@ -806,9 +802,6 @@ if "${HANDLE_CHANGED_K8S_CONFIGS}"; then
 else
   log "Not automatically resolving diffs in '${K8S_CONFIGS_DIR}'- any diffs must be resolved manually"
 fi
-
-# Go back to previous git branch.
-git checkout --quiet "${CURRENT_BRANCH}"
 
 # Print a README of next steps to take.
 print_readme
