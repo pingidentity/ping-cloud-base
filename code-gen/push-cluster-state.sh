@@ -128,7 +128,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
       ENV='prod' ||
       ENV="${ENV_OR_BRANCH_SUFFIX}"
 
-  echo "Processing branch '${GIT_BRANCH}' for CDE '${ENV}' and default CDE branch '${DEFAULT_CDE_BRANCH}"
+  echo "Processing branch '${GIT_BRANCH}' for CDE '${ENV}' and default CDE branch '${DEFAULT_CDE_BRANCH}'"
 
   ENV_CODE_DIR=$(mktemp -d)
   organize_code_for_environment "${GENERATED_CODE_DIR}" "${ENV_OR_BRANCH}" "${ENV}" "${ENV_CODE_DIR}" "${IS_PRIMARY}"
