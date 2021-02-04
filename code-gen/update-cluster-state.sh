@@ -318,9 +318,9 @@ handle_changed_k8s_configs() {
       new_file_dirname="$(dirname "${new_file}")"
       new_file_ext="${new_file_basename##*.}"
 
-      # Copy non-YAML files at the same location into the new branch, e.g. sealingkey.pem
-      if test "${new_file_ext}" != 'yaml'; then
-        log "Copying non-YAML file ${DEFAULT_CDE_BRANCH}:${new_file} into same location on ${NEW_BRANCH}"
+      # Copy non-YAML files that are not env_vars files to the same location on the new branch, e.g. sealingkey.pem
+      if test "${new_file_ext}" != 'yaml' && test "${new_file_basename}" != 'env_vars'; then
+        log "Copying non-YAML file ${DEFAULT_CDE_BRANCH}:${new_file} to the same location on ${NEW_BRANCH}"
         mkdir -p "${new_file_dirname}"
         git show "${DEFAULT_CDE_BRANCH}:${new_file}" > "${new_file}"
         continue
@@ -331,7 +331,11 @@ handle_changed_k8s_configs() {
       if test "${new_file_basename}" = "${SECRETS_FILE_NAME}" ||
          test  "${new_file_basename}" = "${SEALED_SECRETS_FILE_NAME}"; then
         log "Copying ${DEFAULT_CDE_BRANCH}:${new_file} into ${K8S_CONFIGS_DIR}/${BASE_DIR}"
-        git show "${DEFAULT_CDE_BRANCH}:${new_file}" > "${K8S_CONFIGS_DIR}/${BASE_DIR}/${new_file_basename}.old"
+
+        old_secret_file="${K8S_CONFIGS_DIR}/${BASE_DIR}/${new_file_basename}.old"
+        git show "${DEFAULT_CDE_BRANCH}:${new_file}" >> "${old_secret_file}"
+        echo >> "${old_secret_file}"
+
         continue
       fi
 
