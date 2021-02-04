@@ -801,7 +801,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
 
       # For every env_vars file in the new version, populate the old values into an env_vars.old file.
       set -x
-      env_vars_files="$(find "${TARGET_DIR}" -name "${ENV_VARS_FILE}" -type f)"
+      env_vars_files="$(find "${TARGET_DIR}" -name "${ENV_VARS_FILE_NAME}" -type f)"
 
       for env_var_file in ${env_vars_files}; do # Loop for env_vars.old
         dir_name="$(dirname "${env_var_file}")"
