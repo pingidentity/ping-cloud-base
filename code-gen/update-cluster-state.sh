@@ -45,9 +45,6 @@ PING_CLOUD_DEFAULT_DEVOPS_USER='pingcloudpt-licensing@pingidentity.com'
 # If true, reset to the OOTB cluster state for the new version, i.e. perform no migration.
 RESET_TO_DEFAULT="${RESET_TO_DEFAULT:-false}"
 
-# Update log file.
-LOG_FILE="$(mktemp)/update.log"
-
 # FIXME: obtain the list of known k8s files between the old and new versions dynamically
 
 # List of k8s files not to copy over. These are OOTB k8s config files for a Beluga release and not customized by
@@ -639,7 +636,10 @@ finalize() {
 # Trap all exit codes to detect non-zero exit codes and log on it.
 trap 'finalize' EXIT
 
-# Print out the update log file.
+# Update log file.
+LOG_FILE="$(mktemp)/update.log"
+mkdir -p "$(dirname "${LOG_FILE}")"
+touch "${LOG_FILE}"
 log "Update log file: ${LOG_FILE}"
 
 # Save the the script name to include in log messages.
