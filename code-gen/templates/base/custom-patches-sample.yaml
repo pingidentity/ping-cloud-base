@@ -75,13 +75,13 @@ spec:
     spec:
       containers:
       - name: pingaccess-was-admin
-         resources:
-           requests:
-             memory: "1Gi"
-             cpu: "1"
-           limits:
-             memory: "1Gi"
-             cpu: "1"
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "1"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
 
 ---
 
@@ -95,13 +95,57 @@ spec:
     spec:
       containers:
       - name: pingaccess-was
-         resources:
-           requests:
-             memory: "1Gi"
-             cpu: "1"
-           limits:
-             memory: "1Gi"
-             cpu: "1"
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "1"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
+
+---
+
+################################################
+#                PingFederate
+################################################
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingfederate-admin
+  namespace: ping-cloud
+spec:
+  template:
+    spec:
+      containers:
+      - name: pingfederate-admin
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "1"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingfederate
+  namespace: ping-cloud
+spec:
+  template:
+    spec:
+      containers:
+      - name: pingfederate
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "1"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
 
 ---
 
@@ -135,13 +179,13 @@ spec:
     spec:
       containers:
       - name: pingaccess-admin
-         resources:
-           requests:
-             memory: "1Gi"
-             cpu: "1"
-           limits:
-             memory: "1Gi"
-             cpu: "1"
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "1"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
 
 ---
 
@@ -155,13 +199,13 @@ spec:
     spec:
       containers:
       - name: pingaccess
-         resources:
-           requests:
-             memory: "1Gi"
-             cpu: "1"
-           limits:
-             memory: "1Gi"
-             cpu: "1"
+          resources:
+            requests:
+              memory: "1Gi"
+              cpu: "1"
+            limits:
+              memory: "1Gi"
+              cpu: "1"
 
 ---
 
