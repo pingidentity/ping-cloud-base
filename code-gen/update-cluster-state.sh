@@ -34,6 +34,32 @@ CLUSTER_STATE_REPO='cluster-state-repo'
 PING_CLOUD_BASE='ping-cloud-base'
 PING_CLOUD_DEFAULT_DEVOPS_USER='pingcloudpt-licensing@pingidentity.com'
 
+HANDLE_CHANGED_PROFILES="${HANDLE_CHANGED_PROFILES:-true}"
+HANDLE_CHANGED_K8S_CONFIGS="${HANDLE_CHANGED_K8S_CONFIGS:-true}"
+
+# FIXME: obtain the list of known k8s files between the old and new versions dynamically
+
+# List of k8s files not to copy over. These are OOTB k8s config files for a Beluga release and not customized by
+# PS/GSO. The following list is union of all files under k8s-configs from v1.6 through v1.8 and obtained by running
+# these commands:
+#
+#     find "${K8S_CONFIGS_DIR}" -type f -exec basename {} + | sort -u   # Run this command on each tag
+#     cat v1.7-k8s-files v1.8-k8s-files | sort -u                       # Create a union of the k8s files
+
+known_k8s_files=".flux.yaml \
+  argo-application.yaml \
+  custom-patches.yaml \
+  descriptor.json \
+  env_vars \
+  flux-command.sh \
+  git-ops-command.sh \
+  known-hosts-config.yaml \
+  kustomization.yaml \
+  orig-secrets.yaml \
+  region-promotion.txt \
+  remove-from-secondary-patch.yaml \
+  seal.sh"
+
 ########################################################################################################################
 # Prints a log message prepended with the name of the current script to stdout.
 #
@@ -110,37 +136,6 @@ set_env_vars() {
 }
 
 ########################################################################################################################
-# Replace the value of an environment variable in the target file. This function must be invoked from within a CDE
-# branch directory. The value of the variable will be obtained from the CDE branch's env_vars files.
-#
-# Arguments
-#   $1 -> The variable name to replace.
-#   $2 -> The file in which to replace the environment variable.
-#   $3 -> Optional flag indicating whether or not to log the value. Default is false.
-########################################################################################################################
-search_and_replace_env_var() {
-  var_name="$1"
-  target_file="$2"
-  log_value="${3:-false}"
-
-  # Look up the variable in the CDE branch directory.
-  var_found_str="$(git grep ^"${var_name}"=)"
-
-  # Remove the variable name prefix to obtain the variable value.
-  var_value="${var_found_str##*"${var_name}"=}"
-
-  if "${log_value}"; then
-    log "Fixing value of variable '${var_name}' to: ${var_value}"
-  else
-    log "Fixing value of variable '${var_name}'"
-  fi
-
-  # Replace the variable value in the target file.
-  sed -i.bak "s%^\(${var_name}=\)\(.*\)$%\1${var_value}%" "${target_file}"
-  rm -f "${target_file}.bak"
-}
-
-########################################################################################################################
 # Returns the initial git revision.
 #
 # Returns
@@ -148,16 +143,6 @@ search_and_replace_env_var() {
 ########################################################################################################################
 get_initial_git_rev() {
   git log --reverse --format=format:%H 2> /dev/null | head -1
-}
-
-########################################################################################################################
-# Returns the latest git revision.
-#
-# Returns
-#   The latest git revision
-########################################################################################################################
-get_latest_git_rev() {
-  git log --format=format:%H 2> /dev/null | head -1
 }
 
 ########################################################################################################################
@@ -277,127 +262,106 @@ get_min_required_secrets() {
 }
 
 ########################################################################################################################
-# Copy profiles files that were deleted or renamed from the default CDE branch into its new branch.
+# Copy profiles files that were deleted or renamed from a default CDE branch into its new one.
+#
+# Arguments
+#   $1 -> The new branch for a default CDE branch.
 ########################################################################################################################
 handle_changed_profiles() {
-  log "Reconciling changes in the '${PROFILES_DIR}' directory between the old and new versions"
+  NEW_BRANCH="$1"
+  DEFAULT_CDE_BRANCH="${NEW_BRANCH##*-}"
 
-  for NEW_BRANCH in ${NEW_BRANCHES}; do
-    CDE="${NEW_BRANCH##*-}"
-    log "Reconciling '${PROFILES_DIR}' diffs between default CDE branch '${CDE}' and its new branch '${NEW_BRANCH}'"
+  log "Reconciling '${PROFILES_DIR}' diffs between '${DEFAULT_CDE_BRANCH}' and its new branch '${NEW_BRANCH}'"
 
-    git checkout --quiet "${NEW_BRANCH}"
-    new_files="$(git diff --diff-filter=R --diff-filter=D \
-        --name-status "${CDE}" HEAD -- "${PROFILES_DIR}" |
-        awk '{ print $2 }')"
+  git checkout --quiet "${NEW_BRANCH}"
+  new_files="$(git diff --diff-filter=R --diff-filter=D \
+      --name-status "${DEFAULT_CDE_BRANCH}" HEAD -- "${PROFILES_DIR}" |
+      awk '{ print $2 }')"
 
-    if test "${new_files}"; then
-      echo "${new_files}" | xargs git checkout "${CDE}"
-      msg="Copied changed '${PROFILES_DIR}' files from default branch '${CDE}' to its new branch '${NEW_BRANCH}'"
-      log "${msg}"
-      git add .
-      git commit --allow-empty -m "${msg}"
-    else
-      log "No changed '${PROFILES_DIR}' files to copy from default branch '${CDE}' to its new branch '${NEW_BRANCH}'"
-    fi
+  if test "${new_files}"; then
+    echo "${new_files}" | xargs git checkout "${DEFAULT_CDE_BRANCH}"
+    msg="Copied changed '${PROFILES_DIR}' files from '${DEFAULT_CDE_BRANCH}' to its new branch '${NEW_BRANCH}'"
+    log "${msg}"
+    git add .
+    git commit --allow-empty -m "${msg}"
+  else
+    log "No changed '${PROFILES_DIR}' files to copy '${DEFAULT_CDE_BRANCH}' to its new branch '${NEW_BRANCH}'"
+  fi
 
-    git checkout --quiet -
-  done
+  git checkout --quiet -
 }
 
 ########################################################################################################################
-# Copy new k8s-configs files from the default CDE branches into their new ones.
+# Copy new k8s-configs files from the default CDE branch into its new one.
+#
+# Arguments
+#   $1 -> The new branch for a default CDE branch.
 ########################################################################################################################
 handle_changed_k8s_configs() {
-  # FIXME: obtain the list of known k8s files between the old and new versions dynamically
+  NEW_BRANCH="$1"
+  DEFAULT_CDE_BRANCH="${NEW_BRANCH##*-}"
 
-  # List of k8s files not to copy over. These are OOTB k8s config files for a Beluga release and not customized by
-  # PS/GSO. The following list is union of all files under k8s-configs from v1.6 through v1.8 and obtained by running
-  # these commands:
-  #
-  #     find "${K8S_CONFIGS_DIR}" -type f -exec basename {} + | sort -u   # Run this command on each tag
-  #     cat v1.7-k8s-files v1.8-k8s-files | sort -u                       # Create a union of the k8s files
+  log "Reconciling '${K8S_CONFIGS_DIR}' diffs between '${DEFAULT_CDE_BRANCH}' and its new branch '${NEW_BRANCH}'"
 
-  known_k8s_files=".flux.yaml \
-    argo-application.yaml \
-    custom-patches.yaml \
-    descriptor.json \
-    env_vars \
-    flux-command.sh \
-    git-ops-command.sh \
-    known-hosts-config.yaml \
-    kustomization.yaml \
-    orig-secrets.yaml \
-    region-promotion.txt \
-    remove-from-secondary-patch.yaml \
-    seal.sh"
+  git checkout --quiet "${NEW_BRANCH}"
+  new_files="$(git diff --diff-filter=D --name-only "${DEFAULT_CDE_BRANCH}" HEAD -- "${K8S_CONFIGS_DIR}")"
 
-  log "Reconciling changes in the '${K8S_CONFIGS_DIR}' directory between the old and new versions"
+  if test "${new_files}"; then
+    log "Found the following new files in branch '${DEFAULT_CDE_BRANCH}':"
+    echo "${new_files}"
 
-  for NEW_BRANCH in ${NEW_BRANCHES}; do
-    CDE="${NEW_BRANCH##*-}"
-    log "Reconciling '${K8S_CONFIGS_DIR}' diffs between default CDE branch '${CDE}' and its new branch '${NEW_BRANCH}'"
+    KUSTOMIZATION_FILE="${CUSTOM_RESOURCES_REL_DIR}/kustomization.yaml"
+    KUSTOMIZATION_BAK_FILE="${KUSTOMIZATION_FILE}.bak"
 
-    git checkout --quiet "${NEW_BRANCH}"
-    new_files="$(git diff --diff-filter=D --name-only "${CDE}" HEAD -- "${K8S_CONFIGS_DIR}")"
+    for new_file in ${new_files}; do
+      new_file_basename="$(basename "${new_file}")"
+      new_file_dirname="$(dirname "${new_file}")"
+      new_file_ext="${new_file_basename##*.}"
 
-    if test "${new_files}"; then
-      log "Found the following new files in branch '${CDE}':"
-      echo "${new_files}"
+      # Copy non-YAML files at the same location into the new branch, e.g. sealingkey.pem
+      if test "${new_file_ext}" != 'yaml'; then
+        log "Copying non-YAML file ${DEFAULT_CDE_BRANCH}:${new_file} into same location on ${NEW_BRANCH}"
+        mkdir -p "${new_file_dirname}"
+        git show "${DEFAULT_CDE_BRANCH}:${new_file}" > "${new_file}"
+        continue
+      fi
 
-      KUSTOMIZATION_FILE="${CUSTOM_RESOURCES_REL_DIR}/kustomization.yaml"
-      KUSTOMIZATION_BAK_FILE="${KUSTOMIZATION_FILE}.bak"
+      # Handle the secrets.yaml and sealed-secrets.yaml files in a special manner, if they're different.
+      # Copy them from the default CDE under a different name that has the a '.old' suffix.
+      if test "${new_file_basename}" = "${SECRETS_FILE_NAME}" ||
+         test  "${new_file_basename}" = "${SEALED_SECRETS_FILE_NAME}"; then
+        log "Copying ${DEFAULT_CDE_BRANCH}:${new_file} into ${K8S_CONFIGS_DIR}/${BASE_DIR}"
+        git show "${DEFAULT_CDE_BRANCH}:${new_file}" > "${K8S_CONFIGS_DIR}/${BASE_DIR}/${new_file_basename}.old"
+        continue
+      fi
 
-      for new_file in ${new_files}; do
-        new_file_basename="$(basename "${new_file}")"
-        new_file_dirname="$(dirname "${new_file}")"
-        new_file_ext="${new_file_basename##*.}"
+      if echo "${known_k8s_files}" | grep -q "${new_file_basename}"; then
+        log "Ignoring file ${DEFAULT_CDE_BRANCH}:${new_file} since it is a Beluga-owned file"
+      else
+        log "Copying custom file ${DEFAULT_CDE_BRANCH}:${new_file} into directory ${CUSTOM_RESOURCES_REL_DIR}"
+        git show "${DEFAULT_CDE_BRANCH}:${new_file}" > "${CUSTOM_RESOURCES_REL_DIR}/${new_file_basename}"
 
-        # Copy non-YAML files at the same location into the new branch, e.g. sealingkey.pem
-        if test "${new_file_ext}" != 'yaml'; then
-          log "Copying non-YAML file ${CDE}:${new_file} into same location on ${NEW_BRANCH}"
-          mkdir -p "${new_file_dirname}"
-          git show "${CDE}:${new_file}" > "${new_file}"
-          continue
+        log "Adding new resource file ${new_file_basename} to ${KUSTOMIZATION_FILE}"
+        new_resource_line="- ${new_file_basename}"
+
+        grep_opts=(-q -e "${new_resource_line}")
+        if ! grep "${grep_opts[@]}" "${KUSTOMIZATION_FILE}"; then
+          # shellcheck disable=SC1003
+          sed -i.bak -e '/^resources:$/a\'$'\n'"${new_resource_line}" "${KUSTOMIZATION_FILE}"
+          rm -f "${KUSTOMIZATION_BAK_FILE}"
         fi
+      fi
+    done
 
-        # Handle the secrets.yaml and sealed-secrets.yaml files in a special manner, if they're different.
-        # Copy them from the default CDE under a different name that has the a '.old' suffix.
-        if test "${new_file_basename}" = "${SECRETS_FILE_NAME}" ||
-           test  "${new_file_basename}" = "${SEALED_SECRETS_FILE_NAME}"; then
-          log "Copying ${CDE}:${new_file} into ${K8S_CONFIGS_DIR}/${BASE_DIR}"
-          git show "${CDE}:${new_file}" > "${K8S_CONFIGS_DIR}/${BASE_DIR}/${new_file_basename}.old"
-          continue
-        fi
+    msg="Copied new '${K8S_CONFIGS_DIR}' files '${DEFAULT_CDE_BRANCH}' to its new branch '${NEW_BRANCH}'"
+    log "${msg}"
+    git add .
+    git commit --allow-empty -m "${msg}"
+  else
+    log "No changed '${K8S_CONFIGS_DIR}' files to copy '${DEFAULT_CDE_BRANCH}' to its new branch '${NEW_BRANCH}'"
+  fi
 
-        if echo "${known_k8s_files}" | grep -q "${new_file_basename}"; then
-          log "Ignoring file ${CDE}:${new_file} since it is a Beluga-owned file"
-        else
-          log "Copying custom file ${CDE}:${new_file} into directory ${CUSTOM_RESOURCES_REL_DIR}"
-          git show "${CDE}:${new_file}" > "${CUSTOM_RESOURCES_REL_DIR}/${new_file_basename}"
-
-          log "Adding new resource file ${new_file_basename} to ${KUSTOMIZATION_FILE}"
-          new_resource_line="- ${new_file_basename}"
-
-          grep_opts=(-q -e "${new_resource_line}")
-          if ! grep "${grep_opts[@]}" "${KUSTOMIZATION_FILE}"; then
-            # shellcheck disable=SC1003
-            sed -i.bak -e '/^resources:$/a\'$'\n'"${new_resource_line}" "${KUSTOMIZATION_FILE}"
-            rm -f "${KUSTOMIZATION_BAK_FILE}"
-          fi
-        fi
-      done
-
-      msg="Copied new '${K8S_CONFIGS_DIR}' files from default branch '${CDE}' to its new branch '${NEW_BRANCH}'"
-      log "${msg}"
-      git add .
-      git commit --allow-empty -m "${msg}"
-    else
-      log "No changed '${K8S_CONFIGS_DIR}' files to copy from default branch '${CDE}' to its new branch '${NEW_BRANCH}'"
-    fi
-
-    git checkout --quiet -
-  done
+  git checkout --quiet -
 }
 
 ########################################################################################################################
@@ -709,7 +673,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
   # The file into which the primary region directory name will be stored for later use.
   PRIMARY_REGION_DIR_FILE="$(mktemp)"
 
-  for REGION_DIR in ${REGION_DIRS}; do # REGION loop
+  for REGION_DIR in ${REGION_DIRS}; do # REGION loop for generate
     # Perform the code generation in a sub-shell so it doesn't pollute the current shell with environment variables.
     (
       # Common environment variables for the region
@@ -752,7 +716,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
         echo "${REGION_DIR}" > "${PRIMARY_REGION_DIR_FILE}"
       fi
     )
-  done # REGION loop
+  done # REGION loop for generate
 
   # Determine the primary region. If we can't, then error out.
   PRIMARY_REGION_DIR="$(cat "${PRIMARY_REGION_DIR_FILE}")"
@@ -772,7 +736,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
   done # REGION sort loop
 
   log "Region directories in sorted order for CDE '${ENV}': ${REGION_DIRS_SORTED}"
-  for REGION_DIR in ${REGION_DIRS_SORTED}; do
+  for REGION_DIR in ${REGION_DIRS_SORTED}; do # REGION loop for push
     if test "${PRIMARY_REGION_DIR}" = "${REGION_DIR}"; then
       IS_PRIMARY=true
       TYPE='primary'
@@ -794,25 +758,29 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
            "${NEW_PING_CLOUD_BASE_REPO}/code-gen/push-cluster-state.sh"
      )
     log "Done creating branch for ${TYPE} region '${REGION_DIR}' for CDE '${ENV}': ${NEW_BRANCH}"
-  done
+  done # REGION loop for push
+
+  # Copy profiles files that were deleted or renamed from the default CDE branch into its new branch.
+  HANDLE_CHANGED_PROFILES="${HANDLE_CHANGED_PROFILES:-true}"
+  if "${HANDLE_CHANGED_PROFILES}"; then
+    handle_changed_profiles "${NEW_BRANCH}"
+  else
+    log "Not automatically resolving diffs in '${PROFILES_DIR}' - any diffs must be resolved manually"
+  fi
+
+  # Copy new k8s-configs files from the default CDE branches into their corresponding new branches.
+  HANDLE_CHANGED_K8S_CONFIGS="${HANDLE_CHANGED_K8S_CONFIGS:-true}"
+  if "${HANDLE_CHANGED_K8S_CONFIGS}"; then
+    handle_changed_k8s_configs "${NEW_BRANCH}"
+  else
+    log "Not automatically resolving diffs in '${K8S_CONFIGS_DIR}' - any diffs must be resolved manually"
+  fi
+
+  echo
+  log "Done updating branch '${NEW_BRANCH}' for CDE '${ENV}'"
+  echo
 
 done # ENV loop
-
-# Copy profiles files that were deleted or renamed from the default CDE branch into its new branch.
-HANDLE_CHANGED_PROFILES="${HANDLE_CHANGED_PROFILES:-true}"
-if "${HANDLE_CHANGED_PROFILES}"; then
-  handle_changed_profiles
-else
-  log "Not automatically resolving diffs in '${PROFILES_DIR}'- any diffs must be resolved manually"
-fi
-
-# Copy new k8s-configs files from the default CDE branches into their corresponding new branches.
-HANDLE_CHANGED_K8S_CONFIGS="${HANDLE_CHANGED_K8S_CONFIGS:-true}"
-if "${HANDLE_CHANGED_K8S_CONFIGS}"; then
-  handle_changed_k8s_configs
-else
-  log "Not automatically resolving diffs in '${K8S_CONFIGS_DIR}'- any diffs must be resolved manually"
-fi
 
 # Print a README of next steps to take.
 print_readme
