@@ -31,6 +31,7 @@ TEMPLATES_REGION_DIR="${CODE_GEN_DIR}/${TEMPLATES_DIR}/region"
 
 CUSTOM_RESOURCES_DIR='custom-resources'
 CUSTOM_PATCHES_FILE_NAME='custom-patches.yaml'
+CUSTOM_PATCHES_SAMPLE_FILE_NAME='custom-patches-sample.yaml'
 CUSTOM_RESOURCES_REL_DIR="${K8S_CONFIGS_DIR}/${BASE_DIR}/${CUSTOM_RESOURCES_DIR}"
 CUSTOM_PATCHES_REL_FILE_NAME="${K8S_CONFIGS_DIR}/${BASE_DIR}/${CUSTOM_PATCHES_FILE_NAME}"
 
@@ -507,7 +508,9 @@ print_readme() {
   echo "      discrepancies in the new '${ENV_VARS_FILE_NAME}'."
   echo
   echo "    - WARNING: changing app JVM settings will require related changes to the"
-  echo "      replica set of the apps. Make those changes to ${CUSTOM_PATCHES_FILE_NAME}."
+  echo "      replica set of the apps. Make those changes to '${CUSTOM_PATCHES_FILE_NAME}'."
+  echo "      There is a '${CUSTOM_PATCHES_SAMPLE_FILE_NAME}' peer file with some examples"
+  echo "      showing how to patch HPA settings, replica count, mem/cpu request/limits, etc."
   echo
 
   if "${ALL_MIN_SECRETS_FOUND}"; then
