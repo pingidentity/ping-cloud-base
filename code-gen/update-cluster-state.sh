@@ -320,7 +320,7 @@ handle_changed_k8s_configs() {
 
   for new_file in ${new_files}; do
     new_file_basename="$(basename "${new_file}")"
-    if echo "${known_k8s_files}" | grep -q "${new_file_basename}"; then
+    if echo "${known_k8s_files}" | grep -q "/${new_file_basename}$"; then
       log "Ignoring file ${DEFAULT_CDE_BRANCH}:${new_file} since it is a Beluga-owned file"
       continue
     fi
