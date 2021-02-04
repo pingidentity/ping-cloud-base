@@ -29,8 +29,10 @@ TEMPLATES_DIR='templates'
 TEMPLATES_BASE_DIR="${CODE_GEN_DIR}/${TEMPLATES_DIR}/${BASE_DIR}"
 TEMPLATES_REGION_DIR="${CODE_GEN_DIR}/${TEMPLATES_DIR}/region"
 
-CUSTOM_RESOURCES_REL_DIR="${K8S_CONFIGS_DIR}/${BASE_DIR}/custom-resources"
-CUSTOM_PATCHES_REL_FILE_NAME="${K8S_CONFIGS_DIR}/${BASE_DIR}/custom-patches.yaml"
+CUSTOM_RESOURCES_DIR='custom-resources'
+CUSTOM_PATCHES_FILE_NAME='custom-patches.yaml'
+CUSTOM_RESOURCES_REL_DIR="${K8S_CONFIGS_DIR}/${BASE_DIR}/${CUSTOM_RESOURCES_DIR}"
+CUSTOM_PATCHES_REL_FILE_NAME="${K8S_CONFIGS_DIR}/${BASE_DIR}/${CUSTOM_PATCHES_FILE_NAME}"
 
 ENV_VARS_FILE_NAME='env_vars'
 SECRETS_FILE_NAME='secrets.yaml'
@@ -496,7 +498,7 @@ print_readme() {
   echo "      discrepancies in the new '${ENV_VARS_FILE_NAME}'."
   echo
   echo "    - WARNING: changing app JVM settings will require related changes to the"
-  echo "      replica set of the apps. Make those changes in the custom-patches.yaml file."
+  echo "      replica set of the apps. Make those changes to ${CUSTOM_PATCHES_FILE_NAME}."
   echo
 
   if "${ALL_MIN_SECRETS_FOUND}"; then
@@ -556,7 +558,7 @@ print_readme() {
     echo "- All Kubernetes customizations under '${K8S_CONFIGS_DIR}' have been migrated"
     echo "  to the '${CUSTOM_RESOURCES_REL_DIR}' directory."
     echo
-    echo "    - New custom resources should only be added under this directory."
+    echo "    - New custom resources should only be added under this directory in future."
     echo
     echo "    - Similarly, patches to out-of-the-box resources should only go"
     echo "      into '${CUSTOM_PATCHES_REL_FILE_NAME}'."
