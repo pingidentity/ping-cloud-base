@@ -484,27 +484,27 @@ print_readme() {
   echo "- No changes have been made to the default CDE branches."
   echo
   echo "- The new CDE branches are just local branches and not pushed to the server."
-  echo "  They contain cluster state valid for ${NEW_VERSION}."
+  echo "  They contain cluster state valid for '${NEW_VERSION}'."
   echo
 
-  echo "- All environment variables have been reset to the default for ${NEW_VERSION}."
+  echo "- All environment variables have been reset to the default for '${NEW_VERSION}'."
   echo
-  echo "    - The ${ENV_VARS_FILE_NAME} have been copied over from the default CDE branch"
+  echo "    - The '${ENV_VARS_FILE_NAME}' files have been copied over from the default CDE branch"
   echo "      with a suffix of '.old', but they are not sourced from kustomization.yaml."
   echo
-  echo "    - Use the ${ENV_VARS_FILE_NAME}.old files as a reference to fix up any"
-  echo "      discrepancies in the new ${ENV_VARS_FILE_NAME}."
+  echo "    - Use the '${ENV_VARS_FILE_NAME}.old' files as a reference to fix up any"
+  echo "      discrepancies in the new '${ENV_VARS_FILE_NAME}'."
   echo
-  echo "    - WARNING: changing app JVM settings will required related changes to the"
+  echo "    - WARNING: changing app JVM settings will require related changes to the"
   echo "      replica set of the apps. Make those changes in the custom-patches.yaml file."
   echo
 
   if "${ALL_MIN_SECRETS_FOUND}"; then
-    echo "- All secrets have been reset to the default for ${NEW_VERSION}."
+    echo "- All secrets have been reset to the default for '${NEW_VERSION}'."
   else
-    echo "- All but the following secrets have been reset to the default for ${NEW_VERSION}"
+    echo "- All but the following secrets have been reset to the default for '${NEW_VERSION}'"
     echo
-    echo "    - The PING_IDENTITY_DEVOPS_KEY contains a fake key. If using devops licenses,"
+    echo "    - The 'PING_IDENTITY_DEVOPS_KEY' contains a fake key. If using devops licenses,"
     echo "      it must be updated to the key for '${PING_CLOUD_DEFAULT_DEVOPS_USER}'."
     echo
     echo "    - The git SSH key in 'argo-git-deploy' and 'ssh-id-key-secret' also"
@@ -530,7 +530,7 @@ print_readme() {
   echo "      those defined directly within '${CLUSTER_STATE_REPO}'."
   echo
 
-  if "${HANDLE_CHANGED_PROFILES}"; then
+  if ! "${RESET_TO_DEFAULT}"; then
     echo "- All server profile changes under '${PROFILES_DIR}' have been migrated."
   else
     echo "- Changes under '${PROFILES_DIR}' were not migrated upon request. If profile"
@@ -552,7 +552,7 @@ print_readme() {
   fi
   echo
 
-  if "${HANDLE_CHANGED_K8S_CONFIGS}"; then
+  if ! "${RESET_TO_DEFAULT}"; then
     echo "- All Kubernetes customizations under '${K8S_CONFIGS_DIR}' have been migrated"
     echo "  to the '${CUSTOM_RESOURCES_REL_DIR}' directory."
     echo
@@ -603,11 +603,11 @@ print_readme() {
   echo "      git checkout <new-cde-branch>"
   echo "      git branch -m <default-cde-branch>"
   echo
-  echo "- Create SRE tickets for platform upgrades for ${NEW_BRANCH}, e.g."
+  echo "- Create SRE tickets for platform upgrades for '${NEW_BRANCH}', e.g."
   echo "  ASG fixes, EKS upgrades, etc."
   echo
   echo "- Run any required commands from the management node to prepare the"
-  echo "  cluster for ${NEW_BRANCH}, e.g. delete flux, elastic-stack-logging"
+  echo "  cluster for '${NEW_BRANCH}', e.g. delete flux, elastic-stack-logging"
   echo "  namespaces, etc."
   echo
   echo "- Push the newly migrated CDE branches to the server."
