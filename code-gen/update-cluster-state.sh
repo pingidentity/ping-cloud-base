@@ -637,9 +637,8 @@ finalize() {
 trap 'finalize' EXIT
 
 # Update log file.
-LOG_FILE="$(mktemp)/update.log"
-mkdir -p "$(dirname "${LOG_FILE}")"
-touch "${LOG_FILE}"
+LOG_DIR="$(mktemp -d)"
+LOG_FILE="${LOG_DIR}/update.log"
 log "Update log file: ${LOG_FILE}"
 
 # Save the the script name to include in log messages.
