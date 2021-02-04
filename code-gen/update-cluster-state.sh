@@ -800,9 +800,10 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
       fi
 
       # For every env_vars file in the new version, populate the old values into an env_vars.old file.
+      set -x
       env_vars_files="$(find "${TARGET_DIR}" -name "${ENV_VARS_FILE}" -type f)"
 
-      for env_var_file in ${env_vars_files}; do
+      for env_var_file in ${env_vars_files}; do # Loop for env_vars.old
         dir_name="$(dirname "${env_var_file}")"
         dir_name="${dir_name##*/}"
 
@@ -821,7 +822,9 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
         log "Creating '${old_env_var_file}' for region '${REGION_DIR}' and branch '${NEW_BRANCH}'"
 
         envsubst "${ENV_VARS_TO_SUBST}" < "${env_var_template}" > "${old_env_var_file}"
-      done
+      done # Loop for env_vars.old
+
+      set +x
     )
   done # REGION loop for generate
 
