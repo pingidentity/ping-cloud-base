@@ -153,7 +153,7 @@ add_derived_variables() {
 #   $1 -> The log message.
 ########################################################################################################################
 log() {
-  echo "=====> ${SCRIPT_NAME} $1" 2>&1 | tee -a "${LOG_FILE}"
+  echo "=====> ${SCRIPT_NAME} $1" 2>&1
 }
 
 ########################################################################################################################
@@ -635,12 +635,6 @@ finalize() {
 
 # Trap all exit codes to detect non-zero exit codes and log on it.
 trap 'finalize' EXIT
-
-# Update log file.
-LOG_DIR="${LOG_DIR:-/tmp}"
-LOG_FILE="${LOG_DIR}/update.log"
-rm -f "${LOG_FILE}"
-echo "=====> Update log file: ${LOG_FILE}"
 
 # Save the the script name to include in log messages.
 SCRIPT_NAME="$(basename "$0")"
