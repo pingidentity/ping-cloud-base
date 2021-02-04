@@ -94,6 +94,7 @@ set_env_vars() {
   if test -f "${env_file}"; then
     set -a
     # shellcheck disable=SC1090
+    set -x
     source "$1"
     set +a
   fi
