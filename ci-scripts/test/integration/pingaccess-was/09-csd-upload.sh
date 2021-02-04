@@ -9,19 +9,21 @@ fi
 
 testPingAccessWasRuntimeCsdUpload() {
   local upload_csd_job_name=pingaccess-was-periodic-csd-upload
-  csd_upload "${upload_csd_job_name}"
+  local path="${PROJECT_DIR}/k8s-configs/ping-cloud/base/pingaccess-was/engine/aws/periodic-csd-upload.yaml"
+  csd_upload "${upload_csd_job_name}" "${path}"
   assertEquals 0 $?
 }
 
 testPingAccessWasAdminCsdUpload() {
   local upload_csd_job_name=pingaccess-was-admin-periodic-csd-upload
-  csd_upload "${upload_csd_job_name}"
+  local path="${PROJECT_DIR}/k8s-configs/ping-cloud/base/pingaccess-was/admin/aws/periodic-csd-upload.yaml"
+  csd_upload "${upload_csd_job_name}" "${path}"
   assertEquals 0 $?
 }
 
 csd_upload() {
   local upload_csd_job_name="${1}"
-  local upload_job="${PROJECT_DIR}/k8s-configs/ping-cloud/base/pingaccess-was/admin/aws/periodic-csd-upload.yaml"
+  local upload_job="${2}"
 
   log "Applying the CSD upload job"
   kubectl delete -f "${upload_job}" -n "${NAMESPACE}"
@@ -34,7 +36,7 @@ csd_upload() {
   log "Expected CSD files:"
   expected_files "${upload_csd_job_name}" | tee /tmp/expected.txt
 
-  if ! verify_upload_with_timeout "pingaccess"; then
+  if ! verify_upload_with_timeout "pingaccess-was"; then
     return 1
   fi
   return 0
