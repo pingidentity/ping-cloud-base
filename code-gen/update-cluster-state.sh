@@ -278,17 +278,18 @@ handle_changed_profiles() {
       --name-status "${DEFAULT_CDE_BRANCH}" HEAD -- "${PROFILES_DIR}" |
       awk '{ print $2 }')"
 
-  if test "${new_files}"; then
-    echo "${new_files}" | xargs git checkout "${DEFAULT_CDE_BRANCH}"
-    msg="Copied changed '${PROFILES_DIR}' files from '${DEFAULT_CDE_BRANCH}' to its new branch '${NEW_BRANCH}'"
-    log "${msg}"
-    git add .
-    git commit --allow-empty -m "${msg}"
-  else
+  if ! test "${new_files}"; then
     log "No changed '${PROFILES_DIR}' files to copy '${DEFAULT_CDE_BRANCH}' to its new branch '${NEW_BRANCH}'"
+    return
   fi
 
-  git checkout --quiet -
+  echo "${new_files}" | xargs git checkout "${DEFAULT_CDE_BRANCH}"
+
+  msg="Copied changed '${PROFILES_DIR}' files from '${DEFAULT_CDE_BRANCH}' to its new branch '${NEW_BRANCH}'"
+  log "${msg}"
+
+  git add .
+  git commit --allow-empty -m "${msg}"
 }
 
 ########################################################################################################################
@@ -306,66 +307,67 @@ handle_changed_k8s_configs() {
   git checkout --quiet "${NEW_BRANCH}"
   new_files="$(git diff --diff-filter=D --name-only "${DEFAULT_CDE_BRANCH}" HEAD -- "${K8S_CONFIGS_DIR}")"
 
-  if test "${new_files}"; then
-    log "Found the following new files in branch '${DEFAULT_CDE_BRANCH}':"
-    echo "${new_files}"
-
-    KUSTOMIZATION_FILE="${CUSTOM_RESOURCES_REL_DIR}/kustomization.yaml"
-    KUSTOMIZATION_BAK_FILE="${KUSTOMIZATION_FILE}.bak"
-
-    for new_file in ${new_files}; do
-      new_file_basename="$(basename "${new_file}")"
-      new_file_dirname="$(dirname "${new_file}")"
-      new_file_ext="${new_file_basename##*.}"
-
-      # Copy non-YAML files that are not env_vars files to the same location on the new branch, e.g. sealingkey.pem
-      if test "${new_file_ext}" != 'yaml' && test "${new_file_basename}" != 'env_vars'; then
-        log "Copying non-YAML file ${DEFAULT_CDE_BRANCH}:${new_file} to the same location on ${NEW_BRANCH}"
-        mkdir -p "${new_file_dirname}"
-        git show "${DEFAULT_CDE_BRANCH}:${new_file}" > "${new_file}"
-        continue
-      fi
-
-      # Handle the secrets.yaml and sealed-secrets.yaml files in a special manner, if they're different.
-      # Copy them from the default CDE under a different name that has the a '.old' suffix.
-      if test "${new_file_basename}" = "${SECRETS_FILE_NAME}" ||
-         test  "${new_file_basename}" = "${SEALED_SECRETS_FILE_NAME}"; then
-        log "Copying ${DEFAULT_CDE_BRANCH}:${new_file} into ${K8S_CONFIGS_DIR}/${BASE_DIR}"
-
-        old_secret_file="${K8S_CONFIGS_DIR}/${BASE_DIR}/${new_file_basename}.old"
-        git show "${DEFAULT_CDE_BRANCH}:${new_file}" >> "${old_secret_file}"
-        echo >> "${old_secret_file}"
-
-        continue
-      fi
-
-      if echo "${known_k8s_files}" | grep -q "${new_file_basename}"; then
-        log "Ignoring file ${DEFAULT_CDE_BRANCH}:${new_file} since it is a Beluga-owned file"
-      else
-        log "Copying custom file ${DEFAULT_CDE_BRANCH}:${new_file} into directory ${CUSTOM_RESOURCES_REL_DIR}"
-        git show "${DEFAULT_CDE_BRANCH}:${new_file}" > "${CUSTOM_RESOURCES_REL_DIR}/${new_file_basename}"
-
-        log "Adding new resource file ${new_file_basename} to ${KUSTOMIZATION_FILE}"
-        new_resource_line="- ${new_file_basename}"
-
-        grep_opts=(-q -e "${new_resource_line}")
-        if ! grep "${grep_opts[@]}" "${KUSTOMIZATION_FILE}"; then
-          # shellcheck disable=SC1003
-          sed -i.bak -e '/^resources:$/a\'$'\n'"${new_resource_line}" "${KUSTOMIZATION_FILE}"
-          rm -f "${KUSTOMIZATION_BAK_FILE}"
-        fi
-      fi
-    done
-
-    msg="Copied new '${K8S_CONFIGS_DIR}' files '${DEFAULT_CDE_BRANCH}' to its new branch '${NEW_BRANCH}'"
-    log "${msg}"
-    git add .
-    git commit --allow-empty -m "${msg}"
-  else
+  if ! test "${new_files}"; then
     log "No changed '${K8S_CONFIGS_DIR}' files to copy '${DEFAULT_CDE_BRANCH}' to its new branch '${NEW_BRANCH}'"
+    return
   fi
 
-  git checkout --quiet -
+  log "Found the following new files in branch '${DEFAULT_CDE_BRANCH}':"
+  echo "${new_files}"
+
+  KUSTOMIZATION_FILE="${CUSTOM_RESOURCES_REL_DIR}/kustomization.yaml"
+  KUSTOMIZATION_BAK_FILE="${KUSTOMIZATION_FILE}.bak"
+
+  for new_file in ${new_files}; do
+    new_file_basename="$(basename "${new_file}")"
+    if echo "${known_k8s_files}" | grep -q "${new_file_basename}"; then
+      log "Ignoring file ${DEFAULT_CDE_BRANCH}:${new_file} since it is a Beluga-owned file"
+      continue
+    fi
+
+    new_file_dirname="$(dirname "${new_file}")"
+    new_file_ext="${new_file_basename##*.}"
+
+    # Copy non-YAML files files to the same location on the new branch, e.g. sealingkey.pem
+    if test "${new_file_ext}" != 'yaml'; then
+      log "Copying non-YAML file ${DEFAULT_CDE_BRANCH}:${new_file} to the same location on ${NEW_BRANCH}"
+      mkdir -p "${new_file_dirname}"
+      git show "${DEFAULT_CDE_BRANCH}:${new_file}" > "${new_file}"
+      continue
+    fi
+
+    # Handle the secrets.yaml and sealed-secrets.yaml files in a special manner, if they're different.
+    # Copy them from the default CDE under a different name that has the a '.old' suffix.
+    if test "${new_file_basename}" = "${SECRETS_FILE_NAME}" ||
+       test  "${new_file_basename}" = "${SEALED_SECRETS_FILE_NAME}"; then
+      log "Copying ${DEFAULT_CDE_BRANCH}:${new_file} into ${K8S_CONFIGS_DIR}/${BASE_DIR}"
+
+      old_secret_file="${K8S_CONFIGS_DIR}/${BASE_DIR}/${new_file_basename}.old"
+      git show "${DEFAULT_CDE_BRANCH}:${new_file}" >> "${old_secret_file}"
+      echo >> "${old_secret_file}"
+
+      continue
+    fi
+
+    log "Copying custom file ${DEFAULT_CDE_BRANCH}:${new_file} into directory ${CUSTOM_RESOURCES_REL_DIR}"
+    git show "${DEFAULT_CDE_BRANCH}:${new_file}" > "${CUSTOM_RESOURCES_REL_DIR}/${new_file_basename}"
+
+    log "Adding new resource file ${new_file_basename} to ${KUSTOMIZATION_FILE}"
+    new_resource_line="- ${new_file_basename}"
+
+    grep_opts=(-q -e "${new_resource_line}")
+    if ! grep "${grep_opts[@]}" "${KUSTOMIZATION_FILE}"; then
+      # shellcheck disable=SC1003
+      sed -i.bak -e '/^resources:$/a\'$'\n'"${new_resource_line}" "${KUSTOMIZATION_FILE}"
+      rm -f "${KUSTOMIZATION_BAK_FILE}"
+    fi
+  done
+
+  msg="Copied new '${K8S_CONFIGS_DIR}' files '${DEFAULT_CDE_BRANCH}' to its new branch '${NEW_BRANCH}'"
+  log "${msg}"
+
+  git add .
+  git commit --allow-empty -m "${msg}"
 }
 
 ########################################################################################################################
