@@ -59,6 +59,7 @@ RESET_TO_DEFAULT="${RESET_TO_DEFAULT:-false}"
 beluga_owned_k8s_files="@.flux.yaml \
 @argo-application.yaml \
 @custom-patches.yaml \
+@custom-patches-sample.yaml \
 @descriptor.json \
 @env_vars \
 @flux-command.sh \
@@ -408,16 +409,23 @@ handle_changed_k8s_configs() {
   KUSTOMIZATION_BAK_FILE="${KUSTOMIZATION_FILE}.bak"
 
   for new_file in ${new_files}; do
+    # Ignore Beluga-owned files.
     new_file_basename="$(basename "${new_file}")"
     if echo "${beluga_owned_k8s_files}" | grep -q "@${new_file_basename}"; then
       log "Ignoring file ${DEFAULT_CDE_BRANCH}:${new_file} since it is a Beluga-owned file"
       continue
     fi
 
+    # Copy files in the custom-resources section (owned by PS/GSO) as is.
     new_file_dirname="$(dirname "${new_file}")"
-    new_file_ext="${new_file_basename##*.}"
+    if test "${new_file_dirname##*/}" = "${CUSTOM_RESOURCES_DIR}"; then
+      log "Copying custom resource file ${DEFAULT_CDE_BRANCH}:${new_file} to the same location on ${NEW_BRANCH}"
+      git show "${DEFAULT_CDE_BRANCH}:${new_file}" > "${new_file}"
+      continue
+    fi
 
     # Copy non-YAML files files to the same location on the new branch, e.g. sealingkey.pem
+    new_file_ext="${new_file_basename##*.}"
     if test "${new_file_ext}" != 'yaml'; then
       log "Copying non-YAML file ${DEFAULT_CDE_BRANCH}:${new_file} to the same location on ${NEW_BRANCH}"
       mkdir -p "${new_file_dirname}"
