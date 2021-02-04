@@ -702,8 +702,6 @@ ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
 NEW_BRANCHES=
 REPO_STATUS=0
 
-log "Validating that '${CLUSTER_STATE_REPO}' has branches for environments: '${ENVIRONMENTS}'"
-
 for ENV in ${ENVIRONMENTS}; do
   test "${ENV}" = 'prod' &&
       DEFAULT_CDE_BRANCH='master' ||
