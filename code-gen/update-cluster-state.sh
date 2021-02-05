@@ -61,7 +61,6 @@ RESET_TO_DEFAULT="${RESET_TO_DEFAULT:-false}"
 
 beluga_owned_k8s_files="@.flux.yaml \
 @argo-application.yaml \
-@custom-patches.yaml \
 @custom-patches-sample.yaml \
 @descriptor.json \
 @env_vars \
@@ -419,6 +418,13 @@ handle_changed_k8s_configs() {
       continue
     fi
 
+    # Copy the custom-patches.yaml file (owned by PS/GSO) as is.
+    if test "${new_file_basename}" = "${CUSTOM_PATCHES_FILE_NAME}"; then
+      log "Copying file ${DEFAULT_CDE_BRANCH}:${new_file} to the same location on ${NEW_BRANCH}"
+      git show "${DEFAULT_CDE_BRANCH}:${new_file}" > "${new_file}"
+      continue
+    fi
+
     # Copy files in the custom-resources section (owned by PS/GSO) as is.
     new_file_dirname="$(dirname "${new_file}")"
     if test "${new_file_dirname##*/}" = "${CUSTOM_RESOURCES_DIR}"; then
@@ -597,7 +603,7 @@ print_readme() {
   echo
   echo "    - Run the following command from the '${K8S_CONFIGS_DIR}' directory:"
   echo
-  echo "          ./git-ops-command.sh <REGION_DIR> > /tmp/<REGION_DIR>.yaml'"
+  echo "          ./flux-command.sh <REGION_DIR> > /tmp/<REGION_DIR>.yaml'"
   echo
   echo "    - Verify that the generated manifest looks right for the CDE and region."
   echo
