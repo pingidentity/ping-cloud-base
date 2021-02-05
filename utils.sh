@@ -299,7 +299,8 @@ build_kustomizations_in_dir() {
 # Arguments
 #   $1 -> The directory that contains the files where variables must be substituted.
 #   $2 -> The variables to be substituted. Check DEFAULT_VARS below for the expected format.
-#   $3 -> Optional comma-separated filenames to exclude from substitution.
+#   $3 -> Optional space-separated filenames to include for substitution. If not provided, environment variables in all
+#         template files in the provided directory will be substituted.
 ########################################################################################################################
 
 # The list of variables in the template files that will be substituted by default.
@@ -328,19 +329,21 @@ ${BACKUP_URL}'
 substitute_vars() {
   local subst_dir="$1"
   local vars="$2"
-  local excluded_filenames="$3"
+  local included_filenames="${@:3}"
 
   for file in $(find "${subst_dir}" -type f); do
-    exclude_file=false
-    if test ! -z "${excluded_filenames}"; then
-      for excluded_filename in ${excluded_filenames}; do
-        if $(echo "${file}" | grep -qi "${excluded_filename}$"); then
-          exclude_file=true
+    include_file=true
+    if test "${included_filenames}"; then
+      include_file=false
+      for included_filename in ${included_filenames}; do
+        file_basename="$(basename "${file}")"
+        if $(echo "${file_basename}" | grep -qi "^${included_filename}$"); then
+          include_file=true
           break
         fi
       done
     fi
-    "${exclude_file}" && continue
+    "${include_file}" || continue
 
     local old_file="${file}.bak"
     cp "${file}" "${old_file}"
