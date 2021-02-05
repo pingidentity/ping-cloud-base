@@ -52,7 +52,6 @@ while test ${NUM_REPLICAS} -gt -1; do
     check_for_password_in_logs "${SERVER}" "${PATTERN}" ${TEMP_LOG_FILE}
     TEST_RESULT=${?}
   fi
-  set -x
 
   # Fail test if error occured within check_for_password_in_logs function
   test "${TEST_RESULT}" == "1" && exit 1

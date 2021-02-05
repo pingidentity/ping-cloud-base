@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # Source support libs referenced by the tested script
-. "${HOOKS_DIR}"/utils.lib.sh
-. "${HOOKS_DIR}"/util/upload-csd-s3-utils.sh
+# Suppress env vars noise in the test output
+. "${HOOKS_DIR}"/utils.lib.sh > /dev/null
+. "${HOOKS_DIR}"/util/upload-csd-s3-utils.sh > /dev/null
 
 kubectl() {
   echo ""

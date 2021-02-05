@@ -1,11 +1,9 @@
 #!/bin/bash
 
 # Source support libs referenced by the tested script
-. "${HOOKS_DIR}"/utils.lib.sh
-
-# Source the script we're testing
-script_to_test="${HOOKS_DIR}"/util/config-query-keypair-utils.sh
-. "${script_to_test}"
+# Suppress env vars noise in the test output
+. "${HOOKS_DIR}"/utils.lib.sh > /dev/null
+. "${HOOKS_DIR}"/util/config-query-keypair-utils.sh > /dev/null
 
 readonly resources_dir="${PROJECT_DIR}"/ci-scripts/test/unit/pingaccess/config-query-keypair-utils/resources
 
@@ -46,7 +44,7 @@ make_api_request() {
 # Here, test the logic all the way through to when the https listener is
 # updated with the new keypair
 testUpgradeSucceedsWhenKeypairMissingSan() {
-    local templates_dir_path="${PROJECT_DIR}"/profiles/aws/pingaccess/templates/81
+    local templates_dir_path="${TEMPLATES_DIR}"/81
     logs=$(upgrade_config_query_listener_keypair "${templates_dir_path}")
 
     # Look for the message indicating the upgrade was skipped

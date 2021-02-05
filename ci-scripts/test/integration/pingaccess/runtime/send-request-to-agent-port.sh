@@ -12,7 +12,7 @@ send_request_to_agent_port() {
   engine_hostname="${3}"
   namespace="${4}"
 
-  agent_port_runtime_response=$(kubectl exec pingaccess-admin-0 -n ${4} \
+  agent_port_runtime_response=$(kubectl exec pingaccess-admin-0 -n ${namespace} \
     -c pingaccess-admin -- curl -k -s -i -H "vnd-pi-v: 1.0" \
     -H "vnd-pi-authz: Bearer ${agent_name}:${shared_secret}" \
     -H "X-Forwarded-Proto: https" -H "X-Forwarded-Host: httpbin" \

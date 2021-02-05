@@ -9,7 +9,7 @@ fi
 
 testPingDirectoryCsdUpload() {
   local upload_csd_job_name=pingdirectory-csd-upload
-  local upload_job="${PROJECT_DIR}/k8s-configs/ping-cloud/base/pingdirectory/aws/upload-csd.yaml"
+  local upload_job="${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingdirectory/server/aws/upload-csd.yaml
 
   log "Applying the CSD upload job"
   kubectl delete -f "${upload_job}" -n "${NAMESPACE}"
@@ -20,6 +20,8 @@ testPingDirectoryCsdUpload() {
 
   log "Expected CSD files:"
   expected_files "${upload_csd_job_name}" | tee /tmp/expected.txt
+
+  sleep 5
 
   verify_upload_with_timeout "pingdirectory"
   assertEquals 0 $?

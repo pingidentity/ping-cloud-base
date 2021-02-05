@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Source the script we're testing
-script_to_test="${HOOKS_DIR}"/utils.lib.sh
-. "${script_to_test}"
+# Suppress env vars noise in the test output
+. "${HOOKS_DIR}"/utils.lib.sh > /dev/null
 
 testBelugaLogging() {
 

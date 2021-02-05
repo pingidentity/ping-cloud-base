@@ -35,9 +35,7 @@ execute_test_scripts() {
     echo
 
     # Calculate and track the combined results of all tests
-    # PDO-1803 - change this for part 1
-#     test_file_failures=$((${test_file_failures} + ${test_result}))
-    test_file_failures=$((${all_tests_passed} + ${test_result}))
+    test_file_failures=$((${test_file_failures} + ${test_result}))
 
   done
 
@@ -64,7 +62,7 @@ NO_COLOR='\033[0m' # No Color
 if test ${exit_code} -eq 0; then
   GREEN='\033[0;32m'
   # Use printf to print in color
-  printf '++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n'
+  printf '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n'
   printf "Prerequisite Test Summary: ${GREEN}All prerequisite tests in ${TEST_DIR} completed successfully ${NO_COLOR}\n"
   printf '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n'
 else

@@ -1,12 +1,9 @@
 #!/bin/bash
 
 # Source support libs referenced by the tested script
-. "${HOOKS_DIR}"/utils.lib.sh
-
-# Source the script we're testing
-script_to_test="${HOOKS_DIR}"/util/upload-csd-s3-utils.sh
-. "${script_to_test}"
-
+# Suppress env vars noise in the test output
+. "${HOOKS_DIR}"/utils.lib.sh > /dev/null
+. "${HOOKS_DIR}"/util/upload-csd-s3-utils.sh > /dev/null
 
 testTransformPingDirectoryRuntimeFilename() {
   filename=$(transform_csd_filename "support-data-ds-8.1.0.1-pingdirectory-0-20200903203030Z-zip")

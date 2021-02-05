@@ -7,17 +7,13 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-testPingAccessWasRuntimeCsdUpload() {
-  local upload_csd_job_name=pingaccess-was-periodic-csd-upload
-  local path="${PROJECT_DIR}/k8s-configs/ping-cloud/base/pingaccess-was/engine/aws/periodic-csd-upload.yaml"
-  csd_upload "${upload_csd_job_name}" "${path}"
+testPingFederateRuntimeCsdUpload() {
+  csd_upload "pingfederate-periodic-csd-upload" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingfederate/engine/aws/periodic-csd-upload.yaml
   assertEquals 0 $?
 }
 
-testPingAccessWasAdminCsdUpload() {
-  local upload_csd_job_name=pingaccess-was-admin-periodic-csd-upload
-  local path="${PROJECT_DIR}/k8s-configs/ping-cloud/base/pingaccess-was/admin/aws/periodic-csd-upload.yaml"
-  csd_upload "${upload_csd_job_name}" "${path}"
+testPingFederateAdminCsdUpload() {
+  csd_upload "pingfederate-admin-periodic-csd-upload" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingfederate/admin/aws/periodic-csd-upload.yaml
   assertEquals 0 $?
 }
 
@@ -27,19 +23,28 @@ csd_upload() {
 
   log "Applying the CSD upload job"
   kubectl delete -f "${upload_job}" -n "${NAMESPACE}"
+  assertEquals "The kubectl delete command to remove an existing ${upload_csd_job_name} should have succeeded" 0 $?
+
   kubectl apply -f "${upload_job}" -n "${NAMESPACE}"
+  assertEquals "The kubectl apply command to create the ${upload_csd_job_name} should have succeeded" 0 $?
+
   kubectl create job --from=cronjob/${upload_csd_job_name} ${upload_csd_job_name} -n "${NAMESPACE}"
+  assertEquals "The kubectl create command to create the job should have succeeded" 0 $?
 
   log "Waiting for CSD upload job to complete"
   kubectl wait --for=condition=complete --timeout=900s job.batch/${upload_csd_job_name} -n "${NAMESPACE}"
+  assertEquals "The kubectl wait command for the job should have succeeded" 0 $?
+
+  sleep 5
 
   log "Expected CSD files:"
   expected_files "${upload_csd_job_name}" | tee /tmp/expected.txt
 
-  if ! verify_upload_with_timeout "pingaccess-was"; then
+  if ! verify_upload_with_timeout "pingfederate"; then
     return 1
   fi
   return 0
+
 }
 
 # When arguments are passed to a script you must
