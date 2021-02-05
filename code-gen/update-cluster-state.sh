@@ -16,6 +16,8 @@
 #   ENVIRONMENTS -> A space-separated list of environments. Defaults to 'dev test stage prod', if unset. If provided,
 #       it must contain all or a subset of the environments currently created by the generate-cluster-state.sh script,
 #       i.e. dev, test, stage, prod.
+#   RESET_TO_DEFAULT -> An optional flag, which if set to true will reset the cluster-state-repo to the OOTB state
+#       for the new version. This has the same effect as running the platform code build job.
 
 ### Global values and utility functions ###
 BASE64_DECODE_OPT="${BASE64_DECODE_OPT:--D}"
@@ -602,7 +604,8 @@ print_readme() {
   echo "    - Repeat the command for every region for multi-region customers."
   echo
   echo "    - Pay special attention to app JVM settings and ensure that they are"
-  echo "      adequate for the type and size of the CDE."
+  echo "      adequate for the type and size of the CDE. Reach out to the Beluga"
+  echo "      team on sizing guidance."
   echo
 
   echo "- After verifying the generated manifest, rename the default CDE branches to"
@@ -691,9 +694,8 @@ if ! git diff-index --quiet HEAD --; then
   echo
   echo 'If local changes are unnecessary, then get rid of them by running these commands:'
   echo
-  echo '    git restore --staged .    # Get rid of staged changes that are not yet committed'
-  echo '    git restore .             # Get rid of untracked changes'
-  echo '    rm -rf <unnecessary-files-and-directories>'
+  echo '    git reset --hard HEAD     # Get rid of staged and un-staged modifications'
+  echo '    git clean -fd             # Get rid of untracked files and directories'
   echo
 
   exit 1
@@ -765,6 +767,8 @@ get_min_required_secrets
 #   - Generate code for all its regions
 #   - Push code for all its regions into new branches
 for ENV in ${ENVIRONMENTS}; do # ENV loop
+  log "Updating branch '${NEW_BRANCH}' for CDE '${ENV}'"
+
   test "${ENV}" = 'prod' &&
       DEFAULT_CDE_BRANCH='master' ||
       DEFAULT_CDE_BRANCH="${ENV}"
@@ -827,6 +831,11 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
             SSH_ID_KEY_FILE="${ID_RSA_FILE}" \
             "${NEW_PING_CLOUD_BASE_REPO}/${CODE_GEN_DIR}/generate-cluster-state.sh"
       )
+      GEN_RC=$?
+      if test ${GEN_RC} -ne 0; then
+        log "Error generating code for region '${REGION_DIR}' and branch '${NEW_BRANCH}': ${GEN_RC}"
+        exit ${GEN_RC}
+      fi
       log "Done generating code for region '${REGION_DIR}' and branch '${NEW_BRANCH}' into '${TARGET_DIR}'"
 
       # Persist the primary region's directory name for later use.
@@ -913,12 +922,20 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
     log "Creating branch for ${TYPE} region '${REGION_DIR}' and CDE '${ENV}': ${NEW_BRANCH}"
     (
       set -x;
-      GENERATED_CODE_DIR="${TARGET_DIR}" \
-           IS_PRIMARY=${IS_PRIMARY} \
-           ENVIRONMENTS="${NEW_BRANCH}" \
-           PUSH_TO_SERVER=false \
-           "${NEW_PING_CLOUD_BASE_REPO}/${CODE_GEN_DIR}/push-cluster-state.sh"
-     )
+      QUIET=true \
+          GENERATED_CODE_DIR="${TARGET_DIR}" \
+          IS_PRIMARY=${IS_PRIMARY} \
+          ENVIRONMENTS="${NEW_BRANCH}" \
+          PUSH_TO_SERVER=false \
+          "${NEW_PING_CLOUD_BASE_REPO}/${CODE_GEN_DIR}/push-cluster-state.sh"
+    )
+    PUSH_RC=$?
+    if test ${PUSH_RC} -ne 0; then
+      log "Error creating branch '${NEW_BRANCH}' for ${TYPE} region '${REGION_DIR}' and CDE '${ENV}': ${PUSH_RC}"
+      exit ${PUSH_RC}
+    fi
+    log "Done creating branch '${NEW_BRANCH}' for ${TYPE} region '${REGION_DIR}' and CDE '${ENV}'"
+
   done # REGION loop for push
 
   # If requested, copy profiles files that were deleted or renamed from the default CDE branch into its new branch.
@@ -935,10 +952,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
     handle_changed_k8s_configs "${NEW_BRANCH}"
   fi
 
-  echo
   log "Done updating branch '${NEW_BRANCH}' for CDE '${ENV}'"
-  echo
-
 done # ENV loop
 
 # Print a README of next steps to take.
