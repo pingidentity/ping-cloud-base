@@ -103,6 +103,10 @@ push_with_retries() {
 }
 
 ### Script start ###
+
+# Quiet mode where pretty console-formatting is omitted.
+QUIET="${QUIET:-false}"
+
 ALL_ENVIRONMENTS='dev test stage prod'
 ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
 
@@ -112,6 +116,28 @@ IS_PRIMARY="${IS_PRIMARY:-false}"
 PUSH_RETRY_COUNT="${PUSH_RETRY_COUNT:-30}"
 PUSH_TO_SERVER="${PUSH_TO_SERVER:-true}"
 PCB_COMMIT_SHA=$(cat "${GENERATED_CODE_DIR}"/pcb-commit-sha.txt)
+
+# This is a destructive script by design. Add a warning to the user if local changes are being destroyed though.
+CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+if test -n "$(git status -s)"; then
+  echo "WARN: The following local changes in current branch '${CURRENT_BRANCH}' will be destroyed:"
+  git status
+fi
+
+# Get rid of staged/un-staged modifications and untracked files/directories on current branch.
+# Otherwise, you cannot switch to another branch.
+git reset --hard HEAD
+git clean -fd
+
+# Get a list of the remote branches from the server.
+set +e
+REMOTE_BRANCHES="$(git ls-remote --quiet --heads 2> /dev/null)"
+FETCH_EXIT_CODE=$?
+set -e
+
+if test ${FETCH_EXIT_CODE} -ne 0; then
+  echo "WARN: Unable to retrieve remote branches from the server. Exit code: ${FETCH_EXIT_CODE}"
+fi
 
 # The ENVIRONMENTS variable can either be the CDE names (e.g. dev, test, stage, prod) or the branch names (e.g.
 # v1.8.0-dev, v1.8.0-test, v1.8.0-stage, v1.8.0-master). It will be the CDE names on initial seeding of the cluster
@@ -133,34 +159,41 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   ENV_CODE_DIR=$(mktemp -d)
   organize_code_for_environment "${GENERATED_CODE_DIR}" "${ENV_OR_BRANCH}" "${ENV}" "${ENV_CODE_DIR}" "${IS_PRIMARY}"
 
-  # Revert both staged and untracked files.
-  git restore --staged .
-  git restore .
+  # NOTE: this shouldn't be required here since we commit all changes before moving to the next branch. But it doesn't
+  # hurt to have it as an extra pre-caution.
 
-  # Check if the branch exists on remote. If so, switch to it and pull the latest code from it.
-  if git ls-remote --quiet --heads &> /dev/null | grep -q "${GIT_BRANCH}" 2> /dev/null; then
-    echo "Branch ${GIT_BRANCH} exists on server. Checking out latest code from server."
-    git checkout "${GIT_BRANCH}"
-    git pull -X theirs
+  # Get rid of staged/un-staged modifications and untracked files/directories on current branch.
+  # Otherwise, you cannot switch to another branch.
+  git reset --hard HEAD
+  git clean -fd
 
-  # Otherwise, check if the branch exists locally. If so, switch to it.
-  elif git rev-parse --verify "${GIT_BRANCH}" &> /dev/null; then
-    echo "Branch ${GIT_BRANCH} exists locally but not on server. Switching to it."
+  # Check if the branch exists locally. If so, switch to it.
+  if git rev-parse --verify "${GIT_BRANCH}" &> /dev/null; then
+    echo "Branch ${GIT_BRANCH} exists locally. Switching to it."
     git checkout "${GIT_BRANCH}"
 
   # Otherwise, create it.
   else
     # Attempt to create the branch from its default CDE branch name.
-    echo "Branch ${GIT_BRANCH} does not exist locally or on the server. Creating it."
+    echo "Branch ${GIT_BRANCH} does not exist locally. Creating it."
 
     if git rev-parse --verify "${DEFAULT_CDE_BRANCH}" &> /dev/null; then
       echo "Switching to branch ${DEFAULT_CDE_BRANCH} before creating ${GIT_BRANCH}"
       git checkout --quiet "${DEFAULT_CDE_BRANCH}"
     else
       echo "WARN: Default CDE branch ${DEFAULT_CDE_BRANCH} does not exist for branch ${GIT_BRANCH}"
+      echo "WARN: Creating it from revision: $(git rev-parse --abbrev-ref HEAD)"
     fi
 
     git checkout -b "${GIT_BRANCH}"
+  fi
+
+  # Check if the branch exists on remote. If so, pull the latest code from remote.
+  if echo "${REMOTE_BRANCHES}" | grep -q "${GIT_BRANCH}" 2> /dev/null; then
+    echo "Branch ${GIT_BRANCH} exists on server. Checking out latest code from server."
+    git pull -X theirs
+  elif test "${REMOTE_BRANCHES}"; then
+    echo "Branch ${GIT_BRANCH} does not exist on server."
   fi
 
   if "${IS_PRIMARY}"; then
@@ -209,7 +242,9 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     echo "Not pushing changes to the server for branch '${GIT_BRANCH}'"
   fi
 
-  echo
-  echo ---
-  echo
+  if ! "${QUIET}"; then
+    echo
+    echo ---
+    echo
+  fi
 done
