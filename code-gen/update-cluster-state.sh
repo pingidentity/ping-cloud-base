@@ -26,6 +26,9 @@ K8S_CONFIGS_DIR='k8s-configs'
 PROFILES_DIR='profiles'
 BASE_DIR='base'
 
+PING_CLOUD_DIR='ping-cloud'
+CLUSTER_TOOLS_DIR='cluster-tools'
+
 CODE_GEN_DIR='code-gen'
 TEMPLATES_DIR='templates'
 TEMPLATES_BASE_DIR="${CODE_GEN_DIR}/${TEMPLATES_DIR}/${BASE_DIR}"
@@ -69,6 +72,8 @@ beluga_owned_k8s_files="@.flux.yaml \
 @known-hosts-config.yaml \
 @kustomization.yaml \
 @orig-secrets.yaml \
+@secrets.yaml \
+@sealed-secrets.yaml \
 @region-promotion.txt \
 @remove-from-secondary-patch.yaml \
 @seal.sh"
@@ -388,14 +393,56 @@ handle_changed_profiles() {
 # Copy new k8s-configs files from the default CDE branch into its new one.
 #
 # Arguments
-#   $1 -> The new branch for a default CDE branch.
+#   $1 -> The primary region.
+#   $2 -> The new branch for a default CDE branch.
 ########################################################################################################################
 handle_changed_k8s_configs() {
-  NEW_BRANCH="$1"
+  PRIMARY_REGION="$1"
+  NEW_BRANCH="$2"
   DEFAULT_CDE_BRANCH="${NEW_BRANCH##*-}"
 
-  log "Reconciling '${K8S_CONFIGS_DIR}' diffs between '${DEFAULT_CDE_BRANCH}' and its new branch '${NEW_BRANCH}'"
+  log "Handling changes to ${SECRETS_FILE_NAME} and ${SEALED_SECRETS_FILE_NAME} in branch '${DEFAULT_CDE_BRANCH}':"
 
+  # In v1.6, secrets are present under ping-cloud/secrets.yaml and cluster-tools/secrets.yaml for each region.
+  # In v1.7 and later, secrets are present under base/secrets.yaml.
+
+  # First switch to the default CDE branch.
+  git checkout --quiet "${DEFAULT_BRANCH}"
+  old_secrets_dir="$(mktemp -d)"
+
+  for secrets_file_name in "${SECRETS_FILE_NAME}" "${SEALED_SECRETS_FILE_NAME}"; do # secrets loop
+    old_secrets_file="${old_secrets_dir}/${secrets_file_name}.old"
+
+    # The >= v1.7 case:
+    base_secrets="$(git ls-files "${K8S_CONFIGS_DIR}/${BASE_DIR}/${secrets_file_name}")"
+    if test "${base_secrets}"; then
+      for base_secret in ${base_secrets}; do
+        git show "${base_secret}" >> "${old_secrets_file}"
+        echo >> "${old_secrets_file}"
+      done
+    else
+      # The v1.6 case:
+      tools_secrets="$(git ls-files "${K8S_CONFIGS_DIR}/${PRIMARY_REGION}/${CLUSTER_TOOLS_DIR}/${secrets_file_name}")"
+      for tools_secret in ${tools_secrets}; do
+        git show "${tools_secret}" >> "${old_secrets_file}"
+        echo >> "${old_secrets_file}"
+      done
+
+      ping_secrets="$(git ls-files "${K8S_CONFIGS_DIR}/${PRIMARY_REGION}/${PING_CLOUD_DIR}/${secrets_file_name}")"
+      for ping_secret in ${ping_secrets}; do
+        git show "${ping_secret}" >> "${old_secrets_file}"
+        echo >> "${old_secrets_file}"
+      done
+    fi
+  done # secrets loop
+
+  # Switch to the new CDE branch and copy over the old secrets.
+  git checkout --quiet "${NEW_BRANCH}"
+  cp "${old_secrets_dir}/*" "${K8S_CONFIGS_DIR}/${BASE_DIR}"
+
+  log "Handling files exclusively not owned by Beluga in branch '${DEFAULT_CDE_BRANCH}':"
+
+  log "Reconciling '${K8S_CONFIGS_DIR}' diffs between '${DEFAULT_CDE_BRANCH}' and its new branch '${NEW_BRANCH}'"
   git checkout --quiet "${NEW_BRANCH}"
   new_files="$(git diff --diff-filter=D --name-only "${DEFAULT_CDE_BRANCH}" HEAD -- "${K8S_CONFIGS_DIR}")"
 
@@ -404,12 +451,13 @@ handle_changed_k8s_configs() {
     return
   fi
 
-  log "Found the following new files in branch '${DEFAULT_CDE_BRANCH}':"
+  log "DEBUG: Found the following new files in branch '${DEFAULT_CDE_BRANCH}':"
   echo "${new_files}"
 
   KUSTOMIZATION_FILE="${CUSTOM_RESOURCES_REL_DIR}/kustomization.yaml"
   KUSTOMIZATION_BAK_FILE="${KUSTOMIZATION_FILE}.bak"
 
+  # Special-case the handling all files owned by PS/GSO.
   for new_file in ${new_files}; do
     # Ignore Beluga-owned files.
     new_file_basename="$(basename "${new_file}")"
@@ -433,26 +481,12 @@ handle_changed_k8s_configs() {
       continue
     fi
 
-    # Copy non-YAML files files to the same location on the new branch, e.g. sealingkey.pem
+    # Copy non-YAML files (owned by PS/GSO) to the same location on the new branch, e.g. sealingkey.pem
     new_file_ext="${new_file_basename##*.}"
     if test "${new_file_ext}" != 'yaml'; then
       log "Copying non-YAML file ${DEFAULT_CDE_BRANCH}:${new_file} to the same location on ${NEW_BRANCH}"
       mkdir -p "${new_file_dirname}"
       git show "${DEFAULT_CDE_BRANCH}:${new_file}" > "${new_file}"
-      continue
-    fi
-
-    # Handle the secrets.yaml and sealed-secrets.yaml files in a special manner, if they're different.
-    # Copy them from the default CDE under a different name that has the a '.old' suffix.
-    if test "${new_file_basename}" = "${SECRETS_FILE_NAME}" ||
-       test  "${new_file_basename}" = "${SEALED_SECRETS_FILE_NAME}"; then
-
-      old_secret_file="${K8S_CONFIGS_DIR}/${BASE_DIR}/${new_file_basename}.old"
-      log "Appending ${DEFAULT_CDE_BRANCH}:${new_file} to ${old_secret_file}"
-
-      git show "${DEFAULT_CDE_BRANCH}:${new_file}" >> "${old_secret_file}"
-      echo >> "${old_secret_file}"
-
       continue
     fi
 
@@ -955,7 +989,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
   if "${RESET_TO_DEFAULT}"; then
     log "Not migrating '${K8S_CONFIGS_DIR}' because migration was explicitly skipped"
   else
-    handle_changed_k8s_configs "${NEW_BRANCH}"
+    handle_changed_k8s_configs "${PRIMARY_REGION_DIR}" "${NEW_BRANCH}"
   fi
 
   log "Done updating branch '${NEW_BRANCH}' for CDE '${ENV}'"
