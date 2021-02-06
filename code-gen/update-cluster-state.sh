@@ -26,9 +26,6 @@ K8S_CONFIGS_DIR='k8s-configs'
 PROFILES_DIR='profiles'
 BASE_DIR='base'
 
-#PING_CLOUD_DIR='ping-cloud'
-#CLUSTER_TOOLS_DIR='cluster-tools'
-
 CODE_GEN_DIR='code-gen'
 TEMPLATES_DIR='templates'
 TEMPLATES_BASE_DIR="${CODE_GEN_DIR}/${TEMPLATES_DIR}/${BASE_DIR}"
@@ -416,7 +413,7 @@ handle_changed_k8s_configs() {
 
   for secrets_file_name in "${SECRETS_FILE_NAME}" "${SEALED_SECRETS_FILE_NAME}"; do # secrets loop
     log "Handling changes to ${secrets_file_name} in branch '${DEFAULT_CDE_BRANCH}'"
-    old_secrets_file="${old_secrets_dir}/${secrets_file_name}.old"
+    old_secrets_file="${old_secrets_dir}/${secrets_file_name}"
 
     # The >= v1.7 case:
     all_secret_files="$(git ls-files "${K8S_CONFIGS_DIR}/${BASE_DIR}/${secrets_file_name}")"
@@ -425,6 +422,7 @@ handle_changed_k8s_configs() {
       if test "${secrets_file_name}" = "${SEALED_SECRETS_FILE_NAME}"; then
         file_path="${K8S_CONFIGS_DIR}/${PRIMARY_REGION}/${secrets_file_name}"
       else
+        # The '*' below may be one of 'ping-cloud' or 'cluster-tools' as noted above.
         file_path="${K8S_CONFIGS_DIR}/${PRIMARY_REGION}/*/${secrets_file_name}"
       fi
       all_secret_files="$(git ls-files "${file_path}")"
@@ -439,7 +437,13 @@ handle_changed_k8s_configs() {
 
   # Switch to the new CDE branch and copy over the old secrets.
   git checkout --quiet "${NEW_BRANCH}"
-  cp "${old_secrets_dir}"/* "${K8S_CONFIGS_DIR}/${BASE_DIR}"
+  #find "${old_secrets_dir}" -type f -exec cp {} "${K8S_CONFIGS_DIR}/${BASE_DIR}/" \;
+
+  find "${old_secrets_dir}" -type f -exec -bash -c \
+      "DST_DIR=${K8S_CONFIGS_DIR}/${BASE_DIR} \
+       if ! diff -q {} ${DST_DIR}/{}; then \
+         cp {} ${DST_DIR}/{}.old \
+       fi" \;
 
   log "Handling non Beluga-owned files in branch '${DEFAULT_CDE_BRANCH}'"
 
