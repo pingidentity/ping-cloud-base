@@ -435,15 +435,18 @@ handle_changed_k8s_configs() {
     done
   done # secrets loop
 
-  # Switch to the new CDE branch and copy over the old secrets.
+  # Switch to the new CDE branch and copy over the old secrets, if they're different.
   git checkout --quiet "${NEW_BRANCH}"
-  #find "${old_secrets_dir}" -type f -exec cp {} "${K8S_CONFIGS_DIR}/${BASE_DIR}/" \;
 
-  find "${old_secrets_dir}" -type f -exec -bash -c \
-      "DST_DIR=${K8S_CONFIGS_DIR}/${BASE_DIR} \
-       if ! diff -q {} ${DST_DIR}/{}; then \
-         cp {} ${DST_DIR}/{}.old \
-       fi" \;
+  secret_files="$(find "${old_secrets_dir}" -type f)"
+  for file in ${secret_files}; do
+    dst_file="${K8S_CONFIGS_DIR}/${BASE_DIR}}/${file}"
+    if diff -q "${file}" "${dst_file}"; then
+      log "No difference found between $(basename "${file}") and ${dst_file}"
+    else
+      cp "${file}" "${dst_file}.old"
+    fi
+  done
 
   log "Handling non Beluga-owned files in branch '${DEFAULT_CDE_BRANCH}'"
 
