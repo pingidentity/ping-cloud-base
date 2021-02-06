@@ -438,6 +438,8 @@ handle_changed_k8s_configs() {
 
   # Switch to the new CDE branch and copy over the old secrets.
   git checkout --quiet "${NEW_BRANCH}"
+  log "CURRENT WORKING DIR ${PWD} CONTENTS:"
+  ls "${PWD}"
   cp "${old_secrets_dir}/*" "${K8S_CONFIGS_DIR}/${BASE_DIR}"
 
   log "Handling files exclusively not owned by Beluga in branch '${DEFAULT_CDE_BRANCH}':"
