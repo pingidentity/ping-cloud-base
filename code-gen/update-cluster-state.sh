@@ -393,21 +393,21 @@ handle_changed_profiles() {
 # Copy new k8s-configs files from the default CDE branch into its new one.
 #
 # Arguments
-#   $1 -> The primary region.
-#   $2 -> The new branch for a default CDE branch.
+#   $1 -> The new branch for a default CDE branch.
+#   $2 -> The primary region.
 ########################################################################################################################
 handle_changed_k8s_configs() {
-  PRIMARY_REGION="$1"
-  NEW_BRANCH="$2"
-  DEFAULT_CDE_BRANCH="${NEW_BRANCH##*-}"
+  NEW_BRANCH="$1"
+  PRIMARY_REGION="$2"
 
+  DEFAULT_CDE_BRANCH="${NEW_BRANCH##*-}"
   log "Handling changes to ${SECRETS_FILE_NAME} and ${SEALED_SECRETS_FILE_NAME} in branch '${DEFAULT_CDE_BRANCH}':"
 
   # In v1.6, secrets are present under ping-cloud/secrets.yaml and cluster-tools/secrets.yaml for each region.
   # In v1.7 and later, secrets are present under base/secrets.yaml.
 
   # First switch to the default CDE branch.
-  git checkout --quiet "${DEFAULT_BRANCH}"
+  git checkout --quiet "${DEFAULT_CDE_BRANCH}"
   old_secrets_dir="$(mktemp -d)"
 
   for secrets_file_name in "${SECRETS_FILE_NAME}" "${SEALED_SECRETS_FILE_NAME}"; do # secrets loop
@@ -988,7 +988,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
   if "${RESET_TO_DEFAULT}"; then
     log "Not migrating '${K8S_CONFIGS_DIR}' because migration was explicitly skipped"
   else
-    handle_changed_k8s_configs "${PRIMARY_REGION_DIR}" "${NEW_BRANCH}"
+    handle_changed_k8s_configs "${NEW_BRANCH}" "${PRIMARY_REGION_DIR}"
   fi
 
   log "Done updating branch '${NEW_BRANCH}' for CDE '${ENV}'"
