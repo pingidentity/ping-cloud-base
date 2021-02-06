@@ -440,9 +440,11 @@ handle_changed_k8s_configs() {
 
   secret_files="$(find "${old_secrets_dir}" -type f)"
   for file in ${secret_files}; do
-    dst_file="${K8S_CONFIGS_DIR}/${BASE_DIR}}/${file}"
+    file_name="$(basename "${file}")"
+    dst_file="${K8S_CONFIGS_DIR}/${BASE_DIR}/${file_name}"
+
     if diff -q "${file}" "${dst_file}"; then
-      log "No difference found between $(basename "${file}") and ${dst_file}"
+      log "No difference found between ${file_name} and ${dst_file}"
     else
       cp "${file}" "${dst_file}.old"
     fi
