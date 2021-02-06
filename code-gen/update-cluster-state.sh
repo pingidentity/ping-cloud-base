@@ -443,7 +443,7 @@ handle_changed_k8s_configs() {
     file_name="$(basename "${file}")"
     dst_file="${K8S_CONFIGS_DIR}/${BASE_DIR}/${file_name}"
 
-    if diff -q --ignore-blank-lines "${file}" "${dst_file}"; then
+    if diff -qbB "${file}" "${dst_file}"; then
       log "No difference found between ${file_name} and ${dst_file}"
     else
       cp "${file}" "${dst_file}.old"
@@ -929,7 +929,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
         envsubst "${ENV_VARS_TO_SUBST}" < "${ENV_VARS_TEMPLATE}" > "${OLD_ENV_VARS_FILE}"
 
         # If there are no differences between env_vars and env_vars.old, delete the old one.
-        if diff -q --ignore-blank-lines "${ENV_VARS_FILE}" "${OLD_ENV_VARS_FILE}"; then
+        if diff -qbB "${ENV_VARS_FILE}" "${OLD_ENV_VARS_FILE}"; then
           log "No difference found between ${ENV_VARS_FILE} and ${OLD_ENV_VARS_FILE} - removing the old one"
           rm -f "${OLD_ENV_VARS_FILE}"
         fi
