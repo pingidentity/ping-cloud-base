@@ -26,8 +26,8 @@ K8S_CONFIGS_DIR='k8s-configs'
 PROFILES_DIR='profiles'
 BASE_DIR='base'
 
-PING_CLOUD_DIR='ping-cloud'
-CLUSTER_TOOLS_DIR='cluster-tools'
+#PING_CLOUD_DIR='ping-cloud'
+#CLUSTER_TOOLS_DIR='cluster-tools'
 
 CODE_GEN_DIR='code-gen'
 TEMPLATES_DIR='templates'
@@ -418,7 +418,7 @@ handle_changed_k8s_configs() {
     all_secret_files="$(git ls-files "${K8S_CONFIGS_DIR}/${BASE_DIR}/${secrets_file_name}")"
     if test "${all_secret_files}"; then
       # The v1.6 case:
-      all_secret_files="$(git ls-files "${K8S_CONFIGS_DIR}/${PRIMARY_REGION}*/${secrets_file_name}")"
+      all_secret_files="$(git ls-files "${K8S_CONFIGS_DIR}/${PRIMARY_REGION}"*/"${secrets_file_name}")"
     fi
 
     log "Found secret files: ${all_secret_files}"
