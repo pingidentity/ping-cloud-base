@@ -403,8 +403,12 @@ handle_changed_k8s_configs() {
   DEFAULT_CDE_BRANCH="${NEW_BRANCH##*-}"
   log "Handling changes to ${SECRETS_FILE_NAME} and ${SEALED_SECRETS_FILE_NAME} in branch '${DEFAULT_CDE_BRANCH}'"
 
-  # In v1.6, secrets are present under ping-cloud/secrets.yaml and cluster-tools/secrets.yaml for each region.
-  # In v1.7 and later, secrets are present under base/secrets.yaml.
+  # In v1.6:
+  #   - Secrets are present under <region>/ping-cloud/secrets.yaml and cluster-tools/secrets.yaml for each region.
+  #   - Sealed secrets are present under <region>/sealed-secrets.yaml.
+
+  # In v1.7 and later:
+  #   - Secrets and sealed secrets are both present under base/.
 
   # First switch to the default CDE branch.
   git checkout --quiet "${DEFAULT_CDE_BRANCH}"
@@ -416,12 +420,17 @@ handle_changed_k8s_configs() {
 
     # The >= v1.7 case:
     all_secret_files="$(git ls-files "${K8S_CONFIGS_DIR}/${BASE_DIR}/${secrets_file_name}")"
-    if test "${all_secret_files}"; then
+    if ! test "${all_secret_files}"; then
       # The v1.6 case:
-      all_secret_files="$(git ls-files "${K8S_CONFIGS_DIR}/${PRIMARY_REGION}"*/"${secrets_file_name}")"
+      if test "${secrets_file_name}" = "${SEALED_SECRETS_FILE_NAME}"; then
+        file_path="${K8S_CONFIGS_DIR}/${PRIMARY_REGION}/${secrets_file_name}"
+      else
+        file_path="${K8S_CONFIGS_DIR}/${PRIMARY_REGION}/*/${secrets_file_name}"
+      fi
+      all_secret_files="$(git ls-files "${file_path}")"
     fi
 
-    log "Found secret files: ${all_secret_files}"
+    log "Found '${secrets_file_name}' files: ${all_secret_files}"
     for secret_file in ${all_secret_files}; do
       git show "${DEFAULT_CDE_BRANCH}:${secret_file}" >> "${old_secrets_file}"
       echo >> "${old_secrets_file}"
