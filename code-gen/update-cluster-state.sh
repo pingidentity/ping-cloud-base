@@ -696,7 +696,7 @@ trap 'finalize' EXIT
 SCRIPT_NAME="$(basename "$0")"
 
 # Check required binaries.
-check_binaries 'kubectl' 'git' 'base64' 'jq' || exit 1
+check_binaries 'kubectl' 'git' 'base64' 'jq' 'envsubst' || exit 1
 
 # Verify that required environment variable NEW_VERSION is set.
 if test -z "${NEW_VERSION}"; then
@@ -719,7 +719,6 @@ fi
 # However, there is a bug in the wrapper script (shipped code) that prevents it from working correctly. The wrapper has
 # been fixed in v1.8. This check should be fixed in v1.9.
 
-git update-index --refresh
 if ! git diff-index --quiet HEAD --; then
   echo
   echo 'There are local changes, which must be resolved before running this script:'
