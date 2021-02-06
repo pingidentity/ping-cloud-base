@@ -417,20 +417,20 @@ handle_changed_k8s_configs() {
     base_secrets="$(git ls-files "${K8S_CONFIGS_DIR}/${BASE_DIR}/${secrets_file_name}")"
     if test "${base_secrets}"; then
       for base_secret in ${base_secrets}; do
-        git show "${base_secret}" >> "${old_secrets_file}"
+        git show "${DEFAULT_CDE_BRANCH}:${base_secret}" >> "${old_secrets_file}"
         echo >> "${old_secrets_file}"
       done
     else
       # The v1.6 case:
       tools_secrets="$(git ls-files "${K8S_CONFIGS_DIR}/${PRIMARY_REGION}/${CLUSTER_TOOLS_DIR}/${secrets_file_name}")"
       for tools_secret in ${tools_secrets}; do
-        git show "${tools_secret}" >> "${old_secrets_file}"
+        git show "${DEFAULT_CDE_BRANCH}:${tools_secret}" >> "${old_secrets_file}"
         echo >> "${old_secrets_file}"
       done
 
       ping_secrets="$(git ls-files "${K8S_CONFIGS_DIR}/${PRIMARY_REGION}/${PING_CLOUD_DIR}/${secrets_file_name}")"
       for ping_secret in ${ping_secrets}; do
-        git show "${ping_secret}" >> "${old_secrets_file}"
+        git show "${DEFAULT_CDE_BRANCH}:${ping_secret}" >> "${old_secrets_file}"
         echo >> "${old_secrets_file}"
       done
     fi
@@ -439,8 +439,8 @@ handle_changed_k8s_configs() {
   # Switch to the new CDE branch and copy over the old secrets.
   git checkout --quiet "${NEW_BRANCH}"
   log "CURRENT WORKING DIR ${PWD} CONTENTS:"
-  ls "${PWD}"
-  cp "${old_secrets_dir}/*" "${K8S_CONFIGS_DIR}/${BASE_DIR}"
+  tree -L 2 "${PWD}"
+  cp "${old_secrets_dir}"/* "${K8S_CONFIGS_DIR}/${BASE_DIR}"
 
   log "Handling files exclusively not owned by Beluga in branch '${DEFAULT_CDE_BRANCH}':"
 
