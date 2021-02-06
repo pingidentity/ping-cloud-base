@@ -416,7 +416,7 @@ handle_changed_k8s_configs() {
 
     # The >= v1.7 case:
     all_secret_files="$(git ls-files "${K8S_CONFIGS_DIR}/${BASE_DIR}/${secrets_file_name}")"
-    if ! test "${all_secret_files}"; then
+    if test "${all_secret_files}"; then
       # The v1.6 case:
       all_secret_files="$(git ls-files "${K8S_CONFIGS_DIR}/${PRIMARY_REGION}*/${secrets_file_name}")"
     fi
