@@ -415,29 +415,17 @@ handle_changed_k8s_configs() {
     old_secrets_file="${old_secrets_dir}/${secrets_file_name}.old"
 
     # The >= v1.7 case:
-    base_secrets="$(git ls-files "${K8S_CONFIGS_DIR}/${BASE_DIR}/${secrets_file_name}")"
-    if test "${base_secrets}"; then
-      log "Found base secret files: ${base_secrets}"
-      for base_secret in ${base_secrets}; do
-        git show "${DEFAULT_CDE_BRANCH}:${base_secret}" >> "${old_secrets_file}"
-        echo >> "${old_secrets_file}"
-      done
-    else
+    all_secret_files="$(git ls-files "${K8S_CONFIGS_DIR}/${BASE_DIR}/${secrets_file_name}")"
+    if ! test "${all_secret_files}"; then
       # The v1.6 case:
-      tools_secrets="$(git ls-files "${K8S_CONFIGS_DIR}/${PRIMARY_REGION}/${CLUSTER_TOOLS_DIR}/${secrets_file_name}")"
-      log "Found tools secret files: ${tools_secrets}"
-      for tools_secret in ${tools_secrets}; do
-        git show "${DEFAULT_CDE_BRANCH}:${tools_secret}" >> "${old_secrets_file}"
-        echo >> "${old_secrets_file}"
-      done
-
-      ping_secrets="$(git ls-files "${K8S_CONFIGS_DIR}/${PRIMARY_REGION}/${PING_CLOUD_DIR}/${secrets_file_name}")"
-      log "Found ping secret files: ${ping_secrets}"
-      for ping_secret in ${ping_secrets}; do
-        git show "${DEFAULT_CDE_BRANCH}:${ping_secret}" >> "${old_secrets_file}"
-        echo >> "${old_secrets_file}"
-      done
+      all_secret_files="$(git ls-files "${K8S_CONFIGS_DIR}/${PRIMARY_REGION}*/${secrets_file_name}")"
     fi
+
+    log "Found secret files: ${all_secret_files}"
+    for secret_file in ${all_secret_files}; do
+      git show "${DEFAULT_CDE_BRANCH}:${secret_file}" >> "${old_secrets_file}"
+      echo >> "${old_secrets_file}"
+    done
   done # secrets loop
 
   # Switch to the new CDE branch and copy over the old secrets.
