@@ -1,5 +1,11 @@
-# NOTE: Change CONFIG_REPO_BRANCH to the name of the branch under test
+# NOTE:
+# - Set K8S_GIT_URL to a mirror of ping-cloud-base that has the manifests to be tested.
+# - Run the script from the branch under test. This will ensure that the K8S_GIT_BRANCH variable is set correctly.
 
+### CHANGE ME ###
+K8S_GIT_URL=https://github.com/pingidentity/ping-cloud-base
+
+### Other static environment variables ###
 CLUSTER_NAME=ci-cd
 
 IS_MULTI_CLUSTER=false
