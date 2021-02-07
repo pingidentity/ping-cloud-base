@@ -191,7 +191,9 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   # Check if the branch exists on remote. If so, pull the latest code from remote.
   if echo "${REMOTE_BRANCHES}" | grep -q "${GIT_BRANCH}" 2> /dev/null; then
     echo "Branch ${GIT_BRANCH} exists on server. Checking out latest code from server."
-    git pull -X theirs
+    set +e
+    git pull origin "${GIT_BRANCH}" -X theirs
+    set -e
   elif test "${REMOTE_BRANCHES}"; then
     echo "Branch ${GIT_BRANCH} does not exist on server."
   fi
