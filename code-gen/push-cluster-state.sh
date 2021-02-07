@@ -194,7 +194,6 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     set +e
     git pull origin "${GIT_BRANCH}" -X theirs
     set -e
-    git add .
   elif test "${REMOTE_BRANCHES}"; then
     echo "Branch ${GIT_BRANCH} does not exist on server."
   fi
