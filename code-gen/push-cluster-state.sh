@@ -138,10 +138,10 @@ fi
 # Set the git merge strategy to avoid noisy hints in the output.
 git config pull.rebase false
 
-# Get rid of staged/un-staged modifications and untracked files/directories on current branch.
+# Get rid of staged/un-staged modifications and untracked files/directories (including ignored ones) on current branch.
 # Otherwise, you cannot switch to another branch.
 git reset --hard HEAD
-git clean -fd
+git clean -fdx
 
 # Create a staging branch from which to create new branches.
 STAGING_BRANCH="staging-branch-$(date +%s)"
@@ -180,10 +180,10 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   # NOTE: this shouldn't be required here since we commit all changes before moving to the next branch. But it doesn't
   # hurt to have it as an extra pre-caution.
 
-  # Get rid of staged/un-staged modifications and untracked files/directories on current branch.
-  # Otherwise, you cannot switch to another branch.
+  # Get rid of staged/un-staged modifications and untracked files/directories (including ignored ones) on current
+  # branch. Otherwise, you cannot switch to another branch.
   git reset --hard HEAD
-  git clean -fd
+  git clean -fdx
 
   # Check if the branch exists locally. If so, switch to it.
   if git rev-parse --verify "${GIT_BRANCH}" &> /dev/null; then
