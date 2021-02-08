@@ -102,6 +102,14 @@ push_with_retries() {
   return 1
 }
 
+########################################################################################################################
+# Switch back to the previous branch and delete the staging branch.
+########################################################################################################################
+finalize() {
+  git checkout --quiet "${CURRENT_BRANCH}"
+  git branch -D "${STAGING_BRANCH}"
+}
+
 ### Script start ###
 
 # Quiet mode where pretty console-formatting is omitted.
@@ -124,10 +132,25 @@ if test -n "$(git status -s)"; then
   git status
 fi
 
+# Trap all exit codes to run any finalization.
+trap 'finalize' EXIT
+
+# Set the git merge strategy to avoid noisy hints in the output.
+git config pull.rebase false
+
 # Get rid of staged/un-staged modifications and untracked files/directories on current branch.
 # Otherwise, you cannot switch to another branch.
 git reset --hard HEAD
 git clean -fd
+
+# Create a staging branch from which to create new branches.
+STAGING_BRANCH='staging-branch'
+if git rev-parse --verify "${STAGING_BRANCH}" &> /dev/null; then
+  echo "Staging branch '${STAGING_BRANCH}' exists - deleting it"
+  git branch -D "${STAGING_BRANCH}"
+fi
+echo "Creating staging branch '${STAGING_BRANCH}'"
+git checkout -b "${STAGING_BRANCH}"
 
 # Get a list of the remote branches from the server.
 set +e
@@ -181,8 +204,9 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
       echo "Switching to branch ${DEFAULT_CDE_BRANCH} before creating ${GIT_BRANCH}"
       git checkout --quiet "${DEFAULT_CDE_BRANCH}"
     else
-      echo "WARN: Default CDE branch ${DEFAULT_CDE_BRANCH} does not exist for branch ${GIT_BRANCH}"
-      echo "WARN: Creating it from revision: $(git rev-parse --abbrev-ref HEAD)"
+      echo "Default CDE branch ${DEFAULT_CDE_BRANCH} does not exist for branch ${GIT_BRANCH}"
+      echo "Creating it from branch: ${STAGING_BRANCH}"
+      git checkout --quiet "${STAGING_BRANCH}"
     fi
 
     git checkout -b "${GIT_BRANCH}"
@@ -192,7 +216,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   if echo "${REMOTE_BRANCHES}" | grep -q "${GIT_BRANCH}" 2> /dev/null; then
     echo "Branch ${GIT_BRANCH} exists on server. Checking out latest code from server."
     set +e
-    git pull origin "${GIT_BRANCH}" -X theirs
+    git pull --no-edit origin "${GIT_BRANCH}" -X theirs
     set -e
   elif test "${REMOTE_BRANCHES}"; then
     echo "Branch ${GIT_BRANCH} does not exist on server."
