@@ -389,13 +389,14 @@ handle_changed_profiles() {
 }
 
 ########################################################################################################################
-# Copy new k8s-configs files from the default CDE branch into its new one.
+# Create secrets.yaml.old and sealed-secrets.yaml.old files if different between the default CDE branch and its new
+# one. This makes it easier for the operator to see the differences in secrets between the two branches.
 #
 # Arguments
 #   $1 -> The new branch for a default CDE branch.
 #   $2 -> The primary region.
 ########################################################################################################################
-handle_changed_k8s_configs() {
+handle_changed_k8s_secrets() {
   NEW_BRANCH="$1"
   PRIMARY_REGION="$2"
 
@@ -452,6 +453,23 @@ handle_changed_k8s_configs() {
     fi
   done
 
+  msg="Done creating ${SECRETS_FILE_NAME}.old and ${SEALED_SECRETS_FILE_NAME}.old in branch '${NEW_BRANCH}'"
+  log "${msg}"
+
+  git add .
+  git commit --allow-empty -m "${msg}"
+}
+
+########################################################################################################################
+# Copy new k8s-configs files from the default CDE branch into its new one.
+#
+# Arguments
+#   $1 -> The new branch for a default CDE branch.
+########################################################################################################################
+handle_changed_k8s_configs() {
+  NEW_BRANCH="$1"
+
+  DEFAULT_CDE_BRANCH="${NEW_BRANCH##*-}"
   log "Handling non Beluga-owned files in branch '${DEFAULT_CDE_BRANCH}'"
 
   log "Reconciling '${K8S_CONFIGS_DIR}' diffs between '${DEFAULT_CDE_BRANCH}' and its new branch '${NEW_BRANCH}'"
@@ -575,7 +593,7 @@ print_readme() {
     echo "    - The 'PING_IDENTITY_DEVOPS_KEY' contains a fake key. If using devops licenses,"
     echo "      it must be updated to the key for '${PING_CLOUD_DEFAULT_DEVOPS_USER}'."
     echo
-    echo "    - The git SSH key in 'argo-git-deploy' and 'ssh-id-key-secret' also"
+    echo "    - The git SSH key in 'flux-git-deploy' and 'ssh-id-key-secret' also"
     echo "      contain fake values and must be updated."
     echo
     echo "    - Reach out to the platform team to get the right values for these secrets."
@@ -869,6 +887,11 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
       # Generate code now that we have set all the required environment variables
       log "Generating code for region '${REGION_DIR}' and branch '${NEW_BRANCH}' into '${TARGET_DIR}'"
       (
+        # If resetting to default, then use defaults for these variables instead of migrating them.
+        if test "${RESET_TO_DEFAULT}"; then
+          unset KUSTOMIZE_BASE LETS_ENCRYPT_SERVER
+        fi
+
         export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY}"
         set -x
         QUIET=true \
@@ -894,13 +917,6 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
       if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
         IS_PRIMARY=true
         echo "${REGION_DIR}" > "${PRIMARY_REGION_DIR_FILE}"
-      fi
-
-      # Do not create env_vars.old files if resetting to the OOTB cluster state.
-      if "${RESET_TO_DEFAULT}"; then
-        log "Not creating env_vars.old because migration was explicitly skipped"
-        # shellcheck disable=SC2106
-        continue
       fi
 
       # For every env_vars file in the new version, populate the old values into an env_vars.old file.
@@ -989,6 +1005,9 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
 
   done # REGION loop for push
 
+  # Create .old files for secrets.yaml and sealed-secrets.yaml files so it's easy to see the differences in a pinch.
+  handle_changed_k8s_secrets "${NEW_BRANCH}" "${PRIMARY_REGION_DIR}"
+
   # If requested, copy profiles files that were deleted or renamed from the default CDE branch into its new branch.
   if "${RESET_TO_DEFAULT}"; then
     log "Not migrating '${PROFILES_DIR}' because migration was explicitly skipped"
@@ -1000,7 +1019,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
   if "${RESET_TO_DEFAULT}"; then
     log "Not migrating '${K8S_CONFIGS_DIR}' because migration was explicitly skipped"
   else
-    handle_changed_k8s_configs "${NEW_BRANCH}" "${PRIMARY_REGION_DIR}"
+    handle_changed_k8s_configs "${NEW_BRANCH}"
   fi
 
   log "Done updating branch '${NEW_BRANCH}' for CDE '${ENV}'"
