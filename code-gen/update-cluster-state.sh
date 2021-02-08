@@ -593,7 +593,7 @@ print_readme() {
     echo "    - The 'PING_IDENTITY_DEVOPS_KEY' contains a fake key. If using devops licenses,"
     echo "      it must be updated to the key for '${PING_CLOUD_DEFAULT_DEVOPS_USER}'."
     echo
-    echo "    - The git SSH key in 'flux-git-deploy' and 'ssh-id-key-secret' also"
+    echo "    - The git SSH key in 'argo-git-deploy' and 'ssh-id-key-secret' also"
     echo "      contain fake values and must be updated."
     echo
     echo "    - Reach out to the platform team to get the right values for these secrets."
