@@ -103,7 +103,7 @@ push_with_retries() {
 }
 
 ########################################################################################################################
-# Switch back to the previous branch.
+# Switch back to the previous branch and delete the staging branch.
 ########################################################################################################################
 finalize() {
   git checkout --quiet "${CURRENT_BRANCH}"
