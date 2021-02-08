@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# If VERBOSE is true, then output line-by-line execution
+"${VERBOSE:-false}" && set -x
+
 ########################################################################################################################
 #
 # Note: This script must be executed within its git checkout tree after switching to the desired branch.
@@ -309,6 +312,11 @@ add_derived_variables() {
 #   ${2} -> The environment name.
 ########################################################################################################################
 add_irsa_variables() {
+  if test "${IRSA_PING_ANNOTATION_KEY_VALUE}"; then
+    export IRSA_PING_ANNOTATION_KEY_VALUE="${IRSA_PING_ANNOTATION_KEY_VALUE}"
+    return
+  fi
+
   local ssm_path_prefix="$1"
   local env="$2"
 
@@ -552,12 +560,13 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   export CLUSTER_STATE_REPO_BRANCH="${GIT_BRANCH##*-}"
 
   # The base URL for kustomization files and environment will be different for each CDE.
+  # On migrated customers, we must preserve the size of the customers.
   case "${ENV}" in
     dev | test)
-      export KUSTOMIZE_BASE='test'
+      export KUSTOMIZE_BASE="${KUSTOMIZE_BASE:-test}"
       ;;
     stage | prod)
-      export KUSTOMIZE_BASE="prod/${SIZE}"
+      export KUSTOMIZE_BASE="${KUSTOMIZE_BASE:-prod/${SIZE}}"
       ;;
   esac
 

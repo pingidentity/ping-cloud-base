@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 
 # If VERBOSE is true, then output line-by-line execution
 "${VERBOSE:-false}" && set -x
@@ -61,7 +61,6 @@ RESET_TO_DEFAULT="${RESET_TO_DEFAULT:-false}"
 
 beluga_owned_k8s_files="@.flux.yaml \
 @argo-application.yaml \
-@custom-patches.yaml \
 @custom-patches-sample.yaml \
 @descriptor.json \
 @env_vars \
@@ -70,6 +69,8 @@ beluga_owned_k8s_files="@.flux.yaml \
 @known-hosts-config.yaml \
 @kustomization.yaml \
 @orig-secrets.yaml \
+@secrets.yaml \
+@sealed-secrets.yaml \
 @region-promotion.txt \
 @remove-from-secondary-patch.yaml \
 @seal.sh"
@@ -169,14 +170,16 @@ log() {
 #   $1 -> The directory to push.
 ########################################################################################################################
 pushd_quiet() {
-  set -e; pushd "$1" >/dev/null 2>&1; set +e
+  # shellcheck disable=SC2164
+  pushd "$1" >/dev/null 2>&1
 }
 
 ########################################################################################################################
 # Invokes popd but suppresses stdout and stderr.
 ########################################################################################################################
 popd_quiet() {
-  set -e; popd >/dev/null 2>&1; set +e
+  # shellcheck disable=SC2164
+  popd >/dev/null 2>&1
 }
 
 ########################################################################################################################
@@ -386,6 +389,78 @@ handle_changed_profiles() {
 }
 
 ########################################################################################################################
+# Create secrets.yaml.old and sealed-secrets.yaml.old files if different between the default CDE branch and its new
+# one. This makes it easier for the operator to see the differences in secrets between the two branches.
+#
+# Arguments
+#   $1 -> The new branch for a default CDE branch.
+#   $2 -> The primary region.
+########################################################################################################################
+handle_changed_k8s_secrets() {
+  NEW_BRANCH="$1"
+  PRIMARY_REGION="$2"
+
+  DEFAULT_CDE_BRANCH="${NEW_BRANCH##*-}"
+  log "Handling changes to ${SECRETS_FILE_NAME} and ${SEALED_SECRETS_FILE_NAME} in branch '${DEFAULT_CDE_BRANCH}'"
+
+  # In v1.6:
+  #   - Secrets are present under <region>/ping-cloud/secrets.yaml and cluster-tools/secrets.yaml for each region.
+  #   - Sealed secrets are present under <region>/sealed-secrets.yaml.
+
+  # In v1.7 and later:
+  #   - Secrets and sealed secrets are both present under base/.
+
+  # First switch to the default CDE branch.
+  git checkout --quiet "${DEFAULT_CDE_BRANCH}"
+  old_secrets_dir="$(mktemp -d)"
+
+  for secrets_file_name in "${SECRETS_FILE_NAME}" "${SEALED_SECRETS_FILE_NAME}"; do # secrets loop
+    log "Handling changes to ${secrets_file_name} in branch '${DEFAULT_CDE_BRANCH}'"
+    old_secrets_file="${old_secrets_dir}/${secrets_file_name}"
+
+    # The >= v1.7 case:
+    all_secret_files="$(git ls-files "${K8S_CONFIGS_DIR}/${BASE_DIR}/${secrets_file_name}")"
+    if ! test "${all_secret_files}"; then
+      # The v1.6 case:
+      if test "${secrets_file_name}" = "${SEALED_SECRETS_FILE_NAME}"; then
+        file_path="${K8S_CONFIGS_DIR}/${PRIMARY_REGION}/${secrets_file_name}"
+      else
+        # The '*' below may be one of 'ping-cloud' or 'cluster-tools' as noted above.
+        file_path="${K8S_CONFIGS_DIR}/${PRIMARY_REGION}/*/${secrets_file_name}"
+      fi
+      all_secret_files="$(git ls-files "${file_path}")"
+    fi
+
+    log "Found '${secrets_file_name}' files: ${all_secret_files}"
+    for secret_file in ${all_secret_files}; do
+      git show "${DEFAULT_CDE_BRANCH}:${secret_file}" >> "${old_secrets_file}"
+      echo >> "${old_secrets_file}"
+    done
+  done # secrets loop
+
+  # Switch to the new CDE branch and copy over the old secrets, if they're different.
+  git checkout --quiet "${NEW_BRANCH}"
+
+  secret_files="$(find "${old_secrets_dir}" -type f)"
+  for file in ${secret_files}; do
+    file_name="$(basename "${file}")"
+    dst_file="${K8S_CONFIGS_DIR}/${BASE_DIR}/${file_name}"
+
+    if diff -qbB "${file}" "${dst_file}"; then
+      log "No difference found between ${file_name} and ${dst_file}"
+    else
+      cp "${file}" "${dst_file}.old"
+    fi
+  done
+
+  msg="Done creating ${SECRETS_FILE_NAME}.old and ${SEALED_SECRETS_FILE_NAME}.old in branch '${NEW_BRANCH}'"
+  log "${msg}"
+
+  git add .
+  git commit --allow-empty -m "${msg}"
+}
+
+########################################################################################################################
 # Copy new k8s-configs files from the default CDE branch into its new one.
 #
 # Arguments
@@ -393,10 +468,11 @@ handle_changed_profiles() {
 ########################################################################################################################
 handle_changed_k8s_configs() {
   NEW_BRANCH="$1"
+
   DEFAULT_CDE_BRANCH="${NEW_BRANCH##*-}"
+  log "Handling non Beluga-owned files in branch '${DEFAULT_CDE_BRANCH}'"
 
   log "Reconciling '${K8S_CONFIGS_DIR}' diffs between '${DEFAULT_CDE_BRANCH}' and its new branch '${NEW_BRANCH}'"
-
   git checkout --quiet "${NEW_BRANCH}"
   new_files="$(git diff --diff-filter=D --name-only "${DEFAULT_CDE_BRANCH}" HEAD -- "${K8S_CONFIGS_DIR}")"
 
@@ -405,17 +481,25 @@ handle_changed_k8s_configs() {
     return
   fi
 
-  log "Found the following new files in branch '${DEFAULT_CDE_BRANCH}':"
+  log "DEBUG: Found the following new files in branch '${DEFAULT_CDE_BRANCH}':"
   echo "${new_files}"
 
   KUSTOMIZATION_FILE="${CUSTOM_RESOURCES_REL_DIR}/kustomization.yaml"
   KUSTOMIZATION_BAK_FILE="${KUSTOMIZATION_FILE}.bak"
 
+  # Special-case the handling all files owned by PS/GSO.
   for new_file in ${new_files}; do
     # Ignore Beluga-owned files.
     new_file_basename="$(basename "${new_file}")"
     if echo "${beluga_owned_k8s_files}" | grep -q "@${new_file_basename}"; then
       log "Ignoring file ${DEFAULT_CDE_BRANCH}:${new_file} since it is a Beluga-owned file"
+      continue
+    fi
+
+    # Copy the custom-patches.yaml file (owned by PS/GSO) as is.
+    if test "${new_file_basename}" = "${CUSTOM_PATCHES_FILE_NAME}"; then
+      log "Copying file ${DEFAULT_CDE_BRANCH}:${new_file} to the same location on ${NEW_BRANCH}"
+      git show "${DEFAULT_CDE_BRANCH}:${new_file}" > "${new_file}"
       continue
     fi
 
@@ -427,26 +511,12 @@ handle_changed_k8s_configs() {
       continue
     fi
 
-    # Copy non-YAML files files to the same location on the new branch, e.g. sealingkey.pem
+    # Copy non-YAML files (owned by PS/GSO) to the same location on the new branch, e.g. sealingkey.pem
     new_file_ext="${new_file_basename##*.}"
     if test "${new_file_ext}" != 'yaml'; then
       log "Copying non-YAML file ${DEFAULT_CDE_BRANCH}:${new_file} to the same location on ${NEW_BRANCH}"
       mkdir -p "${new_file_dirname}"
       git show "${DEFAULT_CDE_BRANCH}:${new_file}" > "${new_file}"
-      continue
-    fi
-
-    # Handle the secrets.yaml and sealed-secrets.yaml files in a special manner, if they're different.
-    # Copy them from the default CDE under a different name that has the a '.old' suffix.
-    if test "${new_file_basename}" = "${SECRETS_FILE_NAME}" ||
-       test  "${new_file_basename}" = "${SEALED_SECRETS_FILE_NAME}"; then
-
-      old_secret_file="${K8S_CONFIGS_DIR}/${BASE_DIR}/${new_file_basename}.old"
-      log "Appending ${DEFAULT_CDE_BRANCH}:${new_file} to ${old_secret_file}"
-
-      git show "${DEFAULT_CDE_BRANCH}:${new_file}" >> "${old_secret_file}"
-      echo >> "${old_secret_file}"
-
       continue
     fi
 
@@ -656,7 +726,7 @@ trap 'finalize' EXIT
 SCRIPT_NAME="$(basename "$0")"
 
 # Check required binaries.
-check_binaries 'kubectl' 'git' 'base64' 'jq' || exit 1
+check_binaries 'kubectl' 'git' 'base64' 'jq' 'envsubst' || exit 1
 
 # Verify that required environment variable NEW_VERSION is set.
 if test -z "${NEW_VERSION}"; then
@@ -679,7 +749,6 @@ fi
 # However, there is a bug in the wrapper script (shipped code) that prevents it from working correctly. The wrapper has
 # been fixed in v1.8. This check should be fixed in v1.9.
 
-git update-index --refresh
 if ! git diff-index --quiet HEAD --; then
   echo
   echo 'There are local changes, which must be resolved before running this script:'
@@ -818,6 +887,11 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
       # Generate code now that we have set all the required environment variables
       log "Generating code for region '${REGION_DIR}' and branch '${NEW_BRANCH}' into '${TARGET_DIR}'"
       (
+        # If resetting to default, then use defaults for these variables instead of migrating them.
+        if test "${RESET_TO_DEFAULT}"; then
+          unset KUSTOMIZE_BASE LETS_ENCRYPT_SERVER
+        fi
+
         export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY}"
         set -x
         QUIET=true \
@@ -843,13 +917,6 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
       if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
         IS_PRIMARY=true
         echo "${REGION_DIR}" > "${PRIMARY_REGION_DIR_FILE}"
-      fi
-
-      # Do not create env_vars.old files if resetting to the OOTB cluster state.
-      if "${RESET_TO_DEFAULT}"; then
-        log "Not creating env_vars.old because migration was explicitly skipped"
-        # shellcheck disable=SC2106
-        continue
       fi
 
       # For every env_vars file in the new version, populate the old values into an env_vars.old file.
@@ -880,7 +947,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
         envsubst "${ENV_VARS_TO_SUBST}" < "${ENV_VARS_TEMPLATE}" > "${OLD_ENV_VARS_FILE}"
 
         # If there are no differences between env_vars and env_vars.old, delete the old one.
-        if diff -q "${ENV_VARS_FILE}" "${OLD_ENV_VARS_FILE}"; then
+        if diff -qbB "${ENV_VARS_FILE}" "${OLD_ENV_VARS_FILE}"; then
           log "No difference found between ${ENV_VARS_FILE} and ${OLD_ENV_VARS_FILE} - removing the old one"
           rm -f "${OLD_ENV_VARS_FILE}"
         fi
@@ -937,6 +1004,9 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
     log "Done creating branch '${NEW_BRANCH}' for ${TYPE} region '${REGION_DIR}' and CDE '${ENV}'"
 
   done # REGION loop for push
+
+  # Create .old files for secrets.yaml and sealed-secrets.yaml files so it's easy to see the differences in a pinch.
+  handle_changed_k8s_secrets "${NEW_BRANCH}" "${PRIMARY_REGION_DIR}"
 
   # If requested, copy profiles files that were deleted or renamed from the default CDE branch into its new branch.
   if "${RESET_TO_DEFAULT}"; then
