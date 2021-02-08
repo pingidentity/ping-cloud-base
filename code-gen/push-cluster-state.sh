@@ -1,4 +1,7 @@
-#!/bin/bash -e
+#!/bin/bash
+
+# If VERBOSE is true, then output line-by-line execution
+"${VERBOSE:-false}" && set -x
 
 # WARNING: This script must only be used to seed the initial cluster state. It is destructive and will replace the
 # contents of the remote branches corresponding to the different Customer Deployment Environments with new state.
@@ -102,6 +105,14 @@ push_with_retries() {
   return 1
 }
 
+########################################################################################################################
+# Switch back to the previous branch and delete the staging branch.
+########################################################################################################################
+finalize() {
+  git checkout --quiet "${CURRENT_BRANCH}"
+  git branch -D "${STAGING_BRANCH}"
+}
+
 ### Script start ###
 
 # Quiet mode where pretty console-formatting is omitted.
@@ -124,19 +135,26 @@ if test -n "$(git status -s)"; then
   git status
 fi
 
+# Set the git merge strategy to avoid noisy hints in the output.
+git config pull.rebase false
+
 # Get rid of staged/un-staged modifications and untracked files/directories on current branch.
 # Otherwise, you cannot switch to another branch.
 git reset --hard HEAD
 git clean -fd
 
-# Get a list of the remote branches from the server.
-set +e
-REMOTE_BRANCHES="$(git ls-remote --quiet --heads 2> /dev/null)"
-FETCH_EXIT_CODE=$?
-set -e
+# Create a staging branch from which to create new branches.
+STAGING_BRANCH="staging-branch-$(date +%s)"
+echo "Creating staging branch '${STAGING_BRANCH}'"
+git checkout -b "${STAGING_BRANCH}"
 
-if test ${FETCH_EXIT_CODE} -ne 0; then
-  echo "WARN: Unable to retrieve remote branches from the server. Exit code: ${FETCH_EXIT_CODE}"
+# Get a list of the remote branches from the server.
+git pull &> /dev/null
+REMOTE_BRANCHES="$(git ls-remote --quiet --heads 2> /dev/null)"
+LS_REMOTE_EXIT_CODE=$?
+
+if test ${LS_REMOTE_EXIT_CODE} -ne 0; then
+  echo "WARN: Unable to retrieve remote branches from the server. Exit code: ${LS_REMOTE_EXIT_CODE}"
 fi
 
 # The ENVIRONMENTS variable can either be the CDE names (e.g. dev, test, stage, prod) or the branch names (e.g.
@@ -181,8 +199,9 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
       echo "Switching to branch ${DEFAULT_CDE_BRANCH} before creating ${GIT_BRANCH}"
       git checkout --quiet "${DEFAULT_CDE_BRANCH}"
     else
-      echo "WARN: Default CDE branch ${DEFAULT_CDE_BRANCH} does not exist for branch ${GIT_BRANCH}"
-      echo "WARN: Creating it from revision: $(git rev-parse --abbrev-ref HEAD)"
+      echo "Default CDE branch ${DEFAULT_CDE_BRANCH} does not exist for branch ${GIT_BRANCH}"
+      echo "Creating it from branch: ${STAGING_BRANCH}"
+      git checkout --quiet "${STAGING_BRANCH}"
     fi
 
     git checkout -b "${GIT_BRANCH}"
@@ -191,9 +210,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   # Check if the branch exists on remote. If so, pull the latest code from remote.
   if echo "${REMOTE_BRANCHES}" | grep -q "${GIT_BRANCH}" 2> /dev/null; then
     echo "Branch ${GIT_BRANCH} exists on server. Checking out latest code from server."
-    set +e
-    git pull origin "${GIT_BRANCH}" -X theirs
-    set -e
+    git pull --no-edit origin "${GIT_BRANCH}" -X theirs
   elif test "${REMOTE_BRANCHES}"; then
     echo "Branch ${GIT_BRANCH} does not exist on server."
   fi
@@ -250,3 +267,6 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     echo
   fi
 done
+
+# Run any required finalization
+finalize
