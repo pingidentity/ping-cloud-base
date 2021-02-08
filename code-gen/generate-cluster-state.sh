@@ -312,6 +312,11 @@ add_derived_variables() {
 #   ${2} -> The environment name.
 ########################################################################################################################
 add_irsa_variables() {
+  if test "${IRSA_PING_ANNOTATION_KEY_VALUE}"; then
+    export IRSA_PING_ANNOTATION_KEY_VALUE="${IRSA_PING_ANNOTATION_KEY_VALUE}"
+    return
+  fi
+
   local ssm_path_prefix="$1"
   local env="$2"
 
