@@ -7,6 +7,7 @@
 ${VERBOSE} && set -x
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
-beluga_log "Cleaning up old work directories"
-rm -rf "${SERVER_ROOT_DIR}/work/*"
+wd=$(pwd)
+beluga_log "Cleaning up stale work directories in ${SERVER_ROOT_DIR}/work"
+cd ${SERVER_ROOT_DIR}/work && rm -rfv * && cd ${wd}
 exit 0
