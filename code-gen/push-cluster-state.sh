@@ -216,7 +216,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   if echo "${REMOTE_BRANCHES}" | grep -q "${GIT_BRANCH}" 2> /dev/null; then
     echo "Branch ${GIT_BRANCH} exists on server. Checking out latest code from server."
     set +e
-    git pull origin "${GIT_BRANCH}" -X theirs
+    git pull --no-edit origin "${GIT_BRANCH}" -X theirs
     set -e
   elif test "${REMOTE_BRANCHES}"; then
     echo "Branch ${GIT_BRANCH} does not exist on server."
