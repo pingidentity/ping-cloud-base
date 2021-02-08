@@ -1,4 +1,7 @@
-#!/bin/bash -e
+#!/bin/bash
+
+# If VERBOSE is true, then output line-by-line execution
+"${VERBOSE:-false}" && set -x
 
 # WARNING: This script must only be used to seed the initial cluster state. It is destructive and will replace the
 # contents of the remote branches corresponding to the different Customer Deployment Environments with new state.
@@ -132,9 +135,6 @@ if test -n "$(git status -s)"; then
   git status
 fi
 
-# Trap all exit codes to run any finalization.
-trap 'finalize' EXIT
-
 # Set the git merge strategy to avoid noisy hints in the output.
 git config pull.rebase false
 
@@ -144,22 +144,17 @@ git reset --hard HEAD
 git clean -fd
 
 # Create a staging branch from which to create new branches.
-STAGING_BRANCH='staging-branch'
-if git rev-parse --verify "${STAGING_BRANCH}" &> /dev/null; then
-  echo "Staging branch '${STAGING_BRANCH}' exists - deleting it"
-  git branch -D "${STAGING_BRANCH}"
-fi
+STAGING_BRANCH="staging-branch-$(date +%s)"
 echo "Creating staging branch '${STAGING_BRANCH}'"
 git checkout -b "${STAGING_BRANCH}"
 
 # Get a list of the remote branches from the server.
-set +e
+git pull &> /dev/null
 REMOTE_BRANCHES="$(git ls-remote --quiet --heads 2> /dev/null)"
-FETCH_EXIT_CODE=$?
-set -e
+LS_REMOTE_EXIT_CODE=$?
 
-if test ${FETCH_EXIT_CODE} -ne 0; then
-  echo "WARN: Unable to retrieve remote branches from the server. Exit code: ${FETCH_EXIT_CODE}"
+if test ${LS_REMOTE_EXIT_CODE} -ne 0; then
+  echo "WARN: Unable to retrieve remote branches from the server. Exit code: ${LS_REMOTE_EXIT_CODE}"
 fi
 
 # The ENVIRONMENTS variable can either be the CDE names (e.g. dev, test, stage, prod) or the branch names (e.g.
@@ -215,9 +210,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   # Check if the branch exists on remote. If so, pull the latest code from remote.
   if echo "${REMOTE_BRANCHES}" | grep -q "${GIT_BRANCH}" 2> /dev/null; then
     echo "Branch ${GIT_BRANCH} exists on server. Checking out latest code from server."
-    set +e
     git pull --no-edit origin "${GIT_BRANCH}" -X theirs
-    set -e
   elif test "${REMOTE_BRANCHES}"; then
     echo "Branch ${GIT_BRANCH} does not exist on server."
   fi
@@ -274,3 +267,6 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     echo
   fi
 done
+
+# Run any required finalization
+finalize
