@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# If VERBOSE is true, then output line-by-line execution
+"${VERBOSE:-false}" && set -x
+
 ########################################################################################################################
 #
 # Note: This script must be executed within its git checkout tree after switching to the desired branch.
