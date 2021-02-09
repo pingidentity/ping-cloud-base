@@ -213,6 +213,12 @@ data:
     connect = localhost:${LDAP_PORT}
     delay = yes
     sslVersion = ${TLS_TUNNEL_VERSIONS}
+
+    [https]
+    accept = 5679
+    connect = localhost:${HTTP_PORT}
+    delay = yes
+    sslVersion = ${TLS_TUNNEL_VERSIONS}
     EOF
 
     if test "${TLS_TUNNEL_CIPHER_LIST}" != 'null'; then

@@ -24,6 +24,7 @@
     --instanceName "${LOCAL_INSTANCE_NAME}" \
     --ldapPort ${LDAP_PORT} \
     --ldapsPort ${LDAPS_PORT} \
+    --httpPort ${HTTP_PORT} \
     --httpsPort ${HTTPS_PORT} \
     --enableStartTLS \
     --maxHeapSize "${MAX_HEAP_SIZE}" --jvmTuningParameter AGGRESSIVE \

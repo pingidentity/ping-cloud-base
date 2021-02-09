@@ -27,6 +27,8 @@ spec:
           ports:
             - containerPort: 5678
               name: stunnel
+            - containerPort: 5679
+              name: stunnel-https
           resources:
             requests:
               memory: "32Mi"

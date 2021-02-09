@@ -59,7 +59,7 @@ metadata:
 spec:
   ports:
   - port: 1443
-    name: https
-    targetPort: https
+    name: stunnel-https
+    targetPort: stunnel-https
   selector:
     class: pingdirectory-server
