@@ -689,7 +689,7 @@ print_readme() {
   echo "  backup branches:"
   echo
   echo "      git checkout <default-cde-branch>"
-  echo "      git branch -m <default-cde-branch>-backup"
+  echo "      git branch -m <old-version>-<default-cde-branch>"
   echo
   echo "- Rename the new CDE branches to their corresponding default branch name:"
   echo
