@@ -934,6 +934,8 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
       add_derived_variables
 
       for ENV_VARS_FILE in ${ENV_VARS_FILES}; do # Loop for env_vars.old
+        OLD_ENV_VARS_FILE="${ENV_VARS_FILE}".old
+
         DIR_NAME="$(dirname "${ENV_VARS_FILE}")"
         DIR_NAME="${DIR_NAME##*/}"
 
@@ -946,11 +948,20 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
         elif test "${DIR_NAME}" = "${REGION_DIR}"; then
           ENV_VARS_TEMPLATE="${NEW_PING_CLOUD_BASE_REPO}/${TEMPLATES_REGION_DIR}/${ENV_VARS_FILE_NAME}"
         else
-          # Ignore the env_vars under ping app-specific directories.
+          # Copy the env_vars under ping app-specific directories as is to an env_vars.old in the generated code
+          # directory.
+          app_env_vars_file="$(git ls-files "*/${DIR_NAME}/env_vars" | grep "${REGION_DIR}" | head -1)"
+
+          if test "${app_env_vars_file}"; then
+            log "Copying ${app_env_vars_file} from ${DEFAULT_CDE_BRANCH} to ${OLD_ENV_VARS_FILE}"
+            git show "${DEFAULT_CDE_BRANCH}:${app_env_vars_file}" > "${OLD_ENV_VARS_FILE}"
+          else
+            log "Not an app-specific env_vars file: ${ENV_VARS_FILE}"
+          fi
+
           continue
         fi
 
-        OLD_ENV_VARS_FILE="${ENV_VARS_FILE}".old
         log "Creating '${OLD_ENV_VARS_FILE}' for region '${REGION_DIR}' and branch '${NEW_BRANCH}'"
         envsubst "${ENV_VARS_TO_SUBST}" < "${ENV_VARS_TEMPLATE}" > "${OLD_ENV_VARS_FILE}"
 
