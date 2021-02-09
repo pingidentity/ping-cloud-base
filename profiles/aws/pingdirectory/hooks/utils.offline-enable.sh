@@ -37,6 +37,8 @@ function verifyParams() {
     admin_pass_file"
 
   for param in ${params}; do
+#     echo "param: ${param}"
+#     echo "config_json: ${config_json}"
     local value=$(jq -r ".${param}" "${config_json}")
     if [ -z "${value}" ] || [ "${value}" = 'null' ]; then
       beluga_error "Parameter '${param}' is missing from configuration file '${config_json}'"

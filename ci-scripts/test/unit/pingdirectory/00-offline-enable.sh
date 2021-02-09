@@ -3,42 +3,37 @@
 # Source the script we're testing
 script_to_test="${HOOKS_DIR}"/utils.offline-enable.sh
 
-# Mock functions that are used in utils.offline-enable.sh.
+# Suppress env vars noise in the test output
+. "${script_to_test}" > /dev/null
+
+SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
+templates_dir_path="${SCRIPT_HOME}"/templates/offline-enable
+
+# # Mock functions that are used in utils.offline-enable.sh.
 is_multi_cluster() {
   # This is treated as a boolean within util.lib.sh we are defaulting this to true.
   # This is needed to test that the primary and secondary region key name is provided descriptor.json.
   test 0 -eq 0
 }
+
 beluga_log() {
   return 0
 }
+
 beluga_error() {
   return 0
 }
 
 setUp() {
-  # Mock empty files for script to avoid no directory exist error.
-  export HOOKS_DIR=$(mktemp -d)
-  touch "${HOOKS_DIR}"/pingcommon.lib.sh
-  touch "${HOOKS_DIR}"/utils.lib.sh
-
   export regions_file=$(mktemp)
   export descriptor_json=$(mktemp)
   export config_json=$(mktemp)
-
-  SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
-  templates_dir_path="${SCRIPT_HOME}"/templates/offline-enable
-}
-
-oneTimeTearDown() {
-  [[ "${_shunit_name_}" = 'EXIT' ]] && return 0
-  rm ${regions_file}
 }
 
 testParamsOfflineEnableScript() {
   # Set config_json variable, which is used by utils.offline-enable.sh
   tr -d '[:space:]' < "${templates_dir_path}"/01-valid-offline-enable-config.json > "${config_json}"
-  verifyParams > /dev/null
+  verifyParams
   actual_exit_code=$?
   assertEquals "All required params injected into offline-enable expected to pass" 0 ${actual_exit_code}
 
@@ -107,12 +102,6 @@ testDescriptorJsonSchema() {
   actual_exit_code=$?
   assertEquals "Missing replica count in descriptor JSON expected to fail" 1 ${actual_exit_code}
 }
-
-# Override setup to avoid framework provided verbose logs
-setUp
-
-# Execute script
-. "${script_to_test}" > /dev/null
 
 # load shunit
 . ${SHUNIT_PATH}

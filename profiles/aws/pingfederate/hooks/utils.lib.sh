@@ -23,7 +23,7 @@ function make_api_request() {
   "${VERBOSE}" && set -x
 
   if test "${curl_result}" -ne 0; then
-    beluga_log "Admin API connection refused"
+    beluga_error "Admin API connection refused"
     return ${curl_result}
   fi
 

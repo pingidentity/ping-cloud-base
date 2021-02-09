@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # Source the script we're testing
-script_to_test="${HOOKS_DIR}"/utils.lib.sh
-. "${script_to_test}"
+. "${HOOKS_DIR}"/utils.lib.sh > /dev/null
 
 testBelugaLogging() {
 

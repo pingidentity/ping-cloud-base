@@ -8,8 +8,14 @@ test "${VERBOSE}" && set -x
 
 # Override environment variables with optional file supplied from the outside
 ENV_VARS_FILE="${1}"
+
+# Integration tests to skip.  Unit tests cannot be skipped.
 SKIP_TESTS="${SKIP_TESTS:-pingdirectory/03-backup-restore.sh \
-  chaos/01-delete-pa-admin-pod.sh}"
+  pingaccess/05-test-cloudwatch-logs.sh \
+  pingfederate/05-test-cloudwatch-logs.sh \
+  pingdirectory/05-test-cloudwatch-logs.sh \
+  pingaccess/11-heartbeat-endpoint.sh \
+  chaos/01-delete-pa-admin-pod.sh }"
 
 if test -z "${ENV_VARS_FILE}"; then
   echo "Using environment variables based on CI variables"

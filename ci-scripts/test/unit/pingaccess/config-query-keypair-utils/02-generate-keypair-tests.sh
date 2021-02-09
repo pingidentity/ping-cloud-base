@@ -1,13 +1,11 @@
 #!/bin/bash
 
 # Source support libs referenced by the tested script
-. "${HOOKS_DIR}"/utils.lib.sh
+# Suppress env vars noise in the test output
+. "${HOOKS_DIR}"/utils.lib.sh > /dev/null
+. "${HOOKS_DIR}"/util/config-query-keypair-utils.sh > /dev/null
 
-# Source the script we're testing
-script_to_test="${HOOKS_DIR}"/util/config-query-keypair-utils.sh
-. "${script_to_test}"
-
-templates_dir_path="${PROJECT_DIR}"/profiles/aws/pingaccess/templates/81
+templates_dir_path="${TEMPLATES_DIR}"/81
 
 make_api_request() {
     exit 0
