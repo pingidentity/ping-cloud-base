@@ -674,7 +674,7 @@ print_readme() {
   echo
   echo "    - Run the following command from the '${K8S_CONFIGS_DIR}' directory:"
   echo
-  echo "          ./git-ops-command.sh <REGION_DIR> > /tmp/<REGION_DIR>.yaml'"
+  echo "          ./git-ops-command.sh <REGION_DIR> > /tmp/<REGION_DIR>.yaml"
   echo
   echo "    - Verify that the generated manifest looks right for the CDE and region."
   echo
