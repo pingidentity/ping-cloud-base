@@ -39,7 +39,7 @@ function make_api_request() {
     "${VERBOSE}" && set -x
 
     if test "${curl_result}" -ne 0; then
-        beluga_log "Admin API connection refused with the curl exit code: ${curl_result}"
+        beluga_error "Admin API connection refused with the curl exit code: ${curl_result}"
         return 1
     fi
 

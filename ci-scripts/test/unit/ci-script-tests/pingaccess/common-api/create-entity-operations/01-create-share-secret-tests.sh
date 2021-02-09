@@ -1,7 +1,7 @@
 #!/bin/bash
 
-script_to_test="${PROJECT_DIR}"/ci-scripts/test/integration/pingaccess/common-api/create-entity-operations.sh
-. "${script_to_test}"
+# Suppress env vars noise in the test output
+. "${PROJECT_DIR}"/ci-scripts/test/integration/pingaccess/common-api/create-entity-operations.sh > /dev/null
 
 readonly resources_dir="${PROJECT_DIR}"/ci-scripts/test/unit/ci-script-tests/pingaccess/common-api/create-entity-operations/resources
 
