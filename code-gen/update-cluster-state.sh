@@ -612,9 +612,10 @@ print_readme() {
   echo
   echo "    - Secrets that are new in '${NEW_VERSION}' must be configured and re-sealed."
   echo
-  echo "    - Secrets that are no longer used in '${NEW_VERSION}' should be removed,"
-  echo "      but having them around will not cause any problems. The '${ORIG_SECRETS_FILE_NAME}'"
-  echo "      file contains the complete list of secrets for '${NEW_VERSION}'."
+  echo "    - Secrets that are no longer used in '${NEW_VERSION}' must be removed."
+  echo
+  echo "    - The '${ORIG_SECRETS_FILE_NAME}' file contains the complete list of secrets"
+  echo "      for '${NEW_VERSION}'."
   echo
   echo "    - Note that the seal.sh script is recommended if sealing all secrets at once"
   echo "      since it handles both secrets inherited from '${PING_CLOUD_BASE}' and"
