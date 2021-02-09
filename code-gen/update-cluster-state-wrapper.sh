@@ -69,7 +69,7 @@ if ! test "${NEW_PING_CLOUD_BASE_REPO}"; then
 
   pushd_quiet "${PCB_CLONE_BASE_DIR}"
   echo "=====> Cloning ${PING_CLOUD_BASE}@${NEW_VERSION} from ${PING_CLOUD_BASE_REPO_URL} to '${PCB_CLONE_BASE_DIR}'"
-  git clone --depth 1 --branch "${NEW_VERSION}" "${PING_CLOUD_BASE_REPO_URL}"
+  git clone -c advice.detachedHead=false --depth 1 --branch "${NEW_VERSION}" "${PING_CLOUD_BASE_REPO_URL}"
   if test $? -ne 0; then
     echo "=====> Unable to clone ${PING_CLOUD_BASE_REPO_URL}@${NEW_VERSION} from ${PING_CLOUD_BASE_REPO_URL}"
     popd_quiet
@@ -83,7 +83,7 @@ fi
 UPDATE_SCRIPT_PATH="${NEW_PING_CLOUD_BASE_REPO}/${CODE_GEN_DIR_NAME}/${UPDATE_SCRIPT_NAME}"
 
 if test -f "${UPDATE_SCRIPT_PATH}"; then
-  "${UPDATE_SCRIPT_PATH}"
+  NEW_PING_CLOUD_BASE_REPO="${NEW_PING_CLOUD_BASE_REPO}" "${UPDATE_SCRIPT_PATH}"
   exit $?
 else
   echo "=====> Upgrade script not supported to update the cluster state repo to version ${NEW_VERSION}"
