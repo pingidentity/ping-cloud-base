@@ -696,11 +696,11 @@ print_readme() {
   echo "      git checkout <new-cde-branch>"
   echo "      git branch -m <default-cde-branch>"
   echo
-  echo "- Create SRE tickets for platform upgrades for '${NEW_BRANCH}', e.g."
+  echo "- Create SRE tickets for platform upgrades for '${NEW_VERSION}', e.g."
   echo "  ASG fixes, EKS upgrades, etc."
   echo
   echo "- Run any required commands from the management node to prepare the"
-  echo "  cluster for '${NEW_BRANCH}', e.g. delete flux, elastic-stack-logging"
+  echo "  cluster for '${NEW_VERSION}', e.g. delete flux, elastic-stack-logging"
   echo "  namespaces, etc."
   echo
   echo "- Push the newly migrated CDE branches to the server."
