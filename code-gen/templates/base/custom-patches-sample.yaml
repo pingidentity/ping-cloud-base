@@ -75,13 +75,13 @@ spec:
     spec:
       containers:
       - name: pingaccess-was-admin
-          resources:
-            requests:
-              memory: "1Gi"
-              cpu: "1"
-            limits:
-              memory: "1Gi"
-              cpu: "1"
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
 
 ---
 
@@ -95,13 +95,13 @@ spec:
     spec:
       containers:
       - name: pingaccess-was
-          resources:
-            requests:
-              memory: "1Gi"
-              cpu: "1"
-            limits:
-              memory: "1Gi"
-              cpu: "1"
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
 
 ---
 
@@ -119,13 +119,13 @@ spec:
     spec:
       containers:
       - name: pingfederate-admin
-          resources:
-            requests:
-              memory: "1Gi"
-              cpu: "1"
-            limits:
-              memory: "1Gi"
-              cpu: "1"
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
 
 ---
 
@@ -139,13 +139,13 @@ spec:
     spec:
       containers:
       - name: pingfederate
-          resources:
-            requests:
-              memory: "1Gi"
-              cpu: "1"
-            limits:
-              memory: "1Gi"
-              cpu: "1"
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
 
 ---
 
@@ -179,13 +179,13 @@ spec:
     spec:
       containers:
       - name: pingaccess-admin
-          resources:
-            requests:
-              memory: "1Gi"
-              cpu: "1"
-            limits:
-              memory: "1Gi"
-              cpu: "1"
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
 
 ---
 
@@ -199,13 +199,13 @@ spec:
     spec:
       containers:
       - name: pingaccess
-          resources:
-            requests:
-              memory: "1Gi"
-              cpu: "1"
-            limits:
-              memory: "1Gi"
-              cpu: "1"
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
 
 ---
 
