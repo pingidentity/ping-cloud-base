@@ -404,17 +404,18 @@ handle_changed_k8s_secrets() {
   log "Handling changes to ${SECRETS_FILE_NAME} and ${SEALED_SECRETS_FILE_NAME} in branch '${DEFAULT_CDE_BRANCH}'"
 
   # In v1.6:
-  #   - Secrets are present under <region>/ping-cloud/secrets.yaml and cluster-tools/secrets.yaml for each region.
+  #   - Secrets and the OOTB secrets for a release are present under <region>/ping-cloud/[orig-]secrets.yaml and
+  #     <region>/cluster-tools/[orig-]secrets.yaml for each region.
   #   - Sealed secrets are present under <region>/sealed-secrets.yaml.
 
   # In v1.7 and later:
-  #   - Secrets and sealed secrets are both present under base/.
+  #   - Secrets, OOTB secrets and sealed secrets are all present under base/.
 
   # First switch to the default CDE branch.
   git checkout --quiet "${DEFAULT_CDE_BRANCH}"
   old_secrets_dir="$(mktemp -d)"
 
-  for secrets_file_name in "${SECRETS_FILE_NAME}" "${SEALED_SECRETS_FILE_NAME}"; do # secrets loop
+  for secrets_file_name in "${SECRETS_FILE_NAME}" "${ORIG_SECRETS_FILE_NAME}" "${SEALED_SECRETS_FILE_NAME}"; do
     log "Handling changes to ${secrets_file_name} in branch '${DEFAULT_CDE_BRANCH}'"
     old_secrets_file="${old_secrets_dir}/${secrets_file_name}"
 
@@ -571,10 +572,15 @@ print_readme() {
   echo "  They contain cluster state valid for '${NEW_VERSION}'."
   echo
 
-  echo "- All environment variables have been reset to the default for '${NEW_VERSION}'."
+  if "${RESET_TO_DEFAULT}"; then
+    echo "- All environment variables have been reset to the default for '${NEW_VERSION}'."
+  else
+    echo "- Environment variables have been migrated to '${NEW_VERSION}' with the exception"
+    echo "  of app JVM settings."
+  fi
   echo
   echo "    - The '${ENV_VARS_FILE_NAME}' files have been copied over from the default CDE branch"
-  echo "      with a suffix of '.old', but they are not sourced from kustomization.yaml."
+  echo "      with a suffix of '.old', but they are not sourced from any kustomization.yaml."
   echo
   echo "    - Use the '${ENV_VARS_FILE_NAME}.old' files as a reference to fix up any"
   echo "      discrepancies in the new '${ENV_VARS_FILE_NAME}'."
@@ -599,16 +605,17 @@ print_readme() {
     echo "    - Reach out to the platform team to get the right values for these secrets."
   fi
   echo
-  echo "- The '${SECRETS_FILE_NAME}' and '${SEALED_SECRETS_FILE_NAME}' files have been copied over"
-  echo "  from the default CDE branch with a suffix of '.old', but they are not sourced from"
-  echo "  kustomization.yaml. Use the '*secrets.yaml.old' files as a reference to fix up the"
-  echo "  new ones in the following manner:"
+  echo "- The '${SECRETS_FILE_NAME}', '${ORIG_SECRETS_FILE_NAME}' and '${SEALED_SECRETS_FILE_NAME}'"
+  echo "  files have been copied over from the default CDE branch with a suffix of '.old',"
+  echo "  but they are not sourced from any kustomization.yaml. Use the '*secrets.yaml.old'"
+  echo "  files as a reference to fix up the new ones in the following manner:"
   echo
   echo "    - Secrets that are new in '${NEW_VERSION}' must be configured and re-sealed."
   echo
-  echo "    - Secrets that are no longer used in '${NEW_VERSION}' should be removed,"
-  echo "      but having them around will not cause any problems. The '${ORIG_SECRETS_FILE_NAME}'"
-  echo "      file contains the complete list of secrets for '${NEW_VERSION}'."
+  echo "    - Secrets that are no longer used in '${NEW_VERSION}' must be removed."
+  echo
+  echo "    - The '${ORIG_SECRETS_FILE_NAME}' file contains the complete list of secrets"
+  echo "      for '${NEW_VERSION}'."
   echo
   echo "    - Note that the seal.sh script is recommended if sealing all secrets at once"
   echo "      since it handles both secrets inherited from '${PING_CLOUD_BASE}' and"
