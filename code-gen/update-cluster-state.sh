@@ -809,7 +809,7 @@ if ! test "${NEW_PING_CLOUD_BASE_REPO}"; then
   pushd_quiet "${NEW_PCB_REPO}"
 
   log "Cloning ${PING_CLOUD_BASE}@${NEW_VERSION} from ${PING_CLOUD_BASE_REPO_URL} to '${NEW_PCB_REPO}'"
-  git clone --depth 1 --branch "${NEW_VERSION}" "${PING_CLOUD_BASE_REPO_URL}"
+  git clone -c advice.detachedHead=false --depth 1 --branch "${NEW_VERSION}" "${PING_CLOUD_BASE_REPO_URL}"
 
   if test $? -ne 0; then
     log "Unable to clone ${PING_CLOUD_BASE_REPO_URL}@${NEW_VERSION} from ${PING_CLOUD_BASE_REPO_URL}"
@@ -888,7 +888,8 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
       log "Generating code for region '${REGION_DIR}' and branch '${NEW_BRANCH}' into '${TARGET_DIR}'"
       (
         # If resetting to default, then use defaults for these variables instead of migrating them.
-        if test "${RESET_TO_DEFAULT}"; then
+        if "${RESET_TO_DEFAULT}"; then
+          log "Resetting variables to the default or out-of-the-box values per request"
           unset KUSTOMIZE_BASE LETS_ENCRYPT_SERVER
         fi
 
