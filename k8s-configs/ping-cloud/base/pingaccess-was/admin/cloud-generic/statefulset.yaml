@@ -84,7 +84,7 @@ spec:
             memory: "512Mi"
             cpu: "20m"
           limits:
-            memory: "1280Gi"
+            memory: "1280Mi"
             cpu: "1"
         volumeMounts:
         # FIXME: fix home directory when containers run as non-root user
