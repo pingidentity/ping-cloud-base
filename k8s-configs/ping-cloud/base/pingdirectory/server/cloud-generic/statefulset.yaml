@@ -188,6 +188,8 @@ spec:
             - name: topology-descriptor
               mountPath: /opt/staging/topology/descriptor.json
               subPath: descriptor.json
+            - name: in-dir
+              mountPath: /opt/in
             - name: data-dir
               mountPath: /opt/staging/topology.json
               subPath: topology.json
