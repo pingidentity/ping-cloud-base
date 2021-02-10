@@ -94,9 +94,12 @@ spec:
         - name: profile-init
           image: public.ecr.aws/r2h3l6e4/pingcloud-profiles/pingdirectory:8.1.0.2-v1.0.0
           imagePullPolicy: IfNotPresent
-          command: |
-            cp -r /opt/stage/* /opt/in/
-            chmod a+x /opt/in/hooks/*
+          command:
+            - sh
+            - -c
+            - |
+              cp -r /opt/stage/* /opt/in/
+              chmod a+x /opt/in/hooks/*
           envFrom:
             - configMapRef:
                 name: pingdirectory-environment-variables
