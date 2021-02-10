@@ -72,9 +72,14 @@ configMapGenerator:
   - env_vars
   - pingaccess-was/env_vars
 
-
-# Pingcloud-metadata
+# PingCloud-metadata
 - name: pingcloud-metadata-environment-variables
+  behavior: merge
+  envs:
+  - ../base/env_vars
+
+# PingCloud-oauth
+- name: pingcloud-oauth-environment-variables
   behavior: merge
   envs:
   - ../base/env_vars

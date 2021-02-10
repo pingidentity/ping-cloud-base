@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pingentitlement
+  labels:
+    app: ping-cloud
+spec:
+  serviceAccount: ping-serviceaccount
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: pingcloud-oauth
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-tools/entitlement:v1.0.0-pdo-1776-entitlement-image
+      command:
+      - python3
+      - src/OAuthClientServicesController.py
+      envFrom:
+      - configMapRef:
+          name: pingcloud-oauth-environment-variables
+      env:
+      - name: NAMESPACE
+        valueFrom:
+          fieldRef:
+            fieldPath: metadata.namespace
+      - name: ENVIRONMENT_ID
+        valueFrom:
+          secretKeyRef:
+            name: p14c-bootstrap-secrets
+            key: P14C_ENVIRONMENT_ID
+      - name: TOKEN_ENDPOINT
+        valueFrom:
+          secretKeyRef:
+            name: p14c-bootstrap-secrets
+            key: P14C_TOKEN_ENDPOINT
+      - name: CLIENT_ID
+        valueFrom:
+          secretKeyRef:
+            name: p14c-bootstrap-secrets
+            key: P14C_CLIENT_ID
+      - name: CLIENT_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: p14c-bootstrap-secrets
+            key: P14C_CLIENT_SECRET

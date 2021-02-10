@@ -10,16 +10,8 @@ generatorOptions:
   disableNameSuffixHash: true
 
 configMapGenerator:
-- name: pingcommon-init
-  files:
-  - scripts/copy-dependencies.sh
-  - scripts/wait-for-services.sh
-  - scripts/utils.lib.sh
+- name: pingcloud-oauth-environment-variables
 
 resources:
-- namespace.yaml
-- rbac.yaml
 - secret.yaml
-- configmap.yaml
-- pingcloud-metadata
-- pingcloud-oauth-service
+- deployment.yaml

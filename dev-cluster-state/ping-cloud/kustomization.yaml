@@ -33,8 +33,14 @@ configMapGenerator:
   - env_vars
   - pingdirectory/env_vars
 
-# Pingcloud-metadata
+# PingCloud-metadata
 - name: pingcloud-metadata-environment-variables
+  behavior: merge
+  envs:
+  - env_vars
+
+# PingCloud-oauth
+- name: pingcloud-oauth-environment-variables
   behavior: merge
   envs:
   - env_vars
