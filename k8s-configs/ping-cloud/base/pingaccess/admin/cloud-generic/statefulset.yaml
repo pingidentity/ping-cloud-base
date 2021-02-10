@@ -27,21 +27,21 @@ spec:
     spec:
       serviceAccount: ping-serviceaccount
       initContainers:
-        - name: profile-init
-          image: public.ecr.aws/r2h3l6e4/pingcloud-profiles/pingdirectory:8.1.0.2-v1.0.0
-          imagePullPolicy: IfNotPresent
-          command:
-            - sh
-            - -c
-            - |
-              cp -r /opt/stage/* /opt/in/
-              chmod a+x /opt/in/hooks/*
-          envFrom:
-            - configMapRef:
-                name: pingaccess-environment-variables
-          volumeMounts:
-            - name: in-dir
-              mountPath: /opt/in
+      - name: profile-init
+        image: public.ecr.aws/r2h3l6e4/pingcloud-profiles/pingdirectory:8.1.0.2-v1.0.0
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+          - |
+            cp -r /opt/stage/* /opt/in/
+            chmod a+x /opt/in/hooks/*
+        envFrom:
+          - configMapRef:
+              name: pingaccess-environment-variables
+        volumeMounts:
+          - name: in-dir
+            mountPath: /opt/in
       - name: pingaccess-init
         # FIXME: switch to same user as app
         securityContext:
