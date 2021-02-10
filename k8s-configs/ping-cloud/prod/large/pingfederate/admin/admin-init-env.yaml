@@ -11,4 +11,4 @@ spec:
         # PF admin must wait for PD to be ready
         # A space-separated list of deployments or statefulsets that this app should wait for
         - name: WAIT_FOR_SERVICES
-          value: pingdirectory
+          value: "pingdirectory pingaccess-was-admin"

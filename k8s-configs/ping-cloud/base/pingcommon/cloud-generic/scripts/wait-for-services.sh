@@ -12,6 +12,17 @@ if test -z "${WAIT_FOR_SERVICES}"; then
 else
   beluga_log "Checking dependent service(s): ${WAIT_FOR_SERVICES}"
 
+
+# Another input: WAITING_APP
+#  if WAITING_APP=pingfederate-admin; then
+#    if AUTHENTICATION_MODE=LDAP; then
+#      wait for PD
+#    else
+#      wait for PA-WAS
+#    fi
+#  fi
+
+
   for APP in ${WAIT_FOR_SERVICES}; do
     if is_secondary_cluster; then
       case "${APP}" in
