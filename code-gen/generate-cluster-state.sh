@@ -530,7 +530,10 @@ cp ../.gitignore "${CLUSTER_STATE_DIR}"
 cp ../k8s-configs/cluster-tools/base/git-ops/git-ops-command.sh "${K8S_CONFIGS_DIR}"
 find "${TEMPLATES_HOME}" -type f -maxdepth 1 | xargs -I {} cp {} "${K8S_CONFIGS_DIR}"
 
-cp -pr ../profiles/aws/. "${CLUSTER_STATE_DIR}"/profiles
+# Profiles are no longer pushed to the cluster state repo by default.
+# This README outlines where they moved to.
+cp -pr ../profiles/README.md "${CLUSTER_STATE_DIR}"/profiles
+
 echo "${PING_CLOUD_BASE_COMMIT_SHA}" > "${TARGET_DIR}/pcb-commit-sha.txt"
 
 # Now generate the yaml files for each environment
