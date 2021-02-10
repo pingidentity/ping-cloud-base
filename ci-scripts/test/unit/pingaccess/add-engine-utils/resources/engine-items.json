@@ -1,0 +1,29 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "name": "pingaccess-was-0",
+      "description": null,
+      "configReplicationEnabled": true,
+      "keys": [
+        {
+          "jwk": {
+            "kty": "EC",
+            "kid": "f1ae8f34-29ec-4a86-a3db-99f3fa0ae558",
+            "x": "x2z7EVbHSv6Khh1fur6FMrYyRGFjynuGJqoWYoDTDjE",
+            "y": "6nL0TamZw3XaCN7xQCkQ23V_GLOkPB5ao_ZoC8Dmqzg",
+            "crv": "P-256"
+          },
+          "created": 1612989551354
+        }
+      ],
+      "httpProxyId": 0,
+      "httpsProxyId": 0,
+      "selectedCertificateId": 5,
+      "certificateHash": {
+        "algorithm": "SHA1",
+        "hexValue": "48cad90a350e060a5e649ed09b99ce31b07d9678"
+      }
+    }
+  ]
+}
