@@ -91,6 +91,18 @@ spec:
             - name: pingdirectory-init
               mountPath: /utils.lib.sh
               subPath: utils.lib.sh
+        - name: profile-init
+          image: public.ecr.aws/r2h3l6e4/pingcloud-profiles/pingdirectory:8.1.0.2-v1.0.0
+          imagePullPolicy: IfNotPresent
+          command: |
+            cp -r /opt/stage/* /opt/in/
+            chmod a+x /opt/in/hooks/*
+          envFrom:
+            - configMapRef:
+                name: pingdirectory-environment-variables
+          volumeMounts:
+            - name: in-dir
+              mountPath: /opt/in
         - name: wait-for-services
           # FIXME: switch to same user as app
           securityContext:
@@ -243,6 +255,8 @@ spec:
         - name: ssh-dir
           emptyDir: {}
         - name: data-dir
+          emptyDir: {}
+        - name: in-dir
           emptyDir: {}
         - name: pingdirectory-init
           configMap:
