@@ -164,7 +164,7 @@ test -f ~/.pingidentity/devops && . ~/.pingidentity/devops
 . utils.sh
 
 declare dryrun='false'
-declare skipTest='false'
+declare skipTest='true'
 
 LOG_FILE=/tmp/dev-env.log
 rm -f "${LOG_FILE}"
