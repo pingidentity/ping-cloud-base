@@ -173,7 +173,7 @@ spec:
       - name: data-dir
         emptyDir: {}
       - name: in-dir
-        emptyDir {}
+        emptyDir: {}
       - name: pingaccess-init
         configMap:
           name: pingcommon-init
