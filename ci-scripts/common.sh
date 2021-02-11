@@ -11,10 +11,15 @@ ENV_VARS_FILE="${1}"
 
 # Integration tests to skip.  Unit tests cannot be skipped.
 SKIP_TESTS="${SKIP_TESTS:-pingdirectory/03-backup-restore.sh \
+  pingfederate/02-csd-upload-test.sh \
+  pingaccess-was/09-csd-upload-test.sh \
+  pingaccess/09-csd-upload-test.sh
   pingaccess/05-test-cloudwatch-logs.sh \
   pingfederate/05-test-cloudwatch-logs.sh \
   pingdirectory/05-test-cloudwatch-logs.sh \
   pingaccess/11-heartbeat-endpoint.sh \
+  pingfederate/09-heartbeat-endpoint.sh \
+  pingaccess/08-artifact-test.sh \
   chaos/01-delete-pa-admin-pod.sh }"
 
 if test -z "${ENV_VARS_FILE}"; then
