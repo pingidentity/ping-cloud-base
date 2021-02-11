@@ -78,7 +78,7 @@ if test $(format_version "${IMAGE_VERSION}") -gt $(format_version "${INSTALLED_V
 
   beluga_log "Upgrading from ${INSTALLED_VERSION} -> ${IMAGE_VERSION}"
   beluga_log "Running upgrade.sh from ${NEW_SERVER_ROOT_DIR} against source server at ${OLD_SERVER_ROOT_DIR}"
-  sh "${NEW_SERVER_ROOT_DIR}/upgrade/bin/upgrade.sh" "${OLD_SERVER_ROOT_DIR}"
+  sh "${NEW_SERVER_ROOT_DIR}/upgrade/bin/upgrade.sh" "${OLD_SERVER_ROOT_DIR}" --release-notes-reviewed
 
   UPGRADE_STATUS=${?}
   beluga_log "Upgrade from ${INSTALLED_VERSION} -> ${IMAGE_VERSION}: ${UPGRADE_STATUS}"
