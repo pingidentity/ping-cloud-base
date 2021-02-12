@@ -19,7 +19,7 @@ data:
     scrape_configs:
     # Monitor prometheus itself
     - job_name: 'prometheus'
-      scrape_interval: 5s
+      scrape_interval: 10s
       static_configs:
       - targets: ['localhost:9090']
     # Monitor kube-state-metrics
@@ -44,6 +44,7 @@ data:
 
     # Discover and monitor PF instances
     - job_name: 'pf-jmx-exporter'
+      scrape_interval: 10s
       kubernetes_sd_configs:
       - role: endpoints
       relabel_configs:
@@ -59,6 +60,7 @@ data:
 
     # Discover and monitor PF instances
     - job_name: 'pf-heartbeat-exporter'
+      scrape_interval: 10s
       metrics_path: /
       kubernetes_sd_configs:
       - role: endpoints
@@ -75,6 +77,7 @@ data:
 
     # Discover and monitor PA instances
     - job_name: 'pa-jmx-exporter'
+      scrape_interval: 10s
       kubernetes_sd_configs:
       - role: endpoints
       relabel_configs:
@@ -90,6 +93,7 @@ data:
 
     # Discover and monitor PA instances
     - job_name: 'pa-heartbeat-exporter'
+      scrape_interval: 10s
       metrics_path: /
       kubernetes_sd_configs:
       - role: endpoints
