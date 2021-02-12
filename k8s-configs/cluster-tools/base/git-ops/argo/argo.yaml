@@ -4,6 +4,8 @@
 # The following modifications have been made to it:
 #   - Added an "argocd" Namespace for all namespace-scoped resources
 #   - Changed the default git poll interval to 1 minute using the --app-resync to the argocd-application-controller
+#   - Changed the default self-heal interval to 1 minute by adding the --self-heal-timeout-seconds arg to the
+#     argocd-application-controller
 #   - Added an "argo-git-deploy" Secret to hold the SSH key for git cloning
 #   - Set the ArgoCD UI password to "admin"
 #   - Added git-ops-command.sh as the config management tool to build the uber Kubernetes YAML
@@ -2258,6 +2260,13 @@ data:
     - name: git-ops-command
       generate:
         command: [ "git-ops-command.sh" ]
+  resource.compareoptions: |
+    # Even though it's the default, adding it here for easier kustomization
+    # disables status field diffing in specified resource types
+    # 'crd' - CustomResourceDefinition-s (default)
+    # 'all' - all resources
+    # 'none' - disabled
+    ignoreResourceStatusField: crd
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -2764,6 +2773,8 @@ spec:
         - --operation-processors
         - "10"
         - --app-resync
+        - "$(APP_RESYNC_SECONDS)"
+        - --self-heal-timeout-seconds
         - "$(APP_RESYNC_SECONDS)"
         env:
         - name: APP_RESYNC_SECONDS
