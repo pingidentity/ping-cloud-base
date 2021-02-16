@@ -2,7 +2,10 @@
 
 set_script_variables() {
   # This is the backup directory on the server
-  SERVER_RESTORE_DIR=$(mktemp -d)
+  SERVER_RESTORE_DIR="${OUT_DIR}/restore"
+  rm -rf "${SERVER_RESTORE_DIR}"
+  mkdir -p "${SERVER_RESTORE_DIR}"
+
   MASTER_KEY_FILE=pf.jwk
   MASTER_KEY_PATH="${SERVER_ROOT_DIR}/server/default/data/${MASTER_KEY_FILE}"
   DEPLOYER_PATH="${SERVER_ROOT_DIR}/server/default/data/drop-in-deployer"
