@@ -6,8 +6,15 @@ data:
   get_ssm_env_vars.sh: |-
     #!/bin/sh
 
+    VERBOSE="${VERBOSE:-false}"
+
     # Configuration file to share environment variables with main container.
     CONFIG_FILE='/config/ds_env_vars'
+
+    # Enable debug flag for aws cli if VERBOSE is true
+    if "${VERBOSE}"; then
+      AWS_DEBUG='--debug'
+    fi
 
     # Verify that the mandatory variable is set.
     if test -z "${REGION}"; then
@@ -20,7 +27,7 @@ data:
 
     # Query aws endpoint to get value associated with the key.
     get_ssm_val() {
-      if ! ssm_val="$(aws ssm --region "${REGION}"  get-parameters \
+      if ! ssm_val="$(aws ${AWS_DEBUG} ssm --region "${REGION}"  get-parameters \
                 --names "$1" \
                 --query 'Parameters[*].Value' \
                 --output text)"; then
