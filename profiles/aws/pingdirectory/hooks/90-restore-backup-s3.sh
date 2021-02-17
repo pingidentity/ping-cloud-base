@@ -6,7 +6,7 @@
 initializeSkbnConfiguration
 
 # This is the backup directory on the server
-SERVER_RESTORE_DIR="/tmp/restore"
+SERVER_RESTORE_DIR="${OUT_DIR}/restore"
 
 LDAPS_PORT=1636
 ROOT_USER_DN=cn=administrator
