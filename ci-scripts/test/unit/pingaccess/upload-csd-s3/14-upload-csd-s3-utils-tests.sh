@@ -1,12 +1,9 @@
 #!/bin/bash
 
-# Source support libs referenced by the tested script
-. "${HOOKS_DIR}"/utils.lib.sh
-
 # Source the script we're testing
-script_to_test="${HOOKS_DIR}"/util/upload-csd-s3-utils.sh
-. "${script_to_test}"
-
+# Suppress env vars noise in the test output
+. "${HOOKS_DIR}"/utils.lib.sh > /dev/null
+. "${HOOKS_DIR}"/util/upload-csd-s3-utils.sh > /dev/null
 
 testTransformPingAccessRuntimeFilename() {
   expected="202101252015-pingaccess-1-support-data.zip"

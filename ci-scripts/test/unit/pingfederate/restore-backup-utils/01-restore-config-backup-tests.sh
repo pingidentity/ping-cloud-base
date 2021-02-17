@@ -1,7 +1,9 @@
 #!/bin/bash
 
-. "${HOOKS_DIR}"/utils.lib.sh
-. "${HOOKS_DIR}"/util/restore-backup-utils.sh
+# Source the script we're testing
+# Suppress env vars noise in the test output
+. "${HOOKS_DIR}"/utils.lib.sh > /dev/null
+. "${HOOKS_DIR}"/util/restore-backup-utils.sh > /dev/null
 
 mktemp() {
   return 0

@@ -392,7 +392,7 @@ EOF
 
       unit_test_failures=$((${unit_test_failures} + ${test_result}))
 
-      # Immediately exit if there's a test failure
+      # Exit immediately if there's a test failure
       if test ${unit_test_failures} -gt 0; then
         break
       fi
@@ -433,11 +433,10 @@ EOF
 
       integration_test_failures=$((${integration_test_failures} + ${test_result}))
 
-      # Immediately exit if there's a test failure
-      # PDO-1803 - Uncomment this
-#       if test ${integration_test_failures} -gt 0; then
-#         break
-#       fi
+      # Exit immediately if there's a test failure
+      if test ${integration_test_failures} -gt 0; then
+        break
+      fi
     done
     log
 

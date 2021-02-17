@@ -1,6 +1,20 @@
+########################################################################################################################
+# This file provides sample patches to update the following settings for each provisioned app:
+#
+#   - HPA min/max replicas and target CPU utilization
+#   - Memory/CPU requests/limits
+#   - Disk size
+#
+# It serves just as a sample and not included from any kustomization.yaml file. PS/GSO must update the
+# custom-patches.yaml file using these snippets as appropriate for a customer environment for it to be effective.
+########################################################################################################################
+
+
 ################################################
 #               Nginx public
 ################################################
+
+### Update public nginx HPA min/max replicas and target CPU utilization ###
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
@@ -20,6 +34,8 @@ spec:
 ################################################
 #              Nginx private
 ################################################
+
+### Update private nginx HPA min/max replicas and target CPU utilization ###
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
@@ -37,9 +53,59 @@ spec:
 ---
 
 ################################################
+#                ElasticSearch
+################################################
+
+### Update elasticsearch disk size  ###
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: es-cluster
+  namespace: elastic-stack-logging
+spec:
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+      labels:
+        app: elasticsearch
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: elasticsearch-gp2      
+      resources:
+        requests:
+          storage: 40Gi
+
+---
+
+################################################
 #                PingDirectory
 ################################################
 
+### Update pingdirectory disk size  ###
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingdirectory
+  namespace: ping-cloud
+spec:
+  volumeClaimTemplates:
+  - metadata:
+      name: out-dir
+      labels:
+        app: ping-cloud
+        role: pingdirectory
+        class: pingdirectory-server
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: pingdirectory-gp2
+      resources:
+        requests:
+          storage: 40Gi
+---
+
+### Update pingdirectory memory/cpu requests/limits  ###
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -65,6 +131,29 @@ spec:
 #               PingAccess-WAS
 ################################################
 
+### Update pingaccess-was-admin disk size  ###
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingaccess-was-admin
+  namespace: ping-cloud
+spec:
+  volumeClaimTemplates:
+  - metadata:
+      name: out-dir
+      labels:
+        app: ping-cloud
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: pingaccess-was-gp2
+      resources:
+        requests:
+          storage: 20Gi
+
+---
+
+### Update pingaccess-was-admin memory/cpu requests/limits  ###
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -75,16 +164,17 @@ spec:
     spec:
       containers:
       - name: pingaccess-was-admin
-          resources:
-            requests:
-              memory: "1Gi"
-              cpu: "1"
-            limits:
-              memory: "1Gi"
-              cpu: "1"
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
 
 ---
 
+### Update pingaccess-was engine memory/cpu requests/limits  ###
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -95,13 +185,13 @@ spec:
     spec:
       containers:
       - name: pingaccess-was
-          resources:
-            requests:
-              memory: "1Gi"
-              cpu: "1"
-            limits:
-              memory: "1Gi"
-              cpu: "1"
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
 
 ---
 
@@ -109,6 +199,29 @@ spec:
 #                PingFederate
 ################################################
 
+### Update pingfederate-admin disk size  ###
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingfederate-admin
+  namespace: ping-cloud
+spec:
+  volumeClaimTemplates:
+  - metadata:
+      name: out-dir
+      labels:
+        app: ping-cloud
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: pingfederate-gp2
+      resources:
+        requests:
+          storage: 20Gi
+
+---
+
+### Update pingfederate-admin memory/cpu requests/limits  ###
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -119,16 +232,17 @@ spec:
     spec:
       containers:
       - name: pingfederate-admin
-          resources:
-            requests:
-              memory: "1Gi"
-              cpu: "1"
-            limits:
-              memory: "1Gi"
-              cpu: "1"
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
 
 ---
 
+### Update pingfederate engine memory/cpu requests/limits  ###
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -139,16 +253,17 @@ spec:
     spec:
       containers:
       - name: pingfederate
-          resources:
-            requests:
-              memory: "1Gi"
-              cpu: "1"
-            limits:
-              memory: "1Gi"
-              cpu: "1"
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
 
 ---
 
+### Update pingfederate engine HPA min/max replicas and target CPU utilization ###
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
@@ -169,6 +284,29 @@ spec:
 #                PingAccess
 ################################################
 
+### Update pingaccess-admin disk size  ###
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingaccess-admin
+  namespace: ping-cloud
+spec:
+  volumeClaimTemplates:
+  - metadata:
+      name: out-dir
+      labels:
+        app: ping-cloud
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: pingaccess-gp2
+      resources:
+        requests:
+          storage: 20Gi
+
+---
+
+### Update pingaccess-admin memory/cpu requests/limits  ###
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -179,16 +317,17 @@ spec:
     spec:
       containers:
       - name: pingaccess-admin
-          resources:
-            requests:
-              memory: "1Gi"
-              cpu: "1"
-            limits:
-              memory: "1Gi"
-              cpu: "1"
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
 
 ---
 
+### Update pingaccess engine memory/cpu requests/limits  ###
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -199,16 +338,17 @@ spec:
     spec:
       containers:
       - name: pingaccess
-          resources:
-            requests:
-              memory: "1Gi"
-              cpu: "1"
-            limits:
-              memory: "1Gi"
-              cpu: "1"
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
 
 ---
 
+### Update pingaccess engine HPA min/max replicas and target CPU utilization ###
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:

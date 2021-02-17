@@ -546,6 +546,8 @@ export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL}"
 # v1.8.0-dev, v1.8.0-test, v1.8.0-stage, v1.8.0-master). We must handle both cases. Note that the 'prod' environment
 # will have a branch name suffix of 'master'.
 for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
+# Run in a sub-shell so the current shell is not polluted with environment variables.
+(
   test "${ENV_OR_BRANCH}" = 'prod' &&
       GIT_BRANCH='master' ||
       GIT_BRANCH="${ENV_OR_BRANCH}"
@@ -660,6 +662,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   echo "CLUSTER_STATE_REPO_BRANCH: ${CLUSTER_STATE_REPO_BRANCH}"
   echo "ENVIRONMENT_TYPE: ${ENVIRONMENT_TYPE}"
   echo "KUSTOMIZE_BASE: ${KUSTOMIZE_BASE}"
+  echo "LETS_ENCRYPT_SERVER: ${LETS_ENCRYPT_SERVER}"
   echo "CLUSTER_NAME: ${CLUSTER_NAME}"
   echo "PING_CLOUD_NAMESPACE: ${PING_CLOUD_NAMESPACE}"
   echo "DNS_ZONE: ${DNS_ZONE}"
@@ -696,6 +699,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/' "${PRIMARY_PING_KUST_FILE}"
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
   fi
+)
 done
 
 cp -p push-cluster-state.sh "${TARGET_DIR}"
