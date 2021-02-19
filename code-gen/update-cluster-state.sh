@@ -843,13 +843,12 @@ get_min_required_secrets
 #   - Generate code for all its regions
 #   - Push code for all its regions into new branches
 for ENV in ${ENVIRONMENTS}; do # ENV loop
-  log "Updating branch '${NEW_BRANCH}' for CDE '${ENV}'"
-
   test "${ENV}" = 'prod' &&
       DEFAULT_CDE_BRANCH='master' ||
       DEFAULT_CDE_BRANCH="${ENV}"
 
   NEW_BRANCH="${NEW_VERSION}-${DEFAULT_CDE_BRANCH}"
+  log "Updating branch '${NEW_BRANCH}' for CDE '${ENV}'"
 
   log "Switching to branch ${DEFAULT_CDE_BRANCH} to determine deployed regions"
   git checkout --quiet "${DEFAULT_CDE_BRANCH}"
