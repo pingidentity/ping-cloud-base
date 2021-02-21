@@ -74,7 +74,7 @@ if ! "${QUIET}"; then
   echo "---------------------------------------------------------------------------------------------------------------"
 fi
 
-# Get one of the region directories - git-ops-command.sh needs to point to a REGION directory.
+# Get one of the region directories - flux-command.sh needs to point to a REGION directory.
 REGION_DIR="$(find . \
     -mindepth 1 -maxdepth 1 \
     -type d \( ! -name 'base' \) \
