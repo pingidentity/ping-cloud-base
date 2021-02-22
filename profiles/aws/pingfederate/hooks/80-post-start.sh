@@ -39,5 +39,5 @@ fi
 
 # Kill the container if post-start fails.
 beluga_log "post-start: admin post-start initialization failed"
-SERVER_PID=$(pgrep -alf java | grep 'run.properties' | awk '{ print $1; }')
+SERVER_PID=$(pgrep -f java)
 kill "${SERVER_PID}"
