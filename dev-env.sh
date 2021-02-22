@@ -377,6 +377,9 @@ export SKIP_CONFIGURE_KUBE=true
 export SKIP_CONFIGURE_AWS=true
 
 export DEV_TEST_ENV=true
+
+export SOLUTIONS_ARTIFACTS=${SOLUTIONS_ARTIFACTS}
+
 EOF
 
     log "Running unit tests"
