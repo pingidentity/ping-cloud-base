@@ -10,6 +10,8 @@ if (test -f "${STAGING_DIR}/artifacts/artifact-list.json") || (test ! -z "${SOLU
   # Check to see if the artifact file is empty
   ARTIFACT_LIST_JSON=$(cat "${STAGING_DIR}/artifacts/artifact-list.json")
 
+  beluga_log "SOLUTIONS_ARTIFACTS" "${SOLUTIONS_ARTIFACTS}"
+
   # Combine the artifacts specified in artifact-list.json with the ones specified in SOLUTIONS_ARTIFACTS
   MERGED_ARTIFACT_LIST=$(echo $(echo "${ARTIFACT_LIST_JSON}" | jq '.[]') $(echo "${SOLUTIONS_ARTIFACTS}" | jq '.[]') | jq -s '.')
 
