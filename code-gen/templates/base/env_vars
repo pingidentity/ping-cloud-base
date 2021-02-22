@@ -19,6 +19,7 @@ GLOBAL_TENANT_DOMAIN=${GLOBAL_TENANT_DOMAIN}
 ############################################################
 # Ping-hosted common artifacts URL
 PING_ARTIFACT_REPO_URL=${PING_ARTIFACT_REPO_URL}
+SOLUTIONS_ARTIFACTS=${SOLUTIONS_ARTIFACTS}
 
 # Customer-specific log and backup URLs for region
 LOG_ARCHIVE_URL=${LOG_ARCHIVE_URL}
