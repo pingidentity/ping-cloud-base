@@ -9,10 +9,10 @@ test -f "${STAGING_DIR}/ds_env_vars" && . "${STAGING_DIR}/ds_env_vars"
 ########################################################################################################################
 function stop_server()
 {
-  SERVER_PID=$(pgrep -alf java | grep 'run.properties' | awk '{ print $1 }')
+  SERVER_PID=$(pgrep -f java)
   kill "${SERVER_PID}"
   while true; do
-    SERVER_PID=$(pgrep -alf java | grep 'run.properties' | awk '{ print $1 }')
+    SERVER_PID=$(pgrep -f java)
     if test -z ${SERVER_PID}; then
         break
     else
