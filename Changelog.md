@@ -1,5 +1,14 @@
 # Changelog
 
+### 1.7.2
+- Decreased stunnel cpu resources
+- Fixed the seal.sh script, which was broken when the IRSA environment variable was made regional in v1.7.1
+
+_Changes:_
+
+- [X] PDO-2068 Evaluate pod sizing for small deployment sizing
+- [X] PDO-2067 seal.sh script broken
+
 ### 1.7.1
 
 - Added a script to update the cluster-state repo from one release to another

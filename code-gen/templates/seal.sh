@@ -74,12 +74,15 @@ if ! "${QUIET}"; then
   echo "---------------------------------------------------------------------------------------------------------------"
 fi
 
-# Run git-ops-command.sh with an OUT_DIR so each k8s resource is written to a separate file. Also, give it a fake
-# REGION_NICK_NAME and TENANT_DOMAIN because all secrets exist in base, and without these variables, "kustomize build"
-# will fail when invoked from within git-ops-command.sh.
+# Get one of the region directories - git-ops-command.sh needs to point to a REGION directory.
+REGION_DIR="$(find . \
+    -mindepth 1 -maxdepth 1 \
+    -type d \( ! -name 'base' \) \
+    -exec basename {} \; | tail -1)"
+
+# Run git-ops-command.sh with an OUT_DIR so each k8s resource is written to a separate file.
 OUT_DIR=$(mktemp -d)
-OUT_DIR="${OUT_DIR}" REGION_NICK_NAME=base TENANT_DOMAIN=base.ping-cloud.com \
-    "${SCRIPT_DIR}"/git-ops-command.sh "${BUILD_DIR}"
+OUT_DIR="${OUT_DIR}" "${SCRIPT_DIR}"/git-ops-command.sh "${REGION_DIR}"
 
 YAML_FILES=$(find "${OUT_DIR}" -type f | xargs grep -rl 'kind: Secret')
 if test -z "${YAML_FILES}"; then
