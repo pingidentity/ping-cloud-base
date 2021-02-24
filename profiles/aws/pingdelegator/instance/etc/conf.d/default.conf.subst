@@ -1,0 +1,22 @@
+server {
+    # Enable SSL and HTTP/2
+    listen  ${PD_DELEGATOR_HTTPS_PORT} ssl http2;
+    server_name  localhost;
+
+    ssl_certificate ${CERTIFICATE_FILE};
+    ssl_certificate_key ${CERTIFICATE_KEY_FILE};
+
+    root ${SERVER_ROOT_DIR}/html;
+    
+    # Nginx Landing Page
+    index /index.html;
+
+    location / {
+        try_files $uri $uri/index.html $uri/ "=404";
+
+        # The first "$uri" matches the uri exactly
+        # The second "$uri/index.html" matches a directory containing the index.html where the last element of the path matches the directory name, with no trailing slash
+        # The third "$uri/" matches the directory
+        # The fourth "=404" returns nginx default 404 error page if none of the preceding patterns match.
+    }
+}

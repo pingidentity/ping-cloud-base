@@ -33,6 +33,13 @@ configMapGenerator:
   - env_vars
   - pingdirectory/env_vars
 
+# Ping Delegated Admin
+- name: pingdelegator-environment-variables
+  behavior: merge
+  envs:
+  - env_vars
+  - pingdelegator/env_vars
+
 # Pingcloud-metadata
 - name: pingcloud-metadata-environment-variables
   behavior: merge
@@ -237,6 +244,20 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/5/host
       value: argocd${ENVIRONMENT}.${TENANT_DOMAIN}
+
+# Ping Delegated Admin
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingdelegator-ingress
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingdelegator${ENVIRONMENT}.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingdelegator${ENVIRONMENT}.${TENANT_DOMAIN}
 
 # Set a hostname for all the headless services so their endpoint IPs are published to Route53
 - target:
