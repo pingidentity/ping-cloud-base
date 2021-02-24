@@ -112,6 +112,9 @@ PINGACCESS_WAS_API=https://pingaccess-was-admin${FQDN}/pa-admin-api/v3
 # runtime services:
 PINGACCESS_WAS_RUNTIME=https://pingaccess-was${FQDN}
 
+# Ping Delegated Admin
+PINGDELEGATOR_CONSOLE=https://pingdelegator${FQDN}/delegator
+
 # Pingcloud-metadata service:
 PINGCLOUD_METADATA_API=https://metadata${FQDN}
 

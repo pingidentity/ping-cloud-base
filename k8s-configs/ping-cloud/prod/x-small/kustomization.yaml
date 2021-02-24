@@ -7,3 +7,4 @@ resources:
 - pingfederate
 - pingaccess-was
 - pingaccess
+- pingdelegator

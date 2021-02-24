@@ -381,7 +381,7 @@ EOF
 
     log "Running unit tests"
     unit_test_failures=0
-    for unit_test_dir in common ci-script-tests pingaccess pingfederate pingdirectory; do
+    for unit_test_dir in $(find 'ci-scripts/test/unit' -type d -mindepth 1 -maxdepth 1 -exec basename '{}' \;); do
       log
       log "==============================================================================================="
       log "      Executing unit tests in directory: ${unit_test_dir}            "
@@ -421,8 +421,7 @@ EOF
 
 
     log "Running integration tests"
-    integration_test_failures=0
-    for integration_test_dir in pingaccess pingaccess-was pingdirectory pingfederate pingcloud-metadata chaos; do
+    for integration_test_dir in $(find 'ci-scripts/test/integration' -type d -mindepth 1 -maxdepth 1 -exec basename '{}' \;); do
       log
       log "==============================================================================================="
       log "      Executing integration tests in directory: ${integration_test_dir}            "

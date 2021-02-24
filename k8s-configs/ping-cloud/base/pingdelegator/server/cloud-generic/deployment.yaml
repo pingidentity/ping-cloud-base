@@ -1,0 +1,140 @@
+# This defines the Ping Delegated Admin deployment
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pingdelegator
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      role: pingdelegator
+  template:
+    metadata:
+      name: pingdelegator
+      annotations:
+        lastUpdateReason: "NA"
+      labels:
+        role: pingdelegator
+    spec:
+      serviceAccount: ping-serviceaccount
+      affinity:
+        podAntiAffinity:
+          # Add a soft requirement for each DA pod to be deployed to a different AZ
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: role
+                      operator: In
+                      values:
+                        - pingdelegator
+                topologyKey: "failure-domain.beta.kubernetes.io/zone"
+      initContainers:
+      - name: pingdelegator-init
+        # FIXME: switch to same user as app
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        image: pingcloud-mirror.jfrog.io/bitnami/kubectl:1.15.3
+        imagePullPolicy: IfNotPresent
+        command:
+          - /copy-dependencies.sh
+        volumeMounts:
+          - name: ssh-dir
+            mountPath: /.ssh
+          - name: data-dir
+            mountPath: /data
+          - name: ssh-id-key-secret
+            mountPath: /id_rsa
+            subPath: id_rsa
+          - name: known-hosts-config
+            mountPath: /known_hosts
+            subPath: known_hosts
+          - name: pingdelegator-init
+            mountPath: /copy-dependencies.sh
+            subPath: copy-dependencies.sh
+          - name: pingdelegator-init
+            mountPath: /utils.lib.sh
+            subPath: utils.lib.sh
+        envFrom:
+          - configMapRef:
+              name: pingdelegator-environment-variables
+      containers:
+      - name: pingdelegator
+        image: pingidentity/pingdelegator:2010-4.2.1
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "80m"
+          limits:
+            memory: "1Gi"
+            cpu: "1"
+        volumeMounts:
+          # FIXME: fix home directory when containers run as non-root user
+          - name: ssh-dir
+            mountPath: /root/.ssh
+          - name: topology-descriptor
+            mountPath: /opt/staging/topology/descriptor.json
+            subPath: descriptor.json
+          - name: data-dir
+            mountPath: /usr/local/bin/kubectl
+            subPath: kubectl
+        readinessProbe:
+          exec:
+            command: [/opt/liveness.sh]
+          initialDelaySeconds: 60
+          periodSeconds: 5
+          failureThreshold: 3
+          timeoutSeconds: 5
+        livenessProbe:
+          exec:
+            command: [/opt/liveness.sh]
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          failureThreshold: 4
+          timeoutSeconds: 5
+        ports:
+          - name: https
+            containerPort: 1443
+        lifecycle:
+          preStop:
+            exec:
+              command: [
+                  # Gracefully shutdown nginx
+                  "/bin/sh",
+                  "-c",
+                  "nginx -s quit",
+                  "while killall -0 nginx; do sleep 1; done",
+                ]
+        envFrom:
+        - configMapRef:
+            name: pingdelegator-environment-variables
+      volumes:
+        - name: ssh-dir
+          emptyDir: {}
+        - name: data-dir
+          emptyDir: {}
+        - name: pingdelegator-init
+          configMap:
+            name: pingcommon-init
+            defaultMode: 0555
+        - name: topology-descriptor
+          configMap:
+            name: topology-descriptor
+            optional: true
+            defaultMode: 0644
+        - name: ssh-id-key-secret
+          secret:
+            secretName: ssh-id-key-secret
+            optional: true
+            defaultMode: 0400
+        - name: known-hosts-config
+          configMap:
+            name: known-hosts-config
+            optional: true
+            defaultMode: 0644
