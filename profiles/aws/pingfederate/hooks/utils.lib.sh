@@ -231,16 +231,52 @@ function configure_tcp_xml() {
   local currentDir="$(pwd)"
   cd "${SERVER_ROOT_DIR}/server/default/conf"
 
+  # DNS_PING should always include the domain name of the local cluster.
+  query_list="${PF_CLUSTER_DOMAIN_NAME}"
+
   if is_multi_cluster; then
-    export S3_PING_PROTOCOL="<org.jgroups.aws.s3.NATIVE_S3_PING \
-        region_name=\"${PRIMARY_REGION}\" \
-        bucket_name=\"${CLUSTER_BUCKET_NAME}\" \
-        bucket_prefix=\"${PING_PRODUCT}\" \
-        remove_all_data_on_view_change=\"true\" \
-        write_data_on_find=\"true\" />"
+    #####################################
+    #         NATIVE_S3_PING            #
+    #####################################
+
+    # If CLUSTER_BUCKET_NAME is set, then configure NATIVE_S3_PING. It will take precedence over DNS_PING in the
+    # JGroups discovery protocol stack.
+    if test "${CLUSTER_BUCKET_NAME}"; then
+      export S3_PING_PROTOCOL="<org.jgroups.aws.s3.NATIVE_S3_PING \
+          region_name=\"${PRIMARY_REGION}\" \
+          bucket_name=\"${CLUSTER_BUCKET_NAME}\" \
+          bucket_prefix=\"${PING_PRODUCT}\" \
+          remove_all_data_on_view_change=\"true\" \
+          write_data_on_find=\"true\" />"
+    fi
+
+    #####################################
+    #             DNS_PING              #
+    #####################################
+
+    # Sanitize SECONDARY_TENANT_DOMAINS by removing all single/double quotes and replacing comma with space.
+    secondary_domains="$(echo "${SECONDARY_TENANT_DOMAINS}" | tr -d '"' | tr -d "'" | tr ',' ' ')"
+
+    # Handle both Beluga Dev/CI-CD environments and Ping Cloud CDE environments:
+    #   - Beluga Dev/CI-CD environments:
+    #       - If an environment name is provided through the BELUGA_ENV_NAME variable, usually ${USER} or ${GIT_BRANCH},
+    #         then prepend that to the domain name.
+    #       - If no environment is provided through the BELUGA_ENV_NAME variable, then use the domain name as is.
+    #   - Ping Cloud CDEs:
+    #       - Prepend the CDE name provided through the ENV environment variable followed by a dash to the domain name.
+    for domain in ${secondary_domains}; do
+      if "${IS_BELUGA_ENV:-false}"; then
+        test "${BELUGA_ENV_NAME}" &&
+            dns_suffix="-${BELUGA_ENV_NAME}.${domain}" ||
+            dns_suffix=".${domain}"
+      else
+        dns_suffix=".${ENV}-${domain}"
+      fi
+      query_list="${query_list},${PF_CLUSTER_PRIVATE_HOSTNAME}${dns_suffix}"
+    done
   fi
 
-  export DNS_PING_PROTOCOL="<dns.DNS_PING dns_query=\"${PF_CLUSTER_DOMAIN_NAME}\" />"
+  export DNS_PING_PROTOCOL="<dns.DNS_PING dns_query=\"${query_list}\" />"
 
   envsubst '${S3_PING_PROTOCOL} ${DNS_PING_PROTOCOL}' \
       < "${STAGING_DIR}/templates/tcp.xml" \

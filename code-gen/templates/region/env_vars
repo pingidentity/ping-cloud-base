@@ -8,8 +8,12 @@ REGION_NICK_NAME=${REGION_NICK_NAME}
 # Tenant domain suffix for customer for region
 TENANT_DOMAIN=${TENANT_DOMAIN}
 
-# S3 bucket name for PingFederate adaptive clustering
-# Only required in multi-cluster environments
+# Optional S3 bucket name for PingFederate adaptive clustering using the JGroups NATIVE_S3_PING discovery protocol.
+#
+# NOTES:
+#   - Only used in multi-cluster environments. If provided, PF will be configured with NATIVE_S3_PING.
+#   - In multi-cluster mode, one or both of CLUSTER_BUCKET_NAME and SECONDARY_TENANT_DOMAINS (in base env_vars)
+#     must be set. If both are set, then NATIVE_S3_PING will take precedence over DNS_PING.
 CLUSTER_BUCKET_NAME=${CLUSTER_BUCKET_NAME}
 
 # Customer-specific artifacts URL for region
