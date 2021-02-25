@@ -345,8 +345,11 @@ get_min_required_secrets() {
     if ! test -s "${ID_RSA_FILE}"; then
       log "SSH key not found in ${ID_RSA_FILE}"
       ALL_MIN_SECRETS_FOUND=false
+      ID_RSA_FILE=
     fi
-  else
+  fi
+
+  if test -z "${PING_IDENTITY_DEVOPS_USER}" || test -z "${PING_IDENTITY_DEVOPS_KEY}"; then
     ALL_MIN_SECRETS_FOUND=false
 
     # Default the dev ops user and key to fake values, if not found in secrets.yaml.
@@ -972,7 +975,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
         # If resetting to default, then use defaults for these variables instead of migrating them.
         if "${RESET_TO_DEFAULT}"; then
           log "Resetting variables to the default or out-of-the-box values per request"
-          unset KUSTOMIZE_BASE LETS_ENCRYPT_SERVER
+          unset LETS_ENCRYPT_SERVER
         fi
 
         export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY}"
