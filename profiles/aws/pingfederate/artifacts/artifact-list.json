@@ -2,6 +2,6 @@
   {
     "name": "pf-agentless-integration-kit",
     "version": "2.0.1",
-    "source": "private"
+    "source": "public"
   }
 ]
