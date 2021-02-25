@@ -18,10 +18,10 @@ spec:
         resources:
           limits:
             memory: 256Mi
-            cpu: 1
+            cpu: 500m
           requests:
             memory: 256Mi
-            cpu: 1
+            cpu: 300m
       - name: pingdirectory-statsd-exporter
         resources:
           limits:
