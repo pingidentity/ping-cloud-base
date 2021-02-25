@@ -1,6 +1,46 @@
 # Changelog
 
+### 1.8.0
+
+- Upgraded PingFederate to 10.1.4
+- Standardized CSD export naming convention to an easily retrievable name
+- Added periodic CSD log collection for PingAccess WAS admin and engines
+- Added Grafana dashboards for PingFederate and PingAccess
+- Changed the default environment size to x-small for dev and test environments to reduce costs
+- Replaced FluxCD with ArgoCD as the continuous delivery tool
+- Enabled IAM Roles for Kubernetes Service Accounts (IRSA) to pare down pod permissions
+
+_Changes:_
+
+- [X] PDO-1030 Expose the relevant Operation Data from PingFederate through a JMX exporter
+- [X] PDO-1031 Expose the relevant Operation Data from PingAccess through a protocol that can be consumed by Prometheus
+- [X] PDO-1032 Import PingFederate Operation Data to Prometheus
+- [X] PDO-1033 Import PingAccess Operation Data to Prometheus
+- [X] PDO-1388 Standardize CSD Export naming convention to an easily retrievable name
+- [X] PDO-1390 Collect CSD data for pingaccess-was and pingaccess-was-admin
+- [X] PDO-1533 Count relevant Operational Data for PingFederate from existing logs
+- [X] PDO-1536 Count relevant Operational Data for PingAccess from existing logs
+- [X] PDO-1539 Deploy a very small deployment size as the default for dev/test
+- [X] PDO-1564 Add ArgoCD as the continuous delivery tool in Ping Cloud environments
+- [X] PDO-1569 Enable IRSA for K8s Pods to use AWS IAM role
+- [X] PDO-1570 Configure PA-WAS to proxy to the ArgoCD UI
+- [X] PDO-1578 Allow more granular upgrades of ping applications
+- [X] PDO-1664 Fix edge-case errors with push-clouster-state.sh
+- [X] PDO-1671 PingCloud deployments of Stage CDE needs to be the same size as Prod
+- [X] PDO-1722 Update PD k8s configs to use PD labels only in production
+- [X] PDO-1747 Set up a pull cache for ArgoCD images from docker.io in the JFrog mirror
+- [X] PDO-1770 Update SIEM logstash/elasticsearch images from using JFrog to ECR
+- [X] PDO-1799 Upgrade PF to 10.1.4
+- [X] PDO-1812 improper shutdowns of PF not cleaned up
+- [X] PDO-1821 Upload json_exporter Docker image to ECR
+- [X] PDO-2025 PA engine crash looping due to excessive public key creation
+- [X] PDO-2042 Change the staging directory for restore to not use the tmp file system
+- [X] PDO-2058 PD fails when changing out USER_BASE_DN
+- [X] PDO-2061 PA post-start failure does not stop the server as intended
+- [X] PDO-2066 Update script not handling files with spaces in the name
+
 ### 1.7.2
+
 - Decreased stunnel cpu resources
 - Fixed the seal.sh script, which was broken when the IRSA environment variable was made regional in v1.7.1
 
