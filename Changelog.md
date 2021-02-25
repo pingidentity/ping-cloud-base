@@ -1,5 +1,17 @@
 # Changelog
 
+### 1.8.1
+
+- Fixed PingFederate to not allow back-channel access after revoking persistent session 
+- Decreased CPU requests and limits of the PingDirectory stunnel sidecar container
+- Fixed the update-cluster-state-wrapper.sh script to preserve customer size
+
+_Changes:_
+
+- [X] PDO-1712 PingFederate back-channel access available even after revoking persistent session
+- [X] PDO-2068 Evaluate pod sizing for small deployment sizing
+- [X] PDO-2086 RESET_TO_DEFAULT flag of update CSR script not preserving customer size
+
 ### 1.8.0
 
 - Upgraded PingFederate to 10.1.4
