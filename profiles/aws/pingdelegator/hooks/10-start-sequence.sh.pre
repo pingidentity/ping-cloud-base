@@ -2,3 +2,5 @@
 
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
+
+run_hook "100-tail-logs.sh"
