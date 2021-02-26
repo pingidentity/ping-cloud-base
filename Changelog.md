@@ -11,6 +11,7 @@ _Changes:_
 - [X] PDO-1712 PingFederate back-channel access available even after revoking persistent session
 - [X] PDO-2068 Evaluate pod sizing for small deployment sizing
 - [X] PDO-2086 RESET_TO_DEFAULT flag of update CSR script not preserving customer size
+- [X] PDO-2094 PingDirectory backup for large backup files fails
 
 ### 1.8.0
 
