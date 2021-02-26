@@ -35,7 +35,9 @@ cd "${SERVER_BACKUP_DIR}"
 DST_FILE_TIMESTAMP="data-$(date +%m-%d-%Y.%H.%M.%S).zip"
 zip -r "${DST_FILE_TIMESTAMP}" *
 
-UPLOAD_DIR="$(mktemp -d)"
+UPLOAD_DIR="/opt/out/backup-upload"
+rm -rf "${UPLOAD_DIR}"
+mkdir -p "${UPLOAD_DIR}"
 
 # Two copy of the backup will be pushed to cloud storage.
 # Make a copy: latest.zip
