@@ -63,7 +63,7 @@ PD_CLUSTER_PORT=8989
 # - Set this to false
 # - 90-restore-backup-s3.sh script exit before proceeding if value is false
 RESTORE_BACKUP=true
-NEW_RELIC_APP_NAME=PingAccess
+NEW_RELIC_APP_NAME=${PING_PRODUCT}
 NEW_RELIC_LICENSE_KEY=eu01xx35a077642a629b413c7aca28e66df1NRAL
-NEW_RELIC_LABELS=app:PA;user:antonklyba
+NEW_RELIC_LABELS=app:${HOSTNAME};user:antonklyba
 JAVA_OPTS=-javaagent:/opt/staging/jmx_prometheus_javaagent-0.14.0.jar=8080:/opt/out/instance/conf/jmx_export_config.yaml -javaagent:/opt/out/instance/conf/newrelic.jar
