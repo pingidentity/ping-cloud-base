@@ -50,12 +50,12 @@ admin.ui.max.sessions=100
 # Specifies how exported sensitive data should be encrypted.
 # Valid values are:
 #
-#   MASTER_KEY - (default) Use the system default/v1.9-release-branch key.
+#   MASTER_KEY - (default) Use the system default/master key.
 #
 #   PORTABLE_INSECURE - Use a randomly-generated key for each export, and include it in the exported data.
 #
 #                       Warning: This allows the exported data to be imported anywhere, including another cluster with
-#                       a different v1.9-release-branch key. However, including the encryption key with the data allows sensitive
+#                       a different master key. However, including the encryption key with the data allows sensitive
 #                       information to be decrypted and may present a significant security risk.
 admin.export.encryption.mode=MASTER_KEY
 

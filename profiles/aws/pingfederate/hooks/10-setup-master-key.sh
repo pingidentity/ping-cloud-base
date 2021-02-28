@@ -10,16 +10,16 @@ ${VERBOSE} && set -x
 #---------------------------------------------------------------------------------------------
 
 #
-# We may already have a v1.9-release-branch key on disk if one was supplied through a secret, the 'in' volume or
+# We may already have a master key on disk if one was supplied through a secret, the 'in' volume or
 # extracted from a backup in the drop in deployer directory; in these cases we will use that key
 # during obfuscation.
 #
 
 MASTER_KEY_PATH="${SERVER_ROOT_DIR}/server/default/data/pf.jwk"
 if ! test -f "${MASTER_KEY_PATH}"; then
-  beluga_log "No pre-existing v1.9-release-branch key found - obfuscate will create one"
+  beluga_log "No pre-existing master key found - obfuscate will create one"
 else
-  beluga_log "A pre-existing v1.9-release-branch key was found on disk - using it"
+  beluga_log "A pre-existing master key was found on disk - using it"
 fi
 
 obfuscatePassword

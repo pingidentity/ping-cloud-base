@@ -23,7 +23,7 @@
 # The script is non-destructive by design and doesn't push any new state to the server. Instead, it will set up a
 # parallel branch for every CDE branch corresponding to the environments specified through the ENVIRONMENTS environment
 # variable. For example, if the new version is v1.7.1, then it’ll set up 4 new branches at the new version for the
-# default set of environments: v1.7.1-dev, v1.7.1-test, v1.7.1-stage and v1.7.1-v1.9-release-branch. These new branches will be valid
+# default set of environments: v1.7.1-dev, v1.7.1-test, v1.7.1-stage and v1.7.1-master. These new branches will be valid
 # for that version for all regions for the customer’s CDEs. A best faith effort will be made to migrate all existing
 # customizations to server profiles and Kubernetes configuration. However, it’ll still be up to PS/GSO teams to verify
 # that the migration is correct and complete. The update-cluster-state.sh script will provide further steps to the

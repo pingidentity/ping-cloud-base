@@ -62,7 +62,7 @@ restore_backup() {
 #
 # OR
 #
-# 2) If the v1.9-release-branch key doesn't exist within the image. There may have been 
+# 2) If the master key doesn't exist within the image. There may have been 
 #    an issue with the EBS volume which the 90-restore-backup-s3.sh restore script
 #    will restore the latest configuration from S3. If this is an initial
 #    deployment the restore scipt will not find any backups within S3.
