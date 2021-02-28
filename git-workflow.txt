@@ -1,5 +1,5 @@
 We have approximately been releasing on a monthly cadence and sometimes have to work on minor releases concurrently. So
-we have multiple release branches, instead of a single "v1.9-release-branch" branch like some of the other products that have a
+we have multiple release branches, instead of a single "master" branch like some of the other products that have a
 longer release cycle do, e.g. PingDirectory, which follows a loose quarterly release schedule.
 
 We also follow semantic versioning (semver.org), which states:
@@ -15,7 +15,7 @@ This also results in more frequent versions and branches to track those versions
 Branching and tagging:
 
 Release branches are created after we release a particular version and commit to the next release as a team. They are
-always created from the HEAD of the v1.9-release-branch branch. Release branches have a pattern of "v<major>.<minor>-release-branch",
+always created from the HEAD of the master branch. Release branches have a pattern of "v<major>.<minor>-release-branch",
 e.g. v1.3-release-branch. Once a release has been qualified by the QA team, the release tag is created off of the tip
 of the release branch. There is a tagging script under the build directory to do that.
 
@@ -25,14 +25,14 @@ release branches. However, maintenance releases on top of a minor release can on
 example, you cannot push changes for v1.3.3 into the v1.3-release-branch until v1.3.2 has been tagged.
 
 Features that do not have a known release version must be maintained in their own feature branches until they are
-targeted for the next release. It is the developer's responsibility to keep this branch in sync with the v1.9-release-branch branch
+targeted for the next release. It is the developer's responsibility to keep this branch in sync with the master branch
 by performing periodic merges from it. If there are merge conflicts, the developer must reach out to the committer of
 the code that resulted in the conflicts to ensure that the conflicts are resolved correctly.
 
 Once a change has been made to a lower branch, it must be promoted to higher branches. The developer has the choice of
 doing it themselves via the MR workflow (as described in the following section), or may defer it to the release
-engineer to handle it. A release engineer will merge changes from lower branches all the way up into v1.9-release-branch
-periodically, for example, from v1.3-release-branch -> v1.4-release-branch -> v1.9-release-branch. Multiple commits may be chained
+engineer to handle it. A release engineer will merge changes from lower branches all the way up into master
+periodically, for example, from v1.3-release-branch -> v1.4-release-branch -> master. Multiple commits may be chained
 to keep the CI pipeline from going berserk. But if it's not a fast-forward merge, and there are merge conflicts, the
 release engineer may request the developer to perform the merge. See the "Promoting changes from lower to higher
 versions" section below on how to do this, if necessary.
@@ -127,26 +127,26 @@ document on why cherry-picking should not be part of a normal git workflow:
 
 https://dan.bravender.net/2011/10/20/Why_cherry-picking_should_not_be_part_of_a_normal_git_workflow.html
 
-The following steps explain how to promote a bug-fix/feature (pdo-x) targeted for the v1.4-release-branch into v1.9-release-branch.
+The following steps explain how to promote a bug-fix/feature (pdo-x) targeted for the v1.4-release-branch into master.
 
 1. Create an MR from pdo-x to v1.4-release-branch using the "Git Workflow" steps above.
 
 2. After the code is reviewed and merged into the v1.4-release-branch, the MR workflow will delete the pdo-x remote
    branch. Retain your local copy of pdo-x for the merge.
 
-3. Switch to your local copy of v1.9-release-branch and update it:
-   git checkout v1.9-release-branch
+3. Switch to your local copy of master and update it:
+   git checkout master
    git pull
 
-4. Create a local branch for merging pdo-x into v1.9-release-branch:
-   git checkout -b pdo-x-v1.9-release-branch
+4. Create a local branch for merging pdo-x into master:
+   git checkout -b pdo-x-master
 
-5. Merge pdo-x into pdo-x-v1.9-release-branch and push it to remote:
+5. Merge pdo-x into pdo-x-master and push it to remote:
    git merge pdo-x
-   git push --set-upstream origin pdo-x-v1.9-release-branch
+   git push --set-upstream origin pdo-x-master
 
-6. Follow the MR process on GitLab UI requesting to merge pdo-x-v1.9-release-branch into v1.9-release-branch.
+6. Follow the MR process on GitLab UI requesting to merge pdo-x-master into master.
 
 7. Once the branch has been merged, you may optionally get rid of your local branches:
-   git checkout v1.9-release-branch
-   git branch -D pdo-x pdo-x-v1.9-release-branch
+   git checkout master
+   git branch -D pdo-x pdo-x-master

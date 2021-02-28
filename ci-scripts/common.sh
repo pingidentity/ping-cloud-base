@@ -35,14 +35,14 @@ if test -z "${ENV_VARS_FILE}"; then
   export PRIMARY_TENANT_DOMAIN="${TENANT_DOMAIN}"
   export GLOBAL_TENANT_DOMAIN="${GLOBAL_TENANT_DOMAIN:-$(echo "${TENANT_DOMAIN}"|sed -e "s/[^.]*.\(.*\)/global.\1/")}"
 
-  if [[ ${CI_COMMIT_REF_SLUG} != v1.9-release-branch ]]; then
+  if [[ ${CI_COMMIT_REF_SLUG} != master ]]; then
     export ENVIRONMENT=-${CI_COMMIT_REF_SLUG}
     export BELUGA_ENV_NAME=${CI_COMMIT_REF_SLUG}
   fi
   export NAMESPACE=ping-cloud-${CI_COMMIT_REF_SLUG}
 
   export CONFIG_PARENT_DIR=aws
-  export CONFIG_REPO_BRANCH=${CI_COMMIT_REF_NAME:-v1.9-release-branch}
+  export CONFIG_REPO_BRANCH=${CI_COMMIT_REF_NAME:-master}
 
   export ARTIFACT_REPO_URL=s3://${CLUSTER_NAME}-artifacts-bucket
   export PING_ARTIFACT_REPO_URL=https://ping-artifacts.s3-us-west-2.amazonaws.com
