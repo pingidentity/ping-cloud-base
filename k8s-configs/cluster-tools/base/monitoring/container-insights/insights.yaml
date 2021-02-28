@@ -309,6 +309,20 @@ data:
 
     <source>
       @type tail
+      @id in_tail_pingdelegator_container_logs
+      @label @dacontainers
+      path /var/log/containers/pingdelegator*.log
+      pos_file /var/log/pingdelegator-containers.log.pos
+      tag kubernetes.*
+      read_from_head true
+      <parse>
+        @type json
+        time_format %Y-%m-%dT%H:%M:%S.%NZ
+      </parse>
+    </source>
+
+    <source>
+      @type tail
       @id in_tail_cwagent_logs
       @label @cwagentlogs
       path /var/log/containers/cloudwatch-agent*
@@ -675,6 +689,63 @@ data:
       </match>
 
       <match pawas_clear>
+        @type null
+      </match>
+
+      <match temp.unmatched_logs>
+        @type relabel
+        @label @normal
+      </match>
+
+      <match temp.**>
+        @type rewrite_tag_filter
+        remove_tag_prefix temp
+        <rule>
+          key stream_name
+          pattern /^(.+)$/
+          tag ${tag}.$1
+        </rule>
+      </match>
+
+      <match **>
+        @type relabel
+        @label @tagstream
+      </match>
+    </label>
+
+    <label @dacontainers>
+      <filter **>
+        @type kubernetes_metadata
+      </filter>
+
+      <filter **>
+        @type record_transformer
+        enable_ruby true
+        <record>
+          stream_name ${record["kubernetes"]["pod_name"]}_${record["kubernetes"]["namespace_name"]}_${record["kubernetes"]["container_name"]}
+        </record>
+      </filter>
+
+      <match kubernetes.**>
+        @type rewrite_tag_filter
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/log\/access/
+          tag temp.pingdelegator_nginx_access_logs
+        </rule>
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/log\/error/
+          tag temp.pingdelegator_nginx_error_logs
+        </rule>
+        <rule>
+          key log
+          pattern /^(.+)$/
+          tag temp.unmatched_logs
+        </rule>
+      </match>
+
+      <match clear>
         @type null
       </match>
 
