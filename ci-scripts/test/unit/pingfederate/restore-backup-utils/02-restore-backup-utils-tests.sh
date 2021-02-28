@@ -22,12 +22,12 @@ oneTimeTearDown() {
 testServerMasterKeyPath() {
   # unset for this particular test
   unset MASTER_KEY_PATH
-  local expected_master_key_path="${SERVER_ROOT_DIR}/server/default/data/pf.jwk"
+  local expected_v1.9-release-branch_key_path="${SERVER_ROOT_DIR}/server/default/data/pf.jwk"
 
   set_script_variables
   assertEquals 0 ${?}
 
-  assertEquals "Invalid master key path for PingFederate: ${MASTER_KEY_PATH}" "${expected_master_key_path}" "${MASTER_KEY_PATH}"
+  assertEquals "Invalid v1.9-release-branch key path for PingFederate: ${MASTER_KEY_PATH}" "${expected_v1.9-release-branch_key_path}" "${MASTER_KEY_PATH}"
   assertEquals "Invalid DATA_BACKUP_FILE_NAM: ${DATA_BACKUP_FILE_NAME}" "latest.zip" "${DATA_BACKUP_FILE_NAME}"
 }
 

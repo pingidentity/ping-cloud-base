@@ -344,7 +344,7 @@ _Changes:_
 ### 1.3.0
 
 - Added support for PingAccess deployment automation, including initial deployment of a cluster, auto-scaling, 
-  auto-healing of failed admin and engine instances, encrypted backup of the master key for disaster recovery upon 
+  auto-healing of failed admin and engine instances, encrypted backup of the v1.9-release-branch key for disaster recovery upon 
   instance and AZ failure
 - Added the ability to capture and upload PingFederate CSD archives to S3, if using AWS  
 - Updated PingDirectory from 8.0.0.0 to 8.0.0.1
@@ -427,7 +427,7 @@ _Changes:_
 - Added a Kubernetes Job for restoring PingDirectory user data from S3, if using AWS
 - Added support for installing and updating PingDirectory extensions, similar to PingFederate kits
 - Separated the PingFederate admin configuration from customer end users in the PingDirectory DIT
-- Organized the cluster state repo into branches for different environments instead of a single master branch with
+- Organized the cluster state repo into branches for different environments instead of a single v1.9-release-branch branch with
   directories for each environment
 
 _Changes:_
@@ -449,5 +449,5 @@ _Changes:_
   auto-healing of failed instances, backup/restore for disaster recovery upon instance and AZ failure and periodic
   collection of CSD archives
 - Added support for PingFederate deployment automation, including initial deployment of a cluster, auto-scaling, 
-  auto-healing of failed admin and engine instances, encrypted backup of the master key for disaster recovery upon 
+  auto-healing of failed admin and engine instances, encrypted backup of the v1.9-release-branch key for disaster recovery upon 
   instance and AZ failure   

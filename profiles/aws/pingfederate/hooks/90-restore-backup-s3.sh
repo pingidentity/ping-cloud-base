@@ -41,9 +41,9 @@ if test -f "${SERVER_RESTORE_DIR}/${DST_FILE}"; then
   beluga_log "Extracting config export to ${SERVER_RESTORE_DIR}"
   unzip -o "${SERVER_RESTORE_DIR}/${DST_FILE}" -d "${SERVER_RESTORE_DIR}"
 
-  # Copy master key to server directory
+  # Copy v1.9-release-branch key to server directory
   find "${SERVER_RESTORE_DIR}" -type f -name "${MASTER_KEY_FILE}" | xargs -I {} cp {} "${MASTER_KEY_PATH}"
-  test ! -f "${MASTER_KEY_PATH}" && beluga_log "Unable to locate master key" && exit 1
+  test ! -f "${MASTER_KEY_PATH}" && beluga_log "Unable to locate v1.9-release-branch key" && exit 1
   chmod 400 "${MASTER_KEY_PATH}"
 
   # Deploy configuration using drop-in-deployer

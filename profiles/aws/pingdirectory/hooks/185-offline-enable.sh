@@ -29,9 +29,9 @@
 #   cn=example:1,cn=Server Instances,cn=Topology,cn=config
 #
 # A replication server and one DN per replicated base DN:
-#   cn=replication server,cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config
-#   cn=dc_example_dc_com,cn=domains,cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config
-#   cn=dc_other_dc_com,cn=domains,cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config
+#   cn=replication server,cn=Multiv1.9-release-branch Synchronization,cn=Synchronization Providers,cn=config
+#   cn=dc_example_dc_com,cn=domains,cn=Multiv1.9-release-branch Synchronization,cn=Synchronization Providers,cn=config
+#   cn=dc_other_dc_com,cn=domains,cn=Multiv1.9-release-branch Synchronization,cn=Synchronization Providers,cn=config
 #
 # Updates instance-name in global config cn=config
 #
@@ -294,7 +294,7 @@ repl_port=$((repl_port_base + port_inc * local_ordinal))
 
 # The DN of the replication server. This does not need to be quoted since it has
 # no special characters.
-rs_dn="cn=replication server,cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config"
+rs_dn="cn=replication server,cn=Multiv1.9-release-branch Synchronization,cn=Synchronization Providers,cn=config"
 
 if grep -qi "^ *dn: *${rs_dn}$" < "${conf}"; then
   beluga_log "Updating existing replication entries for replication server DN '${rs_dn}'"
@@ -330,7 +330,7 @@ EOF
 fi
 
 beluga_log "removing DNs no longer being replicated"
-domains_dn='cn=domains,cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config'
+domains_dn='cn=domains,cn=Multiv1.9-release-branch Synchronization,cn=Synchronization Providers,cn=config'
 
 grep -i "^dn:.*${domains_dn}$" < "${conf}" |
 while read -r dn; do

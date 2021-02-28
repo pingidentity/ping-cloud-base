@@ -158,17 +158,17 @@ if test ${LS_REMOTE_EXIT_CODE} -ne 0; then
 fi
 
 # The ENVIRONMENTS variable can either be the CDE names (e.g. dev, test, stage, prod) or the branch names (e.g.
-# v1.8.0-dev, v1.8.0-test, v1.8.0-stage, v1.8.0-master). It will be the CDE names on initial seeding of the cluster
+# v1.8.0-dev, v1.8.0-test, v1.8.0-stage, v1.8.0-v1.9-release-branch). It will be the CDE names on initial seeding of the cluster
 # state repo. On upgrade of the cluster state repo it will be the branch names. We must handle both cases. Note that
-# the 'prod' environment will have a branch name suffix of 'master'.
+# the 'prod' environment will have a branch name suffix of 'v1.9-release-branch'.
 for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   test "${ENV_OR_BRANCH}" = 'prod' &&
-      GIT_BRANCH='master' ||
+      GIT_BRANCH='v1.9-release-branch' ||
       GIT_BRANCH="${ENV_OR_BRANCH}"
   DEFAULT_CDE_BRANCH="${GIT_BRANCH##*-}"
 
   ENV_OR_BRANCH_SUFFIX="${ENV_OR_BRANCH##*-}"
-  test "${ENV_OR_BRANCH_SUFFIX}" = 'master' &&
+  test "${ENV_OR_BRANCH_SUFFIX}" = 'v1.9-release-branch' &&
       ENV='prod' ||
       ENV="${ENV_OR_BRANCH_SUFFIX}"
 

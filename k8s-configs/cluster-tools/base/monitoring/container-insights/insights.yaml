@@ -1,5 +1,5 @@
 # This yaml file was copied from:
-# https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/master/k8s-yaml-templates/quickstart/cwagent-fluentd-quickstart.yaml
+# https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/v1.9-release-branch/k8s-yaml-templates/quickstart/cwagent-fluentd-quickstart.yaml
 
 # create amazon-cloudwatch namespace
 apiVersion: v1

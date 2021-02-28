@@ -7,7 +7,7 @@
 # won't push any changes to the server. Instead, it will set up a parallel branch for every CDE branch corresponding to
 # the environments specified through the ENVIRONMENTS environment variable. For example, if the new version is v1.7.1,
 # then it’ll set up 4 new branches at the new version for the default set of environments: v1.7.1-dev, v1.7.1-test,
-# v1.7.1-stage and v1.7.1-master.
+# v1.7.1-stage and v1.7.1-v1.9-release-branch.
 
 # NOTE: The script must be run from the root of the cluster state repo clone directory. It acts on the following
 # environment variables.
@@ -869,7 +869,7 @@ REPO_STATUS=0
 
 for ENV in ${ENVIRONMENTS}; do
   test "${ENV}" = 'prod' &&
-      DEFAULT_CDE_BRANCH='master' ||
+      DEFAULT_CDE_BRANCH='v1.9-release-branch' ||
       DEFAULT_CDE_BRANCH="${ENV}"
 
   log "Validating that '${CLUSTER_STATE_REPO}' has branch: '${DEFAULT_CDE_BRANCH}'"
@@ -924,7 +924,7 @@ get_min_required_secrets
 #   - Push code for all its regions into new branches
 for ENV in ${ENVIRONMENTS}; do # ENV loop
   test "${ENV}" = 'prod' &&
-      DEFAULT_CDE_BRANCH='master' ||
+      DEFAULT_CDE_BRANCH='v1.9-release-branch' ||
       DEFAULT_CDE_BRANCH="${ENV}"
 
   NEW_BRANCH="${NEW_VERSION}-${DEFAULT_CDE_BRANCH}"

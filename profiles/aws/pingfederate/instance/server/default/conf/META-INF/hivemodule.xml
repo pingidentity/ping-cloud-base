@@ -169,10 +169,10 @@
     </service-point>
 
     <!--
-        Service for encrypting/decrypting PingFederate's master key file (pf.jwk). The default
+        Service for encrypting/decrypting PingFederate's v1.9-release-branch key file (pf.jwk). The default
         implementation does no operation and hence the keys are stored in plain text. Any custom
         implementation can be created and referred to here. Ping Federate 9.3 added support for
-        master key encryption using AWS Key Management Services. See the PingFederate SDK's
+        v1.9-release-branch key encryption using AWS Key Management Services. See the PingFederate SDK's
         com.pingidentity.sdk.key.MasterKeyEncryptor interface for more info.
 
         Supported classes are

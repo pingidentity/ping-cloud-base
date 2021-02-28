@@ -118,7 +118,7 @@
 #                           | e.g. "mini.ping-demo.com,mini.ping-oasis.com".     |
 #                           | Only used if IS_MULTI_CLUSTER is true.             |
 #                           |                                                    |
-# CONFIG_REPO_BRANCH        | The branch within this repository for server       | master
+# CONFIG_REPO_BRANCH        | The branch within this repository for server       | v1.9-release-branch
 #                           | profiles, i.e. configuration.                      |
 #                           |                                                    |
 # CONFIG_PARENT_DIR         | The parent directory for server profiles within    | aws
@@ -259,7 +259,7 @@ export PRIMARY_TENANT_DOMAIN="${PRIMARY_TENANT_DOMAIN:-${TENANT_DOMAIN}}"
 export SECONDARY_TENANT_DOMAINS="${SECONDARY_TENANT_DOMAINS}"
 export GLOBAL_TENANT_DOMAIN="${GLOBAL_TENANT_DOMAIN:-$(echo "${TENANT_DOMAIN}"|sed -e "s/[^.]*.\(.*\)/global.\1/")}"
 
-export CONFIG_REPO_BRANCH="${CONFIG_REPO_BRANCH:-master}"
+export CONFIG_REPO_BRANCH="${CONFIG_REPO_BRANCH:-v1.9-release-branch}"
 export CONFIG_PARENT_DIR="${CONFIG_PARENT_DIR:-aws}"
 
 export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"

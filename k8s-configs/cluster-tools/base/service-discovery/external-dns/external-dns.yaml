@@ -1,5 +1,5 @@
 # This yaml file was obtained from:
-# https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md
+# https://github.com/kubernetes-sigs/external-dns/blob/v1.9-release-branch/docs/tutorials/aws.md
 
 apiVersion: v1
 kind: ServiceAccount

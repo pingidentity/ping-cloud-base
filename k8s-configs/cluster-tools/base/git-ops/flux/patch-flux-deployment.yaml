@@ -13,7 +13,7 @@ spec:
         - --listen-metrics=:3031
         - --git-poll-interval=60s
         - --git-url=git@github.com:pingidentity/ping-cloud-base.git
-        - --git-branch=master
+        - --git-branch=v1.9-release-branch
         - --git-path=k8s-configs/ping-cloud/test
         - --git-readonly
         - --registry-disable-scanning

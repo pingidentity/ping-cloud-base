@@ -552,17 +552,17 @@ ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
 export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL}"
 
 # The ENVIRONMENTS variable can either be the CDE names (e.g. dev, test, stage, prod) or the branch names (e.g.
-# v1.8.0-dev, v1.8.0-test, v1.8.0-stage, v1.8.0-master). We must handle both cases. Note that the 'prod' environment
-# will have a branch name suffix of 'master'.
+# v1.8.0-dev, v1.8.0-test, v1.8.0-stage, v1.8.0-v1.9-release-branch). We must handle both cases. Note that the 'prod' environment
+# will have a branch name suffix of 'v1.9-release-branch'.
 for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
 # Run in a sub-shell so the current shell is not polluted with environment variables.
 (
   test "${ENV_OR_BRANCH}" = 'prod' &&
-      GIT_BRANCH='master' ||
+      GIT_BRANCH='v1.9-release-branch' ||
       GIT_BRANCH="${ENV_OR_BRANCH}"
 
   ENV_OR_BRANCH_SUFFIX="${ENV_OR_BRANCH##*-}"
-  test "${ENV_OR_BRANCH_SUFFIX}" = 'master' &&
+  test "${ENV_OR_BRANCH_SUFFIX}" = 'v1.9-release-branch' &&
       ENV='prod' ||
       ENV="${ENV_OR_BRANCH_SUFFIX}"
 
@@ -570,7 +570,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   export ENV="${ENV}"
   export ENVIRONMENT_TYPE="${ENV}"
 
-  # Set the cluster state repo branch to the default CDE branch, i.e. dev, test, stage or master.
+  # Set the cluster state repo branch to the default CDE branch, i.e. dev, test, stage or v1.9-release-branch.
   export CLUSTER_STATE_REPO_BRANCH="${GIT_BRANCH##*-}"
 
   # The base URL for kustomization files and environment will be different for each CDE.

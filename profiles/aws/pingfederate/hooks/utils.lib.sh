@@ -122,8 +122,8 @@ function obfuscatePassword() {
       export JAVA_HOME=/usr/lib/jvm/default-jvm/jre/
    fi
    #
-   # The master key may not exist, this means no key was passed in as a secret and this is the first run of PF
-   # for this environment, we can use the obfuscate utility to generate a master key as a byproduct of obfuscating
+   # The v1.9-release-branch key may not exist, this means no key was passed in as a secret and this is the first run of PF
+   # for this environment, we can use the obfuscate utility to generate a v1.9-release-branch key as a byproduct of obfuscating
    # the password used to authenticate to PingDirectory in the ldap properties file.
    #
    # Obfuscate the ldap password

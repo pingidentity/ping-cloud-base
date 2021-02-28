@@ -21,9 +21,9 @@ MASTER_KEY_PATH="${SERVER_ROOT_DIR}/server/default/data/${MASTER_KEY_FILE}"
 beluga_log "waiting for admin API to be ready"
 wait_for_admin_api_endpoint configArchive/export
 
-beluga_log "Fetching configuration and master key from the admin server"
+beluga_log "Fetching configuration and v1.9-release-branch key from the admin server"
 
-# Fetch the configuration and master key from the admin server
+# Fetch the configuration and v1.9-release-branch key from the admin server
 EXPORT_DIR=$(mktemp -d)
 EXPORT_ZIP_FILE="${EXPORT_DIR}/data.zip"
 
@@ -43,8 +43,8 @@ RESULT=$?
 beluga_log "Extracting config export to ${EXPORT_DIR}"
 unzip -o "${EXPORT_ZIP_FILE}" -d "${EXPORT_DIR}"
 
-# Copy master key to server directory and obfuscate
+# Copy v1.9-release-branch key to server directory and obfuscate
 find "${EXPORT_DIR}" -type f -name "${MASTER_KEY_FILE}" | xargs -I {} cp {} "${MASTER_KEY_PATH}"
-test ! -f "${MASTER_KEY_PATH}" && beluga_log "Unable to locate master key" && exit 1
+test ! -f "${MASTER_KEY_PATH}" && beluga_log "Unable to locate v1.9-release-branch key" && exit 1
 chmod 400 "${MASTER_KEY_PATH}"
 obfuscatePassword
