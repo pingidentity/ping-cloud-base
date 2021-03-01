@@ -151,7 +151,7 @@ if (test -f "${STAGING_DIR}/artifacts/artifact-list.json") || (test ! -z "${SOLU
         ls ${OUT_DIR}/instance/server/default/conf/language-packs
 
       else
-        beluga_log "Artifacts will not be deployed as could not parse the list of artifacts"
+        beluga_log "Artifacts will not be deployed as could not parse the list of artifacts."
         exit 1
       fi
     else
@@ -165,4 +165,21 @@ if (test -f "${STAGING_DIR}/artifacts/artifact-list.json") || (test ! -z "${SOLU
 else
   beluga_log "Artifacts will not be deployed as ${STAGING_DIR}/artifacts/artifact-list.json doesn't exist and no artifacts were specified in SOLUTIONS_ARTIFACTS."
   exit 0
+fi
+
+
+# Find all pf-authn-api-sdk jars that may have been unzipped into /deploy and move them into /lib
+find ${OUT_DIR}/instance/server/default/deploy -name 'pf-authn-api-sdk*.jar' -exec mv "{}" ${OUT_DIR}/instance/server/default/lib \;
+
+# Keep only the highest version of the pf-authn-api-sdk jar
+LIB_PF_AUTHN_API_SDK_JARS=$(find ${OUT_DIR}/instance/server/default/lib -name 'pf-authn-api-sdk*.jar')
+PF_AUTHN_API_SDK_COUNT=$(echo "${LIB_PF_AUTHN_API_SDK_JARS}" | wc -l | xargs)
+
+if test $PF_AUTHN_API_SDK_COUNT -gt 1; then
+  HIGHEST_VERSION_JAR=$(echo "${LIB_PF_AUTHN_API_SDK_JARS}" | sort -V | tail -1)
+  beluga_log "Multiple versions of the pf-authn-api-sdk jar detected. The highest version ${HIGHEST_VERSION_JAR} will be kept."
+  for pf_authn_api_sdk_jar in $(echo "${LIB_PF_AUTHN_API_SDK_JARS}" | sort -V | head -n -1); do
+    beluga_log "Deleting ${pf_authn_api_sdk_jar}"
+    rm "${pf_authn_api_sdk_jar}"
+  done
 fi
