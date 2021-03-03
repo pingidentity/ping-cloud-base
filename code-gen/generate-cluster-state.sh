@@ -68,130 +68,138 @@
 # In addition, the following environment variables, if present, will be used for the following purposes:
 #
 # ----------------------------------------------------------------------------------------------------------------------
-# Variable               | Purpose                                            | Default (if not present)
+# Variable                 | Purpose                                            | Default (if not present)
 # ----------------------------------------------------------------------------------------------------------------------
-# TENANT_NAME            | The name of the tenant, e.g. k8s-icecream. If      | ping-cloud-customer
-#                        | provided, this value will be used for the cluster  |
-#                        | name and must have the correct case (e.g. ci-cd    |
-#                        | vs. CI-CD). If not provided, this variable is      |
-#                        | not used, and the cluster name defaults to the CDE |
-#                        | name.                                              |
-#                        |                                                    |
-# TENANT_DOMAIN          | The tenant's domain suffix that's common to all    | ci-cd.ping-oasis.com
-#                        | CDEs e.g. k8s-icecream.com. The tenant domain in   |
-#                        | each CDE is assumed to have the CDE name as the    |
-#                        | prefix, followed by a hyphen. For example, for the |
-#                        | above suffix, the tenant domain for stage is       |
-#                        | assumed to be stage-k8s-icecream.com and a hosted  |
-#                        | zone assumed to exist on Route53 for that domain.  |
-#                        |                                                    |
-# GLOBAL_TENANT_DOMAIN   | Region-independent URL used for DNS failover/      | Replaces the first segment of
-#                        | routing.                                           | the TENANT_DOMAIN value with the
-#                        |                                                    | string "global". For example, it will
-#                        |                                                    | default to "global.poc.ping.com" for
-#                        |                                                    | tenant domain "us1.poc.ping.cloud".
-#                        |                                                    |
-# REGION                 | The region where the tenant environment is         | us-west-2
-#                        | deployed. For PCPT, this is a required parameter   |
-#                        | to Container Insights, an AWS-specific logging     |
-#                        | and monitoring solution.                           |
-#                        |                                                    |
-# REGION_NICK_NAME       | An optional nick name for the region. For example, | Same as REGION.
-#                        | this variable may be set to a unique name in       |
-#                        | multi-cluster deployments which live in the same   |
-#                        | region. The nick name will be used as the name of  |
-#                        | the region-specific code directory in the cluster  |
-#                        | state repo.                                        |
-#                        |                                                    |
-# IS_MULTI_CLUSTER       | Flag indicating whether or not this is a           | false
-#                        | multi-cluster deployment.                          |
-#                        |                                                    |
-# PRIMARY_TENANT_DOMAIN  | In multi-cluster environments, the primary domain. | Same as TENANT_DOMAIN.
-#                        | Only used if IS_MULTI_CLUSTER is true.             |
-#                        |                                                    |
-# PRIMARY_REGION         | In multi-cluster environments, the primary region. | Same as REGION.
-#                        | Only used if IS_MULTI_CLUSTER is true.             |
-#                        |                                                    |
-# CLUSTER_BUCKET_NAME    | The name of the S3 bucket where clustering         | No default. Required if IS_MULTI_CLUSTER
-#                        | information is maintained. Only used if            | is true.
-#                        | IS_MULTI_CLUSTER is true.                          |
-#                        |                                                    |
-# SIZE                   | Size of the environment, which pertains to the     | x-small
-#                        | number of user identities. Legal values are        |
-#                        | x-small, small, medium or large.                   |
-#                        |                                                    |
-# CLUSTER_STATE_REPO_URL | The URL of the cluster-state repo.                 | https://github.com/pingidentity/ping-cloud-base
-#                        |                                                    |
-# ARTIFACT_REPO_URL      | The URL for plugins (e.g. PF kits, PD extensions). | The string "unused".
-#                        | If not provided, the Ping stack will be            |
-#                        | provisioned without plugins. This URL must always  |
-#                        | have an s3 scheme, e.g.                            |
-#                        | s3://customer-repo-bucket-name.                    |
-#                        |                                                    |
-# PING_ARTIFACT_REPO_URL | This environment variable can be used to overwrite | https://ping-artifacts.s3-us-west-2.amazonaws.com
-#                        | the default endpoint for public plugins. This URL  |
-#                        | must use an https scheme as shown by the default   |
-#                        | value.                                             |
-#                        |                                                    |
-# LOG_ARCHIVE_URL        | The URL of the log archives. If provided, logs are | The string "unused".
-#                        | periodically captured and sent to this URL. For    |
-#                        | AWS S3 buckets, it must be an S3 URL, e.g.         |
-#                        | s3://logs.                                         |
-#                        |                                                    |
-# BACKUP_URL             | The URL of the backup location. If provided, data  | The string "unused".
-#                        | backups are periodically captured and sent to this |
-#                        | URL. For AWS S3 buckets, it must be an S3 URL,     |
-#                        | e.g. s3://backups.                                 |
-#                        |                                                    |
-# K8S_GIT_URL            | The Git URL of the Kubernetes base manifest files. | https://github.com/pingidentity/ping-cloud-base
-#                        |                                                    |
-# K8S_GIT_BRANCH         | The Git branch within the above Git URL.           | The git branch where this script
-#                        |                                                    | exists, i.e. CI_COMMIT_REF_NAME
-#                        |                                                    |
-# REGISTRY_NAME          | The registry hostname for the Docker images used   | docker.io
-#                        | by the Ping stack. This can be Docker hub, ECR     |
-#                        | (1111111111.dkr.ecr.us-east-2.amazonaws.com), etc. |
-#                        |                                                    |
-# SSH_ID_PUB_FILE        | The file containing the public-key (in PEM format) | No default
-#                        | used by the CD tool and Ping containers to access  |
-#                        | the cluster state and config repos, respectively.  |
-#                        | If not provided, a new key-pair will be generated  |
-#                        | by the script. If provided, the SSH_ID_KEY_FILE    |
-#                        | must also be provided and correspond to this       |
-#                        | public key.                                        |
-#                        |                                                    |
-# SSH_ID_KEY_FILE        | The file containing the private-key (in PEM        | No default
-#                        | format) used by the CD tool and Ping containers to |
-#                        | access the cluster state and config repos,         |
-#                        | respectively. If not provided, a new key-pair      |
-#                        | will be generated by the script. If provided, the  |
-#                        | SSH_ID_PUB_FILE must also be provided and          |
-#                        | correspond to this private key.                    |
-#                        |                                                    |
-# TARGET_DIR             | The directory where the manifest files will be     | /tmp/sandbox
-#                        | generated. If the target directory exists, it will |
-#                        | be deleted.                                        |
-#                        |                                                    |
-# IS_BELUGA_ENV          | An optional flag that may be provided to indicate  | false. Only intended for Beluga
-#                        | that the cluster state is being generated for      | developers.
-#                        | testing during Beluga development. If set to true, |
-#                        | the cluster name is assumed to be the tenant name  |
-#                        | and the tenant domain assumed to be the same       |
-#                        | across all 4 CDEs. On the other hand, in PCPT, the |
-#                        | cluster name for the CDEs are hardcoded to dev,    |
-#                        | test, stage and prod. The domain names for the     |
-#                        | CDEs are derived from the TENANT_DOMAIN variable   |
-#                        | as documented above. This flag exists because the  |
-#                        | Beluga developers only have access to one domain   |
-#                        | and hosted zone in their Ping IAM account role.    |
-#                        |                                                    |
-# ACCOUNT_ID_PATH_PREFIX | The SSM path prefix which stores CDE account IDs   | The string "unused".
-#                        | of the Ping Cloud customers. The environment type  |
-#                        | is appended to the key path before the value is    |
-#                        | retrieved from the SSM endpoint. The IAM role with |
-#                        | the AWS account ID must be added as an annotation  |
-#                        | to the corresponding Kubernetes service account to |
-#                        | enable IRSA (IAM Role for Service Accounts).       |
+# TENANT_NAME              | The name of the tenant, e.g. k8s-icecream. If      | ping-cloud-customer
+#                          | provided, this value will be used for the cluster  |
+#                          | name and must have the correct case (e.g. ci-cd    |
+#                          | vs. CI-CD). If not provided, this variable is      |
+#                          | not used, and the cluster name defaults to the CDE |
+#                          | name.                                              |
+#                          |                                                    |
+# TENANT_DOMAIN            | The tenant's domain suffix that's common to all    | ci-cd.ping-oasis.com
+#                          | CDEs e.g. k8s-icecream.com. The tenant domain in   |
+#                          | each CDE is assumed to have the CDE name as the    |
+#                          | prefix, followed by a hyphen. For example, for the |
+#                          | above suffix, the tenant domain for stage is       |
+#                          | assumed to be stage-k8s-icecream.com and a hosted  |
+#                          | zone assumed to exist on Route53 for that domain.  |
+#                          |                                                    |
+# GLOBAL_TENANT_DOMAIN     | Region-independent URL used for DNS failover/      | Replaces the first segment of
+#                          | routing.                                           | the TENANT_DOMAIN value with the
+#                          |                                                    | string "global". For example, it will
+#                          |                                                    | default to "global.poc.ping.com" for
+#                          |                                                    | tenant domain "us1.poc.ping.cloud".
+#                          |                                                    |
+# SECONDARY_TENANT_DOMAINS | A comma-separated list of tenant domain suffixes   | No default.
+#                          | of secondary regions in multi-region environments, |
+#                          | e.g. "xxx.eu1.ping.cloud,xxx.au1.ping.cloud".      |
+#                          | The primary tenant domain suffix must not be in    |
+#                          | the list. Only used if IS_MULTI_CLUSTER is true.   |
+#                          |                                                    |
+# REGION                   | The region where the tenant environment is         | us-west-2
+#                          | deployed. For PCPT, this is a required parameter   |
+#                          | to Container Insights, an AWS-specific logging     |
+#                          | and monitoring solution.                           |
+#                          |                                                    |
+# REGION_NICK_NAME         | An optional nick name for the region. For example, | Same as REGION.
+#                          | this variable may be set to a unique name in       |
+#                          | multi-cluster deployments which live in the same   |
+#                          | region. The nick name will be used as the name of  |
+#                          | the region-specific code directory in the cluster  |
+#                          | state repo.                                        |
+#                          |                                                    |
+# IS_MULTI_CLUSTER         | Flag indicating whether or not this is a           | false
+#                          | multi-cluster deployment.                          |
+#                          |                                                    |
+# PRIMARY_TENANT_DOMAIN    | In multi-cluster environments, the primary domain. | Same as TENANT_DOMAIN.
+#                          | Only used if IS_MULTI_CLUSTER is true.             |
+#                          |                                                    |
+# PRIMARY_REGION           | In multi-cluster environments, the primary region. | Same as REGION.
+#                          | Only used if IS_MULTI_CLUSTER is true.             |
+#                          |                                                    |
+# CLUSTER_BUCKET_NAME      | The optional name of the S3 bucket where cluster   | No default.
+#                          | information is maintained for PF. Only used if     |
+#                          | IS_MULTI_CLUSTER is true. If provided, PF will be  |
+#                          | configured with NATIVE_S3_PING discovery and will  |
+#                          | precede over DNS_PING, which is always configured. |
+#                          |                                                    |
+# SIZE                     | Size of the environment, which pertains to the     | x-small
+#                          | number of user identities. Legal values are        |
+#                          | x-small, small, medium or large.                   |
+#                          |                                                    |
+# CLUSTER_STATE_REPO_URL   | The URL of the cluster-state repo.                 | https://github.com/pingidentity/ping-cloud-base
+#                          |                                                    |
+# ARTIFACT_REPO_URL        | The URL for plugins (e.g. PF kits, PD extensions). | The string "unused".
+#                          | If not provided, the Ping stack will be            |
+#                          | provisioned without plugins. This URL must always  |
+#                          | have an s3 scheme, e.g.                            |
+#                          | s3://customer-repo-bucket-name.                    |
+#                          |                                                    |
+# PING_ARTIFACT_REPO_URL   | This environment variable can be used to overwrite | https://ping-artifacts.s3-us-west-2.amazonaws.com
+#                          | the default endpoint for public plugins. This URL  |
+#                          | must use an https scheme as shown by the default   |
+#                          | value.                                             |
+#                          |                                                    |
+# LOG_ARCHIVE_URL          | The URL of the log archives. If provided, logs are | The string "unused".
+#                          | periodically captured and sent to this URL. For    |
+#                          | AWS S3 buckets, it must be an S3 URL, e.g.         |
+#                          | s3://logs.                                         |
+#                          |                                                    |
+# BACKUP_URL               | The URL of the backup location. If provided, data  | The string "unused".
+#                          | backups are periodically captured and sent to this |
+#                          | URL. For AWS S3 buckets, it must be an S3 URL,     |
+#                          | e.g. s3://backups.                                 |
+#                          |                                                    |
+# K8S_GIT_URL              | The Git URL of the Kubernetes base manifest files. | https://github.com/pingidentity/ping-cloud-base
+#                          |                                                    |
+# K8S_GIT_BRANCH           | The Git branch within the above Git URL.           | The git branch where this script
+#                          |                                                    | exists, i.e. CI_COMMIT_REF_NAME
+#                          |                                                    |
+# REGISTRY_NAME            | The registry hostname for the Docker images used   | docker.io
+#                          | by the Ping stack. This can be Docker hub, ECR     |
+#                          | (1111111111.dkr.ecr.us-east-2.amazonaws.com), etc. |
+#                          |                                                    |
+# SSH_ID_PUB_FILE          | The file containing the public-key (in PEM format) | No default
+#                          | used by the CD tool and Ping containers to access  |
+#                          | the cluster state and config repos, respectively.  |
+#                          | If not provided, a new key-pair will be generated  |
+#                          | by the script. If provided, the SSH_ID_KEY_FILE    |
+#                          | must also be provided and correspond to this       |
+#                          | public key.                                        |
+#                          |                                                    |
+# SSH_ID_KEY_FILE          | The file containing the private-key (in PEM        | No default
+#                          | format) used by the CD tool and Ping containers to |
+#                          | access the cluster state and config repos,         |
+#                          | respectively. If not provided, a new key-pair      |
+#                          | will be generated by the script. If provided, the  |
+#                          | SSH_ID_PUB_FILE must also be provided and          |
+#                          | correspond to this private key.                    |
+#                          |                                                    |
+# TARGET_DIR               | The directory where the manifest files will be     | /tmp/sandbox
+#                          | generated. If the target directory exists, it will |
+#                          | be deleted.                                        |
+#                          |                                                    |
+# IS_BELUGA_ENV            | An optional flag that may be provided to indicate  | false. Only intended for Beluga
+#                          | that the cluster state is being generated for      | developers.
+#                          | testing during Beluga development. If set to true, |
+#                          | the cluster name is assumed to be the tenant name  |
+#                          | and the tenant domain assumed to be the same       |
+#                          | across all 4 CDEs. On the other hand, in PCPT, the |
+#                          | cluster name for the CDEs are hardcoded to dev,    |
+#                          | test, stage and prod. The domain names for the     |
+#                          | CDEs are derived from the TENANT_DOMAIN variable   |
+#                          | as documented above. This flag exists because the  |
+#                          | Beluga developers only have access to one domain   |
+#                          | and hosted zone in their Ping IAM account role.    |
+#                          |                                                    |
+# ACCOUNT_ID_PATH_PREFIX   | The SSM path prefix which stores CDE account IDs   | The string "unused".
+#                          | of the Ping Cloud customers. The environment type  |
+#                          | is appended to the key path before the value is    |
+#                          | retrieved from the SSM endpoint. The IAM role with |
+#                          | the AWS account ID must be added as an annotation  |
+#                          | to the corresponding Kubernetes service account to |
+#                          | enable IRSA (IAM Role for Service Accounts).       |
 ########################################################################################################################
 
 #### SCRIPT START ####
@@ -229,6 +237,7 @@ ${REGION_NICK_NAME}
 ${PRIMARY_REGION}
 ${TENANT_DOMAIN}
 ${PRIMARY_TENANT_DOMAIN}
+${SECONDARY_TENANT_DOMAINS}
 ${GLOBAL_TENANT_DOMAIN}
 ${ARTIFACT_REPO_URL}
 ${PING_ARTIFACT_REPO_URL}
@@ -356,8 +365,8 @@ if test -z "${IS_MULTI_CLUSTER}"; then
 fi
 
 if "${IS_MULTI_CLUSTER}"; then
-  check_env_vars "CLUSTER_BUCKET_NAME"
-  if test $? -ne 0; then
+  if test ! "${CLUSTER_BUCKET_NAME}" && test ! "${SECONDARY_TENANT_DOMAINS}"; then
+    echo 'In multi-cluster mode, one or both of CLUSTER_BUCKET_NAME and SECONDARY_TENANT_DOMAINS must be set.'
     popd >/dev/null 2>&1
     exit 1
   fi
@@ -375,6 +384,7 @@ echo "Initial PRIMARY_REGION: ${PRIMARY_REGION}"
 echo "Initial TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Initial GLOBAL_TENANT_DOMAIN: ${GLOBAL_TENANT_DOMAIN}"
 echo "Initial PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
+echo "Initial SECONDARY_TENANT_DOMAINS: ${SECONDARY_TENANT_DOMAINS}"
 
 echo "Initial CLUSTER_STATE_REPO_URL: ${CLUSTER_STATE_REPO_URL}"
 
@@ -419,6 +429,7 @@ export IS_MULTI_CLUSTER="${IS_MULTI_CLUSTER}"
 export PRIMARY_REGION="${PRIMARY_REGION:-${REGION}}"
 PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX="${PRIMARY_TENANT_DOMAIN%.}"
 export PRIMARY_TENANT_DOMAIN="${PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX:-${TENANT_DOMAIN_NO_DOT_SUFFIX}}"
+export SECONDARY_TENANT_DOMAINS="${SECONDARY_TENANT_DOMAINS}"
 
 if "${IS_BELUGA_ENV}"; then
   DERIVED_GLOBAL_TENANT_DOMAIN="global.${TENANT_DOMAIN_NO_DOT_SUFFIX}"
@@ -464,6 +475,7 @@ echo "Using PRIMARY_REGION: ${PRIMARY_REGION}"
 echo "Using TENANT_DOMAIN: ${TENANT_DOMAIN}"
 echo "Using GLOBAL_TENANT_DOMAIN: ${GLOBAL_TENANT_DOMAIN}"
 echo "Using PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
+echo "Using SECONDARY_TENANT_DOMAINS: ${SECONDARY_TENANT_DOMAINS}"
 
 echo "Using CLUSTER_STATE_REPO_URL: ${CLUSTER_STATE_REPO_URL}"
 echo "Using CLUSTER_STATE_REPO_PATH: ${REGION_NICK_NAME}"
@@ -698,6 +710,12 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     PRIMARY_PING_KUST_FILE="${ENV_DIR}/${REGION_NICK_NAME}/kustomization.yaml"
     sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/' "${PRIMARY_PING_KUST_FILE}"
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
+  fi
+
+  if "${IS_BELUGA_ENV}"; then
+    BASE_ENV_VARS="${ENV_DIR}/base/env_vars"
+    echo >> "${BASE_ENV_VARS}"
+    echo "IS_BELUGA_ENV=true" >> "${BASE_ENV_VARS}"
   fi
 )
 done
