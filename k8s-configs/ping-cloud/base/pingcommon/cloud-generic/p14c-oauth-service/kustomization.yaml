@@ -5,21 +5,15 @@ namespace: ping-cloud
 
 commonLabels:
   app: ping-cloud
+  role: p14c-oauth-service
 
 generatorOptions:
   disableNameSuffixHash: true
 
 configMapGenerator:
-- name: pingcommon-init
-  files:
-  - scripts/copy-dependencies.sh
-  - scripts/wait-for-services.sh
-  - scripts/utils.lib.sh
+- name: p14c-oauth-service-environment-variables
 
 resources:
-- namespace.yaml
-- rbac.yaml
 - secret.yaml
-- configmap.yaml
-- pingcloud-metadata
-- p14c-oauth-service
+- deployment.yaml
+- rbac.yaml

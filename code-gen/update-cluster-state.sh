@@ -326,6 +326,7 @@ get_min_required_secrets() {
   fi
 
   # If secrets.yaml has contents, then attempt to retrieve each required secret.
+  ALL_MIN_SECRETS_FOUND=false
   if test -s "${ping_cloud_secrets_yaml}"; then
     ALL_MIN_SECRETS_FOUND=true
 
