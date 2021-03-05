@@ -92,6 +92,12 @@ configMapGenerator:
   envs:
   - ../base/env_vars
 
+# PingCloud-oauth
+- name: p14c-oauth-service-environment-variables
+  behavior: merge
+  envs:
+  - env_vars
+
 patchesStrategicMerge:
 
 ### Regional enablement - remove admins, backups, etc. from secondary ###
