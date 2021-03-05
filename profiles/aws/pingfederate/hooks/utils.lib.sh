@@ -144,9 +144,11 @@ ${PF_LDAP_PASSWORD_OBFUSCATED}'
 
    PF_LDAP_PASSWORD_OBFUSCATED="${PF_LDAP_PASSWORD_OBFUSCATED:8}"
 
-   envsubst "${vars}" \
-      < "${STAGING_DIR}/templates/pingfederate-ldap-ds.xml" \
-      > ../server/default/data/pingfederate-ldap-ds.xml
+   if [ ! -e "../server/default/data/pingfederate-ldap-ds.xml" ]; then
+      envsubst "${vars}" \
+         < "${STAGING_DIR}/templates/pingfederate-ldap-ds.xml" \
+         > ../server/default/data/pingfederate-ldap-ds.xml
+   fi
 
    cd "${currentDir}"
 }
