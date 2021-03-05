@@ -46,6 +46,12 @@ configMapGenerator:
   envs:
   - env_vars
 
+# PingCloud-oauth
+- name: p14c-oauth-service-environment-variables
+  behavior: merge
+  envs:
+  - env_vars
+
 patchesJson6902:
 
 # pingcloud-metadata ingress

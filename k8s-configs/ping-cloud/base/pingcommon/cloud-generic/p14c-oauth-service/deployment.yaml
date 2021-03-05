@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: p14c-oauth-service
+spec:
+  selector:
+    matchLabels:
+      role: p14c-oauth-service
+  replicas: 1
+  template:
+    metadata:
+      name: p14c-oauth-service
+      labels:
+        role: p14c-oauth-service
+    spec:
+      serviceAccount: p14c-oauth-serviceaccount
+      containers:
+      - name: pingcloud-oauth
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-services/p14c-integration:v1.0.0-pdo-1776-entitlement-image
+
+        # TODO: Change this back when the image is finally pointed to a stable version ^^
+#        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "300m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        envFrom:
+        - configMapRef:
+            name: p14c-oauth-service-environment-variables
+        - secretRef:
+            name: p14c-bootstrap-secret
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        # The -u flag is necessary for python to emit logging to standard out
+        command: [ 'python3', '-u', '/app/src/oauth_client_services_controller.py' ]
+
