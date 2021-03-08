@@ -68,6 +68,8 @@ set_p14c_as_token_provider() {
 
 
 if [[ -z "${ENVIRONMENT_ID}" ]]; then
+  beluga_log "No PingOne environment ID detected"
+else
   beluga_log "PingOne environment ID detected"
   
   if is_previously_configured; then
@@ -88,8 +90,6 @@ if [[ -z "${ENVIRONMENT_ID}" ]]; then
   fi
 
   exit 0
-else
-  beluga_log "No PingOne environment ID detected"
 fi
 
 
