@@ -9,6 +9,9 @@ ${VERBOSE} && set -x
 if test -f "${STAGING_DIR}/p14c_env_vars"; then
     export $(grep -v '^#' ${STAGING_DIR}/p14c_env_vars | xargs -0)
     export_container_env $(sed 's/=.*//' ${STAGING_DIR}/p14c_env_vars | tr '\n' ' ')
+
+    AUTHENTICATION_MODE=OIDC
+    export_container_env AUTHENTICATION_MODE
 fi
 
 exit 0
