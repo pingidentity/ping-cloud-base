@@ -65,7 +65,34 @@ set_p14c_as_token_provider() {
   return $?
 }
 
-echo "ENVIRONMENT_ID - ${ENVIRONMENT_ID}"
+
+
+if [[ -z "${ENVIRONMENT_ID}" ]]; then
+  beluga_log "PingOne environment ID detected"
+  
+  if is_previously_configured; then
+    exit 0
+  fi
+
+  beluga_log "P14C_ISSUER - ${AUTH_SERVER_BASE_URL}/${ENVIRONMENT_ID}/as"
+  export P14C_ISSUER = "${AUTH_SERVER_BASE_URL}/${ENVIRONMENT_ID}/as"
+
+  if ! add_p14c_credentials; then
+    beluga_error "Failed to add P14C credentials"
+    exit 1
+  fi
+
+  if ! set_p14c_as_token_provider; then
+    beluga_error "Failed to add P14C as a token provider"
+    exit 1
+  fi
+
+  exit 0
+else
+  beluga_log "No PingOne environment ID detected"
+fi
+
+
 
 if is_previously_configured && ! p14c_credentials_changed; then
   exit 0

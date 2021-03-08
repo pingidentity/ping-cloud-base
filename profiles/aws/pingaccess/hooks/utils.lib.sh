@@ -426,10 +426,6 @@ function export_environment_variables() {
     export PA_GCOPTION="${PA_WAS_GCOPTION:-${PA_GCOPTION}}"
 
     test -f "${STAGING_DIR}/p14c_env_vars" && export $(grep -v '^#' ${STAGING_DIR}/p14c_env_vars | xargs -0)
-    echo "CLIENT_ID - ${CLIENT_ID}"
-    echo "CLIENT_SECRET - ${CLIENT_SECRET}"
-    echo "ENVIRONMENT_ID - ${ENVIRONMENT_ID}"
-    echo "AUTH_SERVER_BASE_URL - ${AUTH_SERVER_BASE_URL}"
   else
     export K8S_STATEFUL_SET_NAME="${K8S_STATEFUL_SET_NAME_PINGACCESS}"
     export K8S_SERVICE_NAME_ADMIN="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}"
