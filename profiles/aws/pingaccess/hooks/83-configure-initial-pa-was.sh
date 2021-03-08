@@ -334,6 +334,41 @@ echo "ENVIRONMENT_ID - ${ENVIRONMENT_ID}"
 # and break the WAS liveness probe.
 update_application_reserved_endpoint
 
+if [[ -z "${ENVIRONMENT_ID}" ]]; then
+  beluga_log "No PingOne environment ID detected"
+else
+  beluga_log "PingOne environment ID detected"
+  
+  if is_previously_configured; then
+    exit 0
+  fi
+
+  export P14C_CLIENT_ID="${CLIENT_ID}"
+  export P14C_CLIENT_SECRET="${CLIENT_SECRET}"
+
+  create_web_session
+  create_pa_virtual_host
+  create_pf_virtual_host
+  create_kibana_virtual_host
+  create_grafana_virtual_host
+  create_prometheus_virtual_host
+  create_argocd_virtual_host
+  create_pa_site
+  create_pf_site
+  create_kibana_site
+  create_grafana_site
+  create_prometheus_site
+  create_argocd_site
+  create_pa_application
+  create_pf_application
+  create_kibana_application
+  create_grafana_application
+  create_prometheus_application
+  create_argocd_application
+
+  exit 0
+fi
+
 if is_previously_configured; then
   if p14c_credentials_changed; then
     update_web_session
