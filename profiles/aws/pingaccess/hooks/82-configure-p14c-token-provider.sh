@@ -65,6 +65,8 @@ set_p14c_as_token_provider() {
   return $?
 }
 
+echo "ENVIRONMENT_ID - ${ENVIRONMENT_ID}"
+
 if is_previously_configured && ! p14c_credentials_changed; then
   exit 0
 fi

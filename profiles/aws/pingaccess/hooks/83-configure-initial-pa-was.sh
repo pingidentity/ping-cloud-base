@@ -326,6 +326,8 @@ is_production_environment() {
   test "${ENVIRONMENT_TYPE}"
 }
 
+echo "ENVIRONMENT_ID - ${ENVIRONMENT_ID}"
+
 # PDO-1432 - Always update the reserved
 # endpoint from /pa to /pa-was so that
 # WAS archives don't reset this value
