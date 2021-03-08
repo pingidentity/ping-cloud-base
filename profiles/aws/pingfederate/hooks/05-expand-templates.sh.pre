@@ -9,6 +9,6 @@ ${VERBOSE} && set -x
 beluga_log "Applying oidc.properties values"
 
 test -f "${STAGING_DIR}/p14c_env_vars" && export $(grep -v '^#' ${STAGING_DIR}/p14c_env_vars | xargs -0)
-beluga_log "P14C_OIDC_CLIENT_ID = ${P14C_OIDC_CLIENT_ID}"
+beluga_log "PF_OIDC_CLIENT_ID = ${PF_OIDC_CLIENT_ID}"
 
 exit 0
