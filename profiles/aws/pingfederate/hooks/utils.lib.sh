@@ -144,7 +144,9 @@ ${PF_LDAP_PASSWORD_OBFUSCATED}'
 
    PF_LDAP_PASSWORD_OBFUSCATED="${PF_LDAP_PASSWORD_OBFUSCATED:8}"
 
-   if [ ! -e "../server/default/data/pingfederate-ldap-ds.xml" ]; then
+   # We want to avoid messing with the ldap config store if it's already got data in it.
+   # The default empty file in a fresh install is 3 lines.
+   if [ $(wc -l < ../server/default/data/pingfederate-ldap-ds.xml) -le 5 ]; then
       envsubst "${vars}" \
          < "${STAGING_DIR}/templates/pingfederate-ldap-ds.xml" \
          > ../server/default/data/pingfederate-ldap-ds.xml
