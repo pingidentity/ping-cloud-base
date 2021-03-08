@@ -6,9 +6,9 @@ ${VERBOSE} && set -x
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 
-beluga_log "Applying oidc.properties values"
-
-test -f "${STAGING_DIR}/p14c_env_vars" && export $(grep -v '^#' ${STAGING_DIR}/p14c_env_vars | xargs -0)
-beluga_log "PF_OIDC_CLIENT_ID = ${PF_OIDC_CLIENT_ID}"
+if test -f "${STAGING_DIR}/p14c_env_vars"; then
+    export $(grep -v '^#' ${STAGING_DIR}/p14c_env_vars | xargs -0)
+    export_container_env $(sed 's/=.*//' ../p14c_env_vars | tr '\n' ' ')
+fi
 
 exit 0
