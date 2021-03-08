@@ -76,8 +76,7 @@ else
     exit 0
   fi
 
-  beluga_log "P14C_ISSUER - ${AUTH_SERVER_BASE_URL}/${ENVIRONMENT_ID}/as"
-  export P14C_ISSUER = "${AUTH_SERVER_BASE_URL}/${ENVIRONMENT_ID}/as"
+  export P14C_ISSUER="${AUTH_SERVER_BASE_URL}/${ENVIRONMENT_ID}/as"
 
   if ! add_p14c_credentials; then
     beluga_error "Failed to add P14C credentials"
