@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+
+# Set env vars used in oidc.properties
+
+${VERBOSE} && set -x
+. "${HOOKS_DIR}/pingcommon.lib.sh"
+. "${HOOKS_DIR}/utils.lib.sh"
+
+beluga_log "Applying oidc.properties values"
+
+test -f "${STAGING_DIR}/p14c_env_vars" && export $(grep -v '^#' ${STAGING_DIR}/p14c_env_vars | xargs -0)
+beluga_log "P14C_OIDC_CLIENT_ID = ${P14C_OIDC_CLIENT_ID}"
+
+exit 0
