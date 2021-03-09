@@ -11,7 +11,7 @@ if test -f "${STAGING_DIR}/p14c_env_vars"; then
     export_container_env $(sed 's/=.*//' ${STAGING_DIR}/p14c_env_vars | tr '\n' ' ')
 
     AUTHENTICATION_MODE=OIDC
-    PF_ADMIN_HOSTNAME=pingaccess-admin-en-jayhsu.en-jayhsu-dev.ping-qual.com
+    PF_ADMIN_HOSTNAME=pingfederate-admin-en-jayhsu.en-jayhsu-dev.ping-qual.com
     export_container_env AUTHENTICATION_MODE PF_ADMIN_HOSTNAME
 fi
 
