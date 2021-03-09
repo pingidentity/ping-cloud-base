@@ -65,6 +65,7 @@ pf.console.login.mode=multiple
 #     LDAP   - External LDAP authentication.
 #     cert   - X509 certificate-based authentication.
 #     RADIUS - External RADIUS authentication.
+#     OIDC   - External or Internal OIDC authentication.
 # Default is native.
 pf.console.authentication=${AUTHENTICATION_MODE}
 
@@ -92,6 +93,11 @@ cert.properties.file=cert_auth.properties
 # When RADIUS-based authentication is enabled, this property indicates the
 # name of the configuration properties file.
 radius.properties.file=radius.properties
+
+#
+# When OIDC administrative-console authentication is enabled, this property
+# indicates the name of the file containing configuration properties.
+oidc.properties.file=oidc.properties
 
 # -------------------------
 # Runtime Server Properties
