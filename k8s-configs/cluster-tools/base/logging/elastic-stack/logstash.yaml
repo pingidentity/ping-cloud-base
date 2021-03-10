@@ -785,7 +785,7 @@ spec:
       initContainers:
 
       - name: check-service-availability
-        image: public.ecr.aws/r2h3l6e4/pingcloud-tools/enrichment-bootstrap:7.8.0-v1.0.1
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:7.8.0-v1.0.1
         
         imagePullPolicy: IfNotPresent
         command: ["sh", '$(CONTAINER_NAME).sh']
@@ -802,7 +802,7 @@ spec:
           value: "green"
 
       - name: create-enrichment-cache-files
-        image: public.ecr.aws/r2h3l6e4/pingcloud-tools/enrichment-bootstrap:7.8.0-v1.0.1
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:7.8.0-v1.0.1
         
         imagePullPolicy: IfNotPresent
         workingDir: /scripts
@@ -833,7 +833,7 @@ spec:
 
       containers:
       - name: logstash
-        image: public.ecr.aws/r2h3l6e4/pingcloud-tools/logstash:7.8.0-v1.0.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logstash:7.8.0-v1.0.0
         imagePullPolicy: IfNotPresent
         securityContext:
           runAsUser: 0
@@ -909,7 +909,7 @@ spec:
 
       # Sidecar enrichment container which updates Logstash dictionaries
       - name: enrichment-sidecar
-        image: public.ecr.aws/r2h3l6e4/pingcloud-tools/enrichment-bootstrap:7.8.0-v1.0.1
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:7.8.0-v1.0.1
         
         imagePullPolicy: IfNotPresent
         workingDir: /scripts
