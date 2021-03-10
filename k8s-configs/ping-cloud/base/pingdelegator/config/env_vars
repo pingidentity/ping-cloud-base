@@ -44,3 +44,6 @@ PD_DELEGATOR_DADMIN_API_NAMESPACE=
 # Set to true if the "profile" scope is supported for the Delegated Admin OIDC client on
 # PingFederate and you wish to use it to show the current user's name in the navigation.
 PD_DELEGATOR_PROFILE_SCOPE_ENABLED=false
+
+# Short-term fix for PDO-2138.
+PING_CONTAINER_PRIVILEGED=true
