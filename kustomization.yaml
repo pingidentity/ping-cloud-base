@@ -94,6 +94,7 @@ patchesStrategicMerge:
     PD_DELEGATOR_PUBLIC_HOSTNAME: pingdelegator.${TENANT_DOMAIN}
     PD_HTTP_PUBLIC_HOSTNAME: pingdirectory.${TENANT_DOMAIN}
     REGION: ${REGION}
+    NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
 
 patchesJson6902:
 

@@ -110,6 +110,8 @@ spec:
             secretKeyRef:
               name: pingcommon-passwords
               key: PF_ADMIN_USER_PASSWORD
+        - name: NEW_RELIC_APP_NAME
+          value: ${TENANT_NAME}_PingFederate-Admin
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
@@ -139,6 +141,9 @@ spec:
         - name: data-dir
           mountPath: /opt/staging/jmx_prometheus_javaagent-0.14.0.jar
           subPath: jmx_prometheus_javaagent-0.14.0.jar
+        - name: data-dir
+          mountPath: /opt/staging/newrelic.jar
+          subPath: newrelic.jar
         - name: data-dir
           mountPath: /opt/staging/native-s3-ping.jar
           subPath: native-s3-ping.jar
