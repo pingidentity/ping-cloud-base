@@ -266,7 +266,7 @@ fi
 #Check for NewRelic License Key(used by NewRelic Agent to push data)
 if [ ! -z "$NEW_RELIC_LICENSE_KEY" ]; then
     NEW_RELIC_APP_NAME=$TENANT_NAME'_'$NEW_RELIC_APP_NAME
-    NEW_RELIC_LABELS=customer_name:${TENANT_NAME};region:${REGION}
+    NEW_RELIC_LABELS=customer_name:${TENANT_NAME};region:${REGION};environment:${ENVIRONMENT}
     JAVA_AGENT_OPTS="$JAVA_OPTS -javaagent:/opt/staging/newrelic.jar"
 fi
 
