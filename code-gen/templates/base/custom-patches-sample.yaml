@@ -31,6 +31,17 @@ spec:
 
 ---
 
+### Update the header size max for customers needing larger sized cookies/headers ###
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-configuration
+  namespace: ingress-nginx-public
+data:
+  large_client_header_buffers: "4 128k"
+
+---
+
 ################################################
 #              Nginx private
 ################################################
@@ -192,6 +203,17 @@ spec:
           limits:
             memory: "1Gi"
             cpu: "1"
+
+---
+
+### Update the PingAccess-WAS engine's proxy body size ###
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: pingaccess-was-ingress
+  namespace: ping-cloud
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 16m
 
 ---
 
