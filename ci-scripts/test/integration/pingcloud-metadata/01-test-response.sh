@@ -24,7 +24,7 @@ log "Verifying image ids retrieved from the metadata endpoint"
 temp_file_metadata="$(mktemp)"
 temp_file_kubectl="$(mktemp)"
 
-echo "${RETURN_VAL}" | jq -r .[].image | grep -v 'N/A' > "${temp_file_metadata}"
+echo "${RETURN_VAL}" | jq -r '.[] [].image' | grep -v 'N/A' > "${temp_file_metadata}"
 
 for image_id in $(kubectl -n "${NAMESPACE}" get pod -o jsonpath="{.items[*].spec.containers[*].image}");
 do
