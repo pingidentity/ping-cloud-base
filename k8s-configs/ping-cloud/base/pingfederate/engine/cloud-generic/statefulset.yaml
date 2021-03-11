@@ -110,7 +110,7 @@ spec:
               name: pingcommon-passwords
               key: PF_LDAP_PASSWORD
         - name: NEW_RELIC_APP_NAME
-          value: ${TENANT_NAME}_PingFederate
+          value: PingFederate
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables

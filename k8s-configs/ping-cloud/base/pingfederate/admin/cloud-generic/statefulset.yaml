@@ -111,7 +111,7 @@ spec:
               name: pingcommon-passwords
               key: PF_ADMIN_USER_PASSWORD
         - name: NEW_RELIC_APP_NAME
-          value: ${TENANT_NAME}_PingFederate-Admin
+          value: PingFederate-Admin
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
