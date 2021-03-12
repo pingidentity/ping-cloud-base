@@ -28,10 +28,8 @@ spec:
       serviceAccount: ping-serviceaccount
       initContainers:
       - name: pingfederate-p14c-init
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-services/p14c-integration:v1.0.0-pdo-1776-entitlement-image
-        # TODO: Change this back when the image is finally pointed to a stable version ^^
-        # imagePullPolicy: IfNotPresent
-        imagePullPolicy: Always
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.0
+        imagePullPolicy: IfNotPresent
         env:
         - name: NAMESPACE
           valueFrom:

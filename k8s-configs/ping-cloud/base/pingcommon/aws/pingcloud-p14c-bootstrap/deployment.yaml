@@ -16,8 +16,7 @@ spec:
       containers:
       - name: p14c-bootstrap
         image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-bootstrap:v1.0.0
-        # FIXME: remove after development is done
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         env:
         - name: NAMESPACE
           valueFrom:
