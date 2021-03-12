@@ -264,9 +264,9 @@ if [ "$JAVA_MAJOR_VERSION" = "1" ]; then
 fi
 
 #Check for NewRelic License Key(used by NewRelic Agent to push data)
-if [ ! -z "$NEW_RELIC_LICENSE_KEY" ]; then
-    NEW_RELIC_APP_NAME=$TENANT_NAME'_'$NEW_RELIC_APP_NAME
-    JAVA_AGENT_OPTS="$JAVA_AGENT_OPTS -javaagent:/opt/staging/newrelic.jar"
+if [ ! -z ${NEW_RELIC_LICENSE_KEY} ]; then
+    NEW_RELIC_APP_NAME="${TENANT_NAME}_${NEW_RELIC_APP_NAME}"
+    JAVA_AGENT_OPTS="${JAVA_AGENT_OPTS} -javaagent:/opt/staging/newrelic.jar"
 fi
 
 # Check for run.properties (used by PingFederate to configure ports, etc.)

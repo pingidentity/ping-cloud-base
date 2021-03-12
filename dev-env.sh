@@ -160,6 +160,9 @@
 # K8S_CONTEXT               | The current Kubernetes context, i.e. cluster.      | The current context as set in
 #                           | spec is saved before applying it.                  | ~/.kube/config or the config file
 #                           |                                                    | to which KUBECONFIG is set.
+#                           |                                                    |
+# NEW_RELIC_LICENSE_KEY     | The key of NewRelic APM Agent used to send data to | No default
+#                           | NewRelic account                                   |
 ########################################################################################################################
 
 #

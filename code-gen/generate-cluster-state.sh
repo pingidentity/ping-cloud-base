@@ -206,6 +206,8 @@
 #                          | is currently only used if the orchestrator for     |
 #                          | PingCloud environments is MyPing.                  |
 #
+# NEW_RELIC_LICENSE_KEY    | The key of NewRelic APM Agent used to send data to | No default
+#                          | NewRelic account                                   |
 ########################################################################################################################
 
 #### SCRIPT START ####

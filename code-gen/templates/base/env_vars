@@ -65,6 +65,10 @@ K8S_GIT_BRANCH=${K8S_GIT_BRANCH}
 # The name of the Docker image registry
 REGISTRY_NAME=${REGISTRY_NAME}
 
+# NewRelic Tags
+TENANT_NAME=${TENANT_NAME}
+NEW_RELIC_LABELS=region:${REGION};customer_name:${TENANT_NAME};environment:${ENV}
+
 ############################################################
 # Cluster state repo details
 ############################################################
@@ -161,6 +165,3 @@ GRAFANA_PUBLIC_HOSTNAME=monitoring.${DNS_ZONE_DERIVED}
 KIBANA_PUBLIC_HOSTNAME=logs.${DNS_ZONE_DERIVED}
 ARGOCD_PUBLIC_HOSTNAME=argocd.${DNS_ZONE_DERIVED}
 
-#NewRelic Tags
-TENANT_NAME=${TENANT_NAME}
-NEW_RELIC_LABELS=region:${REGION};customer_name:${TENANT_NAME};environment:${ENV}
