@@ -7,11 +7,18 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-testDeploymentAvailability() {
+testP14COAuthDeploymentAvailability() {
 
   status=$(kubectl get deployment p14c-oauth-service -o json | jq -r '.status.conditions[0].type')
   assertEquals 0 $?
   assertEquals "The status of the p14c-oauth-service deployment should be Available but was: ${status}" 'Available' ${status}
+}
+
+testP14CBootstrapDeploymentAvailability() {
+
+  status=$(kubectl get deployment p14c-bootstrap -o json | jq -r '.status.conditions[0].type')
+  assertEquals 0 $?
+  assertEquals "The status of the p14c-bootstrap deployment should be Available but was: ${status}" 'Available' ${status}
 }
 
 

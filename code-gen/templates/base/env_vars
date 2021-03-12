@@ -46,6 +46,13 @@ LOG_ARCHIVE_URL=${LOG_ARCHIVE_URL}
 BACKUP_URL=${BACKUP_URL}
 
 ############################################################
+# Platform event queue variables
+############################################################
+PLATFORM_EVENT_QUEUE_NAME=${EVENT_QUEUE_NAME}
+PLATFORM_EVENT_QUEUE_POLL_BATCH_SIZE=1
+PLATFORM_EVENT_QUEUE_POLL_INTERVAL_SECONDS=2
+
+############################################################
 # Miscellaneous ping-cloud-base variables
 ############################################################
 # Namespace where Ping apps are deployed

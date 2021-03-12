@@ -7,11 +7,18 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-testPodAvailability() {
+testP14COAuthPodAvailability() {
 
   status=$(kubectl get pods --selector=role=p14c-oauth-service -o json | jq -r '.items[].status.containerStatuses[].ready')
   assertEquals 0 $?
   assertEquals "The status of the p14c-oauth-service pod should be ready but was: ${status}" 'true' ${status}
+}
+
+testP14CBootstrapPodAvailability() {
+
+  status=$(kubectl get pods --selector=role=p14c-bootstrap -o json | jq -r '.items[].status.containerStatuses[].ready')
+  assertEquals 0 $?
+  assertEquals "The status of the p14c-bootstrap pod should be ready but was: ${status}" 'true' ${status}
 }
 
 

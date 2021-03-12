@@ -27,6 +27,20 @@ spec:
     spec:
       serviceAccount: ping-serviceaccount
       initContainers:
+      - name: pingaccess-was-p14c-init
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-services/p14c-integration:v1.0.0-pdo-1776-entitlement-image
+        # TODO: Change this back when the image is finally pointed to a stable version ^^
+        # imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        command: [ 'python3', '-u', '/app/src/pingaccess_was_p14c_init.py' ]
+        volumeMounts:
+        - name: data-dir
+          mountPath: /opt/staging
       - name: pingaccess-was-init
         # FIXME: switch to same user as app
         securityContext:
@@ -107,6 +121,9 @@ spec:
         - name: data-dir
           mountPath: /opt/staging/ds_env_vars
           subPath: ds_env_vars
+        - name: data-dir
+          mountPath: /opt/staging/p14c_env_vars
+          subPath: p14c_env_vars
         readinessProbe:
           exec:
             command: [ /opt/staging/hooks/85-pa-admin-readiness.sh ]

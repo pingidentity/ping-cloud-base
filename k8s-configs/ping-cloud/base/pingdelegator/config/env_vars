@@ -19,7 +19,10 @@ SECRETS_DIR=/usr/local/secrets
 PD_DELEGATOR_HTTPS_PORT=1443
 
 # The hostname and HTTPS port for the public Ping Federate instance.
-PF_ENGINE_PUBLIC_PORT=443
+# Leave blank due to DS-38745, DS-39639 recent changes.
+# If you provide 443 as the port here, then you will need to go to PF Instance and change its BaseURL to include PORT
+# This will cause an error in Delegated Admin if you don't.
+PF_ENGINE_PUBLIC_PORT=
 
 # The client id that was set up with Ping Federate for Ping Delegator.
 PF_DELEGATOR_CLIENTID=dadmin
@@ -44,3 +47,6 @@ PD_DELEGATOR_DADMIN_API_NAMESPACE=
 # Set to true if the "profile" scope is supported for the Delegated Admin OIDC client on
 # PingFederate and you wish to use it to show the current user's name in the navigation.
 PD_DELEGATOR_PROFILE_SCOPE_ENABLED=false
+
+# Short-term fix for PDO-2138.
+PING_CONTAINER_PRIVILEGED=true
