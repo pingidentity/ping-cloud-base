@@ -14,6 +14,7 @@ if ! [ -z "${OPERATIONAL_MODE}" ] &&  [ "${OPERATIONAL_MODE}" != "CLUSTERED_ENGI
    run_hook "10-setup-master-key.sh"
    run_hook "10-set-engine-threads.sh"
    run_hook "10-cleanup-work-directory.sh"
+   run_hook "10-configure-ldap-ds.sh"
 fi
 
 if ! [ -z "${OPERATIONAL_MODE}" ] &&  [ "${OPERATIONAL_MODE}" = "CLUSTERED_ENGINE" ]; then
