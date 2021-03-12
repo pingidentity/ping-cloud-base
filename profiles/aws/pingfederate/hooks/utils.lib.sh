@@ -18,7 +18,8 @@ function make_api_request() {
         --retry-delay 1 \
         --retry-connrefused \
         -u ${PF_ADMIN_USER_USERNAME}:${PF_ADMIN_USER_PASSWORD} \
-        -H 'X-Xsrf-Header: PingFederate' "$@")
+        -H "Content-Type: application/json" \
+        -H "X-Xsrf-Header: PingFederate" "$@")
   curl_result=$?
   "${VERBOSE}" && set -x
 
@@ -27,14 +28,13 @@ function make_api_request() {
     return ${curl_result}
   fi
 
-  if test "${http_code}" -ne 200; then
-    beluga_log "API call returned HTTP status code: ${http_code}"
-    return 1
-  fi
-
-  cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
-
-  return 0
+  if test "${http_code}" -eq 200 || test "${http_code}" -eq 201; then
+    cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
+    return 0                                                            
+  fi                                                                    
+                                                                        
+  beluga_log "API call returned HTTP status code: ${http_code}"         
+  return 1 
 }
 
 ########################################################################################################################
