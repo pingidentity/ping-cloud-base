@@ -48,11 +48,11 @@ if test ! -f "${DST_FILE}"; then
     exit 1
 fi
 
-beluga_log 'Downloading NewRelic Java APM Agent from ping-artifacts-test bucket'
+beluga_log 'Downloading NewRelic Java APM Agent from ping-artifacts bucket'
 
 DST_FILE='/data/newrelic.jar'
 wget -qO "${DST_FILE}" \
-    https://ping-artifacts-test.s3.amazonaws.com/pingcommon/newrelic-java-agent/newrelic.jar
+    https://ping-artifacts.s3.amazonaws.com/pingcommon/newrelic-java-agent/newrelic.jar
 
 beluga_log 'Checking for newrelic jar file in data directory'
 if test ! -f "${DST_FILE}"; then
