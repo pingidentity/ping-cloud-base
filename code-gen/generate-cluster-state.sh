@@ -200,6 +200,12 @@
 #                          | the AWS account ID must be added as an annotation  |
 #                          | to the corresponding Kubernetes service account to |
 #                          | enable IRSA (IAM Role for Service Accounts).       |
+#                          |                                                    |
+# EVENT_QUEUE_NAME         | The name of the queue that may be used to notify   | platform_event_queue.fifo
+#                          | PingCloud applications of platform events. This    |
+#                          | is currently only used if the orchestrator for     |
+#                          | PingCloud environments is MyPing.                  |
+#
 ########################################################################################################################
 
 #### SCRIPT START ####
@@ -232,6 +238,7 @@ ${PING_IDENTITY_DEVOPS_KEY_BASE64}
 ${SSH_ID_KEY_BASE64}
 ${IS_MULTI_CLUSTER}
 ${CLUSTER_BUCKET_NAME}
+${EVENT_QUEUE_NAME}
 ${REGION}
 ${REGION_NICK_NAME}
 ${PRIMARY_REGION}
@@ -378,6 +385,7 @@ echo "Initial SIZE: ${SIZE}"
 
 echo "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 echo "Initial CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
+echo "Initial EVENT_QUEUE_NAME: ${EVENT_QUEUE_NAME}"
 echo "Initial REGION: ${REGION}"
 echo "Initial REGION_NICK_NAME: ${REGION_NICK_NAME}"
 echo "Initial PRIMARY_REGION: ${PRIMARY_REGION}"
@@ -419,6 +427,7 @@ TENANT_DOMAIN_NO_DOT_SUFFIX="${TENANT_DOMAIN%.}"
 export TENANT_DOMAIN="${TENANT_DOMAIN_NO_DOT_SUFFIX}"
 
 export CLUSTER_BUCKET_NAME="${CLUSTER_BUCKET_NAME}"
+export EVENT_QUEUE_NAME=${EVENT_QUEUE_NAME:-platform_event_queue.fifo}
 export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
 
 export LAST_UPDATE_REASON="${LAST_UPDATE_REASON:-NA}"
@@ -469,6 +478,7 @@ echo "Using SIZE: ${SIZE}"
 
 echo "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 echo "Using CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
+echo "Using EVENT_QUEUE_NAME: ${EVENT_QUEUE_NAME}"
 echo "Using REGION: ${REGION}"
 echo "Using REGION_NICK_NAME: ${REGION_NICK_NAME}"
 echo "Using PRIMARY_REGION: ${PRIMARY_REGION}"
