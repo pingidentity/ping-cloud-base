@@ -20,6 +20,10 @@ beluga_log "post-start: waiting for admin API to be ready"
 wait_for_admin_api_endpoint configArchive/export
 
 # Replicate admin changes to engine(s)
+beluga_log "Updating LDAP-DS Entry"
+sh "${HOOKS_DIR}/80-configure-ldap-ds.sh"
+
+# Replicate admin changes to engine(s)
 beluga_log "post-start: Replicating admin changes to engine(s)"
 sh "${HOOKS_DIR}/95-replicate-engines.sh"
 REPLICATION_STATUS=${?}

@@ -9,7 +9,7 @@
   "bindAnonymously": false,
   "userDN": "uid=pingfederate,ou=devopsaccount,o=platformconfig",
   "password": "${PF_LDAP_PASSWORD}",
-  "useSsl": false,
+  "useSsl": ${PF_PD_BIND_USESSL},
   "useDnsSrvRecords": false,
   "name": "pingdirectory-appintegrations",
   "hostnamesTags": [

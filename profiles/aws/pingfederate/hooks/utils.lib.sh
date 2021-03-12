@@ -139,6 +139,10 @@ ${PD_CLUSTER_PRIVATE_HOSTNAME}
 ${PF_PD_BIND_PORT}
 ${PF_LDAP_PASSWORD_OBFUSCATED}'
 
+   envsubst "${vars}" \
+      < "${STAGING_DIR}/templates/ldap.properties" \
+      > ldap.properties
+
    cd "${currentDir}"
 }
 
