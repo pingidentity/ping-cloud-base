@@ -50,6 +50,8 @@ if test -z "${ENV_VARS_FILE}"; then
   export BACKUP_URL=s3://${CLUSTER_NAME}-backup-bucket
   export CLUSTER_BUCKET_NAME="${CLUSTER_NAME}-cluster-bucket"
 
+  export EVENT_QUEUE_NAME='platform_event_queue.fifo'
+
   export PROJECT_DIR="${CI_PROJECT_DIR}"
   export AWS_PROFILE=csg
 elif test -f "${ENV_VARS_FILE}"; then
