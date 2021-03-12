@@ -9,3 +9,4 @@ commonLabels:
 resources:
 - ../cloud-generic
 - configmap.yaml
+- pingcloud-p14c-bootstrap

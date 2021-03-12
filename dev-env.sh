@@ -149,6 +149,11 @@
 #                           | configured with NATIVE_S3_PING discovery and will  |
 #                           | precede over DNS_PING, which is always configured. |
 #                           |                                                    |
+# EVENT_QUEUE_NAME          | The name of the queue that may be used to notify   | ${USER}_platform_event_queue.fifo
+#                           | PingCloud applications of platform events. This    |
+#                           | is currently only used if the orchestrator for     |
+#                           | PingCloud environments is MyPing.                  |
+#                           |                                                    |
 # DEPLOY_FILE               | The name of the file where the final deployment    | /tmp/deploy.yaml
 #                           | spec is saved before applying it.                  |
 #                           |                                                    |
@@ -221,6 +226,7 @@ log "Initial ENVIRONMENT: ${ENVIRONMENT}"
 log "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 log "Initial TOPOLOGY_DESCRIPTOR_FILE: ${TOPOLOGY_DESCRIPTOR_FILE}"
 log "Initial CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
+log "Initial EVENT_QUEUE_NAME: ${EVENT_QUEUE_NAME}"
 log "Initial REGION: ${REGION}"
 log "Initial REGION_NICK_NAME: ${REGION_NICK_NAME}"
 log "Initial PRIMARY_REGION: ${PRIMARY_REGION}"
@@ -249,6 +255,7 @@ export ENVIRONMENT=-"${ENVIRONMENT:-${USER}}"
 
 export IS_MULTI_CLUSTER="${IS_MULTI_CLUSTER}"
 export CLUSTER_BUCKET_NAME="${CLUSTER_BUCKET_NAME}"
+export EVENT_QUEUE_NAME="${EVENT_QUEUE_NAME:-${USER}_platform_event_queue.fifo}"
 
 export REGION="${REGION:-us-east-2}"
 export REGION_NICK_NAME="${REGION_NICK_NAME:-${REGION}}"
@@ -280,6 +287,7 @@ log "Using ENVIRONMENT: ${ENVIRONMENT_NO_HYPHEN_PREFIX}"
 log "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 log "Using TOPOLOGY_DESCRIPTOR_FILE: ${TOPOLOGY_DESCRIPTOR_FILE}"
 log "Using CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
+log "Using EVENT_QUEUE_NAME: ${EVENT_QUEUE_NAME}"
 log "Using REGION: ${REGION}"
 log "Using REGION_NICK_NAME: ${REGION_NICK_NAME}"
 log "Using PRIMARY_REGION: ${PRIMARY_REGION}"
