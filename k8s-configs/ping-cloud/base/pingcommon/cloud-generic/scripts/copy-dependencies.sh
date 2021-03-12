@@ -52,7 +52,7 @@ beluga_log 'Downloading NewRelic Java APM Agent from ping-artifacts bucket'
 
 DST_FILE='/data/newrelic.jar'
 wget -qO "${DST_FILE}" \
-    https://ping-artifacts.s3.amazonaws.com/pingcommon/newrelic-java-agent/newrelic.jar
+    https://ping-artifacts.s3.amazonaws.com/pingcommon/newrelic-java-agent/6.4.2/newrelic.jar
 
 beluga_log 'Checking for newrelic jar file in data directory'
 if test ! -f "${DST_FILE}"; then
