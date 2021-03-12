@@ -23,6 +23,8 @@ rules:
     resources:
       - "secrets"
     verbs:
+      - get
+      - watch
       - create
       - patch
 
