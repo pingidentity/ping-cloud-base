@@ -18,6 +18,7 @@ function make_api_request() {
         --retry-delay 1 \
         --retry-connrefused \
         -u ${PF_ADMIN_USER_USERNAME}:${PF_ADMIN_USER_PASSWORD} \
+        -H "Content-Type: application/json" \
         -H 'X-Xsrf-Header: PingFederate' "$@")
   curl_result=$?
   "${VERBOSE}" && set -x
@@ -137,16 +138,6 @@ ${PD_CLUSTER_DOMAIN_NAME}
 ${PD_CLUSTER_PRIVATE_HOSTNAME}
 ${PF_PD_BIND_PORT}
 ${PF_LDAP_PASSWORD_OBFUSCATED}'
-
-   envsubst "${vars}" \
-      < "${STAGING_DIR}/templates/ldap.properties" \
-      > ldap.properties
-
-   PF_LDAP_PASSWORD_OBFUSCATED="${PF_LDAP_PASSWORD_OBFUSCATED:8}"
-
-   envsubst "${vars}" \
-      < "${STAGING_DIR}/templates/pingfederate-ldap-ds.xml" \
-      > ../server/default/data/pingfederate-ldap-ds.xml
 
    cd "${currentDir}"
 }
