@@ -155,6 +155,9 @@ spec:
         - name: data-dir
           mountPath: /opt/staging/p14c_env_vars
           subPath: p14c_env_vars
+        - name: data-dir
+          mountPath: /opt/staging/solutions_artifacts
+          subPath: solutions_artifacts
         - mountPath: /etc/podinfo
           name: podinfo
         readinessProbe:

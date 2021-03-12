@@ -5,6 +5,9 @@
 
 ${VERBOSE} && set -x
 
+# Check and export environment variable(s) for PF artifacts
+test -f "${STAGING_DIR}/solutions_artifacts" && SOLUTIONS_ARTIFACTS=$(cat "${STAGING_DIR}/solutions_artifacts")
+
 # Check to see if the artifact file exists, or if solutions artifacts are specified
 if (test -f "${STAGING_DIR}/artifacts/artifact-list.json") || (test ! -z "${SOLUTIONS_ARTIFACTS}"); then
   # Check to see if the artifact file is empty
