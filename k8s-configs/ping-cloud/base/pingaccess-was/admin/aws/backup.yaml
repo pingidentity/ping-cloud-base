@@ -15,7 +15,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: pingaccess-was-backup
-        image: pingcloud-mirror.jfrog.io/pingidentity/pingaccess:2010-6.1.3
+        image: pingcloud-virtual.jfrog.io/pingidentity/pingaccess:2010-6.1.3
         command:
         - /opt/in/backup-archive-data.sh
         envFrom:
