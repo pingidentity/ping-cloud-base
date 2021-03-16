@@ -30,6 +30,7 @@ if test -z "${ENV_VARS_FILE}"; then
   export REGION="${AWS_DEFAULT_REGION:-us-west-2}"
   export REGION_NICK_NAME=${REGION}
   export TENANT_DOMAIN='ci-cd.ping-oasis.com'
+  export TENANT_NAME='ci-cd'
 
   export PRIMARY_REGION="${REGION}"
   export PRIMARY_TENANT_DOMAIN="${TENANT_DOMAIN}"
