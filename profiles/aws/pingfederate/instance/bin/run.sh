@@ -263,6 +263,12 @@ if [ "$JAVA_MAJOR_VERSION" = "1" ]; then
     ENDORSED_DIRS_FLAG='-Djava.endorsed.dirs="$PF_ENDORSED_DIRS"'
 fi
 
+# Check for NewRelic License Key (used by NewRelic Agent to push data)
+if [ ${NEW_RELIC_LICENSE_KEY} != 'unused' ]; then
+    NEW_RELIC_APP_NAME="${TENANT_NAME}_${NEW_RELIC_APP_NAME}"
+    JAVA_AGENT_OPTS="${JAVA_AGENT_OPTS} -javaagent:/opt/staging/newrelic.jar"
+fi
+
 # Check for run.properties (used by PingFederate to configure ports, etc.)
 runprops="$PF_HOME/bin/run.properties"
 if [ ! -f "$runprops" ]; then
