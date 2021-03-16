@@ -147,13 +147,13 @@ pa-was-integration-tests:
     variables:
       - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
 
-pc-metadata-integration-tests:
+pc-services-integration-tests:
   stage: integration-test
   tags:
     - pd-eks-deploy
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
-    - ./ci-scripts/test/integration/run-integration-tests.sh pingcloud-metadata
+    - ./ci-scripts/test/integration/run-integration-tests.sh pingcloud-services
   except:
     variables:
       - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
