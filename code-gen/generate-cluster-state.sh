@@ -206,7 +206,7 @@
 #                          | is currently only used if the orchestrator for     |
 #                          | PingCloud environments is MyPing.                  |
 #                          |                                                    |
-# NEW_RELIC_LICENSE_KEY    | The key of NewRelic APM Agent used to send data to | No default
+# NEW_RELIC_LICENSE_KEY    | The key of NewRelic APM Agent used to send data to | The string "unused".
 #                          | NewRelic account                                   |
 ########################################################################################################################
 
@@ -510,10 +510,11 @@ echo "Using TARGET_DIR: ${TARGET_DIR}"
 echo "Using IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
 echo ---
 
+NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY:-unused}
+
 export PING_IDENTITY_DEVOPS_USER_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_USER}")
 export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_KEY}")
-NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KEY}")
-export NEW_RELIC_LICENSE_KEY_BASE64=${NEW_RELIC_LICENSE_KEY_BASE64:-''}
+export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KEY}")
 
 TEMPLATES_HOME="${SCRIPT_HOME}/templates"
 BASE_DIR="${TEMPLATES_HOME}/base"
