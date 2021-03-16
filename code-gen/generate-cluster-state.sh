@@ -70,12 +70,10 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # Variable                 | Purpose                                            | Default (if not present)
 # ----------------------------------------------------------------------------------------------------------------------
-# TENANT_NAME              | The name of the tenant, e.g. k8s-icecream. If      | ping-cloud-customer
-#                          | provided, this value will be used for the cluster  |
-#                          | name and must have the correct case (e.g. ci-cd    |
-#                          | vs. CI-CD). If not provided, this variable is      |
-#                          | not used, and the cluster name defaults to the CDE |
-#                          | name.                                              |
+# TENANT_NAME              | The name of the tenant, e.g. k8s-icecream. If      | First segment of the TENANT_DOMAIN
+#                          | provided, this value will be used for the cluster  | value. E.g. it will default to "ci-cd" 
+#                          | name and must have the correct case (e.g. ci-cd    | for tenant domain "ci-cd.ping-oasis.com"
+#                          | vs. CI-CD).                                        |
 #                          |                                                    |
 # TENANT_DOMAIN            | The tenant's domain suffix that's common to all    | ci-cd.ping-oasis.com
 #                          | CDEs e.g. k8s-icecream.com. The tenant domain in   |
@@ -205,7 +203,9 @@
 #                          | PingCloud applications of platform events. This    |
 #                          | is currently only used if the orchestrator for     |
 #                          | PingCloud environments is MyPing.                  |
-#
+#                          |                                                    |
+# NEW_RELIC_LICENSE_KEY    | The key of NewRelic APM Agent used to send data to | The string "unused".
+#                          | NewRelic account                                   |
 ########################################################################################################################
 
 #### SCRIPT START ####
@@ -235,6 +235,8 @@ QUIET="${QUIET:-false}"
 # file and substituted at runtime by the continuous delivery tool running in cluster.
 DEFAULT_VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
 ${PING_IDENTITY_DEVOPS_KEY_BASE64}
+${NEW_RELIC_LICENSE_KEY_BASE64}
+${TENANT_NAME}
 ${SSH_ID_KEY_BASE64}
 ${IS_MULTI_CLUSTER}
 ${CLUSTER_BUCKET_NAME}
@@ -416,7 +418,7 @@ echo ---
 
 # Use defaults for other variables, if not present.
 export IS_BELUGA_ENV="${IS_BELUGA_ENV:-false}"
-export TENANT_NAME="${TENANT_NAME:-ping-cloud-customer}"
+export TENANT_NAME="${TENANT_NAME:-${TENANT_DOMAIN%%.*}}"
 export SIZE="${SIZE:-x-small}"
 
 ### Region-specific environment variables ###
@@ -506,8 +508,11 @@ echo "Using TARGET_DIR: ${TARGET_DIR}"
 echo "Using IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
 echo ---
 
+NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY:-unused}
+
 export PING_IDENTITY_DEVOPS_USER_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_USER}")
 export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_KEY}")
+export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KEY}")
 
 TEMPLATES_HOME="${SCRIPT_HOME}/templates"
 BASE_DIR="${TEMPLATES_HOME}/base"

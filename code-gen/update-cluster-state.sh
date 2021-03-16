@@ -342,6 +342,11 @@ get_min_required_secrets() {
       ALL_MIN_SECRETS_FOUND=false
     fi
 
+    NEW_RELIC_LICENSE_KEY="$(get_secret_from_file 'NEW_RELIC_LICENSE_KEY' "${ping_cloud_secrets_yaml}")"
+    if ! test "${NEW_RELIC_LICENSE_KEY}"; then
+      log "NEW_RELIC_LICENSE_KEY not found in ${ping_cloud_secrets_yaml}"
+    fi
+
     ID_RSA_FILE="$(mktemp)"
     get_secret_from_file 'id_rsa' "${ping_cloud_secrets_yaml}" > "${ID_RSA_FILE}"
     if ! test -s "${ID_RSA_FILE}"; then
