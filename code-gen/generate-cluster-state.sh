@@ -73,9 +73,7 @@
 # TENANT_NAME              | The name of the tenant, e.g. k8s-icecream. If      | First segment of the TENANT_DOMAIN
 #                          | provided, this value will be used for the cluster  | value. E.g. it will default to "ci-cd" 
 #                          | name and must have the correct case (e.g. ci-cd    | for tenant domain "ci-cd.ping-oasis.com"
-#                          | vs. CI-CD). If not provided, this variable is      |
-#                          | not used, and the cluster name defaults to the CDE |
-#                          | name.                                              |
+#                          | vs. CI-CD).                                        |
 #                          |                                                    |
 # TENANT_DOMAIN            | The tenant's domain suffix that's common to all    | ci-cd.ping-oasis.com
 #                          | CDEs e.g. k8s-icecream.com. The tenant domain in   |
