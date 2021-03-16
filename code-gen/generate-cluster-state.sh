@@ -70,9 +70,9 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # Variable                 | Purpose                                            | Default (if not present)
 # ----------------------------------------------------------------------------------------------------------------------
-# TENANT_NAME              | The name of the tenant, e.g. k8s-icecream. If      | ping-cloud-customer
-#                          | provided, this value will be used for the cluster  |
-#                          | name and must have the correct case (e.g. ci-cd    |
+# TENANT_NAME              | The name of the tenant, e.g. k8s-icecream. If      | First segment of the TENANT_DOMAIN
+#                          | provided, this value will be used for the cluster  | value. E.g. it will default to "ci-cd" 
+#                          | name and must have the correct case (e.g. ci-cd    | for tenant domain "ci-cd.ping-oasis.com"
 #                          | vs. CI-CD). If not provided, this variable is      |
 #                          | not used, and the cluster name defaults to the CDE |
 #                          | name.                                              |
