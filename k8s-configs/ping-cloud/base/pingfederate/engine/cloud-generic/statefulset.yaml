@@ -112,6 +112,10 @@ spec:
         - name: NEW_RELIC_APP_NAME
           valueFrom:
             fieldRef:
+              fieldPath: spec.serviceName
+        - name: NEW_RELIC_POD_NAME
+          valueFrom:
+            fieldRef:
               fieldPath: metadata.name
         envFrom:
         - configMapRef:
