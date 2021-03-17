@@ -36,16 +36,17 @@ ${PF_PD_BIND_PORT}'
 
   if get_datastore; then
     beluga_log "PD LDAP Data Store exists, updating with current password."
-    API_RESPONSE=$(make_api_request -X PUT -d "${LDAP_DS_PAYLOAD}" \
-      "${PF_API_HOST}/dataStores/${LDAP_DS_ID}") > /dev/null
+    make_api_request -X PUT -d "${LDAP_DS_PAYLOAD}" \
+      "${PF_API_HOST}/dataStores/${LDAP_DS_ID}" > /dev/null
     test $? -ne 0 && return 1
   else
     beluga_log "PD LDAP Data Store isn't there, adding it."
-    API_RESPONSE=$(make_api_request -X POST -d "${LDAP_DS_PAYLOAD}" \
-      "${PF_API_HOST}/dataStores") > /dev/null
+    make_api_request -X POST -d "${LDAP_DS_PAYLOAD}" \
+      "${PF_API_HOST}/dataStores" > /dev/null
     test $? -ne 0 && return 1
   fi
 
+  return 0
 }
 
 update_datastore
