@@ -22,6 +22,8 @@ wait_for_admin_api_endpoint configArchive/export
 # Replicate admin changes to engine(s)
 beluga_log "Updating LDAP-DS Entry"
 sh "${HOOKS_DIR}/80-configure-ldap-ds.sh"
+CONFIGURE_LDAP_STATUS=${?}
+beluga_log "post-start: configure datastore status: ${CONFIGURE_LDAP_STATUS}"
 
 # Replicate admin changes to engine(s)
 beluga_log "post-start: Replicating admin changes to engine(s)"
@@ -36,7 +38,9 @@ BACKUP_STATUS=${?}
 beluga_log "post-start: data backup status: ${BACKUP_STATUS}"
 
 # Write the marker file if post-start succeeds.
-if test "${BACKUP_STATUS}" -eq 0 && test "${REPLICATION_STATUS}" -eq 0; then
+if test "${BACKUP_STATUS}" -eq 0 && \
+   test "${REPLICATION_STATUS}" -eq 0 && \
+   test "${CONFIGURE_LDAP_STATUS}" -eq 0; then
   touch "${POST_START_INIT_MARKER_FILE}"
   exit 0
 fi
