@@ -101,6 +101,11 @@ KUSTOMIZE_BASE=${KUSTOMIZE_BASE}
 LETS_ENCRYPT_SERVER=${LETS_ENCRYPT_SERVER}
 
 ############################################################
+# PingCommon environment variables
+############################################################
+USER_BASE_DN=dc=example,dc=com
+
+############################################################
 # PingFederate variables for environment
 ############################################################
 PF_PD_BIND_PORT=${PF_PD_BIND_PORT}

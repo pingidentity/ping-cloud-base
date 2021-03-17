@@ -68,6 +68,8 @@ spec:
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
+        - configMapRef:
+            name: pingcommon-environment-variables
       - name: wait-for-services
         # FIXME: switch to same user as app
         securityContext:
@@ -87,6 +89,8 @@ spec:
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
+        - configMapRef:
+            name: pingcommon-environment-variables
       containers:
       - name: pingfederate-admin
         image: pingcloud-virtual.jfrog.io/pingidentity/pingfederate:2101-10.2.1
@@ -108,6 +112,11 @@ spec:
             secretKeyRef:
               name: pingcommon-passwords
               key: PF_ADMIN_USER_PASSWORD
+        - name: DA_OAUTH_TOKEN_VALIDATOR_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: pingcommon-passwords
+              key: DA_OAUTH_TOKEN_VALIDATOR_SECRET
         - name: NEW_RELIC_APP_NAME
           valueFrom:
             fieldRef:
@@ -115,6 +124,8 @@ spec:
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
+        - configMapRef:
+            name: pingcommon-environment-variables
         - secretRef:
             name: devops-secret
             optional: true
