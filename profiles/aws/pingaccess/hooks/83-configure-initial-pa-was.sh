@@ -152,7 +152,7 @@ create_pa_site() {
 create_pf_site() {
   export SITE_ID=20
   export SITE_NAME="PingFederate Admin Console"
-  export SITE_TARGET="pingfederate-admin:9999"
+  export SITE_TARGET="pingfederate-admin:443"
   export SITE_SECURE=true
 
   beluga_log "Creating PF Site"

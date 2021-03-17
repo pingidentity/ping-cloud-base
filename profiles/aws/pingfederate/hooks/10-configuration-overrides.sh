@@ -99,7 +99,7 @@ function applyConfigStoreOverrides()
                   -u "Administrator:${PF_ADMIN_USER_PASSWORD}" \
                   -w '%{http_code}' \
                   -X GET \
-                  "https://localhost:9999/pf-admin-api/v1/configStore/${target}/${id}")
+                  "https://localhost:${PF_ADMIN_PORT}/pf-admin-api/v1/configStore/${target}/${id}")
                ${VERBOSE} && set -x
                result=$(echo "${oldValue:$(echo "${#oldValue} -3" |bc)}" | tr -d '$\n')
                oldValue=$(echo "${oldValue:0:-3}" | tr -d '$\n' )
@@ -143,7 +143,7 @@ function applyConfigStoreOverrides()
                                     -w '%{http_code}' \
                                     -o /dev/null \
                                     -X DELETE \
-                                     "https://localhost:9999/pf-admin-api/v1/configStore/${target}/${id}")
+                                     "https://localhost:${PF_ADMIN_PORT}/pf-admin-api/v1/configStore/${target}/${id}")
                            ${VERBOSE} && set -x
                            case ${result} in
                               404)
@@ -178,7 +178,7 @@ function applyConfigStoreOverrides()
                                     -w '%{http_code}' \
                                     -d "${payload}" \
                                     -X PUT \
-                                     "https://localhost:9999/pf-admin-api/v1/configStore/${target}/${id}")
+                                     "https://localhost:${PF_ADMIN_PORT}/pf-admin-api/v1/configStore/${target}/${id}")
                         ${VERBOSE} && set -x
                         result="${newValue##*\}}"
                         newValue=$(echo "${newValue:0:-3}" | tr -d '$\n')
@@ -239,7 +239,7 @@ function stopServer()
    pid=$(cat pingfederate.pid)
    kill ${pid}
    beluga_log "Waiting for PingFederate to shutdown" 
-   while [  "$(netstat -lntp|grep 9999|grep "${pid}/java" >/dev/null 2>&1;echo $?)" = "0" ]; do
+   while [  "$(netstat -lntp|grep ${PF_ADMIN_PORT}|grep "${pid}/java" >/dev/null 2>&1;echo $?)" = "0" ]; do
       sleep 1
    done
    sleep 1

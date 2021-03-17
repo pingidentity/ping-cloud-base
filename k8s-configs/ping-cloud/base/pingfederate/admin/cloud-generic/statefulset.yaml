@@ -94,8 +94,6 @@ spec:
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_CONSOLE
-        - name: AUTHENTICATION_MODE
-          value: LDAP
         - name: PF_DNS_PING_NAMESPACE
           valueFrom:
             fieldRef:
@@ -173,7 +171,8 @@ spec:
           failureThreshold: 3
           timeoutSeconds: 5
         ports:
-        - containerPort: 9999
+        - name: pf-admin
+          containerPort: 443
       volumes:
       - name: podinfo
         downwardAPI:
