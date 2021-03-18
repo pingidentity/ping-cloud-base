@@ -118,9 +118,7 @@ spec:
               name: pingcommon-passwords
               key: DA_OAUTH_TOKEN_VALIDATOR_SECRET
         - name: NEW_RELIC_APP_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
+          value: pingfederate-admin
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
