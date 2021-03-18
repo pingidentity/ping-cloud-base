@@ -3,7 +3,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 # Apply PingFederate runtime engine deployment resources
-- ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingfederate/engine?ref=${K8S_GIT_BRANCH}
+- ../../../../${K8S_GIT_BRANCH}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingfederate/engine
 
 images:
 - name: ${REGISTRY_NAME}/pingidentity/pingfederate
