@@ -5,11 +5,11 @@
 	"image": "pingcloud-docker.jfrog.io/pingidentity/pyaws",
 	"settings": { 
 		"terminal.integrated.shell.linux": "/bin/bash",
-		"python.pythonPath": "/usr/local/bin/python"
+		"python.pythonPath": "/usr/bin/python"
 	},
 	"remoteEnv": 
 	{
-	   "profile": "beluga",
+	   "profile": "csg",
 	   "PYTHONPATH" : "${containerWorkspaceFolder}",
 	   "config" : "${containerWorkspaceFolder}/config.yaml"
 	},
