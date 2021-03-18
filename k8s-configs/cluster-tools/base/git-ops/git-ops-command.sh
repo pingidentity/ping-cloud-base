@@ -107,9 +107,9 @@ fi
 
 # Wait for subprocess to complete first.
 for pid in $(jobs -p); do
-    echo "HERE: $pid" 
-    log "git-ops-command: waiting for subprocess to complete '${pid}'"
-    wait "${pid}"
+  echo "HERE: $pid" 
+  log "git-ops-command: waiting for subprocess to complete '${pid}'"
+  wait "${pid}"
 done
 
 # Build the uber deploy yaml
