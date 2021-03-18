@@ -12,29 +12,29 @@ variables:
   DELETE_ENV_AFTER_PIPELINE: 'true'
 
 ## Compile stage ##
-compile:
-  stage: compile
-  tags:
-  - pd-eks-deploy
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
-  script:
-  - ./ci-scripts/compile/compile.sh
-  except:
-    variables:
-    - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
-
-## Build stage ##
-deploy:
-  stage: build
-  tags:
-  - pd-eks-deploy
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
-  script:
-  - ./ci-scripts/build/deploy.sh
-  except:
-    variables:
-    - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
-
+#compile:
+#  stage: compile
+#  tags:
+#  - pd-eks-deploy
+#  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+#  script:
+#  - ./ci-scripts/compile/compile.sh
+#  except:
+#    variables:
+#    - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
+#
+### Build stage ##
+#deploy:
+#  stage: build
+#  tags:
+#  - pd-eks-deploy
+#  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+#  script:
+#  - ./ci-scripts/build/deploy.sh
+#  except:
+#    variables:
+#    - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
+#
 python-demo:
    stage: unit-test
    tags:
@@ -190,7 +190,7 @@ python-demo:
 #    variables:
 #      - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
 #
-### Chaos testing stage ##
+## Chaos testing stage ##
 #chaos-tests:
 #  stage: chaos
 #  tags:
@@ -203,13 +203,13 @@ python-demo:
 #    - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
 #
 ## Cleanup stage ##
-cleanup:
-  stage: cleanup
-  tags:
-  - pd-eks-deploy
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
-  script:
-  - ./ci-scripts/cleanup/teardown.sh
-  except:
-    variables:
-    - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
+#cleanup:
+#  stage: cleanup
+#  tags:
+#  - pd-eks-deploy
+#  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+#  script:
+#  - ./ci-scripts/cleanup/teardown.sh
+#  except:
+#    variables:
+#    - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
