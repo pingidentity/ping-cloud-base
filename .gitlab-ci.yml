@@ -3,8 +3,8 @@ stages:
 - compile
 - build
 - unit-test
-- integration-test
-- chaos
+#- integration-test
+#- chaos
 - cleanup
 
 ## Global environment variables ##
@@ -35,163 +35,173 @@ deploy:
     variables:
     - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
 
-## Unit Test stage ##
-common-unit-tests:
-  stage: unit-test
-  tags:
-    - pd-eks-deploy
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
-  script:
-    - ./ci-scripts/test/unit/run-unit-tests.sh common
-  except:
-    variables:
+python-demo:
+   stage: unit-test
+   tags:
+   - shell-runner
+   script:  
+     - ./ci-scripts/python/sample-runner.sh "pyaws" "dummy P1" "dummy P2" "dummy P3"
+   except:
+      variables:
       - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
-
-pd-unit-tests:
-  stage: unit-test
-  tags:
-    - pd-eks-deploy
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
-  script:
-    - ./ci-scripts/test/unit/run-unit-tests.sh pingdirectory
-  except:
-    variables:
-      - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
-
-pf-unit-tests:
-  stage: unit-test
-  tags:
-    - pd-eks-deploy
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
-  script:
-    - ./ci-scripts/test/unit/run-unit-tests.sh pingfederate
-  except:
-    variables:
-      - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
-
-pa-unit-tests:
-  stage: unit-test
-  tags:
-    - pd-eks-deploy
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
-  script:
-    - ./ci-scripts/test/unit/run-unit-tests.sh pingaccess
-  except:
-    variables:
-      - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
-
-ci-script-unit-tests:
-  stage: unit-test
-  tags:
-    - pd-eks-deploy
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
-  script:
-    - ./ci-scripts/test/unit/run-unit-tests.sh ci-script-tests
-  except:
-    variables:
-      - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
-
-## Integration Test stage ##
-pd-integration-tests:
-  stage: integration-test
-  tags:
-  - pd-eks-deploy
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
-  script:
-  - ./ci-scripts/test/integration/run-integration-tests.sh pingdirectory
-  except:
-    variables:
-    - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
-
-da-integration-tests:
-  stage: integration-test
-  tags:
-    - pd-eks-deploy
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
-  script:
-    - ./ci-scripts/test/integration/run-integration-tests.sh pingdelegator
-  except:
-    variables:
-      - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
-
-pf-integration-tests:
-  stage: integration-test
-  tags:
-  - pd-eks-deploy
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
-  script:
-  - ./ci-scripts/test/integration/run-integration-tests.sh pingfederate
-  except:
-    variables:
-    - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
-
-pa-integration-tests:
-  stage: integration-test
-  tags:
-    - pd-eks-deploy
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
-  script:
-    - ./ci-scripts/test/integration/run-integration-tests.sh pingaccess
-  except:
-    variables:
-      - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
-
-pa-was-integration-tests:
-  stage: integration-test
-  tags:
-    - pd-eks-deploy
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
-  script:
-    - ./ci-scripts/test/integration/run-integration-tests.sh pingaccess-was
-  except:
-    variables:
-      - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
-
-pc-metadata-integration-tests:
-  stage: integration-test
-  tags:
-    - pd-eks-deploy
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
-  script:
-    - ./ci-scripts/test/integration/run-integration-tests.sh pingcloud-metadata
-  except:
-    variables:
-      - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
-
-common-integration-tests:
-  stage: integration-test
-  tags:
-    - pd-eks-deploy
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
-  script:
-    - ./ci-scripts/test/integration/run-integration-tests.sh common
-  except:
-    variables:
-      - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
-
-monitoring-integration-tests:
-  stage: integration-test
-  tags:
-    - pd-eks-deploy
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
-  script:
-    - ./ci-scripts/test/integration/run-integration-tests.sh monitoring
-  except:
-    variables:
-      - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
-
-## Chaos testing stage ##
-chaos-tests:
-  stage: chaos
-  tags:
-  - pd-eks-deploy
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
-  script:
-  - ./ci-scripts/test/integration/run-integration-tests.sh chaos
-  except:
-    variables:
-    - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
-
+        
+### Unit Test stage ##
+#common-unit-tests:
+#  stage: unit-test
+#  tags:
+#    - pd-eks-deploy
+#  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+#  script:
+#    - ./ci-scripts/test/unit/run-unit-tests.sh common
+#  except:
+#    variables:
+#      - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
+#
+#pd-unit-tests:
+#  stage: unit-test
+#  tags:
+#    - pd-eks-deploy
+#  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+#  script:
+#    - ./ci-scripts/test/unit/run-unit-tests.sh pingdirectory
+#  except:
+#    variables:
+#      - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
+#
+#pf-unit-tests:
+#  stage: unit-test
+#  tags:
+#    - pd-eks-deploy
+#  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+#  script:
+#    - ./ci-scripts/test/unit/run-unit-tests.sh pingfederate
+#  except:
+#    variables:
+#      - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
+#
+#pa-unit-tests:
+#  stage: unit-test
+#  tags:
+#    - pd-eks-deploy
+#  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+#  script:
+#    - ./ci-scripts/test/unit/run-unit-tests.sh pingaccess
+#  except:
+#    variables:
+#      - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
+#
+#ci-script-unit-tests:
+#  stage: unit-test
+#  tags:
+#    - pd-eks-deploy
+#  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+#  script:
+#    - ./ci-scripts/test/unit/run-unit-tests.sh ci-script-tests
+#  except:
+#    variables:
+#      - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
+#
+### Integration Test stage ##
+#pd-integration-tests:
+#  stage: integration-test
+#  tags:
+#  - pd-eks-deploy
+#  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+#  script:
+#  - ./ci-scripts/test/integration/run-integration-tests.sh pingdirectory
+#  except:
+#    variables:
+#    - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
+#
+#da-integration-tests:
+#  stage: integration-test
+#  tags:
+#    - pd-eks-deploy
+#  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+#  script:
+#    - ./ci-scripts/test/integration/run-integration-tests.sh pingdelegator
+#  except:
+#    variables:
+#      - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
+#
+#pf-integration-tests:
+#  stage: integration-test
+#  tags:
+#  - pd-eks-deploy
+#  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+#  script:
+#  - ./ci-scripts/test/integration/run-integration-tests.sh pingfederate
+#  except:
+#    variables:
+#    - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
+#
+#pa-integration-tests:
+#  stage: integration-test
+#  tags:
+#    - pd-eks-deploy
+#  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+#  script:
+#    - ./ci-scripts/test/integration/run-integration-tests.sh pingaccess
+#  except:
+#    variables:
+#      - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
+#
+#pa-was-integration-tests:
+#  stage: integration-test
+#  tags:
+#    - pd-eks-deploy
+#  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+#  script:
+#    - ./ci-scripts/test/integration/run-integration-tests.sh pingaccess-was
+#  except:
+#    variables:
+#      - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
+#
+#pc-metadata-integration-tests:
+#  stage: integration-test
+#  tags:
+#    - pd-eks-deploy
+#  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+#  script:
+#    - ./ci-scripts/test/integration/run-integration-tests.sh pingcloud-metadata
+#  except:
+#    variables:
+#      - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
+#
+#common-integration-tests:
+#  stage: integration-test
+#  tags:
+#    - pd-eks-deploy
+#  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+#  script:
+#    - ./ci-scripts/test/integration/run-integration-tests.sh common
+#  except:
+#    variables:
+#      - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
+#
+#monitoring-integration-tests:
+#  stage: integration-test
+#  tags:
+#    - pd-eks-deploy
+#  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+#  script:
+#    - ./ci-scripts/test/integration/run-integration-tests.sh monitoring
+#  except:
+#    variables:
+#      - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
+#
+### Chaos testing stage ##
+#chaos-tests:
+#  stage: chaos
+#  tags:
+#  - pd-eks-deploy
+#  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+#  script:
+#  - ./ci-scripts/test/integration/run-integration-tests.sh chaos
+#  except:
+#    variables:
+#    - $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
+#
 ## Cleanup stage ##
 cleanup:
   stage: cleanup
