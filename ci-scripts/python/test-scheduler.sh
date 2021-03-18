@@ -5,6 +5,10 @@ cd ${HOME}/tests
 #
 ./shell-sample.sh
 #
-# run the python sample
+# run the kubectl python sample
 #
 python ./python-sample.py
+#
+# run the python k8s client example.
+#
+python ./framework.py

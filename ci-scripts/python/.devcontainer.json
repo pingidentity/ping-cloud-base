@@ -1,0 +1,25 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.158.0/containers/python-3
+{
+	"name": "PingCloud Test Development",
+	"image": "pingcloud-docker.jfrog.io/pingidentity/pyaws",
+	"settings": { 
+		"terminal.integrated.shell.linux": "/bin/bash",
+		"python.pythonPath": "/usr/local/bin/python"
+	},
+	"remoteEnv": 
+	{
+	   "profile": "beluga",
+	   "PYTHONPATH" : "${containerWorkspaceFolder}",
+	   "config" : "${containerWorkspaceFolder}/config.yaml"
+	},
+	"extensions": [
+		"ms-python.python"
+	],
+	"mounts": [
+		"source=${localEnv:HOME}/.aws,target=/home/pyuser/.aws,type=bind,consistency=cached",
+		"source=${localEnv:HOME}/.kube,target=/home/pyuser/.kube,type=bind,consistency=cached",
+		"source=${localEnv:HOME}/.vim,target=/home/pyuser/.vim,type=bind,consistency=cached"
+	]
+}
+
