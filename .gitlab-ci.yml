@@ -1,11 +1,11 @@
 ## Pipeline stages ##
 stages:
-- compile
-- build
+#- compile
+#- build
 - unit-test
 #- integration-test
 #- chaos
-- cleanup
+#- cleanup
 
 ## Global environment variables ##
 variables:
