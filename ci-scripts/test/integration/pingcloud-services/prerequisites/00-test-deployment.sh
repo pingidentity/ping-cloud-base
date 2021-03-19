@@ -21,6 +21,12 @@ testP14CBootstrapDeploymentAvailability() {
   assertEquals "The status of the p14c-bootstrap deployment should be Available but was: ${status}" 'Available' ${status}
 }
 
+testP14CBOMDeploymentAvailability() {
+
+  status=$(kubectl get deployment p14c-bom-service -o json | jq -r '.status.conditions[0].type')
+  assertEquals 0 $?
+  assertEquals "The status of the p14c-bom-service deployment should be Available but was: ${status}" 'Available' ${status}
+}
 
 # When arguments are passed to a script you must
 # consume all of them before shunit is invoked

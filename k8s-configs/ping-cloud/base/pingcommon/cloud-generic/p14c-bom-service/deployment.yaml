@@ -16,7 +16,7 @@ spec:
       serviceAccount: p14c-bom-serviceaccount
       containers:
       - name: pingcloud-bom
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.1
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.3
         imagePullPolicy: IfNotPresent
         resources:
           requests:
@@ -28,6 +28,8 @@ spec:
         envFrom:
         - configMapRef:
             name: p14c-bom-service-environment-variables
+        - secretRef:
+            name: p14c-bootstrap-secret
         env:
         - name: NAMESPACE
           valueFrom:

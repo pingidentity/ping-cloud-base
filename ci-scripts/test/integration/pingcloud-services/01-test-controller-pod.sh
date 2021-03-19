@@ -21,6 +21,12 @@ testP14CBootstrapPodAvailability() {
   assertEquals "The status of the p14c-bootstrap pod should be ready but was: ${status}" 'true' ${status}
 }
 
+testP14CBOMPodAvailability() {
+
+  status=$(kubectl get pods --selector=role=p14c-bom-service -o json | jq -r '.items[].status.containerStatuses[].ready')
+  assertEquals 0 $?
+  assertEquals "The status of the p14c-bom-service pod should be ready but was: ${status}" 'true' ${status}
+}
 
 # When arguments are passed to a script you must
 # consume all of them before shunit is invoked
