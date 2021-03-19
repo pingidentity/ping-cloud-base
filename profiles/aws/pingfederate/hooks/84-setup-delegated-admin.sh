@@ -5,9 +5,9 @@ set -e
 . "${HOOKS_DIR}/utils.lib.sh"
 . "${HOOKS_DIR}/util/configure-delegated-admin-utils.sh"
 
-# Do not proceed to configure DA if SKIP_DA_SETUP is set to true
-if $(echo "${SKIP_DA_SETUP}" | grep -iq "true"); then
-  beluga_log "SKIP_DA_SETUP is true, skipping..."
+# Do not proceed to configure DA if DA_SKIP_SETUP is set to true
+if $(echo "${DA_SKIP_SETUP}" | grep -iq "true"); then
+  beluga_log "DA_SKIP_SETUP is true, skipping..."
   exit 0
 fi
 

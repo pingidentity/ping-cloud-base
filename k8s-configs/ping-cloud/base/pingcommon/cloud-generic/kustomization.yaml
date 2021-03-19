@@ -15,6 +15,9 @@ configMapGenerator:
   - scripts/copy-dependencies.sh
   - scripts/wait-for-services.sh
   - scripts/utils.lib.sh
+- name: pingcommon-environment-variables
+  envs:
+  - env_vars
 
 resources:
 - namespace.yaml

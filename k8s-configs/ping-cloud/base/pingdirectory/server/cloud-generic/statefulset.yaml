@@ -74,6 +74,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: pingdirectory-environment-variables
+            - configMapRef:
+                name: pingcommon-environment-variables
           volumeMounts:
             - name: ssh-dir
               mountPath: /.ssh
@@ -103,6 +105,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: pingdirectory-environment-variables
+            - configMapRef:
+                name: pingcommon-environment-variables
           volumeMounts:
             - name: pingdirectory-init
               mountPath: /utils.lib.sh
@@ -160,9 +164,16 @@ spec:
                 secretKeyRef:
                   name: pingcommon-passwords
                   key: PF_LDAP_PASSWORD
+            - name: DA_OAUTH_TOKEN_VALIDATOR_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pingcommon-passwords
+                  key: DA_OAUTH_TOKEN_VALIDATOR_SECRET
           envFrom:
             - configMapRef:
                 name: pingdirectory-environment-variables
+            - configMapRef:
+                name: pingcommon-environment-variables
             - secretRef:
                 name: devops-secret
                 optional: true

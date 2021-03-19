@@ -156,6 +156,20 @@ initialize_all_servers_for_dn() {
 }
 
 ########################################################################################################################
+# Enable and configure Delegated Admin.
+########################################################################################################################
+configure_delegated_admin() {
+  beluga_log "configuring Access Token Validator and PingFederate instance for Delegated Admin"
+  # Note: using /dev/null to hide dsconfig from showing secret within logs
+  dsconfig --no-prompt --batch-file "${DA_ATV_BATCH_FILE}" > /dev/null
+  test $? -ne 0 && return 1
+  
+  beluga_log "configuring Delegated Admin general setup"
+  dsconfig --no-prompt --batch-file "${DA_CONFIG_BATCH_FILE}"
+  return ${?}
+}
+
+########################################################################################################################
 # Perform finalization on exit.
 # - On non-zero exit, stop the container to signal failure with the post-start sequence.
 # - On success:
@@ -173,7 +187,6 @@ finalize() {
 
   run_hook "100-tail-logs.sh"
 }
-
 
 # --- MAIN SCRIPT ---
 beluga_log "starting post-start hook"
@@ -198,6 +211,20 @@ test $? -ne 0 && exit 1
 ALLOW_PRE_ENCODED_PW_CONTROL='1.3.6.1.4.1.30221.2.5.51:true::MAOBAf8='
 change_user_password "cn=${ADMIN_USER_NAME}" "${ADMIN_USER_PASSWORD_FILE}" "${ALLOW_PRE_ENCODED_PW_CONTROL}"
 test $? -ne 0 && exit 1
+
+# Configure Delegated Admin
+# Do not proceed to configure DA if DA_SKIP_SETUP is set to true
+if $(echo "${DA_SKIP_SETUP}" | grep -iq "true"); then
+  beluga_log "DA_SKIP_SETUP is true, skipping..."
+else
+  da_dir="${PD_PROFILE}/misc-files/delegated-admin"
+  DA_ATV_BATCH_FILE="${da_dir}/00-delegated-admin-atv-setup.dsconfig"
+  DA_CONFIG_BATCH_FILE="${da_dir}/01-delegated-admin-general-setup.dsconfig"
+
+  beluga_log "Configuring Delegated Admin"
+  configure_delegated_admin
+  test $? -ne 0 && exit 1
+fi
 
 # --- NOTE ---
 # This assumes that data initialization is only required once for the initial data in the server profile.
