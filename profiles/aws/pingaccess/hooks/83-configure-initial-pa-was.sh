@@ -14,7 +14,7 @@ is_previously_configured() {
 
   local applications_count=$(jq -n "${get_applications_response}" | jq '.items | length')
 
-  if test "${applications_count}" -ge 5; then
+  if test "${applications_count}" -ge 6; then
     beluga_log "pa-was already configured"
     return 0
   else
@@ -25,7 +25,7 @@ is_previously_configured() {
 p14c_credentials_changed() {
   get_web_session_clientId
 
-  if test "${CLIENT_ID}" != "${P14C_CLIENT_ID}"; then
+  if test "${PA_WAS_CLIENT_ID}" != "${P14C_CLIENT_ID}"; then
     beluga_log "P14C credentials changed"
     return 0
   else
@@ -37,15 +37,15 @@ p14c_credentials_changed() {
 get_web_session_clientId() {
   local resource=webSessions
   local id=10
-  CLIENT_ID= # Global scope
+  PA_WAS_CLIENT_ID= # Global scope
 
   beluga_log "Getting Web Session"
   local response=$(get_entity "${resource}" "${id}")
   beluga_log "make_api_request response..."
   beluga_log "${response}"
 
-  CLIENT_ID=$(jq -n "${response}" | jq '.clientCredentials["clientId"]')
-  CLIENT_ID=$(strip_double_quotes "${CLIENT_ID}")
+  PA_WAS_CLIENT_ID=$(jq -n "${response}" | jq '.clientCredentials["clientId"]')
+  PA_WAS_CLIENT_ID=$(strip_double_quotes "${PA_WAS_CLIENT_ID}")
 }
 
 update_web_session() {
@@ -332,11 +332,19 @@ is_production_environment() {
 # and break the WAS liveness probe.
 update_application_reserved_endpoint
 
-if is_previously_configured; then
-  if p14c_credentials_changed; then
-    update_web_session
+if is_myping_deployment; then
+  if is_previously_configured; then
+    exit 0
   fi
-  exit 0
+  export P14C_CLIENT_ID="${CLIENT_ID}"
+  export P14C_CLIENT_SECRET="${CLIENT_SECRET}"
+else
+  if is_previously_configured; then
+    if p14c_credentials_changed; then
+      update_web_session
+    fi
+    exit 0
+  fi
 fi
 
 create_web_session

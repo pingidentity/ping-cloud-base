@@ -424,6 +424,8 @@ function export_environment_variables() {
     export PA_MIN_YGEN="${PA_WAS_MIN_YGEN:-${PA_MIN_YGEN}}"
     export PA_MAX_YGEN="${PA_WAS_MAX_YGEN:-${PA_MAX_YGEN}}"
     export PA_GCOPTION="${PA_WAS_GCOPTION:-${PA_GCOPTION}}"
+
+    test -f "${STAGING_DIR}/p14c_env_vars" && source ${STAGING_DIR}/p14c_env_vars
   else
     export K8S_STATEFUL_SET_NAME="${K8S_STATEFUL_SET_NAME_PINGACCESS}"
     export K8S_SERVICE_NAME_ADMIN="${K8S_SERVICE_NAME_PINGACCESS_ADMIN}"
@@ -525,6 +527,18 @@ get_image_version() {
 get_installed_version() {
   get_version "${SERVER_ROOT_DIR}"
   INSTALLED_VERSION="${VERSION}"
+}
+
+########################################################################################################################
+# Detects if this is a MyPing Deployment or not
+########################################################################################################################
+is_myping_deployment() {
+  if test -z "${ENVIRONMENT_ID}"; then
+    return 1
+  else
+    beluga_log "MyPing Deployment detected"
+    return 0
+  fi
 }
 
 # These are needed by every script - so export them when this script is sourced.

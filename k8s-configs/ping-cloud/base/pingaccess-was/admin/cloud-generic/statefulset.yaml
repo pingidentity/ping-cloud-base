@@ -65,6 +65,9 @@ spec:
         - name: pingaccess-was-init
           mountPath: /utils.lib.sh
           subPath: utils.lib.sh
+        - name: data-dir
+          mountPath: /opt/staging/p14c_env_vars
+          subPath: p14c_env_vars
         envFrom:
         - configMapRef:
             name: pingaccess-was-environment-variables
