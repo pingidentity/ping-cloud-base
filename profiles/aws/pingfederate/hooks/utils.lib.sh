@@ -30,11 +30,11 @@ function make_api_request() {
 
   if test "${http_code}" -eq 200 || test "${http_code}" -eq 201; then
     cat ${OUT_DIR}/api_response.txt && rm -f ${OUT_DIR}/api_response.txt
-    return 0                                                            
-  fi                                                                    
-                                                                        
-  beluga_log "API call returned HTTP status code: ${http_code}"         
-  return 1 
+    return 0
+  fi
+
+  beluga_log "API call returned HTTP status code: ${http_code}"
+  return 1
 }
 
 ########################################################################################################################
@@ -141,12 +141,6 @@ ${PF_LDAP_PASSWORD_OBFUSCATED}'
    envsubst "${vars}" \
       < "${STAGING_DIR}/templates/ldap.properties" \
       > ldap.properties
-
-   PF_LDAP_PASSWORD_OBFUSCATED="${PF_LDAP_PASSWORD_OBFUSCATED:8}"
-
-   envsubst "${vars}" \
-      < "${STAGING_DIR}/templates/pingfederate-ldap-ds.xml" \
-      > ../server/default/data/pingfederate-ldap-ds.xml
 
    cd "${currentDir}"
 }
