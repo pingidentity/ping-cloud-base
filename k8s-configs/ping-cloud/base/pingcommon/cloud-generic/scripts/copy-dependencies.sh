@@ -36,7 +36,7 @@ cat <<EOF > "${TOPOLOGY_FILE}"
 }
 EOF
 
-beluga_log 'Downloading JMX prometheus Java Agent from ping-artifacts-test bucket'
+beluga_log 'Downloading JMX prometheus Java Agent from ping-artifacts bucket'
 
 DST_FILE='/data/jmx_prometheus_javaagent-0.14.0.jar'
 wget -qO "${DST_FILE}" \
@@ -48,6 +48,17 @@ if test ! -f "${DST_FILE}"; then
     exit 1
 fi
 
+beluga_log 'Downloading NewRelic Java APM Agent from ping-artifacts bucket'
+
+DST_FILE='/data/newrelic.jar'
+wget -qO "${DST_FILE}" \
+    https://ping-artifacts.s3.amazonaws.com/pingcommon/newrelic-java-agent/6.4.2/newrelic.jar
+
+beluga_log 'Checking for newrelic jar file in data directory'
+if test ! -f "${DST_FILE}"; then
+    beluga_log "Failed to locate '${DST_FILE}'" 'ERROR'
+    exit 1
+fi
 beluga_log "Execution completed successfully"
 
 exit 0

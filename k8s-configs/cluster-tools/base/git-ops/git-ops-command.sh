@@ -69,13 +69,18 @@ TARGET_DIR_FULL="$(pwd)"
 TARGET_DIR_SHORT="$(basename "${TARGET_DIR_FULL}")"
 
 # Directory paths relative to TARGET_DIR
-TOOLS_DIR='cluster-tools'
-PING_CLOUD_DIR='ping-cloud'
 BASE_DIR='../base'
 
 # Perform substitution and build in a temporary directory
 TMP_DIR="$(mktemp -d)"
 BUILD_DIR="${TMP_DIR}/${TARGET_DIR_SHORT}"
+
+# Source env_vars file in base dir
+. "${BASE_DIR}/env_vars"
+
+# Create subprocess to clone only targeted git branch from the upstream repo in background
+log "git-ops-command: creating subprocess to clone git branch '${K8S_GIT_BRANCH}'"
+git clone -q --depth=1  -b "${K8S_GIT_BRANCH}" --single-branch "${K8S_GIT_URL}"  "${TMP_DIR}/${K8S_GIT_BRANCH}" &
 
 # Copy contents of target directory into temporary directory
 log "git-ops-command: copying templates into '${TMP_DIR}'"
@@ -102,6 +107,12 @@ if test -f 'env_vars'; then
   )
   test $? -ne 0 && exit 1
 fi
+
+# Wait for subprocess to complete first.
+for pid in $(jobs -p); do
+  log "git-ops-command: waiting for subprocess to complete '${pid}'"
+  wait "${pid}"
+done
 
 # Build the uber deploy yaml
 if test -z "${OUT_DIR}" || test ! -d "${OUT_DIR}"; then

@@ -14,7 +14,6 @@ ADS_CRT_FILE=/usr/local/secrets/ads.crt
 ADS_KEY_FILE=/usr/local/secrets/ads.key
 
 USER_BACKEND_ID=userRoot
-USER_BASE_DN=dc=example,dc=com
 DISABLE_ALL_OLDER_USER_BASE_DN=true
 
 REPLICATION_BASE_DNS=o=platformconfig;o=appintegrations
@@ -50,10 +49,6 @@ TAIL_LOG_FILES=
 # Individual files should be spelled out, globs are unreliable
 K8S_TAIL_LOG_FILES=/opt/out/instance/logs/access /opt/out/instance/logs/change-notifications.log /opt/out/instance/logs/errors /opt/out/instance/logs/failed-ops /opt/out/instance/logs/expensive-write-ops /opt/out/instance/logs/replication
 
-# This JSON file must exist for multi-region.
-TOPOLOGY_DESCRIPTOR_JSON=/opt/staging/topology/descriptor.json
-TOPOLOGY_DESCRIPTOR_PROFILES_JSON=/opt/staging/topology/descriptor-profiles.json
-
 SECRETS_DIR=/usr/local/secrets
 
 # FIXME: these are redundant across services - DRY
@@ -72,13 +67,3 @@ PD_CLUSTER_PORT=8989
 
 TLS_TUNNEL_CIPHER_LIST=null
 TLS_TUNNEL_VERSIONS=TLSv1.2
-
-# DA Configuration
-DA_IMPLICIT_GRANT_TYPE_CLIENT_ID=dadmin
-DA_EXCLUSIVE_SCOPE_NAME=urn:pingidentity:directory-delegated-admin
-DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID=dapingdirectory
-DA_OAUTH_TOKEN_VALIDATOR_SECRET=2Federate
-DA_PINGFEDERATE_ATV_NAME=DAPingFederateValidator
-DA_PINGFEDERATE_INSTANCE_NAME=DAPingFederate
-PINGFEDERATE_ENGINE_SERVER=pingfederate
-PINGFEDERATE_ENGINE_PORT=9031

@@ -65,8 +65,15 @@ set_p14c_as_token_provider() {
   return $?
 }
 
-if is_previously_configured && ! p14c_credentials_changed; then
-  exit 0
+if is_myping_deployment; then
+  if is_previously_configured; then
+    exit 0
+  fi
+  export P14C_ISSUER="${AUTH_SERVER_BASE_URL}/${ENVIRONMENT_ID}/as"
+else
+  if is_previously_configured && ! p14c_credentials_changed; then
+    exit 0
+  fi
 fi
 
 if ! add_p14c_credentials; then

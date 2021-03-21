@@ -30,6 +30,7 @@ if test -z "${ENV_VARS_FILE}"; then
   export REGION="${AWS_DEFAULT_REGION:-us-west-2}"
   export REGION_NICK_NAME=${REGION}
   export TENANT_DOMAIN='ci-cd.ping-oasis.com'
+  export TENANT_NAME='ci-cd'
 
   export PRIMARY_REGION="${REGION}"
   export PRIMARY_TENANT_DOMAIN="${TENANT_DOMAIN}"
@@ -91,7 +92,8 @@ PINGDIRECTORY_ADMIN=pingdirectory-admin${FQDN}
 PINGFEDERATE_CONSOLE=https://pingfederate-admin${FQDN}/pingfederate/app
 
 # The trailing / is required to avoid a 302
-PINGFEDERATE_API=https://pingfederate-admin${FQDN}/pf-admin-api/api-docs/
+PINGFEDERATE_API_DOCS=https://pingfederate-admin${FQDN}/pf-admin-api/api-docs/
+PINGFEDERATE_ADMIN_API=https://pingfederate-admin${FQDN}/pf-admin-api/v1
 
 # runtime services:
 PINGFEDERATE_AUTH_ENDPOINT=https://pingfederate${FQDN}

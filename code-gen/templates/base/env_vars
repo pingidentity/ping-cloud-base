@@ -65,6 +65,10 @@ K8S_GIT_BRANCH=${K8S_GIT_BRANCH}
 # The name of the Docker image registry
 REGISTRY_NAME=${REGISTRY_NAME}
 
+# NewRelic Tags
+TENANT_NAME=${TENANT_NAME}
+NEW_RELIC_LABELS="region:${REGION};customer_name:${TENANT_NAME};environment:${ENV}"
+
 ############################################################
 # Cluster state repo details
 ############################################################
@@ -95,6 +99,11 @@ KUSTOMIZE_BASE=${KUSTOMIZE_BASE}
 # Lets Encrypt server
 ############################################################
 LETS_ENCRYPT_SERVER=${LETS_ENCRYPT_SERVER}
+
+############################################################
+# PingCommon environment variables
+############################################################
+USER_BASE_DN=dc=example,dc=com
 
 ############################################################
 # PingFederate variables for environment
@@ -151,7 +160,8 @@ PA_WAS_CLUSTER_PUBLIC_HOSTNAME=pingaccess-was-cluster.${PRIMARY_DNS_ZONE_DERIVED
 
 # Ping engine hostname variables
 PD_PUBLIC_HOSTNAME=pingdirectory-admin.${DNS_ZONE_DERIVED}
-PD_DELEGATOR_PUBLIC_HOSTNAME=pingdelegator.${DNS_ZONE}
+PD_HTTP_PUBLIC_HOSTNAME=pingdirectory.${DNS_ZONE_DERIVED}
+PD_DELEGATOR_PUBLIC_HOSTNAME=pingdelegator.${DNS_ZONE_DERIVED}
 PF_ENGINE_PUBLIC_HOSTNAME=pingfederate.${DNS_ZONE_DERIVED}
 PA_ENGINE_PUBLIC_HOSTNAME=pingaccess.${DNS_ZONE_DERIVED}
 PA_WAS_ENGINE_PUBLIC_HOSTNAME=pingaccess-was.${DNS_ZONE_DERIVED}
@@ -160,3 +170,4 @@ PROMETHEUS_PUBLIC_HOSTNAME=prometheus.${DNS_ZONE_DERIVED}
 GRAFANA_PUBLIC_HOSTNAME=monitoring.${DNS_ZONE_DERIVED}
 KIBANA_PUBLIC_HOSTNAME=logs.${DNS_ZONE_DERIVED}
 ARGOCD_PUBLIC_HOSTNAME=argocd.${DNS_ZONE_DERIVED}
+

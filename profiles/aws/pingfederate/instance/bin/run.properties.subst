@@ -11,13 +11,13 @@
 #
 # This property defines the port on which the PingFederate administrative
 # console and API runs. Default is 9999.
-pf.admin.https.port=9999
+pf.admin.https.port=${PF_ADMIN_PORT}
 
 #
 # This property defines the host name of this machine that will be used in
 # PingFederate's administrative API to represent itself to clients.
 # If left empty, PingFederate will do a name lookup to find its name.
-pf.admin.hostname=
+pf.admin.hostname=${PF_ADMIN_PUBLIC_HOSTNAME}
 
 #
 # This property defines the IP address over which the PingFederate
@@ -31,7 +31,13 @@ pf.console.bind.address=0.0.0.0
 #   ---------------
 # This property defines the browser window or tab title for the administrative
 # console, used to make separate instances identifiable.
-pf.console.title=PingFederate
+pf.console.title=${PF_ADMIN_CONSOLE_TITLE}
+
+#
+# This property defines the name of the PingFederate environment that will be
+# displayed in the administrative console, used to make separate environments
+# easily identifiable.
+pf.console.environment=${PF_ADMIN_CONSOLE_ENVIRONMENT}
 
 #   Admin Console UI Timeout
 #   ------------------------
@@ -66,7 +72,7 @@ pf.console.login.mode=multiple
 #     cert   - X509 certificate-based authentication.
 #     RADIUS - External RADIUS authentication.
 # Default is native.
-pf.console.authentication=${AUTHENTICATION_MODE}
+pf.console.authentication=${PF_CONSOLE_AUTHENTICATION}
 
 # Authentication methods for the Admin API.
 #   Valid values are:
@@ -92,6 +98,11 @@ cert.properties.file=cert_auth.properties
 # When RADIUS-based authentication is enabled, this property indicates the
 # name of the configuration properties file.
 radius.properties.file=radius.properties
+
+#
+# When OIDC administrative-console authentication is enabled, this property
+# indicates the name of the file containing configuration properties.
+oidc.properties.file=oidc.properties
 
 # -------------------------
 # Runtime Server Properties

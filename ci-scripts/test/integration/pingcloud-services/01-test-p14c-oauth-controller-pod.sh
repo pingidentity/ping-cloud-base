@@ -9,18 +9,10 @@ fi
 
 testP14COAuthPodAvailability() {
 
-  status=$(kubectl get pods --selector=role=p14c-oauth-service -o json | jq -r '.items[].status.containerStatuses[].ready')
+  status=$(kubectl get pods --selector=role=p14c-oauth-service -n ${NAMESPACE} -o json | jq -r '.items[].status.containerStatuses[].ready')
   assertEquals 0 $?
   assertEquals "The status of the p14c-oauth-service pod should be ready but was: ${status}" 'true' ${status}
 }
-
-testP14CBootstrapPodAvailability() {
-
-  status=$(kubectl get pods --selector=role=p14c-bootstrap -o json | jq -r '.items[].status.containerStatuses[].ready')
-  assertEquals 0 $?
-  assertEquals "The status of the p14c-bootstrap pod should be ready but was: ${status}" 'true' ${status}
-}
-
 
 # When arguments are passed to a script you must
 # consume all of them before shunit is invoked
