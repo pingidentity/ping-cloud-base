@@ -6,8 +6,8 @@ resources:
 - ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingdelegator/server?ref=${K8S_GIT_BRANCH}
 
 images:
-- name: pingidentity/pingdelegator
-  newName: ${REGISTRY_NAME}/pingidentity/pingdelegator
+- name: ${REGISTRY_NAME}/pingidentity/pingdelegator
+  newTag: ${PINGDELEGATOR_IMAGE_TAG}
 
 generatorOptions:
   disableNameSuffixHash: true
