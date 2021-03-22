@@ -22,7 +22,7 @@ testP14CBootstrapDeploymentAvailability() {
 }
 
 testP14CBOMDeploymentAvailability() {
-  status=$(kubectl get deployment p14c-bom-service -o json | jq -r '.status.conditions[0].type')
+  status=$(kubectl get deployment p14c-bom-service -n ${NAMESPACE} -o json| jq -r '.status.conditions[0].type')
   assertEquals 0 $?
   assertEquals "The status of the p14c-bom-service deployment should be Available but was: ${status}" 'Available' ${status}
 }  
