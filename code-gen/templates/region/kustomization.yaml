@@ -103,7 +103,7 @@ configMapGenerator:
   - ../base/env_vars
   - env_vars
 
-# PingCloud-bom
+# PingCloud BOM service
 - name: p14c-bom-service-environment-variables
   behavior: merge
   envs:

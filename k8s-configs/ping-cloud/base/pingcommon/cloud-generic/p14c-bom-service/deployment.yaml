@@ -3,15 +3,10 @@ kind: Deployment
 metadata:
   name: p14c-bom-service
 spec:
-  selector:
-    matchLabels:
-      role: p14c-bom-service
   replicas: 1
   template:
     metadata:
       name: p14c-bom-service
-      labels:
-        role: p14c-bom-service
     spec:
       serviceAccount: p14c-bom-serviceaccount
       containers:

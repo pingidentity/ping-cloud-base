@@ -7,11 +7,11 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-testP14COAuthPodAvailability() {
+testP14CBOMPodAvailability() {
 
-  status=$(kubectl get pods --selector=role=p14c-oauth-service -n ${NAMESPACE} -o json | jq -r '.items[].status.containerStatuses[].ready')
+  status=$(kubectl get pods --selector=role=p14c-bom-service -o json | jq -r '.items[].status.containerStatuses[].ready')
   assertEquals 0 $?
-  assertEquals "The status of the p14c-oauth-service pod should be ready but was: ${status}" 'true' ${status}
+  assertEquals "The status of the p14c-bom-service pod should be ready but was: ${status}" 'true' ${status}
 }
 
 # When arguments are passed to a script you must
