@@ -116,7 +116,7 @@ spec:
               subPath: wait-for-services.sh
       containers:
         - name: pingdirectory
-          image: pingcloud-docker.jfrog.io/pingidentity/pingdirectory:2006.1-8.1.0.2
+          image: pingcloud-virtual.jfrog.io/pingidentity/pingdirectory:2006.1-8.1.0.2
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 1389

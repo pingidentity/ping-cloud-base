@@ -6,8 +6,8 @@ resources:
 - ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingfederate/engine?ref=${K8S_GIT_BRANCH}
 
 images:
-- name: pingidentity/pingfederate
-  newName: ${REGISTRY_NAME}/pingidentity/pingfederate
+- name: ${REGISTRY_NAME}/pingidentity/pingfederate
+  newTag: ${PINGFEDERATE_IMAGE_TAG}
 
 patchesJson6902:
 
