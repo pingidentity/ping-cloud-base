@@ -3,7 +3,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 # Apply PingAccess-WAS runtime engine deployment resources
-- ../../../../${K8S_GIT_BRANCH}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingaccess-was/engine
+- ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingaccess-was/engine?ref=${K8S_GIT_BRANCH}
 
 images:
 - name: pingidentity/pingaccess
