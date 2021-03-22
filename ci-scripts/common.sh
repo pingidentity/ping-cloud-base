@@ -92,7 +92,8 @@ PINGDIRECTORY_ADMIN=pingdirectory-admin${FQDN}
 PINGFEDERATE_CONSOLE=https://pingfederate-admin${FQDN}/pingfederate/app
 
 # The trailing / is required to avoid a 302
-PINGFEDERATE_API=https://pingfederate-admin${FQDN}/pf-admin-api/api-docs/
+PINGFEDERATE_API_DOCS=https://pingfederate-admin${FQDN}/pf-admin-api/api-docs/
+PINGFEDERATE_ADMIN_API=https://pingfederate-admin${FQDN}/pf-admin-api/v1
 
 # runtime services:
 PINGFEDERATE_AUTH_ENDPOINT=https://pingfederate${FQDN}
