@@ -12,7 +12,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: pingaccess-was-periodic-csd-upload
-            image: pingcloud-mirror.jfrog.io/pingidentity/pingaccess:2010-6.1.3
+            image: pingcloud-virtual.jfrog.io/pingidentity/pingaccess:2010-6.1.3
             command:
             - /opt/in/backup-csd-data.sh
             env:
