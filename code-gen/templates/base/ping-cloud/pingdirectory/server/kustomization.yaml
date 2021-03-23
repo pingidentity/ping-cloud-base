@@ -6,8 +6,8 @@ resources:
 - ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingdirectory/server?ref=${K8S_GIT_BRANCH}
 
 images:
-- name: pingidentity/pingdirectory
-  newName: ${REGISTRY_NAME}/pingidentity/pingdirectory
+- name: ${REGISTRY_NAME}/pingidentity/pingdirectory
+  newTag: ${PINGDIRECTORY_IMAGE_TAG}
 
 generatorOptions:
   disableNameSuffixHash: true

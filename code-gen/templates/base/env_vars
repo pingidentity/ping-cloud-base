@@ -101,6 +101,11 @@ KUSTOMIZE_BASE=${KUSTOMIZE_BASE}
 LETS_ENCRYPT_SERVER=${LETS_ENCRYPT_SERVER}
 
 ############################################################
+# PingCommon environment variables
+############################################################
+USER_BASE_DN=dc=example,dc=com
+
+############################################################
 # PingFederate variables for environment
 ############################################################
 PF_PD_BIND_PORT=${PF_PD_BIND_PORT}
@@ -126,6 +131,14 @@ PA_MAX_HEAP=${PA_MAX_HEAP}
 PA_MIN_YGEN=${PA_MIN_YGEN}
 PA_MAX_YGEN=${PA_MAX_YGEN}
 PA_GCOPTION=${PA_GCOPTION}
+
+############################################################
+# Ping application image tags
+############################################################
+PINGACCESS_IMAGE_TAG=2010-6.1.3
+PINGFEDERATE_IMAGE_TAG=2101-10.2.1
+PINGDIRECTORY_IMAGE_TAG=2006.1-8.1.0.2
+PINGDELEGATOR_IMAGE_TAG=2101-4.2.1
 
 ############################################################
 # Cluster name variables
@@ -155,7 +168,8 @@ PA_WAS_CLUSTER_PUBLIC_HOSTNAME=pingaccess-was-cluster.${PRIMARY_DNS_ZONE_DERIVED
 
 # Ping engine hostname variables
 PD_PUBLIC_HOSTNAME=pingdirectory-admin.${DNS_ZONE_DERIVED}
-PD_DELEGATOR_PUBLIC_HOSTNAME=pingdelegator.${DNS_ZONE}
+PD_HTTP_PUBLIC_HOSTNAME=pingdirectory.${DNS_ZONE_DERIVED}
+PD_DELEGATOR_PUBLIC_HOSTNAME=pingdelegator.${DNS_ZONE_DERIVED}
 PF_ENGINE_PUBLIC_HOSTNAME=pingfederate.${DNS_ZONE_DERIVED}
 PA_ENGINE_PUBLIC_HOSTNAME=pingaccess.${DNS_ZONE_DERIVED}
 PA_WAS_ENGINE_PUBLIC_HOSTNAME=pingaccess-was.${DNS_ZONE_DERIVED}

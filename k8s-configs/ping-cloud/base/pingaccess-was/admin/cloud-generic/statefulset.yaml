@@ -65,6 +65,9 @@ spec:
         - name: pingaccess-was-init
           mountPath: /utils.lib.sh
           subPath: utils.lib.sh
+        - name: data-dir
+          mountPath: /opt/staging/p14c_env_vars
+          subPath: p14c_env_vars
         envFrom:
         - configMapRef:
             name: pingaccess-was-environment-variables
@@ -89,7 +92,7 @@ spec:
             name: pingaccess-was-environment-variables
       containers:
       - name: pingaccess-was-admin
-        image: pingcloud-mirror.jfrog.io/pingidentity/pingaccess:2010-6.1.3
+        image: pingcloud-virtual.jfrog.io/pingidentity/pingaccess:2010-6.1.3
         imagePullPolicy: IfNotPresent
         resources:
           requests:
