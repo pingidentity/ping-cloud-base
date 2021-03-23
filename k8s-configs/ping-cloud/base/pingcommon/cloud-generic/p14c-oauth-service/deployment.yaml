@@ -28,8 +28,6 @@ spec:
         envFrom:
         - configMapRef:
             name: p14c-oauth-service-environment-variables
-        - secretRef:
-            name: p14c-bootstrap-secret
         env:
         - name: NAMESPACE
           valueFrom:
