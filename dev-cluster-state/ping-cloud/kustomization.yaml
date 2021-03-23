@@ -59,6 +59,12 @@ configMapGenerator:
   envs:
   - env_vars
 
+# PingCloud BOM service
+- name: p14c-bom-service-environment-variables
+  behavior: merge
+  envs:
+  - env_vars
+
 # PingCloud P14C bootstrap
 - name: pingcloud-p14c-bootstrap-environment-variables
   behavior: merge
