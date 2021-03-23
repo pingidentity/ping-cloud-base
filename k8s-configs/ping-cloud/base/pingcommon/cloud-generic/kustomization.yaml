@@ -26,3 +26,4 @@ resources:
 - configmap.yaml
 - pingcloud-metadata
 - p14c-oauth-service
+- p14c-bom-service
