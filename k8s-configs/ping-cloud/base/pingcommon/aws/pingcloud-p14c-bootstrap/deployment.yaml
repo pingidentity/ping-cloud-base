@@ -15,7 +15,7 @@ spec:
       serviceAccount: p14c-bootstrap-serviceaccount
       containers:
       - name: p14c-bootstrap
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-bootstrap:v1.0.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-bootstrap:v1.0.3
         imagePullPolicy: IfNotPresent
         env:
         - name: NAMESPACE
