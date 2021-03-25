@@ -119,6 +119,10 @@ spec:
               key: DA_OAUTH_TOKEN_VALIDATOR_SECRET
         - name: NEW_RELIC_APP_NAME
           value: pingfederate-admin
+        - name: NEW_RELIC_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
