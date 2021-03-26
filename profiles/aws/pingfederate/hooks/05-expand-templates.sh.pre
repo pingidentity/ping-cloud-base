@@ -8,7 +8,7 @@ ${VERBOSE} && set -x
 
 if test -f "${STAGING_DIR}/p14c_env_vars"; then
     beluga_log "Exporting P14C container environment variables"
-    export $(grep -v '^#' ${STAGING_DIR}/p14c_env_vars | xargs -0)
+    set -a; source ${STAGING_DIR}/p14c_env_vars; set +a
     export_container_env $(sed 's/=.*//' ${STAGING_DIR}/p14c_env_vars | tr '\n' ' ')
 else
     beluga_log "Did not find P14C container environment variables to export"
