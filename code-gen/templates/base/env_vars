@@ -46,11 +46,12 @@ LOG_ARCHIVE_URL=${LOG_ARCHIVE_URL}
 BACKUP_URL=${BACKUP_URL}
 
 ############################################################
-# Platform event queue variables
+# Platform event queue and SSM variables
 ############################################################
 PLATFORM_EVENT_QUEUE_NAME=${EVENT_QUEUE_NAME}
 PLATFORM_EVENT_QUEUE_POLL_BATCH_SIZE=1
 PLATFORM_EVENT_QUEUE_POLL_INTERVAL_SECONDS=2
+ORCH_API_SSM_PATH_PREFIX=${ORCH_API_SSM_PATH_PREFIX}
 
 ############################################################
 # Miscellaneous ping-cloud-base variables

@@ -52,6 +52,7 @@ if test -z "${ENV_VARS_FILE}"; then
   export CLUSTER_BUCKET_NAME="${CLUSTER_NAME}-cluster-bucket"
 
   export EVENT_QUEUE_NAME='platform_event_queue.fifo'
+  export ORCH_API_SSM_PATH_PREFIX='/pcpt/orch-api'
 
   export PROJECT_DIR="${CI_PROJECT_DIR}"
   export AWS_PROFILE=csg
