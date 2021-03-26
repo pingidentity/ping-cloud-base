@@ -48,6 +48,16 @@ patchesStrategicMerge:
       purpose: service-account-for-ping-cloud-stack
       ${IRSA_PING_ANNOTATION_KEY_VALUE}
 
+### P14C Bootstrap service account ###
+- |-
+  apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: p14c-bootstrap-serviceaccount
+    annotations:
+      purpose: service-account-for-ping-cloud-stack
+      ${IRSA_PING_ANNOTATION_KEY_VALUE}
+
 patchesJson6902:
 
 # pingcloud-metadata ingress
