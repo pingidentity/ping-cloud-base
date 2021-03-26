@@ -72,7 +72,7 @@ monitoring information.
     "response.concurrency.statistics.mean",
     "response.time.statistics.mean"])
 
-{"items":[{
+{
       "cpu.load": $monitor.getCpuLoad('####.#'),
       "total.jvm.memory": $monitor.getTotalJvmMemory(),
       "free.jvm.memory": $monitor.getFreeJvmMemory(),
@@ -95,7 +95,7 @@ monitoring information.
       #set ( $count =  $count + 1)
       "${key}": "$map.get($key)"#if( $count < $size ),#end
 #end
-}]}
+}
 
 #else
 #set( $Content-Type = "text/html" )
