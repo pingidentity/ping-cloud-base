@@ -5,14 +5,11 @@ namespace: ping-cloud
 
 commonLabels:
   app: ping-cloud
-  role: p14c-oauth-service
+  role: pingfederate-admin-configurator
 
 generatorOptions:
   disableNameSuffixHash: true
 
-configMapGenerator:
-- name: p14c-oauth-service-environment-variables
-
 resources:
-- deployment.yaml
+- job.yaml
 - rbac.yaml

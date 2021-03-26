@@ -5,13 +5,13 @@ namespace: ping-cloud
 
 commonLabels:
   app: ping-cloud
-  role: p14c-oauth-service
+  role: p14c-bom-service
 
 generatorOptions:
   disableNameSuffixHash: true
 
 configMapGenerator:
-- name: p14c-oauth-service-environment-variables
+- name: p14c-bom-service-environment-variables
 
 resources:
 - deployment.yaml

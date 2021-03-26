@@ -5,6 +5,7 @@ resources:
 - ../../k8s-configs/ping-cloud
 
 configMapGenerator:
+
 # Pingaccess
 - name: pingaccess-environment-variables
   behavior: merge
@@ -48,6 +49,12 @@ configMapGenerator:
 
 # PingCloud-oauth
 - name: p14c-oauth-service-environment-variables
+  behavior: merge
+  envs:
+  - env_vars
+
+# PingCloud BOM service
+- name: p14c-bom-service-environment-variables
   behavior: merge
   envs:
   - env_vars

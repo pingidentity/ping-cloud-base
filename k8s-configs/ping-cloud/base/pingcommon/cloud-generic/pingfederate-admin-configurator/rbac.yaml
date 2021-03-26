@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pf-script-serviceaccount
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: Role
+metadata:
+  name: pf-script-role
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - "configmaps"
+    verbs:
+      - get
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - "secrets"
+    verbs:
+      - get
+      - watch
+  - apiGroups:
+      - ""
+    resources:
+      - "pods"
+    verbs:
+      - watch
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: RoleBinding
+metadata:
+  name: pf-script-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: pf-script-role
+subjects:
+  - kind: ServiceAccount
+    name: pf-script-serviceaccount
