@@ -94,7 +94,7 @@ spec:
       containers:
       - name: pingfederate-admin
         image: pingcloud-virtual.jfrog.io/pingidentity/pingfederate:2101-10.2.1
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_CONSOLE
