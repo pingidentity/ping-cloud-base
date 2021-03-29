@@ -159,14 +159,17 @@ initialize_all_servers_for_dn() {
 # Enable and configure Delegated Admin.
 ########################################################################################################################
 configure_delegated_admin() {
-  beluga_log "configuring Access Token Validator and PingFederate instance for Delegated Admin"
-  # Note: using /dev/null to hide dsconfig from showing secret within logs
-  dsconfig --no-prompt --batch-file "${DA_ATV_BATCH_FILE}" > /dev/null
-  test $? -ne 0 && return 1
-  
-  beluga_log "configuring Delegated Admin general setup"
-  dsconfig --no-prompt --batch-file "${DA_CONFIG_BATCH_FILE}"
+  beluga_log "Enabling Delegated Admin"
+  dsconfig --no-prompt --batch-file "${DA_CONFIG_BATCH_FILE}" > /dev/null
   return ${?}
+}
+
+########################################################################################################################
+# Reset Delegated Admin configuration.
+########################################################################################################################
+reset_delegated_admin() {
+  beluga_log "Resetting Delegated Admin configuration"
+  dsconfig --no-prompt --batch-continue-on-error --batch-file "${DA_RESET_CONFIG_BATCH_FILE}"
 }
 
 ########################################################################################################################
@@ -217,13 +220,16 @@ test $? -ne 0 && exit 1
 if $(echo "${DA_SKIP_SETUP}" | grep -iq "true"); then
   beluga_log "DA_SKIP_SETUP is true, skipping..."
 else
-  da_dir="${PD_PROFILE}/misc-files/delegated-admin"
-  DA_ATV_BATCH_FILE="${da_dir}/00-delegated-admin-atv-setup.dsconfig"
-  DA_CONFIG_BATCH_FILE="${da_dir}/01-delegated-admin-general-setup.dsconfig"
+  DA_RESET_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/00-reset-delegated-admin.dsconfig"
+  DA_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/01-add-delegated-admin.dsconfig"
 
   beluga_log "Configuring Delegated Admin"
+  reset_delegated_admin
   configure_delegated_admin
-  test $? -ne 0 && exit 1
+  if test $? -ne 0; then
+    beluga_error "Failed to configure Delegated Admin"
+    exit 1
+  fi
 fi
 
 # --- NOTE ---

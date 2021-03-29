@@ -53,7 +53,11 @@ set_pcv() {
 
     make_api_request -X POST -d "${pcv_payload}" \
       "${PF_API_HOST}/passwordCredentialValidators" > /dev/null
-    test $? -ne 0 && return 1
+    response_status_code=$?
+
+    if test ${response_status_code} -ne 0; then
+      return ${response_status_code}
+    fi
 
     beluga_log "PCV, '${DA_PCV_ID}', successfully created"
   else
@@ -96,7 +100,11 @@ change_pcv_search_base() {
 
   make_api_request -X PUT -d "${new_user_base_dn_payload}" \
     "${PF_API_HOST}/passwordCredentialValidators/${DA_PCV_ID}" > /dev/null
-  test $? -ne 0 && return 1
+  response_status_code=$?
+  
+  if test ${response_status_code} -ne 0; then
+    return ${response_status_code}
+  fi
 
   beluga_log "PCV, ${DA_PCV_ID}, search base successfully updated to ${USER_BASE_DN}"
 }
@@ -132,7 +140,11 @@ set_idp_adapter_html_form() {
 
     make_api_request -X POST -d "${idp_adapter_html_form_payload}" \
       "${PF_API_HOST}/idp/adapters" > /dev/null
-    test $? -ne 0 && return 1
+    response_status_code=$?
+    
+    if test ${response_status_code} -ne 0; then
+      return ${response_status_code}
+    fi
 
     beluga_log "IDP adapter HTML form, '${DA_IDP_ADAPTER_HTML_FORM_ID}', successfully created"
   else
@@ -170,7 +182,11 @@ set_idp_adapter_mapping() {
 
     make_api_request -X POST -d "${idp_adapter_mapping_payload}" \
       "${PF_API_HOST}/oauth/idpAdapterMappings" > /dev/null
-    test $? -ne 0 && return 1
+    response_status_code=$?
+    
+    if test ${response_status_code} -ne 0; then
+      return ${response_status_code}
+    fi
 
     beluga_log "IDP adapter mapping, '${DA_IDP_ADAPTER_HTML_FORM_ID}', successfully created"
   else
@@ -213,7 +229,11 @@ set_jwt() {
 
     make_api_request -X POST -d "${create_jwt_payload}" \
     "${PF_API_HOST}/oauth/accessTokenManagers" > /dev/null
-    test $? -ne 0 && return 1
+    response_status_code=$?
+    
+    if test ${response_status_code} -ne 0; then
+      return ${response_status_code}
+    fi
 
     beluga_log "JWT, '${DA_JWT_ID}', successfully created"
   else
@@ -252,7 +272,11 @@ set_jwt_default_mapping() {
 
     make_api_request -X POST -d "${jwt_default_mapping_payload}" \
       "${PF_API_HOST}/oauth/accessTokenMappings" > /dev/null
-    test $? -ne 0 && return 1
+    response_status_code=$?
+    
+    if test ${response_status_code} -ne 0; then
+      return ${response_status_code}
+    fi
 
     beluga_log "JWT default mapping, '${DA_JWT_ID}', successfully created"
   else
@@ -290,7 +314,11 @@ set_oidc_policy() {
 
     make_api_request -X POST -d "${oidc_policy_payload}" \
       "${PF_API_HOST}/oauth/openIdConnect/policies" > /dev/null
-    test $? -ne 0 && return 1
+    response_status_code=$?
+    
+    if test ${response_status_code} -ne 0; then
+      return ${response_status_code}
+    fi
 
     beluga_log "OIDC policy, '${DA_OIDC_POLICY_ID}', successfully created"
   else
@@ -327,7 +355,11 @@ set_exclusive_scope() {
 
     make_api_request -X POST -d "${exclusive_scope_payload}" \
       "${PF_API_HOST}/oauth/authServerSettings/scopes/exclusiveScopes" > /dev/null
-    test $? -ne 0 && return 1
+    response_status_code=$?
+    
+    if test ${response_status_code} -ne 0; then
+      return ${response_status_code}
+    fi
 
     beluga_log "Exclusive scope, '${DA_EXCLUSIVE_SCOPE_NAME}', created successfully"
   else
@@ -364,9 +396,16 @@ setAllowedOrigins() {
   AUTH_SERVER_SETTINGS_PAYLOAD="${AUTH_SERVER_SETTINGS_RESPONSE}"
   buildOriginList
 
+  beluga_log "adding the following allowedOrigns"
+  echo "${AUTH_SERVER_SETTINGS_PAYLOAD}" | jq -r ".allowedOrigins"
+
   make_api_request -X PUT -d "${AUTH_SERVER_SETTINGS_PAYLOAD}" \
     "${PF_API_HOST}/oauth/authServerSettings" > /dev/null
-  test $? -ne 0 && return 1
+  response_status_code=$?
+  
+  if test ${response_status_code} -ne 0; then
+    return ${response_status_code}
+  fi
 
   beluga_log "Auth server settings updated successfully"
 }
@@ -457,12 +496,19 @@ set_implicit_grant_type_client() {
     REDIRECT_URIS=$(envsubst < ${TEMPLATES_DIR_PATH}/redirect-uris-template.json)
     buildRedirectUriList
 
+    beluga_log "adding the following redirectURIs"
+    echo "${REDIRECT_URIS}" | jq -r ".redirectUris"
+
     # Join API JSON payload with redirectUris list.
     implicit_grant_type_payload=$(echo "${implicit_grant_type_payload}" ${REDIRECT_URIS} | jq -s add)
 
     make_api_request -X POST -d "${implicit_grant_type_payload}" \
       "${PF_API_HOST}/oauth/clients" > /dev/null
-    test $? -ne 0 && return 1
+    response_status_code=$?
+    
+    if test ${response_status_code} -ne 0; then
+      return ${response_status_code}
+    fi
 
     beluga_log "Implicit grant type, '${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}', created successfully"
   else
@@ -490,13 +536,17 @@ buildRedirectUriList() {
       # Construct DA hostname.
       da_hostname="${PD_DELEGATOR_PUBLIC_HOSTNAME%%.*}.${region_hostname#*.}"
 
+      beluga_log "Adding 'https://${da_hostname}:${PD_DELEGATOR_PUBLIC_PORT}/*' and  'https://${da_hostname}/*' as redirect URIs"
+
       # Append to redirectUris list.
-      addRedirectUri "https://${da_hostname}:443/*"
+      addRedirectUri "https://${da_hostname}:${PD_DELEGATOR_PUBLIC_PORT}/*"
       addRedirectUri "https://${da_hostname}/*"
     done
   else
     # Append to redirectUris list.
-    addRedirectUri "https://${PD_DELEGATOR_PUBLIC_HOSTNAME}:443/*"
+    beluga_log "Adding 'https://${PD_DELEGATOR_PUBLIC_HOSTNAME}:${PD_DELEGATOR_PUBLIC_PORT}/*' and  'https://${PD_DELEGATOR_PUBLIC_HOSTNAME}/*' as redirect URIs"
+
+    addRedirectUri "https://${PD_DELEGATOR_PUBLIC_HOSTNAME}:${PD_DELEGATOR_PUBLIC_PORT}/*"
     addRedirectUri "https://${PD_DELEGATOR_PUBLIC_HOSTNAME}/*"
   fi
 }
@@ -542,7 +592,11 @@ set_oauth_token_validator_client() {
 
     make_api_request -X POST -d "${oauth_token_val_payload}" \
       "${PF_API_HOST}/oauth/clients" > /dev/null
-    test $? -ne 0 && return 1
+    response_status_code=$?
+    
+    if test ${response_status_code} -ne 0; then
+      return ${response_status_code}
+    fi
 
     beluga_log "OAuth token validator client, '${DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID}', created successfully"
   else
@@ -604,7 +658,11 @@ setVirtualHosts() {
 
   make_api_request -X PUT -d "${DA_VIRTUAL_HOST_PAYLOAD}" \
     "${PF_API_HOST}/virtualHostNames" > /dev/null
-  test $? -ne 0 && return 1
+  response_status_code=$?
+  
+  if test ${response_status_code} -ne 0; then
+    return ${response_status_code}
+  fi
 
   beluga_log "Virtual host settings updated successfully"
 }
@@ -625,6 +683,8 @@ buildVirtualHostList() {
 
     # Construct PF Engine hostname.
     pf_hostname="${PF_ENGINE_PUBLIC_HOSTNAME%%.*}.${region_hostname#*.}"
+
+    beluga_log "constructed PingFederate hostname: ${pf_hostname}"
 
     # Only add secondary or more regions as a virtual host.
     # This if condition is skipping primary region which is PF_ENGINE_PUBLIC_HOSTNAME.
