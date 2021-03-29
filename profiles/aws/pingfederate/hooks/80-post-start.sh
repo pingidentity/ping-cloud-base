@@ -22,6 +22,7 @@ wait_for_admin_api_endpoint configArchive/export
 beluga_log "post-start: configure DA"
 sh "${HOOKS_DIR}/84-setup-delegated-admin.sh"
 DA_CONFIG_STATUS=${?}
+beluga_log "post-start: configure DA status: ${DA_CONFIG_STATUS}"
 
 # Update LDAP-DS entry
 beluga_log "Updating LDAP-DS Entry"
