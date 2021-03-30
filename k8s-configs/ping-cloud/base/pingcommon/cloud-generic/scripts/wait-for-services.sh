@@ -28,7 +28,7 @@ else
         pingfederate-cluster)
           HOST_PORT_LIST="\
             ${PF_CLUSTER_PUBLIC_HOSTNAME}:${PF_CLUSTER_PORT} \
-            ${PF_ADMIN_SERVER_NAME}.${PF_CLUSTER_PUBLIC_HOSTNAME}:${PF_ADMIN_WAIT_PORT}"
+            ${PF_ENGINE_SERVER_NAME}.${PF_CLUSTER_PUBLIC_HOSTNAME}:${PF_ENGINE_WAIT_PORT}"
           ;;
 
         pingaccess-admin)
