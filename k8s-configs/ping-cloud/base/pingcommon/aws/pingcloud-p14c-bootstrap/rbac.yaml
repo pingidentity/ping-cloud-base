@@ -17,7 +17,7 @@ rules:
     - "configmaps"
     verbs:
     - create
-    - patch
+    - update
 
 ---
 

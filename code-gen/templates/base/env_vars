@@ -46,11 +46,12 @@ LOG_ARCHIVE_URL=${LOG_ARCHIVE_URL}
 BACKUP_URL=${BACKUP_URL}
 
 ############################################################
-# Platform event queue variables
+# Platform event queue and SSM variables
 ############################################################
 PLATFORM_EVENT_QUEUE_NAME=${EVENT_QUEUE_NAME}
 PLATFORM_EVENT_QUEUE_POLL_BATCH_SIZE=1
 PLATFORM_EVENT_QUEUE_POLL_INTERVAL_SECONDS=2
+ORCH_API_SSM_PATH_PREFIX=${ORCH_API_SSM_PATH_PREFIX}
 
 ############################################################
 # Miscellaneous ping-cloud-base variables
@@ -170,6 +171,7 @@ PA_WAS_CLUSTER_PUBLIC_HOSTNAME=pingaccess-was-cluster.${PRIMARY_DNS_ZONE_DERIVED
 PD_PUBLIC_HOSTNAME=pingdirectory-admin.${DNS_ZONE_DERIVED}
 PD_HTTP_PUBLIC_HOSTNAME=pingdirectory.${DNS_ZONE_DERIVED}
 PD_DELEGATOR_PUBLIC_HOSTNAME=pingdelegator.${DNS_ZONE_DERIVED}
+PD_DELEGATOR_PUBLIC_PORT=443
 PF_ENGINE_PUBLIC_HOSTNAME=pingfederate.${DNS_ZONE_DERIVED}
 PA_ENGINE_PUBLIC_HOSTNAME=pingaccess.${DNS_ZONE_DERIVED}
 PA_WAS_ENGINE_PUBLIC_HOSTNAME=pingaccess-was.${DNS_ZONE_DERIVED}

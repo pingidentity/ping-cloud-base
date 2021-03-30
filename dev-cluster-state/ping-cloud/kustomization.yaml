@@ -4,13 +4,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 resources:
 - ../../k8s-configs/ping-cloud
 
-generatorOptions:
-  disableNameSuffixHash: true
-
 configMapGenerator:
-# Empty entitlements ConfigMap indicating that MyPing is NOT the orchestrator for this environment.
-- name: entitlements
-  namespace: ${NAMESPACE}
 
 # Pingaccess
 - name: pingaccess-environment-variables

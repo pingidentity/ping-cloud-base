@@ -13,9 +13,14 @@ spec:
         lastUpdateReason: "NA"
     spec:
       serviceAccount: p14c-bootstrap-serviceaccount
+      # This security context is required for IRSA permissions to the
+      # SQS platform event queue to work for the "app" user.
+      securityContext:
+        runAsUser: 101
+        fsGroup: 101
       containers:
       - name: p14c-bootstrap
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-bootstrap:v1.0.3
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-bootstrap:v1.0.5
         imagePullPolicy: IfNotPresent
         env:
         - name: NAMESPACE
