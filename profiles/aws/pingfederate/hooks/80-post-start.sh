@@ -20,7 +20,7 @@ beluga_log "post-start: waiting for admin API to be ready"
 wait_for_admin_api_endpoint configArchive/export
 
 beluga_log "post-start: configure DA"
-sh "${HOOKS_DIR}/84-setup-delegated-admin.sh"
+# sh "${HOOKS_DIR}/84-setup-delegated-admin.sh"
 DA_CONFIG_STATUS=${?}
 beluga_log "post-start: configure DA status: ${DA_CONFIG_STATUS}"
 

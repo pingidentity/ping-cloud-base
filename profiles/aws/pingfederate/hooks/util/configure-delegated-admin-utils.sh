@@ -44,6 +44,9 @@ set_pcv() {
   # If API return 404 status code. Proceed to create PCV.
   if test $(echo "${DA_PCV_RESPONSE}" | grep "${PF_API_404_MESSAGE}" &> /dev/null; echo $?) -eq 0; then
 
+    beluga_log "Using datastore response"
+    echo "${DA_PCV_RESPONSE}" | jq
+
     beluga_log "Creating PCV"
 
     # Export datastore id. It is required within template create-password-credentials-validator.
