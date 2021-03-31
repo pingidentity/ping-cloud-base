@@ -47,6 +47,28 @@ substitute_vars() {
 }
 
 ########################################################################################################################
+# Returns the first directory relative to the second.
+#
+# Arguments
+#   $1 -> The directory to transform into a relative path.
+#   $2 -> The directory relative to which the first directory must be transformed.
+########################################################################################################################
+relative_path() {
+  to_transform="$(cd "${1%%/}"; pwd)"
+  relative_to="$(cd "$2"; pwd)"
+
+  # Move up from the directory to transform while counting the number of directories traversed until the other
+  # directory is reached.
+  dot_dots=
+  while test "${relative_to#${to_transform}/}" = "${relative_to}"; do
+    to_transform="$(dirname "${to_transform}")"
+    dot_dots="../${dot_dots}"
+  done
+
+  echo ${dot_dots}${relative_to#${to_transform}/}
+}
+
+########################################################################################################################
 # Clean up on exit. If non-zero exit, then print the log file to stdout before deleting it. Change back to the previous
 # directory. Delete the kustomize build directory, if it exists.
 ########################################################################################################################
@@ -69,8 +91,6 @@ TARGET_DIR_FULL="$(pwd)"
 TARGET_DIR_SHORT="$(basename "${TARGET_DIR_FULL}")"
 
 # Directory paths relative to TARGET_DIR
-TOOLS_DIR='cluster-tools'
-PING_CLOUD_DIR='ping-cloud'
 BASE_DIR='../base'
 
 # Perform substitution and build in a temporary directory
@@ -99,6 +119,23 @@ if test -f 'env_vars'; then
     fi
 
     substitute_vars "${env_vars_file}" .
+
+    # Clone git branch from the upstream repo
+    log "git-ops-command: cloning git branch '${K8S_GIT_BRANCH}' from: ${K8S_GIT_URL}"
+    git clone -q --depth=1 -b "${K8S_GIT_BRANCH}" --single-branch "${K8S_GIT_URL}" "${TMP_DIR}/${K8S_GIT_BRANCH}"
+
+    log "git-ops-command: replacing remote repo URL '${K8S_GIT_URL}' with locally cloned repo"
+    kust_files="$(find "${TMP_DIR}" -name kustomization.yaml | grep -v "${K8S_GIT_BRANCH}")"
+
+    for kust_file in ${kust_files}; do
+      rel_resource_dir="$(relative_path "$(dirname "${kust_file}")" "${TMP_DIR}/${K8S_GIT_BRANCH}")"
+      log "git-ops-command: replacing ${K8S_GIT_URL} in file ${kust_file} with ${rel_resource_dir}"
+      sed -i.bak \
+          -e "s|${K8S_GIT_URL}|${rel_resource_dir}|g" \
+          -e "s|\?ref=${K8S_GIT_BRANCH}$||g" \
+          "${kust_file}"
+      rm -f "${kust_file}".bak
+    done
   )
   test $? -ne 0 && exit 1
 fi

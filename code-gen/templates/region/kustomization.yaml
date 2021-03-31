@@ -72,6 +72,8 @@ configMapGenerator:
   - env_vars
   - pingaccess-was/env_vars
 
+
+# PingDelegator
 # Create the config maps that hold the variable for triggering updates of DA servers
 - name: pingdelegator-last-update-config
   namespace: ${PING_CLOUD_NAMESPACE}
@@ -86,11 +88,34 @@ configMapGenerator:
   - env_vars
   - pingdelegator/env_vars
 
+
+# PingCloud services
 # Pingcloud-metadata
 - name: pingcloud-metadata-environment-variables
   behavior: merge
   envs:
   - ../base/env_vars
+
+# PingCloud-oauth
+- name: p14c-oauth-service-environment-variables
+  behavior: merge
+  envs:
+  - ../base/env_vars
+  - env_vars
+
+# PingCloud BOM service
+- name: p14c-bom-service-environment-variables
+  behavior: merge
+  envs:
+  - ../base/env_vars
+  - env_vars
+
+# PingCloud P14C bootstrap
+- name: pingcloud-p14c-bootstrap-environment-variables
+  behavior: merge
+  envs:
+  - ../base/env_vars
+  - env_vars
 
 patchesStrategicMerge:
 

@@ -74,6 +74,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: pingdirectory-environment-variables
+            - configMapRef:
+                name: pingcommon-environment-variables
           volumeMounts:
             - name: ssh-dir
               mountPath: /.ssh
@@ -118,6 +120,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: pingdirectory-environment-variables
+            - configMapRef:
+                name: pingcommon-environment-variables
           volumeMounts:
             - name: pingdirectory-init
               mountPath: /utils.lib.sh
@@ -127,7 +131,7 @@ spec:
               subPath: wait-for-services.sh
       containers:
         - name: pingdirectory
-          image: pingcloud-docker.jfrog.io/pingidentity/pingdirectory:2006.1-8.1.0.2
+          image: pingcloud-virtual.jfrog.io/pingidentity/pingdirectory:2006.1-8.1.0.2
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 1389
@@ -142,7 +146,7 @@ spec:
             limits:
               memory: "2560Mi"
             requests:
-              memory: "2Gi"
+              memory: "2560Mi"
               cpu: "300m"
           env:
             - name: P14C_ENVIRONMENT_ID
@@ -175,9 +179,16 @@ spec:
                 secretKeyRef:
                   name: pingcommon-passwords
                   key: PF_LDAP_PASSWORD
+            - name: DA_OAUTH_TOKEN_VALIDATOR_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pingcommon-passwords
+                  key: DA_OAUTH_TOKEN_VALIDATOR_SECRET
           envFrom:
             - configMapRef:
                 name: pingdirectory-environment-variables
+            - configMapRef:
+                name: pingcommon-environment-variables
             - secretRef:
                 name: devops-secret
                 optional: true

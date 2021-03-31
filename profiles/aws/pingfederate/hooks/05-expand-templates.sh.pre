@@ -1,0 +1,17 @@
+#!/usr/bin/env sh
+
+# Set P14c-related env vars used in run.properties and oidc.properties
+
+${VERBOSE} && set -x
+. "${HOOKS_DIR}/pingcommon.lib.sh"
+. "${HOOKS_DIR}/utils.lib.sh"
+
+if test -f "${STAGING_DIR}/p14c_env_vars"; then
+    beluga_log "Exporting P14C container environment variables"
+    set -a; source ${STAGING_DIR}/p14c_env_vars; set +a
+    export_container_env $(sed 's/=.*//' ${STAGING_DIR}/p14c_env_vars | tr '\n' ' ')
+else
+    beluga_log "Did not find P14C container environment variables to export"
+fi
+
+exit 0

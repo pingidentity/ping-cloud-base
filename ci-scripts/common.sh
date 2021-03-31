@@ -30,6 +30,7 @@ if test -z "${ENV_VARS_FILE}"; then
   export REGION="${AWS_DEFAULT_REGION:-us-west-2}"
   export REGION_NICK_NAME=${REGION}
   export TENANT_DOMAIN='ci-cd.ping-oasis.com'
+  export TENANT_NAME='ci-cd'
 
   export PRIMARY_REGION="${REGION}"
   export PRIMARY_TENANT_DOMAIN="${TENANT_DOMAIN}"
@@ -49,6 +50,9 @@ if test -z "${ENV_VARS_FILE}"; then
   export LOG_ARCHIVE_URL=s3://${CLUSTER_NAME}-logs-bucket
   export BACKUP_URL=s3://${CLUSTER_NAME}-backup-bucket
   export CLUSTER_BUCKET_NAME="${CLUSTER_NAME}-cluster-bucket"
+
+  export EVENT_QUEUE_NAME='platform_event_queue.fifo'
+  export ORCH_API_SSM_PATH_PREFIX='/pcpt/orch-api'
 
   export PROJECT_DIR="${CI_PROJECT_DIR}"
   export AWS_PROFILE=csg
@@ -89,7 +93,8 @@ PINGDIRECTORY_ADMIN=pingdirectory-admin${FQDN}
 PINGFEDERATE_CONSOLE=https://pingfederate-admin${FQDN}/pingfederate/app
 
 # The trailing / is required to avoid a 302
-PINGFEDERATE_API=https://pingfederate-admin${FQDN}/pf-admin-api/api-docs/
+PINGFEDERATE_API_DOCS=https://pingfederate-admin${FQDN}/pf-admin-api/api-docs/
+PINGFEDERATE_ADMIN_API=https://pingfederate-admin${FQDN}/pf-admin-api/v1
 
 # runtime services:
 PINGFEDERATE_AUTH_ENDPOINT=https://pingfederate${FQDN}

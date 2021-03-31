@@ -1,0 +1,21 @@
+{
+  "clientId": "${DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID}",
+  "name": "${DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID}",
+  "description": "",
+  "enabled": true,
+  "redirectUris": [],
+  "grantTypes": [
+    "ACCESS_TOKEN_VALIDATION"
+  ],
+  "defaultAccessTokenManagerRef": {
+    "id": "${DA_JWT_ID}"
+  },
+  "clientAuth": {
+    "secret": "${DA_OAUTH_TOKEN_VALIDATOR_SECRET}"
+  },
+  "oidcPolicy": {
+    "policyGroup": {
+      "id": "${DA_OIDC_POLICY_ID}"
+    }
+  }
+}

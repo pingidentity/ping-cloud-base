@@ -149,12 +149,23 @@
 #                           | configured with NATIVE_S3_PING discovery and will  |
 #                           | precede over DNS_PING, which is always configured. |
 #                           |                                                    |
+# EVENT_QUEUE_NAME          | The name of the queue that may be used to notify   | ${USER}_platform_event_queue.fifo
+#                           | PingCloud applications of platform events. This    |
+#                           | is currently only used if the orchestrator for     |
+#                           | PingCloud environments is MyPing.                  |
+#                           |                                                    |
+# ORCH_API_SSM_PATH_PREFIX  | The prefix of the SSM path that contains MyPing    | /pcpt/orch-api
+#                           | state data required for the P14C/P1AS integration. |
+#                           |                                                    |
 # DEPLOY_FILE               | The name of the file where the final deployment    | /tmp/deploy.yaml
 #                           | spec is saved before applying it.                  |
 #                           |                                                    |
 # K8S_CONTEXT               | The current Kubernetes context, i.e. cluster.      | The current context as set in
 #                           | spec is saved before applying it.                  | ~/.kube/config or the config file
 #                           |                                                    | to which KUBECONFIG is set.
+#                           |                                                    |
+# NEW_RELIC_LICENSE_KEY     | The key of NewRelic APM Agent used to send data to | The string 'unused'
+#                           | NewRelic account                                   |
 ########################################################################################################################
 
 #
@@ -221,6 +232,8 @@ log "Initial ENVIRONMENT: ${ENVIRONMENT}"
 log "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 log "Initial TOPOLOGY_DESCRIPTOR_FILE: ${TOPOLOGY_DESCRIPTOR_FILE}"
 log "Initial CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
+log "Initial EVENT_QUEUE_NAME: ${EVENT_QUEUE_NAME}"
+log "Initial ORCH_API_SSM_PATH_PREFIX: ${ORCH_API_SSM_PATH_PREFIX}"
 log "Initial REGION: ${REGION}"
 log "Initial REGION_NICK_NAME: ${REGION_NICK_NAME}"
 log "Initial PRIMARY_REGION: ${PRIMARY_REGION}"
@@ -249,6 +262,9 @@ export ENVIRONMENT=-"${ENVIRONMENT:-${USER}}"
 
 export IS_MULTI_CLUSTER="${IS_MULTI_CLUSTER}"
 export CLUSTER_BUCKET_NAME="${CLUSTER_BUCKET_NAME}"
+
+export EVENT_QUEUE_NAME="${EVENT_QUEUE_NAME:-${USER}_platform_event_queue.fifo}"
+export ORCH_API_SSM_PATH_PREFIX="${ORCH_API_SSM_PATH_PREFIX:-/${USER}/pcpt/orch-api}"
 
 export REGION="${REGION:-us-east-2}"
 export REGION_NICK_NAME="${REGION_NICK_NAME:-${REGION}}"
@@ -280,6 +296,8 @@ log "Using ENVIRONMENT: ${ENVIRONMENT_NO_HYPHEN_PREFIX}"
 log "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 log "Using TOPOLOGY_DESCRIPTOR_FILE: ${TOPOLOGY_DESCRIPTOR_FILE}"
 log "Using CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
+log "Using EVENT_QUEUE_NAME: ${EVENT_QUEUE_NAME}"
+log "Using ORCH_API_SSM_PATH_PREFIX: ${ORCH_API_SSM_PATH_PREFIX}"
 log "Using REGION: ${REGION}"
 log "Using REGION_NICK_NAME: ${REGION_NICK_NAME}"
 log "Using PRIMARY_REGION: ${PRIMARY_REGION}"
@@ -300,9 +318,11 @@ log "Using DEPLOY_FILE: ${DEPLOY_FILE}"
 log "Using K8S_CONTEXT: ${K8S_CONTEXT}"
 log ---
 
+NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY:-unused}
+
 export PING_IDENTITY_DEVOPS_USER_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_USER}")
 export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_KEY}")
-
+export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KEY}")
 export CLUSTER_NAME=${TENANT_NAME}
 export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
 
@@ -359,6 +379,9 @@ export CLUSTER_NAME=${TENANT_NAME}
 
 export IS_MULTI_CLUSTER=${IS_MULTI_CLUSTER}
 export CLUSTER_BUCKET_NAME=${CLUSTER_BUCKET_NAME}
+
+export EVENT_QUEUE_NAME=${EVENT_QUEUE_NAME}
+export ORCH_API_SSM_PATH_PREFIX=${ORCH_API_SSM_PATH_PREFIX}
 
 export REGION=${REGION}
 export REGION_NICK_NAME=${REGION_NICK_NAME}

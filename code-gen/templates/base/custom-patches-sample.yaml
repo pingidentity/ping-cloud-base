@@ -31,6 +31,28 @@ spec:
 
 ---
 
+### Update the header size max for customers needing larger sized cookies/headers ###
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-configuration
+  namespace: ingress-nginx-public
+data:
+  large_client_header_buffers: "4 128k"
+
+---
+
+### Update the header size max for customers needing larger sized cookies/headers ###
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-configuration
+  namespace: ingress-nginx-public
+data:
+  large_client_header_buffers: "4 128k"
+
+---
+
 ################################################
 #              Nginx private
 ################################################
@@ -195,6 +217,60 @@ spec:
 
 ---
 
+### Update the PingAccess-WAS engine's proxy body size ###
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: pingaccess-was-ingress
+  namespace: ping-cloud
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 16m
+
+---
+
+### Update the PingAccess-WAS engine's proxy body size ###
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: pingaccess-was-ingress
+  namespace: ping-cloud
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 16m
+
+---
+
+### Update pingaccess-was backup cronjob to adjust schedule
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: pingaccess-was-periodic-backup
+  namespace: ping-cloud
+spec:
+  schedule: "0 * * * *"
+
+---
+
+### Update pingaccess-was admin csd upload cronjob to adjust schedule
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: pingaccess-was-admin-periodic-csd-upload
+  namespace: ping-cloud
+spec:
+  schedule: "0 * * * *"
+
+---
+
+### Update pingaccess-was engine csd upload cronjob to adjust schedule
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: pingaccess-was-periodic-csd-upload
+  namespace: ping-cloud
+spec:
+  schedule: "0 * * * *"
+
+---
 ################################################
 #                PingFederate
 ################################################
@@ -277,6 +353,39 @@ spec:
     kind: StatefulSet
     name: pingfederate
   targetCPUUtilizationPercentage: 70
+
+---
+
+### Update pingfederate backup cronjob to adjust schedule
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: pingfederate-periodic-backup
+  namespace: ping-cloud
+spec:
+  schedule: "0 * * * *"
+
+---
+
+### Update pingfederate admin csd upload cronjob to adjust schedule
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: pingfederate-admin-periodic-csd-upload
+  namespace: ping-cloud
+spec:
+  schedule: "0 * * * *"
+
+---
+
+### Update pingfederate engine csd upload cronjob to adjust schedule
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: pingfederate-periodic-csd-upload
+  namespace: ping-cloud
+spec:
+  schedule: "0 * * * *"
 
 ---
 
@@ -365,3 +474,35 @@ spec:
 
 ---
 
+### Update pingaccess backup cronjob to adjust schedule
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: pingaccess-periodic-backup
+  namespace: ping-cloud
+spec:
+  schedule: "0 * * * *"
+
+---
+
+### Update pingaccess admin csd upload cronjob to adjust schedule
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: pingaccess-admin-periodic-csd-upload
+  namespace: ping-cloud
+spec:
+  schedule: "0 * * * *"
+
+---
+
+### Update pingaccess engine csd upload cronjob to adjust schedule
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: pingaccess-periodic-csd-upload
+  namespace: ping-cloud
+spec:
+  schedule: "0 * * * *"
+
+---

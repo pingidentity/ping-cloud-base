@@ -326,6 +326,7 @@ get_min_required_secrets() {
   fi
 
   # If secrets.yaml has contents, then attempt to retrieve each required secret.
+  ALL_MIN_SECRETS_FOUND=false
   if test -s "${ping_cloud_secrets_yaml}"; then
     ALL_MIN_SECRETS_FOUND=true
 
@@ -339,6 +340,11 @@ get_min_required_secrets() {
     if ! test "${PING_IDENTITY_DEVOPS_KEY}"; then
       log "PING_IDENTITY_DEVOPS_KEY not found in ${ping_cloud_secrets_yaml}"
       ALL_MIN_SECRETS_FOUND=false
+    fi
+
+    NEW_RELIC_LICENSE_KEY="$(get_secret_from_file 'NEW_RELIC_LICENSE_KEY' "${ping_cloud_secrets_yaml}")"
+    if ! test "${NEW_RELIC_LICENSE_KEY}"; then
+      log "NEW_RELIC_LICENSE_KEY not found in ${ping_cloud_secrets_yaml}"
     fi
 
     ID_RSA_FILE="$(mktemp)"

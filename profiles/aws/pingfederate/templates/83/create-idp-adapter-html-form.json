@@ -1,0 +1,34 @@
+{
+  "id": "${DA_IDP_ADAPTER_HTML_FORM_ID}",
+  "name": "${DA_IDP_ADAPTER_HTML_FORM_ID}",
+  "pluginDescriptorRef": {
+    "id": "com.pingidentity.adapters.htmlform.idp.HtmlFormIdpAuthnAdapter"
+  },
+  "configuration": {
+    "tables": [{
+      "name": "Credential Validators",
+      "rows": [{
+        "fields": [{
+          "name": "Password Credential Validator Instance",
+          "value": "${DA_PCV_ID}"
+        }]
+      }]
+    }],
+    "fields": []
+  },
+  "attributeContract": {
+    "coreAttributes": [{
+      "name": "username",
+      "masked": false,
+      "pseudonym": true
+    }],
+    "extendedAttributes": [{
+        "name": "entryUUID"
+      },
+      {
+        "name": "cn"
+      }
+    ],
+    "maskOgnlValues": false
+  }
+}

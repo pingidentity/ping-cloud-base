@@ -18,7 +18,7 @@ spec:
       initContainers:
 
       - name: check-service-availability
-        image: public.ecr.aws/r2h3l6e4/pingcloud-tools/enrichment-bootstrap:7.8.0-v1.0.1
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:7.8.0-v1.0.1
         
         imagePullPolicy: IfNotPresent
         command: ["sh", '$(CONTAINER_NAME).sh']
@@ -95,7 +95,7 @@ spec:
       restartPolicy: OnFailure
       initContainers:
       - name: wait-for-kibana
-        image: public.ecr.aws/r2h3l6e4/pingcloud-tools/enrichment-bootstrap:7.8.0-v1.0.1
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:7.8.0-v1.0.1
         
         imagePullPolicy: IfNotPresent
         command: ["sh", "-c", "until $(curl --output /dev/null --silent --fail ${KIBANA_HOST}:5601/api/status); do echo 'waiting for kibana API' && sleep 1; done"]
@@ -104,12 +104,12 @@ spec:
           value: "http://kibana"
       containers:
       - name: create-logstash-index
-        image: public.ecr.aws/r2h3l6e4/pingcloud-tools/enrichment-bootstrap:7.8.0-v1.0.1
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:7.8.0-v1.0.1
         imagePullPolicy: IfNotPresent
         command: ["sh", "-c", "curl -X POST 'http://kibana:5601/api/saved_objects/index-pattern/logstash-*'  -H 'kbn-xsrf: true' -H 'Content-Type: application/json' -d '{\"attributes\": { \"title\": \"logstash*\", \"timeFieldName\": \"@timestamp\" } }' "]
 
       - name: kibana-dashboard-upload
-        image: public.ecr.aws/r2h3l6e4/pingcloud-tools/enrichment-bootstrap:7.8.0-v1.0.1
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:7.8.0-v1.0.1
         
         imagePullPolicy: IfNotPresent
         workingDir: /scripts

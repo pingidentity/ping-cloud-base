@@ -37,7 +37,7 @@ exit 0
 #      "restrictedResponseTypes": [],
 #      "defaultAccessTokenManagerRef": {
 #        "id": "jwt",
-#        "location": "https://pingfederate-admin-68c57f7c54-fs5q4:9999/pf-admin-api/v1/oauth/accessTokenManagers/jwt"
+#        "location": "https://pingfederate-admin-68c57f7c54-fs5q4:443/pf-admin-api/v1/oauth/accessTokenManagers/jwt"
 #      },
 #      "validateUsingAllEligibleAtms": false,
 #      "oidcPolicy": {

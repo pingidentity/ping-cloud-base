@@ -18,8 +18,12 @@ K8S_DEPLOYMENT_NAME_PINGFEDERATE_ADMIN=pingfederate-admin
 K8S_SERVICE_NAME_PINGFEDERATE_ADMIN=pingfederate-admin
 
 PINGFEDERATE_ADMIN_SERVER=pingfederate-admin
-PF_ADMIN_PORT=9999
+PF_ADMIN_PORT=443
 PF_ADMIN_USER_USERNAME=administrator
+PF_CONSOLE_AUTHENTICATION=LDAP
+PF_ADMIN_PUBLIC_HOSTNAME=
+PF_ADMIN_CONSOLE_TITLE=PingFederate
+PF_ADMIN_CONSOLE_ENVIRONMENT=
 
 API_RETRY_LIMIT=10
 API_TIMEOUT_WAIT=5
@@ -70,4 +74,5 @@ PD_CLUSTER_PORT=8989
 # - Set this to false
 # - 90-restore-backup-s3.sh script exit before proceeding if value is false
 RESTORE_BACKUP=true
+
 JAVA_AGENT_OPTS=-javaagent:/opt/staging/jmx_prometheus_javaagent-0.14.0.jar=8080:/opt/out/instance/bin/jmx_export_config.yaml

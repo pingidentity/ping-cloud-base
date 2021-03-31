@@ -42,6 +42,18 @@ spec:
         volumeMounts:
           - name: in-dir
             mountPath: /opt/in
+      - name: pingfederate-p14c-init
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.6
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        command: [ 'python3', '-u', '/app/src/pingfederate_p14c_init.py' ]
+        volumeMounts:
+        - name: data-dir
+          mountPath: /opt/staging
       - name: pingfederate-init
         # FIXME: switch to same user as app
         securityContext:
@@ -73,6 +85,8 @@ spec:
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
+        - configMapRef:
+            name: pingcommon-environment-variables
       - name: wait-for-services
         # FIXME: switch to same user as app
         securityContext:
@@ -92,6 +106,8 @@ spec:
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
+        - configMapRef:
+            name: pingcommon-environment-variables
       containers:
       - name: pingfederate-admin
         image: pingcloud-virtual.jfrog.io/pingidentity/pingfederate:2101-10.2.1
@@ -99,8 +115,6 @@ spec:
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_CONSOLE
-        - name: AUTHENTICATION_MODE
-          value: LDAP
         - name: PF_DNS_PING_NAMESPACE
           valueFrom:
             fieldRef:
@@ -115,11 +129,27 @@ spec:
             secretKeyRef:
               name: pingcommon-passwords
               key: PF_ADMIN_USER_PASSWORD
+        - name: DA_OAUTH_TOKEN_VALIDATOR_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: pingcommon-passwords
+              key: DA_OAUTH_TOKEN_VALIDATOR_SECRET
+        - name: NEW_RELIC_APP_NAME
+          value: pingfederate-admin
+        - name: NEW_RELIC_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
+        - configMapRef:
+            name: pingcommon-environment-variables
         - secretRef:
             name: devops-secret
+            optional: true
+        - secretRef:
+            name: newrelic-license-key
             optional: true
         resources:
           requests:
@@ -147,6 +177,9 @@ spec:
           mountPath: /opt/staging/jmx_prometheus_javaagent-0.14.0.jar
           subPath: jmx_prometheus_javaagent-0.14.0.jar
         - name: data-dir
+          mountPath: /opt/staging/newrelic.jar
+          subPath: newrelic.jar
+        - name: data-dir
           mountPath: /opt/staging/native-s3-ping.jar
           subPath: native-s3-ping.jar
         - name: out-dir
@@ -157,6 +190,12 @@ spec:
         - name: data-dir
           mountPath: /opt/staging/ds_env_vars
           subPath: ds_env_vars
+        - name: data-dir
+          mountPath: /opt/staging/p14c_env_vars
+          subPath: p14c_env_vars
+        - name: data-dir
+          mountPath: /opt/staging/solutions_artifacts
+          subPath: solutions_artifacts
         - mountPath: /etc/podinfo
           name: podinfo
         readinessProbe:
@@ -174,7 +213,8 @@ spec:
           failureThreshold: 3
           timeoutSeconds: 5
         ports:
-        - containerPort: 9999
+        - name: pf-admin
+          containerPort: 443
       volumes:
       - name: podinfo
         downwardAPI:

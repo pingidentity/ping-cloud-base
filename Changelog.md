@@ -1,5 +1,17 @@
 # Changelog
 
+### 1.8.3
+
+- Increase PD pod resources to account for ad-hoc java processes
+
+- [X] PDO-2178 PingDirectory Pods - backup processes cause pod restarts
+
+### 1.8.2
+
+- Fixed PingFederate issue where LDAP stores added after initial bootstrap were getting removed on restart.
+
+- [X] PDO-2125 Data loss in PF on pod rolling
+
 ### 1.8.1
 
 - Fixed PingFederate to not allow back-channel access after revoking persistent session 

@@ -126,11 +126,20 @@ spec:
             secretKeyRef:
               name: pingcommon-passwords
               key: PF_LDAP_PASSWORD
+        - name: NEW_RELIC_APP_NAME
+          value: pingfederate
+        - name: NEW_RELIC_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
         - secretRef:
             name: devops-secret
+            optional: true
+        - secretRef:
+            name: newrelic-license-key
             optional: true
         resources:
           requests:
@@ -157,6 +166,9 @@ spec:
         - name: data-dir
           mountPath: /opt/staging/jmx_prometheus_javaagent-0.14.0.jar
           subPath: jmx_prometheus_javaagent-0.14.0.jar
+        - name: data-dir
+          mountPath: /opt/staging/newrelic.jar
+          subPath: newrelic.jar
         - name: data-dir
           mountPath: /opt/staging/native-s3-ping.jar
           subPath: native-s3-ping.jar
@@ -187,7 +199,7 @@ spec:
         - containerPort: 8080
 
       - name: pingfederate-heartbeat-exporter
-        image: public.ecr.aws/r2h3l6e4/pingcloud-tools/prometheus-json-exporter:v1.0.2
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-json-exporter:0.2.0-v1.0.2
         imagePullPolicy: IfNotPresent
         env:
           - name: SERVICE_SHORTNAME

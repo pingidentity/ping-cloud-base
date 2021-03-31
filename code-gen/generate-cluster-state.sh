@@ -70,12 +70,10 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # Variable                 | Purpose                                            | Default (if not present)
 # ----------------------------------------------------------------------------------------------------------------------
-# TENANT_NAME              | The name of the tenant, e.g. k8s-icecream. If      | ping-cloud-customer
-#                          | provided, this value will be used for the cluster  |
-#                          | name and must have the correct case (e.g. ci-cd    |
-#                          | vs. CI-CD). If not provided, this variable is      |
-#                          | not used, and the cluster name defaults to the CDE |
-#                          | name.                                              |
+# TENANT_NAME              | The name of the tenant, e.g. k8s-icecream. If      | First segment of the TENANT_DOMAIN
+#                          | provided, this value will be used for the cluster  | value. E.g. it will default to "ci-cd" 
+#                          | name and must have the correct case (e.g. ci-cd    | for tenant domain "ci-cd.ping-oasis.com"
+#                          | vs. CI-CD).                                        |
 #                          |                                                    |
 # TENANT_DOMAIN            | The tenant's domain suffix that's common to all    | ci-cd.ping-oasis.com
 #                          | CDEs e.g. k8s-icecream.com. The tenant domain in   |
@@ -156,10 +154,6 @@
 # K8S_GIT_BRANCH           | The Git branch within the above Git URL.           | The git branch where this script
 #                          |                                                    | exists, i.e. CI_COMMIT_REF_NAME
 #                          |                                                    |
-# REGISTRY_NAME            | The registry hostname for the Docker images used   | docker.io
-#                          | by the Ping stack. This can be Docker hub, ECR     |
-#                          | (1111111111.dkr.ecr.us-east-2.amazonaws.com), etc. |
-#                          |                                                    |
 # SSH_ID_PUB_FILE          | The file containing the public-key (in PEM format) | No default
 #                          | used by the CD tool and Ping containers to access  |
 #                          | the cluster state and config repos, respectively.  |
@@ -200,6 +194,17 @@
 #                          | the AWS account ID must be added as an annotation  |
 #                          | to the corresponding Kubernetes service account to |
 #                          | enable IRSA (IAM Role for Service Accounts).       |
+#                          |                                                    |
+# EVENT_QUEUE_NAME         | The name of the queue that may be used to notify   | platform_event_queue.fifo
+#                          | PingCloud applications of platform events. This    |
+#                          | is currently only used if the orchestrator for     |
+#                          | PingCloud environments is MyPing.                  |
+#                          |                                                    |
+# ORCH_API_SSM_PATH_PREFIX | The prefix of the SSM path that contains MyPing    | /pcpt/orch-api
+#                          | state data required for the P14C/P1AS integration. |
+#                          |                                                    |
+# NEW_RELIC_LICENSE_KEY    | The key of NewRelic APM Agent used to send data to | The string "unused".
+#                          | NewRelic account                                   |
 ########################################################################################################################
 
 #### SCRIPT START ####
@@ -229,9 +234,13 @@ QUIET="${QUIET:-false}"
 # file and substituted at runtime by the continuous delivery tool running in cluster.
 DEFAULT_VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
 ${PING_IDENTITY_DEVOPS_KEY_BASE64}
+${NEW_RELIC_LICENSE_KEY_BASE64}
+${TENANT_NAME}
 ${SSH_ID_KEY_BASE64}
 ${IS_MULTI_CLUSTER}
 ${CLUSTER_BUCKET_NAME}
+${EVENT_QUEUE_NAME}
+${ORCH_API_SSM_PATH_PREFIX}
 ${REGION}
 ${REGION_NICK_NAME}
 ${PRIMARY_REGION}
@@ -281,6 +290,10 @@ ${DNS_ZONE}
 ${DNS_ZONE_DERIVED}
 ${PRIMARY_DNS_ZONE}
 ${PRIMARY_DNS_ZONE_DERIVED}
+${PINGACCESS_IMAGE_TAG}
+${PINGFEDERATE_IMAGE_TAG}
+${PINGDIRECTORY_IMAGE_TAG}
+${PINGDELEGATOR_IMAGE_TAG}
 ${LAST_UPDATE_REASON}
 ${IRSA_PING_ANNOTATION_KEY_VALUE}'
 
@@ -378,6 +391,8 @@ echo "Initial SIZE: ${SIZE}"
 
 echo "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 echo "Initial CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
+echo "Initial EVENT_QUEUE_NAME: ${EVENT_QUEUE_NAME}"
+echo "Initial ORCH_API_SSM_PATH_PREFIX: ${ORCH_API_SSM_PATH_PREFIX}"
 echo "Initial REGION: ${REGION}"
 echo "Initial REGION_NICK_NAME: ${REGION_NICK_NAME}"
 echo "Initial PRIMARY_REGION: ${PRIMARY_REGION}"
@@ -397,8 +412,6 @@ echo "Initial BACKUP_URL: ${BACKUP_URL}"
 echo "Initial K8S_GIT_URL: ${K8S_GIT_URL}"
 echo "Initial K8S_GIT_BRANCH: ${K8S_GIT_BRANCH}"
 
-echo "Initial REGISTRY_NAME: ${REGISTRY_NAME}"
-
 echo "Initial SSH_ID_PUB_FILE: ${SSH_ID_PUB_FILE}"
 echo "Initial SSH_ID_KEY_FILE: ${SSH_ID_KEY_FILE}"
 
@@ -408,7 +421,7 @@ echo ---
 
 # Use defaults for other variables, if not present.
 export IS_BELUGA_ENV="${IS_BELUGA_ENV:-false}"
-export TENANT_NAME="${TENANT_NAME:-ping-cloud-customer}"
+export TENANT_NAME="${TENANT_NAME:-${TENANT_DOMAIN%%.*}}"
 export SIZE="${SIZE:-x-small}"
 
 ### Region-specific environment variables ###
@@ -420,6 +433,9 @@ export TENANT_DOMAIN="${TENANT_DOMAIN_NO_DOT_SUFFIX}"
 
 export CLUSTER_BUCKET_NAME="${CLUSTER_BUCKET_NAME}"
 export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
+
+export EVENT_QUEUE_NAME=${EVENT_QUEUE_NAME:-platform_event_queue.fifo}
+export ORCH_API_SSM_PATH_PREFIX=${ORCH_API_SSM_PATH_PREFIX:-/pcpt/orch-api}
 
 export LAST_UPDATE_REASON="${LAST_UPDATE_REASON:-NA}"
 
@@ -444,8 +460,6 @@ export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
 
-export PING_CLOUD_NAMESPACE='ping-cloud'
-
 PING_CLOUD_BASE_COMMIT_SHA=$(git rev-parse HEAD)
 CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 if test "${CURRENT_GIT_BRANCH}" = 'HEAD'; then
@@ -456,12 +470,14 @@ export CLUSTER_STATE_REPO_URL=${CLUSTER_STATE_REPO_URL:-https://github.com/pingi
 export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
 export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-${CURRENT_GIT_BRANCH}}"
 
-export REGISTRY_NAME="${REGISTRY_NAME:-docker.io}"
-
 export SSH_ID_PUB_FILE="${SSH_ID_PUB_FILE}"
 export SSH_ID_KEY_FILE="${SSH_ID_KEY_FILE}"
 
 export TARGET_DIR="${TARGET_DIR:-/tmp/sandbox}"
+
+### Default environment variables ###
+export REGISTRY_NAME='pingcloud-virtual.jfrog.io'
+export PING_CLOUD_NAMESPACE='ping-cloud'
 
 # Print out the values being used for each variable.
 echo "Using TENANT_NAME: ${TENANT_NAME}"
@@ -469,6 +485,8 @@ echo "Using SIZE: ${SIZE}"
 
 echo "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 echo "Using CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
+echo "Using EVENT_QUEUE_NAME: ${EVENT_QUEUE_NAME}"
+echo "Using ORCH_API_SSM_PATH_PREFIX: ${ORCH_API_SSM_PATH_PREFIX}"
 echo "Using REGION: ${REGION}"
 echo "Using REGION_NICK_NAME: ${REGION_NICK_NAME}"
 echo "Using PRIMARY_REGION: ${PRIMARY_REGION}"
@@ -486,8 +504,6 @@ echo "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 echo "Using K8S_GIT_URL: ${K8S_GIT_URL}"
 echo "Using K8S_GIT_BRANCH: ${K8S_GIT_BRANCH}"
 
-echo "Using REGISTRY_NAME: ${REGISTRY_NAME}"
-
 AUTO_GENERATED_STR='<auto-generated>'
 echo "Using SSH_ID_PUB_FILE: ${SSH_ID_PUB_FILE:-${AUTO_GENERATED_STR}}"
 echo "Using SSH_ID_KEY_FILE: ${SSH_ID_KEY_FILE:-${AUTO_GENERATED_STR}}"
@@ -496,8 +512,11 @@ echo "Using TARGET_DIR: ${TARGET_DIR}"
 echo "Using IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
 echo ---
 
+NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY:-unused}
+
 export PING_IDENTITY_DEVOPS_USER_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_USER}")
 export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_KEY}")
+export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KEY}")
 
 TEMPLATES_HOME="${SCRIPT_HOME}/templates"
 BASE_DIR="${TEMPLATES_HOME}/base"

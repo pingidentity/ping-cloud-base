@@ -10,9 +10,9 @@ spec:
       - name: pingdirectory
         resources:
           limits:
-            memory: 32Gi
+            memory: 45Gi
           requests:
-            memory: 32Gi
+            memory: 45Gi
             cpu: 6
       - name: stunnel
         resources:

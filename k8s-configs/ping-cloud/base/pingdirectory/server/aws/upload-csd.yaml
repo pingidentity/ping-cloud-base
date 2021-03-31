@@ -59,7 +59,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: pingdirectory-csd-uploader
-        image: pingcloud-docker.jfrog.io/pingidentity/pingdirectory:2006.1-8.1.0.2
+        image: pingcloud-virtual.jfrog.io/pingidentity/pingdirectory:2006.1-8.1.0.2
         command:
         - /opt/in/upload.sh
         volumeMounts:
