@@ -13,5 +13,7 @@ spec:
     name: pingaccess-was-admin
   - port: 9090
     name: pingaccess-was-config-query
+  - port: 8443
+    name: config-translator
   selector:
     role: pingaccess-was-admin

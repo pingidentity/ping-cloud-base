@@ -17,6 +17,7 @@ spec:
   tls:
   - hosts:
     - pingaccess-was-admin-dev.ping-demo.com
+    - config-translator-mpeterson.mpeterson.ping-demo.com
   rules:
   - host: pingaccess-was-admin-dev.ping-demo.com
     http:
@@ -26,3 +27,10 @@ spec:
         backend:
           serviceName: pingaccess-was-admin
           servicePort: 9000
+  - host: config-translator-mpeterson.mpeterson.ping-demo.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: pingaccess-was-admin
+          servicePort: 8443
