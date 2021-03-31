@@ -139,14 +139,11 @@ spec:
         - name: data-dir
           mountPath: /opt/staging/ds_env_vars
           subPath: ds_env_vars
-<<<<<<< HEAD
         - name: in-dir
           mountPath: /opt/in
-=======
         - name: data-dir
           mountPath: /opt/staging/p14c_env_vars
           subPath: p14c_env_vars
->>>>>>> master
         readinessProbe:
           exec:
             command: [ /opt/staging/hooks/85-pa-admin-readiness.sh ]
