@@ -224,7 +224,7 @@ else
   DA_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/01-add-delegated-admin.dsconfig"
 
   beluga_log "Configuring Delegated Admin"
-  reset_delegated_admin
+  # reset_delegated_admin
   configure_delegated_admin
   if test $? -ne 0; then
     beluga_error "Failed to configure Delegated Admin"
