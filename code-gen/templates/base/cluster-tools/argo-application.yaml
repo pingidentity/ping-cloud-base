@@ -5,7 +5,8 @@ metadata:
   namespace: argocd
 spec:
   syncPolicy:
-    automated: {}
+    automated:
+      prune: true
   destination:
     server: https://kubernetes.default.svc
   project: default
