@@ -160,7 +160,7 @@ initialize_all_servers_for_dn() {
 ########################################################################################################################
 configure_delegated_admin() {
   beluga_log "Enabling Delegated Admin"
-  dsconfig --no-prompt --batch-file "${DA_CONFIG_BATCH_FILE}" > /dev/null
+  dsconfig --no-prompt --batch-file "${DA_CONFIG_BATCH_FILE}"
   return ${?}
 }
 
