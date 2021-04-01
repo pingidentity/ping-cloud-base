@@ -225,7 +225,7 @@ else
 
   beluga_log "Configuring Delegated Admin"
   # reset_delegated_admin
-  configure_delegated_admin
+  # configure_delegated_admin
   if test $? -ne 0; then
     beluga_error "Failed to configure Delegated Admin"
     exit 1
