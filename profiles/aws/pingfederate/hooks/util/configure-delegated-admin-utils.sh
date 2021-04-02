@@ -53,6 +53,11 @@ set_pcv() {
     # Export datastore id. It is required within template create-password-credentials-validator.
     export PD_DATASTORE_ID=$(jq -n "${DATA_STORES_RESPONSE}" | jq -r '.items[] | select(.name=="pingdirectory-appintegrations") | .id')
 
+    if test -z "${PD_DATASTORE_ID}" || test "${PD_DATASTORE_ID}" = 'null'; then
+      beluga_error "LDAP ID of pingdirectory-appintegrations is required. Restart container until found."
+      return 1
+    fi
+
     pcv_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/create-password-credentials-validator.json)
 
     beluga_log "Using payload"
