@@ -34,17 +34,21 @@ get_pcv() {
 set_pcv() {
   unset PD_DATASTORE_ID
 
-  if ! get_datastore; then
-    beluga_error "Something went wrong when attempting to get datastore response"
-    return 1
-  fi
-
   get_pcv
 
   # If API return 404 status code. Proceed to create PCV.
   if test $(echo "${DA_PCV_RESPONSE}" | grep "${PF_API_404_MESSAGE}" &> /dev/null; echo $?) -eq 0; then
 
     beluga_log "Creating PCV"
+
+    # Get datastore details.
+    if ! get_datastore; then
+      beluga_error "Something went wrong when attempting to get datastore response"
+      return 1
+    fi
+
+    beluga_log "Using datastore response"
+    echo "${DATA_STORES_RESPONSE}" | jq
 
     # Export datastore id. It is required within template create-password-credentials-validator.
     export PD_DATASTORE_ID=$(jq -n "${DATA_STORES_RESPONSE}" | jq -r '.items[] | select(.name=="pingdirectory-appintegrations") | .id')
