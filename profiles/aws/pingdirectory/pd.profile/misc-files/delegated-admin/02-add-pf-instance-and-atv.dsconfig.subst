@@ -1,0 +1,29 @@
+  # Create an access token validator for PingFederate tokens.
+
+  dsconfig set-trust-manager-provider-prop \
+    --provider-name "Blind Trust" \
+    --set enabled:true
+
+  dsconfig create-external-server \
+    --server-name "${DA_PINGFEDERATE_INSTANCE_NAME}" \
+    --type "http" \
+    --set "base-url:https://${PINGFEDERATE_ENGINE_SERVER}:${PINGFEDERATE_ENGINE_PORT}" \
+    --set "hostname-verification-method:allow-all" \
+    --set "trust-manager-provider:Blind Trust"
+
+  dsconfig create-identity-mapper \
+    --mapper-name "entryUUIDMatch" \
+    --type "exact-match" \
+    --set enabled:true \
+    --set "match-attribute:entryUUID" \
+    --set "match-base-dn:${USER_BASE_DN}"
+
+  dsconfig create-access-token-validator \
+    --validator-name "${DA_PINGFEDERATE_ATV_NAME}" \
+    --type "ping-federate" \
+    --set enabled:true \
+    --set "identity-mapper:entryUUIDMatch" \
+    --set "subject-claim-name:sub" \
+    --set "authorization-server:${DA_PINGFEDERATE_INSTANCE_NAME}" \
+    --set "client-id:${DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID}" \
+    --set "client-secret:${DA_OAUTH_TOKEN_VALIDATOR_SECRET}"

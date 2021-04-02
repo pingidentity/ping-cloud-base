@@ -14,9 +14,6 @@
 TEMPLATES_DIR_PATH="${STAGING_DIR}"/templates/ldap-ds
 PF_API_HOST="https://${PF_ADMIN_HOST_PORT}/pf-admin-api/v1"
 
-# We hard code the DS for use in other configuration elements
-LDAP_DS_ID="LDAP-FA8D375DFAC589A222E13AA059319ABF9823B552"
-
 get_datastore() {
   DATA_STORES_RESPONSE=$(make_api_request -s -X GET "${PF_API_HOST}/dataStores/${LDAP_DS_ID}") > /dev/null
 }
@@ -30,7 +27,8 @@ update_datastore() {
   vars='${PF_PD_BIND_USESSL}
 ${PD_CLUSTER_PRIVATE_HOSTNAME}
 ${PF_LDAP_PASSWORD}
-${PF_PD_BIND_PORT}'
+${PF_PD_BIND_PORT}
+${LDAP_DS_ID}'
 
   LDAP_DS_PAYLOAD=$(envsubst "${vars}" < "${TEMPLATES_DIR_PATH}/pd-ldap-ds.json")
 
