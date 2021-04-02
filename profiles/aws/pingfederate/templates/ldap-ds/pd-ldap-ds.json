@@ -1,6 +1,6 @@
 {
   "type": "LDAP",
-  "id": "LDAP-FA8D375DFAC589A222E13AA059319ABF9823B552",
+  "id": "${LDAP_DS_ID}",
   "maskAttributeValues": false,
   "hostnames": [
     "${PD_CLUSTER_PRIVATE_HOSTNAME}:${PF_PD_BIND_PORT}"
