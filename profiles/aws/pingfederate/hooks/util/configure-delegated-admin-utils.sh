@@ -5,13 +5,6 @@ TEMPLATES_DIR_PATH="${STAGING_DIR}"/templates/83
 PF_API_HOST="https://${PF_ADMIN_HOST_PORT}/pf-admin-api/v1"
 
 ########################################################################################################################
-# Retrieve all data stores.
-########################################################################################################################
-get_datastore() {
-  DATA_STORES_RESPONSE=$(make_api_request -X GET "${PF_API_HOST}/dataStores") > /dev/null
-}
-
-########################################################################################################################
 # Retrieve DA password credential validator.
 ########################################################################################################################
 get_pcv() {
@@ -40,25 +33,6 @@ set_pcv() {
   if test $(echo "${DA_PCV_RESPONSE}" | grep "${PF_API_404_MESSAGE}" &> /dev/null; echo $?) -eq 0; then
 
     beluga_log "Creating PCV"
-
-    # Get datastore details.
-    if ! get_datastore; then
-      beluga_error "Something went wrong when attempting to get datastore response"
-      return 1
-    fi
-
-    beluga_log "Using datastore response"
-    echo
-    echo "${DATA_STORES_RESPONSE}" | jq
-    echo
-
-    # Export datastore id. It is required within template create-password-credentials-validator.
-    export PD_DATASTORE_ID=$(jq -n "${DATA_STORES_RESPONSE}" | jq -r '.items[] | select(.name=="pingdirectory-appintegrations") | .id')
-
-    if test -z "${PD_DATASTORE_ID}" || test "${PD_DATASTORE_ID}" = 'null'; then
-      beluga_error "LDAP ID of pingdirectory-appintegrations is required. Restart container until found."
-      return 1
-    fi
 
     pcv_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/create-password-credentials-validator.json)
 
