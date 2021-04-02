@@ -19,16 +19,16 @@ rm -f "${POST_START_INIT_MARKER_FILE}"
 beluga_log "post-start: waiting for admin API to be ready"
 wait_for_admin_api_endpoint configArchive/export
 
-beluga_log "post-start: configure DA"
-sh "${HOOKS_DIR}/84-setup-delegated-admin.sh"
-DA_CONFIG_STATUS=${?}
-beluga_log "post-start: configure DA status: ${DA_CONFIG_STATUS}"
-
 # Update LDAP-DS entry
 beluga_log "Updating LDAP-DS Entry"
 sh "${HOOKS_DIR}/80-configure-ldap-ds.sh"
 LDAP_CONFIG_STATUS=${?}
 beluga_log "post-start: configure ldap status: ${LDAP_CONFIG_STATUS}"
+
+beluga_log "post-start: configure DA"
+sh "${HOOKS_DIR}/84-setup-delegated-admin.sh"
+DA_CONFIG_STATUS=${?}
+beluga_log "post-start: configure DA status: ${DA_CONFIG_STATUS}"
 
 # Replicate admin changes to engine(s)
 beluga_log "post-start: Replicating admin changes to engine(s)"
