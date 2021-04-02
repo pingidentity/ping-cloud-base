@@ -10,8 +10,7 @@ dsconfig create-rest-resource-type \
   --set primary-display-attribute-type:cn \
   --set resource-endpoint:users \
   --set "search-filter-pattern:(|(cn=*%%*)(mail=%%*)(uid=%%*)(sn=*%%*))" \
-  --set structural-ldap-objectclass:inetOrgPerson \
-  --set "parent-dn:ou=people,${USER_BASE_DN}"
+  --set structural-ldap-objectclass:inetOrgPerson
 
 dsconfig create-rest-resource-type \
   --type group \
@@ -22,8 +21,7 @@ dsconfig create-rest-resource-type \
   --set primary-display-attribute-type:cn \
   --set resource-endpoint:groups \
   --set "search-filter-pattern:(cn=*%%*)" \
-  --set structural-ldap-objectclass:groupOfUniqueNames \
-  --set "parent-dn:${USER_BASE_DN}"
+  --set structural-ldap-objectclass:groupOfUniqueNames
 
 #
 # Specify the attributes that will be made available through the Delegated Admin API.

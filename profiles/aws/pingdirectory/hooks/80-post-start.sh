@@ -246,7 +246,8 @@ else
     --index cn \
     --index mail \
     --index uid \
-    --index sn
+    --index sn \
+    --index pf-connected-identity
 
   if ! configure_delegated_admin_atv; then
     beluga_error "Failed to configure Delegated Admin"
