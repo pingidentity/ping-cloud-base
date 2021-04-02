@@ -48,7 +48,9 @@ set_pcv() {
     fi
 
     beluga_log "Using datastore response"
+    echo
     echo "${DATA_STORES_RESPONSE}" | jq
+    echo
 
     # Export datastore id. It is required within template create-password-credentials-validator.
     export PD_DATASTORE_ID=$(jq -n "${DATA_STORES_RESPONSE}" | jq -r '.items[] | select(.name=="pingdirectory-appintegrations") | .id')
@@ -61,7 +63,9 @@ set_pcv() {
     pcv_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/create-password-credentials-validator.json)
 
     beluga_log "Using payload"
+    echo
     echo "${pcv_payload}" | jq
+    echo
 
     make_api_request -X POST -d "${pcv_payload}" \
       "${PF_API_HOST}/passwordCredentialValidators" > /dev/null
@@ -111,7 +115,9 @@ change_pcv_search_base() {
     jq --arg user_base_dn "${USER_BASE_DN}" '(.configuration.fields[] | select(.name=="Search Base") | .value) |= $user_base_dn')
 
   beluga_log "Using payload"
+  echo
   echo "${new_user_base_dn_payload}" | jq
+  echo
 
   make_api_request -X PUT -d "${new_user_base_dn_payload}" \
     "${PF_API_HOST}/passwordCredentialValidators/${DA_PCV_ID}" > /dev/null
@@ -154,7 +160,9 @@ set_idp_adapter_html_form() {
     idp_adapter_html_form_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/create-idp-adapter-html-form.json)
 
     beluga_log "Using payload"
+    echo
     echo "${idp_adapter_html_form_payload}" | jq
+    echo
 
     make_api_request -X POST -d "${idp_adapter_html_form_payload}" \
       "${PF_API_HOST}/idp/adapters" > /dev/null
@@ -199,7 +207,9 @@ set_idp_adapter_mapping() {
     idp_adapter_mapping_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/create-idp-adapter-mapping.json)
 
     beluga_log "Using payload"
+    echo
     echo "${idp_adapter_mapping_payload}" | jq
+    echo
 
     make_api_request -X POST -d "${idp_adapter_mapping_payload}" \
       "${PF_API_HOST}/oauth/idpAdapterMappings" > /dev/null
@@ -292,7 +302,9 @@ set_jwt_default_mapping() {
     jwt_default_mapping_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/create-jwt-mapping.json)
 
     beluga_log "Using payload"
+    echo
     echo "${jwt_default_mapping_payload}" | jq
+    echo
 
     make_api_request -X POST -d "${jwt_default_mapping_payload}" \
       "${PF_API_HOST}/oauth/accessTokenMappings" > /dev/null
@@ -337,7 +349,9 @@ set_oidc_policy() {
     oidc_policy_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/create-open-id-connect-policy.json)
 
     beluga_log "Using payload"
+    echo
     echo "${oidc_policy_payload}" | jq
+    echo
 
     make_api_request -X POST -d "${oidc_policy_payload}" \
       "${PF_API_HOST}/oauth/openIdConnect/policies" > /dev/null
@@ -381,7 +395,9 @@ set_exclusive_scope() {
     exclusive_scope_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/create-exclusive-scope.json)
 
     beluga_log "Using payload"
+    echo
     echo "${exclusive_scope_payload}" | jq
+    echo
 
     make_api_request -X POST -d "${exclusive_scope_payload}" \
       "${PF_API_HOST}/oauth/authServerSettings/scopes/exclusiveScopes" > /dev/null
@@ -430,7 +446,9 @@ setAllowedOrigins() {
   echo "${AUTH_SERVER_SETTINGS_PAYLOAD}" | jq -r ".allowedOrigins"
 
   beluga_log "Using payload"
+  echo
   echo "${AUTH_SERVER_SETTINGS_PAYLOAD}" | jq
+  echo
 
   make_api_request -X PUT -d "${AUTH_SERVER_SETTINGS_PAYLOAD}" \
     "${PF_API_HOST}/oauth/authServerSettings" > /dev/null
@@ -536,7 +554,9 @@ set_implicit_grant_type_client() {
     implicit_grant_type_payload=$(echo "${implicit_grant_type_payload}" ${REDIRECT_URIS} | jq -s add)
 
     beluga_log "Using payload"
+    echo
     echo "${implicit_grant_type_payload}" | jq
+    echo
 
     make_api_request -X POST -d "${implicit_grant_type_payload}" \
       "${PF_API_HOST}/oauth/clients" > /dev/null
