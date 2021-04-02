@@ -165,6 +165,15 @@ configure_delegated_admin() {
 }
 
 ########################################################################################################################
+# Configure PF instance and ATV.
+########################################################################################################################
+configure_delegated_admin_atv() {
+  beluga_log "Creating PingFederate instance and ATV"
+  dsconfig --no-prompt --batch-file "${DA_CONFIG_ATV_BATCH_FILE}" > /dev/null
+  return ${?}
+}
+
+########################################################################################################################
 # Reset Delegated Admin configuration.
 ########################################################################################################################
 reset_delegated_admin() {
@@ -222,11 +231,17 @@ if $(echo "${DA_SKIP_SETUP}" | grep -iq "true"); then
 else
   DA_RESET_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/00-reset-delegated-admin.dsconfig"
   DA_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/01-add-delegated-admin.dsconfig"
+  DA_CONFIG_ATV_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/02-add-pf-instance-and-atv.dsconfig"
 
   beluga_log "Configuring Delegated Admin"
   reset_delegated_admin
-  configure_delegated_admin
-  if test $? -ne 0; then
+
+  if ! configure_delegated_admin_atv; then
+    beluga_error "Failed to configure Delegated Admin"
+    exit 1
+  fi
+
+  if ! configure_delegated_admin; then
     beluga_error "Failed to configure Delegated Admin"
     exit 1
   fi

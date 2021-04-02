@@ -34,12 +34,12 @@ dsconfig delete-identity-mapper \
 dsconfig delete-rest-resource-type --type-name groups
 dsconfig delete-rest-resource-type --type-name users
 
-dsconfig delete-constructed-attribute \
-  --attribute-name pf-connected-identity
+#dsconfig delete-constructed-attribute \
+#  --attribute-name pf-connected-identity
 
-dsconfig delete-local-db-index \
-  --backend-name "userRoot" \
-  --index-name "pf-connected-identity"
+#dsconfig delete-local-db-index \
+#  --backend-name "userRoot" \
+#  --index-name "pf-connected-identity"
 
 dsconfig set-connection-handler-prop \
   --handler-name "HTTPS Connection Handler" \

@@ -1,36 +1,4 @@
 #
-# Create an access token validator for PingFederate tokens.
-#
-
-dsconfig set-trust-manager-provider-prop \
-  --provider-name "Blind Trust" \
-  --set enabled:true
-
-dsconfig create-external-server \
-  --server-name "${DA_PINGFEDERATE_INSTANCE_NAME}" \
-  --type "http" \
-  --set "base-url:https://${PINGFEDERATE_ENGINE_SERVER}:${PINGFEDERATE_ENGINE_PORT}" \
-  --set "hostname-verification-method:allow-all" \
-  --set "trust-manager-provider:Blind Trust"
-
-dsconfig create-identity-mapper \
-  --mapper-name "entryUUIDMatch" \
-  --type "exact-match" \
-  --set enabled:true \
-  --set "match-attribute:entryUUID" \
-  --set "match-base-dn:${USER_BASE_DN}"
-
-dsconfig create-access-token-validator \
-  --validator-name "${DA_PINGFEDERATE_ATV_NAME}" \
-  --type "ping-federate" \
-  --set enabled:true \
-  --set "identity-mapper:entryUUIDMatch" \
-  --set "subject-claim-name:sub" \
-  --set "authorization-server:${DA_PINGFEDERATE_INSTANCE_NAME}" \
-  --set "client-id:${DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID}" \
-  --set "client-secret:${DA_OAUTH_TOKEN_VALIDATOR_SECRET}"
-
-#
 # The search-base-dn value is the DN of a valid base entry where managed users are stored.
 #
 dsconfig create-rest-resource-type \
@@ -147,18 +115,18 @@ dsconfig set-http-servlet-extension-prop \
 #
 # Create an equality index for the pf-connected-identity attribute.
 #
-dsconfig create-local-db-index \
-  --backend-name "userRoot" \
-  --index-name "pf-connected-identity" \
-  --set index-type:equality
+#dsconfig create-local-db-index \
+#  --backend-name "userRoot" \
+#  --index-name "pf-connected-identity" \
+#  --set index-type:equality
 
 #
 # Create a constructed attribute for pf-connected-identity (where the entryUUID is the PingFederate user ID attribute).
 #
-dsconfig create-constructed-attribute \
-  --attribute-name pf-connected-identity \
-  --set attribute-type:pf-connected-identity \
-  --set value-pattern:auth-source=pf-local-identity:user-id={entryUUID}
+#dsconfig create-constructed-attribute \
+#  --attribute-name pf-connected-identity \
+#  --set attribute-type:pf-connected-identity \
+#  --set value-pattern:auth-source=pf-local-identity:user-id={entryUUID}
 
 #
 # Enable the Delegated Admin HTTP servlet.
