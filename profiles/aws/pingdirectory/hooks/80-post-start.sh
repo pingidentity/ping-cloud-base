@@ -233,6 +233,17 @@ else
   DA_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/01-add-delegated-admin.dsconfig"
   DA_CONFIG_ATV_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/02-add-pf-instance-and-atv.dsconfig"
 
+  rebuild-index --task \
+    --useSSL --trustAll \
+    --port ${LDAPS_PORT} \
+    --bindDN "${ROOT_USER_DN}" \
+    --bindPasswordFile "${ROOT_USER_PASSWORD_FILE}" \
+    --baseDN "${USER_BASE_DN}" \
+    --index cn \
+    --index mail \
+    --index uid \
+    --index sn
+
   beluga_log "Configuring Delegated Admin"
   reset_delegated_admin
 
