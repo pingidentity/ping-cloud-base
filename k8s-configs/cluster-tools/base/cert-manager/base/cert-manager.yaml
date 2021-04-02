@@ -7683,7 +7683,7 @@ rules:
     resources: ["certificates", "certificaterequests", "clusterissuers", "issuers", "orders"]
     verbs: ["get", "list", "watch"]
   # We require these rules to support users with the OwnerReferencesPermissionEnforcement
-  # admission controller enabled:
+  # admission controller enabled:
   # https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#ownerreferencespermissionenforcement
   - apiGroups: ["certmanager.k8s.io"]
     resources: ["certificates/finalizers"]
@@ -7722,7 +7722,7 @@ rules:
     resources: ["challenges"]
     verbs: ["create", "delete"]
   # We require these rules to support users with the OwnerReferencesPermissionEnforcement
-  # admission controller enabled:
+  # admission controller enabled:
   # https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#ownerreferencespermissionenforcement
   - apiGroups: ["certmanager.k8s.io"]
     resources: ["orders/finalizers"]
@@ -7772,12 +7772,12 @@ rules:
     resources: ["ingresses"]
     verbs: ["get", "list", "watch", "create", "delete", "update"]
   # We require these rules to support users with the OwnerReferencesPermissionEnforcement
-  # admission controller enabled:
+  # admission controller enabled:
   # https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#ownerreferencespermissionenforcement
   - apiGroups: ["certmanager.k8s.io"]
     resources: ["challenges/finalizers"]
     verbs: ["update"]
-  # DNS01 rules (duplicated above)
+  # DNS01 rules (duplicated above)
   - apiGroups: [""]
     resources: ["secrets"]
     verbs: ["get", "list", "watch"]
@@ -7806,7 +7806,7 @@ rules:
     resources: ["ingresses"]
     verbs: ["get", "list", "watch"]
   # We require these rules to support users with the OwnerReferencesPermissionEnforcement
-  # admission controller enabled:
+  # admission controller enabled:
   # https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#ownerreferencespermissionenforcement
   - apiGroups: ["extensions"]
     resources: ["ingresses/finalizers"]
