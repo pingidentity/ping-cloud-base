@@ -160,8 +160,30 @@ initialize_all_servers_for_dn() {
 ########################################################################################################################
 configure_delegated_admin() {
   beluga_log "Enabling Delegated Admin"
-  dsconfig --no-prompt --batch-file "${DA_CONFIG_BATCH_FILE}" > /dev/null
-  return ${?}
+  dsconfig --no-prompt --batch-file "${DA_CONFIG_BATCH_FILE}"
+  config_da_result=$?
+
+  if test ${config_da_result} -ne 0; then
+    capture_latest_logs "Status code when enabling Delegated Admin" ${config_da_result}
+  fi
+
+  return ${config_da_result}
+}
+
+########################################################################################################################
+# Configure PF instance and ATV.
+########################################################################################################################
+configure_delegated_admin_atv() {
+  beluga_log "Creating PingFederate instance and ATV"
+  # Output dsconfig command into into /dev/null to avoid secret from being exposed via logs
+  dsconfig --no-prompt --batch-file "${DA_CONFIG_ATV_BATCH_FILE}" > /dev/null
+  config_da_result=$?
+
+  if test ${config_da_result} -ne 0; then
+    capture_latest_logs "Status code when creating PF instance and ATV for Delegated Admin" ${config_da_result}
+  fi
+
+  return ${config_da_result}
 }
 
 ########################################################################################################################
@@ -170,6 +192,18 @@ configure_delegated_admin() {
 reset_delegated_admin() {
   beluga_log "Resetting Delegated Admin configuration"
   dsconfig --no-prompt --batch-continue-on-error --batch-file "${DA_RESET_CONFIG_BATCH_FILE}"
+}
+
+capture_latest_logs() {
+  msg="${1}"
+  status_code=${2}
+
+  beluga_error "${msg}: ${status_code}"
+  beluga_error "The following contains logs from the ${SERVER_ROOT_DIR}/logs/config-audit.log file:"
+  tail -100 "${SERVER_ROOT_DIR}/logs/config-audit.log"
+
+  beluga_error "The following contains logs from the ${SERVER_ROOT_DIR}/logs/errors file:"
+  tail -100 "${SERVER_ROOT_DIR}/logs/errors"
 }
 
 ########################################################################################################################
@@ -222,11 +256,21 @@ if $(echo "${DA_SKIP_SETUP}" | grep -iq "true"); then
 else
   DA_RESET_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/00-reset-delegated-admin.dsconfig"
   DA_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/01-add-delegated-admin.dsconfig"
+  DA_CONFIG_ATV_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/02-add-pf-instance-and-atv.dsconfig"
 
   beluga_log "Configuring Delegated Admin"
+
+  # Reset DA dsconfig
   reset_delegated_admin
-  configure_delegated_admin
-  if test $? -ne 0; then
+
+  # Setup PF instance and ATV within PD that DA will need.
+  if ! configure_delegated_admin_atv; then
+    beluga_error "Failed to create PF instance and ATV for Delegated Admin"
+    exit 1
+  fi
+
+  # Configure DA
+  if ! configure_delegated_admin; then
     beluga_error "Failed to configure Delegated Admin"
     exit 1
   fi
