@@ -13,7 +13,7 @@ spec:
             memory: 45Gi
           requests:
             memory: 45Gi
-            cpu: 6
+            cpu: 4
       - name: stunnel
         resources:
           requests:
