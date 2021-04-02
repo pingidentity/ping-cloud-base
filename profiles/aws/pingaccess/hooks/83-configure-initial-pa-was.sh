@@ -226,8 +226,22 @@ create_pf_application() {
   export VIRTUAL_HOST_ID=20
   export SITE_ID=20
 
+  # PDO-2235 - To circumvent a double-auth AdminSSO
+  # event for a MyPing user trying to access the PF Admin UI,
+  # disable the WebSession for this app in PA WAS.
   beluga_log "Creating PF Application"
-  create_application
+  if is_myping_deployment; then
+    beluga_log "Disabling the WebSession for the PF Admin Application since this is a MyPing deployment"
+
+    export SESSION_ID=0
+    app_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/application-payload.json)
+    resource=applications
+
+    create_entity "${app_payload}" "${resource}"
+    unset APP_ID APP_NAME APP_DESCRIPTION VIRTUAL_HOST_ID SITE_ID SESSION_ID
+  else
+    create_application
+  fi
 }
 
 create_kibana_application() {
