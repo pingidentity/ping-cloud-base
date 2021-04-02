@@ -233,6 +233,9 @@ else
   DA_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/01-add-delegated-admin.dsconfig"
   DA_CONFIG_ATV_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/02-add-pf-instance-and-atv.dsconfig"
 
+  beluga_log "Configuring Delegated Admin"
+  reset_delegated_admin
+
   rebuild-index --task \
     --useSSL --trustAll \
     --port ${LDAPS_PORT} \
@@ -243,9 +246,6 @@ else
     --index mail \
     --index uid \
     --index sn
-
-  beluga_log "Configuring Delegated Admin"
-  reset_delegated_admin
 
   if ! configure_delegated_admin_atv; then
     beluga_error "Failed to configure Delegated Admin"
