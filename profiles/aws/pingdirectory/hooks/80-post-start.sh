@@ -236,6 +236,7 @@ else
   beluga_log "Configuring Delegated Admin"
   reset_delegated_admin
 
+  beluga_log "Resetting indexes for DA"
   rebuild-index --task \
     --useSSL --trustAll \
     --port ${LDAPS_PORT} \
