@@ -65,7 +65,7 @@ spec:
               name: pingdelegator-environment-variables
       containers:
       - name: pingdelegator
-        image: pingcloud-virtual.jfrog.io/pingidentity/pingdelegator:2101-4.2.1
+        image: pingcloud-virtual.jfrog.io/pingidentity/pingdelegator:${PINGDELEGATOR_IMAGE_TAG}
         imagePullPolicy: IfNotPresent
         resources:
           requests:

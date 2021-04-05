@@ -94,7 +94,7 @@ spec:
               mountPath: /utils.lib.sh
               subPath: utils.lib.sh
         - name: profile-init
-          image: public.ecr.aws/r2h3l6e4/pingcloud-profiles/pingdirectory:8.1.0.2-v1.0.1
+          image: public.ecr.aws/r2h3l6e4/pingcloud-profiles/pingdirectory:${PINGDIRECTORY_PROFILE_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
           command:
             - sh
@@ -131,7 +131,7 @@ spec:
               subPath: wait-for-services.sh
       containers:
         - name: pingdirectory
-          image: pingcloud-virtual.jfrog.io/pingidentity/pingdirectory:2006.1-8.1.0.2
+          image: pingcloud-virtual.jfrog.io/pingidentity/pingdirectory:${PINGDIRECTORY_IMAGE_TAG}
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 1389

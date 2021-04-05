@@ -39,7 +39,7 @@ spec:
                 topologyKey: "failure-domain.beta.kubernetes.io/zone"
       initContainers:
       - name: profile-init
-        image: public.ecr.aws/r2h3l6e4/pingcloud-profiles/pingfederate:10.1.2-v1.0.1
+        image: public.ecr.aws/r2h3l6e4/pingcloud-profiles/pingfederate:${PINGFEDERATE_PROFILE_IMAGE_TAG}
         imagePullPolicy: IfNotPresent
         command:
           - sh
@@ -105,7 +105,7 @@ spec:
             name: pingfederate-environment-variables
       containers:
       - name: pingfederate
-        image: pingcloud-virtual.jfrog.io/pingidentity/pingfederate:2101-10.2.1
+        image: pingcloud-virtual.jfrog.io/pingidentity/pingfederate:${PINGFEDERATE_IMAGE_TAG}
         imagePullPolicy: IfNotPresent
         env:
         - name: OPERATIONAL_MODE
