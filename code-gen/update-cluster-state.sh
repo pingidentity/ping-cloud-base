@@ -128,7 +128,8 @@ ${DNS_ZONE}
 ${DNS_ZONE_DERIVED}
 ${PRIMARY_DNS_ZONE}
 ${PRIMARY_DNS_ZONE_DERIVED}
-${IRSA_PING_ANNOTATION_KEY_VALUE}'
+${IRSA_PING_ANNOTATION_KEY_VALUE}
+${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}'
 
 ########################################################################################################################
 # Export some derived environment variables.
