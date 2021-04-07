@@ -149,22 +149,6 @@ dsconfig create-delegated-admin-resource-rights  \
   --set enabled:true
 
 #
-# Create an equality index for the pf-connected-identity attribute.
-#
-dsconfig create-local-db-index \
-  --backend-name "userRoot" \
-  --index-name "pf-connected-identity" \
-  --set index-type:equality
-
-#
-# Create a constructed attribute for pf-connected-identity (where the entryUUID is the PingFederate user ID attribute).
-#
-dsconfig create-constructed-attribute \
-  --attribute-name pf-connected-identity \
-  --set attribute-type:pf-connected-identity \
-  --set value-pattern:auth-source=pf-local-identity:user-id={entryUUID}
-
-#
 # Enable the Delegated Admin HTTP servlet.
 #
 
