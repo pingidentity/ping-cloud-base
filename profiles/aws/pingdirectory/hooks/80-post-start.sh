@@ -250,6 +250,9 @@ change_user_password "cn=${ADMIN_USER_NAME}" "${ADMIN_USER_PASSWORD_FILE}" "${AL
 test $? -ne 0 && exit 1
 
 # Configure Delegated Admin
+# Reset DA dsconfig
+reset_delegated_admin
+
 # Do not proceed to configure DA if DA_SKIP_SETUP is set to true
 if $(echo "${DA_SKIP_SETUP}" | grep -iq "true"); then
   beluga_log "DA_SKIP_SETUP is true, skipping..."
@@ -259,9 +262,6 @@ else
   DA_CONFIG_ATV_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/02-add-pf-instance-and-atv.dsconfig"
 
   beluga_log "Configuring Delegated Admin"
-
-  # Reset DA dsconfig
-  reset_delegated_admin
 
   # Setup PF instance and ATV within PD that DA will need.
   if ! configure_delegated_admin_atv; then

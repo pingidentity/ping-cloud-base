@@ -546,6 +546,23 @@ set_implicit_grant_type_client() {
   fi
 }
 
+disable_implicit_grant_type_client() {
+  get_implicit_grant_type_client
+  if test $(echo "${DA_IMPLICIT_CLIENT_RESPONSE}" | grep "${PF_API_404_MESSAGE}" &> /dev/null; echo $?) -ne 0; then
+    implicit_grant_type_payload=$(jq -n "${DA_IMPLICIT_CLIENT_RESPONSE}" | '.enabled = false' )
+
+    make_api_request -X PUT -d "${implicit_grant_type_payload}" \
+      "${PF_API_HOST}/oauth/clients/${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" > /dev/null
+    response_status_code=$?
+    
+    if test ${response_status_code} -ne 0; then
+      return ${response_status_code}
+    fi
+
+    beluga_log "Implicit grant type client, '${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}', is now disabled"
+  fi
+}
+
 ########################################################################################################################
 # Generate a list of all the possible DA callbacks for the implicit client.
 #
@@ -640,6 +657,23 @@ set_oauth_token_validator_client() {
     fi
 
     beluga_log "OAuth token validator client password synced successfully with PingDirectory"
+  fi
+}
+
+disable_oauth_token_validator_client() {
+  get_oauth_token_validator_client
+  if test $(echo "${DA_OAUTH_TOKEN_VAL_CLIENT_RESPONSE}" | grep "${PF_API_404_MESSAGE}" &> /dev/null; echo $?) -ne 0; then
+    oauth_token_val_payload=$(jq -n "${DA_OAUTH_TOKEN_VAL_CLIENT_RESPONSE}" | '.enabled = false' )
+
+    make_api_request -X PUT -d "${oauth_token_val_payload}" \
+      "${PF_API_HOST}/oauth/clients/${DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID}" > /dev/null
+    response_status_code=$?
+    
+    if test ${response_status_code} -ne 0; then
+      return ${response_status_code}
+    fi
+
+    beluga_log "OAuth token validator client, '${DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID}', is now disabled"
   fi
 }
 
