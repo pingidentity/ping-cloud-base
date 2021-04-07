@@ -10,7 +10,7 @@ if $(echo "${ENABLE_DA}" | grep -iq "false"); then
 
   beluga_log "ENABLE_DA is false, disabling clients that Delegated Admin use..."
 
-  if ! disable_implicit_and_oauth_token_client; then
+  if ! disable_client_wrapper; then
     beluga_error "Failed to disable Delegated Admin"
     exit 1
   fi
