@@ -546,23 +546,6 @@ set_implicit_grant_type_client() {
   fi
 }
 
-disable_implicit_grant_type_client() {
-  get_implicit_grant_type_client
-  if test $(echo "${DA_IMPLICIT_CLIENT_RESPONSE}" | grep "${PF_API_404_MESSAGE}" &> /dev/null; echo $?) -ne 0; then
-    implicit_grant_type_payload=$(jq -n "${DA_IMPLICIT_CLIENT_RESPONSE}" | '.enabled = false' )
-
-    make_api_request -X PUT -d "${implicit_grant_type_payload}" \
-      "${PF_API_HOST}/oauth/clients/${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" > /dev/null
-    response_status_code=$?
-    
-    if test ${response_status_code} -ne 0; then
-      return ${response_status_code}
-    fi
-
-    beluga_log "Implicit grant type client, '${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}', is now disabled"
-  fi
-}
-
 ########################################################################################################################
 # Generate a list of all the possible DA callbacks for the implicit client.
 #
@@ -660,20 +643,42 @@ set_oauth_token_validator_client() {
   fi
 }
 
-disable_oauth_token_validator_client() {
+disable_implicit_and_oauth_token_client() {
+  get_implicit_grant_type_client
+  disable_client "${DA_IMPLICIT_CLIENT_RESPONSE}" "${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}"
+  disable_implicit_client_status=$?
+
+  if test ${disable_implicit_client_status} -ne 0; then
+    beluga_error "Failed to disable implicit grant type client"
+    return ${disable_implicit_client_status}
+  fi
+  
   get_oauth_token_validator_client
-  if test $(echo "${DA_OAUTH_TOKEN_VAL_CLIENT_RESPONSE}" | grep "${PF_API_404_MESSAGE}" &> /dev/null; echo $?) -ne 0; then
-    oauth_token_val_payload=$(jq -n "${DA_OAUTH_TOKEN_VAL_CLIENT_RESPONSE}" | '.enabled = false' )
+  disable_client "${DA_OAUTH_TOKEN_VAL_CLIENT_RESPONSE}" "${DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID}"
+  disable_oauth_token_validator_client_status=$?
+
+  if test ${disable_oauth_token_validator_client_status} -ne 0; then
+    beluga_error "Failed to disable OAuth token validator client"
+    return ${disable_oauth_token_validator_client_status}
+  fi
+}
+
+disable_client() {
+  client_id="$1"
+  client_response_payload="$2"
+
+  if test $(echo "${client_response_payload}" | grep "${PF_API_404_MESSAGE}" &> /dev/null; echo $?) -ne 0; then
+    oauth_token_val_payload=$(jq -n "${client_response_payload}" | jq '.enabled = false' )
 
     make_api_request -X PUT -d "${oauth_token_val_payload}" \
-      "${PF_API_HOST}/oauth/clients/${DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID}" > /dev/null
+      "${PF_API_HOST}/oauth/clients/${client_id}" > /dev/null
     response_status_code=$?
     
     if test ${response_status_code} -ne 0; then
       return ${response_status_code}
     fi
 
-    beluga_log "OAuth token validator client, '${DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID}', is now disabled"
+    beluga_log "Client '${client_id}', is now disabled. Delegated Admin cannot communicate to PingFederate unless this is enabled."
   fi
 }
 

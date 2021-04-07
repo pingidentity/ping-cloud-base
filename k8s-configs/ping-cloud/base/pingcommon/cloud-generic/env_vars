@@ -14,7 +14,7 @@ LDAP_DS_ID=LDAP-FA8D375DFAC589A222E13AA059319ABF9823B552
 
 # DA common configuration for PF and PD.
 # Note: No spaces are allowed within the ID names below.
-DA_SKIP_SETUP=false
+ENABLE_DA=false
 DA_PCV_ID=dapcv
 DA_PCV_SEARCH_FILTER=uid=${username}
 DA_IDP_ADAPTER_HTML_FORM_ID=daidphtml

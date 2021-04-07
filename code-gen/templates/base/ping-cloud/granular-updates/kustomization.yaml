@@ -41,4 +41,4 @@ resources:
 - ../pingfederate/engine
 
 # Ping Delegated Admin resources
-- ../pingdelegator/server
+# - ../pingdelegator/server

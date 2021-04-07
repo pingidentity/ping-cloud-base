@@ -6,20 +6,16 @@ set -e
 . "${HOOKS_DIR}/util/configure-delegated-admin-utils.sh"
 
 # Do not proceed to configure DA if ENABLE_DA is set to false
-if $(echo "${DA_SKIP_SETUP}" | grep -iq "true"); then
+if $(echo "${ENABLE_DA}" | grep -iq "false"); then
 
   beluga_log "ENABLE_DA is false, disabling clients that Delegated Admin use..."
 
-  if ! disable_implicit_grant_type_client; then
-    beluga_error "Failed to disable Implicit Grant Type Client"
+  if ! disable_implicit_and_oauth_token_client; then
+    beluga_error "Failed to disable Delegated Admin"
     exit 1
   fi
 
-  if ! disable_oauth_token_validator_client; then
-    beluga_error "Failed to disable OAuth Token Validator Client"
-    exit 1
-  fi
-
+  # Exit script, to avoid configuring DA
   exit 0
 fi
 
