@@ -690,6 +690,13 @@ disable_client() {
     beluga_log "Client '${client_id}', was not found."
   else
     beluga_log "Client '${client_id}', found. Disabling now..."
+
+    beluga_log "Using payload"
+    echo "${client_response_payload}"
+    echo
+    echo "${client_response_payload}" | jq
+    echo
+
     oauth_token_val_payload=$(jq -n "${client_response_payload}" | jq '.enabled = false' )
 
     make_api_request -X PUT -d "${oauth_token_val_payload}" \
