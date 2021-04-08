@@ -28,7 +28,7 @@ beluga_log "post-start: configure ldap status: ${LDAP_CONFIG_STATUS}"
 # Skip DA configuration if LDAP ID isn't created.
 if test "${LDAP_CONFIG_STATUS}" -eq 0; then
   beluga_log "post-start: configure DA"
-  # sh "${HOOKS_DIR}/84-setup-delegated-admin.sh"
+  sh "${HOOKS_DIR}/84-setup-delegated-admin.sh"
   DA_CONFIG_STATUS=${?}
   beluga_log "post-start: configure DA status: ${DA_CONFIG_STATUS}"
 fi
