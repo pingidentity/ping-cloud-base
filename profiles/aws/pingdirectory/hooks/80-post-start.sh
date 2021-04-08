@@ -253,9 +253,9 @@ test $? -ne 0 && exit 1
 # Reset DA dsconfig
 reset_delegated_admin
 
-# Do not proceed to configure DA if ENABLE_DA is set to false
-if $(echo "${ENABLE_DA}" | grep -iq "false"); then
-  beluga_log "ENABLE_DA is false, skipping..."
+# Do not proceed to configure DA if ENABLE_DEL_ADMIN is set to false
+if $(echo "${ENABLE_DEL_ADMIN}" | grep -iq "false"); then
+  beluga_log "ENABLE_DEL_ADMIN is false, skipping..."
 else
   DA_RESET_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/00-reset-delegated-admin.dsconfig"
   DA_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/01-add-delegated-admin.dsconfig"
