@@ -5,8 +5,6 @@ set -e
 . "${HOOKS_DIR}/utils.lib.sh"
 . "${HOOKS_DIR}/util/configure-delegated-admin-utils.sh"
 
-wait_for_admin_api_endpoint oauth/clients
-
 # Do not proceed to configure DA if ENABLE_DEL_ADMIN is set to false
 if $(echo "${ENABLE_DEL_ADMIN}" | grep -iq "false"); then
 
