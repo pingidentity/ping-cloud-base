@@ -34,6 +34,7 @@ ${LDAP_DS_ID}'
   LDAP_DS_PAYLOAD=$(envsubst "${vars}" < "${TEMPLATES_DIR_PATH}/pd-ldap-ds.json")
 
   echo "${LDAP_DS_PAYLOAD}" | jq
+  echo "${DATA_STORES_RESPONSE}"
   
   if test $(echo "${DATA_STORES_RESPONSE}" | grep "${PF_API_404_MESSAGE}" &> /dev/null; echo $?) -eq 0; then
     beluga_log "PD LDAP Data Store isn't there, adding it."
