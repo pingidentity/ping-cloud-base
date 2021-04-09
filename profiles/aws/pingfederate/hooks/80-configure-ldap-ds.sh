@@ -16,7 +16,7 @@ PF_API_HOST="https://${PF_ADMIN_HOST_PORT}/pf-admin-api/v1"
 PF_API_404_MESSAGE="HTTP status code: 404"
 
 get_datastore() {
-  DATA_STORES_RESPONSE=$(make_api_request -s -X GET "${PF_API_HOST}/dataStores/${LDAP_DS_ID}") > /dev/null
+  DATA_STORES_RESPONSE=$(make_api_request -X GET "${PF_API_HOST}/dataStores/${LDAP_DS_ID}")
 }
 
 update_datastore() {
@@ -33,8 +33,10 @@ ${LDAP_DS_ID}'
 
   LDAP_DS_PAYLOAD=$(envsubst "${vars}" < "${TEMPLATES_DIR_PATH}/pd-ldap-ds.json")
 
+  get_datastore
+  
   echo "${LDAP_DS_PAYLOAD}" | jq
-  echo "${DATA_STORES_RESPONSE}"
+  echo "data store response ${DATA_STORES_RESPONSE}"
   
   if test $(echo "${DATA_STORES_RESPONSE}" | grep "${PF_API_404_MESSAGE}" &> /dev/null; echo $?) -eq 0; then
     beluga_log "PD LDAP Data Store isn't there, adding it."
