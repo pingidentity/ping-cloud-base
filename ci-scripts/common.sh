@@ -20,6 +20,7 @@ SKIP_TESTS="${SKIP_TESTS:-pingdirectory/03-backup-restore.sh \
   pingaccess/11-heartbeat-endpoint.sh \
   pingfederate/09-heartbeat-endpoint.sh \
   pingaccess/08-artifact-test.sh \
+  pingdelegator/01-admin-user-login.sh \
   chaos/01-delete-pa-admin-pod.sh }"
 
 if test -z "${ENV_VARS_FILE}"; then
