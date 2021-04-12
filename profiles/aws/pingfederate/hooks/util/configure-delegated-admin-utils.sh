@@ -666,7 +666,6 @@ disable_client_wrapper() {
   
   # Disable OAuth token validator client, (PD -> PF)
   if get_oauth_token_validator_client; then
-    get_oauth_token_validator_client
     disable_client "${DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID}" "${DA_OAUTH_TOKEN_VAL_CLIENT_RESPONSE}"
     disable_oauth_token_validator_client_status=$?
 
