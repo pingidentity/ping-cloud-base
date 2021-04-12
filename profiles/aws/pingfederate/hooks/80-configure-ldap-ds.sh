@@ -32,17 +32,15 @@ ${LDAP_DS_ID}'
 
   LDAP_DS_PAYLOAD=$(envsubst "${vars}" < "${TEMPLATES_DIR_PATH}/pd-ldap-ds.json")
 
-  echo "${LDAP_DS_PAYLOAD}" | jq
-
   if get_datastore; then
     beluga_log "PD LDAP Data Store exists, updating with current password."
     make_api_request -X PUT -d "${LDAP_DS_PAYLOAD}" \
-      "${PF_API_HOST}/dataStores/${LDAP_DS_ID}"
+      "${PF_API_HOST}/dataStores/${LDAP_DS_ID}" > /dev/null
     test $? -ne 0 && return 1
   else
     beluga_log "PD LDAP Data Store isn't there, adding it."
     make_api_request -X POST -d "${LDAP_DS_PAYLOAD}" \
-      "${PF_API_HOST}/dataStores"
+      "${PF_API_HOST}/dataStores" > /dev/null
     test $? -ne 0 && return 1
   fi
 
