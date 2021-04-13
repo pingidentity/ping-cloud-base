@@ -117,20 +117,6 @@ dsconfig create-delegated-admin-resource-rights \
   --set enabled:true
 
 #
-# Create Delegated Admin Rights.
-#
-dsconfig create-delegated-admin-resource-rights  \
-  --rights-name "user-${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" \
-  --rest-resource-type groups \
-  --set admin-permission:create \
-  --set admin-permission:read \
-  --set admin-permission:update \
-  --set admin-permission:delete \
-  --set admin-permission:manage-group-membership \
-  --set admin-scope:all-resources-in-base \
-  --set enabled:true
-
-#
 # Enable the Delegated Admin HTTP servlet.
 #
 
