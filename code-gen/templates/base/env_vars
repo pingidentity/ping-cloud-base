@@ -181,3 +181,8 @@ GRAFANA_PUBLIC_HOSTNAME=monitoring.${DNS_ZONE_DERIVED}
 KIBANA_PUBLIC_HOSTNAME=logs.${DNS_ZONE_DERIVED}
 ARGOCD_PUBLIC_HOSTNAME=argocd.${DNS_ZONE_DERIVED}
 
+# WARNING!!!
+# Delegated Admin is disabled by default because it triggers a memory leak in PingDirectory (DS-44258).
+# Delegated Admin is only supported in a trial capacity in 1.9.0 as a result. Enabling it may cause unexpected performance issues on PF and PD.
+# Setting flag to true disables Delegated Admin configuration within PingFederate and PingDirectory.
+DA_SKIP_SETUP=true
