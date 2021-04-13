@@ -31,7 +31,6 @@ dsconfig delete-external-server \
 dsconfig delete-identity-mapper \
   --mapper-name "entryUUIDMatch"
 
-dsconfig delete-rest-resource-type --type-name groups
 dsconfig delete-rest-resource-type --type-name users
 
 dsconfig delete-delegated-admin-resource-rights \
