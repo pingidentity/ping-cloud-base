@@ -9,7 +9,7 @@ dsconfig create-rest-resource-type \
   --set "search-base-dn:${USER_BASE_DN}" \
   --set primary-display-attribute-type:cn \
   --set resource-endpoint:users \
-  --set "search-filter-pattern:(|(cn=*%%*)(mail=%%*)(uid=%%*))" \
+  --set "search-filter-pattern:(|(cn=*%%*)(mail=%%*)(uid=%%*)(sn=*%%*))" \
   --set structural-ldap-objectclass:inetOrgPerson \
   --set "parent-dn:ou=people,${USER_BASE_DN}"
 
@@ -29,6 +29,13 @@ dsconfig create-rest-resource-type \
 # Specify the attributes that will be made available through the Delegated Admin API.
 #
 dsconfig create-delegated-admin-attribute --type-name users --attribute-type cn --set "display-name:Full Name" --set "display-order-index:0"
+dsconfig create-delegated-admin-attribute --type-name users --attribute-type givenName --set "display-name:First Name" --set "display-order-index:1"
+dsconfig create-delegated-admin-attribute --type-name users --attribute-type sn --set "display-name:Last Name" --set "display-order-index:2"
+dsconfig create-delegated-admin-attribute --type-name users --attribute-type mail --set "display-name:Email" --set "display-order-index:3"
+dsconfig create-delegated-admin-attribute --type-name users --attribute-type uid --set "display-name:User ID" --set "display-order-index:4"
+dsconfig create-delegated-admin-attribute --type-name users --attribute-type ds-pwp-account-disabled --set "display-name:Account Disabled"
+dsconfig create-delegated-admin-attribute --type-name groups --attribute-type cn --set "display-name:Group"
+dsconfig create-delegated-admin-attribute --type-name groups --attribute-type description --set "display-name:Description"
 
 #
 # Complete the configuration of the Delegated Admin API.
