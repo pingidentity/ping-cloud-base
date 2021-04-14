@@ -9,18 +9,33 @@ dsconfig create-rest-resource-type \
   --set "search-base-dn:${USER_BASE_DN}" \
   --set primary-display-attribute-type:cn \
   --set resource-endpoint:users \
-  --set "search-filter-pattern:(|(cn=*%%*)(mail=%%*)(uid=%%*))" \
+  --set "search-filter-pattern:(|(cn=%%)(mail=%%)(uid=%%)(sn=%%))" \
   --set structural-ldap-objectclass:inetOrgPerson \
   --set "parent-dn:ou=people,${USER_BASE_DN}"
+
+dsconfig create-rest-resource-type \
+  --type group \
+  --type-name groups \
+  --set "display-name:Groups" \
+  --set enabled:false \
+  --set "search-base-dn:${USER_BASE_DN}" \
+  --set primary-display-attribute-type:cn \
+  --set resource-endpoint:groups \
+  --set "search-filter-pattern:(cn=%%)" \
+  --set structural-ldap-objectclass:groupOfUniqueNames \
+  --set "parent-dn:${USER_BASE_DN}"
 
 #
 # Specify the attributes that will be made available through the Delegated Admin API.
 #
 dsconfig create-delegated-admin-attribute --type-name users --attribute-type cn --set "display-name:Full Name" --set "display-order-index:0"
 dsconfig create-delegated-admin-attribute --type-name users --attribute-type givenName --set "display-name:First Name" --set "display-order-index:1"
+dsconfig create-delegated-admin-attribute --type-name users --attribute-type sn --set "display-name:Last Name" --set "display-order-index:2"
 dsconfig create-delegated-admin-attribute --type-name users --attribute-type mail --set "display-name:Email" --set "display-order-index:3"
 dsconfig create-delegated-admin-attribute --type-name users --attribute-type uid --set "display-name:User ID" --set "display-order-index:4"
 dsconfig create-delegated-admin-attribute --type-name users --attribute-type ds-pwp-account-disabled --set "display-name:Account Disabled"
+dsconfig create-delegated-admin-attribute --type-name groups --attribute-type cn --set "display-name:Group"
+dsconfig create-delegated-admin-attribute --type-name groups --attribute-type description --set "display-name:Description"
 
 #
 # Complete the configuration of the Delegated Admin API.
@@ -51,6 +66,9 @@ dsconfig set-access-control-handler-prop \
 
 dsconfig set-rest-resource-type-prop \
   --type-name users --set enabled:true
+
+dsconfig set-rest-resource-type-prop \
+  --type-name groups --set enabled:true
 
 dsconfig set-http-servlet-extension-prop \
   --extension-name "Delegated Admin" \
@@ -108,6 +126,20 @@ dsconfig create-delegated-admin-rights \
 dsconfig create-delegated-admin-resource-rights \
   --rights-name "user-${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" \
   --rest-resource-type users \
+  --set admin-permission:create \
+  --set admin-permission:read \
+  --set admin-permission:update \
+  --set admin-permission:delete \
+  --set admin-permission:manage-group-membership \
+  --set admin-scope:all-resources-in-base \
+  --set enabled:true
+
+#
+# Create Delegated Admin Rights.
+#
+dsconfig create-delegated-admin-resource-rights  \
+  --rights-name "user-${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" \
+  --rest-resource-type groups \
   --set admin-permission:create \
   --set admin-permission:read \
   --set admin-permission:update \

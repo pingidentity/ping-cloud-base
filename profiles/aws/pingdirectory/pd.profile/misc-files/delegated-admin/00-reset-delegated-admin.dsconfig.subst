@@ -34,6 +34,7 @@ dsconfig delete-delegated-admin-resource-rights \
 dsconfig delete-delegated-admin-rights \
   --rights-name "user-${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}"
 
+dsconfig delete-rest-resource-type --type-name groups
 dsconfig delete-rest-resource-type --type-name users
 
 dsconfig set-connection-handler-prop \
