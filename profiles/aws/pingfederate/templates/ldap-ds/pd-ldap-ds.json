@@ -6,11 +6,9 @@
     "${PD_CLUSTER_PRIVATE_HOSTNAME}:${PF_PD_BIND_PORT}"
   ],
   "ldapType": "PING_DIRECTORY",
-  "bindAnonymously": false,
   "userDN": "uid=pingfederate,ou=devopsaccount,o=platformconfig",
   "password": "${PF_LDAP_PASSWORD}",
   "useSsl": ${PF_PD_BIND_USESSL},
-  "useDnsSrvRecords": false,
   "name": "pingdirectory-appintegrations",
   "hostnamesTags": [
     {
@@ -20,19 +18,7 @@
       "defaultSource": true
     }
   ],
-  "testOnBorrow": false,
-  "testOnReturn": false,
   "createIfNecessary": true,
-  "verifyHost": false,
-  "minConnections": 10,
-  "maxConnections": 100,
-  "maxWait": -1,
-  "timeBetweenEvictions": 60000,
-  "readTimeout": 3000,
-  "connectionTimeout": 3000,
-  "binaryAttributes": [],
-  "dnsTtl": 60000,
-  "ldapDnsSrvPrefix": "_ldap._tcp",
-  "ldapsDnsSrvPrefix": "_ldaps._tcp"
+  "verifyHost": false
 }
 
