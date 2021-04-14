@@ -77,7 +77,7 @@ relative_path() {
 ########################################################################################################################
 format_version() {
   version="$1"
-  printf "%03d%03d%03d%03d" $(echo "${version#v}" | tr '.' ' ')
+  printf "%03d%03d%03d%03d" $(echo "${version}" | tr '.' ' ')
 }
 
 ########################################################################################################################
@@ -85,7 +85,7 @@ format_version() {
 # it returns 004000005000.
 ########################################################################################################################
 kustomize_version() {
-  version="$(kustomize version --short | cut -d' ' -f1 | cut -d'/' -f2)"
+  version="$(kustomize version --short | grep -oE '[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+')"
   format_version "${version}"
 }
 
@@ -168,7 +168,7 @@ log "git-ops-command: detected kustomize version ${KUST_VER}"
 # kustomize to load patch files that are not directly under the kustomize root. For example, we need this option for
 # the remove-from-secondary-patch.yaml because it lives in base and is outside of the kustomize root of the region
 # directories.
-VER_4_0_1="$(format_version 'v4.0.1')"
+VER_4_0_1="$(format_version '4.0.1')"
 
 if test ${KUST_VER} -ge ${VER_4_0_1}; then
   build_load_arg='--load-restrictor'
