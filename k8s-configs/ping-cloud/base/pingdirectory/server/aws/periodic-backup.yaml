@@ -44,7 +44,7 @@ kind: CronJob
 metadata:
   name: pingdirectory-periodic-backup
 spec:
-  schedule: "0 */6 * * *"
+  schedule: "30 */6 * * *"
   jobTemplate:
     spec:
       template:
