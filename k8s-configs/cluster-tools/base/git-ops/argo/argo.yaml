@@ -5,7 +5,8 @@
 #   - Added an "argocd" Namespace for all namespace-scoped resources
 #   - Changed the default git poll interval to 1 minute using the --app-resync to the argocd-application-controller
 #   - Added an "argo-git-deploy" Secret to hold the SSH key for git cloning
-#   - Set the ArgoCD UI password to "admin"
+#   - Set the ArgoCD UI password to "admin" in the "argocd-secret" secret object
+#   - Added the "sealedsecrets.bitnami.com/managed: true" annotation to the above secret so it's manageable by Bitnami.
 #   - Added git-ops-command.sh as the config management tool to build the uber Kubernetes YAML
 #   - Added an init container to install a few custom tools into the ArgoCD repo server
 
@@ -2308,6 +2309,8 @@ metadata:
     app.kubernetes.io/name: argocd-secret
     app.kubernetes.io/part-of: argocd
   name: argocd-secret
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
 type: Opaque
 data:
   admin.password: "JDJhJDEwJHlWRU5GT21mTzBGcXNLNlVreTBEei5vLzM1ekloWDdmMjBvOU9CRVFKNVZqWUpOUHhGbUNlCg=="
