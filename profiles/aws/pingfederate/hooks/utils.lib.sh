@@ -320,7 +320,7 @@ function initializeSkbnConfiguration() {
   # Get prefix of HOSTNAME which match the pod name.  
   export POD="$(echo "${HOSTNAME}" | cut -d. -f1)"
   
-  METADATA=$(kubectl get "$(kubectl get pod -o name | grep "${POD}")" \
+  METADATA=$(kubectl get "$(kubectl get pod -o name --field-selector metadata.name=${POD})" \
     -o=jsonpath='{.metadata.namespace},{.metadata.name},{.metadata.labels.role}')
 
   METADATA_NS=$(echo "$METADATA"| cut -d',' -f1)
