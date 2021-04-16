@@ -21,7 +21,7 @@ get_datastore() {
 update_datastore() {
   export PF_LDAP_PASSWORD_OBFUSCATED=$(sh ${SERVER_ROOT_DIR}/bin/obfuscate.sh "${PF_LDAP_PASSWORD}" | tr -d '\n')
 
-  wait_for_admin_api_endpoint
+  wait_for_admin_api_endpoint dataStores
 
   # Inject obfuscated password into ldap properties file.
   vars='${PF_PD_BIND_USESSL}
