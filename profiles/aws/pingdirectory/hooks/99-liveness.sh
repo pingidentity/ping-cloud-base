@@ -27,7 +27,7 @@ ldapsearch \
   --operationPurpose "Checking ou=admins,o=platformconfig connection" \
   --noPropertiesFile \
   --terse \
-  --hostname "pingdirectory" \
+  --hostname "${HOSTNAME}" \
   --port "1389" \
   --baseDN "ou=admins,o=platformconfig" \
   --searchScope base "(&)" \
