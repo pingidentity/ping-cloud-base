@@ -544,6 +544,7 @@ set_implicit_grant_type_client() {
   else
     beluga_log "Implicit grant type, '${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}', already exist"
 
+    # Enable implicit grant type client, (DA  -> PF)
     set_client_ability "${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" "${DA_IMPLICIT_CLIENT_RESPONSE}" "true"
     enable_implicit_client_status=$?
 
@@ -650,7 +651,7 @@ set_oauth_token_validator_client() {
     fi
     beluga_log "OAuth token validator client password synced successfully with PingDirectory"
 
-
+    # Enables OAuth token validator client, (PD -> PF)
     set_client_ability "${DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID}" "${DA_OAUTH_TOKEN_VAL_CLIENT_RESPONSE}" "true"
     enable_oauth_token_validator_client_status=$?
 
@@ -706,7 +707,7 @@ disable_client_wrapper() {
 #   
 #   ${1} -> The name of the client you want to disable.
 #   ${2} -> The JSON payload that will update the /oauth/clients/:id endpoint.
-#   ${3} -> The enable or disable switch. ('true' => enable, 'false' => disable)
+#   ${3} -> The enable or disable switch for client. ('true' => enable, 'false' => disable)
 ########################################################################################################################
 set_client_ability() {
   client_id="$1"
@@ -721,7 +722,7 @@ set_client_ability() {
 
     oauth_token_val_payload=$(jq -n "${client_response_payload}" | jq --arg client_ability "${client_ability}" '.enabled = $client_ability' )
 
-    beluga_log "Using payload"
+    beluga_log "Using payload and setting client enabled property to '${client_ability}'"
     echo "${oauth_token_val_payload}"
     echo
     echo "${oauth_token_val_payload}" | jq
