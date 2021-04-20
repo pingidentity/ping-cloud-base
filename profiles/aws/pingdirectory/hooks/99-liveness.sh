@@ -21,20 +21,14 @@ ldapsearch \
   --searchScope base "(&)" 1.1 \
   2>/dev/null || exit 1
 
-beluga_log "Test LDAP ou=clients,o=appintegrations connection"
-# shellcheck disable=SC2086
-ldapsearch \
-  --operationPurpose "Checking ou=clients,o=appintegrations" \
-  --port "${LDAPS_PORT}" \
-  --baseDN "ou=clients,o=appintegrations" \
-  --searchScope base "(&)" \
-  2>/dev/null || exit 1
-
 beluga_log "Test LDAP ou=admins,o=platformconfig connection"
 # shellcheck disable=SC2086
 ldapsearch \
   --operationPurpose "Checking ou=admins,o=platformconfig connection" \
-  --port "${LDAPS_PORT}" \
+  --noPropertiesFile \
+  --terse \
+  --hostname "pingdirectory" \
+  --port "1389" \
   --baseDN "ou=admins,o=platformconfig" \
   --searchScope base "(&)" \
   2>/dev/null || exit 1
