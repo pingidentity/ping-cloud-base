@@ -719,7 +719,7 @@ set_client_ability() {
   else
     beluga_log "Client '${client_id}', found."
 
-    oauth_token_val_payload=$(jq -n "${client_response_payload}" | jq '.enabled = ${client_ability}' )
+    oauth_token_val_payload=$(jq -n "${client_response_payload}" | jq --arg client_ability "${client_ability}" '.enabled = $client_ability' )
 
     beluga_log "Using payload"
     echo "${oauth_token_val_payload}"
