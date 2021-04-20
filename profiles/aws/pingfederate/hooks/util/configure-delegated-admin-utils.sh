@@ -543,7 +543,17 @@ set_implicit_grant_type_client() {
     beluga_log "Implicit grant type, '${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}', created successfully"
   else
     beluga_log "Implicit grant type, '${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}', already exist"
+
+    set_client_ability "${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" "${DA_IMPLICIT_CLIENT_RESPONSE}" "true"
+    enable_implicit_client_status=$?
+
+    if test ${enable_implicit_client_status} -ne 0; then
+      beluga_error "Failed to enable implicit grant type client"
+      return ${enable_implicit_client_status}
+    fi
   fi
+
+  return 0
 }
 
 ########################################################################################################################
@@ -638,9 +648,20 @@ set_oauth_token_validator_client() {
       beluga_error "Something went wrong when synchronizing oauth token secret with PD"
       return 1
     fi
-
     beluga_log "OAuth token validator client password synced successfully with PingDirectory"
+
+
+    set_client_ability "${DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID}" "${DA_OAUTH_TOKEN_VAL_CLIENT_RESPONSE}" "true"
+    enable_oauth_token_validator_client_status=$?
+
+    if test ${enable_oauth_token_validator_client_status} -ne 0; then
+      beluga_error "Failed to enable OAuth token validator client"
+      return ${enable_oauth_token_validator_client_status}
+    fi
+
   fi
+
+  return 0
 }
 
 ########################################################################################################################
@@ -655,7 +676,7 @@ set_oauth_token_validator_client() {
 disable_client_wrapper() {
   # Disable implicit grant type client, (DA  -> PF)
   if get_implicit_grant_type_client; then
-    disable_client "${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" "${DA_IMPLICIT_CLIENT_RESPONSE}"
+    set_client_ability "${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" "${DA_IMPLICIT_CLIENT_RESPONSE}" "false"
     disable_implicit_client_status=$?
 
     if test ${disable_implicit_client_status} -ne 0; then
@@ -666,7 +687,7 @@ disable_client_wrapper() {
   
   # Disable OAuth token validator client, (PD -> PF)
   if get_oauth_token_validator_client; then
-    disable_client "${DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID}" "${DA_OAUTH_TOKEN_VAL_CLIENT_RESPONSE}"
+    set_client_ability "${DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID}" "${DA_OAUTH_TOKEN_VAL_CLIENT_RESPONSE}" "false"
     disable_oauth_token_validator_client_status=$?
 
     if test ${disable_oauth_token_validator_client_status} -ne 0; then
@@ -685,23 +706,26 @@ disable_client_wrapper() {
 #   
 #   ${1} -> The name of the client you want to disable.
 #   ${2} -> The JSON payload that will update the /oauth/clients/:id endpoint.
+#   ${3} -> The enable or disable switch. ('true' => enable, 'false' => disable)
 ########################################################################################################################
-disable_client() {
+set_client_ability() {
   client_id="$1"
   client_response_payload="$2"
+  client_ability="$3"
+
 
   if test $(echo "${client_response_payload}" | grep "${PF_API_404_MESSAGE}" &> /dev/null; echo $?) -eq 0; then
     beluga_log "Client '${client_id}', was not found."
   else
-    beluga_log "Client '${client_id}', found. Disabling now..."
+    beluga_log "Client '${client_id}', found."
+
+    oauth_token_val_payload=$(jq -n "${client_response_payload}" | jq '.enabled = ${client_ability}' )
 
     beluga_log "Using payload"
-    echo "${client_response_payload}"
+    echo "${oauth_token_val_payload}"
     echo
-    echo "${client_response_payload}" | jq
+    echo "${oauth_token_val_payload}" | jq
     echo
-
-    oauth_token_val_payload=$(jq -n "${client_response_payload}" | jq '.enabled = false' )
 
     make_api_request -X PUT -d "${oauth_token_val_payload}" \
       "${PF_API_HOST}/oauth/clients/${client_id}" > /dev/null
@@ -710,9 +734,9 @@ disable_client() {
     if test ${response_status_code} -ne 0; then
       return ${response_status_code}
     fi
-
-    beluga_log "Client '${client_id}', is now disabled. Delegated Admin cannot communicate to PingFederate unless this is enabled."
   fi
+
+  return 0
 }
 
 ########################################################################################################################

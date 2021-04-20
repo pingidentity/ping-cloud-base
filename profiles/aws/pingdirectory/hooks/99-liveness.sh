@@ -6,6 +6,7 @@ ${VERBOSE} && set -x
 # shellcheck source=/dev/null
 test -f "${CONTAINER_ENV}" && . "${CONTAINER_ENV}"
 
+beluga_log "Test LDAP docker container liveness check connection"
 # shellcheck disable=SC2086
 ldapsearch \
   --dontWrap \
@@ -20,20 +21,22 @@ ldapsearch \
   --searchScope base "(&)" 1.1 \
   2>/dev/null || exit 1
 
-beluga_log "Test LDAP appintegrations Connection"
+beluga_log "Test LDAP ou=accessgrants,o=appintegrations connection"
 ldapsearch \
   ou=accessgrants,o=appintegrations \
   2>/dev/null || exit 1
 
+beluga_log "Test LDAP ou=clients,o=appintegrations connection"
 ldapsearch \
   ou=clients,o=appintegrations \
   2>/dev/null || exit 1
 
+beluga_log "Test LDAP ou=authsessions,o=appintegrations connection"
 ldapsearch \
   ou=authsessions,o=appintegrations \
   2>/dev/null || exit 1
 
-beluga_log "Test LDAP platformconfig Connection"
+beluga_log "Test LDAP o=platformconfig connection"
 ldapsearch \
   o=platformconfig \
   2>/dev/null || exit 1
