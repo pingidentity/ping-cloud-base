@@ -276,6 +276,7 @@ ${ENV}
 ${ENVIRONMENT_TYPE}
 ${KUSTOMIZE_BASE}
 ${LETS_ENCRYPT_SERVER}
+${USER_BASE_DN}
 ${PF_PD_BIND_PORT}
 ${PF_PD_BIND_PROTOCOL}
 ${PF_PD_BIND_USESSL}
@@ -655,6 +656,8 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
       ;;
   esac
 
+  export USER_BASE_DN="${USER_BASE_DN:-dc=example,dc=com}"
+
   # Set PF variables based on ENV
   case "${ENV}" in
     dev | test | stage)
@@ -734,6 +737,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   echo "ENVIRONMENT_TYPE: ${ENVIRONMENT_TYPE}"
   echo "KUSTOMIZE_BASE: ${KUSTOMIZE_BASE}"
   echo "LETS_ENCRYPT_SERVER: ${LETS_ENCRYPT_SERVER}"
+  echo "USER_BASE_DN: ${USER_BASE_DN}"
   echo "CLUSTER_NAME: ${CLUSTER_NAME}"
   echo "PING_CLOUD_NAMESPACE: ${PING_CLOUD_NAMESPACE}"
   echo "DNS_ZONE: ${DNS_ZONE}"
