@@ -36,7 +36,12 @@ ldapsearch \
   ou=authsessions,o=appintegrations \
   2>/dev/null || exit 1
 
-beluga_log "Test LDAP o=platformconfig connection"
+beluga_log "Test LDAP uid=pingfederate,ou=devopsaccount,o=platformconfig connection"
 ldapsearch \
-  o=platformconfig \
+  uid=pingfederate,ou=devopsaccount,o=platformconfig \
+  2>/dev/null || exit 1
+
+beluga_log "Test LDAP ou=admins,o=platformconfig connection"
+ldapsearch \
+  ou=admins,o=platformconfig \
   2>/dev/null || exit 1
