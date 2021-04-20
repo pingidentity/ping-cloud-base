@@ -107,6 +107,7 @@ ${ENV}
 ${ENVIRONMENT_TYPE}
 ${KUSTOMIZE_BASE}
 ${LETS_ENCRYPT_SERVER}
+${USER_BASE_DN}
 ${PF_PD_BIND_PORT}
 ${PF_PD_BIND_PROTOCOL}
 ${PF_PD_BIND_USESSL}
@@ -469,15 +470,13 @@ handle_changed_profiles() {
     echo "${new_files}" | xargs git checkout "${DEFAULT_CDE_BRANCH}"
   fi
 
-  # Create an .old file for each artifact-list.json file and copy it from the default CDE branch into the new branch.
+  # Copy artifact-list.json files from the default CDE branch into the new branch but with a .old extension.
   artifact_json_files="$(find "${PROFILES_DIR}" -name ${ARTIFACTS_JSON_FILE_NAME})"
   log "Found the following ${ARTIFACTS_JSON_FILE_NAME} files: ${artifact_json_files}"
 
   for artifact_file in ${artifact_json_files}; do
-    cp "${artifact_file}"{,.old}
-
-    log "Copying file ${DEFAULT_CDE_BRANCH}:${artifact_file} to the same location on ${NEW_BRANCH}"
-    git show "${DEFAULT_CDE_BRANCH}:${artifact_file}" > "${artifact_file}"
+    log "Copying file ${DEFAULT_CDE_BRANCH}:${artifact_file} to the same location on ${NEW_BRANCH} with .old extension"
+    git show "${DEFAULT_CDE_BRANCH}:${artifact_file}" > "${artifact_file}".old
   done
 
   msg="Copied changed '${PROFILES_DIR}' files from '${DEFAULT_CDE_BRANCH}' to its new branch '${NEW_BRANCH}'"
