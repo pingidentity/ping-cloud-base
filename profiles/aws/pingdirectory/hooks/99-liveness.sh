@@ -1,6 +1,4 @@
 #!/usr/bin/env sh
-. "${HOOKS_DIR}/utils.lib.sh"
-
 ${VERBOSE} && set -x
 
 # shellcheck source=/dev/null
@@ -20,20 +18,19 @@ ldapsearch \
   --searchScope base "(&)" 1.1 \
   2>/dev/null || exit 1
 
-vars=""
-if [[ "${PF_PD_BIND_USESSL}" = true ]]; then
-  vars="--useSSL --trustAll --port 5678"
-else
-  vars="--port 1389"
-fi
+# vars=""
+# if [[ "${PF_PD_BIND_USESSL}" = true ]]; then
+#   vars="--useSSL --trustAll --port 5678"
+# else
+#   vars="--port 1389"
+# fi
 
 # shellcheck disable=SC2086
 ldapsearch \
   --noPropertiesFile \
-  --terse \
-  ${vars} \
+  --port 1389 \
   --operationPurpose "Checking ou=admins,o=platformconfig connection" \
   --hostname "${HOSTNAME}" \
   --baseDN "ou=admins,o=platformconfig" \
-  --searchScope base "(&)" \
+  --filter "(uid={0})" \
   2>/dev/null || exit 1
