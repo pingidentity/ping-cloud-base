@@ -6,7 +6,6 @@ ${VERBOSE} && set -x
 # shellcheck source=/dev/null
 test -f "${CONTAINER_ENV}" && . "${CONTAINER_ENV}"
 
-beluga_log "Test LDAP docker container liveness check connection"
 # shellcheck disable=SC2086
 ldapsearch \
   --dontWrap \
@@ -21,14 +20,19 @@ ldapsearch \
   --searchScope base "(&)" 1.1 \
   2>/dev/null || exit 1
 
-beluga_log "Test LDAP ou=admins,o=platformconfig connection"
-# shellcheck disable=SC2086
+vars=""
+if [[ "${PF_PD_BIND_USESSL}" = true ]]; then
+  vars="--useSSL --trustAll --port 5678"
+else
+  vars="--port 1389"
+fi
+
 ldapsearch \
-  --operationPurpose "Checking ou=admins,o=platformconfig connection" \
   --noPropertiesFile \
   --terse \
+  "${vars} " \
+  --operationPurpose "Checking ou=admins,o=platformconfig connection" \
   --hostname "${HOSTNAME}" \
-  --port "1389" \
   --baseDN "ou=admins,o=platformconfig" \
   --searchScope base "(&)" \
   2>/dev/null || exit 1
