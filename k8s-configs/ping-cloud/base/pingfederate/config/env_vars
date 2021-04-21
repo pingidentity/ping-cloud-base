@@ -38,10 +38,6 @@ PF_MAX_HEAP=512m
 PF_MIN_YGEN=128m
 PF_MAX_YGEN=256m
 
-PF_PD_BIND_PORT=1389
-PF_PD_BIND_PROTOCOL=ldap
-PF_PD_BIND_USESSL=false
-
 # Leave blank
 TAIL_LOG_FILES=
 # Individual files should be spelled out, globs are unreliable
