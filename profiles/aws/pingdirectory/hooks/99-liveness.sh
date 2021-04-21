@@ -11,19 +11,19 @@ ldapsearch \
   --suppressPropertiesFileComment \
   --noPropertiesFile \
   --operationPurpose "Docker container liveness check" \
+  --hostname "${HOSTNAME}" \
   --port "${LDAPS_PORT}" \
   --useSSL \
   --trustAll \
   --baseDN "" \
-  --searchScope base "(&)" 1.1 \
-  2>/dev/null || exit 1
+  --searchScope base "(&)" 1.1 || exit 1
 
 ldapsearch \
   --operationPurpose "Checking ou=clients,o=appintegrations" \
+  --hostname "${HOSTNAME}" \
   --port "${LDAPS_PORT}" \
   --baseDN "ou=clients,o=appintegrations" \
-  --searchScope base "(&)" \
-  2>/dev/null || exit 1
+  --searchScope base "(&)" || exit 1
 
 # vars=""
 # if [[ "${PF_PD_BIND_USESSL}" = true ]]; then
@@ -36,7 +36,7 @@ ldapsearch \
   --noPropertiesFile \
   --port 1389 \
   --operationPurpose "Checking ou=admins,o=platformconfig connection" \
-  --hostname "${HOSTNAME}.pingdirectory" \
+  --hostname "${HOSTNAME}" \
   --baseDN "ou=admins,o=platformconfig" \
   --filter "(uid={0})" \
   2>/dev/null || exit 1
