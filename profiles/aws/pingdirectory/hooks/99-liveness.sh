@@ -18,6 +18,13 @@ ldapsearch \
   --searchScope base "(&)" 1.1 \
   2>/dev/null || exit 1
 
+ldapsearch \
+  --operationPurpose "Checking ou=clients,o=appintegrations" \
+  --port "${LDAPS_PORT}" \
+  --baseDN "ou=clients,o=appintegrations" \
+  --searchScope base "(&)" \
+  2>/dev/null || exit 1
+
 # vars=""
 # if [[ "${PF_PD_BIND_USESSL}" = true ]]; then
 #   vars="--useSSL --trustAll --port 5678"
@@ -25,12 +32,11 @@ ldapsearch \
 #   vars="--port 1389"
 # fi
 
-# shellcheck disable=SC2086
 ldapsearch \
   --noPropertiesFile \
   --port 1389 \
   --operationPurpose "Checking ou=admins,o=platformconfig connection" \
-  --hostname "${HOSTNAME}" \
+  --hostname "${HOSTNAME}.pingdirectory" \
   --baseDN "ou=admins,o=platformconfig" \
   --filter "(uid={0})" \
   2>/dev/null || exit 1
