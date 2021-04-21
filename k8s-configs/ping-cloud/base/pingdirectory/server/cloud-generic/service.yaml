@@ -8,7 +8,7 @@ metadata:
   annotations:
     external-dns.alpha.kubernetes.io/hostname: pingdirectory-cluster-dev.ping-demo.com
 spec:
-  publishNotReadyAddresses: true
+  # publishNotReadyAddresses: true
   ports:
   - port: 1389
     name: ldap
