@@ -27,6 +27,7 @@ else
   vars="--port 1389"
 fi
 
+# shellcheck disable=SC2086
 ldapsearch \
   --noPropertiesFile \
   --terse \
