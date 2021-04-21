@@ -27,13 +27,12 @@ else
   vars="--port 1389"
 fi
 
-# shellcheck disable=SC2086
-ldapsearch \
-  --noPropertiesFile \
-  --terse \
-  "${vars} " \
-  --operationPurpose "Checking ou=admins,o=platformconfig connection" \
-  --hostname "${HOSTNAME}" \
-  --baseDN "ou=admins,o=platformconfig" \
-  --searchScope base "(&)" \
-  2>/dev/null || exit 1
+# ldapsearch \
+#   --noPropertiesFile \
+#   --terse \
+#   "${vars} " \
+#   --operationPurpose "Checking ou=admins,o=platformconfig connection" \
+#   --hostname "${HOSTNAME}" \
+#   --baseDN "ou=admins,o=platformconfig" \
+#   --searchScope base "(&)" \
+#   2>/dev/null || exit 1
