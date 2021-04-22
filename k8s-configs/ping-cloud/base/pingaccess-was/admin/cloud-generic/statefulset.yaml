@@ -43,7 +43,7 @@ spec:
           - name: in-dir
             mountPath: /opt/in
       - name: pingaccess-was-p14c-init
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.6
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.12
         imagePullPolicy: IfNotPresent
         env:
         - name: NAMESPACE
@@ -131,6 +131,9 @@ spec:
         - name: data-dir
           mountPath: /usr/local/bin/skbn
           subPath: skbn
+        - name: data-dir
+          mountPath: /opt/staging/newrelic.jar
+          subPath: newrelic.jar
         - name: out-dir
           mountPath: /opt/out
         - name: pingaccess-was-license
@@ -191,11 +194,16 @@ spec:
             secretKeyRef:
               name: pingaccess-was-passwords
               key: P14C_CLIENT_SECRET
+        - name: NEW_RELIC_APP_NAME
+          value: pingaccess-was-admin
         envFrom:
         - configMapRef:
             name: pingaccess-was-environment-variables
         - secretRef:
             name: devops-secret
+            optional: true
+        - secretRef:
+            name: newrelic-license-key
             optional: true
       volumes:
       - name: ssh-dir

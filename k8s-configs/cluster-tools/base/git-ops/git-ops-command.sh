@@ -69,6 +69,27 @@ relative_path() {
 }
 
 ########################################################################################################################
+# Format the provided kustomize version for numeric comparison. For example, if the kustomize version is 4.0.5, it
+# returns 004000005000.
+#
+# Arguments
+#   ${1} -> The kustomize short version, e.g. v4.0.5.
+########################################################################################################################
+format_version() {
+  version="$1"
+  printf "%03d%03d%03d%03d" $(echo "${version}" | tr '.' ' ')
+}
+
+########################################################################################################################
+# Returns the version of kustomize formatted for numeric comparison. For example, if the kustomize version is 4.0.5,
+# it returns 004000005000.
+########################################################################################################################
+kustomize_version() {
+  version="$(kustomize version --short | grep -oE '[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+')"
+  format_version "${version}"
+}
+
+########################################################################################################################
 # Clean up on exit. If non-zero exit, then print the log file to stdout before deleting it. Change back to the previous
 # directory. Delete the kustomize build directory, if it exists.
 ########################################################################################################################
@@ -140,13 +161,30 @@ if test -f 'env_vars'; then
   test $? -ne 0 && exit 1
 fi
 
+KUST_VER="$(kustomize_version)"
+log "git-ops-command: detected kustomize version ${KUST_VER}"
+
+# The load restriction build arg name and value are different starting in kustomize v4.0.1. This argument allows
+# kustomize to load patch files that are not directly under the kustomize root. For example, we need this option for
+# the remove-from-secondary-patch.yaml because it lives in base and is outside of the kustomize root of the region
+# directories.
+VER_4_0_1="$(format_version '4.0.1')"
+
+if test ${KUST_VER} -ge ${VER_4_0_1}; then
+  build_load_arg='--load-restrictor'
+  build_load_arg_value='LoadRestrictionsNone'
+else
+  build_load_arg='--load_restrictor'
+  build_load_arg_value='none'
+fi
+
 # Build the uber deploy yaml
 if test -z "${OUT_DIR}" || test ! -d "${OUT_DIR}"; then
   log "git-ops-command: generating uber yaml file from '${BUILD_DIR}' to stdout"
-  kustomize build --load_restrictor none "${BUILD_DIR}"
+  kustomize build ${build_load_arg} ${build_load_arg_value} "${BUILD_DIR}"
 else
   log "git-ops-command: generating yaml files from '${BUILD_DIR}' to '${OUT_DIR}'"
-  kustomize build --load_restrictor none "${BUILD_DIR}" --output "${OUT_DIR}"
+  kustomize build ${build_load_arg} ${build_load_arg_value} "${BUILD_DIR}" --output "${OUT_DIR}"
 fi
 
 exit 0

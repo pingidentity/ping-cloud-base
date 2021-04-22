@@ -9,6 +9,9 @@ TOPOLOGY_DESCRIPTOR_PROFILES_JSON=/opt/staging/topology/descriptor-profiles.json
 # PD USER_BASE_DN
 USER_BASE_DN=dc=example,dc=com
 
+# PD Datastore ID from PingFederate
+LDAP_DS_ID=LDAP-FA8D375DFAC589A222E13AA059319ABF9823B552
+
 # DA common configuration for PF and PD.
 # Note: No spaces are allowed within the ID names below.
 DA_SKIP_SETUP=false

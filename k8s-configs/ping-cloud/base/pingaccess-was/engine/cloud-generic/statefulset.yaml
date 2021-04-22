@@ -127,6 +127,9 @@ spec:
         - name: data-dir
           mountPath: /usr/local/bin/skbn
           subPath: skbn
+        - name: data-dir
+          mountPath: /opt/staging/newrelic.jar
+          subPath: newrelic.jar
         - name: pingaccess-was-license
           mountPath: /opt/in/instance/conf/pingaccess.lic
           subPath: pingaccess.lic
@@ -164,11 +167,16 @@ spec:
             secretKeyRef:
               name: pingaccess-was-passwords
               key: PA_ADMIN_USER_PASSWORD
+        - name: NEW_RELIC_APP_NAME
+          value: pingaccess-was
         envFrom:
         - configMapRef:
             name: pingaccess-was-environment-variables
         - secretRef:
             name: devops-secret
+            optional: true
+        - secretRef:
+            name: newrelic-license-key
             optional: true
       volumes:
       - name: ssh-dir

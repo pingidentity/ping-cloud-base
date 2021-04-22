@@ -37,6 +37,8 @@ CUSTOM_PATCHES_SAMPLE_FILE_NAME='custom-patches-sample.yaml'
 CUSTOM_RESOURCES_REL_DIR="${K8S_CONFIGS_DIR}/${BASE_DIR}/${CUSTOM_RESOURCES_DIR}"
 CUSTOM_PATCHES_REL_FILE_NAME="${K8S_CONFIGS_DIR}/${BASE_DIR}/${CUSTOM_PATCHES_FILE_NAME}"
 
+ARTIFACTS_JSON_FILE_NAME='artifact-list.json'
+
 ENV_VARS_FILE_NAME='env_vars'
 SECRETS_FILE_NAME='secrets.yaml'
 ORIG_SECRETS_FILE_NAME='orig-secrets.yaml'
@@ -84,6 +86,7 @@ ${REGION}
 ${REGION_NICK_NAME}
 ${PRIMARY_REGION}
 ${TENANT_DOMAIN}
+${TENANT_NAME}
 ${PRIMARY_TENANT_DOMAIN}
 ${GLOBAL_TENANT_DOMAIN}
 ${ARTIFACT_REPO_URL}
@@ -104,6 +107,7 @@ ${ENV}
 ${ENVIRONMENT_TYPE}
 ${KUSTOMIZE_BASE}
 ${LETS_ENCRYPT_SERVER}
+${USER_BASE_DN}
 ${PF_PD_BIND_PORT}
 ${PF_PD_BIND_PROTOCOL}
 ${PF_PD_BIND_USESSL}
@@ -127,7 +131,8 @@ ${DNS_ZONE}
 ${DNS_ZONE_DERIVED}
 ${PRIMARY_DNS_ZONE}
 ${PRIMARY_DNS_ZONE_DERIVED}
-${IRSA_PING_ANNOTATION_KEY_VALUE}'
+${IRSA_PING_ANNOTATION_KEY_VALUE}
+${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}'
 
 ########################################################################################################################
 # Export some derived environment variables.
@@ -462,10 +467,18 @@ handle_changed_profiles() {
 
   if ! test "${new_files}"; then
     log "No changed '${PROFILES_DIR}' files to copy '${DEFAULT_CDE_BRANCH}' to its new branch '${NEW_BRANCH}'"
-    return
+  else
+    echo "${new_files}" | xargs git checkout "${DEFAULT_CDE_BRANCH}"
   fi
 
-  echo "${new_files}" | xargs git checkout "${DEFAULT_CDE_BRANCH}"
+  # Copy artifact-list.json files from the default CDE branch into the new branch but with a .old extension.
+  artifact_json_files="$(find "${PROFILES_DIR}" -name ${ARTIFACTS_JSON_FILE_NAME})"
+  log "Found the following ${ARTIFACTS_JSON_FILE_NAME} files: ${artifact_json_files}"
+
+  for artifact_file in ${artifact_json_files}; do
+    log "Copying file ${DEFAULT_CDE_BRANCH}:${artifact_file} to the same location on ${NEW_BRANCH} with .old extension"
+    git show "${DEFAULT_CDE_BRANCH}:${artifact_file}" > "${artifact_file}".old
+  done
 
   msg="Copied changed '${PROFILES_DIR}' files from '${DEFAULT_CDE_BRANCH}' to its new branch '${NEW_BRANCH}'"
   log "${msg}"
@@ -575,18 +588,23 @@ handle_changed_k8s_configs() {
   KUSTOMIZATION_BAK_FILE="${KUSTOMIZATION_FILE}.bak"
 
   # Special-case the handling all files owned by PS/GSO.
+
+  # 1. Copy the custom-patches.yaml file (owned by PS/GSO) as is.
+  # 2. Copy the custom-resources/kustomization.yaml, which references the custom resources (also owned by PS/GSO) as is.
+  for file in ${CUSTOM_RESOURCES_REL_DIR}/kustomization.yaml ${CUSTOM_PATCHES_REL_FILE_NAME}; do
+    if git show "${DEFAULT_CDE_BRANCH}:${file}" &> /dev/null; then
+      log "Copying file ${DEFAULT_CDE_BRANCH}:${file} to the same location on ${NEW_BRANCH}"
+      git show "${DEFAULT_CDE_BRANCH}:${file}" > "${file}"
+    else
+      log "${file} does not exist in default CDE branch ${DEFAULT_CDE_BRANCH}"
+    fi
+  done
+
   for new_file in ${new_files}; do
     # Ignore Beluga-owned files.
     new_file_basename="$(basename "${new_file}")"
     if echo "${beluga_owned_k8s_files}" | grep -q "@${new_file_basename}"; then
       log "Ignoring file ${DEFAULT_CDE_BRANCH}:${new_file} since it is a Beluga-owned file"
-      continue
-    fi
-
-    # Copy the custom-patches.yaml file (owned by PS/GSO) as is.
-    if test "${new_file_basename}" = "${CUSTOM_PATCHES_FILE_NAME}"; then
-      log "Copying file ${DEFAULT_CDE_BRANCH}:${new_file} to the same location on ${NEW_BRANCH}"
-      git show "${DEFAULT_CDE_BRANCH}:${new_file}" > "${new_file}"
       continue
     fi
 

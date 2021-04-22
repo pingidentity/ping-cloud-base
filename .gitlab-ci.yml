@@ -2,6 +2,8 @@ workflow:
   rules:
     - if: $CI_COMMIT_MESSAGE =~ /\[skip pipeline\]/
       when: never
+    - if: $CI_MERGE_REQUEST_ID
+      when: never
     - when: always
 
 ## Pipeline stages ##

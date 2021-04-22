@@ -131,6 +131,9 @@ spec:
         - name: data-dir
           mountPath: /opt/staging/jmx_prometheus_javaagent-0.14.0.jar
           subPath: jmx_prometheus_javaagent-0.14.0.jar
+        - name: data-dir
+          mountPath: /opt/staging/newrelic.jar
+          subPath: newrelic.jar
         - name: pingaccess-license
           mountPath: /opt/in/instance/conf/pingaccess.lic
           subPath: pingaccess.lic
@@ -168,11 +171,16 @@ spec:
             secretKeyRef:
               name: pingaccess-passwords
               key: PA_ADMIN_USER_PASSWORD
+        - name: NEW_RELIC_APP_NAME
+          value: pingaccess
         envFrom:
         - configMapRef:
             name: pingaccess-environment-variables
         - secretRef:
             name: devops-secret
+            optional: true
+        - secretRef:
+            name: newrelic-license-key
             optional: true
       
       - name: pingaccess-heartbeat-exporter

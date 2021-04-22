@@ -195,6 +195,15 @@
 #                          | to the corresponding Kubernetes service account to |
 #                          | enable IRSA (IAM Role for Service Accounts).       |
 #                          |                                                    |
+# NLB_EIP_PATH_PREFIX      | The SSM path prefix which stores comma separated   | The string "unused".
+#                          | AWS Elastic IP allocation IDs that exist in the   |
+#                          | CDE account of the Ping Cloud customers.           |
+#                          | The environment type is appended to the SSM key    | 
+#                          | path before the value is retrieved from the        |
+#                          | AWS SSM endpoint. The EIP allocation IDs must be   |
+#                          | added as an annotation to the corresponding K8s    |
+#                          | service for the AWS NLB to use the AWS Elastic IP. |
+#                          |                                                    |
 # EVENT_QUEUE_NAME         | The name of the queue that may be used to notify   | platform_event_queue.fifo
 #                          | PingCloud applications of platform events. This    |
 #                          | is currently only used if the orchestrator for     |
@@ -267,6 +276,7 @@ ${ENV}
 ${ENVIRONMENT_TYPE}
 ${KUSTOMIZE_BASE}
 ${LETS_ENCRYPT_SERVER}
+${USER_BASE_DN}
 ${PF_PD_BIND_PORT}
 ${PF_PD_BIND_PROTOCOL}
 ${PF_PD_BIND_USESSL}
@@ -295,7 +305,8 @@ ${PINGFEDERATE_IMAGE_TAG}
 ${PINGDIRECTORY_IMAGE_TAG}
 ${PINGDELEGATOR_IMAGE_TAG}
 ${LAST_UPDATE_REASON}
-${IRSA_PING_ANNOTATION_KEY_VALUE}'
+${IRSA_PING_ANNOTATION_KEY_VALUE}
+${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}'
 
 # Variables to replace within the generated cluster state code
 REPO_VARS="${REPO_VARS:-${DEFAULT_VARS}}"
@@ -358,6 +369,38 @@ add_irsa_variables() {
   fi
 
   export IRSA_PING_ANNOTATION_KEY_VALUE="${IRSA_PING_ANNOTATION_KEY_VALUE}"
+}
+
+########################################################################################################################
+# Export NLB EIP annotation for the provided environment.
+#
+# Arguments
+#   ${1} -> The SSM path prefix which stores CDE account IDs of Ping Cloud environments.
+#   ${2} -> The environment name.
+########################################################################################################################
+add_nlb_variables() {
+  local ssm_path_prefix="$1"
+  local env="$2"
+
+  if test "${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"; then
+    export NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE="${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
+  else
+    # Default empty string
+    NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE=''
+
+    if [ "${ssm_path_prefix}" != "unused" ]; then
+
+      # Getting value from ssm parameter store.
+      if ! ssm_value=$(get_ssm_value "${ssm_path_prefix}/${env}/elastic-ips/nlb/nginx-public"); then
+        echo "Error: ${ssm_value}"
+        exit 1
+      fi
+
+      NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE="service.beta.kubernetes.io/aws-load-balancer-eip-allocations: ${ssm_value}"
+    fi
+
+    export NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE="${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
+  fi
 }
 
 # Checking required tools and environment variables.
@@ -616,6 +659,8 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
       ;;
   esac
 
+  export USER_BASE_DN="${USER_BASE_DN:-dc=example,dc=com}"
+
   # Set PF variables based on ENV
   case "${ENV}" in
     dev | test | stage)
@@ -687,6 +732,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
 
   add_derived_variables
   add_irsa_variables "${ACCOUNT_ID_PATH_PREFIX:-unused}" "${ENV}"
+  add_nlb_variables "${NLB_EIP_PATH_PREFIX:-unused}" "${ENV}"
 
   echo ---
   echo "For environment ${ENV}, using variable values:"
@@ -694,6 +740,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   echo "ENVIRONMENT_TYPE: ${ENVIRONMENT_TYPE}"
   echo "KUSTOMIZE_BASE: ${KUSTOMIZE_BASE}"
   echo "LETS_ENCRYPT_SERVER: ${LETS_ENCRYPT_SERVER}"
+  echo "USER_BASE_DN: ${USER_BASE_DN}"
   echo "CLUSTER_NAME: ${CLUSTER_NAME}"
   echo "PING_CLOUD_NAMESPACE: ${PING_CLOUD_NAMESPACE}"
   echo "DNS_ZONE: ${DNS_ZONE}"

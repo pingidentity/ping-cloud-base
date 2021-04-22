@@ -24,3 +24,6 @@ ARTIFACT_REPO_URL=${ARTIFACT_REPO_URL}
 ############################################################
 # Used by ping product pods
 IRSA_PING_ANNOTATION_KEY_VALUE="${IRSA_PING_ANNOTATION_KEY_VALUE}"
+
+# Annotation used by ingress-nginx service in ingress-nginx-public namespace
+NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE="${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
