@@ -12,9 +12,9 @@ USER_BASE_DN=dc=example,dc=com
 # PD Datastore ID from PingFederate
 LDAP_DS_ID=LDAP-FA8D375DFAC589A222E13AA059319ABF9823B552
 
-#PF_PD_BIND_PORT=1389
-#PF_PD_BIND_PROTOCOL=ldap
-#PF_PD_BIND_USESSL=false
+PF_PD_BIND_PORT=1389
+PF_PD_BIND_PROTOCOL=ldap
+PF_PD_BIND_USESSL=false
 
 # DA common configuration for PF and PD.
 # Note: No spaces are allowed within the ID names below.
