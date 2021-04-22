@@ -11,7 +11,6 @@ ldapsearch \
   --suppressPropertiesFileComment \
   --noPropertiesFile \
   --operationPurpose "Docker container liveness check" \
-  --hostname "${HOSTNAME}" \
   --port "${LDAPS_PORT}" \
   --useSSL \
   --trustAll \

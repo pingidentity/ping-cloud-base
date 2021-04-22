@@ -218,7 +218,8 @@ spec:
             failureThreshold: 3
           livenessProbe:
             exec:
-              command: [liveness.sh]
+              command:
+                - /opt/staging/hooks/99-liveness.sh
             # Health checks will kick in 10 minutes after the pod starts up.
             initialDelaySeconds: 600
             periodSeconds: 30
