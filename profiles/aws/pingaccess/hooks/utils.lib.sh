@@ -541,6 +541,26 @@ is_myping_deployment() {
   fi
 }
 
+########################################################################################################################
+# Logs the contents of the provided file to stdout with a log level of INFO.
+#
+# Arguments
+#   $1 -> The fully-qualified log filename.
+#   $2 -> The optional log header.
+########################################################################################################################
+beluga_log_file_contents() {
+  file="$1"
+  log_header="${2:-'Contents of file'}"
+
+  beluga_log "-----------------------------------------------------------------"
+  beluga_log "${log_header}: ${filename}"
+  beluga_log "-----------------------------------------------------------------"
+  while IFS= read -r line; do
+    beluga_log "${line}"
+  done < ${file}
+}
+
 # These are needed by every script - so export them when this script is sourced.
 beluga_log "export config settings"
 export_config_settings
+
