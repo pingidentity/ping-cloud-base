@@ -1,5 +1,60 @@
 # Changelog
 
+### 1.9.0
+
+- Option to enable Delegated Admin
+- Upgraded PingFederate to version 10.2
+- Provisioned Workforce/Customer 360 Plugins (PF Trial)
+- Added a metadata service to display Ping Cloud metadata component versions
+- Added PingFederate NewRelic APM Agent
+
+_Changes:_
+
+- [X] PDO-1133 Multi-Region Kubernetes DNS
+- [X] PDO-1606 DA - Create k8s ingress resource
+- [X] PDO-1607 DA - Create k8s service
+- [X] PDO-1608 DA - Create k8s Deployment
+- [X] PDO-1609 DA - Create a liveness and readiness probe
+- [X] PDO-1610 DA - Create PingDelegator environment variables configmap
+- [X] PDO-1612 DA - Integrate PingDelegator logs with AWS CloudWatch
+- [X] PDO-1615 DA - customizations to Ping Cloud templates
+- [X] PDO-1621 Add a metadata service to display Ping Cloud metadata component versions
+- [X] PDO-1638 Upgrade PF to 10.2
+- [X] PDO-1639 Beluga k8s stack fails to build with customize version >= 3.9
+- [X] PDO-1669 Provision Workforce/Customer 360 Plugins (PF Trial)
+- [X] PDO-1704 DA - Integrate PingDelegator with PingFederate
+- [X] PDO-1721 MyPing -> Ping Cloud bootstrap secrets and configuration
+- [X] PDO-1758 Create the OAuth client services controller Deployment object
+- [X] PDO-1771 Add access control to ECR registries in CSG AWS account
+- [X] PDO-1773 ECR: ensure that untagged images get periodically cleaned up
+- [X] PDO-1775 Change the JSON for the metadata service to future proof it for additional metadata
+- [X] PDO-1777 DA - Move docker image to JFrog registry
+- [X] PDO-1788 DA - Integrate PingDelegator with PingDirectory
+- [X] PDO-1801 Image tag customization broke in v1.7
+- [X] PDO-1802 Performance degradation of git-ops-command.sh due to PDO-1578
+- [X] PDO-2072 Provide patch for increasing header-size on public nginx for Kerberos
+- [X] PDO-2098 Change the image repo for the Ping Cloud monitoring image
+- [X] PDO-2122 Remove waiting on pingdirectory-0 to speed up PF bootstrap on rolling updates
+- [X] PDO-2124 ALL_MIN_SECRETS_FOUND not set when running update cluster script
+- [X] PDO-2130 DA: Create ConfigMap and Secrets to hold common variables for DA, PF, and PD
+- [X] PDO-2133 Add custom-patch-sample for schedule edits of corncobs into custom-patch-sample.yaml
+- [X] PDO-2134 Setup NR Agent for PF
+- [X] PDO-2135 Setup tags for PF APM NR
+- [X] PDO-2175 Public URL for variable PD_HTTP_PUBLIC_HOSTNAME is not set in PingCloud
+- [X] PDO-2225 p14c-bootstrap k8s: add IRSA to new Ping service account
+- [X] PDO-2234 Remove MyPing controllers from secondary regions
+- [X] PDO-2236 Remove Daily encrypted exports run in PD - redundant as backups are already taken to S3
+- [X] PDO-2253 DA: Integrate administrator as the default Delegated Admin
+- [X] PDO-2254 ArgoCD: enable auto-pruning to prevent OutOfSync issues on update
+- [X] PDO-2261 Decrease PD cpu in medium/large to support new relic pods
+- [X] PDO-2296 Custom secrets printed in startup log
+- [X] PDO-2306 Long-running PD pods being OOMKilled when there is no user activity
+- [X] PDO-2316 Metadata pod crashing due to resource pressure
+- [X] PDO-2319 Upgrade script replaces custom-resources and custom-patches
+- [X] PDO-2320 Run PD periodic backup processes at different times to mitigate OOMKills
+- [X] PDO-2322 Add sealed-secrets annotation to argocd-secret
+- [X] PDO-2323 Hook script failed to get pod metadata when pod suffix is double digit
+
 ### 1.8.3
 
 - Increase PD pod resources to account for ad-hoc java processes

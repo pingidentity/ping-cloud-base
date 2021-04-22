@@ -17,7 +17,7 @@ templates_dir_path="${STAGING_DIR}"/templates/81
 #---------------------------------------------------------------------------------------------
 function process_admin()
 {
-   local pingaccess_admin_api_endpoint="https://localhost:${PA_ADMIN_PORT}/pa-admin-api/v3"
+   pingaccess_admin_api_endpoint="https://localhost:${PA_ADMIN_PORT}/pa-admin-api/v3"
    #
    # Check if it's necessary to run the upgrade tool. Compare version in /opt/server with current 
    # version of server under /opt/out/instance to make the call.
@@ -60,7 +60,7 @@ function process_admin()
       test $? -ne 0 && return 1
 
       original=$(echo "${original}" | tr -s ' '| tr '\n' ' ')
-      local  payload="$(echo "${original}" | jq -r ".keyRollEnabled |= false" | tr -s ' '|tr -d '\n' )"
+      payload="$(echo "${original}" | jq -r ".keyRollEnabled |= false" | tr -s ' '|tr -d '\n' )"
       make_api_request -X PUT -d "${payload}" \
          "${pingaccess_admin_api_endpoint}/authTokenManagement" > /dev/null
       test $? -ne 0 && return 1
@@ -74,6 +74,12 @@ function process_admin()
       # Copy /jvm-memory.options file to new install
       #
       cp "${SERVER_ROOT_DIR}"/conf/jvm-memory.options "${NEW_INSTANCE_DIR}"/conf
+
+      #
+      # PDO-2027 - Boost the logging for log4j2.xml on the target
+      #
+      cp "${NEW_INSTANCE_DIR}"/conf/log4j2.xml "${NEW_INSTANCE_DIR}"/conf/log4j2.xml.orig
+      sed -i '/<Loggers>/a <AsyncLogger name="com.pingidentity.pa.spring.config.plugin.ConfigurablePluginPostProcessor" level="TRACE"/>' "${NEW_INSTANCE_DIR}"/conf/log4j2.xml
 
       #
       # PDO-1426 removed restore backup configuration from S3 upon container restart.
@@ -115,27 +121,29 @@ function process_admin()
       # Perform server upgrade
       #
       sh ./upgrade.sh -s -r -p ${UPGRADE_PORT} -i "${NEW_INSTANCE_DIR}" -l "${NEW_LICENSE_FILE}" "${SERVER_ROOT_DIR}"
-   
       #
       # Check if upgrade succeeded, and report status 
       #
-      local rc=${?}
+      rc=${?}
       beluga_log "Upgrade from ${INSTALLED_VERSION} -> ${IMAGE_VERSION}  Return Code: ${rc}"
 
       # Upgrade complete
       beluga_log "Upgrade complete, now terminating old server instance"
       stop_server
 
+      # PDO-2027 - Export upgrade target instance logs to CloudWatch
+      beluga_log_file_contents "${NEW_INSTANCE_DIR}"/log/pingaccess.log 'PA UPGRADE TARGET INSTANCE LOG'
+
+      # PDO-2027 - After the upgrade, restore the original log4j2.xml file to eliminate TRACE
+      # logging noise.
+      beluga_log "Removing ConfigurablePluginPostProcessor TRACE logging"
+      mv "${NEW_INSTANCE_DIR}"/conf/log4j2.xml.orig "${NEW_INSTANCE_DIR}"/conf/log4j2.xml
+
       #
       # Export upgrade logs to CloudWatch
       #
       for file in $(ls   "${NEW_INSTANCE_DIR}"/upgrade/log); do
-         beluga_log "-----------------------------------------------------------------"
-         beluga_log " UPGRADE LOG: /opt/out/instance/upgrade/log/${file}"
-         beluga_log "-----------------------------------------------------------------"
-         while IFS= read -r line; do
-            beluga_log "${line}"
-         done < "${NEW_INSTANCE_DIR}"/upgrade/log/${file}
+         beluga_log_file_contents "${NEW_INSTANCE_DIR}"/upgrade/log/${file} 'UPGRADE LOG'
       done
 
       #-------------------------------------------------------------------------------------
