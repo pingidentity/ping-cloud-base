@@ -23,7 +23,6 @@ if (test -f "${STAGING_DIR}/artifacts/artifact-list.json") || (test ! -z "${SOLU
   if _is_invalid_json "${ARTIFACT_LIST_JSON}"; then
     beluga_log "Artifacts will not be deployed as the artifact-list.json could not be parsed."
     exit 1
-  fi
   elif _is_invalid_json "${SOLUTIONS_ARTIFACTS}"; then
     beluga_log "Artifacts will not be deployed as the solutions artifact list could not be parsed."
     exit 1
