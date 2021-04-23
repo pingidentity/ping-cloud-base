@@ -12,8 +12,22 @@ test -f "${STAGING_DIR}/solutions_artifacts" && SOLUTIONS_ARTIFACTS=$(cat "${STA
 if (test -f "${STAGING_DIR}/artifacts/artifact-list.json") || (test ! -z "${SOLUTIONS_ARTIFACTS}"); then
   # Check to see if the artifact file is empty
   ARTIFACT_LIST_JSON=$(cat "${STAGING_DIR}/artifacts/artifact-list.json")
+  beluga_log "ARTIFACT_LIST_JSON : ${ARTIFACT_LIST_JSON}"
 
   beluga_log "SOLUTIONS_ARTIFACTS : ${SOLUTIONS_ARTIFACTS}"
+
+  _is_invalid_json() {
+    test $(echo ${1} | jq >/dev/null 2>&1; echo $?) -ne "0"
+  }
+
+  if _is_invalid_json "${ARTIFACT_LIST_JSON}"; then
+    beluga_log "Artifacts will not be deployed as the artifact-list.json could not be parsed."
+    exit 1
+  fi
+  elif _is_invalid_json "${SOLUTIONS_ARTIFACTS}"; then
+    beluga_log "Artifacts will not be deployed as the solutions artifact list could not be parsed."
+    exit 1
+  fi
 
   # Combine the artifacts specified in artifact-list.json with the ones specified in SOLUTIONS_ARTIFACTS
   MERGED_ARTIFACT_LIST=$(echo $(echo "${ARTIFACT_LIST_JSON}" | jq '.[]') $(echo "${SOLUTIONS_ARTIFACTS}" | jq '.[]') | jq -s '.')
@@ -28,7 +42,10 @@ if (test -f "${STAGING_DIR}/artifacts/artifact-list.json") || (test ! -z "${SOLU
 
       # Check to see if the artifact list is a valid json string
       beluga_log "${MERGED_ARTIFACT_LIST}"
-      if test $(echo ${MERGED_ARTIFACT_LIST} | jq >/dev/null 2>&1; echo $?) = "0"; then
+      if _is_invalid_json "${MERGED_ARTIFACT_LIST}"; then
+        beluga_log "Artifacts will not be deployed as the combined list of artifiacts from artifact_list.json and solutions_artifacts could not be parsed."
+        exit 1
+      else
 
         # Check to see if there are any duplicate artifacts
         # This is needed to avoid issues with multiple plugin versions
@@ -152,10 +169,6 @@ if (test -f "${STAGING_DIR}/artifacts/artifact-list.json") || (test ! -z "${SOLU
         ls ${OUT_DIR}/instance/server/default/deploy
         ls ${OUT_DIR}/instance/server/default/conf/template
         ls ${OUT_DIR}/instance/server/default/conf/language-packs
-
-      else
-        beluga_log "Artifacts will not be deployed as could not parse the list of artifacts."
-        exit 1
       fi
     else
       beluga_log "Artifacts will not be deployed as the environment variable ARTIFACT_REPO_URL and PING_ARTIFACT_REPO_URL are empty."
