@@ -478,6 +478,70 @@ EOF
   done
 }
 
+# Test when the artifact JSON is invalid.
+# Script is expected to terminate and exit with the error code 1.
+testInvalidArtifactListJson() {
+  local expected_status_code=1
+  local actual_status_code=
+
+  log "Test invalid artifact_list JSON"
+  for SERVER in ${SERVERS}; do
+
+    # Set the container name.
+    test "${SERVER}" = "${PRODUCT_NAME}-admin-0" && CONTAINER="${PRODUCT_NAME}-admin" || CONTAINER="${PRODUCT_NAME}"
+    cat > ${ARTIFACT_JSON_FILE} <<-EOF
+    [
+      {{
+        "version": "${IK_ARTIFACT_VERSION}"
+      }
+    ]
+EOF
+
+    set_artifact_list_json_file
+
+    run_artifact_script
+    actual_status_code=${?}
+
+    assertEquals "Artifact deploy script did not terminate as expected." ${expected_status_code} ${actual_status_code}
+
+  done
+}
+
+# Test when the solutions artifacts JSON is invalid.
+# Script is expected to terminate and exit with the error code 1.
+testInvalidSolutionsArtifactJSON() {
+  local expected_status_code=1
+  local actual_status_code=
+
+  log "Test invalid solutions artifacts JSON"
+  for SERVER in ${SERVERS}; do
+
+    # Set the container name.
+    test "${SERVER}" = "${PRODUCT_NAME}-admin-0" && CONTAINER="${PRODUCT_NAME}-admin" || CONTAINER="${PRODUCT_NAME}"
+
+    cat > "${TEMP_ENV_VAR_FILE}" <<-EOF
+    export SOLUTIONS_ARTIFACTS="
+    [
+      {{
+        \"name\": \"${IK_ARTIFACT_NAME}\",
+        \"version\": \"${IK_ARTIFACT_VERSION}\"
+      }
+    ]"
+EOF
+
+    set_solutions_artifact_env_var_file
+
+    # Clear artifact-list.json to ensure it does not interfere with the test
+    clear_artifact_list_json_file
+
+    run_artifact_script_with_solutions_artifact
+    actual_status_code=${?}
+
+    assertEquals "Artifact deploy script did not terminate as expected." ${expected_status_code} ${actual_status_code}
+
+  done
+}
+
 
 # When arguments are passed to a script you must
 # consume all of them before shunit is invoked
