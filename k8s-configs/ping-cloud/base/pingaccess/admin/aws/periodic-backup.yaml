@@ -43,12 +43,24 @@ kind: CronJob
 metadata:
   name: pingaccess-periodic-backup
 spec:
-  schedule: "0 * * * *"
+  schedule: "30 * * * *"
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
       template:
         spec:
           serviceAccount: ping-serviceaccount
+          affinity:
+            podAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchExpressions:
+                  - key: statefulset.kubernetes.io/pod-name
+                    operator: In
+                    values:
+                    - "pingaccess-admin-0"
+                topologyKey: "kubernetes.io/hostname"
           restartPolicy: OnFailure
           containers:
           - name: pingaccess-backup
