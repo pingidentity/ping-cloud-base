@@ -4,6 +4,8 @@ metadata:
   name: pingaccess-admin-periodic-csd-upload
 spec:
   schedule: "0 * * * *"
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
       template:
