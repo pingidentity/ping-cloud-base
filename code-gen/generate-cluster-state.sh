@@ -264,7 +264,8 @@ ${BACKUP_URL}
 ${PING_CLOUD_NAMESPACE}
 ${K8S_GIT_URL}
 ${K8S_GIT_BRANCH}
-${REGISTRY_NAME}
+${JFROG_REGISTRY_NAME}
+${ECR_REGISTRY_NAME}
 ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
 ${CLUSTER_STATE_REPO_URL}
 ${CLUSTER_STATE_REPO_BRANCH}
@@ -519,7 +520,8 @@ export SSH_ID_KEY_FILE="${SSH_ID_KEY_FILE}"
 export TARGET_DIR="${TARGET_DIR:-/tmp/sandbox}"
 
 ### Default environment variables ###
-export REGISTRY_NAME='pingcloud-virtual.jfrog.io'
+export JFROG_REGISTRY_NAME='pingcloud-virtual.jfrog.io'
+export ECR_REGISTRY_NAME='public.ecr.aws/r2h3l6e4'
 export PING_CLOUD_NAMESPACE='ping-cloud'
 
 # Print out the values being used for each variable.
