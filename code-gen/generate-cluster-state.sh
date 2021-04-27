@@ -655,7 +655,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
       export PA_WAS_MAX_YGEN=512m
 
       export PA_MIN_HEAP=1024m
-      export PA_MAX_HEAP1024m
+      export PA_MAX_HEAP=1024m
       export PA_MIN_YGEN=512m
       export PA_MAX_YGEN=512m
       ;;
