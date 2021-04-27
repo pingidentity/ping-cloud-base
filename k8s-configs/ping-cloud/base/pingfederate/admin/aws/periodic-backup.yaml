@@ -40,12 +40,24 @@ kind: CronJob
 metadata:
   name: pingfederate-periodic-backup
 spec:
-  schedule: "*/5 * * * *"
+  schedule: "30 * * * *"
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
       template:
         spec:
           serviceAccount: ping-serviceaccount
+          affinity:
+            podAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchExpressions:
+                  - key: statefulset.kubernetes.io/pod-name
+                    operator: In
+                    values:
+                    - "pingfederate-admin-0"
+                topologyKey: "kubernetes.io/hostname"
           restartPolicy: OnFailure
           containers:
           - name: pingfederate-backup
