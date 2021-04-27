@@ -8,10 +8,10 @@ spec:
       containers:
       - name: pingaccess-was
         resources:
-          limits:
+          requests:
             memory: 3Gi
             cpu: 2
-          requests:
+          limits:
             memory: 3Gi
             cpu: 2
   replicas: 2
