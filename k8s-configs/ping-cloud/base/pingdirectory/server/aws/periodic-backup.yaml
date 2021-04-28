@@ -45,11 +45,28 @@ metadata:
   name: pingdirectory-periodic-backup
 spec:
   schedule: "30 */6 * * *"
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
       template:
         spec:
           serviceAccount: ping-serviceaccount
+          affinity:
+            podAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchExpressions:
+                  - key: statefulset.kubernetes.io/pod-name
+                    operator: In
+                    values:
+                    - "pingdirectory-0"
+                topologyKey: "kubernetes.io/hostname"
+          tolerations:
+          - key: "pingidentity.com/pd-only"
+            operator: "Equal"
+            value: "true"
+            effect: "NoSchedule"
           restartPolicy: OnFailure
           containers:
           - name: pingdirectory-backup
