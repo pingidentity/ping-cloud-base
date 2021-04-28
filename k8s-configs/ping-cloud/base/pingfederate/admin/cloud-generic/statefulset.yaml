@@ -28,7 +28,7 @@ spec:
       serviceAccount: ping-serviceaccount
       initContainers:
       - name: profile-init
-        image: public.ecr.aws/r2h3l6e4/pingcloud-profiles/pingfederate:${PINGFEDERATE_PROFILE_IMAGE_TAG}
+        image: public.ecr.aws/r2h3l6e4/pingcloud-profiles/pingfederate:=10.1.2-v1.0.3
         imagePullPolicy: IfNotPresent
         command:
           - sh
@@ -110,7 +110,7 @@ spec:
             name: pingcommon-environment-variables
       containers:
       - name: pingfederate-admin
-        image: pingcloud-virtual.jfrog.io/pingidentity/pingfederate:${PINGFEDERATE_IMAGE_TAG}
+        image: pingcloud-virtual.jfrog.io/pingidentity/pingfederate:=10.1.2
         imagePullPolicy: IfNotPresent
         env:
         - name: OPERATIONAL_MODE

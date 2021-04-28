@@ -28,7 +28,7 @@ spec:
       serviceAccount: ping-serviceaccount
       initContainers:
       - name: profile-init
-        image: public.ecr.aws/r2h3l6e4/pingcloud-profiles/pingaccess-was:${PINGACCESS_WAS_PROFILE_IMAGE_TAG}
+        image: public.ecr.aws/r2h3l6e4/pingcloud-profiles/pingaccess-was:6.1.3-v1.0.3
         imagePullPolicy: IfNotPresent
         command:
           - sh
@@ -109,7 +109,7 @@ spec:
             name: pingaccess-was-environment-variables
       containers:
       - name: pingaccess-was-admin
-        image: pingcloud-virtual.jfrog.io/pingidentity/pingaccess:${PINGACCESS_IMAGE_TAG}
+        image: pingcloud-virtual.jfrog.io/pingidentity/pingaccess:6.1.3
         imagePullPolicy: IfNotPresent
         resources:
           requests:
