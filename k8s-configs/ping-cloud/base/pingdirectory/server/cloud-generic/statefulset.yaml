@@ -173,6 +173,12 @@ spec:
                 secretKeyRef:
                   name: pingcommon-passwords
                   key: DA_OAUTH_TOKEN_VALIDATOR_SECRET
+            - name: NEW_RELIC_APP_NAME
+              value: pingdirectory
+            - name: NEW_RELIC_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
           envFrom:
             - configMapRef:
                 name: pingdirectory-environment-variables
@@ -180,6 +186,9 @@ spec:
                 name: pingcommon-environment-variables
             - secretRef:
                 name: devops-secret
+                optional: true
+            - secretRef:
+                name: newrelic-license-key
                 optional: true
           volumeMounts:
             # FIXME: fix home directory when containers run as non-root user
@@ -197,6 +206,9 @@ spec:
             - name: data-dir
               mountPath: /usr/local/bin/skbn
               subPath: skbn
+            - name: data-dir
+              mountPath: /opt/staging/newrelic.jar
+              subPath: newrelic.jar
             - name: out-dir
               mountPath: /opt/out
             - name: pingdirectory-passwords
