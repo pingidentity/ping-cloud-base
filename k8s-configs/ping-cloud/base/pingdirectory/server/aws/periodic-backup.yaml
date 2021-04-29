@@ -52,16 +52,6 @@ spec:
       template:
         spec:
           serviceAccount: ping-serviceaccount
-          affinity:
-            podAffinity:
-              requiredDuringSchedulingIgnoredDuringExecution:
-              - labelSelector:
-                  matchExpressions:
-                  - key: statefulset.kubernetes.io/pod-name
-                    operator: In
-                    values:
-                    - "pingdirectory-0"
-                topologyKey: "kubernetes.io/hostname"
           tolerations:
           - key: "pingidentity.com/pd-only"
             operator: "Equal"
