@@ -249,31 +249,31 @@ ALLOW_PRE_ENCODED_PW_CONTROL='1.3.6.1.4.1.30221.2.5.51:true::MAOBAf8='
 change_user_password "cn=${ADMIN_USER_NAME}" "${ADMIN_USER_PASSWORD_FILE}" "${ALLOW_PRE_ENCODED_PW_CONTROL}"
 test $? -ne 0 && exit 1
 
-# # Configure Delegated Admin
-# # Reset DA dsconfig every time as PD starts
-# DA_RESET_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/00-reset-delegated-admin.dsconfig"
-# reset_delegated_admin
+# Configure Delegated Admin
+# Reset DA dsconfig every time as PD starts
+DA_RESET_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/00-reset-delegated-admin.dsconfig"
+reset_delegated_admin
 
-# # Do not proceed to configure DA if ENABLE_DEL_ADMIN is set to false
-# if $(echo "${ENABLE_DEL_ADMIN}" | grep -iq "false"); then
-#   beluga_log "ENABLE_DEL_ADMIN is false, skipping..."
-# else
-#   beluga_log "Configuring Delegated Admin"
+# Do not proceed to configure DA if ENABLE_DEL_ADMIN is set to false
+if $(echo "${ENABLE_DEL_ADMIN}" | grep -iq "false"); then
+  beluga_log "ENABLE_DEL_ADMIN is false, skipping..."
+else
+  beluga_log "Configuring Delegated Admin"
 
-#   # Setup PF instance and ATV within PD that DA will need.
-#   DA_CONFIG_ATV_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/02-add-pf-instance-and-atv.dsconfig"
-#   if ! configure_delegated_admin_atv; then
-#     beluga_error "Failed to create PF instance and ATV for Delegated Admin"
-#     exit 1
-#   fi
+  # Setup PF instance and ATV within PD that DA will need.
+  DA_CONFIG_ATV_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/02-add-pf-instance-and-atv.dsconfig"
+  if ! configure_delegated_admin_atv; then
+    beluga_error "Failed to create PF instance and ATV for Delegated Admin"
+    exit 1
+  fi
 
-#   # Configure DA
-#   DA_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/01-add-delegated-admin.dsconfig"
-#   if ! configure_delegated_admin; then
-#     beluga_error "Failed to configure Delegated Admin"
-#     exit 1
-#   fi
-# fi
+  # Configure DA
+  DA_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/01-add-delegated-admin.dsconfig"
+  if ! configure_delegated_admin; then
+    beluga_error "Failed to configure Delegated Admin"
+    exit 1
+  fi
+fi
 
 # --- NOTE ---
 # This assumes that data initialization is only required once for the initial data in the server profile.
