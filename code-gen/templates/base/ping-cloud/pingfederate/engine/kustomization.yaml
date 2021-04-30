@@ -6,8 +6,11 @@ resources:
 - ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingfederate/engine?ref=${K8S_GIT_BRANCH}
 
 images:
-- name: ${REGISTRY_NAME}/pingidentity/pingfederate
+- name: ${JFROG_REGISTRY_NAME}/pingidentity/pingfederate
   newTag: ${PINGFEDERATE_IMAGE_TAG}
+- name: ${ECR_REGISTRY_NAME}/pingcloud-profiles/pingfederate
+  newTag: ${PINGACCESS_PROFILE_IMAGE_TAG}
+
 
 patchesJson6902:
 

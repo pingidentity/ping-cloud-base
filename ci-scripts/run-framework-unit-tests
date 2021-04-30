@@ -1,0 +1,67 @@
+#! /bin/bash
+pushd $(cd $(dirname ${0});pwd -P)/framework-unit-tests 2>&1 > /dev/null
+# 
+# Program constants
+#
+declare -r image="pingcloud-docker.jfrog.io/pingidentity/pyaws:latest"
+declare -r profile=csg
+#
+# Trying to pass the KUBE_CA_PARAM environment variable via the docker run command 
+# doesn't work due to the embedded newlines, the simplest solution is to create a
+# local file and map it into the container.
+#
+echo "${KUBE_CA_PEM}" > ./kube.ca.pem
+#
+# Build the docker run command. First the environment variables needed to create 
+# the AWS config/credential & Kubernetes context files.
+#
+cmd=""
+cmd="${cmd} -e profile=${profile}"
+cmd="${cmd} -e region=${AWS_DEFAULT_REGION}"
+cmd="${cmd} -e role=${AWS_ACCOUNT_ROLE_ARN}"
+cmd="${cmd} -e key=${AWS_ACCESS_KEY_ID}"
+cmd="${cmd} -e secret=${AWS_SECRET_ACCESS_KEY}"
+cmd="${cmd} -e cluster=${EKS_CLUSTER_NAME}"
+cmd="${cmd} -e kubeurl=${KUBE_URL}"
+#
+# Next we need to map the tests into the container if using the generic container,
+# if a container with an embedded test suite is used this section can be omitted.
+# in this case we're mapping the current working directory onto the tests folder.
+#
+cmd="${cmd}  -v $(pwd -P):/home/pyuser/tests"
+#
+# Next the configuration for the entrypoint script. 'hostenv=${OSTYPE}' paases the 
+# host operating system type to the container (may be used to decide whether to set 
+# file permissions for example). 'cicd=true' tells the entrypoint  script to create
+# the AWS & Kubernetes context files. The volume mapping makes the  cluster's root 
+# certificate available to kubectl in order to create the .kube/context file. And 
+# finally 'target=./test/test-scheduler.sh' tells the container which file to run.
+#
+cmd="${cmd} -e hostenv=${OSTYPE}"
+cmd="${cmd} -e cicd=true"
+cmd="${cmd} -v $(pwd)/kube.ca.pem:/home/pyuser/kube.ca.pem"
+cmd="${cmd} -e target=./tests/run.sh"
+#
+# Finally pipeline specific data needed by the tests. The content will be highly
+# dependent on the tests being run, the following is illustrative rather than 
+# prescriptive.
+#
+if [[ ${CI_COMMIT_REF_SLUG} != master ]]; then
+   cmd="${cmd} -e NAMESPACE=ping-cloud-${CI_COMMIT_REF_SLUG}"
+else
+   cmd="${cmd} -e NAMESPACE=ping-cloud"
+fi
+cmd="${cmd} -e ARTIFACT_REPO_URL=s3://${EKS_CLUSTER_NAME}-artifacts-bucket"
+cmd="${cmd} -e PING_ARTIFACT_REPO_URL=https://ping-artifacts.s3-us-west-2.amazonaws.com"
+cmd="${cmd} -e LOG_ARCHIVE_URL=s3://${EKS_CLUSTER_NAME}-logs-bucket"
+cmd="${cmd} -e BACKUP_URL=s3://${EKS_CLUSTER_NAME}-backup-bucket"
+cmd="${cmd} -e CLUSTER_BUCKET_NAME="${EKS_CLUSTER_NAME}-cluster-bucket""
+#cmd="${cmd} "
+#
+# For testing ensure latest image, not needed in actual tests.
+#
+docker pull pingcloud-docker.jfrog.io/pingidentity/pyaws
+echo ""
+docker run ${cmd} ${image} $@
+echo ""
+popd 2>&1 > /dev/null
