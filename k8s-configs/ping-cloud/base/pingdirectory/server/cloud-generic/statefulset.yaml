@@ -116,8 +116,11 @@ spec:
               subPath: wait-for-services.sh
       containers:
         - name: pingdirectory
-          image: pingcloud-virtual.jfrog.io/pingidentity/pingdirectory:2006.1-8.1.0.2
+          image: pingcloud-virtual.jfrog.io/pingidentity/pingdirectory:8.2.0.4-edge
           imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
           ports:
             - containerPort: 1389
               name: ldap
