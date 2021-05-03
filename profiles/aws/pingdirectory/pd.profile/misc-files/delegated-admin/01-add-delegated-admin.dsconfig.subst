@@ -9,7 +9,7 @@ dsconfig create-rest-resource-type \
   --set "search-base-dn:${USER_BASE_DN}" \
   --set primary-display-attribute-type:cn \
   --set resource-endpoint:users \
-  --set "search-filter-pattern:(|(cn=*%%*)(mail=%%*)(uid=%%*)(sn=*%%*))" \
+  --set "search-filter-pattern:(|(cn=%%)(mail=%%)(uid=%%)(sn=%%))" \
   --set structural-ldap-objectclass:inetOrgPerson \
   --set "parent-dn:ou=people,${USER_BASE_DN}"
 
@@ -21,7 +21,7 @@ dsconfig create-rest-resource-type \
   --set "search-base-dn:${USER_BASE_DN}" \
   --set primary-display-attribute-type:cn \
   --set resource-endpoint:groups \
-  --set "search-filter-pattern:(cn=*%%*)" \
+  --set "search-filter-pattern:(cn=%%)" \
   --set structural-ldap-objectclass:groupOfUniqueNames \
   --set "parent-dn:${USER_BASE_DN}"
 

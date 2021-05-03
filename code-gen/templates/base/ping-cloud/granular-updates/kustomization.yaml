@@ -40,7 +40,5 @@ resources:
 - ../pingfederate/admin
 - ../pingfederate/engine
 
-# WARNING!!!
-# Delegated Admin is disabled by default because it triggers a memory leak in PingDirectory (DS-44258).
-# Delegated Admin is only supported in a trial capacity in 1.9.0 as a result. Enabling it may cause unexpected performance issues on PF and PD.
-# - ../pingdelegator/server
+# Delegated admin resources
+- ../pingdelegator/server
