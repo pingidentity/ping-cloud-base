@@ -116,7 +116,12 @@ spec:
               subPath: wait-for-services.sh
       containers:
         - name: pingdirectory
-          image: pingcloud-virtual.jfrog.io/pingidentity/pingdirectory:2006.1-8.1.0.2
+          # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          # FIXME: change from edge image to tagged image when it's available
+          image: pingcloud-virtual.jfrog.io/pingidentity/pingdirectory:8.2.0.4-edge
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 1389
