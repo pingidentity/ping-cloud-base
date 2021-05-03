@@ -8,7 +8,7 @@ set -e
 # Do not proceed to configure DA if ENABLE_DEL_ADMIN is set to false
 if ! ${ENABLE_DEL_ADMIN}; then
 
-  beluga_log "ENABLE_DEL_ADMIN is false, disabling clients that Delegated Admin use..."
+  beluga_log "ENABLE_DEL_ADMIN is not true, disabling clients that Delegated Admin use..."
 
   if ! disable_client_wrapper; then
     beluga_error "Failed to disable Delegated Admin"
