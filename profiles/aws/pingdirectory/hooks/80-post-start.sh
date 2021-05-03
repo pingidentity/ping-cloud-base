@@ -254,11 +254,9 @@ test $? -ne 0 && exit 1
 DA_RESET_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/00-reset-delegated-admin.dsconfig"
 reset_delegated_admin
 
-# Do not proceed to configure DA if ENABLE_DEL_ADMIN is set to false
-if $(echo "${ENABLE_DEL_ADMIN}" | grep -iq "false"); then
-  beluga_log "ENABLE_DEL_ADMIN is false, skipping..."
-else
-  beluga_log "Configuring Delegated Admin"
+# Proceed to configure DA if ENABLE_DEL_ADMIN is set to true
+if ${ENABLE_DEL_ADMIN}; then
+  beluga_log "ENABLE_DEL_ADMIN is true, configuring DA"
 
   # Setup PF instance and ATV within PD that DA will need.
   DA_CONFIG_ATV_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/02-add-pf-instance-and-atv.dsconfig"
@@ -273,6 +271,8 @@ else
     beluga_error "Failed to configure Delegated Admin"
     exit 1
   fi
+else
+  beluga_log "ENABLE_DEL_ADMIN is not true, skipping DA configuration"
 fi
 
 # --- NOTE ---

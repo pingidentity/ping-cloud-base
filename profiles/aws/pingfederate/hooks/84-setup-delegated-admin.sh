@@ -6,7 +6,7 @@ set -e
 . "${HOOKS_DIR}/util/configure-delegated-admin-utils.sh"
 
 # Do not proceed to configure DA if ENABLE_DEL_ADMIN is set to false
-if $(echo "${ENABLE_DEL_ADMIN}" | grep -iq "false"); then
+if ! ${ENABLE_DEL_ADMIN}; then
 
   beluga_log "ENABLE_DEL_ADMIN is false, disabling clients that Delegated Admin use..."
 
