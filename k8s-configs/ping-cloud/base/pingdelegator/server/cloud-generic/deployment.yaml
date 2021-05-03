@@ -65,6 +65,10 @@ spec:
               name: pingdelegator-environment-variables
       containers:
       - name: pingdelegator
+        # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
         image: pingcloud-virtual.jfrog.io/pingidentity/pingdelegator:2103-4.4.1
         imagePullPolicy: IfNotPresent
         resources:

@@ -117,7 +117,8 @@ spec:
       restartPolicy: Never
       containers:
       - name: pingdirectory-restore
-        image: pingcloud-virtual.jfrog.io/pingidentity/pingdirectory:2006.1-8.1.0.2
+        # FIXME: change from edge image to tagged image when it's available
+        image: pingcloud-virtual.jfrog.io/pingidentity/pingdirectory:8.2.0.4-edge
         command:
         - /opt/in/restore.sh
         volumeMounts:
