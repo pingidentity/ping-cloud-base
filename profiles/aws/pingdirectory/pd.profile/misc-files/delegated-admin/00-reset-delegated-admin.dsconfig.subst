@@ -28,15 +28,15 @@ dsconfig delete-identity-mapper \
   --mapper-name "entryUUIDMatch"
 
 dsconfig delete-delegated-admin-resource-rights \
-  --rights-name "admin-user-${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" \
+  --rights-name "administrator-user-${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" \
   --rest-resource-type users
 
 dsconfig delete-delegated-admin-resource-rights \
-  --rights-name "admin-user-${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" \
+  --rights-name "administrator-user-${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" \
   --rest-resource-type groups
 
 dsconfig delete-delegated-admin-rights \
-  --rights-name "admin-user-${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}"
+  --rights-name "administrator-user-${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}"
 
 dsconfig delete-rest-resource-type --type-name groups
 dsconfig delete-rest-resource-type --type-name users
