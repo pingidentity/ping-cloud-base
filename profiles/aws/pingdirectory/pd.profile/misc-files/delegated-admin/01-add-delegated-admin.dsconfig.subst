@@ -1,29 +1,4 @@
 #
-# Create Delegated Admin Rights for users.
-#
-dsconfig create-delegated-admin-resource-rights \
-  --rights-name "administrator-user-${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" \
-  --rest-resource-type users \
-  --set admin-permission:create \
-  --set admin-permission:read \
-  --set admin-permission:update \
-  --set admin-permission:delete \
-  --set admin-permission:manage-group-membership \
-  --set admin-scope:all-resources-in-base \
-  --set enabled:true
-
-dsconfig create-delegated-admin-resource-rights  \
-  --rights-name "administrator-user-${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" \
-  --rest-resource-type groups \
-  --set admin-permission:create \
-  --set admin-permission:read \
-  --set admin-permission:update \
-  --set admin-permission:delete \
-  --set admin-permission:manage-group-membership \
-  --set admin-scope:all-resources-in-base \
-  --set enabled:true
-
-#
 # The search-base-dn value is the DN of a valid base entry where managed users are stored.
 #
 dsconfig create-rest-resource-type \
@@ -49,6 +24,31 @@ dsconfig create-rest-resource-type \
   --set "search-filter-pattern:(cn=*%%*)" \
   --set structural-ldap-objectclass:groupOfUniqueNames \
   --set "parent-dn:${USER_BASE_DN}"
+
+#
+# Create Delegated Admin Rights for users.
+#
+dsconfig create-delegated-admin-resource-rights \
+  --rights-name "administrator-user-${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" \
+  --rest-resource-type users \
+  --set admin-permission:create \
+  --set admin-permission:read \
+  --set admin-permission:update \
+  --set admin-permission:delete \
+  --set admin-permission:manage-group-membership \
+  --set admin-scope:all-resources-in-base \
+  --set enabled:true
+
+dsconfig create-delegated-admin-resource-rights  \
+  --rights-name "administrator-user-${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" \
+  --rest-resource-type groups \
+  --set admin-permission:create \
+  --set admin-permission:read \
+  --set admin-permission:update \
+  --set admin-permission:delete \
+  --set admin-permission:manage-group-membership \
+  --set admin-scope:all-resources-in-base \
+  --set enabled:true
 
 #
 # Specify the attributes that will be made available through the Delegated Admin API.
