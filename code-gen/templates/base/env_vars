@@ -139,7 +139,7 @@ PA_GCOPTION=${PA_GCOPTION}
 PINGACCESS_IMAGE_TAG=2010-6.1.3
 PINGFEDERATE_IMAGE_TAG=2101-10.2.1
 # FIXME: change from edge image to tagged image when it's available
-PINGDIRECTORY_IMAGE_TAG=8.2.0.4-edge
+PINGDIRECTORY_IMAGE_TAG=2104-8.2.0.4
 PINGDELEGATOR_IMAGE_TAG=2103-4.4.1
 
 ############################################################
