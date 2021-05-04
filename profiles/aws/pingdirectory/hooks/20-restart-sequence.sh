@@ -77,6 +77,10 @@ if test "${MANAGE_PROFILE_STATUS}" -ne 0; then
   exit 20
 fi
 
+# Rebuild indexes, if necessary for the USER_BASE_DN.
+beluga_log "Rebuilding any new or untrusted indexes for base DN ${USER_BASE_DN}"
+rebuild-index --bulkRebuild new --bulkRebuild untrusted --baseDN "${USER_BASE_DN}"
+
 beluga_log "updating tools.properties"
 run_hook "185-apply-tools-properties.sh"
 
