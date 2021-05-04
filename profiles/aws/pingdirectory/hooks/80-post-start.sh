@@ -252,7 +252,7 @@ test $? -ne 0 && exit 1
 # Configure Delegated Admin
 # Reset DA dsconfig every time as PD starts
 DA_RESET_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/00-reset-delegated-admin.dsconfig"
-# reset_delegated_admin
+reset_delegated_admin
 
 # Proceed to configure DA if ENABLE_DEL_ADMIN is set to true
 if ${ENABLE_DEL_ADMIN}; then
