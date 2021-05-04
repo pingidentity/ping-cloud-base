@@ -51,6 +51,10 @@ if test "${MANAGE_PROFILE_STATUS}" -ne 0; then
   exit 183
 fi
 
+# Rebuild indexes, if necessary for the USER_BASE_DN.
+beluga_log "Rebuilding any new or untrusted indexes for base DN ${USER_BASE_DN}"
+rebuild-index --bulkRebuild new --bulkRebuild untrusted --baseDN "${USER_BASE_DN}"
+
 beluga_log "updating encryption settings"
 run_hook "15-encryption-settings.sh"
 
