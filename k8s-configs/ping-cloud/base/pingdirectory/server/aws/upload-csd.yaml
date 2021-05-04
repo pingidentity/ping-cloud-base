@@ -63,8 +63,7 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        # FIXME: change from edge image to tagged image when it's available
-        image: pingcloud-virtual.jfrog.io/pingidentity/pingdirectory:8.2.0.4-edge
+        image: pingcloud-virtual.jfrog.io/pingdirectory:2104-8.2.0.4
         command:
         - /opt/in/upload.sh
         volumeMounts:
