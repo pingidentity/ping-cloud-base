@@ -267,6 +267,12 @@ if ${ENABLE_DEL_ADMIN}; then
 
   # Configure DA
   DA_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/01-add-delegated-admin.dsconfig"
+  DA_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/01-add-delegated-admin.dsconfig"
+
+  DA_DEFAULT_ADMIN_USER="${PD_PROFILE}/misc-files/delegated-admin/delegated-admin/default-admin-user.ldif"
+  dsconfig --no-prompt --batch-file ${DA_DEFAULT_ADMIN_USER} > /dev/null
+
+
   if ! configure_delegated_admin; then
     beluga_error "Failed to configure Delegated Admin"
     exit 1
