@@ -1,0 +1,17 @@
+dn: ou=people,dc=example,dc=com
+changetype: add
+objectClass: top
+objectClass: organizationalUnit
+ou: people
+
+dn: uid=administrator,ou=people,dc=example,dc=com
+changetype: add
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+sn: PingFederate
+cn: Administrator
+givenName: PingFederate
+uid: administrator
+userPassword: 2FederateM0re
