@@ -1,11 +1,9 @@
 dn: ou=people,dc=example,dc=com
-changetype: add
 objectClass: top
 objectClass: organizationalUnit
 ou: people
 
 dn: uid=administrator,ou=people,dc=example,dc=com
-changetype: add
 objectClass: top
 objectClass: person
 objectClass: organizationalPerson
