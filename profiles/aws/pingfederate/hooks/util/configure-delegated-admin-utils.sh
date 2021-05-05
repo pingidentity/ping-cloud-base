@@ -387,6 +387,51 @@ set_exclusive_scope() {
   fi
 }
 
+get_session() {
+  DA_SESSION_RESPONSE=$(make_api_request -X GET \
+    "${PF_API_HOST}/session/authenticationSessionPolicies") > /dev/null
+
+  # Search for DAs session ID from response.
+  jq -n "${DA_SESSION_RESPONSE}" |\
+  jq --arg DA_IDP_ADAPTER_HTML_FORM_ID "${DA_IDP_ADAPTER_HTML_FORM_ID}" \
+    '.items[] | select(.authenticationSource.sourceRef.id==$DA_IDP_ADAPTER_HTML_FORM_ID)' |\
+  jq -r ".id"
+  DA_SESSION_ID_EXIST_STATUS=$?
+
+  # Return status. If it was found w/o any errors occurring then status will be 0
+  return ${DA_SESSION_ID_EXIST_STATUS}
+}
+
+########################################################################################################################
+# Create session to keep users logged in within DA application.
+#
+# Template Used:
+#   enable-session.json:
+#   
+#   ${DA_EXCLUSIVE_SCOPE_NAME} -> The access token scope that is set within PD HTTP servlet.
+########################################################################################################################
+set_session() {
+
+  if ! get_session; then
+
+    beluga_log "Enabling sessions to keep user logged in within Delegated Admin app"
+
+    session_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/enable-session.json)
+
+    make_api_request -X POST -d "${session_payload}" \
+      "${PF_API_HOST}/session/authenticationSessionPolicies" > /dev/null
+    response_status_code=$?
+    
+    if test ${response_status_code} -ne 0; then
+      return ${response_status_code}
+    fi
+
+    beluga_log "Successfully enabled DA session"
+  else
+    beluga_log "DA session already exist"
+  fi
+}
+
 
 ########################################################################################################################
 # Retrieve auth server settings of PF.
