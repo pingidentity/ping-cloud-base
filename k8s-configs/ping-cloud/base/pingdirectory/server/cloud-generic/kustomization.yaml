@@ -12,6 +12,7 @@ resources:
 - statefulset.yaml
 - service.yaml
 - ingress.yaml
+- disruption-budget.yaml
 
 patchesStrategicMerge:
 - pingdirectory-tunnel.yaml
