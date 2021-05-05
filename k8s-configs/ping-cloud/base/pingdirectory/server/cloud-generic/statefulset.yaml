@@ -120,7 +120,7 @@ spec:
           securityContext:
             runAsNonRoot: false
             runAsUser: 0
-          image: pingcloud-virtual.jfrog.io/pingdirectory:2104-8.2.0.4
+          image: pingcloud-virtual.jfrog.io/pingidentity/pingdirectory:2104-8.2.0.4
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 1389

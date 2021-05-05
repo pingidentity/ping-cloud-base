@@ -11,3 +11,4 @@ resources:
 - ingress.yaml
 - service.yaml
 - statefulset.yaml
+- disruption-budget.yaml
