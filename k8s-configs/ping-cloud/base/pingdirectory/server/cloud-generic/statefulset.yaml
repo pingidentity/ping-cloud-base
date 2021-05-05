@@ -8,7 +8,7 @@ metadata:
     class: pingdirectory-server
 spec:
   serviceName: pingdirectory
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       class: pingdirectory-server
@@ -133,10 +133,10 @@ spec:
               name: repl
           resources:
             limits:
-              memory: "2560Mi"
+              memory: "4Gi"
             requests:
-              memory: "2560Mi"
-              cpu: "300m"
+              memory: "4Gi"
+              cpu: "2"
           env:
             - name: P14C_ENVIRONMENT_ID
               valueFrom:

@@ -707,10 +707,10 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   esac
   export PA_WAS_GCOPTION='-XX:+UseParallelGC'
 
-  export PA_MIN_HEAP=512m
-  export PA_MAX_HEAP=512m
-  export PA_MIN_YGEN=256m
-  export PA_MAX_YGEN=256m
+  export PA_MIN_HEAP=1024m
+  export PA_MAX_HEAP=1024m
+  export PA_MIN_YGEN=512m
+  export PA_MAX_YGEN=512m
   export PA_GCOPTION='-XX:+UseParallelGC'
 
   # Zone for this region and the primary region
