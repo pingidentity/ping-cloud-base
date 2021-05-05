@@ -258,6 +258,10 @@ reset_delegated_admin
 if ${ENABLE_DEL_ADMIN}; then
   beluga_log "ENABLE_DEL_ADMIN is true, configuring DA"
 
+  DA_DEFAULT_ADMIN_USER="${PD_PROFILE}/misc-files/delegated-admin/default-admin-user.ldif"
+  ldapmodify --defaultAdd --ldifFile ${DA_DEFAULT_ADMIN_USER}
+  sleep 30
+
   # Setup PF instance and ATV within PD that DA will need.
   DA_CONFIG_ATV_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/02-add-pf-instance-and-atv.dsconfig"
   if ! configure_delegated_admin_atv; then
@@ -268,10 +272,6 @@ if ${ENABLE_DEL_ADMIN}; then
   # Configure DA
   DA_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/01-add-delegated-admin.dsconfig"
   DA_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/01-add-delegated-admin.dsconfig"
-
-  DA_DEFAULT_ADMIN_USER="${PD_PROFILE}/misc-files/delegated-admin/default-admin-user.ldif"
-  ldapmodify --defaultAdd --ldifFile ${DA_DEFAULT_ADMIN_USER}
-
 
   if ! configure_delegated_admin; then
     beluga_error "Failed to configure Delegated Admin"
