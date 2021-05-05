@@ -254,32 +254,32 @@ test $? -ne 0 && exit 1
 DA_RESET_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/00-reset-delegated-admin.dsconfig"
 reset_delegated_admin
 
-# Proceed to configure DA if ENABLE_DEL_ADMIN is set to true
-if ${ENABLE_DEL_ADMIN}; then
-  beluga_log "ENABLE_DEL_ADMIN is true, configuring DA"
+# # Proceed to configure DA if ENABLE_DEL_ADMIN is set to true
+# if ${ENABLE_DEL_ADMIN}; then
+#   beluga_log "ENABLE_DEL_ADMIN is true, configuring DA"
 
-  DA_DEFAULT_ADMIN_USER="${PD_PROFILE}/misc-files/delegated-admin/default-admin-user.ldif"
-  ldapmodify --defaultAdd --ldifFile ${DA_DEFAULT_ADMIN_USER}
-  sleep 30
+#   DA_DEFAULT_ADMIN_USER="${PD_PROFILE}/misc-files/delegated-admin/default-admin-user.ldif"
+#   ldapmodify --defaultAdd --ldifFile ${DA_DEFAULT_ADMIN_USER}
+#   sleep 30
 
-  # Setup PF instance and ATV within PD that DA will need.
-  DA_CONFIG_ATV_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/02-add-pf-instance-and-atv.dsconfig"
-  if ! configure_delegated_admin_atv; then
-    beluga_error "Failed to create PF instance and ATV for Delegated Admin"
-    exit 1
-  fi
+#   # Setup PF instance and ATV within PD that DA will need.
+#   DA_CONFIG_ATV_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/02-add-pf-instance-and-atv.dsconfig"
+#   if ! configure_delegated_admin_atv; then
+#     beluga_error "Failed to create PF instance and ATV for Delegated Admin"
+#     exit 1
+#   fi
 
-  # Configure DA
-  DA_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/01-add-delegated-admin.dsconfig"
-  DA_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/01-add-delegated-admin.dsconfig"
+#   # Configure DA
+#   DA_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/01-add-delegated-admin.dsconfig"
+#   DA_CONFIG_BATCH_FILE="${PD_PROFILE}/misc-files/delegated-admin/01-add-delegated-admin.dsconfig"
 
-  if ! configure_delegated_admin; then
-    beluga_error "Failed to configure Delegated Admin"
-    exit 1
-  fi
-else
-  beluga_log "ENABLE_DEL_ADMIN is not true, skipping DA configuration"
-fi
+#   if ! configure_delegated_admin; then
+#     beluga_error "Failed to configure Delegated Admin"
+#     exit 1
+#   fi
+# else
+#   beluga_log "ENABLE_DEL_ADMIN is not true, skipping DA configuration"
+# fi
 
 # --- NOTE ---
 # This assumes that data initialization is only required once for the initial data in the server profile.
