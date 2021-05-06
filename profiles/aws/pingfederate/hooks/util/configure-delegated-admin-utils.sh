@@ -437,6 +437,29 @@ set_session() {
   fi
 }
 
+########################################################################################################################
+# Enable adapter and revoked session tracking upon logout.
+#
+# Template Used:
+#   track-enabled-and-revoked-sessions.json:
+########################################################################################################################
+track_enabled_and_revoke_sessions() {
+  beluga_log "Enabling the ability to track adapter sessions for logout"
+  beluga_log "Enabling the ability to track revoked sessions on logout"
+
+  session_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/track-enabled-and-revoked-sessions.json)
+
+  make_api_request -X PUT -d "${session_payload}" \
+    "${PF_API_HOST}/session/settings" > /dev/null
+  response_status_code=$?
+  
+  if test ${response_status_code} -ne 0; then
+    return ${response_status_code}
+  fi
+
+  beluga_log "Now tracking adapter and revoked sessions upon logout"
+}
+
 
 ########################################################################################################################
 # Retrieve auth server settings of PF.

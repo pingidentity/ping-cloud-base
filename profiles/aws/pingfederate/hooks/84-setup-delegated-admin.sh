@@ -73,3 +73,13 @@ if ! setVirtualHosts; then
   beluga_error "Failed to create Virtual Hosts"
   exit 1
 fi
+
+if ! set_session; then
+  beluga_error "Failed to enable sessions for DA HTML form"
+  exit 1
+fi
+
+if ! track_enabled_and_revoke_sessions; then
+  beluga_error "Failed to enable session tracking"
+  exit 1
+fi
