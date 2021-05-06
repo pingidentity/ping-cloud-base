@@ -8,7 +8,7 @@ metadata:
     class: pingdirectory-server
 spec:
   serviceName: pingdirectory
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       class: pingdirectory-server
@@ -131,7 +131,11 @@ spec:
               subPath: wait-for-services.sh
       containers:
         - name: pingdirectory
-          image: pingcloud-virtual.jfrog.io/pingidentity/pingdirectory:8.1.0.2
+          # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          image: pingcloud-virtual.jfrog.io/pingidentity/pingdirectory:2104-8.2.0.4
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 1389
@@ -144,10 +148,10 @@ spec:
               name: repl
           resources:
             limits:
-              memory: "2560Mi"
+              memory: "4Gi"
             requests:
-              memory: "2560Mi"
-              cpu: "300m"
+              memory: "4Gi"
+              cpu: "2"
           env:
             - name: P14C_ENVIRONMENT_ID
               valueFrom:
@@ -184,6 +188,12 @@ spec:
                 secretKeyRef:
                   name: pingcommon-passwords
                   key: DA_OAUTH_TOKEN_VALIDATOR_SECRET
+            - name: NEW_RELIC_APP_NAME
+              value: pingdirectory
+            - name: NEW_RELIC_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
           envFrom:
             - configMapRef:
                 name: pingdirectory-environment-variables
@@ -191,6 +201,9 @@ spec:
                 name: pingcommon-environment-variables
             - secretRef:
                 name: devops-secret
+                optional: true
+            - secretRef:
+                name: newrelic-license-key
                 optional: true
           volumeMounts:
             # FIXME: fix home directory when containers run as non-root user
@@ -210,6 +223,9 @@ spec:
             - name: data-dir
               mountPath: /usr/local/bin/skbn
               subPath: skbn
+            - name: data-dir
+              mountPath: /opt/staging/newrelic.jar
+              subPath: newrelic.jar
             - name: out-dir
               mountPath: /opt/out
             - name: pingdirectory-passwords

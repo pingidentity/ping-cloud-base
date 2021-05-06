@@ -107,13 +107,6 @@ LETS_ENCRYPT_SERVER=${LETS_ENCRYPT_SERVER}
 ############################################################
 USER_BASE_DN=${USER_BASE_DN}
 
-# WARNING!!!
-# Delegated Admin is disabled by default because it triggers a memory leak in PingDirectory (DS-44258).
-# Delegated Admin is only supported in a trial capacity in 1.9.0 as a result. Enabling it may cause unexpected
-# performance issues on PF and PD. Setting this flag to true disables Delegated Admin configuration within
-# PingFederate and PingDirectory.
-DA_SKIP_SETUP=true
-
 ############################################################
 # PingFederate variables for environment
 ############################################################
@@ -146,8 +139,8 @@ PA_GCOPTION=${PA_GCOPTION}
 ############################################################
 PINGACCESS_IMAGE_TAG=2010-6.1.3
 PINGFEDERATE_IMAGE_TAG=2101-10.2.1
-PINGDIRECTORY_IMAGE_TAG=2006.1-8.1.0.2
-PINGDELEGATOR_IMAGE_TAG=2101-4.2.1
+PINGDIRECTORY_IMAGE_TAG=2104-8.2.0.4
+PINGDELEGATOR_IMAGE_TAG=2103-4.4.1
 
 ############################################################
 <<<<<<< HEAD
