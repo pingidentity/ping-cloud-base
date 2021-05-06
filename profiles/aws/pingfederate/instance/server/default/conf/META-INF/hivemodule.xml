@@ -166,7 +166,6 @@
                         org.sourceid.saml20.service.session.data.impl.SessionStorageManagerJdbcImpl : Use this service-point for a Jdbc implementation.
                         org.sourceid.saml20.service.session.data.impl.SessionStorageManagerLdapImpl : Use this service-point for a LDAP implementation.
             -->
-            <construct class="org.sourceid.saml20.service.session.data.impl.SessionStorageManagerJdbcImpl"/>
             <construct class="org.sourceid.saml20.service.session.data.impl.SessionStorageManagerLdapImpl"/>
         </invoke-factory>
     </service-point>
