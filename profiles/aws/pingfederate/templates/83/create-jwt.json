@@ -33,5 +33,11 @@
     "extendedAttributes": [{
       "name": "sub"
     }]
+  },
+  "sessionValidationSettings": {
+    "includeSessionId": false,
+    "checkValidAuthnSession": true,
+    "checkSessionRevocationStatus": true,
+    "updateAuthnSessionActivity": true
   }
 }

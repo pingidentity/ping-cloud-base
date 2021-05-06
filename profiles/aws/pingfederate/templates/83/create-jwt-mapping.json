@@ -15,12 +15,6 @@
       "value": "USER_KEY"
     }
   },
-  "sessionValidationSettings": {
-    "includeSessionId": false,
-    "checkValidAuthnSession": true,
-    "checkSessionRevocationStatus": true,
-    "updateAuthnSessionActivity": true
-  },
   "issuanceCriteria": {
     "conditionalCriteria": []
   }
