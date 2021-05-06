@@ -387,19 +387,24 @@ set_exclusive_scope() {
   fi
 }
 
+########################################################################################################################
+# Get all sessions from PF and return true if DA HTML form was found.
+
+#   ${DA_IDP_ADAPTER_HTML_FORM_ID} -> Name of the DA IDP Adapter HTML Form.
+########################################################################################################################
 get_session() {
   DA_SESSION_RESPONSE=$(make_api_request -X GET \
     "${PF_API_HOST}/session/authenticationSessionPolicies") > /dev/null
 
   # Search for DAs session ID from response.
-  jq -n "${DA_SESSION_RESPONSE}" |\
-  jq --arg DA_IDP_ADAPTER_HTML_FORM_ID "${DA_IDP_ADAPTER_HTML_FORM_ID}" \
-    '.items[] | select(.authenticationSource.sourceRef.id==$DA_IDP_ADAPTER_HTML_FORM_ID)' |\
-  jq -r ".id"
-  DA_SESSION_ID_EXIST_STATUS=$?
+  DA_SESSION_ID=$( jq -n "${DA_SESSION_RESPONSE}" |\
+                   jq --arg DA_IDP_ADAPTER_HTML_FORM_ID "${DA_IDP_ADAPTER_HTML_FORM_ID}" \
+                    '.items[] | select(.authenticationSource.sourceRef.id==$DA_IDP_ADAPTER_HTML_FORM_ID)' |\
+                   jq -r ".id" )
 
-  # Return status. If it was found w/o any errors occurring then status will be 0
-  return ${DA_SESSION_ID_EXIST_STATUS}
+  beluga_log "DA sessionId: ${DA_SESSION_ID}"
+
+  test ! -z "${DA_SESSION_ID}"
 }
 
 ########################################################################################################################
