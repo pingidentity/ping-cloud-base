@@ -12,9 +12,9 @@ is_multi_cluster() {
 
 testSadPathCreateSession() {
 
-  # Mock up get_session as a success.
+  # Mock up get_session as a failure.
   get_session() {
-    return 0
+    return 1
   }
 
   # Mock up make_api_request as a failure.
@@ -32,9 +32,9 @@ testSadPathCreateSession() {
 
 testHappyPathCreateSession() {
 
-  # Mock up get_session as a success.
+  # Mock up get_session as a failure.
   get_session() {
-    return 0
+    return 1
   }
 
   # Mock up make_api_request as a success for creating session for DA.
