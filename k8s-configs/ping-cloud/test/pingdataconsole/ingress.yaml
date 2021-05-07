@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: pingdataconsole-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx-public
+spec:
+  tls:
+  - hosts:
+    - pingdataconsole-dev.ping-demo.com
+  rules:
+  - host: pingdataconsole-dev.ping-demo.com
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: pingdataconsole-service
+          servicePort: 8080
