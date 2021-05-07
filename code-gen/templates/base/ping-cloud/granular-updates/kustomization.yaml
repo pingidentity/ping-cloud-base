@@ -42,3 +42,15 @@ resources:
 
 # Delegated admin resources
 - ../pingdelegator/server
+
+# WARNING!!!
+#
+# Exposing the pingdataconsole in production is not recommended. The console resources only exist for debugging
+# Delegated Admin configuration. Do NOT make any configuration changes via the data console. That can cause errors
+# while applying future updates through the cluster-state repo.
+#
+# To deploy the console, uncomment the following line. Once debugging is complete, comment it out once again. To login
+# into the admin console, use "pingdirectory:1636" for the Server field and "administrator/<default-password>"
+# for the Username/Password fields.
+
+#- ../pingdataconsole
