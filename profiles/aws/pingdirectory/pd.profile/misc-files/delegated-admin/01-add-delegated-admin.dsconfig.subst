@@ -107,6 +107,8 @@ dsconfig create-delegated-admin-resource-rights \
   --set admin-permission:create \
   --set admin-permission:read \
   --set admin-permission:update \
+  --set admin-permission:download \
+  --set admin-permission:upload \
   --set admin-permission:delete \
   --set admin-permission:manage-group-membership \
   --set admin-scope:all-resources-in-base \
@@ -118,6 +120,8 @@ dsconfig create-delegated-admin-resource-rights  \
   --set admin-permission:create \
   --set admin-permission:read \
   --set admin-permission:update \
+  --set admin-permission:download \
+  --set admin-permission:upload \
   --set admin-permission:delete \
   --set admin-permission:manage-group-membership \
   --set admin-scope:all-resources-in-base \
