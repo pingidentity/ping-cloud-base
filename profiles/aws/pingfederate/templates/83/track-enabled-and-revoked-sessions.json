@@ -1,0 +1,4 @@
+{
+  "trackAdapterSessionsForLogout": true,
+  "revokeUserSessionOnLogout": true
+}

@@ -387,6 +387,79 @@ set_exclusive_scope() {
   fi
 }
 
+########################################################################################################################
+# Get all sessions from PF and return true if DA HTML form was found.
+
+#   ${DA_IDP_ADAPTER_HTML_FORM_ID} -> Name of the DA IDP Adapter HTML Form.
+########################################################################################################################
+get_session() {
+  DA_SESSION_RESPONSE=$(make_api_request -X GET \
+    "${PF_API_HOST}/session/authenticationSessionPolicies") > /dev/null
+
+  # Search for DAs session ID from response.
+  DA_SESSION_ID=$( jq -n "${DA_SESSION_RESPONSE}" |\
+                   jq --arg DA_IDP_ADAPTER_HTML_FORM_ID "${DA_IDP_ADAPTER_HTML_FORM_ID}" \
+                    '.items[] | select(.authenticationSource.sourceRef.id==$DA_IDP_ADAPTER_HTML_FORM_ID)' |\
+                   jq -r ".id" )
+
+  beluga_log "DA sessionId: ${DA_SESSION_ID}"
+
+  test ! -z "${DA_SESSION_ID}"
+}
+
+########################################################################################################################
+# Create session to keep users logged in within DA application.
+#
+# Template Used:
+#   enable-session.json:
+#   
+#   ${DA_EXCLUSIVE_SCOPE_NAME} -> The access token scope that is set within PD HTTP servlet.
+########################################################################################################################
+set_session() {
+
+  if ! get_session; then
+
+    beluga_log "Enabling sessions to keep user logged in within Delegated Admin app"
+
+    session_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/enable-session.json)
+
+    make_api_request -X POST -d "${session_payload}" \
+      "${PF_API_HOST}/session/authenticationSessionPolicies" > /dev/null
+    response_status_code=$?
+    
+    if test ${response_status_code} -ne 0; then
+      return ${response_status_code}
+    fi
+
+    beluga_log "Successfully enabled DA session"
+  else
+    beluga_log "DA session already exist"
+  fi
+}
+
+########################################################################################################################
+# Enable adapter and revoked session tracking upon logout.
+#
+# Template Used:
+#   track-enabled-and-revoked-sessions.json:
+########################################################################################################################
+track_enabled_and_revoke_sessions() {
+  beluga_log "Enabling the ability to track adapter sessions for logout"
+  beluga_log "Enabling the ability to track revoked sessions on logout"
+
+  session_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/track-enabled-and-revoked-sessions.json)
+
+  make_api_request -X PUT -d "${session_payload}" \
+    "${PF_API_HOST}/session/settings" > /dev/null
+  response_status_code=$?
+  
+  if test ${response_status_code} -ne 0; then
+    return ${response_status_code}
+  fi
+
+  beluga_log "Now tracking adapter and revoked sessions upon logout"
+}
+
 
 ########################################################################################################################
 # Retrieve auth server settings of PF.
