@@ -36,59 +36,6 @@ deploy:
   script:
   - ./ci-scripts/build/deploy.sh
 
-<<<<<<< HEAD
-=======
-## Unit Test stage ##
-
-## Global environment variables ##
-framework-unit-tests:
-  stage: unit-test
-  tags:
-  - shell-runner
-  script:
-     - ./ci-scripts/run-framework-unit-tests "dummy Parameter From gitlab runner"
-
-common-unit-tests:
-  stage: unit-test
-  tags:
-    - pd-eks-deploy
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
-  script:
-    - ./ci-scripts/test/unit/run-unit-tests.sh common
-
-pd-unit-tests:
-  stage: unit-test
-  tags:
-    - pd-eks-deploy
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
-  script:
-    - ./ci-scripts/test/unit/run-unit-tests.sh pingdirectory
-
-pf-unit-tests:
-  stage: unit-test
-  tags:
-    - pd-eks-deploy
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
-  script:
-    - ./ci-scripts/test/unit/run-unit-tests.sh pingfederate
-
-pa-unit-tests:
-  stage: unit-test
-  tags:
-    - pd-eks-deploy
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
-  script:
-    - ./ci-scripts/test/unit/run-unit-tests.sh pingaccess
-
-ci-script-unit-tests:
-  stage: unit-test
-  tags:
-    - pd-eks-deploy
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
-  script:
-    - ./ci-scripts/test/unit/run-unit-tests.sh ci-script-tests
-
->>>>>>> master
 ## Integration Test stage ##
 pd-integration-tests:
   stage: integration-test
