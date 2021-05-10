@@ -11,3 +11,4 @@ resources:
 - service.yaml
 - ingress.yaml
 - hpa.yaml
+- disruption-budget.yaml
