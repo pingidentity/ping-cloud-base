@@ -29,7 +29,7 @@ simply be the same as `USER_BASE_DN` in test environments.
 
 After creating the LDAP group, grant the group Delegated Admin rights by adding the following `dsconfig` command to 
 the bottom of `profiles/pingdirectory/pd.profile/misc-files/delegated-admin/01-add-delegated-admin.dsconfig.subst` in 
-the cluster-state repo. Note that this will be effected only on the next rollout of the PingDirectory servers.
+the cluster-state repo. Note that this will be effective only on the next rollout of the PingDirectory servers.
 
 ```shell
 dsconfig set-delegated-admin-rights-prop \
@@ -83,10 +83,32 @@ aci: (targetattr!="userPassword")(version 3.0; acl "Allow read access for all"; 
 
 Replace `USER_BASE_DN` above with the `USER_BASE_DN` for the customer environment.
 
-## Integrating existing customers with Delegated Admin
+## Existing customers
 
+### Quick test of DA after upgrading a customer to >= 1.9.0
+
+- Add the following admin user using the `ldapmodify` tool, if it is not already present.
+  ```shell
+  dn: uid=admin,dc=example,dc=com
+  objectClass: top
+  objectClass: person
+  objectClass: organizationalPerson
+  objectClass: inetOrgPerson
+  uid: admin
+  givenName: Admin
+  sn: User
+  cn: Admin User
+  userPassword: 2FederateM0re
+  ```
+- Login to the Delegated Admin app at https://pingdelegator.${DNS_ZONE} as `admin/2FederateM0re`.
+- You will see the following warning banner on the UI:
+    `Please contact your administrator. The current Delegated Admin configuration is invalid.`
+- Follow the steps in the previous sections to fix the warning.
+
+### Integrating existing customers with Delegated Admin
+
+- Apply the ACI change from the above section to the base user entry to prevent warnings about invalid configuration in
+  the Delegated Admin application.
 - Add the `dsconfig` command mentioned earlier into the PingDirectory profile in the correct location. Note that since 
   Delegated Admin configuration is set up post server startup, it is not located in the normal `dsconfig` directory 
   that `manage-profile` uses. Also, the file has a `.subst` extension so variable substitutions work as expected.
-- Apply the ACI change from the above section to the base user entry to prevent warnings about invalid configuration in 
-  the Delegated Admin application.
