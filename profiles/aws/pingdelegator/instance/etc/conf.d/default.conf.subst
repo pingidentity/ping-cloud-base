@@ -11,10 +11,10 @@ server {
     # Nginx Landing Page
     index /index.html;
 
-    add_header 'Access-Control-Allow-Headers' 'Accept, Accept-Language, Authorization, Cache-Control, Content-Disposition, Content-Type, Origin, User-Agent, X-Requested-With' always;
-    add_header 'Access-Control-Expose-Headers' 'Content-Disposition' always;
-
     location / {
+        add_header 'Access-Control-Allow-Headers' 'Content-Disposition' always;
+        add_header 'Access-Control-Expose-Headers' 'Content-Disposition' always;
+
         try_files $uri $uri/index.html $uri/ "=404";
 
         # The first "$uri" matches the uri exactly
