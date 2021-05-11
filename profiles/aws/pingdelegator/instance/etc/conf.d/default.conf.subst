@@ -12,9 +12,6 @@ server {
     index /index.html;
 
     location / {
-        add_header 'Access-Control-Allow-Headers' 'Content-Disposition' always;
-        add_header 'Access-Control-Expose-Headers' 'Content-Disposition' always;
-
         try_files $uri $uri/index.html $uri/ "=404";
 
         # The first "$uri" matches the uri exactly

@@ -84,7 +84,8 @@ dsconfig create-http-servlet-cross-origin-policy \
   --set "cors-allowed-methods: POST" \
   --set "cors-allowed-methods: DELETE" \
   --set "cors-allowed-methods: PATCH" \
-  --set "cors-allowed-origins: *"
+  --set "cors-allowed-origins: *" \
+  --set cors-exposed-headers:Content-Disposition
 
 dsconfig set-http-servlet-extension-prop \
   --extension-name "Delegated Admin" \
