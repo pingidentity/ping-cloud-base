@@ -69,7 +69,6 @@ ECR_REGISTRY_NAME=${ECR_REGISTRY_NAME}
 
 # NewRelic Tags
 TENANT_NAME=${TENANT_NAME}
-NEW_RELIC_LABELS="region:${REGION};customer_name:${TENANT_NAME};environment:${ENV}"
 
 ############################################################
 # Cluster state repo details

@@ -70,12 +70,10 @@ STARTING_FILE=${INSTANCE_ROOT}/logs/server.starting
 
 # Check for NewRelic License Key (used by NewRelic Agent to push data)
 if [ ${NEW_RELIC_LICENSE_KEY} != 'unused' ]; then
-    NEW_RELIC_LABELS=`echo $NEW_RELIC_LABELS|sed 's/\"//g'`
-    export NEW_RELIC_LABELS="${NEW_RELIC_LABELS};pod_name:${NEW_RELIC_POD_NAME}"
     if [ -z ${JAVA_AGENT_OPTS} ]; then
-        JAVA_AGENT_OPTS="-javaagent:/opt/staging/newrelic.jar"
+        JAVA_AGENT_OPTS="-javaagent:/opt/staging/newrelic.jar -Dnewrelic.config.file=${NEW_RELIC_CONFIG_FILE}"
     else
-        JAVA_AGENT_OPTS="${JAVA_AGENT_OPTS} -javaagent:/opt/staging/newrelic.jar"
+        JAVA_AGENT_OPTS="${JAVA_AGENT_OPTS} -javaagent:/opt/staging/newrelic.jar -Dnewrelic.config.file=${NEW_RELIC_CONFIG_FILE}"
     fi
 fi
 
