@@ -15,14 +15,14 @@ spec:
       serviceAccount: ping-serviceaccount
       containers:
       - name: pingdataconsole
-        image: pingcloud-mirror.jfrog.io/pingidentity/pingdataconsole:2006.1-8.1.0.0
+        image: pingcloud-virtual.jfrog.io/pingidentity/pingdataconsole:8.2.0.3
         resources:
           requests:
             memory: 512Mi
-            cpu: 10m
+            cpu: 300m
           limits:
-            memory: 512Mi
-            cpu: 10m
+            memory: 1024Mi
+            cpu: 300m
         ports:
         - containerPort: 8080
           name: http

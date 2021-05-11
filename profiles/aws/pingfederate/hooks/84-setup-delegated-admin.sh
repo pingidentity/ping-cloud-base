@@ -10,7 +10,7 @@ if ! ${ENABLE_DEL_ADMIN}; then
 
   beluga_log "ENABLE_DEL_ADMIN is not true, disabling clients that Delegated Admin use..."
 
-  if ! disable_or_enable_client_wrapper "disable"; then
+  if ! set_client_ability_wrapper "disable"; then
     beluga_error "Failed to disable Delegated Admin"
     exit 1
   fi
@@ -69,7 +69,8 @@ if ! set_oauth_token_validator_client; then
   exit 1
 fi
 
-if ! disable_or_enable_client_wrapper "enable"; then
+# Ensure all clients are enabled.
+if ! set_client_ability_wrapper "enable"; then
   beluga_error "Failed to enable Delegated Admin"
   exit 1
 fi

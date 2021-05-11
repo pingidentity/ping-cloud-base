@@ -8,7 +8,7 @@ metadata:
     class: pingdirectory-server
 spec:
   serviceName: pingdirectory
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       class: pingdirectory-server
@@ -120,8 +120,7 @@ spec:
           securityContext:
             runAsNonRoot: false
             runAsUser: 0
-          # FIXME: change from edge image to tagged image when it's available
-          image: pingcloud-virtual.jfrog.io/pingidentity/pingdirectory:8.2.0.4-edge
+          image: pingcloud-virtual.jfrog.io/pingidentity/pingdirectory:2104-8.2.0.4
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 1389
@@ -134,10 +133,10 @@ spec:
               name: repl
           resources:
             limits:
-              memory: "2560Mi"
+              memory: "4Gi"
             requests:
-              memory: "2560Mi"
-              cpu: "300m"
+              memory: "4Gi"
+              cpu: "2"
           env:
             - name: P14C_ENVIRONMENT_ID
               valueFrom:
