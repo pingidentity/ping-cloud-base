@@ -265,8 +265,11 @@ fi
 
 # Check for NewRelic License Key (used by NewRelic Agent to push data)
 if [ ${NEW_RELIC_LICENSE_KEY} != 'unused' ]; then
-    NEW_RELIC_LABELS="${NEW_RELIC_LABELS};pod_name:${NEW_RELIC_POD_NAME}"
-    JAVA_AGENT_OPTS="${JAVA_AGENT_OPTS} -javaagent:/opt/staging/newrelic.jar"
+    if [ -z ${JAVA_AGENT_OPTS} ]; then
+        JAVA_AGENT_OPTS="-javaagent:/opt/staging/newrelic.jar -Dnewrelic.config.file=${NEW_RELIC_CONFIG_FILE}"
+    else
+        JAVA_AGENT_OPTS="${JAVA_AGENT_OPTS} -javaagent:/opt/staging/newrelic.jar -Dnewrelic.config.file=${NEW_RELIC_CONFIG_FILE}"
+    fi
 fi
 
 # Check for run.properties (used by PingFederate to configure ports, etc.)
