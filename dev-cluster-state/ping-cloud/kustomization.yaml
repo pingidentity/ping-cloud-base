@@ -327,6 +327,13 @@ patchesJson6902:
     - op: remove
       path: /metadata/annotations/service.beta.kubernetes.io~1aws-load-balancer-internal
 
+# Image Tags
+images:
+  - name: ${JFROG_REGISTRY_NAME}/pingidentity/pingdirectory
+    newTag: ${PINGDIRECTORY_IMAGE_TAG}
+  - name: ${ECR_REGISTRY_NAME}/pingcloud-profiles/pingdirectory
+    newTag: ${PINGDIRECTORY_PROFILE_IMAGE_TAG}
+
 patchesStrategicMerge:
 - |-
   apiVersion: v1

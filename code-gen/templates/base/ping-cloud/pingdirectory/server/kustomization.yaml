@@ -6,10 +6,10 @@ resources:
 - ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingdirectory/server?ref=${K8S_GIT_BRANCH}
 
 images:
-- name: ${JFROG_REGISTRY_NAME}/pingidentity/pingdirectory
-  newTag: ${PINGDIRECTORY_IMAGE_TAG}
-- name: ${ECR_REGISTRY_NAME}/pingcloud-profiles/pingdirectory
-  newTag: ${PINGDIRECTORY_PROFILE_IMAGE_TAG}
+  - name: ${JFROG_REGISTRY_NAME}/pingidentity/pingdirectory
+    newTag: ${PINGDIRECTORY_IMAGE_TAG}
+  - name: ${ECR_REGISTRY_NAME}/pingcloud-profiles/pingdirectory
+    newTag: ${PINGDIRECTORY_PROFILE_IMAGE_TAG}
 
 
 generatorOptions:
