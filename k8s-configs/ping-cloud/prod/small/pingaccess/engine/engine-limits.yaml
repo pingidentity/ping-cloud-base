@@ -9,8 +9,8 @@ spec:
       - name: pingaccess
         resources:
           requests:
-            memory: "1Gi"
+            memory: "2Gi"
             cpu: "1"
           limits:
-            memory: "1Gi"
+            memory: "2Gi"
             cpu: "1"

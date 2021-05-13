@@ -108,6 +108,32 @@ spec:
           volumeMounts:
             - name: in-dir
               mountPath: /opt/in
+        - name: newrelic-tags-exporter
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v1.0.0
+          imagePullPolicy: IfNotPresent
+          envFrom:
+          - configMapRef:
+              name: pingdirectory-environment-variables
+          - secretRef:
+              name: newrelic-license-key
+              optional: true
+          env:
+          - name: NEW_RELIC_APP_NAME
+            value: "pingdirectory"
+          - name: METADATA_EP_URL
+            value: "http://metadata:5000"
+          - name: NEW_RELIC_CONFIG_FILEPATH
+            value: "/opt/shared-dir/newrelic.yml"
+          - name: POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          volumeMounts:
+          - name: shared-dir
+            mountPath: /opt/shared-dir
         - name: wait-for-services
           # FIXME: switch to same user as app
           securityContext:
@@ -188,12 +214,8 @@ spec:
                 secretKeyRef:
                   name: pingcommon-passwords
                   key: DA_OAUTH_TOKEN_VALIDATOR_SECRET
-            - name: NEW_RELIC_APP_NAME
-              value: pingdirectory
-            - name: NEW_RELIC_POD_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.name
+            - name: NEW_RELIC_CONFIG_FILE
+              value: "/opt/shared-dir/newrelic.yml"
           envFrom:
             - configMapRef:
                 name: pingdirectory-environment-variables
@@ -209,6 +231,8 @@ spec:
             # FIXME: fix home directory when containers run as non-root user
             - name: ssh-dir
               mountPath: /root/.ssh
+            - name: shared-dir
+              mountPath: /opt/shared-dir
             - name: topology-descriptor
               mountPath: /opt/staging/topology/descriptor.json
               subPath: descriptor.json
@@ -285,6 +309,8 @@ spec:
               memory: 100Mi
       volumes:
         - name: ssh-dir
+          emptyDir: {}
+        - name: shared-dir
           emptyDir: {}
         - name: data-dir
           emptyDir: {}
