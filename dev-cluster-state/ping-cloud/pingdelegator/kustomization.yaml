@@ -1,0 +1,9 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+# Image Tags
+images:
+  - name: ${JFROG_REGISTRY_NAME}/pingidentity/pingdelegator
+    newTag: ${PINGDIRECTORY_IMAGE_TAG}
+  - name: ${ECR_REGISTRY_NAME}/pingcloud-profiles/pingdelegator
+    newTag: ${PINGDIRECTORY_PROFILE_IMAGE_TAG}
