@@ -52,6 +52,8 @@ spec:
                   values:
                   - ingress-nginx
               topologyKey: "failure-domain.beta.kubernetes.io/zone"
+      tolerations:
+      - operator: Exists
       containers:
       - name: nginx-ingress-controller
         image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.26.1
