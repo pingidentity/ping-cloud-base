@@ -5,7 +5,7 @@ resources:
 - namespace.yaml
 - ../base
 - rbac.yaml
-- hpa.yaml
+# - hpa.yaml
 
 namespace: ingress-nginx-private
 
@@ -17,7 +17,7 @@ patchesJson6902:
   target:
     group: apps
     version: v1
-    kind: Deployment
+    kind: DaemonSet
     name: nginx-ingress-controller
 
 - path: make-service-private.yaml

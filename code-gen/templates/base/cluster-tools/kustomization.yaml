@@ -139,7 +139,7 @@ patchesJson6902:
 - target:
     group: apps
     version: v1
-    kind: Deployment
+    kind: DaemonSet
     name: nginx-ingress-controller
     namespace: ingress-nginx-private
   patch: |-
@@ -151,7 +151,7 @@ patchesJson6902:
 - target:
     group: apps
     version: v1
-    kind: Deployment
+    kind: DaemonSet
     name: nginx-ingress-controller
     namespace: ingress-nginx-public
   patch: |-

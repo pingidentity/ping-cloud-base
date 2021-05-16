@@ -14,34 +14,6 @@
 #               Nginx public
 ################################################
 
-### Update public nginx HPA min/max replicas and target CPU utilization ###
-apiVersion: autoscaling/v1
-kind: HorizontalPodAutoscaler
-metadata:
-  name: nginx-ingress-controller
-  namespace: ingress-nginx-public
-spec:
-  minReplicas: 3
-  maxReplicas: 3
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: nginx-ingress-controller
-  targetCPUUtilizationPercentage: 70
-
----
-
-### Update the header size max for customers needing larger sized cookies/headers ###
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: nginx-configuration
-  namespace: ingress-nginx-public
-data:
-  large_client_header_buffers: "4 128k"
-
----
-
 ### Update the header size max for customers needing larger sized cookies/headers ###
 apiVersion: v1
 kind: ConfigMap
@@ -57,20 +29,14 @@ data:
 #              Nginx private
 ################################################
 
-### Update private nginx HPA min/max replicas and target CPU utilization ###
-apiVersion: autoscaling/v1
-kind: HorizontalPodAutoscaler
+### Update the header size max for customers needing larger sized cookies/headers ###
+apiVersion: v1
+kind: ConfigMap
 metadata:
-  name: nginx-ingress-controller
+  name: nginx-configuration
   namespace: ingress-nginx-private
-spec:
-  minReplicas: 1
-  maxReplicas: 1
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: nginx-ingress-controller
-  targetCPUUtilizationPercentage: 70
+data:
+  large_client_header_buffers: "4 128k"
 
 ---
 
