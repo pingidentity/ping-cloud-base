@@ -3,11 +3,28 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 - ../../k8s-configs/ping-cloud
-- pingdirectory
-- pingdelegator
-- pingfederate
-- pingaccess
-- pingaccess-was
+
+images:
+  - name: ${JFROG_REGISTRY_NAME}/pingidentity/pingdirectory
+    newTag: ${PINGDIRECTORY_IMAGE_TAG}
+  - name: ${ECR_REGISTRY_NAME}/pingcloud-profiles/pingdirectory
+    newTag: ${PINGDIRECTORY_PROFILE_IMAGE_TAG}
+  - name: ${JFROG_REGISTRY_NAME}/pingidentity/pingdelegator
+    newTag: ${PINGDIRECTORY_IMAGE_TAG}
+  - name: ${ECR_REGISTRY_NAME}/pingcloud-profiles/pingdelegator
+    newTag: ${PINGDIRECTORY_PROFILE_IMAGE_TAG}
+  - name: ${JFROG_REGISTRY_NAME}/pingidentity/pingfederate
+    newTag: ${PINGDIRECTORY_IMAGE_TAG}
+  - name: ${ECR_REGISTRY_NAME}/pingcloud-profiles/pingfederate
+    newTag: ${PINGDIRECTORY_PROFILE_IMAGE_TAG}
+  - name: ${JFROG_REGISTRY_NAME}/pingidentity/pingaccess
+    newTag: ${PINGDIRECTORY_IMAGE_TAG}
+  - name: ${ECR_REGISTRY_NAME}/pingcloud-profiles/pingaccess
+    newTag: ${PINGDIRECTORY_PROFILE_IMAGE_TAG}
+  - name: ${JFROG_REGISTRY_NAME}/pingidentity/pingaccess-was
+    newTag: ${PINGDIRECTORY_IMAGE_TAG}
+  - name: ${ECR_REGISTRY_NAME}/pingcloud-profiles/pingaccess-was
+    newTag: ${PINGDIRECTORY_PROFILE_IMAGE_TAG}
 
 configMapGenerator:
 
