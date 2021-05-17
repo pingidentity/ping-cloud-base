@@ -50,7 +50,7 @@ spec:
               topologyKey: "failure-domain.beta.kubernetes.io/zone"
       containers:
         - name: nginx-ingress-controller
-          image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.26.1
+          image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.46.0
           resources:
             limits:
               cpu: 2
