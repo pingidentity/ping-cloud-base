@@ -7,6 +7,7 @@ metadata:
   labels:
     cluster: pingfederate-cluster
     role: pingfederate-admin
+    orchestrator: my-ping
 spec:
   serviceName: pingfederate-admin
   selector:
@@ -22,6 +23,7 @@ spec:
       labels:
         cluster: pingfederate-cluster
         role: pingfederate-admin
+        orchestrator: my-ping
       annotations:
         lastUpdateReason: "NA"
     spec:
