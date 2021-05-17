@@ -44,6 +44,12 @@ Changing the `USER_BASE_DN` requires completely rolling out every PingDirectory 
 followed by rolling out all PingFederate servers (admin and engines). Use the `LAST_UPDATE_REASON` environment 
 variable to roll out PingDirectory and PingFederate servers sequentially.
 
+## Delegated Admin certificate issue
+
+In lower environments where the PingDirectory certificate is from the Let's Encrypt staging server, the Delegated Admin 
+UI will deny access due to the certificate being invalid. To work around it, download the certificate and import it 
+as a trusted certificate into the system trust store (e.g. OSX keychain).
+
 ## Fixing Delegated Admin warnings on PingDirectory
 
 ### Determining if there are problems with the Delegated Admin configuration or data 
@@ -85,7 +91,7 @@ Replace `USER_BASE_DN` above with the `USER_BASE_DN` for the customer environmen
 
 ## Existing customers
 
-### Quick test of DA after upgrading a customer to >= 1.9.0
+### Quick test of Delegated Admin after upgrading a customer to >= 1.9.0
 
 - Add the following admin user using the `ldapmodify` tool, if it is not already present.
   ```shell
