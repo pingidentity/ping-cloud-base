@@ -28,3 +28,4 @@ resources:
 - p14c-oauth-service
 - pingfederate-admin-configurator
 - p14c-bom-service
+- pf-ik-deployer

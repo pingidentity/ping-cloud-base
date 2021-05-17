@@ -177,3 +177,11 @@ kind: Job
 metadata:
   name: pingfederate-admin-configurator
 $patch: delete
+
+---
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pf-ik-deployer
+$patch: delete

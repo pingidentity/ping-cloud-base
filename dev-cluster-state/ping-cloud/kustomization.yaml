@@ -65,6 +65,12 @@ configMapGenerator:
   envs:
   - env_vars
 
+  # PingCloud PF IK Deployer
+- name: pingcloud-pf-ik-deployer-environment-variables
+  behavior: merge
+  envs:
+    - env_vars
+
 patchesJson6902:
 
 # pingcloud-metadata ingress

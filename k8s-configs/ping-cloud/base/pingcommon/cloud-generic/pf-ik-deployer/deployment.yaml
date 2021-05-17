@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pf-ik-deployer
+spec:
+  selector:
+    matchLabels:
+      role: pf-ik-deployer
+  replicas: 1
+  template:
+    metadata:
+      name: pf-ik-deployer
+      labels:
+        role: pf-ik-deployer
+    spec:
+      serviceAccount: pf-ik-deployeraccount
+      containers:
+        - name: pingcloud-pf-ik-deployer
+          image: public.ecr.aws/r2h3l6e4/pingcloud-services/pf-ik-deployment:v1.0.0-PDO-2367
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "300m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          envFrom:
+            - configMapRef:
+                name: pf-ik-deployer-environment-variables
+          env:
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          # The -u flag is necessary for python to emit logging to standard out
+          command: [ 'python3', '-u', '/app/src/pf_ik_deployer.py' ]
