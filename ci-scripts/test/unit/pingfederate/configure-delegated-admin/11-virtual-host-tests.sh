@@ -10,12 +10,17 @@ is_multi_cluster() {
   return 0
 }
 
+# Mock up is_valid_json_file, this logic passes descriptor.json validation.
+is_valid_json_file() {
+  return 0
+}
+
 testSadPathVirtualHostsFailure() {
 
-  # Mock up getVirtualHosts as a failure.
+  # Mock up getVirtualHostNames as a failure.
   # When calling setVirtualHosts function, its
-  # expected to fail when getVirtualHosts response returns an error.
-  getVirtualHosts() {
+  # expected to fail when getVirtualHostNames response returns an error.
+  getVirtualHostNames() {
     return 1
   }
 
@@ -27,8 +32,8 @@ testSadPathVirtualHostsFailure() {
 
 testSadPathCreateVirtualHosts() {
 
-  # Mock up getVirtualHosts as a success.
-  getVirtualHosts() {
+  # Mock up getVirtualHostNames as a success.
+  getVirtualHostNames() {
     return 0
   }
 
@@ -47,8 +52,8 @@ testSadPathCreateVirtualHosts() {
 
 testHappyPathCreateVirtualHosts() {
 
-  # Mock up getVirtualHosts as a success.
-  getVirtualHosts() {
+  # Mock up getVirtualHostNames as a success.
+  getVirtualHostNames() {
     return 0
   }
 

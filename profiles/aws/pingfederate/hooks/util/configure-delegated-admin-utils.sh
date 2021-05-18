@@ -509,6 +509,22 @@ setAllowedOrigins() {
 }
 
 ########################################################################################################################
+# Validate that the provided file is present, non-empty and has valid JSON.
+#
+# Arguments:
+#   $1 -> The file to validate.
+#
+# Returns:
+#   0 -> If the file is valid; 1 -> otherwise.
+########################################################################################################################
+is_valid_json_file() {
+  local json_file="$1"
+  test ! -f "${json_file}" && return 1
+  num_keys="$(jq -r '(keys|length)' "${json_file}")"
+  test $? -eq 0 && test ! -z "${num_keys}" && test "${num_keys}" -gt 0
+}
+
+########################################################################################################################
 # Build PD and DA host names and call addOrigin function to generate payload.
 #
 # Note:
@@ -518,6 +534,11 @@ setAllowedOrigins() {
 buildOriginList() {
 
   descriptor_file="${STAGING_DIR}/topology/descriptor.json"
+
+  if is_multi_cluster && ! is_valid_json_file "${descriptor_file}"; then
+    beluga_error "In multi-cluster mode, a non-empty descriptor.json describing the PD topology must be provided"
+    return 1
+  fi
 
   # if deploying in multi_cluster environment, then use PDs descriptor.json to get the public host names per region.
   if is_multi_cluster; then
@@ -576,7 +597,7 @@ get_implicit_grant_type_client() {
 #
 # Template Used:
 #   create-implicit-grant-type.json:
-#   
+#
 #   ${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID} -> The name you want to use as the implicit client.
 #   ${DA_EXCLUSIVE_SCOPE_NAME} -> DA exclusive scope name.
 #   ${DA_JWT_ID} -> DA JWT name.
@@ -611,7 +632,7 @@ set_implicit_grant_type_client() {
     make_api_request -X POST -d "${implicit_grant_type_payload}" \
       "${PF_API_HOST}/oauth/clients" > /dev/null
     response_status_code=$?
-    
+
     if test ${response_status_code} -ne 0; then
       return ${response_status_code}
     fi
@@ -633,6 +654,11 @@ set_implicit_grant_type_client() {
 ########################################################################################################################
 buildRedirectUriList() {
   descriptor_file="${STAGING_DIR}/topology/descriptor.json"
+
+  if is_multi_cluster && ! is_valid_json_file "${descriptor_file}"; then
+    beluga_error "In multi-cluster mode, a non-empty descriptor.json describing the PD topology must be provided"
+    return 1
+  fi
 
   # if deploying in multi_cluster environment, then use PDs descriptor.json to get the public host names per region.
   if is_multi_cluster; then
@@ -684,7 +710,7 @@ get_oauth_token_validator_client() {
 #
 # Template Used:
 #   create-authorization-server-grant-type:
-#   
+#
 #   ${DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID} -> The name you want to use as the OAuth token validator client.
 #   ${DA_JWT_ID} -> DA JWT name.
 #   ${DA_OIDC_POLICY_ID} -> DA OIDC policy name.
@@ -703,7 +729,7 @@ set_oauth_token_validator_client() {
     make_api_request -X POST -d "${oauth_token_val_payload}" \
       "${PF_API_HOST}/oauth/clients" > /dev/null
     response_status_code=$?
-    
+
     if test ${response_status_code} -ne 0; then
       return ${response_status_code}
     fi
@@ -737,7 +763,7 @@ set_oauth_token_validator_client() {
 ########################################################################################################################
 set_client_ability_wrapper() {
   client_status="$1"
-  
+
   if [ "${client_status}" == "enable" ]; then
     client_enable_flag="true"
   else
@@ -754,7 +780,7 @@ set_client_ability_wrapper() {
       return ${implicit_client_status}
     fi
   fi
-  
+
   # OAuth token validator client, (PD -> PF)
   if get_oauth_token_validator_client; then
     set_client_ability "${DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID}" "${DA_OAUTH_TOKEN_VAL_CLIENT_RESPONSE}" "${client_enable_flag}"
@@ -765,7 +791,7 @@ set_client_ability_wrapper() {
       return ${oauth_token_validator_client_status}
     fi
   fi
-  
+
   return 0
 }
 
@@ -793,7 +819,7 @@ set_client_ability() {
   make_api_request -X PUT -d "${oauth_token_val_payload}" \
     "${PF_API_HOST}/oauth/clients/${client_id}" > /dev/null
   response_status_code=$?
-  
+
   if test ${response_status_code} -ne 0; then
     return ${response_status_code}
   fi
@@ -826,6 +852,12 @@ getVirtualHostNames() {
 # virtualHostNames property.
 ########################################################################################################################
 setVirtualHosts() {
+  descriptor_file="${STAGING_DIR}/topology/descriptor.json"
+
+  if is_multi_cluster && ! is_valid_json_file "${descriptor_file}"; then
+    beluga_error "In multi-cluster mode, a non-empty descriptor.json describing the PD topology must be provided"
+    return 1
+  fi
 
   if ! is_multi_cluster; then
     beluga_log "Not in multi cluster mode. Skip configuration of virtual host"
