@@ -10,21 +10,21 @@ images:
   - name: ${ECR_REGISTRY_NAME}/pingcloud-profiles/pingdirectory
     newTag: ${PINGDIRECTORY_PROFILE_IMAGE_TAG}
   - name: ${JFROG_REGISTRY_NAME}/pingidentity/pingdelegator
-    newTag: ${PINGDIRECTORY_IMAGE_TAG}
+    newTag: ${PINGDELEGATOR_IMAGE_TAG}
   - name: ${ECR_REGISTRY_NAME}/pingcloud-profiles/pingdelegator
-    newTag: ${PINGDIRECTORY_PROFILE_IMAGE_TAG}
+    newTag: ${PINGDELEGATOR_PROFILE_IMAGE_TAG}
   - name: ${JFROG_REGISTRY_NAME}/pingidentity/pingfederate
-    newTag: ${PINGDIRECTORY_IMAGE_TAG}
+    newTag: ${PINGFEDERATE_IMAGE_TAG}
   - name: ${ECR_REGISTRY_NAME}/pingcloud-profiles/pingfederate
-    newTag: ${PINGDIRECTORY_PROFILE_IMAGE_TAG}
+    newTag: ${PINGFEDERATE_PROFILE_IMAGE_TAG}
   - name: ${JFROG_REGISTRY_NAME}/pingidentity/pingaccess
-    newTag: ${PINGDIRECTORY_IMAGE_TAG}
+    newTag: ${PINGACCESS_IMAGE_TAG}
   - name: ${ECR_REGISTRY_NAME}/pingcloud-profiles/pingaccess
-    newTag: ${PINGDIRECTORY_PROFILE_IMAGE_TAG}
+    newTag: ${PINGACCESS_PROFILE_IMAGE_TAG}
   - name: ${JFROG_REGISTRY_NAME}/pingidentity/pingaccess-was
-    newTag: ${PINGDIRECTORY_IMAGE_TAG}
+    newTag: ${PINGACCESS_IMAGE_TAG}
   - name: ${ECR_REGISTRY_NAME}/pingcloud-profiles/pingaccess-was
-    newTag: ${PINGDIRECTORY_PROFILE_IMAGE_TAG}
+    newTag: ${PINGACCESS_WAS_PROFILE_IMAGE_TAG}
 
 configMapGenerator:
 
