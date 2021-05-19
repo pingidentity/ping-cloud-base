@@ -241,6 +241,7 @@ function configure_tcp_xml() {
           bucket_name=\"${CLUSTER_BUCKET_NAME}\" \
           bucket_prefix=\"${PING_PRODUCT}\" \
           remove_all_data_on_view_change=\"true\" \
+          acl_grant_bucket_owner_full_control=\"true\" \
           write_data_on_find=\"true\" />"
     fi
 
