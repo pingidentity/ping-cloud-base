@@ -95,7 +95,7 @@ Replace `USER_BASE_DN` above with the `USER_BASE_DN` for the customer environmen
 
 - Add the following admin user using the `ldapmodify` tool, if it is not already present.
   ```shell
-  dn: uid=admin,dc=example,dc=com
+  dn: uid=admin,${USER_BASE_DN}
   objectClass: top
   objectClass: person
   objectClass: organizationalPerson
