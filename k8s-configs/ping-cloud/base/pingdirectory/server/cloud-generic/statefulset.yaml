@@ -233,6 +233,9 @@ spec:
             - name: data-dir
               mountPath: /opt/staging/newrelic.jar
               subPath: newrelic.jar
+            - name: data-dir
+              mountPath: /opt/staging/jmx_prometheus_javaagent-0.14.0.jar
+              subPath: jmx_prometheus_javaagent-0.14.0.jar
             - name: out-dir
               mountPath: /opt/out
             - name: pingdirectory-passwords
@@ -276,6 +279,8 @@ spec:
             - "--web.listen-address=:9102"
           ports:
             - containerPort: 9102
+              protocol: TCP
+            - containerPort: 8080
               protocol: TCP
             - containerPort: 8125
               protocol: UDP
