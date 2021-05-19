@@ -67,3 +67,5 @@ PD_CLUSTER_PORT=8989
 
 TLS_TUNNEL_CIPHER_LIST=null
 TLS_TUNNEL_VERSIONS=TLSv1.2
+
+JAVA_AGENT_OPTS=-javaagent:/opt/staging/jmx_prometheus_javaagent-0.14.0.jar=8080:/opt/out/instance/conf/jmx_export_config.yaml
