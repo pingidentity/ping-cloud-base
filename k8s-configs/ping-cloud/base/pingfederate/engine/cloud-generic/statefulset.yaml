@@ -38,6 +38,21 @@ spec:
                         - pingfederate-engine
                 topologyKey: "failure-domain.beta.kubernetes.io/zone"
       initContainers:
+      - name: profile-init
+        image: public.ecr.aws/r2h3l6e4/pingcloud-profiles/pingfederate:10.1.2-v1.0.3
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+          - |
+            cp -r /opt/stage/* /opt/in/
+            chmod a+x /opt/in/hooks/*
+        envFrom:
+          - configMapRef:
+              name: pingdirectory-environment-variables
+        volumeMounts:
+          - name: in-dir
+            mountPath: /opt/in
       - name: pingfederate-init
         # FIXME: switch to same user as app
         securityContext:
@@ -52,6 +67,8 @@ spec:
           mountPath: /.ssh
         - name: data-dir
           mountPath: /data
+        - name: in-dir
+          mountPath: /opt/in
         - name: ssh-id-key-secret
           mountPath: /id_rsa
           subPath: id_rsa
@@ -163,6 +180,8 @@ spec:
           mountPath: /root/.ssh
         - name: shared-dir
           mountPath: /opt/shared-dir
+        - name: in-dir
+          mountPath: /opt/in
         - name: topology-descriptor
           mountPath: /opt/staging/topology/descriptor.json
           subPath: descriptor.json
@@ -258,6 +277,8 @@ spec:
       - name: shared-dir
         emptyDir: {}
       - name: data-dir
+        emptyDir: {}
+      - name: in-dir
         emptyDir: {}
       - name: pingfederate-init
         configMap:

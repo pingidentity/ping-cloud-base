@@ -1,8 +1,0 @@
-{
-  "id": ${VHOST_ID},
-  "host":"${VHOST_HOST}",
-  "port":${VHOST_PORT},
-  "agentResourceCacheTTL":900,
-  "keyPairId": 0,
-  "trustedCertificateGroupId": 0
-}

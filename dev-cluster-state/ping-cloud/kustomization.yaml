@@ -1,6 +1,28 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
+images:
+  - name: ${JFROG_REGISTRY_NAME}/pingidentity/pingdirectory
+    newTag: ${PINGDIRECTORY_IMAGE_TAG}
+  - name: ${ECR_REGISTRY_NAME}/pingcloud-profiles/pingdirectory
+    newTag: ${PINGDIRECTORY_PROFILE_IMAGE_TAG}
+  - name: ${JFROG_REGISTRY_NAME}/pingidentity/pingdelegator
+    newTag: ${PINGDELEGATOR_IMAGE_TAG}
+  - name: ${ECR_REGISTRY_NAME}/pingcloud-profiles/pingdelegator
+    newTag: ${PINGDELEGATOR_PROFILE_IMAGE_TAG}
+  - name: ${JFROG_REGISTRY_NAME}/pingidentity/pingfederate
+    newTag: ${PINGFEDERATE_IMAGE_TAG}
+  - name: ${ECR_REGISTRY_NAME}/pingcloud-profiles/pingfederate
+    newTag: ${PINGFEDERATE_PROFILE_IMAGE_TAG}
+  - name: ${JFROG_REGISTRY_NAME}/pingidentity/pingaccess
+    newTag: ${PINGACCESS_IMAGE_TAG}
+  - name: ${ECR_REGISTRY_NAME}/pingcloud-profiles/pingaccess
+    newTag: ${PINGACCESS_PROFILE_IMAGE_TAG}
+  - name: ${JFROG_REGISTRY_NAME}/pingidentity/pingaccess-was
+    newTag: ${PINGACCESS_IMAGE_TAG}
+  - name: ${ECR_REGISTRY_NAME}/pingcloud-profiles/pingaccess-was
+    newTag: ${PINGACCESS_WAS_PROFILE_IMAGE_TAG}
+
 resources:
 - ../../k8s-configs/ping-cloud
 

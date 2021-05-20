@@ -8,6 +8,8 @@ resources:
 images:
 - name: ${JFROG_REGISTRY_NAME}/pingidentity/pingfederate
   newTag: ${PINGFEDERATE_IMAGE_TAG}
+- name: ${ECR_REGISTRY_NAME}/pingcloud-profiles/pingfederate
+  newTag: ${PINGFEDERATE_PROFILE_IMAGE_TAG}
 
 patchesJson6902:
 

@@ -8,6 +8,8 @@ resources:
 images:
 - name: ${JFROG_REGISTRY_NAME}/pingidentity/pingdelegator
   newTag: ${PINGDELEGATOR_IMAGE_TAG}
+- name: ${ECR_REGISTRY_NAME}/pingcloud-profiles/pingdelegator
+  newTag: ${PINGDELEGATOR_PROFILE_IMAGE_TAG}
 
 generatorOptions:
   disableNameSuffixHash: true

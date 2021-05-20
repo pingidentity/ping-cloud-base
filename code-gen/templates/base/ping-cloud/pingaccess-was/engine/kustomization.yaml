@@ -8,6 +8,8 @@ resources:
 images:
 - name: ${JFROG_REGISTRY_NAME}/pingidentity/pingaccess
   newTag: ${PINGACCESS_IMAGE_TAG}
+- name: ${ECR_REGISTRY_NAME}/pingcloud-profiles/pingaccess-was
+  newTag: ${PINGACCESS_WAS_PROFILE_IMAGE_TAG}
 
 patchesJson6902:
 

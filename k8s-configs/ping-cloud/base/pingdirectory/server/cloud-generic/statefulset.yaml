@@ -62,6 +62,21 @@ spec:
           effect: "NoSchedule"
       terminationGracePeriodSeconds: 300
       initContainers:
+        - name: profile-init
+          image: public.ecr.aws/r2h3l6e4/pingcloud-profiles/pingdirectory:8.1.0.2-v1.0.3
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              cp -r /opt/stage/* /opt/in/
+              chmod a+x /opt/in/hooks/*
+          envFrom:
+            - configMapRef:
+                name: pingdirectory-environment-variables
+          volumeMounts:
+            - name: in-dir
+              mountPath: /opt/in
         - name: pingdirectory-init
           # FIXME: switch to same user as app
           securityContext:
@@ -81,6 +96,8 @@ spec:
               mountPath: /.ssh
             - name: data-dir
               mountPath: /data
+            - name: in-dir
+              mountPath: /opt/in
             - name: ssh-id-key-secret
               mountPath: /id_rsa
               subPath: id_rsa
@@ -216,6 +233,8 @@ spec:
             # FIXME: fix home directory when containers run as non-root user
             - name: ssh-dir
               mountPath: /root/.ssh
+            - name: in-dir
+              mountPath: /opt/in
             - name: shared-dir
               mountPath: /opt/shared-dir
             - name: topology-descriptor
@@ -302,6 +321,8 @@ spec:
           emptyDir: {}
         - name: data-dir
           emptyDir: {}
+        - name: in-dir
+          emptyDir: {} 
         - name: pingdirectory-init
           configMap:
             name: pingcommon-init
