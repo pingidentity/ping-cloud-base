@@ -14,9 +14,9 @@ metadata:
 spec:
   tls:
   - hosts:
-    - pingcentral-dev.ping-demo.com
+    - pingcentral.ping-demo.com
   rules:
-  - host: pingcentral-dev.ping-demo.com
+  - host: pingcentral.ping-demo.com
     http:
       paths:
       # This rule gives external access to the pingcentral service
