@@ -467,6 +467,8 @@ handle_changed_profiles() {
   if ! test "${new_files}"; then
     log "No changed '${PROFILES_DIR}' files to copy '${DEFAULT_CDE_BRANCH}' to its new branch '${NEW_BRANCH}'"
   else
+    log "DEBUG: Found the following new files in branch '${DEFAULT_CDE_BRANCH}':"
+    echo "${new_files}"
     echo "${new_files}" | xargs git checkout "${DEFAULT_CDE_BRANCH}"
   fi
 
