@@ -114,6 +114,15 @@ spec:
             - name: pingdirectory-init
               mountPath: /wait-for-services.sh
               subPath: wait-for-services.sh
+        - name: fedramp-bootstrap
+          image: public.ecr.aws/r2h3l6e4/geoff/fedramp-bootstrap:0.0.1
+          imagePullPolicy: IfNotPresent
+          command:
+            - /tools/setup_container_env.sh
+            - sleep 300
+          volumeMounts:
+            - name: secrets-dir
+              mountPath: /usr/local/secrets
       containers:
         - name: pingdirectory
           # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
@@ -294,6 +303,8 @@ spec:
         - name: pingdirectory-statsd-mapping
           configMap:
             name: pingdirectory-statsd-mapping
+        - name: secrets-dir
+          emptyDir: {}
   volumeClaimTemplates:
     - metadata:
         name: out-dir
