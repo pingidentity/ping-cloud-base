@@ -6,3 +6,14 @@ SERVER_PROFILE_PATH=profiles/aws/pingcentral
 SERVER_PROFILE_BRANCH=pdo-1510-pingcentral-spike
 
 PING_IDENTITY_ACCEPT_EULA=YES
+
+REGION=us-west-2
+
+K8S_ACME_CERT_SECRET_NAME=acme-tls-cert
+
+# Leave blank
+TAIL_LOG_FILES=
+# Individual files should be spelled out, globs are unreliable
+K8S_TAIL_LOG_FILES=/opt/out/instance/log/error.log /opt/out/instance/log/access.log
+
+SECRETS_DIR=/usr/local/secrets

@@ -6,6 +6,10 @@ namespace: ping-cloud
 commonLabels:
   app: ping-cloud
 
+resources:
+- secret-license.yaml
+- secret-passwords.yaml
+
 generatorOptions:
   disableNameSuffixHash: true
 

@@ -78,19 +78,6 @@ spec:
         #   limits:
         #     memory: "1Gi"
         #     cpu: "1"
-        volumeMounts:
-          # FIXME: fix home directory when containers run as non-root user
-          - name: ssh-dir
-            mountPath: /root/.ssh
-          - name: topology-descriptor
-            mountPath: /opt/staging/topology/descriptor.json
-            subPath: descriptor.json
-          - name: data-dir
-            mountPath: /usr/local/bin/kubectl
-            subPath: kubectl
-          - name: data-dir
-            mountPath: /opt/staging/ds_env_vars
-            subPath: ds_env_vars
         readinessProbe:
           exec:
             command: [/opt/liveness.sh]
@@ -109,8 +96,27 @@ spec:
           - name: https
             containerPort: 9022
         envFrom:
-        - configMapRef:
-            name: pingcentral-environment-variables
+          - configMapRef:
+              name: pingcentral-environment-variables
+        volumeMounts:
+          # FIXME: fix home directory when containers run as non-root user
+          - name: ssh-dir
+            mountPath: /root/.ssh
+          - name: topology-descriptor
+            mountPath: /opt/staging/topology/descriptor.json
+            subPath: descriptor.json
+          - name: data-dir
+            mountPath: /usr/local/bin/kubectl
+            subPath: kubectl
+          - name: data-dir
+            mountPath: /opt/staging/ds_env_vars
+            subPath: ds_env_vars
+          - name: pingcentral-passwords
+            mountPath: /usr/local/secrets
+            readOnly: true
+          - name: pingcentral-license
+            mountPath: /opt/in/instance/conf/pingcentral.lic
+            subPath: pingcentral.lic
       volumes:
         - name: ssh-dir
           emptyDir: {}
@@ -135,3 +141,8 @@ spec:
             name: known-hosts-config
             optional: true
             defaultMode: 0644
+        - name: pingcentral-license
+          secret:
+            secretName: pingcentral-license
+            optional: true
+            defaultMode: 0400
