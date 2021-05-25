@@ -39,7 +39,7 @@ UPLOAD_DIR="/opt/out/backup-upload"
 rm -rf "${UPLOAD_DIR}"
 mkdir -p "${UPLOAD_DIR}"
 
-mv "$DST_FILE_TIMESTAMP" "${UPLOAD_DIR}/${DST_FILE_TIMESTAMP}"
+mv "${DST_FILE_TIMESTAMP}" "${UPLOAD_DIR}/${DST_FILE_TIMESTAMP}"
 
 # Cleanup backup dir
 cd "${UPLOAD_DIR}" || exit 1
