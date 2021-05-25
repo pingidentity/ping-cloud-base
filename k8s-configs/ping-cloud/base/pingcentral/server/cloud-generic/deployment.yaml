@@ -5,7 +5,7 @@ kind: Deployment
 metadata:
   name: pingcentral
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: RollingUpdate
   selector:
@@ -95,9 +95,23 @@ spec:
         ports:
           - name: https
             containerPort: 9022
+        env:
+          - name: OLD_PC_ADMIN_USER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: pingcentral-passwords
+                key: OLD_PC_ADMIN_USER_PASSWORD
+          - name: PC_ADMIN_USER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: pingcentral-passwords
+                key: PC_ADMIN_USER_PASSWORD
         envFrom:
           - configMapRef:
               name: pingcentral-environment-variables
+          - secretRef:
+              name: devops-secret
+              optional: true
         volumeMounts:
           # FIXME: fix home directory when containers run as non-root user
           - name: ssh-dir
@@ -144,5 +158,10 @@ spec:
         - name: pingcentral-license
           secret:
             secretName: pingcentral-license
+            optional: true
+            defaultMode: 0400
+        - name: pingcentral-passwords
+          secret:
+            secretName: pingcentral-passwords
             optional: true
             defaultMode: 0400

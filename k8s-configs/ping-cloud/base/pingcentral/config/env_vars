@@ -5,6 +5,7 @@ SERVER_PROFILE_URL=https://server-profile-user-at-705370621539:8pCzGIXG3k+EOV1hy
 SERVER_PROFILE_PATH=profiles/aws/pingcentral
 SERVER_PROFILE_BRANCH=pdo-1510-pingcentral-spike
 
+ACCEPT_EULA=YES
 PING_IDENTITY_ACCEPT_EULA=YES
 
 REGION=us-west-2
