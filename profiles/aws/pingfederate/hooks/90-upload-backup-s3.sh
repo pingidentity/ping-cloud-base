@@ -38,8 +38,12 @@ fi
 DST_FILE_LATEST="latest.zip"
 UPLOAD_DIR="$(mktemp -d)"
 
-cp "${DST_DIRECTORY}/$DST_FILE_TIMESTAMP" "${UPLOAD_DIR}/$DST_FILE_LATEST"
-cp "${DST_DIRECTORY}/$DST_FILE_TIMESTAMP" "${UPLOAD_DIR}/$DST_FILE_TIMESTAMP"
+mv "${DST_DIRECTORY}/${DST_FILE_TIMESTAMP}" "${UPLOAD_DIR}/${DST_FILE_TIMESTAMP}"
+
+# Cleanup backup dir
+rm -rf "${DST_DIRECTORY}"
+
+cp "${UPLOAD_DIR}/${DST_FILE_TIMESTAMP}" "${UPLOAD_DIR}/${DST_FILE_LATEST}"
 
 beluga_log "Copying files to '${SKBN_CLOUD_PREFIX}'"
 
@@ -50,8 +54,7 @@ fi
 # STDOUT all the files in one line for integration test
 ls ${UPLOAD_DIR} | xargs
 
-# Cleanup k8s-s3-upload-archive temp directory
-rm -rf ${DST_DIRECTORY}
+# Cleanup upload dir
 rm -rf "${UPLOAD_DIR}"
 
 exit 0

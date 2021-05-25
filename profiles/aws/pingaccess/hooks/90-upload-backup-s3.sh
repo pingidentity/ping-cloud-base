@@ -31,15 +31,21 @@ fi
 
 UPLOAD_DIR="$(mktemp -d)"
 
+# Append the current timestamp to zip filename
+DST_FILE_TIMESTAMP="data-$(date +%m-%d-%Y.%H.%M.%S).zip"
+
+mv "${DST_FILE}" "${UPLOAD_DIR}/${DST_FILE_TIMESTAMP}"
+
+# Cleanup backup dir
+cd "${HOME}" || exit 1
+rm -rf "${DST_DIRECTORY}"
+
 # Two copy of the backup will be pushed to cloud storage.
 # Make a copy: latest.zip
 DST_FILE_LATEST="latest.zip"
-DST_FILE_TIMESTAMP="data-$(date +%m-%d-%Y.%H.%M.%S).zip"
+cp "${UPLOAD_DIR}/${DST_FILE_TIMESTAMP}" "${UPLOAD_DIR}/${DST_FILE_LATEST}"
 
-cp "${DST_FILE}" "${UPLOAD_DIR}/${DST_FILE_TIMESTAMP}"
-cp "${DST_FILE}" "${UPLOAD_DIR}/${DST_FILE_LATEST}"
-
-beluga_log "Copying files to '${SKBN_CLOUD_PREFIX}'"
+beluga_log "Copying files in '${UPLOAD_DIR}' to '${SKBN_CLOUD_PREFIX}'"
 
 if ! skbnCopy "${SKBN_K8S_PREFIX}/${UPLOAD_DIR}" "${SKBN_CLOUD_PREFIX}"; then
   beluga_log "Failed to upload files in ${UPLOAD_DIR}"
@@ -49,6 +55,5 @@ fi
 # STDOUT all the files in one line for integration test
 ls ${UPLOAD_DIR} | xargs
 
-# Cleanup k8s-s3-upload-archive temp directory
-rm -rf "${DST_DIRECTORY}"
+# Cleanup upload dir
 rm -rf "${UPLOAD_DIR}"
