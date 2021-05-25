@@ -42,7 +42,7 @@ mkdir -p "${UPLOAD_DIR}"
 mv "$DST_FILE_TIMESTAMP" "${UPLOAD_DIR}/${DST_FILE_TIMESTAMP}"
 
 # Cleanup backup dir
-cd "${HOME}" || exit 1
+cd "${UPLOAD_DIR}" || exit 1
 rm -rf "${SERVER_BACKUP_DIR}"
 
 # Two copy of the backup will be pushed to cloud storage.

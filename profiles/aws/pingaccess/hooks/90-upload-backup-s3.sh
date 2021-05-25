@@ -37,7 +37,7 @@ DST_FILE_TIMESTAMP="data-$(date +%m-%d-%Y.%H.%M.%S).zip"
 mv "${DST_FILE}" "${UPLOAD_DIR}/${DST_FILE_TIMESTAMP}"
 
 # Cleanup backup dir
-cd "${HOME}" || exit 1
+cd "${UPLOAD_DIR}" || exit 1
 rm -rf "${DST_DIRECTORY}"
 
 # Two copy of the backup will be pushed to cloud storage.
