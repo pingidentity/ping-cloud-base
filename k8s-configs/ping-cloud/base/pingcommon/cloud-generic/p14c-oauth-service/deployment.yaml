@@ -16,7 +16,7 @@ spec:
       serviceAccount: p14c-oauth-serviceaccount
       containers:
       - name: pingcloud-oauth
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.12
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.17
         imagePullPolicy: IfNotPresent
         resources:
           requests:
@@ -34,4 +34,11 @@ spec:
             fieldRef:
               fieldPath: metadata.namespace
         # The -u flag is necessary for python to emit logging to standard out
-        command: [ 'python3', '-u', '/app/src/oauth_client_services_controller.py' ]
+        command: [ 'python3', '-u', '/app/oauth_client_services_controller.py' ]
+        livenessProbe:
+          exec:
+            command: [ 'python3', '-u', '/app/liveness.py' ]
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          failureThreshold: 3
+          timeoutSeconds: 3
