@@ -89,6 +89,58 @@ aci: (targetattr!="userPassword")(version 3.0; acl "Allow read access for all"; 
 
 Replace `USER_BASE_DN` above with the `USER_BASE_DN` for the customer environment.
 
+## Port Forward into Delegated Admin
+
+1. You must have installed [Versent/saml2aws](https://github.com/Versent/saml2aws).
+
+   Skip if you already have installed, but if you do experience timeouts after logging into DA. You must upgrade Versent/saml2aws.
+
+2. Get the ingress private hosts for pingdirectory-http-ingress and pingdelegator-ingress. From your cluster by running the following:
+   ```shell
+   $ kubectl get ingress -n ping-cloud
+
+   <Remember host URLs as you will need in the next step>
+   ```
+
+3. Add  the pingdirectory-http-ingress and pingdelegator-ingress hosts from step 2 in your `/etc/hosts` file
+  
+   ```
+   127.0.0.1  pingdelegator.<cde>-<customer>.<region (e.g. us1)>.ping-<environment>.cloud
+   127.0.0.1  pingdirectory.<cde>-<customer>.<region (e.g. us1)>.ping-<environment>.cloud
+
+   <Comment out all other 127.0.0.1 lines except for localhost>
+   ```
+
+4. Start a port-forwarding session
+   
+5. Within your cluster state repo navigate to the file `/k8s-configs/base/env_vars`
+   
+   a) Search for variable PD_DELEGATOR_PUBLIC_PORT and set to `localPortNumber`
+   
+   b) Add new variable PD_HTTP_PUBLIC_PORT and set to `localPortNumber`
+
+   e.g.
+   ```
+   PD_DELEGATOR_PUBLIC_PORT=8080
+   PD_HTTP_PUBLIC_PORT=8080
+   ```
+
+6. Modify PingFederate CORS Settings to allow private port for PingDelegator app.
+   
+   a) Login into the PingFederate Admin Console. 
+   
+   b) Navigate to System > OAuth Settings > Authorization Server Setting.
+   
+   c) Scroll to the section Cross-Origin Resource Sharing Settings > Allowed Origin
+   
+   d) Add the wildcard character `*` to your pingdelegator URL 
+      
+      e.g. `https://pingdelegator.test-whale.us1.ping-preview.cloud:*`
+
+   e) Click Update > Save
+
+   f) Replicate changes to cluster
+
 ## Existing customers
 
 ### Quick test of Delegated Admin after upgrading a customer to >= 1.9.0
