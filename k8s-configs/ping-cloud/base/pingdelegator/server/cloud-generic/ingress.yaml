@@ -10,7 +10,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    kubernetes.io/ingress.class: nginx-public
+    kubernetes.io/ingress.class: nginx-private
 spec:
   tls:
   - hosts:
@@ -19,7 +19,7 @@ spec:
   - host: pingdelegator-dev.ping-demo.com
     http:
       paths:
-      # This rule gives external access to the pingaccess runtime service
+      # This rule gives external access to the pingdelegator
       - path: /
         backend:
           serviceName: pingdelegator
