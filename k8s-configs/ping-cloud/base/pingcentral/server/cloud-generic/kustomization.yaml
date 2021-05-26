@@ -12,3 +12,5 @@ resources:
 - service.yaml
 - ingress.yaml
 - storage.yaml
+- snapshot-class.yaml
+- volume-snapshot.yaml

@@ -176,6 +176,10 @@ spec:
   - metadata:
       name: out-dir
     spec:
+      dataSource:
+        name: pingcentral-snapshot
+        kind: VolumeSnapshot
+        apiGroup: snapshot.storage.k8s.io
       accessModes:
       - ReadWriteOnce
       storageClassName: pingcentral-gp2

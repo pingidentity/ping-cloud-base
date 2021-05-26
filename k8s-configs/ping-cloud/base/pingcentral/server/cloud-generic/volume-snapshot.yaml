@@ -1,8 +1,10 @@
+# A VolumeSnapshot is a request for a snapshot of a pre-existing PersistentVolumeClaim.
+
 apiVersion: snapshot.storage.k8s.io/v1beta1
 kind: VolumeSnapshot
 metadata:
-  name: test-snapshot
+  name: pingcentral-snapshot
 spec:
-  volumeSnapshotClassName: test-snapclass
+  volumeSnapshotClassName: pingcentral-snapclass
   source:
     persistentVolumeClaimName: out-dir-pingcentral-0
