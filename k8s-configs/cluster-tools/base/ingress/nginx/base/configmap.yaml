@@ -3,7 +3,7 @@ apiVersion: v1
 metadata:
   name: nginx-configuration
 data:
-  main-snippet: load_module /usr/lib/nginx/modules/ngx_http_sigsci_nxo_module-1.17.7.so;
+  main-snippet: load_module /usr/lib/nginx/modules/ngx_http_sigsci_nxo_module-1.19.6.so;
   http-snippet: sigsci_agent_host unix:/sigsci/tmp/sigsci.sock;
 
 ---
