@@ -5,9 +5,6 @@ SERVER_PROFILE_URL=https://server-profile-user-at-705370621539:8pCzGIXG3k+EOV1hy
 SERVER_PROFILE_PATH=profiles/aws/pingcentral
 SERVER_PROFILE_BRANCH=pdo-1510-pingcentral-spike
 
-ACCEPT_EULA=YES
-PING_IDENTITY_ACCEPT_EULA=YES
-
 REGION=us-west-2
 
 K8S_ACME_CERT_SECRET_NAME=acme-tls-cert
@@ -18,3 +15,16 @@ TAIL_LOG_FILES=
 K8S_TAIL_LOG_FILES=/opt/out/instance/log/error.log /opt/out/instance/log/access.log
 
 SECRETS_DIR=/usr/local/secrets
+
+
+MYSQL_DATABASE: pingcentral
+MYSQL_SERVICE_PORT: "3306"
+MYSQL_PASSWORD: 2FederateM0re
+MYSQL_SERVICE_HOST: calvincarter-primary-mysql-rds.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
+MYSQL_USER: admin
+PING_CENTRAL_BLIND_TRUST: "true"
+PING_CENTRAL_LOG_LEVEL: DEBUG
+PING_CENTRAL_OIDC_ENABLED: "true"
+PING_CENTRAL_VERIFY_HOSTNAME: "false"
+PING_IDENTITY_ACCEPT_EULA: "YES"
+PING_IDENTITY_PASSWORD: 2FederateM0re
