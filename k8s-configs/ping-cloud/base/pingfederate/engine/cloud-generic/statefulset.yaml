@@ -201,6 +201,9 @@ spec:
           subPath: ds_env_vars
         - mountPath: /etc/podinfo
           name: podinfo
+        - name: data-dir
+          mountPath: /opt/staging/solutions_artifacts
+          subPath: solutions_artifacts
         readinessProbe:
           exec:
             command: [ /opt/staging/hooks/99-pf-engine-liveness.sh ]
