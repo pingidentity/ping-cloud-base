@@ -1,15 +1,13 @@
 # This defines the Ping Delegated Admin deployment
 
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: pingcentral
 spec:
   replicas: 1
-  serviceName: pingcentral
-  updateStrategy:
+  strategy:
     type: RollingUpdate
-  podManagementPolicy: OrderedReady
   selector:
     matchLabels:
       role: pingcentral
@@ -127,8 +125,6 @@ spec:
           - name: data-dir
             mountPath: /opt/staging/ds_env_vars
             subPath: ds_env_vars
-          - name: out-dir
-            mountPath: /opt/out
           - name: pingcentral-passwords
             mountPath: /usr/local/secrets
             readOnly: true
@@ -159,9 +155,6 @@ spec:
             name: known-hosts-config
             optional: true
             defaultMode: 0644
-        - name: out-dir
-          persistentVolumeClaim:
-            claimName: out-dir
         - name: pingcentral-license
           secret:
             secretName: pingcentral-license
@@ -172,17 +165,3 @@ spec:
             secretName: pingcentral-passwords
             optional: true
             defaultMode: 0400
-  volumeClaimTemplates:
-  - metadata:
-      name: out-dir
-    spec:
-      dataSource:
-        name: pingcentral-snapshot
-        kind: VolumeSnapshot
-        apiGroup: snapshot.storage.k8s.io
-      accessModes:
-      - ReadWriteOnce
-      storageClassName: pingcentral-gp2
-      resources:
-        requests:
-          storage: 20Gi

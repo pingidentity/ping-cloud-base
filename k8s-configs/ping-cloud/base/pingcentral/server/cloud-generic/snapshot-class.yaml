@@ -1,8 +1,0 @@
-# Create a VolumeSnapshotClass to determine the CSI driver and deletionPolicy for your VolumeSnapshot.
-
-apiVersion: snapshot.storage.k8s.io/v1beta1
-kind: VolumeSnapshotClass
-metadata:
-  name: pingcentral-snapclass
-driver: ebs.csi.aws.com
-deletionPolicy: Delete
