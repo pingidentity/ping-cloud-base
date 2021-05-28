@@ -11,17 +11,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    kubernetes.io/ingress.class: nginx-public
-    nginx.ingress.kubernetes.io/enable-modsecurity: "true"
-    nginx.ingress.kubernetes.io/modsecurity-snippet: |
-      Include /etc/nginx/owasp-modsecurity-crs/nginx-modsecurity.conf
-      SecRuleEngine DetectionOnly
-      SecRequestBodyAccess On
-      SecAuditEngine RelevantOnly
-      SecAuditLogParts ABCDEFGHIJKZ
-      SecAuditLogType Serial
-      SecAuditLogFormat JSON
-      SecAuditLog /dev/stdout
+    kubernetes.io/ingress.class: nginx-private
 spec:
   tls:
   - hosts:
