@@ -48,7 +48,7 @@ rm -rf "${SERVER_BACKUP_DIR}"
 # Two copy of the backup will be pushed to cloud storage.
 # Make a copy: latest.zip
 DST_FILE_LATEST=latest.zip
-cp "${UPLOAD_DIR}/$DST_FILE_TIMESTAMP" "${UPLOAD_DIR}/${DST_FILE_LATEST}"
+cp "${UPLOAD_DIR}/${DST_FILE_TIMESTAMP}" "${UPLOAD_DIR}/${DST_FILE_LATEST}"
 
 beluga_log "Copying files in '${UPLOAD_DIR}' to '${SKBN_CLOUD_PREFIX}'"
 
