@@ -96,7 +96,8 @@ ${BACKUP_URL}
 ${PING_CLOUD_NAMESPACE}
 ${K8S_GIT_URL}
 ${K8S_GIT_BRANCH}
-${REGISTRY_NAME}
+${JFROG_REGISTRY_NAME}
+${ECR_REGISTRY_NAME}
 ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
 ${CLUSTER_STATE_REPO_URL}
 ${CLUSTER_STATE_REPO_BRANCH}
@@ -131,7 +132,8 @@ ${DNS_ZONE}
 ${DNS_ZONE_DERIVED}
 ${PRIMARY_DNS_ZONE}
 ${PRIMARY_DNS_ZONE_DERIVED}
-${IRSA_PING_ANNOTATION_KEY_VALUE}'
+${IRSA_PING_ANNOTATION_KEY_VALUE}
+${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}'
 
 ########################################################################################################################
 # Export some derived environment variables.

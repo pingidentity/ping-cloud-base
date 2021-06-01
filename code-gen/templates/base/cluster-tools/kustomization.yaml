@@ -60,16 +60,6 @@ patchesStrategicMerge:
     - '*.${DNS_ZONE}'
     commonName: ${DNS_ZONE}
 
-### External DNS service account ###
-- |-
-  apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    name: external-dns
-    namespace: external-dns
-    annotations:
-      purpose: service-account-for-external-dns
-
 ### Cloud-watch logging and monitoring ###
 - |-
   apiVersion: v1
@@ -116,6 +106,16 @@ patchesStrategicMerge:
   data:
     ssh_known_hosts: |-
       ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
+
+### Assign Elastic IP addresses to the ingress-nginx-public Network Load Balancer by adding the annotation ###
+- |-
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: ingress-nginx
+    namespace: ingress-nginx-public
+    annotations:
+      ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}
 
 patchesJson6902:
 
