@@ -124,11 +124,9 @@ spec:
         - name: sigsci-agent
           image: signalsciences/sigsci-agent:latest
           imagePullPolicy: IfNotPresent
-          env:
-          - name: SIGSCI_ACCESSKEYID
-            value: a41c7f13-146a-46cd-b23e-5e57bc0c52aa
-          - name: SIGSCI_SECRETACCESSKEY
-            value: OlZ6UdQo7Pc91PGqTyYeWjzHanGo9ME_Ig_U4r4lU6A
+          envFrom:
+          - secretRef:
+              name: sig-sci-secret
           securityContext:
             # The sigsci-agent container should run with its root filesystem read only
             readOnlyRootFilesystem: true
