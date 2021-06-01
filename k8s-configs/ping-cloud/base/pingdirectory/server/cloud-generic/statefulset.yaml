@@ -248,9 +248,10 @@ spec:
               mountPath: /opt/staging/ds_env_vars
               subPath: ds_env_vars
           readinessProbe:
-            exec:
-              command:
-                - /opt/staging/hooks/85-readiness.sh
+            httpGet:
+              path: /available-state
+              port: 1443
+              scheme: HTTPS
             # Do not start the readiness probe for 3 minutes after starting the
             # container because PD will never finish its start/restart sequence
             # before then, in practice. Run the readiness probe every 5 seconds
@@ -260,8 +261,10 @@ spec:
             periodSeconds: 5
             failureThreshold: 3
           livenessProbe:
-            exec:
-              command: [/opt/liveness.sh]
+            httpGet:
+              path: /available-state
+              port: 1443
+              scheme: HTTPS
             # Health checks will kick in 10 minutes after the pod starts up.
             initialDelaySeconds: 600
             periodSeconds: 30

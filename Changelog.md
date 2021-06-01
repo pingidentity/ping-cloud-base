@@ -4,11 +4,12 @@
 
 - Fixed Elasticsearch cluster not able to select a primary
 - Reduced log output on curl calls
+- PingDirectory health checks are now performed via HTTPS
 
 _Changes:_
-- [X] PDO-2308 Update PD liveness check to use an absolute path
 - [X] PDO-2413 Remove curl progress output from logs
 - [X] PDO-2439 Elasticsearch unable to select a master
+- [X] PDO-2468 Update PD healthchecks to use the availability servlet
 
 ### 1.9.0
 
