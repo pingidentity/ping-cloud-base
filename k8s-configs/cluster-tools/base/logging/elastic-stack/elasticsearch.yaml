@@ -202,12 +202,14 @@ spec:
           value: "elasticsearch"
         - name: ES_JAVA_OPTS
           value: "-Xms512m -Xmx512m"
-        - name: LOG_LEVEL
+        - name: logger.level
           value: 'warn'
-        - name: node.name
+        - name: NODE_NAME
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
+        - name: node.name
+          value: "$(NODE_NAME).elasticsearch"
         - name: cluster.name
           value: "k8s-logs"
         - name: network.host

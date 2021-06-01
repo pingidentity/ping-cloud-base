@@ -12,7 +12,7 @@ test -f "${STAGING_DIR}/ds_env_vars" && . "${STAGING_DIR}/ds_env_vars"
 ########################################################################################################################
 function make_api_request() {
   set +x
-  http_code=$(curl -k -o ${OUT_DIR}/api_response.txt -w "%{http_code}" \
+  http_code=$(curl -sSk -o ${OUT_DIR}/api_response.txt -w "%{http_code}" \
         --retry ${API_RETRY_LIMIT} \
         --max-time ${API_TIMEOUT_WAIT} \
         --retry-delay 1 \
@@ -47,7 +47,7 @@ function make_api_request() {
 ########################################################################################################################
 function make_api_request_download() {
   set +x
-  http_code=$(curl -k \
+  http_code=$(curl -sSk \
     --retry "${API_RETRY_LIMIT}" \
     --max-time "${API_TIMEOUT_WAIT}" \
     --retry-delay 1 \
@@ -86,7 +86,7 @@ function wait_for_admin_api_endpoint() {
   beluga_log "Waiting for admin API endpoint at ${API_REQUEST_URL}"
 
   while true; do
-    http_code=$(curl -k \
+    http_code=$(curl -sSk \
       --retry "${API_RETRY_LIMIT}" \
       --max-time "${API_TIMEOUT_WAIT}" \
       --retry-delay 1 \
