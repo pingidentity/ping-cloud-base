@@ -98,7 +98,7 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
                 else
                   # For downloading over https we need to specify the exact file name,
                   # This will only work for standard extensions with a prefix of pingidentity.com
-                  curl -f "${ARTIFACT_LOCATION}/${ARTIFACT_RUNTIME_ZIP}" --output ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP} && beluga_log "Artifact successfully downloaded." || exit 1
+                  curl -sS -f "${ARTIFACT_LOCATION}/${ARTIFACT_RUNTIME_ZIP}" --output ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP} && beluga_log "Artifact successfully downloaded." || exit 1
                 fi
 
                 if test $(echo $?) != "0"; then
@@ -125,7 +125,7 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
         done
 
         # Print listed files from extensions
-        ls ${DOWNLOAD_DIR}
+        ls ${DOWNLOAD_DIR} | xargs
 
       else
         beluga_log "Artifacts will not be deployed as could not parse ${STAGING_DIR}/artifacts/artifact-list.json."

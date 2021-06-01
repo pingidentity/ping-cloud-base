@@ -53,8 +53,8 @@ if test -f "${SERVER_RESTORE_DIR}/${DST_FILE}"; then
   # Print the filename of the downloaded file from cloud storage.
   beluga_log "Download file name: ${DATA_BACKUP_FILE_NAME}"
 
-  # Print listed files from drop-in-deployer
-  ls ${DEPLOYER_PATH}
+  # Print listed files from drop-in-deployer to a single line
+  ls ${DEPLOYER_PATH} | xargs
 
 else 
   beluga_log "No archive data found"

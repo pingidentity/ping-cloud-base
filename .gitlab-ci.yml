@@ -38,6 +38,15 @@ deploy:
   - ./ci-scripts/build/deploy.sh
 
 ## Unit Test stage ##
+
+## Global environment variables ##
+framework-unit-tests:
+  stage: unit-test
+  tags:
+  - shell-runner
+  script:
+     - ./ci-scripts/run-framework-unit-tests "dummy Parameter From gitlab runner"
+
 common-unit-tests:
   stage: unit-test
   tags:

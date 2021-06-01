@@ -96,7 +96,8 @@ ${BACKUP_URL}
 ${PING_CLOUD_NAMESPACE}
 ${K8S_GIT_URL}
 ${K8S_GIT_BRANCH}
-${REGISTRY_NAME}
+${JFROG_REGISTRY_NAME}
+${ECR_REGISTRY_NAME}
 ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
 ${CLUSTER_STATE_REPO_URL}
 ${CLUSTER_STATE_REPO_BRANCH}
@@ -131,7 +132,8 @@ ${DNS_ZONE}
 ${DNS_ZONE_DERIVED}
 ${PRIMARY_DNS_ZONE}
 ${PRIMARY_DNS_ZONE_DERIVED}
-${IRSA_PING_ANNOTATION_KEY_VALUE}'
+${IRSA_PING_ANNOTATION_KEY_VALUE}
+${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}'
 
 ########################################################################################################################
 # Export some derived environment variables.
@@ -467,6 +469,8 @@ handle_changed_profiles() {
   if ! test "${new_files}"; then
     log "No changed '${PROFILES_DIR}' files to copy '${DEFAULT_CDE_BRANCH}' to its new branch '${NEW_BRANCH}'"
   else
+    log "DEBUG: Found the following new files in branch '${DEFAULT_CDE_BRANCH}':"
+    echo "${new_files}"
     echo "${new_files}" | xargs git checkout "${DEFAULT_CDE_BRANCH}"
   fi
 

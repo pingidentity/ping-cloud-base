@@ -359,9 +359,6 @@
                     <KeyValuePair key="logPurpose" value="Provisioner_SIEM"/>
                 </JSONLayout>
             </PingSyslogLayout>
-            <Policies>
-                <TimeBasedTriggeringPolicy />
-            </Policies>
         </Console>
         <!-- Outbound provisioner audit log: A time/date based rolling appender -->
         <RollingFile name="OutboundProvisionerEventToFile"
