@@ -260,8 +260,10 @@ spec:
             periodSeconds: 5
             failureThreshold: 3
           livenessProbe:
-            exec:
-              command: [/opt/liveness.sh]
+            httpGet:
+              path: /available-state
+              port: 1443
+              scheme: HTTPS
             # Health checks will kick in 10 minutes after the pod starts up.
             initialDelaySeconds: 600
             periodSeconds: 30
