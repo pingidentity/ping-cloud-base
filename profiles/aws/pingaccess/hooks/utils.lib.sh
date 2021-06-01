@@ -28,7 +28,7 @@ function stop_server()
 ########################################################################################################################
 function make_api_request() {
     set +x
-    http_code=$(curl -k -o ${OUT_DIR}/api_response.txt -w "%{http_code}" \
+    http_code=$(curl -sSk -o ${OUT_DIR}/api_response.txt -w "%{http_code}" \
          --retry ${API_RETRY_LIMIT} \
          --max-time ${API_TIMEOUT_WAIT} \
          --retry-delay 1 \
@@ -61,7 +61,7 @@ function make_api_request() {
 ########################################################################################################################
 function make_initial_api_request() {
     set +x
-    http_code=$(curl -k -o ${OUT_DIR}/api_response.txt -w "%{http_code}" \
+    http_code=$(curl -sSk -o ${OUT_DIR}/api_response.txt -w "%{http_code}" \
          --retry ${API_RETRY_LIMIT} \
          --max-time ${API_TIMEOUT_WAIT} \
          --retry-delay 1 \
@@ -94,7 +94,7 @@ function make_initial_api_request() {
 ########################################################################################################################
 function make_api_request_download() {
     set +x
-    http_code=$(curl -k -w "%{http_code}" \
+    http_code=$(curl -sSk -w "%{http_code}" \
          --retry ${API_RETRY_LIMIT} \
          --max-time ${API_TIMEOUT_WAIT} \
          --retry-delay 1 \

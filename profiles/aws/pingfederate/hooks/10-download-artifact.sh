@@ -117,7 +117,7 @@ if (test -f "${STAGING_DIR}/artifacts/artifact-list.json") || (test ! -z "${SOLU
                   fi
 
                 else
-                  curl "${ARTIFACT_LOCATION}" --output ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}
+                  curl -sS "${ARTIFACT_LOCATION}" --output ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}
                 fi
 
                 # Unzip deploy and conf folders from the runtime zip
@@ -148,10 +148,10 @@ if (test -f "${STAGING_DIR}/artifacts/artifact-list.json") || (test ! -z "${SOLU
 
         done
 
-        # Print listed files from deploy and conf
-        ls ${OUT_DIR}/instance/server/default/deploy
-        ls ${OUT_DIR}/instance/server/default/conf/template
-        ls ${OUT_DIR}/instance/server/default/conf/language-packs
+        # Print listed files from deploy and conf to a single line so we don't spam logs
+        ls ${OUT_DIR}/instance/server/default/deploy | xargs
+        ls ${OUT_DIR}/instance/server/default/conf/template | xargs
+        ls ${OUT_DIR}/instance/server/default/conf/language-packs | xargs
 
       else
         beluga_log "Artifacts will not be deployed as could not parse the list of artifacts."
