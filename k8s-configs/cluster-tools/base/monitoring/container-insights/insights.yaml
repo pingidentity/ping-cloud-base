@@ -240,7 +240,7 @@ data:
       @id in_tail_container_logs
       @label @nonpingcontainers
       path /var/log/containers/*.log
-      exclude_path ["/var/log/containers/cloudwatch-agent*", "/var/log/containers/fluentd*", "/var/log/containers/pingaccess*", "/var/log/containers/pingfederate*", "/var/log/containers/pingdirectory*"]
+      exclude_path ["/var/log/containers/cloudwatch-agent*", "/var/log/containers/fluentd*", "/var/log/containers/pingaccess*", "/var/log/containers/pingfederate*", "/var/log/containers/pingdirectory*", "/var/log/containers/pingdelegator*"]
       pos_file /var/log/fluentd-containers.log.pos
       tag *
       read_from_head true
@@ -728,6 +728,11 @@ data:
 
       <match kubernetes.**>
         @type rewrite_tag_filter
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/log\/access.*127\.0\.0\.1.*GET \/ HTTP\/2\.0.*200/
+          tag clear
+        </rule>
         <rule>
           key log
           pattern /^\/opt\/out\/instance\/log\/access/
