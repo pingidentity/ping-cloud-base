@@ -9,7 +9,7 @@ fi
 
 testLdap() {
   log "DEV_TEST_ENV set to: ${DEV_TEST_ENV}"
-  log "Using the hostname: ${PINGDIRECTORY_ADMIN} and port: $(PD_SEED_LDAPS_PORT)"
+  log "Using the hostname: ${PINGDIRECTORY_ADMIN} and port: ${PD_SEED_LDAPS_PORT}"
   if test "${DEV_TEST_ENV}" = 'true'; then
     log "Running process grep and ldapsearch..."
     if pgrep -f docker > /dev/null; then
