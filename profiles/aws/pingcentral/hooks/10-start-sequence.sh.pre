@@ -1,3 +1,4 @@
 #!/usr/bin/env sh
 
+echo "Deleting pingcentral.jwk"
 rm -f "${SERVER_ROOT_DIR}"/conf/pingcentral.jwk
