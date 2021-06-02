@@ -2789,3 +2789,27 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 10
       serviceAccountName: argocd-application-controller
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: argocd-notifications-secret
+stringData:
+  slack-token: xoxb-2627129940-2109028639153-D4ezdz373bsgv2XwM5nJKDZg
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-notifications-cm
+data:
+  service.slack: |
+    apiURL: <url>                 # optional URL, e.g. https://example.com/api
+    token: $slack-token
+    username: <override-username> # optional username
+    icon: <override-icon> # optional icon for the message (supports both emoij and url notation)
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    notifications.argoproj.io/subscribe.on-sync-succeeded.slack: argocd
