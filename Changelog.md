@@ -4,11 +4,13 @@
 
 - Fixed Elasticsearch cluster not able to select a primary
 - Reduced log output on curl calls
+- Added the pingfederate-p14c-init container to PingFederate engine nodes so that integration kits are deployed on engines
 
 _Changes:_
 - [X] PDO-2308 Update PD liveness check to use an absolute path
 - [X] PDO-2413 Remove curl progress output from logs
 - [X] PDO-2439 Elasticsearch unable to select a master
+- [X] PDO-2507 NS 2 - Missing integration kit file in the node on CIAM environment
 
 ### 1.9.0
 
