@@ -233,6 +233,9 @@ spec:
             - name: data-dir
               mountPath: /opt/staging/newrelic.jar
               subPath: newrelic.jar
+            - name: data-dir
+              mountPath: /opt/staging/jmx_prometheus_javaagent-0.14.0.jar
+              subPath: jmx_prometheus_javaagent-0.14.0.jar
             - name: out-dir
               mountPath: /opt/out
             - name: pingdirectory-passwords
@@ -257,8 +260,10 @@ spec:
             periodSeconds: 5
             failureThreshold: 3
           livenessProbe:
-            exec:
-              command: [liveness.sh]
+            httpGet:
+              path: /available-state
+              port: 1443
+              scheme: HTTPS
             # Health checks will kick in 10 minutes after the pod starts up.
             initialDelaySeconds: 600
             periodSeconds: 30
@@ -276,6 +281,8 @@ spec:
             - "--web.listen-address=:9102"
           ports:
             - containerPort: 9102
+              protocol: TCP
+            - containerPort: 8080
               protocol: TCP
             - containerPort: 8125
               protocol: UDP

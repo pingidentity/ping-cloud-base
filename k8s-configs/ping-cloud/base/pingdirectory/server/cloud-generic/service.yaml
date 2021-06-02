@@ -21,6 +21,8 @@ spec:
   - port: 8989
     name: repl
     targetPort: repl
+  - port: 8080
+    name: jmx-metrics
   - port: 9102
     name: metrics
   clusterIP: None
