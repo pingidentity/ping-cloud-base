@@ -223,7 +223,6 @@ data:
     echo "Contents of ${STUNNEL_CONF_FILE}:"
     cat "${STUNNEL_CONF_FILE}"
 
-    echo "Installing kubectl"
     wget https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl -P ${STUNNEL_HOME}
     chmod +x "${STUNNEL_HOME}"/kubectl
 

@@ -12,7 +12,7 @@ test -f "${STAGING_DIR}/ds_env_vars" && . "${STAGING_DIR}/ds_env_vars"
 ########################################################################################################################
 function make_api_request() {
   set +x
-  http_code=$(curl -k -o ${OUT_DIR}/api_response.txt -w "%{http_code}" \
+  http_code=$(curl -sSk -o ${OUT_DIR}/api_response.txt -w "%{http_code}" \
         --retry ${API_RETRY_LIMIT} \
         --max-time ${API_TIMEOUT_WAIT} \
         --retry-delay 1 \
@@ -47,7 +47,7 @@ function make_api_request() {
 ########################################################################################################################
 function make_api_request_download() {
   set +x
-  http_code=$(curl -k \
+  http_code=$(curl -sSk \
     --retry "${API_RETRY_LIMIT}" \
     --max-time "${API_TIMEOUT_WAIT}" \
     --retry-delay 1 \
@@ -86,7 +86,7 @@ function wait_for_admin_api_endpoint() {
   beluga_log "Waiting for admin API endpoint at ${API_REQUEST_URL}"
 
   while true; do
-    http_code=$(curl -k \
+    http_code=$(curl -sSk \
       --retry "${API_RETRY_LIMIT}" \
       --max-time "${API_TIMEOUT_WAIT}" \
       --retry-delay 1 \
@@ -241,6 +241,7 @@ function configure_tcp_xml() {
           bucket_name=\"${CLUSTER_BUCKET_NAME}\" \
           bucket_prefix=\"${PING_PRODUCT}\" \
           remove_all_data_on_view_change=\"true\" \
+          acl_grant_bucket_owner_full_control=\"true\" \
           write_data_on_find=\"true\" />"
     fi
 
@@ -286,6 +287,18 @@ function configure_tcp_xml() {
 # Set up tcp.xml based on whether it is a single-cluster or multi-cluster deployment.
 ########################################################################################################################
 function configure_cluster() {
+  # Copy customer native-s3-ping, if present.
+  # See PDO-1438 for details. Here's the customization to native S3 ping:
+  # https://github.com/jgroups-extras/native-s3-ping/pull/83/files
+  CUSTOM_NATIVE_S3_PING_JAR='/opt/staging/native-s3-ping.jar'
+  if test -f "${CUSTOM_NATIVE_S3_PING_JAR}"; then
+    TARGET_FILE="${SERVER_ROOT_DIR}"/server/default/lib/native-s3-ping.jar
+    beluga_log "Copying '${CUSTOM_NATIVE_S3_PING_JAR}' to '${TARGET_FILE}'"
+
+    mv "${TARGET_FILE}" "${TARGET_FILE}".bak
+    cp "${CUSTOM_NATIVE_S3_PING_JAR}" "${TARGET_FILE}"
+  fi
+
   # Configure the tcp.xml file for service discovery.
   configure_tcp_xml
 }
