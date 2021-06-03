@@ -204,12 +204,10 @@ spec:
           value: "-Xms512m -Xmx512m"
         - name: logger.level
           value: 'warn'
-        - name: NODE_NAME
+        - name: node.name
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        - name: node.name
-          value: "$(NODE_NAME).elasticsearch"
         - name: cluster.name
           value: "k8s-logs"
         - name: network.host
