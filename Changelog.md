@@ -16,6 +16,7 @@ _Changes:_
 - [X] PDO-2399 Multi-line logs not displaying in CW properly
 - [X] PDO-2413 Remove curl progress output from logs
 - [X] PDO-2439 Elasticsearch log level to warn
+- [X] PDO-2490 Allow auto-expansion of all volumes (Elastic logging, PD, and PA/PA-WAS/PF admins)
 - [X] PDO-2507 NS 2 - Missing integration kit file in the node on CIAM environment
 
 ### 1.9.0
