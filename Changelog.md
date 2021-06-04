@@ -11,13 +11,21 @@ _Changes:_
 ### 1.9.1
 
 - Fixed Elasticsearch cluster not able to select a primary
+- Removed duplicate PingDelegator logs from CloudWatch
 - Reduced log output on curl calls
+- Fixed the problem where PingFederate fails to crashloop pods when artifact-list.json contains improper json
+- Added the pingfederate-p14c-init container to PingFederate engine nodes so that integration kits are deployed on engines
+- Updated fluentd to aggregate multiline log messages
 
 _Changes:_
 
+- [X] PDO-2243 Remove duplicate messages from PingDelegator's access.log
 - [X] PDO-2308 Update PD liveness check to use an absolute path
+- [X] PDO-2335 PingFederate fails to crashloop pods when artifact-list.json contains improper json
+- [X] PDO-2399 Multi-line logs not displaying in CW properly
 - [X] PDO-2413 Remove curl progress output from logs
-- [X] PDO-2439 Elasticsearch unable to select a master
+- [X] PDO-2439 Elasticsearch log level to warn
+- [X] PDO-2507 NS 2 - Missing integration kit file in the node on CIAM environment
 
 ### 1.9.0
 

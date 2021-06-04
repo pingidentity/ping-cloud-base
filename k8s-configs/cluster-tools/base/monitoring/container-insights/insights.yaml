@@ -240,7 +240,7 @@ data:
       @id in_tail_container_logs
       @label @nonpingcontainers
       path /var/log/containers/*.log
-      exclude_path ["/var/log/containers/cloudwatch-agent*", "/var/log/containers/fluentd*", "/var/log/containers/pingaccess*", "/var/log/containers/pingfederate*", "/var/log/containers/pingdirectory*"]
+      exclude_path ["/var/log/containers/cloudwatch-agent*", "/var/log/containers/fluentd*", "/var/log/containers/pingaccess*", "/var/log/containers/pingfederate*", "/var/log/containers/pingdirectory*", "/var/log/containers/pingdelegator*"]
       pos_file /var/log/fluentd-containers.log.pos
       tag *
       read_from_head true
@@ -362,6 +362,15 @@ data:
         </record>
       </filter>
 
+      <filter **>
+        @type concat
+        key log
+        multiline_start_regexp /\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}([,.]\d{3}){0,1}Z|\d{2}:\d{2}:\d{2}\s+ping.*-\d{1,2}|\\u001b\[0;32m/
+        separator ""
+        flush_interval 5
+        timeout_label @normal
+      </filter>
+
       <match kubernetes.**>
         @type rewrite_tag_filter
         <rule>
@@ -443,6 +452,15 @@ data:
         <record>
           stream_name ${record["kubernetes"]["pod_name"]}_${record["kubernetes"]["namespace_name"]}_${record["kubernetes"]["container_name"]}
         </record>
+      </filter>
+
+      <filter **>
+        @type concat
+        key log
+        multiline_start_regexp /\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}[,.]\d{3}|\d{2}:\d{2}:\d{2}\s+ping.*-\d{1,2}|\\u001b\[0;32m/
+        separator ""
+        flush_interval 5
+        timeout_label @normal
       </filter>
 
       <match kubernetes.**>
@@ -555,6 +573,15 @@ data:
         <record>
           stream_name ${record["kubernetes"]["pod_name"]}_${record["kubernetes"]["namespace_name"]}_${record["kubernetes"]["container_name"]}
         </record>
+      </filter>
+
+      <filter **>
+        @type concat
+        key log
+        multiline_start_regexp /\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2},\d{3}|\d{2}:\d{2}:\d{2}\s+ping.*-\d{1,2}/
+        separator ""
+        flush_interval 5
+        timeout_label @normal
       </filter>
 
       <match kubernetes.**>
@@ -728,6 +755,11 @@ data:
 
       <match kubernetes.**>
         @type rewrite_tag_filter
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/log\/access.*127\.0\.0\.1.*GET \/ HTTP\/2\.0.*200/
+          tag clear
+        </rule>
         <rule>
           key log
           pattern /^\/opt\/out\/instance\/log\/access/
