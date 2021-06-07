@@ -1,0 +1,12 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+- ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingcommon/my-ping?ref=${K8S_GIT_BRANCH}
+
+images:
+- name: ${ECR_REGISTRY_NAME}/pingcloud-services/p14c-bootstrap
+  newTag: ${P14C_BOOTSTRAP_IMAGE_TAG}
+
+- name: ${ECR_REGISTRY_NAME}/pingcloud-services/p14c-integration
+  newTag: ${P14C_INTEGRATION_IMAGE_TAG}

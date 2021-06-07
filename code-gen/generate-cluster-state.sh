@@ -568,6 +568,7 @@ BASE_DIR="${TEMPLATES_HOME}/base"
 BASE_TOOLS_REL_DIR="base/cluster-tools"
 BASE_PING_CLOUD_REL_DIR="base/ping-cloud"
 REGION_DIR="${TEMPLATES_HOME}/region"
+CHUB_OVERLAY_DIR="${TEMPLATES_HOME}/chub-overlay"
 
 # Generate an SSH key pair for the CD tool.
 if test -z "${SSH_ID_PUB_FILE}" && test -z "${SSH_ID_KEY_FILE}"; then
@@ -767,6 +768,15 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
 
   cp -r "${BASE_DIR}" "${ENV_DIR}"
   cp -r "${REGION_DIR}/." "${ENV_DIR}/${REGION_NICK_NAME}"
+
+  if test "${ENV}" = 'chub'; then
+    echo "Laying down overrides for customer hub into '${ENV}' branch"
+    (
+      cd "${CHUB_OVERLAY_DIR}"
+      find . -type f -exec cp -avfL --parents '{}' "${ENV_DIR}/${REGION_NICK_NAME}" \;
+      cd -
+    )
+  fi
 
   substitute_vars "${ENV_DIR}" "${REPO_VARS}" secrets.yaml env_vars
 
