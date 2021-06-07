@@ -1,0 +1,12 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingdirectory
+spec:
+  template:
+    spec:
+      initContainers:
+      - name: wait-for-services
+        env:
+        - name: WAIT_FOR_SERVICES
+          value: pingfederate-admin

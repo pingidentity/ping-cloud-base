@@ -8,7 +8,7 @@ commonLabels:
   role: pingcentral
 
 resources:
-- ../../../base/pingcentral/server/aws
+- ../../../../base/pingcentral/server/aws
 
 patchesStrategicMerge:
-- wait-for-services.yaml
+- wait-for-service.yaml

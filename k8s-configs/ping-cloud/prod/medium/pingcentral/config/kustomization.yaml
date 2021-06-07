@@ -8,7 +8,10 @@ commonLabels:
   role: pingcentral
 
 resources:
-- ../../../base/pingcentral/server/aws
+- ../../../../base/pingcentral/config
 
-patchesStrategicMerge:
-- wait-for-services.yaml
+configMapGenerator:
+- name: pingcentral-environment-variables
+  behavior: merge
+  envs:
+  - env_vars
