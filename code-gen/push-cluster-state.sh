@@ -118,7 +118,7 @@ finalize() {
 # Quiet mode where pretty console-formatting is omitted.
 QUIET="${QUIET:-false}"
 
-ALL_ENVIRONMENTS='dev test stage prod'
+ALL_ENVIRONMENTS='dev test stage prod chub'
 ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
 
 GENERATED_CODE_DIR="${GENERATED_CODE_DIR:-/tmp/sandbox}"

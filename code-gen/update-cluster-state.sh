@@ -888,7 +888,7 @@ fi
 CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 
 # Validate that a CDE branch exists for every environment.
-ALL_ENVIRONMENTS='dev test stage prod'
+ALL_ENVIRONMENTS='dev test stage prod chub'
 ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
 
 NEW_BRANCHES=

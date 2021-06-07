@@ -11,4 +11,4 @@ resources:
 - ../../../base/pingcentral/server/aws
 
 patchesStrategicMerge:
-- wait-for-services.yaml
+- wait-for-service.yaml

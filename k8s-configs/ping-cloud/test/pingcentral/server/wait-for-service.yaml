@@ -9,4 +9,4 @@ spec:
       - name: wait-for-services
         env:
         - name: WAIT_FOR_SERVICES
-          value: pingfederate-admin
+          value: pingfederate-cluster

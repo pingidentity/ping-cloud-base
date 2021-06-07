@@ -610,7 +610,7 @@ cp -pr ../profiles/aws/. "${CLUSTER_STATE_DIR}"/profiles
 echo "${PING_CLOUD_BASE_COMMIT_SHA}" > "${TARGET_DIR}/pcb-commit-sha.txt"
 
 # Now generate the yaml files for each environment
-ALL_ENVIRONMENTS='dev test stage prod'
+ALL_ENVIRONMENTS='dev test stage prod chub'
 ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
 
 export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL}"
@@ -643,7 +643,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     dev | test)
       export KUSTOMIZE_BASE="${KUSTOMIZE_BASE:-test}"
       ;;
-    stage | prod)
+    stage | prod | chub)
       export KUSTOMIZE_BASE="${KUSTOMIZE_BASE:-prod/${SIZE}}"
       ;;
   esac
@@ -653,7 +653,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     dev | test | stage)
       export LETS_ENCRYPT_SERVER="${LETS_ENCRYPT_SERVER:-https://acme-staging-v02.api.letsencrypt.org/directory}"
       ;;
-    prod)
+    prod | chub)
       export LETS_ENCRYPT_SERVER="${LETS_ENCRYPT_SERVER:-https://acme-v02.api.letsencrypt.org/directory}"
       ;;
   esac
@@ -714,7 +714,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   export PA_GCOPTION='-XX:+UseParallelGC'
 
   # Zone for this region and the primary region
-  if "${IS_BELUGA_ENV}"; then
+  if "${IS_BELUGA_ENV}" || test "${ENV}" = 'chub'; then
     export DNS_ZONE="\${TENANT_DOMAIN}"
     export PRIMARY_DNS_ZONE="\${PRIMARY_TENANT_DOMAIN}"
   else
