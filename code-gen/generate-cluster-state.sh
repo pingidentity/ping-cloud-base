@@ -767,7 +767,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   mkdir -p "${ENV_DIR}"
 
   cp -r "${BASE_DIR}" "${ENV_DIR}"
-  cp -r "${REGION_DIR}/." "${ENV_DIR}/${REGION_NICK_NAME}"
+  cp -r "${REGION_DIR}/." "${ENV_DIR}/region"
 
   if test "${ENV}" = 'chub'; then
     echo "Laying down overrides for customer hub from ${CHUB_OVERLAY_DIR} onto ${ENV_DIR}"
@@ -775,6 +775,9 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     rsync -rR * "${ENV_DIR}"
     cd - >/dev/null 2>&1
   fi
+
+  # Rename to the actual region nick name after overlaying CHUB files.
+  mv "${ENV_DIR}/region" "${ENV_DIR}/${REGION_NICK_NAME}"
 
   substitute_vars "${ENV_DIR}" "${REPO_VARS}" secrets.yaml env_vars
 
