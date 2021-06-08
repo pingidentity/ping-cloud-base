@@ -770,9 +770,9 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   cp -r "${REGION_DIR}/." "${ENV_DIR}/${REGION_NICK_NAME}"
 
   if test "${ENV}" = 'chub'; then
-    echo "Laying down overrides for customer hub from ${CHUB_OVERLAY_DIR} onto ${ENV_DIR}/base"
+    echo "Laying down overrides for customer hub from ${CHUB_OVERLAY_DIR} onto ${ENV_DIR}"
     cd "${CHUB_OVERLAY_DIR}"
-    rsync -rR * "${ENV_DIR}/base"
+    rsync -rR * "${ENV_DIR}"
     cd - >/dev/null 2>&1
   fi
 
