@@ -7,5 +7,5 @@ commonLabels:
   app: ping-cloud
 
 resources:
-- ../../cloud-generic
+- ../cloud-generic
 - pingcloud-p14c-bootstrap
