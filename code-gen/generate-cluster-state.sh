@@ -770,12 +770,10 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   cp -r "${REGION_DIR}/." "${ENV_DIR}/${REGION_NICK_NAME}"
 
   if test "${ENV}" = 'chub'; then
-    echo "Laying down overrides for customer hub into '${ENV}' branch"
-    (
-      cd "${CHUB_OVERLAY_DIR}"
-      find . -type f -exec cp -avfL --parents '{}' "${ENV_DIR}/${REGION_NICK_NAME}" \;
-      cd -
-    )
+    echo "Laying down overrides for customer hub from ${CHUB_OVERLAY_DIR} onto ${ENV_DIR}/base"
+    cd "${CHUB_OVERLAY_DIR}"
+    rsync -rR * "${ENV_DIR}/base"
+    cd - >/dev/null 2>&1
   fi
 
   substitute_vars "${ENV_DIR}" "${REPO_VARS}" secrets.yaml env_vars
