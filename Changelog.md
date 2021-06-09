@@ -1,5 +1,13 @@
 # Changelog
 
+### 1.9.2
+
+- Preserve PingDirectory descriptor.json across CSR updates
+
+_Changes:_
+
+- [X] PDO-2539 Preserve PingDirectory descriptor.json across CSR updates
+
 ### 1.9.1
 
 - Remove duplicate PingDelegator logs from CloudWatch
