@@ -62,6 +62,21 @@ spec:
           effect: "NoSchedule"
       terminationGracePeriodSeconds: 300
       initContainers:
+        - name: profile-init
+          image: public.ecr.aws/r2h3l6e4/pingcloud-profiles/pindirectory:8.2.0.4-v1.0.4
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - -c
+            - |
+              cp -r /opt/stage/* /opt/in/
+              chmod a+x /opt/in/hooks/*
+          envFrom:
+            - configMapRef:
+                name: pingaccess-environment-variables
+          volumeMounts:
+            - name: in-dir
+              mountPath: /opt/in
         - name: pingdirectory-init
           # FIXME: switch to same user as app
           securityContext:
@@ -247,6 +262,8 @@ spec:
             - name: data-dir
               mountPath: /opt/staging/ds_env_vars
               subPath: ds_env_vars
+            - name: in-dir
+              mountPath: /opt/in
           readinessProbe:
             exec:
               command:
@@ -303,6 +320,8 @@ spec:
         - name: shared-dir
           emptyDir: {}
         - name: data-dir
+          emptyDir: {}
+        - name: in-dir
           emptyDir: {}
         - name: pingdirectory-init
           configMap:

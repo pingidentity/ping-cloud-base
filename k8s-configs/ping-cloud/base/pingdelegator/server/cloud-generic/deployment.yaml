@@ -34,6 +34,21 @@ spec:
                         - pingdelegator
                 topologyKey: "failure-domain.beta.kubernetes.io/zone"
       initContainers:
+      - name: profile-init
+        image: public.ecr.aws/r2h3l6e4/pingcloud-profiles/pingdelegator:4.4.1-v1.0.4
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+          - |
+            cp -r /opt/stage/* /opt/in/
+            chmod a+x /opt/in/hooks/*
+        envFrom:
+          - configMapRef:
+              name: pingaccess-environment-variables
+        volumeMounts:
+          - name: in-dir
+            mountPath: /opt/in
       - name: pingdelegator-init
         # FIXME: switch to same user as app
         securityContext:
@@ -91,6 +106,8 @@ spec:
           - name: data-dir
             mountPath: /opt/staging/ds_env_vars
             subPath: ds_env_vars
+          - name: in-dir
+            mountPath: /opt/in
         readinessProbe:
           exec:
             command: [/opt/liveness.sh]
@@ -125,6 +142,8 @@ spec:
         - name: ssh-dir
           emptyDir: {}
         - name: data-dir
+          emptyDir: {}
+        - name: in-dir
           emptyDir: {}
         - name: pingdelegator-init
           configMap:

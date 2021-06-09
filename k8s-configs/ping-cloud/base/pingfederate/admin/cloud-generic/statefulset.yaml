@@ -27,6 +27,21 @@ spec:
     spec:
       serviceAccount: ping-serviceaccount
       initContainers:
+      - name: profile-init
+        image: public.ecr.aws/r2h3l6e4/pingcloud-profiles/pingfederate:10.1.2-v1.0.4
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+          - -c
+          - |
+            cp -r /opt/stage/* /opt/in/
+            chmod a+x /opt/in/hooks/*
+        envFrom:
+          - configMapRef:
+              name: pingaccess-environment-variables
+        volumeMounts:
+          - name: in-dir
+            mountPath: /opt/in
       - name: pingfederate-p14c-init
         image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.17
         imagePullPolicy: IfNotPresent
@@ -201,6 +216,8 @@ spec:
           subPath: solutions_artifacts
         - mountPath: /etc/podinfo
           name: podinfo
+        - name: in-dir
+          mountPath: /opt/in
         readinessProbe:
           exec:
             command: [ /opt/staging/hooks/85-pf-admin-readiness.sh ]
@@ -243,6 +260,8 @@ spec:
       - name: shared-dir
         emptyDir: {}
       - name: data-dir
+        emptyDir: {}
+      - name: in-dir
         emptyDir: {}
       - name: pingfederate-init
         configMap:
