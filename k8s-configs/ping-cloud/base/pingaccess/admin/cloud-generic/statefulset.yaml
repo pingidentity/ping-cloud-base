@@ -22,6 +22,7 @@ spec:
       labels:
         cluster: pingaccess-cluster
         role: pingaccess-admin
+        entitled-app: "true"
       annotations:
         lastUpdateReason: "NA"
     spec:

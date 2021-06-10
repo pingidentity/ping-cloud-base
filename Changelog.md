@@ -8,6 +8,21 @@ _Changes:_
 
 - [X] PDO-2468 Update PD healthchecks to use the availability servlet
 
+### 1.9.2
+
+- Preserve PingDirectory descriptor.json across CSR updates
+- Added entitled-app: "true" label to PingFederate Admin and PingAccess Admin
+- Updated p14c-integration image to 1.0.20
+- Updated p14c-bootstrap image to 1.0.9
+- Fixed external access to the PingFederate admin API
+
+_Changes:_
+
+- [X] PDO-2539 Preserve PingDirectory descriptor.json across CSR updates
+- [X] PDO-2285 Narrow Kube watch pods for Bom Controller
+- [X] PDO-2578 Updated p14c-integration image to 1.0.20 and p14c-bootstrap image to 1.0.9
+- [X] PDO-2607 Fix external access to the PingFederate admin API
+
 ### 1.9.1
 
 - Fixed Elasticsearch cluster not able to select a primary

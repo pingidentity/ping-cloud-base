@@ -144,9 +144,9 @@ PINGDELEGATOR_IMAGE_TAG=2103-4.4.1
 ############################################################
 # Ping solution image tags
 ############################################################
-METADATA_IMAGE_TAG=v1.0.2
-P14C_BOOTSTRAP_IMAGE_TAG=v1.0.7
-P14C_INTEGRATION_IMAGE_TAG=v1.0.12
+METADATA_IMAGE_TAG=v1.0.3
+P14C_BOOTSTRAP_IMAGE_TAG=v1.0.9
+P14C_INTEGRATION_IMAGE_TAG=v1.0.20
 
 ############################################################
 # Cluster name variables

@@ -10,7 +10,7 @@ metadata:
 spec:
   ports:
   - port: 443
-    name: pingfederate-admin
+    name: pf-admin
     targetPort: pf-admin
   selector:
     role: pingfederate-admin
