@@ -10,7 +10,7 @@ server.port=${PING_CENTRAL_SERVER_PORT}
 
 server.ssl.trust-any=${PING_CENTRAL_BLIND_TRUST}
 server.ssl.https.verify-hostname=${PING_CENTRAL_VERIFY_HOSTNAME}
-server.ssl.delegate-to-system=false
+#server.ssl.delegate-to-system=false
 
 logging.level.com.pingidentity=${PING_CENTRAL_LOG_LEVEL}
 logging.level.org.springframework.security=${PING_CENTRAL_LOG_LEVEL}
