@@ -35,3 +35,10 @@ spec:
               fieldPath: metadata.namespace
         # The -u flag is necessary for python to emit logging to standard out
         command: [ 'python3', '-u', '/app/oauth_client_services_controller.py' ]
+        livenessProbe:
+          exec:
+            command: [ 'python3', '-u', '/app/liveness.py' ]
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          failureThreshold: 3
+          timeoutSeconds: 3
