@@ -47,7 +47,7 @@ cp "${UPLOAD_DIR}/${DST_FILE_TIMESTAMP}" "${UPLOAD_DIR}/${DST_FILE_LATEST}"
 
 beluga_log "Copying files to '${SKBN_CLOUD_PREFIX}'"
 
-if ! skbnCopy "${SKBN_K8S_PREFIX}/${UPLOAD_DIR}/" "${SKBN_CLOUD_PREFIX}/"; then
+if ! skbnCopy "${UPLOAD_DIR}/" "${SKBN_CLOUD_PREFIX}/"; then
   exit 1
 fi
 
