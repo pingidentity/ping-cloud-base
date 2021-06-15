@@ -70,6 +70,8 @@ REGISTRY_NAME=${REGISTRY_NAME}
 TENANT_NAME=${TENANT_NAME}
 NEW_RELIC_LABELS="region:${REGION};customer_name:${TENANT_NAME};environment:${ENV}"
 
+ENVIRONMENT_PREFIX=${TENANT_NAME}-${CLUSTER_STATE_REPO_BRANCH}-${REGION_NICK_NAME}
+
 ############################################################
 # Cluster state repo details
 ############################################################
