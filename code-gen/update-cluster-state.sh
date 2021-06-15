@@ -582,7 +582,6 @@ handle_changed_k8s_configs() {
 
   if ! test "${new_files}"; then
     log "No changed '${K8S_CONFIGS_DIR}' files to copy '${DEFAULT_CDE_BRANCH}' to its new branch '${NEW_BRANCH}'"
-    return
   fi
 
   log "DEBUG: Found the following new files in branch '${DEFAULT_CDE_BRANCH}':"
