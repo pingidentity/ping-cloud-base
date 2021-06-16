@@ -9,7 +9,6 @@ test -f "${STAGING_DIR}/ds_env_vars" && . "${STAGING_DIR}/ds_env_vars"
 ########################################################################################################################
 function initializeSkbnConfiguration() {
   unset SKBN_CLOUD_PREFIX
-  unset SKBN_K8S_PREFIX
 
   # Allow overriding the backup URL with an arg
   test ! -z "${1}" && BACKUP_URL="${1}"
@@ -28,20 +27,7 @@ function initializeSkbnConfiguration() {
 
   esac
 
-  beluga_log "Getting cluster metadata"
-
-  # Get prefix of HOSTNAME which match the pod name.
-  export POD="$(echo "${HOSTNAME}" | cut -d. -f1)"
-
-  METADATA=$(kubectl get "$(kubectl get pod -o name --field-selector metadata.name=${POD})" \
-    -o=jsonpath='{.metadata.namespace},{.metadata.name},{.metadata.labels.role}')
-    
-  METADATA_NS=$(echo "${METADATA}"| cut -d',' -f1)
-  METADATA_PN=$(echo "${METADATA}"| cut -d',' -f2)
-  METADATA_CN=$(echo "${METADATA}"| cut -d',' -f3)
-
   export SKBN_CLOUD_PREFIX="${BACKUP_URL}"
-  export SKBN_K8S_PREFIX="k8s://${METADATA_NS}/${METADATA_PN}/${METADATA_CN}"
 }
 
 ########################################################################################################################
