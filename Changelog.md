@@ -2,11 +2,13 @@
 
 ### 1.10.0
 
+- PA-WAS now verifies each individual Application exists on restarts and upgrades
 - PingDirectory health checks are now performed via HTTPS
 - ElasticSearch image updated to 7.13.2
 
 _Changes:_
 
+- [X] PDO-2386 Improve upgrade of PA-WAS by making idempotent
 - [X] PDO-2463 Update cluster tools to latest version: Elasticsearch
 - [X] PDO-2468 Update PD healthchecks to use the availability servlet
 

@@ -103,8 +103,7 @@ testAgentConfig() {
   agent_id=$(parse_value_from_response "${create_agent_response}" 'id')
   assertEquals "Failed to parse the id from the agent response: ${create_agent_response}" 0 $?
 
-  # Create an app
-  create_application_response=$(create_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_API}" "${agent_id}" "${virtual_host_id}")
+  create_application_response=$(create_agent_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_API}" "${agent_id}" "${virtual_host_id}")
   assertEquals "Failed to create the application with a password of ${PA_ADMIN_PASSWORD}, an agent_id of ${agent_id} and a virtual_host_id of ${virtual_host_id}.  The response was: ${create_application_response}" 0 $?
 
   application_id=$(parse_value_from_response "${create_application_response}" 'id')

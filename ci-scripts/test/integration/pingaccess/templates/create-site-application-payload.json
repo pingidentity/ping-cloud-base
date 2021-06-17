@@ -1,0 +1,23 @@
+{
+  "id":${APP_ID},
+  "name":"${APP_NAME}",
+  "description":"${APP_DESCRIPTION}",
+  "virtualHostIds":[
+    ${VIRTUAL_HOST_ID}
+  ],
+  "siteId":${SITE_ID},
+  "webSessionId":0,
+  "applicationType":"Web",
+  "accessValidatorId":0,
+  "identityMappingIds":{
+    "Web":0,
+    "API":0
+  },
+  "enabled":true,
+  "defaultAuthType":null,
+  "requireHTTPS":true,
+  "caseSensitivePath":false,
+  "destination":"Site",
+  "contextRoot":"/",
+  "spaSupportEnabled":true
+}

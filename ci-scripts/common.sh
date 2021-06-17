@@ -115,7 +115,7 @@ PINGACCESS_AGENT=https://pingaccess-agent${FQDN}
 # PingAccess WAS
 # admin services:
 # The trailing / is required to avoid a 302
-PINGACCESS_WAS_SWAGGER=https://pingaccess-was-admin${FQDN}/pa-admin-api/api-docs/
+PINGACCESS_WAS_SWAGGER=https://pingaccess-was-admin${FQDN}/pa-admin-api/v3/api-docs/
 PINGACCESS_WAS_CONSOLE=https://pingaccess-was-admin${FQDN}
 PINGACCESS_WAS_API=https://pingaccess-was-admin${FQDN}/pa-admin-api/v3
 

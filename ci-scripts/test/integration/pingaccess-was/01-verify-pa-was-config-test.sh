@@ -1,6 +1,11 @@
 #!/bin/bash
 
 . "${PROJECT_DIR}"/ci-scripts/common.sh "${1}"
+. "${PROJECT_DIR}"/ci-scripts/test/integration/pingaccess/util/pa-test-utils.sh
+. "${PROJECT_DIR}"/ci-scripts/test/integration/pingaccess/common-api/create-entity-operations.sh
+. "${PROJECT_DIR}"/ci-scripts/test/integration/pingaccess/common-api/delete-entity-operations.sh
+. "${PROJECT_DIR}"/ci-scripts/test/integration/pingaccess-was/common-api/get-entity-operations.sh
+
 
 if skipTest "${0}"; then
   log "Skipping test ${0}"
@@ -17,6 +22,8 @@ oneTimeSetUp() {
   . ${SCRIPT_HOME}/common-api/get-entity-operations.sh
 
   export PA_ADMIN_PASSWORD=2FederateM0re
+  export templates_dir_path="${PROJECT_DIR}"/ci-scripts/test/integration/pingaccess/templates
+
 }
 
 testWebSession() {
@@ -214,6 +221,57 @@ testUpdatedApplicationReservedPath() {
   context_root=$(parse_value_from_response "${response}" 'contextRoot')
   assertEquals '/pa-was' "$(strip_double_quotes "${context_root}")"
 }
+
+testPaWasIdempotent() {
+  export APP_ID=123
+  export APP_NAME="TestApp"
+  export VIRTUAL_HOST_ID=1
+  export SITE_ID=20
+
+  # Cleanup from possible previous run failures
+  log "Deleting app: ${APP_NAME} if it exists"
+  response=$(delete_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "${APP_ID}")
+
+  upload_job="${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess-was/admin/aws/backup.yaml
+  log "Deleting pa-was backup job if it exists"
+  kubectl delete -f "${upload_job}" -n "${NAMESPACE}"
+
+  log "Creating new App: ${APP_NAME}"
+  response=$(create_site_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}")
+  assertEquals "Response value was ${response}" 0 $?
+
+  log "Deleting PingAccess App"
+  pa_app_id=10
+  response=$(delete_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "${pa_app_id}")
+  assertEquals "Response value was ${response}" 0 $?
+
+  log "Backing up PA-WAS"
+  kubectl apply -f "${upload_job}" -n "${NAMESPACE}"
+  assertEquals "The kubectl apply command to create the PingAccess WAS upload job should have succeeded" 0 $?
+
+  log "Waiting for backup job to complete"
+  kubectl wait --for=condition=complete --timeout=900s job/pingaccess-was-backup -n "${NAMESPACE}"
+  assertEquals "The kubectl wait command for the backup job should have succeeded" 0 $?
+
+  log "Restarting PA-WAS Admin"
+  kubectl exec pingaccess-was-admin-0 -n "${NAMESPACE}" -c pingaccess-was-admin -- sh -c "pgrep -f java | xargs kill"
+  sleep 3
+
+  log "Waiting for PA-WAS Admin to be ready"
+  kubectl wait --for=condition=ready --timeout=300s pod -l role=pingaccess-was-admin -n "${NAMESPACE}"
+  sleep 3
+
+  log "Verifying the PingAccess App recreated on restart"
+  response=$(get_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "${pa_app_id}")
+  assertEquals "The PingAccess App not present after restart" 0 $?
+
+  APP_ID=123 # Unset elsewhere
+  log "Verifying the new App: ${APP_NAME} still present"
+  response=$(get_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "${APP_ID}")
+  assertEquals "The new App: ${APP_NAME} should have been present after restart" 0 $?
+
+}
+
 
 # When arguments are passed to a script you must
 # consume all of them before shunit is invoked
