@@ -9,6 +9,7 @@
 - Updated p14c-bootstrap image to 1.0.9
 - Fixed external access to the PingFederate admin API
 - Removing pf-referenceid-adapter-2.0.1.jar if it is found on the filesystem
+- Updated PF heap settings to match 1.7.2 values
 
 _Changes:_
 
@@ -20,6 +21,7 @@ _Changes:_
 - [X] PDO-2607 Fix external access to the PingFederate admin API
 - [X] PDO-2609 Removing pf-referenceid-adapter-2.0.1.jar if it is found on the filesystem
 - [X] PDO-2639 Update p14c-integration docker images in ping-cloud-base to v1.0.21
+- [X] PDO-2645 Fix PF product Heap Variable Settings to return to 1.7 values
 
 ### 1.9.1
 
