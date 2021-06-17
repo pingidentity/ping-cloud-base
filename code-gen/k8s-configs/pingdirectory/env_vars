@@ -1,4 +1,0 @@
-# Update this environment variable to trigger updates to the PD servers
-LAST_UPDATE_REASON="NA"
-
-SERVER_PROFILE_PATH=profiles/pingdirectory
