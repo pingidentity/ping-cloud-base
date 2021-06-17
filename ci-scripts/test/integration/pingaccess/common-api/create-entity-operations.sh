@@ -70,8 +70,37 @@ create_agent() {
   return $?
 }
 
+create_site_application() {
 
-create_application() {
+  set +x
+
+  password="${1}"
+  endpoint="${2}/applications"
+
+  create_application_payload=$(envsubst < ${templates_dir_path}/create-site-application-payload.json)
+  create_application_response=$(curl -k \
+    -i \
+    -s \
+    -u "Administrator:${password}" \
+    -H 'X-Xsrf-Header: PingAccess' \
+    -d "${create_application_payload}" \
+    "${endpoint}")
+
+  log_curl_exit $? "${endpoint}"
+  exit_code=$?
+  test ${exit_code} -ne 0 && return ${exit_code}
+
+  # Clean up
+  unset APP_ID APP_NAME VIRTUAL_HOST_ID SITE_ID
+
+  create_application_response_code=$(parse_http_response_code "${create_application_response}")
+  log_response ${create_application_response_code} "${create_application_response}" "There was a problem creating an application with the payload: ${create_application_payload}:"
+
+  return $?
+
+}
+
+create_agent_application() {
 
   set +x
 
@@ -82,7 +111,7 @@ create_application() {
   export AGENT_ID=${3}
   export VIRTUAL_HOST_ID=${4}
 
-  create_application_payload=$(envsubst < ${templates_dir_path}/create-application-payload.json)
+  create_application_payload=$(envsubst < ${templates_dir_path}/create-agent-application-payload.json)
   create_application_response=$(curl -k \
     -i \
     -s \

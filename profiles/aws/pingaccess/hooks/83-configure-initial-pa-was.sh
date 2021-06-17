@@ -8,19 +8,6 @@
 TEMPLATES_DIR_PATH=${STAGING_DIR}/templates/83
 ENDPOINT="https://localhost:9000/pa-admin-api/v3"
 
-is_previously_configured() {
-  local get_applications_response=$(make_api_request "${ENDPOINT}"/applications)
-  test $? -ne 0 && return 1
-
-  local applications_count=$(jq -n "${get_applications_response}" | jq '.items | length')
-
-  if test "${applications_count}" -ge 6; then
-    beluga_log "pa-was already configured"
-    return 0
-  else
-    return 1
-  fi
-}
 
 p14c_credentials_changed() {
   get_web_session_clientId
@@ -39,7 +26,7 @@ get_web_session_clientId() {
   local id=10
   PA_WAS_CLIENT_ID= # Global scope
 
-  beluga_log "Getting Web Session"
+  beluga_log "Getting Web Session Client ID"
   local response=$(get_entity "${resource}" "${id}")
   beluga_log "make_api_request response..."
   beluga_log "${response}"
@@ -63,17 +50,22 @@ update_application_reserved_endpoint() {
   local application_reserved_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/application-reserved-payload.json)
   local resource='applications/reserved'
 
-  beluga_log "Updating Web Session"
+  beluga_log "Updating Application Reserved Endpoint"
   update_entity "${application_reserved_payload}" "${resource}"
 }
 
 create_web_session() {
   local web_session_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/web-session-payload.json)
   local resource=webSessions
+  local id=10
+  local response
 
-  beluga_log "Creating Web Session"
   set +x  # Hide P14C client secret in logs
-  create_entity "${web_session_payload}" "${resource}"
+  response=$(get_entity "${resource}" "${id}")
+  if test ${?} -ne 0; then
+    beluga_log "Creating Web Session"
+    create_entity "${web_session_payload}" "${resource}"
+  fi
   "${VERBOSE}" && set -x
 }
 
@@ -125,8 +117,10 @@ create_prometheus_virtual_host() {
 create_virtual_host() {
   local vhost_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/vhost-payload.json)
   local resource=virtualhosts
+  local response
 
-  create_entity "${vhost_payload}" "${resource}"
+  response=$(get_entity "${resource}" "${VHOST_ID}")
+  test ${?} -ne 0 && create_entity "${vhost_payload}" "${resource}"
   unset VHOST_ID VHOST_HOST VHOST_PORT
 }
 
@@ -203,8 +197,10 @@ create_argocd_site() {
 create_site() {
   local site_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/site-payload.json)
   local resource=sites
+  local response
 
-  create_entity "${site_payload}" "${resource}"
+  response=$(get_entity "${resource}" "${SITE_ID}")
+  test ${?} -ne 0 && create_entity "${site_payload}" "${resource}"
   unset SITE_ID SITE_NAME SITE_TARGET SITE_SECURE
 }
 
@@ -297,8 +293,10 @@ create_application() {
 
   local app_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/application-payload.json)
   local resource=applications
+  local response
 
-  create_entity "${app_payload}" "${resource}"
+  response=$(get_entity "${resource}" "${APP_ID}")
+  test ${?} -ne 0 && create_entity "${app_payload}" "${resource}"
   unset APP_ID APP_NAME APP_DESCRIPTION VIRTUAL_HOST_ID SITE_ID SESSION_ID
 }
 
@@ -347,21 +345,14 @@ is_production_environment() {
 update_application_reserved_endpoint
 
 if is_myping_deployment; then
-  if is_previously_configured; then
-    exit 0
-  fi
   export P14C_CLIENT_ID="${CLIENT_ID}"
   export P14C_CLIENT_SECRET="${CLIENT_SECRET}"
-else
-  if is_previously_configured; then
-    if p14c_credentials_changed; then
-      update_web_session
-    fi
-    exit 0
-  fi
 fi
 
 create_web_session
+if p14c_credentials_changed; then
+  update_web_session
+fi
 create_pa_virtual_host
 create_pf_virtual_host
 create_kibana_virtual_host

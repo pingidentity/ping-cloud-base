@@ -23,6 +23,9 @@ delete_agent() {
   exit_code=$?
   test ${exit_code} -ne 0 && return ${exit_code}
 
+  echo "delete_agent: password: ${password}, endpoint: ${endpoint}, agent_id: ${application_id}"
+  echo "delete_agent_response: ${delete_agent_response}"
+
   delete_agent_response_code=$(parse_http_response_code "${delete_agent_response}")
   log_response ${delete_agent_response_code} "${delete_agent_response}" "There was a problem deleting the agent:"
 
@@ -50,6 +53,9 @@ delete_application() {
   exit_code=$?
   test ${exit_code} -ne 0 && return ${exit_code}
 
+  echo "delete_application: password: ${password}, endpoint: ${endpoint}, application_id: ${application_id}"
+  echo "delete_application_response: ${delete_application_response}"
+
   delete_application_response_code=$(parse_http_response_code "${delete_application_response}")
   log_response ${delete_application_response_code} "${delete_application_response}" "There was a problem deleting the application:"
 
@@ -76,6 +82,8 @@ delete_virtual_host() {
   log_curl_exit $? "${endpoint}"
   exit_code=$?
   test ${exit_code} -ne 0 && return ${exit_code}
+
+  echo "delete_virtual_host values: password: ${password}, endpoint: ${endpoint}, virtual_host_id: ${virtual_host_id}"
 
   delete_virtual_host_response_code=$(parse_http_response_code "${delete_virtual_host_response}")
   log_response ${delete_virtual_host_response_code} "${delete_virtual_host_response}" "There was a problem deleting the virtual host:"

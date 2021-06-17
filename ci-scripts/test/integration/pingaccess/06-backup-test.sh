@@ -37,7 +37,7 @@ testPingAccessBackup() {
   kubectl delete -f "${UPLOAD_JOB}" -n "${NAMESPACE}"
 
   kubectl apply -f "${UPLOAD_JOB}" -n "${NAMESPACE}"
-  assertEquals "The kubectl apply command to create the PingAccess upload jo should have succeeded" 0 $?
+  assertEquals "The kubectl apply command to create the PingAccess upload job should have succeeded" 0 $?
 
   log "Waiting for backup job to complete"
   kubectl wait --for=condition=complete --timeout=900s job/pingaccess-backup -n "${NAMESPACE}"
