@@ -76,10 +76,10 @@ if ! test -z "${processed_filename}"; then
   # Use the absolute path to the generated zip file
   src_file="${OUT_DIR}/$(basename "${support_data_filename}")"
 
-  beluga_log "Copying: ${SKBN_K8S_PREFIX}/${src_file} to ${SKBN_CLOUD_PREFIX}/${processed_filename}"
+  beluga_log "Copying: ${src_file} to ${SKBN_CLOUD_PREFIX}/${processed_filename}"
 
   # Copy the generated zip file to the s3 bucket and rename it
-  if ! skbnCopy "${SKBN_K8S_PREFIX}/${src_file}" "${SKBN_CLOUD_PREFIX}/${processed_filename}"; then
+  if ! skbnCopy "${src_file}" "${SKBN_CLOUD_PREFIX}/${processed_filename}"; then
     exit 1
   fi
 

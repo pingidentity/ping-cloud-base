@@ -70,6 +70,8 @@ ECR_REGISTRY_NAME=${ECR_REGISTRY_NAME}
 # NewRelic Tags
 TENANT_NAME=${TENANT_NAME}
 
+ENVIRONMENT_PREFIX=${TENANT_NAME}-${CLUSTER_STATE_REPO_BRANCH}-${REGION_NICK_NAME}
+
 ############################################################
 # Cluster state repo details
 ############################################################

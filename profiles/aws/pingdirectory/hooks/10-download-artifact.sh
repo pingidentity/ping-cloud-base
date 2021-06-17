@@ -89,9 +89,9 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
                   # Set required environment variables for skbn
                   initializeSkbnConfiguration "${ARTIFACT_LOCATION}"
                   
-                  beluga_log "Copying: '${ARTIFACT_RUNTIME_ZIP}' to '${SKBN_K8S_PREFIX}'"
+                  beluga_log "Copying: '${ARTIFACT_RUNTIME_ZIP}' to '${DOWNLOAD_DIR}'"
 
-                  if ! skbnCopy "${SKBN_CLOUD_PREFIX}/${ARTIFACT_RUNTIME_ZIP}" "${SKBN_K8S_PREFIX}${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}"; then
+                  if ! skbnCopy "${SKBN_CLOUD_PREFIX}/${ARTIFACT_RUNTIME_ZIP}" "${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}"; then
                     exit 1
                   fi
 
