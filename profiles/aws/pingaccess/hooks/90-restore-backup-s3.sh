@@ -96,9 +96,9 @@ if ! test -z "${BACKUP_FILE_NAME}" || ! test -f "${OUT_DIR}"/instance/conf/pa.jw
 
   beluga_log "Copying: '${DATA_BACKUP_FILE_NAME}' to '${SERVER_RESTORE_DIR}/${DST_FILE}'"
 
+  # If the backup file does not exist, log error and proceeds further
   if ! skbnCopy "${SKBN_CLOUD_PREFIX}/${DATA_BACKUP_FILE_NAME}" "${SERVER_RESTORE_DIR}/${DST_FILE}"; then
-    beluga_log "Cannot locate s3 bucket ${SKBN_CLOUD_PREFIX}/${DATA_BACKUP_FILE_NAME}"
-    exit 1
+    beluga_log "Unable to copy ${DATA_BACKUP_FILE_NAME}"
   fi
 
   # Check if file exists

@@ -128,8 +128,9 @@ if (test -f "${STAGING_DIR}/artifacts/artifact-list.json") || (test ! -z "${SOLU
 
                   beluga_log "Copying: '${ARTIFACT_LOCATION}' to '${DOWNLOAD_DIR}'"
 
+                  # If the file does not exist, log error and proceeds further
                   if ! skbnCopy "${SKBN_CLOUD_PREFIX}" "${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}"; then
-                    exit 1
+                    beluga_log "Unable to copy ${ARTIFACT_RUNTIME_ZIP}"
                   fi
 
                 else
