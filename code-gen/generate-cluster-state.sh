@@ -677,10 +677,10 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   # Update the PF JVM limits based on environment.
   case "${ENV}" in
     dev | test)
-      export PF_MIN_HEAP=256m
-      export PF_MAX_HEAP=512m
-      export PF_MIN_YGEN=128m
-      export PF_MAX_YGEN=256m
+      export PF_MIN_HEAP=1536m
+      export PF_MAX_HEAP=1536m
+      export PF_MIN_YGEN=768m
+      export PF_MAX_YGEN=768m
       ;;
     stage | prod)
       export PF_MIN_HEAP=3072m
