@@ -14,6 +14,7 @@ _Changes:_
 
 - [X] PDO-2203 Add liveness probe to p14c-oauth and p14c-bom controllers
 - [X] PDO-2285 Narrow Kube watch pods for Bom Controller
+- [X] PDO-2431 Update to use ingress-nginx/controller:v0.46.0 
 - [X] PDO-2539 Preserve PingDirectory descriptor.json across CSR updates
 - [X] PDO-2578 Updated p14c-integration image to 1.0.20 and p14c-bootstrap image to 1.0.9
 - [X] PDO-2579 Update to use skbn v1.0.0
