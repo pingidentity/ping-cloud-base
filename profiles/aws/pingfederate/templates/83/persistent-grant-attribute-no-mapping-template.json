@@ -1,0 +1,7 @@
+{
+  "${PERSISTENT_GRANT_ATTR}": {
+    "source": {
+      "type": "NO_MAPPING"
+    }
+  }
+}

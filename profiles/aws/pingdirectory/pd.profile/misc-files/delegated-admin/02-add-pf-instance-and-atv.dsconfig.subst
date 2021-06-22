@@ -12,7 +12,7 @@
     --set "trust-manager-provider:Blind Trust"
 
   dsconfig create-identity-mapper \
-    --mapper-name "entryUUIDMatch" \
+    --mapper-name "${DA_IDENTITY_MAPPER_NAME}" \
     --type "exact-match" \
     --set enabled:true \
     --set "match-attribute:entryUUID" \
@@ -22,7 +22,7 @@
     --validator-name "${DA_PINGFEDERATE_ATV_NAME}" \
     --type "ping-federate" \
     --set enabled:true \
-    --set "identity-mapper:entryUUIDMatch" \
+    --set "identity-mapper:${DA_IDENTITY_MAPPER_NAME}" \
     --set "subject-claim-name:sub" \
     --set "authorization-server:${DA_PINGFEDERATE_INSTANCE_NAME}" \
     --set "client-id:${DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID}" \
