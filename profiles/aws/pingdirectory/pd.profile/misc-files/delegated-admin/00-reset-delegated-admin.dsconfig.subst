@@ -25,7 +25,7 @@ dsconfig delete-external-server \
   --server-name "${DA_PINGFEDERATE_INSTANCE_NAME}"
 
 dsconfig delete-identity-mapper \
-  --mapper-name "entryUUIDMatch"
+  --mapper-name "${DA_IDENTITY_MAPPER_NAME}"
 
 dsconfig delete-delegated-admin-resource-rights \
   --rights-name "administrator-user-${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" \

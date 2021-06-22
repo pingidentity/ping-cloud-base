@@ -12,6 +12,11 @@ get_idp_adapter_mapping() {
 
 testSadPathCreateIdpMapping() {
 
+  # Mock up ignorePersistentGrantAttributes as a success.
+  ignorePersistentGrantAttributes() {
+    return 0
+  }
+
   # Mock up make_api_request as a failure.
   # When calling set_idp_adapter_mapping function, its
   # expected to fail when make_api_request fails to create idp adapter mapping.
@@ -26,6 +31,11 @@ testSadPathCreateIdpMapping() {
 }
 
 testHappyPathCreateIdpMapping() {
+
+  # Mock up ignorePersistentGrantAttributes as a success.
+  ignorePersistentGrantAttributes() {
+    return 0
+  }
 
   # Mock up make_api_request as a success for creating idp adapter mapping.
   make_api_request() {
