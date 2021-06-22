@@ -168,6 +168,8 @@ get_idp_adapter_mapping() {
 #   
 #   Variables:
 #   ${DA_IDP_ADAPTER_HTML_FORM_ID} -> Maps to the existing DA IDP Adapter HTML Form.
+#   ${ALL_PERSISTENT_GRANT_NO_MAPPING_ATTRS} -> List of all the Persistent Grant Extended Attributes with 'No Mapping'
+#                                               as its value.
 ########################################################################################################################
 set_idp_adapter_mapping() {
 
@@ -178,7 +180,16 @@ set_idp_adapter_mapping() {
 
     beluga_log "Creating IDP adapter mapping"
 
+    ALL_PERSISTENT_GRANT_NO_MAPPING_ATTRS="{}"
+    if ! ignorePersistentGrantAttributes; then
+      beluga_error "Exiting - will not create IDP adapter mapping for DA until issue is resolved"
+      return 1
+    fi
+
+    # Merge 'No Mapping' persistent grant extended attributes with DAs IDP adapter mapping payload
     idp_adapter_mapping_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/create-idp-adapter-mapping.json)
+    idp_adapter_mapping_payload=$( echo "${idp_adapter_mapping_payload}" |\
+                                  jq ".attributeContractFulfillment *= ${ALL_PERSISTENT_GRANT_NO_MAPPING_ATTRS}" )
 
     beluga_log "Using payload"
     echo
@@ -197,6 +208,84 @@ set_idp_adapter_mapping() {
   else
     beluga_log "IDP adapter mapping, '${DA_IDP_ADAPTER_HTML_FORM_ID}', already exist"
   fi
+}
+
+########################################################################################################################
+# Build a list of all the Persistent Grant Extended Attributes that will need to be ignored as DA attempt to create
+# its IDP adapter mapping. These Persistent Grant Extended Attributes will have 'No Mapping' as its value.
+#
+# Template Used:
+#   persistent-grant-attribute-no-mapping-template.json:
+#   
+#   Variables:
+#   ${ALL_PERSISTENT_GRANT_NO_MAPPING_ATTRS} -> List of all the Persistent Grant Extended Attributes with 'No Mapping'
+#                                               as its value.
+########################################################################################################################
+ignorePersistentGrantAttributes() {
+  beluga_log "Build a JSON object of all the persistent grants to ignore"
+
+  if ! get_auth_server_settings; then
+    beluga_error "Something went wrong when attempting to get auth server settings response"
+    return 1
+  fi
+
+  beluga_log "Listing all global persistent grant extended attributes from Authorization Server Settings"
+  echo "${AUTH_SERVER_SETTINGS_RESPONSE}" | jq '.persistentGrantContract.extendedAttributes'
+
+  for PERSISTENT_GRANT_ATTR in $( echo "${AUTH_SERVER_SETTINGS_RESPONSE}" |\
+                                 jq -r '.persistentGrantContract.extendedAttributes[].name  | @base64' ); do
+
+    PERSISTENT_GRANT_ATTR=$( echo "${PERSISTENT_GRANT_ATTR}" | base64 -d )
+    
+    if find_persistent_grant_attr "${PERSISTENT_GRANT_ATTR}";  then
+      echo "Skipping ${PERSISTENT_GRANT_ATTR}, this will be set by DA IDP adapter mapping"
+      continue
+    fi
+
+    # PERSISTENT_GRANT_ATTR wasn't found in DAs create-idp-adapter-mapping.json. 
+    # This attribute is considered as a global attribute from PF auth server settings and DA doesn't need it. 
+    # Set its value to 'No Mapping'.
+    export PERSISTENT_GRANT_ATTR="${PERSISTENT_GRANT_ATTR}"
+    persistent_grant=$(envsubst < ${TEMPLATES_DIR_PATH}/persistent-grant-attribute-no-mapping-template.json)
+
+    ALL_PERSISTENT_GRANT_NO_MAPPING_ATTRS=$( echo "${ALL_PERSISTENT_GRANT_NO_MAPPING_ATTRS}" |\
+                                   jq --arg persistent_grant "$persistent_grant" ". += $persistent_grant" )
+ done
+
+ return 0
+}
+
+########################################################################################################################
+# Helper method that will search for Persistent Grant Extended Attribute within DAs configuration. 
+# If its found within DAs IPD Adapter Mapping configuration return 0. If NOT found, return 1.
+#
+# Template Used:
+#   persistent-grant-attribute-no-mapping-template.json:
+#   
+#   Variables:
+#   ${ALL_PERSISTENT_GRANT_NO_MAPPING_ATTRS} -> List of all the Persistent Grant Extended Attributes with 'No Mapping'
+#                                               as its value.
+########################################################################################################################
+find_persistent_grant_attr() {
+ persistent_grant_attr="$1"
+
+ idp_adapter_mapping_json=$(envsubst < ${TEMPLATES_DIR_PATH}/create-idp-adapter-mapping.json)
+
+ # Search and return a valid JSON if persistent grant exist within DAs create-idp-adapter-mapping.json template
+ persistent_grant_json=$( echo "${idp_adapter_mapping_json}" |\
+                          jq --arg persistent_grant_attr "${persistent_grant_attr}" \
+                            '.attributeContractFulfillment | to_entries | '.[]' | select(.key==$persistent_grant_attr)' )
+
+ echo "${persistent_grant_json}" | jq
+ is_json_parsable=$?
+
+ if [[ ${is_json_parsable} -eq 0 && ! -z "${persistent_grant_json}" ]]; then
+    # Persistent grant attribute was found in DAs configuration
+    return 0
+ fi
+
+ # Persistent grant attribute was NOT found. It will need to be included in payload but with 'No Mapping' value.
+ return 1
 }
 
 ########################################################################################################################
