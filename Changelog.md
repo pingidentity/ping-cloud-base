@@ -1,5 +1,13 @@
 # Changelog
 
+### 1.9.3
+
+- Remove PingFederate-P14C-Init container from secondary region
+
+_Changes:_
+
+- [x] PDO-2661 Remove pingfederate-p14c-init container in secondary
+
 ### 1.9.2
 
 - P14c-oauth and p14c-bom controllers now restart when pingone api is inaccessible
