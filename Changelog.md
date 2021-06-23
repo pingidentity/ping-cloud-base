@@ -5,7 +5,7 @@
 - P14c-oauth and p14c-bom controllers now restart when pingone api is inaccessible
 - Preserve PingDirectory descriptor.json across CSR updates
 - Added entitled-app: "true" label to PingFederate Admin and PingAccess Admin
-- Updated p14c-integration image to 1.0.21
+- Updated p14c-integration image to 1.0.22
 - Updated p14c-bootstrap image to 1.0.9
 - Fixed external access to the PingFederate admin API
 - Removing pf-referenceid-adapter-2.0.1.jar if it is found on the filesystem
@@ -27,6 +27,7 @@ _Changes:_
 - [X] PDO-2639 Update p14c-integration docker images in ping-cloud-base to v1.0.21
 - [X] PDO-2641 Fixed issue with DA IDP Adapter Grant Mapping to handle Persistent Grant Extended Attributes
 - [X] PDO-2645 Fix PF product Heap Variable Settings to return to 1.7 values
+- [X] PDO-2665 My Ping Trial deployment failure RCA - Workforce solution - p14c-e2e-reliability267-271
 
 ### 1.9.1
 
