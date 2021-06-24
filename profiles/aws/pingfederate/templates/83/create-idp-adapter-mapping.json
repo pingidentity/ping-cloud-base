@@ -16,12 +16,6 @@
         "type": "ADAPTER"
       },
       "value": "cn"
-    },
-    "SELECTED_ACCOUNTS": {
-      "source": {
-        "type": "ADAPTER"
-      },
-      "value": "cn"
     }
   },
   "issuanceCriteria": {
