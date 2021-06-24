@@ -91,6 +91,8 @@ Replace `USER_BASE_DN` above with the `USER_BASE_DN` for the customer environmen
 
 ## Port Forward into Delegated Admin
 
+**Note: If you have access to the private network from VPN then you do not need to port-forward.**
+
 1. You must have installed [Versent/saml2aws](https://github.com/Versent/saml2aws).
 
    Skip if you already have installed, but if you do experience timeouts after logging into DA. You must upgrade Versent/saml2aws.
@@ -140,6 +142,30 @@ Replace `USER_BASE_DN` above with the `USER_BASE_DN` for the customer environmen
    e) Click Update > Save
 
    f) Replicate changes to cluster
+
+7. Modify 'dadmin' client Redirection URI to `localPortNumber`.
+
+   a) Login into the PingFederate Admin Console.
+
+   b) Navigate to Applications > OAuth Clients > Client `dadmin`.
+
+   c) Edit all the Redirection URIs that has the port number 443 to your `localPortNumber`.
+
+      e.g. `https://pingdelegator.test-whale.us1.ping-preview.cloud:443` to `https://pingdelegator.test-whale.us1.ping-preview.cloud:8080`
+
+   d) Click Update > Save
+
+8. Respin DA pods by updating last `LAST_UPDATE_REASON` variable.
+   
+   a) Navigate to file, `k8s-configs/<region>/pingdelegator/env_vars`, and update `LAST_UPDATE_REASON`.
+   
+   b) Save file > commit > push changes into cluster state repo.
+
+   c) Wait for argocd to respin DA pods within your cluster.
+
+   d) Login into DA from the browser to confirm the changes that were made are successful. The URL should include the `localPortNumber`.
+
+      e.g. `https://pingdelegator.test-whale.us1.ping-preview.cloud:8080`
 
 ## Existing customers
 
