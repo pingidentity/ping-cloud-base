@@ -148,7 +148,7 @@ PINGDELEGATOR_IMAGE_TAG=2103-4.4.1
 ############################################################
 METADATA_IMAGE_TAG=v1.0.3
 P14C_BOOTSTRAP_IMAGE_TAG=v1.0.9
-P14C_INTEGRATION_IMAGE_TAG=v1.0.20
+P14C_INTEGRATION_IMAGE_TAG=v1.0.22
 
 ############################################################
 # Cluster name variables
