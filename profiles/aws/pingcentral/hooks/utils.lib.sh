@@ -76,3 +76,20 @@ function initializeSkbnConfiguration() {
   export SKBN_CLOUD_PREFIX="${CHUB_BUCKET_URL}"
   export SKBN_K8S_PREFIX="k8s://${METADATA_NS}/${METADATA_PN}/${METADATA_CN}"
 }
+
+########################################################################################################################
+# Function to copy file(s) between cloud storage and k8s
+#
+########################################################################################################################
+function skbnCopy() {
+  PARALLEL="0"
+  SOURCE="${1}"
+  DESTINATION="${2}"
+
+  # Check if the number of files to be copied in parallel is defined (0 for full parallelism)
+  test ! -z "${3}" && PARALLEL="${3}"
+
+  if ! skbn cp --src "$SOURCE" --dst "${DESTINATION}" --parallel "${PARALLEL}"; then
+    return 1
+  fi
+}
