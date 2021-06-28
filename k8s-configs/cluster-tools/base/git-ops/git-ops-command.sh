@@ -135,7 +135,7 @@ if test -f 'env_vars'; then
 
     if test -f "${BASE_ENV_VARS}"; then
       env_vars_file="$(mktemp)"
-      cat env_vars "${BASE_ENV_VARS}" > "${env_vars_file}"
+      awk 1 env_vars "${BASE_ENV_VARS}" > "${env_vars_file}"
       substitute_vars "${env_vars_file}" "${BASE_DIR}"
     fi
 

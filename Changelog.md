@@ -2,6 +2,7 @@
 
 ### 1.10.0
 
+- Deploy PingCentral in P1AS customer hub clusters
 - PA-WAS now verifies each individual Application exists on restarts and upgrades
 - PingDirectory health checks are now performed via HTTPS
 - ElasticSearch image updated to 7.13.2
@@ -9,6 +10,7 @@
 
 _Changes:_
 
+- [X] PDO-700 Deploy PingCentral in P1AS customer hub clusters
 - [X] PDO-2386 Improve upgrade of PA-WAS by making idempotent
 - [X] PDO-2462 Update cluster tools to latest version: Kibana
 - [X] PDO-2463 Update cluster tools to latest version: Elasticsearch

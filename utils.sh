@@ -394,7 +394,7 @@ build_cluster_state_code() {
   STATUS=0
   log "Building cluster state code in directory ${DIR}"
 
-  BASE_DIRS=$(find "${DIR}" -name base -type d)
+  BASE_DIRS=$(find "${DIR}/cluster-state/k8s-configs" -name base -type d -maxdepth 2)
 
   GIT_OPS_CMD_NAME='git-ops-command.sh'
   GIT_OPS_CMD="$(find "${DIR}" -name "${GIT_OPS_CMD_NAME}" -type f)"

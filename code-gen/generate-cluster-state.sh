@@ -51,6 +51,7 @@
 #   - base64
 #   - envsubst
 #   - git
+#   - rsync
 #
 # ------------------
 # Usage instructions
@@ -405,7 +406,7 @@ add_nlb_variables() {
 }
 
 # Checking required tools and environment variables.
-check_binaries "openssl" "ssh-keygen" "ssh-keyscan" "base64" "envsubst" "git" "aws"
+check_binaries "openssl" "ssh-keygen" "ssh-keyscan" "base64" "envsubst" "git" "aws" "rsync"
 HAS_REQUIRED_TOOLS=${?}
 
 check_env_vars "PING_IDENTITY_DEVOPS_USER" "PING_IDENTITY_DEVOPS_KEY"
@@ -564,10 +565,13 @@ export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEV
 export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KEY}")
 
 TEMPLATES_HOME="${SCRIPT_HOME}/templates"
-BASE_DIR="${TEMPLATES_HOME}/base"
 BASE_TOOLS_REL_DIR="base/cluster-tools"
 BASE_PING_CLOUD_REL_DIR="base/ping-cloud"
 REGION_DIR="${TEMPLATES_HOME}/region"
+
+COMMON_TEMPLATES_DIR="${TEMPLATES_HOME}/common"
+CHUB_TEMPLATES_DIR="${TEMPLATES_HOME}/customer-hub"
+CDE_TEMPLATES_DIR="${TEMPLATES_HOME}/cde"
 
 # Generate an SSH key pair for the CD tool.
 if test -z "${SSH_ID_PUB_FILE}" && test -z "${SSH_ID_KEY_FILE}"; then
@@ -597,6 +601,7 @@ BOOTSTRAP_SHORT_DIR='fluxcd'
 BOOTSTRAP_DIR="${TARGET_DIR}/${BOOTSTRAP_SHORT_DIR}"
 CLUSTER_STATE_DIR="${TARGET_DIR}/cluster-state"
 K8S_CONFIGS_DIR="${CLUSTER_STATE_DIR}/k8s-configs"
+CUSTOMER_HUB='customer-hub'
 
 mkdir -p "${BOOTSTRAP_DIR}"
 mkdir -p "${K8S_CONFIGS_DIR}"
@@ -610,32 +615,41 @@ cp -pr ../profiles/aws/. "${CLUSTER_STATE_DIR}"/profiles
 echo "${PING_CLOUD_BASE_COMMIT_SHA}" > "${TARGET_DIR}/pcb-commit-sha.txt"
 
 # Now generate the yaml files for each environment
-ALL_ENVIRONMENTS='dev test stage prod'
+ALL_ENVIRONMENTS='dev test stage prod customer-hub'
 ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
 
 export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL}"
 
-# The ENVIRONMENTS variable can either be the CDE names (e.g. dev, test, stage, prod) or the branch names (e.g.
-# v1.8.0-dev, v1.8.0-test, v1.8.0-stage, v1.8.0-master). We must handle both cases. Note that the 'prod' environment
-# will have a branch name suffix of 'master'.
+# The ENVIRONMENTS variable can either be the CDE names (e.g. dev, test, stage, prod) or the CHUB name "customer-hub",
+# or the corresponding branch names (e.g. v1.8.0-dev, v1.8.0-test, v1.8.0-stage, v1.8.0-master, v1.8.0-customer-hub).
+# We must handle both cases. Note that the 'prod' environment will have a branch name suffix of 'master'.
 for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
 # Run in a sub-shell so the current shell is not polluted with environment variables.
 (
-  test "${ENV_OR_BRANCH}" = 'prod' &&
-      GIT_BRANCH='master' ||
-      GIT_BRANCH="${ENV_OR_BRANCH}"
+  if echo "${ENV_OR_BRANCH})" | grep -q customer-hub; then
+    GIT_BRANCH="${CUSTOMER_HUB}"
 
-  ENV_OR_BRANCH_SUFFIX="${ENV_OR_BRANCH##*-}"
-  test "${ENV_OR_BRANCH_SUFFIX}" = 'master' &&
-      ENV='prod' ||
-      ENV="${ENV_OR_BRANCH_SUFFIX}"
+    ENV_OR_BRANCH_SUFFIX="${CUSTOMER_HUB}"
+    ENV="${CUSTOMER_HUB}"
+
+    export CLUSTER_STATE_REPO_BRANCH="${CUSTOMER_HUB}"
+  else
+    test "${ENV_OR_BRANCH}" = 'prod' &&
+        GIT_BRANCH='master' ||
+        GIT_BRANCH="${ENV_OR_BRANCH}"
+
+    ENV_OR_BRANCH_SUFFIX="${ENV_OR_BRANCH##*-}"
+    test "${ENV_OR_BRANCH_SUFFIX}" = 'master' &&
+        ENV='prod' ||
+        ENV="${ENV_OR_BRANCH_SUFFIX}"
+
+    # Set the cluster state repo branch to the default CDE branch, i.e. dev, test, stage or master.
+    export CLUSTER_STATE_REPO_BRANCH="${GIT_BRANCH##*-}"
+  fi
 
   # Export all the environment variables required for envsubst
   export ENV="${ENV}"
   export ENVIRONMENT_TYPE="${ENV}"
-
-  # Set the cluster state repo branch to the default CDE branch, i.e. dev, test, stage or master.
-  export CLUSTER_STATE_REPO_BRANCH="${GIT_BRANCH##*-}"
 
   # The base URL for kustomization files and environment will be different for each CDE.
   # On migrated customers, we must preserve the size of the customers.
@@ -643,7 +657,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     dev | test)
       export KUSTOMIZE_BASE="${KUSTOMIZE_BASE:-test}"
       ;;
-    stage | prod)
+    stage | prod | customer-hub)
       export KUSTOMIZE_BASE="${KUSTOMIZE_BASE:-prod/${SIZE}}"
       ;;
   esac
@@ -653,7 +667,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     dev | test | stage)
       export LETS_ENCRYPT_SERVER="${LETS_ENCRYPT_SERVER:-https://acme-staging-v02.api.letsencrypt.org/directory}"
       ;;
-    prod)
+    prod | customer-hub)
       export LETS_ENCRYPT_SERVER="${LETS_ENCRYPT_SERVER:-https://acme-v02.api.letsencrypt.org/directory}"
       ;;
   esac
@@ -714,7 +728,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   export PA_GCOPTION='-XX:+UseParallelGC'
 
   # Zone for this region and the primary region
-  if "${IS_BELUGA_ENV}"; then
+  if "${IS_BELUGA_ENV}" || test "${ENV}" = 'customer-hub'; then
     export DNS_ZONE="\${TENANT_DOMAIN}"
     export PRIMARY_DNS_ZONE="\${PRIMARY_TENANT_DOMAIN}"
   else
@@ -765,8 +779,23 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   ENV_DIR="${K8S_CONFIGS_DIR}/${ENV_OR_BRANCH}"
   mkdir -p "${ENV_DIR}"
 
-  cp -r "${BASE_DIR}" "${ENV_DIR}"
-  cp -r "${REGION_DIR}/." "${ENV_DIR}/${REGION_NICK_NAME}"
+  # Copy the common templates first.
+  cd "${COMMON_TEMPLATES_DIR}"
+  rsync -rR * "${ENV_DIR}"
+  cd - >/dev/null 2>&1
+
+  # Overlay the CHUB or CDE specific templates next.
+  if test "${ENV}" = 'customer-hub'; then
+    cd "${CHUB_TEMPLATES_DIR}"
+  else
+    cd "${CDE_TEMPLATES_DIR}"
+  fi
+
+  rsync -rR * "${ENV_DIR}"
+  cd - >/dev/null 2>&1
+
+  # Rename to the actual region nick name.
+  mv "${ENV_DIR}/region" "${ENV_DIR}/${REGION_NICK_NAME}"
 
   substitute_vars "${ENV_DIR}" "${REPO_VARS}" secrets.yaml env_vars
 
