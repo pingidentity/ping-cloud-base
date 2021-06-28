@@ -41,6 +41,13 @@ configMapGenerator:
   - env_vars
   - pingdelegator/env_vars
 
+# PingCentral
+- name: pingcentral-environment-variables
+  behavior: merge
+  envs:
+  - env_vars
+  - pingcentral/env_vars
+
 # Pingcloud-metadata
 - name: pingcloud-metadata-environment-variables
   behavior: merge
@@ -289,6 +296,20 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingdelegator${ENVIRONMENT}.${TENANT_DOMAIN}
+
+# PingCentral
+- target:
+    group: extensions
+    version: v1beta1
+    kind: Ingress
+    name: pingcentral-ingress
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingcentral.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingcentral.${TENANT_DOMAIN}
 
 # Set a hostname for all the headless services so their endpoint IPs are published to Route53
 - target:

@@ -1,0 +1,26 @@
+# This defines the ingress for the Ping Delegated Admin service
+
+# NOTE: it will only work if an ingress controller (e.g. nginx) is running on
+# your cluster.
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: pingcentral-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    kubernetes.io/ingress.class: nginx-public
+spec:
+  tls:
+  - hosts:
+    - pingcentral.ping-demo.com
+  rules:
+  - host: pingcentral.ping-demo.com
+    http:
+      paths:
+      # This rule gives external access to the pingcentral service
+      - path: /
+        backend:
+          serviceName: pingcentral
+          servicePort: 9022

@@ -1,0 +1,29 @@
+#
+# Removes primary-cluster resources for each application
+#
+
+################################################
+#                  PingCentral
+################################################
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pingcentral
+$patch: delete
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: pingcentral
+$patch: delete
+
+---
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: pingcentral-ingress
+$patch: delete

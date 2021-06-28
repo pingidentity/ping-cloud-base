@@ -1,0 +1,13 @@
+# This service exposes the Ping Delegated Admin ports within cluster.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: pingcentral
+spec:
+  ports:
+    - port: 9022
+      name: pingcentral
+      targetPort: https
+  selector:
+    role: pingcentral
