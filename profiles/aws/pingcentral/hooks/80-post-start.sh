@@ -13,6 +13,7 @@ JWK_BACKUP_STATUS=0
 beluga_log "post-start: engine replication status: ${JWK_BACKUP_STATUS}"
 
 if test "${JWK_BACKUP_STATUS}" -eq 0; then
+  beluga_log "post-start: exiting now"
   exit 0
 fi
 
