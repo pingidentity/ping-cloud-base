@@ -48,9 +48,6 @@ spec:
             mountPath: /.ssh
           - name: data-dir
             mountPath: /data
-          - name: data-dir
-            mountPath: /usr/local/bin/skbn
-            subPath: skbn
           - name: ssh-id-key-secret
             mountPath: /id_rsa
             subPath: id_rsa
@@ -125,6 +122,9 @@ spec:
           - name: data-dir
             mountPath: /usr/local/bin/kubectl
             subPath: kubectl
+          - name: data-dir
+            mountPath: /usr/local/bin/skbn
+            subPath: skbn
           - name: data-dir
             mountPath: /opt/staging/ds_env_vars
             subPath: ds_env_vars
