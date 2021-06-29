@@ -16,6 +16,16 @@ _Changes:_
 - [X] PDO-2463 Update cluster tools to latest version: Elasticsearch
 - [X] PDO-2468 Update PD healthchecks to use the availability servlet
 
+### 1.9.3
+
+- Remove PingFederate-P14C-Init container from secondary region
+- Updated p14c-integration image to 1.0.23
+
+_Changes:_
+
+- [x] PDO-2661 Remove pingfederate-p14c-init container in secondary
+- [X] PDO-2668 Update p14c-integration docker images in ping-cloud-base to v1.0.23
+
 ### 1.9.2
 
 - P14c-oauth and p14c-bom controllers now restart when pingone api is inaccessible
