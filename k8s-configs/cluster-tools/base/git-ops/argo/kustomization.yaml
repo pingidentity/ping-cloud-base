@@ -5,6 +5,8 @@ namespace: argocd
 
 resources:
 - argo.yaml
+- argocd-notifications-secret.yaml
+- argocd-notifications-cm.yaml
 
 generatorOptions:
   disableNameSuffixHash: true
