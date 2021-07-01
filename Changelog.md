@@ -4,9 +4,11 @@
 
 - Remove PingFederate-P14C-Init container from secondary region
 - Updated p14c-integration image to 1.0.23
+- Upgraded PingFederate to version 10.2.4
 
 _Changes:_
 
+- [X] PDO-2631 Upgrade PF to version 10.2.4
 - [x] PDO-2661 Remove pingfederate-p14c-init container in secondary
 - [X] PDO-2668 Update p14c-integration docker images in ping-cloud-base to v1.0.23
 
