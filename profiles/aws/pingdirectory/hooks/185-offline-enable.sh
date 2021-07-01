@@ -408,7 +408,7 @@ beluga_log "Modifications being applied from ${mods} LDIF file:"
 cat "${mods}"
 
 beluga_log "Calling ldifmodify for mods '${mods}'"
-ldifmodify -s "${conf}" -m "${mods}" -t "${conf}.new"
+ldifmodify --doNotWrap -s "${conf}" -m "${mods}" -t "${conf}.new"
 if test $? -ne 0; then
   beluga_error "error applying modifications in ${mods}"
   exit 1
@@ -489,7 +489,7 @@ beluga_log "applying dsconfig from file ${config_batch_file}:"
 cat "${config_batch_file}"
 dsconfig --no-prompt --offline --suppressMirroredDataChecks --batch-file "${config_batch_file}"
 if test $? -ne 0; then
-  beluga_error "error applying dsconfig commands in ${config_batch_file}"  
+  beluga_error "error applying dsconfig commands in ${config_batch_file}"
   exit 1
 fi
 
