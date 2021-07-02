@@ -4,7 +4,7 @@ kind: ClusterRoleBinding
 metadata:
   labels:
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: v1.9.5
+    app.kubernetes.io/version: v2.1.0
   name: kube-state-metrics
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -22,7 +22,7 @@ kind: ClusterRole
 metadata:
   labels:
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: v1.9.5
+    app.kubernetes.io/version: v2.1.0
   name: kube-state-metrics
 rules:
 - apiGroups:
@@ -40,16 +40,6 @@ rules:
   - persistentvolumes
   - namespaces
   - endpoints
-  verbs:
-  - list
-  - watch
-- apiGroups:
-  - extensions
-  resources:
-  - daemonsets
-  - deployments
-  - replicasets
-  - ingresses
   verbs:
   - list
   - watch
@@ -124,6 +114,14 @@ rules:
   - networking.k8s.io
   resources:
   - networkpolicies
+  - ingresses
+  verbs:
+  - list
+  - watch
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
   verbs:
   - list
   - watch
@@ -135,7 +133,7 @@ kind: Deployment
 metadata:
   labels:
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: v1.9.5
+    app.kubernetes.io/version: v2.1.0
   name: kube-state-metrics
   namespace: kube-system
 spec:
@@ -147,10 +145,10 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: kube-state-metrics
-        app.kubernetes.io/version: v1.9.5
+        app.kubernetes.io/version: v2.1.0
     spec:
       containers:
-      - image: quay.io/coreos/kube-state-metrics:v1.9.5
+      - image: k8s.gcr.io/kube-state-metrics/kube-state-metrics:v2.1.0
         resources:
           limits:
             cpu: 50m
@@ -185,7 +183,7 @@ kind: ServiceAccount
 metadata:
   labels:
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: v1.9.5
+    app.kubernetes.io/version: v2.1.0
   name: kube-state-metrics
   namespace: kube-system
 
@@ -196,7 +194,7 @@ kind: Service
 metadata:
   labels:
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: v1.9.5
+    app.kubernetes.io/version: v2.1.0
   name: kube-state-metrics
   namespace: kube-system
 spec:
