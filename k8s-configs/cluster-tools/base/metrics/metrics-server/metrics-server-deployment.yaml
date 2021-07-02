@@ -29,7 +29,32 @@ spec:
         emptyDir: {}
       containers:
       - name: metrics-server
-        image: k8s.gcr.io/metrics-server-amd64:v0.3.6
+        image: k8s.gcr.io/metrics-server/metrics-server:v0.5.0
+        ports:
+          - containerPort: 4443
+            name: https
+            protocol: TCP
+        args:
+          - --cert-dir=/tmp
+          - --secure-port=4443
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            port: https
+            path: /readyz
+            scheme: HTTPS
+          periodSeconds: 10
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /livez
+            port: https
+            scheme: HTTPS
+          periodSeconds: 10
+        securityContext:
+          readOnlyRootFilesystem: true
+          runAsUser: 1000
+          runAsNonRoot: true
         resources:
           limits:
             cpu: 50m
