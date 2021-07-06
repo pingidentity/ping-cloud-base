@@ -20,13 +20,19 @@ _Changes:_
 
 ### 1.9.3
 
+- Fix a PingDirectory crash caused by the offline-enable hook script after a restart
 - Remove PingFederate-P14C-Init container from secondary region
 - Updated p14c-integration image to 1.0.23
+- Update prometheus-json-exporter image to 1.0.3
+- Upgraded PingFederate to version 10.2.4
 
 _Changes:_
 
+- [X] PDO-2631 Upgrade PF to version 10.2.4
+- [X] PDO-2637 PingDirectroy crashloops on restart in the offline-enable hook script
 - [x] PDO-2661 Remove pingfederate-p14c-init container in secondary
 - [X] PDO-2668 Update p14c-integration docker images in ping-cloud-base to v1.0.23
+- [X] PDO-2688 Use latest prometheus-json-exporter image
 
 ### 1.9.2
 
