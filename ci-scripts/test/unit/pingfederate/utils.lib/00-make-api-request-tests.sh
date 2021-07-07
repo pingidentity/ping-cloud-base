@@ -3,7 +3,6 @@
 # Source the script we're testing
 # Suppress env vars noise in the test output
 . "${HOOKS_DIR}"/utils.lib.sh > /dev/null
-. "${HOOKS_DIR}"/util/upload-csd-s3-utils.sh > /dev/null
 
 # Mock up the curl responses
 # when it's called from the

@@ -1,9 +1,8 @@
 #!/bin/bash
 
-# Source the script we're testing
+# Source support libs referenced by the tested script
 # Suppress env vars noise in the test output
 . "${HOOKS_DIR}"/utils.lib.sh > /dev/null
-. "${HOOKS_DIR}"/util/upload-csd-s3-utils.sh > /dev/null
 
 kubectl() {
   echo ""
@@ -14,7 +13,7 @@ cd() {
 }
 
 find() {
-  echo "support-data--pingfederate-1-20210125201530.zip"
+  echo "202009032030-pingdirectory-0-support-data.zip"
 }
 
 skbn() {
@@ -30,6 +29,10 @@ stat() {
   echo 1
 }
 
+rm() {
+  return 1
+}
+
 oneTimeSetUp() {
   export VERBOSE=false
 }
@@ -38,7 +41,7 @@ oneTimeTearDown() {
   unset VERBOSE
 }
 
-testUploadPingFederateCsdFileNameTransformationErrors() {
+testUploadPingDirectoryCsdFileRemovalErrors() {
 
   script_to_test="${HOOKS_DIR}"/82-upload-csd-s3.sh
   result=$(. "${script_to_test}")
@@ -46,7 +49,7 @@ testUploadPingFederateCsdFileNameTransformationErrors() {
   assertEquals "Expected an exit code of 1 but the script returned with a different code with a result of:  $result" 1 $?
 
   last_line=$(echo "${result}" | tail -1)
-  expected_log_msg="Exiting with a 1"
+  expected_log_msg="Remove exiting with: 1"
   assertContains "Expected '$expected_log_msg' to be in the last line in the output but it wasn't: ${last_line}" "${last_line}" "${expected_log_msg}"
 }
 

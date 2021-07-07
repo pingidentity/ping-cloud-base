@@ -1,9 +1,8 @@
 #!/bin/bash
 
-# Source the script we're testing
+# Source support libs referenced by the tested script
 # Suppress env vars noise in the test output
 . "${HOOKS_DIR}"/utils.lib.sh > /dev/null
-. "${HOOKS_DIR}"/util/upload-csd-s3-utils.sh > /dev/null
 
 kubectl() {
   echo ""
@@ -14,11 +13,15 @@ cd() {
 }
 
 find() {
-  echo ""
+  echo "202009032030-pingdirectory-0-support-data.zip"
 }
 
 collect-data() {
   echo ""
+}
+
+stat() {
+  echo 0
 }
 
 oneTimeSetUp() {
@@ -29,7 +32,7 @@ oneTimeTearDown() {
   unset VERBOSE
 }
 
-testUploadPingFederateCsdSupportDataNameBlank() {
+testUploadPingDirectoryCsdSupportDataEmpty() {
 
   script_to_test="${HOOKS_DIR}"/82-upload-csd-s3.sh
   result=$(. "${script_to_test}")
@@ -38,6 +41,9 @@ testUploadPingFederateCsdSupportDataNameBlank() {
 
   last_line=$(echo "${result}" | tail -1)
   expected_log_msg="WARN"
+  assertContains "Expected '$expected_log_msg' to be in the last line in the output but it wasn't: ${last_line}" "${last_line}" "${expected_log_msg}"
+
+  expected_log_msg="0 bytes"
   assertContains "Expected '$expected_log_msg' to be in the last line in the output but it wasn't: ${last_line}" "${last_line}" "${expected_log_msg}"
 }
 

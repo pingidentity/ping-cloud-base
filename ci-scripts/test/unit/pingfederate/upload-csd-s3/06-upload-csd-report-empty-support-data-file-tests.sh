@@ -3,7 +3,6 @@
 # Source the script we're testing
 # Suppress env vars noise in the test output
 . "${HOOKS_DIR}"/utils.lib.sh > /dev/null
-. "${HOOKS_DIR}"/util/upload-csd-s3-utils.sh > /dev/null
 
 kubectl() {
   echo ""
@@ -14,7 +13,7 @@ cd() {
 }
 
 find() {
-  echo "support-data-ping-pingfederate-1-20210125201530.zip"
+  echo "20210125201530-pingfederate-1-support-data.zip"
 }
 
 collect-data() {

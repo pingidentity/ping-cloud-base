@@ -3,7 +3,6 @@
 # Source support libs referenced by the tested script
 # Suppress env vars noise in the test output
 . "${HOOKS_DIR}"/utils.lib.sh > /dev/null
-. "${HOOKS_DIR}"/util/upload-csd-s3-utils.sh > /dev/null
 
 kubectl() {
   echo ""
@@ -13,8 +12,16 @@ cd() {
   echo ""
 }
 
+date() {
+  echo "202009032030"
+}
+
+hostname() {
+  echo "pingdirectory-0"
+}
+
 find() {
-  echo "support-data-ds-8.1.0.1-pingdirectory-0-20200903203030Z-zip"
+  echo "202009032030-pingdirectory-0-support-data.zip"
 }
 
 skbn() {
