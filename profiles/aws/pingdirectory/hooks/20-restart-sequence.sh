@@ -79,7 +79,13 @@ fi
 
 # Rebuild indexes, if necessary for the USER_BASE_DN.
 beluga_log "Rebuilding any new or untrusted indexes for base DN ${USER_BASE_DN}"
-rebuild-index --bulkRebuild new --bulkRebuild untrusted --baseDN "${USER_BASE_DN}"
+rebuild-index --bulkRebuild new --bulkRebuild untrusted --baseDN "${USER_BASE_DN}" &> /tmp/rebuild-index.out
+rebuild_index_status=$?
+
+if test ${rebuild_index_status} -ne 0; then
+  beluga_log "rebuild-index tool status: ${rebuild_index_status}"
+  cat /tmp/rebuild-index.out
+fi
 
 beluga_log "updating tools.properties"
 run_hook "185-apply-tools-properties.sh"

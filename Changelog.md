@@ -7,6 +7,7 @@
 - Updated p14c-integration image to 1.0.23
 - Update prometheus-json-exporter image to 1.0.3
 - Upgraded PingFederate to version 10.2.4
+- Capture additional logs from rebuild-index within PD
 - Fixed hook script issue with updated collect-support-data tool
 
 _Changes:_
@@ -16,6 +17,7 @@ _Changes:_
 - [x] PDO-2661 Remove pingfederate-p14c-init container in secondary
 - [X] PDO-2668 Update p14c-integration docker images in ping-cloud-base to v1.0.23
 - [X] PDO-2688 Use latest prometheus-json-exporter image
+- [X] PDO-2689 Capture additional logs from rebuild-index within PD
 - [X] PDO-2690 Updating the PD and PF 82-upload-csd-s3.sh hook scripts to work with the updated collect-support-data tool
 
 ### 1.9.2
