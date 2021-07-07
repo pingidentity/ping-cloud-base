@@ -118,6 +118,38 @@ spec:
             name: pingfederate-environment-variables
         - configMapRef:
             name: pingcommon-environment-variables
+
+      # Non-Beluga Ansible Docker image init container that initializes generic P1 configuration for admin SSO
+      - name: p14c-generic-configurator
+        # FIXME: change the image tag to the public ECR version when it's available
+        image: 05370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-solutions/ansible-beluga:0.2-sol-221-solutions-docker-addition
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: pingfederate-environment-variables
+        - secretRef:
+            name: pingcommon-passwords
+        env:
+        - name: API_LOCATION
+          value: "pingfederate-admin"
+        - name: ENV_ID
+          value: "http://metadata:5000"
+        - name: WORKER_APP_ACCESS_TOKEN
+          value: "/opt/shared-dir/newrelic.yml"
+        - name: PINGFED_BASE_URL
+          value: "pingfederate-admin"
+        - name: PF_USERNAME
+          value: "administrator"
+        - name: PF_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingcommon-passwords
+              key: PF_ADMIN_USER_PASSWORD
+        - name: AUTH_SERVER_BASE_URL
+          value: "TBD"
+        - name: PLAYBOOK
+          value: "/opt/shared-dir/newrelic.yml"
+
       containers:
       - name: pingfederate-admin
         # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
