@@ -48,7 +48,7 @@ function initializeSkbnConfiguration() {
   unset SKBN_K8S_PREFIX
 
   # Check if endpoint is AWS cloud storage service (S3 bucket)
-  case "$CHUB_BUCKET_URL" in "s3://"*)
+  case "$CHUB_BACKUP_URL" in "s3://"*)
 
     # Set AWS specific variable for skbn
     export AWS_REGION=${REGION}
@@ -73,7 +73,7 @@ function initializeSkbnConfiguration() {
   METADATA_PN=$(echo "$METADATA"| cut -d',' -f2)
   METADATA_CN=$(echo "$METADATA"| cut -d',' -f3)
 
-  export SKBN_CLOUD_PREFIX="${CHUB_BUCKET_URL}"
+  export SKBN_CLOUD_PREFIX="${CHUB_BACKUP_URL}"
   export SKBN_K8S_PREFIX="k8s://${METADATA_NS}/${METADATA_PN}/${METADATA_CN}"
 }
 

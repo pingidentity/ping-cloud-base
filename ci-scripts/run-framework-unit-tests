@@ -55,6 +55,7 @@ cmd="${cmd} -e ARTIFACT_REPO_URL=s3://${EKS_CLUSTER_NAME}-artifacts-bucket"
 cmd="${cmd} -e PING_ARTIFACT_REPO_URL=https://ping-artifacts.s3-us-west-2.amazonaws.com"
 cmd="${cmd} -e LOG_ARCHIVE_URL=s3://${EKS_CLUSTER_NAME}-logs-bucket"
 cmd="${cmd} -e BACKUP_URL=s3://${EKS_CLUSTER_NAME}-backup-bucket"
+cmd="${cmd} -e CHUB_BUCKET_URL=s3://${EKS_CLUSTER_NAME}-chub-backup-bucket"
 cmd="${cmd} -e CLUSTER_BUCKET_NAME="${EKS_CLUSTER_NAME}-cluster-bucket""
 #cmd="${cmd} "
 #

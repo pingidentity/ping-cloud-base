@@ -28,6 +28,7 @@ ARTIFACT_REPO_URL=s3://${CLUSTER_NAME}-artifacts-bucket
 PING_ARTIFACT_REPO_URL=https://ping-artifacts.s3-us-west-2.amazonaws.com
 LOG_ARCHIVE_URL=s3://${CLUSTER_NAME}-logs-bucket
 BACKUP_URL=s3://${CLUSTER_NAME}-backup-bucket
+CHUB_BUCKET_URL=s3://${CLUSTER_NAME}-chub-backup-bucket
 
 PROJECT_DIR=${PWD}/../../../ping-cloud-base
 AWS_PROFILE=csg

@@ -32,7 +32,7 @@ if ! test -f "${JWK_FILE}"; then
   exit 0
 fi
 
-beluga_log "Uploading to location ${CHUB_BUCKET_URL}"
+beluga_log "Uploading to location ${CHUB_BACKUP_URL}"
 
 # Set required environment variables for skbn
 initializeSkbnConfiguration

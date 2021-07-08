@@ -93,16 +93,17 @@ The script set up various environment variables and build the docker run command
  55 cmd="${cmd} -e PING_ARTIFACT_REPO_URL=https://ping-artifacts.s3-us-west-2.amazonaws.com"
  56 cmd="${cmd} -e LOG_ARCHIVE_URL=s3://${EKS_CLUSTER_NAME}-logs-bucket"
  57 cmd="${cmd} -e BACKUP_URL=s3://${EKS_CLUSTER_NAME}-backup-bucket"
- 58 cmd="${cmd} -e CLUSTER_BUCKET_NAME="${EKS_CLUSTER_NAME}-cluster-bucket""
- 59 #cmd="${cmd} "
- 60 #
- 61 # For testing ensure latest image, not needed in actual tests.
- 62 #
- 63 docker pull pingcloud-docker.jfrog.io/pingidentity/pyaws
- 64 echo ""
- 65 docker run ${cmd} ${image}
- 66 echo ""
- 67 popd 2>&1 > /dev/null
+ 58 cmd="${cmd} -e CHUB_BUCKET_URL=s3://${EKS_CLUSTER_NAME}-chub-backup-bucket"
+ 59 cmd="${cmd} -e CLUSTER_BUCKET_NAME="${EKS_CLUSTER_NAME}-cluster-bucket""
+ 60 #cmd="${cmd} "
+ 61 #
+ 62 # For testing ensure latest image, not needed in actual tests.
+ 63 #
+ 64 docker pull pingcloud-docker.jfrog.io/pingidentity/pyaws
+ 65 echo ""
+ 66 docker run ${cmd} ${image}
+ 67 echo ""
+ 68 popd 2>&1 > /dev/null
 ```
   
 In brief the script changes to the test directory (line 2) and map it into the container at /home/pyuser/tests (line 31). The run.sh script is configured as the target (line 43). It explicitly pulls the docker image (line 63) and runs it (line 65). this hands off control to the entrypoint script in the container which is responsible for setting up the AWS & Kubernetes configuration files and then executing the run.sh script.  
