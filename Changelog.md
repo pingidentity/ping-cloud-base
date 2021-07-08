@@ -8,6 +8,7 @@
 - ElasticSearch image updated to 7.13.2
 - Kibana image updated to 7.13.2
 - metrics-server updated to v0.5.0
+- Beluga maintained container images with built in hook scripts.
 
 _Changes:_
 
@@ -17,6 +18,7 @@ _Changes:_
 - [X] PDO-2463 Update cluster tools to latest version: Elasticsearch
 - [X] PDO-2465 Update cluster tools to latest version: metrics-server
 - [X] PDO-2468 Update PD healthchecks to use the availability servlet
+- [X] PDO-1739 Migrate to Beluga container images
 
 ### 1.9.3
 
