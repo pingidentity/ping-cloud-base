@@ -55,8 +55,8 @@ function initializeSkbnConfiguration() {
 
     DIRECTORY_NAME=$(echo "${PING_PRODUCT}" | tr '[:upper:]' '[:lower:]')
 
-    if ! $(echo "$BACKUP_URL" | grep -q "/$DIRECTORY_NAME"); then
-      BACKUP_URL="${BACKUP_URL}/${DIRECTORY_NAME}"
+    if ! $(echo "$CHUB_BACKUP_URL" | grep -q "/$DIRECTORY_NAME"); then
+      CHUB_BACKUP_URL="${CHUB_BACKUP_URL}/${DIRECTORY_NAME}"
     fi
 
   esac

@@ -20,7 +20,7 @@ initializeSkbnConfiguration
 
 beluga_log "Copying files to '${SKBN_CLOUD_PREFIX}'"
 
-if ! skbnCopy "${SKBN_K8S_PREFIX}/${JWK_FILE}" "${SKBN_CLOUD_PREFIX}/"; then
+if ! skbnCopy "${SKBN_K8S_PREFIX}${JWK_FILE}" "${SKBN_CLOUD_PREFIX}/"; then
   exit 1
 fi
 
