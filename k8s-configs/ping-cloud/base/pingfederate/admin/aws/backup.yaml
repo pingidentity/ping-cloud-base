@@ -18,7 +18,11 @@ spec:
           runAsNonRoot: false
           runAsUser: 0
         # FIXME: switch to stable version once GSA team publishes
-        image: pingcloud-virtual.jfrog.io/pingidentity/pingfederate:10.2.4-edge
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:10.2.4-v1.0.1
+        # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
         command:
         - /opt/in/backup-archive-data.sh
         envFrom:
