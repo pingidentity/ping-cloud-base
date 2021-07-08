@@ -81,15 +81,15 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
                     # Set required environment variables for skbn
                     initializeSkbnConfiguration "${ARTIFACT_LOCATION}"
                   
-                    beluga_log "Copying: '${ARTIFACT_RUNTIME_ZIP}' to '${SKBN_K8S_PREFIX}'"
+                    beluga_log "Copying: '${ARTIFACT_RUNTIME_ZIP}' to '${DOWNLOAD_DIR}'"
 
-                    if ! skbnCopy "${SKBN_CLOUD_PREFIX}" "${SKBN_K8S_PREFIX}${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}"; then
+                    if ! skbnCopy "${SKBN_CLOUD_PREFIX}" "${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}"; then
                       beluga_log "Failed to copy ${ARTIFACT_RUNTIME_ZIP}"
                       exit 1
                     fi
 
                   else
-                    curl "${ARTIFACT_LOCATION}" --output ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}
+                    curl -sS "${ARTIFACT_LOCATION}" --output ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}
                   fi
 
                   if test $(echo $?) == "0"; then
@@ -141,8 +141,8 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
 
         done
 
-        # Print listed files from deploy and conf
-        ls ${OUT_DIR}/instance/lib
+        # Print listed files from deploy and conf to a single line so we don't spam logs
+        ls ${OUT_DIR}/instance/lib | xargs
 
       else
         beluga_log "Artifacts will not be deployed as could not parse ${STAGING_DIR}/artifacts/artifact-list.json."

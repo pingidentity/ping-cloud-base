@@ -92,6 +92,7 @@ PINGDIRECTORY_ADMIN=pingdirectory-admin${FQDN}
 # Pingfederate
 # admin services:
 PINGFEDERATE_CONSOLE=https://pingfederate-admin${FQDN}/pingfederate/app
+PINGFEDERATE_API=https://pingfederate-admin-api${FQDN}/pf-admin-api/v1/version
 
 # The trailing / is required to avoid a 302
 PINGFEDERATE_API_DOCS=https://pingfederate-admin${FQDN}/pf-admin-api/api-docs/
@@ -114,7 +115,7 @@ PINGACCESS_AGENT=https://pingaccess-agent${FQDN}
 # PingAccess WAS
 # admin services:
 # The trailing / is required to avoid a 302
-PINGACCESS_WAS_SWAGGER=https://pingaccess-was-admin${FQDN}/pa-admin-api/api-docs/
+PINGACCESS_WAS_SWAGGER=https://pingaccess-was-admin${FQDN}/pa-admin-api/v3/api-docs/
 PINGACCESS_WAS_CONSOLE=https://pingaccess-was-admin${FQDN}
 PINGACCESS_WAS_API=https://pingaccess-was-admin${FQDN}/pa-admin-api/v3
 

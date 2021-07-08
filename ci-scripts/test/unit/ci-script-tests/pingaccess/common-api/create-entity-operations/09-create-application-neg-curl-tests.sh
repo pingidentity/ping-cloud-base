@@ -25,9 +25,9 @@ testCreateApplicationWithBadCurlResponse() {
   local mock_endpoint=${mock_hostname}'/applications'
   local error_msg="ERROR: The curl call to ${mock_endpoint} returned the exit code: 6"
 
-  create_application_response=$(create_application "" "${mock_hostname}" "")
-  assertEquals "The function create_application returned an exit code other than 6.  The mocked curl function should force create_application to return 6." 6 $?
-  assertContains "The create_application response \"${create_application_response}\" does not contain \"${error_msg}\"." "${create_application_response}" "${error_msg}"
+  create_application_response=$(create_agent_application "" "${mock_hostname}" "" "")
+  assertEquals "The function create_agent_application returned an exit code other than 6.  The mocked curl function should force create_agent_application to return 6." 6 $?
+  assertContains "The create_agent_application response \"${create_application_response}\" does not contain \"${error_msg}\"." "${create_application_response}" "${error_msg}"
 }
 
 # When arguments are passed to a script you must

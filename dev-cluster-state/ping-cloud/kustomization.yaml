@@ -74,6 +74,18 @@ configMapGenerator:
 
 patchesJson6902:
 
+# Change the number of pingdirectory replicas to 2 to reduce pressure on the CI/CD pipeline
+# and allow more concurrent pipelines.
+- target:
+    group: apps
+    version: v1
+    kind: StatefulSet
+    name: pingdirectory
+  patch: |-
+    - op: replace
+      path: /spec/replicas
+      value: 2
+
 # pingcloud-metadata ingress
 - target:
     group: extensions

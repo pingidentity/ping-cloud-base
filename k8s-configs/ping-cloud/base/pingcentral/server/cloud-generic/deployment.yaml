@@ -123,11 +123,11 @@ spec:
             mountPath: /usr/local/bin/kubectl
             subPath: kubectl
           - name: data-dir
-            mountPath: /usr/local/bin/skbn
-            subPath: skbn
-          - name: data-dir
             mountPath: /opt/staging/ds_env_vars
             subPath: ds_env_vars
+          - name: data-dir
+            mountPath: /usr/local/bin/skbn
+            subPath: skbn
           - name: pingcentral-passwords
             mountPath: /usr/local/secrets
             readOnly: true

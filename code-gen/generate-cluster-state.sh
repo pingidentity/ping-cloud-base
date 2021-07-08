@@ -51,6 +51,7 @@
 #   - base64
 #   - envsubst
 #   - git
+#   - rsync
 #
 # ------------------
 # Usage instructions
@@ -195,6 +196,15 @@
 #                          | to the corresponding Kubernetes service account to |
 #                          | enable IRSA (IAM Role for Service Accounts).       |
 #                          |                                                    |
+# NLB_EIP_PATH_PREFIX      | The SSM path prefix which stores comma separated   | The string "unused".
+#                          | AWS Elastic IP allocation IDs that exist in the   |
+#                          | CDE account of the Ping Cloud customers.           |
+#                          | The environment type is appended to the SSM key    | 
+#                          | path before the value is retrieved from the        |
+#                          | AWS SSM endpoint. The EIP allocation IDs must be   |
+#                          | added as an annotation to the corresponding K8s    |
+#                          | service for the AWS NLB to use the AWS Elastic IP. |
+#                          |                                                    |
 # EVENT_QUEUE_NAME         | The name of the queue that may be used to notify   | platform_event_queue.fifo
 #                          | PingCloud applications of platform events. This    |
 #                          | is currently only used if the orchestrator for     |
@@ -255,7 +265,8 @@ ${BACKUP_URL}
 ${PING_CLOUD_NAMESPACE}
 ${K8S_GIT_URL}
 ${K8S_GIT_BRANCH}
-${REGISTRY_NAME}
+${JFROG_REGISTRY_NAME}
+${ECR_REGISTRY_NAME}
 ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
 ${CLUSTER_STATE_REPO_URL}
 ${CLUSTER_STATE_REPO_BRANCH}
@@ -296,7 +307,8 @@ ${PINGFEDERATE_IMAGE_TAG}
 ${PINGDIRECTORY_IMAGE_TAG}
 ${PINGDELEGATOR_IMAGE_TAG}
 ${LAST_UPDATE_REASON}
-${IRSA_PING_ANNOTATION_KEY_VALUE}'
+${IRSA_PING_ANNOTATION_KEY_VALUE}
+${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}'
 
 # Variables to replace within the generated cluster state code
 REPO_VARS="${REPO_VARS:-${DEFAULT_VARS}}"
@@ -361,8 +373,40 @@ add_irsa_variables() {
   export IRSA_PING_ANNOTATION_KEY_VALUE="${IRSA_PING_ANNOTATION_KEY_VALUE}"
 }
 
+########################################################################################################################
+# Export NLB EIP annotation for the provided environment.
+#
+# Arguments
+#   ${1} -> The SSM path prefix which stores CDE account IDs of Ping Cloud environments.
+#   ${2} -> The environment name.
+########################################################################################################################
+add_nlb_variables() {
+  local ssm_path_prefix="$1"
+  local env="$2"
+
+  if test "${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"; then
+    export NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE="${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
+  else
+    # Default empty string
+    NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE=''
+
+    if [ "${ssm_path_prefix}" != "unused" ]; then
+
+      # Getting value from ssm parameter store.
+      if ! ssm_value=$(get_ssm_value "${ssm_path_prefix}/${env}/elastic-ips/nlb/nginx-public"); then
+        echo "Error: ${ssm_value}"
+        exit 1
+      fi
+
+      NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE="service.beta.kubernetes.io/aws-load-balancer-eip-allocations: ${ssm_value}"
+    fi
+
+    export NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE="${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
+  fi
+}
+
 # Checking required tools and environment variables.
-check_binaries "openssl" "ssh-keygen" "ssh-keyscan" "base64" "envsubst" "git" "aws"
+check_binaries "openssl" "ssh-keygen" "ssh-keyscan" "base64" "envsubst" "git" "aws" "rsync"
 HAS_REQUIRED_TOOLS=${?}
 
 check_env_vars "PING_IDENTITY_DEVOPS_USER" "PING_IDENTITY_DEVOPS_KEY"
@@ -477,7 +521,8 @@ export SSH_ID_KEY_FILE="${SSH_ID_KEY_FILE}"
 export TARGET_DIR="${TARGET_DIR:-/tmp/sandbox}"
 
 ### Default environment variables ###
-export REGISTRY_NAME='pingcloud-virtual.jfrog.io'
+export JFROG_REGISTRY_NAME='pingcloud-virtual.jfrog.io'
+export ECR_REGISTRY_NAME='public.ecr.aws/r2h3l6e4'
 export PING_CLOUD_NAMESPACE='ping-cloud'
 
 # Print out the values being used for each variable.
@@ -520,10 +565,13 @@ export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEV
 export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KEY}")
 
 TEMPLATES_HOME="${SCRIPT_HOME}/templates"
-BASE_DIR="${TEMPLATES_HOME}/base"
 BASE_TOOLS_REL_DIR="base/cluster-tools"
 BASE_PING_CLOUD_REL_DIR="base/ping-cloud"
 REGION_DIR="${TEMPLATES_HOME}/region"
+
+COMMON_TEMPLATES_DIR="${TEMPLATES_HOME}/common"
+CHUB_TEMPLATES_DIR="${TEMPLATES_HOME}/customer-hub"
+CDE_TEMPLATES_DIR="${TEMPLATES_HOME}/cde"
 
 # Generate an SSH key pair for the CD tool.
 if test -z "${SSH_ID_PUB_FILE}" && test -z "${SSH_ID_KEY_FILE}"; then
@@ -553,6 +601,7 @@ BOOTSTRAP_SHORT_DIR='fluxcd'
 BOOTSTRAP_DIR="${TARGET_DIR}/${BOOTSTRAP_SHORT_DIR}"
 CLUSTER_STATE_DIR="${TARGET_DIR}/cluster-state"
 K8S_CONFIGS_DIR="${CLUSTER_STATE_DIR}/k8s-configs"
+CUSTOMER_HUB='customer-hub'
 
 mkdir -p "${BOOTSTRAP_DIR}"
 mkdir -p "${K8S_CONFIGS_DIR}"
@@ -566,32 +615,41 @@ cp -pr ../profiles/aws/. "${CLUSTER_STATE_DIR}"/profiles
 echo "${PING_CLOUD_BASE_COMMIT_SHA}" > "${TARGET_DIR}/pcb-commit-sha.txt"
 
 # Now generate the yaml files for each environment
-ALL_ENVIRONMENTS='dev test stage prod'
+ALL_ENVIRONMENTS='dev test stage prod customer-hub'
 ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
 
 export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL}"
 
-# The ENVIRONMENTS variable can either be the CDE names (e.g. dev, test, stage, prod) or the branch names (e.g.
-# v1.8.0-dev, v1.8.0-test, v1.8.0-stage, v1.8.0-master). We must handle both cases. Note that the 'prod' environment
-# will have a branch name suffix of 'master'.
+# The ENVIRONMENTS variable can either be the CDE names (e.g. dev, test, stage, prod) or the CHUB name "customer-hub",
+# or the corresponding branch names (e.g. v1.8.0-dev, v1.8.0-test, v1.8.0-stage, v1.8.0-master, v1.8.0-customer-hub).
+# We must handle both cases. Note that the 'prod' environment will have a branch name suffix of 'master'.
 for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
 # Run in a sub-shell so the current shell is not polluted with environment variables.
 (
-  test "${ENV_OR_BRANCH}" = 'prod' &&
-      GIT_BRANCH='master' ||
-      GIT_BRANCH="${ENV_OR_BRANCH}"
+  if echo "${ENV_OR_BRANCH})" | grep -q customer-hub; then
+    GIT_BRANCH="${CUSTOMER_HUB}"
 
-  ENV_OR_BRANCH_SUFFIX="${ENV_OR_BRANCH##*-}"
-  test "${ENV_OR_BRANCH_SUFFIX}" = 'master' &&
-      ENV='prod' ||
-      ENV="${ENV_OR_BRANCH_SUFFIX}"
+    ENV_OR_BRANCH_SUFFIX="${CUSTOMER_HUB}"
+    ENV="${CUSTOMER_HUB}"
+
+    export CLUSTER_STATE_REPO_BRANCH="${CUSTOMER_HUB}"
+  else
+    test "${ENV_OR_BRANCH}" = 'prod' &&
+        GIT_BRANCH='master' ||
+        GIT_BRANCH="${ENV_OR_BRANCH}"
+
+    ENV_OR_BRANCH_SUFFIX="${ENV_OR_BRANCH##*-}"
+    test "${ENV_OR_BRANCH_SUFFIX}" = 'master' &&
+        ENV='prod' ||
+        ENV="${ENV_OR_BRANCH_SUFFIX}"
+
+    # Set the cluster state repo branch to the default CDE branch, i.e. dev, test, stage or master.
+    export CLUSTER_STATE_REPO_BRANCH="${GIT_BRANCH##*-}"
+  fi
 
   # Export all the environment variables required for envsubst
   export ENV="${ENV}"
   export ENVIRONMENT_TYPE="${ENV}"
-
-  # Set the cluster state repo branch to the default CDE branch, i.e. dev, test, stage or master.
-  export CLUSTER_STATE_REPO_BRANCH="${GIT_BRANCH##*-}"
 
   # The base URL for kustomization files and environment will be different for each CDE.
   # On migrated customers, we must preserve the size of the customers.
@@ -599,7 +657,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     dev | test)
       export KUSTOMIZE_BASE="${KUSTOMIZE_BASE:-test}"
       ;;
-    stage | prod)
+    stage | prod | customer-hub)
       export KUSTOMIZE_BASE="${KUSTOMIZE_BASE:-prod/${SIZE}}"
       ;;
   esac
@@ -609,7 +667,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     dev | test | stage)
       export LETS_ENCRYPT_SERVER="${LETS_ENCRYPT_SERVER:-https://acme-staging-v02.api.letsencrypt.org/directory}"
       ;;
-    prod)
+    prod | customer-hub)
       export LETS_ENCRYPT_SERVER="${LETS_ENCRYPT_SERVER:-https://acme-v02.api.letsencrypt.org/directory}"
       ;;
   esac
@@ -633,10 +691,10 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   # Update the PF JVM limits based on environment.
   case "${ENV}" in
     dev | test)
-      export PF_MIN_HEAP=256m
-      export PF_MAX_HEAP=512m
-      export PF_MIN_YGEN=128m
-      export PF_MAX_YGEN=256m
+      export PF_MIN_HEAP=1536m
+      export PF_MAX_HEAP=1536m
+      export PF_MIN_YGEN=768m
+      export PF_MAX_YGEN=768m
       ;;
     stage | prod)
       export PF_MIN_HEAP=3072m
@@ -670,7 +728,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   export PA_GCOPTION='-XX:+UseParallelGC'
 
   # Zone for this region and the primary region
-  if "${IS_BELUGA_ENV}"; then
+  if "${IS_BELUGA_ENV}" || test "${ENV}" = 'customer-hub'; then
     export DNS_ZONE="\${TENANT_DOMAIN}"
     export PRIMARY_DNS_ZONE="\${PRIMARY_TENANT_DOMAIN}"
   else
@@ -687,6 +745,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
 
   add_derived_variables
   add_irsa_variables "${ACCOUNT_ID_PATH_PREFIX:-unused}" "${ENV}"
+  add_nlb_variables "${NLB_EIP_PATH_PREFIX:-unused}" "${ENV}"
 
   echo ---
   echo "For environment ${ENV}, using variable values:"
@@ -720,8 +779,23 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   ENV_DIR="${K8S_CONFIGS_DIR}/${ENV_OR_BRANCH}"
   mkdir -p "${ENV_DIR}"
 
-  cp -r "${BASE_DIR}" "${ENV_DIR}"
-  cp -r "${REGION_DIR}/." "${ENV_DIR}/${REGION_NICK_NAME}"
+  # Copy the common templates first.
+  cd "${COMMON_TEMPLATES_DIR}"
+  rsync -rR * "${ENV_DIR}"
+  cd - >/dev/null 2>&1
+
+  # Overlay the CHUB or CDE specific templates next.
+  if test "${ENV}" = 'customer-hub'; then
+    cd "${CHUB_TEMPLATES_DIR}"
+  else
+    cd "${CDE_TEMPLATES_DIR}"
+  fi
+
+  rsync -rR * "${ENV_DIR}"
+  cd - >/dev/null 2>&1
+
+  # Rename to the actual region nick name.
+  mv "${ENV_DIR}/region" "${ENV_DIR}/${REGION_NICK_NAME}"
 
   substitute_vars "${ENV_DIR}" "${REPO_VARS}" secrets.yaml env_vars
 

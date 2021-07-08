@@ -12,7 +12,7 @@ testUrls() {
   exit_code=0
   for i in {1..10}
   do
-    testUrlsExpect2xx "${PINGFEDERATE_CONSOLE}" "${PINGFEDERATE_API_DOCS}"
+    testUrlsExpect2xx "${PINGFEDERATE_CONSOLE}" "${PINGFEDERATE_API_DOCS}" "${PINGFEDERATE_API}"
     exit_code=$?
 
     if [[ $exit_code -ne 0 ]]; then

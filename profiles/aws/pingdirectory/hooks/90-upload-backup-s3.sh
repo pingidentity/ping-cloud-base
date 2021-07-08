@@ -39,21 +39,25 @@ UPLOAD_DIR="/opt/out/backup-upload"
 rm -rf "${UPLOAD_DIR}"
 mkdir -p "${UPLOAD_DIR}"
 
+mv "${DST_FILE_TIMESTAMP}" "${UPLOAD_DIR}/${DST_FILE_TIMESTAMP}"
+
+# Cleanup backup dir
+cd "${UPLOAD_DIR}" || exit 1
+rm -rf "${SERVER_BACKUP_DIR}"
+
 # Two copy of the backup will be pushed to cloud storage.
 # Make a copy: latest.zip
 DST_FILE_LATEST=latest.zip
-cp "$DST_FILE_TIMESTAMP" "${UPLOAD_DIR}/${DST_FILE_TIMESTAMP}"
-cp "$DST_FILE_TIMESTAMP" "${UPLOAD_DIR}/${DST_FILE_LATEST}"
+cp "${UPLOAD_DIR}/${DST_FILE_TIMESTAMP}" "${UPLOAD_DIR}/${DST_FILE_LATEST}"
 
 beluga_log "Copying files in '${UPLOAD_DIR}' to '${SKBN_CLOUD_PREFIX}'"
 
-if ! skbnCopy "${SKBN_K8S_PREFIX}/${UPLOAD_DIR}" "${SKBN_CLOUD_PREFIX}/"; then
+if ! skbnCopy "${UPLOAD_DIR}" "${SKBN_CLOUD_PREFIX}/"; then
   exit 1
 fi
 
 # STDOUT all the files in one line for integration test
 ls ${UPLOAD_DIR} | xargs
 
-# Cleanup
-rm -rf "${SERVER_BACKUP_DIR}"
+# Cleanup upload dir
 rm -rf "${UPLOAD_DIR}"

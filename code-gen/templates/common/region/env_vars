@@ -1,0 +1,29 @@
+############################################################
+# Region-specific parameters
+############################################################
+# Region name and nick name. REGION must be valid AWS region name.
+REGION=${REGION}
+REGION_NICK_NAME=${REGION_NICK_NAME}
+
+# Tenant domain suffix for customer for region
+TENANT_DOMAIN=${TENANT_DOMAIN}
+
+# Optional S3 bucket name for PingFederate adaptive clustering using the JGroups NATIVE_S3_PING discovery protocol.
+#
+# NOTES:
+#   - Only used in multi-cluster environments. If provided, PF will be configured with NATIVE_S3_PING.
+#   - In multi-cluster mode, one or both of CLUSTER_BUCKET_NAME and SECONDARY_TENANT_DOMAINS (in base env_vars)
+#     must be set. If both are set, then NATIVE_S3_PING will take precedence over DNS_PING.
+CLUSTER_BUCKET_NAME=${CLUSTER_BUCKET_NAME}
+
+# Customer-specific artifacts URL for region
+ARTIFACT_REPO_URL=${ARTIFACT_REPO_URL}
+
+############################################################
+# IRSA - IAM role for service accounts
+############################################################
+# Used by ping product pods
+IRSA_PING_ANNOTATION_KEY_VALUE="${IRSA_PING_ANNOTATION_KEY_VALUE}"
+
+# Annotation used by ingress-nginx service in ingress-nginx-public namespace
+NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE="${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"

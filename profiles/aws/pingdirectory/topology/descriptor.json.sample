@@ -1,0 +1,57 @@
+# This file shows samples of a PingDirectory topology descriptor file that's required in both single-region and
+multi-region deployments.
+
+# NOTE:
+# It should be provided from the cluster-state-repo through the 'topology-descriptor' ConfigMap, i.e.
+# k8s-configs/base/ping-cloud/descriptor.json
+
+# The general format should be:
+
+{
+	"<region>": {
+		"hostname": "<external-dns-name>",
+		"replicas": <number-of-replicas-in-region>
+	},
+	"<region>": {
+		"hostname": "<external-dns-name>",
+		"replicas": <number-of-replicas-in-region>
+	},
+    ...
+}
+
+# region-name - the region where the local Kubernetes cluster is located
+# external-dns-name - the external DNS hostname of the Kubernetes headless service that's in front of the servers in that region
+# replicas - the number of servers in the replication topology in that region
+
+For example:
+
+{
+	"us-west-2": {
+		"hostname": "pingdirectory-cluster.foo1.bar1",
+		"replicas": 6
+	},
+	"eu-west-1": {
+		"hostname": "pingdirectory-cluster.foo2.bar2",
+		"replicas": 3
+	}
+}
+
+# The above descriptor implies that PingDirectory server hostnames will be:
+#   - pingdirectory-0.pingdirectory-cluster.foo1.bar1, pingdirectory-1.pingdirectory-cluster.foo1.bar1, etc. (6 total)
+#     in region us-west-2
+#   - pingdirectory-0.pingdirectory-cluster.foo2.bar2, pingdirectory-1.pingdirectory-cluster.foo2.bar2, etc. (3 total)
+#     in region eu-west-1
+
+# Here's a valid example of a 'preview' Ping Cloud customer 'coral' for its 'stage' CDE in 2 regions -
+# 'us-east-2' and 'eu-central-1':
+
+{
+	"us-east-2": {
+		"hostname": "pingdirectory-cluster.stage-coral.us1.ping-preview.cloud",
+		"replicas": 2
+	},
+	"eu-central-1": {
+		"hostname": "pingdirectory-cluster.stage-coral.eu1.ping-preview.cloud",
+		"replicas": 2
+	}
+}

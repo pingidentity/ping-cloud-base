@@ -38,6 +38,18 @@ spec:
                         - pingfederate-engine
                 topologyKey: "failure-domain.beta.kubernetes.io/zone"
       initContainers:
+      - name: pingfederate-p14c-init
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.23
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+        command: [ 'python3', '-u', '/app/pingfederate_p14c_init.py' ]
+        volumeMounts:
+          - name: data-dir
+            mountPath: /opt/staging
       - name: pingfederate-init
         # FIXME: switch to same user as app
         securityContext:
@@ -67,6 +79,32 @@ spec:
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
+      - name: newrelic-tags-exporter
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v1.0.0
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: pingfederate-environment-variables
+        - secretRef:
+            name: newrelic-license-key
+            optional: true
+        env:
+        - name: NEW_RELIC_APP_NAME
+          value: "pingfederate"
+        - name: METADATA_EP_URL
+          value: "http://metadata:5000"
+        - name: NEW_RELIC_CONFIG_FILEPATH
+          value: "/opt/shared-dir/newrelic.yml"
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        volumeMounts:
+        - name: shared-dir
+          mountPath: /opt/shared-dir
       - name: wait-for-services
         # FIXME: switch to same user as app
         securityContext:
@@ -88,7 +126,12 @@ spec:
             name: pingfederate-environment-variables
       containers:
       - name: pingfederate
-        image: pingcloud-virtual.jfrog.io/pingidentity/pingfederate:2101-10.2.1
+        # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        # FIXME: switch to stable version once GSA team publishes
+        image: pingcloud-virtual.jfrog.io/pingidentity/pingfederate:10.2.4-edge
         imagePullPolicy: IfNotPresent
         env:
         - name: OPERATIONAL_MODE
@@ -135,6 +178,8 @@ spec:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
           mountPath: /root/.ssh
+        - name: shared-dir
+          mountPath: /opt/shared-dir
         - name: topology-descriptor
           mountPath: /opt/staging/topology/descriptor.json
           subPath: descriptor.json
@@ -161,6 +206,9 @@ spec:
           subPath: ds_env_vars
         - mountPath: /etc/podinfo
           name: podinfo
+        - name: data-dir
+          mountPath: /opt/staging/solutions_artifacts
+          subPath: solutions_artifacts
         readinessProbe:
           exec:
             command: [ /opt/staging/hooks/99-pf-engine-liveness.sh ]
@@ -180,7 +228,7 @@ spec:
         - containerPort: 8080
 
       - name: pingfederate-heartbeat-exporter
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-json-exporter:0.2.0-v1.0.2
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-json-exporter:0.2.0-v1.0.3
         imagePullPolicy: IfNotPresent
         env:
           - name: SERVICE_SHORTNAME
@@ -226,6 +274,8 @@ spec:
                 divisor: 1m
                 resource: requests.cpu
       - name: ssh-dir
+        emptyDir: {}
+      - name: shared-dir
         emptyDir: {}
       - name: data-dir
         emptyDir: {}

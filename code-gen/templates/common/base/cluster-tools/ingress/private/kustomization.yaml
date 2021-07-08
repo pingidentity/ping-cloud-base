@@ -1,0 +1,32 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+- ${K8S_GIT_URL}/k8s-configs/cluster-tools/base/ingress/nginx/private?ref=${K8S_GIT_BRANCH}
+
+patchesStrategicMerge:
+
+### Assign Elastic IP addresses to the ingress-nginx-private Network Load Balancer by adding the annotation ###
+- |-
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: ingress-nginx
+    namespace: ingress-nginx-private
+    annotations:
+      ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}
+
+patchesJson6902:
+
+### Change the default TLS secret for the ingress controllers ###
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: nginx-ingress-controller
+    namespace: ingress-nginx-private
+  patch: |-
+    - op: add
+      path: /spec/template/spec/containers/0/args/-
+      value:
+        --default-ssl-certificate=${PING_CLOUD_NAMESPACE}/acme-tls-cert

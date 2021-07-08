@@ -270,6 +270,55 @@ parse_url() {
 }
 
 ########################################################################################################################
+# Format the provided kustomize version for numeric comparison. For example, if the kustomize version is 4.0.5, it
+# returns 004000005000.
+#
+# Arguments
+#   ${1} -> The kustomize short version, e.g. v4.0.5.
+########################################################################################################################
+format_version() {
+  version="$1"
+  printf "%03d%03d%03d%03d" $(echo "${version}" | tr '.' ' ')
+}
+
+########################################################################################################################
+# Returns the version of kustomize formatted for numeric comparison. For example, if the kustomize version is 4.0.5,
+# it returns 004000005000.
+########################################################################################################################
+kustomize_version() {
+  version="$(kustomize version --short | grep -oE '[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+')"
+  format_version "${version}"
+}
+
+########################################################################################################################
+# Sets the "kustomize" load restriction build arg and value in the variables 'build_load_arg' and 'build_load_arg_value'
+# if they are not already set to allow loading patch files that are not directly under the kustomize base depending on
+# the version of kustomize.
+########################################################################################################################
+set_kustomize_load_arg_and_value() {
+  if test "${build_load_arg}" && test "${build_load_arg_value}"; then
+    return
+  fi
+
+  KUST_VER="$(kustomize_version)"
+  log "Detected kustomize version ${KUST_VER}"
+
+  # The load restriction build arg name and value are different starting in kustomize v4.0.1. This argument allows
+  # kustomize to load patch files that are not directly under the kustomize base. For example, we need this option for
+  # the remove-from-secondary-patch.yaml because it lives in base and is outside of the kustomize root of the region
+  # directories.
+  VER_4_0_1="$(format_version '4.0.1')"
+
+  if test ${KUST_VER} -ge ${VER_4_0_1}; then
+    build_load_arg='--load-restrictor'
+    build_load_arg_value='LoadRestrictionsNone'
+  else
+    build_load_arg='--load_restrictor'
+    build_load_arg_value='none'
+  fi
+}
+
+########################################################################################################################
 # Build all kustomizations under the provided directory and its sub-directories.
 #
 # Arguments
@@ -290,7 +339,8 @@ build_kustomizations_in_dir() {
     KUSTOMIZATION_DIR=$(dirname ${KUSTOMIZATION_FILE})
 
     log "Processing kustomization.yaml in ${KUSTOMIZATION_DIR}"
-    kustomize build --load_restrictor none "${KUSTOMIZATION_DIR}" 1> /dev/null
+    set_kustomize_load_arg_and_value
+    kustomize build "${build_load_arg}" "${build_load_arg_value}" "${KUSTOMIZATION_DIR}" 1> /dev/null
     BUILD_RESULT=${?}
     log "Build result for directory ${KUSTOMIZATION_DIR}: ${BUILD_RESULT}"
 
@@ -344,7 +394,7 @@ build_cluster_state_code() {
   STATUS=0
   log "Building cluster state code in directory ${DIR}"
 
-  BASE_DIRS=$(find "${DIR}" -name base -type d)
+  BASE_DIRS=$(find "${DIR}/cluster-state/k8s-configs" -name base -type d -maxdepth 2)
 
   GIT_OPS_CMD_NAME='git-ops-command.sh'
   GIT_OPS_CMD="$(find "${DIR}" -name "${GIT_OPS_CMD_NAME}" -type f)"
@@ -487,7 +537,8 @@ build_dev_deploy_file() {
   cp -pr "${dev_cluster_state_dir}" "${build_dir}"
 
   substitute_vars "${build_dir}" "${DEFAULT_VARS}"
-  kustomize build --load_restrictor none "${build_dir}/${cluster_type}" > "${deploy_file}"
+  set_kustomize_load_arg_and_value
+  kustomize build "${build_load_arg}" "${build_load_arg_value}" "${build_dir}/${cluster_type}" > "${deploy_file}"
   rm -rf "${build_dir}"
 
   test ! -z "${NAMESPACE}" && test "${NAMESPACE}" != 'ping-cloud' &&

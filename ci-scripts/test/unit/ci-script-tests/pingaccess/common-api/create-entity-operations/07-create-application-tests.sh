@@ -29,10 +29,10 @@ testCreateApplicationHappyPath() {
   local name='"name":"app1"'
 
   # curl is mocked above so these parameters don't matter
-  create_application_response=$(create_application "" "" "")
-  assertEquals "The function create_application returned a non-zero exit code.  The mocked curl function should force create_application to return 0." 0 $?
-  assertContains "The create_application response \"${create_application_response}\" does not contain \"${http_ok_status_line}\"." "${create_application_response}" "${http_ok_status_line}"
-  assertContains "The create_application response \"${create_application_response}\" does not contain \"${name}\"." "${create_application_response}" "${name}"
+  create_application_response=$(create_agent_application "" "" "" "")
+  assertEquals "The function create_agent_application returned a non-zero exit code.  The mocked curl function should force create_agent_application to return 0." 0 $?
+  assertContains "The create_agent_application response \"${create_application_response}\" does not contain \"${http_ok_status_line}\"." "${create_application_response}" "${http_ok_status_line}"
+  assertContains "The create_agent_application response \"${create_application_response}\" does not contain \"${name}\"." "${create_application_response}" "${name}"
 }
 
 # load shunit

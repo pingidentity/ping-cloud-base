@@ -23,6 +23,7 @@ K8S_CONFIGS_DIR='k8s-configs'
 CLUSTER_STATE_DIR='cluster-state'
 PROFILES_DIR='profiles'
 BASE_DIR='base'
+CUSTOMER_HUB='customer-hub'
 
 ########################################################################################################################
 # Delete all files and directories under the provided directory. All hidden files and directories directly under the
@@ -44,7 +45,7 @@ dir_deep_clean() {
 
 ########################################################################################################################
 # Organizes the Kubernetes configuration files to push into the cluster state repo for a specific Customer Deployment
-# Environment (CDE).
+# Environment (CDE) or customer-hub.
 #
 # Arguments
 #   ${1} -> The directory where cluster state code was generated, i.e. the TARGET_DIR to generate-cluster-state.sh.
@@ -75,7 +76,7 @@ organize_code_for_environment() {
     # Copy everything under cluster state into the code directory for the environment.
     cp -pr "${generated_code_dir}/${CLUSTER_STATE_DIR}"/. "${out_dir}"
 
-    # Remove everything under the k8s-configs because code is initially generated for every CDE under there.
+    # Remove everything under the k8s-configs because code is initially generated for every CDE and CHUB under there.
     rm -rf "${dst_k8s_dir:?}"/*
   fi
 
@@ -118,7 +119,7 @@ finalize() {
 # Quiet mode where pretty console-formatting is omitted.
 QUIET="${QUIET:-false}"
 
-ALL_ENVIRONMENTS='dev test stage prod'
+ALL_ENVIRONMENTS='dev test stage prod customer-hub'
 ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
 
 GENERATED_CODE_DIR="${GENERATED_CODE_DIR:-/tmp/sandbox}"
@@ -157,22 +158,31 @@ if test ${LS_REMOTE_EXIT_CODE} -ne 0; then
   echo "WARN: Unable to retrieve remote branches from the server. Exit code: ${LS_REMOTE_EXIT_CODE}"
 fi
 
-# The ENVIRONMENTS variable can either be the CDE names (e.g. dev, test, stage, prod) or the branch names (e.g.
-# v1.8.0-dev, v1.8.0-test, v1.8.0-stage, v1.8.0-master). It will be the CDE names on initial seeding of the cluster
-# state repo. On upgrade of the cluster state repo it will be the branch names. We must handle both cases. Note that
-# the 'prod' environment will have a branch name suffix of 'master'.
+# The ENVIRONMENTS variable can either be the CDE names or CHUB name (e.g. dev, test, stage, prod or customer-hub) or
+# the branch names (e.g. v1.8.0-dev, v1.8.0-test, v1.8.0-stage, v1.8.0-master or v1.8.0-customer-hub). It will be the
+# CDE names or CHUB name on initial seeding of the cluster state repo. On upgrade of the cluster state repo it will be
+# the branch names. We must handle both cases. Note that the 'prod' environment will have a branch name suffix
+# of 'master'.
 for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
-  test "${ENV_OR_BRANCH}" = 'prod' &&
-      GIT_BRANCH='master' ||
-      GIT_BRANCH="${ENV_OR_BRANCH}"
-  DEFAULT_CDE_BRANCH="${GIT_BRANCH##*-}"
+  if echo "${ENV_OR_BRANCH})" | grep -q "${CUSTOMER_HUB}"; then
+    GIT_BRANCH="${ENV_OR_BRANCH}"
+    DEFAULT_CDE_BRANCH="${CUSTOMER_HUB}"
 
-  ENV_OR_BRANCH_SUFFIX="${ENV_OR_BRANCH##*-}"
-  test "${ENV_OR_BRANCH_SUFFIX}" = 'master' &&
-      ENV='prod' ||
-      ENV="${ENV_OR_BRANCH_SUFFIX}"
+    ENV_OR_BRANCH_SUFFIX="${CUSTOMER_HUB}"
+    ENV="${CUSTOMER_HUB}"
+  else
+    test "${ENV_OR_BRANCH}" = 'prod' &&
+        GIT_BRANCH='master' ||
+        GIT_BRANCH="${ENV_OR_BRANCH}"
+    DEFAULT_CDE_BRANCH="${GIT_BRANCH##*-}"
 
-  echo "Processing branch '${GIT_BRANCH}' for CDE '${ENV}' and default CDE branch '${DEFAULT_CDE_BRANCH}'"
+    ENV_OR_BRANCH_SUFFIX="${ENV_OR_BRANCH##*-}"
+    test "${ENV_OR_BRANCH_SUFFIX}" = 'master' &&
+        ENV='prod' ||
+        ENV="${ENV_OR_BRANCH_SUFFIX}"
+  fi
+
+  echo "Processing branch '${GIT_BRANCH}' for environment '${ENV}' and default branch '${DEFAULT_CDE_BRANCH}'"
 
   ENV_CODE_DIR=$(mktemp -d)
   organize_code_for_environment "${GENERATED_CODE_DIR}" "${ENV_OR_BRANCH}" "${ENV}" "${ENV_CODE_DIR}" "${IS_PRIMARY}"
@@ -192,14 +202,14 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
 
   # Otherwise, create it.
   else
-    # Attempt to create the branch from its default CDE branch name.
+    # Attempt to create the branch from its default CDE or CHUB branch name.
     echo "Branch ${GIT_BRANCH} does not exist locally. Creating it."
 
     if git rev-parse --verify "${DEFAULT_CDE_BRANCH}" &> /dev/null; then
       echo "Switching to branch ${DEFAULT_CDE_BRANCH} before creating ${GIT_BRANCH}"
       git checkout --quiet "${DEFAULT_CDE_BRANCH}"
     else
-      echo "Default CDE branch ${DEFAULT_CDE_BRANCH} does not exist for branch ${GIT_BRANCH}"
+      echo "Default branch ${DEFAULT_CDE_BRANCH} does not exist for branch ${GIT_BRANCH}"
       echo "Creating it from branch: ${STAGING_BRANCH}"
       git checkout --quiet "${STAGING_BRANCH}"
     fi

@@ -22,20 +22,21 @@ spec:
       labels:
         cluster: pingfederate-cluster
         role: pingfederate-admin
+        entitled-app: "true"
       annotations:
         lastUpdateReason: "NA"
     spec:
       serviceAccount: ping-serviceaccount
       initContainers:
       - name: pingfederate-p14c-init
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.12
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.23
         imagePullPolicy: IfNotPresent
         env:
         - name: NAMESPACE
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        command: [ 'python3', '-u', '/app/src/pingfederate_p14c_init.py' ]
+        command: [ 'python3', '-u', '/app/pingfederate_p14c_init.py' ]
         volumeMounts:
         - name: data-dir
           mountPath: /opt/staging
@@ -70,6 +71,32 @@ spec:
             name: pingfederate-environment-variables
         - configMapRef:
             name: pingcommon-environment-variables
+      - name: newrelic-tags-exporter
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v1.0.0
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: pingfederate-environment-variables
+        - secretRef:
+            name: newrelic-license-key
+            optional: true
+        env:
+        - name: NEW_RELIC_APP_NAME
+          value: "pingfederate-admin"
+        - name: METADATA_EP_URL
+          value: "http://metadata:5000"
+        - name: NEW_RELIC_CONFIG_FILEPATH
+          value: "/opt/shared-dir/newrelic.yml"
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        volumeMounts:
+        - name: shared-dir
+          mountPath: /opt/shared-dir
       - name: wait-for-services
         # FIXME: switch to same user as app
         securityContext:
@@ -93,7 +120,12 @@ spec:
             name: pingcommon-environment-variables
       containers:
       - name: pingfederate-admin
-        image: pingcloud-virtual.jfrog.io/pingidentity/pingfederate:2101-10.2.1
+        # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        # FIXME: switch to stable version once GSA team publishes
+        image: pingcloud-virtual.jfrog.io/pingidentity/pingfederate:10.2.4-edge
         imagePullPolicy: IfNotPresent
         env:
         - name: OPERATIONAL_MODE
@@ -117,12 +149,6 @@ spec:
             secretKeyRef:
               name: pingcommon-passwords
               key: DA_OAUTH_TOKEN_VALIDATOR_SECRET
-        - name: NEW_RELIC_APP_NAME
-          value: pingfederate-admin
-        - name: NEW_RELIC_POD_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
@@ -145,6 +171,8 @@ spec:
         # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
           mountPath: /root/.ssh
+        - name: shared-dir
+          mountPath: /opt/shared-dir
         - name: topology-descriptor
           mountPath: /opt/staging/topology/descriptor.json
           subPath: descriptor.json
@@ -217,6 +245,8 @@ spec:
                 divisor: 1m
                 resource: requests.cpu
       - name: ssh-dir
+        emptyDir: {}
+      - name: shared-dir
         emptyDir: {}
       - name: data-dir
         emptyDir: {}

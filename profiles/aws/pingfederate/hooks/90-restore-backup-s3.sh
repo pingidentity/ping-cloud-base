@@ -21,9 +21,9 @@ initializeSkbnConfiguration
 
 set_script_variables
 
-beluga_log "Copying: '${DATA_BACKUP_FILE_NAME}' to '${SKBN_K8S_PREFIX}${SERVER_RESTORE_DIR}'"
+beluga_log "Copying: '${DATA_BACKUP_FILE_NAME}' to '${SERVER_RESTORE_DIR}'"
 
-if ! skbnCopy "${SKBN_CLOUD_PREFIX}/${DATA_BACKUP_FILE_NAME}" "${SKBN_K8S_PREFIX}${SERVER_RESTORE_DIR}/${DST_FILE}"; then
+if ! skbnCopy "${SKBN_CLOUD_PREFIX}/${DATA_BACKUP_FILE_NAME}" "${SERVER_RESTORE_DIR}/${DST_FILE}"; then
   beluga_log "Cannot locate s3 bucket ${SKBN_CLOUD_PREFIX}/${DATA_BACKUP_FILE_NAME}"
   exit 1
 fi
@@ -53,8 +53,8 @@ if test -f "${SERVER_RESTORE_DIR}/${DST_FILE}"; then
   # Print the filename of the downloaded file from cloud storage.
   beluga_log "Download file name: ${DATA_BACKUP_FILE_NAME}"
 
-  # Print listed files from drop-in-deployer
-  ls ${DEPLOYER_PATH}
+  # Print listed files from drop-in-deployer to a single line
+  ls ${DEPLOYER_PATH} | xargs
 
 else 
   beluga_log "No archive data found"

@@ -1,0 +1,12 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+namespace: ping-cloud
+
+commonLabels:
+  app: ping-cloud
+
+resources:
+- p14c-oauth-service
+- pingfederate-admin-configurator
+- p14c-bom-service

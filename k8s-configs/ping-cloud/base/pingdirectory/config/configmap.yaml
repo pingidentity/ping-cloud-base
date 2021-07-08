@@ -223,7 +223,6 @@ data:
     echo "Contents of ${STUNNEL_CONF_FILE}:"
     cat "${STUNNEL_CONF_FILE}"
 
-    echo "Installing kubectl"
     wget https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl -P ${STUNNEL_HOME}
     chmod +x "${STUNNEL_HOME}"/kubectl
 
@@ -233,8 +232,6 @@ data:
     cat > "${FETCH_CERT_SCRIPT}" <<EOF
 
     while true; do
-      echo "Running periodic fetch script at \$(date)"
-
       SECRET_FILE=\$(mktemp)
       ${STUNNEL_HOME}/kubectl get secret "${K8S_ACME_CERT_SECRET_NAME}" -o yaml 2> /dev/null > \${SECRET_FILE}
 
@@ -253,8 +250,6 @@ data:
           echo "Sending stunnel process PID \${PID} the HUP signal"
           kill -HUP \${PID}
           echo "stunnel config last reloaded at \$(date)"
-        else
-          echo "Certificate in \${TEMP_CRT_FILE} and ${STUNNEL_CRT_FILE} are the same"
         fi
       else
         echo "TLS key-pair not found in secret"

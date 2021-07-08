@@ -21,7 +21,8 @@ test ${STATUS} -eq 0 && STATUS=${BUILD_RESULT}
 # Root kustomization.yaml file
 log "Building root ${PROJECT_DIR} kustomization.yaml"
 
-kustomize build --load_restrictor none "${PROJECT_DIR}" 1> /dev/null
+set_kustomize_load_arg_and_value
+kustomize build "${build_load_arg}" "${build_load_arg_value}" "${PROJECT_DIR}" 1> /dev/null
 BUILD_RESULT=${?}
 test ${STATUS} -eq 0 && STATUS=${BUILD_RESULT}
 

@@ -11,6 +11,7 @@ parameters:
   iopsPerGB: "50"
 mountOptions:
   - discard
+allowVolumeExpansion: true
 
 ---
 
@@ -25,3 +26,4 @@ parameters:
   fsType: ext4
 mountOptions:
   - discard
+allowVolumeExpansion: true

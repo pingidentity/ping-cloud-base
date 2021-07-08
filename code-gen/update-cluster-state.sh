@@ -38,6 +38,10 @@ CUSTOM_RESOURCES_REL_DIR="${K8S_CONFIGS_DIR}/${BASE_DIR}/${CUSTOM_RESOURCES_DIR}
 CUSTOM_PATCHES_REL_FILE_NAME="${K8S_CONFIGS_DIR}/${BASE_DIR}/${CUSTOM_PATCHES_FILE_NAME}"
 
 ARTIFACTS_JSON_FILE_NAME='artifact-list.json'
+DESCRIPTOR_JSON_FILE_NAME='descriptor.json'
+
+PING_CLOUD_DIR='ping-cloud'
+PING_CLOUD_REL_DIR="${K8S_CONFIGS_DIR}/${BASE_DIR}/${PING_CLOUD_DIR}"
 
 ENV_VARS_FILE_NAME='env_vars'
 SECRETS_FILE_NAME='secrets.yaml'
@@ -64,7 +68,6 @@ RESET_TO_DEFAULT="${RESET_TO_DEFAULT:-false}"
 beluga_owned_k8s_files="@.flux.yaml \
 @argo-application.yaml \
 @custom-patches-sample.yaml \
-@descriptor.json \
 @env_vars \
 @flux-command.sh \
 @git-ops-command.sh \
@@ -96,7 +99,8 @@ ${BACKUP_URL}
 ${PING_CLOUD_NAMESPACE}
 ${K8S_GIT_URL}
 ${K8S_GIT_BRANCH}
-${REGISTRY_NAME}
+${JFROG_REGISTRY_NAME}
+${ECR_REGISTRY_NAME}
 ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
 ${CLUSTER_STATE_REPO_URL}
 ${CLUSTER_STATE_REPO_BRANCH}
@@ -131,7 +135,8 @@ ${DNS_ZONE}
 ${DNS_ZONE_DERIVED}
 ${PRIMARY_DNS_ZONE}
 ${PRIMARY_DNS_ZONE_DERIVED}
-${IRSA_PING_ANNOTATION_KEY_VALUE}'
+${IRSA_PING_ANNOTATION_KEY_VALUE}
+${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}'
 
 ########################################################################################################################
 # Export some derived environment variables.
@@ -467,6 +472,8 @@ handle_changed_profiles() {
   if ! test "${new_files}"; then
     log "No changed '${PROFILES_DIR}' files to copy '${DEFAULT_CDE_BRANCH}' to its new branch '${NEW_BRANCH}'"
   else
+    log "DEBUG: Found the following new files in branch '${DEFAULT_CDE_BRANCH}':"
+    echo "${new_files}"
     echo "${new_files}" | xargs git checkout "${DEFAULT_CDE_BRANCH}"
   fi
 
@@ -577,7 +584,6 @@ handle_changed_k8s_configs() {
 
   if ! test "${new_files}"; then
     log "No changed '${K8S_CONFIGS_DIR}' files to copy '${DEFAULT_CDE_BRANCH}' to its new branch '${NEW_BRANCH}'"
-    return
   fi
 
   log "DEBUG: Found the following new files in branch '${DEFAULT_CDE_BRANCH}':"
@@ -590,7 +596,10 @@ handle_changed_k8s_configs() {
 
   # 1. Copy the custom-patches.yaml file (owned by PS/GSO) as is.
   # 2. Copy the custom-resources/kustomization.yaml, which references the custom resources (also owned by PS/GSO) as is.
-  for file in ${CUSTOM_RESOURCES_REL_DIR}/kustomization.yaml ${CUSTOM_PATCHES_REL_FILE_NAME}; do
+  # 3. Copy the ping-cloud/descriptor.json file (also owned by PS/GSO) as is.
+  for file in ${CUSTOM_RESOURCES_REL_DIR}/kustomization.yaml \
+              ${CUSTOM_PATCHES_REL_FILE_NAME} \
+              ${PING_CLOUD_REL_DIR}/${DESCRIPTOR_JSON_FILE_NAME}; do
     if git show "${DEFAULT_CDE_BRANCH}:${file}" &> /dev/null; then
       log "Copying file ${DEFAULT_CDE_BRANCH}:${file} to the same location on ${NEW_BRANCH}"
       git show "${DEFAULT_CDE_BRANCH}:${file}" > "${file}"
@@ -762,7 +771,7 @@ print_readme() {
     echo
     echo "    - The following files in '${K8S_CONFIGS_DIR}' are typically customized:"
     echo
-    echo "        - PingDirectory descriptor.json for multi-region customers"
+    echo "        - PingDirectory '${DESCRIPTOR_JSON_FILE_NAME}' for multi-region customers"
     echo "        - Additional custom certificates/ingresses or patches to existing ones"
     echo
     echo "    - To get a list of all '${K8S_CONFIGS_DIR}' files that are different"

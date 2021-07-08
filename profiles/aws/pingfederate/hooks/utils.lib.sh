@@ -12,7 +12,7 @@ test -f "${STAGING_DIR}/ds_env_vars" && . "${STAGING_DIR}/ds_env_vars"
 ########################################################################################################################
 function make_api_request() {
   set +x
-  http_code=$(curl -k -o ${OUT_DIR}/api_response.txt -w "%{http_code}" \
+  http_code=$(curl -sSk -o ${OUT_DIR}/api_response.txt -w "%{http_code}" \
         --retry ${API_RETRY_LIMIT} \
         --max-time ${API_TIMEOUT_WAIT} \
         --retry-delay 1 \
@@ -47,7 +47,7 @@ function make_api_request() {
 ########################################################################################################################
 function make_api_request_download() {
   set +x
-  http_code=$(curl -k \
+  http_code=$(curl -sSk \
     --retry "${API_RETRY_LIMIT}" \
     --max-time "${API_TIMEOUT_WAIT}" \
     --retry-delay 1 \
@@ -86,7 +86,7 @@ function wait_for_admin_api_endpoint() {
   beluga_log "Waiting for admin API endpoint at ${API_REQUEST_URL}"
 
   while true; do
-    http_code=$(curl -k \
+    http_code=$(curl -sSk \
       --retry "${API_RETRY_LIMIT}" \
       --max-time "${API_TIMEOUT_WAIT}" \
       --retry-delay 1 \
@@ -309,7 +309,6 @@ function configure_cluster() {
 ########################################################################################################################
 function initializeSkbnConfiguration() {
   unset SKBN_CLOUD_PREFIX
-  unset SKBN_K8S_PREFIX
 
   # Allow overriding the backup URL with an arg
   test ! -z "${1}" && BACKUP_URL="${1}"
@@ -328,23 +327,7 @@ function initializeSkbnConfiguration() {
 
   esac
 
-  beluga_log "Getting cluster metadata"
-
-  # Get prefix of HOSTNAME which match the pod name.  
-  export POD="$(echo "${HOSTNAME}" | cut -d. -f1)"
-  
-  METADATA=$(kubectl get "$(kubectl get pod -o name --field-selector metadata.name=${POD})" \
-    -o=jsonpath='{.metadata.namespace},{.metadata.name},{.metadata.labels.role}')
-
-  METADATA_NS=$(echo "$METADATA"| cut -d',' -f1)
-  METADATA_PN=$(echo "$METADATA"| cut -d',' -f2)
-  METADATA_CN=$(echo "$METADATA"| cut -d',' -f3)
-
-  # Remove suffix for PF runtime.
-  METADATA_CN="${METADATA_CN%-engine}"
-
   export SKBN_CLOUD_PREFIX="${BACKUP_URL}"
-  export SKBN_K8S_PREFIX="k8s://${METADATA_NS}/${METADATA_PN}/${METADATA_CN}"
 }
 
 ########################################################################################################################

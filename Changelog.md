@@ -1,9 +1,94 @@
 # Changelog
 
+### 1.10.0
+
+- Deploy PingCentral in P1AS customer hub clusters
+- PA-WAS now verifies each individual Application exists on restarts and upgrades
+- PingDirectory health checks are now performed via HTTPS
+- ElasticSearch image updated to 7.13.2
+- Kibana image updated to 7.13.2
+- metrics-server updated to v0.5.0
+
+_Changes:_
+
+- [X] PDO-700 Deploy PingCentral in P1AS customer hub clusters
+- [X] PDO-2386 Improve upgrade of PA-WAS by making idempotent
+- [X] PDO-2462 Update cluster tools to latest version: Kibana
+- [X] PDO-2463 Update cluster tools to latest version: Elasticsearch
+- [X] PDO-2465 Update cluster tools to latest version: metrics-server
+- [X] PDO-2468 Update PD healthchecks to use the availability servlet
+
+### 1.9.3
+
+- Fix a PingDirectory crash caused by the offline-enable hook script after a restart
+- Remove PingFederate-P14C-Init container from secondary region
+- Updated p14c-integration image to 1.0.23
+- Update prometheus-json-exporter image to 1.0.3
+- Upgraded PingFederate to version 10.2.4
+
+_Changes:_
+
+- [X] PDO-2631 Upgrade PF to version 10.2.4
+- [X] PDO-2637 PingDirectroy crashloops on restart in the offline-enable hook script
+- [x] PDO-2661 Remove pingfederate-p14c-init container in secondary
+- [X] PDO-2668 Update p14c-integration docker images in ping-cloud-base to v1.0.23
+- [X] PDO-2688 Use latest prometheus-json-exporter image
+
+### 1.9.2
+
+- P14c-oauth and p14c-bom controllers now restart when pingone api is inaccessible
+- Preserve PingDirectory descriptor.json across CSR updates
+- Added entitled-app: "true" label to PingFederate Admin and PingAccess Admin
+- Updated p14c-integration image to 1.0.22
+- Updated p14c-bootstrap image to 1.0.9
+- Fixed external access to the PingFederate admin API
+- Removing pf-referenceid-adapter-2.0.1.jar if it is found on the filesystem
+- DA now creates its own Identity Mapper within PD
+- Fixed issue with DA IDP Adapter Grant Mapping to handle Persistent Grant Extended Attributes
+- Updated PF heap settings to match 1.7.2 values
+
+_Changes:_
+
+- [X] PDO-2203 Add liveness probe to p14c-oauth and p14c-bom controllers
+- [X] PDO-2285 Narrow Kube watch pods for Bom Controller
+- [X] PDO-2431 Update to use ingress-nginx/controller:v0.46.0 
+- [X] PDO-2539 Preserve PingDirectory descriptor.json across CSR updates
+- [X] PDO-2578 Updated p14c-integration image to 1.0.20 and p14c-bootstrap image to 1.0.9
+- [X] PDO-2579 Update to use skbn v1.0.1
+- [X] PDO-2607 Fix external access to the PingFederate admin API
+- [X] PDO-2609 Removing pf-referenceid-adapter-2.0.1.jar if it is found on the filesystem
+- [X] PDO-2633 DA now creates its own Identity Mapper within PD
+- [X] PDO-2639 Update p14c-integration docker images in ping-cloud-base to v1.0.21
+- [X] PDO-2641 Fixed issue with DA IDP Adapter Grant Mapping to handle Persistent Grant Extended Attributes
+- [X] PDO-2645 Fix PF product Heap Variable Settings to return to 1.7 values
+- [X] PDO-2665 My Ping Trial deployment failure RCA - Workforce solution - p14c-e2e-reliability267-271
+
+### 1.9.1
+
+- Fixed Elasticsearch cluster not able to select a primary
+- Removed duplicate PingDelegator logs from CloudWatch
+- Reduced log output on curl calls
+- Fixed the problem where PingFederate fails to crashloop pods when artifact-list.json contains improper json
+- Added the pingfederate-p14c-init container to PingFederate engine nodes so that integration kits are deployed on engines
+- Updated fluentd to aggregate multiline log messages
+
+_Changes:_
+
+- [X] PDO-2243 Remove duplicate messages from PingDelegator's access.log
+- [X] PDO-2308 Update PD liveness check to use an absolute path
+- [X] PDO-2335 PingFederate fails to crashloop pods when artifact-list.json contains improper json
+- [X] PDO-2399 Multi-line logs not displaying in CW properly
+- [X] PDO-2413 Remove curl progress output from logs
+- [X] PDO-2439 Elasticsearch log level to warn
+- [X] PDO-2490 Allow auto-expansion of all volumes (Elastic logging, PD, and PA/PA-WAS/PF admins)
+- [X] PDO-2507 NS 2 - Missing integration kit file in the node on CIAM environment
+
 ### 1.9.0
 
-- Option to enable Delegated Admin
+- Add PingDelegator 4.4.1 as a new application in P1AS
 - Upgraded PingFederate to version 10.2
+- Upgraded PingDirectory to version 8.2.0.4
+- Option to enable Delegated Admin
 - Provisioned Workforce/Customer 360 Plugins (PF Trial)
 - Added a metadata service to display Ping Cloud metadata component versions
 - Added PingFederate NewRelic APM Agent
@@ -44,16 +129,28 @@ _Changes:_
 - [X] PDO-2225 p14c-bootstrap k8s: add IRSA to new Ping service account
 - [X] PDO-2234 Remove MyPing controllers from secondary regions
 - [X] PDO-2236 Remove Daily encrypted exports run in PD - redundant as backups are already taken to S3
+- [X] PDO-2252 Rebuild the indexes before starting/restarting the server
 - [X] PDO-2253 DA: Integrate administrator as the default Delegated Admin
 - [X] PDO-2254 ArgoCD: enable auto-pruning to prevent OutOfSync issues on update
 - [X] PDO-2261 Decrease PD cpu in medium/large to support new relic pods
+- [X] PDO-2279 Create PodDisruptionBudget for PF Runtime
+- [X] PDO-2280 Create PodDisruptionBudget for PA Runtime
+- [X] PDO-2281 Create PodDisruptionBudget for PD
 - [X] PDO-2296 Custom secrets printed in startup log
 - [X] PDO-2306 Long-running PD pods being OOMKilled when there is no user activity
+- [X] PDO-2314 Set data backups for PA/PF to run at the half-hour mark
 - [X] PDO-2316 Metadata pod crashing due to resource pressure
 - [X] PDO-2319 Upgrade script replaces custom-resources and custom-patches
 - [X] PDO-2320 Run PD periodic backup processes at different times to mitigate OOMKills
 - [X] PDO-2322 Add sealed-secrets annotation to argocd-secret
 - [X] PDO-2323 Hook script failed to get pod metadata when pod suffix is double digit
+- [X] PDO-2336 Adjust pod sizes. Pods being OOMKilled in dev environments
+- [X] PDO-2338 PD throws LDAP exception when PF initially deploys
+- [X] PDO-2371 Upgrade DA and PD images
+- [X] PDO-2391 Fix ACI causing UI warning in DA
+- [X] PDO-2395 Enable DA Sessions
+- [X] PDO-2415 Update to turn acl flag on for native s3
+- [X] PDO-2474 PF-admin is crashing at start-up after running environment upgrade
 
 ### 1.8.3
 
