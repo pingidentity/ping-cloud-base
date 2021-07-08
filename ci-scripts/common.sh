@@ -50,6 +50,7 @@ if test -z "${ENV_VARS_FILE}"; then
   export PING_ARTIFACT_REPO_URL=https://ping-artifacts.s3-us-west-2.amazonaws.com
   export LOG_ARCHIVE_URL=s3://${CLUSTER_NAME}-logs-bucket
   export BACKUP_URL=s3://${CLUSTER_NAME}-backup-bucket
+  export CHUB_BACKUP_URL=s3://${CLUSTER_NAME}-chub-backup-bucket
   export CLUSTER_BUCKET_NAME="${CLUSTER_NAME}-cluster-bucket"
 
   export EVENT_QUEUE_NAME='platform_event_queue.fifo'
