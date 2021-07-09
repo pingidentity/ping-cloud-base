@@ -4,20 +4,22 @@
 "${VERBOSE:-false}" && set -x
 
 # This script may be used to upgrade an existing cluster state repo. It is designed to be non-destructive in that it
-# won't push any changes to the server. Instead, it will set up a parallel branch for every CDE branch corresponding to
-# the environments specified through the ENVIRONMENTS environment variable. For example, if the new version is v1.7.1,
-# then it’ll set up 4 new branches at the new version for the default set of environments: v1.7.1-dev, v1.7.1-test,
-# v1.7.1-stage and v1.7.1-master.
+# won't push any changes to the server. Instead, it will set up a parallel branch for every CDE branch and/or the
+# customer-hub branch as specified through the ENVIRONMENTS environment variable. For example, if the new version is
+# v1.7.1 and the ENVIRONMENTS variable override is not provided, then it’ll set up 4 new CDE branches at the new
+# version for the default set of environments: v1.7.1-dev, v1.7.1-test, v1.7.1-stage and v1.7.1-master and 1 new
+# customer-hub branch v1.7.1-customer-hub.
 
 # NOTE: The script must be run from the root of the cluster state repo clone directory. It acts on the following
 # environment variables.
 #
 #   NEW_VERSION -> Required. The new version of Beluga to which to update the cluster state repo.
-#   ENVIRONMENTS -> A space-separated list of environments. Defaults to 'dev test stage prod', if unset. If provided,
-#       it must contain all or a subset of the environments currently created by the generate-cluster-state.sh script,
-#       i.e. dev, test, stage, prod.
+#   ENVIRONMENTS -> A space-separated list of environments. Defaults to 'dev test stage prod customer-hub', if unset.
+#       If provided, it must contain all or a subset of the environments currently created by the
+#       generate-cluster-state.sh script, i.e. dev, test, stage, prod and customer-hub.
 #   RESET_TO_DEFAULT -> An optional flag, which if set to true will reset the cluster-state-repo to the OOTB state
-#       for the new version. This has the same effect as running the platform code build job.
+#       for the new version. This has the same effect as running the platform code build job that initially seeds the
+#       cluster-state repo.
 
 ### Global values and utility functions ###
 BASE64_DECODE_OPT="${BASE64_DECODE_OPT:--D}"
@@ -49,6 +51,7 @@ ORIG_SECRETS_FILE_NAME='orig-secrets.yaml'
 SEALED_SECRETS_FILE_NAME='sealed-secrets.yaml'
 
 CLUSTER_STATE_REPO='cluster-state-repo'
+CUSTOMER_HUB='customer-hub'
 
 PING_CLOUD_BASE='ping-cloud-base'
 PING_CLOUD_DEFAULT_DEVOPS_USER='pingcloudpt-licensing@pingidentity.com'
@@ -455,58 +458,25 @@ git_diff() {
 }
 
 ########################################################################################################################
-# Copy profiles files that were deleted or renamed from a default CDE branch into its new one.
-#
-# Arguments
-#   $1 -> The new branch for a default CDE branch.
-########################################################################################################################
-handle_changed_profiles() {
-  NEW_BRANCH="$1"
-  DEFAULT_CDE_BRANCH="${NEW_BRANCH##*-}"
-
-  log "Reconciling '${PROFILES_DIR}' diffs between '${DEFAULT_CDE_BRANCH}' and its new branch '${NEW_BRANCH}'"
-
-  git checkout --quiet "${NEW_BRANCH}"
-  new_files="$(git_diff "${DEFAULT_CDE_BRANCH}" HEAD "${PROFILES_DIR}")"
-
-  if ! test "${new_files}"; then
-    log "No changed '${PROFILES_DIR}' files to copy '${DEFAULT_CDE_BRANCH}' to its new branch '${NEW_BRANCH}'"
-  else
-    log "DEBUG: Found the following new files in branch '${DEFAULT_CDE_BRANCH}':"
-    echo "${new_files}"
-    echo "${new_files}" | xargs git checkout "${DEFAULT_CDE_BRANCH}"
-  fi
-
-  # Copy artifact-list.json files from the default CDE branch into the new branch but with a .old extension.
-  artifact_json_files="$(find "${PROFILES_DIR}" -name ${ARTIFACTS_JSON_FILE_NAME})"
-  log "Found the following ${ARTIFACTS_JSON_FILE_NAME} files: ${artifact_json_files}"
-
-  for artifact_file in ${artifact_json_files}; do
-    log "Copying file ${DEFAULT_CDE_BRANCH}:${artifact_file} to the same location on ${NEW_BRANCH} with .old extension"
-    git show "${DEFAULT_CDE_BRANCH}:${artifact_file}" > "${artifact_file}".old
-  done
-
-  msg="Copied changed '${PROFILES_DIR}' files from '${DEFAULT_CDE_BRANCH}' to its new branch '${NEW_BRANCH}'"
-  log "${msg}"
-
-  git add .
-  git commit --allow-empty -m "${msg}"
-}
-
-########################################################################################################################
-# Create secrets.yaml.old and sealed-secrets.yaml.old files if different between the default CDE branch and its new
+# Create secrets.yaml.old and sealed-secrets.yaml.old files if different between the default git branch and its new
 # one. This makes it easier for the operator to see the differences in secrets between the two branches.
 #
 # Arguments
-#   $1 -> The new branch for a default CDE branch.
+#   $1 -> The new branch for a default git branch.
 #   $2 -> The primary region.
 ########################################################################################################################
 handle_changed_k8s_secrets() {
   NEW_BRANCH="$1"
+
+  if ! "${CUSTOMER_HUB_BRANCH_EXISTS}" && (echo "${NEW_BRANCH}" | grep -q "${CUSTOMER_HUB}"); then
+    log "No secrets to migrate to '${NEW_BRANCH}' - '${CUSTOMER_HUB}' branch does not exist"
+    return 0
+  fi
+
   PRIMARY_REGION="$2"
 
-  DEFAULT_CDE_BRANCH="${NEW_BRANCH##*-}"
-  log "Handling changes to ${SECRETS_FILE_NAME} and ${SEALED_SECRETS_FILE_NAME} in branch '${DEFAULT_CDE_BRANCH}'"
+  DEFAULT_GIT_BRANCH="${NEW_BRANCH##*-}"
+  log "Handling changes to ${SECRETS_FILE_NAME} and ${SEALED_SECRETS_FILE_NAME} in branch '${DEFAULT_GIT_BRANCH}'"
 
   # In v1.6:
   #   - Secrets and the OOTB secrets for a release are present under <region>/ping-cloud/[orig-]secrets.yaml and
@@ -516,12 +486,12 @@ handle_changed_k8s_secrets() {
   # In v1.7 and later:
   #   - Secrets, OOTB secrets and sealed secrets are all present under base/.
 
-  # First switch to the default CDE branch.
-  git checkout --quiet "${DEFAULT_CDE_BRANCH}"
+  # First switch to the default git branch.
+  git checkout --quiet "${DEFAULT_GIT_BRANCH}"
   old_secrets_dir="$(mktemp -d)"
 
   for secrets_file_name in "${SECRETS_FILE_NAME}" "${ORIG_SECRETS_FILE_NAME}" "${SEALED_SECRETS_FILE_NAME}"; do
-    log "Handling changes to ${secrets_file_name} in branch '${DEFAULT_CDE_BRANCH}'"
+    log "Handling changes to ${secrets_file_name} in branch '${DEFAULT_GIT_BRANCH}'"
     old_secrets_file="${old_secrets_dir}/${secrets_file_name}"
 
     # The >= v1.7 case:
@@ -539,12 +509,12 @@ handle_changed_k8s_secrets() {
 
     log "Found '${secrets_file_name}' files: ${all_secret_files}"
     for secret_file in ${all_secret_files}; do
-      git show "${DEFAULT_CDE_BRANCH}:${secret_file}" >> "${old_secrets_file}"
+      git show "${DEFAULT_GIT_BRANCH}:${secret_file}" >> "${old_secrets_file}"
       echo >> "${old_secrets_file}"
     done
   done # secrets loop
 
-  # Switch to the new CDE branch and copy over the old secrets, if they're different.
+  # Switch to the new git branch and copy over the old secrets, if they're different.
   git checkout --quiet "${NEW_BRANCH}"
 
   secret_files="$(find "${old_secrets_dir}" -type f)"
@@ -567,26 +537,31 @@ handle_changed_k8s_secrets() {
 }
 
 ########################################################################################################################
-# Copy new k8s-configs files from the default CDE branch into its new one.
+# Copy new k8s-configs files from the default git branch into its new one.
 #
 # Arguments
-#   $1 -> The new branch for a default CDE branch.
+#   $1 -> The new branch for a default git branch.
 ########################################################################################################################
 handle_changed_k8s_configs() {
   NEW_BRANCH="$1"
 
-  DEFAULT_CDE_BRANCH="${NEW_BRANCH##*-}"
-  log "Handling non Beluga-owned files in branch '${DEFAULT_CDE_BRANCH}'"
-
-  log "Reconciling '${K8S_CONFIGS_DIR}' diffs between '${DEFAULT_CDE_BRANCH}' and its new branch '${NEW_BRANCH}'"
-  git checkout --quiet "${NEW_BRANCH}"
-  new_files="$(git_diff "${DEFAULT_CDE_BRANCH}" HEAD "${K8S_CONFIGS_DIR}")"
-
-  if ! test "${new_files}"; then
-    log "No changed '${K8S_CONFIGS_DIR}' files to copy '${DEFAULT_CDE_BRANCH}' to its new branch '${NEW_BRANCH}'"
+  if ! "${CUSTOMER_HUB_BRANCH_EXISTS}" && (echo "${NEW_BRANCH}" | grep -q "${CUSTOMER_HUB}"); then
+    log "No k8s config to migrate to '${NEW_BRANCH}' - '${CUSTOMER_HUB}' branch does not exist"
+    return 0
   fi
 
-  log "DEBUG: Found the following new files in branch '${DEFAULT_CDE_BRANCH}':"
+  DEFAULT_GIT_BRANCH="${NEW_BRANCH##*-}"
+  log "Handling non Beluga-owned files in branch '${DEFAULT_GIT_BRANCH}'"
+
+  log "Reconciling '${K8S_CONFIGS_DIR}' diffs between '${DEFAULT_GIT_BRANCH}' and its new branch '${NEW_BRANCH}'"
+  git checkout --quiet "${NEW_BRANCH}"
+  new_files="$(git_diff "${DEFAULT_GIT_BRANCH}" HEAD "${K8S_CONFIGS_DIR}")"
+
+  if ! test "${new_files}"; then
+    log "No changed '${K8S_CONFIGS_DIR}' files to copy '${DEFAULT_GIT_BRANCH}' to its new branch '${NEW_BRANCH}'"
+  fi
+
+  log "DEBUG: Found the following new files in branch '${DEFAULT_GIT_BRANCH}':"
   echo "${new_files}"
 
   KUSTOMIZATION_FILE="${CUSTOM_RESOURCES_REL_DIR}/kustomization.yaml"
@@ -600,11 +575,11 @@ handle_changed_k8s_configs() {
   for file in ${CUSTOM_RESOURCES_REL_DIR}/kustomization.yaml \
               ${CUSTOM_PATCHES_REL_FILE_NAME} \
               ${PING_CLOUD_REL_DIR}/${DESCRIPTOR_JSON_FILE_NAME}; do
-    if git show "${DEFAULT_CDE_BRANCH}:${file}" &> /dev/null; then
-      log "Copying file ${DEFAULT_CDE_BRANCH}:${file} to the same location on ${NEW_BRANCH}"
-      git show "${DEFAULT_CDE_BRANCH}:${file}" > "${file}"
+    if git show "${DEFAULT_GIT_BRANCH}:${file}" &> /dev/null; then
+      log "Copying file ${DEFAULT_GIT_BRANCH}:${file} to the same location on ${NEW_BRANCH}"
+      git show "${DEFAULT_GIT_BRANCH}:${file}" > "${file}"
     else
-      log "${file} does not exist in default CDE branch ${DEFAULT_CDE_BRANCH}"
+      log "${file} does not exist in default git branch ${DEFAULT_GIT_BRANCH}"
     fi
   done
 
@@ -612,29 +587,29 @@ handle_changed_k8s_configs() {
     # Ignore Beluga-owned files.
     new_file_basename="$(basename "${new_file}")"
     if echo "${beluga_owned_k8s_files}" | grep -q "@${new_file_basename}"; then
-      log "Ignoring file ${DEFAULT_CDE_BRANCH}:${new_file} since it is a Beluga-owned file"
+      log "Ignoring file ${DEFAULT_GIT_BRANCH}:${new_file} since it is a Beluga-owned file"
       continue
     fi
 
     # Copy files in the custom-resources section (owned by PS/GSO) as is.
     new_file_dirname="$(dirname "${new_file}")"
     if test "${new_file_dirname##*/}" = "${CUSTOM_RESOURCES_DIR}"; then
-      log "Copying custom resource file ${DEFAULT_CDE_BRANCH}:${new_file} to the same location on ${NEW_BRANCH}"
-      git show "${DEFAULT_CDE_BRANCH}:${new_file}" > "${new_file}"
+      log "Copying custom resource file ${DEFAULT_GIT_BRANCH}:${new_file} to the same location on ${NEW_BRANCH}"
+      git show "${DEFAULT_GIT_BRANCH}:${new_file}" > "${new_file}"
       continue
     fi
 
     # Copy non-YAML files (owned by PS/GSO) to the same location on the new branch, e.g. sealingkey.pem
     new_file_ext="${new_file_basename##*.}"
     if test "${new_file_ext}" != 'yaml'; then
-      log "Copying non-YAML file ${DEFAULT_CDE_BRANCH}:${new_file} to the same location on ${NEW_BRANCH}"
+      log "Copying non-YAML file ${DEFAULT_GIT_BRANCH}:${new_file} to the same location on ${NEW_BRANCH}"
       mkdir -p "${new_file_dirname}"
-      git show "${DEFAULT_CDE_BRANCH}:${new_file}" > "${new_file}"
+      git show "${DEFAULT_GIT_BRANCH}:${new_file}" > "${new_file}"
       continue
     fi
 
-    log "Copying custom file ${DEFAULT_CDE_BRANCH}:${new_file} into directory ${CUSTOM_RESOURCES_REL_DIR}"
-    git show "${DEFAULT_CDE_BRANCH}:${new_file}" > "${CUSTOM_RESOURCES_REL_DIR}/${new_file_basename}"
+    log "Copying custom file ${DEFAULT_GIT_BRANCH}:${new_file} into directory ${CUSTOM_RESOURCES_REL_DIR}"
+    git show "${DEFAULT_GIT_BRANCH}:${new_file}" > "${CUSTOM_RESOURCES_REL_DIR}/${new_file_basename}"
 
     log "Adding new resource file ${new_file_basename} to ${KUSTOMIZATION_FILE}"
     new_resource_line="- ${new_file_basename}"
@@ -647,7 +622,7 @@ handle_changed_k8s_configs() {
     fi
   done
 
-  msg="Copied new '${K8S_CONFIGS_DIR}' files '${DEFAULT_CDE_BRANCH}' to its new branch '${NEW_BRANCH}'"
+  msg="Copied new '${K8S_CONFIGS_DIR}' files '${DEFAULT_GIT_BRANCH}' to its new branch '${NEW_BRANCH}'"
   log "${msg}"
 
   git add .
@@ -662,8 +637,8 @@ print_readme() {
   SEPARATOR='^'
 
   for NEW_BRANCH in ${NEW_BRANCHES}; do
-    CDE="${NEW_BRANCH##*-}"
-    BRANCH_LINE="${TAB} ${NEW_BRANCH} -> ${CDE}"
+    ENV="${NEW_BRANCH##*-}"
+    BRANCH_LINE="${TAB} ${NEW_BRANCH} -> ${ENV}"
     test "${ENV_BRANCH_MAP}" &&
         ENV_BRANCH_MAP="${ENV_BRANCH_MAP}${SEPARATOR}${BRANCH_LINE}" ||
         ENV_BRANCH_MAP="${BRANCH_LINE}"
@@ -674,13 +649,13 @@ print_readme() {
   echo '#                                    README                                    #'
   echo '################################################################################'
   echo
-  echo "- The following new CDE branches have been created for the default ones:"
+  echo "- The following new git branches have been created for the default ones:"
   echo
   echo "${ENV_BRANCH_MAP}" | tr "${SEPARATOR}" '\n'
   echo
-  echo "- No changes have been made to the default CDE branches."
+  echo "- No changes have been made to the default git branches."
   echo
-  echo "- The new CDE branches are just local branches and not pushed to the server."
+  echo "- The new git branches are just local branches and not pushed to the server."
   echo "  They contain cluster state valid for '${NEW_VERSION}'."
   echo
 
@@ -691,7 +666,7 @@ print_readme() {
     echo "  of app JVM settings."
   fi
   echo
-  echo "    - The '${ENV_VARS_FILE_NAME}' files have been copied over from the default CDE branch"
+  echo "    - The '${ENV_VARS_FILE_NAME}' files have been copied over from the default git branch"
   echo "      with a suffix of '.old', but they are not sourced from any kustomization.yaml."
   echo
   echo "    - Use the '${ENV_VARS_FILE_NAME}.old' files as a reference to fix up any"
@@ -718,7 +693,7 @@ print_readme() {
   fi
   echo
   echo "- The '${SECRETS_FILE_NAME}', '${ORIG_SECRETS_FILE_NAME}' and '${SEALED_SECRETS_FILE_NAME}'"
-  echo "  files have been copied over from the default CDE branch with a suffix of '.old',"
+  echo "  files have been copied over from the default git branch with a suffix of '.old',"
   echo "  but they are not sourced from any kustomization.yaml. Use the '*secrets.yaml.old'"
   echo "  files as a reference to fix up the new ones in the following manner:"
   echo
@@ -739,7 +714,7 @@ print_readme() {
   else
     echo "- Changes under '${PROFILES_DIR}' were not migrated upon request. If profile"
     echo "  customizations have been made, then they need to be manually migrated to"
-    echo "  the new CDE branches."
+    echo "  the new git branches."
     echo
     echo "    - The following files in '${PROFILES_DIR}' are typically customized:"
     echo
@@ -749,7 +724,7 @@ print_readme() {
     echo "        - PingDirectory 03-passthrough-auth-plugin.dsconfig"
     echo
     echo "    - To get a list of all of the '${PROFILES_DIR}' files that are different"
-    echo "      between a default CDE branch and its new branch, run:"
+    echo "      between a default git branch and its new branch, run:"
     echo
     echo "          git diff --name-status --diff-filter=D --diff-filter=R \\"
     echo "              <default-cde-branch> <new-cde-branch> -- ${PROFILES_DIR}"
@@ -767,7 +742,7 @@ print_readme() {
   else
     echo "- Changes under '${K8S_CONFIGS_DIR}' were not migrated upon request. If"
     echo "  Kubernetes customizations have been made, then they need to be manually"
-    echo "  migrated to the new CDE branches."
+    echo "  migrated to the new git branches."
     echo
     echo "    - The following files in '${K8S_CONFIGS_DIR}' are typically customized:"
     echo
@@ -775,7 +750,7 @@ print_readme() {
     echo "        - Additional custom certificates/ingresses or patches to existing ones"
     echo
     echo "    - To get a list of all '${K8S_CONFIGS_DIR}' files that are different"
-    echo "      between a default CDE branch and its new branch, run:"
+    echo "      between a default git branch and its new branch, run:"
     echo
     echo "          git diff --name-status --diff-filter=D --diff-filter=R \\"
     echo "              <default-cde-branch> <new-cde-branch> -- ${K8S_CONFIGS_DIR}"
@@ -788,22 +763,22 @@ print_readme() {
   echo
   echo "          ./git-ops-command.sh <REGION_DIR> > /tmp/<REGION_DIR>.yaml"
   echo
-  echo "    - Verify that the generated manifest looks right for the CDE and region."
+  echo "    - Verify that the generated manifest looks right for the environment and region."
   echo
   echo "    - Repeat the command for every region for multi-region customers."
   echo
   echo "    - Pay special attention to app JVM settings and ensure that they are"
-  echo "      adequate for the type and size of the CDE. Reach out to the Beluga"
-  echo "      team on sizing guidance."
+  echo "      adequate for the type and size of the environment. Reach out to the"
+  echo "      Beluga team on sizing guidance."
   echo
 
-  echo "- After verifying the generated manifest, rename the default CDE branches to"
+  echo "- After verifying the generated manifest, rename the default git branches to"
   echo "  backup branches:"
   echo
   echo "      git checkout <default-cde-branch>"
   echo "      git branch -m <old-version>-<default-cde-branch>"
   echo
-  echo "- Rename the new CDE branches to their corresponding default branch name:"
+  echo "- Rename the new git branches to their corresponding default branch name:"
   echo
   echo "      git checkout <new-cde-branch>"
   echo "      git branch -m <default-cde-branch>"
@@ -815,7 +790,7 @@ print_readme() {
   echo "  cluster for '${NEW_VERSION}', e.g. delete flux, elastic-stack-logging"
   echo "  namespaces, etc."
   echo
-  echo "- Push the newly migrated CDE branches to the server."
+  echo "- Push the newly migrated git branches to the server."
 }
 
 ########################################################################################################################
@@ -845,7 +820,7 @@ trap 'finalize' EXIT
 SCRIPT_NAME="$(basename "$0")"
 
 # Check required binaries.
-check_binaries 'kubectl' 'git' 'base64' 'jq' 'envsubst' || exit 1
+check_binaries 'kubectl' 'git' 'base64' 'jq' 'envsubst' 'rsync' || exit 1
 
 # Verify that required environment variable NEW_VERSION is set.
 if test -z "${NEW_VERSION}"; then
@@ -892,8 +867,8 @@ fi
 # Save off the current branch so we can switch back to it at the end of the script.
 CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 
-# Validate that a CDE branch exists for every environment.
-ALL_ENVIRONMENTS='dev test stage prod'
+# Validate that a git branch exists for every environment.
+ALL_ENVIRONMENTS='dev test stage prod customer-hub'
 ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
 
 NEW_BRANCHES=
@@ -901,17 +876,25 @@ REPO_STATUS=0
 
 for ENV in ${ENVIRONMENTS}; do
   test "${ENV}" = 'prod' &&
-      DEFAULT_CDE_BRANCH='master' ||
-      DEFAULT_CDE_BRANCH="${ENV}"
+      DEFAULT_GIT_BRANCH='master' ||
+      DEFAULT_GIT_BRANCH="${ENV}"
 
-  log "Validating that '${CLUSTER_STATE_REPO}' has branch: '${DEFAULT_CDE_BRANCH}'"
-  git checkout --quiet "${DEFAULT_CDE_BRANCH}"
+  log "Validating that '${CLUSTER_STATE_REPO}' has branch: '${DEFAULT_GIT_BRANCH}'"
+  git checkout --quiet "${DEFAULT_GIT_BRANCH}"
   if test $? -ne 0; then
-    log "CDE branch '${DEFAULT_CDE_BRANCH}' does not exist in '${CLUSTER_STATE_REPO}'"
-    REPO_STATUS=1
+    log "git branch '${DEFAULT_GIT_BRANCH}' does not exist in '${CLUSTER_STATE_REPO}'"
+
+    # Do not consider it a failure for the customer-hub branch to not exist.
+    if test "${ENV}" = "${CUSTOMER_HUB}"; then
+      log "Will create git branch '${CUSTOMER_HUB}' in '${CLUSTER_STATE_REPO}'"
+      CUSTOMER_HUB_BRANCH_EXISTS=false
+    else
+      REPO_STATUS=1
+      CUSTOMER_HUB_BRANCH_EXISTS=true
+    fi
   fi
 
-  NEW_BRANCH="${NEW_VERSION}-${DEFAULT_CDE_BRANCH}"
+  NEW_BRANCH="${NEW_VERSION}-${DEFAULT_GIT_BRANCH}"
   test "${NEW_BRANCHES}" &&
       NEW_BRANCHES="${NEW_BRANCHES} ${NEW_BRANCH}" ||
       NEW_BRANCHES="${NEW_BRANCH}"
@@ -956,14 +939,16 @@ get_min_required_secrets
 #   - Push code for all its regions into new branches
 for ENV in ${ENVIRONMENTS}; do # ENV loop
   test "${ENV}" = 'prod' &&
-      DEFAULT_CDE_BRANCH='master' ||
-      DEFAULT_CDE_BRANCH="${ENV}"
+      DEFAULT_GIT_BRANCH='master' ||
+      DEFAULT_GIT_BRANCH="${ENV}"
 
-  NEW_BRANCH="${NEW_VERSION}-${DEFAULT_CDE_BRANCH}"
-  log "Updating branch '${NEW_BRANCH}' for CDE '${ENV}'"
+  IS_CUSTOMER_HUB="$(echo "${ENV}" | grep -q "${CUSTOMER_HUB}")"
 
-  log "Switching to branch ${DEFAULT_CDE_BRANCH} to determine deployed regions"
-  git checkout --quiet "${DEFAULT_CDE_BRANCH}"
+  NEW_BRANCH="${NEW_VERSION}-${DEFAULT_GIT_BRANCH}"
+  log "Updating branch '${NEW_BRANCH}' for environment '${ENV}'"
+
+  log "Switching to branch ${DEFAULT_GIT_BRANCH} to determine deployed regions"
+  git checkout --quiet "${DEFAULT_GIT_BRANCH}"
 
   # Get the names of all the regional directories. Note that this may not be the actual region, rather it's the nick
   # name of the region.
@@ -1064,8 +1049,8 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
           app_env_vars_file="$(git ls-files "*/${DIR_NAME}/env_vars" | grep "${REGION_DIR}" | head -1)"
 
           if test "${app_env_vars_file}"; then
-            log "Copying ${app_env_vars_file} from ${DEFAULT_CDE_BRANCH} to ${OLD_ENV_VARS_FILE}"
-            git show "${DEFAULT_CDE_BRANCH}:${app_env_vars_file}" > "${OLD_ENV_VARS_FILE}"
+            log "Copying ${app_env_vars_file} from ${DEFAULT_GIT_BRANCH} to ${OLD_ENV_VARS_FILE}"
+            git show "${DEFAULT_GIT_BRANCH}:${app_env_vars_file}" > "${OLD_ENV_VARS_FILE}"
           else
             log "Not an app-specific env_vars file: ${ENV_VARS_FILE}"
           fi
@@ -1089,9 +1074,9 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
   # Determine the primary region. If we can't, then error out.
   PRIMARY_REGION_DIR="$(cat "${PRIMARY_REGION_DIR_FILE}")"
   if test "${PRIMARY_REGION_DIR}"; then
-    log "Primary region directory for CDE '${ENV}': '${PRIMARY_REGION_DIR}'"
+    log "Primary region directory for '${ENV}': '${PRIMARY_REGION_DIR}'"
   else
-    log "Primary region is unknown for CDE '${ENV}'"
+    log "Primary region is unknown for '${ENV}'"
     exit 1
   fi
 
@@ -1103,7 +1088,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
     fi
   done # REGION sort loop
 
-  log "Region directories in sorted order for CDE '${ENV}': ${REGION_DIRS_SORTED}"
+  log "Region directories in sorted order for '${ENV}': ${REGION_DIRS_SORTED}"
   for REGION_DIR in ${REGION_DIRS_SORTED}; do # REGION loop for push
     if test "${PRIMARY_REGION_DIR}" = "${REGION_DIR}"; then
       IS_PRIMARY=true
@@ -1113,10 +1098,15 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
       TYPE='secondary'
     fi
 
-    TARGET_DIR="${TENANT_CODE_DIR}/${REGION_DIR}"
-    log "Generated code directory for ${TYPE} region '${REGION_DIR}' and CDE '${ENV}': ${TARGET_DIR}"
+    if "${IS_CUSTOMER_HUB}" && ! "${IS_PRIMARY}"; then
+      log "Not pushing '${CUSTOMER_HUB}' branch for secondary region"
+      continue
+    fi
 
-    log "Creating branch for ${TYPE} region '${REGION_DIR}' and CDE '${ENV}': ${NEW_BRANCH}"
+    TARGET_DIR="${TENANT_CODE_DIR}/${REGION_DIR}"
+    log "Generated code directory for ${TYPE} region '${REGION_DIR}' and '${ENV}': ${TARGET_DIR}"
+
+    log "Creating branch for ${TYPE} region '${REGION_DIR}' and '${ENV}': ${NEW_BRANCH}"
     (
       set -x;
       QUIET=true \
@@ -1128,31 +1118,24 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
     )
     PUSH_RC=$?
     if test ${PUSH_RC} -ne 0; then
-      log "Error creating branch '${NEW_BRANCH}' for ${TYPE} region '${REGION_DIR}' and CDE '${ENV}': ${PUSH_RC}"
+      log "Error creating branch '${NEW_BRANCH}' for ${TYPE} region '${REGION_DIR}' and '${ENV}': ${PUSH_RC}"
       exit ${PUSH_RC}
     fi
-    log "Done creating branch '${NEW_BRANCH}' for ${TYPE} region '${REGION_DIR}' and CDE '${ENV}'"
+    log "Done creating branch '${NEW_BRANCH}' for ${TYPE} region '${REGION_DIR}' and '${ENV}'"
 
   done # REGION loop for push
 
   # Create .old files for secrets.yaml and sealed-secrets.yaml files so it's easy to see the differences in a pinch.
   handle_changed_k8s_secrets "${NEW_BRANCH}" "${PRIMARY_REGION_DIR}"
 
-  # If requested, copy profiles files that were deleted or renamed from the default CDE branch into its new branch.
-  if "${RESET_TO_DEFAULT}"; then
-    log "Not migrating '${PROFILES_DIR}' because migration was explicitly skipped"
-  else
-    handle_changed_profiles "${NEW_BRANCH}"
-  fi
-
-  # If requested, copy new k8s-configs files from the default CDE branches into their corresponding new branches.
+  # If requested, copy new k8s-configs files from the default git branches into their corresponding new branches.
   if "${RESET_TO_DEFAULT}"; then
     log "Not migrating '${K8S_CONFIGS_DIR}' because migration was explicitly skipped"
   else
     handle_changed_k8s_configs "${NEW_BRANCH}"
   fi
 
-  log "Done updating branch '${NEW_BRANCH}' for CDE '${ENV}'"
+  log "Done updating branch '${NEW_BRANCH}' for '${ENV}'"
 done # ENV loop
 
 # Print a README of next steps to take.

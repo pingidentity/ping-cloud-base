@@ -5,22 +5,21 @@
 - Deploy PingCentral in P1AS customer hub clusters
 - PA-WAS now verifies each individual Application exists on restarts and upgrades
 - PingDirectory health checks are now performed via HTTPS
-- ElasticSearch image updated to 7.13.2
-- Kibana image updated to 7.13.2
-- Kibana image updated to 7.13.2
-- metrics-server updated to v0.5.0
-- Beluga maintained container images with built in hook scripts.
+- Update a few supporting cluster tools to their latest versions
+- Beluga maintained container images with built in hook scripts
 
 _Changes:_
 
 - [X] PDO-700 Deploy PingCentral in P1AS customer hub clusters
 - [X] PDO-1739 Migrate to Beluga container images
 - [X] PDO-2386 Improve upgrade of PA-WAS by making idempotent
-- [X] PDO-2462 Update cluster tools to latest version: Kibana
-- [X] PDO-2463 Update cluster tools to latest version: Elasticsearch
-- [X] PDO-2465 Update cluster tools to latest version: metrics-server
+- [X] PDO-2462 Update cluster tools to latest version: Kibana (7.13.2)
+- [X] PDO-2463 Update cluster tools to latest version: Elasticsearch (7.13.2)
+- [X] PDO-2465 Update cluster tools to latest version: metrics-server (v0.5.0)
 - [X] PDO-2468 Update PD healthchecks to use the availability servlet
-- [X] PDO-2638 Update cluster tools to latest version: Logstash
+- [X] PDO-2536 Put admin NLB on the public network
+- [X] PDO-2638 Update cluster tools to latest version: Logstash (7.13.2)
+- [X] PDO-2687 Update update-cluster-state-wrapper.sh to seed initial customer-hub code into the CSR
 
 ### 1.9.3
 

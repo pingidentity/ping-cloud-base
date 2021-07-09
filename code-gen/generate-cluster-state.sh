@@ -626,7 +626,7 @@ export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL}"
 for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
 # Run in a sub-shell so the current shell is not polluted with environment variables.
 (
-  if echo "${ENV_OR_BRANCH})" | grep -q customer-hub; then
+  if echo "${ENV_OR_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
     GIT_BRANCH="${CUSTOMER_HUB}"
 
     ENV_OR_BRANCH_SUFFIX="${CUSTOMER_HUB}"

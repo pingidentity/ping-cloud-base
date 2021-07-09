@@ -165,6 +165,12 @@ fi
 # of 'master'.
 for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   if echo "${ENV_OR_BRANCH})" | grep -q "${CUSTOMER_HUB}"; then
+    # Do not push any changes to the customer-hub branch when this script is run on secondary regions.
+    if ! "${IS_PRIMARY}"; then
+      echo "Not pushing any changes to ${CUSTOMER_HUB} branch for secondary region"
+      continue
+    fi
+
     GIT_BRANCH="${ENV_OR_BRANCH}"
     DEFAULT_CDE_BRANCH="${CUSTOMER_HUB}"
 
@@ -241,7 +247,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     echo "Copying ${src_dir} to ${PWD}"
     cp -pr "${src_dir}" ./
 
-    # Copy bases files into the k8s-configs directory.
+    # Copy base files into the k8s-configs directory.
     src_dir="${GENERATED_CODE_DIR}/${CLUSTER_STATE_DIR}/${K8S_CONFIGS_DIR}"
     echo "Copying base files from ${src_dir} to ${K8S_CONFIGS_DIR}"
     find "${src_dir}" -type f -maxdepth 1 -exec cp {} "${K8S_CONFIGS_DIR}" \;
