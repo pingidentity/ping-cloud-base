@@ -146,7 +146,7 @@ if test -f 'env_vars'; then
     git clone -q --depth=1 -b "${K8S_GIT_BRANCH}" --single-branch "${K8S_GIT_URL}" "${TMP_DIR}/${K8S_GIT_BRANCH}"
 
     log "git-ops-command: replacing remote repo URL '${K8S_GIT_URL}' with locally cloned repo"
-    kust_files="$(find "${TMP_DIR}" -name kustomization.yaml | grep -v "${K8S_GIT_BRANCH}")"
+    kust_files="$(find "${TMP_DIR}" -name kustomization.yaml | grep -wv "${K8S_GIT_BRANCH}")"
 
     for kust_file in ${kust_files}; do
       rel_resource_dir="$(relative_path "$(dirname "${kust_file}")" "${TMP_DIR}/${K8S_GIT_BRANCH}")"
