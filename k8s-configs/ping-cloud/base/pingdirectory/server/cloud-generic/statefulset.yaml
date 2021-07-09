@@ -97,26 +97,39 @@ spec:
           securityContext:
             runAsNonRoot: false
             runAsUser: 0
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v1.0.0
+          ### FIXME
+          # For testing purposes - should be changed before merging!
+          # image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v1.0.2
+          image: 7es7/newrelic-tags-exporter:v1.0.2-test
           imagePullPolicy: IfNotPresent
           envFrom:
           - configMapRef:
               name: pingdirectory-environment-variables
           - secretRef:
               name: newrelic-license-key
+              optional: false
+          - secretRef:
+              name: devops-secret
               optional: true
           env:
+          - name: LICENSE_SERVER_URL
+            value: "https://license.pingidentity.com/devops/license"
           - name: NEW_RELIC_APP_NAME
             value: "pingdirectory"
           - name: METADATA_EP_URL
             value: "http://metadata:5000"
           - name: NEW_RELIC_CONFIG_FILEPATH
             value: "/opt/shared-dir/newrelic.yml"
+          - name: PRODUCT_LICENSE_FILEPATH
+            value: "/opt/license/pingdirectory.lic"
           - name: POD_NAME
             valueFrom:
               fieldRef:
                 fieldPath: metadata.name
           volumeMounts:
+          - name: pingdirectory-license
+            mountPath: /opt/license/pingdirectory.lic
+            subPath: pingdirectory.lic
           - name: shared-dir
             mountPath: /opt/shared-dir
         - name: wait-for-services
