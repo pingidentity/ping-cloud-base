@@ -7,18 +7,20 @@
 - PingDirectory health checks are now performed via HTTPS
 - ElasticSearch image updated to 7.13.2
 - Kibana image updated to 7.13.2
+- Kibana image updated to 7.13.2
 - metrics-server updated to v0.5.0
 - Beluga maintained container images with built in hook scripts.
 
 _Changes:_
 
 - [X] PDO-700 Deploy PingCentral in P1AS customer hub clusters
+- [X] PDO-1739 Migrate to Beluga container images
 - [X] PDO-2386 Improve upgrade of PA-WAS by making idempotent
 - [X] PDO-2462 Update cluster tools to latest version: Kibana
 - [X] PDO-2463 Update cluster tools to latest version: Elasticsearch
 - [X] PDO-2465 Update cluster tools to latest version: metrics-server
 - [X] PDO-2468 Update PD healthchecks to use the availability servlet
-- [X] PDO-1739 Migrate to Beluga container images
+- [X] PDO-2638 Update cluster tools to latest version: Logstash
 
 ### 1.9.3
 
