@@ -135,6 +135,11 @@ PA_MIN_YGEN=${PA_MIN_YGEN}
 PA_MAX_YGEN=${PA_MAX_YGEN}
 PA_GCOPTION=${PA_GCOPTION}
 
+###################################
+# PingCentral environment variables
+###################################
+MYSQL_SERVICE_HOST=pingcentraldb.${TENANT_DOMAIN}
+
 ############################################################
 # Ping application image tags
 ############################################################
