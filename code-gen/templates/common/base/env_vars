@@ -64,7 +64,6 @@ K8S_GIT_URL=${K8S_GIT_URL}
 K8S_GIT_BRANCH=${K8S_GIT_BRANCH}
 
 # The name of the Docker image registry
-JFROG_REGISTRY_NAME=${JFROG_REGISTRY_NAME}
 ECR_REGISTRY_NAME=${ECR_REGISTRY_NAME}
 
 # NewRelic Tags
@@ -143,10 +142,10 @@ MYSQL_SERVICE_HOST=pingcentraldb.${TENANT_DOMAIN}
 ############################################################
 # Ping application image tags
 ############################################################
-PINGACCESS_IMAGE_TAG=2010-6.1.3
-PINGFEDERATE_IMAGE_TAG=2106-10.2.4
-PINGDIRECTORY_IMAGE_TAG=2104-8.2.0.4
-PINGDELEGATOR_IMAGE_TAG=2103-4.4.1
+PINGACCESS_IMAGE_TAG=6.1.3-v1.0.0
+PINGFEDERATE_IMAGE_TAG=10.2.4-v1.0.1
+PINGDIRECTORY_IMAGE_TAG=8.3.0.0-v1.0.1
+PINGDELEGATOR_IMAGE_TAG=4.4.1-v1.0.2
 
 ############################################################
 # Ping solution image tags
