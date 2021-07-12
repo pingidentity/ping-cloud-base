@@ -258,7 +258,9 @@ log ---
 # current cluster. Must have the GTE devops user and key exported as
 # environment variables.
 export TENANT_NAME="${TENANT_NAME:-PingPOC}"
+
 export ENVIRONMENT=-"${ENVIRONMENT:-${USER}}"
+export BELUGA_ENV_NAME="${ENVIRONMENT#-}"
 
 export IS_MULTI_CLUSTER="${IS_MULTI_CLUSTER}"
 export CLUSTER_BUCKET_NAME="${CLUSTER_BUCKET_NAME}"
@@ -283,15 +285,16 @@ export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
 
+# MySQL database names cannot have dashes. So transform dashes into underscores.
+ENV_NAME_NO_DASHES=$(echo ${BELUGA_ENV_NAME} | tr '-' '_')
+export MYSQL_DATABASE="pingcentral_${ENV_NAME_NO_DASHES}"
+
 DEPLOY_FILE=${DEPLOY_FILE:-/tmp/deploy.yaml}
 test -z "${K8S_CONTEXT}" && K8S_CONTEXT=$(kubectl config current-context)
 
-ENVIRONMENT_NO_HYPHEN_PREFIX="${ENVIRONMENT#-}"
-export BELUGA_ENV_NAME="${ENVIRONMENT_NO_HYPHEN_PREFIX}"
-
 # Show the values being used for the relevant environment variables.
 log "Using TENANT_NAME: ${TENANT_NAME}"
-log "Using ENVIRONMENT: ${ENVIRONMENT_NO_HYPHEN_PREFIX}"
+log "Using ENVIRONMENT: ${BELUGA_ENV_NAME}"
 
 log "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 log "Using TOPOLOGY_DESCRIPTOR_FILE: ${TOPOLOGY_DESCRIPTOR_FILE}"
@@ -305,6 +308,7 @@ log "Using TENANT_DOMAIN: ${TENANT_DOMAIN}"
 log "Using PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
 log "Using SECONDARY_TENANT_DOMAINS: ${SECONDARY_TENANT_DOMAINS}"
 log "Using GLOBAL_TENANT_DOMAIN: ${GLOBAL_TENANT_DOMAIN}"
+log "Using MYSQL_DATABASE: ${MYSQL_DATABASE}"
 
 log "Using CONFIG_REPO_BRANCH: ${CONFIG_REPO_BRANCH}"
 log "Using CONFIG_PARENT_DIR: ${CONFIG_PARENT_DIR}"
@@ -326,7 +330,7 @@ export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KE
 export CLUSTER_NAME=${TENANT_NAME}
 export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
 
-export NAMESPACE=ping-cloud-${ENVIRONMENT_NO_HYPHEN_PREFIX}
+export NAMESPACE=ping-cloud-${BELUGA_ENV_NAME}
 
 # Set the cluster type based on primary or secondary.
 "${IS_MULTI_CLUSTER}" && test "${TENANT_DOMAIN}" != "${PRIMARY_TENANT_DOMAIN}" &&
@@ -403,6 +407,8 @@ export PING_ARTIFACT_REPO_URL=${PING_ARTIFACT_REPO_URL}
 export LOG_ARCHIVE_URL=${LOG_ARCHIVE_URL}
 export BACKUP_URL=${BACKUP_URL}
 
+export MYSQL_DATABASE=${MYSQL_DATABASE}
+
 export PROJECT_DIR=${PWD}
 export AWS_PROFILE=${AWS_PROFILE:-csg}
 
@@ -413,38 +419,7 @@ export SKIP_CONFIGURE_AWS=true
 export DEV_TEST_ENV=true
 EOF
 
-    log "Running unit tests"
-    unit_test_failures=0
-    for unit_test_dir in $(find 'ci-scripts/test/unit' -type d -mindepth 1 -maxdepth 1 -exec basename '{}' \;); do
-      log
-      log "==============================================================================================="
-      log "      Executing unit tests in directory: ${unit_test_dir}            "
-      log "==============================================================================================="
-
-      ci-scripts/test/unit/run-unit-tests.sh "${unit_test_dir}" "${TEST_ENV_VARS_FILE}"
-      test_result=$?
-
-      unit_test_failures=$((${unit_test_failures} + ${test_result}))
-
-      # Exit immediately if there's a test failure
-      if test ${unit_test_failures} -gt 0; then
-        break
-      fi
-    done
-    log
-
-    if test ${unit_test_failures} -ne 0; then
-      RED='\033[0;31m'
-      NO_COLOR='\033[0m'
-      # Use printf to print in color
-      printf '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n'
-      printf "Unit Test Failures: ${RED} ${unit_test_failures} Unit test(s) failed.  See details above.  Exiting...${NO_COLOR}\n"
-      printf '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n'
-      exit 1
-    fi
-
     log "Waiting for pods in ${NAMESPACE} to be ready..."
-
     for DEPLOYMENT in $(kubectl get statefulset,deployment -n "${NAMESPACE}" -o name --context "${K8S_CONTEXT}"); do
       NUM_REPLICAS=$(kubectl get "${DEPLOYMENT}" -o jsonpath='{.spec.replicas}' \
         -n "${NAMESPACE}" --context "${K8S_CONTEXT}")
@@ -452,7 +427,6 @@ EOF
       time kubectl rollout status --timeout "${TIMEOUT}"s "${DEPLOYMENT}" \
         -n "${NAMESPACE}" -w --context "${K8S_CONTEXT}" | tee -a "${LOG_FILE}"
     done
-
 
     log "Running integration tests"
     for integration_test_dir in $(find 'ci-scripts/test/integration' -type d -mindepth 1 -maxdepth 1 -exec basename '{}' \;); do
