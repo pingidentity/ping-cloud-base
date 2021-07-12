@@ -21,6 +21,7 @@ _Changes:_
 - [X] PDO-2536 Put admin NLB on the public network
 - [X] PDO-2638 Update cluster tools to latest version: Logstash (7.13.2)
 - [X] PDO-2687 Update update-cluster-state-wrapper.sh to seed initial customer-hub code into the CSR
+- [X] PDO-2708 Fix image tag kustomization in the CSR for P1AS app images
 
 ### 1.9.3
 
