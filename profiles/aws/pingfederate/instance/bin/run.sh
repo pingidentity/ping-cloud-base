@@ -269,7 +269,6 @@ if [ ${NEW_RELIC_LICENSE_KEY} != 'unused' ]; then
     if test ! -f "${NEW_RELIC_CONFIG_FILE}"; then
         die "Missing NewRelic config file; aborting setting NewRelic APM agent."
     else
-        NEW_RELIC_APP_NAME="${TENANT_NAME}_${NEW_RELIC_APP_NAME}"
         JAVA_AGENT_OPTS="${JAVA_AGENT_OPTS} -javaagent:/opt/staging/newrelic.jar -Dnewrelic.config.file=${NEW_RELIC_CONFIG_FILE}"
     fi
 fi
