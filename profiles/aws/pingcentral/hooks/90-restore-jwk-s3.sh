@@ -30,8 +30,11 @@ if ! skbnCopy "${SKBN_CLOUD_PREFIX}/${JWK_FILE_NAME}" "${SERVER_RESTORE_DIR}/${J
   exit 1
 fi
 
-cp "${SERVER_RESTORE_DIR}/${JWK_FILE_NAME}" "${MASTER_KEY_PATH}"
+if test -f "${SERVER_RESTORE_DIR}/${JWK_FILE_NAME}"; then
+  cp "${SERVER_RESTORE_DIR}/${JWK_FILE_NAME}" "${MASTER_KEY_PATH}"
+  beluga_log "Successfully restored ${JWK_FILE_NAME} file"
+  exit 0
+fi
 
-beluga_log "Successfully restored ${JWK_FILE_NAME} file"
-
+beluga_log "${JWK_FILE_NAME} file doesn't exist within S3, detecting this as a first time deployment."
 exit 0

@@ -5,17 +5,18 @@ ${VERBOSE} && set -x
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 
-POST_START_RESTORE_MARKER_FILE="${SERVER_ROOT_DIR}/post-start-restore-complete"
+JWK_FILE_NAME="pingcentral.jwk"
+MASTER_KEY_PATH="${SERVER_ROOT_DIR}/conf/${JWK_FILE_NAME}"
 
 beluga_log "post-start: starting post-start initialization"
 
-if test -f "${POST_START_RESTORE_MARKER_FILE}"; then
+if test -f "${MASTER_KEY_PATH}"; then
   beluga_log "post-start: JWK file exists exiting now"
   exit 0
 fi
 
 # Wait until pingcentral generate its JWK file for the first time
-pingcental_jwk_wait "${SERVER_ROOT_DIR}/conf/pingcentral.jwk"
+pingcental_jwk_wait "${MASTER_KEY_PATH}"
 
 sh "${HOOKS_DIR}/90-upload-jwk-s3.sh"
 JWK_UPLOAD_STATUS=$?
