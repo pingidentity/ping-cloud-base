@@ -10,7 +10,7 @@ POST_START_RESTORE_MARKER_FILE="${SERVER_ROOT_DIR}/post-start-restore-complete"
 beluga_log "post-start: starting post-start initialization"
 
 if test -f "${POST_START_RESTORE_MARKER_FILE}"; then
-  beluga_log "post-start: exiting now"
+  beluga_log "post-start: JWK file exists exiting now"
   exit 0
 fi
 
