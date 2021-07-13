@@ -11,6 +11,11 @@
 #
 #   GENERATED_CODE_DIR -> The TARGET_DIR of generate-cluster-state.sh. Defaults to '/tmp/sandbox', if unset.
 #   IS_PRIMARY -> A flag indicating whether or not this is the primary region. Defaults to false, if unset.
+#   IS_PROFILE_REPO -> A flag indicating whether or not this push is targeted for the server profile repo. Defaults to
+#       false, if unset.
+#   INCLUDE_PROFILES_IN_CSR -> A flag indicating whether or not to include profile code into the CSR. Defaults to
+#       true, if unset. This flag will be removed (or its default set to true) when Versent provisions a new profile
+#       repo exclusively for server profiles.
 #   ENVIRONMENTS -> A space-separated list of environments. Defaults to 'dev test stage prod', if unset. If provided,
 #       it must contain all or a subset of the environments currently created by the generate-cluster-state.sh script,
 #       i.e. dev, test, stage, prod.
@@ -116,6 +121,16 @@ finalize() {
 
 ### Script start ###
 
+# If profile repo and secondary region, early-out. The profiles will be exactly identical for all regions and should
+# already have been seeded when this script was run on primary region.
+IS_PRIMARY="${IS_PRIMARY:-false}"
+IS_PROFILE_REPO="${IS_PROFILE_REPO:-false}"
+
+if "${IS_PROFILE_REPO}" && ! "${IS_PRIMARY}"; then
+  echo "Nothing to push to the profile repo for secondary regions"
+  exit 0
+fi
+
 # Quiet mode where pretty console-formatting is omitted.
 QUIET="${QUIET:-false}"
 
@@ -123,7 +138,9 @@ ALL_ENVIRONMENTS='dev test stage prod customer-hub'
 ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
 
 GENERATED_CODE_DIR="${GENERATED_CODE_DIR:-/tmp/sandbox}"
-IS_PRIMARY="${IS_PRIMARY:-false}"
+
+# FIXME: default this to false when Versent has a new repo exclusively for server profiles.
+INCLUDE_PROFILES_IN_CSR="${INCLUDE_PROFILES_IN_CSR:-true}"
 
 PUSH_RETRY_COUNT="${PUSH_RETRY_COUNT:-30}"
 PUSH_TO_SERVER="${PUSH_TO_SERVER:-true}"
@@ -232,40 +249,54 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   fi
 
   if "${IS_PRIMARY}"; then
-    # Clean-up
+    # Clean-up everything in the repo.
     echo "Cleaning up ${PWD}"
     dir_deep_clean "${PWD}"
-    mkdir -p "${K8S_CONFIGS_DIR}"
 
-    # Copy the base files into the environment directory.
-    src_dir="${ENV_CODE_DIR}"
-    echo "Copying base files from ${src_dir} to ${PWD}"
-    find "${src_dir}" -type f -maxdepth 1 -exec cp {} ./ \;
+    if "${IS_PROFILE_REPO}" || "${INCLUDE_PROFILES_IN_CSR}"; then
+      # Copy the profiles.
+      src_dir="${ENV_CODE_DIR}/${PROFILES_DIR}"
+      echo "Copying ${src_dir} to ${PWD}"
+      cp -pr "${src_dir}" ./
 
-    # Copy the profiles directory.
-    src_dir="${ENV_CODE_DIR}/${PROFILES_DIR}"
-    echo "Copying ${src_dir} to ${PWD}"
-    cp -pr "${src_dir}" ./
+      # FIXME: copy the file to update the SPR in the future.
+      cp "${ENV_CODE_DIR}"/.gitignore ./
+    fi
 
-    # Copy base files into the k8s-configs directory.
-    src_dir="${GENERATED_CODE_DIR}/${CLUSTER_STATE_DIR}/${K8S_CONFIGS_DIR}"
-    echo "Copying base files from ${src_dir} to ${K8S_CONFIGS_DIR}"
-    find "${src_dir}" -type f -maxdepth 1 -exec cp {} "${K8S_CONFIGS_DIR}" \;
+    if ! "${IS_PROFILE_REPO}"; then
+      # Copy the base files into the environment directory.
+      src_dir="${ENV_CODE_DIR}"
+      echo "Copying base files from ${src_dir} to ${PWD}"
+      find "${src_dir}" -type f -maxdepth 1 -exec cp {} ./ \;
 
-    # Copy the k8s-configs/base directory, which is common code for all regions.
-    src_dir="${ENV_CODE_DIR}/${K8S_CONFIGS_DIR}/${BASE_DIR}"
-    echo "Copying ${src_dir} to ${K8S_CONFIGS_DIR}"
-    cp -pr "${src_dir}" "${K8S_CONFIGS_DIR}/"
+      # Copy the k8s-configs.
+      mkdir -p "${K8S_CONFIGS_DIR}"
+
+      # Copy base files into the k8s-configs directory.
+      src_dir="${GENERATED_CODE_DIR}/${CLUSTER_STATE_DIR}/${K8S_CONFIGS_DIR}"
+      echo "Copying base files from ${src_dir} to ${K8S_CONFIGS_DIR}"
+      find "${src_dir}" -type f -maxdepth 1 -exec cp {} "${K8S_CONFIGS_DIR}" \;
+
+      # Copy the k8s-configs/base directory, which is common code for all regions.
+      src_dir="${ENV_CODE_DIR}/${K8S_CONFIGS_DIR}/${BASE_DIR}"
+      echo "Copying ${src_dir} to ${K8S_CONFIGS_DIR}"
+      cp -pr "${src_dir}" "${K8S_CONFIGS_DIR}/"
+    fi
   fi
 
-  # shellcheck disable=SC2010
-  region="$(ls "${ENV_CODE_DIR}/${K8S_CONFIGS_DIR}" | grep -v "${BASE_DIR}")"
-  src_dir="${ENV_CODE_DIR}/${K8S_CONFIGS_DIR}/${region}"
+  if "${IS_PROFILE_REPO}"; then
+    commit_msg="Initial commit of profile code for environment '${ENV}' - ping-cloud-base@${PCB_COMMIT_SHA}"
+  else
+    # shellcheck disable=SC2010
+    region="$(ls "${ENV_CODE_DIR}/${K8S_CONFIGS_DIR}" | grep -v "${BASE_DIR}")"
+    src_dir="${ENV_CODE_DIR}/${K8S_CONFIGS_DIR}/${region}"
 
-  echo "Copying ${src_dir} to ${K8S_CONFIGS_DIR}"
-  cp -pr "${src_dir}" "${K8S_CONFIGS_DIR}/"
+    echo "Copying ${src_dir} to ${K8S_CONFIGS_DIR}"
+    cp -pr "${src_dir}" "${K8S_CONFIGS_DIR}/"
 
-  commit_msg="Initial commit of code for environment '${ENV}' in region '${region}' - ping-cloud-base@${PCB_COMMIT_SHA}"
+    commit_msg="Initial commit of k8s code for environment '${ENV}' in region '${region}' - ping-cloud-base@${PCB_COMMIT_SHA}"
+  fi
+
   echo "${commit_msg}"
 
   git add .
