@@ -7,53 +7,116 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-testCSRImageTagMatchesBelugaDefaultImage() {
-  . "${PROJECT_DIR}"/code-gen/templates/common/base/env_vars
+oneTimeSetUp() {
 
-  $(test "${PINGACCESS_IMAGE_TAG}" && \
-    test "${PINGFEDERATE_IMAGE_TAG}" && \
-    test "${PINGDIRECTORY_IMAGE_TAG}" && \
-    test "${PINGDELEGATOR_IMAGE_TAG}")
-  assertEquals "One of the required image tags missing from env_vars file" 0 $?
+  . "${PROJECT_DIR}"/code-gen/templates/common/base/env_vars
 
   log "Query endpoint: ${PINGCLOUD_METADATA_API}"
   RETURN_VAL=$(curl -s -m 5 -k -L "${PINGCLOUD_METADATA_API}")
   assertEquals "Failed to connect to: ${PINGCLOUD_METADATA_API}" 0 $?
 
-  temp_file_metadata="$(mktemp)"
-  echo "${RETURN_VAL}" | jq -r '.[] [].image' | grep -v 'N/A' > "${temp_file_metadata}"
+  TEMP_FILE_METADATA="$(mktemp)"
+  echo "${RETURN_VAL}" | jq -r '.[] [].image' | grep -v 'N/A' > "${TEMP_FILE_METADATA}"
+}
 
-  # Test PA image tag
-  uniqueTagCount=$(cat "${temp_file_metadata}" | grep "pingaccess" | sort -u | wc -l | awk '{ print $1 }')
-  assertEquals "PingAccess is using multiple image tag versions" 1 "${uniqueTagCount}"
+getUniqueTagCount() {
+  pod_name="${1}"
+  echo $(cat "${TEMP_FILE_METADATA}" | grep ${pod_name} | sort -u | wc -l | awk '{ print $1 }')
+}
 
-  matchedTagCount=$(cat "${temp_file_metadata}" | grep "pingaccess" | sort -u \
-                    | grep "${PINGACCESS_IMAGE_TAG}" | wc -l | awk '{ print $1 }')
-  assertEquals "PingAccess CSR image tag doesn't match Beluga default image tag" 1 "${matchedTagCount}"
+getMatchedTagCount() {
+  image_tag_name="${1}"
+  pod_name="${2}"
+  echo $(cat "${TEMP_FILE_METADATA}" | grep ${pod_name} | sort -u \
+        | grep ${image_tag_name} | wc -l | awk '{ print $1 }')
+}
 
-  # Test PF image tag
-  uniqueTagCount=$(cat "${temp_file_metadata}" | grep "pingfederate" | sort -u | wc -l | awk '{ print $1 }')
-  assertEquals "PingFederate is using multiple image tag versions" 1 "${uniqueTagCount}"
+testPingAccessImageTag() {
+  $(test "${PINGACCESS_IMAGE_TAG}")
+  assertEquals "PINGACCESS_IMAGE_TAG missing from env_vars file" 0 $?
 
-  matchedTagCount=$(cat "${temp_file_metadata}" | grep "pingfederate" | sort -u \
-                    | grep "${PINGFEDERATE_IMAGE_TAG}" | wc -l | awk '{ print $1 }')
-  assertEquals "PingFederate CSR image tag doesn't match Beluga default image tag" 1 "${matchedTagCount}"
+  unique_count=$(getUniqueTagCount "pingaccess")
+  assertEquals "PingAccess is using multiple image tag versions" 1 "${unique_count}"
 
-  # Test PD image tag
-  uniqueTagCount=$(cat "${temp_file_metadata}" | grep "pingdirectory" | sort -u | wc -l | awk '{ print $1 }')
-  assertEquals "PingDirectory is using multiple image tag versions" 1 "${uniqueTagCount}"
+  matched_count=$(getMatchedTagCount "${PINGACCESS_IMAGE_TAG}" "pingaccess")
+  assertEquals "PingAccess CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
+}
 
-  matchedTagCount=$(cat "${temp_file_metadata}" | grep "pingdirectory" | sort -u \
-                    | grep "${PINGDIRECTORY_IMAGE_TAG}" | wc -l | awk '{ print $1 }')
-  assertEquals "PingDirectory CSR image tag doesn't match Beluga default image tag" 1 "${matchedTagCount}"
+testPingFederateImageTag() {
+  $(test "${PINGFEDERATE_IMAGE_TAG}")
+  assertEquals "PINGFEDERATE_IMAGE_TAG missing from env_vars file" 0 $?
 
-  # Test PingDelegator image tag
-  uniqueTagCount=$(cat "${temp_file_metadata}" | grep "pingdelegator" | sort -u | wc -l | awk '{ print $1 }')
-  assertEquals "PingDelegator is using multiple image tag versions" 1 "${uniqueTagCount}"
+  unique_count=$(getUniqueTagCount "pingfederate")
+  assertEquals "PingFederate is using multiple image tag versions" 1 "${unique_count}"
 
-  matchedTagCount=$(cat "${temp_file_metadata}" | grep "pingdelegator" | sort -u \
-                    | grep "${PINGDELEGATOR_IMAGE_TAG}" | wc -l | awk '{ print $1 }')
-  assertEquals "PingDelegator CSR image tag doesn't match Beluga default image tag" 1 "${matchedTagCount}"
+  matched_count=$(getMatchedTagCount "${PINGFEDERATE_IMAGE_TAG}" "pingfederate")
+  assertEquals "PingFederate CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
+}
+
+testPingDirectoryImageTag() {
+  $(test "${PINGDIRECTORY_IMAGE_TAG}")
+  assertEquals "PINGDIRECTORY_IMAGE_TAG missing from env_vars file" 0 $?
+
+  unique_count=$(getUniqueTagCount "pingdirectory")
+  assertEquals "PingDirectory is using multiple image tag versions" 1 "${unique_count}"
+
+  matched_count=$(getMatchedTagCount "${PINGDIRECTORY_IMAGE_TAG}" "pingdirectory")
+  assertEquals "PingDirectory CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
+}
+
+testPingDelegatorImageTag() {
+  $(test "${PINGDELEGATOR_IMAGE_TAG}")
+  assertEquals "PINGDELEGATOR_IMAGE_TAG missing from env_vars file" 0 $?
+
+  unique_count=$(getUniqueTagCount "pingdelegator")
+  assertEquals "PingDelegator is using multiple image tag versions" 1 "${unique_count}"
+
+  matched_count=$(getMatchedTagCount "${PINGDELEGATOR_IMAGE_TAG}" "pingdelegator")
+  assertEquals "PingDelegator CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
+}
+
+testPingCentralImageTag() {
+  $(test "${PINGCENTRAL_IMAGE_TAGE}")
+  assertEquals "PINGCENTRAL_IMAGE_TAGE missing from env_vars file" 0 $?
+
+  unique_count=$(getUniqueTagCount "pingcentral")
+  assertEquals "PingCentral is using multiple image tag versions" 1 "${unique_count}"
+
+  matched_count=$(getMatchedTagCount "${PINGCENTRAL_IMAGE_TAGE}" "pingcentral")
+  assertEquals "PingCentral CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
+}
+
+testMetadataImageTag() {
+  $(test "${METADATA_IMAGE_TAG}")
+  assertEquals "METADATA_IMAGE_TAG missing from env_vars file" 0 $?
+
+  unique_count=$(getUniqueTagCount "metadata")
+  assertEquals "PingCloud Metadata is using multiple image tag versions" 1 "${unique_count}"
+
+  matched_count=$(getMatchedTagCount "${METADATA_IMAGE_TAG}" "metadata")
+  assertEquals "PingCloud Metadata CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
+}
+
+testP14CBootstrapImageTag() {
+  $(test "${P14C_BOOTSTRAP_IMAGE_TAG}")
+  assertEquals "P14C_BOOTSTRAP_IMAGE_TAG missing from env_vars file" 0 $?
+
+  unique_count=$(getUniqueTagCount "p14c-bootstrap")
+  assertEquals "P14C Bootstrap is using multiple image tag versions" 1 "${unique_count}"
+
+  matched_count=$(getMatchedTagCount "${P14C_BOOTSTRAP_IMAGE_TAG}" "p14c-bootstrap")
+  assertEquals "P14C Bootstrap CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
+}
+
+testP14CIntegrationImageTag() {
+  $(test "${P14C_INTEGRATION_IMAGE_TAG}")
+  assertEquals "P14C_INTEGRATION_IMAGE_TAG missing from env_vars file" 0 $?
+
+  unique_count=$(getUniqueTagCount "p14c-integration")
+  assertEquals "P14C Integration is using multiple image tag versions" 1 "${unique_count}"
+
+  matched_count=$(getMatchedTagCount "${P14C_INTEGRATION_IMAGE_TAG}" "p14c-integration")
+  assertEquals "P14C Integration CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
 }
 
 # When arguments are passed to a script you must
