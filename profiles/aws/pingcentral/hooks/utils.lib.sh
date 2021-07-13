@@ -93,3 +93,16 @@ function skbnCopy() {
     return 1
   fi
 }
+
+function pingcental_jwk_wait() {
+  JWK_FILE="$1"
+  while true; do
+    if ! test -f "${JWK_FILE}"; then
+        beluga_log "PingCentral JWK file doesn't exist yet, waiting.."
+        sleep 3
+    else
+        beluga_log "PingCentral is now ready. JWK file successfully created"
+        break
+    fi
+  done
+}
