@@ -78,7 +78,7 @@ spec:
         ### FIXME
         # For testing purposes - should be changed before merging!
         # image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v1.0.2
-        image: 7es7/newrelic-tags-exporter:1.0.2-test
+        image: 7es7/newrelic-tags-exporter:1.0.2-test-2
         imagePullPolicy: Always
         envFrom:
         - configMapRef:
@@ -161,6 +161,8 @@ spec:
             secretKeyRef:
               name: pingcommon-passwords
               key: DA_OAUTH_TOKEN_VALIDATOR_SECRET
+        - name: NEW_RELIC_CONFIG_FILE
+          value: "/opt/shared-dir/newrelic.yml"
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables

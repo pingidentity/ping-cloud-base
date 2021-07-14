@@ -86,7 +86,7 @@ spec:
         ### FIXME
         # For testing purposes - should be changed before merging!
         # image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v1.0.2
-        image: 7es7/newrelic-tags-exporter:1.0.2-test
+        image: 7es7/newrelic-tags-exporter:1.0.2-test-2
         imagePullPolicy: Always
         envFrom:
         - configMapRef:
@@ -164,12 +164,14 @@ spec:
             secretKeyRef:
               name: pingcommon-passwords
               key: PF_LDAP_PASSWORD
-        - name: NEW_RELIC_APP_NAME
-          value: pingfederate
-        - name: NEW_RELIC_POD_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
+        # - name: NEW_RELIC_APP_NAME
+        #   value: pingfederate
+        # - name: NEW_RELIC_POD_NAME
+        #   valueFrom:
+        #     fieldRef:
+        #       fieldPath: metadata.name
+        - name: NEW_RELIC_CONFIG_FILE
+          value: "/opt/shared-dir/newrelic.yml"
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
