@@ -31,9 +31,3 @@ configMapGenerator:
   behavior: merge
   envs:
   - ../base/env_vars
-
-patchesStrategicMerge:
-
-### Regional enablement - remove admins, backups, etc. from secondary ###
-### This patch should be commented out on the primary region ###
-- ../base/ping-cloud/remove-from-secondary-patch.yaml

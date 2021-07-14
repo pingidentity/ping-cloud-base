@@ -137,7 +137,9 @@ PA_GCOPTION=${PA_GCOPTION}
 ###################################
 # PingCentral environment variables
 ###################################
-MYSQL_SERVICE_HOST=pingcentraldb.${TENANT_DOMAIN}
+MYSQL_SERVICE_HOST=${MYSQL_SERVICE_HOST}
+MYSQL_USER=${MYSQL_USER}
+MYSQL_PASSWORD=${MYSQL_PASSWORD}
 
 ############################################################
 # Ping application image tags

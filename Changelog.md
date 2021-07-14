@@ -23,6 +23,7 @@ _Changes:_
 - [X] PDO-2676 Update the push-cluster-state.sh script to push seed code into the new SPR repo
 - [X] PDO-2687 Update update-cluster-state-wrapper.sh to seed initial customer-hub code into the CSR
 - [X] PDO-2708 Fix image tag kustomization in the CSR for P1AS app images
+- [X] PDO-2717 Adapt the Discovery service to retrieve the PingCentral database details from SSM
 
 ### 1.9.3
 
