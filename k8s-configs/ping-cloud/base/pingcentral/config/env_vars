@@ -3,7 +3,7 @@ VERBOSE=false
 
 SERVER_PROFILE_URL=https://server-profile-user-at-705370621539:8pCzGIXG3k+EOV1hyeTnPoj3aRY8LR3z+C1CSd7iiaQ=@git-codecommit.us-west-2.amazonaws.com/v1/repos/ping-cloud-base
 SERVER_PROFILE_PATH=profiles/aws/pingcentral
-SERVER_PROFILE_BRANCH=v1.10-release-branch
+SERVER_PROFILE_BRANCH=master
 
 REGION=us-west-2
 
