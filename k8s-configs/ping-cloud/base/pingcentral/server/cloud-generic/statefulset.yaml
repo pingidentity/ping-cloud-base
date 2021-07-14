@@ -1,16 +1,18 @@
-# This defines the Ping Delegated Admin deployment
+# This defines the Ping Central deployment
 
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: pingcentral
 spec:
   replicas: 1
-  strategy:
-    type: RollingUpdate
   selector:
     matchLabels:
-      role: pingcentral
+      app: pingcentral
+  serviceName: pingcentral
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
   template:
     metadata:
       name: pingcentral
@@ -69,15 +71,15 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: pingidentity/pingcentral:edge
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingcentral:1.7-v1.0.0-pdo-2624-pc-jwk
         imagePullPolicy: IfNotPresent
-        # resources:
-        #   requests:
-        #     memory: "256Mi"
-        #     cpu: "80m"
-        #   limits:
-        #     memory: "1Gi"
-        #     cpu: "1"
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "4"
+          limits:
+            memory: "5Gi"
+            cpu: "4"
         readinessProbe:
           exec:
             command: [/opt/liveness.sh]
@@ -168,3 +170,13 @@ spec:
             secretName: pingcentral-passwords
             optional: true
             defaultMode: 0400
+  volumeClaimTemplates:
+  - metadata:
+      name: out-dir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: pingcentral-gp2
+      resources:
+        requests:
+          storage: ".5Gi"

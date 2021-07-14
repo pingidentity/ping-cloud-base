@@ -8,6 +8,7 @@ commonLabels:
   role: pingcentral
 
 resources:
-- deployment.yaml
+- statefulset.yaml
 - service.yaml
 - ingress.yaml
+- storage.yaml
