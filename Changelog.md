@@ -4,7 +4,7 @@
 
 - Fix a PingDirectory crash caused by the offline-enable hook script after a restart
 - Remove PingFederate-P14C-Init container from secondary region
-- Updated p14c-integration image to 1.0.23
+- Updated p14c-integration image to 1.0.24
 - Update prometheus-json-exporter image to 1.0.3
 - Upgraded PingFederate to version 10.2.4
 - Capture additional logs from rebuild-index within PD
@@ -19,6 +19,7 @@ _Changes:_
 - [X] PDO-2688 Use latest prometheus-json-exporter image
 - [X] PDO-2689 Capture additional logs from rebuild-index within PD
 - [X] PDO-2690 Updating the PD and PF 82-upload-csd-s3.sh hook scripts to work with the updated collect-support-data tool
+- [X] PDO-2723 Update p14c-integration docker images in ping-cloud-base to v1.0.24
 
 ### 1.9.2
 
