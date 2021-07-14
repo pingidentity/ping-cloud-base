@@ -132,6 +132,9 @@ ${PA_MAX_HEAP}
 ${PA_MIN_YGEN}
 ${PA_MAX_YGEN}
 ${PA_GCOPTION}
+${MYSQL_SERVICE_HOST}
+${MYSQL_USER}
+${MYSQL_PASSWORD}
 ${CLUSTER_NAME}
 ${CLUSTER_NAME_LC}
 ${DNS_ZONE}
@@ -997,6 +1000,8 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
         fi
 
         export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY}"
+        export NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY}"
+
         set -x
         QUIET=true \
             TARGET_DIR="${TARGET_DIR}" \

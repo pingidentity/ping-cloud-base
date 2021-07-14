@@ -214,7 +214,17 @@
 #                          | state data required for the P14C/P1AS integration. |
 #                          |                                                    |
 # NEW_RELIC_LICENSE_KEY    | The key of NewRelic APM Agent used to send data to | The string "unused".
-#                          | NewRelic account                                   |
+#                          | NewRelic account.                                  |
+#                          |                                                    |
+# MYSQL_SERVICE_HOST       | The hostname of the MySQL database server.         | pingcentraldb.${PRIMARY_TENANT_DOMAIN}
+#                          |                                                    |
+# MYSQL_USER               | The DBA user of the PingCentral MySQL RDS          | pcadmin
+#                          | database.                                          |
+#                          |                                                    |
+# MYSQL_PASSWORD           | The DBA password of the PingCentral MySQL RDS      | The SSM path: /aws/reference/
+#                          | database.                                          | secretsmanager//pcpt/ping-central/
+#                          |                                                    | dbserver/password
+#                          |                                                    |
 ########################################################################################################################
 
 #### SCRIPT START ####
@@ -295,6 +305,9 @@ ${PA_MAX_HEAP}
 ${PA_MIN_YGEN}
 ${PA_MAX_YGEN}
 ${PA_GCOPTION}
+${MYSQL_SERVICE_HOST}
+${MYSQL_USER}
+${MYSQL_PASSWORD}
 ${CLUSTER_NAME}
 ${CLUSTER_NAME_LC}
 ${DNS_ZONE}
@@ -453,6 +466,10 @@ echo "Initial PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 echo "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 echo "Initial BACKUP_URL: ${BACKUP_URL}"
 
+echo "Initial MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
+echo "Initial MYSQL_USER: ${MYSQL_USER}"
+echo "Initial MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
+
 echo "Initial K8S_GIT_URL: ${K8S_GIT_URL}"
 echo "Initial K8S_GIT_BRANCH: ${K8S_GIT_BRANCH}"
 
@@ -504,6 +521,10 @@ export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
 
+export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-"pingcentraldb.\${PRIMARY_TENANT_DOMAIN}"}"
+export MYSQL_USER="${MYSQL_USER:-pcadmin}"
+export MYSQL_PASSWORD="${MYSQL_PASSWORD:-'/aws/reference/secretsmanager//pcpt/ping-central/dbserver/password'}"
+
 PING_CLOUD_BASE_COMMIT_SHA=$(git rev-parse HEAD)
 CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 if test "${CURRENT_GIT_BRANCH}" = 'HEAD'; then
@@ -544,6 +565,10 @@ echo "Using CLUSTER_STATE_REPO_PATH: ${REGION_NICK_NAME}"
 
 echo "Using ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
+
+echo "Using MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
+echo "Using MYSQL_USER: ${MYSQL_USER}"
+echo "Using MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
 
 echo "Using K8S_GIT_URL: ${K8S_GIT_URL}"
 echo "Using K8S_GIT_BRANCH: ${K8S_GIT_BRANCH}"
