@@ -24,6 +24,13 @@ getUniqueTagCount() {
   echo $(cat "${TEMP_FILE_METADATA}" | grep ${pod_name} | sort -u | wc -l | awk '{ print $1 }')
 }
 
+getPingAccessUniqueTagCount() {
+  pod_name="${1}"
+  echo $(echo "$RETURN_VAL" \
+    | jq --arg pod_name "$pod_name" --arg admin_name "${pod_name}-admin" ' .version | with_entries( select((.key == $pod_name or .key == $admin_name) ) ) | .[] .image' \
+    | sort -u | wc -l | awk '{print $1 }')
+}
+
 getMatchedTagCount() {
   image_tag_name="${1}"
   pod_name="${2}"
@@ -31,14 +38,33 @@ getMatchedTagCount() {
         | grep ${image_tag_name} | wc -l | awk '{ print $1 }')
 }
 
+getPingAccessMatchedTagCount() {
+  image_tag_name="${1}"
+  pod_name="${2}"
+  echo $(echo "$RETURN_VAL" \
+    | jq --arg pod_name "$pod_name" --arg admin_name "${pod_name}-admin" ' .version | with_entries( select((.key == $pod_name or .key == $admin_name) ) ) | .[] .image' \
+    | sort -u | grep ${image_tag_name} | wc -l | awk '{print $1 }')
+}
+
 testPingAccessImageTag() {
   $(test "${PINGACCESS_IMAGE_TAG}")
   assertEquals "PINGACCESS_IMAGE_TAG missing from env_vars file" 0 $?
 
-  unique_count=$(getUniqueTagCount "pingaccess")
+  unique_count=$(getPingAccessUniqueTagCount "pingaccess")
   assertEquals "PingAccess is using multiple image tag versions" 1 "${unique_count}"
 
   matched_count=$(getMatchedTagCount "${PINGACCESS_IMAGE_TAG}" "pingaccess")
+  assertEquals "PingAccess CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
+}
+
+testPingAccessWasImageTag() {
+  $(test "${PINGACCESS_WAS_IMAGE_TAG}")
+  assertEquals "PINGACCESS_WAS_IMAGE_TAG missing from env_vars file" 0 $?
+
+  unique_count=$(getPingAccessUniqueTagCount "pingaccess-was")
+  assertEquals "PingAccess is using multiple image tag versions" 1 "${unique_count}"
+
+  matched_count=$(getMatchedTagCount "${PINGACCESS_WAS_IMAGE_TAG}" "pingaccess-was")
   assertEquals "PingAccess CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
 }
 
