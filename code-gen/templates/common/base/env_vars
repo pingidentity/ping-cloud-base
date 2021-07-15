@@ -84,7 +84,7 @@ CLUSTER_STATE_REPO_BRANCH=${CLUSTER_STATE_REPO_BRANCH}
 ############################################################
 # Server profile variables
 ############################################################
-SERVER_PROFILE_URL=${SERVER_PROFILE_URL_DERIVED}
+SERVER_PROFILE_URL=${SERVER_PROFILE_URL}
 SERVER_PROFILE_BRANCH=${SERVER_PROFILE_BRANCH_DERIVED}
 
 ############################################################

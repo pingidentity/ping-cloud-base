@@ -7,6 +7,7 @@
 - PingDirectory health checks are now performed via HTTPS
 - Update a few supporting cluster tools to their latest versions
 - Beluga maintained container images with built in hook scripts
+- Server profiles are now seeded into a separate repository for partner access
 
 _Changes:_
 
@@ -19,6 +20,7 @@ _Changes:_
 - [X] PDO-2465 Update cluster tools to latest version: metrics-server (v0.5.0)
 - [X] PDO-2468 Update PD healthchecks to use the availability servlet
 - [X] PDO-2536 Put admin NLB on the public network
+- [X] PDO-2623 Separate the server profiles into its own repository for partner enablement
 - [X] PDO-2638 Update cluster tools to latest version: Logstash (7.13.2)
 - [X] PDO-2676 Update the push-cluster-state.sh script to push seed code into the new SPR repo
 - [X] PDO-2687 Update update-cluster-state-wrapper.sh to seed initial customer-hub code into the CSR
