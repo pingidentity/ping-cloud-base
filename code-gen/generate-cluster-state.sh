@@ -129,6 +129,9 @@
 #                          |                                                    |
 # CLUSTER_STATE_REPO_URL   | The URL of the cluster-state repo.                 | https://github.com/pingidentity/ping-cloud-base
 #                          |                                                    |
+# SERVER_PROFILE_URL       | The URL for the server-profiles repo.              | Same as the CLUSTER_STATE_REPO_URL,
+#                          |                                                    | if not provided.
+#                          |                                                    |
 # ARTIFACT_REPO_URL        | The URL for plugins (e.g. PF kits, PD extensions). | The string "unused".
 #                          | If not provided, the Ping stack will be            |
 #                          | provisioned without plugins. This URL must always  |
@@ -280,7 +283,7 @@ ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
 ${CLUSTER_STATE_REPO_URL}
 ${CLUSTER_STATE_REPO_BRANCH}
 ${CLUSTER_STATE_REPO_PATH_DERIVED}
-${SERVER_PROFILE_URL_DERIVED}
+${SERVER_PROFILE_URL}
 ${SERVER_PROFILE_BRANCH_DERIVED}
 ${SERVER_PROFILE_PATH}
 ${ENV}
@@ -342,13 +345,21 @@ add_derived_variables() {
   # The directory within the cluster state repo for the region's manifest files.
   export CLUSTER_STATE_REPO_PATH_DERIVED="\${REGION_NICK_NAME}"
 
-  # Server profile URL and branch. The directory is in each app's env_vars file.
-  export SERVER_PROFILE_URL_DERIVED="\${CLUSTER_STATE_REPO_URL}"
+  # Server profile branch. The directory is in each app's env_vars file.
   export SERVER_PROFILE_BRANCH_DERIVED="\${CLUSTER_STATE_REPO_BRANCH}"
 
   # Zone for this region and the primary region.
   export DNS_ZONE_DERIVED="\${DNS_ZONE}"
   export PRIMARY_DNS_ZONE_DERIVED="\${PRIMARY_DNS_ZONE}"
+
+  # Zone for this region and the primary region.
+  if "${IS_BELUGA_ENV}" || test "${ENV}" = "${CUSTOMER_HUB}"; then
+    export DNS_ZONE="\${TENANT_DOMAIN}"
+    export PRIMARY_DNS_ZONE="\${PRIMARY_TENANT_DOMAIN}"
+  else
+    export DNS_ZONE="\${ENV}-\${TENANT_DOMAIN}"
+    export PRIMARY_DNS_ZONE="\${ENV}-\${PRIMARY_TENANT_DOMAIN}"
+  fi
 }
 
 ########################################################################################################################
@@ -459,6 +470,7 @@ echo "Initial PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
 echo "Initial SECONDARY_TENANT_DOMAINS: ${SECONDARY_TENANT_DOMAINS}"
 
 echo "Initial CLUSTER_STATE_REPO_URL: ${CLUSTER_STATE_REPO_URL}"
+echo "Initial SERVER_PROFILE_URL: ${SERVER_PROFILE_URL}"
 
 echo "Initial ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Initial PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
@@ -530,7 +542,11 @@ CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 if test "${CURRENT_GIT_BRANCH}" = 'HEAD'; then
   CURRENT_GIT_BRANCH=$(git describe --tags --always)
 fi
+
+# FIXME: change the default for the SERVER_PROFILE_URL to be profile-repo when Versent creates the SPR repo here
+# and in the documentation at the top of the script.
 export CLUSTER_STATE_REPO_URL=${CLUSTER_STATE_REPO_URL:-https://github.com/pingidentity/ping-cloud-base}
+export SERVER_PROFILE_URL="${SERVER_PROFILE_URL:-${CLUSTER_STATE_REPO_URL}}"
 
 export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
 export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-${CURRENT_GIT_BRANCH}}"
@@ -561,6 +577,7 @@ echo "Using PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
 echo "Using SECONDARY_TENANT_DOMAINS: ${SECONDARY_TENANT_DOMAINS}"
 
 echo "Using CLUSTER_STATE_REPO_URL: ${CLUSTER_STATE_REPO_URL}"
+echo "Using SERVER_PROFILE_URL: ${SERVER_PROFILE_URL}"
 echo "Using CLUSTER_STATE_REPO_PATH: ${REGION_NICK_NAME}"
 
 echo "Using ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
@@ -750,15 +767,6 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   export PA_MAX_YGEN=512m
   export PA_GCOPTION='-XX:+UseParallelGC'
 
-  # Zone for this region and the primary region
-  if "${IS_BELUGA_ENV}" || test "${ENV}" = 'customer-hub'; then
-    export DNS_ZONE="\${TENANT_DOMAIN}"
-    export PRIMARY_DNS_ZONE="\${PRIMARY_TENANT_DOMAIN}"
-  else
-    export DNS_ZONE="\${ENV}-\${TENANT_DOMAIN}"
-    export PRIMARY_DNS_ZONE="\${ENV}-\${PRIMARY_TENANT_DOMAIN}"
-  fi
-
   "${IS_BELUGA_ENV}" &&
       export CLUSTER_NAME="${TENANT_NAME}" ||
       export CLUSTER_NAME="${ENV}"
@@ -808,7 +816,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   cd - >/dev/null 2>&1
 
   # Overlay the CHUB or CDE specific templates next.
-  if test "${ENV}" = 'customer-hub'; then
+  if test "${ENV}" = "${CUSTOMER_HUB}"; then
     cd "${CHUB_TEMPLATES_DIR}"
   else
     cd "${CDE_TEMPLATES_DIR}"
