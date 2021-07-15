@@ -108,7 +108,7 @@ ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
 ${CLUSTER_STATE_REPO_URL}
 ${CLUSTER_STATE_REPO_BRANCH}
 ${CLUSTER_STATE_REPO_PATH_DERIVED}
-${SERVER_PROFILE_URL_DERIVED}
+${SERVER_PROFILE_URL}
 ${SERVER_PROFILE_BRANCH_DERIVED}
 ${ENV}
 ${ENVIRONMENT_TYPE}
@@ -151,16 +151,15 @@ add_derived_variables() {
   # The directory within the cluster state repo for the region's manifest files.
   export CLUSTER_STATE_REPO_PATH_DERIVED="\${REGION_NICK_NAME}"
 
-  # Server profile URL and branch. The directory is in each app's env_vars file.
-  export SERVER_PROFILE_URL_DERIVED="\${CLUSTER_STATE_REPO_URL}"
+  # Server profile branch. The directory is in each app's env_vars file.
   export SERVER_PROFILE_BRANCH_DERIVED="\${CLUSTER_STATE_REPO_BRANCH}"
 
   # Zone for this region and the primary region.
   export DNS_ZONE_DERIVED="\${DNS_ZONE}"
   export PRIMARY_DNS_ZONE_DERIVED="\${PRIMARY_DNS_ZONE}"
 
-  # Zone for this region and the primary region
-  if "${IS_BELUGA_ENV:-false}"; then
+  # Zone for this region and the primary region.
+  if "${IS_BELUGA_ENV:-false}" || test "${ENV}" = "${CUSTOMER_HUB}"; then
     export DNS_ZONE="\${TENANT_DOMAIN}"
     export PRIMARY_DNS_ZONE="\${PRIMARY_TENANT_DOMAIN}"
   else
@@ -1001,6 +1000,9 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
 
         export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY}"
         export NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY}"
+
+        # FIXME: When Versent creates the new server-profile repo, then change the git repo slug
+        # from cluster-state-repo to profile-repo.
 
         set -x
         QUIET=true \
