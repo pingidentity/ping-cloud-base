@@ -6,47 +6,12 @@ resources:
 
 configMapGenerator:
 
-# Pingaccess
-- name: pingaccess-environment-variables
-  behavior: merge
-  envs:
-  - env_vars
-  - pingaccess/env_vars
-
-# Pingaccess WAS
-- name: pingaccess-was-environment-variables
-  behavior: merge
-  envs:
-  - env_vars
-  - pingaccess-was/env_vars
-
-# Pingfederate
-- name: pingfederate-environment-variables
-  behavior: merge
-  envs:
-  - env_vars
-  - pingfederate/env_vars
-
 # Pingdirectory
 - name: pingdirectory-environment-variables
   behavior: merge
   envs:
   - env_vars
   - pingdirectory/env_vars
-
-# Ping Delegated Admin
-- name: pingdelegator-environment-variables
-  behavior: merge
-  envs:
-  - env_vars
-  - pingdelegator/env_vars
-
-# PingCentral
-- name: pingcentral-environment-variables
-  behavior: merge
-  envs:
-  - env_vars
-  - pingcentral/env_vars
 
 # Pingcloud-metadata
 - name: pingcloud-metadata-environment-variables

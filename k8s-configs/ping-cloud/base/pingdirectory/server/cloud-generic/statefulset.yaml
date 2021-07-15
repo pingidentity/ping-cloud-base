@@ -45,15 +45,6 @@ spec:
                       values:
                         - pingdirectory
                 topologyKey: "failure-domain.beta.kubernetes.io/zone"
-        # this does not apply in dev/test and is removed via kustomize
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: pingidentity.com/pd
-                    operator: In
-                    values:
-                      - "true"
       # this does not apply in dev/test and is removed via kustomize
       tolerations:
         - key: "pingidentity.com/pd-only"
@@ -297,6 +288,9 @@ spec:
             requests:
               cpu: 100m
               memory: 100Mi
+        - name: pingdirectory-replication-controller
+          image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-controllers/pingdirectory-replication:v1.0.0-master
+          imagePullPolicy: Always
       volumes:
         - name: ssh-dir
           emptyDir: {}
