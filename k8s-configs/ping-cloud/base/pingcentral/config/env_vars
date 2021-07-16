@@ -16,6 +16,15 @@ K8S_TAIL_LOG_FILES=/opt/out/instance/log/error.log /opt/out/instance/log/access.
 
 SECRETS_DIR=/usr/local/secrets
 
+# PingCentral admin username to the application
+PC_ADMIN_USER_USERNAME=administrator
+
+# Retry client request to pingaccess admin API up to 10 times. Engine pod uses admin
+# API to retrieve its proper configuration.
+API_RETRY_LIMIT=10
+
+# Seconds client request will wait for response from API.
+API_TIMEOUT_WAIT=5
 
 MYSQL_DATABASE=pingcentral
 MYSQL_SERVICE_PORT=3306
