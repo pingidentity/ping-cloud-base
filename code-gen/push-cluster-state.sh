@@ -24,10 +24,13 @@
 #   PUSH_TO_SERVER -> A flag indicating whether or not to push the code to the remote server. Defaults to true.
 
 # Global variables
+CLUSTER_STATE_REPO_DIR='cluster-state-repo'
 K8S_CONFIGS_DIR='k8s-configs'
-CLUSTER_STATE_DIR='cluster-state'
-PROFILES_DIR='profiles'
 BASE_DIR='base'
+
+PROFILE_REPO_DIR='profile-repo'
+PROFILES_DIR='profiles'
+
 CUSTOMER_HUB='customer-hub'
 
 ########################################################################################################################
@@ -66,27 +69,25 @@ organize_code_for_environment() {
   out_dir="${4}"
   is_primary="${5}"
 
+  src_profiles_dir="${generated_code_dir}/${PROFILE_REPO_DIR}/${PROFILES_DIR}/${src_rel_dir_for_env}"
+  dst_profiles_dir="${out_dir}/${PROFILES_DIR}"
+
+  src_k8s_dir="${generated_code_dir}/${CLUSTER_STATE_REPO_DIR}/${K8S_CONFIGS_DIR}/${src_rel_dir_for_env}"
   dst_k8s_dir="${out_dir}/${K8S_CONFIGS_DIR}"
-  src_env_dir="${generated_code_dir}/${CLUSTER_STATE_DIR}/${K8S_CONFIGS_DIR}/${src_rel_dir_for_env}"
+
   # shellcheck disable=SC2010
-  region="$(ls "${src_env_dir}" | grep -v "${BASE_DIR}")"
+  region="$(ls "${src_k8s_dir}" | grep -v "${BASE_DIR}")"
 
   "${is_primary}" && type='primary' || type='secondary'
   echo "Organizing code for environment '${env}' into '${out_dir}' for ${type} region '${region}'"
 
-  if "${is_primary}"; then
-    # For the primary region, we need to copy everything (i.e. both the k8s-configs and the profiles)
-    # into the cluster state repo.
+  # Copy the environment-specific profiles and k8s-configs files into the destination directory for the environment.
+  # Also, copy the common files (e.g. .gitignore, update-cluster-state-wrapper.sh, etc.) to the output directory.
+  cp -pr "${src_profiles_dir}"/. "${dst_profiles_dir}"
+  find "${generated_code_dir}/${PROFILE_REPO_DIR}" -type f -mindepth 1 -maxdepth 1 -exec cp {} "${out_dir}" \;
 
-    # Copy everything under cluster state into the code directory for the environment.
-    cp -pr "${generated_code_dir}/${CLUSTER_STATE_DIR}"/. "${out_dir}"
-
-    # Remove everything under the k8s-configs because code is initially generated for every CDE and CHUB under there.
-    rm -rf "${dst_k8s_dir:?}"/*
-  fi
-
-  # Copy the environment-specific k8s-configs.
-  cp -pr "${src_env_dir}"/. "${dst_k8s_dir}"
+  cp -pr "${src_k8s_dir}"/. "${dst_k8s_dir}"
+  find "${generated_code_dir}/${CLUSTER_STATE_REPO_DIR}" -type f -mindepth 1 -maxdepth 1 -exec cp {} "${out_dir}" \;
 }
 
 ########################################################################################################################
@@ -273,7 +274,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
       mkdir -p "${K8S_CONFIGS_DIR}"
 
       # Copy base files into the k8s-configs directory.
-      src_dir="${GENERATED_CODE_DIR}/${CLUSTER_STATE_DIR}/${K8S_CONFIGS_DIR}"
+      src_dir="${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}/${K8S_CONFIGS_DIR}"
       echo "Copying base files from ${src_dir} to ${K8S_CONFIGS_DIR}"
       find "${src_dir}" -type f -maxdepth 1 -exec cp {} "${K8S_CONFIGS_DIR}" \;
 
