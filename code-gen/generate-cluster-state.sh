@@ -253,9 +253,13 @@ QUIET="${QUIET:-false}"
 ########################################################################################################################
 
 # The list of variables in the template files that will be substituted by default.
+# Note: DEFAULT_VARS is a superset of ENV_VARS_TO_SUBST within update-cluster-state.sh. These variables should be kept
+# in sync with the following exceptions: LAST_UPDATE_REASON, PING_IDENTITY_DEVOPS_USER_BASE64,
+# PING_IDENTITY_DEVOPS_KEY_BASE64 and NEW_RELIC_LICENSE_KEY_BASE64 should only be found within DEFAULT_VARS
 # Note: only secret variables are substituted into YAML files. Environments variables are just written to an env_vars
 # file and substituted at runtime by the continuous delivery tool running in cluster.
-DEFAULT_VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
+DEFAULT_VARS='${LAST_UPDATE_REASON}
+${PING_IDENTITY_DEVOPS_USER_BASE64}
 ${PING_IDENTITY_DEVOPS_KEY_BASE64}
 ${NEW_RELIC_LICENSE_KEY_BASE64}
 ${TENANT_NAME}
@@ -317,11 +321,15 @@ ${DNS_ZONE}
 ${DNS_ZONE_DERIVED}
 ${PRIMARY_DNS_ZONE}
 ${PRIMARY_DNS_ZONE_DERIVED}
+${METADATA_IMAGE_TAG}
+${P14C_BOOTSTRAP_IMAGE_TAG}
+${P14C_INTEGRATION_IMAGE_TAG}
+${PINGCENTRAL_IMAGE_TAG}
 ${PINGACCESS_IMAGE_TAG}
+${PINGACCESS_WAS_IMAGE_TAG}
 ${PINGFEDERATE_IMAGE_TAG}
 ${PINGDIRECTORY_IMAGE_TAG}
 ${PINGDELEGATOR_IMAGE_TAG}
-${LAST_UPDATE_REASON}
 ${IRSA_PING_ANNOTATION_KEY_VALUE}
 ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}'
 
