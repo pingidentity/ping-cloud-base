@@ -35,11 +35,32 @@ testPingAccessImageTag() {
   $(test "${PINGACCESS_IMAGE_TAG}")
   assertEquals "PINGACCESS_IMAGE_TAG missing from env_vars file" 0 $?
 
-  unique_count=$(getUniqueTagCount "pingaccess")
+  unique_count=$(echo "${RETURN_VAL}" \
+                | jq '.version | with_entries( select(.key|contains("pingaccess") ) )' \
+                | jq '. | with_entries( select(.key|contains("pingaccess-was") | not) )| .[].image' \
+                | sort -u | grep "pingaccess" | wc -l | awk '{ print $1 }')
   assertEquals "PingAccess is using multiple image tag versions" 1 "${unique_count}"
 
-  matched_count=$(getMatchedTagCount "${PINGACCESS_IMAGE_TAG}" "pingaccess")
+  matched_count=$(echo "${RETURN_VAL}" \
+                | jq '.version | with_entries( select(.key|contains("pingaccess") ) )' \
+                | jq '. | with_entries( select(.key|contains("pingaccess-was") | not) ) | .[].image' \
+                | sort -u | grep "pingaccess" | grep ${PINGACCESS_IMAGE_TAG} |  wc -l | awk '{ print $1 }')
   assertEquals "PingAccess CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
+}
+
+testPingAccessWASImageTag() {
+  $(test "${PINGACCESS_WAS_IMAGE_TAG}")
+  assertEquals "PINGACCESS_WAS_IMAGE_TAG missing from env_vars file" 0 $?
+
+  unique_count=$(echo "${RETURN_VAL}" \
+                | jq '.version | with_entries( select( .key|contains("pingaccess-was") ) ) | .[].image' \
+                | sort -u | grep "pingaccess" | wc -l | awk '{ print $1 }')
+  assertEquals "PingAccess WAS is using multiple image tag versions" 1 "${unique_count}"
+
+  matched_count=$(echo "${RETURN_VAL}" \
+                | jq '.version | with_entries( select( .key|contains("pingaccess-was") ) ) | .[].image' \
+                | sort -u | grep "pingaccess" | grep ${PINGACCESS_WAS_IMAGE_TAG} | wc -l | awk '{ print $1 }')
+  assertEquals "PingAccess WAS CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
 }
 
 testPingFederateImageTag() {
@@ -76,13 +97,13 @@ testPingDelegatorImageTag() {
 }
 
 testPingCentralImageTag() {
-  $(test "${PINGCENTRAL_IMAGE_TAGE}")
-  assertEquals "PINGCENTRAL_IMAGE_TAGE missing from env_vars file" 0 $?
+  $(test "${PINGCENTRAL_IMAGE_TAG}")
+  assertEquals "PINGCENTRAL_IMAGE_TAG missing from env_vars file" 0 $?
 
   unique_count=$(getUniqueTagCount "pingcentral")
   assertEquals "PingCentral is using multiple image tag versions" 1 "${unique_count}"
 
-  matched_count=$(getMatchedTagCount "${PINGCENTRAL_IMAGE_TAGE}" "pingcentral")
+  matched_count=$(getMatchedTagCount "${PINGCENTRAL_IMAGE_TAG}" "pingcentral")
   assertEquals "PingCentral CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
 }
 
