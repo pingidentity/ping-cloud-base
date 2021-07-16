@@ -16,13 +16,13 @@ else
   log "Deleting environment ${NAMESPACE}"
   kubectl delete namespace "${NAMESPACE}"
 
-  log "Deleting PingCentral database ${MYSQL_DATABASE} from host ${MYSQL_SERVICE_HOST}"
-
-  pod_name="mysql-client-${CI_COMMIT_REF_SLUG}"
-  kubectl delete pod "${pod_name}"
-
-  kubectl run -i "${pod_name}" --restart=Never --rm --image=arey/mysql-client -- \
-       -h "${MYSQL_SERVICE_HOST}" -P ${MYSQL_SERVICE_PORT} \
-       -u "${MYSQL_USER}" -p"${MYSQL_PASSWORD}" \
-       -e "drop database ${MYSQL_DATABASE}"
+#  log "Deleting PingCentral database ${MYSQL_DATABASE} from host ${MYSQL_SERVICE_HOST}"
+#
+#  pod_name="mysql-client-${CI_COMMIT_REF_SLUG}"
+#  kubectl delete pod "${pod_name}"
+#
+#  kubectl run -i "${pod_name}" --restart=Never --rm --image=arey/mysql-client -- \
+#       -h "${MYSQL_SERVICE_HOST}" -P ${MYSQL_SERVICE_PORT} \
+#       -u "${MYSQL_USER}" -p"${MYSQL_PASSWORD}" \
+#       -e "drop database ${MYSQL_DATABASE}"
 fi
