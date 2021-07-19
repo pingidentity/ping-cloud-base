@@ -136,6 +136,14 @@ pc-services-integration-tests:
   script:
     - ./ci-scripts/test/integration/run-integration-tests.sh pingcloud-services
 
+pcentral-services-integration-tests:
+  stage: integration-test
+  tags:
+    - pd-eks-deploy
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+  script:
+    - ./ci-scripts/test/integration/run-integration-tests.sh pingcentral
+
 common-integration-tests:
   stage: integration-test
   tags:
