@@ -136,7 +136,7 @@ pc-services-integration-tests:
   script:
     - ./ci-scripts/test/integration/run-integration-tests.sh pingcloud-services
 
-pcentral-services-integration-tests:
+pcentral-integration-tests:
   stage: integration-test
   tags:
     - pd-eks-deploy
