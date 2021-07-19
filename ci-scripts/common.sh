@@ -53,6 +53,10 @@ if test -z "${ENV_VARS_FILE}"; then
   export CHUB_BACKUP_URL=s3://${CLUSTER_NAME}-chub-backup-bucket
   export CLUSTER_BUCKET_NAME="${CLUSTER_NAME}-cluster-bucket"
 
+  # MySQL database names cannot have dashes. So transform dashes into underscores.
+  ENV_NAME_NO_DASHES=$(echo ${CI_COMMIT_REF_SLUG} | tr '-' '_')
+  export MYSQL_DATABASE="pingcentral_${ENV_NAME_NO_DASHES}"
+
   export EVENT_QUEUE_NAME='platform_event_queue.fifo'
   export ORCH_API_SSM_PATH_PREFIX='/pcpt/orch-api'
 
@@ -126,6 +130,12 @@ PINGACCESS_WAS_RUNTIME=https://pingaccess-was${FQDN}
 
 # Ping Delegated Admin
 PINGDELEGATOR_CONSOLE=https://pingdelegator${FQDN}/delegator
+
+# PingCentral
+MYSQL_SERVICE_HOST=beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
+MYSQL_SERVICE_PORT=3306
+MYSQL_USER=admin
+MYSQL_PASSWORD=2FederateM0re
 
 # Pingcloud-metadata service:
 PINGCLOUD_METADATA_API=https://metadata${FQDN}

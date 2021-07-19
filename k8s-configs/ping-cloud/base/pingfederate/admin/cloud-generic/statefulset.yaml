@@ -29,7 +29,7 @@ spec:
       serviceAccount: ping-serviceaccount
       initContainers:
       - name: pingfederate-p14c-init
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.23
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.24
         imagePullPolicy: IfNotPresent
         env:
         - name: NAMESPACE
@@ -120,12 +120,11 @@ spec:
             name: pingcommon-environment-variables
       containers:
       - name: pingfederate-admin
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:10.2.4-v1.0.1
         # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        # FIXME: switch to stable version once GSA team publishes
-        image: pingcloud-virtual.jfrog.io/pingidentity/pingfederate:10.2.4-edge
         imagePullPolicy: IfNotPresent
         env:
         - name: OPERATIONAL_MODE

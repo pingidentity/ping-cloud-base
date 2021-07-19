@@ -21,8 +21,6 @@ metadata:
       SecAuditLogType Serial
       SecAuditLogFormat JSON
       SecAuditLog /dev/stdout
-    # Possible fix for some 502 failures on admin assets and api requests.
-    nginx.ingress.kubernetes.io/service-upstream: "true"
 spec:
   tls:
     - hosts:

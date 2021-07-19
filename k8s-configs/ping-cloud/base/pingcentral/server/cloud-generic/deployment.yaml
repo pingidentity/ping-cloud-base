@@ -3,21 +3,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pingdelegator
+  name: pingcentral
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: RollingUpdate
   selector:
     matchLabels:
-      role: pingdelegator
+      role: pingcentral
   template:
     metadata:
-      name: pingdelegator
+      name: pingcentral
       annotations:
         lastUpdateReason: "NA"
       labels:
-        role: pingdelegator
+        role: pingcentral
     spec:
       serviceAccount: ping-serviceaccount
       affinity:
@@ -31,10 +31,10 @@ spec:
                     - key: role
                       operator: In
                       values:
-                        - pingdelegator
+                        - pingcentral
                 topologyKey: "failure-domain.beta.kubernetes.io/zone"
       initContainers:
-      - name: pingdelegator-init
+      - name: pingcentral-init
         # FIXME: switch to same user as app
         securityContext:
           runAsNonRoot: false
@@ -54,43 +54,30 @@ spec:
           - name: known-hosts-config
             mountPath: /known_hosts
             subPath: known_hosts
-          - name: pingdelegator-init
+          - name: pingcentral-init
             mountPath: /copy-dependencies.sh
             subPath: copy-dependencies.sh
-          - name: pingdelegator-init
+          - name: pingcentral-init
             mountPath: /utils.lib.sh
             subPath: utils.lib.sh
         envFrom:
           - configMapRef:
-              name: pingdelegator-environment-variables
+              name: pingcentral-environment-variables
       containers:
-      - name: pingdelegator
+      - name: pingcentral
         # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdelegator:4.4.1-v1.0.2
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral:1.7-v1.0.0
         imagePullPolicy: IfNotPresent
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "80m"
-          limits:
-            memory: "1Gi"
-            cpu: "1"
-        volumeMounts:
-          # FIXME: fix home directory when containers run as non-root user
-          - name: ssh-dir
-            mountPath: /root/.ssh
-          - name: topology-descriptor
-            mountPath: /opt/staging/topology/descriptor.json
-            subPath: descriptor.json
-          - name: data-dir
-            mountPath: /usr/local/bin/kubectl
-            subPath: kubectl
-          - name: data-dir
-            mountPath: /opt/staging/ds_env_vars
-            subPath: ds_env_vars
+        # resources:
+        #   requests:
+        #     memory: "256Mi"
+        #     cpu: "80m"
+        #   limits:
+        #     memory: "1Gi"
+        #     cpu: "1"
         readinessProbe:
           exec:
             command: [/opt/liveness.sh]
@@ -107,26 +94,49 @@ spec:
           timeoutSeconds: 5
         ports:
           - name: https
-            containerPort: 1443
-        lifecycle:
-          preStop:
-            exec:
-              command: [
-                  # Gracefully shutdown nginx
-                  "/bin/sh",
-                  "-c",
-                  "nginx -s quit",
-                  "while killall -0 nginx; do sleep 1; done",
-                ]
+            containerPort: 9022
+        env:
+          - name: OLD_PC_ADMIN_USER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: pingcentral-passwords
+                key: OLD_PC_ADMIN_USER_PASSWORD
+          - name: PC_ADMIN_USER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: pingcentral-passwords
+                key: PC_ADMIN_USER_PASSWORD
         envFrom:
-        - configMapRef:
-            name: pingdelegator-environment-variables
+          - configMapRef:
+              name: pingcentral-environment-variables
+          - secretRef:
+              name: devops-secret
+              optional: true
+        volumeMounts:
+          # FIXME: fix home directory when containers run as non-root user
+          - name: ssh-dir
+            mountPath: /root/.ssh
+          - name: topology-descriptor
+            mountPath: /opt/staging/topology/descriptor.json
+            subPath: descriptor.json
+          - name: data-dir
+            mountPath: /usr/local/bin/kubectl
+            subPath: kubectl
+          - name: data-dir
+            mountPath: /opt/staging/ds_env_vars
+            subPath: ds_env_vars
+          - name: pingcentral-passwords
+            mountPath: /usr/local/secrets
+            readOnly: true
+          - name: pingcentral-license
+            mountPath: /opt/in/instance/conf/pingcentral.lic
+            subPath: pingcentral.lic
       volumes:
         - name: ssh-dir
           emptyDir: {}
         - name: data-dir
           emptyDir: {}
-        - name: pingdelegator-init
+        - name: pingcentral-init
           configMap:
             name: pingcommon-init
             defaultMode: 0555
@@ -145,3 +155,13 @@ spec:
             name: known-hosts-config
             optional: true
             defaultMode: 0644
+        - name: pingcentral-license
+          secret:
+            secretName: pingcentral-license
+            optional: true
+            defaultMode: 0400
+        - name: pingcentral-passwords
+          secret:
+            secretName: pingcentral-passwords
+            optional: true
+            defaultMode: 0400

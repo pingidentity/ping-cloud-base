@@ -129,6 +129,9 @@
 #                          |                                                    |
 # CLUSTER_STATE_REPO_URL   | The URL of the cluster-state repo.                 | https://github.com/pingidentity/ping-cloud-base
 #                          |                                                    |
+# SERVER_PROFILE_URL       | The URL for the server-profiles repo.              | Same as the CLUSTER_STATE_REPO_URL,
+#                          |                                                    | if not provided.
+#                          |                                                    |
 # ARTIFACT_REPO_URL        | The URL for plugins (e.g. PF kits, PD extensions). | The string "unused".
 #                          | If not provided, the Ping stack will be            |
 #                          | provisioned without plugins. This URL must always  |
@@ -218,7 +221,17 @@
 #                          | state data required for the P14C/P1AS integration. |
 #                          |                                                    |
 # NEW_RELIC_LICENSE_KEY    | The key of NewRelic APM Agent used to send data to | The string "unused".
-#                          | NewRelic account                                   |
+#                          | NewRelic account.                                  |
+#                          |                                                    |
+# MYSQL_SERVICE_HOST       | The hostname of the MySQL database server.         | pingcentraldb.${PRIMARY_TENANT_DOMAIN}
+#                          |                                                    |
+# MYSQL_USER               | The DBA user of the PingCentral MySQL RDS          | pcadmin
+#                          | database.                                          |
+#                          |                                                    |
+# MYSQL_PASSWORD           | The DBA password of the PingCentral MySQL RDS      | The SSM path: /aws/reference/
+#                          | database.                                          | secretsmanager//pcpt/ping-central/
+#                          |                                                    | dbserver/password
+#                          |                                                    |
 ########################################################################################################################
 
 #### SCRIPT START ####
@@ -244,9 +257,13 @@ QUIET="${QUIET:-false}"
 ########################################################################################################################
 
 # The list of variables in the template files that will be substituted by default.
+# Note: DEFAULT_VARS is a superset of ENV_VARS_TO_SUBST within update-cluster-state.sh. These variables should be kept
+# in sync with the following exceptions: LAST_UPDATE_REASON, PING_IDENTITY_DEVOPS_USER_BASE64,
+# PING_IDENTITY_DEVOPS_KEY_BASE64 and NEW_RELIC_LICENSE_KEY_BASE64 should only be found within DEFAULT_VARS
 # Note: only secret variables are substituted into YAML files. Environments variables are just written to an env_vars
 # file and substituted at runtime by the continuous delivery tool running in cluster.
-DEFAULT_VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
+DEFAULT_VARS='${LAST_UPDATE_REASON}
+${PING_IDENTITY_DEVOPS_USER_BASE64}
 ${PING_IDENTITY_DEVOPS_KEY_BASE64}
 ${NEW_RELIC_LICENSE_KEY_BASE64}
 ${TENANT_NAME}
@@ -270,13 +287,12 @@ ${CHUB_BACKUP_URL}
 ${PING_CLOUD_NAMESPACE}
 ${K8S_GIT_URL}
 ${K8S_GIT_BRANCH}
-${JFROG_REGISTRY_NAME}
 ${ECR_REGISTRY_NAME}
 ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
 ${CLUSTER_STATE_REPO_URL}
 ${CLUSTER_STATE_REPO_BRANCH}
 ${CLUSTER_STATE_REPO_PATH_DERIVED}
-${SERVER_PROFILE_URL_DERIVED}
+${SERVER_PROFILE_URL}
 ${SERVER_PROFILE_BRANCH_DERIVED}
 ${SERVER_PROFILE_PATH}
 ${ENV}
@@ -301,17 +317,24 @@ ${PA_MAX_HEAP}
 ${PA_MIN_YGEN}
 ${PA_MAX_YGEN}
 ${PA_GCOPTION}
+${MYSQL_SERVICE_HOST}
+${MYSQL_USER}
+${MYSQL_PASSWORD}
 ${CLUSTER_NAME}
 ${CLUSTER_NAME_LC}
 ${DNS_ZONE}
 ${DNS_ZONE_DERIVED}
 ${PRIMARY_DNS_ZONE}
 ${PRIMARY_DNS_ZONE_DERIVED}
+${METADATA_IMAGE_TAG}
+${P14C_BOOTSTRAP_IMAGE_TAG}
+${P14C_INTEGRATION_IMAGE_TAG}
+${PINGCENTRAL_IMAGE_TAG}
 ${PINGACCESS_IMAGE_TAG}
+${PINGACCESS_WAS_IMAGE_TAG}
 ${PINGFEDERATE_IMAGE_TAG}
 ${PINGDIRECTORY_IMAGE_TAG}
 ${PINGDELEGATOR_IMAGE_TAG}
-${LAST_UPDATE_REASON}
 ${IRSA_PING_ANNOTATION_KEY_VALUE}
 ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}'
 
@@ -335,13 +358,21 @@ add_derived_variables() {
   # The directory within the cluster state repo for the region's manifest files.
   export CLUSTER_STATE_REPO_PATH_DERIVED="\${REGION_NICK_NAME}"
 
-  # Server profile URL and branch. The directory is in each app's env_vars file.
-  export SERVER_PROFILE_URL_DERIVED="\${CLUSTER_STATE_REPO_URL}"
+  # Server profile branch. The directory is in each app's env_vars file.
   export SERVER_PROFILE_BRANCH_DERIVED="\${CLUSTER_STATE_REPO_BRANCH}"
 
   # Zone for this region and the primary region.
   export DNS_ZONE_DERIVED="\${DNS_ZONE}"
   export PRIMARY_DNS_ZONE_DERIVED="\${PRIMARY_DNS_ZONE}"
+
+  # Zone for this region and the primary region.
+  if "${IS_BELUGA_ENV}" || test "${ENV}" = "${CUSTOMER_HUB}"; then
+    export DNS_ZONE="\${TENANT_DOMAIN}"
+    export PRIMARY_DNS_ZONE="\${PRIMARY_TENANT_DOMAIN}"
+  else
+    export DNS_ZONE="\${ENV}-\${TENANT_DOMAIN}"
+    export PRIMARY_DNS_ZONE="\${ENV}-\${PRIMARY_TENANT_DOMAIN}"
+  fi
 }
 
 ########################################################################################################################
@@ -452,6 +483,7 @@ echo "Initial PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
 echo "Initial SECONDARY_TENANT_DOMAINS: ${SECONDARY_TENANT_DOMAINS}"
 
 echo "Initial CLUSTER_STATE_REPO_URL: ${CLUSTER_STATE_REPO_URL}"
+echo "Initial SERVER_PROFILE_URL: ${SERVER_PROFILE_URL}"
 
 echo "Initial ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Initial PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
@@ -459,6 +491,10 @@ echo "Initial PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 echo "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 echo "Initial BACKUP_URL: ${BACKUP_URL}"
 echo "Initial CHUB_BACKUP_URL: ${CHUB_BACKUP_URL}"
+
+echo "Initial MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
+echo "Initial MYSQL_USER: ${MYSQL_USER}"
+echo "Initial MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
 
 echo "Initial K8S_GIT_URL: ${K8S_GIT_URL}"
 echo "Initial K8S_GIT_BRANCH: ${K8S_GIT_BRANCH}"
@@ -512,12 +548,20 @@ export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
 export CHUB_BACKUP_URL="${CHUB_BACKUP_URL:-unused}"
 
+export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-"pingcentraldb.\${PRIMARY_TENANT_DOMAIN}"}"
+export MYSQL_USER="${MYSQL_USER:-pcadmin}"
+export MYSQL_PASSWORD="${MYSQL_PASSWORD:-'/aws/reference/secretsmanager//pcpt/ping-central/dbserver/password'}"
+
 PING_CLOUD_BASE_COMMIT_SHA=$(git rev-parse HEAD)
 CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 if test "${CURRENT_GIT_BRANCH}" = 'HEAD'; then
   CURRENT_GIT_BRANCH=$(git describe --tags --always)
 fi
+
+# FIXME: change the default for the SERVER_PROFILE_URL to be profile-repo when Versent creates the SPR repo here
+# and in the documentation at the top of the script.
 export CLUSTER_STATE_REPO_URL=${CLUSTER_STATE_REPO_URL:-https://github.com/pingidentity/ping-cloud-base}
+export SERVER_PROFILE_URL="${SERVER_PROFILE_URL:-${CLUSTER_STATE_REPO_URL}}"
 
 export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
 export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-${CURRENT_GIT_BRANCH}}"
@@ -528,7 +572,6 @@ export SSH_ID_KEY_FILE="${SSH_ID_KEY_FILE}"
 export TARGET_DIR="${TARGET_DIR:-/tmp/sandbox}"
 
 ### Default environment variables ###
-export JFROG_REGISTRY_NAME='pingcloud-virtual.jfrog.io'
 export ECR_REGISTRY_NAME='public.ecr.aws/r2h3l6e4'
 export PING_CLOUD_NAMESPACE='ping-cloud'
 
@@ -549,10 +592,15 @@ echo "Using PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
 echo "Using SECONDARY_TENANT_DOMAINS: ${SECONDARY_TENANT_DOMAINS}"
 
 echo "Using CLUSTER_STATE_REPO_URL: ${CLUSTER_STATE_REPO_URL}"
+echo "Using SERVER_PROFILE_URL: ${SERVER_PROFILE_URL}"
 echo "Using CLUSTER_STATE_REPO_PATH: ${REGION_NICK_NAME}"
 
 echo "Using ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
+
+echo "Using MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
+echo "Using MYSQL_USER: ${MYSQL_USER}"
+echo "Using MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
 
 echo "Using K8S_GIT_URL: ${K8S_GIT_URL}"
 echo "Using K8S_GIT_BRANCH: ${K8S_GIT_BRANCH}"
@@ -606,19 +654,28 @@ mkdir -p "${TARGET_DIR}"
 # Next build up the directory structure of the cluster-state repo
 BOOTSTRAP_SHORT_DIR='fluxcd'
 BOOTSTRAP_DIR="${TARGET_DIR}/${BOOTSTRAP_SHORT_DIR}"
-CLUSTER_STATE_DIR="${TARGET_DIR}/cluster-state"
-K8S_CONFIGS_DIR="${CLUSTER_STATE_DIR}/k8s-configs"
+
+CLUSTER_STATE_REPO_DIR="${TARGET_DIR}/cluster-state-repo"
+K8S_CONFIGS_DIR="${CLUSTER_STATE_REPO_DIR}/k8s-configs"
+
+PROFILE_REPO_DIR="${TARGET_DIR}/profile-repo"
+PROFILES_DIR="${PROFILE_REPO_DIR}/profiles"
+
 CUSTOMER_HUB='customer-hub'
+PING_CENTRAL='pingcentral'
 
 mkdir -p "${BOOTSTRAP_DIR}"
 mkdir -p "${K8S_CONFIGS_DIR}"
+mkdir -p "${PROFILE_REPO_DIR}"
 
-cp ./update-cluster-state-wrapper.sh "${CLUSTER_STATE_DIR}"
-cp ../.gitignore "${CLUSTER_STATE_DIR}"
+cp ./update-cluster-state-wrapper.sh "${CLUSTER_STATE_REPO_DIR}"
+
+cp ../.gitignore "${CLUSTER_STATE_REPO_DIR}"
+cp ../.gitignore "${PROFILE_REPO_DIR}"
+
 cp ../k8s-configs/cluster-tools/base/git-ops/git-ops-command.sh "${K8S_CONFIGS_DIR}"
 find "${TEMPLATES_HOME}" -type f -maxdepth 1 | xargs -I {} cp {} "${K8S_CONFIGS_DIR}"
 
-cp -pr ../profiles/aws/. "${CLUSTER_STATE_DIR}"/profiles
 echo "${PING_CLOUD_BASE_COMMIT_SHA}" > "${TARGET_DIR}/pcb-commit-sha.txt"
 
 # Now generate the yaml files for each environment
@@ -633,7 +690,7 @@ export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL}"
 for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
 # Run in a sub-shell so the current shell is not polluted with environment variables.
 (
-  if echo "${ENV_OR_BRANCH})" | grep -q customer-hub; then
+  if echo "${ENV_OR_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
     GIT_BRANCH="${CUSTOMER_HUB}"
 
     ENV_OR_BRANCH_SUFFIX="${CUSTOMER_HUB}"
@@ -734,15 +791,6 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   export PA_MAX_YGEN=512m
   export PA_GCOPTION='-XX:+UseParallelGC'
 
-  # Zone for this region and the primary region
-  if "${IS_BELUGA_ENV}" || test "${ENV}" = 'customer-hub'; then
-    export DNS_ZONE="\${TENANT_DOMAIN}"
-    export PRIMARY_DNS_ZONE="\${PRIMARY_TENANT_DOMAIN}"
-  else
-    export DNS_ZONE="\${ENV}-\${TENANT_DOMAIN}"
-    export PRIMARY_DNS_ZONE="\${ENV}-\${PRIMARY_TENANT_DOMAIN}"
-  fi
-
   "${IS_BELUGA_ENV}" &&
       export CLUSTER_NAME="${TENANT_NAME}" ||
       export CLUSTER_NAME="${ENV}"
@@ -770,7 +818,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   echo "CHUB_BACKUP_URL: ${CHUB_BACKUP_URL}"
 
   # Build the kustomization file for the bootstrap tools for each environment
-  echo "Generating bootstrap yaml"
+  echo "Generating bootstrap yaml for ${ENV}"
 
   # The code for an environment is generated under a directory of the same name as what's provided in ENVIRONMENTS.
   ENV_BOOTSTRAP_DIR="${BOOTSTRAP_DIR}/${ENV_OR_BRANCH}"
@@ -782,7 +830,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   substitute_vars "${ENV_BOOTSTRAP_DIR}" "${BOOTSTRAP_VARS}"
 
   # Copy the shared cluster tools and Ping yaml templates into their target directories
-  echo "Generating tools and ping yaml"
+  echo "Generating tools and ping yaml for ${ENV}"
 
   ENV_DIR="${K8S_CONFIGS_DIR}/${ENV_OR_BRANCH}"
   mkdir -p "${ENV_DIR}"
@@ -793,7 +841,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   cd - >/dev/null 2>&1
 
   # Overlay the CHUB or CDE specific templates next.
-  if test "${ENV}" = 'customer-hub'; then
+  if test "${ENV}" = "${CUSTOMER_HUB}"; then
     cd "${CHUB_TEMPLATES_DIR}"
   else
     cd "${CDE_TEMPLATES_DIR}"
@@ -818,6 +866,20 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     BASE_ENV_VARS="${ENV_DIR}/base/env_vars"
     echo >> "${BASE_ENV_VARS}"
     echo "IS_BELUGA_ENV=true" >> "${BASE_ENV_VARS}"
+  fi
+
+  echo "Copying server profiles for environment ${ENV}"
+  ENV_PROFILES_DIR="${PROFILES_DIR}/${ENV_OR_BRANCH}"
+  mkdir -p "${ENV_PROFILES_DIR}"
+
+  cp -pr ../profiles/aws/. "${ENV_PROFILES_DIR}"
+
+  if test "${ENV}" = "${CUSTOMER_HUB}"; then
+    # Retain only the pingcentral profiles
+    find "${ENV_PROFILES_DIR}" -type d -mindepth 1 -maxdepth 1 -not -name "${PING_CENTRAL}" -exec rm -rf {} +
+  else
+    # Remove the pingcentral profiles
+    rm -rf "${ENV_PROFILES_DIR}/${PING_CENTRAL}"
   fi
 )
 done

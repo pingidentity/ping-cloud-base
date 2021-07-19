@@ -8,4 +8,11 @@ commonLabels:
 
 resources:
 - ../cloud-generic
-- configmap.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+- name: discovery-service
+  files:
+  - scripts/get_ssm_env_vars.sh
