@@ -153,10 +153,6 @@
 #                          | URL. For AWS S3 buckets, it must be an S3 URL,     |
 #                          | e.g. s3://backups.                                 |
 #                          |                                                    |
-# CHUB_BACKUP_URL          | The URL of the customer HUB backup location.       | The string "unused".
-#                          |                                                    |
-#                          |                                                    |
-#                          |                                                    |
 # K8S_GIT_URL              | The Git URL of the Kubernetes base manifest files. | https://github.com/pingidentity/ping-cloud-base
 #                          |                                                    |
 # K8S_GIT_BRANCH           | The Git branch within the above Git URL.           | The git branch where this script
@@ -283,7 +279,6 @@ ${ARTIFACT_REPO_URL}
 ${PING_ARTIFACT_REPO_URL}
 ${LOG_ARCHIVE_URL}
 ${BACKUP_URL}
-${CHUB_BACKUP_URL}
 ${PING_CLOUD_NAMESPACE}
 ${K8S_GIT_URL}
 ${K8S_GIT_BRANCH}
@@ -490,7 +485,6 @@ echo "Initial PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 
 echo "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 echo "Initial BACKUP_URL: ${BACKUP_URL}"
-echo "Initial CHUB_BACKUP_URL: ${CHUB_BACKUP_URL}"
 
 echo "Initial MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 echo "Initial MYSQL_USER: ${MYSQL_USER}"
@@ -546,7 +540,6 @@ export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.
 
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
-export CHUB_BACKUP_URL="${CHUB_BACKUP_URL:-unused}"
 
 export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-"pingcentraldb.\${PRIMARY_TENANT_DOMAIN}"}"
 export MYSQL_USER="${MYSQL_USER:-pcadmin}"
@@ -815,7 +808,6 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   echo "PRIMARY_DNS_ZONE: ${PRIMARY_DNS_ZONE}"
   echo "LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
   echo "BACKUP_URL: ${BACKUP_URL}"
-  echo "CHUB_BACKUP_URL: ${CHUB_BACKUP_URL}"
 
   # Build the kustomization file for the bootstrap tools for each environment
   echo "Generating bootstrap yaml for ${ENV}"

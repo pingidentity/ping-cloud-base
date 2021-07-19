@@ -139,7 +139,6 @@
 #                           | are periodically captured and sent to this URL.    |
 #                           |                                                    |
 # BACKUP_URL                | The URL of the backup location. If provided, data  | The string "unused".
-# CHUB_BACKUP_URL           | The URL of the CHUB backup location. If provided, data  | The string "unused".
 #                           | backups are periodically captured and sent to this |
 #                           | URL. For AWS S3 buckets, it must be an S3 URL,     |
 #                           | e.g. s3://backups.                                 |
@@ -285,7 +284,6 @@ export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
 export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
-export CHUB_BACKUP_URL="${CHUB_BACKUP_URL:-unused}"
 
 # MySQL database names cannot have dashes. So transform dashes into underscores.
 ENV_NAME_NO_DASHES=$(echo ${BELUGA_ENV_NAME} | tr '-' '_')
@@ -319,7 +317,7 @@ log "Using ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 log "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 log "Using LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 log "Using BACKUP_URL: ${BACKUP_URL}"
-log "Using CHUB_BACKUP_URL: ${CHUB_BACKUP_URL}"
+
 log "Using DEPLOY_FILE: ${DEPLOY_FILE}"
 log "Using K8S_CONTEXT: ${K8S_CONTEXT}"
 log ---
@@ -408,7 +406,6 @@ export ARTIFACT_REPO_URL=${ARTIFACT_REPO_URL}
 export PING_ARTIFACT_REPO_URL=${PING_ARTIFACT_REPO_URL}
 export LOG_ARCHIVE_URL=${LOG_ARCHIVE_URL}
 export BACKUP_URL=${BACKUP_URL}
-export CHUB_BACKUP_URL=${CHUB_BACKUP_URL}
 
 export MYSQL_DATABASE=${MYSQL_DATABASE}
 

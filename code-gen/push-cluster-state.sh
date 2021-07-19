@@ -27,7 +27,6 @@
 CLUSTER_STATE_REPO_DIR='cluster-state-repo'
 K8S_CONFIGS_DIR='k8s-configs'
 BASE_DIR='base'
-CUSTOMER_HUB='customer-hub'
 
 PROFILE_REPO_DIR='profile-repo'
 PROFILES_DIR='profiles'
