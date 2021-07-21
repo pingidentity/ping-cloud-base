@@ -28,7 +28,7 @@ get_ssm_val() {
   if ! ssm_val="$(aws ${AWS_DEBUG} ssm --region "${REGION}"  get-parameters \
             --names "${param_name}" \
             --query 'Parameters[*].Value' \
-            --output text "${extra_arg}")"; then
+            --output text ${extra_arg})"; then
     echo "$ssm_val"
     return 1
   fi
