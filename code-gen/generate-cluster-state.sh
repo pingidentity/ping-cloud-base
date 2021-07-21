@@ -253,9 +253,13 @@ QUIET="${QUIET:-false}"
 ########################################################################################################################
 
 # The list of variables in the template files that will be substituted by default.
+# Note: DEFAULT_VARS is a superset of ENV_VARS_TO_SUBST within update-cluster-state.sh. These variables should be kept
+# in sync with the following exceptions: LAST_UPDATE_REASON, PING_IDENTITY_DEVOPS_USER_BASE64,
+# PING_IDENTITY_DEVOPS_KEY_BASE64 and NEW_RELIC_LICENSE_KEY_BASE64 should only be found within DEFAULT_VARS
 # Note: only secret variables are substituted into YAML files. Environments variables are just written to an env_vars
 # file and substituted at runtime by the continuous delivery tool running in cluster.
-DEFAULT_VARS='${PING_IDENTITY_DEVOPS_USER_BASE64}
+DEFAULT_VARS='${LAST_UPDATE_REASON}
+${PING_IDENTITY_DEVOPS_USER_BASE64}
 ${PING_IDENTITY_DEVOPS_KEY_BASE64}
 ${NEW_RELIC_LICENSE_KEY_BASE64}
 ${TENANT_NAME}
@@ -317,11 +321,15 @@ ${DNS_ZONE}
 ${DNS_ZONE_DERIVED}
 ${PRIMARY_DNS_ZONE}
 ${PRIMARY_DNS_ZONE_DERIVED}
+${METADATA_IMAGE_TAG}
+${P14C_BOOTSTRAP_IMAGE_TAG}
+${P14C_INTEGRATION_IMAGE_TAG}
+${PINGCENTRAL_IMAGE_TAG}
 ${PINGACCESS_IMAGE_TAG}
+${PINGACCESS_WAS_IMAGE_TAG}
 ${PINGFEDERATE_IMAGE_TAG}
 ${PINGDIRECTORY_IMAGE_TAG}
 ${PINGDELEGATOR_IMAGE_TAG}
-${LAST_UPDATE_REASON}
 ${IRSA_PING_ANNOTATION_KEY_VALUE}
 ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}'
 
@@ -639,19 +647,28 @@ mkdir -p "${TARGET_DIR}"
 # Next build up the directory structure of the cluster-state repo
 BOOTSTRAP_SHORT_DIR='fluxcd'
 BOOTSTRAP_DIR="${TARGET_DIR}/${BOOTSTRAP_SHORT_DIR}"
-CLUSTER_STATE_DIR="${TARGET_DIR}/cluster-state"
-K8S_CONFIGS_DIR="${CLUSTER_STATE_DIR}/k8s-configs"
+
+CLUSTER_STATE_REPO_DIR="${TARGET_DIR}/cluster-state-repo"
+K8S_CONFIGS_DIR="${CLUSTER_STATE_REPO_DIR}/k8s-configs"
+
+PROFILE_REPO_DIR="${TARGET_DIR}/profile-repo"
+PROFILES_DIR="${PROFILE_REPO_DIR}/profiles"
+
 CUSTOMER_HUB='customer-hub'
+PING_CENTRAL='pingcentral'
 
 mkdir -p "${BOOTSTRAP_DIR}"
 mkdir -p "${K8S_CONFIGS_DIR}"
+mkdir -p "${PROFILE_REPO_DIR}"
 
-cp ./update-cluster-state-wrapper.sh "${CLUSTER_STATE_DIR}"
-cp ../.gitignore "${CLUSTER_STATE_DIR}"
+cp ./update-cluster-state-wrapper.sh "${CLUSTER_STATE_REPO_DIR}"
+
+cp ../.gitignore "${CLUSTER_STATE_REPO_DIR}"
+cp ../.gitignore "${PROFILE_REPO_DIR}"
+
 cp ../k8s-configs/cluster-tools/base/git-ops/git-ops-command.sh "${K8S_CONFIGS_DIR}"
 find "${TEMPLATES_HOME}" -type f -maxdepth 1 | xargs -I {} cp {} "${K8S_CONFIGS_DIR}"
 
-cp -pr ../profiles/aws/. "${CLUSTER_STATE_DIR}"/profiles
 echo "${PING_CLOUD_BASE_COMMIT_SHA}" > "${TARGET_DIR}/pcb-commit-sha.txt"
 
 # Now generate the yaml files for each environment
@@ -793,7 +810,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   echo "BACKUP_URL: ${BACKUP_URL}"
 
   # Build the kustomization file for the bootstrap tools for each environment
-  echo "Generating bootstrap yaml"
+  echo "Generating bootstrap yaml for ${ENV}"
 
   # The code for an environment is generated under a directory of the same name as what's provided in ENVIRONMENTS.
   ENV_BOOTSTRAP_DIR="${BOOTSTRAP_DIR}/${ENV_OR_BRANCH}"
@@ -805,7 +822,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   substitute_vars "${ENV_BOOTSTRAP_DIR}" "${BOOTSTRAP_VARS}"
 
   # Copy the shared cluster tools and Ping yaml templates into their target directories
-  echo "Generating tools and ping yaml"
+  echo "Generating tools and ping yaml for ${ENV}"
 
   ENV_DIR="${K8S_CONFIGS_DIR}/${ENV_OR_BRANCH}"
   mkdir -p "${ENV_DIR}"
@@ -841,6 +858,20 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     BASE_ENV_VARS="${ENV_DIR}/base/env_vars"
     echo >> "${BASE_ENV_VARS}"
     echo "IS_BELUGA_ENV=true" >> "${BASE_ENV_VARS}"
+  fi
+
+  echo "Copying server profiles for environment ${ENV}"
+  ENV_PROFILES_DIR="${PROFILES_DIR}/${ENV_OR_BRANCH}"
+  mkdir -p "${ENV_PROFILES_DIR}"
+
+  cp -pr ../profiles/aws/. "${ENV_PROFILES_DIR}"
+
+  if test "${ENV}" = "${CUSTOMER_HUB}"; then
+    # Retain only the pingcentral profiles
+    find "${ENV_PROFILES_DIR}" -type d -mindepth 1 -maxdepth 1 -not -name "${PING_CENTRAL}" -exec rm -rf {} +
+  else
+    # Remove the pingcentral profiles
+    rm -rf "${ENV_PROFILES_DIR}/${PING_CENTRAL}"
   fi
 )
 done

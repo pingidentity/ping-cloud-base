@@ -14,6 +14,7 @@ _Changes:_
 - [X] PDO-700 Deploy PingCentral in P1AS customer hub clusters
 - [X] PDO-1739 Migrate to Beluga container images
 - [X] PDO-2386 Improve upgrade of PA-WAS by making idempotent
+- [X] PDO-2387 Remove the nginx annotation service-upstream from all ingresses
 - [X] PDO-2434 Update cluster tools to latest version: sealed-secrets-controller (0.16.0)
 - [X] PDO-2462 Update cluster tools to latest version: Kibana (7.13.2)
 - [X] PDO-2463 Update cluster tools to latest version: Elasticsearch (7.13.2)
@@ -26,6 +27,7 @@ _Changes:_
 - [X] PDO-2687 Update update-cluster-state-wrapper.sh to seed initial customer-hub code into the CSR
 - [X] PDO-2708 Fix image tag kustomization in the CSR for P1AS app images
 - [X] PDO-2717 Adapt the Discovery service to retrieve the PingCentral database details from SSM
+- [X] PDO-2718 Allow MyPing image tags to be Kustomizable
 
 ### 1.9.3
 

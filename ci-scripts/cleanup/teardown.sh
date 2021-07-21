@@ -26,3 +26,6 @@ else
        -u "${MYSQL_USER}" -p"${MYSQL_PASSWORD}" \
        -e "drop database ${MYSQL_DATABASE}"
 fi
+
+# Do not consider failure to cleanup a pipeline failure
+exit 0

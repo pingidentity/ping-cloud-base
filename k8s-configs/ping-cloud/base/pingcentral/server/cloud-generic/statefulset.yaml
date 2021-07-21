@@ -1,16 +1,18 @@
-# This defines the Ping Delegated Admin deployment
+# This defines the Ping Central deployment
 
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: pingcentral
 spec:
   replicas: 1
-  strategy:
-    type: RollingUpdate
   selector:
     matchLabels:
-      role: pingcentral
+      app: pingcentral
+  serviceName: pingcentral
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
   template:
     metadata:
       name: pingcentral
@@ -71,13 +73,13 @@ spec:
           runAsUser: 0
         image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingcentral:1.8-v1.0.1-pdo-2713-calvin-pc-password-change
         imagePullPolicy: IfNotPresent
-        # resources:
-        #   requests:
-        #     memory: "256Mi"
-        #     cpu: "80m"
-        #   limits:
-        #     memory: "1Gi"
-        #     cpu: "1"
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "4"
+          limits:
+            memory: "5Gi"
+            cpu: "4"
         readinessProbe:
           exec:
             command: [/opt/liveness.sh]
@@ -106,6 +108,11 @@ spec:
               secretKeyRef:
                 name: pingcentral-passwords
                 key: PC_ADMIN_USER_PASSWORD
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: pingcentral-passwords
+                key: MYSQL_PASSWORD
         envFrom:
           - configMapRef:
               name: pingcentral-environment-variables
@@ -125,6 +132,9 @@ spec:
           - name: data-dir
             mountPath: /opt/staging/ds_env_vars
             subPath: ds_env_vars
+          - name: data-dir
+            mountPath: /usr/local/bin/skbn
+            subPath: skbn
           - name: pingcentral-passwords
             mountPath: /usr/local/secrets
             readOnly: true
@@ -165,3 +175,13 @@ spec:
             secretName: pingcentral-passwords
             optional: true
             defaultMode: 0400
+  volumeClaimTemplates:
+  - metadata:
+      name: out-dir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: pingcentral-gp2
+      resources:
+        requests:
+          storage: ".5Gi"

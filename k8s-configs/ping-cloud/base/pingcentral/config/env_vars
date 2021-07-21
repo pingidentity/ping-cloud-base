@@ -12,7 +12,7 @@ K8S_ACME_CERT_SECRET_NAME=acme-tls-cert
 # Leave blank
 TAIL_LOG_FILES=
 # Individual files should be spelled out, globs are unreliable
-K8S_TAIL_LOG_FILES=/opt/out/instance/log/error.log /opt/out/instance/log/access.log
+K8S_TAIL_LOG_FILES=/opt/out/instance/log/application-api.log /opt/out/instance/log/application-ext.log /opt/out/instance/log/application.log /opt/out/instance/log/monitor.log
 
 SECRETS_DIR=/usr/local/secrets
 
@@ -26,14 +26,14 @@ API_RETRY_LIMIT=10
 # Seconds client request will wait for response from API.
 API_TIMEOUT_WAIT=5
 
+PING_IDENTITY_ACCEPT_EULA=YES
+
+MYSQL_USER=admin
 MYSQL_DATABASE=pingcentral
 MYSQL_SERVICE_PORT=3306
-MYSQL_PASSWORD=2FederateM0re
 MYSQL_SERVICE_HOST=mysql-2713.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
-MYSQL_USER=admin
+PING_CENTRAL_SERVER_PORT=9022
 PING_CENTRAL_BLIND_TRUST=true
 PING_CENTRAL_LOG_LEVEL=DEBUG
 PING_CENTRAL_OIDC_ENABLED=true
 PING_CENTRAL_VERIFY_HOSTNAME=false
-PING_IDENTITY_ACCEPT_EULA=YES
-PING_IDENTITY_PASSWORD=2FederateM0re
