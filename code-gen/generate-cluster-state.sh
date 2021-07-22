@@ -424,7 +424,7 @@ add_nlb_variables() {
     if [ "${ssm_path_prefix}" != "unused" ]; then
 
       # Getting value from ssm parameter store.
-      if ! ssm_value=$(get_ssm_value "${ssm_path_prefix}/${env}/elastic-ips/nlb/nginx-public"); then
+      if ! ssm_value=$(get_ssm_value "${ssm_path_prefix}/${env}/nginx-public"); then
         echo "Error: ${ssm_value}"
         exit 1
       fi
