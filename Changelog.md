@@ -17,6 +17,7 @@ _Changes:_
 - [X] PDO-2387 Remove the nginx annotation service-upstream from all ingresses
 - [X] PDO-2430 Update cluster tools to latest version: cluster-autoscaler (1.17.4)
 - [X] PDO-2434 Update cluster tools to latest version: sealed-secrets-controller (0.16.0)
+- [X] PDO-2435 Update cluster tools to latest version: external-dns (0.8.0)
 - [X] PDO-2462 Update cluster tools to latest version: Kibana (7.13.2)
 - [X] PDO-2463 Update cluster tools to latest version: Elasticsearch (7.13.2)
 - [X] PDO-2465 Update cluster tools to latest version: metrics-server (v0.5.0)
