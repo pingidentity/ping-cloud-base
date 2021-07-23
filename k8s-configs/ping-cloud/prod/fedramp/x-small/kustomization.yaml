@@ -1,0 +1,74 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+- ../../x-small
+
+# other than the line above, this file should only change image names/versions
+images:
+- name: registry.opensource.zalan.do/teapot/external-dns
+  newName: 251360940232.dkr.ecr.us-east-1.amazonaws.com/ironbank/external-dns
+  newTag: v0.7.4
+# - name: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.26.1
+#   newName:
+#   newTag: 
+- name: quay.io/coreos/kube-state-metrics
+  newName: 251360940232.dkr.ecr.us-east-1.amazonaws.com/ironbank/opensource/coreos/kube-state-metrics
+  newTag: v1.9.7
+# - name: quay.io/bitnami/sealed-secrets-controller:v0.12.4
+#   newName:
+#   newTag:
+- name: pingcloud-virtual.jfrog.io/redis:5.0.10-alpine
+  newName: 251360940232.dkr.ecr.us-east-1.amazonaws.com/ironbank/opensource/redis/redis5
+  newTag: 5.0.9
+- name: pingcloud-virtual.jfrog.io/python:3.9.1-slim
+  newName: 251360940232.dkr.ecr.us-east-1.amazonaws.com/ironbank/opensource/python/python39
+  newTag: v3.9.4
+- name: pingcloud-virtual.jfrog.io/dexidp/dex:v2.25.0
+  newName: 251360940232.dkr.ecr.us-east-1.amazonaws.com/ironbank/opensource/dexidp/dex
+  newTag: v2.28.1
+- name: pingcloud-virtual.jfrog.io/argoproj/argocd:v1.8.1
+  newName: 251360940232.dkr.ecr.us-east-1.amazonaws.com/ironbank/opensource/argoproj/argocd
+  newTag: v1.8.2
+# - name: pingcloud-mirror.jfrog.io/prom/statsd-exporter:v0.14.1
+#   newName:
+#   newTag:
+- name: pingcloud-mirror.jfrog.io/prom/prometheus:v2.15.2
+  newName: 251360940232.dkr.ecr.us-east-1.amazonaws.com/ironbank/opensource/prometheus/prometheus
+  newTag: v2.20.1
+- name: pingcloud-mirror.jfrog.io/memcached:1.5.20
+  newName: 251360940232.dkr.ecr.us-east-1.amazonaws.com/ironbank/opensource/memcached/memcached
+  newTag: latest # TODO: change this
+- name: pingcloud-mirror.jfrog.io/grafana/grafana:6.5.3
+  newName: 251360940232.dkr.ecr.us-east-1.amazonaws.com/ironbank/opensource/grafana/grafana
+  newTag: 7.5.7
+- name: pingcloud-mirror.jfrog.io/fluent/fluentd-kubernetes-daemonset:v1.7.3-debian-cloudwatch-1.0
+  newName: 251360940232.dkr.ecr.us-east-1.amazonaws.com/ironbank/opensource/fluentd/fluentd-kubernetes-daemonset
+  newTag: 1.11.4
+# - name: pingcloud-mirror.jfrog.io/dweomer/stunnel
+#   newName:
+#   newTag:
+- name: pingcloud-mirror.jfrog.io/bitnami/kubectl:1.15.3
+  newName: 251360940232.dkr.ecr.us-east-1.amazonaws.com/ironbank/opensource/kubernetes-1.17/kubectl-1.17
+  newTag: v1.17.15
+- name: pingcloud-mirror.jfrog.io/amazon/aws-cli:2.0.17
+  newName: 251360940232.dkr.ecr.us-east-1.amazonaws.com/ironbank/opensource/amazon/aws-cli
+  newTag: 2.0.63
+# - name: k8s.gcr.io/metrics-server-amd64:v0.3.6
+#   newName: 
+#   newTag:
+- name: docker.elastic.co/kibana/kibana:7.8.0
+  newName: 251360940232.dkr.ecr.us-east-1.amazonaws.com/ironbank/opensource/elastic/kibana
+  newTag: latest
+- name: docker.elastic.co/elasticsearch/elasticsearch:7.8.0
+  newName: 251360940232.dkr.ecr.us-east-1.amazonaws.com/ironbank/elastic/elasticsearch/elasticsearch
+  newTag: 7.9.2
+- name: quay.io/jetstack/cert-manager-controller:v0.10.1
+  newName: 251360940232.dkr.ecr.us-east-1.amazonaws.com/ironbank/jetstack/cert-manager/cert-manager-controller-011
+  newTag: latest
+- name: quay.io/jetstack/cert-manager-cainjector:v0.10.1
+  newName: 251360940232.dkr.ecr.us-east-1.amazonaws.com/ironbank/jetstack/cert-manager/cert-manager-cainjector-011
+  newTag: latest
+- name: pingcloud-mirror.jfrog.io/busybox:1.32
+  newName: 251360940232.dkr.ecr.us-east-1.amazonaws.com/ironbank/redhat/ubi/ubi8
+  newTag: "8.3"
