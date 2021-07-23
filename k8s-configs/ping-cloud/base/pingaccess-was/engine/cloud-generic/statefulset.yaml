@@ -193,8 +193,6 @@ spec:
             secretKeyRef:
               name: pingaccess-was-passwords
               key: PA_ADMIN_USER_PASSWORD
-        # - name: NEW_RELIC_APP_NAME
-        #   value: "pingaccess-was"
         - name: NEW_RELIC_CONFIG_FILE
           value: "/opt/shared-dir/newrelic.yml"
         envFrom:

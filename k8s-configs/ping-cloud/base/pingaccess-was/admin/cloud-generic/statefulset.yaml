@@ -220,8 +220,6 @@ spec:
             secretKeyRef:
               name: pingaccess-was-passwords
               key: P14C_CLIENT_SECRET
-        # - name: NEW_RELIC_APP_NAME
-        #   value: "pingaccess-was-admin"
         - name: NEW_RELIC_CONFIG_FILE
           value: "/opt/shared-dir/newrelic.yml"
         envFrom:

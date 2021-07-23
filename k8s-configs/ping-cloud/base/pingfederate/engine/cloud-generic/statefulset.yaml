@@ -164,12 +164,6 @@ spec:
             secretKeyRef:
               name: pingcommon-passwords
               key: PF_LDAP_PASSWORD
-        # - name: NEW_RELIC_APP_NAME
-        #   value: pingfederate
-        # - name: NEW_RELIC_POD_NAME
-        #   valueFrom:
-        #     fieldRef:
-        #       fieldPath: metadata.name
         - name: NEW_RELIC_CONFIG_FILE
           value: "/opt/shared-dir/newrelic.yml"
         envFrom:

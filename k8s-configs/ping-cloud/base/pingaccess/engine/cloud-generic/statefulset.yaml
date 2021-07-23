@@ -197,8 +197,6 @@ spec:
             secretKeyRef:
               name: pingaccess-passwords
               key: PA_ADMIN_USER_PASSWORD
-        # - name: NEW_RELIC_APP_NAME
-        #   value: "pingaccess"
         - name: NEW_RELIC_CONFIG_FILE
           value: "/opt/shared-dir/newrelic.yml"
         envFrom:
