@@ -16,7 +16,7 @@ if test ! -f /data/kubectl; then
 fi
 
 beluga_log "Downloading skbn from ping-artifacts bucket"
-wget -qO /data/skbn https://ping-artifacts.s3-us-west-2.amazonaws.com/pingcommon/skbn/0.5.1/skbn
+curl -sS -o /data/skbn https://ping-artifacts.s3-us-west-2.amazonaws.com/pingcommon/skbn/1.0.1/skbn
 
 beluga_log "Checking skbn executable in data directory"
 if test ! -f /data/skbn; then
@@ -39,7 +39,7 @@ EOF
 beluga_log 'Downloading custom native S3 ping jar from ping-artifacts bucket'
 
 DST_FILE='/data/native-s3-ping.jar'
-wget -qO "${DST_FILE}" \
+curl -sS -o "${DST_FILE}" \
     https://ping-artifacts.s3-us-west-2.amazonaws.com/pingfederate/native-s3-ping/0.9.5.Final/native-s3-ping.jar
 
 beluga_log 'Checking for native-s3-ping.jar in data directory'
@@ -51,7 +51,7 @@ fi
 beluga_log 'Downloading JMX prometheus Java Agent from ping-artifacts bucket'
 
 DST_FILE='/data/jmx_prometheus_javaagent-0.14.0.jar'
-wget -qO "${DST_FILE}" \
+curl -sS -o "${DST_FILE}" \
     https://ping-artifacts.s3-us-west-2.amazonaws.com/pingcommon/jmx-prometheus-javaagent/0.14.0/jmx_prometheus_javaagent-0.14.0.jar
 
 beluga_log 'Checking for jmx_prometheus_javaagent jar file in data directory'
@@ -63,7 +63,7 @@ fi
 beluga_log 'Downloading NewRelic Java APM Agent from ping-artifacts bucket'
 
 DST_FILE='/data/newrelic.jar'
-wget -qO "${DST_FILE}" \
+curl -sS -o "${DST_FILE}" \
     https://ping-artifacts.s3.amazonaws.com/pingcommon/newrelic-java-agent/6.4.2/newrelic.jar
 
 beluga_log 'Checking for newrelic jar file in data directory'

@@ -18,7 +18,7 @@ PD_ADMIN_SERVER_NAME="${PD_STS_NAME}-0"
 PD_ADMIN_SERVICE_NAME='pingdirectory'
 PD_ADMIN_WAIT_PORT=1636
 
-SHORT_HOSTNAME="$(hostname)"
+SHORT_HOSTNAME="$(cat /etc/hostname)"
 
 ########################################################################################################################
 # Logs the provided message at the provided log level. Default log level is INFO, if not provided.
