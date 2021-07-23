@@ -30,7 +30,7 @@ _Changes:_
 - [X] PDO-2708 Fix image tag kustomization in the CSR for P1AS app images
 - [X] PDO-2717 Adapt the Discovery service to retrieve the PingCentral database details from SSM
 - [X] PDO-2718 Allow MyPing image tags to be Kustomizable
-- [X] PDO-2714 Update PD image to 8.3.0.0-v1.0.3 and PF image to 10.2.4-v1.0.2
+- [X] PDO-2739 Press more app-specific concerns into the images instead of exposing them in the SPR
 
 ### 1.9.3
 
