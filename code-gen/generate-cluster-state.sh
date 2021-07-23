@@ -738,7 +738,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
       export PF_PD_BIND_PROTOCOL=ldap
       export PF_PD_BIND_USESSL=false
       ;;
-    prod)
+    prod | customer-hub)
       export PF_PD_BIND_PORT=5678
       export PF_PD_BIND_PROTOCOL=ldaps
       export PF_PD_BIND_USESSL=true
@@ -753,7 +753,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
       export PF_MIN_YGEN=768m
       export PF_MAX_YGEN=768m
       ;;
-    stage | prod)
+    stage | prod | customer-hub)
       export PF_MIN_HEAP=3072m
       export PF_MAX_HEAP=3072m
       export PF_MIN_YGEN=1536m
@@ -769,7 +769,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
       export PA_WAS_MIN_YGEN=512m
       export PA_WAS_MAX_YGEN=512m
       ;;
-    stage | prod)
+    stage | prod | customer-hub)
       export PA_WAS_MIN_HEAP=2048m
       export PA_WAS_MAX_HEAP=2048m
       export PA_WAS_MIN_YGEN=1024m

@@ -1,9 +1,9 @@
 # Purpose
-This server profile aims at providing a richer featured PingFederate configuration 
-that can also include deploying PingFederate Artifacts (Integration Kits).
+This server profile aims at providing a richer featured PingAccess configuration 
+that can also include deploying PingAccess Artifacts (plugins).
 
 ## artifacts
-The artifacts available within the S3 bucket can be deployed to PingFederate
+The artifacts available within the S3 bucket can be deployed to PingAccess
 through a JSON specification as shown below,
 
 ```
@@ -23,9 +23,9 @@ through a JSON specification as shown below,
 
 Simply upload the JSON file to the following location within server profiles
 and the artifacts within this list will be downloaded from the artifact repo
-and deployed to PingFederate.
+and deployed to PingAccess.
 
-- pingfederate/artifacts/artifact-list.json
+- pingaccess/artifacts/artifact-list.json
 
 ```
 For private plugins the environment variable ARTIFACT_REPO_URL needs to point to the private artifact repo.

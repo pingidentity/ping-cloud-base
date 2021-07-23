@@ -6,7 +6,7 @@ resources:
 - ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingaccess/admin?ref=${K8S_GIT_BRANCH}
 
 images:
-- name: ${ECR_REGISTRY_NAME}/pingidentity/pingaccess
+- name: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess
   newTag: ${PINGACCESS_IMAGE_TAG}
 
 patchesJson6902:
