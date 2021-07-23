@@ -22,13 +22,11 @@ echo "AWS_REGION: ${REGION}"
 # Query aws endpoint to get value associated with the key.
 get_ssm_val() {
   param_name="$1"
-  if echo "${param_name}" | grep -q 'secretsmanager'; then
-    extra_arg='--with-decryption'
-  fi
   if ! ssm_val="$(aws ${AWS_DEBUG} ssm --region "${REGION}"  get-parameters \
             --names "${param_name}" \
             --query 'Parameters[*].Value' \
-            --output text ${extra_arg})"; then
+            --with-decryption \
+            --output text)"; then
     echo "$ssm_val"
     return 1
   fi
