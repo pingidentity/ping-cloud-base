@@ -85,15 +85,21 @@ beluga_owned_k8s_files="@.flux.yaml \
 
 # The list of variables to substitute in env_vars.old files.
 # shellcheck disable=SC2016
-ENV_VARS_TO_SUBST='${IS_MULTI_CLUSTER}
+# Note: ENV_VARS_TO_SUBST is a subset of DEFAULT_VARS within generate-cluster-state.sh. These variables should be kept
+# in sync with the following exceptions: LAST_UPDATE_REASON, PING_IDENTITY_DEVOPS_USER_BASE64,
+# PING_IDENTITY_DEVOPS_KEY_BASE64 and NEW_RELIC_LICENSE_KEY_BASE64 should only be found within DEFAULT_VARS
+ENV_VARS_TO_SUBST='${TENANT_NAME}
+${SSH_ID_KEY_BASE64}
+${IS_MULTI_CLUSTER}
 ${CLUSTER_BUCKET_NAME}
-${SECONDARY_TENANT_DOMAINS}
+${EVENT_QUEUE_NAME}
+${ORCH_API_SSM_PATH_PREFIX}
 ${REGION}
 ${REGION_NICK_NAME}
 ${PRIMARY_REGION}
 ${TENANT_DOMAIN}
-${TENANT_NAME}
 ${PRIMARY_TENANT_DOMAIN}
+${SECONDARY_TENANT_DOMAINS}
 ${GLOBAL_TENANT_DOMAIN}
 ${ARTIFACT_REPO_URL}
 ${PING_ARTIFACT_REPO_URL}
@@ -102,14 +108,14 @@ ${BACKUP_URL}
 ${PING_CLOUD_NAMESPACE}
 ${K8S_GIT_URL}
 ${K8S_GIT_BRANCH}
-${JFROG_REGISTRY_NAME}
 ${ECR_REGISTRY_NAME}
 ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
 ${CLUSTER_STATE_REPO_URL}
 ${CLUSTER_STATE_REPO_BRANCH}
 ${CLUSTER_STATE_REPO_PATH_DERIVED}
-${SERVER_PROFILE_URL_DERIVED}
+${SERVER_PROFILE_URL}
 ${SERVER_PROFILE_BRANCH_DERIVED}
+${SERVER_PROFILE_PATH}
 ${ENV}
 ${ENVIRONMENT_TYPE}
 ${KUSTOMIZE_BASE}
@@ -132,12 +138,24 @@ ${PA_MAX_HEAP}
 ${PA_MIN_YGEN}
 ${PA_MAX_YGEN}
 ${PA_GCOPTION}
+${MYSQL_SERVICE_HOST}
+${MYSQL_USER}
+${MYSQL_PASSWORD}
 ${CLUSTER_NAME}
 ${CLUSTER_NAME_LC}
 ${DNS_ZONE}
 ${DNS_ZONE_DERIVED}
 ${PRIMARY_DNS_ZONE}
 ${PRIMARY_DNS_ZONE_DERIVED}
+${METADATA_IMAGE_TAG}
+${P14C_BOOTSTRAP_IMAGE_TAG}
+${P14C_INTEGRATION_IMAGE_TAG}
+${PINGCENTRAL_IMAGE_TAG}
+${PINGACCESS_IMAGE_TAG}
+${PINGACCESS_WAS_IMAGE_TAG}
+${PINGFEDERATE_IMAGE_TAG}
+${PINGDIRECTORY_IMAGE_TAG}
+${PINGDELEGATOR_IMAGE_TAG}
 ${IRSA_PING_ANNOTATION_KEY_VALUE}
 ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}'
 
@@ -148,16 +166,15 @@ add_derived_variables() {
   # The directory within the cluster state repo for the region's manifest files.
   export CLUSTER_STATE_REPO_PATH_DERIVED="\${REGION_NICK_NAME}"
 
-  # Server profile URL and branch. The directory is in each app's env_vars file.
-  export SERVER_PROFILE_URL_DERIVED="\${CLUSTER_STATE_REPO_URL}"
+  # Server profile branch. The directory is in each app's env_vars file.
   export SERVER_PROFILE_BRANCH_DERIVED="\${CLUSTER_STATE_REPO_BRANCH}"
 
   # Zone for this region and the primary region.
   export DNS_ZONE_DERIVED="\${DNS_ZONE}"
   export PRIMARY_DNS_ZONE_DERIVED="\${PRIMARY_DNS_ZONE}"
 
-  # Zone for this region and the primary region
-  if "${IS_BELUGA_ENV:-false}"; then
+  # Zone for this region and the primary region.
+  if "${IS_BELUGA_ENV:-false}" || test "${ENV}" = "${CUSTOMER_HUB}"; then
     export DNS_ZONE="\${TENANT_DOMAIN}"
     export PRIMARY_DNS_ZONE="\${PRIMARY_TENANT_DOMAIN}"
   else
@@ -997,6 +1014,11 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
         fi
 
         export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY}"
+        export NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY}"
+
+        # FIXME: When Versent creates the new server-profile repo, then change the git repo slug
+        # from cluster-state-repo to profile-repo.
+
         set -x
         QUIET=true \
             TARGET_DIR="${TARGET_DIR}" \

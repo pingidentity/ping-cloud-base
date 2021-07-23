@@ -7,25 +7,35 @@
 - PingDirectory health checks are now performed via HTTPS
 - Update a few supporting cluster tools to their latest versions
 - Beluga maintained container images with built in hook scripts
+- Server profiles are now seeded into a separate repository for partner access
 
 _Changes:_
 
 - [X] PDO-700 Deploy PingCentral in P1AS customer hub clusters
 - [X] PDO-1739 Migrate to Beluga container images
 - [X] PDO-2386 Improve upgrade of PA-WAS by making idempotent
+- [X] PDO-2387 Remove the nginx annotation service-upstream from all ingresses
+- [X] PDO-2430 Update cluster tools to latest version: cluster-autoscaler (1.17.4)
+- [X] PDO-2434 Update cluster tools to latest version: sealed-secrets-controller (0.16.0)
+- [X] PDO-2435 Update cluster tools to latest version: external-dns (0.8.0)
 - [X] PDO-2462 Update cluster tools to latest version: Kibana (7.13.2)
 - [X] PDO-2463 Update cluster tools to latest version: Elasticsearch (7.13.2)
 - [X] PDO-2465 Update cluster tools to latest version: metrics-server (v0.5.0)
 - [X] PDO-2468 Update PD healthchecks to use the availability servlet
 - [X] PDO-2536 Put admin NLB on the public network
+- [X] PDO-2623 Separate the server profiles into its own repository for partner enablement
 - [X] PDO-2638 Update cluster tools to latest version: Logstash (7.13.2)
+- [X] PDO-2676 Update the push-cluster-state.sh script to push seed code into the new SPR repo
 - [X] PDO-2687 Update update-cluster-state-wrapper.sh to seed initial customer-hub code into the CSR
+- [X] PDO-2708 Fix image tag kustomization in the CSR for P1AS app images
+- [X] PDO-2717 Adapt the Discovery service to retrieve the PingCentral database details from SSM
+- [X] PDO-2718 Allow MyPing image tags to be Kustomizable
 
 ### 1.9.3
 
 - Fix a PingDirectory crash caused by the offline-enable hook script after a restart
 - Remove PingFederate-P14C-Init container from secondary region
-- Updated p14c-integration image to 1.0.23
+- Updated p14c-integration image to 1.0.24
 - Update prometheus-json-exporter image to 1.0.3
 - Upgraded PingFederate to version 10.2.4
 - Capture additional logs from rebuild-index within PD
@@ -40,6 +50,7 @@ _Changes:_
 - [X] PDO-2688 Use latest prometheus-json-exporter image
 - [X] PDO-2689 Capture additional logs from rebuild-index within PD
 - [X] PDO-2690 Updating the PD and PF 82-upload-csd-s3.sh hook scripts to work with the updated collect-support-data tool
+- [X] PDO-2723 Update p14c-integration docker images in ping-cloud-base to v1.0.24
 
 ### 1.9.2
 
