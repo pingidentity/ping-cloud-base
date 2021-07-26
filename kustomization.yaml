@@ -99,7 +99,7 @@ patchesStrategicMerge:
 patchesJson6902:
 
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: metadata-ingress
@@ -112,7 +112,7 @@ patchesJson6902:
       value: metadata.${TENANT_DOMAIN}
 
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: pingdirectory-http-ingress
@@ -125,7 +125,7 @@ patchesJson6902:
       value: pingdirectory.${TENANT_DOMAIN}
 
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: pingdelegator-ingress
@@ -138,7 +138,7 @@ patchesJson6902:
       value: pingdelegator.${TENANT_DOMAIN}
 
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: pingfederate-ingress
@@ -151,7 +151,7 @@ patchesJson6902:
       value: pingfederate.${TENANT_DOMAIN}
 
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: pingfederate-admin-ingress
@@ -164,7 +164,7 @@ patchesJson6902:
       value: pingfederate-admin-api.${TENANT_DOMAIN}
 
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: pingaccess-ingress
@@ -177,7 +177,7 @@ patchesJson6902:
       value: pingaccess.${TENANT_DOMAIN}
 
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: pingaccess-admin-ingress
@@ -190,7 +190,7 @@ patchesJson6902:
       value: pingaccess-admin-api.${TENANT_DOMAIN}
 
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: pingaccess-agent-ingress
@@ -204,7 +204,7 @@ patchesJson6902:
 
 # Ingresses through PA-WAS engines
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: pingaccess-was-ingress
@@ -258,7 +258,7 @@ patchesJson6902:
       value: argocd.${TENANT_DOMAIN}
 
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: pingaccess-was-admin-ingress

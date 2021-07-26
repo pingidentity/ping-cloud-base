@@ -3,7 +3,7 @@
 # NOTE: it will only work if an ingress controller (e.g. nginx) is running on
 # your cluster.
 
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: pingaccess-ingress
@@ -29,7 +29,7 @@ spec:
 
 # This defines the ingress for the pingaccess agent services.
 
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: pingaccess-agent-ingress

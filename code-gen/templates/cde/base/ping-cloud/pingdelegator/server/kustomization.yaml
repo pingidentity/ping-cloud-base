@@ -29,7 +29,7 @@ patchesJson6902:
 
 # Ping Delegated Admin
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: pingdelegator-ingress
