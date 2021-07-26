@@ -28,7 +28,7 @@ patchesJson6902:
 
 # pingfederate runtime
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: pingfederate-ingress

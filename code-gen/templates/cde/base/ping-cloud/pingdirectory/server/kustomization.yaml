@@ -31,7 +31,7 @@ patchesJson6902:
 
 # pingdirectory HTTP
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: pingdirectory-http-ingress
