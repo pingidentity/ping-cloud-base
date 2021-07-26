@@ -5,9 +5,7 @@ namespace: argocd
 
 resources:
 - argo.yaml
-- argocd-notifications-secret.yaml
-- argocd-notifications-cm.yaml
-
+- argocd-notifications-controller
 generatorOptions:
   disableNameSuffixHash: true
 
