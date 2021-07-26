@@ -1,16 +1,18 @@
-# This defines the Ping Delegated Admin deployment
+# This defines the Ping Central deployment
 
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: pingcentral
 spec:
   replicas: 1
-  strategy:
-    type: RollingUpdate
   selector:
     matchLabels:
-      role: pingcentral
+      app: pingcentral
+  serviceName: pingcentral
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
   template:
     metadata:
       name: pingcentral
@@ -69,18 +71,18 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral:1.7-v1.0.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral:1.8.0-v1.0.1
         imagePullPolicy: IfNotPresent
-        # resources:
-        #   requests:
-        #     memory: "256Mi"
-        #     cpu: "80m"
-        #   limits:
-        #     memory: "1Gi"
-        #     cpu: "1"
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "1"
+          limits:
+            memory: "5Gi"
+            cpu: "2"
         readinessProbe:
           exec:
-            command: [/opt/liveness.sh]
+            command: [/opt/readiness.sh]
           initialDelaySeconds: 60
           periodSeconds: 5
           failureThreshold: 3
@@ -125,6 +127,9 @@ spec:
           - name: data-dir
             mountPath: /opt/staging/ds_env_vars
             subPath: ds_env_vars
+          - name: data-dir
+            mountPath: /usr/local/bin/skbn
+            subPath: skbn
           - name: pingcentral-passwords
             mountPath: /usr/local/secrets
             readOnly: true
@@ -165,3 +170,13 @@ spec:
             secretName: pingcentral-passwords
             optional: true
             defaultMode: 0400
+  volumeClaimTemplates:
+  - metadata:
+      name: out-dir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: pingcentral-gp2
+      resources:
+        requests:
+          storage: "10G"
