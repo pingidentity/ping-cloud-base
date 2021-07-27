@@ -34,7 +34,7 @@ spec:
     singular: application
   scope: Namespaced
   versions:
-    - name: v1
+    - name: v1alpha1
       served: true
       storage: true
       subresources: {}
@@ -1731,7 +1731,7 @@ spec:
     singular: appproject
   scope: Namespaced
   versions:
-    - name: v1
+    - name: v1alpha1
       served: true
       storage: true
       schema:
