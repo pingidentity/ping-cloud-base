@@ -1,6 +1,6 @@
 # This defines the private ingress for the pingfederate admin services.
 
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: pingfederate-admin-ingress

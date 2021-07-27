@@ -6,7 +6,7 @@ resources:
 - ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingdelegator/server?ref=${K8S_GIT_BRANCH}
 
 images:
-- name: ${ECR_REGISTRY_NAME}/pingidentity/pingdelegator
+- name: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingdelegator
   newTag: ${PINGDELEGATOR_IMAGE_TAG}
 
 generatorOptions:
@@ -29,7 +29,7 @@ patchesJson6902:
 
 # Ping Delegated Admin
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: pingdelegator-ingress

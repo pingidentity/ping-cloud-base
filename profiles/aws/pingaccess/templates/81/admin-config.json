@@ -1,5 +1,0 @@
-{
-  "hostPort":"${CLUSTER_CONFIG_HOST}:${CLUSTER_CONFIG_PORT}",
-  "httpProxyId": 0,
-  "httpsProxyId": 0
-}

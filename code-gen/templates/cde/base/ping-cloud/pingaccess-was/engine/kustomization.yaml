@@ -6,7 +6,7 @@ resources:
 - ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingaccess-was/engine?ref=${K8S_GIT_BRANCH}
 
 images:
-- name: ${ECR_REGISTRY_NAME}/pingidentity/pingaccess
+- name: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess-was
   newTag: ${PINGACCESS_WAS_IMAGE_TAG}
 
 patchesJson6902:
@@ -28,7 +28,7 @@ patchesJson6902:
 
 # PingAccess admin and PingFederate admin through PingAccess-WAS
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: pingaccess-was-ingress

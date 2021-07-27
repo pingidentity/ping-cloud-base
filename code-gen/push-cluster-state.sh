@@ -24,7 +24,7 @@
 #   PUSH_TO_SERVER -> A flag indicating whether or not to push the code to the remote server. Defaults to true.
 
 # Global variables
-CLUSTER_STATE_REPO_DIR='cluster-state-repo'
+CLUSTER_STATE_REPO_DIR='cluster-state'
 K8S_CONFIGS_DIR='k8s-configs'
 BASE_DIR='base'
 

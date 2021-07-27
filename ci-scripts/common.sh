@@ -83,6 +83,7 @@ export CLUSTER_NAME_LC=$(echo "${CLUSTER_NAME}" | tr '[:upper:]' '[:lower:]')
 export LOG_GROUP_NAME="/aws/containerinsights/${CLUSTER_NAME}/application"
 
 FQDN=${ENVIRONMENT}.${TENANT_DOMAIN}
+CHUB_FQDN=${TENANT_DOMAIN}
 
 # Monitoring
 LOGS_CONSOLE=https://logs${FQDN}/app/kibana
@@ -137,6 +138,9 @@ MYSQL_PASSWORD=2FederateM0re
 
 # Pingcloud-metadata service:
 PINGCLOUD_METADATA_API=https://metadata${FQDN}
+
+# PingCentral service
+PINGCENTRAL_CONSOLE=https://pingcentral.${CHUB_FQDN}
 
 # Source some utility methods.
 . ${PROJECT_DIR}/utils.sh
