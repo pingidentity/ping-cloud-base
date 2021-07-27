@@ -13,6 +13,7 @@ _Changes:_
 
 - [X] PDO-700 Deploy PingCentral in P1AS customer hub clusters
 - [X] PDO-1739 Migrate to Beluga container images
+- [X] PDO-2233 Update CRD resource apiVersion to v1
 - [X] PDO-2386 Improve upgrade of PA-WAS by making idempotent
 - [X] PDO-2387 Remove the nginx annotation service-upstream from all ingresses
 - [X] PDO-2434 Update cluster tools to latest version: sealed-secrets-controller (0.16.0)
