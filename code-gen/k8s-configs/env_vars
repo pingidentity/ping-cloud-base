@@ -2,11 +2,11 @@
 # Region-specific parameters
 ############################################################
 # Region name and nick name. REGION must be valid AWS region name.
-REGION=us-west-2
-REGION_NICK_NAME=us-west-2
+REGION=
+REGION_NICK_NAME=
 
 # Tenant domain suffix for customer for region
-TENANT_DOMAIN=ihormikitorians.ping-demo.com
+TENANT_DOMAIN=
 
 # Optional S3 bucket name for PingFederate adaptive clustering using the JGroups NATIVE_S3_PING discovery protocol.
 #
@@ -17,10 +17,13 @@ TENANT_DOMAIN=ihormikitorians.ping-demo.com
 CLUSTER_BUCKET_NAME=
 
 # Customer-specific artifacts URL for region
-ARTIFACT_REPO_URL=s3://ihormikitorians-csd-archives-bucket
+ARTIFACT_REPO_URL=unused
 
 ############################################################
 # IRSA - IAM role for service accounts
 ############################################################
 # Used by ping product pods
 IRSA_PING_ANNOTATION_KEY_VALUE=""
+
+# Annotation used by ingress-nginx service in ingress-nginx-public namespace
+NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE=""
