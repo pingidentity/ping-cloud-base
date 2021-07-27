@@ -71,18 +71,18 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingcentral:1.8-v1.0.1-pdo-2713-calvin-pc-password-change
-        imagePullPolicy: Always
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral:1.8.0-v1.0.1
+        imagePullPolicy: IfNotPresent
         resources:
           requests:
             memory: "2Gi"
-            cpu: "4"
+            cpu: "1"
           limits:
             memory: "5Gi"
-            cpu: "4"
+            cpu: "2"
         readinessProbe:
           exec:
-            command: [/opt/liveness.sh]
+            command: [/opt/readiness.sh]
           initialDelaySeconds: 60
           periodSeconds: 5
           failureThreshold: 3
@@ -184,4 +184,4 @@ spec:
       storageClassName: pingcentral-gp2
       resources:
         requests:
-          storage: ".5Gi"
+          storage: "10G"

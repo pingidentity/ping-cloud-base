@@ -25,7 +25,7 @@ Simply upload the JSON file to the following location within server profiles
 and the artifacts within this list will be downloaded from the artifact repo
 and deployed to PingFederate.
 
-- aws/pingfederate/artifacts/artifact-list.json
+- pingfederate/artifacts/artifact-list.json
 
 ```
 For private plugins the environment variable ARTIFACT_REPO_URL needs to point to the private artifact repo.
@@ -38,14 +38,3 @@ Public plugins are downloaded through the following URL by default,
 
 The public repo URL can be updated through the environment variable PING_ARTIFACT_REPO_URL.
 ```
-
-## hooks
-This directory contains shell script example that are executed when the container 
-comes up
-
-## instance
-This directory is intended to hold the minimal configuration needed to bring up
-a tenant, it should not contain any 'customer centric' configuration such as
-OAuth client definition or applications in PingAccess. It should contain the
-minimal configuration needed to bring up PF using PD for admin authentication
-and PA using the PF instance as token provider.

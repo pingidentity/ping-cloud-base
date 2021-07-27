@@ -424,7 +424,7 @@ add_nlb_variables() {
     if [ "${ssm_path_prefix}" != "unused" ]; then
 
       # Getting value from ssm parameter store.
-      if ! ssm_value=$(get_ssm_value "${ssm_path_prefix}/${env}/elastic-ips/nlb/nginx-public"); then
+      if ! ssm_value=$(get_ssm_value "${ssm_path_prefix}/${env}/nginx-public"); then
         echo "Error: ${ssm_value}"
         exit 1
       fi
@@ -648,7 +648,7 @@ mkdir -p "${TARGET_DIR}"
 BOOTSTRAP_SHORT_DIR='fluxcd'
 BOOTSTRAP_DIR="${TARGET_DIR}/${BOOTSTRAP_SHORT_DIR}"
 
-CLUSTER_STATE_REPO_DIR="${TARGET_DIR}/cluster-state-repo"
+CLUSTER_STATE_REPO_DIR="${TARGET_DIR}/cluster-state"
 K8S_CONFIGS_DIR="${CLUSTER_STATE_REPO_DIR}/k8s-configs"
 
 PROFILE_REPO_DIR="${TARGET_DIR}/profile-repo"
@@ -738,7 +738,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
       export PF_PD_BIND_PROTOCOL=ldap
       export PF_PD_BIND_USESSL=false
       ;;
-    prod)
+    prod | customer-hub)
       export PF_PD_BIND_PORT=5678
       export PF_PD_BIND_PROTOCOL=ldaps
       export PF_PD_BIND_USESSL=true
@@ -753,7 +753,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
       export PF_MIN_YGEN=768m
       export PF_MAX_YGEN=768m
       ;;
-    stage | prod)
+    stage | prod | customer-hub)
       export PF_MIN_HEAP=3072m
       export PF_MAX_HEAP=3072m
       export PF_MIN_YGEN=1536m
@@ -769,7 +769,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
       export PA_WAS_MIN_YGEN=512m
       export PA_WAS_MAX_YGEN=512m
       ;;
-    stage | prod)
+    stage | prod | customer-hub)
       export PA_WAS_MIN_HEAP=2048m
       export PA_WAS_MAX_HEAP=2048m
       export PA_WAS_MIN_YGEN=1024m

@@ -140,7 +140,7 @@ MYSQL_PASSWORD=2FederateM0re
 PINGCLOUD_METADATA_API=https://metadata${FQDN}
 
 # PingCentral service
-PINGCENTRAL_CONSOLE=https://pingcentral${CHUB_FQDN}
+PINGCENTRAL_CONSOLE=https://pingcentral.${CHUB_FQDN}
 
 # Source some utility methods.
 . ${PROJECT_DIR}/utils.sh
