@@ -47,7 +47,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: nginx-configuration
-  namespace: ingress-nginx-public
+  namespace: ingress-nginx-private
 data:
   large_client_header_buffers: "4 128k"
 

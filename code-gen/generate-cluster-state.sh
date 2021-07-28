@@ -221,13 +221,11 @@
 #                          |                                                    |
 # MYSQL_SERVICE_HOST       | The hostname of the MySQL database server.         | pingcentraldb.${PRIMARY_TENANT_DOMAIN}
 #                          |                                                    |
-# MYSQL_USER               | The DBA user of the PingCentral MySQL RDS          | pcadmin
-#                          | database.                                          |
+# MYSQL_USER               | The DBA user of the PingCentral MySQL RDS          | The SSM path:
+#                          | database.                                          | ssm://pcpt/ping-central/rds/username
 #                          |                                                    |
-# MYSQL_PASSWORD           | The DBA password of the PingCentral MySQL RDS      | The SSM path: /aws/reference/
-#                          | database.                                          | secretsmanager//pcpt/ping-central/
-#                          |                                                    | dbserver/password
-#                          |                                                    |
+# MYSQL_PASSWORD           | The DBA password of the PingCentral MySQL RDS      | The SSM path:
+#                          | database.                                          | ssm://pcpt/ping-central/rds/password
 ########################################################################################################################
 
 #### SCRIPT START ####
@@ -315,6 +313,7 @@ ${PA_GCOPTION}
 ${MYSQL_SERVICE_HOST}
 ${MYSQL_USER}
 ${MYSQL_PASSWORD}
+${MYSQL_DATABASE}
 ${CLUSTER_NAME}
 ${CLUSTER_NAME_LC}
 ${DNS_ZONE}
@@ -542,8 +541,8 @@ export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
 
 export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-"pingcentraldb.\${PRIMARY_TENANT_DOMAIN}"}"
-export MYSQL_USER="${MYSQL_USER:-pcadmin}"
-export MYSQL_PASSWORD="${MYSQL_PASSWORD:-'/aws/reference/secretsmanager//pcpt/ping-central/dbserver/password'}"
+export MYSQL_USER="${MYSQL_USER:-ssm://pcpt/ping-central/rds/username}"
+export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://pcpt/ping-central/rds/password}"
 
 PING_CLOUD_BASE_COMMIT_SHA=$(git rev-parse HEAD)
 CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -567,6 +566,7 @@ export TARGET_DIR="${TARGET_DIR:-/tmp/sandbox}"
 ### Default environment variables ###
 export ECR_REGISTRY_NAME='public.ecr.aws/r2h3l6e4'
 export PING_CLOUD_NAMESPACE='ping-cloud'
+export MYSQL_DATABASE='pingcentral'
 
 # Print out the values being used for each variable.
 echo "Using TENANT_NAME: ${TENANT_NAME}"

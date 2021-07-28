@@ -1,5 +1,5 @@
 # This yaml file was obtained from:
-# https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md
+# https://github.com/kubernetes-sigs/external-dns/tree/master/kustomize
 
 apiVersion: v1
 kind: ServiceAccount
@@ -12,11 +12,14 @@ metadata:
   name: external-dns
 rules:
 - apiGroups: [ "" ]
-  resources: [ "services", "endpoints", "nodes", "pods" ]
+  resources: [ "services", "endpoints", "pods" ]
   verbs: [ "get", "watch", "list" ]
-- apiGroups: [ "networking.k8s.io" ]
+- apiGroups: [ "extensions", "networking.k8s.io" ]
   resources: [ "ingresses" ]
-  verbs: [ "get", "watch", "list" ]
+  verbs: [ "get", "watch", "list"]
+- apiGroups: [ "" ]
+  resources: [ "nodes" ]
+  verbs: [ "list", "watch" ]
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
@@ -29,7 +32,6 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: external-dns
-  namespace: default
 ---
 apiVersion: apps/v1
 kind: Deployment
