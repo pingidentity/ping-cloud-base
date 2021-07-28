@@ -166,6 +166,14 @@
 #                           |                                                    |
 # NEW_RELIC_LICENSE_KEY     | The key of NewRelic APM Agent used to send data to | The string 'unused'
 #                           | NewRelic account                                   |
+#                           |                                                    |
+# MYSQL_SERVICE_HOST        | The hostname of the MySQL database server.         | beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
+#                           |                                                    |
+# MYSQL_USER                | The DBA user of the PingCentral MySQL RDS          | The SSM path:
+#                           | database.                                          | ssm://pcpt/ping-central/rds/username
+#                           |                                                    |
+# MYSQL_PASSWORD            | The DBA password of the PingCentral MySQL RDS      | The SSM path:
+#                           | database.                                          | ssm://pcpt/ping-central/rds/password
 ########################################################################################################################
 
 #
@@ -250,6 +258,10 @@ log "Initial PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 log "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 log "Initial BACKUP_URL: ${BACKUP_URL}"
 
+log "Initial MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
+log "Initial MYSQL_USER: ${MYSQL_USER}"
+log "Initial MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
+
 log "Initial DEPLOY_FILE: ${DEPLOY_FILE}"
 log "Initial K8S_CONTEXT: ${K8S_CONTEXT}"
 log ---
@@ -285,6 +297,10 @@ export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
 
+export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com}"
+export MYSQL_USER="${MYSQL_USER:-ssm://pcpt/ping-central/rds/username}"
+export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://pcpt/ping-central/rds/password}"
+
 # MySQL database names cannot have dashes. So transform dashes into underscores.
 ENV_NAME_NO_DASHES=$(echo ${BELUGA_ENV_NAME} | tr '-' '_')
 export MYSQL_DATABASE="pingcentral_${ENV_NAME_NO_DASHES}"
@@ -308,7 +324,6 @@ log "Using TENANT_DOMAIN: ${TENANT_DOMAIN}"
 log "Using PRIMARY_TENANT_DOMAIN: ${PRIMARY_TENANT_DOMAIN}"
 log "Using SECONDARY_TENANT_DOMAINS: ${SECONDARY_TENANT_DOMAINS}"
 log "Using GLOBAL_TENANT_DOMAIN: ${GLOBAL_TENANT_DOMAIN}"
-log "Using MYSQL_DATABASE: ${MYSQL_DATABASE}"
 
 log "Using CONFIG_REPO_BRANCH: ${CONFIG_REPO_BRANCH}"
 log "Using CONFIG_PARENT_DIR: ${CONFIG_PARENT_DIR}"
@@ -317,6 +332,11 @@ log "Using ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 log "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 log "Using LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 log "Using BACKUP_URL: ${BACKUP_URL}"
+
+log "Using MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
+log "Using MYSQL_USER: ${MYSQL_USER}"
+log "Using MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
+log "Using MYSQL_DATABASE: ${MYSQL_DATABASE}"
 
 log "Using DEPLOY_FILE: ${DEPLOY_FILE}"
 log "Using K8S_CONTEXT: ${K8S_CONTEXT}"
@@ -407,6 +427,9 @@ export PING_ARTIFACT_REPO_URL=${PING_ARTIFACT_REPO_URL}
 export LOG_ARCHIVE_URL=${LOG_ARCHIVE_URL}
 export BACKUP_URL=${BACKUP_URL}
 
+export MYSQL_SERVICE_HOST=${MYSQL_SERVICE_HOST}
+export MYSQL_USER=${MYSQL_USER}
+export MYSQL_PASSWORD=${MYSQL_PASSWORD}
 export MYSQL_DATABASE=${MYSQL_DATABASE}
 
 export PROJECT_DIR=${PWD}
