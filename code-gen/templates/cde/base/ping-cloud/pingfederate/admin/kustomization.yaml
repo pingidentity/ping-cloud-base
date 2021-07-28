@@ -28,7 +28,7 @@ patchesJson6902:
 
 # pingfederate admin api
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: pingfederate-admin-ingress

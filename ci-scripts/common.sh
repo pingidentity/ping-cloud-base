@@ -52,6 +52,10 @@ if test -z "${ENV_VARS_FILE}"; then
   export BACKUP_URL=s3://${CLUSTER_NAME}-backup-bucket
   export CLUSTER_BUCKET_NAME="${CLUSTER_NAME}-cluster-bucket"
 
+  export MYSQL_SERVICE_HOST=beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
+  export MYSQL_USER=ssm://pcpt/ping-central/rds/username
+  export MYSQL_PASSWORD=ssm://pcpt/ping-central/rds/password
+
   # MySQL database names cannot have dashes. So transform dashes into underscores.
   ENV_NAME_NO_DASHES=$(echo ${CI_COMMIT_REF_SLUG} | tr '-' '_')
   export MYSQL_DATABASE="pingcentral_${ENV_NAME_NO_DASHES}"
@@ -83,6 +87,7 @@ export CLUSTER_NAME_LC=$(echo "${CLUSTER_NAME}" | tr '[:upper:]' '[:lower:]')
 export LOG_GROUP_NAME="/aws/containerinsights/${CLUSTER_NAME}/application"
 
 FQDN=${ENVIRONMENT}.${TENANT_DOMAIN}
+CHUB_FQDN=${TENANT_DOMAIN}
 
 # Monitoring
 LOGS_CONSOLE=https://logs${FQDN}/app/kibana
@@ -132,11 +137,14 @@ PINGDELEGATOR_CONSOLE=https://pingdelegator${FQDN}/delegator
 # PingCentral
 MYSQL_SERVICE_HOST=beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
 MYSQL_SERVICE_PORT=3306
-MYSQL_USER=admin
-MYSQL_PASSWORD=2FederateM0re
+MYSQL_USER_SSM=/pcpt/ping-central/rds/username
+MYSQL_PASSWORD_SSM=/pcpt/ping-central/rds/password
 
 # Pingcloud-metadata service:
 PINGCLOUD_METADATA_API=https://metadata${FQDN}
+
+# PingCentral service
+PINGCENTRAL_CONSOLE=https://pingcentral.${CHUB_FQDN}
 
 # Source some utility methods.
 . ${PROJECT_DIR}/utils.sh
@@ -232,6 +240,26 @@ EOF
   [${AWS_PROFILE}]
   role_arn = ${AWS_ACCOUNT_ROLE_ARN}
 EOF
+}
+
+########################################################################################################################
+# Retrieve the value associated with the provided parameter from AWS parameter store.
+#
+# Arguments
+#   ${1} -> The SSM parameter name.
+#
+# Returns
+#   The value of the parameter name if found, or the error message stating why the command failed.
+########################################################################################################################
+get_ssm_val() {
+  param_name="$1"
+  aws ssm get-parameters \
+        --profile "${AWS_PROFILE}" \
+        --region "${REGION}" \
+        --names "${param_name}" \
+        --query 'Parameters[*].Value' \
+        --with-decryption \
+        --output text
 }
 
 ########################################################################################################################

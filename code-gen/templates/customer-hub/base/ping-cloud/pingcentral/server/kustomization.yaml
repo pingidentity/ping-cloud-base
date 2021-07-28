@@ -18,7 +18,7 @@ patchesJson6902:
 - target:
     group: apps
     version: v1
-    kind: Deployment
+    kind: StatefulSet
     name: pingcentral
   patch: |
     - op: add
@@ -31,7 +31,7 @@ patchesJson6902:
 
 # PingCentral HTTP
 - target:
-    group: extensions
+    group: networking.k8s.io
     version: v1beta1
     kind: Ingress
     name: pingcentral-ingress
