@@ -8,6 +8,7 @@
 - Update a few supporting cluster tools to their latest versions
 - Beluga maintained container images with built in hook scripts
 - Server profiles are now seeded into a separate repository for partner access
+- Add Elasticsearch wait init container to kibana manifest
 
 _Changes:_
 
@@ -19,6 +20,7 @@ _Changes:_
 - [X] PDO-2430 Update cluster tools to latest version: cluster-autoscaler (1.17.4)
 - [X] PDO-2434 Update cluster tools to latest version: sealed-secrets-controller (0.16.0)
 - [X] PDO-2435 Update cluster tools to latest version: external-dns (0.8.0)
+- [X] PDO-2445 Logstash date parsing errors
 - [X] PDO-2462 Update cluster tools to latest version: Kibana (7.13.2)
 - [X] PDO-2463 Update cluster tools to latest version: Elasticsearch (7.13.2)
 - [X] PDO-2465 Update cluster tools to latest version: metrics-server (v0.5.0)
@@ -32,6 +34,7 @@ _Changes:_
 - [X] PDO-2708 Fix image tag kustomization in the CSR for P1AS app images
 - [X] PDO-2717 Adapt the Discovery service to retrieve the PingCentral database details from SSM
 - [X] PDO-2718 Allow MyPing image tags to be Kustomizable
+- [X] PDO-2721 Logstash index template didn't create during deployment
 - [X] PDO-2739 Press more app-specific concerns into the images instead of exposing them in the SPR
 
 ### 1.9.3

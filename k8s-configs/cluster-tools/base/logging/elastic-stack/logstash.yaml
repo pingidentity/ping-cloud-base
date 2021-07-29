@@ -256,12 +256,16 @@ data:
         if([log_type] == "PF_Audit_Log"){
             grok {
                 match => {
-                  "log" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                  "log" => [ "<%{NUMBER}>%{GREEDYDATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             #Convert the injested data into Individual Fields for elasticsearch
             json {
                 source => "json_data"
+            }
+            date {
+              match => [ "timestamp", "MMM  d HH:mm:ss", "MMM dd HH:mm:ss", "MMM d", "MMM dd" ]
+              locale => "en"
             }
 
             if([json_data]){
@@ -345,11 +349,15 @@ data:
         if([log_type] == "PF_System_Log"){
             grok {
                 match => {
-                  "log" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                  "log" => [ "<%{NUMBER}>%{GREEDYDATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
                 source => "json_data"
+            }
+            date {
+              match => [ "timestamp", "MMM  d HH:mm:ss", "MMM dd HH:mm:ss", "MMM d", "MMM dd" ]
+              locale => "en"
             }
 
             if([json_data]){
@@ -364,11 +372,15 @@ data:
         if([log_type] == "PF_Provisioner_Log"){
             grok {
                 match => {
-                  "log" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                  "log" => [ "<%{NUMBER}>%{GREEDYDATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
               source => "json_data"
+            }
+            date {
+              match => [ "timestamp", "MMM  d HH:mm:ss", "MMM dd HH:mm:ss", "MMM d", "MMM dd" ]
+              locale => "en"
             }
             if([json_data]) {
               mutate {
@@ -389,7 +401,7 @@ data:
             }
 
             grok {
-                match => { "message" => "%{WORD:log_name} \[%{GREEDYDATA:date}\] %{WORD:ldapType} %{GREEDYDATA}" }
+                match => { "message" => "%{WORD:log_name} \[%{GREEDYDATA:timestamp}\] %{WORD:ldapType} %{GREEDYDATA}" }
             }
 
             mutate{
@@ -403,6 +415,11 @@ data:
 
             geoip {
                 source => "requesterIP"
+            }
+
+            date {
+                match => [ "timestamp", "dd/MMM/yyyy:HH:mm:ss Z", "dd/MMM/yyyy:HH:mm:ss.SSS Z" ]
+                locale => "en"
             }
 
             translate {
@@ -455,12 +472,18 @@ data:
         if([log_type] == "PA_Audit_Log" or [log_type] == "PA_WAS_Audit_Log"){
             grok {
                 match => {
-                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
                 source => "json_data"
             }
+
+            date {
+                match => [ "timestamp", "dd/MMM/yyyy:HH:mm:ss Z", "dd/MMM/yyyy:HH:mm:ss.SSS Z" ]
+                locale => "en"
+            }
+
 
             if([json_data]){
                 mutate {
@@ -513,12 +536,17 @@ data:
         if([log_type] == "PA_System_Log" or [log_type] == "PA_WAS_System_Log"){
             grok {
                 match => {
-                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
                 source => "json_data"
             }
+            date {
+                match => [ "timestamp", "dd/MMM/yyyy:HH:mm:ss Z", "dd/MMM/yyyy:HH:mm:ss.SSS Z" ]
+                locale => "en"
+            }
+
             if([json_data]){
                 mutate {
                     remove_field => "[json_data]"
@@ -531,12 +559,17 @@ data:
         if([log_type] == "PA_Admin_System_Log" or [log_type] == "PA_WAS_Admin_System_Log"){
             grok {
                 match => {
-                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
                 source => "json_data"
             }
+            date {
+                match => [ "timestamp", "dd/MMM/yyyy:HH:mm:ss Z", "dd/MMM/yyyy:HH:mm:ss.SSS Z" ]
+                locale => "en"
+            }
+
             if([json_data]){
                 mutate {
                     remove_field => "[json_data]"
@@ -549,12 +582,17 @@ data:
         if([log_type] == "PF_Admin_System_Log"){
             grok {
                 match => {
-                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
                 source => "json_data"
             }
+            date {
+                match => [ "timestamp", "dd/MMM/yyyy:HH:mm:ss Z", "dd/MMM/yyyy:HH:mm:ss.SSS Z" ]
+                locale => "en"
+            }
+
             if([json_data]){
                 mutate {
                     remove_field => "[json_data]"
@@ -567,8 +605,12 @@ data:
         if([log_type] == "PA_Admin_Audit_Log" or [log_type] == "PA_WAS_Admin_Audit_Log"){
             grok {
                 match => {
-                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
+            }
+            date {
+              match => [ "timestamp", "MMM  d HH:mm:ss", "MMM dd HH:mm:ss", "MMM d", "MMM dd" ]
+              locale => "en"
             }
             json {
                 source => "json_data"
@@ -585,8 +627,12 @@ data:
         if([log_type] == "PF_Admin_Audit_Log" or [log_type] == "PF_Admin_Audit_API_Log" ){
             grok {
                 match => {
-                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:date} %{TIME}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
+            }
+            date {
+              match => [ "timestamp", "MMM  d HH:mm:ss", "MMM dd HH:mm:ss", "MMM d", "MMM dd" ]
+              locale => "en"
             }
             json {
                 source => "json_data"

@@ -98,15 +98,39 @@ spec:
         image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:7.13.2-v1.0.0
         
         imagePullPolicy: IfNotPresent
-        command: ["sh", "-c", "until $(curl --output /dev/null --silent --fail ${KIBANA_HOST}:5601/api/status); do echo 'waiting for kibana API' && sleep 1; done"]
+        command: ["sh", "-c"]
+        args:
+          - until $(curl --output /dev/null --silent --fail ${KIBANA_HOST}:5601/api/status);
+            do echo "waiting for kibana API";
+            sleep 1;
+            done;
         env:
         - name: KIBANA_HOST
           value: "http://kibana"
+      - name: wait-for-es
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:7.8.0-v1.0.1
+
+        imagePullPolicy: IfNotPresent
+        command: ["sh", "-c"]
+        args:
+          - until $(curl --output /dev/null --silent --fail ${ES_HOST}:9200/_cluster/health?local=true);
+            do echo "waiting for Elasticsearch Green status";
+            sleep 1;
+            done;
+        env:
+        - name: ES_HOST
+          value: "http://elasticsearch"
       containers:
       - name: create-logstash-index
         image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:7.13.2-v1.0.0
         imagePullPolicy: IfNotPresent
-        command: ["sh", "-c", "curl -sS -X POST 'http://kibana:5601/api/saved_objects/index-pattern/logstash-*'  -H 'kbn-xsrf: true' -H 'Content-Type: application/json' -d '{\"attributes\": { \"title\": \"logstash*\", \"timeFieldName\": \"@timestamp\" } }' "]
+        command: ["sh", "-c"]
+        args:
+          - |
+            curl -sS -X POST 'http://kibana:5601/api/saved_objects/index-pattern/logstash-*' \
+            -H 'kbn-xsrf: true' \
+            -H 'Content-Type: application/json' \
+            -d '{"attributes": { "title": "logstash*", "timeFieldName": "@timestamp" } }'
 
       - name: kibana-dashboard-upload
         image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:7.13.2-v1.0.0
