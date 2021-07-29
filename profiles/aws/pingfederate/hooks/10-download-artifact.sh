@@ -73,7 +73,7 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json" || test ! -z "${SOLUTIO
 
         _is_in_ik_list() {
           artifact_name=$(echo ${1} | cut -d '-' -f 2- | sed 's/-/ /g')
-          test $(echo "${IK_LIST_JSON}" | jq --arg name "${artifact_name}" '.[] | select(.name | ascii_downcase | contains($name | any))') = "true"
+          test $(echo "${IK_LIST_JSON}" | jq --arg name "${artifact_name}" '.[] | select(.name | ascii_downcase | contains($name)) | any') = "true"
         }
 
         for name in $(echo "${MERGED_ARTIFACT_LIST}" | jq '.[].name'); do
@@ -179,6 +179,9 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json" || test ! -z "${SOLUTIO
           fi
 
         done
+        # Set Internal Field Separator to newline to iterate over lines, ignoring whitespaces
+        IFS=$'\n'
+
         for artifact in $(echo "${IK_LIST_JSON}" | jq -c '.[]'); do
           _artifact() {
             echo ${artifact} | jq -r ${1}
@@ -259,6 +262,9 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json" || test ! -z "${SOLUTIO
             exit 1
           fi
         done
+
+        # Reset Internal Field Separator to default value
+        unset IFS
 
         # Print listed files from deploy and conf to a single line so we don't spam logs
         ls ${OUT_DIR}/instance/server/default/deploy | xargs
