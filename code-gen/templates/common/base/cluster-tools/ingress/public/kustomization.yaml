@@ -14,6 +14,7 @@ patchesStrategicMerge:
     name: ingress-nginx
     namespace: ingress-nginx-public
     annotations:
+      service.beta.kubernetes.io/aws-load-balancer-type: nlb
       ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}
 
 patchesJson6902:
