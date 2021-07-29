@@ -75,6 +75,3 @@ PD_CLUSTER_PORT=8989
 RESTORE_BACKUP=true
 
 JAVA_AGENT_OPTS=-javaagent:/opt/staging/jmx_prometheus_javaagent-0.14.0.jar=8080:/opt/out/instance/bin/jmx_export_config.yaml
-IK_CLIENT_ID=1cb5a842-00d2-4212-9f87-c8990ba86fac
-IK_CLIENT_SECRET=-zMiXa1BQG.R7-bQOGuTynrfrxNGEWJmCPxGJaHYEOudxvYtL4WbZu4dNm57prQz
-IK_TOKEN_URL=https://auth-staging.pingone.com/2dfdde13-3595-4c03-a69f-b8b123664014/as/token
