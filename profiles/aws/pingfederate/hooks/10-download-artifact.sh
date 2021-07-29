@@ -17,6 +17,8 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json" || test ! -z "${SOLUTIO
 
   beluga_log "SOLUTIONS_ARTIFACTS : ${SOLUTIONS_ARTIFACTS}"
 
+  beluga_log "IK_LIST_JSON : ${IK_LIST_JSON}"
+
   _is_invalid_json() {
     test $(echo ${1} | jq >/dev/null 2>&1; echo $?) -ne "0"
   }
@@ -198,53 +200,69 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json" || test ! -z "${SOLUTIO
 
               # Get IK Service API URL
               api_url=$(kubectl get configmap p14c-environment-metadata -o json | jq -r '.data."information.json"'| jq -r '.pingOneInformation.webhookBaseUrl')
+
               # Get Env ID to work with IK Service
               env_id=$(kubectl get configmap p14c-environment-metadata -o json | jq -r '.data."information.json"'| jq -r '.pingOneInformation.environmentId')
 
-              # Get Bearer token to communicate with IK Service
-              token=$(curl -s --location \
-              --header "Content-Type: application/x-www-form-urlencoded"  \
-              --data-raw "grant_type=client_credentials" \
-              -u "${IK_CLIENT_ID}":"${IK_CLIENT_SECRET}" \
-              "${IK_TOKEN_URL}" | jq -r '.access_token')
+              if ( ( test ! -z "${api_url}" ) && ( test ! -z "${env_id}" ) ); then
 
-              # Get Artifact ID from IK Service
-              ARTIFACT_ID=$(curl -s --location --header "Authorization: Bearer ${token}" \
-                "${api_url}/v1/environments/${env_id}/integrations?filter=pingProductNames%20eq%20%22${PING_PRODUCT}%22" |
-                jq -r --arg name "${ARTIFACT_NAME}" '._embedded.integrations[] | select(.name | ascii_downcase | contains($name) | .id)')
+                #creds=$(kubectl get secret p14c-ik-service-secret -o json | jq '.data')
+                #IK_CLIENT_ID=$(echo "${creds}" | jq '.CLIENT_ID' | base64 --decode)
+                #IK_CLIENT_SECRET=$(echo "${creds}" | jq '.CLIENT_SECRET' | base64 --decode)
+                #IK_TOKEN_URL=$(echo "${creds}" | jq '.TOKEN_URL' | base64 --decode)
 
-              # Get artifact version ID if artifact exists in IK Service
-              if ( ( test ! -z ${ARTIFACT_ID} ) ); then
+                if ( ( test ! -z "${IK_CLIENT_ID}") && ( test ! -z "${IK_CLIENT_SECRET}") && ( test ! -z "${IK_TOKEN_URL}") ); then
+                  # Get Bearer token to communicate with IK Service
+                  token=$(curl -s --location \
+                  --header "Content-Type: application/x-www-form-urlencoded"  \
+                  --data-raw "grant_type=client_credentials" \
+                  -u "${IK_CLIENT_ID}":"${IK_CLIENT_SECRET}" \
+                  "${IK_TOKEN_URL}" | jq -r '.access_token')
 
-                VERSION_ID=$(curl -s --location --header "Authorization: Bearer ${token}" \
-                  "${api_url}/v1/environments/${env_id}/integrations/${ARTIFACT_ID}/versions" |
-                   jq -r --arg version "${ARTIFACT_VERSION}" '._embedded.versions[] | select(.number==$version) | .id')
+                  # Get Artifact ID from IK Service
+                  ARTIFACT_ID=$(curl -s --location --header "Authorization: Bearer ${token}" \
+                    "${api_url}/v1/environments/${env_id}/integrations?filter=pingProductNames%20eq%20%22${PING_PRODUCT}%22" |
+                    jq -r --arg name "${ARTIFACT_NAME}" '._embedded.integrations[] | select(.name | ascii_downcase | contains($name | ascii_downcase)) | .id')
 
-                if ( ( test ! -z ${VERSION_ID} ) ); then
-                  beluga_log "Download Artifact from IK Service"
+                  # Get artifact version ID if artifact exists in IK Service
+                  if ( ( test ! -z ${ARTIFACT_ID} ) ); then
 
-                  curl -sS --location "${api_url}/v1/environments/${env_id}/integrations/${ARTIFACT_ID}/versions/${VERSION_ID}/asset" --output ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}
+                    VERSION_ID=$(curl -s --location --header "Authorization: Bearer ${token}" \
+                      "${api_url}/v1/environments/${env_id}/integrations/${ARTIFACT_ID}/versions" |
+                       jq -r --arg version "${ARTIFACT_VERSION}" '._embedded.versions[] | select(.number==$version) | .id')
 
-                  if test $(echo $?) = "0"; then
-                  # Unzip artifact to tmp dir because it can have different unneeded folders in archive
-                  if ! unzip -o ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP} */dist/* -d ${DOWNLOAD_DIR}/${ARTIFACT_DOWNLOAD_NAME}
-                  then
-                      beluga_log "Artifact ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP} could not be unzipped."
-                      exit 1
-                  fi
-                  # Copy only needed folders
-                  cp -r ${DOWNLOAD_DIR}/${ARTIFACT_DOWNLOAD_NAME}/*/dist/* ${OUT_DIR}/instance/server/default
+                    if ( ( test ! -z ${VERSION_ID} ) ); then
+                      beluga_log "Download Artifact from IK Service"
+
+                      curl -sS --location "${api_url}/v1/environments/${env_id}/integrations/${ARTIFACT_ID}/versions/${VERSION_ID}/asset" --output ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}
+
+                      if test $(echo $?) = "0"; then
+                      # Unzip artifact to tmp dir because it can have different unneeded folders in archive
+                      if ! unzip -o ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP} */dist/* -d ${DOWNLOAD_DIR}/${ARTIFACT_DOWNLOAD_NAME}
+                      then
+                          beluga_log "Artifact ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP} could not be unzipped."
+                          exit 1
+                      fi
+                      # Copy only needed folders
+                      cp -r ${DOWNLOAD_DIR}/${ARTIFACT_DOWNLOAD_NAME}/*/dist/* ${OUT_DIR}/instance/server/default
+                      else
+                        beluga_log "Artifact download failed from IK Service"
+                        exit 1
+                      fi
+
+                      # Cleanup
+                      if test -f "${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}"; then
+                        rm ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}
+                      fi
+                      if test -d "${DOWNLOAD_DIR}/${ARTIFACT_DOWNLOAD_NAME}"; then
+                        rm -rf ${DOWNLOAD_DIR}/${ARTIFACT_DOWNLOAD_NAME}
+                      fi
+                    else
+                      beluga_log "Missing IK Service creds, skipping download from IK Service"
+                    fi
+
                   else
-                    beluga_log "Artifact download failed from IK Service"
-                    exit 1
-                  fi
-
-                  # Cleanup
-                  if test -f "${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}"; then
-                    rm ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}
-                  fi
-                  if test -d "${DOWNLOAD_DIR}/${ARTIFACT_DOWNLOAD_NAME}"; then
-                    rm -rf ${DOWNLOAD_DIR}/${ARTIFACT_DOWNLOAD_NAME}
+                    beluga_log "Missing p14c integration, skipping download from IK Service"
                   fi
 
                 else
