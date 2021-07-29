@@ -234,7 +234,7 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json" || test ! -z "${SOLUTIO
                     if ( ( test ! -z ${VERSION_ID} ) ); then
                       beluga_log "Download Artifact from IK Service"
 
-                      curl -sS --location "${api_url}/v1/environments/${env_id}/integrations/${ARTIFACT_ID}/versions/${VERSION_ID}/asset" --output ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}
+                      curl -sS --location --header "Authorization: Bearer ${token}" "${api_url}/v1/environments/${env_id}/integrations/${ARTIFACT_ID}/versions/${VERSION_ID}/asset" --output ${DOWNLOAD_DIR}/${ARTIFACT_RUNTIME_ZIP}
 
                       if test $(echo $?) = "0"; then
                       # Unzip artifact to tmp dir because it can have different unneeded folders in archive
