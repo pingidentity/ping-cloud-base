@@ -11,6 +11,7 @@ stages:
 - compile
 - build
 - unit-test
+- pa-was-test
 - integration-test
 - chaos
 - cleanup
@@ -38,6 +39,15 @@ deploy:
   - ./ci-scripts/build/deploy.sh
 
 ## Unit tests have moved into ping-cloud-docker (PDO-1739) ##
+
+## PA-WAS stage ##
+pa-was-integration-tests:
+  stage: pa-was-test
+  tags:
+    - pd-eks-deploy
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+  script:
+    - ./ci-scripts/test/integration/run-integration-tests.sh pingaccess-was
 
 ## Integration Test stage ##
 pd-integration-tests:
@@ -71,14 +81,6 @@ pa-integration-tests:
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
   script:
     - ./ci-scripts/test/integration/run-integration-tests.sh pingaccess
-
-pa-was-integration-tests:
-  stage: integration-test
-  tags:
-    - pd-eks-deploy
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
-  script:
-    - ./ci-scripts/test/integration/run-integration-tests.sh pingaccess-was
 
 pc-services-integration-tests:
   stage: integration-test
