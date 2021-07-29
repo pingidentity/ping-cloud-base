@@ -75,7 +75,8 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json" || test ! -z "${SOLUTIO
 
         _is_in_ik_list() {
           artifact_name=$(echo ${1} | cut -d '-' -f 2- | sed 's/-/ /g')
-          test $(echo "${IK_LIST_JSON}" | jq --arg name "${artifact_name}" '.[] | select(.name | ascii_downcase | contains($name)) | any') = "true"
+          is_in_list=$(echo "${IK_LIST_JSON}" | jq --arg name "${artifact_name}" '.[] | select(.name | ascii_downcase | contains($name)) | any')
+          test "${is_in_list}" = "true"
         }
 
         for name in $(echo "${MERGED_ARTIFACT_LIST}" | jq '.[].name'); do
