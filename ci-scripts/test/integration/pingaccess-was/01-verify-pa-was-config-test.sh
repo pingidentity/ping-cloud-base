@@ -263,12 +263,12 @@ testPaWasIdempotent() {
 
   log "Verifying the PingAccess App recreated on restart"
   response=$(get_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "${pa_app_id}")
-  assertEquals "The PingAccess App not present after restart" 0 $?
+  assertEquals "The PingAccess App not present after restart: ${response}"  0 $?
 
   APP_ID=123 # Unset elsewhere
   log "Verifying the new App: ${APP_NAME} still present"
   response=$(get_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "${APP_ID}")
-  assertEquals "The new App: ${APP_NAME} should have been present after restart" 0 $?
+  assertEquals "The new App: ${APP_NAME} should have been present after restart: ${response}" 0 $?
 
 }
 
