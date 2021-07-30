@@ -71,8 +71,8 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral:1.8.0-v1.0.3
-        imagePullPolicy: IfNotPresent
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingcentral:1.8.0-v1.0.3-pdo-2713-pc-password-change
+        imagePullPolicy: Always
         resources:
           requests:
             memory: "2Gi"
@@ -108,11 +108,6 @@ spec:
               secretKeyRef:
                 name: pingcentral-passwords
                 key: PC_ADMIN_USER_PASSWORD
-          - name: MYSQL_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: pingcentral-passwords
-                key: MYSQL_PASSWORD
         envFrom:
           - configMapRef:
               name: pingcentral-environment-variables
@@ -141,6 +136,8 @@ spec:
           - name: pingcentral-license
             mountPath: /opt/in/instance/conf/pingcentral.lic
             subPath: pingcentral.lic
+          - name: out-dir
+            mountPath: /opt/out
       volumes:
         - name: ssh-dir
           emptyDir: {}
@@ -175,6 +172,9 @@ spec:
             secretName: pingcentral-passwords
             optional: true
             defaultMode: 0400
+        - name: out-dir
+          persistentVolumeClaim:
+            claimName: out-dir
   volumeClaimTemplates:
   - metadata:
       name: out-dir

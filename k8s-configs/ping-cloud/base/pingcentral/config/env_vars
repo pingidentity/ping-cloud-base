@@ -28,8 +28,6 @@ API_RETRY_LIMIT=10
 # Seconds client request will wait for response from API.
 API_TIMEOUT_WAIT=5
 
-PING_IDENTITY_ACCEPT_EULA=YES
-
 MYSQL_SERVICE_HOST=beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
 MYSQL_SERVICE_PORT=3306
 MYSQL_USER=ssm://pcpt/ping-central/rds/username
