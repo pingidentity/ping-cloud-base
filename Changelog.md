@@ -9,6 +9,8 @@
 - Beluga maintained container images with built in hook scripts
 - Server profiles are now seeded into a separate repository for partner access
 - Add Elasticsearch wait init container to kibana manifest
+- Updated cluster-autoscalar memory request/limit to 512 MB 
+- Fixed PD Grafana dashboard, 'Replication Backlog' metric 
 
 _Changes:_
 
@@ -36,6 +38,8 @@ _Changes:_
 - [X] PDO-2718 Allow MyPing image tags to be Kustomizable
 - [X] PDO-2721 Logstash index template didn't create during deployment
 - [X] PDO-2739 Press more app-specific concerns into the images instead of exposing them in the SPR
+- [X] PDO-2741 Update cluster-autoscalar memory request/limit to 512 MB
+- [X] PDO-2740 No data on PD Grafana dashboard, 'Replication Backlog' metric
 
 ### 1.9.3
 
