@@ -424,8 +424,9 @@ add_nlb_variables() {
 
       # Getting value from ssm parameter store.
       if ! ssm_value=$(get_ssm_value "${ssm_path_prefix}/${env}/nginx-public"); then
+        # Throw error to STDOUT and proceed if failed to retrieve the SSM value
+        # This is to cater customer-hub CDE which does not have a corresponding SSM path like other CDE.
         echo "Error: ${ssm_value}"
-        exit 1
       fi
 
       NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE="service.beta.kubernetes.io/aws-load-balancer-eip-allocations: ${ssm_value}"
