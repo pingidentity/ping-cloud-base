@@ -27,7 +27,6 @@ _Changes:_
 - [X] PDO-2463 Update cluster tools to latest version: Elasticsearch (7.13.2)
 - [X] PDO-2465 Update cluster tools to latest version: metrics-server (v0.5.0)
 - [X] PDO-2468 Update PD healthchecks to use the availability servlet
-- [X] PDO-2536 Put admin NLB on the public network
 - [X] PDO-2623 Separate the server profiles into its own repository for partner enablement
 - [X] PDO-2624 Restore and backup PingCentral encryption key file from S3
 - [X] PDO-2638 Update cluster tools to latest version: Logstash (7.13.2)
