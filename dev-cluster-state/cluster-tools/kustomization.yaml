@@ -164,3 +164,14 @@ patchesJson6902:
         - --registry=txt
         - --publish-internal-services
         - --domain-filter=${TENANT_DOMAIN}.
+
+# Make the admin nodes available externally for test purposes. In general, they
+# will be behind a VPN gateway on all CDEs so only admins have access to them.
+- target:
+    version: v1
+    kind: Service
+    name: ingress-nginx
+    namespace: ingress-nginx-private
+  patch: |-
+    - op: remove
+      path: /metadata/annotations/service.beta.kubernetes.io~1aws-load-balancer-internal
