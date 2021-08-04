@@ -19,3 +19,9 @@ patchesJson6902:
     version: v1
     kind: Deployment
     name: nginx-ingress-controller
+
+- path: make-service-private.yaml
+  target:
+    version: v1
+    kind: Service
+    name: ingress-nginx
