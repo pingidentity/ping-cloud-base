@@ -255,20 +255,24 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     dir_deep_clean "${PWD}"
 
     if "${IS_PROFILE_REPO}" || "${INCLUDE_PROFILES_IN_CSR}"; then
+      # Copy the base files into the environment directory.
+      src_dir="${ENV_CODE_DIR}"
+      echo "Copying base files from ${src_dir} to ${PWD}"
+      cp "${src_dir}"/.gitignore ./
+      cp "${src_dir}"/update-profile-wrapper.sh ./
+
       # Copy the profiles.
       src_dir="${ENV_CODE_DIR}/${PROFILES_DIR}"
       echo "Copying ${src_dir} to ${PWD}"
       cp -pr "${src_dir}" ./
-
-      # FIXME: copy the file to update the SPR in the future.
-      cp "${ENV_CODE_DIR}"/.gitignore ./
     fi
 
     if ! "${IS_PROFILE_REPO}"; then
       # Copy the base files into the environment directory.
       src_dir="${ENV_CODE_DIR}"
       echo "Copying base files from ${src_dir} to ${PWD}"
-      find "${src_dir}" -type f -maxdepth 1 -exec cp {} ./ \;
+      cp "${src_dir}"/.gitignore ./
+      cp "${src_dir}"/update-cluster-state-wrapper.sh ./
 
       # Copy the k8s-configs.
       mkdir -p "${K8S_CONFIGS_DIR}"
