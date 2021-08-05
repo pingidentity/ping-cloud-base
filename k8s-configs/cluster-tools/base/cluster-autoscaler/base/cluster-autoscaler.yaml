@@ -42,9 +42,6 @@ rules:
       - "persistentvolumeclaims"
       - "persistentvolumes"
     verbs: ["watch", "list", "get"]
-  - apiGroups: ["extensions"]
-    resources: ["replicasets", "daemonsets"]
-    verbs: ["watch", "list", "get"]
   - apiGroups: ["policy"]
     resources: ["poddisruptionbudgets"]
     verbs: ["watch", "list"]
@@ -54,7 +51,7 @@ rules:
   - apiGroups: ["storage.k8s.io"]
     resources: ["storageclasses", "csinodes"]
     verbs: ["watch", "list", "get"]
-  - apiGroups: ["batch", "extensions"]
+  - apiGroups: ["batch"]
     resources: ["jobs"]
     verbs: ["get", "list", "watch", "patch"]
   - apiGroups: ["coordination.k8s.io"]
@@ -147,10 +144,10 @@ spec:
           resources:
             limits:
               cpu: 100m
-              memory: 300Mi
+              memory: 512Mi
             requests:
               cpu: 100m
-              memory: 300Mi
+              memory: 512Mi
           command:
             - ./cluster-autoscaler
             - --v=1

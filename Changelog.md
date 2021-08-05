@@ -8,29 +8,37 @@
 - Update a few supporting cluster tools to their latest versions
 - Beluga maintained container images with built in hook scripts
 - Server profiles are now seeded into a separate repository for partner access
+- Add Elasticsearch wait init container to kibana manifest
+- Updated cluster-autoscalar memory request/limit to 512 MB 
+- Fixed PD Grafana dashboard, 'Replication Backlog' metric 
 
 _Changes:_
 
 - [X] PDO-700 Deploy PingCentral in P1AS customer hub clusters
 - [X] PDO-1739 Migrate to Beluga container images
+- [X] PDO-2208 Change "apiVersion" for ingress resources in ping-cloud-base
 - [X] PDO-2386 Improve upgrade of PA-WAS by making idempotent
 - [X] PDO-2387 Remove the nginx annotation service-upstream from all ingresses
 - [X] PDO-2430 Update cluster tools to latest version: cluster-autoscaler (1.17.4)
 - [X] PDO-2434 Update cluster tools to latest version: sealed-secrets-controller (0.16.0)
 - [X] PDO-2435 Update cluster tools to latest version: external-dns (0.8.0)
+- [X] PDO-2445 Logstash date parsing errors
 - [X] PDO-2462 Update cluster tools to latest version: Kibana (7.13.2)
 - [X] PDO-2463 Update cluster tools to latest version: Elasticsearch (7.13.2)
 - [X] PDO-2465 Update cluster tools to latest version: metrics-server (v0.5.0)
 - [X] PDO-2468 Update PD healthchecks to use the availability servlet
-- [X] PDO-2536 Put admin NLB on the public network
 - [X] PDO-2623 Separate the server profiles into its own repository for partner enablement
+- [X] PDO-2624 Restore and backup PingCentral encryption key file from S3
 - [X] PDO-2638 Update cluster tools to latest version: Logstash (7.13.2)
 - [X] PDO-2676 Update the push-cluster-state.sh script to push seed code into the new SPR repo
 - [X] PDO-2687 Update update-cluster-state-wrapper.sh to seed initial customer-hub code into the CSR
 - [X] PDO-2708 Fix image tag kustomization in the CSR for P1AS app images
 - [X] PDO-2717 Adapt the Discovery service to retrieve the PingCentral database details from SSM
 - [X] PDO-2718 Allow MyPing image tags to be Kustomizable
-- [X] PDO-2714 Update PD image to 8.3.0.0-v1.0.3 and PF image to 10.2.4-v1.0.2
+- [X] PDO-2721 Logstash index template didn't create during deployment
+- [X] PDO-2739 Press more app-specific concerns into the images instead of exposing them in the SPR
+- [X] PDO-2741 Update cluster-autoscalar memory request/limit to 512 MB
+- [X] PDO-2740 No data on PD Grafana dashboard, 'Replication Backlog' metric
 
 ### 1.9.3
 

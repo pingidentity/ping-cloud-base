@@ -4,7 +4,8 @@
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 . ${SCRIPT_HOME}/../common.sh
 
-# Configure kube config, unless skipped
+# Configure aws and kubectl, unless skipped
+configure_aws
 configure_kube
 
 # Do not ever delete the environment on the master branch. And only delete an environment,
@@ -20,6 +21,9 @@ else
 
   pod_name="mysql-client-${CI_COMMIT_REF_SLUG}"
   kubectl delete pod "${pod_name}"
+
+  MYSQL_USER=$(get_ssm_val "${MYSQL_USER_SSM}")
+  MYSQL_PASSWORD=$(get_ssm_val "${MYSQL_PASSWORD_SSM}")
 
   kubectl run -i "${pod_name}" --restart=Never --rm --image=arey/mysql-client -- \
        -h "${MYSQL_SERVICE_HOST}" -P ${MYSQL_SERVICE_PORT} \
