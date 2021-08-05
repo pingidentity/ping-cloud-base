@@ -3,6 +3,7 @@
 ### 1.10.0
 
 - Deploy PingCentral in P1AS customer hub clusters
+- Change PingCentral application password
 - PA-WAS now verifies each individual Application exists on restarts and upgrades
 - PingDirectory health checks are now performed via HTTPS
 - Update a few supporting cluster tools to their latest versions
@@ -35,6 +36,7 @@ _Changes:_
 - [X] PDO-2686 Provide a wrapper script in the profile-repo to update profiles from one version to another
 - [X] PDO-2687 Update update-cluster-state-wrapper.sh to seed initial customer-hub code into the CSR
 - [X] PDO-2708 Fix image tag kustomization in the CSR for P1AS app images
+- [X] PDO-2713 Change PingCentral application password
 - [X] PDO-2717 Adapt the Discovery service to retrieve the PingCentral database details from SSM
 - [X] PDO-2718 Allow MyPing image tags to be Kustomizable
 - [X] PDO-2721 Logstash index template didn't create during deployment
