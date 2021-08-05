@@ -21,8 +21,7 @@ PC_ADMIN_USER_USERNAME=administrator
 
 PING_IDENTITY_ACCEPT_EULA=YES
 
-# Retry client request to pingaccess admin API up to 10 times. Engine pod uses admin
-# API to retrieve its proper configuration.
+# Retry client request to pingcentral API up to 10 times.
 API_RETRY_LIMIT=10
 
 # Seconds client request will wait for response from API.
