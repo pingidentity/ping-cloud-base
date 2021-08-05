@@ -71,8 +71,8 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingcentral:1.8.0-v1.0.3-pdo-2713-pc-password-change
-        imagePullPolicy: Always
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral:1.8.0-v1.0.4
+        imagePullPolicy: IfNotPresent
         resources:
           requests:
             memory: "2Gi"
