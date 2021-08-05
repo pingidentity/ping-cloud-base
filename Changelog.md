@@ -30,13 +30,14 @@ _Changes:_
 - [X] PDO-2623 Separate the server profiles into its own repository for partner enablement
 - [X] PDO-2624 Restore and backup PingCentral encryption key file from S3
 - [X] PDO-2638 Update cluster tools to latest version: Logstash (7.13.2)
-- [X] PDO-2676 Update the push-cluster-state.sh script to push seed code into the new SPR repo
+- [X] PDO-2676 Update the push-cluster-state.sh script to push seed code into the new profile-repo
+- [X] PDO-2686 Provide a wrapper script in the profile-repo to update profiles from one version to another
 - [X] PDO-2687 Update update-cluster-state-wrapper.sh to seed initial customer-hub code into the CSR
 - [X] PDO-2708 Fix image tag kustomization in the CSR for P1AS app images
 - [X] PDO-2717 Adapt the Discovery service to retrieve the PingCentral database details from SSM
 - [X] PDO-2718 Allow MyPing image tags to be Kustomizable
 - [X] PDO-2721 Logstash index template didn't create during deployment
-- [X] PDO-2739 Press more app-specific concerns into the images instead of exposing them in the SPR
+- [X] PDO-2739 Press more app-specific concerns into the images instead of exposing them in the profile-repo
 - [X] PDO-2741 Update cluster-autoscalar memory request/limit to 512 MB
 - [X] PDO-2740 No data on PD Grafana dashboard, 'Replication Backlog' metric
 
