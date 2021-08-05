@@ -11,6 +11,7 @@
 - Add Elasticsearch wait init container to kibana manifest
 - Updated cluster-autoscalar memory request/limit to 512 MB 
 - Fixed PD Grafana dashboard, 'Replication Backlog' metric 
+- Updated p14c-integration image to 1.0.26
 
 _Changes:_
 
@@ -37,6 +38,7 @@ _Changes:_
 - [X] PDO-2717 Adapt the Discovery service to retrieve the PingCentral database details from SSM
 - [X] PDO-2718 Allow MyPing image tags to be Kustomizable
 - [X] PDO-2721 Logstash index template didn't create during deployment
+- [X] PDO-2728 Update p14c-integration docker images in ping-cloud-base
 - [X] PDO-2739 Press more app-specific concerns into the images instead of exposing them in the profile-repo
 - [X] PDO-2741 Update cluster-autoscalar memory request/limit to 512 MB
 - [X] PDO-2740 No data on PD Grafana dashboard, 'Replication Backlog' metric
