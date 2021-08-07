@@ -143,7 +143,7 @@ MYSQL_PASSWORD_SSM=/pcpt/ping-central/rds/password
 PINGCLOUD_METADATA_API=https://metadata${FQDN}
 
 # PingCentral service
-PINGCENTRAL_CONSOLE=https://pingcentral.${FQDN}
+PINGCENTRAL_CONSOLE=https://pingcentral${FQDN}
 
 # Source some utility methods.
 . ${PROJECT_DIR}/utils.sh
