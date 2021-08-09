@@ -72,7 +72,7 @@ spec:
           runAsNonRoot: false
           runAsUser: 0
         image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingcentral:1.8.0-v1.0.5-pdo-2713-detect-first-deploy
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         resources:
           requests:
             memory: "2Gi"
