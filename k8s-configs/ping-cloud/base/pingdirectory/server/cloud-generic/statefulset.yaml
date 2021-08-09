@@ -22,6 +22,8 @@ spec:
       labels:
         class: pingdirectory-server
     spec:
+      securityContext:
+        fsGroup: 9999
       serviceAccount: ping-serviceaccount
       affinity:
         podAntiAffinity:
@@ -117,7 +119,6 @@ spec:
           # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
           securityContext:
             runAsNonRoot: true
-            fsGroup: 9999
           image: public.ecr.aws/r2h3l6e4/pingidentity/pingdirectory:2104-8.2.0.4
           imagePullPolicy: IfNotPresent
           ports:
