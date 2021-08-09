@@ -42,6 +42,7 @@ _Changes:_
 - [X] PDO-2739 Press more app-specific concerns into the images instead of exposing them in the profile-repo
 - [X] PDO-2741 Update cluster-autoscalar memory request/limit to 512 MB
 - [X] PDO-2740 No data on PD Grafana dashboard, 'Replication Backlog' metric
+- [X] PDO-2807 Add a public NLB in the customer-hub VPC for the metadata service 
 
 ### 1.9.3
 
