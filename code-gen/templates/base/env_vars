@@ -70,6 +70,8 @@ REGISTRY_NAME=${REGISTRY_NAME}
 TENANT_NAME=${TENANT_NAME}
 NEW_RELIC_LABELS="region:${REGION};customer_name:${TENANT_NAME};environment:${ENV}"
 
+ENVIRONMENT_PREFIX=${TENANT_NAME}-${CLUSTER_STATE_REPO_BRANCH}-${REGION_NICK_NAME}
+
 ############################################################
 # Cluster state repo details
 ############################################################
@@ -137,7 +139,7 @@ PA_GCOPTION=${PA_GCOPTION}
 # Ping application image tags
 ############################################################
 PINGACCESS_IMAGE_TAG=2010-6.1.3
-PINGFEDERATE_IMAGE_TAG=2101-10.2.1
+PINGFEDERATE_IMAGE_TAG=2106-10.2.4
 PINGDIRECTORY_IMAGE_TAG=2104-8.2.0.4
 PINGDELEGATOR_IMAGE_TAG=2103-4.4.1
 

@@ -3,7 +3,6 @@
 # Source support libs referenced by the tested script
 # Suppress env vars noise in the test output
 . "${HOOKS_DIR}"/utils.lib.sh > /dev/null
-. "${HOOKS_DIR}"/util/upload-csd-s3-utils.sh > /dev/null
 
 kubectl() {
   echo ""
@@ -14,15 +13,11 @@ cd() {
 }
 
 find() {
-  echo "support-data-ds-8.1.0.1-pingdirectory-0-20200903203030Z-zip"
+  echo ""
 }
 
 collect-data() {
   echo ""
-}
-
-stat() {
-  echo 0
 }
 
 oneTimeSetUp() {
@@ -33,8 +28,9 @@ oneTimeTearDown() {
   unset VERBOSE
 }
 
-testUploadPingDirectoryCsdSupportDataEmpty() {
+testUploadPingDirectoryCsdSupportDataNameBlank() {
 
+  export SERVER_ROOT_DIR=$(pwd)
   script_to_test="${HOOKS_DIR}"/82-upload-csd-s3.sh
   result=$(. "${script_to_test}")
 
@@ -43,9 +39,7 @@ testUploadPingDirectoryCsdSupportDataEmpty() {
   last_line=$(echo "${result}" | tail -1)
   expected_log_msg="WARN"
   assertContains "Expected '$expected_log_msg' to be in the last line in the output but it wasn't: ${last_line}" "${last_line}" "${expected_log_msg}"
-
-  expected_log_msg="0 bytes"
-  assertContains "Expected '$expected_log_msg' to be in the last line in the output but it wasn't: ${last_line}" "${last_line}" "${expected_log_msg}"
+  export SERVER_ROOT_DIR=
 }
 
 # When arguments are passed to a script you must

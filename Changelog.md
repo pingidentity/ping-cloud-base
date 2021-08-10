@@ -1,5 +1,55 @@
 # Changelog
 
+### 1.9.3
+
+- Fix a PingDirectory crash caused by the offline-enable hook script after a restart
+- Remove PingFederate-P14C-Init container from secondary region
+- Updated p14c-integration image to 1.0.24
+- Update prometheus-json-exporter image to 1.0.3
+- Upgraded PingFederate to version 10.2.4
+- Capture additional logs from rebuild-index within PD
+- Fixed hook script issue with updated collect-support-data tool
+
+_Changes:_
+
+- [X] PDO-2631 Upgrade PF to version 10.2.4
+- [X] PDO-2637 PingDirectroy crashloops on restart in the offline-enable hook script
+- [x] PDO-2661 Remove pingfederate-p14c-init container in secondary
+- [X] PDO-2668 Update p14c-integration docker images in ping-cloud-base to v1.0.23
+- [X] PDO-2688 Use latest prometheus-json-exporter image
+- [X] PDO-2689 Capture additional logs from rebuild-index within PD
+- [X] PDO-2690 Updating the PD and PF 82-upload-csd-s3.sh hook scripts to work with the updated collect-support-data tool
+- [X] PDO-2723 Update p14c-integration docker images in ping-cloud-base to v1.0.24
+
+### 1.9.2
+
+- P14c-oauth and p14c-bom controllers now restart when pingone api is inaccessible
+- Preserve PingDirectory descriptor.json across CSR updates
+- Added entitled-app: "true" label to PingFederate Admin and PingAccess Admin
+- Updated p14c-integration image to 1.0.22
+- Updated p14c-bootstrap image to 1.0.9
+- Fixed external access to the PingFederate admin API
+- Removing pf-referenceid-adapter-2.0.1.jar if it is found on the filesystem
+- DA now creates its own Identity Mapper within PD
+- Fixed issue with DA IDP Adapter Grant Mapping to handle Persistent Grant Extended Attributes
+- Updated PF heap settings to match 1.7.2 values
+
+_Changes:_
+
+- [X] PDO-2203 Add liveness probe to p14c-oauth and p14c-bom controllers
+- [X] PDO-2285 Narrow Kube watch pods for Bom Controller
+- [X] PDO-2431 Update to use ingress-nginx/controller:v0.46.0 
+- [X] PDO-2539 Preserve PingDirectory descriptor.json across CSR updates
+- [X] PDO-2578 Updated p14c-integration image to 1.0.20 and p14c-bootstrap image to 1.0.9
+- [X] PDO-2579 Update to use skbn v1.0.1
+- [X] PDO-2607 Fix external access to the PingFederate admin API
+- [X] PDO-2609 Removing pf-referenceid-adapter-2.0.1.jar if it is found on the filesystem
+- [X] PDO-2633 DA now creates its own Identity Mapper within PD
+- [X] PDO-2639 Update p14c-integration docker images in ping-cloud-base to v1.0.21
+- [X] PDO-2641 Fixed issue with DA IDP Adapter Grant Mapping to handle Persistent Grant Extended Attributes
+- [X] PDO-2645 Fix PF product Heap Variable Settings to return to 1.7 values
+- [X] PDO-2665 My Ping Trial deployment failure RCA - Workforce solution - p14c-e2e-reliability267-271
+
 ### 1.9.1
 
 - Remove duplicate PingDelegator logs from CloudWatch

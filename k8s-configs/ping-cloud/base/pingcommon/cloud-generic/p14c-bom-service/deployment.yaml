@@ -16,7 +16,7 @@ spec:
       serviceAccount: p14c-bom-serviceaccount
       containers:
       - name: pingcloud-bom
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.12
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.24
         imagePullPolicy: IfNotPresent
         resources:
           requests:
@@ -34,6 +34,12 @@ spec:
             fieldRef:
               fieldPath: metadata.namespace
         # The -u flag is necessary for python to emit logging to standard out
-        command: [ 'python3', '-u', '/app/src/bom_service_controller.py' ]
-
+        command: [ 'python3', '-u', '/app/bom_service_controller.py' ]
+        livenessProbe:
+          exec:
+            command: [ 'python3', '-u', '/app/liveness.py'  ]
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          failureThreshold: 3
+          timeoutSeconds: 3
 
