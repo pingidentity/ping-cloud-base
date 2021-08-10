@@ -1,7 +1,7 @@
 # This defines the Ping Central deployment
 
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: pingcentral
 spec:
@@ -9,10 +9,6 @@ spec:
   selector:
     matchLabels:
       app: pingcentral
-  serviceName: pingcentral
-  updateStrategy:
-    type: RollingUpdate
-  podManagementPolicy: OrderedReady
   template:
     metadata:
       name: pingcentral
@@ -136,8 +132,6 @@ spec:
           - name: pingcentral-license
             mountPath: /opt/in/instance/conf/pingcentral.lic
             subPath: pingcentral.lic
-          - name: out-dir
-            mountPath: /opt/out
       volumes:
         - name: ssh-dir
           emptyDir: {}
@@ -172,16 +166,3 @@ spec:
             secretName: pingcentral-passwords
             optional: true
             defaultMode: 0400
-        - name: out-dir
-          persistentVolumeClaim:
-            claimName: out-dir
-  volumeClaimTemplates:
-  - metadata:
-      name: out-dir
-    spec:
-      accessModes:
-      - ReadWriteOnce
-      storageClassName: pingcentral-gp2
-      resources:
-        requests:
-          storage: "10G"
