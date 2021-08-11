@@ -1,5 +1,7 @@
 # TODO: delete P14C pods
 
+patchesStrategicMerge:
+  - argocd-tools
 
 # other than the line above, this file should only change image names/versions
 images:
