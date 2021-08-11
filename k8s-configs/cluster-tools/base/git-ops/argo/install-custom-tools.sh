@@ -4,8 +4,14 @@
 pip install --upgrade pip
 pip3 install git-remote-codecommit --no-warn-script-location
 
-cp /usr/local/bin/git-remote-codecommit /tools
-cp /usr/local/lib/python3.9/site-packages/git_remote_codecommit/__init__.py /tools
+if [ -f "/usr/local/bin/git-remote-codecommit" ]; then
+    cp /usr/local/bin/git-remote-codecommit /tools
+    cp /usr/local/lib/python3.9/site-packages/git_remote_codecommit/__init__.py /tools
+else
+    dir=`python -m site --user-site`
+    cp ~/.local/bin/git-remote-codecommit /tools
+    cp "$dir/git_remote_codecommit/__init__.py" /tools
+fi
 
 # On the ArgoCD container, python3 is available under /usr/bin/python3
 sed -i 's|/usr/local/bin/python|/usr/bin/python3|' /tools/git-remote-codecommit
