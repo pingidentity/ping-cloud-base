@@ -2,6 +2,7 @@
 
 patchesStrategicMerge:
   - argocd-tools
+  - argocd-https
 
 # other than the line above, this file should only change image names/versions
 images:
@@ -27,8 +28,8 @@ images:
   newName: 251360940232.dkr.ecr.us-east-1.amazonaws.com/ironbank/opensource/dexidp/dex
   newTag: v2.28.1
 - name: pingcloud-virtual.jfrog.io/argoproj/argocd:v1.8.1
-  newName: 251360940232.dkr.ecr.us-east-1.amazonaws.com/ironbank/opensource/argoproj/argocd
-  newTag: v1.8.2
+  newName: 251360940232.dkr.ecr.us-east-1.amazonaws.com/pingidentity/argocd-tools
+  newTag: 0.0.1
 # - name: pingcloud-mirror.jfrog.io/prom/statsd-exporter:v0.14.1
 #   newName:
 #   newTag:
