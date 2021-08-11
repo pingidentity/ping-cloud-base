@@ -8,5 +8,4 @@ spec:
     spec:
       initContainers:
       - name: install-custom-tools
-        command: ["/bin/sh", "-c", "cp /tools/* /tmp/tools"]
-        image: public.ecr.aws/r2h3l6e4/pingidentity/argocd-tools:0.0.1
+        $patch: delete
