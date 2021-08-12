@@ -119,7 +119,7 @@ spec:
           mountPath: /opt/shared-dir
       containers:
       - name: pingaccess-was
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was:6.1.3-v1.0.1
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was:6.1.3-v1.0.3
         # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
         securityContext:
           runAsNonRoot: false

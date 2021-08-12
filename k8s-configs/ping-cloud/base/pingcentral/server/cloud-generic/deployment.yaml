@@ -1,7 +1,7 @@
 # This defines the Ping Central deployment
 
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: pingcentral
 spec:
@@ -9,10 +9,6 @@ spec:
   selector:
     matchLabels:
       app: pingcentral
-  serviceName: pingcentral
-  updateStrategy:
-    type: RollingUpdate
-  podManagementPolicy: OrderedReady
   template:
     metadata:
       name: pingcentral
@@ -71,7 +67,7 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral:1.8.0-v1.0.4
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral:1.8.0-v1.0.6
         imagePullPolicy: IfNotPresent
         resources:
           requests:
@@ -170,13 +166,3 @@ spec:
             secretName: pingcentral-passwords
             optional: true
             defaultMode: 0400
-  volumeClaimTemplates:
-  - metadata:
-      name: out-dir
-    spec:
-      accessModes:
-      - ReadWriteOnce
-      storageClassName: pingcentral-gp2
-      resources:
-        requests:
-          storage: "10G"
