@@ -23,9 +23,6 @@ PRIMARY_TENANT_DOMAIN=${PRIMARY_TENANT_DOMAIN}
 #
 # NOTES:
 #   - Only used in multi-cluster environments. If provided, PF will be configured with DNS_PING.
-#   - In multi-cluster mode, one or both of CLUSTER_BUCKET_NAME (in regional env_vars)
-#     and SECONDARY_TENANT_DOMAINS must be set. If both are set, then NATIVE_S3_PING will
-#     take precedence over DNS_PING.
 #   - It is recommended that SECONDARY_TENANT_DOMAINS be set apriori, even before the
 #     secondary regions are created to avoid pod rollouts. DNS_PING will simply ignore
 #     unreachable domains. If it is not set beforehand, then all servers in the PF
@@ -147,7 +144,7 @@ MYSQL_DATABASE=${MYSQL_DATABASE}
 ############################################################
 PINGACCESS_IMAGE_TAG=6.1.3-v1.0.1
 PINGACCESS_WAS_IMAGE_TAG=6.1.3-v1.0.1
-PINGFEDERATE_IMAGE_TAG=10.2.4-v1.0.3
+PINGFEDERATE_IMAGE_TAG=10.2.4-v1.0.6
 PINGDIRECTORY_IMAGE_TAG=8.3.0.0-v1.0.6
 PINGDELEGATOR_IMAGE_TAG=4.4.1-v1.0.4
 PINGCENTRAL_IMAGE_TAG=1.8.0-v1.0.4

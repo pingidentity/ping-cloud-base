@@ -90,7 +90,7 @@ spec:
           runAsNonRoot: false
           runAsUser: 0
         image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v1.0.1
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
             name: pingaccess-environment-variables
@@ -99,7 +99,7 @@ spec:
             optional: false
         - secretRef:
             name: devops-secret
-            optional: false
+            optional: true
         env:
         - name: LICENSE_SERVER_URL
           value: "https://license.pingidentity.com/devops/license"

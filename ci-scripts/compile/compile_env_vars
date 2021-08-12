@@ -9,7 +9,6 @@ K8S_GIT_URL=https://github.com/pingidentity/ping-cloud-base
 CLUSTER_NAME=ci-cd
 
 IS_MULTI_CLUSTER=false
-CLUSTER_BUCKET_NAME=${CLUSTER_NAME}-cluster-bucket
 
 REGION=us-west-2
 REGION_NICK_NAME=primary

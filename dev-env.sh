@@ -143,12 +143,6 @@
 #                           | URL. For AWS S3 buckets, it must be an S3 URL,     |
 #                           | e.g. s3://backups.                                 |
 #                           |                                                    |
-# CLUSTER_BUCKET_NAME       | The optional name of the S3 bucket where cluster   | The string "unused".
-#                           | information is maintained for PF. Only used if     |
-#                           | IS_MULTI_CLUSTER is true. If provided, PF will be  |
-#                           | configured with NATIVE_S3_PING discovery and will  |
-#                           | precede over DNS_PING, which is always configured. |
-#                           |                                                    |
 # EVENT_QUEUE_NAME          | The name of the queue that may be used to notify   | ${USER}_platform_event_queue.fifo
 #                           | PingCloud applications of platform events. This    |
 #                           | is currently only used if the orchestrator for     |
@@ -226,8 +220,8 @@ fi
 
 test -z "${IS_MULTI_CLUSTER}" && IS_MULTI_CLUSTER=false
 if "${IS_MULTI_CLUSTER}"; then
-  if test ! "${CLUSTER_BUCKET_NAME}" && test ! "${SECONDARY_TENANT_DOMAINS}"; then
-    echo 'In multi-cluster mode, one or both of CLUSTER_BUCKET_NAME and SECONDARY_TENANT_DOMAINS must be set.'
+  if test ! "${SECONDARY_TENANT_DOMAINS}"; then
+    echo 'In multi-cluster mode SECONDARY_TENANT_DOMAINS must be set.'
     popd > /dev/null 2>&1
     exit 1
   fi
@@ -239,7 +233,6 @@ log "Initial ENVIRONMENT: ${ENVIRONMENT}"
 
 log "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 log "Initial TOPOLOGY_DESCRIPTOR_FILE: ${TOPOLOGY_DESCRIPTOR_FILE}"
-log "Initial CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
 log "Initial EVENT_QUEUE_NAME: ${EVENT_QUEUE_NAME}"
 log "Initial ORCH_API_SSM_PATH_PREFIX: ${ORCH_API_SSM_PATH_PREFIX}"
 log "Initial REGION: ${REGION}"
@@ -275,7 +268,6 @@ export ENVIRONMENT=-"${ENVIRONMENT:-${USER}}"
 export BELUGA_ENV_NAME="${ENVIRONMENT#-}"
 
 export IS_MULTI_CLUSTER="${IS_MULTI_CLUSTER}"
-export CLUSTER_BUCKET_NAME="${CLUSTER_BUCKET_NAME}"
 
 export EVENT_QUEUE_NAME="${EVENT_QUEUE_NAME:-${USER}_platform_event_queue.fifo}"
 export ORCH_API_SSM_PATH_PREFIX="${ORCH_API_SSM_PATH_PREFIX:-/${USER}/pcpt/orch-api}"
@@ -314,7 +306,6 @@ log "Using ENVIRONMENT: ${BELUGA_ENV_NAME}"
 
 log "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 log "Using TOPOLOGY_DESCRIPTOR_FILE: ${TOPOLOGY_DESCRIPTOR_FILE}"
-log "Using CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
 log "Using EVENT_QUEUE_NAME: ${EVENT_QUEUE_NAME}"
 log "Using ORCH_API_SSM_PATH_PREFIX: ${ORCH_API_SSM_PATH_PREFIX}"
 log "Using REGION: ${REGION}"
@@ -402,7 +393,6 @@ if test "${dryrun}" = 'false'; then
 export CLUSTER_NAME=${TENANT_NAME}
 
 export IS_MULTI_CLUSTER=${IS_MULTI_CLUSTER}
-export CLUSTER_BUCKET_NAME=${CLUSTER_BUCKET_NAME}
 
 export EVENT_QUEUE_NAME=${EVENT_QUEUE_NAME}
 export ORCH_API_SSM_PATH_PREFIX=${ORCH_API_SSM_PATH_PREFIX}

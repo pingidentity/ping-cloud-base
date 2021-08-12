@@ -12,6 +12,7 @@
 - Updated cluster-autoscalar memory request/limit to 512 MB 
 - Fixed PD Grafana dashboard, 'Replication Backlog' metric 
 - Updated p14c-integration image to 1.0.26
+- Remove NATIVE_S3_PING as a supported JGroups discovery protocol for PF clustering
 
 _Changes:_
 
@@ -42,6 +43,7 @@ _Changes:_
 - [X] PDO-2739 Press more app-specific concerns into the images instead of exposing them in the profile-repo
 - [X] PDO-2741 Update cluster-autoscalar memory request/limit to 512 MB
 - [X] PDO-2740 No data on PD Grafana dashboard, 'Replication Backlog' metric
+- [X] PDO-2754 Remove NATIVE_S3_PING as a supported JGroups discovery protocol for PF clustering
 - [X] PDO-2806 Ensure that profile changes are being applied on a restart
 - [X] PDO-2807 Add a public NLB in the customer-hub VPC for the metadata service 
 

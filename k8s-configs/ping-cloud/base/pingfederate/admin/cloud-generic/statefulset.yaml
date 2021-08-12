@@ -75,15 +75,20 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v1.0.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v1.0.1
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
         - secretRef:
             name: newrelic-license-key
+            optional: false
+        - secretRef:
+            name: devops-secret
             optional: true
         env:
+        - name: LICENSE_SERVER_URL
+          value: "https://license.pingidentity.com/devops/license"
         - name: NEW_RELIC_APP_NAME
           value: "pingfederate-admin"
         - name: METADATA_EP_URL
@@ -120,7 +125,7 @@ spec:
             name: pingcommon-environment-variables
       containers:
       - name: pingfederate-admin
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:10.2.4-v1.0.3
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:10.2.4-v1.0.6
         # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
         securityContext:
           runAsNonRoot: false
@@ -148,6 +153,10 @@ spec:
             secretKeyRef:
               name: pingcommon-passwords
               key: DA_OAUTH_TOKEN_VALIDATOR_SECRET
+        - name: NEW_RELIC_APP_NAME
+          value: "pingfederate-admin"
+        - name: NEW_RELIC_CONFIG_FILE
+          value: "/opt/shared-dir/newrelic.yml"
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
@@ -158,7 +167,7 @@ spec:
             optional: true
         - secretRef:
             name: newrelic-license-key
-            optional: true
+            optional: false
         resources:
           requests:
             memory: "2Gi"
