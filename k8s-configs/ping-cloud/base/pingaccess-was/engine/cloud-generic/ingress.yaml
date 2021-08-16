@@ -30,6 +30,7 @@ spec:
         - prometheus-dev.ping-demo.com
         - logs-dev.ping-demo.com
         - argocd-dev.ping-demo.com
+        - pingcentral-admin-dev.ping-demo.com
 
   rules:
     - host: pingaccess-admin-dev.ping-demo.com
@@ -76,6 +77,14 @@ spec:
       http:
         paths:
           # This rule allows external access to Argo CD via the pingaccess-was runtime service
+          - path: /
+            backend:
+              serviceName: pingaccess-was
+              servicePort: 443
+    - host: pingcentral-admin-dev.ping-demo.com
+      http:
+        paths:
+          # This rule allows external access to PingCentral via the pingaccess-was runtime service
           - path: /
             backend:
               serviceName: pingaccess-was
