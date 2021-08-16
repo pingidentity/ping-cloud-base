@@ -283,6 +283,14 @@ patchesJson6902:
       path: /spec/rules/5/host
       value: argocd${ENVIRONMENT}.${TENANT_DOMAIN}
 
+    # PingCentral console through PA-WAS engines
+    - op: replace
+      path: /spec/tls/0/hosts/6
+      value: pingcentral-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/6/host
+      value: pingcentral-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+
 # Ping Delegated Admin
 - target:
     group: networking.k8s.io
