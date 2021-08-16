@@ -24,6 +24,7 @@ patchesStrategicMerge:
     GRAFANA_PUBLIC_HOSTNAME: monitoring.${TENANT_DOMAIN}
     KIBANA_PUBLIC_HOSTNAME: logs.${TENANT_DOMAIN}
     ARGOCD_PUBLIC_HOSTNAME: argocd.${TENANT_DOMAIN}
+    PC_ADMIN_PUBLIC_HOSTNAME: pingcentral-admin.${TENANT_DOMAIN}
     BACKUP_URL: ${BACKUP_URL}
     REGION: ${REGION}
 - |-
@@ -276,6 +277,14 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/5/host
       value: argocd.${TENANT_DOMAIN}
+
+    ### PingCentral ###
+    - op: replace
+      path: /spec/tls/0/hosts/6
+      value: pingcentral-admin.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/6/host
+      value: pingcentral-admin.${TENANT_DOMAIN}
 
 - target:
     group: networking.k8s.io

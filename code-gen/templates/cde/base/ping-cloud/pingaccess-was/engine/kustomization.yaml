@@ -81,4 +81,10 @@ patchesJson6902:
       path: /spec/rules/5/host
       value: argocd.${DNS_ZONE}
 
-
+    # PingCentral console through PA-WAS engines
+    - op: replace
+      path: /spec/tls/0/hosts/6
+      value: pingcentral-admin.${DNS_ZONE}
+    - op: replace
+      path: /spec/rules/6/host
+      value: pingcentral-admin.${DNS_ZONE}
