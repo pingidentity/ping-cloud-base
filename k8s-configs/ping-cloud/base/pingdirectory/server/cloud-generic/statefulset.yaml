@@ -185,7 +185,7 @@ spec:
             - name: ssh-dir
               mountPath: /root/.ssh
             - name: topology-descriptor
-              mountPath: /opt/staging/topology/descriptor.json
+              mountPath: /tmp/topology/descriptor.json
               subPath: descriptor.json
             - name: data-dir
               mountPath: /opt/staging/topology.json
