@@ -67,7 +67,7 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral:1.8.0-v1.0.6
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingcentral:1.8.0-v1.0.9-pdo-2764-pf-upgrade-10-3-1
         imagePullPolicy: IfNotPresent
         resources:
           requests:
