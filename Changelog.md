@@ -12,6 +12,9 @@
 - Updated cluster-autoscalar memory request/limit to 512 MB 
 - Fixed PD Grafana dashboard, 'Replication Backlog' metric 
 - Updated p14c-integration image to 1.0.26
+- Upgraded PingDirectory to version 8.3.0.0
+- Modify all P1AS apps to use user_id:group_id => 9031:9999
+- Remove NATIVE_S3_PING as a supported JGroups discovery protocol for PF clustering
 
 _Changes:_
 
@@ -35,6 +38,7 @@ _Changes:_
 - [X] PDO-2686 Provide a wrapper script in the profile-repo to update profiles from one version to another
 - [X] PDO-2687 Update update-cluster-state-wrapper.sh to seed initial customer-hub code into the CSR
 - [X] PDO-2708 Fix image tag kustomization in the CSR for P1AS app images
+- [X] PDO-2713 Change PingCentral application password
 - [X] PDO-2717 Adapt the Discovery service to retrieve the PingCentral database details from SSM
 - [X] PDO-2718 Allow MyPing image tags to be Kustomizable
 - [X] PDO-2721 Logstash index template didn't create during deployment
@@ -42,6 +46,11 @@ _Changes:_
 - [X] PDO-2739 Press more app-specific concerns into the images instead of exposing them in the profile-repo
 - [X] PDO-2741 Update cluster-autoscalar memory request/limit to 512 MB
 - [X] PDO-2740 No data on PD Grafana dashboard, 'Replication Backlog' metric
+- [X] PDO-2754 Remove NATIVE_S3_PING as a supported JGroups discovery protocol for PF clustering
+- [X] PDO-2788 Upgraded PingDirectory to version 8.3.0.0
+- [X] PDO-2806 Ensure that profile changes are being applied on a restart
+- [X] PDO-2807 Add a public NLB in the customer-hub VPC for the metadata service
+- [X] PDO-2814 Modify all P1AS apps to use user_id:group_id => 9031:9999
 
 ### 1.9.3
 

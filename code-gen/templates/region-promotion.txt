@@ -39,8 +39,6 @@ Promote a region from secondary to primary
   - Set PRIMARY_REGION to the same value as that region's REGION variable.
   - Set PRIMARY_TENANT_DOMAIN to the same value as that region's TENANT_DOMAIN variable.
   - For PF DNS_PING, set SECONDARY_TENANT_DOMAINS to include the tenant domains of only the secondary regions.
-  - If using PF NATIVE_S3_PING, then open an SRE ticket to point the SSM variable CLUSTER_BUCKET_NAME to the
-    PingFederate cluster S3 bucket in the new primary region.
 
 - Edit the region's ping-cloud/kustomization.yaml file (e.g. k8s-configs/us-west-2/ping-cloud/kustomization.yaml).
   Comment out the `remove-from-secondary-patch.yaml` patch in the `patchesStrategicMerge` section.
@@ -63,7 +61,6 @@ Change the other secondary clusters to point to the new primary
   - Set PRIMARY_REGION to the new primary region, i.e. that of the newly promoted primary.
   - Set PRIMARY_TENANT_DOMAIN to the new primary's tenant domain.
   - For PF DNS_PING, set SECONDARY_TENANT_DOMAINS to include the tenant domains of only the secondary regions.
-  - If using PF NATIVE_S3_PING, open an SRE ticket to point the SSM variable CLUSTER_BUCKET_NAME to the PingFederate
     cluster S3 bucket in the new primary region.
 
 - Edit each app's env_vars file (e.g. PD's env_vars would be at
@@ -86,7 +83,6 @@ Demote an old primary to secondary
   - Set PRIMARY_REGION to the new primary region, i.e. that of the newly promoted primary.
   - Set PRIMARY_TENANT_DOMAIN to the new primary's tenant domain.
   - For PF DNS_PING, set SECONDARY_TENANT_DOMAINS to include the tenant domains of only the secondary regions.
-  - If using PF NATIVE_S3_PING, open an SRE ticket to point the SSM variable CLUSTER_BUCKET_NAME to the PingFederate
     cluster S3 bucket in the new primary region.
 
 - Edit the region's ping-cloud/kustomization.yaml file (e.g. k8s-configs/us-east-1/ping-cloud/kustomization.yaml).

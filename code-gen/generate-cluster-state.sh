@@ -117,12 +117,6 @@
 # PRIMARY_REGION           | In multi-cluster environments, the primary region. | Same as REGION.
 #                          | Only used if IS_MULTI_CLUSTER is true.             |
 #                          |                                                    |
-# CLUSTER_BUCKET_NAME      | The optional name of the S3 bucket where cluster   | No default.
-#                          | information is maintained for PF. Only used if     |
-#                          | IS_MULTI_CLUSTER is true. If provided, PF will be  |
-#                          | configured with NATIVE_S3_PING discovery and will  |
-#                          | precede over DNS_PING, which is always configured. |
-#                          |                                                    |
 # SIZE                     | Size of the environment, which pertains to the     | x-small
 #                          | number of user identities. Legal values are        |
 #                          | x-small, small, medium or large.                   |
@@ -263,7 +257,6 @@ ${NEW_RELIC_LICENSE_KEY_BASE64}
 ${TENANT_NAME}
 ${SSH_ID_KEY_BASE64}
 ${IS_MULTI_CLUSTER}
-${CLUSTER_BUCKET_NAME}
 ${EVENT_QUEUE_NAME}
 ${ORCH_API_SSM_PATH_PREFIX}
 ${REGION}
@@ -453,8 +446,8 @@ if test -z "${IS_MULTI_CLUSTER}"; then
 fi
 
 if "${IS_MULTI_CLUSTER}"; then
-  if test ! "${CLUSTER_BUCKET_NAME}" && test ! "${SECONDARY_TENANT_DOMAINS}"; then
-    echo 'In multi-cluster mode, one or both of CLUSTER_BUCKET_NAME and SECONDARY_TENANT_DOMAINS must be set.'
+  if test ! "${SECONDARY_TENANT_DOMAINS}"; then
+    echo 'In multi-cluster mode SECONDARY_TENANT_DOMAINS must be set.'
     popd >/dev/null 2>&1
     exit 1
   fi
@@ -465,7 +458,6 @@ echo "Initial TENANT_NAME: ${TENANT_NAME}"
 echo "Initial SIZE: ${SIZE}"
 
 echo "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
-echo "Initial CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
 echo "Initial EVENT_QUEUE_NAME: ${EVENT_QUEUE_NAME}"
 echo "Initial ORCH_API_SSM_PATH_PREFIX: ${ORCH_API_SSM_PATH_PREFIX}"
 echo "Initial REGION: ${REGION}"
@@ -511,7 +503,6 @@ export REGION_NICK_NAME="${REGION_NICK_NAME:-${REGION}}"
 TENANT_DOMAIN_NO_DOT_SUFFIX="${TENANT_DOMAIN%.}"
 export TENANT_DOMAIN="${TENANT_DOMAIN_NO_DOT_SUFFIX}"
 
-export CLUSTER_BUCKET_NAME="${CLUSTER_BUCKET_NAME}"
 export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
 
 export EVENT_QUEUE_NAME=${EVENT_QUEUE_NAME:-platform_event_queue.fifo}
@@ -573,7 +564,6 @@ echo "Using TENANT_NAME: ${TENANT_NAME}"
 echo "Using SIZE: ${SIZE}"
 
 echo "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
-echo "Using CLUSTER_BUCKET_NAME: ${CLUSTER_BUCKET_NAME}"
 echo "Using EVENT_QUEUE_NAME: ${EVENT_QUEUE_NAME}"
 echo "Using ORCH_API_SSM_PATH_PREFIX: ${ORCH_API_SSM_PATH_PREFIX}"
 echo "Using REGION: ${REGION}"
