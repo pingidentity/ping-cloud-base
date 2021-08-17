@@ -323,6 +323,20 @@ data:
 
     <source>
       @type tail
+      @id in_tail_pingcentral_container_logs
+      @label @pccontainers
+      path /var/log/containers/pingcentral*.log
+      pos_file /var/log/pingcentral-containers.log.pos
+      tag kubernetes.*
+      read_from_head true
+      <parse>
+        @type json
+        time_format %Y-%m-%dT%H:%M:%S.%NZ
+      </parse>
+    </source>
+
+    <source>
+      @type tail
       @id in_tail_cwagent_logs
       @label @cwagentlogs
       path /var/log/containers/cloudwatch-agent*
@@ -769,6 +783,73 @@ data:
           key log
           pattern /^\/opt\/out\/instance\/log\/error/
           tag temp.pingdelegator_nginx_error_logs
+        </rule>
+        <rule>
+          key log
+          pattern /^(.+)$/
+          tag temp.unmatched_logs
+        </rule>
+      </match>
+
+      <match clear>
+        @type null
+      </match>
+
+      <match temp.unmatched_logs>
+        @type relabel
+        @label @normal
+      </match>
+
+      <match temp.**>
+        @type rewrite_tag_filter
+        remove_tag_prefix temp
+        <rule>
+          key stream_name
+          pattern /^(.+)$/
+          tag ${tag}.$1
+        </rule>
+      </match>
+
+      <match **>
+        @type relabel
+        @label @tagstream
+      </match>
+    </label>
+
+    <label @pccontainers>
+      <filter **>
+        @type kubernetes_metadata
+      </filter>
+
+      <filter **>
+        @type record_transformer
+        enable_ruby true
+        <record>
+          stream_name ${record["kubernetes"]["pod_name"]}_${record["kubernetes"]["namespace_name"]}_${record["kubernetes"]["container_name"]}
+        </record>
+      </filter>
+
+      <match kubernetes.**>
+        @type rewrite_tag_filter
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/log\/application-api/
+          tag temp.pingcentral_application_api
+        </rule>
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/log\/application-ext/
+          tag temp.pingcentral_application_ext
+        </rule>
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/log\/application/
+          tag temp.pingcentral_application
+        </rule>
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/log\/monitor/
+          tag temp.pingcentral_monitor
         </rule>
         <rule>
           key log
