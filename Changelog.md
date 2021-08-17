@@ -15,6 +15,7 @@
 - Upgraded PingDirectory to version 8.3.0.0
 - Modify all P1AS apps to use user_id:group_id => 9031:9999
 - Remove NATIVE_S3_PING as a supported JGroups discovery protocol for PF clustering
+- Enabling access to the PingCentral Admin UI via PingAccess WAS
 
 _Changes:_
 
@@ -47,10 +48,13 @@ _Changes:_
 - [X] PDO-2741 Update cluster-autoscalar memory request/limit to 512 MB
 - [X] PDO-2740 No data on PD Grafana dashboard, 'Replication Backlog' metric
 - [X] PDO-2754 Remove NATIVE_S3_PING as a supported JGroups discovery protocol for PF clustering
+- [X] PDO-2779 Implement CloudWatch for PingCentral Log Files
 - [X] PDO-2788 Upgraded PingDirectory to version 8.3.0.0
+- [X] PDO-2794 Enabling access to the PingCentral Admin UI via PingAccess WAS
 - [X] PDO-2806 Ensure that profile changes are being applied on a restart
 - [X] PDO-2807 Add a public NLB in the customer-hub VPC for the metadata service
 - [X] PDO-2814 Modify all P1AS apps to use user_id:group_id => 9031:9999
+- [X] PDO-2830 Set PingCentral k8s deployment strategy to Recreate
 
 ### 1.9.3
 
