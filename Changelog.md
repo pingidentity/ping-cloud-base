@@ -48,6 +48,7 @@ _Changes:_
 - [X] PDO-2740 No data on PD Grafana dashboard, 'Replication Backlog' metric
 - [X] PDO-2754 Remove NATIVE_S3_PING as a supported JGroups discovery protocol for PF clustering
 - [X] PDO-2788 Upgraded PingDirectory to version 8.3.0.0
+- [X] PDO-2789 Use MYSQL_USE_SSL in PingCentral datasource url
 - [X] PDO-2806 Ensure that profile changes are being applied on a restart
 - [X] PDO-2807 Add a public NLB in the customer-hub VPC for the metadata service
 - [X] PDO-2814 Modify all P1AS apps to use user_id:group_id => 9031:9999
