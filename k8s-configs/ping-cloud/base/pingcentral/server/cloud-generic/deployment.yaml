@@ -9,6 +9,8 @@ spec:
   selector:
     matchLabels:
       app: pingcentral
+  strategy:
+    type: Recreate
   template:
     metadata:
       name: pingcentral
