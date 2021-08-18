@@ -140,7 +140,7 @@ spec:
         app.kubernetes.io/version: v1.9.5
     spec:
       containers:
-      - image: quay.io/coreos/kube-state-metrics:v1.9.5
+      - image: public.ecr.aws/r2h3l6e4/coreos/kube-state-metrics:v1.9.5
         resources:
           limits:
             cpu: 50m

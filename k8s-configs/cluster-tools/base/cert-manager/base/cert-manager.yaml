@@ -8059,7 +8059,7 @@ spec:
       serviceAccountName: cert-manager-cainjector
       containers:
         - name: cainjector
-          image: "quay.io/jetstack/cert-manager-cainjector:v0.10.1"
+          image: public.ecr.aws/r2h3l6e4/jetstack/cert-manager-cainjector:v0.10.1"
           imagePullPolicy: IfNotPresent
           args:
           - --leader-election-namespace=$(POD_NAMESPACE)
@@ -8113,7 +8113,7 @@ spec:
       serviceAccountName: cert-manager
       containers:
         - name: cert-manager
-          image: "quay.io/jetstack/cert-manager-controller:v0.10.1"
+          image: public.ecr.aws/r2h3l6e4/jetstack/cert-manager-controller:v0.10.1"
           imagePullPolicy: IfNotPresent
           args:
           - --cluster-resource-namespace=$(POD_NAMESPACE)

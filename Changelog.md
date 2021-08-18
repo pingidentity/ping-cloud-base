@@ -16,6 +16,7 @@
 - Modify all P1AS apps to use user_id:group_id => 9031:9999
 - Remove NATIVE_S3_PING as a supported JGroups discovery protocol for PF clustering
 - Enabling access to the PingCentral Admin UI via PingAccess WAS
+- Update images to pull from ECR
 
 _Changes:_
 
@@ -39,6 +40,7 @@ _Changes:_
 - [X] PDO-2686 Provide a wrapper script in the profile-repo to update profiles from one version to another
 - [X] PDO-2687 Update update-cluster-state-wrapper.sh to seed initial customer-hub code into the CSR
 - [X] PDO-2708 Fix image tag kustomization in the CSR for P1AS app images
+- [X] PDO-2709 Decommission the JFrog pull cache and use public ECR for all images
 - [X] PDO-2713 Change PingCentral application password
 - [X] PDO-2717 Adapt the Discovery service to retrieve the PingCentral database details from SSM
 - [X] PDO-2718 Allow MyPing image tags to be Kustomizable
