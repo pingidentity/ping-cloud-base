@@ -11,7 +11,7 @@
 - Add Elasticsearch wait init container to kibana manifest
 - Updated cluster-autoscalar memory request/limit to 512 MB 
 - Fixed PD Grafana dashboard, 'Replication Backlog' metric 
-- Updated p14c-integration image to 1.0.26
+- Updated p14c-integration image to 1.0.28
 - Upgraded PingDirectory to version 8.3.0.0
 - Modify all P1AS apps to use user_id:group_id => 9031:9999
 - Remove NATIVE_S3_PING as a supported JGroups discovery protocol for PF clustering
@@ -33,6 +33,7 @@ _Changes:_
 - [X] PDO-2463 Update cluster tools to latest version: Elasticsearch (7.13.2)
 - [X] PDO-2465 Update cluster tools to latest version: metrics-server (v0.5.0)
 - [X] PDO-2468 Update PD healthchecks to use the availability servlet
+- [X] PDO-2571 Add P1AS Branding to PF Admin Console
 - [X] PDO-2623 Separate the server profiles into its own repository for partner enablement
 - [X] PDO-2624 Restore and backup PingCentral encryption key file from S3
 - [X] PDO-2638 Update cluster tools to latest version: Logstash (7.13.2)
