@@ -541,10 +541,11 @@ if test "${CURRENT_GIT_BRANCH}" = 'HEAD'; then
   CURRENT_GIT_BRANCH=$(git describe --tags --always)
 fi
 
-# FIXME: change the default for the SERVER_PROFILE_URL to be profile-repo when Versent creates the SPR repo here
-# and in the documentation at the top of the script.
 export CLUSTER_STATE_REPO_URL=${CLUSTER_STATE_REPO_URL:-https://github.com/pingidentity/ping-cloud-base}
-export SERVER_PROFILE_URL="${SERVER_PROFILE_URL:-${CLUSTER_STATE_REPO_URL}}"
+CLUSTER_STATE_REPO_NAME="${CLUSTER_STATE_REPO_URL##*/}"
+
+SERVER_PROFILE_URL_DERIVED="$(echo "${CLUSTER_STATE_REPO_URL}" | sed -e "s/${CLUSTER_STATE_REPO_NAME}/profile-repo/")"
+export SERVER_PROFILE_URL="${SERVER_PROFILE_URL:-${SERVER_PROFILE_URL_DERIVED}}"
 
 export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
 export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-${CURRENT_GIT_BRANCH}}"
