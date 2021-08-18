@@ -88,7 +88,7 @@ spec:
     spec:
       initContainers:
       - name: add-envsubst
-        image: pingcloud-mirror.jfrog.io/pingidentity/pingtoolkit:2006-1.0.0
+        image: public.ecr.aws/r2h3l6e4/pingidentity/pingtoolkit:2006-1.0.1
         command:
         - sh
         - -c
@@ -109,7 +109,7 @@ spec:
         - --git-poll-interval=60s
         - --git-readonly
         - --registry-disable-scanning
-        image: pingcloud-mirror.jfrog.io/fluxcd/flux:1.21.0
+        image: public.ecr.aws/r2h3l6e4/fluxcd/flux:1.21.0
         imagePullPolicy: IfNotPresent
         livenessProbe:
           httpGet:
@@ -181,7 +181,7 @@ spec:
         - -m 512
         - -I 5m
         - -p 11211
-        image: pingcloud-mirror.jfrog.io/memcached:1.5.20
+        image: public.ecr.aws/r2h3l6e4/memcached:1.5.20
         resources:
           requests:
             cpu: 500m

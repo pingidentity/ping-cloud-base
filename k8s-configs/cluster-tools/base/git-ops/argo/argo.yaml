@@ -2471,7 +2471,7 @@ spec:
       - command:
         - /shared/argocd-util
         - rundex
-        image: pingcloud-virtual.jfrog.io/dexidp/dex:v2.25.0
+        image: public.ecr.aws/r2h3l6e4/dexidp/dex:v2.25.0
         imagePullPolicy: Always
         name: dex
         ports:
@@ -2487,7 +2487,7 @@ spec:
         - -n
         - /usr/local/bin/argocd-util
         - /shared
-        image: pingcloud-virtual.jfrog.io/argoproj/argocd:v1.8.1
+        image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v1.8.1
         imagePullPolicy: Always
         name: copyutil
         volumeMounts:
@@ -2536,7 +2536,7 @@ spec:
         - ""
         - --appendonly
         - "no"
-        image: pingcloud-virtual.jfrog.io/redis:5.0.10-alpine
+        image: public.ecr.aws/r2h3l6e4/redis:5.0.10-alpine
         imagePullPolicy: Always
         name: redis
         ports:
@@ -2585,7 +2585,7 @@ spec:
 
       # Installs custom tools
       - name: install-custom-tools
-        image: pingcloud-virtual.jfrog.io/python:3.9.1-slim
+        image: public.ecr.aws/r2h3l6e4/python:3.9.1-slim
         command: [ "install-custom-tools.sh" ]
         volumeMounts:
         - name: tools-dir
@@ -2601,7 +2601,7 @@ spec:
         - argocd-repo-server
         - --redis
         - argocd-redis:6379
-        image: pingcloud-virtual.jfrog.io/argoproj/argocd:v1.8.1
+        image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v1.8.1
         imagePullPolicy: Always
         name: argocd-repo-server
         ports:
@@ -2697,7 +2697,7 @@ spec:
         - argocd-server
         - --staticassets
         - /shared/app
-        image: pingcloud-virtual.jfrog.io/argoproj/argocd:v1.8.1
+        image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v1.8.1
         imagePullPolicy: Always
         name: argocd-server
         ports:
@@ -2771,7 +2771,7 @@ spec:
         env:
         - name: APP_RESYNC_SECONDS
           value: "60"
-        image: pingcloud-virtual.jfrog.io/argoproj/argocd:v1.8.1
+        image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v1.8.1
         imagePullPolicy: Always
         livenessProbe:
           httpGet:

@@ -43,7 +43,7 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: pingcloud-mirror.jfrog.io/bitnami/kubectl:1.15.3
+        image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
         imagePullPolicy: IfNotPresent
         command:
         - /copy-dependencies.sh
@@ -72,7 +72,7 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: pingcloud-mirror.jfrog.io/busybox:1.32
+        image: public.ecr.aws/r2h3l6e4/busybox:1.32
         imagePullPolicy: IfNotPresent
         command:
         - /wait-for-services.sh
