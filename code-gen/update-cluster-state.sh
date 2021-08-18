@@ -1016,9 +1016,6 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
         export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY}"
         export NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY}"
 
-        # FIXME: When Versent creates the new server-profile repo, then change the git repo slug
-        # from cluster-state-repo to profile-repo.
-
         set -x
         QUIET=true \
             TARGET_DIR="${TARGET_DIR}" \
