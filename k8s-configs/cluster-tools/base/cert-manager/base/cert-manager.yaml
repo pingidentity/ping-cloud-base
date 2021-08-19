@@ -7768,7 +7768,7 @@ rules:
   - apiGroups: [""]
     resources: ["pods", "services"]
     verbs: ["get", "list", "watch", "create", "delete"]
-  - apiGroups: ["networking.k8s.io"]
+  - apiGroups: ["extensions", "networking.k8s.io"]
     resources: ["ingresses"]
     verbs: ["get", "list", "watch", "create", "delete", "update"]
   # We require these rules to support users with the OwnerReferencesPermissionEnforcement
@@ -7802,13 +7802,13 @@ rules:
   - apiGroups: ["certmanager.k8s.io"]
     resources: ["certificates", "certificaterequests", "issuers", "clusterissuers"]
     verbs: ["get", "list", "watch"]
-  - apiGroups: ["networking.k8s.io"]
+  - apiGroups: ["extensions", "networking.k8s.io"]
     resources: ["ingresses"]
     verbs: ["get", "list", "watch"]
   # We require these rules to support users with the OwnerReferencesPermissionEnforcement
   # admission controller enabled:
   # https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#ownerreferencespermissionenforcement
-  - apiGroups: ["networking.k8s.io"]
+  - apiGroups: ["extensions", "networking.k8s.io"]
     resources: ["ingresses/finalizers"]
     verbs: ["update"]
   - apiGroups: [""]
