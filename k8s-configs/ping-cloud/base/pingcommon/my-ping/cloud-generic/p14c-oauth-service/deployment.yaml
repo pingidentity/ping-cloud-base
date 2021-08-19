@@ -16,7 +16,8 @@ spec:
       serviceAccount: p14c-oauth-serviceaccount
       containers:
       - name: pingcloud-oauth
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.28
+        # SOL-FIXME: change this to the dev image that has the changes from ping-cloud-docker branch PDO-2651
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-services/p14c-integration:v1.0.28-PDO-2651-switch-to-ansible
         imagePullPolicy: IfNotPresent
         resources:
           requests:
