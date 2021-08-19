@@ -6,6 +6,32 @@ spec:
   template:
     spec:
       serviceAccount: pf-script-serviceaccount
+      initContainers:
+      - name: wait-for-services
+        # FIXME: switch to same user as app
+        securityContext:
+          runAsNonRoot: false
+          runAsUser: 0
+        image: public.ecr.aws/r2h3l6e4/busybox:1.32
+        imagePullPolicy: IfNotPresent
+        command:
+          - /wait-for-services.sh
+        volumeMounts:
+          - name: pingaccess-was-init
+            mountPath: /utils.lib.sh
+            subPath: utils.lib.sh
+          - name: pingaccess-was-init
+            mountPath: /wait-for-services.sh
+            subPath: wait-for-services.sh
+        env:
+          # PF admin configurator must wait until the PF admin is ready
+          # A space-separated list of deployments or statefulsets that this app should wait for
+          - name: WAIT_FOR_SERVICES
+            value: "pingfederate-admin-0"
+        envFrom:
+          - configMapRef:
+              name: pingfederate-environment-variables
+
       containers:
       - name: pingfederate-admin-configurator
         image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.28
