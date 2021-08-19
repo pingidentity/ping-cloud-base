@@ -15,10 +15,6 @@ spec:
 
       initContainers:
       - name: wait-for-services
-        # FIXME: switch to same user as app
-        securityContext:
-          runAsNonRoot: false
-          runAsUser: 0
         image: public.ecr.aws/r2h3l6e4/busybox:1.32
         imagePullPolicy: IfNotPresent
         command:
@@ -35,9 +31,6 @@ spec:
           # A space-separated list of deployments or statefulsets that this job should wait for
           - name: WAIT_FOR_SERVICES
             value: "pingfederate-admin-0"
-        envFrom:
-          - configMapRef:
-              name: pingcommon-environment-variables
 
       containers:
       - name: pingfederate-admin-configurator
@@ -52,48 +45,32 @@ spec:
             cpu: "500m"
 
         envFrom:
+          # This provides the following environment variables:
+          #   - PINGFEDERATE_ADMIN_SERVER
+          #   - PF_ADMIN_PORT
           - configMapRef:
               name: pingfederate-environment-variables
+
+          # This provides the following environment variables:
+          #   - TOKEN_ENDPOINT
+          #   - CLIENT_ID
+          #   - CLIENT_SECRET
           - secretRef:
               name: p14c-bootstrap-secret
 
         env:
-          - name: TOKEN_ENDPOINT
-            valueFrom:
-              secretKeyRef:
-                - name: p14c-bootstrap-secret
-                  key: TOKEN_ENDPOINT
-
-          - name: CLIENT_ID
-            valueFrom:
-              secretKeyRef:
-                - name: p14c-bootstrap-secret
-                  key: CLIENT_ID
-
-          - name: CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                - name: p14c-bootstrap-secret
-                  key: CLIENT_SECRET
-
-          - name: PINGFEDERATE_ADMIN_SERVER
-            valueFrom:
-              - configMapRef:
-                name: pingfederate-environment-variables
-                key: PINGFEDERATE_ADMIN_SERVER
-
           - name: PF_USERNAME
             value: Administrator
 
           - name: PF_PASSWORD
             valueFrom:
               secretKeyRef:
-                - name: pingcommon-passwords
-                  key: PF_ADMIN_USER_PASSWORD
+                name: pingcommon-passwords
+                key: PF_ADMIN_USER_PASSWORD
 
           - name: ENVIRONMENT_METADATA_JSON
             valueFrom:
-              configMapRef:
+              configMapKeyRef:
                 name: p14c-environment-metadata
                 key: information.json
 
