@@ -29,7 +29,7 @@ spec:
         emptyDir: {}
       containers:
       - name: metrics-server
-        image: k8s.gcr.io/metrics-server/metrics-server:v0.5.0
+        image: public.ecr.aws/r2h3l6e4/metrics-server/metrics-server:v0.5.0
         ports:
           - containerPort: 4443
             name: https

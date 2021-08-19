@@ -11,11 +11,12 @@
 - Add Elasticsearch wait init container to kibana manifest
 - Updated cluster-autoscalar memory request/limit to 512 MB 
 - Fixed PD Grafana dashboard, 'Replication Backlog' metric 
-- Updated p14c-integration image to 1.0.26
+- Updated p14c-integration image to 1.0.28
 - Upgraded PingDirectory to version 8.3.0.0
 - Modify all P1AS apps to use user_id:group_id => 9031:9999
 - Remove NATIVE_S3_PING as a supported JGroups discovery protocol for PF clustering
 - Enabling access to the PingCentral Admin UI via PingAccess WAS
+- Update images to pull from ECR
 
 _Changes:_
 
@@ -32,6 +33,7 @@ _Changes:_
 - [X] PDO-2463 Update cluster tools to latest version: Elasticsearch (7.13.2)
 - [X] PDO-2465 Update cluster tools to latest version: metrics-server (v0.5.0)
 - [X] PDO-2468 Update PD healthchecks to use the availability servlet
+- [X] PDO-2571 Add P1AS Branding to PF Admin Console
 - [X] PDO-2623 Separate the server profiles into its own repository for partner enablement
 - [X] PDO-2624 Restore and backup PingCentral encryption key file from S3
 - [X] PDO-2638 Update cluster tools to latest version: Logstash (7.13.2)
@@ -39,6 +41,7 @@ _Changes:_
 - [X] PDO-2686 Provide a wrapper script in the profile-repo to update profiles from one version to another
 - [X] PDO-2687 Update update-cluster-state-wrapper.sh to seed initial customer-hub code into the CSR
 - [X] PDO-2708 Fix image tag kustomization in the CSR for P1AS app images
+- [X] PDO-2709 Decommission the JFrog pull cache and use public ECR for all images
 - [X] PDO-2713 Change PingCentral application password
 - [X] PDO-2717 Adapt the Discovery service to retrieve the PingCentral database details from SSM
 - [X] PDO-2718 Allow MyPing image tags to be Kustomizable

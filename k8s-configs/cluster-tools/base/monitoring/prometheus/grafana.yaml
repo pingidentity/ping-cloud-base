@@ -797,7 +797,7 @@ spec:
           app: grafana
     spec:
       containers:
-        - image: pingcloud-mirror.jfrog.io/grafana/grafana:6.5.3
+        - image: public.ecr.aws/r2h3l6e4/grafana/grafana:6.5.3
           name: grafana
           args:
             - "--config=/etc/grafana/grafana.ini"

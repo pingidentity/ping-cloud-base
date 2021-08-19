@@ -116,6 +116,8 @@ PF_MAX_HEAP=${PF_MAX_HEAP}
 PF_MIN_YGEN=${PF_MIN_YGEN}
 PF_MAX_YGEN=${PF_MAX_YGEN}
 
+PF_ADMIN_CONSOLE_ENVIRONMENT=${ENV}-${REGION}
+
 ############################################################
 # PingAccess variables for environment
 ############################################################
@@ -154,7 +156,7 @@ PINGCENTRAL_IMAGE_TAG=1.8.0-v1.0.8
 ############################################################
 METADATA_IMAGE_TAG=v1.0.4
 P14C_BOOTSTRAP_IMAGE_TAG=v1.0.9
-P14C_INTEGRATION_IMAGE_TAG=v1.0.26
+P14C_INTEGRATION_IMAGE_TAG=v1.0.28
 
 ############################################################
 # Cluster name variables
