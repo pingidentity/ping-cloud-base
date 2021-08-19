@@ -6,6 +6,13 @@ spec:
   template:
     spec:
       serviceAccount: pf-script-serviceaccount
+
+      volumes:
+      - name: pf-admin-configurator-init
+        configMap:
+          name: pingcommon-init
+          defaultMode: 0555
+
       initContainers:
       - name: wait-for-services
         # FIXME: switch to same user as app
@@ -17,24 +24,24 @@ spec:
         command:
           - /wait-for-services.sh
         volumeMounts:
-          - name: pingaccess-was-init
+          - name: pf-admin-configurator-init
             mountPath: /utils.lib.sh
             subPath: utils.lib.sh
-          - name: pingaccess-was-init
+          - name: pf-admin-configurator-init
             mountPath: /wait-for-services.sh
             subPath: wait-for-services.sh
         env:
           # PF admin configurator must wait until the PF admin is ready
-          # A space-separated list of deployments or statefulsets that this app should wait for
+          # A space-separated list of deployments or statefulsets that this job should wait for
           - name: WAIT_FOR_SERVICES
             value: "pingfederate-admin-0"
         envFrom:
           - configMapRef:
-              name: pingfederate-environment-variables
+              name: pingcommon-environment-variables
 
       containers:
       - name: pingfederate-admin-configurator
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.28
+        image: public.ecr.aws/r2h3l6e4/pingcloud-solutions/ansible-beluga:0.4
         imagePullPolicy: IfNotPresent
         resources:
           requests:
@@ -43,16 +50,28 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "500m"
-        env:
-        - name: NAMESPACE
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.namespace
+
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
         - secretRef:
-            name: pingcommon-passwords
-        command: [ 'python3', '-u', '/app/pingfederate_admin_configurator.py' ]
+            name: p14c-bootstrap-secret
+
+        env:
+        - name: PF_USERNAME
+          value: Administrator
+
+        - name: PF_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              - name: pingcommon-passwords
+                key: PF_ADMIN_USER_PASSWORD
+
+        - name: ENVIRONMENT_METADATA_JSON
+          valueFrom:
+            configMapRef:
+              name: p14c-environment-metadata
+              key: information.json
+
       restartPolicy: Never
   backoffLimit: 4
