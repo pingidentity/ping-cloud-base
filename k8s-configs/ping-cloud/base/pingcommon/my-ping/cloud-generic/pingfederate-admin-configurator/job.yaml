@@ -52,26 +52,50 @@ spec:
             cpu: "500m"
 
         envFrom:
-        - configMapRef:
-            name: pingfederate-environment-variables
-        - secretRef:
-            name: p14c-bootstrap-secret
+          - configMapRef:
+              name: pingfederate-environment-variables
+          - secretRef:
+              name: p14c-bootstrap-secret
 
         env:
-        - name: PF_USERNAME
-          value: Administrator
+          - name: TOKEN_ENDPOINT
+            valueFrom:
+              secretKeyRef:
+                - name: p14c-bootstrap-secret
+                  key: TOKEN_ENDPOINT
 
-        - name: PF_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              - name: pingcommon-passwords
-                key: PF_ADMIN_USER_PASSWORD
+          - name: CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                - name: p14c-bootstrap-secret
+                  key: CLIENT_ID
 
-        - name: ENVIRONMENT_METADATA_JSON
-          valueFrom:
-            configMapRef:
-              name: p14c-environment-metadata
-              key: information.json
+          - name: CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                - name: p14c-bootstrap-secret
+                  key: CLIENT_SECRET
+
+          - name: PINGFEDERATE_ADMIN_SERVER
+            valueFrom:
+              - configMapRef:
+                name: pingfederate-environment-variables
+                key: PINGFEDERATE_ADMIN_SERVER
+
+          - name: PF_USERNAME
+            value: Administrator
+
+          - name: PF_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                - name: pingcommon-passwords
+                  key: PF_ADMIN_USER_PASSWORD
+
+          - name: ENVIRONMENT_METADATA_JSON
+            valueFrom:
+              configMapRef:
+                name: p14c-environment-metadata
+                key: information.json
 
       restartPolicy: Never
   backoffLimit: 4
