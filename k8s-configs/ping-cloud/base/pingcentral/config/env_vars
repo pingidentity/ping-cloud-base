@@ -32,6 +32,7 @@ MYSQL_SERVICE_PORT=3306
 MYSQL_USER=ssm://pcpt/ping-central/rds/username
 MYSQL_PASSWORD=ssm://pcpt/ping-central/rds/password
 MYSQL_DATABASE=pingcentral
+MYSQL_USE_SSL=true
 
 PING_CENTRAL_BLIND_TRUST=true
 PING_CENTRAL_LOG_LEVEL=DEBUG
