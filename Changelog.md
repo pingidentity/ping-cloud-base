@@ -13,6 +13,7 @@
 - Fixed PD Grafana dashboard, 'Replication Backlog' metric 
 - Updated p14c-integration image to 1.0.28
 - Upgraded PingDirectory to version 8.3.0.0
+- Upgraded PingFederate to version 10.3.1 
 - Modify all P1AS apps to use user_id:group_id => 9031:9999
 - Remove NATIVE_S3_PING as a supported JGroups discovery protocol for PF clustering
 - Enabling access to the PingCentral Admin UI via PingAccess WAS
@@ -53,6 +54,7 @@ _Changes:_
 - [X] PDO-2741 Update cluster-autoscalar memory request/limit to 512 MB
 - [X] PDO-2740 No data on PD Grafana dashboard, 'Replication Backlog' metric
 - [X] PDO-2754 Remove NATIVE_S3_PING as a supported JGroups discovery protocol for PF clustering
+- [X] PDO-2764 Upgrade PF to version 10.3.1
 - [X] PDO-2779 Implement CloudWatch for PingCentral Log Files
 - [X] PDO-2788 Upgraded PingDirectory to version 8.3.0.0
 - [X] PDO-2789 Force PingCentral to communicate to RDS using SSL connection
