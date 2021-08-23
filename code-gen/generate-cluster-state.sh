@@ -286,6 +286,8 @@ ${ENVIRONMENT_TYPE}
 ${KUSTOMIZE_BASE}
 ${LETS_ENCRYPT_SERVER}
 ${USER_BASE_DN}
+${ADMIN_CONSOLE_BRANDING}
+${ENVIRONMENT_PREFIX}
 ${PF_PD_BIND_PORT}
 ${PF_PD_BIND_PROTOCOL}
 ${PF_PD_BIND_USESSL}
@@ -360,6 +362,14 @@ add_derived_variables() {
     export DNS_ZONE="\${ENV}-\${TENANT_DOMAIN}"
     export PRIMARY_DNS_ZONE="\${ENV}-\${PRIMARY_TENANT_DOMAIN}"
   fi
+
+  # This variable's value will make it onto the branding for all admin consoles and
+  # will include the name of the environment and the region where it's deployed.
+  export ADMIN_CONSOLE_BRANDING="\${ENV}-\${REGION}"
+
+  # This variable's value will be used as the prefix to distinguish between worker apps for different CDEs for a
+  # single P14C tenant. All of these apps will be created within the "Administrators" environment in the tenant.
+  export ENVIRONMENT_PREFIX="\${TENANT_NAME}-\${CLUSTER_STATE_REPO_BRANCH}-\${REGION_NICK_NAME}"
 }
 
 ########################################################################################################################
@@ -443,14 +453,6 @@ fi
 
 if test -z "${IS_MULTI_CLUSTER}"; then
   IS_MULTI_CLUSTER=false
-fi
-
-if "${IS_MULTI_CLUSTER}"; then
-  if test ! "${SECONDARY_TENANT_DOMAINS}"; then
-    echo 'In multi-cluster mode SECONDARY_TENANT_DOMAINS must be set.'
-    popd >/dev/null 2>&1
-    exit 1
-  fi
 fi
 
 # Print out the values provided used for each variable.
@@ -698,7 +700,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
 
   # Export all the environment variables required for envsubst
   export ENV="${ENV}"
-  export ENVIRONMENT_TYPE="${ENV}"
+  export ENVIRONMENT_TYPE="\${ENV}"
 
   # The base URL for kustomization files and environment will be different for each CDE.
   # On migrated customers, we must preserve the size of the customers.
