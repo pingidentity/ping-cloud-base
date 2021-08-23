@@ -6,10 +6,18 @@
 # It's okay to leave the "pingaccess-was/admin" uncommented out on the 2nd rollout since its deployment should be
 # idempotent. After all the application are updated, reset this file back to its original contents.
 
-# NOTE: Before upgrading Beluga from one version to another, the default poll interval of the CD tool may temporarily
-# need to be increased so that it doesn't interfere with changes that are still being made to the cluster-state-repo.
-# So the steps should be:
+# ======================================================================== #
+#                              README                                      #
+# ======================================================================== #
+# Since the CD tool is set to auto-prune by default, commenting out apps will remove them from the cluster. To prevent
+# that from happening, auto-prune must be turned off in k8s-configs/base/cluster-tools/git-ops/argo-application.yaml.
+# Do NOT proceed with granular updates of apps without doing that first.
+
+# Additionally, before upgrading Beluga from one version to another, the default poll interval of the CD tool may
+# temporarily need to be increased so that it doesn't interfere with changes that are still being made to the
+# cluster-state-repo. So the steps should be:
 #
+#   - Set "prune: false" in argo-application.yaml.
 #   - Update the APP_RESYNC_SECONDS environment variable in k8s-configs/base/cluster-tools/kustomization.yaml to
 #     increase the sync interval of the CD tool.
 #   - Wait for the CD replicas to be rolled out.

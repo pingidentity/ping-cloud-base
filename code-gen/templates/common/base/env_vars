@@ -66,7 +66,9 @@ ECR_REGISTRY_NAME=${ECR_REGISTRY_NAME}
 # NewRelic Tags
 TENANT_NAME=${TENANT_NAME}
 
-ENVIRONMENT_PREFIX=${TENANT_NAME}-${CLUSTER_STATE_REPO_BRANCH}-${REGION_NICK_NAME}
+# This variable's value will be used as the prefix to distinguish between worker apps for different CDEs for a
+# single P14C customer. All of these apps will be created within the "Administrators" environment in the tenant.
+ENVIRONMENT_PREFIX=${ENVIRONMENT_PREFIX}
 
 ############################################################
 # Cluster state repo details
@@ -116,7 +118,9 @@ PF_MAX_HEAP=${PF_MAX_HEAP}
 PF_MIN_YGEN=${PF_MIN_YGEN}
 PF_MAX_YGEN=${PF_MAX_YGEN}
 
-PF_ADMIN_CONSOLE_ENVIRONMENT=${ENV}-${REGION}
+# This variable's value will make it onto the branding for the PF admin console and
+# will include the name of the environment and the region where it's deployed.
+PF_ADMIN_CONSOLE_ENVIRONMENT=${ADMIN_CONSOLE_BRANDING}
 
 ############################################################
 # PingAccess variables for environment
@@ -146,10 +150,10 @@ MYSQL_DATABASE=${MYSQL_DATABASE}
 ############################################################
 PINGACCESS_IMAGE_TAG=6.1.3-v1.0.3
 PINGACCESS_WAS_IMAGE_TAG=6.1.3-v1.0.4
-PINGFEDERATE_IMAGE_TAG=10.2.4-v1.0.7
-PINGDIRECTORY_IMAGE_TAG=8.3.0.0-v1.0.7
+PINGFEDERATE_IMAGE_TAG=10.3.1-v1.0.8
+PINGDIRECTORY_IMAGE_TAG=8.3.0.0-v1.0.8
 PINGDELEGATOR_IMAGE_TAG=4.4.1-v1.0.5
-PINGCENTRAL_IMAGE_TAG=1.8.0-v1.0.10
+PINGCENTRAL_IMAGE_TAG=1.8.0-v1.0.11
 
 ############################################################
 # Ping solution image tags

@@ -13,9 +13,11 @@
 - Fixed PD Grafana dashboard, 'Replication Backlog' metric 
 - Updated p14c-integration image to 1.0.28
 - Upgraded PingDirectory to version 8.3.0.0
+- Upgraded PingFederate to version 10.3.1 
 - Modify all P1AS apps to use user_id:group_id => 9031:9999
 - Remove NATIVE_S3_PING as a supported JGroups discovery protocol for PF clustering
 - Enabling access to the PingCentral Admin UI via PingAccess WAS
+- Move DA Configuration to offline mode within PD
 - Update images to pull from ECR
 
 _Changes:_
@@ -43,6 +45,7 @@ _Changes:_
 - [X] PDO-2708 Fix image tag kustomization in the CSR for P1AS app images
 - [X] PDO-2709 Decommission the JFrog pull cache and use public ECR for all images
 - [X] PDO-2713 Change PingCentral application password
+- [X] PDO-2715 Move DA Configuration to offline mode within PD
 - [X] PDO-2717 Adapt the Discovery service to retrieve the PingCentral database details from SSM
 - [X] PDO-2718 Allow MyPing image tags to be Kustomizable
 - [X] PDO-2721 Logstash index template didn't create during deployment
@@ -51,6 +54,7 @@ _Changes:_
 - [X] PDO-2741 Update cluster-autoscalar memory request/limit to 512 MB
 - [X] PDO-2740 No data on PD Grafana dashboard, 'Replication Backlog' metric
 - [X] PDO-2754 Remove NATIVE_S3_PING as a supported JGroups discovery protocol for PF clustering
+- [X] PDO-2764 Upgrade PF to version 10.3.1
 - [X] PDO-2779 Implement CloudWatch for PingCentral Log Files
 - [X] PDO-2788 Upgraded PingDirectory to version 8.3.0.0
 - [X] PDO-2789 Force PingCentral to communicate to RDS using SSL connection
@@ -60,6 +64,8 @@ _Changes:_
 - [X] PDO-2814 Modify all P1AS apps to use user_id:group_id => 9031:9999
 - [X] PDO-2830 Set PingCentral k8s deployment strategy to Recreate
 - [X] PDO-2832 Move PingCentral v1.8.0 from edge to a stable tag
+- [X] PDO-2849 Reuse environment variables in the env_vars file in the CSR as much as possible
+- [X] PDO-2851 Cleanup PingCentral application.properties file 
 
 ### 1.9.3
 
