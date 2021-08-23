@@ -120,6 +120,8 @@ ${ENVIRONMENT_TYPE}
 ${KUSTOMIZE_BASE}
 ${LETS_ENCRYPT_SERVER}
 ${USER_BASE_DN}
+${ADMIN_CONSOLE_BRANDING}
+${ENVIRONMENT_PREFIX}
 ${PF_PD_BIND_PORT}
 ${PF_PD_BIND_PROTOCOL}
 ${PF_PD_BIND_USESSL}
@@ -181,6 +183,14 @@ add_derived_variables() {
     export DNS_ZONE="\${ENV}-\${TENANT_DOMAIN}"
     export PRIMARY_DNS_ZONE="\${ENV}-\${PRIMARY_TENANT_DOMAIN}"
   fi
+
+  # This variable's value will make it onto the branding for all admin consoles and
+  # will include the name of the environment and the region where it's deployed.
+  export ADMIN_CONSOLE_BRANDING="\${ENV}-\${REGION}"
+
+  # This variable's value will be used as the prefix to distinguish between PF apps for different CDEs for a single
+  # P14C tenant. All of these apps will be created within the "Administrators" environment in the tenant.
+  export ENVIRONMENT_PREFIX="\${TENANT_NAME}-\${CLUSTER_STATE_REPO_BRANCH}-\${REGION_NICK_NAME}"
 }
 
 ########################################################################################################################

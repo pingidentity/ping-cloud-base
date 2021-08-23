@@ -66,7 +66,9 @@ ECR_REGISTRY_NAME=${ECR_REGISTRY_NAME}
 # NewRelic Tags
 TENANT_NAME=${TENANT_NAME}
 
-ENVIRONMENT_PREFIX=${TENANT_NAME}-${CLUSTER_STATE_REPO_BRANCH}-${REGION_NICK_NAME}
+# This variable's value will be used as the prefix to distinguish between worker apps for different CDEs for a
+# single P14C customer. All of these apps will be created within the "Administrators" environment in the tenant.
+ENVIRONMENT_PREFIX=${ENVIRONMENT_PREFIX}
 
 ############################################################
 # Cluster state repo details
@@ -116,7 +118,9 @@ PF_MAX_HEAP=${PF_MAX_HEAP}
 PF_MIN_YGEN=${PF_MIN_YGEN}
 PF_MAX_YGEN=${PF_MAX_YGEN}
 
-PF_ADMIN_CONSOLE_ENVIRONMENT=${ENV}-${REGION}
+# This variable's value will make it onto the branding for the PF admin console and
+# will include the name of the environment and the region where it's deployed.
+PF_ADMIN_CONSOLE_ENVIRONMENT=${ADMIN_CONSOLE_BRANDING}
 
 ############################################################
 # PingAccess variables for environment

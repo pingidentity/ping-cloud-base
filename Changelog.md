@@ -64,7 +64,8 @@ _Changes:_
 - [X] PDO-2814 Modify all P1AS apps to use user_id:group_id => 9031:9999
 - [X] PDO-2830 Set PingCentral k8s deployment strategy to Recreate
 - [X] PDO-2832 Move PingCentral v1.8.0 from edge to a stable tag
-- [X] PDO-2851: Cleanup PingCentral application.properties file 
+- [X] PDO-2849 Reuse environment variables in the env_vars file in the CSR as much as possible
+- [X] PDO-2851 Cleanup PingCentral application.properties file 
 
 ### 1.9.3
 
