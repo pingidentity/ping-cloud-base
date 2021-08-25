@@ -69,8 +69,9 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral:1.8.0-v1.0.11
-        imagePullPolicy: IfNotPresent
+        #FIXME: Update image tags to final public versions & PullPolicy to IfNotPresent
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingcentral:1.8.0-v1.0.12-north-star-p2
+        imagePullPolicy: Always
         resources:
           requests:
             memory: "2Gi"

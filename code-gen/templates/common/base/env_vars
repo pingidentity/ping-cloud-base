@@ -148,12 +148,13 @@ MYSQL_DATABASE=${MYSQL_DATABASE}
 ############################################################
 # Ping application image tags
 ############################################################
-PINGACCESS_IMAGE_TAG=6.1.3-v1.0.3
-PINGACCESS_WAS_IMAGE_TAG=6.1.3-v1.0.4
-PINGFEDERATE_IMAGE_TAG=10.3.1-v1.0.8
-PINGDIRECTORY_IMAGE_TAG=8.3.0.0-v1.0.8
-PINGDELEGATOR_IMAGE_TAG=4.4.1-v1.0.5
-PINGCENTRAL_IMAGE_TAG=1.8.0-v1.0.11
+#FIXME: Update image tags to final public versions
+PINGACCESS_IMAGE_TAG=6.1.3-v1.0.4-north-star-p2
+PINGACCESS_WAS_IMAGE_TAG=6.1.3-v1.0.5-north-star-p2
+PINGFEDERATE_IMAGE_TAG=10.3.1-v1.0.9-north-star-p2
+PINGDIRECTORY_IMAGE_TAG=8.3.0.0-v1.0.10-north-star-p2
+PINGDELEGATOR_IMAGE_TAG=4.4.1-v1.0.6-north-star-p2
+PINGCENTRAL_IMAGE_TAG=1.8.0-v1.0.12-north-star-p2
 
 ############################################################
 # Ping solution image tags

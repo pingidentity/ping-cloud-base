@@ -1,5 +1,13 @@
 # Changelog
 
+### 1.11.0
+
+- Configured all Ping applications to use the new DevOps user/key retrieved through the Discovery service
+
+_Changes:_
+
+- [X] PDO-2810 Added a license pre-hook script that configures the DevOps user/key to use for product licenses
+
 ### 1.10.0
 
 - Deploy PingCentral in P1AS customer hub clusters
