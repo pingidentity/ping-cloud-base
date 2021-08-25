@@ -19,6 +19,7 @@
 - Enabling access to the PingCentral Admin UI via PingAccess WAS
 - Move DA Configuration to offline mode within PD
 - Update images to pull from ECR
+- Updated newrelic-tags-exporter image to 1.0.2
 
 _Changes:_
 
