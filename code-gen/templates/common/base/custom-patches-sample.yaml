@@ -104,13 +104,14 @@ spec:
 #                PingDirectory
 ################################################
 
-### Update pingdirectory disk size  ###
+### Update pingdirectory disk size, replicas, memory/cpu requests/limits  ###
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: pingdirectory
   namespace: ping-cloud
 spec:
+  replicas: 3
   volumeClaimTemplates:
   - metadata:
       name: out-dir
@@ -125,18 +126,6 @@ spec:
       resources:
         requests:
           storage: 40Gi
----
-
-### Update pingdirectory memory/cpu requests/limits  ###
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: pingdirectory
-  namespace: ping-cloud
-spec:
-  replicas: 3
-  template:
-    spec:
       containers:
       - name: pingdirectory
         resources:
@@ -153,7 +142,7 @@ spec:
 #               PingAccess-WAS
 ################################################
 
-### Update pingaccess-was-admin disk size  ###
+### Update pingaccess-was-admin disk size, memory/cpu requests/limits ###
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -172,18 +161,6 @@ spec:
       resources:
         requests:
           storage: 20Gi
-
----
-
-### Update pingaccess-was-admin memory/cpu requests/limits  ###
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: pingaccess-was-admin
-  namespace: ping-cloud
-spec:
-  template:
-    spec:
       containers:
       - name: pingaccess-was-admin
         resources:
@@ -196,13 +173,14 @@ spec:
 
 ---
 
-### Update pingaccess-was engine memory/cpu requests/limits  ###
+### Update pingaccess-was engine replicas, memory/cpu requests/limits  ###
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: pingaccess-was
   namespace: ping-cloud
 spec:
+  replicas: 3
   template:
     spec:
       containers:
@@ -228,17 +206,6 @@ metadata:
 
 ---
 
-### Update the PingAccess-WAS engine's proxy body size ###
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  name: pingaccess-was-ingress
-  namespace: ping-cloud
-  annotations:
-    nginx.ingress.kubernetes.io/proxy-body-size: 16m
-
----
-
 ### Update pingaccess-was backup cronjob to adjust schedule
 apiVersion: batch/v1beta1
 kind: CronJob
@@ -249,33 +216,11 @@ spec:
   schedule: "0 * * * *"
 
 ---
-
-### Update pingaccess-was admin csd upload cronjob to adjust schedule
-apiVersion: batch/v1beta1
-kind: CronJob
-metadata:
-  name: pingaccess-was-admin-periodic-csd-upload
-  namespace: ping-cloud
-spec:
-  schedule: "0 * * * *"
-
----
-
-### Update pingaccess-was engine csd upload cronjob to adjust schedule
-apiVersion: batch/v1beta1
-kind: CronJob
-metadata:
-  name: pingaccess-was-periodic-csd-upload
-  namespace: ping-cloud
-spec:
-  schedule: "0 * * * *"
-
----
 ################################################
 #                PingFederate
 ################################################
 
-### Update pingfederate-admin disk size  ###
+### Update pingfederate-admin disk size, memory/cpu requests/limits ###
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -294,18 +239,6 @@ spec:
       resources:
         requests:
           storage: 20Gi
-
----
-
-### Update pingfederate-admin memory/cpu requests/limits  ###
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: pingfederate-admin
-  namespace: ping-cloud
-spec:
-  template:
-    spec:
       containers:
       - name: pingfederate-admin
         resources:
@@ -367,33 +300,11 @@ spec:
 
 ---
 
-### Update pingfederate admin csd upload cronjob to adjust schedule
-apiVersion: batch/v1beta1
-kind: CronJob
-metadata:
-  name: pingfederate-admin-periodic-csd-upload
-  namespace: ping-cloud
-spec:
-  schedule: "0 * * * *"
-
----
-
-### Update pingfederate engine csd upload cronjob to adjust schedule
-apiVersion: batch/v1beta1
-kind: CronJob
-metadata:
-  name: pingfederate-periodic-csd-upload
-  namespace: ping-cloud
-spec:
-  schedule: "0 * * * *"
-
----
-
 ################################################
 #                PingAccess
 ################################################
 
-### Update pingaccess-admin disk size  ###
+### Update pingaccess-admin disk size, memory/cpu requests/limits ###
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -412,18 +323,6 @@ spec:
       resources:
         requests:
           storage: 20Gi
-
----
-
-### Update pingaccess-admin memory/cpu requests/limits  ###
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: pingaccess-admin
-  namespace: ping-cloud
-spec:
-  template:
-    spec:
       containers:
       - name: pingaccess-admin
         resources:
@@ -479,28 +378,6 @@ apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
   name: pingaccess-periodic-backup
-  namespace: ping-cloud
-spec:
-  schedule: "0 * * * *"
-
----
-
-### Update pingaccess admin csd upload cronjob to adjust schedule
-apiVersion: batch/v1beta1
-kind: CronJob
-metadata:
-  name: pingaccess-admin-periodic-csd-upload
-  namespace: ping-cloud
-spec:
-  schedule: "0 * * * *"
-
----
-
-### Update pingaccess engine csd upload cronjob to adjust schedule
-apiVersion: batch/v1beta1
-kind: CronJob
-metadata:
-  name: pingaccess-periodic-csd-upload
   namespace: ping-cloud
 spec:
   schedule: "0 * * * *"
