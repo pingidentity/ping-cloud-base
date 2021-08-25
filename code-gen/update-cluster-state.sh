@@ -25,13 +25,13 @@
 BASE64_DECODE_OPT="${BASE64_DECODE_OPT:--D}"
 
 K8S_CONFIGS_DIR='k8s-configs'
-PROFILES_DIR='profiles'
+COMMON_DIR='common'
 BASE_DIR='base'
 
 CODE_GEN_DIR='code-gen'
 TEMPLATES_DIR='templates'
-TEMPLATES_BASE_DIR="${CODE_GEN_DIR}/${TEMPLATES_DIR}/${BASE_DIR}"
-TEMPLATES_REGION_DIR="${CODE_GEN_DIR}/${TEMPLATES_DIR}/region"
+TEMPLATES_BASE_DIR="${CODE_GEN_DIR}/${TEMPLATES_DIR}/${COMMON_DIR}/${BASE_DIR}"
+TEMPLATES_REGION_DIR="${CODE_GEN_DIR}/${TEMPLATES_DIR}/${COMMON_DIR}/region"
 
 CUSTOM_RESOURCES_DIR='custom-resources'
 CUSTOM_PATCHES_FILE_NAME='custom-patches.yaml'
@@ -98,6 +98,7 @@ ${REGION_NICK_NAME}
 ${PRIMARY_REGION}
 ${TENANT_DOMAIN}
 ${PRIMARY_TENANT_DOMAIN}
+${PRIMARY_TENANT_DOMAIN_DERIVED}
 ${SECONDARY_TENANT_DOMAINS}
 ${GLOBAL_TENANT_DOMAIN}
 ${ARTIFACT_REPO_URL}
@@ -184,6 +185,8 @@ add_derived_variables() {
     export PRIMARY_DNS_ZONE="\${ENV}-\${PRIMARY_TENANT_DOMAIN}"
   fi
 
+  export PRIMARY_TENANT_DOMAIN_DERIVED="\${PRIMARY_TENANT_DOMAIN}"
+
   # This variable's value will make it onto the branding for all admin consoles and
   # will include the name of the environment and the region where it's deployed.
   export ADMIN_CONSOLE_BRANDING="\${ENV}-\${REGION}"
@@ -258,7 +261,14 @@ set_env_vars() {
 
     # FIXME: escape variable values with spaces in the future. For now, LAST_UPDATE_REASON is the only one with spaces.
     # The PS/GSO teams have been informed to quote the string if it has spaces or escape the quotes.
-    # Remove LAST_UPDATE_REASON because it has spaces. The source will fail otherwise.
+
+    # Export LAST_UPDATE_REASON separately from others. If it has quotes, the source command will fail.
+    LAST_UPDATE_REASON="$(sed -ne "s/^LAST_UPDATE_REASON=\(.*\)$/\1/p" "${env_file_bak}")"
+    if test "${LAST_UPDATE_REASON}"; then
+      export LAST_UPDATE_REASON
+    fi
+
+    # Remove LAST_UPDATE_REASON because it can have spaces. The source will fail otherwise.
     sed -i.bak '/^LAST_UPDATE_REASON=.*$/d' "${env_file_bak}"
     rm -f "${env_file_bak}".bak
 
@@ -495,9 +505,13 @@ git_diff() {
 handle_changed_k8s_secrets() {
   NEW_BRANCH="$1"
 
-  if ! "${CUSTOMER_HUB_BRANCH_EXISTS}" && (echo "${NEW_BRANCH}" | grep -q "${CUSTOMER_HUB}"); then
-    log "No secrets to migrate to '${NEW_BRANCH}' - '${CUSTOMER_HUB}' branch does not exist"
-    return 0
+  # If the new branch is for the customer-hub and a customer-hub branch didn't exist in the previous version,
+  # there's nothing to migrate.
+  if echo "${NEW_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
+    if ! "${CUSTOMER_HUB_BRANCH_EXISTS}"; then
+      log "No secrets to migrate to '${NEW_BRANCH}' - '${CUSTOMER_HUB}' branch does not exist"
+      return 0
+    fi
   fi
 
   PRIMARY_REGION="$2"
@@ -572,9 +586,13 @@ handle_changed_k8s_secrets() {
 handle_changed_k8s_configs() {
   NEW_BRANCH="$1"
 
-  if ! "${CUSTOMER_HUB_BRANCH_EXISTS}" && (echo "${NEW_BRANCH}" | grep -q "${CUSTOMER_HUB}"); then
-    log "No k8s config to migrate to '${NEW_BRANCH}' - '${CUSTOMER_HUB}' branch does not exist"
-    return 0
+  # If the new branch is for the customer-hub and a customer-hub branch didn't exist in the previous version,
+  # there's nothing to migrate.
+  if echo "${NEW_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
+    if ! "${CUSTOMER_HUB_BRANCH_EXISTS}"; then
+      log "No k8s config to migrate to '${NEW_BRANCH}' - '${CUSTOMER_HUB}' branch does not exist"
+      return 0
+    fi
   fi
 
   DEFAULT_GIT_BRANCH="${NEW_BRANCH##*-}"
@@ -734,28 +752,6 @@ print_readme() {
   echo "    - Note that the seal.sh script is recommended if sealing all secrets at once"
   echo "      since it handles both secrets inherited from '${PING_CLOUD_BASE}' and"
   echo "      those defined directly within '${CLUSTER_STATE_REPO}'."
-  echo
-
-  if ! "${RESET_TO_DEFAULT}"; then
-    echo "- All server profile changes under '${PROFILES_DIR}' have been migrated."
-  else
-    echo "- Changes under '${PROFILES_DIR}' were not migrated upon request. If profile"
-    echo "  customizations have been made, then they need to be manually migrated to"
-    echo "  the new git branches."
-    echo
-    echo "    - The following files in '${PROFILES_DIR}' are typically customized:"
-    echo
-    echo "        - PingFederate and PingDirectory artifact-list.json"
-    echo "        - PingFederate language-pack and template files"
-    echo "        - PingDirectory schema and dsconfig files"
-    echo "        - PingDirectory 03-passthrough-auth-plugin.dsconfig"
-    echo
-    echo "    - To get a list of all of the '${PROFILES_DIR}' files that are different"
-    echo "      between a default git branch and its new branch, run:"
-    echo
-    echo "          git diff --name-status --diff-filter=D --diff-filter=R \\"
-    echo "              <default-cde-branch> <new-cde-branch> -- ${PROFILES_DIR}"
-  fi
   echo
 
   if ! "${RESET_TO_DEFAULT}"; then
@@ -969,7 +965,11 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
       DEFAULT_GIT_BRANCH='master' ||
       DEFAULT_GIT_BRANCH="${ENV}"
 
-  IS_CUSTOMER_HUB="$(echo "${ENV}" | grep -q "${CUSTOMER_HUB}")"
+  if echo "${ENV}" | grep -q "${CUSTOMER_HUB}"; then
+    IS_CUSTOMER_HUB=true
+  else
+    IS_CUSTOMER_HUB=false
+  fi
 
   NEW_BRANCH="${NEW_VERSION}-${DEFAULT_GIT_BRANCH}"
   log "Updating branch '${NEW_BRANCH}' for environment '${ENV}'"
@@ -1026,10 +1026,15 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
         export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY}"
         export NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY}"
 
+        # Preserve LAST_UPDATE_REASON so pods are not re-spun automatically. This way field can control the
+        # rollout of each region to be sequential, if necessary.
+
+        # Also set SERVER_PROFILE_URL to empty so the new default (i.e. profile-repo with the same URL as the CSR)
+        # is automatically used.
         set -x
         QUIET=true \
             TARGET_DIR="${TARGET_DIR}" \
-            LAST_UPDATE_REASON="Updating cluster-state-repo to version ${NEW_VERSION}" \
+            SERVER_PROFILE_URL= \
             K8S_GIT_URL="${PING_CLOUD_BASE_REPO_URL}" \
             K8S_GIT_BRANCH="${NEW_VERSION}" \
             ENVIRONMENTS="${NEW_BRANCH}" \
@@ -1052,7 +1057,8 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
         echo "${REGION_DIR}" > "${PRIMARY_REGION_DIR_FILE}"
       fi
 
-      # For every env_vars file in the new version, populate the old values into an env_vars.old file.
+      # For the base/region env_vars file in the new version, populate the old values into an env_vars.old file such
+      # that the env_vars.old files will have the new template but are populated with the old values.
       ENV_VARS_FILES="$(find "${TARGET_DIR}" -name "${ENV_VARS_FILE_NAME}" -type f)"
 
       # Add some derived environment variables for substitution.
@@ -1073,13 +1079,12 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
         elif test "${DIR_NAME}" = "${REGION_DIR}"; then
           ENV_VARS_TEMPLATE="${NEW_PING_CLOUD_BASE_REPO}/${TEMPLATES_REGION_DIR}/${ENV_VARS_FILE_NAME}"
         else
-          # Copy the env_vars under ping app-specific directories as is to an env_vars.old in the generated code
-          # directory.
+          # Copy the env_vars under ping app-specific directories as is into the generated code directory.
           app_env_vars_file="$(git ls-files "*/${DIR_NAME}/env_vars" | grep "${REGION_DIR}" | head -1)"
 
           if test "${app_env_vars_file}"; then
-            log "Copying ${app_env_vars_file} from ${DEFAULT_GIT_BRANCH} to ${OLD_ENV_VARS_FILE}"
-            git show "${DEFAULT_GIT_BRANCH}:${app_env_vars_file}" > "${OLD_ENV_VARS_FILE}"
+            log "Copying ${app_env_vars_file} from ${DEFAULT_GIT_BRANCH} to ${ENV_VARS_FILE}"
+            git show "${DEFAULT_GIT_BRANCH}:${app_env_vars_file}" > "${ENV_VARS_FILE}"
           else
             log "Not an app-specific env_vars file: ${ENV_VARS_FILE}"
           fi
@@ -1094,6 +1099,8 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
         if diff -qbB "${ENV_VARS_FILE}" "${OLD_ENV_VARS_FILE}"; then
           log "No difference found between ${ENV_VARS_FILE} and ${OLD_ENV_VARS_FILE} - removing the old one"
           rm -f "${OLD_ENV_VARS_FILE}"
+        else
+          log "Difference found between ${ENV_VARS_FILE} and ${OLD_ENV_VARS_FILE} - keeping the old one"
         fi
 
       done # Loop for env_vars.old
