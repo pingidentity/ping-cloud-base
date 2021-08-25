@@ -83,7 +83,7 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v1.0.1
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v1.0.2
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
@@ -95,6 +95,10 @@ spec:
             name: devops-secret
             optional: true
         env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
         - name: LICENSE_SERVER_URL
           value: "https://license.pingidentity.com/devops/license"
         - name: NEW_RELIC_APP_NAME
