@@ -93,7 +93,7 @@ spec:
     spec:
       accessModes:
       - ReadWriteOnce
-      storageClassName: elasticsearch-gp2      
+      storageClassName: elasticsearch-gp2
       resources:
         requests:
           storage: 40Gi
@@ -126,6 +126,8 @@ spec:
       resources:
         requests:
           storage: 40Gi
+  template:
+    spec:
       containers:
       - name: pingdirectory
         resources:
@@ -161,6 +163,8 @@ spec:
       resources:
         requests:
           storage: 20Gi
+  template:
+    spec:
       containers:
       - name: pingaccess-was-admin
         resources:
@@ -239,6 +243,8 @@ spec:
       resources:
         requests:
           storage: 20Gi
+  template:
+    spec:
       containers:
       - name: pingfederate-admin
         resources:
@@ -323,6 +329,8 @@ spec:
       resources:
         requests:
           storage: 20Gi
+  template:
+    spec:
       containers:
       - name: pingaccess-admin
         resources:
