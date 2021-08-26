@@ -123,8 +123,8 @@
 #                          |                                                    |
 # CLUSTER_STATE_REPO_URL   | The URL of the cluster-state repo.                 | https://github.com/pingidentity/ping-cloud-base
 #                          |                                                    |
-# SERVER_PROFILE_URL       | The URL for the server-profiles repo.              | Same as the CLUSTER_STATE_REPO_URL,
-#                          |                                                    | if not provided.
+# SERVER_PROFILE_URL       | The URL for the server-profiles repo.              | URL of CLUSTER_STATE_REPO_URL with the
+#                          |                                                    | name profile-repo, if not provided.
 #                          |                                                    |
 # ARTIFACT_REPO_URL        | The URL for plugins (e.g. PF kits, PD extensions). | The string "unused".
 #                          | If not provided, the Ping stack will be            |
@@ -264,6 +264,7 @@ ${REGION_NICK_NAME}
 ${PRIMARY_REGION}
 ${TENANT_DOMAIN}
 ${PRIMARY_TENANT_DOMAIN}
+${PRIMARY_TENANT_DOMAIN_DERIVED}
 ${SECONDARY_TENANT_DOMAINS}
 ${GLOBAL_TENANT_DOMAIN}
 ${ARTIFACT_REPO_URL}
@@ -362,6 +363,8 @@ add_derived_variables() {
     export DNS_ZONE="\${ENV}-\${TENANT_DOMAIN}"
     export PRIMARY_DNS_ZONE="\${ENV}-\${PRIMARY_TENANT_DOMAIN}"
   fi
+
+  export PRIMARY_TENANT_DOMAIN_DERIVED="\${PRIMARY_TENANT_DOMAIN}"
 
   # This variable's value will make it onto the branding for all admin consoles and
   # will include the name of the environment and the region where it's deployed.
@@ -844,7 +847,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   # Regional enablement - add admins, backups, etc. to primary.
   if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
     PRIMARY_PING_KUST_FILE="${ENV_DIR}/${REGION_NICK_NAME}/kustomization.yaml"
-    sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/' "${PRIMARY_PING_KUST_FILE}"
+    sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/g' "${PRIMARY_PING_KUST_FILE}"
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
   fi
 

@@ -50,6 +50,8 @@ _Changes:_
 - [X] PDO-2676 Update the push-cluster-state.sh script to push seed code into the new profile-repo
 - [X] PDO-2686 Provide a wrapper script in the profile-repo to update profiles from one version to another
 - [X] PDO-2687 Update update-cluster-state-wrapper.sh to seed initial customer-hub code into the CSR
+- [X] PDO-2700 Fix inconsistency in "newrelic-tags-exporter" init container between PA/PF/PD
+- [X] PDO-2705 NR agent could crash if config file contains empty tag values (Config Syntax Error))
 - [X] PDO-2708 Fix image tag kustomization in the CSR for P1AS app images
 - [X] PDO-2709 Decommission the JFrog pull cache and use public ECR for all images
 - [X] PDO-2713 Change PingCentral application password
@@ -62,6 +64,7 @@ _Changes:_
 - [X] PDO-2741 Update cluster-autoscalar memory request/limit to 512 MB
 - [X] PDO-2740 No data on PD Grafana dashboard, 'Replication Backlog' metric
 - [X] PDO-2754 Remove NATIVE_S3_PING as a supported JGroups discovery protocol for PF clustering
+- [X] PDO-2763 Wrong way of retrieving NR account_type tag data
 - [X] PDO-2764 Upgrade PF to version 10.3.1
 - [X] PDO-2779 Implement CloudWatch for PingCentral Log Files
 - [X] PDO-2788 Upgraded PingDirectory to version 8.3.0.0
