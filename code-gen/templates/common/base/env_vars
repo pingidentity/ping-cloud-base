@@ -63,7 +63,7 @@ K8S_GIT_BRANCH=${K8S_GIT_BRANCH}
 # The name of the Docker image registry
 ECR_REGISTRY_NAME=${ECR_REGISTRY_NAME}
 
-# NewRelic Tags
+# The tenant or customer name
 TENANT_NAME=${TENANT_NAME}
 
 # This variable's value will be used as the prefix to distinguish between worker apps for different CDEs for a
