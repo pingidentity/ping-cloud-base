@@ -1026,6 +1026,12 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
         export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY}"
         export NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY}"
 
+        # If customer-hub branch, reset the LETS_ENCRYPT_SERVER so the prod one is set by default.
+        if "${IS_CUSTOMER_HUB}"; then
+          log "Unsetting LETS_ENCRYPT_SERVER for the ${CUSTOMER_HUB} branch"
+          unset LETS_ENCRYPT_SERVER
+        fi
+
         # Preserve LAST_UPDATE_REASON so pods are not re-spun automatically. This way field can control the
         # rollout of each region to be sequential, if necessary.
 
