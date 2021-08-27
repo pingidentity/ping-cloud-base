@@ -15,7 +15,7 @@ spec:
           containers:
           - name: pingaccess-periodic-csd-upload
             #FIXME: Update image tags to final public versions & PullPolicy to IfNotPresent
-            image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess:6.1.3-v1.0.5-north-star-p2
+            image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess:6.3.0-v1.0.5-north-star-p2
             imagePullPolicy: Always
             # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
             securityContext:
