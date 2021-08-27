@@ -70,7 +70,7 @@ spec:
           runAsNonRoot: false
           runAsUser: 0
         #FIXME: Update image tags to final public versions & PullPolicy to IfNotPresent
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdelegator:4.4.1-v1.0.6-north-star-p2
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdelegator:4.4.1-v1.0.7-north-star-p2
         imagePullPolicy: Always
         resources:
           requests:

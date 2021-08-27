@@ -154,7 +154,7 @@ spec:
             runAsNonRoot: false
             runAsUser: 0
           #FIXME: Update image tags to final public versions & PullPolicy to IfNotPresent
-          image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:8.3.0.0-v1.0.10-north-star-p2
+          image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:8.3.0.0-v1.0.11-north-star-p2
           imagePullPolicy: Always
           ports:
             - containerPort: 1389
