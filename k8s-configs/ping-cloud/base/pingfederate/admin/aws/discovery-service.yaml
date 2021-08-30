@@ -20,6 +20,9 @@ spec:
         - name: discovery-service
           mountPath: /get_ssm_env_vars.sh
           subPath: get_ssm_env_vars.sh
+        securityContext:
+          runAsGroup: 9999
+          runAsNonRoot: true
       volumes:
       - name: discovery-service
         configMap:

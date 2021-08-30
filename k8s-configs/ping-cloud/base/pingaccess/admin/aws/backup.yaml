@@ -17,6 +17,8 @@ spec:
       containers:
       - name: pingaccess-backup
         image: pingcloud-virtual.jfrog.io/pingidentity/pingaccess:2010-6.1.3
+        securityContext:
+              runAsNonRoot: true
         command:
         - /opt/in/backup-archive-data.sh
         envFrom:
@@ -26,6 +28,8 @@ spec:
         - name: pingaccess-backup
           mountPath: /opt/in/backup-archive-data.sh
           subPath: backup-archive-data.sh
+      securityContext:
+        fsGroup: 9999
       volumes:
       - name: pingaccess-backup
         configMap:
