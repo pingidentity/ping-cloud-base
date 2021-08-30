@@ -22,8 +22,6 @@ spec:
       labels:
         class: pingdirectory-server
     spec:
-      securityContext:
-        fsGroup: 9999
       serviceAccount: ping-serviceaccount
       affinity:
         podAntiAffinity:
@@ -66,9 +64,9 @@ spec:
       initContainers:
         - name: pingdirectory-init
           # FIXME: switch to same user as app
+          image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
           securityContext:
             runAsNonRoot: true
-          image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
           imagePullPolicy: IfNotPresent
           command:
             - /copy-dependencies.sh
@@ -118,7 +116,9 @@ spec:
         - name: pingdirectory
           # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
           securityContext:
+            runAsGroup: 9999
             runAsNonRoot: true
+            runAsUser: 9031
           image: public.ecr.aws/r2h3l6e4/pingidentity/pingdirectory:2104-8.2.0.4
           imagePullPolicy: IfNotPresent
           ports:
@@ -174,9 +174,9 @@ spec:
                   key: DA_OAUTH_TOKEN_VALIDATOR_SECRET
           envFrom:
             - configMapRef:
-                name: pingdirectory-environment-variables
-            - configMapRef:
                 name: pingcommon-environment-variables
+            - configMapRef:
+                name: pingdirectory-environment-variables
             - secretRef:
                 name: devops-secret
                 optional: true
@@ -253,6 +253,8 @@ spec:
             requests:
               cpu: 100m
               memory: 100Mi
+      securityContext:
+        fsGroup: 9999
       volumes:
         - name: ssh-dir
           emptyDir: {}

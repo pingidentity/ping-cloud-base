@@ -43,8 +43,9 @@ spec:
       - name: pingfederate-init
         # FIXME: switch to same user as app
         securityContext:
-          runAsNonRoot: false
-          runAsUser: 0
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
         image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
         imagePullPolicy: IfNotPresent
         command:
@@ -74,8 +75,9 @@ spec:
       - name: wait-for-services
         # FIXME: switch to same user as app
         securityContext:
-          runAsNonRoot: false
-          runAsUser: 0
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
         image: public.ecr.aws/r2h3l6e4/busybox:1.32
         imagePullPolicy: IfNotPresent
         command:
@@ -95,10 +97,11 @@ spec:
       containers:
       - name: pingfederate-admin
         # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
-        securityContext:
-          runAsNonRoot: false
-          runAsUser: 0
         image: public.ecr.aws/r2h3l6e4/pingidentity/pingfederate:2106-10.2.4
+        securityContext:
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
         imagePullPolicy: IfNotPresent
         env:
         - name: OPERATIONAL_MODE
@@ -201,6 +204,8 @@ spec:
         ports:
         - name: pf-admin
           containerPort: 443
+      securityContext:
+        fsGroup: 9999
       volumes:
       - name: podinfo
         downwardAPI:
