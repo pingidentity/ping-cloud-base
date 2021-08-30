@@ -127,7 +127,7 @@ spec:
             name: pingcommon-environment-variables
       containers:
       - name: pingfederate-admin
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:10.3.1-v1.0.9
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:10.3.1-v1.0.10
         # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
         securityContext:
           runAsNonRoot: false
