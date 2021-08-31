@@ -72,9 +72,9 @@ spec:
             - /copy-dependencies.sh
           envFrom:
             - configMapRef:
-                name: pingdirectory-environment-variables
-            - configMapRef:
                 name: pingcommon-environment-variables
+            - configMapRef:
+                name: pingdirectory-environment-variables
           volumeMounts:
             - name: ssh-dir
               mountPath: /.ssh
@@ -103,9 +103,9 @@ spec:
             - /wait-for-services.sh
           envFrom:
             - configMapRef:
-                name: pingdirectory-environment-variables
-            - configMapRef:
                 name: pingcommon-environment-variables
+            - configMapRef:
+                name: pingdirectory-environment-variables
           volumeMounts:
             - name: pingdirectory-init
               mountPath: /utils.lib.sh
