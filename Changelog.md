@@ -2,10 +2,12 @@
 
 ### 1.11.0
 
+- Updated PA to 6.3 to support SSO through P14C (for administrator users) and SSO through PingFederate (for customer users)
 - Configured all Ping applications to use the new DevOps user/key retrieved through the Discovery service
 
 _Changes:_
 
+- [X] PDO-2846 Updated PA to 6.3
 - [X] PDO-2810 Added a license pre-hook script that configures the DevOps user/key to use for product licenses
 
 ### 1.10.0
