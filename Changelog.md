@@ -5,6 +5,7 @@
 - Updated PA to 6.3 to support SSO through P14C (for administrator users) and SSO through PingFederate (for customer users)
 - Configured all Ping applications to use the new DevOps user/key retrieved through the Discovery service
 - Updated the P14C bootstrap image to query the platform event queue for future updates to MyPing parameters
+- Fixed PD Grafana dashboard, 'Replication Backlog' metric with changeable UserBaseDN env var
 
 _Changes:_
 

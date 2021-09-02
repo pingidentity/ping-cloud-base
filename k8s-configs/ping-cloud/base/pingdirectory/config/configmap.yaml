@@ -145,7 +145,13 @@ data:
         name: "garbage_collection_live_megabytes"
         labels:
           region: "$1"
-
+        #PD replicas
+      - match: "^dc=(.*)_dc=(.*)\\.replica(.*)"
+        match_type: regex
+        name: "Replica_${3}"
+        labels:
+          UserBaseDN1: "$1"
+          UserBaseDN2: "$2"
 ---
 
 apiVersion: v1
