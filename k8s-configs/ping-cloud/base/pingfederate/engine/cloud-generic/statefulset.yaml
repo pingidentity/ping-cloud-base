@@ -162,9 +162,6 @@ spec:
         - configMapRef:
             name: pingfederate-environment-variables
         - secretRef:
-            name: devops-secret
-            optional: true
-        - secretRef:
             name: newrelic-license-key
             optional: false
         resources:

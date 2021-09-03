@@ -161,9 +161,6 @@ spec:
         - configMapRef:
             name: pingcommon-environment-variables
         - secretRef:
-            name: devops-secret
-            optional: true
-        - secretRef:
             name: newrelic-license-key
             optional: false
         resources:

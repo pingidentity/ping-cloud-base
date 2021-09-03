@@ -57,16 +57,9 @@
 # Usage instructions
 # ------------------
 # The script does not take any parameters, but rather acts on environment variables. The environment variables will
-# be substituted into the variables in the yaml template files. The following mandatory environment variables must be
-# present before running this script:
+# be substituted into the variables in the yaml template files.
 #
-# ----------------------------------------------------------------------------------------------------------------------
-# Variable                    | Purpose
-# ----------------------------------------------------------------------------------------------------------------------
-# PING_IDENTITY_DEVOPS_USER   | A user with license to run Ping Software
-# PING_IDENTITY_DEVOPS_KEY    | The key to the above user
-#
-# In addition, the following environment variables, if present, will be used for the following purposes:
+# The following environment variables, if present, will be used for the following purposes:
 #
 # ----------------------------------------------------------------------------------------------------------------------
 # Variable                 | Purpose                                            | Default (if not present)
@@ -220,6 +213,12 @@
 #                          |                                                    |
 # MYSQL_PASSWORD           | The DBA password of the PingCentral MySQL RDS      | The SSM path:
 #                          | database.                                          | ssm://pcpt/ping-central/rds/password
+#                          |                                                    |
+# PING_IDENTITY_DEVOPS_USER| A user with license to run Ping Software.          | The SSM path:
+#                          |                                                    | ssm://pcpt/devops-license/user
+#                          |                                                    |
+# PING_IDENTITY_DEVOPS_KEY | The key to the above user.                         | The SSM path:
+#                          |                                                    | ssm://pcpt/devops-license/key
 ########################################################################################################################
 
 #### SCRIPT START ####
@@ -246,13 +245,13 @@ QUIET="${QUIET:-false}"
 
 # The list of variables in the template files that will be substituted by default.
 # Note: DEFAULT_VARS is a superset of ENV_VARS_TO_SUBST within update-cluster-state.sh. These variables should be kept
-# in sync with the following exceptions: LAST_UPDATE_REASON, PING_IDENTITY_DEVOPS_USER_BASE64,
-# PING_IDENTITY_DEVOPS_KEY_BASE64 and NEW_RELIC_LICENSE_KEY_BASE64 should only be found within DEFAULT_VARS
+# in sync with the following exceptions: LAST_UPDATE_REASON, and NEW_RELIC_LICENSE_KEY_BASE64 should only be found
+# within DEFAULT_VARS
 # Note: only secret variables are substituted into YAML files. Environments variables are just written to an env_vars
 # file and substituted at runtime by the continuous delivery tool running in cluster.
 DEFAULT_VARS='${LAST_UPDATE_REASON}
-${PING_IDENTITY_DEVOPS_USER_BASE64}
-${PING_IDENTITY_DEVOPS_KEY_BASE64}
+${PING_IDENTITY_DEVOPS_USER}
+${PING_IDENTITY_DEVOPS_KEY}
 ${NEW_RELIC_LICENSE_KEY_BASE64}
 ${TENANT_NAME}
 ${SSH_ID_KEY_BASE64}
@@ -445,10 +444,7 @@ add_nlb_variables() {
 check_binaries "openssl" "ssh-keygen" "ssh-keyscan" "base64" "envsubst" "git" "aws" "rsync"
 HAS_REQUIRED_TOOLS=${?}
 
-check_env_vars "PING_IDENTITY_DEVOPS_USER" "PING_IDENTITY_DEVOPS_KEY"
-HAS_REQUIRED_VARS=${?}
-
-if test ${HAS_REQUIRED_TOOLS} -ne 0 || test ${HAS_REQUIRED_VARS} -ne 0; then
+if test ${HAS_REQUIRED_TOOLS} -ne 0; then
   # Go back to previous working directory, if different, before exiting.
   popd >/dev/null 2>&1
   exit 1
@@ -485,6 +481,8 @@ echo "Initial BACKUP_URL: ${BACKUP_URL}"
 echo "Initial MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 echo "Initial MYSQL_USER: ${MYSQL_USER}"
 echo "Initial MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
+
+echo "Initial PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
 
 echo "Initial K8S_GIT_URL: ${K8S_GIT_URL}"
 echo "Initial K8S_GIT_BRANCH: ${K8S_GIT_BRANCH}"
@@ -540,6 +538,9 @@ export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-"pingcentraldb.\${PRIMARY_TENAN
 export MYSQL_USER="${MYSQL_USER:-ssm://pcpt/ping-central/rds/username}"
 export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://pcpt/ping-central/rds/password}"
 
+export PING_IDENTITY_DEVOPS_USER="${PING_IDENTITY_DEVOPS_USER:-ssm://pcpt/devops-license/user}"
+export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY:-ssm://pcpt/devops-license/key}"
+
 PING_CLOUD_BASE_COMMIT_SHA=$(git rev-parse HEAD)
 CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 if test "${CURRENT_GIT_BRANCH}" = 'HEAD'; then
@@ -591,6 +592,8 @@ echo "Using MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 echo "Using MYSQL_USER: ${MYSQL_USER}"
 echo "Using MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
 
+echo "Using PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
+
 echo "Using K8S_GIT_URL: ${K8S_GIT_URL}"
 echo "Using K8S_GIT_BRANCH: ${K8S_GIT_BRANCH}"
 
@@ -604,8 +607,6 @@ echo ---
 
 NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY:-unused}
 
-export PING_IDENTITY_DEVOPS_USER_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_USER}")
-export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_KEY}")
 export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KEY}")
 
 TEMPLATES_HOME="${SCRIPT_HOME}/templates"

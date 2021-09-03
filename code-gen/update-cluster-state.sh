@@ -54,7 +54,7 @@ CLUSTER_STATE_REPO='cluster-state-repo'
 CUSTOMER_HUB='customer-hub'
 
 PING_CLOUD_BASE='ping-cloud-base'
-PING_CLOUD_DEFAULT_DEVOPS_USER='pingcloudpt-licensing@pingidentity.com'
+PING_CLOUD_DEFAULT_DEVOPS_USER='p1as-product-licensing@pingidentity.com'
 
 # If true, reset to the OOTB cluster state for the new version, i.e. perform no migration.
 RESET_TO_DEFAULT="${RESET_TO_DEFAULT:-false}"
@@ -86,9 +86,11 @@ beluga_owned_k8s_files="@.flux.yaml \
 # The list of variables to substitute in env_vars.old files.
 # shellcheck disable=SC2016
 # Note: ENV_VARS_TO_SUBST is a subset of DEFAULT_VARS within generate-cluster-state.sh. These variables should be kept
-# in sync with the following exceptions: LAST_UPDATE_REASON, PING_IDENTITY_DEVOPS_USER_BASE64,
-# PING_IDENTITY_DEVOPS_KEY_BASE64 and NEW_RELIC_LICENSE_KEY_BASE64 should only be found within DEFAULT_VARS
+# in sync with the following exceptions: LAST_UPDATE_REASON and NEW_RELIC_LICENSE_KEY_BASE64 should only be found
+# within DEFAULT_VARS
 ENV_VARS_TO_SUBST='${TENANT_NAME}
+${PING_IDENTITY_DEVOPS_USER}
+${PING_IDENTITY_DEVOPS_KEY}
 ${SSH_ID_KEY_BASE64}
 ${IS_MULTI_CLUSTER}
 ${EVENT_QUEUE_NAME}
@@ -312,7 +314,7 @@ get_ping_cloud_secrets_file() {
   fi
 
   # Get the full path of the secrets.yaml file that has all ping-cloud secrets.
-  secrets_yaml="$(git grep -e PING_IDENTITY_DEVOPS | grep -v '\$' | head -1 | cut -d: -f1)"
+  secrets_yaml="$(git grep -e NEW_RELIC_LICENSE_KEY | grep -v '\$' | head -1 | cut -d: -f1)"
 
   # If found, copy it to the provided output file in JSON format.
   # NOTE: it's safer to use kubectl here than a YAML parser like yq, whose options vary by version of the tool, OS, etc.
@@ -356,8 +358,7 @@ get_secret_from_file() {
 # Retrieve the minimum required secrets required to stand up the out-of-the-box ping-cloud stack into the following
 # environment variables:
 #
-#   - PING_IDENTITY_DEVOPS_USER - The devops user
-#   - PING_IDENTITY_DEVOPS_KEY - The devops key
+#   - NEW_RELIC_LICENSE_KEY - used to send data to NewRelic account
 #   - ID_RSA_FILE - SSH key for cloning from git
 #
 # If all the secrets are found, then a global variable named ALL_MIN_SECRETS_FOUND will be set to true.
@@ -379,18 +380,6 @@ get_min_required_secrets() {
   if test -s "${ping_cloud_secrets_yaml}"; then
     ALL_MIN_SECRETS_FOUND=true
 
-    PING_IDENTITY_DEVOPS_USER="$(get_secret_from_file 'PING_IDENTITY_DEVOPS_USER' "${ping_cloud_secrets_yaml}")"
-    if ! test "${PING_IDENTITY_DEVOPS_USER}"; then
-      log "PING_IDENTITY_DEVOPS_USER not found in ${ping_cloud_secrets_yaml}"
-      ALL_MIN_SECRETS_FOUND=false
-    fi
-
-    PING_IDENTITY_DEVOPS_KEY="$(get_secret_from_file 'PING_IDENTITY_DEVOPS_KEY' "${ping_cloud_secrets_yaml}")"
-    if ! test "${PING_IDENTITY_DEVOPS_KEY}"; then
-      log "PING_IDENTITY_DEVOPS_KEY not found in ${ping_cloud_secrets_yaml}"
-      ALL_MIN_SECRETS_FOUND=false
-    fi
-
     NEW_RELIC_LICENSE_KEY="$(get_secret_from_file 'NEW_RELIC_LICENSE_KEY' "${ping_cloud_secrets_yaml}")"
     if ! test "${NEW_RELIC_LICENSE_KEY}"; then
       log "NEW_RELIC_LICENSE_KEY not found in ${ping_cloud_secrets_yaml}"
@@ -404,16 +393,6 @@ get_min_required_secrets() {
       ID_RSA_FILE=
     fi
   fi
-
-  if test -z "${PING_IDENTITY_DEVOPS_USER}" || test -z "${PING_IDENTITY_DEVOPS_KEY}"; then
-    ALL_MIN_SECRETS_FOUND=false
-
-    # Default the dev ops user and key to fake values, if not found in secrets.yaml.
-    PING_IDENTITY_DEVOPS_USER="${PING_CLOUD_DEFAULT_DEVOPS_USER}"
-    PING_IDENTITY_DEVOPS_KEY='2FederateM0re'
-  fi
-
-  log "Using PING_IDENTITY_DEVOPS_USER -> ${PING_IDENTITY_DEVOPS_USER}"
 }
 
 ########################################################################################################################
@@ -728,9 +707,6 @@ print_readme() {
   else
     echo "- All but the following secrets have been reset to the default for '${NEW_VERSION}'"
     echo
-    echo "    - The 'PING_IDENTITY_DEVOPS_KEY' contains a fake key. If using devops licenses,"
-    echo "      it must be updated to the key for '${PING_CLOUD_DEFAULT_DEVOPS_USER}'."
-    echo
     echo "    - The git SSH key in 'argo-git-deploy' and 'ssh-id-key-secret' also"
     echo "      contain fake values and must be updated."
     echo
@@ -954,7 +930,7 @@ fi
 # The base environment variables file that's common to all regions.
 BASE_ENV_VARS="${K8S_CONFIGS_DIR}/${BASE_DIR}/${ENV_VARS_FILE_NAME}"
 
-# Get the minimum required ping-cloud secrets (currently, the devops user/key and SSH git key).
+# Get the minimum required ping-cloud secrets (currently, the New Relic key and SSH git key).
 get_min_required_secrets
 
 # For each environment:
@@ -1023,7 +999,6 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
           unset LETS_ENCRYPT_SERVER
         fi
 
-        export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY}"
         export NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY}"
 
         # If customer-hub branch, reset the LETS_ENCRYPT_SERVER so the prod one is set by default.
@@ -1044,7 +1019,8 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
             K8S_GIT_URL="${PING_CLOUD_BASE_REPO_URL}" \
             K8S_GIT_BRANCH="${NEW_VERSION}" \
             ENVIRONMENTS="${NEW_BRANCH}" \
-            PING_IDENTITY_DEVOPS_USER="${PING_IDENTITY_DEVOPS_USER}" \
+            PING_IDENTITY_DEVOPS_USER='' \
+            PING_IDENTITY_DEVOPS_KEY='' \
             SSH_ID_PUB_FILE="${ID_RSA_FILE}" \
             SSH_ID_KEY_FILE="${ID_RSA_FILE}" \
             "${NEW_PING_CLOUD_BASE_REPO}/${CODE_GEN_DIR}/generate-cluster-state.sh"

@@ -110,9 +110,6 @@ spec:
         envFrom:
           - configMapRef:
               name: pingcentral-environment-variables
-          - secretRef:
-              name: devops-secret
-              optional: true
         volumeMounts:
           # FIXME: fix home directory when containers run as non-root user
           - name: ssh-dir

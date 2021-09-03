@@ -26,7 +26,3 @@ spec:
         ports:
         - containerPort: 8080
           name: http
-        envFrom:
-        - secretRef:
-            name: devops-secret
-            optional: true
