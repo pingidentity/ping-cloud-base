@@ -3,14 +3,15 @@
 ### 1.11.0
 
 - Updated PA to 6.3 to support SSO through P14C (for administrator users) and SSO through PingFederate (for customer users)
-- Configured all Ping applications to use the new DevOps user/key retrieved through the Discovery service
+- Configured all Ping applications to use the DevOps user/key retrieved through the Discovery service as defaults
 - Updated the P14C bootstrap image to query the platform event queue for future updates to MyPing parameters
 - Fixed PD Grafana dashboard, 'Replication Backlog' metric with changeable UserBaseDN env var
 
 _Changes:_
 
-- [X] PDO-2846 Updated PA to 6.3
 - [X] PDO-2810 Added a license pre-hook script that configures the DevOps user/key to use for product licenses
+- [X] PDO-2811 Change the default for the DevOps USER/KEY to SSM paths
+- [X] PDO-2846 Updated PA to 6.3
 - [X] PDO-2874 Updated the P14C bootstrap image to query the platform event queue for future updates to MyPing parameters
 
 ### 1.10.0

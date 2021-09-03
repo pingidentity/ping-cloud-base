@@ -191,9 +191,6 @@ spec:
         - configMapRef:
             name: pingaccess-was-environment-variables
         - secretRef:
-            name: devops-secret
-            optional: true
-        - secretRef:
             name: newrelic-license-key
             optional: true
       volumes:

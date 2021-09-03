@@ -33,15 +33,7 @@
 # be deployed as-is onto the cluster. In fact, this is exactly what gets deployed when the script is run in real
 # mode, i.e. without the -n option.
 #
-# The following mandatory environment variables must be present before running this script.
-#
-# ----------------------------------------------------------------------------------------------------------------------
-# Variable                    | Purpose
-# ----------------------------------------------------------------------------------------------------------------------
-# PING_IDENTITY_DEVOPS_USER   | A user with license to run Ping Software
-# PING_IDENTITY_DEVOPS_KEY    | The key to the above user
-#
-# In addition, the following environment variables, if present, will be used for the following purposes:
+# The following environment variables, if present, will be used for the following purposes:
 #
 # ----------------------------------------------------------------------------------------------------------------------
 # Variable                  | Purpose                                            | Default (if not present)
@@ -168,6 +160,12 @@
 #                           |                                                    |
 # MYSQL_PASSWORD            | The DBA password of the PingCentral MySQL RDS      | The SSM path:
 #                           | database.                                          | ssm://pcpt/ping-central/rds/password
+#                           |                                                    |
+# PING_IDENTITY_DEVOPS_USER | A user with license to run Ping Software.          | The SSM path:
+#                           |                                                    | ssm://pcpt/devops-license/user
+#                           |                                                    |
+# PING_IDENTITY_DEVOPS_KEY  | The key to the above user.                         | The SSM path:
+#                           |                                                    | ssm://pcpt/devops-license/key
 ########################################################################################################################
 
 #
@@ -210,10 +208,7 @@ done
 check_binaries "openssl" "base64" "kustomize" "kubectl" "envsubst"
 HAS_REQUIRED_TOOLS=${?}
 
-check_env_vars "PING_IDENTITY_DEVOPS_USER" "PING_IDENTITY_DEVOPS_KEY"
-HAS_REQUIRED_VARS=${?}
-
-if test ${HAS_REQUIRED_TOOLS} -ne 0 || test ${HAS_REQUIRED_VARS} -ne 0; then
+if test ${HAS_REQUIRED_TOOLS} -ne 0; then
   popd  > /dev/null 2>&1
   exit 1
 fi
@@ -255,6 +250,8 @@ log "Initial MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 log "Initial MYSQL_USER: ${MYSQL_USER}"
 log "Initial MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
 
+log "Initial PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
+
 log "Initial DEPLOY_FILE: ${DEPLOY_FILE}"
 log "Initial K8S_CONTEXT: ${K8S_CONTEXT}"
 log ---
@@ -293,6 +290,9 @@ export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-beluga-ci-cd-mysql.cmpxy5bpieb9
 export MYSQL_USER="${MYSQL_USER:-ssm://pcpt/ping-central/rds/username}"
 export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://pcpt/ping-central/rds/password}"
 
+export PING_IDENTITY_DEVOPS_USER="${PING_IDENTITY_DEVOPS_USER:-ssm://pcpt/devops-license/user}"
+export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY:-ssm://pcpt/devops-license/key}"
+
 # MySQL database names cannot have dashes. So transform dashes into underscores.
 ENV_NAME_NO_DASHES=$(echo ${BELUGA_ENV_NAME} | tr '-' '_')
 export MYSQL_DATABASE="pingcentral_${ENV_NAME_NO_DASHES}"
@@ -329,14 +329,14 @@ log "Using MYSQL_USER: ${MYSQL_USER}"
 log "Using MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
 log "Using MYSQL_DATABASE: ${MYSQL_DATABASE}"
 
+log "Using PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
+
 log "Using DEPLOY_FILE: ${DEPLOY_FILE}"
 log "Using K8S_CONTEXT: ${K8S_CONTEXT}"
 log ---
 
 NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY:-unused}
 
-export PING_IDENTITY_DEVOPS_USER_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_USER}")
-export PING_IDENTITY_DEVOPS_KEY_BASE64=$(base64_no_newlines "${PING_IDENTITY_DEVOPS_KEY}")
 export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KEY}")
 export CLUSTER_NAME=${TENANT_NAME}
 export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
@@ -424,6 +424,9 @@ export MYSQL_DATABASE=${MYSQL_DATABASE}
 
 export EVENT_QUEUE_NAME=${EVENT_QUEUE_NAME}
 export ORCH_API_SSM_PATH_PREFIX=${ORCH_API_SSM_PATH_PREFIX}
+
+export PING_IDENTITY_DEVOPS_USER=${PING_IDENTITY_DEVOPS_USER}
+export PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 
 export PROJECT_DIR=${PWD}
 export AWS_PROFILE=${AWS_PROFILE:-csg}

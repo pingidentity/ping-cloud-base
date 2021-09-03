@@ -373,17 +373,6 @@ patchesStrategicMerge:
   apiVersion: v1
   kind: Secret
   metadata:
-    name: devops-secret
-  data:
-    PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER_BASE64}
-    PING_IDENTITY_DEVOPS_KEY: ${PING_IDENTITY_DEVOPS_KEY_BASE64}
-    GIT_USER: Z2l0bGFiLW1hY2hpbmUtdXNlci1hdC03MDUzNzA2MjE1Mzk=
-    GIT_PASS: ZjNvd3dBSVkwYWpmZWwzWDMyUnFLeWZKS3ZEa3REZnJiUlBCQzhrY0wrcz0=
-
-- |-
-  apiVersion: v1
-  kind: Secret
-  metadata:
     name: newrelic-license-key
   data:
     NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY_BASE64}

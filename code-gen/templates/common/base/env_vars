@@ -146,6 +146,12 @@ MYSQL_PASSWORD=${MYSQL_PASSWORD}
 MYSQL_DATABASE=${MYSQL_DATABASE}
 
 ############################################################
+# DevOps License environment variables
+############################################################
+PING_IDENTITY_DEVOPS_USER=${PING_IDENTITY_DEVOPS_USER}
+PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
+
+############################################################
 # Ping application image tags
 ############################################################
 #FIXME: Update image tags to final public versions
