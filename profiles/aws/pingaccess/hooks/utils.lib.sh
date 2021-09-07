@@ -310,7 +310,7 @@ function export_config_settings() {
   # First export environment variables based on PA or PA-WAS.
   export_environment_variables
 
-  SHORT_HOST_NAME=$(hostname)
+  SHORT_HOST_NAME=$(cat /etc/hostname)
   ORDINAL=${SHORT_HOST_NAME##*-}
 
   if is_multi_cluster; then
