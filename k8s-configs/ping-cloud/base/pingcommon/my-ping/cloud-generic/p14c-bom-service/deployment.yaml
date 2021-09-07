@@ -16,8 +16,9 @@ spec:
       serviceAccount: p14c-bom-serviceaccount
       containers:
       - name: pingcloud-bom
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.28
-        imagePullPolicy: IfNotPresent
+        #FIXME: Update image tags to public versions & PullPolicy to Always
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-services/p14c-integration:v1.0.29-north-star-p2
+        imagePullPolicy: Always
         resources:
           requests:
             memory: "256Mi"
@@ -42,4 +43,3 @@ spec:
           periodSeconds: 30
           failureThreshold: 3
           timeoutSeconds: 3
-
