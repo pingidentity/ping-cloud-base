@@ -64,7 +64,7 @@ if test -z "${ENV_VARS_FILE}"; then
   ENV_NAME_NO_DASHES=$(echo ${CI_COMMIT_REF_SLUG} | tr '-' '_')
   export MYSQL_DATABASE="pingcentral_${ENV_NAME_NO_DASHES}"
 
-  export EVENT_QUEUE_NAME='platform_event_queue.fifo'
+  export PLATFORM_EVENT_QUEUE_NAME='platform_event_queue.fifo'
   export ORCH_API_SSM_PATH_PREFIX='/pcpt/orch-api'
 
   export PROJECT_DIR="${CI_PROJECT_DIR}"

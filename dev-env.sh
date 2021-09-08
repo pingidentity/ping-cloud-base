@@ -135,7 +135,7 @@
 #                           | URL. For AWS S3 buckets, it must be an S3 URL,     |
 #                           | e.g. s3://backups.                                 |
 #                           |                                                    |
-# EVENT_QUEUE_NAME          | The name of the queue that may be used to notify   | ${USER}_platform_event_queue.fifo
+# PLATFORM_EVENT_QUEUE_NAME | The name of the queue that may be used to notify   | ${USER}_platform_event_queue.fifo
 #                           | PingCloud applications of platform events. This    |
 #                           | is currently only used if the orchestrator for     |
 #                           | PingCloud environments is MyPing.                  |
@@ -228,7 +228,7 @@ log "Initial ENVIRONMENT: ${ENVIRONMENT}"
 
 log "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 log "Initial TOPOLOGY_DESCRIPTOR_FILE: ${TOPOLOGY_DESCRIPTOR_FILE}"
-log "Initial EVENT_QUEUE_NAME: ${EVENT_QUEUE_NAME}"
+log "Initial PLATFORM_EVENT_QUEUE_NAME: ${PLATFORM_EVENT_QUEUE_NAME}"
 log "Initial ORCH_API_SSM_PATH_PREFIX: ${ORCH_API_SSM_PATH_PREFIX}"
 log "Initial REGION: ${REGION}"
 log "Initial REGION_NICK_NAME: ${REGION_NICK_NAME}"
@@ -266,7 +266,7 @@ export BELUGA_ENV_NAME="${ENVIRONMENT#-}"
 
 export IS_MULTI_CLUSTER="${IS_MULTI_CLUSTER}"
 
-export EVENT_QUEUE_NAME="${EVENT_QUEUE_NAME:-${USER}_platform_event_queue.fifo}"
+export PLATFORM_EVENT_QUEUE_NAME="${PLATFORM_EVENT_QUEUE_NAME:-${USER}_platform_event_queue.fifo}"
 export ORCH_API_SSM_PATH_PREFIX="${ORCH_API_SSM_PATH_PREFIX:-/${USER}/pcpt/orch-api}"
 
 export REGION="${REGION:-us-east-2}"
@@ -306,7 +306,7 @@ log "Using ENVIRONMENT: ${BELUGA_ENV_NAME}"
 
 log "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 log "Using TOPOLOGY_DESCRIPTOR_FILE: ${TOPOLOGY_DESCRIPTOR_FILE}"
-log "Using EVENT_QUEUE_NAME: ${EVENT_QUEUE_NAME}"
+log "Using PLATFORM_EVENT_QUEUE_NAME: ${PLATFORM_EVENT_QUEUE_NAME}"
 log "Using ORCH_API_SSM_PATH_PREFIX: ${ORCH_API_SSM_PATH_PREFIX}"
 log "Using REGION: ${REGION}"
 log "Using REGION_NICK_NAME: ${REGION_NICK_NAME}"
@@ -422,7 +422,7 @@ export MYSQL_USER=${MYSQL_USER}
 export MYSQL_PASSWORD=${MYSQL_PASSWORD}
 export MYSQL_DATABASE=${MYSQL_DATABASE}
 
-export EVENT_QUEUE_NAME=${EVENT_QUEUE_NAME}
+export PLATFORM_EVENT_QUEUE_NAME=${PLATFORM_EVENT_QUEUE_NAME}
 export ORCH_API_SSM_PATH_PREFIX=${ORCH_API_SSM_PATH_PREFIX}
 
 export PING_IDENTITY_DEVOPS_USER=${PING_IDENTITY_DEVOPS_USER}

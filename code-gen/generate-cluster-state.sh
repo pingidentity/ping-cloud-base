@@ -195,7 +195,7 @@
 #                          | added as an annotation to the corresponding K8s    |
 #                          | service for the AWS NLB to use the AWS Elastic IP. |
 #                          |                                                    |
-# EVENT_QUEUE_NAME         | The name of the queue that may be used to notify   | platform_event_queue.fifo
+# PLATFORM_EVENT_QUEUE_NAME| The name of the queue that may be used to notify   | platform_event_queue.fifo
 #                          | PingCloud applications of platform events. This    |
 #                          | is currently only used if the orchestrator for     |
 #                          | PingCloud environments is MyPing.                  |
@@ -256,7 +256,7 @@ ${NEW_RELIC_LICENSE_KEY_BASE64}
 ${TENANT_NAME}
 ${SSH_ID_KEY_BASE64}
 ${IS_MULTI_CLUSTER}
-${EVENT_QUEUE_NAME}
+${PLATFORM_EVENT_QUEUE_NAME}
 ${ORCH_API_SSM_PATH_PREFIX}
 ${REGION}
 ${REGION_NICK_NAME}
@@ -459,7 +459,7 @@ echo "Initial TENANT_NAME: ${TENANT_NAME}"
 echo "Initial SIZE: ${SIZE}"
 
 echo "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
-echo "Initial EVENT_QUEUE_NAME: ${EVENT_QUEUE_NAME}"
+echo "Initial PLATFORM_EVENT_QUEUE_NAME: ${PLATFORM_EVENT_QUEUE_NAME}"
 echo "Initial ORCH_API_SSM_PATH_PREFIX: ${ORCH_API_SSM_PATH_PREFIX}"
 echo "Initial REGION: ${REGION}"
 echo "Initial REGION_NICK_NAME: ${REGION_NICK_NAME}"
@@ -508,7 +508,7 @@ export TENANT_DOMAIN="${TENANT_DOMAIN_NO_DOT_SUFFIX}"
 
 export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
 
-export EVENT_QUEUE_NAME=${EVENT_QUEUE_NAME:-platform_event_queue.fifo}
+export PLATFORM_EVENT_QUEUE_NAME=${PLATFORM_EVENT_QUEUE_NAME:-platform_event_queue.fifo}
 export ORCH_API_SSM_PATH_PREFIX=${ORCH_API_SSM_PATH_PREFIX:-/pcpt/orch-api}
 
 export LAST_UPDATE_REASON="${LAST_UPDATE_REASON:-NA}"
@@ -571,7 +571,7 @@ echo "Using TENANT_NAME: ${TENANT_NAME}"
 echo "Using SIZE: ${SIZE}"
 
 echo "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
-echo "Using EVENT_QUEUE_NAME: ${EVENT_QUEUE_NAME}"
+echo "Using PLATFORM_EVENT_QUEUE_NAME: ${PLATFORM_EVENT_QUEUE_NAME}"
 echo "Using ORCH_API_SSM_PATH_PREFIX: ${ORCH_API_SSM_PATH_PREFIX}"
 echo "Using REGION: ${REGION}"
 echo "Using REGION_NICK_NAME: ${REGION_NICK_NAME}"
