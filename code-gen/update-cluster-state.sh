@@ -91,7 +91,7 @@ beluga_owned_k8s_files="@.flux.yaml \
 ENV_VARS_TO_SUBST='${TENANT_NAME}
 ${SSH_ID_KEY_BASE64}
 ${IS_MULTI_CLUSTER}
-${EVENT_QUEUE_NAME}
+${PLATFORM_EVENT_QUEUE_NAME}
 ${ORCH_API_SSM_PATH_PREFIX}
 ${REGION}
 ${REGION_NICK_NAME}
@@ -516,7 +516,12 @@ handle_changed_k8s_secrets() {
 
   PRIMARY_REGION="$2"
 
-  DEFAULT_GIT_BRANCH="${NEW_BRANCH##*-}"
+  if echo "${NEW_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
+    DEFAULT_GIT_BRANCH="${CUSTOMER_HUB}"
+  else
+    DEFAULT_GIT_BRANCH="${NEW_BRANCH##*-}"
+  fi
+
   log "Handling changes to ${SECRETS_FILE_NAME} and ${SEALED_SECRETS_FILE_NAME} in branch '${DEFAULT_GIT_BRANCH}'"
 
   # In v1.6:
@@ -595,7 +600,12 @@ handle_changed_k8s_configs() {
     fi
   fi
 
-  DEFAULT_GIT_BRANCH="${NEW_BRANCH##*-}"
+  if echo "${NEW_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
+    DEFAULT_GIT_BRANCH="${CUSTOMER_HUB}"
+  else
+    DEFAULT_GIT_BRANCH="${NEW_BRANCH##*-}"
+  fi
+
   log "Handling non Beluga-owned files in branch '${DEFAULT_GIT_BRANCH}'"
 
   log "Reconciling '${K8S_CONFIGS_DIR}' diffs between '${DEFAULT_GIT_BRANCH}' and its new branch '${NEW_BRANCH}'"
@@ -682,7 +692,11 @@ print_readme() {
   SEPARATOR='^'
 
   for NEW_BRANCH in ${NEW_BRANCHES}; do
-    ENV="${NEW_BRANCH##*-}"
+    if echo "${NEW_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
+      ENV="${CUSTOMER_HUB}"
+    else
+      ENV="${NEW_BRANCH##*-}"
+    fi
     BRANCH_LINE="${TAB} ${NEW_BRANCH} -> ${ENV}"
     test "${ENV_BRANCH_MAP}" &&
         ENV_BRANCH_MAP="${ENV_BRANCH_MAP}${SEPARATOR}${BRANCH_LINE}" ||
@@ -1117,6 +1131,8 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
   PRIMARY_REGION_DIR="$(cat "${PRIMARY_REGION_DIR_FILE}")"
   if test "${PRIMARY_REGION_DIR}"; then
     log "Primary region directory for '${ENV}': '${PRIMARY_REGION_DIR}'"
+  elif "${IS_CUSTOMER_HUB}"; then
+    log "Primary region not found for '${ENV}'. Will default to first region found."
   else
     log "Primary region is unknown for '${ENV}'"
     exit 1
@@ -1125,6 +1141,12 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
   # Sort the regions such that the primary region is first in order.
   REGION_DIRS_SORTED="${PRIMARY_REGION_DIR}"
   for REGION_DIR in ${REGION_DIRS}; do # REGION sort loop
+    # If primary region not set and it's the customer-hub branch, then default it to the first region.
+    if test ! "${PRIMARY_REGION_DIR}" && "${IS_CUSTOMER_HUB}"; then
+      PRIMARY_REGION_DIR="${REGION_DIR}"
+      REGION_DIRS_SORTED="${PRIMARY_REGION_DIR}"
+      log "Defaulting primary region to '${ENV}' to: '${PRIMARY_REGION_DIR}'."
+    fi
     if test "${PRIMARY_REGION_DIR}" != "${REGION_DIR}"; then
       REGION_DIRS_SORTED="${REGION_DIRS_SORTED} ${REGION_DIR}"
     fi
