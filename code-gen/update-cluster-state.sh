@@ -39,7 +39,6 @@ CUSTOM_PATCHES_SAMPLE_FILE_NAME='custom-patches-sample.yaml'
 CUSTOM_RESOURCES_REL_DIR="${K8S_CONFIGS_DIR}/${BASE_DIR}/${CUSTOM_RESOURCES_DIR}"
 CUSTOM_PATCHES_REL_FILE_NAME="${K8S_CONFIGS_DIR}/${BASE_DIR}/${CUSTOM_PATCHES_FILE_NAME}"
 
-ARTIFACTS_JSON_FILE_NAME='artifact-list.json'
 DESCRIPTOR_JSON_FILE_NAME='descriptor.json'
 
 PING_CLOUD_DIR='ping-cloud'
@@ -483,16 +482,6 @@ git_diff() {
 ########################################################################################################################
 handle_changed_k8s_secrets() {
   NEW_BRANCH="$1"
-
-  # If the new branch is for the customer-hub and a customer-hub branch didn't exist in the previous version,
-  # there's nothing to migrate.
-  if echo "${NEW_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
-    if ! "${CUSTOMER_HUB_BRANCH_EXISTS}"; then
-      log "No secrets to migrate to '${NEW_BRANCH}' - '${CUSTOMER_HUB}' branch does not exist"
-      return 0
-    fi
-  fi
-
   PRIMARY_REGION="$2"
 
   if echo "${NEW_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
@@ -569,15 +558,6 @@ handle_changed_k8s_secrets() {
 ########################################################################################################################
 handle_changed_k8s_configs() {
   NEW_BRANCH="$1"
-
-  # If the new branch is for the customer-hub and a customer-hub branch didn't exist in the previous version,
-  # there's nothing to migrate.
-  if echo "${NEW_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
-    if ! "${CUSTOMER_HUB_BRANCH_EXISTS}"; then
-      log "No k8s config to migrate to '${NEW_BRANCH}' - '${CUSTOMER_HUB}' branch does not exist"
-      return 0
-    fi
-  fi
 
   if echo "${NEW_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
     DEFAULT_GIT_BRANCH="${CUSTOMER_HUB}"
@@ -847,16 +827,7 @@ if test ! -d "${K8S_CONFIGS_DIR}"; then
   exit 1
 fi
 
-# FIXME: This is actually better for checking the status
-#
-# if test -n "$(git status -s)"; then
-#   echo commands-to-fix-local-changes
-# fi
-#
-# However, there is a bug in the wrapper script (shipped code) that prevents it from working correctly. The wrapper has
-# been fixed in v1.8. This check should be fixed in v1.9.
-
-if ! git diff-index --quiet HEAD --; then
+if test -n "$(git status -s)"; then
   echo
   echo 'There are local changes, which must be resolved before running this script:'
   echo
@@ -896,15 +867,7 @@ for ENV in ${ENVIRONMENTS}; do
   git checkout --quiet "${DEFAULT_GIT_BRANCH}"
   if test $? -ne 0; then
     log "git branch '${DEFAULT_GIT_BRANCH}' does not exist in '${CLUSTER_STATE_REPO}'"
-
-    # Do not consider it a failure for the customer-hub branch to not exist.
-    if test "${ENV}" = "${CUSTOMER_HUB}"; then
-      log "Will create git branch '${CUSTOMER_HUB}' in '${CLUSTER_STATE_REPO}'"
-      CUSTOMER_HUB_BRANCH_EXISTS=false
-    else
-      REPO_STATUS=1
-      CUSTOMER_HUB_BRANCH_EXISTS=true
-    fi
+    REPO_STATUS=1
   fi
 
   NEW_BRANCH="${NEW_VERSION}-${DEFAULT_GIT_BRANCH}"
@@ -1026,10 +989,12 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
 
         # Also set SERVER_PROFILE_URL to empty so the new default (i.e. profile-repo with the same URL as the CSR)
         # is automatically used.
+
+        # Last but not least, set the PING_IDENTITY_DEVOPS_USER/KEY to empty so they are fetched from SSM going forward.
         set -x
         QUIET=true \
             TARGET_DIR="${TARGET_DIR}" \
-            SERVER_PROFILE_URL= \
+            SERVER_PROFILE_URL='' \
             K8S_GIT_URL="${PING_CLOUD_BASE_REPO_URL}" \
             K8S_GIT_BRANCH="${NEW_VERSION}" \
             ENVIRONMENTS="${NEW_BRANCH}" \

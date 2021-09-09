@@ -11,6 +11,7 @@
 _Changes:_
 
 - [X] PDO-2753 PF Admin SSO Revert script update
+- [X] PDO-2791 Added a script to update server profile code from one version of Beluga to another
 - [X] PDO-2810 Added a license pre-hook script that configures the DevOps user/key to use for product licenses
 - [X] PDO-2811 Change the default for the DevOps USER/KEY to SSM paths
 - [X] PDO-2837 P14C liveness probe hitting wrong URL
