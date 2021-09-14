@@ -7,6 +7,7 @@
 - Configured all Ping applications to use the DevOps user/key retrieved through the Discovery service as defaults
 - Updated the P14C bootstrap image to query the platform event queue for future updates to MyPing parameters
 - Fixed PD Grafana dashboard, 'Replication Backlog' metric with changeable UserBaseDN env var
+- Fixing P14C issuer URL to not have newlines so PA pods do not fail to start up
 
 _Changes:_
 
@@ -17,6 +18,7 @@ _Changes:_
 - [X] PDO-2837 P14C liveness probe hitting wrong URL
 - [X] PDO-2846 Updated PA to 6.3
 - [X] PDO-2874 Updated the P14C bootstrap image to query the platform event queue for future updates to MyPing parameters
+- [X] PDO-1668 Fixing P14C issuer URL to not have newlines so PA pods do not fail to start up
 
 ### 1.10.0
 
