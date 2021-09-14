@@ -124,7 +124,7 @@ spec:
       containers:
       - name: pingaccess-was-admin
         #FIXME: Update image tags to final public versions & PullPolicy to IfNotPresent
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess-was:6.3.0-v1.0.6-north-star-p2
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess-was:6.3.0-v1.0.7-north-star-p2
         # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
         securityContext:
           runAsNonRoot: false
