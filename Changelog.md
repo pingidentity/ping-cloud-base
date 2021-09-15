@@ -90,6 +90,7 @@ _Changes:_
 - [X] PDO-2849 Reuse environment variables in the env_vars file in the CSR as much as possible
 - [X] PDO-2851 Cleanup PingCentral application.properties file 
 - [X] PDO-2869 Change PingFederate v10.3.1-edge image tag to a stable version
+- [X] PDO-2916 Enable/or disable PingCentral development endpoints using an environment variable
 
 ### 1.9.3
 

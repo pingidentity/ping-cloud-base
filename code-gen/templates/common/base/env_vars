@@ -160,7 +160,7 @@ PINGACCESS_WAS_IMAGE_TAG=6.3.0-v1.0.7-north-star-p2
 PINGFEDERATE_IMAGE_TAG=10.3.1-v1.0.12-north-star-p2
 PINGDIRECTORY_IMAGE_TAG=8.3.0.0-v1.0.11-north-star-p2
 PINGDELEGATOR_IMAGE_TAG=4.4.1-v1.0.7-north-star-p2
-PINGCENTRAL_IMAGE_TAG=1.8.0-v1.0.13-north-star-p2
+PINGCENTRAL_IMAGE_TAG=1.8.0-v1.0.14-north-star-p2
 
 ############################################################
 # Ping solution image tags
