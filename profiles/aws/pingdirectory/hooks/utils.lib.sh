@@ -51,7 +51,7 @@ function skbnCopy() {
 # Export values for PingDirectory configuration settings based on single vs. multi cluster.
 ########################################################################################################################
 function export_config_settings() {
-  export SHORT_HOST_NAME=$(hostname)
+  export SHORT_HOST_NAME=$(cat /etc/hostname)
   export ORDINAL=${SHORT_HOST_NAME##*-}
   export LOCAL_DOMAIN_NAME="$(hostname -f | cut -d'.' -f2-)"
 
