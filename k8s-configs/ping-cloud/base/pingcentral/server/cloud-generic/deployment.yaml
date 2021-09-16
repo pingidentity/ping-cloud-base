@@ -69,7 +69,7 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral:1.8.0-v1.0.13
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral:1.8.0-v1.0.14
         imagePullPolicy: IfNotPresent
         resources:
           requests:
