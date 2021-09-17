@@ -14,7 +14,7 @@ spec:
       containers:
       - name: pingfederate-backup
         #FIXME: Update image tags to final public versions & PullPolicy to IfNotPresent
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingfederate:10.3.1-v1.0.12-north-star-p2
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingfederate:10.3.1-v1.0.13-north-star-p2
         imagePullPolicy: Always
         # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
         securityContext:
