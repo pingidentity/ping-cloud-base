@@ -59,9 +59,8 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: pingdirectory-backup
-            #FIXME: Update image tags to final public versions & PullPolicy to IfNotPresent
-            image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:8.3.0.0-v1.0.11-north-star-p2
-            imagePullPolicy: Always
+            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory:8.3.0.0-v1.0.11
+            imagePullPolicy: IfNotPresent
            # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
             securityContext:
               runAsNonRoot: false

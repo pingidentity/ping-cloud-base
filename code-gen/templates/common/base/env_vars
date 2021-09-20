@@ -154,20 +154,19 @@ PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 ############################################################
 # Ping application image tags
 ############################################################
-#FIXME: Update image tags to final public versions
-PINGACCESS_IMAGE_TAG=6.3.0-v1.0.6-north-star-p2
-PINGACCESS_WAS_IMAGE_TAG=6.3.0-v1.0.7-north-star-p2
-PINGFEDERATE_IMAGE_TAG=10.3.1-v1.0.13-north-star-p2
-PINGDIRECTORY_IMAGE_TAG=8.3.0.0-v1.0.11-north-star-p2
-PINGDELEGATOR_IMAGE_TAG=4.4.1-v1.0.7-north-star-p2
-PINGCENTRAL_IMAGE_TAG=1.8.0-v1.0.15-north-star-p2
+PINGACCESS_IMAGE_TAG=6.3.0-v1.0.6
+PINGACCESS_WAS_IMAGE_TAG=6.3.0-v1.0.6
+PINGFEDERATE_IMAGE_TAG=10.3.1-v1.0.12
+PINGDIRECTORY_IMAGE_TAG=8.3.0.0-v1.0.11
+PINGDELEGATOR_IMAGE_TAG=4.4.1-v1.0.7
+PINGCENTRAL_IMAGE_TAG=1.8.0-v1.0.15
 
 ############################################################
 # Ping solution image tags
 ############################################################
 METADATA_IMAGE_TAG=v1.0.4
-P14C_BOOTSTRAP_IMAGE_TAG=v1.0.10-north-star-p2
-P14C_INTEGRATION_IMAGE_TAG=v1.0.29-north-star-p2
+P14C_BOOTSTRAP_IMAGE_TAG=v1.0.10
+P14C_INTEGRATION_IMAGE_TAG=v1.0.29
 
 ############################################################
 # Cluster name variables
