@@ -25,7 +25,7 @@ else
   MYSQL_USER=$(get_ssm_val "${MYSQL_USER_SSM}")
   MYSQL_PASSWORD=$(get_ssm_val "${MYSQL_PASSWORD_SSM}")
 
-  kubectl run -i "${pod_name}" --restart=Never --rm --image=arey/mysql-client -- \
+  kubectl run -n default -i "${pod_name}" --restart=Never --rm --image=arey/mysql-client -- \
        -h "${MYSQL_SERVICE_HOST}" -P ${MYSQL_SERVICE_PORT} \
        -u "${MYSQL_USER}" -p"${MYSQL_PASSWORD}" \
        -e "drop database ${MYSQL_DATABASE}"

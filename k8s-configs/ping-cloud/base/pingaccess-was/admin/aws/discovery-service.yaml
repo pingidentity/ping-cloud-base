@@ -13,7 +13,7 @@ spec:
         - /get_ssm_env_vars.sh
         envFrom:
         - configMapRef:
-            name: pingaccess-was-environment-variables
+            name: pingaccess-was-admin-environment-variables
         volumeMounts:
         - name: data-dir
           mountPath: /config

@@ -22,7 +22,7 @@ patchesJson6902:
       path: /spec/template/spec/containers/0/envFrom/-
       value:
         configMapRef:
-          name: pingaccess-last-update-config
+          name: pingaccess-admin-last-update-config
 
 ### Ingress patches ###
 

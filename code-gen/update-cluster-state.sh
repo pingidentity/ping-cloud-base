@@ -53,7 +53,6 @@ CLUSTER_STATE_REPO='cluster-state-repo'
 CUSTOMER_HUB='customer-hub'
 
 PING_CLOUD_BASE='ping-cloud-base'
-PING_CLOUD_DEFAULT_DEVOPS_USER='p1as-product-licensing@pingidentity.com'
 
 # If true, reset to the OOTB cluster state for the new version, i.e. perform no migration.
 RESET_TO_DEFAULT="${RESET_TO_DEFAULT:-false}"
@@ -262,12 +261,6 @@ set_env_vars() {
 
     # FIXME: escape variable values with spaces in the future. For now, LAST_UPDATE_REASON is the only one with spaces.
     # The PS/GSO teams have been informed to quote the string if it has spaces or escape the quotes.
-
-    # Export LAST_UPDATE_REASON separately from others. If it has quotes, the source command will fail.
-    LAST_UPDATE_REASON="$(sed -ne "s/^LAST_UPDATE_REASON=\(.*\)$/\1/p" "${env_file_bak}")"
-    if test "${LAST_UPDATE_REASON}"; then
-      export LAST_UPDATE_REASON
-    fi
 
     # Remove LAST_UPDATE_REASON because it can have spaces. The source will fail otherwise.
     sed -i.bak '/^LAST_UPDATE_REASON=.*$/d' "${env_file_bak}"
@@ -984,9 +977,6 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
           unset LETS_ENCRYPT_SERVER
         fi
 
-        # Preserve LAST_UPDATE_REASON so pods are not re-spun automatically. This way field can control the
-        # rollout of each region to be sequential, if necessary.
-
         # Also set SERVER_PROFILE_URL to empty so the new default (i.e. profile-repo with the same URL as the CSR)
         # is automatically used.
 
@@ -1046,6 +1036,17 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
           if test "${app_env_vars_file}"; then
             log "Copying ${app_env_vars_file} from ${DEFAULT_GIT_BRANCH} to ${ENV_VARS_FILE}"
             git show "${DEFAULT_GIT_BRANCH}:${app_env_vars_file}" > "${ENV_VARS_FILE}"
+
+            # Add the env_vars file to the admin/engine directories for PF, PA and PA-WAS to allow their admin to be
+            # updatable independently of their engines.
+            app_dir_name="$(dirname "${ENV_VARS_FILE}")"
+            if test -d "${app_dir_name}"/admin || test -d "${app_dir_name}"/engine; then
+              for role in admin engine; do
+                inner_env_vars_file="${app_dir_name}/${role}/env_vars"
+                cp "${ENV_VARS_FILE}" "${inner_env_vars_file}"
+              done
+              rm -f "${ENV_VARS_FILE}"
+            fi
           else
             log "Not an app-specific env_vars file: ${ENV_VARS_FILE}"
           fi

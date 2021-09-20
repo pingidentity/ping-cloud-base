@@ -71,7 +71,7 @@ spec:
             - /opt/in/backup-archive-data.sh
             envFrom:
             - configMapRef:
-                name: pingfederate-environment-variables
+                name: pingfederate-admin-environment-variables
             volumeMounts:
             - name: pingfederate-backup
               mountPath: /opt/in/backup-archive-data.sh

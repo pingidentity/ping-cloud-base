@@ -16,6 +16,10 @@ generatorOptions:
   disableNameSuffixHash: true
 
 configMapGenerator:
+- name: pingfederate-admin-environment-variables
+  envs:
+  - env_vars
+
 - name: pingfederate-environment-variables
   envs:
   - env_vars

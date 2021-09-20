@@ -16,6 +16,10 @@ generatorOptions:
   disableNameSuffixHash: true
 
 configMapGenerator:
+- name: pingaccess-admin-environment-variables
+  envs:
+  - env_vars
+
 - name: pingaccess-environment-variables
   envs:
   - env_vars

@@ -69,7 +69,7 @@ spec:
           subPath: utils.lib.sh
         envFrom:
         - configMapRef:
-            name: pingfederate-environment-variables
+            name: pingfederate-admin-environment-variables
         - configMapRef:
             name: pingcommon-environment-variables
       - name: newrelic-tags-exporter
@@ -80,7 +80,7 @@ spec:
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
-            name: pingfederate-environment-variables
+            name: pingfederate-admin-environment-variables
         - secretRef:
             name: newrelic-license-key
             optional: false
@@ -120,7 +120,7 @@ spec:
           subPath: wait-for-services.sh
         envFrom:
         - configMapRef:
-            name: pingfederate-environment-variables
+            name: pingfederate-admin-environment-variables
         - configMapRef:
             name: pingcommon-environment-variables
       containers:
@@ -158,7 +158,7 @@ spec:
           value: "/opt/shared-dir/newrelic.yml"
         envFrom:
         - configMapRef:
-            name: pingfederate-environment-variables
+            name: pingfederate-admin-environment-variables
         - configMapRef:
             name: pingcommon-environment-variables
         - secretRef:

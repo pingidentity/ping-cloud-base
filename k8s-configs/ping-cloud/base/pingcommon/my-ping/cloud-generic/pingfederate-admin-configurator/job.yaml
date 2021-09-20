@@ -25,7 +25,7 @@ spec:
               fieldPath: metadata.namespace
         envFrom:
         - configMapRef:
-            name: pingfederate-environment-variables
+            name: pingfederate-admin-environment-variables
         - secretRef:
             name: pingcommon-passwords
         command: [ 'python3', '-u', '/app/pingfederate_admin_configurator.py' ]

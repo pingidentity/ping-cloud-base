@@ -26,7 +26,7 @@ spec:
         - /opt/in/backup-archive-data.sh
         envFrom:
         - configMapRef:
-            name: pingaccess-was-environment-variables
+            name: pingaccess-was-admin-environment-variables
         volumeMounts:
         - name: pingaccess-was-backup
           mountPath: /opt/in/backup-archive-data.sh
