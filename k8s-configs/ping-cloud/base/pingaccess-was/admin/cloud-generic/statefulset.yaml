@@ -71,7 +71,7 @@ spec:
           subPath: p14c_env_vars
         envFrom:
         - configMapRef:
-            name: pingaccess-was-environment-variables
+            name: pingaccess-was-admin-environment-variables
       - name: wait-for-services
         # FIXME: switch to same user as app
         securityContext:
@@ -90,7 +90,7 @@ spec:
           subPath: wait-for-services.sh
         envFrom:
         - configMapRef:
-            name: pingaccess-was-environment-variables
+            name: pingaccess-was-admin-environment-variables
       - name: newrelic-tags-exporter
         securityContext:
           runAsNonRoot: false
@@ -99,7 +99,7 @@ spec:
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
-            name: pingaccess-was-environment-variables
+            name: pingaccess-was-admin-environment-variables
         - secretRef:
             name: newrelic-license-key
             optional: false
@@ -217,7 +217,7 @@ spec:
           value: "/opt/shared-dir/newrelic.yml"
         envFrom:
         - configMapRef:
-            name: pingaccess-was-environment-variables
+            name: pingaccess-was-admin-environment-variables
         - secretRef:
             name: newrelic-license-key
             optional: false
