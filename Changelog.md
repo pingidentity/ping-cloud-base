@@ -1,5 +1,13 @@
 # Changelog
 
+### 1.12.0
+
+- Added custom patch to create public ingresses for admin endpoints
+
+_Changes:_
+
+- [X] PDO-2921 SigSci WAF: create public ingresses for admin endpoints
+
 ### 1.11.0
 
 - Fixing P14C issuer URL to not have newlines so PA pods do not fail to start up
