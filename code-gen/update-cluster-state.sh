@@ -79,6 +79,7 @@ beluga_owned_k8s_files="@.flux.yaml \
 @sealed-secrets.yaml \
 @region-promotion.txt \
 @remove-from-secondary-patch.yaml \
+@ext-ingresses.yaml \
 @seal.sh"
 
 # The list of variables to substitute in env_vars.old files.
