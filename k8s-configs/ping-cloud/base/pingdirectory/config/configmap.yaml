@@ -239,8 +239,8 @@ data:
         TEMP_CRT_FILE=\$(mktemp)
         TEMP_KEY_FILE=\$(mktemp)
 
-        grep 'tls.key' \${SECRET_FILE} | cut -d: -f2 | base64 -d > \${TEMP_KEY_FILE}
-        grep 'tls.crt' \${SECRET_FILE} | cut -d: -f2 | base64 -d > \${TEMP_CRT_FILE}
+        grep 'tls.key' \${SECRET_FILE} | grep -v f. | cut -d: -f2 | xargs | base64 -d > \${TEMP_KEY_FILE}
+        grep 'tls.crt' \${SECRET_FILE} | grep -v f. | cut -d: -f2 | xargs | base64 -d > \${TEMP_CRT_FILE}
 
         if ! diff \${TEMP_CRT_FILE} ${STUNNEL_CRT_FILE} > /dev/null; then
           mv \${TEMP_CRT_FILE} ${STUNNEL_CRT_FILE}
