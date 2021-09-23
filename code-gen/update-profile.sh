@@ -28,6 +28,8 @@ CODE_GEN_DIR='code-gen'
 ARTIFACTS_JSON_FILE_NAME='artifact-list.json'
 
 PROFILE_REPO='profile-repo'
+CUSTOMER_HUB='customer-hub'
+
 PING_CLOUD_BASE='ping-cloud-base'
 
 # If true, reset to the OOTB profile state for the new version, i.e. perform no migration.
@@ -170,19 +172,23 @@ git_diff() {
 ########################################################################################################################
 handle_changed_profiles() {
   NEW_BRANCH="$1"
-  DEFAULT_CDE_BRANCH="${NEW_BRANCH##*-}"
+  if echo "${NEW_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
+    DEFAULT_GIT_BRANCH="${CUSTOMER_HUB}"
+  else
+    DEFAULT_GIT_BRANCH="${NEW_BRANCH##*-}"
+  fi
 
-  log "Reconciling '${PROFILES_DIR}' diffs between '${DEFAULT_CDE_BRANCH}' and its new branch '${NEW_BRANCH}'"
+  log "Reconciling '${PROFILES_DIR}' diffs between '${DEFAULT_GIT_BRANCH}' and its new branch '${NEW_BRANCH}'"
 
   git checkout --quiet "${NEW_BRANCH}"
-  new_files="$(git_diff "${DEFAULT_CDE_BRANCH}" HEAD "${PROFILES_DIR}")"
+  new_files="$(git_diff "${DEFAULT_GIT_BRANCH}" HEAD "${PROFILES_DIR}")"
 
   if ! test "${new_files}"; then
-    log "No changed '${PROFILES_DIR}' files to copy '${DEFAULT_CDE_BRANCH}' to its new branch '${NEW_BRANCH}'"
+    log "No changed '${PROFILES_DIR}' files to copy '${DEFAULT_GIT_BRANCH}' to its new branch '${NEW_BRANCH}'"
   else
-    log "DEBUG: Found the following new files in branch '${DEFAULT_CDE_BRANCH}':"
+    log "DEBUG: Found the following new files in branch '${DEFAULT_GIT_BRANCH}':"
     echo "${new_files}"
-    echo "${new_files}" | xargs git checkout "${DEFAULT_CDE_BRANCH}"
+    echo "${new_files}" | xargs git checkout "${DEFAULT_GIT_BRANCH}"
   fi
 
   # Copy artifact-list.json files from the default CDE branch into the new branch but with a .old extension.
@@ -190,11 +196,11 @@ handle_changed_profiles() {
   log "Found the following ${ARTIFACTS_JSON_FILE_NAME} files: ${artifact_json_files}"
 
   for artifact_file in ${artifact_json_files}; do
-    log "Copying file ${DEFAULT_CDE_BRANCH}:${artifact_file} to the same location on ${NEW_BRANCH} with .old extension"
-    git show "${DEFAULT_CDE_BRANCH}:${artifact_file}" > "${artifact_file}".old
+    log "Copying file ${DEFAULT_GIT_BRANCH}:${artifact_file} to the same location on ${NEW_BRANCH} with .old extension"
+    git show "${DEFAULT_GIT_BRANCH}:${artifact_file}" > "${artifact_file}".old
   done
 
-  msg="Copied changed '${PROFILES_DIR}' files from '${DEFAULT_CDE_BRANCH}' to its new branch '${NEW_BRANCH}'"
+  msg="Copied changed '${PROFILES_DIR}' files from '${DEFAULT_GIT_BRANCH}' to its new branch '${NEW_BRANCH}'"
   log "${msg}"
 
   git add .
@@ -209,7 +215,11 @@ print_readme() {
   SEPARATOR='^'
 
   for NEW_BRANCH in ${NEW_BRANCHES}; do
-    ENV="${NEW_BRANCH##*-}"
+    if echo "${NEW_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
+      ENV="${CUSTOMER_HUB}"
+    else
+      ENV="${NEW_BRANCH##*-}"
+    fi
     BRANCH_LINE="${TAB} ${NEW_BRANCH} -> ${ENV}"
     test "${ENV_BRANCH_MAP}" &&
         ENV_BRANCH_MAP="${ENV_BRANCH_MAP}${SEPARATOR}${BRANCH_LINE}" ||
@@ -395,7 +405,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
       GENERATED_CODE_DIR="${TARGET_DIR}" \
       IS_PRIMARY=true \
       IS_PROFILE_REPO=true \
-      ENVIRONMENTS="${NEW_BRANCH}" \
+      ENVIRONMENTS="${ENV}" \
       PUSH_TO_SERVER=false \
       "${NEW_PING_CLOUD_BASE_REPO}/${CODE_GEN_DIR}/push-cluster-state.sh"
 
