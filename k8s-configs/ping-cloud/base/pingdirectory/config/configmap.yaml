@@ -248,7 +248,7 @@ data:
 
           PID=\$(pgrep stunnel)
           echo "Sending stunnel process PID \${PID} the HUP signal"
-          kill -HUP \${PID}
+          kill -s HUP \${PID}
           echo "stunnel config last reloaded at \$(date)"
         fi
       else
