@@ -496,11 +496,13 @@ echo ---
 
 # Use defaults for other variables, if not present.
 export IS_BELUGA_ENV="${IS_BELUGA_ENV:-false}"
+
+TENANT_DOMAIN="${TENANT_DOMAIN:-ci-cd.ping-oasis.com}"
 export TENANT_NAME="${TENANT_NAME:-${TENANT_DOMAIN%%.*}}"
 export SIZE="${SIZE:-x-small}"
 
 ### Region-specific environment variables ###
-export REGION="${REGION}"
+export REGION="${REGION:-us-west-2}"
 export REGION_NICK_NAME="${REGION_NICK_NAME:-${REGION}}"
 
 TENANT_DOMAIN_NO_DOT_SUFFIX="${TENANT_DOMAIN%.}"
