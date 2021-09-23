@@ -173,7 +173,7 @@ data:
     STUNNEL_LOG_DIR=/var/log/stunnel
     STUNNEL_LOG_FILE="${STUNNEL_LOG_DIR}"/stunnel.log
 
-    STUNNEL_CA_FILE=/etc/ssl/certs/ca-certificates.crt
+    STUNNEL_CA_FILE=/etc/ssl/certs/ca-bundle.crt
 
     STUNNEL_CRT_FILE="${STUNNEL_HOME}"/tls.crt
     STUNNEL_KEY_FILE="${STUNNEL_HOME}"/tls.key
