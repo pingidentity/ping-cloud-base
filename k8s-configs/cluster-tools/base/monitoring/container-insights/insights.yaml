@@ -373,6 +373,7 @@ data:
 
       <match kubernetes.**>
         @type rewrite_tag_filter
+        hostname_command cat /etc/hostname
         <rule>
           key log
           pattern /^\/opt\/out\/instance\/logs\/server/
@@ -427,6 +428,7 @@ data:
 
       <match temp.**>
         @type rewrite_tag_filter
+        hostname_command cat /etc/hostname
         remove_tag_prefix temp
         <rule>
           key stream_name
@@ -465,6 +467,7 @@ data:
 
       <match kubernetes.**>
         @type rewrite_tag_filter
+        hostname_command cat /etc/hostname
         <rule>
           key log
           pattern /^\<[0-9]+\>/
@@ -548,6 +551,7 @@ data:
 
       <match temp.**>
         @type rewrite_tag_filter
+        hostname_command cat /etc/hostname
         remove_tag_prefix temp
         <rule>
           key stream_name
@@ -586,6 +590,7 @@ data:
 
       <match kubernetes.**>
         @type rewrite_tag_filter
+        hostname_command cat /etc/hostname
         <rule>
           key log
           pattern /^\/opt\/out\/instance\/log\/pingaccess_api_audit.*127\.0\.0\.1\| GET\| \/pa-admin-api\/v3\/version\| 200/
@@ -644,6 +649,7 @@ data:
 
       <match temp.**>
         @type rewrite_tag_filter
+        hostname_command cat /etc/hostname
         remove_tag_prefix temp
         <rule>
           key stream_name
@@ -673,6 +679,7 @@ data:
 
       <match kubernetes.**>
         @type rewrite_tag_filter
+        hostname_command cat /etc/hostname
         <rule>
           key log
           pattern /^\/opt\/out\/instance\/log\/pingaccess_api_audit.*127\.0\.0\.1\| GET\| \/pa-admin-api\/v3\/version\| 200/
@@ -726,6 +733,7 @@ data:
 
       <match temp.**>
         @type rewrite_tag_filter
+        hostname_command cat /etc/hostname
         remove_tag_prefix temp
         <rule>
           key stream_name
@@ -755,6 +763,7 @@ data:
 
       <match kubernetes.**>
         @type rewrite_tag_filter
+        hostname_command cat /etc/hostname
         <rule>
           key log
           pattern /^\/opt\/out\/instance\/log\/access.*127\.0\.0\.1.*GET \/ HTTP\/2\.0.*200/
@@ -788,6 +797,7 @@ data:
 
       <match temp.**>
         @type rewrite_tag_filter
+        hostname_command cat /etc/hostname
         remove_tag_prefix temp
         <rule>
           key stream_name
