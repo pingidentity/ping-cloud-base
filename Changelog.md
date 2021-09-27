@@ -18,6 +18,7 @@ _Changes:_
 - Fixed PD Grafana dashboard, 'Replication Backlog' metric with changeable UserBaseDN env var
 - Fix PF's run.sh to not map SIGTERM to SIGKILL
 - Added the ability to roll out PF/PA/PA-WAS admin and engines separately
+- Upgraded newrelic-tags-exporter to version 1.0.5 
 
 _Changes:_
 
@@ -29,6 +30,7 @@ _Changes:_
 - [X] PDO-2837 P14C liveness probe hitting wrong URL
 - [X] PDO-2846 Updated PA to 6.3
 - [X] PDO-2874 Updated the P14C bootstrap image to query the platform event queue for future updates to MyPing parameters
+- [X] PDO-2878 Update newrelic-tags-exporter image version to 1.0.5
 - [X] PDO-2885 Provide the ability to update PA/PF admin independent of engines
 - [X] PDO-2919 Fix PF's run.sh to not map SIGTERM to SIGKILL
 
