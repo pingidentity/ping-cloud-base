@@ -35,7 +35,8 @@ CUSTOMER_HUB='customer-hub'
 
 ########################################################################################################################
 # Delete all files and directories under the provided directory. All hidden files and directories directly under the
-# provided directory will be left intact.
+# provided directory will be left intact. Any glob specified through the RETAIN_GLOB environment variable will be
+# ignored.
 #
 # Arguments
 #   ${1} -> The directory to clean up.
@@ -45,7 +46,12 @@ dir_deep_clean() {
   if test -d "${dir}"; then
     echo "Contents of directory ${dir} before deletion:"
     find "${dir}" -mindepth 1 -maxdepth 1
-    find "${dir}" -mindepth 1 -maxdepth 1 -not -path "${dir}/.*" -exec rm -rf {} +
+    # Allow a glob to be retained with an environment variable. For example,
+    # users may want project files such as *.iml and *.vscode to be retained.
+    if test "${RETAIN_GLOB}"; then
+      set -- -not -path "${dir}/${RETAIN_GLOB}"
+    fi
+    find "${dir}" -mindepth 1 -maxdepth 1 -not -path "${dir}/.*" "$@" -exec rm -rf {} +
     echo "Contents of directory ${dir} after deletion:"
     find "${dir}" -mindepth 1 -maxdepth 1
   fi
@@ -156,10 +162,10 @@ fi
 # Set the git merge strategy to avoid noisy hints in the output.
 git config pull.rebase false
 
-# Get rid of staged/un-staged modifications and untracked files/directories (including ignored ones) on current branch.
+# Get rid of staged/un-staged modifications and untracked files/directories on current branch.
 # Otherwise, you cannot switch to another branch.
 git reset --hard HEAD
-git clean -fdx
+git clean -fd
 
 # Create a staging branch from which to create new branches.
 STAGING_BRANCH="staging-branch-$(date +%s)"
@@ -213,10 +219,10 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   # NOTE: this shouldn't be required here since we commit all changes before moving to the next branch. But it doesn't
   # hurt to have it as an extra pre-caution.
 
-  # Get rid of staged/un-staged modifications and untracked files/directories (including ignored ones) on current
+  # Get rid of staged/un-staged modifications and untracked files/directories on current
   # branch. Otherwise, you cannot switch to another branch.
   git reset --hard HEAD
-  git clean -fdx
+  git clean -fd
 
   # Check if the branch exists locally. If so, switch to it.
   if git rev-parse --verify "${GIT_BRANCH}" &> /dev/null; then
