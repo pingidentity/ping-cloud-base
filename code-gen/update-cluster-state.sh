@@ -836,7 +836,7 @@ if test -n "$(git status -s)"; then
   echo 'If local changes are unnecessary, then get rid of them by running these commands:'
   echo
   echo '    git reset --hard HEAD     # Get rid of staged and un-staged modifications'
-  echo '    git clean -fdx            # Get rid of untracked files and directories (including ignored ones)'
+  echo '    git clean -fd             # Get rid of untracked files and directories'
   echo
 
   exit 1

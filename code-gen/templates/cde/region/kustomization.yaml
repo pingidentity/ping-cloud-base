@@ -156,6 +156,9 @@ configMapGenerator:
 
 patchesStrategicMerge:
 
+### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
+- custom-patches.yaml
+
 ### Regional enablement - remove admins, backups, etc. from secondary ###
 ### These patches should be commented out on the primary region ###
 

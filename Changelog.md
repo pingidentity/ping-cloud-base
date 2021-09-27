@@ -3,10 +3,12 @@
 ### 1.12.0
 
 - Added custom patch to create public ingresses for admin endpoints
+- Added regional custom-patches.yaml as an extension point to customize configuration for a specific region 
 
 _Changes:_
 
 - [X] PDO-2921 SigSci WAF: create public ingresses for admin endpoints
+- [X] PDO-2938 Added regional custom-patches.yaml as an extension point to customize configuration for a specific region
 
 ### 1.11.0
 
