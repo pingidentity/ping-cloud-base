@@ -66,6 +66,10 @@ spec:
             image: pingcloud-virtual.jfrog.io/pingidentity/pingaccess:2010-6.1.3
             command:
             - /opt/in/backup-archive-data.sh
+            securityContext:
+              runAsGroup: 9999
+              runAsNonRoot: true
+              runAsUser: 9031
             envFrom:
             - configMapRef:
                 name: pingaccess-environment-variables

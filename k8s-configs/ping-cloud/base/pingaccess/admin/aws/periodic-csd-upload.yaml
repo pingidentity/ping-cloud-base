@@ -17,6 +17,10 @@ spec:
             image: pingcloud-virtual.jfrog.io/pingidentity/pingaccess:2010-6.1.3
             command:
             - /opt/in/backup-csd-data.sh
+            securityContext:
+              runAsGroup: 9999
+              runAsNonRoot: true
+              runAsUser: 9031
             env:
             - name: CSD_POD_ROLE
               value: "pingaccess-admin"
