@@ -11,10 +11,12 @@
 - Fix PF's run.sh to not map SIGTERM to SIGKILL
 - Added the ability to roll out PF/PA/PA-WAS admin and engines separately
 - Upgraded newrelic-tags-exporter to version 1.0.5 
+- Updated cert-manager from v0.10.1 to v1.5.3
 
 _Changes:_
 
 - [X] PDO-1668 Fixing P14C issuer URL to not have newlines so PA pods do not fail to start up
+- [X] PDO-2433 Updated cert-manager from v0.10.1 to v1.5.3
 - [X] PDO-2753 PF Admin SSO Revert script update
 - [X] PDO-2791 Added a script to update server profile code from one version of Beluga to another
 - [X] PDO-2810 Added a license pre-hook script that configures the DevOps user/key to use for product licenses
