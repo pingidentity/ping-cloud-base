@@ -34,7 +34,6 @@ patchesStrategicMerge:
   spec:
     dnsNames:
       - '*.${TENANT_DOMAIN}'
-    commonName: ${TENANT_DOMAIN}
 
 ### Cloud-watch logging and monitoring ###
 - |-

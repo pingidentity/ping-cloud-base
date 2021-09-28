@@ -34,7 +34,6 @@ patchesStrategicMerge:
   spec:
     dnsNames:
     - '*.${DNS_ZONE}'
-    commonName: ${DNS_ZONE}
 
 patchesJson6902:
 

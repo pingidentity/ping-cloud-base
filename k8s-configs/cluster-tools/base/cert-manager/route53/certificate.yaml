@@ -10,4 +10,3 @@ spec:
     kind: ClusterIssuer
   dnsNames:
   - '*.ping-demo.com'
-  commonName: ping-demo.com
