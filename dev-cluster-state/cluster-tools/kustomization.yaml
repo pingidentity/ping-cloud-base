@@ -8,7 +8,7 @@ patchesStrategicMerge:
 
 ### Lets encrypt ACME certificate issuer for the cluster ###
 - |-
-  apiVersion: certmanager.k8s.io/v1alpha1
+  apiVersion: cert-manager.io/v1alpha2
   kind: ClusterIssuer
   metadata:
     name: letsencrypt-prod
@@ -26,7 +26,7 @@ patchesStrategicMerge:
 
 ### Lets encrypt ACME certificate for all endpoints ###
 - |-
-  apiVersion: certmanager.k8s.io/v1alpha1
+  apiVersion: cert-manager.io/v1alpha2
   kind: Certificate
   metadata:
     name: acme-tls-cert
@@ -134,7 +134,7 @@ patchesJson6902:
 
 # Change the namespace of the ACME certificate to the ping-cloud namespace
 - target:
-    group: certmanager.k8s.io
+    group: cert-manager.io
     version: v1alpha1
     kind: Certificate
     name: acme-tls-cert
