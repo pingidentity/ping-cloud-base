@@ -134,7 +134,7 @@ patchesJson6902:
 # Change the namespace of the ACME certificate to the ping-cloud namespace
 - target:
     group: cert-manager.io
-    version: v1alpha1
+    version: v1alpha2
     kind: Certificate
     name: acme-tls-cert
     namespace: cert-manager
