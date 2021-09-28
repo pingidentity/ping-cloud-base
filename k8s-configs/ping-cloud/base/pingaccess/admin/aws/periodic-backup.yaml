@@ -7,10 +7,10 @@ data:
     #!/bin/sh
 
     # Install kubectl
-    curl -sS https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl \
-    -o /usr/local/bin/kubectl
+    curl -sS https://storage.googleapis.com/kubernetes-release/release/v1.19.0/bin/linux/amd64/kubectl \
+    -o /tmp/kubectl
     
-    chmod +x /usr/local/bin/kubectl
+    chmod +x /tmp/kubectl
 
     UPLOAD_FILES=
     SERVER="${K8S_STATEFUL_SET_NAME_PINGACCESS}-0"
@@ -18,7 +18,7 @@ data:
     LOG_FILE=/tmp/upload.log
 
     echo "Uploading pingaccess backup data on server ${SERVER}"
-    kubectl exec "${SERVER}" -- sh -c \
+    /tmp/kubectl exec "${SERVER}" -- sh -c \
             "test -x ${SCRIPT} && \
             ${SCRIPT}"> "${LOG_FILE}"
 

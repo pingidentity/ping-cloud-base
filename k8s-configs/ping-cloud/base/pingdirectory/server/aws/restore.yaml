@@ -8,10 +8,10 @@ data:
     set -e
 
     # Install kubectl
-    curl -sS https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl \
-    -o /usr/local/bin/kubectl
+    curl -sS https://storage.googleapis.com/kubernetes-release/release/v1.19.0/bin/linux/amd64/kubectl \
+    -o /tmp/kubectl
     
-    chmod +x /usr/local/bin/kubectl
+    chmod +x /tmp/kubectl
 
     RESTORE_FILES=
     SCRIPT="${HOOKS_DIR}"/90-restore-backup-s3.sh
@@ -19,7 +19,7 @@ data:
 
     test -z "${BACKUP_RESTORE_POD}" && SERVER="${K8S_STATEFUL_SET_NAME}-0" || SERVER="${BACKUP_RESTORE_POD}"
 
-    NUM_REPLICAS=$(kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
+    NUM_REPLICAS=$(/tmp/kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
     echo "restore: number of replicas: ${NUM_REPLICAS}"
 
     DN_LIST=
@@ -38,7 +38,7 @@ data:
       if "${PAUSE_REPLICATION_BEFORE_RESTORE}" && test ${NUM_REPLICAS} -gt 1; then
         echo "Executing pre-initialization from within ${SERVER} pod for DNs: ${DNS_LIST}"
         for DN in ${DNS_LIST}; do
-          kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
+          /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
             "dsreplication pre-external-initialization \
               --retryTimeoutSeconds \"${RETRY_TIMEOUT_SECONDS}\" \
               --baseDN \"${DN}\" \
@@ -51,7 +51,7 @@ data:
       if "${PAUSE_REPLICATION_BEFORE_RESTORE}" && test ${NUM_REPLICAS} -gt 1; then
         echo "Initializing replication from within ${SERVER} pod for DNs: ${DN_LIST} "
         for DN in ${DNS_LIST}; do
-          kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
+          /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
             "dsreplication initialize-all \
               --retryTimeoutSeconds \"${RETRY_TIMEOUT_SECONDS}\" \
               --baseDN \"${DN}\" \
@@ -60,7 +60,7 @@ data:
 
         echo "Executing post-initialization from within ${SERVER} pod for DNs: ${DNS_LIST}"
         for DN in ${DNS_LIST}; do
-          kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
+          /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
             "dsreplication post-external-initialization \
               --retryTimeoutSeconds \"${RETRY_TIMEOUT_SECONDS}\" \
               --baseDN \"${DN}\" \
@@ -75,7 +75,7 @@ data:
     pause_replication
 
     echo "Running restore script within ${SERVER} pod"
-    kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
+    /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
         "test -x ${SCRIPT} && \
             export BACKUP_FILE_NAME=${BACKUP_FILE_NAME} && \
             ${SCRIPT}"> "${LOG_FILE}"
