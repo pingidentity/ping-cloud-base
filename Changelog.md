@@ -10,7 +10,8 @@
 - Fixed PD Grafana dashboard, 'Replication Backlog' metric with changeable UserBaseDN env var
 - Fix PF's run.sh to not map SIGTERM to SIGKILL
 - Added the ability to roll out PF/PA/PA-WAS admin and engines separately
-- Upgraded newrelic-tags-exporter to version 1.0.5 
+- Upgraded newrelic-tags-exporter to version 1.0.5
+- Fixed error in run.sh when New Relic key isn't provided
 - Updated cert-manager from v0.10.1 to v1.5.3
 
 _Changes:_
@@ -27,6 +28,7 @@ _Changes:_
 - [X] PDO-2878 Update newrelic-tags-exporter image version to 1.0.5
 - [X] PDO-2885 Provide the ability to update PA/PF admin independent of engines
 - [X] PDO-2919 Fix PF's run.sh to not map SIGTERM to SIGKILL
+- [X] PDO-2936 Error in run.sh when New Relic key isn't provided
 
 ### 1.10.0
 
