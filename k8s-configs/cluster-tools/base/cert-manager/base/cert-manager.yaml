@@ -41,7 +41,7 @@ spec:
   scope: Namespaced
   conversion:
     # a Webhook strategy instruct API server to call an external webhook for any conversion between custom resources.
-    strategy: Webhook
+    strategy: None
     # webhookClientConfig is required when strategy is `Webhook` and it configures the webhook endpoint to be called by API server.
     webhook:
       # We don't actually support `v1beta1` but is listed here as it is a
@@ -769,7 +769,7 @@ spec:
   scope: Namespaced
   conversion:
     # a Webhook strategy instruct API server to call an external webhook for any conversion between custom resources.
-    strategy: Webhook
+    strategy: None
     # webhookClientConfig is required when strategy is `Webhook` and it configures the webhook endpoint to be called by API server.
     webhook:
       # We don't actually support `v1beta1` but is listed here as it is a
@@ -2088,7 +2088,7 @@ spec:
   scope: Namespaced
   conversion:
     # a Webhook strategy instruct API server to call an external webhook for any conversion between custom resources.
-    strategy: Webhook
+    strategy: None
     # webhookClientConfig is required when strategy is `Webhook` and it configures the webhook endpoint to be called by API server.
     webhook:
       # We don't actually support `v1beta1` but is listed here as it is a
@@ -5963,7 +5963,7 @@ spec:
   scope: Cluster
   conversion:
     # a Webhook strategy instruct API server to call an external webhook for any conversion between custom resources.
-    strategy: Webhook
+    strategy: None
     # webhookClientConfig is required when strategy is `Webhook` and it configures the webhook endpoint to be called by API server.
     webhook:
       # We don't actually support `v1beta1` but is listed here as it is a
@@ -10688,7 +10688,7 @@ spec:
   scope: Namespaced
   conversion:
     # a Webhook strategy instruct API server to call an external webhook for any conversion between custom resources.
-    strategy: Webhook
+    strategy: None
     # webhookClientConfig is required when strategy is `Webhook` and it configures the webhook endpoint to be called by API server.
     webhook:
       # We don't actually support `v1beta1` but is listed here as it is a
@@ -15414,7 +15414,7 @@ spec:
   scope: Namespaced
   conversion:
     # a Webhook strategy instruct API server to call an external webhook for any conversion between custom resources.
-    strategy: Webhook
+    strategy: None
     # webhookClientConfig is required when strategy is `Webhook` and it configures the webhook endpoint to be called by API server.
     webhook:
       # We don't actually support `v1beta1` but is listed here as it is a
