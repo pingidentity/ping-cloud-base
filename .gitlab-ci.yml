@@ -25,7 +25,7 @@ compile:
   stage: compile
   tags:
     - default-gitlab-runner
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
   - ./ci-scripts/compile/compile.sh
 
@@ -34,7 +34,7 @@ deploy:
   stage: build
   tags:
   - default-gitlab-runner
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
   - ./ci-scripts/build/deploy.sh
 
@@ -45,7 +45,7 @@ pa-was-integration-tests:
   stage: pa-was-test
   tags:
     - default-gitlab-runner
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
     - ./ci-scripts/test/integration/run-integration-tests.sh pingaccess-was
 
@@ -54,7 +54,7 @@ pd-integration-tests:
   stage: integration-test
   tags:
     - default-gitlab-runner
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
   - ./ci-scripts/test/integration/run-integration-tests.sh pingdirectory
 
@@ -62,7 +62,7 @@ da-integration-tests:
   stage: integration-test
   tags:
     - default-gitlab-runner
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
     - ./ci-scripts/test/integration/run-integration-tests.sh pingdelegator
 
@@ -70,7 +70,7 @@ pf-integration-tests:
   stage: integration-test
   tags:
     - default-gitlab-runner
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
   - ./ci-scripts/test/integration/run-integration-tests.sh pingfederate
 
@@ -78,7 +78,7 @@ pa-integration-tests:
   stage: integration-test
   tags:
     - default-gitlab-runner
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
     - ./ci-scripts/test/integration/run-integration-tests.sh pingaccess
 
@@ -86,7 +86,7 @@ pc-services-integration-tests:
   stage: integration-test
   tags:
     - default-gitlab-runner
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
     - ./ci-scripts/test/integration/run-integration-tests.sh pingcloud-services
 
@@ -94,7 +94,7 @@ pcentral-integration-tests:
   stage: integration-test
   tags:
     - default-gitlab-runner
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
     - ./ci-scripts/test/integration/run-integration-tests.sh pingcentral
 
@@ -102,7 +102,7 @@ common-integration-tests:
   stage: integration-test
   tags:
     - default-gitlab-runner
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
     - ./ci-scripts/test/integration/run-integration-tests.sh common
 
@@ -110,7 +110,7 @@ monitoring-integration-tests:
   stage: integration-test
   tags:
     - default-gitlab-runner
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
     - ./ci-scripts/test/integration/run-integration-tests.sh monitoring
 
@@ -119,7 +119,7 @@ chaos-tests:
   stage: chaos
   tags:
     - default-gitlab-runner
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
   - ./ci-scripts/test/integration/run-integration-tests.sh chaos
 
@@ -128,6 +128,6 @@ cleanup:
   stage: cleanup
   tags:
     - default-gitlab-runner
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:stable
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
   - ./ci-scripts/cleanup/teardown.sh
