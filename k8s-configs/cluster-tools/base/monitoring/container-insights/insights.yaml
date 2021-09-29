@@ -1218,10 +1218,10 @@ spec:
               value: "k8s/1.0.1"
           resources:
             limits:
-              memory: 400Mi
+              memory: 756Mi
             requests:
               cpu: 100m
-              memory: 200Mi
+              memory: 512Mi
           volumeMounts:
             - name: config-volume
               mountPath: /config-volume
