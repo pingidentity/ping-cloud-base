@@ -1,0 +1,4 @@
+- op: add
+  path: /data
+  value:
+    main-snippet: load_module /usr/lib/nginx/modules/ngx_http_sigsci_module.so;

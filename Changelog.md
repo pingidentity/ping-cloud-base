@@ -4,9 +4,11 @@
 
 - Added custom patch to create public ingresses for admin endpoints
 - Added regional custom-patches.yaml as an extension point to customize configuration for a specific region 
+- Updated ingress to v1.0.0 and added the SigSci agent sidecar container to the public Nginx-ingress-controller pod
 
 _Changes:_
 
+- [X] PDO-2534 SigSci WAF: run the SigSci agent as a sidecar container in the Nginx-ingress-controller pod
 - [X] PDO-2921 SigSci WAF: create public ingresses for admin endpoints
 - [X] PDO-2938 Added regional custom-patches.yaml as an extension point to customize configuration for a specific region
 

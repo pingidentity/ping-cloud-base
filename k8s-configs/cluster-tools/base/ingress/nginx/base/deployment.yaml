@@ -50,7 +50,7 @@ spec:
               topologyKey: "failure-domain.beta.kubernetes.io/zone"
       containers:
         - name: nginx-ingress-controller
-          image: public.ecr.aws/r2h3l6e4/ingress-nginx/controller:v0.46.0
+          image: public.ecr.aws/r2h3l6e4/pingcloud-services/sigsci-nginx-ingress-controller:v1.0.0
           resources:
             limits:
               cpu: 2
