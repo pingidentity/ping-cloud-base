@@ -15,10 +15,10 @@ NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY:-unused}
 export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KEY}")
 
 # Deploy the configuration to Kubernetes
-DEPLOY_FILE=/tmp/deploy.yaml
-build_dev_deploy_file "${DEPLOY_FILE}"
+DEPLOY_DIR="$(mktemp -d)"
+build_dev_deploy_dir "${DEPLOY_DIR}"
 
-kubectl apply -f "${DEPLOY_FILE}"
+kubectl apply -f "${DEPLOY_DIR}"
 
 # A PingDirectory pod can take up to 15 minutes to deploy in the CI/CD cluster. There are two sets of dependencies
 # today from:
