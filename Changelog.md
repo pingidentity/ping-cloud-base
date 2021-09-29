@@ -13,10 +13,13 @@
 - Upgraded newrelic-tags-exporter to version 1.0.5
 - Increase memory for FluentD to avoid memory issues in GA deployments
 - Fixed error in run.sh when New Relic key isn't provided
+- Updated cert-manager from v0.10.1 to v1.5.3
+- Added New Relic support for PingCentral
 
 _Changes:_
 
 - [X] PDO-1668 Fixing P14C issuer URL to not have newlines so PA pods do not fail to start up
+- [X] PDO-2433 Updated cert-manager from v0.10.1 to v1.5.3
 - [X] PDO-2753 PF Admin SSO Revert script update
 - [X] PDO-2791 Added a script to update server profile code from one version of Beluga to another
 - [X] PDO-2810 Added a license pre-hook script that configures the DevOps user/key to use for product licenses
@@ -29,6 +32,7 @@ _Changes:_
 - [X] PDO-2919 Fix PF's run.sh to not map SIGTERM to SIGKILL
 - [X] PDO-2935 Increase memory for FluentD to avoid memory issues in GA deployments
 - [X] PDO-2936 Error in run.sh when New Relic key isn't provided
+- [X] PDO-2941 Add New Relic support for PingCentral
 
 ### 1.10.0
 
