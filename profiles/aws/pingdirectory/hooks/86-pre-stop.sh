@@ -4,7 +4,7 @@
 
 beluga_log "pre-stop: starting pre-stop hook"
 
-SHORT_HOST_NAME=$(hostname)
+SHORT_HOST_NAME=$(cat /etc/hostname)
 ORDINAL=${SHORT_HOST_NAME##*-}
 beluga_log "pre-stop: pod ordinal: ${ORDINAL}"
 
