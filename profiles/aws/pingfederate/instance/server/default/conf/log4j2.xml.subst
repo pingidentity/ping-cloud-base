@@ -1527,7 +1527,7 @@
         <Logger name="org.eclipse.jetty.server.session" level="WARN" />
         <Logger name="org.apache.hivemind" level="INFO" />
         <!-- Limit the jgroups category -->
-        <Logger name="org.jgroups" level="INFO" />
+        <Logger name="org.jgroups" level="ERROR" />
         <Logger name="com.pingidentity.jgroups.org.jgroups" level="WARN" />
         <Logger name="com.pingidentity.aws" level="INFO" />
         <!-- Limit the Amazon AWS SDK logging -->

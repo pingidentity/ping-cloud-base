@@ -16,9 +16,8 @@ spec:
       restartPolicy: Never
       containers:
       - name: pingaccess-backup
-        #FIXME: Update image tags to final public versions & PullPolicy to IfNotPresent
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess:6.3.0-v1.0.5-north-star-p2
-        imagePullPolicy: Always
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess:6.3.0-v1.0.7
+        imagePullPolicy: IfNotPresent
         # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
         securityContext:
           runAsNonRoot: false
@@ -27,7 +26,7 @@ spec:
         - /opt/in/backup-archive-data.sh
         envFrom:
         - configMapRef:
-            name: pingaccess-environment-variables
+            name: pingaccess-admin-environment-variables
         volumeMounts:
         - name: pingaccess-backup
           mountPath: /opt/in/backup-archive-data.sh

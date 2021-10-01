@@ -2,20 +2,37 @@
 
 ### 1.11.0
 
+- Fixing P14C issuer URL to not have newlines so PA pods do not fail to start up
 - Updated p14c-integration image to 1.0.29
 - Updated PA to 6.3 to support SSO through P14C (for administrator users) and SSO through PingFederate (for customer users)
 - Configured all Ping applications to use the DevOps user/key retrieved through the Discovery service as defaults
 - Updated the P14C bootstrap image to query the platform event queue for future updates to MyPing parameters
 - Fixed PD Grafana dashboard, 'Replication Backlog' metric with changeable UserBaseDN env var
+- Fix PF's run.sh to not map SIGTERM to SIGKILL
+- Added the ability to roll out PF/PA/PA-WAS admin and engines separately
+- Upgraded newrelic-tags-exporter to version 1.0.5
+- Increase memory for FluentD to avoid memory issues in GA deployments
+- Fixed error in run.sh when New Relic key isn't provided
+- Updated cert-manager from v0.10.1 to v1.5.3
+- Added New Relic support for PingCentral
 
 _Changes:_
 
+- [X] PDO-1668 Fixing P14C issuer URL to not have newlines so PA pods do not fail to start up
+- [X] PDO-2433 Updated cert-manager from v0.10.1 to v1.5.3
 - [X] PDO-2753 PF Admin SSO Revert script update
+- [X] PDO-2791 Added a script to update server profile code from one version of Beluga to another
 - [X] PDO-2810 Added a license pre-hook script that configures the DevOps user/key to use for product licenses
 - [X] PDO-2811 Change the default for the DevOps USER/KEY to SSM paths
 - [X] PDO-2837 P14C liveness probe hitting wrong URL
 - [X] PDO-2846 Updated PA to 6.3
 - [X] PDO-2874 Updated the P14C bootstrap image to query the platform event queue for future updates to MyPing parameters
+- [X] PDO-2878 Update newrelic-tags-exporter image version to 1.0.5
+- [X] PDO-2885 Provide the ability to update PA/PF admin independent of engines
+- [X] PDO-2919 Fix PF's run.sh to not map SIGTERM to SIGKILL
+- [X] PDO-2935 Increase memory for FluentD to avoid memory issues in GA deployments
+- [X] PDO-2936 Error in run.sh when New Relic key isn't provided
+- [X] PDO-2941 Add New Relic support for PingCentral
 
 ### 1.10.0
 
@@ -87,6 +104,7 @@ _Changes:_
 - [X] PDO-2849 Reuse environment variables in the env_vars file in the CSR as much as possible
 - [X] PDO-2851 Cleanup PingCentral application.properties file 
 - [X] PDO-2869 Change PingFederate v10.3.1-edge image tag to a stable version
+- [X] PDO-2916 Enable/or disable PingCentral development endpoints using an environment variable
 
 ### 1.9.3
 

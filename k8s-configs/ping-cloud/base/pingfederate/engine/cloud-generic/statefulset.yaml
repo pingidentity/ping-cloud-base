@@ -39,9 +39,8 @@ spec:
                 topologyKey: "failure-domain.beta.kubernetes.io/zone"
       initContainers:
       - name: pingfederate-p14c-init
-        #FIXME: Update image tags to public versions & PullPolicy to Always
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-services/p14c-integration:v1.0.29-north-star-p2
-        imagePullPolicy: Always
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.29
+        imagePullPolicy: IfNotPresent
         env:
           - name: NAMESPACE
             valueFrom:
@@ -84,7 +83,7 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v1.0.4
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v1.0.5
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
@@ -131,13 +130,12 @@ spec:
             name: pingfederate-environment-variables
       containers:
       - name: pingfederate
-        #FIXME: Update image tags to final public versions & PullPolicy to IfNotPresent
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingfederate:10.3.1-v1.0.11-north-star-p2
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:10.3.1-v1.0.14
         # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_ENGINE

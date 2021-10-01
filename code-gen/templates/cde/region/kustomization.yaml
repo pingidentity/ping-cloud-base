@@ -27,50 +27,86 @@ configMapGenerator:
 
 # Pingfederate
 # Create the config maps that hold the variable for triggering updates of PF servers
+- name: pingfederate-admin-last-update-config
+  namespace: ${PING_CLOUD_NAMESPACE}
+  envs:
+  - pingfederate/admin/env_vars
+
 - name: pingfederate-last-update-config
   namespace: ${PING_CLOUD_NAMESPACE}
   envs:
-  - pingfederate/env_vars
+  - pingfederate/engine/env_vars
 
-# Merge all env_vars into Pingfederate common environment variables configmap
+# Merge all env_vars into Pingfederate environment variables configmaps
+- name: pingfederate-admin-environment-variables
+  behavior: merge
+  envs:
+  - ../base/env_vars
+  - env_vars
+  - pingfederate/admin/env_vars
+
 - name: pingfederate-environment-variables
   behavior: merge
   envs:
   - ../base/env_vars
   - env_vars
-  - pingfederate/env_vars
+  - pingfederate/engine/env_vars
 
 
 # PingAccess
 # Create the config maps that hold the variable for triggering updates of PA servers
+- name: pingaccess-admin-last-update-config
+  namespace: ${PING_CLOUD_NAMESPACE}
+  envs:
+  - pingaccess/admin/env_vars
+
 - name: pingaccess-last-update-config
   namespace: ${PING_CLOUD_NAMESPACE}
   envs:
-  - pingaccess/env_vars
+  - pingaccess/engine/env_vars
 
-# Merge all env_vars into PingAccess common environment variables configmap
+# Merge all env_vars into PingAccess environment variables configmaps
+- name: pingaccess-admin-environment-variables
+  behavior: merge
+  envs:
+  - ../base/env_vars
+  - env_vars
+  - pingaccess/admin/env_vars
+
 - name: pingaccess-environment-variables
   behavior: merge
   envs:
   - ../base/env_vars
   - env_vars
-  - pingaccess/env_vars
+  - pingaccess/engine/env_vars
 
 
 # PingAccess WAS
 # Create the config maps that hold the variable for triggering updates of PA WAS servers
+- name: pingaccess-was-admin-last-update-config
+  namespace: ${PING_CLOUD_NAMESPACE}
+  envs:
+  - pingaccess-was/admin/env_vars
+
 - name: pingaccess-was-last-update-config
   namespace: ${PING_CLOUD_NAMESPACE}
   envs:
-  - pingaccess-was/env_vars
+  - pingaccess-was/engine/env_vars
 
-# Merge all env_vars into PingAccess WAS common environment variables configmap
+# Merge all env_vars into PingAccess WAS environment variables configmaps
+- name: pingaccess-was-admin-environment-variables
+  behavior: merge
+  envs:
+  - ../base/env_vars
+  - env_vars
+  - pingaccess-was/admin/env_vars
+
 - name: pingaccess-was-environment-variables
   behavior: merge
   envs:
   - ../base/env_vars
   - env_vars
-  - pingaccess-was/env_vars
+  - pingaccess-was/engine/env_vars
 
 
 # PingDelegator

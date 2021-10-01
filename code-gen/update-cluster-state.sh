@@ -39,7 +39,6 @@ CUSTOM_PATCHES_SAMPLE_FILE_NAME='custom-patches-sample.yaml'
 CUSTOM_RESOURCES_REL_DIR="${K8S_CONFIGS_DIR}/${BASE_DIR}/${CUSTOM_RESOURCES_DIR}"
 CUSTOM_PATCHES_REL_FILE_NAME="${K8S_CONFIGS_DIR}/${BASE_DIR}/${CUSTOM_PATCHES_FILE_NAME}"
 
-ARTIFACTS_JSON_FILE_NAME='artifact-list.json'
 DESCRIPTOR_JSON_FILE_NAME='descriptor.json'
 
 PING_CLOUD_DIR='ping-cloud'
@@ -54,7 +53,6 @@ CLUSTER_STATE_REPO='cluster-state-repo'
 CUSTOMER_HUB='customer-hub'
 
 PING_CLOUD_BASE='ping-cloud-base'
-PING_CLOUD_DEFAULT_DEVOPS_USER='p1as-product-licensing@pingidentity.com'
 
 # If true, reset to the OOTB cluster state for the new version, i.e. perform no migration.
 RESET_TO_DEFAULT="${RESET_TO_DEFAULT:-false}"
@@ -263,12 +261,6 @@ set_env_vars() {
 
     # FIXME: escape variable values with spaces in the future. For now, LAST_UPDATE_REASON is the only one with spaces.
     # The PS/GSO teams have been informed to quote the string if it has spaces or escape the quotes.
-
-    # Export LAST_UPDATE_REASON separately from others. If it has quotes, the source command will fail.
-    LAST_UPDATE_REASON="$(sed -ne "s/^LAST_UPDATE_REASON=\(.*\)$/\1/p" "${env_file_bak}")"
-    if test "${LAST_UPDATE_REASON}"; then
-      export LAST_UPDATE_REASON
-    fi
 
     # Remove LAST_UPDATE_REASON because it can have spaces. The source will fail otherwise.
     sed -i.bak '/^LAST_UPDATE_REASON=.*$/d' "${env_file_bak}"
@@ -483,16 +475,6 @@ git_diff() {
 ########################################################################################################################
 handle_changed_k8s_secrets() {
   NEW_BRANCH="$1"
-
-  # If the new branch is for the customer-hub and a customer-hub branch didn't exist in the previous version,
-  # there's nothing to migrate.
-  if echo "${NEW_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
-    if ! "${CUSTOMER_HUB_BRANCH_EXISTS}"; then
-      log "No secrets to migrate to '${NEW_BRANCH}' - '${CUSTOMER_HUB}' branch does not exist"
-      return 0
-    fi
-  fi
-
   PRIMARY_REGION="$2"
 
   if echo "${NEW_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
@@ -569,15 +551,6 @@ handle_changed_k8s_secrets() {
 ########################################################################################################################
 handle_changed_k8s_configs() {
   NEW_BRANCH="$1"
-
-  # If the new branch is for the customer-hub and a customer-hub branch didn't exist in the previous version,
-  # there's nothing to migrate.
-  if echo "${NEW_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
-    if ! "${CUSTOMER_HUB_BRANCH_EXISTS}"; then
-      log "No k8s config to migrate to '${NEW_BRANCH}' - '${CUSTOMER_HUB}' branch does not exist"
-      return 0
-    fi
-  fi
 
   if echo "${NEW_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
     DEFAULT_GIT_BRANCH="${CUSTOMER_HUB}"
@@ -847,16 +820,7 @@ if test ! -d "${K8S_CONFIGS_DIR}"; then
   exit 1
 fi
 
-# FIXME: This is actually better for checking the status
-#
-# if test -n "$(git status -s)"; then
-#   echo commands-to-fix-local-changes
-# fi
-#
-# However, there is a bug in the wrapper script (shipped code) that prevents it from working correctly. The wrapper has
-# been fixed in v1.8. This check should be fixed in v1.9.
-
-if ! git diff-index --quiet HEAD --; then
+if test -n "$(git status -s)"; then
   echo
   echo 'There are local changes, which must be resolved before running this script:'
   echo
@@ -896,15 +860,7 @@ for ENV in ${ENVIRONMENTS}; do
   git checkout --quiet "${DEFAULT_GIT_BRANCH}"
   if test $? -ne 0; then
     log "git branch '${DEFAULT_GIT_BRANCH}' does not exist in '${CLUSTER_STATE_REPO}'"
-
-    # Do not consider it a failure for the customer-hub branch to not exist.
-    if test "${ENV}" = "${CUSTOMER_HUB}"; then
-      log "Will create git branch '${CUSTOMER_HUB}' in '${CLUSTER_STATE_REPO}'"
-      CUSTOMER_HUB_BRANCH_EXISTS=false
-    else
-      REPO_STATUS=1
-      CUSTOMER_HUB_BRANCH_EXISTS=true
-    fi
+    REPO_STATUS=1
   fi
 
   NEW_BRANCH="${NEW_VERSION}-${DEFAULT_GIT_BRANCH}"
@@ -1021,15 +977,14 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
           unset LETS_ENCRYPT_SERVER
         fi
 
-        # Preserve LAST_UPDATE_REASON so pods are not re-spun automatically. This way field can control the
-        # rollout of each region to be sequential, if necessary.
-
         # Also set SERVER_PROFILE_URL to empty so the new default (i.e. profile-repo with the same URL as the CSR)
         # is automatically used.
+
+        # Last but not least, set the PING_IDENTITY_DEVOPS_USER/KEY to empty so they are fetched from SSM going forward.
         set -x
         QUIET=true \
             TARGET_DIR="${TARGET_DIR}" \
-            SERVER_PROFILE_URL= \
+            SERVER_PROFILE_URL='' \
             K8S_GIT_URL="${PING_CLOUD_BASE_REPO_URL}" \
             K8S_GIT_BRANCH="${NEW_VERSION}" \
             ENVIRONMENTS="${NEW_BRANCH}" \
@@ -1081,6 +1036,17 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
           if test "${app_env_vars_file}"; then
             log "Copying ${app_env_vars_file} from ${DEFAULT_GIT_BRANCH} to ${ENV_VARS_FILE}"
             git show "${DEFAULT_GIT_BRANCH}:${app_env_vars_file}" > "${ENV_VARS_FILE}"
+
+            # Add the env_vars file to the admin/engine directories for PF, PA and PA-WAS to allow their admin to be
+            # updatable independently of their engines.
+            app_dir_name="$(dirname "${ENV_VARS_FILE}")"
+            if test -d "${app_dir_name}"/admin || test -d "${app_dir_name}"/engine; then
+              for role in admin engine; do
+                inner_env_vars_file="${app_dir_name}/${role}/env_vars"
+                cp "${ENV_VARS_FILE}" "${inner_env_vars_file}"
+              done
+              rm -f "${ENV_VARS_FILE}"
+            fi
           else
             log "Not an app-specific env_vars file: ${ENV_VARS_FILE}"
           fi

@@ -8,9 +8,8 @@ spec:
       serviceAccount: pf-script-serviceaccount
       containers:
       - name: pingfederate-admin-configurator
-        #FIXME: Update image tags to public versions & PullPolicy to Always
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-services/p14c-integration:v1.0.29-north-star-p2
-        imagePullPolicy: Always
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.29
+        imagePullPolicy: IfNotPresent
         resources:
           requests:
             memory: "256Mi"
@@ -25,7 +24,7 @@ spec:
               fieldPath: metadata.namespace
         envFrom:
         - configMapRef:
-            name: pingfederate-environment-variables
+            name: pingfederate-admin-environment-variables
         - secretRef:
             name: pingcommon-passwords
         command: [ 'python3', '-u', '/app/pingfederate_admin_configurator.py' ]

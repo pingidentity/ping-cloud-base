@@ -1,9 +1,8 @@
 ORCHESTRATION_TYPE=kubernetes
 VERBOSE=false
 
-SERVER_PROFILE_URL=https://server-profile-user-at-705370621539:8pCzGIXG3k+EOV1hyeTnPoj3aRY8LR3z+C1CSd7iiaQ=@git-codecommit.us-west-2.amazonaws.com/v1/repos/ping-cloud-base
 SERVER_PROFILE_PATH=profiles/aws/pingcentral
-SERVER_PROFILE_BRANCH=master
+SERVER_PROFILE_BRANCH=v1.11-release-branch
 
 REGION=us-west-2
 
@@ -39,3 +38,4 @@ PING_CENTRAL_BLIND_TRUST=true
 PING_CENTRAL_LOG_LEVEL=ERROR
 PING_CENTRAL_VERIFY_HOSTNAME=true
 PING_CENTRAL_SERVER_PORT=9022
+DEV_ENDPOINTS_ENABLED=false
