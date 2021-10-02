@@ -164,7 +164,8 @@ git clean -fdx
 # Create a staging branch from which to create new branches.
 STAGING_BRANCH="staging-branch-$(date +%s)"
 echo "Creating staging branch '${STAGING_BRANCH}'"
-git checkout -b "${STAGING_BRANCH}"
+# Create new branch without any commit history.
+git checkout --orphan "${STAGING_BRANCH}"
 
 # Get a list of the remote branches from the server.
 git pull &> /dev/null
@@ -181,7 +182,7 @@ fi
 # the branch names. We must handle both cases. Note that the 'prod' environment will have a branch name suffix
 # of 'master'.
 for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
-  if echo "${ENV_OR_BRANCH})" | grep -q "${CUSTOMER_HUB}"; then
+  if echo "${ENV_OR_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
     # Do not push any changes to the customer-hub branch when this script is run on secondary regions.
     if ! "${IS_PRIMARY}"; then
       echo "Not pushing any changes to ${CUSTOMER_HUB} branch for secondary region"
@@ -237,7 +238,8 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
       git checkout --quiet "${STAGING_BRANCH}"
     fi
 
-    git checkout -b "${GIT_BRANCH}"
+    # Create new branch without any commit history.
+    git checkout --orphan "${GIT_BRANCH}"
   fi
 
   # Check if the branch exists on remote. If so, pull the latest code from remote.
