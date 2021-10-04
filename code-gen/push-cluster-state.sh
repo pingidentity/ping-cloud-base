@@ -164,8 +164,7 @@ git clean -fdx
 # Create a staging branch from which to create new branches.
 STAGING_BRANCH="staging-branch-$(date +%s)"
 echo "Creating staging branch '${STAGING_BRANCH}'"
-# Create new branch without any commit history.
-git checkout --orphan "${STAGING_BRANCH}"
+git checkout -b "${STAGING_BRANCH}"
 
 # Get a list of the remote branches from the server.
 git pull &> /dev/null
