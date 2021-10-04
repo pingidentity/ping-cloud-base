@@ -372,26 +372,11 @@ fi
 # NOTE: This entire block of code is being run from the profile-repo directory. All non-absolute paths are
 # relative to this directory.
 
-# Generate code for all environments into a sandbox environment
+# Generate code for each new branch into a sandbox directory
 # Push code for just the primary region into new branches
 
-# Code for all environments will be generated in the following directory.
-TARGET_DIR="$(mktemp -d)"
-
-# Perform the code generation in a sub-shell so it doesn't pollute the current shell with environment variables.
-(
-  log "Generating code into '${TARGET_DIR}'"
-  QUIET=true \
-      TARGET_DIR="${TARGET_DIR}" \
-      "${NEW_PING_CLOUD_BASE_REPO}/${CODE_GEN_DIR}/generate-cluster-state.sh"
-
-  GEN_RC=$?
-  if test ${GEN_RC} -ne 0; then
-    log "Error generating code: ${GEN_RC}"
-    exit ${GEN_RC}
-  fi
-  log "Done generating code into '${TARGET_DIR}'"
-)
+# Code for all environments will be generated in sub-directories of the following directory.
+TEMP_DIR="$(mktemp -d)"
 
 for ENV in ${ENVIRONMENTS}; do # ENV loop
   test "${ENV}" = 'prod' &&
@@ -399,13 +384,30 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
       DEFAULT_GIT_BRANCH="${ENV}"
 
   NEW_BRANCH="${NEW_VERSION}-${DEFAULT_GIT_BRANCH}"
+  TARGET_DIR="${TEMP_DIR}/${NEW_BRANCH}"
+
+  # Perform the code generation in a sub-shell so it doesn't pollute the current shell with environment variables.
+  (
+    log "Generating code into '${TARGET_DIR}'"
+    QUIET=true \
+        TARGET_DIR="${TARGET_DIR}" \
+        ENVIRONMENTS="${NEW_BRANCH}" \
+        "${NEW_PING_CLOUD_BASE_REPO}/${CODE_GEN_DIR}/generate-cluster-state.sh"
+
+    GEN_RC=$?
+    if test ${GEN_RC} -ne 0; then
+      log "Error generating code: ${GEN_RC}"
+      exit ${GEN_RC}
+    fi
+    log "Done generating code into '${TARGET_DIR}'"
+  )
 
   log "Creating branch '${ENV}': ${NEW_BRANCH}"
   QUIET=true \
       GENERATED_CODE_DIR="${TARGET_DIR}" \
       IS_PRIMARY=true \
       IS_PROFILE_REPO=true \
-      ENVIRONMENTS="${ENV}" \
+      ENVIRONMENTS="${NEW_BRANCH}" \
       PUSH_TO_SERVER=false \
       "${NEW_PING_CLOUD_BASE_REPO}/${CODE_GEN_DIR}/push-cluster-state.sh"
 

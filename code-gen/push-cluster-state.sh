@@ -35,7 +35,8 @@ CUSTOMER_HUB='customer-hub'
 
 ########################################################################################################################
 # Delete all files and directories under the provided directory. All hidden files and directories directly under the
-# provided directory will be left intact.
+# provided directory will be left intact. Any glob specified through the RETAIN_GLOB environment variable will be
+# ignored.
 #
 # Arguments
 #   ${1} -> The directory to clean up.
@@ -45,7 +46,13 @@ dir_deep_clean() {
   if test -d "${dir}"; then
     echo "Contents of directory ${dir} before deletion:"
     find "${dir}" -mindepth 1 -maxdepth 1
-    find "${dir}" -mindepth 1 -maxdepth 1 -not -path "${dir}/.*" -exec rm -rf {} +
+    # Allow a glob to be retained with an environment variable. For example,
+    # users may want project files such as *.iml and *.vscode to be retained.
+    if test "${RETAIN_GLOB}"; then
+      find "${dir}" -mindepth 1 -maxdepth 1 -not -path "${dir}/.*" -not -path "${dir}/${RETAIN_GLOB}" -exec rm -rf {} +
+    else
+      find "${dir}" -mindepth 1 -maxdepth 1 -not -path "${dir}/.*" -exec rm -rf {} +
+    fi
     echo "Contents of directory ${dir} after deletion:"
     find "${dir}" -mindepth 1 -maxdepth 1
   fi
@@ -116,8 +123,9 @@ push_with_retries() {
 # Switch back to the previous branch and delete the staging branch.
 ########################################################################################################################
 finalize() {
-  git checkout --quiet "${CURRENT_BRANCH}"
-  git branch -D "${STAGING_BRANCH}"
+  if test "${CURRENT_BRANCH}"; then
+    git checkout --quiet "${CURRENT_BRANCH}"
+  fi
 }
 
 ### Script start ###
@@ -146,25 +154,20 @@ PUSH_RETRY_COUNT="${PUSH_RETRY_COUNT:-30}"
 PUSH_TO_SERVER="${PUSH_TO_SERVER:-true}"
 PCB_COMMIT_SHA=$(cat "${GENERATED_CODE_DIR}"/pcb-commit-sha.txt)
 
-# This is a destructive script by design. Add a warning to the user if local changes are being destroyed though.
-CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-if test -n "$(git status -s)"; then
-  echo "WARN: The following local changes in current branch '${CURRENT_BRANCH}' will be destroyed:"
-  git status
-fi
-
 # Set the git merge strategy to avoid noisy hints in the output.
 git config pull.rebase false
 
-# Get rid of staged/un-staged modifications and untracked files/directories (including ignored ones) on current branch.
-# Otherwise, you cannot switch to another branch.
-git reset --hard HEAD
-git clean -fdx
+# This is a destructive script by design. Add a warning to the user if local changes are being destroyed though.
+CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD 2> /dev/null)"
+if test "${CURRENT_BRANCH}" && test -n "$(git status -s)"; then
+  echo "WARN: The following local changes in current branch '${CURRENT_BRANCH}' will be destroyed:"
+  git status
 
-# Create a staging branch from which to create new branches.
-STAGING_BRANCH="staging-branch-$(date +%s)"
-echo "Creating staging branch '${STAGING_BRANCH}'"
-git checkout -b "${STAGING_BRANCH}"
+  # Get rid of staged/un-staged modifications and untracked files/directories (including ignored ones)
+  # on current branch. Otherwise, you cannot switch to another branch.
+  git reset --hard HEAD
+  git clean -fdx
+fi
 
 # Get a list of the remote branches from the server.
 git pull &> /dev/null
@@ -181,7 +184,7 @@ fi
 # the branch names. We must handle both cases. Note that the 'prod' environment will have a branch name suffix
 # of 'master'.
 for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
-  if echo "${ENV_OR_BRANCH})" | grep -q "${CUSTOMER_HUB}"; then
+  if echo "${ENV_OR_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
     # Do not push any changes to the customer-hub branch when this script is run on secondary regions.
     if ! "${IS_PRIMARY}"; then
       echo "Not pushing any changes to ${CUSTOMER_HUB} branch for secondary region"
@@ -210,14 +213,6 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   ENV_CODE_DIR=$(mktemp -d)
   organize_code_for_environment "${GENERATED_CODE_DIR}" "${ENV_OR_BRANCH}" "${ENV}" "${ENV_CODE_DIR}" "${IS_PRIMARY}"
 
-  # NOTE: this shouldn't be required here since we commit all changes before moving to the next branch. But it doesn't
-  # hurt to have it as an extra pre-caution.
-
-  # Get rid of staged/un-staged modifications and untracked files/directories (including ignored ones) on current
-  # branch. Otherwise, you cannot switch to another branch.
-  git reset --hard HEAD
-  git clean -fdx
-
   # Check if the branch exists locally. If so, switch to it.
   if git rev-parse --verify "${GIT_BRANCH}" &> /dev/null; then
     echo "Branch ${GIT_BRANCH} exists locally. Switching to it."
@@ -226,18 +221,22 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   # Otherwise, create it.
   else
     # Attempt to create the branch from its default CDE or CHUB branch name.
-    echo "Branch ${GIT_BRANCH} does not exist locally. Creating it."
+    echo "Branch ${GIT_BRANCH} does not exist locally"
 
     if git rev-parse --verify "${DEFAULT_CDE_BRANCH}" &> /dev/null; then
-      echo "Switching to branch ${DEFAULT_CDE_BRANCH} before creating ${GIT_BRANCH}"
-      git checkout --quiet "${DEFAULT_CDE_BRANCH}"
+      # This block will be executed only during updates. At the time, we want to capture history
+      # of all changes in the old CDE or customer-hub branches onto the new ones that are created.
+      echo "Creating ${GIT_BRANCH} from its default branch ${DEFAULT_CDE_BRANCH}"
+      git checkout -b "${GIT_BRANCH}" "${DEFAULT_CDE_BRANCH}"
     else
+      # This block will be executed on initial seeding of the repo or if the default CDE branch does not
+      # exist for some reason during an update. Our only option is to create it as an orphan branch.
+      # If it's an update and we have access to the remote, then we'll pull the remote branch, if it
+      # exists, onto the orphan branch in the following block.
       echo "Default branch ${DEFAULT_CDE_BRANCH} does not exist for branch ${GIT_BRANCH}"
-      echo "Creating it from branch: ${STAGING_BRANCH}"
-      git checkout --quiet "${STAGING_BRANCH}"
+      echo "Creating ${GIT_BRANCH} as an orphan branch"
+      git checkout --orphan "${GIT_BRANCH}"
     fi
-
-    git checkout -b "${GIT_BRANCH}"
   fi
 
   # Check if the branch exists on remote. If so, pull the latest code from remote.
