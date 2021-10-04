@@ -15,10 +15,12 @@
 - Fixed error in run.sh when New Relic key isn't provided
 - Updated cert-manager from v0.10.1 to v1.5.3
 - Added New Relic support for PingCentral
+- Decreased log level for argocd
 
 _Changes:_
 
 - [X] PDO-1668 Fixing P14C issuer URL to not have newlines so PA pods do not fail to start up
+- [X] PDO-2412 Decrease ArgoCD log level
 - [X] PDO-2433 Updated cert-manager from v0.10.1 to v1.5.3
 - [X] PDO-2753 PF Admin SSO Revert script update
 - [X] PDO-2791 Added a script to update server profile code from one version of Beluga to another
