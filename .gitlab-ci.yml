@@ -5,6 +5,9 @@ workflow:
     - if: $CI_MERGE_REQUEST_ID
       when: never
     - when: always
+    - changes:
+      - "**/*.md"
+      when: never
 
 ## Pipeline stages ##
 stages:
