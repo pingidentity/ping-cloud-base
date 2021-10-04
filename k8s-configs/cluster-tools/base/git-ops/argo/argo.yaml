@@ -2599,8 +2599,13 @@ spec:
       - command:
         - uid_entrypoint.sh
         - argocd-repo-server
+        - --loglevel
+        - "$(ARGOCD_LOG_LEVEL)"
         - --redis
         - argocd-redis:6379
+        env:
+        - name: ARGOCD_LOG_LEVEL
+          value: "warn"
         image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v1.8.1
         imagePullPolicy: Always
         name: argocd-repo-server
@@ -2695,8 +2700,13 @@ spec:
       containers:
       - command:
         - argocd-server
+        - --loglevel
+        - "$(ARGOCD_LOG_LEVEL)"
         - --staticassets
         - /shared/app
+        env:
+        - name: ARGOCD_LOG_LEVEL
+          value: "warn"
         image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v1.8.1
         imagePullPolicy: Always
         name: argocd-server
@@ -2768,9 +2778,13 @@ spec:
         - "10"
         - --app-resync
         - "$(APP_RESYNC_SECONDS)"
+        - --loglevel
+        - "$(ARGOCD_LOG_LEVEL)"
         env:
         - name: APP_RESYNC_SECONDS
           value: "60"
+        - name: ARGOCD_LOG_LEVEL
+          value: "warn"
         image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v1.8.1
         imagePullPolicy: Always
         livenessProbe:
