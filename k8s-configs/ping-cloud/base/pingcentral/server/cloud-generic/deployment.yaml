@@ -71,7 +71,7 @@ spec:
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
-            name: pingdirectory-environment-variables
+            name: pingcentral-environment-variables
         - secretRef:
             name: newrelic-license-key
             optional: false
