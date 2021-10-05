@@ -163,10 +163,10 @@ if test "${CURRENT_BRANCH}" && test -n "$(git status -s)"; then
   echo "WARN: The following local changes in current branch '${CURRENT_BRANCH}' will be destroyed:"
   git status
 
-  # Get rid of staged/un-staged modifications and untracked files/directories (including ignored ones)
+  # Get rid of staged/un-staged modifications and untracked files/directories
   # on current branch. Otherwise, you cannot switch to another branch.
   git reset --hard HEAD
-  git clean -fdx
+  git clean -fd
 fi
 
 # Get a list of the remote branches from the server.
