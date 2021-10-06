@@ -10,6 +10,10 @@ PA_ADMIN_SERVER=pingaccess-admin
 PA_ADMIN_PORT=9000
 PA_ENGINE_PORT=3000
 
+PA_ADMIN_API_RATE_LIMIT=5000
+PA_ADMIN_API_RATE_LIMIT_POLICY=Resource Identity IP OAuthClient
+PA_ADMIN_APPLICATIONS=AR GR KI PA PC PF PR 
+
 # Retry client request to pingaccess admin API up to 10 times. Engine pod uses admin
 # API to retrieve its proper configuration.
 API_RETRY_LIMIT=10
