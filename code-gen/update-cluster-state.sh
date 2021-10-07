@@ -1020,7 +1020,10 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
         OLD_ENV_VARS_FILE="${ENV_VARS_FILE}".old
 
         DIR_NAME="$(dirname "${ENV_VARS_FILE}")"
+        PARENT_DIR_NAME="$(dirname "${DIR_NAME}")"
+
         DIR_NAME="${DIR_NAME##*/}"
+        PARENT_DIR_NAME="${PARENT_DIR_NAME##*/}"
 
         if test "${DIR_NAME}" = "${BASE_DIR}"; then
           # Only generate base env_vars.old for primary region.
@@ -1032,12 +1035,20 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
           ENV_VARS_TEMPLATE="${NEW_PING_CLOUD_BASE_REPO}/${TEMPLATES_REGION_DIR}/${ENV_VARS_FILE_NAME}"
         else
           # Copy the env_vars under ping app-specific directories as is into the generated code directory.
-          app_env_vars_file="$(git ls-files "*/${DIR_NAME}/env_vars" | grep "${REGION_DIR}" | head -1)"
+          if echo "${DIR_NAME}" | grep -q 'ping'; then
+            app_env_vars_file="$(git ls-files "*/${DIR_NAME}/env_vars" | grep "${REGION_DIR}" | head -1)"
+          elif test "${DIR_NAME}" = 'admin' || test "${DIR_NAME}" = 'engine'; then
+            app_env_vars_file="$(git ls-files "*/${PARENT_DIR_NAME}/${DIR_NAME}/env_vars" | grep "${REGION_DIR}" | head -1)"
+          else
+            log "Not an app-specific env_vars file: ${ENV_VARS_FILE}"
+            app_env_vars_file=
+          fi
 
           if test "${app_env_vars_file}"; then
             log "Copying ${app_env_vars_file} from ${DEFAULT_GIT_BRANCH} to ${ENV_VARS_FILE}"
             git show "${DEFAULT_GIT_BRANCH}:${app_env_vars_file}" > "${ENV_VARS_FILE}"
 
+            # Handle the v1.10 to v1.11 migration case where we split the env_vars file for admin/engine.
             # Add the env_vars file to the admin/engine directories for PF, PA and PA-WAS to allow their admin to be
             # updatable independently of their engines.
             app_dir_name="$(dirname "${ENV_VARS_FILE}")"
@@ -1048,8 +1059,6 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
               done
               rm -f "${ENV_VARS_FILE}"
             fi
-          else
-            log "Not an app-specific env_vars file: ${ENV_VARS_FILE}"
           fi
 
           continue
