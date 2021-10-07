@@ -17,6 +17,7 @@
 - Added New Relic support for PingCentral
 - Implemented Kubernetes Infrastructure Agent for New Relic
 - Decreased log level for argocd
+- Updated newrelic-tags-exporter image version to 1.0.6 
 
 _Changes:_
 
@@ -37,6 +38,7 @@ _Changes:_
 - [X] PDO-2935 Increase memory for FluentD to avoid memory issues in GA deployments
 - [X] PDO-2936 Error in run.sh when New Relic key isn't provided
 - [X] PDO-2941 Add New Relic support for PingCentral
+- [X] PDO-2958 Update newrelic-tags-exporter image version to 1.0.6 
 
 ### 1.10.0
 
