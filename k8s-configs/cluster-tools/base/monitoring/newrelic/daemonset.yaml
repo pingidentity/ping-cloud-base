@@ -1,0 +1,180 @@
+---
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: newrelic
+  labels:
+    app: newrelic-infrastructure
+    chart: newrelic-infrastructure-1.6.2
+    release: nri-bundle
+    mode: privileged
+  name: nri-bundle-newrelic-infrastructure
+spec:
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: newrelic-infrastructure
+      release: nri-bundle
+  template:
+    metadata:
+      labels:
+        app: newrelic-infrastructure
+        release: nri-bundle
+        mode: privileged
+      annotations: {}
+    spec:
+      serviceAccountName: nri-bundle-newrelic-infrastructure
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+        - name: newrelic-infrastructure
+          image: "newrelic/infrastructure-k8s:1.26.6"
+          imagePullPolicy: "IfNotPresent"
+          securityContext:
+            privileged: true
+          env:
+            - name: NRIA_LICENSE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: newrelic-license-key
+                  key: NEWRELIC_LICENSE_KEY
+            - name: "CLUSTER_NAME"
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['CLUSTER_NAME']
+            - name: "NRK8S_NODE_NAME"
+              valueFrom:
+                fieldRef:
+                  apiVersion: "v1"
+                  fieldPath: "spec.nodeName"
+            - name: "NRIA_DISPLAY_NAME"
+              valueFrom:
+                fieldRef:
+                  apiVersion: "v1"
+                  fieldPath: "spec.nodeName"
+            - name: "NRIA_CUSTOM_ATTRIBUTES"
+              value: '{"clusterName":"$(CLUSTER_NAME)"}'
+            - name: "NRIA_PASSTHROUGH_ENVIRONMENT"
+              value: "KUBERNETES_SERVICE_HOST,KUBERNETES_SERVICE_PORT,CLUSTER_NAME,CADVISOR_PORT,NRK8S_NODE_NAME,KUBE_STATE_METRICS_URL,KUBE_STATE_METRICS_POD_LABEL,TIMEOUT,ETCD_TLS_SECRET_NAME,ETCD_TLS_SECRET_NAMESPACE,API_SERVER_SECURE_PORT,KUBE_STATE_METRICS_SCHEME,KUBE_STATE_METRICS_PORT,SCHEDULER_ENDPOINT_URL,ETCD_ENDPOINT_URL,CONTROLLER_MANAGER_ENDPOINT_URL,API_SERVER_ENDPOINT_URL,DISABLE_KUBE_STATE_METRICS,DISCOVERY_CACHE_TTL"
+          volumeMounts:
+            - name: dev
+              mountPath: /dev
+            - name: host-docker-socket
+              mountPath: /var/run/docker.sock
+            - name: log
+              mountPath: /var/log
+            - name: host-volume
+              mountPath: /host
+              readOnly: true
+          resources:
+            limits:
+              memory: 300M
+            requests:
+              cpu: 100m
+              memory: 150M
+
+      volumes:
+        - name: dev
+          hostPath:
+            path: /dev
+        - name: host-docker-socket
+          hostPath:
+            path: /var/run/docker.sock
+        - name: log
+          hostPath:
+            path: /var/log
+        - name: host-volume
+          hostPath:
+            path: /
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+        - effect: NoExecute
+          operator: Exists
+
+---
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app: newrelic-logging
+    chart: newrelic-logging-1.3.1
+    release: nri-bundle
+    app.kubernetes.io/name: newrelic-logging
+  name: nri-bundle-newrelic-logging
+  namespace: newrelic
+spec:
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: newrelic-logging
+      release: nri-bundle
+  template:
+    metadata:
+      labels:
+        app: newrelic-logging
+        release: nri-bundle
+        app.kubernetes.io/name: newrelic-logging
+    spec:
+      serviceAccountName: nri-bundle-newrelic-logging
+      hostNetwork: true # This option is a requirement for the Infrastructure Agent to report the proper hostname in New Relic.
+      dnsPolicy: ClusterFirstWithHostNet
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: newrelic-logging
+          image: "newrelic/newrelic-fluentbit-output:1.4.3"
+          imagePullPolicy: "IfNotPresent"
+          env:
+            - name: ENDPOINT
+              value: "https://log-api.newrelic.com/log/v1"
+            - name: SOURCE
+              value: "kubernetes"
+            - name: LICENSE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: newrelic-license-key
+                  key: NEWRELIC_LICENSE_KEY
+            - name: CLUSTER_NAME
+              value: k8s-cluster-name
+            - name: LOG_LEVEL
+              value: "info"
+            - name: PATH
+              value: "/var/log/containers/*.log"
+            - name: K8S_LOGGING_EXCLUDE
+              value: "Off"
+          command:
+            - /fluent-bit/bin/fluent-bit
+            - -c
+            - /fluent-bit/etc/fluent-bit.conf
+            - -e
+            - /fluent-bit/bin/out_newrelic.so
+          volumeMounts:
+            - name: fluent-bit-config
+              mountPath: /fluent-bit/etc
+            - name: var
+              mountPath: /var
+          resources:
+            limits:
+              cpu: 500m
+              memory: 128Mi
+            requests:
+              cpu: 250m
+              memory: 64Mi
+
+      volumes:
+        - name: fluent-bit-config
+          configMap:
+            name: nri-bundle-newrelic-logging-fluent-bit-config
+        - name: var
+          hostPath:
+            path: /var
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+        - effect: NoExecute
+          operator: Exists
+

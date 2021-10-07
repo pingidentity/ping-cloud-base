@@ -25,12 +25,13 @@ _Changes:_
 - Fixed error in run.sh when New Relic key isn't provided
 - Updated cert-manager from v0.10.1 to v1.5.3
 - Added New Relic support for PingCentral
+- Implemented Kubernetes Infrastructure Agent for New Relic
 - Decreased log level for argocd
-- Change the behavior of the push-cluster-state.sh script to only preserve git history on updates
 
 _Changes:_
 
 - [X] PDO-1668 Fixing P14C issuer URL to not have newlines so PA pods do not fail to start up
+- [X] PDO-1676 Deploy Kubernetes Agent for New Relic
 - [X] PDO-2412 Decrease ArgoCD log level
 - [X] PDO-2433 Updated cert-manager from v0.10.1 to v1.5.3
 - [X] PDO-2753 PF Admin SSO Revert script update
@@ -46,7 +47,6 @@ _Changes:_
 - [X] PDO-2935 Increase memory for FluentD to avoid memory issues in GA deployments
 - [X] PDO-2936 Error in run.sh when New Relic key isn't provided
 - [X] PDO-2941 Add New Relic support for PingCentral
-- [X] PDO-2948 Change the behavior of the push-cluster-state.sh script to only preserve git history on updates
 
 ### 1.10.0
 
