@@ -71,6 +71,52 @@ patchesStrategicMerge:
     name: cwagentconfig
     namespace: amazon-cloudwatch
 
+# NewRelic resources
+- |-
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: newrelic-license-key
+    namespace: newrelic
+  type: Opaque
+  data:
+    NEWRELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY_BASE64}
+
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: nri-bundle-nri-prometheus-config
+    namespace: newrelic
+  data:
+    config.yaml: |
+      cluster_name: ${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
+      require_scrape_enabled_label_for_nodes: true
+
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: nri-bundle-nri-kube-events-config
+    namespace: newrelic
+  data:
+    config.yaml: |-
+      sinks:
+      - name: newRelicInfra
+        config:
+          agentEndpoint: http://localhost:8001/v1/data
+          clusterName: ${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
+          agentHTTPTimeout: 30s
+
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: nri-bundle-metadata
+    namespace: newrelic
+  data:
+    cluster_name: ${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
+
 patchesJson6902:
 
 # Change the default TLS secret for the ingress controllers
@@ -174,3 +220,31 @@ patchesJson6902:
   patch: |-
     - op: remove
       path: /metadata/annotations/service.beta.kubernetes.io~1aws-load-balancer-internal
+
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: nri-bundle-nri-metadata-injection
+    namespace: newrelic
+  patch: |-
+    - op: replace
+      path: /spec/template/metadata/annotations/clusterName
+      value: ${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
+
+    # - op: replace
+    #   path: /spec/template/spec/containers/0/env
+    #   value:
+    #     - name: clusterName
+    #       value: ${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
+
+- target:
+    group: apps
+    version: v1
+    kind: DaemonSet
+    name: nri-bundle-newrelic-infrastructure
+    namespace: newrelic
+  patch: |-
+    - op: replace
+      path: /spec/template/metadata/annotations/CLUSTER_NAME
+      value: ${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
