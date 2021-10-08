@@ -208,6 +208,39 @@ handle_changed_profiles() {
 }
 
 ########################################################################################################################
+# Copy custom non-profiles files as is from old to new branch (including dot files).
+#
+# Arguments
+#   $1 -> The new branch for a default CDE branch.
+########################################################################################################################
+handle_custom_files() {
+  NEW_BRANCH="$1"
+  if echo "${NEW_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
+    DEFAULT_GIT_BRANCH="${CUSTOMER_HUB}"
+  else
+    DEFAULT_GIT_BRANCH="${NEW_BRANCH##*-}"
+  fi
+
+  git checkout --quiet "${DEFAULT_GIT_BRANCH}"
+  custom_files="$(git ls-files | grep -v "^${PROFILES_DIR}" | grep -v 'update-profile-wrapper.sh')"
+
+  if "${VERBOSE}" || "${DEBUG:-false}"; then
+    log "DEBUG: Found the following custom non-profile files in branch '${DEFAULT_GIT_BRANCH}':"
+    echo "${custom_files}"
+  fi
+
+  log "Copying custom non-profile files from '${DEFAULT_GIT_BRANCH}' to its new branch '${NEW_BRANCH}'"
+  git checkout --quiet "${NEW_BRANCH}"
+  echo "${custom_files}" | xargs git checkout "${DEFAULT_GIT_BRANCH}"
+
+  msg="Copied custom non-profile files from '${DEFAULT_GIT_BRANCH}' to its new branch '${NEW_BRANCH}'"
+  log "${msg}"
+
+  git add .
+  git commit --allow-empty -m "${msg}"
+}
+
+########################################################################################################################
 # Prints a README containing next steps to take.
 ########################################################################################################################
 print_readme() {
@@ -423,6 +456,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
     log "Not migrating '${PROFILES_DIR}' because migration was explicitly skipped"
   else
     handle_changed_profiles "${NEW_BRANCH}"
+    handle_custom_files "${NEW_BRANCH}"
   fi
 
   log "Done updating branch '${NEW_BRANCH}' for '${ENV}'"
