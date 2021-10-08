@@ -12,6 +12,7 @@ _Changes:_
 
 ### 1.11.0
 
+- Enabled PingAccess Admin SSO for MyPing customers
 - Fixing P14C issuer URL to not have newlines so PA pods do not fail to start up
 - Updated p14c-integration image to 1.0.29
 - Updated PA to 6.3 to support SSO through P14C (for administrator users) and SSO through PingFederate (for customer users)
@@ -36,6 +37,7 @@ _Changes:_
 - [X] PDO-2412 Decrease ArgoCD log level
 - [X] PDO-2433 Updated cert-manager from v0.10.1 to v1.5.3
 - [X] PDO-2753 PF Admin SSO Revert script update
+- [X] PDO-2758 Enabled PingAccess Admin SSO for MyPing customers
 - [X] PDO-2791 Added a script to update server profile code from one version of Beluga to another
 - [X] PDO-2810 Added a license pre-hook script that configures the DevOps user/key to use for product licenses
 - [X] PDO-2811 Change the default for the DevOps USER/KEY to SSM paths
