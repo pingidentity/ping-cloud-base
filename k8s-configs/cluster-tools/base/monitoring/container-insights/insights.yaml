@@ -622,6 +622,16 @@ data:
         </rule>
         <rule>
           key log
+          pattern /^\/opt\/out\/instance\/log\/pingaccess_sideband_client_audit/
+          tag temp.pingaccess_sideband_client_audit_logs
+        </rule>
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/log\/pingaccess_sideband_audit/
+          tag temp.pingaccess_sideband_audit_logs
+        </rule>
+        <rule>
+          key log
           pattern /^\/opt\/out\/instance\/log\/pingaccess/
           tag temp.pingaccess_logs
         </rule>
@@ -701,6 +711,16 @@ data:
           key log
           pattern /^\/opt\/out\/instance\/log\/pingaccess_api_audit/
           tag temp.pingaccess_api_audit_logs
+        </rule>
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/log\/pingaccess_sideband_client_audit/
+          tag temp.pingaccess_sideband_client_audit_logs
+        </rule>
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/log\/pingaccess_sideband_audit/
+          tag temp.pingaccess_sideband_audit_logs
         </rule>
         <rule>
           key log

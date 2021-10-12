@@ -19,6 +19,7 @@
 - Implemented Kubernetes Infrastructure Agent for New Relic
 - Decreased log level for argocd
 - Updated newrelic-tags-exporter image version to 1.0.6
+- Support PA database changed from H2 to Apache Derby
 
 _Changes:_
 
@@ -33,6 +34,7 @@ _Changes:_
 - [X] PDO-2811 Change the default for the DevOps USER/KEY to SSM paths
 - [X] PDO-2837 P14C liveness probe hitting wrong URL
 - [X] PDO-2846 Updated PA to 6.3
+- [X] PDO-2872 Support PA database changed from H2 to Apache Derby
 - [X] PDO-2874 Updated the P14C bootstrap image to query the platform event queue for future updates to MyPing parameters
 - [X] PDO-2878 Update newrelic-tags-exporter image version to 1.0.5
 - [X] PDO-2885 Provide the ability to update PA/PF admin independent of engines

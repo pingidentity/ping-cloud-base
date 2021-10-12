@@ -7,11 +7,11 @@
 ##    $monitor.getUsedJvmMemory('KB' | 'MB' | 'GB')
 ##    $monitor.getFreeJvmMemory() - bytes by default
 ##    $monitor.getFreeJvmMemory('KB' | 'MB' | 'GB')
-##    $monitor.getTotalPhysicalSystemMemory()   - bytes by default
+##    $monitor.getTotalPhysicalSystemMemory()	- bytes by default
 ##    $monitor.getTotalPhysicalSystemMemory('bytes' | 'KB' | 'MB' | 'GB')
-##    $monitor.getTotalFreePhysicalSystemMemory()       - bytes by default
+##    $monitor.getTotalFreePhysicalSystemMemory()	- bytes by default
 ##    $monitor.getTotalFreePhysicalSystemMemory('bytes' | 'KB' | 'MB' | 'GB')
-##    $monitor.getTotalUsedPhysicalSystemMemory()       - bytes by default
+##    $monitor.getTotalUsedPhysicalSystemMemory()	- bytes by default
 ##    $monitor.getTotalUsedPhysicalSystemMemory('bytes' | 'KB' | 'MB' | 'GB')
 ##    $monitor.getHostname()
 ##    $monitor.getNumberOfCpus()
@@ -41,27 +41,27 @@
 $monitor.setContentType('application/json')##
 {"items":[{
 ## Set pa.statistics.window.seconds property and uncomment to enable ProcessingStatistics
-      "response.statistics.window.seconds": "$monitor.getProcessingStatistics().getWindowLengthSeconds()",
-      "response.statistics.count": "$monitor.getProcessingStatistics().getResponseCount()",
-      "response.time.statistics.90.percentile": "$monitor.getProcessingStatistics().getResponseTimePercentileMs(90.0, '###.##')",
-      "response.time.statistics.mean": "$monitor.getProcessingStatistics().getResponseTimeMeanMs('###.##')",
-      "response.time.statistics.max": "$monitor.getProcessingStatistics().getResponseTimeMaximumMs()",
-      "response.time.statistics.min": "$monitor.getProcessingStatistics().getResponseTimeMinimumMs()",
-      "response.concurrency.statistics.90.percentile": "$monitor.getProcessingStatistics().getConcurrencyPercentile(90.0, '###.##')",
-      "response.concurrency.statistics.mean": "$monitor.getProcessingStatistics().getConcurrencyMean('###.##')",
-      "response.concurrency.statistics.max": "$monitor.getProcessingStatistics().getConcurrencyMaximum()",
-      "response.concurrency.statistics.min": "$monitor.getProcessingStatistics().getConcurrencyMinimum()",
-      "cpu.load": "$monitor.getCpuLoad('###.##')",
-      "total.jvm.memory": "$monitor.getTotalJvmMemory('MB') MB",
-      "free.jvm.memory": "$monitor.getFreeJvmMemory('MB') MB",
-      "used.jvm.memory": "$monitor.getUsedJvmMemory('MB') MB",
-      "total.physical.system.memory": "$monitor.getTotalPhysicalSystemMemory('GB') GB",
-      "total.free.physical.system.memory": "$monitor.getTotalFreePhysicalSystemMemory('MB') MB",
-      "total.used.physical.system.memory": "$monitor.getTotalUsedPhysicalSystemMemory('GB') GB",
-      "number.of.cpus": "$monitor.getNumberOfCpus()",
-      "hostname": "$monitor.getHostname()",
-      "open.client.connections": "$monitor.getOpenClientConnections()",
-      "number.of.applications": "$monitor.getNumberOfApplications()",
-      "number.of.virtual.hosts": "$monitor.getNumberOfVirtualHosts()",
-      "last.refresh.time": "$monitor.getLastRefreshTime()"
+    "response.statistics.window.seconds": "$monitor.getProcessingStatistics().getWindowLengthSeconds()",
+    "response.statistics.count": "$monitor.getProcessingStatistics().getResponseCount()",
+    "response.time.statistics.90.percentile": "$monitor.getProcessingStatistics().getResponseTimePercentileMs(90.0, '###.##')",
+    "response.time.statistics.mean": "$monitor.getProcessingStatistics().getResponseTimeMeanMs('###.##')",
+    "response.time.statistics.max": "$monitor.getProcessingStatistics().getResponseTimeMaximumMs()",
+    "response.time.statistics.min": "$monitor.getProcessingStatistics().getResponseTimeMinimumMs()",
+    "response.concurrency.statistics.90.percentile": "$monitor.getProcessingStatistics().getConcurrencyPercentile(90.0, '###.##')",
+    "response.concurrency.statistics.mean": "$monitor.getProcessingStatistics().getConcurrencyMean('###.##')",
+    "response.concurrency.statistics.max": "$monitor.getProcessingStatistics().getConcurrencyMaximum()",
+    "response.concurrency.statistics.min": "$monitor.getProcessingStatistics().getConcurrencyMinimum()",
+    "cpu.load": "$monitor.getCpuLoad('###.##')",
+    "total.jvm.memory": "$monitor.getTotalJvmMemory('MB') MB",
+    "free.jvm.memory": "$monitor.getFreeJvmMemory('MB') MB",
+    "used.jvm.memory": "$monitor.getUsedJvmMemory('MB') MB",
+    "total.physical.system.memory": "$monitor.getTotalPhysicalSystemMemory('GB') GB",
+    "total.free.physical.system.memory": "$monitor.getTotalFreePhysicalSystemMemory('MB') MB",
+    "total.used.physical.system.memory": "$monitor.getTotalUsedPhysicalSystemMemory('GB') GB",
+    "number.of.cpus": "$monitor.getNumberOfCpus()",
+    "hostname": "$monitor.getHostname()",
+    "open.client.connections": "$monitor.getOpenClientConnections()",
+    "number.of.applications": "$monitor.getNumberOfApplications()",
+    "number.of.virtual.hosts": "$monitor.getNumberOfVirtualHosts()",
+    "last.refresh.time": "$monitor.getLastRefreshTime()"
 }]}##
