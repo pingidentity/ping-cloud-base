@@ -207,8 +207,6 @@ spec:
         ports:
         - name: pf-admin
           containerPort: 443
-      securityContext:
-        fsGroup: 9999
       volumes:
       - name: podinfo
         downwardAPI:
