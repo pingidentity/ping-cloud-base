@@ -105,10 +105,6 @@ spec:
           runAsUser: 9031
           runAsGroup: 9999
         image: public.ecr.aws/r2h3l6e4/pingidentity/pingfederate:2106-10.2.4
-        securityContext:
-          runAsGroup: 9999
-          runAsNonRoot: true
-          runAsUser: 9031
         imagePullPolicy: IfNotPresent
         env:
         - name: OPERATIONAL_MODE
