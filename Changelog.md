@@ -25,6 +25,7 @@ _Changes:_
 
 - [X] PDO-1668 Fixing P14C issuer URL to not have newlines so PA pods do not fail to start up
 - [X] PDO-1676 Deploy Kubernetes Agent for New Relic
+- [X] PDO-2401 create a new hook script "10-download-artifact.sh.post" in the PF image
 - [X] PDO-2412 Decrease ArgoCD log level
 - [X] PDO-2433 Updated cert-manager from v0.10.1 to v1.5.3
 - [X] PDO-2753 PF Admin SSO Revert script update
