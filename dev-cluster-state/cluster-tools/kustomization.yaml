@@ -232,12 +232,6 @@ patchesJson6902:
       path: /spec/template/metadata/annotations/clusterName
       value: ${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
 
-    # - op: replace
-    #   path: /spec/template/spec/containers/0/env
-    #   value:
-    #     - name: clusterName
-    #       value: ${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
-
 - target:
     group: apps
     version: v1
