@@ -45,6 +45,7 @@ _Changes:_
 - [X] PDO-2941 Add New Relic support for PingCentral
 - [X] PDO-2950 Fixed error in PingDirectory's utils.lib.sh for USER_BASE_DN that's 1-level deep, e.g. o=data
 - [X] PDO-2958 Update newrelic-tags-exporter image version to 1.0.6
+- [X] PDO-2986 Fixed issue with P14C bootstrap image where k8s resource data for SSM params are deleted on param update
 
 ### 1.10.0
 
