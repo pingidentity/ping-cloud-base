@@ -28,7 +28,7 @@ spec:
       serviceAccount: ping-serviceaccount
       initContainers:
       - name: pingaccess-was-p14c-init
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.30
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.32
         imagePullPolicy: IfNotPresent
         env:
         - name: NAMESPACE
@@ -121,7 +121,7 @@ spec:
           mountPath: /opt/shared-dir
       containers:
       - name: pingaccess-was-admin
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was:6.3.0-v1.0.8
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was:6.3.0-v1.0.9
         # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
         securityContext:
           runAsNonRoot: false
