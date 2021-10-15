@@ -16,7 +16,6 @@
 - Fixed error in run.sh when New Relic key isn't provided
 - Updated cert-manager from v0.10.1 to v1.5.3
 - Added New Relic support for PingCentral
-- Implemented Kubernetes Infrastructure Agent for New Relic
 - Decreased log level for argocd
 - Updated newrelic-tags-exporter image version to 1.0.6
 - Support PA database changed from H2 to Apache Derby
@@ -24,7 +23,6 @@
 _Changes:_
 
 - [X] PDO-1668 Fixing P14C issuer URL to not have newlines so PA pods do not fail to start up
-- [X] PDO-1676 Deploy Kubernetes Agent for New Relic
 - [X] PDO-2401 create a new hook script "10-download-artifact.sh.post" in the PF image
 - [X] PDO-2412 Decrease ArgoCD log level
 - [X] PDO-2433 Updated cert-manager from v0.10.1 to v1.5.3
