@@ -166,7 +166,7 @@ PINGCENTRAL_IMAGE_TAG=1.8.0-v1.0.19
 ############################################################
 METADATA_IMAGE_TAG=v1.0.4
 P14C_BOOTSTRAP_IMAGE_TAG=v1.0.11
-P14C_INTEGRATION_IMAGE_TAG=v1.0.32
+P14C_INTEGRATION_IMAGE_TAG=v1.0.33
 
 ############################################################
 # Cluster name variables
