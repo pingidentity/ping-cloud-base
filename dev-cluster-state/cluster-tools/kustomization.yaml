@@ -90,7 +90,7 @@ patchesStrategicMerge:
     namespace: newrelic
   data:
     config.yaml: |
-      cluster_name: ${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
+      cluster_name: ${TENANT_NAME}_${ENV}_${REGION}_k8s-cluster
       require_scrape_enabled_label_for_nodes: true
 
 - |-
@@ -105,7 +105,7 @@ patchesStrategicMerge:
       - name: newRelicInfra
         config:
           agentEndpoint: http://localhost:8001/v1/data
-          clusterName: ${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
+          clusterName: ${TENANT_NAME}_${ENV}_${REGION}_k8s-cluster
           agentHTTPTimeout: 30s
 
 - |-
@@ -115,7 +115,7 @@ patchesStrategicMerge:
     name: nri-bundle-metadata
     namespace: newrelic
   data:
-    cluster_name: ${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
+    cluster_name: ${TENANT_NAME}_${ENV}_${REGION}_k8s-cluster
 
 patchesJson6902:
 
@@ -230,13 +230,7 @@ patchesJson6902:
   patch: |-
     - op: replace
       path: /spec/template/metadata/annotations/clusterName
-      value: ${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
-
-    # - op: replace
-    #   path: /spec/template/spec/containers/0/env
-    #   value:
-    #     - name: clusterName
-    #       value: ${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
+      value: ${TENANT_NAME}_${ENV}_${REGION}_k8s-cluster
 
 - target:
     group: apps
@@ -247,4 +241,4 @@ patchesJson6902:
   patch: |-
     - op: replace
       path: /spec/template/metadata/annotations/CLUSTER_NAME
-      value: ${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
+      value: ${TENANT_NAME}_${ENV}_${REGION}_k8s-cluster
