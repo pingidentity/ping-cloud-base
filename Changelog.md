@@ -26,7 +26,6 @@ _Changes:_
 - Fixed error in run.sh when New Relic key isn't provided
 - Updated cert-manager from v0.10.1 to v1.5.3
 - Added New Relic support for PingCentral
-- Implemented Kubernetes Infrastructure Agent for New Relic
 - Decreased log level for argocd
 - Updated newrelic-tags-exporter image version to 1.0.6
 - Support PA database changed from H2 to Apache Derby
@@ -34,7 +33,6 @@ _Changes:_
 _Changes:_
 
 - [X] PDO-1668 Fixing P14C issuer URL to not have newlines so PA pods do not fail to start up
-- [X] PDO-1676 Deploy Kubernetes Agent for New Relic
 - [X] PDO-2401 create a new hook script "10-download-artifact.sh.post" in the PF image
 - [X] PDO-2412 Decrease ArgoCD log level
 - [X] PDO-2433 Updated cert-manager from v0.10.1 to v1.5.3
@@ -56,6 +54,7 @@ _Changes:_
 - [X] PDO-2950 Fixed error in PingDirectory's utils.lib.sh for USER_BASE_DN that's 1-level deep, e.g. o=data
 - [X] PDO-2958 Update newrelic-tags-exporter image version to 1.0.6
 - [X] PDO-2986 Fixed issue with P14C bootstrap image where k8s resource data for SSM params are deleted on param update
+- [X] PDO-2989 Add the Beluga version to the cluster-state and profile repos in a version.txt file
 
 ### 1.10.0
 

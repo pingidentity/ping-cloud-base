@@ -95,6 +95,11 @@ organize_code_for_environment() {
 
   cp -pr "${src_k8s_dir}"/. "${dst_k8s_dir}"
   find "${generated_code_dir}/${CLUSTER_STATE_REPO_DIR}" -type f -mindepth 1 -maxdepth 1 -exec cp {} "${out_dir}" \;
+
+  # Last but not least, stick the version of Beluga into a version.txt file.
+  beluga_version="$(find "${src_k8s_dir}" -name env_vars -exec grep '^K8S_GIT_BRANCH=' {} \; | cut -d= -f2)"
+  echo "Beluga version is ${beluga_version} for environment ${env}"
+  echo "${beluga_version}" > "${out_dir}"/version.txt
 }
 
 ########################################################################################################################
@@ -257,6 +262,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
       src_dir="${ENV_CODE_DIR}"
       echo "Copying base files from ${src_dir} to ${PWD}"
       cp "${src_dir}"/.gitignore ./
+      cp "${src_dir}"/version.txt ./
       cp "${src_dir}"/update-profile-wrapper.sh ./
 
       # Copy the profiles.
@@ -270,6 +276,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
       src_dir="${ENV_CODE_DIR}"
       echo "Copying base files from ${src_dir} to ${PWD}"
       cp "${src_dir}"/.gitignore ./
+      cp "${src_dir}"/version.txt ./
       cp "${src_dir}"/update-cluster-state-wrapper.sh ./
 
       # Copy the k8s-configs.

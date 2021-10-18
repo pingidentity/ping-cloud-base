@@ -166,7 +166,7 @@ PINGCENTRAL_IMAGE_TAG=1.8.0-v1.0.19
 ############################################################
 METADATA_IMAGE_TAG=v1.0.4
 P14C_BOOTSTRAP_IMAGE_TAG=v1.0.11
-P14C_INTEGRATION_IMAGE_TAG=v1.0.33
+P14C_INTEGRATION_IMAGE_TAG=v1.0.34
 
 ############################################################
 # Cluster name variables
@@ -186,7 +186,9 @@ PRIMARY_DNS_ZONE=${PRIMARY_DNS_ZONE}
 # Ping admin configuration required for admin access and clustering
 PD_PRIMARY_PUBLIC_HOSTNAME=pingdirectory-admin.${PRIMARY_DNS_ZONE_DERIVED}
 PF_ADMIN_PUBLIC_HOSTNAME=pingfederate-admin.${PRIMARY_DNS_ZONE_DERIVED}
+PF_ADMIN_API_PUBLIC_HOSTNAME=pingfederate-admin-api.${PRIMARY_DNS_ZONE_DERIVED}
 PA_ADMIN_PUBLIC_HOSTNAME=pingaccess-admin.${PRIMARY_DNS_ZONE_DERIVED}
+PA_ADMIN_API_PUBLIC_HOSTNAME=pingaccess-admin-api.${PRIMARY_DNS_ZONE_DERIVED}
 PA_WAS_ADMIN_PUBLIC_HOSTNAME=pingaccess-was-admin.${PRIMARY_DNS_ZONE_DERIVED}
 PC_ADMIN_PUBLIC_HOSTNAME=pingcentral-admin.${PRIMARY_DNS_ZONE_DERIVED}
 PC_ADMIN_PRIVATE_SITE_HOSTNAME=pingcentral.${PRIMARY_TENANT_DOMAIN_DERIVED}

@@ -222,7 +222,9 @@ handle_custom_files() {
   fi
 
   git checkout --quiet "${DEFAULT_GIT_BRANCH}"
-  custom_files="$(git ls-files | grep -v "^${PROFILES_DIR}" | grep -v 'update-profile-wrapper.sh')"
+  custom_files="$(git ls-files | grep -v "^${PROFILES_DIR}" |
+      grep -v 'update-profile-wrapper.sh' |
+      grep -v 'version.txt')"
 
   if "${VERBOSE}" || "${DEBUG:-false}"; then
     log "DEBUG: Found the following custom non-profile files in branch '${DEFAULT_GIT_BRANCH}':"
