@@ -17,7 +17,8 @@
 - Updated cert-manager from v0.10.1 to v1.5.3
 - Added New Relic support for PingCentral
 - Decreased log level for argocd
-- Updated newrelic-tags-exporter image version to 1.0.6
+- Updated Pingcentral image version to 1.0.20
+- Added support for PingCentral application performance metrics through the NewRelic APM agent
 - Support PA database changed from H2 to Apache Derby
 
 _Changes:_
@@ -42,7 +43,7 @@ _Changes:_
 - [X] PDO-2936 Error in run.sh when New Relic key isn't provided
 - [X] PDO-2941 Add New Relic support for PingCentral
 - [X] PDO-2950 Fixed error in PingDirectory's utils.lib.sh for USER_BASE_DN that's 1-level deep, e.g. o=data
-- [X] PDO-2958 Update newrelic-tags-exporter image version to 1.0.6
+- [X] PDO-2958 newrelic-tags-exporter container crashes if 'entitlements' configmap not found
 - [X] PDO-2986 Fixed issue with P14C bootstrap image where k8s resource data for SSM params are deleted on param update
 
 ### 1.10.0
