@@ -12,7 +12,8 @@ fi
 
 prepare_for_restore() {
 
-    # PDO-1076 - Proactively delete the H2 database password backup file if it exists
+    # Delete the h2 DB backup password now that Derby is the new DB.
+    # TODO prepare_for_restore can be removed once all customers are on PA 6.3 (v1.11 or later)
     readonly h2_props_backup="${SERVER_ROOT_DIR}/conf/h2_password_properties.backup"
     if [ -f "${h2_props_backup}" ]; then
       beluga_log "Found the H2 database password properties file: ${h2_props_backup}.  Removing this file before unzipping the backup."
@@ -50,11 +51,8 @@ restore_backup() {
     done
     echo
 
-    beluga_log "Copying files from ${restore_data_dir} to ${OUT_DIR}/instance/data/"
-    for FILE in ${restore_data_dir}/*; do
-        beluga_log "Copying file: ${FILE} to ${OUT_DIR}/instance/data/"
-        cp "${FILE}" "${OUT_DIR}/instance/data/"
-    done
+    beluga_log "Copying files and subdirectories from ${restore_data_dir} to ${OUT_DIR}/instance/data/"
+    cp -r "${restore_data_dir}"/ "${OUT_DIR}/instance/"
     echo
 }
 
