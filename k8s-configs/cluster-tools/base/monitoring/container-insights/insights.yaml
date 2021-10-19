@@ -1170,6 +1170,8 @@ spec:
             - name: dmesg
               mountPath: /var/log/dmesg
               readOnly: true
+      securityContext:
+        runAsUser: 0
       volumes:
         - name: fluentd-out 
           emptyDir: {}
