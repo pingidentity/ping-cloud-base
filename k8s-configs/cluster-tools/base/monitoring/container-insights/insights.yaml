@@ -1171,10 +1171,8 @@ spec:
               mountPath: /var/log/dmesg
               readOnly: true
       volumes:
-        - hostPath:
-            path: /tmp
-            type: ''
-          name: fluentd-out
+        - name: fluentd-out 
+          emptyDir: {}
         - name: config-volume
           configMap:
             name: fluentd-config
