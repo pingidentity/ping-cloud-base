@@ -73,6 +73,22 @@ patchesStrategicMerge:
 
 patchesJson6902:
 
+### Patch to inject environment variables to SigSci agent container ###
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: nginx-ingress-controller
+    namespace: ingress-nginx-public
+  patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/1/env/0/value
+      value: ${REGION}
+
+    - op: replace
+      path: /spec/template/spec/containers/1/env/1/value
+      value: ${BELUGA_ENV_NAME}
+
 # Change the default TLS secret for the ingress controllers
 - target:
     group: apps

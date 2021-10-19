@@ -30,3 +30,19 @@ patchesJson6902:
       path: /spec/template/spec/containers/0/args/-
       value:
         --default-ssl-certificate=${PING_CLOUD_NAMESPACE}/acme-tls-cert
+
+### Patch to inject environment variables to SigSci agent container ###
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: nginx-ingress-controller
+    namespace: ingress-nginx-public
+  patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/1/env/0/value
+      value: ${REGION}
+
+    - op: replace
+      path: /spec/template/spec/containers/1/env/1/value
+      value: ${ENVIRONMENT_PREFIX}
