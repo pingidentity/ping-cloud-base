@@ -1110,6 +1110,7 @@ spec:
       annotations:
         configHash: 8915de4cf9c3551a8dc74c0137a3e83569d28c71044b0359c2578d2e0461825
     spec:
+      serviceAccount: fluentd
       serviceAccountName: fluentd
       terminationGracePeriodSeconds: 30
       # Because the image's entrypoint requires to write on /fluentd/etc but we mount configmap there which is read-only,
@@ -1152,6 +1153,8 @@ spec:
               cpu: 100m
               memory: 200Mi
           volumeMounts:
+            - mountPath: /var/pos
+              name: fluentd-out
             - name: config-volume
               mountPath: /config-volume
             - name: fluentdconf
@@ -1168,6 +1171,10 @@ spec:
               mountPath: /var/log/dmesg
               readOnly: true
       volumes:
+        - hostPath:
+            path: /tmp
+            type: ''
+          name: fluentd-out
         - name: config-volume
           configMap:
             name: fluentd-config
