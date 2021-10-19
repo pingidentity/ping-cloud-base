@@ -177,6 +177,12 @@
 #                          | as documented above. This flag exists because the  |
 #                          | Beluga developers only have access to one domain   |
 #                          | and hosted zone in their Ping IAM account role.    |
+#                          |                                                    |  
+# IS_GA                    | A flag indicating whether or not this is a GA      | ssm://pcpt/stage/is-ga
+#                          | customer.                                          |
+#                          |                                                    |        
+# IS_MY_PING               | A flag indicating whether or not this is a MyPing  | ssm://pcpt/orch-api/is-myping
+#                          | customer.                                          |         
 #                          |                                                    |
 # ACCOUNT_ID_PATH_PREFIX   | The SSM path prefix which stores CDE account IDs   | The string "unused".
 #                          | of the Ping Cloud customers. The environment type  |
@@ -187,7 +193,7 @@
 #                          | enable IRSA (IAM Role for Service Accounts).       |
 #                          |                                                    |
 # NLB_EIP_PATH_PREFIX      | The SSM path prefix which stores comma separated   | The string "unused".
-#                          | AWS Elastic IP allocation IDs that exist in the   |
+#                          | AWS Elastic IP allocation IDs that exist in the    |
 #                          | CDE account of the Ping Cloud customers.           |
 #                          | The environment type is appended to the SSM key    | 
 #                          | path before the value is retrieved from the        |
@@ -438,6 +444,68 @@ add_nlb_variables() {
 
     export NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE="${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
   fi
+}
+
+########################################################################################################################
+# Export IS_GA annotation for the provided environment.
+#
+# Arguments
+#   ${1} -> The SSM path prefix which stores CDE account IDs of Ping Cloud environments.
+########################################################################################################################
+get_is_ga_variable() {
+  if test "${IS_GA}"; then
+    export IS_GA="${IS_GA}"
+    return
+  fi
+
+  local ssm_path_prefix="$1"
+  
+  # Default empty string
+  IS_GA=''
+
+  if [ "${ssm_path_prefix}" != "unused" ]; then
+
+    # Getting value from ssm parameter store.
+    if ! ssm_value=$(get_ssm_value "${ssm_path_prefix}"); then
+      echo "Error: ${ssm_value}"
+      exit 1
+    fi
+ 
+    IS_GA="${ssm_value}"
+  fi
+
+  export IS_GA="${IS_GA}"
+}
+
+########################################################################################################################
+# Export IS_MY_PING annotation for the provided environment.
+#
+# Arguments
+#   ${1} -> The SSM path prefix which stores CDE account IDs of Ping Cloud environments.
+########################################################################################################################
+get_is_myping_variable() {
+  if test "${IS_MY_PING}"; then
+    export IS_MY_PING="${IS_MY_PING}"
+    return
+  fi
+
+  local ssm_path_prefix="$1"
+
+  # Default empty string
+  IS_MY_PING=''
+
+  if [ "${ssm_path_prefix}" != "unused" ]; then
+
+    # Getting value from ssm parameter store.
+    if ! ssm_value=$(get_ssm_value "${ssm_path_prefix}"); then
+      echo "Error: ${ssm_value}"
+      exit 1
+    fi
+
+    IS_MY_PING="${ssm_value}"
+  fi
+
+  export IS_MY_PING="${IS_MY_PING}"
 }
 
 # Checking required tools and environment variables.
@@ -719,16 +787,19 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
       ;;
   esac
 
-  # Update the Let's encrypt server to use staging/production based on environment type.
-  case "${ENV}" in
-    dev | test | stage)
-      export LETS_ENCRYPT_SERVER="${LETS_ENCRYPT_SERVER:-https://acme-staging-v02.api.letsencrypt.org/directory}"
-      ;;
-    prod | customer-hub)
-      export LETS_ENCRYPT_SERVER="${LETS_ENCRYPT_SERVER:-https://acme-v02.api.letsencrypt.org/directory}"
-      ;;
-  esac
-
+  # Update the Let's encrypt server to use staging/production based on trial vs. paid customers and on environment type.
+  if test ${IS_GA} || test ${IS_MY_PING}; then
+    export LETS_ENCRYPT_SERVER="${LETS_ENCRYPT_SERVER:-https://acme-v02.api.letsencrypt.org/directory}"
+  else
+    case "${ENV}" in
+      dev | test | stage)
+        export LETS_ENCRYPT_SERVER="${LETS_ENCRYPT_SERVER:-https://acme-staging-v02.api.letsencrypt.org/directory}"
+        ;;
+      prod | customer-hub)
+        export LETS_ENCRYPT_SERVER="${LETS_ENCRYPT_SERVER:-https://acme-v02.api.letsencrypt.org/directory}"
+        ;;
+    esac
+  fi
   export USER_BASE_DN="${USER_BASE_DN:-dc=example,dc=com}"
 
   # Set PF variables based on ENV
@@ -794,6 +865,9 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   add_derived_variables
   add_irsa_variables "${ACCOUNT_ID_PATH_PREFIX:-unused}" "${ENV}"
   add_nlb_variables "${NLB_EIP_PATH_PREFIX:-unused}" "${ENV}"
+  get_is_ga_variable 'ssm://pcpt/stage/is-ga'
+  get_is_myping_variable 'ssm://pcpt/orch-api/is-myping'
+
 
   echo ---
   echo "For environment ${ENV}, using variable values:"
