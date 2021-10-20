@@ -21,6 +21,7 @@
 - Added support for PingCentral application performance metrics through the NewRelic APM agent
 - Support PA database changed from H2 to Apache Derby
 - Updated starter configuration to use LE production server for all GA and MyPing customers
+- Fixed Pod startup errors due to Prometheus not being able to find jmx_export_config.yaml
 
 _Changes:_
 
@@ -48,6 +49,7 @@ _Changes:_
 - [X] PDO-2958 newrelic-tags-exporter container crashes if 'entitlements' configmap not found
 - [X] PDO-2986 Fixed issue with P14C bootstrap image where k8s resource data for SSM params are deleted on param update
 - [X] PDO-2989 Add the Beluga version to the cluster-state and profile repos in a version.txt file
+- [X] PDO-2990 Pod startup errors due to Prometheus not being able to find jmx_export_config.yaml
 
 ### 1.10.0
 
