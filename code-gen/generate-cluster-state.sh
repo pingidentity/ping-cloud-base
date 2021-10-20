@@ -447,10 +447,12 @@ add_nlb_variables() {
 }
 
 ########################################################################################################################
-# Export IS_GA annotation for the provided environment.
+# Export the IS_GA environment variable for the provided customer. If it is already present as an environment
+# variable, then export it as is. Otherwise, if the SSM path prefix for it is not 'unused', then try to retrieve it out
+# of SSM. On error, print a warning message, but default the value to false. On success, use the value from SSM.
 #
 # Arguments
-#   ${1} -> The SSM path prefix which stores CDE account IDs of Ping Cloud environments.
+#   ${1} -> The SSM path prefix which stores the IS_GA flag.
 ########################################################################################################################
 get_is_ga_variable() {
   if test "${IS_GA}"; then
@@ -460,28 +462,29 @@ get_is_ga_variable() {
 
   local ssm_path_prefix="$1"
   
-  # Default empty string
-  IS_GA=''
+  # Default false
+  IS_GA=false
 
   if [ "${ssm_path_prefix}" != "unused" ]; then
-
     # Getting value from ssm parameter store.
     if ! ssm_value=$(get_ssm_value "${ssm_path_prefix}"); then
-      echo "Error: ${ssm_value}"
-      exit 1
+      echo "Warn: ${ssm_value}"
+      echo "Defaulting IS_GA=false."
+    else
+      IS_GA="${ssm_value}"
     fi
- 
-    IS_GA="${ssm_value}"
   fi
 
   export IS_GA="${IS_GA}"
 }
 
 ########################################################################################################################
-# Export IS_MY_PING annotation for the provided environment.
+# Export the IS_MY_PING environment variable for the provided customer. If it is already present as an environment
+# variable, then export it as is. Otherwise, if the SSM path prefix for it is not 'unused', then try to retrieve it out
+# of SSM. On error, print a warning message, but default the value to false. On success, use the value from SSM.
 #
 # Arguments
-#   ${1} -> The SSM path prefix which stores CDE account IDs of Ping Cloud environments.
+#   ${1} -> The SSM path prefix which stores the IS_MY_PING flag.
 ########################################################################################################################
 get_is_myping_variable() {
   if test "${IS_MY_PING}"; then
@@ -491,18 +494,17 @@ get_is_myping_variable() {
 
   local ssm_path_prefix="$1"
 
-  # Default empty string
-  IS_MY_PING=''
+  # Default false
+  IS_MY_PING=false
 
   if [ "${ssm_path_prefix}" != "unused" ]; then
-
     # Getting value from ssm parameter store.
     if ! ssm_value=$(get_ssm_value "${ssm_path_prefix}"); then
-      echo "Error: ${ssm_value}"
-      exit 1
+      echo "Warn: ${ssm_value}"
+      echo "Defaulting IS_MY_PING=false."
+    else
+      IS_MY_PING="${ssm_value}"
     fi
-
-    IS_MY_PING="${ssm_value}"
   fi
 
   export IS_MY_PING="${IS_MY_PING}"
@@ -745,6 +747,9 @@ ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
 
 export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL}"
 
+get_is_ga_variable 'ssm://pcpt/stage/is-ga'
+get_is_myping_variable 'ssm://pcpt/orch-api/is-myping'
+
 # The ENVIRONMENTS variable can either be the CDE names (e.g. dev, test, stage, prod) or the CHUB name "customer-hub",
 # or the corresponding branch names (e.g. v1.8.0-dev, v1.8.0-test, v1.8.0-stage, v1.8.0-master, v1.8.0-customer-hub).
 # We must handle both cases. Note that the 'prod' environment will have a branch name suffix of 'master'.
@@ -787,34 +792,38 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
       ;;
   esac
 
-  # Update the Let's encrypt server to use staging/production based on trial vs. paid customers and on environment type.
-  if test ${IS_GA} || test ${IS_MY_PING}; then
-    export LETS_ENCRYPT_SERVER="${LETS_ENCRYPT_SERVER:-https://acme-v02.api.letsencrypt.org/directory}"
-  else
-    case "${ENV}" in
-      dev | test | stage)
-        export LETS_ENCRYPT_SERVER="${LETS_ENCRYPT_SERVER:-https://acme-staging-v02.api.letsencrypt.org/directory}"
-        ;;
-      prod | customer-hub)
-        export LETS_ENCRYPT_SERVER="${LETS_ENCRYPT_SERVER:-https://acme-v02.api.letsencrypt.org/directory}"
-        ;;
-    esac
+  # Update the Let's encrypt server to use staging/production based on GA/MyPing customers or the environment type.
+  PROD_LETS_ENCRYPT_SERVER='https://acme-v02.api.letsencrypt.org/directory'
+  STAGE_LETS_ENCRYPT_SERVER='https://acme-stging-v02.api.letsencrypt.org/directory'
+
+  if test ! "${LETS_ENCRYPT_SERVER}"; then
+    if "${IS_GA}" || "${IS_MY_PING}"; then
+      LETS_ENCRYPT_SERVER="${PROD_LETS_ENCRYPT_SERVER}"
+    else
+      case "${ENV}" in
+        dev | test | stage)
+          LETS_ENCRYPT_SERVER="${STAGE_LETS_ENCRYPT_SERVER}"
+          ;;
+        prod | customer-hub)
+          LETS_ENCRYPT_SERVER="${PROD_LETS_ENCRYPT_SERVER}"
+          ;;
+      esac
+    fi
   fi
+  export LETS_ENCRYPT_SERVER="${LETS_ENCRYPT_SERVER}"
+
   export USER_BASE_DN="${USER_BASE_DN:-dc=example,dc=com}"
 
   # Set PF variables based on ENV
-  case "${ENV}" in
-    dev | test | stage)
-      export PF_PD_BIND_PORT=1389
-      export PF_PD_BIND_PROTOCOL=ldap
-      export PF_PD_BIND_USESSL=false
-      ;;
-    prod | customer-hub)
-      export PF_PD_BIND_PORT=5678
-      export PF_PD_BIND_PROTOCOL=ldaps
-      export PF_PD_BIND_USESSL=true
-      ;;
-  esac
+  if test "${LETS_ENCRYPT_SERVER}" = "${STAGE_LETS_ENCRYPT_SERVER}"; then
+    export PF_PD_BIND_PORT=1389
+    export PF_PD_BIND_PROTOCOL=ldap
+    export PF_PD_BIND_USESSL=false
+  else
+    export PF_PD_BIND_PORT=5678
+    export PF_PD_BIND_PROTOCOL=ldaps
+    export PF_PD_BIND_USESSL=true
+  fi
 
   # Update the PF JVM limits based on environment.
   case "${ENV}" in
@@ -865,9 +874,6 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   add_derived_variables
   add_irsa_variables "${ACCOUNT_ID_PATH_PREFIX:-unused}" "${ENV}"
   add_nlb_variables "${NLB_EIP_PATH_PREFIX:-unused}" "${ENV}"
-  get_is_ga_variable 'ssm://pcpt/stage/is-ga'
-  get_is_myping_variable 'ssm://pcpt/orch-api/is-myping'
-
 
   echo ---
   echo "For environment ${ENV}, using variable values:"
