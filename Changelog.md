@@ -9,6 +9,7 @@ _Changes:_
 
 - [X] PDO-2921 SigSci WAF: create public ingresses for admin endpoints
 - [X] PDO-2938 Added regional custom-patches.yaml as an extension point to customize configuration for a specific region
+- [X] PDO-2988 Increased metadata pod timeoutSeconds probe to 3 seconds for liveness & readiness
 
 ### 1.11.0
 
