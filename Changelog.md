@@ -32,6 +32,7 @@ _Changes:_
 - Updated Pingcentral image version to 1.0.20
 - Added support for PingCentral application performance metrics through the NewRelic APM agent
 - Support PA database changed from H2 to Apache Derby
+- Updated starter configuration to use LE production server for all GA and MyPing customers
 
 _Changes:_
 
@@ -39,6 +40,7 @@ _Changes:_
 - [X] PDO-2401 create a new hook script "10-download-artifact.sh.post" in the PF image
 - [X] PDO-2412 Decrease ArgoCD log level
 - [X] PDO-2433 Updated cert-manager from v0.10.1 to v1.5.3
+- [X] PDO-2599 Updated starter configuration to use LE production server for all GA and MyPing customers
 - [X] PDO-2753 PF Admin SSO Revert script update
 - [X] PDO-2758 Enabled PingAccess Admin SSO for MyPing customers
 - [X] PDO-2791 Added a script to update server profile code from one version of Beluga to another
