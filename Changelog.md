@@ -35,6 +35,7 @@ _Changes:_
 - Support PA database changed from H2 to Apache Derby
 - Updated starter configuration to use LE production server for all GA and MyPing customers
 - Fixed Pod startup errors due to Prometheus not being able to find jmx_export_config.yaml
+- Added replication backlog check to PD readiness check
 
 _Changes:_
 
@@ -48,6 +49,7 @@ _Changes:_
 - [X] PDO-2791 Added a script to update server profile code from one version of Beluga to another
 - [X] PDO-2810 Added a license pre-hook script that configures the DevOps user/key to use for product licenses
 - [X] PDO-2811 Change the default for the DevOps USER/KEY to SSM paths
+- [X] PDO-2826 Add replication backlog check to PD readiness check
 - [X] PDO-2837 P14C liveness probe hitting wrong URL
 - [X] PDO-2846 Updated PA to 6.3
 - [X] PDO-2872 Support PA database changed from H2 to Apache Derby
