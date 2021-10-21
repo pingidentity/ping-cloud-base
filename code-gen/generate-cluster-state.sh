@@ -178,10 +178,10 @@
 #                          | Beluga developers only have access to one domain   |
 #                          | and hosted zone in their Ping IAM account role.    |
 #                          |                                                    |  
-# IS_GA                    | A flag indicating whether or not this is a GA      | ssm://pcpt/stage/is-ga
+# IS_GA                    | A flag indicating whether or not this is a GA      | The SSM path: /pcpt/stage/is-ga
 #                          | customer.                                          |
 #                          |                                                    |        
-# IS_MY_PING               | A flag indicating whether or not this is a MyPing  | ssm://pcpt/orch-api/is-myping
+# IS_MY_PING               | A flag indicating whether or not this is a MyPing  | The SSM path: /pcpt/orch-api/is-myping
 #                          | customer.                                          |         
 #                          |                                                    |
 # ACCOUNT_ID_PATH_PREFIX   | The SSM path prefix which stores CDE account IDs   | The string "unused".
@@ -747,8 +747,8 @@ ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
 
 export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL}"
 
-get_is_ga_variable 'ssm://pcpt/stage/is-ga'
-get_is_myping_variable 'ssm://pcpt/orch-api/is-myping'
+get_is_ga_variable '/pcpt/stage/is-ga'
+get_is_myping_variable '/pcpt/orch-api/is-myping'
 
 # The ENVIRONMENTS variable can either be the CDE names (e.g. dev, test, stage, prod) or the CHUB name "customer-hub",
 # or the corresponding branch names (e.g. v1.8.0-dev, v1.8.0-test, v1.8.0-stage, v1.8.0-master, v1.8.0-customer-hub).
@@ -794,7 +794,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
 
   # Update the Let's encrypt server to use staging/production based on GA/MyPing customers or the environment type.
   PROD_LETS_ENCRYPT_SERVER='https://acme-v02.api.letsencrypt.org/directory'
-  STAGE_LETS_ENCRYPT_SERVER='https://acme-stging-v02.api.letsencrypt.org/directory'
+  STAGE_LETS_ENCRYPT_SERVER='https://acme-staging-v02.api.letsencrypt.org/directory'
 
   if test ! "${LETS_ENCRYPT_SERVER}"; then
     if "${IS_GA}" || "${IS_MY_PING}"; then
@@ -815,7 +815,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   export USER_BASE_DN="${USER_BASE_DN:-dc=example,dc=com}"
 
   # Set PF variables based on ENV
-  if test "${LETS_ENCRYPT_SERVER}" = "${STAGE_LETS_ENCRYPT_SERVER}"; then
+  if echo "${LETS_ENCRYPT_SERVER}" | grep -q 'staging'; then
     export PF_PD_BIND_PORT=1389
     export PF_PD_BIND_PROTOCOL=ldap
     export PF_PD_BIND_USESSL=false

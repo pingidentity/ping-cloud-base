@@ -977,6 +977,8 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
           unset LETS_ENCRYPT_SERVER
         fi
 
+        log "Using LETS_ENCRYPT_SERVER: ${LETS_ENCRYPT_SERVER}"
+
         # Also set SERVER_PROFILE_URL to empty so the new default (i.e. profile-repo with the same URL as the CSR)
         # is automatically used.
 
