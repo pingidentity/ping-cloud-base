@@ -17,7 +17,7 @@ if (test -f "${STAGING_DIR}/artifacts/artifact-list.json") || (test ! -z "${SOLU
   beluga_log "SOLUTIONS_ARTIFACTS : ${SOLUTIONS_ARTIFACTS}"
 
   _is_invalid_json() {
-    test $(echo ${1} | jq >/dev/null 2>&1; echo $?) -ne "0"
+    test $(echo ${1} | jq "" >/dev/null 2>&1; echo $?) -ne "0"
   }
 
   if _is_invalid_json "${ARTIFACT_LIST_JSON}"; then

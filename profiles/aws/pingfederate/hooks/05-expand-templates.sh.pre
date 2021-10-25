@@ -14,4 +14,12 @@ else
     beluga_log "Did not find P14C container environment variables to export"
 fi
 
-exit 0
+if [ -n "${OPERATIONAL_MODE}" ] &&  [ "${OPERATIONAL_MODE}" = "CLUSTERED_CONSOLE" ]; then
+    THREADMIN=1
+    THREADMAX=10
+    export_container_env THREADMIN THREADMAX
+fi
+
+if [ -z "${OPERATIONAL_MODE}" ] ||  [ "${OPERATIONAL_MODE}" != "CLUSTERED_CONSOLE" ]; then
+   run_hook "10-set-engine-threads.sh"
+fi

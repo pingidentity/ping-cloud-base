@@ -16,6 +16,7 @@
 # For example, the root user password could be directly provided with the
 # --rootUserPassword argument, and the --encryptDataWithRandomPassphrase
 # argument can be used to encrypt data with a randomly generated key.
+    --fips-provider BCFIPS \
     --verbose \
     --acceptLicense \
     --skipPortCheck \

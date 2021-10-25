@@ -268,7 +268,7 @@ pf.cluster.diagnostics.port=7500
 #    LUNA    - Denotes a SafeNet Luna implementation.
 #    OFF     - Use the default Sun keystore/JCE implementation.
 # Default is OFF.
-pf.hsm.mode=OFF
+pf.hsm.mode=BCFIPS
 
 #  Hardware Security Module Hybrid Mode
 #  ------------------------------------

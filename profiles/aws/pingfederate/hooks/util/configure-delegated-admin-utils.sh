@@ -317,8 +317,6 @@ set_jwt() {
     beluga_log "Creating JWT"
 
     # Generate random symmetric key and export. It is required within template create-jwt.
-    # is this line failing because xxd doesn't exist? Try the following command instead (untested)
-    # dd if=/dev/urandom count=1 bs=32 2>/dev/null | od -t x -w32 | awk '{gsub(/ /,"");print; exit}'
     export DA_JWT_SYMMETRIC_KEY=$(dd if=/dev/urandom count=5 bs=8 | xxd -p | head -n 2 | tr -d '[:space:]')
 
     create_jwt_payload=$(envsubst < ${TEMPLATES_DIR_PATH}/create-jwt.json)

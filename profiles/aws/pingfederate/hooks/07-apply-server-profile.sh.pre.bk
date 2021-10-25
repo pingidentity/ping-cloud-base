@@ -1,0 +1,9 @@
+#!/bin/env sh
+
+${VERBOSE} && set -x
+. "${HOOKS_DIR}/pingcommon.lib.sh"
+. "${HOOKS_DIR}/utils.lib.sh"
+
+cat ${STAGING_DIR}/instance/server/default/conf/META-INF/hivemodule.xml
+
+obfuscatePassword

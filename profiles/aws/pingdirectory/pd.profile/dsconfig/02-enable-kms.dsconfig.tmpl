@@ -1,0 +1,9 @@
+dsconfig create-cipher-stream-provider \
+     --provider-name "Amazon KMS" \
+     --type amazon-key-management-service \
+     --set enabled:true \
+     --set "aws-region-name:${AWS_REGION}" \
+     --set "kms-encryption-key-arn:${KMS_KEY_ARN}"
+
+dsconfig set-global-configuration-prop \
+     --set "encryption-settings-cipher-stream-provider:Amazon KMS"     

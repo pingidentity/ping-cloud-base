@@ -9,7 +9,6 @@ beluga_log "Starting PingFederate Engine liveness probe.  Waiting for heartbeat 
 get_url_response_code=$(curl -k \
   -s \
   -S \
-  --retry-connrefused \
   -w '%{response_code}' \
   --max-time 2 \
   -o /dev/null \

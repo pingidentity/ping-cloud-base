@@ -29,21 +29,6 @@ if ! test -f "${ADMIN_CONFIGURATION_COMPLETE}"; then
     exit 1
   fi
 
-  if isPingaccessWas; then
-    sh "${HOOKS_DIR}/82-configure-p14c-token-provider.sh"
-    if test $? -ne 0; then
-      stop_server
-      exit 1
-    fi
-
-    sh "${HOOKS_DIR}/83-configure-initial-pa-was.sh"
-    if test $? -ne 0; then
-      stop_server
-      exit 1
-    fi
-
-  fi
-
   touch ${ADMIN_CONFIGURATION_COMPLETE}
 
 else
@@ -57,23 +42,6 @@ else
     fi
   else
     beluga_log "not changing PA admin password"
-  fi
-
-  # If P14C environment variables have changed, update the config with new values
-  if isPingaccessWas; then
-    beluga_log "Starting hook: ${HOOKS_DIR}/82-configure-p14c-token-provider.sh"
-    sh "${HOOKS_DIR}/82-configure-p14c-token-provider.sh"
-    if test $? -ne 0; then
-      stop_server
-      exit 1
-    fi
-
-    beluga_log "Starting hook: ${HOOKS_DIR}/83-configure-initial-pa-was.sh"
-    sh "${HOOKS_DIR}/83-configure-initial-pa-was.sh"
-    if test $? -ne 0; then
-      stop_server
-      exit 1
-    fi
   fi
 
 fi

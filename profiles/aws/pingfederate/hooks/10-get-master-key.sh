@@ -47,4 +47,18 @@ unzip -o "${EXPORT_ZIP_FILE}" -d "${EXPORT_DIR}"
 find "${EXPORT_DIR}" -type f -name "${MASTER_KEY_FILE}" | xargs -I {} cp {} "${MASTER_KEY_PATH}"
 test ! -f "${MASTER_KEY_PATH}" && beluga_log "Unable to locate master key" && exit 1
 chmod 400 "${MASTER_KEY_PATH}"
+
+JWK_ENCRYPTED=false
+
+if test -f "${MASTER_KEY_PATH}"; then
+  res=$(cat "${MASTER_KEY_PATH}" | jq "" 2>/dev/null)
+  rc=$?
+  if test $rc -ne 0; then
+    JWK_ENCRYPTED=true
+  fi
+fi
+
+substitute_kms_key_id $JWK_ENCRYPTED
+
+
 obfuscatePassword

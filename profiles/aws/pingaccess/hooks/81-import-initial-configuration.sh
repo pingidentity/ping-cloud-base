@@ -56,7 +56,6 @@ get_admin_user_response=$(curl -k \
      --retry ${API_RETRY_LIMIT} \
      --max-time ${API_TIMEOUT_WAIT} \
      --retry-delay 1 \
-     --retry-connrefused \
      -u ${PA_ADMIN_USER_USERNAME}:${OLD_PA_ADMIN_USER_PASSWORD} \
      -H "X-Xsrf-Header: PingAccess" "${PINGACCESS_ADMIN_API_ENDPOINT}/users/1")
 "${VERBOSE}" && set -x

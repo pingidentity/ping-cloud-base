@@ -61,9 +61,6 @@ if test ${rebuild_index_status} -ne 0; then
   cat /tmp/rebuild-index.out
 fi
 
-beluga_log "updating encryption settings"
-run_hook "15-encryption-settings.sh"
-
 beluga_log "enabling the replication sub-system in offline mode"
 offline_enable_replication
 enable_replication_status=$?
