@@ -101,7 +101,7 @@ function applyConfigStoreOverrides()
                   -X GET \
                   "https://localhost:${PF_ADMIN_PORT}/pf-admin-api/v1/configStore/${target}/${id}")
                ${VERBOSE} && set -x
-               result=$(echo "${oldValue:$(echo "${#oldValue} -3" |bc)}" | tr -d '$\n')
+               result=$(echo "${oldValue:$(echo "$((${#oldValue} -3))")}" | tr -d '$\n')
                oldValue=$(echo "${oldValue:0:-3}" | tr -d '$\n' )
                #
                # An http response of 404 means the item wasn't found, this may or may not
@@ -239,7 +239,7 @@ function stopServer()
    pid=$(cat pingfederate.pid)
    kill ${pid}
    beluga_log "Waiting for PingFederate to shutdown" 
-   while [  "$(netstat -lntp|grep ${PF_ADMIN_PORT}|grep "${pid}/java" >/dev/null 2>&1;echo $?)" = "0" ]; do
+   while [  "$(jps | grep ${pid} >/dev/null 2>&1;echo $?)" = "0" ]; do
       sleep 1
    done
    sleep 1
@@ -277,7 +277,8 @@ if [ ${hasGeneralOverride} -eq 1 ] || [ ${hasConfigStoreOverride} -eq 1 ]; then
    applyConfigStoreOverrides
    rc2=$?
    stopServer
-   rc=$(echo "( ${rc1} * 10) + ${rc2}"|bc)
+   rc=$(echo "$(((${rc1} * 10) + ${rc2}))")
+
 else
    beluga_log "No data or config store overrides found to applied - Do nothing"   
 fi

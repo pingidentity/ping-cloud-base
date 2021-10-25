@@ -33,7 +33,8 @@ fi
 #
 #  YYYYMMDDHHMM-<pod name>-support-data.zip
 #
-support_data_filename="$(date +"%Y%m%d%H%M")-$(hostname)-support-data.zip"
+hostname = $(cat /etc/hostname)
+support_data_filename="$(date +"%Y%m%d%H%M")-${hostname}-support-data.zip"
 support_data_file_path="${SERVER_ROOT_DIR}/${support_data_filename}"
 
 # Calling collect-support-data.sh to produce a zip of diagnostic info is pretty straightforward.
