@@ -3,6 +3,7 @@
 ### 1.12.0
 
 - Added custom patch to create public ingresses for admin endpoints
+- Add support for enabling rate limiting in PA and PA-WAS
 - Added regional custom-patches.yaml as an extension point to customize configuration for a specific region 
 - Updated ingress to v1.0.0 and added the SigSci agent sidecar container to the public Nginx-ingress-controller pod
 
@@ -10,6 +11,7 @@ _Changes:_
 
 - [X] PDO-2534 SigSci WAF: run the SigSci agent as a sidecar container in the Nginx-ingress-controller pod
 - [X] PDO-2921 SigSci WAF: create public ingresses for admin endpoints
+- [X] PDO-2928 Add support for enabling rate limiting in PA and PA-WAS
 - [X] PDO-2938 Added regional custom-patches.yaml as an extension point to customize configuration for a specific region
 - [X] PDO-2988 Increased metadata pod timeoutSeconds probe to 3 seconds for liveness & readiness
 
