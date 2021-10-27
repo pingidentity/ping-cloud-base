@@ -23,6 +23,7 @@
 - Updated starter configuration to use LE production server for all GA and MyPing customers
 - Fixed Pod startup errors due to Prometheus not being able to find jmx_export_config.yaml
 - Added replication backlog check to PD readiness check
+- Update cluster tools to version: cluster-autoscaler (1.20.0)
 
 _Changes:_
 
@@ -52,6 +53,7 @@ _Changes:_
 - [X] PDO-2986 Fixed issue with P14C bootstrap image where k8s resource data for SSM params are deleted on param update
 - [X] PDO-2989 Add the Beluga version to the cluster-state and profile repos in a version.txt file
 - [X] PDO-2990 Pod startup errors due to Prometheus not being able to find jmx_export_config.yaml
+- [X] PDO-3027 Update cluster tools to version: cluster-autoscaler (1.20.0)
 
 ### 1.10.0
 
