@@ -695,6 +695,15 @@ data:
         </record>
       </filter>
 
+      <filter **>
+        @type concat
+        key log
+        multiline_start_regexp /\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}([,.]\d{3}){0,1}|\d{2}:\d{2}:\d{2}\s+ping.*-\d{1,2}|\\u001b\[0;32m/
+        separator ""
+        flush_interval 5
+        timeout_label @normal
+      </filter>
+
       <match kubernetes.**>
         @type rewrite_tag_filter
         <rule>
