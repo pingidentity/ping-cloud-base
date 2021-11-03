@@ -1,0 +1,224 @@
+---
+# Source: nri-bundle/charts/newrelic-infrastructure/templates/daemonset.yaml
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: newrelic
+  labels:     
+    app: newrelic-infrastructure
+    chart: newrelic-infrastructure-2.7.0
+    release: nri-bundle
+    mode: privileged
+  name: nri-bundle-newrelic-infrastructure
+spec:
+    
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate
+    
+  selector:
+    matchLabels:
+      app: newrelic-infrastructure
+      release: nri-bundle
+  template:
+    metadata:
+      labels:
+        app: newrelic-infrastructure
+        release: nri-bundle
+        mode: privileged
+      annotations: {}
+    spec:
+      serviceAccountName: nri-bundle-newrelic-infrastructure
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      initContainers:
+        - name: wait-for-nr-license-secret
+          image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
+          command: [ "/bin/sh", "-c" ]
+          args: [ "kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
+          env:
+            - name: "WAIT_TIMEOUT_SEC"
+              value: "300"
+            - name: "JOB_NAME"
+              value: "newrelic-license-secret-exporter"
+      containers:
+        - name: newrelic-infrastructure
+          image: "newrelic/infrastructure-k8s:2.8.1"
+          imagePullPolicy: "IfNotPresent"
+          securityContext:
+            privileged: true
+          env:
+            - name: NRIA_LICENSE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: newrelic-license-key
+                  key: NEW_RELIC_LICENSE_KEY
+            - name: "CLUSTER_NAME"
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['CLUSTER_NAME']
+            - name: "NRK8S_NODE_NAME"
+              valueFrom:
+                fieldRef:
+                  apiVersion: "v1"
+                  fieldPath: "spec.nodeName"
+            - name: "NRIA_DISPLAY_NAME"
+              valueFrom:
+                fieldRef:
+                  apiVersion: "v1"
+                  fieldPath: "spec.nodeName"
+            - name: "NRIA_CUSTOM_ATTRIBUTES"
+              value: '{"clusterName":"$(CLUSTER_NAME)"}'
+            - name: "NRIA_PASSTHROUGH_ENVIRONMENT"
+              value: "KUBERNETES_SERVICE_HOST,KUBERNETES_SERVICE_PORT,CLUSTER_NAME,CADVISOR_PORT,NRK8S_NODE_NAME,KUBE_STATE_METRICS_URL,KUBE_STATE_METRICS_POD_LABEL,TIMEOUT,ETCD_TLS_SECRET_NAME,ETCD_TLS_SECRET_NAMESPACE,API_SERVER_SECURE_PORT,KUBE_STATE_METRICS_SCHEME,KUBE_STATE_METRICS_PORT,KUBE_STATE_METRICS_NAMESPACE,SCHEDULER_ENDPOINT_URL,ETCD_ENDPOINT_URL,CONTROLLER_MANAGER_ENDPOINT_URL,API_SERVER_ENDPOINT_URL,DISABLE_KUBE_STATE_METRICS,DISCOVERY_CACHE_TTL"
+          volumeMounts:
+            - name: dev
+              mountPath: /dev
+            - name: host-docker-socket
+              mountPath: /var/run/docker.sock
+            - name: log
+              mountPath: /var/log
+            - name: host-volume
+              mountPath: /host
+              readOnly: true
+            # Volume Mount added for custom defintion file used to set scrape interval
+            - mountPath: /var/db/newrelic-infra/newrelic-integrations/nri-kubernetes-definition.yml
+              name: nri-kubernetes-definition-cfg-volume
+              subPath: nri-kubernetes-definition.yml
+          resources:
+            limits:
+              memory: 300M
+            requests:
+              cpu: 100m
+              memory: 150M
+            
+      volumes:
+        - name: dev
+          hostPath:
+            path: /dev
+        - name: host-docker-socket
+          hostPath:
+            path: /var/run/docker.sock
+        - name: log
+          hostPath:
+            path: /var/log
+        - name: host-volume
+          hostPath:
+            path: /
+        # Volume added for custom defintion file used to set scrape interval
+        - name: nri-kubernetes-definition-cfg-volume
+          configMap:
+            name: nri-kubernetes-definition-cfg
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+        - effect: NoExecute
+          operator: Exists
+
+---
+# Source: nri-bundle/charts/newrelic-logging/templates/daemonset.yaml
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  namespace: newrelic
+  labels:     
+    app: newrelic-logging
+    chart: newrelic-logging-1.10.0
+    release: nri-bundle
+    app.kubernetes.io/name: newrelic-logging
+  name: nri-bundle-newrelic-logging
+spec:
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: newrelic-logging
+      release: nri-bundle
+  template:
+    metadata:
+      labels:
+        app: newrelic-logging
+        release: nri-bundle
+        kubernetes.io/os: linux
+        app.kubernetes.io/name: newrelic-logging
+      annotations: {}
+    spec:
+      serviceAccountName: nri-bundle-newrelic-logging
+      hostNetwork: true # This option is a requirement for the Infrastructure Agent to report the proper hostname in New Relic.
+      dnsPolicy: ClusterFirstWithHostNet
+      terminationGracePeriodSeconds: 10
+      initContainers:
+        - name: wait-for-nr-license-secret
+          image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
+          command: [ "/bin/sh", "-c" ]
+          args: [ "kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
+          env:
+            - name: "WAIT_TIMEOUT_SEC"
+              value: "300"
+            - name: "JOB_NAME"
+              value: "newrelic-license-secret-exporter"
+      containers:
+        - name: newrelic-logging
+          image: "newrelic/newrelic-fluentbit-output:1.10.0"
+          imagePullPolicy: "IfNotPresent"
+          env:
+            - name: ENDPOINT
+              value: "https://log-api.newrelic.com/log/v1"
+            - name: SOURCE
+              value:  "k8s"
+            - name: LICENSE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: newrelic-license-key
+                  key: NEW_RELIC_LICENSE_KEY
+            - name: CLUSTER_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['CLUSTER_NAME']
+            - name: LOG_LEVEL
+              value: "info"
+            - name: LOG_PARSER
+              value: "docker"
+            - name: FB_DB
+              value: "/var/log/flb_kube.db"
+            - name: PATH
+              value: "/var/log/containers/*.log"
+            - name: K8S_LOGGING_EXCLUDE
+              value: "Off"
+            - name: LOW_DATA_MODE
+              value: "true"
+          command:
+            - /fluent-bit/bin/fluent-bit
+            - -c
+            - /fluent-bit/etc/fluent-bit.conf
+            - -e
+            - /fluent-bit/bin/out_newrelic.so
+          volumeMounts:
+            - name: fluent-bit-config
+              mountPath: /fluent-bit/etc
+            - name: var
+              mountPath: /var
+          resources:
+            limits:
+              cpu: 500m
+              memory: 128Mi
+            requests:
+              cpu: 250m
+              memory: 64Mi
+            
+      volumes:
+        - name: fluent-bit-config
+          configMap:
+            name: nri-bundle-newrelic-logging-fluent-bit-config
+        - name: var
+          hostPath:
+            path: /var
+      nodeSelector:
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+        - effect: NoExecute
+          operator: Exists
