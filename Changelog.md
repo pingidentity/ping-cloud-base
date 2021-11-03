@@ -39,7 +39,7 @@ _Changes:_
 - Support PA database changed from H2 to Apache Derby
 - Updated starter configuration to use LE production server for all GA and MyPing customers
 - Fixed Pod startup errors due to Prometheus not being able to find jmx_export_config.yaml
-- Added replication backlog check to PD readiness check
+- Added PD startupProbe with replication backlog check
 - Update cluster tools to version: cluster-autoscaler (1.20.0)
 
 _Changes:_
