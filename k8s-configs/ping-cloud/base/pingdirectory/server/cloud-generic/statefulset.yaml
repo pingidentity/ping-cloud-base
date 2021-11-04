@@ -150,7 +150,7 @@ spec:
           securityContext:
             runAsNonRoot: false
             runAsUser: 0
-          image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory:8.3.0.0-v1.0.16
+          image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory:8.3.0.0-v1.0.18
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 1389
@@ -252,24 +252,28 @@ spec:
             exec:
               command:
                 - /opt/staging/hooks/85-readiness.sh
-            # Do not start the readiness probe for 3 minutes after starting the
-            # container because PD will never finish its start/restart sequence
-            # before then, in practice. Run the readiness probe every 5 seconds
-            # and tolerate up to 3 failures, so PD cannot falsely be considered
-            # READY for more than 15 seconds in a row.
-            initialDelaySeconds: 182
             periodSeconds: 5
             failureThreshold: 3
             timeoutSeconds: 5
+          startupProbe:
+            exec:
+              command:
+                - /opt/staging/hooks/84-startup-probe.sh
+            # Do not start the startup probe for 3 minutes after starting the
+            # container because PD will never finish its start/restart sequence
+            # before then, in practice. Run the startup probe every 5 seconds
+            # and tolerate up to 100 failures, so PD will be marked as ready as far as it really be ready
+            initialDelaySeconds: 180
+            periodSeconds: 5
+            failureThreshold: 100
+            timeoutSeconds: 5
           livenessProbe:
-            httpGet:
-              path: /available-state
-              port: 1443
-              scheme: HTTPS
-            # Health checks will kick in 10 minutes after the pod starts up.
-            initialDelaySeconds: 600
+            exec:
+              command:
+                - /opt/staging/hooks/86-liveness.sh
             periodSeconds: 30
             failureThreshold: 3
+            timeoutSeconds: 5
           lifecycle:
             preStop:
               exec:

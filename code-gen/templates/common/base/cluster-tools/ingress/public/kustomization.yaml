@@ -2,7 +2,7 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-- ${K8S_GIT_URL}/k8s-configs/cluster-tools/base/ingress/nginx/public?ref=${K8S_GIT_BRANCH}
+- ${K8S_GIT_URL}/k8s-configs/cluster-tools/${KUSTOMIZE_BASE}/ingress/nginx/public?ref=${K8S_GIT_BRANCH}
 
 patchesStrategicMerge:
 

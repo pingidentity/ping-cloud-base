@@ -60,3 +60,6 @@ patchesJson6902:
           sshPrivateKeySecret:
             name: argo-git-deploy
             key: identity
+    - op: add
+      path: /data/timeout.reconciliation
+      value: 60s

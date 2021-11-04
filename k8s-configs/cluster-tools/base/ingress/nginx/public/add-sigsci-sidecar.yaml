@@ -15,19 +15,20 @@
   value:
     image: public.ecr.aws/r2h3l6e4/pingcloud-services/sigsci-agent:v4.22.0
     name: sigsci-agent
-    # FIXME: PDO-2991 - Update resource limit & request to the matrix provided by the performance team.
     resources:
       limits:
-        cpu: 100m
-        memory: 200Mi
+        cpu: 1
+        memory: 512Mi
       requests:
-        cpu: 50m
-        memory: 100Mi
+        cpu: 1
+        memory: 512Mi
     env:
     - name: AWS_REGION
       value: us-east-2
     - name: AGENT_NAME
       value: beluga-dev
+    - name: SIGSCI_MAX_PROCS
+      value: '70%'
     volumeMounts:
     - mountPath: /var/run/
       name: sigsci-socket
