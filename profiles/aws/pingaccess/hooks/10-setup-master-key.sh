@@ -5,7 +5,7 @@ ${VERBOSE} && set -x
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 
-MASTER_KEY_PATH="${SERVER_ROOT_DIR}/server/default/data/pf.jwk"
+MASTER_KEY_PATH="${SERVER_ROOT_DIR}/conf/pa.jwk"
 
 JWK_ENCRYPTED=false
 
@@ -17,5 +17,4 @@ if test -f "${MASTER_KEY_PATH}"; then
   fi
 fi
    
-obfuscatePassword
 substitute_kms_key_id $JWK_ENCRYPTED

@@ -9,6 +9,7 @@ test -f "${STAGING_DIR}/ds_env_vars" && . "${STAGING_DIR}/ds_env_vars"
 ########################################################################################################################
 function initializeSkbnConfiguration() {
   unset SKBN_CLOUD_PREFIX
+  unset SKBN_K8S_PREFIX
 
   # Allow overriding the backup URL with an arg
   test ! -z "${1}" && BACKUP_URL="${1}"
@@ -27,7 +28,20 @@ function initializeSkbnConfiguration() {
 
   esac
 
+  beluga_log "Getting cluster metadata"
+
+  # Get prefix of HOSTNAME which match the pod name.
+  export POD="$(echo "${HOSTNAME}" | cut -d. -f1)"
+
+  METADATA=$(kubectl get "$(kubectl get pod -o name --field-selector metadata.name=${POD})" \
+    -o=jsonpath='{.metadata.namespace},{.metadata.name},{.metadata.labels.role}')
+    
+  METADATA_NS=$(echo "${METADATA}"| cut -d',' -f1)
+  METADATA_PN=$(echo "${METADATA}"| cut -d',' -f2)
+  METADATA_CN=$(echo "${METADATA}"| cut -d',' -f3)
+
   export SKBN_CLOUD_PREFIX="${BACKUP_URL}"
+  export SKBN_K8S_PREFIX="k8s://${METADATA_NS}/${METADATA_PN}/${METADATA_CN}"
 }
 
 ########################################################################################################################
@@ -53,7 +67,7 @@ function skbnCopy() {
 function export_config_settings() {
   export SHORT_HOST_NAME=$(cat /etc/hostname)
   export ORDINAL=${SHORT_HOST_NAME##*-}
-  export LOCAL_DOMAIN_NAME="$(hostname -f | cut -d'.' -f2-)"
+  export LOCAL_DOMAIN_NAME="$(cat /etc/hosts | grep $SHORT_HOST_NAME | awk '{print $2}' | cut -d'.' -f2-)"
 
   # For multi-region:
   # If using NLB to route traffic between the regions, the hostnames will be the same per region (i.e. that of the NLB),
@@ -308,3 +322,4 @@ offline_enable_replication() {
 # These are needed by every script - so export them when this script is sourced.
 beluga_log "export config settings"
 export_config_settings
+

@@ -56,7 +56,7 @@
                      com.pingidentity.crypto.AWSCloudHSMJCEManager : Use this service-point element if you are using the AWS Cloud HSM (not classic) to store certs
                      com.pingidentity.crypto.BCFIPSJCEManager      : Use this service-point element if you are using the Bouncy Castle FIPS provider to store certs
              -->
-             <construct class="com.pingidentity.crypto.SunJCEManager"/>
+             <construct class="com.pingidentity.crypto.BCFIPSJCEManager"/>
          </invoke-factory>
      </service-point>
 
@@ -70,7 +70,7 @@
                      com.pingidentity.crypto.AWSCloudHSMCertificateServiceImpl : Use this service-point element if you are using the AWS Cloud HSM (not classic) to store certs
                      com.pingidentity.crypto.BCFIPSCertificateServiceImpl      : Use this service-point element if you are using the Bouncy Castle FIPS provider to store certs
              -->
-             <construct class="com.pingidentity.crypto.CertificateServiceImpl"/>
+             <construct class="com.pingidentity.crypto.BCFIPSCertificateServiceImpl"/>
          </invoke-factory>
      </service-point>
 
@@ -180,6 +180,6 @@
             com.pingidentity.pingcommons.aws.key.AwsKmsMasterKeyEncryptor         : AWS KMS implementation. Note that admin should specify the key Id in MasterKeySet.xml.
      -->
     <service-point id="MasterKeyEncryptor" interface="com.pingidentity.sdk.key.MasterKeyEncryptor">
-        <create-instance class="com.pingidentity.crypto.jwk.NoOpMasterKeyEncryptor"/>
+        <create-instance class="com.pingidentity.pingcommons.aws.key.AwsKmsMasterKeyEncryptor"/>
 	  </service-point>
 </module>

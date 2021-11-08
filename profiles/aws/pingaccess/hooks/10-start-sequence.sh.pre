@@ -3,6 +3,8 @@
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 
+run_hook "10-setup-master-key.sh"
+
 if ! test -z "${OPERATIONAL_MODE}" && test "${OPERATIONAL_MODE}" = "CLUSTERED_CONSOLE"; then
   run_hook "90-restore-backup-s3.sh"
   run_hook "11-change-default-db-password.sh"

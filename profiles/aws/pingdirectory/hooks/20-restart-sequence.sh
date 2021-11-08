@@ -90,9 +90,6 @@ fi
 beluga_log "updating tools.properties"
 run_hook "185-apply-tools-properties.sh"
 
-beluga_log "updating encryption settings"
-run_hook "15-encryption-settings.sh"
-
 beluga_log "enabling the replication sub-system in offline mode"
 offline_enable_replication
 enable_replication_status=$?

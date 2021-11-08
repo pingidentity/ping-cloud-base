@@ -17,7 +17,7 @@ if test -f "${STAGING_DIR}/artifacts/artifact-list.json"; then
 
       # Check to see if the artifact list is a valid json string
       beluga_log "${ARTIFACT_LIST_JSON}"
-      if test $(echo ${ARTIFACT_LIST_JSON} | jq >/dev/null 2>&1; echo $?) == "0"; then
+      if test $(echo ${ARTIFACT_LIST_JSON} | jq "" >/dev/null 2>&1; echo $?) == "0"; then
 
         DOWNLOAD_DIR="${STAGING_DIR}/pd.profile/server-sdk-extensions"
 

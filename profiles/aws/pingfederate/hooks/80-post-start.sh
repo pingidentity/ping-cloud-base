@@ -10,6 +10,7 @@ if test "${OPERATIONAL_MODE}" != "CLUSTERED_CONSOLE"; then
   exit 0
 fi
 
+
 beluga_log "post-start: starting admin post-start initialization"
 
 # Remove the marker file before running post-start initialization.
@@ -26,6 +27,7 @@ LDAP_CONFIG_STATUS=${?}
 beluga_log "post-start: configure ldap status: ${LDAP_CONFIG_STATUS}"
 
 # Skip DA configuration if LDAP ID isn't created.
+DA_CONFIG_STATUS=0
 if test "${LDAP_CONFIG_STATUS}" -eq 0; then
   beluga_log "post-start: configure DA"
   sh "${HOOKS_DIR}/84-setup-delegated-admin.sh"
@@ -56,5 +58,5 @@ fi
 
 # Kill the container if post-start fails.
 beluga_log "post-start: admin post-start initialization failed"
-SERVER_PID=$(pgrep -f java)
-kill "${SERVER_PID}"
+SERVER_PID=$(jps -vVlm | grep org.pingidentity.RunPF | awk '{print $1}')
+#kill "${SERVER_PID}"

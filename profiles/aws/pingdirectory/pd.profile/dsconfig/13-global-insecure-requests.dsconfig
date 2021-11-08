@@ -1,0 +1,23 @@
+dsconfig set-global-configuration-prop --set reject-insecure-requests:false
+
+dsconfig create-connection-criteria \
+    --criteria-name "Localhost Insecure Requests" \
+    --type simple \
+    --set included-client-address:127.0.0.1 \
+    --set included-client-address:::1
+
+dsconfig create-request-criteria \
+    --criteria-name "Localhost Insecure Requests" \
+    --type simple \
+    --set "connection-criteria:Localhost Insecure Requests"
+
+dsconfig create-request-criteria \
+    --criteria-name "Root DSE and Schema Read Requests and Localhost Insecure Requests" \
+    --type aggregate \
+    --set "any-included-request-criteria:Root DSE Read Requests" \
+    --set "any-included-request-criteria:Schema Read Requests" \
+    --set "any-included-request-criteria:Localhost Insecure Requests"
+
+dsconfig set-global-configuration-prop \
+    --set reject-insecure-requests:true \
+    --set "allowed-insecure-request-criteria:Root DSE and Schema Read Requests and Localhost Insecure Requests"

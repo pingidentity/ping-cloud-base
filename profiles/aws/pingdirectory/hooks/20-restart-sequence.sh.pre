@@ -5,3 +5,4 @@ ${VERBOSE} && set -x
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 
 run_hook "10-download-artifact.sh"
+run_hook "10-setup-kms.sh"

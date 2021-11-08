@@ -12,7 +12,7 @@ fi
 
 beluga_log "Starting add engine script..."
 
-SHORT_HOST_NAME=$(hostname)
+SHORT_HOST_NAME=$(cat /etc/hostname)
 ORDINAL=${SHORT_HOST_NAME##*-}
 PINGACCESS_ADMIN_API_ENDPOINT="https://${ADMIN_HOST_PORT}/pa-admin-api/v3"
 TEMPLATES_DIR_PATH=${STAGING_DIR}/templates/51

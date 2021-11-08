@@ -19,19 +19,18 @@ get_datastore() {
 }
 
 update_datastore() {
-  export PF_LDAP_PASSWORD_OBFUSCATED=$(sh ${SERVER_ROOT_DIR}/bin/obfuscate.sh "${PF_LDAP_PASSWORD}" | tr -d '\n')
+  export PF_LDAP_PASSWORD_OBFUSCATED="${PF_LDAP_PASSWORD}"  #$(sh ${SERVER_ROOT_DIR}/bin/obfuscate.sh "${PF_LDAP_PASSWORD}" | tail -2 | tr -d '\n')
 
   wait_for_admin_api_endpoint
 
   # Inject obfuscated password into ldap properties file.
   vars='${PF_PD_BIND_USESSL}
 ${PD_CLUSTER_PRIVATE_HOSTNAME}
-${PF_LDAP_PASSWORD}
+${PF_LDAP_PASSWORD_OBFUSCATED}
 ${PF_PD_BIND_PORT}
 ${LDAP_DS_ID}'
 
   LDAP_DS_PAYLOAD=$(envsubst "${vars}" < "${TEMPLATES_DIR_PATH}/pd-ldap-ds.json")
-
   if get_datastore; then
     beluga_log "PD LDAP Data Store exists, updating with current password."
     make_api_request -X PUT -d "${LDAP_DS_PAYLOAD}" \

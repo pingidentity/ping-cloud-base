@@ -264,7 +264,7 @@ if [ "$JAVA_MAJOR_VERSION" = "1" ]; then
 fi
 
 # Check for NewRelic License Key (used by NewRelic Agent to push data)
-if [ ${NEW_RELIC_LICENSE_KEY} != 'unused' ]; then
+if [  "${NEW_RELIC_LICENSE_KEY}" != 'unused' ]; then
     NEW_RELIC_LABELS="${NEW_RELIC_LABELS};pod_name:${NEW_RELIC_POD_NAME}"
     JAVA_AGENT_OPTS="${JAVA_AGENT_OPTS} -javaagent:/opt/staging/newrelic.jar"
 fi
