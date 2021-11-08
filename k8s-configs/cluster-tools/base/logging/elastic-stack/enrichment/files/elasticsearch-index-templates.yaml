@@ -47,6 +47,18 @@ data:
       },
       "mappings": {
         "properties": {
+          "@timestamp": {
+            "type": "date"
+          },
+          "@version": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
           "geoip": {
             "dynamic": true,
             "properties": {
@@ -61,6 +73,15 @@ data:
               },
               "longitude": {
                 "type": "half_float"
+              },
+              "country_name": {
+                "type": "text",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword",
+                    "ignore_above": 256
+                  }
+                }
               }
             }
           },
@@ -75,6 +96,15 @@ data:
           },
           "date": {
             "type": "date"
+          },
+          "requestUri": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
           },
           "responseCode": {
             "type": "long",
@@ -103,6 +133,18 @@ data:
       },
       "mappings": {
         "properties": {
+          "@timestamp": {
+            "type": "date"
+          },
+          "@version": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
           "geoip": {
             "dynamic": true,
             "properties": {
@@ -138,6 +180,18 @@ data:
       },
       "mappings": {
         "properties": {
+          "@timestamp": {
+            "type": "date"
+          },
+          "@version": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
           "geoip": {
             "dynamic": true,
             "properties": {
@@ -194,6 +248,18 @@ data:
       },
       "mappings": {
         "properties": {
+          "@timestamp": {
+            "type": "date"
+          },
+          "@version": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
           "geoip": {
             "dynamic": true,
             "properties": {
@@ -605,8 +671,8 @@ data:
       "settings": {
         "number_of_shards": 1,
         "number_of_replicas": 1,
-        "index.lifecycle.name": "ping-2-day-retention",     
-        "index.lifecycle.rollover_alias": "pd-failed-ops"   
+        "index.lifecycle.name": "ping-2-day-retention",
+        "index.lifecycle.rollover_alias": "pd-failed-ops"
       },
       "mappings": {
         "properties": {
@@ -640,11 +706,23 @@ data:
       "settings": {
         "number_of_shards": 1,
         "number_of_replicas": 1,
-        "index.lifecycle.name": "ping-2-day-retention",     
-        "index.lifecycle.rollover_alias": "pf-audit"   
+        "index.lifecycle.name": "ping-2-day-retention",
+        "index.lifecycle.rollover_alias": "pf-audit"
       },
       "mappings": {
         "properties": {
+          "@timestamp": {
+            "type": "date"
+          },
+          "@version": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
           "adapterid": {
             "type": "text",
             "fields": {
@@ -672,7 +750,16 @@ data:
               }
             }
           },
-          "connectionid": {
+          "connectionId": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
+          "event": {
             "type": "text",
             "fields": {
               "keyword": {
@@ -842,6 +929,24 @@ data:
               },
               "longitude": {
                 "type": "half_float"
+              },
+              "country_name": {
+                "type": "text",
+                "fields": {
+                  "keyword": {
+                    "type": "keyword",
+                    "ignore_above": 256
+                  }
+                }
+              }
+            }
+          },
+          "found_country": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
               }
             }
           },
@@ -889,11 +994,23 @@ data:
       "settings": {
         "number_of_shards": 1,
         "number_of_replicas": 1,
-        "index.lifecycle.name": "ping-2-day-retention",     
-        "index.lifecycle.rollover_alias": "pf-system"   
+        "index.lifecycle.name": "ping-2-day-retention",
+        "index.lifecycle.rollover_alias": "pf-system"
       },
       "mappings": {
         "properties": {
+          "@timestamp": {
+            "type": "date"
+          },
+          "@version": {
+            "type": "text",
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
           "geoip": {
             "dynamic": true,
             "properties": {
@@ -1106,8 +1223,8 @@ data:
       "settings": {
         "number_of_shards": 1,
         "number_of_replicas": 1,
-        "index.lifecycle.name": "ping-2-day-retention",     
-        "index.lifecycle.rollover_alias": "pf-admin-system"   
+        "index.lifecycle.name": "ping-2-day-retention",
+        "index.lifecycle.rollover_alias": "pf-admin-system"
       },
       "mappings": {
         "properties": {
@@ -1141,8 +1258,8 @@ data:
       "settings": {
         "number_of_shards": 1,
         "number_of_replicas": 1,
-        "index.lifecycle.name": "ping-2-day-retention",     
-        "index.lifecycle.rollover_alias": "pf-admin-audit"   
+        "index.lifecycle.name": "ping-2-day-retention",
+        "index.lifecycle.rollover_alias": "pf-admin-audit"
       },
       "mappings": {
         "properties": {
@@ -1173,7 +1290,7 @@ data:
               }
             }
           },
-          "connectionid": {
+          "connectionId": {
             "type": "text",
             "fields": {
               "keyword": {
