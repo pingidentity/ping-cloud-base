@@ -22,6 +22,12 @@ rules:
     verbs:
       - get
       - update
+
+  - apiGroups: [""]
+    resources:
+    - secrets
+    verbs: ["get", "create", "patch"]
+
   - apiGroups: ['policy']
     resources: ['podsecuritypolicies']
     verbs: ['use']
@@ -229,6 +235,11 @@ rules:
     resources: ["events"]
     verbs: ["get", "watch", "list"]
 
+  - apiGroups: ["batch"]
+    resources:
+    - jobs
+    verbs: ["get", "list", "watch"]
+
 ---
 # Source: nri-bundle/charts/newrelic-logging/templates/clusterrole.yaml
 
@@ -246,6 +257,11 @@ rules:
     resources:
       - namespaces
       - pods
+    verbs: ["get", "list", "watch"]
+
+  - apiGroups: ["batch"]
+    resources:
+    - jobs
     verbs: ["get", "list", "watch"]
 
 ---
@@ -271,6 +287,12 @@ rules:
     - "services"
     - "endpoints"
   verbs: ["get", "list", "watch"]
+
+- apiGroups: ["batch"]
+  resources:
+  - jobs
+  verbs: ["get", "list", "watch"]
+
 - nonResourceURLs:
   - /metrics
   verbs:
