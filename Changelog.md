@@ -44,6 +44,7 @@ _Changes:_
 - Fixed Pod startup errors due to Prometheus not being able to find jmx_export_config.yaml
 - Added PD startupProbe with replication backlog check
 - Update cluster tools to version: cluster-autoscaler (1.20.0)
+- Update kibana index mappings
 
 _Changes:_
 
@@ -74,6 +75,8 @@ _Changes:_
 - [X] PDO-2989 Add the Beluga version to the cluster-state and profile repos in a version.txt file
 - [X] PDO-2990 Pod startup errors due to Prometheus not being able to find jmx_export_config.yaml
 - [X] PDO-3027 Update cluster tools to version: cluster-autoscaler (1.20.0)
+- [X] PDO-3037 Update PF audit Kibana index mapping
+- [X] PDO-3038 Update PA audit Kibana index mapping
 
 ### 1.10.0
 
