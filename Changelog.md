@@ -25,6 +25,7 @@
 - Added PD startupProbe with replication backlog check
 - Update cluster tools to version: cluster-autoscaler (1.20.0)
 - Update kibana index mappings
+- Fix grafana PingAccess Topology Dashboard Failed_Authorizations
 - Fix grafana PingFederate Topology Failed_Authentications
 
 _Changes:_
