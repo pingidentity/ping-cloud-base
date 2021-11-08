@@ -25,8 +25,6 @@
 - Added PD startupProbe with replication backlog check
 - Update cluster tools to version: cluster-autoscaler (1.20.0)
 - Update kibana index mappings
-- Fix grafana PingAccess Topology Dashboard Failed_Authorizations
-- Fix grafana PingFederate Topology Failed_Authentications
 
 _Changes:_
 
@@ -57,7 +55,8 @@ _Changes:_
 - [X] PDO-2989 Add the Beluga version to the cluster-state and profile repos in a version.txt file
 - [X] PDO-2990 Pod startup errors due to Prometheus not being able to find jmx_export_config.yaml
 - [X] PDO-3027 Update cluster tools to version: cluster-autoscaler (1.20.0)
-- [X] PDO-3041 Grafana PingAccess Topology Dashboard 'Failed Authorizations' graph is flatlining at '0'
+- [X] PDO-3037 Update PF audit Kibana index mapping
+- [X] PDO-3038 Update PA audit Kibana index mapping
 
 ### 1.10.0
 
@@ -68,11 +67,11 @@ _Changes:_
 - Beluga maintained container images with built in hook scripts
 - Server profiles are now seeded into a separate repository for partner access
 - Add Elasticsearch wait init container to kibana manifest
-- Updated cluster-autoscalar memory request/limit to 512 MB
-- Fixed PD Grafana dashboard, 'Replication Backlog' metric
+- Updated cluster-autoscalar memory request/limit to 512 MB 
+- Fixed PD Grafana dashboard, 'Replication Backlog' metric 
 - Updated p14c-integration image to 1.0.28
 - Upgraded PingDirectory to version 8.3.0.0
-- Upgraded PingFederate to version 10.3.1
+- Upgraded PingFederate to version 10.3.1 
 - Modify all P1AS apps to use user_id:group_id => 9031:9999
 - Remove NATIVE_S3_PING as a supported JGroups discovery protocol for PF clustering
 - Enabling access to the PingCentral Admin UI via PingAccess WAS
@@ -127,7 +126,7 @@ _Changes:_
 - [X] PDO-2830 Set PingCentral k8s deployment strategy to Recreate
 - [X] PDO-2832 Move PingCentral v1.8.0 from edge to a stable tag
 - [X] PDO-2849 Reuse environment variables in the env_vars file in the CSR as much as possible
-- [X] PDO-2851 Cleanup PingCentral application.properties file
+- [X] PDO-2851 Cleanup PingCentral application.properties file 
 - [X] PDO-2869 Change PingFederate v10.3.1-edge image tag to a stable version
 - [X] PDO-2916 Enable/or disable PingCentral development endpoints using an environment variable
 
@@ -169,7 +168,7 @@ _Changes:_
 
 - [X] PDO-2203 Add liveness probe to p14c-oauth and p14c-bom controllers
 - [X] PDO-2285 Narrow Kube watch pods for Bom Controller
-- [X] PDO-2431 Update to use ingress-nginx/controller:v0.46.0
+- [X] PDO-2431 Update to use ingress-nginx/controller:v0.46.0 
 - [X] PDO-2539 Preserve PingDirectory descriptor.json across CSR updates
 - [X] PDO-2578 Updated p14c-integration image to 1.0.20 and p14c-bootstrap image to 1.0.9
 - [X] PDO-2579 Update to use skbn v1.0.1
@@ -284,7 +283,7 @@ _Changes:_
 
 ### 1.8.1
 
-- Fixed PingFederate to not allow back-channel access after revoking persistent session
+- Fixed PingFederate to not allow back-channel access after revoking persistent session 
 - Decreased CPU requests and limits of the PingDirectory stunnel sidecar container
 - Fixed the update-cluster-state-wrapper.sh script to preserve customer size
 
@@ -548,14 +547,14 @@ _Changes:_
 
 - Changed PingAccess 'podManagementPolicy' to 'OrderedReady' to support zero-downtime update of engines
 - Fixed encryption errors encountered while restoring PingDirectory user and operational data from backups
-- Disabled automatic key renewal on the Bitnami sealed-secrets controller
+- Disabled automatic key renewal on the Bitnami sealed-secrets controller 
 
 _Changes:_
 
 - [X] PDO-1083 - PingAccess podManagementPolicy 'Parallel' tears down all engines at the same time
 - [X] PDO-1089 - Attempt to restore backups made after changing encryption-password for PingDirectory fails
 - [X] PDO-1092 - CI/CD cluster's capacity reduced by half due to PingFederate limit changes in base
-- [X] PDO-1095 - Bitnami sealed-secrets controller rotates keys every 30 days
+- [X] PDO-1095 - Bitnami sealed-secrets controller rotates keys every 30 days 
 
 ### 1.4.0
 
@@ -595,7 +594,7 @@ _Changes:_
 
 ### 1.3.2
 
-- Fixed PingDirectory deployment automation to replace the server profile fully so that environment variable changes
+- Fixed PingDirectory deployment automation to replace the server profile fully so that environment variable changes 
   are always honored
 - Fixed PingAccess deployment automation such that the Backup CronJob does not crash the admin server
 
@@ -611,8 +610,8 @@ _Changes:_
 - Fixed PingAccess deployment automation to enable verbose logging only if VERBOSE is true
 - Fixed PingDirectory backup to include PingFederate data under the o=appintegrations backend
 - Fixed PingDirectory rolling update to preserve the server's MAX_HEAP_SIZE setting
-- Fixed PingFederate restore job to not fail if there are too many backup files
-
+- Fixed PingFederate restore job to not fail if there are too many backup files 
+  
 _Changes:_
 
 - [X] PDO-845 - Purge sessions script purging wrong backend
@@ -625,8 +624,8 @@ _Changes:_
 
 ### 1.3.0
 
-- Added support for PingAccess deployment automation, including initial deployment of a cluster, auto-scaling,
-  auto-healing of failed admin and engine instances, encrypted backup of the master key for disaster recovery upon
+- Added support for PingAccess deployment automation, including initial deployment of a cluster, auto-scaling, 
+  auto-healing of failed admin and engine instances, encrypted backup of the master key for disaster recovery upon 
   instance and AZ failure
 - Added the ability to capture and upload PingFederate CSD archives to S3, if using AWS  
 - Updated PingDirectory from 8.0.0.0 to 8.0.0.1
@@ -666,7 +665,7 @@ _Changes:_
 - [X] PDO-816 - Upgrade cluster-autoscaler version to 1.14.x
 - [X] PDO-817 - Add pod anti-affinities for each ES pod to be deployed to a separate node and potentially separate AZ
 - [X] PDO-810 - Wait for the admin API to be ready before uploading data to s3
-- [X] PDO-820 - Force pod restart on PA API call failure
+- [X] PDO-820 - Force pod restart on PA API call failure 
 
 ### 1.2.0
 
@@ -727,9 +726,9 @@ _Changes:_
 
 ### 1.0.0
 
-- Added support for PingDirectory deployment automation, including initial setup of a replication topology, scaling,
+- Added support for PingDirectory deployment automation, including initial setup of a replication topology, scaling, 
   auto-healing of failed instances, backup/restore for disaster recovery upon instance and AZ failure and periodic
   collection of CSD archives
-- Added support for PingFederate deployment automation, including initial deployment of a cluster, auto-scaling,
-  auto-healing of failed admin and engine instances, encrypted backup of the master key for disaster recovery upon
+- Added support for PingFederate deployment automation, including initial deployment of a cluster, auto-scaling, 
+  auto-healing of failed admin and engine instances, encrypted backup of the master key for disaster recovery upon 
   instance and AZ failure   
