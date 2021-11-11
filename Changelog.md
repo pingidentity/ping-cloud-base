@@ -20,6 +20,7 @@ _Changes:_
 - [X] PDO-2938 Added regional custom-patches.yaml as an extension point to customize configuration for a specific region
 - [X] PDO-2988 Increased metadata pod timeoutSeconds probe to 3 seconds for liveness & readiness
 - [X] PDO-2991 SigSci WAF: Update SigSci sidecar resource limit & requests
+- [X] PDO-3058 CSD upload file changed from .zip-zip format to .zip
 
 ### 1.11.0
 
