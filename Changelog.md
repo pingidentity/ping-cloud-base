@@ -3,6 +3,7 @@
 ### 1.12.0
 
 - Added custom patch to create public ingresses for admin endpoints
+- Heartbeat endpoint page template changed
 - Add support for enabling rate limiting in PA and PA-WAS
 - Added regional custom-patches.yaml as an extension point to customize configuration for a specific region 
 - Updated ingress to v1.0.0 and added the SigSci agent sidecar container to the public Nginx-ingress-controller pod
@@ -12,6 +13,7 @@
 _Changes:_
 
 - [X] PDO-1350 PingAccess proactively remove temp file that causes upgrade to fail
+- [X] PDO-2223 Heartbeat endpoint page template changing
 - [X] PDO-2410 PA-WAS: parse multiline logs
 - [X] PDO-2432 Update cluster tools to latest version: argocd to v2.1.6
 - [X] PDO-2534 SigSci WAF: run the SigSci agent as a sidecar container in the Nginx-ingress-controller pod
