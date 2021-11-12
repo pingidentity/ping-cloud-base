@@ -46,7 +46,7 @@ spec:
   ports:
   - name: ldaps
     port: 636
-    targetPort: stunnel
+    targetPort: ldaps
 
 ---
 
