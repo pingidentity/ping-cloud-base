@@ -148,3 +148,4 @@
 # allowed to be invoked using the exec task below:
 
 ${HOOKS_DIR}/82-upload-csd-s3.sh
+${HOOKS_DIR}/12-replace-server-cert.sh
