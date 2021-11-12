@@ -820,7 +820,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     export PF_PD_BIND_PROTOCOL=ldap
     export PF_PD_BIND_USESSL=false
   else
-    export PF_PD_BIND_PORT=5678
+    export PF_PD_BIND_PORT=1636
     export PF_PD_BIND_PROTOCOL=ldaps
     export PF_PD_BIND_USESSL=true
   fi
