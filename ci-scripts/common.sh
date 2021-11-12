@@ -43,8 +43,8 @@ if test -z "${ENV_VARS_FILE}"; then
   if [[ ${CI_COMMIT_REF_SLUG} != master ]]; then
     export ENVIRONMENT=-${CI_COMMIT_REF_SLUG}
   fi
-  export NEW_RELIC_ENVIRONMENT_NAME=${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
   export BELUGA_ENV_NAME=${CI_COMMIT_REF_SLUG}
+  export NEW_RELIC_ENVIRONMENT_NAME=${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
   export ENV=${BELUGA_ENV_NAME}
 
   export NAMESPACE=ping-cloud-${CI_COMMIT_REF_SLUG}
