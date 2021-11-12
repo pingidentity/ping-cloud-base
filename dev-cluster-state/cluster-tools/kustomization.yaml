@@ -35,12 +35,12 @@ patchesStrategicMerge:
     dnsNames:
       - '*.${TENANT_DOMAIN}'
     keystores:
-      jks:
+      pkcs12:
         create: true
         # Password used to encrypt the keystore into which the ACME certs will be added
         passwordSecretRef:
           name: pingcommon-passwords
-          key: ACME_JKS_KEYSTORE_PASSWORD
+          key: ACME_CERT_KEYSTORE_PASSWORD
 
 ### Cloud-watch logging and monitoring ###
 - |-

@@ -198,6 +198,11 @@ spec:
                 secretKeyRef:
                   name: pingcommon-passwords
                   key: PF_LDAP_PASSWORD
+            - name: ACME_CERT_KEYSTORE_PASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: pingcommon-passwords
+                    key: ACME_CERT_KEYSTORE_PASSWORD
             - name: DA_OAUTH_TOKEN_VALIDATOR_SECRET
               valueFrom:
                 secretKeyRef:

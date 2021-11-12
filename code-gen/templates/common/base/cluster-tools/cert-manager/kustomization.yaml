@@ -35,12 +35,12 @@ patchesStrategicMerge:
     dnsNames:
     - '*.${DNS_ZONE}'
     keystores:
-      jks:
+      pkcs12:
         create: true
         # Password used to encrypt the keystore into which the ACME certs will be added
         passwordSecretRef:
           name: pingcommon-passwords
-          key: ACME_JKS_KEYSTORE_PASSWORD
+          key: ACME_CERT_KEYSTORE_PASSWORD
 
 patchesJson6902:
 
