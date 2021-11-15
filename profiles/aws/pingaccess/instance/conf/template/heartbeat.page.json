@@ -39,7 +39,7 @@
 ##    $monitor.setContentType('application/json') - insert custom content type set in the response header
 ##
 $monitor.setContentType('application/json')##
-{"items":[{
+{
 ## Set pa.statistics.window.seconds property and uncomment to enable ProcessingStatistics
     "response.statistics.window.seconds": "$monitor.getProcessingStatistics().getWindowLengthSeconds()",
     "response.statistics.count": "$monitor.getProcessingStatistics().getResponseCount()",
@@ -64,4 +64,4 @@ $monitor.setContentType('application/json')##
     "number.of.applications": "$monitor.getNumberOfApplications()",
     "number.of.virtual.hosts": "$monitor.getNumberOfVirtualHosts()",
     "last.refresh.time": "$monitor.getLastRefreshTime()"
-}]}##
+}##
