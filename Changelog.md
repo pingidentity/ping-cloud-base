@@ -13,7 +13,7 @@
 _Changes:_
 
 - [X] PDO-1350 PingAccess proactively remove temp file that causes upgrade to fail
-- [X] PDO-1676 Deploy Kubernetes Agent for New Relic
+- [X] PDO-1676 Deploy Kubernetes Infrastructure Agent for New Relic
 - [X] PDO-2410 PA-WAS: parse multiline logs
 - [X] PDO-2432 Update cluster tools to latest version: argocd to v2.1.6
 - [X] PDO-2534 SigSci WAF: run the SigSci agent as a sidecar container in the Nginx-ingress-controller pod
