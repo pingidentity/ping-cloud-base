@@ -24,6 +24,7 @@ _Changes:_
 - [X] PDO-2988 Increased metadata pod timeoutSeconds probe to 3 seconds for liveness & readiness
 - [X] PDO-2991 SigSci WAF: Update SigSci sidecar resource limit & requests
 - [X] PDO-3058 CSD upload file changed from .zip-zip format to .zip
+- [X] PDO-3091 Fixed role association on gateway objects created in P14C for MyPing E2E flow
 
 ### 1.11.0
 
