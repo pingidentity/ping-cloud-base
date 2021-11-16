@@ -47,6 +47,7 @@ if test -z "${ENV_VARS_FILE}"; then
   export ENV=${BELUGA_ENV_NAME}
 
   export NAMESPACE=ping-cloud-${CI_COMMIT_REF_SLUG}
+  export NEW_RELIC_ENVIRONMENT_NAME=${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
 
   export CONFIG_PARENT_DIR=aws
   export CONFIG_REPO_BRANCH=${CI_COMMIT_REF_NAME:-master}
@@ -69,6 +70,7 @@ if test -z "${ENV_VARS_FILE}"; then
 
   export PROJECT_DIR="${CI_PROJECT_DIR}"
   export AWS_PROFILE=csg
+
 elif test -f "${ENV_VARS_FILE}"; then
   echo "Using environment variables defined in file ${ENV_VARS_FILE}"
   set -a; source "${ENV_VARS_FILE}"; set +a
