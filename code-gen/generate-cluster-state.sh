@@ -717,11 +717,7 @@ fi
 parse_url "${CLUSTER_STATE_REPO_URL}"
 echo "Obtaining known_hosts contents for cluster state repo host: ${URL_HOST}"
 
-set -x
-export KNOWN_HOSTS_CLUSTER_STATE_REPO="${KNOWN_HOSTS_CLUSTER_STATE_REPO:-$(ssh-keyscan -H "${URL_HOST}" 2>/dev/null)}"
-set +x
-
-read -n 1 -srp 'Press any key to continue'
+export KNOWN_HOSTS_CLUSTER_STATE_REPO="${KNOWN_HOSTS_CLUSTER_STATE_REPO:-$(ssh-keyscan -H "${URL_HOST}" 2>/dev/null | grep ssh-rsa)}"
 
 # Delete existing target directory and re-create it
 rm -rf "${TARGET_DIR}"
