@@ -343,6 +343,8 @@ export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
 
 export NAMESPACE=ping-cloud-${BELUGA_ENV_NAME}
 
+export NEW_RELIC_ENVIRONMENT_NAME=${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
+
 # Set the cluster type based on primary or secondary.
 "${IS_MULTI_CLUSTER}" && test "${TENANT_DOMAIN}" != "${PRIMARY_TENANT_DOMAIN}" &&
   CLUSTER_TYPE=secondary ||
@@ -408,6 +410,8 @@ export BELUGA_ENV_NAME="${BELUGA_ENV_NAME}"
 export ENV=${BELUGA_ENV_NAME}
 
 export NAMESPACE=${NAMESPACE}
+
+export NEW_RELIC_ENVIRONMENT_NAME=${NEW_RELIC_ENVIRONMENT_NAME}
 
 export CONFIG_PARENT_DIR=aws
 export CONFIG_REPO_BRANCH=${CONFIG_REPO_BRANCH}
