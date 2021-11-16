@@ -60,7 +60,7 @@ spec:
           containers:
           - name: pingdirectory-backup
             # FIXME: PDO-2975: use correct public image tag when it's released
-            image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:8.3.0.0-v1.0.Y-pdo-2975-bye-stunnel
+            image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:8.3.0.0-v1.0.Z-pdo-2975-bye-stunnel
             imagePullPolicy: IfNotPresent
            # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
             securityContext:
