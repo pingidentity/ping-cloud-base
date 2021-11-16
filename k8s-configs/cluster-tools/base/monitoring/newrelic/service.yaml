@@ -1,0 +1,44 @@
+---
+# Source: nri-bundle/charts/nri-metadata-injection/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nri-bundle-nri-metadata-injection
+  namespace: newrelic
+  labels:
+    app.kubernetes.io/name: nri-metadata-injection
+    helm.sh/chart: nri-metadata-injection-2.1.0
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/version: "1.6.0"
+spec:
+  ports:
+  - port: 443
+    targetPort: 8443
+  selector:
+    app.kubernetes.io/name: nri-metadata-injection
+
+---
+# Source: nri-bundle/charts/kube-state-metrics/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: nri-bundle-kube-state-metrics
+  namespace: newrelic
+  labels:
+    app.kubernetes.io/name: kube-state-metrics
+    helm.sh/chart: "kube-state-metrics-2.13.2"
+    app.kubernetes.io/instance: "nri-bundle"
+  annotations:
+    prometheus.io/scrape: 'true'
+spec:
+  type: "ClusterIP"
+  ports:
+  - name: "http"
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+  
+  selector:
+    app.kubernetes.io/name: kube-state-metrics
+    app.kubernetes.io/instance: nri-bundle
+

@@ -70,6 +70,9 @@ TENANT_NAME=${TENANT_NAME}
 # single P14C customer. All of these apps will be created within the "Administrators" environment in the tenant.
 ENVIRONMENT_PREFIX=${ENVIRONMENT_PREFIX}
 
+# The name of the environment as it will appear on the NewRelic console.
+NEW_RELIC_ENVIRONMENT_NAME=${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
+
 ############################################################
 # Cluster state repo details
 ############################################################

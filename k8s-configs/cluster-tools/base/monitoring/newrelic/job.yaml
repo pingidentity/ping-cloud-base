@@ -1,0 +1,126 @@
+---
+# Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/job-createSecret.yaml
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nri-bundle-nri-metadata-injection-admission-create
+  namespace: newrelic
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    app: nri-metadata-injection-admission-create
+    app.kubernetes.io/name: nri-metadata-injection
+    helm.sh/chart: nri-metadata-injection-2.1.0
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/version: "1.6.0"
+spec:
+  template:
+    metadata:
+      name: nri-bundle-nri-metadata-injection-admission-create
+      labels:
+        app: nri-metadata-injection-admission-create
+        app.kubernetes.io/name: nri-metadata-injection
+        helm.sh/chart: nri-metadata-injection-2.1.0
+        app.kubernetes.io/instance: nri-bundle
+        app.kubernetes.io/version: "1.6.0"
+    spec:
+      containers:
+        - name: create
+          image: k8s.gcr.io/ingress-nginx/kube-webhook-certgen:v1.0
+          imagePullPolicy: IfNotPresent
+          args:
+            - create
+            - --host=nri-bundle-nri-metadata-injection,nri-bundle-nri-metadata-injection.newrelic.svc
+            - --namespace=newrelic
+            - --secret-name=nri-bundle-nri-metadata-injection-admission
+            - --cert-name=tls.crt
+            - --key-name=tls.key
+      restartPolicy: OnFailure
+      serviceAccountName: nri-bundle-nri-metadata-injection-admission
+      securityContext:
+        runAsGroup: 2000
+        runAsNonRoot: true
+        runAsUser: 2000
+
+---
+# Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/job-patchWebhook.yaml
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nri-bundle-nri-metadata-injection-admission-patch
+  namespace: newrelic
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    app: nri-metadata-injection-admission-patch
+    app.kubernetes.io/name: nri-metadata-injection
+    helm.sh/chart: nri-metadata-injection-2.1.0
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/version: "1.6.0"
+spec:
+  template:
+    metadata:
+      name: nri-bundle-nri-metadata-injection-admission-patch
+      labels:
+        app: nri-metadata-injection-admission-patch
+        app.kubernetes.io/name: nri-metadata-injection
+        helm.sh/chart: nri-metadata-injection-2.1.0
+        app.kubernetes.io/instance: nri-bundle
+        app.kubernetes.io/version: "1.6.0"
+    spec:
+      containers:
+        - name: patch
+          image: k8s.gcr.io/ingress-nginx/kube-webhook-certgen:v1.0
+          imagePullPolicy: IfNotPresent
+          args:
+            - patch
+            - --webhook-name=nri-bundle-nri-metadata-injection
+            - --namespace=newrelic
+            - --secret-name=nri-bundle-nri-metadata-injection-admission
+            - --patch-failure-policy=Ignore
+            - --patch-validating=false
+      restartPolicy: OnFailure
+      serviceAccountName: nri-bundle-nri-metadata-injection-admission
+      securityContext:
+        runAsGroup: 2000
+        runAsNonRoot: true
+        runAsUser: 2000
+
+# This job copies NR License key secret object to 'newrelic' namespace
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: newrelic-license-secret-exporter
+  namespace: newrelic
+  labels:
+    app: newrelic-license-secret-exporter
+spec:
+  template:
+    metadata:
+      labels:
+        app: newrelic-license-secret-exporter
+      annotations: {}
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: nri-bundle-newrelic-infrastructure
+      containers:
+      - name: newrelic-license-secret-exporter
+        image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
+        command: [ "/bin/sh", "-c" ]
+        args: [ "kubectl get secret $(SECRET_NAME) --namespace=$(SECRET_NAMESPACE) -oyaml | sed 's/namespace: .*/namespace: $(CURRENT_NAMESPACE)/' | kubectl apply --namespace=$(CURRENT_NAMESPACE) -f -" ]
+        env:
+          - name: "SECRET_NAME"
+            value: "newrelic-license-key"
+          - name: "SECRET_NAMESPACE"
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.annotations['SECRET_NAMESPACE']
+          - name: "CURRENT_NAMESPACE"
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
