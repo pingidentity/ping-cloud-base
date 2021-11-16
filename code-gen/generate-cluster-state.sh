@@ -447,15 +447,16 @@ add_nlb_variables() {
 }
 
 ########################################################################################################################
-# Export the IS_GA environment variable for the provided customer. If it is already present as an environment
+# Export the IS_GA environment variable for the provided customer. If it's already present as a boolean environment
 # variable, then export it as is. Otherwise, if the SSM path prefix for it is not 'unused', then try to retrieve it out
-# of SSM. On error, print a warning message, but default the value to false. On success, use the value from SSM.
+# of SSM. On error, print a warning message, but default the value to false. On success, use the value from SSM, if it
+# is a valid boolean. Otherwise, default it to false.
 #
 # Arguments
-#   ${1} -> The SSM path prefix which stores the IS_GA flag.
+#   ${1} -> The value of the IS_GA flag.
 ########################################################################################################################
 get_is_ga_variable() {
-  if test "${IS_GA}"; then
+  if test "${IS_GA}" = 'true' || test "${IS_GA}" = 'false'; then
     export IS_GA="${IS_GA}"
     return
   fi
@@ -463,7 +464,7 @@ get_is_ga_variable() {
   local ssm_path_prefix="$1"
   
   # Default false
-  IS_GA=false
+  IS_GA='false'
 
   if [ "${ssm_path_prefix}" != "unused" ]; then
     # Getting value from ssm parameter store.
@@ -475,19 +476,24 @@ get_is_ga_variable() {
     fi
   fi
 
-  export IS_GA="${IS_GA}"
+  if test "${IS_GA}" = 'true' || test "${IS_GA}" = 'false'; then
+    export IS_GA="${IS_GA}"
+  else
+    export IS_GA='false'
+  fi
 }
 
 ########################################################################################################################
-# Export the IS_MY_PING environment variable for the provided customer. If it is already present as an environment
+# Export the IS_MY_PING environment variable for the provided customer. If it's already present as a boolean environment
 # variable, then export it as is. Otherwise, if the SSM path prefix for it is not 'unused', then try to retrieve it out
 # of SSM. On error, print a warning message, but default the value to false. On success, use the value from SSM.
+# Otherwise, default it to false.
 #
 # Arguments
-#   ${1} -> The SSM path prefix which stores the IS_MY_PING flag.
+#   ${1} -> The value of the IS_MY_PING flag.
 ########################################################################################################################
 get_is_myping_variable() {
-  if test "${IS_MY_PING}"; then
+  if test "${IS_MY_PING}" = 'true' || test "${IS_MY_PING}" = 'false'; then
     export IS_MY_PING="${IS_MY_PING}"
     return
   fi
@@ -495,7 +501,7 @@ get_is_myping_variable() {
   local ssm_path_prefix="$1"
 
   # Default false
-  IS_MY_PING=false
+  IS_MY_PING='false'
 
   if [ "${ssm_path_prefix}" != "unused" ]; then
     # Getting value from ssm parameter store.
@@ -507,7 +513,11 @@ get_is_myping_variable() {
     fi
   fi
 
-  export IS_MY_PING="${IS_MY_PING}"
+  if test "${IS_MY_PING}" = 'true' || test "${IS_MY_PING}" = 'false'; then
+    export IS_MY_PING="${IS_MY_PING}"
+  else
+    export IS_MY_PING='false'
+  fi
 }
 
 # Checking required tools and environment variables.
@@ -707,7 +717,11 @@ fi
 parse_url "${CLUSTER_STATE_REPO_URL}"
 echo "Obtaining known_hosts contents for cluster state repo host: ${URL_HOST}"
 
+set -x
 export KNOWN_HOSTS_CLUSTER_STATE_REPO="${KNOWN_HOSTS_CLUSTER_STATE_REPO:-$(ssh-keyscan -H "${URL_HOST}" 2>/dev/null)}"
+set +x
+
+read -n 1 -srp 'Press any key to continue'
 
 # Delete existing target directory and re-create it
 rm -rf "${TARGET_DIR}"

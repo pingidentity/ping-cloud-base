@@ -29,7 +29,7 @@ patchesStrategicMerge:
     namespace: argocd
   data:
     ssh_known_hosts: |-
-      ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
+      "${KNOWN_HOSTS_CLUSTER_STATE_REPO}"
 
 ### Deploy key to the cluster state repo ###
 - |-
