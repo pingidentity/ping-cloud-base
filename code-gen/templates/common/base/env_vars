@@ -70,6 +70,9 @@ TENANT_NAME=${TENANT_NAME}
 # single P14C customer. All of these apps will be created within the "Administrators" environment in the tenant.
 ENVIRONMENT_PREFIX=${ENVIRONMENT_PREFIX}
 
+# The name of the environment as it will appear on the NewRelic console.
+NEW_RELIC_ENVIRONMENT_NAME=${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
+
 ############################################################
 # Cluster state repo details
 ############################################################
@@ -158,8 +161,8 @@ PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 ############################################################
 # Ping application image tags
 ############################################################
-PINGACCESS_IMAGE_TAG=6.3.1-v1.0.14
-PINGACCESS_WAS_IMAGE_TAG=6.3.1-v1.0.14
+PINGACCESS_IMAGE_TAG=6.3.1-v1.0.15
+PINGACCESS_WAS_IMAGE_TAG=6.3.1-v1.0.15
 PINGFEDERATE_IMAGE_TAG=10.3.3-v1.0.Y-pdo-2975-bye-stunnel
 PINGDIRECTORY_IMAGE_TAG=8.3.0.0-v1.0.Y-pdo-2975-bye-stunnel
 PINGDELEGATOR_IMAGE_TAG=4.4.1-v1.0.8

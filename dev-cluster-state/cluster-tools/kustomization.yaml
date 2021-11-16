@@ -78,6 +78,33 @@ patchesStrategicMerge:
     name: cwagentconfig
     namespace: amazon-cloudwatch
 
+# NewRelic resources
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: nri-bundle-nri-prometheus-config
+    namespace: newrelic
+  data:
+    config.yaml: |
+      cluster_name: ${NEW_RELIC_ENVIRONMENT_NAME}
+      require_scrape_enabled_label_for_nodes: true
+
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: nri-bundle-nri-kube-events-config
+    namespace: newrelic
+  data:
+    config.yaml: |-
+      sinks:
+      - name: newRelicInfra
+        config:
+          agentEndpoint: http://localhost:8001/v1/data
+          clusterName: ${NEW_RELIC_ENVIRONMENT_NAME}
+          agentHTTPTimeout: 30s
+
 patchesJson6902:
 
 ### Patch to inject environment variables to SigSci agent container ###
@@ -197,3 +224,59 @@ patchesJson6902:
   patch: |-
     - op: remove
       path: /metadata/annotations/service.beta.kubernetes.io~1aws-load-balancer-internal
+
+# Newrelic resources
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: nri-bundle-nri-metadata-injection
+    namespace: newrelic
+  patch: |-
+    - op: replace
+      path: /spec/template/metadata/annotations/clusterName
+      value: ${NEW_RELIC_ENVIRONMENT_NAME}
+
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: nri-bundle-newrelic-metadata
+    namespace: newrelic
+  patch: |-
+    - op: replace
+      path: /spec/template/metadata/annotations/CLUSTER_NAME
+      value: ${NEW_RELIC_ENVIRONMENT_NAME}
+
+- target:
+    group: apps
+    version: v1
+    kind: DaemonSet
+    name: nri-bundle-newrelic-infrastructure
+    namespace: newrelic
+  patch: |-
+    - op: replace
+      path: /spec/template/metadata/annotations/CLUSTER_NAME
+      value: ${NEW_RELIC_ENVIRONMENT_NAME}
+
+- target:
+    group: apps
+    version: v1
+    kind: DaemonSet
+    name: nri-bundle-newrelic-logging
+    namespace: newrelic
+  patch: |-
+    - op: replace
+      path: /spec/template/metadata/annotations/CLUSTER_NAME
+      value: ${NEW_RELIC_ENVIRONMENT_NAME}
+
+- target:
+    group: batch
+    version: v1
+    kind: Job
+    name: newrelic-license-secret-exporter
+    namespace: newrelic
+  patch: |-
+    - op: replace
+      path: /spec/template/metadata/annotations/SECRET_NAMESPACE
+      value: ${NAMESPACE}
