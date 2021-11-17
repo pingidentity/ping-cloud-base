@@ -60,7 +60,7 @@ rules:
   - apiGroups: [""]
     resources:
     - secrets
-    verbs: ["get", "list", "watch", "create"]
+    verbs: ["get", "list", "watch", "create", "patch"]
 
   - apiGroups: ["batch"]
     resources:
