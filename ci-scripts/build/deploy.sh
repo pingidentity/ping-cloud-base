@@ -23,15 +23,15 @@ NR_JOB_NAME='newrelic-license-secret-exporter'
 NR_NAMESPACE='newrelic'
 NR_TIMEOUT_SECONDS=120
 
-echo "Waiting for ${NR_JOB_NAME} to be deleted with a timeout of ${NR_TIMEOUT_SECONDS} seconds"
-time kubectl delete job "${NR_JOB_NAME}" --timeout "${NR_TIMEOUT_SECONDS}s" -n "${NR_NAMESPACE}" --ignore-not-found=true
+# echo "Waiting for ${NR_JOB_NAME} to be deleted with a timeout of ${NR_TIMEOUT_SECONDS} seconds"
+# time kubectl delete job "${NR_JOB_NAME}" --timeout "${NR_TIMEOUT_SECONDS}s" -n "${NR_NAMESPACE}" --ignore-not-found=true
 
 kubectl apply -f "${DEPLOY_FILE}"
 
-echo "Waiting for rollout of ${NR_JOB_NAME} with a timeout of ${NR_TIMEOUT_SECONDS} seconds"
-time kubectl wait --for=condition=complete "job/${NR_JOB_NAME}" -n "${NR_NAMESPACE}" --timeout "${NR_TIMEOUT_SECONDS}s" && \
-echo "Waiting for ${NR_JOB_NAME} to be deleted with a timeout of ${NR_TIMEOUT_SECONDS} seconds" && \
-time kubectl delete job "${NR_JOB_NAME}" --timeout "${NR_TIMEOUT_SECONDS}s" -n "${NR_NAMESPACE}" --ignore-not-found=true
+# echo "Waiting for rollout of ${NR_JOB_NAME} with a timeout of ${NR_TIMEOUT_SECONDS} seconds"
+# time kubectl wait --for=condition=complete "job/${NR_JOB_NAME}" -n "${NR_NAMESPACE}" --timeout "${NR_TIMEOUT_SECONDS}s" && \
+# echo "Waiting for ${NR_JOB_NAME} to be deleted with a timeout of ${NR_TIMEOUT_SECONDS} seconds" && \
+# time kubectl delete job "${NR_JOB_NAME}" --timeout "${NR_TIMEOUT_SECONDS}s" -n "${NR_NAMESPACE}" --ignore-not-found=true
 
 # A PingDirectory pod can take up to 15 minutes to deploy in the CI/CD cluster. There are two sets of dependencies
 # today from:
