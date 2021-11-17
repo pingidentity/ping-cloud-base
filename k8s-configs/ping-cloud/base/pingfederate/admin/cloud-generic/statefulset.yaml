@@ -113,7 +113,7 @@ spec:
         securityContext:
           runAsGroup: 0
           runAsNonRoot: false
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         command:
         - /wait-for-services.sh
         volumeMounts:
