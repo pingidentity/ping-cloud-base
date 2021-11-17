@@ -111,8 +111,9 @@ spec:
         # FIXME: switch to same user as app
         image: public.ecr.aws/r2h3l6e4/busybox:1.32
         securityContext:
-          runAsGroup: 0
-          runAsNonRoot: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
         imagePullPolicy: Always
         command:
         - /wait-for-services.sh
