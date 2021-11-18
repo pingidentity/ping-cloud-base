@@ -15,9 +15,6 @@ spec:
   - port: 1636
     name: ldaps
     targetPort: ldaps
-  - port: 5678
-    name: stunnel
-    targetPort: stunnel
   - port: 8989
     name: repl
     targetPort: repl
@@ -47,7 +44,7 @@ spec:
   ports:
   - name: ldaps
     port: 636
-    targetPort: stunnel
+    targetPort: ldaps
 
 ---
 

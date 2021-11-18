@@ -14,14 +14,6 @@ spec:
           requests:
             memory: 4Gi
             cpu: 2
-      - name: stunnel
-        resources:
-          limits:
-            memory: 256Mi
-            cpu: 500m
-          requests:
-            memory: 256Mi
-            cpu: 300m
       - name: pingdirectory-statsd-exporter
         resources:
           limits:
