@@ -255,6 +255,7 @@ QUIET="${QUIET:-false}"
 # within DEFAULT_VARS
 # Note: only secret variables are substituted into YAML files. Environments variables are just written to an env_vars
 # file and substituted at runtime by the continuous delivery tool running in cluster.
+# shellcheck disable=SC2016
 DEFAULT_VARS='${LAST_UPDATE_REASON}
 ${PING_IDENTITY_DEVOPS_USER}
 ${PING_IDENTITY_DEVOPS_KEY}
@@ -294,6 +295,7 @@ ${LETS_ENCRYPT_SERVER}
 ${USER_BASE_DN}
 ${ADMIN_CONSOLE_BRANDING}
 ${ENVIRONMENT_PREFIX}
+${NEW_RELIC_ENVIRONMENT_NAME}
 ${PF_PD_BIND_PORT}
 ${PF_PD_BIND_PROTOCOL}
 ${PF_PD_BIND_USESSL}
@@ -378,6 +380,9 @@ add_derived_variables() {
   # This variable's value will be used as the prefix to distinguish between worker apps for different CDEs for a
   # single P14C tenant. All of these apps will be created within the "Administrators" environment in the tenant.
   export ENVIRONMENT_PREFIX="\${TENANT_NAME}-\${CLUSTER_STATE_REPO_BRANCH}-\${REGION_NICK_NAME}"
+
+  # The name of the environment as it will appear on the NewRelic console.
+  export NEW_RELIC_ENVIRONMENT_NAME="\${TENANT_NAME}_\${ENV}_\${REGION_NICK_NAME}_k8s-cluster"
 }
 
 ########################################################################################################################
