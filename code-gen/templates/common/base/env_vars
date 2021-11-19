@@ -71,7 +71,7 @@ TENANT_NAME=${TENANT_NAME}
 ENVIRONMENT_PREFIX=${ENVIRONMENT_PREFIX}
 
 # The name of the environment as it will appear on the NewRelic console.
-NEW_RELIC_ENVIRONMENT_NAME=${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
+NEW_RELIC_ENVIRONMENT_NAME=${NEW_RELIC_ENVIRONMENT_NAME}
 
 ############################################################
 # Cluster state repo details
