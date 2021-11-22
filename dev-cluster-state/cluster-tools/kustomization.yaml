@@ -4,6 +4,12 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 resources:
 - ../../k8s-configs/cluster-tools
 
+secretGenerator:
+- name: newrelic-license-key
+  namespace: newrelic
+  literals:
+  - NEWRELIC_LICENSE_KEY=DUMMY_NEW_RELIC_LICENSE_KEY_BASE64
+
 patchesStrategicMerge:
 
 ### Lets encrypt ACME certificate issuer for the cluster ###
@@ -279,14 +285,3 @@ patchesJson6902:
     - op: replace
       path: /spec/template/metadata/annotations/CLUSTER_NAME
       value: ${NEW_RELIC_ENVIRONMENT_NAME}
-
-- target:
-    group: batch
-    version: v1
-    kind: Job
-    name: newrelic-license-secret-exporter
-    namespace: newrelic
-  patch: |-
-    - op: replace
-      path: /spec/template/metadata/annotations/SECRET_NAMESPACE
-      value: ${NAMESPACE}
