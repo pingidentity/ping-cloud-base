@@ -3,16 +3,19 @@
 ### 1.12.0
 
 - Added custom patch to create public ingresses for admin endpoints
+- Heartbeat endpoint page template changed
 - Add support for enabling rate limiting in PA and PA-WAS
 - Added regional custom-patches.yaml as an extension point to customize configuration for a specific region 
 - Updated ingress to v1.0.0 and added the SigSci agent sidecar container to the public Nginx-ingress-controller pod
 - Add multiline log support for PA-WAS
 - Implemented Kubernetes Infrastructure Agent for New Relic
 - Updated argocd to latest release: v2.1.6
+- Add sideband fields to PA logs
 
 _Changes:_
 
 - [X] PDO-1350 PingAccess proactively remove temp file that causes upgrade to fail
+- [X] PDO-2223 Heartbeat endpoint page template changing
 - [X] PDO-1676 Deploy Kubernetes Infrastructure Agent for New Relic
 - [X] PDO-2410 PA-WAS: parse multiline logs
 - [X] PDO-2432 Update cluster tools to latest version: argocd to v2.1.6
@@ -20,6 +23,7 @@ _Changes:_
 - [X] PDO-2921 SigSci WAF: create public ingresses for admin endpoints
 - [X] PDO-2928 Add support for enabling rate limiting in PA and PA-WAS
 - [X] PDO-2938 Added regional custom-patches.yaml as an extension point to customize configuration for a specific region
+- [X] PDO-2962 Added new PA sideband logs to SIEM Integration
 - [X] PDO-2965 Refactor NewRelic APM agents to use Secret located in 'newrelic' namespace
 - [X] PDO-2988 Increased metadata pod timeoutSeconds probe to 3 seconds for liveness & readiness
 - [X] PDO-2991 SigSci WAF: Update SigSci sidecar resource limit & requests
