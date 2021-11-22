@@ -108,6 +108,13 @@ patchesStrategicMerge:
           clusterName: ${NEW_RELIC_ENVIRONMENT_NAME}
           agentHTTPTimeout: 30s
 
+- |-
+  apiVersion: batch/v1
+  kind: Job
+  metadata:
+    name: newrelic-license-secret-exporter
+  $patch: delete
+
 patchesJson6902:
 
 ### Patch to inject environment variables to SigSci agent container ###
