@@ -51,6 +51,20 @@ PLATFORM_EVENT_QUEUE_POLL_INTERVAL_SECONDS=2
 ORCH_API_SSM_PATH_PREFIX=${ORCH_API_SSM_PATH_PREFIX}
 
 ############################################################
+# Cluster state repo details
+############################################################
+# The known-hosts file to trust the cluster state repo server for git/ssh cloning
+KNOWN_HOSTS_CLUSTER_STATE_REPO="${KNOWN_HOSTS_CLUSTER_STATE_REPO}"
+
+CLUSTER_STATE_REPO_URL=${CLUSTER_STATE_REPO_URL}
+CLUSTER_STATE_REPO_PATH=${CLUSTER_STATE_REPO_PATH_DERIVED}
+CLUSTER_STATE_REPO_BRANCH=${CLUSTER_STATE_REPO_BRANCH}
+
+# The application reconciliation timeout in seconds for ArgoCD, i.e. how frequently ArgoCD should poll the
+# cluster-state-repo for changes. To disable reconciliation set it to 0.
+APP_RESYNC_SECONDS=60
+
+############################################################
 # Miscellaneous ping-cloud-base variables
 ############################################################
 # Namespace where Ping apps are deployed
@@ -71,21 +85,7 @@ TENANT_NAME=${TENANT_NAME}
 ENVIRONMENT_PREFIX=${ENVIRONMENT_PREFIX}
 
 # The name of the environment as it will appear on the NewRelic console.
-NEW_RELIC_ENVIRONMENT_NAME=${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
-
-############################################################
-# Cluster state repo details
-############################################################
-# The known-hosts file to trust the cluster state repo server for git/ssh cloning
-KNOWN_HOSTS_CLUSTER_STATE_REPO="${KNOWN_HOSTS_CLUSTER_STATE_REPO}"
-
-CLUSTER_STATE_REPO_URL=${CLUSTER_STATE_REPO_URL}
-CLUSTER_STATE_REPO_PATH=${CLUSTER_STATE_REPO_PATH_DERIVED}
-CLUSTER_STATE_REPO_BRANCH=${CLUSTER_STATE_REPO_BRANCH}
-
-# The application reconciliation timeout in seconds for ArgoCD, i.e. how frequently ArgoCD should poll the
-# cluster-state-repo for changes. To disable reconciliation set it to 0.
-APP_RESYNC_SECONDS=60
+NEW_RELIC_ENVIRONMENT_NAME=${NEW_RELIC_ENVIRONMENT_NAME}
 
 ############################################################
 # Server profile variables
@@ -164,7 +164,7 @@ PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 PINGACCESS_IMAGE_TAG=6.3.1-v1.0.15
 PINGACCESS_WAS_IMAGE_TAG=6.3.1-v1.0.15
 PINGFEDERATE_IMAGE_TAG=10.3.1-v1.0.16
-PINGDIRECTORY_IMAGE_TAG=8.3.0.0-v1.0.18
+PINGDIRECTORY_IMAGE_TAG=8.3.0.0-v1.0.19
 PINGDELEGATOR_IMAGE_TAG=4.4.1-v1.0.8
 PINGCENTRAL_IMAGE_TAG=1.8.0-v1.0.20
 
