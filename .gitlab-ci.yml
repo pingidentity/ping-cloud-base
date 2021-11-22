@@ -9,7 +9,7 @@ workflow:
 ## Pipeline stages ##
 stages:
 - compile
-- build
+- deploy
 - unit-test
 - pa-was-test
 - integration-test
@@ -31,12 +31,12 @@ compile:
 
 ## Build stage ##
 deploy:
-  stage: build
+  stage: deploy
   tags:
   - default-gitlab-runner
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
-  - ./ci-scripts/build/deploy.sh
+  - ./ci-scripts/deploy/deploy.sh
 
 ## Unit tests have moved into ping-cloud-docker (PDO-1739) ##
 
