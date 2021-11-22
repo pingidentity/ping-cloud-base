@@ -50,6 +50,7 @@ spec:
               topologyKey: "failure-domain.beta.kubernetes.io/zone"
       containers:
         - name: nginx-ingress-controller
+          # NOTE: image is different than fedramp
           image: public.ecr.aws/r2h3l6e4/pingcloud-services/sigsci-nginx-ingress-controller:v1.0.0
           resources:
             limits:
@@ -65,6 +66,8 @@ spec:
             - --udp-services-configmap=$(POD_NAMESPACE)/udp-services
             - --publish-service=$(POD_NAMESPACE)/ingress-nginx
             - --annotations-prefix=nginx.ingress.kubernetes.io
+            - --http-port=8080
+            - --https-port=8443
           securityContext:
             allowPrivilegeEscalation: true
             capabilities:
@@ -85,10 +88,10 @@ spec:
                   fieldPath: metadata.namespace
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 8080
               protocol: TCP
             - name: https
-              containerPort: 443
+              containerPort: 8443
               protocol: TCP
           livenessProbe:
             failureThreshold: 3
