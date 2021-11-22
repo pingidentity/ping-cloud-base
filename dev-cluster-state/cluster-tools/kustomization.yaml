@@ -119,6 +119,7 @@ patchesStrategicMerge:
   kind: Job
   metadata:
     name: newrelic-license-secret-exporter
+    namespace: newrelic
   $patch: delete
 
 patchesJson6902:
