@@ -10,6 +10,7 @@
 - Add multiline log support for PA-WAS
 - Implemented Kubernetes Infrastructure Agent for New Relic
 - Updated argocd to latest release: v2.1.6
+- Add sideband fields to PA logs
 
 _Changes:_
 
@@ -22,6 +23,7 @@ _Changes:_
 - [X] PDO-2921 SigSci WAF: create public ingresses for admin endpoints
 - [X] PDO-2928 Add support for enabling rate limiting in PA and PA-WAS
 - [X] PDO-2938 Added regional custom-patches.yaml as an extension point to customize configuration for a specific region
+- [X] PDO-2962 Added new PA sideband logs to SIEM Integration
 - [X] PDO-2965 Refactor NewRelic APM agents to use Secret located in 'newrelic' namespace
 - [X] PDO-2988 Increased metadata pod timeoutSeconds probe to 3 seconds for liveness & readiness
 - [X] PDO-2991 SigSci WAF: Update SigSci sidecar resource limit & requests

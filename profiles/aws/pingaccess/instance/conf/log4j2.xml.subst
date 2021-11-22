@@ -218,6 +218,8 @@
                 <KeyValuePair key="resource" value="$${ctx:AUDIT.resource:-}"/>
                 <KeyValuePair key="requestUri" value="$${ctx:AUDIT.requestUri:-}"/>
                 <KeyValuePair key="responseCode" value="$${ctx:AUDIT.responseCode:-}"/>
+                <KeyValuePair key="sidebandName" value="$${ctx:AUDIT.sidebandName:-}"/>
+                <KeyValuePair key="sidebandDecision" value="$${ctx:AUDIT.sidebandDecision:-}"/>
                 <KeyValuePair key="logPurpose" value="Audit_SIEM" />
               </JSONLayout>
             </PingSyslogLayout>
