@@ -11,6 +11,7 @@
 - Implemented Kubernetes Infrastructure Agent for New Relic
 - Updated argocd to latest release: v2.1.6
 - Add sideband fields to PA logs
+- Force StatefulSets (PF-admin, PA-admin, PA-was-admin, PD) to use non-root user.
 
 _Changes:_
 
@@ -29,6 +30,7 @@ _Changes:_
 - [X] PDO-2991 SigSci WAF: Update SigSci sidecar resource limit & requests
 - [X] PDO-3058 CSD upload file changed from .zip-zip format to .zip
 - [X] PDO-3102 Fix offline replication configuration error when config.ldif has line wrappings
+- [X] PDO-3103 Force StatefulSets (PF-admin, PA-admin, PA-was-admin, PD) to use non-root user.
 - [X] PDO-3109 Fix code generation script to only use the SSH-RSA host keys for GitHub
 - [X] PDO-3110 Make code generation script more resilient to invalid values for IS_GA and IS_MY_PING SSM parameters 
 
