@@ -652,6 +652,11 @@ data:
         </rule>
         <rule>
           key log
+          pattern /^\/opt\/out\/instance\/log\/pingaccess_engine_audit_json.log/
+          tag temp.pingaccess_engine_audit_json
+        </rule>
+        <rule>
+          key log
           pattern /^(.+)$/
           tag temp.unmatched_logs
         </rule>
