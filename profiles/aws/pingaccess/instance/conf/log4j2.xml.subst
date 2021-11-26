@@ -503,7 +503,7 @@
                      fileName="${sys:pa.home}/log/pingaccess_engine_audit_json.log"
                      filePattern="${sys:pa.home}/log/pingaccess_engine_audit_json.log.%i"
                      ignoreExceptions="false">
-            <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" />
+            <JSONLayout complete="false" compact="true" eventEol="true" objectMessageAsJsonObject="true" />
 
             <Policies>
                 <SizeBasedTriggeringPolicy size="100 MB" />
