@@ -8,9 +8,9 @@ data:
 
     # Install kubectl
     curl -sS https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl \
-    -o /usr/local/bin/kubectl
+    -o /tmp/kubectl
 
-    chmod +x /usr/local/bin/kubectl
+    chmod +x /tmp/kubectl
 
     UPLOAD_FILES=
     SERVER="${K8S_STATEFUL_SET_NAME_PINGACCESS_WAS}-0"
@@ -18,7 +18,7 @@ data:
     LOG_FILE=/tmp/upload.log
 
     echo "Uploading pingaccess backup data on server ${SERVER}"
-    kubectl exec "${SERVER}" -- sh -c \
+    /tmp/kubectl exec "${SERVER}" -- sh -c \
             "test -x ${SCRIPT} && \
             ${SCRIPT}"> "${LOG_FILE}"
 
@@ -65,10 +65,10 @@ spec:
           - name: pingaccess-was-backup
             image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was:6.3.1-v1.0.15
             imagePullPolicy: IfNotPresent
-            # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
             securityContext:
-              runAsNonRoot: false
-              runAsUser: 0
+              runAsGroup: 9999
+              runAsNonRoot: true
+              runAsUser: 9031
             command:
             - /opt/in/backup-archive-data.sh
             envFrom:
