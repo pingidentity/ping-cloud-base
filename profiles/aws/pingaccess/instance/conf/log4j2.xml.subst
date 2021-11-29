@@ -505,10 +505,10 @@
                 <KeyValuePair key="resourceName" value="$${ctx:AUDIT.resourceName:-}"/>
                 <KeyValuePair key="requestUri" value="$${ctx:AUDIT.requestUri:-}"/>
                 <KeyValuePair key="responseCode" value="$${ctx:AUDIT.responseCode:-}"/>
-                <KeyValuePair key="failedRuleType" value="$${ctx:AUDIT.failedRuleType}"/>
-                <KeyValuePair key="failedRuleName" value="$${ctx:AUDIT.failedRuleName}"/>
-                <KeyValuePair key="applicationName" value="$${ctx:AUDIT.applicationName}"/>
-                <KeyValuePair key="pathPrefix" value="$${ctx:AUDIT.pathPrefix}"/>
+                <KeyValuePair key="failedRuleType" value="$${ctx:AUDIT.failedRuleType:-}"/>
+                <KeyValuePair key="failedRuleName" value="$${ctx:AUDIT.failedRuleName:-}"/>
+                <KeyValuePair key="applicationName" value="$${ctx:AUDIT.applicationName:-}"/>
+                <KeyValuePair key="pathPrefix" value="$${ctx:AUDIT.pathPrefix:-}"/>
                 <KeyValuePair key="sidebandName" value="$${ctx:AUDIT.sidebandName:-}"/>
                 <KeyValuePair key="sidebandDecision" value="$${ctx:AUDIT.sidebandDecision:-}"/>
                 <KeyValuePair key="logPurpose" value="Audit_Engine" />
