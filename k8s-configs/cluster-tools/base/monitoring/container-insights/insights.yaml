@@ -652,11 +652,6 @@ data:
         </rule>
         <rule>
           key log
-          pattern /^\/opt\/out\/instance\/log\/pingaccess_engine_audit_json.log/
-          tag temp.pingaccess_engine_audit_json
-        </rule>
-        <rule>
-          key log
           pattern /^(.+)$/
           tag temp.unmatched_logs
         </rule>
@@ -1236,8 +1231,6 @@ spec:
         - name: fluentd-cloudwatch
           image: public.ecr.aws/r2h3l6e4/fluent/fluentd-kubernetes-daemonset:v1.7.3-debian-cloudwatch-1.0
           env:
-            - name: FLUENTD_OPT
-              value: "-qq"
             - name: REGION
               valueFrom:
                 configMapKeyRef:

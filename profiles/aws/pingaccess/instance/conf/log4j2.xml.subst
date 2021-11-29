@@ -486,13 +486,34 @@
                      fileName="${sys:pa.home}/log/pingaccess_engine_audit.log"
                      filePattern="${sys:pa.home}/log/pingaccess_engine_audit.log.%i"
                      ignoreExceptions="false">
-            <PatternLayout>
+            <!--<PatternLayout>-->
                 <!-- Uncomment this if you want to use UTF-8 encoding instead of system's default encoding. -->
                 <!--
                 <charset>UTF-8</charset>
                 -->
-                <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.proxyRoundTripMS} ms| %X{AUDIT.resource}| %X{AUDIT.subject}| %X{AUDIT.authMech}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.failedRuleType}| %X{AUDIT.failedRuleName}| %X{AUDIT.applicationName}| %X{AUDIT.resourceName}| %X{AUDIT.pathPrefix} %n</pattern>
-            </PatternLayout>
+                <!--<pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.proxyRoundTripMS} ms| %X{AUDIT.resource}| %X{AUDIT.subject}| %X{AUDIT.authMech}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.failedRuleType}| %X{AUDIT.failedRuleName}| %X{AUDIT.applicationName}| %X{AUDIT.resourceName}| %X{AUDIT.pathPrefix} %n</pattern>-->
+            <!--</PatternLayout>-->
+            <JSONLayout complete="false" compact="true" eventEol="true" objectMessageAsJsonObject="true">
+                <KeyValuePair key="date" value="$${date:yyyy-MM-dd'T'HH:mm:ssZ}"/>
+                <KeyValuePair key="exchangeId" value="$${ctx:exchangeId:-}"/>
+                <KeyValuePair key="trackingId" value="$${ctx:AUDIT.trackingId:-}"/>
+                <KeyValuePair key="roundTripMS" value="$${ctx:AUDIT.roundTripMS:-}"/>
+                <KeyValuePair key="subject" value="$${ctx:AUDIT.subject:-}"/>
+                <KeyValuePair key="authMech" value="$${ctx:AUDIT.authMech:-}"/>
+                <KeyValuePair key="client" value="$${ctx:AUDIT.client:-}"/>
+                <KeyValuePair key="method" value="$${ctx:AUDIT.method:-}"/>
+                <KeyValuePair key="resource" value="$${ctx:AUDIT.resource:-}"/>
+                <KeyValuePair key="resourceName" value="$${ctx:AUDIT.resourceName:-}"/>
+                <KeyValuePair key="requestUri" value="$${ctx:AUDIT.requestUri:-}"/>
+                <KeyValuePair key="responseCode" value="$${ctx:AUDIT.responseCode:-}"/>
+                <KeyValuePair key="failedRuleType" value="$${ctx:AUDIT.failedRuleType}"/>
+                <KeyValuePair key="failedRuleName" value="$${ctx:AUDIT.failedRuleName}"/>
+                <KeyValuePair key="applicationName" value="$${ctx:AUDIT.applicationName}"/>
+                <KeyValuePair key="pathPrefix" value="$${ctx:AUDIT.pathPrefix}"/>
+                <KeyValuePair key="sidebandName" value="$${ctx:AUDIT.sidebandName:-}"/>
+                <KeyValuePair key="sidebandDecision" value="$${ctx:AUDIT.sidebandDecision:-}"/>
+                <KeyValuePair key="logPurpose" value="Audit_SIEM" />
+            </JSONLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="100 MB" />
             </Policies>
