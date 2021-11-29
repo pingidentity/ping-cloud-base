@@ -28,6 +28,7 @@ _Changes:_
 - [X] PDO-2988 Increased metadata pod timeoutSeconds probe to 3 seconds for liveness & readiness
 - [X] PDO-2991 SigSci WAF: Update SigSci sidecar resource limit & requests
 - [X] PDO-3058 CSD upload file changed from .zip-zip format to .zip
+- [X] PDO-3092 Force all jobs and cronjobs of Ping products to use non-root
 - [X] PDO-3091 Fixed role association on gateway objects created in P14C and PF authentication policy issue for MyPing E2E flow
 - [X] PDO-3102 Fix offline replication configuration error when config.ldif has line wrappings
 - [X] PDO-3109 Fix code generation script to only use the SSH-RSA host keys for GitHub

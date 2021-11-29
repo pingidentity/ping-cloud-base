@@ -16,10 +16,10 @@ spec:
           - name: pingfederate-periodic-csd-upload
             image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:10.3.1-v1.0.16
             imagePullPolicy: IfNotPresent
-            # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
             securityContext:
-              runAsNonRoot: false
-              runAsUser: 0
+              runAsGroup: 9999
+              runAsNonRoot: true
+              runAsUser: 9031
             command:
             - /opt/in/backup-csd-data.sh
             env:

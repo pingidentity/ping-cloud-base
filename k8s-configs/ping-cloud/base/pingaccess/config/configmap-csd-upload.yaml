@@ -8,11 +8,11 @@ data:
 
     # Install kubectl
     curl -sS https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl \
-    -o /usr/local/bin/kubectl
+    -o /tmp/kubectl
 
-    chmod +x /usr/local/bin/kubectl
+    chmod +x /tmp/kubectl
 
-    REPLICAS=$(kubectl get pods -l=role="${CSD_POD_ROLE}" -o name)
+    REPLICAS=$(/tmp/kubectl get pods -l=role="${CSD_POD_ROLE}" -o name)
 
     CSD_FILES=
     for REPLICA in ${REPLICAS}; do
@@ -21,7 +21,7 @@ data:
       LOG_FILE=/tmp/upload.log
 
       echo "Uploading CSD on server ${SERVER}"
-      kubectl exec "${SERVER}" -c "${CSD_CONTAINER_NAME}" -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" >"${LOG_FILE}"
+      /tmp/kubectl exec "${SERVER}" -c "${CSD_CONTAINER_NAME}" -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" >"${LOG_FILE}"
 
       # Sending logs to STDOUT
       cat ${LOG_FILE}
