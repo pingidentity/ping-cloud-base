@@ -8,9 +8,9 @@ SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 configure_aws
 configure_kube
 
-# Do not ever delete the environment on the master branch. And only delete an environment,
+# Do not ever delete the environment on the v1.12-release-branch branch. And only delete an environment,
 # if the DELETE_ENV_AFTER_PIPELINE flag is true
-if test "${CI_COMMIT_REF_SLUG}" = 'master' || test "${DELETE_ENV_AFTER_PIPELINE}" = 'false'; then
+if test "${CI_COMMIT_REF_SLUG}" = 'v1.12-release-branch' || test "${DELETE_ENV_AFTER_PIPELINE}" = 'false'; then
   log "Not deleting environment ${NAMESPACE}"
   log "Not deleting PingCentral database ${MYSQL_DATABASE} from host ${MYSQL_SERVICE_HOST}"
 else

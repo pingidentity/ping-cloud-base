@@ -7,7 +7,7 @@
 # won't push any changes to the server. Instead, it will set up a parallel branch for every CDE branch and/or the
 # customer-hub branch as specified through the ENVIRONMENTS environment variable. For example, if the new version is
 # v1.7.1 and the ENVIRONMENTS variable override is not provided, then it’ll set up 4 new CDE branches at the new
-# version for the default set of environments: v1.7.1-dev, v1.7.1-test, v1.7.1-stage and v1.7.1-master and 1 new
+# version for the default set of environments: v1.7.1-dev, v1.7.1-test, v1.7.1-stage and v1.7.1-v1.12-release-branch and 1 new
 # customer-hub branch v1.7.1-customer-hub.
 
 # NOTE: The script must be run from the root of the cluster state repo clone directory. It acts on the following
@@ -858,7 +858,7 @@ REPO_STATUS=0
 
 for ENV in ${ENVIRONMENTS}; do
   test "${ENV}" = 'prod' &&
-      DEFAULT_GIT_BRANCH='master' ||
+      DEFAULT_GIT_BRANCH='v1.12-release-branch' ||
       DEFAULT_GIT_BRANCH="${ENV}"
 
   log "Validating that '${CLUSTER_STATE_REPO}' has branch: '${DEFAULT_GIT_BRANCH}'"
@@ -913,7 +913,7 @@ get_min_required_secrets
 #   - Push code for all its regions into new branches
 for ENV in ${ENVIRONMENTS}; do # ENV loop
   test "${ENV}" = 'prod' &&
-      DEFAULT_GIT_BRANCH='master' ||
+      DEFAULT_GIT_BRANCH='v1.12-release-branch' ||
       DEFAULT_GIT_BRANCH="${ENV}"
 
   if echo "${ENV}" | grep -q "${CUSTOMER_HUB}"; then

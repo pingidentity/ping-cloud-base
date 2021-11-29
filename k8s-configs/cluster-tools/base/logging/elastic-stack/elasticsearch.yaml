@@ -214,7 +214,7 @@ spec:
           value: "0.0.0.0"
         - name: discovery.seed_hosts
           value: "es-cluster-0.elasticsearch"
-        - name: cluster.initial_master_nodes
+        - name: cluster.initial_v1.12-release-branch_nodes
           value: "es-cluster-0"
         - name: xpack.license.self_generated.type
           value: "trial"

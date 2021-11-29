@@ -23,7 +23,7 @@
 # The script is non-destructive by design and doesn't push any new state to the server. Instead, it will set up a
 # parallel branch for every CDE branch corresponding to the environments specified through the ENVIRONMENTS environment
 # variable. For example, if the new version is v1.11.0, then it’ll set up 4 new branches at the new version for the
-# default set of environments: v1.11.0-dev, v1.11.0-test, v1.11.0-stage and v1.11.0-master. These new branches will be
+# default set of environments: v1.11.0-dev, v1.11.0-test, v1.11.0-stage and v1.11.0-v1.12-release-branch. These new branches will be
 # valid for that version for all regions for the customer’s CDEs. All profile customizations added by field teams will
 # be migrated to the new branches verbatim. But changes to OOTB Beluga profiles will be overwritten. So it's up to the
 # PS/GSO teams to reconcile those files. The best practice is to NOT change OOTB Beluga profile but rather add new

@@ -120,7 +120,7 @@ data:
         lowDataMode    ${LOW_DATA_MODE}
 
   parsers.conf: |
-    # Relevant parsers retrieved from: https://github.com/fluent/fluent-bit/blob/master/conf/parsers.conf
+    # Relevant parsers retrieved from: https://github.com/fluent/fluent-bit/blob/v1.12-release-branch/conf/parsers.conf
     [PARSER]
         Name         docker
         Format       json

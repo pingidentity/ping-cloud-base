@@ -1,5 +1,5 @@
 # This yaml file was obtained from:
-# https://github.com/kubernetes-sigs/external-dns/tree/master/kustomize
+# https://github.com/kubernetes-sigs/external-dns/tree/v1.12-release-branch/kustomize
 
 apiVersion: v1
 kind: ServiceAccount

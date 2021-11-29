@@ -101,7 +101,7 @@ spec:
         - --memcached-service=
         - --ssh-keygen-dir=/var/fluxd/keygen
         - --git-url=git@github.com:fluxcd/flux-get-started
-        - --git-branch=master
+        - --git-branch=v1.12-release-branch
         - --git-label=flux-sync
         - --git-user=Flux automation
         - --git-email=flux@example.com

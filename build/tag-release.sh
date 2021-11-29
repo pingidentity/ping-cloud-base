@@ -6,7 +6,7 @@
 usage() {
   echo "Usage: ${0} SOURCE_REF TARGET_REF [REF_TYPE]"
   echo "  where"
-  echo "    SOURCE_REF => source ref from where to create the target ref, e.g. master"
+  echo "    SOURCE_REF => source ref from where to create the target ref, e.g. v1.12-release-branch"
   echo "    TARGET_REF => the target ref, e.g. v1.0.0"
   echo "    REF_TYPE => the target ref type - tag or branch, default is tag"
 }

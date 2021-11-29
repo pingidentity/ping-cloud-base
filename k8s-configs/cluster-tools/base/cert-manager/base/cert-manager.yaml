@@ -18,7 +18,7 @@
 # https://github.com/jetstack/cert-manager/releases/download/v1.5.3/cert-manager.yaml
 #
 # The manifests in the base cert-manager.yaml from above are built from these templates:
-# https://github.com/jetstack/cert-manager/tree/master/deploy/charts/cert-manager/templates
+# https://github.com/jetstack/cert-manager/tree/v1.12-release-branch/deploy/charts/cert-manager/templates
 #
 # The following modifications have been made to the base manifests:
 #   - Removed all the webhook-* resources, i.e. resources under the  "# Source: cert-manager/templates/webhook-*"

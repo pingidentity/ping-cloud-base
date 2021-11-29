@@ -7,7 +7,7 @@
 
 # It is recommended that all (instead of a subset) of the secrets be sealed at the same time. This ensures that they
 # are all encrypted with the same sealing key. After sealing the secrets, make sure to save off the Bitnami service's
-# master key using PingCloud docs.
+# v1.12-release-branch key using PingCloud docs.
 
 # Before running this script, populate all the required secrets into cluster-state-repo/k8s-configs/base/secrets.yaml.
 # For reference, a copy of the original contents of the secrets.yaml file is available under the same directory in the
@@ -165,7 +165,7 @@ else
   echo "      grep 'kind: SealedSecret' /tmp/deploy.yaml # should have hits"
   echo "- Push all modified files into the cluster state repo"
   echo "- Run this script for each CDE branch and region directory in the order - dev, test, stage, prod"
-  echo "- IMPORTANT: create a backup of the Bitnami service's master key using PingCloud docs"
+  echo "- IMPORTANT: create a backup of the Bitnami service's v1.12-release-branch key using PingCloud docs"
 fi
 
 popd &> /dev/null

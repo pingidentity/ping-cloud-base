@@ -776,8 +776,8 @@ get_is_ga_variable '/pcpt/stage/is-ga'
 get_is_myping_variable '/pcpt/orch-api/is-myping'
 
 # The ENVIRONMENTS variable can either be the CDE names (e.g. dev, test, stage, prod) or the CHUB name "customer-hub",
-# or the corresponding branch names (e.g. v1.8.0-dev, v1.8.0-test, v1.8.0-stage, v1.8.0-master, v1.8.0-customer-hub).
-# We must handle both cases. Note that the 'prod' environment will have a branch name suffix of 'master'.
+# or the corresponding branch names (e.g. v1.8.0-dev, v1.8.0-test, v1.8.0-stage, v1.8.0-v1.12-release-branch, v1.8.0-customer-hub).
+# We must handle both cases. Note that the 'prod' environment will have a branch name suffix of 'v1.12-release-branch'.
 for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
 # Run in a sub-shell so the current shell is not polluted with environment variables.
 (
@@ -790,15 +790,15 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     export CLUSTER_STATE_REPO_BRANCH="${CUSTOMER_HUB}"
   else
     test "${ENV_OR_BRANCH}" = 'prod' &&
-        GIT_BRANCH='master' ||
+        GIT_BRANCH='v1.12-release-branch' ||
         GIT_BRANCH="${ENV_OR_BRANCH}"
 
     ENV_OR_BRANCH_SUFFIX="${ENV_OR_BRANCH##*-}"
-    test "${ENV_OR_BRANCH_SUFFIX}" = 'master' &&
+    test "${ENV_OR_BRANCH_SUFFIX}" = 'v1.12-release-branch' &&
         ENV='prod' ||
         ENV="${ENV_OR_BRANCH_SUFFIX}"
 
-    # Set the cluster state repo branch to the default CDE branch, i.e. dev, test, stage or master.
+    # Set the cluster state repo branch to the default CDE branch, i.e. dev, test, stage or v1.12-release-branch.
     export CLUSTER_STATE_REPO_BRANCH="${GIT_BRANCH##*-}"
   fi
 

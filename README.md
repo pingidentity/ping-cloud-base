@@ -59,7 +59,7 @@ The BACKUP_URL must point to an s3 bucket on AWS. PingFederate in clustered mode
 To build the environment, simply run:
 
 ```
-kustomize build https://github.com/pingidentity/ping-cloud-base?ref=master |
+kustomize build https://github.com/pingidentity/ping-cloud-base?ref=v1.12-release-branch |
   envsubst '
     ${PING_IDENTITY_DEVOPS_USER}
     ${PING_IDENTITY_DEVOPS_KEY}
@@ -113,7 +113,7 @@ https://logs.k8s-icecream.ping-devops.com
 
 Information on how to access the environments may be found here:
 
-https://github.com/pingidentity/pingidentity-devops-getting-started/tree/master/11-docker-compose/03-full-stack
+https://github.com/pingidentity/pingidentity-devops-getting-started/tree/v1.12-release-branch/11-docker-compose/03-full-stack
 
 # Customization
 
@@ -125,7 +125,7 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-- https://github.com/pingidentity/ping-cloud-base/k8s-configs?ref=master
+- https://github.com/pingidentity/ping-cloud-base/k8s-configs?ref=v1.12-release-branch
 ```
 
 In addition, some overrides must be provided (e.g. via secret and configmap

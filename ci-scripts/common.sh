@@ -40,7 +40,7 @@ if test -z "${ENV_VARS_FILE}"; then
   export PRIMARY_TENANT_DOMAIN="${TENANT_DOMAIN}"
   export GLOBAL_TENANT_DOMAIN="${GLOBAL_TENANT_DOMAIN:-$(echo "${TENANT_DOMAIN}"|sed -e "s/[^.]*.\(.*\)/global.\1/")}"
 
-  if [[ ${CI_COMMIT_REF_SLUG} != master ]]; then
+  if [[ ${CI_COMMIT_REF_SLUG} != v1.12-release-branch ]]; then
     export ENVIRONMENT=-${CI_COMMIT_REF_SLUG}
   fi
   export BELUGA_ENV_NAME=${CI_COMMIT_REF_SLUG}
@@ -50,7 +50,7 @@ if test -z "${ENV_VARS_FILE}"; then
   export NEW_RELIC_ENVIRONMENT_NAME=${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
 
   export CONFIG_PARENT_DIR=aws
-  export CONFIG_REPO_BRANCH=${CI_COMMIT_REF_NAME:-master}
+  export CONFIG_REPO_BRANCH=${CI_COMMIT_REF_NAME:-v1.12-release-branch}
 
   export ARTIFACT_REPO_URL=s3://${CLUSTER_NAME}-artifacts-bucket
   export PING_ARTIFACT_REPO_URL=https://ping-artifacts.s3-us-west-2.amazonaws.com

@@ -184,10 +184,10 @@ if test ${LS_REMOTE_EXIT_CODE} -ne 0; then
 fi
 
 # The ENVIRONMENTS variable can either be the CDE names or CHUB name (e.g. dev, test, stage, prod or customer-hub) or
-# the branch names (e.g. v1.8.0-dev, v1.8.0-test, v1.8.0-stage, v1.8.0-master or v1.8.0-customer-hub). It will be the
+# the branch names (e.g. v1.8.0-dev, v1.8.0-test, v1.8.0-stage, v1.8.0-v1.12-release-branch or v1.8.0-customer-hub). It will be the
 # CDE names or CHUB name on initial seeding of the cluster state repo. On upgrade of the cluster state repo it will be
 # the branch names. We must handle both cases. Note that the 'prod' environment will have a branch name suffix
-# of 'master'.
+# of 'v1.12-release-branch'.
 for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   if echo "${ENV_OR_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
     # Do not push any changes to the customer-hub branch when this script is run on secondary regions.
@@ -203,12 +203,12 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     ENV="${CUSTOMER_HUB}"
   else
     test "${ENV_OR_BRANCH}" = 'prod' &&
-        GIT_BRANCH='master' ||
+        GIT_BRANCH='v1.12-release-branch' ||
         GIT_BRANCH="${ENV_OR_BRANCH}"
     DEFAULT_CDE_BRANCH="${GIT_BRANCH##*-}"
 
     ENV_OR_BRANCH_SUFFIX="${ENV_OR_BRANCH##*-}"
-    test "${ENV_OR_BRANCH_SUFFIX}" = 'master' &&
+    test "${ENV_OR_BRANCH_SUFFIX}" = 'v1.12-release-branch' &&
         ENV='prod' ||
         ENV="${ENV_OR_BRANCH_SUFFIX}"
   fi

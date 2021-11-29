@@ -7,7 +7,7 @@
 # won't push any changes to the server. Instead, it will set up a parallel branch for every CDE branch and/or the
 # customer-hub branch as specified through the ENVIRONMENTS environment variable. For example, if the new version is
 # v1.11.0 and the ENVIRONMENTS variable override is not provided, then it’ll set up 4 new CDE branches at the new
-# version for the default set of environments: v1.11.0-dev, v1.11.0-test, v1.11.0-stage and v1.11.0-master and 1 new
+# version for the default set of environments: v1.11.0-dev, v1.11.0-test, v1.11.0-stage and v1.11.0-v1.12-release-branch and 1 new
 # customer-hub branch v1.11.0-customer-hub.
 
 # NOTE: The script must be run from the root of the profile repo clone directory. It acts on the following
@@ -363,7 +363,7 @@ REPO_STATUS=0
 
 for ENV in ${ENVIRONMENTS}; do
   test "${ENV}" = 'prod' &&
-      DEFAULT_GIT_BRANCH='master' ||
+      DEFAULT_GIT_BRANCH='v1.12-release-branch' ||
       DEFAULT_GIT_BRANCH="${ENV}"
 
   log "Validating that '${PROFILE_REPO}' has branch: '${DEFAULT_GIT_BRANCH}'"
@@ -415,7 +415,7 @@ TEMP_DIR="$(mktemp -d)"
 
 for ENV in ${ENVIRONMENTS}; do # ENV loop
   test "${ENV}" = 'prod' &&
-      DEFAULT_GIT_BRANCH='master' ||
+      DEFAULT_GIT_BRANCH='v1.12-release-branch' ||
       DEFAULT_GIT_BRANCH="${ENV}"
 
   NEW_BRANCH="${NEW_VERSION}-${DEFAULT_GIT_BRANCH}"

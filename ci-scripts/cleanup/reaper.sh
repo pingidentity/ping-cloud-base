@@ -11,11 +11,11 @@ kubectl config use-context ${EKS_CLUSTER_NAME}
 namespace_prefix="ping-cloud-"
 
 # We'll leave the environment on
-# master always running so it's available for quick testing.
+# v1.12-release-branch always running so it's available for quick testing.
 ping_namespaces() {
   kubectl get ns -o name |
     sed -n "s|^namespace/${namespace_prefix}||p" |
-    grep -v "master" |
+    grep -v "v1.12-release-branch" |
     sort
 }
 
@@ -23,7 +23,7 @@ git_branches() {
   git ls-remote -q --heads |
     awk '{ print $2 }' |
     sed "s|^refs/heads/||" |
-    grep -v '^master$'
+    grep -v '^v1.12-release-branch$'
 }
 
 echo "Namespaces in cluster ${EKS_CLUSTER_NAME} w/ prefix ${namespace_prefix}:"

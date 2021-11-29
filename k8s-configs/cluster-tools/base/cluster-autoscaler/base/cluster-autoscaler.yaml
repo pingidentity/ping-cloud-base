@@ -1,5 +1,5 @@
 # This was copied down from here:
-# https://raw.githubusercontent.com/kubernetes/autoscaler/master/cluster-autoscaler/cloudprovider/aws/examples/cluster-autoscaler-autodiscover.yaml
+# https://raw.githubusercontent.com/kubernetes/autoscaler/v1.12-release-branch/cluster-autoscaler/cloudprovider/aws/examples/cluster-autoscaler-autodiscover.yaml
 ---
 apiVersion: v1
 kind: ServiceAccount
