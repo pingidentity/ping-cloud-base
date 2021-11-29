@@ -149,7 +149,6 @@
         </Logger>
         <Logger name="engineaudit" level="INFO" additivity="false">
             <AppenderRef ref="EngineAuditLog-File"/>
-            <AppenderRef ref="EngineAuditJson-File"/>
             <AppenderRef ref="CONSOLE_AUDIT"/>
             <!--<AppenderRef ref="EngineAuditLog-Database-Failover"/>-->
             <!--<AppenderRef ref="EngineAuditLog-SQLServer-Database-Failover"/>-->
@@ -512,20 +511,8 @@
                 <KeyValuePair key="pathPrefix" value="$${ctx:AUDIT.pathPrefix}"/>
                 <KeyValuePair key="sidebandName" value="$${ctx:AUDIT.sidebandName:-}"/>
                 <KeyValuePair key="sidebandDecision" value="$${ctx:AUDIT.sidebandDecision:-}"/>
-                <KeyValuePair key="logPurpose" value="Audit_SIEM" />
+                <KeyValuePair key="logPurpose" value="Audit_Engine" />
             </JSONLayout>
-            <Policies>
-                <SizeBasedTriggeringPolicy size="100 MB" />
-            </Policies>
-            <DefaultRolloverStrategy max="4" />
-        </RollingFile>
-
-        <RollingFile name="EngineAuditJson-File"
-                     fileName="${sys:pa.home}/log/pingaccess_engine_audit_json.log"
-                     filePattern="${sys:pa.home}/log/pingaccess_engine_audit_json.log.%i"
-                     ignoreExceptions="false">
-            <JSONLayout complete="false" compact="true" eventEol="true" objectMessageAsJsonObject="true" />
-
             <Policies>
                 <SizeBasedTriggeringPolicy size="100 MB" />
             </Policies>
