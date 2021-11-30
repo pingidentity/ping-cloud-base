@@ -1,0 +1,15 @@
+# This service exposes the Ping Delegated Admin ports within cluster.
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pingdatasync
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0
+    external-dns.alpha.kubernetes.io/hostname: pingdatasync-dev.ping-demo.com
+spec:
+  externalTrafficPolicy: Local
+  type: LoadBalancer
+  selector:
+    class: pingdatasync-server

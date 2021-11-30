@@ -1,0 +1,3 @@
+ORCHESTRATION_TYPE=kubernetes
+VERBOSE=false
+

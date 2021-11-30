@@ -1,0 +1,157 @@
+# This defines the Ping Central deployment
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pingdatasync
+  labels:
+    class: pingdatasync-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      class: pingdatasync-server
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        lastUpdateReason: "NA"
+      labels:
+        class: pingdatasync-server
+    spec:
+      serviceAccountName: ping-serviceaccount
+      affinity:
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: statefulset.kubernetes.io/pod-name
+                  operator: In
+                  values:
+                  - "pingdirectory-0"
+              topologyKey: "kubernetes.io/zone"
+      initContainers:
+      - name: pingdatasync-init
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 9031
+          runAsGroup: 9999
+        image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
+        imagePullPolicy: IfNotPresent
+        command:
+          - /copy-dependencies.sh
+        volumeMounts:
+          - name: ssh-dir
+            mountPath: /.ssh
+          - name: data-dir
+            mountPath: /data
+          - name: ssh-id-key-secret
+            mountPath: /id_rsa
+            subPath: id_rsa
+          - name: known-hosts-config
+            mountPath: /known_hosts
+            subPath: known_hosts
+          - name: pingdatasync-init
+            mountPath: /copy-dependencies.sh
+            subPath: copy-dependencies.sh
+          - name: pingcentral-init
+            mountPath: /utils.lib.sh
+            subPath: utils.lib.sh
+        envFrom:
+          - configMapRef:
+              name: pingdatasync-environment-variables
+      containers:
+      - name: pingdatasync
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 9031
+          runAsGroup: 9999
+        image: pingidentity/pingdatasync:2110-8.2.0.6
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: "4Gi"
+          requests:
+            memory: "4Gi"
+            cpu: "2"
+        readinessProbe:
+          exec:
+            command: [/opt/readiness.sh]
+          initialDelaySeconds: 60
+          periodSeconds: 5
+          failureThreshold: 5
+          timeoutSeconds: 5
+        livenessProbe:
+          exec:
+            command: [/opt/liveness.sh]
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          failureThreshold: 5
+          timeoutSeconds: 5
+        ports:
+          - name: https
+            containerPort: 9022
+        envFrom:
+          - configMapRef:
+              name: pingdatasync-environment-variables
+        volumeMounts:
+          # FIXME: fix home directory when containers run as non-root user
+          - name: ssh-dir
+            mountPath: /home/.ssh
+          - name: topology-descriptor
+            mountPath: /opt/staging/topology/descriptor.json
+            subPath: descriptor.json
+          - name: data-dir
+            mountPath: /usr/local/bin/kubectl
+            subPath: kubectl
+          - name: data-dir
+            mountPath: /opt/staging/ds_env_vars
+            subPath: ds_env_vars
+          - name: data-dir
+            mountPath: /usr/local/bin/skbn
+            subPath: skbn
+          - name: pingdatasync-passwords
+            mountPath: /usr/local/secrets
+            readOnly: true
+          - name: pingdatasync-license
+            mountPath: /opt/in/instance/conf/pingdatasync.lic
+            subPath: pingdatasync.lic
+      volumes:
+        - name: ssh-dir
+          emptyDir: {}
+        - name: shared-dir
+          emptyDir: {}
+        - name: data-dir
+          emptyDir: {}
+        - name: pingdatasync-init
+          configMap:
+            name: pingcommon-init
+            defaultMode: 0555
+        - name: topology-descriptor
+          configMap:
+            name: topology-descriptor
+            optional: true
+            defaultMode: 0644
+        - name: ssh-id-key-secret
+          secret:
+            secretName: ssh-id-key-secret
+            optional: true
+            defaultMode: 0400
+        - name: known-hosts-config
+          configMap:
+            name: known-hosts-config
+            optional: true
+            defaultMode: 0644
+        - name: pingdatasync-license
+          secret:
+            secretName: pingdatasync-license
+            optional: true
+            defaultMode: 0400
+        - name: pingdatasync-passwords
+          secret:
+            secretName: pingdatasync-passwords
+            optional: true
+            defaultMode: 0400
