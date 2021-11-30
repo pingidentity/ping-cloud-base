@@ -125,4 +125,4 @@ patchesJson6902:
   patch: |-
     - op: replace
       path: /spec/template/metadata/annotations/SECRET_NAMESPACE
-      value: ${NAMESPACE}
+      value: ${PING_CLOUD_NAMESPACE}
