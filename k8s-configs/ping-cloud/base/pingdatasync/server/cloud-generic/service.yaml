@@ -13,3 +13,10 @@ spec:
   type: LoadBalancer
   selector:
     class: pingdatasync-server
+  ports:
+  - port: 1389
+    name: ldap
+  - port: 1636
+    name: ldaps
+  - port: 1443
+    name: https

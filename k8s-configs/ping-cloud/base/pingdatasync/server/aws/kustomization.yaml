@@ -10,5 +10,5 @@ commonLabels:
 resources:
 - ../cloud-generic
 
-patchesStrategicMerge:
-- discovery-service.yaml
+# patchesStrategicMerge:
+# - discovery-service.yaml

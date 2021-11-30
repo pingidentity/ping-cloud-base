@@ -1,3 +1,28 @@
 ORCHESTRATION_TYPE=kubernetes
 VERBOSE=false
 
+# SERVER_PROFILE_URL=https://github.com/pingidentity/ping-cloud-base.git
+# SERVER_PROFILE_PATH=profiles/aws/pingdirectory
+# SERVER_PROFILE_BRANCH=master
+
+SERVER_PROFILE_URL=https://github.com/pingidentity/pingidentity-server-profiles.git
+SERVER_PROFILE_PATH=simple-sync/pingdatasync
+PING_IDENTITY_ACCEPT_EULA=YES
+
+LDAP_PORT=1389
+LDAPS_PORT=1636
+HTTPS_PORT=1443
+
+# Failover administrative user
+ADMIN_USER_NAME=admin
+
+# Location of file with the root user password (i.e. cn=directory manager).
+# Defaults to /SECRETS_DIR/root-user-password
+ROOT_USER_PASSWORD_FILE=
+
+# Location of file with the admin password, used as the password replication admin
+# Defaults to /SECRETS_DIR/admin-user-password
+ADMIN_USER_PASSWORD_FILE=
+
+# Directory for the profile used by the PingData manage-profile tool
+PD_PROFILE="${STAGING_DIR}/pd.profile"

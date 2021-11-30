@@ -57,7 +57,7 @@ spec:
           - name: pingdatasync-init
             mountPath: /copy-dependencies.sh
             subPath: copy-dependencies.sh
-          - name: pingcentral-init
+          - name: pingdatasync-init
             mountPath: /utils.lib.sh
             subPath: utils.lib.sh
         envFrom:
@@ -69,7 +69,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           runAsGroup: 9999
-        image: pingidentity/pingdatasync:2110-8.2.0.6
+        image: pingidentity/pingdatasync:edge
         imagePullPolicy: IfNotPresent
         resources:
           limits:
@@ -92,8 +92,12 @@ spec:
           failureThreshold: 5
           timeoutSeconds: 5
         ports:
+          - name: ldap
+            containerPort: 1389
+          - name: ldaps
+            containerPort: 1636
           - name: https
-            containerPort: 9022
+            containerPort: 1443
         envFrom:
           - configMapRef:
               name: pingdatasync-environment-variables
@@ -117,12 +121,10 @@ spec:
             mountPath: /usr/local/secrets
             readOnly: true
           - name: pingdatasync-license
-            mountPath: /opt/in/instance/conf/pingdatasync.lic
-            subPath: pingdatasync.lic
+            mountPath: /opt/in/instance/conf/PingDirectory.lic
+            subPath: PingDirectory.lic
       volumes:
         - name: ssh-dir
-          emptyDir: {}
-        - name: shared-dir
           emptyDir: {}
         - name: data-dir
           emptyDir: {}
