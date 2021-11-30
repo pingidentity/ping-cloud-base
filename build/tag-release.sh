@@ -27,7 +27,7 @@ replaceAndCommit() {
   REF_TYPE=${3}
 
   echo "Changing ${SOURCE_REF} -> ${TARGET_REF} in expected files"
-  git grep -l "${SOURCE_REF}" | xargs sed -i.bak "s/${SOURCE_REF}/${TARGET_REF}/g"
+  git grep -l "^SERVER_PROFILE_BRANCH=${SOURCE_REF}" | xargs sed -i.bak "s/^\(SERVER_PROFILE_BRANCH=\)${SOURCE_REF}$/\1${TARGET_REF}/g"
 
   echo "Committing changes for new ${REF_TYPE} ${TARGET_REF}"
   git add .
