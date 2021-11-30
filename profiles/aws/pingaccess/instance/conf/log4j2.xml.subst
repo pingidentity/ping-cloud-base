@@ -285,7 +285,7 @@
                      fileName="${sys:pa.home}/log/pingaccess.json"
                      filePattern="${sys:pa.home}/log/pingaccess.json.%i"
                      ignoreExceptions="false">
-            <JsonLayout complete="false" compact="true"/>
+            <JsonLayout complete="false" eventEol="true" objectMessageAsJsonObject="true"/>
             <Policies>
                 <SizeBasedTriggeringPolicy size="100 MB" />
             </Policies>
