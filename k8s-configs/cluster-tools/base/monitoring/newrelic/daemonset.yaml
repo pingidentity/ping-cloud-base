@@ -37,12 +37,14 @@ spec:
         - name: wait-for-nr-license-secret
           image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
           command: [ "/bin/sh", "-c" ]
-          args: [ "kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
+          args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
           env:
             - name: "WAIT_TIMEOUT_SEC"
               value: "300"
             - name: "JOB_NAME"
               value: "newrelic-license-secret-exporter"
+            - name: "SECRET_NAME"
+              value: "newrelic-license-key"
       containers:
         - name: newrelic-infrastructure
           image: "newrelic/infrastructure-k8s:2.8.1"
@@ -154,12 +156,14 @@ spec:
         - name: wait-for-nr-license-secret
           image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
           command: [ "/bin/sh", "-c" ]
-          args: [ "kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
+          args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
           env:
             - name: "WAIT_TIMEOUT_SEC"
               value: "300"
             - name: "JOB_NAME"
               value: "newrelic-license-secret-exporter"
+            - name: "SECRET_NAME"
+              value: "newrelic-license-key"
       containers:
         - name: newrelic-logging
           image: "newrelic/newrelic-fluentbit-output:1.10.0"
