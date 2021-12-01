@@ -202,6 +202,9 @@ spec:
             - name: pingdirectory-passwords
               mountPath: /usr/local/secrets
               readOnly: true
+            - name: acme-tls-cert
+              mountPath: /usr/local/secrets/certs
+              readOnly: true
             - name: pingdirectory-license
               mountPath: /opt/in/instance/PingDirectory.lic
               subPath: PingDirectory.lic
@@ -291,6 +294,11 @@ spec:
         - name: pingdirectory-passwords
           secret:
             secretName: pingdirectory-passwords
+            optional: true
+            defaultMode: 0400
+        - name: acme-tls-cert
+          secret:
+            secretName: acme-tls-cert
             optional: true
             defaultMode: 0400
         - name: pingdirectory-statsd-mapping

@@ -235,13 +235,16 @@ data:
       @type null
     </match>
   containers.conf: |
+    <filter kubernetes.**>
+      @type kubernetes_metadata
+    </filter>
     <source>
       @type tail
       @id in_tail_container_logs
       @label @nonpingcontainers
       path /var/log/containers/*.log
       exclude_path ["/var/log/containers/cloudwatch-agent*", "/var/log/containers/fluentd*", "/var/log/containers/pingaccess*", "/var/log/containers/pingfederate*", "/var/log/containers/pingdirectory*", "/var/log/containers/pingdelegator*"]
-      pos_file /var/log/fluentd-containers.log.pos
+      pos_file /var/pos/fluentd-containers.log.pos
       tag *
       read_from_head true
       <parse>
@@ -256,7 +259,7 @@ data:
       @label @pacontainers
       path /var/log/containers/pingaccess*.log
       exclude_path ["/var/log/containers/pingaccess-was*.log"]
-      pos_file /var/log/pingaccess-containers.log.pos
+      pos_file /var/pos/pingaccess-containers.log.pos
       tag kubernetes.*
       read_from_head true
       <parse>
@@ -270,7 +273,7 @@ data:
       @id in_tail_pingaccess_was_container_logs
       @label @pawascontainers
       path /var/log/containers/pingaccess-was*.log
-      pos_file /var/log/pingaccess-was-containers.log.pos
+      pos_file /var/pos/pingaccess-was-containers.log.pos
       tag kubernetes.*
       read_from_head true
       <parse>
@@ -284,7 +287,7 @@ data:
       @id in_tail_pingfederate_container_logs
       @label @pfcontainers
       path /var/log/containers/pingfederate*.log
-      pos_file /var/log/pingfederate-containers.log.pos
+      pos_file /var/pos/pingfederate-containers.log.pos
       tag kubernetes.*
       read_from_head true
       <parse>
@@ -298,7 +301,7 @@ data:
       @id in_tail_pingdiretory_container_logs
       @label @pdcontainers
       path /var/log/containers/pingdirectory*.log
-      pos_file /var/log/pingdirectory-containers.log.pos
+      pos_file /var/pos/pingdirectory-containers.log.pos
       tag kubernetes.*
       read_from_head true
       <parse>
@@ -312,7 +315,7 @@ data:
       @id in_tail_pingdelegator_container_logs
       @label @dacontainers
       path /var/log/containers/pingdelegator*.log
-      pos_file /var/log/pingdelegator-containers.log.pos
+      pos_file /var/pos/pingdelegator-containers.log.pos
       tag kubernetes.*
       read_from_head true
       <parse>
@@ -326,7 +329,7 @@ data:
       @id in_tail_cwagent_logs
       @label @cwagentlogs
       path /var/log/containers/cloudwatch-agent*
-      pos_file /var/log/cloudwatch-agent.log.pos
+      pos_file /var/pos/cloudwatch-agent.log.pos
       tag *
       read_from_head true
       <parse>
@@ -340,7 +343,7 @@ data:
       @id in_tail_fluentd_logs
       @label @fluentdlogs
       path /var/log/containers/fluentd*
-      pos_file /var/log/fluentd.log.pos
+      pos_file /var/pos/fluentd.log.pos
       tag *
       read_from_head true
       <parse>
@@ -902,37 +905,44 @@ data:
     </label>
 
     <label @tagstream>
+      <filter **>
+        @type record_transformer
+        <record>
+          cluster "#{ENV.fetch('CLUSTER_NAME')}"
+        </record>
+      </filter>
       <match **>
-        @type cloudwatch_logs
         @id out_cloudwatch_logs_ping_containers
-        region "#{ENV.fetch('REGION')}"
-        log_group_name "/aws/containerinsights/#{ENV.fetch('CLUSTER_NAME')}/application"
-        use_tag_as_stream true
-        auto_create_stream true
-        <buffer>
-          flush_interval 5
-          chunk_limit_size 2m
-          queued_chunks_limit_size 32
-          retry_forever true
-        </buffer>
+        @type splunk_hec
+        use_ssl true
+        ssl_verify false
+        ca_file /fluentd/etc/ca.pem
+        host splunkhf1.usgov.pingidentity.com
+        port 8088
+        token a71a87e7-5e50-4d19-9e03-03ef99ce3f59
+        format json
+        flush 5s
       </match>
     </label>
 
     <label @normal>
+      <filter **>
+        @type record_transformer
+        <record>
+          cluster "#{ENV.fetch('CLUSTER_NAME')}"
+        </record>
+      </filter>
       <match **>
-        @type cloudwatch_logs
         @id out_cloudwatch_logs_containers
-        region "#{ENV.fetch('REGION')}"
-        log_group_name "/aws/containerinsights/#{ENV.fetch('CLUSTER_NAME')}/application"
-        log_stream_name_key stream_name
-        remove_log_stream_name_key true
-        auto_create_stream true
-        <buffer>
-          flush_interval 5
-          chunk_limit_size 2m
-          queued_chunks_limit_size 32
-          retry_forever true
-        </buffer>
+        @type splunk_hec
+       use_ssl true
+        ca_file /fluentd/etc/ca.pem
+        ssl_verify false
+        host splunkhf1.usgov.pingidentity.com
+        port 8088
+        token a71a87e7-5e50-4d19-9e03-03ef99ce3f59
+        format json
+        flush 5s
       </match>
     </label>
   systemd.conf: |
@@ -949,7 +959,7 @@ data:
       <storage>
         @type local
         persistent true
-        path /var/log/fluentd-journald-kubelet-pos.json
+        path /var/pos/fluentd-journald-kubelet-pos.json
       </storage>
       read_from_head true
       tag kubelet.service
@@ -968,7 +978,7 @@ data:
       <storage>
         @type local
         persistent true
-        path /var/log/fluentd-journald-kubeproxy-pos.json
+        path /var/pos/fluentd-journald-kubeproxy-pos.json
       </storage>
       read_from_head true
       tag kubeproxy.service
@@ -987,7 +997,7 @@ data:
       <storage>
         @type local
         persistent true
-        path /var/log/fluentd-journald-docker-pos.json
+        path /var/pos/fluentd-journald-docker-pos.json
       </storage>
       read_from_head true
       tag docker.service
@@ -1004,23 +1014,21 @@ data:
         @id filter_systemd_stream_transformer
         <record>
           stream_name ${tag}-${record["hostname"]}
+          cluster "#{ENV.fetch('CLUSTER_NAME')}"
         </record>
       </filter>
 
       <match **>
-        @type cloudwatch_logs
         @id out_cloudwatch_logs_systemd
-        region "#{ENV.fetch('REGION')}"
-        log_group_name "/aws/containerinsights/#{ENV.fetch('CLUSTER_NAME')}/dataplane"
-        log_stream_name_key stream_name
-        auto_create_stream true
-        remove_log_stream_name_key true
-        <buffer>
-          flush_interval 5
-          chunk_limit_size 2m
-          queued_chunks_limit_size 32
-          retry_forever true
-        </buffer>
+        @type splunk_hec
+        use_ssl true
+        ssl_verify false
+        ca_file /fluentd/etc/ca.pem
+        host splunkhf1.usgov.pingidentity.com
+        port 8088
+        token a71a87e7-5e50-4d19-9e03-03ef99ce3f59
+        format json
+        flush 5s
       </match>
     </label>
   host.conf: |
@@ -1029,7 +1037,7 @@ data:
       @id in_tail_dmesg
       @label @hostlogs
       path /var/log/dmesg
-      pos_file /var/log/dmesg.log.pos
+      pos_file /var/pos/dmesg.log.pos
       tag host.dmesg
       read_from_head true
       <parse>
@@ -1042,7 +1050,7 @@ data:
       @id in_tail_secure
       @label @hostlogs
       path /var/log/secure
-      pos_file /var/log/secure.log.pos
+      pos_file /var/pos/secure.log.pos
       tag host.secure
       read_from_head true
       <parse>
@@ -1055,7 +1063,7 @@ data:
       @id in_tail_messages
       @label @hostlogs
       path /var/log/messages
-      pos_file /var/log/messages.log.pos
+      pos_file /var/pos/messages.log.pos
       tag host.messages
       read_from_head true
       <parse>
@@ -1078,7 +1086,6 @@ data:
       </filter>
 
       <match host.**>
-        @type cloudwatch_logs
         @id out_cloudwatch_logs_host_logs
         region "#{ENV.fetch('REGION')}"
         log_group_name "/aws/containerinsights/#{ENV.fetch('CLUSTER_NAME')}/host"
@@ -1093,6 +1100,9 @@ data:
         </buffer>
       </match>
     </label>
+  outputs.conf: |
+    [httpout]
+    uri=10.30.15.9:9998
 ---
 apiVersion: apps/v1
 kind: DaemonSet

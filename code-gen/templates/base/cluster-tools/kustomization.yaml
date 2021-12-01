@@ -60,6 +60,8 @@ patchesStrategicMerge:
     - '*.${DNS_ZONE}'
     commonName: ${DNS_ZONE}
 
+
+
 ### External DNS service account ###
 - |-
   apiVersion: v1

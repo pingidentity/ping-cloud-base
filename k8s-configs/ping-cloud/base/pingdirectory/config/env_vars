@@ -12,6 +12,8 @@ ADMIN_USER_PASSWORD_FILE=/usr/local/secrets/admin-user-password
 ENCRYPTION_PASSWORD_FILE=/usr/local/secrets/encryption-password
 ADS_CRT_FILE=/usr/local/secrets/ads.crt
 ADS_KEY_FILE=/usr/local/secrets/ads.key
+CM_CRT_FILE=/usr/local/secrets/certs/ca.crt
+CM_KEY_FILE=/usr/local/secrets/certs/tls.key
 
 USER_BACKEND_ID=userRoot
 DISABLE_ALL_OLDER_USER_BASE_DN=true
