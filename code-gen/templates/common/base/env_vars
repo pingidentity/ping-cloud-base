@@ -84,9 +84,6 @@ TENANT_NAME=${TENANT_NAME}
 # single P14C customer. All of these apps will be created within the "Administrators" environment in the tenant.
 ENVIRONMENT_PREFIX=${ENVIRONMENT_PREFIX}
 
-# The name of the environment as it will appear on the NewRelic console.
-NEW_RELIC_ENVIRONMENT_NAME=${NEW_RELIC_ENVIRONMENT_NAME}
-
 ############################################################
 # Server profile variables
 ############################################################
@@ -102,6 +99,9 @@ ENVIRONMENT_TYPE=${ENVIRONMENT_TYPE}
 # Used by Kubernetes manifests
 ENV=${ENV}
 KUSTOMIZE_BASE=${KUSTOMIZE_BASE}
+
+# The name of the environment as it will appear on the NewRelic console.
+NEW_RELIC_ENVIRONMENT_NAME=${NEW_RELIC_ENVIRONMENT_NAME}
 
 ############################################################
 # Lets Encrypt server
