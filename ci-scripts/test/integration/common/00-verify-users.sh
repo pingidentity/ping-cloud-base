@@ -7,25 +7,51 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-# test ping-access user
-test_ping_user "pingaccess-admin-0" "pingaccess-admin"
+# test ping access admin user
+test_ping_user_pa_admin() {
 
-# test ping-access-was user
-test_ping_user "pingaccess-was-admin-0" "pingaccess-was-admin"
+  verify_ping_user "pingaccess-admin-0" "pingaccess-admin"
 
-test_ping_user() {
+}
+
+# test ping access was admin user
+test_ping_user_pa_was_admin() {
+
+  verify_ping_user "pingaccess-was-admin-0" "pingaccess-was-admin"
+
+}
+
+# test ping federate admin user
+test_ping_user_pf_admin() {
+
+  verify_ping_user "pingfederate-admin-0" "pingfederate-admin"
+
+}
+
+# test ping directory user
+test_ping_user_pd() {
+  
+  # test pingdirectory-0 server
+  verify_ping_user "pingdirectory-0" "pingdirectory"
+
+  # test pingdirectory-1 server
+  verify_ping_user "pingdirectory-1" "pingdirectory"
+
+}
+
+verify_ping_user() {
   SERVER="${1}"
   CONTAINER="${2}"
 
   response=$(kubectl exec "${SERVER}" -c "${CONTAINER}" -n "${NAMESPACE}" -- \
     sh -c "whoami")
-    
+
   if test "${response}" = "ping"; then
-    log "Running with ping user"
+    log "${SERVER} : Running with ping user"
     success=0
 
   else
-    log "Not Running with ping user"
+    log "${SERVER} Not Running with ping user"
     success=1
   fi
 
