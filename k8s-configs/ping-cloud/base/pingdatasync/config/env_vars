@@ -13,16 +13,22 @@ LDAP_PORT=1389
 LDAPS_PORT=1636
 HTTPS_PORT=1443
 
+ROOT_USER_PASSWORD_FILE=/usr/local/secrets/root-user-password
+ADMIN_USER_PASSWORD_FILE=/usr/local/secrets/admin-user-password
+#ENCRYPTION_PASSWORD_FILE=/usr/local/secrets/encryption-password
+#ADS_CRT_FILE=/usr/local/secrets/ads.crt
+#ADS_KEY_FILE=/usr/local/secrets/ads.key
+
 # Failover administrative user
 ADMIN_USER_NAME=admin
 
 # Location of file with the root user password (i.e. cn=directory manager).
 # Defaults to /SECRETS_DIR/root-user-password
-ROOT_USER_PASSWORD_FILE=
+# ROOT_USER_PASSWORD_FILE=
 
 # Location of file with the admin password, used as the password replication admin
 # Defaults to /SECRETS_DIR/admin-user-password
-ADMIN_USER_PASSWORD_FILE=
+# ADMIN_USER_PASSWORD_FILE=
 
 # Directory for the profile used by the PingData manage-profile tool
 PD_PROFILE="${STAGING_DIR}/pd.profile"
