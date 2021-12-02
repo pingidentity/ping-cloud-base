@@ -17,7 +17,7 @@ _Changes:_
 - Implemented Kubernetes Infrastructure Agent for New Relic
 - Updated argocd to latest release: v2.1.6
 - Add sideband fields to PA logs
-- Force StatefulSets (PF-admin, PA-admin, PA-was-admin, PD) to use non-root user.
+- Force StatefulSets (PF-admin, PA-admin, PA-was-admin, PD) to use non-root user
 
 _Changes:_
 
