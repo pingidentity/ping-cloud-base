@@ -1,5 +1,11 @@
 # Changelog
 
+### 1.13.0
+
+_Changes:_
+
+- [X] PDO-3064 PingAccess hook scripts updated to use the beluga_log method instead of echo
+
 ### 1.12.0
 
 - Added custom patch to create public ingresses for admin endpoints
@@ -29,10 +35,13 @@ _Changes:_
 - [X] PDO-2988 Increased metadata pod timeoutSeconds probe to 3 seconds for liveness & readiness
 - [X] PDO-2991 SigSci WAF: Update SigSci sidecar resource limit & requests
 - [X] PDO-3058 CSD upload file changed from .zip-zip format to .zip
+- [X] PDO-3092 Force all jobs and cronjobs of Ping products to use non-root
+- [X] PDO-3091 Fixed role association on gateway objects created in P14C and PF authentication policy issue for MyPing E2E flow
 - [X] PDO-3102 Fix offline replication configuration error when config.ldif has line wrappings
 - [X] PDO-3103 Force StatefulSets (PF-admin, PA-admin, PA-was-admin, PD) to use non-root user.
 - [X] PDO-3109 Fix code generation script to only use the SSH-RSA host keys for GitHub
 - [X] PDO-3110 Make code generation script more resilient to invalid values for IS_GA and IS_MY_PING SSM parameters 
+- [X] PDO-3137 Support SSO for multiple PA admin applications per environment
 
 ### 1.11.0
 

@@ -17,11 +17,13 @@ SKIP_TESTS="${SKIP_TESTS:-pingdirectory/03-backup-restore.sh \
   pingaccess/09-csd-upload-test.sh \
   pingaccess/05-test-cloudwatch-logs.sh \
   pingaccess/03-change-default-db-password-test.sh \
+  pingaccess-was/05-test-cloudwatch-logs.sh \
   pingfederate/05-test-cloudwatch-logs.sh \
   pingdirectory/05-test-cloudwatch-logs.sh \
   pingfederate/09-heartbeat-endpoint.sh \
   pingaccess/08-artifact-test.sh \
   pingdelegator/01-admin-user-login.sh \
+  pingaccess-was/05-test-cloudwatch-logs.sh \
   chaos/01-delete-pa-admin-pod.sh }"
 
 if test -z "${ENV_VARS_FILE}"; then
@@ -47,7 +49,7 @@ if test -z "${ENV_VARS_FILE}"; then
   export ENV=${BELUGA_ENV_NAME}
 
   export NAMESPACE=ping-cloud-${CI_COMMIT_REF_SLUG}
-  export NEW_RELIC_ENVIRONMENT_NAME=${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
+  export NEW_RELIC_ENVIRONMENT_NAME=${TENANT_NAME}_${ENV}_${REGION}_k8s-cluster
 
   export CONFIG_PARENT_DIR=aws
   export CONFIG_REPO_BRANCH=${CI_COMMIT_REF_NAME:-master}

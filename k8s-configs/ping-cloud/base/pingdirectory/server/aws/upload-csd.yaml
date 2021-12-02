@@ -7,10 +7,10 @@ data:
     #!/bin/sh
 
     # Install kubectl
-    curl -sS https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
-    chmod +x /usr/local/bin/kubectl
+    curl -sS https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl -o /tmp/kubectl
+    chmod +x /tmp/kubectl
 
-    NUM_REPLICAS=$(kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
+    NUM_REPLICAS=$(/tmp/kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
 
     START=0
     END=$((${NUM_REPLICAS} - 1))
@@ -22,7 +22,7 @@ data:
       LOG_FILE=/tmp/upload.log
 
       echo "Uploading CSD on server ${SERVER}"
-      kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}"> "${LOG_FILE}"
+      /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}"> "${LOG_FILE}"
 
       if test ${?} -eq 0; then
         # Sending logs to STDOUT
@@ -58,10 +58,10 @@ spec:
       restartPolicy: Never
       containers:
       - name: pingdirectory-csd-uploader
-        # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
         securityContext:
-          runAsNonRoot: false
-          runAsUser: 0
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory:8.3.0.0-v1.0.19
         imagePullPolicy: IfNotPresent
         command:
