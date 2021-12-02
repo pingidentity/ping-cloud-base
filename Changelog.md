@@ -1,11 +1,5 @@
 # Changelog
 
-### 1.13.0
-
-_Changes:_
-
-- [X] PDO-3064 PingAccess hook scripts updated to use the beluga_log method instead of echo
-
 ### 1.12.0
 
 - Added support for SigSci Web Access Firewall (WAF) to Nginx ingress controller
