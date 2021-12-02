@@ -114,7 +114,7 @@ spec:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         command:
         - /wait-for-services.sh
         volumeMounts:
