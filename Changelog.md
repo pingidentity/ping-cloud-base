@@ -8,16 +8,17 @@ _Changes:_
 
 ### 1.12.0
 
+- Added support for SigSci Web Access Firewall (WAF) to Nginx ingress controller
+- Updated Nginx ingress controller to version 1.0.0
+- Updated ArgoCD to version 2.1.6
 - Added custom patch to create public ingresses for admin endpoints
+- Added multiline log support for PA-WAS
+- Added sideband fields to PA logs
+- Added regional custom-patches.yaml as an extension point to customize the configuration for a specific region
+- Added support for enabling rate-limiting in PA and PA-WAS
 - Heartbeat endpoint page template changed
-- Add support for enabling rate limiting in PA and PA-WAS
-- Added regional custom-patches.yaml as an extension point to customize configuration for a specific region 
-- Updated ingress to v1.0.0 and added the SigSci agent sidecar container to the public Nginx-ingress-controller pod
 - Removing vestigial code (restore-db-password hook script and dbConfig.jose manipulation) from deployment automation
-- Add multiline log support for PA-WAS
 - Implemented Kubernetes Infrastructure Agent for New Relic
-- Updated argocd to latest release: v2.1.6
-- Add sideband fields to PA logs
 
 _Changes:_
 
