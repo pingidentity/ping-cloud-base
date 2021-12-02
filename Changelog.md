@@ -42,6 +42,7 @@ _Changes:_
 - [X] PDO-3109 Fix code generation script to only use the SSH-RSA host keys for GitHub
 - [X] PDO-3110 Make code generation script more resilient to invalid values for IS_GA and IS_MY_PING SSM parameters 
 - [X] PDO-3137 Support SSO for multiple PA admin applications per environment
+- [X] PDO-3145 Fixed MyPing admin SSO errors caused due to intermittent DNS resolution issues
 
 ### 1.11.0
 
