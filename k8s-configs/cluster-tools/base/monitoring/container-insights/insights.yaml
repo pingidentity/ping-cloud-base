@@ -607,6 +607,11 @@ data:
         </rule>
         <rule>
           key log
+          pattern /^\<[0-9]+\>/
+          tag pa_clear
+        </rule>
+        <rule>
+          key log
           pattern /^\/opt\/out\/instance\/log\/pingaccess_engine_audit/
           tag temp.pingaccess_engine_audit_logs
         </rule>
@@ -1232,7 +1237,7 @@ spec:
           image: public.ecr.aws/r2h3l6e4/fluent/fluentd-kubernetes-daemonset:v1.7.3-debian-cloudwatch-1.0
           env:
             - name: FLUENTD_OPT
-              value: "-qq"
+              value: ""
             - name: REGION
               valueFrom:
                 configMapKeyRef:
