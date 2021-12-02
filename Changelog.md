@@ -1,5 +1,11 @@
 # Changelog
 
+### 1.13.0
+
+_Changes:_
+
+- [X] PDO-3064 PingAccess hook scripts updated to use the beluga_log method instead of echo
+
 ### 1.12.0
 
 - Added custom patch to create public ingresses for admin endpoints
@@ -7,6 +13,7 @@
 - Add support for enabling rate limiting in PA and PA-WAS
 - Added regional custom-patches.yaml as an extension point to customize configuration for a specific region 
 - Updated ingress to v1.0.0 and added the SigSci agent sidecar container to the public Nginx-ingress-controller pod
+- Removing vestigial code (restore-db-password hook script and dbConfig.jose manipulation) from deployment automation
 - Add multiline log support for PA-WAS
 - Implemented Kubernetes Infrastructure Agent for New Relic
 - Updated argocd to latest release: v2.1.6
@@ -27,6 +34,7 @@ _Changes:_
 - [X] PDO-2965 Refactor NewRelic APM agents to use Secret located in 'newrelic' namespace
 - [X] PDO-2988 Increased metadata pod timeoutSeconds probe to 3 seconds for liveness & readiness
 - [X] PDO-2991 SigSci WAF: Update SigSci sidecar resource limit & requests
+- [X] PDO-2996 Removing vestigial code (restore-db-password hook script and dbConfig.jose manipulation) from deployment automation
 - [X] PDO-3058 CSD upload file changed from .zip-zip format to .zip
 - [X] PDO-3092 Force all jobs and cronjobs of Ping products to use non-root
 - [X] PDO-3091 Fixed role association on gateway objects created in P14C and PF authentication policy issue for MyPing E2E flow
