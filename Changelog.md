@@ -38,7 +38,7 @@ _Changes:_
 - [X] PDO-3092 Force all jobs and cronjobs of Ping products to use non-root
 - [X] PDO-3091 Fixed role association on gateway objects created in P14C and PF authentication policy issue for MyPing E2E flow
 - [X] PDO-3102 Fix offline replication configuration error when config.ldif has line wrappings
-- [X] PDO-3103 Force StatefulSets (PF-admin, PA-admin, PA-was-admin, PD) to use non-root user.
+- [X] PDO-3103 Force StatefulSets (PF-admin, PA-admin, PA-was-admin, PD) to use non-root user
 - [X] PDO-3109 Fix code generation script to only use the SSH-RSA host keys for GitHub
 - [X] PDO-3110 Make code generation script more resilient to invalid values for IS_GA and IS_MY_PING SSM parameters 
 - [X] PDO-3137 Support SSO for multiple PA admin applications per environment
