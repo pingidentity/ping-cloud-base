@@ -87,7 +87,7 @@ log "Running test scripts..."
 # To be found by the regex, scripts must be:
 # - under the ci-script-tests, common or ping-prefixed directories (no matter how deep)
 # - must be prefixed with at least a 2-digit number to be found and must end with .sh
-execute_test_scripts "${SCRIPT_HOME}/${TEST_DIR}" '(chaos|ping[a-zA-Z-]*|monitoring)\/[0-9][0-9]+.*\.sh'
+execute_test_scripts "${SCRIPT_HOME}/${TEST_DIR}" '(common|chaos|ping[a-zA-Z-]*|monitoring)\/[0-9][0-9]+.*\.sh'
 exit_code=$?
 
 if test ${exit_code} -eq 0; then
