@@ -232,7 +232,7 @@ spec:
           timeoutSeconds: 5
         ports:
         - name: pf-admin
-          containerPort: 443
+          containerPort: 9999
       securityContext:
         fsGroup: 9999
       volumes:
