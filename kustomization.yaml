@@ -190,6 +190,27 @@ patchesStrategicMerge:
     PD_HTTP_PUBLIC_HOSTNAME: pingdirectory.${TENANT_DOMAIN}
     REGION: ${REGION}
     NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: pingdatasync-environment-variables
+  data:
+    PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}
+    PING_IDENTITY_DEVOPS_KEY: ${PING_IDENTITY_DEVOPS_KEY}
+    BACKUP_URL: ${BACKUP_URL}
+    PA_WAS_ADMIN_PUBLIC_HOSTNAME: pingaccess-was-admin.${TENANT_DOMAIN}
+    PA_WAS_ENGINE_PUBLIC_HOSTNAME: pingaccess-was.${TENANT_DOMAIN}
+    PA_ADMIN_PUBLIC_HOSTNAME: pingaccess-admin.${TENANT_DOMAIN}
+    PA_ADMIN_API_PUBLIC_HOSTNAME: pingaccess-admin-api.${TENANT_DOMAIN}
+    PA_ENGINE_PUBLIC_HOSTNAME: pingaccess.${TENANT_DOMAIN}
+    PF_ADMIN_PUBLIC_HOSTNAME: pingfederate-admin.${TENANT_DOMAIN}
+    PF_ADMIN_API_PUBLIC_HOSTNAME: pingfederate-admin-api.${TENANT_DOMAIN}
+    PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
+    PD_DELEGATOR_PUBLIC_HOSTNAME: pingdelegator.${TENANT_DOMAIN}
+    PD_HTTP_PUBLIC_HOSTNAME: pingdirectory.${TENANT_DOMAIN}
+    REGION: ${REGION}
+    NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY}
 
 patchesJson6902:
 

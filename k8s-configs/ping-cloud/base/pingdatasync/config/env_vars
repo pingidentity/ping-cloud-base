@@ -1,12 +1,14 @@
 ORCHESTRATION_TYPE=kubernetes
 VERBOSE=false
 
-# SERVER_PROFILE_URL=https://github.com/pingidentity/ping-cloud-base.git
-# SERVER_PROFILE_PATH=profiles/aws/pingdirectory
-# SERVER_PROFILE_BRANCH=master
+SERVER_PROFILE_URL=https://git-codecommit.us-west-2.amazonaws.com/v1/repos/ping-cloud-base
+SERVER_PROFILE_PATH=profiles/aws/pingdatasync
+SERVER_PROFILE_BRANCH=pdo-2951-deploy-datasync
 
-SERVER_PROFILE_URL=https://github.com/pingidentity/pingidentity-server-profiles.git
-SERVER_PROFILE_PATH=simple-sync/pingdatasync
+REGION=us-west-2
+
+#SERVER_PROFILE_URL=https://github.com/pingidentity/pingidentity-server-profiles.git
+#SERVER_PROFILE_PATH=simple-sync/pingdatasync
 PING_IDENTITY_ACCEPT_EULA=YES
 
 LDAP_PORT=1389

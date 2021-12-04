@@ -69,6 +69,13 @@ configMapGenerator:
   - env_vars
   - pingcentral/env_vars
 
+# PingDataSync
+- name: pingdatasync-environment-variables
+  behavior: merge
+  envs:
+  - env_vars
+  - pingdatasync/env_vars
+
 # Pingcloud-metadata
 - name: pingcloud-metadata-environment-variables
   behavior: merge

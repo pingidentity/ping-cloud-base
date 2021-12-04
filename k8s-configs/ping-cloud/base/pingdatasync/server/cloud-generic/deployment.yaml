@@ -1,5 +1,4 @@
 # This defines the Ping Central deployment
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -35,10 +34,10 @@ spec:
               topologyKey: "kubernetes.io/zone"
       initContainers:
       - name: pingdatasync-init
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 9031
-          runAsGroup: 9999
+        # securityContext:
+        #   runAsNonRoot: true
+        #   runAsUser: 9031
+        #   runAsGroup: 9999
         image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
         imagePullPolicy: IfNotPresent
         command:
@@ -65,10 +64,10 @@ spec:
               name: pingdatasync-environment-variables
       containers:
       - name: pingdatasync
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 9031
-          runAsGroup: 9999
+        # securityContext:
+        #   runAsNonRoot: true
+        #   runAsUser: 9031
+        #   runAsGroup: 9999
         image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdatasync:8.2.0.6-v1.0.0-pdo-2951-deploy-datasync
         imagePullPolicy: Always
         resources:
@@ -102,7 +101,7 @@ spec:
           - name: ROOT_USER_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: pingdirectory-passwords
+                name: pingdatasync-passwords
                 key: root-user-password
         envFrom:
           - configMapRef:
@@ -113,9 +112,6 @@ spec:
           # FIXME: fix home directory when containers run as non-root user
           - name: ssh-dir
             mountPath: /home/.ssh
-          - name: topology-descriptor
-            mountPath: /opt/staging/topology/descriptor.json
-            subPath: descriptor.json
           - name: data-dir
             mountPath: /usr/local/bin/kubectl
             subPath: kubectl
@@ -125,6 +121,9 @@ spec:
           - name: data-dir
             mountPath: /usr/local/bin/skbn
             subPath: skbn
+          - name: topology-descriptor
+            mountPath: /opt/staging/topology/descriptor.json
+            subPath: descriptor.json
           - name: pingdatasync-passwords
             mountPath: /usr/local/secrets
             readOnly: true
@@ -155,13 +154,13 @@ spec:
             name: known-hosts-config
             optional: true
             defaultMode: 0644
-        - name: pingdatasync-license
-          secret:
-            secretName: pingdatasync-license
-            optional: true
-            defaultMode: 0400
         - name: pingdatasync-passwords
           secret:
             secretName: pingdatasync-passwords
+            optional: true
+            defaultMode: 040
+        - name: pingdatasync-license
+          secret:
+            secretName: pingdatasync-license
             optional: true
             defaultMode: 0400
