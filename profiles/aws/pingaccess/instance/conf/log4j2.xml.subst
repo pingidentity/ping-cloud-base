@@ -553,9 +553,22 @@
                      fileName="${sys:pa.home}/log/pingaccess_engine_audit.json"
                      filePattern="${sys:pa.home}/log/pingaccess_engine_audit.json.%i"
                      ignoreExceptions="false">
-            <JsonLayout eventEol="true" compact="true">
+            <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" >
+                <KeyValuePair key="date" value="$${date:yyyy-MM-dd'T'HH:mm:ssZ}"/>
+                <KeyValuePair key="exchangeId" value="$${ctx:exchangeId:-}"/>
+                <KeyValuePair key="trackingId" value="$${ctx:AUDIT.trackingId:-}"/>
+                <KeyValuePair key="roundTripMS" value="$${ctx:AUDIT.roundTripMS:-}"/>
+                <KeyValuePair key="subject" value="$${ctx:AUDIT.subject:-}"/>
+                <KeyValuePair key="authMech" value="$${ctx:AUDIT.authMech:-}"/>
+                <KeyValuePair key="client" value="$${ctx:AUDIT.client:-}"/>
+                <KeyValuePair key="method" value="$${ctx:AUDIT.method:-}"/>
+                <KeyValuePair key="resource" value="$${ctx:AUDIT.resource:-}"/>
+                <KeyValuePair key="requestUri" value="$${ctx:AUDIT.requestUri:-}"/>
+                <KeyValuePair key="responseCode" value="$${ctx:AUDIT.responseCode:-}"/>
+                <KeyValuePair key="sidebandName" value="$${ctx:AUDIT.sidebandName:-}"/>
+                <KeyValuePair key="sidebandDecision" value="$${ctx:AUDIT.sidebandDecision:-}"/>
                 <KeyValuePair key="logPurpose" value="pingaccess-engine-audit" />
-            </JsonLayout>
+            </JSONLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="100 MB" />
             </Policies>
