@@ -158,6 +158,7 @@
         <!-- ======================= -->
         <Logger name="apiaudit" level="INFO" additivity="false">
             <AppenderRef ref="APIAuditLog-File"/>
+            <AppenderRef ref="APIAuditLog-File-JSON"/>
             <AppenderRef ref="CONSOLE_AUDIT"/>
             <!--<AppenderRef ref="ApiAuditLog-Database-Failover"/>-->
             <!--<AppenderRef ref="ApiAuditLog-SQLServer-Database-Failover"/>-->
@@ -167,6 +168,7 @@
         </Logger>
         <Logger name="engineaudit" level="INFO" additivity="false">
             <AppenderRef ref="EngineAuditLog-File"/>
+            <AppenderRef ref="EngineAuditLog-File-JSON"/>
             <AppenderRef ref="CONSOLE_AUDIT"/>
             <!--<AppenderRef ref="EngineAuditLog-Database-Failover"/>-->
             <!--<AppenderRef ref="EngineAuditLog-SQLServer-Database-Failover"/>-->
@@ -176,6 +178,7 @@
         </Logger>
         <Logger name="agentaudit" level="INFO" additivity="false">
             <AppenderRef ref="AgentAuditLog-File"/>
+            <AppenderRef ref="AgentAuditLog-File-JSON"/>
             <AppenderRef ref="CONSOLE_AUDIT"/>
             <!--<AppenderRef ref="AgentAuditLog-Database-Failover"/>-->
             <!--<AppenderRef ref="AgentAuditLog-SQLServer-Database-Failover"/>-->
@@ -185,6 +188,7 @@
         </Logger>
         <Logger name="sidebandclientaudit" level="INFO" additivity="false">
             <AppenderRef ref="SidebandClientAuditLog-File"/>
+            <AppenderRef ref="SidebandClientAuditLog-File-JSON"/>
             <AppenderRef ref="CONSOLE_AUDIT"/>
             <!--<AppenderRef ref="SidebandClientAuditLog-Database-Failover"/>-->
             <!--<AppenderRef ref="SidebandClientAuditLog-SQLServer-Database-Failover"/>-->
@@ -194,6 +198,7 @@
         </Logger>
         <Logger name="sidebandaudit" level="INFO" additivity="false">
             <AppenderRef ref="SidebandAuditLog-File"/>
+            <AppenderRef ref="SidebandAuditLog-File-JSON"/>
             <AppenderRef ref="CONSOLE_AUDIT"/>
             <!--<AppenderRef ref="SidebandAuditLog-Database-Failover"/>-->
             <!--<AppenderRef ref="SidebandAuditLog-SQLServer-Database-Failover"/>-->
@@ -286,7 +291,7 @@
                      filePattern="${sys:pa.home}/log/pingaccess.json.%i"
                      ignoreExceptions="false">
             <JsonLayout eventEol="true" compact="true">
-                <KeyValuePair key="logPurpose" value="pingaccess" />
+                <KeyValuePair key="logPurpose" value="pingaccess-api-audit" />
             </JsonLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="100 MB" />
@@ -306,6 +311,20 @@
                 -->
                 <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.subject}| %X{AUDIT.authMech}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode} %n</pattern>
             </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="100 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="4" />
+        </RollingFile>
+
+        <!-- API JSON auditing file logging configuration-->
+        <RollingFile name="APIAuditLog-File-JSON"
+                     fileName="${sys:pa.home}/log/pingaccess_api_audit.json"
+                     filePattern="${sys:pa.home}/log/pingaccess_api_audit.json.%i"
+                     ignoreExceptions="false">
+            <JsonLayout eventEol="true" compact="true">
+                <KeyValuePair key="logPurpose" value="pingaccess-api-audit" />
+            </JsonLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="100 MB" />
             </Policies>
@@ -524,6 +543,19 @@
                 -->
                 <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.proxyRoundTripMS} ms| %X{AUDIT.resource}| %X{AUDIT.subject}| %X{AUDIT.authMech}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.failedRuleType}| %X{AUDIT.failedRuleName}| %X{AUDIT.applicationName}| %X{AUDIT.resourceName}| %X{AUDIT.pathPrefix} %n</pattern>
             </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="100 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="4" />
+        </RollingFile>
+
+        <RollingFile name="EngineAuditLog-File-JSON"
+                     fileName="${sys:pa.home}/log/pingaccess_engine_audit.json"
+                     filePattern="${sys:pa.home}/log/pingaccess_engine_audit.json.%i"
+                     ignoreExceptions="false">
+            <JsonLayout eventEol="true" compact="true">
+                <KeyValuePair key="logPurpose" value="pingaccess-engine-audit" />
+            </JsonLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="100 MB" />
             </Policies>
@@ -780,6 +812,18 @@
             <DefaultRolloverStrategy max="4" />
         </RollingFile>
 
+        <RollingFile name="AgentAuditLog-File-JSON"
+                     fileName="${sys:pa.home}/log/pingaccess_agent_audit.json"
+                     filePattern="${sys:pa.home}/log/pingaccess_agent_audit.json.%i"
+                     ignoreExceptions="false">
+            <JsonLayout eventEol="true" compact="true">
+                <KeyValuePair key="logPurpose" value="pingaccess-agentaudit-audit" />
+            </JsonLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="100 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="4" />
+        </RollingFile>
         <!-- Agent Audit log : JDBC appender template for Oracle
 
         To enable:
@@ -1003,6 +1047,19 @@
             <DefaultRolloverStrategy max="4" />
         </RollingFile>
 
+        <RollingFile name="SidebandClientAuditLog-File-JSON"
+                     fileName="${sys:pa.home}/log/pingaccess_sideband_client_audit.json"
+                     filePattern="${sys:pa.home}/log/pingaccess_sideband_client_audit.json.%i"
+                     ignoreExceptions="false">
+            <JsonLayout eventEol="true" compact="true">
+                <KeyValuePair key="logPurpose" value="pingaccess-sidebandclient-audit-json" />
+            </JsonLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="100 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="4" />
+        </RollingFile>
+
         <!-- Sideband Client Audit log : JDBC appender template for Oracle
 
         To enable:
@@ -1216,6 +1273,19 @@
                 -->
                 <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.resource}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.applicationName}| %X{AUDIT.resourceName}| %X{AUDIT.pathPrefix}| %X{AUDIT.sidebandName} %n</pattern>
             </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="100 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="4" />
+        </RollingFile>
+
+        <RollingFile name="SidebandAuditLog-File-JSON"
+                     fileName="${sys:pa.home}/log/pingaccess_sideband_audit.json"
+                     filePattern="${sys:pa.home}/log/pingaccess_sideband_audit.json.%i"
+                     ignoreExceptions="false">
+            <JsonLayout eventEol="true" compact="true">
+                <KeyValuePair key="logPurpose" value="pingaccess-sideband-audit-json" />
+            </JsonLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="100 MB" />
             </Policies>
