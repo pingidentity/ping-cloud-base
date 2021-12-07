@@ -4,6 +4,7 @@
 
 - Added support for SigSci Web Access Firewall (WAF) to Nginx ingress controller
 - Updated Nginx ingress controller to version 1.0.0
+- Update PF upload artifact script to support Standard IKs
 - Updated ArgoCD to version 2.1.6
 - Added custom patch to create public ingresses for admin endpoints
 - Added multiline log support for PA-WAS
@@ -22,6 +23,7 @@ _Changes:_
 - [X] PDO-2410 PA-WAS: parse multiline logs
 - [X] PDO-2432 Update cluster tools to latest version: argocd to v2.1.6
 - [X] PDO-2534 SigSci WAF: run the SigSci agent as a sidecar container in the Nginx-ingress-controller pod
+- [X] PDO-2895 Update PF upload artifact script to support Standard IKs
 - [X] PDO-2921 SigSci WAF: create public ingresses for admin endpoints
 - [X] PDO-2928 Add support for enabling rate limiting in PA and PA-WAS
 - [X] PDO-2938 Added regional custom-patches.yaml as an extension point to customize configuration for a specific region
