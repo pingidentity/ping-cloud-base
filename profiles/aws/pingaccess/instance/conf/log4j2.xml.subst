@@ -287,8 +287,8 @@
 
         <!-- Main JSON log : A size based file rolling appender -->
         <RollingFile name="File-json"
-                     fileName="${sys:pa.home}/log/pingaccess.json"
-                     filePattern="${sys:pa.home}/log/pingaccess.json.%i"
+                     fileName="${sys:pa.home}/log/pingaccess.log"
+                     filePattern="${sys:pa.home}/log/pingaccess.log.%i"
                      ignoreExceptions="false">
             <JsonLayout eventEol="true" compact="true">
                 <KeyValuePair key="logPurpose" value="pingaccess" />
@@ -319,8 +319,8 @@
 
         <!-- API JSON auditing file logging configuration-->
         <RollingFile name="APIAuditLog-File-JSON"
-                     fileName="${sys:pa.home}/log/pingaccess_api_audit.json"
-                     filePattern="${sys:pa.home}/log/pingaccess_api_audit.json.%i"
+                     fileName="${sys:pa.home}/log/pingaccess_api_audit.log"
+                     filePattern="${sys:pa.home}/log/pingaccess_api_audit.log.%i"
                      ignoreExceptions="false">
             <JsonLayout eventEol="true" compact="true">
                 <KeyValuePair key="logPurpose" value="pingaccess-api-audit" />
@@ -550,8 +550,8 @@
         </RollingFile>
 
         <RollingFile name="EngineAuditLog-File-JSON"
-                     fileName="${sys:pa.home}/log/pingaccess_engine_audit.json"
-                     filePattern="${sys:pa.home}/log/pingaccess_engine_audit.json.%i"
+                     fileName="${sys:pa.home}/log/pingaccess_engine_audit.log"
+                     filePattern="${sys:pa.home}/log/pingaccess_engine_audit.log.%i"
                      ignoreExceptions="false">
             <JSONLayout compact="true" eventEol="true" properties="false" complete="false">
                 <KeyValuePair key="date" value="$${date:yyyy-MM-dd'T'HH:mm:ssZ}"/>
@@ -826,8 +826,8 @@
         </RollingFile>
 
         <RollingFile name="AgentAuditLog-File-JSON"
-                     fileName="${sys:pa.home}/log/pingaccess_agent_audit.json"
-                     filePattern="${sys:pa.home}/log/pingaccess_agent_audit.json.%i"
+                     fileName="${sys:pa.home}/log/pingaccess_agent_audit.log"
+                     filePattern="${sys:pa.home}/log/pingaccess_agent_audit.log.%i"
                      ignoreExceptions="false">
             <JsonLayout eventEol="true" compact="true">
                 <KeyValuePair key="logPurpose" value="pingaccess-agentaudit-audit" />
@@ -1061,8 +1061,8 @@
         </RollingFile>
 
         <RollingFile name="SidebandClientAuditLog-File-JSON"
-                     fileName="${sys:pa.home}/log/pingaccess_sideband_client_audit.json"
-                     filePattern="${sys:pa.home}/log/pingaccess_sideband_client_audit.json.%i"
+                     fileName="${sys:pa.home}/log/pingaccess_sideband_client_audit.log"
+                     filePattern="${sys:pa.home}/log/pingaccess_sideband_client_audit.log.%i"
                      ignoreExceptions="false">
             <JsonLayout eventEol="true" compact="true">
                 <KeyValuePair key="logPurpose" value="pingaccess-sidebandclient-audit-json" />
@@ -1293,8 +1293,8 @@
         </RollingFile>
 
         <RollingFile name="SidebandAuditLog-File-JSON"
-                     fileName="${sys:pa.home}/log/pingaccess_sideband_audit.json"
-                     filePattern="${sys:pa.home}/log/pingaccess_sideband_audit.json.%i"
+                     fileName="${sys:pa.home}/log/pingaccess_sideband_audit.log"
+                     filePattern="${sys:pa.home}/log/pingaccess_sideband_audit.log.%i"
                      ignoreExceptions="false">
             <JsonLayout eventEol="true" compact="true">
                 <KeyValuePair key="logPurpose" value="pingaccess-sideband-audit-json" />
