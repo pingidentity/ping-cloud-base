@@ -2,15 +2,17 @@
 
 ### 1.12.0
 
+- Added support for SigSci Web Access Firewall (WAF) to Nginx ingress controller
+- Updated Nginx ingress controller to version 1.0.0
+- Updated ArgoCD to version 2.1.6
 - Added custom patch to create public ingresses for admin endpoints
+- Added multiline log support for PA-WAS
+- Added sideband fields to PA logs
+- Added regional custom-patches.yaml as an extension point to customize the configuration for a specific region
+- Added support for enabling rate-limiting in PA and PA-WAS
 - Heartbeat endpoint page template changed
-- Add support for enabling rate limiting in PA and PA-WAS
-- Added regional custom-patches.yaml as an extension point to customize configuration for a specific region 
-- Updated ingress to v1.0.0 and added the SigSci agent sidecar container to the public Nginx-ingress-controller pod
-- Add multiline log support for PA-WAS
+- Removing vestigial code (restore-db-password hook script and dbConfig.jose manipulation) from deployment automation
 - Implemented Kubernetes Infrastructure Agent for New Relic
-- Updated argocd to latest release: v2.1.6
-- Add sideband fields to PA logs
 
 _Changes:_
 
@@ -27,6 +29,7 @@ _Changes:_
 - [X] PDO-2965 Refactor NewRelic APM agents to use Secret located in 'newrelic' namespace
 - [X] PDO-2988 Increased metadata pod timeoutSeconds probe to 3 seconds for liveness & readiness
 - [X] PDO-2991 SigSci WAF: Update SigSci sidecar resource limit & requests
+- [X] PDO-2996 Removing vestigial code (restore-db-password hook script and dbConfig.jose manipulation) from deployment automation
 - [X] PDO-3058 CSD upload file changed from .zip-zip format to .zip
 - [X] PDO-3092 Force all jobs and cronjobs of Ping products to use non-root
 - [X] PDO-3091 Fixed role association on gateway objects created in P14C and PF authentication policy issue for MyPing E2E flow
@@ -35,6 +38,7 @@ _Changes:_
 - [X] PDO-3110 Make code generation script more resilient to invalid values for IS_GA and IS_MY_PING SSM parameters
 - [X] PDO-3115 Remove OOTB Integration Kits for PingFederate
 - [X] PDO-3137 Support SSO for multiple PA admin applications per environment
+- [X] PDO-3145 Fixed MyPing admin SSO errors caused due to intermittent DNS resolution issues
 
 ### 1.11.0
 

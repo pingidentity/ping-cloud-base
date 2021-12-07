@@ -240,6 +240,11 @@ rules:
     - jobs
     verbs: ["get", "list", "watch"]
 
+  - apiGroups: [""]
+    resources:
+    - secrets
+    verbs: ["get"]
+
 ---
 # Source: nri-bundle/charts/newrelic-logging/templates/clusterrole.yaml
 
@@ -253,6 +258,11 @@ metadata:
     app.kubernetes.io/name: newrelic-logging
   name: nri-bundle-newrelic-logging
 rules:
+  - apiGroups: [""]
+    resources:
+    - secrets
+    verbs: ["get"]
+
   - apiGroups: [""]
     resources:
       - namespaces
@@ -292,6 +302,11 @@ rules:
   resources:
   - jobs
   verbs: ["get", "list", "watch"]
+
+- apiGroups: [""]
+  resources:
+  - secrets
+  verbs: ["get"]
 
 - nonResourceURLs:
   - /metrics
