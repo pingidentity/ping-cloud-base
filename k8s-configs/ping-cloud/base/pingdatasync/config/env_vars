@@ -31,6 +31,3 @@ ADMIN_USER_NAME=admin
 # Location of file with the admin password, used as the password replication admin
 # Defaults to /SECRETS_DIR/admin-user-password
 # ADMIN_USER_PASSWORD_FILE=
-
-# Directory for the profile used by the PingData manage-profile tool
-PD_PROFILE="${STAGING_DIR}/pd.profile"
