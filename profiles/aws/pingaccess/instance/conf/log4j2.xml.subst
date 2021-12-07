@@ -18,7 +18,7 @@
     <Loggers>
         <!-- PingAccess Loggers-->
         <AsyncLogger name="com.pingidentity" level="${PA_LOG_LEVEL}" additivity="false" includeLocation="false">
-            <AppenderRef ref="File"/>
+<!--            <AppenderRef ref="File"/>-->
             <AppenderRef ref="File-json"/>
             <AppenderRef ref="CONSOLE-SIEM"/>
             <!--<AppenderRef ref="CONSOLE" />-->
