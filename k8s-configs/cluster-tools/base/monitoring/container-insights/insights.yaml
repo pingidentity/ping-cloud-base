@@ -590,12 +590,11 @@ data:
       </filter>
 
       <filter **>
-        @type concat
-        key log
-        multiline_start_regexp /\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2},\d{3}|\d{2}:\d{2}:\d{2}\s+ping.*-\d{1,2}/
-        separator ""
-        flush_interval 5
-        timeout_label @normal
+        @type grep
+        <exclude>
+          key log
+          pattern /^\<[0-9]+\>/
+        </exclude>
       </filter>
 
       <match kubernetes.**>
@@ -603,11 +602,6 @@ data:
         <rule>
           key log
           pattern /^\/opt\/out\/instance\/log\/pingaccess_api_audit.*127\.0\.0\.1\| GET\| \/pa-admin-api\/v3\/version\| 200/
-          tag pa_clear
-        </rule>
-        <rule>
-          key log
-          pattern /^\<[0-9]+\>/
           tag pa_clear
         </rule>
         <rule>
@@ -660,10 +654,6 @@ data:
           pattern /^(.+)$/
           tag temp.unmatched_logs
         </rule>
-      </match>
-
-      <match pa_clear>
-        @type null
       </match>
 
       <match temp.unmatched_logs>
@@ -1237,7 +1227,7 @@ spec:
           image: public.ecr.aws/r2h3l6e4/fluent/fluentd-kubernetes-daemonset:v1.7.3-debian-cloudwatch-1.0
           env:
             - name: FLUENTD_OPT
-              value: ""
+              value: "-qq"
             - name: REGION
               valueFrom:
                 configMapKeyRef:
