@@ -15,6 +15,8 @@
   value:
     image: public.ecr.aws/r2h3l6e4/pingcloud-services/sigsci-agent:v4.22.0
     name: sigsci-agent
+    securityContext:
+      readOnlyRootFilesystem: false
     resources:
       limits:
         cpu: 2

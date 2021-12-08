@@ -19,6 +19,7 @@ _Changes:_
 - Added support for enabling rate-limiting in PA and PA-WAS
 - Heartbeat endpoint page template changed
 - Removing vestigial code (restore-db-password hook script and dbConfig.jose manipulation) from deployment automation
+- Update 20-restart-sequence.sh script to skip rebuild index when no index changes
 - Implemented Kubernetes Infrastructure Agent for New Relic
 
 _Changes:_
@@ -38,6 +39,7 @@ _Changes:_
 - [X] PDO-2988 Increased metadata pod timeoutSeconds probe to 3 seconds for liveness & readiness
 - [X] PDO-2991 SigSci WAF: Update SigSci sidecar resource limit & requests
 - [X] PDO-2996 Removing vestigial code (restore-db-password hook script and dbConfig.jose manipulation) from deployment automation
+- [X] PDO-3003 Update 20-restart-sequence.sh script to skip rebuild index when no index changes
 - [X] PDO-3058 CSD upload file changed from .zip-zip format to .zip
 - [X] PDO-3092 Force all jobs and cronjobs of Ping products to use non-root
 - [X] PDO-3091 Fixed role association on gateway objects created in P14C and PF authentication policy issue for MyPing E2E flow
