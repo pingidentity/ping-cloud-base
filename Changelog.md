@@ -33,7 +33,6 @@ _Changes:_
 - [X] PDO-2895 Update PF upload artifact script to support Standard IKs
 - [X] PDO-2921 SigSci WAF: create public ingresses for admin endpoints
 - [X] PDO-2928 Add support for enabling rate limiting in PA and PA-WAS
-- [X] PDO-2937 Change 'Replica __ {}' metric's names to match the other metric's names template
 - [X] PDO-2938 Added regional custom-patches.yaml as an extension point to customize configuration for a specific region
 - [X] PDO-2962 Added new PA sideband logs to SIEM Integration
 - [X] PDO-2965 Refactor NewRelic APM agents to use Secret located in 'newrelic' namespace
