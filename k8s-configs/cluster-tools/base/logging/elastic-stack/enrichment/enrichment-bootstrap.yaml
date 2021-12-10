@@ -4,6 +4,7 @@ kind: Job
 metadata:
   name: enrichment-bootstrap
 spec:
+  ttlSecondsAfterFinished: 30
   template:
     spec:
       serviceAccount: enrichment

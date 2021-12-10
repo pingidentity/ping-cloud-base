@@ -90,6 +90,7 @@ kind: Job
 metadata:
   name: kibana-dashboard-upload
 spec:
+  ttlSecondsAfterFinished: 30
   template:
     spec:
       restartPolicy: OnFailure
