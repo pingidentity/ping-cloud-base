@@ -148,7 +148,7 @@ data:
         #PD replicas
       - match: "^dc=(.*)_dc=(.*)\\.replica(.*)"
         match_type: regex
-        name: "Replica_${3}"
+        name: "replica_${3}"
         labels:
           UserBaseDN1: "$1"
           UserBaseDN2: "$2"

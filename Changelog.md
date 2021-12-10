@@ -4,6 +4,7 @@
 
 - Added support for SigSci Web Access Firewall (WAF) to Nginx ingress controller
 - Updated Nginx ingress controller to version 1.0.0
+- Update PF upload artifact script to support Standard IKs
 - Updated ArgoCD to version 2.1.6
 - Added custom patch to create public ingresses for admin endpoints
 - Added multiline log support for PA-WAS
@@ -12,6 +13,7 @@
 - Added support for enabling rate-limiting in PA and PA-WAS
 - Heartbeat endpoint page template changed
 - Removing vestigial code (restore-db-password hook script and dbConfig.jose manipulation) from deployment automation
+- Update 20-restart-sequence.sh script to skip rebuild index when no index changes
 - Implemented Kubernetes Infrastructure Agent for New Relic
 
 _Changes:_
@@ -22,14 +24,17 @@ _Changes:_
 - [X] PDO-2410 PA-WAS: parse multiline logs
 - [X] PDO-2432 Update cluster tools to latest version: argocd to v2.1.6
 - [X] PDO-2534 SigSci WAF: run the SigSci agent as a sidecar container in the Nginx-ingress-controller pod
+- [X] PDO-2895 Update PF upload artifact script to support Standard IKs
 - [X] PDO-2921 SigSci WAF: create public ingresses for admin endpoints
 - [X] PDO-2928 Add support for enabling rate limiting in PA and PA-WAS
+- [X] PDO-2937 Change 'Replica __ {}' metric's names to match the other metric's names template
 - [X] PDO-2938 Added regional custom-patches.yaml as an extension point to customize configuration for a specific region
 - [X] PDO-2962 Added new PA sideband logs to SIEM Integration
 - [X] PDO-2965 Refactor NewRelic APM agents to use Secret located in 'newrelic' namespace
 - [X] PDO-2988 Increased metadata pod timeoutSeconds probe to 3 seconds for liveness & readiness
 - [X] PDO-2991 SigSci WAF: Update SigSci sidecar resource limit & requests
 - [X] PDO-2996 Removing vestigial code (restore-db-password hook script and dbConfig.jose manipulation) from deployment automation
+- [X] PDO-3003 Update 20-restart-sequence.sh script to skip rebuild index when no index changes
 - [X] PDO-3058 CSD upload file changed from .zip-zip format to .zip
 - [X] PDO-3092 Force all jobs and cronjobs of Ping products to use non-root
 - [X] PDO-3091 Fixed role association on gateway objects created in P14C and PF authentication policy issue for MyPing E2E flow

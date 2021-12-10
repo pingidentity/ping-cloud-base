@@ -18,18 +18,24 @@ The required structure for runtime artifact zips to be used with ping-cloud-base
 Zip Name: 
     <ARTIFACT_NAME>-<ARTIFACT-VERSION>-runtime.zip
 Contents:
-    - deploy
-        - <IK_ADAPTER_NAME>.jar (The dependent libraries must be shaded and included within the adapter jar itself)
-        - [Optional] <IK_WAR_NAME>.war
-    - conf (If IK includes template and language-packs)
-        - template
-        - language-packs
-```
+        Legal.pdf
+      config
+        data.zip
+      dist/pingfederate/server/default
+        deploy
+          pf-duo-security-adapter-3.0.jar
+        conf
+          language-packs
+            iovation-messages.properties
+        lib
+          pf-authn-api-sdk-0.54.jar
+      sample
+        ...
+      metadata
+        zoom-saml-metadata.xml
 
 ```
-Note: Please make sure the deploy and conf folders are at the root level inside the artifact zip.
-```
-
+Standard IKs doc : https://docs.google.com/document/d/1aAX1qL6JcLZZHRmuvqCwJbEHlQeFH8Rc4bEbiu3pTXg/edit#
 # Upload
 
 The following tools must be set up and configured correctly:
