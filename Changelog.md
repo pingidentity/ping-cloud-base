@@ -36,6 +36,7 @@ _Changes:_
 - [X] PDO-2996 Removing vestigial code (restore-db-password hook script and dbConfig.jose manipulation) from deployment automation
 - [X] PDO-3003 Update 20-restart-sequence.sh script to skip rebuild index when no index changes
 - [X] PDO-3058 CSD upload file changed from .zip-zip format to .zip
+- [X] PDO-3087 Enhance default PingFederate user to support password change and policies by default
 - [X] PDO-3092 Force all jobs and cronjobs of Ping products to use non-root
 - [X] PDO-3091 Fixed role association on gateway objects created in P14C and PF authentication policy issue for MyPing E2E flow
 - [X] PDO-3102 Fix offline replication configuration error when config.ldif has line wrappings
