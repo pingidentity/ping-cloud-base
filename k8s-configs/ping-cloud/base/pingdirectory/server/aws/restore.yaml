@@ -109,7 +109,7 @@ metadata:
     app: ping-cloud
     role: pingdirectory
 spec:
-  ttlSecondsAfterFinished: 0
+  ttlSecondsAfterFinished: 30
   backoffLimit: 0
   template:
     spec:

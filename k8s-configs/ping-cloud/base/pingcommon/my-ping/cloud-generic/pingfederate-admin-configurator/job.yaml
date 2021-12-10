@@ -3,6 +3,7 @@ kind: Job
 metadata:
   name: pingfederate-admin-configurator
 spec:
+  ttlSecondsAfterFinished: 30
   template:
     spec:
       serviceAccount: pf-script-serviceaccount
