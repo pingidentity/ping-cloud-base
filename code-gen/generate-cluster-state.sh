@@ -707,7 +707,17 @@ fi
 parse_url "${CLUSTER_STATE_REPO_URL}"
 echo "Obtaining known_hosts contents for cluster state repo host: ${URL_HOST}"
 
-export KNOWN_HOSTS_CLUSTER_STATE_REPO="${KNOWN_HOSTS_CLUSTER_STATE_REPO:-$(ssh-keyscan -H "${URL_HOST}" 2>/dev/null)}"
+if test ! "${KNOWN_HOSTS_CLUSTER_STATE_REPO}"; then
+  # For GitHub, use the 'ecdsa' SSH host key type. The CD tool doesn't work with RSA keys. For all others, use 'rsa'.
+  # FIXME: make SSH_HOST_KEY_TYPE overridable in the future. Ref: "man ssh-keyscan".
+  if echo "${URL_HOST}" | grep -q 'github.com'; then
+    SSH_HOST_KEY_TYPE='ecdsa'
+  else
+    SSH_HOST_KEY_TYPE='rsa'
+  fi
+  KNOWN_HOSTS_CLUSTER_STATE_REPO="$(ssh-keyscan -t "${SSH_HOST_KEY_TYPE}" -H "${URL_HOST}" 2>/dev/null)"
+fi
+export KNOWN_HOSTS_CLUSTER_STATE_REPO
 
 # Delete existing target directory and re-create it
 rm -rf "${TARGET_DIR}"

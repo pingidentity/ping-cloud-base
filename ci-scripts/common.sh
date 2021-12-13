@@ -17,6 +17,7 @@ SKIP_TESTS="${SKIP_TESTS:-pingdirectory/03-backup-restore.sh \
   pingaccess/09-csd-upload-test.sh \
   pingaccess/05-test-cloudwatch-logs.sh \
   pingaccess/03-change-default-db-password-test.sh \
+  pingaccess-was/05-test-cloudwatch-logs.sh \
   pingfederate/05-test-cloudwatch-logs.sh \
   pingdirectory/05-test-cloudwatch-logs.sh \
   pingfederate/09-heartbeat-endpoint.sh \
