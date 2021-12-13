@@ -1,5 +1,11 @@
 # Changelog
 
+### 1.12.1
+
+_Changes:_
+
+- [X] PDO-3204 - Upgrade New Relic Java agent to account for Log4j vulnerability
+
 ### 1.12.0
 
 - Added support for SigSci Web Access Firewall (WAF) to Nginx ingress controller
@@ -51,6 +57,7 @@ _Changes:_
 - [X] PDO-3145 Fixed MyPing admin SSO errors caused due to intermittent DNS resolution issues
 - [X] PDO-3175 ArgoCD UI shows a few SharedResourceWarnings
 - [X] PDO-3179 Argocd failing to deploy newrelic namespace from scratch and shows 3 newrelic resources as out of sync
+
 
 ### 1.11.0
 
