@@ -2,8 +2,11 @@
 
 ### 1.11.1
 
+- Apply patch for security vulnerability CVE-2021-44228
+
 _Changes:_
 
+- [X] PDO-3196 Apply patch for security vulnerability CVE-2021-44228 within all Ping applications
 - [X] PDO-3204 - Upgrade New Relic Java agent to account for Log4j vulnerability
 
 ### 1.11.0
