@@ -116,6 +116,8 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
         volumeMounts:
         - name: shared-dir
           mountPath: /opt/shared-dir
@@ -212,6 +214,8 @@ spec:
               key: P14C_CLIENT_SECRET
         - name: NEW_RELIC_CONFIG_FILE
           value: "/opt/shared-dir/newrelic.yml"
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
         envFrom:
         - configMapRef:
             name: pingaccess-was-admin-environment-variables

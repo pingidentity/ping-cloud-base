@@ -27,6 +27,9 @@ spec:
         envFrom:
         - configMapRef:
             name: pingaccess-admin-environment-variables
+        env:
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
         volumeMounts:
         - name: pingaccess-backup
           mountPath: /opt/in/backup-archive-data.sh

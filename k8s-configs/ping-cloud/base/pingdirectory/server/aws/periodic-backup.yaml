@@ -70,6 +70,9 @@ spec:
             envFrom:
             - configMapRef:
                 name: pingdirectory-environment-variables
+            env:
+            - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+              value: "true"
             volumeMounts:
             - name: backup-script
               mountPath: /opt/in/backup.sh

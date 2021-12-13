@@ -27,6 +27,8 @@ spec:
               value: "pingfederate-admin"
             - name: CSD_CONTAINER_NAME
               value: "pingfederate-admin"
+            - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+              value: "true"
             envFrom:
             - configMapRef:
                 name: pingfederate-admin-environment-variables
