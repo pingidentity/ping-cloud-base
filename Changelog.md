@@ -40,6 +40,7 @@ _Changes:_
 - [X] PDO-2965 Refactor NewRelic APM agents to use Secret located in 'newrelic' namespace
 - [X] PDO-2988 Increased metadata pod timeoutSeconds probe to 3 seconds for liveness & readiness
 - [X] PDO-2991 SigSci WAF: Update SigSci sidecar resource limit & requests
+- [X] PDO-2993 Add "ttlSecondsAfterFinished: 30" to all ping product and Kibana jobs so its pods get reaped upon completion
 - [X] PDO-2996 Removing vestigial code (restore-db-password hook script and dbConfig.jose manipulation) from deployment automation
 - [X] PDO-3003 Update 20-restart-sequence.sh script to skip rebuild index when no index changes
 - [X] PDO-3058 CSD upload file changed from .zip-zip format to .zip

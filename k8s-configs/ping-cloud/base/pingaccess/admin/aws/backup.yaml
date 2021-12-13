@@ -8,7 +8,7 @@ metadata:
     cluster: pingaccess-cluster
     role: pingaccess
 spec:
-  ttlSecondsAfterFinished: 0
+  ttlSecondsAfterFinished: 30
   backoffLimit: 5
   template:
     spec:
