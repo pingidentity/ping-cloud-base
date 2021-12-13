@@ -1,5 +1,11 @@
 # Changelog
 
+### 1.11.1
+
+_Changes:_
+
+- [X] PDO-3204 - Upgrade New Relic Java agent to account for Log4j vulnerability
+
 ### 1.11.0
 
 - Enabled PingAccess Admin SSO for MyPing customers
