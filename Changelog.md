@@ -19,8 +19,9 @@
 _Changes:_
 
 - [X] PDO-1350 PingAccess proactively remove temp file that causes upgrade to fail
-- [X] PDO-2223 Heartbeat endpoint page template changing
 - [X] PDO-1676 Deploy Kubernetes Infrastructure Agent for New Relic
+- [X] PDO-2223 Heartbeat endpoint page template changing
+- [X] PDO-2368 Refactored IK download script to use artifact-list.json as the single source of truth for all PF IKs
 - [X] PDO-2410 PA-WAS: parse multiline logs
 - [X] PDO-2432 Update cluster tools to latest version: argocd to v2.1.6
 - [X] PDO-2534 SigSci WAF: run the SigSci agent as a sidecar container in the Nginx-ingress-controller pod
@@ -43,6 +44,7 @@ _Changes:_
 - [X] PDO-3102 Fix offline replication configuration error when config.ldif has line wrappings
 - [X] PDO-3109 Fix code generation script to only use the SSH-RSA host keys for GitHub
 - [X] PDO-3110 Make code generation script more resilient to invalid values for IS_GA and IS_MY_PING SSM parameters 
+- [X] PDO-3115 Remove OOTB Integration Kits for PingFederate
 - [X] PDO-3137 Support SSO for multiple PA admin applications per environment
 - [X] PDO-3145 Fixed MyPing admin SSO errors caused due to intermittent DNS resolution issues
 
