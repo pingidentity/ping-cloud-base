@@ -17,7 +17,6 @@ metadata:
     app: nri-kube-events
     app.kubernetes.io/name: nri-kube-events
     helm.sh/chart: nri-kube-events-1.10.0
-    app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/version: "1.6.0"
 
 ---
@@ -29,7 +28,6 @@ metadata:
   labels:
     app.kubernetes.io/name: nri-prometheus
     helm.sh/chart: nri-prometheus-1.10.0
-    app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/version: "2.9.0"
 apiVersion: v1
 data:
@@ -160,7 +158,6 @@ kind: ConfigMap
 metadata:
   name: pingmetadata
   namespace: newrelic
-  selfLink: /api/v1/namespaces/default/configmaps/pingmetadata
 
 ---
 apiVersion: v1

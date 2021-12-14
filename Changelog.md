@@ -15,6 +15,7 @@
 - Removing vestigial code (restore-db-password hook script and dbConfig.jose manipulation) from deployment automation
 - Update 20-restart-sequence.sh script to skip rebuild index when no index changes
 - Implemented Kubernetes Infrastructure Agent for New Relic
+- Fixed showing a few SharedResourceWarnings in ArgoCD UI
 
 _Changes:_
 
@@ -32,6 +33,7 @@ _Changes:_
 - [X] PDO-2938 Added regional custom-patches.yaml as an extension point to customize configuration for a specific region
 - [X] PDO-2962 Added new PA sideband logs to SIEM Integration
 - [X] PDO-2965 Refactor NewRelic APM agents to use Secret located in 'newrelic' namespace
+- [X] PDO-2978 Integrate latest New Relic namespace changes in Beluga 1.12
 - [X] PDO-2988 Increased metadata pod timeoutSeconds probe to 3 seconds for liveness & readiness
 - [X] PDO-2991 SigSci WAF: Update SigSci sidecar resource limit & requests
 - [X] PDO-2993 Add "ttlSecondsAfterFinished: 30" to all ping product and Kibana jobs so its pods get reaped upon completion
@@ -47,6 +49,8 @@ _Changes:_
 - [X] PDO-3115 Remove OOTB Integration Kits for PingFederate
 - [X] PDO-3137 Support SSO for multiple PA admin applications per environment
 - [X] PDO-3145 Fixed MyPing admin SSO errors caused due to intermittent DNS resolution issues
+- [X] PDO-3175 ArgoCD UI shows a few SharedResourceWarnings
+- [X] PDO-3179 Argocd failing to deploy newrelic namespace from scratch and shows 3 newrelic resources as out of sync
 
 ### 1.11.0
 
