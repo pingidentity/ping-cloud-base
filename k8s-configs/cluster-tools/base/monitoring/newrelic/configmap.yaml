@@ -158,7 +158,6 @@ kind: ConfigMap
 metadata:
   name: pingmetadata
   namespace: newrelic
-  selfLink: /api/v1/namespaces/default/configmaps/pingmetadata
 
 ---
 apiVersion: v1
