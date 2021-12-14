@@ -9,6 +9,5 @@ resources:
 - daemonset.yaml
 - deployment.yaml
 - job.yaml
-- mutationwebhookconfiguration.yaml
 - service.yaml
 - serviceaccount.yaml
