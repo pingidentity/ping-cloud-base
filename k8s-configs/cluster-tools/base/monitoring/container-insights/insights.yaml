@@ -596,14 +596,17 @@ data:
           pattern /^\<[0-9]+\>/
         </exclude>
       </filter>
+    
+      <filter **>
+        @type grep
+        <exclude>
+          key log
+          pattern /\/pa-admin-api\/v3\/version/
+        </exclude>
+      </filter>
 
       <match kubernetes.**>
         @type rewrite_tag_filter
-        <rule>
-          key log
-          pattern /^\/opt\/out\/instance\/log\/pingaccess_api_audit.*127\.0\.0\.1\| GET\| \/pa-admin-api\/v3\/version\| 200/
-          tag pa_clear
-        </rule>
         <rule>
           key log
           pattern /^\/opt\/out\/instance\/log\/pingaccess_engine_audit/
@@ -691,21 +694,23 @@ data:
       </filter>
 
       <filter **>
-        @type concat
-        key log
-        multiline_start_regexp /\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}([,.]\d{3}){0,1}|\d{2}:\d{2}:\d{2}\s+ping.*-\d{1,2}|\\u001b\[0;32m/
-        separator ""
-        flush_interval 5
-        timeout_label @normal
+        @type grep
+        <exclude>
+          key log
+          pattern /^\<[0-9]+\>/
+        </exclude>
+      </filter>
+    
+      <filter **>
+        @type grep
+        <exclude>
+          key log
+          pattern /\/pa-admin-api\/v3\/version/
+        </exclude>
       </filter>
 
       <match kubernetes.**>
         @type rewrite_tag_filter
-        <rule>
-          key log
-          pattern /^\/opt\/out\/instance\/log\/pingaccess_api_audit.*127\.0\.0\.1\| GET\| \/pa-admin-api\/v3\/version\| 200/
-          tag pawas_clear
-        </rule>
         <rule>
           key log
           pattern /^\/opt\/out\/instance\/log\/pingaccess_engine_audit/
@@ -753,9 +758,6 @@ data:
         </rule>
       </match>
 
-      <match pawas_clear>
-        @type null
-      </match>
 
       <match temp.unmatched_logs>
         @type relabel

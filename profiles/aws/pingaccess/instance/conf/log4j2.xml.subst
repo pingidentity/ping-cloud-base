@@ -14,6 +14,10 @@
 <!--
    | monitorInterval - the number of seconds before Log4J2 detects changes to the configuration file and reconfigures itself.
  -->
+<!--
+   | File-json appender is used for JSON logging for CloudWatch.
+   | Only File or File-json appender should be used in Loggers.
+-->
 <Configuration monitorInterval="30" shutdownHook="enable" packages="com.pingidentity.pa.cli.logging.appenders.log4j2,com.pingidentity.pa.cli.logging.layouts.log4j2,com.pingidentity.pa.cli.logging.filters.log4j2">
     <Loggers>
         <!-- PingAccess Loggers-->
@@ -292,6 +296,7 @@
                      ignoreExceptions="false">
             <JSONLayout eventEol="true" compact="true">
                 <KeyValuePair key="date" value="$${date:yyyy-MM-dd'T'HH:mm:ssZ}"/>
+                <KeyValuePair key="exchangeId" value="$${ctx:exchangeId:-}"/>
                 <KeyValuePair key="logPurpose" value="pingaccess" />
             </JSONLayout>
             <Policies>
@@ -1099,7 +1104,7 @@
                 <KeyValuePair key="responseCode" value="$${ctx:AUDIT.responseCode:-}"/>
                 <KeyValuePair key="sidebandName" value="$${ctx:AUDIT.sidebandName:-}"/>
                 <KeyValuePair key="sidebandDecision" value="$${ctx:AUDIT.sidebandDecision:-}"/>
-                <KeyValuePair key="logPurpose" value="pingaccess-sidebandclient-audit-json" />
+                <KeyValuePair key="logPurpose" value="pingaccess-sideband-client-audit-json" />
             </JSONLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="100 MB" />
@@ -1344,6 +1349,7 @@
                 <KeyValuePair key="resourceName" value="$${ctx:AUDIT.resourceName:-}"/>
                 <KeyValuePair key="pathPrefix" value="$${ctx:AUDIT.pathPrefix:-}"/>
                 <KeyValuePair key="sidebandName" value="$${ctx:AUDIT.sidebandName:-}"/>
+                <KeyValuePair key="logPurpose" value="pingaccess-sideband-audit-json" />
             </JSONLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="100 MB" />
