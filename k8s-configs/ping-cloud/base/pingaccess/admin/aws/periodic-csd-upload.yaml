@@ -14,7 +14,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: pingaccess-admin-periodic-csd-upload
-            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess:6.3.1-v1.0.13
+            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess:6.3.1-v1.0.15-log4j2-patch
             imagePullPolicy: IfNotPresent
             # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
             securityContext:
