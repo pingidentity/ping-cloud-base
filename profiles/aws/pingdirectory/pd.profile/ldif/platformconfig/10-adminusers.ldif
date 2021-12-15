@@ -53,6 +53,9 @@ title: PF Admin
 givenName: Pingfederate
 mail: Pingfederate@test.com
 userPassword: ${PF_LDAP_PASSWORD}
+ds-privilege-name: config-read
+ds-privilege-name: password-reset
+ds-privilege-name: proxied-auth
 
 dn: uid=openvpn,ou=devopsaccount,o=platformconfig
 objectClass: inetOrgPerson

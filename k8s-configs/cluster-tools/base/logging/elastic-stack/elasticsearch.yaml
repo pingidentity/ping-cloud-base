@@ -120,6 +120,9 @@ spec:
       labels:
         app: elasticsearch
     spec:
+      # Use `elasticsearch` user for volumes
+      securityContext:
+        fsGroup: 1000
       affinity:
         podAntiAffinity:
           # Add a hard requirement for each elastic-search pod to be deployed to a different node
@@ -142,35 +145,6 @@ spec:
                   values:
                   - elasticsearch
               topologyKey: "failure-domain.beta.kubernetes.io/zone"
-
-      initContainers:
-
-      - name: fix-permissions
-        image: public.ecr.aws/r2h3l6e4/busybox:1.32
-        command: [ "sh", "-c", "chown -R 1000:1000 /usr/share/elasticsearch/data" ]
-
-        securityContext:
-          privileged: true
-
-        volumeMounts:
-        - name: data
-          mountPath: /usr/share/elasticsearch/data
-
-
-      - name: increase-vm-max-map
-        image: public.ecr.aws/r2h3l6e4/busybox:1.32
-        command: [ "sysctl", "-w", "vm.max_map_count=262144" ]
-
-        securityContext:
-          privileged: true
-
-
-      - name: increase-fd-ulimit
-        image: public.ecr.aws/r2h3l6e4/busybox:1.32
-        command: [ "sh", "-c", "ulimit -n 65536" ]
-
-        securityContext:
-          privileged: true
 
       containers:
 
