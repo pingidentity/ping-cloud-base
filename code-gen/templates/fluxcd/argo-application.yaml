@@ -4,6 +4,11 @@ metadata:
   name: "ping-cloud-${CLUSTER_STATE_REPO_BRANCH}-${REGION_NICK_NAME}"
   namespace: argocd
 spec:
+  ignoreDifferences:
+  - group: batch
+    kind: Job
+    jsonPointers:
+    - /spec/ttlSecondsAfterFinished
   syncPolicy:
     automated:
       prune: true

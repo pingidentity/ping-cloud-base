@@ -114,6 +114,9 @@ spec:
         ports:
           - containerPort: 8443
             protocol: TCP
+        volumeMounts:
+          - name: tls-key-cert-pair
+            mountPath: /etc/tls-key-cert-pair
         readinessProbe:
           httpGet:
             path: /health
@@ -126,6 +129,10 @@ spec:
           requests:
             cpu: 100m
             memory: 30M
+      volumes:
+        - name: tls-key-cert-pair
+          secret:
+            secretName: nri-bundle-nri-metadata-injection-admission
 
 ---
 # Source: nri-bundle/charts/nri-prometheus/templates/deployment.yaml
