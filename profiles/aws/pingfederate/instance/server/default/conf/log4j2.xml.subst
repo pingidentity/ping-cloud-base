@@ -63,6 +63,20 @@
             <DefaultRolloverStrategy max="4" />
         </RollingFile>
 
+        <!-- Main JSON log : A size based file rolling appender with json formatting -->
+        <RollingFile name="FILE-Json" fileName="${sys:pf.log.dir}/server.log"
+                     filePattern="${sys:pf.log.dir}/server.log.%i" ignoreExceptions="false">
+            <JSONLayout eventEol="true" compact="true">
+                <KeyValuePair key="date" value="$${date:yyyy-MM-dd'T'HH:mm:ssZ}"/>
+                <KeyValuePair key="exchangeId" value="$${trackingid:-}"/>
+                <KeyValuePair key="logPurpose" value="pingfederate-server" />
+            </JSONLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="100 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="4" />
+        </RollingFile>
+
         <Console name="CONSOLE-SIEM" >
             <PingSyslogLayout>
                 <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" properties="true">
@@ -1481,7 +1495,8 @@
         <Logger name="org.sourceid.saml20.domain.mgmt.impl.DataDeployer" level="DEBUG" />
         <Logger name="org.sourceid.saml20.util.SystemUtil" level="INFO" additivity="false">
             <AppenderRef ref="CONSOLE" />
-            <AppenderRef ref="FILE" />
+<!--            <AppenderRef ref="FILE" />-->
+            <AppenderRef ref="FILE-Json" />
             <AppenderRef ref="CONSOLE-SIEM" />
         </Logger>
         <!--
@@ -1515,7 +1530,8 @@
         <Logger name="com.pingidentity" level="${PF_LOG_LEVEL}" />
         <Logger name="com.pingidentity.common.util.ErrorHandler" level="INFO" additivity="false">
             <AppenderRef ref="CONSOLE" />
-            <AppenderRef ref="FILE" />
+<!--            <AppenderRef ref="FILE" />-->
+            <AppenderRef ref="FILE-Json" />
             <AppenderRef ref="CONSOLE-SIEM" />
         </Logger>
         <Logger name="com.pingidentity.appserver.jetty" level="INFO" />
@@ -1742,6 +1758,7 @@
         <!--
         <AsyncLogger name="com.pingidentity.common.util.xml.XmlBeansUtil" level="TRACE" additivity="false" includeLocation="false">
             <AppenderRef ref="FILE" />
+            <AppenderRef ref="FILE-Json" />
         </AsyncLogger>
         -->
 
@@ -1796,7 +1813,8 @@
         -->
 		  <AsyncRoot level="${PF_LOG_LEVEL}" includeLocation="false">
             <!-- <AppenderRef ref="CONSOLE" /> -->
-            <AppenderRef ref="FILE" />
+<!--            <AppenderRef ref="FILE" />-->
+            <AppenderRef ref="FILE-Json" />
             <AppenderRef ref="CONSOLE-SIEM" />
         </AsyncRoot>
 
