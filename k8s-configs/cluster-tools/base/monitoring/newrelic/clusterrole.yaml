@@ -1,4 +1,40 @@
 ---
+# Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/clusterrole.yaml
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: nri-bundle-nri-metadata-injection-admission
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade,post-install,post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    app: nri-metadata-injection-admission
+    app.kubernetes.io/name: nri-metadata-injection
+    helm.sh/chart: nri-metadata-injection-2.1.0
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/version: "1.6.0"
+rules:
+  - apiGroups:
+      - admissionregistration.k8s.io
+    resources:
+      - mutatingwebhookconfigurations
+    verbs:
+      - get
+      - update
+
+  - apiGroups: [""]
+    resources:
+      - secrets
+    verbs: ["get", "create", "patch"]
+
+  - apiGroups: ['policy']
+    resources: ['podsecuritypolicies']
+    verbs: ['use']
+    resourceNames:
+      - nri-bundle-nri-metadata-injection-admission
+
+---
 # Source: nri-bundle/charts/newrelic-infrastructure/templates/clusterrole.yaml
 
 apiVersion: rbac.authorization.k8s.io/v1
