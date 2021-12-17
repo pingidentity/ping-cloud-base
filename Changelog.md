@@ -1,5 +1,11 @@
 # Changelog
 
+### 1.11.2
+
+_Changes:_
+
+- [X] PDO-3243 New Relic Java Agent v6.5.2 for Log4Shell vulnerability 
+
 ### 1.11.1
 
 - Updated PingAccess and PingFederate images for Log4Shell security vulnerability (CVE-2021-44228)
