@@ -159,7 +159,7 @@ PINGACCESS_WAS_IMAGE_TAG=6.3.1-v1.0.15-log4j2-patch
 PINGFEDERATE_IMAGE_TAG=10.3.3-v1.0.20-log4j2-patch-no-IKs
 PINGDIRECTORY_IMAGE_TAG=8.3.0.0-v1.0.18
 PINGDELEGATOR_IMAGE_TAG=4.4.1-v1.0.8
-PINGCENTRAL_IMAGE_TAG=1.8.0-v1.0.20
+PINGCENTRAL_IMAGE_TAG=1.8.1-v1.0.20-log4j2-patch-alpine-3.14.3
 
 ############################################################
 # Ping solution image tags

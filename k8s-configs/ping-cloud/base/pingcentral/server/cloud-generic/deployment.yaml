@@ -101,7 +101,7 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral:1.8.0-v1.0.20
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral:1.8.1-v1.0.20-log4j2-patch-alpine-3.14.3
         imagePullPolicy: IfNotPresent
         resources:
           requests:
