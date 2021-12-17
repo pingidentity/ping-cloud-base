@@ -3,9 +3,9 @@
 ### 1.11.1
 
 - Updated PingAccess and PingFederate images for Log4Shell security vulnerability (CVE-2021-44228)
-- Disabled PingCentral due to Log4Shell security vulnerability (CVE-2021-44228)
 - Fixed various PingAccess Admin SSO issues with MyPing customers
 - Remove OOTB Integration Kits for PingFederate and deploy default IKs using artifact script
+- Updated PingCentral image for Log4Shell security vulnerability (CVE-2021-44228)
 
 _Changes:_
 
@@ -17,6 +17,8 @@ _Changes:_
 - [X] PDO-3204 Upgrade New Relic Java agent to account for Log4Shell security vulnerability
 - [X] PDO-3213 Updating PingAccess and PingFederate images for Log4Shell security vulnerability
 - [X] PDO-3216 Disable PingCentral due to Log4Shell security vulnerability
+- [X] PDO-3217 Re-enable PingCentral
+- [X] PDO-3232 Updating PingCentral for Log4Shell security vulnerability
 
 ### 1.11.0
 
