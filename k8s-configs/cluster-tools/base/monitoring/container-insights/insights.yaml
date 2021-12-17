@@ -467,6 +467,14 @@ data:
           stream_name ${record["kubernetes"]["pod_name"]}_${record["kubernetes"]["namespace_name"]}_${record["kubernetes"]["container_name"]}
         </record>
       </filter>
+    
+      <filter **>
+        @type grep
+        <exclude>
+          key log
+          pattern /^\<[0-9]+\>/
+        </exclude>
+      </filter>
 
       <match kubernetes.**>
         @type rewrite_tag_filter
@@ -1233,7 +1241,7 @@ spec:
           image: public.ecr.aws/r2h3l6e4/fluent/fluentd-kubernetes-daemonset:v1.7.3-debian-cloudwatch-1.0
           env:
             - name: FLUENTD_OPT
-              value: "-qq"
+              value: "-q"
             - name: REGION
               valueFrom:
                 configMapKeyRef:
