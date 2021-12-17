@@ -2,7 +2,7 @@
 
 . "./utils.lib.sh"
 
-NEWRELIC_VERSION="6.5.1"
+NEWRELIC_VERSION="6.5.2"
 
 beluga_log "Copying SSH configuration files"
 test -f /known_hosts && cp /known_hosts /.ssh
