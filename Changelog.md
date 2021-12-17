@@ -53,7 +53,6 @@ _Changes:_
 - [X] PDO-3179 Argocd failing to deploy newrelic namespace from scratch and shows 3 newrelic resources as out of sync
 - [X] PDO-3204 - Upgrade New Relic Java agent to account for Log4j vulnerability
 
-
 ### 1.11.0
 
 - Enabled PingAccess Admin SSO for MyPing customers
