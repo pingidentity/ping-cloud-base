@@ -474,6 +474,14 @@ data:
           key log
           pattern /^\<[0-9]+\>/
         </exclude>
+      </filter>      
+    
+    <filter **>
+        @type grep
+        <exclude>
+          key log
+          pattern /\/version/
+        </exclude>
       </filter>
 
       <match kubernetes.**>
