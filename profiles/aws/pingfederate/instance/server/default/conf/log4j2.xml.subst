@@ -402,9 +402,9 @@
                 <KeyValuePair key="user" value="$${ctx:api.user:-}"/>
                 <KeyValuePair key="authtype" value="$${ctx:api.authtype:-}"/>
                 <KeyValuePair key="clientip" value="$${ctx:api.clientip:-}"/>
-                <KeyValuePair key="httpmethod" value="line $${ctx:api.httpmethod:-}"/>
-                <KeyValuePair key="url" value="line $${ctx:api.url:-}"/>
-                <KeyValuePair key="status" value="line $${ctx:api.status:-}"/>
+                <KeyValuePair key="httpmethod" value="$${ctx:api.httpmethod:-}"/>
+                <KeyValuePair key="url" value="$${ctx:api.url:-}"/>
+                <KeyValuePair key="status" value="$${ctx:api.status:-}"/>
                 <KeyValuePair key="logPurpose" value="pingfederate-admin-api-audit" />
             </JSONLayout>
             <Policies>
