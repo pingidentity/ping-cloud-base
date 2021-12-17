@@ -100,6 +100,21 @@
             <DefaultRolloverStrategy max="4" />
         </RollingFile>
 
+        <!-- SAML Transaction JSON log : A time/date based rolling appender with json formatting -->
+        <RollingFile name="SamlTransactionJson" fileName="${sys:pf.log.dir}/transaction.log"
+                     filePattern="${sys:pf.log.dir}/transaction.log.%i"
+                     ignoreExceptions="false">
+            <JSONLayout eventEol="true" compact="true">
+                <KeyValuePair key="date" value="$${date:yyyy-MM-dd'T'HH:mm:ssZ}"/>
+                <KeyValuePair key="logPurpose" value="pingfederate-transaction" />
+            </JSONLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="100 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="4" />
+        </RollingFile>
+
+
         <!-- Security Audit log for Splunk: A time/date based rolling appender
 
         NOTES:
@@ -191,9 +206,35 @@
             <DefaultRolloverStrategy max="4" />
         </RollingFile>
 
+        <RollingFile name="SecurityAudit2FileJson" fileName="${sys:pf.log.dir}/audit.log"
+                     filePattern="${sys:pf.log.dir}/audit.log.%i"
+                     ignoreExceptions="false">
+            <JSONLayout eventEol="true" compact="true">
+                <KeyValuePair key="dateTimeStamp" value="$${date:yyyy-MM-dd HH:mm:ss,S}"/>
+                <KeyValuePair key="trackingId" value="$${ctx:trackingid:-}"/>
+                <KeyValuePair key="event" value="$${ctx:event:-}"/>
+                <KeyValuePair key="subject" value="$${ctx:subject:-}"/>
+                <KeyValuePair key="ip" value="$${ctx:ip:-}"/>
+                <KeyValuePair key="app" value="$${ctx:app:-}"/>
+                <KeyValuePair key="connectionId" value="$${ctx:connectionid:-}"/>
+                <KeyValuePair key="protocol" value="$${ctx:protocol:-}"/>
+                <KeyValuePair key="host" value="$${ctx:host:-}"/>
+                <KeyValuePair key="role" value="$${ctx:role:-}"/>
+                <KeyValuePair key="status" value="$${ctx:status:-}"/>
+                <KeyValuePair key="adapterId" value="$${ctx:adapterid:-}"/>
+                <KeyValuePair key="description" value="$${ctx:description:-}"/>
+                <KeyValuePair key="responseTime" value="$${ctx:responsetime:-}"/>
+                <KeyValuePair key="logPurpose" value="pingfederate-security-audit" />
+            </JSONLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="100 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="4" />
+        </RollingFile>
+
         <Console name="SecurityAudit2Console4SIEM" >
             <PingSyslogLayout>
-                <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" >
+                <JSONLayout eventEol="true" compact="true">
                     <KeyValuePair key="dateTimeStamp" value="$${date:yyyy-MM-dd HH:mm:ss,S}"/>
                     <KeyValuePair key="trackingId" value="$${ctx:trackingid:-}"/>
                     <KeyValuePair key="event" value="$${ctx:event:-}"/>
@@ -212,6 +253,7 @@
                 </JSONLayout>
             </PingSyslogLayout>
         </Console>
+
         <!-- Admin Audit log : A time/date based rolling appender -->
         <RollingFile name="AdminAudit" fileName="${sys:pf.log.dir}/admin.log"
                      filePattern="${sys:pf.log.dir}/admin.%d{yyyy-MM-dd}.log"
@@ -236,6 +278,35 @@
             </DefaultRolloverStrategy>
         </RollingFile>
 
+        <!-- Admin Audit JSON log : A time/date based rolling appender with json formatting -->
+        <RollingFile name="AdminAuditJson" fileName="${sys:pf.log.dir}/admin.log"
+                     filePattern="${sys:pf.log.dir}/admin.%d{yyyy-MM-dd}.log"
+                     ignoreExceptions="false">
+            <JSONLayout eventEol="true" compact="true">
+                <KeyValuePair key="date" value="$${date:yyyy-MM-dd'T'HH:mm:ssZ}"/>
+                <KeyValuePair key="user" value="$${ctx:user:-}"/>
+                <KeyValuePair key="roles" value="$${ctx:roles:-}"/>
+                <KeyValuePair key="ip" value="$${ctx:ip:-}"/>
+                <KeyValuePair key="component" value="$${ctx:component:-}"/>
+                <KeyValuePair key="event" value="$${ctx:event:-}"/>
+                <KeyValuePair key="eventdetailid" value="$${ctx:eventdetailid:-}"/>
+                <KeyValuePair key="logPurpose" value="pingfederate-admin-audit" />
+            </JSONLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="admin.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="1" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
+
+        </RollingFile>
+
         <!-- Admin Event Detail Audit log : A time/date based rolling appender -->
         <RollingFile name="AdminEventDetailAudit" fileName="${sys:pf.log.dir}/admin-event-detail.log"
                      filePattern="${sys:pf.log.dir}/admin-event-detail.%d{yyyy-MM-dd}.log"
@@ -246,6 +317,32 @@
                 <charset>UTF-8</charset> -->
                 <pattern>%X{eventdetailid} | %X{filename} | %X{delta} | line %X{position} | %m%n</pattern>
             </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="admin-event-detail.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="1" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+
+        <!-- Admin Event Detail Audit Json log : A time/date based rolling appender with json formatting -->
+        <RollingFile name="AdminEventDetailAuditJson" fileName="${sys:pf.log.dir}/admin-event-detail.log"
+                     filePattern="${sys:pf.log.dir}/admin-event-detail.%d{yyyy-MM-dd}.log"
+                     ignoreExceptions="false">
+            <JSONLayout eventEol="true" compact="true">
+                <KeyValuePair key="date" value="$${date:yyyy-MM-dd'T'HH:mm:ssZ}"/>
+                <KeyValuePair key="eventdetailid" value="$${ctx:eventdetailid:-}"/>
+                <KeyValuePair key="filename" value="$${ctx:filename:-}"/>
+                <KeyValuePair key="delta" value="$${ctx:delta:-}"/>
+                <KeyValuePair key="delta" value="line $${ctx:position:-}"/>
+                <KeyValuePair key="logPurpose" value="pingfederate-admin-event-detail" />
+            </JSONLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
@@ -296,6 +393,34 @@
             </DefaultRolloverStrategy>
         </RollingFile>
 
+        <!-- Admin API Audit Json log : A time/date based rolling appender with json formatting -->
+        <RollingFile name="AdminApiAuditJson" fileName="${sys:pf.log.dir}/admin-api.log"
+                     filePattern="${sys:pf.log.dir}/admin-api.%d{yyyy-MM-dd}.log"
+                     ignoreExceptions="false">
+            <JSONLayout eventEol="true" compact="true">
+                <KeyValuePair key="date" value="$${date:yyyy-MM-dd'T'HH:mm:ssZ}"/>
+                <KeyValuePair key="user" value="$${ctx:api.user:-}"/>
+                <KeyValuePair key="authtype" value="$${ctx:api.authtype:-}"/>
+                <KeyValuePair key="clientip" value="$${ctx:api.clientip:-}"/>
+                <KeyValuePair key="httpmethod" value="line $${ctx:api.httpmethod:-}"/>
+                <KeyValuePair key="url" value="line $${ctx:api.url:-}"/>
+                <KeyValuePair key="status" value="line $${ctx:api.status:-}"/>
+                <KeyValuePair key="logPurpose" value="pingfederate-admin-api-audit" />
+            </JSONLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="admin-api.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="1" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+
         <Console name="AdminApiAudit2Console" >
             <PingSyslogLayout>
                 <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" >
@@ -310,6 +435,7 @@
                 </JSONLayout>
             </PingSyslogLayout>
         </Console>
+
         <!-- Runtime API Audit log : A time/date based rolling appender -->
         <RollingFile name="RuntimeApiAudit" fileName="${sys:pf.log.dir}/runtime-api.log"
                      filePattern="${sys:pf.log.dir}/runtime-api.%d{yyyy-MM-dd}.log"
@@ -346,6 +472,34 @@
             </DefaultRolloverStrategy>
         </RollingFile>
 
+        <!-- Runtime API Audit JSON log : A time/date based rolling appender with json formatting -->
+        <RollingFile name="RuntimeApiAuditJson" fileName="${sys:pf.log.dir}/runtime-api.log"
+                     filePattern="${sys:pf.log.dir}/runtime-api.%d{yyyy-MM-dd}.log"
+                     ignoreExceptions="false">
+            <JSONLayout eventEol="true" compact="true">
+                <KeyValuePair key="dateTimeStamp" value="$${date:yyyy-MM-dd HH:mm:ss,S}"/>
+                <KeyValuePair key="user" value="$${ctx:api.user:-}" />
+                <KeyValuePair key="authType" value="$${ctx:api.authtype:-}" />
+                <KeyValuePair key="clientIp" value="$${ctx:api.clientip:-}" />
+                <KeyValuePair key="httpMethod" value="$${ctx:api.httpmethod:-}" />
+                <KeyValuePair key="url" value="$${ctx:api.url:-}" />
+                <KeyValuePair key="status" value="$${ctx:api.status:-}" />
+                <KeyValuePair key="logPurpose" value="pingfederate-runtime-api-audit" />
+            </JSONLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="runtime-api.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="1" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+
         <!-- Provisioner log : A time/date based rolling appender -->
         <RollingFile name="ProvisionerLog" fileName="${sys:pf.log.dir}/provisioner.log"
                      filePattern="${sys:pf.log.dir}/provisioner.%d{yyyy-MM-dd}.log"
@@ -353,6 +507,28 @@
             <PatternLayout>
                 <pattern>%d{ABSOLUTE} %-5p [%c{1}] %m %x %X{ChannelCode}%n</pattern>
             </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="1" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+
+        <RollingFile name="ProvisionerLogJson" fileName="${sys:pf.log.dir}/provisioner.log"
+                     filePattern="${sys:pf.log.dir}/provisioner.%d{yyyy-MM-dd}.log"
+                     ignoreExceptions="false">
+            <JSONLayout eventEol="true" compact="true">
+                <KeyValuePair key="time" value="$${date:yyyy-MM-dd HH:mm:ss,S}"/>
+                <KeyValuePair key="channelCode" value="$${ctx:ChannelCode:-}" />
+                <KeyValuePair key="logPurpose" value="pingfederate-provisioner" />
+            </JSONLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
@@ -409,6 +585,31 @@
                 </Delete>
             </DefaultRolloverStrategy>
         </RollingFile>
+
+       <RollingFile name="OutboundProvisionerEventToFileJson"
+                     fileName="${sys:pf.log.dir}/provisioner-audit.log"
+                     filePattern="${sys:pf.log.dir}/provisioner-audit.%d{yyyy-MM-dd}.log"
+                     ignoreExceptions="false">
+           <JSONLayout eventEol="true" compact="true">
+                <KeyValuePair key="time" value="$${date:yyyy-MM-dd HH:mm:ss,S}"/>
+                <KeyValuePair key="cycle_id" value="$${ctx:cycle_id:-}" />
+                <KeyValuePair key="event_type" value="$${ctx:event_type:-}" />
+                <KeyValuePair key="source_id" value="$${ctx:source_id:-}" />
+                <KeyValuePair key="target_id" value="$${ctx:target_id:-}" />
+                <KeyValuePair key="is_success" value="$${ctx:is_success:-}" />
+                <KeyValuePair key="non_success_cause" value="$${ctx:non_success_cause:-}" />
+                <KeyValuePair key="logPurpose" value="pingfederate-outbound-provisioner" />
+           </JSONLayout>
+            <DefaultRolloverStrategy>
+                <Delete basePath="${sys:pf.log.dir}">
+                    <IfFileName glob="provisioner-audit.*.log">
+                        <IfAny>
+                            <IfAccumulatedFileCount exceeds="1" />
+                        </IfAny>
+                    </IfFileName>
+                </Delete>
+            </DefaultRolloverStrategy>
+       </RollingFile>
 
         <!-- Outbound provisioner audit log for Splunk: A time/date based
 
@@ -1559,7 +1760,8 @@
 
         <AsyncLogger name="org.sourceid.saml20.bindings.BindingLogProxy"
                      level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="SamlTransaction" />
+<!--            <appender-ref ref="SamlTransaction" />-->
+            <appender-ref ref="SamlTransactionJson" />
         </AsyncLogger>
 
         <!--
@@ -1578,8 +1780,9 @@
         -->
         <Logger name="org.sourceid.websso.profiles.sp.SpAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="SecurityAudit2File" />
-            <appender-ref ref="SecurityAudit2Console4SIEM" />    
+<!--            <appender-ref ref="SecurityAudit2File" />-->
+            <appender-ref ref="SecurityAudit2FileJson" />
+            <appender-ref ref="SecurityAudit2Console4SIEM" />
             <!--
                 <appender-ref ref="SecurityAuditToSQLServerDB-FAILOVER"/>
                 <appender-ref ref="SecurityAuditToOracleDB-FAILOVER"/>
@@ -1607,8 +1810,9 @@
         -->
         <Logger name="org.sourceid.websso.profiles.idp.IdpAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="SecurityAudit2File" />
-            <appender-ref ref="SecurityAudit2Console4SIEM" />    
+<!--            <appender-ref ref="SecurityAudit2File" />-->
+            <appender-ref ref="SecurityAudit2FileJson" />
+            <appender-ref ref="SecurityAudit2Console4SIEM" />
             <!--
                 <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
                 <appender-ref ref="SecurityAuditToCEFFile"/>
@@ -1636,8 +1840,9 @@
         -->
         <Logger name="org.sourceid.websso.profiles.idp.AsAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="SecurityAudit2File" />
-            <appender-ref ref="SecurityAudit2Console4SIEM" />    
+<!--            <appender-ref ref="SecurityAudit2File" />-->
+            <appender-ref ref="SecurityAudit2FileJson" />
+            <appender-ref ref="SecurityAudit2Console4SIEM" />
             <!--
                 <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
                 <appender-ref ref="SecurityAuditToCEFFile"/>
@@ -1664,8 +1869,9 @@
         -->
         <Logger name="org.sourceid.websso.profiles.idp.ClientRegistrationAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="SecurityAudit2File" />
-            <appender-ref ref="SecurityAudit2Console4SIEM" />    
+<!--            <appender-ref ref="SecurityAudit2File" />-->
+            <appender-ref ref="SecurityAudit2FileJson" />
+            <appender-ref ref="SecurityAudit2Console4SIEM" />
             <!--
                 <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
                 <appender-ref ref="SecurityAuditToCEFFile"/>
@@ -1692,8 +1898,9 @@
         -->
         <Logger name="org.sourceid.wstrust.log.STSAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="SecurityAudit2File" />
-            <appender-ref ref="SecurityAudit2Console4SIEM" />    
+<!--            <appender-ref ref="SecurityAudit2File" />-->
+            <appender-ref ref="SecurityAudit2FileJson" />
+            <appender-ref ref="SecurityAudit2Console4SIEM" />
             <!--
                 <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
                 <appender-ref ref="SecurityAuditToCEFFile"/>
@@ -1720,7 +1927,8 @@
         -->
         <AsyncLogger name="com.pingidentity.provisioner"
                      level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="ProvisionerLog" />
+<!--            <appender-ref ref="ProvisionerLog" />-->
+            <appender-ref ref="ProvisionerLogJson" />
             <appender-ref ref="ProvisionerLogForSIEM" />
 
             <!--
@@ -1733,20 +1941,24 @@
         </AsyncLogger>
 
         <Logger name="AuditLogger" level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="AdminAudit" />
+<!--            <appender-ref ref="AdminAudit" />-->
+            <appender-ref ref="AdminAuditJson" />
         </Logger>
 
         <Logger name="EventDetailAuditLogger" level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="AdminEventDetailAudit" />
+<!--            <appender-ref ref="AdminEventDetailAudit" />-->
+            <appender-ref ref="AdminEventDetailAuditJson" />
         </Logger>
 
         <Logger name="AdminApiAuditLogger" level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="AdminApiAudit" />
+<!--            <appender-ref ref="AdminApiAudit" />-->
+            <appender-ref ref="AdminApiAuditJson" />
             <appender-ref ref="AdminApiAudit2Console" />
         </Logger>
 
         <Logger name="RuntimeApiAuditLogger" level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="RuntimeApiAudit" />
+<!--            <appender-ref ref="RuntimeApiAudit" />-->
+            <appender-ref ref="RuntimeApiAuditJson" />
         </Logger>
 
         <!-- Log xml content before parsing-->
@@ -1781,7 +1993,8 @@
         -->
 
         <Logger name="ProvisionerAuditLogger" level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="OutboundProvisionerEventToFile" />
+<!--            <appender-ref ref="OutboundProvisionerEventToFile" />-->
+            <appender-ref ref="OutboundProvisionerEventToFileJson" />
             <!--
             <appender-ref ref="OutboundProvisionerEventToSQLServerDB-FAILOVER"/>
             <appender-ref ref="OutboundProvisionerEventToOracleDB-FAILOVER"/>
