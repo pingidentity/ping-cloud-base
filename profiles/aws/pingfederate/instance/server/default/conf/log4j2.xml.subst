@@ -600,6 +600,9 @@
                 <KeyValuePair key="non_success_cause" value="$${ctx:non_success_cause:-}" />
                 <KeyValuePair key="logPurpose" value="pingfederate-outbound-provisioner" />
            </JSONLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+            </Policies>
             <DefaultRolloverStrategy>
                 <Delete basePath="${sys:pf.log.dir}">
                     <IfFileName glob="provisioner-audit.*.log">
