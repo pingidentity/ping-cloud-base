@@ -126,6 +126,8 @@ metadata:
   namespace: newrelic
   labels:
     app: newrelic-license-secret-exporter
+  annotations:
+    argocd.argoproj.io/hook: Sync
 spec:
   ttlSecondsAfterFinished: 30
   template:

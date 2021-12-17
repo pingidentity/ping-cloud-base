@@ -88,7 +88,9 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: kibana-dashboard-upload
+  name: kibana-dashboard-upload  
+  annotations:
+    argocd.argoproj.io/hook: Sync
 spec:
   ttlSecondsAfterFinished: 30
   template:
