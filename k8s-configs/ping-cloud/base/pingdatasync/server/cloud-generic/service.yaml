@@ -1,4 +1,4 @@
-# This service exposes the Ping Delegated Admin ports within cluster.
+# This service exposes the Ping DataSync ports within cluster.
 
 kind: Service
 apiVersion: v1

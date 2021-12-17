@@ -3,31 +3,27 @@ VERBOSE=false
 
 SERVER_PROFILE_URL=https://git-codecommit.us-west-2.amazonaws.com/v1/repos/ping-cloud-base
 SERVER_PROFILE_PATH=profiles/aws/pingdatasync
-SERVER_PROFILE_BRANCH=pdo-2951-deploy-datasync
+SERVER_PROFILE_BRANCH=master
 
 REGION=us-west-2
 
-#SERVER_PROFILE_URL=https://github.com/pingidentity/pingidentity-server-profiles.git
-#SERVER_PROFILE_PATH=simple-sync/pingdatasync
 PING_IDENTITY_ACCEPT_EULA=YES
 
 LDAP_PORT=1389
 LDAPS_PORT=1636
 HTTPS_PORT=1443
 
-ROOT_USER_PASSWORD_FILE=/usr/local/secrets/root-user-password
-ADMIN_USER_PASSWORD_FILE=/usr/local/secrets/admin-user-password
-#ENCRYPTION_PASSWORD_FILE=/usr/local/secrets/encryption-password
-#ADS_CRT_FILE=/usr/local/secrets/ads.crt
-#ADS_KEY_FILE=/usr/local/secrets/ads.key
-
 # Failover administrative user
 ADMIN_USER_NAME=admin
 
 # Location of file with the root user password (i.e. cn=directory manager).
 # Defaults to /SECRETS_DIR/root-user-password
-# ROOT_USER_PASSWORD_FILE=
+ROOT_USER_PASSWORD_FILE=/home/ping/secrets/root-user-password
 
 # Location of file with the admin password, used as the password replication admin
 # Defaults to /SECRETS_DIR/admin-user-password
-# ADMIN_USER_PASSWORD_FILE=
+ADMIN_USER_PASSWORD_FILE=/home/ping/secrets/admin-user-password
+
+#ENCRYPTION_PASSWORD_FILE=/home/ping/secrets/encryption-password
+#ADS_CRT_FILE=/home/ping/secrets/ads.crt
+#ADS_KEY_FILE=/home/ping/secrets/ads.key

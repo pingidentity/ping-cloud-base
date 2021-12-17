@@ -1,4 +1,4 @@
-# This defines the Ping Central deployment
+# This defines the Ping DataSync deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -34,10 +34,10 @@ spec:
               topologyKey: "kubernetes.io/zone"
       initContainers:
       - name: pingdatasync-init
-        # securityContext:
-        #   runAsNonRoot: true
-        #   runAsUser: 9031
-        #   runAsGroup: 9999
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 9031
+          runAsGroup: 9999
         image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
         imagePullPolicy: IfNotPresent
         command:
@@ -64,10 +64,10 @@ spec:
               name: pingdatasync-environment-variables
       containers:
       - name: pingdatasync
-        # securityContext:
-        #   runAsNonRoot: true
-        #   runAsUser: 9031
-        #   runAsGroup: 9999
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 9031
+          runAsGroup: 9999
         image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdatasync:8.2.0.6-v1.0.0-pdo-2951-deploy-datasync
         imagePullPolicy: Always
         resources:
@@ -103,29 +103,40 @@ spec:
               secretKeyRef:
                 name: pingdatasync-passwords
                 key: root-user-password
+          - name: PING_DATASYNC_POD_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
+          - name: PING_DATASYNC_POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: PING_DATASYNC_POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
         envFrom:
           - configMapRef:
               name: pingdatasync-environment-variables
           - configMapRef:
               name: pingcommon-environment-variables
         volumeMounts:
-          # FIXME: fix home directory when containers run as non-root user
           - name: ssh-dir
-            mountPath: /home/.ssh
+            mountPath: /home/ping/.ssh
           - name: data-dir
-            mountPath: /usr/local/bin/kubectl
+            mountPath: /home/ping/bin/kubectl
             subPath: kubectl
           - name: data-dir
             mountPath: /opt/staging/ds_env_vars
             subPath: ds_env_vars
           - name: data-dir
-            mountPath: /usr/local/bin/skbn
+            mountPath: /home/ping/bin/skbn
             subPath: skbn
           - name: topology-descriptor
             mountPath: /opt/staging/topology/descriptor.json
             subPath: descriptor.json
           - name: pingdatasync-passwords
-            mountPath: /usr/local/secrets
+            mountPath: /home/ping/secrets
             readOnly: true
           - name: pingdatasync-license
             mountPath: /opt/in/instance/conf/PingDirectory.lic
@@ -158,7 +169,7 @@ spec:
           secret:
             secretName: pingdatasync-passwords
             optional: true
-            defaultMode: 040
+            # defaultMode: 0400
         - name: pingdatasync-license
           secret:
             secretName: pingdatasync-license
