@@ -1,6 +1,7 @@
 ORCHESTRATION_TYPE=kubernetes
 VERBOSE=false
 
+# TODO: Change me to https://github.com/pingidentity/ping-cloud-base.git before v1.13 is released.
 SERVER_PROFILE_URL=https://git-codecommit.us-west-2.amazonaws.com/v1/repos/ping-cloud-base
 SERVER_PROFILE_PATH=profiles/aws/pingdatasync
 SERVER_PROFILE_BRANCH=master
