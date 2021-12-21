@@ -60,7 +60,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: pingfederate-backup
-            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:10.3.3-v1.0.21
+            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:10.3.3-v1.0.23
             imagePullPolicy: IfNotPresent
             securityContext:
               runAsGroup: 9999
@@ -71,6 +71,9 @@ spec:
             envFrom:
             - configMapRef:
                 name: pingfederate-admin-environment-variables
+            env:
+            - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+              value: "true"
             volumeMounts:
             - name: pingfederate-backup
               mountPath: /opt/in/backup-archive-data.sh

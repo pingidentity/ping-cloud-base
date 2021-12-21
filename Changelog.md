@@ -16,6 +16,7 @@
 - Update 20-restart-sequence.sh script to skip rebuild index when no index changes
 - Implemented Kubernetes Infrastructure Agent for New Relic
 - Fixed showing a few SharedResourceWarnings in ArgoCD UI
+- Updated to address Log4Shell vulnerabilities
 
 _Changes:_
 
@@ -51,6 +52,9 @@ _Changes:_
 - [X] PDO-3145 Fixed MyPing admin SSO errors caused due to intermittent DNS resolution issues
 - [X] PDO-3175 ArgoCD UI shows a few SharedResourceWarnings
 - [X] PDO-3179 Argocd failing to deploy newrelic namespace from scratch and shows 3 newrelic resources as out of sync
+- [X] PDO-3196 Fix Security Vulnerability CVE-2021-44228 by patching Log4j2 files
+- [X] PDO-3218 Updating images for Log4Shell security vulnerability
+- [X] PDO-3243 Upgrade New Relic Java Agent to 6.5.2 to address Log4Shell Vulnerability
 
 ### 1.11.0
 

@@ -367,3 +367,7 @@ org.apache.xml.security.ignoreLineBreaks=true
 #com.unboundid.ldap.sdk.debug.enabled=true
 #com.unboundid.ldap.sdk.debug.level=FINEST
 #com.unboundid.ldap.sdk.debug.type=LDAP
+
+#   Log4j 2 Settings
+#   ---------------------------
+log4j2.formatMsgNoLookups=true
