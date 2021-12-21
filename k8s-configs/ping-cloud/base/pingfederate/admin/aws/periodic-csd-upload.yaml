@@ -14,7 +14,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: pingfederate-admin-periodic-csd-upload
-            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:10.3.3-v1.0.21
+            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:10.3.3-v1.0.23
             imagePullPolicy: IfNotPresent
             securityContext:
               runAsGroup: 9999
@@ -27,6 +27,8 @@ spec:
               value: "pingfederate-admin"
             - name: CSD_CONTAINER_NAME
               value: "pingfederate-admin"
+            - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+              value: "true"
             envFrom:
             - configMapRef:
                 name: pingfederate-admin-environment-variables

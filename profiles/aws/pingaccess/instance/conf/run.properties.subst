@@ -454,3 +454,6 @@ pa.cluster.serverstate.staleEntryEvictionIntervalSeconds=60
 # This property is only used if pa.cluster.interprocess.communication is not none
 pa.cluster.serverstate.replicationIntervalMilliseconds=1000
 
+#   Log4j 2 Settings
+#   ---------------------------
+log4j2.formatMsgNoLookups=true

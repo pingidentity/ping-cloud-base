@@ -73,6 +73,9 @@ spec:
         envFrom:
         - configMapRef:
             name: pingdirectory-environment-variables
+        env:
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
       volumes:
       - name: upload-script
         configMap:
