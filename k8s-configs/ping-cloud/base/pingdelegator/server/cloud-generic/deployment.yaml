@@ -40,7 +40,7 @@ spec:
           runAsNonRoot: false
           runAsUser: 0
         image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         command:
           - /copy-dependencies.sh
         volumeMounts:
@@ -70,7 +70,7 @@ spec:
           runAsNonRoot: false
           runAsUser: 0
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdelegator:4.4.1-v1.0.8
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         resources:
           requests:
             memory: "256Mi"

@@ -29,7 +29,7 @@ spec:
       initContainers:
       - name: pingaccess-was-p14c-init
         image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.38
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         env:
         - name: NAMESPACE
           valueFrom:
@@ -45,7 +45,7 @@ spec:
           runAsNonRoot: false
           runAsUser: 0
         image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         command:
         - /copy-dependencies.sh
         volumeMounts:
@@ -77,7 +77,7 @@ spec:
           runAsNonRoot: false
           runAsUser: 0
         image: public.ecr.aws/r2h3l6e4/busybox:1.32
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         command:
         - /wait-for-services.sh
         volumeMounts:
@@ -94,7 +94,7 @@ spec:
         securityContext:
           runAsNonRoot: false
         image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v1.0.7
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         envFrom:
         - configMapRef:
             name: pingaccess-was-admin-environment-variables
@@ -126,7 +126,7 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         resources:
           requests:
             memory: "1280Mi"

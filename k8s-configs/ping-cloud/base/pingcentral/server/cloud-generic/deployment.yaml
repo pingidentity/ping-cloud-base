@@ -40,7 +40,7 @@ spec:
           runAsNonRoot: false
           runAsUser: 0
         image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         command:
           - /copy-dependencies.sh
         volumeMounts:
@@ -68,7 +68,7 @@ spec:
           runAsNonRoot: false
           runAsUser: 0
         image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v1.0.7
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         envFrom:
         - configMapRef:
             name: pingcentral-environment-variables
@@ -100,7 +100,7 @@ spec:
           runAsNonRoot: false
           runAsUser: 0
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral:1.8.0-v1.0.20
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         resources:
           requests:
             memory: "2Gi"
