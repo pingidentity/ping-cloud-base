@@ -2,3 +2,5 @@ kind: Namespace
 apiVersion: v1
 metadata:
   name: newrelic
+  annotations:
+    "helm.sh/hook": pre-install
