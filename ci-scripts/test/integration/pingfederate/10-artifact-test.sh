@@ -58,11 +58,6 @@ EOF
 
 #Set an environment variable file containing SOLUTIONS_ARTIFACTS
 set_solutions_artifact_env_var_file() {
-  echo "Echo tests for troubleshooting"
-  echo "Temp var file: ${TEMP_ENV_VAR_FILE}"
-  echo "Server name: ${SERVER}"
-  echo "Container: ${CONTAINER}"
-  echo "Namespace: ${NAMESPACE}"
   kubectl cp ${TEMP_ENV_VAR_FILE} "${SERVER}":/opt/staging/hooks/test-env  -c "${CONTAINER}" -n "${NAMESPACE}"
 }
 
@@ -81,12 +76,14 @@ run_artifact_script_with_solutions_artifact() {
   #like PING_ARTIFACT_REPO_URL. This is to avoid the difficulty in handling and escaping
   #quotes in the json when passing it in through kubectl exec.
   echo "Start troubleshoot"
-  kubectl get ns
+  echo "Server: ${SERVER}"
+  echo "Namespace: ${NAMESPACE}"
+  echo "Container: ${CONTAINER}"
   echo "End"
   kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c \
     "source /opt/staging/hooks/test-env; \
     PING_ARTIFACT_REPO_URL=s3://ci-cd-artifacts-bucket; \
-    /opt/staging/hooks/10-download-artifact.sh" > /dev/null 2>&1
+    /opt/staging/hooks/10-download-artifact.sh"
   return ${?}
 }
 
