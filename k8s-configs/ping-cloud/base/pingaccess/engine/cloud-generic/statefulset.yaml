@@ -44,7 +44,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
         image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         command:
         - /copy-dependencies.sh
         volumeMounts:
@@ -74,7 +74,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
         image: public.ecr.aws/r2h3l6e4/busybox:1.32
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         command:
         - /wait-for-services.sh
         volumeMounts:
@@ -93,7 +93,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
         image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v1.0.7
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
             name: pingaccess-environment-variables
@@ -120,13 +120,13 @@ spec:
           mountPath: /opt/shared-dir
       containers:
       - name: pingaccess
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess:6.3.1-v1.0.17
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess:6.3.1-v1.0.19
         # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         resources:
           requests:
             memory: "2Gi"
@@ -207,7 +207,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
         image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-json-exporter:0.2.0-v1.0.3
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         env:
           - name: SERVICE_SHORTNAME
             value: pa
