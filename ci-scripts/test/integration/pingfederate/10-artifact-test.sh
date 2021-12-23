@@ -75,15 +75,10 @@ run_artifact_script_with_solutions_artifact() {
   #which is sourced before running the script instead of being directly specified
   #like PING_ARTIFACT_REPO_URL. This is to avoid the difficulty in handling and escaping
   #quotes in the json when passing it in through kubectl exec.
-  echo "Start troubleshoot"
-  echo "Server: ${SERVER}"
-  echo "Namespace: ${NAMESPACE}"
-  echo "Container: ${CONTAINER}"
-  echo "End"
   kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c \
     "source /opt/staging/hooks/test-env; \
     PING_ARTIFACT_REPO_URL=s3://ci-cd-artifacts-bucket; \
-    /opt/staging/hooks/10-download-artifact.sh"
+    /opt/staging/hooks/10-download-artifact.sh" > /dev/null 2>&1
   return ${?}
 }
 
@@ -172,7 +167,7 @@ EOF
 
     # Search for artifact plugin in /deploy directory and capture status code.
     kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c \
-      "test -f ${TARGET_DEPLOY_DIR}/${IK_ARTIFACT_JARNAME}" > /dev/null 2>&1
+      "test -f ${TARGET_DEPLOY_DIR}/${IK_ARTIFACT_JARNAME}" 
     actual_status_code_artifact_deploy=${?}
 
     assertEquals "Artifact deploy script did not return expected value." ${expected_status_code} ${actual_status_code_script}
