@@ -122,9 +122,17 @@ EOF
   actual_status_code_script=${?}
 
   # Search for artifact plugin in /deploy directory and capture status code.
+  echo "Begin Test"
+  echo "Server: ${SERVER}"
+  echo "Container: ${CONTAINER}"
+  echo "Namespace: ${NAMESPACE}"
+  echo "Target dir: ${TARGET_DEPLOY_DIR}"
+  echo "IK artifact name: ${IK_ARTIFACT_JARNAME}"
+  echo "Exec into pod and running test"
   kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c \
-    "test -f ${TARGET_DEPLOY_DIR}/${IK_ARTIFACT_JARNAME}" > /dev/null 2>&1
+    "test -f ${TARGET_DEPLOY_DIR}/${IK_ARTIFACT_JARNAME}"
   actual_status_code_artifact_deploy=${?}
+  echo "Status code: ${?}"
 
   assertEquals "Artifact deploy script did not return expected value." ${expected_status_code} ${actual_status_code_script}
   assertEquals "Expected artifact ${IK_ARTIFACT_JARNAME} was not deployed succesfully." ${expected_status_code} ${actual_status_code_artifact_deploy}
