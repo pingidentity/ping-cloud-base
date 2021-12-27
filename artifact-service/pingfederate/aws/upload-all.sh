@@ -24,4 +24,4 @@ export ARTIFACT_VISIBILITY=${ARTIFACT_VISIBILITY}
 
 # Add code below to execute upload-artifact.sh script to upload Standard IKs
 # Example to upload an artifact
-#./upload-artifact.sh ${ARTIFACT_SOURCE_URL}/products/integration-kits/<name-of-the-integration-kit>/<version>/<name-of-the-integration-kit-version.zip>
+#./upload-artifact.sh ${ARTIFACT_SOURCE_URL}/products/plugins/integration-kits/<name-of-the-integration-kit>/<name-of-the-integration-kit>/<version>/<name-of-the-integration-kit-version.zip>
