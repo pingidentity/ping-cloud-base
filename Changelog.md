@@ -6,6 +6,7 @@ _Changes:_
 
 - [X] PDO-3064 PingAccess hook scripts updated to use the beluga_log method instead of echo
 - [X] PDO-3146 Change Busybox-based containers in cluster-tools to run as non-root
+- [X] PDO-3207 Force Engines to use non-root
 
 ### 1.12.0
 

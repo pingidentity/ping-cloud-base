@@ -123,7 +123,7 @@ EOF
 
   # Search for artifact plugin in /deploy directory and capture status code.
   kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c \
-    "test -f ${TARGET_DEPLOY_DIR}/${IK_ARTIFACT_JARNAME}"
+    "test -f ${TARGET_DEPLOY_DIR}/${IK_ARTIFACT_JARNAME}" > /dev/null 2>&1
   actual_status_code_artifact_deploy=${?}
 
   assertEquals "Artifact deploy script did not return expected value." ${expected_status_code} ${actual_status_code_script}
@@ -166,17 +166,8 @@ EOF
     actual_status_code_script=${?}
 
     # Search for artifact plugin in /deploy directory and capture status code.
-    echo "Begin Test"
-    echo "Server: ${SERVER}"
-    echo "Container: ${CONTAINER}"
-    echo "Namespace: ${NAMESPACE}"
-    echo "Target dir: ${TARGET_DEPLOY_DIR}"
-    echo "IK artifact name: ${IK_ARTIFACT_JARNAME}"
-    echo "Exec into pod and running test"
-    ls -al ${TARGET_DEPLOY_DIR}
-    sleep 60
     kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c \
-      "test -f ${TARGET_DEPLOY_DIR}/${IK_ARTIFACT_JARNAME}" 
+      "test -f ${TARGET_DEPLOY_DIR}/${IK_ARTIFACT_JARNAME}" > /dev/null 2>&1
     actual_status_code_artifact_deploy=${?}
 
     assertEquals "Artifact deploy script did not return expected value." ${expected_status_code} ${actual_status_code_script}
@@ -227,16 +218,6 @@ EOF
     actual_status_code_script=${?}
 
     # Search for artifact plugin in /deploy directory and capture status code.
-    echo "Begin Test"
-    echo "Server: ${SERVER}"
-    echo "Container: ${CONTAINER}"
-    echo "Namespace: ${NAMESPACE}"
-    echo "Target dir: ${TARGET_DEPLOY_DIR}"
-    echo "IK artifact name: ${IK_ARTIFACT_JARNAME}"
-    echo "Second artifact jarname: ${SECOND_IK_ARTIFACT_JARNAME}"
-    echo "Exec into pod and running test"
-    ls -al ${TARGET_DEPLOY_DIR}
-    sleep 60
     kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c \
       "test -f ${TARGET_DEPLOY_DIR}/${IK_ARTIFACT_JARNAME} \
       && test -f ${TARGET_DEPLOY_DIR}/${SECOND_IK_ARTIFACT_JARNAME}" > /dev/null 2>&1
