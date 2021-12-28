@@ -23,8 +23,8 @@
     <Loggers>
         <!-- PingAccess Loggers-->
         <AsyncLogger name="com.pingidentity" level="${PA_LOG_LEVEL}" additivity="false" includeLocation="false">
-<!--            <AppenderRef ref="File"/>-->
-            <AppenderRef ref="File-json"/>
+            <AppenderRef ref="File"/>
+            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
             <!--<AppenderRef ref="CONSOLE" />-->
             <!--<AppenderRef ref="SYSLOG" />-->
@@ -66,86 +66,86 @@
 
         <!-- Changes to this section will not be required to effectively troubleshoot PingAccess -->
         <AsyncLogger name="com.netflix" level="WARN" additivity="false" includeLocation="false">
-<!--            <AppenderRef ref="File"/>-->
-            <AppenderRef ref="File-json"/>
+            <AppenderRef ref="File"/>
+            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="com.netflix.config.sources.URLConfigurationSource" level="FATAL" additivity="false"
                      includeLocation="false">
-<!--            <AppenderRef ref="File"/>-->
-            <AppenderRef ref="File-json"/>
+            <AppenderRef ref="File"/>
+            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="net.sf.ehcache" level="WARN" additivity="false" includeLocation="false">
-<!--            <AppenderRef ref="File"/>-->
-            <AppenderRef ref="File-json"/>
+            <AppenderRef ref="File"/>
+            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
-        <AsyncLogger name="net.sf.ehcache.config.CacheConfiguration" level="ERROR" additivity="false"
-                     includeLocation="false">
-<!--            <AppenderRef ref="File"/>-->
+        <AsyncLogger name="net.sf.ehcache.config.CacheConfiguration" level="ERROR" additivity="false">
+            <AppenderRef ref="File"/>
+            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="File-json"/>
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="org.springframework" level="WARN" additivity="false" includeLocation="false">
-<!--            <AppenderRef ref="File"/>-->
-            <AppenderRef ref="File-json"/>
+            <AppenderRef ref="File"/>
+            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="org.springframework.orm.jpa" level="WARN" additivity="false" includeLocation="false">
-<!--            <AppenderRef ref="File"/>-->
-            <AppenderRef ref="File-json"/>
+            <AppenderRef ref="File"/>
+            <!-- <AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="org.hibernate" level="WARN" additivity="false" includeLocation="false">
-<!--            <AppenderRef ref="File"/>-->
-            <AppenderRef ref="File-json"/>
+            <AppenderRef ref="File"/>
+            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="org.hibernate.orm.deprecation" level="FATAL" additivity="false" includeLocation="false">
-<!--            <AppenderRef ref="File"/>-->
-            <AppenderRef ref="File-json"/>
+            <AppenderRef ref="File"/>
+            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="org.hibernate.cache.ehcache.AbstractEhcacheRegionFactory" level="ERROR" additivity="false" includeLocation="false">
-<!--            <AppenderRef ref="File"/>-->
-            <AppenderRef ref="File-json"/>
+            <AppenderRef ref="File"/>
+            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="org.hibernate.jpa.internal.util.LogHelper" level="FATAL" additivity="false"
                      includeLocation="false">
-<!--            <AppenderRef ref="File"/>-->
-            <AppenderRef ref="File-json"/>
+            <AppenderRef ref="File"/>
+            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="org.apache.http" level="WARN" additivity="false" includeLocation="false">
-<!--            <AppenderRef ref="File"/>-->
-            <AppenderRef ref="File-json"/>
+            <AppenderRef ref="File"/>
+            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="java.sql.DatabaseMetaData" level="WARN" additivity="false" includeLocation="false">
-<!--            <AppenderRef ref="File"/>-->
-            <AppenderRef ref="File-json"/>
+            <AppenderRef ref="File"/>
+            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="com.wordnik.swagger" level="WARN" additivity="false" includeLocation="false">
-<!--            <AppenderRef ref="File"/>-->
-            <AppenderRef ref="File-json"/>
+            <AppenderRef ref="File"/>
+            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="io.netty" level="WARN" additivity="false" includeLocation="false">
-<!--            <AppenderRef ref="File"/>-->
-            <AppenderRef ref="File-json"/>
+            <AppenderRef ref="File"/>
+            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="org.jose4j.jwe.kdf" level="WARN" additivity="false" includeLocation="false">
-<!--            <AppenderRef ref="File"/>-->
-            <AppenderRef ref="File-json"/>
+            <AppenderRef ref="File"/>
+            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator" level="ERROR" additivity="false" includeLocation="false">
-<!--            <AppenderRef ref="File"/>-->
-            <AppenderRef ref="File-json"/>
+            <AppenderRef ref="File"/>
+            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
 
@@ -153,8 +153,8 @@
         <!-- Set up the Root logger  -->
         <!-- ======================= -->
         <AsyncRoot level="INFO" includeLocation="false">
-<!--            <AppenderRef ref="File"/>-->
-            <AppenderRef ref="File-json"/>
+            <AppenderRef ref="File"/>
+            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncRoot>
 
@@ -162,8 +162,8 @@
         <!-- Audit log configuration -->
         <!-- ======================= -->
         <Logger name="apiaudit" level="INFO" additivity="false">
-<!--            <AppenderRef ref="APIAuditLog-File"/>-->
-            <AppenderRef ref="APIAuditLog-File-JSON"/>
+            <AppenderRef ref="APIAuditLog-File"/>
+            <!--<AppenderRef ref="APIAuditLog-File-JSON"/>-->
             <AppenderRef ref="CONSOLE_AUDIT"/>
             <!--<AppenderRef ref="ApiAuditLog-Database-Failover"/>-->
             <!--<AppenderRef ref="ApiAuditLog-SQLServer-Database-Failover"/>-->
@@ -172,8 +172,8 @@
             <!--<AppenderRef ref="ApiAuditLog-HarFile"/>-->
         </Logger>
         <Logger name="engineaudit" level="INFO" additivity="false">
-<!--            <AppenderRef ref="EngineAuditLog-File"/>-->
-            <AppenderRef ref="EngineAuditLog-File-JSON"/>
+            <AppenderRef ref="EngineAuditLog-File"/>
+            <!--<AppenderRef ref="EngineAuditLog-File-JSON"/>-->
             <AppenderRef ref="CONSOLE_AUDIT"/>
             <!--<AppenderRef ref="EngineAuditLog-Database-Failover"/>-->
             <!--<AppenderRef ref="EngineAuditLog-SQLServer-Database-Failover"/>-->
@@ -182,8 +182,8 @@
             <!--<AppenderRef ref="EngineAuditLog-HarFile"/>-->
         </Logger>
         <Logger name="agentaudit" level="INFO" additivity="false">
-<!--            <AppenderRef ref="AgentAuditLog-File"/>-->
-            <AppenderRef ref="AgentAuditLog-File-JSON"/>
+            <AppenderRef ref="AgentAuditLog-File"/>
+            <!--<AppenderRef ref="AgentAuditLog-File-JSON"/>-->
             <AppenderRef ref="CONSOLE_AUDIT"/>
             <!--<AppenderRef ref="AgentAuditLog-Database-Failover"/>-->
             <!--<AppenderRef ref="AgentAuditLog-SQLServer-Database-Failover"/>-->
@@ -192,8 +192,8 @@
             <!--<AppenderRef ref="AgentAuditLog-HarFile"/>-->
         </Logger>
         <Logger name="sidebandclientaudit" level="INFO" additivity="false">
-<!--            <AppenderRef ref="SidebandClientAuditLog-File"/>-->
-            <AppenderRef ref="SidebandClientAuditLog-File-JSON"/>
+            <AppenderRef ref="SidebandClientAuditLog-File"/>
+            <!--<AppenderRef ref="SidebandClientAuditLog-File-JSON"/>-->
             <AppenderRef ref="CONSOLE_AUDIT"/>
             <!--<AppenderRef ref="SidebandClientAuditLog-Database-Failover"/>-->
             <!--<AppenderRef ref="SidebandClientAuditLog-SQLServer-Database-Failover"/>-->
@@ -202,8 +202,8 @@
             <!--<AppenderRef ref="SidebandClientAuditLog-HarFile"/>-->
         </Logger>
         <Logger name="sidebandaudit" level="INFO" additivity="false">
-<!--            <AppenderRef ref="SidebandAuditLog-File"/>-->
-            <AppenderRef ref="SidebandAuditLog-File-JSON"/>
+            <AppenderRef ref="SidebandAuditLog-File"/>
+            <!--<AppenderRef ref="SidebandAuditLog-File-JSON"/>-->
             <AppenderRef ref="CONSOLE_AUDIT"/>
             <!--<AppenderRef ref="SidebandAuditLog-Database-Failover"/>-->
             <!--<AppenderRef ref="SidebandAuditLog-SQLServer-Database-Failover"/>-->
