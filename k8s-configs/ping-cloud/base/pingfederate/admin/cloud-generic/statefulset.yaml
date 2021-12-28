@@ -56,7 +56,7 @@ spec:
         - /copy-dependencies.sh
         volumeMounts:
         - name: ssh-dir
-          mountPath: /.ssh
+          mountPath: /home/ping/.ssh
         - name: data-dir
           mountPath: /data
         - name: ssh-id-key-secret
