@@ -13,7 +13,7 @@ _Changes:_
 - Updated Nginx ingress controller to version 1.0.0
 - Update PF upload artifact script to support Standard IKs
 - Updated ArgoCD to version 2.1.6
-- Added custom patch to create public ingresses for admin endpoints
+- Added custom patch to create public   ingresses for admin endpoints
 - Added multiline log support for PA-WAS
 - Added sideband fields to PA logs
 - Added regional custom-patches.yaml as an extension point to customize the configuration for a specific region
@@ -22,12 +22,6 @@ _Changes:_
 - Removing vestigial code (restore-db-password hook script and dbConfig.jose manipulation) from deployment automation
 - Update 20-restart-sequence.sh script to skip rebuild index when no index changes
 - Implemented Kubernetes Infrastructure Agent for New Relic
-<<<<<<< HEAD
-- Updated argocd to latest release: v2.1.6
-- Add sideband fields to PA logs
-- Force StatefulSets (PF-admin, PA-admin, PA-was-admin, PD) to use non-root user
-=======
->>>>>>> master
 
 _Changes:_
 
