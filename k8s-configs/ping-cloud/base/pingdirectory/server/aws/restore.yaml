@@ -109,7 +109,7 @@ metadata:
     app: ping-cloud
     role: pingdirectory
 spec:
-  ttlSecondsAfterFinished: 0
+  ttlSecondsAfterFinished: 30
   backoffLimit: 0
   template:
     spec:
@@ -121,7 +121,11 @@ spec:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
+<<<<<<< HEAD
         image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:8.3.0.3-v1.0.23-pdo-2957
+=======
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory:8.3.0.0-v1.0.21
+>>>>>>> master
         imagePullPolicy: IfNotPresent
         command:
         - /opt/in/restore.sh

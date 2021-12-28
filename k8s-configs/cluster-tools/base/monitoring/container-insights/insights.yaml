@@ -1224,6 +1224,16 @@ spec:
               mountPath: /config-volume
             - name: fluentdconf
               mountPath: /fluentd/etc
+          # TODO: runAsNonRoot should be applied at the pod level, but limit changes to container for now
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - all
+            readOnlyRootFilesystem: true
         - name: update-log-driver
           image: public.ecr.aws/r2h3l6e4/busybox:1.32
           command: ['sh','-c','']

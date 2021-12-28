@@ -161,10 +161,10 @@ PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 ############################################################
 # Ping application image tags
 ############################################################
-PINGACCESS_IMAGE_TAG=6.3.1-v1.0.16
-PINGACCESS_WAS_IMAGE_TAG=6.3.1-v1.0.16
+PINGACCESS_IMAGE_TAG=6.3.1-v1.0.17
+PINGACCESS_WAS_IMAGE_TAG=6.3.1-v1.0.17
 PINGFEDERATE_IMAGE_TAG=10.3.1-v1.0.16
-PINGDIRECTORY_IMAGE_TAG=8.3.0.0-v1.0.19
+PINGDIRECTORY_IMAGE_TAG=8.3.0.0-v1.0.21
 PINGDELEGATOR_IMAGE_TAG=4.4.1-v1.0.8
 PINGCENTRAL_IMAGE_TAG=1.8.0-v1.0.20
 
@@ -173,7 +173,7 @@ PINGCENTRAL_IMAGE_TAG=1.8.0-v1.0.20
 ############################################################
 METADATA_IMAGE_TAG=v1.0.4
 P14C_BOOTSTRAP_IMAGE_TAG=v1.0.11
-P14C_INTEGRATION_IMAGE_TAG=v1.0.36
+P14C_INTEGRATION_IMAGE_TAG=v1.0.38
 
 ############################################################
 # Cluster name variables

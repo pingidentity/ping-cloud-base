@@ -105,96 +105,50 @@ fi
 
 # Create the directory structure for the artifact
 mkdir ${ARTIFACT_LOCATION}/work
-mkdir ${ARTIFACT_LOCATION}/work/deploy
-mkdir ${ARTIFACT_LOCATION}/work/conf
-mkdir ${ARTIFACT_LOCATION}/work/conf/language-packs
-mkdir ${ARTIFACT_LOCATION}/work/conf/template
 
-# Copy the basic jars and wars to deploy
-cp ${ARTIFACT_LOCATION}/dist/*.jar ${ARTIFACT_LOCATION}/work/deploy
-cp ${ARTIFACT_LOCATION}/dist/*.war ${ARTIFACT_LOCATION}/work/deploy
+# Packaging as per IK standards 
+# Copy the Legal.pdf file if exists at the root
+cp ${ARTIFACT_LOCATION}/Legal.pdf ${ARTIFACT_LOCATION}/work
 
-# Handle the kits where the jars or wars are within deploy
-if [ -d "${ARTIFACT_LOCATION}/deploy" ]
+# Copy config folder
+if [ -d "${ARTIFACT_LOCATION}/config" ]
 then
-    cp -r ${ARTIFACT_LOCATION}/deploy/*.jar ${ARTIFACT_LOCATION}/work/deploy
-    cp -r ${ARTIFACT_LOCATION}/deploy/*.war ${ARTIFACT_LOCATION}/work/deploy
+    mkdir -p ${ARTIFACT_LOCATION}/work/config && cp -r ${ARTIFACT_LOCATION}/config/* ${ARTIFACT_LOCATION}/work/config
 fi
 
-# Handle the kits where the jars or wars are within dist/deploy
-if [ -d "${ARTIFACT_LOCATION}/dist/deploy" ]
+# Copy language-packs folder
+if [ -d "${ARTIFACT_LOCATION}/dist/pingfederate/server/default/conf/language-packs" ]
 then
-    cp -r ${ARTIFACT_LOCATION}/dist/deploy/*.jar ${ARTIFACT_LOCATION}/work/deploy
-    cp -r ${ARTIFACT_LOCATION}/dist/deploy/*.war ${ARTIFACT_LOCATION}/work/deploy
+    mkdir -p ${ARTIFACT_LOCATION}/work/dist/pingfederate/server/default/conf/language-packs && \
+    cp -r ${ARTIFACT_LOCATION}/dist/pingfederate/server/default/conf/language-packs/* ${ARTIFACT_LOCATION}/work/dist/pingfederate/server/default/conf/language-packs
 fi
 
-# Handle the war for the VIP IK which exists as a folder
-if [ -d "${ARTIFACT_LOCATION}/dist/vip-adapter-security-code-challenge.war" ]
+# Copy deploy folder
+if [ -d "${ARTIFACT_LOCATION}/dist/pingfederate/server/default/deploy" ]
 then
-    cp -r ${ARTIFACT_LOCATION}/dist/*.war ${ARTIFACT_LOCATION}/work/deploy
+    mkdir -p ${ARTIFACT_LOCATION}/work/dist/pingfederate/server/default/deploy && \
+    cp -r ${ARTIFACT_LOCATION}/dist/pingfederate/server/default/deploy/* ${ARTIFACT_LOCATION}/work/dist/pingfederate/server/default/deploy
 fi
 
-# Handle the due-web folder for Duo IK which is essentially a war
-if [ -d "${ARTIFACT_LOCATION}/dist/duo-web" ]
+# Copy lib folder
+if [ -d "${ARTIFACT_LOCATION}/dist/pingfederate/server/default/lib" ]
 then
-    cp -r ${ARTIFACT_LOCATION}/dist/duo-web ${ARTIFACT_LOCATION}/work/deploy
+    mkdir -p ${ARTIFACT_LOCATION}/work/dist/pingfederate/server/default/lib && \
+    cp -r ${ARTIFACT_LOCATION}/dist/pingfederate/server/default/lib/* ${ARTIFACT_LOCATION}/work/dist/pingfederate/server/default/lib
 fi
 
-# Handle the sub-folder structure for PingOne for Customers IK
-if [ -d "${ARTIFACT_LOCATION}/dist/ds-pcv" ]
+# Copy sample folder
+if [ -d "${ARTIFACT_LOCATION}/sample" ]
 then
-    cp ${ARTIFACT_LOCATION}/dist/ds-pcv/*.jar ${ARTIFACT_LOCATION}/work/deploy
+    mkdir -p ${ARTIFACT_LOCATION}/work/sample && \
+    cp -r ${ARTIFACT_LOCATION}/sample/* ${ARTIFACT_LOCATION}/work/sample
 fi
 
-# Handle the sub-folder structure for PingOne for Customers IK
-if [ -d "${ARTIFACT_LOCATION}/dist/provisioner" ]
+# Copy metadata folder
+if [ -d "${ARTIFACT_LOCATION}/metadata" ]
 then
-    cp ${ARTIFACT_LOCATION}/dist/provisioner/*.jar ${ARTIFACT_LOCATION}/work/deploy
-fi
-
-# Copy the template files if they exist at the root
-cp ${ARTIFACT_LOCATION}/dist/*.html ${ARTIFACT_LOCATION}/work/conf/template
-
-# Upload conf folder for PingOne for Customers Integration Kit as it exists inside a specific sub folder
-if [ -d "${ARTIFACT_LOCATION}/dist/ds-pcv/conf" ]
-then
-    cp -r ${ARTIFACT_LOCATION}/dist/ds-pcv/conf/* ${ARTIFACT_LOCATION}/work/conf
-fi
-
-# Copy the template files if they exist within a separate folder
-if [ -d "${ARTIFACT_LOCATION}/dist/template" ]
-then
-    cp -r ${ARTIFACT_LOCATION}/dist/template/* ${ARTIFACT_LOCATION}/work/conf/template
-fi
-
-# Copy the template files if they exist within the /conf folder
-if [ -d "${ARTIFACT_LOCATION}/conf/template" ]
-then
-    cp -r ${ARTIFACT_LOCATION}/conf/template/* ${ARTIFACT_LOCATION}/work/conf/template
-fi
-
-# Copy language-packs if they exist within a separate folder
-if [ -d "${ARTIFACT_LOCATION}/dist/language-packs" ]
-then
-    cp -r ${ARTIFACT_LOCATION}/dist/language-packs/* ${ARTIFACT_LOCATION}/work/conf/language-packs
-fi
-
-# Copy language-packs if they exist within the /conf folder
-if [ -d "${ARTIFACT_LOCATION}/conf/language-packs" ]
-then
-    cp -r ${ARTIFACT_LOCATION}/conf/language-packs/* ${ARTIFACT_LOCATION}/work/conf/language-packs
-fi
-
-# Copy language-packs if they exist within dist/conf
-if [ -d "${ARTIFACT_LOCATION}/dist/conf/language-packs" ]
-then
-    cp -r ${ARTIFACT_LOCATION}/dist/conf/language-packs/* ${ARTIFACT_LOCATION}/work/conf/language-packs
-fi
-
-# Copy templates if they exist within the /dist/conf
-if [ -d "${ARTIFACT_LOCATION}/dist/conf/template" ]
-then
-    cp -r ${ARTIFACT_LOCATION}/dist/conf/template/* ${ARTIFACT_LOCATION}/work/conf/template
+    mkdir -p ${ARTIFACT_LOCATION}/work/metadata && \
+    cp -r ${ARTIFACT_LOCATION}/metadata/* ${ARTIFACT_LOCATION}/work/metadata
 fi
 
 # Create the runtime zip

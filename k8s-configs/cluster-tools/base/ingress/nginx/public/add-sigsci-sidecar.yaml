@@ -13,22 +13,22 @@
 - op: add
   path: /spec/template/spec/containers/-
   value:
-    image: public.ecr.aws/r2h3l6e4/pingcloud-services/sigsci-agent:v4.22.0
+    image: public.ecr.aws/r2h3l6e4/pingcloud-services/sigsci-agent:v4.24.1
     name: sigsci-agent
+    securityContext:
+      readOnlyRootFilesystem: false
     resources:
       limits:
-        cpu: 1
-        memory: 512Mi
+        cpu: 2
+        memory: 2Gi
       requests:
-        cpu: 1
-        memory: 512Mi
+        cpu: 2
+        memory: 2Gi
     env:
     - name: AWS_REGION
       value: us-east-2
     - name: AGENT_NAME
       value: beluga-dev
-    - name: SIGSCI_MAX_PROCS
-      value: '70%'
     volumeMounts:
     - mountPath: /var/run/
       name: sigsci-socket
