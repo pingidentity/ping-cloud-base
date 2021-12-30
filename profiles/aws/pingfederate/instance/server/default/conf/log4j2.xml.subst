@@ -24,6 +24,13 @@
    |
    | monitorInterval - the number of seconds before Log4J2 detects changes to the configuration file and reconfigures itself.
  -->
+
+<!--
+   | Appenders with json names used for JSON logging for CloudWatch.
+   | Only File or Json appender should be used in Loggers.
+   | To enable JSON logging uncomment every "json" appender, comment every "File" appender.
+-->
+
 <Configuration monitorInterval="30" packages="com.pingidentity.log4j.pattern,com.pingidentity.log4j.layout,com.pingidentity.log4j.appender" shutdownHook="disable">
     <Appenders>
 
@@ -64,7 +71,7 @@
         </RollingFile>
 
         <!-- Main JSON log : A size based file rolling appender with json formatting -->
-        <RollingFile name="FILE-Json" fileName="${sys:pf.log.dir}/server.log"
+        <RollingFile name="FILEToJson" fileName="${sys:pf.log.dir}/server.log"
                      filePattern="${sys:pf.log.dir}/server.log.%i" ignoreExceptions="false">
             <JSONLayout eventEol="true" compact="true">
                 <KeyValuePair key="date" value="$${date:yyyy-MM-dd'T'HH:mm:ssZ}"/>
@@ -85,7 +92,7 @@
             </PingSyslogLayout>
         </Console>
         <!-- SAML Transaction log : A time/date based rolling appender -->
-        <RollingFile name="SamlTransaction" fileName="${sys:pf.log.dir}/transaction.log"
+        <RollingFile name="SamlTransactionToFile" fileName="${sys:pf.log.dir}/transaction.log"
                      filePattern="${sys:pf.log.dir}/transaction.log.%i"
                      ignoreExceptions="false">
             <PatternLayout>
@@ -101,7 +108,7 @@
         </RollingFile>
 
         <!-- SAML Transaction JSON log : A time/date based rolling appender with json formatting -->
-        <RollingFile name="SamlTransactionJson" fileName="${sys:pf.log.dir}/transaction.log"
+        <RollingFile name="SamlTransactionToJson" fileName="${sys:pf.log.dir}/transaction.log"
                      filePattern="${sys:pf.log.dir}/transaction.log.%i"
                      ignoreExceptions="false">
             <JSONLayout eventEol="true" compact="true">
@@ -144,7 +151,7 @@
         </RollingFile>
         -->
 
-        <RollingFile name="SecurityAudit2File" fileName="${sys:pf.log.dir}/audit.log"
+        <RollingFile name="SecurityAuditToFile" fileName="${sys:pf.log.dir}/audit.log"
                      filePattern="${sys:pf.log.dir}/audit.log.%i"
                      ignoreExceptions="false">
             <PatternLayout>
@@ -206,7 +213,7 @@
             <DefaultRolloverStrategy max="4" />
         </RollingFile>
 
-        <RollingFile name="SecurityAudit2FileJson" fileName="${sys:pf.log.dir}/audit.log"
+        <RollingFile name="SecurityAuditToJson" fileName="${sys:pf.log.dir}/audit.log"
                      filePattern="${sys:pf.log.dir}/audit.log.%i"
                      ignoreExceptions="false">
             <JSONLayout eventEol="true" compact="true">
@@ -255,7 +262,7 @@
         </Console>
 
         <!-- Admin Audit log : A time/date based rolling appender -->
-        <RollingFile name="AdminAudit" fileName="${sys:pf.log.dir}/admin.log"
+        <RollingFile name="AdminAuditToFile" fileName="${sys:pf.log.dir}/admin.log"
                      filePattern="${sys:pf.log.dir}/admin.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <PatternLayout>
@@ -279,7 +286,7 @@
         </RollingFile>
 
         <!-- Admin Audit JSON log : A time/date based rolling appender with json formatting -->
-        <RollingFile name="AdminAuditJson" fileName="${sys:pf.log.dir}/admin.log"
+        <RollingFile name="AdminAuditToJson" fileName="${sys:pf.log.dir}/admin.log"
                      filePattern="${sys:pf.log.dir}/admin.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <JSONLayout eventEol="true" compact="true">
@@ -308,7 +315,7 @@
         </RollingFile>
 
         <!-- Admin Event Detail Audit log : A time/date based rolling appender -->
-        <RollingFile name="AdminEventDetailAudit" fileName="${sys:pf.log.dir}/admin-event-detail.log"
+        <RollingFile name="AdminEventDetailAuditToFile" fileName="${sys:pf.log.dir}/admin-event-detail.log"
                      filePattern="${sys:pf.log.dir}/admin-event-detail.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <PatternLayout>
@@ -332,7 +339,7 @@
         </RollingFile>
 
         <!-- Admin Event Detail Audit Json log : A time/date based rolling appender with json formatting -->
-        <RollingFile name="AdminEventDetailAuditJson" fileName="${sys:pf.log.dir}/admin-event-detail.log"
+        <RollingFile name="AdminEventDetailAuditToJson" fileName="${sys:pf.log.dir}/admin-event-detail.log"
                      filePattern="${sys:pf.log.dir}/admin-event-detail.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <JSONLayout eventEol="true" compact="true">
@@ -358,7 +365,7 @@
         </RollingFile>
 
         <!-- Admin API Audit log : A time/date based rolling appender -->
-        <RollingFile name="AdminApiAudit" fileName="${sys:pf.log.dir}/admin-api.log"
+        <RollingFile name="AdminApiAuditToFile" fileName="${sys:pf.log.dir}/admin-api.log"
                      filePattern="${sys:pf.log.dir}/admin-api.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <PatternLayout>
@@ -394,7 +401,7 @@
         </RollingFile>
 
         <!-- Admin API Audit Json log : A time/date based rolling appender with json formatting -->
-        <RollingFile name="AdminApiAuditJson" fileName="${sys:pf.log.dir}/admin-api.log"
+        <RollingFile name="AdminApiAuditToJson" fileName="${sys:pf.log.dir}/admin-api.log"
                      filePattern="${sys:pf.log.dir}/admin-api.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <JSONLayout eventEol="true" compact="true">
@@ -437,7 +444,7 @@
         </Console>
 
         <!-- Runtime API Audit log : A time/date based rolling appender -->
-        <RollingFile name="RuntimeApiAudit" fileName="${sys:pf.log.dir}/runtime-api.log"
+        <RollingFile name="RuntimeApiAuditToFile" fileName="${sys:pf.log.dir}/runtime-api.log"
                      filePattern="${sys:pf.log.dir}/runtime-api.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <PatternLayout>
@@ -473,7 +480,7 @@
         </RollingFile>
 
         <!-- Runtime API Audit JSON log : A time/date based rolling appender with json formatting -->
-        <RollingFile name="RuntimeApiAuditJson" fileName="${sys:pf.log.dir}/runtime-api.log"
+        <RollingFile name="RuntimeApiAuditToJson" fileName="${sys:pf.log.dir}/runtime-api.log"
                      filePattern="${sys:pf.log.dir}/runtime-api.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <JSONLayout eventEol="true" compact="true">
@@ -501,7 +508,7 @@
         </RollingFile>
 
         <!-- Provisioner log : A time/date based rolling appender -->
-        <RollingFile name="ProvisionerLog" fileName="${sys:pf.log.dir}/provisioner.log"
+        <RollingFile name="ProvisionerLogToFile" fileName="${sys:pf.log.dir}/provisioner.log"
                      filePattern="${sys:pf.log.dir}/provisioner.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <PatternLayout>
@@ -521,7 +528,7 @@
             </DefaultRolloverStrategy>
         </RollingFile>
 
-        <RollingFile name="ProvisionerLogJson" fileName="${sys:pf.log.dir}/provisioner.log"
+        <RollingFile name="ProvisionerLogToJson" fileName="${sys:pf.log.dir}/provisioner.log"
                      filePattern="${sys:pf.log.dir}/provisioner.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <JSONLayout eventEol="true" compact="true">
@@ -586,7 +593,7 @@
             </DefaultRolloverStrategy>
         </RollingFile>
 
-       <RollingFile name="OutboundProvisionerEventToFileJson"
+       <RollingFile name="OutboundProvisionerEventToJson"
                      fileName="${sys:pf.log.dir}/provisioner-audit.log"
                      filePattern="${sys:pf.log.dir}/provisioner-audit.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
@@ -1700,7 +1707,7 @@
         <Logger name="org.sourceid.saml20.util.SystemUtil" level="INFO" additivity="false">
             <AppenderRef ref="CONSOLE" />
             <AppenderRef ref="FILE" />
-<!--            <AppenderRef ref="FILE-Json" />-->
+            <!--<AppenderRef ref="FILE-Json" />-->
             <AppenderRef ref="CONSOLE-SIEM" />
         </Logger>
         <!--
@@ -1735,7 +1742,7 @@
         <Logger name="com.pingidentity.common.util.ErrorHandler" level="INFO" additivity="false">
             <AppenderRef ref="CONSOLE" />
             <AppenderRef ref="FILE" />
-<!--            <AppenderRef ref="FILE-Json" />-->
+            <!--<AppenderRef ref="FILEToJson" />-->
             <AppenderRef ref="CONSOLE-SIEM" />
         </Logger>
         <Logger name="com.pingidentity.appserver.jetty" level="INFO" />
@@ -1763,8 +1770,8 @@
 
         <AsyncLogger name="org.sourceid.saml20.bindings.BindingLogProxy"
                      level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="SamlTransaction" />
-<!--            <appender-ref ref="SamlTransactionJson" />-->
+            <appender-ref ref="SamlTransactionToFile" />
+            <!--<appender-ref ref="SamlTransactionToJson" />-->
         </AsyncLogger>
 
         <!--
@@ -1783,8 +1790,8 @@
         -->
         <Logger name="org.sourceid.websso.profiles.sp.SpAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="SecurityAudit2File" />
-<!--            <appender-ref ref="SecurityAudit2FileJson" />-->
+            <appender-ref ref="SecurityAuditToFile" />
+            <!--<appender-ref ref="SecurityAuditToJson" />-->
             <appender-ref ref="SecurityAudit2Console4SIEM" />
             <!--
                 <appender-ref ref="SecurityAuditToSQLServerDB-FAILOVER"/>
@@ -1813,8 +1820,8 @@
         -->
         <Logger name="org.sourceid.websso.profiles.idp.IdpAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="SecurityAudit2File" />
-<!--            <appender-ref ref="SecurityAudit2FileJson" />-->
+            <appender-ref ref="SecurityAuditToFile" />
+            <!--<appender-ref ref="SecurityAuditToJson" />-->
             <appender-ref ref="SecurityAudit2Console4SIEM" />
             <!--
                 <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
@@ -1843,8 +1850,8 @@
         -->
         <Logger name="org.sourceid.websso.profiles.idp.AsAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="SecurityAudit2File" />
-<!--            <appender-ref ref="SecurityAudit2FileJson" />-->
+            <appender-ref ref="SecurityAuditToFile" />
+            <!--<appender-ref ref="SecurityAuditToJson" />-->
             <appender-ref ref="SecurityAudit2Console4SIEM" />
             <!--
                 <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
@@ -1872,8 +1879,8 @@
         -->
         <Logger name="org.sourceid.websso.profiles.idp.ClientRegistrationAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="SecurityAudit2File" />
-<!--            <appender-ref ref="SecurityAudit2FileJson" />-->
+            <appender-ref ref="SecurityAuditToFile" />
+            <!--<appender-ref ref="SecurityAuditToJson" />-->
             <appender-ref ref="SecurityAudit2Console4SIEM" />
             <!--
                 <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
@@ -1901,8 +1908,8 @@
         -->
         <Logger name="org.sourceid.wstrust.log.STSAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="SecurityAudit2File" />
-<!--            <appender-ref ref="SecurityAudit2FileJson" />-->
+            <appender-ref ref="SecurityAuditToFile" />
+            <!--<appender-ref ref="SecurityAuditToJson" />-->
             <appender-ref ref="SecurityAudit2Console4SIEM" />
             <!--
                 <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
@@ -1930,8 +1937,8 @@
         -->
         <AsyncLogger name="com.pingidentity.provisioner"
                      level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="ProvisionerLog" />
-<!--            <appender-ref ref="ProvisionerLogJson" />-->
+            <appender-ref ref="ProvisionerLogToFile" />
+            <!--<appender-ref ref="ProvisionerLogToJson" />-->
             <appender-ref ref="ProvisionerLogForSIEM" />
 
             <!--
@@ -1944,24 +1951,24 @@
         </AsyncLogger>
 
         <Logger name="AuditLogger" level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="AdminAudit" />
-<!--            <appender-ref ref="AdminAuditJson" />-->
+            <appender-ref ref="AdminAuditToFile" />
+            <!--<appender-ref ref="AdminAuditToJson" />-->
         </Logger>
 
         <Logger name="EventDetailAuditLogger" level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="AdminEventDetailAudit" />
-<!--            <appender-ref ref="AdminEventDetailAuditJson" />-->
+            <appender-ref ref="AdminEventDetailAuditToFile" />
+            <!--<appender-ref ref="AdminEventDetailAuditToJson" />-->
         </Logger>
 
         <Logger name="AdminApiAuditLogger" level="INFO" additivity="false" includeLocation="false">
-            <appender-ref ref="AdminApiAudit" />
-<!--            <appender-ref ref="AdminApiAuditJson" />-->
+            <appender-ref ref="AdminApiAuditToFile" />
+            <!--<appender-ref ref="AdminApiAuditToJson" />-->
             <appender-ref ref="AdminApiAudit2Console" />
         </Logger>
 
         <Logger name="RuntimeApiAuditLogger" level="INFO" additivity="false" includeLocation="false">
-<!--            <appender-ref ref="RuntimeApiAudit" />-->
-            <appender-ref ref="RuntimeApiAuditJson" />
+            <appender-ref ref="RuntimeApiAuditToFile" />
+            <!--<appender-ref ref="RuntimeApiAuditToJson" />-->
         </Logger>
 
         <!-- Log xml content before parsing-->
@@ -1997,7 +2004,7 @@
 
         <Logger name="ProvisionerAuditLogger" level="INFO" additivity="false" includeLocation="false">
             <appender-ref ref="OutboundProvisionerEventToFile" />
-<!--            <appender-ref ref="OutboundProvisionerEventToFileJson" />-->
+            <!--<appender-ref ref="OutboundProvisionerEventToJson" />-->
             <!--
             <appender-ref ref="OutboundProvisionerEventToSQLServerDB-FAILOVER"/>
             <appender-ref ref="OutboundProvisionerEventToOracleDB-FAILOVER"/>
@@ -2030,7 +2037,7 @@
 		  <AsyncRoot level="${PF_LOG_LEVEL}" includeLocation="false">
             <!-- <AppenderRef ref="CONSOLE" /> -->
             <AppenderRef ref="FILE" />
-<!--            <AppenderRef ref="FILE-Json" />-->
+            <!-- <AppenderRef ref="FILEToJson" />-->
             <AppenderRef ref="CONSOLE-SIEM" />
         </AsyncRoot>
 
