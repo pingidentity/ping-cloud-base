@@ -26,9 +26,9 @@
  -->
 
 <!--
-   | Appenders with json names used for JSON logging for CloudWatch.
-   | Only File or Json appender should be used in Loggers.
-   | To enable JSON logging uncomment every "json" appender, comment every "File" appender.
+   | Appenders ToJson used for JSON logging for CloudWatch.
+   | Only ToFile or ToJson appender should be used in Loggers.
+   | To enable JSON logging uncomment every "ToJson" appender, comment every "File" appender.
 -->
 
 <Configuration monitorInterval="30" packages="com.pingidentity.log4j.pattern,com.pingidentity.log4j.layout,com.pingidentity.log4j.appender" shutdownHook="disable">
