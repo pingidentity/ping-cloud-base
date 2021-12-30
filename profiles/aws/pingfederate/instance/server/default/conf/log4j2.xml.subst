@@ -1699,8 +1699,8 @@
         <Logger name="org.sourceid.saml20.domain.mgmt.impl.DataDeployer" level="DEBUG" />
         <Logger name="org.sourceid.saml20.util.SystemUtil" level="INFO" additivity="false">
             <AppenderRef ref="CONSOLE" />
-<!--            <AppenderRef ref="FILE" />-->
-            <AppenderRef ref="FILE-Json" />
+            <AppenderRef ref="FILE" />
+<!--            <AppenderRef ref="FILE-Json" />-->
             <AppenderRef ref="CONSOLE-SIEM" />
         </Logger>
         <!--
@@ -1734,8 +1734,8 @@
         <Logger name="com.pingidentity" level="${PF_LOG_LEVEL}" />
         <Logger name="com.pingidentity.common.util.ErrorHandler" level="INFO" additivity="false">
             <AppenderRef ref="CONSOLE" />
-<!--            <AppenderRef ref="FILE" />-->
-            <AppenderRef ref="FILE-Json" />
+            <AppenderRef ref="FILE" />
+<!--            <AppenderRef ref="FILE-Json" />-->
             <AppenderRef ref="CONSOLE-SIEM" />
         </Logger>
         <Logger name="com.pingidentity.appserver.jetty" level="INFO" />
@@ -1763,8 +1763,8 @@
 
         <AsyncLogger name="org.sourceid.saml20.bindings.BindingLogProxy"
                      level="INFO" additivity="false" includeLocation="false">
-<!--            <appender-ref ref="SamlTransaction" />-->
-            <appender-ref ref="SamlTransactionJson" />
+            <appender-ref ref="SamlTransaction" />
+<!--            <appender-ref ref="SamlTransactionJson" />-->
         </AsyncLogger>
 
         <!--
@@ -1783,8 +1783,8 @@
         -->
         <Logger name="org.sourceid.websso.profiles.sp.SpAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-<!--            <appender-ref ref="SecurityAudit2File" />-->
-            <appender-ref ref="SecurityAudit2FileJson" />
+            <appender-ref ref="SecurityAudit2File" />
+<!--            <appender-ref ref="SecurityAudit2FileJson" />-->
             <appender-ref ref="SecurityAudit2Console4SIEM" />
             <!--
                 <appender-ref ref="SecurityAuditToSQLServerDB-FAILOVER"/>
@@ -1813,8 +1813,8 @@
         -->
         <Logger name="org.sourceid.websso.profiles.idp.IdpAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-<!--            <appender-ref ref="SecurityAudit2File" />-->
-            <appender-ref ref="SecurityAudit2FileJson" />
+            <appender-ref ref="SecurityAudit2File" />
+<!--            <appender-ref ref="SecurityAudit2FileJson" />-->
             <appender-ref ref="SecurityAudit2Console4SIEM" />
             <!--
                 <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
@@ -1843,8 +1843,8 @@
         -->
         <Logger name="org.sourceid.websso.profiles.idp.AsAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-<!--            <appender-ref ref="SecurityAudit2File" />-->
-            <appender-ref ref="SecurityAudit2FileJson" />
+            <appender-ref ref="SecurityAudit2File" />
+<!--            <appender-ref ref="SecurityAudit2FileJson" />-->
             <appender-ref ref="SecurityAudit2Console4SIEM" />
             <!--
                 <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
@@ -1872,8 +1872,8 @@
         -->
         <Logger name="org.sourceid.websso.profiles.idp.ClientRegistrationAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-<!--            <appender-ref ref="SecurityAudit2File" />-->
-            <appender-ref ref="SecurityAudit2FileJson" />
+            <appender-ref ref="SecurityAudit2File" />
+<!--            <appender-ref ref="SecurityAudit2FileJson" />-->
             <appender-ref ref="SecurityAudit2Console4SIEM" />
             <!--
                 <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
@@ -1901,8 +1901,8 @@
         -->
         <Logger name="org.sourceid.wstrust.log.STSAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
-<!--            <appender-ref ref="SecurityAudit2File" />-->
-            <appender-ref ref="SecurityAudit2FileJson" />
+            <appender-ref ref="SecurityAudit2File" />
+<!--            <appender-ref ref="SecurityAudit2FileJson" />-->
             <appender-ref ref="SecurityAudit2Console4SIEM" />
             <!--
                 <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
@@ -1930,8 +1930,8 @@
         -->
         <AsyncLogger name="com.pingidentity.provisioner"
                      level="INFO" additivity="false" includeLocation="false">
-<!--            <appender-ref ref="ProvisionerLog" />-->
-            <appender-ref ref="ProvisionerLogJson" />
+            <appender-ref ref="ProvisionerLog" />
+<!--            <appender-ref ref="ProvisionerLogJson" />-->
             <appender-ref ref="ProvisionerLogForSIEM" />
 
             <!--
@@ -1944,18 +1944,18 @@
         </AsyncLogger>
 
         <Logger name="AuditLogger" level="INFO" additivity="false" includeLocation="false">
-<!--            <appender-ref ref="AdminAudit" />-->
-            <appender-ref ref="AdminAuditJson" />
+            <appender-ref ref="AdminAudit" />
+<!--            <appender-ref ref="AdminAuditJson" />-->
         </Logger>
 
         <Logger name="EventDetailAuditLogger" level="INFO" additivity="false" includeLocation="false">
-<!--            <appender-ref ref="AdminEventDetailAudit" />-->
-            <appender-ref ref="AdminEventDetailAuditJson" />
+            <appender-ref ref="AdminEventDetailAudit" />
+<!--            <appender-ref ref="AdminEventDetailAuditJson" />-->
         </Logger>
 
         <Logger name="AdminApiAuditLogger" level="INFO" additivity="false" includeLocation="false">
-<!--            <appender-ref ref="AdminApiAudit" />-->
-            <appender-ref ref="AdminApiAuditJson" />
+            <appender-ref ref="AdminApiAudit" />
+<!--            <appender-ref ref="AdminApiAuditJson" />-->
             <appender-ref ref="AdminApiAudit2Console" />
         </Logger>
 
@@ -1996,8 +1996,8 @@
         -->
 
         <Logger name="ProvisionerAuditLogger" level="INFO" additivity="false" includeLocation="false">
-<!--            <appender-ref ref="OutboundProvisionerEventToFile" />-->
-            <appender-ref ref="OutboundProvisionerEventToFileJson" />
+            <appender-ref ref="OutboundProvisionerEventToFile" />
+<!--            <appender-ref ref="OutboundProvisionerEventToFileJson" />-->
             <!--
             <appender-ref ref="OutboundProvisionerEventToSQLServerDB-FAILOVER"/>
             <appender-ref ref="OutboundProvisionerEventToOracleDB-FAILOVER"/>
@@ -2029,8 +2029,8 @@
         -->
 		  <AsyncRoot level="${PF_LOG_LEVEL}" includeLocation="false">
             <!-- <AppenderRef ref="CONSOLE" /> -->
-<!--            <AppenderRef ref="FILE" />-->
-            <AppenderRef ref="FILE-Json" />
+            <AppenderRef ref="FILE" />
+<!--            <AppenderRef ref="FILE-Json" />-->
             <AppenderRef ref="CONSOLE-SIEM" />
         </AsyncRoot>
 
