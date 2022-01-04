@@ -32,16 +32,16 @@
         <!-- ============================== -->
 
         <Console name="CONSOLE" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{ABSOLUTE} %-5p [%c{1}] %m%n" />
+            <PatternLayout pattern="%d{ABSOLUTE} %-5p [%c{1}] %m{nolookups}%n" />
         </Console>
 
         <Console name="CONSOLE-ERROR" target="SYSTEM_ERR">
-            <PatternLayout pattern="%d{ABSOLUTE} %-5p [%c{1}] %m%n" />
+            <PatternLayout pattern="%d{ABSOLUTE} %-5p [%c{1}] %m{nolookups}%n" />
         </Console>
 
         <Console name="CONSOLE-PROVISIONER" target="SYSTEM_OUT">
             <PatternLayout
-                    pattern="%d{ABSOLUTE} %-5p [%c{1}] %m %x %X{ChannelCode}%n" />
+                    pattern="%d{ABSOLUTE} %-5p [%c{1}] %m{nolookups} %x %X{ChannelCode}%n" />
         </Console>
 
         <!-- ================================= -->
@@ -55,7 +55,7 @@
                 <!-- Uncomment this if you want to use UTF-8 encoding instead
                     of system's default encoding.
                 <charset>UTF-8</charset> -->
-                <pattern>%d %X{trackingid} %-5p [%c] %m%n</pattern>
+                <pattern>%d %X{trackingid} %-5p [%c] %m{nolookups}%n</pattern>
             </PatternLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="100 MB" />
@@ -78,7 +78,7 @@
                 <!-- Uncomment this if you want to use UTF-8 encoding instead
                     of system's default encoding.
                 <charset>UTF-8</charset> -->
-                <pattern>%d %m%n</pattern>
+                <pattern>%d %m{nolookups}%n</pattern>
             </PatternLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="100 MB" />
@@ -206,7 +206,7 @@
                 <!-- Uncomment this if you want to use UTF-8 encoding instead
                     of system's default encoding.
                 <charset>UTF-8</charset> -->
-                <pattern>%d | %X{user} | %X{roles} | %X{ip} | %X{component} | %X{event} | %X{eventdetailid} | %m%n</pattern>
+                <pattern>%d | %X{user} | %X{roles} | %X{ip} | %X{component} | %X{event} | %X{eventdetailid} | %m{nolookups}%n</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />
@@ -230,7 +230,7 @@
                 <!-- Uncomment this if you want to use UTF-8 encoding instead
                     of system's default encoding.
                 <charset>UTF-8</charset> -->
-                <pattern>%X{eventdetailid} | %X{filename} | %X{delta} | line %X{position} | %m%n</pattern>
+                <pattern>%X{eventdetailid} | %X{filename} | %X{delta} | line %X{position} | %m{nolookups}%n</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />
@@ -337,7 +337,7 @@
                      filePattern="${sys:pf.log.dir}/provisioner.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
             <PatternLayout>
-                <pattern>%d{ABSOLUTE} %-5p [%c{1}] %m %x %X{ChannelCode}%n</pattern>
+                <pattern>%d{ABSOLUTE} %-5p [%c{1}] %m{nolookups} %x %X{ChannelCode}%n</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />

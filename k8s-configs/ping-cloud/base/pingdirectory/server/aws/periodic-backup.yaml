@@ -59,7 +59,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: pingdirectory-backup
-            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory:8.3.0.0-v1.0.21
+            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory:8.3.0.0-v1.0.22
             imagePullPolicy: IfNotPresent
             securityContext:
               runAsGroup: 9999
@@ -70,6 +70,9 @@ spec:
             envFrom:
             - configMapRef:
                 name: pingdirectory-environment-variables
+            env:
+            - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+              value: "true"
             volumeMounts:
             - name: backup-script
               mountPath: /opt/in/backup.sh

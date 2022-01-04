@@ -17,7 +17,6 @@ metadata:
     app: nri-kube-events
     app.kubernetes.io/name: nri-kube-events
     helm.sh/chart: nri-kube-events-1.10.0
-    app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/version: "1.6.0"
 
 ---
@@ -29,7 +28,6 @@ metadata:
   labels:
     app.kubernetes.io/name: nri-prometheus
     helm.sh/chart: nri-prometheus-1.10.0
-    app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/version: "2.9.0"
 apiVersion: v1
 data:
@@ -160,7 +158,6 @@ kind: ConfigMap
 metadata:
   name: pingmetadata
   namespace: newrelic
-  selfLink: /api/v1/namespaces/default/configmaps/pingmetadata
 
 ---
 apiVersion: v1
@@ -194,3 +191,27 @@ data:
           - ./bin/nri-kubernetes
           - --metrics
         interval: 20
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: copy-secret
+  namespace: newrelic
+data:
+  copy-secret.sh: |-
+    #!/bin/sh
+
+    cd /tmp
+
+    kubectl get secret ${SECRET_NAME} \
+        -n ${SECRET_NAMESPACE} \
+        -o jsonpath='{.data.NEW_RELIC_LICENSE_KEY}' |
+    base64 -d > NEW_RELIC_LICENSE_KEY
+
+    kubectl create secret generic ${SECRET_NAME} \
+        -n ${CURRENT_NAMESPACE} \
+        --from-file=NEW_RELIC_LICENSE_KEY
+
+    rm -f NEW_RELIC_LICENSE_KEY

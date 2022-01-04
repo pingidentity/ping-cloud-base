@@ -5,8 +5,9 @@
 #   - Added an "argocd" Namespace for all namespace-scoped resources
 #   - Added an "argo-git-deploy" Secret to hold the SSH key for git cloning
 #   - Set the ArgoCD UI password to "admin" in the "argocd-secret" secret object
-#   - Added the "sealedsecrets.bitnami.com/managed: true" annotation to the above secret so it's manageable by Bitnami.
+#   - Added the "sealedsecrets.bitnami.com/managed: true" annotation to the above secret so it's manageable by Bitnami
 #   - Added git-ops-command.sh as the config management tool to build the uber Kubernetes YAML
+#   - Ignore diffs in webhook client CA bundle (ref: https://argo-cd-docs.readthedocs.io/en/latest/user-guide/diffing/)
 #   - Added an init container to install a few custom tools into the ArgoCD repo server
 #   - Changed the docker image repo to Amazon ECR repo in CSG AWS account
 #   - Set the "server.log.level" to "warn" in argocd-cmd-params-cm configMap
@@ -2844,6 +2845,11 @@ data:
     - name: git-ops-command
       generate:
         command: [ "git-ops-command.sh" ]
+  resource.customizations: |
+    admissionregistration.k8s.io/MutatingWebhookConfiguration:
+      ignoreDifferences: |
+        jsonPointers:
+        - /webhooks/0/clientConfig/caBundle
 ---
 apiVersion: v1
 kind: ConfigMap
