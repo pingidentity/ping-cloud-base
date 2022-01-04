@@ -25,14 +25,14 @@ rules:
 
   - apiGroups: [""]
     resources:
-    - secrets
+      - secrets
     verbs: ["get", "create", "patch"]
 
   - apiGroups: ['policy']
     resources: ['podsecuritypolicies']
     verbs: ['use']
     resourceNames:
-    - nri-bundle-nri-metadata-injection-admission
+      - nri-bundle-nri-metadata-injection-admission
 
 ---
 # Source: nri-bundle/charts/newrelic-infrastructure/templates/clusterrole.yaml
@@ -78,7 +78,6 @@ metadata:
   labels:
     app.kubernetes.io/name: kube-state-metrics
     helm.sh/chart: kube-state-metrics-2.13.2
-    app.kubernetes.io/instance: nri-bundle
   name: nri-bundle-kube-state-metrics
 rules:
 
@@ -227,7 +226,6 @@ metadata:
     app: nri-kube-events
     app.kubernetes.io/name: nri-kube-events
     helm.sh/chart: nri-kube-events-1.10.0
-    app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/version: "1.6.0"
   name: nri-bundle-nri-kube-events
 rules:
@@ -284,7 +282,6 @@ metadata:
   labels:
     app.kubernetes.io/name: nri-prometheus
     helm.sh/chart: nri-prometheus-1.10.0
-    app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/version: "2.9.0"
 rules:
 - apiGroups: [""]

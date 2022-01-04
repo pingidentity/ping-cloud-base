@@ -8,7 +8,6 @@ metadata:
   labels:
     app.kubernetes.io/name: kube-state-metrics
     helm.sh/chart: "kube-state-metrics-2.13.2"
-    app.kubernetes.io/instance: "nri-bundle"
     app.kubernetes.io/version: "1.9.8"
 spec:
   selector:
@@ -19,7 +18,6 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: kube-state-metrics
-        app.kubernetes.io/instance: "nri-bundle"
     spec:
       hostNetwork: false
       serviceAccountName: nri-bundle-kube-state-metrics
@@ -86,7 +84,6 @@ metadata:
   labels:
     app.kubernetes.io/name: nri-metadata-injection
     helm.sh/chart: nri-metadata-injection-2.1.0
-    app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/version: "1.6.0"
 spec:
   replicas: 1
@@ -98,7 +95,6 @@ spec:
       labels:
         app.kubernetes.io/name: nri-metadata-injection
         helm.sh/chart: nri-metadata-injection-2.1.0
-        app.kubernetes.io/instance: nri-bundle
         app.kubernetes.io/version: "1.6.0"
       annotations: {}
     spec:
@@ -119,8 +115,8 @@ spec:
           - containerPort: 8443
             protocol: TCP
         volumeMounts:
-        - name: tls-key-cert-pair
-          mountPath: /etc/tls-key-cert-pair
+          - name: tls-key-cert-pair
+            mountPath: /etc/tls-key-cert-pair
         readinessProbe:
           httpGet:
             path: /health
@@ -133,11 +129,10 @@ spec:
           requests:
             cpu: 100m
             memory: 30M
-          
       volumes:
-      - name: tls-key-cert-pair
-        secret:
-          secretName: nri-bundle-nri-metadata-injection-admission
+        - name: tls-key-cert-pair
+          secret:
+            secretName: nri-bundle-nri-metadata-injection-admission
 
 ---
 # Source: nri-bundle/charts/nri-prometheus/templates/deployment.yaml
@@ -150,7 +145,6 @@ metadata:
   labels:
     app.kubernetes.io/name: nri-prometheus
     helm.sh/chart: nri-prometheus-1.10.0
-    app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/version: "2.9.0"
 spec:
   replicas: 1
@@ -162,7 +156,6 @@ spec:
       labels:
         app.kubernetes.io/name: nri-prometheus
         helm.sh/chart: nri-prometheus-1.10.0
-        app.kubernetes.io/instance: nri-bundle
         app.kubernetes.io/version: "2.9.0"
     spec:
       serviceAccountName: nri-prometheus
@@ -215,7 +208,6 @@ metadata:
     app: nri-kube-events
     app.kubernetes.io/name: nri-kube-events
     helm.sh/chart: nri-kube-events-1.10.0
-    app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/version: "1.6.0"
   annotations:
 spec:
@@ -229,7 +221,6 @@ spec:
         app: nri-kube-events
         app.kubernetes.io/name: nri-kube-events
         helm.sh/chart: nri-kube-events-1.10.0
-        app.kubernetes.io/instance: nri-bundle
         app.kubernetes.io/version: "1.6.0"
     spec:
       securityContext:

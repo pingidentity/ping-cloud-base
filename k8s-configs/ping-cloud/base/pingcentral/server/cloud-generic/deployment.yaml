@@ -90,6 +90,8 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
         volumeMounts:
         - name: shared-dir
           mountPath: /opt/shared-dir
@@ -99,7 +101,7 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral:1.8.0-v1.0.20
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral:1.8.1-v1.0.21
         imagePullPolicy: IfNotPresent
         resources:
           requests:
@@ -138,6 +140,8 @@ spec:
                 key: PC_ADMIN_USER_PASSWORD
           - name: NEW_RELIC_CONFIG_FILE
             value: "/opt/shared-dir/newrelic.yml"
+          - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+            value: "true"
         envFrom:
           - configMapRef:
               name: pingcentral-environment-variables
