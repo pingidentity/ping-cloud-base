@@ -367,6 +367,13 @@ if test "${dryrun}" = 'false'; then
   log "Deploying ${DEPLOY_FILE} to cluster ${CLUSTER_NAME}, namespace ${NAMESPACE} for tenant ${TENANT_DOMAIN}"
   kubectl apply -f "${DEPLOY_FILE}" --context "${K8S_CONTEXT}" | tee -a "${LOG_FILE}"
 
+  if [[ "${PIPESTATUS[0]}" != 0 ]]; then
+    echo -e "\033[31m->>>> Non-zero exit code while applying changes to cluster ^^^^^\033[0m"
+    exit 1
+  else
+    echo -e "\033[32m^^^^^^ SUCCESS! kubectl apply ran successfully ^^^^^^\033[0m"
+  fi
+
   # Print out the ingress objects for logs and the ping stack
   log
   log '--- Ingress URLs ---' | tee -a "${LOG_FILE}"
