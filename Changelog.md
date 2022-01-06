@@ -17,6 +17,7 @@
 - Implemented Kubernetes Infrastructure Agent for New Relic
 - Fixed showing a few SharedResourceWarnings in ArgoCD UI
 - Updated to address Log4Shell vulnerabilities
+- ElasticSearch image updated to 7.16.2
 
 _Changes:_
 
@@ -55,6 +56,7 @@ _Changes:_
 - [X] PDO-3196 Fix Security Vulnerability CVE-2021-44228 by patching Log4j2 files
 - [X] PDO-3218 Updating images for Log4Shell security vulnerability
 - [X] PDO-3243 Upgrade New Relic Java Agent to 6.5.2 to address Log4Shell Vulnerability
+- [X] PDO-3265 Upgrade Elasticsearch version to 7.16.2 for patches to the log4j2
 
 ### 1.11.0
 
