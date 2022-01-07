@@ -2,9 +2,12 @@
 
 ### 1.13.0
 
+- Updated the SigSci Agent to run as a non-root user
+
 _Changes:_
 
 - [X] PDO-3064 PingAccess hook scripts updated to use the beluga_log method instead of echo
+- [X] PDO-3142 Run SigSci agent as non-root, update nginx ingress controller security context
 - [X] PDO-3146 Change Busybox-based containers in cluster-tools to run as non-root
 - [X] PDO-3200 Change dev-env.sh script to have better error handling for kubectl apply
 
