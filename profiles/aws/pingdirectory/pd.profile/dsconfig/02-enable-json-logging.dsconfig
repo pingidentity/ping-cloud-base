@@ -10,8 +10,8 @@ dsconfig set-log-publisher-prop \
 
 dsconfig set-log-publisher-prop \
   --publisher-name 'JSON Error Logger' \
-  --set enabled:false
+  --set enabled:true
 
 dsconfig set-log-publisher-prop \
   --publisher-name 'JSON Access Logger' \
-  --set enabled:false
+  --set enabled:true
