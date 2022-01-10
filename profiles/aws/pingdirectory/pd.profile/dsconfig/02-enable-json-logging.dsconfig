@@ -1,0 +1,17 @@
+# Disable plaintext file access log
+
+dsconfig set-log-publisher-prop \
+  --publisher-name 'File-Based Access Logger' \
+  --set enabled:false
+
+dsconfig set-log-publisher-prop \
+  --publisher-name 'File-Based Error Logger' \
+  --set enabled:false
+
+dsconfig set-log-publisher-prop \
+  --publisher-name 'JSON Error Logger' \
+  --set enabled:false
+
+dsconfig set-log-publisher-prop \
+  --publisher-name 'JSON Access Logger' \
+  --set enabled:false
