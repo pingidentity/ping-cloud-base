@@ -23,12 +23,15 @@ _Changes:_
 - Removing vestigial code (restore-db-password hook script and dbConfig.jose manipulation) from deployment automation
 - Update 20-restart-sequence.sh script to skip rebuild index when no index changes
 - Implemented Kubernetes Infrastructure Agent for New Relic
+- Fixed showing a few SharedResourceWarnings in ArgoCD UI
+- Updated to address Log4Shell vulnerabilities
 
 _Changes:_
 
 - [X] PDO-1350 PingAccess proactively remove temp file that causes upgrade to fail
-- [X] PDO-2223 Heartbeat endpoint page template changing
 - [X] PDO-1676 Deploy Kubernetes Infrastructure Agent for New Relic
+- [X] PDO-2223 Heartbeat endpoint page template changing
+- [X] PDO-2368 Refactored IK download script to use artifact-list.json as the single source of truth for all PF IKs
 - [X] PDO-2410 PA-WAS: parse multiline logs
 - [X] PDO-2432 Update cluster tools to latest version: argocd to v2.1.6
 - [X] PDO-2534 SigSci WAF: run the SigSci agent as a sidecar container in the Nginx-ingress-controller pod
@@ -39,6 +42,7 @@ _Changes:_
 - [X] PDO-2938 Added regional custom-patches.yaml as an extension point to customize configuration for a specific region
 - [X] PDO-2962 Added new PA sideband logs to SIEM Integration
 - [X] PDO-2965 Refactor NewRelic APM agents to use Secret located in 'newrelic' namespace
+- [X] PDO-2978 Integrate latest New Relic namespace changes in Beluga 1.12
 - [X] PDO-2988 Increased metadata pod timeoutSeconds probe to 3 seconds for liveness & readiness
 - [X] PDO-2991 SigSci WAF: Update SigSci sidecar resource limit & requests
 - [X] PDO-2993 Add "ttlSecondsAfterFinished: 30" to all ping product and Kibana jobs so its pods get reaped upon completion
@@ -51,8 +55,14 @@ _Changes:_
 - [X] PDO-3102 Fix offline replication configuration error when config.ldif has line wrappings
 - [X] PDO-3109 Fix code generation script to only use the SSH-RSA host keys for GitHub
 - [X] PDO-3110 Make code generation script more resilient to invalid values for IS_GA and IS_MY_PING SSM parameters 
+- [X] PDO-3115 Remove OOTB Integration Kits for PingFederate
 - [X] PDO-3137 Support SSO for multiple PA admin applications per environment
 - [X] PDO-3145 Fixed MyPing admin SSO errors caused due to intermittent DNS resolution issues
+- [X] PDO-3175 ArgoCD UI shows a few SharedResourceWarnings
+- [X] PDO-3179 Argocd failing to deploy newrelic namespace from scratch and shows 3 newrelic resources as out of sync
+- [X] PDO-3196 Fix Security Vulnerability CVE-2021-44228 by patching Log4j2 files
+- [X] PDO-3218 Updating images for Log4Shell security vulnerability
+- [X] PDO-3243 Upgrade New Relic Java Agent to 6.5.2 to address Log4Shell Vulnerability
 
 ### 1.11.0
 

@@ -27,6 +27,8 @@ spec:
               value: "pingaccess-was-engine"
             - name: CSD_CONTAINER_NAME
               value: "pingaccess-was"
+            - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+              value: "true"
             envFrom:
             - configMapRef:
                 name: pingaccess-was-environment-variables

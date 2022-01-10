@@ -16,6 +16,7 @@ metadata:
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/version: "1.6.0"
 spec:
+  ttlSecondsAfterFinished: 30
   template:
     metadata:
       name: nri-bundle-nri-metadata-injection-admission-create
@@ -62,6 +63,7 @@ metadata:
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/version: "1.6.0"
 spec:
+  ttlSecondsAfterFinished: 30
   template:
     metadata:
       name: nri-bundle-nri-metadata-injection-admission-patch
@@ -90,8 +92,9 @@ spec:
         runAsNonRoot: true
         runAsUser: 2000
 
-# This job copies NR License key secret object to 'newrelic' namespace
 ---
+
+# This job copies NR License key secret object to 'newrelic' namespace
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -99,7 +102,10 @@ metadata:
   namespace: newrelic
   labels:
     app: newrelic-license-secret-exporter
+  annotations:
+    argocd.argoproj.io/hook: Sync
 spec:
+  ttlSecondsAfterFinished: 30
   template:
     metadata:
       labels:
@@ -108,11 +114,16 @@ spec:
     spec:
       restartPolicy: OnFailure
       serviceAccountName: nri-bundle-newrelic-infrastructure
+      volumes:
+        - name: copy-secret
+          configMap:
+            name: copy-secret
+            defaultMode: 0555
       containers:
       - name: newrelic-license-secret-exporter
         image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
-        command: [ "/bin/sh", "-c" ]
-        args: [ "kubectl get secret $(SECRET_NAME) --namespace=$(SECRET_NAMESPACE) -oyaml | sed 's/namespace: .*/namespace: $(CURRENT_NAMESPACE)/' | kubectl apply --namespace=$(CURRENT_NAMESPACE) -f -" ]
+        command:
+          - /tmp/copy-secret.sh
         env:
           - name: "SECRET_NAME"
             value: "newrelic-license-key"
@@ -124,3 +135,7 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
+        volumeMounts:
+          - name: copy-secret
+            mountPath: /tmp/copy-secret.sh
+            subPath: copy-secret.sh

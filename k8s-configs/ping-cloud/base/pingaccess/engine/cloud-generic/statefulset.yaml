@@ -115,6 +115,8 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
         volumeMounts:
         - name: shared-dir
           mountPath: /opt/shared-dir
@@ -194,13 +196,15 @@ spec:
               key: PA_ADMIN_USER_PASSWORD
         - name: NEW_RELIC_CONFIG_FILE
           value: "/opt/shared-dir/newrelic.yml"
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
         envFrom:
         - configMapRef:
             name: pingaccess-environment-variables
         - secretRef:
             name: newrelic-license-key
             optional: false
-      
+
       - name: pingaccess-heartbeat-exporter
         securityContext:
           runAsGroup: 9999

@@ -24,6 +24,9 @@ spec:
         envFrom:
         - configMapRef:
             name: pingfederate-admin-environment-variables
+        env:
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
         volumeMounts:
         - name: pingfederate-backup
           mountPath: /opt/in/backup-archive-data.sh

@@ -2,6 +2,8 @@
 
 . "./utils.lib.sh"
 
+NEWRELIC_VERSION="6.5.2"
+
 beluga_log "Copying SSH configuration files"
 test -f /known_hosts && cp /known_hosts /.ssh
 test -f /id_rsa && cp /id_rsa /.ssh
@@ -51,11 +53,11 @@ if test ! -f "${DST_FILE}"; then
     exit 1
 fi
 
-beluga_log 'Downloading NewRelic Java APM Agent from ping-artifacts bucket'
+beluga_log "Downloading NewRelic Java APM Agent version ${NEWRELIC_VERSION} from ping-artifacts bucket"
 
 DST_FILE='/data/newrelic.jar'
 wget -qO "${DST_FILE}" \
-    https://ping-artifacts.s3.amazonaws.com/pingcommon/newrelic-java-agent/6.4.2/newrelic.jar
+    "https://ping-artifacts.s3.amazonaws.com/pingcommon/newrelic-java-agent/${NEWRELIC_VERSION}/newrelic.jar"
 
 beluga_log 'Checking for newrelic jar file in data directory'
 if test ! -f "${DST_FILE}"; then

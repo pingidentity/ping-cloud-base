@@ -192,7 +192,7 @@
         <!-- To use, uncomment the next block and the appenderRef under the AsyncRoot element, in the 'Loggers' section -->
 
         <Console name="CONSOLE" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{ABSOLUTE} %-5p [%c{1}] %m%n" />
+            <PatternLayout pattern="%d{ABSOLUTE} %-5p [%c{1}] %m{nolookups}%n" />
         </Console>
 
 
@@ -254,7 +254,7 @@
                 <!--
                 <charset>UTF-8</charset>
                 -->
-                <pattern>%d{ISO8601} %5p [%X{exchangeId}] %c - %m%n</pattern>
+                <pattern>%d{ISO8601} %5p [%X{exchangeId}] %c - %m{nolookups}%n</pattern>
             </PatternLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="100 MB" />

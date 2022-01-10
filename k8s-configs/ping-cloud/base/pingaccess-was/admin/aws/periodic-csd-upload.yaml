@@ -27,6 +27,8 @@ spec:
               value: "pingaccess-was-admin"
             - name: CSD_CONTAINER_NAME
               value: "pingaccess-was-admin"
+            - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+              value: "true"
             envFrom:
             - configMapRef:
                 name: pingaccess-was-admin-environment-variables
