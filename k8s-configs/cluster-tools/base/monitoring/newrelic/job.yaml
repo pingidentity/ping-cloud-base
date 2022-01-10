@@ -7,8 +7,8 @@ metadata:
   name: nri-bundle-nri-metadata-injection-admission-create
   namespace: newrelic
   annotations:
-    "helm.sh/hook": pre-install,pre-upgrade
-    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
   labels:
     app: nri-metadata-injection-admission-create
     app.kubernetes.io/name: nri-metadata-injection
@@ -54,8 +54,8 @@ metadata:
   name: nri-bundle-nri-metadata-injection-admission-patch
   namespace: newrelic
   annotations:
-    "helm.sh/hook": post-install,post-upgrade
-    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
   labels:
     app: nri-metadata-injection-admission-patch
     app.kubernetes.io/name: nri-metadata-injection
