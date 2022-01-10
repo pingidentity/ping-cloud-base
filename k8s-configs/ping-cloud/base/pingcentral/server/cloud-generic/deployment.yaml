@@ -35,7 +35,6 @@ spec:
                 topologyKey: "failure-domain.beta.kubernetes.io/zone"
       initContainers:
       - name: pingcentral-init
-        # FIXME: switch to same user as app
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -99,7 +98,6 @@ spec:
           mountPath: /opt/shared-dir
       containers:
       - name: pingcentral
-        # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -152,7 +150,6 @@ spec:
               name: newrelic-license-key
               optional: false
         volumeMounts:
-          # FIXME: fix home directory when containers run as non-root user
           - name: ssh-dir
             mountPath: /home/ping/.ssh
           - name: shared-dir

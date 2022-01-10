@@ -63,7 +63,6 @@ spec:
       terminationGracePeriodSeconds: 300
       initContainers:
         - name: pingdirectory-init
-          # FIXME: switch to same user as app
           securityContext:
             runAsGroup: 9999
             runAsNonRoot: true
@@ -128,7 +127,6 @@ spec:
           - name: shared-dir
             mountPath: /opt/shared-dir
         - name: wait-for-services
-          # FIXME: switch to same user as app
           securityContext:
             runAsGroup: 9999
             runAsNonRoot: true
@@ -151,7 +149,6 @@ spec:
               subPath: wait-for-services.sh
       containers:
         - name: pingdirectory
-          # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
           securityContext:
             runAsGroup: 9999
             runAsNonRoot: true
@@ -222,7 +219,6 @@ spec:
                 name: newrelic-license-key
                 optional: false
           volumeMounts:
-            # FIXME: fix home directory when containers run as non-root user
             - name: ssh-dir
               mountPath: /home/ping/.ssh
             - name: shared-dir

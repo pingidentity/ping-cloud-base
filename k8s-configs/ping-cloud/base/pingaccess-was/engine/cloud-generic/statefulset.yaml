@@ -39,7 +39,6 @@ spec:
               topologyKey: "failure-domain.beta.kubernetes.io/zone"
       initContainers:
       - name: pingaccess-was-init
-        # FIXME: switch to same user as app
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -69,7 +68,6 @@ spec:
         - configMapRef:
             name: pingaccess-was-environment-variables
       - name: wait-for-services
-        # FIXME: switch to same user as app
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -124,7 +122,6 @@ spec:
       containers:
       - name: pingaccess-was
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was:6.3.1-v1.0.19
-        # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -138,7 +135,6 @@ spec:
             memory: "1280Mi"
             cpu: 1
         volumeMounts:
-        # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
           mountPath: /home/ping/.ssh
         - name: shared-dir
