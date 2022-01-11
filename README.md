@@ -148,3 +148,23 @@ direct invocation from kubectl does not work at the moment.
 ~~kubectl apply -k .~~
 
 
+# Gotchas
+Make sure that your branch name is sufficiently short (<40 characters)
+
+When automatically testing with CI/CD, the URLs created are based on the git branch name.
+If this branch name is too long, AWS Route53 will not be able to generate the URLs and your tests will fail.
+
+Gitlab push rules are set up to not allow you to push to the branch if this is the case, however, 
+you can also add this git hook to prevent this from occurring before you even push to Gitlab:
+
+```
+❯ cat .git/hooks/pre-push
+#!/bin/sh
+
+CUR_BRANCH=$(git branch --show-current)
+
+if [[ $(echo "${CUR_BRANCH}" | wc -c) -gt 40 ]]; then
+  echo "Your branch name is too long. Please shorten to 40 characters or less to comply with route53 max length requirements"
+  exit 1
+fi
+```
