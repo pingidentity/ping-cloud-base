@@ -10,6 +10,7 @@ _Changes:_
 - [X] PDO-3142 Run SigSci agent as non-root, update nginx ingress controller security context
 - [X] PDO-3146 Change Busybox-based containers in cluster-tools to run as non-root
 - [X] PDO-3200 Change dev-env.sh script to have better error handling for kubectl apply
+- [X] PDO-3262 Add push rule to repo, README for branch name max length requirement
 
 ### 1.12.0
 
