@@ -376,15 +376,15 @@ data:
         </record>
       </filter>
 
-      <filter **>
-        @type concat
-        key log
-        multiline_start_regexp /\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}([,.]\d{3}){0,1}Z|\d{2}:\d{2}:\d{2}\s+ping.*-\d{1,2}|\\u001b\[0;32m/
-        separator ""
-        flush_interval 5
-        timeout_label @normal
-      </filter>
-
+      #<filter **>
+      #  @type concat
+      #  key log
+      #  multiline_start_regexp /\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}([,.]\d{3}){0,1}Z|\d{2}:\d{2}:\d{2}\s+ping.*-\d{1,2}|\\u001b\[0;32m/
+      #  separator ""
+      #  flush_interval 5
+      #  timeout_label @normal
+      #</filter>
+    
       <match kubernetes.**>
         @type rewrite_tag_filter
         <rule>
@@ -394,12 +394,12 @@ data:
         </rule>
         <rule>
           key log
-          pattern /^\/opt\/out\/instance\/logs\/access/
+          pattern \\"logType\\":\\"access\\"
           tag temp.access_logs
         </rule>
         <rule>
           key log
-          pattern /^\/opt\/out\/instance\/logs\/errors/
+          pattern \\"logType\\":\\"error\\"
           tag temp.errors_logs
         </rule>
         <rule>
@@ -1241,8 +1241,6 @@ spec:
         - name: fluentd-cloudwatch
           image: public.ecr.aws/r2h3l6e4/fluent/fluentd-kubernetes-daemonset:v1.7.3-debian-cloudwatch-1.0
           env:
-            - name: FLUENTD_OPT
-              value: "-qq"
             - name: REGION
               valueFrom:
                 configMapKeyRef:
