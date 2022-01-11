@@ -62,7 +62,7 @@ spec:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:8.3.0.0-v1.0.21-pdo-3295-fix
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:8.3.0.3-v1.0.23-pdo-3295
         imagePullPolicy: IfNotPresent
         command:
         - /opt/in/upload.sh
