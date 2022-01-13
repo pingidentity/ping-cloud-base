@@ -39,6 +39,10 @@ spec:
                 topologyKey: "failure-domain.beta.kubernetes.io/zone"
       initContainers:
       - name: pingfederate-p14c-init
+        securityContext:
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
         image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.38
         imagePullPolicy: IfNotPresent
         env:

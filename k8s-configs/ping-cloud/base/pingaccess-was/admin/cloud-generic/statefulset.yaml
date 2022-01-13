@@ -28,6 +28,10 @@ spec:
       serviceAccount: ping-serviceaccount
       initContainers:
       - name: pingaccess-was-p14c-init
+        securityContext:
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
         image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.0.38
         imagePullPolicy: IfNotPresent
         env:
@@ -40,10 +44,10 @@ spec:
         - name: data-dir
           mountPath: /opt/staging
       - name: pingaccess-was-init
-        # FIXME: switch to same user as app
         securityContext:
-          runAsNonRoot: false
-          runAsUser: 0
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
         image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
         imagePullPolicy: IfNotPresent
         command:
@@ -72,10 +76,10 @@ spec:
         - configMapRef:
             name: pingaccess-was-admin-environment-variables
       - name: wait-for-services
-        # FIXME: switch to same user as app
         securityContext:
-          runAsNonRoot: false
-          runAsUser: 0
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
         image: public.ecr.aws/r2h3l6e4/busybox:1.32
         imagePullPolicy: IfNotPresent
         command:
@@ -92,7 +96,9 @@ spec:
             name: pingaccess-was-admin-environment-variables
       - name: newrelic-tags-exporter
         securityContext:
-          runAsNonRoot: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
         image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v1.0.7
         imagePullPolicy: IfNotPresent
         envFrom:
@@ -124,10 +130,10 @@ spec:
       containers:
       - name: pingaccess-was-admin
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was:6.3.1-v1.0.19
-        # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
         securityContext:
-          runAsNonRoot: false
-          runAsUser: 0
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
         imagePullPolicy: IfNotPresent
         resources:
           requests:
@@ -137,9 +143,8 @@ spec:
             memory: "1280Mi"
             cpu: "1"
         volumeMounts:
-        # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
-          mountPath: /root/.ssh
+          mountPath: /home/ping/.ssh
         - name: shared-dir
           mountPath: /opt/shared-dir
         - name: topology-descriptor
@@ -222,6 +227,8 @@ spec:
         - secretRef:
             name: newrelic-license-key
             optional: false
+      securityContext:
+        fsGroup: 9999
       volumes:
       - name: ssh-dir
         emptyDir: {}
