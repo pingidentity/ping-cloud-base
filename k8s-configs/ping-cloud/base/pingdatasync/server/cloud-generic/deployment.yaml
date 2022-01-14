@@ -124,23 +124,25 @@ spec:
           - name: ssh-dir
             mountPath: /home/ping/.ssh
           - name: data-dir
-            mountPath: /home/ping/bin/kubectl
+            mountPath: /usr/local/bin/kubectl
             subPath: kubectl
           - name: data-dir
             mountPath: /opt/staging/ds_env_vars
             subPath: ds_env_vars
           - name: data-dir
-            mountPath: /home/ping/bin/skbn
+            mountPath: /usr/local/bin/skbn
             subPath: skbn
           - name: topology-descriptor
             mountPath: /opt/staging/topology/descriptor.json
             subPath: descriptor.json
           - name: pingdatasync-passwords
-            mountPath: /home/ping/secrets
+            mountPath: /usr/local/secrets
             readOnly: true
           - name: pingdatasync-license
             mountPath: /opt/in/instance/conf/PingDirectory.lic
             subPath: PingDirectory.lic
+      securityContext:
+        fsGroup: 9999
       volumes:
         - name: ssh-dir
           emptyDir: {}
@@ -169,7 +171,7 @@ spec:
           secret:
             secretName: pingdatasync-passwords
             optional: true
-            # defaultMode: 0400
+            defaultMode: 0400
         - name: pingdatasync-license
           secret:
             secretName: pingdatasync-license
