@@ -19,6 +19,7 @@
 - Updated to address Log4Shell vulnerabilities
 - Update logstash to 7.16.2
 - ElasticSearch image updated to 7.16.2
+- Kibana updated to 7.16.2
 
 _Changes:_
 
@@ -59,6 +60,7 @@ _Changes:_
 - [X] PDO-3243 Upgrade New Relic Java Agent to 6.5.2 to address Log4Shell Vulnerability
 - [X] PDO-3266 Upgrade Logstash version to 7.16.2 for patches to the log4j2
 - [X] PDO-3265 Upgrade Elasticsearch version to 7.16.2 for patches to the log4j2
+- [X] PDO-3333 Fix Kibana showing an error 'We encountered an error retrieving search results'
 
 ### 1.11.0
 
