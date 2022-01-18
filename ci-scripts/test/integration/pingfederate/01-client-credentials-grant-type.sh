@@ -37,7 +37,7 @@ exit 0
 #      "restrictedResponseTypes": [],
 #      "defaultAccessTokenManagerRef": {
 #        "id": "jwt",
-#        "location": "https://pingfederate-admin-68c57f7c54-fs5q4:443/pf-admin-api/v1/oauth/accessTokenManagers/jwt"
+#        "location": "https://pingfederate-admin-68c57f7c54-fs5q4:9999/pf-admin-api/v1/oauth/accessTokenManagers/jwt"
 #      },
 #      "validateUsingAllEligibleAtms": false,
 #      "oidcPolicy": {
@@ -55,7 +55,7 @@ exit 0
 #    }'
 #
 #
-#curl  -v -k -u "Administrator:2FederateM0re" -H "X-XSRF-Header: PingFederate"  -H "Accept: application/json" -H "content-type: application/json" -d "'${client}'" https://pingfederate-admin-raypf.ping-demo.com:443/pf-admin-api/v1/oauth/clients
+#curl  -v -k -u "Administrator:2FederateM0re" -H "X-XSRF-Header: PingFederate"  -H "Accept: application/json" -H "content-type: application/json" -d "'${client}'" https://pingfederate-admin-raypf.ping-demo.com:9999/pf-admin-api/v1/oauth/clients
 
 URL="${PINGFEDERATE_AUTH_ENDPOINT}/as/token.oauth2?grant_type=client_credentials&scope="
 log "Attempting to obtain access token from ${URL}"
