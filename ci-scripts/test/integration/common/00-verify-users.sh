@@ -69,6 +69,32 @@ test_ping_user_pd() {
 
 }
 
+# test ping delegator user
+test_ping_user_pdel() {
+  
+  # get pingdelegator pod name
+  pingdelegator_pods=$(kubectl get pod -n "${NAMESPACE}" --field-selector=status.phase=Running --no-headers -o custom-columns=":metadata.name"  | grep pingdelegator)
+
+  # test pingdelegator server
+  for pingdelegator_pod in ${pingdelegator_pods}; do
+    verify_ping_user "${pingdelegator_pod}" "pingdelegator"
+  done
+
+  }
+
+# test ping central user
+test_ping_user_pc() {
+  
+  # get pingcentral pod name
+  pingcentral_pods=$(kubectl get pod -n "${NAMESPACE}" --field-selector=status.phase=Running --no-headers -o custom-columns=":metadata.name"  | grep pingcentral)
+
+  # test pingcentral server
+  for pingcentral_pod in ${pingcentral_pods}; do
+    verify_ping_user "${pingcentral_pod}" "pingcentral"
+  done
+
+  }
+
 verify_ping_user() {
   SERVER="${1}"
   CONTAINER="${2}"
