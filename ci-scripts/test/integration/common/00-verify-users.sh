@@ -14,6 +14,17 @@ test_ping_user_pa_admin() {
 
 }
 
+# test ping access engine user
+test_ping_user_pa_engine() {
+
+  # test pingaccess-0 server
+  verify_ping_user "pingaccess-0" "pingaccess"
+
+  # test pingaccess-1 server
+  verify_ping_user "pingaccess-1" "pingaccess"
+
+}
+
 # test ping access was admin user
 test_ping_user_pa_was_admin() {
 
@@ -21,10 +32,29 @@ test_ping_user_pa_was_admin() {
 
 }
 
+# test ping access was engine user
+test_ping_user_pa_was_engine() {
+ 
+  # test pingaccess-was-0 server
+  verify_ping_user "pingaccess-was-0" "pingaccess-was"
+
+}
+
 # test ping federate admin user
 test_ping_user_pf_admin() {
 
   verify_ping_user "pingfederate-admin-0" "pingfederate-admin"
+
+}
+
+# test ping federate engine user
+test_ping_user_pf_engine() {
+ 
+  # test pingfederate-0 server
+  verify_ping_user "pingfederate-0" "pingfederate"
+
+  # test pingfederate-1 server
+  verify_ping_user "pingfederate-1" "pingfederate"
 
 }
 
