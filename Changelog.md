@@ -2,11 +2,20 @@
 
 ### 1.13.0
 
+- Updated the SigSci Agent to run as a non-root user
+- Updated  default PingID adapter, PingOne MFA IK, PingOne Risk Management IK
+
 _Changes:_
 
 - [X] PDO-3064 PingAccess hook scripts updated to use the beluga_log method instead of echo
+- [X] PDO-3065 PingFederate hook scripts updated to use the beluga_log method instead of echo
+- [X] PDO-3129 Update json_exporter image version to 0.3.0
+- [X] PDO-3142 Run SigSci agent as non-root, update nginx ingress controller security context
 - [X] PDO-3146 Change Busybox-based containers in cluster-tools to run as non-root
+- [X] PDO-3167 Update default PingID adapter, PingOne MFA IK, PingOne Risk Management IK
+- [X] PDO-3200 Change dev-env.sh script to have better error handling for kubectl apply
 - [X] PDO-3207 Force Admins to use non-root
+- [X] PDO-3262 Add push rule to repo, README for branch name max length requirement
 
 ### 1.12.0
 

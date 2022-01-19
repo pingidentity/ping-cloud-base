@@ -13,10 +13,18 @@
 - op: add
   path: /spec/template/spec/containers/-
   value:
-    image: public.ecr.aws/r2h3l6e4/pingcloud-services/sigsci-agent:v4.24.1
+    image: public.ecr.aws/r2h3l6e4/pingcloud-services/sigsci-agent:4.24.1-v1.0.0
     name: sigsci-agent
     securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL 
+      # SigSci needs to be able to write to the root fs
       readOnlyRootFilesystem: false
+      runAsNonRoot: true
+      runAsUser: 1000
+      runAsGroup: 1000
     resources:
       limits:
         cpu: 2

@@ -137,7 +137,7 @@ spec:
             name: pingfederate-environment-variables
       containers:
       - name: pingfederate
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:10.3.3-v1.0.23
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:10.3.3-v1.0.24
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -232,11 +232,15 @@ spec:
         - containerPort: 8080
 
       - name: pingfederate-heartbeat-exporter
+<<<<<<< HEAD
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
         image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-json-exporter:0.2.0-v1.0.3
+=======
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-json-exporter:0.3.0-v1.0.4
+>>>>>>> v1.13-release-branch
         imagePullPolicy: IfNotPresent
         env:
           - name: SERVICE_SHORTNAME
