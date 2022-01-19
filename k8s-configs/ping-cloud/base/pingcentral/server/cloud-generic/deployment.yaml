@@ -102,7 +102,7 @@ spec:
           runAsNonRoot: false
           runAsUser: 0
         image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingcentral:1.8.1-v1.0.21-pdo-2827
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         resources:
           requests:
             memory: "2Gi"
