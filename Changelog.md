@@ -25,6 +25,7 @@ _Changes:_
 - [X] PDO-3167 Update default PingID adapter, PingOne MFA IK, PingOne Risk Management IK
 - [X] PDO-3200 Change dev-env.sh script to have better error handling for kubectl apply
 - [X] PDO-3262 Add push rule to repo, README for branch name max length requirement
+- [X] PDO-3307 Update PD status for PingOne
 
 ### 1.12.0
 
