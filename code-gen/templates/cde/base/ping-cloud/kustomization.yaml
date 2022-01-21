@@ -10,6 +10,7 @@ resources:
 - pingaccess/config
 - pingfederate/config
 - pingdelegator/config
+- pingdatasync/config
 
 # The following resource reference includes all ping applications by default. However, it may be tweaked to roll out
 # applications independent of one another to enforce proper dependency order. Refer to the docs in kustomization.yaml
