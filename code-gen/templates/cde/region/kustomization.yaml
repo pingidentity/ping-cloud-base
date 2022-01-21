@@ -25,6 +25,20 @@ configMapGenerator:
   - env_vars
   - pingdirectory/env_vars
 
+# Pingdatasync
+# Create the config maps that hold the variable for triggering updates of PD servers
+- name: pingdatasync-last-update-config
+  namespace: ${PING_CLOUD_NAMESPACE}
+  envs:
+  - pingdatasync/env_vars
+
+# Merge all env_vars into Pingdatasync common environment variables configmap
+- name: pingdatasync-environment-variables
+  behavior: merge
+  envs:
+  - ../base/env_vars
+  - env_vars
+  - pingdatasync/env_vars
 
 # Pingfederate
 # Create the config maps that hold the variable for triggering updates of PF servers

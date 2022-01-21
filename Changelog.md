@@ -2,11 +2,13 @@
 
 ### 1.13.0
 
+- Deploy PingDataSync into cluster
 - Updated the SigSci Agent to run as a non-root user
 - Updated  default PingID adapter, PingOne MFA IK, PingOne Risk Management IK
 
 _Changes:_
 
+- [X] PDO-2951 Deploy PingDataSync into cluster
 - [X] PDO-3064 PingAccess hook scripts updated to use the beluga_log method instead of echo
 - [X] PDO-3065 PingFederate hook scripts updated to use the beluga_log method instead of echo
 - [X] PDO-3129 Update json_exporter image version to 0.3.0

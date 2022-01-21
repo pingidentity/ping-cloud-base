@@ -1,0 +1,22 @@
+# This service exposes the Ping DataSync ports within cluster.
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pingdatasync-admin
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0
+    external-dns.alpha.kubernetes.io/hostname: pingdatasync-dev.ping-demo.com
+spec:
+  externalTrafficPolicy: Local
+  type: LoadBalancer
+  selector:
+    class: pingdatasync-server
+  ports:
+  - port: 1389
+    name: ldap
+  - port: 1636
+    name: ldaps
+  - port: 1443
+    name: https
