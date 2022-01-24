@@ -131,7 +131,7 @@ spec:
             name: pingcommon-environment-variables
       containers:
       - name: pingfederate-admin
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:10.3.3-v1.0.24
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:10.3.3-v1.0.25
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true

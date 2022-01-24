@@ -69,6 +69,9 @@ resources:
 # Delegated admin resources
 - ../pingdelegator/server
 
+# Ping Data Sync resources
+- ../pingdatasync/server
+
 # WARNING!!!
 #
 # Exposing the pingdataconsole in production is not recommended. The console resources only exist for debugging

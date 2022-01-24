@@ -8,3 +8,4 @@ resources:
 - pingaccess-was
 - pingaccess
 - pingdelegator
+- pingdatasync
