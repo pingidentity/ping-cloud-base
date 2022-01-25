@@ -9,3 +9,4 @@ resources:
 - pingaccess
 - pingdelegator
 - pingcentral
+- pingdatasync

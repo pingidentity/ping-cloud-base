@@ -1,0 +1,14 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+namespace: ping-cloud
+
+commonLabels:
+  app: ping-cloud
+  role: pingdatasync
+
+resources:
+- ../cloud-generic
+
+patchesStrategicMerge:
+- discovery-service.yaml
