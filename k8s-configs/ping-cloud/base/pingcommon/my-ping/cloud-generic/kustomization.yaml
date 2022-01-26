@@ -8,5 +8,5 @@ commonLabels:
 
 resources:
 - p14c-oauth-service
-- pingfederate-admin-configurator
+- pingone-configurator
 - p14c-bom-service
