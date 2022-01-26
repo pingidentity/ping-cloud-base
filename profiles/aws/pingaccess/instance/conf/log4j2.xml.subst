@@ -14,17 +14,12 @@
 <!--
    | monitorInterval - the number of seconds before Log4J2 detects changes to the configuration file and reconfigures itself.
  -->
-<!--
-   | File-json appender is used for JSON logging for CloudWatch.
-   | Only File or File-json appender should be used in Loggers.
-   | To enable JSON logging uncomment every "File-json" appender, comment every "File" appender.
--->
+
 <Configuration monitorInterval="30" shutdownHook="enable" packages="com.pingidentity.pa.cli.logging.appenders.log4j2,com.pingidentity.pa.cli.logging.layouts.log4j2,com.pingidentity.pa.cli.logging.filters.log4j2">
     <Loggers>
         <!-- PingAccess Loggers-->
         <AsyncLogger name="com.pingidentity" level="${PA_LOG_LEVEL}" additivity="false" includeLocation="false">
             <AppenderRef ref="File"/>
-            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
             <!--<AppenderRef ref="CONSOLE" />-->
             <!--<AppenderRef ref="SYSLOG" />-->
@@ -67,85 +62,68 @@
         <!-- Changes to this section will not be required to effectively troubleshoot PingAccess -->
         <AsyncLogger name="com.netflix" level="WARN" additivity="false" includeLocation="false">
             <AppenderRef ref="File"/>
-            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="com.netflix.config.sources.URLConfigurationSource" level="FATAL" additivity="false"
                      includeLocation="false">
             <AppenderRef ref="File"/>
-            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="net.sf.ehcache" level="WARN" additivity="false" includeLocation="false">
             <AppenderRef ref="File"/>
-            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="net.sf.ehcache.config.CacheConfiguration" level="ERROR" additivity="false">
             <AppenderRef ref="File"/>
-            <!--<AppenderRef ref="File-json"/>-->
-            <AppenderRef ref="File-json"/>
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="org.springframework" level="WARN" additivity="false" includeLocation="false">
             <AppenderRef ref="File"/>
-            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="org.springframework.orm.jpa" level="WARN" additivity="false" includeLocation="false">
             <AppenderRef ref="File"/>
-            <!-- <AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="org.hibernate" level="WARN" additivity="false" includeLocation="false">
             <AppenderRef ref="File"/>
-            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="org.hibernate.orm.deprecation" level="FATAL" additivity="false" includeLocation="false">
             <AppenderRef ref="File"/>
-            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="org.hibernate.cache.ehcache.AbstractEhcacheRegionFactory" level="ERROR" additivity="false" includeLocation="false">
             <AppenderRef ref="File"/>
-            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="org.hibernate.jpa.internal.util.LogHelper" level="FATAL" additivity="false"
                      includeLocation="false">
             <AppenderRef ref="File"/>
-            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="org.apache.http" level="WARN" additivity="false" includeLocation="false">
             <AppenderRef ref="File"/>
-            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="java.sql.DatabaseMetaData" level="WARN" additivity="false" includeLocation="false">
             <AppenderRef ref="File"/>
-            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="com.wordnik.swagger" level="WARN" additivity="false" includeLocation="false">
             <AppenderRef ref="File"/>
-            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="io.netty" level="WARN" additivity="false" includeLocation="false">
             <AppenderRef ref="File"/>
-            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="org.jose4j.jwe.kdf" level="WARN" additivity="false" includeLocation="false">
             <AppenderRef ref="File"/>
-            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
         <AsyncLogger name="org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator" level="ERROR" additivity="false" includeLocation="false">
             <AppenderRef ref="File"/>
-            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncLogger>
 
@@ -154,7 +132,6 @@
         <!-- ======================= -->
         <AsyncRoot level="INFO" includeLocation="false">
             <AppenderRef ref="File"/>
-            <!--<AppenderRef ref="File-json"/>-->
             <AppenderRef ref="CONSOLE-SIEM"/>
         </AsyncRoot>
 
@@ -163,7 +140,6 @@
         <!-- ======================= -->
         <Logger name="apiaudit" level="INFO" additivity="false">
             <AppenderRef ref="APIAuditLog-File"/>
-            <!--<AppenderRef ref="APIAuditLog-File-JSON"/>-->
             <AppenderRef ref="CONSOLE_AUDIT"/>
             <!--<AppenderRef ref="ApiAuditLog-Database-Failover"/>-->
             <!--<AppenderRef ref="ApiAuditLog-SQLServer-Database-Failover"/>-->
@@ -173,7 +149,6 @@
         </Logger>
         <Logger name="engineaudit" level="INFO" additivity="false">
             <AppenderRef ref="EngineAuditLog-File"/>
-            <!--<AppenderRef ref="EngineAuditLog-File-JSON"/>-->
             <AppenderRef ref="CONSOLE_AUDIT"/>
             <!--<AppenderRef ref="EngineAuditLog-Database-Failover"/>-->
             <!--<AppenderRef ref="EngineAuditLog-SQLServer-Database-Failover"/>-->
@@ -183,7 +158,6 @@
         </Logger>
         <Logger name="agentaudit" level="INFO" additivity="false">
             <AppenderRef ref="AgentAuditLog-File"/>
-            <!--<AppenderRef ref="AgentAuditLog-File-JSON"/>-->
             <AppenderRef ref="CONSOLE_AUDIT"/>
             <!--<AppenderRef ref="AgentAuditLog-Database-Failover"/>-->
             <!--<AppenderRef ref="AgentAuditLog-SQLServer-Database-Failover"/>-->
@@ -193,7 +167,6 @@
         </Logger>
         <Logger name="sidebandclientaudit" level="INFO" additivity="false">
             <AppenderRef ref="SidebandClientAuditLog-File"/>
-            <!--<AppenderRef ref="SidebandClientAuditLog-File-JSON"/>-->
             <AppenderRef ref="CONSOLE_AUDIT"/>
             <!--<AppenderRef ref="SidebandClientAuditLog-Database-Failover"/>-->
             <!--<AppenderRef ref="SidebandClientAuditLog-SQLServer-Database-Failover"/>-->
@@ -203,7 +176,6 @@
         </Logger>
         <Logger name="sidebandaudit" level="INFO" additivity="false">
             <AppenderRef ref="SidebandAuditLog-File"/>
-            <!--<AppenderRef ref="SidebandAuditLog-File-JSON"/>-->
             <AppenderRef ref="CONSOLE_AUDIT"/>
             <!--<AppenderRef ref="SidebandAuditLog-Database-Failover"/>-->
             <!--<AppenderRef ref="SidebandAuditLog-SQLServer-Database-Failover"/>-->
@@ -290,22 +262,6 @@
             <DefaultRolloverStrategy max="4" />
         </RollingFile>
 
-        <!-- Main JSON log : A size based file rolling appender -->
-        <RollingFile name="File-json"
-                     fileName="${sys:pa.home}/log/pingaccess.log"
-                     filePattern="${sys:pa.home}/log/pingaccess.log.%i"
-                     ignoreExceptions="false">
-            <JSONLayout eventEol="true" compact="true">
-                <KeyValuePair key="date" value="$${date:yyyy-MM-dd'T'HH:mm:ssZ}"/>
-                <KeyValuePair key="exchangeId" value="$${ctx:exchangeId:-}"/>
-                <KeyValuePair key="logPurpose" value="pingaccess" />
-            </JSONLayout>
-            <Policies>
-                <SizeBasedTriggeringPolicy size="100 MB" />
-            </Policies>
-            <DefaultRolloverStrategy max="4" />
-        </RollingFile>
-
         <!-- API auditing file logging configuration-->
         <RollingFile name="APIAuditLog-File"
                      fileName="${sys:pa.home}/log/pingaccess_api_audit.log"
@@ -318,30 +274,6 @@
                 -->
                 <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.subject}| %X{AUDIT.authMech}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode} %n</pattern>
             </PatternLayout>
-            <Policies>
-                <SizeBasedTriggeringPolicy size="100 MB" />
-            </Policies>
-            <DefaultRolloverStrategy max="4" />
-        </RollingFile>
-
-        <!-- API JSON auditing file logging configuration-->
-        <RollingFile name="APIAuditLog-File-JSON"
-                     fileName="${sys:pa.home}/log/pingaccess_api_audit.log"
-                     filePattern="${sys:pa.home}/log/pingaccess_api_audit.log.%i"
-                     ignoreExceptions="false">
-            <JSONLayout eventEol="true" compact="true">
-                <KeyValuePair key="date" value="$${date:yyyy-MM-dd'T'HH:mm:ssZ}"/>
-                <KeyValuePair key="exchangeId" value="$${ctx:exchangeId:-}"/>
-                <KeyValuePair key="trackingId" value="$${ctx:AUDIT.trackingId:-}"/>
-                <KeyValuePair key="roundTripMS" value="$${ctx:AUDIT.roundTripMS:-}"/>
-                <KeyValuePair key="subject" value="$${ctx:AUDIT.subject:-}"/>
-                <KeyValuePair key="authMech" value="$${ctx:AUDIT.authMech:-}"/>
-                <KeyValuePair key="client" value="$${ctx:AUDIT.client:-}"/>
-                <KeyValuePair key="method" value="$${ctx:AUDIT.method:-}"/>
-                <KeyValuePair key="requestUri" value="$${ctx:AUDIT.requestUri:-}"/>
-                <KeyValuePair key="responseCode" value="$${ctx:AUDIT.responseCode:-}"/>
-                <KeyValuePair key="logPurpose" value="pingaccess-api-audit" />
-            </JSONLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="100 MB" />
             </Policies>
@@ -560,33 +492,6 @@
                 -->
                 <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.proxyRoundTripMS} ms| %X{AUDIT.resource}| %X{AUDIT.subject}| %X{AUDIT.authMech}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.failedRuleType}| %X{AUDIT.failedRuleName}| %X{AUDIT.applicationName}| %X{AUDIT.resourceName}| %X{AUDIT.pathPrefix} %n</pattern>
             </PatternLayout>
-            <Policies>
-                <SizeBasedTriggeringPolicy size="100 MB" />
-            </Policies>
-            <DefaultRolloverStrategy max="4" />
-        </RollingFile>
-
-        <RollingFile name="EngineAuditLog-File-JSON"
-                     fileName="${sys:pa.home}/log/pingaccess_engine_audit.log"
-                     filePattern="${sys:pa.home}/log/pingaccess_engine_audit.log.%i"
-                     ignoreExceptions="false">
-            <JSONLayout eventEol="true" compact="true">
-                <KeyValuePair key="date" value="$${date:yyyy-MM-dd'T'HH:mm:ssZ}"/>
-                <KeyValuePair key="exchangeId" value="$${ctx:exchangeId:-}"/>
-                <KeyValuePair key="trackingId" value="$${ctx:AUDIT.trackingId:-}"/>
-                <KeyValuePair key="roundTripMS" value="$${ctx:AUDIT.roundTripMS:-} ms"/>
-                <KeyValuePair key="proxyRoundTripMS" value="$${ctx:AUDIT.proxyRoundTripMS:-} ms"/>
-                <KeyValuePair key="resource" value="$${ctx:AUDIT.resource:-}"/>
-                <KeyValuePair key="subject" value="$${ctx:AUDIT.subject:-}"/>
-                <KeyValuePair key="authMech" value="$${ctx:AUDIT.authMech:-}"/>
-                <KeyValuePair key="client" value="$${ctx:AUDIT.client:-}"/>
-                <KeyValuePair key="method" value="$${ctx:AUDIT.method:-}"/>
-                <KeyValuePair key="requestUri" value="$${ctx:AUDIT.requestUri:-}"/>
-                <KeyValuePair key="responseCode" value="$${ctx:AUDIT.responseCode:-}"/>
-                <KeyValuePair key="responseCode" value="$${ctx:AUDIT.failedRuleType:-}"/>
-                <KeyValuePair key="responseCode" value="$${ctx:AUDIT.failedRuleName:-}"/>
-                <KeyValuePair key="logPurpose" value="pingaccess-engine-audit" />
-            </JSONLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="100 MB" />
             </Policies>
@@ -843,30 +748,6 @@
             <DefaultRolloverStrategy max="4" />
         </RollingFile>
 
-        <RollingFile name="AgentAuditLog-File-JSON"
-                     fileName="${sys:pa.home}/log/pingaccess_agent_audit.log"
-                     filePattern="${sys:pa.home}/log/pingaccess_agent_audit.log.%i"
-                     ignoreExceptions="false">
-            <JSONLayout eventEol="true" compact="true">
-                <KeyValuePair key="date" value="$${date:yyyy-MM-dd'T'HH:mm:ssZ}"/>
-                <KeyValuePair key="exchangeId" value="$${ctx:exchangeId:-}"/>
-                <KeyValuePair key="trackingId" value="$${ctx:AUDIT.trackingId:-}"/>
-                <KeyValuePair key="roundTripMS" value="$${ctx:AUDIT.roundTripMS:-} ms"/>
-                <KeyValuePair key="resource" value="$${ctx:AUDIT.resource:-}"/>
-                <KeyValuePair key="client" value="$${ctx:AUDIT.client:-}"/>
-                <KeyValuePair key="method" value="$${ctx:AUDIT.method:-}"/>
-                <KeyValuePair key="requestUri" value="$${ctx:AUDIT.requestUri:-}"/>
-                <KeyValuePair key="responseCode" value="$${ctx:AUDIT.responseCode:-}"/>
-                <KeyValuePair key="applicationName" value="$${ctx:AUDIT.applicationName:-}"/>
-                <KeyValuePair key="resourceName" value="$${ctx:AUDIT.resourceName:-}"/>
-                <KeyValuePair key="pathPrefix" value="$${ctx:AUDIT.pathPrefix:-}"/>
-                <KeyValuePair key="logPurpose" value="pingaccess-agent-audit" />
-            </JSONLayout>
-            <Policies>
-                <SizeBasedTriggeringPolicy size="100 MB" />
-            </Policies>
-            <DefaultRolloverStrategy max="4" />
-        </RollingFile>
         <!-- Agent Audit log : JDBC appender template for Oracle
 
         To enable:
@@ -1090,29 +971,6 @@
             <DefaultRolloverStrategy max="4" />
         </RollingFile>
 
-        <RollingFile name="SidebandClientAuditLog-File-JSON"
-                     fileName="${sys:pa.home}/log/pingaccess_sideband_client_audit.log"
-                     filePattern="${sys:pa.home}/log/pingaccess_sideband_client_audit.log.%i"
-                     ignoreExceptions="false">
-            <JSONLayout eventEol="true" compact="true">
-                <KeyValuePair key="date" value="$${date:yyyy-MM-dd'T'HH:mm:ssZ}"/>
-                <KeyValuePair key="exchangeId" value="$${ctx:exchangeId:-}"/>
-                <KeyValuePair key="trackingId" value="$${ctx:AUDIT.trackingId:-}"/>
-                <KeyValuePair key="roundTripMS" value="$${ctx:AUDIT.roundTripMS:-} ms"/>
-                <KeyValuePair key="client" value="$${ctx:AUDIT.client:-}"/>
-                <KeyValuePair key="method" value="$${ctx:AUDIT.method:-}"/>
-                <KeyValuePair key="requestUri" value="$${ctx:AUDIT.requestUri:-}"/>
-                <KeyValuePair key="responseCode" value="$${ctx:AUDIT.responseCode:-}"/>
-                <KeyValuePair key="sidebandName" value="$${ctx:AUDIT.sidebandName:-}"/>
-                <KeyValuePair key="sidebandDecision" value="$${ctx:AUDIT.sidebandDecision:-}"/>
-                <KeyValuePair key="logPurpose" value="pingaccess-sideband-client-audit-json" />
-            </JSONLayout>
-            <Policies>
-                <SizeBasedTriggeringPolicy size="100 MB" />
-            </Policies>
-            <DefaultRolloverStrategy max="4" />
-        </RollingFile>
-
         <!-- Sideband Client Audit log : JDBC appender template for Oracle
 
         To enable:
@@ -1326,32 +1184,6 @@
                 -->
                 <pattern>%d{ISO8601}| %X{exchangeId}| %X{AUDIT.trackingId}| %X{AUDIT.roundTripMS} ms| %X{AUDIT.resource}| %X{AUDIT.client}| %X{AUDIT.method}| %X{AUDIT.requestUri}| %X{AUDIT.responseCode}| %X{AUDIT.applicationName}| %X{AUDIT.resourceName}| %X{AUDIT.pathPrefix}| %X{AUDIT.sidebandName} %n</pattern>
             </PatternLayout>
-            <Policies>
-                <SizeBasedTriggeringPolicy size="100 MB" />
-            </Policies>
-            <DefaultRolloverStrategy max="4" />
-        </RollingFile>
-
-        <RollingFile name="SidebandAuditLog-File-JSON"
-                     fileName="${sys:pa.home}/log/pingaccess_sideband_audit.log"
-                     filePattern="${sys:pa.home}/log/pingaccess_sideband_audit.log.%i"
-                     ignoreExceptions="false">
-            <JSONLayout eventEol="true" compact="true">
-                <KeyValuePair key="date" value="$${date:yyyy-MM-dd'T'HH:mm:ssZ}"/>
-                <KeyValuePair key="exchangeId" value="$${ctx:exchangeId:-}"/>
-                <KeyValuePair key="trackingId" value="$${ctx:AUDIT.trackingId:-}"/>
-                <KeyValuePair key="roundTripMS" value="$${ctx:AUDIT.roundTripMS:-} ms"/>
-                <KeyValuePair key="resource" value="$${ctx:AUDIT.resource:-}"/>
-                <KeyValuePair key="client" value="$${ctx:AUDIT.client:-}"/>
-                <KeyValuePair key="method" value="$${ctx:AUDIT.method:-}"/>
-                <KeyValuePair key="requestUri" value="$${ctx:AUDIT.requestUri:-}"/>
-                <KeyValuePair key="responseCode" value="$${ctx:AUDIT.responseCode:-}"/>
-                <KeyValuePair key="applicationName" value="$${ctx:AUDIT.applicationName:-}"/>
-                <KeyValuePair key="resourceName" value="$${ctx:AUDIT.resourceName:-}"/>
-                <KeyValuePair key="pathPrefix" value="$${ctx:AUDIT.pathPrefix:-}"/>
-                <KeyValuePair key="sidebandName" value="$${ctx:AUDIT.sidebandName:-}"/>
-                <KeyValuePair key="logPurpose" value="pingaccess-sideband-audit-json" />
-            </JSONLayout>
             <Policies>
                 <SizeBasedTriggeringPolicy size="100 MB" />
             </Policies>
