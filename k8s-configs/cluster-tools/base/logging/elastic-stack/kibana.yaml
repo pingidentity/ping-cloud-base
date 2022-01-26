@@ -35,7 +35,7 @@ spec:
 
       containers:
       - name: kibana
-        image: public.ecr.aws/r2h3l6e4/kibana/kibana:7.13.2
+        image: public.ecr.aws/r2h3l6e4/kibana/kibana:7.16.2
 
         ports:
         - containerPort: 5601
@@ -88,7 +88,9 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: kibana-dashboard-upload
+  name: kibana-dashboard-upload  
+  annotations:
+    argocd.argoproj.io/hook: Sync
 spec:
   ttlSecondsAfterFinished: 30
   template:

@@ -36,7 +36,6 @@ metadata:
   labels:
     app: 'cert-manager'
     app.kubernetes.io/name: 'cert-manager'
-    app.kubernetes.io/instance: 'cert-manager'
     # Generated labels
     app.kubernetes.io/version: "v1.5.3"
 spec:
@@ -747,7 +746,6 @@ metadata:
   labels:
     app: 'cert-manager'
     app.kubernetes.io/name: 'cert-manager'
-    app.kubernetes.io/instance: 'cert-manager'
     # Generated labels
     app.kubernetes.io/version: "v1.5.3"
 spec:
@@ -2051,7 +2049,6 @@ metadata:
   labels:
     app: 'cert-manager'
     app.kubernetes.io/name: 'cert-manager'
-    app.kubernetes.io/instance: 'cert-manager'
     # Generated labels
     app.kubernetes.io/version: "v1.5.3"
 spec:
@@ -5910,7 +5907,6 @@ metadata:
   labels:
     app: 'cert-manager'
     app.kubernetes.io/name: 'cert-manager'
-    app.kubernetes.io/instance: 'cert-manager'
     # Generated labels
     app.kubernetes.io/version: "v1.5.3"
 spec:
@@ -10618,7 +10614,6 @@ metadata:
   labels:
     app: 'cert-manager'
     app.kubernetes.io/name: 'cert-manager'
-    app.kubernetes.io/instance: 'cert-manager'
     # Generated labels
     app.kubernetes.io/version: "v1.5.3"
 spec:
@@ -15326,7 +15321,6 @@ metadata:
   labels:
     app: 'cert-manager'
     app.kubernetes.io/name: 'cert-manager'
-    app.kubernetes.io/instance: 'cert-manager'
     # Generated labels
     app.kubernetes.io/version: "v1.5.3"
 spec:
@@ -15990,7 +15984,6 @@ metadata:
   labels:
     app: cainjector
     app.kubernetes.io/name: cainjector
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "cainjector"
     app.kubernetes.io/version: "v1.5.3"
 ---
@@ -16004,7 +15997,6 @@ metadata:
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "controller"
     app.kubernetes.io/version: "v1.5.3"
 ---
@@ -16019,7 +16011,6 @@ metadata:
   labels:
     app: cainjector
     app.kubernetes.io/name: cainjector
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "cainjector"
     app.kubernetes.io/version: "v1.5.3"
 rules:
@@ -16054,7 +16045,6 @@ metadata:
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "controller"
     app.kubernetes.io/version: "v1.5.3"
 rules:
@@ -16080,7 +16070,6 @@ metadata:
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "controller"
     app.kubernetes.io/version: "v1.5.3"
 rules:
@@ -16106,7 +16095,6 @@ metadata:
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "controller"
     app.kubernetes.io/version: "v1.5.3"
 rules:
@@ -16141,7 +16129,6 @@ metadata:
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "controller"
     app.kubernetes.io/version: "v1.5.3"
 rules:
@@ -16179,7 +16166,6 @@ metadata:
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "controller"
     app.kubernetes.io/version: "v1.5.3"
 rules:
@@ -16239,7 +16225,6 @@ metadata:
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "controller"
     app.kubernetes.io/version: "v1.5.3"
 rules:
@@ -16276,7 +16261,6 @@ metadata:
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "controller"
     app.kubernetes.io/version: "v1.5.3"
     rbac.authorization.k8s.io/aggregate-to-view: "true"
@@ -16298,7 +16282,6 @@ metadata:
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "controller"
     app.kubernetes.io/version: "v1.5.3"
     rbac.authorization.k8s.io/aggregate-to-edit: "true"
@@ -16320,7 +16303,6 @@ metadata:
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "cert-manager"
     app.kubernetes.io/version: "v1.5.3"
 rules:
@@ -16340,7 +16322,6 @@ metadata:
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "cert-manager"
     app.kubernetes.io/version: "v1.5.3"
 rules:
@@ -16369,7 +16350,6 @@ metadata:
   labels:
     app: cainjector
     app.kubernetes.io/name: cainjector
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "cainjector"
     app.kubernetes.io/version: "v1.5.3"
 roleRef:
@@ -16389,7 +16369,6 @@ metadata:
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "controller"
     app.kubernetes.io/version: "v1.5.3"
 roleRef:
@@ -16409,7 +16388,6 @@ metadata:
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "controller"
     app.kubernetes.io/version: "v1.5.3"
 roleRef:
@@ -16429,7 +16407,6 @@ metadata:
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "controller"
     app.kubernetes.io/version: "v1.5.3"
 roleRef:
@@ -16449,7 +16426,6 @@ metadata:
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "controller"
     app.kubernetes.io/version: "v1.5.3"
 roleRef:
@@ -16469,7 +16445,6 @@ metadata:
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "controller"
     app.kubernetes.io/version: "v1.5.3"
 roleRef:
@@ -16489,7 +16464,6 @@ metadata:
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "controller"
     app.kubernetes.io/version: "v1.5.3"
 roleRef:
@@ -16509,7 +16483,6 @@ metadata:
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "cert-manager"
     app.kubernetes.io/version: "v1.5.3"
 roleRef:
@@ -16529,7 +16502,6 @@ metadata:
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "cert-manager"
     app.kubernetes.io/version: "v1.5.3"
 roleRef:
@@ -16554,7 +16526,6 @@ metadata:
   labels:
     app: cainjector
     app.kubernetes.io/name: cainjector
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "cainjector"
     app.kubernetes.io/version: "v1.5.3"
 rules:
@@ -16588,7 +16559,6 @@ metadata:
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "controller"
     app.kubernetes.io/version: "v1.5.3"
 rules:
@@ -16623,7 +16593,6 @@ metadata:
   labels:
     app: cainjector
     app.kubernetes.io/name: cainjector
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "cainjector"
     app.kubernetes.io/version: "v1.5.3"
 roleRef:
@@ -16646,7 +16615,6 @@ metadata:
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "controller"
     app.kubernetes.io/version: "v1.5.3"
 roleRef:
@@ -16671,7 +16639,6 @@ metadata:
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "controller"
     app.kubernetes.io/version: "v1.5.3"
 spec:
@@ -16683,7 +16650,6 @@ spec:
       targetPort: 9402
   selector:
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "controller"
 ---
 # Source: cert-manager/templates/webhook-service.yaml
@@ -16698,7 +16664,6 @@ metadata:
   labels:
     app: cainjector
     app.kubernetes.io/name: cainjector
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "cainjector"
     app.kubernetes.io/version: "v1.5.3"
 spec:
@@ -16706,14 +16671,12 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: cainjector
-      app.kubernetes.io/instance: cert-manager
       app.kubernetes.io/component: "cainjector"
   template:
     metadata:
       labels:
         app: cainjector
         app.kubernetes.io/name: cainjector
-        app.kubernetes.io/instance: cert-manager
         app.kubernetes.io/component: "cainjector"
         app.kubernetes.io/version: "v1.5.3"
     spec:
@@ -16744,7 +16707,6 @@ metadata:
   labels:
     app: cert-manager
     app.kubernetes.io/name: cert-manager
-    app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/component: "controller"
     app.kubernetes.io/version: "v1.5.3"
 spec:
@@ -16752,14 +16714,12 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: cert-manager
-      app.kubernetes.io/instance: cert-manager
       app.kubernetes.io/component: "controller"
   template:
     metadata:
       labels:
         app: cert-manager
         app.kubernetes.io/name: cert-manager
-        app.kubernetes.io/instance: cert-manager
         app.kubernetes.io/component: "controller"
         app.kubernetes.io/version: "v1.5.3"
       annotations:

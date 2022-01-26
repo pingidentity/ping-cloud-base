@@ -16,7 +16,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: pingaccess-backup
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess:6.3.1-v1.0.17
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess:6.3.1-v1.0.19
         imagePullPolicy: IfNotPresent
         securityContext:
           runAsGroup: 9999
@@ -27,6 +27,9 @@ spec:
         envFrom:
         - configMapRef:
             name: pingaccess-admin-environment-variables
+        env:
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
         volumeMounts:
         - name: pingaccess-backup
           mountPath: /opt/in/backup-archive-data.sh

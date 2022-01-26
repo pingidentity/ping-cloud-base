@@ -113,12 +113,14 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
         volumeMounts:
         - name: shared-dir
           mountPath: /opt/shared-dir
       containers:
       - name: pingaccess-was
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was:6.3.1-v1.0.17
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was:6.3.1-v1.0.19
         # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
         securityContext:
           runAsNonRoot: false
@@ -186,6 +188,8 @@ spec:
               key: PA_ADMIN_USER_PASSWORD
         - name: NEW_RELIC_CONFIG_FILE
           value: "/opt/shared-dir/newrelic.yml"
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
         envFrom:
         - configMapRef:
             name: pingaccess-was-environment-variables

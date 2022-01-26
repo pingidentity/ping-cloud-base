@@ -3,6 +3,8 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: enrichment-bootstrap
+  annotations:
+    argocd.argoproj.io/hook: Sync
 spec:
   ttlSecondsAfterFinished: 30
   template:
