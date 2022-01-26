@@ -197,16 +197,13 @@
 
 
         <Console name="CONSOLE-SIEM" target="SYSTEM_OUT">
-            <PingSyslogLayout>
-                <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" properties="true">
-                    <KeyValuePair key="logPurpose" value="System_SIEM" />
-                </JSONLayout>
-            </PingSyslogLayout>
+            <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" properties="true">
+                <KeyValuePair key="logPurpose" value="System_SIEM" />
+            </JSONLayout>
         </Console>
 
         <Console name="CONSOLE_AUDIT" target="SYSTEM_OUT">
-            <PingSyslogLayout>
-              <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" >
+            <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" >
                 <KeyValuePair key="date" value="$${date:yyyy-MM-dd'T'HH:mm:ssZ}"/>
                 <KeyValuePair key="exchangeId" value="$${ctx:exchangeId:-}"/>
                 <KeyValuePair key="trackingId" value="$${ctx:AUDIT.trackingId:-}"/>
@@ -221,8 +218,7 @@
                 <KeyValuePair key="sidebandName" value="$${ctx:AUDIT.sidebandName:-}"/>
                 <KeyValuePair key="sidebandDecision" value="$${ctx:AUDIT.sidebandDecision:-}"/>
                 <KeyValuePair key="logPurpose" value="Audit_SIEM" />
-              </JSONLayout>
-            </PingSyslogLayout>
+            </JSONLayout>
         </Console>
 
         <!-- ========================= -->
