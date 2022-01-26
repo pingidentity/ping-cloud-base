@@ -5,6 +5,8 @@
 - Deploy PingDataSync into cluster
 - Updated the SigSci Agent to run as a non-root user
 - Updated  default PingID adapter, PingOne MFA IK, PingOne Risk Management IK
+- Force engines to use non-root
+- Force admins (PF, PA, PA-WAS, PD) to use non-root
 - Replaced PingDirectory backup tool to use export-ldif
 - Replaced PingDirectory restore tool to use import-ldif
 - Update PingFederateConfigurator job to use ansible image
@@ -16,6 +18,7 @@ _Changes:_
 - [X] PDO-2951 Deploy PingDataSync into cluster
 - [X] PDO-3064 PingAccess hook scripts updated to use the beluga_log method instead of echo
 - [X] PDO-3065 PingFederate hook scripts updated to use the beluga_log method instead of echo
+- [X] PDO-3103 Force admins (PF, PA, PA-WAS, PD, DA, PC) to use non-root
 - [X] PDO-3104 Change PingAccess/PingAccess-WAS beluga_log messages to use beluga_warn or beluga_error
 - [X] PDO-3105 Change PingFederate beluga_log messages to use beluga_warn or beluga_error
 - [X] PDO-3106 Change PingDirectory beluga_log messages to use beluga_warn or beluga_error
@@ -25,6 +28,7 @@ _Changes:_
 - [X] PDO-3146 Change Busybox-based containers in cluster-tools to run as non-root
 - [X] PDO-3167 Update default PingID adapter, PingOne MFA IK, PingOne Risk Management IK
 - [X] PDO-3200 Change dev-env.sh script to have better error handling for kubectl apply
+- [X] PDO-3207 Force Admins to use non-root
 - [X] PDO-3262 Add push rule to repo, README for branch name max length requirement
 - [X] PDO-3305 Modify k8s in PCB to run ansible image
 - [X] PDO-3307 Update PD status for PingOne
