@@ -7,6 +7,7 @@
 - Updated  default PingID adapter, PingOne MFA IK, PingOne Risk Management IK
 - Replaced PingDirectory backup tool to use export-ldif
 - Replaced PingDirectory restore tool to use import-ldif
+- Update PingFederateConfigurator job to use ansible image
 
 _Changes:_
 
@@ -25,6 +26,8 @@ _Changes:_
 - [X] PDO-3167 Update default PingID adapter, PingOne MFA IK, PingOne Risk Management IK
 - [X] PDO-3200 Change dev-env.sh script to have better error handling for kubectl apply
 - [X] PDO-3262 Add push rule to repo, README for branch name max length requirement
+- [X] PDO-3305 Modify k8s in PCB to run ansible image
+- [X] PDO-3307 Update PD status for PingOne
 
 ### 1.12.0
 
