@@ -828,12 +828,18 @@ spec:
         app: logstash-elastic
     spec:
       serviceAccount: logstash-elastic
+      securityContext:
+        # Use "logstash" user for entire pod, also user 1000 in enrichment exists as well
+        runAsUser: 1000 
+        runAsGroup: 1000 
+        fsGroup: 1000
       initContainers:
 
       - name: check-service-availability
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:7.16.2-v1.0.0
-        
-        imagePullPolicy: IfNotPresent
+        #image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:7.16.2-v1.0.0
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-monitoring/enrichment-bootstrap:7.16.2-v1.0.0-pdo-3157-logstash-non-root
+        #imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         command: ["sh", '$(CONTAINER_NAME).sh']
 
         env:
@@ -848,9 +854,11 @@ spec:
           value: "green"
 
       - name: create-enrichment-cache-files
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:7.16.2-v1.0.0
+        #image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:7.16.2-v1.0.0
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-monitoring/enrichment-bootstrap:7.16.2-v1.0.0-pdo-3157-logstash-non-root
         
-        imagePullPolicy: IfNotPresent
+        #imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
 
@@ -882,9 +890,10 @@ spec:
         image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logstash:7.16.2-v1.0.0
         imagePullPolicy: IfNotPresent
         securityContext:
-          runAsUser: 0
-          runAsGroup: 1000
-          privileged: true
+          ## "logstash" user
+          #runAsUser: 1000 
+          #runAsGroup: 1000 
+          ##privileged: true
 
         env:
 
