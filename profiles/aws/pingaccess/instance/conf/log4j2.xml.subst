@@ -197,13 +197,13 @@
 
 
         <Console name="CONSOLE-SIEM" target="SYSTEM_OUT">
-            <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" properties="true">
+            <JSONLayout compact="true" eventEol="true" objectMessageAsJsonObject="true" properties="true">
                 <KeyValuePair key="logPurpose" value="System_SIEM" />
             </JSONLayout>
         </Console>
 
         <Console name="CONSOLE_AUDIT" target="SYSTEM_OUT">
-            <JSONLayout complete="true" compact="true" eventEol="true" objectMessageAsJsonObject="true" >
+            <JSONLayout compact="true" eventEol="true" objectMessageAsJsonObject="true" >
                 <KeyValuePair key="date" value="$${date:yyyy-MM-dd'T'HH:mm:ssZ}"/>
                 <KeyValuePair key="exchangeId" value="$${ctx:exchangeId:-}"/>
                 <KeyValuePair key="trackingId" value="$${ctx:AUDIT.trackingId:-}"/>
