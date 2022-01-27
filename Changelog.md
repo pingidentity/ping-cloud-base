@@ -10,6 +10,7 @@
 - Replaced PingDirectory backup tool to use export-ldif
 - Replaced PingDirectory restore tool to use import-ldif
 - Update PingFederateConfigurator job to use ansible image
+- Update all pingcloud-apps images to support ssh-rsa HostKeyAlgorithm
 
 _Changes:_
 
@@ -33,6 +34,8 @@ _Changes:_
 - [X] PDO-3262 Add push rule to repo, README for branch name max length requirement
 - [X] PDO-3305 Modify k8s in PCB to run ansible image
 - [X] PDO-3307 Update PD status for PingOne
+- [X] PDO-3370 (BugFix) PD running into crashloop after restart with missing PingDirectory.lic file
+- [X] PDO-3371 Update all pingcloud-apps images to support ssh-rsa HostKeyAlgorithm
 
 ### 1.12.0
 
