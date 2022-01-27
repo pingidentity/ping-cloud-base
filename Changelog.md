@@ -13,6 +13,7 @@ _Changes:_
 - [X] PDO-859  Replace PingDirectory backup tool to use export-ldif
 - [X] PDO-867  Replace PingDirectory restore tool to use import-ldif
 - [X] PDO-2951 Deploy PingDataSync into cluster
+- [X] PDO-2954 Support PingDataSync logs within CloudWatch
 - [X] PDO-3064 PingAccess hook scripts updated to use the beluga_log method instead of echo
 - [X] PDO-3065 PingFederate hook scripts updated to use the beluga_log method instead of echo
 - [X] PDO-3104 Change PingAccess/PingAccess-WAS beluga_log messages to use beluga_warn or beluga_error
