@@ -59,6 +59,7 @@ _Changes:_
 - ElasticSearch image updated to 7.16.2
 - Kibana updated to 7.16.2
 - Added Open Token Adapter Integration Kit to server profile for PingFederate SSO
+- Patched default PF agentless adapter IK
 
 _Changes:_
 
@@ -101,6 +102,7 @@ _Changes:_
 - [X] PDO-3265 Upgrade Elasticsearch version to 7.16.2 for patches to the log4j2
 - [X] PDO-3333 Fix Kibana showing an error 'We encountered an error retrieving search results
 - [X] PDO-3352 Add Open Token Adapter Integration Kit to server profile for PingFederate SSO
+- [X] PDO-3393 Default Agentless adapter kit deployed has known vulnerabilities
 
 ### 1.11.0
 
