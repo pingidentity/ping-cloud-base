@@ -22,6 +22,7 @@
 - Kibana updated to 7.16.2
 - Added Open Token Adapter Integration Kit to server profile for PingFederate SSO
 - Patched default PF agentless adapter IK
+- Upgraded PingFederate to v10.3.5 to resolve security vulnerability SECADV029 and SECBL021
 
 _Changes:_
 
@@ -65,6 +66,7 @@ _Changes:_
 - [X] PDO-3333 Fix Kibana showing an error 'We encountered an error retrieving search results
 - [X] PDO-3352 Add Open Token Adapter Integration Kit to server profile for PingFederate SSO
 - [X] PDO-3393 Default Agentless adapter kit deployed has known vulnerabilities
+- [X] PDO-3401 Upgrade PingFederate to v10.3.5 to resolve security vulnerability SECADV029 and SECBL021
 
 ### 1.11.0
 
