@@ -2,10 +2,41 @@
 
 ### 1.13.0
 
+- Deploy PingDataSync into cluster
+- Updated the SigSci Agent to run as a non-root user
+- Updated  default PingID adapter, PingOne MFA IK, PingOne Risk Management IK
+- Force engines to use non-root
+- Force admins (PF, PA, PA-WAS, PD) to use non-root
+- Replaced PingDirectory backup tool to use export-ldif
+- Replaced PingDirectory restore tool to use import-ldif
+- Update PingFederateConfigurator job to use ansible image
+- Update all pingcloud-apps images to support ssh-rsa HostKeyAlgorithm
+
 _Changes:_
 
+- [X] PDO-859  Replace PingDirectory backup tool to use export-ldif
+- [X] PDO-867  Replace PingDirectory restore tool to use import-ldif
+- [X] PDO-2951 Deploy PingDataSync into cluster
+- [X] PDO-2954 Support PingDataSync logs within CloudWatch
 - [X] PDO-3064 PingAccess hook scripts updated to use the beluga_log method instead of echo
+- [X] PDO-3065 PingFederate hook scripts updated to use the beluga_log method instead of echo
+- [X] PDO-3103 Force admins (PF, PA, PA-WAS, PD, DA, PC) to use non-root
+- [X] PDO-3104 Change PingAccess/PingAccess-WAS beluga_log messages to use beluga_warn or beluga_error
+- [X] PDO-3105 Change PingFederate beluga_log messages to use beluga_warn or beluga_error
+- [X] PDO-3106 Change PingDirectory beluga_log messages to use beluga_warn or beluga_error
+- [X] PDO-3108 Change PingCentral beluga_log messages to use beluga_warn or beluga_error
+- [X] PDO-3129 Update json_exporter image version to 0.3.0
+- [X] PDO-3142 Run SigSci agent as non-root, update nginx ingress controller security context
 - [X] PDO-3146 Change Busybox-based containers in cluster-tools to run as non-root
+- [X] PDO-3167 Update default PingID adapter, PingOne MFA IK, PingOne Risk Management IK
+- [X] PDO-3200 Change dev-env.sh script to have better error handling for kubectl apply
+- [X] PDO-3207 Force Admins to use non-root
+- [X] PDO-3262 Add push rule to repo, README for branch name max length requirement
+- [X] PDO-3305 Modify k8s in PCB to run ansible image
+- [X] PDO-3307 Update PD status for PingOne
+- [X] PDO-3359 Dynamically deploy PingDataSync in the same availability zone as PingDirectory
+- [X] PDO-3370 (BugFix) PD running into crashloop after restart with missing PingDirectory.lic file
+- [X] PDO-3371 Update all pingcloud-apps images to support ssh-rsa HostKeyAlgorithm
 
 ### 1.12.0
 
@@ -24,6 +55,11 @@ _Changes:_
 - Implemented Kubernetes Infrastructure Agent for New Relic
 - Fixed showing a few SharedResourceWarnings in ArgoCD UI
 - Updated to address Log4Shell vulnerabilities
+- Update logstash to 7.16.2
+- ElasticSearch image updated to 7.16.2
+- Kibana updated to 7.16.2
+- Added Open Token Adapter Integration Kit to server profile for PingFederate SSO
+- Patched default PF agentless adapter IK
 
 _Changes:_
 
@@ -62,6 +98,11 @@ _Changes:_
 - [X] PDO-3196 Fix Security Vulnerability CVE-2021-44228 by patching Log4j2 files
 - [X] PDO-3218 Updating images for Log4Shell security vulnerability
 - [X] PDO-3243 Upgrade New Relic Java Agent to 6.5.2 to address Log4Shell Vulnerability
+- [X] PDO-3266 Upgrade Logstash version to 7.16.2 for patches to the log4j2
+- [X] PDO-3265 Upgrade Elasticsearch version to 7.16.2 for patches to the log4j2
+- [X] PDO-3333 Fix Kibana showing an error 'We encountered an error retrieving search results
+- [X] PDO-3352 Add Open Token Adapter Integration Kit to server profile for PingFederate SSO
+- [X] PDO-3393 Default Agentless adapter kit deployed has known vulnerabilities
 
 ### 1.11.0
 

@@ -7,11 +7,11 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-testPingFederateAdminConfiguratorJobStatus() {
+testPingOneConfiguratorJobStatus() {
 
-  status=$(kubectl get job pingfederate-admin-configurator -n ${NAMESPACE} -o json | jq -r '.status.conditions[0].type')
+  status=$(kubectl get job pingone-configurator -n ${NAMESPACE} -o json | jq -r '.status.conditions[0].type')
   assertEquals 0 $?
-  assertEquals "The status of the pingfederate-admin-configurator job should be Complete but was: ${status}" 'Complete' ${status}
+  assertEquals "The status of the pingone-configurator job should be Complete but was: ${status}" 'Complete' ${status}
 }
 
 # When arguments are passed to a script you must

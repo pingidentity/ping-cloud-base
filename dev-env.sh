@@ -336,6 +336,7 @@ log "Using K8S_CONTEXT: ${K8S_CONTEXT}"
 log ---
 
 NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY:-unused}
+export DATASYNC_P1AS_SYNC_SERVER=${DATASYNC_P1AS_SYNC_SERVER:-"pingdirectory-0"}
 
 export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KEY}")
 export CLUSTER_NAME=${TENANT_NAME}
@@ -366,6 +367,13 @@ build_dev_deploy_file "${DEPLOY_FILE}" "${CLUSTER_TYPE}"
 if test "${dryrun}" = 'false'; then
   log "Deploying ${DEPLOY_FILE} to cluster ${CLUSTER_NAME}, namespace ${NAMESPACE} for tenant ${TENANT_DOMAIN}"
   kubectl apply -f "${DEPLOY_FILE}" --context "${K8S_CONTEXT}" | tee -a "${LOG_FILE}"
+
+  if [[ "${PIPESTATUS[0]}" != 0 ]]; then
+    echo -e "\033[31m->>>> Non-zero exit code while applying changes to cluster ^^^^^\033[0m"
+    exit 1
+  else
+    echo -e "\033[32m^^^^^^ SUCCESS! kubectl apply ran successfully ^^^^^^\033[0m"
+  fi
 
   # Print out the ingress objects for logs and the ping stack
   log
