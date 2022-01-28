@@ -84,6 +84,9 @@ TENANT_NAME=${TENANT_NAME}
 # single P14C customer. All of these apps will be created within the "Administrators" environment in the tenant.
 ENVIRONMENT_PREFIX=${ENVIRONMENT_PREFIX}
 
+# PingDirectory pod name where DataSync will deploy itself within same availability zone. Default pod is pingdirectory-0.
+DATASYNC_P1AS_SYNC_SERVER="pingdirectory-0"
+
 ############################################################
 # Server profile variables
 ############################################################
