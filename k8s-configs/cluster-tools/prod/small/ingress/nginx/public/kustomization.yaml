@@ -11,5 +11,20 @@ patchesStrategicMerge:
   metadata:
     name: nginx-ingress-controller
   spec:
-    minReplicas: 3
-    maxReplicas: 5
+    minReplicas: 4
+    maxReplicas: 6
+    targetCPUUtilizationPercentage: 50
+
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: nginx-configuration
+    namespace: ingress-nginx-public
+  data:
+    main-snippet: load_module /usr/lib/nginx/modules/ngx_http_sigsci_module.so;
+    keepalive_requests: "100000"
+    keepalive_timeout: "30"
+    max-worker-connections: "0"
+    max_conns: "0"
+    worker-processes: "4"
