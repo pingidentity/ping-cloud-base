@@ -13,6 +13,7 @@ configure_kube
 NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY:-unused}
 
 export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KEY}")
+export DATASYNC_P1AS_SYNC_SERVER="pingdirectory-0"
 
 # Deploy the configuration to Kubernetes
 DEPLOY_FILE=/tmp/deploy.yaml
