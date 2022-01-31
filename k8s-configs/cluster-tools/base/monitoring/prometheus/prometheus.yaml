@@ -26,6 +26,14 @@ data:
     - job_name: 'kube-state-metrics'
       static_configs:
       - targets: ['kube-state-metrics.kube-system.svc.cluster.local:8080']
+    # Monitor node-exporter metrics
+    - job_name: 'node-exporter'
+      kubernetes_sd_configs:
+      - role: endpoints
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_endpoints_name]
+        regex: 'node-exporter'
+        action: keep
 
     # Discover and monitor PD instances
     - job_name: 'pd-statsd-exporter'

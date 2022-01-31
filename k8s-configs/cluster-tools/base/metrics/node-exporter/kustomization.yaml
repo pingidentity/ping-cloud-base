@@ -2,6 +2,5 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-- kube-state-metrics
-- metrics-server
-- node-exporter
+- node-exporter-deamonset.yaml
+- node-exporter-service.yaml
