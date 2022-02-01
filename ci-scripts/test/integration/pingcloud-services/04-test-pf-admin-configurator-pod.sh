@@ -7,10 +7,10 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-testPingFederateAdminConfiguratorPodStatus() {
-  status=$(kubectl get pods --selector=role=pingfederate-admin-configurator -n ${NAMESPACE} -o json | jq -r '.items[].status.phase')
+testPingOneConfiguratorPodStatus() {
+  status=$(kubectl get pods --selector=role=pingone-configurator -n ${NAMESPACE} -o json | jq -r '.items[].status.phase')
   assertEquals 0 $?
-  assertEquals "The status phase of the pingfederate-admin-configurator pod should be Succeeded but was: ${status}" 'Succeeded' ${status}
+  assertEquals "The status phase of the pingone-configurator pod should be Succeeded but was: ${status}" 'Succeeded' ${status}
 }
 
 

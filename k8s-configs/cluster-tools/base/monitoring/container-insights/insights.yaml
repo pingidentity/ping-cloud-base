@@ -240,7 +240,7 @@ data:
       @id in_tail_container_logs
       @label @nonpingcontainers
       path /var/log/containers/*.log
-      exclude_path ["/var/log/containers/cloudwatch-agent*", "/var/log/containers/fluentd*", "/var/log/containers/pingaccess*", "/var/log/containers/pingfederate*", "/var/log/containers/pingdirectory*", "/var/log/containers/pingdelegator*"]
+      exclude_path ["/var/log/containers/cloudwatch-agent*", "/var/log/containers/fluentd*", "/var/log/containers/pingaccess*", "/var/log/containers/pingfederate*", "/var/log/containers/pingdirectory*","/var/log/containers/pingdatasync*", "/var/log/containers/pingdelegator*"]
       pos_file /var/log/fluentd-containers.log.pos
       tag *
       read_from_head true
@@ -299,6 +299,20 @@ data:
       @label @pdcontainers
       path /var/log/containers/pingdirectory*.log
       pos_file /var/log/pingdirectory-containers.log.pos
+      tag kubernetes.*
+      read_from_head true
+      <parse>
+        @type json
+        time_format %Y-%m-%dT%H:%M:%S.%NZ
+      </parse>
+    </source>
+    
+    <source>
+      @type tail
+      @id in_tail_pingdatasync_container_logs
+      @label @pdsynccontainers
+      path /var/log/containers/pingdatasync*.log
+      pos_file /var/log/pingdatasync-containers.log.pos
       tag kubernetes.*
       read_from_head true
       <parse>
@@ -426,6 +440,93 @@ data:
           key log
           pattern /^\/opt\/out\/instance\/logs\/config-audit/
           tag temp.config_audit_logs
+        </rule>
+        <rule>
+          key log
+          pattern /^(.+)$/
+          tag temp.unmatched_logs
+        </rule>
+      </match>
+
+      <match temp.unmatched_logs>
+        @type relabel
+        @label @normal
+      </match>
+
+      <match temp.**>
+        @type rewrite_tag_filter
+        remove_tag_prefix temp
+        <rule>
+          key stream_name
+          pattern /^(.+)$/
+          tag ${tag}.$1
+        </rule>
+      </match>
+
+      <match **>
+        @type relabel
+        @label @tagstream
+      </match>
+    </label>
+
+    <label @pdsynccontainers>
+      <filter **>
+        @type kubernetes_metadata
+      </filter>
+
+      <filter **>
+        @type record_transformer
+        enable_ruby true
+        <record>
+          stream_name ${record["kubernetes"]["pod_name"]}_${record["kubernetes"]["namespace_name"]}_${record["kubernetes"]["container_name"]}
+        </record>
+      </filter>
+
+      <filter **>
+        @type concat
+        key log
+        multiline_start_regexp /\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}([,.]\d{3}){0,1}Z|\d{2}:\d{2}:\d{2}\s+ping.*-\d{1,2}|\\u001b\[0;32m/
+        separator ""
+        flush_interval 5
+        timeout_label @normal
+      </filter>
+
+      <match kubernetes.**>
+        @type rewrite_tag_filter
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/logs\/access/
+          tag temp.access_logs
+        </rule>
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/logs\/errors/
+          tag temp.errors_logs
+        </rule>
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/logs\/failed-ops/
+          tag temp.failed_ops_logs
+        </rule>
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/logs\/config-audit/
+          tag temp.config_audit_logs
+        </rule>
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/logs\/server/
+          tag temp.server_logs
+        </rule>
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/logs\/sync/
+          tag temp.sync_logs
+        </rule>
+        <rule>
+          key log
+          pattern /^\/opt\/out\/instance\/logs\/sync-failed-ops/
+          tag temp.sync_failed_ops_logs
         </rule>
         <rule>
           key log

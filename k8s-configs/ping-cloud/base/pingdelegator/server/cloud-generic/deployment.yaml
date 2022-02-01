@@ -35,10 +35,10 @@ spec:
                 topologyKey: "failure-domain.beta.kubernetes.io/zone"
       initContainers:
       - name: pingdelegator-init
-        # FIXME: switch to same user as app
         securityContext:
-          runAsNonRoot: false
-          runAsUser: 0
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
         image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
         imagePullPolicy: IfNotPresent
         command:
@@ -65,10 +65,10 @@ spec:
               name: pingdelegator-environment-variables
       containers:
       - name: pingdelegator
-        # Required because new GSA images run as non-root by default, and P1AS does not work with non-root user yet.
         securityContext:
-          runAsNonRoot: false
-          runAsUser: 0
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdelegator:4.4.1-v1.0.8
         imagePullPolicy: IfNotPresent
         resources:
@@ -79,9 +79,8 @@ spec:
             memory: "1Gi"
             cpu: "1"
         volumeMounts:
-          # FIXME: fix home directory when containers run as non-root user
           - name: ssh-dir
-            mountPath: /root/.ssh
+            mountPath: /home/ping/.ssh
           - name: topology-descriptor
             mountPath: /opt/staging/topology/descriptor.json
             subPath: descriptor.json
@@ -121,6 +120,8 @@ spec:
         envFrom:
         - configMapRef:
             name: pingdelegator-environment-variables
+      securityContext:
+        fsGroup: 9999
       volumes:
         - name: ssh-dir
           emptyDir: {}

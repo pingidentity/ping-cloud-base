@@ -5,7 +5,7 @@ namespace: ping-cloud
 
 commonLabels:
   app: ping-cloud
-  role: pingfederate-admin-configurator
+  role: pingone-configurator
 
 generatorOptions:
   disableNameSuffixHash: true

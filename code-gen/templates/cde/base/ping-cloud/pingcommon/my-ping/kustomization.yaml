@@ -10,3 +10,6 @@ images:
 
 - name: ${ECR_REGISTRY_NAME}/pingcloud-services/p14c-integration
   newTag: ${P14C_INTEGRATION_IMAGE_TAG}
+
+- name: ${ECR_REGISTRY_NAME}/pingcloud-solutions/ansible-beluga
+  newTag: ${ANSIBLE_BELUGA_IMAGE_TAG}
