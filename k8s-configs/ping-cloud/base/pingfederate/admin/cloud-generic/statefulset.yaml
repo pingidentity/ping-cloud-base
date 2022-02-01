@@ -130,7 +130,7 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_CONSOLE

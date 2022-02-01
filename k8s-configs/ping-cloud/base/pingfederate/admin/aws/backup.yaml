@@ -14,7 +14,7 @@ spec:
       containers:
       - name: pingfederate-backup
         image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingfederate:10.3.3-v1.0.23-pdo-2827-new
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
