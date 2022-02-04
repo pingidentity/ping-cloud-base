@@ -14,6 +14,7 @@ configMapGenerator:
   files:
   - scripts/copy-dependencies.sh
   - scripts/wait-for-services.sh
+  - scripts/wait-for-pds.sh
   - scripts/utils.lib.sh
 - name: pingcommon-environment-variables
   envs:

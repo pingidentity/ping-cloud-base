@@ -37,6 +37,9 @@ _Changes:_
 - [X] PDO-3359 Dynamically deploy PingDataSync in the same availability zone as PingDirectory
 - [X] PDO-3370 (BugFix) PD running into crashloop after restart with missing PingDirectory.lic file
 - [X] PDO-3371 Update all pingcloud-apps images to support ssh-rsa HostKeyAlgorithm
+- [X] PDO-3404 PingDataSync add wait-for-service for external and internal PD instance
+- [X] PDO-3408 Enforce PingDataSync to only deploy within primary region
+- [X] PDO-3394 (BugFix) PD status update for P1
 
 ### 1.12.0
 
