@@ -18,6 +18,7 @@ _Changes:_
 - [X] PDO-867  Replace PingDirectory restore tool to use import-ldif
 - [X] PDO-2951 Deploy PingDataSync into cluster
 - [X] PDO-2954 Support PingDataSync logs within CloudWatch
+- [X] PDO-2955 Add External PD & P1AS PD certs to PingDataSync TrustStore
 - [X] PDO-3064 PingAccess hook scripts updated to use the beluga_log method instead of echo
 - [X] PDO-3065 PingFederate hook scripts updated to use the beluga_log method instead of echo
 - [X] PDO-3103 Force admins (PF, PA, PA-WAS, PD, DA, PC) to use non-root
