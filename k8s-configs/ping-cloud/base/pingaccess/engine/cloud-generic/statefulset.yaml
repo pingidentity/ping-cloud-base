@@ -202,10 +202,11 @@ spec:
             optional: false
 
       - name: pingaccess-heartbeat-exporter
-        securityContext:
-          runAsGroup: 9999
-          runAsNonRoot: true
-          runAsUser: 9031
+        # FIXME: PDO-3207 breaks proper work of this container - should be fixed as scope of PDO-3428 and image version should be updated as well.
+        # securityContext:
+        #   runAsGroup: 9999
+        #   runAsNonRoot: true
+        #   runAsUser: 9031
         image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-json-exporter:0.3.0-v1.0.4
         imagePullPolicy: IfNotPresent
         env:

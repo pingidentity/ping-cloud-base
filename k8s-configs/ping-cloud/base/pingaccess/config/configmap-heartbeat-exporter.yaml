@@ -7,27 +7,27 @@ data:
     ---
     metrics:
     - name: metric_pingaccess_response_concurrency_statistics_90_percentile
-      path: $."response.concurrency.statistics.90.percentile"+
+      path: '{.response\.concurrency\.statistics\.90\.percentile}'
       labels:
         environment: pingaccess
         source: heartbeat
     - name: metric_pingaccess_response_statistics_count
-      path: $."response.statistics.count"+
+      path: '{.response\.statistics\.count}'
       labels:
         environment: pingaccess
         source: heartbeat
     - name: metric_pingaccess_response_time_statistics_90_percentile
-      path: $."response.time.statistics.90.percentile"+
+      path: '{.response\.time\.statistics\.90\.percentile}'
       labels:
         environment: pingaccess
         source: heartbeat
     - name: metric_pingaccess_response_concurrency_statistics_mean
-      path: $."response.concurrency.statistics.mean"+
+      path: '{.response\.concurrency\.statistics\.mean}'
       labels:
         environment: pingaccess
         source: heartbeat
     - name: metric_pingaccess_response_time_statistics_mean
-      path: $."response.time.statistics.mean"+
+      path: '{.response\.time\.statistics\.mean}'
       labels:
         environment: pingaccess
         source: heartbeat
