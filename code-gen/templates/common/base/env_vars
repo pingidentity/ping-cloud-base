@@ -170,14 +170,14 @@ PINGFEDERATE_IMAGE_TAG=10.3.3-v1.0.25
 PINGDIRECTORY_IMAGE_TAG=8.3.0.3-v1.0.28
 PINGDELEGATOR_IMAGE_TAG=4.4.1-v1.0.8
 PINGCENTRAL_IMAGE_TAG=1.8.1-v1.0.22
-PINGDATASYNC_IMAGE_TAG=8.2.0.6-v1.0.1
+PINGDATASYNC_IMAGE_TAG=8.2.0.6-v1.0.2
 
 ############################################################
 # Ping solution image tags
 ############################################################
 METADATA_IMAGE_TAG=v1.0.4
 P14C_BOOTSTRAP_IMAGE_TAG=v1.0.11
-P14C_INTEGRATION_IMAGE_TAG=v1.1.0
+P14C_INTEGRATION_IMAGE_TAG=v1.1.1
 ANSIBLE_BELUGA_IMAGE_TAG=v1.0.1
 
 ############################################################
