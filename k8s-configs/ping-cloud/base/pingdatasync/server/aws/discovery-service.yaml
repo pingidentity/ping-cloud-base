@@ -7,10 +7,6 @@ spec:
     spec:
       initContainers:
       - name: pingdatasync-discovery-service
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 9031
-          runAsGroup: 9999
         image: public.ecr.aws/r2h3l6e4/amazon/aws-cli:2.0.17
         imagePullPolicy: IfNotPresent
         command:

@@ -24,3 +24,8 @@ ROOT_USER_PASSWORD_FILE=/usr/local/secrets/root-user-password
 TAIL_LOG_FILES=
 # Individual files should be spelled out, globs are unreliable
 K8S_TAIL_LOG_FILES=/opt/out/instance/logs/access /opt/out/instance/logs/errors /opt/out/instance/logs/failed-ops /opt/out/instance/logs/config-audit.log /opt/out/instance/logs/server.out /opt/out/instance/logs/sync /opt/out/instance/logs/sync-failed-ops
+
+PD_CLUSTER_PRIVATE_HOSTNAME=pingdirectory
+DATASYNC_P1AS_SYNC_SERVER=pingdirectory-0
+DATASYNC_EXTERNAL_SYNC_SERVER_HOST=example.com
+DATASYNC_EXTERNAL_SYNC_SERVER_PORT=443
