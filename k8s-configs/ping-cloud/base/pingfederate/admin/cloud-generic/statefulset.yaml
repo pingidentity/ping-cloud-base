@@ -153,11 +153,6 @@ spec:
             secretKeyRef:
               name: pingcommon-passwords
               key: DA_OAUTH_TOKEN_VALIDATOR_SECRET
-        - name: PC_ADMIN_USER_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: pingcentral-passwords
-              key: PC_ADMIN_USER_PASSWORD
         - name: NEW_RELIC_CONFIG_FILE
           value: "/opt/shared-dir/newrelic.yml"
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
@@ -167,8 +162,6 @@ spec:
             name: pingfederate-admin-environment-variables
         - configMapRef:
             name: pingcommon-environment-variables
-        - configMapRef:
-            name: pingcentral-environment-variables
         - secretRef:
             name: newrelic-license-key
             optional: false
