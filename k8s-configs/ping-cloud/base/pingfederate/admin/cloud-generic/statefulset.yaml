@@ -158,11 +158,6 @@ spec:
             secretKeyRef:
               name: pingcentral-passwords
               key: PC_ADMIN_USER_PASSWORD
-        - name: PA_ADMIN_USER_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: pingaccess-passwords
-              key: PA_ADMIN_USER_PASSWORD
         - name: NEW_RELIC_CONFIG_FILE
           value: "/opt/shared-dir/newrelic.yml"
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
