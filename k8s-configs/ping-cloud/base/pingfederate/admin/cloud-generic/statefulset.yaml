@@ -169,8 +169,6 @@ spec:
             name: pingcommon-environment-variables
         - configMapRef:
             name: pingcentral-environment-variables
-        - configMapRef:
-            name: pingaccess-admin-environment-variables
         - secretRef:
             name: newrelic-license-key
             optional: false
