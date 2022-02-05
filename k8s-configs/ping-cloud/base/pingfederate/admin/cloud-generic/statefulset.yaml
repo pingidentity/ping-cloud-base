@@ -148,6 +148,11 @@ spec:
             secretKeyRef:
               name: pingcommon-passwords
               key: PF_ADMIN_USER_PASSWORD
+        - name: PC_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingcentral-passwords
+              key: PC_ADMIN_USER_PASSWORD
         - name: DA_OAUTH_TOKEN_VALIDATOR_SECRET
           valueFrom:
             secretKeyRef:
@@ -162,6 +167,8 @@ spec:
             name: pingfederate-admin-environment-variables
         - configMapRef:
             name: pingcommon-environment-variables
+        - configMapRef:
+            name: pingcentral-environment-variables
         - secretRef:
             name: newrelic-license-key
             optional: false
