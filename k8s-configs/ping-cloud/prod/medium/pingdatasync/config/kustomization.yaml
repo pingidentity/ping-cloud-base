@@ -9,9 +9,3 @@ commonLabels:
 
 resources:
 - ../../../../base/pingdatasync/config
-
-configMapGenerator:
-- name: pingdatasync-environment-variables
-  behavior: merge
-  envs:
-  - env_vars
