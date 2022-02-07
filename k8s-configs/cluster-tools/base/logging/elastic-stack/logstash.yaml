@@ -837,7 +837,7 @@ spec:
 
       - name: check-service-availability
         #image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:7.16.2-v1.0.0
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-monitoring/enrichment-bootstrap:7.16.2-v1.0.0-pdo-3157-logstash-non-root
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.0.0-pdo-3156-logstash-non-root
         #imagePullPolicy: IfNotPresent
         imagePullPolicy: Always
         command: ["sh", '$(CONTAINER_NAME).sh']
@@ -855,15 +855,15 @@ spec:
 
       - name: create-enrichment-cache-files
         #image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:7.16.2-v1.0.0
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-monitoring/enrichment-bootstrap:7.16.2-v1.0.0-pdo-3157-logstash-non-root
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.0.0-pdo-3156-logstash-non-root
         
         #imagePullPolicy: IfNotPresent
         imagePullPolicy: Always
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
 
-        securityContext:
-          privileged: true
+        #securityContext:
+          #privileged: true
 
         env:
         - name: CONTAINER_NAME
@@ -882,8 +882,10 @@ spec:
         volumeMounts:
         - name: enrichment-cache
           mountPath: /enrichment-cache
+          readOnly: true
         - name: enrichment-cache-files
           mountPath: /enrichment-cache-files
+          readOnly: false
 
       containers:
       - name: logstash
@@ -891,8 +893,8 @@ spec:
         imagePullPolicy: IfNotPresent
         securityContext:
           ## "logstash" user
-          #runAsUser: 1000 
-          #runAsGroup: 1000 
+          runAsUser: 1000
+          runAsGroup: 1000
           ##privileged: true
 
         env:
