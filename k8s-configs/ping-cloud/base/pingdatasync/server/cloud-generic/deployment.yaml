@@ -86,7 +86,7 @@ spec:
         securityContext:
           runAsNonRoot: false
           runAsUser: 0
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdatasync:8.2.0.6-v1.0.2
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdatasync:8.2.0.6-v1.0.3
         imagePullPolicy: Always
         # FIXME: Determine recommended resources in P1AS
         resources:
@@ -123,6 +123,16 @@ spec:
               secretKeyRef:
                 name: pingdatasync-passwords
                 key: root-user-password
+          - name: EXT_PD_USER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: pingdatasync-passwords
+                key: ext-pd-user-password
+          - name: P1AS_PD_USER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: pingdirectory-passwords
+                key: admin-user-password
           - name: PING_DATASYNC_POD_NAME
             valueFrom:
               fieldRef:

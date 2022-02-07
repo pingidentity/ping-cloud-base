@@ -21,6 +21,7 @@ _Changes:_
 - [X] PDO-2354 Add Metric and Alerting For JVM GC CPU percent in PA
 - [X] PDO-2356 Add Metric and Alerting For JVM Old Gen Collected percent in PA
 - [X] PDO-2951 Deploy PingDataSync into cluster
+- [X] PDO-2953 Sync directory from external PD server to P1AS PD server
 - [X] PDO-2954 Support PingDataSync logs within CloudWatch
 - [X] PDO-2955 Add External PD & P1AS PD certs to PingDataSync TrustStore
 - [X] PDO-3064 PingAccess hook scripts updated to use the beluga_log method instead of echo
