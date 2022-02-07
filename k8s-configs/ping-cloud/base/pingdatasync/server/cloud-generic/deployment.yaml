@@ -33,7 +33,26 @@ spec:
                   operator: In
                   values:
                   - "pingdirectory-0"
-              topologyKey: "kubernetes.io/zone"
+              topologyKey: failure-domain.beta.kubernetes.io/zone
+        # PingDataSync pods are scheduled to run on nodes with the label "pingidentity.com/pd=true"
+        # and taint "pingidentity.com/pd-only=true:NoSchedule".
+        # This aligns with PingDirectory configuration. PingDataSync essentially will attempt to deploy
+        # to the same node as pingdirectory-0 or DATASYNC_P1AS_SYNC_SERVER. If there is not enough memory on the node,
+        # PingDataSync will attempt to deploy within the same availability zone.
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: pingidentity.com/pd
+                    operator: In
+                    values:
+                      - "true"
+      tolerations:
+        - key: "pingidentity.com/pd-only"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+      terminationGracePeriodSeconds: 300
       initContainers:
       - name: wait-for-pds
         securityContext:

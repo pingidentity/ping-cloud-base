@@ -98,6 +98,14 @@ pcentral-integration-tests:
   script:
     - ./ci-scripts/test/integration/run-integration-tests.sh pingcentral
 
+datasync-integration-tests:
+  stage: integration-test
+  tags:
+    - default-gitlab-runner
+  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
+  script:
+    - ./ci-scripts/test/integration/run-integration-tests.sh pingdatasync
+
 common-integration-tests:
   stage: integration-test
   tags:

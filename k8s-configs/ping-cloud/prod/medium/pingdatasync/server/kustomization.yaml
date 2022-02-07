@@ -9,6 +9,3 @@ commonLabels:
 
 resources:
 - ../../../../base/pingdatasync/server/aws
-
-patchesStrategicMerge:
-- limits.yaml
