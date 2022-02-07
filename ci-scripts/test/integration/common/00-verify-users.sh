@@ -95,6 +95,19 @@ test_ping_user_pc() {
 
   }
 
+  # test ping datasync user
+test_ping_user_pds() {
+  
+  # get pingdatasync pod name
+  pingdatasync_pods=$(kubectl get pod -n "${NAMESPACE}" --field-selector=status.phase=Running --no-headers -o custom-columns=":metadata.name"  | grep pingdatasync)
+
+  # test pingdatasync server
+  for pingdatasync_pod in ${pingdatasync_pods}; do
+    verify_ping_user "${pingdatasync_pod}" "pingdatasync"
+  done
+
+  }
+
 verify_ping_user() {
   SERVER="${1}"
   CONTAINER="${2}"
