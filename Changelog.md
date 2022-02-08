@@ -12,6 +12,7 @@
 - Update PingFederateConfigurator job to use ansible image
 - Run PingDataSync using nonroot user
 - Update all pingcloud-apps images to support ssh-rsa HostKeyAlgorithm
+- Use alpine docker image for enrichment-bootstrap
 
 _Changes:_
 
@@ -48,6 +49,7 @@ _Changes:_
 - [X] PDO-3404 PingDataSync add wait-for-service for external and internal PD instance
 - [X] PDO-3408 Enforce PingDataSync to only deploy within primary region
 - [X] PDO-3394 (BugFix) PD status update for P1
+- [X] PDO-3414 Use alpine docker image for enrichment-bootstrap
 
 ### 1.12.0
 
