@@ -33,7 +33,26 @@ spec:
                   operator: In
                   values:
                   - "pingdirectory-0"
-              topologyKey: "kubernetes.io/zone"
+              topologyKey: failure-domain.beta.kubernetes.io/zone
+        # PingDataSync pods are scheduled to run on nodes with the label "pingidentity.com/pd=true"
+        # and taint "pingidentity.com/pd-only=true:NoSchedule".
+        # This aligns with PingDirectory configuration. PingDataSync essentially will attempt to deploy
+        # to the same node as pingdirectory-0 or DATASYNC_P1AS_SYNC_SERVER. If there is not enough memory on the node,
+        # PingDataSync will attempt to deploy within the same availability zone.
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: pingidentity.com/pd
+                    operator: In
+                    values:
+                      - "true"
+      tolerations:
+        - key: "pingidentity.com/pd-only"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+      terminationGracePeriodSeconds: 300
       initContainers:
       - name: wait-for-pds
         securityContext:
@@ -55,8 +74,9 @@ spec:
               name: pingdatasync-environment-variables
       - name: pingdatasync-init
         securityContext:
-          runAsNonRoot: false
-          runAsUser: 0
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
         image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
         imagePullPolicy: IfNotPresent
         command:
@@ -84,9 +104,10 @@ spec:
       containers:
       - name: pingdatasync
         securityContext:
-          runAsNonRoot: false
-          runAsUser: 0
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdatasync:8.2.0.6-v1.0.2
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdatasync:8.2.0.6-v1.0.5
         imagePullPolicy: Always
         # FIXME: Determine recommended resources in P1AS
         resources:
@@ -123,6 +144,16 @@ spec:
               secretKeyRef:
                 name: pingdatasync-passwords
                 key: root-user-password
+          - name: EXT_PD_USER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: pingdatasync-passwords
+                key: ext-pd-user-password
+          - name: P1AS_PD_USER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: pingdirectory-passwords
+                key: admin-user-password
           - name: PING_DATASYNC_POD_NAME
             valueFrom:
               fieldRef:
@@ -142,7 +173,7 @@ spec:
               name: pingcommon-environment-variables
         volumeMounts:
           - name: ssh-dir
-            mountPath: /root/.ssh
+            mountPath: /home/ping/.ssh
           - name: data-dir
             mountPath: /usr/local/bin/kubectl
             subPath: kubectl
@@ -161,6 +192,8 @@ spec:
           - name: pingdatasync-license
             mountPath: /opt/in/instance/conf/PingDirectory.lic
             subPath: PingDirectory.lic
+      securityContext:
+        fsGroup: 9999
       volumes:
         - name: ssh-dir
           emptyDir: {}

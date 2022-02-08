@@ -10,13 +10,19 @@
 - Replaced PingDirectory backup tool to use export-ldif
 - Replaced PingDirectory restore tool to use import-ldif
 - Update PingFederateConfigurator job to use ansible image
+- Run PingDataSync using nonroot user
 - Update all pingcloud-apps images to support ssh-rsa HostKeyAlgorithm
 
 _Changes:_
 
 - [X] PDO-859  Replace PingDirectory backup tool to use export-ldif
 - [X] PDO-867  Replace PingDirectory restore tool to use import-ldif
+- [X] PDO-2350 Add Metric and Alerting For JVM GC CPU percent in PF
+- [X] PDO-2351 Add Metric and Alerting For JVM Old Gen Collected percent in PF
+- [X] PDO-2354 Add Metric and Alerting For JVM GC CPU percent in PA
+- [X] PDO-2356 Add Metric and Alerting For JVM Old Gen Collected percent in PA
 - [X] PDO-2951 Deploy PingDataSync into cluster
+- [X] PDO-2953 Sync directory from external PD server to P1AS PD server
 - [X] PDO-2954 Support PingDataSync logs within CloudWatch
 - [X] PDO-2955 Add External PD & P1AS PD certs to PingDataSync TrustStore
 - [X] PDO-3064 PingAccess hook scripts updated to use the beluga_log method instead of echo
@@ -29,12 +35,14 @@ _Changes:_
 - [X] PDO-3129 Update json_exporter image version to 0.3.0
 - [X] PDO-3142 Run SigSci agent as non-root, update nginx ingress controller security context
 - [X] PDO-3146 Change Busybox-based containers in cluster-tools to run as non-root
+- [X] PDO-3163 Change PingFederate Port to 9999 within P14C Integration
 - [X] PDO-3167 Update default PingID adapter, PingOne MFA IK, PingOne Risk Management IK
 - [X] PDO-3200 Change dev-env.sh script to have better error handling for kubectl apply
 - [X] PDO-3207 Force Admins to use non-root
 - [X] PDO-3262 Add push rule to repo, README for branch name max length requirement
 - [X] PDO-3305 Modify k8s in PCB to run ansible image
 - [X] PDO-3307 Update PD status for PingOne
+- [X] PDO-3341 Run PingDataSync using nonroot user
 - [X] PDO-3359 Dynamically deploy PingDataSync in the same availability zone as PingDirectory
 - [X] PDO-3370 (BugFix) PD running into crashloop after restart with missing PingDirectory.lic file
 - [X] PDO-3371 Update all pingcloud-apps images to support ssh-rsa HostKeyAlgorithm

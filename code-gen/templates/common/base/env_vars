@@ -85,7 +85,7 @@ TENANT_NAME=${TENANT_NAME}
 ENVIRONMENT_PREFIX=${ENVIRONMENT_PREFIX}
 
 # PingDirectory pod name where DataSync will deploy itself within same availability zone. Default pod is pingdirectory-0.
-DATASYNC_P1AS_SYNC_SERVER="pingdirectory-0"
+DATASYNC_P1AS_SYNC_SERVER=pingdirectory-0
 
 ############################################################
 # Server profile variables
@@ -164,13 +164,13 @@ PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 ############################################################
 # Ping application image tags
 ############################################################
-PINGACCESS_IMAGE_TAG=6.3.1-v1.0.22
+PINGACCESS_IMAGE_TAG=6.3.1-v1.0.23
 PINGACCESS_WAS_IMAGE_TAG=6.3.1-v1.0.22
-PINGFEDERATE_IMAGE_TAG=10.3.3-v1.0.25
+PINGFEDERATE_IMAGE_TAG=10.3.3-v1.0.27
 PINGDIRECTORY_IMAGE_TAG=8.3.0.3-v1.0.28
 PINGDELEGATOR_IMAGE_TAG=4.4.1-v1.0.8
 PINGCENTRAL_IMAGE_TAG=1.8.1-v1.0.22
-PINGDATASYNC_IMAGE_TAG=8.2.0.6-v1.0.2
+PINGDATASYNC_IMAGE_TAG=8.2.0.6-v1.0.5
 
 ############################################################
 # Ping solution image tags

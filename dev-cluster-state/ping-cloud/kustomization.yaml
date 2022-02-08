@@ -408,17 +408,6 @@ patchesJson6902:
     - op: remove
       path: /metadata/annotations/service.beta.kubernetes.io~1aws-load-balancer-internal
 
-### deploy pingdatasync to specific AZ ###
-- target:
-    group: apps
-    version: v1
-    kind: Deployment
-    name: pingdatasync
-  patch: |-
-    - op: replace
-      path: /spec/template/spec/affinity/podAffinity/preferredDuringSchedulingIgnoredDuringExecution/0/podAffinityTerm/labelSelector/matchExpressions/0/values/0
-      value: ${DATASYNC_P1AS_SYNC_SERVER}
-
 patchesStrategicMerge:
 - |-
   apiVersion: v1
