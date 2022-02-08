@@ -44,6 +44,7 @@ _Changes:_
 - [X] PDO-3307 Update PD status for PingOne
 - [X] PDO-3341 Run PingDataSync using nonroot user
 - [X] PDO-3359 Dynamically deploy PingDataSync in the same availability zone as PingDirectory
+- [X] PDO-3369 Update p1/newrelic-tags-exporter to run with "ping" user, "identity" group
 - [X] PDO-3370 (BugFix) PD running into crashloop after restart with missing PingDirectory.lic file
 - [X] PDO-3371 Update all pingcloud-apps images to support ssh-rsa HostKeyAlgorithm
 - [X] PDO-3404 PingDataSync add wait-for-service for external and internal PD instance
