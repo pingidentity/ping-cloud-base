@@ -887,7 +887,6 @@ spec:
           privileged: true
 
         env:
-
           - name: CONTAINER_NAME
             value: "logstash"
           - name: LS_JAVA_OPTS
@@ -1000,7 +999,6 @@ spec:
       - name: enrichment-cache
         configMap:
           name: enrichment-cache
-          defaultMode: 0555
       - name: enrichment-cache-files
         emptyDir: {}
       - name: logstash-sincedb-files
