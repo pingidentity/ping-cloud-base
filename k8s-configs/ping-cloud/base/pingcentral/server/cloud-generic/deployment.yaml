@@ -18,6 +18,7 @@ spec:
         lastUpdateReason: "NA"
       labels:
         role: pingcentral
+        entitled-app: "true"
     spec:
       serviceAccount: ping-serviceaccount
       affinity:
