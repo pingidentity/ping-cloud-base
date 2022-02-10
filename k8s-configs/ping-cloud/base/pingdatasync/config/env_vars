@@ -19,7 +19,8 @@ SYNC_SERVER_NAME=sync
 P1AS_PD_SERVER=p1as_pd_server
 EXT_PD_SERVER=external_pd_server
 
-EXT_PD_TO_P1AS_PD_PIPE=external_pd_to_external_p1as_pd
+EXT_PD_TO_P1AS_PD_PIPE=external_pd_to_p1as_pd
+P1AS_PD_TO_EXT_PD_PIPE=p1as_pd_to_external_pd
 
 MAX_HEAP_SIZE=3g
 

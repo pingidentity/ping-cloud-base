@@ -38,6 +38,7 @@ _Changes:_
 - [X] PDO-3146 Change Busybox-based containers in cluster-tools to run as non-root
 - [X] PDO-3163 Change PingFederate Port to 9999 within P14C Integration
 - [X] PDO-3167 Update default PingID adapter, PingOne MFA IK, PingOne Risk Management IK
+- [X] PDO-3180 Sync directory from P1AS PD server to external PD server
 - [X] PDO-3200 Change dev-env.sh script to have better error handling for kubectl apply
 - [X] PDO-3207 Force Admins to use non-root
 - [X] PDO-3262 Add push rule to repo, README for branch name max length requirement
