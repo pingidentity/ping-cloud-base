@@ -47,6 +47,7 @@ _Changes:_
 - [X] PDO-3262 Add push rule to repo, README for branch name max length requirement
 - [X] PDO-3305 Modify k8s in PCB to run ansible image
 - [X] PDO-3307 Update PD status for PingOne
+- [X] PDO-3340 PA-WAS pods crashed during 82-upload-csd-s3.sh hook run on test/dev clusters
 - [X] PDO-3341 Run PingDataSync using nonroot user
 - [X] PDO-3359 Dynamically deploy PingDataSync in the same availability zone as PingDirectory
 - [X] PDO-3369 Update p1/newrelic-tags-exporter to run with "ping" user, "identity" group
