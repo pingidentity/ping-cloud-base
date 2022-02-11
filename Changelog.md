@@ -11,6 +11,7 @@
 - Replaced PingDirectory restore tool to use import-ldif
 - Update PingFederateConfigurator job to use ansible image
 - Run PingDataSync using nonroot user
+- Update Pingdatasync secrets volume mount from pingdatasync to pingdirectory
 - Update all pingcloud-apps images to support ssh-rsa HostKeyAlgorithm
 - Use alpine docker image for enrichment-bootstrap
 
@@ -26,6 +27,7 @@ _Changes:_
 - [X] PDO-2953 Sync directory from external PD server to P1AS PD server
 - [X] PDO-2954 Support PingDataSync logs within CloudWatch
 - [X] PDO-2955 Add External PD & P1AS PD certs to PingDataSync TrustStore
+- [X] PDO-2995 Update Pingdatasync secrets volume mount from pingdatasync to pingdirectory
 - [X] PDO-3064 PingAccess hook scripts updated to use the beluga_log method instead of echo
 - [X] PDO-3065 PingFederate hook scripts updated to use the beluga_log method instead of echo
 - [X] PDO-3103 Force admins (PF, PA, PA-WAS, PD, DA, PC) to use non-root
