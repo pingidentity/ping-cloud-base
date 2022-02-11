@@ -67,11 +67,14 @@ spec:
             - --udp-services-configmap=$(POD_NAMESPACE)/udp-services
             - --publish-service=$(POD_NAMESPACE)/ingress-nginx
             - --annotations-prefix=nginx.ingress.kubernetes.io
+            - --http-port=8080
+            - --https-port=8443
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
               drop:
                 - ALL
+              # Needed for sigsci
               add:
                 - NET_BIND_SERVICE
             # Official ingress controller allows root fs writes
@@ -91,10 +94,10 @@ spec:
                   fieldPath: metadata.namespace
           ports:
             - name: http
-              containerPort: 80
+              containerPort: 8080
               protocol: TCP
             - name: https
-              containerPort: 443
+              containerPort: 8443
               protocol: TCP
           livenessProbe:
             failureThreshold: 3
