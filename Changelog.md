@@ -18,6 +18,7 @@ _Changes:_
 
 - [X] PDO-859  Replace PingDirectory backup tool to use export-ldif
 - [X] PDO-867  Replace PingDirectory restore tool to use import-ldif
+- [X] PDO-2092 Allow UDP ports to enable PF RADIUS functionality
 - [X] PDO-2350 Add Metric and Alerting For JVM GC CPU percent in PF
 - [X] PDO-2351 Add Metric and Alerting For JVM Old Gen Collected percent in PF
 - [X] PDO-2354 Add Metric and Alerting For JVM GC CPU percent in PA

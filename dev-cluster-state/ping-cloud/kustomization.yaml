@@ -396,6 +396,18 @@ patchesJson6902:
     - op: remove
       path: /metadata/annotations/service.beta.kubernetes.io~1aws-load-balancer-internal
 
+# Service that exposes the pingfederate engine radius ports
+- target:
+    version: v1
+    kind: Service
+    name: udp-loadbalancer
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+      value: pingfederate-radius${ENVIRONMENT}.${TENANT_DOMAIN}
+    - op: remove
+      path: /metadata/annotations/service.beta.kubernetes.io~1aws-load-balancer-internal
+
 # pingdatasync put ldaps on public and change the hostname
 - target:
     version: v1
