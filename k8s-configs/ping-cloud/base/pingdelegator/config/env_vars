@@ -11,7 +11,7 @@ K8S_ACME_CERT_SECRET_NAME=acme-tls-cert
 # Leave blank
 TAIL_LOG_FILES=
 # Individual files should be spelled out, globs are unreliable
-K8S_TAIL_LOG_FILES=/opt/out/instance/log/error.log /opt/out/instance/log/access.log
+K8S_TAIL_LOG_FILES=/opt/out/instance/logs/error.log /opt/out/instance/logs/access.log
 
 SECRETS_DIR=/usr/local/secrets
 
