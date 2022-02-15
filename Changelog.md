@@ -1,5 +1,13 @@
 # Changelog
 
+### 1.14.0
+
+- Configure PingFederate and PingAccess environments within PingCentral
+
+_Changes:_
+
+- [X] PDO-2827 Configure PingFederate and PingAccess environments within PingCentral
+
 ### 1.13.0
 
 - Deploy PingDataSync into cluster
