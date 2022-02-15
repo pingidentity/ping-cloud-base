@@ -50,7 +50,8 @@ patchesJson6902:
         http:
           paths:
           # This rule gives external access to the global pingfederate runtime service
-          - path: /
+          - pathType: Prefix
+            path: /
             backend:
               service:
                name: pingfederate
