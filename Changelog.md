@@ -14,6 +14,7 @@
 - Update Pingdatasync secrets volume mount from pingdatasync to pingdirectory
 - Update all pingcloud-apps images to support ssh-rsa HostKeyAlgorithm
 - Use alpine docker image for enrichment-bootstrap
+- Add custom artifacts to PingDataSync to allow custom sync pipes
 
 _Changes:_
 
@@ -60,6 +61,7 @@ _Changes:_
 - [X] PDO-3408 Enforce PingDataSync to only deploy within primary region
 - [X] PDO-3394 (BugFix) PD status update for P1
 - [X] PDO-3414 Use alpine docker image for enrichment-bootstrap
+- [X] PDO-3449 Add custom artifacts to PingDataSync to allow custom sync pipes
 - [X] PDO-3479 Change PA integration test 01-agent-config-test.sh to be idempotent
 
 ### 1.12.0
