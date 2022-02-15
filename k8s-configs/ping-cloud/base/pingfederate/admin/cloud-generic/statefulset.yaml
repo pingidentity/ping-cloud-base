@@ -131,7 +131,7 @@ spec:
             name: pingcommon-environment-variables
       containers:
       - name: pingfederate-admin
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:10.3.3-v1.0.27
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:10.3.3-v1.0.28
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -154,6 +154,26 @@ spec:
             secretKeyRef:
               name: pingcommon-passwords
               key: PF_ADMIN_USER_PASSWORD
+        - name: PC_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingcentral-passwords
+              key: PC_ADMIN_USER_PASSWORD
+        - name: PA_ADMIN_USER_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: pingaccess-admin-environment-variables
+              key: PA_ADMIN_USER_USERNAME
+        - name: PA_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingaccess-passwords
+              key: PA_ADMIN_USER_PASSWORD
+        - name: PC_ADMIN_USER_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: pingcentral-environment-variables
+              key: PC_ADMIN_USER_USERNAME
         - name: DA_OAUTH_TOKEN_VALIDATOR_SECRET
           valueFrom:
             secretKeyRef:
@@ -287,11 +307,6 @@ spec:
       - name: pingfederate-license
         secret:
           secretName: pingfederate-license
-          optional: true
-          defaultMode: 0400
-      - name: pingaccess-passwords
-        secret:
-          secretName: pingaccess-passwords
           optional: true
           defaultMode: 0400
   volumeClaimTemplates:
