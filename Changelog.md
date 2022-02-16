@@ -51,6 +51,7 @@ _Changes:_
 - [X] PDO-3404 PingDataSync add wait-for-service for external and internal PD instance
 - [X] PDO-3408 Enforce PingDataSync to only deploy within primary region
 - [X] PDO-3394 (BugFix) PD status update for P1
+- [X] PDO-3411 Move Fluentd CloudWatch config to a separate file
 - [X] PDO-3414 Use alpine docker image for enrichment-bootstrap
 
 ### 1.12.0
