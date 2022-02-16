@@ -34,7 +34,7 @@ spec:
             name: pingfederate-admin-environment-variables
       containers:
       - name: pingone-configurator
-        image: public.ecr.aws/r2h3l6e4/pingcloud-solutions/ansible-beluga:v1.0.1
+        image: public.ecr.aws/r2h3l6e4/pingcloud-solutions/ansible-beluga:v1.0.2
         imagePullPolicy: IfNotPresent
         resources:
           requests:
