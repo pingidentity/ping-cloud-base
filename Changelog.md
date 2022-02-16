@@ -64,6 +64,7 @@ _Changes:_
 - [X] PDO-3414 Use alpine docker image for enrichment-bootstrap
 - [X] PDO-3449 Add custom artifacts to PingDataSync to allow custom sync pipes
 - [X] PDO-3479 Change PA integration test 01-agent-config-test.sh to be idempotent
+- [X] PDO-3502 Update DataSync to use USER_BASE_DN variable
 
 ### 1.12.0
 
