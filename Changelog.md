@@ -11,12 +11,16 @@
 - Replaced PingDirectory restore tool to use import-ldif
 - Update PingFederateConfigurator job to use ansible image
 - Run PingDataSync using nonroot user
+- Update Pingdatasync secrets volume mount from pingdatasync to pingdirectory
 - Update all pingcloud-apps images to support ssh-rsa HostKeyAlgorithm
+- Use alpine docker image for enrichment-bootstrap
+- Add custom artifacts to PingDataSync to allow custom sync pipes
 
 _Changes:_
 
 - [X] PDO-859  Replace PingDirectory backup tool to use export-ldif
 - [X] PDO-867  Replace PingDirectory restore tool to use import-ldif
+- [X] PDO-2092 Allow UDP ports to enable PF RADIUS functionality
 - [X] PDO-2350 Add Metric and Alerting For JVM GC CPU percent in PF
 - [X] PDO-2351 Add Metric and Alerting For JVM Old Gen Collected percent in PF
 - [X] PDO-2354 Add Metric and Alerting For JVM GC CPU percent in PA
@@ -25,6 +29,7 @@ _Changes:_
 - [X] PDO-2953 Sync directory from external PD server to P1AS PD server
 - [X] PDO-2954 Support PingDataSync logs within CloudWatch
 - [X] PDO-2955 Add External PD & P1AS PD certs to PingDataSync TrustStore
+- [X] PDO-2995 Update Pingdatasync secrets volume mount from pingdatasync to pingdirectory
 - [X] PDO-3064 PingAccess hook scripts updated to use the beluga_log method instead of echo
 - [X] PDO-3065 PingFederate hook scripts updated to use the beluga_log method instead of echo
 - [X] PDO-3103 Force admins (PF, PA, PA-WAS, PD, DA, PC) to use non-root
@@ -35,20 +40,30 @@ _Changes:_
 - [X] PDO-3129 Update json_exporter image version to 0.3.0
 - [X] PDO-3142 Run SigSci agent as non-root, update nginx ingress controller security context
 - [X] PDO-3146 Change Busybox-based containers in cluster-tools to run as non-root
+- [X] PDO-3160 Update NGINX ingress controller to use 8080/8443 for the containerPort
 - [X] PDO-3163 Change PingFederate Port to 9999 within P14C Integration
 - [X] PDO-3167 Update default PingID adapter, PingOne MFA IK, PingOne Risk Management IK
+- [X] PDO-3180 Sync directory from P1AS PD server to external PD server
 - [X] PDO-3200 Change dev-env.sh script to have better error handling for kubectl apply
 - [X] PDO-3207 Force Admins to use non-root
 - [X] PDO-3262 Add push rule to repo, README for branch name max length requirement
 - [X] PDO-3305 Modify k8s in PCB to run ansible image
 - [X] PDO-3307 Update PD status for PingOne
+- [X] PDO-3340 PA-WAS pods crashed during 82-upload-csd-s3.sh hook run on test/dev clusters
 - [X] PDO-3341 Run PingDataSync using nonroot user
+- [X] PDO-3343 Upgrade PingDelegator/DelegatedAdmin to 4.8.0
 - [X] PDO-3359 Dynamically deploy PingDataSync in the same availability zone as PingDirectory
+- [X] PDO-3369 Update p1/newrelic-tags-exporter to run with "ping" user, "identity" group
 - [X] PDO-3370 (BugFix) PD running into crashloop after restart with missing PingDirectory.lic file
 - [X] PDO-3371 Update all pingcloud-apps images to support ssh-rsa HostKeyAlgorithm
 - [X] PDO-3404 PingDataSync add wait-for-service for external and internal PD instance
+- [X] PDO-3406 Set changelog max-age within external PingDirectory server using API and P1AS PingDirectory server using dsconfig
 - [X] PDO-3408 Enforce PingDataSync to only deploy within primary region
 - [X] PDO-3394 (BugFix) PD status update for P1
+- [X] PDO-3411 Move Fluentd CloudWatch config to a separate file
+- [X] PDO-3414 Use alpine docker image for enrichment-bootstrap
+- [X] PDO-3449 Add custom artifacts to PingDataSync to allow custom sync pipes
+- [X] PDO-3479 Change PA integration test 01-agent-config-test.sh to be idempotent
 
 ### 1.12.0
 

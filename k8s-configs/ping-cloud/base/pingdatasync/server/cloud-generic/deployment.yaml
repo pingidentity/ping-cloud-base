@@ -107,9 +107,8 @@ spec:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdatasync:8.2.0.6-v1.0.5
-        imagePullPolicy: Always
-        # FIXME: Determine recommended resources in P1AS
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdatasync:8.2.0.6-v1.0.8
+        imagePullPolicy: IfNotPresent
         resources:
           limits:
             memory: "4Gi"
@@ -120,14 +119,14 @@ spec:
         readinessProbe:
           exec:
             command: [/opt/readiness.sh]
-          initialDelaySeconds: 60
+          initialDelaySeconds: 90
           periodSeconds: 5
           failureThreshold: 5
           timeoutSeconds: 5
         livenessProbe:
           exec:
             command: [/opt/liveness.sh]
-          initialDelaySeconds: 60
+          initialDelaySeconds: 90
           periodSeconds: 30
           failureThreshold: 5
           timeoutSeconds: 5
@@ -154,6 +153,11 @@ spec:
               secretKeyRef:
                 name: pingdirectory-passwords
                 key: admin-user-password
+          - name: DATASYNC_EXTERNAL_SYNC_SERVER_API_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: pingdatasync-passwords
+                key: DATASYNC_EXTERNAL_SYNC_SERVER_API_PASSWORD
           - name: PING_DATASYNC_POD_NAME
             valueFrom:
               fieldRef:
@@ -189,7 +193,7 @@ spec:
           - name: pingdatasync-passwords
             mountPath: /usr/local/secrets
             readOnly: true
-          - name: pingdatasync-license
+          - name: pingdirectory-license
             mountPath: /opt/in/instance/conf/PingDirectory.lic
             subPath: PingDirectory.lic
       securityContext:
@@ -223,8 +227,8 @@ spec:
             secretName: pingdatasync-passwords
             optional: true
             defaultMode: 0400
-        - name: pingdatasync-license
+        - name: pingdirectory-license
           secret:
-            secretName: pingdatasync-license
+            secretName: pingdirectory-license
             optional: true
             defaultMode: 0400

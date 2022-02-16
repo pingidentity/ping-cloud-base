@@ -16,7 +16,11 @@ spec:
       serviceAccount: p14c-bom-serviceaccount
       containers:
       - name: pingcloud-bom
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.1.1
+        securityContext:
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.2.0
         imagePullPolicy: IfNotPresent
         resources:
           requests:

@@ -417,6 +417,16 @@ patchesJson6902:
       path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
       value: pingdirectory-admin.${TENANT_DOMAIN}
 
+# pingfederate engine radius ports
+- target:
+    version: v1
+    kind: Service
+    name: udp-loadbalancer
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+      value: pingfederate-radius.${TENANT_DOMAIN}
+
 # Make the admin nodes available externally for test purposes. In general, they
 # will be behind a VPN gateway on all CDEs so only admins have access to them.
 - target:

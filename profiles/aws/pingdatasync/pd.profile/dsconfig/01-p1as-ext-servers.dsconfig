@@ -1,0 +1,31 @@
+#
+# Step 1: Creating External Servers
+#
+
+# 1a) Create External PD Server
+dsconfig create-external-server \
+  --server-name external_pd_server \
+  --set server-host-name:${DATASYNC_EXTERNAL_SYNC_SERVER_HOST} \
+  --set server-port:${DATASYNC_EXTERNAL_SYNC_SERVER_PORT} \
+  --type ping-identity-ds \
+  --set "bind-dn:cn=${SYNC_SERVER_NAME}" \
+  --set "password:${EXT_PD_USER_PASSWORD}" \
+  --set connection-security:ssl \
+  --set key-manager-provider:Null \
+  --set trust-manager-provider:JKS \
+  --set initial-connections:1 \
+  --set max-connections:4
+
+# 1b) Create P1AS PD Server
+dsconfig create-external-server \
+  --server-name external_p1as_pd_server \
+  --set "server-host-name:${DATASYNC_P1AS_SYNC_SERVER}.${PD_CLUSTER_PRIVATE_HOSTNAME}" \
+  --set server-port:${LDAPS_PORT} \
+  --type ping-identity-ds \
+  --set "bind-dn:cn=${SYNC_SERVER_NAME}" \
+  --set "password:${P1AS_PD_USER_PASSWORD}" \
+  --set connection-security:ssl \
+  --set key-manager-provider:Null \
+  --set trust-manager-provider:JKS \
+  --set initial-connections:1 \
+  --set max-connections:4
