@@ -25,6 +25,7 @@ _Changes:_
 - [X] PDO-2351 Add Metric and Alerting For JVM Old Gen Collected percent in PF
 - [X] PDO-2354 Add Metric and Alerting For JVM GC CPU percent in PA
 - [X] PDO-2356 Add Metric and Alerting For JVM Old Gen Collected percent in PA
+- [X] PDO-2746 Add PingCentral deployment status to PingOne
 - [X] PDO-2951 Deploy PingDataSync into cluster
 - [X] PDO-2953 Sync directory from external PD server to P1AS PD server
 - [X] PDO-2954 Support PingDataSync logs within CloudWatch
