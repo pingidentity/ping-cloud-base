@@ -19,7 +19,7 @@
     --verbose \
     --acceptLicense \
     --skipPortCheck \
-    --licenseKeyFile "${LICENSE_KEY_FILE}" \
+    --licenseKeyFile "$${LICENSE_KEY_FILE}" \
     --location "${REGION}" \
     --instanceName "${LOCAL_INSTANCE_NAME}" \
     --ldapPort ${LDAP_PORT} \
