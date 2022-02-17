@@ -13,6 +13,7 @@
 - Update all pingcloud-apps images to support ssh-rsa HostKeyAlgorithm
 - Use alpine docker image for enrichment-bootstrap
 - Add custom artifacts to PingDataSync to allow custom sync pipes
+- Upgrade PF to 11.0.1
 
 _Changes:_
 
@@ -27,6 +28,7 @@ _Changes:_
 - [X] PDO-2954 Support PingDataSync logs within CloudWatch
 - [X] PDO-2955 Add External PD & P1AS PD certs to PingDataSync TrustStore
 - [X] PDO-2995 Update Pingdatasync secrets volume mount from pingdatasync to pingdirectory
+- [X] PDO-3017 Upgrade PF to 11.0.1
 - [X] PDO-3064 PingAccess hook scripts updated to use the beluga_log method instead of echo
 - [X] PDO-3065 PingFederate hook scripts updated to use the beluga_log method instead of echo
 - [X] PDO-3103 Force admins (PF, PA, PA-WAS, PD, DA, PC) to use non-root
