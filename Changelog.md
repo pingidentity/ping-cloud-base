@@ -7,8 +7,6 @@
 - Updated  default PingID adapter, PingOne MFA IK, PingOne Risk Management IK
 - Force engines to use non-root
 - Force admins (PF, PA, PA-WAS, PD) to use non-root
-- Replaced PingDirectory backup tool to use export-ldif
-- Replaced PingDirectory restore tool to use import-ldif
 - Update PingFederateConfigurator job to use ansible image
 - Run PingDataSync using nonroot user
 - Update Pingdatasync secrets volume mount from pingdatasync to pingdirectory
@@ -18,8 +16,6 @@
 
 _Changes:_
 
-- [X] PDO-859  Replace PingDirectory backup tool to use export-ldif
-- [X] PDO-867  Replace PingDirectory restore tool to use import-ldif
 - [X] PDO-2092 Allow UDP ports to enable PF RADIUS functionality
 - [X] PDO-2350 Add Metric and Alerting For JVM GC CPU percent in PF
 - [X] PDO-2351 Add Metric and Alerting For JVM Old Gen Collected percent in PF
