@@ -67,6 +67,7 @@ _Changes:_
 - [X] PDO-3479 Change PA integration test 01-agent-config-test.sh to be idempotent
 - [X] PDO-3488 Solutions Ansible entrypoint.sh script null evaluation
 - [X] PDO-3502 Update DataSync to use USER_BASE_DN variable
+- [X] PDO-3513 (BugFix) Logstash crashlooping due to updated plugin dependencies
 
 ### 1.12.0
 
