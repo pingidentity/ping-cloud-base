@@ -247,9 +247,6 @@ spec:
             - name: pingdirectory-passwords
               mountPath: /usr/local/secrets
               readOnly: true
-            - name: pingdirectory-license
-              mountPath: /opt/in/instance/PingDirectory.lic
-              subPath: PingDirectory.lic
             - name: data-dir
               mountPath: /opt/staging/ds_env_vars
               subPath: ds_env_vars
@@ -343,11 +340,6 @@ spec:
         - name: out-dir
           persistentVolumeClaim:
             claimName: out-dir
-        - name: pingdirectory-license
-          secret:
-            secretName: pingdirectory-license
-            optional: true
-            defaultMode: 0400
         - name: pingdirectory-passwords
           secret:
             secretName: pingdirectory-passwords
