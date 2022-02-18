@@ -8,7 +8,6 @@ if skipTest "${0}"; then
 fi
 
 oneTimeSetUp() {
-
   . "${PROJECT_DIR}"/code-gen/templates/common/base/env_vars
 
   log "Query endpoint: ${PINGCLOUD_METADATA_API}"
@@ -16,7 +15,7 @@ oneTimeSetUp() {
   assertEquals "Failed to connect to: ${PINGCLOUD_METADATA_API}" 0 $?
 
   TEMP_FILE_METADATA="$(mktemp)"
-  echo "${RETURN_VAL}" | jq -r '.[] [].image' | grep -v 'N/A' > "${TEMP_FILE_METADATA}"
+  echo "${RETURN_VAL}" | jq -r '.version [].image' | grep -v 'N/A' > "${TEMP_FILE_METADATA}"
 }
 
 getUniqueTagCount() {
