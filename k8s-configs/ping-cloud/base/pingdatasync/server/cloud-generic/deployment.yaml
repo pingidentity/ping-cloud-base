@@ -193,9 +193,6 @@ spec:
           - name: pingdatasync-passwords
             mountPath: /usr/local/secrets
             readOnly: true
-          - name: pingdirectory-license
-            mountPath: /opt/in/instance/conf/PingDirectory.lic
-            subPath: PingDirectory.lic
       securityContext:
         fsGroup: 9999
       volumes:
@@ -225,10 +222,5 @@ spec:
         - name: pingdatasync-passwords
           secret:
             secretName: pingdatasync-passwords
-            optional: true
-            defaultMode: 0400
-        - name: pingdirectory-license
-          secret:
-            secretName: pingdirectory-license
             optional: true
             defaultMode: 0400
