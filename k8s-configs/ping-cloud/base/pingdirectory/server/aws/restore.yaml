@@ -122,7 +122,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
         image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:8.3.0.3-v1.0.29-pdo-3377
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         command:
         - /opt/in/restore.sh
         volumeMounts:
