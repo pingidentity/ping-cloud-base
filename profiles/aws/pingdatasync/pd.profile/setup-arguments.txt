@@ -18,7 +18,6 @@
 # argument can be used to encrypt data with a randomly generated key.
     --acceptLicense \
     --verbose \
-    --licenseKeyFile "${LICENSE_KEY_FILE}" \
     --location "${REGION}" \
     --instanceName "${PING_DATASYNC_POD_NAME}.${PING_DATASYNC_POD_NAMESPACE}" \
     --localHostName "${PING_DATASYNC_POD_IP}" \
