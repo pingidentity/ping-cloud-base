@@ -232,9 +232,11 @@ data:
     @include host.conf
     @include outputs.conf
 
-    <match fluent.**>
-      @type null
-    </match>
+    <label @FLUENT_LOG>
+      <match **>
+        @type null
+      </match>
+    </label>
   containers.conf: |
     <source>
       @type tail
@@ -684,6 +686,14 @@ data:
       </filter>
 
       <filter **>
+        @type grep
+        <exclude>
+          key log
+          pattern /^<\d+.>|^\/opt\/out\/instance\/log\/pingaccess_api_audit.*127\.0\.0\.1\| GET\| \/pa-admin-api\/v3\/version\| 200/
+        </exclude>
+      </filter>
+
+      <filter **>
         @type record_transformer
         enable_ruby true
         <record>
@@ -694,7 +704,8 @@ data:
       <filter **>
         @type concat
         key log
-        multiline_start_regexp /\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2},\d{3}|\d{2}:\d{2}:\d{2}\s+ping.*-\d{1,2}/
+        multiline_start_regexp /\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}[^.+](?:ERROR)|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2},\d{3}[^.+](?:ERROR)|\d{2}:\d{2}:\d{2}\s+ping.*-\d{1,2}[^.+](?:ERROR)/i
+        multiline_end_regexp /[\t ]*... \d+ (?:more|common frames omitted)/i
         separator ""
         flush_interval 5
         timeout_label @normal
@@ -702,11 +713,6 @@ data:
 
       <match kubernetes.**>
         @type rewrite_tag_filter
-        <rule>
-          key log
-          pattern /^\/opt\/out\/instance\/log\/pingaccess_api_audit.*127\.0\.0\.1\| GET\| \/pa-admin-api\/v3\/version\| 200/
-          tag pa_clear
-        </rule>
         <rule>
           key log
           pattern /^\/opt\/out\/instance\/log\/pingaccess_engine_audit/
@@ -759,10 +765,6 @@ data:
         </rule>
       </match>
 
-      <match pa_clear>
-        @type null
-      </match>
-
       <match temp.unmatched_logs>
         @type relabel
         @label @normal
@@ -788,6 +790,14 @@ data:
       <filter **>
         @type kubernetes_metadata
       </filter>
+    
+      <filter **>
+        @type grep
+        <exclude>
+          key log
+          pattern /^<\d+.>|^\/opt\/out\/instance\/log\/pingaccess_api_audit.*127\.0\.0\.1\| GET\| \/pa-admin-api\/v3\/version\| 200/
+        </exclude>
+      </filter>
 
       <filter **>
         @type record_transformer
@@ -800,7 +810,8 @@ data:
       <filter **>
         @type concat
         key log
-        multiline_start_regexp /\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}([,.]\d{3}){0,1}|\d{2}:\d{2}:\d{2}\s+ping.*-\d{1,2}|\\u001b\[0;32m/
+        multiline_start_regexp /\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}[^.+](?:ERROR)|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2},\d{3}[^.+](?:ERROR)|\d{2}:\d{2}:\d{2}\s+ping.*-\d{1,2}[^.+](?:ERROR)/i
+        multiline_end_regexp /[\t ]*... \d+ (?:more|common frames omitted)/i
         separator ""
         flush_interval 5
         timeout_label @normal
@@ -808,11 +819,6 @@ data:
 
       <match kubernetes.**>
         @type rewrite_tag_filter
-        <rule>
-          key log
-          pattern /^\/opt\/out\/instance\/log\/pingaccess_api_audit.*127\.0\.0\.1\| GET\| \/pa-admin-api\/v3\/version\| 200/
-          tag pawas_clear
-        </rule>
         <rule>
           key log
           pattern /^\/opt\/out\/instance\/log\/pingaccess_engine_audit/
@@ -858,10 +864,6 @@ data:
           pattern /^(.+)$/
           tag temp.unmatched_logs
         </rule>
-      </match>
-
-      <match pawas_clear>
-        @type null
       </match>
 
       <match temp.unmatched_logs>
@@ -1107,7 +1109,7 @@ data:
       @type systemd
       @id in_systemd_kubelet
       @label @systemd
-      filters [{ "_SYSTEMD_UNIT": "kubelet.service" }]
+      matches [{ "_SYSTEMD_UNIT": "kubelet.service" }]
       <entry>
         field_map {"MESSAGE": "message", "_HOSTNAME": "hostname", "_SYSTEMD_UNIT": "systemd_unit"}
         field_map_strict true
@@ -1126,7 +1128,7 @@ data:
       @type systemd
       @id in_systemd_kubeproxy
       @label @systemd
-      filters [{ "_SYSTEMD_UNIT": "kubeproxy.service" }]
+      matches [{ "_SYSTEMD_UNIT": "kubeproxy.service" }]
       <entry>
         field_map {"MESSAGE": "message", "_HOSTNAME": "hostname", "_SYSTEMD_UNIT": "systemd_unit"}
         field_map_strict true
@@ -1145,7 +1147,7 @@ data:
       @type systemd
       @id in_systemd_docker
       @label @systemd
-      filters [{ "_SYSTEMD_UNIT": "docker.service" }]
+      matches [{ "_SYSTEMD_UNIT": "docker.service" }]
       <entry>
         field_map {"MESSAGE": "message", "_HOSTNAME": "hostname", "_SYSTEMD_UNIT": "systemd_unit"}
         field_map_strict true
@@ -1355,7 +1357,7 @@ spec:
           command: ['sh','-c','']
       containers:
         - name: fluentd-cloudwatch
-          image: public.ecr.aws/r2h3l6e4/fluent/fluentd-kubernetes-daemonset:v1.7.3-debian-cloudwatch-1.0
+          image: public.ecr.aws/r2h3l6e4/fluent/fluentd-kubernetes-daemonset:v1.14.3-debian-cloudwatch-1.0
           env:
             - name: FLUENTD_OPT
               value: "-qq"
@@ -1371,6 +1373,10 @@ spec:
                   key: cluster.name
             - name: CI_VERSION
               value: "k8s/1.0.1"
+            - name: K8S_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
           resources:
             limits:
               memory: 756Mi
