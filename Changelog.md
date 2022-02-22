@@ -48,6 +48,7 @@ _Changes:_
 - [X] PDO-3200 Change dev-env.sh script to have better error handling for kubectl apply
 - [X] PDO-3207 Force Admins to use non-root
 - [X] PDO-3262 Add push rule to repo, README for branch name max length requirement
+- [X] PDO-3281 Upgrade PingAccess and PingCentral base images to avoid DOS attack
 - [X] PDO-3305 Modify k8s in PCB to run ansible image
 - [X] PDO-3307 Update PD status for PingOne
 - [X] PDO-3340 PA-WAS pods crashed during 82-upload-csd-s3.sh hook run on test/dev clusters
