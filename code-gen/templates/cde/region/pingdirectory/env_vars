@@ -2,3 +2,8 @@
 LAST_UPDATE_REASON="${LAST_UPDATE_REASON}"
 
 SERVER_PROFILE_PATH=profiles/pingdirectory
+
+# PingDataSync required information for syncing with P1AS PD
+ADMIN_BIND_DN=cn=admin
+SYNC_BIND_DN=cn=sync
+CHANGELOG_SYNC_MAX_AGE=2h

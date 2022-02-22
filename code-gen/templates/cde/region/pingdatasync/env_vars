@@ -2,3 +2,22 @@
 LAST_UPDATE_REASON="${LAST_UPDATE_REASON}"
 
 SERVER_PROFILE_PATH=profiles/pingdatasync
+
+EXT_PD_ADMIN_BIND_DN=cn=administrator
+EXT_PD_SYNC_BIND_DN=cn=sync
+
+EXT_PD_HOST=example.com
+EXT_PD_LDAPS_PORT=443
+EXT_PD_HTTPS_PORT=1443
+
+EXT_PD_HOST_INITIAL_CONNECTIONS=1
+EXT_PD_HOST_MAX_CONNECTIONS=4
+
+P1AS_PD_HOST_INITIAL_CONNECTIONS=1
+P1AS_PD_HOST_MAX_CONNECTIONS=4
+
+# Set to true if you want P1AS to enable changelog and max-age within the external PD server.
+# This will be configured using configuration API.
+# External server must have the HTTPS port exposed and configuration API enabled in order for this to work.
+SET_EXT_PD_CHANGELOG_MAX_AGE_FOR_ME=false
+EXT_PD_CHANGELOG_SYNC_TIME=2h
