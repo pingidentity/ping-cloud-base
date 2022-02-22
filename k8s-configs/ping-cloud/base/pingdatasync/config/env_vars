@@ -24,29 +24,38 @@ P1AS_PD_TO_EXT_PD_PIPE=p1as_pd_to_external_pd
 
 MAX_HEAP_SIZE=3g
 
-# Location of file with the root user password (i.e. cn=directory manager).
-# Defaults to /SECRETS_DIR/root-user-password
-ROOT_USER_PASSWORD_FILE=/usr/local/secrets/root-user-password
-
 # Leave blank
 TAIL_LOG_FILES=
 # Individual files should be spelled out, globs are unreliable
 K8S_TAIL_LOG_FILES=/opt/out/instance/logs/access /opt/out/instance/logs/errors /opt/out/instance/logs/failed-ops /opt/out/instance/logs/config-audit.log /opt/out/instance/logs/server.out /opt/out/instance/logs/sync-failed-ops
 
 # PingDataSync server information
-ROOT_USER_NAME=administrator
+ROOT_BIND_DN=cn=administrator
+ROOT_USER_PASSWORD_FILE=/usr/local/secrets/root-user-password
 
 # External PingDirectory server information
-DATASYNC_EXTERNAL_SYNC_SERVER_API_USERNAME=cn=administrator
-DATASYNC_EXTERNAL_SYNC_SERVER_CHANGELOG_SYNC_TIME=2h
+EXT_PD_ADMIN_BIND_DN=cn=administrator
+EXT_PD_SYNC_BIND_DN=cn=sync
+
+EXT_PD_CHANGELOG_SYNC_MAX_AGE=2h
+SET_EXT_PD_CHANGELOG_MAX_AGE_FOR_ME=false
+
+# Configurable connections to external PD server
+EXT_PD_HOST_INITIAL_CONNECTIONS=1
+EXT_PD_HOST_MAX_CONNECTIONS=4
+
 API_RETRY_LIMIT=15
 API_TIMEOUT_WAIT=10
-SET_EXTERNAL_SERVER_CHANGELOG_MAX_AGE_FOR_ME=false
 
-DATASYNC_EXTERNAL_SYNC_SERVER_HOST=example.com
-DATASYNC_EXTERNAL_SYNC_SERVER_PORT=443
-DATASYNC_EXTERNAL_SYNC_SERVER_HTTPS_PORT=1443
+EXT_PD_HOST=example.com
+EXT_PD_LDAPS_PORT=443
+EXT_PD_HTTPS_PORT=1443
 
 # P1AS PingDirectory server information
-DATASYNC_P1AS_SYNC_SERVER=pingdirectory-0
-PD_CLUSTER_PRIVATE_HOSTNAME=pingdirectory
+P1AS_PD_POD_NAME=pingdirectory-0
+P1AS_PD_CLUSTER_PRIVATE_HOSTNAME=pingdirectory
+P1AS_PD_LDAPS_PORT=1636
+
+# Configurable connections to P1AS PD pod
+P1AS_PD_HOST_INITIAL_CONNECTIONS=1
+P1AS_PD_HOST_MAX_CONNECTIONS=4
