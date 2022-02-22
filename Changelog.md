@@ -68,6 +68,7 @@ _Changes:_
 - [X] PDO-3488 Solutions Ansible entrypoint.sh script null evaluation
 - [X] PDO-3502 Update DataSync to use USER_BASE_DN variable
 - [X] PDO-3513 (BugFix) Logstash crashlooping due to updated plugin dependencies
+- [X] PDO-3540 Fix metadata by updating flask to v2.0.3
 
 ### 1.12.0
 
