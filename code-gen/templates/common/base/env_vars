@@ -176,8 +176,8 @@ PINGDATASYNC_IMAGE_TAG=8.2.0.6-v1.0.10
 # Ping solution image tags
 ############################################################
 METADATA_IMAGE_TAG=v1.0.6
-P14C_BOOTSTRAP_IMAGE_TAG=v1.1.0
-P14C_INTEGRATION_IMAGE_TAG=v1.3.0
+P14C_BOOTSTRAP_IMAGE_TAG=v1.2.0
+P14C_INTEGRATION_IMAGE_TAG=v1.4.0
 ANSIBLE_BELUGA_IMAGE_TAG=v1.0.2
 
 ############################################################
