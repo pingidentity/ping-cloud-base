@@ -69,3 +69,8 @@ TLS_TUNNEL_CIPHER_LIST=null
 TLS_TUNNEL_VERSIONS=TLSv1.2
 
 JAVA_AGENT_OPTS=-javaagent:/opt/staging/jmx_prometheus_javaagent-0.14.0.jar=8080:/opt/in/instance/conf/jmx_export_config.yaml
+
+# PingDataSync required information for syncing with P1AS PD
+ADMIN_BIND_DN=cn=admin
+SYNC_BIND_DN=cn=sync
+CHANGELOG_SYNC_MAX_AGE=2h

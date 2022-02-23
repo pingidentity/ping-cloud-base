@@ -34,24 +34,6 @@ spec:
                   values:
                   - "pingdirectory-0"
               topologyKey: failure-domain.beta.kubernetes.io/zone
-        # PingDataSync pods are scheduled to run on nodes with the label "pingidentity.com/pd=true"
-        # and taint "pingidentity.com/pd-only=true:NoSchedule".
-        # This aligns with PingDirectory configuration. PingDataSync essentially will attempt to deploy
-        # to the same node as pingdirectory-0 or DATASYNC_P1AS_SYNC_SERVER. If there is not enough memory on the node,
-        # PingDataSync will attempt to deploy within the same availability zone.
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: pingidentity.com/pd
-                    operator: In
-                    values:
-                      - "true"
-      tolerations:
-        - key: "pingidentity.com/pd-only"
-          operator: "Equal"
-          value: "true"
-          effect: "NoSchedule"
       terminationGracePeriodSeconds: 300
       initContainers:
       - name: wait-for-pds
@@ -98,6 +80,12 @@ spec:
           - name: pingdatasync-init
             mountPath: /utils.lib.sh
             subPath: utils.lib.sh
+        env:
+          - name: P1AS_PD_LDAPS_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: pingdirectory-environment-variables
+                key: LDAPS_PORT
         envFrom:
           - configMapRef:
               name: pingdatasync-environment-variables
@@ -107,9 +95,8 @@ spec:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdatasync:8.2.0.6-v1.0.6
-        imagePullPolicy: Always
-        # FIXME: Determine recommended resources in P1AS
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdatasync:8.2.0.6-v1.0.10
+        imagePullPolicy: IfNotPresent
         resources:
           limits:
             memory: "4Gi"
@@ -120,14 +107,14 @@ spec:
         readinessProbe:
           exec:
             command: [/opt/readiness.sh]
-          initialDelaySeconds: 60
+          initialDelaySeconds: 90
           periodSeconds: 5
           failureThreshold: 5
           timeoutSeconds: 5
         livenessProbe:
           exec:
             command: [/opt/liveness.sh]
-          initialDelaySeconds: 60
+          initialDelaySeconds: 90
           periodSeconds: 30
           failureThreshold: 5
           timeoutSeconds: 5
@@ -144,25 +131,45 @@ spec:
               secretKeyRef:
                 name: pingdatasync-passwords
                 key: root-user-password
-          - name: EXT_PD_USER_PASSWORD
+          - name: EXT_PD_SYNC_BIND_DN_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: pingdatasync-passwords
-                key: ext-pd-user-password
-          - name: P1AS_PD_USER_PASSWORD
+                key: EXT_PD_SYNC_BIND_DN_PASSWORD
+          - name: EXT_PD_ADMIN_BIND_DN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: pingdatasync-passwords
+                key: EXT_PD_ADMIN_BIND_DN_PASSWORD
+          - name: P1AS_PD_SYNC_BIND_DN_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: pingdirectory-passwords
                 key: admin-user-password
-          - name: PING_DATASYNC_POD_NAME
+          - name: P1AS_PD_LDAPS_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: pingdirectory-environment-variables
+                key: LDAPS_PORT
+          - name: P1AS_PD_ADMIN_BIND_DN
+            valueFrom:
+              configMapKeyRef:
+                name: pingdirectory-environment-variables
+                key: ADMIN_BIND_DN
+          - name: P1AS_PD_SYNC_BIND_DN
+            valueFrom:
+              configMapKeyRef:
+                name: pingdirectory-environment-variables
+                key: SYNC_BIND_DN
+          - name: PINGDATASYNC_POD_NAME
             valueFrom:
               fieldRef:
                 fieldPath: metadata.name
-          - name: PING_DATASYNC_POD_NAMESPACE
+          - name: PINGDATASYNC_POD_NAMESPACE
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
-          - name: PING_DATASYNC_POD_IP
+          - name: PINGDATASYNC_POD_IP
             valueFrom:
               fieldRef:
                 fieldPath: status.podIP

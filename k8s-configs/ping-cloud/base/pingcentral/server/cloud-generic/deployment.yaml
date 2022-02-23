@@ -18,6 +18,7 @@ spec:
         lastUpdateReason: "NA"
       labels:
         role: pingcentral
+        entitled-app: "true"
     spec:
       serviceAccount: ping-serviceaccount
       affinity:
@@ -102,7 +103,7 @@ spec:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral:1.8.1-v1.0.22
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral:1.8.1-v1.0.24
         imagePullPolicy: IfNotPresent
         resources:
           requests:
