@@ -18,6 +18,7 @@
 _Changes:_
 
 - [X] PDO-2092 Allow UDP ports to enable PF RADIUS functionality
+- [X] PDO-2233 Change "apiVersion" for CRD resources in ping-cloud-base
 - [X] PDO-2350 Add Metric For JVM GC CPU percent in PF
 - [X] PDO-2351 Add Metric For JVM Old Gen Collected percent in PF
 - [X] PDO-2354 Add Metric For JVM GC CPU percent in PA

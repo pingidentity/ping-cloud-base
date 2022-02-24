@@ -184,7 +184,7 @@ spec:
       - emptyDir: {}
         name: tmp
 ---
-apiVersion: apiextensions.k8s.io/v1beta1
+apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   name: sealedsecrets.bitnami.com
@@ -196,7 +196,13 @@ spec:
     plural: sealedsecrets
     singular: sealedsecret
   scope: Namespaced
-  version: v1alpha1
+  versions:
+  - name: v1alpha1
+    served: true
+    storage: true
+    schema:
+      openAPIV3Schema:
+        type: object
 ---
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: Role
