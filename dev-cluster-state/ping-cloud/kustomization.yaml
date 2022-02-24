@@ -117,7 +117,7 @@ patchesJson6902:
 # pingcloud-metadata ingress
 - target:
     group: networking.k8s.io
-    version: v1beta1
+    version: v1
     kind: Ingress
     name: metadata-ingress
   patch: |-
@@ -131,7 +131,7 @@ patchesJson6902:
 # pingdirectory HTTP
 - target:
     group: networking.k8s.io
-    version: v1beta1
+    version: v1
     kind: Ingress
     name: pingdirectory-http-ingress
   patch: |-
@@ -145,7 +145,7 @@ patchesJson6902:
 # pingfederate runtime
 - target:
     group: networking.k8s.io
-    version: v1beta1
+    version: v1
     kind: Ingress
     name: pingfederate-ingress
   patch: |-
@@ -166,15 +166,18 @@ patchesJson6902:
         http:
           paths:
           # This rule gives external access to the global pingfederate runtime service
-          - path: /
+          - pathType: Prefix
+            path: /
             backend:
-              serviceName: pingfederate
-              servicePort: 9031
+              service:
+                name: pingfederate
+                port:
+                  number: 9031
 
 # pingfederate admin api
 - target:
     group: networking.k8s.io
-    version: v1beta1
+    version: v1
     kind: Ingress
     name: pingfederate-admin-ingress
   patch: |-
@@ -188,7 +191,7 @@ patchesJson6902:
 # pingaccess runtime
 - target:
     group: networking.k8s.io
-    version: v1beta1
+    version: v1
     kind: Ingress
     name: pingaccess-ingress
   patch: |-
@@ -209,15 +212,18 @@ patchesJson6902:
         http:
           paths:
           # This rule gives external access to the global pingaccess runtime service
-          - path: /
+          - pathType: Prefix
+            path: /
             backend:
-              serviceName: pingaccess
-              servicePort: 443
+              service:
+                name: pingaccess
+                port:
+                  number: 443
 
 # pingaccess admin api
 - target:
     group: networking.k8s.io
-    version: v1beta1
+    version: v1
     kind: Ingress
     name: pingaccess-admin-ingress
   patch: |-
@@ -231,7 +237,7 @@ patchesJson6902:
 # pingaccess agent
 - target:
     group: networking.k8s.io
-    version: v1beta1
+    version: v1
     kind: Ingress
     name: pingaccess-agent-ingress
   patch: |-
@@ -245,7 +251,7 @@ patchesJson6902:
 # pingaccess was admin
 - target:
     group: networking.k8s.io
-    version: v1beta1
+    version: v1
     kind: Ingress
     name: pingaccess-was-admin-ingress
   patch: |-
@@ -259,7 +265,7 @@ patchesJson6902:
 # pingaccess was runtime
 - target:
     group: networking.k8s.io
-    version: v1beta1
+    version: v1
     kind: Ingress
     name: pingaccess-was-ingress
   patch: |-
@@ -322,7 +328,7 @@ patchesJson6902:
 # Ping Delegated Admin
 - target:
     group: networking.k8s.io
-    version: v1beta1
+    version: v1
     kind: Ingress
     name: pingdelegator-ingress
   patch: |-
@@ -336,7 +342,7 @@ patchesJson6902:
 # PingCentral
 - target:
     group: networking.k8s.io
-    version: v1beta1
+    version: v1
     kind: Ingress
     name: pingcentral-ingress
   patch: |-

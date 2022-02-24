@@ -4,7 +4,7 @@
 # NOTE: it will only work if an ingress controller (e.g. nginx) is running on
 # your cluster.
 
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: pingdirectory-http-ingress
@@ -21,7 +21,10 @@ spec:
     http:
       paths:
       # This rule gives external access to the pingdirectory REST API and SCIM service
-      - path: /
+      - pathType: Prefix
+        path: /
         backend:
-          serviceName: pingdirectory-http
-          servicePort: 1443
+          service:
+            name: pingdirectory-http
+            port:
+              number: 1443
