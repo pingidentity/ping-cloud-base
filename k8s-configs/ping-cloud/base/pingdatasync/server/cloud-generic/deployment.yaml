@@ -20,20 +20,6 @@ spec:
         class: pingdatasync-server
     spec:
       serviceAccountName: ping-serviceaccount
-      affinity:
-        # This podAffinity rule is designed to deploy PingDataSync to the same AZ as its targeted PingDirectory syncing server.
-        # The default is set to deploy to the same AZ as "pingdirectory-0".
-        podAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: statefulset.kubernetes.io/pod-name
-                  operator: In
-                  values:
-                  - "pingdirectory-0"
-              topologyKey: failure-domain.beta.kubernetes.io/zone
       terminationGracePeriodSeconds: 300
       initContainers:
       - name: wait-for-pds
