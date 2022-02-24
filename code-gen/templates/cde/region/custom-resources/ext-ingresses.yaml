@@ -10,8 +10,7 @@
 
 # This defines the external ingress for the pingdelegator service
 
-# FIXME: PDO-2918 - ingress >=v1.0.0 dropped support for v1beta1 so should use v1
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: pingdelegator-ext-ingress
@@ -28,17 +27,19 @@ spec:
   - host: ext-pingdelegator.${DNS_ZONE}
     http:
       paths:
-      - path: /
+      - pathType: Prefix
+        path: /
         backend:
-          serviceName: pingdelegator
-          servicePort: 1443
+          service:
+            name: pingdelegator
+            port:
+              number: 1443
 
 ---
 
 # This defines the external ingress for the pingaccess-was admin service
 
-# FIXME: PDO-2918 - ingress >=v1.0.0 dropped support for v1beta1 so should use v1
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: pingaccess-was-admin-ext-ingress
@@ -55,17 +56,19 @@ spec:
   - host: ext-pingaccess-was-admin.${DNS_ZONE}
     http:
       paths:
-      - path: /
+      - pathType: Prefix
+        path: /
         backend:
-          serviceName: pingaccess-was-admin
-          servicePort: 9000
+          service:
+            name: pingaccess-was-admin
+            port:
+              number: 9000
 
 ---
 
 # This defines the external ingress for the pingaccess admin service
 
-# FIXME: PDO-2918 - ingress >=v1.0.0 dropped support for v1beta1 so should use v1
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: pingaccess-admin-ext-ingress
@@ -82,17 +85,19 @@ spec:
     - host: ext-pingaccess-admin-api.${DNS_ZONE}
       http:
         paths:
-          - path: /
+          - path: /pa-admin-api/
+            pathType: Prefix
             backend:
-              serviceName: pingaccess-admin
-              servicePort: 9000
+              service:
+                name: pingaccess-admin
+                port:
+                  number: 9000
 
 ---
 
 # This defines the external ingress for the pingfederate admin services.
 
-# FIXME: PDO-2918 - ingress >=v1.0.0 dropped support for v1beta1 so should use v1
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: pingfederate-admin-ext-ingress
@@ -109,17 +114,19 @@ spec:
     - host: ext-pingfederate-admin-api.${DNS_ZONE}
       http:
         paths:
-          - path: /
+          - path: /pf-admin-api/
+            pathType: Prefix
             backend:
-              serviceName: pingfederate-admin
-              servicePort: pf-admin
+              service:
+                name: pingfederate-admin
+                port:
+                  number: 443
 
 ---
 
 # This defines the external ingress for the pingdirectory REST API and SCIM service
 
-# FIXME: PDO-2918 - ingress >=v1.0.0 dropped support for v1beta1 so should use v1
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: pingdirectory-http-ext-ingress
@@ -136,8 +143,11 @@ spec:
   - host: ext-pingdirectory.${DNS_ZONE}
     http:
       paths:
-      - path: /
+      - pathType: Prefix
+        path: /
         backend:
-          serviceName: pingdirectory-http
-          servicePort: 1443
+          service:
+            name: pingdirectory-http
+            port:
+              number: 1443
 

@@ -29,7 +29,7 @@ patchesJson6902:
 # pingfederate runtime
 - target:
     group: networking.k8s.io
-    version: v1beta1
+    version: v1
     kind: Ingress
     name: pingfederate-ingress
   patch: |
@@ -52,8 +52,10 @@ patchesJson6902:
           # This rule gives external access to the global pingfederate runtime service
           - path: /
             backend:
-              serviceName: pingfederate
-              servicePort: 9031
+              service:
+               name: pingfederate
+               port:
+                 number: 9031
 
 # pingfederate radius
 - target:
