@@ -72,6 +72,7 @@ _Changes:_
 - [X] PDO-3502 Update DataSync to use USER_BASE_DN variable
 - [X] PDO-3513 (BugFix) Logstash crashlooping due to updated plugin dependencies
 - [X] PDO-3540 Fix metadata by updating flask to v2.0.3
+- [X] PDO-3557 Update PD to 8.3.0.5 to fix JVM crashes
 
 ### 1.12.0
 
