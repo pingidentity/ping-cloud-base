@@ -29,7 +29,7 @@ SKIP_TESTS="${SKIP_TESTS:-pingdirectory/03-backup-restore.sh \
 if test -z "${ENV_VARS_FILE}"; then
   echo "Using environment variables based on CI variables"
 
-  export CLUSTER_NAME="${EKS_CLUSTER_NAME:-ci-cd}"
+  export CLUSTER_NAME="${EKS_CLUSTER_NAME_1:-ci-cd}"
   export IS_MULTI_CLUSTER=false
 
   export TENANT_NAME='ci-cd'
@@ -172,7 +172,7 @@ configure_kube() {
     return
   fi
 
-  check_env_vars "KUBE_CA_PEM" "KUBE_URL" "EKS_CLUSTER_NAME" "AWS_ACCOUNT_ROLE_ARN"
+  check_env_vars "KUBE_CA_PEM_1" "KUBE_URL_1" "EKS_CLUSTER_NAME_1" "AWS_ACCOUNT_ROLE_ARN"
   HAS_REQUIRED_VARS=${?}
 
   if test ${HAS_REQUIRED_VARS} -ne 0; then
@@ -180,24 +180,24 @@ configure_kube() {
   fi
 
   log "Configuring KUBE"
-  echo "${KUBE_CA_PEM}" > "$(pwd)/kube.ca.pem"
+  echo "${KUBE_CA_PEM_1}" > "$(pwd)/kube.ca.pem"
 
-  kubectl config set-cluster "${EKS_CLUSTER_NAME}" \
-    --server="${KUBE_URL}" \
+  kubectl config set-cluster "${EKS_CLUSTER_NAME_1}" \
+    --server="${KUBE_URL_1}" \
     --certificate-authority="$(pwd)/kube.ca.pem"
 
   kubectl config set-credentials aws \
     --exec-command aws-iam-authenticator \
     --exec-api-version client.authentication.k8s.io/v1alpha1 \
     --exec-arg=token \
-    --exec-arg=-i --exec-arg="${EKS_CLUSTER_NAME}" \
+    --exec-arg=-i --exec-arg="${EKS_CLUSTER_NAME_1}" \
     --exec-arg=-r --exec-arg="${AWS_ACCOUNT_ROLE_ARN}"
 
-  kubectl config set-context "${EKS_CLUSTER_NAME}" \
-    --cluster="${EKS_CLUSTER_NAME}" \
+  kubectl config set-context "${EKS_CLUSTER_NAME_1}" \
+    --cluster="${EKS_CLUSTER_NAME_1}" \
     --user=aws
 
-  kubectl config use-context "${EKS_CLUSTER_NAME}"
+  kubectl config use-context "${EKS_CLUSTER_NAME_1}"
 }
 
 ########################################################################################################################
