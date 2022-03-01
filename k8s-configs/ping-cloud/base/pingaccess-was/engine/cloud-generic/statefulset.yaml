@@ -64,6 +64,9 @@ spec:
         - name: pingaccess-was-init
           mountPath: /utils.lib.sh
           subPath: utils.lib.sh
+        - name: pingaccess-was-init
+          mountPath: /logger.lib.sh
+          subPath: logger.lib.sh
         envFrom:
         - configMapRef:
             name: pingaccess-was-environment-variables
@@ -80,6 +83,9 @@ spec:
         - name: pingaccess-was-init
           mountPath: /utils.lib.sh
           subPath: utils.lib.sh
+        - name: pingaccess-was-init
+          mountPath: /logger.lib.sh
+          subPath: logger.lib.sh
         - name: pingaccess-was-init
           mountPath: /wait-for-services.sh
           subPath: wait-for-services.sh
@@ -148,6 +154,9 @@ spec:
         - name: data-dir
           mountPath: /usr/local/bin/skbn
           subPath: skbn
+        - name: data-dir
+          mountPath: /opt/staging/hooks/logger.lib.sh
+          subPath: logger.lib.sh
         - name: data-dir
           mountPath: /opt/staging/newrelic.jar
           subPath: newrelic.jar

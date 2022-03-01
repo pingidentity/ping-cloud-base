@@ -65,6 +65,7 @@ _Changes:_
 - [X] PDO-3394 (BugFix) PD status update for P1
 - [X] PDO-3411 Move Fluentd CloudWatch config to a separate file
 - [X] PDO-3414 Use alpine docker image for enrichment-bootstrap
+- [X] PDO-3425 Deploy utils.lib.sh to each product container from one place
 - [X] PDO-3449 Add custom artifacts to PingDataSync to allow custom sync pipes
 - [X] PDO-3479 Change PA integration test 01-agent-config-test.sh to be idempotent
 - [X] PDO-3488 Solutions Ansible entrypoint.sh script null evaluation

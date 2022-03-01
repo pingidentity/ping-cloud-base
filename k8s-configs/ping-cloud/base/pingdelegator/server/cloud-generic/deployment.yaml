@@ -60,6 +60,9 @@ spec:
           - name: pingdelegator-init
             mountPath: /utils.lib.sh
             subPath: utils.lib.sh
+          - name: pingdelegator-init
+            mountPath: /logger.lib.sh
+            subPath: logger.lib.sh
         envFrom:
           - configMapRef:
               name: pingdelegator-environment-variables
@@ -87,6 +90,9 @@ spec:
           - name: data-dir
             mountPath: /usr/local/bin/kubectl
             subPath: kubectl
+          - name: data-dir
+            mountPath: /opt/staging/hooks/logger.lib.sh
+            subPath: logger.lib.sh
           - name: data-dir
             mountPath: /opt/staging/ds_env_vars
             subPath: ds_env_vars

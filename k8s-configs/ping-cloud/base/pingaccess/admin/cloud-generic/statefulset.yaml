@@ -55,6 +55,9 @@ spec:
         - name: pingaccess-init
           mountPath: /utils.lib.sh
           subPath: utils.lib.sh
+        - name: pingaccess-init
+          mountPath: /logger.lib.sh
+          subPath: logger.lib.sh
         envFrom:
         - configMapRef:
             name: pingaccess-admin-environment-variables
@@ -71,6 +74,9 @@ spec:
         - name: pingaccess-init
           mountPath: /utils.lib.sh
           subPath: utils.lib.sh
+        - name: pingaccess-init
+          mountPath: /logger.lib.sh
+          subPath: logger.lib.sh
         - name: pingaccess-init
           mountPath: /wait-for-services.sh
           subPath: wait-for-services.sh
@@ -137,6 +143,9 @@ spec:
         - name: data-dir
           mountPath: /usr/local/bin/kubectl
           subPath: kubectl
+        - name: data-dir
+          mountPath: /opt/staging/hooks/logger.lib.sh
+          subPath: logger.lib.sh
         - name: data-dir
           mountPath: /usr/local/bin/skbn
           subPath: skbn
