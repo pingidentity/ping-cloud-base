@@ -131,7 +131,7 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: pingdirectory-passwords
-                key: admin-user-password
+                key: root-user-password
           - name: P1AS_PD_LDAPS_PORT
             valueFrom:
               configMapKeyRef:
