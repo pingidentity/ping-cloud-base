@@ -63,6 +63,9 @@ spec:
         - name: pingaccess-init
           mountPath: /utils.lib.sh
           subPath: utils.lib.sh
+        - name: pingaccess-init
+          mountPath: /logger.lib.sh
+          subPath: logger.lib.sh
         envFrom:
         - configMapRef:
             name: pingaccess-environment-variables
@@ -79,6 +82,9 @@ spec:
         - name: pingaccess-init
           mountPath: /utils.lib.sh
           subPath: utils.lib.sh
+        - name: pingaccess-init
+          mountPath: /logger.lib.sh
+          subPath: logger.lib.sh
         - name: pingaccess-init
           mountPath: /wait-for-services.sh
           subPath: wait-for-services.sh
@@ -147,6 +153,9 @@ spec:
         - name: data-dir
           mountPath: /usr/local/bin/skbn
           subPath: skbn
+        - name: data-dir
+          mountPath: /opt/staging/hooks/logger.lib.sh
+          subPath: logger.lib.sh
         - name: data-dir
           mountPath: /opt/staging/jmx_prometheus_javaagent-0.14.0.jar
           subPath: jmx_prometheus_javaagent-0.14.0.jar

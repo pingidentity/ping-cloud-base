@@ -24,6 +24,9 @@ spec:
           mountPath: /utils.lib.sh
           subPath: utils.lib.sh
         - name: pingone-config
+          mountPath: /logger.lib.sh
+          subPath: logger.lib.sh
+        - name: pingone-config
           mountPath: /wait-for-services.sh
           subPath: wait-for-services.sh
         env:
