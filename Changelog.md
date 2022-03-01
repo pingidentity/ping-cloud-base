@@ -3,10 +3,12 @@
 ### 1.14.0
 
 - Configure PingFederate and PingAccess environments within PingCentral
+- Create PingDirectory's Password Credential Validator using PingFederate Admin API
 
 _Changes:_
 
 - [X] PDO-2827 Configure PingFederate and PingAccess environments within PingCentral
+- [X] PDO-3433 Create PingDirectory's Password Credential Validator using PingFederate Admin API
 
 ### 1.13.0
 
