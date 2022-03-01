@@ -4,9 +4,11 @@
 
 - Configure PingFederate and PingAccess environments within PingCentral
 - Create PingDirectory's Password Credential Validator using PingFederate Admin API
+- Augment ArgoCD's application name with customer name
 
 _Changes:_
 
+- [X] PDO-2635 Augment ArgoCD's application name with customer name
 - [X] PDO-2827 Configure PingFederate and PingAccess environments within PingCentral
 - [X] PDO-3433 Create PingDirectory's Password Credential Validator using PingFederate Admin API
 
