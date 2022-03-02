@@ -38,7 +38,7 @@ if test -z "${ENV_VARS_FILE}"; then
   export REGION_NICK_NAME=${REGION}
   export PRIMARY_REGION="${REGION}"
 
-  export TENANT_DOMAIN='ci-cd.ping-oasis.com'
+  export TENANT_DOMAIN='ci-cd-1.ping-oasis.com'
   export PRIMARY_TENANT_DOMAIN="${TENANT_DOMAIN}"
   export GLOBAL_TENANT_DOMAIN="${GLOBAL_TENANT_DOMAIN:-$(echo "${TENANT_DOMAIN}"|sed -e "s/[^.]*.\(.*\)/global.\1/")}"
 
