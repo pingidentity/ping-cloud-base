@@ -43,6 +43,7 @@ spec:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
+          allowPrivilegeEscalation: false
         image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.4.0
         imagePullPolicy: IfNotPresent
         env:
@@ -55,6 +56,7 @@ spec:
           - name: data-dir
             mountPath: /opt/staging
       - name: pingfederate-init
+        # FIXME PDO-3574: switch to same user as app
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -87,6 +89,7 @@ spec:
         - configMapRef:
             name: pingfederate-environment-variables
       - name: newrelic-tags-exporter
+        # FIXME PDO-3575: switch to same user as app
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -120,6 +123,7 @@ spec:
         - name: shared-dir
           mountPath: /opt/shared-dir
       - name: wait-for-services
+        # FIXME PDO-3576: switch to same user as app
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -148,6 +152,7 @@ spec:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
+          allowPrivilegeEscalation: false
         imagePullPolicy: IfNotPresent
         env:
         - name: OPERATIONAL_MODE
