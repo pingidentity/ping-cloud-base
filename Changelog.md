@@ -17,6 +17,7 @@
 
 _Changes:_
 
+- [X] BRASS-358 Update Solutions Ansible playbook to continue on error
 - [X] PDO-2092 Allow UDP ports to enable PF RADIUS functionality
 - [X] PDO-2233 Change "apiVersion" for CRD resources in ping-cloud-base
 - [X] PDO-2350 Add Metric For JVM GC CPU percent in PF
@@ -74,7 +75,7 @@ _Changes:_
 - [X] PDO-3513 (BugFix) Logstash crashlooping due to updated plugin dependencies
 - [X] PDO-3540 Fix metadata by updating flask to v2.0.3
 - [X] PDO-3557 Update PD to 8.3.0.5 to fix JVM crashes
-- [X] BRASS-358 Update Solutions Ansible playbook to continue on error
+- [X] PDO-3570 Add group identity 9999 for all Ping product applications and avoid escalating privileges
 
 ### 1.12.0
 

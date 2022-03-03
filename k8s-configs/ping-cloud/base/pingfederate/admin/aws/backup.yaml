@@ -19,6 +19,7 @@ spec:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
+          allowPrivilegeEscalation: false
         command:
         - /opt/in/backup-archive-data.sh
         envFrom:

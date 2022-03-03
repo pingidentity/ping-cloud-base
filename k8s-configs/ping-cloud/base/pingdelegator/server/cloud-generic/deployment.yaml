@@ -35,6 +35,7 @@ spec:
                 topologyKey: "failure-domain.beta.kubernetes.io/zone"
       initContainers:
       - name: pingdelegator-init
+        # FIXME PDO-3574: switch to same user as app
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -72,7 +73,8 @@ spec:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdelegator:4.8.0-v1.0.10
+          allowPrivilegeEscalation: false
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdelegator:4.8.0-v1.0.11
         imagePullPolicy: IfNotPresent
         resources:
           requests:

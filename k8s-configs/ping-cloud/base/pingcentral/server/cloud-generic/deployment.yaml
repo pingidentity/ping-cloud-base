@@ -36,6 +36,7 @@ spec:
                 topologyKey: "failure-domain.beta.kubernetes.io/zone"
       initContainers:
       - name: pingcentral-init
+        # FIXME PDO-3574: switch to same user as app
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -68,6 +69,7 @@ spec:
           - configMapRef:
               name: pingcentral-environment-variables
       - name: newrelic-tags-exporter
+        # FIXME PDO-3575: switch to same user as app
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -106,7 +108,8 @@ spec:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral:1.8.1-v1.0.24
+          allowPrivilegeEscalation: false
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral:1.8.1-v1.0.25
         imagePullPolicy: IfNotPresent
         resources:
           requests:

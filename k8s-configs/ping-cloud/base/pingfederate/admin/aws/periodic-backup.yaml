@@ -9,7 +9,7 @@ data:
     # Install kubectl
     curl -sS https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl \
     -o /tmp/kubectl
-    
+
     chmod +x /tmp/kubectl
 
     UPLOAD_FILES=
@@ -66,6 +66,7 @@ spec:
               runAsGroup: 9999
               runAsNonRoot: true
               runAsUser: 9031
+              allowPrivilegeEscalation: false
             command:
             - /opt/in/backup-archive-data.sh
             envFrom:
