@@ -120,7 +120,7 @@ spec:
               service:
                 name: pingfederate-admin
                 port:
-                  number: 443
+                  number: 9999
 
 ---
 
