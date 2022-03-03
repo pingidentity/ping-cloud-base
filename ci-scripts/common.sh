@@ -142,7 +142,7 @@ PINGACCESS_WAS_RUNTIME=https://pingaccess-was${FQDN}
 PINGDELEGATOR_CONSOLE=https://pingdelegator${FQDN}/delegator
 
 # PingCentral
-MYSQL_SERVICE_HOST=beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
+MYSQL_SERVICE_HOST=beluga-ci-cd-1-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
 MYSQL_SERVICE_PORT=3306
 MYSQL_USER_SSM=/pcpt/ping-central/rds/username
 MYSQL_PASSWORD_SSM=/pcpt/ping-central/rds/password
