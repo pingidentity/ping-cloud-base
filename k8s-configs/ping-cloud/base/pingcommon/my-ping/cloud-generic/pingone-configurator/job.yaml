@@ -5,7 +5,7 @@ metadata:
   annotations:
     argocd.argoproj.io/hook: Sync
 spec:
-  ttlSecondsAfterFinished: 30
+  #ttlSecondsAfterFinished: 30
   template:
     spec:
       serviceAccount: p1-config-serviceaccount
