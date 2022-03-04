@@ -76,6 +76,7 @@ _Changes:_
 - [X] PDO-3540 Fix metadata by updating flask to v2.0.3
 - [X] PDO-3557 Update PD to 8.3.0.5 to fix JVM crashes
 - [X] PDO-3570 Add group identity 9999 for all Ping product applications and avoid escalating privileges
+- [X] PDO-3577 Disable external server configuration. Use flag IS_P1AS_TEST_MODE to enable for QA
 
 ### 1.12.0
 
