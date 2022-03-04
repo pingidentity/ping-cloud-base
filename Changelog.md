@@ -17,7 +17,7 @@
 
 _Changes:_
 
-- [X] BRASS-358 Update Solutions Ansible playbook to continue on error
+- [X] BRASS-358 Update Solutions Ansible to continue on error, removed "canUseIntelligenceDataConsent": true from  risk script
 - [X] PDO-2092 Allow UDP ports to enable PF RADIUS functionality
 - [X] PDO-2233 Change "apiVersion" for CRD resources in ping-cloud-base
 - [X] PDO-2350 Add Metric For JVM GC CPU percent in PF
