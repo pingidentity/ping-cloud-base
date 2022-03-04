@@ -153,7 +153,6 @@ PINGCLOUD_METADATA_API=https://metadata${FQDN}
 # PingCentral service
 PINGCENTRAL_CONSOLE=https://pingcentral${FQDN}
 
-PROJECT_DIR=/Users/kaneshafox/ping-cloud/ping-cloud-base
 # Source some utility methods.
 . ${PROJECT_DIR}/utils.sh
 
