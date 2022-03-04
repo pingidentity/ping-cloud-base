@@ -28,8 +28,8 @@ SKIP_TESTS="${SKIP_TESTS:-pingdirectory/03-backup-restore.sh \
 
 if test -z "${ENV_VARS_FILE}"; then
   echo "Using environment variables based on CI variables"
-
-  export CLUSTER_NAME="${EKS_CLUSTER_NAME_1:-ci-cd}"
+  # Figure out how to change env vars
+#  export CLUSTER_NAME="${EKS_CLUSTER_NAME_1:-ci-cd}"
   export IS_MULTI_CLUSTER=false
 
   export TENANT_NAME='ci-cd'
@@ -38,9 +38,9 @@ if test -z "${ENV_VARS_FILE}"; then
   export REGION_NICK_NAME=${REGION}
   export PRIMARY_REGION="${REGION}"
 
-  export TENANT_DOMAIN='ci-cd-1.ping-oasis.com'
-  export PRIMARY_TENANT_DOMAIN="${TENANT_DOMAIN}"
-  export GLOBAL_TENANT_DOMAIN="${GLOBAL_TENANT_DOMAIN:-$(echo "${TENANT_DOMAIN}"|sed -e "s/[^.]*.\(.*\)/global.\1/")}"
+#  export TENANT_DOMAIN="${EKS_CLUSTER_NAME_1:-ci-cd}.ping-oasis.com"
+#  export PRIMARY_TENANT_DOMAIN="${TENANT_DOMAIN}"
+#  export GLOBAL_TENANT_DOMAIN="${GLOBAL_TENANT_DOMAIN:-$(echo "${TENANT_DOMAIN}"|sed -e "s/[^.]*.\(.*\)/global.\1/")}"
 
   if [[ ${CI_COMMIT_REF_SLUG} != master ]]; then
     export ENVIRONMENT=-${CI_COMMIT_REF_SLUG}
@@ -54,12 +54,12 @@ if test -z "${ENV_VARS_FILE}"; then
   export CONFIG_PARENT_DIR=aws
   export CONFIG_REPO_BRANCH=${CI_COMMIT_REF_NAME:-master}
 
-  export ARTIFACT_REPO_URL=s3://${CLUSTER_NAME}-artifacts-bucket
+#  export ARTIFACT_REPO_URL=s3://${CLUSTER_NAME}-artifacts-bucket
   export PING_ARTIFACT_REPO_URL=https://ping-artifacts.s3-us-west-2.amazonaws.com
-  export LOG_ARCHIVE_URL=s3://${CLUSTER_NAME}-logs-bucket
-  export BACKUP_URL=s3://${CLUSTER_NAME}-backup-bucket
+#  export LOG_ARCHIVE_URL=s3://${CLUSTER_NAME}-logs-bucket
+#  export BACKUP_URL=s3://${CLUSTER_NAME}-backup-bucket
 
-  export MYSQL_SERVICE_HOST=beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
+#  export MYSQL_SERVICE_HOST=beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
   export MYSQL_USER=ssm://pcpt/ping-central/rds/username
   export MYSQL_PASSWORD=ssm://pcpt/ping-central/rds/password
 
@@ -91,10 +91,10 @@ export ADMIN_PASS=2FederateM0re
 
 export PD_SEED_LDAPS_PORT=636
 
-export CLUSTER_NAME_LC=$(echo "${CLUSTER_NAME}" | tr '[:upper:]' '[:lower:]')
-export LOG_GROUP_NAME="/aws/containerinsights/${CLUSTER_NAME}/application"
+#export CLUSTER_NAME_LC=$(echo "${CLUSTER_NAME}" | tr '[:upper:]' '[:lower:]')
+#export LOG_GROUP_NAME="/aws/containerinsights/${CLUSTER_NAME}/application"
 
-FQDN=${ENVIRONMENT}.${TENANT_DOMAIN}
+#FQDN=${ENVIRONMENT}.${TENANT_DOMAIN}
 
 # Monitoring
 LOGS_CONSOLE=https://logs${FQDN}/app/kibana
@@ -142,7 +142,7 @@ PINGACCESS_WAS_RUNTIME=https://pingaccess-was${FQDN}
 PINGDELEGATOR_CONSOLE=https://pingdelegator${FQDN}/delegator
 
 # PingCentral
-MYSQL_SERVICE_HOST=beluga-ci-cd-1-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
+MYSQL_SERVICE_HOST="beluga-${EKS_CLUSTER_NAME_1:-ci-cd}-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com"
 MYSQL_SERVICE_PORT=3306
 MYSQL_USER_SSM=/pcpt/ping-central/rds/username
 MYSQL_PASSWORD_SSM=/pcpt/ping-central/rds/password
@@ -153,6 +153,7 @@ PINGCLOUD_METADATA_API=https://metadata${FQDN}
 # PingCentral service
 PINGCENTRAL_CONSOLE=https://pingcentral${FQDN}
 
+PROJECT_DIR=/Users/kaneshafox/ping-cloud/ping-cloud-base
 # Source some utility methods.
 . ${PROJECT_DIR}/utils.sh
 
@@ -172,32 +173,41 @@ configure_kube() {
     return
   fi
 
-  check_env_vars "KUBE_CA_PEM_1" "KUBE_URL_1" "EKS_CLUSTER_NAME_1" "AWS_ACCOUNT_ROLE_ARN"
-  HAS_REQUIRED_VARS=${?}
+  cluster_postfixes=("" "_1")
 
-  if test ${HAS_REQUIRED_VARS} -ne 0; then
-    exit 1
-  fi
+  for postfix in "${cluster_postfixes[@]}"; do
+    check_env_vars "KUBE_CA_PEM$postfix" "KUBE_URL$postfix" "EKS_CLUSTER_NAME$postfix" "AWS_ACCOUNT_ROLE_ARN"
+    HAS_REQUIRED_VARS=${?}
 
-  log "Configuring KUBE"
-  echo "${KUBE_CA_PEM_1}" > "$(pwd)/kube.ca.pem"
+    if test ${HAS_REQUIRED_VARS} -ne 0; then
+      exit 1
+    fi
 
-  kubectl config set-cluster "${EKS_CLUSTER_NAME_1}" \
-    --server="${KUBE_URL_1}" \
-    --certificate-authority="$(pwd)/kube.ca.pem"
+    log "Configuring KUBE"
+    echo "$KUBE_CA_PEM$postfix" > "$(pwd)/kube.ca.pem"
 
-  kubectl config set-credentials aws \
-    --exec-command aws-iam-authenticator \
-    --exec-api-version client.authentication.k8s.io/v1alpha1 \
-    --exec-arg=token \
-    --exec-arg=-i --exec-arg="${EKS_CLUSTER_NAME_1}" \
-    --exec-arg=-r --exec-arg="${AWS_ACCOUNT_ROLE_ARN}"
+    kubectl config set-cluster "$EKS_CLUSTER_NAME$postfix" \
+      --server="$KUBE_URL$postfix" \
+      --certificate-authority="$(pwd)/kube.ca.pem"
 
-  kubectl config set-context "${EKS_CLUSTER_NAME_1}" \
-    --cluster="${EKS_CLUSTER_NAME_1}" \
-    --user=aws
+    kubectl config set-credentials aws \
+      --exec-command aws-iam-authenticator \
+      --exec-api-version client.authentication.k8s.io/v1alpha1 \
+      --exec-arg=token \
+      --exec-arg=-i --exec-arg="$EKS_CLUSTER_NAME$postfix" \
+      --exec-arg=-r --exec-arg="${AWS_ACCOUNT_ROLE_ARN}"
 
-  kubectl config use-context "${EKS_CLUSTER_NAME_1}"
+    kubectl config set-context "$EKS_CLUSTER_NAME$postfix" \
+      --cluster="$EKS_CLUSTER_NAME$postfix" \
+      --user=aws
+
+    kubectl config use-context "$EKS_CLUSTER_NAME$postfix"
+
+    # Check namespaces
+    # break out of loop if cluster is available (i.e. no ping namespaces)
+    # if cluster isn't available check age of namespaces and delete if > 1hr? old then break out of loop
+    # if at the last cluster and none available, sleep 5 minutes and then try again?
+  done
 }
 
 ########################################################################################################################
