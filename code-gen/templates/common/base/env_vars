@@ -161,8 +161,8 @@ PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 ############################################################
 # Ping application image tags
 ############################################################
-PINGACCESS_IMAGE_TAG=6.3.3-v1.0.26
-PINGACCESS_WAS_IMAGE_TAG=6.3.3-v1.0.26
+PINGACCESS_IMAGE_TAG=6.3.3-v1.0.28
+PINGACCESS_WAS_IMAGE_TAG=6.3.3-v1.0.28
 PINGFEDERATE_IMAGE_TAG=11.0.1-v1.0.33
 PINGDIRECTORY_IMAGE_TAG=8.3.0.5-v1.0.31
 PINGDELEGATOR_IMAGE_TAG=4.8.0-v1.0.11
