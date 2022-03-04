@@ -28,19 +28,19 @@ SKIP_TESTS="${SKIP_TESTS:-pingdirectory/03-backup-restore.sh \
 
 if test -z "${ENV_VARS_FILE}"; then
   echo "Using environment variables based on CI variables"
-  # Figure out how to change env vars
-#  export CLUSTER_NAME="${EKS_CLUSTER_NAME_1:-ci-cd}"
+
+  export CLUSTER_NAME="${SELECTED_KUBE_NAME:-ci-cd}"
   export IS_MULTI_CLUSTER=false
 
-  export TENANT_NAME='ci-cd'
+  export TENANT_NAME="${CLUSTER_NAME}"
 
   export REGION="${AWS_DEFAULT_REGION:-us-west-2}"
   export REGION_NICK_NAME=${REGION}
   export PRIMARY_REGION="${REGION}"
 
-#  export TENANT_DOMAIN="${EKS_CLUSTER_NAME_1:-ci-cd}.ping-oasis.com"
-#  export PRIMARY_TENANT_DOMAIN="${TENANT_DOMAIN}"
-#  export GLOBAL_TENANT_DOMAIN="${GLOBAL_TENANT_DOMAIN:-$(echo "${TENANT_DOMAIN}"|sed -e "s/[^.]*.\(.*\)/global.\1/")}"
+  export TENANT_DOMAIN="${CLUSTER_NAME}.ping-oasis.com"
+  export PRIMARY_TENANT_DOMAIN="${TENANT_DOMAIN}"
+  export GLOBAL_TENANT_DOMAIN="${GLOBAL_TENANT_DOMAIN:-$(echo "${TENANT_DOMAIN}"|sed -e "s/[^.]*.\(.*\)/global.\1/")}"
 
   if [[ ${CI_COMMIT_REF_SLUG} != master ]]; then
     export ENVIRONMENT=-${CI_COMMIT_REF_SLUG}
@@ -54,12 +54,12 @@ if test -z "${ENV_VARS_FILE}"; then
   export CONFIG_PARENT_DIR=aws
   export CONFIG_REPO_BRANCH=${CI_COMMIT_REF_NAME:-master}
 
-#  export ARTIFACT_REPO_URL=s3://${CLUSTER_NAME}-artifacts-bucket
+  export ARTIFACT_REPO_URL=s3://${CLUSTER_NAME}-artifacts-bucket
   export PING_ARTIFACT_REPO_URL=https://ping-artifacts.s3-us-west-2.amazonaws.com
-#  export LOG_ARCHIVE_URL=s3://${CLUSTER_NAME}-logs-bucket
-#  export BACKUP_URL=s3://${CLUSTER_NAME}-backup-bucket
+  export LOG_ARCHIVE_URL=s3://${CLUSTER_NAME}-logs-bucket
+  export BACKUP_URL=s3://${CLUSTER_NAME}-backup-bucket
 
-#  export MYSQL_SERVICE_HOST=beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
+  export MYSQL_SERVICE_HOST=beluga-${CLUSTER_NAME}-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
   export MYSQL_USER=ssm://pcpt/ping-central/rds/username
   export MYSQL_PASSWORD=ssm://pcpt/ping-central/rds/password
 
@@ -91,10 +91,10 @@ export ADMIN_PASS=2FederateM0re
 
 export PD_SEED_LDAPS_PORT=636
 
-#export CLUSTER_NAME_LC=$(echo "${CLUSTER_NAME}" | tr '[:upper:]' '[:lower:]')
-#export LOG_GROUP_NAME="/aws/containerinsights/${CLUSTER_NAME}/application"
+export CLUSTER_NAME_LC=$(echo "${CLUSTER_NAME}" | tr '[:upper:]' '[:lower:]')
+export LOG_GROUP_NAME="/aws/containerinsights/${CLUSTER_NAME}/application"
 
-#FQDN=${ENVIRONMENT}.${TENANT_DOMAIN}
+FQDN=${ENVIRONMENT}.${TENANT_DOMAIN}
 
 # Monitoring
 LOGS_CONSOLE=https://logs${FQDN}/app/kibana
@@ -142,7 +142,7 @@ PINGACCESS_WAS_RUNTIME=https://pingaccess-was${FQDN}
 PINGDELEGATOR_CONSOLE=https://pingdelegator${FQDN}/delegator
 
 # PingCentral
-MYSQL_SERVICE_HOST="beluga-${EKS_CLUSTER_NAME_1:-ci-cd}-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com"
+MYSQL_SERVICE_HOST="beluga-${SELECTED_KUBE_NAME:-ci-cd}-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com"
 MYSQL_SERVICE_PORT=3306
 MYSQL_USER_SSM=/pcpt/ping-central/rds/username
 MYSQL_PASSWORD_SSM=/pcpt/ping-central/rds/password
@@ -156,6 +156,52 @@ PINGCENTRAL_CONSOLE=https://pingcentral${FQDN}
 PROJECT_DIR=/Users/kaneshafox/ping-cloud/ping-cloud-base
 # Source some utility methods.
 . ${PROJECT_DIR}/utils.sh
+
+find_cluster() {
+  if test -n "${SKIP_CONFIGURE_KUBE}"; then
+    log "Skipping KUBE configuration"
+    return
+  fi
+
+  # TODO: pull the cluster list dynamically and see if it is scaled up before trying to deploy to it
+  cluster_postfixes=("_1", "_2")
+  found_cluster=false
+  sleep_wait_seconds=300
+  current_check=1
+  max_checks=5
+
+  while [[ $found_cluster == false ]]; do
+    for postfix in "${cluster_postfixes[@]}"; do
+      export SELECTED_KUBE_NAME="$EKS_CLUSTER_NAME$postfix"
+      export SELECTED_CA_PEM="$KUBE_CA_PEM$postfix"
+      export SELECTED_KUBE_URL="$KUBE_URL$postfix"
+      configure_kube
+
+      echo "INFO: Namespaces on cluster $SELECTED_KUBE_NAME: $(kubectl get ns)"
+      # Check namespaces
+      # break out of loop if cluster is available (i.e. no ping namespaces)
+      # NOTE - from the time that we check for a namespace to deploying
+      if ! kubectl get ns | grep ping > /dev/null; then
+        found_cluster=true
+        echo "Found cluster $SELECTED_KUBE_NAME available to deploy to"
+        echo "SELECTED_KUBE_NAME=$SELECTED_KUBE_NAME" >> build.env
+        echo "SELECTED_CA_PEM=$SELECTED_CA_PEM" >> build.env
+        echo "SELECTED_KUBE_URL=$SELECTED_KUBE_URL" >> build.env
+        break
+      fi
+    done
+
+    if [[ $found_cluster == false ]]; then
+      if [[ $current_check -ge $max_checks ]]; then
+        echo "Could not find a cluster to run on - please check that the pipeline is not saturated and delete unused namespaces"
+        exit 1
+      fi
+      echo "No unused cluster found to run your changes on. Waiting for ${sleep_wait_seconds} seconds, then checking again."
+      ((current_check=current_check+1))
+      sleep $sleep_wait_seconds
+    fi
+  done
+}
 
 ########################################################################################################################
 # Configures kubectl to be able to talk to the Kubernetes API server based on the following environment variables:
@@ -173,63 +219,32 @@ configure_kube() {
     return
   fi
 
-  # TODO: pull the cluster list dynamically and see if it is scaled up before trying to deploy to it
-  cluster_postfixes=("" "_1")
-  found_cluster=false
-  sleep_wait_seconds=300
-  current_check=1
-  max_checks=5
+  check_env_vars "SELECTED_CA_PEM" "SELECTED_KUBE_URL" "SELECTED_KUBE_NAME" "AWS_ACCOUNT_ROLE_ARN"
+  HAS_REQUIRED_VARS=${?}
 
-  while [[ $found_cluster == false ]]; do
-    for postfix in "${cluster_postfixes[@]}"; do
-      check_env_vars "KUBE_CA_PEM$postfix" "KUBE_URL$postfix" "EKS_CLUSTER_NAME$postfix" "AWS_ACCOUNT_ROLE_ARN"
-      HAS_REQUIRED_VARS=${?}
+  if test ${HAS_REQUIRED_VARS} -ne 0; then
+    exit 1
+  fi
 
-      if test ${HAS_REQUIRED_VARS} -ne 0; then
-        exit 1
-      fi
+  log "Configuring KUBE"
+  echo ${SELECTED_CA_PEM} > "$(pwd)/kube.ca.pem"
 
-      log "Configuring KUBE"
-      echo "$KUBE_CA_PEM$postfix" > "$(pwd)/kube.ca.pem"
+  kubectl config set-cluster "${SELECTED_KUBE_NAME}" \
+    --server="${SELECTED_KUBE_URL}" \
+    --certificate-authority="$(pwd)/kube.ca.pem"
 
-      kubectl config set-cluster "$EKS_CLUSTER_NAME$postfix" \
-        --server="$KUBE_URL$postfix" \
-        --certificate-authority="$(pwd)/kube.ca.pem"
+  kubectl config set-credentials aws \
+    --exec-command aws-iam-authenticator \
+    --exec-api-version client.authentication.k8s.io/v1alpha1 \
+    --exec-arg=token \
+    --exec-arg=-i --exec-arg="${SELECTED_KUBE_NAME}" \
+    --exec-arg=-r --exec-arg="${AWS_ACCOUNT_ROLE_ARN}"
 
-      kubectl config set-credentials aws \
-        --exec-command aws-iam-authenticator \
-        --exec-api-version client.authentication.k8s.io/v1alpha1 \
-        --exec-arg=token \
-        --exec-arg=-i --exec-arg="$EKS_CLUSTER_NAME$postfix" \
-        --exec-arg=-r --exec-arg="${AWS_ACCOUNT_ROLE_ARN}"
+  kubectl config set-context "${SELECTED_KUBE_NAME}" \
+    --cluster="${SELECTED_KUBE_NAME}" \
+    --user=aws
 
-      kubectl config set-context "$EKS_CLUSTER_NAME$postfix" \
-        --cluster="$EKS_CLUSTER_NAME$postfix" \
-        --user=aws
-
-      kubectl config use-context "$EKS_CLUSTER_NAME$postfix"
-
-      echo "INFO: Namespaces on cluster $EKS_CLUSTER_NAME$postfix: $(kubectl get ns)"
-      # Check namespaces
-      # break out of loop if cluster is available (i.e. no ping namespaces)
-      # NOTE - from the time that we check for a namespace to deploying 
-      if ! kubectl get ns | grep ping > /dev/null; then 
-        found_cluster=true
-        echo "Found cluster $EKS_CLUSTER_NAME$postfix available to deploy to"
-        break
-      fi
-    done
-
-    if [[ $found_cluster == false ]]; then
-      if [[ $current_check -ge $max_checks ]]; then
-        echo "Could not find a cluster to run on - please check that the pipeline is not saturated and delete unused namespaces"
-        exit 1
-      fi
-      echo "No unused cluster found to run your changes on. Waiting for ${sleep_wait_seconds} seconds, then checking again."
-      ((current_check=current_check+1))
-      sleep $sleep_wait_seconds
-    fi
-  done
+  kubectl config use-context "${SELECTED_KUBE_NAME}"
 }
 
 ########################################################################################################################
