@@ -173,40 +173,62 @@ configure_kube() {
     return
   fi
 
+  # TODO: pull the cluster list dynamically and see if it is scaled up before trying to deploy to it
   cluster_postfixes=("" "_1")
+  found_cluster=false
+  sleep_wait_seconds=300
+  current_check=1
+  max_checks=5
 
-  for postfix in "${cluster_postfixes[@]}"; do
-    check_env_vars "KUBE_CA_PEM$postfix" "KUBE_URL$postfix" "EKS_CLUSTER_NAME$postfix" "AWS_ACCOUNT_ROLE_ARN"
-    HAS_REQUIRED_VARS=${?}
+  while [[ $found_cluster == false ]]; do
+    for postfix in "${cluster_postfixes[@]}"; do
+      check_env_vars "KUBE_CA_PEM$postfix" "KUBE_URL$postfix" "EKS_CLUSTER_NAME$postfix" "AWS_ACCOUNT_ROLE_ARN"
+      HAS_REQUIRED_VARS=${?}
 
-    if test ${HAS_REQUIRED_VARS} -ne 0; then
-      exit 1
+      if test ${HAS_REQUIRED_VARS} -ne 0; then
+        exit 1
+      fi
+
+      log "Configuring KUBE"
+      echo "$KUBE_CA_PEM$postfix" > "$(pwd)/kube.ca.pem"
+
+      kubectl config set-cluster "$EKS_CLUSTER_NAME$postfix" \
+        --server="$KUBE_URL$postfix" \
+        --certificate-authority="$(pwd)/kube.ca.pem"
+
+      kubectl config set-credentials aws \
+        --exec-command aws-iam-authenticator \
+        --exec-api-version client.authentication.k8s.io/v1alpha1 \
+        --exec-arg=token \
+        --exec-arg=-i --exec-arg="$EKS_CLUSTER_NAME$postfix" \
+        --exec-arg=-r --exec-arg="${AWS_ACCOUNT_ROLE_ARN}"
+
+      kubectl config set-context "$EKS_CLUSTER_NAME$postfix" \
+        --cluster="$EKS_CLUSTER_NAME$postfix" \
+        --user=aws
+
+      kubectl config use-context "$EKS_CLUSTER_NAME$postfix"
+
+      echo "INFO: Namespaces on cluster $EKS_CLUSTER_NAME$postfix: $(kubectl get ns)"
+      # Check namespaces
+      # break out of loop if cluster is available (i.e. no ping namespaces)
+      # NOTE - from the time that we check for a namespace to deploying 
+      if ! kubectl get ns | grep ping > /dev/null; then 
+        found_cluster=true
+        echo "Found cluster $EKS_CLUSTER_NAME$postfix available to deploy to"
+        break
+      fi
+    done
+
+    if [[ $found_cluster == false ]]; then
+      if [[ $current_check -ge $max_checks ]]; then
+        echo "Could not find a cluster to run on - please check that the pipeline is not saturated and delete unused namespaces"
+        exit 1
+      fi
+      echo "No unused cluster found to run your changes on. Waiting for ${sleep_wait_seconds} seconds, then checking again."
+      ((current_check=current_check+1))
+      sleep $sleep_wait_seconds
     fi
-
-    log "Configuring KUBE"
-    echo "$KUBE_CA_PEM$postfix" > "$(pwd)/kube.ca.pem"
-
-    kubectl config set-cluster "$EKS_CLUSTER_NAME$postfix" \
-      --server="$KUBE_URL$postfix" \
-      --certificate-authority="$(pwd)/kube.ca.pem"
-
-    kubectl config set-credentials aws \
-      --exec-command aws-iam-authenticator \
-      --exec-api-version client.authentication.k8s.io/v1alpha1 \
-      --exec-arg=token \
-      --exec-arg=-i --exec-arg="$EKS_CLUSTER_NAME$postfix" \
-      --exec-arg=-r --exec-arg="${AWS_ACCOUNT_ROLE_ARN}"
-
-    kubectl config set-context "$EKS_CLUSTER_NAME$postfix" \
-      --cluster="$EKS_CLUSTER_NAME$postfix" \
-      --user=aws
-
-    kubectl config use-context "$EKS_CLUSTER_NAME$postfix"
-
-    # Check namespaces
-    # break out of loop if cluster is available (i.e. no ping namespaces)
-    # if cluster isn't available check age of namespaces and delete if > 1hr? old then break out of loop
-    # if at the last cluster and none available, sleep 5 minutes and then try again?
   done
 }
 
