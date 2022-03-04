@@ -171,7 +171,7 @@ find_cluster() {
 
   while [[ $found_cluster == false ]]; do
     for postfix in "${cluster_postfixes[@]}"; do
-      export SELECTED_KUBE_NAME="$EKS_CLUSTER_NAME$postfix"
+      export SELECTED_KUBE_NAME=$(echo "ci-cd$postfix" | tr '_' '-')
       export SELECTED_CA_PEM="$KUBE_CA_PEM$postfix"
       export SELECTED_KUBE_URL="$KUBE_URL$postfix"
       configure_kube
