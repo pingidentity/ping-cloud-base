@@ -1,5 +1,5 @@
 #
-# Step 2: Create internal (P1AS) endpoint
+# Create internal (P1AS) endpoint
 # One way sync endpoint from internal (P1AS) PD to external PD
 
 dsconfig create-sync-source \
@@ -17,7 +17,7 @@ dsconfig create-sync-destination \
   --set server:external_pd_server
 
 #
-# Step 3: Create Sync Pipes
+# Create Sync Pipes
 # Create sync pipe for internal (P1AS) PD to external PD
 
 dsconfig create-sync-pipe \
@@ -28,7 +28,7 @@ dsconfig create-sync-pipe \
   --set "shared-mutex-name:Mutex for 'external_pd_to_p1as_pd' and 'p1as_pd_to_external_pd'"
 
 #
-# Step 4: Create Attribute and DN Mappings
+# Create Attribute and DN Mappings
 # Create dn map for internal (P1AS) PD to external PD
 
 dsconfig create-dn-map \
@@ -37,7 +37,7 @@ dsconfig create-dn-map \
   --set "to-dn-pattern:{1},${USER_BASE_DN}"
 
 #
-# Step 5: Create Sync Classes
+# Create Sync Classes
 # Create sync class for internal (P1AS) PD to external PD
 
 dsconfig create-sync-class \
