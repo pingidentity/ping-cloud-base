@@ -5,7 +5,8 @@ metadata:
   annotations:
     argocd.argoproj.io/hook: Sync
 spec:
-  #ttlSecondsAfterFinished: 30
+  # 24-hour TTL for debugging and so the integration test can get the results of the job, only runs once anyway
+  ttlSecondsAfterFinished: 86400
   template:
     spec:
       serviceAccount: p1-config-serviceaccount
