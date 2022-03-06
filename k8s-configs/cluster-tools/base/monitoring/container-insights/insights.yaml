@@ -909,12 +909,12 @@ data:
         </rule>
         <rule>
           key log
-          pattern /^\/opt\/out\/instance\/log\/access/
+          pattern /^\/opt\/out\/instance\/logs\/access/
           tag temp.pingdelegator_nginx_access_logs
         </rule>
         <rule>
           key log
-          pattern /^\/opt\/out\/instance\/log\/error/
+          pattern /^\/opt\/out\/instance\/logs\/error/
           tag temp.pingdelegator_nginx_error_logs
         </rule>
         <rule>

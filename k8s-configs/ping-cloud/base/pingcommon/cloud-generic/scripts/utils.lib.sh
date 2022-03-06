@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+. "./logger.lib.sh"
+
 # Constants.
 PA_ADMIN_SERVER_NAME='pingaccess-admin-0'
 PA_ADMIN_SERVICE_NAME='pingaccess-admin'
@@ -20,21 +22,6 @@ PD_ADMIN_WAIT_PORT=1636
 
 SHORT_HOSTNAME="$(hostname)"
 
-########################################################################################################################
-# Logs the provided message at the provided log level. Default log level is INFO, if not provided.
-#
-# Arguments
-#   $1 -> The log message.
-#   $2 -> Optional log level. Default is INFO.
-########################################################################################################################
-beluga_log() {
-  file_name="$(basename "$0")"
-  message="$1"
-  test -z "$2" && log_level='INFO' || log_level="$2"
-  format='+%Y-%m-%d %H:%M:%S'
-  timestamp="$(TZ=UTC date "${format}")"
-  echo "${file_name}: ${timestamp} ${log_level} ${message}"
-}
 
 ########################################################################################################################
 # Determines if the environment is set up in the primary cluster.

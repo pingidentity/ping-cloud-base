@@ -3,7 +3,7 @@
 # NOTE: it will only work if an ingress controller (e.g. nginx) is running on
 # your cluster.
 
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: pingaccess-admin-ingress
@@ -20,7 +20,10 @@ spec:
       http:
         paths:
           # This rule gives internal access to the pingaccess admin services.
-          - path: /
+          - pathType: Prefix
+            path: /
             backend:
-              serviceName: pingaccess-admin
-              servicePort: 9000
+              service:
+                name: pingaccess-admin
+                port:
+                  number: 9000

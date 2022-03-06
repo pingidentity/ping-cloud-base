@@ -26,9 +26,6 @@ patchesJson6902:
       value:
         configMapRef:
           name: pingdatasync-last-update-config
-    - op: replace
-      path: /spec/template/spec/affinity/podAffinity/preferredDuringSchedulingIgnoredDuringExecution/0/podAffinityTerm/labelSelector/matchExpressions/0/values/0
-      value: ${P1AS_PD_POD_NAME}
 
 ### Ingress patches ###
 

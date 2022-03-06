@@ -4,6 +4,9 @@
 
 NEWRELIC_VERSION="6.5.2"
 
+beluga_log "Copying logger.lib.sh"
+test -f ./logger.lib.sh && cp ./logger.lib.sh /data/logger.lib.sh
+
 beluga_log "Copying SSH configuration files"
 test -f /known_hosts && cp /known_hosts /.ssh
 test -f /id_rsa && cp /id_rsa /.ssh

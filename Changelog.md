@@ -27,7 +27,9 @@ _Changes:_
 
 _Changes:_
 
+- [X] BRASS-358 Update Solutions Ansible to continue on error, removed "canUseIntelligenceDataConsent": true from  risk script
 - [X] PDO-2092 Allow UDP ports to enable PF RADIUS functionality
+- [X] PDO-2233 Change "apiVersion" for CRD resources in ping-cloud-base
 - [X] PDO-2350 Add Metric For JVM GC CPU percent in PF
 - [X] PDO-2351 Add Metric For JVM Old Gen Collected percent in PF
 - [X] PDO-2354 Add Metric For JVM GC CPU percent in PA
@@ -64,16 +66,17 @@ _Changes:_
 - [X] PDO-3340 PA-WAS pods crashed during 82-upload-csd-s3.sh hook run on test/dev clusters
 - [X] PDO-3341 Run PingDataSync using nonroot user
 - [X] PDO-3343 Upgrade PingDelegator/DelegatedAdmin to 4.8.0
-- [X] PDO-3359 Dynamically deploy PingDataSync in the same availability zone as PingDirectory
 - [X] PDO-3369 Update p1/newrelic-tags-exporter to run with "ping" user, "identity" group
 - [X] PDO-3370 (BugFix) PD running into crashloop after restart with missing PingDirectory.lic file
 - [X] PDO-3371 Update all pingcloud-apps images to support ssh-rsa HostKeyAlgorithm
+- [X] PDO-3382 Change P1 Deployment to use isMyPing SSM
 - [X] PDO-3404 PingDataSync add wait-for-service for external and internal PD instance
 - [X] PDO-3406 Set changelog max-age within external PingDirectory server using API and P1AS PingDirectory server using dsconfig
 - [X] PDO-3408 Enforce PingDataSync to only deploy within primary region
 - [X] PDO-3394 (BugFix) PD status update for P1
 - [X] PDO-3411 Move Fluentd CloudWatch config to a separate file
 - [X] PDO-3414 Use alpine docker image for enrichment-bootstrap
+- [X] PDO-3425 Deploy utils.lib.sh to each product container from one place
 - [X] PDO-3449 Add custom artifacts to PingDataSync to allow custom sync pipes
 - [X] PDO-3479 Change PA integration test 01-agent-config-test.sh to be idempotent
 - [X] PDO-3488 Solutions Ansible entrypoint.sh script null evaluation
@@ -81,6 +84,9 @@ _Changes:_
 - [X] PDO-3502 Update DataSync to use USER_BASE_DN variable
 - [X] PDO-3513 (BugFix) Logstash crashlooping due to updated plugin dependencies
 - [X] PDO-3540 Fix metadata by updating flask to v2.0.3
+- [X] PDO-3557 Update PD to 8.3.0.5 to fix JVM crashes
+- [X] PDO-3570 Add group identity 9999 for all Ping product applications and avoid escalating privileges
+- [X] PDO-3577 Disable external server configuration. Use flag IS_P1AS_TEST_MODE to enable for QA
 
 ### 1.12.0
 

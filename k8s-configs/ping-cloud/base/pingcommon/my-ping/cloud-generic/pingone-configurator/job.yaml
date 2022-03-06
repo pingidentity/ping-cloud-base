@@ -24,6 +24,9 @@ spec:
           mountPath: /utils.lib.sh
           subPath: utils.lib.sh
         - name: pingone-config
+          mountPath: /logger.lib.sh
+          subPath: logger.lib.sh
+        - name: pingone-config
           mountPath: /wait-for-services.sh
           subPath: wait-for-services.sh
         env:
@@ -34,7 +37,7 @@ spec:
             name: pingfederate-admin-environment-variables
       containers:
       - name: pingone-configurator
-        image: public.ecr.aws/r2h3l6e4/pingcloud-solutions/ansible-beluga:v1.0.2
+        image: public.ecr.aws/r2h3l6e4/pingcloud-solutions/ansible-beluga:v1.0.4
         imagePullPolicy: IfNotPresent
         resources:
           requests:

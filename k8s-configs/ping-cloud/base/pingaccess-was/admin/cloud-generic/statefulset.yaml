@@ -32,18 +32,20 @@ spec:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.3.0
+          allowPrivilegeEscalation: false
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.4.0
         imagePullPolicy: IfNotPresent
         env:
         - name: NAMESPACE
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        command: [ 'python3', '-u', '/app/pingaccess_was_p14c_init.py' ]
+        command: [ 'python3', '-u', '/app/pingaccess_was_p1_init.py' ]
         volumeMounts:
         - name: data-dir
           mountPath: /opt/staging
       - name: pingaccess-was-init
+        # FIXME PDO-3574: switch to same user as app
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -69,6 +71,9 @@ spec:
         - name: pingaccess-was-init
           mountPath: /utils.lib.sh
           subPath: utils.lib.sh
+        - name: pingaccess-was-init
+          mountPath: /logger.lib.sh
+          subPath: logger.lib.sh
         - name: data-dir
           mountPath: /opt/staging/p14c_env_vars
           subPath: p14c_env_vars
@@ -76,6 +81,7 @@ spec:
         - configMapRef:
             name: pingaccess-was-admin-environment-variables
       - name: wait-for-services
+        # FIXME PDO-3576: switch to same user as app
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -89,12 +95,16 @@ spec:
           mountPath: /utils.lib.sh
           subPath: utils.lib.sh
         - name: pingaccess-was-init
+          mountPath: /logger.lib.sh
+          subPath: logger.lib.sh
+        - name: pingaccess-was-init
           mountPath: /wait-for-services.sh
           subPath: wait-for-services.sh
         envFrom:
         - configMapRef:
             name: pingaccess-was-admin-environment-variables
       - name: newrelic-tags-exporter
+        # FIXME PDO-3575: switch to same user as app
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -129,11 +139,12 @@ spec:
           mountPath: /opt/shared-dir
       containers:
       - name: pingaccess-was-admin
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was:6.3.3-v1.0.25
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was:6.3.3-v1.0.28
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
+          allowPrivilegeEscalation: false
         imagePullPolicy: IfNotPresent
         resources:
           requests:
@@ -156,6 +167,9 @@ spec:
         - name: data-dir
           mountPath: /usr/local/bin/skbn
           subPath: skbn
+        - name: data-dir
+          mountPath: /opt/staging/hooks/logger.lib.sh
+          subPath: logger.lib.sh
         - name: data-dir
           mountPath: /opt/staging/newrelic.jar
           subPath: newrelic.jar

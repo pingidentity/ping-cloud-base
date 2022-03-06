@@ -14,12 +14,13 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: pingaccess-admin-periodic-csd-upload
-            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess:6.3.3-v1.0.25
+            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess:6.3.3-v1.0.28
             imagePullPolicy: IfNotPresent
             securityContext:
               runAsGroup: 9999
               runAsNonRoot: true
               runAsUser: 9031
+              allowPrivilegeEscalation: false
             command:
             - /opt/in/backup-csd-data.sh
             env:

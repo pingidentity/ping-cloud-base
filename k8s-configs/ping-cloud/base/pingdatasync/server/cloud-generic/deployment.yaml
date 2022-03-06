@@ -20,26 +20,14 @@ spec:
         class: pingdatasync-server
     spec:
       serviceAccountName: ping-serviceaccount
-      affinity:
-        # This podAffinity rule is designed to deploy PingDataSync to the same AZ as its targeted PingDirectory syncing server.
-        # The default is set to deploy to the same AZ as "pingdirectory-0".
-        podAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: statefulset.kubernetes.io/pod-name
-                  operator: In
-                  values:
-                  - "pingdirectory-0"
-              topologyKey: failure-domain.beta.kubernetes.io/zone
       terminationGracePeriodSeconds: 300
       initContainers:
       - name: wait-for-pds
+        # FIXME PDO-3576: switch to same user as app
         securityContext:
-          runAsNonRoot: false
-          runAsUser: 0
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
         image: public.ecr.aws/r2h3l6e4/busybox:1.32
         imagePullPolicy: IfNotPresent
         command:
@@ -49,12 +37,16 @@ spec:
             mountPath: /utils.lib.sh
             subPath: utils.lib.sh
           - name: pingdatasync-init
+            mountPath: /logger.lib.sh
+            subPath: logger.lib.sh
+          - name: pingdatasync-init
             mountPath: /wait-for-pds.sh
             subPath: wait-for-pds.sh
         envFrom:
           - configMapRef:
               name: pingdatasync-environment-variables
       - name: pingdatasync-init
+        # FIXME PDO-3574: switch to same user as app
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -80,6 +72,9 @@ spec:
           - name: pingdatasync-init
             mountPath: /utils.lib.sh
             subPath: utils.lib.sh
+          - name: pingdatasync-init
+            mountPath: /logger.lib.sh
+            subPath: logger.lib.sh
         env:
           - name: P1AS_PD_LDAPS_PORT
             valueFrom:
@@ -95,7 +90,8 @@ spec:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdatasync:8.2.0.6-v1.0.10
+          allowPrivilegeEscalation: false
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdatasync:8.2.0.6-v1.0.15
         imagePullPolicy: IfNotPresent
         resources:
           limits:
@@ -145,7 +141,7 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: pingdirectory-passwords
-                key: admin-user-password
+                key: root-user-password
           - name: P1AS_PD_LDAPS_PORT
             valueFrom:
               configMapKeyRef:
@@ -190,6 +186,9 @@ spec:
           - name: data-dir
             mountPath: /usr/local/bin/skbn
             subPath: skbn
+          - name: data-dir
+            mountPath: /opt/staging/hooks/logger.lib.sh
+            subPath: logger.lib.sh
           - name: topology-descriptor
             mountPath: /opt/staging/topology/descriptor.json
             subPath: descriptor.json

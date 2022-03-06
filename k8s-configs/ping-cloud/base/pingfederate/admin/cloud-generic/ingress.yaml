@@ -1,6 +1,6 @@
 # This defines the private ingress for the pingfederate admin services.
 
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: pingfederate-admin-ingress
@@ -18,6 +18,9 @@ spec:
         paths:
           # This rule gives internal access to the pingfederate admin services.
           - path: /
+            pathType: Prefix
             backend:
-              serviceName: pingfederate-admin
-              servicePort: pf-admin
+              service:
+                name: pingfederate-admin
+                port:
+                  name: pf-admin
