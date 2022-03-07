@@ -171,23 +171,23 @@ find_cluster() {
 
   while [[ $found_cluster == false ]]; do
     for postfix in "${cluster_postfixes[@]}"; do
-      ca_pem_var="KUBE_CA_PEM$postfix"
-      kube_url_var="KUBE_URL$postfix"
-      export SELECTED_KUBE_NAME=$(echo "ci-cd$postfix" | tr '_' '-')
-      export SELECTED_CA_PEM=$(eval "echo \"\$$ca_pem_var\"")
-      export SELECTED_KUBE_URL=$(eval "echo \"\$$kube_url_var\"")
+      export SELECTED_POSTFIX=$postfix
+      kube_name=$(echo "ci-cd$postfix" | tr '_' '-')
+#      ca_pem_var="KUBE_CA_PEM$postfix"
+#      kube_url_var="KUBE_URL$postfix"
+#      export SELECTED_KUBE_NAME=$(echo "ci-cd$postfix" | tr '_' '-')
+#      export SELECTED_CA_PEM=$(eval "echo \"\$$ca_pem_var\"")
+#      export SELECTED_KUBE_URL=$(eval "echo \"\$$kube_url_var\"")
       configure_kube
 
-      log "INFO: Namespaces on cluster $SELECTED_KUBE_NAME: $(kubectl get ns)"
+      log "INFO: Namespaces on cluster $kube_name: $(kubectl get ns)"
       # Check namespaces
       # break out of loop if cluster is available (i.e. no ping namespaces)
       # NOTE - from the time that we check for a namespace to deploying
       if ! kubectl get ns | grep ping > /dev/null; then
         found_cluster=true
-        log "Found cluster $SELECTED_KUBE_NAME available to deploy to"
-        echo "SELECTED_KUBE_NAME=$SELECTED_KUBE_NAME" > build.env
-        echo "SELECTED_CA_PEM=$SELECTED_CA_PEM" >> build.env
-        echo "SELECTED_KUBE_URL=$SELECTED_KUBE_URL" >> build.env
+        log "Found cluster $kube_name available to deploy to"
+        echo "SELECTED_POSTFIX=$postfix" > build.env
         break
       fi
     done
@@ -220,12 +220,26 @@ configure_kube() {
     return
   fi
 
-  check_env_vars "SELECTED_CA_PEM" "SELECTED_KUBE_URL" "SELECTED_KUBE_NAME" "AWS_ACCOUNT_ROLE_ARN"
+  check_env_vars "SELECTED_POSTFIX"
   HAS_REQUIRED_VARS=${?}
 
   if test ${HAS_REQUIRED_VARS} -ne 0; then
     exit 1
   fi
+
+  ca_pem_var="KUBE_CA_PEM$SELECTED_POSTFIX"
+  kube_url_var="KUBE_URL$SELECTED_POSTFIX"
+
+  check_env_vars ca_pem_var kube_url_var "AWS_ACCOUNT_ROLE_ARN"
+  HAS_REQUIRED_VARS=${?}
+
+  if test ${HAS_REQUIRED_VARS} -ne 0; then
+    exit 1
+  fi
+
+  SELECTED_KUBE_NAME=$(echo "ci-cd$SELECTED_POSTFIX" | tr '_' '-')
+  SELECTED_CA_PEM=$(eval "echo \"\$$ca_pem_var\"")
+  SELECTED_KUBE_URL=$(eval "echo \"\$$kube_url_var\"")
 
   log "Configuring KUBE"
   echo "${SELECTED_CA_PEM}" > "$(pwd)/kube.ca.pem"
