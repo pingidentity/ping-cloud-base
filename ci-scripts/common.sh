@@ -163,7 +163,7 @@ find_cluster() {
   fi
 
   # TODO: pull the cluster list dynamically and see if it is scaled up before trying to deploy to it
-  cluster_postfixes=("_1", "_2")
+  cluster_postfixes=("_1" "_2")
   found_cluster=false
   sleep_wait_seconds=300
   current_check=1
