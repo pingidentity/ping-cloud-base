@@ -228,7 +228,7 @@ configure_kube() {
   fi
 
   log "Configuring KUBE"
-  echo ${SELECTED_CA_PEM} > "$(pwd)/kube.ca.pem"
+  echo "${SELECTED_CA_PEM}" > "$(pwd)/kube.ca.pem"
 
   kubectl config set-cluster "${SELECTED_KUBE_NAME}" \
     --server="${SELECTED_KUBE_URL}" \
