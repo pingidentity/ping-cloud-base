@@ -171,9 +171,11 @@ find_cluster() {
 
   while [[ $found_cluster == false ]]; do
     for postfix in "${cluster_postfixes[@]}"; do
+      ca_pem_var="KUBE_CA_PEM$postfix"
+      kube_url_var="KUBE_URL$postfix"
       export SELECTED_KUBE_NAME=$(echo "ci-cd$postfix" | tr '_' '-')
-      export SELECTED_CA_PEM="$KUBE_CA_PEM$postfix"
-      export SELECTED_KUBE_URL="$KUBE_URL$postfix"
+      export SELECTED_CA_PEM=$(eval "echo \"\$$ca_pem_var\"")
+      export SELECTED_KUBE_URL=$(eval "echo \"\$$kube_url_var\"")
       configure_kube
 
       echo "INFO: Namespaces on cluster $SELECTED_KUBE_NAME: $(kubectl get ns)"
