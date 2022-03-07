@@ -9,7 +9,7 @@ pushd "${PROJECT_DIR}"
 
 # Configure kube config, unless skipped
 find_cluster
-configure_kube
+#configure_kube
 
 NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY:-unused}
 

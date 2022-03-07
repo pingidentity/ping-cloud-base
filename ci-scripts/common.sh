@@ -178,26 +178,26 @@ find_cluster() {
       export SELECTED_KUBE_URL=$(eval "echo \"\$$kube_url_var\"")
       configure_kube
 
-      echo "INFO: Namespaces on cluster $SELECTED_KUBE_NAME: $(kubectl get ns)"
+      log "INFO: Namespaces on cluster $SELECTED_KUBE_NAME: $(kubectl get ns)"
       # Check namespaces
       # break out of loop if cluster is available (i.e. no ping namespaces)
       # NOTE - from the time that we check for a namespace to deploying
       if ! kubectl get ns | grep ping > /dev/null; then
         found_cluster=true
-        echo "Found cluster $SELECTED_KUBE_NAME available to deploy to"
-        echo "SELECTED_KUBE_NAME=$SELECTED_KUBE_NAME" >> build.env
-        echo "SELECTED_CA_PEM=$SELECTED_CA_PEM" >> build.env
-        echo "SELECTED_KUBE_URL=$SELECTED_KUBE_URL" >> build.env
+        log "Found cluster $SELECTED_KUBE_NAME available to deploy to"
+        log "SELECTED_KUBE_NAME=$SELECTED_KUBE_NAME" >> build.env
+        log "SELECTED_CA_PEM=$SELECTED_CA_PEM" >> build.env
+        log "SELECTED_KUBE_URL=$SELECTED_KUBE_URL" >> build.env
         break
       fi
     done
 
     if [[ $found_cluster == false ]]; then
       if [[ $current_check -ge $max_checks ]]; then
-        echo "Could not find a cluster to run on - please check that the pipeline is not saturated and delete unused namespaces"
+        log "Could not find a cluster to run on - please check that the pipeline is not saturated and delete unused namespaces"
         exit 1
       fi
-      echo "No unused cluster found to run your changes on. Waiting for ${sleep_wait_seconds} seconds, then checking again."
+      log "No unused cluster found to run your changes on. Waiting for ${sleep_wait_seconds} seconds, then checking again."
       ((current_check=current_check+1))
       sleep $sleep_wait_seconds
     fi
