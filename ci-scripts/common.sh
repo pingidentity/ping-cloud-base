@@ -172,22 +172,18 @@ find_cluster() {
   while [[ $found_cluster == false ]]; do
     for postfix in "${cluster_postfixes[@]}"; do
       export SELECTED_POSTFIX=$postfix
-      kube_name=$(echo "ci-cd$postfix" | tr '_' '-')
-#      ca_pem_var="KUBE_CA_PEM$postfix"
-#      kube_url_var="KUBE_URL$postfix"
-#      export SELECTED_KUBE_NAME=$(echo "ci-cd$postfix" | tr '_' '-')
-#      export SELECTED_CA_PEM=$(eval "echo \"\$$ca_pem_var\"")
-#      export SELECTED_KUBE_URL=$(eval "echo \"\$$kube_url_var\"")
+      export SELECTED_KUBE_NAME=$(echo "ci-cd$postfix" | tr '_' '-')
       configure_kube
 
-      log "INFO: Namespaces on cluster $kube_name: $(kubectl get ns)"
+      log "INFO: Namespaces on cluster $SELECTED_KUBE_NAME: $(kubectl get ns)"
       # Check namespaces
       # break out of loop if cluster is available (i.e. no ping namespaces)
       # NOTE - from the time that we check for a namespace to deploying
       if ! kubectl get ns | grep ping > /dev/null; then
         found_cluster=true
-        log "Found cluster $kube_name available to deploy to"
-        echo "SELECTED_POSTFIX=$postfix" > build.env
+        log "Found cluster $SELECTED_KUBE_NAME available to deploy to"
+        echo "SELECTED_POSTFIX=$SELECTED_POSTFIX" > build.env
+        echo "SELECTED_KUBE_NAME=$SELECTED_KUBE_NAME" >> build.env
         break
       fi
     done
@@ -220,7 +216,7 @@ configure_kube() {
     return
   fi
 
-  check_env_vars "SELECTED_POSTFIX"
+  check_env_vars "SELECTED_POSTFIX SELECTED_KUBE_NAME"
   HAS_REQUIRED_VARS=${?}
 
   if test ${HAS_REQUIRED_VARS} -ne 0; then
@@ -237,7 +233,6 @@ configure_kube() {
     exit 1
   fi
 
-  SELECTED_KUBE_NAME=$(echo "ci-cd$SELECTED_POSTFIX" | tr '_' '-')
   SELECTED_CA_PEM=$(eval "echo \"\$$ca_pem_var\"")
   SELECTED_KUBE_URL=$(eval "echo \"\$$kube_url_var\"")
 
