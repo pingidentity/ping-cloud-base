@@ -185,9 +185,9 @@ find_cluster() {
       if ! kubectl get ns | grep ping > /dev/null; then
         found_cluster=true
         log "Found cluster $SELECTED_KUBE_NAME available to deploy to"
-        log "SELECTED_KUBE_NAME=$SELECTED_KUBE_NAME" >> build.env
-        log "SELECTED_CA_PEM=$SELECTED_CA_PEM" >> build.env
-        log "SELECTED_KUBE_URL=$SELECTED_KUBE_URL" >> build.env
+        echo "SELECTED_KUBE_NAME=$SELECTED_KUBE_NAME" > build.env
+        echo "SELECTED_CA_PEM=$SELECTED_CA_PEM" >> build.env
+        echo "SELECTED_KUBE_URL=$SELECTED_KUBE_URL" >> build.env
         break
       fi
     done
