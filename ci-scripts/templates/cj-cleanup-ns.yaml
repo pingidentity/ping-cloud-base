@@ -1,13 +1,24 @@
+# Create resources in default namespace to run cleanup of ns older than given time.
+# 
+# Set environment variables as per the requirements,
+#     NAMESPACE_PREFIX='ping' (default), set 'all' to delete all non system namespaces.
+#     NAMESPACE_AGE='120' (in min, default)
+# 
+# Note following are k8s system namespaces,
+#     default, kube-node-lease, kube-public, kube-system
+#
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: namespace-admin-serviceaccount
+  namespace: default
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: namespace-admin-clusterrole
+  namespace: default
 rules:
 - apiGroups: [""]
   resources: ["namespaces"]
@@ -47,4 +58,10 @@ spec:
           restartPolicy: Never
           containers:
             - name: kubectl
-              image: public.ecr.aws/r2h3l6e4/kube-metadata:v0.0.6
+              image: public.ecr.aws/r2h3l6e4/delete-k8s-ns:v0.0.2
+              env:
+                - name: NAMESPACE_PREFIX
+                  value: 'ping' # set this value to 'all' to delete all non-system ns
+                - name: NAMESPACE_AGE
+                  value: '120' # age in min
+

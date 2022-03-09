@@ -14,7 +14,7 @@ NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY:-unused}
 
 export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KEY}")
 export DATASYNC_P1AS_SYNC_SERVER="pingdirectory-0"
-export CLEANUP_NS_JOB="cleanup-ns-resources.yaml"
+export CLEANUP_NS_JOB="${SCRIPT_HOME}/../templates/cj-cleanup-ns.yaml"
 
 # Deploy namespace cleanup cronjob
 kubectl apply -f "${CLEANUP_NS_JOB}"
