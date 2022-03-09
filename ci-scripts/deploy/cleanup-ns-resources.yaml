@@ -1,0 +1,50 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: namespace-admin-serviceaccount
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: namespace-admin-clusterrole
+rules:
+- apiGroups: [""]
+  resources: ["namespaces"]
+  verbs: ["get", "list", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: namespace-admin-rolebinding
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: namespace-admin-clusterrole
+subjects:
+- kind: ServiceAccount
+  name: namespace-admin-serviceaccount
+  namespace: default
+---
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cleanup-nondefault-namespaces
+  namespace: default
+spec:
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  schedule: '0 * * * *' # cron spec of time, every hour
+  jobTemplate:
+    spec:
+      backoffLimit: 0 
+      activeDeadlineSeconds: 120  #duration of the job
+      template:
+        spec:
+          serviceAccountName: namespace-admin-serviceaccount # name of the service
+          restartPolicy: Never
+          containers:
+            - name: kubectl
+              image: public.ecr.aws/r2h3l6e4/kube-metadata:v0.0.6
