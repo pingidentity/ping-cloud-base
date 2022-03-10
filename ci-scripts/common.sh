@@ -160,6 +160,23 @@ set_env_vars
 # Source some utility methods.
 . ${PROJECT_DIR}/utils.sh
 
+check_cluster_nodes() {
+  num_nodes=$(kubectl get nodes | awk '{ print $2 }' | grep 'Ready' | wc -l)
+  # All CI/CD clusters should have 6 nodes ready (2 per AZ)
+  min_nodes=6
+  if [[ $? != 0 ]]; then
+    log "There was a problem checking how many nodes are running on the cluster, exiting"
+    exit 1
+  fi
+  if [[ $num_nodes -lt $min_nodes ]]; then
+    log "Cluster ${SELECTED_KUBE_NAME} does not have enough nodes available"
+    log "CI/CD pipeline requires ${min_nodes} nodes but there were only ${num_nodes} nodes"
+    log "Skipping this cluster and trying the next"
+    return 1 
+  fi
+  return 0 
+}
+
 ########################################################################################################################
 # Finds an available ci-cd cluster to run on:
 #
@@ -190,6 +207,12 @@ find_cluster() {
       export SELECTED_POSTFIX=$postfix
       export SELECTED_KUBE_NAME=$(echo "ci-cd$postfix" | tr '_' '-')
       configure_kube
+
+      cluster_check=$(check_cluster_nodes)
+      if [[ $cluster_check != 0 ]]; then
+        log "No nodes available in cluster, continuing to next cluster"
+        continue
+      fi
 
       log "INFO: Namespaces on cluster $SELECTED_KUBE_NAME: $(kubectl get ns)"
       # Check namespaces & break out of loop if cluster is available (i.e. no cluster-in-use-lock namespace)
