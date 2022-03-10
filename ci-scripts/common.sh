@@ -208,9 +208,18 @@ find_cluster() {
       export SELECTED_KUBE_NAME=$(echo "ci-cd$postfix" | tr '_' '-')
       configure_kube
 
-      cluster_check=$(check_cluster_nodes)
-      if [[ $cluster_check != 0 ]]; then
-        log "No nodes available in cluster, continuing to next cluster"
+      # All CI/CD clusters should have 6 nodes ready (2 per AZ)
+      min_nodes=6
+      # Get 'Ready' nodes, count them, remove whitespace from 'wc'
+      num_nodes=$(kubectl get nodes | awk '{ print $2 }' | grep 'Ready' | wc -l | tr -d ' ')
+      if [[ $? != 0 ]]; then
+        log "There was a problem checking how many nodes are running on the cluster, continuining to next cluser"
+        continue
+      fi
+      if [[ $num_nodes -lt $min_nodes ]]; then
+        log "Cluster ${SELECTED_KUBE_NAME} does not have enough nodes available"
+        log "CI/CD pipeline requires ${min_nodes} nodes but there were only ${num_nodes} nodes"
+        log "Skipping this cluster and trying the next"
         continue
       fi
 
