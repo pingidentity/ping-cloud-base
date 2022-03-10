@@ -14,6 +14,7 @@
 - Use alpine docker image for enrichment-bootstrap
 - Add custom artifacts to PingDataSync to allow custom sync pipes
 - Upgrade PF to 11.0.1
+- Fix fluentd PD logs parsing configuration
 
 _Changes:_
 
@@ -73,6 +74,7 @@ _Changes:_
 - [X] PDO-3501 Consolidate and rename PingDataSync, external PD, and P1AS PD shared variables
 - [X] PDO-3502 Update DataSync to use USER_BASE_DN variable
 - [X] PDO-3513 (BugFix) Logstash crashlooping due to updated plugin dependencies
+- [X] PDO-3518 Fix fluentd PD logs parsing configuration
 - [X] PDO-3540 Fix metadata by updating flask to v2.0.3
 - [X] PDO-3557 Update PD to 8.3.0.5 to fix JVM crashes
 - [X] PDO-3570 Add group identity 9999 for all Ping product applications and avoid escalating privileges
