@@ -221,6 +221,8 @@ find_cluster() {
         log "CI/CD pipeline requires ${min_nodes} nodes but there were only ${num_nodes} nodes"
         log "Skipping this cluster and trying the next"
         continue
+      else 
+        log "Found sufficient nodes are available on this cluster ${SELECTED_KUBE_NAME}"
       fi
 
       log "INFO: Namespaces on cluster $SELECTED_KUBE_NAME: $(kubectl get ns)"
