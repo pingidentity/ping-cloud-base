@@ -26,142 +26,203 @@ SKIP_TESTS="${SKIP_TESTS:-pingdirectory/03-backup-restore.sh \
   pingaccess-was/05-test-cloudwatch-logs.sh \
   chaos/01-delete-pa-admin-pod.sh }"
 
-if test -z "${ENV_VARS_FILE}"; then
-  echo "Using environment variables based on CI variables"
+set_env_vars() {
+  if test -z "${ENV_VARS_FILE}"; then
+    echo "Using environment variables based on CI variables"
 
-  export CLUSTER_NAME="${EKS_CLUSTER_NAME:-ci-cd}"
-  export IS_MULTI_CLUSTER=false
+    export CLUSTER_NAME="${SELECTED_KUBE_NAME:-ci-cd}"
+    export IS_MULTI_CLUSTER=false
 
-  export TENANT_NAME='ci-cd'
+    export TENANT_NAME="${CLUSTER_NAME}"
 
-  export REGION="${AWS_DEFAULT_REGION:-us-west-2}"
-  export REGION_NICK_NAME=${REGION}
-  export PRIMARY_REGION="${REGION}"
+    export REGION="${AWS_DEFAULT_REGION:-us-west-2}"
+    export REGION_NICK_NAME=${REGION}
+    export PRIMARY_REGION="${REGION}"
 
-  export TENANT_DOMAIN='ci-cd.ping-oasis.com'
-  export PRIMARY_TENANT_DOMAIN="${TENANT_DOMAIN}"
-  export GLOBAL_TENANT_DOMAIN="${GLOBAL_TENANT_DOMAIN:-$(echo "${TENANT_DOMAIN}"|sed -e "s/[^.]*.\(.*\)/global.\1/")}"
+    export TENANT_DOMAIN="${CLUSTER_NAME}.ping-oasis.com"
+    export PRIMARY_TENANT_DOMAIN="${TENANT_DOMAIN}"
+    export GLOBAL_TENANT_DOMAIN="${GLOBAL_TENANT_DOMAIN:-$(echo "${TENANT_DOMAIN}"|sed -e "s/[^.]*.\(.*\)/global.\1/")}"
 
-  if [[ ${CI_COMMIT_REF_SLUG} != master ]]; then
-    export ENVIRONMENT=-${CI_COMMIT_REF_SLUG}
+    if [[ ${CI_COMMIT_REF_SLUG} != master ]]; then
+      export ENVIRONMENT=-${CI_COMMIT_REF_SLUG}
+    fi
+    export BELUGA_ENV_NAME=${CI_COMMIT_REF_SLUG}
+    export ENV=${BELUGA_ENV_NAME}
+
+    export NAMESPACE=ping-cloud-${CI_COMMIT_REF_SLUG}
+    export NEW_RELIC_ENVIRONMENT_NAME=${TENANT_NAME}_${ENV}_${REGION}_k8s-cluster
+
+    export CONFIG_PARENT_DIR=aws
+    export CONFIG_REPO_BRANCH=${CI_COMMIT_REF_NAME:-master}
+
+    export ARTIFACT_REPO_URL=s3://${CLUSTER_NAME}-artifacts-bucket
+    export PING_ARTIFACT_REPO_URL=https://ping-artifacts.s3-us-west-2.amazonaws.com
+    export LOG_ARCHIVE_URL=s3://${CLUSTER_NAME}-logs-bucket
+    export BACKUP_URL=s3://${CLUSTER_NAME}-backup-bucket
+
+    export MYSQL_SERVICE_HOST=beluga-${CLUSTER_NAME}-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
+    export MYSQL_USER=ssm://pcpt/ping-central/rds/username
+    export MYSQL_PASSWORD=ssm://pcpt/ping-central/rds/password
+
+    # MySQL database names cannot have dashes. So transform dashes into underscores.
+    ENV_NAME_NO_DASHES=$(echo ${CI_COMMIT_REF_SLUG} | tr '-' '_')
+    export MYSQL_DATABASE="pingcentral_${ENV_NAME_NO_DASHES}"
+
+    export PLATFORM_EVENT_QUEUE_NAME='platform_event_queue.fifo'
+    export ORCH_API_SSM_PATH_PREFIX='/pcpt/orch-api'
+
+    export PROJECT_DIR="${CI_PROJECT_DIR}"
+    export AWS_PROFILE=csg
+
+  elif test -f "${ENV_VARS_FILE}"; then
+    echo "Using environment variables defined in file ${ENV_VARS_FILE}"
+    set -a; source "${ENV_VARS_FILE}"; set +a
+  else
+    echo "ENV_VARS_FILE points to a non-existent file: ${ENV_VARS_FILE}"
+    exit 1
   fi
-  export BELUGA_ENV_NAME=${CI_COMMIT_REF_SLUG}
-  export ENV=${BELUGA_ENV_NAME}
 
-  export NAMESPACE=ping-cloud-${CI_COMMIT_REF_SLUG}
-  export NEW_RELIC_ENVIRONMENT_NAME=${TENANT_NAME}_${ENV}_${REGION}_k8s-cluster
+  # Timing
+  export LOG_SYNC_SECONDS="${LOG_SYNC_SECONDS:-5}"
+  export UPLOAD_TIMEOUT_SECONDS="${UPLOAD_TIMEOUT_SECONDS:-20}"
+  export CURL_TIMEOUT_SECONDS="${CURL_TIMEOUT_SECONDS:-450}"
 
-  export CONFIG_PARENT_DIR=aws
-  export CONFIG_REPO_BRANCH=${CI_COMMIT_REF_NAME:-master}
+  export ADMIN_USER=administrator
+  export ADMIN_PASS=2FederateM0re
 
-  export ARTIFACT_REPO_URL=s3://${CLUSTER_NAME}-artifacts-bucket
-  export PING_ARTIFACT_REPO_URL=https://ping-artifacts.s3-us-west-2.amazonaws.com
-  export LOG_ARCHIVE_URL=s3://${CLUSTER_NAME}-logs-bucket
-  export BACKUP_URL=s3://${CLUSTER_NAME}-backup-bucket
+  export PD_SEED_LDAPS_PORT=636
 
-  export MYSQL_SERVICE_HOST=beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
-  export MYSQL_USER=ssm://pcpt/ping-central/rds/username
-  export MYSQL_PASSWORD=ssm://pcpt/ping-central/rds/password
+  export CLUSTER_NAME_LC=$(echo "${CLUSTER_NAME}" | tr '[:upper:]' '[:lower:]')
+  export LOG_GROUP_NAME="/aws/containerinsights/${CLUSTER_NAME}/application"
 
-  # MySQL database names cannot have dashes. So transform dashes into underscores.
-  ENV_NAME_NO_DASHES=$(echo ${CI_COMMIT_REF_SLUG} | tr '-' '_')
-  export MYSQL_DATABASE="pingcentral_${ENV_NAME_NO_DASHES}"
+  FQDN=${ENVIRONMENT}.${TENANT_DOMAIN}
 
-  export PLATFORM_EVENT_QUEUE_NAME='platform_event_queue.fifo'
-  export ORCH_API_SSM_PATH_PREFIX='/pcpt/orch-api'
+  # Monitoring
+  LOGS_CONSOLE=https://logs${FQDN}/app/kibana
+  PROMETHEUS=https://prometheus${FQDN}
+  GRAFANA=https://monitoring${FQDN}
 
-  export PROJECT_DIR="${CI_PROJECT_DIR}"
-  export AWS_PROFILE=csg
+  # Pingdirectory
+  PINGDIRECTORY_API=https://pingdirectory${FQDN}
+  PINGDIRECTORY_ADMIN=pingdirectory-admin${FQDN}
 
-elif test -f "${ENV_VARS_FILE}"; then
-  echo "Using environment variables defined in file ${ENV_VARS_FILE}"
-  set -a; source "${ENV_VARS_FILE}"; set +a
-else
-  echo "ENV_VARS_FILE points to a non-existent file: ${ENV_VARS_FILE}"
-  exit 1
-fi
+  # Pingfederate
+  # admin services:
+  PINGFEDERATE_CONSOLE=https://pingfederate-admin${FQDN}/pingfederate/app
+  PINGFEDERATE_API=https://pingfederate-admin-api${FQDN}/pf-admin-api/v1/version
 
-# Timing
-export LOG_SYNC_SECONDS="${LOG_SYNC_SECONDS:-5}"
-export UPLOAD_TIMEOUT_SECONDS="${UPLOAD_TIMEOUT_SECONDS:-20}"
-export CURL_TIMEOUT_SECONDS="${CURL_TIMEOUT_SECONDS:-450}"
+  # The trailing / is required to avoid a 302
+  PINGFEDERATE_API_DOCS=https://pingfederate-admin${FQDN}/pf-admin-api/api-docs/
+  PINGFEDERATE_ADMIN_API=https://pingfederate-admin${FQDN}/pf-admin-api/v1
 
-export ADMIN_USER=administrator
-export ADMIN_PASS=2FederateM0re
+  # runtime services:
+  PINGFEDERATE_AUTH_ENDPOINT=https://pingfederate${FQDN}
+  PINGFEDERATE_OAUTH_PLAYGROUND=https://pingfederate${FQDN}/OAuthPlayground
 
-export PD_SEED_LDAPS_PORT=636
+  # Pingaccess
+  # admin services:
+  PINGACCESS_CONSOLE=https://pingaccess-admin${FQDN}
+  PINGACCESS_SWAGGER=https://pingaccess-admin${FQDN}/pa-admin-api/api-docs
+  PINGACCESS_API=https://pingaccess-admin${FQDN}/pa-admin-api/v3
 
-export CLUSTER_NAME_LC=$(echo "${CLUSTER_NAME}" | tr '[:upper:]' '[:lower:]')
-export LOG_GROUP_NAME="/aws/containerinsights/${CLUSTER_NAME}/application"
+  # runtime services:
+  PINGACCESS_RUNTIME=https://pingaccess${FQDN}
+  PINGACCESS_AGENT=https://pingaccess-agent${FQDN}
 
-FQDN=${ENVIRONMENT}.${TENANT_DOMAIN}
+  # PingAccess WAS
+  # admin services:
+  # The trailing / is required to avoid a 302
+  PINGACCESS_WAS_SWAGGER=https://pingaccess-was-admin${FQDN}/pa-admin-api/v3/api-docs/
+  PINGACCESS_WAS_CONSOLE=https://pingaccess-was-admin${FQDN}
+  PINGACCESS_WAS_API=https://pingaccess-was-admin${FQDN}/pa-admin-api/v3
 
-# Monitoring
-LOGS_CONSOLE=https://logs${FQDN}/app/kibana
-PROMETHEUS=https://prometheus${FQDN}
-GRAFANA=https://monitoring${FQDN}
+  # runtime services:
+  PINGACCESS_WAS_RUNTIME=https://pingaccess-was${FQDN}
 
-# Pingdirectory
-PINGDIRECTORY_API=https://pingdirectory${FQDN}
-PINGDIRECTORY_ADMIN=pingdirectory-admin${FQDN}
+  # Ping Delegated Admin
+  PINGDELEGATOR_CONSOLE=https://pingdelegator${FQDN}/delegator
 
-# Pingfederate
-# admin services:
-PINGFEDERATE_CONSOLE=https://pingfederate-admin${FQDN}/pingfederate/app
-PINGFEDERATE_API=https://pingfederate-admin-api${FQDN}/pf-admin-api/v1/version
+  # PingCentral
+  MYSQL_SERVICE_HOST="beluga-${SELECTED_KUBE_NAME:-ci-cd}-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com"
+  MYSQL_SERVICE_PORT=3306
+  MYSQL_USER_SSM=/pcpt/ping-central/rds/username
+  MYSQL_PASSWORD_SSM=/pcpt/ping-central/rds/password
 
-# The trailing / is required to avoid a 302
-PINGFEDERATE_API_DOCS=https://pingfederate-admin${FQDN}/pf-admin-api/api-docs/
-PINGFEDERATE_ADMIN_API=https://pingfederate-admin${FQDN}/pf-admin-api/v1
+  # Pingcloud-metadata service:
+  PINGCLOUD_METADATA_API=https://metadata${FQDN}
 
-# runtime services:
-PINGFEDERATE_AUTH_ENDPOINT=https://pingfederate${FQDN}
-PINGFEDERATE_OAUTH_PLAYGROUND=https://pingfederate${FQDN}/OAuthPlayground
+  # PingCentral service
+  PINGCENTRAL_CONSOLE=https://pingcentral${FQDN}
+}
 
-# Pingaccess
-# admin services:
-PINGACCESS_CONSOLE=https://pingaccess-admin${FQDN}
-PINGACCESS_SWAGGER=https://pingaccess-admin${FQDN}/pa-admin-api/api-docs
-PINGACCESS_API=https://pingaccess-admin${FQDN}/pa-admin-api/v3
-
-# runtime services:
-PINGACCESS_RUNTIME=https://pingaccess${FQDN}
-PINGACCESS_AGENT=https://pingaccess-agent${FQDN}
-
-# PingAccess WAS
-# admin services:
-# The trailing / is required to avoid a 302
-PINGACCESS_WAS_SWAGGER=https://pingaccess-was-admin${FQDN}/pa-admin-api/v3/api-docs/
-PINGACCESS_WAS_CONSOLE=https://pingaccess-was-admin${FQDN}
-PINGACCESS_WAS_API=https://pingaccess-was-admin${FQDN}/pa-admin-api/v3
-
-# runtime services:
-PINGACCESS_WAS_RUNTIME=https://pingaccess-was${FQDN}
-
-# Ping Delegated Admin
-PINGDELEGATOR_CONSOLE=https://pingdelegator${FQDN}/delegator
-
-# PingCentral
-MYSQL_SERVICE_HOST=beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
-MYSQL_SERVICE_PORT=3306
-MYSQL_USER_SSM=/pcpt/ping-central/rds/username
-MYSQL_PASSWORD_SSM=/pcpt/ping-central/rds/password
-
-# Pingcloud-metadata service:
-PINGCLOUD_METADATA_API=https://metadata${FQDN}
-
-# PingCentral service
-PINGCENTRAL_CONSOLE=https://pingcentral${FQDN}
+set_env_vars
 
 # Source some utility methods.
 . ${PROJECT_DIR}/utils.sh
+
+########################################################################################################################
+# Finds an available ci-cd cluster to run on:
+#
+# If no cluster is available it will try again every 5 minutes for 30 minutes before timing out.
+########################################################################################################################
+find_cluster() {
+  if test -n "${SKIP_CONFIGURE_KUBE}"; then
+    log "Skipping KUBE configuration"
+    return
+  fi
+
+  check_env_vars "CLUSTER_POSTFIXES"
+  HAS_REQUIRED_VARS=${?}
+
+  if test ${HAS_REQUIRED_VARS} -ne 0; then
+    exit 1
+  fi
+
+  # TODO: pull the cluster list dynamically and see if it is scaled up before trying to deploy to it
+  cluster_postfixes=($CLUSTER_POSTFIXES)
+  found_cluster=false
+  sleep_wait_seconds=300
+  current_check=1
+  max_checks=7
+
+  while [[ $found_cluster == false ]]; do
+    for postfix in "${cluster_postfixes[@]}"; do
+      export SELECTED_POSTFIX=$postfix
+      export SELECTED_KUBE_NAME=$(echo "ci-cd$postfix" | tr '_' '-')
+      configure_kube
+
+      log "INFO: Namespaces on cluster $SELECTED_KUBE_NAME: $(kubectl get ns)"
+      # Check namespaces & break out of loop if cluster is available (i.e. no cluster-in-use-lock namespace)
+      if ! kubectl get ns | grep cluster-in-use-lock > /dev/null; then
+        # Add a cluster-in-use-lock namespace to make sure we lock this cluster for our use
+        kubectl create namespace cluster-in-use-lock || continue
+        found_cluster=true
+        log "Found cluster $SELECTED_KUBE_NAME available to deploy to"
+        echo "SELECTED_POSTFIX=$SELECTED_POSTFIX" > deploy.env
+        echo "SELECTED_KUBE_NAME=$SELECTED_KUBE_NAME" >> deploy.env
+        set_env_vars
+        break
+      fi
+    done
+
+    if [[ $found_cluster == false ]]; then
+      if [[ $current_check -ge $max_checks ]]; then
+        log "Could not find a cluster to run on - please check that the pipeline is not saturated and delete unused namespaces"
+        exit 1
+      fi
+      log "No unused cluster found to run your changes on. Waiting for ${sleep_wait_seconds} seconds, then checking again."
+      ((current_check=current_check+1))
+      sleep $sleep_wait_seconds
+    fi
+  done
+}
 
 ########################################################################################################################
 # Configures kubectl to be able to talk to the Kubernetes API server based on the following environment variables:
 #
 #   - KUBE_CA_PEM
 #   - KUBE_URL
-#   - EKS_CLUSTER_NAME
+#   - SELECTED_KUBE_NAME
 #   - AWS_ACCOUNT_ROLE_ARN
 #
 # If the environment variables are not present, then the function will exit with a non-zero return code.
@@ -172,32 +233,38 @@ configure_kube() {
     return
   fi
 
-  check_env_vars "KUBE_CA_PEM" "KUBE_URL" "EKS_CLUSTER_NAME" "AWS_ACCOUNT_ROLE_ARN"
+  ca_pem_var="KUBE_CA_PEM$SELECTED_POSTFIX"
+  kube_url_var="KUBE_URL$SELECTED_POSTFIX"
+
+  check_env_vars "SELECTED_POSTFIX" "SELECTED_KUBE_NAME" "AWS_ACCOUNT_ROLE_ARN" ca_pem_var kube_url_var
   HAS_REQUIRED_VARS=${?}
 
   if test ${HAS_REQUIRED_VARS} -ne 0; then
     exit 1
   fi
 
-  log "Configuring KUBE"
-  echo "${KUBE_CA_PEM}" > "$(pwd)/kube.ca.pem"
+  SELECTED_CA_PEM=$(eval "echo \"\$$ca_pem_var\"")
+  SELECTED_KUBE_URL=$(eval "echo \"\$$kube_url_var\"")
 
-  kubectl config set-cluster "${EKS_CLUSTER_NAME}" \
-    --server="${KUBE_URL}" \
+  log "Configuring KUBE"
+  echo "${SELECTED_CA_PEM}" > "$(pwd)/kube.ca.pem"
+
+  kubectl config set-cluster "${SELECTED_KUBE_NAME}" \
+    --server="${SELECTED_KUBE_URL}" \
     --certificate-authority="$(pwd)/kube.ca.pem"
 
   kubectl config set-credentials aws \
     --exec-command aws-iam-authenticator \
     --exec-api-version client.authentication.k8s.io/v1alpha1 \
     --exec-arg=token \
-    --exec-arg=-i --exec-arg="${EKS_CLUSTER_NAME}" \
+    --exec-arg=-i --exec-arg="${SELECTED_KUBE_NAME}" \
     --exec-arg=-r --exec-arg="${AWS_ACCOUNT_ROLE_ARN}"
 
-  kubectl config set-context "${EKS_CLUSTER_NAME}" \
-    --cluster="${EKS_CLUSTER_NAME}" \
+  kubectl config set-context "${SELECTED_KUBE_NAME}" \
+    --cluster="${SELECTED_KUBE_NAME}" \
     --user=aws
 
-  kubectl config use-context "${EKS_CLUSTER_NAME}"
+  kubectl config use-context "${SELECTED_KUBE_NAME}"
 }
 
 ########################################################################################################################
