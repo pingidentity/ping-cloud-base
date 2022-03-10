@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Source common environment variables
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 . ${SCRIPT_HOME}/../common.sh
@@ -13,23 +15,42 @@ configure_kube
 if test "${CI_COMMIT_REF_SLUG}" = 'master' || test "${DELETE_ENV_AFTER_PIPELINE}" = 'false'; then
   log "Not deleting environment ${NAMESPACE}"
   log "Not deleting PingCentral database ${MYSQL_DATABASE} from host ${MYSQL_SERVICE_HOST}"
-else
-  log "Deleting environment ${NAMESPACE}"
-  kubectl delete namespace "${NAMESPACE}"
-
-  log "Deleting PingCentral database ${MYSQL_DATABASE} from host ${MYSQL_SERVICE_HOST}"
-
-  pod_name="mysql-client-${CI_COMMIT_REF_SLUG}"
-  kubectl delete pod "${pod_name}"
-
-  MYSQL_USER=$(get_ssm_val "${MYSQL_USER_SSM}")
-  MYSQL_PASSWORD=$(get_ssm_val "${MYSQL_PASSWORD_SSM}")
-
-  kubectl run -n default -i "${pod_name}" --restart=Never --rm --image=arey/mysql-client -- \
-       -h "${MYSQL_SERVICE_HOST}" -P ${MYSQL_SERVICE_PORT} \
-       -u "${MYSQL_USER}" -p"${MYSQL_PASSWORD}" \
-       -e "drop database ${MYSQL_DATABASE}"
+  exit 0
 fi
 
-# Do not consider failure to cleanup a pipeline failure
-exit 0
+all_namespaces=$(kubectl get ns -o name)
+deleting_ns=()
+
+for ns in $all_namespaces; do
+  if [[ $ns == *"kube-"* || $ns == "namespace/default" || $ns == *"cluster-in-use-lock"* ]]; then
+    log "Skipping namespace ${ns}"
+    continue
+  fi
+  log "Deleting namespace asynchronously: ${ns}"
+  kubectl delete "${ns}" --wait=false
+  deleting_ns+=($ns)
+done
+
+wait_time=15
+
+for ns in "${deleting_ns[@]}"; do
+  while kubectl get ns -o name | grep $ns > /dev/null; do
+    log "Waiting for namespace ${ns} to terminate"
+    log "Sleeping for ${wait_time} seconds and trying again"
+    sleep ${wait_time}
+  done
+done
+
+pod_name="mysql-client-${CI_COMMIT_REF_SLUG}"
+MYSQL_USER=$(get_ssm_val "${MYSQL_USER_SSM}")
+MYSQL_PASSWORD=$(get_ssm_val "${MYSQL_PASSWORD_SSM}")
+
+log "Deleting PingCentral database ${MYSQL_DATABASE} from host ${MYSQL_SERVICE_HOST}"
+kubectl run -n default -i "${pod_name}" --restart=Never --rm --image=arey/mysql-client -- \
+      -h "${MYSQL_SERVICE_HOST}" -P ${MYSQL_SERVICE_PORT} \
+      -u "${MYSQL_USER}" -p"${MYSQL_PASSWORD}" \
+      -e "drop database ${MYSQL_DATABASE}"
+
+# Finally, delete the cluster-in-use-lock namespace. Do this last so that the cluster is clear for use by the next branch
+log "cluster-in-use-lock namespace synchronously deleting (will exit when done)"
+kubectl delete ns cluster-in-use-lock
