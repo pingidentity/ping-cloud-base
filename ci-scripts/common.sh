@@ -193,12 +193,14 @@ find_cluster() {
 
       # All CI/CD clusters should have 6 nodes ready (2 per AZ)
       min_nodes=6
-      # Get nodes with ONLY 'Ready' state, count them, remove whitespace from 'wc'
-      num_nodes=$(kubectl get nodes | awk '{ print $2 }' | grep '^Ready$' | wc -l | tr -d ' ')
+      # Get nodes with ONLY 'Ready' state, count them
+      num_nodes=$(kubectl get nodes | awk '{ print $2 }' | grep -c '^Ready$' )
+
       if [[ $? != 0 ]]; then
-        log "There was a problem checking how many nodes are running on the cluster, continuining to next cluser"
+        log "There was a problem checking how many nodes are running on the cluster, continuing to next cluser"
         continue
       fi
+
       if [[ $num_nodes -lt $min_nodes ]]; then
         log "Cluster ${SELECTED_KUBE_NAME} does not have enough nodes available"
         log "CI/CD pipeline requires ${min_nodes} nodes but there were only ${num_nodes} nodes"
