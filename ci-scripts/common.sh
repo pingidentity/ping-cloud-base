@@ -191,8 +191,9 @@ find_cluster() {
       export SELECTED_KUBE_NAME=$(echo "ci-cd$postfix" | tr '_' '-')
       configure_kube
 
-      # All CI/CD clusters should have 6 nodes ready (2 per AZ)
-      min_nodes=6
+      # Typically, all CI/CD clusters should have 6 nodes ready (2 per AZ)
+      # We make the minimum 3 in case of random failures with a node (since the pipeline can run with 3)
+      min_nodes=3
       # Get nodes with ONLY 'Ready' state, count them
       num_nodes=$(kubectl get nodes | awk '{ print $2 }' | grep -c '^Ready$' )
 
