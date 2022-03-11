@@ -210,8 +210,8 @@ find_cluster() {
 
       # All CI/CD clusters should have 6 nodes ready (2 per AZ)
       min_nodes=6
-      # Get 'Ready' nodes, count them, remove whitespace from 'wc'
-      num_nodes=$(kubectl get nodes | awk '{ print $2 }' | grep 'Ready' | wc -l | tr -d ' ')
+      # Get nodes with ONLY 'Ready' state, count them, remove whitespace from 'wc'
+      num_nodes=$(kubectl get nodes | awk '{ print $2 }' | grep '^Ready$' | wc -l | tr -d ' ')
       if [[ $? != 0 ]]; then
         log "There was a problem checking how many nodes are running on the cluster, continuining to next cluser"
         continue
@@ -222,7 +222,7 @@ find_cluster() {
         log "Skipping this cluster and trying the next"
         continue
       else 
-        log "Found sufficient nodes are available on this cluster ${SELECTED_KUBE_NAME}"
+        log "Found sufficient nodes are available on cluster ${SELECTED_KUBE_NAME}"
       fi
 
       log "INFO: Namespaces on cluster $SELECTED_KUBE_NAME: $(kubectl get ns)"
