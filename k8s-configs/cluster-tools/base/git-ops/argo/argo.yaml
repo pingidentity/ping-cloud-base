@@ -2879,7 +2879,7 @@ apiVersion: v1
 kind: ConfigMap
 data:
   policy.csv: |
-    p, dev, applications, action/apps/StatefulSet/restart, *, allow
+    p, config-team, applications, action/apps/StatefulSet/restart, *, allow
   policy.default: role:readonly
 metadata:
   labels:
