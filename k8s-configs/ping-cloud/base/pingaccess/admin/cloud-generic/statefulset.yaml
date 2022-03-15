@@ -29,7 +29,7 @@ spec:
       serviceAccount: ping-serviceaccount
       initContainers:
       - name: pingaccess-init
-        # FIXME: switch to same user as app
+        # FIXME PDO-3574: switch to same user as app
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -55,10 +55,14 @@ spec:
         - name: pingaccess-init
           mountPath: /utils.lib.sh
           subPath: utils.lib.sh
+        - name: pingaccess-init
+          mountPath: /logger.lib.sh
+          subPath: logger.lib.sh
         envFrom:
         - configMapRef:
             name: pingaccess-admin-environment-variables
       - name: wait-for-services
+        # FIXME PDO-3576: switch to same user as app
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -72,12 +76,16 @@ spec:
           mountPath: /utils.lib.sh
           subPath: utils.lib.sh
         - name: pingaccess-init
+          mountPath: /logger.lib.sh
+          subPath: logger.lib.sh
+        - name: pingaccess-init
           mountPath: /wait-for-services.sh
           subPath: wait-for-services.sh
         envFrom:
         - configMapRef:
             name: pingaccess-admin-environment-variables
       - name: newrelic-tags-exporter
+        # FIXME PDO-3575: switch to same user as app
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -112,11 +120,12 @@ spec:
           mountPath: /opt/shared-dir
       containers:
       - name: pingaccess-admin
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess:6.3.1-v1.0.23
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess:6.3.3-v1.0.28
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
+          allowPrivilegeEscalation: false
         imagePullPolicy: IfNotPresent
         resources:
           requests:
@@ -126,7 +135,6 @@ spec:
             memory: "4Gi"
             cpu: 2
         volumeMounts:
-        # FIXME: fix home directory when containers run as non-root user
         - name: ssh-dir
           mountPath: /home/ping/.ssh
         - name: shared-dir
@@ -137,6 +145,9 @@ spec:
         - name: data-dir
           mountPath: /usr/local/bin/kubectl
           subPath: kubectl
+        - name: data-dir
+          mountPath: /opt/staging/hooks/logger.lib.sh
+          subPath: logger.lib.sh
         - name: data-dir
           mountPath: /usr/local/bin/skbn
           subPath: skbn

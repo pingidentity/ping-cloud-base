@@ -396,7 +396,7 @@ data:
       <filter **>
         @type concat
         key log
-        multiline_start_regexp /\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}([,.]\d{3}){0,1}Z|\d{2}:\d{2}:\d{2}\s+ping.*-\d{1,2}|\\u001b\[0;32m/
+        multiline_start_regexp /\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}[^.+](?:ERROR)|\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2},\d{3}[^.+](?:ERROR)|\d{2}:\d{2}:\d{2}\s+ping.*-\d{1,2}[^.+](?:ERROR)/i
         separator ""
         flush_interval 5
         timeout_label @normal
@@ -909,12 +909,12 @@ data:
         </rule>
         <rule>
           key log
-          pattern /^\/opt\/out\/instance\/log\/access/
+          pattern /^\/opt\/out\/instance\/logs\/access/
           tag temp.pingdelegator_nginx_access_logs
         </rule>
         <rule>
           key log
-          pattern /^\/opt\/out\/instance\/log\/error/
+          pattern /^\/opt\/out\/instance\/logs\/error/
           tag temp.pingdelegator_nginx_error_logs
         </rule>
         <rule>

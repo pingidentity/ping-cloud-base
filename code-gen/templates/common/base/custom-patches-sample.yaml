@@ -200,7 +200,7 @@ spec:
 ---
 
 ### Update the PingAccess-WAS engine's proxy body size ###
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: pingaccess-was-ingress

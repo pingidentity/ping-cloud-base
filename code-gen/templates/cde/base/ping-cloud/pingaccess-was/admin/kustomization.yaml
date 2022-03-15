@@ -29,7 +29,7 @@ patchesJson6902:
 # pingaccess was admin
 - target:
     group: networking.k8s.io
-    version: v1beta1
+    version: v1
     kind: Ingress
     name: pingaccess-was-admin-ingress
   patch: |

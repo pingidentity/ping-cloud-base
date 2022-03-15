@@ -3,7 +3,7 @@
 # NOTE: it will only work if an ingress controller (e.g. nginx) is running on
 # your cluster.
 
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: pingaccess-ingress
@@ -20,16 +20,19 @@ spec:
     http:
       paths:
       # This rule gives external access to the pingaccess runtime service
-      - path: /
+      - pathType: Prefix
+        path: /
         backend:
-          serviceName: pingaccess
-          servicePort: 443
+          service:
+            name: pingaccess
+            port:
+              number: 443
 
 ---
 
 # This defines the ingress for the pingaccess agent services.
 
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: pingaccess-agent-ingress
@@ -46,7 +49,10 @@ spec:
     http:
       paths:
       # This rule gives external access to the pingaccess agent port
-      - path: /
+      - pathType: Prefix
+        path: /
         backend:
-          serviceName: pingaccess
-          servicePort: 3030
+          service:
+            name: pingaccess
+            port:
+              number: 3030

@@ -879,7 +879,7 @@ spec:
 
       containers:
       - name: logstash
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logstash:7.16.2-v1.0.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logstash:7.16.2-v1.0.1
         imagePullPolicy: IfNotPresent
         securityContext:
           runAsUser: 0

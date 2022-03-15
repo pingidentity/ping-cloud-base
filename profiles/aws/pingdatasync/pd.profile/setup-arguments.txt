@@ -20,8 +20,8 @@
     --verbose \
     --licenseKeyFile "${LICENSE_KEY_FILE}" \
     --location "${REGION}" \
-    --instanceName "${PING_DATASYNC_POD_NAME}.${PING_DATASYNC_POD_NAMESPACE}" \
-    --localHostName "${PING_DATASYNC_POD_IP}" \
+    --instanceName "${PINGDATASYNC_POD_NAME}.${PINGDATASYNC_POD_NAMESPACE}" \
+    --localHostName "${PINGDATASYNC_POD_IP}" \
     --ldapPort ${LDAP_PORT} \
     --ldapsPort ${LDAPS_PORT} \
     --httpsPort ${HTTPS_PORT} \

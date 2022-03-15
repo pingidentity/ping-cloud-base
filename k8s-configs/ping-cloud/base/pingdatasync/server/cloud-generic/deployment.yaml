@@ -20,44 +20,14 @@ spec:
         class: pingdatasync-server
     spec:
       serviceAccountName: ping-serviceaccount
-      affinity:
-        # This podAffinity rule is designed to deploy PingDataSync to the same AZ as its targeted PingDirectory syncing server.
-        # The default is set to deploy to the same AZ as "pingdirectory-0".
-        podAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 1
-            podAffinityTerm:
-              labelSelector:
-                matchExpressions:
-                - key: statefulset.kubernetes.io/pod-name
-                  operator: In
-                  values:
-                  - "pingdirectory-0"
-              topologyKey: failure-domain.beta.kubernetes.io/zone
-        # PingDataSync pods are scheduled to run on nodes with the label "pingidentity.com/pd=true"
-        # and taint "pingidentity.com/pd-only=true:NoSchedule".
-        # This aligns with PingDirectory configuration. PingDataSync essentially will attempt to deploy
-        # to the same node as pingdirectory-0 or DATASYNC_P1AS_SYNC_SERVER. If there is not enough memory on the node,
-        # PingDataSync will attempt to deploy within the same availability zone.
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: pingidentity.com/pd
-                    operator: In
-                    values:
-                      - "true"
-      tolerations:
-        - key: "pingidentity.com/pd-only"
-          operator: "Equal"
-          value: "true"
-          effect: "NoSchedule"
       terminationGracePeriodSeconds: 300
       initContainers:
       - name: wait-for-pds
+        # FIXME PDO-3576: switch to same user as app
         securityContext:
-          runAsNonRoot: false
-          runAsUser: 0
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
         image: public.ecr.aws/r2h3l6e4/busybox:1.32
         imagePullPolicy: IfNotPresent
         command:
@@ -67,12 +37,16 @@ spec:
             mountPath: /utils.lib.sh
             subPath: utils.lib.sh
           - name: pingdatasync-init
+            mountPath: /logger.lib.sh
+            subPath: logger.lib.sh
+          - name: pingdatasync-init
             mountPath: /wait-for-pds.sh
             subPath: wait-for-pds.sh
         envFrom:
           - configMapRef:
               name: pingdatasync-environment-variables
       - name: pingdatasync-init
+        # FIXME PDO-3574: switch to same user as app
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -98,6 +72,15 @@ spec:
           - name: pingdatasync-init
             mountPath: /utils.lib.sh
             subPath: utils.lib.sh
+          - name: pingdatasync-init
+            mountPath: /logger.lib.sh
+            subPath: logger.lib.sh
+        env:
+          - name: P1AS_PD_LDAPS_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: pingdirectory-environment-variables
+                key: LDAPS_PORT
         envFrom:
           - configMapRef:
               name: pingdatasync-environment-variables
@@ -107,7 +90,8 @@ spec:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdatasync:8.2.0.6-v1.0.9
+          allowPrivilegeEscalation: false
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdatasync:8.2.0.6-v1.0.15
         imagePullPolicy: IfNotPresent
         resources:
           limits:
@@ -143,30 +127,45 @@ spec:
               secretKeyRef:
                 name: pingdatasync-passwords
                 key: root-user-password
-          - name: EXT_PD_USER_PASSWORD
+          - name: EXT_PD_SYNC_BIND_DN_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: pingdatasync-passwords
-                key: ext-pd-user-password
-          - name: P1AS_PD_USER_PASSWORD
+                key: EXT_PD_SYNC_BIND_DN_PASSWORD
+          - name: EXT_PD_ADMIN_BIND_DN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: pingdatasync-passwords
+                key: EXT_PD_ADMIN_BIND_DN_PASSWORD
+          - name: P1AS_PD_SYNC_BIND_DN_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: pingdirectory-passwords
-                key: admin-user-password
-          - name: DATASYNC_EXTERNAL_SYNC_SERVER_API_PASSWORD
+                key: root-user-password
+          - name: P1AS_PD_LDAPS_PORT
             valueFrom:
-              secretKeyRef:
-                name: pingdatasync-passwords
-                key: DATASYNC_EXTERNAL_SYNC_SERVER_API_PASSWORD
-          - name: PING_DATASYNC_POD_NAME
+              configMapKeyRef:
+                name: pingdirectory-environment-variables
+                key: LDAPS_PORT
+          - name: P1AS_PD_ADMIN_BIND_DN
+            valueFrom:
+              configMapKeyRef:
+                name: pingdirectory-environment-variables
+                key: ADMIN_BIND_DN
+          - name: P1AS_PD_SYNC_BIND_DN
+            valueFrom:
+              configMapKeyRef:
+                name: pingdirectory-environment-variables
+                key: SYNC_BIND_DN
+          - name: PINGDATASYNC_POD_NAME
             valueFrom:
               fieldRef:
                 fieldPath: metadata.name
-          - name: PING_DATASYNC_POD_NAMESPACE
+          - name: PINGDATASYNC_POD_NAMESPACE
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
-          - name: PING_DATASYNC_POD_IP
+          - name: PINGDATASYNC_POD_IP
             valueFrom:
               fieldRef:
                 fieldPath: status.podIP
@@ -187,6 +186,9 @@ spec:
           - name: data-dir
             mountPath: /usr/local/bin/skbn
             subPath: skbn
+          - name: data-dir
+            mountPath: /opt/staging/hooks/logger.lib.sh
+            subPath: logger.lib.sh
           - name: topology-descriptor
             mountPath: /opt/staging/topology/descriptor.json
             subPath: descriptor.json

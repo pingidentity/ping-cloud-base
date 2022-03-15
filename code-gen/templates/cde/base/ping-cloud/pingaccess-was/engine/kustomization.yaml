@@ -29,7 +29,7 @@ patchesJson6902:
 # PingAccess admin and PingFederate admin through PingAccess-WAS
 - target:
     group: networking.k8s.io
-    version: v1beta1
+    version: v1
     kind: Ingress
     name: pingaccess-was-ingress
   patch: |

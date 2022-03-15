@@ -32,7 +32,7 @@ patchesJson6902:
 # pingdirectory HTTP
 - target:
     group: networking.k8s.io
-    version: v1beta1
+    version: v1
     kind: Ingress
     name: pingdirectory-http-ingress
   patch: |

@@ -11,7 +11,7 @@ dsconfig set-root-dn-user-prop \
 #
 dsconfig create-root-dn-user \
     --user-name "pingdatasync"  \
-    --set alternate-bind-dn:cn=sync  \
+    --set "alternate-bind-dn:${SYNC_BIND_DN}"  \
     --set alternate-bind-dn:cn=datasync  \
     --set inherit-default-root-privileges:false  \
     --set privilege:bypass-acl  \
@@ -22,7 +22,7 @@ dsconfig create-root-dn-user \
     --set password<${ROOT_USER_PASSWORD_FILE}
 
 #
-# Create a user for pingdirectoryproxy 
+# Create a user for pingdirectoryproxy
 #
 dsconfig create-root-dn-user \
     --user-name pingdirectoryproxy  \

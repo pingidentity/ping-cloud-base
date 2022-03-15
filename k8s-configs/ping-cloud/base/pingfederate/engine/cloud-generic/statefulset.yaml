@@ -43,18 +43,20 @@ spec:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.3.0
+          allowPrivilegeEscalation: false
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.4.0
         imagePullPolicy: IfNotPresent
         env:
           - name: NAMESPACE
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
-        command: [ 'python3', '-u', '/app/pingfederate_p14c_init.py' ]
+        command: [ 'python3', '-u', '/app/pingfederate_p1_init.py' ]
         volumeMounts:
           - name: data-dir
             mountPath: /opt/staging
       - name: pingfederate-init
+        # FIXME PDO-3574: switch to same user as app
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -80,10 +82,14 @@ spec:
         - name: pingfederate-init
           mountPath: /utils.lib.sh
           subPath: utils.lib.sh
+        - name: pingfederate-init
+          mountPath: /logger.lib.sh
+          subPath: logger.lib.sh
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
       - name: newrelic-tags-exporter
+        # FIXME PDO-3575: switch to same user as app
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -117,6 +123,7 @@ spec:
         - name: shared-dir
           mountPath: /opt/shared-dir
       - name: wait-for-services
+        # FIXME PDO-3576: switch to same user as app
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -130,6 +137,9 @@ spec:
           mountPath: /utils.lib.sh
           subPath: utils.lib.sh
         - name: pingfederate-init
+          mountPath: /logger.lib.sh
+          subPath: logger.lib.sh
+        - name: pingfederate-init
           mountPath: /wait-for-services.sh
           subPath: wait-for-services.sh
         envFrom:
@@ -137,11 +147,12 @@ spec:
             name: pingfederate-environment-variables
       containers:
       - name: pingfederate
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:11.0.1-v1.0.29
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:11.0.1-v1.0.34
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
+          allowPrivilegeEscalation: false
         imagePullPolicy: IfNotPresent
         env:
         - name: OPERATIONAL_MODE
@@ -193,6 +204,9 @@ spec:
         - name: data-dir
           mountPath: /usr/local/bin/skbn
           subPath: skbn
+        - name: data-dir
+          mountPath: /opt/staging/hooks/logger.lib.sh
+          subPath: logger.lib.sh
         - name: data-dir
           mountPath: /opt/staging/jmx_prometheus_javaagent-0.14.0.jar
           subPath: jmx_prometheus_javaagent-0.14.0.jar

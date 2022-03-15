@@ -3,7 +3,7 @@
 # NOTE: it will only work if an ingress controller (e.g. nginx) is running on
 # your cluster.
 
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: pingdelegator-ingress
@@ -20,7 +20,10 @@ spec:
     http:
       paths:
       # This rule gives external access to the pingdelegator
-      - path: /
+      - pathType: Prefix
+        path: /
         backend:
-          serviceName: pingdelegator
-          servicePort: 1443
+          service:
+            name: pingdelegator
+            port:
+              number: 1443
