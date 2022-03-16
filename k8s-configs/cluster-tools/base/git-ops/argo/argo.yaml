@@ -2841,6 +2841,7 @@ metadata:
     app.kubernetes.io/part-of: argocd
   name: argocd-cm
 data:
+  accounts.config-team: apiKey,login
   configManagementPlugins: |
     - name: git-ops-command
       generate:
@@ -2876,6 +2877,10 @@ metadata:
 ---
 apiVersion: v1
 kind: ConfigMap
+data:
+  policy.csv: |
+    p, config-team, applications, action/apps/StatefulSet/restart, *, allow
+  policy.default: role:readonly
 metadata:
   labels:
     app.kubernetes.io/name: argocd-rbac-cm
