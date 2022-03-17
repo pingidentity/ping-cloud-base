@@ -88,5 +88,10 @@
   {
     "name": "opentoken-adapter",
     "version": "2.7"
+  },
+  {
+    "name": "pe-stubpcv",
+    "version": "1.0.0",
+    "source": "private"
   }
 ]
