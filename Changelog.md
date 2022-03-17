@@ -15,6 +15,7 @@
 - Add custom artifacts to PingDataSync to allow custom sync pipes
 - Upgrade PF to 11.0.1
 - Fix fluentd PD logs parsing configuration
+- Fix missing PD logs due to late tail-logs hook call
 
 _Changes:_
 
@@ -81,6 +82,7 @@ _Changes:_
 - [X] PDO-3570 Add group identity 9999 for all Ping product applications and avoid escalating privileges
 - [X] PDO-3577 Disable external server configuration. Use flag IS_P1AS_TEST_MODE to enable for QA
 - [X] PDO-3594 Add a new dsconfig file "45-disable-daily-ldif-export.dsconfig" to turn off on-prem backup
+- [X] PDO-3598 Fix missing PD logs
 
 ### 1.12.0
 
