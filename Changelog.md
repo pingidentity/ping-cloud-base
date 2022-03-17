@@ -83,6 +83,7 @@ _Changes:_
 - [X] PDO-3577 Disable external server configuration. Use flag IS_P1AS_TEST_MODE to enable for QA
 - [X] PDO-3594 Add a new dsconfig file "45-disable-daily-ldif-export.dsconfig" to turn off on-prem backup
 - [X] PDO-3598 Fix missing PD logs
+- [X] PDO-3606 Backup/restore PingDataSync config/sync-state.ldif file to/from s3
 
 ### 1.12.0
 
