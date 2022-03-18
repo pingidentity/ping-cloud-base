@@ -37,6 +37,9 @@ deploy:
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
   - ./ci-scripts/deploy/deploy.sh
+  artifacts:
+    reports:
+      dotenv: deploy.env
 
 ## Unit tests have moved into ping-cloud-docker (PDO-1739) ##
 
@@ -48,6 +51,8 @@ pa-was-integration-tests:
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
     - ./ci-scripts/test/integration/run-integration-tests.sh pingaccess-was
+  dependencies:
+    - deploy
 
 ## Integration Test stage ##
 pd-integration-tests:
@@ -57,6 +62,8 @@ pd-integration-tests:
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
   - ./ci-scripts/test/integration/run-integration-tests.sh pingdirectory
+  dependencies:
+    - deploy
 
 da-integration-tests:
   stage: integration-test
@@ -65,6 +72,8 @@ da-integration-tests:
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
     - ./ci-scripts/test/integration/run-integration-tests.sh pingdelegator
+  dependencies:
+    - deploy
 
 pf-integration-tests:
   stage: integration-test
@@ -73,6 +82,8 @@ pf-integration-tests:
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
   - ./ci-scripts/test/integration/run-integration-tests.sh pingfederate
+  dependencies:
+    - deploy
 
 pa-integration-tests:
   stage: integration-test
@@ -81,6 +92,8 @@ pa-integration-tests:
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
     - ./ci-scripts/test/integration/run-integration-tests.sh pingaccess
+  dependencies:
+    - deploy
 
 pc-services-integration-tests:
   stage: integration-test
@@ -89,6 +102,8 @@ pc-services-integration-tests:
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
     - ./ci-scripts/test/integration/run-integration-tests.sh pingcloud-services
+  dependencies:
+    - deploy
 
 pcentral-integration-tests:
   stage: integration-test
@@ -97,6 +112,8 @@ pcentral-integration-tests:
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
     - ./ci-scripts/test/integration/run-integration-tests.sh pingcentral
+  dependencies:
+    - deploy
 
 datasync-integration-tests:
   stage: integration-test
@@ -105,6 +122,8 @@ datasync-integration-tests:
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
     - ./ci-scripts/test/integration/run-integration-tests.sh pingdatasync
+  dependencies:
+    - deploy
 
 common-integration-tests:
   stage: integration-test
@@ -113,6 +132,8 @@ common-integration-tests:
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
     - ./ci-scripts/test/integration/run-integration-tests.sh common
+  dependencies:
+    - deploy
 
 monitoring-integration-tests:
   stage: integration-test
@@ -121,6 +142,8 @@ monitoring-integration-tests:
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
     - ./ci-scripts/test/integration/run-integration-tests.sh monitoring
+  dependencies:
+    - deploy
 
 ## Chaos testing stage ##
 chaos-tests:
@@ -130,6 +153,8 @@ chaos-tests:
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
   - ./ci-scripts/test/integration/run-integration-tests.sh chaos
+  dependencies:
+    - deploy
 
 ## Cleanup stage ##
 cleanup:
@@ -139,3 +164,5 @@ cleanup:
   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.0.0
   script:
   - ./ci-scripts/cleanup/teardown.sh
+  dependencies:
+    - deploy

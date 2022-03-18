@@ -91,7 +91,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdatasync:8.2.0.6-v1.0.15
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdatasync:8.2.0.6-v1.0.16
         imagePullPolicy: IfNotPresent
         resources:
           limits:
@@ -114,6 +114,12 @@ spec:
           periodSeconds: 30
           failureThreshold: 5
           timeoutSeconds: 5
+        # Backup config/sync-state.ldif to s3 before terminating pod
+        lifecycle:
+          preStop:
+            exec:
+              command:
+                - /opt/staging/hooks/15-upload-sync-state-s3.sh
         ports:
           - name: ldap
             containerPort: 1389

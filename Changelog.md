@@ -26,10 +26,13 @@ _Changes:_
 - Use alpine docker image for enrichment-bootstrap
 - Add custom artifacts to PingDataSync to allow custom sync pipes
 - Upgrade PF to 11.0.1
+- Fix fluentd PD logs parsing configuration
+- Fix missing PD logs due to late tail-logs hook call
 
 _Changes:_
 
 - [X] BRASS-358 Update Solutions Ansible to continue on error, removed "canUseIntelligenceDataConsent": true from  risk script
+- [X] BRASS-359 Add local username attribute to Risk Adapter in PingFederate
 - [X] PDO-2092 Allow UDP ports to enable PF RADIUS functionality
 - [X] PDO-2233 Change "apiVersion" for CRD resources in ping-cloud-base
 - [X] PDO-2350 Add Metric For JVM GC CPU percent in PF
@@ -85,10 +88,14 @@ _Changes:_
 - [X] PDO-3501 Consolidate and rename PingDataSync, external PD, and P1AS PD shared variables
 - [X] PDO-3502 Update DataSync to use USER_BASE_DN variable
 - [X] PDO-3513 (BugFix) Logstash crashlooping due to updated plugin dependencies
+- [X] PDO-3518 Fix fluentd PD logs parsing configuration
 - [X] PDO-3540 Fix metadata by updating flask to v2.0.3
 - [X] PDO-3557 Update PD to 8.3.0.5 to fix JVM crashes
 - [X] PDO-3570 Add group identity 9999 for all Ping product applications and avoid escalating privileges
 - [X] PDO-3577 Disable external server configuration. Use flag IS_P1AS_TEST_MODE to enable for QA
+- [X] PDO-3594 Add a new dsconfig file "45-disable-daily-ldif-export.dsconfig" to turn off on-prem backup
+- [X] PDO-3598 Fix missing PD logs
+- [X] PDO-3606 Backup/restore PingDataSync config/sync-state.ldif file to/from s3
 
 ### 1.12.0
 
