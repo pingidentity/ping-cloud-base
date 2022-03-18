@@ -257,7 +257,7 @@ spec:
         #   runAsUser: 9031
         securityContext:
           runAsUser: 0
-        image: elastic/filebeat:8.1.0
+        image: elastic/filebeat:7.16.2
         imagePullPolicy: IfNotPresent
         args: [
           "-c", "/etc/filebeat.yml",
