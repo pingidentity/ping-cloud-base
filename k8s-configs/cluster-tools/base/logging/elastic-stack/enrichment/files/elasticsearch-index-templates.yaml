@@ -1483,3 +1483,17 @@ data:
         }
       }
     }
+
+  pa-gc-pause-time-template.json: |
+    {
+      "order": 1,
+      "index_patterns": [
+        "pa-gc-pause-time*"
+      ],
+      "settings": {
+        "number_of_shards": 1,
+        "number_of_replicas": 1,
+        "index.lifecycle.name": "ping-2-day-retention",
+        "index.lifecycle.rollover_alias": "pa-gc-pause-time"
+      }
+    }

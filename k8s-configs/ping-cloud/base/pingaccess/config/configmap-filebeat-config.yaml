@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pa-filebeat-config
+data:
+  filebeat.yml: |-
+    filebeat.inputs:
+    - type: log
+      paths:
+        - /opt/out/instance/log/jvm-garbage-collection.log
+      scan_frequency: 1s
+
+    # document_type: apache-access
+    # fields_under_root: true
+
+    output.logstash:
+      hosts: ["logstash:20518"]
+
+---

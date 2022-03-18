@@ -155,3 +155,12 @@ data:
             }
         }
     }
+
+  pa-gc-pause-time.json: |
+    {
+        "aliases": {
+            "pa-gc-pause-time": {
+                "is_write_index": true
+            }
+        }
+    }
