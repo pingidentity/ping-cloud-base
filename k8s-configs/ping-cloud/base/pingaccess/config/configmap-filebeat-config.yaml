@@ -6,11 +6,13 @@ data:
   filebeat.yml: |-
     filebeat.inputs:
     - type: log
+      enabled: true
       paths:
         - /opt/out/instance/log/jvm-garbage-collection.log
       scan_frequency: 1s
 
     output.logstash:
+      enabled: true
       hosts: ["logstash.elastic-stack-logging.svc.cluster.local:20518"]
 
 ---
