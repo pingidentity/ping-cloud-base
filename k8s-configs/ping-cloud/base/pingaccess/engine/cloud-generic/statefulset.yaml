@@ -259,13 +259,13 @@ spec:
           runAsUser: 0
         image: elastic/filebeat:7.16.2
         imagePullPolicy: IfNotPresent
-        args: [
-          "-c", "/etc/filebeat.yml",
-          "-e",
-        ]
+        # args: [
+        #   "-c", "/etc/filebeat.yml",
+        #   "-e",
+        # ]
         volumeMounts:
         - name: pa-filebeat-config
-          mountPath: /etc/filebeat.yml
+          mountPath: /usr/share/filebeat/filebeat.yml
           readOnly: true
           subPath: filebeat.yml
         resources:
