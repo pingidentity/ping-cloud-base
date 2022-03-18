@@ -253,7 +253,7 @@ spec:
         #   runAsUser: 9031
         securityContext:
           runAsUser: 0
-        image: docker.elastic.co/beats/filebeat:8.1.1
+        image: elastic/filebeat:8.1.0
         imagePullPolicy: IfNotPresent
         args: [
           "-c", "/etc/filebeat.yml",
