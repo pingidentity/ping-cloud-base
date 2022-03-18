@@ -831,19 +831,20 @@ data:
             }
 
             elasticsearch {
-                index => "pa-gc-pause-time*"
+                # index => "pa-gc-pause-time*"
+                id => "pa-gc-pause-time-out"
                 ilm_enabled => true
                 ilm_rollover_alias => "pa-gc-pause-time"
                 ilm_policy => "ping-2-day-retention"
                 hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
 
-                fields => {
-                    "timestamp" => "timestamp"
-                    "jvm_time_seconds" => "jvm_time_seconds"
-                    "gc_pause_time" => "gc_pause_time"
-                    "gc_pause_ms_unit" => "gc_pause_ms_unit"
-                    "gc_type" => "gc_type"
-                }
+                # fields => {
+                #     "timestamp" => "timestamp"
+                #     "jvm_time_seconds" => "jvm_time_seconds"
+                #     "gc_pause_time" => "gc_pause_time"
+                #     "gc_pause_ms_unit" => "gc_pause_ms_unit"
+                #     "gc_type" => "gc_type"
+                # }
             }
         }
     }

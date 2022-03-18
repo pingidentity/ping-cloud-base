@@ -10,9 +10,6 @@ data:
         - /opt/out/instance/log/jvm-garbage-collection.log
       scan_frequency: 1s
 
-    # document_type: apache-access
-    # fields_under_root: true
-
     output.logstash:
       hosts: ["logstash:20518"]
 

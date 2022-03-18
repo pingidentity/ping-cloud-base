@@ -129,7 +129,8 @@ spec:
           mountPath: /opt/shared-dir
       containers:
       - name: pingaccess
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess:6.3.3-v1.0.28
+        # image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess:6.3.3-v1.0.28
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess:6.3.3-v1.0.28-pdo-2352
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
