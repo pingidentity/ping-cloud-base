@@ -11,6 +11,6 @@ data:
       scan_frequency: 1s
 
     output.logstash:
-      hosts: ["logstash:20518"]
+      hosts: ["logstash.elastic-stack-logging.svc.cluster.local:20518"]
 
 ---
