@@ -817,11 +817,6 @@ data:
 
     filter {
         if([log_type] == "PA_GC_Log"){
-
-            # Extracting GC Pause Time data from JVM GC log
-            # Formatted log entry sample:
-            # [2022-03-17T19:31:05.086+0000][3.981s][info][gc             ] GC(2) Pause Young (Allocation Failure) 103M->14M(240M) 13.857ms
-
             grok {
                 match => {"message" => "\[%{TIMESTAMP_ISO8601:timestamp}\]\[%{NUMBER:jvm_time_seconds}s\]\[%{DATA:msg_type}\]\[%{DATA:gc_tags}\] GC\(%{NUMBER:event_count}\) Pause %{WORD:gc_type} \(%{DATA:event_cause}\) %{NUMBER:heap_before}(?<heap_before_unit>[MKG]?)\-\>%{NUMBER:heap_after}(?<heap_after_unit>[MKG]?)\(%{NUMBER:heap_total}(?<heap_total_unit>[MKG]?)\) %{NUMBER:gc_pause_time}(?<gc_pause_ms_unit>[unm]?s)"}
             }
@@ -829,37 +824,20 @@ data:
                 remove_field => "[log_type]"
                 add_field => { "log_type" => "PA_GC_Pause_Log" }
             }
+        }
+    }
 
+    output {
+        if([log_type] == "PA_GC_Pause_Log"){
             elasticsearch {
-                # index => "pa-gc-pause-time*"
                 id => "pa-gc-pause-time-out"
                 ilm_enabled => true
                 ilm_rollover_alias => "pa-gc-pause-time"
                 ilm_policy => "ping-2-day-retention"
                 hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
-
-                # fields => {
-                #     "timestamp" => "timestamp"
-                #     "jvm_time_seconds" => "jvm_time_seconds"
-                #     "gc_pause_time" => "gc_pause_time"
-                #     "gc_pause_ms_unit" => "gc_pause_ms_unit"
-                #     "gc_type" => "gc_type"
-                # }
             }
         }
     }
-
-    # output {
-    #     elasticsearch { 
-    #         id => "pa_gc_out"
-    #         index => "pa_gc"
-    #         hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
-    #         sniffing => false
-    #         # ilm_enabled => true
-    #         # ilm_rollover_alias => "logstash"
-    #         # ilm_policy => "ping-2-day-retention"
-    #     }
-    # }
 
 ---
 apiVersion: apps/v1
