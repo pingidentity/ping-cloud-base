@@ -1,0 +1,24 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: heapdump
+  namespace: ping-cloud
+  labels:
+    app: pingfederate
+data:
+  heapdump.sh: |-
+    #!/bin/sh
+    set -e
+
+    echo "Sending heap dump to S3"
+
+    java_pid=$(ps aux | grep -e [j]ava | awk '{print $1}')
+    cur_date=$(date -Iseconds)
+
+    cd /opt/shared-dir
+    jmap -dump:live,format=b,file="heapdump-${cur_date}.bin" ${java_pid}
+    tar -czf "heapdump-${cur_date}.tar.gz" "heapdump-${cur_date}.bin"
+    source "${HOOKS_DIR}/utils.lib.sh"
+    initializeSkbnConfiguration "${LOG_ARCHIVE_URL}"
+    skbnCopy /opt/shared-dir/"heapdump-${cur_date}.tar.gz" "${SKBN_CLOUD_PREFIX}/heapdump-${cur_date}.tar.gz"

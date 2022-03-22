@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: ping-cloud
+    cluster: pingfederate-cluster
+    role: pingfederate-engine
+  name: pingfederate
+  namespace: ping-cloud
+spec:
+  template:
+    spec:
+      containers:
+      - name: pingfederate
+        lifecycle:
+          preStop:
+            exec:
+              command: [
+                "/bin/sh", "/tmp/heapdump.sh"
+              ]
+        volumeMounts:
+        - name: heapdump
+          mountPath: /tmp/heapdump.sh
+          readOnly: true
+          subPath: heapdump.sh
+      volumes:
+      - name: heapdump
+        configMap:
+          name: heapdump
+
