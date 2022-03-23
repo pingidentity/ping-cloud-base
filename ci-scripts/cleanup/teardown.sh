@@ -51,6 +51,10 @@ kubectl run -n default -i "${pod_name}" --restart=Never --rm --image=arey/mysql-
       -u "${MYSQL_USER}" -p"${MYSQL_PASSWORD}" \
       -e "drop database ${MYSQL_DATABASE}"
 
-# Finally, delete the cluster-in-use-lock namespace. Do this last so that the cluster is clear for use by the next branch
-log "cluster-in-use-lock namespace synchronously deleting (will exit when done)"
-kubectl delete ns cluster-in-use-lock
+# Sometimes, the cron job on the cluster - "cleanup-nondefault-namespaces" might clean up the lock before we can. 
+# So check if it exists first.
+if kubectl get ns cluster-in-use-lock > /dev/null 2>&1; then
+  # Finally, delete the cluster-in-use-lock namespace. Do this last so that the cluster is clear for use by the next branch
+  log "cluster-in-use-lock namespace synchronously deleting (will exit when done)"
+  kubectl delete ns cluster-in-use-lock
+fi

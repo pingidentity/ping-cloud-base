@@ -1,0 +1,5 @@
+# Add python dependency requirements here
+# Example:
+# kubernetes==12.0.1
+
+
