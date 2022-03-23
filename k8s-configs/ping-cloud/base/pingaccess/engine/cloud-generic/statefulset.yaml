@@ -152,6 +152,8 @@ spec:
           mountPath: /home/ping/.ssh
         - name: shared-dir
           mountPath: /opt/shared-dir
+        - name: pingaccess-logs-dir
+          mountPath: /opt/out/instance/log
         - name: topology-descriptor
           mountPath: /opt/staging/topology/descriptor.json
           subPath: descriptor.json
@@ -268,6 +270,8 @@ spec:
           mountPath: /usr/share/filebeat/filebeat.yml
           readOnly: true
           subPath: filebeat.yml
+        - name: pingaccess-logs-dir
+          mountPath: /opt/out/instance/log
         resources:
           limits:
             memory: 200Mi
@@ -283,6 +287,8 @@ spec:
       - name: shared-dir
         emptyDir: {}
       - name: data-dir
+        emptyDir: {}
+      - name: pingaccess-logs-dir
         emptyDir: {}
       - name: pingaccess-init
         configMap:

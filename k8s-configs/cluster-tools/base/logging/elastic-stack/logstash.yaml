@@ -15,7 +15,7 @@ data:
 
     output {
         elasticsearch {
-            index => "pa-gc-pause-time-test"
+            index => "pa-gc-pause-time"
             hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
         }
     }

@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: pa-filebeat-config
+  namespace: ping-cloud-kyryloyermak
 data:
   filebeat.yml: |-
     filebeat.inputs:
@@ -13,6 +14,6 @@ data:
 
     output.logstash:
       enabled: true
-      hosts: ["logstash.elastic-stack-logging.svc.cluster.local:20518"]
+      hosts: ["logstash-elastic.elastic-stack-logging.svc.cluster.local:20518"]
 
 ---
