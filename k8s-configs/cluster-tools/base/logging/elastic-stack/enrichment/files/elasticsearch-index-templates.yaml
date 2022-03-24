@@ -1495,5 +1495,376 @@ data:
         "number_of_replicas": 1,
         "index.lifecycle.name": "ping-2-day-retention",
         "index.lifecycle.rollover_alias": "pa-gc-pause-time"
+      },
+      "mappings": {
+        "_doc": {
+          "dynamic_templates": [
+            {
+              "message_field": {
+                "path_match": "message",
+                "match_mapping_type": "string",
+                "mapping": {
+                  "norms": false,
+                  "type": "text"
+                }
+              }
+            },
+            {
+              "string_fields": {
+                "match": "*",
+                "match_mapping_type": "string",
+                "mapping": {
+                  "fields": {
+                    "keyword": {
+                      "ignore_above": 256,
+                      "type": "keyword"
+                    }
+                  },
+                  "norms": false,
+                  "type": "text"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "@timestamp": {
+              "type": "date"
+            },
+            "@version": {
+              "type": "keyword"
+            },
+            "agent": {
+              "properties": {
+                "ephemeral_id": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword",
+                      "ignore_above": 256
+                    }
+                  },
+                  "norms": false
+                },
+                "hostname": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword",
+                      "ignore_above": 256
+                    }
+                  },
+                  "norms": false
+                },
+                "id": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword",
+                      "ignore_above": 256
+                    }
+                  },
+                  "norms": false
+                },
+                "name": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword",
+                      "ignore_above": 256
+                    }
+                  },
+                  "norms": false
+                },
+                "type": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword",
+                      "ignore_above": 256
+                    }
+                  },
+                  "norms": false
+                },
+                "version": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword",
+                      "ignore_above": 256
+                    }
+                  },
+                  "norms": false
+                }
+              }
+            },
+            "ecs": {
+              "properties": {
+                "version": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword",
+                      "ignore_above": 256
+                    }
+                  },
+                  "norms": false
+                }
+              }
+            },
+            "event_cause": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              },
+              "norms": false
+            },
+            "event_count": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              },
+              "norms": false
+            },
+            "gc_log_type": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              },
+              "norms": false
+            },
+            "gc_pause_ms": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              },
+              "norms": false
+            },
+            "gc_pause_ms_unit": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              },
+              "norms": false
+            },
+            "gc_pause_time": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              },
+              "norms": false
+            },
+            "gc_tags": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              },
+              "norms": false
+            },
+            "gc_type": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              },
+              "norms": false
+            },
+            "geoip": {
+              "dynamic": "true",
+              "properties": {
+                "ip": {
+                  "type": "ip"
+                },
+                "latitude": {
+                  "type": "half_float"
+                },
+                "location": {
+                  "type": "geo_point"
+                },
+                "longitude": {
+                  "type": "half_float"
+                }
+              }
+            },
+            "heap_after": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              },
+              "norms": false
+            },
+            "heap_after_unit": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              },
+              "norms": false
+            },
+            "heap_before": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              },
+              "norms": false
+            },
+            "heap_before_unit": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              },
+              "norms": false
+            },
+            "heap_total": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              },
+              "norms": false
+            },
+            "heap_total_unit": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              },
+              "norms": false
+            },
+            "host": {
+              "properties": {
+                "name": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword",
+                      "ignore_above": 256
+                    }
+                  },
+                  "norms": false
+                }
+              }
+            },
+            "input": {
+              "properties": {
+                "type": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "type": "keyword",
+                      "ignore_above": 256
+                    }
+                  },
+                  "norms": false
+                }
+              }
+            },
+            "jvm_time_seconds": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              },
+              "norms": false
+            },
+            "log": {
+              "properties": {
+                "file": {
+                  "properties": {
+                    "path": {
+                      "type": "text",
+                      "fields": {
+                        "keyword": {
+                          "type": "keyword",
+                          "ignore_above": 256
+                        }
+                      },
+                      "norms": false
+                    }
+                  }
+                },
+                "offset": {
+                  "type": "long"
+                }
+              }
+            },
+            "log_type": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              },
+              "norms": false
+            },
+            "message": {
+              "type": "text",
+              "norms": false
+            },
+            "msg_type": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              },
+              "norms": false
+            },
+            "tags": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              },
+              "norms": false
+            },
+            "timestamp": {
+              "type": "date"
+            }
+          }
+        }
       }
     }
