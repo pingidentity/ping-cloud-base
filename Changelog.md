@@ -21,6 +21,8 @@ _Changes:_
 
 - [X] BRASS-358 Update Solutions Ansible to continue on error, removed "canUseIntelligenceDataConsent": true from  risk script
 - [X] BRASS-359 Add local username attribute to Risk Adapter in PingFederate
+- [X] BRASS-367  Pre-configured IdP/SP connections do not match up; don't work OOTB
+- [X] BRASS-370  Pre-configured PF Policy incorrect Population ID mapping
 - [X] PDO-2092 Allow UDP ports to enable PF RADIUS functionality
 - [X] PDO-2233 Change "apiVersion" for CRD resources in ping-cloud-base
 - [X] PDO-2350 Add Metric For JVM GC CPU percent in PF
