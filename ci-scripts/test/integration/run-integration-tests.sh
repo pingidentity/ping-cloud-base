@@ -20,6 +20,9 @@ prepareShunit
 # This variable will need to change when the shunit version changes
 export SHUNIT_PATH="${PROJECT_DIR}/ci-scripts/test/shunit/shunit2-2.1.x/shunit2"
 
+# set PYTHONPATH
+export PYTHONPATH="${PROJECT_DIR}/ci-scripts/test/python-utils"
+
 execute_test_scripts() {
 
   local test_directory="${1}"
@@ -36,8 +39,26 @@ execute_test_scripts() {
 
     # Calculate and track the combined results of all tests
     test_file_failures=$((${test_file_failures} + ${test_result}))
-
   done
+
+  python_files=(`find ${1} -maxdepth 1 -name "*.py"`)
+  if [ ${#python_files[@]} -gt 0 ]; then
+    log "Installing python requirements"
+    REQUIREMENTS="${PROJECT_DIR}/ci-scripts/test/python-utils/requirements.txt"
+    pip3.9 install -r ${REQUIREMENTS}
+    log "Running python tests from: ${test_directory}"
+    START=$(pwd)
+    cd ${test_directory}
+    python3 -m unittest
+
+    test_result=$?
+    cd "$START"
+    log "Test result: ${test_result}"
+    echo
+
+    # Calculate and track the combined results of all tests
+    test_file_failures=$((${test_file_failures} + ${test_result}))
+  fi
 
   return ${test_file_failures}
 }
@@ -45,16 +66,17 @@ execute_test_scripts() {
 log "Running prerequisite scripts..."
 
 # Pass in a regex to selectively execute
-# the tests in the prerequisites subdirectory
+# the shunit tests in the prerequisites subdirectory
 # and skip other support scripts, etc.
 # The prerequisites scripts/tests are meant to help
 # with issues like DNS propagation delay.
 # These tests must succeed before the other
 # integration tests can run.
 
-# To be found by the regex, scripts must be:
+# To be found by the regex, sh scripts must be:
 # - under the ci-script-tests, common or ping-prefixed directories (no matter how deep)
 # - must be prefixed with at least a 2-digit number to be found and must end with .sh
+# All python test scripts in the directory will be executed
 execute_test_scripts "${SCRIPT_HOME}/${TEST_DIR}/prerequisites" '(common|chaos|ping[a-zA-Z-]*|monitoring)\/prerequisites\/[0-9][0-9]+.*\.sh'
 exit_code=$?
 
@@ -87,6 +109,7 @@ log "Running test scripts..."
 # To be found by the regex, scripts must be:
 # - under the ci-script-tests, common or ping-prefixed directories (no matter how deep)
 # - must be prefixed with at least a 2-digit number to be found and must end with .sh
+# All python test scripts in the directory will be executed
 execute_test_scripts "${SCRIPT_HOME}/${TEST_DIR}" '(common|chaos|ping[a-zA-Z-]*|monitoring)\/[0-9][0-9]+.*\.sh'
 exit_code=$?
 

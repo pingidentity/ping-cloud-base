@@ -1,13 +1,12 @@
 # Unit and Integration Test Readme
 
-## Moving to shunit2
+## shunit2
 
 The shunit2 framework provides several advantages to help with developing tests:
 * Junit-style assert statements
 * Mocking capabilities
 * Standardized test output
 
-In our environment, the goal is to use shunit2 for both unit and integration tests.
 In the case of unit tests, the mocking capabilities allow you to test different branches of
 the logic in shell script functions by controlling the return values from networking calls, etc.
 For integration tests, shunit provides junit assertions and standardized test output.
@@ -55,6 +54,34 @@ testMyTest() {
 how to use `setUp()` `oneTimeSetUp()` `oneTimeTearDown()`, etc
 
 
+## How to write a python test
+1\. Add your test file in the appropriate integration test directory. The file name must begin with "test_" and end with the ".py" file extension
+
+For example, `integration/pingcloud-services/test_password.py`
+
+2\. Format your test as follows:
+
+```
+#!/usr/bin/env python3
+import unittest
+
+
+class TestPython(unittest.TestCase):
+    def test_python_success(self):
+        self.assertTrue(True)
+
+    def test_python_fail(self):
+        self.assertTrue(False)
+
+
+if __name__ == "__main__":
+    unittest.main()
+``` 
+
+3\. Add any shared or common python code to the `ci-scripts/test/python-utils` directory
+
+4\. Add any python dependency requirements needed to the `requirements.txt` file in the `ci-scripts/test/python-utils` directory
+
 ## Guidelines for writing a good test
 
 When writing a test, keep in mind that you will not probably be the one trying to figure out
@@ -65,15 +92,15 @@ out what went wrong.
  name will be the first clue someone has to figure out the intent.  Refactor the name if the context 
  of the test changes.
 
-2\. Do not use `set -x` debugging - Shell debugging is very noisy in the logs and it often 
+2\. Do not use `set -x` debugging for the shunit tests - Shell debugging is very noisy in the logs and it often 
  cascades into the shunit test infrastructure code itself (yielding very confusing messages).  Please 
  rely on shunit assert statements instead (see next item).
 
-3\. Use shunit assert statements to verify each step in the test - Test assert statements are incredibly 
+3\. Use assert statements to verify each step in the test - Test assert statements are incredibly 
 helpful for a few reasons:
 
   a) When used with a proper message, assert statements are quiet.  They only output when there's 
-    a real issue.  This means you don't have to rely on noisy `echo` debug statements to trace what went 
+    a real issue.  This means you don't have to rely on noisy `echo` or `print` debug statements to trace what went 
     wrong in the code.
   
   b) They communicate the intended state of the test at the point where they're executed. 
@@ -100,3 +127,7 @@ https://github.com/kward/shunit2
 https://github.com/kward/shunit2#asserts
 
 https://github.com/kward/shunit2/wiki/Cookbook
+
+https://docs.python.org/3/library/unittest.html
+
+https://docs.python.org/3/library/unittest.mock.html
