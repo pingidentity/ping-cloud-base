@@ -523,11 +523,6 @@ data:
         </rule>
         <rule>
           key log
-          pattern /^\/opt\/out\/instance\/logs\/sync/
-          tag temp.sync_logs
-        </rule>
-        <rule>
-          key log
           pattern /^\/opt\/out\/instance\/logs\/sync-failed-ops/
           tag temp.sync_failed_ops_logs
         </rule>
