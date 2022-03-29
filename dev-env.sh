@@ -135,7 +135,7 @@
 #                           | URL. For AWS S3 buckets, it must be an S3 URL,     |
 #                           | e.g. s3://backups.                                 |
 #                           |                                                    |
-# PLATFORM_EVENT_QUEUE_NAME | The name of the queue that may be used to notify   | ${USER}_platform_event_queue.fifo
+# PLATFORM_EVENT_QUEUE_NAME | The name of the queue that may be used to notify   | platform_event_queue.fifo
 #                           | PingCloud applications of platform events. This    |
 #                           | is currently only used if the orchestrator for     |
 #                           | PingCloud environments is MyPing.                  |
@@ -266,8 +266,8 @@ export BELUGA_ENV_NAME="${ENVIRONMENT#-}"
 
 export IS_MULTI_CLUSTER="${IS_MULTI_CLUSTER}"
 
-export PLATFORM_EVENT_QUEUE_NAME="${PLATFORM_EVENT_QUEUE_NAME:-${USER}_platform_event_queue.fifo}"
-export ORCH_API_SSM_PATH_PREFIX="${ORCH_API_SSM_PATH_PREFIX:-/${USER}/pcpt/orch-api}"
+export PLATFORM_EVENT_QUEUE_NAME="${PLATFORM_EVENT_QUEUE_NAME:-platform_event_queue.fifo}"
+export ORCH_API_SSM_PATH_PREFIX="${ORCH_API_SSM_PATH_PREFIX:-/pcpt/orch-api}"
 
 export REGION="${REGION:-us-east-2}"
 export REGION_NICK_NAME="${REGION_NICK_NAME:-${REGION}}"
