@@ -168,7 +168,7 @@ spec:
         - name: PC_ADMIN_USER_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: pingcentral-passwords
+              name: pingcommon-passwords
               key: PC_ADMIN_USER_PASSWORD
         - name: PA_ADMIN_USER_USERNAME
           valueFrom:
@@ -180,11 +180,6 @@ spec:
             secretKeyRef:
               name: pingaccess-passwords
               key: PA_ADMIN_USER_PASSWORD
-        - name: PC_ADMIN_USER_USERNAME
-          valueFrom:
-            configMapKeyRef:
-              name: pingcentral-environment-variables
-              key: PC_ADMIN_USER_USERNAME
         - name: DA_OAUTH_TOKEN_VALIDATOR_SECRET
           valueFrom:
             secretKeyRef:

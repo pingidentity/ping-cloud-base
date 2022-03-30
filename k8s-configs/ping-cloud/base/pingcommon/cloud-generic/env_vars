@@ -6,6 +6,9 @@ PINGFEDERATE_ENGINE_PORT=9031
 TOPOLOGY_DESCRIPTOR_JSON=/opt/staging/topology/descriptor.json
 TOPOLOGY_DESCRIPTOR_PROFILES_JSON=/opt/staging/topology/descriptor-profiles.json
 
+# PingCentral admin username to the application
+PC_ADMIN_USER_USERNAME=administrator
+
 # PD USER_BASE_DN
 USER_BASE_DN=dc=example,dc=com
 PD_PCV_SEARCH_FILTER=(&(objectClass=person)(|(mail=${username})(cn=${username})(uid=${username})))
