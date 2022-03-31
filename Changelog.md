@@ -16,6 +16,7 @@
 - Upgrade PF to 11.0.1
 - Fix fluentd PD logs parsing configuration
 - Fix missing PD logs due to late tail-logs hook call
+- Automate usage of AWS Secrets Manager 
 
 _Changes:_
 
@@ -86,6 +87,7 @@ _Changes:_
 - [X] PDO-3594 Add a new dsconfig file "45-disable-daily-ldif-export.dsconfig" to turn off on-prem backup
 - [X] PDO-3598 Fix missing PD logs
 - [X] PDO-3606 Backup/restore PingDataSync config/sync-state.ldif file to/from s3
+- [X] PDO-3608 Add Secrets Manager objects to Discovery Service
 
 ### 1.12.0
 
