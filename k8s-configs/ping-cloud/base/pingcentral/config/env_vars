@@ -28,8 +28,8 @@ API_TIMEOUT_WAIT=5
 
 MYSQL_SERVICE_HOST=beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
 MYSQL_SERVICE_PORT=3306
-MYSQL_USER=ssm://pcpt/ping-central/rds/username
-MYSQL_PASSWORD=ssm://pcpt/ping-central/rds/password
+MYSQL_USER=ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#username
+MYSQL_PASSWORD=ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#password
 MYSQL_DATABASE=pingcentral
 MYSQL_USE_SSL=true
 
