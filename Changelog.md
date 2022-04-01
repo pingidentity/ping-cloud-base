@@ -13,7 +13,7 @@
 - Update all pingcloud-apps images to support ssh-rsa HostKeyAlgorithm
 - Use alpine docker image for enrichment-bootstrap
 - Add custom artifacts to PingDataSync to allow custom sync pipes
-- Upgrade PF to 11.0.1
+- Upgrade PF to 11.0.2
 - Fix fluentd PD logs parsing configuration
 - Fix missing PD logs due to late tail-logs hook call
 - Automate usage of AWS Secrets Manager 
@@ -86,6 +86,7 @@ _Changes:_
 - [X] PDO-3577 Disable external server configuration. Use flag IS_P1AS_TEST_MODE to enable for QA
 - [X] PDO-3594 Add a new dsconfig file "45-disable-daily-ldif-export.dsconfig" to turn off on-prem backup
 - [X] PDO-3598 Fix missing PD logs
+- [X] PDO-3601 Upgrade PF to 11.0.2 to fix OOM issue
 - [X] PDO-3606 Backup/restore PingDataSync config/sync-state.ldif file to/from s3
 - [X] PDO-3608 Add Secrets Manager objects to Discovery Service
 
