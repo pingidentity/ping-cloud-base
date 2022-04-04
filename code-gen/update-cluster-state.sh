@@ -991,6 +991,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
         # is automatically used.
 
         # Last but not least, set the PING_IDENTITY_DEVOPS_USER/KEY to empty so they are fetched from SSM going forward.
+        # Also set the MYSQL_USER/PASSWORD to empty so they are fetched from AWS Secrets Manager going forward.
         set -x
         QUIET=true \
             TARGET_DIR="${TARGET_DIR}" \
@@ -1000,6 +1001,8 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
             ENVIRONMENTS="${NEW_BRANCH}" \
             PING_IDENTITY_DEVOPS_USER='' \
             PING_IDENTITY_DEVOPS_KEY='' \
+            MYSQL_USER='' \
+            MYSQL_PASSWORD='' \
             SSH_ID_PUB_FILE="${ID_RSA_FILE}" \
             SSH_ID_KEY_FILE="${ID_RSA_FILE}" \
             "${NEW_PING_CLOUD_BASE_REPO}/${CODE_GEN_DIR}/generate-cluster-state.sh"
