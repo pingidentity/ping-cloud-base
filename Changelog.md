@@ -11,6 +11,7 @@ _Changes:_
 - [X] PDO-2827 Configure PingFederate and PingAccess environments within PingCentral
 - [X] PDO-3433 Create PingDirectory's Password Credential Validator using PingFederate Admin API
 - [X] PDO-3446 Upgraded ArgoCD to v2.3.1
+- [X] PDO-3548 Set manage-profile tempProfileDirectory argument to the persistent volume /opt/out directory
 - [X] PDO-3571 Added non-admin ArgoCD user with access to restart StatefulSet pods
 
 ### 1.13.0
@@ -26,14 +27,19 @@ _Changes:_
 - Update all pingcloud-apps images to support ssh-rsa HostKeyAlgorithm
 - Use alpine docker image for enrichment-bootstrap
 - Add custom artifacts to PingDataSync to allow custom sync pipes
-- Upgrade PF to 11.0.1
+- Upgrade PF to 11.0.2
 - Fix fluentd PD logs parsing configuration
 - Fix missing PD logs due to late tail-logs hook call
+- Automate usage of AWS Secrets Manager
+- Set min and max CPU properties within run.properties for engine and admin
+- Add jetty-runtime.xml to profile-repo
 
 _Changes:_
 
 - [X] BRASS-358 Update Solutions Ansible to continue on error, removed "canUseIntelligenceDataConsent": true from  risk script
 - [X] BRASS-359 Add local username attribute to Risk Adapter in PingFederate
+- [X] BRASS-367  Pre-configured IdP/SP connections do not match up; don't work OOTB
+- [X] BRASS-370  Pre-configured PF Policy incorrect Population ID mapping
 - [X] PDO-2092 Allow UDP ports to enable PF RADIUS functionality
 - [X] PDO-2233 Change "apiVersion" for CRD resources in ping-cloud-base
 - [X] PDO-2350 Add Metric For JVM GC CPU percent in PF
@@ -96,7 +102,10 @@ _Changes:_
 - [X] PDO-3577 Disable external server configuration. Use flag IS_P1AS_TEST_MODE to enable for QA
 - [X] PDO-3594 Add a new dsconfig file "45-disable-daily-ldif-export.dsconfig" to turn off on-prem backup
 - [X] PDO-3598 Fix missing PD logs
+- [X] PDO-3601 Upgrade PF to 11.0.2 to fix OOM issue
 - [X] PDO-3606 Backup/restore PingDataSync config/sync-state.ldif file to/from s3
+- [X] PDO-3608 Add Secrets Manager objects to Discovery Service
+- [X] PDO-3685 Set min and max CPU properties within run.properties for engine and admin
 
 ### 1.12.0
 
