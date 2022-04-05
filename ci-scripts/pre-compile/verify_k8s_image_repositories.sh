@@ -10,7 +10,6 @@ PING_CLOUD_BASE_DIR="${PROJECT_DIR}/k8s-configs"
 
 ########################################################################################################################
 # Performs a 'grep' on each yaml file within the given path.
-# Excludes files 'kustomization.yaml' ,'secret-license.yaml', 'secret-passwords.yaml'
 # Arguments
 #   $1 -> base directory path.
 #
@@ -21,7 +20,7 @@ verify_k8s_image_repositories() {
 
   local path="${1}"
 
-  search_dev_image=$(find . -type f -name "*.yaml" -exec grep 'public.ecr.aws/r2h3l6e4/.' {} \; | grep "/dev/")
+  search_dev_image=$(find "${path}" -type f -name "*.yaml" -exec grep 'public.ecr.aws/r2h3l6e4/.' {} \; | grep "/dev/")
   if test -z "$search_dev_image"; then
     echo "$search_dev_image"
     return 0
