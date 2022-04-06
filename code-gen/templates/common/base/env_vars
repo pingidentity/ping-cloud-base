@@ -144,14 +144,6 @@ PA_MIN_YGEN=${PA_MIN_YGEN}
 PA_MAX_YGEN=${PA_MAX_YGEN}
 PA_GCOPTION=${PA_GCOPTION}
 
-###################################
-# PingCentral environment variables
-###################################
-MYSQL_SERVICE_HOST=${MYSQL_SERVICE_HOST}
-MYSQL_USER=${MYSQL_USER}
-MYSQL_PASSWORD=${MYSQL_PASSWORD}
-MYSQL_DATABASE=${MYSQL_DATABASE}
-
 ############################################################
 # DevOps License environment variables
 ############################################################

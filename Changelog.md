@@ -19,6 +19,7 @@
 - Automate usage of AWS Secrets Manager
 - Set min and max CPU properties within run.properties for engine and admin
 - Add jetty-runtime.xml to profile-repo
+- Move PingCentral AWS RDS MYSQL vars from base/env_vars to region/pingcentral/env_vars
 
 _Changes:_
 
@@ -92,6 +93,7 @@ _Changes:_
 - [X] PDO-3606 Backup/restore PingDataSync config/sync-state.ldif file to/from s3
 - [X] PDO-3608 Add Secrets Manager objects to Discovery Service
 - [X] PDO-3685 Set min and max CPU properties within run.properties for engine and admin
+- [X] PDO-3731 Move PingCentral AWS RDS MYSQL vars from base/env_vars to region/pingcentral/env_vars
 
 ### 1.12.0
 
