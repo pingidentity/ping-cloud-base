@@ -16,6 +16,7 @@
 - Upgrade PF to 11.0.2
 - Fix fluentd PD logs parsing configuration
 - Fix missing PD logs due to late tail-logs hook call
+- Use self-hosted newrelic docker images
 - Automate usage of AWS Secrets Manager
 - Set min and max CPU properties within run.properties for engine and admin
 - Add jetty-runtime.xml to profile-repo
@@ -92,6 +93,7 @@ _Changes:_
 - [X] PDO-3601 Upgrade PF to 11.0.2 to fix OOM issue
 - [X] PDO-3606 Backup/restore PingDataSync config/sync-state.ldif file to/from s3
 - [X] PDO-3608 Add Secrets Manager objects to Discovery Service
+- [X] PDO-3643 NewRelic infrastructure pods pulling from docker instead of ecr
 - [X] PDO-3685 Set min and max CPU properties within run.properties for engine and admin
 - [X] PDO-3731 Move PingCentral AWS RDS MYSQL vars from base/env_vars to region/pingcentral/env_vars
 

@@ -47,7 +47,7 @@ spec:
               value: "newrelic-license-key"
       containers:
         - name: newrelic-infrastructure
-          image: "newrelic/infrastructure-k8s:2.8.1"
+          image: public.ecr.aws/r2h3l6e4/newrelic/infrastructure-k8s:2.8.1
           imagePullPolicy: "IfNotPresent"
           securityContext:
             privileged: true
@@ -166,7 +166,7 @@ spec:
               value: "newrelic-license-key"
       containers:
         - name: newrelic-logging
-          image: "newrelic/newrelic-fluentbit-output:1.10.0"
+          image: public.ecr.aws/r2h3l6e4/newrelic/newrelic-fluentbit-output:1.10.0
           imagePullPolicy: "IfNotPresent"
           env:
             - name: ENDPOINT
