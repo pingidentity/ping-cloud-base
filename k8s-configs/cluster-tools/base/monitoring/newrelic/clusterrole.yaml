@@ -244,35 +244,6 @@ rules:
     verbs: ["get"]
 
 ---
-# Source: nri-bundle/charts/newrelic-logging/templates/clusterrole.yaml
-
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  labels:     
-    app: newrelic-logging
-    chart: newrelic-logging-1.10.0
-    release: nri-bundle
-    app.kubernetes.io/name: newrelic-logging
-  name: nri-bundle-newrelic-logging
-rules:
-  - apiGroups: [""]
-    resources:
-    - secrets
-    verbs: ["get"]
-
-  - apiGroups: [""]
-    resources:
-      - namespaces
-      - pods
-    verbs: ["get", "list", "watch"]
-
-  - apiGroups: ["batch"]
-    resources:
-    - jobs
-    verbs: ["get", "list", "watch"]
-
----
 # Source: nri-bundle/charts/nri-prometheus/templates/clusterrole.yaml
 
 apiVersion: rbac.authorization.k8s.io/v1

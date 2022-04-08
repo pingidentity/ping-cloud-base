@@ -21,6 +21,7 @@
 - Set min and max CPU properties within run.properties for engine and admin
 - Add jetty-runtime.xml to profile-repo
 - Move PingCentral AWS RDS MYSQL vars from base/env_vars to region/pingcentral/env_vars
+- Turned off pod logs from going into NewRelic
 
 _Changes:_
 
@@ -96,6 +97,7 @@ _Changes:_
 - [X] PDO-3643 NewRelic infrastructure pods pulling from docker instead of ecr
 - [X] PDO-3685 Set min and max CPU properties within run.properties for engine and admin
 - [X] PDO-3731 Move PingCentral AWS RDS MYSQL vars from base/env_vars to region/pingcentral/env_vars
+- [X] PDO-3764 Turn off pod logs from going into NewRelic
 
 ### 1.12.0
 
