@@ -12,7 +12,7 @@ images:
 generatorOptions:
   disableNameSuffixHash: true
 
-patchesJson6902:
+patches:
 
 ### pingdatasync Last Update Config Map ###
 - target:
@@ -39,3 +39,24 @@ patchesJson6902:
       path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
       value: pingdatasync-admin.${DNS_ZONE}
 
+### imagePullPolicy patches ###
+
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: pingdatasync
+  patch: |
+    - op: replace
+      path: /spec/template/spec/containers/0/imagePullPolicy
+      value: ${IMAGE_PULL_POLICY}
+
+- target:
+    group: batch
+    version: v1
+    kind: Job
+    name: pingdatasync-backup
+  patch: |
+    - op: replace
+      path: /spec/template/spec/containers/0/imagePullPolicy
+      value: ${IMAGE_PULL_POLICY}

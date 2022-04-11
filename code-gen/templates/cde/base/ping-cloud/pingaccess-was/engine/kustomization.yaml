@@ -9,7 +9,7 @@ images:
 - name: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess-was
   newTag: ${PINGACCESS_WAS_IMAGE_TAG}
 
-patchesJson6902:
+patches:
 
 ### PingAccess WAS Engine Last Update Config Map ###
 - target:
@@ -88,3 +88,25 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/6/host
       value: pingcentral-admin.${DNS_ZONE}
+
+### imagePullPolicy patches ###
+
+- target:
+    group: apps
+    version: v1
+    kind: StatefulSet
+    name: pingaccess-was
+  patch: |
+    - op: replace
+      path: /spec/template/spec/containers/0/imagePullPolicy
+      value: ${IMAGE_PULL_POLICY}
+
+- target:
+    group: batch
+    version: v1beta1
+    kind: CronJob
+    name: pingaccess-was-periodic-csd-upload
+  patch: |
+    - op: replace
+      path: /spec/jobTemplate/spec/template/spec/containers/0/imagePullPolicy
+      value: ${IMAGE_PULL_POLICY}

@@ -1,0 +1,19 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+- ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingcommon/base?ref=${K8S_GIT_BRANCH}
+
+patches:
+
+### imagePullPolicy patches ###
+
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: pingcloud-metadata
+  patch: |
+    - op: replace
+      path: /spec/template/spec/containers/0/imagePullPolicy
+      value: ${IMAGE_PULL_POLICY}

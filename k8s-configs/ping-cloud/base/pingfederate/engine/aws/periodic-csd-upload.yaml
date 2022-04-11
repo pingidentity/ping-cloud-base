@@ -15,7 +15,7 @@ spec:
           containers:
           - name: pingfederate-periodic-csd-upload
             image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:11.0.1-v1.0.35
-            imagePullPolicy: IfNotPresent
+            imagePullPolicy: Always
             securityContext:
               runAsGroup: 9999
               runAsNonRoot: true

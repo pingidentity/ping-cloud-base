@@ -9,7 +9,7 @@ images:
 - name: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingfederate
   newTag: ${PINGFEDERATE_IMAGE_TAG}
 
-patchesJson6902:
+patches:
 
 ### PingFederate Engine Last Update Config Map ###
 - target:
@@ -67,3 +67,28 @@ patchesJson6902:
     - op: replace
       path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
       value: pingfederate-radius.${DNS_ZONE}
+
+### imagePullPolicy patches ###
+
+- target:
+    group: apps
+    version: v1
+    kind: StatefulSet
+    name: pingfederate
+  patch: |
+    - op: replace
+      path: /spec/template/spec/initContainers/2/imagePullPolicy
+      value: ${IMAGE_PULL_POLICY}
+    - op: replace
+      path: /spec/template/spec/containers/0/imagePullPolicy
+      value: ${IMAGE_PULL_POLICY}
+
+- target:
+    group: batch
+    version: v1beta1
+    kind: CronJob
+    name: pingfederate-periodic-csd-upload
+  patch: |
+    - op: replace
+      path: /spec/jobTemplate/spec/template/spec/containers/0/imagePullPolicy
+      value: ${IMAGE_PULL_POLICY}

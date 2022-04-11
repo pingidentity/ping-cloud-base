@@ -13,3 +13,47 @@ images:
 
 - name: ${ECR_REGISTRY_NAME}/pingcloud-solutions/ansible-beluga
   newTag: ${ANSIBLE_BELUGA_IMAGE_TAG}
+
+patches:
+
+### imagePullPolicy patches ###
+
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: p14c-bootstrap
+  patch: |
+    - op: replace
+      path: /spec/template/spec/containers/0/imagePullPolicy
+      value: ${IMAGE_PULL_POLICY}
+
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: p14c-bom-service
+  patch: |
+    - op: replace
+      path: /spec/template/spec/containers/0/imagePullPolicy
+      value: ${IMAGE_PULL_POLICY}
+
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: p14c-oauth-service
+  patch: |
+    - op: replace
+      path: /spec/template/spec/containers/0/imagePullPolicy
+      value: ${IMAGE_PULL_POLICY}
+
+- target:
+    group: batch
+    version: v1
+    kind: Job
+    name: pingone-configurator
+  patch: |
+    - op: replace
+      path: /spec/template/spec/containers/0/imagePullPolicy
+      value: ${IMAGE_PULL_POLICY}
