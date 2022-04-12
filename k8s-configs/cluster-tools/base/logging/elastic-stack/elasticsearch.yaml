@@ -247,6 +247,7 @@ metadata:
     app: elasticsearch
 provisioner: kubernetes.io/aws-ebs
 parameters:
+  encrypted: "true"
   type: io1
   fsType: ext4
   iopsPerGB: "50"
@@ -264,6 +265,7 @@ metadata:
 provisioner: kubernetes.io/aws-ebs
 volumeBindingMode: WaitForFirstConsumer
 parameters:
+  encrypted: "true"
   type: gp2
   fsType: ext4
 mountOptions:
