@@ -379,7 +379,6 @@ spec:
             requests:
               cpu: 100m
               memory: 150M
-
       volumes:
         - name: dev
           hostPath:

@@ -271,14 +271,3 @@ patchesJson6902:
     - op: replace
       path: /spec/template/metadata/annotations/CLUSTER_NAME
       value: ${NEW_RELIC_ENVIRONMENT_NAME}
-
-- target:
-    group: apps
-    version: v1
-    kind: DaemonSet
-    name: nri-bundle-newrelic-logging
-    namespace: newrelic
-  patch: |-
-    - op: replace
-      path: /spec/template/metadata/annotations/CLUSTER_NAME
-      value: ${NEW_RELIC_ENVIRONMENT_NAME}

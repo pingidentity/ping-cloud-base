@@ -23,6 +23,7 @@
 - Added Open Token Adapter Integration Kit to server profile for PingFederate SSO
 - Patched default PF agentless adapter IK
 - Upgraded PingFederate to v10.3.5 to resolve security vulnerability SECADV029 and SECBL021
+- Turned off pod logs from going into NewRelic
 
 _Changes:_
 
@@ -68,6 +69,7 @@ _Changes:_
 - [X] PDO-3393 Default Agentless adapter kit deployed has known vulnerabilities
 - [X] PDO-3401 Upgrade PingFederate to v10.3.5 to resolve security vulnerability SECADV029 and SECBL021
 - [X] PDO-3513 (BugFix) Logstash crashlooping due to updated plugin dependencies
+- [X] PDO-3764 Turn off pod logs from going into NewRelic
 
 ### 1.11.0
 
