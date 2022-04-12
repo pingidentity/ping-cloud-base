@@ -14,6 +14,7 @@ _Changes:_
 - [X] PDO-3446 Upgraded ArgoCD to v2.3.1
 - [X] PDO-3548 Set manage-profile tempProfileDirectory argument to the persistent volume /opt/out directory
 - [X] PDO-3571 Added non-admin ArgoCD user with access to restart StatefulSet pods
+- [X] PDO-3773 Encrypt K8s StorageClass (AWS EBS volumes)
 
 ### 1.13.0
 
