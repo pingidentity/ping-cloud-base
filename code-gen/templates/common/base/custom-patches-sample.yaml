@@ -122,7 +122,7 @@ spec:
     spec:
       accessModes:
       - ReadWriteOnce
-      storageClassName: pingdirectory-gp2
+      storageClassName: pingdirectory-enc-gp2
       resources:
         requests:
           storage: 40Gi
