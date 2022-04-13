@@ -147,7 +147,7 @@ spec:
             name: pingfederate-environment-variables
       containers:
       - name: pingfederate
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingfederate:11.0.2-v1.0.40-pdo-3434
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingfederate:11.0.2-v1.0.40-pdo-3434-new
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
