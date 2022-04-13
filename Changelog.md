@@ -98,6 +98,7 @@ _Changes:_
 - [X] PDO-3685 Set min and max CPU properties within run.properties for engine and admin
 - [X] PDO-3731 Move PingCentral AWS RDS MYSQL vars from base/env_vars to region/pingcentral/env_vars
 - [X] PDO-3764 Turn off pod logs from going into NewRelic
+- [X] PDO-3781 Encrypt K8s StorageClass
 
 ### 1.12.0
 
