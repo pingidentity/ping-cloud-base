@@ -27,7 +27,17 @@ replaceAndCommit() {
   REF_TYPE=${3}
 
   echo "Changing ${SOURCE_REF} -> ${TARGET_REF} in expected files"
-  git grep -l "^SERVER_PROFILE_BRANCH=${SOURCE_REF}" | xargs sed -i.bak "s/^\(SERVER_PROFILE_BRANCH=\)${SOURCE_REF}$/\1${TARGET_REF}/g"
+  # git grep -l "^SERVER_PROFILE_BRANCH=${SOURCE_REF}" | xargs sed -i.bak "s/^\(SERVER_PROFILE_BRANCH=\)${SOURCE_REF}$/\1${TARGET_REF}/g"
+
+  #update base env vars
+  git grep -l "^PINGACCESS_IMAGE_TAG=${SOURCE_REF}" | xargs sed -i.bak "s/^\(PINGACCESS_IMAGE_TAG=\)${SOURCE_REF}$/\1${TARGET_REF}/g"
+  git grep -l "^PINGACCESS_WAS_IMAGE_TAG=${SOURCE_REF}" | xargs sed -i.bak "s/^\(PINGACCESS_WAS_IMAGE_TAG=\)${SOURCE_REF}$/\1${TARGET_REF}/g" 
+  git grep -l "^PINGFEDERATE_IMAGE_TAG=${SOURCE_REF}" | xargs sed -i.bak "s/^\(PINGFEDERATE_IMAGE_TAG=\)${SOURCE_REF}$/\1${TARGET_REF}/g"
+  git grep -l "^PINGDIRECTORY_IMAGE_TAG=${SOURCE_REF}" | xargs sed -i.bak "s/^\(PINGDIRECTORY_IMAGE_TAG=\)${SOURCE_REF}$/\1${TARGET_REF}/g"
+  git grep -l "^PINGDELEGATOR_IMAGE_TAG=${SOURCE_REF}" | xargs sed -i.bak "s/^\(PINGDELEGATOR_IMAGE_TAG=\)${SOURCE_REF}$/\1${TARGET_REF}/g"
+  git grep -l "^PINGCENTRAL_IMAGE_TAG=${SOURCE_REF}" | xargs sed -i.bak "s/^\(PINGCENTRAL_IMAGE_TAG=\)${SOURCE_REF}$/\1${TARGET_REF}/g"
+  git grep -l "^PINGDATASYNC_IMAGE_TAG=${SOURCE_REF}" | xargs sed -i.bak "s/^\(PINGDATASYNC_IMAGE_TAG=\)${SOURCE_REF}$/\1${TARGET_REF}/g"
+
 
   echo "Committing changes for new ${REF_TYPE} ${TARGET_REF}"
   git add .
@@ -67,10 +77,11 @@ fi
 echo ---
 echo "Files that are different between origin/${SOURCE_REF} and ${TARGET_REF} refs:"
 git diff --name-only origin/"${SOURCE_REF}" "${TARGET_REF}"
+# git diff origin/"${SOURCE_REF}" "${TARGET_REF}"
 echo ---
 
 # Confirm before pushing the tag to the server
 read -n 1 -srp 'Press any key to continue'
-git push origin "${TARGET_REF}"
+# git push origin "${TARGET_REF}"
 
 popd &> /dev/null
