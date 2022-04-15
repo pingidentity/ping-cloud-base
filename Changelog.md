@@ -4,6 +4,7 @@
 
 - Configure PingFederate and PingAccess environments within PingCentral
 - Create PingDirectory's Password Credential Validator using PingFederate Admin API
+- Create PingDirectory's LDAP Client Manager using PingFederate Admin API
 - Force liveness probe for PingDirectory to use API endpoint /available-or-degraded-state
 
 _Changes:_
