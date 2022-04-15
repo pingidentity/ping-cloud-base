@@ -60,8 +60,8 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: pingfederate-backup
-            image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingfederate:11.0.2-v1.0.40-pdo-3434-new
-            imagePullPolicy: Always
+            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:11.0.2-v1.0.41
+            imagePullPolicy: IfNotPresent
             securityContext:
               runAsGroup: 9999
               runAsNonRoot: true
