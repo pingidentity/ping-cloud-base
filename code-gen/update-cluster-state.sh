@@ -951,6 +951,9 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
   for REGION_DIR in ${REGION_DIRS}; do # REGION loop for generate
     # Perform the code generation in a sub-shell so it doesn't pollute the current shell with environment variables.
     (
+      # Add some derived environment variables for substitution.
+      add_derived_variables
+
       # Common environment variables for the region
       REGION_ENV_VARS="${K8S_CONFIGS_DIR}/${REGION_DIR}/${ENV_VARS_FILE_NAME}"
 
@@ -1003,6 +1006,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
             PING_IDENTITY_DEVOPS_KEY='' \
             MYSQL_USER='' \
             MYSQL_PASSWORD='' \
+            PLATFORM_EVENT_QUEUE_NAME='' \
             SSH_ID_PUB_FILE="${ID_RSA_FILE}" \
             SSH_ID_KEY_FILE="${ID_RSA_FILE}" \
             "${NEW_PING_CLOUD_BASE_REPO}/${CODE_GEN_DIR}/generate-cluster-state.sh"
@@ -1021,73 +1025,59 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
         echo "${REGION_DIR}" > "${PRIMARY_REGION_DIR_FILE}"
       fi
 
-      # For the base/region env_vars file in the new version, populate the old values into an env_vars.old file such
-      # that the env_vars.old files will have the new template but are populated with the old values.
+      # Import new env_vars into cluster-state-repo and rename original env_vars as env_vars.old.
       ENV_VARS_FILES="$(find "${TARGET_DIR}" -name "${ENV_VARS_FILE_NAME}" -type f)"
 
-      # Add some derived environment variables for substitution.
-      add_derived_variables
+      for TEMPLATE_ENV_VARS_FILE in ${ENV_VARS_FILES}; do # Loop through env_vars from ping-cloud-base/code-gen
 
-      for ENV_VARS_FILE in ${ENV_VARS_FILES}; do # Loop for env_vars.old
-        OLD_ENV_VARS_FILE="${ENV_VARS_FILE}".old
-
-        DIR_NAME="$(dirname "${ENV_VARS_FILE}")"
+        DIR_NAME="$(dirname "${TEMPLATE_ENV_VARS_FILE}")"
         PARENT_DIR_NAME="$(dirname "${DIR_NAME}")"
 
         DIR_NAME="${DIR_NAME##*/}"
         PARENT_DIR_NAME="${PARENT_DIR_NAME##*/}"
 
         if test "${DIR_NAME}" = "${BASE_DIR}"; then
-          # Only generate base env_vars.old for primary region.
-          if ! "${IS_PRIMARY}"; then
+          # Capture original env_var for primary or customer-hub region only.
+          if "${IS_PRIMARY}" = "true" || "${IS_CUSTOMER_HUB}" = "true"; then
+            ORIG_ENV_VARS_FILE="${BASE_ENV_VARS}"
+          else
+            # skip to next iteration when its secondary-region.
             continue
           fi
-          ENV_VARS_TEMPLATE="${NEW_PING_CLOUD_BASE_REPO}/${TEMPLATES_BASE_DIR}/${ENV_VARS_FILE_NAME}"
         elif test "${DIR_NAME}" = "${REGION_DIR}"; then
-          ENV_VARS_TEMPLATE="${NEW_PING_CLOUD_BASE_REPO}/${TEMPLATES_REGION_DIR}/${ENV_VARS_FILE_NAME}"
+          ORIG_ENV_VARS_FILE="${REGION_ENV_VARS}"
         else
-          # Copy the env_vars under ping app-specific directories as is into the generated code directory.
+          # Capture original env_var for ping app-specific directory.
           if echo "${DIR_NAME}" | grep -q 'ping'; then
-            app_env_vars_file="$(git ls-files "*/${DIR_NAME}/env_vars" | grep "${REGION_DIR}" | head -1)"
+             ORIG_ENV_VARS_FILE="${K8S_CONFIGS_DIR}/${REGION_DIR}/${DIR_NAME}/${ENV_VARS_FILE_NAME}"
           elif test "${DIR_NAME}" = 'admin' || test "${DIR_NAME}" = 'engine'; then
-            app_env_vars_file="$(git ls-files "*/${PARENT_DIR_NAME}/${DIR_NAME}/env_vars" | grep "${REGION_DIR}" | head -1)"
+             ORIG_ENV_VARS_FILE="${K8S_CONFIGS_DIR}/${REGION_DIR}/${PARENT_DIR_NAME}/${DIR_NAME}/${ENV_VARS_FILE_NAME}"
           else
-            log "Not an app-specific env_vars file: ${ENV_VARS_FILE}"
-            app_env_vars_file=
+            log "Not an app-specific env_vars file: ${TEMPLATE_ENV_VARS_FILE}"
+            # skip to next iteration.
+            continue
           fi
-
-          if test "${app_env_vars_file}"; then
-            log "Copying ${app_env_vars_file} from ${DEFAULT_GIT_BRANCH} to ${ENV_VARS_FILE}"
-            git show "${DEFAULT_GIT_BRANCH}:${app_env_vars_file}" > "${ENV_VARS_FILE}"
-
-            # Handle the v1.10 to v1.11 migration case where we split the env_vars file for admin/engine.
-            # Add the env_vars file to the admin/engine directories for PF, PA and PA-WAS to allow their admin to be
-            # updatable independently of their engines.
-            app_dir_name="$(dirname "${ENV_VARS_FILE}")"
-            if test -d "${app_dir_name}"/admin || test -d "${app_dir_name}"/engine; then
-              for role in admin engine; do
-                inner_env_vars_file="${app_dir_name}/${role}/env_vars"
-                cp "${ENV_VARS_FILE}" "${inner_env_vars_file}"
-              done
-              rm -f "${ENV_VARS_FILE}"
-            fi
-          fi
-
-          continue
         fi
 
-        log "Creating '${OLD_ENV_VARS_FILE}' for region '${REGION_DIR}' and branch '${NEW_BRANCH}'"
-        envsubst "${ENV_VARS_TO_SUBST}" < "${ENV_VARS_TEMPLATE}" > "${OLD_ENV_VARS_FILE}"
+        # Backup original env_vars by generating env_vars.old file.
+        OLD_ENV_VARS_FILE="$(dirname "${TEMPLATE_ENV_VARS_FILE}")/${ENV_VARS_FILE_NAME}".old
+        log "Backing up '${ORIG_ENV_VARS_FILE}' for region '${REGION_DIR}' and branch '${NEW_BRANCH}'"
+        cp -f "${ORIG_ENV_VARS_FILE}" "${OLD_ENV_VARS_FILE}"
+
+        # Substitute variables into new imported env_vars.
+        tmp_file=$(mktemp)
+        envsubst "${ENV_VARS_TO_SUBST}" < "${TEMPLATE_ENV_VARS_FILE}" > "${tmp_file}"
+        mv "${tmp_file}" "${TEMPLATE_ENV_VARS_FILE}"
 
         # If there are no differences between env_vars and env_vars.old, delete the old one.
-        if diff -qbB "${ENV_VARS_FILE}" "${OLD_ENV_VARS_FILE}"; then
-          log "No difference found between ${ENV_VARS_FILE} and ${OLD_ENV_VARS_FILE} - removing the old one"
+        if diff -qbB "${TEMPLATE_ENV_VARS_FILE}" "${OLD_ENV_VARS_FILE}"; then
+          log "No difference found between ${TEMPLATE_ENV_VARS_FILE} and ${OLD_ENV_VARS_FILE} - removing the old one"
           rm -f "${OLD_ENV_VARS_FILE}"
         else
-          log "Difference found between ${ENV_VARS_FILE} and ${OLD_ENV_VARS_FILE} - keeping the old one"
+          log "Difference found between ${TEMPLATE_ENV_VARS_FILE} and ${OLD_ENV_VARS_FILE} - keeping the old one"
         fi
 
-      done # Loop for env_vars.old
+      done # Loop for env_vars
     )
   done # REGION loop for generate
 

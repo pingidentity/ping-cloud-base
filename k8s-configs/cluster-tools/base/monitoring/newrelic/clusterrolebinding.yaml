@@ -84,27 +84,6 @@ subjects:
   namespace: newrelic
 
 ---
-# Source: nri-bundle/charts/newrelic-logging/templates/clusterrolebinding.yaml
-
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  labels:     
-    app: newrelic-logging
-    chart: newrelic-logging-1.10.0
-    release: nri-bundle
-    app.kubernetes.io/name: newrelic-logging
-  name: nri-bundle-newrelic-logging
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: nri-bundle-newrelic-logging
-subjects:
-- kind: ServiceAccount
-  name: nri-bundle-newrelic-logging
-  namespace: newrelic
-
----
 # Source: nri-bundle/charts/nri-prometheus/templates/clusterrolebinding.yaml
 
 apiVersion: rbac.authorization.k8s.io/v1
