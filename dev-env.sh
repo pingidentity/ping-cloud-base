@@ -135,7 +135,7 @@
 #                           | URL. For AWS S3 buckets, it must be an S3 URL,     |
 #                           | e.g. s3://backups.                                 |
 #                           |                                                    |
-# PLATFORM_EVENT_QUEUE_NAME | The name of the queue that may be used to notify   | ${USER}_platform_event_queue.fifo
+# PLATFORM_EVENT_QUEUE_NAME | The name of the queue that may be used to notify   | v2_platform_event_queue.fifo
 #                           | PingCloud applications of platform events. This    |
 #                           | is currently only used if the orchestrator for     |
 #                           | PingCloud environments is MyPing.                  |
@@ -156,10 +156,10 @@
 # MYSQL_SERVICE_HOST        | The hostname of the MySQL database server.         | beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
 #                           |                                                    |
 # MYSQL_USER                | The DBA user of the PingCentral MySQL RDS          | The SSM path:
-#                           | database.                                          | ssm://pcpt/ping-central/rds/username
+#                           | database.                                          | ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#username
 #                           |                                                    |
 # MYSQL_PASSWORD            | The DBA password of the PingCentral MySQL RDS      | The SSM path:
-#                           | database.                                          | ssm://pcpt/ping-central/rds/password
+#                           | database.                                          | ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#password
 #                           |                                                    |
 # PING_IDENTITY_DEVOPS_USER | A user with license to run Ping Software.          | The SSM path:
 #                           |                                                    | ssm://pcpt/devops-license/user
@@ -266,8 +266,8 @@ export BELUGA_ENV_NAME="${ENVIRONMENT#-}"
 
 export IS_MULTI_CLUSTER="${IS_MULTI_CLUSTER}"
 
-export PLATFORM_EVENT_QUEUE_NAME="${PLATFORM_EVENT_QUEUE_NAME:-${USER}_platform_event_queue.fifo}"
-export ORCH_API_SSM_PATH_PREFIX="${ORCH_API_SSM_PATH_PREFIX:-/${USER}/pcpt/orch-api}"
+export PLATFORM_EVENT_QUEUE_NAME="${PLATFORM_EVENT_QUEUE_NAME:-v2_platform_event_queue.fifo}"
+export ORCH_API_SSM_PATH_PREFIX="${ORCH_API_SSM_PATH_PREFIX:-/pcpt/orch-api}"
 
 export REGION="${REGION:-us-east-2}"
 export REGION_NICK_NAME="${REGION_NICK_NAME:-${REGION}}"
@@ -287,8 +287,8 @@ export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
 
 export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com}"
-export MYSQL_USER="${MYSQL_USER:-ssm://pcpt/ping-central/rds/username}"
-export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://pcpt/ping-central/rds/password}"
+export MYSQL_USER="${MYSQL_USER:-ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#username}"
+export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#password}"
 
 export PING_IDENTITY_DEVOPS_USER="${PING_IDENTITY_DEVOPS_USER:-ssm://pcpt/devops-license/user}"
 export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY:-ssm://pcpt/devops-license/key}"

@@ -16,6 +16,9 @@ PD_PCV_SEARCH_FILTER=(&(objectClass=person)(|(mail=${username})(cn=${username})(
 # PD Datastore ID from PingFederate
 LDAP_DS_ID=LDAP-FA8D375DFAC589A222E13AA059319ABF9823B552
 
+# PD LDAP CLIENT MANAGER SEARCH BASE
+LDAP_CLIENT_MANAGER_SEARCH_BASE=ou=clients,o=appintegrations
+
 # DA common configuration for PF and PD.
 # Note: No spaces are allowed within the ID names below.
 ENABLE_DEL_ADMIN=true

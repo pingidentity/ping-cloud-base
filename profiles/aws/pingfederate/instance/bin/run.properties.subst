@@ -13,20 +13,17 @@
 # console and API runs. Default is 9999.
 pf.admin.https.port=${PF_ADMIN_PORT}
 
+# This property defines the URL that PingFederate's administrative node will use
+# to populate resource references in Administrative API responses
+# and for the redirect URL the node will send to an OP for administrator OIDC login
+# (for example, https://pingfederate-admin.example.com or, if the load balancer uses
+# a custom port, https://pingfederate-admin.example.com:8443).
 #
-# This property defines the host name of this machine that will be used in
-# PingFederate's administrative API to represent itself to clients.
-# If left empty, PingFederate will do a name lookup to find its name.
-pf.admin.hostname=${PF_ADMIN_PUBLIC_HOSTNAME}
-
-#
-#  The redirect URI sent to the OIDC provider is constructed from the property pf.admin.baseurl,
-#  a combination of the deprecated property pf.admin.hostname and pf.admin.https.port
-#  or a combination of the host's IP address and pf.admin.https.port. Using pf.admin.baseurl is preferred.
-#
-#  This base is followed by '/pingfederate/app?service=finishsso'. For example, if pf.admin.baseurl
-#  is 'https://pingfederate-admin.example.com', then the redirect URI will be
-#  'https://pingfederate-admin.example.com/pingfederate/app?service=finishsso'.
+# This property should be used because pf.admin.hostname has been deprecated.
+# If pf.admin.hostname is defined in run.properties, it will be ignored
+# if pf.admin.baseurl is specified. But if only pf.admin.hostname is defined,
+# then the URL will be constructed the same way as in versions of PingFederate
+# before 10.3.
 pf.admin.baseurl=https://${PF_ADMIN_PUBLIC_HOSTNAME}:443
 
 #
@@ -48,6 +45,26 @@ pf.console.title=${PF_ADMIN_CONSOLE_TITLE}
 # displayed in the administrative console, used to make separate environments
 # easily identifiable.
 pf.console.environment=${PF_ADMIN_CONSOLE_ENVIRONMENT}
+
+#   HTML page background image
+#   ---------------
+# This property enables image background for administrative console
+pf.console.show.background.images=true
+
+#   PingOne unified admin settings
+#   -----------------------
+# These properties set the URL of the PingOne unified admin icon in the PingFederate administrative console.
+
+# This property should be set based on the region of your PingOne organization.
+#   Valid values are:
+#     com     - indicates the North America region at console.pingone.com
+#     eu      - indicates the Europe region at console.pingone.eu
+#     asia    - indicates the Asia region at console.pingone.asia
+#     ca      - indicates the Canada region at console.pingone.ca
+# pf.pingone.admin.url.region=
+
+# The ID of your PingOne organization's environment.
+# pf.pingone.admin.url.environment.id=
 
 #   Admin Console UI Timeout
 #   ------------------------
@@ -81,6 +98,7 @@ pf.console.login.mode=multiple
 #     LDAP   - External LDAP authentication.
 #     cert   - X509 certificate-based authentication.
 #     RADIUS - External RADIUS authentication.
+#     OIDC   - External or Internal OIDC authentication.
 # Default is native.
 pf.console.authentication=${PF_CONSOLE_AUTHENTICATION}
 
@@ -91,6 +109,7 @@ pf.console.authentication=${PF_CONSOLE_AUTHENTICATION}
 #     LDAP   - External LDAP authentication.
 #     cert   - X509 certificate-based authentication.
 #     RADIUS - External RADIUS authentication.
+#     OAuth2 - External or Internal OAuth2 authorization.
 # Default is native.
 pf.admin.api.authentication=LDAP
 
@@ -114,6 +133,12 @@ radius.properties.file=radius.properties
 # indicates the name of the file containing configuration properties.
 oidc.properties.file=oidc.properties
 
+#
+# When OAuth 2.0 administrative-API authentication is enabled, this property
+# indicates the name of the file containing configuration properties.
+# oauth2.properties.file=oauth2.properties
+
+
 # -------------------------
 # Runtime Server Properties
 # -------------------------
@@ -131,15 +156,11 @@ pf.http.port=-1
 # Default is 9031.
 pf.https.port=9031
 
-#
-# This property defines a secondary HTTPS port that can be used, for example,
-# with SOAP or artifact SAML bindings or for WS-Trust STS calls.
-# To use this port, change the placeholder value to the port number
-# you want to use.
-# Important: If you are using mutual SSL/TLS for either WS-Trust STS
-# authentication or for SAML back-channel authentication, you must use this
-# port for security reasons (or use a similarly configured new listener,
-# with either "WantClientAuth" or "NeedClientAuth" set to "true".
+# This property defines a secondary HTTPS port that can be used for mutual SSL/TLS
+# (client X.509 certificate) authentication for both end users and protocol
+# requests (SAML, WS-Trust and OAuth). Set its value to the desired inbound
+# listening TCP port.
+# A value of -1 disables this feature.
 pf.secondary.https.port=-1
 
 #
@@ -151,7 +172,7 @@ pf.secondary.https.port=-1
 pf.engine.bind.address=0.0.0.0
 
 #
-# This property defines the IP address over which an SNMP agent and JMX
+# This property defines the IP address over which JMX
 # communicate with PingFederate. Use for deployments where multiple network
 # interfaces are installed on the machine running PingFederate.
 # The bind addresses can be ipv6 compliant: use "::" as a replacement
@@ -166,9 +187,12 @@ pf.monitor.bind.address=0.0.0.0
 # Default is true.
 pf.engine.prefer_ipv4=true
 
-# This property defines the context path used for the PingFederate runtime
-# application.
-# Default is "/", which is the root of the server.
+# This property defines the context path used for the PingFederate
+# runtime application.
+# Note: If this property is changed, the path must also be added to
+# the base URL for your PingFederate system protocol settings.
+# The default is "/", which is the root of the server.
+# Both, "/sso" and "/sso/" are valid values for this property.
 pf.runtime.context.path=/
 
 #
@@ -188,6 +212,18 @@ pf.log.eventdetail=false
 # in the heartbeat endpoint
 #
 pf.heartbeat.system.monitoring=true
+
+#
+# This property sets the maximum request body size for inbound runtime requests.
+# Default is 200000 if one is not specified. Units are in bytes.
+#
+pf.runtime.http.maxRequestBodySize=200000
+
+#
+# This property sets how long the runtime will process a request until it timeout.
+# Default is 30000 if one is not specified.
+#
+pf.runtime.http.idleTimeout=30000
 
 # ---------------------
 # Deployment Properties
@@ -212,6 +248,8 @@ pf.operational.mode=$OPERATIONAL_MODE
 # is *not* STANDALONE:
 pf.cluster.node.index=
 # A strong, randomly-generated key (22 or more alphanumerics) is recommended.
+# In BCFIPS mode, if encryption is enabled, the minimum length of 22
+# characters is enforced.
 pf.cluster.auth.pwd=
 pf.cluster.encrypt=false
 
@@ -240,11 +278,12 @@ pf.cluster.mcast.group.port=7601
 # When TCP is used, this property specifies a list of initial hosts to be
 # contacted for a group discovery, for example,
 # "10.0.1.4[7600],server2.mydomain.com[7600]".
+# It is recommended to include all cluster nodes in this list.
 #
 # IMPORTANT: For ipv6, DO NOT use brackets ([]) to surround the IP addresses.
 #
 # For dynamic clusters using tcp as the transport protocol, alternate
-# discovery mechanisms are available. See server/default/conf/tcp.xml for
+# discovery mechanisms are available. See bin/jgroups.properties for
 # further details. If a dynamic discovery mechanism is used, this property
 # is ignored.
 pf.cluster.tcp.discovery.initial.hosts=
@@ -269,14 +308,36 @@ pf.cluster.diagnostics.enabled=false
 pf.cluster.diagnostics.addr=224.0.75.75
 pf.cluster.diagnostics.port=7500
 
+# This property defines the tags associated with this PingFederate node.
+# Configuration is optional. When configured, PingFederate takes this property
+# into consideration when processing requests. For example, tags may be used
+# to determine the data store location that this PingFederate
+# node communicates with. Administrators may also use tags in conjunction with
+# authentication selectors and policies to define authentication requirements.
+#
+# Administrators may define one tag or a list of space-separated tags.
+# Each tag cannot contain any spaces. Other characters are allowed.
+#
+# Example 1: node.tags=north
+# Example 1 defines one tag: 'north'
+#
+# Example 2: node.tags=1 123 test
+# Example 2 defines three tags: '1', '123' and 'test'
+#
+# Example 3: node.tags=
+# Example 3 is also valid because the node.tags property is optional.
+node.tags=
+
 #   Hardware Security Module Mode
 #   -----------------------------
-# This property enables or disables a FIPS-compliance Hardware Security Module.
+# This property enables or disables a Hardware Security Module.
 #
 #  Valid values are:
-#    NCIPHER - Denotes a Thales nCipher implementation.
-#    LUNA    - Denotes a SafeNet Luna implementation.
-#    OFF     - Use the default Sun keystore/JCE implementation.
+#    AWSCLOUDHSM - Denotes an AWS CloudHSM (not classic) implementation.
+#    NCIPHER     - Denotes a Thales nCipher implementation.
+#    LUNA        - Denotes a SafeNet Luna implementation.
+#    BCFIPS      - Denotes a Bouncy Castle FIPS implementation.
+#    OFF         - Use the default Sun keystore/JCE implementation.
 # Default is OFF.
 pf.hsm.mode=OFF
 
@@ -292,6 +353,13 @@ pf.hsm.mode=OFF
 #    false - disable Hybrid mode.
 # Default is false.
 pf.hsm.hybrid=false
+
+# Additional allowed security providers for BCFIPS mode.
+#
+# When operating in BCFIPS mode, PingFederate limits the provider list to the
+# minimum required. Additional providers can be allowed by adding their class names
+# to the following comma-delimited list.
+# pf.fips.additional.allowed.providers=
 
 #   Outbound Provisioner Properties
 #   ---------------------------
@@ -326,7 +394,7 @@ provisioner.failover.grace.period=600
 # In order to be interoperable with a wide range of external systems PingFederate
 # has been modified to handle special cases related to encoding cookies.
 #
-# When setting a cookie, PingFederate will first evaluate
+# When setting a cookie, PingFederate will first evaluate 
 # 'jetty51.encode.wildcard.session.cookies' and 'jetty51.encode.cookies' to see
 # if the cookie values should be encoded.  If the cookie value should be encoded,
 # PingFederate will then encode the following characters (space included): ;, "
@@ -370,13 +438,52 @@ javax.net.ssl.sessionCacheSize=5000
 #https.proxyPort=<HTTPS_PROXY_PORT>
 #http.nonProxyHosts=*.internal.com|localhost
 
-# This property determines whether PingFederate omits line breaks in XML digital signatures. Default is true.
+# This property determines whether PingFederate omits line breaks in XML digital signatures. If omitted, this setting defaults to "false".
+# It is recommended to set this as "true" for improved interoperability with Microsoft products.
 org.apache.xml.security.ignoreLineBreaks=true
 
 # COMMENT THIS OUT IF TOO MUCH OUTPUT ON LDAP CHATTER
 #com.unboundid.ldap.sdk.debug.enabled=true
 #com.unboundid.ldap.sdk.debug.level=FINEST
 #com.unboundid.ldap.sdk.debug.type=LDAP
+
+# These properties determine the default timeouts for outbound java.net.URL connections (in milliseconds).
+# These values may be overridden in certain contexts.
+# When a more specific configuration option is not available, these defaults are used.
+sun.net.client.defaultConnectTimeout=30000
+sun.net.client.defaultReadTimeout=30000
+
+#   TLS Protocol Settings
+#   ---------------------
+# The following properties control the allowed TLS client and server protocols.
+# Each property may contain a comma-separated list of allowed TLS protocols.
+#
+# "pf.tls.client.protocols" property is used by all PingFederate outbound HTTPS connections
+# "pf.runtime.tls.server.protocols" property is used by PingFederate for all runtime inbound HTTPS connections
+# "pf.admin.tls.server.protocols" property is used by PingFederate for all administrative console inbound HTTPS connections
+#
+# The default value of "TLSv1.2" will be used if any of these properties are not present
+pf.tls.client.protocols=TLSv1.2,TLSv1.3
+pf.tls.runtime.server.protocols=TLSv1.2,TLSv1.3
+pf.tls.admin.server.protocols=TLSv1.2,TLSv1.3
+
+#   HTTP Server Thread Pool Settings
+#   --------------------------------
+# The following properties control the minimum and the maximum number of threads used to configure PingFederate thread pools.
+#
+# Please refer to the performance tuning guide for further tuning guidance.
+pf.admin.threads.min=${THREADMIN}
+pf.admin.threads.max=${THREADMAX}
+pf.runtime.threads.min=${THREADMIN}
+pf.runtime.threads.max=${THREADMAX}
+
+#   HTTP Connector Queue Size Settings
+#   ----------------------------------
+# The following properties control the queue size of the HTTP connector.
+#
+# Please refer to the performance tuning guide for further tuning guidance.
+pf.admin.acceptQueueSize=512
+pf.runtime.acceptQueueSize=512
 
 #   Log4j 2 Settings
 #   ---------------------------

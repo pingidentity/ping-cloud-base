@@ -22,15 +22,21 @@ echo "AWS_REGION: ${REGION}"
 # Query aws endpoint to get value associated with the key.
 get_ssm_val() {
   param_name="$1"
-  if ! ssm_val="$(aws ${AWS_DEBUG} ssm --region "${REGION}"  get-parameters \
-            --names "${param_name}" \
+  if ! ssm_val="$(aws ${AWS_DEBUG} ssm --region "${REGION}" get-parameters \
+            --names "${param_name%#*}" \
             --query 'Parameters[*].Value' \
             --with-decryption \
             --output text)"; then
     echo "$ssm_val"
     return 1
   fi
-  echo "$ssm_val"
+  if [[ "$param_name" == *"secretsmanager"* ]]; then
+    # grep for the value of the secrets manager object's key
+    # the object's key is the string following the '#' in the param_name variable
+    echo "$ssm_val" | grep -Eo "${param_name#*#}[^,]*" | grep -Eo "[^:]*$"
+  else
+    echo "$ssm_val"
+  fi
 }
 
 # Check all the environment variables

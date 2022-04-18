@@ -61,14 +61,14 @@ set_env_vars() {
     export BACKUP_URL=s3://${CLUSTER_NAME}-backup-bucket
 
     export MYSQL_SERVICE_HOST=beluga-${CLUSTER_NAME}-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
-    export MYSQL_USER=ssm://pcpt/ping-central/rds/username
-    export MYSQL_PASSWORD=ssm://pcpt/ping-central/rds/password
+    export MYSQL_USER=ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#username
+    export MYSQL_PASSWORD=ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#password
 
     # MySQL database names cannot have dashes. So transform dashes into underscores.
     ENV_NAME_NO_DASHES=$(echo ${CI_COMMIT_REF_SLUG} | tr '-' '_')
     export MYSQL_DATABASE="pingcentral_${ENV_NAME_NO_DASHES}"
 
-    export PLATFORM_EVENT_QUEUE_NAME='platform_event_queue.fifo'
+    export PLATFORM_EVENT_QUEUE_NAME='v2_platform_event_queue.fifo'
     export ORCH_API_SSM_PATH_PREFIX='/pcpt/orch-api'
 
     export PROJECT_DIR="${CI_PROJECT_DIR}"
@@ -145,8 +145,8 @@ set_env_vars() {
   # PingCentral
   MYSQL_SERVICE_HOST="beluga-${SELECTED_KUBE_NAME:-ci-cd}-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com"
   MYSQL_SERVICE_PORT=3306
-  MYSQL_USER_SSM=/pcpt/ping-central/rds/username
-  MYSQL_PASSWORD_SSM=/pcpt/ping-central/rds/password
+  MYSQL_USER_SSM=/aws/reference/secretsmanager/pcpt/ping-central/dbserver#username
+  MYSQL_PASSWORD_SSM=/aws/reference/secretsmanager/pcpt/ping-central/dbserver#password
 
   # Pingcloud-metadata service:
   PINGCLOUD_METADATA_API=https://metadata${FQDN}
@@ -178,7 +178,6 @@ find_cluster() {
     exit 1
   fi
 
-  # TODO: pull the cluster list dynamically and see if it is scaled up before trying to deploy to it
   cluster_postfixes=($CLUSTER_POSTFIXES)
   found_cluster=false
   sleep_wait_seconds=300
@@ -337,7 +336,7 @@ EOF
 }
 
 ########################################################################################################################
-# Retrieve the value associated with the provided parameter from AWS parameter store.
+# Retrieve the value associated with the provided parameter from AWS parameter store or AWS Secrets Manager.
 #
 # Arguments
 #   ${1} -> The SSM parameter name.
@@ -347,13 +346,24 @@ EOF
 ########################################################################################################################
 get_ssm_val() {
   param_name="$1"
-  aws ssm get-parameters \
-        --profile "${AWS_PROFILE}" \
-        --region "${REGION}" \
-        --names "${param_name}" \
-        --query 'Parameters[*].Value' \
-        --with-decryption \
-        --output text
+  if ! ssm_val="$(aws ssm get-parameters \
+            --profile "${AWS_PROFILE}" \
+            --region "${REGION}" \
+            --names "${param_name%#*}" \
+            --query 'Parameters[*].Value' \
+            --with-decryption \
+            --output text)"; then
+    echo "$ssm_val"
+    return 1
+  fi
+
+  if [[ "$param_name" == *"secretsmanager"* ]]; then
+    # grep for the value of the secrets manager object's key
+    # the object's key is the string following the '#' in the param_name variable
+    echo "$ssm_val" | grep -Eo "${param_name#*#}[^,]*" | grep -Eo "[^:]*$" | tr -d '"'
+  else
+    echo "$ssm_val"
+  fi
 }
 
 ########################################################################################################################
