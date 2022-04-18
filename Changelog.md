@@ -23,6 +23,7 @@
 - Move PingCentral AWS RDS MYSQL vars from base/env_vars to region/pingcentral/env_vars
 - Turned off pod logs from going into NewRelic
 - Fix upgrade-cluster-state script to import new env_vars changes from base
+- Fix PingCentral PingOne deployment status and url update
 
 _Changes:_
 
@@ -95,6 +96,7 @@ _Changes:_
 - [X] PDO-3601 Upgrade PF to 11.0.2 to fix OOM issue
 - [X] PDO-3606 Backup/restore PingDataSync config/sync-state.ldif file to/from s3
 - [X] PDO-3608 Add Secrets Manager objects to Discovery Service
+- [X] PDO-3625 Run bootstrap & bom pods in CHUB account
 - [X] PDO-3643 NewRelic infrastructure pods pulling from docker instead of ecr
 - [X] PDO-3685 Set min and max CPU properties within run.properties for engine and admin
 - [X] PDO-3731 Move PingCentral AWS RDS MYSQL vars from base/env_vars to region/pingcentral/env_vars
