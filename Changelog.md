@@ -4,15 +4,20 @@
 
 - Configure PingFederate and PingAccess environments within PingCentral
 - Create PingDirectory's Password Credential Validator using PingFederate Admin API
+- Create PingDirectory's LDAP Client Manager using PingFederate Admin API
+- Force liveness probe for PingDirectory to use API endpoint /available-or-degraded-state
 
 _Changes:_
 
 - [X] PDO-2517 Port of PingFederate pre-config script from bash to python
 - [X] PDO-2827 Configure PingFederate and PingAccess environments within PingCentral
 - [X] PDO-3433 Create PingDirectory's Password Credential Validator using PingFederate Admin API
+- [X] PDO-3434 Create PingDirectory's LDAP Client Manager using PingFederate Admin API
 - [X] PDO-3446 Upgraded ArgoCD to v2.3.1
 - [X] PDO-3548 Set manage-profile tempProfileDirectory argument to the persistent volume /opt/out directory
 - [X] PDO-3571 Added non-admin ArgoCD user with access to restart StatefulSet pods
+- [X] PDO-3582 Force liveness probe to use API endpoint /available-or-degraded-state
+- [X] PDO-3773 Encrypt K8s StorageClass (AWS EBS volumes)
 
 ### 1.13.0
 
@@ -30,9 +35,14 @@ _Changes:_
 - Upgrade PF to 11.0.2
 - Fix fluentd PD logs parsing configuration
 - Fix missing PD logs due to late tail-logs hook call
+- Use self-hosted newrelic docker images
 - Automate usage of AWS Secrets Manager
 - Set min and max CPU properties within run.properties for engine and admin
 - Add jetty-runtime.xml to profile-repo
+- Move PingCentral AWS RDS MYSQL vars from base/env_vars to region/pingcentral/env_vars
+- Turned off pod logs from going into NewRelic
+- Fix upgrade-cluster-state script to import new env_vars changes from base
+- Fix PingCentral PingOne deployment status and url update
 
 _Changes:_
 
@@ -105,7 +115,13 @@ _Changes:_
 - [X] PDO-3601 Upgrade PF to 11.0.2 to fix OOM issue
 - [X] PDO-3606 Backup/restore PingDataSync config/sync-state.ldif file to/from s3
 - [X] PDO-3608 Add Secrets Manager objects to Discovery Service
+- [X] PDO-3625 Run bootstrap & bom pods in CHUB account
+- [X] PDO-3643 NewRelic infrastructure pods pulling from docker instead of ecr
 - [X] PDO-3685 Set min and max CPU properties within run.properties for engine and admin
+- [X] PDO-3731 Move PingCentral AWS RDS MYSQL vars from base/env_vars to region/pingcentral/env_vars
+- [X] PDO-3764 Turn off pod logs from going into NewRelic
+- [X] PDO-3771 Fix upgrade-cluster-state script to import new env_vars changes from base
+- [X] PDO-3781 Encrypt K8s StorageClass
 
 ### 1.12.0
 
@@ -129,6 +145,8 @@ _Changes:_
 - Kibana updated to 7.16.2
 - Added Open Token Adapter Integration Kit to server profile for PingFederate SSO
 - Patched default PF agentless adapter IK
+- Upgraded PingFederate to v10.3.5 to resolve security vulnerability SECADV029 and SECBL021
+- Turned off pod logs from going into NewRelic
 
 _Changes:_
 
@@ -172,6 +190,10 @@ _Changes:_
 - [X] PDO-3333 Fix Kibana showing an error 'We encountered an error retrieving search results
 - [X] PDO-3352 Add Open Token Adapter Integration Kit to server profile for PingFederate SSO
 - [X] PDO-3393 Default Agentless adapter kit deployed has known vulnerabilities
+- [X] PDO-3401 Upgrade PingFederate to v10.3.5 to resolve security vulnerability SECADV029 and SECBL021
+- [X] PDO-3513 (BugFix) Logstash crashlooping due to updated plugin dependencies
+- [X] PDO-3764 Turn off pod logs from going into NewRelic
+- [X] PDO-3782 Encrypt K8s StorageClass 
 
 ### 1.11.0
 

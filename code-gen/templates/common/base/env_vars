@@ -144,14 +144,6 @@ PA_MIN_YGEN=${PA_MIN_YGEN}
 PA_MAX_YGEN=${PA_MAX_YGEN}
 PA_GCOPTION=${PA_GCOPTION}
 
-###################################
-# PingCentral environment variables
-###################################
-MYSQL_SERVICE_HOST=${MYSQL_SERVICE_HOST}
-MYSQL_USER=${MYSQL_USER}
-MYSQL_PASSWORD=${MYSQL_PASSWORD}
-MYSQL_DATABASE=${MYSQL_DATABASE}
-
 ############################################################
 # DevOps License environment variables
 ############################################################
@@ -163,8 +155,8 @@ PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 ############################################################
 PINGACCESS_IMAGE_TAG=6.3.3-v1.0.28
 PINGACCESS_WAS_IMAGE_TAG=6.3.3-v1.0.28
-PINGFEDERATE_IMAGE_TAG=11.0.2-v1.0.39
-PINGDIRECTORY_IMAGE_TAG=8.3.0.5-v1.0.36
+PINGFEDERATE_IMAGE_TAG=11.0.2-v1.0.41
+PINGDIRECTORY_IMAGE_TAG=8.3.0.5-v1.0.37
 PINGDELEGATOR_IMAGE_TAG=4.8.0-v1.0.12
 PINGCENTRAL_IMAGE_TAG=1.8.1-v1.0.26
 PINGDATASYNC_IMAGE_TAG=8.2.0.6-v1.0.16
@@ -173,7 +165,7 @@ PINGDATASYNC_IMAGE_TAG=8.2.0.6-v1.0.16
 # Ping solution image tags
 ############################################################
 METADATA_IMAGE_TAG=v1.0.6
-P14C_BOOTSTRAP_IMAGE_TAG=v1.2.0
+P14C_BOOTSTRAP_IMAGE_TAG=v1.3.0
 P14C_INTEGRATION_IMAGE_TAG=v114
 ANSIBLE_BELUGA_IMAGE_TAG=v1.0.6
 
