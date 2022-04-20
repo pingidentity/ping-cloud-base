@@ -102,15 +102,14 @@ echo ---
 cd ping-cloud-base
 git checkout "${SOURCE_REF}"
 
-# if test "${REF_TYPE}" = 'tag'; then
-#   replaceAndCommit_tag "${SOURCE_REF}" "${TARGET_REF}" "${REF_TYPE}"
-#   git tag "${TARGET_REF}"
-# else
-#   git checkout -b "${TARGET_REF}"
-#   replaceAndCommit_branch "${SOURCE_REF}" "${TARGET_REF}" 
-# fi
-git checkout -b "${TARGET_REF}"
-replaceAndCommit_branch "${SOURCE_REF}" "${TARGET_REF}" 
+if test "${REF_TYPE}" = 'tag'; then
+  replaceAndCommit_tag "${SOURCE_REF}" "${TARGET_REF}" "${REF_TYPE}"
+  git tag "${TARGET_REF}"
+else
+  git checkout -b "${TARGET_REF}"
+  replaceAndCommit_branch "${SOURCE_REF}" "${TARGET_REF}" 
+fi
+
 echo ---
 echo "Files that are different between origin/${SOURCE_REF} and ${TARGET_REF} refs:"
 # git diff --name-only origin/"${SOURCE_REF}" "${TARGET_REF}"
