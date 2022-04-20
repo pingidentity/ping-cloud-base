@@ -66,18 +66,36 @@ replaceAndCommit_branch() {
   # git grep -l "^SERVER_PROFILE_BRANCH=${SOURCE_REF}" | xargs sed -i.bak "s/^\(SERVER_PROFILE_BRANCH=\)${SOURCE_REF}$/\1${TARGET_REF}/g"
 
   #update base env vars
-  git grep -l "^PINGACCESS_IMAGE_TAG=${SOURCE_REF_latest}" | xargs sed -i.bak "s/^\(PINGACCESS_IMAGE_TAG=\)${SOURCE_REF_latest}$/\1${TARGET_REF_latest}/g"
-  git grep -l "^PINGACCESS_WAS_IMAGE_TAG=${SOURCE_REF_latest}" | xargs sed -i.bak "s/^\(PINGACCESS_WAS_IMAGE_TAG=\)${SOURCE_REF_latest}$/\1${TARGET_REF_latest}/g" 
-  git grep -l "^PINGFEDERATE_IMAGE_TAG=${SOURCE_REF_latest}" | xargs sed -i.bak "s/^\(PINGFEDERATE_IMAGE_TAG=\)${SOURCE_REF_latest}$/\1${TARGET_REF_latest}/g"
-  git grep -l "^PINGDIRECTORY_IMAGE_TAG=${SOURCE_REF_latest}" | xargs sed -i.bak "s/^\(PINGDIRECTORY_IMAGE_TAG=\)${SOURCE_REF_latest}$/\1${TARGET_REF_latest}/g"
-  git grep -l "^PINGDELEGATOR_IMAGE_TAG=${SOURCE_REF_latest}" | xargs sed -i.bak "s/^\(PINGDELEGATOR_IMAGE_TAG=\)${SOURCE_REF_latest}$/\1${TARGET_REF_latest}/g"
-  git grep -l "^PINGCENTRAL_IMAGE_TAG=${SOURCE_REF_latest}" | xargs sed -i.bak "s/^\(PINGCENTRAL_IMAGE_TAG=\)${SOURCE_REF_latest}$/\1${TARGET_REF_latest}/g"
-  git grep -l "^PINGDATASYNC_IMAGE_TAG=${SOURCE_REF_latest}" | xargs sed -i.bak "s/^\(PINGDATASYNC_IMAGE_TAG=\)${SOURCE_REF_latest}$/\1${TARGET_REF_latest}/g"
+  # git grep -l "^PINGACCESS_IMAGE_TAG=${SOURCE_REF_latest}" | xargs sed -i.bak "s/^\(PINGACCESS_IMAGE_TAG=\)${SOURCE_REF_latest}$/\1${TARGET_REF_latest}/g"
+  # git grep -l "^PINGACCESS_WAS_IMAGE_TAG=${SOURCE_REF_latest}" | xargs sed -i.bak "s/^\(PINGACCESS_WAS_IMAGE_TAG=\)${SOURCE_REF_latest}$/\1${TARGET_REF_latest}/g" 
+  # git grep -l "^PINGFEDERATE_IMAGE_TAG=${SOURCE_REF_latest}" | xargs sed -i.bak "s/^\(PINGFEDERATE_IMAGE_TAG=\)${SOURCE_REF_latest}$/\1${TARGET_REF_latest}/g"
+  # git grep -l "^PINGDIRECTORY_IMAGE_TAG=${SOURCE_REF_latest}" | xargs sed -i.bak "s/^\(PINGDIRECTORY_IMAGE_TAG=\)${SOURCE_REF_latest}$/\1${TARGET_REF_latest}/g"
+  # git grep -l "^PINGDELEGATOR_IMAGE_TAG=${SOURCE_REF_latest}" | xargs sed -i.bak "s/^\(PINGDELEGATOR_IMAGE_TAG=\)${SOURCE_REF_latest}$/\1${TARGET_REF_latest}/g"
+  # git grep -l "^PINGCENTRAL_IMAGE_TAG=${SOURCE_REF_latest}" | xargs sed -i.bak "s/^\(PINGCENTRAL_IMAGE_TAG=\)${SOURCE_REF_latest}$/\1${TARGET_REF_latest}/g"
+  # git grep -l "^PINGDATASYNC_IMAGE_TAG=${SOURCE_REF_latest}" | xargs sed -i.bak "s/^\(PINGDATASYNC_IMAGE_TAG=\)${SOURCE_REF_latest}$/\1${TARGET_REF_latest}/g"
+
+  grep_var "PINGACCESS_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}-latest"
+  grep_var "PINGACCESS_WAS_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}-latest"
+  grep_var "PINGFEDERATE_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}-latest"
+  grep_var "PINGDIRECTORY_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}-latest"
+  grep_var "PINGDELEGATOR_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}-latest"
+  grep_var "PINGCENTRAL_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}-latest"
+  grep_var "PINGDATASYNC_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}-latest"
 
 
   echo "Committing changes for new ${REF_TYPE} ${TARGET_REF}"
   git add .
   git commit -m "[skip pipeline] - creating new ${REF_TYPE} ${TARGET_REF}"
+}
+
+grep_var() {
+
+  VAR=${1}
+  SOURCE_VALUE=${2}
+  TARGET_VALUE=${3}
+
+  git grep -l "^${VAR}=${SOURCE_VALUE}" | xargs sed -i.bak "s/^\(${VAR}=\)${SOURCE_VALUE}$/\1${TARGET_VALUE}/g"
+
 }
 
 SOURCE_REF=${1}
