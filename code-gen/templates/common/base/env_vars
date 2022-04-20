@@ -161,13 +161,13 @@ PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 ############################################################
 # Ping application image tags
 ############################################################
-PINGACCESS_IMAGE_TAG=pdo-3605-latest
-PINGACCESS_WAS_IMAGE_TAG=pdo-3605-latest
-PINGFEDERATE_IMAGE_TAG=pdo-3605-latest
-PINGDIRECTORY_IMAGE_TAG=pdo-3605-latest
-PINGDELEGATOR_IMAGE_TAG=pdo-3605-latest
-PINGCENTRAL_IMAGE_TAG=pdo-3605-latest
-PINGDATASYNC_IMAGE_TAG=pdo-3605-latest
+PINGACCESS_IMAGE_TAG=pdo-3605
+PINGACCESS_WAS_IMAGE_TAG=pdo-3605
+PINGFEDERATE_IMAGE_TAG=pdo-3605
+PINGDIRECTORY_IMAGE_TAG=pdo-3605
+PINGDELEGATOR_IMAGE_TAG=pdo-3605
+PINGCENTRAL_IMAGE_TAG=pdo-3605
+PINGDATASYNC_IMAGE_TAG=pdo-3605
 
 ############################################################
 # Ping solution image tags
