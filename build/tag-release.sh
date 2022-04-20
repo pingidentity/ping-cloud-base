@@ -13,7 +13,7 @@ usage() {
 
 ########################################################################################################################
 # Replaces the current version references in the source ref with the target ref in all the necessary places. Then,
-# commits the changes into the target ref (branch or tag). Must be in the ping-cloud-base directory for it to work
+# commits the changes into the target ref(tag). Must be in the ping-cloud-base directory for it to work
 # correctly.
 #
 # Arguments:
@@ -21,7 +21,7 @@ usage() {
 #   ${2} -> The target ref
 #   ${3} -> The ref type, tag or branch
 ########################################################################################################################
-replaceAndCommit() {
+replaceAndCommit_tag() {
   SOURCE_REF=${1}
   TARGET_REF=${2}
   REF_TYPE=${3}
@@ -37,6 +37,39 @@ replaceAndCommit() {
   git grep -l "^PINGDELEGATOR_IMAGE_TAG=${SOURCE_REF}" | xargs sed -i.bak "s/^\(PINGDELEGATOR_IMAGE_TAG=\)${SOURCE_REF}$/\1${TARGET_REF}/g"
   git grep -l "^PINGCENTRAL_IMAGE_TAG=${SOURCE_REF}" | xargs sed -i.bak "s/^\(PINGCENTRAL_IMAGE_TAG=\)${SOURCE_REF}$/\1${TARGET_REF}/g"
   git grep -l "^PINGDATASYNC_IMAGE_TAG=${SOURCE_REF}" | xargs sed -i.bak "s/^\(PINGDATASYNC_IMAGE_TAG=\)${SOURCE_REF}$/\1${TARGET_REF}/g"
+
+
+  echo "Committing changes for new ${REF_TYPE} ${TARGET_REF}"
+  git add .
+  git commit -m "[skip pipeline] - creating new ${REF_TYPE} ${TARGET_REF}"
+}
+
+########################################################################################################################
+# Replaces the current version references in the source ref with the target ref in all the necessary places. Then,
+# commits the changes into the target ref (branch ). Must be in the ping-cloud-base directory for it to work
+# correctly.
+#
+# Arguments:
+#   ${1} -> The source ref
+#   ${2} -> The target ref
+#   ${3} -> The ref type, tag or branch
+########################################################################################################################
+replaceAndCommit_branch() {
+  SOURCE_REF=${1}
+  TARGET_REF=${2}
+  # REF_TYPE=${3}
+
+  echo "Changing ${SOURCE_REF} -> ${TARGET_REF} in expected files"
+  # git grep -l "^SERVER_PROFILE_BRANCH=${SOURCE_REF}" | xargs sed -i.bak "s/^\(SERVER_PROFILE_BRANCH=\)${SOURCE_REF}$/\1${TARGET_REF}/g"
+
+  #update base env vars
+  git grep -l "^PINGACCESS_IMAGE_TAG=${SOURCE_REF}-latest" | xargs sed -i.bak "s/^\(PINGACCESS_IMAGE_TAG=\)${SOURCE_REF}-latest$/\1${TARGET_REF}-latest/g"
+  git grep -l "^PINGACCESS_WAS_IMAGE_TAG=${SOURCE_REF}-latest" | xargs sed -i.bak "s/^\(PINGACCESS_WAS_IMAGE_TAG=\)${SOURCE_REF}-latest$/\1${TARGET_REF}-latest/g" 
+  git grep -l "^PINGFEDERATE_IMAGE_TAG=${SOURCE_REF}-latest" | xargs sed -i.bak "s/^\(PINGFEDERATE_IMAGE_TAG=\)${SOURCE_REF}-latest$/\1${TARGET_REF}-latest/g"
+  git grep -l "^PINGDIRECTORY_IMAGE_TAG=${SOURCE_REF}-latest" | xargs sed -i.bak "s/^\(PINGDIRECTORY_IMAGE_TAG=\)${SOURCE_REF}-latest$/\1${TARGET_REF}-latest/g"
+  git grep -l "^PINGDELEGATOR_IMAGE_TAG=${SOURCE_REF}-latest" | xargs sed -i.bak "s/^\(PINGDELEGATOR_IMAGE_TAG=\)${SOURCE_REF}-latest$/\1${TARGET_REF}-latest/g"
+  git grep -l "^PINGCENTRAL_IMAGE_TAG=${SOURCE_REF}-latest" | xargs sed -i.bak "s/^\(PINGCENTRAL_IMAGE_TAG=\)${SOURCE_REF}-latest$/\1${TARGET_REF}-latest/g"
+  git grep -l "^PINGDATASYNC_IMAGE_TAG=${SOURCE_REF}-latest" | xargs sed -i.bak "s/^\(PINGDATASYNC_IMAGE_TAG=\)${SOURCE_REF}-latest$/\1${TARGET_REF}-latest/g"
 
 
   echo "Committing changes for new ${REF_TYPE} ${TARGET_REF}"
@@ -67,11 +100,11 @@ cd ping-cloud-base
 git checkout "${SOURCE_REF}"
 
 if test "${REF_TYPE}" = 'tag'; then
-  replaceAndCommit "${SOURCE_REF}" "${TARGET_REF}" "${REF_TYPE}"
+  replaceAndCommit_tag "${SOURCE_REF}" "${TARGET_REF}" "${REF_TYPE}"
   git tag "${TARGET_REF}"
 else
   git checkout -b "${TARGET_REF}"
-  replaceAndCommit "${SOURCE_REF}" "${TARGET_REF}" "${REF_TYPE}"
+  replaceAndCommit_branch "${SOURCE_REF}" "${TARGET_REF}" 
 fi
 
 echo ---
