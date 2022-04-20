@@ -167,7 +167,7 @@ PINGFEDERATE_IMAGE_TAG=pdo-3605-latest
 PINGDIRECTORY_IMAGE_TAG=pdo-3605-latest
 PINGDELEGATOR_IMAGE_TAG=pdo-3605-latest
 PINGCENTRAL_IMAGE_TAG=pdo-3605-latest
-PINGDATASYNC_IMAGE_TAG=pdo-3605-latest
+PINGDATASYNC_IMAGE_TAG=pdo-3605
 
 ############################################################
 # Ping solution image tags
