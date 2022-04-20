@@ -82,7 +82,7 @@ replaceAndCommit_branch() {
 
 SOURCE_REF=${1}
 TARGET_REF=${2}
-# REF_TYPE=${3:-tag}
+REF_TYPE=${3}
 
 if test -z "${SOURCE_REF}" || test -z "${TARGET_REF}"; then
   usage
