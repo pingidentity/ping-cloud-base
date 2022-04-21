@@ -120,6 +120,19 @@ grep_var() {
 
 }
 
+grep_yaml() {
+
+  image=${1}
+  SOURCE_VALUE=${2}
+  TARGET_VALUE=${3}
+
+  echo "Changing ${SOURCE_VALUE} -> ${TARGET_VALUE} in expected files"
+
+  git grep -l "^${image}:${SOURCE_VALUE}" | xargs sed -i.bak "s/^\(${image}:\)${SOURCE_VALUE}$/\1${TARGET_VALUE}/g"
+
+}
+
+
 SOURCE_REF=${1}
 TARGET_REF=${2}
 REF_TYPE=${3}
