@@ -102,6 +102,7 @@ replaceAndCommit_branch() {
   grep_var "PINGCENTRAL_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}-latest"
   grep_var "PINGDATASYNC_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}-latest"
 
+  grep_yaml "public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess" "${SOURCE_REF}" "${TARGET_REF}-latest"
 
   echo "Committing changes for new ${REF_TYPE} ${TARGET_REF}"
   git add .
