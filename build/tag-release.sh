@@ -45,6 +45,39 @@ replaceAndCommit_tag() {
 
 ########################################################################################################################
 # Replaces the current version references in the source ref with the target ref in all the necessary places. Then,
+# commits the changes into the target ref(tag). Must be in the ping-cloud-base directory for it to work
+# correctly.
+#
+# Arguments:
+#   ${1} -> The source ref
+#   ${2} -> The target ref
+#   ${3} -> The ref type, tag or branch
+########################################################################################################################
+replaceAndCommit_RC_tag() {
+  SOURCE_REF=${1}
+  TARGET_REF=${2}
+  REF_TYPE=${3}
+
+  echo "Changing ${SOURCE_REF} -> ${TARGET_REF} in expected files"
+
+  #update base env vars
+
+  grep_var "PINGACCESS_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}"
+  grep_var "PINGACCESS_WAS_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}"
+  grep_var "PINGFEDERATE_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}"
+  grep_var "PINGDIRECTORY_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}-"
+  grep_var "PINGDELEGATOR_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}"
+  grep_var "PINGCENTRAL_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}"
+  grep_var "PINGDATASYNC_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}"
+
+  echo "Committing changes for new ${REF_TYPE} ${TARGET_REF}"
+  git add .
+  git commit -m "[skip pipeline] - creating new ${REF_TYPE} ${TARGET_REF}"
+}
+
+
+########################################################################################################################
+# Replaces the current version references in the source ref with the target ref in all the necessary places. Then,
 # commits the changes into the target ref (branch ). Must be in the ping-cloud-base directory for it to work
 # correctly.
 #
@@ -110,6 +143,9 @@ git checkout "${SOURCE_REF}"
 
 if test "${REF_TYPE}" = 'tag'; then
   replaceAndCommit_tag "${SOURCE_REF}" "${TARGET_REF}" "${REF_TYPE}"
+  git tag "${TARGET_REF}"
+elif test "${REF_TYPE}" = 'RC'; then
+  replaceAndCommit_RC_tag "${SOURCE_REF}" "${TARGET_REF}" "${REF_TYPE}"
   git tag "${TARGET_REF}"
 else
   git checkout -b "${TARGET_REF}"
