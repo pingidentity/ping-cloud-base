@@ -61,8 +61,8 @@ set_env_vars() {
     export BACKUP_URL=s3://${CLUSTER_NAME}-backup-bucket
 
     export MYSQL_SERVICE_HOST=beluga-${CLUSTER_NAME}-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
-    export MYSQL_USER=ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#username
-    export MYSQL_PASSWORD=ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#password
+    export MYSQL_USER=ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username
+    export MYSQL_PASSWORD=ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#password
 
     # MySQL database names cannot have dashes. So transform dashes into underscores.
     ENV_NAME_NO_DASHES=$(echo ${CI_COMMIT_REF_SLUG} | tr '-' '_')
@@ -145,8 +145,8 @@ set_env_vars() {
   # PingCentral
   MYSQL_SERVICE_HOST="beluga-${SELECTED_KUBE_NAME:-ci-cd}-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com"
   MYSQL_SERVICE_PORT=3306
-  MYSQL_USER_SSM=/aws/reference/secretsmanager/pcpt/ping-central/dbserver#username
-  MYSQL_PASSWORD_SSM=/aws/reference/secretsmanager/pcpt/ping-central/dbserver#password
+  MYSQL_USER_SSM=/aws/reference/secretsmanager//pcpt/ping-central/dbserver#username
+  MYSQL_PASSWORD_SSM=/aws/reference/secretsmanager//pcpt/ping-central/dbserver#password
 
   # Pingcloud-metadata service:
   PINGCLOUD_METADATA_API=https://metadata${FQDN}

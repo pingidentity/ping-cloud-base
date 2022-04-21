@@ -156,10 +156,10 @@
 # MYSQL_SERVICE_HOST        | The hostname of the MySQL database server.         | beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
 #                           |                                                    |
 # MYSQL_USER                | The DBA user of the PingCentral MySQL RDS          | The SSM path:
-#                           | database.                                          | ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#username
+#                           | database.                                          | ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username
 #                           |                                                    |
 # MYSQL_PASSWORD            | The DBA password of the PingCentral MySQL RDS      | The SSM path:
-#                           | database.                                          | ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#password
+#                           | database.                                          | ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#password
 #                           |                                                    |
 # PING_IDENTITY_DEVOPS_USER | A user with license to run Ping Software.          | The SSM path:
 #                           |                                                    | ssm://pcpt/devops-license/user
@@ -287,8 +287,8 @@ export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
 
 export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com}"
-export MYSQL_USER="${MYSQL_USER:-ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#username}"
-export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#password}"
+export MYSQL_USER="${MYSQL_USER:-ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username}"
+export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#password}"
 
 export PING_IDENTITY_DEVOPS_USER="${PING_IDENTITY_DEVOPS_USER:-ssm://pcpt/devops-license/user}"
 export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY:-ssm://pcpt/devops-license/key}"
