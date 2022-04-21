@@ -19,7 +19,7 @@ usage() {
 # Arguments:
 #   ${1} -> The source ref
 #   ${2} -> The target ref
-#   ${3} -> The ref type, tag or branch
+#   ${3} -> The ref type- tag
 ########################################################################################################################
 replaceAndCommit_tag() {
   SOURCE_REF=${1}
@@ -33,7 +33,7 @@ replaceAndCommit_tag() {
   grep_var "PINGACCESS_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}"
   grep_var "PINGACCESS_WAS_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}"
   grep_var "PINGFEDERATE_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}"
-  grep_var "PINGDIRECTORY_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}-"
+  grep_var "PINGDIRECTORY_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}"
   grep_var "PINGDELEGATOR_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}"
   grep_var "PINGCENTRAL_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}"
   grep_var "PINGDATASYNC_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}"
@@ -44,14 +44,15 @@ replaceAndCommit_tag() {
 }
 
 ########################################################################################################################
-# Replaces the current version references in the source ref with the target ref in all the necessary places. Then,
-# commits the changes into the target ref(tag). Must be in the ping-cloud-base directory for it to work
-# correctly.
+# Replaces the current version references in the source ref(v*.*-release-branch-latest image) with the target ref(RC tag) 
+# in base/env_vars and also k8s yaml files. Then, commits the changes into the target ref(tag).
+#
+# Must be in the ping-cloud-base directory for it to work correctly.
 #
 # Arguments:
 #   ${1} -> The source ref
 #   ${2} -> The target ref
-#   ${3} -> The ref type, tag or branch
+#   ${3} -> The ref type-RC tag
 ########################################################################################################################
 replaceAndCommit_RC_tag() {
   SOURCE_REF=${1}
@@ -65,7 +66,7 @@ replaceAndCommit_RC_tag() {
   grep_var "PINGACCESS_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}"
   grep_var "PINGACCESS_WAS_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}"
   grep_var "PINGFEDERATE_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}"
-  grep_var "PINGDIRECTORY_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}-"
+  grep_var "PINGDIRECTORY_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}"
   grep_var "PINGDELEGATOR_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}"
   grep_var "PINGCENTRAL_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}"
   grep_var "PINGDATASYNC_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}"
@@ -77,14 +78,14 @@ replaceAndCommit_RC_tag() {
 
 
 ########################################################################################################################
-# Replaces the current version references in the source ref with the target ref in all the necessary places. Then,
-# commits the changes into the target ref (branch ). Must be in the ping-cloud-base directory for it to work
-# correctly.
+# Replaces the current version references in the source ref(tag) with the target ref(v*.*-release-branch-latest image) in 
+# base/env_vars and also k8s yaml files. Then, commits the changes into the target ref (branch:-v*.*-release-branch ). 
+#
+# Must be in the ping-cloud-base directory for it to work correctly.
 #
 # Arguments:
 #   ${1} -> The source ref
 #   ${2} -> The target ref
-#   ${3} -> The ref type, tag or branch
 ########################################################################################################################
 replaceAndCommit_branch() {
   SOURCE_REF=${1}
