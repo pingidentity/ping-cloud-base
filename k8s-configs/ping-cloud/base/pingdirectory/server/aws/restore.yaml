@@ -123,7 +123,7 @@ spec:
           runAsUser: 9031
           allowPrivilegeEscalation: false
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory:8.3.0.5-v1.0.37
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         command:
         - /opt/in/restore.sh
         volumeMounts:
