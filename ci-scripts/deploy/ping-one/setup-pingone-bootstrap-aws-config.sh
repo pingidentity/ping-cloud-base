@@ -13,12 +13,25 @@ fi
 param_store_path_base="/${CLUSTER_NAME:-${USER}}/pcpt/orch-api"
 
 
-product_entitlements_path="${param_store_path_base}/product-entitlements"
+# Product Entitlements SSM Param for legacy (pre 1.13) deployments
+legacy_product_entitlements_path="${param_store_path_base}/product-entitlements"
+
+product_entitlements_path="${param_store_path_base}/product-entitlements/v2"
+
 entitlements_value=$(cat <<EOF
 {
   "productEntitlements": ${PRODUCT_ENTITLEMENTS}
 }
 EOF)
+
+echo "Updating the legacy entitlements parameter..."
+aws ssm put-parameter \
+    --name "${legacy_product_entitlements_path}" \
+    --value "${entitlements_value}" \
+    --type String \
+    --region "${region}" \
+    --profile "${profile}" \
+    --overwrite
 
 echo "Updating the entitlements parameter..."
 aws ssm put-parameter \
