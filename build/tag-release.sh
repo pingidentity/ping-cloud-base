@@ -129,6 +129,8 @@ grep_yaml() {
 
   echo "Changing ${SOURCE_VALUE} -> ${TARGET_VALUE} in expected files"
 
+  echo "working dir : ${pwd}"
+
   git grep -l "^${image}:${SOURCE_VALUE}" | xargs sed -i.bak "s/^\(${image}:\)${SOURCE_VALUE}$/\1${TARGET_VALUE}/g"
 
 }
