@@ -123,9 +123,9 @@ grep_var() {
 
 grep_yaml() {
 
-  image=${1}
-  SOURCE_VALUE=${2}
-  TARGET_VALUE=${3}
+  image=${0}
+  SOURCE_VALUE=${1}
+  TARGET_VALUE=${2}
 
   echo "Changing ${SOURCE_VALUE} -> ${TARGET_VALUE} in expected files"
   cd /Users/vathsalyakidambi/Desktop/repos/ping-cloud-base/k8s-configs
