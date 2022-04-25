@@ -38,6 +38,16 @@ replaceAndCommit_tag() {
   grep_var "PINGCENTRAL_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}"
   grep_var "PINGDATASYNC_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}"
 
+  #update k8s yaml files
+
+  grep_yaml "pingaccess" "${SOURCE_REF}" "${TARGET_REF}"
+  grep_yaml "pingaccess-was" "${SOURCE_REF}" "${TARGET_REF}"
+  grep_yaml "pingfederate" "${SOURCE_REF}" "${TARGET_REF}"
+  grep_yaml "pingdirectory" "${SOURCE_REF}" "${TARGET_REF}"
+  grep_yaml "pingdelegator" "${SOURCE_REF}" "${TARGET_REF}"
+  grep_yaml "pingcentral" "${SOURCE_REF}" "${TARGET_REF}"
+  grep_yaml "pingdatasync" "${SOURCE_REF}" "${TARGET_REF}"
+
   echo "Committing changes for new ${REF_TYPE} ${TARGET_REF}"
   git add .
   git commit -m "[skip pipeline] - creating new ${REF_TYPE} ${TARGET_REF}"
@@ -71,6 +81,16 @@ replaceAndCommit_RC_tag() {
   grep_var "PINGCENTRAL_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}"
   grep_var "PINGDATASYNC_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}"
 
+  #update k8s yaml files
+
+  grep_yaml "pingaccess" "${SOURCE_REF}-latest" "${TARGET_REF}"
+  grep_yaml "pingaccess-was" "${SOURCE_REF}-latest" "${TARGET_REF}"
+  grep_yaml "pingfederate" "${SOURCE_REF}-latest" "${TARGET_REF}"
+  grep_yaml "pingdirectory" "${SOURCE_REF}-latest" "${TARGET_REF}"
+  grep_yaml "pingdelegator" "${SOURCE_REF}-latest" "${TARGET_REF}"
+  grep_yaml "pingcentral" "${SOURCE_REF}-latest" "${TARGET_REF}"
+  grep_yaml "pingdatasync" "${SOURCE_REF}-latest" "${TARGET_REF}"
+
   echo "Committing changes for new ${REF_TYPE} ${TARGET_REF}"
   git add .
   git commit -m "[skip pipeline] - creating new ${REF_TYPE} ${TARGET_REF}"
@@ -102,7 +122,15 @@ replaceAndCommit_branch() {
   grep_var "PINGCENTRAL_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}-latest"
   grep_var "PINGDATASYNC_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}-latest"
 
-  grep_yaml "image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess" "${SOURCE_REF}" "${TARGET_REF}-latest"
+  #update k8s yaml files
+
+  grep_yaml "pingaccess" "${SOURCE_REF}" "${TARGET_REF}-latest"
+  grep_yaml "pingaccess-was" "${SOURCE_REF}" "${TARGET_REF}-latest"
+  grep_yaml "pingfederate" "${SOURCE_REF}" "${TARGET_REF}-latest"
+  grep_yaml "pingdirectory" "${SOURCE_REF}" "${TARGET_REF}-latest"
+  grep_yaml "pingdelegator" "${SOURCE_REF}" "${TARGET_REF}-latest"
+  grep_yaml "pingcentral" "${SOURCE_REF}" "${TARGET_REF}-latest"
+  grep_yaml "pingdatasync" "${SOURCE_REF}" "${TARGET_REF}-latest"
 
   echo "Committing changes for new ${REF_TYPE} ${TARGET_REF}"
   git add .
@@ -111,9 +139,9 @@ replaceAndCommit_branch() {
 
 grep_var() {
 
-  VAR=${1}
-  SOURCE_VALUE=${2}
-  TARGET_VALUE=${3}
+  local VAR=${1}
+  local SOURCE_VALUE=${2}
+  local TARGET_VALUE=${3}
 
   echo "Changing ${SOURCE_VALUE} -> ${TARGET_VALUE} in expected files"
 
@@ -123,23 +151,19 @@ grep_var() {
 
 grep_yaml() {
 
-  image=${1}
-  SOURCE_VALUE=${2}
-  TARGET_VALUE=${3}
+  local VAR=${1}
+  local SOURCE_VALUE=${2}
+  local TARGET_VALUE=${3}
+
+  local image="image: public.ecr.aws/r2h3l6e4/pingcloud-apps/${1}"
 
   echo "Changing ${image}:${SOURCE_VALUE} -> ${TARGET_VALUE} in expected files"
-  cd /Users/vathsalyakidambi/Desktop/repos/ping-cloud-base/k8s-configs
+  cd "${SANDBOX}"/ping-cloud-base/k8s-configs
 
-  echo "working dir "
-  pwd
-
-  git grep -l "${image}:${SOURCE_VALUE}"  | xargs sed -n "s/${SOURCE_VALUE}/${TARGET_VALUE}/p"
-  cd /Users/vathsalyakidambi/Desktop/repos/ping-cloud-base/build
-  echo "working dir "
-  pwd
+  git grep -l "${image}:${SOURCE_VALUE}"  | xargs sed -i.bak "s/${SOURCE_VALUE}/${TARGET_VALUE}/g"
+  cd "${SANDBOX}"/ping-cloud-base/
 
 }
-
 
 SOURCE_REF=${1}
 TARGET_REF=${2}
@@ -174,10 +198,10 @@ else
   replaceAndCommit_branch "${SOURCE_REF}" "${TARGET_REF}" 
 fi
 
+
 echo ---
 echo "Files that are different between origin/${SOURCE_REF} and ${TARGET_REF} refs:"
-# git diff --name-only origin/"${SOURCE_REF}" "${TARGET_REF}"
-git diff origin/"${SOURCE_REF}" "${TARGET_REF}"
+git diff --name-only origin/"${SOURCE_REF}" "${TARGET_REF}"
 echo ---
 
 # Confirm before pushing the tag to the server
