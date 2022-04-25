@@ -130,11 +130,14 @@ grep_yaml() {
   echo "Changing ${image}:${SOURCE_VALUE} -> ${TARGET_VALUE} in expected files"
   cd /Users/vathsalyakidambi/Desktop/repos/ping-cloud-base/k8s-configs
 
-  echo "working dir : ${pwd}"
+  echo "working dir "
+  pwd
 
   git grep -r "${image}:${SOURCE_VALUE}" 
   # | xargs sed -i.bak "s/^\(${image}:\)${SOURCE_VALUE}$/\1${TARGET_VALUE}/g"
   cd /Users/vathsalyakidambi/Desktop/repos/ping-cloud-base/build
+  echo "working dir "
+  pwd
 
 }
 
