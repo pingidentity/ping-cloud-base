@@ -128,7 +128,7 @@ grep_yaml() {
   TARGET_VALUE=${3}
 
   echo "Changing ${SOURCE_VALUE} -> ${TARGET_VALUE} in expected files"
-  cd /Users/vathsalyakidambi/Desktop/repos/ping-cloud-base
+  cd /Users/vathsalyakidambi/Desktop/repos/ping-cloud-base/k8s-configs
 
   echo "working dir : ${pwd}"
 
