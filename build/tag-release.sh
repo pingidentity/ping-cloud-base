@@ -133,7 +133,7 @@ grep_yaml() {
   echo "working dir "
   pwd
 
-  git grep -l "${image}:${SOURCE_VALUE}"  | xargs sed -n 's/${SOURCE_VALUE}/${TARGET_VALUE}/p'
+  git grep -l "${image}:${SOURCE_VALUE}"  | xargs sed -n "s/${SOURCE_VALUE}/${TARGET_VALUE}/p"
   cd /Users/vathsalyakidambi/Desktop/repos/ping-cloud-base/build
   echo "working dir "
   pwd
