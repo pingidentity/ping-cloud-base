@@ -9725,8 +9725,6 @@ metadata:
   annotations:
     sealedsecrets.bitnami.com/managed: "true"
 type: Opaque
-data:
-  admin.password: "JDJhJDEwJHlWRU5GT21mTzBGcXNLNlVreTBEei5vLzM1ekloWDdmMjBvOU9CRVFKNVZqWUpOUHhGbUNlCg=="
 ---
 apiVersion: v1
 kind: Service
