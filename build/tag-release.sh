@@ -221,6 +221,25 @@ verify_latest() {
 
 }
 
+verify_ref_name() {
+
+  local value=${1}
+
+  # TODO: Change to 'release-branch'
+  # REGEX='^v[0-9]+.[0-9]+-new-image-process$'
+
+  REGEX='^pdo-[0-9]+$'
+  
+  if [[ $value =~ $REGEX ]]; then
+    echo "$value is a release branch"
+    export REF_NAME="release-branch"
+  else
+    echo "$value is  RC"
+    export REF_NAME="rc"
+  fi
+}
+
+
 SOURCE_REF=${1}
 TARGET_REF=${2}
 REF_TYPE=${3}
@@ -255,8 +274,8 @@ git checkout "${SOURCE_REF}"
 # fi
 
 if test "${REF_TYPE}" = 'tag'; then
-  verify_latest "${SOURCE_REF}"
-  if test "${label}" = 'latest'; then
+  verify_ref_name "${SOURCE_REF}"
+  if test "${REF_NAME}" = 'release-branch'; then  
     replaceAndCommit "${SOURCE_REF}-latest" "${TARGET_REF}" "${REF_TYPE}"
   else
     replaceAndCommit "${SOURCE_REF}" "${TARGET_REF}" "${REF_TYPE}"

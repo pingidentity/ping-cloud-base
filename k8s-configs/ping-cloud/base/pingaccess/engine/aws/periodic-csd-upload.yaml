@@ -14,7 +14,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: pingaccess-periodic-csd-upload
-            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess:pdo-3605-latest
+            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess:pdo-3605
             imagePullPolicy: IfNotPresent
             securityContext:
               runAsGroup: 9999
