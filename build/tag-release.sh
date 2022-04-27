@@ -99,9 +99,9 @@ verify_ref_name() {
   local value=${1}
 
   # TODO: Change to 'release-branch'
-  # REGEX='^v[0-9]+.[0-9]+-new-image-process$'
+  REGEX='^v[0-9]+.[0-9]+-new-image-process$'
 
-  REGEX='^pdo-[0-9]+$'
+  # REGEX='^pdo-[0-9]+$'
   
   if [[ $value =~ $REGEX ]]; then
     echo "$value is a release branch"
@@ -161,8 +161,8 @@ fi
 
 echo ---
 echo "Files that are different between origin/${SOURCE_REF} and ${TARGET_REF} refs:"
-# git diff --name-only origin/"${SOURCE_REF}" "${TARGET_REF}"
-git diff  origin/"${SOURCE_REF}" "${TARGET_REF}"
+git diff --name-only origin/"${SOURCE_REF}" "${TARGET_REF}"
+# git diff  origin/"${SOURCE_REF}" "${TARGET_REF}"
 echo ---
 
 # Confirm before pushing the tag to the server
