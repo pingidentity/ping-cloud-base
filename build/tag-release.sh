@@ -54,7 +54,7 @@ replaceAndCommit_tag() {
 }
 
 ########################################################################################################################
-# Replaces the current version references in the source ref(v*.*-release-branch-latest image) with the target ref(RC tag) 
+# Replaces the current version references in the source ref(v*.*-release-branch-latest image) with the target ref(RC tag)
 # in base/env_vars and also k8s yaml files. Then, commits the changes into the target ref(tag).
 #
 # Must be in the ping-cloud-base directory for it to work correctly.
@@ -96,10 +96,9 @@ replaceAndCommit_RC_tag() {
   git commit -m "[skip pipeline] - creating new ${REF_TYPE} ${TARGET_REF}"
 }
 
-
 ########################################################################################################################
-# Replaces the current version references in the source ref(tag) with the target ref(v*.*-release-branch-latest image) in 
-# base/env_vars and also k8s yaml files. Then, commits the changes into the target ref (branch:-v*.*-release-branch ). 
+# Replaces the current version references in the source ref(tag) with the target ref(v*.*-release-branch-latest image) in
+# base/env_vars and also k8s yaml files. Then, commits the changes into the target ref (branch:-v*.*-release-branch ).
 #
 # Must be in the ping-cloud-base directory for it to work correctly.
 #
@@ -110,7 +109,6 @@ replaceAndCommit_RC_tag() {
 replaceAndCommit_branch() {
   SOURCE_REF=${1}
   TARGET_REF=${2}
-
 
   #update base env vars
 
@@ -137,6 +135,48 @@ replaceAndCommit_branch() {
   git commit -m "[skip pipeline] - creating new ${REF_TYPE} ${TARGET_REF}"
 }
 
+########################################################################################################################
+# Replaces the current version references in the source ref with the target ref in all the necessary places. Then,
+# commits the changes into the target ref(tag). Must be in the ping-cloud-base directory for it to work
+# correctly.
+#
+# Arguments:
+#   ${1} -> The source ref
+#   ${2} -> The target ref
+#   ${3} -> The ref type- tag
+########################################################################################################################
+replaceAndCommit() {
+  SOURCE=${1}
+  TARGET=${2}
+  REF_TYPE=${3}
+
+  echo "Changing ${SOURCE} -> ${TARGET} in expected files"
+
+  #update base env vars
+
+  grep_var "PINGACCESS_IMAGE_TAG" "${SOURCE}" "${TARGET}"
+  grep_var "PINGACCESS_WAS_IMAGE_TAG" "${SOURCE}" "${TARGET}"
+  grep_var "PINGFEDERATE_IMAGE_TAG" "${SOURCE}" "${TARGET}"
+  grep_var "PINGDIRECTORY_IMAGE_TAG" "${SOURCE}" "${TARGET}"
+  grep_var "PINGDELEGATOR_IMAGE_TAG" "${SOURCE}" "${TARGET}"
+  grep_var "PINGCENTRAL_IMAGE_TAG" "${SOURCE}" "${TARGET}"
+  grep_var "PINGDATASYNC_IMAGE_TAG" "${SOURCE}" "${TARGET}"
+
+  #update k8s yaml files
+
+  grep_yaml "pingaccess" "${SOURCE}" "${TARGET}"
+  grep_yaml "pingaccess-was" "${SOURCE}" "${TARGET}"
+  grep_yaml "pingfederate" "${SOURCE}" "${TARGET}"
+  grep_yaml "pingdirectory" "${SOURCE}" "${TARGET}"
+  grep_yaml "pingdelegator" "${SOURCE}" "${TARGET}"
+  grep_yaml "pingcentral" "${SOURCE}" "${TARGET}"
+  grep_yaml "pingdatasync" "${SOURCE}" "${TARGET}"
+
+  echo "Committing changes for new ${REF_TYPE} ${TARGET}"
+  git add .
+  git commit -m "[skip pipeline] - creating new ${REF_TYPE} ${TARGET}"
+}
+
 grep_var() {
 
   local VAR=${1}
@@ -160,8 +200,24 @@ grep_yaml() {
   echo "Changing ${image}:${SOURCE_VALUE} -> ${TARGET_VALUE} in expected files"
   cd "${SANDBOX}"/ping-cloud-base/k8s-configs
 
-  git grep -l "${image}:${SOURCE_VALUE}"  | xargs sed -i.bak "s/${SOURCE_VALUE}/${TARGET_VALUE}/g"
+  git grep -l "${image}:${SOURCE_VALUE}" | xargs sed -i.bak "s/${SOURCE_VALUE}/${TARGET_VALUE}/g"
   cd "${SANDBOX}"/ping-cloud-base/
+
+}
+
+verify_latest() {
+
+  local value=${1}
+  local SUB='latest'
+
+  echo "Verifying if ${value} is latest or not"
+
+  if  grep "$SUB" <<<"$value"; then
+    export label="latest"
+
+  else
+    export label="non-latest"
+  fi
 
 }
 
@@ -175,7 +231,7 @@ if test -z "${SOURCE_REF}" || test -z "${TARGET_REF}"; then
 fi
 
 SCRIPT_DIR=$(dirname "${0}")
-pushd "${SCRIPT_DIR}" &> /dev/null
+pushd "${SCRIPT_DIR}" &>/dev/null
 
 SANDBOX=$(mktemp -d)
 echo "Making modifications in sandbox directory ${SANDBOX}"
@@ -187,25 +243,39 @@ echo ---
 cd ping-cloud-base
 git checkout "${SOURCE_REF}"
 
+# if test "${REF_TYPE}" = 'tag'; then
+#   replaceAndCommit_tag "${SOURCE_REF}" "${TARGET_REF}" "${REF_TYPE}"
+#   git tag "${TARGET_REF}"
+# elif test "${REF_TYPE}" = 'RC'; then
+#   replaceAndCommit_RC_tag "${SOURCE_REF}" "${TARGET_REF}" "${REF_TYPE}"
+#   git tag "${TARGET_REF}"
+# else
+#   git checkout -b "${TARGET_REF}"
+#   replaceAndCommit_branch "${SOURCE_REF}" "${TARGET_REF}"
+# fi
+
 if test "${REF_TYPE}" = 'tag'; then
-  replaceAndCommit_tag "${SOURCE_REF}" "${TARGET_REF}" "${REF_TYPE}"
-  git tag "${TARGET_REF}"
-elif test "${REF_TYPE}" = 'RC'; then
-  replaceAndCommit_RC_tag "${SOURCE_REF}" "${TARGET_REF}" "${REF_TYPE}"
-  git tag "${TARGET_REF}"
+  verify_latest "${SOURCE_REF}"
+  if test "${label}" = 'latest'; then
+    replaceAndCommit "${SOURCE_REF}-latest" "${TARGET_REF}" "${REF_TYPE}"
+  else
+    replaceAndCommit "${SOURCE_REF}" "${TARGET_REF}" "${REF_TYPE}"
+  fi
+ git tag "${TARGET_REF}"
+
 else
   git checkout -b "${TARGET_REF}"
-  replaceAndCommit_branch "${SOURCE_REF}" "${TARGET_REF}" 
+  replaceAndCommit_branch "${SOURCE_REF}" "${TARGET_REF}"
 fi
-
 
 echo ---
 echo "Files that are different between origin/${SOURCE_REF} and ${TARGET_REF} refs:"
 git diff --name-only origin/"${SOURCE_REF}" "${TARGET_REF}"
+# git diff  origin/"${SOURCE_REF}" "${TARGET_REF}"
 echo ---
 
 # Confirm before pushing the tag to the server
 read -n 1 -srp 'Press any key to continue'
 # git push origin "${TARGET_REF}"
 
-popd &> /dev/null
+popd &>/dev/null
