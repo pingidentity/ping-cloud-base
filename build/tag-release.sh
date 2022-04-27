@@ -13,131 +13,7 @@ usage() {
 
 ########################################################################################################################
 # Replaces the current version references in the source ref with the target ref in all the necessary places. Then,
-# commits the changes into the target ref(tag). Must be in the ping-cloud-base directory for it to work
-# correctly.
-#
-# Arguments:
-#   ${1} -> The source ref
-#   ${2} -> The target ref
-#   ${3} -> The ref type- tag
-########################################################################################################################
-replaceAndCommit_tag() {
-  SOURCE_REF=${1}
-  TARGET_REF=${2}
-  REF_TYPE=${3}
-
-  echo "Changing ${SOURCE_REF} -> ${TARGET_REF} in expected files"
-
-  #update base env vars
-
-  grep_var "PINGACCESS_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}"
-  grep_var "PINGACCESS_WAS_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}"
-  grep_var "PINGFEDERATE_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}"
-  grep_var "PINGDIRECTORY_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}"
-  grep_var "PINGDELEGATOR_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}"
-  grep_var "PINGCENTRAL_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}"
-  grep_var "PINGDATASYNC_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}"
-
-  #update k8s yaml files
-
-  grep_yaml "pingaccess" "${SOURCE_REF}" "${TARGET_REF}"
-  grep_yaml "pingaccess-was" "${SOURCE_REF}" "${TARGET_REF}"
-  grep_yaml "pingfederate" "${SOURCE_REF}" "${TARGET_REF}"
-  grep_yaml "pingdirectory" "${SOURCE_REF}" "${TARGET_REF}"
-  grep_yaml "pingdelegator" "${SOURCE_REF}" "${TARGET_REF}"
-  grep_yaml "pingcentral" "${SOURCE_REF}" "${TARGET_REF}"
-  grep_yaml "pingdatasync" "${SOURCE_REF}" "${TARGET_REF}"
-
-  echo "Committing changes for new ${REF_TYPE} ${TARGET_REF}"
-  git add .
-  git commit -m "[skip pipeline] - creating new ${REF_TYPE} ${TARGET_REF}"
-}
-
-########################################################################################################################
-# Replaces the current version references in the source ref(v*.*-release-branch-latest image) with the target ref(RC tag)
-# in base/env_vars and also k8s yaml files. Then, commits the changes into the target ref(tag).
-#
-# Must be in the ping-cloud-base directory for it to work correctly.
-#
-# Arguments:
-#   ${1} -> The source ref
-#   ${2} -> The target ref
-#   ${3} -> The ref type-RC tag
-########################################################################################################################
-replaceAndCommit_RC_tag() {
-  SOURCE_REF=${1}
-  TARGET_REF=${2}
-  REF_TYPE=${3}
-
-  echo "Changing ${SOURCE_REF} -> ${TARGET_REF} in expected files"
-
-  #update base env vars
-
-  grep_var "PINGACCESS_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}"
-  grep_var "PINGACCESS_WAS_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}"
-  grep_var "PINGFEDERATE_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}"
-  grep_var "PINGDIRECTORY_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}"
-  grep_var "PINGDELEGATOR_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}"
-  grep_var "PINGCENTRAL_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}"
-  grep_var "PINGDATASYNC_IMAGE_TAG" "${SOURCE_REF}-latest" "${TARGET_REF}"
-
-  #update k8s yaml files
-
-  grep_yaml "pingaccess" "${SOURCE_REF}-latest" "${TARGET_REF}"
-  grep_yaml "pingaccess-was" "${SOURCE_REF}-latest" "${TARGET_REF}"
-  grep_yaml "pingfederate" "${SOURCE_REF}-latest" "${TARGET_REF}"
-  grep_yaml "pingdirectory" "${SOURCE_REF}-latest" "${TARGET_REF}"
-  grep_yaml "pingdelegator" "${SOURCE_REF}-latest" "${TARGET_REF}"
-  grep_yaml "pingcentral" "${SOURCE_REF}-latest" "${TARGET_REF}"
-  grep_yaml "pingdatasync" "${SOURCE_REF}-latest" "${TARGET_REF}"
-
-  echo "Committing changes for new ${REF_TYPE} ${TARGET_REF}"
-  git add .
-  git commit -m "[skip pipeline] - creating new ${REF_TYPE} ${TARGET_REF}"
-}
-
-########################################################################################################################
-# Replaces the current version references in the source ref(tag) with the target ref(v*.*-release-branch-latest image) in
-# base/env_vars and also k8s yaml files. Then, commits the changes into the target ref (branch:-v*.*-release-branch ).
-#
-# Must be in the ping-cloud-base directory for it to work correctly.
-#
-# Arguments:
-#   ${1} -> The source ref
-#   ${2} -> The target ref
-########################################################################################################################
-replaceAndCommit_branch() {
-  SOURCE_REF=${1}
-  TARGET_REF=${2}
-
-  #update base env vars
-
-  grep_var "PINGACCESS_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}-latest"
-  grep_var "PINGACCESS_WAS_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}-latest"
-  grep_var "PINGFEDERATE_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}-latest"
-  grep_var "PINGDIRECTORY_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}-latest"
-  grep_var "PINGDELEGATOR_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}-latest"
-  grep_var "PINGCENTRAL_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}-latest"
-  grep_var "PINGDATASYNC_IMAGE_TAG" "${SOURCE_REF}" "${TARGET_REF}-latest"
-
-  #update k8s yaml files
-
-  grep_yaml "pingaccess" "${SOURCE_REF}" "${TARGET_REF}-latest"
-  grep_yaml "pingaccess-was" "${SOURCE_REF}" "${TARGET_REF}-latest"
-  grep_yaml "pingfederate" "${SOURCE_REF}" "${TARGET_REF}-latest"
-  grep_yaml "pingdirectory" "${SOURCE_REF}" "${TARGET_REF}-latest"
-  grep_yaml "pingdelegator" "${SOURCE_REF}" "${TARGET_REF}-latest"
-  grep_yaml "pingcentral" "${SOURCE_REF}" "${TARGET_REF}-latest"
-  grep_yaml "pingdatasync" "${SOURCE_REF}" "${TARGET_REF}-latest"
-
-  echo "Committing changes for new ${REF_TYPE} ${TARGET_REF}"
-  git add .
-  git commit -m "[skip pipeline] - creating new ${REF_TYPE} ${TARGET_REF}"
-}
-
-########################################################################################################################
-# Replaces the current version references in the source ref with the target ref in all the necessary places. Then,
-# commits the changes into the target ref(tag). Must be in the ping-cloud-base directory for it to work
+# commits the changes into the target ref(branch or tag). Must be in the ping-cloud-base directory for it to work
 # correctly.
 #
 # Arguments:
@@ -183,10 +59,15 @@ grep_var() {
   local SOURCE_VALUE=${2}
   local TARGET_VALUE=${3}
 
-  echo "Changing ${SOURCE_VALUE} -> ${TARGET_VALUE} in expected files"
-
-  git grep -l "^${VAR}=${SOURCE_VALUE}" | xargs sed -i.bak "s/^\(${VAR}=\)${SOURCE_VALUE}$/\1${TARGET_VALUE}/g"
-
+  verify_var=$(git grep -l "^${VAR}=${SOURCE_VALUE}" | wc -l)
+  if test ${verify_var} = 0; then
+    usage
+    exit 1
+  else
+    echo "Changing ${SOURCE_VALUE} -> ${TARGET_VALUE} in expected files"
+     git grep -l "^${VAR}=${SOURCE_VALUE}" | xargs sed -i.bak "s/^\(${VAR}=\)${SOURCE_VALUE}$/\1${TARGET_VALUE}/g"
+  fi
+  
 }
 
 grep_yaml() {
@@ -196,28 +77,20 @@ grep_yaml() {
   local TARGET_VALUE=${3}
 
   local image="image: public.ecr.aws/r2h3l6e4/pingcloud-apps/${1}"
-
-  echo "Changing ${image}:${SOURCE_VALUE} -> ${TARGET_VALUE} in expected files"
+  
   cd "${SANDBOX}"/ping-cloud-base/k8s-configs
 
-  git grep -l "${image}:${SOURCE_VALUE}" | xargs sed -i.bak "s/${SOURCE_VALUE}/${TARGET_VALUE}/g"
-  cd "${SANDBOX}"/ping-cloud-base/
-
-}
-
-verify_latest() {
-
-  local value=${1}
-  local SUB='latest'
-
-  echo "Verifying if ${value} is latest or not"
-
-  if  grep "$SUB" <<<"$value"; then
-    export label="latest"
-
+  verify_yaml=$(git grep -l "${image}:${SOURCE_VALUE}" | wc -l)
+  if test ${verify_yaml} = 0; then
+    usage
+    exit 1
   else
-    export label="non-latest"
+    echo "Changing ${image}:${SOURCE_VALUE} -> ${TARGET_VALUE} in expected files"
+
+    git grep -l "${image}:${SOURCE_VALUE}" | xargs sed -i.bak "s/${SOURCE_VALUE}/${TARGET_VALUE}/g"
   fi
+
+  cd "${SANDBOX}"/ping-cloud-base/
 
 }
 
@@ -226,9 +99,9 @@ verify_ref_name() {
   local value=${1}
 
   # TODO: Change to 'release-branch'
-  # REGEX='^v[0-9]+.[0-9]+-new-image-process$'
+  REGEX='^v[0-9]+.[0-9]+-new-image-process$'
 
-  REGEX='^pdo-[0-9]+$'
+  # REGEX='^pdo-[0-9]+$'
   
   if [[ $value =~ $REGEX ]]; then
     echo "$value is a release branch"
@@ -238,7 +111,6 @@ verify_ref_name() {
     export REF_NAME="rc"
   fi
 }
-
 
 SOURCE_REF=${1}
 TARGET_REF=${2}
@@ -262,29 +134,29 @@ echo ---
 cd ping-cloud-base
 git checkout "${SOURCE_REF}"
 
-# if test "${REF_TYPE}" = 'tag'; then
-#   replaceAndCommit_tag "${SOURCE_REF}" "${TARGET_REF}" "${REF_TYPE}"
-#   git tag "${TARGET_REF}"
-# elif test "${REF_TYPE}" = 'RC'; then
-#   replaceAndCommit_RC_tag "${SOURCE_REF}" "${TARGET_REF}" "${REF_TYPE}"
-#   git tag "${TARGET_REF}"
-# else
-#   git checkout -b "${TARGET_REF}"
-#   replaceAndCommit_branch "${SOURCE_REF}" "${TARGET_REF}"
-# fi
-
 if test "${REF_TYPE}" = 'tag'; then
   verify_ref_name "${SOURCE_REF}"
   if test "${REF_NAME}" = 'release-branch'; then  
     replaceAndCommit "${SOURCE_REF}-latest" "${TARGET_REF}" "${REF_TYPE}"
-  else
+  elif test "${REF_NAME}" = 'rc'; then  
     replaceAndCommit "${SOURCE_REF}" "${TARGET_REF}" "${REF_TYPE}"
+  else
+    usage
+    exit 1
   fi
  git tag "${TARGET_REF}"
+ unset REF_NAME
 
 else
-  git checkout -b "${TARGET_REF}"
-  replaceAndCommit_branch "${SOURCE_REF}" "${TARGET_REF}"
+  verify_ref_name "${TARGET_REF}"
+  if test "${REF_NAME}" = 'release-branch'; then 
+    git checkout -b "${TARGET_REF}"
+    replaceAndCommit "${SOURCE_REF}" "${TARGET_REF}-latest"
+  else
+    usage
+    exit 1
+  fi
+  unset REF_NAME
 fi
 
 echo ---
@@ -298,3 +170,6 @@ read -n 1 -srp 'Press any key to continue'
 # git push origin "${TARGET_REF}"
 
 popd &>/dev/null
+
+
+#todo -update yaml files with pdo-3605 and also update "usage" method or just add a new method like usage for yaml and env vars error handling
