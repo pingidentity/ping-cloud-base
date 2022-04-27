@@ -99,9 +99,9 @@ verify_ref_name() {
   local value=${1}
 
   # TODO: Change to 'release-branch'
-  REGEX='^v[0-9]+.[0-9]+-new-image-process$'
+  # REGEX='^v[0-9]+.[0-9]+-new-image-process$'
 
-  # REGEX='^pdo-[0-9]+$'
+  REGEX='^pdo-[0-9]+$'
   
   if [[ $value =~ $REGEX ]]; then
     echo "$value is a release branch"

@@ -52,7 +52,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: pingdatasync-backup
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdatasync:8.2.0.6-v1.0.16
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdatasync:pdo-3605
         imagePullPolicy: IfNotPresent
         securityContext:
           runAsGroup: 9999
