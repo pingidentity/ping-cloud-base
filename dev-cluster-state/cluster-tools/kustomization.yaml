@@ -161,7 +161,22 @@ patchesJson6902:
       value:
         --default-ssl-certificate=${NAMESPACE}/acme-tls-cert
 
-# Update nginx replica count to support dev-env and CI/CD workloads.
+# Update nginx memory request & limit to support dev-env and CI/CD workloads
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: nginx-ingress-controller
+    namespace: ingress-nginx-public
+  patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/limits/memory
+      value: 2.5Gi
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/requests/memory
+      value: 2.5Gi
+
+  # Update nginx replica count to support dev-env and CI/CD workloads.
 - target:
     group: autoscaling
     version: v1

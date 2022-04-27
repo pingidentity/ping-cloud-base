@@ -99,7 +99,7 @@ class PingOneSetup:
         self.envId = None
         self.entitlements = None
         self.metadata = None
-        self.environment_name = os.getenv("CLUSTER_NAME", os.getenv("USER") + "_" + self.deploy_type.lower())
+        self.environment_name = os.getenv("CLUSTER_NAME", os.getenv("USER", "unknown") + "_" + self.deploy_type.lower())
         self.products = None
         workerapp_client = get_client(WORKERAPP_CLIENT)
         self.workerapp_client_session = OAuth2Session(workerapp_client["client_id"],
