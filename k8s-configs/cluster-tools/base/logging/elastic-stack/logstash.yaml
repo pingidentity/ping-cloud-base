@@ -278,37 +278,38 @@ data:
 
                 geoip {
                     source => "ip"
+                    target => "client"
                 }
 
                 #Security Enrichments begin here, ENRICH THE IP ADDRESS DETAIL
 
                 translate {
-                    field => "ip"
-                    destination => "threat_intel"
+                    source => "ip"
+                    target => "threat_intel"
                     fallback => "No"
                     dictionary_path => '/enrichment-cache-files/AlienVaultIP.yml'
                     refresh_behaviour => "replace"
                 }
 
                 translate {
-                    field => "ip"
-                    destination => "tor_intel"
+                    source => "ip"
+                    target => "tor_intel"
                     fallback => "No"
                     dictionary_path => '/enrichment-cache-files/TorNodes.yml'
                     refresh_behaviour => "replace"
                 }
 
                 translate {
-                    field => "[geoip][country_name]"
-                    destination => "malicious_country"
+                    source => "[geoip][country_name]"
+                    target => "malicious_country"
                     fallback => "No"
                     dictionary_path => '/enrichment-cache-files/MaliciousCountries.yml'
                     refresh_behaviour => "replace"
                 }
 
                 translate {
-                    field => "[geoip][country_name]"
-                    destination => "known_country"
+                    source => "[geoip][country_name]"
+                    target => "known_country"
                     fallback => "No"
                     dictionary_path => '/enrichment-cache-files/KnownCountries.yml'
                     refresh_behaviour => "replace"
@@ -415,6 +416,7 @@ data:
 
             geoip {
                 source => "requesterIP"
+                target => "client"
             }
 
             date {
@@ -423,32 +425,32 @@ data:
             }
 
             translate {
-                field => "requesterIP"
-                destination => "threat_intel"
+                source => "requesterIP"
+                target => "threat_intel"
                 fallback => "No"
                 dictionary_path => '/enrichment-cache-files/AlienVaultIP.yml'
                 refresh_behaviour => "replace"
             }
 
             translate {
-                field => "requesterIP"
-                destination => "tor_intel"
+                source => "requesterIP"
+                target => "tor_intel"
                 fallback => "No"
                 dictionary_path => '/enrichment-cache-files/TorNodes.yml'
                 refresh_behaviour => "replace"
             }
 
             translate {
-                field => "[geoip][country_name]"
-                destination => "malicious_country"
+                source => "[geoip][country_name]"
+                target => "malicious_country"
                 fallback => "No"
                 dictionary_path => '/enrichment-cache-files/MaliciousCountries.yml'
                 refresh_behaviour => "replace"
             }
 
             translate {
-                field => "[geoip][country_name]"
-                destination => "known_country"
+                source => "[geoip][country_name]"
+                target => "known_country"
                 fallback => "No"
                 dictionary_path => '/enrichment-cache-files/KnownCountries.yml'
                 refresh_behaviour => "replace"
@@ -491,35 +493,36 @@ data:
                 }
                 geoip {
                     source => "client"
+                    target => "client"
                 }
 
                 translate {
-                    field => "client"
-                    destination => "threat_intel"
+                    source => "client"
+                    target => "threat_intel"
                     fallback => "No"
                     dictionary_path => '/enrichment-cache-files/AlienVaultIP.yml'
                     refresh_behaviour => "replace"
                 }
 
                 translate {
-                    field => "client"
-                    destination => "tor_intel"
+                    source => "client"
+                    target => "tor_intel"
                     fallback => "No"
                     dictionary_path => '/enrichment-cache-files/TorNodes.yml'
                     refresh_behaviour => "replace"
                 }
 
                 translate {
-                    field => "[geoip][country_name]"
-                    destination => "malicious_country"
+                    source => "[geoip][country_name]"
+                    target => "malicious_country"
                     fallback => "No"
                     dictionary_path => '/enrichment-cache-files/MaliciousCountries.yml'
                     refresh_behaviour => "replace"
                 }
 
                 translate {
-                    field => "[geoip][country_name]"
-                    destination => "known_country"
+                    source => "[geoip][country_name]"
+                    target => "known_country"
                     fallback => "No"
                     dictionary_path => '/enrichment-cache-files/KnownCountries.yml'
                     refresh_behaviour => "replace"
