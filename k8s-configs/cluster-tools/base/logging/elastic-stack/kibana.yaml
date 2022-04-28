@@ -18,7 +18,9 @@ spec:
       initContainers:
 
       - name: check-service-availability
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.0.0
+        ### FIXME
+        # image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.0.0
+        image: 7es7/enrichment-bootstrap:3.14-v1.0.1_test
         
         imagePullPolicy: IfNotPresent
         command: ["sh", '$(CONTAINER_NAME).sh']
@@ -99,7 +101,9 @@ spec:
       restartPolicy: OnFailure
       initContainers:
       - name: wait-for-kibana
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.0.0
+        ### FIXME
+        # image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.0.0
+        image: 7es7/enrichment-bootstrap:3.14-v1.0.1_test
         
         imagePullPolicy: IfNotPresent
         command: ["sh", "-c"]
@@ -112,7 +116,9 @@ spec:
         - name: KIBANA_HOST
           value: "http://kibana"
       - name: wait-for-es
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.0.0
+        ### FIXME
+        # image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.0.0
+        image: 7es7/enrichment-bootstrap:3.14-v1.0.1_test
 
         imagePullPolicy: IfNotPresent
         command: ["sh", "-c"]
@@ -126,7 +132,9 @@ spec:
           value: "http://elasticsearch"
       containers:
       - name: create-logstash-index
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.0.0
+        ### FIXME
+        # image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.0.0
+        image: 7es7/enrichment-bootstrap:3.14-v1.0.1_test
         imagePullPolicy: IfNotPresent
         command: ["sh", "-c"]
         args:
@@ -137,7 +145,9 @@ spec:
             -d '{"attributes": { "title": "logstash*", "timeFieldName": "@timestamp" } }'
 
       - name: kibana-dashboard-upload
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.0.0
+        ### FIXME
+        # image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.0.0
+        image: 7es7/enrichment-bootstrap:3.14-v1.0.1_test
         
         imagePullPolicy: IfNotPresent
         workingDir: /scripts

@@ -12,7 +12,9 @@ spec:
       containers:
 
       - name: elasticsearch-bootstrap
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.0.0
+        ### FIXME
+        # image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.0.0
+        image: 7es7/enrichment-bootstrap:3.14-v1.0.1_test
         
         imagePullPolicy: IfNotPresent
         workingDir: /scripts
