@@ -34,7 +34,7 @@ spec:
           runAsUser: 9031
           allowPrivilegeEscalation: false
         image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v114
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         env:
         - name: NAMESPACE
           valueFrom:
@@ -145,7 +145,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         resources:
           requests:
             memory: "1280Mi"

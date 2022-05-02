@@ -17,7 +17,7 @@ spec:
       containers:
       - name: pingdirectory-backup
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory:pdo-3605
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true

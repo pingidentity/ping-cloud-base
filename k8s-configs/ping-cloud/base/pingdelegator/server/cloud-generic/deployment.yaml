@@ -75,7 +75,7 @@ spec:
           runAsUser: 9031
           allowPrivilegeEscalation: false
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdelegator:pdo-3605
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         resources:
           requests:
             memory: "256Mi"

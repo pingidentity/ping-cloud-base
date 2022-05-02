@@ -165,7 +165,7 @@ spec:
             runAsUser: 9031
             allowPrivilegeEscalation: false
           image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory:pdo-3605
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           ports:
             - containerPort: 1389
               name: ldap
@@ -378,7 +378,7 @@ spec:
       spec:
         accessModes:
           - ReadWriteOnce
-        storageClassName: pingdirectory-gp2
+        storageClassName: pingdirectory-enc-gp2
         resources:
           requests:
             storage: 40Gi

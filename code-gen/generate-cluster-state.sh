@@ -201,7 +201,7 @@
 #                          | added as an annotation to the corresponding K8s    |
 #                          | service for the AWS NLB to use the AWS Elastic IP. |
 #                          |                                                    |
-# PLATFORM_EVENT_QUEUE_NAME| The name of the queue that may be used to notify   | platform_event_queue.fifo
+# PLATFORM_EVENT_QUEUE_NAME| The name of the queue that may be used to notify   | v2_platform_event_queue.fifo
 #                          | PingCloud applications of platform events. This    |
 #                          | is currently only used if the orchestrator for     |
 #                          | PingCloud environments is MyPing.                  |
@@ -215,10 +215,10 @@
 # MYSQL_SERVICE_HOST       | The hostname of the MySQL database server.         | pingcentraldb.${PRIMARY_TENANT_DOMAIN}
 #                          |                                                    |
 # MYSQL_USER               | The DBA user of the PingCentral MySQL RDS          | The SSM path:
-#                          | database.                                          | ssm://pcpt/ping-central/rds/username
+#                          | database.                                          | ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#username
 #                          |                                                    |
 # MYSQL_PASSWORD           | The DBA password of the PingCentral MySQL RDS      | The SSM path:
-#                          | database.                                          | ssm://pcpt/ping-central/rds/password
+#                          | database.                                          | ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#password
 #                          |                                                    |
 # PING_IDENTITY_DEVOPS_USER| A user with license to run Ping Software.          | The SSM path:
 #                          |                                                    | ssm://pcpt/devops-license/user
@@ -596,7 +596,7 @@ export TENANT_DOMAIN="${TENANT_DOMAIN_NO_DOT_SUFFIX}"
 
 export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
 
-export PLATFORM_EVENT_QUEUE_NAME=${PLATFORM_EVENT_QUEUE_NAME:-platform_event_queue.fifo}
+export PLATFORM_EVENT_QUEUE_NAME=${PLATFORM_EVENT_QUEUE_NAME:-v2_platform_event_queue.fifo}
 export ORCH_API_SSM_PATH_PREFIX=${ORCH_API_SSM_PATH_PREFIX:-/pcpt/orch-api}
 
 export LAST_UPDATE_REASON="${LAST_UPDATE_REASON:-NA}"
@@ -623,8 +623,8 @@ export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
 
 export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-"pingcentraldb.\${PRIMARY_TENANT_DOMAIN}"}"
-export MYSQL_USER="${MYSQL_USER:-ssm://pcpt/ping-central/rds/username}"
-export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://pcpt/ping-central/rds/password}"
+export MYSQL_USER="${MYSQL_USER:-ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#username}"
+export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#password}"
 
 export PING_IDENTITY_DEVOPS_USER="${PING_IDENTITY_DEVOPS_USER:-ssm://pcpt/devops-license/user}"
 export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY:-ssm://pcpt/devops-license/key}"

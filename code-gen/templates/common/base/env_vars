@@ -144,14 +144,6 @@ PA_MIN_YGEN=${PA_MIN_YGEN}
 PA_MAX_YGEN=${PA_MAX_YGEN}
 PA_GCOPTION=${PA_GCOPTION}
 
-###################################
-# PingCentral environment variables
-###################################
-MYSQL_SERVICE_HOST=${MYSQL_SERVICE_HOST}
-MYSQL_USER=${MYSQL_USER}
-MYSQL_PASSWORD=${MYSQL_PASSWORD}
-MYSQL_DATABASE=${MYSQL_DATABASE}
-
 ############################################################
 # DevOps License environment variables
 ############################################################
@@ -173,9 +165,9 @@ PINGDATASYNC_IMAGE_TAG=pdo-3605
 # Ping solution image tags
 ############################################################
 METADATA_IMAGE_TAG=v1.0.6
-P14C_BOOTSTRAP_IMAGE_TAG=v1.2.0
+P14C_BOOTSTRAP_IMAGE_TAG=v1.3.0
 P14C_INTEGRATION_IMAGE_TAG=v114
-ANSIBLE_BELUGA_IMAGE_TAG=v1.0.5
+ANSIBLE_BELUGA_IMAGE_TAG=v1.0.6
 
 ############################################################
 # Cluster name variables
