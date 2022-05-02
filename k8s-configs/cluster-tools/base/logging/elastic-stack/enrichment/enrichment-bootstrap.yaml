@@ -14,9 +14,9 @@ spec:
       - name: elasticsearch-bootstrap
         ### FIXME
         # image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.0.0
+        # imagePullPolicy: IfNotPresent
         image: 7es7/enrichment-bootstrap:3.14-v1.0.1_test
-        
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
 
@@ -44,6 +44,48 @@ spec:
         - name: enrichment-elasticsearch-index-templates
           mountPath: /usr/share/elasticsearch/data/index-templates
 
+      - name: kibana-bootstrap
+        ### FIXME
+        # image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.0.0
+        image: 7es7/enrichment-bootstrap:3.14-v1.0.1_test
+        imagePullPolicy: Always
+        workingDir: /scripts
+        command: ["sh", '$(CONTAINER_NAME).sh']
+        env:
+        - name: CONTAINER_NAME
+          value: 'kibana-bootstrap'
+        - name: KIBANA_URL
+          value: 'http://kibana'
+        - name: KIBANA_PORT
+          value: '5601'
+        - name: CHECK_KIBANA_URL
+          value: "http://kibana:5601/api/status"
+        - name: CHECK_ELASTICSEARCH_URL
+          value: "http://elasticsearch:9200/_cluster/health"
+
+        securityContext:
+          privileged: true
+          runAsUser: 1000
+          runAsGroup: 1000
+        volumeMounts: 
+        - name: kibana-dashboard-pa
+          mountPath: /scripts/dashboards/pa.ndjson
+          subPath: pa.ndjson
+        - name: kibana-dashboard-pd
+          mountPath: /scripts/dashboards/pd.ndjson
+          subPath: pd.ndjson
+        - name: kibana-dashboard-pf
+          mountPath: /scripts/dashboards/pf.ndjson
+          subPath: pf.ndjson
+        - name: kibana-dashboard-pf-basic
+          mountPath: /scripts/dashboards/pf-basic.ndjson
+          subPath: pf-basic.ndjson
+        - name: kibana-dashboard-pa-was-basic
+          mountPath: /scripts/dashboards/pa-was-basic.ndjson
+          subPath: pa-was-basic.ndjson
+        - name: enrichment-elasticsearch-index-templates
+          mountPath: /scripts/index-templates
+
       restartPolicy: OnFailure
 
       volumes:
@@ -56,3 +98,18 @@ spec:
       - name: enrichment-elasticsearch-index-templates
         configMap:
           name: enrichment-elasticsearch-index-templates
+      - name: kibana-dashboard-pa
+        configMap:
+          name: kibana-dashboard-pa 
+      - name: kibana-dashboard-pd
+        configMap:
+          name: kibana-dashboard-pd 
+      - name: kibana-dashboard-pf
+        configMap:
+          name: kibana-dashboard-pf
+      - name: kibana-dashboard-pf-basic
+        configMap:
+          name: kibana-dashboard-pf-basic
+      - name: kibana-dashboard-pa-was-basic
+        configMap:
+          name: kibana-dashboard-pa-was-basic
