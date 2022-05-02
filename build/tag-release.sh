@@ -37,16 +37,22 @@ replaceAndCommit() {
   grep_var "PINGDELEGATOR_IMAGE_TAG" "${SOURCE}" "${TARGET}"
   grep_var "PINGCENTRAL_IMAGE_TAG" "${SOURCE}" "${TARGET}"
   grep_var "PINGDATASYNC_IMAGE_TAG" "${SOURCE}" "${TARGET}"
+  grep_var "METADATA_IMAGE_TAG" "${SOURCE}" "${TARGET}"
+  grep_var "P14C_BOOTSTRAP_IMAGE_TAG" "${SOURCE}" "${TARGET}"
+  grep_var "P14C_INTEGRATION_IMAGE_TAG" "${SOURCE}" "${TARGET}"
 
   #update k8s yaml files
 
-  grep_yaml "pingaccess" "${SOURCE}" "${TARGET}"
-  grep_yaml "pingaccess-was" "${SOURCE}" "${TARGET}"
-  grep_yaml "pingfederate" "${SOURCE}" "${TARGET}"
-  grep_yaml "pingdirectory" "${SOURCE}" "${TARGET}"
-  grep_yaml "pingdelegator" "${SOURCE}" "${TARGET}"
-  grep_yaml "pingcentral" "${SOURCE}" "${TARGET}"
-  grep_yaml "pingdatasync" "${SOURCE}" "${TARGET}"
+  grep_yaml "pingaccess" "pingcloud-apps" "${SOURCE}" "${TARGET}"
+  grep_yaml "pingaccess-was" "pingcloud-apps" "${SOURCE}" "${TARGET}"
+  grep_yaml "pingfederate" "pingcloud-apps" "${SOURCE}" "${TARGET}"
+  grep_yaml "pingdirectory" "pingcloud-apps" "${SOURCE}" "${TARGET}"
+  grep_yaml "pingdelegator" "pingcloud-apps" "${SOURCE}" "${TARGET}"
+  grep_yaml "pingcentral" "pingcloud-apps" "${SOURCE}" "${TARGET}"
+  grep_yaml "pingdatasync" "pingcloud-apps" "${SOURCE}" "${TARGET}"
+  grep_yaml "metadata" "pingcloud-services" "${SOURCE}" "${TARGET}"
+  grep_yaml "p14c-bootstrap" "pingcloud-services" "${SOURCE}" "${TARGET}"
+  grep_yaml "p14c-integration" "pingcloud-services" "${SOURCE}" "${TARGET}"
 
   echo "Committing changes for new ${REF_TYPE} ${TARGET}"
   git add .
@@ -73,10 +79,11 @@ grep_var() {
 grep_yaml() {
 
   local VAR=${1}
-  local SOURCE_VALUE=${2}
-  local TARGET_VALUE=${3}
+  local ECR_REPO=${2}
+  local SOURCE_VALUE=${3}
+  local TARGET_VALUE=${4}
 
-  local image="image: public.ecr.aws/r2h3l6e4/pingcloud-apps/${1}"
+  local image="image: public.ecr.aws/r2h3l6e4/${2}/${1}"
   
   cd "${SANDBOX}"/ping-cloud-base/k8s-configs
 
