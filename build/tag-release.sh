@@ -28,6 +28,8 @@ replaceAndCommit() {
 
   echo "Changing ${SOURCE} -> ${TARGET} in expected files"
 
+  git grep -l "^SERVER_PROFILE_BRANCH=${SOURCE}" | xargs sed -i.bak "s/^\(SERVER_PROFILE_BRANCH=\)${SOURCE}$/\1${TARGET}/g"
+
   #update base env vars
 
   grep_var "PINGACCESS_IMAGE_TAG" "${SOURCE}" "${TARGET}"
