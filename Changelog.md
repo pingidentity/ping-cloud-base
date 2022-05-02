@@ -1,5 +1,13 @@
 # Changelog
 
+### 1.12.4
+
+- Upgrade PingAccess to v6.3.4
+
+_Changes:_
+
+- [X] PDO-3846 PA Bugfix - upgrade to 6.3.4
+
 ### 1.12.3
 
 - Turned off pod logs from going into NewRelic
