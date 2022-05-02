@@ -81,7 +81,7 @@ grep_yaml() {
   cd "${SANDBOX}"/ping-cloud-base/k8s-configs
 
   verify_yaml=$(git grep -l "${image}:${SOURCE_VALUE}" | wc -l)
-  if test ${verify_yaml} = 0; then
+  if [[ ${verify_yaml} == 0 ]]; then
     usage
     exit 1
   else
