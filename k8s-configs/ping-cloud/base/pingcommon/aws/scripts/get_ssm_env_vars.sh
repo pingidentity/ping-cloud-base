@@ -33,7 +33,9 @@ get_ssm_val() {
   if [[ "$param_name" == *"secretsmanager"* ]]; then
     # grep for the value of the secrets manager object's key
     # the object's key is the string following the '#' in the param_name variable
-    echo "$ssm_val" | grep -Eo "${param_name#*#}[^,]*" | grep -Eo "[^:]*$"
+    # Using python 2.7 available in docker image to retrieve JSON value.
+    # Retrieved value should not contain any special characters so quoting is not required.
+    echo "$ssm_val" | python -c "import sys, json; print json.load(sys.stdin)['${param_name#*#}']"
   else
     echo "$ssm_val"
   fi

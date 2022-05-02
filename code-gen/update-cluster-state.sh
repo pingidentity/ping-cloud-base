@@ -951,8 +951,6 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
   for REGION_DIR in ${REGION_DIRS}; do # REGION loop for generate
     # Perform the code generation in a sub-shell so it doesn't pollute the current shell with environment variables.
     (
-      # Add some derived environment variables for substitution.
-      add_derived_variables
 
       # Common environment variables for the region
       REGION_ENV_VARS="${K8S_CONFIGS_DIR}/${REGION_DIR}/${ENV_VARS_FILE_NAME}"
@@ -1027,6 +1025,9 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
 
       # Import new env_vars into cluster-state-repo and rename original env_vars as env_vars.old.
       ENV_VARS_FILES="$(find "${TARGET_DIR}" -name "${ENV_VARS_FILE_NAME}" -type f)"
+
+      # Add some derived environment variables for substitution.
+      add_derived_variables
 
       for TEMPLATE_ENV_VARS_FILE in ${ENV_VARS_FILES}; do # Loop through env_vars from ping-cloud-base/code-gen
 
