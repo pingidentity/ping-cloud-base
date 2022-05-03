@@ -26,6 +26,7 @@ _Changes:_
 - [X] PDO-3723 Grafana: Upgrade to 8.4.5 risks investigation
 - [X] PDO-3745 Argocd admin creds in secrets.yaml
 - [X] PDO-3773 Encrypt K8s StorageClass (AWS EBS volumes)
+- [X] PDO-3853 PD Upgrade to version 9.0.0.1
 
 ### 1.13.0
 
