@@ -5,12 +5,14 @@
 - Configure PingFederate and PingAccess environments within PingCentral
 - Create PingDirectory's Password Credential Validator using PingFederate Admin API
 - Create PingDirectory's LDAP Client Manager using PingFederate Admin API
+- Replace Fluentd with Fluent-bit
 - Force liveness probe for PingDirectory to use API endpoint /available-or-degraded-state
 
 _Changes:_
 
 - [X] PDO-2517 Port of PingFederate pre-config script from bash to python
 - [X] PDO-2827 Configure PingFederate and PingAccess environments within PingCentral
+- [X] PDO-2894 Use Fluent Bit instead of Fluentd
 - [X] PDO-3276 Update cluster tools to latest version: Elasticsearch 8.1.3
 - [X] PDO-3279 Update cluster tools to latest version: Logstash v8.1.3
 - [X] PDO-3433 Create PingDirectory's Password Credential Validator using PingFederate Admin API
