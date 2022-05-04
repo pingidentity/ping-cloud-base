@@ -8,6 +8,7 @@
 - Create PingDirectory's LDAP Client Manager using PingFederate Admin API
 - Replace Fluentd with Fluent-bit
 - Force liveness probe for PingDirectory to use API endpoint /available-or-degraded-state
+- Logstash now getting logs from FluentBit
 
 _Changes:_
 
@@ -25,6 +26,7 @@ _Changes:_
 - [X] PDO-3620 Update cluster tools to latest version: Grafana v8.4.5
 - [X] PDO-3723 Grafana: Upgrade to 8.4.5 risks investigation
 - [X] PDO-3745 Argocd admin creds in secrets.yaml
+- [X] PDO-3753 Configure FluentBit to send SIEM logs to logstash
 - [X] PDO-3773 Encrypt K8s StorageClass (AWS EBS volumes)
 
 ### 1.13.0
