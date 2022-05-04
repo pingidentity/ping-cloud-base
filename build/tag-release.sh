@@ -145,6 +145,23 @@ echo ---
 cd ping-cloud-base
 git checkout "${SOURCE_REF}"
 
+###########################################################################################################################
+# Verifies the 'REF_TYPE' if its a 'tag' or 'branch'. 
+# 
+# (1) -->if the target value is to be replaced by a 'tag' , 'verify_ref_name' method helps validate the source value if its
+#  a "release-branch(v*.*-release-branch)" or a "tag (RC)". 
+#
+#
+# This would be applicable in phases "Ready to Release" and also during "Hardening" wherein the env_vars and other values 
+# need to be replaced from 'v*.*-release-branch-latest' to 'RC tag' [or] if there is a new 'RC tag' that needs to be updated.
+# updated.
+#
+#
+# (2) -->if the target value is to be replaced by a 'branch' , 'verify_ref_name' method simply helps validate the target 
+# value if its a "release-branch(v*.*-release-branch)" or not and breaks if any other value is provided. 
+#   
+#   
+###########################################################################################################################
 if test "${REF_TYPE}" = 'tag'; then
   verify_ref_name "${SOURCE_REF}"
   if test "${REF_NAME}" = 'release-branch'; then  
