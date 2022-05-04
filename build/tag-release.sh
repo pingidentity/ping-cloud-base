@@ -42,6 +42,7 @@ replaceAndCommit() {
   grep_var "METADATA_IMAGE_TAG" "${SOURCE}" "${TARGET}"
   grep_var "P14C_BOOTSTRAP_IMAGE_TAG" "${SOURCE}" "${TARGET}"
   grep_var "P14C_INTEGRATION_IMAGE_TAG" "${SOURCE}" "${TARGET}"
+  grep_var "ANSIBLE_BELUGA_IMAGE_TAG" "${SOURCE}" "${TARGET}"
 
   #update k8s yaml files
 
@@ -55,6 +56,7 @@ replaceAndCommit() {
   grep_yaml "metadata" "pingcloud-services" "${SOURCE}" "${TARGET}"
   grep_yaml "p14c-bootstrap" "pingcloud-services" "${SOURCE}" "${TARGET}"
   grep_yaml "p14c-integration" "pingcloud-services" "${SOURCE}" "${TARGET}"
+  grep_yaml "ansible-beluga" "pingcloud-solutions" "${SOURCE}" "${TARGET}"
 
   echo "Committing changes for new ${REF_TYPE} ${TARGET}"
   git add .
