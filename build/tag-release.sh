@@ -173,12 +173,12 @@ fi
 echo ---
 echo "Files that are different between origin/${SOURCE_REF} and ${TARGET_REF} refs:"
 git diff --name-only origin/"${SOURCE_REF}" "${TARGET_REF}"
-# git diff  origin/"${SOURCE_REF}" "${TARGET_REF}"
+
 echo ---
 
 # Confirm before pushing the tag to the server
 read -n 1 -srp 'Press any key to continue'
-# git push origin "${TARGET_REF}"
+git push origin "${TARGET_REF}"
 
 popd &>/dev/null
 
