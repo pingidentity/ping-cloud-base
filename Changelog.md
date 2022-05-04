@@ -1,5 +1,13 @@
 # Changelog
 
+### 1.15.0
+
+- Augment ArgoCD's application name with customer name
+
+_Changes:_
+
+- [X] PDO-2635 Augment ArgoCD's application name with customer name
+
 ### 1.14.0
 
 - Configure PingFederate and PingAccess environments within PingCentral
