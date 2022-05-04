@@ -6,75 +6,21 @@ metadata:
   labels:
     app: logstash-elastic
 data:
-  host.conf: |
-    input {
-        file {
-            id => "dmesg"
-            path => "/var/log/dmesg"
-            add_field => { "log_type" => "syslog" }
-            add_field => { "stream_name" => "host.dmesg_${NODE_NAME}"}
-            add_field => { "log_group" => "host" }
-            start_position => "beginning"
-            sincedb_path => "/logstash-sincedb-files/${NODE_NAME}_dmegs_sincedb"
-        }
-        file {
-            id => "secure_log"
-            path => "/var/log/secure"
-            add_field => { "stream_name" => "host.secure_${NODE_NAME}"}
-            add_field => { "log_type" => "syslog" }
-            add_field => { "log_group" => "host" }
-            start_position => "beginning"
-            sincedb_path => "/logstash-sincedb-files/${NODE_NAME}_secure_sincedb" 
-        }
-        file {
-            id => "messages"
-            path => "/var/log/messages"
-            add_field => { "log_type" => "syslog" }
-            add_field => { "stream_name" => "host.messages_${NODE_NAME}"}
-            add_field => { "log_group" => "host" }
-            start_position => "beginning"
-            sincedb_path => "/logstash-sincedb-files/${NODE_NAME}_messages_sincedb" 
-        }
-    }
-    filter {
-      if ([log_type] == 'syslog') {
-        grok {
-          match => { "message" => "%{SYSLOGTIMESTAMP:syslog_timestamp} %{SYSLOGHOST:syslog_hostname} %{DATA:syslog_program}(?:\[%{POSINT:syslog_pid}\])?: %{GREEDYDATA:syslog_message}" }
-          add_field => { "received_at" => "%{@timestamp}" }
-          add_field => { "received_from" => "%{host}" }
-        }
-        mutate { 
-          add_field => {"raw_message" => "%{message}"}
-        }
-        mutate {
-          copy => {"syslog_message" => "message" }
-        }
-        date {
-          match => [ "timestamp", "MMM  d HH:mm:ss", "MMM dd HH:mm:ss" ]
-        }
-      }
-    }
-
   containers.conf: |
     input {
-      file {
-        id => 'containers_log'
-        path => "/var/log/containers/*.log"
+      http {
+        port => 8080
         add_field => { "log_type" => "json" }
         add_field => { "log_group" => "application" }
-        start_position => "beginning"
-        sincedb_path => "/logstash-sincedb-files/${NODE_NAME}_application_sincedb"
+        id => 'containers_log'
+        additional_codecs => { "application/json" => "json_lines" }
       }
     }
     filter {
+      mutate {
+        remove_field => ["date", "headers"]
+      }
       if ([log_type] == "json") {
-        kubernetes {
-          source => "path"
-          target => "kubernetes"
-        }
-        json {
-          source => "message"
-        }
         mutate {
           replace => {"message" => "%{log}"}
         }
@@ -206,36 +152,6 @@ data:
                 }
             }
           }
-        }
-      }
-    }
-
-  systemd.conf: |
-    input {
-      journald {
-        id => "systemd_log_docker"
-        add_field => { "log_type" => "systemd" }
-        add_field => { "log_group" => "dataplane" }
-        filter    => { "_SYSTEMD_UNIT" => "docker.service"}
-      }
-      journald {
-        id => "systemd_log_kubelet"
-        add_field => { "log_type" => "systemd" }
-        add_field => { "log_group" => "dataplane" }
-        filter    => { "_SYSTEMD_UNIT" => "kubelet.service"}
-      }
-      journald {
-        id => "systemd_log_kubeproxy"
-        add_field => { "log_type" => "systemd" }
-        add_field => { "log_group" => "dataplane" }
-        filter    => { "_SYSTEMD_UNIT" => "kubeproxy.service"}
-      }
-    }
-    filter {
-      if ([log_type] == 'systemd') {
-        mutate {
-          rename => { "MESSAGE" => "message" }
-          add_field => { "stream_name" => "%{_SYSTEMD_UNIT}_%{_HOSTNAME}" }
         }
       }
     }
@@ -866,6 +782,9 @@ spec:
           - containerPort: 20517
             name: pa-audit-in
             protocol: TCP
+          - containerPort: 8080
+            name: http-log-input
+            protocol: TCP
 
         volumeMounts:
         - name: enrichment-logstash-config
@@ -959,6 +878,8 @@ spec:
       name: pa-system-in
     - port: 20517
       name: pa-audit-in
+    - port: 8080
+      name: http-log-input
 
 ---
 apiVersion: v1

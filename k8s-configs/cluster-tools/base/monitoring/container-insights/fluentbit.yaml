@@ -102,12 +102,19 @@ data:
         K8S-Logging.Parser  On
         K8S-Logging.Exclude Off
         Annotations         Off
+        Buffer_Size         1Mb
     
     [FILTER]
         Name                lua
         Match               ping.*
         script              record_modifier.lua
         call                record_modifier
+
+    [FILTER]
+        Name                rewrite_tag
+        Match               ping.*
+        Rule                $log ^.*SIEM app_siem_logs.elk_out false
+        Emitter_Name        siem_logs
     
     # Exclude DA healthcheck logs
     [FILTER]
@@ -188,6 +195,12 @@ data:
         Match               ping.*
         Rule                $log ^\/opt\/out\/instance\/logs\/access access_logs.$stream_name false
         Emitter_Name        access_logs
+
+    [FILTER]
+        Name                rewrite_tag
+        Match               access_logs.*
+        Rule                $kubernetes.container_name ^pingdirectory$ pd.elk_out true
+        Emitter_Name        pd_siem_elk
     
     [FILTER]
         Name                rewrite_tag
@@ -382,6 +395,7 @@ data:
         K8S-Logging.Parser  On
         K8S-Logging.Exclude Off
         Annotations         Off
+        Buffer_Size         1Mb
 
     [FILTER]
         Name                lua
@@ -537,6 +551,13 @@ data:
         auto_create_group   true
         extra_user_agent    container-insight
 
+    [OUTPUT]
+        Name                http
+        Match               *.elk_out
+        Host                logstash-elastic.elastic-stack-logging
+        Port                8080
+        Format              json_lines
+
   time.lua: |
     # This script is called by fluent-bit to append a time to the log message.
     function append_tag(tag, timestamp, record)
@@ -555,8 +576,13 @@ data:
         new_record["stream_name"] = record["kubernetes"]["pod_name"].."_"..record["kubernetes"]["namespace_name"].."_"..record["kubernetes"]["container_name"]
         return 2, timestamp, new_record
       else
-        print(record)
-        return 0, 0, 0
+        for index, data in ipairs(record) do
+          print(index)
+          for key, value in pairs(data) do
+            print('\t', key, value)
+          end
+        end
+        return -1, timestamp, record
       end
     end
 
