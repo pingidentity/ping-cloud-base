@@ -27,6 +27,7 @@ _Changes:_
 - [X] PDO-3723 Grafana: Upgrade to 8.4.5 risks investigation
 - [X] PDO-3745 Argocd admin creds in secrets.yaml
 - [X] PDO-3753 Configure FluentBit to send SIEM logs to logstash
+- [X] PDO-3754 Replace current logstash DaemonSet by non-root Deployment
 - [X] PDO-3773 Encrypt K8s StorageClass (AWS EBS volumes)
 
 ### 1.13.0
