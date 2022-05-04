@@ -33,7 +33,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v114
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:pdo-3605
         imagePullPolicy: Always
         env:
         - name: NAMESPACE
