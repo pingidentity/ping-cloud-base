@@ -167,7 +167,7 @@ PINGDATASYNC_IMAGE_TAG=pdo-3605
 METADATA_IMAGE_TAG=pdo-3605
 P14C_BOOTSTRAP_IMAGE_TAG=pdo-3605
 P14C_INTEGRATION_IMAGE_TAG=pdo-3605
-ANSIBLE_BELUGA_IMAGE_TAG=v1.0.6
+ANSIBLE_BELUGA_IMAGE_TAG=pdo-3605
 
 ############################################################
 # Cluster name variables
