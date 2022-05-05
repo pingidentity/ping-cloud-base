@@ -75,9 +75,9 @@ grep_var() {
     exit 1
   else
     echo "Changing ${SOURCE_VALUE} -> ${TARGET_VALUE} in expected files"
-     git grep -l "^${VAR}=${SOURCE_VALUE}" | xargs sed -i.bak "s/^\(${VAR}=\)${SOURCE_VALUE}$/\1${TARGET_VALUE}/g"
+    git grep -l "^${VAR}=${SOURCE_VALUE}" | xargs sed -i.bak "s/^\(${VAR}=\)${SOURCE_VALUE}$/\1${TARGET_VALUE}/g"
   fi
-  
+
 }
 
 grep_yaml() {
@@ -88,7 +88,7 @@ grep_yaml() {
   local TARGET_VALUE=${4}
 
   local image="image: public.ecr.aws/r2h3l6e4/${2}/${1}"
-  
+
   cd "${SANDBOX}"/ping-cloud-base/k8s-configs
 
   verify_yaml=$(git grep -l "${image}:${SOURCE_VALUE}" | wc -l)
@@ -97,7 +97,6 @@ grep_yaml() {
     exit 1
   else
     echo "Changing ${image}:${SOURCE_VALUE} -> ${image}:${TARGET_VALUE} in expected files"
-
     git grep -l "${image}:${SOURCE_VALUE}" | xargs sed -i.bak "s/${SOURCE_VALUE}/${TARGET_VALUE}/g"
   fi
 
@@ -113,7 +112,7 @@ verify_ref_name() {
   REGEX='^v[0-9]+.[0-9]+-new-image-process$'
 
   # REGEX='^pdo-[0-9]+$'
-  
+
   if [[ $value =~ $REGEX ]]; then
     echo "$value is a release branch"
     export REF_NAME="release-branch"
@@ -146,38 +145,38 @@ cd ping-cloud-base
 git checkout "${SOURCE_REF}"
 
 ###########################################################################################################################
-# Verifies the 'REF_TYPE' if its a 'tag' or 'branch'. 
-# 
+# Verifies the 'REF_TYPE' if its a 'tag' or 'branch'.
+#
 # (1) -->if the target value is to be replaced by a 'tag' , 'verify_ref_name' method helps validate the source value if its
-#  a "release-branch(v*.*-release-branch)" or a "tag (RC)". 
+#  a "release-branch(v*.*-release-branch)" or a "tag (RC)".
 #
 #
-# This would be applicable in phases "Ready to Release" and also during "Hardening" wherein the env_vars and other values 
+# This would be applicable in phases "Ready to Release" and also during "Hardening" wherein the env_vars and other values
 # need to be replaced from 'v*.*-release-branch-latest' to 'RC tag' [or] if there is a new 'RC tag' that needs to be updated.
 # updated.
 #
 #
-# (2) -->if the target value is to be replaced by a 'branch' , 'verify_ref_name' method simply helps validate the target 
-# value if its a "release-branch(v*.*-release-branch)" or not and breaks if any other value is provided. 
-#   
-#   
+# (2) -->if the target value is to be replaced by a 'branch' , 'verify_ref_name' method simply helps validate the target
+# value if its a "release-branch(v*.*-release-branch)" or not and breaks if any other value is provided.
+#
+#
 ###########################################################################################################################
 if test "${REF_TYPE}" = 'tag'; then
   verify_ref_name "${SOURCE_REF}"
-  if test "${REF_NAME}" = 'release-branch'; then  
+  if test "${REF_NAME}" = 'release-branch'; then
     replaceAndCommit "${SOURCE_REF}-latest" "${TARGET_REF}" "${REF_TYPE}"
-  elif test "${REF_NAME}" = 'rc'; then  
+  elif test "${REF_NAME}" = 'rc'; then
     replaceAndCommit "${SOURCE_REF}" "${TARGET_REF}" "${REF_TYPE}"
   else
     usage
     exit 1
   fi
- git tag "${TARGET_REF}"
- unset REF_NAME
+  git tag "${TARGET_REF}"
+  unset REF_NAME
 
 else
   verify_ref_name "${TARGET_REF}"
-  if test "${REF_NAME}" = 'release-branch'; then 
+  if test "${REF_NAME}" = 'release-branch'; then
     git checkout -b "${TARGET_REF}"
     replaceAndCommit "${SOURCE_REF}" "${TARGET_REF}-latest"
   else
@@ -199,5 +198,4 @@ git push origin "${TARGET_REF}"
 
 popd &>/dev/null
 
-
-#todo- update "usage" method 
+#todo- update "usage" method
