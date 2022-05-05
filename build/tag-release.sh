@@ -153,7 +153,7 @@ git checkout "${SOURCE_REF}"
 #
 # This would be applicable in phases "Ready to Release" and also during "Hardening" wherein the env_vars and other values
 # need to be replaced from 'v*.*-release-branch-latest' to 'RC tag' [or] if there is a new 'RC tag' that needs to be updated.
-# updated.
+# 
 #
 #
 # (2) -->if the target value is to be replaced by a 'branch' , 'verify_ref_name' method simply helps validate the target
