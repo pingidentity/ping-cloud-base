@@ -96,7 +96,7 @@ grep_yaml() {
     usage
     exit 1
   else
-    echo "Changing ${image}:${SOURCE_VALUE} -> ${TARGET_VALUE} in expected files"
+    echo "Changing ${image}:${SOURCE_VALUE} -> ${image}:${TARGET_VALUE} in expected files"
 
     git grep -l "${image}:${SOURCE_VALUE}" | xargs sed -i.bak "s/${SOURCE_VALUE}/${TARGET_VALUE}/g"
   fi
