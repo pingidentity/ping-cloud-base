@@ -93,6 +93,8 @@ set_env_vars() {
     export PROJECT_DIR="${CI_PROJECT_DIR}"
     export AWS_PROFILE=csg
 
+    export LEGACY_LOGGING=True
+
   elif test -f "${ENV_VARS_FILE}"; then
     echo "Using environment variables defined in file ${ENV_VARS_FILE}"
     set -a; source "${ENV_VARS_FILE}"; set +a

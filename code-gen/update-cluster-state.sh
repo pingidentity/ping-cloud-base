@@ -165,7 +165,8 @@ ${PINGDELEGATOR_IMAGE_TAG}
 ${PINGDATASYNC_IMAGE_TAG}
 ${IRSA_PING_ANNOTATION_KEY_VALUE}
 ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}
-${DATASYNC_P1AS_SYNC_SERVER}'
+${DATASYNC_P1AS_SYNC_SERVER}
+${LEGACY_LOGGING}'
 
 ########################################################################################################################
 # Export some derived environment variables.

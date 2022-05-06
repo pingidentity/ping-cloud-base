@@ -52,6 +52,7 @@ patchesStrategicMerge:
   data:
     cluster.name: ${CLUSTER_NAME}
     logs.region: ${REGION}
+    legacy_logging: "${LEGACY_LOGGING}"
   kind: ConfigMap
   metadata:
     name: cluster-info

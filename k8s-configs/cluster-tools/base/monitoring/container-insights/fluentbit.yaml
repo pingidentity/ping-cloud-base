@@ -1,16 +1,16 @@
 # create configmap for cluster name and aws region for CloudWatch Logs
 # need to replace the placeholders cluster_name and region_name
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-info
+  namespace: amazon-cloudwatch
 data:
   cluster.name: cluster_name
   logs.region: region_name
   log.level: "error"
   read.head: "True"
   read.tail: "True"
-kind: ConfigMap
-metadata:
-  name: cluster-info
-  namespace: amazon-cloudwatch
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -75,7 +75,7 @@ data:
     [INPUT]
         Name                tail
         Tag                 ping.*
-        Path                /var/log/containers/ping*, /var/log/containers/p14c*
+        Path                /var/log/containers/*_ping-cloud*.log
         multiline.parser    docker, cri
         DB                  /fluent-bit/state/flb_ping.db
         Mem_Buf_Limit       50MB
@@ -102,6 +102,7 @@ data:
         K8S-Logging.Parser  On
         K8S-Logging.Exclude Off
         Annotations         Off
+        Labels              Off
         Buffer_Size         1Mb
     
     [FILTER]
@@ -109,6 +110,18 @@ data:
         Match               ping.*
         script              record_modifier.lua
         call                record_modifier
+
+    [FILTER]
+        Name                lua
+        Match               ping.*
+        script              change_output.lua
+        call                change_output
+
+    [FILTER]
+        Name                rewrite_tag
+        Match               ping.*
+        Rule                $tag ^.+$ $tag false
+        Emitter_Name        change_output_app
 
     [FILTER]
         Name                rewrite_tag
@@ -132,68 +145,68 @@ data:
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/log\/pingaccess_api_audit pingaccess_api_audit_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/log\/pingaccess_api_audit pingaccess_api_audit_logs.$stream_name.cw_out false
         Emitter_Name        pingaccess_api_audit_logs
     
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/log\/pingaccess_agent_audit pingaccess_agent_audit_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/log\/pingaccess_agent_audit pingaccess_agent_audit_logs.$stream_name.cw_out false
         Emitter_Name        pingaccess_agent_audit_logs
 
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/log\/pingaccess_engine_audit pingaccess_engine_audit_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/log\/pingaccess_engine_audit pingaccess_engine_audit_logs.$stream_name.cw_out false
         Emitter_Name        pingaccess_engine_audit_logs
     
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/log\/pingaccess_sideband_client_audit pingaccess_sideband_client_audit_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/log\/pingaccess_sideband_client_audit pingaccess_sideband_client_audit_logs.$stream_name.cw_out false
         Emitter_Name        pingaccess_sideband_client_audit_logs
     
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/log\/pingaccess_sideband_audit pingaccess_sideband_audit_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/log\/pingaccess_sideband_audit pingaccess_sideband_audit_logs.$stream_name.cw_out false
         Emitter_Name        pingaccess_sideband_audit_logs
     
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/log\/pingaccess pingaccess_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/log\/pingaccess pingaccess_logs.$stream_name.cw_out false
         Emitter_Name        pingaccess_logs
     
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/upgrade\/log\/audit pingaccess_upgrade_audit_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/upgrade\/log\/audit pingaccess_upgrade_audit_logs.$stream_name.cw_out false
         Emitter_Name        pingaccess_upgrade_audit_logs
     
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/upgrade\/log\/upgrade_status pingaccess_upgrade_status_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/upgrade\/log\/upgrade_status pingaccess_upgrade_status_logs.$stream_name.cw_out false
         Emitter_Name        pingaccess_upgrade_status_logs
     
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/upgrade\/log\/upgrade pingaccess_upgrade_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/upgrade\/log\/upgrade pingaccess_upgrade_logs.$stream_name.cw_out false
         Emitter_Name        pingaccess_upgrade_logs
     
     # PD
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/logs\/server server_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/logs\/server server_logs.$stream_name.cw_out false
         Emitter_Name        server_logs
     
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/logs\/access access_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/logs\/access access_logs.$stream_name.cw_out false
         Emitter_Name        access_logs
 
     [FILTER]
@@ -203,154 +216,172 @@ data:
         Emitter_Name        pd_siem_elk
     
     [FILTER]
+        Name                lua
+        Match               pd.elk_out
+        script              deduplicate.lua
+        call                deduplicate
+
+    [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/logs\/errors errors_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/logs\/errors errors_logs.$stream_name.cw_out false
         Emitter_Name        errors_logs
     
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/logs\/change-notifications change_notifications_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/logs\/change-notifications change_notifications_logs.$stream_name.cw_out false
         Emitter_Name        change_notifications_logs
     
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/logs\/failed-ops failed_ops_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/logs\/failed-ops failed_ops_logs.$stream_name.cw_out false
         Emitter_Name        failed_ops_logs
     
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/logs\/expensive-write-ops expensive_write_ops_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/logs\/expensive-write-ops expensive_write_ops_logs.$stream_name.cw_out false
         Emitter_Name        expensive_write_ops_logs
     
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/logs\/replication replication_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/logs\/replication replication_logs.$stream_name.cw_out false
         Emitter_Name        replication_logs
     
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/logs\/config-audit config_audit_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/logs\/config-audit config_audit_logs.$stream_name.cw_out false
         Emitter_Name        config_audit_logs
     
     # PDSync   
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/logs\/sync-failed-ops sync_failed_ops_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/logs\/sync-failed-ops sync_failed_ops_logs.$stream_name.cw_out false
         Emitter_Name        sync_failed_ops_logs
     
     # PF
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/log\/admin-api admin_api_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/log\/admin-api admin_api_logs.$stream_name.cw_out false
         Emitter_Name        admin_api_logs
     
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/log\/admin-event-detail admin_event_detail_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/log\/admin-event-detail admin_event_detail_logs.$stream_name.cw_out false
         Emitter_Name        admin_event_detail_logs
     
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/log\/admin admin_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/log\/admin admin_logs.$stream_name.cw_out false
         Emitter_Name        admin_logs
     
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/log\/runtime-api runtime_api_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/log\/server server_logs.$stream_name.cw_out false
+        Emitter_Name        server_pf_logs
+    
+    [FILTER]
+        Name                rewrite_tag
+        Match               ping.*
+        Rule                $log ^\/opt\/out\/instance\/log\/runtime-api runtime_api_logs.$stream_name.cw_out false
         Emitter_Name        runtime_api_logs
     
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/log\/transaction transaction_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/log\/transaction transaction_logs.$stream_name.cw_out false
         Emitter_Name        transaction_logs
     
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/log\/audit audit_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/log\/audit audit_logs.$stream_name.cw_out false
         Emitter_Name        audit_logs
     
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/log\/provisioner-audit provisioner_audit_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/log\/provisioner-audit provisioner_audit_logs.$stream_name.cw_out false
         Emitter_Name        provisioner_audit_logs
     
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/log\/provisioner provisioner_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/log\/provisioner provisioner_logs.$stream_name.cw_out false
         Emitter_Name        provisioner_logs
     
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/log\/init init_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/log\/init init_logs.$stream_name.cw_out false
         Emitter_Name        init_logs
     
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/log\/jvm-garbage-collection jvm_garbage_collection_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/log\/jvm-garbage-collection jvm_garbage_collection_logs.$stream_name.cw_out false
         Emitter_Name        jvm_garbage_collection_logs
     
     # PC
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/log\/application-api pingcentral_application_api.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/log\/application-api pingcentral_application_api.$stream_name.cw_out false
         Emitter_Name        pingcentral_application_api
     
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/log\/application-ext pingcentral_application_ext.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/log\/application-ext pingcentral_application_ext.$stream_name.cw_out false
         Emitter_Name        pingcentral_application_ext
     
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/log\/application pingcentral_application.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/log\/application pingcentral_application.$stream_name.cw_out false
         Emitter_Name        pingcentral_application
     
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/log\/monitor pingcentral_monitor.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/log\/monitor pingcentral_monitor.$stream_name.cw_out false
         Emitter_Name        pingcentral_monitor
     
     # DA
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/logs\/error error_logs.$stream_name false
+        Rule                $log ^\/opt\/out\/instance\/logs\/error error_logs.$stream_name.cw_out false
         Emitter_Name        error_logs
     
     # Everything else
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^.*$ $stream_name false
+        Rule                $log ^.*$ $stream_name.cw_out false
         Emitter_Name        unmatched_logs
+
+    [FILTER]
+        Name                record_modifier
+        Match               *
+        Remove_key          tag
+        Remove_key          stream_name
 
   nonping-log.conf: |
     [INPUT]
         Name                tail
         Tag                 nonping.*
-        Exclude_Path        /var/log/containers/cloudwatch-agent*, /var/log/containers/fluent-bit*, /var/log/containers/aws-node*, /var/log/containers/kube-proxy*, /var/log/containers/ping*, /var/log/containers/p14c*
-        Path                /var/log/containers/*
+        Path                /var/log/containers/*.log
+        Exclude_Path        *_ping-cloud*.log, *fluent-bit*.log, *nri-bundle*.log, *grafana*.log, *prometheus*.log, *cloudwatch-agent*.log
         multiline.parser    docker, cri
         DB                  /fluent-bit/state/flb_nonping.db
         Mem_Buf_Limit       50MB
@@ -358,31 +389,6 @@ data:
         Refresh_Interval    10
         Rotate_Wait         30
         storage.type        filesystem
-        Read_from_Head      ${READ_FROM_HEAD}
-    
-    [INPUT]
-        Name                tail
-        Tag                 nonping.*
-        Path                /var/log/containers/fluent-bit*
-        Parser              docker
-        DB                  /fluent-bit/state/flb_log.db
-        Mem_Buf_Limit       5MB
-        Skip_Long_Lines     Off
-        Refresh_Interval    10
-        Read_from_Head      ${READ_FROM_HEAD}
-
-    [INPUT]
-        Name                tail
-        Tag                 nonping.*
-        Path                /var/log/containers/cloudwatch-agent*
-        Docker_Mode         On
-        Docker_Mode_Flush   5
-        Docker_Mode_Parser  cwagent_firstline
-        Parser              docker
-        DB                  /fluent-bit/state/flb_cwagent.db
-        Mem_Buf_Limit       5MB
-        Skip_Long_Lines     Off
-        Refresh_Interval    10
         Read_from_Head      ${READ_FROM_HEAD}
     
     [FILTER]
@@ -395,6 +401,7 @@ data:
         K8S-Logging.Parser  On
         K8S-Logging.Exclude Off
         Annotations         Off
+        Labels              Off
         Buffer_Size         1Mb
 
     [FILTER]
@@ -402,13 +409,31 @@ data:
         Match               nonping.*
         script              record_modifier.lua
         call                record_modifier
+
+    [FILTER]
+        Name                lua
+        Match               *nginx*
+        script              change_output.lua
+        call                change_output
+
+    [FILTER]
+        Name                rewrite_tag
+        Match               *nginx*
+        Rule                $tag ^.+$ $tag false
+        Emitter_Name        change_out_nginx
     
     # Everything else
     [FILTER]
         Name                rewrite_tag
         Match               nonping.*
-        Rule                $log ^.*$ $stream_name false
+        Rule                $log ^.*$ $stream_name.cw_out false
         Emitter_Name        unmatched_nonping_logs
+
+    [FILTER]
+        Name                record_modifier
+        Match               *
+        Remove_key          tag
+        Remove_key          stream_name
 
   dataplane-log.conf: |
     [INPUT]
@@ -526,11 +551,11 @@ data:
   outputs.conf: |
     [OUTPUT]
         Name                cloudwatch
-        Match               *ping*
+        Match               *.cw_out
         region              ${AWS_REGION}
         log_group_name      /aws/containerinsights/${CLUSTER_NAME}/application
         log_stream_name     $(tag)
-        auto_create_group   true     
+        auto_create_group   true
         extra_user_agent    fluent-bit
     
     [OUTPUT]
@@ -571,18 +596,41 @@ data:
   record_modifier.lua: |
     # This script is called by fluent-bit to append a stream_name to the log message.
     function record_modifier(tag, timestamp, record)
-      if record["kubernetes"] then
+      if record["kubernetes"] ~= nil then
         new_record = record
         new_record["stream_name"] = record["kubernetes"]["pod_name"].."_"..record["kubernetes"]["namespace_name"].."_"..record["kubernetes"]["container_name"]
-        return 2, timestamp, new_record
+        return 1, timestamp, new_record
       else
-        for index, data in ipairs(record) do
-          print(index)
-          for key, value in pairs(data) do
-            print('\t', key, value)
-          end
-        end
-        return -1, timestamp, record
+        output = tag .. ":  [" .. string.format("%f", timestamp) .. ", { "
+        for key, val in pairs(record) do
+          output = output .. string.format(" %s => %s,", key, val)
+        end  
+        output = string.sub(output,1,-2) .. " }]"
+        print(output)
+        return -1, 0, 0
+      end
+    end
+
+  change_output.lua: |
+    # This script is called by fluent-bit to change output based on LEGACY_LOGGING env var
+    function change_output(tag,timestamp,record)
+      flag = string.lower(os.getenv("LEGACY_LOGGING"))
+      if flag == "false" then
+        new_record = record
+        new_record["tag"] = "app.elk_out"
+        return 1, timestamp, new_record
+      else
+        return 0, 0, 0
+      end
+    end
+
+  deduplicate.lua: |
+    function deduplicate(tag,timestamp,record)
+      flag = string.lower(os.getenv("LEGACY_LOGGING"))
+      if flag == "false" then
+        return -1, 0, 0
+      else
+        return 0, 0, 0
       end
     end
 
@@ -637,6 +685,11 @@ spec:
                 configMapKeyRef:
                   name: cluster-info
                   key: log.level
+            - name: LEGACY_LOGGING
+              valueFrom:
+                configMapKeyRef:
+                  name: cluster-info
+                  key: legacy_logging
         resources:
             limits:
               memory: 200Mi

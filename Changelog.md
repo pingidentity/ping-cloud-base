@@ -8,7 +8,8 @@
 - Create PingDirectory's LDAP Client Manager using PingFederate Admin API
 - Replace Fluentd with Fluent-bit
 - Force liveness probe for PingDirectory to use API endpoint /available-or-degraded-state
-- Logstash now getting logs from FluentBit
+- Logstash now getting logs from FluentBit and working as non-root Deployment
+- FluentBit now has a FeatureFlag 'LEGACY_LOGGING' to control application logs destination
 
 _Changes:_
 
@@ -28,6 +29,7 @@ _Changes:_
 - [X] PDO-3745 Argocd admin creds in secrets.yaml
 - [X] PDO-3753 Configure FluentBit to send SIEM logs to logstash
 - [X] PDO-3754 Replace current logstash DaemonSet by non-root Deployment
+- [X] PDO-3755 Implement FeatureFlags with many outputs for FluentBit
 - [X] PDO-3773 Encrypt K8s StorageClass (AWS EBS volumes)
 
 ### 1.13.0
