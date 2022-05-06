@@ -38,7 +38,7 @@ spec:
             name: pingfederate-admin-environment-variables
       containers:
       - name: pingone-configurator
-        image: public.ecr.aws/r2h3l6e4/pingcloud-solutions/ansible-beluga:v1.0.6
+        image: public.ecr.aws/r2h3l6e4/pingcloud-solutions/ansible-beluga:v1.0.7
         imagePullPolicy: IfNotPresent
         resources:
           requests:
@@ -54,6 +54,11 @@ spec:
               name: p14c-environment-metadata
               key: information.json
               optional: true
+        - name: IS_PINGONE
+          valueFrom:
+            configMapKeyRef:
+              name: is-pingone
+              key: P1
         - name: PF_USERNAME
           value: Administrator
         - name: PF_PASSWORD

@@ -31,6 +31,7 @@ _Changes:_
 - [X] PDO-3754 Replace current logstash DaemonSet by non-root Deployment
 - [X] PDO-3755 Implement FeatureFlags with many outputs for FluentBit
 - [X] PDO-3773 Encrypt K8s StorageClass (AWS EBS volumes)
+- [X] PDO-3856 PingOne configurator skips is_myping
 
 ### 1.13.0
 
