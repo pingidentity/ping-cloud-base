@@ -81,25 +81,31 @@ grep_yaml() {
   local TARGET_VALUE=${4}
   local REF_VALUE=${5}
 
-  local dev_ecr_path="image: public.ecr.aws/r2h3l6e4/${2}/${1}/dev"
-  local prod_ecr_path="image: public.ecr.aws/r2h3l6e4/${2}/${1}"
+  local dev_ecr_path="image: public.ecr.aws/r2h3l6e4/${ECR_REPO}/${VAR}/dev"
+  local prod_ecr_path="image: public.ecr.aws/r2h3l6e4/${ECR_REPO}/${VAR}"
+
   local SOURCE_IMAGE="${dev_ecr_path}:${SOURCE_VALUE}"
+
+  cd "${SANDBOX}"/ping-cloud-base/k8s-configs
+  git grep -l "${SOURCE_IMAGE}" | xargs sed -i.bak "s/${SOURCE_VALUE}/${TARGET_VALUE}/g"
 
   if test "${REF_VALUE}" = 'branch'; then
     local TARGET_IMAGE="${dev_ecr_path}:${TARGET_VALUE}"
 
-  elif test "${REF_VALUE}" = 'tag'; then
+  elif
+    test "${REF_VALUE}" = 'tag'
+  then
     local TARGET_IMAGE="${prod_ecr_path}:${TARGET_VALUE}"
+
+    # update the ecr path to prod from dev 
+    git grep -l "${dev_ecr_path}" | xargs sed -i.bak "s/\/dev//g"
 
   else
     usage
     exit 1
   fi
 
-  cd "${SANDBOX}"/ping-cloud-base/k8s-configs
-
-  echo "Changing ${SOURCE_IMAGE} -> ${TARGET_IMAGE} in expected files"
-  git grep -l "${SOURCE_IMAGE}" | xargs sed -i.bak "s/${SOURCE_IMAGE}/${TARGET_IMAGE}/g"
+  echo "Updated from  ${SOURCE_IMAGE} -> ${TARGET_IMAGE} in expected files"
 
   cd "${SANDBOX}"/ping-cloud-base/
 
@@ -180,7 +186,7 @@ fi
 echo ---
 echo "Files that are different between origin/${SOURCE_REF} and ${TARGET_REF} refs:"
 # git diff --name-only origin/"${SOURCE_REF}" "${TARGET_REF}"
-git diff  origin/"${SOURCE_REF}" "${TARGET_REF}"
+git diff origin/"${SOURCE_REF}" "${TARGET_REF}"
 
 echo ---
 
