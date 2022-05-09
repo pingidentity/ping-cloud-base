@@ -179,7 +179,8 @@ fi
 
 echo ---
 echo "Files that are different between origin/${SOURCE_REF} and ${TARGET_REF} refs:"
-git diff --name-only origin/"${SOURCE_REF}" "${TARGET_REF}"
+# git diff --name-only origin/"${SOURCE_REF}" "${TARGET_REF}"
+git diff  origin/"${SOURCE_REF}" "${TARGET_REF}"
 
 echo ---
 
