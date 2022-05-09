@@ -153,21 +153,21 @@ PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 ############################################################
 # Ping application image tags
 ############################################################
-PINGACCESS_IMAGE_TAG=pdo-3605
-PINGACCESS_WAS_IMAGE_TAG=pdo-3605
-PINGFEDERATE_IMAGE_TAG=pdo-3605
-PINGDIRECTORY_IMAGE_TAG=pdo-3605
-PINGDELEGATOR_IMAGE_TAG=pdo-3605
-PINGCENTRAL_IMAGE_TAG=pdo-3605
-PINGDATASYNC_IMAGE_TAG=pdo-3605
+PINGACCESS_IMAGE_TAG=pdo-3605-new-latest
+PINGACCESS_WAS_IMAGE_TAG=pdo-3605-new-latest
+PINGFEDERATE_IMAGE_TAG=pdo-3605-new-latest
+PINGDIRECTORY_IMAGE_TAG=pdo-3605-new-latest
+PINGDELEGATOR_IMAGE_TAG=pdo-3605-new-latest
+PINGCENTRAL_IMAGE_TAG=pdo-3605-new-latest
+PINGDATASYNC_IMAGE_TAG=pdo-3605-new-latest
 
 ############################################################
 # Ping solution image tags
 ############################################################
-METADATA_IMAGE_TAG=pdo-3605
-P14C_BOOTSTRAP_IMAGE_TAG=pdo-3605
-P14C_INTEGRATION_IMAGE_TAG=pdo-3605
-ANSIBLE_BELUGA_IMAGE_TAG=pdo-3605
+METADATA_IMAGE_TAG=pdo-3605-new-latest
+P14C_BOOTSTRAP_IMAGE_TAG=pdo-3605-new-latest
+P14C_INTEGRATION_IMAGE_TAG=pdo-3605-new-latest
+ANSIBLE_BELUGA_IMAGE_TAG=pdo-3605-new-latest
 
 ############################################################
 # Cluster name variables
