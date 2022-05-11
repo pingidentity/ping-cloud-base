@@ -212,7 +212,7 @@ data:
     [FILTER]
         Name                rewrite_tag
         Match               access_logs.*
-        Rule                $kubernetes.container_name ^pingdirectory$ pd.elk_out true
+        Rule                $kubernetes['container_name'] ^pingdirectory$ pd.elk_out true
         Emitter_Name        pd_siem_elk
     
     [FILTER]
