@@ -2,6 +2,8 @@
 
 ### 1.14.0
 
+- SigSci Agent upgraded from v4.24.1 to v4.28.0
+- Nginx Ingress Controller upgraded from v1.0.0 to v1.2.0
 - Configure PingFederate and PingAccess environments within PingCentral
 - Create PingDirectory's Password Credential Validator using PingFederate Admin API
 - Grafana upgraded from v6.5.3 to v8.4.5
@@ -13,6 +15,8 @@
 
 _Changes:_
 
+- [X] PDO-3844 Update cluster tools to latest version: sig-sci agent v4.28.0
+- [X] PDO-3270 Update cluster tools to latest version: nginx-ingress-controller v1.2.0
 - [X] PDO-2517 Port of PingFederate pre-config script from bash to python
 - [X] PDO-2827 Configure PingFederate and PingAccess environments within PingCentral
 - [X] PDO-2894 Use Fluent Bit instead of Fluentd
