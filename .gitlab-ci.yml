@@ -119,6 +119,7 @@ p1-pa-was-integration-tests:
 .all-p1-tests: &all-p1-tests
   - pingcloud-services
   - common
+  - pingone
 
 .integration-tests-base:
   variables:

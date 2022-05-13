@@ -1,5 +1,5 @@
-# Add python dependency requirements here
-# Example:
-# kubernetes==12.0.1
+# Test frameworks
+pytest==7.1.2
 
-
+# Web browser testing
+seleniumbase==2.5.4
