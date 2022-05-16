@@ -7,6 +7,7 @@ resources:
 
 images:
 - name: ${ECR_REGISTRY_NAME}/pingcloud-services/metadata
+  newName: ${ECR_REGISTRY_NAME}/pingcloud-services/metadata${ECR_ENV}
   newTag: ${METADATA_IMAGE_TAG}
 
 configMapGenerator:

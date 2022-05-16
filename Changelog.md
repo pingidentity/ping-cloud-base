@@ -2,6 +2,7 @@
 
 ### 1.14.0
 
+- New image tagging convention for all Ping applications
 - SigSci Agent upgraded from v4.24.1 to v4.28.0
 - Nginx Ingress Controller upgraded from v1.0.0 to v1.2.0
 - Configure PingFederate and PingAccess environments within PingCentral
@@ -23,6 +24,8 @@ _Changes:_
 - [X] PDO-3275 Update cluster tools to latest version: Kibana v8.1.3
 - [X] PDO-3276 Update cluster tools to latest version: Elasticsearch 8.1.3
 - [X] PDO-3279 Update cluster tools to latest version: Logstash v8.1.3
+- [X] PDO-3421 Set ImagePullPolicy for all Ping apps to 'Always'
+- [X] PDO-3422 Create script to ensure development ECR public image tag isn't in any production release
 - [X] PDO-3433 Create PingDirectory's Password Credential Validator using PingFederate Admin API
 - [X] PDO-3434 Create PingDirectory's LDAP Client Manager using PingFederate Admin API
 - [X] PDO-3446 Upgraded ArgoCD to v2.3.1
@@ -30,8 +33,10 @@ _Changes:_
 - [X] PDO-3548 Set manage-profile tempProfileDirectory argument and force exportldiff files to write to the persistent volume /opt/out directory
 - [X] PDO-3571 Added non-admin ArgoCD user with access to restart StatefulSet pods
 - [X] PDO-3582 Force liveness probe to use API endpoint /available-or-degraded-state
+- [X] PDO-3605 Automate release candidate ECR images within in ping-cloud-base
 - [X] PDO-3620 Update cluster tools to latest version: Grafana v8.4.5
 - [X] PDO-3723 Grafana: Upgrade to 8.4.5 risks investigation
+- [X] PDO-3743 Automate development ECR images in ping-cloud-base
 - [X] PDO-3745 Argocd admin creds in secrets.yaml
 - [X] PDO-3753 Configure FluentBit to send SIEM logs to logstash
 - [X] PDO-3754 Replace current logstash DaemonSet by non-root Deployment
