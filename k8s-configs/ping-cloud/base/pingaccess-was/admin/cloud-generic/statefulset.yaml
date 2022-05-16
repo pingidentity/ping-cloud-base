@@ -33,8 +33,8 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v114
-        imagePullPolicy: IfNotPresent
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v1.14-release-branch-latest
+        imagePullPolicy: Always
         env:
         - name: NAMESPACE
           valueFrom:
@@ -139,13 +139,13 @@ spec:
           mountPath: /opt/shared-dir
       containers:
       - name: pingaccess-was-admin
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was:6.3.3-v1.0.28
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was/dev:v1.14-release-branch-latest
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         resources:
           requests:
             memory: "1280Mi"

@@ -109,8 +109,8 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral:1.8.1-v1.0.26
-        imagePullPolicy: IfNotPresent
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral/dev:v1.14-release-branch-latest
+        imagePullPolicy: Always
         resources:
           requests:
             memory: "2Gi"
