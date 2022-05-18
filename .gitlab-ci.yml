@@ -169,6 +169,11 @@ integration-tests:
   only:
     variables:
       - $PINGONE_DEPLOY == "true"
+  artifacts:
+    name: "integration_test_logs"
+    paths:
+      - ci-scripts/test/integration/pingone/latest_logs/
+    when: on_failure
 
 p1-integration-tests:
   extends: .p1-integration-tests-base
