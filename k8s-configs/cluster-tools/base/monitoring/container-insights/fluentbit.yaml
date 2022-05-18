@@ -653,7 +653,7 @@ spec:
     spec:
       containers:
       - name: fluent-bit
-        image: amazon/aws-for-fluent-bit:2.23.4
+        image: public.ecr.aws/r2h3l6e4/amazon/aws-for-fluent-bit:2.23.4
         imagePullPolicy: Always
         env:
             - name: AWS_REGION

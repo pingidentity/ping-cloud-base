@@ -9,10 +9,11 @@
 - Create PingDirectory's Password Credential Validator using PingFederate Admin API
 - Grafana upgraded from v6.5.3 to v8.4.5
 - Create PingDirectory's LDAP Client Manager using PingFederate Admin API
-- Replace Fluentd with Fluent-bit
+- Replace Fluentd with Fluent Bit
 - Force liveness probe for PingDirectory to use API endpoint /available-or-degraded-state
-- Logstash now getting logs from FluentBit and working as non-root Deployment
-- FluentBit now has a FeatureFlag 'LEGACY_LOGGING' to control application logs destination
+- Logstash now getting logs from Fluent Bit and working as non-root Deployment
+- Fluent Bit now has a FeatureFlag 'LEGACY_LOGGING' to control application logs destination
+- Fluent Bit docker image is now pulled from ECR
 
 _Changes:_
 
@@ -38,11 +39,12 @@ _Changes:_
 - [X] PDO-3723 Grafana: Upgrade to 8.4.5 risks investigation
 - [X] PDO-3743 Automate development ECR images in ping-cloud-base
 - [X] PDO-3745 Argocd admin creds in secrets.yaml
-- [X] PDO-3753 Configure FluentBit to send SIEM logs to logstash
+- [X] PDO-3753 Configure Fluent Bit to send SIEM logs to logstash
 - [X] PDO-3754 Replace current logstash DaemonSet by non-root Deployment
-- [X] PDO-3755 Implement FeatureFlags with many outputs for FluentBit
+- [X] PDO-3755 Implement FeatureFlags with many outputs for Fluent Bit
 - [X] PDO-3773 Encrypt K8s StorageClass (AWS EBS volumes)
 - [X] PDO-3856 PingOne configurator skips is_myping
+- [X] PDO-3892 Fluent Bit image is now pulled from ECR
 
 ### 1.13.0
 
