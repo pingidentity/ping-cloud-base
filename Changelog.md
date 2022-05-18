@@ -36,6 +36,7 @@ _Changes:_
 - [X] PDO-3582 Force liveness probe to use API endpoint /available-or-degraded-state
 - [X] PDO-3605 Automate release candidate ECR images within in ping-cloud-base
 - [X] PDO-3620 Update cluster tools to latest version: Grafana v8.4.5
+- [X] PDO-3678 server.publicBaseUrl is not found in Kibana
 - [X] PDO-3723 Grafana: Upgrade to 8.4.5 risks investigation
 - [X] PDO-3743 Automate development ECR images in ping-cloud-base
 - [X] PDO-3745 Argocd admin creds in secrets.yaml
@@ -44,6 +45,7 @@ _Changes:_
 - [X] PDO-3755 Implement FeatureFlags with many outputs for Fluent Bit
 - [X] PDO-3773 Encrypt K8s StorageClass (AWS EBS volumes)
 - [X] PDO-3856 PingOne configurator skips is_myping
+- [X] PDO-3913 Few data views are listed twice in Kibana Discover tab
 - [X] PDO-3892 Fluent Bit image is now pulled from ECR
 
 ### 1.13.0
