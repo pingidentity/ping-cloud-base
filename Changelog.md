@@ -13,7 +13,8 @@
 - Force liveness probe for PingDirectory to use API endpoint /available-or-degraded-state
 - Logstash now getting logs from Fluent Bit and working as non-root Deployment
 - Fluent Bit now has a FeatureFlag 'LEGACY_LOGGING' to control application logs destination
-- Fluent Bit docker image is now pulled from ECR
+- Fluent Bit docker image is now pulled from ECR 
+- Add "pf-jwt-token-translator-1.1.1.2.jar" to artifact.json file
 
 _Changes:_
 
@@ -49,6 +50,7 @@ _Changes:_
 - [X] PDO-3892 Fluent Bit image is now pulled from ECR
 - [X] PDO-3913 Few data views are listed twice in Kibana Discover tab
 - [X] PDO-3936 Investigate flaky PingOne integration tests
+- [X] PDO-3930 Add "pf-jwt-token-translator-1.1.1.2.jar" to artifact.json file
 
 ### 1.13.0
 
