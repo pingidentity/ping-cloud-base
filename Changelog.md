@@ -17,6 +17,7 @@
 
 _Changes:_
 
+- [X] PDO-3942 Moved ENVIRONMENT_PREFIX from base env_vars to region env_vars
 - [X] PDO-3844 Update cluster tools to latest version: sig-sci agent v4.28.0
 - [X] PDO-3270 Update cluster tools to latest version: nginx-ingress-controller v1.2.0
 - [X] PDO-2517 Port of PingFederate pre-config script from bash to python

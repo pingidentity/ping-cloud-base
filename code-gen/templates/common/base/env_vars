@@ -79,10 +79,6 @@ ECR_REGISTRY_NAME=${ECR_REGISTRY_NAME}
 # The tenant or customer name
 TENANT_NAME=${TENANT_NAME}
 
-# This variable's value will be used as the prefix to distinguish between worker apps for different CDEs for a
-# single P14C customer. All of these apps will be created within the "Administrators" environment in the tenant.
-ENVIRONMENT_PREFIX=${ENVIRONMENT_PREFIX}
-
 ############################################################
 # Server profile variables
 ############################################################
