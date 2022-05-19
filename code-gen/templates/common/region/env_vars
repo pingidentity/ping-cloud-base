@@ -8,6 +8,11 @@ REGION_NICK_NAME=${REGION_NICK_NAME}
 # Tenant domain suffix for customer for region
 TENANT_DOMAIN=${TENANT_DOMAIN}
 
+# This variable's value will be used as the prefix to distinguish between worker apps for different CDEs for a
+# single P14C customer. All of these apps will be created within the "Administrators" environment in the tenant.
+# This variable name is also used in forming the Signal Science Agent name as displayed in SigSci Dashboard.
+ENVIRONMENT_PREFIX=${ENVIRONMENT_PREFIX}
+
 # Customer-specific artifacts URL for region
 ARTIFACT_REPO_URL=${ARTIFACT_REPO_URL}
 
