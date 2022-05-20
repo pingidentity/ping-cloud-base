@@ -1,5 +1,13 @@
 # Changelog
 
+### 1.12.5
+
+- Upgrade PingFederate to v10.3.7
+
+_Changes:_
+
+- [X] PDO-3902 Upgrade PingFederate to v10.3.7
+
 ### 1.12.4
 
 - Upgrade PingAccess to v6.3.4
