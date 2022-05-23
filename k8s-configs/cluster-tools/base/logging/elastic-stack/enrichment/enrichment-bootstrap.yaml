@@ -12,7 +12,7 @@ spec:
       containers:
 
       - name: elasticsearch-bootstrap
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.1.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.2.0
         
         imagePullPolicy: IfNotPresent
         workingDir: /scripts
@@ -43,7 +43,7 @@ spec:
           mountPath: /usr/share/elasticsearch/data/index-templates
 
       - name: kibana-bootstrap
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.1.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.2.0
         imagePullPolicy: IfNotPresent
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
@@ -58,6 +58,8 @@ spec:
           value: "http://kibana:5601/api/status"
         - name: CHECK_ELASTICSEARCH_URL
           value: "http://elasticsearch:9200/_cluster/health"
+        - name: RETRY_KIBANA_BOOTSTRAP_SEC
+          value: "30"
 
         securityContext:
           privileged: true
