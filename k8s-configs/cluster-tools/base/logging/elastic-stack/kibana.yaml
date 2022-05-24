@@ -18,7 +18,7 @@ spec:
       initContainers:
 
       - name: check-service-availability
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.2.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.2.1
         
         imagePullPolicy: IfNotPresent
         command: ["sh", '$(CONTAINER_NAME).sh']
