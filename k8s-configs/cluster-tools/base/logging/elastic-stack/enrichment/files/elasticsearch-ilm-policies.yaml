@@ -53,11 +53,33 @@ data:
             "actions": {
               "rollover": {
                 "max_age": "1d"
+              },
+              "set_priority": {
+                "priority": 100
+              }
+            }
+          },
+          "warm": {
+            "min_age": "90d",
+            "actions": {
+              "forcemerge": {
+                "max_num_segments": 1,
+                "index_codec": "best_compression"
+              },
+              "readonly": {},
+              "set_priority": {
+                "priority": 50
+              },
+              "shrink": {
+                "number_of_shards": 1
+              },
+              "allocate": {
+                "number_of_replicas": 0
               }
             }
           },
           "delete": {
-            "min_age": "30d",
+            "min_age": "180d",
             "actions": {
               "delete": {}
             }

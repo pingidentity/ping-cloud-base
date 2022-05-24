@@ -13,7 +13,8 @@
 - Force liveness probe for PingDirectory to use API endpoint /available-or-degraded-state
 - Logstash now getting logs from Fluent Bit and working as non-root Deployment
 - Fluent Bit now has a FeatureFlag 'LEGACY_LOGGING' to control application logs destination
-- Fluent Bit docker image is now pulled from ECR 
+- Fluent Bit docker image is now pulled from ECR
+- Implemented Hot\Warm Tiers for ElasticSearch 
 - Add "pf-jwt-token-translator-1.1.1.2.jar" to artifact.json file
 
 _Changes:_
@@ -39,6 +40,7 @@ _Changes:_
 - [X] PDO-3605 Automate release candidate ECR images within in ping-cloud-base
 - [X] PDO-3620 Update cluster tools to latest version: Grafana v8.4.5
 - [X] PDO-3678 server.publicBaseUrl is not found in Kibana
+- [X] PDO-3716 Elasticsearch: Implement Hot/Warm Tiers
 - [X] PDO-3723 Grafana: Upgrade to 8.4.5 risks investigation
 - [X] PDO-3743 Automate development ECR images in ping-cloud-base
 - [X] PDO-3745 Argocd admin creds in secrets.yaml

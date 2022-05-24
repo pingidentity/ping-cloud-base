@@ -10,7 +10,7 @@ data:
       ],
       "template": {
         "settings": {
-          "number_of_shards": 1,
+          "number_of_shards": 3,
           "number_of_replicas": 1,
           "index.lifecycle.name": "ping-2-day-retention",
           "index.lifecycle.rollover_alias": "pa-audit"
@@ -97,7 +97,7 @@ data:
       ],
       "template": {
         "settings": {
-          "number_of_shards": 1,
+          "number_of_shards": 3,
           "number_of_replicas": 1,
           "index.lifecycle.name": "ping-2-day-retention",
           "index.lifecycle.rollover_alias": "pa-system"
@@ -145,7 +145,7 @@ data:
       ],
       "template": {
         "settings": {
-          "number_of_shards": 1,
+          "number_of_shards": 3,
           "number_of_replicas": 1,
           "index.lifecycle.name": "ping-2-day-retention",
           "index.lifecycle.rollover_alias": "pa-was-audit"
@@ -214,7 +214,7 @@ data:
       ],
       "template": {
         "settings": {
-          "number_of_shards": 1,
+          "number_of_shards": 3,
           "number_of_replicas": 1,
           "index.lifecycle.name": "ping-2-day-retention",
           "index.lifecycle.rollover_alias": "pa-was-system"
@@ -262,7 +262,7 @@ data:
       ],
       "template": {
         "settings": {
-          "number_of_shards": 1,
+          "number_of_shards": 3,
           "number_of_replicas": 1,
           "index.lifecycle.name": "ping-2-day-retention",
           "index.lifecycle.rollover_alias": "pd-access"
@@ -644,7 +644,7 @@ data:
       ],
       "template": {
         "settings": {
-          "number_of_shards": 1,
+          "number_of_shards": 3,
           "number_of_replicas": 1,
           "index.lifecycle.name": "ping-2-day-retention",
           "index.lifecycle.rollover_alias": "pd-failed-ops"
@@ -680,7 +680,7 @@ data:
       ],
       "template": {
         "settings": {
-          "number_of_shards": 1,
+          "number_of_shards": 3,
           "number_of_replicas": 1,
           "index.lifecycle.name": "ping-2-day-retention",
           "index.lifecycle.rollover_alias": "pf-audit"
@@ -955,8 +955,8 @@ data:
       ],
       "template": {
         "settings": {
-          "number_of_shards": 1,
-          "number_of_replicas": 1,
+          "number_of_shards": 3,
+          "number_of_replicas": 2,
           "index.lifecycle.name": "ping-logstash-policy",
           "index.lifecycle.rollover_alias": "logstash"
         }
@@ -970,7 +970,7 @@ data:
       ],
       "template": {
         "settings": {
-          "number_of_shards": 1,
+          "number_of_shards": 3,
           "number_of_replicas": 1,
           "index.lifecycle.name": "ping-2-day-retention",
           "index.lifecycle.rollover_alias": "pf-system"
@@ -1018,7 +1018,7 @@ data:
       ],
       "template": {
         "settings": {
-          "number_of_shards": 1,
+          "number_of_shards": 3,
           "number_of_replicas": 1,
           "index.lifecycle.name": "ping-2-day-retention",
           "index.lifecycle.rollover_alias": "pa-admin-audit"
@@ -1075,7 +1075,7 @@ data:
       ],
       "template": {
         "settings": {
-          "number_of_shards": 1,
+          "number_of_shards": 3,
           "number_of_replicas": 1,
           "index.lifecycle.name": "ping-2-day-retention",
           "index.lifecycle.rollover_alias": "pa-admin-system"
@@ -1111,7 +1111,7 @@ data:
       ],
       "template": {
         "settings": {
-          "number_of_shards": 1,
+          "number_of_shards": 3,
           "number_of_replicas": 1,
           "index.lifecycle.name": "ping-2-day-retention",
           "index.lifecycle.rollover_alias": "pa-was-admin-audit"
@@ -1168,7 +1168,7 @@ data:
       ],
       "template": {
         "settings": {
-          "number_of_shards": 1,
+          "number_of_shards": 3,
           "number_of_replicas": 1,
           "index.lifecycle.name": "ping-2-day-retention",
           "index.lifecycle.rollover_alias": "pa-was-admin-system"
@@ -1204,7 +1204,7 @@ data:
       ],
       "template": {
         "settings": {
-          "number_of_shards": 1,
+          "number_of_shards": 3,
           "number_of_replicas": 1,
           "index.lifecycle.name": "ping-2-day-retention",
           "index.lifecycle.rollover_alias": "pf-admin-system"
