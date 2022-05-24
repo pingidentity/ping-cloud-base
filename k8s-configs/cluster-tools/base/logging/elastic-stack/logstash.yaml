@@ -27,7 +27,8 @@ data:
         if ([log] =~ "/opt/out/instance/logs/access") {
           mutate {
             replace => { "log_type" => "PD_Access_Log" }
-            remove_field => "[log]"
+            replace => { "log_group" => "SIEM" }
+            remove_field => "[message]"
           }
         }
       }
@@ -36,14 +37,17 @@ data:
           if ([log] =~ "System_SIEM") {
             mutate {
               replace => { "log_type" => "PF_System_Log" }
+              replace => { "log_group" => "SIEM" }
             }
           } else if ([log] =~ "Audit_SIEM") {
             mutate {
               replace => { "log_type" => "PF_Audit_Log" }
+              replace => { "log_group" => "SIEM" }
             }
           } else if ([log] =~ "Provisioner_SIEM") {
             mutate {
               replace => { "log_type" => "PF_Provisioner_Log"}
+              replace => { "log_group" => "SIEM" }
             }
           }
         }
@@ -51,11 +55,13 @@ data:
           if ([log] =~ "System_SIEM") {
             mutate {
               replace => { "log_type" => "PA_System_Log" }
+              replace => { "log_group" => "SIEM" }
             }
           }
           else if ([log] =~ "Audit_SIEM") {
             mutate {
               replace => { "log_type" => "PA_Audit_Log" }
+              replace => { "log_group" => "SIEM" }
             }
           } 
         }
@@ -63,11 +69,13 @@ data:
           if ([log] =~ "System_SIEM") {
             mutate {
               replace => { "log_type" => "PA_WAS_System_Log" }
+              replace => { "log_group" => "SIEM" }
             }
           }
           else if ([log] =~ "Audit_SIEM") {
             mutate {
               replace => { "log_type" => "PA_WAS_Audit_Log" }
+              replace => { "log_group" => "SIEM" }
             }
           } 
         }
@@ -75,11 +83,13 @@ data:
           if ([log] =~ "System_SIEM") {
             mutate {
               replace => { "log_type" => "PA_Admin_System_Log" }
+              replace => { "log_group" => "SIEM" }
             }
           }
           else if ([log] =~ "Audit_SIEM") {
             mutate {
               replace => { "log_type" => "PA_Admin_Audit_Log" }
+              replace => { "log_group" => "SIEM" }
             }
           } 
         }
@@ -87,11 +97,13 @@ data:
           if ([log] =~ "System_SIEM") {
             mutate {
               replace => { "log_type" => "PA_WAS_Admin_System_Log" }
+              replace => { "log_group" => "SIEM" }
             }
           }
           else if ([log] =~ "Audit_SIEM") {
             mutate {
               replace => { "log_type" => "PA_WAS_Admin_Audit_Log" }
+              replace => { "log_group" => "SIEM" }
             }
           } 
         }
@@ -99,16 +111,19 @@ data:
           if ([log] =~ "System_SIEM") {
             mutate {
               replace => { "log_type" => "PF_Admin_System_Log" }
+              replace => { "log_group" => "SIEM" }
             }
           }
           else if ([log] =~ "Audit_SIEM") {
             mutate {
               replace => { "log_type" => "PF_Admin_Audit_Log" }
+              replace => { "log_group" => "SIEM" }
             }
           }
           else if ([log] =~ "AdminApiAuditSIEM") {
             mutate {
               replace => { "log_type" => "PF_Admin_Audit_API_Log"}
+              replace => { "log_group" => "SIEM" }
             }
           }
         }
@@ -198,11 +213,15 @@ data:
                 source => "json_data"
             }
             if([json_data]){
+                date {
+                  match => ["timestamp", "MMM dd HH:mm:ss"]
+                }
                 #Drop the original as you do not need it at this point.
                 mutate {
                     remove_field => "[json_data]"
                     remove_field => "[log]"
                     remove_field => "[pod_name]"
+                    remove_field => "[timestamp]"
                 }
                 geoip {
                     source => "ip"
@@ -273,10 +292,14 @@ data:
                 source => "json_data"
             }
             if([json_data]){
+                date {
+                  match => ["timestamp", "MMM dd HH:mm:ss"]
+                }
                 mutate {
                     remove_field => "[json_data]"
                     remove_field => "[log]"
                     remove_field => "[pod_name]"
+                    remove_field => "[timestamp]"
                 }
             }
         }
@@ -291,10 +314,14 @@ data:
               source => "json_data"
             }
             if([json_data]) {
+              date {
+                match => ["timestamp", "MMM dd HH:mm:ss"]
+              }
               mutate {
                 remove_field => "[json_data]"
                 remove_field => "[log]"
                 remove_field => "[pod_name]"
+                remove_field => "[timestamp]"
               }
             }
         }
@@ -302,11 +329,14 @@ data:
         # LOGS ARE SENT IN A CUSTOM FORMAT, AND THIS CONFIG MATCHES AND PARSES THEM.
         if([log_type] == "PD_Access_Log"){
             kv {
-                source => "[message]"
+                source => "[log]"
                 value_split => "="
             }
             grok {
-                match => { "message" => "%{WORD:log_name} \[%{GREEDYDATA:timestamp}\] %{WORD:ldapType} %{GREEDYDATA}" }
+                match => { "log" => "%{WORD:log_name} \[%{GREEDYDATA:timestamp}\] %{WORD:ldapType} %{GREEDYDATA}" }
+            }
+            date {
+              match => ["timestamp", "dd/MMM/yyyy:HH:mm:ss.SSS Z"]
             }
             mutate{
                 gsub => [
@@ -356,7 +386,7 @@ data:
                 }
             }
             mutate {
-                remove_field => "[message]"
+                remove_field => "[log]"
                 remove_field => "[tags]"
             }
         }
@@ -371,9 +401,13 @@ data:
             json {
                 source => "json_data"
             }
-            if([json_data]){
+            if([json_data]){ 
+                date {
+                  match => ["timestamp", "MMM dd HH:mm:ss"]
+                }
                 mutate {
                     remove_field => "[json_data]" 
+                    remove_field => "[timestamp]"
                 }
                 geoip {
                     source => "client"
@@ -423,10 +457,14 @@ data:
                 source => "json_data"
             }
             if([json_data]){
+                date {
+                  match => ["timestamp", "MMM dd HH:mm:ss"]
+                }
                 mutate {
                     remove_field => "[json_data]"
                     remove_field => "[log]"
                     remove_field => "[pod_name]"
+                    remove_field => "[timestamp]"
                 }
             }
         }
@@ -440,10 +478,14 @@ data:
                 source => "json_data"
             }
             if([json_data]){
+                date {
+                  match => ["timestamp", "MMM dd HH:mm:ss"]
+                }
                 mutate {
                     remove_field => "[json_data]"
                     remove_field => "[log]"
                     remove_field => "[pod_name]"
+                    remove_field => "[timestamp]"
                 }
             }
         }
@@ -457,10 +499,14 @@ data:
                 source => "json_data"
             }
             if([json_data]){
+                date {
+                  match => ["timestamp", "MMM dd HH:mm:ss"]
+                }
                 mutate {
                     remove_field => "[json_data]"
                     remove_field => "[log]"
                     remove_field => "[pod_name]"
+                    remove_field => "[timestamp]"
                 }
             }
         }
@@ -474,10 +520,14 @@ data:
                 source => "json_data"
             }
             if([json_data]){
+                date {
+                  match => ["timestamp", "MMM dd HH:mm:ss"]
+                }
                 mutate {
                     remove_field => "[json_data]"
                     remove_field => "[log]"
                     remove_field => "[pod_name]"
+                    remove_field => "[timestamp]"
                 }
             }
         }
@@ -491,22 +541,28 @@ data:
                 source => "json_data"
             }
             if([json_data]){
+                date {
+                  match => ["timestamp", "MMM dd HH:mm:ss"]
+                }
                 mutate {
                     remove_field => "[json_data]"
                     remove_field => "[log]"
                     remove_field => "[pod_name]"
+                    remove_field => "[timestamp]"
                 }
             }
         }
     }
 
     output {
-        elasticsearch {
+        if ([log_group] == "application") {
+          elasticsearch {
             hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
             sniffing => false
             ilm_enabled => true
             ilm_rollover_alias => "logstash"
-            ilm_policy => "ping-2-day-retention"
+            ilm_policy => "ping-logstash-policy"
+          }
         }
         if([log_type] == "PF_Provisioner_Log"){
             elasticsearch {
@@ -647,7 +703,7 @@ data:
 
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: Deployment 
 metadata:
   name: logstash-elastic
   labels:
@@ -657,10 +713,6 @@ spec:
   selector:
     matchLabels:
       app: logstash-elastic
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 1
   template:
     metadata:
       labels:
@@ -719,7 +771,6 @@ spec:
         securityContext:
           runAsUser: 1000
           runAsGroup: 1000
-
         env:
           - name: CONTAINER_NAME
             value: "logstash"
@@ -751,10 +802,11 @@ spec:
             value: "true"
           - name: PIPELINE_ORDERED
             value: "false"
-
+          - name: QUEUE_TYPE
+            value: "persisted"
         resources:
           limits:
-            memory: 2Gi
+            memory: 4Gi
           requests:
             cpu: 150m
             memory: 1Gi
