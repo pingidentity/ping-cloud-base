@@ -10,7 +10,7 @@ data:
   logs.region: region_name
   log.level: "error"
   read.head: "True"
-  read.tail: "True"
+  read.tail: "Off"
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -514,7 +514,7 @@ data:
     [PARSER]
         Name                dmesg
         Format              regex
-        Regex               ^\[.*\](?<message>.*)$
+        Regex               ^\[.*?\](?<message>.*)$
 
     [PARSER]
         Name                syslog
@@ -653,7 +653,7 @@ spec:
     spec:
       containers:
       - name: fluent-bit
-        image: public.ecr.aws/r2h3l6e4/amazon/aws-for-fluent-bit:2.23.4
+        image: public.ecr.aws/r2h3l6e4/amazon/aws-for-fluent-bit:2.24.0
         imagePullPolicy: Always
         env:
             - name: AWS_REGION

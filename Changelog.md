@@ -53,6 +53,7 @@ _Changes:_
 - [X] PDO-3913 Few data views are listed twice in Kibana Discover tab
 - [X] PDO-3936 Investigate flaky PingOne integration tests
 - [X] PDO-3930 Add "pf-jwt-token-translator-1.1.1.2.jar" to artifact.json file
+- [X] PDO-3933 ELK/CloudWatch logging improvements
 - [X] PDO-3946 Some of Kibana resources bootstrapping fails in rare cases
 
 ### 1.13.0
