@@ -27,7 +27,6 @@ data:
         if ([log] =~ "/opt/out/instance/logs/access") {
           mutate {
             replace => { "log_type" => "PD_Access_Log" }
-            replace => { "log_group" => "SIEM" }
             remove_field => "[message]"
           }
         }
@@ -126,6 +125,12 @@ data:
               replace => { "log_group" => "SIEM" }
             }
           }
+          else if ([log] =~ "Provisioner_SIEM") {
+            mutate {
+              replace => { "log_type" => "PF_Provisioner_Log" }
+              replace => { "log_group" => "SIEM" }
+            }
+          }
         }
       }
       if ([kubernetes][container_name] == "nginx-ingress-controller") {
@@ -155,17 +160,34 @@ data:
           }
         }
         else if [stream] == "stderr" {
-          grok {
-            match => { "message" => ["%{DATA:[nginx][error][time]} \[%{DATA:[nginx][error][level]}\] %{NUMBER:[nginx][error][pid]}#%{NUMBER:[nginx][error][tid]}: (\*%{NUMBER:[nginx][error][connection_id]} )?%{GREEDYDATA:[nginx][error][message]}"] }
-            remove_field => "message"
+          if ([log] =~ /[\d\/: ]+\[.+?\]/) {
+            grok {
+              match => { "message" => ["%{DATA:[nginx][error][time]} \[%{DATA:[nginx][error][level]}\] %{NUMBER:[nginx][error][pid]}#%{NUMBER:[nginx][error][tid]}: (\*%{NUMBER:[nginx][error][connection_id]} )?%{GREEDYDATA:[nginx][error][message]}"] }
+              remove_field => "message"
+            }
+            mutate {
+              rename => { "@timestamp" => "read_timestamp" }
+            }
+            date {
+              match => [ "[nginx][error][time]", "YYYY/MM/dd H:m:s" ]
+              remove_field => "[nginx][error][time]"
+            }
           }
-          mutate {
-            rename => { "@timestamp" => "read_timestamp" }
+          else if ([log] =~ /\w{5} [\d:\.]{15}.[ \t]+.*?\]/) {
+            mutate {
+              remove_field => "[message]"
+            }
+            grok {
+              match => { "log" => ["[A-Z]%{DATA:timestamp} [ \t]+%{DATA}\] %{GREEDYDATA:message}"]
+              }
+            }
+            date {
+              match => ["timestamp", "MMdd HH:mm:ss.SSSSSS"]
+            }
           }
-          date {
-            match => [ "[nginx][error][time]", "YYYY/MM/dd H:m:s" ]
-            remove_field => "[nginx][error][time]"
-          }
+        }
+        mutate {
+          remove_field => "[log]"
         }
       }
       if ([log_type] == "json") {
@@ -175,12 +197,12 @@ data:
           }
           grok {
             match => {
-              log => ["^\/opt\/out\/instance\/log.*?\/%{DATA:log_name}\.log %{GREEDYDATA:message}"]
+              log => [ "^\/opt\/out\/instance.*?\/log.*\/%{DATA:log_name}\.log %{GREEDYDATA:message}" ]
             }
           }
           mutate {
             gsub => [
-              "message", "\/opt\/out\/instance\/log.*/.*\.log", ""
+              "message", "\/opt\/out\/instance.*?\/log.*/.*\.log", ""
             ]
             gsub => [
               "message", "\\n", "\n"
