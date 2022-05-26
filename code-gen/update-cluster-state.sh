@@ -187,7 +187,7 @@ add_derived_variables() {
     export DNS_ZONE="\${TENANT_DOMAIN}"
     export PRIMARY_DNS_ZONE="\${PRIMARY_TENANT_DOMAIN}"
   else
-    export DNS_ZONE="\${ENV}-\${TENANT_DOMAIN}"
+    export DNS_ZONE="\${REGION_ENV}-\${TENANT_DOMAIN}"
     export PRIMARY_DNS_ZONE="\${ENV}-\${PRIMARY_TENANT_DOMAIN}"
   fi
 
