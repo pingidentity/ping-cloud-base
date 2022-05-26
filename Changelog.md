@@ -55,6 +55,7 @@ _Changes:_
 - [X] PDO-3930 Add "pf-jwt-token-translator-1.1.1.2.jar" to artifact.json file
 - [X] PDO-3933 ELK/CloudWatch logging improvements
 - [X] PDO-3946 Some of Kibana resources bootstrapping fails in rare cases
+- [X] PDO-3956 ELK: there are no log time chart and no window to choose time slot for 'pa-was-system' data view
 
 ### 1.13.0
 
