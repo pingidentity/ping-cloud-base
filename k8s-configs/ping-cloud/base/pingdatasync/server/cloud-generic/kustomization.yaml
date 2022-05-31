@@ -8,5 +8,6 @@ commonLabels:
   role: pingdatasync
 
 resources:
-- deployment.yaml
+- statefulset.yaml
 - service.yaml
+- storage.yaml

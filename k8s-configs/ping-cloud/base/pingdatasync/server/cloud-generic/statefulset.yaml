@@ -1,23 +1,26 @@
 # This defines the Ping DataSync deployment
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: pingdatasync
   labels:
-    class: pingdatasync-server
+    role: pingdatasync-server
 spec:
-  replicas: 1
   selector:
     matchLabels:
-      class: pingdatasync-server
-  strategy:
-    type: Recreate
+      role: pingdatasync-server
+  replicas: 1
+  serviceName: pingdatasync-admin
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
   template:
     metadata:
+      name: pingdatasync
+      labels:
+        role: pingdatasync-server
       annotations:
         lastUpdateReason: "NA"
-      labels:
-        class: pingdatasync-server
     spec:
       serviceAccountName: ping-serviceaccount
       terminationGracePeriodSeconds: 300
@@ -230,6 +233,9 @@ spec:
             name: known-hosts-config
             optional: true
             defaultMode: 0644
+        - name: out-dir
+          persistentVolumeClaim:
+            claimName: out-dir
         - name: pingdatasync-passwords
           secret:
             secretName: pingdatasync-passwords
@@ -240,3 +246,13 @@ spec:
             secretName: pingdirectory-license
             optional: true
             defaultMode: 0400
+  volumeClaimTemplates:
+    - metadata:
+        name: out-dir
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: pingdatasync-gp2
+        resources:
+          requests:
+            storage: 20Gi
