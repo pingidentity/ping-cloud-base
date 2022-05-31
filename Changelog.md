@@ -38,6 +38,7 @@ _Changes:_
 - [X] PDO-3571 Added non-admin ArgoCD user with access to restart StatefulSet pods
 - [X] PDO-3582 Force liveness probe to use API endpoint /available-or-degraded-state
 - [X] PDO-3605 Automate release candidate ECR images within in ping-cloud-base
+- [X] PDO-3610 Convert PingDataSync to a Statefulset
 - [X] PDO-3620 Update cluster tools to latest version: Grafana v8.4.5
 - [X] PDO-3678 server.publicBaseUrl is not found in Kibana
 - [X] PDO-3716 Elasticsearch: Implement Hot/Warm Tiers
