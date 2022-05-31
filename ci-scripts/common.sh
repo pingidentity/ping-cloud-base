@@ -26,6 +26,37 @@ SKIP_TESTS="${SKIP_TESTS:-pingdirectory/03-backup-restore.sh \
   pingaccess-was/05-test-cloudwatch-logs.sh \
   chaos/01-delete-pa-admin-pod.sh }"
 
+# environment variables that are determined based on deployment type (traditional or PingOne)
+set_deploy_type_env_vars() {
+  # MySQL database names cannot have dashes. So transform dashes into underscores.
+  ENV_NAME_NO_DASHES=$(echo ${CI_COMMIT_REF_SLUG} | tr '-' '_')
+
+  if [[ -n ${PINGONE} ]]; then
+    # Set PingOne deploy env vars
+    echo "Setting env vars for PingOne deployment"
+    export NAMESPACE=ping-p1-${CI_COMMIT_REF_SLUG}
+    export PLATFORM_EVENT_QUEUE_NAME="${SELECTED_KUBE_NAME}_v2_platform_event_queue.fifo"
+    export ORCH_API_SSM_PATH_PREFIX="/${SELECTED_KUBE_NAME}/pcpt/orch-api"
+    export MYSQL_DATABASE="p1_pingcentral${ENV_NAME_NO_DASHES}"
+    export BELUGA_ENV_NAME=p1-${CI_COMMIT_REF_SLUG}
+    if [[ ${CI_COMMIT_REF_SLUG} != master ]]; then
+      export ENVIRONMENT=-p1-${CI_COMMIT_REF_SLUG}
+    fi
+  else
+    # Set traditional deploy env vars
+    echo "Setting env vars for traditional deployment"
+    export NAMESPACE=ping-cloud-${CI_COMMIT_REF_SLUG}
+    export PLATFORM_EVENT_QUEUE_NAME="v2_platform_event_queue.fifo"
+    export ORCH_API_SSM_PATH_PREFIX="/pcpt/orch-api"
+    export MYSQL_DATABASE="pingcentral_${ENV_NAME_NO_DASHES}"
+    export BELUGA_ENV_NAME=${CI_COMMIT_REF_SLUG}
+    if [[ ${CI_COMMIT_REF_SLUG} != master ]]; then
+      export ENVIRONMENT=-${CI_COMMIT_REF_SLUG}
+    fi
+  fi
+}
+
+# all other environment variables
 set_env_vars() {
   if test -z "${ENV_VARS_FILE}"; then
     echo "Using environment variables based on CI variables"
@@ -43,13 +74,8 @@ set_env_vars() {
     export PRIMARY_TENANT_DOMAIN="${TENANT_DOMAIN}"
     export GLOBAL_TENANT_DOMAIN="${GLOBAL_TENANT_DOMAIN:-$(echo "${TENANT_DOMAIN}"|sed -e "s/[^.]*.\(.*\)/global.\1/")}"
 
-    if [[ ${CI_COMMIT_REF_SLUG} != master ]]; then
-      export ENVIRONMENT=-${CI_COMMIT_REF_SLUG}
-    fi
-    export BELUGA_ENV_NAME=${CI_COMMIT_REF_SLUG}
     export ENV=${BELUGA_ENV_NAME}
 
-    export NAMESPACE=ping-cloud-${CI_COMMIT_REF_SLUG}
     export NEW_RELIC_ENVIRONMENT_NAME=${TENANT_NAME}_${ENV}_${REGION}_k8s-cluster
 
     export CONFIG_PARENT_DIR=aws
@@ -61,18 +87,13 @@ set_env_vars() {
     export BACKUP_URL=s3://${CLUSTER_NAME}-backup-bucket
 
     export MYSQL_SERVICE_HOST=beluga-${CLUSTER_NAME}-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
-    export MYSQL_USER=ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#username
-    export MYSQL_PASSWORD=ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#password
-
-    # MySQL database names cannot have dashes. So transform dashes into underscores.
-    ENV_NAME_NO_DASHES=$(echo ${CI_COMMIT_REF_SLUG} | tr '-' '_')
-    export MYSQL_DATABASE="pingcentral_${ENV_NAME_NO_DASHES}"
-
-    export PLATFORM_EVENT_QUEUE_NAME='v2_platform_event_queue.fifo'
-    export ORCH_API_SSM_PATH_PREFIX='/pcpt/orch-api'
+    export MYSQL_USER=ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username
+    export MYSQL_PASSWORD=ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#password
 
     export PROJECT_DIR="${CI_PROJECT_DIR}"
     export AWS_PROFILE=csg
+
+    export LEGACY_LOGGING=True
 
   elif test -f "${ENV_VARS_FILE}"; then
     echo "Using environment variables defined in file ${ENV_VARS_FILE}"
@@ -145,8 +166,8 @@ set_env_vars() {
   # PingCentral
   MYSQL_SERVICE_HOST="beluga-${SELECTED_KUBE_NAME:-ci-cd}-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com"
   MYSQL_SERVICE_PORT=3306
-  MYSQL_USER_SSM=/aws/reference/secretsmanager/pcpt/ping-central/dbserver#username
-  MYSQL_PASSWORD_SSM=/aws/reference/secretsmanager/pcpt/ping-central/dbserver#password
+  MYSQL_USER_SSM=/aws/reference/secretsmanager//pcpt/ping-central/dbserver#username
+  MYSQL_PASSWORD_SSM=/aws/reference/secretsmanager//pcpt/ping-central/dbserver#password
 
   # Pingcloud-metadata service:
   PINGCLOUD_METADATA_API=https://metadata${FQDN}
@@ -155,85 +176,20 @@ set_env_vars() {
   PINGCENTRAL_CONSOLE=https://pingcentral${FQDN}
 }
 
+set_deploy_type_env_vars
 set_env_vars
 
 # Source some utility methods.
 . ${PROJECT_DIR}/utils.sh
 
 ########################################################################################################################
-# Finds an available ci-cd cluster to run on:
-#
-# If no cluster is available it will try again every 5 minutes for 30 minutes before timing out.
+# Sets env vars specific to PingOne API integration
 ########################################################################################################################
-find_cluster() {
-  if test -n "${SKIP_CONFIGURE_KUBE}"; then
-    log "Skipping KUBE configuration"
-    return
-  fi
-
-  check_env_vars "CLUSTER_POSTFIXES"
-  HAS_REQUIRED_VARS=${?}
-
-  if test ${HAS_REQUIRED_VARS} -ne 0; then
-    exit 1
-  fi
-
-  cluster_postfixes=($CLUSTER_POSTFIXES)
-  found_cluster=false
-  sleep_wait_seconds=300
-  current_check=1
-  max_checks=7
-
-  while [[ $found_cluster == false ]]; do
-    for postfix in "${cluster_postfixes[@]}"; do
-      export SELECTED_POSTFIX=$postfix
-      export SELECTED_KUBE_NAME=$(echo "ci-cd$postfix" | tr '_' '-')
-      configure_kube
-
-      # Typically, all CI/CD clusters should have 6 nodes ready (2 per AZ)
-      # We make the minimum 3 in case of random failures with a node (since the pipeline can run with 3)
-      min_nodes=3
-      # Get nodes with ONLY 'Ready' state, count them
-      num_nodes=$(kubectl get nodes | awk '{ print $2 }' | grep -c '^Ready$' )
-
-      if [[ $? != 0 ]]; then
-        log "There was a problem checking how many nodes are running on the cluster, continuing to next cluser"
-        continue
-      fi
-
-      if [[ $num_nodes -lt $min_nodes ]]; then
-        log "Cluster ${SELECTED_KUBE_NAME} does not have enough nodes available"
-        log "CI/CD pipeline requires ${min_nodes} nodes but there were only ${num_nodes} nodes"
-        log "Skipping this cluster and trying the next"
-        continue
-      else
-        log "Found sufficient nodes are available on cluster ${SELECTED_KUBE_NAME}"
-      fi
-
-      log "INFO: Namespaces on cluster $SELECTED_KUBE_NAME: $(kubectl get ns)"
-      # Check namespaces & break out of loop if cluster is available (i.e. no cluster-in-use-lock namespace)
-      if ! kubectl get ns | grep cluster-in-use-lock > /dev/null; then
-        # Add a cluster-in-use-lock namespace to make sure we lock this cluster for our use
-        kubectl create namespace cluster-in-use-lock || continue
-        found_cluster=true
-        log "Found cluster $SELECTED_KUBE_NAME available to deploy to"
-        echo "SELECTED_POSTFIX=$SELECTED_POSTFIX" > deploy.env
-        echo "SELECTED_KUBE_NAME=$SELECTED_KUBE_NAME" >> deploy.env
-        set_env_vars
-        break
-      fi
-    done
-
-    if [[ $found_cluster == false ]]; then
-      if [[ $current_check -ge $max_checks ]]; then
-        log "Could not find a cluster to run on - please check that the pipeline is not saturated and delete unused namespaces"
-        exit 1
-      fi
-      log "No unused cluster found to run your changes on. Waiting for ${sleep_wait_seconds} seconds, then checking again."
-      ((current_check=current_check+1))
-      sleep $sleep_wait_seconds
-    fi
-  done
+set_pingone_api_env_vars() {
+  P1_BASE_ENV_VARS=$(get_ssm_val "/pcpt/pingone/env-vars")
+  eval $P1_BASE_ENV_VARS
+  P1_CLUSTER_ENV_VARS=$(get_ssm_val "/pcpt/pingone/${SELECTED_KUBE_NAME}/env-vars")
+  eval $P1_CLUSTER_ENV_VARS
 }
 
 ########################################################################################################################
@@ -695,4 +651,60 @@ expected_files() {
     tr ' ' '\n' |
     sort
   done
+}
+
+########################################################################################################################
+# Check if the cluster is ready to run integration tests.
+# BLOCKS until the cluster is ready, returns when either ready or timeout is reached 
+#
+# A PingDirectory pod can take up to 15 minutes to deploy in the CI/CD cluster. There are two sets of dependencies
+# today from:
+#
+#     1. PA engine -> PA admin -> PF admin -> PD
+#     2. PF engine -> PF admin -> PD
+#     3. PA WAS engine -> PA WAS admin
+#
+# So checking the rollout status of the end dependencies should be enough after PD is rolled out. We'll give each 2.5
+# minutes after PD is ready. This should be more than enough time because as soon as pingdirectory-0 is ready, the
+# rollout of the others will begin, and they don't take nearly as much time as a single PD server. So the entire Ping
+# stack must be rolled out in no more than (15 * num of PD replicas + 2.5 * number of end dependents) minutes.
+#
+# Arguments:
+# $1 - the namespace to check
+########################################################################################################################
+check_if_ready() {
+  local ns_to_check=${1}
+
+  PD_REPLICA='statefulset.apps/pingdirectory'
+  OTHER_PING_APP_REPLICAS='statefulset.apps/pingfederate statefulset.apps/pingaccess statefulset.apps/pingaccess-was'
+
+  NUM_PD_REPLICAS=$(kubectl get "${PD_REPLICA}" -o jsonpath='{.spec.replicas}' -n "${ns_to_check}")
+  PD_TIMEOUT_SECONDS=$((NUM_PD_REPLICAS * 900))
+  DEPENDENT_TIMEOUT_SECONDS=300
+
+  echo "Waiting for rollout of ${PD_REPLICA} with a timeout of ${PD_TIMEOUT_SECONDS} seconds"
+  time kubectl rollout status "${PD_REPLICA}" --timeout "${PD_TIMEOUT_SECONDS}s" -n "${ns_to_check}" -w
+
+  for DEPENDENT_REPLICA in ${OTHER_PING_APP_REPLICAS}; do
+    echo "Waiting for rollout of ${DEPENDENT_REPLICA} with a timeout of ${DEPENDENT_TIMEOUT_SECONDS} seconds"
+    time kubectl rollout status "${DEPENDENT_REPLICA}" --timeout "${DEPENDENT_TIMEOUT_SECONDS}s" -n "${ns_to_check}" -w
+  done
+
+  # Print out the ingress objects for logs and the ping stack
+  echo
+  echo '--- Ingress URLs ---'
+  kubectl get ingress -A
+
+  # Print out the pingdirectory hostname
+  echo
+  echo '--- LDAP hostname ---'
+  kubectl get svc pingdirectory-admin -n "${ns_to_check}" \
+    -o jsonpath='{.metadata.annotations.external-dns\.alpha\.kubernetes\.io/hostname}'
+
+  # Print out the  pods for the ping stack
+  echo
+  echo
+  echo '--- Pod status ---'
+  kubectl get pods -n "${ns_to_check}"
+
 }

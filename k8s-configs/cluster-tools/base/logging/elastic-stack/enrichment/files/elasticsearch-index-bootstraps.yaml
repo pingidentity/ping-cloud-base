@@ -4,15 +4,6 @@ kind: ConfigMap
 metadata:
   name: enrichment-elasticsearch-index-bootstraps
 data:
-  enrichment.json: |
-    {
-        "aliases": {
-            "enrichment": {
-                "is_write_index": true
-            }
-        }
-    }
-
   logstash.json: |
     {
         "aliases": {

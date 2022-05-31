@@ -6,104 +6,47 @@ metadata:
   labels:
     app: logstash-elastic
 data:
-  host.conf: |
-    input {
-        file {
-            id => "dmesg"
-            path => "/var/log/dmesg"
-            add_field => { "log_type" => "syslog" }
-            add_field => { "stream_name" => "host.dmesg_${NODE_NAME}"}
-            add_field => { "log_group" => "host" }
-            start_position => "beginning"
-            sincedb_path => "/logstash-sincedb-files/${NODE_NAME}_dmegs_sincedb" 
-        }
-        file {
-            id => "secure_log"
-            path => "/var/log/secure"
-            add_field => { "stream_name" => "host.secure_${NODE_NAME}"}
-            add_field => { "log_type" => "syslog" }
-            add_field => { "log_group" => "host" }
-            start_position => "beginning"
-            sincedb_path => "/logstash-sincedb-files/${NODE_NAME}_secure_sincedb" 
-        }
-        file {
-            id => "messages"
-            path => "/var/log/messages"
-            add_field => { "log_type" => "syslog" }
-            add_field => { "stream_name" => "host.messages_${NODE_NAME}"}
-            add_field => { "log_group" => "host" }
-            start_position => "beginning"
-            sincedb_path => "/logstash-sincedb-files/${NODE_NAME}_messages_sincedb" 
-        }
-    }
-    filter {
-      if ([log_type] == 'syslog') {
-        grok {
-          match => { "message" => "%{SYSLOGTIMESTAMP:syslog_timestamp} %{SYSLOGHOST:syslog_hostname} %{DATA:syslog_program}(?:\[%{POSINT:syslog_pid}\])?: %{GREEDYDATA:syslog_message}" }
-          add_field => { "received_at" => "%{@timestamp}" }
-          add_field => { "received_from" => "%{host}" }
-        }
-        mutate { 
-          add_field => {"raw_message" => "%{message}"}
-        }
-        mutate {
-          copy => {"syslog_message" => "message" }
-        }
-        date {
-          match => [ "timestamp", "MMM  d HH:mm:ss", "MMM dd HH:mm:ss" ]
-        }
-      }
-    }
-
   containers.conf: |
     input {
-      file {
-        id => 'containers_log'
-        path => "/var/log/containers/*.log"
+      http {
+        port => 8080
         add_field => { "log_type" => "json" }
         add_field => { "log_group" => "application" }
-        start_position => "beginning"
-        sincedb_path => "/logstash-sincedb-files/${NODE_NAME}_application_sincedb" 
+        id => 'containers_log'
+        additional_codecs => { "application/json" => "json_lines" }
       }
     }
     filter {
-      if ([log_type] == "json") {
-        kubernetes {
-          source => "path"
-          target => "kubernetes"
+      mutate {
+        remove_field => ["date", "headers"]
+      }
+      mutate {
+        replace => {"message" => "%{log}"}
+      }
+      if ([kubernetes][container_name] == "pingdirectory") {
+        if ([log] =~ "/opt/out/instance/logs/access") {
+          mutate {
+            replace => { "log_type" => "PD_Access_Log" }
+            remove_field => "[message]"
+          }
         }
-        json {
-          source => "message"
-        }
-        mutate {
-          replace => {"message" => "%{log}"}
-        }
+      }
+      if ([log] =~ "SIEM") {
         if ([kubernetes][container_name] == "pingfederate") {
           if ([log] =~ "System_SIEM") {
             mutate {
               replace => { "log_type" => "PF_System_Log" }
+              replace => { "log_group" => "SIEM" }
             }
           } else if ([log] =~ "Audit_SIEM") {
             mutate {
               replace => { "log_type" => "PF_Audit_Log" }
+              replace => { "log_group" => "SIEM" }
             }
           } else if ([log] =~ "Provisioner_SIEM") {
             mutate {
               replace => { "log_type" => "PF_Provisioner_Log"}
-            }
-          } else {
-              grok {
-                  match => {
-                    message => ["%{GREEDYDATA:log_name}\.log %{GREEDYDATA:message}"]
-                  }
-              }
-            }
-          }
-        if ([kubernetes][container_name] == "pingdirectory") {
-          if ([log] =~ "/opt/out/instance/logs/access") {
-            mutate {
-              replace => { "log_type" => "PD_Access_Log" }
-              remove_field => "[log]"
+              replace => { "log_group" => "SIEM" }
             }
           }
         }
@@ -111,225 +54,242 @@ data:
           if ([log] =~ "System_SIEM") {
             mutate {
               replace => { "log_type" => "PA_System_Log" }
+              replace => { "log_group" => "SIEM" }
             }
           }
           else if ([log] =~ "Audit_SIEM") {
             mutate {
               replace => { "log_type" => "PA_Audit_Log" }
+              replace => { "log_group" => "SIEM" }
             }
           } 
-          else {
-            grok {
-                match => {
-                  message => ["%{GREEDYDATA:log_name}\.log %{GREEDYDATA:message}"]
-                }
-            }
-          }
         }
         if ([kubernetes][container_name] =~ "pingaccess-was") {
           if ([log] =~ "System_SIEM") {
             mutate {
               replace => { "log_type" => "PA_WAS_System_Log" }
+              replace => { "log_group" => "SIEM" }
             }
           }
           else if ([log] =~ "Audit_SIEM") {
             mutate {
               replace => { "log_type" => "PA_WAS_Audit_Log" }
+              replace => { "log_group" => "SIEM" }
             }
           } 
-          else {
-            grok {
-                match => {
-                  message => ["%{GREEDYDATA:log_name}\.log %{GREEDYDATA:message}"]
-                }
-            }
-          }
         }
         if ([kubernetes][container_name] == "pingaccess-admin") {
           if ([log] =~ "System_SIEM") {
             mutate {
               replace => { "log_type" => "PA_Admin_System_Log" }
+              replace => { "log_group" => "SIEM" }
             }
           }
           else if ([log] =~ "Audit_SIEM") {
             mutate {
               replace => { "log_type" => "PA_Admin_Audit_Log" }
+              replace => { "log_group" => "SIEM" }
             }
           } 
-          else {
-            grok {
-                match => {
-                  message => ["%{GREEDYDATA:log_name}\.log %{GREEDYDATA:message}"]
-                }
-            }
-          }
         }
         if ([kubernetes][container_name] == "pingaccess-was-admin") {
           if ([log] =~ "System_SIEM") {
             mutate {
               replace => { "log_type" => "PA_WAS_Admin_System_Log" }
+              replace => { "log_group" => "SIEM" }
             }
           }
           else if ([log] =~ "Audit_SIEM") {
             mutate {
               replace => { "log_type" => "PA_WAS_Admin_Audit_Log" }
+              replace => { "log_group" => "SIEM" }
             }
           } 
-          else {
-            grok {
-                match => {
-                  message => ["%{GREEDYDATA:log_name}\.log %{GREEDYDATA:message}"]
-                }
-            }
-          }
         }
         if ([kubernetes][container_name] == "pingfederate-admin") {
           if ([log] =~ "System_SIEM") {
             mutate {
               replace => { "log_type" => "PF_Admin_System_Log" }
+              replace => { "log_group" => "SIEM" }
             }
           }
           else if ([log] =~ "Audit_SIEM") {
             mutate {
               replace => { "log_type" => "PF_Admin_Audit_Log" }
+              replace => { "log_group" => "SIEM" }
             }
           }
           else if ([log] =~ "AdminApiAuditSIEM") {
             mutate {
               replace => { "log_type" => "PF_Admin_Audit_API_Log"}
+              replace => { "log_group" => "SIEM" }
             }
           }
-          else {
-            grok {
-                match => {
-                  message => ["%{GREEDYDATA:log_name}\.log %{GREEDYDATA:message}"]
-                }
+          else if ([log] =~ "Provisioner_SIEM") {
+            mutate {
+              replace => { "log_type" => "PF_Provisioner_Log" }
+              replace => { "log_group" => "SIEM" }
             }
           }
         }
       }
-    }
-
-  systemd.conf: |
-    input {
-      journald {
-        id => "systemd_log_docker"
-        add_field => { "log_type" => "systemd" }
-        add_field => { "log_group" => "dataplane" }
-        filter    => { "_SYSTEMD_UNIT" => "docker.service"}
-      }
-      journald {
-        id => "systemd_log_kubelet"
-        add_field => { "log_type" => "systemd" }
-        add_field => { "log_group" => "dataplane" }
-        filter    => { "_SYSTEMD_UNIT" => "kubelet.service"}
-      }
-      journald {
-        id => "systemd_log_kubeproxy"
-        add_field => { "log_type" => "systemd" }
-        add_field => { "log_group" => "dataplane" }
-        filter    => { "_SYSTEMD_UNIT" => "kubeproxy.service"}
-      }
-    }
-    filter {
-      if ([log_type] == 'systemd') {
+      if ([kubernetes][container_name] == "nginx-ingress-controller") {
         mutate {
-          rename => { "MESSAGE" => "message" }
-          add_field => { "stream_name" => "%{_SYSTEMD_UNIT}_%{_HOSTNAME}" }
+          replace => { "log_type" => "nginx_log" }
+        }
+        if [stream] == "stdout" {
+          grok {
+            match => { "message" => ["%{IPORHOST:[nginx][access][remote_ip]} - %{DATA:[nginx][access][user_name]} \[%{HTTPDATE:[nginx][access][time]}\] \"%{WORD:[nginx][access][method]} %{DATA:[nginx][access][url]} HTTP/%{NUMBER:[nginx][access][http_version]}\" %{NUMBER:[nginx][access][response_code]} %{NUMBER:[nginx][access][body_sent][bytes]} \"%{DATA:[nginx][access][referrer]}\" \"%{DATA:[nginx][access][agent]}\" %{NUMBER:[nginx][access][request_length]} %{NUMBER:[nginx][access][request_time]} \[%{DATA:[nginx][access][proxy_upstream_name]}\] \[%{DATA:[nginx][access][proxy_alternative_upstream_name]}\] %{NOTSPACE:[nginx][access][upstream_addr]} %{NUMBER:[nginx][access][upstream_response_length]} %{NUMBER:[nginx][access][upstream_response_time]} %{NUMBER:[nginx][access][upstream_response_code]} %{NOTSPACE:[nginx][access][req_id]}"] }
+            remove_field => "message"
+          }
+          mutate {
+            add_field => { "read_timestamp" => "%{@timestamp}" }
+          }
+          date {
+            match => [ "[nginx][access][time]", "dd/MMM/YYYY:H:m:s Z" ]
+            remove_field => "[nginx][access][time]"
+          }
+          useragent {
+            source => "[nginx][access][agent]"
+            target => "[nginx][access][user_agent]"
+            remove_field => "[nginx][access][agent]"
+          }
+          geoip {
+            source => "[nginx][access][remote_ip]"
+            target => "[nginx][access][geoip]"
+          }
+        }
+        else if [stream] == "stderr" {
+          if ([log] =~ /[\d\/: ]+\[.+?\]/) {
+            grok {
+              match => { "message" => ["%{DATA:[nginx][error][time]} \[%{DATA:[nginx][error][level]}\] %{NUMBER:[nginx][error][pid]}#%{NUMBER:[nginx][error][tid]}: (\*%{NUMBER:[nginx][error][connection_id]} )?%{GREEDYDATA:[nginx][error][message]}"] }
+              remove_field => "message"
+            }
+            mutate {
+              rename => { "@timestamp" => "read_timestamp" }
+            }
+            date {
+              match => [ "[nginx][error][time]", "YYYY/MM/dd H:m:s" ]
+              remove_field => "[nginx][error][time]"
+            }
+          }
+          else if ([log] =~ /\w{5} [\d:\.]{15}.[ \t]+.*?\]/) {
+            mutate {
+              remove_field => "[message]"
+            }
+            grok {
+              match => { "log" => ["[A-Z]%{DATA:timestamp} [ \t]+%{DATA}\] %{GREEDYDATA:message}"]
+              }
+            }
+            date {
+              match => ["timestamp", "MMdd HH:mm:ss.SSSSSS"]
+            }
+          }
+        }
+        mutate {
+          remove_field => "[log]"
+        }
+      }
+      if ([log_type] == "json") {
+        if ([log] =~ /^\/.*\.log/ ) {
+          mutate {
+            remove_field => "message"
+          }
+          grok {
+            match => {
+              log => [ "^\/opt\/out\/instance.*?\/log.*\/%{DATA:log_name}\.log %{GREEDYDATA:message}" ]
+            }
+          }
+          mutate {
+            gsub => [
+              "message", "\/opt\/out\/instance.*?\/log.*/.*\.log", ""
+            ]
+            gsub => [
+              "message", "\\n", "\n"
+            ]
+          }
+        }
+        mutate {
+          remove_field => "[log]"
         }
       }
     }
 
   ping_apps.conf: |
-    input {
-        http {
-            id => "enrichment_in"
-            port => 20510
-            codec => "json"
-            response_code => 200
-            add_field => {"log_type" => "Enrichment_System_Log"}
-        }
-    }
     filter {
         #PROCESS PING FED AUDIT LOG
         #Log4J Pattern Matching from PF and extraction of JSON DATA from the MSG
         if([log_type] == "PF_Audit_Log"){
             grok {
                 match => {
-                  "log" => [ "<%{NUMBER}>%{GREEDYDATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                  "log" => [ "<%{NUMBER}>%{DATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
+            }
+            mutate {
+              gsub => [
+                "json_data", "\\n", ""
+              ]
             }
             #Convert the injested data into Individual Fields for elasticsearch
             json {
                 source => "json_data"
             }
-            date {
-              match => [ "timestamp", "MMM  d HH:mm:ss", "MMM dd HH:mm:ss", "MMM d", "MMM dd" ]
-              locale => "en"
-            }
-
             if([json_data]){
+                date {
+                  match => ["timestamp", "MMM dd HH:mm:ss"]
+                }
                 #Drop the original as you do not need it at this point.
                 mutate {
                     remove_field => "[json_data]"
                     remove_field => "[log]"
                     remove_field => "[pod_name]"
+                    remove_field => "[timestamp]"
                 }
-
                 geoip {
                     source => "ip"
                 }
-
                 #Security Enrichments begin here, ENRICH THE IP ADDRESS DETAIL
-
                 translate {
-                    field => "ip"
-                    destination => "threat_intel"
+                    source => "ip"
+                    target => "threat_intel"
                     fallback => "No"
                     dictionary_path => '/enrichment-cache-files/AlienVaultIP.yml'
                     refresh_behaviour => "replace"
                 }
-
                 translate {
-                    field => "ip"
-                    destination => "tor_intel"
+                    source => "ip"
+                    target => "tor_intel"
                     fallback => "No"
                     dictionary_path => '/enrichment-cache-files/TorNodes.yml'
                     refresh_behaviour => "replace"
                 }
-
                 translate {
-                    field => "[geoip][country_name]"
-                    destination => "malicious_country"
+                    source => "[geoip][country_name]"
+                    target => "malicious_country"
                     fallback => "No"
                     dictionary_path => '/enrichment-cache-files/MaliciousCountries.yml'
                     refresh_behaviour => "replace"
                 }
-
                 translate {
-                    field => "[geoip][country_name]"
-                    destination => "known_country"
+                    source => "[geoip][country_name]"
+                    target => "known_country"
                     fallback => "No"
                     dictionary_path => '/enrichment-cache-files/KnownCountries.yml'
                     refresh_behaviour => "replace"
                 }
-
                 if([malicious_country] == "No" and [known_country] == "No"){
                     mutate {
                         add_field => { "suspicious_country" => "YES" }
                     }
                 }
-
                 #Query for previous logins in Elasticsearch, if login is found append data to the log
                 #IF A SUCCESSFUL LOGIN OCCURS, Query ES to see if the the attempt was successful in the past to determine distance from previous login.
-
                 if([status] == "success" and [event] == "AUTHN_ATTEMPT"){
                     elasticsearch {
                         index => "pf-audit*"
                         query_template => "/etc/logstash/templates/6hr-1200km-template.json"
                         hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
                         add_field => {"found_distance_alert" => "YES"}
-
                         fields => {
                             "subject" => "found_subject"
                             "ip" => "found_ip"
@@ -342,29 +302,26 @@ data:
                 }
             }
         }
-
         # PROCESS PING FED SYSTEM LOG
         # USING LOG4J's ability to output in JSON limits the amount of processing you have to do besides splitting up JSON.
-
         if([log_type] == "PF_System_Log"){
             grok {
                 match => {
-                  "log" => [ "<%{NUMBER}>%{GREEDYDATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                  "log" => [ "<%{NUMBER}>%{DATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
                 source => "json_data"
             }
-            date {
-              match => [ "timestamp", "MMM  d HH:mm:ss", "MMM dd HH:mm:ss", "MMM d", "MMM dd" ]
-              locale => "en"
-            }
-
             if([json_data]){
+                date {
+                  match => ["timestamp", "MMM dd HH:mm:ss"]
+                }
                 mutate {
                     remove_field => "[json_data]"
                     remove_field => "[log]"
                     remove_field => "[pod_name]"
+                    remove_field => "[timestamp]"
                 }
             }
         }
@@ -372,38 +329,37 @@ data:
         if([log_type] == "PF_Provisioner_Log"){
             grok {
                 match => {
-                  "log" => [ "<%{NUMBER}>%{GREEDYDATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                  "log" => [ "<%{NUMBER}>%{DATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
               source => "json_data"
             }
-            date {
-              match => [ "timestamp", "MMM  d HH:mm:ss", "MMM dd HH:mm:ss", "MMM d", "MMM dd" ]
-              locale => "en"
-            }
             if([json_data]) {
+              date {
+                match => ["timestamp", "MMM dd HH:mm:ss"]
+              }
               mutate {
                 remove_field => "[json_data]"
                 remove_field => "[log]"
                 remove_field => "[pod_name]"
+                remove_field => "[timestamp]"
               }
             }
         }
-
         # PROCESS PING DIRECTORY LOGS
         # LOGS ARE SENT IN A CUSTOM FORMAT, AND THIS CONFIG MATCHES AND PARSES THEM.
-
         if([log_type] == "PD_Access_Log"){
             kv {
-                source => "[message]"
+                source => "[log]"
                 value_split => "="
             }
-
             grok {
-                match => { "message" => "%{WORD:log_name} \[%{GREEDYDATA:timestamp}\] %{WORD:ldapType} %{GREEDYDATA}" }
+                match => { "log" => "%{WORD:log_name} \[%{GREEDYDATA:timestamp}\] %{WORD:ldapType} %{GREEDYDATA}" }
             }
-
+            date {
+              match => ["timestamp", "dd/MMM/yyyy:HH:mm:ss.SSS Z"]
+            }
             mutate{
                 gsub => [
                     "filter", '"', ""
@@ -411,120 +367,101 @@ data:
                 gsub => [
                     "dn", '"', ""
                 ]
+                gsub => [
+                    "requesterIP", "internal", "127.0.0.1"
+                ]
             }
-
             geoip {
                 source => "requesterIP"
             }
-
-            date {
-                match => [ "timestamp", "dd/MMM/yyyy:HH:mm:ss Z", "dd/MMM/yyyy:HH:mm:ss.SSS Z" ]
-                locale => "en"
-            }
-
             translate {
-                field => "requesterIP"
-                destination => "threat_intel"
+                source => "requesterIP"
+                target => "threat_intel"
                 fallback => "No"
                 dictionary_path => '/enrichment-cache-files/AlienVaultIP.yml'
                 refresh_behaviour => "replace"
             }
-
             translate {
-                field => "requesterIP"
-                destination => "tor_intel"
+                source => "requesterIP"
+                target => "tor_intel"
                 fallback => "No"
                 dictionary_path => '/enrichment-cache-files/TorNodes.yml'
                 refresh_behaviour => "replace"
             }
-
             translate {
-                field => "[geoip][country_name]"
-                destination => "malicious_country"
+                source => "[geoip][country_name]"
+                target => "malicious_country"
                 fallback => "No"
                 dictionary_path => '/enrichment-cache-files/MaliciousCountries.yml'
                 refresh_behaviour => "replace"
             }
-
             translate {
-                field => "[geoip][country_name]"
-                destination => "known_country"
+                source => "[geoip][country_name]"
+                target => "known_country"
                 fallback => "No"
                 dictionary_path => '/enrichment-cache-files/KnownCountries.yml'
                 refresh_behaviour => "replace"
             }
-
             if([malicious_country] == "No" and [known_country] == "No"){
                 mutate {
                     add_field => { "suspicious_country" => "YES" }
                 }
             }
-
             mutate {
-                remove_field => "[message]"
+                remove_field => "[log]"
                 remove_field => "[tags]"
             }
         }
-
         # PROCESS PING ACCESS AUDIT LOG
         # PING ACCESS IS SENDING IN LOG4J FORMAT (JSON), SO PARSING IS MUCH LIKE PING FED.
-
         if([log_type] == "PA_Audit_Log" or [log_type] == "PA_WAS_Audit_Log"){
             grok {
                 match => {
-                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                    "message" => [ "<%{NUMBER}>%{DATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
                 source => "json_data"
             }
-
-            date {
-                match => [ "timestamp", "dd/MMM/yyyy:HH:mm:ss Z", "dd/MMM/yyyy:HH:mm:ss.SSS Z" ]
-                locale => "en"
-            }
-
-
-            if([json_data]){
+            if([json_data]){ 
+                date {
+                  match => ["timestamp", "MMM dd HH:mm:ss"]
+                }
                 mutate {
                     remove_field => "[json_data]" 
+                    remove_field => "[timestamp]"
                 }
                 geoip {
                     source => "client"
                 }
-
                 translate {
-                    field => "client"
-                    destination => "threat_intel"
+                    source => "client"
+                    target => "threat_intel"
                     fallback => "No"
                     dictionary_path => '/enrichment-cache-files/AlienVaultIP.yml'
                     refresh_behaviour => "replace"
                 }
-
                 translate {
-                    field => "client"
-                    destination => "tor_intel"
+                    source => "client"
+                    target => "tor_intel"
                     fallback => "No"
                     dictionary_path => '/enrichment-cache-files/TorNodes.yml'
                     refresh_behaviour => "replace"
                 }
-
                 translate {
-                    field => "[geoip][country_name]"
-                    destination => "malicious_country"
+                    source => "[geoip][country_name]"
+                    target => "malicious_country"
                     fallback => "No"
                     dictionary_path => '/enrichment-cache-files/MaliciousCountries.yml'
                     refresh_behaviour => "replace"
                 }
-
                 translate {
-                    field => "[geoip][country_name]"
-                    destination => "known_country"
+                    source => "[geoip][country_name]"
+                    target => "known_country"
                     fallback => "No"
                     dictionary_path => '/enrichment-cache-files/KnownCountries.yml'
                     refresh_behaviour => "replace"
                 }
-
                 if([malicious_country] == "No" and [known_country] == "No"){
                     mutate {
                         add_field => { "suspicious_country" => "YES" }
@@ -532,143 +469,122 @@ data:
                 }
             }
         }
-
         if([log_type] == "PA_System_Log" or [log_type] == "PA_WAS_System_Log"){
             grok {
                 match => {
-                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                    "message" => [ "<%{NUMBER}>%{DATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
                 source => "json_data"
             }
-            date {
-                match => [ "timestamp", "dd/MMM/yyyy:HH:mm:ss Z", "dd/MMM/yyyy:HH:mm:ss.SSS Z" ]
-                locale => "en"
-            }
-
             if([json_data]){
+                date {
+                  match => ["timestamp", "MMM dd HH:mm:ss"]
+                }
                 mutate {
                     remove_field => "[json_data]"
                     remove_field => "[log]"
                     remove_field => "[pod_name]"
+                    remove_field => "[timestamp]"
                 }
             }
         }
-
         if([log_type] == "PA_Admin_System_Log" or [log_type] == "PA_WAS_Admin_System_Log"){
             grok {
                 match => {
-                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                    "message" => [ "<%{NUMBER}>%{DATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
                 source => "json_data"
             }
-            date {
-                match => [ "timestamp", "dd/MMM/yyyy:HH:mm:ss Z", "dd/MMM/yyyy:HH:mm:ss.SSS Z" ]
-                locale => "en"
-            }
-
             if([json_data]){
+                date {
+                  match => ["timestamp", "MMM dd HH:mm:ss"]
+                }
                 mutate {
                     remove_field => "[json_data]"
                     remove_field => "[log]"
                     remove_field => "[pod_name]"
+                    remove_field => "[timestamp]"
                 }
             }
         }
-
         if([log_type] == "PF_Admin_System_Log"){
             grok {
                 match => {
-                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                    "message" => [ "<%{NUMBER}>%{DATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
             }
             json {
                 source => "json_data"
             }
-            date {
-                match => [ "timestamp", "dd/MMM/yyyy:HH:mm:ss Z", "dd/MMM/yyyy:HH:mm:ss.SSS Z" ]
-                locale => "en"
-            }
-
             if([json_data]){
+                date {
+                  match => ["timestamp", "MMM dd HH:mm:ss"]
+                }
                 mutate {
                     remove_field => "[json_data]"
                     remove_field => "[log]"
                     remove_field => "[pod_name]"
+                    remove_field => "[timestamp]"
                 }
             }
         }
-
         if([log_type] == "PA_Admin_Audit_Log" or [log_type] == "PA_WAS_Admin_Audit_Log"){
             grok {
                 match => {
-                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                    "message" => [ "<%{NUMBER}>%{DATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
-            }
-            date {
-              match => [ "timestamp", "MMM  d HH:mm:ss", "MMM dd HH:mm:ss", "MMM d", "MMM dd" ]
-              locale => "en"
             }
             json {
                 source => "json_data"
             }
             if([json_data]){
+                date {
+                  match => ["timestamp", "MMM dd HH:mm:ss"]
+                }
                 mutate {
                     remove_field => "[json_data]"
                     remove_field => "[log]"
                     remove_field => "[pod_name]"
+                    remove_field => "[timestamp]"
                 }
             }
         }
-
         if([log_type] == "PF_Admin_Audit_Log" or [log_type] == "PF_Admin_Audit_API_Log" ){
             grok {
                 match => {
-                    "message" => [ "<%{NUMBER}>%{GREEDYDATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
+                    "message" => [ "<%{NUMBER}>%{DATA:timestamp}  [a-zA-Z-]{1,30}-[0-9]{1,3}[ ,]{1,3}%{GREEDYDATA:json_data}" ]
                 }
-            }
-            date {
-              match => [ "timestamp", "MMM  d HH:mm:ss", "MMM dd HH:mm:ss", "MMM d", "MMM dd" ]
-              locale => "en"
             }
             json {
                 source => "json_data"
             }
             if([json_data]){
+                date {
+                  match => ["timestamp", "MMM dd HH:mm:ss"]
+                }
                 mutate {
                     remove_field => "[json_data]"
                     remove_field => "[log]"
                     remove_field => "[pod_name]"
+                    remove_field => "[timestamp]"
                 }
-            }
-        }
-
-        if([log_type] == "Enrichment_System_Log"){
-            mutate {
-                remove_field => [ "json", "[headers]" ]
             }
         }
     }
 
     output {
-        elasticsearch {
+        if ([log_group] == "application") {
+          elasticsearch {
             hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
             sniffing => false
             ilm_enabled => true
             ilm_rollover_alias => "logstash"
-            ilm_policy => "ping-2-day-retention"
-        }
-        if([log_type] == "Enrichment_System_Log"){
-            elasticsearch {
-                id => "enrichment_out"
-                hosts => "${LOGSTASH_ELASTICSEARCH_URL}:${LOGSTASH_ELASTICSEARCH_PORT}"
-                ilm_enabled => true
-                ilm_rollover_alias => "enrichment"
-                ilm_policy => "ping-2-day-retention"
-            }
+            ilm_policy => "ping-logstash-policy"
+          }
         }
         if([log_type] == "PF_Provisioner_Log"){
             elasticsearch {
@@ -809,19 +725,16 @@ data:
 
 ---
 apiVersion: apps/v1
-kind: DaemonSet
+kind: Deployment 
 metadata:
   name: logstash-elastic
   labels:
     app: logstash-elastic
 spec:
+  replicas: 2
   selector:
     matchLabels:
       app: logstash-elastic
-  updateStrategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 1
   template:
     metadata:
       labels:
@@ -831,8 +744,7 @@ spec:
       initContainers:
 
       - name: check-service-availability
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.0.0
-        
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.2.1
         imagePullPolicy: IfNotPresent
         command: ["sh", '$(CONTAINER_NAME).sh']
 
@@ -848,14 +760,11 @@ spec:
           value: "green"
 
       - name: create-enrichment-cache-files
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.0.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.2.1
         
         imagePullPolicy: IfNotPresent
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
-
-        securityContext:
-          privileged: true
 
         env:
         - name: CONTAINER_NAME
@@ -879,13 +788,11 @@ spec:
 
       containers:
       - name: logstash
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logstash:7.16.2-v1.0.1
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logstash:8.1.3-v1.0.0
         imagePullPolicy: IfNotPresent
         securityContext:
-          runAsUser: 0
+          runAsUser: 1000
           runAsGroup: 1000
-          privileged: true
-
         env:
           - name: CONTAINER_NAME
             value: "logstash"
@@ -911,10 +818,17 @@ spec:
             value: "500"
           - name: PIPELINE_BATCH_SIZE
             value: "1500"
-
+          - name: PIPELINE_ECS_COMPATIBILITY
+            value: "disabled"
+          - name: XPACK_MONITORING_ENABLED
+            value: "true"
+          - name: PIPELINE_ORDERED
+            value: "false"
+          - name: QUEUE_TYPE
+            value: "persisted"
         resources:
           limits:
-            memory: 2Gi
+            memory: 4Gi
           requests:
             cpu: 150m
             memory: 1Gi
@@ -923,14 +837,8 @@ spec:
           - containerPort: 9600
             name: rest
             protocol: TCP
-          - containerPort: 20510
-            name: enrichment-in
-            protocol: TCP
-          - containerPort: 20516
-            name: pa-system-in
-            protocol: TCP
-          - containerPort: 20517
-            name: pa-audit-in
+          - containerPort: 8080
+            name: http-log-input
             protocol: TCP
 
         volumeMounts:
@@ -940,21 +848,13 @@ spec:
         - name: enrichment-logstash-search-templates
           mountPath: /etc/logstash/templates
           readOnly: true
-        - name: varlog
-          mountPath: /var/log
-        - name: varlibdockercontainers
-          mountPath: /var/lib/docker/containers
-          readOnly: true
         - name: enrichment-cache-files
           mountPath: /enrichment-cache-files
-          readOnly: false
-        - name: logstash-sincedb-files
-          mountPath: /logstash-sincedb-files
           readOnly: false
 
       # Sidecar enrichment container which updates Logstash dictionaries
       - name: enrichment-sidecar
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.0.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.2.1
         
         imagePullPolicy: IfNotPresent
         workingDir: /scripts
@@ -990,20 +890,11 @@ spec:
       - name: enrichment-logstash-search-templates
         configMap:
           name: enrichment-logstash-search-templates
-      - name: varlog
-        hostPath:
-          path: /var/log
-      - name: varlibdockercontainers
-        hostPath:
-          path: /var/lib/docker/containers
       - name: enrichment-cache
         configMap:
           name: enrichment-cache
       - name: enrichment-cache-files
         emptyDir: {}
-      - name: logstash-sincedb-files
-        hostPath:
-          path: /logstash-sincedb-files
 
       tolerations:   
       - operator: Exists
@@ -1021,12 +912,8 @@ spec:
   ports:
     - port: 9600
       name: rest
-    - port: 20510
-      name: enrichment-in
-    - port: 20516
-      name: pa-system-in
-    - port: 20517
-      name: pa-audit-in
+    - port: 8080
+      name: http-log-input
 
 ---
 apiVersion: v1

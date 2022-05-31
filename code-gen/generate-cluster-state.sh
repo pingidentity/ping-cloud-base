@@ -215,16 +215,19 @@
 # MYSQL_SERVICE_HOST       | The hostname of the MySQL database server.         | pingcentraldb.${PRIMARY_TENANT_DOMAIN}
 #                          |                                                    |
 # MYSQL_USER               | The DBA user of the PingCentral MySQL RDS          | The SSM path:
-#                          | database.                                          | ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#username
+#                          | database.                                          | ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username
 #                          |                                                    |
 # MYSQL_PASSWORD           | The DBA password of the PingCentral MySQL RDS      | The SSM path:
-#                          | database.                                          | ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#password
+#                          | database.                                          | ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#password
 #                          |                                                    |
 # PING_IDENTITY_DEVOPS_USER| A user with license to run Ping Software.          | The SSM path:
 #                          |                                                    | ssm://pcpt/devops-license/user
 #                          |                                                    |
 # PING_IDENTITY_DEVOPS_KEY | The key to the above user.                         | The SSM path:
 #                          |                                                    | ssm://pcpt/devops-license/key
+#                          |                                                    |
+# LEGACY_LOGGING           | Flag indicating where we should send app logs -    | True
+#                          | to CloudWatch(if True) or to ELK (if False)        |
 ########################################################################################################################
 
 #### SCRIPT START ####
@@ -260,6 +263,7 @@ DEFAULT_VARS='${LAST_UPDATE_REASON}
 ${PING_IDENTITY_DEVOPS_USER}
 ${PING_IDENTITY_DEVOPS_KEY}
 ${NEW_RELIC_LICENSE_KEY_BASE64}
+${LEGACY_LOGGING}
 ${TENANT_NAME}
 ${SSH_ID_KEY_BASE64}
 ${IS_MULTI_CLUSTER}
@@ -368,7 +372,7 @@ add_derived_variables() {
     export DNS_ZONE="\${TENANT_DOMAIN}"
     export PRIMARY_DNS_ZONE="\${PRIMARY_TENANT_DOMAIN}"
   else
-    export DNS_ZONE="\${ENV}-\${TENANT_DOMAIN}"
+    export DNS_ZONE="\${REGION_ENV}-\${TENANT_DOMAIN}"
     export PRIMARY_DNS_ZONE="\${ENV}-\${PRIMARY_TENANT_DOMAIN}"
   fi
 
@@ -568,6 +572,8 @@ echo "Initial MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 echo "Initial MYSQL_USER: ${MYSQL_USER}"
 echo "Initial MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
 
+echo "Initial LEGACY_LOGGING: ${LEGACY_LOGGING}"
+
 echo "Initial PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
 
 echo "Initial K8S_GIT_URL: ${K8S_GIT_URL}"
@@ -623,11 +629,13 @@ export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
 
 export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-"pingcentraldb.\${PRIMARY_TENANT_DOMAIN}"}"
-export MYSQL_USER="${MYSQL_USER:-ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#username}"
-export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#password}"
+export MYSQL_USER="${MYSQL_USER:-ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username}"
+export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#password}"
 
 export PING_IDENTITY_DEVOPS_USER="${PING_IDENTITY_DEVOPS_USER:-ssm://pcpt/devops-license/user}"
 export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY:-ssm://pcpt/devops-license/key}"
+
+export LEGACY_LOGGING=${LEGACY_LOGGING:-True}
 
 PING_CLOUD_BASE_COMMIT_SHA=$(git rev-parse HEAD)
 CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -679,6 +687,8 @@ echo "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 echo "Using MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 echo "Using MYSQL_USER: ${MYSQL_USER}"
 echo "Using MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
+
+echo "Using LEGACY_LOGGING: ${LEGACY_LOGGING}"
 
 echo "Using PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
 
