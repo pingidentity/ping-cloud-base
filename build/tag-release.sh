@@ -38,6 +38,7 @@ replaceAndCommit() {
   grep_var "PINGCENTRAL_IMAGE_TAG" "${SOURCE}" "${TARGET}"
   grep_var "PINGDATASYNC_IMAGE_TAG" "${SOURCE}" "${TARGET}"
   grep_var "METADATA_IMAGE_TAG" "${SOURCE}" "${TARGET}"
+  grep_var "HEALTHCHECK_IMAGE_TAG" "${SOURCE}" "${TARGET}"
   grep_var "P14C_BOOTSTRAP_IMAGE_TAG" "${SOURCE}" "${TARGET}"
   grep_var "P14C_INTEGRATION_IMAGE_TAG" "${SOURCE}" "${TARGET}"
   grep_var "ANSIBLE_BELUGA_IMAGE_TAG" "${SOURCE}" "${TARGET}"
@@ -54,6 +55,7 @@ replaceAndCommit() {
   grep_yaml "p14c-bootstrap" "pingcloud-services" "${SOURCE}" "${TARGET}" "${REF_TYPE}"
   grep_yaml "p14c-integration" "pingcloud-services" "${SOURCE}" "${TARGET}" "${REF_TYPE}"
   grep_yaml "metadata" "pingcloud-services" "${SOURCE}" "${TARGET}" "${REF_TYPE}"
+  grep_yaml "healthcheck" "pingcloud-services" "${SOURCE}" "${TARGET}" "${REF_TYPE}"
   grep_yaml "ansible-beluga" "pingcloud-solutions" "${SOURCE}" "${TARGET}" "${REF_TYPE}"
 
   echo "Committing changes for new ${REF_TYPE} ${TARGET}"
