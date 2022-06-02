@@ -172,6 +172,9 @@ set_env_vars() {
   # Pingcloud-metadata service:
   PINGCLOUD_METADATA_API=https://metadata${FQDN}
 
+  # Pingcloud-healthcheck service:
+  PINGCLOUD_HEALTHCHECK_API=https://healthcheck${FQDN}
+
   # PingCentral service
   PINGCENTRAL_CONSOLE=https://pingcentral${FQDN}
 }
