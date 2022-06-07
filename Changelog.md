@@ -17,6 +17,7 @@
 - Implemented Hot\Warm Tiers for ElasticSearch 
 - Add "pf-jwt-token-translator-1.1.1.2.jar" to artifact.json file
 - Add healthcheck service
+- Add logstash parsers for all ping apps
 
 _Changes:_
 
@@ -53,6 +54,7 @@ _Changes:_
 - [X] PDO-3805 Create & Deploy Health Check service in P1AS
 - [X] PDO-3856 PingOne configurator skips is_myping
 - [X] PDO-3892 Fluent Bit image is now pulled from ECR
+- [X] PDO-3910 Create a logstash parsers for all ping-app non-SIEM logs
 - [X] PDO-3913 Few data views are listed twice in Kibana Discover tab
 - [X] PDO-3936 Investigate flaky PingOne integration tests
 - [X] PDO-3930 Add "pf-jwt-token-translator-1.1.1.2.jar" to artifact.json file
