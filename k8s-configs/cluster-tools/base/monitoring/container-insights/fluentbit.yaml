@@ -543,9 +543,9 @@ data:
         parser json
         key_content log
     
-        rule "start_state" "/(?:\/.*\.log) ([0-9\-:T]+,\d+) (ERROR) (.*)/" "cont"
-        rule "cont" "/(?:\/.*\.log)[ \t]+(\w+\..*)/" "cont"
-        rule "cont" "/(?:\/.*\.log)[ \t]+(at \w+\..*|Caused by:.*|\.\.\. \d+ more)/" "cont"
+        rule "start_state" "/(?:\/.*\/log[s]?\/\w+(?:\.log)?) ([0-9\-:T, ]+) (ERROR) (.*)/" "cont"
+        rule "cont" "/(?:\/.*\/log[s]?\/\w+(?:\.log)?)[ \t]+(\w+\..*)/" "cont"
+        rule "cont" "/(?:\/.*\/log[s]?\/\w+(?:\.log)?)[ \t]+(at \w+\..*|Caused by:.*|\.\.\. \d+ more)/" "cont"
 
 
   outputs.conf: |
