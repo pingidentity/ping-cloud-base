@@ -80,7 +80,7 @@ patchesJson6902:
     group: networking.k8s.io
     version: v1
     kind: Ingress
-    name: metadata-ingress
+    name: healthcheck-ingress
   patch: |
     - op: replace
       path: /spec/tls/0/hosts/0
