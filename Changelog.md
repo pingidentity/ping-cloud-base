@@ -2,7 +2,6 @@
 
 ### 1.14.0
 
-- Cluster tool cluster-autoscaler upgrade from v1.20.0 to v1.21.0
 - New image tagging convention for all Ping applications
 - SigSci Agent upgraded from v4.24.1 to v4.28.0
 - Nginx Ingress Controller upgraded from v1.0.0 to v1.2.0
@@ -17,12 +16,13 @@
 - Fluent Bit docker image is now pulled from ECR
 - Implemented Hot\Warm Tiers for ElasticSearch 
 - Add "pf-jwt-token-translator-1.1.1.2.jar" to artifact.json file
+- Cluster tool cluster-autoscaler upgrade from v1.20.0 to v1.21.0
 
 _Changes:_
 
-- [X] PDO-3269 Update cluster tools to latest version: cluster-autoscaler v1.21.0
 - [X] PDO-3942 Moved ENVIRONMENT_PREFIX from base env_vars to region env_vars
 - [X] PDO-3844 Update cluster tools to latest version: sig-sci agent v4.28.0
+- [X] PDO-3269 Update cluster tools to latest version: cluster-autoscaler v1.21.0
 - [X] PDO-3270 Update cluster tools to latest version: nginx-ingress-controller v1.2.0
 - [X] PDO-2517 Port of PingFederate pre-config script from bash to python
 - [X] PDO-2827 Configure PingFederate and PingAccess environments within PingCentral
