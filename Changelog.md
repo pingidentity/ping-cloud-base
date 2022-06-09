@@ -16,11 +16,8 @@
 - Fluent Bit docker image is now pulled from ECR
 - Implemented Hot\Warm Tiers for ElasticSearch 
 - Add "pf-jwt-token-translator-1.1.1.2.jar" to artifact.json file
-<<<<<<< HEAD
-- Cluster tool cluster-autoscaler upgrade from v1.20.0 to v1.21.0
-=======
 - Add healthcheck service
->>>>>>> origin/v1.14-release-branch
+- Cluster tool cluster-autoscaler upgrade from v1.20.0 to v1.21.0
 
 _Changes:_
 
