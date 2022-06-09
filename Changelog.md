@@ -1,7 +1,7 @@
 # Changelog
 
 ### 1.14.0
-
+- Update cluster-tool external-dns from version v0.08.0 to version v.0.11.0
 - New image tagging convention for all Ping applications
 - SigSci Agent upgraded from v4.24.1 to v4.28.0
 - Nginx Ingress Controller upgraded from v1.0.0 to v1.2.0
@@ -20,7 +20,7 @@
 - Add logstash parsers for all ping apps
 
 _Changes:_
-
+- [X] PDO-3274 Update cluster tools to recommended version: external-dns v.11.0
 - [X] PDO-3942 Moved ENVIRONMENT_PREFIX from base env_vars to region env_vars
 - [X] PDO-3844 Update cluster tools to latest version: sig-sci agent v4.28.0
 - [X] PDO-3270 Update cluster tools to latest version: nginx-ingress-controller v1.2.0
