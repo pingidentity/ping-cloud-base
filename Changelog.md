@@ -16,7 +16,11 @@
 - Fluent Bit docker image is now pulled from ECR
 - Implemented Hot\Warm Tiers for ElasticSearch 
 - Add "pf-jwt-token-translator-1.1.1.2.jar" to artifact.json file
+<<<<<<< HEAD
 - Cluster tool cluster-autoscaler upgrade from v1.20.0 to v1.21.0
+=======
+- Add healthcheck service
+>>>>>>> origin/v1.14-release-branch
 
 _Changes:_
 
@@ -51,6 +55,7 @@ _Changes:_
 - [X] PDO-3754 Replace current logstash DaemonSet by non-root Deployment
 - [X] PDO-3755 Implement FeatureFlags with many outputs for Fluent Bit
 - [X] PDO-3773 Encrypt K8s StorageClass (AWS EBS volumes)
+- [X] PDO-3805 Create & Deploy Health Check service in P1AS
 - [X] PDO-3856 PingOne configurator skips is_myping
 - [X] PDO-3892 Fluent Bit image is now pulled from ECR
 - [X] PDO-3913 Few data views are listed twice in Kibana Discover tab
@@ -60,6 +65,7 @@ _Changes:_
 - [X] PDO-3946 Some of Kibana resources bootstrapping fails in rare cases
 - [X] PDO-3956 ELK: there are no log time chart and no window to choose time slot for 'pa-was-system' data view
 - [X] PDO-3959 Fix URLs not rendering due to DNS_ZONE envsubst ordering
+- [X] PDO-3968 Update logstash image to have all needed plugins
 
 ### 1.13.0
 

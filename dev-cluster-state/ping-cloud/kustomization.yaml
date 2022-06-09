@@ -82,6 +82,12 @@ configMapGenerator:
   envs:
   - env_vars
 
+# Pingcloud-healthcheck
+- name: pingcloud-healthcheck-environment-variables
+  behavior: merge
+  envs:
+  - env_vars
+
 # PingCloud-oauth
 - name: p14c-oauth-service-environment-variables
   behavior: merge
@@ -127,6 +133,20 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: metadata${ENVIRONMENT}.${TENANT_DOMAIN}
+
+# pingcloud-healthcheck ingress
+- target:
+    group: networking.k8s.io
+    version: v1
+    kind: Ingress
+    name: healthcheck-ingress
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: healthcheck${ENVIRONMENT}.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: healthcheck${ENVIRONMENT}.${TENANT_DOMAIN}
 
 # pingdirectory HTTP
 - target:
