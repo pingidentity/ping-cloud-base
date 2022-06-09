@@ -32,6 +32,7 @@ _Changes:_
 - [X] PDO-3279 Update cluster tools to latest version: Logstash v8.1.3
 - [X] PDO-3421 Set ImagePullPolicy for all Ping apps to 'Always'
 - [X] PDO-3422 Create script to ensure development ECR public image tag isn't in any production release
+- [X] PDO-3428 PA/PF heartbeat exporter doesn't export metric properly after implementing PDO-3207
 - [X] PDO-3433 Create PingDirectory's Password Credential Validator using PingFederate Admin API
 - [X] PDO-3434 Create PingDirectory's LDAP Client Manager using PingFederate Admin API
 - [X] PDO-3446 Upgraded ArgoCD to v2.3.1
