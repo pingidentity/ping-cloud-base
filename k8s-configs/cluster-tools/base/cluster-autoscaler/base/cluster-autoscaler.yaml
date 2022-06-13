@@ -139,15 +139,15 @@ spec:
     spec:
       serviceAccountName: cluster-autoscaler
       containers:
-        - image: public.ecr.aws/r2h3l6e4/autoscaling/cluster-autoscaler:v1.21.0
+        - image: public.ecr.aws/r2h3l6e4/autoscaling/cluster-autoscaler:v1.21.1
           name: cluster-autoscaler
           resources:
             limits:
               cpu: 100m
-              memory: 612Mi
+              memory: 512Mi
             requests:
               cpu: 100m
-              memory: 612Mi
+              memory: 512Mi
           command:
             - ./cluster-autoscaler
             - --v=1

@@ -17,13 +17,13 @@
 - Implemented Hot\Warm Tiers for ElasticSearch 
 - Add "pf-jwt-token-translator-1.1.1.2.jar" to artifact.json file
 - Add healthcheck service
-- Cluster tool cluster-autoscaler upgrade from v1.20.0 to v1.21.0
+- Cluster tool cluster-autoscaler upgrade from v1.20.0 to v1.21.1
 
 _Changes:_
 
 - [X] PDO-3942 Moved ENVIRONMENT_PREFIX from base env_vars to region env_vars
 - [X] PDO-3844 Update cluster tools to latest version: sig-sci agent v4.28.0
-- [X] PDO-3269 Update cluster tools to latest version: cluster-autoscaler v1.21.0
+- [X] PDO-3269 Update cluster tools to latest version: cluster-autoscaler v1.21.1
 - [X] PDO-3270 Update cluster tools to latest version: nginx-ingress-controller v1.2.0
 - [X] PDO-2517 Port of PingFederate pre-config script from bash to python
 - [X] PDO-2827 Configure PingFederate and PingAccess environments within PingCentral
