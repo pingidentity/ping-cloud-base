@@ -39,7 +39,7 @@ testGrafanaDashboardsExist() {
   done
   
   assertContains "${dashboards}" "PingAccess Per-Server Dashboard"
-  assertContains "${dashboards}" "PingAccess Topology Dasboard"
+  assertContains "${dashboards}" "PingAccess Topology Dashboard"
   assertContains "${dashboards}" "PingDirectory Per-Server Dashboard"
   assertContains "${dashboards}" "PingDirectory Topology Dashboard"
   assertContains "${dashboards}" "PingFederate Per-Server Dashboard"
