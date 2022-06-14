@@ -7,6 +7,9 @@ spec:
     # The ACME server URL
     server: https://acme-v02.api.letsencrypt.org/directory
 
+    # Chain to use for Let's Encrypt production server
+    preferredChain: 'ISRG Root X1'
+
     # Email address used for ACME registration
     email: support@pingidentity.com
 
