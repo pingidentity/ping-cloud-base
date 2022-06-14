@@ -45,6 +45,15 @@ patchesStrategicMerge:
   spec:
     dnsNames:
       - '*.${TENANT_DOMAIN}'
+    # Direct cert-manager to create a keystore, add it to a secret named after this certificate.
+    # This will be mounted within the container. More info can be found in cert-manager docs.
+    keystores:
+      pkcs12:
+        create: true
+        # Password used to encrypt the keystore into which the ACME certs will be added
+        passwordSecretRef:
+          name: pingcommon-passwords
+          key: ACME_CERT_KEYSTORE_PASSWORD
 
 ### Cloud-watch logging and monitoring ###
 - |-
