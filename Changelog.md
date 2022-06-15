@@ -42,6 +42,7 @@ _Changes:_
 - [X] PDO-3548 Set manage-profile tempProfileDirectory argument and force exportldiff files to write to the persistent volume /opt/out directory
 - [X] PDO-3571 Added non-admin ArgoCD user with access to restart StatefulSet pods
 - [X] PDO-3582 Force liveness probe to use API endpoint /available-or-degraded-state
+- [X] PDO-3603 Auto update product tags for production registry in ping-cloud-base
 - [X] PDO-3605 Automate release candidate ECR images within in ping-cloud-base
 - [X] PDO-3610 Convert PingDataSync to a Statefulset
 - [X] PDO-3620 Update cluster tools to latest version: Grafana v8.4.5
