@@ -164,7 +164,7 @@ spec:
             runAsNonRoot: true
             runAsUser: 9031
             allowPrivilegeEscalation: false
-          image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.14-release-branch-latest
+          image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:v1.14.0.0-PDO-3972-stunnel-pt-2
           imagePullPolicy: Always
           ports:
             - containerPort: 1389
