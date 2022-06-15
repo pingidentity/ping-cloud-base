@@ -30,6 +30,7 @@ _Changes:_
 - [X] PDO-3275 Update cluster tools to latest version: Kibana v8.1.3
 - [X] PDO-3276 Update cluster tools to latest version: Elasticsearch 8.1.3
 - [X] PDO-3277 Update cluster tools to latest version: kube-state-metrics v2.5.0
+- [X] PDO-3278 Update cluster tools to latest version: metrics-server v0.6.1
 - [X] PDO-3279 Update cluster tools to latest version: Logstash v8.1.3
 - [X] PDO-3421 Set ImagePullPolicy for all Ping apps to 'Always'
 - [X] PDO-3422 Create script to ensure development ECR public image tag isn't in any production release
