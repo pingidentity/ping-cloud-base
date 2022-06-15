@@ -56,6 +56,7 @@ _Changes:_
 - [X] PDO-3783 Recreate the PF Threat Detection Dashboard in P1AS
 - [X] PDO-3805 Create & Deploy Health Check service in P1AS
 - [X] PDO-3842 Update cluster tools to latest version: newrelic java agent to v6.5.4
+- [X] PDO-3843 Update cluster tools to latest version: cloudwatch-agent to v1.247352.0
 - [X] PDO-3856 PingOne configurator skips is_myping
 - [X] PDO-3892 Fluent Bit image is now pulled from ECR
 - [X] PDO-3910 Create a logstash parsers for all ping-app non-SIEM logs
