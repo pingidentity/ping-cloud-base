@@ -9,10 +9,12 @@ data:
   pipelines.yml: |
     - pipeline.id: main
       path.config: "/usr/share/logstash/pipeline/main"
+    - pipeline.id: customer
+      path.config: "/usr/share/logstash/pipeline/customer"
 
 ---
 apiVersion: apps/v1
-kind: Deployment 
+kind: StatefulSet
 metadata:
   name: logstash-elastic
   labels:
@@ -27,7 +29,7 @@ spec:
       labels:
         app: logstash-elastic
     spec:
-      serviceAccount: logstash-elastic
+      serviceAccountName: logstash-elastic
       initContainers:
 
       - name: check-service-availability
@@ -102,9 +104,9 @@ spec:
           - name: LOG_LEVEL
             value: "warn"
           - name: PIPELINE_BATCH_DELAY
-            value: "500"
+            value: "50"
           - name: PIPELINE_BATCH_SIZE
-            value: "1500"
+            value: "500"
           - name: PIPELINE_ECS_COMPATIBILITY
             value: "disabled"
           - name: XPACK_MONITORING_ENABLED
@@ -113,6 +115,8 @@ spec:
             value: "false"
           - name: QUEUE_TYPE
             value: "persisted"
+          - name: QUEUE_MAX_BYTES
+            value: "1000gb"
         resources:
           limits:
             memory: 4Gi
@@ -136,11 +140,17 @@ spec:
         - name: logstash-pipeline-main
           mountPath: /usr/share/logstash/pipeline/main
           readOnly: true
+        - name: logstash-pipeline-customer
+          mountPath: /usr/share/logstash/pipeline/customer
+          readOnly: true
         - name: enrichment-logstash-search-templates
           mountPath: /etc/logstash/templates
           readOnly: true
         - name: enrichment-cache-files
           mountPath: /enrichment-cache-files
+          readOnly: false
+        - name: logstash-efs
+          mountPath: /usr/share/logstash/data/queue
           readOnly: false
 
       # Sidecar enrichment container which updates Logstash dictionaries
@@ -178,6 +188,9 @@ spec:
       - name: logstash-pipeline-main
         configMap:
           name: logstash-pipeline-main
+      - name: logstash-pipeline-customer
+        configMap:
+          name: logstash-pipeline-customer
       - name: logstash-pipelines
         configMap:
           name: logstash-pipelines
@@ -192,6 +205,18 @@ spec:
 
       tolerations:   
       - operator: Exists
+  serviceName: logstash-elastic
+  volumeClaimTemplates:
+    - metadata:
+        name: logstash-efs
+        labels:
+          app: logstash-elastic
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: efs
+        resources:
+          requests:
+            storage: 1Mi
 
 ---
 kind: Service
@@ -247,3 +272,4 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: logstash-elastic
+
