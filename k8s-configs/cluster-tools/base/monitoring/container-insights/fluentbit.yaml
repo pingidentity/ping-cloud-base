@@ -655,6 +655,12 @@ spec:
       - name: fluent-bit
         image: public.ecr.aws/r2h3l6e4/amazon/aws-for-fluent-bit:2.24.0
         imagePullPolicy: Always
+        securityContext:
+          capabilities:
+            drop:
+              - ALL
+            add:
+              - CAP_FOWNER
         env:
             - name: AWS_REGION
               valueFrom:

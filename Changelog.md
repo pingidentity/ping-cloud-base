@@ -18,7 +18,11 @@
 - Add "pf-jwt-token-translator-1.1.1.2.jar" to artifact.json file
 - Add healthcheck service
 - Add logstash parsers for all ping apps
+<<<<<<< HEAD
 - Cluster tool cluster-autoscaler upgrade from v1.20.0 to v1.21.1
+=======
+- Add EFS StorageClass. Configure Elasticsearch to use EFS StorageClass
+>>>>>>> origin/v1.14-release-branch
 
 _Changes:_
 - [X] PDO-3274 Update cluster tools to recommended version: external-dns v.11.0
@@ -32,6 +36,7 @@ _Changes:_
 - [X] PDO-3275 Update cluster tools to latest version: Kibana v8.1.3
 - [X] PDO-3276 Update cluster tools to latest version: Elasticsearch 8.1.3
 - [X] PDO-3277 Update cluster tools to latest version: kube-state-metrics v2.5.0
+- [X] PDO-3278 Update cluster tools to latest version: metrics-server v0.6.1
 - [X] PDO-3279 Update cluster tools to latest version: Logstash v8.1.3
 - [X] PDO-3421 Set ImagePullPolicy for all Ping apps to 'Always'
 - [X] PDO-3422 Create script to ensure development ECR public image tag isn't in any production release
@@ -43,6 +48,7 @@ _Changes:_
 - [X] PDO-3548 Set manage-profile tempProfileDirectory argument and force exportldiff files to write to the persistent volume /opt/out directory
 - [X] PDO-3571 Added non-admin ArgoCD user with access to restart StatefulSet pods
 - [X] PDO-3582 Force liveness probe to use API endpoint /available-or-degraded-state
+- [X] PDO-3603 Auto update product tags for production registry in ping-cloud-base
 - [X] PDO-3605 Automate release candidate ECR images within in ping-cloud-base
 - [X] PDO-3610 Convert PingDataSync to a Statefulset
 - [X] PDO-3620 Update cluster tools to latest version: Grafana v8.4.5
@@ -58,6 +64,8 @@ _Changes:_
 - [X] PDO-3783 Recreate the PF Threat Detection Dashboard in P1AS
 - [X] PDO-3805 Create & Deploy Health Check service in P1AS
 - [X] PDO-3842 Update cluster tools to latest version: newrelic java agent to v6.5.4
+- [X] PDO-3843 Update cluster tools to latest version: cloudwatch-agent to v1.247352.0
+- [X] PDO-3851 Implement EFS storage for ElasticSearch
 - [X] PDO-3856 PingOne configurator skips is_myping
 - [X] PDO-3892 Fluent Bit image is now pulled from ECR
 - [X] PDO-3910 Create a logstash parsers for all ping-app non-SIEM logs

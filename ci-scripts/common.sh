@@ -95,6 +95,9 @@ set_env_vars() {
 
     export LEGACY_LOGGING=True
 
+    # Service SSM should be available for all environments
+    export SERVICE_SSM_PATH_PREFIX="/${SELECTED_KUBE_NAME}/pcpt/service"
+
   elif test -f "${ENV_VARS_FILE}"; then
     echo "Using environment variables defined in file ${ENV_VARS_FILE}"
     set -a; source "${ENV_VARS_FILE}"; set +a
