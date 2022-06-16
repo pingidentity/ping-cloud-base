@@ -19,6 +19,7 @@
 - Add healthcheck service
 - Add logstash parsers for all ping apps
 - Add EFS StorageClass. Configure Elasticsearch to use EFS StorageClass
+- Add customer-configurable pipeline to logstash
 
 _Changes:_
 - [X] PDO-3274 Update cluster tools to recommended version: external-dns v.11.0
@@ -58,6 +59,7 @@ _Changes:_
 - [X] PDO-3773 Encrypt K8s StorageClass (AWS EBS volumes)
 - [X] PDO-3783 Recreate the PF Threat Detection Dashboard in P1AS
 - [X] PDO-3805 Create & Deploy Health Check service in P1AS
+- [X] PDO-3821 Create customer-configurable pipeline in logstash with PQ
 - [X] PDO-3840 Update cluster tools to latest version: prometheus to v2.36.1
 - [X] PDO-3842 Update cluster tools to latest version: newrelic java agent to v6.5.4
 - [X] PDO-3843 Update cluster tools to latest version: cloudwatch-agent to v1.247352.0
