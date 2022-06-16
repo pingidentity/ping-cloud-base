@@ -18,6 +18,7 @@
 - Add "pf-jwt-token-translator-1.1.1.2.jar" to artifact.json file
 - Add healthcheck service
 - Add logstash parsers for all ping apps
+- Add EFS StorageClass. Configure Elasticsearch to use EFS StorageClass
 
 _Changes:_
 - [X] PDO-3274 Update cluster tools to recommended version: external-dns v.11.0
@@ -59,6 +60,7 @@ _Changes:_
 - [X] PDO-3805 Create & Deploy Health Check service in P1AS
 - [X] PDO-3842 Update cluster tools to latest version: newrelic java agent to v6.5.4
 - [X] PDO-3843 Update cluster tools to latest version: cloudwatch-agent to v1.247352.0
+- [X] PDO-3851 Implement EFS storage for ElasticSearch
 - [X] PDO-3856 PingOne configurator skips is_myping
 - [X] PDO-3892 Fluent Bit image is now pulled from ECR
 - [X] PDO-3910 Create a logstash parsers for all ping-app non-SIEM logs
