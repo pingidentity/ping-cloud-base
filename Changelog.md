@@ -18,11 +18,8 @@
 - Add "pf-jwt-token-translator-1.1.1.2.jar" to artifact.json file
 - Add healthcheck service
 - Add logstash parsers for all ping apps
-<<<<<<< HEAD
 - Cluster tool cluster-autoscaler upgrade from v1.20.0 to v1.21.1
-=======
 - Add EFS StorageClass. Configure Elasticsearch to use EFS StorageClass
->>>>>>> origin/v1.14-release-branch
 
 _Changes:_
 - [X] PDO-3274 Update cluster tools to recommended version: external-dns v.11.0
