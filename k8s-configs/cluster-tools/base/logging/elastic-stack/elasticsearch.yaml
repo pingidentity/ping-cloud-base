@@ -217,10 +217,10 @@ spec:
         app: elasticsearch
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      storageClassName: elasticsearch-gp2
+      storageClassName: efs
       resources:
         requests:
-          storage: 40Gi
+          storage: 1Mi
 
 ---
 apiVersion: apps/v1

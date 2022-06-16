@@ -10,3 +10,4 @@ resources:
 - metrics
 - monitoring
 - security
+- efs-driver
