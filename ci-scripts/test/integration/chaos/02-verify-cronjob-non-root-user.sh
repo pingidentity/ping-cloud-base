@@ -13,9 +13,10 @@ testNonRootCronjob() {
     -n "${NAMESPACE}" \
     -o json | jq -c '.items[].spec.jobTemplate.spec.template.spec.containers[]')
   echo "Looping through cronjobs to test"
-  for cronjob in ${cronjobs}; do
-    cronjob_name=$(echo ${cronjob} | jq '.name')
-    runAsNonRoot=$(echo ${cronjob} | jq '.securityContext.runAsNonRoot')
+  echo "${cronjobs}" | while read -r cronjob
+  do
+    cronjob_name=$(echo "${cronjob}" | jq '.name')
+    runAsNonRoot=$(echo "${cronjob}" | jq '.securityContext.runAsNonRoot')
     runAsUser=$(echo "${cronjob}" | jq '.securityContext.runAsUser')
 
     assertEquals "Cronjob: ${cronjob_name}: Failed to get securityContext: runAsNonRoot" "${runAsNonRoot}" "true"

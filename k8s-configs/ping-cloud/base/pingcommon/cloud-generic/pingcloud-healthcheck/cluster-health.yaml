@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: healthcheck-cluster-health
+spec:
+  schedule: "* * * * *"
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: cluster-healthcheck-serviceaccount
+          restartPolicy: Never
+          containers:
+          - name: healthcheck-cluster-health
+            image: public.ecr.aws/r2h3l6e4/pingcloud-services/robot-framework:v1.1.0
+            imagePullPolicy: IfNotPresent
+            securityContext:
+              runAsGroup: 9999
+              runAsNonRoot: true
+              runAsUser: 9031
+              allowPrivilegeEscalation: false
+            command:
+              - /bin/bash
+              - -c
+              - ./robot_wrapper.sh cluster-health.xml "--include cluster-health tests/cluster-health"
+            envFrom:
+            - configMapRef:
+                name: pingcloud-healthcheck-environment-variables
