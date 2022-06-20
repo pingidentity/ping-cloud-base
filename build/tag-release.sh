@@ -117,6 +117,25 @@ grep_yaml() {
   cd "${SANDBOX}"/ping-cloud-base/
 }
 
+########################################################################################################################
+# Performs a 'grep' on each file within the repo searching for dev image paths.
+#
+# Returns
+#   non-zero on failure.
+########################################################################################################################
+verify_k8s_image_repositories() {
+  search_dev_image=$(git grep -h "image: public.ecr.aws/r2h3l6e4/." | grep "/dev:" | xargs)
+  echo "---"
+
+  if test -z "$search_dev_image"; then
+    echo "Verified all dev image paths removed"
+  else
+    echo "Error: The below dev image paths still exist"
+    echo "$search_dev_image"
+    return 1
+  fi
+}
+
 ###########################################################################################################################
 # Verifies the 'REF_TYPE' if its a 'tag' or 'branch'.
 #
@@ -187,6 +206,11 @@ elif test "${REF_TYPE}" = 'tag'; then
   # Update 'base/env_vars' image tags and yaml files
   pip3 install -r "${PWD_DIR}"/python/requirements.txt > /dev/null
   replace_and_commit "${SOURCE_REF}-latest" "${TARGET_REF}" "${REF_TYPE}"
+
+  # Verify no dev image paths in repo
+  verify_k8s_image_repositories
+
+  # Create tag
   git tag "${TARGET_REF}"
 
 else
