@@ -12,6 +12,7 @@
 - Replace Fluentd with Fluent Bit
 - Force liveness probe for PingDirectory to use API endpoint /available-or-degraded-state
 - Logstash now getting logs from Fluent Bit and working as non-root Deployment
+- Cluster tool cluster-autoscaler upgrade from v1.20.0 to v1.21.1
 - Fluent Bit now has a FeatureFlag 'LEGACY_LOGGING' to control application logs destination
 - Fluent Bit docker image is now pulled from ECR
 - Implemented Hot\Warm Tiers for ElasticSearch 
@@ -22,13 +23,12 @@
 - Add customer-configurable pipeline to logstash
 
 _Changes:_
-- [X] PDO-3274 Update cluster tools to recommended version: external-dns v.11.0
-- [X] PDO-3942 Moved ENVIRONMENT_PREFIX from base env_vars to region env_vars
-- [X] PDO-3844 Update cluster tools to latest version: sig-sci agent v4.28.0
-- [X] PDO-3270 Update cluster tools to latest version: nginx-ingress-controller v1.2.0
 - [X] PDO-2517 Port of PingFederate pre-config script from bash to python
 - [X] PDO-2827 Configure PingFederate and PingAccess environments within PingCentral
 - [X] PDO-2894 Use Fluent Bit instead of Fluentd
+- [X] PDO-3269 Update cluster tools to latest version: cluster-autoscaler v1.21.1
+- [X] PDO-3270 Update cluster tools to latest version: nginx-ingress-controller v1.2.0
+- [X] PDO-3274 Update cluster tools to recommended version: external-dns v.11.0
 - [X] PDO-3275 Update cluster tools to latest version: Kibana v8.1.3
 - [X] PDO-3276 Update cluster tools to latest version: Elasticsearch 8.1.3
 - [X] PDO-3277 Update cluster tools to latest version: kube-state-metrics v2.5.0
@@ -63,6 +63,7 @@ _Changes:_
 - [X] PDO-3840 Update cluster tools to latest version: prometheus to v2.36.1
 - [X] PDO-3842 Update cluster tools to latest version: newrelic java agent to v6.5.4
 - [X] PDO-3843 Update cluster tools to latest version: cloudwatch-agent to v1.247352.0
+- [X] PDO-3844 Update cluster tools to latest version: sig-sci agent v4.28.0
 - [X] PDO-3851 Implement EFS storage for ElasticSearch
 - [X] PDO-3856 PingOne configurator skips is_myping
 - [X] PDO-3887 Add config-audit.log and server.out files to PingDirectory tail logs
@@ -74,6 +75,7 @@ _Changes:_
 - [X] PDO-3928 Move script that verifies development images are not in production to tag-release.sh
 - [X] PDO-3930 Add "pf-jwt-token-translator-1.1.1.2.jar" to artifact.json file
 - [X] PDO-3933 ELK/CloudWatch logging improvements
+- [X] PDO-3942 Moved ENVIRONMENT_PREFIX from base env_vars to region env_vars
 - [X] PDO-3946 Some of Kibana resources bootstrapping fails in rare cases
 - [X] PDO-3956 ELK: there are no log time chart and no window to choose time slot for 'pa-was-system' data view
 - [X] PDO-3959 Fix URLs not rendering due to DNS_ZONE envsubst ordering
