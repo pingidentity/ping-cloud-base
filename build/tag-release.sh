@@ -124,7 +124,7 @@ grep_yaml() {
 #   non-zero on failure.
 ########################################################################################################################
 verify_k8s_image_repositories() {
-  search_dev_image=$(git grep -h "image: public.ecr.aws/r2h3l6e4/." | grep "/dev:" | xargs)
+  search_dev_image=$(git grep -h "image: public.ecr.aws/r2h3l6e4/." | grep -v "search_dev_image" | grep "/dev:" | xargs)
   echo "---"
 
   if test -z "$search_dev_image"; then
