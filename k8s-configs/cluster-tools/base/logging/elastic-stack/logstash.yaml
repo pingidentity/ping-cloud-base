@@ -85,38 +85,31 @@ spec:
         env:
           - name: CONTAINER_NAME
             value: "logstash"
-          - name: LS_JAVA_OPTS
-            value: "-Xmx1g -Xms1g"
           - name: NODE_NAME
             valueFrom:
               fieldRef:
                 fieldPath: spec.nodeName
-          - name: LOGSTASH_ELASTICSEARCH_URL
-            value: "http://elasticsearch"
-          - name: LOGSTASH_ELASTICSEARCH_PORT
-            value: "9200"
           - name: CONFIG_RELOAD_AUTOMATIC
             value: "true"
           - name: CONFIG_RELOAD_INTERVAL
             value: "5s"
           - name: LOG_FORMAT
             value: "json"
-          - name: LOG_LEVEL
-            value: "warn"
           - name: PIPELINE_BATCH_DELAY
             value: "50"
           - name: PIPELINE_BATCH_SIZE
             value: "500"
           - name: PIPELINE_ECS_COMPATIBILITY
             value: "disabled"
-          - name: XPACK_MONITORING_ENABLED
-            value: "true"
           - name: PIPELINE_ORDERED
             value: "false"
           - name: QUEUE_TYPE
             value: "persisted"
           - name: QUEUE_MAX_BYTES
             value: "1000gb"
+        envFrom:
+          - configMapRef:
+              name: elk-environment-variables
         resources:
           limits:
             memory: 4Gi

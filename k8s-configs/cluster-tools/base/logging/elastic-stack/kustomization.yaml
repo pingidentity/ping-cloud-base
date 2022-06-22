@@ -10,3 +10,8 @@ resources:
 - kibana.yaml
 - logstash.yaml
 - logstash_pipelines
+
+configMapGenerator:
+- name: elk-environment-variables
+  envs:
+  - env_vars
