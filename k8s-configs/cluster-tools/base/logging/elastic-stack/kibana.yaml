@@ -54,10 +54,6 @@ spec:
             value: "0.0.0.0"
           - name: SERVER_PORT
             value: "5601"
-          - name: ELASTICSEARCH_HOSTS
-            value: "http://elasticsearch:9200"
-          - name: XPACK_MONITORING_ENABLED
-            value: "false"
           - name: LOGGING_ROOT_LEVEL
             value: "warn"
           - name: LOGGING_QUIET

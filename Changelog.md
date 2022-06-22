@@ -60,6 +60,7 @@ _Changes:_
 - [X] PDO-3783 Recreate the PF Threat Detection Dashboard in P1AS
 - [X] PDO-3805 Create & Deploy Health Check service in P1AS
 - [X] PDO-3821 Create customer-configurable pipeline in logstash with PQ
+- [X] PDO-3830 ES JVM Heapsize too small
 - [X] PDO-3840 Update cluster tools to latest version: prometheus to v2.36.1
 - [X] PDO-3842 Update cluster tools to latest version: newrelic java agent to v6.5.4
 - [X] PDO-3843 Update cluster tools to latest version: cloudwatch-agent to v1.247352.0
@@ -70,6 +71,7 @@ _Changes:_
 - [X] PDO-3892 Fluent Bit image is now pulled from ECR
 - [X] PDO-3907 Create Cluster Health Tests for Health Checks Pt 1
 - [X] PDO-3910 Create a logstash parsers for all ping-app non-SIEM logs
+- [X] PDO-3911 Warning message in es-cluster pods logs
 - [X] PDO-3913 Few data views are listed twice in Kibana Discover tab
 - [X] PDO-3936 Investigate flaky PingOne integration tests
 - [X] PDO-3928 Move script that verifies development images are not in production to tag-release.sh
