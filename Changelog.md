@@ -21,6 +21,7 @@
 - Add logstash parsers for all ping apps
 - Add EFS StorageClass. Configure Elasticsearch to use EFS StorageClass
 - Add customer-configurable pipeline to logstash
+- Fix max-character branch name length for ping-cloud-base
 
 _Changes:_
 - [X] PDO-2517 Port of PingFederate pre-config script from bash to python
@@ -84,6 +85,7 @@ _Changes:_
 - [X] PDO-3968 Update logstash image to have all needed plugins
 - [X] PDO-3972 Remove stunnel
 - [X] PDO-3980 Health Check service is listing wrong envType in a CDE
+- [X] PDO-4008 Fix max-character branch name for PCB
 
 ### 1.13.0
 
