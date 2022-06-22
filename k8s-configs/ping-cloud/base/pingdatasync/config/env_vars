@@ -27,7 +27,7 @@ MAX_HEAP_SIZE=3g
 # Leave blank
 TAIL_LOG_FILES=
 # Individual files should be spelled out, globs are unreliable
-K8S_TAIL_LOG_FILES=/opt/out/instance/logs/access /opt/out/instance/logs/errors /opt/out/instance/logs/failed-ops /opt/out/instance/logs/config-audit.log /opt/out/instance/logs/server.out /opt/out/instance/logs/sync-failed-ops
+K8S_TAIL_LOG_FILES=/opt/out/instance/logs/access /opt/out/instance/logs/errors /opt/out/instance/logs/failed-ops /opt/out/instance/logs/server.out /opt/out/instance/logs/sync-failed-ops
 
 # PingDataSync server information
 ROOT_BIND_DN=cn=administrator
