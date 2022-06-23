@@ -1,0 +1,48 @@
+# This patch may be applied to the pingdirectory statefulset to start up a sidecar container that'll tunnel TLS
+# traffic. Since nginx is simply a web proxy and cannot handle proxying anything but HTTPS traffic, this is necessary
+# for the pingdirectory LDAPS server.
+
+# This patch requires a secret object of the name pointed by the K8S_ACME_CERT_SECRET_NAME environment variable to
+# exist. This is usually created by cert-manager, which interacts with Let's encrypt to issue an ACME certificate.
+# For BYOC use cases, the secret may be created declaratively with the tls.crt and tls.key that contains the identity
+# certificate and key in base64-encoded PEM format.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingdirectory
+spec:
+  template:
+    spec:
+      containers:
+        - name: stunnel
+          image: public.ecr.aws/r2h3l6e4/dweomer/stunnel
+          securityContext:
+            # Run as the stunnel uid and gid
+            runAsNonRoot: true
+            runAsUser: 100
+            runAsGroup: 101
+          imagePullPolicy: IfNotPresent
+          command:
+            - /home/stunnel/stunnel.sh
+          ports:
+            - containerPort: 5678
+              name: stunnel
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "20m"
+            limits:
+              memory: "64Mi"
+              cpu: "200m"
+          envFrom:
+            - configMapRef:
+                name: pingdirectory-environment-variables
+          volumeMounts:
+            - name: stunnel
+              mountPath: /home/stunnel/stunnel.sh
+              subPath: stunnel.sh
+      volumes:
+        - name: stunnel
+          configMap:
+            name: stunnel
+            defaultMode: 0555
