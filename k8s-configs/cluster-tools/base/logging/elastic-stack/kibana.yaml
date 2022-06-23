@@ -60,6 +60,15 @@ spec:
             value: "true"
           - name: SERVER_PUBLICBASEURL
             value: "http://kibana:5601"
+          - name: XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY
+            value: "phaishungei5quiupahsh8ahgu9aen8aer9zo6cheek6eengohFooqu4aquieke5"
+          - name: XPACK_REPORTING_ENCRYPTIONKEY
+            value: "phaishungei5quiupahsh8ahgu9aen8aer9zo6cheek6eengohFooqu4aquieke5"
+          - name: XPACK_SECURITY_ENCRYPTIONKEY
+            value: "phaishungei5quiupahsh8ahgu9aen8aer9zo6cheek6eengohFooqu4aquieke5"
+          - name: XPACK_REPORTING_KIBANASERVER_HOSTNAME
+            value: localhost
+
 
         resources:
           limits:
