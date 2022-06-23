@@ -1,5 +1,21 @@
 # Changelog
 
+### 1.13.2
+
+* Upgrade PingCentral to 1.8.3
+
+_Changes:_
+
+- [X] PDO-4006 Upgrade PC to 1.8.3
+
+### 1.13.1
+
+* Fix URL substitution for DNS_ZONE
+
+_Changes:_
+
+- [X] PDO-3954 Fix URL subsitution for DNS_ZONE
+
 ### 1.13.0
 
 - Deploy PingDataSync into cluster
