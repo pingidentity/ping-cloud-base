@@ -18,6 +18,7 @@
 - Implemented Hot\Warm Tiers for ElasticSearch 
 - Add "pf-jwt-token-translator-1.1.1.2.jar" to artifact.json file
 - Add healthcheck service
+- Add cluster-health healthchecks for namespaces, nodes, and statefulsets
 - Add logstash parsers for all ping apps
 - Add EFS StorageClass. Configure Elasticsearch to use EFS StorageClass
 - Add customer-configurable pipeline to logstash
@@ -76,6 +77,7 @@ _Changes:_
 - [X] PDO-3911 Warning message in es-cluster pods logs
 - [X] PDO-3913 Few data views are listed twice in Kibana Discover tab
 - [X] PDO-3915 Create Reaper Deployment in PCB
+- [X] PDO-3919 Create Cluster Health Tests for Health Checks Pt 2
 - [X] PDO-3936 Investigate flaky PingOne integration tests
 - [X] PDO-3928 Move script that verifies development images are not in production to tag-release.sh
 - [X] PDO-3930 Add "pf-jwt-token-translator-1.1.1.2.jar" to artifact.json file
