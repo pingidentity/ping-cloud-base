@@ -27,7 +27,7 @@ PingOne integration to P1AS requires several setup steps. In this directory ther
 3. Run `./setup.sh` to install a venv and install python modules (if needed)
 4. Run `python3 p1_setup_and_teardown.py` from this directory
 5. Select `Setup` to create a new environment
-6. Select your Environment use case. **Note: while using the scripts you can only have 1 environment for each use case at a time**
+6. Select "Workforce" for your Environment use case. **Note: while using the scripts you can only have 1 environment for each use case at a time**
 7. Check or uncheck each app you would like for your environment
 8. Confirm your selection
 9. Login to PingOne UI to view your environment
