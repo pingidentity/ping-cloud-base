@@ -15,7 +15,7 @@
 - Cluster tool cluster-autoscaler upgrade from v1.20.0 to v1.21.1
 - Fluent Bit now has a FeatureFlag 'LEGACY_LOGGING' to control application logs destination
 - Fluent Bit docker image is now pulled from ECR
-- Implemented Hot\Warm Tiers for ElasticSearch 
+- Implemented Hot\Warm Tiers for ElasticSearch
 - Add "pf-jwt-token-translator-1.1.1.2.jar" to artifact.json file
 - Add healthcheck service
 - Add cluster-health healthchecks for namespaces, nodes, and statefulsets
@@ -23,6 +23,7 @@
 - Add EFS StorageClass. Configure Elasticsearch to use EFS StorageClass
 - Add customer-configurable pipeline to logstash
 - Fix max-character branch name length for ping-cloud-base
+- Convert PingDataSync to a StatefulSet
 - Add Pod-Reaper cluster tool
 
 _Changes:_
@@ -50,6 +51,7 @@ _Changes:_
 - [X] PDO-3603 Auto update product tags for production registry in ping-cloud-base
 - [X] PDO-3605 Automate release candidate ECR images within in ping-cloud-base
 - [X] PDO-3610 Convert PingDataSync to a Statefulset
+- [X] PDO-3611 Use 'manage-profile replace-profile' to support root password change
 - [X] PDO-3620 Update cluster tools to latest version: Grafana v8.4.5
 - [X] PDO-3678 server.publicBaseUrl is not found in Kibana
 - [X] PDO-3716 Elasticsearch: Implement Hot/Warm Tiers
@@ -60,6 +62,7 @@ _Changes:_
 - [X] PDO-3754 Replace current logstash DaemonSet by non-root Deployment
 - [X] PDO-3755 Implement FeatureFlags with many outputs for Fluent Bit
 - [X] PDO-3773 Encrypt K8s StorageClass (AWS EBS volumes)
+- [X] PDO-3780 Connect to external PD server within PingDataSync using LDAP
 - [X] PDO-3783 Recreate the PF Threat Detection Dashboard in P1AS
 - [X] PDO-3805 Create & Deploy Health Check service in P1AS
 - [X] PDO-3821 Create customer-configurable pipeline in logstash with PQ

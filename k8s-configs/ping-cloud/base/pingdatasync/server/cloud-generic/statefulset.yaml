@@ -48,6 +48,17 @@ spec:
         envFrom:
           - configMapRef:
               name: pingdatasync-environment-variables
+        env:
+          - name: P1AS_PD_LDAP_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: pingdirectory-environment-variables
+                key: LDAP_PORT
+          - name: P1AS_PD_LDAPS_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: pingdirectory-environment-variables
+                key: LDAPS_PORT
       - name: pingdatasync-init
         # FIXME PDO-3574: switch to same user as app
         securityContext:
@@ -78,12 +89,6 @@ spec:
           - name: pingdatasync-init
             mountPath: /logger.lib.sh
             subPath: logger.lib.sh
-        env:
-          - name: P1AS_PD_LDAPS_PORT
-            valueFrom:
-              configMapKeyRef:
-                name: pingdirectory-environment-variables
-                key: LDAPS_PORT
         envFrom:
           - configMapRef:
               name: pingdatasync-environment-variables
@@ -117,12 +122,6 @@ spec:
           periodSeconds: 30
           failureThreshold: 5
           timeoutSeconds: 5
-        # Backup config/sync-state.ldif to s3 before terminating pod
-        lifecycle:
-          preStop:
-            exec:
-              command:
-                - /opt/staging/hooks/15-upload-sync-state-s3.sh
         ports:
           - name: ldap
             containerPort: 1389
@@ -151,6 +150,11 @@ spec:
               secretKeyRef:
                 name: pingdirectory-passwords
                 key: root-user-password
+          - name: P1AS_PD_LDAP_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: pingdirectory-environment-variables
+                key: LDAP_PORT
           - name: P1AS_PD_LDAPS_PORT
             valueFrom:
               configMapKeyRef:
@@ -174,10 +178,6 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
-          - name: PINGDATASYNC_POD_IP
-            valueFrom:
-              fieldRef:
-                fieldPath: status.podIP
         envFrom:
           - configMapRef:
               name: pingdatasync-environment-variables
@@ -186,6 +186,8 @@ spec:
         volumeMounts:
           - name: ssh-dir
             mountPath: /home/ping/.ssh
+          - name: out-dir
+            mountPath: /opt/out
           - name: data-dir
             mountPath: /usr/local/bin/kubectl
             subPath: kubectl
@@ -240,7 +242,7 @@ spec:
           secret:
             secretName: pingdatasync-passwords
             optional: true
-            defaultMode: 0400
+            defaultMode: 0440
         - name: pingdirectory-license
           secret:
             secretName: pingdirectory-license
