@@ -23,10 +23,11 @@ spec:
         cluster: pingaccess-cluster
         role: pingaccess-admin
         entitled-app: "true"
+        pod-reaper: enabled
       annotations:
         lastUpdateReason: "NA"
     spec:
-      serviceAccount: ping-serviceaccount
+      serviceAccountName: ping-serviceaccount
       initContainers:
       - name: pingaccess-init
         # FIXME PDO-3574: switch to same user as app

@@ -23,10 +23,11 @@ spec:
         cluster: pingfederate-cluster
         role: pingfederate-admin
         entitled-app: "true"
+        pod-reaper: enabled
       annotations:
         lastUpdateReason: "NA"
     spec:
-      serviceAccount: ping-serviceaccount
+      serviceAccountName: ping-serviceaccount
       initContainers:
       - name: pingfederate-p14c-init
         securityContext:

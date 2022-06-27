@@ -22,6 +22,7 @@
 - Add EFS StorageClass. Configure Elasticsearch to use EFS StorageClass
 - Add customer-configurable pipeline to logstash
 - Fix max-character branch name length for ping-cloud-base
+- Add Pod-Reaper cluster tool
 
 _Changes:_
 - [X] PDO-2517 Port of PingFederate pre-config script from bash to python
@@ -74,6 +75,7 @@ _Changes:_
 - [X] PDO-3910 Create a logstash parsers for all ping-app non-SIEM logs
 - [X] PDO-3911 Warning message in es-cluster pods logs
 - [X] PDO-3913 Few data views are listed twice in Kibana Discover tab
+- [X] PDO-3915 Create Reaper Deployment in PCB
 - [X] PDO-3936 Investigate flaky PingOne integration tests
 - [X] PDO-3928 Move script that verifies development images are not in production to tag-release.sh
 - [X] PDO-3930 Add "pf-jwt-token-translator-1.1.1.2.jar" to artifact.json file
