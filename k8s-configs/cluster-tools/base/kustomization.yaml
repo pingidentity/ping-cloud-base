@@ -11,3 +11,4 @@ resources:
 - monitoring
 - security
 - efs-driver
+- pod-reaper

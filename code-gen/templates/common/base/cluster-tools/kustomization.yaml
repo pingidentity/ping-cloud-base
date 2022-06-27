@@ -12,3 +12,4 @@ resources:
 - metrics
 - monitoring
 - security
+- pod-reaper

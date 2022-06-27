@@ -19,10 +19,11 @@ spec:
       labels:
         cluster: pingaccess-cluster
         role: pingaccess-engine
+        pod-reaper: enabled
       annotations:
         lastUpdateReason: "NA"
     spec:
-      serviceAccount: ping-serviceaccount
+      serviceAccountName: ping-serviceaccount
       affinity:
         podAntiAffinity:
           # Add a soft requirement for each PA runtime pod to be deployed to a different AZ

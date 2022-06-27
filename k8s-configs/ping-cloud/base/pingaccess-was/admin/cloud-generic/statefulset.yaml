@@ -22,10 +22,11 @@ spec:
       labels:
         cluster: pingaccess-was-cluster
         role: pingaccess-was-admin
+        pod-reaper: enabled
       annotations:
         lastUpdateReason: "NA"
     spec:
-      serviceAccount: ping-serviceaccount
+      serviceAccountName: ping-serviceaccount
       initContainers:
       - name: pingaccess-was-p14c-init
         securityContext:
