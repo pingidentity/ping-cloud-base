@@ -15,6 +15,12 @@ secretGenerator:
   literals:
   - NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY}
 
+configMapGenerator:
+- name: elk-environment-variables
+  behavior: merge
+  literals:
+    - CLUSTER_NAME=${CLUSTER_NAME}
+
 patchesStrategicMerge:
 
 ### Lets encrypt ACME certificate issuer for the cluster ###

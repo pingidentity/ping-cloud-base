@@ -87,3 +87,42 @@ data:
         }
       }
     }
+
+  alerts.json: |
+    {
+      "policy": {
+        "phases": {
+          "hot": {
+            "actions": {
+              "set_priority": {
+                "priority": 100
+              },
+              "rollover": {
+                "max_age": "1d"
+              }
+            }
+          },
+          "warm": {
+            "min_age": "2d",
+            "actions": {
+              "forcemerge": {
+                "max_num_segments": 1
+              },
+              "readonly": {},
+              "set_priority": {
+                "priority": 50
+              },
+              "shrink": {
+                "number_of_shards": 1
+              }
+            }
+          },
+          "delete": {
+            "min_age": "7d",
+            "actions": {
+              "delete": {}
+            }
+          }
+        }
+      }
+    }

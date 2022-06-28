@@ -102,7 +102,7 @@ data:
         K8S-Logging.Parser  On
         K8S-Logging.Exclude Off
         Annotations         Off
-        Labels              Off
+        Labels              On
         Buffer_Size         1Mb
     
     [FILTER]
