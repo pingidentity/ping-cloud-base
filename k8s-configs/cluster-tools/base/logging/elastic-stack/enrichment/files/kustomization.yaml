@@ -10,3 +10,4 @@ resources:
 - enrichment-cache.yaml
 - kibana-dashboards.yaml
 - logstash-search-templates.yaml
+- kibana-alerts.yaml

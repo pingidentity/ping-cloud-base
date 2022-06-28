@@ -6,3 +6,4 @@ namespace: elastic-stack-logging
 resources:
 - main
 - customer
+- alerts

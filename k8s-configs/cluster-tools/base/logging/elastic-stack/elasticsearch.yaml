@@ -271,10 +271,6 @@ spec:
         env:
         - name: CONTAINER_NAME
           value: "elasticsearch"
-        - name: ES_JAVA_OPTS
-          value: "-Xms1024m -Xmx1024m"
-        - name: logger.level
-          value: 'warn'
         - name: node.name
           valueFrom:
             fieldRef:
@@ -293,6 +289,9 @@ spec:
           value: "false"
         - name: node.roles
           value: "data_warm, ingest, ml, transform, remote_cluster_client"
+        envFrom:
+          - configMapRef:
+              name: elk-environment-variables
 
         volumeMounts:
         - name: data-warm
