@@ -92,6 +92,7 @@ _Changes:_
 - [X] PDO-3968 Update logstash image to have all needed plugins
 - [X] PDO-3980 Health Check service is listing wrong envType in a CDE
 - [X] PDO-4008 Fix max-character branch name for PCB
+- [X] PDO-4016 Few data views are listed twice in Kibana Discover tab
 
 ### 1.13.0
 
