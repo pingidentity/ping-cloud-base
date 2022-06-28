@@ -147,6 +147,8 @@ $RECYCLE.BIN/
 envvars.sh
 custom-k8s-settings.yaml
 create_eks_cluster.sh
+.gitignore
+efs-sc-my.yaml
 
 # shunit unzipped files
 ci-scripts/test/shunit/shunit2-2.1.x/
