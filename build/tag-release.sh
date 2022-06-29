@@ -102,16 +102,14 @@ grep_yaml() {
 
   local dev_ecr_path="image: public.ecr.aws/r2h3l6e4/.*/${var}/dev"
 
-  local source_image="${dev_ecr_path}:${source_value}"
-
   echo "Changing ${var}:${source_value} -> ${var}:${target_value} in k8s yaml files"
 
   cd "${SANDBOX}"/ping-cloud-base/k8s-configs
-  git grep -l "${source_image}" | xargs sed -i.bak "s/${source_value}/${target_value}/g"
+  git grep -l "${dev_ecr_path}:${source_value}" | xargs sed -i.bak "s/${var}\/dev:${source_value}/${var}\/dev:${target_value}/g"
 
   if test "${ref_value}" = 'tag'; then
     # update the ecr path to prod from dev
-    git grep -l "${dev_ecr_path}" | xargs sed -i.bak "s/\/dev//g"
+    git grep -l "${dev_ecr_path}" | xargs sed -i.bak "s/${var}\/dev:/${var}:/g"
   fi
 
   cd "${SANDBOX}"/ping-cloud-base/
