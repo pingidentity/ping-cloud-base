@@ -16,6 +16,12 @@ secretGenerator:
   - NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY}
 
 configMapGenerator:
+- name: logging-bootstrap-environment-variables
+  behavior: merge
+  literals:
+    - SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX}
+    - REGION=${REGION}
+
 - name: elk-environment-variables
   behavior: merge
   literals:

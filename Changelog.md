@@ -26,6 +26,7 @@
 - Convert PingDataSync to a StatefulSet
 - Add Pod-Reaper cluster tool
 - Implement Kibana-based alerting
+- Add logging-bootstrap application
 
 _Changes:_
 - [X] PDO-2517 Port of PingFederate pre-config script from bash to python
@@ -97,6 +98,7 @@ _Changes:_
 - [X] PDO-4008 Fix max-character branch name for PCB
 - [X] PDO-4016 Few data views are listed twice in Kibana Discover tab
 - [X] PDO-4040 Add ingress metrics dashboard to Grafana
+- [X] PDO-4027 Add logging-bootstrap application
 
 ### 1.13.0
 
