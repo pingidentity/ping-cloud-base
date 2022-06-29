@@ -20,6 +20,16 @@ configMapGenerator:
     - REGION=${REGION}
 
 patchesStrategicMerge:
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: cluster-info
+  data:
+    legacy_logging: "${LEGACY_LOGGING}"
+    cluster.name: ${CLUSTER_NAME}
+    logs.region: ${REGION}
+
 
 ### enrichment-bootstrap service account ###
 - |-

@@ -7,16 +7,6 @@ resources:
 patchesStrategicMerge:
 
 ### Cloud-watch logging and monitoring ###
-- |-
-  apiVersion: v1
-  kind: ConfigMap
-  metadata:
-    name: cluster-info
-    namespace: amazon-cloudwatch
-  data:
-    legacy_logging: "${LEGACY_LOGGING}"
-    cluster.name: ${CLUSTER_NAME}
-    logs.region: ${REGION}
 
 - |-
   apiVersion: v1

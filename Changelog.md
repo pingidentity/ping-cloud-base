@@ -27,6 +27,7 @@
 - Add Pod-Reaper cluster tool
 - Implement Kibana-based alerting
 - Add logging-bootstrap application
+- Fluent Bit now store raw logs on S3
 
 _Changes:_
 - [X] PDO-2517 Port of PingFederate pre-config script from bash to python
@@ -93,6 +94,7 @@ _Changes:_
 - [X] PDO-3956 ELK: there are no log time chart and no window to choose time slot for 'pa-was-system' data view
 - [X] PDO-3959 Fix URLs not rendering due to DNS_ZONE envsubst ordering
 - [X] PDO-3968 Update logstash image to have all needed plugins
+- [X] PDO-3969 Store raw logs on S3
 - [X] PDO-3974 Implement Kibana Alerting
 - [X] PDO-3980 Health Check service is listing wrong envType in a CDE
 - [X] PDO-4008 Fix max-character branch name for PCB
