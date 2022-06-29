@@ -68,7 +68,6 @@ patchesStrategicMerge:
   kind: ConfigMap
   metadata:
     name: cluster-info
-    namespace: amazon-cloudwatch
 
 - |-
   apiVersion: v1
