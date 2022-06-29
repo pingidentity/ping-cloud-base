@@ -71,6 +71,7 @@ _Changes:_
 - [X] PDO-3821 Create customer-configurable pipeline in logstash with PQ
 - [X] PDO-3830 ES JVM Heapsize too small
 - [X] PDO-3840 Update cluster tools to latest version: prometheus to v2.36.1
+- [X] PDO-3841 Update cluster tools to latest version: newrelic-infrastructure to 4.5.8
 - [X] PDO-3842 Update cluster tools to latest version: newrelic java agent to v6.5.4
 - [X] PDO-3843 Update cluster tools to latest version: cloudwatch-agent to v1.247352.0
 - [X] PDO-3844 Update cluster tools to latest version: sig-sci agent v4.28.0
