@@ -4,6 +4,39 @@ metadata:
   name: enrichment
   labels:
     app: enrichment
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: enrichment
+  labels:
+    app: enrichment
+rules:
+  - apiGroups:
+    - ""
+    resources:
+    - "configmaps"
+    verbs:
+    - create
+    - update
+    - get
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: enrichment
+  labels:
+    app: enrichment
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: enrichment
+subjects:
+  - kind: ServiceAccount
+    name: enrichment
+
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -20,7 +53,7 @@ rules:
     verbs: ["get", "list", "watch", "update"]
   - apiGroups: ["storage.k8s.io"]
     resources: ["storageclasses"]
-    verbs: ["get", "list", "watch"]
+    verbs: ["get", "list", "watch", "create"]
   - apiGroups: [""]
     resources: ["events"]
     verbs: ["create", "update", "patch"]

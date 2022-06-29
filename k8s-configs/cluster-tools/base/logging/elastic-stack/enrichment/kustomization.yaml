@@ -8,3 +8,10 @@ resources:
 - enrichment-resources.yaml
 - enrichment-bootstrap.yaml
 
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+  - name: logging-bootstrap-environment-variables
+    literals:
+      - SERVICE_SSM_PATH_PREFIX=/pcpt/service

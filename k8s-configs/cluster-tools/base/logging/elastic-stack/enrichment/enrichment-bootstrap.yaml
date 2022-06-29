@@ -86,6 +86,25 @@ spec:
         - name: kibana-alerts
           mountPath: /scripts/alerts
 
+      - name: logging-bootstrap
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logging-bootstrap:v1.2.0
+        imagePullPolicy: Always
+        env:
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+        envFrom:
+        - configMapRef:
+            name: logging-bootstrap-environment-variables
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "300m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+
       restartPolicy: OnFailure
 
       volumes:
