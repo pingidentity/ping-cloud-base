@@ -7,6 +7,7 @@
 _Changes:_
 
 - [X] PDO-2635 Augment ArgoCD's application name with customer name
+- [X] PDO-3940 Add timeouts for screen updates in PingOne integration tests
 
 ### 1.14.0
 

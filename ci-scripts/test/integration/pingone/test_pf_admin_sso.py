@@ -36,7 +36,7 @@ class TestPFAdminSSO(seleniumbase.BaseCase):
         self.type("#password", old_password)
         self.click('button[data-id="submit-button"]')
         # Waiting because it can take a second to present the next screen
-        time.sleep(3)
+        self.wait_for_text_visible(text="Incorrect username or password.",timeout=30)
         # Password has already been changed
         if self.is_text_visible(text="Incorrect username or password."):
             self.type("#username", username)
@@ -48,7 +48,7 @@ class TestPFAdminSSO(seleniumbase.BaseCase):
             self.type("#new", new_password)
             self.type("#verify", new_password)
             self.click('button[data-id="submit-button"]')
-        time.sleep(3)
+        self.wait_for_element_present('img[src="images/ping-identity-white.svg"]',timeout=30)
         # "Welcome To Ping" pop-up for first time login
         if self.is_element_visible('button[data-id="guide-close-button"]'):
             self.click('button[data-id="guide-close-button"]')
