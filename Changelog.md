@@ -3,6 +3,7 @@
 ### 1.15.0
 
 - Augment ArgoCD's application name with customer name
+- Add fix to application name for ArgoCD
 
 _Changes:_
 
