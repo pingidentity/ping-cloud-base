@@ -1,1 +1,7 @@
-[]
+[
+  {
+    "name": "sample-rules",
+    "version": "6.3.4",
+    "source": "private"
+  }
+]
