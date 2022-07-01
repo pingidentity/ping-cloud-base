@@ -171,9 +171,6 @@ spec:
             mountPath: /opt/staging/ds_env_vars
             subPath: ds_env_vars
           - name: data-dir
-            mountPath: /usr/local/bin/skbn
-            subPath: skbn
-          - name: data-dir
             mountPath: /opt/staging/hooks/logger.lib.sh
             subPath: logger.lib.sh
           - name: pingcentral-passwords

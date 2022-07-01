@@ -29,6 +29,7 @@
 - Add logging-bootstrap application
 - Fluent Bit now store raw logs on S3
 - Remove stunnel from PingDirectory
+- Remove skbn as backup mechanism as replaced with aws cli
 
 _Changes:_
 - [X] PDO-2517 Port of PingFederate pre-config script from bash to python
@@ -58,6 +59,7 @@ _Changes:_
 - [X] PDO-3611 Use 'manage-profile replace-profile' to support root password change
 - [X] PDO-3620 Update cluster tools to latest version: Grafana v8.4.5
 - [X] PDO-3678 server.publicBaseUrl is not found in Kibana
+- [X] PDO-3684 Remove skbn as replaced with aws cli in PD0-3683
 - [X] PDO-3716 Elasticsearch: Implement Hot/Warm Tiers
 - [X] PDO-3723 Grafana: Upgrade to 8.4.5 risks investigation
 - [X] PDO-3743 Automate development ECR images in ping-cloud-base
