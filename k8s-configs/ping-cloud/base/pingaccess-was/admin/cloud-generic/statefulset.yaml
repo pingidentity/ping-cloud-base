@@ -166,9 +166,6 @@ spec:
           mountPath: /usr/local/bin/kubectl
           subPath: kubectl
         - name: data-dir
-          mountPath: /usr/local/bin/skbn
-          subPath: skbn
-        - name: data-dir
           mountPath: /opt/staging/hooks/logger.lib.sh
           subPath: logger.lib.sh
         - name: data-dir
