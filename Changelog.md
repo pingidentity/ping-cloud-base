@@ -106,6 +106,7 @@ _Changes:_
 - [X] PDO-4016 Few data views are listed twice in Kibana Discover tab
 - [X] PDO-4040 Add ingress metrics dashboard to Grafana
 - [X] PDO-4027 Add logging-bootstrap application
+- [X] PDO-4056 Ping Federate - Threat Intel / Detection Dashboard is missing
 
 ### 1.13.0
 

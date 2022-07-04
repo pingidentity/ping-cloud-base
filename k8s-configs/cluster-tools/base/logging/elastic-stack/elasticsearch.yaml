@@ -161,9 +161,9 @@ spec:
         resources:
           limits:
             memory: 4Gi
-            cpu: 1000m
+            cpu: 2000m
           requests:
-            memory: 512Mi
+            memory: 2Gi
             cpu: 100m
 
         ports:
@@ -255,9 +255,9 @@ spec:
         resources:
           limits:
             memory: 4Gi
-            cpu: 1000m
+            cpu: 2000m
           requests:
-            memory: 512Mi
+            memory: 2Gi
             cpu: 100m
 
         ports:

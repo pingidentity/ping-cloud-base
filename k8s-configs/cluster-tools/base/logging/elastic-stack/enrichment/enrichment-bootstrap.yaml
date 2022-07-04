@@ -12,7 +12,7 @@ spec:
       containers:
 
       - name: elasticsearch-bootstrap
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.3.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.4.0
         
         imagePullPolicy: IfNotPresent
         workingDir: /scripts
@@ -43,7 +43,7 @@ spec:
           mountPath: /usr/share/elasticsearch/data/index-templates
 
       - name: kibana-bootstrap
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.3.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.4.0
         imagePullPolicy: IfNotPresent
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
