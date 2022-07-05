@@ -5,7 +5,9 @@ metadata:
   name: enrichment-bootstrap
   annotations:
     argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
 spec:
+  ttlSecondsAfterFinished: 600
   template:
     spec:
       serviceAccountName: enrichment
