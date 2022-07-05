@@ -30,6 +30,7 @@
 - Fluent Bit now store raw logs on S3
 - Remove stunnel from PingDirectory
 - Remove skbn as backup mechanism as replaced with aws cli
+- Update cronjobs to prevent multiple jobs being scheduled during scaledown
 
 _Changes:_
 - [X] PDO-2517 Port of PingFederate pre-config script from bash to python
@@ -108,6 +109,7 @@ _Changes:_
 - [X] PDO-4040 Add ingress metrics dashboard to Grafana
 - [X] PDO-4027 Add logging-bootstrap application
 - [X] PDO-4056 Ping Federate - Threat Intel / Detection Dashboard is missing
+- [X] PDO-4057 Update all cronjob configs to prevent multiple jobs being scheduled during scaledown
 
 ### 1.13.0
 
