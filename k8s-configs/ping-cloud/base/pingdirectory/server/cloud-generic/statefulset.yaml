@@ -99,11 +99,11 @@ spec:
               mountPath: /logger.lib.sh
               subPath: logger.lib.sh
         - name: newrelic-tags-exporter
-          # FIXME PDO-3575: switch to same user as app
           securityContext:
             runAsGroup: 9999
             runAsNonRoot: true
             runAsUser: 9031
+            allowPrivilegeEscalation: false
           image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v1.1.0
           imagePullPolicy: IfNotPresent
           envFrom:
