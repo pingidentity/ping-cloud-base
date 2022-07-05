@@ -1,0 +1,20 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+namespace: ping-cloud
+
+commonLabels:
+  app: ping-cloud
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+- name: pingcloud-healthcheck-environment-variables
+
+resources:
+- cluster-health.yaml
+- deployment.yaml
+- service.yaml
+- serviceaccount.yaml
+- ingress.yaml

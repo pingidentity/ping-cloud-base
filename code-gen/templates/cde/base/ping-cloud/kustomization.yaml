@@ -74,3 +74,17 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: metadata.${DNS_ZONE}
+
+# pingcloud-healthcheck ingress
+- target:
+    group: networking.k8s.io
+    version: v1
+    kind: Ingress
+    name: healthcheck-ingress
+  patch: |
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: healthcheck.${DNS_ZONE}
+    - op: replace
+      path: /spec/rules/0/host
+      value: healthcheck.${DNS_ZONE}

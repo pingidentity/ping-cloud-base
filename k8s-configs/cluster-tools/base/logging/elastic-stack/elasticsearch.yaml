@@ -11,7 +11,7 @@ data:
 
     # log action execution errors for easier debugging
     logger.action.name = org.elasticsearch.action
-    logger.action.level = debug
+    logger.action.level = info
 
     appender.rolling.type = Console
     appender.rolling.name = rolling
@@ -104,6 +104,9 @@ data:
     logger.saml2_decrypt.level = fatal
 
 
+    logger.com_amazonaws_auth_profile_internal_BasicProfileConfigFileLoader.name = com.amazonaws.auth.profile.internal.BasicProfileConfigFileLoader
+    logger.com_amazonaws_auth_profile_internal_BasicProfileConfigFileLoader.level = error
+
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -158,9 +161,9 @@ spec:
         resources:
           limits:
             memory: 4Gi
-            cpu: 1000m
+            cpu: 2000m
           requests:
-            memory: 512Mi
+            memory: 2Gi
             cpu: 100m
 
         ports:
@@ -174,10 +177,6 @@ spec:
         env:
         - name: CONTAINER_NAME
           value: "elasticsearch"
-        - name: ES_JAVA_OPTS
-          value: "-Xms1024m -Xmx1024m"
-        - name: logger.level
-          value: 'warn'
         - name: node.name
           valueFrom:
             fieldRef:
@@ -196,6 +195,9 @@ spec:
           value: "false"
         - name: node.roles 
           value: "master, data_hot, data_content, ingest, ml, transform, remote_cluster_client"
+        envFrom:
+          - configMapRef:
+              name: elk-environment-variables
         volumeMounts:
         - name: data
           mountPath: /usr/share/elasticsearch/data
@@ -217,10 +219,10 @@ spec:
         app: elasticsearch
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      storageClassName: elasticsearch-gp2
+      storageClassName: efs
       resources:
         requests:
-          storage: 40Gi
+          storage: 1Mi
 
 ---
 apiVersion: apps/v1
@@ -253,9 +255,9 @@ spec:
         resources:
           limits:
             memory: 4Gi
-            cpu: 1000m
+            cpu: 2000m
           requests:
-            memory: 512Mi
+            memory: 2Gi
             cpu: 100m
 
         ports:
@@ -269,10 +271,6 @@ spec:
         env:
         - name: CONTAINER_NAME
           value: "elasticsearch"
-        - name: ES_JAVA_OPTS
-          value: "-Xms1024m -Xmx1024m"
-        - name: logger.level
-          value: 'warn'
         - name: node.name
           valueFrom:
             fieldRef:
@@ -291,6 +289,9 @@ spec:
           value: "false"
         - name: node.roles
           value: "data_warm, ingest, ml, transform, remote_cluster_client"
+        envFrom:
+          - configMapRef:
+              name: elk-environment-variables
 
         volumeMounts:
         - name: data-warm

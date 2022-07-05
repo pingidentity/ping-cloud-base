@@ -212,6 +212,11 @@ spec:
                 secretKeyRef:
                   name: pingcommon-passwords
                   key: PF_LDAP_PASSWORD
+            - name: ACME_CERT_KEYSTORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pingcommon-passwords
+                  key: ACME_CERT_KEYSTORE_PASSWORD
             - name: DA_OAUTH_TOKEN_VALIDATOR_SECRET
               valueFrom:
                 secretKeyRef:
@@ -244,9 +249,6 @@ spec:
               mountPath: /usr/local/bin/kubectl
               subPath: kubectl
             - name: data-dir
-              mountPath: /usr/local/bin/skbn
-              subPath: skbn
-            - name: data-dir
               mountPath: /opt/staging/hooks/logger.lib.sh
               subPath: logger.lib.sh
             - name: data-dir
@@ -259,6 +261,9 @@ spec:
               mountPath: /opt/out
             - name: pingdirectory-passwords
               mountPath: /usr/local/secrets
+              readOnly: true
+            - name: acme-tls-cert
+              mountPath: /usr/local/secrets/certs
               readOnly: true
             - name: pingdirectory-license
               mountPath: /opt/in/instance/PingDirectory.lic
@@ -365,6 +370,11 @@ spec:
         - name: pingdirectory-passwords
           secret:
             secretName: pingdirectory-passwords
+            optional: true
+            defaultMode: 0400
+        - name: acme-tls-cert
+          secret:
+            secretName: acme-tls-cert
             optional: true
             defaultMode: 0400
         - name: pingdirectory-statsd-mapping

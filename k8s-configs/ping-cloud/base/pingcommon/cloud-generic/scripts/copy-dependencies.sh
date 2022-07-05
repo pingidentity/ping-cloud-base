@@ -2,7 +2,7 @@
 
 . "./utils.lib.sh"
 
-NEWRELIC_VERSION="6.5.2"
+NEWRELIC_VERSION="6.5.4"
 
 beluga_log "Copying logger.lib.sh"
 test -f ./logger.lib.sh && cp ./logger.lib.sh /data/logger.lib.sh
@@ -22,18 +22,6 @@ if test ! -f /data/kubectl; then
     beluga_log "Failed to locate /data/kubectl" "ERROR"
     exit 1
 fi
-
-beluga_log "Downloading skbn from ping-artifacts bucket"
-wget -qO /data/skbn https://ping-artifacts.s3-us-west-2.amazonaws.com/pingcommon/skbn/1.0.1/skbn
-
-beluga_log "Checking skbn executable in data directory"
-if test ! -f /data/skbn; then
-    beluga_log "Failed to locate /data/skbn" "ERROR"
-    exit 1
-fi
-
-beluga_log "Updating skbn permission"
-chmod +x /data/skbn
 
 beluga_log "Generate a dummy topology JSON file so the hook that generates it in the image is not triggered"
 

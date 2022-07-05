@@ -1,23 +1,26 @@
 # This defines the Ping DataSync deployment
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: pingdatasync
   labels:
-    class: pingdatasync-server
+    role: pingdatasync-server
 spec:
-  replicas: 1
   selector:
     matchLabels:
-      class: pingdatasync-server
-  strategy:
-    type: Recreate
+      role: pingdatasync-server
+  replicas: 1
+  serviceName: pingdatasync-admin
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
   template:
     metadata:
+      name: pingdatasync
+      labels:
+        role: pingdatasync-server
       annotations:
         lastUpdateReason: "NA"
-      labels:
-        class: pingdatasync-server
     spec:
       serviceAccountName: ping-serviceaccount
       terminationGracePeriodSeconds: 300
@@ -45,6 +48,17 @@ spec:
         envFrom:
           - configMapRef:
               name: pingdatasync-environment-variables
+        env:
+          - name: P1AS_PD_LDAP_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: pingdirectory-environment-variables
+                key: LDAP_PORT
+          - name: P1AS_PD_LDAPS_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: pingdirectory-environment-variables
+                key: LDAPS_PORT
       - name: pingdatasync-init
         # FIXME PDO-3574: switch to same user as app
         securityContext:
@@ -75,12 +89,6 @@ spec:
           - name: pingdatasync-init
             mountPath: /logger.lib.sh
             subPath: logger.lib.sh
-        env:
-          - name: P1AS_PD_LDAPS_PORT
-            valueFrom:
-              configMapKeyRef:
-                name: pingdirectory-environment-variables
-                key: LDAPS_PORT
         envFrom:
           - configMapRef:
               name: pingdatasync-environment-variables
@@ -114,12 +122,6 @@ spec:
           periodSeconds: 30
           failureThreshold: 5
           timeoutSeconds: 5
-        # Backup config/sync-state.ldif to s3 before terminating pod
-        lifecycle:
-          preStop:
-            exec:
-              command:
-                - /opt/staging/hooks/15-upload-sync-state-s3.sh
         ports:
           - name: ldap
             containerPort: 1389
@@ -148,6 +150,11 @@ spec:
               secretKeyRef:
                 name: pingdirectory-passwords
                 key: root-user-password
+          - name: P1AS_PD_LDAP_PORT
+            valueFrom:
+              configMapKeyRef:
+                name: pingdirectory-environment-variables
+                key: LDAP_PORT
           - name: P1AS_PD_LDAPS_PORT
             valueFrom:
               configMapKeyRef:
@@ -171,10 +178,6 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
-          - name: PINGDATASYNC_POD_IP
-            valueFrom:
-              fieldRef:
-                fieldPath: status.podIP
         envFrom:
           - configMapRef:
               name: pingdatasync-environment-variables
@@ -183,15 +186,14 @@ spec:
         volumeMounts:
           - name: ssh-dir
             mountPath: /home/ping/.ssh
+          - name: out-dir
+            mountPath: /opt/out
           - name: data-dir
             mountPath: /usr/local/bin/kubectl
             subPath: kubectl
           - name: data-dir
             mountPath: /opt/staging/ds_env_vars
             subPath: ds_env_vars
-          - name: data-dir
-            mountPath: /usr/local/bin/skbn
-            subPath: skbn
           - name: data-dir
             mountPath: /opt/staging/hooks/logger.lib.sh
             subPath: logger.lib.sh
@@ -230,13 +232,26 @@ spec:
             name: known-hosts-config
             optional: true
             defaultMode: 0644
+        - name: out-dir
+          persistentVolumeClaim:
+            claimName: out-dir
         - name: pingdatasync-passwords
           secret:
             secretName: pingdatasync-passwords
             optional: true
-            defaultMode: 0400
+            defaultMode: 0440
         - name: pingdirectory-license
           secret:
             secretName: pingdirectory-license
             optional: true
             defaultMode: 0400
+  volumeClaimTemplates:
+    - metadata:
+        name: out-dir
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: pingdatasync-gp2
+        resources:
+          requests:
+            storage: 20Gi

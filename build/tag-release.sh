@@ -12,6 +12,21 @@ usage() {
 }
 
 ########################################################################################################################
+# Gets a product image's repo
+# Arguments:
+#   ${1} -> the product to search for (Ex: "pingaccess")
+########################################################################################################################
+get_image_repo() {
+  local image=${1}
+
+  repo=$(git grep -h "image: public.ecr.aws/r2h3l6e4/.*/${image}" | head -n 1)
+  repo=$(echo "${repo}" | sed "s|image: public.ecr.aws/r2h3l6e4/||g")
+  repo="${repo%"/${image}"*}"
+
+  echo "${repo}"
+}
+
+########################################################################################################################
 # Replaces the current version references in the source ref with the target ref in all the necessary places. Then,
 # commits the changes into the target ref(branch or tag). Must be in the ping-cloud-base directory for it to work
 # correctly.
@@ -21,105 +36,140 @@ usage() {
 #   ${2} -> The target ref
 #   ${3} -> The ref type- tag or branch
 ########################################################################################################################
-replaceAndCommit() {
-  SOURCE=${1}
-  TARGET=${2}
-  REF_TYPE=${3}
+replace_and_commit() {
+  local source_value=${1}
+  local target_value=${2}
+  local ref_value=${3}
 
-  echo "Changing ${SOURCE} -> ${TARGET} in expected files"
+  local image_map=(
+    "pingaccess"
+    "pingaccess-was"
+    "pingfederate"
+    "pingdirectory"
+    "pingdelegator"
+    "pingcentral"
+    "pingdatasync"
+    "p14c-bootstrap"
+    "p14c-integration"
+    "metadata"
+    "healthcheck"
+    "ansible-beluga"
+  )
 
-  #update base env vars
+  for image in ${image_map[@]}; do
+    image_tag_var="$(echo "${image}" | tr '-' '_' | tr '[:lower:]' '[:upper:]')_IMAGE_TAG"
+    image_repo=$(get_image_repo ${image} | xargs)
 
-  grep_var "PINGACCESS_IMAGE_TAG" "${SOURCE}" "${TARGET}"
-  grep_var "PINGACCESS_WAS_IMAGE_TAG" "${SOURCE}" "${TARGET}"
-  grep_var "PINGFEDERATE_IMAGE_TAG" "${SOURCE}" "${TARGET}"
-  grep_var "PINGDIRECTORY_IMAGE_TAG" "${SOURCE}" "${TARGET}"
-  grep_var "PINGDELEGATOR_IMAGE_TAG" "${SOURCE}" "${TARGET}"
-  grep_var "PINGCENTRAL_IMAGE_TAG" "${SOURCE}" "${TARGET}"
-  grep_var "PINGDATASYNC_IMAGE_TAG" "${SOURCE}" "${TARGET}"
-  grep_var "METADATA_IMAGE_TAG" "${SOURCE}" "${TARGET}"
-  grep_var "P14C_BOOTSTRAP_IMAGE_TAG" "${SOURCE}" "${TARGET}"
-  grep_var "P14C_INTEGRATION_IMAGE_TAG" "${SOURCE}" "${TARGET}"
-  grep_var "ANSIBLE_BELUGA_IMAGE_TAG" "${SOURCE}" "${TARGET}"
+    echo ---
+    echo "Changing values for ${image} in expected files"
 
-  #update k8s yaml files
+    if test "${ref_value}" = 'tag'; then
+      # If tag, search registry for latest image version
+      target_image=$(python3 "${PWD_DIR}"/python/src/get_latest_image.py "${image_repo}/${image}" ${target_value})
+    else
+      # If branch, use target value
+      target_image="${target_value}"
+    fi
 
-  grep_yaml "pingaccess" "pingcloud-apps" "${SOURCE}" "${TARGET}" "${REF_TYPE}"
-  grep_yaml "pingaccess-was" "pingcloud-apps" "${SOURCE}" "${TARGET}" "${REF_TYPE}"
-  grep_yaml "pingfederate" "pingcloud-apps" "${SOURCE}" "${TARGET}" "${REF_TYPE}"
-  grep_yaml "pingdirectory" "pingcloud-apps" "${SOURCE}" "${TARGET}" "${REF_TYPE}"
-  grep_yaml "pingdelegator" "pingcloud-apps" "${SOURCE}" "${TARGET}" "${REF_TYPE}"
-  grep_yaml "pingcentral" "pingcloud-apps" "${SOURCE}" "${TARGET}" "${REF_TYPE}"
-  grep_yaml "pingdatasync" "pingcloud-apps" "${SOURCE}" "${TARGET}" "${REF_TYPE}"
-  grep_yaml "p14c-bootstrap" "pingcloud-services" "${SOURCE}" "${TARGET}" "${REF_TYPE}"
-  grep_yaml "p14c-integration" "pingcloud-services" "${SOURCE}" "${TARGET}" "${REF_TYPE}"
-  grep_yaml "metadata" "pingcloud-services" "${SOURCE}" "${TARGET}" "${REF_TYPE}"
-  grep_yaml "ansible-beluga" "pingcloud-solutions" "${SOURCE}" "${TARGET}" "${REF_TYPE}"
+    # update base env vars
+    grep_var "${image_tag_var}" "${source_value}" "${target_image}"
 
-  echo "Committing changes for new ${REF_TYPE} ${TARGET}"
+    # update k8s yaml files
+    grep_yaml "${image}" "${source_value}" "${target_image}" "${ref_value}"
+  done
+
+  echo ---
+  echo "Committing changes for new ${ref_value} ${target_value}"
   git add .
-  git commit -m "[skip pipeline] - creating new ${REF_TYPE} ${TARGET}"
+  git commit -m "[skip pipeline] - creating new ${ref_value} ${target_value}"
 }
 
 grep_var() {
-
   local var=${1}
   local source_value=${2}
   local target_value=${3}
 
-  echo "Changing ${source_value} -> ${target_value} in expected files"
+  echo "Changing ${var}=${source_value} -> ${var}=${target_value} in base env vars"
 
   git grep -l "^${var}=${source_value}" | xargs sed -i.bak "s/^\(${var}=\)${source_value}$/\1${target_value}/g"
-
 }
 
 grep_yaml() {
-
   local var=${1}
-  local ecr_repo=${2}
-  local source_value=${3}
-  local target_value=${4}
-  local ref_value=${5}
+  local source_value=${2}
+  local target_value=${3}
+  local ref_value=${4}
 
-  local dev_ecr_path="image: public.ecr.aws/r2h3l6e4/${ecr_repo}/${var}/dev"
-  local prod_ecr_path="image: public.ecr.aws/r2h3l6e4/${ecr_repo}/${var}"
+  local dev_ecr_path="image: public.ecr.aws/r2h3l6e4/.*/${var}/dev"
 
-  local source_image="${dev_ecr_path}:${source_value}"
+  echo "Changing ${var}:${source_value} -> ${var}:${target_value} in k8s yaml files"
 
   cd "${SANDBOX}"/ping-cloud-base/k8s-configs
-  git grep -l "${source_image}" | xargs sed -i.bak "s/${source_value}/${target_value}/g"
+  git grep -l "${dev_ecr_path}:${source_value}" | xargs sed -i.bak "s/${var}\/dev:${source_value}/${var}\/dev:${target_value}/g"
 
-  if test "${ref_value}" = 'branch'; then
-    local target_image="${dev_ecr_path}:${target_value}"
-
-  elif test "${ref_value}" = 'tag'; then
-    local target_image="${prod_ecr_path}:${target_value}"
-
+  if test "${ref_value}" = 'tag'; then
     # update the ecr path to prod from dev
-    git grep -l "${dev_ecr_path}" | xargs sed -i.bak "s/\/dev//g"
-
-  else
-    usage
-    exit 1
+    git grep -l "${dev_ecr_path}" | xargs sed -i.bak "s/${var}\/dev:/${var}:/g"
   fi
 
-  echo "Updated from  ${source_image} -> ${target_image} in expected files"
-
   cd "${SANDBOX}"/ping-cloud-base/
-
 }
+
+########################################################################################################################
+# Performs a 'grep' on each file within the repo searching for dev image paths.
+#
+# Returns
+#   non-zero on failure.
+########################################################################################################################
+verify_k8s_image_repositories() {
+  search_dev_image=$(git grep -h "image: public.ecr.aws/r2h3l6e4/." | grep -v "search_dev_image" | grep "/dev:" | xargs)
+  echo "---"
+
+  if test -z "$search_dev_image"; then
+    echo "Verified all dev image paths removed"
+  else
+    echo "Error: The below dev image paths still exist"
+    echo "$search_dev_image"
+    return 1
+  fi
+}
+
+###########################################################################################################################
+# Verifies the 'REF_TYPE' if its a 'tag' or 'branch'.
+#
+# (1) -->if the 'REF_TYPE' is a 'branch' then --> creates new branch and adds new changes on the new branch as follows -
+#
+# updates 'SERVER_PROFILE_BRANCH' variable with target branch name (v*.*-release-branch)
+# updates 'base/env_vars' image tags with target branch name (v*.*-release-branch-latest)
+# updates yaml files docker images with target branch name (v*.*-release-branch-latest)
+#
+# eg: `build/tag-release.sh v1.14-release-branch v1.15-release-branch branch`
+#
+# (2) -->if the 'REF_TYPE' is a 'tag' then --> adds new changes as follows and then creates a new tag -
+#
+# updates 'SERVER_PROFILE_BRANCH' variable with target tag name (v*.*.*.*_RC1 or v*.*.*.*)
+# updates 'base/env_vars' image tags with latest RC or final image version (v*.*.*.*_RC1 or v*.*.*.*)
+# updates yaml files docker images target tag name with latest RC or final image version (v*.*.*.*_RC1 or v*.*.*.*)
+# updates the ecr path to 'prod' from 'dev'
+#
+# eg: `build/tag-release.sh v1.14-release-branch v1.14.0.0_RC1 tag`
+# eg: `build/tag-release.sh v1.14-release-branch v1.14.0.0 tag`
+#
+###########################################################################################################################
 
 SOURCE_REF=${1}
 TARGET_REF=${2}
 REF_TYPE=${3}
 
-if test -z "${SOURCE_REF}" || test -z "${TARGET_REF}"; then
+if test -z "${SOURCE_REF}" || test -z "${TARGET_REF}" || test -z "${REF_TYPE}"; then
   usage
   exit 1
 fi
 
 SCRIPT_DIR=$(dirname "${0}")
 pushd "${SCRIPT_DIR}" &>/dev/null
+
+PWD_DIR=$(pwd)
 
 SANDBOX=$(mktemp -d)
 echo "Making modifications in sandbox directory ${SANDBOX}"
@@ -131,30 +181,7 @@ echo ---
 cd ping-cloud-base
 git checkout "${SOURCE_REF}"
 
-###########################################################################################################################
-# Verifies the 'REF_TYPE' if its a 'tag' or 'branch'.
-#
-# (1) -->if the 'REF_TYPE' is a 'branch' then --> creates new branch and adds new changes on the new branch as follows -
-#
-# updates 'SERVER_PROFILE_BRANCH' variable with target  branch name (v*.*-release-branch)
-# updates 'base/env_vars' image tags with target branch name (v*.*-release-branch-latest)
-# updates yaml files docker images with target branch name (v*.*-release-branch-latest)
-#
-# eg: `build/tag-release.sh v1.14-release-branch v1.15-release-branch branch`
-#
-# (2) -->if the 'REF_TYPE' is a 'tag' then --> adds new changes as follows and then creates a new tag -
-#
-# updates 'SERVER_PROFILE_BRANCH' variable with target tag name (v*.*.*.*_RC1)
-# updates 'base/env_vars' image tags with target tag name (v*.*.*.*_RC1)
-# updates yaml files docker images target tag name (v*.*.*.*_RC1) 
-# updates the ecr path to 'prod' from 'dev'
-#
-# eg: `build/tag-release.sh v1.14-release-branch v1.14.0.0_RC1`
-#
-###########################################################################################################################
-
 if test "${REF_TYPE}" = 'branch'; then
-
   # Create and checkout to target branch
   git checkout -b "${TARGET_REF}"
 
@@ -163,11 +190,9 @@ if test "${REF_TYPE}" = 'branch'; then
   git grep -l "^SERVER_PROFILE_BRANCH=${SOURCE_REF}" | xargs sed -i.bak "s/^\(SERVER_PROFILE_BRANCH=\)${SOURCE_REF}$/\1${TARGET_REF}/g"
 
   # Update 'base/env_vars' image tags and yaml files
-  echo "Changing ${SOURCE_REF}-latest -> ${TARGET_REF}-latest in base/env_vars and yaml files"
-  replaceAndCommit "${SOURCE_REF}-latest" "${TARGET_REF}-latest" "${REF_TYPE}"
+  replace_and_commit "${SOURCE_REF}-latest" "${TARGET_REF}-latest" "${REF_TYPE}"
 
 elif test "${REF_TYPE}" = 'tag'; then
-
   # Update 'SERVER_PROFILE_BRANCH' variable
   echo "Changing ${SOURCE_REF} -> ${TARGET_REF} in SERVER_PROFILE_BRANCH variable"
   git grep -l "^SERVER_PROFILE_BRANCH=${SOURCE_REF}" | xargs sed -i.bak "s/^\(SERVER_PROFILE_BRANCH=\)${SOURCE_REF}$/\1${TARGET_REF}/g"
@@ -177,8 +202,13 @@ elif test "${REF_TYPE}" = 'tag'; then
   git grep -l "^ECR_ENV=/dev" | xargs sed -i.bak "s/\/dev//g"
 
   # Update 'base/env_vars' image tags and yaml files
-  echo "Changing ${SOURCE_REF}-latest -> ${TARGET_REF} in base/env_vars and yaml files"
-  replaceAndCommit "${SOURCE_REF}-latest" "${TARGET_REF}" "${REF_TYPE}"
+  pip3 install -r "${PWD_DIR}"/python/requirements.txt > /dev/null
+  replace_and_commit "${SOURCE_REF}-latest" "${TARGET_REF}" "${REF_TYPE}"
+
+  # Verify no dev image paths in repo
+  verify_k8s_image_repositories
+
+  # Create tag
   git tag "${TARGET_REF}"
 
 else

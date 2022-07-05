@@ -102,7 +102,7 @@ spec:
     spec:
       containers:
         - name: cloudwatch-agent
-          image: public.ecr.aws/r2h3l6e4/amazon/cloudwatch-agent:1.230621.0
+          image: public.ecr.aws/r2h3l6e4/amazon/cloudwatch-agent:1.247352.0
           #ports:
           #  - containerPort: 8125
           #    hostPort: 8125
@@ -143,6 +143,9 @@ spec:
             - name: varlibdocker
               mountPath: /var/lib/docker
               readOnly: true
+            - name: containerdsock
+              mountPath: /run/containerd/containerd.sock
+              readOnly: true
             - name: sys
               mountPath: /sys
               readOnly: true
@@ -162,6 +165,9 @@ spec:
         - name: varlibdocker
           hostPath:
             path: /var/lib/docker
+        - name: containerdsock
+          hostPath:
+            path: /run/containerd/containerd.sock
         - name: sys
           hostPath:
             path: /sys
@@ -170,5 +176,3 @@ spec:
             path: /dev/disk/
       terminationGracePeriodSeconds: 60
       serviceAccountName: cloudwatch-agent
-      tolerations:   
-      - operator: Exists

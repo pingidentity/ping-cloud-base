@@ -5,14 +5,16 @@ metadata:
   name: enrichment-bootstrap
   annotations:
     argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
 spec:
+  ttlSecondsAfterFinished: 600
   template:
     spec:
-      serviceAccount: enrichment
+      serviceAccountName: enrichment
       containers:
 
       - name: elasticsearch-bootstrap
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.2.1
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.4.0
         
         imagePullPolicy: IfNotPresent
         workingDir: /scripts
@@ -43,7 +45,7 @@ spec:
           mountPath: /usr/share/elasticsearch/data/index-templates
 
       - name: kibana-bootstrap
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.2.1
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.4.0
         imagePullPolicy: IfNotPresent
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
@@ -62,7 +64,7 @@ spec:
           value: "30"
 
         securityContext:
-          privileged: true
+          privileged: false
           runAsUser: 1000
           runAsGroup: 1000
         volumeMounts: 
@@ -83,6 +85,27 @@ spec:
           subPath: pa-was-basic.ndjson
         - name: enrichment-elasticsearch-index-templates
           mountPath: /scripts/index-templates
+        - name: kibana-alerts
+          mountPath: /scripts/alerts
+
+      - name: logging-bootstrap
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logging-bootstrap:v1.2.0
+        imagePullPolicy: Always
+        env:
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+        envFrom:
+        - configMapRef:
+            name: logging-bootstrap-environment-variables
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "300m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
 
       restartPolicy: OnFailure
 
@@ -111,3 +134,6 @@ spec:
       - name: kibana-dashboard-pa-was-basic
         configMap:
           name: kibana-dashboard-pa-was-basic
+      - name: kibana-alerts
+        configMap:
+          name: kibana-alerts

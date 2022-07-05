@@ -10,14 +10,8 @@ fi
 testPodConnection() {
 
   expected_ready_state="1/1"
-  pod_label_name="class=pingdatasync-server"
 
-  # Get pingdatasync pod name
-  pingdatasync_pod_name=$(kubectl get pods \
-                          -l "${pod_label_name}" \
-                          -n "${NAMESPACE}" \
-                          -o=jsonpath="{.items[*].metadata.name}" | tr -s '[[:space:]]')
-  pingdatasync_ready_state=$(kubectl get pods "${pingdatasync_pod_name}" \
+  pingdatasync_ready_state=$(kubectl get pods "pingdatasync-0" \
                             -n "${NAMESPACE}" | tail -n +2 | awk '{print $2}' | tr -s '[[:space:]]')
   assertEquals "Failed to get pingdatasync running state 1/1" "${expected_ready_state}" "${pingdatasync_ready_state}"
 }

@@ -21,7 +21,6 @@
     --licenseKeyFile "${LICENSE_KEY_FILE}" \
     --location "${REGION}" \
     --instanceName "${PINGDATASYNC_POD_NAME}.${PINGDATASYNC_POD_NAMESPACE}" \
-    --localHostName "${PINGDATASYNC_POD_IP}" \
     --ldapPort ${LDAP_PORT} \
     --ldapsPort ${LDAPS_PORT} \
     --httpsPort ${HTTPS_PORT} \

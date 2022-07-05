@@ -209,6 +209,9 @@
 # ORCH_API_SSM_PATH_PREFIX | The prefix of the SSM path that contains MyPing    | /pcpt/orch-api
 #                          | state data required for the P14C/P1AS integration. |
 #                          |                                                    |
+# SERVICE_SSM_PATH_PREFIX  | The prefix of the SSM path that contains service   | /pcpt/service
+#                          | state data required for the cluster.               |
+#                          |                                                    |
 # NEW_RELIC_LICENSE_KEY    | The key of NewRelic APM Agent used to send data to | The string "unused".
 #                          | NewRelic account.                                  |
 #                          |                                                    |
@@ -269,6 +272,7 @@ ${SSH_ID_KEY_BASE64}
 ${IS_MULTI_CLUSTER}
 ${PLATFORM_EVENT_QUEUE_NAME}
 ${ORCH_API_SSM_PATH_PREFIX}
+${SERVICE_SSM_PATH_PREFIX}
 ${REGION}
 ${REGION_NICK_NAME}
 ${PRIMARY_REGION}
@@ -551,6 +555,7 @@ echo "Initial SIZE: ${SIZE}"
 echo "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 echo "Initial PLATFORM_EVENT_QUEUE_NAME: ${PLATFORM_EVENT_QUEUE_NAME}"
 echo "Initial ORCH_API_SSM_PATH_PREFIX: ${ORCH_API_SSM_PATH_PREFIX}"
+echo "Initial SERVICE_SSM_PATH_PREFIX: ${SERVICE_SSM_PATH_PREFIX}"
 echo "Initial REGION: ${REGION}"
 echo "Initial REGION_NICK_NAME: ${REGION_NICK_NAME}"
 echo "Initial PRIMARY_REGION: ${PRIMARY_REGION}"
@@ -604,6 +609,7 @@ export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
 
 export PLATFORM_EVENT_QUEUE_NAME=${PLATFORM_EVENT_QUEUE_NAME:-v2_platform_event_queue.fifo}
 export ORCH_API_SSM_PATH_PREFIX=${ORCH_API_SSM_PATH_PREFIX:-/pcpt/orch-api}
+export SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX:-/pcpt/service}
 
 export LAST_UPDATE_REASON="${LAST_UPDATE_REASON:-NA}"
 
@@ -669,6 +675,7 @@ echo "Using SIZE: ${SIZE}"
 echo "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 echo "Using PLATFORM_EVENT_QUEUE_NAME: ${PLATFORM_EVENT_QUEUE_NAME}"
 echo "Using ORCH_API_SSM_PATH_PREFIX: ${ORCH_API_SSM_PATH_PREFIX}"
+echo "Using SERVICE_SSM_PATH_PREFIX: ${SERVICE_SSM_PATH_PREFIX}"
 echo "Using REGION: ${REGION}"
 echo "Using REGION_NICK_NAME: ${REGION_NICK_NAME}"
 echo "Using PRIMARY_REGION: ${PRIMARY_REGION}"
@@ -856,7 +863,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     export PF_PD_BIND_PROTOCOL=ldap
     export PF_PD_BIND_USESSL=false
   else
-    export PF_PD_BIND_PORT=5678
+    export PF_PD_BIND_PORT=1636
     export PF_PD_BIND_PROTOCOL=ldaps
     export PF_PD_BIND_USESSL=true
   fi

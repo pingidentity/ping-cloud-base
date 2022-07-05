@@ -54,23 +54,31 @@ spec:
             value: "0.0.0.0"
           - name: SERVER_PORT
             value: "5601"
-          - name: ELASTICSEARCH_HOSTS
-            value: "http://elasticsearch:9200"
-          - name: XPACK_MONITORING_ENABLED
-            value: "false"
           - name: LOGGING_ROOT_LEVEL
             value: "warn"
           - name: LOGGING_QUIET
             value: "true"
           - name: SERVER_PUBLICBASEURL
             value: "http://kibana:5601"
+          - name: XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY
+            value: "phaishungei5quiupahsh8ahgu9aen8aer9zo6cheek6eengohFooqu4aquieke5"
+          - name: XPACK_REPORTING_ENCRYPTIONKEY
+            value: "phaishungei5quiupahsh8ahgu9aen8aer9zo6cheek6eengohFooqu4aquieke5"
+          - name: XPACK_SECURITY_ENCRYPTIONKEY
+            value: "phaishungei5quiupahsh8ahgu9aen8aer9zo6cheek6eengohFooqu4aquieke5"
+          - name: XPACK_REPORTING_KIBANASERVER_HOSTNAME
+            value: localhost
+        envFrom:
+          - configMapRef:
+              name: elk-environment-variables
+
 
         resources:
           limits:
-            memory: 1Gi
-            cpu: 1000m
+            memory: 4Gi
+            cpu: 2000m
           requests:
-            memory: 512Mi
+            memory: 1Gi
             cpu: 100m
 
 ---

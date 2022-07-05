@@ -149,7 +149,7 @@ direct invocation from kubectl does not work at the moment.
 
 
 # Gotchas
-Make sure that your branch name is sufficiently short (<40 characters)
+Make sure that your branch name is sufficiently short (<37 characters)
 
 When automatically testing with CI/CD, the URLs created are based on the git branch name.
 If this branch name is too long, AWS Route53 will not be able to generate the URLs and your tests will fail.
@@ -163,8 +163,8 @@ you can also add this git hook to prevent this from occurring before you even pu
 
 CUR_BRANCH=$(git branch --show-current)
 
-if [[ $(echo "${CUR_BRANCH}" | wc -c) -gt 40 ]]; then
-  echo "Your branch name is too long. Please shorten to 40 characters or less to comply with route53 max length requirements"
+if [[ $(echo "${CUR_BRANCH}" | wc -c) -gt 37 ]]; then
+  echo "Your branch name is too long. Please shorten to 37 characters or less to comply with route53 max length requirements"
   exit 1
 fi
 ```

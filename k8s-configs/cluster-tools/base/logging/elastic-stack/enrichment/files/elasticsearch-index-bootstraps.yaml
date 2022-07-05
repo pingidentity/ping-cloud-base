@@ -13,6 +13,15 @@ data:
         }
     }
 
+  alerts.json: |
+    {
+        "aliases": {
+            "alerts": {
+                "is_write_index": true
+            }
+        }
+    }
+
   pa-audit.json: |
     {
         "aliases": {

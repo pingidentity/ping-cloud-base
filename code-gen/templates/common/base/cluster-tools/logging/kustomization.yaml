@@ -3,3 +3,42 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/base/logging?ref=${K8S_GIT_BRANCH}
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+- name: elk-environment-variables
+  behavior: merge
+  envs:
+  - env_vars
+
+- name: logging-bootstrap-environment-variables
+  behavior: merge
+  literals:
+    - SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX}
+    - REGION=${REGION}
+
+patchesStrategicMerge:
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: cluster-info
+  data:
+    legacy_logging: "${LEGACY_LOGGING}"
+    cluster.name: ${CLUSTER_NAME}
+    logs.region: ${REGION}
+
+
+### enrichment-bootstrap service account ###
+- |-
+  apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    labels:
+      app: enrichment
+    name: enrichment
+    annotations:
+      purpose: service-account-for-ping-cloud-stack
+      ${IRSA_PING_ANNOTATION_KEY_VALUE}
