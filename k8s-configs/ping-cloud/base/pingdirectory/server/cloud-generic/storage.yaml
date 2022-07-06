@@ -19,6 +19,22 @@ allowVolumeExpansion: true
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
+  name: pingdirectory-io2
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  encrypted: "true"
+  type: io2
+  fsType: ext4
+  iopsPerGB: "50"
+mountOptions:
+  - discard
+allowVolumeExpansion: true
+
+---
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
   name: pingdirectory-gp2
 provisioner: kubernetes.io/aws-ebs
 volumeBindingMode: WaitForFirstConsumer
@@ -40,6 +56,37 @@ volumeBindingMode: WaitForFirstConsumer
 parameters:
   encrypted: "true"
   type: gp2
+  fsType: ext4
+mountOptions:
+  - discard
+allowVolumeExpansion: true
+
+---
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: pingdirectory-gp3
+provisioner: kubernetes.io/aws-ebs
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  type: gp3
+  fsType: ext4
+mountOptions:
+  - discard
+allowVolumeExpansion: true
+
+---
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: pingdirectory-enc-gp3
+provisioner: kubernetes.io/aws-ebs
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  encrypted: "true"
+  type: gp3
   fsType: ext4
 mountOptions:
   - discard
