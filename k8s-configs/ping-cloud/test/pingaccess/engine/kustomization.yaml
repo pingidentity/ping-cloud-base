@@ -9,5 +9,5 @@ commonLabels:
 resources:
 - ../../../base/pingaccess/engine/aws
 
-patchesStrategicMerge:
-- engine-init-env.yaml
+# patchesStrategicMerge:
+# - engine-init-env.yaml
