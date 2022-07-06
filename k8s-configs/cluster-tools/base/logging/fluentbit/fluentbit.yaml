@@ -670,7 +670,7 @@ data:
       flag = string.lower(os.getenv("LEGACY_LOGGING"))
       if flag == "false" then
         new_record = record
-        new_record["tag"] = "app.elk_out"
+        new_record["tag"] = "ping_apps.elk_out"
         return 1, timestamp, new_record
       else
         return 0, 0, 0
