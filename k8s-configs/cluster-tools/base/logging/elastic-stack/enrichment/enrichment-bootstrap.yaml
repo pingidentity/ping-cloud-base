@@ -3,11 +3,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: enrichment-bootstrap
-  annotations:
-    argocd.argoproj.io/hook: Sync
-    argocd.argoproj.io/hook-delete-policy: HookSucceeded
 spec:
-  ttlSecondsAfterFinished: 600
   template:
     spec:
       serviceAccountName: enrichment
@@ -21,7 +17,10 @@ spec:
         command: ["sh", '$(CONTAINER_NAME).sh']
 
         securityContext:
-          privileged: true
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
 
         env:
         - name: CONTAINER_NAME
@@ -64,9 +63,10 @@ spec:
           value: "30"
 
         securityContext:
-          privileged: false
+          runAsNonRoot: true
           runAsUser: 1000
           runAsGroup: 1000
+          allowPrivilegeEscalation: false
         volumeMounts: 
         - name: kibana-dashboard-pa
           mountPath: /scripts/dashboards/pa.ndjson
@@ -89,6 +89,11 @@ spec:
           mountPath: /scripts/alerts
 
       - name: logging-bootstrap
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
         image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logging-bootstrap:v1.2.0
         imagePullPolicy: Always
         env:

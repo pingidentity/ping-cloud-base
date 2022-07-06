@@ -23,6 +23,8 @@ metadata:
     app: logstash-elastic
 spec:
   replicas: 2
+  updateStrategy:
+    type: RollingUpdate
   selector:
     matchLabels:
       app: logstash-elastic
@@ -35,6 +37,11 @@ spec:
       initContainers:
 
       - name: check-service-availability
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
         image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.2.1
         imagePullPolicy: IfNotPresent
         command: ["sh", '$(CONTAINER_NAME).sh']
@@ -50,7 +57,22 @@ spec:
         - name: DESIRED_STATUS
           value: "green"
 
+      - name: wait-for-bootstrap-completed
+        securityContext:
+          runAsGroup: 2000
+          runAsNonRoot: true
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
+        image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
+        imagePullPolicy: IfNotPresent
+        command: ["sh", "-c", "kubectl wait --for=condition=complete --timeout=300s -n elastic-stack-logging job/enrichment-bootstrap"]
+
       - name: create-enrichment-cache-files
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
         image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.2.1
         
         imagePullPolicy: IfNotPresent
@@ -82,8 +104,10 @@ spec:
         image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logstash:8.1.3-v1.2.0
         imagePullPolicy: IfNotPresent
         securityContext:
+          runAsNonRoot: true
           runAsUser: 1000
           runAsGroup: 1000
+          allowPrivilegeEscalation: false
         env:
           - name: CONTAINER_NAME
             value: "logstash"
@@ -144,6 +168,9 @@ spec:
         - name: enrichment-logstash-search-templates
           mountPath: /etc/logstash/templates
           readOnly: true
+        - name: enrichment-elasticsearch-index-templates
+          mountPath: /usr/share/logstash/index_templates
+          readOnly: true
         - name: enrichment-cache-files
           mountPath: /enrichment-cache-files
           readOnly: false
@@ -198,6 +225,9 @@ spec:
       - name: enrichment-logstash-search-templates
         configMap:
           name: enrichment-logstash-search-templates
+      - name: enrichment-elasticsearch-index-templates
+        configMap:
+          name: enrichment-elasticsearch-index-templates
       - name: enrichment-cache
         configMap:
           name: enrichment-cache
@@ -253,9 +283,11 @@ metadata:
 rules:
 - apiGroups:
   - ""
+  - "batch"
   resources:
   - pods
   - namespaces
+  - jobs
   verbs:
   - get
   - list
