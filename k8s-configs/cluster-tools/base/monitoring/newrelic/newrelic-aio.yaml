@@ -1100,6 +1100,11 @@ spec:
       serviceAccountName: nri-bundle-newrelic-infrastructure-controlplane
       initContainers:
         - name: wait-for-nr-license-secret
+          securityContext:
+            runAsGroup: 2000
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
           image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
@@ -1274,6 +1279,11 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       initContainers:
         - name: wait-for-nr-license-secret
+          securityContext:
+            runAsGroup: 2000
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
           image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
@@ -1475,6 +1485,11 @@ spec:
       terminationGracePeriodSeconds: 10
       initContainers:
         - name: wait-for-nr-license-secret
+          securityContext:
+            runAsGroup: 2000
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
           image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
@@ -1732,6 +1747,11 @@ spec:
       serviceAccountName: nri-bundle-nri-prometheus
       initContainers:
         - name: wait-for-nr-license-secret
+          securityContext:
+            runAsGroup: 2000
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
           image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
@@ -1802,6 +1822,11 @@ spec:
         runAsUser: 1000
       initContainers:
         - name: wait-for-nr-license-secret
+          securityContext:
+            runAsGroup: 2000
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
           image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
@@ -1926,6 +1951,11 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       initContainers:
         - name: wait-for-nr-license-secret
+          securityContext:
+            runAsGroup: 2000
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
           image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
@@ -2187,6 +2217,11 @@ spec:
             defaultMode: 0555
       containers:
       - name: newrelic-license-secret-exporter
+        securityContext:
+          runAsGroup: 2000
+          runAsNonRoot: true
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
         image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
         command:
           - /tmp/copy-secret.sh

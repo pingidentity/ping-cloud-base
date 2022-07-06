@@ -53,6 +53,7 @@ _Changes:_
 - [X] PDO-3522 Create PF admin SSO integration test for CI/CD
 - [X] PDO-3548 Set manage-profile tempProfileDirectory argument and force exportldiff files to write to the persistent volume /opt/out directory
 - [X] PDO-3571 Added non-admin ArgoCD user with access to restart StatefulSet pods
+- [X] PDO-3574 Cluster tool: force bitnami/kubectl initContainer to use its own nonroot user
 - [X] PDO-3576 Cluster tool: force busybox initContainer to use its own nonroot user
 - [X] PDO-3582 Force liveness probe to use API endpoint /available-or-degraded-state
 - [X] PDO-3603 Auto update product tags for production registry in ping-cloud-base
