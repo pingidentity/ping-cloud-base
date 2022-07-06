@@ -13,7 +13,7 @@
 - op: add
   path: /spec/template/spec/containers/-
   value:
-    image: public.ecr.aws/r2h3l6e4/pingcloud-services/sigsci-agent:4.28.0
+    image: public.ecr.aws/r2h3l6e4/pingcloud-services/sigsci-agent:4.28.0-v1.1.0
     name: sigsci-agent
     securityContext:
       allowPrivilegeEscalation: false

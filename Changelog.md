@@ -10,6 +10,7 @@ _Changes:_
 - [X] PDO-2635 Augment ArgoCD's application name with customer name
 - [X] PDO-3575 Cluster tool: force pingcloud-monitoring/newrelic-tags-exporter initContainer to run with allowPrivilegeEscalation: false
 - [X] PDO-3940 Add timeouts for screen updates in PingOne integration tests
+- [X] PDO-4036 Fix SigSci to exit properly when terminated
 
 ### 1.14.0
 - Update cluster-tool external-dns from version v0.08.0 to version v.0.11.0
