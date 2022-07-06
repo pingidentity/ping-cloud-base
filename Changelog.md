@@ -30,6 +30,7 @@
 - Fluent Bit now store raw logs on S3
 - Remove stunnel from PingDirectory
 - Remove skbn as backup mechanism as replaced with aws cli
+- Update cronjobs to prevent multiple jobs being scheduled during scaledown
 
 _Changes:_
 - [X] PDO-2517 Port of PingFederate pre-config script from bash to python
@@ -52,6 +53,7 @@ _Changes:_
 - [X] PDO-3522 Create PF admin SSO integration test for CI/CD
 - [X] PDO-3548 Set manage-profile tempProfileDirectory argument and force exportldiff files to write to the persistent volume /opt/out directory
 - [X] PDO-3571 Added non-admin ArgoCD user with access to restart StatefulSet pods
+- [X] PDO-3576 Cluster tool: force busybox initContainer to use its own nonroot user
 - [X] PDO-3582 Force liveness probe to use API endpoint /available-or-degraded-state
 - [X] PDO-3603 Auto update product tags for production registry in ping-cloud-base
 - [X] PDO-3605 Automate release candidate ECR images within in ping-cloud-base
@@ -106,6 +108,8 @@ _Changes:_
 - [X] PDO-4016 Few data views are listed twice in Kibana Discover tab
 - [X] PDO-4040 Add ingress metrics dashboard to Grafana
 - [X] PDO-4027 Add logging-bootstrap application
+- [X] PDO-4056 Ping Federate - Threat Intel / Detection Dashboard is missing
+- [X] PDO-4057 Update all cronjob configs to prevent multiple jobs being scheduled during scaledown
 
 ### 1.13.0
 
