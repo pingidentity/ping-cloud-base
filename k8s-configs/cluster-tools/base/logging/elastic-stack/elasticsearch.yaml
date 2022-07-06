@@ -355,14 +355,14 @@ allowVolumeExpansion: true
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: elasticsearch-gp2
+  name: elasticsearch-gp3
   labels:
     app: elasticsearch
 provisioner: kubernetes.io/aws-ebs
 volumeBindingMode: WaitForFirstConsumer
 parameters:
   encrypted: "true"
-  type: gp2
+  type: gp3
   fsType: ext4
 mountOptions:
   - discard

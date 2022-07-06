@@ -286,7 +286,7 @@ spec:
     spec:
       accessModes:
       - ReadWriteOnce
-      storageClassName: pingaccess-was-gp2
+      storageClassName: pingaccess-was-gp3
       resources:
         requests:
           storage: 20Gi
