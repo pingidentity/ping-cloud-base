@@ -71,7 +71,7 @@ _Changes:_
 - [X] PDO-3754 Replace current logstash DaemonSet by non-root Deployment
 - [X] PDO-3755 Implement FeatureFlags with many outputs for Fluent Bit
 - [X] PDO-3773 Encrypt K8s StorageClass (AWS EBS volumes)
-- [X] PDO-3780 Connect to external PD server within PingDataSync using LDAP
+- [X] PDO-3780 Connect to external PD server within PingDataSync using LDAPS
 - [X] PDO-3783 Recreate the PF Threat Detection Dashboard in P1AS
 - [X] PDO-3805 Create & Deploy Health Check service in P1AS
 - [X] PDO-3821 Create customer-configurable pipeline in logstash with PQ
