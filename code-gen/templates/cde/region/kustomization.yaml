@@ -176,6 +176,11 @@ configMapGenerator:
   - ../base/env_vars
   - env_vars
 
+- name: elk-environment-variables
+  behavior: merge
+  envs:
+    - logging/env_vars
+
 patchesStrategicMerge:
 
 ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
