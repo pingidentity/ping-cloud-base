@@ -35,24 +35,26 @@ class TestPFAdminSSO(seleniumbase.BaseCase):
         self.type("#username", username)
         self.type("#password", old_password)
         self.click('button[data-id="submit-button"]')
-        # Waiting because it can take a second to present the next screen
-        self.wait_for_text_visible(text="Incorrect username or password.",timeout=30)
-        # Password has already been changed
-        if self.is_text_visible(text="Incorrect username or password."):
-            self.type("#username", username)
-            self.type("#password", new_password)
-            self.click('button[data-id="submit-button"]')
-        # Change password screen
-        elif self.is_text_visible(text="Change Password", selector="h1"):
-            self.type("#password", old_password)
-            self.type("#new", new_password)
-            self.type("#verify", new_password)
-            self.click('button[data-id="submit-button"]')
+        timeout = time.time() + 10.0
+        while time.time() < timeout:
+          # Password has already been changed
+          if self.is_text_visible(text="Incorrect username or password."):
+              self.type("#username", username)
+              self.type("#password", new_password)
+              self.click('button[data-id="submit-button"]')
+              break
+          # Change password screen
+          elif self.is_text_visible(text="Change Password", selector="h1"):
+              self.type("#password", old_password)
+              self.type("#new", new_password)
+              self.type("#verify", new_password)
+              self.click('button[data-id="submit-button"]')
+              break
         self.wait_for_element_present('img[src="images/ping-identity-white.svg"]',timeout=30)
         # "Welcome To Ping" pop-up for first time login
         if self.is_element_visible('button[data-id="guide-close-button"]'):
             self.click('button[data-id="guide-close-button"]')
-
+    
     def test_pf_admin_user_can_log_in_to_admin_environment(self):
         self.pingone_login()
         # The content frame on the home page displays the list of environments
