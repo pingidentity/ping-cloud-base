@@ -115,6 +115,8 @@ metadata:
 spec:
   serviceName: elasticsearch
   replicas: 3
+  updateStrategy:
+    type: RollingUpdate
   selector:
     matchLabels:
       app: elasticsearch
@@ -155,15 +157,17 @@ spec:
         image: public.ecr.aws/r2h3l6e4/elasticsearch/elasticsearch:8.1.3
 
         securityContext:
+          runAsNonRoot: true
           runAsUser: 1000
           runAsGroup: 1000
+          allowPrivilegeEscalation: false
 
         resources:
           limits:
-            memory: 4Gi
+            memory: 8Gi
             cpu: 2000m
           requests:
-            memory: 2Gi
+            memory: 4Gi
             cpu: 100m
 
         ports:
@@ -232,6 +236,8 @@ metadata:
 spec:
   serviceName: elasticsearch
   replicas: 1
+  updateStrategy:
+    type: RollingUpdate
   selector:
     matchLabels:
       app: elasticsearch
@@ -249,15 +255,17 @@ spec:
         image: public.ecr.aws/r2h3l6e4/elasticsearch/elasticsearch:8.1.3
 
         securityContext:
+          runAsNonRoot: true
           runAsUser: 1000
           runAsGroup: 1000
+          allowPrivilegeEscalation: false
 
         resources:
           limits:
-            memory: 4Gi
+            memory: 8Gi
             cpu: 2000m
           requests:
-            memory: 2Gi
+            memory: 4Gi
             cpu: 100m
 
         ports:

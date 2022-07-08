@@ -110,7 +110,7 @@ data:
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^.+$ $stream_name.s3_out true
+        Rule                $log ^.+$ app.$stream_name true
 
     [FILTER]
         Name                lua
@@ -370,6 +370,12 @@ data:
         Match               ping.*
         Rule                $log ^.*$ $stream_name.cw_out false
         Emitter_Name        unmatched_logs
+    
+    [FILTER]
+        Name                rewrite_tag
+        Match               app.*
+        Rule                $log ^.*$ $stream_name.s3_app_out false
+        Emitter_Name        unmatched_logs_s3_out
 
     [FILTER]
         Name                record_modifier
@@ -414,17 +420,17 @@ data:
     [FILTER]
         Name                rewrite_tag
         Match               nonping.*
-        Rule                $log ^.+$ $stream_name.s3_out true
+        Rule                $log ^.+$ app.$stream_name true
 
     [FILTER]
         Name                lua
-        Match               *nginx*
+        Match               nonping.*nginx*
         script              change_output.lua
         call                change_output
 
     [FILTER]
         Name                rewrite_tag
-        Match               *nginx*
+        Match               nonping.*nginx*
         Rule                $tag ^.+$ $tag false
         Emitter_Name        change_out_nginx
     
@@ -434,6 +440,12 @@ data:
         Match               nonping.*
         Rule                $log ^.*$ $stream_name.cw_out false
         Emitter_Name        unmatched_nonping_logs
+    
+    [FILTER]
+        Name                rewrite_tag
+        Match               app.*
+        Rule                $log ^.*$ $stream_name.s3_app_out false
+        emitter_name        unmatched_nonping_s3_app_out
 
     [FILTER]
         Name                record_modifier
@@ -456,8 +468,8 @@ data:
         Match               dataplane.systemd.*
         Rename              _HOSTNAME                   hostname
         Rename              _SYSTEMD_UNIT               systemd_unit
-        Rename              MESSAGE                     message
-        Remove_regex        ^((?!hostname|systemd_unit|message).)*$
+        Rename              MESSAGE                     log
+        Remove_regex        ^((?!hostname|systemd_unit|log).)*$
 
     [FILTER]
         Name                aws
@@ -466,8 +478,9 @@ data:
 
     [FILTER]
         Name                rewrite_tag
-        Match               nonping.*
-        Rule                $log ^.+$ $stream_name.s3_out true
+        Match               dataplane.systemd.*
+        Rule                $log ^.+$ $TAG[2].$TAG[3]-$hostname.s3_dp_out true
+        emitter_name        dataplane_s3_out
     
   host-log.conf: |
     [INPUT]
@@ -518,7 +531,8 @@ data:
     [FILTER]
         Name                rewrite_tag
         Match               host.*
-        Rule                $log ^.+$ $stream_name.s3_out true
+        Rule                $log ^.+$ $TAG[1].$host.s3_hl_out true
+        emitter_name        host_s3_out
 
   parsers.conf: |
     [PARSER]
@@ -530,12 +544,12 @@ data:
     [PARSER]
         Name                dmesg
         Format              regex
-        Regex               ^\[.*?\](?<message>.*)$
+        Regex               ^\[.*?\](?<log>.*)$
 
     [PARSER]
         Name                syslog
         Format              regex
-        Regex               ^(?<time>[^ ]* {1,2}[^ ]* [^ ]*) (?<host>[^ ]*) (?<ident>[a-zA-Z0-9_\/\.\-]*)(?:\[(?<pid>[0-9]+)\])?(?:[^\:]*\:)? *(?<message>.*)$
+        Regex               ^(?<time>[^ ]* {1,2}[^ ]* [^ ]*) (?<host>[^ ]*) (?<ident>[a-zA-Z0-9_\/\.\-]*)(?:\[(?<pid>[0-9]+)\])?(?:[^\:]*\:)? *(?<log>.*)$
         Time_Key            time
         Time_Format         %b %d %H:%M:%S
 
@@ -601,15 +615,32 @@ data:
     
     [OUTPUT]
         Name                s3
-        Match               *.s3_out
+        Match               *.s3_app_out
         Bucket              ${S3_BUCKET}
         Region              ${AWS_REGION}
+        s3_key_format       /application/$TAG/%Y/%m/%d/%H/%M/%S
+        upload_timeout      5m
+    
+    [OUTPUT]
+        Name                s3
+        Match               *.s3_hl_out
+        Bucket              ${S3_BUCKET}
+        Region              ${AWS_REGION}
+        s3_key_format       /host/$TAG/%Y/%m/%d/%H/%M/%S
+        upload_timeout      5m
+    
+    [OUTPUT]
+        Name                s3
+        Match               *.s3_dp_out
+        Bucket              ${S3_BUCKET}
+        Region              ${AWS_REGION}
+        s3_key_format       /dataplane/$TAG/%Y/%m/%d/%H/%M/%S
+        upload_timeout      5m
 
   time.lua: |
     # This script is called by fluent-bit to append a time to the log message.
     function append_tag(tag, timestamp, record)
       new_record = record
-      new_record["time"] = os.date("%Y-%m-%dT%H:%M:%S")
       host = record["private_ip"]:gsub("%.", "-")
       new_record["host"] = "ip-"..host
       return 1, timestamp, new_record
@@ -639,7 +670,7 @@ data:
       flag = string.lower(os.getenv("LEGACY_LOGGING"))
       if flag == "false" then
         new_record = record
-        new_record["tag"] = "app.elk_out"
+        new_record["tag"] = "ping_apps.elk_out"
         return 1, timestamp, new_record
       else
         return 0, 0, 0

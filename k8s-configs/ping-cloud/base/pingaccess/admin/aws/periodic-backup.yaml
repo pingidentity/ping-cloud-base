@@ -45,8 +45,11 @@ spec:
   schedule: "30 * * * *"
   successfulJobsHistoryLimit: 0
   failedJobsHistoryLimit: 1
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 90
   jobTemplate:
     spec:
+      backoffLimit: 0
       template:
         spec:
           serviceAccount: ping-serviceaccount

@@ -46,11 +46,11 @@ spec:
         - name: data-dir
           mountPath: /opt/staging
       - name: pingaccess-was-init
-        # FIXME PDO-3574: switch to same user as app
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
+          allowPrivilegeEscalation: false
         image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
         imagePullPolicy: IfNotPresent
         command:
@@ -87,6 +87,7 @@ spec:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
+          allowPrivilegeEscalation: false
         image: public.ecr.aws/r2h3l6e4/busybox:1.32
         imagePullPolicy: IfNotPresent
         command:
