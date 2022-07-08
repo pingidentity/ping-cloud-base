@@ -105,6 +105,7 @@ _Changes:_
 - [X] PDO-3972 Remove stunnel from PingDirectory
 - [X] PDO-3974 Implement Kibana Alerting
 - [X] PDO-3980 Health Check service is listing wrong envType in a CDE
+- [X] PDO-3993 Fix PF Admin API endpoint for integration test
 - [X] PDO-4008 Fix max-character branch name for PCB
 - [X] PDO-4016 Few data views are listed twice in Kibana Discover tab
 - [X] PDO-4040 Add ingress metrics dashboard to Grafana
