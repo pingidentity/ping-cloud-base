@@ -1,5 +1,10 @@
 [
   {
+    "name": "sample-rules",
+    "version": "6.3.4",
+    "source": "private"
+  },
+  {
     "name": "sample-site-authenticators",
     "version": "6.0.2",
     "source": "private"
