@@ -1,1 +1,7 @@
-[]
+[
+  {
+    "name": "sample-site-authenticators",
+    "version": "6.0.2",
+    "source": "private"
+  }
+]
