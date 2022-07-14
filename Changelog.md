@@ -112,6 +112,7 @@ _Changes:_
 - [X] PDO-4027 Add logging-bootstrap application
 - [X] PDO-4056 Ping Federate - Threat Intel / Detection Dashboard is missing
 - [X] PDO-4057 Update all cronjob configs to prevent multiple jobs being scheduled during scaledown
+- [X] PDO-4093 Logstash is in crashloop state for chub clusters
 
 ### 1.13.0
 

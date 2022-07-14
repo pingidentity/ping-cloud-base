@@ -19,6 +19,12 @@ patchesStrategicMerge:
 
 configMapGenerator:
 
+### Regional env vars for ELK
+- name: elk-environment-variables
+  behavior: merge
+  envs:
+    - logging/env_vars
+
 # PingCentral
 # Create the config maps that hold the variable for triggering updates of PingCentral
 - name: pingcentral-last-update-config
