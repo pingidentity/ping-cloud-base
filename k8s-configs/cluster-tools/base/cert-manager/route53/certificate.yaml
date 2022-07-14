@@ -3,6 +3,7 @@ kind: Certificate
 metadata:
   name: acme-tls-cert
   namespace: cert-manager
+  namespace: cert-manager-test
 spec:
   secretName: acme-tls-cert
   issuerRef:
