@@ -1,0 +1,2 @@
+dsconfig delete-external-server \
+     --server-name external_pd_server
