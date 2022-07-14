@@ -47,26 +47,6 @@ execute_test_scripts() {
 
   python_files=(`find ${1} -maxdepth 1 -name "*.py"`)
   if [ ${#python_files[@]} -gt 0 ]; then
-    log "Installing chrome"
-    apt-get update
-    DEBIAN_FRONTEND=noninteractive apt-get install -y \
-      fonts-liberation \
-      libappindicator1 \
-      libappindicator3-1 \
-      libasound2 \
-      libatk-bridge2.0-0 \
-      libatspi2.0-0 \
-      libgbm1 \
-      libgtk-3-0 \
-      libnspr4 \
-      libnss3 \
-      libxss1 \
-      unzip \
-      wget \
-      xdg-utils
-    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-    dpkg -i google-chrome*.deb
-
     log "Activating Python virtual environment"
     if [[ ! -d venv ]]; then
       python -m venv venv

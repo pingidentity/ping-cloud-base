@@ -14,6 +14,7 @@ _Changes:_
 - [X] PDO-3988 Grafana Successful SSOs Pingfederate Topology dashboard displaying wrong data
 - [X] PDO-4036 Fix SigSci to exit properly when terminated
 - [X] PDO-3524 Create PingOne-Configurator test for CI/CD
+- [X] PDO-3918 Move chrome install from run-integration-tests.sh to k8s-deploy-tools image
 
 ### 1.14.0
 - Update cluster-tool external-dns from version v0.08.0 to version v.0.11.0
