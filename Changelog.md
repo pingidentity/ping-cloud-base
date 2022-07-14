@@ -5,10 +5,13 @@
 - Augment ArgoCD's application name with customer name
 - Add fix to application name for ArgoCD
 - Fix grafana PD topology successful SSOs
+- Update Cluster tool cert-manager to recommended version 
+
 
 _Changes:_
 
 - [X] PDO-2635 Augment ArgoCD's application name with customer name
+- [X] PDO-3272 Cluster tool: Update Cluster-tool cert-manager from version v1.5.3 to version v1.7.2 
 - [X] PDO-3575 Cluster tool: force pingcloud-monitoring/newrelic-tags-exporter initContainer to run with allowPrivilegeEscalation: false
 - [X] PDO-3940 Add timeouts for screen updates in PingOne integration tests
 - [X] PDO-3988 Grafana Successful SSOs Pingfederate Topology dashboard displaying wrong data
