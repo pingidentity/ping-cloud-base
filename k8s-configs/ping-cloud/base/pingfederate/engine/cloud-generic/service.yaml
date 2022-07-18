@@ -9,6 +9,8 @@ spec:
   ports:
   - port: 9031
     name: pingfederate-runtime
+  - port: 9032
+    name: pingfederate-x509
   - port: 8080
     name: metrics
   - port: 8079

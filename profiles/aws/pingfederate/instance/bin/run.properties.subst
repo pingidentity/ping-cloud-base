@@ -161,7 +161,7 @@ pf.https.port=9031
 # requests (SAML, WS-Trust and OAuth). Set its value to the desired inbound
 # listening TCP port.
 # A value of -1 disables this feature.
-pf.secondary.https.port=-1
+pf.secondary.https.port=9032
 
 #
 # This property defines the IP address over which the PingFederate server

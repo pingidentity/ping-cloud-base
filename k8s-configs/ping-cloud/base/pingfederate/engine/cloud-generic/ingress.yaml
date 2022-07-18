@@ -26,4 +26,4 @@ spec:
           service:
             name: pingfederate
             port:
-              number: 9031
+              number: 9032
