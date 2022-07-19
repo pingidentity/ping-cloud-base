@@ -54,6 +54,15 @@ replace_and_commit() {
     "metadata"
     "healthcheck"
     "ansible-beluga"
+    "logging-bootstrap"
+    "logstash"
+    "grafana"
+    "enrichment-bootstrap"
+    "prometheus-json-exporter"
+    "newrelic-tags-exporter"
+    "robot-framework"
+    "sigsci-nginx-ingress-controller"
+    "sigsci-agent"
   )
 
   for image in ${image_map[@]}; do
