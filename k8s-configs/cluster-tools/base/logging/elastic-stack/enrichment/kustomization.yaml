@@ -12,6 +12,10 @@ generatorOptions:
   disableNameSuffixHash: true
 
 configMapGenerator:
-  - name: logging-bootstrap-environment-variables
-    literals:
-      - SERVICE_SSM_PATH_PREFIX=/pcpt/service
+- name: logging-bootstrap-environment-variables
+  literals:
+    - SERVICE_SSM_PATH_PREFIX=/pcpt/service
+
+- name: logging-bootstrap-config
+  files:
+    - app_config.yaml

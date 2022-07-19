@@ -49,7 +49,7 @@ rules:
     resources: ["statefulsets", "replicasets", "daemonsets"]
     verbs: ["watch", "list", "get"]
   - apiGroups: ["storage.k8s.io"]
-    resources: ["storageclasses", "csinodes"]
+    resources: ["storageclasses", "csinodes", "csidrivers", "csistoragecapacities"]
     verbs: ["watch", "list", "get"]
   - apiGroups: ["batch"]
     resources: ["jobs"]
@@ -137,6 +137,7 @@ spec:
         prometheus.io/scrape: 'true'
         prometheus.io/port: '8085'
     spec:
+      priorityClassName: system-cluster-critical
       serviceAccountName: cluster-autoscaler
       containers:
         - image: public.ecr.aws/r2h3l6e4/autoscaling/cluster-autoscaler:v1.21.1

@@ -103,6 +103,10 @@ spec:
         envFrom:
         - configMapRef:
             name: logging-bootstrap-environment-variables
+        volumeMounts:
+          - mountPath: /app/config/
+            name: logging-bootstrap-config
+            readOnly: true
         resources:
           requests:
             memory: "256Mi"
@@ -141,3 +145,6 @@ spec:
       - name: kibana-alerts
         configMap:
           name: kibana-alerts
+      - name: logging-bootstrap-config
+        configMap:
+          name: logging-bootstrap-config
