@@ -45,7 +45,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v1.14-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v1.14.0.0_RC3
         imagePullPolicy: Always
         env:
           - name: NAMESPACE
@@ -149,7 +149,7 @@ spec:
             name: pingfederate-environment-variables
       containers:
       - name: pingfederate
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate/dev:v1.14-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:v1.14.0.0_RC4
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
