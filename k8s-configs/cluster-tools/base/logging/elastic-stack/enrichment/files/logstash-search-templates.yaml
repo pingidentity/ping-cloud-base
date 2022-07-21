@@ -6,86 +6,58 @@ metadata:
 data:
   6hr-1200km-template.json: |
     {
-    "query": {
+      "query": {
         "bool": {
-        "must": [],
-        "filter": [
+          "must": [],
+          "filter": [
             {
-            "bool": {
-                "filter": [
-                {
-                    "bool": {
-                    "filter": [
-                        {
-                        "range": {
-                            "@timestamp": {
-                            "gte": "now-6h/h",
-                            "lte": "now"
-                            }
-                        }
-                        },
-                        {
-                        "bool": {
-                            "should": [
-                            {
-                                "match": {
-                                "status": "success"
-                                }
-                            }
-                            ],
-                            "minimum_should_match": 1
-                        }
-                        },
-                        {
-                        "bool": {
-                            "should": [
-                            {
-                                "match": {
-                                "event": "AUTHN_ATTEMPT"
-                                }
-                            }
-                            ],
-                            "minimum_should_match": 1
-                        }
-                        },
-                        {
-                        "bool": {
-                            "should": [
-                            {
-                                "match": {
-                                "subject": "\"%{[subject]}\""
-                                }
-                            }
-                            ],
-                            "minimum_should_match": 1
-                        }
-                        }
-                    ]
-                    }
+              "range": {
+                "@timestamp": {
+                  "gte": "now-6h/h",
+                  "lte": "now"
                 }
-                ]
+              }
+            },
+            {
+              "match_phrase": {
+                "status": "success"
+              }
+            },
+            {
+              "match_phrase": {
+                "event": "AUTHN_ATTEMPT"
+              }
+            },
+            {
+              "match_phrase": {
+                "subject": "%{subject}"
+              }
+            },
+            {
+              "exists": {
+                "field": "geoip.ip"
+              }
             }
+          ],
+          "should": [],
+          "must_not": {
+            "geo_distance": {
+              "distance": "1200km",
+              "geoip.location": {
+                "lat": "%{[geoip][latitude]}",
+                "lon": "%{[geoip][longitude]}"
+              }
             }
-        ],
-        "should": [],
-        "must_not" : {
-            "geo_distance" : {
-                "distance" : "1200km",
-                "geoip.location" : {
-                    "lat"  : "%{[geoip][location][lat]}",
-                    "lon"  : "%{[geoip][location][lon]}" 
-                }
-            }
+          }
         }
-        }
-    },
-    "size" : 1,
-    "sort": [
+      },
+      "size": 1,
+      "sort": [
         {
-        "@timestamp": {
+          "@timestamp": {
             "order": "desc"
+          }
         }
-        }
-    ],
-    "_source": ["subject", "geoip.location.lat", "geoip.location.lon", "geoip.country_name","geoip.city_name", "protocol", "ip", "malicious_country", "suspicious_country", "_id" ]  
+      ],
+      "_source": ["subject", "geoip.location", "geoip.latitude", "geoip.longitude", "geoip.country_name", "geoip.city_name", "protocol", "ip", "malicious_country", "suspicious_country", "_id"]
     }

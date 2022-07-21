@@ -10,9 +10,8 @@ spec:
       containers:
 
       - name: elasticsearch-bootstrap
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.4.0
-        
-        imagePullPolicy: IfNotPresent
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v1.15-release-branch-latest
+        imagePullPolicy: Always
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
 
@@ -44,8 +43,8 @@ spec:
           mountPath: /usr/share/elasticsearch/data/index-templates
 
       - name: kibana-bootstrap
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:3.14-v1.4.0
-        imagePullPolicy: IfNotPresent
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v1.15-release-branch-latest
+        imagePullPolicy: Always
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
         env:
@@ -94,7 +93,7 @@ spec:
           runAsUser: 1000
           runAsGroup: 1000
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logging-bootstrap:v1.2.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logging-bootstrap/dev:v1.15-release-branch-latest
         imagePullPolicy: Always
         env:
           - name: NAMESPACE

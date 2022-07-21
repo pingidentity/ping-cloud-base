@@ -96,9 +96,6 @@ ENVIRONMENT_TYPE=${ENVIRONMENT_TYPE}
 ENV=${ENV}
 KUSTOMIZE_BASE=${KUSTOMIZE_BASE}
 
-# The name of the environment as it will appear on the NewRelic console.
-NEW_RELIC_ENVIRONMENT_NAME=${NEW_RELIC_ENVIRONMENT_NAME}
-
 # Current app logs destination (True = CW, False = ELK)
 LEGACY_LOGGING=True
 

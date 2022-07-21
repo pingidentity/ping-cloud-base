@@ -18,6 +18,7 @@ _Changes:_
 - [X] PDO-4036 Fix SigSci to exit properly when terminated
 - [X] PDO-3524 Create PingOne-Configurator test for CI/CD
 - [X] PDO-3918 Move chrome install from run-integration-tests.sh to k8s-deploy-tools image
+- [X] PDO-4060 Update versioning for cluster tools in PCB
 
 ### 1.14.0
 - Update cluster-tool external-dns from version v0.08.0 to version v.0.11.0
@@ -124,12 +125,17 @@ _Changes:_
 - [X] PDO-3972 Remove stunnel from PingDirectory
 - [X] PDO-3974 Implement Kibana Alerting
 - [X] PDO-3980 Health Check service is listing wrong envType in a CDE
+- [X] PDO-3993 Fix PF Admin API endpoint for integration test
 - [X] PDO-4008 Fix max-character branch name for PCB
 - [X] PDO-4016 Few data views are listed twice in Kibana Discover tab
 - [X] PDO-4040 Add ingress metrics dashboard to Grafana
 - [X] PDO-4027 Add logging-bootstrap application
 - [X] PDO-4056 Ping Federate - Threat Intel / Detection Dashboard is missing
 - [X] PDO-4057 Update all cronjob configs to prevent multiple jobs being scheduled during scaledown
+- [X] PDO-4093 Logstash is in crashloop state for chub clusters
+- [X] PDO-4098 Newrelic Infrastructure sends data from primary and secondary regions to one NR
+- [X] PDO-4108 There are no data on PA-WAS - Response Codes Over Time Kibana Dashboards
+- [X] PDO-4121 Cost Savings: New Relic: Globally Update Configuration to use lowDataMode
 
 ### 1.13.0
 
