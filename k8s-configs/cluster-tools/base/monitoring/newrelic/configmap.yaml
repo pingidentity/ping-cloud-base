@@ -101,7 +101,7 @@ metadata:
   namespace: newrelic
 data:
   nri-kubernetes.yml: |-
-    interval: 15s
+    interval: 30s # Default value is 15s
     controlPlane:
       retries: 3
       timeout: 10s
@@ -273,7 +273,7 @@ metadata:
   namespace: newrelic
 data:
   nri-kubernetes.yml: |-
-    interval: 20s # Default value is 15s
+    interval: 30s # Default value is 15s
     ksm:
       enabled: true
       retries: 3
@@ -418,7 +418,7 @@ metadata:
   namespace: newrelic
 data:
   nri-kubernetes.yml: |
-    interval: 20s # Default value is 15s
+    interval: 30s # Default value is 15s
     kubelet:
       enabled: true
       retries: 3
