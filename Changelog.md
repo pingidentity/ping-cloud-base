@@ -113,6 +113,7 @@ _Changes:_
 - [X] PDO-4056 Ping Federate - Threat Intel / Detection Dashboard is missing
 - [X] PDO-4057 Update all cronjob configs to prevent multiple jobs being scheduled during scaledown
 - [X] PDO-4093 Logstash is in crashloop state for chub clusters
+- [X] PDO-4098 Newrelic Infrastructure sends data from primary and secondary regions to one NR
 - [X] PDO-4108 There are no data on PA-WAS - Response Codes Over Time Kibana Dashboards
 
 ### 1.13.0
