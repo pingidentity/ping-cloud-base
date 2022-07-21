@@ -115,6 +115,7 @@ _Changes:_
 - [X] PDO-4093 Logstash is in crashloop state for chub clusters
 - [X] PDO-4098 Newrelic Infrastructure sends data from primary and secondary regions to one NR
 - [X] PDO-4108 There are no data on PA-WAS - Response Codes Over Time Kibana Dashboards
+- [X] PDO-4121 Cost Savings: New Relic: Globally Update Configuration to use lowDataMode
 
 ### 1.13.0
 
