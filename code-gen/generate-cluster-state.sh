@@ -178,6 +178,13 @@
 #                          | Beluga developers only have access to one domain   |
 #                          | and hosted zone in their Ping IAM account role.    |
 #                          |                                                    |  
+# IS_BELUGA_CDE            | Additional flag, only meaningful if IS_BELUGA_ENV  |
+#                          | is set to true, it specifies we're building a      |
+#                          | preview like CDE in the CSG account. it will       |
+#                          | Override default IS_BELUGA_ENV behavior to include |
+#                          | the environment name in the domain name and rename |
+#                          | the customer-hub cluser to ${TENANT_NAME}-hub.     |
+#                          |                                                    |
 # IS_GA                    | A flag indicating whether or not this is a GA      | The SSM path: /pcpt/stage/is-ga
 #                          | customer.                                          |
 #                          |                                                    |        
@@ -372,7 +379,7 @@ add_derived_variables() {
   export PRIMARY_DNS_ZONE_DERIVED="\${PRIMARY_DNS_ZONE}"
 
   # Zone for this region and the primary region.
-  if "${IS_BELUGA_ENV}" || test "${ENV}" = "${CUSTOMER_HUB}"; then
+  if [ "${IS_BELUGA_ENV}" -a ! "${IS_BELUGA_CDE}" ] || [ "${ENV}" = "${CUSTOMER_HUB}" ]; then
     export DNS_ZONE="\${TENANT_DOMAIN}"
     export PRIMARY_DNS_ZONE="\${PRIMARY_TENANT_DOMAIN}"
   else
@@ -621,7 +628,7 @@ PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX="${PRIMARY_TENANT_DOMAIN%.}"
 export PRIMARY_TENANT_DOMAIN="${PRIMARY_TENANT_DOMAIN_NO_DOT_SUFFIX:-${TENANT_DOMAIN_NO_DOT_SUFFIX}}"
 export SECONDARY_TENANT_DOMAINS="${SECONDARY_TENANT_DOMAINS}"
 
-if "${IS_BELUGA_ENV}"; then
+if [ "${IS_BELUGA_ENV}" -a ! "${IS_BELUGA_CDE}" ]; then
   DERIVED_GLOBAL_TENANT_DOMAIN="global.${TENANT_DOMAIN_NO_DOT_SUFFIX}"
 else
   DERIVED_GLOBAL_TENANT_DOMAIN="$(echo "${TENANT_DOMAIN_NO_DOT_SUFFIX}" | sed -e "s/\([^.]*\).[^.]*.\(.*\)/global.\1.\2/")"
@@ -694,7 +701,7 @@ echo "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 echo "Using MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 echo "Using MYSQL_USER: ${MYSQL_USER}"
 echo "Using MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
-
+echo "Using MYSQL_DATABASE: ${MYSQL_DATABASE}"
 echo "Using LEGACY_LOGGING: ${LEGACY_LOGGING}"
 
 echo "Using PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
@@ -907,9 +914,15 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   export PA_MAX_YGEN=512m
   export PA_GCOPTION='-XX:+UseParallelGC'
 
-  "${IS_BELUGA_ENV}" &&
-      export CLUSTER_NAME="${TENANT_NAME}" ||
-      export CLUSTER_NAME="${ENV}"
+  if [ ${IS_BELUGA_ENV} ]; then
+     if [ "${ENV}" = "customer-hub" -a "${IS_BELUGA_CDE}" ]; then
+        export CLUSTER_NAME="${TENANT_NAME}-hub"
+     else
+        export CLUSTER_NAME="${TENANT_NAME}"
+     fi
+  else
+     export CLUSTER_NAME="${ENV}"  
+  fi
 
   CLUSTER_NAME_LC="$(echo "${CLUSTER_NAME}" | tr '[:upper:]' '[:lower:]')"
   export CLUSTER_NAME_LC="${CLUSTER_NAME_LC}"
@@ -981,6 +994,9 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     BASE_ENV_VARS="${ENV_DIR}/base/env_vars"
     echo >> "${BASE_ENV_VARS}"
     echo "IS_BELUGA_ENV=true" >> "${BASE_ENV_VARS}"
+    if "${IS_BELUGA_CDE}"; then
+       echo "IS_BELUGA_CDE=true" >> "${BASE_ENV_VARS}"
+    fi   
   fi
 
   echo "Copying server profiles for environment ${ENV}"
