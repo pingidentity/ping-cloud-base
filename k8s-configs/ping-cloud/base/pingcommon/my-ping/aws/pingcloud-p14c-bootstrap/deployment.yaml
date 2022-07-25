@@ -13,13 +13,6 @@ spec:
         lastUpdateReason: "NA"
     spec:
       serviceAccount: p14c-bootstrap-serviceaccount
-      volumes:
-        - name: bootstrap-config
-          configMap:
-            name: pingcloud-p14c-bootstrap-config
-            items:
-            - key: app_config
-              path: app_config.yaml
       securityContext:
         runAsGroup: 9999
         runAsNonRoot: true
@@ -27,19 +20,18 @@ spec:
         fsGroup: 9999
       containers:
       - name: p14c-bootstrap
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-services/bootstrap:v1.14.0.0-PDO-4002-unified-bootstrap
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-services/bootstrap:v1.15.0.0-PDO-4002-unified-bootstrap
         imagePullPolicy: Always
         env:
         - name: NAMESPACE
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
+        - name: DAEMONIZE
+          value: "true"
         envFrom:
         - configMapRef:
             name: pingcloud-p14c-bootstrap-environment-variables
-        volumeMounts:
-          - mountPath: /app/config/app.yaml
-            name: bootstrap-config
         resources:
           requests:
             memory: "256Mi"
@@ -47,3 +39,12 @@ spec:
           limits:
             memory: "512Mi"
             cpu: "500m"
+        volumeMounts:
+          - mountPath: /app/config/app_config.yaml
+            name: pingcloud-p14c-bootstrap-resources
+            readOnly: true
+            subPath: p14c-bootstrap-resources.yaml
+      volumes:
+        - name: pingcloud-p14c-bootstrap-resources
+          configMap:
+            name: pingcloud-p14c-bootstrap-resources

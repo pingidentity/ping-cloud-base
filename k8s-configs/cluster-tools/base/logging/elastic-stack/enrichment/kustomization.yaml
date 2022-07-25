@@ -15,7 +15,9 @@ configMapGenerator:
 - name: logging-bootstrap-environment-variables
   literals:
     - SERVICE_SSM_PATH_PREFIX=/pcpt/service
+    - ORCH_API_SSM_PATH_PREFIX=/pcpt/orch-api
+    - REGION=${REGION}
 
-- name: logging-bootstrap-config
+- name: logging-bootstrap-resources
   files:
-    - app_config.yaml
+    - logging-bootstrap-resources.yaml
