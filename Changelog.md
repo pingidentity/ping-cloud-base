@@ -19,6 +19,7 @@ _Changes:_
 - [X] PDO-3524 Create PingOne-Configurator test for CI/CD
 - [X] PDO-3918 Move chrome install from run-integration-tests.sh to k8s-deploy-tools image
 - [X] PDO-4060 Update versioning for cluster tools in PCB
+- [X] PDO-4106 Update profile with X.509 authentication sample
 
 ### 1.14.0
 - Update cluster-tool external-dns from version v0.08.0 to version v.0.11.0
