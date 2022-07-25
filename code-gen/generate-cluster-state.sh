@@ -209,22 +209,28 @@
 # ORCH_API_SSM_PATH_PREFIX | The prefix of the SSM path that contains MyPing    | /pcpt/orch-api
 #                          | state data required for the P14C/P1AS integration. |
 #                          |                                                    |
+# SERVICE_SSM_PATH_PREFIX  | The prefix of the SSM path that contains service   | /pcpt/service
+#                          | state data required for the cluster.               |
+#                          |                                                    |
 # NEW_RELIC_LICENSE_KEY    | The key of NewRelic APM Agent used to send data to | The string "unused".
 #                          | NewRelic account.                                  |
 #                          |                                                    |
 # MYSQL_SERVICE_HOST       | The hostname of the MySQL database server.         | pingcentraldb.${PRIMARY_TENANT_DOMAIN}
 #                          |                                                    |
 # MYSQL_USER               | The DBA user of the PingCentral MySQL RDS          | The SSM path:
-#                          | database.                                          | ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#username
+#                          | database.                                          | ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username
 #                          |                                                    |
 # MYSQL_PASSWORD           | The DBA password of the PingCentral MySQL RDS      | The SSM path:
-#                          | database.                                          | ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#password
+#                          | database.                                          | ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#password
 #                          |                                                    |
 # PING_IDENTITY_DEVOPS_USER| A user with license to run Ping Software.          | The SSM path:
 #                          |                                                    | ssm://pcpt/devops-license/user
 #                          |                                                    |
 # PING_IDENTITY_DEVOPS_KEY | The key to the above user.                         | The SSM path:
 #                          |                                                    | ssm://pcpt/devops-license/key
+#                          |                                                    |
+# LEGACY_LOGGING           | Flag indicating where we should send app logs -    | True
+#                          | to CloudWatch(if True) or to ELK (if False)        |
 ########################################################################################################################
 
 #### SCRIPT START ####
@@ -260,11 +266,13 @@ DEFAULT_VARS='${LAST_UPDATE_REASON}
 ${PING_IDENTITY_DEVOPS_USER}
 ${PING_IDENTITY_DEVOPS_KEY}
 ${NEW_RELIC_LICENSE_KEY_BASE64}
+${LEGACY_LOGGING}
 ${TENANT_NAME}
 ${SSH_ID_KEY_BASE64}
 ${IS_MULTI_CLUSTER}
 ${PLATFORM_EVENT_QUEUE_NAME}
 ${ORCH_API_SSM_PATH_PREFIX}
+${SERVICE_SSM_PATH_PREFIX}
 ${REGION}
 ${REGION_NICK_NAME}
 ${PRIMARY_REGION}
@@ -368,7 +376,7 @@ add_derived_variables() {
     export DNS_ZONE="\${TENANT_DOMAIN}"
     export PRIMARY_DNS_ZONE="\${PRIMARY_TENANT_DOMAIN}"
   else
-    export DNS_ZONE="\${ENV}-\${TENANT_DOMAIN}"
+    export DNS_ZONE="\${REGION_ENV}-\${TENANT_DOMAIN}"
     export PRIMARY_DNS_ZONE="\${ENV}-\${PRIMARY_TENANT_DOMAIN}"
   fi
 
@@ -547,6 +555,7 @@ echo "Initial SIZE: ${SIZE}"
 echo "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 echo "Initial PLATFORM_EVENT_QUEUE_NAME: ${PLATFORM_EVENT_QUEUE_NAME}"
 echo "Initial ORCH_API_SSM_PATH_PREFIX: ${ORCH_API_SSM_PATH_PREFIX}"
+echo "Initial SERVICE_SSM_PATH_PREFIX: ${SERVICE_SSM_PATH_PREFIX}"
 echo "Initial REGION: ${REGION}"
 echo "Initial REGION_NICK_NAME: ${REGION_NICK_NAME}"
 echo "Initial PRIMARY_REGION: ${PRIMARY_REGION}"
@@ -567,6 +576,8 @@ echo "Initial BACKUP_URL: ${BACKUP_URL}"
 echo "Initial MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 echo "Initial MYSQL_USER: ${MYSQL_USER}"
 echo "Initial MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
+
+echo "Initial LEGACY_LOGGING: ${LEGACY_LOGGING}"
 
 echo "Initial PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
 
@@ -598,6 +609,7 @@ export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
 
 export PLATFORM_EVENT_QUEUE_NAME=${PLATFORM_EVENT_QUEUE_NAME:-v2_platform_event_queue.fifo}
 export ORCH_API_SSM_PATH_PREFIX=${ORCH_API_SSM_PATH_PREFIX:-/pcpt/orch-api}
+export SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX:-/pcpt/service}
 
 export LAST_UPDATE_REASON="${LAST_UPDATE_REASON:-NA}"
 
@@ -623,11 +635,13 @@ export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
 
 export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-"pingcentraldb.\${PRIMARY_TENANT_DOMAIN}"}"
-export MYSQL_USER="${MYSQL_USER:-ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#username}"
-export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#password}"
+export MYSQL_USER="${MYSQL_USER:-ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username}"
+export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#password}"
 
 export PING_IDENTITY_DEVOPS_USER="${PING_IDENTITY_DEVOPS_USER:-ssm://pcpt/devops-license/user}"
 export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY:-ssm://pcpt/devops-license/key}"
+
+export LEGACY_LOGGING=${LEGACY_LOGGING:-True}
 
 PING_CLOUD_BASE_COMMIT_SHA=$(git rev-parse HEAD)
 CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -661,6 +675,7 @@ echo "Using SIZE: ${SIZE}"
 echo "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 echo "Using PLATFORM_EVENT_QUEUE_NAME: ${PLATFORM_EVENT_QUEUE_NAME}"
 echo "Using ORCH_API_SSM_PATH_PREFIX: ${ORCH_API_SSM_PATH_PREFIX}"
+echo "Using SERVICE_SSM_PATH_PREFIX: ${SERVICE_SSM_PATH_PREFIX}"
 echo "Using REGION: ${REGION}"
 echo "Using REGION_NICK_NAME: ${REGION_NICK_NAME}"
 echo "Using PRIMARY_REGION: ${PRIMARY_REGION}"
@@ -679,6 +694,8 @@ echo "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 echo "Using MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 echo "Using MYSQL_USER: ${MYSQL_USER}"
 echo "Using MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
+
+echo "Using LEGACY_LOGGING: ${LEGACY_LOGGING}"
 
 echo "Using PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
 
@@ -846,7 +863,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     export PF_PD_BIND_PROTOCOL=ldap
     export PF_PD_BIND_USESSL=false
   else
-    export PF_PD_BIND_PORT=5678
+    export PF_PD_BIND_PORT=1636
     export PF_PD_BIND_PROTOCOL=ldaps
     export PF_PD_BIND_USESSL=true
   fi

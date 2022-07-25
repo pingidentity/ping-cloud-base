@@ -88,5 +88,9 @@
   {
     "name": "opentoken-adapter",
     "version": "2.7"
+  },
+  {
+    "name": "pf-jwt-token-translator",
+    "version": "1.1.1.2"
   }
 ]

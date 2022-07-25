@@ -2,48 +2,40 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  labels:
+    k8s-app: metrics-server
   name: metrics-server
   namespace: kube-system
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: metrics-server
-  namespace: kube-system
   labels:
     k8s-app: metrics-server
+  name: metrics-server
+  namespace: kube-system
 spec:
   selector:
     matchLabels:
       k8s-app: metrics-server
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
   template:
     metadata:
-      name: metrics-server
       labels:
         k8s-app: metrics-server
     spec:
-      serviceAccountName: metrics-server
-      volumes:
-      # mount in tmp so we can safely use from-scratch images and/or read-only containers
-      - name: tmp-dir
-        emptyDir: {}
       containers:
       - name: metrics-server
-        image: public.ecr.aws/r2h3l6e4/metrics-server/metrics-server:v0.5.0
-        ports:
-          - containerPort: 4443
-            name: https
-            protocol: TCP
+        image: public.ecr.aws/r2h3l6e4/metrics-server/metrics-server:v.0.6.1
+        imagePullPolicy: IfNotPresent
         args:
-          - --cert-dir=/tmp
-          - --secure-port=4443
-        readinessProbe:
-          failureThreshold: 3
-          httpGet:
-            port: https
-            path: /readyz
-            scheme: HTTPS
-          periodSeconds: 10
+        - --cert-dir=/tmp
+        - --secure-port=4443
+        - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
+        - --kubelet-use-node-status-port
+        - --metric-resolution=15s
         livenessProbe:
           failureThreshold: 3
           httpGet:
@@ -51,19 +43,35 @@ spec:
             port: https
             scheme: HTTPS
           periodSeconds: 10
-        securityContext:
-          readOnlyRootFilesystem: true
-          runAsUser: 1000
-          runAsNonRoot: true
+        ports:
+        - containerPort: 4443
+          name: https
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /readyz
+            port: https
+            scheme: HTTPS
+          initialDelaySeconds: 20
+          periodSeconds: 10
         resources:
-          limits:
-            cpu: 50m
-            memory: 100Mi
           requests:
-            cpu: 50m
-            memory: 100Mi
-        imagePullPolicy: IfNotPresent
+            cpu: 100m
+            memory: 200Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1000
         volumeMounts:
-        - name: tmp-dir
-          mountPath: /tmp
+        - mountPath: /tmp
+          name: tmp-dir
+      nodeSelector:
+        kubernetes.io/os: linux
+      priorityClassName: system-cluster-critical
+      serviceAccountName: metrics-server
+      volumes:
+      - emptyDir: {}
+        name: tmp-dir
 

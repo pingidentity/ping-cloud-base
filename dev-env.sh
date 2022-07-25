@@ -143,6 +143,9 @@
 # ORCH_API_SSM_PATH_PREFIX  | The prefix of the SSM path that contains MyPing    | /pcpt/orch-api
 #                           | state data required for the P14C/P1AS integration. |
 #                           |                                                    |
+# SERVICE_SSM_PATH_PREFIX   | The prefix of the SSM path that contains Services  |
+#                           | data for the cluster                               | /pcpt/service
+#                           |                                                    |
 # DEPLOY_FILE               | The name of the file where the final deployment    | /tmp/deploy.yaml
 #                           | spec is saved before applying it.                  |
 #                           |                                                    |
@@ -156,16 +159,19 @@
 # MYSQL_SERVICE_HOST        | The hostname of the MySQL database server.         | beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
 #                           |                                                    |
 # MYSQL_USER                | The DBA user of the PingCentral MySQL RDS          | The SSM path:
-#                           | database.                                          | ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#username
+#                           | database.                                          | ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username
 #                           |                                                    |
 # MYSQL_PASSWORD            | The DBA password of the PingCentral MySQL RDS      | The SSM path:
-#                           | database.                                          | ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#password
+#                           | database.                                          | ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#password
 #                           |                                                    |
 # PING_IDENTITY_DEVOPS_USER | A user with license to run Ping Software.          | The SSM path:
 #                           |                                                    | ssm://pcpt/devops-license/user
 #                           |                                                    |
 # PING_IDENTITY_DEVOPS_KEY  | The key to the above user.                         | The SSM path:
 #                           |                                                    | ssm://pcpt/devops-license/key
+#                           |                                                    |
+# LEGACY_LOGGING            | Flag indicating where we should send app logs -    | True
+#                           | to CloudWatch(if True) or to ELK (if False)        |
 ########################################################################################################################
 
 #
@@ -230,6 +236,7 @@ log "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 log "Initial TOPOLOGY_DESCRIPTOR_FILE: ${TOPOLOGY_DESCRIPTOR_FILE}"
 log "Initial PLATFORM_EVENT_QUEUE_NAME: ${PLATFORM_EVENT_QUEUE_NAME}"
 log "Initial ORCH_API_SSM_PATH_PREFIX: ${ORCH_API_SSM_PATH_PREFIX}"
+log "Initial SERVICE_SSM_PATH_PREFIX: ${SERVICE_SSM_PATH_PREFIX}"
 log "Initial REGION: ${REGION}"
 log "Initial REGION_NICK_NAME: ${REGION_NICK_NAME}"
 log "Initial PRIMARY_REGION: ${PRIMARY_REGION}"
@@ -250,6 +257,8 @@ log "Initial MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 log "Initial MYSQL_USER: ${MYSQL_USER}"
 log "Initial MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
 
+log "Initial LEGACY_LOGGING: ${LEGACY_LOGGING}"
+
 log "Initial PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
 
 log "Initial DEPLOY_FILE: ${DEPLOY_FILE}"
@@ -268,6 +277,7 @@ export IS_MULTI_CLUSTER="${IS_MULTI_CLUSTER}"
 
 export PLATFORM_EVENT_QUEUE_NAME="${PLATFORM_EVENT_QUEUE_NAME:-v2_platform_event_queue.fifo}"
 export ORCH_API_SSM_PATH_PREFIX="${ORCH_API_SSM_PATH_PREFIX:-/pcpt/orch-api}"
+export SERVICE_SSM_PATH_PREFIX="${SERVICE_SSM_PATH_PREFIX:-/${TENANT_NAME}/pcpt/service}"
 
 export REGION="${REGION:-us-east-2}"
 export REGION_NICK_NAME="${REGION_NICK_NAME:-${REGION}}"
@@ -287,11 +297,13 @@ export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
 
 export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com}"
-export MYSQL_USER="${MYSQL_USER:-ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#username}"
-export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://aws/reference/secretsmanager/pcpt/ping-central/dbserver#password}"
+export MYSQL_USER="${MYSQL_USER:-ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username}"
+export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#password}"
 
 export PING_IDENTITY_DEVOPS_USER="${PING_IDENTITY_DEVOPS_USER:-ssm://pcpt/devops-license/user}"
 export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY:-ssm://pcpt/devops-license/key}"
+
+export LEGACY_LOGGING="${LEGACY_LOGGING:-True}"
 
 # MySQL database names cannot have dashes. So transform dashes into underscores.
 ENV_NAME_NO_DASHES=$(echo ${BELUGA_ENV_NAME} | tr '-' '_')
@@ -308,6 +320,7 @@ log "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 log "Using TOPOLOGY_DESCRIPTOR_FILE: ${TOPOLOGY_DESCRIPTOR_FILE}"
 log "Using PLATFORM_EVENT_QUEUE_NAME: ${PLATFORM_EVENT_QUEUE_NAME}"
 log "Using ORCH_API_SSM_PATH_PREFIX: ${ORCH_API_SSM_PATH_PREFIX}"
+log "Using SERVICE_SSM_PATH_PREFIX: ${SERVICE_SSM_PATH_PREFIX}"
 log "Using REGION: ${REGION}"
 log "Using REGION_NICK_NAME: ${REGION_NICK_NAME}"
 log "Using PRIMARY_REGION: ${PRIMARY_REGION}"
@@ -330,6 +343,8 @@ log "Using MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
 log "Using MYSQL_DATABASE: ${MYSQL_DATABASE}"
 
 log "Using PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
+
+log "Using LEGACY_LOGGING: ${LEGACY_LOGGING}"
 
 log "Using DEPLOY_FILE: ${DEPLOY_FILE}"
 log "Using K8S_CONTEXT: ${K8S_CONTEXT}"
@@ -436,9 +451,12 @@ export MYSQL_DATABASE=${MYSQL_DATABASE}
 
 export PLATFORM_EVENT_QUEUE_NAME=${PLATFORM_EVENT_QUEUE_NAME}
 export ORCH_API_SSM_PATH_PREFIX=${ORCH_API_SSM_PATH_PREFIX}
+export SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX}
 
 export PING_IDENTITY_DEVOPS_USER=${PING_IDENTITY_DEVOPS_USER}
 export PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
+
+export LEGACY_LOGGING=${LEGACY_LOGGING}
 
 export PROJECT_DIR=${PWD}
 export AWS_PROFILE=${AWS_PROFILE:-csg}

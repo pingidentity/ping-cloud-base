@@ -1,13 +1,17 @@
 ---
 # Source: nri-bundle/charts/kube-state-metrics/templates/deployment.yaml
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nri-bundle-kube-state-metrics
   namespace: newrelic
   labels:
+    nri-bundle.version: 4.5.8
     app.kubernetes.io/name: kube-state-metrics
     helm.sh/chart: "kube-state-metrics-2.13.2"
+    app.kubernetes.io/instance: "nri-bundle"
+    app.kubernetes.io/managed-by: "Helm"
     app.kubernetes.io/version: "1.9.8"
 spec:
   selector:
@@ -17,7 +21,9 @@ spec:
   template:
     metadata:
       labels:
+        nri-bundle.version: 4.5.8
         app.kubernetes.io/name: kube-state-metrics
+        app.kubernetes.io/instance: "nri-bundle"
     spec:
       hostNetwork: false
       serviceAccountName: nri-bundle-kube-state-metrics
@@ -57,7 +63,7 @@ spec:
         - --collectors=volumeattachments
         - --telemetry-port=8081
         imagePullPolicy: IfNotPresent
-        image: k8s.gcr.io/kube-state-metrics/kube-state-metrics:v1.9.8
+        image: "k8s.gcr.io/kube-state-metrics/kube-state-metrics:v1.9.8"
         ports:
         - containerPort: 8080
         livenessProbe:
@@ -82,9 +88,11 @@ metadata:
   name: nri-bundle-nri-metadata-injection
   namespace: newrelic
   labels:
+    nri-bundle.version: 4.5.8
+    app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: nri-metadata-injection
-    helm.sh/chart: nri-metadata-injection-2.1.0
-    app.kubernetes.io/version: "1.6.0"
+    app.kubernetes.io/version: 1.7.0
+    helm.sh/chart: nri-metadata-injection-3.0.4
 spec:
   replicas: 1
   selector:
@@ -93,19 +101,26 @@ spec:
   template:
     metadata:
       labels:
+        nri-bundle.version: 4.5.8
+        app.kubernetes.io/instance: nri-bundle
         app.kubernetes.io/name: nri-metadata-injection
-        helm.sh/chart: nri-metadata-injection-2.1.0
-        app.kubernetes.io/version: "1.6.0"
+        app.kubernetes.io/version: 1.7.0
+        helm.sh/chart: nri-metadata-injection-3.0.4
       annotations: {}
     spec:
       # Switching from dedicated service account to default one must be
       # done explicitly, otherwise upgrade fails, trying to use old
       # service account.
       serviceAccount: default
+      securityContext:
+        fsGroup: 1001
+        runAsUser: 1001
+        runAsGroup: 1001
+      hostNetwork: false
       containers:
       - name: nri-metadata-injection
-        image: public.ecr.aws/r2h3l6e4/newrelic/k8s-metadata-injection:1.6.0
-        imagePullPolicy: "IfNotPresent"
+        image: "public.ecr.aws/r2h3l6e4/newrelic/k8s-metadata-injection:1.7.0"
+        imagePullPolicy: IfNotPresent
         env:
         - name: clusterName
           valueFrom:
@@ -115,8 +130,8 @@ spec:
           - containerPort: 8443
             protocol: TCP
         volumeMounts:
-          - name: tls-key-cert-pair
-            mountPath: /etc/tls-key-cert-pair
+        - name: tls-key-cert-pair
+          mountPath: /etc/tls-key-cert-pair
         readinessProbe:
           httpGet:
             path: /health
@@ -124,15 +139,16 @@ spec:
           initialDelaySeconds: 1
           periodSeconds: 1
         resources:
+          
           limits:
             memory: 80M
           requests:
             cpu: 100m
             memory: 30M
       volumes:
-        - name: tls-key-cert-pair
-          secret:
-            secretName: nri-bundle-nri-metadata-injection-admission
+      - name: tls-key-cert-pair
+        secret:
+          secretName: nri-bundle-nri-metadata-injection-admission
 
 ---
 # Source: nri-bundle/charts/nri-prometheus/templates/deployment.yaml
@@ -143,9 +159,11 @@ metadata:
   name: nri-bundle-nri-prometheus
   namespace: newrelic
   labels:
+    nri-bundle.version: 4.5.8
+    app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: nri-prometheus
-    helm.sh/chart: nri-prometheus-1.10.0
-    app.kubernetes.io/version: "2.9.0"
+    app.kubernetes.io/version: 2.16.1
+    helm.sh/chart: nri-prometheus-2.1.5
 spec:
   replicas: 1
   selector:
@@ -153,14 +171,21 @@ spec:
       app.kubernetes.io/name: nri-prometheus
   template:
     metadata:
+      annotations:
+        checksum/config: ccb1eaf63851097c4abf7fd036baccf66b0979e728f14bbe687d21a691119c17
       labels:
+        nri-bundle.version: 4.5.8
+        app.kubernetes.io/instance: nri-bundle
         app.kubernetes.io/name: nri-prometheus
-        helm.sh/chart: nri-prometheus-1.10.0
-        app.kubernetes.io/version: "2.9.0"
     spec:
-      serviceAccountName: nri-prometheus
+      serviceAccountName: nri-bundle-nri-prometheus
       initContainers:
         - name: wait-for-nr-license-secret
+          securityContext:
+            runAsGroup: 2000
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
           image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
@@ -173,7 +198,8 @@ spec:
               value: "newrelic-license-key"
       containers:
       - name: nri-prometheus
-        image: public.ecr.aws/r2h3l6e4/newrelic/nri-prometheus:2.9.0
+        image: "public.ecr.aws/r2h3l6e4/newrelic/nri-prometheus:2.16.1"
+        imagePullPolicy: 
         args:
           - "--configfile=/etc/nri-prometheus/config.yaml"
         ports:
@@ -205,29 +231,36 @@ metadata:
   name: nri-bundle-nri-kube-events
   namespace: newrelic
   labels:
-    app: nri-kube-events
+    nri-bundle.version: 4.5.8
+    app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: nri-kube-events
-    helm.sh/chart: nri-kube-events-1.10.0
-    app.kubernetes.io/version: "1.6.0"
+    app.kubernetes.io/version: 1.8.0
+    helm.sh/chart: nri-kube-events-2.2.4
   annotations:
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: nri-kube-events
   template:
     metadata:
       labels:
-        app: nri-kube-events
+        nri-bundle.version: 4.5.8
+        app.kubernetes.io/instance: nri-bundle
         app.kubernetes.io/name: nri-kube-events
-        helm.sh/chart: nri-kube-events-1.10.0
-        app.kubernetes.io/version: "1.6.0"
+        app.kubernetes.io/version: 1.8.0
+        helm.sh/chart: nri-kube-events-2.2.4
     spec:
+      hostNetwork: true
       securityContext:
-        runAsUser: 1000
         runAsNonRoot: true
+        runAsUser: 1000
       initContainers:
         - name: wait-for-nr-license-secret
+          securityContext:
+            runAsGroup: 2000
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
           image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
@@ -240,7 +273,7 @@ spec:
               value: "newrelic-license-key"
       containers:
         - name: kube-events
-          image: public.ecr.aws/r2h3l6e4/newrelic/nri-kube-events:1.6.0
+          image: public.ecr.aws/r2h3l6e4/newrelic/nri-kube-events:1.8.0
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: false
@@ -250,8 +283,8 @@ spec:
           volumeMounts:
             - name: config-volume
               mountPath: /app/config
-        - name: infra-agent
-          image: public.ecr.aws/r2h3l6e4/newrelic/k8s-events-forwarder:1.19.2
+        - name: forwarder
+          image: public.ecr.aws/r2h3l6e4/newrelic/k8s-events-forwarder:1.22.0
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: false
@@ -265,11 +298,19 @@ spec:
                 secretKeyRef:
                   name: newrelic-license-key
                   key: NEW_RELIC_LICENSE_KEY
+
             # Using FORWARD_ONLY mode to avoid the entity creation for the events.
             - name: NRIA_IS_SECURE_FORWARD_ONLY
               value: "false"
             - name: NRIA_IS_FORWARD_ONLY
               value: "true"
+
+            - name: NRIA_OVERRIDE_HOSTNAME_SHORT
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: spec.nodeName
+
           volumeMounts:
             - mountPath: /var/db/newrelic-infra/data
               name: tmpfs-data
@@ -277,8 +318,19 @@ spec:
               name: tmpfs-user-data
             - mountPath: /tmp
               name: tmpfs-tmp
+            - name: config
+              mountPath: /etc/newrelic-infra.yml
+              subPath: newrelic-infra.yml
+            - name: pingmetadata
+              mountPath: /etc/newrelic-infra/integrations.d
       serviceAccountName: nri-bundle-nri-kube-events
       volumes:
+        - name: config
+          configMap:
+            name: nri-bundle-nri-kube-events-agent-config
+            items:
+            - key: newrelic-infra.yml
+              path: newrelic-infra.yml
         - name: config-volume
           configMap:
             name: nri-bundle-nri-kube-events-config
@@ -288,32 +340,44 @@ spec:
           emptyDir: {}
         - name: tmpfs-tmp
           emptyDir: {}
+        - name: pingmetadata
+          configMap:
+            name: pingmetadata
+            items:
+              - key: "pingmetadata.yaml"
+                path: "pingmetadata.yaml"
 
 ---
-# Source: New Relic Metadata deployment
+# Source: nri-bundle/charts/newrelic-infrastructure/templates/ksm/deployment.yaml
 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nri-bundle-newrelic-metadata
   namespace: newrelic
   labels:
-    app: newrelic-infrastructure
-    chart: newrelic-infrastructure-1.6.2
-    release: nri-bundle
-    mode: privileged
+    nri-bundle.version: 4.5.8
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/name: newrelic-infrastructure
+    app.kubernetes.io/version: 3.2.0
+    helm.sh/chart: newrelic-infrastructure-3.5.3
+    # mode: privileged
+  name: nri-bundle-nrk8s-ksm
 spec:
-  replicas: 1
+  strategy: 
+    type: Recreate
   selector:
     matchLabels:
-      app: newrelic-infrastructure
-      release: nri-bundle
+      app.kubernetes.io/instance: nri-bundle
+      app.kubernetes.io/name: newrelic-infrastructure
+      app.kubernetes.io/component: ksm
   template:
     metadata:
       labels:
-        app: newrelic-infrastructure
-        release: nri-bundle
-        mode: privileged
+        nri-bundle.version: 4.5.8
+        app.kubernetes.io/instance: nri-bundle
+        app.kubernetes.io/name: newrelic-infrastructure
+        # mode: privileged
+        app.kubernetes.io/component: ksm
       annotations: {}
     spec:
       serviceAccountName: nri-bundle-newrelic-infrastructure
@@ -321,6 +385,11 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       initContainers:
         - name: wait-for-nr-license-secret
+          securityContext:
+            runAsGroup: 2000
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
           image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
@@ -332,27 +401,63 @@ spec:
             - name: "SECRET_NAME"
               value: "newrelic-license-key"
       containers:
-        - name: newrelic-infrastructure
-          image: public.ecr.aws/r2h3l6e4/newrelic/infrastructure-k8s:1.26.6
-          imagePullPolicy: "IfNotPresent"
+        - name: ksm
+          image: "public.ecr.aws/r2h3l6e4/newrelic/nri-kubernetes:3.2.1"
+          imagePullPolicy: IfNotPresent
           securityContext:
-            privileged: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 2000
+            runAsUser: 1000
+          env:
+            - name: "NRI_KUBERNETES_SINK_HTTP_PORT"
+              value: "8002"
+            - name: "NRI_KUBERNETES_CLUSTERNAME"
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['CLUSTER_NAME']
+            - name: "NRI_KUBERNETES_VERBOSE"
+              value: "false"
+
+            - name: "NRI_KUBERNETES_NODENAME"
+              valueFrom:
+                fieldRef:
+                  apiVersion: "v1"
+                  fieldPath: "spec.nodeName"
+          volumeMounts:
+            - name: nri-kubernetes-config
+              mountPath: /etc/newrelic-infra/nri-kubernetes.yml
+              subPath: nri-kubernetes.yml
+            - name: pingmetadata
+              mountPath: /etc/newrelic-infra/integrations.d
+          resources: 
+            limits:
+              memory: 850M
+            requests:
+              cpu: 100m
+              memory: 150M
+        - name: forwarder
+          image: "public.ecr.aws/r2h3l6e4/newrelic/k8s-events-forwarder:1.24.1"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 2000
+            runAsUser: 1000
+          ports:
+            - containerPort: 8002
           env:
             - name: NRIA_LICENSE_KEY
               valueFrom:
                 secretKeyRef:
                   name: newrelic-license-key
                   key: NEW_RELIC_LICENSE_KEY
-            - name: "CLUSTER_NAME"
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.annotations['CLUSTER_NAME']
-            - name: "NRK8S_NODE_NAME"
+            - name: "NRIA_OVERRIDE_HOSTNAME_SHORT"
               valueFrom:
                 fieldRef:
                   apiVersion: "v1"
                   fieldPath: "spec.nodeName"
-            - name: "NRIA_DISPLAY_NAME"
+            - name: "K8S_NODE_NAME"
               valueFrom:
                 fieldRef:
                   apiVersion: "v1"
@@ -362,42 +467,57 @@ spec:
             - name: "NRIA_PASSTHROUGH_ENVIRONMENT"
               value: "KUBERNETES_SERVICE_HOST,KUBERNETES_SERVICE_PORT,CLUSTER_NAME,CADVISOR_PORT,NRK8S_NODE_NAME,KUBE_STATE_METRICS_URL,KUBE_STATE_METRICS_POD_LABEL,TIMEOUT,ETCD_TLS_SECRET_NAME,ETCD_TLS_SECRET_NAMESPACE,API_SERVER_SECURE_PORT,KUBE_STATE_METRICS_SCHEME,KUBE_STATE_METRICS_PORT,SCHEDULER_ENDPOINT_URL,ETCD_ENDPOINT_URL,CONTROLLER_MANAGER_ENDPOINT_URL,API_SERVER_ENDPOINT_URL,DISABLE_KUBE_STATE_METRICS,DISCOVERY_CACHE_TTL"
           volumeMounts:
-            - name: dev
-              mountPath: /dev
-            - name: host-docker-socket
-              mountPath: /var/run/docker.sock
-            - name: log
-              mountPath: /var/log
-            - name: host-volume
-              mountPath: /host
-              readOnly: true
+            - mountPath: /var/db/newrelic-infra/data
+              name: forwarder-tmpfs-data
+            - mountPath: /var/db/newrelic-infra/user_data
+              name: forwarder-tmpfs-user-data
+            - mountPath: /tmp
+              name: forwarder-tmpfs-tmp
+            - name: config
+              mountPath: /etc/newrelic-infra.yml
+              subPath: newrelic-infra.yml
             - name: pingmetadata
               mountPath: /etc/newrelic-infra/integrations.d
-          resources:
+          resources: 
             limits:
-              memory: 300M
+              memory: 850M
             requests:
               cpu: 100m
               memory: 150M
       volumes:
-        - name: dev
-          hostPath:
-            path: /dev
-        - name: host-docker-socket
-          hostPath:
-            path: /var/run/docker.sock
-        - name: log
-          hostPath:
-            path: /var/log
-        - name: host-volume
-          hostPath:
-            path: /
+        - name: nri-kubernetes-config
+          configMap:
+            name: nri-bundle-nrk8s-ksm
+            items:
+              - key: nri-kubernetes.yml
+                path: nri-kubernetes.yml
+        - name: forwarder-tmpfs-data
+          emptyDir: {}
+        - name: forwarder-tmpfs-user-data
+          emptyDir: {}
+        - name: forwarder-tmpfs-tmp
+          emptyDir: {}
+        - name: config
+          configMap:
+            name: nri-bundle-nrk8s-agent-ksm
+            items:
+              - key: newrelic-infra.yml
+                path: newrelic-infra.yml
         - name: pingmetadata
           configMap:
             name: pingmetadata
             items:
               - key: "pingmetadata.yaml"
                 path: "pingmetadata.yaml"
+      affinity:
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: kube-state-metrics
+              topologyKey: kubernetes.io/hostname
+            weight: 100
       tolerations:
         - effect: NoSchedule
           operator: Exists

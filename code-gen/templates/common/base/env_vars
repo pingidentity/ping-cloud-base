@@ -49,6 +49,7 @@ PLATFORM_EVENT_QUEUE_NAME=${PLATFORM_EVENT_QUEUE_NAME}
 PLATFORM_EVENT_QUEUE_POLL_BATCH_SIZE=1
 PLATFORM_EVENT_QUEUE_POLL_INTERVAL_SECONDS=2
 ORCH_API_SSM_PATH_PREFIX=${ORCH_API_SSM_PATH_PREFIX}
+SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX}
 
 ############################################################
 # Cluster state repo details
@@ -57,7 +58,6 @@ ORCH_API_SSM_PATH_PREFIX=${ORCH_API_SSM_PATH_PREFIX}
 KNOWN_HOSTS_CLUSTER_STATE_REPO="${KNOWN_HOSTS_CLUSTER_STATE_REPO}"
 
 CLUSTER_STATE_REPO_URL=${CLUSTER_STATE_REPO_URL}
-CLUSTER_STATE_REPO_PATH=${CLUSTER_STATE_REPO_PATH_DERIVED}
 CLUSTER_STATE_REPO_BRANCH=${CLUSTER_STATE_REPO_BRANCH}
 
 # The application reconciliation timeout in seconds for ArgoCD, i.e. how frequently ArgoCD should poll the
@@ -80,10 +80,6 @@ ECR_REGISTRY_NAME=${ECR_REGISTRY_NAME}
 # The tenant or customer name
 TENANT_NAME=${TENANT_NAME}
 
-# This variable's value will be used as the prefix to distinguish between worker apps for different CDEs for a
-# single P14C customer. All of these apps will be created within the "Administrators" environment in the tenant.
-ENVIRONMENT_PREFIX=${ENVIRONMENT_PREFIX}
-
 ############################################################
 # Server profile variables
 ############################################################
@@ -100,8 +96,8 @@ ENVIRONMENT_TYPE=${ENVIRONMENT_TYPE}
 ENV=${ENV}
 KUSTOMIZE_BASE=${KUSTOMIZE_BASE}
 
-# The name of the environment as it will appear on the NewRelic console.
-NEW_RELIC_ENVIRONMENT_NAME=${NEW_RELIC_ENVIRONMENT_NAME}
+# Current app logs destination (True = CW, False = ELK)
+LEGACY_LOGGING=True
 
 ############################################################
 # Lets Encrypt server
@@ -112,6 +108,7 @@ LETS_ENCRYPT_SERVER=${LETS_ENCRYPT_SERVER}
 # PingCommon environment variables
 ############################################################
 USER_BASE_DN=${USER_BASE_DN}
+ECR_ENV=/dev
 
 ############################################################
 # PingFederate variables for environment
@@ -153,21 +150,21 @@ PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 ############################################################
 # Ping application image tags
 ############################################################
-PINGACCESS_IMAGE_TAG=6.3.3-v1.0.28
-PINGACCESS_WAS_IMAGE_TAG=6.3.3-v1.0.28
-PINGFEDERATE_IMAGE_TAG=11.0.2-v1.0.41
-PINGDIRECTORY_IMAGE_TAG=8.3.0.5-v1.0.37
-PINGDELEGATOR_IMAGE_TAG=4.8.0-v1.0.12
-PINGCENTRAL_IMAGE_TAG=1.8.1-v1.0.26
-PINGDATASYNC_IMAGE_TAG=8.2.0.6-v1.0.16
+PINGACCESS_IMAGE_TAG=v1.15-release-branch-latest
+PINGACCESS_WAS_IMAGE_TAG=v1.15-release-branch-latest
+PINGFEDERATE_IMAGE_TAG=v1.15-release-branch-latest
+PINGDIRECTORY_IMAGE_TAG=v1.15-release-branch-latest
+PINGDELEGATOR_IMAGE_TAG=v1.15-release-branch-latest
+PINGCENTRAL_IMAGE_TAG=v1.15-release-branch-latest
+PINGDATASYNC_IMAGE_TAG=v1.15-release-branch-latest
 
 ############################################################
 # Ping solution image tags
 ############################################################
-METADATA_IMAGE_TAG=v1.0.6
-P14C_BOOTSTRAP_IMAGE_TAG=v1.3.0
-P14C_INTEGRATION_IMAGE_TAG=v114
-ANSIBLE_BELUGA_IMAGE_TAG=v1.0.6
+METADATA_IMAGE_TAG=v1.15-release-branch-latest
+P14C_BOOTSTRAP_IMAGE_TAG=v1.15-release-branch-latest
+P14C_INTEGRATION_IMAGE_TAG=v1.15-release-branch-latest
+ANSIBLE_BELUGA_IMAGE_TAG=v1.15-release-branch-latest
 
 ############################################################
 # Cluster name variables
@@ -176,9 +173,8 @@ CLUSTER_NAME=${CLUSTER_NAME}
 CLUSTER_NAME_LC=${CLUSTER_NAME_LC}
 
 ############################################################
-# DNS zones
+# Primary DNS zone
 ############################################################
-DNS_ZONE=${DNS_ZONE}
 PRIMARY_DNS_ZONE=${PRIMARY_DNS_ZONE}
 
 ############################################################

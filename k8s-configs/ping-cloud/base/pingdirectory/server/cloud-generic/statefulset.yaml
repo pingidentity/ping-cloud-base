@@ -64,11 +64,11 @@ spec:
       terminationGracePeriodSeconds: 300
       initContainers:
         - name: pingdirectory-init
-          # FIXME PDO-3574: switch to same user as app
           securityContext:
             runAsGroup: 9999
             runAsNonRoot: true
             runAsUser: 9031
+            allowPrivilegeEscalation: false
           image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
           imagePullPolicy: IfNotPresent
           command:
@@ -99,13 +99,13 @@ spec:
               mountPath: /logger.lib.sh
               subPath: logger.lib.sh
         - name: newrelic-tags-exporter
-          # FIXME PDO-3575: switch to same user as app
           securityContext:
             runAsGroup: 9999
             runAsNonRoot: true
             runAsUser: 9031
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v1.1.0
-          imagePullPolicy: IfNotPresent
+            allowPrivilegeEscalation: false
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v1.15-release-branch-latest
+          imagePullPolicy: Always
           envFrom:
           - configMapRef:
               name: pingdirectory-environment-variables
@@ -138,6 +138,7 @@ spec:
             runAsGroup: 9999
             runAsNonRoot: true
             runAsUser: 9031
+            allowPrivilegeEscalation: false
           image: public.ecr.aws/r2h3l6e4/busybox:1.32
           imagePullPolicy: IfNotPresent
           command:
@@ -164,8 +165,8 @@ spec:
             runAsNonRoot: true
             runAsUser: 9031
             allowPrivilegeEscalation: false
-          image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory:8.3.0.5-v1.0.37
-          imagePullPolicy: IfNotPresent
+          image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.15-release-branch-latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 1389
               name: ldap
@@ -212,6 +213,11 @@ spec:
                 secretKeyRef:
                   name: pingcommon-passwords
                   key: PF_LDAP_PASSWORD
+            - name: ACME_CERT_KEYSTORE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pingcommon-passwords
+                  key: ACME_CERT_KEYSTORE_PASSWORD
             - name: DA_OAUTH_TOKEN_VALIDATOR_SECRET
               valueFrom:
                 secretKeyRef:
@@ -244,9 +250,6 @@ spec:
               mountPath: /usr/local/bin/kubectl
               subPath: kubectl
             - name: data-dir
-              mountPath: /usr/local/bin/skbn
-              subPath: skbn
-            - name: data-dir
               mountPath: /opt/staging/hooks/logger.lib.sh
               subPath: logger.lib.sh
             - name: data-dir
@@ -259,6 +262,9 @@ spec:
               mountPath: /opt/out
             - name: pingdirectory-passwords
               mountPath: /usr/local/secrets
+              readOnly: true
+            - name: acme-tls-cert
+              mountPath: /usr/local/secrets/certs
               readOnly: true
             - name: pingdirectory-license
               mountPath: /opt/in/instance/PingDirectory.lic
@@ -365,6 +371,11 @@ spec:
         - name: pingdirectory-passwords
           secret:
             secretName: pingdirectory-passwords
+            optional: true
+            defaultMode: 0400
+        - name: acme-tls-cert
+          secret:
+            secretName: acme-tls-cert
             optional: true
             defaultMode: 0400
         - name: pingdirectory-statsd-mapping

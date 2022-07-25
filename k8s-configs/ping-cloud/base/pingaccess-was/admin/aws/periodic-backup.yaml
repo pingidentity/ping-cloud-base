@@ -45,8 +45,11 @@ spec:
   schedule: "30 * * * *"
   successfulJobsHistoryLimit: 0
   failedJobsHistoryLimit: 1
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 90
   jobTemplate:
     spec:
+      backoffLimit: 0
       template:
         spec:
           serviceAccount: ping-serviceaccount
@@ -63,8 +66,8 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: pingaccess-was-backup
-            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was:6.3.3-v1.0.28
-            imagePullPolicy: IfNotPresent
+            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was/dev:v1.15-release-branch-latest
+            imagePullPolicy: Always
             securityContext:
               runAsGroup: 9999
               runAsNonRoot: true

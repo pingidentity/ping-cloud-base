@@ -10,26 +10,28 @@ metadata:
     argocd.argoproj.io/hook: Sync
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
   labels:
+    nri-bundle.version: 4.5.8
     app: nri-metadata-injection-admission-create
-    app.kubernetes.io/name: nri-metadata-injection
-    helm.sh/chart: nri-metadata-injection-2.1.0
     app.kubernetes.io/instance: nri-bundle
-    app.kubernetes.io/version: "1.6.0"
+    app.kubernetes.io/name: nri-metadata-injection
+    app.kubernetes.io/version: 1.7.0
+    helm.sh/chart: nri-metadata-injection-3.0.4
 spec:
   ttlSecondsAfterFinished: 30
   template:
     metadata:
       name: nri-bundle-nri-metadata-injection-admission-create
       labels:
+        nri-bundle.version: 4.5.8
         app: nri-metadata-injection-admission-create
-        app.kubernetes.io/name: nri-metadata-injection
-        helm.sh/chart: nri-metadata-injection-2.1.0
         app.kubernetes.io/instance: nri-bundle
-        app.kubernetes.io/version: "1.6.0"
+        app.kubernetes.io/name: nri-metadata-injection
+        app.kubernetes.io/version: 1.7.0
+        helm.sh/chart: nri-metadata-injection-3.0.4
     spec:
       containers:
         - name: create
-          image: k8s.gcr.io/ingress-nginx/kube-webhook-certgen:v1.0
+          image: "k8s.gcr.io/ingress-nginx/kube-webhook-certgen:v1.1.1"
           imagePullPolicy: IfNotPresent
           args:
             - create
@@ -57,26 +59,28 @@ metadata:
     argocd.argoproj.io/hook: PostSync
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
   labels:
+    nri-bundle.version: 4.5.8
     app: nri-metadata-injection-admission-patch
-    app.kubernetes.io/name: nri-metadata-injection
-    helm.sh/chart: nri-metadata-injection-2.1.0
     app.kubernetes.io/instance: nri-bundle
-    app.kubernetes.io/version: "1.6.0"
+    app.kubernetes.io/name: nri-metadata-injection
+    app.kubernetes.io/version: 1.7.0
+    helm.sh/chart: nri-metadata-injection-3.0.4
 spec:
   ttlSecondsAfterFinished: 30
   template:
     metadata:
       name: nri-bundle-nri-metadata-injection-admission-patch
       labels:
+        nri-bundle.version: 4.5.8
         app: nri-metadata-injection-admission-patch
-        app.kubernetes.io/name: nri-metadata-injection
-        helm.sh/chart: nri-metadata-injection-2.1.0
         app.kubernetes.io/instance: nri-bundle
-        app.kubernetes.io/version: "1.6.0"
+        app.kubernetes.io/name: nri-metadata-injection
+        app.kubernetes.io/version: 1.7.0
+        helm.sh/chart: nri-metadata-injection-3.0.4
     spec:
       containers:
         - name: patch
-          image: k8s.gcr.io/ingress-nginx/kube-webhook-certgen:v1.0
+          image: "k8s.gcr.io/ingress-nginx/kube-webhook-certgen:v1.1.1"
           imagePullPolicy: IfNotPresent
           args:
             - patch
@@ -93,8 +97,8 @@ spec:
         runAsUser: 2000
 
 ---
-
 # This job copies NR License key secret object to 'newrelic' namespace
+
 apiVersion: batch/v1
 kind: Job
 metadata:

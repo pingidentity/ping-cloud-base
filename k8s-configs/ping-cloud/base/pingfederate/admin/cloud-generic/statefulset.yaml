@@ -23,10 +23,11 @@ spec:
         cluster: pingfederate-cluster
         role: pingfederate-admin
         entitled-app: "true"
+        pod-reaper: enabled
       annotations:
         lastUpdateReason: "NA"
     spec:
-      serviceAccount: ping-serviceaccount
+      serviceAccountName: ping-serviceaccount
       initContainers:
       - name: pingfederate-p14c-init
         securityContext:
@@ -34,8 +35,8 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration:v114
-        imagePullPolicy: IfNotPresent
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v1.15-release-branch-latest
+        imagePullPolicy: Always
         env:
         - name: NAMESPACE
           valueFrom:
@@ -46,11 +47,11 @@ spec:
         - name: data-dir
           mountPath: /opt/staging
       - name: pingfederate-init
-        # FIXME PDO-3574: switch to same user as app
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
+          allowPrivilegeEscalation: false
         image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
         imagePullPolicy: IfNotPresent
         command:
@@ -81,13 +82,13 @@ spec:
         - configMapRef:
             name: pingcommon-environment-variables
       - name: newrelic-tags-exporter
-        # FIXME PDO-3575: switch to same user as app
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v1.1.0
-        imagePullPolicy: IfNotPresent
+          allowPrivilegeEscalation: false
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v1.15-release-branch-latest
+        imagePullPolicy: Always
         envFrom:
         - configMapRef:
             name: pingfederate-admin-environment-variables
@@ -120,6 +121,7 @@ spec:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
+          allowPrivilegeEscalation: false
         image: public.ecr.aws/r2h3l6e4/busybox:1.32
         imagePullPolicy: IfNotPresent
         command:
@@ -141,13 +143,13 @@ spec:
             name: pingcommon-environment-variables
       containers:
       - name: pingfederate-admin
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:11.0.2-v1.0.41
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate/dev:v1.15-release-branch-latest
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_CONSOLE
@@ -215,9 +217,6 @@ spec:
         - name: data-dir
           mountPath: /usr/local/bin/kubectl
           subPath: kubectl
-        - name: data-dir
-          mountPath: /usr/local/bin/skbn
-          subPath: skbn
         - name: data-dir
           mountPath: /opt/staging/hooks/logger.lib.sh
           subPath: logger.lib.sh

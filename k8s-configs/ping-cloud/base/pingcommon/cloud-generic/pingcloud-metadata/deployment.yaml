@@ -20,8 +20,8 @@ spec:
       serviceAccount: ping-serviceaccount
       containers:
       - name: pingcloud-metadata
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/metadata:v1.0.6
-        imagePullPolicy: IfNotPresent
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/metadata/dev:v1.15-release-branch-latest
+        imagePullPolicy: Always
         env:
         - name: NAMESPACE
           valueFrom:

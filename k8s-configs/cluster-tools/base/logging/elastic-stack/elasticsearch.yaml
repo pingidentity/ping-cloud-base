@@ -11,7 +11,7 @@ data:
 
     # log action execution errors for easier debugging
     logger.action.name = org.elasticsearch.action
-    logger.action.level = debug
+    logger.action.level = info
 
     appender.rolling.type = Console
     appender.rolling.name = rolling
@@ -104,14 +104,19 @@ data:
     logger.saml2_decrypt.level = fatal
 
 
+    logger.com_amazonaws_auth_profile_internal_BasicProfileConfigFileLoader.name = com.amazonaws.auth.profile.internal.BasicProfileConfigFileLoader
+    logger.com_amazonaws_auth_profile_internal_BasicProfileConfigFileLoader.level = error
+
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: es-cluster
+  name: es-cluster-hot
 spec:
   serviceName: elasticsearch
   replicas: 3
+  updateStrategy:
+    type: RollingUpdate
   selector:
     matchLabels:
       app: elasticsearch
@@ -149,18 +154,20 @@ spec:
       containers:
 
       - name: elasticsearch
-        image: public.ecr.aws/r2h3l6e4/elasticsearch/elasticsearch:7.16.2
+        image: public.ecr.aws/r2h3l6e4/elasticsearch/elasticsearch:8.1.3
 
         securityContext:
+          runAsNonRoot: true
           runAsUser: 1000
           runAsGroup: 1000
+          allowPrivilegeEscalation: false
 
         resources:
           limits:
-            memory: 2Gi
-            cpu: 1000m
+            memory: 8Gi
+            cpu: 2000m
           requests:
-            memory: 512Mi
+            memory: 4Gi
             cpu: 100m
 
         ports:
@@ -174,10 +181,6 @@ spec:
         env:
         - name: CONTAINER_NAME
           value: "elasticsearch"
-        - name: ES_JAVA_OPTS
-          value: "-Xms512m -Xmx512m"
-        - name: logger.level
-          value: 'warn'
         - name: node.name
           valueFrom:
             fieldRef:
@@ -187,14 +190,18 @@ spec:
         - name: network.host
           value: "0.0.0.0"
         - name: discovery.seed_hosts
-          value: "es-cluster-0.elasticsearch"
+          value: "es-cluster-hot-0.elasticsearch, es-cluster-hot-1.elasticsearch, es-cluster-hot-2.elasticsearch"
         - name: cluster.initial_master_nodes
-          value: "es-cluster-0"
+          value: "es-cluster-hot-0, es-cluster-hot-1, es-cluster-hot-2"
         - name: xpack.license.self_generated.type
-          value: "trial"
+          value: "basic"
         - name: xpack.security.enabled
           value: "false"
-
+        - name: node.roles 
+          value: "master, data_hot, data_content, ingest, ml, transform, remote_cluster_client"
+        envFrom:
+          - configMapRef:
+              name: elk-environment-variables
         volumeMounts:
         - name: data
           mountPath: /usr/share/elasticsearch/data
@@ -216,11 +223,109 @@ spec:
         app: elasticsearch
     spec:
       accessModes: [ "ReadWriteOnce" ]
-      storageClassName: elasticsearch-gp2
+      storageClassName: efs
       resources:
         requests:
-          storage: 40Gi
+          storage: 1Mi
 
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: es-cluster-warm
+spec:
+  serviceName: elasticsearch
+  replicas: 1
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+    spec:
+      # Use `elasticsearch` user for volumes
+      securityContext:
+        fsGroup: 1000
+      containers:
+
+      - name: elasticsearch
+        image: public.ecr.aws/r2h3l6e4/elasticsearch/elasticsearch:8.1.3
+
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
+
+        resources:
+          limits:
+            memory: 8Gi
+            cpu: 2000m
+          requests:
+            memory: 4Gi
+            cpu: 100m
+
+        ports:
+        - containerPort: 9200
+          name: rest
+          protocol: TCP
+        - containerPort: 9300
+          name: inter-node
+          protocol: TCP
+
+        env:
+        - name: CONTAINER_NAME
+          value: "elasticsearch"
+        - name: node.name
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: cluster.name
+          value: "k8s-logs"
+        - name: network.host
+          value: "0.0.0.0"
+        - name: discovery.seed_hosts
+          value: "es-cluster-hot-0.elasticsearch, es-cluster-hot-1.elasticsearch, es-cluster-hot-2.elasticsearch"
+        - name: cluster.initial_master_nodes
+          value: "es-cluster-hot-0, es-cluster-hot-1, es-cluster-hot-2"
+        - name: xpack.license.self_generated.type
+          value: "basic"
+        - name: xpack.security.enabled
+          value: "false"
+        - name: node.roles
+          value: "data_warm, ingest, ml, transform, remote_cluster_client"
+        envFrom:
+          - configMapRef:
+              name: elk-environment-variables
+
+        volumeMounts:
+        - name: data-warm
+          mountPath: /usr/share/elasticsearch/data
+          readOnly: false
+        - name: log4j
+          mountPath: /usr/share/elasticsearch/config/log4j2.properties
+          subPath: log4j2.properties
+            
+      volumes:
+      - name: log4j
+        configMap:
+          name: es-log4j-properties
+
+
+  volumeClaimTemplates:
+  - metadata:
+      name: data-warm
+      labels:
+        app: elasticsearch
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: elasticsearch-sc1
+      resources:
+        requests:
+          storage: 125Gi
 ---
 kind: Service
 apiVersion: v1
@@ -242,15 +347,14 @@ spec:
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: elasticsearch-io1
+  name: elasticsearch-sc1
   labels:
     app: elasticsearch
 provisioner: kubernetes.io/aws-ebs
 parameters:
   encrypted: "true"
-  type: io1
+  type: sc1
   fsType: ext4
-  iopsPerGB: "50"
 mountOptions:
   - discard
 allowVolumeExpansion: true

@@ -1,4 +1,5 @@
 ---
+# Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/psp.yaml
 
 apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
@@ -8,10 +9,12 @@ metadata:
     argocd.argoproj.io/hook: Sync,PostSync
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
   labels:
+    nri-bundle.version: 4.5.8
     app: nri-metadata-injection-admission
+    app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: nri-metadata-injection
-    helm.sh/chart: nri-metadata-injection-2.1.0
-    app.kubernetes.io/version: "1.6.0"
+    app.kubernetes.io/version: 1.7.0
+    helm.sh/chart: nri-metadata-injection-3.0.4
 spec:
   privileged: false
   # Required to prevent escalations to root.

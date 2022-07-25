@@ -1,23 +1,141 @@
 # Changelog
 
-### 1.14.0
+### 1.15.0
 
-- Configure PingFederate and PingAccess environments within PingCentral
-- Create PingDirectory's Password Credential Validator using PingFederate Admin API
-- Create PingDirectory's LDAP Client Manager using PingFederate Admin API
-- Force liveness probe for PingDirectory to use API endpoint /available-or-degraded-state
+- Augment ArgoCD's application name with customer name
+- Add fix to application name for ArgoCD
+- Fix grafana PD topology successful SSOs
+- Updated cluster tool sealed-secrets-controller from v0.17.3 to v0.18.0
 
 _Changes:_
 
+- [X] PDO-2635 Augment ArgoCD's application name with customer name
+- [X] PDO-3271 Updated argocd to v2.4.6
+- [X] PDO-3273 Update cluster tool to latest version: sealed-secrets-controller v.0.18.0
+- [X] PDO-3575 Cluster tool: force pingcloud-monitoring/newrelic-tags-exporter initContainer to run with allowPrivilegeEscalation: false
+- [X] PDO-3940 Add timeouts for screen updates in PingOne integration tests
+- [X] PDO-3988 Grafana Successful SSOs Pingfederate Topology dashboard displaying wrong data
+- [X] PDO-4036 Fix SigSci to exit properly when terminated
+- [X] PDO-3524 Create PingOne-Configurator test for CI/CD
+- [X] PDO-3918 Move chrome install from run-integration-tests.sh to k8s-deploy-tools image
+- [X] PDO-4060 Update versioning for cluster tools in PCB
+
+### 1.14.0
+- Update cluster-tool external-dns from version v0.08.0 to version v.0.11.0
+- New image tagging convention for all Ping applications
+- SigSci Agent upgraded from v4.24.1 to v4.28.0
+- Nginx Ingress Controller upgraded from v1.0.0 to v1.2.0
+- Configure PingFederate and PingAccess environments within PingCentral
+- Create PingDirectory's Password Credential Validator using PingFederate Admin API
+- Grafana upgraded from v6.5.3 to v8.4.5
+- Create PingDirectory's LDAP Client Manager using PingFederate Admin API
+- Replace Fluentd with Fluent Bit
+- Force liveness probe for PingDirectory to use API endpoint /available-or-degraded-state
+- Logstash now getting logs from Fluent Bit and working as non-root Deployment
+- Cluster tool cluster-autoscaler upgrade from v1.20.0 to v1.21.1
+- Fluent Bit now has a FeatureFlag 'LEGACY_LOGGING' to control application logs destination
+- Fluent Bit docker image is now pulled from ECR
+- Implemented Hot\Warm Tiers for ElasticSearch
+- Add "pf-jwt-token-translator-1.1.1.2.jar" to artifact.json file
+- Add healthcheck service
+- Add cluster-health healthchecks for namespaces, nodes, and statefulsets
+- Add logstash parsers for all ping apps
+- Add EFS StorageClass. Configure Elasticsearch to use EFS StorageClass
+- Add customer-configurable pipeline to logstash
+- Fix max-character branch name length for ping-cloud-base
+- Convert PingDataSync to a StatefulSet
+- Add Pod-Reaper cluster tool
+- Implement Kibana-based alerting
+- Add logging-bootstrap application
+- Fluent Bit now store raw logs on S3
+- Remove stunnel from PingDirectory
+- Remove skbn as backup mechanism as replaced with aws cli
+- Update cronjobs to prevent multiple jobs being scheduled during scaledown
+
+_Changes:_
 - [X] PDO-2517 Port of PingFederate pre-config script from bash to python
 - [X] PDO-2827 Configure PingFederate and PingAccess environments within PingCentral
+- [X] PDO-2894 Use Fluent Bit instead of Fluentd
+- [X] PDO-3269 Update cluster tools to latest version: cluster-autoscaler v1.21.1
+- [X] PDO-3270 Update cluster tools to latest version: nginx-ingress-controller v1.2.0
+- [X] PDO-3274 Update cluster tools to recommended version: external-dns v.11.0
+- [X] PDO-3275 Update cluster tools to latest version: Kibana v8.1.3
+- [X] PDO-3276 Update cluster tools to latest version: Elasticsearch 8.1.3
+- [X] PDO-3277 Update cluster tools to latest version: kube-state-metrics v2.5.0
+- [X] PDO-3278 Update cluster tools to latest version: metrics-server v0.6.1
+- [X] PDO-3279 Update cluster tools to latest version: Logstash v8.1.3
+- [X] PDO-3421 Set ImagePullPolicy for all Ping apps to 'Always'
+- [X] PDO-3422 Create script to ensure development ECR public image tag isn't in any production release
+- [X] PDO-3428 PA/PF heartbeat exporter doesn't export metric properly after implementing PDO-3207
 - [X] PDO-3433 Create PingDirectory's Password Credential Validator using PingFederate Admin API
 - [X] PDO-3434 Create PingDirectory's LDAP Client Manager using PingFederate Admin API
 - [X] PDO-3446 Upgraded ArgoCD to v2.3.1
-- [X] PDO-3548 Set manage-profile tempProfileDirectory argument to the persistent volume /opt/out directory
+- [X] PDO-3522 Create PF admin SSO integration test for CI/CD
+- [X] PDO-3548 Set manage-profile tempProfileDirectory argument and force exportldiff files to write to the persistent volume /opt/out directory
 - [X] PDO-3571 Added non-admin ArgoCD user with access to restart StatefulSet pods
+- [X] PDO-3574 Cluster tool: force bitnami/kubectl initContainer to use its own nonroot user
+- [X] PDO-3576 Cluster tool: force busybox initContainer to use its own nonroot user
 - [X] PDO-3582 Force liveness probe to use API endpoint /available-or-degraded-state
+- [X] PDO-3603 Auto update product tags for production registry in ping-cloud-base
+- [X] PDO-3605 Automate release candidate ECR images within in ping-cloud-base
+- [X] PDO-3610 Convert PingDataSync to a Statefulset
+- [X] PDO-3611 Use 'manage-profile replace-profile' to support root password change
+- [X] PDO-3620 Update cluster tools to latest version: Grafana v8.4.5
+- [X] PDO-3678 server.publicBaseUrl is not found in Kibana
+- [X] PDO-3684 Remove skbn as replaced with aws cli in PD0-3683
+- [X] PDO-3716 Elasticsearch: Implement Hot/Warm Tiers
+- [X] PDO-3723 Grafana: Upgrade to 8.4.5 risks investigation
+- [X] PDO-3743 Automate development ECR images in ping-cloud-base
+- [X] PDO-3745 Argocd admin creds in secrets.yaml
+- [X] PDO-3753 Configure Fluent Bit to send SIEM logs to logstash
+- [X] PDO-3754 Replace current logstash DaemonSet by non-root Deployment
+- [X] PDO-3755 Implement FeatureFlags with many outputs for Fluent Bit
 - [X] PDO-3773 Encrypt K8s StorageClass (AWS EBS volumes)
+- [X] PDO-3780 Connect to external PD server within PingDataSync using LDAPS
+- [X] PDO-3783 Recreate the PF Threat Detection Dashboard in P1AS
+- [X] PDO-3805 Create & Deploy Health Check service in P1AS
+- [X] PDO-3821 Create customer-configurable pipeline in logstash with PQ
+- [X] PDO-3830 ES JVM Heapsize too small
+- [X] PDO-3840 Update cluster tools to latest version: prometheus to v2.36.1
+- [X] PDO-3841 Update cluster tools to latest version: newrelic-infrastructure to 4.5.8
+- [X] PDO-3842 Update cluster tools to latest version: newrelic java agent to v6.5.4
+- [X] PDO-3843 Update cluster tools to latest version: cloudwatch-agent to v1.247352.0
+- [X] PDO-3844 Update cluster tools to latest version: sig-sci agent v4.28.0
+- [X] PDO-3851 Implement EFS storage for ElasticSearch
+- [X] PDO-3856 PingOne configurator skips is_myping
+- [X] PDO-3887 Add config-audit.log and server.out files to PingDirectory tail logs
+- [X] PDO-3892 Fluent Bit image is now pulled from ECR
+- [X] PDO-3907 Create Cluster Health Tests for Health Checks Pt 1
+- [X] PDO-3910 Create a logstash parsers for all ping-app non-SIEM logs
+- [X] PDO-3911 Warning message in es-cluster pods logs
+- [X] PDO-3912 Few PF Kibana Dashboards and one PD Kibana Dashboard not showing data 
+- [X] PDO-3913 Few data views are listed twice in Kibana Discover tab
+- [X] PDO-3915 Create Reaper Deployment in PCB
+- [X] PDO-3919 Create Cluster Health Tests for Health Checks Pt 2
+- [X] PDO-3936 Investigate flaky PingOne integration tests
+- [X] PDO-3928 Move script that verifies development images are not in production to tag-release.sh
+- [X] PDO-3930 Add "pf-jwt-token-translator-1.1.1.2.jar" to artifact.json file
+- [X] PDO-3933 ELK/CloudWatch logging improvements
+- [X] PDO-3942 Moved ENVIRONMENT_PREFIX from base env_vars to region env_vars
+- [X] PDO-3946 Some of Kibana resources bootstrapping fails in rare cases
+- [X] PDO-3956 ELK: there are no log time chart and no window to choose time slot for 'pa-was-system' data view
+- [X] PDO-3959 Fix URLs not rendering due to DNS_ZONE envsubst ordering
+- [X] PDO-3968 Update logstash image to have all needed plugins
+- [X] PDO-3969 Store raw logs on S3
+- [X] PDO-3972 Remove stunnel from PingDirectory
+- [X] PDO-3974 Implement Kibana Alerting
+- [X] PDO-3980 Health Check service is listing wrong envType in a CDE
+- [X] PDO-3993 Fix PF Admin API endpoint for integration test
+- [X] PDO-4008 Fix max-character branch name for PCB
+- [X] PDO-4016 Few data views are listed twice in Kibana Discover tab
+- [X] PDO-4040 Add ingress metrics dashboard to Grafana
+- [X] PDO-4027 Add logging-bootstrap application
+- [X] PDO-4056 Ping Federate - Threat Intel / Detection Dashboard is missing
+- [X] PDO-4057 Update all cronjob configs to prevent multiple jobs being scheduled during scaledown
+- [X] PDO-4093 Logstash is in crashloop state for chub clusters
+- [X] PDO-4098 Newrelic Infrastructure sends data from primary and secondary regions to one NR
+- [X] PDO-4108 There are no data on PA-WAS - Response Codes Over Time Kibana Dashboards
+- [X] PDO-4121 Cost Savings: New Relic: Globally Update Configuration to use lowDataMode
 
 ### 1.13.0
 

@@ -36,11 +36,11 @@ spec:
                 topologyKey: "failure-domain.beta.kubernetes.io/zone"
       initContainers:
       - name: pingcentral-init
-        # FIXME PDO-3574: switch to same user as app
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
+          allowPrivilegeEscalation: false
         image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
         imagePullPolicy: IfNotPresent
         command:
@@ -69,13 +69,13 @@ spec:
           - configMapRef:
               name: pingcentral-environment-variables
       - name: newrelic-tags-exporter
-        # FIXME PDO-3575: switch to same user as app
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v1.1.0
-        imagePullPolicy: IfNotPresent
+          allowPrivilegeEscalation: false
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v1.15-release-branch-latest
+        imagePullPolicy: Always
         envFrom:
         - configMapRef:
             name: pingcentral-environment-variables
@@ -109,8 +109,8 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral:1.8.1-v1.0.26
-        imagePullPolicy: IfNotPresent
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral/dev:v1.15-release-branch-latest
+        imagePullPolicy: Always
         resources:
           requests:
             memory: "2Gi"
@@ -170,9 +170,6 @@ spec:
           - name: data-dir
             mountPath: /opt/staging/ds_env_vars
             subPath: ds_env_vars
-          - name: data-dir
-            mountPath: /usr/local/bin/skbn
-            subPath: skbn
           - name: data-dir
             mountPath: /opt/staging/hooks/logger.lib.sh
             subPath: logger.lib.sh

@@ -7,6 +7,7 @@ resources:
 
 images:
 - name: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingdirectory
+  newName: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingdirectory${ECR_ENV}
   newTag: ${PINGDIRECTORY_IMAGE_TAG}
 
 generatorOptions:

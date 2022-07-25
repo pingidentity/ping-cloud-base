@@ -146,6 +146,14 @@ configMapGenerator:
   behavior: merge
   envs:
   - ../base/env_vars
+  - env_vars
+
+# Pingcloud-healthcheck
+- name: pingcloud-healthcheck-environment-variables
+  behavior: merge
+  envs:
+  - ../base/env_vars
+  - env_vars
 
 # PingCloud-oauth
 - name: p14c-oauth-service-environment-variables
@@ -167,6 +175,11 @@ configMapGenerator:
   envs:
   - ../base/env_vars
   - env_vars
+
+- name: elk-environment-variables
+  behavior: merge
+  envs:
+    - logging/env_vars
 
 patchesStrategicMerge:
 

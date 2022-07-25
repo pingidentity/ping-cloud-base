@@ -15,6 +15,18 @@ secretGenerator:
   literals:
   - NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY}
 
+configMapGenerator:
+- name: logging-bootstrap-environment-variables
+  behavior: merge
+  literals:
+    - SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX}
+    - REGION=${REGION}
+
+- name: elk-environment-variables
+  behavior: merge
+  literals:
+    - CLUSTER_NAME=${CLUSTER_NAME}
+
 patchesStrategicMerge:
 
 ### Lets encrypt ACME certificate issuer for the cluster ###
@@ -45,6 +57,13 @@ patchesStrategicMerge:
   spec:
     dnsNames:
       - '*.${TENANT_DOMAIN}'
+    keystores:
+      pkcs12:
+        create: true
+        # Password used to encrypt the keystore into which the ACME certs will be added
+        passwordSecretRef:
+          name: pingcommon-passwords
+          key: ACME_CERT_KEYSTORE_PASSWORD
 
 ### Cloud-watch logging and monitoring ###
 - |-
@@ -52,10 +71,10 @@ patchesStrategicMerge:
   data:
     cluster.name: ${CLUSTER_NAME}
     logs.region: ${REGION}
+    legacy_logging: "${LEGACY_LOGGING}"
   kind: ConfigMap
   metadata:
     name: cluster-info
-    namespace: amazon-cloudwatch
 
 - |-
   apiVersion: v1
@@ -82,6 +101,7 @@ patchesStrategicMerge:
     name: cwagentconfig
     namespace: amazon-cloudwatch
 
+# NewRelic resources
 - |-
   apiVersion: v1
   kind: ConfigMap
@@ -91,7 +111,21 @@ patchesStrategicMerge:
   data:
     config.yaml: |
       cluster_name: ${NEW_RELIC_ENVIRONMENT_NAME}
+      audit: false
+      insecure_skip_verify: false
       require_scrape_enabled_label_for_nodes: true
+      scrape_enabled_label: prometheus.io/scrape
+      scrape_endpoints: false
+      scrape_services: true
+      transformations:
+      - description: Low data mode defaults
+        ignore_metrics:
+        - prefixes:
+          - kube_
+          - container_
+          - machine_
+          - cadvisor_
+      verbose: false
 
 - |-
   apiVersion: v1
@@ -107,6 +141,55 @@ patchesStrategicMerge:
           agentEndpoint: http://localhost:8001/v1/data
           clusterName: ${NEW_RELIC_ENVIRONMENT_NAME}
           agentHTTPTimeout: 30s
+
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    namespace: newrelic
+    name: nri-bundle-nrk8s-agent-controlplane
+  data:
+    newrelic-infra.yml: |-
+      # This is the configuration file for the infrastructure agent. See:
+      # https://docs.newrelic.com/docs/infrastructure/install-infrastructure-agent/configuration/infrastructure-agent-configuration-settings/
+      custom_attributes:
+        clusterName: ${NEW_RELIC_ENVIRONMENT_NAME}
+      http_server_enabled: true
+      http_server_port: 8001
+      is_forward_only: true
+
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    namespace: newrelic
+    name: nri-bundle-nrk8s-agent-ksm
+  data:
+    newrelic-infra.yml: |-
+      # This is the configuration file for the infrastructure agent. See:
+      # https://docs.newrelic.com/docs/infrastructure/install-infrastructure-agent/configuration/infrastructure-agent-configuration-settings/
+      custom_attributes:
+        clusterName: ${NEW_RELIC_ENVIRONMENT_NAME}
+      http_server_enabled: true
+      http_server_port: 8002
+      is_forward_only: true
+
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    namespace: newrelic
+    name: nri-bundle-nrk8s-agent-kubelet
+  data:
+    newrelic-infra.yml: |-
+      # This is the configuration file for the infrastructure agent. See:
+      # https://docs.newrelic.com/docs/infrastructure/install-infrastructure-agent/configuration/infrastructure-agent-configuration-settings/
+      custom_attributes:
+        clusterName: ${NEW_RELIC_ENVIRONMENT_NAME}
+      features:
+        docker_enabled: false
+      http_server_enabled: true
+      http_server_port: 8003
 
 # In the "kustomize" overlay for CI/CD environments, manually create the "newrelic-license-key" secret in the "newrelic" namespace instead of using the "newrelic-license-secret-exporter" job to automate it. Otherwise, concurrent branch pipelines can fail because the "newrelic" namespace is shared across all "ping-cloud" branch pipelines and the updating immutable fields in the exporter job can fail.
 
@@ -161,7 +244,22 @@ patchesJson6902:
       value:
         --default-ssl-certificate=${NAMESPACE}/acme-tls-cert
 
-# Update nginx replica count to support dev-env and CI/CD workloads.
+# Update nginx memory request & limit to support dev-env and CI/CD workloads
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: nginx-ingress-controller
+    namespace: ingress-nginx-public
+  patch: |-
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/limits/memory
+      value: 2.5Gi
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/requests/memory
+      value: 2.5Gi
+
+  # Update nginx replica count to support dev-env and CI/CD workloads.
 - target:
     group: autoscaling
     version: v1
@@ -254,7 +352,18 @@ patchesJson6902:
     group: apps
     version: v1
     kind: Deployment
-    name: nri-bundle-newrelic-metadata
+    name: nri-bundle-nrk8s-ksm
+    namespace: newrelic
+  patch: |-
+    - op: replace
+      path: /spec/template/metadata/annotations/clusterName
+      value: ${NEW_RELIC_ENVIRONMENT_NAME}
+
+- target:
+    group: apps
+    version: v1
+    kind: DaemonSet
+    name: nri-bundle-nrk8s-kubelet
     namespace: newrelic
   patch: |-
     - op: replace
@@ -265,7 +374,7 @@ patchesJson6902:
     group: apps
     version: v1
     kind: DaemonSet
-    name: nri-bundle-newrelic-infrastructure
+    name: nri-bundle-nrk8s-controlplane
     namespace: newrelic
   patch: |-
     - op: replace

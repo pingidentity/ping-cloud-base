@@ -5,9 +5,11 @@ resources:
 - git-ops
 - cert-manager
 - cluster-autoscaler
+- efs-driver
 - service-discovery
 - ingress
 - logging
 - metrics
 - monitoring
 - security
+- pod-reaper

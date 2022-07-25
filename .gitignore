@@ -147,9 +147,18 @@ $RECYCLE.BIN/
 envvars.sh
 custom-k8s-settings.yaml
 create_eks_cluster.sh
+.gitignore
+efs-sc-my.yaml
 
 # shunit unzipped files
 ci-scripts/test/shunit/shunit2-2.1.x/
 
 # Temporary directory used to kustomize/build the dev cluster state
 build-dir
+
+# Python caches
+__pycache__
+.pytest_cache
+
+# Python venv
+venv/*
