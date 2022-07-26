@@ -1301,7 +1301,7 @@ spec:
         fsGroup: 472
       containers:
         - name: grafana
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/grafana:8.4.5-v1.0.0
+          image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/michaelgazda/arm64:grafana-8.4.5
           imagePullPolicy: IfNotPresent
           securityContext:
             runAsUser: 472
