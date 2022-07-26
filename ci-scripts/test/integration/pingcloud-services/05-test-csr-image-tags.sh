@@ -122,11 +122,9 @@ testP14CBootstrapImageTag() {
   assertEquals "BOOTSTRAP_IMAGE_TAG missing from env_vars file" 0 $?
 
   unique_count=$(getUniqueTagCount "bootstrap")
-  echo "unique_count: ${unique_count}"
   assertEquals "P14C Bootstrap is using multiple image tag versions" 1 "${unique_count}"
 
   matched_count=$(getMatchedTagCount "${BOOTSTRAP_IMAGE_TAG}" "bootstrap")
-  echo "matched_count: ${matched_count}"
   assertEquals "P14C Bootstrap CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
 }
 

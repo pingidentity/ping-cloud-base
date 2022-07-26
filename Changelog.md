@@ -11,6 +11,7 @@
 - Update API version in Beluga K8s manifest for EKS v1.22
 - Setup EFS as backend for Prometheus storage
 - Updated cluster tool cert-manager from v1.5.3 to v1.9.1
+- Use generic bootstrap app for p14c and logging
 
 _Changes:_
 
@@ -25,6 +26,7 @@ _Changes:_
 - [X] PDO-4036 Fix SigSci to exit properly when terminated
 - [X] PDO-3524 Create PingOne-Configurator test for CI/CD
 - [X] PDO-3918 Move chrome install from run-integration-tests.sh to k8s-deploy-tools image
+- [X] PDO-4002 Unified bootstrap application
 - [X] PDO-3944 Create CI/CD integration test for Health Checks
 - [X] PDO-4051 Remove PingDirectory config-audit reference from Fluentbit configuration
 - [X] PDO-4052 Update to handle NEW_RELIC_LICENSE_KEY environment variable
