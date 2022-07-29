@@ -11,7 +11,6 @@ metadata:
     app.kubernetes.io/name: newrelic-infrastructure
     app.kubernetes.io/version: 3.2.0
     helm.sh/chart: newrelic-infrastructure-3.5.3
-    # mode: privileged
   name: nri-bundle-nrk8s-controlplane
 spec:
   updateStrategy: 
@@ -29,7 +28,6 @@ spec:
         nri-bundle.version: 4.5.8
         app.kubernetes.io/instance: nri-bundle
         app.kubernetes.io/name: newrelic-infrastructure
-        # mode: privileged
         app.kubernetes.io/component: controlplane
       annotations: {}
     spec:
@@ -39,10 +37,12 @@ spec:
       initContainers:
         - name: wait-for-nr-license-secret
           securityContext:
+            privileged: false
             runAsGroup: 2000
-            runAsNonRoot: true
             runAsUser: 1000
+            runAsNonRoot: true
             allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
           image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
@@ -58,10 +58,12 @@ spec:
           image: "public.ecr.aws/r2h3l6e4/newrelic/nri-kubernetes:3.2.1"
           imagePullPolicy: IfNotPresent
           securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
+            privileged: false
             runAsGroup: 2000
             runAsUser: 1000
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
           env:
             - name: "NRI_KUBERNETES_SINK_HTTP_PORT"
               value: "8001"
@@ -96,10 +98,12 @@ spec:
           image: "public.ecr.aws/r2h3l6e4/newrelic/k8s-events-forwarder:1.24.1"
           imagePullPolicy: IfNotPresent
           securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
+            privileged: false
             runAsGroup: 2000
             runAsUser: 1000
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
           ports:
             - containerPort: 8001
           env:
@@ -190,7 +194,6 @@ metadata:
     app.kubernetes.io/name: newrelic-infrastructure
     app.kubernetes.io/version: 3.2.0
     helm.sh/chart: newrelic-infrastructure-3.5.3
-    # mode: privileged
   name: nri-bundle-nrk8s-kubelet
 spec:
   updateStrategy: 
@@ -208,7 +211,6 @@ spec:
         nri-bundle.version: 4.5.8
         app.kubernetes.io/instance: nri-bundle
         app.kubernetes.io/name: newrelic-infrastructure
-        # mode: privileged
         app.kubernetes.io/component: kubelet
       annotations: {}
     spec:
@@ -218,10 +220,12 @@ spec:
       initContainers:
         - name: wait-for-nr-license-secret
           securityContext:
+            privileged: false
             runAsGroup: 2000
-            runAsNonRoot: true
             runAsUser: 1000
+            runAsNonRoot: true
             allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
           image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
@@ -237,10 +241,12 @@ spec:
           image: "public.ecr.aws/r2h3l6e4/newrelic/nri-kubernetes:3.2.1"
           imagePullPolicy: IfNotPresent
           securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
+            privileged: false
             runAsGroup: 2000
             runAsUser: 1000
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
           env:
             - name: "NRI_KUBERNETES_SINK_HTTP_PORT"
               value: "8003"
@@ -277,11 +283,12 @@ spec:
           args: [ "newrelic-infra" ]
           imagePullPolicy: IfNotPresent
           securityContext:
-            allowPrivilegeEscalation: true
             privileged: true
-            readOnlyRootFilesystem: true
             runAsGroup: 0
             runAsUser: 0
+            runAsNonRoot: false
+            allowPrivilegeEscalation: true
+            readOnlyRootFilesystem: true
           ports:
             - containerPort: 8003
           env:
