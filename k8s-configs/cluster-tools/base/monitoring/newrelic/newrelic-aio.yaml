@@ -49,7 +49,6 @@ metadata:
     app.kubernetes.io/name: newrelic-infrastructure
     app.kubernetes.io/version: 3.2.0
     helm.sh/chart: newrelic-infrastructure-3.5.3
-    # mode: privileged
   name: nri-bundle-newrelic-infrastructure
 rules:
   - apiGroups: [""]
@@ -325,7 +324,6 @@ rules:
   - /metrics
   verbs:
   - get
-
 ---
 # Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/clusterrolebinding.yaml
 
@@ -385,7 +383,6 @@ metadata:
     app.kubernetes.io/name: newrelic-infrastructure
     app.kubernetes.io/version: 3.2.0
     helm.sh/chart: newrelic-infrastructure-3.5.3
-    # mode: privileged
   name: nri-bundle-newrelic-infrastructure
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -461,7 +458,6 @@ subjects:
 - kind: ServiceAccount
   name: nri-bundle-nri-prometheus
   namespace: newrelic
-
 ---
 # Source: nri-bundle/charts/nri-kube-events/templates/configmap.yaml
 
@@ -932,7 +928,6 @@ data:
     is_forward_only: true
     http_server_enabled: true
     http_server_port: 8001
-
 ---
 # Source: nri-bundle/charts/newrelic-infrastructure/templates/controlplane/daemonset.yaml
 
@@ -946,7 +941,6 @@ metadata:
     app.kubernetes.io/name: newrelic-infrastructure
     app.kubernetes.io/version: 3.2.0
     helm.sh/chart: newrelic-infrastructure-3.5.3
-    # mode: privileged
   name: nri-bundle-nrk8s-controlplane
 spec:
   updateStrategy: 
@@ -964,7 +958,6 @@ spec:
         nri-bundle.version: 4.5.8
         app.kubernetes.io/instance: nri-bundle
         app.kubernetes.io/name: newrelic-infrastructure
-        # mode: privileged
         app.kubernetes.io/component: controlplane
       annotations: {}
     spec:
@@ -974,10 +967,12 @@ spec:
       initContainers:
         - name: wait-for-nr-license-secret
           securityContext:
+            privileged: false
             runAsGroup: 2000
-            runAsNonRoot: true
             runAsUser: 1000
+            runAsNonRoot: true
             allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
           image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
@@ -993,10 +988,12 @@ spec:
           image: "public.ecr.aws/r2h3l6e4/newrelic/nri-kubernetes:3.2.1"
           imagePullPolicy: IfNotPresent
           securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
+            privileged: false
             runAsGroup: 2000
             runAsUser: 1000
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
           env:
             - name: "NRI_KUBERNETES_SINK_HTTP_PORT"
               value: "8001"
@@ -1031,10 +1028,12 @@ spec:
           image: "public.ecr.aws/r2h3l6e4/newrelic/k8s-events-forwarder:1.24.1"
           imagePullPolicy: IfNotPresent
           securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
+            privileged: false
             runAsGroup: 2000
             runAsUser: 1000
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
           ports:
             - containerPort: 8001
           env:
@@ -1125,7 +1124,6 @@ metadata:
     app.kubernetes.io/name: newrelic-infrastructure
     app.kubernetes.io/version: 3.2.0
     helm.sh/chart: newrelic-infrastructure-3.5.3
-    # mode: privileged
   name: nri-bundle-nrk8s-kubelet
 spec:
   updateStrategy: 
@@ -1143,7 +1141,6 @@ spec:
         nri-bundle.version: 4.5.8
         app.kubernetes.io/instance: nri-bundle
         app.kubernetes.io/name: newrelic-infrastructure
-        # mode: privileged
         app.kubernetes.io/component: kubelet
       annotations: {}
     spec:
@@ -1153,10 +1150,12 @@ spec:
       initContainers:
         - name: wait-for-nr-license-secret
           securityContext:
+            privileged: false
             runAsGroup: 2000
-            runAsNonRoot: true
             runAsUser: 1000
+            runAsNonRoot: true
             allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
           image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
@@ -1172,10 +1171,12 @@ spec:
           image: "public.ecr.aws/r2h3l6e4/newrelic/nri-kubernetes:3.2.1"
           imagePullPolicy: IfNotPresent
           securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
+            privileged: false
             runAsGroup: 2000
             runAsUser: 1000
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
           env:
             - name: "NRI_KUBERNETES_SINK_HTTP_PORT"
               value: "8003"
@@ -1212,11 +1213,12 @@ spec:
           args: [ "newrelic-infra" ]
           imagePullPolicy: IfNotPresent
           securityContext:
-            allowPrivilegeEscalation: true
             privileged: true
-            readOnlyRootFilesystem: true
             runAsGroup: 0
             runAsUser: 0
+            runAsNonRoot: false
+            allowPrivilegeEscalation: true
+            readOnlyRootFilesystem: true
           ports:
             - containerPort: 8003
           env:
@@ -1292,6 +1294,10 @@ spec:
         - name: host-volume
           hostPath:
             path: /
+        # Volume added for custom defintion file used to set scrape interval
+        # - name: nri-kubernetes-definition-cfg-volume
+        #   configMap:
+        #     name: nri-kubernetes-definition-cfg
         - name: agent-tmpfs-data
           emptyDir: {}
         - name: agent-tmpfs-user-data
@@ -1385,6 +1391,13 @@ spec:
         - --telemetry-port=8081
         imagePullPolicy: IfNotPresent
         image: "k8s.gcr.io/kube-state-metrics/kube-state-metrics:v1.9.8"
+        securityContext:
+          privileged: false
+          runAsGroup: 65534
+          runAsUser: 65534
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
         ports:
         - containerPort: 8080
         livenessProbe:
@@ -1442,6 +1455,13 @@ spec:
       - name: nri-metadata-injection
         image: "public.ecr.aws/r2h3l6e4/newrelic/k8s-metadata-injection:1.7.0"
         imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: false
+          runAsUser: 1001
+          runAsGroup: 1001
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
         env:
         - name: clusterName
           valueFrom:
@@ -1503,10 +1523,12 @@ spec:
       initContainers:
         - name: wait-for-nr-license-secret
           securityContext:
+            privileged: false
             runAsGroup: 2000
-            runAsNonRoot: true
             runAsUser: 1000
+            runAsNonRoot: true
             allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
           image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
@@ -1520,7 +1542,14 @@ spec:
       containers:
       - name: nri-prometheus
         image: "public.ecr.aws/r2h3l6e4/newrelic/nri-prometheus:2.16.1"
-        imagePullPolicy: 
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: false
+          runAsGroup: 65534
+          runAsUser: 65534
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
         args:
           - "--configfile=/etc/nri-prometheus/config.yaml"
         ports:
@@ -1578,10 +1607,12 @@ spec:
       initContainers:
         - name: wait-for-nr-license-secret
           securityContext:
+            privileged: false
             runAsGroup: 2000
-            runAsNonRoot: true
             runAsUser: 1000
+            runAsNonRoot: true
             allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
           image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
@@ -1598,6 +1629,9 @@ spec:
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: false
+            runAsGroup: 2000
+            runAsUser: 1000
+            runAsNonRoot: true
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
           args: ["-config", "/app/config/config.yaml", "-loglevel", "debug"]
@@ -1609,6 +1643,9 @@ spec:
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: false
+            runAsGroup: 2000
+            runAsUser: 1000
+            runAsNonRoot: true
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
           ports:
@@ -1681,7 +1718,6 @@ metadata:
     app.kubernetes.io/name: newrelic-infrastructure
     app.kubernetes.io/version: 3.2.0
     helm.sh/chart: newrelic-infrastructure-3.5.3
-    # mode: privileged
   name: nri-bundle-nrk8s-ksm
 spec:
   strategy: 
@@ -1697,7 +1733,6 @@ spec:
         nri-bundle.version: 4.5.8
         app.kubernetes.io/instance: nri-bundle
         app.kubernetes.io/name: newrelic-infrastructure
-        # mode: privileged
         app.kubernetes.io/component: ksm
       annotations: {}
     spec:
@@ -1707,10 +1742,12 @@ spec:
       initContainers:
         - name: wait-for-nr-license-secret
           securityContext:
+            privileged: false
             runAsGroup: 2000
-            runAsNonRoot: true
             runAsUser: 1000
+            runAsNonRoot: true
             allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
           image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
@@ -1726,10 +1763,12 @@ spec:
           image: "public.ecr.aws/r2h3l6e4/newrelic/nri-kubernetes:3.2.1"
           imagePullPolicy: IfNotPresent
           securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
+            privileged: false
             runAsGroup: 2000
             runAsUser: 1000
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
           env:
             - name: "NRI_KUBERNETES_SINK_HTTP_PORT"
               value: "8002"
@@ -1761,10 +1800,12 @@ spec:
           image: "public.ecr.aws/r2h3l6e4/newrelic/k8s-events-forwarder:1.24.1"
           imagePullPolicy: IfNotPresent
           securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
+            privileged: false
             runAsGroup: 2000
             runAsUser: 1000
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
           ports:
             - containerPort: 8002
           env:
@@ -1844,7 +1885,6 @@ spec:
           operator: Exists
         - effect: NoExecute
           operator: Exists
-
 ---
 # Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/job-createSecret.yaml
 
@@ -1891,8 +1931,8 @@ spec:
       serviceAccountName: nri-bundle-nri-metadata-injection-admission
       securityContext:
         runAsGroup: 2000
-        runAsNonRoot: true
         runAsUser: 2000
+        runAsNonRoot: true
 
 ---
 # Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/job-patchWebhook.yaml
@@ -1940,8 +1980,8 @@ spec:
       serviceAccountName: nri-bundle-nri-metadata-injection-admission
       securityContext:
         runAsGroup: 2000
-        runAsNonRoot: true
         runAsUser: 2000
+        runAsNonRoot: true
 
 ---
 # This job copies NR License key secret object to 'newrelic' namespace
@@ -1972,11 +2012,6 @@ spec:
             defaultMode: 0555
       containers:
       - name: newrelic-license-secret-exporter
-        securityContext:
-          runAsGroup: 2000
-          runAsNonRoot: true
-          runAsUser: 1000
-          allowPrivilegeEscalation: false
         image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
         command:
           - /tmp/copy-secret.sh
@@ -1995,7 +2030,6 @@ spec:
           - name: copy-secret
             mountPath: /tmp/copy-secret.sh
             subPath: copy-secret.sh
-
 ---
 # Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/mutatingWebhookConfiguration.yaml
 
@@ -2028,270 +2062,9 @@ webhooks:
   admissionReviewVersions:
   - v1beta1
   - v1
-
----      
 kind: Namespace
 apiVersion: v1
 metadata:
   name: newrelic
   annotations:
     argocd.argoproj.io/sync-wave: "-1"
-
----
-# Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/psp.yaml
-
-apiVersion: policy/v1beta1
-kind: PodSecurityPolicy
-metadata:
-  name: nri-bundle-nri-metadata-injection-admission
-  annotations:
-    argocd.argoproj.io/hook: Sync,PostSync
-    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
-  labels:
-    nri-bundle.version: 4.5.8
-    app: nri-metadata-injection-admission
-    app.kubernetes.io/instance: nri-bundle
-    app.kubernetes.io/name: nri-metadata-injection
-    app.kubernetes.io/version: 1.7.0
-    helm.sh/chart: nri-metadata-injection-3.0.4
-spec:
-  privileged: false
-  # Required to prevent escalations to root.
-  # allowPrivilegeEscalation: false
-  # This is redundant with non-root + disallow privilege escalation,
-  # but we can provide it for defense in depth.
-  #requiredDropCapabilities:
-  #  - ALL
-  # Allow core volume types.
-  volumes:
-    - 'configMap'
-    - 'emptyDir'
-    - 'projected'
-    - 'secret'
-    - 'downwardAPI'
-    - 'persistentVolumeClaim'
-  hostNetwork: false
-  hostIPC: false
-  hostPID: false
-  runAsUser:
-    # Permits the container to run with root privileges as well.
-    rule: 'RunAsAny'
-  seLinux:
-    # This policy assumes the nodes are using AppArmor rather than SELinux.
-    rule: 'RunAsAny'
-  supplementalGroups:
-    rule: 'MustRunAs'
-    ranges:
-      # Forbid adding the root group.
-      - min: 0
-        max: 65535
-  fsGroup:
-    rule: 'MustRunAs'
-    ranges:
-      # Forbid adding the root group.
-      - min: 0
-        max: 65535
-  readOnlyRootFilesystem: false
-
----
-# Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/role.yaml
-
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: nri-bundle-nri-metadata-injection-admission
-  namespace: newrelic
-  annotations:
-    argocd.argoproj.io/hook: Sync,PostSync
-    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
-  labels:
-    nri-bundle.version: 4.5.8
-    app: nri-metadata-injection-admission
-    app.kubernetes.io/instance: nri-bundle
-    app.kubernetes.io/name: nri-metadata-injection
-    app.kubernetes.io/version: 1.7.0
-    helm.sh/chart: nri-metadata-injection-3.0.4
-rules:
-  - apiGroups:
-      - ""
-    resources:
-      - secrets
-    verbs:
-      - get
-      - create
-
----
-# Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/rolebinding.yaml
-
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: nri-bundle-nri-metadata-injection-admission
-  namespace: newrelic
-  annotations:
-    argocd.argoproj.io/hook: Sync,PostSync
-    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
-  labels:
-    nri-bundle.version: 4.5.8
-    app: nri-metadata-injection-admission
-    app.kubernetes.io/instance: nri-bundle
-    app.kubernetes.io/name: nri-metadata-injection
-    app.kubernetes.io/version: 1.7.0
-    helm.sh/chart: nri-metadata-injection-3.0.4
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: nri-bundle-nri-metadata-injection-admission
-subjects:
-  - kind: ServiceAccount
-    name: nri-bundle-nri-metadata-injection-admission
-    namespace: newrelic
-
----
-# Source: nri-bundle/charts/nri-metadata-injection/templates/service.yaml
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: nri-bundle-nri-metadata-injection
-  namespace: newrelic
-  labels:
-    nri-bundle.version: 4.5.8
-    app.kubernetes.io/instance: nri-bundle
-    app.kubernetes.io/name: nri-metadata-injection
-    app.kubernetes.io/version: 1.7.0
-    helm.sh/chart: nri-metadata-injection-3.0.4
-spec:
-  ports:
-  - port: 443
-    targetPort: 8443
-  selector:
-    app.kubernetes.io/instance: nri-bundle
-    app.kubernetes.io/name: nri-metadata-injection
-
----
-# Source: nri-bundle/charts/kube-state-metrics/templates/service.yaml
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: nri-bundle-kube-state-metrics
-  namespace: newrelic
-  labels:
-    nri-bundle.version: 4.5.8
-    app.kubernetes.io/name: kube-state-metrics
-    helm.sh/chart: "kube-state-metrics-2.13.2"
-    app.kubernetes.io/instance: "nri-bundle"
-    app.kubernetes.io/managed-by: "Helm"
-  annotations:
-    prometheus.io/scrape: 'true'
-spec:
-  type: "ClusterIP"
-  ports:
-  - name: "http"
-    protocol: TCP
-    port: 8080
-    targetPort: 8080
-  
-  selector:
-    app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/instance: nri-bundle
-
----
-# Source: nri-bundle/charts/nri-kube-events/templates/serviceaccount.yaml
-
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  labels:
-    nri-bundle.version: 4.5.8
-    app.kubernetes.io/instance: nri-bundle
-    app.kubernetes.io/name: nri-kube-events
-    app.kubernetes.io/version: 1.8.0
-    helm.sh/chart: nri-kube-events-2.2.4
-  name: nri-bundle-nri-kube-events
-  namespace: newrelic
-  annotations:
-    null
-
----
-# Source: nri-bundle/charts/nri-prometheus/templates/serviceaccount.yaml
-
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: nri-bundle-nri-prometheus
-  namespace: newrelic
-  labels:
-    nri-bundle.version: 4.5.8
-    app.kubernetes.io/instance: nri-bundle
-    app.kubernetes.io/name: nri-prometheus
-    app.kubernetes.io/version: 2.16.1
-    helm.sh/chart: nri-prometheus-2.1.5
-
----
-# Source: nri-bundle/charts/kube-state-metrics/templates/serviceaccount.yaml
-
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  labels:
-    nri-bundle.version: 4.5.8
-    app.kubernetes.io/name: kube-state-metrics
-    helm.sh/chart: kube-state-metrics-2.13.2
-    app.kubernetes.io/instance: nri-bundle
-  name: nri-bundle-kube-state-metrics
-  namespace: newrelic
-imagePullSecrets:
-  []
-
----
-# Source: nri-bundle/charts/newrelic-infrastructure/templates/serviceaccount.yaml
-
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: nri-bundle-newrelic-infrastructure
-  namespace: newrelic
-  labels:
-    nri-bundle.version: 4.5.8
-    app.kubernetes.io/instance: nri-bundle
-    app.kubernetes.io/name: newrelic-infrastructure
-    app.kubernetes.io/version: 3.2.0
-    helm.sh/chart: newrelic-infrastructure-3.5.3
-  annotations:
-    null
-
----
-# Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/serviceaccount.yaml
-
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: nri-bundle-nri-metadata-injection-admission
-  namespace: newrelic
-  annotations:
-    argocd.argoproj.io/hook: Sync,PostSync
-    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
-  labels:
-    nri-bundle.version: 4.5.8
-    app: nri-metadata-injection-admission
-    app.kubernetes.io/instance: nri-bundle
-    app.kubernetes.io/name: nri-metadata-injection
-    app.kubernetes.io/version: 1.7.0
-    helm.sh/chart: nri-metadata-injection-3.0.4
-
----
-# Source: nri-bundle/charts/newrelic-infrastructure/templates/controlplane/serviceaccount.yaml
-
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  labels:
-    nri-bundle.version: 4.5.8
-    app.kubernetes.io/instance: nri-bundle
-    app.kubernetes.io/name: newrelic-infrastructure
-    app.kubernetes.io/version: 3.2.0
-    helm.sh/chart: newrelic-infrastructure-3.5.3
-  name: nri-bundle-newrelic-infrastructure-controlplane
-  namespace: newrelic

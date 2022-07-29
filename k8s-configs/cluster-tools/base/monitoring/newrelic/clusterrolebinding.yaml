@@ -57,7 +57,6 @@ metadata:
     app.kubernetes.io/name: newrelic-infrastructure
     app.kubernetes.io/version: 3.2.0
     helm.sh/chart: newrelic-infrastructure-3.5.3
-    # mode: privileged
   name: nri-bundle-newrelic-infrastructure
 roleRef:
   apiGroup: rbac.authorization.k8s.io
