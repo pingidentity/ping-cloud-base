@@ -8693,6 +8693,19 @@ spec:
     storage: true
     subresources:
       status: {}
+--- 
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  annotations:
+    notifications.argoproj.io/subscribe.on-sync-succeeded.slack: p1as-application-oncall
+    notifications.argoproj.io/subscribe.on-sync-status-unknown.slack: p1as-application-oncall
+    notifications.argoproj.io/subscribe.on-sync-running.slack: p1as-application-oncall
+    notifications.argoproj.io/subscribe.on-sync-failed.slack: p1as-application-oncall
+    notifications.argoproj.io/subscribe.on-health-degraded.slack: p1as-application-oncall
+    notifications.argoproj.io/subscribe.on-deployed.slack: p1as-application-oncall
+    notifications.argoproj.io/subscribe.on-created.slack: p1as-application-oncall
+    notifications.argoproj.io/subscribe.on-deleted.slack: p1as-application-oncall
 ---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
@@ -9483,11 +9496,269 @@ metadata:
     app.kubernetes.io/part-of: argocd
   name: argocd-gpg-keys-cm
 ---
+#apiVersion: v1
+#kind: ConfigMap
+#metadata:
+#  creationTimestamp: null
+#  name: argocd-notifications-cm
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  creationTimestamp: null
   name: argocd-notifications-cm
+data:
+  context: |
+    argocdUrl: http://argocd.kryukov.local
+  template.app-created: |
+    message: |
+      {{if eq .serviceType "slack"}}:white_check_mark:{{end}} Application {{.app.metadata.name}} is now running new version of deployments manifests.
+    slack:
+      attachments: |
+        [{
+          "title": "{{ .app.metadata.name}}",
+          "title_link":"{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+          "color": "#18be52",
+          "fields": [
+          {
+            "title": "Sync Status",
+            "value": "{{.app.status.sync.status}}",
+            "short": true
+          },
+          {
+            "title": "Repository",
+            "value": "{{.app.spec.source.repoURL}}",
+            "short": true
+          },
+          {
+            "title": "Revision",
+            "value": "{{.app.status.sync.revision}}",
+            "short": true
+          }
+          {{range $index, $c := .app.status.conditions}}
+          {{if not $index}},{{end}}
+          {{if $index}},{{end}}
+          {
+            "title": "{{$c.type}}",
+            "value": "{{$c.message}}",
+            "short": true
+          }
+          {{end}}
+          ]
+        }]
+  template.app-health-degraded: |
+    message: |
+      {{if eq .serviceType "slack"}}:exclamation:{{end}} Application {{.app.metadata.name}} has degraded.
+      Application details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}.
+    slack:
+      attachments: |
+        [{
+          "title": "{{ .app.metadata.name}}",
+          "title_link": "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+          "color": "#f4c030",
+          "fields": [
+          {
+            "title": "Sync Status",
+            "value": "{{.app.status.sync.status}}",
+            "short": true
+          },
+          {
+            "title": "Repository",
+            "value": "{{.app.spec.source.repoURL}}",
+            "short": true
+          }
+          {{range $index, $c := .app.status.conditions}}
+          {{if not $index}},{{end}}
+          {{if $index}},{{end}}
+          {
+            "title": "{{$c.type}}",
+            "value": "{{$c.message}}",
+            "short": true
+          }
+          {{end}}
+          ]
+        }]
+  template.app-sync-failed: |
+    message: |
+      {{if eq .serviceType "slack"}}:exclamation:{{end}}  The sync operation of application {{.app.metadata.name}} has failed at {{.app.status.operationState.finishedAt}} with the following error: {{.app.status.operationState.message}}
+      Sync operation details are available at: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}?operation=true .
+    slack:
+      attachments: |
+        [{
+          "title": "{{ .app.metadata.name}}",
+          "title_link":"{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+          "color": "#E96D76",
+          "fields": [
+          {
+            "title": "Sync Status",
+            "value": "{{.app.status.sync.status}}",
+            "short": true
+          },
+          {
+            "title": "Repository",
+            "value": "{{.app.spec.source.repoURL}}",
+            "short": true
+          }
+          {{range $index, $c := .app.status.conditions}}
+          {{if not $index}},{{end}}
+          {{if $index}},{{end}}
+          {
+            "title": "{{$c.type}}",
+            "value": "{{$c.message}}",
+            "short": true
+          }
+          {{end}}
+          ]
+        }]
+  template.app-sync-running: |
+    message: |
+      The sync operation of application {{.app.metadata.name}} has started at {{.app.status.operationState.startedAt}}.
+      Sync operation details are available at: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}?operation=true .
+    slack:
+      attachments: |
+        [{
+          "title": "{{ .app.metadata.name}}",
+          "title_link":"{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+          "color": "#0DADEA",
+          "fields": [
+          {
+            "title": "Sync Status",
+            "value": "{{.app.status.sync.status}}",
+            "short": true
+          },
+          {
+            "title": "Repository",
+            "value": "{{.app.spec.source.repoURL}}",
+            "short": true
+          }
+          {{range $index, $c := .app.status.conditions}}
+          {{if not $index}},{{end}}
+          {{if $index}},{{end}}
+          {
+            "title": "{{$c.type}}",
+            "value": "{{$c.message}}",
+            "short": true
+          }
+          {{end}}
+          ]
+        }]
+  template.app-sync-status-unknown: |
+    message: |
+      {{if eq .serviceType "slack"}}:exclamation:{{end}} Application {{.app.metadata.name}} sync is 'Unknown'.
+      Application details: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}.
+      {{if ne .serviceType "slack"}}
+      {{range $c := .app.status.conditions}}
+          * {{$c.message}}
+      {{end}}
+      {{end}}
+    slack:
+      attachments: |
+        [{
+          "title": "{{ .app.metadata.name}}",
+          "title_link":"{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+          "color": "#E96D76",
+          "fields": [
+          {
+            "title": "Sync Status",
+            "value": "{{.app.status.sync.status}}",
+            "short": true
+          },
+          {
+            "title": "Repository",
+            "value": "{{.app.spec.source.repoURL}}",
+            "short": true
+          }
+          {{range $index, $c := .app.status.conditions}}
+          {{if not $index}},{{end}}
+          {{if $index}},{{end}}
+          {
+            "title": "{{$c.type}}",
+            "value": "{{$c.message}}",
+            "short": true
+          }
+          {{end}}
+          ]
+        }]
+  template.app-sync-succeeded: |
+    message: |
+      {{if eq .serviceType "slack"}}:white_check_mark:{{end}} Application {{.app.metadata.name}} has been successfully synced at {{.app.status.operationState.finishedAt}}.
+      Sync operation details are available at: {{.context.argocdUrl}}/applications/{{.app.metadata.name}}?operation=true .
+    slack:
+      attachments: |
+        [{
+          "title": "{{ .app.metadata.name}}",
+          "title_link":"{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+          "color": "#18be52",
+          "fields": [
+          {
+            "title": "Sync Status",
+            "value": "{{.app.status.sync.status}}",
+            "short": true
+          },
+          {
+            "title": "Repository",
+            "value": "{{.app.spec.source.repoURL}}",
+            "short": true
+          }
+          {{range $index, $c := .app.status.conditions}}
+          {{if not $index}},{{end}}
+          {{if $index}},{{end}}
+          {
+            "title": "{{$c.type}}",
+            "value": "{{$c.message}}",
+            "short": true
+          }
+          {{end}}
+          ]
+        }]
+  trigger.on-created: |
+    - description: Application is created.
+      oncePer: app.metadata.name
+      send:
+      - app-created
+      when: "true"
+  trigger.on-deleted: |
+    - description: Application is deleted.
+      oncePer: app.metadata.name
+      send:
+      - app-deleted
+      when: app.metadata.deletionTimestamp != nil
+  trigger.on-deployed: |
+    - description: Application is synced and healthy. Triggered once per commit.
+      oncePer: app.status.operationState.syncResult.revision
+      send:
+      - app-deployed
+      when: app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
+  trigger.on-health-degraded: |
+    - description: Application has degraded
+      send:
+      - app-health-degraded
+      when: app.status.health.status == 'Degraded'
+  trigger.on-sync-failed: |
+    - description: Application syncing has failed
+      send:
+      - app-sync-failed
+      when: app.status.operationState.phase in ['Error', 'Failed']
+  trigger.on-sync-running: |
+    - description: Application is being synced
+      send:
+      - app-sync-running
+      when: app.status.operationState.phase in ['Running']
+  trigger.on-sync-status-unknown: |
+    - description: Application status is 'Unknown'
+      send:
+      - app-sync-status-unknown
+      when: app.status.sync.status == 'Unknown'
+  trigger.on-sync-succeeded: |
+    - description: Application syncing has succeeded
+      send:
+      - app-sync-succeeded
+      when: app.status.operationState.phase in ['Succeeded']
+  service.slack: |
+    #apiURL: <url>                 # optional URL, e.g. https://example.com/api
+    token: $slack-token
+    #username: <override-username> # optional username
+    #icon: <override-icon> # optional icon for the message (supports both emoij and url notation)
+
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -9529,11 +9800,28 @@ metadata:
     app.kubernetes.io/part-of: argocd
   name: argocd-tls-certs-cm
 ---
-apiVersion: v1
-kind: Secret
+#apiVersion: v1
+#kind: Secret
+#metadata:
+#  name: argocd-notifications-secret
+#type: Opaque
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
 metadata:
+  creationTimestamp: null
   name: argocd-notifications-secret
-type: Opaque
+  namespace: default
+spec:
+  encryptedData:
+    slack-token: AgAa2YsfrbONPmaGDH88qhse1ijd4uOqXtWBSGNPDe1yePMbpMX0Zzc/A9wMo+Ktjn51mNRnb/X4MqR3TDVvyeX5VidpATEuq5VsxtDRU5wocs0ATPY4vFvnYWX0nYXsaKevuw9VFvSW0Rr88bjfDxp4S8AdhUyyZLB8yEs87hNNihm9nYPc8afo2z5Txs/qw9NnDmVYYbsBnwE8hVRXO3/c3DvyjZCSft38pLpFTYqPLWSY/fTNusl6RsCOEgDmCEsgBY1Q+ShZrZFKagFBE324ULUNK1NG/1KSriSpEDsCKROjGb3bA+JwB3IhufbwADBxjggCR/tvbfgyqiyXidCmoI9hEpAuyMmpP+KlX/uSDohQG7QN9gLtP4umVZgPPSTepsZO1ehZ2mhxAwsoQBD9UC9RWD4RWfYpYWxB5PmTWUGer+A9UpUKD1ZjINI16vhoVzXuHJeX4HbAtkwhwr3LKOAGtjR13Lt4jro3oHNRWI2l4LbHkkxM9GgBje8XJRMmUnekgcdYjYdA2IFWQgI+v9YjtwzJMn0UGmK/1vFDPhvNZznKqq3LsZ58+pcEEauIfI379qQh+9q3udOlig2ia3b82A4zS0k6b4IedypQ9rSNxTw+ytHdixobBY5yfiabwXJypXqqp7yJYhrrXkWiywCaOBnQ7lP/8tFQsywWaVRVLLl+y5xb7Y7ZLiJttDitFCjAnAD6QFMhdJmKRq9tXTMB136W7QkjhyrH0f06kOBo0QVAQ5+SWKBqJeTyK9DqN5BO7oI=
+  template:
+    metadata:
+      creationTimestamp: null
+      name: argocd-notifications-secret
+      namespace: default
+    type: Opaque
+status: {}
 ---
 apiVersion: v1
 kind: Secret
