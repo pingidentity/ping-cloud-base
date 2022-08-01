@@ -9508,7 +9508,7 @@ metadata:
   name: argocd-notifications-cm
 data:
   context: |
-    argocdUrl: http://argocd.kryukov.local
+    argocdUrl: 
   template.app-created: |
     message: |
       {{if eq .serviceType "slack"}}:white_check_mark:{{end}} Application {{.app.metadata.name}} is now running new version of deployments manifests.
