@@ -51,7 +51,7 @@ patchesJson6902:
     kind: Certificate
     name: acme-tls-cert
     namespace: cert-manager
-  patch: |-
+  patch:
     - op: replace
       path: /metadata/namespace
       value: ${PING_CLOUD_NAMESPACE}
