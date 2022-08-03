@@ -34,7 +34,6 @@ spec:
         - mountPath: /app/config/reposerver/tls
           name: argocd-repo-server-tls
         workingDir: /app
-
       serviceAccountName: argocd-notifications-controller
       volumes:
       - configMap:
