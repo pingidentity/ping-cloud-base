@@ -250,17 +250,7 @@ data:
       - app-sync-succeeded
       when: app.status.operationState.phase in ['Succeeded']
   service.slack: |
+    #apiURL: <url>                 # optional URL, e.g. https://example.com/api
     token: $slack-token
-#Centrally managed global application subscriptions
-  subscriptions: | 
-    - recipients:
-      - slack: p1as-application-oncall
-      triggers:
-      - on-sync-status-unknown
-      - on-sync-succeeded
-      - on-sync-running
-      - on-sync-failed
-      - on-health-degraded
-      - on-deployed.slack
-      - on-created.slack
-      - on-deleted.slack
+    #username: <override-username> # optional username
+    #icon: <override-icon> # optional icon for the message (supports both emoij and url notation)

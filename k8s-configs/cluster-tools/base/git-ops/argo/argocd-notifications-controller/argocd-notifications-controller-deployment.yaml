@@ -34,11 +34,12 @@ spec:
         - mountPath: /app/config/reposerver/tls
           name: argocd-repo-server-tls
         workingDir: /app
+
       serviceAccountName: argocd-notifications-controller
       volumes:
-      - name: tls-certs
-        configMap:
+      - configMap:
           name: argocd-tls-certs-cm
+        name: tls-certs
       - name: argocd-repo-server-tls
         secret:
           items:
