@@ -254,3 +254,17 @@ data:
     token: $slack-token
     #username: <override-username> # optional username
     #icon: <override-icon> # optional icon for the message (supports both emoij and url notation)
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  annotations:
+    notifications.argoproj.io/subscribe.on-sync-succeeded.slack: p1as-application-oncall
+    notifications.argoproj.io/subscribe.on-sync-status-unknown.slack: p1as-application-oncall
+    notifications.argoproj.io/subscribe.on-sync-running.slack: p1as-application-oncall
+    notifications.argoproj.io/subscribe.on-sync-failed.slack: p1as-application-oncall
+    notifications.argoproj.io/subscribe.on-health-degraded.slack: p1as-application-oncall
+    notifications.argoproj.io/subscribe.on-deployed.slack: p1as-application-oncall
+    notifications.argoproj.io/subscribe.on-created.slack: p1as-application-oncall
+    notifications.argoproj.io/subscribe.on-deleted.slack: p1as-application-oncall
+
