@@ -250,10 +250,7 @@ data:
       - app-sync-succeeded
       when: app.status.operationState.phase in ['Succeeded']
   service.slack: |
-    #apiURL: <url>                 # optional URL, e.g. https://example.com/api
     token: $slack-token
-    #username: <override-username> # optional username
-    #icon: <override-icon> # optional icon for the message (supports both emoij and url notation)
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
@@ -267,4 +264,3 @@ metadata:
     notifications.argoproj.io/subscribe.on-deployed.slack: p1as-application-oncall
     notifications.argoproj.io/subscribe.on-created.slack: p1as-application-oncall
     notifications.argoproj.io/subscribe.on-deleted.slack: p1as-application-oncall
-
