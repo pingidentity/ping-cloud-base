@@ -9082,10 +9082,10 @@ kind: Deployment
 metadata:
   labels:
     app: cainjector
-    app.kubernetes.io/component: "cainjector"
+    app.kubernetes.io/component: cainjector
     app.kubernetes.io/instance: cert-manager
     app.kubernetes.io/name: cainjector
-    app.kubernetes.io/version: "v1.8.0"
+    app.kubernetes.io/version: v1.8.0
   name: cert-manager-cainjector
   namespace: cert-manager
 spec:
@@ -9101,8 +9101,8 @@ spec:
         app: cainjector
         app.kubernetes.io/component: cainjector
         app.kubernetes.io/instance: cert-manager
-        app.kubernetes.io/component: "controller"
-        app.kubernetes.io/version: "v1.8.0"
+        app.kubernetes.io/component: controller
+        app.kubernetes.io/version: v1.8.0
       annotations:
         prometheus.io/path: "/metrics"
         prometheus.io/scrape: 'true'
