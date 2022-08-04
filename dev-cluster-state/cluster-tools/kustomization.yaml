@@ -27,6 +27,12 @@ configMapGenerator:
   literals:
     - CLUSTER_NAME=${CLUSTER_NAME}
 
+# Pingcloud-healthcheck
+- name: cluster-health-environment-variables
+  behavior: merge
+  envs:
+  - ../ping-cloud/env_vars
+
 patchesStrategicMerge:
 
 ### Lets encrypt ACME certificate issuer for the cluster ###
@@ -200,6 +206,15 @@ patchesStrategicMerge:
     name: newrelic-license-secret-exporter
     namespace: newrelic
   $patch: delete
+
+# Healthcheck tests
+- |-
+  apiVersion: batch/v1
+  kind: CronJob
+  metadata:
+    name: healthcheck-cluster-health
+  spec: 
+    schedule: "@hourly"
 
 patchesJson6902:
 

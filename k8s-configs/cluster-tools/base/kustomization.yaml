@@ -5,6 +5,7 @@ resources:
 - cert-manager
 - cluster-autoscaler
 - service-discovery
+- health
 - ingress
 - logging
 - metrics
