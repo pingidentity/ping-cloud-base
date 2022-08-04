@@ -36,9 +36,9 @@ spec:
         workingDir: /app
       serviceAccountName: argocd-notifications-controller
       volumes:
-      - configMap:
+        - name: tls-certs
+        configMap:
           name: argocd-tls-certs-cm
-        name: tls-certs
       - name: argocd-repo-server-tls
         secret:
           items:
