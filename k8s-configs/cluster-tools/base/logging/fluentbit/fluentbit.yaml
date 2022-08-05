@@ -251,12 +251,7 @@ data:
         Match               ping.*
         Rule                $log ^\/opt\/out\/instance\/logs\/replication replication_logs.$stream_name.cw_out false
         Emitter_Name        replication_logs
-    
-    [FILTER]
-        Name                rewrite_tag
-        Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/logs\/config-audit config_audit_logs.$stream_name.cw_out false
-        Emitter_Name        config_audit_logs
+
     
     # PDSync   
     [FILTER]

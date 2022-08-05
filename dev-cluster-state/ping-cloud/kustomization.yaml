@@ -463,12 +463,3 @@ patchesStrategicMerge:
   data:
     descriptor.json: |-
       ${TOPOLOGY_DESCRIPTOR}
-
-
-- |-
-  apiVersion: batch/v1
-  kind: CronJob
-  metadata:
-    name: healthcheck-cluster-health
-  spec: 
-    schedule: "@hourly"

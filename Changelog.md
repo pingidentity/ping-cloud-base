@@ -6,6 +6,7 @@
 - Add fix to application name for ArgoCD
 - Fix grafana PD topology successful SSOs
 - Updated cluster tool sealed-secrets-controller from v0.17.3 to v0.18.0
+- Healthcheck cronjobs moved to 'health' namespace
 
 _Changes:_
 
@@ -18,7 +19,13 @@ _Changes:_
 - [X] PDO-4036 Fix SigSci to exit properly when terminated
 - [X] PDO-3524 Create PingOne-Configurator test for CI/CD
 - [X] PDO-3918 Move chrome install from run-integration-tests.sh to k8s-deploy-tools image
+- [X] PDO-4051 Remove PingDirectory config-audit reference from Fluentbit configuration
+- [X] PDO-4052 Update to handle NEW_RELIC_LICENSE_KEY environment variable
 - [X] PDO-4060 Update versioning for cluster tools in PCB
+- [X] PDO-4097 Execute a _start-server.sh.pre script before starting PingDirectory
+- [X] PDO-4106 Update profile with X.509 authentication sample
+- [X] PDO-4153 Adjust default PingDirectory purge plugin properties
+- [X] PDO-4122 Move Health Check Jobs to separate NS
 
 ### 1.14.0
 - Update cluster-tool external-dns from version v0.08.0 to version v.0.11.0

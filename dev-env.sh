@@ -153,7 +153,7 @@
 #                           | spec is saved before applying it.                  | ~/.kube/config or the config file
 #                           |                                                    | to which KUBECONFIG is set.
 #                           |                                                    |
-# NEW_RELIC_LICENSE_KEY     | The key of NewRelic APM Agent used to send data to | The string 'unused'
+# NEW_RELIC_LICENSE_KEY     | The key of NewRelic APM Agent used to send data to | The SSM path: ssm://pcpt/sre/new-relic/java-agent-license-key
 #                           | NewRelic account                                   |
 #                           |                                                    |
 # MYSQL_SERVICE_HOST        | The hostname of the MySQL database server.         | beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
@@ -350,7 +350,16 @@ log "Using DEPLOY_FILE: ${DEPLOY_FILE}"
 log "Using K8S_CONTEXT: ${K8S_CONTEXT}"
 log ---
 
-NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY:-unused}
+NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY:-ssm://pcpt/sre/new-relic/java-agent-license-key}"
+if [[ ${NEW_RELIC_LICENSE_KEY} == "ssm://"* ]]; then
+  if ! ssm_value=$(get_ssm_value "${NEW_RELIC_LICENSE_KEY#ssm:/}"); then
+    echo "Warn: ${ssm_value}"
+    echo "Setting NEW_RELIC_LICENSE_KEY to unused"
+    NEW_RELIC_LICENSE_KEY="unused"
+  else
+    NEW_RELIC_LICENSE_KEY="${ssm_value}"
+  fi
+fi
 export DATASYNC_P1AS_SYNC_SERVER=${DATASYNC_P1AS_SYNC_SERVER:-"pingdirectory-0"}
 
 export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KEY}")

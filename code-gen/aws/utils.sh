@@ -15,6 +15,7 @@ get_ssm_value() {
   if ! ssm_value="$(aws ssm --region "${REGION}"  get-parameters \
     --names "${ssm_key%#*}" \
     --query 'Parameters[*].Value' \
+    --with-decryption \
     --output text)"; then
       echo "$ssm_value"
       return 1
