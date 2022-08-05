@@ -44,8 +44,8 @@ spec:
       serviceAccountName: nri-bundle-nri-metadata-injection-admission
       securityContext:
         runAsGroup: 2000
-        runAsNonRoot: true
         runAsUser: 2000
+        runAsNonRoot: true
 
 ---
 # Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/job-patchWebhook.yaml
@@ -93,8 +93,8 @@ spec:
       serviceAccountName: nri-bundle-nri-metadata-injection-admission
       securityContext:
         runAsGroup: 2000
-        runAsNonRoot: true
         runAsUser: 2000
+        runAsNonRoot: true
 
 ---
 # This job copies NR License key secret object to 'newrelic' namespace
@@ -125,6 +125,11 @@ spec:
             defaultMode: 0555
       containers:
       - name: newrelic-license-secret-exporter
+        securityContext:
+          runAsGroup: 2000
+          runAsNonRoot: true
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
         image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
         command:
           - /tmp/copy-secret.sh

@@ -64,6 +64,13 @@ spec:
         - --telemetry-port=8081
         imagePullPolicy: IfNotPresent
         image: "k8s.gcr.io/kube-state-metrics/kube-state-metrics:v1.9.8"
+        securityContext:
+          privileged: false
+          runAsGroup: 65534
+          runAsUser: 65534
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
         ports:
         - containerPort: 8080
         livenessProbe:
@@ -121,6 +128,13 @@ spec:
       - name: nri-metadata-injection
         image: "public.ecr.aws/r2h3l6e4/newrelic/k8s-metadata-injection:1.7.0"
         imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: false
+          runAsUser: 1001
+          runAsGroup: 1001
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
         env:
         - name: clusterName
           valueFrom:
@@ -182,10 +196,12 @@ spec:
       initContainers:
         - name: wait-for-nr-license-secret
           securityContext:
+            privileged: false
             runAsGroup: 2000
-            runAsNonRoot: true
             runAsUser: 1000
+            runAsNonRoot: true
             allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
           image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
@@ -199,7 +215,14 @@ spec:
       containers:
       - name: nri-prometheus
         image: "public.ecr.aws/r2h3l6e4/newrelic/nri-prometheus:2.16.1"
-        imagePullPolicy: 
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: false
+          runAsGroup: 65534
+          runAsUser: 65534
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
         args:
           - "--configfile=/etc/nri-prometheus/config.yaml"
         ports:
@@ -257,10 +280,12 @@ spec:
       initContainers:
         - name: wait-for-nr-license-secret
           securityContext:
+            privileged: false
             runAsGroup: 2000
-            runAsNonRoot: true
             runAsUser: 1000
+            runAsNonRoot: true
             allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
           image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
@@ -277,6 +302,9 @@ spec:
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: false
+            runAsGroup: 2000
+            runAsUser: 1000
+            runAsNonRoot: true
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
           args: ["-config", "/app/config/config.yaml", "-loglevel", "debug"]
@@ -288,6 +316,9 @@ spec:
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: false
+            runAsGroup: 2000
+            runAsUser: 1000
+            runAsNonRoot: true
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
           ports:
@@ -360,7 +391,6 @@ metadata:
     app.kubernetes.io/name: newrelic-infrastructure
     app.kubernetes.io/version: 3.2.0
     helm.sh/chart: newrelic-infrastructure-3.5.3
-    # mode: privileged
   name: nri-bundle-nrk8s-ksm
 spec:
   strategy: 
@@ -376,7 +406,6 @@ spec:
         nri-bundle.version: 4.5.8
         app.kubernetes.io/instance: nri-bundle
         app.kubernetes.io/name: newrelic-infrastructure
-        # mode: privileged
         app.kubernetes.io/component: ksm
       annotations: {}
     spec:
@@ -386,10 +415,12 @@ spec:
       initContainers:
         - name: wait-for-nr-license-secret
           securityContext:
+            privileged: false
             runAsGroup: 2000
-            runAsNonRoot: true
             runAsUser: 1000
+            runAsNonRoot: true
             allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
           image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
@@ -405,10 +436,12 @@ spec:
           image: "public.ecr.aws/r2h3l6e4/newrelic/nri-kubernetes:3.2.1"
           imagePullPolicy: IfNotPresent
           securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
+            privileged: false
             runAsGroup: 2000
             runAsUser: 1000
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
           env:
             - name: "NRI_KUBERNETES_SINK_HTTP_PORT"
               value: "8002"
@@ -440,10 +473,12 @@ spec:
           image: "public.ecr.aws/r2h3l6e4/newrelic/k8s-events-forwarder:1.24.1"
           imagePullPolicy: IfNotPresent
           securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
+            privileged: false
             runAsGroup: 2000
             runAsUser: 1000
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
           ports:
             - containerPort: 8002
           env:

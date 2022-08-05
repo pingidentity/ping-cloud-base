@@ -51,6 +51,7 @@ configMapGenerator:
 
 # Pingcloud-healthcheck
 - name: pingcloud-healthcheck-environment-variables
+  namespace: ${PING_CLOUD_NAMESPACE}
   behavior: merge
   envs:
   - ../base/env_vars

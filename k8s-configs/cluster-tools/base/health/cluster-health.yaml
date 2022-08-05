@@ -5,7 +5,7 @@ metadata:
 spec:
   schedule: "* * * * *"
   startingDeadlineSeconds: 90
-  successfulJobsHistoryLimit: 0
+  successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 1
   concurrencyPolicy: Forbid
   jobTemplate:
@@ -27,7 +27,7 @@ spec:
             command:
               - /bin/bash
               - -c
-              - ./robot_wrapper.sh cluster-health.xml "--include cluster-health tests/cluster-health"
+              - ./robot_wrapper.py --path tests/cluster-health --include cluster-health --output cluster-health.xml
             envFrom:
             - configMapRef:
-                name: pingcloud-healthcheck-environment-variables
+                name: cluster-health-environment-variables

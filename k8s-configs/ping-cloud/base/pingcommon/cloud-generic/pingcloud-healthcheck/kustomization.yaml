@@ -11,10 +11,10 @@ generatorOptions:
 
 configMapGenerator:
 - name: pingcloud-healthcheck-environment-variables
+  envs:
+  - env_vars
 
 resources:
-- cluster-health.yaml
 - deployment.yaml
-- service.yaml
-- serviceaccount.yaml
 - ingress.yaml
+- service.yaml

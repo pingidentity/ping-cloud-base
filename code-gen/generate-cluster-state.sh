@@ -212,7 +212,7 @@
 # SERVICE_SSM_PATH_PREFIX  | The prefix of the SSM path that contains service   | /pcpt/service
 #                          | state data required for the cluster.               |
 #                          |                                                    |
-# NEW_RELIC_LICENSE_KEY    | The key of NewRelic APM Agent used to send data to | The string "unused".
+# NEW_RELIC_LICENSE_KEY    | The key of NewRelic APM Agent used to send data to | The SSM path: ssm://pcpt/sre/new-relic/java-agent-license-key
 #                          | NewRelic account.                                  |
 #                          |                                                    |
 # MYSQL_SERVICE_HOST       | The hostname of the MySQL database server.         | pingcentraldb.${PRIMARY_TENANT_DOMAIN}
@@ -710,7 +710,16 @@ echo "Using TARGET_DIR: ${TARGET_DIR}"
 echo "Using IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
 echo ---
 
-NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY:-unused}
+NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY:-ssm://pcpt/sre/new-relic/java-agent-license-key}"
+if [[ ${NEW_RELIC_LICENSE_KEY} == "ssm://"* ]]; then
+  if ! ssm_value=$(get_ssm_value "${NEW_RELIC_LICENSE_KEY#ssm:/}"); then
+    echo "Warn: ${ssm_value}"
+    echo "Setting NEW_RELIC_LICENSE_KEY to unused"
+    NEW_RELIC_LICENSE_KEY="unused"
+  else
+    NEW_RELIC_LICENSE_KEY="${ssm_value}"
+  fi
+fi
 
 export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KEY}")
 
