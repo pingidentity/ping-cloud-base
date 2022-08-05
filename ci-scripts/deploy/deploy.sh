@@ -14,7 +14,7 @@ pushd "${PROJECT_DIR}"
 
 NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY:-ssm://pcpt/sre/new-relic/java-agent-license-key}"
 if [[ ${NEW_RELIC_LICENSE_KEY} == "ssm://"* ]]; then
-  if ! ssm_value=$(get_ssm_value "${NEW_RELIC_LICENSE_KEY}"); then
+  if ! ssm_value=$(get_ssm_value "${NEW_RELIC_LICENSE_KEY#ssm:/}"); then
     echo "Warn: ${ssm_value}"
     echo "Setting NEW_RELIC_LICENSE_KEY to unused"
     NEW_RELIC_LICENSE_KEY="unused"
