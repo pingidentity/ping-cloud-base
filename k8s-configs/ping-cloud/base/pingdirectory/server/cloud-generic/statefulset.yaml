@@ -272,6 +272,9 @@ spec:
             - name: data-dir
               mountPath: /opt/staging/ds_env_vars
               subPath: ds_env_vars
+            - name: pingdirectory-truststore-certs
+              mountPath: /usr/local/secrets/truststore_certs
+              readOnly: true
           readinessProbe:
             exec:
               command:
@@ -381,6 +384,11 @@ spec:
         - name: pingdirectory-statsd-mapping
           configMap:
             name: pingdirectory-statsd-mapping
+        - name: pingdirectory-truststore-certs
+          secret:
+            secretName: pingdirectory-truststore-certs
+            optional: true
+            defaultMode: 0400
   volumeClaimTemplates:
     - metadata:
         name: out-dir
