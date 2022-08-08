@@ -366,6 +366,7 @@ get_secret_from_file() {
 # If all the secrets are found, then a global variable named ALL_MIN_SECRETS_FOUND will be set to true.
 ########################################################################################################################
 get_min_required_secrets() {
+  set -x
   ping_cloud_secrets_yaml="$(mktemp)"
   log "Attempting to get ping-cloud secrets.yaml into ${ping_cloud_secrets_yaml}"
 
@@ -395,6 +396,7 @@ get_min_required_secrets() {
       ID_RSA_FILE=
     fi
   fi
+  set +x
 }
 
 ########################################################################################################################
