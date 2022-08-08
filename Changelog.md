@@ -7,6 +7,7 @@
 - Fix grafana PD topology successful SSOs
 - Updated cluster tool sealed-secrets-controller from v0.17.3 to v0.18.0
 - Healthcheck cronjobs moved to 'health' namespace
+- Update API version in Beluga K8s manifest for EKS v1.22
 
 _Changes:_
 
@@ -26,6 +27,7 @@ _Changes:_
 - [X] PDO-4097 Execute a _start-server.sh.pre script before starting PingDirectory
 - [X] PDO-4106 Update profile with X.509 authentication sample
 - [X] PDO-4153 Adjust default PingDirectory purge plugin properties
+- [X] PDO-4159 Update API version in Beluga K8s manifest for EKS V1.22
 - [X] PDO-4122 Move Health Check Jobs to separate NS
 
 ### 1.14.0
