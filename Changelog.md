@@ -26,9 +26,10 @@ _Changes:_
 - [X] PDO-4060 Update versioning for cluster tools in PCB
 - [X] PDO-4097 Execute a _start-server.sh.pre script before starting PingDirectory
 - [X] PDO-4106 Update profile with X.509 authentication sample
-- [X] PDO-4153 Adjust default PingDirectory purge plugin properties
-- [X] PDO-4159 Update API version in Beluga K8s manifest for EKS V1.22
 - [X] PDO-4122 Move Health Check Jobs to separate NS
+- [X] PDO-4153 Adjust default PingDirectory purge plugin properties
+- [X] PDO-4154 Update truststore with signing certificates for X.509 authentication
+- [X] PDO-4159 Update API version in Beluga K8s manifest for EKS V1.22
 
 ### 1.14.0
 - Update cluster-tool external-dns from version v0.08.0 to version v.0.11.0
