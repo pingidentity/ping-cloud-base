@@ -6,11 +6,13 @@
 - Add fix to application name for ArgoCD
 - Fix grafana PD topology successful SSOs
 - Updated cluster tool sealed-secrets-controller from v0.17.3 to v0.18.0
+- Added ArgoCD slack notification configuration
 - Healthcheck cronjobs moved to 'health' namespace
 - Update API version in Beluga K8s manifest for EKS v1.22
 
 _Changes:_
 
+- [X] PDO-2300 Add ArgoCD slack notifications for better visibility into failure to apply manifests
 - [X] PDO-2635 Augment ArgoCD's application name with customer name
 - [X] PDO-3271 Updated argocd to v2.4.6
 - [X] PDO-3273 Update cluster tool to latest version: sealed-secrets-controller v.0.18.0

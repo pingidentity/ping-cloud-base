@@ -4,6 +4,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 namespace: argocd
 
 resources:
+- argocd-notifications-controller
 - argo.yaml
 
 generatorOptions:
