@@ -17,7 +17,7 @@ oneTimeSetUp() {
 # e.g. server.out -> server_logs
 
 function test_pd_log_streams_exist() {
-  local log_stream_prefixes="server access errors config_audit expensive_write_ops failed_ops replication"
+  local log_stream_prefixes="server access errors expensive_write_ops failed_ops replication"
 
   local success=0
   if ! log_streams_exist "${log_stream_prefixes}"; then
@@ -58,20 +58,6 @@ function test_pd_access_log_events_exist() {
 function test_pd_errors_log_events_exist() {
   local log_stream="errors_logs.$PD_LOG_STREAM_SUFFIX"
   local full_pathname=/opt/out/instance/logs/errors
-  local pod=pingdirectory-0
-  local container=pingdirectory
-
-  local success=0
-  if ! log_events_exist "${log_stream}" "${full_pathname}" "${pod}" "${container}"; then
-    success=1
-  fi
-
-  assertEquals 0 ${success}
-}
-
-function test_pd_config_audit_log_events_exist() {
-  local log_stream="config_audit_logs.$PD_LOG_STREAM_SUFFIX"
-  local full_pathname=/opt/out/instance/logs/config-audit.log
   local pod=pingdirectory-0
   local container=pingdirectory
 

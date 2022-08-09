@@ -111,6 +111,7 @@ p1-pa-was-integration-tests:
   - pingdatasync
   - common
   - monitoring
+  - cluster-health
 
 ################################################
 # All integration tests defined to run on the  #

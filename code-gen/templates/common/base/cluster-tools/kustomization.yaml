@@ -13,3 +13,4 @@ resources:
 - monitoring
 - security
 - pod-reaper
+- health
