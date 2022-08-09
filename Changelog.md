@@ -26,6 +26,7 @@ _Changes:_
 - [X] PDO-4051 Remove PingDirectory config-audit reference from Fluentbit configuration
 - [X] PDO-4052 Update to handle NEW_RELIC_LICENSE_KEY environment variable
 - [X] PDO-4060 Update versioning for cluster tools in PCB
+- [X] PDO-4082 Create a custom sort method to sortBy production release and release candidate
 - [X] PDO-4097 Execute a _start-server.sh.pre script before starting PingDirectory
 - [X] PDO-4106 Update profile with X.509 authentication sample
 - [X] PDO-4122 Move Health Check Jobs to separate NS
