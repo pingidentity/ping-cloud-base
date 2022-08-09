@@ -352,8 +352,6 @@ spec:
             - name: config
               mountPath: /etc/newrelic-infra.yml
               subPath: newrelic-infra.yml
-            - name: pingmetadata
-              mountPath: /etc/newrelic-infra/integrations.d
       serviceAccountName: nri-bundle-nri-kube-events
       volumes:
         - name: config
@@ -371,12 +369,6 @@ spec:
           emptyDir: {}
         - name: tmpfs-tmp
           emptyDir: {}
-        - name: pingmetadata
-          configMap:
-            name: pingmetadata
-            items:
-              - key: "pingmetadata.yaml"
-                path: "pingmetadata.yaml"
 
 ---
 # Source: nri-bundle/charts/newrelic-infrastructure/templates/ksm/deployment.yaml
