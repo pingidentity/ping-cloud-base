@@ -4,7 +4,7 @@ metadata:
   name: argocd-notifications-cm
 data:
   context: |
-    argocdUrl: 
+    argocdUrl:
   template.app-created: |
     message: |
       {{if eq .serviceType "slack"}}:white_check_mark:{{end}} Application {{.app.metadata.name}} is now running new version of deployments manifests.
@@ -251,16 +251,16 @@ data:
       when: app.status.operationState.phase in ['Succeeded']
   service.slack: |
     token: $slack-token
----
-apiVersion: argoproj.io/v1alpha1
-kind: AppProject
-metadata:
-  annotations:
-    notifications.argoproj.io/subscribe.on-sync-succeeded.slack: p1as-application-oncall
-    notifications.argoproj.io/subscribe.on-sync-status-unknown.slack: p1as-application-oncall
-    notifications.argoproj.io/subscribe.on-sync-running.slack: p1as-application-oncall
-    notifications.argoproj.io/subscribe.on-sync-failed.slack: p1as-application-oncall
-    notifications.argoproj.io/subscribe.on-health-degraded.slack: p1as-application-oncall
-    notifications.argoproj.io/subscribe.on-deployed.slack: p1as-application-oncall
-    notifications.argoproj.io/subscribe.on-created.slack: p1as-application-oncall
-    notifications.argoproj.io/subscribe.on-deleted.slack: p1as-application-oncall
+#Centrally managed global application subscriptions
+  subscriptions: | 
+    - recipients:
+      - slack: p1as-application-oncall
+      triggers:
+      - on-sync-status-unknown
+      - on-sync-succeeded
+      - on-sync-running
+      - on-sync-failed
+      - on-health-degraded
+      - on-deployed.slack
+      - on-created.slack
+      - on-deleted.slack
