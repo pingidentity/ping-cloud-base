@@ -134,15 +134,14 @@ patchesStrategicMerge:
       ---
       integrations:
         - name: nri-flex
-          # interval: 30s
+          interval: 30s
           config:
             name: pingmetadata
             apis:
-              - name: pingmetaDataOutput
-                commands:
-                  # run any command, you could cat .json file, or run some commands that produce a json output
-                  # the example just calls an API that returns json
-                  - run: curl -sk http://metadata.${NAMESPACE}:5000 #json output is retrieved from this command
+              - url: http://metadata.${NAMESPACE}:5000 #json output is retrieved from this url
+                event_type: pingmetaDataOutputSample
+                custom_attributes:
+                  pingCloudVersion: version
 
 patchesJson6902:
 
