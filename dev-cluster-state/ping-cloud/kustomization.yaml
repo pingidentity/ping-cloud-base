@@ -85,6 +85,12 @@ configMapGenerator:
   envs:
   - env_vars
 
+# Pingcloud-radsecproxy
+- name: pingcloud-radsecproxy-environment-variables
+  behavior: merge
+  envs:
+  - env_vars
+
 # Pingcloud-healthcheck
 - name: pingcloud-healthcheck-environment-variables
   behavior: merge
@@ -136,6 +142,20 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: metadata${ENVIRONMENT}.${TENANT_DOMAIN}
+
+# pingcloud-radsecproxy ingress
+- target:
+    group: networking.k8s.io
+    version: v1
+    kind: Ingress
+    name: radsecproxy-ingress
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: radsecproxy${ENVIRONMENT}.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/0/host
+      value: radsecproxy${ENVIRONMENT}.${TENANT_DOMAIN}
 
 # pingcloud-healthcheck ingress
 - target:
