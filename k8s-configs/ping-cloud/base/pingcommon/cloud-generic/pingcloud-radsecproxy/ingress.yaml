@@ -1,0 +1,26 @@
+# This defines the ingress for the radsecproxy service
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: radsecproxy-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/secure-backends: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    kubernetes.io/ingress.class: nginx-public
+spec:
+  tls:
+  - hosts:
+    - radsecproxy.ping-demo.com
+  rules:
+  - host: radsecproxy.ping-demo.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: radsecproxy
+            port:
+              number: 2083
