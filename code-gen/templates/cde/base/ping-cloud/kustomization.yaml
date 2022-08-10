@@ -77,6 +77,20 @@ patchesJson6902:
       path: /spec/rules/0/host
       value: metadata.${DNS_ZONE}
 
+# pingcloud-radsecproxy ingress
+- target:
+    group: networking.k8s.io
+    version: v1
+    kind: Ingress
+    name: radsecproxy-ingress
+  patch: |
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: radsecproxy.${DNS_ZONE}
+    - op: replace
+      path: /spec/rules/0/host
+      value: radsecproxy.${DNS_ZONE}
+
 # pingcloud-healthcheck ingress
 - target:
     group: networking.k8s.io
