@@ -1,0 +1,51 @@
+#
+# This defines the pingcloud-radsecproxy deployment.
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pingcloud-radsecproxy
+  labels:
+    role: pingcloud-radsecproxy
+spec:
+  selector:
+    matchLabels:
+      role: pingcloud-radsecproxy
+  template:
+    metadata:
+      name: pingcloud-radsecproxy
+      labels:
+        role: pingcloud-radsecproxy
+    spec:
+      serviceAccount: ping-serviceaccount
+      containers:
+      - name: pingcloud-radsecproxy
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/michaelgazda/radsecproxy:v0.1.0-gazda-test
+        imagePullPolicy: Always
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        envFrom:
+        - configMapRef:
+            name: pingcloud-radsecproxy-environment-variables
+        volumeMounts:
+          - name: acme-tls-cert
+            mountPath: /usr/local/secrets/certs
+            readOnly: true
+        resources:
+          limits:
+            memory: "500Mi"
+            cpu: "400m"
+          requests:
+            memory: "200Mi"
+            cpu: "200m"
+        ports:
+        - containerPort: 2083
+      volumes:
+        - name: acme-tls-cert
+          secret:
+            secretName: acme-tls-cert
+            optional: true
+            defaultMode: 0400
