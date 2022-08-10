@@ -13,8 +13,13 @@ spec:
     name: metrics
   - port: 8079
     name: pf-heartbeat
+  - port: 1812
+    name: pf-radius1
+  - port: 1813
+    name: pf-radius2
   selector:
     role: pingfederate-engine
+
 
 ---
 
