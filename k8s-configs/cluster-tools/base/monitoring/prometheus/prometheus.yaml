@@ -224,11 +224,12 @@ data:
 ---
 
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: prometheus
   namespace: prometheus
 spec:
+  serviceName: prometheus
   replicas: 1
   selector:
     matchLabels:
@@ -244,11 +245,18 @@ spec:
         image: public.ecr.aws/r2h3l6e4/prom/prometheus:v2.36.1
         args:
           - "--config.file=/etc/prometheus/prometheus.yml"
+          - "--storage.tsdb.retention.time=$(PROMETHEUS_RETENTION_TIME)"
+        env:
+          - name: PROMETHEUS_RETENTION_TIME
+            valueFrom:
+              configMapKeyRef:
+                key: PROMETHEUS_RETENTION_TIME
+                name: prometheus-environment-variables
         volumeMounts:
           - name: prometheus-config-volume
             mountPath: /etc/prometheus/
           - name: prometheus-storage-volume
-            mountPath: /prometheus
+            mountPath: /prometheus/data
         ports:
         - containerPort: 9090
         resources:
@@ -262,8 +270,18 @@ spec:
       - name: prometheus-config-volume
         configMap:
           name: prometheus-config
-      - name: prometheus-storage-volume
-        emptyDir: {}
+
+  volumeClaimTemplates:
+  - metadata:
+      name: prometheus-storage-volume
+      labels:
+        app: prometheus
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: efs
+      resources:
+        requests:
+          storage: 1Mi
 
 ---
 

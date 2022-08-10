@@ -209,3 +209,6 @@ PROMETHEUS_PUBLIC_HOSTNAME=prometheus.${DNS_ZONE_DERIVED}
 GRAFANA_PUBLIC_HOSTNAME=monitoring.${DNS_ZONE_DERIVED}
 KIBANA_PUBLIC_HOSTNAME=logs.${DNS_ZONE_DERIVED}
 ARGOCD_PUBLIC_HOSTNAME=argocd.${DNS_ZONE_DERIVED}
+
+# Retention time for Prometheus. Could be set in years(y), weeks(w), days(d), hours(h), minutes(s) or seconds(s)
+PROMETHEUS_RETENTION_TIME=15d
