@@ -1,0 +1,10 @@
+{
+   "bundle"  :  "password-rules",
+   "method"  :  "put",
+   "payload" :
+   {
+      "id": "minLength",
+      "stringValue": 3,
+      "type": "STRING"
+   }
+}
