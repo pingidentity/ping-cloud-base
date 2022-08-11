@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,3 +21,18 @@ metadata:
   labels:
     role: radsecproxy
 $patch: delete
+=======
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+- ping-cloud
+
+patchesStrategicMerge:
+- |-
+  apiVersion: v1
+  kind: Namespace
+  metadata:
+    name: pingcloud-radsecproxy
+  $patch: delete
+>>>>>>> 849dc2d5 (Added patch to disable radsecproxy)
