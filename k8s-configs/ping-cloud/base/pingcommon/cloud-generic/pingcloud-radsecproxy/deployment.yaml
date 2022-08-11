@@ -44,11 +44,7 @@ spec:
 #        readinessProbe:
 #          httpGet:
 #            path: /
-<<<<<<< HEAD
 #            port: 2083
-=======
-#            port: 5000
->>>>>>> 41f89784 (Staged readiness and liveliness checkes but commented out for now)
 #          initialDelaySeconds: 10
 #          periodSeconds: 10
 #          failureThreshold: 3
@@ -57,11 +53,7 @@ spec:
 #        livenessProbe:
 #          httpGet:
 #            path: /
-<<<<<<< HEAD
 #            port: 2083
-=======
-#            port: 5000
->>>>>>> 41f89784 (Staged readiness and liveliness checkes but commented out for now)
 #          initialDelaySeconds: 10
 #          periodSeconds: 10
 #          failureThreshold: 3
