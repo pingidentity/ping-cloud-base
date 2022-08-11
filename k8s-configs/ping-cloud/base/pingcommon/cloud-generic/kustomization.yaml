@@ -30,4 +30,4 @@ resources:
 - pingcloud-metadata
 
 #Uncomment pingpingcloud-radsecproxy in order to deploy it
-#- pingcloud-radsecproxy
+- pingcloud-radsecproxy
