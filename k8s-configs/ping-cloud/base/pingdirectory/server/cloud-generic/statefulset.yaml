@@ -401,3 +401,38 @@ spec:
         resources:
           requests:
             storage: 40Gi
+        - name: prometheus-job-exporter
+        - env:
+            - name: COMMAND1
+              value:
+            - name: COMMAND2
+              value:
+            - name: INTERVAL1
+              value:
+            - name: INTERVAL2
+              value:
+          securityContext:
+            runAsGroup: 9999
+            runAsNonRoot: true
+            runAsUser: 9031
+            allowPrivilegeEscalation: false
+          image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-monitoring/prometheus-job-exporter:PDO-4205
+          ports:
+            - containerPort: 8000
+              protocol: TCP
+            - containerPort: 8000
+              protocol: UDP
+          volumeMounts:
+            - mountPath: /app/
+              name: prometheus-job-exporter
+              readOnly: false
+          resources:
+            limits:
+              cpu: 100m
+              memory: 300Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+      securityContext:
+        fsGroup: 9999
+      
