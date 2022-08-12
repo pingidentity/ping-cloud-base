@@ -402,28 +402,22 @@ spec:
           requests:
             storage: 40Gi
         - name: prometheus-job-exporter
-        - env:
-            - name: COMMAND1
-              value:
-            - name: COMMAND2
-              value:
-            - name: INTERVAL1
-              value:
-            - name: INTERVAL2
-              value:
+        envFrom:
+          - configMapRef:
+              name: pingdirectory-environment-variables
           securityContext:
             runAsGroup: 9999
             runAsNonRoot: true
             runAsUser: 9031
             allowPrivilegeEscalation: false
-          image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-monitoring/prometheus-job-exporter:PDO-4205
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-job-exporter/dev:v1.15-release-branch-latest
           ports:
             - containerPort: 8000
               protocol: TCP
             - containerPort: 8000
               protocol: UDP
           volumeMounts:
-            - mountPath: /app/
+            - mountPath: /app/config.yaml
               name: prometheus-job-exporter
               readOnly: false
           resources:
