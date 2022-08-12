@@ -2,7 +2,9 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
+# Apply PingAccess admin deployment resources
 - ping-cloud
+- ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingcommon/cloud-generic/pingcloud-radsecproxy
 
 patchesStrategicMerge:
 - |-
