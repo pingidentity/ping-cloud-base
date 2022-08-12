@@ -1,15 +1,31 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
-resources:
-# Apply PingAccess admin deployment resources
-- ping-cloud
-- ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingcommon/cloud-generic/pingcloud-radsecproxy
-
 patchesStrategicMerge:
 - |-
   apiVersion: v1
-  kind: Namespace
+  kind: Deployment
   metadata:
     name: pingcloud-radsecproxy
+  $patch: delete
+
+  - |-
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: radsecproxy
+  $patch: delete
+
+- |-
+  apiVersion: networking.k8s.io/v1
+  kind: Ingress
+  metadata:
+    name: radsecproxy-ingress
+  $patch: delete
+
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: pingcloud-radsecproxy-environment-variables
   $patch: delete
