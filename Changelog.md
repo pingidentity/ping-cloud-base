@@ -39,6 +39,7 @@ _Changes:_
 - [X] PDO-4154 Update truststore with signing certificates for X.509 authentication
 - [X] PDO-4159 Update API version in Beluga K8s manifest for EKS V1.22
 - [X] PDO-4193 Inconsistent performance metrics
+- [X] PDO-4242 Improve cert-manager ci/cd deployment reliablility
 
 ### 1.14.0
 - Update cluster-tool external-dns from version v0.08.0 to version v.0.11.0
