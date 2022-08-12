@@ -212,3 +212,13 @@ ARGOCD_PUBLIC_HOSTNAME=argocd.${DNS_ZONE_DERIVED}
 
 # Retention time for Prometheus. Could be set in years(y), weeks(w), days(d), hours(h), minutes(s) or seconds(s)
 PROMETHEUS_RETENTION_TIME=15d
+
+# Prometheus job exporter variables
+COMMAND1=${COMMAND1}
+COMMAND2=${COMMAND2}
+COMMAND3=${COMMAND3}
+COMMAND4=${COMMAND4}
+INTERVAL1=${INTERVAL1}
+INTERVAL2=${INTERVAL2}
+INTERVAL3=${INTERVAL3}
+INTERVAL4=${INTERVAL4}
