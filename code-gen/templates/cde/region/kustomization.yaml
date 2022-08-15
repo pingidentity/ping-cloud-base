@@ -177,6 +177,13 @@ configMapGenerator:
   - ../base/env_vars
   - env_vars
 
+# Region for logging-bootstrap
+- name: logging-bootstrap-environment-variables
+  behavior: merge
+  literals:
+    - SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX}
+    - REGION=${REGION}
+
 - name: elk-environment-variables
   behavior: merge
   envs:
