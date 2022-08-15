@@ -1,6 +1,14 @@
 # Changelog
 
-### 1.15.0
+### 1.16.0.0
+
+- No Changes
+
+_Changes:_
+
+- None
+
+### 1.15.0.0
 
 - Augment ArgoCD's application name with customer name
 - Add fix to application name for ArgoCD
@@ -47,7 +55,8 @@ _Changes:_
 - [X] PDO-4206 Visualize active users count for each tenant environment data through Grafana dashboards
 - [X] PDO-4242 Improve cert-manager ci/cd deployment reliablility
 
-### 1.14.0
+### 1.14.0.0
+
 - Update cluster-tool external-dns from version v0.08.0 to version v.0.11.0
 - New image tagging convention for all Ping applications
 - SigSci Agent upgraded from v4.24.1 to v4.28.0
