@@ -33,6 +33,13 @@ configMapGenerator:
   envs:
   - ../ping-cloud/env_vars
 
+- name: prometheus-environment-variables
+  behavior: merge
+  envs:
+    - ../ping-cloud/env_vars
+  literals:
+    - PROMETHEUS_PING_NAMESPACE=${NAMESPACE}
+
 patchesStrategicMerge:
 
 ### Lets encrypt ACME certificate issuer for the cluster ###
