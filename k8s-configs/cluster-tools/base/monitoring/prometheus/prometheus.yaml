@@ -66,9 +66,6 @@ data:
       - source_labels: [__meta_kubernetes_endpoint_port_name, __meta_kubernetes_service_name]
         action: keep
         regex: metrics;prometheus-job-exporter
-      - source_labels: [__meta_kubernetes_pod_name]
-        action: replace
-        target_label: instance
       - source_labels: [__meta_kubernetes_namespace]
         action: replace
         target_label: namespace
