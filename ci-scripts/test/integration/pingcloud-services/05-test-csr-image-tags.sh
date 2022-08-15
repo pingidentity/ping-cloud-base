@@ -117,15 +117,15 @@ testMetadataImageTag() {
   assertEquals "PingCloud Metadata CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
 }
 
-testP14CBootstrapImageTag() {
-  $(test "${P14C_BOOTSTRAP_IMAGE_TAG}")
-  assertEquals "P14C_BOOTSTRAP_IMAGE_TAG missing from env_vars file" 0 $?
+testBootstrapImageTag() {
+  $(test "${BOOTSTRAP_IMAGE_TAG}")
+  assertEquals "BOOTSTRAP_IMAGE_TAG missing from env_vars file" 0 $?
 
-  unique_count=$(getUniqueTagCount "p14c-bootstrap")
-  assertEquals "P14C Bootstrap is using multiple image tag versions" 1 "${unique_count}"
+  unique_count=$(getUniqueTagCount "bootstrap")
+  assertEquals "Bootstrap is using multiple image tag versions" 1 "${unique_count}"
 
-  matched_count=$(getMatchedTagCount "${P14C_BOOTSTRAP_IMAGE_TAG}" "p14c-bootstrap")
-  assertEquals "P14C Bootstrap CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
+  matched_count=$(getMatchedTagCount "${BOOTSTRAP_IMAGE_TAG}" "bootstrap")
+  assertEquals "Bootstrap CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
 }
 
 testP14CIntegrationImageTag() {

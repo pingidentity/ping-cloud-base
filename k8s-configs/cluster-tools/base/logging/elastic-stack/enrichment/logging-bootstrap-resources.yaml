@@ -1,0 +1,14 @@
+storage/efs/uri:
+  kind: StorageClass
+  name: efs
+  template:
+  values_container_key: efsId
+  ssm_type: string
+  ssm_path_prefix: SERVICE_SSM_PATH_PREFIX
+storage/raw-logs/uri:
+  kind: ConfigMap
+  name: s3-raw-logs-bucket
+  template:
+  values_container_key: bucketName
+  ssm_type: string
+  ssm_path_prefix: SERVICE_SSM_PATH_PREFIX

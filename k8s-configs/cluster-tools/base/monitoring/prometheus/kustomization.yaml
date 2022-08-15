@@ -1,8 +1,18 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
+namespace: prometheus
 
 resources:
 - namespace.yaml
 - grafana.yaml
 - prometheus.yaml
 - grafana-dashboards.yaml
+- prometheus-job-exporter.yaml
+
+configMapGenerator:
+- name: prometheus-environment-variables
+  envs:
+    - env_vars
+
+
+

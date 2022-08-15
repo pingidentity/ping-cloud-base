@@ -5,9 +5,9 @@ resources:
 - ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingcommon/my-ping?ref=${K8S_GIT_BRANCH}
 
 images:
-- name: ${ECR_REGISTRY_NAME}/pingcloud-services/p14c-bootstrap
-  newName: ${ECR_REGISTRY_NAME}/pingcloud-services/p14c-bootstrap${ECR_ENV}
-  newTag: ${P14C_BOOTSTRAP_IMAGE_TAG}
+- name: ${ECR_REGISTRY_NAME}/pingcloud-services/bootstrap
+  newName: ${ECR_REGISTRY_NAME}/pingcloud-services/bootstrap${ECR_ENV}
+  newTag: ${BOOTSTRAP_IMAGE_TAG}
 
 - name: ${ECR_REGISTRY_NAME}/pingcloud-services/p14c-integration
   newName: ${ECR_REGISTRY_NAME}/pingcloud-services/p14c-integration${ECR_ENV}

@@ -660,8 +660,18 @@ expected_files() {
 }
 
 ########################################################################################################################
+# Gets rollout status and waits to return until either the timeout is reached or the rollout is ready
+########################################################################################################################
+wait_for_rollout() {
+  resource="${1}"
+  namespace="${2}"
+  timeout="${3}"
+  time kubectl rollout status "${resource}" --timeout "${timeout}s" -n "${namespace}" -w
+}
+
+########################################################################################################################
 # Check if the cluster is ready to run integration tests.
-# BLOCKS until the cluster is ready, returns when either ready or timeout is reached 
+# BLOCKS until the cluster is ready, returns when either ready or timeout is reached
 #
 # A PingDirectory pod can take up to 15 minutes to deploy in the CI/CD cluster. There are two sets of dependencies
 # today from:
@@ -681,36 +691,32 @@ expected_files() {
 check_if_ready() {
   local ns_to_check=${1}
 
-  PD_REPLICA='statefulset.apps/pingdirectory'
-  OTHER_PING_APP_REPLICAS='statefulset.apps/pingfederate statefulset.apps/pingaccess statefulset.apps/pingaccess-was'
+  local pd_replica='statefulset.apps/pingdirectory'
+  local other_ping_app_replicas='statefulset.apps/pingfederate statefulset.apps/pingaccess statefulset.apps/pingaccess-was'
 
-  NUM_PD_REPLICAS=$(kubectl get "${PD_REPLICA}" -o jsonpath='{.spec.replicas}' -n "${ns_to_check}")
-  PD_TIMEOUT_SECONDS=$((NUM_PD_REPLICAS * 900))
-  DEPENDENT_TIMEOUT_SECONDS=300
+  local num_pd_replicas=$(kubectl get "${pd_replica}" -o jsonpath='{.spec.replicas}' -n "${ns_to_check}")
 
-  echo "Waiting for rollout of ${PD_REPLICA} with a timeout of ${PD_TIMEOUT_SECONDS} seconds"
-  time kubectl rollout status "${PD_REPLICA}" --timeout "${PD_TIMEOUT_SECONDS}s" -n "${ns_to_check}" -w
+  local pd_timeout_seconds=$((num_pd_replicas * 900))
+  local dependent_timeout_seconds=300
 
-  for DEPENDENT_REPLICA in ${OTHER_PING_APP_REPLICAS}; do
-    echo "Waiting for rollout of ${DEPENDENT_REPLICA} with a timeout of ${DEPENDENT_TIMEOUT_SECONDS} seconds"
-    time kubectl rollout status "${DEPENDENT_REPLICA}" --timeout "${DEPENDENT_TIMEOUT_SECONDS}s" -n "${ns_to_check}" -w
+  echo "Waiting for rollout of ${pd_replica} with a timeout of ${pd_timeout_seconds} seconds"
+  wait_for_rollout "${pd_replica}" "${ns_to_check}" "${pd_timeout_seconds}"
+
+  for dependent_replica in ${other_ping_app_replicas}; do
+    echo "Waiting for rollout of ${dependent_replica} with a timeout of ${dependent_timeout_seconds} seconds"
+    wait_for_rollout "${dependent_replica}" "${ns_to_check}" "${dependent_timeout_seconds}"
   done
 
   # Print out the ingress objects for logs and the ping stack
-  echo
-  echo '--- Ingress URLs ---'
+  printf '\n--- Ingress URLs ---\n'
   kubectl get ingress -A
 
   # Print out the pingdirectory hostname
-  echo
-  echo '--- LDAP hostname ---'
+  printf '\n--- LDAP hostname ---\n'
   kubectl get svc pingdirectory-admin -n "${ns_to_check}" \
     -o jsonpath='{.metadata.annotations.external-dns\.alpha\.kubernetes\.io/hostname}'
 
   # Print out the  pods for the ping stack
-  echo
-  echo
-  echo '--- Pod status ---'
+  printf '\n\n--- Pod status ---'
   kubectl get pods -n "${ns_to_check}"
-
 }
