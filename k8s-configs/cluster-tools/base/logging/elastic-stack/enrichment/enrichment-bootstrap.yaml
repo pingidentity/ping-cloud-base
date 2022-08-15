@@ -66,7 +66,7 @@ spec:
           runAsUser: 1000
           runAsGroup: 1000
           allowPrivilegeEscalation: false
-        volumeMounts: 
+        volumeMounts:
         - name: kibana-dashboard-pa
           mountPath: /scripts/dashboards/pa.ndjson
           subPath: pa.ndjson
@@ -93,7 +93,7 @@ spec:
           runAsUser: 1000
           runAsGroup: 1000
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logging-bootstrap/dev:v1.15-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/bootstrap/dev:v1.15-release-branch-latest
         imagePullPolicy: Always
         env:
           - name: NAMESPACE
@@ -103,6 +103,11 @@ spec:
         envFrom:
         - configMapRef:
             name: logging-bootstrap-environment-variables
+        volumeMounts:
+          - mountPath: /app/config/app_config.yaml
+            name: logging-bootstrap-resources
+            subPath: logging-bootstrap-resources.yaml
+            readOnly: true
         resources:
           requests:
             memory: "256Mi"
@@ -125,10 +130,10 @@ spec:
           name: enrichment-elasticsearch-index-templates
       - name: kibana-dashboard-pa
         configMap:
-          name: kibana-dashboard-pa 
+          name: kibana-dashboard-pa
       - name: kibana-dashboard-pd
         configMap:
-          name: kibana-dashboard-pd 
+          name: kibana-dashboard-pd
       - name: kibana-dashboard-pf
         configMap:
           name: kibana-dashboard-pf
@@ -141,3 +146,6 @@ spec:
       - name: kibana-alerts
         configMap:
           name: kibana-alerts
+      - name: logging-bootstrap-resources
+        configMap:
+          name: logging-bootstrap-resources

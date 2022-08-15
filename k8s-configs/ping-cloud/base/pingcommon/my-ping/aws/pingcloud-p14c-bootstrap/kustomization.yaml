@@ -11,6 +11,10 @@ generatorOptions:
   disableNameSuffixHash: true
 
 configMapGenerator:
+- name: pingcloud-p14c-bootstrap-resources
+  files:
+    - p14c-bootstrap-resources.yaml
+
 - name: pingcloud-p14c-bootstrap-environment-variables
   envs:
   - env_vars
