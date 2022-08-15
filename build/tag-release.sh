@@ -49,7 +49,7 @@ replace_and_commit() {
     "pingdelegator"
     "pingcentral"
     "pingdatasync"
-    "p14c-bootstrap"
+    "bootstrap"
     "p14c-integration"
     "metadata"
     "healthcheck"
