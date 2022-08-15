@@ -1,0 +1,31 @@
+apiVersion: postgres-operator.crunchydata.com/v1beta1
+kind: PostgresCluster
+metadata:
+  name: hippo
+spec:
+  metadata:
+    annotations:
+      eks.amazonaws.com/role-arn: "arn:aws:iam::705370621539:role/jackminer-pgo-test-primary"
+  image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres:ubi8-14.3-0
+  postgresVersion: 14
+  instances:
+    - name: instance1
+      dataVolumeClaimSpec:
+        storageClassName: pgo-gp2
+        accessModes:
+        - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: 1Gi
+  backups:
+    pgbackrest:
+      image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbackrest:ubi8-2.38-1
+      configuration:
+        - secret:
+            name: pgo-s3-creds
+      repos:
+      - name: repo1
+        s3:
+          bucket: jackminer-pgo-test
+          endpoint: s3.us-west-2.amazonaws.com
+          region: us-west-2

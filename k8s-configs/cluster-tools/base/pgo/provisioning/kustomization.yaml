@@ -1,0 +1,9 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+  - cloud-generic
+  # TODO: Platform shouldn't be hardcoded but it is everywhere in places like 
+  # https://gitlab.corp.pingidentity.com/ping-cloud-private-tenant/ping-cloud-base/-/blob/6656df13ac0e40f706f2d9da17aad7960b3bd50f/k8s-configs/ping-cloud/test/pingaccess/admin/kustomization.yaml#L10 
+  # anyway...
+  - aws
