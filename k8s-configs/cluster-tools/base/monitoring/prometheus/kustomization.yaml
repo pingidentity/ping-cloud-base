@@ -7,8 +7,19 @@ resources:
 - grafana.yaml
 - prometheus.yaml
 - grafana-dashboards.yaml
+- prometheus-job-exporter.yaml
 
 configMapGenerator:
 - name: prometheus-environment-variables
   literals:
   - PROMETHEUS_RETENTION_TIME=15d
+  - PROMETHEUS_USER_COUNT_1_COMMAND='echo 0'
+  - PROMETHEUS_USER_COUNT_2_COMMAND='echo 0'
+  - PROMETHEUS_USER_COUNT_3_COMMAND='echo 0'
+  - PROMETHEUS_USER_COUNT_4_COMMAND='echo 0'
+  - PROMETHEUS_USER_COUNT_1_SCHEDULE='* * * * *'
+  - PROMETHEUS_USER_COUNT_2_SCHEDULE='* * * * *'
+  - PROMETHEUS_USER_COUNT_3_SCHEDULE='* * * * *'
+  - PROMETHEUS_USER_COUNT_4_SCHEDULE='* * * * *'
+
+
