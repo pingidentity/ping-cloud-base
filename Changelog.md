@@ -13,6 +13,7 @@
 - Updated cluster tool cert-manager from v1.5.3 to v1.9.1
 - Improved Grafana dashboards to be more consistent
 - Added prometheus-job-exporter deployment to expose command outputs as prometheus metrics
+- Added LDAP users count graph
 
 _Changes:_
 
@@ -41,6 +42,7 @@ _Changes:_
 - [X] PDO-4159 Update API version in Beluga K8s manifest for EKS V1.22
 - [X] PDO-4193 Inconsistent performance metrics
 - [X] PDO-4205 Create the K8s infrastructure to get active users count for each tenant environment
+- [X] PDO-4206 Visualize active users count for each tenant environment data through Grafana dashboards
 - [X] PDO-4242 Improve cert-manager ci/cd deployment reliablility
 
 ### 1.14.0
