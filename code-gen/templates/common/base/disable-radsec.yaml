@@ -1,31 +1,29 @@
-kind: Kustomization
-apiVersion: kustomize.config.k8s.io/v1beta1
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pingcloud-radsecproxy
+  namespace: ping-cloud
+$patch: delete
 
-patchesStrategicMerge:
-- |-
-  apiVersion: v1
-  kind: Deployment
-  metadata:
-    name: pingcloud-radsecproxy
-  $patch: delete
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: radsecproxy-ingress
+$patch: delete
 
-  - |-
-  apiVersion: v1
-  kind: Service
-  metadata:
-    name: radsecproxy
-  $patch: delete
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: radsecproxy
+  labels:
+    role: radsecproxy
+$patch: delete
 
-- |-
-  apiVersion: networking.k8s.io/v1
-  kind: Ingress
-  metadata:
-    name: radsecproxy-ingress
-  $patch: delete
-
-- |-
-  apiVersion: v1
-  kind: ConfigMap
-  metadata:
-    name: pingcloud-radsecproxy-environment-variables
-  $patch: delete
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pingcloud-radsecproxy-environment-variables
+$patch: delete
