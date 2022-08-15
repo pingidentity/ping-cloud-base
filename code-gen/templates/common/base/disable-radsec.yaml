@@ -20,10 +20,3 @@ metadata:
   labels:
     role: radsecproxy
 $patch: delete
-
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: pingcloud-radsecproxy-environment-variables
-$patch: delete
