@@ -6,29 +6,29 @@ data:
   config.yaml: |
     metrics:
       users_count_1:
-        command: '${PROMETHEUS_USER_COUNT_1_COMMAND}'
-        interval: '${PROMETHEUS_USER_COUNT_1_SCHEDULE}'
+        command: ${PROMETHEUS_USER_COUNT_1_COMMAND}
+        interval: ${PROMETHEUS_USER_COUNT_1_SCHEDULE}
         description: Count of users
         pod_name: pingdirectory-0
         container_name: pingdirectory
         namespace: '${PROMETHEUS_PING_NAMESPACE}'
       users_count_2:
-        command: '${PROMETHEUS_USER_COUNT_2_COMMAND}'
-        interval: '${PROMETHEUS_USER_COUNT_2_SCHEDULE}'
+        command: ${PROMETHEUS_USER_COUNT_2_COMMAND}
+        interval: ${PROMETHEUS_USER_COUNT_2_SCHEDULE}
         description: Count of users
         pod_name: pingdirectory-0
         container_name: pingdirectory
         namespace: '${PROMETHEUS_PING_NAMESPACE}'
       users_count_3:
-        command: '${PROMETHEUS_USER_COUNT_3_COMMAND}'
-        interval: '${PROMETHEUS_USER_COUNT_3_SCHEDULE}'
+        command: ${PROMETHEUS_USER_COUNT_3_COMMAND}
+        interval: ${PROMETHEUS_USER_COUNT_3_SCHEDULE}
         description: Count of users
         pod_name: pingdirectory-0
         container_name: pingdirectory
         namespace: '${PROMETHEUS_PING_NAMESPACE}'
       users_count_4:
-        command: '${PROMETHEUS_USER_COUNT_4_COMMAND}'
-        interval: '${PROMETHEUS_USER_COUNT_4_SCHEDULE}'
+        command: ${PROMETHEUS_USER_COUNT_4_COMMAND}
+        interval: ${PROMETHEUS_USER_COUNT_4_SCHEDULE}
         description: Count of users
         pod_name: pingdirectory-0
         container_name: pingdirectory
