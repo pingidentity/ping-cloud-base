@@ -1,7 +1,7 @@
-namespace: ping-cloud
+namespace: pgo
 
 commonLabels:
   app: ping-cloud
 
 resources:
-- ebs.yaml
+- cluster.yaml
