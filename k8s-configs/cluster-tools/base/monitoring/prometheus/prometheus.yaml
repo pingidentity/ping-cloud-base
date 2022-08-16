@@ -58,6 +58,21 @@ data:
         action: replace
         target_label: namespace
 
+    # Discover and monitor PD instances
+    - job_name: 'prometheus-job-exporter'
+      kubernetes_sd_configs:
+      - role: endpoints
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_endpoint_port_name, __meta_kubernetes_service_name]
+        action: keep
+        regex: metrics;prometheus-job-exporter
+      - source_labels: [__meta_kubernetes_pod_name]
+        action: replace
+        target_label: instance
+      - source_labels: [__meta_kubernetes_namespace]
+        action: replace
+        target_label: namespace
+
     # Discover and monitor PF instances
     - job_name: 'pf-jmx-exporter'
       scrape_interval: 10s
@@ -224,11 +239,12 @@ data:
 ---
 
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: prometheus
   namespace: prometheus
 spec:
+  serviceName: prometheus
   replicas: 1
   selector:
     matchLabels:
@@ -244,11 +260,18 @@ spec:
         image: public.ecr.aws/r2h3l6e4/prom/prometheus:v2.36.1
         args:
           - "--config.file=/etc/prometheus/prometheus.yml"
+          - "--storage.tsdb.retention.time=$(PROMETHEUS_RETENTION_TIME)"
+        env:
+          - name: PROMETHEUS_RETENTION_TIME
+            valueFrom:
+              configMapKeyRef:
+                key: PROMETHEUS_RETENTION_TIME
+                name: prometheus-environment-variables
         volumeMounts:
           - name: prometheus-config-volume
             mountPath: /etc/prometheus/
           - name: prometheus-storage-volume
-            mountPath: /prometheus
+            mountPath: /prometheus/data
         ports:
         - containerPort: 9090
         resources:
@@ -262,8 +285,18 @@ spec:
       - name: prometheus-config-volume
         configMap:
           name: prometheus-config
-      - name: prometheus-storage-volume
-        emptyDir: {}
+
+  volumeClaimTemplates:
+  - metadata:
+      name: prometheus-storage-volume
+      labels:
+        app: prometheus
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: efs
+      resources:
+        requests:
+          storage: 1Mi
 
 ---
 
@@ -283,7 +316,7 @@ spec:
 ---
 
 # Define role which allows access to endpoint /metrics within the cluster
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: prometheus
@@ -302,6 +335,9 @@ rules:
   verbs: ["get"]
 - nonResourceURLs: ["/metrics"]
   verbs: ["get"]
+- apiGroups: [ "" ]
+  resources: [ "pods/exec" ]
+  verbs: [ "create" ]
 
 ---
 
@@ -313,7 +349,7 @@ metadata:
 
 ---
 
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: prometheus
@@ -325,3 +361,4 @@ subjects:
 - kind: ServiceAccount
   name: prometheus
   namespace: prometheus
+

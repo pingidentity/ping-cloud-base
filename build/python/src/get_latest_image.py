@@ -2,6 +2,7 @@ import sys
 from botocore.config import Config
 import utils
 import re as regex
+from pkg_resources import parse_version
 
 # Constants
 SEMANTIC_VERSION_REGEX = "([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)(_RC[0-9]+)?"
@@ -9,7 +10,7 @@ SEMANTIC_VERSION_REGEX = "([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)(_RC[0-9]+)?"
 
 # This class is very similar to the script located in
 # ping-cloud-docker/ci-scripts/python/src/get_latest_release_candidate_image.py
-# with come changes/additions to account for non-RC tags
+# with some changes/additions to account for non-RC tags
 class LatestImageManager:
     """Get the latest ECR image"""
 
@@ -42,10 +43,10 @@ class LatestImageManager:
     def regex_for_image_within_specific_release(self):
         if "RC" in self.orig_gitlab_name:
             # We only care about the infrastructure version & beluga major version
-            return f"({self.infrastructure_version_num})\.({self.beluga_major_version_num})\.([0-9]+)\.([0-9]+)_RC([0-9]+)$"
+            return f"({self.infrastructure_version_num})\.({self.beluga_major_version_num})\.([0-9]+)\.([0-9]+)(_RC([0-9]+))?$"
         else:
             # We care about the infrastructure version, beluga major version, & the beluga patch version
-            return f"({self.infrastructure_version_num})\.({self.beluga_major_version_num})\.({self.pcb_patch_num})\.([0-9]+)$"
+            return f"({self.infrastructure_version_num})\.({self.beluga_major_version_num})\.({self.pcb_patch_num})\.([0-9]+)(_RC([0-9]+))?$"
 
     def normalize_gitlab_tag(self):
         """
@@ -105,42 +106,17 @@ class LatestImageManager:
                 image_tag_name = regex.search(self.regex_for_image_within_specific_release(), orig_image_tag_name)
 
                 if image_tag_name is not None:
-                    # Extract semantic version into a list as "version_list"
-                    # e.g.
-                    # image_tag_name v1.14.0.0 => image_version_list [1, 14, 0, 0, 0]
-                    # image_tag_name v1.14.0.0_RC1 => image_version_list [1, 14, 0, 0, RC1]
-                    # image_version_list will be used by python's sort method later.
-                    image_infrastructure_version_num = int(image_tag_name.group(1))
-                    image_beluga_major_version_num = int(image_tag_name.group(2))
-                    image_ping_cloud_base_patch = int(image_tag_name.group(3))
-                    image_ping_cloud_docker_patch = int(image_tag_name.group(4))
-                    if "RC" in self.orig_gitlab_name:
-                        image_ping_cloud_rc_num = int(image_tag_name.group(5))
-                    else:
-                        image_ping_cloud_rc_num = 0
-
-                    image_version_list = [
-                        image_infrastructure_version_num,
-                        image_beluga_major_version_num,
-                        image_ping_cloud_base_patch,
-                        image_ping_cloud_docker_patch,
-                        image_ping_cloud_rc_num
-                    ]
-
-                    all_images_within_release.append({
-                        "image_version_list": image_version_list,
-                        "image_tag_name": orig_image_tag_name
-                    })
+                    all_images_within_release.append(orig_image_tag_name)
 
         if len(all_images_within_release) == 0:
             raise Exception(
                 f"No image was found within {self.infrastructure_version_num}.{self.beluga_major_version_num}.{self.pcb_patch_num} release")
 
         # Sort candidates by highest to lowest. The highest is considered as the most recent.
-        all_images_within_release.sort(key=lambda version: version["image_version_list"], reverse=True)
+        sorted_images = sorted(all_images_within_release, key=parse_version, reverse=True)
 
         # Return the first item from the list. This is the latest candidate within the release.
-        return all_images_within_release[0]["image_tag_name"]
+        return sorted_images[0]
 
 
 if __name__ == '__main__':

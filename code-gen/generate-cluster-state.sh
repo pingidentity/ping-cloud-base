@@ -332,7 +332,7 @@ ${DNS_ZONE_DERIVED}
 ${PRIMARY_DNS_ZONE}
 ${PRIMARY_DNS_ZONE_DERIVED}
 ${METADATA_IMAGE_TAG}
-${P14C_BOOTSTRAP_IMAGE_TAG}
+${BOOTSTRAP_IMAGE_TAG}
 ${P14C_INTEGRATION_IMAGE_TAG}
 ${ANSIBLE_BELUGA_IMAGE_TAG}
 ${PINGCENTRAL_IMAGE_TAG}
@@ -353,6 +353,7 @@ ${K8S_GIT_BRANCH}
 ${CLUSTER_STATE_REPO_URL}
 ${CLUSTER_STATE_REPO_BRANCH}
 ${REGION_NICK_NAME}
+${TENANT_NAME}
 ${PING_CLOUD_NAMESPACE}
 ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
 ${SSH_ID_KEY_BASE64}'
@@ -712,7 +713,7 @@ echo ---
 
 NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY:-ssm://pcpt/sre/new-relic/java-agent-license-key}"
 if [[ ${NEW_RELIC_LICENSE_KEY} == "ssm://"* ]]; then
-  if ! ssm_value=$(get_ssm_value "${NEW_RELIC_LICENSE_KEY}"); then
+  if ! ssm_value=$(get_ssm_value "${NEW_RELIC_LICENSE_KEY#ssm:/}"); then
     echo "Warn: ${ssm_value}"
     echo "Setting NEW_RELIC_LICENSE_KEY to unused"
     NEW_RELIC_LICENSE_KEY="unused"

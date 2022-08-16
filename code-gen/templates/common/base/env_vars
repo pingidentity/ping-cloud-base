@@ -162,8 +162,8 @@ PINGDATASYNC_IMAGE_TAG=v1.15-release-branch-latest
 # Ping solution image tags
 ############################################################
 METADATA_IMAGE_TAG=v1.15-release-branch-latest
+BOOTSTRAP_IMAGE_TAG=v1.15-release-branch-latest
 HEALTHCHECK_IMAGE_TAG=v1.15-release-branch-latest
-P14C_BOOTSTRAP_IMAGE_TAG=v1.15-release-branch-latest
 P14C_INTEGRATION_IMAGE_TAG=v1.15-release-branch-latest
 ANSIBLE_BELUGA_IMAGE_TAG=v1.15-release-branch-latest
 
@@ -209,3 +209,19 @@ PROMETHEUS_PUBLIC_HOSTNAME=prometheus.${DNS_ZONE_DERIVED}
 GRAFANA_PUBLIC_HOSTNAME=monitoring.${DNS_ZONE_DERIVED}
 KIBANA_PUBLIC_HOSTNAME=logs.${DNS_ZONE_DERIVED}
 ARGOCD_PUBLIC_HOSTNAME=argocd.${DNS_ZONE_DERIVED}
+
+# Retention time for Prometheus. Could be set in years(y), weeks(w), days(d), hours(h), minutes(m) or seconds(s)
+PROMETHEUS_RETENTION_TIME=15d
+
+# Commands and schedules to obtain users count. Values should be in single quotes. Schedules should be in cron format. Command should return only numeric value(int\float)
+PROMETHEUS_USER_COUNT_1_COMMAND='echo 0'
+PROMETHEUS_USER_COUNT_1_SCHEDULE='* * * * *'
+PROMETHEUS_USER_COUNT_2_COMMAND='echo 0'
+PROMETHEUS_USER_COUNT_2_SCHEDULE='* * * * *'
+PROMETHEUS_USER_COUNT_3_COMMAND='echo 0'
+PROMETHEUS_USER_COUNT_3_SCHEDULE='* * * * *'
+PROMETHEUS_USER_COUNT_4_COMMAND='echo 0'
+PROMETHEUS_USER_COUNT_4_SCHEDULE='* * * * *'
+
+# Variable to have ping-cloud namespace in prometheus-job-exporter
+PROMETHEUS_PING_NAMESPACE=${PING_CLOUD_NAMESPACE}

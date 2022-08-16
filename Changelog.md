@@ -7,11 +7,19 @@
 - Fix grafana PD topology successful SSOs
 - Updated cluster tool sealed-secrets-controller from v0.17.3 to v0.18.0
 - Healthcheck cronjobs moved to 'health' namespace
+- Update API version in Beluga K8s manifest for EKS v1.22
+- Setup EFS as backend for Prometheus storage
+- Updated cluster tool cert-manager from v1.5.3 to v1.9.1
+- Use generic bootstrap app for p14c and logging
+- Improved Grafana dashboards to be more consistent
+- Added prometheus-job-exporter deployment to expose command outputs as prometheus metrics
+- Added LDAP users count graph
 
 _Changes:_
 
 - [X] PDO-2635 Augment ArgoCD's application name with customer name
 - [X] PDO-3271 Updated argocd to v2.4.6
+- [X] PDO-3272 Update cluster tool to recommended version: cert-manager v1.9.1
 - [X] PDO-3273 Update cluster tool to latest version: sealed-secrets-controller v.0.18.0
 - [X] PDO-3575 Cluster tool: force pingcloud-monitoring/newrelic-tags-exporter initContainer to run with allowPrivilegeEscalation: false
 - [X] PDO-3940 Add timeouts for screen updates in PingOne integration tests
@@ -19,13 +27,23 @@ _Changes:_
 - [X] PDO-4036 Fix SigSci to exit properly when terminated
 - [X] PDO-3524 Create PingOne-Configurator test for CI/CD
 - [X] PDO-3918 Move chrome install from run-integration-tests.sh to k8s-deploy-tools image
+- [X] PDO-3944 Create CI/CD integration test for Health Checks
+- [X] PDO-4002 Unified bootstrap application
 - [X] PDO-4051 Remove PingDirectory config-audit reference from Fluentbit configuration
 - [X] PDO-4052 Update to handle NEW_RELIC_LICENSE_KEY environment variable
 - [X] PDO-4060 Update versioning for cluster tools in PCB
+- [X] PDO-4082 Create a custom sort method to sortBy production release and release candidate
+- [X] PDO-4090 Prometheus: Implement EFS to back /data Directory
 - [X] PDO-4097 Execute a _start-server.sh.pre script before starting PingDirectory
 - [X] PDO-4106 Update profile with X.509 authentication sample
-- [X] PDO-4153 Adjust default PingDirectory purge plugin properties
 - [X] PDO-4122 Move Health Check Jobs to separate NS
+- [X] PDO-4153 Adjust default PingDirectory purge plugin properties
+- [X] PDO-4154 Update truststore with signing certificates for X.509 authentication
+- [X] PDO-4159 Update API version in Beluga K8s manifest for EKS V1.22
+- [X] PDO-4193 Inconsistent performance metrics
+- [X] PDO-4205 Create the K8s infrastructure to get active users count for each tenant environment
+- [X] PDO-4206 Visualize active users count for each tenant environment data through Grafana dashboards
+- [X] PDO-4242 Improve cert-manager ci/cd deployment reliablility
 
 ### 1.14.0
 - Update cluster-tool external-dns from version v0.08.0 to version v.0.11.0
