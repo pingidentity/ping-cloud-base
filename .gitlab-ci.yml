@@ -21,15 +21,6 @@ variables:
   DELETE_ENV_AFTER_PIPELINE: "true"
   PINGONE_DEPLOY: $PINGONE_DEPLOY
 
-# ## Compile stage ##
-# compile:
-#   stage: compile
-#   tags:
-#     - default-gitlab-runner
-#   image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.2.0
-#   script:
-#     - ./ci-scripts/compile/compile.sh
-
 ## Find cluster stage ##
 find-cluster:
   stage: find-cluster
