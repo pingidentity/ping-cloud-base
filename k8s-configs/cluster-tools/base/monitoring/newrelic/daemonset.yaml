@@ -325,8 +325,7 @@ spec:
               mountPath: /etc/newrelic-infra.yml
               subPath: newrelic-infra.yml
             - name: nri-integrations-cfg-volume
-              mountPath: /etc/newrelic-infra/integrations.d/pixie-health-check.yaml
-              subPath: pixie-health-check.yaml
+              mountPath: /etc/newrelic-infra/integrations.d
             - name: dev
               mountPath: /dev
             - name: host-docker-socket
@@ -346,9 +345,6 @@ spec:
               name: agent-tmpfs-user-data
             - mountPath: /tmp
               name: agent-tmpfs-tmp
-            - name: pingmetadata
-              mountPath: /etc/newrelic-infra/integrations.d/pingmetadata.yaml
-              subPath: pingmetadata.yaml
           resources: 
             limits:
               memory: 300M
@@ -393,9 +389,6 @@ spec:
         - name: nri-integrations-cfg-volume
           configMap:
             name: nri-bundle-nrk8s-integrations-cfg
-        - name: pingmetadata
-          configMap:
-            name: pingmetadata
       tolerations:
         - effect: NoSchedule
           operator: Exists
