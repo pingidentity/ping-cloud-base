@@ -21,6 +21,7 @@ patchesStrategicMerge:
     metadata:
       name: pf-provisioning
     $patch: delete
+
   - |-
     apiVersion: storage.k8s.io/v1
     kind: StorageClass
