@@ -8,7 +8,6 @@ workflow:
 
 ## Pipeline stages ##
 stages:
-  #- compile
   - find-cluster
   - deploy
   - unit-test
