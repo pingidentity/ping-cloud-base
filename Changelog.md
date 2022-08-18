@@ -44,6 +44,7 @@ _Changes:_
 - [X] PDO-4205 Create the K8s infrastructure to get active users count for each tenant environment
 - [X] PDO-4206 Visualize active users count for each tenant environment data through Grafana dashboards
 - [X] PDO-4242 Improve cert-manager ci/cd deployment reliablility
+- [X] PDO-4265 Increase memory limits for prometheus pod
 
 ### 1.14.0
 - Update cluster-tool external-dns from version v0.08.0 to version v.0.11.0
