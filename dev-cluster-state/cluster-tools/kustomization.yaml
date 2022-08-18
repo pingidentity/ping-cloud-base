@@ -217,13 +217,13 @@ patchesStrategicMerge:
       ---
       integrations:
         - name: nri-flex
-          # interval: 30s
+          interval: 2m
           config:
             name: pingmetadata
             apis:
-              - event_type: pingmetaDataOutputTest
+              - event_type: pingmetaDataOutput
                 url: http://metadata.${NAMESPACE}:5000  
-                jq: ".version[]"
+                jq: ".version"
 
 # In the "kustomize" overlay for CI/CD environments, manually create the "newrelic-license-key" secret in the "newrelic" namespace instead of using the "newrelic-license-secret-exporter" job to automate it. Otherwise, concurrent branch pipelines can fail because the "newrelic" namespace is shared across all "ping-cloud" branch pipelines and the updating immutable fields in the exporter job can fail.
 
@@ -388,7 +388,7 @@ patchesJson6902:
     namespace: newrelic
   patch: |-
     - op: replace
-      path: /spec/template/metadata/annotations/clusterName
+      path: /spec/template/metadata/annotations/CLUSTER_NAME
       value: ${NEW_RELIC_ENVIRONMENT_NAME}
 
 - target:
@@ -399,7 +399,7 @@ patchesJson6902:
     namespace: newrelic
   patch: |-
     - op: replace
-      path: /spec/template/metadata/annotations/clusterName
+      path: /spec/template/metadata/annotations/CLUSTER_NAME
       value: ${NEW_RELIC_ENVIRONMENT_NAME}
 
 - target:

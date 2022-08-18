@@ -390,13 +390,13 @@ data:
     ---
     integrations:
       - name: nri-flex
-        # interval: 30s
+        interval: 2m
         config:
           name: pingmetadata
           apis:
             - event_type: pingmetaDataOutput
               url: http://metadata.${NAMESPACE}:5000
-              jq: ".version[]"
+              jq: ".version"
 
 ---
 # Source: nri-bundle/charts/newrelic-infrastructure/templates/kubelet/scraper-configmap.yaml
