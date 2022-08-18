@@ -394,11 +394,9 @@ data:
         config:
           name: pingmetadata
           apis:
-            - name: pingmetaDataOutput
-              commands:
-                # run any command, you could cat .json file, or run some commands that produce a json output
-                # the example just calls an API that returns json
-                - run: curl -sk http://metadata.${NAMESPACE}:5000 #json output is retrieved from this url
+            - event_type: pingmetaDataOutput
+              url: http://metadata.${NAMESPACE}:5000
+              jq: ".version[]"
 
 ---
 # Source: nri-bundle/charts/newrelic-infrastructure/templates/kubelet/scraper-configmap.yaml

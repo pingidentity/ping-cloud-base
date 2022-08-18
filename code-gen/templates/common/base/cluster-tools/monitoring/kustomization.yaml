@@ -144,11 +144,9 @@ patchesStrategicMerge:
           config:
             name: pingmetadata
             apis:
-              - name: pingmetaDataOutput
-                commands:
-                  # run any command, you could cat .json file, or run some commands that produce a json output
-                  # the example just calls an API that returns json
-                  - run: curl -sk http://metadata.${NAMESPACE}:5000 #json output is retrieved from this url
+              - event_type: pingmetaDataOutputTest
+                url: http://metadata.${NAMESPACE}:5000
+                jq: ".version[]"
 
 patchesJson6902:
 
@@ -207,3 +205,14 @@ patchesJson6902:
     - op: replace
       path: /spec/template/metadata/annotations/SECRET_NAMESPACE
       value: ${PING_CLOUD_NAMESPACE}
+
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: nri-bundle-newrelic-metadata
+    namespace: newrelic
+  patch: |-
+    - op: replace
+      path: /spec/template/metadata/annotations/CLUSTER_NAME
+      value: ${NEW_RELIC_ENVIRONMENT_NAME}
