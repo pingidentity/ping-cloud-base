@@ -145,7 +145,7 @@ patchesStrategicMerge:
             name: pingmetadata
             apis:
               - event_type: pingmetaDataOutput
-                url: http://metadata.${NAMESPACE}:5000
+                url: http://metadata.${PING_CLOUD_NAMESPACE}:5000
                 jq: ".version"
 
 patchesJson6902:
