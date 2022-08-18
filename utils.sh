@@ -8,7 +8,7 @@
 ########################################################################################################################
 log() {
   LOG_FILE=${LOG_FILE:-/tmp/dev-env.log}
-  echo "$(date) ${1}" | tee -a "${LOG_FILE}"
+  printf "%s %s\n" "$(date)" "${1}" | tee -a "${LOG_FILE}"
 }
 
 ########################################################################################################################
@@ -503,8 +503,12 @@ build_dev_deploy_file() {
   local dev_cluster_state_dir='dev-cluster-state'
   cp -pr "${dev_cluster_state_dir}" "${build_dir}"
 
+  log "Substituting vars for ${build_dir}"
+
   substitute_vars "${build_dir}" "${DEFAULT_VARS}"
   set_kustomize_load_arg_and_value
+
+  log "Running kustomize build for ${build_dir}/${cluster_type}"
   kustomize build "${build_load_arg}" "${build_load_arg_value}" "${build_dir}/${cluster_type}" > "${deploy_file}"
   rm -rf "${build_dir}"
 
@@ -571,5 +575,18 @@ get_ssm_value() {
     echo "${ssm_value}" | grep -Eo "${ssm_key#*#}[^,]*" | grep -Eo "[^:]*$"
   else
     echo "${ssm_value}"
+  fi
+}
+
+# Deploy PGO - only if the feature flag is enabled!
+# Arg $1 - directory containing pgo CRDs
+deploy_pgo() {
+  pgo_dir=${1}
+  if [[ $PF_PROVISIONING_ENABLED == "true" ]]; then
+    log "PF Provisioning is enabled, deploying PGO CRD"
+    # PGO CRDs are so large, they have to be applied server-side
+    kubectl apply --server-side -k "${pgo_dir}"
+  else
+    log "PF Provisioning NOT enabled, continuing"
   fi
 }

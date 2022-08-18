@@ -2,6 +2,6 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-  # TODO: add back but without CRDs???? ugh
-  #- base
-  - pf-provisioning
+  # TODO: just the default PGO namespace for now
+  - namespace
+  - default
