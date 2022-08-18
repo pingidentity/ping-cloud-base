@@ -14,6 +14,7 @@
 - Improved Grafana dashboards to be more consistent
 - Added prometheus-job-exporter deployment to expose command outputs as prometheus metrics
 - Added LDAP users count graph
+- Add PingFederate health checks cronjob
 
 _Changes:_
 
@@ -35,6 +36,7 @@ _Changes:_
 - [X] PDO-4082 Create a custom sort method to sortBy production release and release candidate
 - [X] PDO-4090 Prometheus: Implement EFS to back /data Directory
 - [X] PDO-4097 Execute a _start-server.sh.pre script before starting PingDirectory
+- [X] PDO-4101 PF Health Check Tests
 - [X] PDO-4106 Update profile with X.509 authentication sample
 - [X] PDO-4122 Move Health Check Jobs to separate NS
 - [X] PDO-4153 Adjust default PingDirectory purge plugin properties
