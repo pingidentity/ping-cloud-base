@@ -2,7 +2,20 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-- ../../k8s-configs/cluster-tools
+# TODO: do this in a smarter way
+#- ../../k8s-configs/cluster-tools
+- ../../k8s-configs/cluster-tools/base/cert-manager
+- ../../k8s-configs/cluster-tools/base/cluster-autoscaler
+- ../../k8s-configs/cluster-tools/base/service-discovery
+- ../../k8s-configs/cluster-tools/base/health
+- ../../k8s-configs/cluster-tools/base/ingress
+- ../../k8s-configs/cluster-tools/base/logging
+- ../../k8s-configs/cluster-tools/base/metrics
+- ../../k8s-configs/cluster-tools/base/monitoring
+- ../../k8s-configs/cluster-tools/base/security
+- ../../k8s-configs/cluster-tools/base/efs-driver
+- ../../k8s-configs/cluster-tools/base/pod-reaper
+- ../../k8s-configs/cluster-tools/base/pgo
 
 generatorOptions:
   disableNameSuffixHash: true

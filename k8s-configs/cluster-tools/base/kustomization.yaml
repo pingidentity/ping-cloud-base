@@ -1,6 +1,7 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
+# TODO: as it stands now, This essentially gets skipped by dev cluster state
 resources:
 - cert-manager
 - cluster-autoscaler
