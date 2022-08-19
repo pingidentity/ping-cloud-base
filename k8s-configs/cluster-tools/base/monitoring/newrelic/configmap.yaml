@@ -394,7 +394,7 @@ data:
         config:
           name: pingmetadata
           apis:
-            - event_type: pingmetaDataOutput
+            - event_type: pingmetaDataOutputSample
               url: http://metadata.${NAMESPACE}:5000
               jq: ".version"
 
