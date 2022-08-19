@@ -503,6 +503,13 @@ build_dev_deploy_file() {
   local dev_cluster_state_dir='dev-cluster-state'
   cp -pr "${dev_cluster_state_dir}" "${build_dir}"
 
+  if [[ $PF_PROVISIONING_ENABLED != "true" ]]; then
+    # TODO: this should not be here
+    log "PGO disabled, removing"
+    # Remove -pgo from kustomize!
+    sed -i '' 's/- .*\/pgo//g' "${build_dir}/cluster-tools/kustomization.yaml"
+  fi
+
   log "Substituting vars for ${build_dir}"
 
   substitute_vars "${build_dir}" "${DEFAULT_VARS}"
@@ -580,13 +587,19 @@ get_ssm_value() {
 
 # Deploy PGO - only if the feature flag is enabled!
 # Arg $1 - directory containing pgo CRDs
-deploy_pgo() {
-  pgo_dir=${1}
+pgo_feature_flag() {
+  base_dir=${1}
+  build_yaml=${2}
+
+  # TODO: move CRD files since they won't use kustomize in typical way?
+  pgo_crd_dir="${base_dir}/k8s-configs/cluster-tools/base/pgo/base/crd/"
+  dev_kust_file="${tmp_build_dir}/cluster-tools/kustomize.yaml"
+
   if [[ $PF_PROVISIONING_ENABLED == "true" ]]; then
     log "PF Provisioning is enabled, deploying PGO CRD"
     # PGO CRDs are so large, they have to be applied server-side
-    kubectl apply --server-side -k "${pgo_dir}"
+    kubectl apply --server-side -k "${pgo_crd_dir}"
   else
-    log "PF Provisioning NOT enabled, continuing"
+    log "PF Provisioning NOT enabled"
   fi
 }

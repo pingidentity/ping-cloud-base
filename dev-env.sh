@@ -393,7 +393,7 @@ build_dev_deploy_file "${DEPLOY_FILE}" "${CLUSTER_TYPE}"
 
 if test "${dryrun}" = 'false'; then
 
-  deploy_pgo "${CUR_DIR}/k8s-configs/cluster-tools/base/pgo/base/crd/"
+  pgo_feature_flag "${CUR_DIR}" "${DEPLOY_FILE}"
 
   log "Deploying ${DEPLOY_FILE} to cluster ${CLUSTER_NAME}, namespace ${NAMESPACE} for tenant ${TENANT_DOMAIN}"
 
