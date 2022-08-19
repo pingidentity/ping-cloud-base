@@ -14,6 +14,7 @@
 - Improved Grafana dashboards to be more consistent
 - Added prometheus-job-exporter deployment to expose command outputs as prometheus metrics
 - Added LDAP users count graph
+- Add newrelic-metadata pod to send metadata to NewRelic
 
 _Changes:_
 
@@ -21,14 +22,15 @@ _Changes:_
 - [X] PDO-3271 Updated argocd to v2.4.6
 - [X] PDO-3272 Update cluster tool to recommended version: cert-manager v1.9.1
 - [X] PDO-3273 Update cluster tool to latest version: sealed-secrets-controller v.0.18.0
-- [X] PDO-3575 Cluster tool: force pingcloud-monitoring/newrelic-tags-exporter initContainer to run with allowPrivilegeEscalation: false
-- [X] PDO-3940 Add timeouts for screen updates in PingOne integration tests
-- [X] PDO-3988 Grafana Successful SSOs Pingfederate Topology dashboard displaying wrong data
-- [X] PDO-4036 Fix SigSci to exit properly when terminated
 - [X] PDO-3524 Create PingOne-Configurator test for CI/CD
+- [X] PDO-3575 Cluster tool: force pingcloud-monitoring/newrelic-tags-exporter initContainer to run with allowPrivilegeEscalation: false
+- [X] PDO-3823 Add newrelic-metadata pod to send metadata to NewRelic
 - [X] PDO-3918 Move chrome install from run-integration-tests.sh to k8s-deploy-tools image
+- [X] PDO-3940 Add timeouts for screen updates in PingOne integration tests
 - [X] PDO-3944 Create CI/CD integration test for Health Checks
+- [X] PDO-3988 Grafana Successful SSOs Pingfederate Topology dashboard displaying wrong data
 - [X] PDO-4002 Unified bootstrap application
+- [X] PDO-4036 Fix SigSci to exit properly when terminated
 - [X] PDO-4051 Remove PingDirectory config-audit reference from Fluentbit configuration
 - [X] PDO-4052 Update to handle NEW_RELIC_LICENSE_KEY environment variable
 - [X] PDO-4060 Update versioning for cluster tools in PCB
