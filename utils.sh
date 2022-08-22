@@ -504,7 +504,7 @@ build_dev_deploy_file() {
   cp -pr "${dev_cluster_state_dir}" "${build_dir}"
 
   if [[ $PF_PROVISIONING_ENABLED != "true" ]]; then
-    # TODO: this should not be here
+    # TODO: this should not be here - it should be up a level
     log "PGO disabled, removing"
     # Remove -pgo from kustomize!
     sed -i '' 's/- .*\/pgo//g' "${build_dir}/cluster-tools/kustomization.yaml"
@@ -517,37 +517,15 @@ build_dev_deploy_file() {
 
   log "Running kustomize build for ${build_dir}/${cluster_type}"
   kustomize build "${build_load_arg}" "${build_load_arg_value}" "${build_dir}/${cluster_type}" > "${deploy_file}"
-  rm -rf "${build_dir}"
+
+  # Leave around the build directory if we are debugging
+  if [[ $DEBUG != "true" ]]; then
+    log "Removing build directory"
+    rm -rf "${build_dir}"
+  fi
 
   test ! -z "${NAMESPACE}" && test "${NAMESPACE}" != 'ping-cloud' &&
       sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" "${deploy_file}"
-}
-
-########################################################################################################################
-# Build the full Kubernetes yaml files for the dev and CI/CD environments into the provided directory.
-#
-# Arguments
-#   $1 -> The output directory name that will contain the full manifest files when the function is done.
-#   $2 -> Optional cluster type argument value of "secondary". Empty string implies primary cluster.
-########################################################################################################################
-build_dev_deploy_dir() {
-  local deploy_dir="$1"
-  local cluster_type="$2"
-
-  local build_dir='build-dir'
-  rm -rf "${build_dir}"
-
-  local dev_cluster_state_dir='dev-cluster-state'
-  cp -pr "${dev_cluster_state_dir}" "${build_dir}"
-
-  substitute_vars "${build_dir}" "${DEFAULT_VARS}"
-  set_kustomize_load_arg_and_value
-  kustomize build "${build_load_arg}" "${build_load_arg_value}" "${build_dir}/${cluster_type}" --output "${deploy_dir}"
-  rm -rf "${build_dir}"
-
-  test ! -z "${NAMESPACE}" && test "${NAMESPACE}" != 'ping-cloud' &&
-      find "${deploy_dir}" -type f -exec sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" {} \;
-  rm -f "${deploy_dir}"/*.bak
 }
 
 ########################################################################################################################
