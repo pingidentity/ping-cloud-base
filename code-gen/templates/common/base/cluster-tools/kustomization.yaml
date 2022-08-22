@@ -14,3 +14,5 @@ resources:
 - security
 - pod-reaper
 - health
+# TODO: somehow show that this is being toggled in code...
+- pgo
