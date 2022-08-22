@@ -244,6 +244,14 @@ patchesStrategicMerge:
   spec: 
     schedule: "@hourly"
 
+- |-
+  apiVersion: batch/v1
+  kind: CronJob
+  metadata:
+    name: healthcheck-pingfederate
+  spec: 
+    schedule: "@hourly"
+
 patchesJson6902:
 
 ### Patch to inject environment variables to SigSci agent container ###

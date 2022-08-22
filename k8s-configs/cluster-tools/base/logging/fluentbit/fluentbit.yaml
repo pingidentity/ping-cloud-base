@@ -611,7 +611,7 @@ data:
     [OUTPUT]
         Name                s3
         Match               *.s3_app_out
-        Bucket              ${S3_BUCKET}
+        Bucket              ${S3_BUCKET_NAME}
         Region              ${AWS_REGION}
         s3_key_format       /application/$TAG/%Y/%m/%d/%H/%M/%S
         upload_timeout      5m
@@ -619,7 +619,7 @@ data:
     [OUTPUT]
         Name                s3
         Match               *.s3_hl_out
-        Bucket              ${S3_BUCKET}
+        Bucket              ${S3_BUCKET_NAME}
         Region              ${AWS_REGION}
         s3_key_format       /host/$TAG/%Y/%m/%d/%H/%M/%S
         upload_timeout      5m
@@ -627,7 +627,7 @@ data:
     [OUTPUT]
         Name                s3
         Match               *.s3_dp_out
-        Bucket              ${S3_BUCKET}
+        Bucket              ${S3_BUCKET_NAME}
         Region              ${AWS_REGION}
         s3_key_format       /dataplane/$TAG/%Y/%m/%d/%H/%M/%S
         upload_timeout      5m
@@ -702,6 +702,11 @@ spec:
       - name: fluent-bit
         image: public.ecr.aws/r2h3l6e4/amazon/aws-for-fluent-bit:2.24.0
         imagePullPolicy: Always
+        command:
+          - "/bin/sh"
+        args:
+          - "-c"
+          - "S3_BUCKET_NAME=${S3_BUCKET#s3://} /entrypoint.sh"
         securityContext:
           capabilities:
             drop:
