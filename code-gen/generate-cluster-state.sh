@@ -822,9 +822,13 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
         GIT_BRANCH="${ENV_OR_BRANCH}"
 
     ENV_OR_BRANCH_SUFFIX="${ENV_OR_BRANCH##*-}"
-    test "${ENV_OR_BRANCH_SUFFIX}" = 'master' &&
-        ENV='prod' ||
-        ENV="${ENV_OR_BRANCH_SUFFIX}"
+
+    # If the branch is master, set ENV to prod
+    if test "${ENV_OR_BRANCH_SUFFIX}" = 'master'; then
+      ENV='prod'
+    else 
+      ENV="${ENV_OR_BRANCH_SUFFIX}"
+    fi
 
     # Set the cluster state repo branch to the default CDE branch, i.e. dev, test, stage or master.
     export CLUSTER_STATE_REPO_BRANCH="${GIT_BRANCH##*-}"

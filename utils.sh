@@ -567,11 +567,9 @@ get_ssm_value() {
 # Arg $1 - directory containing pgo CRDs
 pgo_feature_flag() {
   base_dir=${1}
-  build_yaml=${2}
 
   # TODO: move CRD files since they won't use kustomize in typical way?
   pgo_crd_dir="${base_dir}/k8s-configs/cluster-tools/base/pgo/base/crd/"
-  dev_kust_file="${tmp_build_dir}/cluster-tools/kustomize.yaml"
 
   if [[ $PF_PROVISIONING_ENABLED == "true" ]]; then
     log "PF Provisioning is enabled, deploying PGO CRD"
