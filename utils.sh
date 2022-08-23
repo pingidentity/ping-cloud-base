@@ -503,12 +503,8 @@ build_dev_deploy_file() {
   local dev_cluster_state_dir='dev-cluster-state'
   cp -pr "${dev_cluster_state_dir}" "${build_dir}"
 
-  if [[ $PF_PROVISIONING_ENABLED != "true" ]]; then
-    # TODO: this should not be here - it should be up a level
-    log "PGO disabled, removing"
-    # Remove -pgo from kustomize!
-    sed -i '' 's/- .*\/pgo//g' "${build_dir}/cluster-tools/kustomization.yaml"
-  fi
+  # TODO: this should not be here - it should be up a level
+  pgo_feature_flag "${build_dir}/cluster-tools/kustomization.yaml"
 
   log "Substituting vars for ${build_dir}"
 
@@ -565,7 +561,7 @@ get_ssm_value() {
 
 # Deploy PGO - only if the feature flag is enabled!
 # Arg $1 - directory containing pgo CRDs
-pgo_feature_flag() {
+pgo_dev_deploy() {
   base_dir=${1}
 
   # TODO: move CRD files since they won't use kustomize in typical way?
@@ -577,5 +573,18 @@ pgo_feature_flag() {
     kubectl apply --server-side -k "${pgo_crd_dir}"
   else
     log "PF Provisioning NOT enabled"
+  fi
+}
+
+# Remove PGO from the resource section of the kustomize file, unless the PingFederate
+# Provisioning feature is enabled
+pgo_feature_flag() {
+  kust_file="${1}"
+
+  if [[ $PF_PROVISIONING_ENABLED != "true" ]]; then
+    # TODO: this should not be here - it should be up a level
+    log "PGO disabled, removing"
+    # Remove -pgo from kustomize!
+    sed -i '' 's/- .*\/pgo//g' "${kust_file}"
   fi
 }
