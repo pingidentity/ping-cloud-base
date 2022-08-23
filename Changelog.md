@@ -14,7 +14,6 @@ _Changes:_
 - Add fix to application name for ArgoCD
 - Fix grafana PD topology successful SSOs
 - Updated cluster tool sealed-secrets-controller from v0.17.3 to v0.18.0
-- Added ArgoCD slack notification configuration
 - Healthcheck cronjobs moved to 'health' namespace
 - Update API version in Beluga K8s manifest for EKS v1.22
 - Setup EFS as backend for Prometheus storage
@@ -23,10 +22,11 @@ _Changes:_
 - Improved Grafana dashboards to be more consistent
 - Added prometheus-job-exporter deployment to expose command outputs as prometheus metrics
 - Added LDAP users count graph
+- Add PingFederate health checks cronjob
+- Fix Fluent-bit raw logs sending to S3
 
 _Changes:_
 
-- [X] PDO-2300 Add ArgoCD slack notifications for better visibility into failure to apply manifests
 - [X] PDO-2635 Augment ArgoCD's application name with customer name
 - [X] PDO-3271 Updated argocd to v2.4.6
 - [X] PDO-3272 Update cluster tool to recommended version: cert-manager v1.9.1
@@ -45,6 +45,7 @@ _Changes:_
 - [X] PDO-4082 Create a custom sort method to sortBy production release and release candidate
 - [X] PDO-4090 Prometheus: Implement EFS to back /data Directory
 - [X] PDO-4097 Execute a _start-server.sh.pre script before starting PingDirectory
+- [X] PDO-4101 PF Health Check Tests
 - [X] PDO-4106 Update profile with X.509 authentication sample
 - [X] PDO-4122 Move Health Check Jobs to separate NS
 - [X] PDO-4153 Adjust default PingDirectory purge plugin properties
@@ -54,6 +55,8 @@ _Changes:_
 - [X] PDO-4205 Create the K8s infrastructure to get active users count for each tenant environment
 - [X] PDO-4206 Visualize active users count for each tenant environment data through Grafana dashboards
 - [X] PDO-4242 Improve cert-manager ci/cd deployment reliablility
+- [X] PDO-4265 Increase memory limits for prometheus pod
+- [X] PDO-4268 Fix Fluent-bit raw logs sending to S3
 
 ### 1.14.0.0
 

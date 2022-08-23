@@ -257,7 +257,7 @@ spec:
       serviceAccountName: prometheus
       containers:
       - name: prometheus
-        image: public.ecr.aws/r2h3l6e4/prom/prometheus:v2.36.1
+        image: public.ecr.aws/r2h3l6e4/prom/prometheus:v2.37.0
         args:
           - "--config.file=/etc/prometheus/prometheus.yml"
           - "--storage.tsdb.retention.time=$(PROMETHEUS_RETENTION_TIME)"
@@ -277,7 +277,7 @@ spec:
         resources:
           limits:
             cpu: 500m
-            memory: 2500Mi
+            memory: 4000Mi
           requests:
             cpu: 100m
             memory: 512Mi
