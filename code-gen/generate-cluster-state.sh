@@ -426,6 +426,10 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   ENV_PROFILES_DIR="${PROFILES_DIR}/${ENV_OR_BRANCH}"
   mkdir -p "${ENV_PROFILES_DIR}"
 
+  ###### ---- ALL FEATURE FLAGS GO HERE ----- #######
+  pgo_feature_flag "${TEMPLATES_HOME}/common/base/cluster-tools/kustomization.yaml"
+  ###################################################
+
   # Copy all env-specific profiles
   cp -pr ../profiles/aws/. "${ENV_PROFILES_DIR}"
 
