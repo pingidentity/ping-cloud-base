@@ -181,7 +181,7 @@ spec:
         # This turns off the default automatic key renewal that happens every 30 days
         - name: SEALED_SECRETS_KEY_RENEW_PERIOD
           value: "0"
-        image: public.ecr.aws/r2h3l6e4/bitnami/sealed-secrets-controller:v0.18.0
+        image: docker.io/bitnami/sealed-secrets-controller:v0.17.3
         resources:
           limits:
             cpu: 500m

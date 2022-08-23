@@ -257,7 +257,7 @@ spec:
       serviceAccountName: prometheus
       containers:
       - name: prometheus
-        image: public.ecr.aws/r2h3l6e4/prom/prometheus:v2.36.1
+        image: docker.io/prom/prometheus:v2.36.1
         args:
           - "--config.file=/etc/prometheus/prometheus.yml"
           - "--storage.tsdb.retention.time=$(PROMETHEUS_RETENTION_TIME)"

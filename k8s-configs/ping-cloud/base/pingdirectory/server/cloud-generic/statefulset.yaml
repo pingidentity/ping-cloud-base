@@ -69,7 +69,7 @@ spec:
             runAsNonRoot: true
             runAsUser: 9031
             allowPrivilegeEscalation: false
-          image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
+          image: docker.io/kubespheredev/kubectl:v1.19.0
           imagePullPolicy: IfNotPresent
           command:
             - /copy-dependencies.sh
@@ -139,7 +139,7 @@ spec:
             runAsNonRoot: true
             runAsUser: 9031
             allowPrivilegeEscalation: false
-          image: public.ecr.aws/r2h3l6e4/busybox:1.32
+          image: docker.io/busybox:1.32
           imagePullPolicy: IfNotPresent
           command:
             - /wait-for-services.sh
@@ -312,7 +312,7 @@ spec:
             runAsNonRoot: true
             runAsUser: 9031
             allowPrivilegeEscalation: false
-          image: public.ecr.aws/r2h3l6e4/prom/statsd-exporter:v0.14.1
+          image: docker.io/prom/statsd-exporter:v0.14.1
           args:
             - "--statsd.mapping-config=/tmp/mapping/pingdirectory-statsd-mapping.yml"
             - "--statsd.listen-udp=:8125"
