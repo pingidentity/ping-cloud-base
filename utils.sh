@@ -584,7 +584,7 @@ pgo_feature_flag() {
   if [[ $PF_PROVISIONING_ENABLED != "true" ]]; then
     # TODO: this should not be here - it should be up a level
     log "PGO disabled, removing"
-    # Remove -pgo from kustomize!
-    sed -i '' 's/- .*\/pgo//g' "${kust_file}"
+    # Remove -pgo from kustomize - pgo must be at the end of the line, start with '- '
+    sed -i '' 's/- .*pgo$//g' "${kust_file}"
   fi
 }
