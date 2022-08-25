@@ -2,11 +2,11 @@
 
 ### 1.16.0.0
 
-- No Changes
+- Add PingAccess and PingAccess-WAS health checks cronjobs
 
 _Changes:_
 
-- None
+- [X] PDO-4104 PA Health Check Tests
 
 ### 1.15.0.0
 
