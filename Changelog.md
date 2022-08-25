@@ -16,6 +16,7 @@
 - Added LDAP users count graph
 - Add PingFederate health checks cronjob
 - Fix Fluent-bit raw logs sending to S3
+- Fix secrets sealing
 
 _Changes:_
 
@@ -49,6 +50,7 @@ _Changes:_
 - [X] PDO-4242 Improve cert-manager ci/cd deployment reliablility
 - [X] PDO-4265 Increase memory limits for prometheus pod
 - [X] PDO-4268 Fix Fluent-bit raw logs sending to S3
+- [X] PDO-4301 Fix secrets sealing
 
 ### 1.14.0
 - Update cluster-tool external-dns from version v0.08.0 to version v.0.11.0
