@@ -223,12 +223,27 @@ patchesStrategicMerge:
   spec: 
     schedule: "@hourly"
 
-# Healthcheck tests
 - |-
   apiVersion: batch/v1
   kind: CronJob
   metadata:
-    name: healthcheck-cluster-health
+    name: healthcheck-pingaccess
+  spec: 
+    schedule: "@hourly"
+
+- |-
+  apiVersion: batch/v1
+  kind: CronJob
+  metadata:
+    name: healthcheck-pingaccess-was
+  spec: 
+    schedule: "@hourly"
+
+- |-
+  apiVersion: batch/v1
+  kind: CronJob
+  metadata:
+    name: healthcheck-pingfederate
   spec: 
     schedule: "@hourly"
 

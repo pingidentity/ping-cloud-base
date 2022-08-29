@@ -1,12 +1,19 @@
 # Changelog
 
-### 1.15.0
+### 1.16.0.0
+
+- Add PingAccess and PingAccess-WAS health checks cronjobs
+
+_Changes:_
+
+- [X] PDO-4104 PA Health Check Tests
+
+### 1.15.0.0
 
 - Augment ArgoCD's application name with customer name
 - Add fix to application name for ArgoCD
 - Fix grafana PD topology successful SSOs
 - Updated cluster tool sealed-secrets-controller from v0.17.3 to v0.18.0
-- Added ArgoCD slack notification configuration
 - Healthcheck cronjobs moved to 'health' namespace
 - Update API version in Beluga K8s manifest for EKS v1.22
 - Setup EFS as backend for Prometheus storage
@@ -15,6 +22,9 @@
 - Improved Grafana dashboards to be more consistent
 - Added prometheus-job-exporter deployment to expose command outputs as prometheus metrics
 - Added LDAP users count graph
+- Add PingFederate health checks cronjob
+- Fix Fluent-bit raw logs sending to S3
+- Fix secrets sealing
 
 _Changes:_
 
@@ -37,6 +47,7 @@ _Changes:_
 - [X] PDO-4082 Create a custom sort method to sortBy production release and release candidate
 - [X] PDO-4090 Prometheus: Implement EFS to back /data Directory
 - [X] PDO-4097 Execute a _start-server.sh.pre script before starting PingDirectory
+- [X] PDO-4101 PF Health Check Tests
 - [X] PDO-4106 Update profile with X.509 authentication sample
 - [X] PDO-4122 Move Health Check Jobs to separate NS
 - [X] PDO-4153 Adjust default PingDirectory purge plugin properties
@@ -46,8 +57,12 @@ _Changes:_
 - [X] PDO-4205 Create the K8s infrastructure to get active users count for each tenant environment
 - [X] PDO-4206 Visualize active users count for each tenant environment data through Grafana dashboards
 - [X] PDO-4242 Improve cert-manager ci/cd deployment reliablility
+- [X] PDO-4265 Increase memory limits for prometheus pod
+- [X] PDO-4268 Fix Fluent-bit raw logs sending to S3
+- [X] PDO-4301 Fix secrets sealing
 
-### 1.14.0
+### 1.14.0.0
+
 - Update cluster-tool external-dns from version v0.08.0 to version v.0.11.0
 - New image tagging convention for all Ping applications
 - SigSci Agent upgraded from v4.24.1 to v4.28.0
