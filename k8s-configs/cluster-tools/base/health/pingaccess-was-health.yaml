@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: healthcheck-cluster-health
+  name: healthcheck-pingaccess-was
 spec:
   schedule: "* * * * *"
   startingDeadlineSeconds: 90
@@ -16,7 +16,7 @@ spec:
           serviceAccountName: cluster-healthcheck-serviceaccount
           restartPolicy: Never
           containers:
-          - name: healthcheck-cluster-health
+          - name: pingaccess-was-health
             image: public.ecr.aws/r2h3l6e4/pingcloud-services/robot-framework/dev:v1.16-release-branch-latest
             imagePullPolicy: Always
             securityContext:
@@ -27,7 +27,7 @@ spec:
             command:
               - /bin/bash
               - -c
-              - ./robot_wrapper.py --path tests/cluster-health --include cluster-health --output cluster-health.xml
+              - ./robot_wrapper.py --path tests/pingaccess-was --include pingaccess-was --output pingaccess-was.xml
             envFrom:
             - configMapRef:
                 name: cluster-health-environment-variables

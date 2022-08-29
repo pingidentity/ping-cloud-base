@@ -12,33 +12,6 @@ log() {
 }
 
 ########################################################################################################################
-# Generate a self-signed certificate for the provided domain. The subject of the certificate will match the domain name.
-# A wildcard SAN (Subject Alternate Name) will be added as well. For example, for the domain foobar.com, the subject
-# name will be "foobar.com" and the SAN "*.foobar.com". The PEM and base64 representation of the certificate and key
-# will be exported in environment variables TLS_CRT_PEM, TLS_KEY_PEM, TLS_CRT_BASE64 and TLS_KEY_BASE64, respectively.
-#
-# Arguments
-#   ${1} -> The name of the domain for which to generate the self-signed certificate.
-#
-########################################################################################################################
-generate_tls_cert() {
-  CERTS_DIR=$(mktemp -d)
-  cd "${CERTS_DIR}"
-  DOMAIN=${1}
-  openssl req -x509 -nodes -newkey rsa:4096 -days 3650 -sha256 \
-    -out tls.crt -keyout tls.key \
-    -subj "/CN=${DOMAIN}" \
-    -reqexts SAN -extensions SAN \
-    -config <(cat /etc/ssl/openssl.cnf; printf "[SAN]\nsubjectAltName=DNS:*.${DOMAIN}") > /dev/null 2>&1
-  export TLS_CRT_PEM=$(cat tls.crt)
-  export TLS_KEY_PEM=$(cat tls.key)
-  export TLS_CRT_BASE64=$(base64_no_newlines tls.crt)
-  export TLS_KEY_BASE64=$(base64_no_newlines tls.key)
-  cd - > /dev/null
-  rm -rf "${CERTS_DIR}"
-}
-
-########################################################################################################################
 # Generate an RSA key pair. The identity and the base64 representation of the key will exported in environment variables
 # SSH_ID_PUB and SSH_ID_KEY_BASE64, respectively.
 ########################################################################################################################
@@ -191,20 +164,6 @@ testUrlsWithoutBasicAuthExpect2xx() {
     ! testUrl "${url}" true false && status=1
   done
   return ${status}
-}
-########################################################################################################################
-# Tests whether a URL is reachable or not within a timeout of 2 minutes. Non-2xx return codes are considered failures.
-# Refer to the "testUrl" function docs for more details.
-#
-# Arguments:
-#   ${1} -> The URL
-#
-# Returns:
-#   0 on success; non-zero on curl failure and non-2xx HTTP code
-########################################################################################################################
-testUrlExpect2xx() {
-  local url="${1}"
-  testUrl "${url}" true
 }
 
 ########################################################################################################################

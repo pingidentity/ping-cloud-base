@@ -84,7 +84,7 @@ REGION_DIR="$(find . \
 OUT_DIR=$(mktemp -d)
 OUT_DIR="${OUT_DIR}" "${SCRIPT_DIR}"/git-ops-command.sh "${REGION_DIR}"
 
-YAML_FILES=$(find "${OUT_DIR}" -type f | xargs grep -rl 'kind: Secret')
+YAML_FILES=$(find "${OUT_DIR}" -type f | xargs grep -rl 'sealedsecrets.bitnami.com/managed: "true"')
 if test -z "${YAML_FILES}"; then
   echo "No secrets found to seal"
   exit 0
@@ -161,7 +161,7 @@ else
   echo "      test -f ${SECRETS_FILE} && cp ${SECRETS_FILE} ${BUILD_DIR}/secrets.yaml"
   echo "      test -f ${SEALED_SECRETS_FILE} && cp ${SEALED_SECRETS_FILE} ${BUILD_DIR}/sealed-secrets.yaml"
   echo "      ./git-ops-command.sh \${REGION_DIR} > /tmp/deploy.yaml"
-  echo "      grep 'kind: Secret' /tmp/deploy.yaml # should not have any hits"
+  echo "      grep 'kind: Secret' /tmp/deploy.yaml # shouldn't have Secrets manifests, but could have ConfigMap manifests"
   echo "      grep 'kind: SealedSecret' /tmp/deploy.yaml # should have hits"
   echo "- Push all modified files into the cluster state repo"
   echo "- Run this script for each CDE branch and region directory in the order - dev, test, stage, prod"
