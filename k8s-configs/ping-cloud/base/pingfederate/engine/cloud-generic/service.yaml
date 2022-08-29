@@ -32,7 +32,7 @@ spec:
   externalTrafficPolicy: Local
   type: LoadBalancer
   selector:
-    class: pingfederate-engine
+    role: pingfederate-engine
   ports:
   - name: radius1
     protocol: UDP
