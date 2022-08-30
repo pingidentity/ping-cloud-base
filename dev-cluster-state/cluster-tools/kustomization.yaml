@@ -391,7 +391,7 @@ patchesJson6902:
     namespace: newrelic
   patch: |-
     - op: replace
-      path: /spec/template/metadata/annotations/clusterName
+      path: /spec/template/metadata/annotations/CLUSTER_NAME
       value: ${NEW_RELIC_ENVIRONMENT_NAME}
 
 - target:
@@ -402,7 +402,7 @@ patchesJson6902:
     namespace: newrelic
   patch: |-
     - op: replace
-      path: /spec/template/metadata/annotations/clusterName
+      path: /spec/template/metadata/annotations/CLUSTER_NAME
       value: ${NEW_RELIC_ENVIRONMENT_NAME}
 
 - target:
@@ -426,3 +426,14 @@ patchesJson6902:
     - op: replace
       path: /spec/template/metadata/annotations/CLUSTER_NAME
       value: ${NEW_RELIC_ENVIRONMENT_NAME}
+
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: nri-bundle-newrelic-metadata
+    namespace: newrelic
+  patch: |-
+    - op: replace
+      path: /spec/template/metadata/annotations/CLUSTER_NAME
+      value: ${NEW_RELIC_ENVIRONMENT_NAME}  
