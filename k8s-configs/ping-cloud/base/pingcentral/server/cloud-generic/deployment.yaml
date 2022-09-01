@@ -109,7 +109,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral/dev:v1.16-release-branch-latest
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingcentral:pdo-3981-new
         imagePullPolicy: Always
         resources:
           requests:
