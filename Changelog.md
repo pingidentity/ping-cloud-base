@@ -2,6 +2,7 @@
 
 ### 1.16.0.0
 
+- Setup NewRelic Kube Events Integration
 - Add newrelic-metadata pod to send metadata to NewRelic
 - Add PingAccess and PingAccess-WAS health checks cronjobs
 
@@ -9,6 +10,7 @@ _Changes:_
 
 - [X] PDO-3823 Add newrelic-metadata pod to send metadata to NewRelic
 - [X] PDO-4104 PA Health Check Tests
+- [X] PDO-4178 Setup NewRelic Kube Events Integration
 
 ### 1.15.0.0
 
