@@ -118,7 +118,7 @@ patchesJson6902:
   patch: |-
     - op: replace
       path: /spec/replicas
-      value: 1
+      value: 2
 
 # pingcloud-metadata ingress
 - target:
