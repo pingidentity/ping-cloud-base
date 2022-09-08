@@ -18,7 +18,7 @@ spec:
   template:
     metadata:
       annotations:
-        lastUpdateReason: "NA"
+        lastUpdateReason: "pdo-4085-new-1"
       labels:
         class: pingdirectory-server
         entitled-app: "true"
