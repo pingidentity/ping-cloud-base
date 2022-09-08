@@ -44,14 +44,12 @@ dsconfig set-local-db-index-prop \
 dsconfig set-local-db-index-prop \
         --backend-name userRoot \
         --index-name sn \
-        --set index-entry-limit:50000 \
-        --set exploded-index-entry-threshold:100
+        --set index-entry-limit:50000
 
 dsconfig set-local-db-index-prop \
         --backend-name userRoot \
         --index-name givenName \
-        --set index-entry-limit:50000 \
-        --set exploded-index-entry-threshold:100
+        --set index-entry-limit:50000
 
 dsconfig set-backend-prop \
         --backend-name userRoot \
