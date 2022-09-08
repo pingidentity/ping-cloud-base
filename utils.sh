@@ -441,7 +441,7 @@ ${GLOBAL_TENANT_DOMAIN}
 ${SECONDARY_TENANT_DOMAINS}
 ${CLUSTER_NAME}
 ${CLUSTER_NAME_LC}
-${NAMESPACE}
+${PING_CLOUD_NAMESPACE}
 ${CONFIG_REPO_BRANCH}
 ${CONFIG_PARENT_DIR}
 ${TOPOLOGY_DESCRIPTOR}
@@ -508,8 +508,8 @@ build_dev_deploy_file() {
   kustomize build "${build_load_arg}" "${build_load_arg_value}" "${build_dir}/${cluster_type}" > "${deploy_file}"
   rm -rf "${build_dir}"
 
-  test ! -z "${NAMESPACE}" && test "${NAMESPACE}" != 'ping-cloud' &&
-      sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" "${deploy_file}"
+  test ! -z "${PING_CLOUD_NAMESPACE}" && test "${PING_CLOUD_NAMESPACE}" != 'ping-cloud' &&
+      sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${PING_CLOUD_NAMESPACE}/g" "${deploy_file}"
 }
 
 ########################################################################################################################
@@ -534,8 +534,8 @@ build_dev_deploy_dir() {
   kustomize build "${build_load_arg}" "${build_load_arg_value}" "${build_dir}/${cluster_type}" --output "${deploy_dir}"
   rm -rf "${build_dir}"
 
-  test ! -z "${NAMESPACE}" && test "${NAMESPACE}" != 'ping-cloud' &&
-      find "${deploy_dir}" -type f -exec sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" {} \;
+  test ! -z "${PING_CLOUD_NAMESPACE}" && test "${PING_CLOUD_NAMESPACE}" != 'ping-cloud' &&
+      find "${deploy_dir}" -type f -exec sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${PING_CLOUD_NAMESPACE}/g" {} \;
   rm -f "${deploy_dir}"/*.bak
 }
 

@@ -366,7 +366,7 @@ export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KE
 export CLUSTER_NAME=${TENANT_NAME}
 export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
 
-export NAMESPACE=ping-cloud-${BELUGA_ENV_NAME}
+export PING_CLOUD_NAMESPACE=ping-cloud-${BELUGA_ENV_NAME}
 
 export NEW_RELIC_ENVIRONMENT_NAME=${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
 
@@ -389,7 +389,7 @@ fi
 build_dev_deploy_file "${DEPLOY_FILE}" "${CLUSTER_TYPE}"
 
 if test "${dryrun}" = 'false'; then
-  log "Deploying ${DEPLOY_FILE} to cluster ${CLUSTER_NAME}, namespace ${NAMESPACE} for tenant ${TENANT_DOMAIN}"
+  log "Deploying ${DEPLOY_FILE} to cluster ${CLUSTER_NAME}, namespace ${PING_CLOUD_NAMESPACE} for tenant ${TENANT_DOMAIN}"
   kubectl apply -f "${DEPLOY_FILE}" --context "${K8S_CONTEXT}" | tee -a "${LOG_FILE}"
 
   if [[ "${PIPESTATUS[0]}" != 0 ]]; then
@@ -407,7 +407,7 @@ if test "${dryrun}" = 'false'; then
   # Print out the pingdirectory hostname
   log
   log '--- LDAP hostname ---'
-  kubectl get svc pingdirectory-admin -n "${NAMESPACE}" \
+  kubectl get svc pingdirectory-admin -n "${PING_CLOUD_NAMESPACE}" \
     -o jsonpath='{.metadata.annotations.external-dns\.alpha\.kubernetes\.io/hostname}' \
     --context "${K8S_CONTEXT}" | tee -a "${LOG_FILE}"
 
@@ -415,7 +415,7 @@ if test "${dryrun}" = 'false'; then
   log
   log
   log '--- Pod status ---'
-  kubectl get pods -n "${NAMESPACE}" --context "${K8S_CONTEXT}" | tee -a "${LOG_FILE}"
+  kubectl get pods -n "${PING_CLOUD_NAMESPACE}" --context "${K8S_CONTEXT}" | tee -a "${LOG_FILE}"
 
   log
   if test "${skipTest}" = 'true'; then
@@ -441,7 +441,7 @@ export ENVIRONMENT=${ENVIRONMENT}
 export BELUGA_ENV_NAME="${BELUGA_ENV_NAME}"
 export ENV=${BELUGA_ENV_NAME}
 
-export NAMESPACE=${NAMESPACE}
+export PING_CLOUD_NAMESPACE=${PING_CLOUD_NAMESPACE}
 
 export NEW_RELIC_ENVIRONMENT_NAME=${NEW_RELIC_ENVIRONMENT_NAME}
 
@@ -477,13 +477,13 @@ export SKIP_CONFIGURE_AWS=true
 export DEV_TEST_ENV=true
 EOF
 
-    log "Waiting for pods in ${NAMESPACE} to be ready..."
-    for DEPLOYMENT in $(kubectl get statefulset,deployment -n "${NAMESPACE}" -o name --context "${K8S_CONTEXT}"); do
+    log "Waiting for pods in ${PING_CLOUD_NAMESPACE} to be ready..."
+    for DEPLOYMENT in $(kubectl get statefulset,deployment -n "${PING_CLOUD_NAMESPACE}" -o name --context "${K8S_CONTEXT}"); do
       NUM_REPLICAS=$(kubectl get "${DEPLOYMENT}" -o jsonpath='{.spec.replicas}' \
-        -n "${NAMESPACE}" --context "${K8S_CONTEXT}")
+        -n "${PING_CLOUD_NAMESPACE}" --context "${K8S_CONTEXT}")
       TIMEOUT=$((NUM_REPLICAS * 900))
       time kubectl rollout status --timeout "${TIMEOUT}"s "${DEPLOYMENT}" \
-        -n "${NAMESPACE}" -w --context "${K8S_CONTEXT}" | tee -a "${LOG_FILE}"
+        -n "${PING_CLOUD_NAMESPACE}" -w --context "${K8S_CONTEXT}" | tee -a "${LOG_FILE}"
     done
 
     log "Running integration tests"

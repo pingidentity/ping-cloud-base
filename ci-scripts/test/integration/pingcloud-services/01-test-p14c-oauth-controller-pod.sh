@@ -9,7 +9,7 @@ fi
 
 testP14COAuthPodAvailability() {
 
-  status=$(kubectl get pods --selector=role=p14c-oauth-service -n ${NAMESPACE} -o json | jq -r '.items[].status.containerStatuses[].ready')
+  status=$(kubectl get pods --selector=role=p14c-oauth-service -n ${PING_CLOUD_NAMESPACE} -o json | jq -r '.items[].status.containerStatuses[].ready')
   assertEquals 0 $?
   assertEquals "The status of the p14c-oauth-service pod should be ready but was: ${status}" 'true' ${status}
 }

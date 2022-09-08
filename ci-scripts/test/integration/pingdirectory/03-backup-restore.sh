@@ -8,8 +8,8 @@ if skipTest "${0}"; then
 fi
 
 expected_files() {
-  kubectl logs -n "${NAMESPACE}" \
-    $(kubectl get pod -o name -n "${NAMESPACE}" | grep pingdirectory-backup | cut -d/ -f2) |
+  kubectl logs -n "${PING_CLOUD_NAMESPACE}" \
+    $(kubectl get pod -o name -n "${PING_CLOUD_NAMESPACE}" | grep pingdirectory-backup | cut -d/ -f2) |
   tail -1 |
   tr ' ' '\n' |
   sort
@@ -35,13 +35,13 @@ testBackupAndRestore() {
   BACKUP_JOB="${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingdirectory/server/aws/backup.yaml
 
   log "Applying the backup job"
-  kubectl delete -f "${BACKUP_JOB}" -n "${NAMESPACE}"
+  kubectl delete -f "${BACKUP_JOB}" -n "${PING_CLOUD_NAMESPACE}"
 
-  kubectl apply -f "${BACKUP_JOB}" -n "${NAMESPACE}"
+  kubectl apply -f "${BACKUP_JOB}" -n "${PING_CLOUD_NAMESPACE}"
   assertEquals "The kubectl apply command to create the ${BACKUP_JOB} should have succeeded" 0 $?
 
   log "Waiting for the backup job to complete"
-  kubectl wait --for=condition=complete --timeout=900s job/pingdirectory-backup -n "${NAMESPACE}"
+  kubectl wait --for=condition=complete --timeout=900s job/pingdirectory-backup -n "${PING_CLOUD_NAMESPACE}"
   assertEquals "The kubectl wait command for the job should have succeeded" 0 $?
 
   log "Expected backup files:"
@@ -61,24 +61,24 @@ testBackupAndRestore() {
   RESTORE_JOB="${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingdirectory/server/aws/restore.yaml
 
   log "Applying the restore job"
-#   kubectl delete -f "${RESTORE_JOB}" -n "${NAMESPACE}"
-  kubectl apply -f "${RESTORE_JOB}" -n "${NAMESPACE}"
+#   kubectl delete -f "${RESTORE_JOB}" -n "${PING_CLOUD_NAMESPACE}"
+  kubectl apply -f "${RESTORE_JOB}" -n "${PING_CLOUD_NAMESPACE}"
   assertEquals "The kubectl apply command to create the ${RESTORE_JOB} should have succeeded" 0 $?
 
   log "Waiting for the restore job to complete"
-  kubectl wait --for=condition=complete --timeout=900s job/pingdirectory-restore -n "${NAMESPACE}"
+  kubectl wait --for=condition=complete --timeout=900s job/pingdirectory-restore -n "${PING_CLOUD_NAMESPACE}"
   assertEquals "The kubectl wait command for the job should have succeeded" 0 $?
 
   # We expect 3 backends to be restored successfully
   RESTORE_SUCCESS_MESSAGE='Restore task .* has been successfully completed'
-  RESTORE_POD=$(kubectl get pod -n "${NAMESPACE}" -o name | grep pingdirectory-restore)
-  NUM_SUCCESSFUL=$(kubectl logs -n "${NAMESPACE}" "${RESTORE_POD}" | grep -c "${RESTORE_SUCCESS_MESSAGE}")
+  RESTORE_POD=$(kubectl get pod -n "${PING_CLOUD_NAMESPACE}" -o name | grep pingdirectory-restore)
+  NUM_SUCCESSFUL=$(kubectl logs -n "${PING_CLOUD_NAMESPACE}" "${RESTORE_POD}" | grep -c "${RESTORE_SUCCESS_MESSAGE}")
 
   NUM_EXPECTED=3
   assertNotEquals "Restore job failed" 4 ${NUM_SUCCESSFUL}
   if test "${NUM_SUCCESSFUL}" -ne 4; then
     log "Restore job failed. Restore logs:"
-    kubectl logs -n "${NAMESPACE}" "${RESTORE_POD}"
+    kubectl logs -n "${PING_CLOUD_NAMESPACE}" "${RESTORE_POD}"
   fi
 }
 

@@ -9,7 +9,7 @@ fi
 
 testP14CBootstrapPodAvailability() {
 
-  status=$(kubectl get pods --selector=role=p14c-bootstrap -n ${NAMESPACE} -o json | jq -r '.items[].status.containerStatuses[].ready')
+  status=$(kubectl get pods --selector=role=p14c-bootstrap -n ${PING_CLOUD_NAMESPACE} -o json | jq -r '.items[].status.containerStatuses[].ready')
   assertEquals 0 $?
   assertEquals "The status of the p14c-bootstrap pod should be ready but was: ${status}" 'true' ${status}
 }

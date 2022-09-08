@@ -90,8 +90,8 @@ testAgentConfig() {
 
   ### Use kubectl exec to connect to the ping-admin-0 instance and verify
   ### the agent port on pingaccess-0 is listening
-  send_request_to_agent_port "${agent_name}" "${agent_shared_secret}" 'pingaccess-0' "${NAMESPACE}"
-  assertEquals "Failed to send a request to the pingaccess-0 runtime agent port for the agent: ${agent_name} with the shared secret: ${agent_shared_secret} in the namespace: ${NAMESPACE}." 0 $?
+  send_request_to_agent_port "${agent_name}" "${agent_shared_secret}" 'pingaccess-0' "${PING_CLOUD_NAMESPACE}"
+  assertEquals "Failed to send a request to the pingaccess-0 runtime agent port for the agent: ${agent_name} with the shared secret: ${agent_shared_secret} in the namespace: ${PING_CLOUD_NAMESPACE}." 0 $?
 
   log "Request sent to the agent port on pingaccess-0 was successful"
 

@@ -26,7 +26,7 @@ temp_file_kubectl="$(mktemp)"
 
 echo "${RETURN_VAL}" | jq -r '.[] [].image' | grep -v 'N/A' > "${temp_file_metadata}"
 
-for image_id in $(kubectl -n "${NAMESPACE}" get pod -o jsonpath="{.items[*].spec.containers[*].image}");
+for image_id in $(kubectl -n "${PING_CLOUD_NAMESPACE}" get pod -o jsonpath="{.items[*].spec.containers[*].image}");
 do
   echo "${image_id}" >> "${temp_file_kubectl}";
 done

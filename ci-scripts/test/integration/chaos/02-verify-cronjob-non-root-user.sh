@@ -10,7 +10,7 @@ fi
 # Verify ping user is set in k8s config file
 testNonRootCronjob() {
   cronjobs=$(kubectl get cronjob \
-    -n "${NAMESPACE}" \
+    -n "${PING_CLOUD_NAMESPACE}" \
     -o json | jq -c '.items[].spec.jobTemplate.spec.template.spec.containers[]')
   echo "Looping through cronjobs to test"
   echo "${cronjobs}" | while read -r cronjob
@@ -32,7 +32,7 @@ testNonRootCronjobUserId() {
     job="${cronjob}-uid"
     kubectl create job \
       ${job} \
-      -n ${NAMESPACE} \
+      -n ${PING_CLOUD_NAMESPACE} \
       --from=cronjob/${cronjob} \
       --dry-run=client \
       -o json > cronjob.json

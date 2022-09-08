@@ -234,7 +234,7 @@ testPaWasIdempotent() {
 
   upload_job="${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess-was/admin/aws/backup.yaml
   log "Deleting pa-was backup job if it exists"
-  kubectl delete -f "${upload_job}" -n "${NAMESPACE}"
+  kubectl delete -f "${upload_job}" -n "${PING_CLOUD_NAMESPACE}"
 
   log "Creating new App: ${APP_NAME}"
   response=$(create_site_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}")
@@ -246,19 +246,19 @@ testPaWasIdempotent() {
   assertEquals "Response value was ${response}" 0 $?
 
   log "Backing up PA-WAS"
-  kubectl apply -f "${upload_job}" -n "${NAMESPACE}"
+  kubectl apply -f "${upload_job}" -n "${PING_CLOUD_NAMESPACE}"
   assertEquals "The kubectl apply command to create the PingAccess WAS upload job should have succeeded" 0 $?
 
   log "Waiting for backup job to complete"
-  kubectl wait --for=condition=complete --timeout=900s job/pingaccess-was-backup -n "${NAMESPACE}"
+  kubectl wait --for=condition=complete --timeout=900s job/pingaccess-was-backup -n "${PING_CLOUD_NAMESPACE}"
   assertEquals "The kubectl wait command for the backup job should have succeeded" 0 $?
 
   log "Restarting PA-WAS Admin"
-  kubectl exec pingaccess-was-admin-0 -n "${NAMESPACE}" -c pingaccess-was-admin -- sh -c "pgrep -f java | xargs kill"
+  kubectl exec pingaccess-was-admin-0 -n "${PING_CLOUD_NAMESPACE}" -c pingaccess-was-admin -- sh -c "pgrep -f java | xargs kill"
   sleep 3
 
   log "Waiting for PA-WAS Admin to be ready"
-  kubectl wait --for=condition=ready --timeout=300s pod -l role=pingaccess-was-admin -n "${NAMESPACE}"
+  kubectl wait --for=condition=ready --timeout=300s pod -l role=pingaccess-was-admin -n "${PING_CLOUD_NAMESPACE}"
   sleep 3
 
   log "Verifying the PingAccess App recreated on restart"

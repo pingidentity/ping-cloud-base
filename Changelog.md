@@ -5,12 +5,14 @@
 - Setup NewRelic Kube Events Integration
 - Add newrelic-metadata pod to send metadata to NewRelic
 - Add PingAccess and PingAccess-WAS health checks cronjobs
+- Update ping-cloud namespace variable
 
 _Changes:_
 
 - [X] PDO-3823 Add newrelic-metadata pod to send metadata to NewRelic
 - [X] PDO-4104 PA Health Check Tests
 - [X] PDO-4178 Setup NewRelic Kube Events Integration
+- [X] PDO-4281 Update ping-cloud namespace variable
 
 ### 1.15.0.0
 

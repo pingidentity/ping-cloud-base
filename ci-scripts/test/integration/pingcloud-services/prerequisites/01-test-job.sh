@@ -9,7 +9,7 @@ fi
 
 testPingOneConfiguratorJobStatus() {
 
-  status=$(kubectl get job pingone-configurator -n ${NAMESPACE} -o json | jq -r '.status.conditions[0].type')
+  status=$(kubectl get job pingone-configurator -n ${PING_CLOUD_NAMESPACE} -o json | jq -r '.status.conditions[0].type')
   assertEquals 0 $?
   assertEquals "The status of the pingone-configurator job should be Complete but was: ${status}" 'Complete' ${status}
 }

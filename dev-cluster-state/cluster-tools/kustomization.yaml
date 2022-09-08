@@ -38,7 +38,7 @@ configMapGenerator:
   envs:
     - ../ping-cloud/env_vars
   literals:
-    - PROMETHEUS_PING_NAMESPACE=${NAMESPACE}
+    - PROMETHEUS_PING_NAMESPACE=${PING_CLOUD_NAMESPACE}
 
 patchesStrategicMerge:
 
@@ -276,7 +276,7 @@ patchesJson6902:
     - op: add
       path: /spec/template/spec/containers/0/args/-
       value:
-        --default-ssl-certificate=${NAMESPACE}/acme-tls-cert
+        --default-ssl-certificate=${PING_CLOUD_NAMESPACE}/acme-tls-cert
 
 - target:
     group: apps
@@ -288,7 +288,7 @@ patchesJson6902:
     - op: add
       path: /spec/template/spec/containers/0/args/-
       value:
-        --default-ssl-certificate=${NAMESPACE}/acme-tls-cert
+        --default-ssl-certificate=${PING_CLOUD_NAMESPACE}/acme-tls-cert
 
 # Update nginx memory request & limit to support dev-env and CI/CD workloads
 - target:
@@ -348,7 +348,7 @@ patchesJson6902:
   patch: |-
     - op: replace
       path: /metadata/namespace
-      value: ${NAMESPACE}
+      value: ${PING_CLOUD_NAMESPACE}
 
 # Configure external-dns to only own the hosted zone for the tenant domain
 # Also, change its update policy to "sync" so records are cleaned up in dev hosted zones

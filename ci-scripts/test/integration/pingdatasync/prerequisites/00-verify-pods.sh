@@ -12,7 +12,7 @@ testPodConnection() {
   expected_ready_state="1/1"
 
   pingdatasync_ready_state=$(kubectl get pods "pingdatasync-0" \
-                            -n "${NAMESPACE}" | tail -n +2 | awk '{print $2}' | tr -s '[[:space:]]')
+                            -n "${PING_CLOUD_NAMESPACE}" | tail -n +2 | awk '{print $2}' | tr -s '[[:space:]]')
   assertEquals "Failed to get pingdatasync running state 1/1" "${expected_ready_state}" "${pingdatasync_ready_state}"
 }
 
