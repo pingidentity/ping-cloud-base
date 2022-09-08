@@ -13,7 +13,7 @@ testDeletePaAdmin() {
 
   PA_ADMIN_PASSWORD=${PA_ADMIN_PASSWORD:-2FederateM0re}
 
-  kubectl delete pod pingaccess-admin-0 -n "${NAMESPACE}"
+  kubectl delete pod pingaccess-admin-0 -n "${PING_CLOUD_NAMESPACE}"
 
   log "Waiting for admin server at ${PINGACCESS_API}/applications"
 

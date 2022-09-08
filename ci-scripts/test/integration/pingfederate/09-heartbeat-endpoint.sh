@@ -12,7 +12,7 @@ testPingFederateHeartbeatEndpointExist() {
   SERVER=
   CONTAINER=
 
-  SERVERS=$( kubectl get pod -o name -n "${NAMESPACE}" -l role=${PRODUCT_NAME}-engine | grep ${PRODUCT_NAME} | cut -d/ -f2)
+  SERVERS=$( kubectl get pod -o name -n "${PING_CLOUD_NAMESPACE}" -l role=${PRODUCT_NAME}-engine | grep ${PRODUCT_NAME} | cut -d/ -f2)
 
   for SERVER in ${SERVERS}; do
     # Set the container name
@@ -30,7 +30,7 @@ testPingFederateHeartbeatEndpointExist() {
    SERVER=
    CONTAINER=
 
-   SERVERS=$( kubectl get pod -o name -n "${NAMESPACE}" -l role=${PRODUCT_NAME}-engine | grep ${PRODUCT_NAME} | cut -d/ -f2)
+   SERVERS=$( kubectl get pod -o name -n "${PING_CLOUD_NAMESPACE}" -l role=${PRODUCT_NAME}-engine | grep ${PRODUCT_NAME} | cut -d/ -f2)
 
    for SERVER in ${SERVERS}; do
      # Set the container name
@@ -56,7 +56,7 @@ curl_heartbeat() {
     SERVER=$1
     CONTAINER=$2
     
-    kubectl exec -n ${NAMESPACE} ${SERVER} -c ${CONTAINER} -- sh -c "curl -s localhost:8079"
+    kubectl exec -n ${PING_CLOUD_NAMESPACE} ${SERVER} -c ${CONTAINER} -- sh -c "curl -s localhost:8079"
 }
 
 # When arguments are passed to a script you must

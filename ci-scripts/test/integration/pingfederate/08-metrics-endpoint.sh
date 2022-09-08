@@ -12,7 +12,7 @@ testPingFederateMetricsEndpointExist() {
   SERVER=
   CONTAINER=
 
-  ENGINE_SERVERS=$( kubectl get pod -o name -n "${NAMESPACE}" -l role=${PRODUCT_NAME}-engine | grep ${PRODUCT_NAME} | cut -d/ -f2)
+  ENGINE_SERVERS=$( kubectl get pod -o name -n "${PING_CLOUD_NAMESPACE}" -l role=${PRODUCT_NAME}-engine | grep ${PRODUCT_NAME} | cut -d/ -f2)
   SERVERS="${PRODUCT_NAME}-admin-0 ${ENGINE_SERVERS}"
 
   for SERVER in ${SERVERS}; do
@@ -31,7 +31,7 @@ testPingFederateMetricsPublished() {
   SERVER=
   CONTAINER=
 
-  ENGINE_SERVERS=$( kubectl get pod -o name -n "${NAMESPACE}" -l role=${PRODUCT_NAME}-engine | grep ${PRODUCT_NAME} | cut -d/ -f2)
+  ENGINE_SERVERS=$( kubectl get pod -o name -n "${PING_CLOUD_NAMESPACE}" -l role=${PRODUCT_NAME}-engine | grep ${PRODUCT_NAME} | cut -d/ -f2)
   SERVERS="${PRODUCT_NAME}-admin-0 ${ENGINE_SERVERS}"
 
   for SERVER in ${SERVERS}; do
@@ -50,7 +50,7 @@ curl_metrics() {
     SERVER=$1
     CONTAINER=$2
     
-    kubectl exec -n ${NAMESPACE} ${SERVER} -c ${CONTAINER} -- sh -c "curl -s localhost:8080/metrics"
+    kubectl exec -n ${PING_CLOUD_NAMESPACE} ${SERVER} -c ${CONTAINER} -- sh -c "curl -s localhost:8080/metrics"
 }
 
 # When arguments are passed to a script you must

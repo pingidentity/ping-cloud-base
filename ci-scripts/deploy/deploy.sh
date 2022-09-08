@@ -50,6 +50,6 @@ wait_for_rollout "deployment/cert-manager-webhook" "cert-manager" "20"
 
 kubectl apply -f "${deploy_file}"
 
-check_if_ready "${NAMESPACE}"
+check_if_ready "${PING_CLOUD_NAMESPACE}"
 
 popd  > /dev/null 2>&1

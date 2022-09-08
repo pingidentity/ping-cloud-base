@@ -8,8 +8,8 @@ if skipTest "${0}"; then
 fi
 
 get_expected_files() {
-  kubectl logs -n "${NAMESPACE}" \
-    $(kubectl get pod -o name -n "${NAMESPACE}" | grep pingaccess-backup | cut -d/ -f2) |
+  kubectl logs -n "${PING_CLOUD_NAMESPACE}" \
+    $(kubectl get pod -o name -n "${PING_CLOUD_NAMESPACE}" | grep pingaccess-backup | cut -d/ -f2) |
   tail -1 |
   tr ' ' '\n' |
   sort
@@ -34,13 +34,13 @@ testPingAccessBackup() {
   UPLOAD_JOB="${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess/admin/aws/backup.yaml
 
   log "Applying backup job"
-  kubectl delete -f "${UPLOAD_JOB}" -n "${NAMESPACE}"
+  kubectl delete -f "${UPLOAD_JOB}" -n "${PING_CLOUD_NAMESPACE}"
 
-  kubectl apply -f "${UPLOAD_JOB}" -n "${NAMESPACE}"
+  kubectl apply -f "${UPLOAD_JOB}" -n "${PING_CLOUD_NAMESPACE}"
   assertEquals "The kubectl apply command to create the PingAccess upload job should have succeeded" 0 $?
 
   log "Waiting for backup job to complete"
-  kubectl wait --for=condition=complete --timeout=900s job/pingaccess-backup -n "${NAMESPACE}"
+  kubectl wait --for=condition=complete --timeout=900s job/pingaccess-backup -n "${PING_CLOUD_NAMESPACE}"
   assertEquals "The kubectl wait command for the backup job should have succeeded" 0 $?
 
   sleep 10

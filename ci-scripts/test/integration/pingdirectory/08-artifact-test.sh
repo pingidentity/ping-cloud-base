@@ -10,7 +10,7 @@ fi
 oneTimeSetUp() {
   PRODUCT_NAME="pingdirectory"
 
-  NUM_REPLICAS=$(kubectl get statefulset "${PRODUCT_NAME}" -o jsonpath='{.spec.replicas}' -n "${NAMESPACE}")
+  NUM_REPLICAS=$(kubectl get statefulset "${PRODUCT_NAME}" -o jsonpath='{.spec.replicas}' -n "${PING_CLOUD_NAMESPACE}")
 
   TEMP_FILE=$(mktemp)
 
@@ -30,10 +30,10 @@ oneTimeSetUp() {
   while test ${REPLICA_INDEX} -gt -1; do
     SERVER="${PRODUCT_NAME}-${REPLICA_INDEX}"
 
-    kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c "cp ${ARTIFACT_JSON} ${ARTIFACT_JSON_BACKUP}"
+    kubectl exec ${SERVER} -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c "cp ${ARTIFACT_JSON} ${ARTIFACT_JSON_BACKUP}"
     
-    kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c "cp -r ${TARGET_DIR} ${TARGET_DIR_BACKUP}"
-    kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c "rm -rf ${TARGET_DIR}/*"
+    kubectl exec ${SERVER} -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c "cp -r ${TARGET_DIR} ${TARGET_DIR_BACKUP}"
+    kubectl exec ${SERVER} -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c "rm -rf ${TARGET_DIR}/*"
 
     REPLICA_INDEX=$((REPLICA_INDEX - 1))
   done
@@ -47,10 +47,10 @@ oneTimeTearDown() {
   while test ${REPLICA_INDEX} -gt -1; do
     SERVER="${PRODUCT_NAME}-${REPLICA_INDEX}"
 
-    kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c "mv -f ${ARTIFACT_JSON_BACKUP} ${ARTIFACT_JSON}"
+    kubectl exec ${SERVER} -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c "mv -f ${ARTIFACT_JSON_BACKUP} ${ARTIFACT_JSON}"
 
-    kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c "rm -rf ${TARGET_DIR}"
-    kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c "mv ${TARGET_DIR_BACKUP} ${TARGET_DIR}"
+    kubectl exec ${SERVER} -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c "rm -rf ${TARGET_DIR}"
+    kubectl exec ${SERVER} -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c "mv ${TARGET_DIR_BACKUP} ${TARGET_DIR}"
 
     REPLICA_INDEX=$((REPLICA_INDEX - 1))
   done
@@ -64,9 +64,9 @@ tearDown() {
   while test ${REPLICA_INDEX} -gt -1; do
     SERVER="${PRODUCT_NAME}-${REPLICA_INDEX}"
 
-    kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c "cp ${ARTIFACT_JSON_BACKUP} ${ARTIFACT_JSON}"    
+    kubectl exec ${SERVER} -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c "cp ${ARTIFACT_JSON_BACKUP} ${ARTIFACT_JSON}"
 
-    kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c "rm -rf ${TARGET_DIR}/*"
+    kubectl exec ${SERVER} -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c "rm -rf ${TARGET_DIR}/*"
     
     REPLICA_INDEX=$((REPLICA_INDEX - 1))
   done
@@ -74,14 +74,14 @@ tearDown() {
 
 # Helper Methods
 set_artifact_list_json_file() {
-  kubectl cp ${TEMP_FILE} "${SERVER}":/opt/staging/artifacts/artifact-list.json  -c "${CONTAINER}" -n "${NAMESPACE}"
-  kubectl exec "${SERVER}" -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c "cat /opt/staging/artifacts/artifact-list.json"
+  kubectl cp ${TEMP_FILE} "${SERVER}":/opt/staging/artifacts/artifact-list.json  -c "${CONTAINER}" -n "${PING_CLOUD_NAMESPACE}"
+  kubectl exec "${SERVER}" -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c "cat /opt/staging/artifacts/artifact-list.json"
 }
 
 run_artifact_script() {
   # Set ARTIFACT_REPO_URL to "s3://ci-cd-artifacts-bucket" before running artifact script.
   # This bucket will always maintain the custom plugins to execute test.
-  kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c \
+  kubectl exec ${SERVER} -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c \
     "ARTIFACT_REPO_URL=${ARTIFACT_REPO_URL}; \
     /opt/staging/hooks/10-download-artifact.sh" > /dev/null 2>&1
   return ${?}
@@ -288,7 +288,7 @@ EOF
     actual_status_code_script=${?}
 
     # Search for artifact plugin in downloaded directory and capture status code.
-    kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c \
+    kubectl exec ${SERVER} -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c \
       "test -f ${TARGET_DIR}/${PINGDATA_EXT_ARTIFACT_FILENAME}" > /dev/null 2>&1
     actual_status_code_artifact_deploy=${?}
 

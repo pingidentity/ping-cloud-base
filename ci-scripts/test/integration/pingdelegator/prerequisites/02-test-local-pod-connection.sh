@@ -14,7 +14,7 @@ testPodConnection() {
 
   # Get all pingdelegator pod names
   delegator_pod_names=$(kubectl get pods \
-                          -n "${NAMESPACE}" \
+                          -n "${PING_CLOUD_NAMESPACE}" \
                           -l ${pod_label_name} \
                           -o=jsonpath="{.items[*].metadata.name}")
   assertEquals "Failed to get pingdelegator pod name" 0 $?
@@ -22,7 +22,7 @@ testPodConnection() {
 
   # Get delegator pod port number. e.g. 1443 
   delegator_pod_port=$(kubectl get pods \
-                          -n "${NAMESPACE}" \
+                          -n "${PING_CLOUD_NAMESPACE}" \
                           -l ${pod_label_name} \
                           -o jsonpath="{.items[0].spec.containers[*].ports[*].containerPort}")
   assertEquals "Failed to get pingdelegator pod port" 0 $?
@@ -31,7 +31,7 @@ testPodConnection() {
   # Test local connection with all Ping Delegated admin pods
   for pod_name in ${delegator_pod_names}
   do
-    kubectl exec -it "${pod_name}" -n "${NAMESPACE}" -- \
+    kubectl exec -it "${pod_name}" -n "${PING_CLOUD_NAMESPACE}" -- \
       curl -ssk -o /dev/null "https://localhost:${delegator_pod_port}/delegator"
     exit_code=$?
 

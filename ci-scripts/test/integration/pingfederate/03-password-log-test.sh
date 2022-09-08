@@ -14,7 +14,7 @@ testPasswordLog() {
   CONTAINER=
 
 
-  ENGINE_SERVERS=$( kubectl get pod -o name -n "${NAMESPACE}" -l role=${PRODUCT_NAME}-engine | grep ${PRODUCT_NAME} | cut -d/ -f2)
+  ENGINE_SERVERS=$( kubectl get pod -o name -n "${PING_CLOUD_NAMESPACE}" -l role=${PRODUCT_NAME}-engine | grep ${PRODUCT_NAME} | cut -d/ -f2)
 
   # Prepend admin server to list of runtime engine servers
   SERVERS="${PRODUCT_NAME}-admin-0 ${ENGINE_SERVERS}"
@@ -30,7 +30,7 @@ testPasswordLog() {
     set_log_file "${SERVER}" "${CONTAINER}" ${TEMP_LOG_FILE}
 
     # Extract environment variables from container
-    ENV_VARS=$( kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c "printenv" )
+    ENV_VARS=$( kubectl exec ${SERVER} -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c "printenv" )
 
     # Retrieve all PingFederate passwords
     PF_ADMIN_USER_PASSWORD=$( echo "${ENV_VARS}" | grep "PF_ADMIN_USER_PASSWORD=" | cut -d= -f2 )

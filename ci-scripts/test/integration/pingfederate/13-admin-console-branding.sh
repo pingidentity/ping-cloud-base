@@ -12,13 +12,13 @@ fi
 testPFAdminConsoleBrandingValues() {
 
   expected="pf.console.title=Advanced SSO"
-  title=$(kubectl exec pingfederate-admin-0 -n "${NAMESPACE}" -c pingfederate-admin -- sh -c \
+  title=$(kubectl exec pingfederate-admin-0 -n "${PING_CLOUD_NAMESPACE}" -c pingfederate-admin -- sh -c \
           "grep pf.console.title /opt/out/instance/bin/run.properties")
   test "${title}" = "${expected}"
   assertEquals "The PingFederate Admin Console Tab Title was ${title} but expected ${expected}" 0 $?
 
   expected="pf.console.environment=dev-${REGION}"
-  header_bar=$(kubectl exec pingfederate-admin-0 -n "${NAMESPACE}" -c pingfederate-admin -- sh -c \
+  header_bar=$(kubectl exec pingfederate-admin-0 -n "${PING_CLOUD_NAMESPACE}" -c pingfederate-admin -- sh -c \
               "grep pf.console.environment /opt/out/instance/bin/run.properties")
   test "${header_bar}" = "${expected}"
   assertEquals "The PingFederate Admin Console Header Bar was ${header_bar} but expected ${expected}" 0 $?

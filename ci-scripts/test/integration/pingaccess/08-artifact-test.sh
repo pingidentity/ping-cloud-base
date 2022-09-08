@@ -17,7 +17,7 @@ oneTimeSetUp() {
 
   TEMP_FILE=$(mktemp)
 
-  ENGINE_SERVERS=$( kubectl get pod -o name -n "${NAMESPACE}" -l role=${PRODUCT_NAME}-engine | grep ${PRODUCT_NAME} | cut -d/ -f2)
+  ENGINE_SERVERS=$( kubectl get pod -o name -n "${PING_CLOUD_NAMESPACE}" -l role=${PRODUCT_NAME}-engine | grep ${PRODUCT_NAME} | cut -d/ -f2)
 
   # Prepend admin server to list of runtime engine servers.
   SERVERS="${PRODUCT_NAME}-admin-0 ${ENGINE_SERVERS}"
@@ -31,22 +31,22 @@ oneTimeTearDown() {
 
 # Helper Methods
 set_artifact_list_json_file() {
-  kubectl cp ${TEMP_FILE} "${SERVER}":/opt/staging/artifacts/artifact-list.json  -c "${CONTAINER}" -n "${NAMESPACE}"
-  kubectl exec "${SERVER}" -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c "cat /opt/staging/artifacts/artifact-list.json"
+  kubectl cp ${TEMP_FILE} "${SERVER}":/opt/staging/artifacts/artifact-list.json  -c "${CONTAINER}" -n "${PING_CLOUD_NAMESPACE}"
+  kubectl exec "${SERVER}" -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c "cat /opt/staging/artifacts/artifact-list.json"
 }
 run_artifact_script() {
   # Set ARTIFACT_REPO_URL to "s3://ci-cd-artifacts-bucket" before running artifact script.
   # This bucket will always maintain the custom plugins to execute test.
-  kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c \
+  kubectl exec ${SERVER} -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c \
     "ARTIFACT_REPO_URL=s3://ci-cd-artifacts-bucket; \
     /opt/staging/hooks/10-download-artifact.sh" > /dev/null 2>&1
   return ${?}
 }
 cleanup_artifacts() {
-  kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c \
+  kubectl exec ${SERVER} -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c \
     "rm /opt/out/instance/lib/${SAMPLE_RULES}-${SAMPLE_RULES_VERSION}.jar" > /dev/null 2>&1
 
-  kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c \
+  kubectl exec ${SERVER} -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c \
     "rm /opt/out/instance/lib/${SAMPLE_SITE_AUTH}-${SAMPLE_SITE_AUTH_VERSION}.jar" > /dev/null 2>&1
 }
 
@@ -262,7 +262,7 @@ EOF
     actual_status_code_script=${?}
 
     # Search for artifact plugin in /lib directory and capture status code.
-    kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c \
+    kubectl exec ${SERVER} -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c \
     "test -f /opt/out/instance/lib/${SAMPLE_RULES}-${SAMPLE_RULES_VERSION}.jar && 
     test -f /opt/out/instance/lib/${SAMPLE_SITE_AUTH}-${SAMPLE_SITE_AUTH_VERSION}.jar" > /dev/null 2>&1
     actual_status_code_artifact_deploy=${?}
@@ -306,7 +306,7 @@ EOF
     actual_status_code_script=${?}
 
     # Search for upgraded artifact plugin in /lib directory and capture status code.
-    kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c \
+    kubectl exec ${SERVER} -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c \
       "test -f /opt/out/instance/lib/${SAMPLE_SITE_AUTH}-${SAMPLE_SITE_AUTH_VERSION_UPGRADE}.jar" > /dev/null 2>&1
     actual_status_code_artifact_deploy=${?}
 

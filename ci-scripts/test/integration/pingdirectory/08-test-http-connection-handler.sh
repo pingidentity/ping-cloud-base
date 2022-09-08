@@ -16,7 +16,7 @@ oneTimeSetUp() {
   touch ${TEST_LDIF_FILE}
 
   # Get the total number of PD servers
-  NUM_REPLICAS=$(kubectl get statefulset "${PRODUCT_NAME}" -o jsonpath='{.spec.replicas}' -n "${NAMESPACE}")
+  NUM_REPLICAS=$(kubectl get statefulset "${PRODUCT_NAME}" -o jsonpath='{.spec.replicas}' -n "${PING_CLOUD_NAMESPACE}")
   NUM_REPLICAS=$((NUM_REPLICAS - 1))
 
   # Create SCIM resource and add users to PD
@@ -125,14 +125,14 @@ EOF
 }
 
 add_users() {
-  kubectl cp ${ADD_USER_LDIF_FILE} pingdirectory-0:"${TEST_LDIF_FILE}" -c "${CONTAINER}" -n "${NAMESPACE}"
-  kubectl exec pingdirectory-0 -c "${CONTAINER}" -n "${NAMESPACE}" -- \
+  kubectl cp ${ADD_USER_LDIF_FILE} pingdirectory-0:"${TEST_LDIF_FILE}" -c "${CONTAINER}" -n "${PING_CLOUD_NAMESPACE}"
+  kubectl exec pingdirectory-0 -c "${CONTAINER}" -n "${PING_CLOUD_NAMESPACE}" -- \
     sh -c "ldapmodify --defaultAdd --ldifFile ${TEST_LDIF_FILE} > /dev/null"
 }
 
 delete_users() {
-  kubectl cp ${DELETE_USER_LDIF_FILE} pingdirectory-0:"${TEST_LDIF_FILE}" -c "${CONTAINER}" -n "${NAMESPACE}"
-  kubectl exec pingdirectory-0 -c "${CONTAINER}" -n "${NAMESPACE}" -- \
+  kubectl cp ${DELETE_USER_LDIF_FILE} pingdirectory-0:"${TEST_LDIF_FILE}" -c "${CONTAINER}" -n "${PING_CLOUD_NAMESPACE}"
+  kubectl exec pingdirectory-0 -c "${CONTAINER}" -n "${PING_CLOUD_NAMESPACE}" -- \
     sh -c "ldapdelete --filename ${TEST_LDIF_FILE} > /dev/null"
 }
 
@@ -145,12 +145,12 @@ applyToAllServers() {
 
     case "${1}" in
       RUN_LDIF)
-        kubectl cp ${TEST_LDIF_FILE} "${SERVER}":"${TEST_LDIF_FILE}"  -c "${CONTAINER}" -n "${NAMESPACE}"
-        kubectl exec "${SERVER}" -c "${CONTAINER}" -n "${NAMESPACE}" -- \
+        kubectl cp ${TEST_LDIF_FILE} "${SERVER}":"${TEST_LDIF_FILE}"  -c "${CONTAINER}" -n "${PING_CLOUD_NAMESPACE}"
+        kubectl exec "${SERVER}" -c "${CONTAINER}" -n "${PING_CLOUD_NAMESPACE}" -- \
           sh -c "dsconfig --no-prompt --batch-file ${TEST_LDIF_FILE} > /dev/null"
         ;;
       CLEANUP)
-        kubectl exec "${SERVER}" -c "${CONTAINER}" -n "${NAMESPACE}" -- \
+        kubectl exec "${SERVER}" -c "${CONTAINER}" -n "${PING_CLOUD_NAMESPACE}" -- \
           sh -c "rm ${TEST_LDIF_FILE} > /dev/null"
         ;;
     esac
