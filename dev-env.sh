@@ -210,6 +210,9 @@ do
   esac
 done
 
+# We assume we always run dev-env.sh from the top-level of the repo
+CUR_DIR=$(pwd)
+
 # Checking required tools and environment variables.
 check_binaries "openssl" "base64" "kustomize" "kubectl" "envsubst"
 HAS_REQUIRED_TOOLS=${?}
@@ -389,6 +392,9 @@ fi
 build_dev_deploy_file "${DEPLOY_FILE}" "${CLUSTER_TYPE}"
 
 if test "${dryrun}" = 'false'; then
+  # Apply large CRDs depending on feature flags
+  apply_crds
+
   log "Deploying ${DEPLOY_FILE} to cluster ${CLUSTER_NAME}, namespace ${PING_CLOUD_NAMESPACE} for tenant ${TENANT_DOMAIN}"
   kubectl apply -f "${DEPLOY_FILE}" --context "${K8S_CONTEXT}" | tee -a "${LOG_FILE}"
 
