@@ -10177,7 +10177,7 @@ spec:
           subPath: envsubst
         - name: tools-dir
           mountPath: /usr/local/bin/kustomize
-          subPath: kustomize_3_5_4
+          subPath: kustomize
         - name: tools-dir
           mountPath: /usr/local/bin/git-remote-codecommit
           subPath: git-remote-codecommit
