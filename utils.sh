@@ -613,8 +613,8 @@ pgo_feature_flag() {
 
 # Apply CRDs server-side to prevent errors around manifest size
 apply_crds() {
-  if [[ $PF_PROVISIONING_ENABLED != "true" ]]; then
-      log "FEATURE FLAG - PF Provisioning is enabled, deploying PGO CRD"
+  if [[ $PF_PROVISIONING_ENABLED == "true" ]]; then
+    log "FEATURE FLAG - PF Provisioning is enabled, deploying PGO CRD"
     # PGO CRDs are so large, they have to be applied server-side
     kubectl apply --server-side -k "${pgo_crd_dir}"
   fi
