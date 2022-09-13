@@ -294,13 +294,13 @@ spec:
             periodSeconds: 5
             failureThreshold: 100
             timeoutSeconds: 5
-          livenessProbe:
-            exec:
-              command:
-                - /opt/staging/hooks/86-liveness.sh
-            periodSeconds: 30
-            failureThreshold: 3
-            timeoutSeconds: 5
+          # livenessProbe:
+          #   exec:
+          #     command:
+          #       - /opt/staging/hooks/86-liveness.sh
+          #   periodSeconds: 30
+          #   failureThreshold: 3
+          #   timeoutSeconds: 5
           lifecycle:
             preStop:
               exec:
