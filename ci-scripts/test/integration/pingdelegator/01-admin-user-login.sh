@@ -21,7 +21,7 @@ oneTimeSetUp() {
   TEST_PF_HTML_FORM=$(mktemp -t "pf-admin-login-form-XXXXXXXXXX")
 
   # Get the total number of PD servers
-  NUM_REPLICAS=$(kubectl get statefulset "${CONTAINER}" -o jsonpath='{.spec.replicas}' -n "${NAMESPACE}")
+  NUM_REPLICAS=$(kubectl get statefulset "${CONTAINER}" -o jsonpath='{.spec.replicas}' -n "${PING_CLOUD_NAMESPACE}")
   NUM_REPLICAS=$((NUM_REPLICAS - 1))
 
   add_users
@@ -48,14 +48,14 @@ oneTimeTearDown() {
 # Helper Methods
 
 add_users() {
-  kubectl cp ${ADD_USER_LDIF_FILE} "${SERVER}:${TEST_CONFIG_FILE}" -c "${CONTAINER}" -n "${NAMESPACE}"
-  kubectl exec "${SERVER}" -c "${CONTAINER}" -n "${NAMESPACE}" -- \
+  kubectl cp ${ADD_USER_LDIF_FILE} "${SERVER}:${TEST_CONFIG_FILE}" -c "${CONTAINER}" -n "${PING_CLOUD_NAMESPACE}"
+  kubectl exec "${SERVER}" -c "${CONTAINER}" -n "${PING_CLOUD_NAMESPACE}" -- \
     sh -c "ldapmodify --defaultAdd --ldifFile ${TEST_CONFIG_FILE} > /dev/null"
 }
 
 delete_users() {
-  kubectl cp ${DELETE_USER_LDIF_FILE} "${SERVER}:${TEST_CONFIG_FILE}" -c "${CONTAINER}" -n "${NAMESPACE}"
-  kubectl exec "${SERVER}" -c "${CONTAINER}" -n "${NAMESPACE}" -- \
+  kubectl cp ${DELETE_USER_LDIF_FILE} "${SERVER}:${TEST_CONFIG_FILE}" -c "${CONTAINER}" -n "${PING_CLOUD_NAMESPACE}"
+  kubectl exec "${SERVER}" -c "${CONTAINER}" -n "${PING_CLOUD_NAMESPACE}" -- \
     sh -c "ldapdelete --filename ${TEST_CONFIG_FILE} > /dev/null"
 }
 
@@ -130,12 +130,12 @@ applyToAllServers() {
 
     case "${1}" in
       DS_CONFIG)
-        kubectl cp ${TEST_CONFIG_FILE} "${SERVER}":"${TEST_CONFIG_FILE}"  -c "${CONTAINER}" -n "${NAMESPACE}"
-        kubectl exec "${SERVER}" -c "${CONTAINER}" -n "${NAMESPACE}" -- \
+        kubectl cp ${TEST_CONFIG_FILE} "${SERVER}":"${TEST_CONFIG_FILE}"  -c "${CONTAINER}" -n "${PING_CLOUD_NAMESPACE}"
+        kubectl exec "${SERVER}" -c "${CONTAINER}" -n "${PING_CLOUD_NAMESPACE}" -- \
           sh -c "dsconfig --no-prompt --batch-file ${TEST_CONFIG_FILE} > /dev/null"
         ;;
       CLEANUP)
-        kubectl exec "${SERVER}" -c "${CONTAINER}" -n "${NAMESPACE}" -- \
+        kubectl exec "${SERVER}" -c "${CONTAINER}" -n "${PING_CLOUD_NAMESPACE}" -- \
           sh -c "rm ${TEST_CONFIG_FILE} > /dev/null"
         ;;
     esac

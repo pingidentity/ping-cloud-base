@@ -12,7 +12,7 @@ oneTimeSetUp() {
   REQUIRED_VARS='BACKUP_URL LOG_ARCHIVE_URL'
   PRODUCT_NAME="pingdirectory"
 
-  NUM_REPLICAS=$(kubectl get statefulset "${PRODUCT_NAME}" -o jsonpath='{.spec.replicas}' -n "${NAMESPACE}")
+  NUM_REPLICAS=$(kubectl get statefulset "${PRODUCT_NAME}" -o jsonpath='{.spec.replicas}' -n "${PING_CLOUD_NAMESPACE}")
 }
 
 testRequiredEnvironmentVariablesAreSet() {
@@ -29,7 +29,7 @@ testRequiredEnvironmentVariablesAreSet() {
       log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
 
       # Extract environment variables from container
-      CONTAINER_ENV_VARS=$( kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c "printenv" )
+      CONTAINER_ENV_VARS=$( kubectl exec ${SERVER} -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c "printenv" )
 
       for CURRENT_VAR_NAME in ${REQUIRED_VARS}; do
           CURRENT_VAR_VALUE=$( echo "${CONTAINER_ENV_VARS}" | grep "${CURRENT_VAR_NAME}=" | cut -d= -f2 )

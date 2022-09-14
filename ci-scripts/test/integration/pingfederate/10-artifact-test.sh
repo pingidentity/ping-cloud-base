@@ -30,7 +30,7 @@ oneTimeSetUp() {
   ARTIFACT_JSON_FILE=$(mktemp)
   TEMP_ENV_VAR_FILE=$(mktemp)
 
-  ENGINE_SERVERS=$( kubectl get pod -o name -n "${NAMESPACE}" -l role=${PRODUCT_NAME}-engine | grep ${PRODUCT_NAME} | cut -d/ -f2)
+  ENGINE_SERVERS=$( kubectl get pod -o name -n "${PING_CLOUD_NAMESPACE}" -l role=${PRODUCT_NAME}-engine | grep ${PRODUCT_NAME} | cut -d/ -f2)
 
   # Prepend admin server to list of runtime engine servers.
   SERVERS="${PRODUCT_NAME}-admin-0 ${ENGINE_SERVERS}"
@@ -46,7 +46,7 @@ oneTimeTearDown() {
 
 # Helper Methods
 set_artifact_list_json_file() {
-  kubectl cp ${ARTIFACT_JSON_FILE} "${SERVER}":/opt/staging/artifacts/artifact-list.json  -c "${CONTAINER}" -n "${NAMESPACE}"
+  kubectl cp ${ARTIFACT_JSON_FILE} "${SERVER}":/opt/staging/artifacts/artifact-list.json  -c "${CONTAINER}" -n "${PING_CLOUD_NAMESPACE}"
 }
 
 clear_artifact_list_json_file() {
@@ -59,17 +59,17 @@ EOF
 run_artifact_script() {
   # Set PING_ARTIFACT_REPO_URL to "s3://ci-cd-artifacts-bucket" before running artifact script.
   # This bucket will always maintain the custom plugins to execute test.
-  kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c \
+  kubectl exec ${SERVER} -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c \
     "PING_ARTIFACT_REPO_URL=s3://ci-cd-artifacts-bucket; \
     /opt/staging/hooks/10-download-artifact.sh" > /dev/null 2>&1
   return ${?}
 }
 
 cleanup_artifacts() {
-  kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c \
+  kubectl exec ${SERVER} -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c \
     "rm ${TARGET_DEPLOY_DIR}/${IK_ARTIFACT_JARNAME}" > /dev/null 2>&1
 
-  kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c \
+  kubectl exec ${SERVER} -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c \
     "rm ${TARGET_DEPLOY_DIR}/${SECOND_IK_ARTIFACT_JARNAME}" > /dev/null 2>&1
 }
 
@@ -105,7 +105,7 @@ EOF
   actual_status_code_script=${?}
 
   # Search for artifact plugin in /deploy directory and capture status code.
-  kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c \
+  kubectl exec ${SERVER} -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c \
     "test -f ${TARGET_DEPLOY_DIR}/${IK_ARTIFACT_JARNAME}" > /dev/null 2>&1
   actual_status_code_artifact_deploy=${?}
 
@@ -246,7 +246,7 @@ EOF
   assertEquals "Artifact deploy script did not return expected value." ${expected_status_code} ${actual_status_code_script}
 
   # Verify there is only one authn-api-sdk jar in /lib
-  num_pf_authn_api_sdk_jars=$(kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c \
+  num_pf_authn_api_sdk_jars=$(kubectl exec ${SERVER} -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c \
     "ls ${TARGET_LIB_DIR}/${AUTHN_API_SDK_NAME}* | wc -l")
 
   assertEquals "Number of pf-authn-api-sdk jars in /lib did not match the expected." 1 ${num_pf_authn_api_sdk_jars}

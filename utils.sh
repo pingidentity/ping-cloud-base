@@ -441,7 +441,7 @@ ${GLOBAL_TENANT_DOMAIN}
 ${SECONDARY_TENANT_DOMAINS}
 ${CLUSTER_NAME}
 ${CLUSTER_NAME_LC}
-${NAMESPACE}
+${PING_CLOUD_NAMESPACE}
 ${CONFIG_REPO_BRANCH}
 ${CONFIG_PARENT_DIR}
 ${TOPOLOGY_DESCRIPTOR}
@@ -503,13 +503,18 @@ build_dev_deploy_file() {
   local dev_cluster_state_dir='dev-cluster-state'
   cp -pr "${dev_cluster_state_dir}" "${build_dir}"
 
+  pgo_dev_deploy "$(pwd)" "${build_dir}"
+
   substitute_vars "${build_dir}" "${DEFAULT_VARS}"
   set_kustomize_load_arg_and_value
   kustomize build "${build_load_arg}" "${build_load_arg_value}" "${build_dir}/${cluster_type}" > "${deploy_file}"
-  rm -rf "${build_dir}"
 
-  test ! -z "${NAMESPACE}" && test "${NAMESPACE}" != 'ping-cloud' &&
-      sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" "${deploy_file}"
+  if [[ "${DEBUG}" != "true" ]]; then
+    rm -rf "${build_dir}"
+  fi
+
+  test ! -z "${PING_CLOUD_NAMESPACE}" && test "${PING_CLOUD_NAMESPACE}" != 'ping-cloud' &&
+      sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${PING_CLOUD_NAMESPACE}/g" "${deploy_file}"
 }
 
 ########################################################################################################################
@@ -534,8 +539,8 @@ build_dev_deploy_dir() {
   kustomize build "${build_load_arg}" "${build_load_arg_value}" "${build_dir}/${cluster_type}" --output "${deploy_dir}"
   rm -rf "${build_dir}"
 
-  test ! -z "${NAMESPACE}" && test "${NAMESPACE}" != 'ping-cloud' &&
-      find "${deploy_dir}" -type f -exec sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" {} \;
+  test ! -z "${PING_CLOUD_NAMESPACE}" && test "${PING_CLOUD_NAMESPACE}" != 'ping-cloud' &&
+      find "${deploy_dir}" -type f -exec sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${PING_CLOUD_NAMESPACE}/g" {} \;
   rm -f "${deploy_dir}"/*.bak
 }
 
@@ -571,5 +576,46 @@ get_ssm_value() {
     echo "${ssm_value}" | grep -Eo "${ssm_key#*#}[^,]*" | grep -Eo "[^:]*$"
   else
     echo "${ssm_value}"
+  fi
+}
+
+# Deploy PGO - only if the feature flag is enabled!
+# Arg $1 - directory containing pgo CRDs
+pgo_dev_deploy() {
+  base_dir=${1}
+  build_dir=${2}
+  dry_run=${3}
+
+  # TODO: move CRD files since they won't use kustomize in typical way?
+  pgo_crd_dir="${base_dir}/k8s-configs/cluster-tools/base/pgo/base/crd/"
+  kust_file="${build_dir}/cluster-tools/pgo/kustomization.yaml"
+  prov_kust_file="${build_dir}/ping-cloud/pingfederate/provisioning/kustomization.yaml"
+
+  if [[ $PF_PROVISIONING_ENABLED == "true" ]]; then
+    log "FEATURE FLAG - PF Provisioning is enabled, continuing"
+  else
+    pgo_feature_flag "${kust_file}" "${prov_kust_file}"
+  fi
+}
+
+# Clear the kustomize file, effectively turning off that block of kustomize code
+pgo_feature_flag() {
+  pgo_kust_file="${1}"
+  prov_kust_file="${2}"
+
+  if [[ $PF_PROVISIONING_ENABLED != "true" ]]; then
+    log "FEATURE FLAG - PF Provisioning is disabled, removing"
+    message="# PF_PROVISIONING_ENABLED has been set to 'false', therefore this file has been cleared to disable the feature"
+    echo "${message}" > "${pgo_kust_file}"
+    echo "${message}" > "${prov_kust_file}"
+  fi
+}
+
+# Apply CRDs server-side to prevent errors around manifest size
+apply_crds() {
+  if [[ $PF_PROVISIONING_ENABLED == "true" ]]; then
+    log "FEATURE FLAG - PF Provisioning is enabled, deploying PGO CRD"
+    # PGO CRDs are so large, they have to be applied server-side
+    kubectl apply --server-side -k "${pgo_crd_dir}"
   fi
 }

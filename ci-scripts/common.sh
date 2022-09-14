@@ -34,7 +34,7 @@ set_deploy_type_env_vars() {
   if [[ -n ${PINGONE} ]]; then
     # Set PingOne deploy env vars
     echo "Setting env vars for PingOne deployment"
-    export NAMESPACE=ping-p1-${CI_COMMIT_REF_SLUG}
+    export PING_CLOUD_NAMESPACE=ping-p1-${CI_COMMIT_REF_SLUG}
     export PLATFORM_EVENT_QUEUE_NAME="${SELECTED_KUBE_NAME}_v2_platform_event_queue.fifo"
     export ORCH_API_SSM_PATH_PREFIX="/${SELECTED_KUBE_NAME}/pcpt/orch-api"
     export MYSQL_DATABASE="p1_pingcentral${ENV_NAME_NO_DASHES}"
@@ -45,7 +45,7 @@ set_deploy_type_env_vars() {
   else
     # Set traditional deploy env vars
     echo "Setting env vars for traditional deployment"
-    export NAMESPACE=ping-cloud-${CI_COMMIT_REF_SLUG}
+    export PING_CLOUD_NAMESPACE=ping-cloud-${CI_COMMIT_REF_SLUG}
     export PLATFORM_EVENT_QUEUE_NAME="v2_platform_event_queue.fifo"
     export ORCH_API_SSM_PATH_PREFIX="/pcpt/orch-api"
     export MYSQL_DATABASE="pingcentral_${ENV_NAME_NO_DASHES}"
@@ -439,7 +439,7 @@ set_log_file() {
   local container="${2}"
   local log_file=${3}
 
-  kubectl logs -n "${NAMESPACE}" "${server}" -c "${container}" --since=60m > ${log_file}
+  kubectl logs -n "${PING_CLOUD_NAMESPACE}" "${server}" -c "${container}" --since=60m > ${log_file}
 }
 
 ########################################################################################################################
@@ -467,7 +467,7 @@ function log_events_exist() {
 
   if "${default}"; then
     # Save current state of logs into a temp file
-    kubectl logs "${pod}" -c "${container}" -n "${NAMESPACE}" |
+    kubectl logs "${pod}" -c "${container}" -n "${PING_CLOUD_NAMESPACE}" |
       # Filter out logs that belong to specific log file or that originate from SIEM logs not sent to CW
       grep -vE "^(/opt/out/instance/log|<[0-9]+>)" |
       grep -vE "^\/opt\/out\/instance\/log\/admin-api.*127\.0\.0\.1\| GET\| \/version\| 200" |
@@ -480,7 +480,7 @@ function log_events_exist() {
       tr -d '\r' > "${temp_log_file}"
   else
     # Save current state of logs into a temp file
-    kubectl logs "${pod}" -c "${container}" -n "${NAMESPACE}" |
+    kubectl logs "${pod}" -c "${container}" -n "${PING_CLOUD_NAMESPACE}" |
       grep ^"${full_pathname}" |
       grep -vE "^\/opt\/out\/instance\/log\/admin-api.*127\.0\.0\.1\| GET\| \/version\| 200" |
       grep -vE "^\/opt\/out\/instance\/log\/pingaccess_api_audit.*127\.0\.0\.1\| GET\| \/pa-admin-api\/v3\/version\| 200" |
@@ -650,9 +650,9 @@ actual_files() {
 #   ${1} -> The upload CSD job name
 ########################################################################################################################
 expected_files() {
-  local upload_csd_job_pods=$(kubectl get pod -o name -n "${NAMESPACE}" | grep "${1}" | cut -d/ -f2)
+  local upload_csd_job_pods=$(kubectl get pod -o name -n "${PING_CLOUD_NAMESPACE}" | grep "${1}" | cut -d/ -f2)
   for upload_csd_job_pod in $upload_csd_job_pods; do
-    kubectl logs -n "${NAMESPACE}" ${upload_csd_job_pod} |
+    kubectl logs -n "${PING_CLOUD_NAMESPACE}" ${upload_csd_job_pod} |
     tail -1 |
     tr ' ' '\n' |
     sort

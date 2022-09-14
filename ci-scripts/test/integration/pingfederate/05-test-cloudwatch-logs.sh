@@ -8,9 +8,9 @@ if skipTest "${0}"; then
 fi
 
 oneTimeSetUp() {
-  readonly PF_LOG_STREAM_SUFFIX="pingfederate-admin-0_${NAMESPACE}_pingfederate-admin"
-  readonly PF_ENGINE_POD=$(kubectl get pod -o name -n "${NAMESPACE}" -l role=pingfederate-engine | head -1 | cut -d/ -f2)
-  readonly PF_ENGINE_LOG_STREAM_SUFFIX="${PF_ENGINE_POD}_${NAMESPACE}_pingfederate"
+  readonly PF_LOG_STREAM_SUFFIX="pingfederate-admin-0_${PING_CLOUD_NAMESPACE}_pingfederate-admin"
+  readonly PF_ENGINE_POD=$(kubectl get pod -o name -n "${PING_CLOUD_NAMESPACE}" -l role=pingfederate-engine | head -1 | cut -d/ -f2)
+  readonly PF_ENGINE_LOG_STREAM_SUFFIX="${PF_ENGINE_POD}_${PING_CLOUD_NAMESPACE}_pingfederate"
 }
 
 # Log streams are prefixed with the format of <log_name>_logs

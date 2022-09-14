@@ -8,7 +8,7 @@ if skipTest "${0}"; then
 fi
 
 testPingOneConfiguratorPodStatus() {
-  status=$(kubectl get pods --selector=role=pingone-configurator -n ${NAMESPACE} -o json | jq -r '.items[].status.phase')
+  status=$(kubectl get pods --selector=role=pingone-configurator -n ${PING_CLOUD_NAMESPACE} -o json | jq -r '.items[].status.phase')
   assertEquals 0 $?
   assertEquals "The status phase of the pingone-configurator pod should be Succeeded but was: ${status}" 'Succeeded' ${status}
 }

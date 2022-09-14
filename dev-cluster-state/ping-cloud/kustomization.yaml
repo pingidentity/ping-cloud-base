@@ -2,7 +2,10 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
+# NOTE: The kustomization.yaml under this directory refers to all of the "k8s-config/ping-cloud/test" directory env
 - ../../k8s-configs/ping-cloud
+# Provisioning is not enabled by default, but the kustomize file is managed directly by dev-env.sh/utils.sh
+- pingfederate/provisioning
 
 configMapGenerator:
 

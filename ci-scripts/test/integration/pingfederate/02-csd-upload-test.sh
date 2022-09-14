@@ -22,17 +22,17 @@ csd_upload() {
   local upload_job="${2}"
 
   log "Applying the CSD upload job"
-  kubectl delete -f "${upload_job}" -n "${NAMESPACE}"
+  kubectl delete -f "${upload_job}" -n "${PING_CLOUD_NAMESPACE}"
   assertEquals "The kubectl delete command to remove an existing ${upload_csd_job_name} should have succeeded" 0 $?
 
-  kubectl apply -f "${upload_job}" -n "${NAMESPACE}"
+  kubectl apply -f "${upload_job}" -n "${PING_CLOUD_NAMESPACE}"
   assertEquals "The kubectl apply command to create the ${upload_csd_job_name} should have succeeded" 0 $?
 
-  kubectl create job --from=cronjob/${upload_csd_job_name} ${upload_csd_job_name} -n "${NAMESPACE}"
+  kubectl create job --from=cronjob/${upload_csd_job_name} ${upload_csd_job_name} -n "${PING_CLOUD_NAMESPACE}"
   assertEquals "The kubectl create command to create the job should have succeeded" 0 $?
 
   log "Waiting for CSD upload job to complete"
-  kubectl wait --for=condition=complete --timeout=900s job.batch/${upload_csd_job_name} -n "${NAMESPACE}"
+  kubectl wait --for=condition=complete --timeout=900s job.batch/${upload_csd_job_name} -n "${PING_CLOUD_NAMESPACE}"
   assertEquals "The kubectl wait command for the job should have succeeded" 0 $?
 
   sleep 5

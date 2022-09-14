@@ -12,7 +12,7 @@ PRODUCT_NAME=pingdirectory
 SERVER=
 CONTAINER=
 
-NUM_REPLICAS=$(kubectl get statefulset "${PRODUCT_NAME}" -o jsonpath='{.spec.replicas}' -n "${NAMESPACE}")
+NUM_REPLICAS=$(kubectl get statefulset "${PRODUCT_NAME}" -o jsonpath='{.spec.replicas}' -n "${PING_CLOUD_NAMESPACE}")
 NUM_REPLICAS=$((NUM_REPLICAS - 1))
 
 while test ${NUM_REPLICAS} -gt -1; do
@@ -27,7 +27,7 @@ while test ${NUM_REPLICAS} -gt -1; do
   set_log_file "${SERVER}" "${CONTAINER}" ${TEMP_LOG_FILE}
 
   # Extract environment variables from container
-  ENV_VARS=$( kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c "printenv" )
+  ENV_VARS=$( kubectl exec ${SERVER} -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c "printenv" )
 
   # Retrieve all PingDirectory passwords
   PF_LDAP_PASSWORD=$( echo "${ENV_VARS}" | grep "PF_LDAP_PASSWORD=" | cut -d= -f2 )

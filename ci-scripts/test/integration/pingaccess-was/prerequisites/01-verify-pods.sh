@@ -14,7 +14,7 @@ testVerifyPAEngines() {
   return_code=0
   for i in {1..10}
   do
-    send_request_to_runtime_port 'pingaccess-was-0' "${NAMESPACE}"
+    send_request_to_runtime_port 'pingaccess-was-0' "${PING_CLOUD_NAMESPACE}"
     return_code=$?
     if [[ ${return_code} -ne 0 ]]; then
       log "The pingaccess-was-0 runtime is inaccessible.  This is attempt ${i} of 10.  Wait 60 seconds and then try again..."

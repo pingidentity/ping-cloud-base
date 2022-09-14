@@ -225,3 +225,11 @@ PROMETHEUS_USER_COUNT_4_SCHEDULE='* * * * *'
 
 # Variable to have ping-cloud namespace in prometheus-job-exporter
 PROMETHEUS_PING_NAMESPACE=${PING_CLOUD_NAMESPACE}
+
+#### FEATURE FLAGS #####################################################################################################
+# Set to true to enable, most are disabled by default
+# NOTE: You must re-run update-cluster-state.sh after flipping a feature flag
+
+PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED}
+
+########################################################################################################################
