@@ -8,14 +8,6 @@ dsconfig create-local-db-index \
 
 dsconfig create-local-db-index \
     --backend-name "appintegrations" \
-    --index-name "accessGrantUniqueUserIdentifier" \
-    --set index-entry-limit:4000 \
-    --set exploded-index-entry-threshold:4000 \
-    --set index-type:equality \
-    --set prime-index:true
-
-dsconfig create-local-db-index \
-    --backend-name "appintegrations" \
     --index-name "accessGrantHashedRefreshTokenValue" \
     --set index-entry-limit:4000 \
     --set exploded-index-entry-threshold:4000 \
