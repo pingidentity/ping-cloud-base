@@ -582,26 +582,17 @@ get_ssm_value() {
 # Deploy PGO - only if the feature flag is enabled!
 # Arg $1 - directory containing pgo CRDs
 pgo_dev_deploy() {
-  base_dir=${1}
-  build_dir=${2}
-  dry_run=${3}
+  local build_dir=${1}
 
-  # TODO: move CRD files since they won't use kustomize in typical way?
-  pgo_crd_dir="${base_dir}/k8s-configs/cluster-tools/base/pgo/base/crd/"
   kust_file="${build_dir}/cluster-tools/pgo/kustomization.yaml"
   prov_kust_file="${build_dir}/ping-cloud/pingfederate/provisioning/kustomization.yaml"
-
-  if [[ $PF_PROVISIONING_ENABLED == "true" ]]; then
-    log "FEATURE FLAG - PF Provisioning is enabled, continuing"
-  else
-    pgo_feature_flag "${kust_file}" "${prov_kust_file}"
-  fi
+  pgo_feature_flag "${kust_file}" "${prov_kust_file}"
 }
 
 # Clear the kustomize file, effectively turning off that block of kustomize code
 pgo_feature_flag() {
-  pgo_kust_file="${1}"
-  prov_kust_file="${2}"
+  local pgo_kust_file="${1}"
+  local prov_kust_file="${2}"
 
   if [[ $PF_PROVISIONING_ENABLED != "true" ]]; then
     log "FEATURE FLAG - PF Provisioning is disabled, removing"
@@ -613,6 +604,9 @@ pgo_feature_flag() {
 
 # Apply CRDs server-side to prevent errors around manifest size
 apply_crds() {
+  local base_dir=${1}
+
+  pgo_crd_dir="${base_dir}/k8s-configs/cluster-tools/base/pgo/base/crd/"
   if [[ $PF_PROVISIONING_ENABLED == "true" ]]; then
     log "FEATURE FLAG - PF Provisioning is enabled, deploying PGO CRD"
     # PGO CRDs are so large, they have to be applied server-side
