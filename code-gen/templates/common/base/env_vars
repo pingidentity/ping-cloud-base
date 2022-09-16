@@ -108,7 +108,7 @@ LETS_ENCRYPT_SERVER=${LETS_ENCRYPT_SERVER}
 # PingCommon environment variables
 ############################################################
 USER_BASE_DN=${USER_BASE_DN}
-ECR_ENV=/dev
+ECR_ENV=
 
 ############################################################
 # PingFederate variables for environment
@@ -150,22 +150,22 @@ PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 ############################################################
 # Ping application image tags
 ############################################################
-PINGACCESS_IMAGE_TAG=v1.15-release-branch-latest
-PINGACCESS_WAS_IMAGE_TAG=v1.15-release-branch-latest
-PINGFEDERATE_IMAGE_TAG=v1.15-release-branch-latest
-PINGDIRECTORY_IMAGE_TAG=v1.15-release-branch-latest
-PINGDELEGATOR_IMAGE_TAG=v1.15-release-branch-latest
-PINGCENTRAL_IMAGE_TAG=v1.15-release-branch-latest
-PINGDATASYNC_IMAGE_TAG=v1.15-release-branch-latest
+PINGACCESS_IMAGE_TAG=v1.15.0.0
+PINGACCESS_WAS_IMAGE_TAG=v1.15.0.0
+PINGFEDERATE_IMAGE_TAG=v1.15.0.0
+PINGDIRECTORY_IMAGE_TAG=v1.15.0.1_RC1
+PINGDELEGATOR_IMAGE_TAG=v1.15.0.0
+PINGCENTRAL_IMAGE_TAG=v1.15.0.0
+PINGDATASYNC_IMAGE_TAG=v1.15.0.0
 
 ############################################################
 # Ping solution image tags
 ############################################################
-METADATA_IMAGE_TAG=v1.15-release-branch-latest
-BOOTSTRAP_IMAGE_TAG=v1.15-release-branch-latest
-HEALTHCHECK_IMAGE_TAG=v1.15-release-branch-latest
-P14C_INTEGRATION_IMAGE_TAG=v1.15-release-branch-latest
-ANSIBLE_BELUGA_IMAGE_TAG=v1.15-release-branch-latest
+METADATA_IMAGE_TAG=v1.15.0.0
+BOOTSTRAP_IMAGE_TAG=v1.15.0.0
+HEALTHCHECK_IMAGE_TAG=v1.15.0.0
+P14C_INTEGRATION_IMAGE_TAG=v1.15.0.0
+ANSIBLE_BELUGA_IMAGE_TAG=v1.15.0.0
 
 ############################################################
 # Cluster name variables
