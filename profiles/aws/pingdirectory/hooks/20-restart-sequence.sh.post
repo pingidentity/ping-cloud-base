@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+
+${VERBOSE} && set -x
+
+. "${HOOKS_DIR}/pingcommon.lib.sh"
+. "${HOOKS_DIR}/utils.lib.sh"
+
+test -f "${HOOKS_DIR}/pingdata.lib.sh" && . "${HOOKS_DIR}/pingdata.lib.sh"
+
+# Remove dc=example,dc=com if it is persisted when changing it out
+
+if [ "${USER_BASE_DN}" != "dc=example,dc=com" ]; then
+  beluga_log "Removing dc=example,dc=com"
+
+  dsconfig set-backend-prop --offline \
+      --remove base-dn:dc=example,dc=com \
+      --backend-name "${USER_BACKEND_ID}" --no-prompt
+  remove_default_basedn_status=$?
+  beluga_log "Removing dc=example,dc=com status: ${remove_default_basedn_status}"
+fi
