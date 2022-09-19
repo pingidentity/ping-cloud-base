@@ -17,7 +17,3 @@ dsconfig set-local-db-index-prop \
     --backend-name userRoot \
     --index-name uid \
     --add index-type:substring
-
-dsconfig create-local-db-index \
-  --index-name roomNumber --backend-name userRoot \
-  --set index-type:equality
