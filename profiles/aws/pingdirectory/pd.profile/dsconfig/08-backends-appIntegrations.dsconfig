@@ -1,0 +1,11 @@
+dsconfig create-backend \
+        --backend-name "appintegrations" \
+        --type local-db \
+        --set enabled:true \
+        --set base-dn:"o=appintegrations" \
+        --set prime-method:preload
+
+dsconfig set-backend-prop \
+      --backend-name "appintegrations" \
+      --set db-cache-percent:15 \
+      --set import-thread-count:1

@@ -1,0 +1,19 @@
+dsconfig set-local-db-index-prop \
+    --backend-name userRoot \
+    --index-name cn \
+    --add index-type:substring
+
+dsconfig set-local-db-index-prop \
+    --backend-name userRoot \
+    --index-name sn \
+    --add index-type:substring
+
+dsconfig set-local-db-index-prop \
+    --backend-name userRoot \
+    --index-name mail \
+    --add index-type:substring
+
+dsconfig set-local-db-index-prop \
+    --backend-name userRoot \
+    --index-name uid \
+    --add index-type:substring
