@@ -27,7 +27,7 @@ spec:
       annotations:
         lastUpdateReason: "NA"
     spec:
-      serviceAccountName: ping-serviceaccount
+      serviceAccountName: pingfederate-admin-serviceaccount
       initContainers:
       - name: pingfederate-p14c-init
         securityContext:

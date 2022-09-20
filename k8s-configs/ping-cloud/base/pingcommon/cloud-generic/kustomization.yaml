@@ -23,6 +23,7 @@ configMapGenerator:
 
 resources:
 - namespace.yaml
+- cluster-rbac.yaml
 - rbac.yaml
 - secret.yaml
 - configmap.yaml
