@@ -172,6 +172,10 @@
 #                           |                                                    |
 # LEGACY_LOGGING            | Flag indicating where we should send app logs -    | True
 #                           | to CloudWatch(if True) or to ELK (if False)        |
+#                           |                                                    |
+# PF_PROVISIONING_ENABLED   | Feature Flag - Indicates if the outbound           | False
+#                           | provisioning feature for PingFederate is enabled   |
+#                           |                                                    |
 ########################################################################################################################
 
 #
@@ -266,6 +270,7 @@ log "Initial PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
 
 log "Initial DEPLOY_FILE: ${DEPLOY_FILE}"
 log "Initial K8S_CONTEXT: ${K8S_CONTEXT}"
+log "Initial PF_PROVISIONING_ENABLED: ${PF_PROVISIONING_ENABLED}"
 log ---
 
 # A script that may be used to set up a dev/test environment against the
@@ -307,6 +312,12 @@ export PING_IDENTITY_DEVOPS_USER="${PING_IDENTITY_DEVOPS_USER:-ssm://pcpt/devops
 export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY:-ssm://pcpt/devops-license/key}"
 
 export LEGACY_LOGGING="${LEGACY_LOGGING:-True}"
+
+#### FEATURE FLAGS #####################################################################################################
+
+export PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED:-false}
+
+########################################################################################################################
 
 # MySQL database names cannot have dashes. So transform dashes into underscores.
 ENV_NAME_NO_DASHES=$(echo ${BELUGA_ENV_NAME} | tr '-' '_')
@@ -351,6 +362,7 @@ log "Using LEGACY_LOGGING: ${LEGACY_LOGGING}"
 
 log "Using DEPLOY_FILE: ${DEPLOY_FILE}"
 log "Using K8S_CONTEXT: ${K8S_CONTEXT}"
+log "Using PF_PROVISIONING_ENABLED: ${PF_PROVISIONING_ENABLED}"
 log ---
 
 NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY:-ssm://pcpt/sre/new-relic/java-agent-license-key}"
@@ -475,6 +487,13 @@ export LEGACY_LOGGING=${LEGACY_LOGGING}
 
 export PROJECT_DIR=${PWD}
 export AWS_PROFILE=${AWS_PROFILE:-csg}
+
+#### FEATURE FLAGS #####################################################################################################
+
+export PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED}
+
+########################################################################################################################
+
 
 # Other dev-env specific variables
 export SKIP_CONFIGURE_KUBE=true

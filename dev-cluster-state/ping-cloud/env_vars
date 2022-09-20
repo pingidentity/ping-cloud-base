@@ -66,3 +66,11 @@ PING_IDENTITY_DEVOPS_USER=${PING_IDENTITY_DEVOPS_USER}
 PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 
 NEW_RELIC_ENVIRONMENT_NAME=${NEW_RELIC_ENVIRONMENT_NAME}
+
+#### FEATURE FLAGS #####################################################################################################
+# Set to true to enable, most are disabled by default
+# NOTE: You must re-run dev-env.sh after flipping a feature flag
+
+PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED}
+
+########################################################################################################################

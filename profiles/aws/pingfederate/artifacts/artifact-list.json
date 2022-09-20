@@ -92,5 +92,9 @@
   {
     "name": "pf-jwt-token-translator",
     "version": "1.1.1.2"
+  },
+  {
+      "name": "postgresql-jdbc-driver",
+      "version": "42.4.0"
   }
 ]
