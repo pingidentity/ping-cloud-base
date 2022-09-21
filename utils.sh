@@ -504,7 +504,7 @@ build_dev_deploy_file() {
   local dev_cluster_state_dir='dev-cluster-state'
   cp -pr "${dev_cluster_state_dir}" "${build_dir}"
 
-  pgo_dev_deploy "$(pwd)" "${build_dir}"
+  pgo_dev_deploy "${build_dir}"
 
   substitute_vars "${build_dir}" "${DEFAULT_VARS}"
   set_kustomize_load_arg_and_value
