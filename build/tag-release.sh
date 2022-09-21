@@ -60,6 +60,7 @@ replace_and_commit() {
     "prometheus-json-exporter"
     "prometheus-job-exporter"
     "newrelic-tags-exporter"
+    "nri-kubernetes"
     "robot-framework"
     "sigsci-nginx-ingress-controller"
     "sigsci-agent"
