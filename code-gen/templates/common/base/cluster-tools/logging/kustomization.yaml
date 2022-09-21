@@ -7,6 +7,12 @@ resources:
 generatorOptions:
   disableNameSuffixHash: true
 
+secretGenerator:
+- name: newrelic-license-key
+  namespace: elastic-stack-logging
+  literals:
+    - NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY}
+
 configMapGenerator:
 - name: elk-environment-variables
   behavior: merge
@@ -29,7 +35,7 @@ patchesStrategicMerge:
     legacy_logging: "${LEGACY_LOGGING}"
     cluster.name: ${CLUSTER_NAME}
     logs.region: ${REGION}
-
+    newrelic_cluster_name: ${NEW_RELIC_ENVIRONMENT_NAME}
 
 ### enrichment-bootstrap service account ###
 - |-
