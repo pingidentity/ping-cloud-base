@@ -16,6 +16,11 @@ secretGenerator:
   literals:
   - NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY}
 
+- name: newrelic-license-key
+  namespace: elastic-stack-logging
+  literals:
+  - NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY}
+
 configMapGenerator:
 - name: logging-bootstrap-environment-variables
   behavior: merge
@@ -86,6 +91,7 @@ patchesStrategicMerge:
     cluster.name: ${CLUSTER_NAME}
     logs.region: ${REGION}
     legacy_logging: "${LEGACY_LOGGING}"
+    newrelic_cluster_name: ${NEW_RELIC_ENVIRONMENT_NAME}
   kind: ConfigMap
   metadata:
     name: cluster-info

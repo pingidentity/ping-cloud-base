@@ -7,6 +7,7 @@
 - Add PingAccess and PingAccess-WAS health checks cronjobs
 - Update ping-cloud namespace variable
 - Added argo-events version 1.7.2
+- Enable newrelic-logging for host logs and service cluster-tools pods(kube-system namespace + external-dns)
 
 _Changes:_
 
@@ -14,6 +15,7 @@ _Changes:_
 - [X] PDO-3823 Add newrelic-metadata pod to send metadata to NewRelic
 - [X] PDO-4089 Notification Framework: Introduce argo-events
 - [X] PDO-4104 PA Health Check Tests
+- [X] PDO-4176 Enable desired NewRelic Logging
 - [X] PDO-4178 Setup NewRelic Kube Events Integration
 - [X] PDO-4261 Upgrade Kustomize to v4.5.7
 - [X] PDO-4281 Update ping-cloud namespace variable
