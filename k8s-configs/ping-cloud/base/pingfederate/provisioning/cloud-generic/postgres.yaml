@@ -44,18 +44,25 @@ spec:
       databases:
         - pf-provisioning
       options: "SUPERUSER"
-  # TODO: Currently, backups go to a separate PVC, this will be fixed in the future to go to S3 with PDO-3863
   backups:
     pgbackrest:
       image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbackrest:ubi8-2.40-0
+      global:
+        repo1-path: /pingfederate/provisioning
+        # Allow storage solution to handle retention (retain max from PGO perspective)
+        repo1-retention-full: "256"
+      # Manual backup option allows easy one-off backups via annotation
+      # See: https://access.crunchydata.com/documentation/postgres-operator/v5/tutorial/backup-management/
+      manual:
+        repoName: repo1
+        options:
+         - --type=full
       repos:
       - name: repo1
-        volume:
-          volumeClaimSpec:
-            storageClassName: pgo-gp2
-            accessModes:
-            - "ReadWriteOnce"
-            resources:
-              requests:
-                # TODO: higher default to be addressed by PDO-3866
-                storage: 1Gi
+        # S3 configuration & schedule set via patches
+      # Manual restore option. Needs custom-patch to execute.
+      restore:
+        enabled: true
+        repoName: repo1
+        options:
+          - --type=default
