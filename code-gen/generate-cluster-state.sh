@@ -285,6 +285,7 @@ ${ARTIFACT_REPO_URL}
 ${PING_ARTIFACT_REPO_URL}
 ${LOG_ARCHIVE_URL}
 ${BACKUP_URL}
+${BACKUP_BUCKET_NAME}
 ${PING_CLOUD_NAMESPACE}
 ${K8S_GIT_URL}
 ${K8S_GIT_BRANCH}
@@ -635,6 +636,7 @@ export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.
 
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
+export BACKUP_BUCKET_NAME=$(get_backup_bucket_name "${BACKUP_URL}")
 
 export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-"pingcentraldb.\${PRIMARY_TENANT_DOMAIN}"}"
 export MYSQL_USER="${MYSQL_USER:-ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username}"
@@ -947,6 +949,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   echo "PRIMARY_DNS_ZONE: ${PRIMARY_DNS_ZONE}"
   echo "LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
   echo "BACKUP_URL: ${BACKUP_URL}"
+  echo "BACKUP_BUCKET_NAME: ${BACKUP_BUCKET_NAME}"
 
   # Build the kustomization file for the bootstrap tools for each environment
   echo "Generating bootstrap yaml for ${ENV}"

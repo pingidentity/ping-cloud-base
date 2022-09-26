@@ -303,6 +303,7 @@ export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
 export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
+export BACKUP_BUCKET_NAME=$(get_backup_bucket_name "${BACKUP_URL}")
 
 export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com}"
 export MYSQL_USER="${MYSQL_USER:-ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username}"
@@ -350,6 +351,7 @@ log "Using ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 log "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 log "Using LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 log "Using BACKUP_URL: ${BACKUP_URL}"
+log "Using BACKUP_BUCKET_NAME: ${BACKUP_BUCKET_NAME}"
 
 log "Using MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 log "Using MYSQL_USER: ${MYSQL_USER}"
@@ -470,6 +472,7 @@ export ARTIFACT_REPO_URL=${ARTIFACT_REPO_URL}
 export PING_ARTIFACT_REPO_URL=${PING_ARTIFACT_REPO_URL}
 export LOG_ARCHIVE_URL=${LOG_ARCHIVE_URL}
 export BACKUP_URL=${BACKUP_URL}
+export BACKUP_BUCKET_NAME=${BACKUP_BUCKET_NAME}
 
 export MYSQL_SERVICE_HOST=${MYSQL_SERVICE_HOST}
 export MYSQL_USER=${MYSQL_USER}

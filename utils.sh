@@ -449,6 +449,7 @@ ${ARTIFACT_REPO_URL}
 ${PING_ARTIFACT_REPO_URL}
 ${LOG_ARCHIVE_URL}
 ${BACKUP_URL}
+${BACKUP_BUCKET_NAME}
 ${MYSQL_SERVICE_HOST}
 ${MYSQL_USER}
 ${MYSQL_PASSWORD}
@@ -613,4 +614,16 @@ apply_crds() {
     # PGO CRDs are so large, they have to be applied server-side
     kubectl apply --server-side -k "${pgo_crd_dir}"
   fi
+}
+
+# Get the backups bucket name from the BACKUP_URL env
+get_backup_bucket_name() {
+  local backup_env=${1}
+
+  if [[ "${backup_env}" == "ssm://"* ]]; then
+      # env var is an ssm parameter
+      backup_env=$(get_ssm_value "${backup_env#ssm:/}")
+  fi
+
+  echo "${backup_env#s3://}"
 }
