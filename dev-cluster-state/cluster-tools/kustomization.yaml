@@ -10,17 +10,6 @@ generatorOptions:
 
 # In the "kustomize" overlay for CI/CD environments, manually create the "newrelic-license-key" secret in the "newrelic" namespace instead of using the "newrelic-license-secret-exporter" job to automate it. Otherwise, concurrent branch pipelines can fail because the "newrelic" namespace is shared across all "ping-cloud" branch pipelines and the updating immutable fields in the exporter job can fail.
 
-secretGenerator:
-- name: newrelic-license-key
-  namespace: newrelic
-  literals:
-  - NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY}
-
-- name: newrelic-license-key
-  namespace: elastic-stack-logging
-  literals:
-  - NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY}
-
 configMapGenerator:
 - name: logging-bootstrap-environment-variables
   behavior: merge
@@ -255,6 +244,14 @@ patchesStrategicMerge:
     name: healthcheck-pingfederate
   spec: 
     schedule: "@hourly"
+- |-
+  apiVersion: v1
+  kind: Secret
+  metadata:
+    name: nr-license-key
+    namespace: elastic-stack-logging
+  data:
+    NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY_BASE64}
 
 patchesJson6902:
 

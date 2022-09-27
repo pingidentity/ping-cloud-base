@@ -1,6 +1,15 @@
 # create configmap for cluster name and aws region for CloudWatch Logs
 # need to replace the placeholders cluster_name and region_name
 apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: nr-license-key
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: cluster-info
@@ -816,7 +825,7 @@ spec:
             - name: NR_LICENSE_KEY
               valueFrom:
                 secretKeyRef:
-                  name: newrelic-license-key
+                  name: nr-license-key
                   key: NEW_RELIC_LICENSE_KEY
             - name: S3_BUCKET
               valueFrom:
