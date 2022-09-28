@@ -74,3 +74,11 @@ PD_CLUSTER_PORT=8989
 RESTORE_BACKUP=true
 
 JAVA_AGENT_OPTS=-javaagent:/opt/staging/jmx_prometheus_javaagent-0.14.0.jar=8080:/opt/in/instance/bin/jmx_export_config.yaml
+
+############################################################
+# Outbound provisioning settings
+############################################################
+# Failover grace period in seconds (default: 600)
+PF_PROVISIONER_GRACE_PERIOD=600
+# Synchronization frequency in seconds (default: 60)
+PF_PROVISIONER_SYNC_FREQ=60

@@ -231,6 +231,11 @@
 #                          |                                                    |
 # LEGACY_LOGGING           | Flag indicating where we should send app logs -    | True
 #                          | to CloudWatch(if True) or to ELK (if False)        |
+#                          |                                                    |
+# PF_PROVISIONING_ENABLED  | Feature Flag - Indicates if the outbound           | False
+#                          | provisioning feature for PingFederate is enabled   |
+#                          | !! Not yet available for multi-region customers !! |
+#                          |                                                    |
 ########################################################################################################################
 
 #### SCRIPT START ####
@@ -589,6 +594,8 @@ echo "Initial K8S_GIT_BRANCH: ${K8S_GIT_BRANCH}"
 
 echo "Initial SSH_ID_PUB_FILE: ${SSH_ID_PUB_FILE}"
 echo "Initial SSH_ID_KEY_FILE: ${SSH_ID_KEY_FILE}"
+
+echo "Initial PF_PROVISIONING_ENABLED: ${PF_PROVISIONING_ENABLED}"
 
 echo "Initial TARGET_DIR: ${TARGET_DIR}"
 echo "Initial IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
