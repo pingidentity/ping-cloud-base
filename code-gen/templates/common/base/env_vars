@@ -231,6 +231,7 @@ PROMETHEUS_PING_NAMESPACE=${PING_CLOUD_NAMESPACE}
 # Set to true to enable, most are disabled by default
 # NOTE: You must re-run update-cluster-state.sh after flipping a feature flag
 
+# !!! Provisioning for PingFederate is not yet available for multi-region customers !!!
 PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED}
 
 ########################################################################################################################
