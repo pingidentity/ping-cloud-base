@@ -1217,7 +1217,7 @@ spec:
             runAsGroup: 0
             runAsUser: 0
             runAsNonRoot: false
-            allowPrivilegeEscalation: true
+            allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
           ports:
             - containerPort: 8003
