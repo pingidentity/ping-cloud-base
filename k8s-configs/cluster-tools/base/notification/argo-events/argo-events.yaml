@@ -405,7 +405,7 @@ spec:
       securityContext:
         runAsNonRoot: true
         runAsUser: 9731
-        AllowPrivilegeEscalation: false
+        allowPrivilegeEscalation: false
       serviceAccountName: argo-events-sa
       volumes:
       - configMap:
