@@ -46,6 +46,7 @@ spec:
         runAsGroup: 2000
         runAsUser: 2000
         runAsNonRoot: true
+        AllowPrivilegeEscalation: false
 
 ---
 # Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/job-patchWebhook.yaml
@@ -95,6 +96,7 @@ spec:
         runAsGroup: 2000
         runAsUser: 2000
         runAsNonRoot: true
+        AllowPrivilegeEscalation: false
 
 ---
 # This job copies NR License key secret object to 'newrelic' namespace
