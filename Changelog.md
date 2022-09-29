@@ -24,6 +24,7 @@ _Changes:_
 - [X] PDO-4261 Upgrade Kustomize to v4.5.7
 - [X] PDO-4281 Update ping-cloud namespace variable
 - [X] PDO-4290 Add simple postgres operator (PGO) database
+- [X] PDO-4320 Set AllowPrivilegeEscalation to False
 
 ### 1.15.0.0
 
