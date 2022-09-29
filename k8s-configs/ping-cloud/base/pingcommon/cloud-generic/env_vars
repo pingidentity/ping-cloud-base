@@ -33,3 +33,10 @@ DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID=dapingdirectory
 DA_PINGFEDERATE_ATV_NAME=DAPingFederateValidator
 DA_PINGFEDERATE_INSTANCE_NAME=DAPingFederate
 DA_IDENTITY_MAPPER_NAME=DAEntryUUIDMatch
+
+# Default argo-events notification configuration
+NOTIFICATON_ENABLED=false
+SLACK_CHANNEL=p1as-application-oncall
+NOTIFICATION_ENDPOINT=http://webhook-eventsource-svc.argo-events:12999/notification
+
+
