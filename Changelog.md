@@ -10,6 +10,7 @@
 - Enable newrelic-logging for host logs and service cluster-tools pods(kube-system namespace + external-dns)
 - Resolve tag _grokparsefailure and log components are missing 
 - Added event source and webhook for argo-events to enable notification
+- LEGACY_LOGGING defaulted to False
 
 _Changes:_
 
@@ -26,6 +27,7 @@ _Changes:_
 - [X] PDO-4281 Update ping-cloud namespace variable
 - [X] PDO-4290 Add simple postgres operator (PGO) database
 - [X] PDO-4391 Notification Framework: alert on backup failure
+- [X] PDO-4401 LEGACY_LOGGING mode: Change default from true to false (off) - Leave flag available
 
 ### 1.15.0.0
 
