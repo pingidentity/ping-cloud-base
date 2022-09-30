@@ -46,7 +46,7 @@ spec:
         runAsGroup: 2000
         runAsUser: 2000
         runAsNonRoot: true
-        allowPrivilegeEscalation: false
+#        allowPrivilegeEscalation: false
 
 ---
 # Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/job-patchWebhook.yaml
