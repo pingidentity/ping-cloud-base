@@ -77,7 +77,7 @@ PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED}
 ########################################################################################################################
 
 # Default argo-events notification configuration
-NOTIFICATON_ENABLED=${NOTIFICATON_ENABLED}
+NOTIFICATION_ENABLED=${NOTIFICATION_ENABLED}
 SLACK_CHANNEL=${SLACK_CHANNEL}
 NOTIFICATION_ENDPOINT=http://webhook-eventsource-svc.argo-events:12999/notification
 
