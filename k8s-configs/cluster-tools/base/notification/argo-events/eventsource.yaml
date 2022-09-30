@@ -9,7 +9,7 @@ spec:
         targetPort: 12999
   webhook:
     notification:
-      port: 12999
+      port: "12999"
       endpoint: /notification
       method: POST
 ---
