@@ -98,7 +98,7 @@ ENV=${ENV}
 KUSTOMIZE_BASE=${KUSTOMIZE_BASE}
 
 # Current app logs destination (True = CW, False = ELK)
-LEGACY_LOGGING=True
+LEGACY_LOGGING=False
 
 ############################################################
 # Lets Encrypt server

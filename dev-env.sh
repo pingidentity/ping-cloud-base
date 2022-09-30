@@ -317,7 +317,7 @@ export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://aws/reference/secretsmanager//pcp
 export PING_IDENTITY_DEVOPS_USER="${PING_IDENTITY_DEVOPS_USER:-ssm://pcpt/devops-license/user}"
 export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY:-ssm://pcpt/devops-license/key}"
 
-export LEGACY_LOGGING="${LEGACY_LOGGING:-True}"
+export LEGACY_LOGGING="${LEGACY_LOGGING:-False}"
 
 #### FEATURE FLAGS #####################################################################################################
 

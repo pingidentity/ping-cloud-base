@@ -229,7 +229,7 @@
 # PING_IDENTITY_DEVOPS_KEY | The key to the above user.                         | The SSM path:
 #                          |                                                    | ssm://pcpt/devops-license/key
 #                          |                                                    |
-# LEGACY_LOGGING           | Flag indicating where we should send app logs -    | True
+# LEGACY_LOGGING           | Flag indicating where we should send app logs -    | False
 #                          | to CloudWatch(if True) or to ELK (if False)        |
 #                          |                                                    |
 # PF_PROVISIONING_ENABLED  | Feature Flag - Indicates if the outbound           | False
@@ -655,7 +655,7 @@ export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://aws/reference/secretsmanager//pcp
 export PING_IDENTITY_DEVOPS_USER="${PING_IDENTITY_DEVOPS_USER:-ssm://pcpt/devops-license/user}"
 export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY:-ssm://pcpt/devops-license/key}"
 
-export LEGACY_LOGGING=${LEGACY_LOGGING:-True}
+export LEGACY_LOGGING=${LEGACY_LOGGING:-False}
 
 PING_CLOUD_BASE_COMMIT_SHA=$(git rev-parse HEAD)
 CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
