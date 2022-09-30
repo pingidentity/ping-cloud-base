@@ -9,6 +9,7 @@
 - Added argo-events version 1.7.2
 - Enable newrelic-logging for host logs and service cluster-tools pods(kube-system namespace + external-dns)
 - Resolve tag _grokparsefailure and log components are missing 
+- Add new env_var "DEFAULT_USER_BASE_DN"
 - Added event source and webhook for argo-events to enable notification
 
 _Changes:_
@@ -25,6 +26,7 @@ _Changes:_
 - [X] PDO-4261 Upgrade Kustomize to v4.5.7
 - [X] PDO-4281 Update ping-cloud namespace variable
 - [X] PDO-4290 Add simple postgres operator (PGO) database
+- [X] PDO-4397 Add new env_var "DEFAULT_USER_BASE_DN"
 - [X] PDO-4391 Notification Framework: alert on backup failure
 
 ### 1.15.0.0

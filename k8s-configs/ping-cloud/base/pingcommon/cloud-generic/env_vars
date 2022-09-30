@@ -11,6 +11,9 @@ PC_ADMIN_USER_USERNAME=administrator
 
 # PD USER_BASE_DN
 USER_BASE_DN=dc=example,dc=com
+
+# This is the OOTB USER_BASE_DN value and is always set to "dc=example,dc=com"
+DEFAULT_USER_BASE_DN=dc=example,dc=com
 PD_PCV_SEARCH_FILTER=(&(objectClass=person)(|(mail=${username})(cn=${username})(uid=${username})))
 
 # PD Datastore ID from PingFederate
