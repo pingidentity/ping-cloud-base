@@ -28,7 +28,7 @@ if test "${CI_COMMIT_REF_SLUG}" = 'master' || test "${DELETE_ENV_AFTER_PIPELINE}
 fi
 
 # Delete the PF provisioning db correctly so the namespace deletes properly
-kubectl delete -n postgres-operator postgrescluster pf-provisioning
+#kubectl delete -n postgres-operator postgrescluster pf-provisioning
 
 all_namespaces=$(kubectl get ns -o name)
 deleting_ns=()
