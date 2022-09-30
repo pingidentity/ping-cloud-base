@@ -1307,7 +1307,7 @@ spec:
             runAsUser: 472
             runAsNonRoot: true
             runAsGroup: 472
-#            allowPrivilegeEscalation: false
+            allowPrivilegeEscalation: false
           args:
             - "--config=/etc/grafana/grafana.ini"
           ports:
