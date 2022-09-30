@@ -15,6 +15,7 @@ _Changes:_
 - [X] PDO-3785 Add PGO database to CI/CD
 - [X] PDO-3823 Add newrelic-metadata pod to send metadata to NewRelic
 - [X] PDO-3863 PGO backups
+- [X] PDO-4046 Ability to override product initContainer p14c-integration image
 - [X] PDO-4089 Notification Framework: Introduce argo-events
 - [X] PDO-4104 PA Health Check Tests
 - [X] PDO-4150 Tag _grokparsefailure and log components are missing
