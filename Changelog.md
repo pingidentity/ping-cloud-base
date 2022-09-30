@@ -2,11 +2,35 @@
 
 ### 1.16.0.0
 
+- Setup NewRelic Kube Events Integration
+- Add newrelic-metadata pod to send metadata to NewRelic
 - Add PingAccess and PingAccess-WAS health checks cronjobs
+- Update ping-cloud namespace variable
+- Added argo-events version 1.7.2
+- Enable newrelic-logging for host logs and service cluster-tools pods(kube-system namespace + external-dns)
+- Resolve tag _grokparsefailure and log components are missing 
+- Add new env_var "DEFAULT_USER_BASE_DN"
+- Added event source and webhook for argo-events to enable notification
+- LEGACY_LOGGING defaulted to False
 
 _Changes:_
 
+- [X] PDO-3785 Add PGO database to CI/CD
+- [X] PDO-3791 Create hook script to enable outbound provisioning
+- [X] PDO-3823 Add newrelic-metadata pod to send metadata to NewRelic
+- [X] PDO-3863 PGO backups
+- [X] PDO-4046 Ability to override product initContainer p14c-integration image
+- [X] PDO-4089 Notification Framework: Introduce argo-events
 - [X] PDO-4104 PA Health Check Tests
+- [X] PDO-4150 Tag _grokparsefailure and log components are missing
+- [X] PDO-4176 Enable desired NewRelic Logging
+- [X] PDO-4178 Setup NewRelic Kube Events Integration
+- [X] PDO-4261 Upgrade Kustomize to v4.5.7
+- [X] PDO-4281 Update ping-cloud namespace variable
+- [X] PDO-4290 Add simple postgres operator (PGO) database
+- [X] PDO-4397 Add new env_var "DEFAULT_USER_BASE_DN"
+- [X] PDO-4391 Notification Framework: alert on backup failure
+- [X] PDO-4401 LEGACY_LOGGING mode: Change default from true to false (off) - Leave flag available
 
 ### 1.15.0.0
 
@@ -28,19 +52,18 @@ _Changes:_
 
 _Changes:_
 
-- [X] PDO-2300 Add ArgoCD slack notifications for better visibility into failure to apply manifests
 - [X] PDO-2635 Augment ArgoCD's application name with customer name
 - [X] PDO-3271 Updated argocd to v2.4.6
 - [X] PDO-3272 Update cluster tool to recommended version: cert-manager v1.9.1
 - [X] PDO-3273 Update cluster tool to latest version: sealed-secrets-controller v.0.18.0
-- [X] PDO-3575 Cluster tool: force pingcloud-monitoring/newrelic-tags-exporter initContainer to run with allowPrivilegeEscalation: false
-- [X] PDO-3940 Add timeouts for screen updates in PingOne integration tests
-- [X] PDO-3988 Grafana Successful SSOs Pingfederate Topology dashboard displaying wrong data
-- [X] PDO-4036 Fix SigSci to exit properly when terminated
 - [X] PDO-3524 Create PingOne-Configurator test for CI/CD
+- [X] PDO-3575 Cluster tool: force pingcloud-monitoring/newrelic-tags-exporter initContainer to run with allowPrivilegeEscalation: false
 - [X] PDO-3918 Move chrome install from run-integration-tests.sh to k8s-deploy-tools image
+- [X] PDO-3940 Add timeouts for screen updates in PingOne integration tests
 - [X] PDO-3944 Create CI/CD integration test for Health Checks
+- [X] PDO-3988 Grafana Successful SSOs Pingfederate Topology dashboard displaying wrong data
 - [X] PDO-4002 Unified bootstrap application
+- [X] PDO-4036 Fix SigSci to exit properly when terminated
 - [X] PDO-4051 Remove PingDirectory config-audit reference from Fluentbit configuration
 - [X] PDO-4052 Update to handle NEW_RELIC_LICENSE_KEY environment variable
 - [X] PDO-4060 Update versioning for cluster tools in PCB

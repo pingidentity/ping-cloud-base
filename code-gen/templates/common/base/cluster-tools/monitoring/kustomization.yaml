@@ -92,6 +92,8 @@ patchesStrategicMerge:
       # https://docs.newrelic.com/docs/infrastructure/install-infrastructure-agent/configuration/infrastructure-agent-configuration-settings/
       custom_attributes:
         clusterName: ${NEW_RELIC_ENVIRONMENT_NAME}
+      # Report metric data about all the operating system's processes (PDO-4178)
+      enable_process_metrics: true
       http_server_enabled: true
       http_server_port: 8001
       is_forward_only: true
@@ -129,6 +131,25 @@ patchesStrategicMerge:
       http_server_enabled: true
       http_server_port: 8003
 
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: pingmetadata
+    namespace: newrelic
+  data:
+    pingmetadata.yaml: |
+      ---
+      integrations:
+        - name: nri-flex
+          interval: 2m
+          config:
+            name: pingmetadata
+            apis:
+              - event_type: pingmetaDataOutputSample
+                url: http://metadata.${PING_CLOUD_NAMESPACE}:5000
+                jq: ".version"
+
 patchesJson6902:
 
 # Newrelic resources
@@ -140,7 +161,7 @@ patchesJson6902:
     namespace: newrelic
   patch: |-
     - op: replace
-      path: /spec/template/metadata/annotations/clusterName
+      path: /spec/template/metadata/annotations/CLUSTER_NAME
       value: ${NEW_RELIC_ENVIRONMENT_NAME}
 
 - target:
@@ -151,7 +172,7 @@ patchesJson6902:
     namespace: newrelic
   patch: |-
     - op: replace
-      path: /spec/template/metadata/annotations/clusterName
+      path: /spec/template/metadata/annotations/CLUSTER_NAME
       value: ${NEW_RELIC_ENVIRONMENT_NAME}
 
 - target:
@@ -186,3 +207,14 @@ patchesJson6902:
     - op: replace
       path: /spec/template/metadata/annotations/SECRET_NAMESPACE
       value: ${PING_CLOUD_NAMESPACE}
+
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: nri-bundle-newrelic-metadata
+    namespace: newrelic
+  patch: |-
+    - op: replace
+      path: /spec/template/metadata/annotations/CLUSTER_NAME
+      value: ${NEW_RELIC_ENVIRONMENT_NAME}

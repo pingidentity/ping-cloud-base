@@ -5,3 +5,6 @@ resources:
 - config
 - admin
 - engine
+# Provisioning, while added here, is automatically removed from the files that reference this kustomization.yaml,
+# if set to false by the environment variable PF_PROVISIONING_ENABLED
+- provisioning

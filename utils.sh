@@ -441,7 +441,7 @@ ${GLOBAL_TENANT_DOMAIN}
 ${SECONDARY_TENANT_DOMAINS}
 ${CLUSTER_NAME}
 ${CLUSTER_NAME_LC}
-${NAMESPACE}
+${PING_CLOUD_NAMESPACE}
 ${CONFIG_REPO_BRANCH}
 ${CONFIG_PARENT_DIR}
 ${TOPOLOGY_DESCRIPTOR}
@@ -449,6 +449,7 @@ ${ARTIFACT_REPO_URL}
 ${PING_ARTIFACT_REPO_URL}
 ${LOG_ARCHIVE_URL}
 ${BACKUP_URL}
+${BACKUP_BUCKET_NAME}
 ${MYSQL_SERVICE_HOST}
 ${MYSQL_USER}
 ${MYSQL_PASSWORD}
@@ -458,7 +459,8 @@ ${NEW_RELIC_LICENSE_KEY_BASE64}
 ${TENANT_NAME}
 ${NEW_RELIC_ENVIRONMENT_NAME}
 ${DATASYNC_P1AS_SYNC_SERVER}
-${LEGACY_LOGGING}'
+${LEGACY_LOGGING}
+${PF_PROVISIONING_ENABLED}'
 
 substitute_vars() {
   local subst_dir="$1"
@@ -503,13 +505,18 @@ build_dev_deploy_file() {
   local dev_cluster_state_dir='dev-cluster-state'
   cp -pr "${dev_cluster_state_dir}" "${build_dir}"
 
+  pgo_dev_deploy "${build_dir}"
+
   substitute_vars "${build_dir}" "${DEFAULT_VARS}"
   set_kustomize_load_arg_and_value
   kustomize build "${build_load_arg}" "${build_load_arg_value}" "${build_dir}/${cluster_type}" > "${deploy_file}"
-  rm -rf "${build_dir}"
 
-  test ! -z "${NAMESPACE}" && test "${NAMESPACE}" != 'ping-cloud' &&
-      sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" "${deploy_file}"
+  if [[ "${DEBUG}" != "true" ]]; then
+    rm -rf "${build_dir}"
+  fi
+
+  test ! -z "${PING_CLOUD_NAMESPACE}" && test "${PING_CLOUD_NAMESPACE}" != 'ping-cloud' &&
+      sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${PING_CLOUD_NAMESPACE}/g" "${deploy_file}"
 }
 
 ########################################################################################################################
@@ -534,8 +541,8 @@ build_dev_deploy_dir() {
   kustomize build "${build_load_arg}" "${build_load_arg_value}" "${build_dir}/${cluster_type}" --output "${deploy_dir}"
   rm -rf "${build_dir}"
 
-  test ! -z "${NAMESPACE}" && test "${NAMESPACE}" != 'ping-cloud' &&
-      find "${deploy_dir}" -type f -exec sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${NAMESPACE}/g" {} \;
+  test ! -z "${PING_CLOUD_NAMESPACE}" && test "${PING_CLOUD_NAMESPACE}" != 'ping-cloud' &&
+      find "${deploy_dir}" -type f -exec sed -i.bak -E "s/((namespace|name): )ping-cloud$/\1${PING_CLOUD_NAMESPACE}/g" {} \;
   rm -f "${deploy_dir}"/*.bak
 }
 
@@ -572,4 +579,51 @@ get_ssm_value() {
   else
     echo "${ssm_value}"
   fi
+}
+
+# Deploy PGO - only if the feature flag is enabled!
+# Arg $1 - directory containing pgo CRDs
+pgo_dev_deploy() {
+  local build_dir=${1}
+
+  kust_file="${build_dir}/cluster-tools/pgo/kustomization.yaml"
+  prov_kust_file="${build_dir}/ping-cloud/pingfederate/provisioning/kustomization.yaml"
+  pgo_feature_flag "${kust_file}" "${prov_kust_file}"
+}
+
+# Clear the kustomize file, effectively turning off that block of kustomize code
+pgo_feature_flag() {
+  local pgo_kust_file="${1}"
+  local prov_kust_file="${2}"
+
+  if [[ $PF_PROVISIONING_ENABLED != "true" ]]; then
+    log "FEATURE FLAG - PF Provisioning is disabled, removing"
+    message="# PF_PROVISIONING_ENABLED has been set to 'false', therefore this file has been cleared to disable the feature"
+    echo "${message}" > "${pgo_kust_file}"
+    echo "${message}" > "${prov_kust_file}"
+  fi
+}
+
+# Apply CRDs server-side to prevent errors around manifest size
+apply_crds() {
+  local base_dir=${1}
+
+  pgo_crd_dir="${base_dir}/k8s-configs/cluster-tools/base/pgo/base/crd/"
+  if [[ $PF_PROVISIONING_ENABLED == "true" ]]; then
+    log "FEATURE FLAG - PF Provisioning is enabled, deploying PGO CRD"
+    # PGO CRDs are so large, they have to be applied server-side
+    kubectl apply --server-side -k "${pgo_crd_dir}"
+  fi
+}
+
+# Get the backups bucket name from the BACKUP_URL env
+get_backup_bucket_name() {
+  local backup_env=${1}
+
+  if [[ "${backup_env}" == "ssm://"* ]]; then
+      # env var is an ssm parameter
+      backup_env=$(get_ssm_value "${backup_env#ssm:/}")
+  fi
+
+  echo "${backup_env#s3://}"
 }

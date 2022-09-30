@@ -172,6 +172,15 @@
 #                           |                                                    |
 # LEGACY_LOGGING            | Flag indicating where we should send app logs -    | True
 #                           | to CloudWatch(if True) or to ELK (if False)        |
+#                           |                                                    |
+# PF_PROVISIONING_ENABLED   | Feature Flag - Indicates if the outbound           | False
+#                           | provisioning feature for PingFederate is enabled   |
+#                           |                                                    |
+# NOTIFICATION_ENABLED       | Flag indicating if alerts should be sent to the    | False
+#                           | endpoint configured in the argo-events             |
+#                           |                                                    |
+# SLACK_CHANNEL           ` | The Slack channel name for argo-events to send     | CDE environment: p1as-application-oncall
+#                           | notification.                                      | Dev environment: nowhere
 ########################################################################################################################
 
 #
@@ -209,6 +218,9 @@ do
       ;;
   esac
 done
+
+# We assume we always run dev-env.sh from the top-level of the repo
+CUR_DIR=$(pwd)
 
 # Checking required tools and environment variables.
 check_binaries "openssl" "base64" "kustomize" "kubectl" "envsubst"
@@ -263,6 +275,7 @@ log "Initial PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
 
 log "Initial DEPLOY_FILE: ${DEPLOY_FILE}"
 log "Initial K8S_CONTEXT: ${K8S_CONTEXT}"
+log "Initial PF_PROVISIONING_ENABLED: ${PF_PROVISIONING_ENABLED}"
 log ---
 
 # A script that may be used to set up a dev/test environment against the
@@ -295,6 +308,7 @@ export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
 export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
+export BACKUP_BUCKET_NAME=$(get_backup_bucket_name "${BACKUP_URL}")
 
 export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com}"
 export MYSQL_USER="${MYSQL_USER:-ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username}"
@@ -303,7 +317,17 @@ export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://aws/reference/secretsmanager//pcp
 export PING_IDENTITY_DEVOPS_USER="${PING_IDENTITY_DEVOPS_USER:-ssm://pcpt/devops-license/user}"
 export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY:-ssm://pcpt/devops-license/key}"
 
-export LEGACY_LOGGING="${LEGACY_LOGGING:-True}"
+export LEGACY_LOGGING="${LEGACY_LOGGING:-False}"
+
+#### FEATURE FLAGS #####################################################################################################
+
+export PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED:-false}
+
+########################################################################################################################
+
+# Default notification configuration for dev environment.
+export NOTIFICATION_ENABLED=${NOTIFICATION_ENABLED:-false}
+export SLACK_CHANNEL=${SLACK_CHANNEL:-nowhere}
 
 # MySQL database names cannot have dashes. So transform dashes into underscores.
 ENV_NAME_NO_DASHES=$(echo ${BELUGA_ENV_NAME} | tr '-' '_')
@@ -336,6 +360,7 @@ log "Using ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 log "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 log "Using LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 log "Using BACKUP_URL: ${BACKUP_URL}"
+log "Using BACKUP_BUCKET_NAME: ${BACKUP_BUCKET_NAME}"
 
 log "Using MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 log "Using MYSQL_USER: ${MYSQL_USER}"
@@ -348,6 +373,7 @@ log "Using LEGACY_LOGGING: ${LEGACY_LOGGING}"
 
 log "Using DEPLOY_FILE: ${DEPLOY_FILE}"
 log "Using K8S_CONTEXT: ${K8S_CONTEXT}"
+log "Using PF_PROVISIONING_ENABLED: ${PF_PROVISIONING_ENABLED}"
 log ---
 
 NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY:-ssm://pcpt/sre/new-relic/java-agent-license-key}"
@@ -366,7 +392,7 @@ export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KE
 export CLUSTER_NAME=${TENANT_NAME}
 export CLUSTER_NAME_LC=$(echo ${CLUSTER_NAME} | tr '[:upper:]' '[:lower:]')
 
-export NAMESPACE=ping-cloud-${BELUGA_ENV_NAME}
+export PING_CLOUD_NAMESPACE=ping-cloud-${BELUGA_ENV_NAME}
 
 export NEW_RELIC_ENVIRONMENT_NAME=${TENANT_NAME}_${BELUGA_ENV_NAME}_${REGION}_k8s-cluster
 
@@ -389,7 +415,10 @@ fi
 build_dev_deploy_file "${DEPLOY_FILE}" "${CLUSTER_TYPE}"
 
 if test "${dryrun}" = 'false'; then
-  log "Deploying ${DEPLOY_FILE} to cluster ${CLUSTER_NAME}, namespace ${NAMESPACE} for tenant ${TENANT_DOMAIN}"
+  # Apply large CRDs depending on feature flags
+  apply_crds "${homeDir}"
+
+  log "Deploying ${DEPLOY_FILE} to cluster ${CLUSTER_NAME}, namespace ${PING_CLOUD_NAMESPACE} for tenant ${TENANT_DOMAIN}"
   kubectl apply -f "${DEPLOY_FILE}" --context "${K8S_CONTEXT}" | tee -a "${LOG_FILE}"
 
   if [[ "${PIPESTATUS[0]}" != 0 ]]; then
@@ -407,7 +436,7 @@ if test "${dryrun}" = 'false'; then
   # Print out the pingdirectory hostname
   log
   log '--- LDAP hostname ---'
-  kubectl get svc pingdirectory-admin -n "${NAMESPACE}" \
+  kubectl get svc pingdirectory-admin -n "${PING_CLOUD_NAMESPACE}" \
     -o jsonpath='{.metadata.annotations.external-dns\.alpha\.kubernetes\.io/hostname}' \
     --context "${K8S_CONTEXT}" | tee -a "${LOG_FILE}"
 
@@ -415,7 +444,7 @@ if test "${dryrun}" = 'false'; then
   log
   log
   log '--- Pod status ---'
-  kubectl get pods -n "${NAMESPACE}" --context "${K8S_CONTEXT}" | tee -a "${LOG_FILE}"
+  kubectl get pods -n "${PING_CLOUD_NAMESPACE}" --context "${K8S_CONTEXT}" | tee -a "${LOG_FILE}"
 
   log
   if test "${skipTest}" = 'true'; then
@@ -441,7 +470,7 @@ export ENVIRONMENT=${ENVIRONMENT}
 export BELUGA_ENV_NAME="${BELUGA_ENV_NAME}"
 export ENV=${BELUGA_ENV_NAME}
 
-export NAMESPACE=${NAMESPACE}
+export PING_CLOUD_NAMESPACE=${PING_CLOUD_NAMESPACE}
 
 export NEW_RELIC_ENVIRONMENT_NAME=${NEW_RELIC_ENVIRONMENT_NAME}
 
@@ -452,6 +481,7 @@ export ARTIFACT_REPO_URL=${ARTIFACT_REPO_URL}
 export PING_ARTIFACT_REPO_URL=${PING_ARTIFACT_REPO_URL}
 export LOG_ARCHIVE_URL=${LOG_ARCHIVE_URL}
 export BACKUP_URL=${BACKUP_URL}
+export BACKUP_BUCKET_NAME=${BACKUP_BUCKET_NAME}
 
 export MYSQL_SERVICE_HOST=${MYSQL_SERVICE_HOST}
 export MYSQL_USER=${MYSQL_USER}
@@ -470,6 +500,13 @@ export LEGACY_LOGGING=${LEGACY_LOGGING}
 export PROJECT_DIR=${PWD}
 export AWS_PROFILE=${AWS_PROFILE:-csg}
 
+#### FEATURE FLAGS #####################################################################################################
+
+export PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED}
+
+########################################################################################################################
+
+
 # Other dev-env specific variables
 export SKIP_CONFIGURE_KUBE=true
 export SKIP_CONFIGURE_AWS=true
@@ -477,13 +514,13 @@ export SKIP_CONFIGURE_AWS=true
 export DEV_TEST_ENV=true
 EOF
 
-    log "Waiting for pods in ${NAMESPACE} to be ready..."
-    for DEPLOYMENT in $(kubectl get statefulset,deployment -n "${NAMESPACE}" -o name --context "${K8S_CONTEXT}"); do
+    log "Waiting for pods in ${PING_CLOUD_NAMESPACE} to be ready..."
+    for DEPLOYMENT in $(kubectl get statefulset,deployment -n "${PING_CLOUD_NAMESPACE}" -o name --context "${K8S_CONTEXT}"); do
       NUM_REPLICAS=$(kubectl get "${DEPLOYMENT}" -o jsonpath='{.spec.replicas}' \
-        -n "${NAMESPACE}" --context "${K8S_CONTEXT}")
+        -n "${PING_CLOUD_NAMESPACE}" --context "${K8S_CONTEXT}")
       TIMEOUT=$((NUM_REPLICAS * 900))
       time kubectl rollout status --timeout "${TIMEOUT}"s "${DEPLOYMENT}" \
-        -n "${NAMESPACE}" -w --context "${K8S_CONTEXT}" | tee -a "${LOG_FILE}"
+        -n "${PING_CLOUD_NAMESPACE}" -w --context "${K8S_CONTEXT}" | tee -a "${LOG_FILE}"
     done
 
     log "Running integration tests"

@@ -12,7 +12,7 @@ export PF_ADMIN_POD_NAME="pingfederate-admin-0"
 # The following test verifies that PF Admin deploys successfully without any restarts
 testPFAdminInitialDeployHappyPath() {
 
-  pf_admin_pod_info=$( kubectl get pods ${PF_ADMIN_POD_NAME} -n "${NAMESPACE}" )
+  pf_admin_pod_info=$( kubectl get pods ${PF_ADMIN_POD_NAME} -n "${PING_CLOUD_NAMESPACE}" )
   pf_admin_status=$(echo "${pf_admin_pod_info}" | awk 'NR!=1 {print $3}' | tr -d '[:space:]' )
   assertEquals "Running" "${pf_admin_status}"
 

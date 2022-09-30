@@ -21,13 +21,14 @@ stages:
 variables:
   DELETE_ENV_AFTER_PIPELINE: 'true'
   PINGONE_DEPLOY: $PINGONE_DEPLOY
-    
+  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.3.0
+
 ## Compile stage ##
 compile:
  stage: compile
  tags:
    - default-gitlab-runner
- image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.2.0
+ image: ${K8S_DEPLOY_TOOLS}
  script:
    - ./ci-scripts/compile/compile.sh
 
@@ -36,7 +37,7 @@ find-cluster:
   stage: find-cluster
   tags:
     - default-gitlab-runner
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.2.0
+  image: ${K8S_DEPLOY_TOOLS}
   script:
     - ./ci-scripts/deploy/find_cluster.sh
   artifacts:
@@ -48,7 +49,7 @@ deploy:
   stage: deploy
   tags:
     - default-gitlab-runner
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.2.0
+  image: ${K8S_DEPLOY_TOOLS}
   script:
     - ./ci-scripts/deploy/deploy.sh
   dependencies:
@@ -58,7 +59,7 @@ p1-deploy:
   stage: deploy
   tags:
     - default-gitlab-runner
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.2.0
+  image: ${K8S_DEPLOY_TOOLS}
   script:
     - sleep 30 #sleep so that the kubectl apply doesn't execute at the same time as the deploy job
     - PINGONE=true ./ci-scripts/deploy/deploy.sh
@@ -75,7 +76,7 @@ pa-was-integration-tests:
   stage: pa-was-test
   tags:
     - default-gitlab-runner
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.2.0
+  image: ${K8S_DEPLOY_TOOLS}
   script:
     - ./ci-scripts/test/integration/run-integration-tests.sh pingaccess-was
   dependencies:
@@ -85,7 +86,7 @@ p1-pa-was-integration-tests:
   stage: pa-was-test
   tags:
     - default-gitlab-runner
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.2.0
+  image: ${K8S_DEPLOY_TOOLS}
   script:
     - sleep 30 #sleep because both pa-was tests running at the exact same time conflicts
     - PINGONE=true ./ci-scripts/test/integration/run-integration-tests.sh pingaccess-was
@@ -128,7 +129,7 @@ p1-pa-was-integration-tests:
   stage: integration-test
   tags:
     - default-gitlab-runner
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.2.0
+  image: ${K8S_DEPLOY_TOOLS}
   script:
     - ./ci-scripts/test/integration/run-integration-tests.sh ${TEST}
   dependencies:
@@ -148,7 +149,7 @@ integration-tests:
   stage: integration-test
   tags:
     - default-gitlab-runner
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.2.0
+  image: ${K8S_DEPLOY_TOOLS}
   script:
     - sleep 30 #sleep so that simultaneous tests don't conflict
     - PINGONE=true ./ci-scripts/test/integration/run-integration-tests.sh ${TEST}
@@ -176,7 +177,7 @@ chaos-tests:
   stage: chaos
   tags:
     - default-gitlab-runner
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.2.0
+  image: ${K8S_DEPLOY_TOOLS}
   script:
     - ./ci-scripts/test/integration/run-integration-tests.sh chaos
   dependencies:
@@ -186,7 +187,7 @@ p1-chaos-tests:
   stage: chaos
   tags:
     - default-gitlab-runner
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.2.0
+  image: ${K8S_DEPLOY_TOOLS}
   script:
     - PINGONE=true ./ci-scripts/test/integration/run-integration-tests.sh chaos
   dependencies:
@@ -200,7 +201,7 @@ cleanup:
   stage: cleanup
   tags:
     - default-gitlab-runner
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.2.0
+  image: ${K8S_DEPLOY_TOOLS}
   script:
     - ./ci-scripts/cleanup/teardown.sh
   dependencies:
@@ -210,7 +211,7 @@ p1-cleanup:
   stage: cleanup
   tags:
     - default-gitlab-runner
-  image: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.2.0
+  image: ${K8S_DEPLOY_TOOLS}
   script:
     - PINGONE=true ./ci-scripts/cleanup/teardown.sh
   dependencies:

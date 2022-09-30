@@ -8,7 +8,7 @@ if skipTest "${0}"; then
 fi
 
 oneTimeSetUp() {
-  readonly PD_LOG_STREAM_SUFFIX="pingdirectory-0_${NAMESPACE}_pingdirectory"
+  readonly PD_LOG_STREAM_SUFFIX="pingdirectory-0_${PING_CLOUD_NAMESPACE}_pingdirectory"
 }
 
 # Log streams are prefixed with the format of <log_name>_logs

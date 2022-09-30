@@ -12,11 +12,11 @@ testPingDirectoryCsdUpload() {
   local upload_job="${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingdirectory/server/aws/upload-csd.yaml
 
   log "Applying the CSD upload job"
-  kubectl delete -f "${upload_job}" -n "${NAMESPACE}"
-  kubectl apply -f "${upload_job}" -n "${NAMESPACE}"
+  kubectl delete -f "${upload_job}" -n "${PING_CLOUD_NAMESPACE}"
+  kubectl apply -f "${upload_job}" -n "${PING_CLOUD_NAMESPACE}"
 
   log "Waiting for CSD upload job to complete"
-  kubectl wait --for=condition=complete --timeout=900s job/pingdirectory-csd-upload -n "${NAMESPACE}"
+  kubectl wait --for=condition=complete --timeout=900s job/pingdirectory-csd-upload -n "${PING_CLOUD_NAMESPACE}"
 
   log "Expected CSD files:"
   expected_files "${upload_csd_job_name}" | tee /tmp/expected.txt

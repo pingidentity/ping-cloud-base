@@ -12,7 +12,7 @@ testRequiredEnvVars() {
   REQUIRED_VARS='BACKUP_URL LOG_ARCHIVE_URL'
   PRODUCT_NAME=pingaccess
 
-  ENGINE_SERVERS=$( kubectl get pod -o name -n "${NAMESPACE}" -l role=${PRODUCT_NAME}-engine | grep ${PRODUCT_NAME} | cut -d/ -f2)
+  ENGINE_SERVERS=$( kubectl get pod -o name -n "${PING_CLOUD_NAMESPACE}" -l role=${PRODUCT_NAME}-engine | grep ${PRODUCT_NAME} | cut -d/ -f2)
 
   # Prepend admin server to list of runtime engine servers.
   SERVERS="${PRODUCT_NAME}-admin-0 ${ENGINE_SERVERS}"
@@ -26,7 +26,7 @@ testRequiredEnvVars() {
 #    log "Observing logs: Server: ${SERVER}, Container: ${CONTAINER}"
 
     # Extract environment variables from container
-    CONTAINER_ENV_VARS=$( kubectl exec ${SERVER} -n "${NAMESPACE}" -c "${CONTAINER}" -- sh -c "printenv" )
+    CONTAINER_ENV_VARS=$( kubectl exec ${SERVER} -n "${PING_CLOUD_NAMESPACE}" -c "${CONTAINER}" -- sh -c "printenv" )
 
 #    log "Container env vars: ${CONTAINER_ENV_VARS}"
 

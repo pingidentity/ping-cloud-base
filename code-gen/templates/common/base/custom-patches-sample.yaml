@@ -4,6 +4,7 @@
 #   - HPA min/max replicas and target CPU utilization
 #   - Memory/CPU requests/limits
 #   - Disk size
+#   - Execute PGO database restore
 #
 # It serves just as a sample and not included from any kustomization.yaml file. PS/GSO must update the
 # custom-patches.yaml file using these snippets as appropriate for a customer environment for it to be effective.
@@ -389,5 +390,21 @@ metadata:
   namespace: ping-cloud
 spec:
   schedule: "0 * * * *"
+
+---
+
+################################################
+#                Postgres-Operator
+################################################
+
+### Execute a PGO database restore for pf-provisioning
+### ***NOTE: This action will bring down the database until the restoration is complete!***
+### If this has been executed before, the id number will need to be incremented to kick off a new restore job
+apiVersion: postgres-operator.crunchydata.com/v1beta1
+kind: PostgresCluster
+metadata:
+  name: pf-provisioning
+  annotations:
+    postgres-operator.crunchydata.com/pgbackrest-restore: id1
 
 ---

@@ -139,7 +139,7 @@ spec:
         - name: clusterName
           valueFrom:
             fieldRef:
-              fieldPath: metadata.annotations['clusterName']
+              fieldPath: metadata.annotations['CLUSTER_NAME']
         ports:
           - containerPort: 8443
             protocol: TCP
@@ -352,8 +352,6 @@ spec:
             - name: config
               mountPath: /etc/newrelic-infra.yml
               subPath: newrelic-infra.yml
-            - name: pingmetadata
-              mountPath: /etc/newrelic-infra/integrations.d
       serviceAccountName: nri-bundle-nri-kube-events
       volumes:
         - name: config
@@ -371,12 +369,6 @@ spec:
           emptyDir: {}
         - name: tmpfs-tmp
           emptyDir: {}
-        - name: pingmetadata
-          configMap:
-            name: pingmetadata
-            items:
-              - key: "pingmetadata.yaml"
-                path: "pingmetadata.yaml"
 
 ---
 # Source: nri-bundle/charts/newrelic-infrastructure/templates/ksm/deployment.yaml
@@ -433,8 +425,8 @@ spec:
               value: "newrelic-license-key"
       containers:
         - name: ksm
-          image: "public.ecr.aws/r2h3l6e4/newrelic/nri-kubernetes:3.2.1"
-          imagePullPolicy: IfNotPresent
+          image: "public.ecr.aws/r2h3l6e4/pingcloud-monitoring/nri-kubernetes:v1.16-release-branch-latest"
+          imagePullPolicy: Always
           securityContext:
             privileged: false
             runAsGroup: 2000
@@ -451,7 +443,6 @@ spec:
                   fieldPath: metadata.annotations['CLUSTER_NAME']
             - name: "NRI_KUBERNETES_VERBOSE"
               value: "false"
-
             - name: "NRI_KUBERNETES_NODENAME"
               valueFrom:
                 fieldRef:
@@ -461,8 +452,6 @@ spec:
             - name: nri-kubernetes-config
               mountPath: /etc/newrelic-infra/nri-kubernetes.yml
               subPath: nri-kubernetes.yml
-            - name: pingmetadata
-              mountPath: /etc/newrelic-infra/integrations.d
           resources: 
             limits:
               memory: 850M
@@ -511,8 +500,6 @@ spec:
             - name: config
               mountPath: /etc/newrelic-infra.yml
               subPath: newrelic-infra.yml
-            - name: pingmetadata
-              mountPath: /etc/newrelic-infra/integrations.d
           resources: 
             limits:
               memory: 850M
@@ -538,12 +525,6 @@ spec:
             items:
               - key: newrelic-infra.yml
                 path: newrelic-infra.yml
-        - name: pingmetadata
-          configMap:
-            name: pingmetadata
-            items:
-              - key: "pingmetadata.yaml"
-                path: "pingmetadata.yaml"
       affinity:
         podAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -553,6 +534,125 @@ spec:
                   app.kubernetes.io/name: kube-state-metrics
               topologyKey: kubernetes.io/hostname
             weight: 100
+      tolerations:
+        - effect: NoSchedule
+          operator: Exists
+        - effect: NoExecute
+          operator: Exists
+
+---
+# Source: New Relic Metadata deployment
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nri-bundle-newrelic-metadata
+  namespace: newrelic
+  labels:
+    app: newrelic-infrastructure
+    chart: newrelic-infrastructure-1.6.2
+    release: nri-bundle
+    mode: privileged
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: newrelic-infrastructure
+      release: nri-bundle
+  template:
+    metadata:
+      labels:
+        app: newrelic-infrastructure
+        release: nri-bundle
+        mode: privileged
+      annotations: {}
+    spec:
+      serviceAccountName: nri-bundle-newrelic-infrastructure
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      initContainers:
+        - name: wait-for-nr-license-secret
+          image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
+          command: [ "/bin/sh", "-c" ]
+          args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
+          env:
+            - name: "WAIT_TIMEOUT_SEC"
+              value: "300"
+            - name: "JOB_NAME"
+              value: "newrelic-license-secret-exporter"
+            - name: "SECRET_NAME"
+              value: "newrelic-license-key"
+      containers:
+        - name: newrelic-infrastructure
+          image: "public.ecr.aws/r2h3l6e4/newrelic/infrastructure:1.28.0"
+          imagePullPolicy: "IfNotPresent"
+          securityContext:
+            privileged: true
+          env:
+            - name: NRIA_LICENSE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: newrelic-license-key
+                  key: NEW_RELIC_LICENSE_KEY
+            - name: "CLUSTER_NAME"
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.annotations['CLUSTER_NAME']
+            - name: NRIA_DISABLE_CLOUD_INSTANCE_ID
+              value: "true"
+            - name: NRIA_DISABLE_CLOUD_METADATA
+              value: "true"
+            - name: NRIA_ENABLE_PROCESS_METRICS
+              value: "false"
+            - name: NRIA_METRICS_PROCESS_SAMPLE_RATE
+              value: "-1"
+            - name: "NRK8S_NODE_NAME"
+              valueFrom:
+                fieldRef:
+                  apiVersion: "v1"
+                  fieldPath: "spec.nodeName"
+            - name: "NRIA_CUSTOM_ATTRIBUTES"
+              value: '{"clusterName":"$(CLUSTER_NAME)"}'
+            - name: "NRIA_PASSTHROUGH_ENVIRONMENT"
+              value: "CLUSTER_NAME"
+          volumeMounts:
+            - name: dev
+              mountPath: /dev
+            - name: host-docker-socket
+              mountPath: /var/run/docker.sock
+            - name: log
+              mountPath: /var/log
+            - name: host-volume
+              mountPath: /host
+              readOnly: true
+            - name: pingmetadata
+              mountPath: /etc/newrelic-infra/integrations.d
+          resources:
+            limits:
+              cpu: 200m
+              memory: 300M
+            requests:
+              cpu: 100m
+              memory: 150M
+      volumes:
+        - name: dev
+          hostPath:
+            path: /dev
+        - name: host-docker-socket
+          hostPath:
+            path: /var/run/docker.sock
+        - name: log
+          hostPath:
+            path: /var/log
+        - name: host-volume
+          hostPath:
+            path: /
+        - name: pingmetadata
+          configMap:
+            name: pingmetadata
+            items:
+              - key: "pingmetadata.yaml"
+                path: "pingmetadata.yaml"
       tolerations:
         - effect: NoSchedule
           operator: Exists

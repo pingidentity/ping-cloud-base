@@ -8,7 +8,7 @@ if skipTest "${0}"; then
 fi
 
 oneTimeSetUp() {
-  readonly PA_WAS_ADMIN_LOG_STREAM_SUFFIX="pingaccess-was-admin-0_${NAMESPACE}_pingaccess-was-admin"
+  readonly PA_WAS_ADMIN_LOG_STREAM_SUFFIX="pingaccess-was-admin-0_${PING_CLOUD_NAMESPACE}_pingaccess-was-admin"
 }
 
 testPaWasLogStreamsExist() {

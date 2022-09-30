@@ -22,10 +22,13 @@ fi
 # Do not ever delete the environment on the master branch. And only delete an environment,
 # if the DELETE_ENV_AFTER_PIPELINE flag is true
 if test "${CI_COMMIT_REF_SLUG}" = 'master' || test "${DELETE_ENV_AFTER_PIPELINE}" = 'false'; then
-  log "Not deleting environment ${NAMESPACE}"
+  log "Not deleting environment ${PING_CLOUD_NAMESPACE}"
   log "Not deleting PingCentral database ${MYSQL_DATABASE} from host ${MYSQL_SERVICE_HOST}"
   exit 0
 fi
+
+# Delete the PF provisioning db correctly so the namespace deletes properly
+kubectl delete -n postgres-operator postgrescluster pf-provisioning
 
 all_namespaces=$(kubectl get ns -o name)
 deleting_ns=()

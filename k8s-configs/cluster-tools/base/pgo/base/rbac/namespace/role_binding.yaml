@@ -1,11 +1,14 @@
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: argocd-notifications-controller
+  name: postgres-operator
+  labels:
+    postgres-operator.crunchydata.com/control-plane: postgres-operator
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: argocd-notifications-controller
+  name: postgres-operator
 subjects:
 - kind: ServiceAccount
-  name: argocd-notifications-controller
+  name: pgo

@@ -73,7 +73,7 @@ test_ping_user_pd() {
 test_ping_user_pdel() {
   
   # get pingdelegator pod name
-  pingdelegator_pods=$(kubectl get pod -n "${NAMESPACE}" --field-selector=status.phase=Running --no-headers -o custom-columns=":metadata.name"  | grep pingdelegator)
+  pingdelegator_pods=$(kubectl get pod -n "${PING_CLOUD_NAMESPACE}" --field-selector=status.phase=Running --no-headers -o custom-columns=":metadata.name"  | grep pingdelegator)
 
   # test pingdelegator server
   for pingdelegator_pod in ${pingdelegator_pods}; do
@@ -86,7 +86,7 @@ test_ping_user_pdel() {
 test_ping_user_pc() {
   
   # get pingcentral pod name
-  pingcentral_pods=$(kubectl get pod -n "${NAMESPACE}" --field-selector=status.phase=Running --no-headers -o custom-columns=":metadata.name"  | grep pingcentral)
+  pingcentral_pods=$(kubectl get pod -n "${PING_CLOUD_NAMESPACE}" --field-selector=status.phase=Running --no-headers -o custom-columns=":metadata.name"  | grep pingcentral)
 
   # test pingcentral server
   for pingcentral_pod in ${pingcentral_pods}; do
@@ -99,7 +99,7 @@ test_ping_user_pc() {
 test_ping_user_pds() {
   
   # get pingdatasync pod name
-  pingdatasync_pods=$(kubectl get pod -n "${NAMESPACE}" --field-selector=status.phase=Running --no-headers -o custom-columns=":metadata.name"  | grep pingdatasync)
+  pingdatasync_pods=$(kubectl get pod -n "${PING_CLOUD_NAMESPACE}" --field-selector=status.phase=Running --no-headers -o custom-columns=":metadata.name"  | grep pingdatasync)
 
   # test pingdatasync server
   for pingdatasync_pod in ${pingdatasync_pods}; do
@@ -112,7 +112,7 @@ verify_ping_user() {
   SERVER="${1}"
   CONTAINER="${2}"
 
-  response=$(kubectl exec "${SERVER}" -c "${CONTAINER}" -n "${NAMESPACE}" -- \
+  response=$(kubectl exec "${SERVER}" -c "${CONTAINER}" -n "${PING_CLOUD_NAMESPACE}" -- \
     sh -c "whoami")
 
   if test "${response}" = "ping"; then
