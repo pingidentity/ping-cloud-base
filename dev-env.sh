@@ -176,7 +176,7 @@
 # PF_PROVISIONING_ENABLED   | Feature Flag - Indicates if the outbound           | False
 #                           | provisioning feature for PingFederate is enabled   |
 #                           |                                                    |
-# NOTIFICATON_ENABLED       | Flag indicating if alerts should be sent to the    | False
+# NOTIFICATION_ENABLED       | Flag indicating if alerts should be sent to the    | False
 #                           | endpoint configured in the argo-events             |
 #                           |                                                    |
 # SLACK_CHANNEL           ` | The Slack channel name for argo-events to send     | CDE environment: p1as-application-oncall
@@ -326,7 +326,7 @@ export PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED:-false}
 ########################################################################################################################
 
 # Default notification configuration for dev environment.
-export NOTIFICATON_ENABLED=${NOTIFICATON_ENABLED:-false}
+export NOTIFICATION_ENABLED=${NOTIFICATION_ENABLED:-false}
 export SLACK_CHANNEL=${SLACK_CHANNEL:-nowhere}
 
 # MySQL database names cannot have dashes. So transform dashes into underscores.
