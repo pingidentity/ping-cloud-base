@@ -96,7 +96,7 @@ spec:
         runAsGroup: 2000
         runAsUser: 2000
         runAsNonRoot: true
-        allowPrivilegeEscalation: false
+        allowPrivilegeEscalation: true
 
 ---
 # This job copies NR License key secret object to 'newrelic' namespace
