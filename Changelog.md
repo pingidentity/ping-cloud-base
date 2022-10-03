@@ -21,6 +21,7 @@ _Changes:_
 - [X] PDO-3863 PGO backups
 - [X] PDO-4046 Ability to override product initContainer p14c-integration image
 - [X] PDO-4089 Notification Framework: Introduce argo-events
+- [X] PDO-4096 Failed Cluster Health Job hanging around
 - [X] PDO-4104 PA Health Check Tests
 - [X] PDO-4150 Tag _grokparsefailure and log components are missing
 - [X] PDO-4176 Enable desired NewRelic Logging
