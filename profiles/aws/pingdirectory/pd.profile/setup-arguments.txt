@@ -32,4 +32,5 @@
     --rootUserDN "${ROOT_USER_DN}" \
     --rootUserPasswordFile "${ROOT_USER_PASSWORD_FILE}" \
     --interServerCertPEMFile "${ADS_CRT_FILE}" \
+    --serverRoot "${SERVER_ROOT_DIR}" \
     --interServerCertPrivateKeyFile "${ADS_KEY_FILE}"
