@@ -206,7 +206,6 @@ spec:
           readOnlyRootFilesystem: true
           runAsNonRoot: true
           runAsUser: 1001
-#          allowPrivilegeEscalation: false
         stdin: false
         tty: false
         volumeMounts:
