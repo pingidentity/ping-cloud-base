@@ -43,7 +43,7 @@ spec:
       restartPolicy: OnFailure
       serviceAccountName: nri-bundle-nri-metadata-injection-admission
       securityContext:
-#        allowPrivilegeEscalation: false
+        allowPrivilegeEscalation: false
         runAsGroup: 2000
         runAsUser: 2000
         runAsNonRoot: true
