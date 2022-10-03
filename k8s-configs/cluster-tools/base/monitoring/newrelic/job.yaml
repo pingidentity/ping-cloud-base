@@ -43,10 +43,10 @@ spec:
       restartPolicy: OnFailure
       serviceAccountName: nri-bundle-nri-metadata-injection-admission
       securityContext:
-        allowPrivilegeEscalation: false
         runAsGroup: 2000
         runAsUser: 2000
         runAsNonRoot: true
+        allowPrivilegeEscalation: false
 
 ---
 # Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/job-patchWebhook.yaml
