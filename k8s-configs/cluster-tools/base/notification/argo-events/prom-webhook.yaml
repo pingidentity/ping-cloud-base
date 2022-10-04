@@ -32,12 +32,8 @@ spec:
           payload:
             - src:
                 dependencyName: test-dep
-                dataKey: alerts.0.status
-              dest: bucket
-            - src:
-                dependencyName: test-dep
-                contextKey: type
-              dest: type
+                dataKey: body
+              dest: message
           method: POST
       retryStrategy:
         steps: 3
