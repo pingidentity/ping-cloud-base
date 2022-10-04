@@ -32,7 +32,7 @@ spec:
           payload:
             - src:
                 dependencyName: test-dep
-                dataKey: body.alerts.0.annotations.summary
+                dataKey: body
               dest: summary
             - src:
                 dependencyName: test-dep
