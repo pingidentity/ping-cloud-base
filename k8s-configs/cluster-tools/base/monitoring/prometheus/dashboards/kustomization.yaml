@@ -5,9 +5,8 @@ generatorOptions:
   disableNameSuffixHash: true
 
 configMapGenerator:
-  - name: grafana-dashboards
+  - name: ping-dashboards
     files:
-      - dashboard-providers.yaml
       - kubernetes-dashboard.json
       - pa-by-server-dashboard.json
       - pa-topology-dashboard.json
@@ -16,3 +15,6 @@ configMapGenerator:
       - pd-by-server-dashboard.json
       - pd-topology-dashboard.json
       - p1as-ingress-dashboard.json
+  - name: dashboard-providers
+    files:
+      - ping-dashboards.yaml
