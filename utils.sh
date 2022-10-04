@@ -588,19 +588,22 @@ pgo_dev_deploy() {
 
   kust_file="${build_dir}/cluster-tools/pgo/kustomization.yaml"
   prov_kust_file="${build_dir}/ping-cloud/pingfederate/provisioning/kustomization.yaml"
-  pgo_feature_flag "${kust_file}" "${prov_kust_file}"
+  monitor_kust_file="${build_dir}/cluster-tools/monitoring/pgo/kustomization.yaml"
+  pgo_feature_flag "${kust_file}" "${prov_kust_file}" "${monitor_kust_file}"
 }
 
 # Clear the kustomize file, effectively turning off that block of kustomize code
 pgo_feature_flag() {
   local pgo_kust_file="${1}"
   local prov_kust_file="${2}"
+  local monitor_kust_file="${3}"
 
   if [[ $PF_PROVISIONING_ENABLED != "true" ]]; then
     log "FEATURE FLAG - PF Provisioning is disabled, removing"
     message="# PF_PROVISIONING_ENABLED has been set to 'false', therefore this file has been cleared to disable the feature"
     echo "${message}" > "${pgo_kust_file}"
     echo "${message}" > "${prov_kust_file}"
+    echo "${message}" > "${monitor_kust_file}"
   fi
 }
 

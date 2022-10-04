@@ -1018,7 +1018,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
 
   ###### ---- ALL FEATURE FLAGS GO HERE ----- #######
 
-  pgo_feature_flag "${ENV_DIR}/base/cluster-tools/pgo/kustomization.yaml" "${ENV_DIR}/base/ping-cloud/pingfederate/provisioning/kustomization.yaml"
+  pgo_feature_flag "${ENV_DIR}/base/cluster-tools/pgo/kustomization.yaml" "${ENV_DIR}/base/ping-cloud/pingfederate/provisioning/kustomization.yaml" "${ENV_DIR}/base/cluster-tools/monitoring/pgo/kustomization.yaml"
 
   ###################################################
 
