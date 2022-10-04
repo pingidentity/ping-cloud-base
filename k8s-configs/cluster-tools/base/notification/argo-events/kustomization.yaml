@@ -7,4 +7,4 @@ resources:
 - argo-events.yaml
 - eventbus.yaml
 - eventsource.yaml
-
+- prom-webhook.yaml
