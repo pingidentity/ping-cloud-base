@@ -10,7 +10,7 @@ spec:
   webhook:
     prom-webhook:
       port: "13000"
-      endpoint: "/notifications"
+      endpoint: /notification
       method: POST
 ---
 apiVersion: argoproj.io/v1alpha1
