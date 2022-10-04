@@ -2016,7 +2016,7 @@ spec:
           runAsGroup: 2000
           runAsNonRoot: true
           runAsUser: 1000
-          allowPrivilegeEscalation: true
+          allowPrivilegeEscalation: false
         image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
         command:
           - /tmp/copy-secret.sh
