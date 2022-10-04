@@ -94,7 +94,7 @@ set_env_vars() {
     export PROJECT_DIR="${CI_PROJECT_DIR}"
     export AWS_PROFILE=csg
 
-    export LEGACY_LOGGING=True
+    export LEGACY_LOGGING=False
 
     # Service SSM should be available for all environments
     export SERVICE_SSM_PATH_PREFIX="/${SELECTED_KUBE_NAME}/pcpt/service"

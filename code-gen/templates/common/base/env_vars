@@ -98,7 +98,7 @@ ENV=${ENV}
 KUSTOMIZE_BASE=${KUSTOMIZE_BASE}
 
 # Current app logs destination (True = CW, False = ELK)
-LEGACY_LOGGING=True
+LEGACY_LOGGING=False
 
 ############################################################
 # Lets Encrypt server
@@ -235,3 +235,8 @@ PROMETHEUS_PING_NAMESPACE=${PING_CLOUD_NAMESPACE}
 PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED}
 
 ########################################################################################################################
+
+# Default argo-events notification configuration
+NOTIFICATION_ENABLED=false
+SLACK_CHANNEL=p1as-application-oncall
+NOTIFICATION_ENDPOINT=http://webhook-eventsource-svc.argo-events:12999/notification

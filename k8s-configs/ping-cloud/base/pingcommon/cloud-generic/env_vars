@@ -11,6 +11,9 @@ PC_ADMIN_USER_USERNAME=administrator
 
 # PD USER_BASE_DN
 USER_BASE_DN=dc=example,dc=com
+
+# This is the OOTB USER_BASE_DN value and is always set to "dc=example,dc=com"
+DEFAULT_USER_BASE_DN=dc=example,dc=com
 PD_PCV_SEARCH_FILTER=(&(objectClass=person)(|(mail=${username})(cn=${username})(uid=${username})))
 
 # PD Datastore ID from PingFederate
@@ -33,3 +36,10 @@ DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID=dapingdirectory
 DA_PINGFEDERATE_ATV_NAME=DAPingFederateValidator
 DA_PINGFEDERATE_INSTANCE_NAME=DAPingFederate
 DA_IDENTITY_MAPPER_NAME=DAEntryUUIDMatch
+
+# Default argo-events notification configuration
+NOTIFICATION_ENABLED=false
+SLACK_CHANNEL=p1as-application-oncall
+NOTIFICATION_ENDPOINT=http://webhook-eventsource-svc.argo-events:12999/notification
+
+

@@ -176,6 +176,11 @@
 # PF_PROVISIONING_ENABLED   | Feature Flag - Indicates if the outbound           | False
 #                           | provisioning feature for PingFederate is enabled   |
 #                           |                                                    |
+# NOTIFICATION_ENABLED       | Flag indicating if alerts should be sent to the    | False
+#                           | endpoint configured in the argo-events             |
+#                           |                                                    |
+# SLACK_CHANNEL           ` | The Slack channel name for argo-events to send     | CDE environment: p1as-application-oncall
+#                           | notification.                                      | Dev environment: nowhere
 ########################################################################################################################
 
 #
@@ -312,13 +317,17 @@ export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://aws/reference/secretsmanager//pcp
 export PING_IDENTITY_DEVOPS_USER="${PING_IDENTITY_DEVOPS_USER:-ssm://pcpt/devops-license/user}"
 export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY:-ssm://pcpt/devops-license/key}"
 
-export LEGACY_LOGGING="${LEGACY_LOGGING:-True}"
+export LEGACY_LOGGING="${LEGACY_LOGGING:-False}"
 
 #### FEATURE FLAGS #####################################################################################################
 
 export PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED:-false}
 
 ########################################################################################################################
+
+# Default notification configuration for dev environment.
+export NOTIFICATION_ENABLED=${NOTIFICATION_ENABLED:-false}
+export SLACK_CHANNEL=${SLACK_CHANNEL:-nowhere}
 
 # MySQL database names cannot have dashes. So transform dashes into underscores.
 ENV_NAME_NO_DASHES=$(echo ${BELUGA_ENV_NAME} | tr '-' '_')

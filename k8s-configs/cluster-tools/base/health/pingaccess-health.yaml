@@ -6,15 +6,15 @@ spec:
   schedule: "* * * * *"
   startingDeadlineSeconds: 90
   successfulJobsHistoryLimit: 1
-  failedJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 0
   concurrencyPolicy: Forbid
   jobTemplate:
     spec:
-      backoffLimit: 0
+      backoffLimit: 2
       template:
         spec:
           serviceAccountName: cluster-healthcheck-serviceaccount
-          restartPolicy: Never
+          restartPolicy: OnFailure
           containers:
           - name: pingaccess-health
             image: public.ecr.aws/r2h3l6e4/pingcloud-services/robot-framework/dev:v1.16-release-branch-latest

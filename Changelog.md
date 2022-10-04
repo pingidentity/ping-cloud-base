@@ -9,6 +9,9 @@
 - Added argo-events version 1.7.2
 - Enable newrelic-logging for host logs and service cluster-tools pods(kube-system namespace + external-dns)
 - Resolve tag _grokparsefailure and log components are missing 
+- Add new env_var "DEFAULT_USER_BASE_DN"
+- Added event source and webhook for argo-events to enable notification
+- LEGACY_LOGGING defaulted to False
 
 _Changes:_
 
@@ -16,7 +19,9 @@ _Changes:_
 - [X] PDO-3791 Create hook script to enable outbound provisioning
 - [X] PDO-3823 Add newrelic-metadata pod to send metadata to NewRelic
 - [X] PDO-3863 PGO backups
+- [X] PDO-4046 Ability to override product initContainer p14c-integration image
 - [X] PDO-4089 Notification Framework: Introduce argo-events
+- [X] PDO-4096 Failed Cluster Health Job hanging around
 - [X] PDO-4104 PA Health Check Tests
 - [X] PDO-4150 Tag _grokparsefailure and log components are missing
 - [X] PDO-4176 Enable desired NewRelic Logging
@@ -25,6 +30,10 @@ _Changes:_
 - [X] PDO-4281 Update ping-cloud namespace variable
 - [X] PDO-4290 Add simple postgres operator (PGO) database
 - [X] PDO-4320 Set AllowPrivilegeEscalation to False
+- [X] PDO-4327 Implement PGO resource sizing per environment
+- [X] PDO-4397 Add new env_var "DEFAULT_USER_BASE_DN"
+- [X] PDO-4391 Notification Framework: alert on backup failure
+- [X] PDO-4401 LEGACY_LOGGING mode: Change default from true to false (off) - Leave flag available
 
 ### 1.15.0.0
 

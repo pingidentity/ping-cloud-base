@@ -394,6 +394,47 @@ spec:
 ---
 
 ################################################
+#           PingFederate Provisioning
+################################################
+
+### Update pingfederate provisioning db disk size, replicas, memory/cpu requests  ###
+apiVersion: postgres-operator.crunchydata.com/v1beta1
+kind: PostgresCluster
+metadata:
+  name: pf-provisioning
+spec:
+  instances:
+    # Must specify entire instance definition because CRD replaces instead of merges list item
+    - name: instance1
+      replicas: 3
+      minAvailable: 1
+      resources:
+        requests:
+          cpu: 2
+          memory: 2Gi
+      dataVolumeClaimSpec:
+        storageClassName: pgo-gp2
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: 20Gi
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: role
+                      operator: In
+                      values:
+                        - pf-provisioning
+                topologyKey: "failure-domain.beta.kubernetes.io/zone"
+
+---
+
+################################################
 #                Postgres-Operator
 ################################################
 
