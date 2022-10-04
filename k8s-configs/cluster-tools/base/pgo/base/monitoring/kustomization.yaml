@@ -1,0 +1,34 @@
+kind: Component
+apiVersion: kustomize.config.k8s.io/v1alpha1
+
+components:
+  - dashboards
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+  - name: pgo-prom-alerts
+    namespace: prometheus
+    files:
+      - prom-alerts.yml
+
+patchesJson6902:
+  - target:
+      group: apps
+      version: v1
+      kind: StatefulSet
+      name: prometheus
+      namespace: prometheus
+    patch: |-
+      - op: add
+        path: /spec/template/spec/volumes/-
+        value:
+          name: alertsconfig
+          configMap:
+            name: pgo-prom-alerts
+      - op: add
+        path: /spec/template/spec/containers/0/volumeMounts/-
+        value:
+          name: alertsconfig
+          mountPath: /etc/prometheus/alert-rules.d
