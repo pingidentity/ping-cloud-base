@@ -17,4 +17,4 @@ configMapGenerator:
 generatorOptions:
  disableNameSuffixHash: true
  annotations:
-   argocd.argoproj.io/sync-options: "Replace=True"
+   argocd.argoproj.io/sync-options: Replace=true
