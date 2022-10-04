@@ -23,6 +23,12 @@ data:
     rule_files:
       - /etc/prometheus/alert-rules.d/*.yml
     alerting:
+      alert_relabel_configs:
+      - source_labels: [k8s_cluster_name]
+        action: replace
+        regex: (.*)
+        replacement: "$1"
+        target_label: k8s_cluster_name
       alertmanagers:
         - scheme: http
           static_configs:

@@ -10,6 +10,8 @@ groups:
   - alert: InstanceDown
     expr: up == 0
     for: 1m
+    labels:
+      k8s_cluster_name: ''
     annotations:
       summary: "Endpoint {{ $labels.instance }} down"
       description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 1 minutes."
@@ -17,6 +19,8 @@ groups:
   - alert: InstanceNotRunning
     expr: kube_pod_status_phase{phase!="Running", namespace=~"ping-.*", job="kube-state-metrics"} == 1
     for: 1m
+    labels:
+      k8s_cluster_name: ''
     annotations:
       summary: "Pod ${{ $labels.pod }} not running"
       description: "{{ $labels.pod }} of job {{ $labels.job }} is not in {{ $labels.phase }} state"
@@ -29,6 +33,7 @@ groups:
       service: postgresql
       severity: critical
       severity_num: 300
+      k8s_cluster_name: ''
     annotations:
       summary: 'Postgres Exporter running on {{ $labels.job }} (instance: {{ $labels.instance }}) is encountering scrape errors processing queries. Error count: ( {{ $value }} )'
 
@@ -41,6 +46,7 @@ groups:
       service: postgresql
       severity: critical
       severity_num: 300
+      k8s_cluster_name: ''
     annotations:
       summary: 'postgres_exporter running on {{ $labels.job }} is unable to communicate with the configured database'
 
@@ -124,6 +130,7 @@ groups:
       service: postgresql
       severity: warning
       severity_num: 200
+      k8s_cluster_name: ''
     annotations:
       description: '{{ $labels.job }} has at least one session idle in transaction for over 5 minutes.'
       summary: 'PGSQL Instance idle transactions'
@@ -135,6 +142,7 @@ groups:
       service: postgresql
       severity: critical
       severity_num: 300
+      k8s_cluster_name: ''
     annotations:
       description: '{{ $labels.job }} has at least one session idle in transaction for over 15 minutes.'
       summary: 'PGSQL Instance idle transactions'
@@ -146,6 +154,7 @@ groups:
       service: postgresql
       severity: warning
       severity_num: 200
+      k8s_cluster_name: ''
     annotations:
       description: '{{ $labels.job }} has at least one query running for over 12 hours.'
       summary: 'PGSQL Max Query Runtime'
@@ -157,6 +166,7 @@ groups:
       service: postgresql
       severity: critical
       severity_num: 300
+      k8s_cluster_name: ''
     annotations:
       description: '{{ $labels.job }} has at least one query running for over 1 day.'
       summary: 'PGSQL Max Query Runtime'
@@ -168,6 +178,7 @@ groups:
       service: postgresql
       severity: warning
       severity_num: 200
+      k8s_cluster_name: ''
     annotations:
       description: '{{ $labels.job }} is using 75% or more of available connections ({{ $value }}%)'
       summary: 'PGSQL Instance connections'
@@ -179,6 +190,7 @@ groups:
       service: postgresql
       severity: critical
       severity_num: 300
+      k8s_cluster_name: ''
     annotations:
       description: '{{ $labels.job }} is using 90% or more of available connections ({{ $value }}%)'
       summary: 'PGSQL Instance connections'
@@ -190,6 +202,7 @@ groups:
       service: postgresql
       severity: warning
       severity_num: 200
+      k8s_cluster_name: ''
     annotations:
       description: 'PGSQL Instance {{ $labels.deployment }} over 75% disk usage at mount point "{{ $labels.mount_point }}": {{ $value }}%'
       summary: PGSQL Instance usage warning
@@ -201,6 +214,7 @@ groups:
       service: postgresql
       severity: critical
       severity_num: 300
+      k8s_cluster_name: ''
     annotations:
       description: 'PGSQL Instance {{ $labels.deployment }} over 90% disk usage at mount point "{{ $labels.mount_point }}": {{ $value }}%'
       summary: 'PGSQL Instance size critical'
@@ -212,6 +226,7 @@ groups:
       service: postgresql
       severity: warning
       severity_num: 200
+      k8s_cluster_name: ''
     annotations:
       description: 'PGSQL Instance {{ $labels.job }} has at least one replica lagging over 50MB behind.'
       summary: 'PGSQL Instance replica lag warning'
@@ -223,6 +238,7 @@ groups:
       service: postgresql
       severity: critical
       severity_num: 300
+      k8s_cluster_name: ''
     annotations:
       description: 'PGSQL Instance {{ $labels.job }} has at least one replica lagging over 100MB behind.'
       summary: 'PGSQL Instance replica lag warning'
@@ -234,6 +250,7 @@ groups:
       service: postgresql
       severity: critical
       severity_num: 300
+      k8s_cluster_name: ''
     annotations:
       description: 'PGSQL Instance {{ $labels.job }} has one or more inactive replication slots'
       summary: 'PGSQL Instance inactive replication slot'
@@ -245,6 +262,7 @@ groups:
       service: postgresql
       severity: warning
       severity_num: 200
+      k8s_cluster_name: ''
     annotations:
       description: 'PGSQL Instance {{ $labels.job }} is over 50% towards transaction id wraparound.'
       summary: 'PGSQL Instance {{ $labels.job }} transaction id wraparound imminent'
@@ -256,6 +274,7 @@ groups:
       service: postgresql
       severity: critical
       severity_num: 300
+      k8s_cluster_name: ''
     annotations:
       description: 'PGSQL Instance {{ $labels.job }} is over 75% towards transaction id wraparound.'
       summary: 'PGSQL Instance transaction id wraparound imminent'
@@ -267,6 +286,7 @@ groups:
       service: postgresql
       severity: warning
       severity_num: 200
+      k8s_cluster_name: ''
     annotations:
       description: 'PGSQL Instance {{ $labels.job }} is over 110% beyond autovacuum_freeze_max_age value. Autovacuum may need tuning to better keep up.'
       summary: 'PGSQL Instance emergency vacuum imminent'
@@ -278,6 +298,7 @@ groups:
       service: postgresql
       severity: critical
       severity_num: 300
+      k8s_cluster_name: ''
     annotations:
       description: 'PGSQL Instance {{ $labels.job }} is over 125% beyond autovacuum_freeze_max_age value. Autovacuum needs tuning to better keep up.'
       summary: 'PGSQL Instance emergency vacuum imminent'
@@ -289,6 +310,7 @@ groups:
         service: postgresql
         severity: critical
         severity_num: 300
+        k8s_cluster_name: ''
     annotations:
         description: 'PGSQL Instance {{ $labels.job }} has a recent failing archive command'
         summary: 'Seconds since the last recorded failure of the archive_command'
@@ -300,6 +322,7 @@ groups:
         service: postgresql
         severity: critical
         severity_num: 300
+        k8s_cluster_name: ''
     annotations:
         description: 'Count of sequences on instance {{ $labels.job }} at over 75% usage: {{ $value }}. Run following query to see full sequence status: SELECT * FROM monitor.sequence_status() WHERE percent >= 75'
 
@@ -310,6 +333,7 @@ groups:
         service: postgresql
         severity: critical
         severity_num: 300
+        k8s_cluster_name: ''
     annotations:
         description: 'One or more settings in the pg_settings system catalog on system {{ $labels.job }} are in a pending_restart state. Check the system catalog for which settings are pending and review postgresql.conf for changes.'
 
