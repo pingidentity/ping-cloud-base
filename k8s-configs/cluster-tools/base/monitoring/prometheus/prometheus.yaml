@@ -24,6 +24,8 @@ data:
         - scheme: http
           static_configs:
           - targets: ['alertmanager:9093']
+    external_labels:
+      k8s_cluster_name: ${CLUSTER_NAME}
 
     scrape_configs:
     # Monitor prometheus itself
@@ -326,12 +328,16 @@ spec:
         args:
           - "--config.file=/etc/prometheus/prometheus.yml"
           - "--storage.tsdb.retention.time=$(PROMETHEUS_RETENTION_TIME)"
+          - "--enable-feature=expand-external-labels"
         env:
           - name: PROMETHEUS_RETENTION_TIME
             valueFrom:
               configMapKeyRef:
                 key: PROMETHEUS_RETENTION_TIME
                 name: prometheus-environment-variables
+        envFrom:
+          - configMapRef:
+              name: prometheus-environment-variables
         volumeMounts:
           - name: prometheus-config-volume
             mountPath: /etc/prometheus/
