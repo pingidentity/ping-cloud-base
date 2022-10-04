@@ -32,8 +32,12 @@ spec:
           payload:
             - src:
                 dependencyName: test-dep
-                dataKey: body
-              dest: message
+                dataKey: body.alerts.0.annotations.summary
+              dest: summary
+            - src:
+                dependencyName: test-dep
+                dataKey: body.alerts.0.annotations.description
+              dest: description
           method: POST
       retryStrategy:
         steps: 3
