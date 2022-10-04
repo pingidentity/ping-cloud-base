@@ -29,6 +29,7 @@ _Changes:_
 - [X] PDO-4261 Upgrade Kustomize to v4.5.7
 - [X] PDO-4281 Update ping-cloud namespace variable
 - [X] PDO-4290 Add simple postgres operator (PGO) database
+- [X] PDO-4327 Implement PGO resource sizing per environment
 - [X] PDO-4397 Add new env_var "DEFAULT_USER_BASE_DN"
 - [X] PDO-4391 Notification Framework: alert on backup failure
 - [X] PDO-4401 LEGACY_LOGGING mode: Change default from true to false (off) - Leave flag available
