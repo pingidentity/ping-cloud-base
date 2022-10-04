@@ -5,6 +5,9 @@ resources:
 - ../../k8s-configs/cluster-tools
 - pgo
 
+components:
+  - monitoring/pgo
+
 generatorOptions:
   disableNameSuffixHash: true
 

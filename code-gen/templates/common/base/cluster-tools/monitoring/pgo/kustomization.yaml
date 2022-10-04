@@ -1,0 +1,2 @@
+# Intentionally left blank - this file will be overwritten by the code-gen/templates/cde/cluster-tools/pgo/kustomiztion.yaml
+# when in use with a CDE, otherwise it is left blank for use in customer-hub
