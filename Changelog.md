@@ -12,6 +12,7 @@
 - Add new env_var "DEFAULT_USER_BASE_DN"
 - Added event source and webhook for argo-events to enable notification
 - LEGACY_LOGGING defaulted to False
+- update pingcloud-bom and pingcloud-oauth securityContext with allowPrivilegeEscalation set to false 
 
 _Changes:_
 
