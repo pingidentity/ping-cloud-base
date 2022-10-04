@@ -168,7 +168,8 @@ ${PINGDATASYNC_IMAGE_TAG}
 ${IRSA_PING_ANNOTATION_KEY_VALUE}
 ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}
 ${DATASYNC_P1AS_SYNC_SERVER}
-${LEGACY_LOGGING}'
+${LEGACY_LOGGING}
+${ARGOCD_SLACK_TOKEN_BASE64}'
 
 ########################################################################################################################
 # Export some derived environment variables.
@@ -982,6 +983,8 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
         fi
 
         export NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY}"
+
+        export ARGOCD_SLACK_TOKEN_SSM_PATH="${ARGOCD_SLACK_TOKEN_SSM_PATH}"
 
         # If customer-hub branch, reset the LETS_ENCRYPT_SERVER so the prod one is set by default.
         if "${IS_CUSTOMER_HUB}"; then

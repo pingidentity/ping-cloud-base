@@ -6,6 +6,7 @@
 - Add newrelic-metadata pod to send metadata to NewRelic
 - Add PingAccess and PingAccess-WAS health checks cronjobs
 - Update ping-cloud namespace variable
+- Add ArgoCD slack notifications secret within SSM and remove from k8s secret
 - Added argo-events version 1.7.2
 - Enable newrelic-logging for host logs and service cluster-tools pods(kube-system namespace + external-dns)
 - Resolve tag _grokparsefailure and log components are missing 
@@ -26,6 +27,7 @@ _Changes:_
 - [X] PDO-4150 Tag _grokparsefailure and log components are missing
 - [X] PDO-4176 Enable desired NewRelic Logging
 - [X] PDO-4178 Setup NewRelic Kube Events Integration
+- [X] PDO-4207 Add ArgoCD slack notifications secret within SSM and remove from k8s secret
 - [X] PDO-4261 Upgrade Kustomize to v4.5.7
 - [X] PDO-4281 Update ping-cloud namespace variable
 - [X] PDO-4290 Add simple postgres operator (PGO) database
