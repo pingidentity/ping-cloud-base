@@ -9,9 +9,6 @@ resources:
   - namespace
   - default
 
-components:
-  - monitoring
-
 # Patch the CRDs such that argocd will sync them properly
 patchesJson6902:
   - target:
