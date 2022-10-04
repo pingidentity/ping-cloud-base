@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: EventSource
+metadata:
+  name: prom-webhook
+spec:
+  service:
+    ports:
+      - port: 13000
+        targetPort: 13000
+  webhook:
+    prom-webhook:
+      port: "13000"
+      endpoint: "/notifications"
+      method: POST
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: prom-webhook
+spec:
+  template:
+    serviceAccountName: argo-events-sa
+  dependencies:
+    - name: prom-webhook
+      eventSourceName: prom-webhook
+  triggers:
+    http:
+      url: https://webhook.site/eeb6aaea-a691-459d-88e6-0e8e8a073b7c
+      payload:
+        - src:
+            dependencyName: test-dep
+            dataKey: alerts.0.status
+          dest: bucket
+        - src:
+            dependencyName: test-dep
+            contextKey: type
+          dest: type
+      method: POST

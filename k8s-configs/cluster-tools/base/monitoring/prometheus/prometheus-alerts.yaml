@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-alerts
+  namespace: prometheus
+  labels:
+    name: prometheus-alerts
+data:
+  instance.yaml: |-
+    groups:
+      - name: alert.rules
+        rules:
+          - alert: InstanceDown
+            expr: up == 0
+            for: 1m
+            annotations:
+              summary: "Endpoint {{ $labels.instance }} down"
+              description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 1 minutes."
+          
+          - alert: InstanceNotRunning
+            expr: kube_pod_status_phase{phase!="Running", namespace=~"ping-.*", job="kube-state-metrics"} == 1
+            for: 1m
+            annotations:
+              summary: "Pod ${{ $labels.pod }} not running"
+              description: "{{ $labels.pod }} of job {{ $labels.job }} is not in {{ $labels.phase }} state"

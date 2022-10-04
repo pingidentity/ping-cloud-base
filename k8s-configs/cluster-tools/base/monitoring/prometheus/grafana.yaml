@@ -15,7 +15,8 @@ data:
                 "name": "prometheus",
                 "type": "prometheus",
                 "url": "http://prometheus.prometheus.svc.cluster.local:9090",
-                "version": 1
+                "version": 1,
+                "uid": "prom0"
             },
             {
                 "access": "proxy",
@@ -1329,6 +1330,9 @@ spec:
               name: ping-dashboards
             - mountPath: /etc/grafana/provisioning/dashboards
               name: dashboard-providers
+            - mountPath: /etc/grafana/provisioning/alerting/provisioning.yaml
+              subPath: provisioning.yaml
+              name: grafana-alerting
             - mountPath: /etc/grafana/grafana.ini
               subPath: grafana.ini
               name: grafana-config

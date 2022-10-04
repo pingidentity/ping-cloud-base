@@ -10,6 +10,14 @@ metadata:
     argocd.argoproj.io/sync-options: Replace=true
 data:
   prometheus.yml: |-
+    rule_files:
+      - /etc/prometheus/alerts/*.yaml
+    alerting:
+      alertmanagers:
+        - scheme: http
+          static_configs:
+          - targets: ['alertmanager:9093']
+
     global:
       # How frequently to scrape targets by default.
       scrape_interval: 15s
@@ -330,6 +338,8 @@ spec:
             mountPath: /etc/prometheus/
           - name: prometheus-storage-volume
             mountPath: /prometheus/data
+          - name: prometheus-alerts
+            mountPath: /etc/prometheus/alerts/
         ports:
         - containerPort: 9090
         resources:
@@ -343,6 +353,9 @@ spec:
       - name: prometheus-config-volume
         configMap:
           name: prometheus-config
+      - name: prometheus-alerts
+        configMap:
+          name: prometheus-alerts
 
   volumeClaimTemplates:
   - metadata:
