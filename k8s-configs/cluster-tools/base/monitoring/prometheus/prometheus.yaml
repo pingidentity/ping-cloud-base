@@ -17,6 +17,9 @@ data:
       scrape_timeout: 5s
       # How frequently to evaluate rules.
       evaluation_interval: 5s
+      external_labels:
+        k8s_cluster_name: ${CLUSTER_NAME}
+
     rule_files:
       - /etc/prometheus/alert-rules.d/*.yml
     alerting:
@@ -24,8 +27,6 @@ data:
         - scheme: http
           static_configs:
           - targets: ['alertmanager:9093']
-    external_labels:
-      k8s_cluster_name: ${CLUSTER_NAME}
 
     scrape_configs:
     # Monitor prometheus itself
