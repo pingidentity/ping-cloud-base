@@ -21,8 +21,9 @@ spec:
   template:
     serviceAccountName: argo-events-sa
   dependencies:
-    - name: prom-webhook
+    - name: test-dep
       eventSourceName: prom-webhook
+      eventName: prom-webhook
   triggers:
     - template:
         name: wh-trigger
