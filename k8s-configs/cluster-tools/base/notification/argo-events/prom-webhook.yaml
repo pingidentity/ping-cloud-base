@@ -24,15 +24,20 @@ spec:
     - name: prom-webhook
       eventSourceName: prom-webhook
   triggers:
-    http:
-      url: https://webhook.site/eeb6aaea-a691-459d-88e6-0e8e8a073b7c
-      payload:
-        - src:
-            dependencyName: test-dep
-            dataKey: alerts.0.status
-          dest: bucket
-        - src:
-            dependencyName: test-dep
-            contextKey: type
-          dest: type
-      method: POST
+    - template:
+        name: wh-trigger
+        http:
+          url: https://webhook.site/eeb6aaea-a691-459d-88e6-0e8e8a073b7c
+          payload:
+            - src:
+                dependencyName: test-dep
+                dataKey: alerts.0.status
+              dest: bucket
+            - src:
+                dependencyName: test-dep
+                contextKey: type
+              dest: type
+          method: POST
+      retryStrategy:
+        steps: 3
+        duration: 3s
