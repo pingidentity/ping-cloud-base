@@ -601,9 +601,12 @@ pgo_feature_flag() {
   if [[ $PF_PROVISIONING_ENABLED != "true" ]]; then
     log "FEATURE FLAG - PF Provisioning is disabled, removing"
     message="# PF_PROVISIONING_ENABLED has been set to 'false', therefore this file has been cleared to disable the feature"
+    component_message="kind: Component
+apiVersion: kustomize.config.k8s.io/v1alpha1
+# PF_PROVISIONING_ENABLED has been set to 'false', therefore this file has been cleared to disable the feature"
     echo "${message}" > "${pgo_kust_file}"
     echo "${message}" > "${prov_kust_file}"
-    echo "${message}" > "${monitor_kust_file}"
+    echo "${component_message}" > "${monitor_kust_file}"
   fi
 }
 

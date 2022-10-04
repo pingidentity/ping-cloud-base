@@ -1,2 +1,4 @@
-# Intentionally left blank - this file will be overwritten by the code-gen/templates/cde/cluster-tools/pgo/kustomiztion.yaml
-# when in use with a CDE, otherwise it is left blank for use in customer-hub
+# Intentionally left as is - this file will be overwritten by the code-gen/templates/cde/cluster-tools/monitoring/pgo/kustomiztion.yaml
+# when in use with a CDE, otherwise it is left as is for use in customer-hub
+kind: Component
+apiVersion: kustomize.config.k8s.io/v1alpha1
