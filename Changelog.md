@@ -13,6 +13,7 @@
 - Add new env_var "DEFAULT_USER_BASE_DN"
 - Added event source and webhook for argo-events to enable notification
 - LEGACY_LOGGING defaulted to False
+- update pingcloud-bom and pingcloud-oauth securityContext with allowPrivilegeEscalation set to false 
 
 _Changes:_
 
@@ -31,6 +32,7 @@ _Changes:_
 - [X] PDO-4261 Upgrade Kustomize to v4.5.7
 - [X] PDO-4281 Update ping-cloud namespace variable
 - [X] PDO-4290 Add simple postgres operator (PGO) database
+- [X] PDO-4320 Set AllowPrivilegeEscalation to False
 - [X] PDO-4327 Implement PGO resource sizing per environment
 - [X] PDO-4397 Add new env_var "DEFAULT_USER_BASE_DN"
 - [X] PDO-4391 Notification Framework: alert on backup failure

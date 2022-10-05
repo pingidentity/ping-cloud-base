@@ -17,6 +17,7 @@ spec:
       containers:
       - name: pingcloud-bom
         securityContext:
+          allowPrivilegeEscalation: false
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
