@@ -72,8 +72,9 @@ spec:
                 fieldRef:
                   fieldPath: metadata.annotations['CLUSTER_NAME']
             - name: "NRI_KUBERNETES_VERBOSE"
-              value: "false"
-
+              value: "true"
+            - name: "NRIA_VERBOSE"
+              value: "1"
             - name: "NRI_KUBERNETES_NODENAME"
               valueFrom:
                 fieldRef:
@@ -255,8 +256,9 @@ spec:
                 fieldRef:
                   fieldPath: metadata.annotations['CLUSTER_NAME']
             - name: "NRI_KUBERNETES_VERBOSE"
-              value: "false"
-
+              value: "true"
+            - name: "NRIA_VERBOSE"
+              value: "1"
             - name: "NRI_KUBERNETES_NODENAME"
               valueFrom:
                 fieldRef:
@@ -311,6 +313,10 @@ spec:
                 fieldRef:
                   apiVersion: "v1"
                   fieldPath: "spec.nodeName"
+            - name: "NRI_KUBERNETES_VERBOSE"
+              value: "true"
+            - name: "NRIA_VERBOSE"
+              value: "1"
             - name: "NRI_KUBERNETES_NODE_NAME"
               valueFrom:
                 fieldRef:
