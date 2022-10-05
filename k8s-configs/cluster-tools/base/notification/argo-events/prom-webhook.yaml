@@ -12,6 +12,7 @@ spec:
       port: "13000"
       endpoint: /notification
       method: POST
+
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Sensor
@@ -21,28 +22,34 @@ spec:
   template:
     serviceAccountName: argo-events-sa
   dependencies:
-    - name: test-dep
+    - name: trigger-slack
       eventSourceName: prom-webhook
       eventName: prom-webhook
+      transform:
+        jq: 'if (.body.alerts[0].status == "firing") then .body.emoji = ":exclamation:" else .body.emoji = ":white_check_mark: " end'
   triggers:
     - template:
-        name: wh-trigger
-        http:
-          url: https://webhook.site/eeb6aaea-a691-459d-88e6-0e8e8a073b7c
-          payload:
-            - src:
-                dependencyName: test-dep
-                dataKey: body.alerts.0.annotations.summary
-              dest: summary
-            - src:
-                dependencyName: test-dep
-                dataKey: body.alerts.0.annotations.description
-              dest: description
-            - src:
-                dependencyName: test-dep
-                dataKey: body.alerts.0.status
-              dest: status
-          method: POST
-      retryStrategy:
-        steps: 3
-        duration: 3s
+        name: trigger-slack
+        slack:
+          channel: general
+          message: this is default message from argo-events
+          slackToken:
+            key: token
+            name: test-secret
+      parameters:
+        - src:
+            dependencyName: trigger-slack
+            dataTemplate: |-
+              *Status*: {{ .Input.body.emoji }}{{ (index .Input.body.alerts 0).status }}
+              *Description*: {{ (index .Input.body.alerts 0).annotations.description }}
+              *Summary*: {{ (index .Input.body.alerts 0).annotations.summary }}
+              *Cluster*: {{ (index .Input.body.alerts 0).labels.k8s_cluster_name }}
+          dest: slack.message
+
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: test-secret
+data:
+  token: eG94Yi00MTc0NjcxNTM5NzgwLTQxNzAxNjMyMjE3OTgtZHlEczBOV2ZXYlhtUk8wZndkdTdVQXVnCg==
