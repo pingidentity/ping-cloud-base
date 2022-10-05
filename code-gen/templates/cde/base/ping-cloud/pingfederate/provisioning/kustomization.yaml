@@ -13,10 +13,11 @@ patchesStrategicMerge:
   kind: PostgresCluster
   metadata:
     name: pf-provisioning
-    annotations:
-      purpose: service-account-for-pgo-stack
-      ${IRSA_PING_ANNOTATION_KEY_VALUE}
   spec:
+    metadata:
+      annotations:
+        purpose: service-account-for-pgo-stack
+        ${IRSA_PING_ANNOTATION_KEY_VALUE}
     backups:
       pgbackrest:
         global:
