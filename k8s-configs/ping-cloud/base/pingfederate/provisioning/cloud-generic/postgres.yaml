@@ -21,7 +21,7 @@ spec:
         resources:
           requests:
             # TODO: higher default to be addressed by PDO-3866
-            storage: 1Gi
+            storage: 20Gi
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
