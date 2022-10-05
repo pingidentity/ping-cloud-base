@@ -10,7 +10,7 @@ data:
     - '/etc/alertmanager/*.tmpl'
     route:
       receiver: alert-webhook
-      group_by: ['pod']
+      group_by: ['...']
       group_wait: 10s
       repeat_interval: 30m
       routes:
