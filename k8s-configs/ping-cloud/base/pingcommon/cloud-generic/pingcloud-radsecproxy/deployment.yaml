@@ -20,7 +20,7 @@ spec:
       serviceAccount: ping-serviceaccount
       containers:
       - name: pingcloud-radsecproxy
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/michaelgazda/radsecproxy:v1.0.0-gazda-test
+        image: public.ecr.aws/r2h3l6e4/gazda-radsecproxy-test:v0.1.0-gazda-test
         imagePullPolicy: Always
         env:
         - name: NAMESPACE
@@ -42,20 +42,18 @@ spec:
             memory: "200Mi"
             cpu: "200m"
 #        readinessProbe:
-#          httpGet:
-#            path: /
+#          tcpSocket:
 #            port: 2083
-#          initialDelaySeconds: 10
+#          initialDelaySeconds: 5
 #          periodSeconds: 10
 #          failureThreshold: 3
 #          successThreshold: 1
 #          timeoutSeconds: 3
 #        livenessProbe:
-#          httpGet:
-#            path: /
+#          tcpSocket:
 #            port: 2083
-#          initialDelaySeconds: 10
-#          periodSeconds: 10
+#          initialDelaySeconds: 15
+#          periodSeconds: 20
 #          failureThreshold: 3
 #          successThreshold: 1
 #          timeoutSeconds: 3
