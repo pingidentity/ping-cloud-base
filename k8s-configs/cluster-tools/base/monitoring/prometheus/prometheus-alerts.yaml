@@ -1,0 +1,20 @@
+groups:
+- name: default-alerts
+  rules:
+    - alert: InstanceDown
+      expr: up == 0
+      for: 1m
+      labels:
+        k8s_cluster_name: ''
+      annotations:
+        summary: "Endpoint {{ $labels.instance }} down"
+        description: "{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 1 minutes."
+
+    - alert: InstanceNotRunning
+      expr: kube_pod_status_phase{phase!="Running", namespace=~"ping-.*", job="kube-state-metrics"} == 1
+      for: 1m
+      labels:
+        k8s_cluster_name: ''
+      annotations:
+        summary: "Pod {{ $labels.pod }} not in running state"
+        description: "{{ $labels.pod }} of job {{ $labels.job }} is in {{ $labels.phase }} state"
