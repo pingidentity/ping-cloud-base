@@ -27,7 +27,7 @@ spec:
             command:
               - /bin/bash
               - -c
-              - ./robot_wrapper.py --path tests/pingaccess --include pingaccess --output pingaccess.xml
+              - ./robot_wrapper.py --path tests/pingaccess --include pingAccess --output pingAccess.xml
             envFrom:
             - configMapRef:
                 name: cluster-health-environment-variables

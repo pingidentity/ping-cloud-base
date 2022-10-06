@@ -5,7 +5,7 @@ from health_common import Categories, TestHealthBase
 
 class TestPingAccessHealth(TestHealthBase):
     job_name = "healthcheck-pingaccess"
-    pingaccess = "pingaccess"
+    pingaccess = "pingAccess"
 
     def test_pingaccess_health_cron_job_exists(self):
         cron_jobs = self.batch_client.list_cron_job_for_all_namespaces()

@@ -14,6 +14,7 @@
 - Added event source and webhook for argo-events to enable notification
 - LEGACY_LOGGING defaulted to False
 - update pingcloud-bom and pingcloud-oauth securityContext with allowPrivilegeEscalation set to false 
+- Use camelCase for healthcheck test tags and filenames
 
 _Changes:_
 
@@ -37,6 +38,7 @@ _Changes:_
 - [X] PDO-4397 Add new env_var "DEFAULT_USER_BASE_DN"
 - [X] PDO-4391 Notification Framework: alert on backup failure
 - [X] PDO-4401 LEGACY_LOGGING mode: Change default from true to false (off) - Leave flag available
+- [X] PDO-4442 Update healthcheck service keys to use consistent format
 
 ### 1.15.0.0
 
