@@ -27,7 +27,7 @@ spec:
             command:
               - /bin/bash
               - -c
-              - ./robot_wrapper.py --path tests/pingfederate --include pingfederate --output pingfederate.xml
+              - ./robot_wrapper.py --path tests/pingfederate --include pingFederate --output pingFederate.xml
             envFrom:
             - configMapRef:
                 name: cluster-health-environment-variables

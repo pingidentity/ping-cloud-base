@@ -7,11 +7,11 @@ from k8s_utils import K8sUtils
 
 @dataclass
 class Categories:
-    pod_status = "pod-status"
+    pod_status = "podStatus"
     synthetic = "synthetic"
     data = "data"
     connectivity = "connectivity"
-    cluster_members = "cluster-members"
+    cluster_members = "clusterMembers"
 
 
 class TestHealthBase(K8sUtils):

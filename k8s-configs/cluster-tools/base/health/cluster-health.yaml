@@ -27,7 +27,7 @@ spec:
             command:
               - /bin/bash
               - -c
-              - ./robot_wrapper.py --path tests/cluster-health --include cluster-health --output cluster-health.xml
+              - ./robot_wrapper.py --path tests/cluster-health --include clusterHealth --output clusterHealth.xml
             envFrom:
             - configMapRef:
                 name: cluster-health-environment-variables
