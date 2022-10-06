@@ -22,8 +22,8 @@ groups:
     labels:
       k8s_cluster_name: ''
     annotations:
-      summary: "Pod ${{ $labels.pod }} not running"
-      description: "{{ $labels.pod }} of job {{ $labels.job }} is not in {{ $labels.phase }} state"
+      summary: "Pod {{ $labels.pod }} not in running state"
+      description: "{{ $labels.pod }} of job {{ $labels.job }} is in {{ $labels.phase }} state"
 
 ########## EXPORTER RULES ##########
   - alert: PGExporterScrapeError

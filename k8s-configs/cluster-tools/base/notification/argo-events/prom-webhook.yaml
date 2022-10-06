@@ -19,6 +19,7 @@ kind: Sensor
 metadata:
   name: prom-webhook
 spec:
+  replicas: 1
   template:
     serviceAccountName: argo-events-sa
   dependencies:
@@ -31,7 +32,7 @@ spec:
     - template:
         name: trigger-slack
         slack:
-          channel: general
+          channel: test-slack-notification
           message: this is default message from argo-events
           slackToken:
             key: token
