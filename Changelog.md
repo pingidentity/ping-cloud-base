@@ -2,6 +2,7 @@
 
 ### 1.16.0.0
 
+- Implemented Radius Proxy as optional installation
 - Setup NewRelic Kube Events Integration
 - Add newrelic-metadata pod to send metadata to NewRelic
 - Add PingAccess and PingAccess-WAS health checks cronjobs
@@ -25,6 +26,7 @@ _Changes:_
 - [X] PDO-4089 Notification Framework: Introduce argo-events
 - [X] PDO-4096 Failed Cluster Health Job hanging around
 - [X] PDO-4104 PA Health Check Tests
+- [X] PDO-4117 Go Proxy: Write Manifest to Deploy RadSec Proxy
 - [X] PDO-4150 Tag _grokparsefailure and log components are missing
 - [X] PDO-4176 Enable desired NewRelic Logging
 - [X] PDO-4178 Setup NewRelic Kube Events Integration
