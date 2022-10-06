@@ -27,8 +27,9 @@ if test "${CI_COMMIT_REF_SLUG}" = 'master' || test "${DELETE_ENV_AFTER_PIPELINE}
   exit 0
 fi
 
-# Delete the PF provisioning db correctly so the namespace deletes properly
-#kubectl delete -n postgres-operator postgrescluster pf-provisioning
+# Get all Custom Resource Definitions so we can gracefully delete the objects before terminating the namespace
+# remove clusterissuers.cert-manager.io from the list because it isn't namespaced
+all_crds=$(kubectl get crds --no-headers -o custom-columns=":metadata.name" | grep -v "clusterissuers.cert-manager.io" | tr "\n" "," | sed -e 's/,$//')
 
 all_namespaces=$(kubectl get ns -o name)
 deleting_ns=()
@@ -38,6 +39,8 @@ for ns in $all_namespaces; do
     log "Skipping namespace ${ns}"
     continue
   fi
+  log "Deleting namespaced CRDs"
+  kubectl delete "${all_crds}" --all -n "${ns#"namespace/"}"
   log "Deleting namespace asynchronously: ${ns}"
   kubectl delete "${ns}" --wait=false
   deleting_ns+=($ns)
