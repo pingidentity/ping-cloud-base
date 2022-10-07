@@ -1,7 +1,16 @@
 dsconfig set-backend-prop \
-        --backend-name "userRoot" \
-        --set db-cache-percent:35 \
-        --set import-thread-count:1
+       --backend-name "userRoot" \
+       --set db-cache-percent:35 \
+       --set import-thread-count:1 \
+       --set prime-thread-count:1 \
+       --set default-cache-mode:cache-keys-only
+
+# dsconfig create-backend \
+#        --backend-name "userRoot" \
+#        --type local-db \
+#        --set enabled:true \
+#        --set base-dn:"dc=example,dc=com" \
+#        --set prime-method:preload
 
 dsconfig create-backend \
         --backend-name "platformconfig" \
@@ -26,10 +35,6 @@ dsconfig set-backend-prop \
       --backend-name "appintegrations" \
       --set db-cache-percent:15 \
       --set import-thread-count:1
-
-dsconfig set-backend-prop \
-        --backend-name userRoot \
-        --set prime-thread-count:1
 
 dsconfig set-local-db-index-prop \
         --backend-name userRoot --index-name cn \
@@ -56,8 +61,3 @@ dsconfig set-local-db-index-prop \
         --index-name givenName \
         --set index-entry-limit:50000 \
         --set exploded-index-entry-threshold:100
-
-dsconfig set-backend-prop \
-        --backend-name userRoot \
-        --set default-cache-mode:cache-keys-only
-
