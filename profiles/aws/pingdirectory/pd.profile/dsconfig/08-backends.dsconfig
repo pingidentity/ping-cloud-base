@@ -24,7 +24,7 @@ dsconfig create-backend \
 
 dsconfig set-backend-prop \
       --backend-name "appintegrations" \
-      --set db-cache-percent:15 \
+      --set db-cache-percent:16 \
       --set import-thread-count:1
 
 dsconfig set-backend-prop \
