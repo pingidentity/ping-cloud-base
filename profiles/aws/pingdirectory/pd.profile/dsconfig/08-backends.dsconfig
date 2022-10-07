@@ -8,6 +8,7 @@
 dsconfig set-backend-prop \
        --backend-name "userRoot" \
        --set enabled:true \
+       --set db-cache-percent:60 \
        --set prime-method:preload
 
 dsconfig create-backend \
