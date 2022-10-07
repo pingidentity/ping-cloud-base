@@ -1,16 +1,15 @@
-dsconfig set-backend-prop \
-       --backend-name "userRoot" \
-       --set db-cache-percent:35 \
-       --set import-thread-count:1 \
-       --set prime-thread-count:1 \
-       --set default-cache-mode:cache-keys-only
-
-# dsconfig create-backend \
+# dsconfig set-backend-prop \
 #        --backend-name "userRoot" \
-#        --type local-db \
-#        --set enabled:true \
-#        --set base-dn:"dc=example,dc=com" \
-#        --set prime-method:preload
+#        --set db-cache-percent:35 \
+#        --set import-thread-count:1 \
+#        --set prime-thread-count:1 \
+#        --set default-cache-mode:cache-keys-only
+
+dsconfig set-backend \
+       --backend-name "userRoot" \
+       --set enabled:true \
+       --set base-dn:"dc=example,dc=com" \
+       --set prime-method:preload
 
 dsconfig create-backend \
         --backend-name "platformconfig" \
