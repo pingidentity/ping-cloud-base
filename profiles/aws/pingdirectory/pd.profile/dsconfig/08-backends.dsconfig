@@ -5,10 +5,9 @@
 #        --set prime-thread-count:1 \
 #        --set default-cache-mode:cache-keys-only
 
-dsconfig set-backend \
+dsconfig set-backend-prop \
        --backend-name "userRoot" \
        --set enabled:true \
-       --set base-dn:"dc=example,dc=com" \
        --set prime-method:preload
 
 dsconfig create-backend \
