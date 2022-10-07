@@ -1,6 +1,7 @@
 dsconfig set-backend-prop \
         --backend-name "userRoot" \
         --set db-cache-percent:36 \
+        --set prime-method:preload \
         --set import-thread-count:1
 
 dsconfig create-backend \
