@@ -8,4 +8,3 @@ resources:
 - argocd-notifications-controller-role.yaml
 - argocd-notifications-controller-rolebinding.yaml
 - argocd-notifications-controller-sa.yaml
-- argocd-notifications-secret.yaml
