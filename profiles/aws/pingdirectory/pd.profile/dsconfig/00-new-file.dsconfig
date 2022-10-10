@@ -1,0 +1,592 @@
+dsconfig set-log-publisher-prop \
+  --publisher-name "File-Based Debug Logger" \
+  --set enabled:true
+
+dsconfig set-connection-handler-prop \
+    --handler-name "HTTPS Connection Handler"  \
+    --reset web-application-extension
+
+#
+# These docs are pruned from the docker to keep size down
+# 
+dsconfig set-connection-handler-prop \
+    --handler-name "HTTPS Connection Handler" \
+    --remove http-servlet-extension:Documentation \
+    --remove "http-servlet-extension:Swagger UI"
+
+dsconfig set-backend-prop \
+       --backend-name "userRoot" \
+       --set db-cache-percent:35 \
+       --set import-thread-count:1 \
+       --set prime-thread-count:1 \
+       --set default-cache-mode:cache-keys-only
+
+dsconfig create-backend \
+        --backend-name "platformconfig" \
+        --type local-db \
+        --set enabled:true \
+        --set base-dn:"o=platformconfig" \
+        --set prime-method:preload
+
+dsconfig set-backend-prop \
+      --backend-name "platformconfig" \
+      --set db-cache-percent:5 \
+      --set import-thread-count:1
+
+dsconfig create-backend \
+        --backend-name "appintegrations" \
+        --type local-db \
+        --set enabled:true \
+        --set base-dn:"o=appintegrations" \
+        --set prime-method:preload
+
+dsconfig set-backend-prop \
+      --backend-name "appintegrations" \
+      --set db-cache-percent:15 \
+      --set import-thread-count:1
+
+dsconfig set-local-db-index-prop \
+        --backend-name userRoot --index-name cn \
+        --remove index-type:substring
+
+dsconfig set-local-db-index-prop \
+        --backend-name userRoot \
+        --index-name givenName \
+        --remove index-type:substring
+
+dsconfig set-local-db-index-prop \
+        --backend-name userRoot \
+        --index-name sn \
+        --remove index-type:substring
+
+dsconfig set-local-db-index-prop \
+        --backend-name userRoot \
+        --index-name sn \
+        --set index-entry-limit:50000 \
+        --set exploded-index-entry-threshold:100
+
+dsconfig set-local-db-index-prop \
+        --backend-name userRoot \
+        --index-name givenName \
+        --set index-entry-limit:50000 \
+        --set exploded-index-entry-threshold:100
+
+dsconfig set-access-control-handler-prop --add 'global-aci:(target="ldap:///o=pcpt")(targetscope="subtree")(targetattr="*")(version 3.0; acl "GL01: Allow members of pdadmingrp with full access to manage o=pcpt";allow (all) groupdn="ldap:///cn=pdadmingrp,ou=groups,o=platformconfig";)'
+dsconfig set-access-control-handler-prop --add 'global-aci:(target="ldap:///o=pcpt")(targetscope="subtree")(targetattr="*")(version 3.0; acl "GL02: Deny PD SRE Admin members part of cn=pdsreadmingrp access to o=pcpt";deny (all) groupdn="ldap:///cn=pdsreadmingrp,ou=groups,o=platformconfig";)'
+dsconfig set-access-control-handler-prop --add 'global-aci:(target="ldap:///o=pcpt")(targetscope="subtree")(targetattr="*")(version 3.0; acl "GL03: Deny vpn users all access to o=pcpt";deny (all) groupdn="ldap:///ou=vpnadmingrp,ou=groups,o=platformconfig";)'
+dsconfig set-access-control-handler-prop --add 'global-aci:(target="ldap:///o=appintegrations")(targetscope="subtree")(targetattr="*")(version 3.0; acl "GL04: Allow members of pfadmingrp with full access to manage o=appintegrations";allow (all) groupdn="ldap:///cn=pfadmingrp,ou=groups,o=platformconfig || ldap:///cn=pdadmingrp,ou=groups,o=platformconfig";)'
+dsconfig set-access-control-handler-prop --add 'global-aci:(target="ldap:///o=appintegrations")(targetscope="subtree")(targetattr="*")(version 3.0; acl "GL05: Deny PD SRE Admin members part of pdsreadmingrp o=appintegrations";deny (all) groupdn="ldap:///cn=pdsreadmingrp,ou=groups,o=platformconfig";)'
+dsconfig set-access-control-handler-prop --add 'global-aci:(target="ldap:///o=appintegrations")(targetscope="subtree")(targetattr="*")(version 3.0; acl "GL06: Deny vpn users all access to o=appintegrations";deny (all) groupdn="ldap:///ou=vpnadmingrp,ou=groups,o=platformconfig";)'
+dsconfig set-access-control-handler-prop --add 'global-aci:(target="ldap:///cn=config")(targetscope="subtree")(targetattr="*||+")(version 3.0; acl "GL07: Allow  access for configWrite group members";allow (all) groupdn="ldap:///cn=configWrite,ou=groups,o=platformconfig";)'
+dsconfig set-access-control-handler-prop --add 'global-aci:(target="ldap:///cn=monitor")(targetscope="subtree")(targetattr="*||+")(version 3.0; acl "GL08: Allow Read only access to monitor backend";allow(read,search,compare) groupdn="ldap:///cn=monitorRead,ou=groups,o=platformconfig||ldap:///cn=configWrite,ou=groups,o=platformconfig";)'
+dsconfig set-access-control-handler-prop --add 'global-aci:(target="ldap:///cn=config")(targetscope="subtree")(targetattr="*||+")(version 3.0; acl "GL09: Alow Read only access to config backend for configRead members";allow(read,search,compare) groupdn="ldap:///cn=configRead,ou=groups,o=platformconfig";)'
+dsconfig set-access-control-handler-prop --add 'global-aci:(target="ldap:///cn=admin data")(targetscope="subtree")(targetattr="*||+")(version 3.0; acl "GL10: Allow access to admin data backend for configWrite members";allow (all) groupdn="ldap:///cn=configWrite,ou=groups,o=platformconfig";)'
+dsconfig set-access-control-handler-prop --add 'global-aci:(target="ldap:///cn=tasks")(targetscope="subtree")(targetattr="*||+")(version 3.0; acl "GL11: Allow access to tasks backend for configWrite members";allow (all) groupdn="ldap:///cn=configWrite,ou=groups,o=platformconfig";)'
+dsconfig set-access-control-handler-prop --add 'global-aci:(target="ldap:///cn=schema")(targetscope="subtree")(targetattr="*||+")(version 3.0; acl "GL12: Allow access to schema backend for configWrite and configRead members";allow (read) groupdn="ldap:///cn=configWrite,ou=groups,o=platformconfig || ldap:///cn=configRead,ou=groups,o=platformconfig";)'
+dsconfig set-access-control-handler-prop --add 'global-aci:(targetcontrol="1.3.6.1.4.1.30221.2.5.12")(version 3.0; acl "GL13: Allow Extended Schema Info Request Control for configWrite and configRead members";allow (read) groupdn="ldap:///cn=configWrite,ou=groups,o=platformconfig || ldap:///cn=configRead,ou=groups,o=platformconfig";)'
+dsconfig set-access-control-handler-prop --add 'global-aci:(targetcontrol="1.2.840.113556.1.4.805")(version 3.0; acl "GL14: Allow Subtree Delete Request Control for pfadmin";allow (read) userdn="ldap:///uid=pfadmin,ou=devopsaccount,o=platformconfig";)'
+dsconfig set-access-control-handler-prop --add 'global-aci:(targetcontrol="1.2.840.113556.1.4.805")(version 3.0; acl "GL15: Allow Subtree Delete Request Control for pingfederate user";allow (read) userdn="ldap:///uid=pingfederate,ou=devopsaccount,o=platformconfig";)'
+
+
+dsconfig create-virtual-attribute \
+      --name "pdadmingrp privileges" \
+      --type "user-defined" \
+          --set "description":"Assigning ds-privileges to pdadmingrp users" \
+          --set "enabled":"true" \
+          --set "attribute-type":"ds-privilege-name" \
+          --set "group-dn":"cn=pdadmingrp,ou=groups,o=platformconfig" \
+          --set "value":"backend-backup" \
+          --set "value":"backend-restore" \
+          --set "value":"config-read" \
+          --set "value":"config-write" \
+          --set "value":"disconnect-client" \
+          --set "value":"ldif-export" \
+          --set "value":"ldif-import" \
+          --set "value":"modify-acl" \
+          --set "value":"password-reset" \
+          --set "value":"server-restart" \
+          --set "value":"server-shutdown" \
+          --set "value":"unindexed-search" \
+          --set "value":"update-schema"
+dsconfig create-virtual-attribute \
+      --name "pdsreadmingrp privileges" \
+      --type "user-defined" \
+          --set "description":"Assigning ds-privileges to pdsreadmingrp users" \
+          --set "enabled":"true" \
+          --set "attribute-type":"ds-privilege-name" \
+          --set "group-dn":"cn=pdsreadmingrp,ou=groups,o=platformconfig" \
+          --set "value":"password-reset"
+dsconfig create-virtual-attribute \
+      --name "configRead privileges" \
+      --type "user-defined" \
+          --set "description":"Assigning ds-privileges to configRead group users" \
+          --set "enabled":"true" \
+          --set "attribute-type":"ds-privilege-name" \
+          --set "group-dn":"cn=configRead,ou=groups,o=platformconfig" \
+          --set "value":"config-read"
+dsconfig create-virtual-attribute \
+      --name "configWrite privileges" \
+      --type "user-defined" \
+          --set "description":"Assigning ds-privileges to configWrite group users" \
+          --set "enabled":"true" \
+          --set "attribute-type":"ds-privilege-name" \
+          --set "group-dn":"cn=configWrite,ou=groups,o=platformconfig" \
+          --set "value":"config-read" \
+          --set "value":"config-write" \
+          --set "value":"modify-acl" \
+          --set "value":"update-schema"
+
+dsconfig create-local-db-index \
+    --backend-name "appintegrations" \
+    --index-name "accessGrantGuid" \
+    --set index-entry-limit:4000 \
+    --set exploded-index-entry-threshold:4000 \
+    --set index-type:equality \
+    --set prime-index:true
+
+dsconfig create-local-db-index \
+    --backend-name "appintegrations" \
+    --index-name "accessGrantUniqueUserIdentifier" \
+    --set index-entry-limit:4000 \
+    --set exploded-index-entry-threshold:4000 \
+    --set index-type:equality \
+    --set prime-index:true
+
+dsconfig create-local-db-index \
+    --backend-name "appintegrations" \
+    --index-name "accessGrantHashedRefreshTokenValue" \
+    --set index-entry-limit:4000 \
+    --set exploded-index-entry-threshold:4000 \
+    --set index-type:equality \
+    --set prime-index:true
+
+dsconfig create-local-db-index \
+    --backend-name "appintegrations" \
+    --index-name "accessGrantClientId" \
+    --set index-entry-limit:4000 \
+    --set exploded-index-entry-threshold:4000 \
+    --set index-type:equality \
+    --set prime-index:true
+
+dsconfig create-local-db-index \
+    --backend-name "appintegrations" \
+    --index-name "accessGrantExpires" \
+    --set index-entry-limit:4000 \
+    --set exploded-index-entry-threshold:4000 \
+    --set index-type:ordering \
+    --set prime-index:true
+
+dsconfig create-local-db-index \
+    --backend-name "appintegrations" \
+    --index-name "pf-oauth-client-id" \
+    --set index-entry-limit:4000 \
+    --set exploded-index-entry-threshold:4000 \
+    --set index-type:equality \
+    --set index-type:ordering \
+    --set index-type:substring \
+    --set prime-index:true
+
+dsconfig create-local-db-index \
+    --backend-name "appintegrations" \
+    --index-name "pf-oauth-client-name" \
+    --set index-entry-limit:4000 \
+    --set exploded-index-entry-threshold:4000 \
+    --set index-type:equality \
+    --set index-type:ordering \
+    --set index-type:substring \
+    --set prime-index:true
+
+dsconfig create-local-db-index \
+    --backend-name "appintegrations" \
+    --index-name "pf-authn-session-group-id" \
+    --set index-entry-limit:4000 \
+    --set exploded-index-entry-threshold:4000 \
+    --set index-type:equality \
+    --set index-type:ordering \
+    --set index-type:substring \
+    --set prime-index:true
+
+dsconfig create-local-db-index \
+    --backend-name "appintegrations" \
+    --index-name "pf-oauth-client-last-modified" \
+    --set index-entry-limit:4000 \
+    --set exploded-index-entry-threshold:4000 \
+    --set index-type:ordering \
+    --set prime-index:true
+
+dsconfig create-local-db-index \
+    --backend-name "appintegrations" \
+    --index-name "pf-authn-session-attribute-hash" \
+    --set index-entry-limit:4000 \
+    --set exploded-index-entry-threshold:4000 \
+    --set index-type:equality \
+    --set prime-index:true
+
+dsconfig create-local-db-index \
+    --backend-name "appintegrations" \
+    --index-name "pf-authn-session-group-parent-id" \
+    --set index-entry-limit:4000 \
+    --set exploded-index-entry-threshold:4000 \
+    --set index-type:substring \
+    --set prime-index:true
+
+dsconfig create-local-db-index \
+    --backend-name "appintegrations" \
+    --index-name "pf-authn-session-group-user-ids" \
+    --set index-entry-limit:4000 \
+    --set exploded-index-entry-threshold:4000 \
+    --set index-type:equality \
+    --set prime-index:true
+
+dsconfig create-local-db-index \
+    --backend-name "appintegrations" \
+    --index-name "pf-authn-session-group-hashed-session-id" \
+    --set index-entry-limit:4000 \
+    --set exploded-index-entry-threshold:4000 \
+    --set index-type:equality \
+    --set prime-index:true
+
+dsconfig create-local-db-index \
+    --backend-name "appintegrations" \
+    --index-name "pf-authn-session-group-expiry-time" \
+    --set index-entry-limit:4000 \
+    --set exploded-index-entry-threshold:4000 \
+    --set index-type:ordering \
+    --set prime-index:true
+
+dsconfig create-local-db-index \
+    --backend-name "appintegrations" \
+    --index-name "pf-authn-session-group-last-activity-time" \
+    --set index-entry-limit:4000 \
+    --set exploded-index-entry-threshold:4000 \
+    --set index-type:ordering \
+    --set prime-index:true
+
+dsconfig set-local-db-index-prop \
+    --backend-name userRoot \
+    --index-name cn \
+    --add index-type:substring
+
+dsconfig set-local-db-index-prop \
+    --backend-name userRoot \
+    --index-name sn \
+    --add index-type:substring
+
+dsconfig set-local-db-index-prop \
+    --backend-name userRoot \
+    --index-name mail \
+    --add index-type:substring
+
+dsconfig set-local-db-index-prop \
+    --backend-name userRoot \
+    --index-name uid \
+    --add index-type:substring
+
+dsconfig set-gauge-prop --gauge-name "CPU Usage (Percent)" --set enabled:false 
+dsconfig set-gauge-prop --gauge-name "License Expiration (Days)" --set enabled:false
+dsconfig set-gauge-prop --gauge-name "Available File Descriptors" --set enabled:false
+
+#
+# Turn the audit log (this tiny container is probably just for demo)
+#
+dsconfig set-log-publisher-prop \
+    --publisher-name "Data Recovery Log"  \
+    --set enabled:false
+
+
+#
+# Set an alias for pingdirectory's administrator to have a
+# console login experience consistent with that of pingfederate
+#
+dsconfig set-root-dn-user-prop \
+    --user-name "Directory Manager"  \
+    --add "alternate-bind-dn:${ROOT_USER_DN}"
+
+#
+# Ping Data Sync User
+#
+dsconfig create-root-dn-user \
+    --user-name "pingdatasync"  \
+    --set "alternate-bind-dn:${SYNC_BIND_DN}"  \
+    --set alternate-bind-dn:cn=datasync  \
+    --set inherit-default-root-privileges:false  \
+    --set privilege:bypass-acl  \
+    --set privilege:bypass-pw-policy  \
+    --set privilege:config-read  \
+    --set privilege:password-reset  \
+    --set privilege:unindexed-search \
+    --set password<${ROOT_USER_PASSWORD_FILE}
+
+#
+# Create a user for pingdirectoryproxy
+#
+dsconfig create-root-dn-user \
+    --user-name pingdirectoryproxy  \
+    --set alternate-bind-dn:cn=pingdirectoryproxy  \
+    --set alternate-bind-dn:cn=proxy  \
+    --set privilege:proxied-auth \
+    --set password<${ROOT_USER_PASSWORD_FILE}
+
+#
+# Create a user for pingdatagovernance
+#
+dsconfig create-root-dn-user \
+    --user-name pingdatagovernance \
+    --set alternate-bind-dn:cn=pingdatagovernance \
+    --set alternate-bind-dn:cn=datagov \
+    --set password<${ROOT_USER_PASSWORD_FILE} \
+    --set inherit-default-root-privileges:false \
+    --set privilege:password-reset \
+    --set privilege:proxied-auth \
+    --set privilege:unindexed-search \
+    --set search-result-entry-limit:100000
+
+
+#
+# Enabling the changelog allows the use of Sync
+#
+dsconfig set-backend-prop \
+    --backend-name changelog \
+    --set enabled:true \
+    --set "changelog-maximum-age:${CHANGELOG_SYNC_MAX_AGE}"
+
+  # Create an access token validator for PingFederate tokens.
+
+  dsconfig set-trust-manager-provider-prop \
+    --provider-name "Blind Trust" \
+    --set enabled:true
+
+  dsconfig create-external-server \
+    --server-name "${DA_PINGFEDERATE_INSTANCE_NAME}" \
+    --type "http" \
+    --set "base-url:https://${PINGFEDERATE_ENGINE_SERVER}:${PINGFEDERATE_ENGINE_PORT}" \
+    --set "hostname-verification-method:allow-all" \
+    --set "trust-manager-provider:Blind Trust"
+
+  dsconfig create-identity-mapper \
+    --mapper-name "${DA_IDENTITY_MAPPER_NAME}" \
+    --type "exact-match" \
+    --set enabled:true \
+    --set "match-attribute:entryUUID" \
+    --set "match-base-dn:${USER_BASE_DN}"
+
+  dsconfig create-access-token-validator \
+    --validator-name "${DA_PINGFEDERATE_ATV_NAME}" \
+    --type "ping-federate" \
+    --set enabled:true \
+    --set "identity-mapper:${DA_IDENTITY_MAPPER_NAME}" \
+    --set "subject-claim-name:sub" \
+    --set "authorization-server:${DA_PINGFEDERATE_INSTANCE_NAME}" \
+    --set "client-id:${DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID}" \
+    --set "client-secret:${DA_OAUTH_TOKEN_VALIDATOR_SECRET}"
+
+#
+# The search-base-dn value is the DN of a valid base entry where managed users are stored.
+#
+dsconfig create-rest-resource-type \
+  --type user \
+  --type-name users \
+  --set "display-name:Users" \
+  --set enabled:false \
+  --set "search-base-dn:${USER_BASE_DN}" \
+  --set primary-display-attribute-type:cn \
+  --set resource-endpoint:users \
+  --set "search-filter-pattern:(|(cn=*%%*)(mail=*%%*)(uid=*%%*)(sn=*%%*))" \
+  --set structural-ldap-objectclass:inetOrgPerson \
+  --set "parent-dn:${USER_BASE_DN}"
+
+dsconfig create-rest-resource-type \
+  --type group \
+  --type-name groups \
+  --set "display-name:Groups" \
+  --set enabled:false \
+  --set "search-base-dn:${USER_BASE_DN}" \
+  --set create-rdn-attribute-type:cn \
+  --set primary-display-attribute-type:cn \
+  --set resource-endpoint:groups \
+  --set "search-filter-pattern:(cn=*%%*)" \
+  --set structural-ldap-objectclass:groupOfUniqueNames \
+  --set "parent-dn:${USER_BASE_DN}"
+
+#
+# Specify the attributes that will be made available through the Delegated Admin API.
+#
+dsconfig create-delegated-admin-attribute --type-name users --attribute-type cn --set "display-name:Full Name" --set "display-order-index:0"
+dsconfig create-delegated-admin-attribute --type-name users --attribute-type givenName --set "display-name:First Name" --set "display-order-index:1"
+dsconfig create-delegated-admin-attribute --type-name users --attribute-type sn --set "display-name:Last Name" --set "display-order-index:2"
+dsconfig create-delegated-admin-attribute --type-name users --attribute-type mail --set "display-name:Email" --set "display-order-index:3"
+dsconfig create-delegated-admin-attribute --type-name users --attribute-type uid --set "display-name:User ID" --set "display-order-index:4"
+dsconfig create-delegated-admin-attribute --type-name users --attribute-type ds-pwp-account-disabled --set "display-name:Account Disabled"
+dsconfig create-delegated-admin-attribute --type-name groups --attribute-type cn --set "display-name:Group"
+dsconfig create-delegated-admin-attribute --type-name groups --attribute-type description --set "display-name:Description"
+
+#
+# Complete the configuration of the Delegated Admin API.
+#
+
+dsconfig set-access-control-handler-prop \
+  --add 'global-aci:(extop="1.3.6.1.4.1.30221.2.6.17 || 1.3.6.1.4.1.30221.2.6.62")(version 3.0;acl "Authenticated access to the multi-update and generate-password extended requests for the Delegated Admin API"; allow (read) userdn="ldap:///all";)'
+
+dsconfig set-access-control-handler-prop \
+  --add 'global-aci:(targetcontrol="1.3.6.1.4.1.4203.1.10.2 || 1.3.6.1.4.1.30221.2.5.40")(version 3.0;acl "Authenticated access to the no-op and password validation details request controls for the Delegated Admin API"; allow (read) userdn="ldap:///all";)'
+
+dsconfig set-http-servlet-extension-prop \
+  --extension-name "Delegated Admin" \
+  --set "access-token-scope:${DA_EXCLUSIVE_SCOPE_NAME}" \
+  --set "response-header:Cache-Control: no-cache, no-store, must-revalidate" \
+  --set "access-token-validator:${DA_PINGFEDERATE_ATV_NAME}" \
+  --set "response-header:Expires: 0" \
+  --set "response-header:Pragma: no-cache"
+
+#
+# Enable virtual attributes on Ping Directory Server.
+#
+dsconfig set-virtual-attribute-prop \
+  --name "Delegated Admin Privilege" \
+  --set enabled:true \
+  --set "base-dn:${USER_BASE_DN}" \
+  --set "filter:(|(objectClass=ds-cfg-user)(objectClass=inetOrgPerson)(objectClass=ubidPerson))"
+
+dsconfig set-virtual-attribute-prop \
+  --name "Password Policy State JSON" \
+  --set enabled:true \
+  --set require-explicit-request-by-name:true \
+  --set "base-dn:${USER_BASE_DN}" \
+  --set "filter:(objectClass=inetOrgPerson)"
+
+#
+# Create a CORS policy for the Delegated Admin HTTP servlet extension, where <origin> 
+# represents the public name of the host that presents the Delegated Admin web application.
+#
+
+dsconfig create-http-servlet-cross-origin-policy \
+  --policy-name "Delegated Admin Cross-Origin Policy" \
+  --set "cors-allowed-methods: GET" \
+  --set "cors-allowed-methods: OPTIONS" \
+  --set "cors-allowed-methods: POST" \
+  --set "cors-allowed-methods: DELETE" \
+  --set "cors-allowed-methods: PATCH" \
+  --set "cors-allowed-origins: *"
+
+dsconfig set-http-servlet-extension-prop \
+  --extension-name "Delegated Admin" \
+  --set "cross-origin-policy:Delegated Admin Cross-Origin Policy"
+
+#
+# Create Delegated Admin user.
+#
+dsconfig create-delegated-admin-rights \
+  --rights-name "administrator-user-${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" \
+  --set "admin-user-dn:uid=admin,${USER_BASE_DN}" \
+  --set enabled:true
+
+#
+# Create Delegated Admin Rights for users.
+#
+dsconfig create-delegated-admin-resource-rights \
+  --rights-name "administrator-user-${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" \
+  --rest-resource-type users \
+  --set admin-permission:create \
+  --set admin-permission:read \
+  --set admin-permission:update \
+  --set admin-permission:delete \
+  --set admin-permission:manage-group-membership \
+  --set admin-scope:all-resources-in-base \
+  --set enabled:true
+
+dsconfig create-delegated-admin-resource-rights  \
+  --rights-name "administrator-user-${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" \
+  --rest-resource-type groups \
+  --set admin-permission:create \
+  --set admin-permission:read \
+  --set admin-permission:update \
+  --set admin-permission:delete \
+  --set admin-permission:manage-group-membership \
+  --set admin-scope:all-resources-in-base \
+  --set enabled:true
+
+#
+# Enable the Delegated Admin REST resource type
+#
+
+dsconfig set-rest-resource-type-prop \
+  --type-name users --set enabled:true
+
+dsconfig set-rest-resource-type-prop \
+  --type-name groups --set enabled:true
+
+#
+# Enable the Delegated Admin HTTP servlet.
+#
+
+dsconfig set-connection-handler-prop \
+  --handler-name "HTTPS Connection Handler" \
+  --set enabled:false \
+  --add "http-servlet-extension:Delegated Admin"
+
+dsconfig set-connection-handler-prop \
+  --handler-name "HTTPS Connection Handler" \
+  --set enabled:true
+
+dsconfig set-access-control-handler-prop \
+    --add 'global-aci:(target="ldap:///cn=alerts")(targetattr="*||+")(version 3.0; acl "pingdatagovernance access to the alerts backend"; allow(read,search,compare) userdn="ldap:///cn=pingdatagovernance,cn=Root DNs,cn=config";)' \
+    --add 'global-aci:(target="ldap:///cn=monitor")(targetattr="*||+")(version 3.0; acl "pingdatagovernance access to the monitor backend"; allow(read,search,compare) userdn="ldap:///cn=Govepingdatagovernance,cn=Root DNs,cn=config";)' \
+    --add 'global-aci:(targetcontrol="1.2.840.113556.1.4.1413||1.3.6.1.1.13.2||1.3.6.1.4.1.30221.2.5.2||1.3.6.1.4.1.30221.2.5.40||1.3.6.1.4.1.30221.2.5.44||1.3.6.1.1.12||2.16.840.1.113730.3.4.3")(version 3.0; acl "pingdatagovernance access to selected controls"; allow (read) userdn="ldap:///cn=pingdatagovernance,cn=Root DNs,cn=config";)' \
+    --add 'global-aci:(targetattr="uid||entryUUID||isMemberOf")(version 3.0; acl "pingdatagovernance access to selected attributes"; allow(all) userdn="ldap:///cn=pingdatagovernance,cn=Root DNs,cn=config";)' \
+#
+# At the time the environment is created we will not know the customers DN so this rule can't be specified in advance
+#
+    --add 'global-aci:(target="ldap:///ou=people,${USER_BASE_DN}")(targetattr="*||+")(version 3.0; acl "pingdatagovernance access to user store data"; allow(all) userdn="ldap:///cn=pingdatagovernance,cn=Root DNs,cn=config";)'
+
+# Enable the stats collector and the statsd monitoring endpoint
+# so that PD metrics can be sent to the statsd exporter
+# and then scraped by prometheus.
+
+# Create a StatsD monitoring endpoint
+dsconfig create-monitoring-endpoint \
+    --type statsd \
+    --endpoint-name StatsDExporterEndpoint \
+    --set enabled:true \
+    --set hostname:localhost \
+    --set server-port:8125 \
+    --set connection-type:unencrypted-udp
+
+# Enable the Stats Collector
+dsconfig set-plugin-prop \
+    --plugin-name "Stats Collector" \
+    --set enabled:true \
+    --set server-info:extended
+
+
+#
+# Configure the automatic purging of expired session groups
+#    
+dsconfig create-plugin \
+    --plugin-name ExpiredSessionAutoPurge  \
+    --type purge-expired-data  \
+    --set enabled:true  \
+    --set datetime-attribute:pf-authn-session-group-expiry-time  \
+    --set "expiration-offset:1 h"  \
+    --set purge-behavior:subtree-delete-entries  \
+    --set base-dn:ou=authsessions,o=appintegrations   \
+    --set "filter:(objectClass=pf-authn-session-groups)"  \
+    --set "polling-interval:20 m"
+
+#
+# Configure the automatic purging of sessions idle for over a week
+#
+dsconfig create-plugin \
+    --plugin-name IdleSessionAutoPurge  \
+    --type purge-expired-data  \
+    --set enabled:true  \
+    --set datetime-attribute:pf-authn-session-group-last-activity-time  \
+    --set "expiration-offset:1 w"  \
+    --set purge-behavior:subtree-delete-entries  \
+    --set base-dn:ou=authsessions,o=appintegrations \
+    --set "filter:(objectClass=pf-authn-session-groups)"  \
+    --set "polling-interval:1 d"
+
+dsconfig set-http-servlet-extension-prop \
+    --extension-name 'Directory REST API'
+
+dsconfig set-recurring-task-chain-prop --chain-name "Daily LDIF Exports" --set enabled:false

@@ -1,6 +1,0 @@
-dsconfig set-backend-prop \
-       --backend-name "userRoot" \
-       --set db-cache-percent:50 \
-       --set import-thread-count:1 \
-       --set prime-thread-count:1 \
-       --set default-cache-mode:cache-keys-only
