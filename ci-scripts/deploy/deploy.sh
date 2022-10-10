@@ -27,7 +27,7 @@ export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KE
 export DATASYNC_P1AS_SYNC_SERVER="pingdirectory-0"
 
 # PingFederate Provisioning feature flag always enabled for CI/CD
-export PF_PROVISIONING_ENABLED="false"
+export PF_PROVISIONING_ENABLED="true"
 
 # Deploy the configuration to Kubernetes
 if [[ -n ${PINGONE} ]]; then
