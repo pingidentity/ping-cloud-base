@@ -594,3 +594,7 @@ dsconfig set-recurring-task-chain-prop --chain-name "Daily LDIF Exports" --set e
 dsconfig set-backend-prop \
        --backend-name "userRoot" \
        --set db-cache-percent:36
+
+dsconfig set-backend-prop \
+       --backend-name "userRoot" \
+       --set db-cache-percent:50
