@@ -39,6 +39,14 @@ for ns in $all_namespaces; do
     log "Skipping namespace ${ns}"
     continue
   fi
+
+  if [[ $ns == *"argo-events"* ]]; then
+    # Must first delete eventsources and sensors to prevent the controller block deletion of the eventbus in Argo
+    log "Deleting Argo eventsources/sensors"
+    kubectl delete eventsources --all -n "${ns#"namespace/"}"
+    kubectl delete sensors --all -n "${ns#"namespace/"}"
+  fi
+
   log "Deleting namespaced CRDs"
   kubectl delete "${all_crds}" --all -n "${ns#"namespace/"}"
   log "Deleting namespace asynchronously: ${ns}"
