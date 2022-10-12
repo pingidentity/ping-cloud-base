@@ -1,0 +1,50 @@
+dsconfig set-http-servlet-extension-prop \
+  --extension-name "Delegated Admin" \
+  --reset cross-origin-policy \
+  --reset access-token-validator
+
+dsconfig delete-http-servlet-cross-origin-policy \
+  --policy-name "Delegated Admin Cross-Origin Policy"
+
+dsconfig set-virtual-attribute-prop \
+    --name "Delegated Admin Privilege"  \
+    --set enabled:false  \
+    --reset base-dn  \
+    --reset filter
+
+dsconfig set-virtual-attribute-prop \
+    --name "Password Policy State JSON"  \
+    --set enabled:false  \
+    --reset base-dn  \
+    --reset filter
+
+dsconfig delete-access-token-validator \
+  --validator-name "${DA_PINGFEDERATE_ATV_NAME}"
+
+dsconfig delete-external-server \
+  --server-name "${DA_PINGFEDERATE_INSTANCE_NAME}"
+
+dsconfig delete-identity-mapper \
+  --mapper-name "${DA_IDENTITY_MAPPER_NAME}"
+
+dsconfig delete-delegated-admin-resource-rights \
+  --rights-name "administrator-user-${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" \
+  --rest-resource-type users
+
+dsconfig delete-delegated-admin-resource-rights \
+  --rights-name "administrator-user-${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" \
+  --rest-resource-type groups
+
+dsconfig delete-delegated-admin-rights \
+  --rights-name "administrator-user-${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}"
+
+dsconfig delete-rest-resource-type --type-name groups
+dsconfig delete-rest-resource-type --type-name users
+
+dsconfig set-connection-handler-prop \
+  --handler-name "HTTPS Connection Handler" \
+  --set enabled:false
+
+dsconfig set-connection-handler-prop \
+  --handler-name "HTTPS Connection Handler" \
+  --set enabled:true
