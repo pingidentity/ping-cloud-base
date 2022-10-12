@@ -206,7 +206,6 @@ cleanup:
     - ./ci-scripts/cleanup/teardown.sh
   dependencies:
     - find-cluster
-  when: on_failure
 
 p1-cleanup:
   stage: cleanup
