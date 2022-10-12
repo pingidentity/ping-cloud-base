@@ -22,7 +22,7 @@ find_cluster() {
   fi
 
   #cluster_postfixes=($CLUSTER_POSTFIXES)
-  cluster_postfixes=("_2")
+  cluster_postfixes=("_1")
   found_cluster=false
   sleep_wait_seconds=300
   current_check=1
