@@ -2,6 +2,7 @@
 
 ### 1.16.0.0
 
+- "12-delegated-admin.dsconfig" file replaced with "00-reset-delegated-admin.dsconfig" and "01-add-delegated-admin.dsconfig"
 - Implemented Radius Proxy as optional installation
 - Setup NewRelic Kube Events Integration
 - Add newrelic-metadata pod to send metadata to NewRelic
@@ -19,6 +20,7 @@
 
 _Changes:_
 
+- [X] PDO-3491 "12-delegated-admin.dsconfig" file replaced with "00-reset-delegated-admin.dsconfig" and "01-add-delegated-admin.dsconfig"
 - [X] PDO-3785 Add PGO database to CI/CD
 - [X] PDO-3791 Create hook script to enable outbound provisioning
 - [X] PDO-3823 Add newrelic-metadata pod to send metadata to NewRelic
