@@ -394,6 +394,7 @@ data:
         Name                tail
         Tag                 newrelic_kube.*
         Path                /var/log/containers/*external-dns*.log, /var/log/containers/*kube-system*.log
+        Exclude_Path        /var/log/containers/*kube-proxy*.log, /var/log/containers/*sealed-secrets-controller*.log
         multiline.parser    docker, cri
         DB                  /fluent-bit/state/flb_nr.db
         Mem_Buf_Limit       50MB
@@ -699,7 +700,7 @@ data:
 
     [OUTPUT]
         Name           nrlogs
-        Match          dataplane.systemd.*
+        Match          dataplane.systemd.docker.*
         license_key    ${NR_LICENSE_KEY}
 
     [OUTPUT]
