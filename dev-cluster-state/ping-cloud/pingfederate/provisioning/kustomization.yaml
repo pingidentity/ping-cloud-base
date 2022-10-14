@@ -33,7 +33,7 @@ patchesStrategicMerge:
         repos:
           - name: repo1
             s3:
-              bucket: "${BACKUP_BUCKET_NAME}"
+              bucket: "${PGO_BACKUP_BUCKET_NAME}"
               endpoint: "s3.${REGION}.amazonaws.com"
               region: "${REGION}"
             schedules:

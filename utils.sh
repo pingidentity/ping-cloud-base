@@ -449,7 +449,7 @@ ${ARTIFACT_REPO_URL}
 ${PING_ARTIFACT_REPO_URL}
 ${LOG_ARCHIVE_URL}
 ${BACKUP_URL}
-${BACKUP_BUCKET_NAME}
+${PGO_BACKUP_BUCKET_NAME}
 ${MYSQL_SERVICE_HOST}
 ${MYSQL_USER}
 ${MYSQL_PASSWORD}
@@ -616,14 +616,17 @@ apply_crds() {
   fi
 }
 
-# Get the backups bucket name from the BACKUP_URL env
-get_backup_bucket_name() {
-  local backup_env=${1}
+# Get the PGO backup bucket name
+get_pgo_backup_bucket_name() {
+  local pgo_backup_env=${1}
 
-  if [[ "${backup_env}" == "ssm://"* ]]; then
-      # env var is an ssm parameter
-      backup_env=$(get_ssm_value "${backup_env#ssm:/}")
+  if [[ "${pgo_backup_env}" == "ssm://"* ]]; then
+    if ! ssm_value=$(get_ssm_value "${pgo_backup_env#ssm:/}"); then
+      pgo_backup_env="not_set"
+    else
+      pgo_backup_env="${ssm_value}"
+    fi
   fi
 
-  echo "${backup_env#s3://}"
+  echo "${pgo_backup_env#s3://}"
 }
