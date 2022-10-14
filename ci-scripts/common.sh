@@ -84,8 +84,8 @@ set_env_vars() {
     export ARTIFACT_REPO_URL=s3://${CLUSTER_NAME}-artifacts-bucket
     export PING_ARTIFACT_REPO_URL=https://ping-artifacts.s3-us-west-2.amazonaws.com
     export LOG_ARCHIVE_URL=s3://${CLUSTER_NAME}-logs-bucket
-    export BACKUP_BUCKET_NAME=${CLUSTER_NAME}-backup-bucket
-    export BACKUP_URL=s3://${BACKUP_BUCKET_NAME}
+    export PGO_BACKUP_BUCKET_NAME=${CLUSTER_NAME}-backup-bucket
+    export BACKUP_URL=s3://${PGO_BACKUP_BUCKET_NAME}
 
     export MYSQL_SERVICE_HOST=beluga-${CLUSTER_NAME}-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
     export MYSQL_USER=ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username
