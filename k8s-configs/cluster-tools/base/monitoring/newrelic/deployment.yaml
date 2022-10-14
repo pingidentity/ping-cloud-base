@@ -63,7 +63,7 @@ spec:
         - --collectors=volumeattachments
         - --telemetry-port=8081
         imagePullPolicy: IfNotPresent
-        image: "k8s.gcr.io/kube-state-metrics/kube-state-metrics:v1.9.8"
+        image: k8s.gcr.io/kube-state-metrics/kube-state-metrics:v1.9.8
         securityContext:
           privileged: false
           runAsGroup: 65534
@@ -126,7 +126,7 @@ spec:
       hostNetwork: false
       containers:
       - name: nri-metadata-injection
-        image: "public.ecr.aws/r2h3l6e4/newrelic/k8s-metadata-injection:1.7.0"
+        image: public.ecr.aws/r2h3l6e4/newrelic/k8s-metadata-injection:1.7.0
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: false
@@ -214,7 +214,7 @@ spec:
               value: "newrelic-license-key"
       containers:
       - name: nri-prometheus
-        image: "public.ecr.aws/r2h3l6e4/newrelic/nri-prometheus:2.16.1"
+        image: public.ecr.aws/r2h3l6e4/newrelic/nri-prometheus:2.16.1
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: false
@@ -425,7 +425,7 @@ spec:
               value: "newrelic-license-key"
       containers:
         - name: ksm
-          image: "public.ecr.aws/r2h3l6e4/pingcloud-monitoring/nri-kubernetes:v1.16-release-branch-latest"
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/nri-kubernetes:v1.16-release-branch-latest
           imagePullPolicy: Always
           securityContext:
             privileged: false
@@ -459,7 +459,7 @@ spec:
               cpu: 100m
               memory: 150M
         - name: forwarder
-          image: "public.ecr.aws/r2h3l6e4/newrelic/k8s-events-forwarder:1.24.1"
+          image: public.ecr.aws/r2h3l6e4/newrelic/k8s-events-forwarder:1.24.1
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: false
@@ -584,7 +584,7 @@ spec:
               value: "newrelic-license-key"
       containers:
         - name: newrelic-infrastructure
-          image: "public.ecr.aws/r2h3l6e4/newrelic/infrastructure:1.28.0"
+          image: public.ecr.aws/r2h3l6e4/newrelic/infrastructure:1.28.0
           imagePullPolicy: "IfNotPresent"
           securityContext:
             privileged: true
