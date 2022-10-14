@@ -55,7 +55,7 @@ spec:
               value: "newrelic-license-key"
       containers:
         - name: controlplane
-          image: "public.ecr.aws/r2h3l6e4/pingcloud-monitoring/nri-kubernetes:v1.16-release-branch-latest"
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/nri-kubernetes:v1.16-release-branch-latest
           imagePullPolicy: Always
           securityContext:
             privileged: false
@@ -95,7 +95,7 @@ spec:
               cpu: 100m
               memory: 150M
         - name: forwarder
-          image: "public.ecr.aws/r2h3l6e4/newrelic/k8s-events-forwarder:1.24.1"
+          image: public.ecr.aws/r2h3l6e4/newrelic/k8s-events-forwarder:1.24.1s
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: false
@@ -238,7 +238,7 @@ spec:
               value: "newrelic-license-key"
       containers:
         - name: kubelet
-          image: "public.ecr.aws/r2h3l6e4/pingcloud-monitoring/nri-kubernetes:v1.16-release-branch-latest"
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/nri-kubernetes:v1.16-release-branch-latest
           imagePullPolicy: Always
           securityContext:
             privileged: false
@@ -279,7 +279,7 @@ spec:
               cpu: 100m
               memory: 150M
         - name: agent
-          image: "public.ecr.aws/r2h3l6e4/newrelic/infrastructure-bundle:2.8.15"
+          image: public.ecr.aws/r2h3l6e4/newrelic/infrastructure-bundle:2.8.15
           args: [ "newrelic-infra" ]
           imagePullPolicy: IfNotPresent
           securityContext:
