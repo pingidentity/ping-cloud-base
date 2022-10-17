@@ -17,6 +17,7 @@
 - LEGACY_LOGGING defaulted to False
 - update pingcloud-bom and pingcloud-oauth securityContext with allowPrivilegeEscalation set to false 
 - Use camelCase for healthcheck test tags and filenames
+- Implemented must-have monitoring/alerting of PGO
 
 _Changes:_
 
@@ -38,6 +39,7 @@ _Changes:_
 - [X] PDO-4281 Update ping-cloud namespace variable
 - [X] PDO-4290 Add simple postgres operator (PGO) database
 - [X] PDO-4320 Set AllowPrivilegeEscalation to False
+- [X] PDO-4326 Implement must-have monitoring/alerting of PGO
 - [X] PDO-4327 Implement PGO resource sizing per environment
 - [X] PDO-4397 Add new env_var "DEFAULT_USER_BASE_DN"
 - [X] PDO-4391 Notification Framework: alert on backup failure
