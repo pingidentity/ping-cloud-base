@@ -69,3 +69,7 @@ spec:
         repoName: repo1
         options:
           - --type=default
+  monitoring:
+    pgmonitor:
+      exporter:
+        image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres-exporter:ubi8-5.2.0-0
