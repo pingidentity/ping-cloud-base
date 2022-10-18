@@ -1,5 +1,5 @@
 ### This file can be used to add custom prometheus alerts for PGO.
-### It will be deployed only if PF_PROVISIONING_ENABLED=true
+### It will be deployed only if the kustomization.yaml in this directory is uncommented
 groups:
 - name: custom-pgo-rules
   rules:

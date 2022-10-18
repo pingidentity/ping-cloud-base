@@ -229,9 +229,10 @@ PROMETHEUS_PING_NAMESPACE=${PING_CLOUD_NAMESPACE}
 
 #### FEATURE FLAGS #####################################################################################################
 # Set to true to enable, most are disabled by default
-# NOTE: You must re-run update-cluster-state.sh after flipping a feature flag
+# Please follow runbook instructions for the given feature flag to enable/disable
 
 # !!! Provisioning for PingFederate is not yet available for multi-region customers !!!
+# Runbook: https://confluence.pingidentity.com/display/PingCloud/How+to+Enable+and+Configure+PingFederate+Provisioning
 PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED}
 
 ########################################################################################################################
