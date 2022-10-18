@@ -47,6 +47,6 @@ data:
 #Centrally managed global application subscriptions
   subscriptions: | 
     - recipients:
-      - slack: p1as-application-oncall
+      - slack: test
       triggers:
       - on-sync-failed
