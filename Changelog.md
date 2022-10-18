@@ -48,6 +48,7 @@ _Changes:_
 - [X] PDO-4401 LEGACY_LOGGING mode: Change default from true to false (off) - Leave flag available
 - [X] PDO-4442 Update healthcheck service keys to use consistent format
 - [X] PDO-4476 Modify PGO feature flag to not require update-cluster script
+- [X] PDO-4498 Move nri-kubernetes images to dev ECR within PCB
 
 ### 1.15.0.0
 
