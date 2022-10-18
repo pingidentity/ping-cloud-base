@@ -240,3 +240,7 @@ PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED}
 NOTIFICATION_ENABLED=false
 SLACK_CHANNEL=p1as-application-oncall
 NOTIFICATION_ENDPOINT=http://webhook-eventsource-svc.argo-events:12999/notification
+
+# Variables used by argocd-image-updater to automatically update the container images managed by ArgoCD
+IMAGE_TAG_PREFIX=${IMAGE_TAG_PREFIX}
+IMAGE_LIST="apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingfederate,apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess,apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess-was"

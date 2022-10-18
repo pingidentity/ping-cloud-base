@@ -359,6 +359,7 @@ ${NOTIFICATION_ENABLED}
 ${SLACK_CHANNEL}
 ${NOTIFICATION_ENDPOINT}
 ${PF_PROVISIONING_ENABLED}
+${IMAGE_TAG_PREFIX}
 ${ARGOCD_SLACK_TOKEN_BASE64}'
 
 # Variables to replace within the generated cluster state code
@@ -690,6 +691,9 @@ export TARGET_DIR="${TARGET_DIR:-/tmp/sandbox}"
 
 export ACCOUNT_BASE_PATH=${ACCOUNT_BASE_PATH:-ssm://pcpt/config/k8s-config/accounts}
 export PGO_BUCKET_URI_SUFFIX=${PGO_BUCKET_URI_SUFFIX:-/pgo-bucket/uri}
+
+### Variable used by argocd-image-updater to scan container image tags matching the prefix.
+export IMAGE_TAG_PREFIX="${K8S_GIT_BRANCH%.*}"
 
 ### FEATURE FLAG DEFAULTS ###
 PF_PROVISIONING_ENABLED="${PF_PROVISIONING_ENABLED:-false}"

@@ -18,10 +18,12 @@
 - update pingcloud-bom and pingcloud-oauth securityContext with allowPrivilegeEscalation set to false 
 - Use camelCase for healthcheck test tags and filenames
 - Implemented must-have monitoring/alerting of PGO
+- Added argo-image-updater version v0.12.0
 
 _Changes:_
 
 - [X] PDO-3491 "12-delegated-admin.dsconfig" file replaced with "00-reset-delegated-admin.dsconfig" and "01-add-delegated-admin.dsconfig"
+- [X] PDO-3599 Autoupdate to minor releases of PingOne AS Product Images
 - [X] PDO-3785 Add PGO database to CI/CD
 - [X] PDO-3791 Create hook script to enable outbound provisioning
 - [X] PDO-3823 Add newrelic-metadata pod to send metadata to NewRelic

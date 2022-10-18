@@ -5,6 +5,7 @@ namespace: argocd
 
 resources:
 - argo.yaml
+- argocd-image-updater.yaml
 
 generatorOptions:
   disableNameSuffixHash: true
