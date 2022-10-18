@@ -9449,6 +9449,7 @@ metadata:
     app.kubernetes.io/part-of: argocd
   name: argocd-cm
 data:
+  accounts.image-updater: apikey
   accounts.config-team: apiKey,login
   configManagementPlugins: |
     - name: git-ops-command
