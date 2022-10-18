@@ -692,7 +692,7 @@ export ACCOUNT_BASE_PATH=${ACCOUNT_BASE_PATH:-ssm://pcpt/config/k8s-config/accou
 export PGO_BUCKET_URI_SUFFIX=${PGO_BUCKET_URI_SUFFIX:-/pgo-bucket/uri}
 
 ### FEATURE FLAG DEFAULTS ###
-PF_PROVISIONING_ENABLED="${PF_PROVISIONING_ENABLED:-false}"
+export PF_PROVISIONING_ENABLED="${PF_PROVISIONING_ENABLED:-false}"
 
 ### Default environment variables ###
 export ECR_REGISTRY_NAME='public.ecr.aws/r2h3l6e4'
@@ -1048,12 +1048,6 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   echo "Copying server profiles for environment ${ENV}"
   ENV_PROFILES_DIR="${PROFILES_DIR}/${ENV_OR_BRANCH}"
   mkdir -p "${ENV_PROFILES_DIR}"
-
-  ###### ---- ALL FEATURE FLAGS GO HERE ----- #######
-
-  pgo_feature_flag "${ENV_DIR}/base/cluster-tools/pgo/kustomization.yaml" "${ENV_DIR}/base/ping-cloud/pingfederate/provisioning/kustomization.yaml" "${ENV_DIR}/base/cluster-tools/monitoring/pgo/kustomization.yaml"
-
-  ###################################################
 
   cp -pr ../profiles/aws/. "${ENV_PROFILES_DIR}"
 

@@ -1,8 +1,6 @@
-### Note: this file may be modified automatically by generate-cluster-state.sh and update-cluster-state.sh
-### DO NOT MODIFY MANUALLY - use feature flag PF_PROVISIONING_ENABLED=true
+### Feature flag - Uncomment this file to enable Postgres Operator (PGO)
+# kind: Kustomization
+# apiVersion: kustomize.config.k8s.io/v1beta1
 
-kind: Kustomization
-apiVersion: kustomize.config.k8s.io/v1beta1
-
-resources:
-- ${K8S_GIT_URL}/k8s-configs/cluster-tools/base/pgo/base?ref=${K8S_GIT_BRANCH}
+# resources:
+# - ${K8S_GIT_URL}/k8s-configs/cluster-tools/base/pgo/base?ref=${K8S_GIT_BRANCH}
