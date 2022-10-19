@@ -19,6 +19,8 @@
 - Use camelCase for healthcheck test tags and filenames
 - Implemented must-have monitoring/alerting of PGO
 - Added argo-image-updater version v0.12.0
+- Fix: Events are not displayed in New Relic for some pods in some namespaces 
+- Fix: New relic not reporting accurate pod metrics for some environments
 
 _Changes:_
 
@@ -38,11 +40,13 @@ _Changes:_
 - [X] PDO-4178 Setup NewRelic Kube Events Integration
 - [X] PDO-4207 Add ArgoCD slack notifications secret within SSM and remove from k8s secret
 - [X] PDO-4261 Upgrade Kustomize to v4.5.7
+- [X] PDO-4274 New relic not reporting accurate pod metrics for Star
 - [X] PDO-4281 Update ping-cloud namespace variable
 - [X] PDO-4290 Add simple postgres operator (PGO) database
 - [X] PDO-4320 Set AllowPrivilegeEscalation to False
 - [X] PDO-4326 Implement must-have monitoring/alerting of PGO
 - [X] PDO-4327 Implement PGO resource sizing per environment
+- [X] PDO-4351 Events are not displayed in New Relic for some pods in some namespaces
 - [X] PDO-4397 Add new env_var "DEFAULT_USER_BASE_DN"
 - [X] PDO-4391 Notification Framework: alert on backup failure
 - [X] PDO-4401 LEGACY_LOGGING mode: Change default from true to false (off) - Leave flag available
