@@ -12,3 +12,7 @@ resources:
 - ingress.yaml
 - hpa.yaml
 - disruption-budget.yaml
+- radsecproxy
+
+patchesStrategicMerge:
+- radsecproxy/pingfederate-radsecproxy.yaml

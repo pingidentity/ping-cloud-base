@@ -21,6 +21,6 @@ spec:
         path: /
         backend:
           service:
-            name: radsecproxy
+            name: pingfederate
             port:
               number: 2083

@@ -53,7 +53,9 @@ _Changes:_
 - [X] PDO-4442 Update healthcheck service keys to use consistent format
 - [X] PDO-4476 Modify PGO feature flag to not require update-cluster script
 - [X] PDO-4480 newrelic-license-secret-exporter job not present in newrelic namespace
+- [X] PDO-4491 Run Radius as a sidecar container alongside PingFederate engine
 - [X] PDO-4498 Move nri-kubernetes images to dev ECR within PCB
+
 ### 1.15.0.0
 
 - Augment ArgoCD's application name with customer name
