@@ -29,4 +29,3 @@ resources:
 - configmap.yaml
 - pingcloud-healthcheck
 - pingcloud-metadata
-- pingcloud-radsecproxy
