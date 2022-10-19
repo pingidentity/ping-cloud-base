@@ -62,7 +62,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: pingdirectory-backup
-            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.17-release-branch-latest-eb140400
+            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.17-release-branch-latest
             imagePullPolicy: Always
             securityContext:
               runAsGroup: 9999
