@@ -616,12 +616,60 @@ apiVersion: kustomize.config.k8s.io/v1alpha1
   fi
 }
 
-# Apply CRDs server-side to prevent errors around manifest size
+########################################################################################################################
+# Gets rollout status and waits to return until either the timeout is reached or the rollout is ready
+#
+# Arguments
+#   $1 -> resource to check rollout status
+#   $2 -> namespace for resource
+#   $3 -> timeout for check
+########################################################################################################################
+wait_for_rollout() {
+  local resource="${1}"
+  local namespace="${2}"
+  local timeout="${3}"
+  time kubectl rollout status "${resource}" --timeout "${timeout}s" -n "${namespace}" -w
+}
+
+########################################################################################################################
+# Apply CRD yaml and wait until cluster reports CRD established
+#
+# Arguments
+#   $1 -> CRD yaml file - *** must only contain CRDs *** otherwise will hang waiting for other objects to be "established"
+#   $2 -> timeout for waiting for CRD to be established
+########################################################################################################################
+apply_crd() {
+  local crd_yaml=${1}
+  local timeout=${2}
+
+  kubectl apply -f "${crd_yaml}"
+  kubectl wait --for condition="established" --timeout="${timeout}s" -f "${crd_yaml}"
+}
+
+########################################################################################################################
+# Apply Custom Resource Definitions
+#
+# Add any CRDs that need to be set up before deploying custom objects to this function
+#
+# Arguments
+#   $1 -> base directory where k8s-configs dir exists
+########################################################################################################################
 apply_crds() {
   local base_dir=${1}
+  local timeout="60"
 
-  pgo_crd_dir="${base_dir}/k8s-configs/cluster-tools/base/pgo/base/crd/"
+  # First, we need to deploy cert-manager. This is due to it using Dynamic Admission Control - Mutating Webhooks which
+  # must be available before we make use cert-manager
+  kubectl apply -f "${base_dir}/k8s-configs/cluster-tools/base/cert-manager/base/cert-manager.yaml"
+  # Wait until the webhook deployment is fully available
+  wait_for_rollout "deployment/cert-manager-webhook" "cert-manager" "20"
+
+  # argo-events CRDs
+  argo_crd_yaml="${base_dir}/k8s-configs/cluster-tools/base/notification/argo-events/argo-events-crd.yaml"
+  apply_crd "${argo_crd_yaml}" "${timeout}"
+
   if [[ $PF_PROVISIONING_ENABLED == "true" ]]; then
+    pgo_crd_dir="${base_dir}/k8s-configs/cluster-tools/base/pgo/base/crd/"
     log "FEATURE FLAG - PF Provisioning is enabled, deploying PGO CRD"
     # PGO CRDs are so large, they have to be applied server-side
     kubectl apply --server-side -k "${pgo_crd_dir}"

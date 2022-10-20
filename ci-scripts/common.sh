@@ -663,16 +663,6 @@ expected_files() {
 }
 
 ########################################################################################################################
-# Gets rollout status and waits to return until either the timeout is reached or the rollout is ready
-########################################################################################################################
-wait_for_rollout() {
-  resource="${1}"
-  namespace="${2}"
-  timeout="${3}"
-  time kubectl rollout status "${resource}" --timeout "${timeout}s" -n "${namespace}" -w
-}
-
-########################################################################################################################
 # Check if the cluster is ready to run integration tests.
 # BLOCKS until the cluster is ready, returns when either ready or timeout is reached
 #
