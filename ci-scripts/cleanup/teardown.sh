@@ -29,7 +29,11 @@ fi
 
 # Get all Custom Resource Definitions so we can gracefully delete the objects before terminating the namespace
 # remove clusterissuers.cert-manager.io from the list because it isn't namespaced
-all_crds=$(kubectl get crds --no-headers -o custom-columns=":metadata.name" | grep -v "clusterissuers.cert-manager.io" | tr "\n" "," | sed -e 's/,$//')
+all_crds=$(kubectl get crds --no-headers -o custom-columns=":metadata.name" | grep -v "clusterissuers.cert-manager.io" | tr "\n" " ")
+
+# Deleting CRDs individually can cause them to hang due to ordering issues, so we delete them all at once
+log "Deleting CRDs: $all_crds"
+kubectl delete crds $all_crds
 
 all_namespaces=$(kubectl get ns -o name)
 deleting_ns=()
@@ -39,8 +43,6 @@ for ns in $all_namespaces; do
     log "Skipping namespace ${ns}"
     continue
   fi
-  log "Deleting namespaced CRDs"
-  kubectl delete "${all_crds}" --all -n "${ns#"namespace/"}"
   log "Deleting namespace asynchronously: ${ns}"
   kubectl delete "${ns}" --wait=false
   deleting_ns+=($ns)
