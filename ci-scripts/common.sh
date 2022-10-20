@@ -96,6 +96,8 @@ set_env_vars() {
 
     export LEGACY_LOGGING=False
 
+    export PF_PROVISIONING_ENABLED=true
+
     # Service SSM should be available for all environments
     export SERVICE_SSM_PATH_PREFIX="/${SELECTED_KUBE_NAME}/pcpt/service"
 
