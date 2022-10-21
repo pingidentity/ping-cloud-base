@@ -17,7 +17,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: pingaccess-was-health
-            image: public.ecr.aws/r2h3l6e4/pingcloud-services/robot-framework/dev:v1.16-release-branch-latest-55bf4340
+            image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-services/robot-framework:pdo-4332-fix-host-name
             imagePullPolicy: Always
             securityContext:
               runAsGroup: 9999
