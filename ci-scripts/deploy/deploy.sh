@@ -26,9 +26,6 @@ fi
 export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KEY}")
 export DATASYNC_P1AS_SYNC_SERVER="pingdirectory-0"
 
-# PingFederate Provisioning feature flag always enabled for CI/CD
-export PF_PROVISIONING_ENABLED="false"
-
 # Deploy the configuration to Kubernetes
 if [[ -n ${PINGONE} ]]; then
   set_pingone_api_env_vars
@@ -41,18 +38,11 @@ fi
 
 deploy_file=/tmp/deploy.yaml
 
-# First, we need to deploy cert-manager. This is due to it using Dynamic Admission Control - Mutating Webhooks which
-# must be available before we make use cert-manager
-kubectl apply -f "${PROJECT_DIR}/k8s-configs/cluster-tools/base/cert-manager/base/cert-manager.yaml"
-
 # Apply Custom Resource Definitions separate, due to size, if applicable
 apply_crds "${PROJECT_DIR}"
 
 # Build file while cert-manager webhook service coming up to save time
 build_dev_deploy_file "${deploy_file}"
-
-# Wait until the webhook deployment is fully available
-wait_for_rollout "deployment/cert-manager-webhook" "cert-manager" "20"
 
 kubectl apply -f "${deploy_file}"
 

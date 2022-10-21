@@ -30,7 +30,7 @@ DA_PCV_SEARCH_FILTER=uid=${username}
 DA_IDP_ADAPTER_HTML_FORM_ID=daidphtml
 DA_JWT_ID=dajwt
 DA_OIDC_POLICY_ID=dapolicy
-DA_IMPLICIT_GRANT_TYPE_CLIENT_ID=dadmin
+DA_DEFAULT_GRANT_TYPE_CLIENT_ID=dadmin
 DA_EXCLUSIVE_SCOPE_NAME=urn:pingidentity:directory-delegated-admin
 DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID=dapingdirectory
 DA_PINGFEDERATE_ATV_NAME=DAPingFederateValidator

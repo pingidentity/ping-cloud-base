@@ -1,8 +1,15 @@
 # Changelog
 
+### 1.17.0.0
+
+- No Changes
+
+_Changes:_
+
+- None
+
 ### 1.16.0.0
 
-- "12-delegated-admin.dsconfig" file replaced with "00-reset-delegated-admin.dsconfig" and "01-add-delegated-admin.dsconfig"
 - Implemented Radius Proxy as optional installation
 - Setup NewRelic Kube Events Integration
 - Add newrelic-metadata pod to send metadata to NewRelic
@@ -19,10 +26,14 @@
 - Use camelCase for healthcheck test tags and filenames
 - Implemented must-have monitoring/alerting of PGO
 - Added argo-image-updater version v0.12.0
+- Fix: Events are not displayed in New Relic for some pods in some namespaces 
+- Fix: New relic not reporting accurate pod metrics for some environments
+- Switch Delegated Admin to use OAuth Authorization Flow instead of Implicit Flow
+- Added ArgoCD slack notifications
 
 _Changes:_
 
-- [X] PDO-3491 "12-delegated-admin.dsconfig" file replaced with "00-reset-delegated-admin.dsconfig" and "01-add-delegated-admin.dsconfig"
+- [X] PDO-2300 Add ArgoCD slack notifications for better visibility into failure to apply manifests
 - [X] PDO-3599 Autoupdate to minor releases of PingOne AS Product Images
 - [X] PDO-3785 Add PGO database to CI/CD
 - [X] PDO-3791 Create hook script to enable outbound provisioning
@@ -32,22 +43,28 @@ _Changes:_
 - [X] PDO-4089 Notification Framework: Introduce argo-events
 - [X] PDO-4096 Failed Cluster Health Job hanging around
 - [X] PDO-4104 PA Health Check Tests
+- [X] PDO-4110 Switch Delegated Admin to use OAuth Authorization Flow instead of Implicit Flow
 - [X] PDO-4117 Go Proxy: Write Manifest to Deploy RadSec Proxy
 - [X] PDO-4150 Tag _grokparsefailure and log components are missing
 - [X] PDO-4176 Enable desired NewRelic Logging
 - [X] PDO-4178 Setup NewRelic Kube Events Integration
 - [X] PDO-4207 Add ArgoCD slack notifications secret within SSM and remove from k8s secret
 - [X] PDO-4261 Upgrade Kustomize to v4.5.7
+- [X] PDO-4274 New relic not reporting accurate pod metrics for Star
 - [X] PDO-4281 Update ping-cloud namespace variable
 - [X] PDO-4290 Add simple postgres operator (PGO) database
 - [X] PDO-4320 Set AllowPrivilegeEscalation to False
 - [X] PDO-4326 Implement must-have monitoring/alerting of PGO
 - [X] PDO-4327 Implement PGO resource sizing per environment
+- [X] PDO-4351 Events are not displayed in New Relic for some pods in some namespaces
 - [X] PDO-4397 Add new env_var "DEFAULT_USER_BASE_DN"
 - [X] PDO-4391 Notification Framework: alert on backup failure
 - [X] PDO-4401 LEGACY_LOGGING mode: Change default from true to false (off) - Leave flag available
+- [X] PDO-4438 PostgreSQL pods and secrets not deployed
 - [X] PDO-4442 Update healthcheck service keys to use consistent format
 - [X] PDO-4476 Modify PGO feature flag to not require update-cluster script
+- [X] PDO-4480 newrelic-license-secret-exporter job not present in newrelic namespace
+- [X] PDO-4491 Run Radius as a sidecar container alongside PingFederate engine
 - [X] PDO-4498 Move nri-kubernetes images to dev ECR within PCB
 
 ### 1.15.0.0

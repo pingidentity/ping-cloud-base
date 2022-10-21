@@ -73,7 +73,6 @@ spec:
                   fieldPath: metadata.annotations['CLUSTER_NAME']
             - name: "NRI_KUBERNETES_VERBOSE"
               value: "false"
-
             - name: "NRI_KUBERNETES_NODENAME"
               valueFrom:
                 fieldRef:
@@ -107,6 +106,8 @@ spec:
           ports:
             - containerPort: 8001
           env:
+            - name: "NRI_KUBERNETES_VERBOSE"
+              value: "false"
             - name: "NRIA_LICENSE_KEY"
               valueFrom:
                 secretKeyRef:
@@ -256,7 +257,6 @@ spec:
                   fieldPath: metadata.annotations['CLUSTER_NAME']
             - name: "NRI_KUBERNETES_VERBOSE"
               value: "false"
-
             - name: "NRI_KUBERNETES_NODENAME"
               valueFrom:
                 fieldRef:
@@ -292,6 +292,8 @@ spec:
           ports:
             - containerPort: 8003
           env:
+            - name: "NRI_KUBERNETES_VERBOSE"
+              value: "false"
             - name: NRIA_LICENSE_KEY
               valueFrom:
                 secretKeyRef:

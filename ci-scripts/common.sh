@@ -96,6 +96,8 @@ set_env_vars() {
 
     export LEGACY_LOGGING=False
 
+    export PF_PROVISIONING_ENABLED=true
+
     # Service SSM should be available for all environments
     export SERVICE_SSM_PATH_PREFIX="/${SELECTED_KUBE_NAME}/pcpt/service"
 
@@ -658,16 +660,6 @@ expected_files() {
     tr ' ' '\n' |
     sort
   done
-}
-
-########################################################################################################################
-# Gets rollout status and waits to return until either the timeout is reached or the rollout is ready
-########################################################################################################################
-wait_for_rollout() {
-  resource="${1}"
-  namespace="${2}"
-  timeout="${3}"
-  time kubectl rollout status "${resource}" --timeout "${timeout}s" -n "${namespace}" -w
 }
 
 ########################################################################################################################
