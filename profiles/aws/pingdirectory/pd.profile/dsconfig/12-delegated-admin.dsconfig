@@ -124,7 +124,7 @@ dsconfig set-http-servlet-extension-prop \
 # Create Delegated Admin user.
 #
 dsconfig create-delegated-admin-rights \
-  --rights-name "administrator-user-${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" \
+  --rights-name "administrator-user-${DA_DEFAULT_GRANT_TYPE_CLIENT_ID}" \
   --set "admin-user-dn:uid=admin,${USER_BASE_DN}" \
   --set enabled:true
 
@@ -132,7 +132,7 @@ dsconfig create-delegated-admin-rights \
 # Create Delegated Admin Rights for users.
 #
 dsconfig create-delegated-admin-resource-rights \
-  --rights-name "administrator-user-${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" \
+  --rights-name "administrator-user-${DA_DEFAULT_GRANT_TYPE_CLIENT_ID}" \
   --rest-resource-type users \
   --set admin-permission:create \
   --set admin-permission:read \
@@ -143,7 +143,7 @@ dsconfig create-delegated-admin-resource-rights \
   --set enabled:true
 
 dsconfig create-delegated-admin-resource-rights  \
-  --rights-name "administrator-user-${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID}" \
+  --rights-name "administrator-user-${DA_DEFAULT_GRANT_TYPE_CLIENT_ID}" \
   --rest-resource-type groups \
   --set admin-permission:create \
   --set admin-permission:read \
