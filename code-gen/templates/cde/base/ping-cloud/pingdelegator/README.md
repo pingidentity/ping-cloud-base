@@ -33,7 +33,7 @@ the cluster-state repo. Note that this will be effective only on the next rollou
 
 ```shell
 dsconfig set-delegated-admin-rights-prop \
-    --rights-name administrator-user-${DA_IMPLICIT_GRANT_TYPE_CLIENT_ID} \
+    --rights-name administrator-user-${DA_DEFAULT_GRANT_TYPE_CLIENT_ID} \
     --remove admin-user-dn:uid=admin,${USER_BASE_DN} \
     --set admin-group-dn:cn=administrators,${GROUP_BASE_DN}
 ```

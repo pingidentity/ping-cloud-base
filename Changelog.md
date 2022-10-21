@@ -20,6 +20,7 @@
 - Added argo-image-updater version v0.12.0
 - Fix: Events are not displayed in New Relic for some pods in some namespaces 
 - Fix: New relic not reporting accurate pod metrics for some environments
+- Switch Delegated Admin to use OAuth Authorization Flow instead of Implicit Flow
 
 _Changes:_
 
@@ -32,6 +33,7 @@ _Changes:_
 - [X] PDO-4089 Notification Framework: Introduce argo-events
 - [X] PDO-4096 Failed Cluster Health Job hanging around
 - [X] PDO-4104 PA Health Check Tests
+- [X] PDO-4110 Switch Delegated Admin to use OAuth Authorization Flow instead of Implicit Flow
 - [X] PDO-4117 Go Proxy: Write Manifest to Deploy RadSec Proxy
 - [X] PDO-4150 Tag _grokparsefailure and log components are missing
 - [X] PDO-4176 Enable desired NewRelic Logging
