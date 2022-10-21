@@ -21,9 +21,11 @@
 - Fix: Events are not displayed in New Relic for some pods in some namespaces 
 - Fix: New relic not reporting accurate pod metrics for some environments
 - Switch Delegated Admin to use OAuth Authorization Flow instead of Implicit Flow
+- Added ArgoCD slack notifications
 
 _Changes:_
 
+- [X] PDO-2300 Add ArgoCD slack notifications for better visibility into failure to apply manifests
 - [X] PDO-3599 Autoupdate to minor releases of PingOne AS Product Images
 - [X] PDO-3785 Add PGO database to CI/CD
 - [X] PDO-3791 Create hook script to enable outbound provisioning
