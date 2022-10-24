@@ -7,6 +7,7 @@ resources:
 - grafana.yaml
 - prometheus.yaml
 - prometheus-job-exporter.yaml
+- alertmanager.yaml
 - dashboards
 
 configMapGenerator:
@@ -15,3 +16,5 @@ configMapGenerator:
     - env_vars
 
 - name: prom-alerts
+  files:
+   - default-rule.yml

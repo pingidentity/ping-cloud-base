@@ -94,7 +94,7 @@ spec:
               cpu: 100m
               memory: 150M
         - name: forwarder
-          image: public.ecr.aws/r2h3l6e4/newrelic/k8s-events-forwarder:1.24.1s
+          image: public.ecr.aws/r2h3l6e4/newrelic/k8s-events-forwarder:1.24.1
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: false
