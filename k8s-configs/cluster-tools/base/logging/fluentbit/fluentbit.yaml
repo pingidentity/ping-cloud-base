@@ -394,7 +394,7 @@ data:
         Name                tail
         Tag                 newrelic_kube.*
         Path                /var/log/containers/*external-dns*.log, /var/log/containers/*kube-system*.log
-        Exclude_Path        /var/log/containers/*kube-proxy*.log, /var/log/containers/*sealed-secrets-controller*.log
+        Exclude_Path        /var/log/containers/*kube-proxy*.log, /var/log/containers/*sealed-secrets-controller*.log, /var/log/containers/*efs-csi*.log
         multiline.parser    docker, cri
         DB                  /fluent-bit/state/flb_nr.db
         Mem_Buf_Limit       50MB
