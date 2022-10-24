@@ -102,7 +102,7 @@
 # NEW_RELIC_LICENSE_KEY     | The key of NewRelic APM Agent used to send data to | The SSM path: ssm://pcpt/sre/new-relic/java-agent-license-key
 #                           | NewRelic account                                   |
 #                           |                                                    |
-# NOTIFICATION_ENABLED       | Flag indicating if alerts should be sent to the    | False
+# NOTIFICATION_ENABLED      | Flag indicating if alerts should be sent to the    | False
 #                           | endpoint configured in the argo-events             |
 #                           |                                                    |
 # ORCH_API_SSM_PATH_PREFIX  | The prefix of the SSM path that contains MyPing    | /pcpt/orch-api
@@ -118,7 +118,7 @@
 #                           | must use an https scheme as shown by the default   |
 #                           | value.                                             |
 #                           |                                                    |
-# PING_IDENTITY_DEVOPS_KEY  | The key to the devops user.                         | The SSM path:
+# PING_IDENTITY_DEVOPS_KEY  | The key to the devops user.                        | The SSM path:
 #                           |                                                    | ssm://pcpt/devops-license/key
 #                           |                                                    |
 # PING_IDENTITY_DEVOPS_USER | A user with license to run Ping Software.          | The SSM path:
@@ -137,6 +137,12 @@
 #                           |                                                    |
 # PRIMARY_TENANT_DOMAIN     | The tenant's domain in the primary region.         | Same as TENANT_DOMAIN.
 #                           | Only used if IS_MULTI_CLUSTER is true.             |
+#                           |                                                    |
+# PROM_NOTIFICATION_ENABLED | Flag indicating if PGO alerts should be sent to    | False
+#                           | the endpoint configured in the argo-events         |
+#                           |                                                    |
+# PROM_SLACK_CHANNEL        | The Slack channel name for PGO argo-events to send | CDE environment: p1as-application-oncall
+#                           | notification.                                      | Dev environment: nowhere
 #                           |                                                    |
 # REGION                    | The region where the tenant environment is         | us-east-2
 #                           | deployed. On AWS, this is a required parameter     |
@@ -333,6 +339,10 @@ export PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED:-false}
 # Default notification configuration for dev environment.
 export NOTIFICATION_ENABLED=${NOTIFICATION_ENABLED:-false}
 export SLACK_CHANNEL=${SLACK_CHANNEL:-nowhere}
+
+# PGO Prometheus notification.
+export PROM_NOTIFICATION_ENABLED=${PROM_NOTIFICATION_ENABLED:-false}
+export PROM_SLACK_CHANNEL=${PROM_SLACK_CHANNEL:-nowhere}
 
 # MySQL database names cannot have dashes. So transform dashes into underscores.
 ENV_NAME_NO_DASHES=$(echo ${BELUGA_ENV_NAME} | tr '-' '_')

@@ -17,6 +17,7 @@
 - update pingcloud-bom and pingcloud-oauth securityContext with allowPrivilegeEscalation set to false 
 - Use camelCase for healthcheck test tags and filenames
 - Implemented must-have monitoring/alerting of PGO
+- Implement PGO alerting via argo-events
 - Added argo-image-updater version v0.12.0
 - Fix: Events are not displayed in New Relic for some pods in some namespaces 
 - Fix: New relic not reporting accurate pod metrics for some environments
@@ -54,6 +55,7 @@ _Changes:_
 - [X] PDO-4401 LEGACY_LOGGING mode: Change default from true to false (off) - Leave flag available
 - [X] PDO-4438 PostgreSQL pods and secrets not deployed
 - [X] PDO-4442 Update healthcheck service keys to use consistent format
+- [X] PDO-4454 Implement Prometheus Alerting
 - [X] PDO-4476 Modify PGO feature flag to not require update-cluster script
 - [X] PDO-4480 newrelic-license-secret-exporter job not present in newrelic namespace
 - [X] PDO-4491 Run Radius as a sidecar container alongside PingFederate engine

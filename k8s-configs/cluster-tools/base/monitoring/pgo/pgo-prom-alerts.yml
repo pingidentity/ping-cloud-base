@@ -377,4 +377,5 @@ groups:
       severity: critical
       severity_num: 300
     annotations:
+      summary: Full backup missing
       description: 'Backup Full status missing for pf-provisioning. Check that pgbackrest info command is working on target system.'
