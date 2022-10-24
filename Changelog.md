@@ -23,6 +23,7 @@
 - Fix: New relic not reporting accurate pod metrics for some environments
 - Switch Delegated Admin to use OAuth Authorization Flow instead of Implicit Flow
 - Added ArgoCD slack notifications
+- Allow multiple Pass-Through-Authentication plugin instances
 
 _Changes:_
 
@@ -60,6 +61,7 @@ _Changes:_
 - [X] PDO-4480 newrelic-license-secret-exporter job not present in newrelic namespace
 - [X] PDO-4491 Run Radius as a sidecar container alongside PingFederate engine
 - [X] PDO-4498 Move nri-kubernetes images to dev ECR within PCB
+- [X] PDO-4558 Allow multiple Pass-Through-Authentication plugin instances
 
 ### 1.15.0.0
 
