@@ -1,6 +1,13 @@
 # Changelog
 
-### 1.14.0
+### 1.14.0.1
+- Allow multiple Pass-Through-Authentication plugin instances
+
+_Changes:_
+
+- [X] PDO-4547 Allow multiple Pass-Through-Authentication plugin instances
+
+### 1.14.0.0
 - Update cluster-tool external-dns from version v0.08.0 to version v.0.11.0
 - New image tagging convention for all Ping applications
 - SigSci Agent upgraded from v4.24.1 to v4.28.0
