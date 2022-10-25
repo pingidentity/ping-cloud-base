@@ -9,87 +9,61 @@ data:
     slack:
       attachments: |
         [{
-          "title": "{{ .app.metadata.name}}",
-          "title_link": "{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+          "title": "{{ .app.metadata.name}} - Health Degraded",
           "color": "#f4c030",
           "fields": [
-          {
-            "title": "Sync Status",
-            "value": "{{.app.status.sync.status}}",
-            "short": true
-          },
-          {
-            "title": "Repository",
-            "value": "{{.app.spec.source.repoURL}}",
-            "short": true
-          }
-          {{range $index, $c := .app.status.conditions}}
-          {{if not $index}},{{end}}
-          {{if $index}},{{end}}
-          {
-            "title": "{{$c.type}}",
-            "value": "{{$c.message}}",
-            "short": true
-          }
-          {{end}}
+            { "Title": "Health status",
+              "value": "{{.app.status.health.status}}"б
+              "short": true
+            },
+            {
+              "title": "Current Sync Status",
+              "value": "{{.app.status.sync.status}}",
+              "short": true
+            },
+            {
+              "title": "Last Sync Result",
+              "value": "{{.app.status.operationState.phase}}",
+              "short": true
+            }
           ]
         }]
   template.app-sync-failed: |
     slack:
       attachments: |
         [{
-          "title": "{{ .app.metadata.name}}",
-          "title_link":"{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+          "title": "{{ .app.metadata.name}} - Last Sync Failed",
           "color": "#E96D76",
           "fields": [
-          {
-            "title": "Sync Status",
-            "value": "{{.app.status.sync.status}}",
-            "short": true
-          },
-          {
-            "title": "Repository",
-            "value": "{{.app.spec.source.repoURL}}",
-            "short": true
-          }
-          {{range $index, $c := .app.status.conditions}}
-          {{if not $index}},{{end}}
-          {{if $index}},{{end}}
-          {
-            "title": "{{$c.type}}",
-            "value": "{{$c.message}}",
-            "short": true
-          }
-          {{end}}
+            {
+              "title": "Current Sync Status",
+              "value": "{{.app.status.sync.status}}",
+              "short": true
+            },
+            {
+              "title": "Last Sync Result",
+              "value": "{{.app.status.operationState.phase}}",
+              "short": true
+            }
           ]
         }]
   template.app-sync-status-unknown: |
     slack:
       attachments: |
         [{
-          "title": "{{ .app.metadata.name}}",
-          "title_link":"{{.context.argocdUrl}}/applications/{{.app.metadata.name}}",
+          "title": "{{ .app.metadata.name}} - Sync status unknown",
           "color": "#d3d3d3",
           "fields": [
-          {
-            "title": "Sync Status",
-            "value": "{{.app.status.sync.status}}",
-            "short": true
-          },
-          {
-            "title": "Repository",
-            "value": "{{.app.spec.source.repoURL}}",
-            "short": true
-          }
-          {{range $index, $c := .app.status.conditions}}
-          {{if not $index}},{{end}}
-          {{if $index}},{{end}}
-          {
-            "title": "{{$c.type}}",
-            "value": "{{$c.message}}",
-            "short": true
-          }
-          {{end}}
+            {
+              "title": "Current Sync Status",
+              "value": "{{.app.status.sync.status}}",
+              "short": true
+            },
+            {
+              "title": "Last Sync Result",
+              "value": "{{.app.status.operationState.phase}}",
+              "short": true
+            }
           ]
         }]
   trigger.on-health-degraded: |
