@@ -1,0 +1,8 @@
+# enable tcp port to allow radius client traffic
+- op: add
+  path: /spec/ports/-
+  value:
+    name: tcp
+    port: 2083
+    protocol: TCP
+    targetPort: 2083
