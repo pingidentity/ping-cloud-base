@@ -29,15 +29,6 @@ spec:
 
 ---
 
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: radsecproxy-ingress
-  namespace: ping-cloud
-$patch: delete
-
----
-
 apiVersion: v1
 kind: ServiceAccount
 metadata:
