@@ -182,6 +182,9 @@
 # PRIMARY_TENANT_DOMAIN      | In multi-cluster environments, the primary domain. | Same as TENANT_DOMAIN.
 #                            | Only used if IS_MULTI_CLUSTER is true.             |
 #                            |                                                    |
+# RADIUS_PROXY_ENABLED       | Feature Flag - Indicates if the radius proxy       | False
+#                            | feature for PingFederate engines is enabled        |
+#                            |                                                    |
 # REGION                     | The region where the tenant environment is         | us-west-2
 #                            | deployed. For PCPT, this is a required parameter   |
 #                            | to Container Insights, an AWS-specific logging     |
@@ -359,6 +362,7 @@ ${NOTIFICATION_ENABLED}
 ${SLACK_CHANNEL}
 ${NOTIFICATION_ENDPOINT}
 ${PF_PROVISIONING_ENABLED}
+${RADIUS_PROXY_ENABLED}
 ${IMAGE_TAG_PREFIX}
 ${ARGOCD_SLACK_TOKEN_BASE64}'
 
@@ -610,6 +614,8 @@ echo "Initial SSH_ID_KEY_FILE: ${SSH_ID_KEY_FILE}"
 echo "Initial PF_PROVISIONING_ENABLED: ${PF_PROVISIONING_ENABLED}"
 echo "Initial PGO_BACKUP_BUCKET_NAME: ${PGO_BACKUP_BUCKET_NAME}"
 
+echo "Initial RADIUS_PROXY_ENABLED: ${RADIUS_PROXY_ENABLED}"
+
 echo "Initial TARGET_DIR: ${TARGET_DIR}"
 echo "Initial IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
 
@@ -697,6 +703,7 @@ export IMAGE_TAG_PREFIX="${K8S_GIT_BRANCH%.*}"
 
 ### FEATURE FLAG DEFAULTS ###
 export PF_PROVISIONING_ENABLED="${PF_PROVISIONING_ENABLED:-false}"
+export RADIUS_PROXY_ENABLED="${RADIUS_PROXY_ENABLED:-false}"
 
 ### Default environment variables ###
 export ECR_REGISTRY_NAME='public.ecr.aws/r2h3l6e4'
@@ -742,6 +749,7 @@ echo "Using SSH_ID_PUB_FILE: ${SSH_ID_PUB_FILE:-${AUTO_GENERATED_STR}}"
 echo "Using SSH_ID_KEY_FILE: ${SSH_ID_KEY_FILE:-${AUTO_GENERATED_STR}}"
 
 echo "Using PF_PROVISIONING_ENABLED: ${PF_PROVISIONING_ENABLED}"
+echo "Using RADIUS_PROXY_ENABLED: ${RADIUS_PROXY_ENABLED}"
 
 echo "Using TARGET_DIR: ${TARGET_DIR}"
 echo "Using IS_BELUGA_ENV: ${IS_BELUGA_ENV}"

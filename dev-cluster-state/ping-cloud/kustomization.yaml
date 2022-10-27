@@ -474,4 +474,4 @@ patchesStrategicMerge:
       ${TOPOLOGY_DESCRIPTOR}
 
 ### Comment this out to deploy the Radius Proxy
-#- disable-radsec.yaml
+- disable-radsec.yaml

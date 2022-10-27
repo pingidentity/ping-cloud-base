@@ -235,6 +235,7 @@ PROMETHEUS_PING_NAMESPACE=${PING_CLOUD_NAMESPACE}
 # Runbook: https://confluence.pingidentity.com/display/PingCloud/How+to+Enable+and+Configure+PingFederate+Provisioning
 PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED}
 
+RADIUS_PROXY_ENABLED=${RADIUS_PROXY_ENABLED}
 ########################################################################################################################
 
 # Default argo-events notification configuration
