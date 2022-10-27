@@ -62,14 +62,14 @@ spec:
         envFrom:
         - configMapRef:
             name: pingaccess-admin-environment-variables
-      - name: pingaccess-upgrade
-        securityContext:
-          runAsGroup: 9999
-          runAsNonRoot: true
-          runAsUser: 9031
-          allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v1.16-release-branch-latest
-        imagePullPolicy: Always
+#      - name: pingaccess-upgrade
+#        securityContext:
+#          runAsGroup: 9999
+#          runAsNonRoot: true
+#          runAsUser: 9031
+#          allowPrivilegeEscalation: false
+#        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v1.16-release-branch-latest
+#        imagePullPolicy: Always
       - name: wait-for-services
         # FIXME PDO-3576: switch to same user as app
         securityContext:
