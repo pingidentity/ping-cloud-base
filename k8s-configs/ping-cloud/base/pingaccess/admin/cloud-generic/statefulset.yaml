@@ -86,6 +86,9 @@ spec:
           mountPath: /opt/staging/hooks/logger.lib.sh
           subPath: logger.lib.sh
         - name: data-dir
+          mountPath: /opt/staging/hooks/22-upgrade-server.sh
+          subPath: 22-upgrade-server.sh
+        - name: data-dir
           mountPath: /opt/staging/jmx_prometheus_javaagent-0.14.0.jar
           subPath: jmx_prometheus_javaagent-0.14.0.jar
         - name: data-dir
