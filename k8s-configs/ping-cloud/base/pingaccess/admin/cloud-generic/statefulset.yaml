@@ -70,31 +70,6 @@ spec:
           allowPrivilegeEscalation: false
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v1.16-release-branch-latest
         imagePullPolicy: Always
-        command:
-        - /upgrade.sh
-        volumeMounts:
-        - name: ssh-dir
-          mountPath: /.ssh
-        - name: data-dir
-          mountPath: /data
-        - name: ssh-id-key-secret
-          mountPath: /id_rsa
-          subPath: id_rsa
-        - name: known-hosts-config
-          mountPath: /known_hosts
-          subPath: known_hosts
-        - name: pingaccess-init
-          mountPath: /upgrade.sh
-          subPath: upgrade.sh
-        - name: pingaccess-init
-          mountPath: /utils.lib.sh
-          subPath: utils.lib.sh
-        - name: pingaccess-init
-          mountPath: /logger.lib.sh
-          subPath: logger.lib.sh
-        envFrom:
-        - configMapRef:
-            name: pingaccess-admin-environment-variables
       - name: wait-for-services
         # FIXME PDO-3576: switch to same user as app
         securityContext:
