@@ -15,10 +15,6 @@ images:
   newName: ${ECR_REGISTRY_NAME}/pingcloud-services/p14c-integration${ECR_ENV}
   newTag: ${P14C_INTEGRATION_IMAGE_TAG}
 
-patchesStrategicMerge:
-### Comment this out to deploy the Radius Proxy
-- disable-radsec.yaml
-
 patchesJson6902:
 
 ### PingFederate Engine Last Update Config Map ###

@@ -43,7 +43,9 @@ spec:
                   fieldPath: metadata.namespace
           envFrom:
             - configMapRef:
-               name: pingcloud-radsecproxy-environment-variables
+                name: pingcloud-radsecproxy-environment-variables
+            - configMapRef:
+                name: pingfederate-environment-variables
           volumeMounts:
             - name: acme-tls-cert
               mountPath: /usr/local/secrets/certs
