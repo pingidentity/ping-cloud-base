@@ -2,11 +2,11 @@
 
 ### 1.17.0.0
 
-- No Changes
+- Remove logstash tolerations
 
 _Changes:_
 
-- None
+- [X] PDO-4432 Logstash has broken tolerations
 
 ### 1.16.0.0
 
