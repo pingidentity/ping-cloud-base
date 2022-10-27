@@ -691,3 +691,45 @@ get_pgo_backup_bucket_name() {
 
   echo "${pgo_backup_env#s3://}"
 }
+
+########################################################################################################################
+# Set a given variable name based on an SSM prefix and suffix. If SSM exists, the ssm_template will
+# be used to set the value. If the SSM prefix is 'unused', no value is set and SSM isn't checked.
+#
+# Arguments
+#   $1 -> var_name - the name of the variable to set
+#   $2 -> ssm_prefix - SSM prefix
+#   $3 -> ssm_suffix - The rest of the SSM key past the prefix
+#   $4 -> ssm_template - A template to render with ${ssm_value} - for example - 'Hello my name is ${ssm_value}' will set
+#                        the variable $var_name to that rendered value
+########################################################################################################################
+set_templated_var() {
+  local var_name="${1}"
+  local ssm_prefix="${2}"
+  local ssm_suffix="${3}"
+  local ssm_template="${4}"
+
+  # Get the actual variable value
+  local var_value="${!1}"
+
+  if [[ ${var_value} != '' ]]; then
+    echo "${var_name} already set to '${var_value}'"
+    return
+  elif [[ ${ssm_prefix} != "unused" ]]; then
+    echo "${var_name} is not set, trying to find it in SSM..."
+    if ! ssm_value=$(get_ssm_value "${ssm_prefix}/${ssm_suffix}"); then
+      echo "WARN: Issue fetching SSM path '${ssm_prefix}/${ssm_suffix}' - ${ssm_value}...
+            Continuing as this could be a disabled environment"
+    else
+      echo "Found '${ssm_prefix}/${ssm_suffix}' in SSM"
+      # Substitute ssm_value within the supplied ssm template
+      var_value=$(echo "${ssm_template}" | ssm_value=${ssm_value} envsubst)
+    fi
+  else
+    echo "Not fetching SSM - it is set to 'unused'"
+  fi
+
+  # Always export the variable and value
+  echo "Setting '${var_name}' to '${var_value}'"
+  export "${var_name}=${var_value}"
+}
