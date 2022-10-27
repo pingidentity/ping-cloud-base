@@ -56,6 +56,7 @@ _Changes:_
 - [X] PDO-4401 LEGACY_LOGGING mode: Change default from true to false (off) - Leave flag available
 - [X] PDO-4438 PostgreSQL pods and secrets not deployed
 - [X] PDO-4442 Update healthcheck service keys to use consistent format
+- [X] PDO-4446 Handle missing SSM parameters
 - [X] PDO-4454 Implement Prometheus Alerting
 - [X] PDO-4476 Modify PGO feature flag to not require update-cluster script
 - [X] PDO-4480 newrelic-license-secret-exporter job not present in newrelic namespace

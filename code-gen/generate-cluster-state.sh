@@ -419,72 +419,6 @@ add_derived_variables() {
 }
 
 ########################################################################################################################
-# Export IRSA annotation for the provided environment.
-#
-# Arguments
-#   ${1} -> The SSM path prefix which stores CDE account IDs of Ping Cloud environments.
-#   ${2} -> The environment name.
-########################################################################################################################
-add_irsa_variables() {
-  if test "${IRSA_PING_ANNOTATION_KEY_VALUE}"; then
-    export IRSA_PING_ANNOTATION_KEY_VALUE="${IRSA_PING_ANNOTATION_KEY_VALUE}"
-    return
-  fi
-
-  local ssm_path_prefix="$1"
-  local env="$2"
-
-  # Default empty string
-  IRSA_PING_ANNOTATION_KEY_VALUE=''
-
-  if [ "${ssm_path_prefix}" != "unused" ]; then
-
-    # Getting value from ssm parameter store.
-    if ! ssm_value=$(get_ssm_value "${ssm_path_prefix}/${env}"); then
-      echo "Error: ${ssm_value}"
-      exit 1
-    fi
-
-    # IRSA for ping product pods. The role name is predefined as a part of the interface contract.
-    IRSA_PING_ANNOTATION_KEY_VALUE="eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role/pcpt/irsa-roles/irsa-ping"
-  fi
-
-  export IRSA_PING_ANNOTATION_KEY_VALUE="${IRSA_PING_ANNOTATION_KEY_VALUE}"
-}
-
-########################################################################################################################
-# Export NLB EIP annotation for the provided environment.
-#
-# Arguments
-#   ${1} -> The SSM path prefix which stores CDE account IDs of Ping Cloud environments.
-#   ${2} -> The environment name.
-########################################################################################################################
-add_nlb_variables() {
-  local ssm_path_prefix="$1"
-  local env="$2"
-
-  if test "${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"; then
-    export NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE="${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
-  else
-    # Default empty string
-    NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE=''
-
-    if [ "${ssm_path_prefix}" != "unused" ]; then
-
-      # Getting value from ssm parameter store.
-      if ! ssm_value=$(get_ssm_value "${ssm_path_prefix}/${env}/nginx-public"); then
-        echo "Error: ${ssm_value}"
-        exit 1
-      fi
-
-      NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE="service.beta.kubernetes.io/aws-load-balancer-eip-allocations: ${ssm_value}"
-    fi
-
-    export NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE="${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
-  fi
-}
-
-########################################################################################################################
 # Export the IS_GA environment variable for the provided customer. If it's already present as a boolean environment
 # variable, then export it as is. Otherwise, if the SSM path prefix for it is not 'unused', then try to retrieve it out
 # of SSM. On error, print a warning message, but default the value to false. On success, use the value from SSM, if it
@@ -698,6 +632,11 @@ export TARGET_DIR="${TARGET_DIR:-/tmp/sandbox}"
 export ACCOUNT_BASE_PATH=${ACCOUNT_BASE_PATH:-ssm://pcpt/config/k8s-config/accounts}
 export PGO_BUCKET_URI_SUFFIX=${PGO_BUCKET_URI_SUFFIX:-/pgo-bucket/uri}
 
+# IRSA for ping product pods. The role name is predefined as a part of the interface contract.
+export IRSA_PING_ANNOTATION_KEY_VALUE=${IRSA_PING_ANNOTATION_KEY_VALUE:-''}
+
+export NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE=${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE:-''}
+
 ### Variable used by argocd-image-updater to scan container image tags matching the prefix.
 export IMAGE_TAG_PREFIX="${K8S_GIT_BRANCH%.*}"
 
@@ -782,13 +721,13 @@ CDE_TEMPLATES_DIR="${TEMPLATES_HOME}/cde"
 
 #Adding an ArgoCD notification slack token
 ARGOCD_SLACK_TOKEN_SSM_PATH="${ARGOCD_SLACK_TOKEN_SSM_PATH:-ssm://pcpt/argocd/notification/slack/access_token}"
-  if ! ssm_value=$(get_ssm_value "${ARGOCD_SLACK_TOKEN_SSM_PATH#ssm:/}"); then
-    echo "Warn: ${ssm_value}"
-    echo "ARGOCD_SLACK_TOKEN is unset, slack notification and argo-events will not work"
-    echo "Using default invalid token"
-    ARGOCD_SLACK_TOKEN="using_default_invalid_token"
-  else
-    ARGOCD_SLACK_TOKEN="${ssm_value}"
+if ! ssm_value=$(get_ssm_value "${ARGOCD_SLACK_TOKEN_SSM_PATH#ssm:/}"); then
+  echo "Warn: ${ssm_value}"
+  echo "ARGOCD_SLACK_TOKEN is unset, slack notification and argo-events will not work"
+  echo "Using default invalid token"
+  ARGOCD_SLACK_TOKEN="using_default_invalid_token"
+else
+  ARGOCD_SLACK_TOKEN="${ssm_value}"
 fi
 
 export ARGOCD_SLACK_TOKEN_BASE64=$(base64_no_newlines "${ARGOCD_SLACK_TOKEN}")
@@ -894,6 +833,8 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   export ENV="${ENV}"
   export ENVIRONMENT_TYPE="\${ENV}"
 
+  echo "-----> Starting to create environment '${ENV}'"
+
   # The base URL for kustomization files and environment will be different for each CDE.
   # On migrated customers, we must preserve the size of the customers.
   case "${ENV}" in
@@ -985,8 +926,14 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   export CLUSTER_NAME_LC="${CLUSTER_NAME_LC}"
 
   add_derived_variables
-  add_irsa_variables "${ACCOUNT_ID_PATH_PREFIX:-unused}" "${ENV}"
-  add_nlb_variables "${NLB_EIP_PATH_PREFIX:-unused}" "${ENV}"
+
+  # shellcheck disable=SC2016
+  IRSA_TEMPLATE='eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role/pcpt/irsa-roles/irsa-ping'
+  set_templated_var "IRSA_PING_ANNOTATION_KEY_VALUE" "${ACCOUNT_ID_PATH_PREFIX:-unused}" "${ENV}" "${IRSA_TEMPLATE}"
+
+  NLB_TEMPLATE='service.beta.kubernetes.io/aws-load-balancer-eip-allocations: ${ssm_value}'
+  set_templated_var "NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE" "${NLB_EIP_PATH_PREFIX:-unused}" "${ENV}/nginx-public" \
+                   "${NLB_TEMPLATE}"
 
   PGO_BACKUP_BUCKET_NAME=${PGO_BACKUP_BUCKET_NAME:-"${ACCOUNT_BASE_PATH}/${ENV}${PGO_BUCKET_URI_SUFFIX}"}
   export PGO_BACKUP_BUCKET_NAME=$(get_pgo_backup_bucket_name "${PGO_BACKUP_BUCKET_NAME}")
@@ -1070,6 +1017,8 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     # Remove the pingcentral profiles
     rm -rf "${ENV_PROFILES_DIR}/${PING_CENTRAL}"
   fi
+
+  echo "=====> Done creating environment '${ENV}'"
 )
 done
 

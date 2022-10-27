@@ -170,7 +170,8 @@ ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}
 ${DATASYNC_P1AS_SYNC_SERVER}
 ${LEGACY_LOGGING}
 ${ARGOCD_SLACK_TOKEN_BASE64}
-${RADIUS_PROXY_ENABLED}'
+${RADIUS_PROXY_ENABLED}
+${PF_PROVISIONING_ENABLED}'
 
 ########################################################################################################################
 # Export some derived environment variables.
