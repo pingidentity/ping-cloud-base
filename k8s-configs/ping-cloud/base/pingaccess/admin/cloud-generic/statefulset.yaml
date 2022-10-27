@@ -71,6 +71,10 @@ spec:
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v1.16-release-branch-latest
         imagePullPolicy: Always
         command:  ['sh', '-c', 'echo The app is running! && sleep 60']
+        volumeMounts:
+        - name: data-dir
+          mountPath: /opt/staging/hooks/22-upgrade.sh
+          subPath: 22-upgrade.sh
       - name: wait-for-services
         # FIXME PDO-3576: switch to same user as app
         securityContext:
