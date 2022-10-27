@@ -70,7 +70,7 @@ spec:
           allowPrivilegeEscalation: false
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v1.16-release-branch-latest
         imagePullPolicy: Always
-        command:  ['sh', '-c', 'echo The app is running! && sleep 60']
+        command:  [ /opt/staging/hooks/22-upgrade.sh ]
         volumeMounts:
         - name: data-dir
           mountPath: /opt/staging/hooks/22-upgrade.sh
