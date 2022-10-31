@@ -9,7 +9,7 @@ workflow:
 ## Pipeline stages ##
 stages:
 # - compile
-# - find-cluster
+- find-cluster
 # - deploy
 # - unit-test
 # - pa-was-test
