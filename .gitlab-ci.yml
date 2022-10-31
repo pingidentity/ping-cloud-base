@@ -8,14 +8,14 @@ workflow:
 
 ## Pipeline stages ##
 stages:
-- compile
-- find-cluster
-- deploy
-- unit-test
-- pa-was-test
+# - compile
+# - find-cluster
+# - deploy
+# - unit-test
+# - pa-was-test
 - integration-test
-- chaos
-- cleanup
+# - chaos
+# - cleanup
 
 ## Global environment variables ##
 variables:
