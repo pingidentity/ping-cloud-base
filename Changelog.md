@@ -3,10 +3,13 @@
 ### 1.17.0.0
 
 - Remove logstash tolerations
+- Prometheus configured to take metrics from second region
+- Prometheus upgraded to 2.39.1
 
 _Changes:_
 
 - [X] PDO-4432 Logstash has broken tolerations
+- [X] PDO-4565 Prometheus: Configure It to Take Metrics from Second Region
 
 ### 1.16.0.0
 

@@ -215,3 +215,12 @@ patchesJson6902:
     - op: replace
       path: /spec/template/metadata/annotations/CLUSTER_NAME
       value: ${NEW_RELIC_ENVIRONMENT_NAME}
+
+- target:
+    kind: Service
+    name: prometheus
+    version: v1
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+      value: prometheus-central.${DNS_ZONE}

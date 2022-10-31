@@ -9,6 +9,9 @@ resources:
 - prometheus-job-exporter.yaml
 - alertmanager.yaml
 - dashboards
+- prometheus-config.yaml
+- prometheus-agent-config.yaml
+- prometheus-agent.yaml
 
 configMapGenerator:
 - name: prometheus-environment-variables
