@@ -24,6 +24,7 @@ class TestPingFederateHealth(TestHealthBase):
         )
 
     def test_health_check_has_pingfederate_results(self):
+        print('hemanth-test',self.endpoint)
         res = requests.get(self.endpoint, verify=False)
         self.assertTrue(
             self.pingfederate in res.json()["health"].keys(),
