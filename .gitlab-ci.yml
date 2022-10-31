@@ -32,17 +32,17 @@ variables:
 #  script:
 #    - ./ci-scripts/compile/compile.sh
 
-# ## Find cluster stage ##
-# find-cluster:
-#   stage: find-cluster
-#   tags:
-#     - default-gitlab-runner
-#   image: ${K8S_DEPLOY_TOOLS}
-#   script:
-#     - ./ci-scripts/deploy/find_cluster.sh
-#   artifacts:
-#     reports:
-#       dotenv: cluster.env
+## Find cluster stage ##
+find-cluster:
+  stage: find-cluster
+  tags:
+    - default-gitlab-runner
+  image: ${K8S_DEPLOY_TOOLS}
+  script:
+    - ./ci-scripts/deploy/find_cluster.sh
+  artifacts:
+    reports:
+      dotenv: cluster.env
 
 # ## Deploy stage ##
 # deploy:
