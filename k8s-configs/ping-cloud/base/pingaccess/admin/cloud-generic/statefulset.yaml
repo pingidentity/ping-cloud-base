@@ -67,9 +67,8 @@ spec:
         imagePullPolicy: Always
         command:  [ /opt/staging/hooks/22-upgrade.sh ]
         volumeMounts:
-        - name: data-dir
-          mountPath: /opt/staging/hooks/22-upgrade.sh
-          subPath: 22-upgrade.sh
+        - name: pingaccess-init
+          mountPath: /upgrade.sh
       - name: wait-for-services
         # FIXME PDO-3576: switch to same user as app
         securityContext:
