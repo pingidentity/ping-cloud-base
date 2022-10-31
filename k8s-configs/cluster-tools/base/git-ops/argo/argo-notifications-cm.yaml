@@ -51,8 +51,8 @@ data:
     slack:
       attachments: |
         [{
-          "title": "{{ .app.metadata.name}} - Sync status unknown",
-          "color": "#d3d3d3",
+          "title": "{{ .app.metadata.name}} - Sync status unknown, sync did not work!",
+          "color": "#E96D76",
           "fields": [
             {
               "title": "Current Sync Status",
