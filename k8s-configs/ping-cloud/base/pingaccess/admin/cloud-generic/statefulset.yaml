@@ -65,7 +65,8 @@ spec:
       - name: pingaccess-upgrade
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v1.16-release-branch-latest
         imagePullPolicy: Always
-        command:  [ /opt/staging/hooks/22-upgrade.sh ]
+        command: 
+        - /upgrade.sh
         volumeMounts:
         - name: pingaccess-init
           mountPath: /upgrade.sh

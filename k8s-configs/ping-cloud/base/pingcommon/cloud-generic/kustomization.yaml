@@ -17,6 +17,7 @@ configMapGenerator:
   - scripts/wait-for-pds.sh
   - scripts/utils.lib.sh
   - scripts/logger.lib.sh
+  - scripts/upgrade.sh
 - name: pingcommon-environment-variables
   envs:
   - env_vars
