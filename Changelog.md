@@ -23,6 +23,7 @@
 - Fix: New relic not reporting accurate pod metrics for some environments
 - Switch Delegated Admin to use OAuth Authorization Flow instead of Implicit Flow
 - Added ArgoCD slack notifications
+- Upgraded Prometheus to v2.39.1
 
 _Changes:_
 
@@ -62,6 +63,7 @@ _Changes:_
 - [X] PDO-4491 Run Radius as a sidecar container alongside PingFederate engine
 - [X] PDO-4492 Enable/disable Radius with environment variable
 - [X] PDO-4498 Move nri-kubernetes images to dev ECR within PCB
+- [X] PDO-4580 Prometheus Pod is being OOMKilled
 
 ### 1.15.0.1
 
