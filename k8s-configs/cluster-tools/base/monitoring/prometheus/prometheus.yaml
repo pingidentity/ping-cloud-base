@@ -326,11 +326,12 @@ spec:
       serviceAccountName: prometheus
       containers:
       - name: prometheus
-        image: public.ecr.aws/r2h3l6e4/prom/prometheus:v2.37.0
+        image: public.ecr.aws/r2h3l6e4/prom/prometheus:v2.39.1
         args:
           - "--config.file=/etc/prometheus/prometheus.yml"
           - "--storage.tsdb.retention.time=$(PROMETHEUS_RETENTION_TIME)"
           - "--enable-feature=expand-external-labels"
+          - "--enable-feature=memory-snapshot-on-shutdown"
         env:
           - name: PROMETHEUS_RETENTION_TIME
             valueFrom:
@@ -352,11 +353,11 @@ spec:
         - containerPort: 9090
         resources:
           limits:
-            cpu: 500m
+            cpu: 1000m
             memory: 4000Mi
           requests:
             cpu: 100m
-            memory: 512Mi
+            memory: 2000Mi
       volumes:
       - name: prometheus-config-volume
         configMap:
