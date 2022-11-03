@@ -163,6 +163,20 @@ spec:
         - name: data-dir
           mountPath: /opt/staging/ds_env_vars
           subPath: ds_env_vars
+        readinessProbe:
+          exec:
+            command: [ /opt/staging/hooks/85-pa-admin-readiness.sh ]
+          initialDelaySeconds: 60
+          periodSeconds: 5
+          failureThreshold: 3
+          timeoutSeconds: 5
+        livenessProbe:
+          exec:
+            command: [ /opt/staging/hooks/99-pa-admin-liveness.sh ]
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          failureThreshold: 4
+          timeoutSeconds: 5        
         ports:
         - containerPort: 9000
         - containerPort: 9090
