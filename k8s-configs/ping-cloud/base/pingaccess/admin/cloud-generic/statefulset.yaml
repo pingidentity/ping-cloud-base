@@ -135,6 +135,10 @@ spec:
           limits:
             memory: "4Gi"
             cpu: 2  
+        volumeMounts:
+        - name: data-dir
+          mountPath: /opt/staging/hooks/logger.lib.sh
+          subPath: logger.lib.sh
       containers:
       - name: pingaccess-admin
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v1.16-release-branch-latest
