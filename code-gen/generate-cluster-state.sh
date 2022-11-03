@@ -66,14 +66,6 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # ACCOUNT_BASE_PATH          | The account's SSM base path                        | The SSM path: /pcpt/config/k8s-config/accounts/
 #                            |                                                    |
-# ACCOUNT_ID_PATH_PREFIX     | The SSM path prefix which stores CDE account IDs   | The string "unused".
-#                            | of the Ping Cloud customers. The environment type  |
-#                            | is appended to the key path before the value is    |
-#                            | retrieved from the SSM endpoint. The IAM role with |
-#                            | the AWS account ID must be added as an annotation  |
-#                            | to the corresponding Kubernetes service account to |
-#                            | enable IRSA (IAM Role for Service Accounts).       |
-#                            |                                                    |
 # ARGOCD_SLACK_TOKEN_SSM_PATH| SSM path to secret token for ArgoCD slack          | The SSM path:
 #                            | notifications                                      | ssm://pcpt/argocd/notification/slack/access_token
 #                            |                                                    |
@@ -555,6 +547,9 @@ echo "Initial IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
 
 echo "Initial ACCOUNT_BASE_PATH: ${ACCOUNT_BASE_PATH}"
 echo "Initial PGO_BUCKET_URI_SUFFIX: ${PGO_BUCKET_URI_SUFFIX}"
+
+echo "Initial IRSA_PING_ANNOTATION_KEY_VALUE: ${IRSA_PING_ANNOTATION_KEY_VALUE}"
+echo "Initial NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE: ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
 echo ---
 
 # Use defaults for other variables, if not present.
@@ -695,6 +690,9 @@ echo "Using IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
 
 echo "Using ACCOUNT_BASE_PATH: ${ACCOUNT_BASE_PATH}"
 echo "Using PGO_BUCKET_URI_SUFFIX: ${PGO_BUCKET_URI_SUFFIX}"
+
+echo "Using IRSA_PING_ANNOTATION_KEY_VALUE: ${IRSA_PING_ANNOTATION_KEY_VALUE}"
+echo "Using NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE: ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
 echo ---
 
 NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY:-ssm://pcpt/sre/new-relic/java-agent-license-key}"
@@ -929,14 +927,16 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
 
   # shellcheck disable=SC2016
   IRSA_TEMPLATE='eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role/pcpt/irsa-roles/irsa-ping'
-  set_templated_var "IRSA_PING_ANNOTATION_KEY_VALUE" "${ACCOUNT_ID_PATH_PREFIX:-unused}" "${ENV}" "${IRSA_TEMPLATE}"
+  set_var "IRSA_PING_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}"
 
+  # shellcheck disable=SC2016
   NLB_TEMPLATE='service.beta.kubernetes.io/aws-load-balancer-eip-allocations: ${ssm_value}'
-  set_templated_var "NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE" "${NLB_EIP_PATH_PREFIX:-unused}" "${ENV}/nginx-public" \
-                   "${NLB_TEMPLATE}"
+  set_var "NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE" "" "${NLB_EIP_PATH_PREFIX:-unused}" "/${ENV}/nginx-public" \
+          "${NLB_TEMPLATE}"
 
-  PGO_BACKUP_BUCKET_NAME=${PGO_BACKUP_BUCKET_NAME:-"${ACCOUNT_BASE_PATH}/${ENV}${PGO_BUCKET_URI_SUFFIX}"}
-  export PGO_BACKUP_BUCKET_NAME=$(get_pgo_backup_bucket_name "${PGO_BACKUP_BUCKET_NAME}")
+  set_var "PGO_BACKUP_BUCKET_NAME" "not_set" "${ACCOUNT_BASE_PATH}${ENV}" "${PGO_BUCKET_URI_SUFFIX}"
+  # Remove s3:// prefix if present
+  export PGO_BACKUP_BUCKET_NAME=${PGO_BACKUP_BUCKET_NAME#s3://}
 
   echo ---
   echo "For environment ${ENV}, using variable values:"
@@ -952,6 +952,8 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   echo "LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
   echo "BACKUP_URL: ${BACKUP_URL}"
   echo "PGO_BACKUP_BUCKET_NAME: ${PGO_BACKUP_BUCKET_NAME}"
+  echo "IRSA_PING_ANNOTATION_KEY_VALUE: ${IRSA_PING_ANNOTATION_KEY_VALUE}"
+  echo "NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE: ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
 
   # Build the kustomization file for the bootstrap tools for each environment
   echo "Generating bootstrap yaml for ${ENV}"
