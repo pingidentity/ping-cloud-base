@@ -139,6 +139,8 @@ spec:
         - name: data-dir
           mountPath: /opt/staging/hooks/logger.lib.sh
           subPath: logger.lib.sh
+        - name: out-dir
+          mountPath: /opt/out
         - name: pingaccess-license
           mountPath: /opt/in/instance/conf/pingaccess.lic
           subPath: pingaccess.lic
