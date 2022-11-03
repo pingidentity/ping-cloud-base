@@ -98,40 +98,6 @@ spec:
             - name: pingdirectory-init
               mountPath: /logger.lib.sh
               subPath: logger.lib.sh
-        - name: newrelic-tags-exporter
-          securityContext:
-            runAsGroup: 9999
-            runAsNonRoot: true
-            runAsUser: 9031
-            allowPrivilegeEscalation: false
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v1.16-release-branch-latest
-          imagePullPolicy: Always
-          envFrom:
-          - configMapRef:
-              name: pingdirectory-environment-variables
-          - secretRef:
-              name: newrelic-license-key
-              optional: false
-          env:
-          - name: NEW_RELIC_APP_NAME
-            value: "pingdirectory"
-          - name: METADATA_EP_URL
-            value: "http://metadata:5000"
-          - name: NEW_RELIC_CONFIG_FILEPATH
-            value: "/opt/shared-dir/newrelic.yml"
-          - name: NAMESPACE
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.namespace
-          - name: POD_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-          - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
-            value: "true"
-          volumeMounts:
-          - name: shared-dir
-            mountPath: /opt/shared-dir
         - name: wait-for-services
           # FIXME PDO-3576: switch to same user as app
           securityContext:
