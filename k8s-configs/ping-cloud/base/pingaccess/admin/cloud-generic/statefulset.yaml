@@ -121,7 +121,7 @@ spec:
         - name: shared-dir
           mountPath: /opt/shared-dir
       - name: pingaccess-upgrade
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v1.16-release-branch-latest
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess:pdo-4338
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -169,8 +169,8 @@ spec:
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_CONSOLE
-        - name: TEST_VAR
-          value: FOO
+        - name: IS_UPGRADE
+          value: YES
         - name: HTTPS_PORT
           value: "9090"
         - name: OLD_PA_ADMIN_USER_PASSWORD
