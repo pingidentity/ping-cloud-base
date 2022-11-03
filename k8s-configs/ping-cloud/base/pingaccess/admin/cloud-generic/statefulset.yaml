@@ -163,6 +163,34 @@ spec:
         - name: data-dir
           mountPath: /opt/staging/ds_env_vars
           subPath: ds_env_vars
+        ports:
+        - containerPort: 9000
+        - containerPort: 9090
+        env:
+        - name: OPERATIONAL_MODE
+          value: CLUSTERED_CONSOLE
+        - name: HTTPS_PORT
+          value: "9090"
+        - name: OLD_PA_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingaccess-passwords
+              key: OLD_PA_ADMIN_USER_PASSWORD
+        - name: PA_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingaccess-passwords
+              key: PA_ADMIN_USER_PASSWORD
+        - name: NEW_RELIC_CONFIG_FILE
+          value: "/opt/shared-dir/newrelic.yml"
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
+        envFrom:
+        - configMapRef:
+            name: pingaccess-admin-environment-variables
+        - secretRef:
+            name: newrelic-license-key
+            optional: false
       containers:
       - name: pingaccess-admin
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v1.16-release-branch-latest
