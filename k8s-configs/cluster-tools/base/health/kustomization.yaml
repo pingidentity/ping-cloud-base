@@ -16,3 +16,4 @@ resources:
 - pingfederate-health.yaml
 - namespace.yaml
 - serviceaccount.yaml
+- httpbin-pa-was.yaml

@@ -6,9 +6,11 @@
 - Prometheus configured to take metrics from second region
 - Prometheus upgraded to 2.39.1
 - Send logs from second region to main Elasticsearch
+- Add HTTP server pod for PingAccess-WAS healthchecks
 
 _Changes:_
 
+- [X] PDO-4312 PA-WAS Health Check Tests - object creation, unauthenticated proxy requests
 - [X] PDO-4432 Logstash has broken tolerations
 - [X] PDO-4565 Prometheus: Configure It to Take Metrics from Second Region
 - [X] PDO-4566 Logstash: Configure It to Send Logs from Second Region to Primary Region
