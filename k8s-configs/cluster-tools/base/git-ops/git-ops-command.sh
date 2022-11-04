@@ -110,53 +110,57 @@ trap "cleanup" EXIT
 # Get short and full directory names of the target directory
 TARGET_DIR_FULL="$(pwd)"
 TARGET_DIR_SHORT="$(basename "${TARGET_DIR_FULL}")"
+REGION_DIR_SHORT="$(basename ${TARGET_DIR_FULL%/${TARGET_DIR_SHORT}})"
 
 # Directory paths relative to TARGET_DIR
 BASE_DIR='../../base'
+REGION_ENV_VARS='../env_vars'
 
 # Perform substitution and build in a temporary directory
 TMP_DIR="$(mktemp -d)"
-BUILD_DIR="${TMP_DIR}/${TARGET_DIR_SHORT}"
+mkdir "${TMP_DIR}/${REGION_DIR_SHORT}"
+BUILD_DIR="${TMP_DIR}/${REGION_DIR_SHORT}/${TARGET_DIR_SHORT}"
 
 # Copy contents of target directory into temporary directory
 log "git-ops-command: copying templates into '${TMP_DIR}'"
-cp -pr "${TARGET_DIR_FULL}" "${TMP_DIR}"
+cp -pr "${TARGET_DIR_FULL}" "${TMP_DIR}/${REGION_DIR_SHORT}"
 test -d "${BASE_DIR}" && cp -pr "${BASE_DIR}" "${TMP_DIR}"
+test -f "${REGION_ENV_VARS}" && cp "${REGION_ENV_VARS}" "${TMP_DIR}/${REGION_DIR_SHORT}"
 
 # If there's an environment file, then perform substitution
-if test -f 'env_vars'; then
+if test -f "${REGION_ENV_VARS}"; then
   # Perform the substitutions in a sub-shell so it doesn't pollute the current shell.
   log "git-ops-command: substituting env_vars into templates"
   (
     cd "${BUILD_DIR}"
 
-    BASE_ENV_VARS="${BASE_DIR}"/env_vars
-    env_vars_file=env_vars
+    BASE_ENV_VARS="${BASE_DIR}/env_vars"
+    env_vars_file="${REGION_ENV_VARS}"
 
     if test -f "${BASE_ENV_VARS}"; then
       env_vars_file="$(mktemp)"
-      awk 1 env_vars "${BASE_ENV_VARS}" > "${env_vars_file}"
+      awk 1 "${REGION_ENV_VARS}" "${BASE_ENV_VARS}" > "${env_vars_file}"
       substitute_vars "${env_vars_file}" "${BASE_DIR}"
     fi
 
     substitute_vars "${env_vars_file}" .
 
     # Clone git branch from the upstream repo
-    log "git-ops-command: cloning git branch '${K8S_GIT_BRANCH}' from: ${K8S_GIT_URL}"
-    git clone -c advice.detachedHead=false -q --depth=1 -b "${K8S_GIT_BRANCH}" --single-branch "${K8S_GIT_URL}" "${TMP_DIR}/${K8S_GIT_BRANCH}"
-
-    log "git-ops-command: replacing remote repo URL '${K8S_GIT_URL}' with locally cloned repo"
-    kust_files="$(find "${TMP_DIR}" -name kustomization.yaml | grep -wv "${K8S_GIT_BRANCH}")"
-
-    for kust_file in ${kust_files}; do
-      rel_resource_dir="$(relative_path "$(dirname "${kust_file}")" "${TMP_DIR}/${K8S_GIT_BRANCH}")"
-      log "git-ops-command: replacing ${K8S_GIT_URL} in file ${kust_file} with ${rel_resource_dir}"
-      sed -i.bak \
-          -e "s|${K8S_GIT_URL}|${rel_resource_dir}|g" \
-          -e "s|\?ref=${K8S_GIT_BRANCH}$||g" \
-          "${kust_file}"
-      rm -f "${kust_file}".bak
-    done
+#    log "git-ops-command: cloning git branch '${K8S_GIT_BRANCH}' from: ${K8S_GIT_URL}"
+#    git clone -c advice.detachedHead=false -q --depth=1 -b "${K8S_GIT_BRANCH}" --single-branch "${K8S_GIT_URL}" "${TMP_DIR}/${K8S_GIT_BRANCH}"
+#
+#    log "git-ops-command: replacing remote repo URL '${K8S_GIT_URL}' with locally cloned repo"
+#    kust_files="$(find "${TMP_DIR}" -name kustomization.yaml | grep -wv "${K8S_GIT_BRANCH}")"
+#
+#    for kust_file in ${kust_files}; do
+#      rel_resource_dir="$(relative_path "$(dirname "${kust_file}")" "${TMP_DIR}/${K8S_GIT_BRANCH}")"
+#      log "git-ops-command: replacing ${K8S_GIT_URL} in file ${kust_file} with ${rel_resource_dir}"
+#      sed -i.bak \
+#          -e "s|${K8S_GIT_URL}|${rel_resource_dir}|g" \
+#          -e "s|\?ref=${K8S_GIT_BRANCH}$||g" \
+#          "${kust_file}"
+#      rm -f "${kust_file}".bak
+#    done
   )
   test $? -ne 0 && exit 1
 fi
