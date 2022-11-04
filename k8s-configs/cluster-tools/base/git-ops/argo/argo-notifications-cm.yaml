@@ -13,7 +13,7 @@ data:
           "color": "#f4c030",
           "fields": [
             { "Title": "Health status",
-              "value": "{{.app.status.health.status}}"б
+              "value": "{{.app.status.health.status}}",
               "short": true
             },
             {
