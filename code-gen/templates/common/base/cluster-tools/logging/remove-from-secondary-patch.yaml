@@ -1,0 +1,9 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: elasticsearch
+  namespace: elastic-stack-logging
+spec:
+  type: ExternalName
+  externalName: elasticsearch.${PRIMARY_DNS_ZONE}
+  $patch: replace
