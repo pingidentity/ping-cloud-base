@@ -112,7 +112,7 @@ TARGET_DIR_FULL="$(pwd)"
 TARGET_DIR_SHORT="$(basename "${TARGET_DIR_FULL}")"
 
 # Directory paths relative to TARGET_DIR
-BASE_DIR='../base'
+BASE_DIR='../../base'
 
 # Perform substitution and build in a temporary directory
 TMP_DIR="$(mktemp -d)"

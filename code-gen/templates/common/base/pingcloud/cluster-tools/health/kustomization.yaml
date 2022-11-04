@@ -11,4 +11,4 @@ configMapGenerator:
 - name: cluster-health-environment-variables
   behavior: merge
   envs:
-  - ../../env_vars
+  - ../../../env_vars

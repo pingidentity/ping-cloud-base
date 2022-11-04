@@ -1,0 +1,25 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+- ../../base/pingcentral
+
+generatorOptions:
+  disableNameSuffixHash: false
+
+configMapGenerator:
+
+# PingCentral
+# Create the config maps that hold the variable for triggering updates of PingCentral
+- name: pingcentral-last-update-config
+  namespace: ${PING_CLOUD_NAMESPACE}
+  envs:
+  - env_vars
+
+# Merge all env_vars into PingCentral common environment variables configmap
+- name: pingcentral-environment-variables
+  behavior: merge
+  envs:
+  - ../../base/env_vars
+  - ../env_vars
+  - env_vars

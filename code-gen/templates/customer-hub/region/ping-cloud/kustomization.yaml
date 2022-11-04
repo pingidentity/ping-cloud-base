@@ -2,7 +2,7 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-- ../base
+- ../../base
 - custom-resources 
 
 generatorOptions:
@@ -14,8 +14,8 @@ patchesStrategicMerge:
 - custom-patches.yaml
 
 ### Remove unneccessary MyPing pods
-- ../base/ping-cloud/pingcommon/my-ping/remove-oauth-service.yaml
-- ../base/ping-cloud/pingcommon/my-ping/remove-pingone-configurator.yaml
+- ../../base/ping-cloud/pingcommon/my-ping/remove-oauth-service.yaml
+- ../../base/ping-cloud/pingcommon/my-ping/remove-pingone-configurator.yaml
 
 configMapGenerator:
 
@@ -23,22 +23,22 @@ configMapGenerator:
 - name: elk-environment-variables
   behavior: merge
   envs:
-    - logging/env_vars
+    - cluster-tools/logging/env_vars
 
 # PingCentral
 # Create the config maps that hold the variable for triggering updates of PingCentral
-- name: pingcentral-last-update-config
-  namespace: ${PING_CLOUD_NAMESPACE}
-  envs:
-  - pingcentral/env_vars
+#- name: pingcentral-last-update-config
+#  namespace: ${PING_CLOUD_NAMESPACE}
+#  envs:
+#  - pingcentral/env_vars
 
 # Merge all env_vars into PingCentral common environment variables configmap
-- name: pingcentral-environment-variables
-  behavior: merge
-  envs:
-  - ../base/env_vars
-  - env_vars
-  - pingcentral/env_vars
+#- name: pingcentral-environment-variables
+#  behavior: merge
+#  envs:
+#  - ../base/env_vars
+#  - env_vars
+#  - pingcentral/env_vars
 
 
 # PingCloud services
@@ -46,27 +46,27 @@ configMapGenerator:
 - name: pingcloud-metadata-environment-variables
   behavior: merge
   envs:
-  - ../base/env_vars
-  - env_vars
+  - ../../base/env_vars
+  - ../env_vars
 
 # Pingcloud-healthcheck
 - name: pingcloud-healthcheck-environment-variables
   namespace: ${PING_CLOUD_NAMESPACE}
   behavior: merge
   envs:
-  - ../base/env_vars
-  - env_vars
+  - ../../base/env_vars
+  - ../env_vars
 
 # PingCloud BOM service
 - name: p14c-bom-service-environment-variables
   behavior: merge
   envs:
-    - ../base/env_vars
-    - env_vars
+    - ../../base/env_vars
+    - ../env_vars
 
 # PingCloud P14C bootstrap
 - name: pingcloud-p14c-bootstrap-environment-variables
   behavior: merge
   envs:
-    - ../base/env_vars
-    - env_vars
+    - ../../base/env_vars
+    - ../env_vars
