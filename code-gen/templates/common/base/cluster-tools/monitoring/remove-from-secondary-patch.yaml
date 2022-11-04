@@ -84,4 +84,3 @@ metadata:
   name: alertmanager
   namespace: prometheus
 $patch: delete
----
