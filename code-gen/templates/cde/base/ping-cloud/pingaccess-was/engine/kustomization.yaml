@@ -89,3 +89,11 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/6/host
       value: pingcentral-admin.${DNS_ZONE}
+    
+    # Healthcheck httpbin service through PA-WAS engines
+    - op: replace
+      path: /spec/tls/0/hosts/7
+      value: healthcheck-httpbin-pa-was.${DNS_ZONE}
+    - op: replace
+      path: /spec/rules/7/host
+      value: healthcheck-httpbin-pa-was.${DNS_ZONE}
