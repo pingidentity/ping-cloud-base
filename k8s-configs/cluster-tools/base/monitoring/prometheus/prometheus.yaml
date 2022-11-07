@@ -25,6 +25,7 @@ spec:
           - "--web.enable-remote-write-receiver"
           - "--enable-feature=memory-snapshot-on-shutdown"
           - "--enable-feature=expand-external-labels"
+          - "--enable-feature=memory-snapshot-on-shutdown"
         env:
           - name: PROMETHEUS_RETENTION_TIME
             valueFrom:
@@ -50,7 +51,7 @@ spec:
             memory: 4000Mi
           requests:
             cpu: 100m
-            memory: 512Mi
+            memory: 2000Mi
       volumes:
       - name: prometheus-config-volume
         configMap:

@@ -466,7 +466,8 @@ ${TENANT_NAME}
 ${NEW_RELIC_ENVIRONMENT_NAME}
 ${DATASYNC_P1AS_SYNC_SERVER}
 ${LEGACY_LOGGING}
-${PF_PROVISIONING_ENABLED}'
+${PF_PROVISIONING_ENABLED}
+${RADIUS_PROXY_ENABLED}'
 
 substitute_vars() {
   local subst_dir="$1"
@@ -676,17 +677,56 @@ apply_crds() {
   fi
 }
 
-# Get the PGO backup bucket name
-get_pgo_backup_bucket_name() {
-  local pgo_backup_env=${1}
+########################################################################################################################
+# Set a given variable name based on an SSM prefix and suffix. If SSM exists, the ssm_template will
+# be used to set the value. If the SSM prefix is 'unused', no value is set and SSM isn't checked.
+#
+# Arguments
+#   $1 -> var_name - the name of the variable to set
+#   $2 -> var_default - the default value for the variable if SSM is unused or there is an error
+#   $3 -> ssm_prefix - SSM prefix
+#   $4 -> ssm_suffix - The rest of the SSM key past the prefix
+#   $5 -> ssm_template - [OPTIONAL] A template to render with ${ssm_value} - for example -
+#                        'Hello my name is ${ssm_value}' will set the variable $var_name to that rendered value
+########################################################################################################################
+set_var() {
+  local var_name="${1}"
+  local var_default="${2}"
+  local ssm_prefix="${3}"
+  local ssm_suffix="${4}"
+  local ssm_template="${5}"
 
-  if [[ "${pgo_backup_env}" == "ssm://"* ]]; then
-    if ! ssm_value=$(get_ssm_value "${pgo_backup_env#ssm:/}"); then
-      pgo_backup_env="not_set"
-    else
-      pgo_backup_env="${ssm_value}"
+  # Set a default that will always be returned
+  local var_value="${var_default}"
+
+  # Get the actual variable value from the passed in var string
+  if [[ "${!1}" != '' ]]; then
+    var_value="${!1}"
+    echo "${var_name} already set to '${var_value}'"
+    return
+  elif [[ ${ssm_prefix} != "unused" ]]; then
+    # Remove ssm:/ if provided - all paths should start with '/'
+    if [[ ${ssm_prefix} == *"ssm://"* ]]; then
+      ssm_prefix="${ssm_prefix#ssm:/}"
     fi
+    echo "${var_name} is not set, trying to find it in SSM..."
+    if ! ssm_value=$(get_ssm_value "${ssm_prefix}${ssm_suffix}"); then
+      printf '\tWARN: Issue fetching SSM path '%s%s' - %s...\nContinuing as this could be a disabled environment\n' \
+             "${ssm_suffix}" "${ssm_prefix}" "${ssm_value}"
+    else
+      printf '\tFound "%s%s" in SSM\n' "${ssm_prefix}" "${ssm_suffix}"
+      # Substitute ssm_value within the supplied ssm template, if template given
+      if [ -n "${ssm_template}" ]; then
+        var_value=$(echo "${ssm_template}" | ssm_value=${ssm_value} envsubst)
+      else
+        var_value="${ssm_value}"
+      fi
+    fi
+  else
+    printf "%s - not fetching SSM - prefix is set to 'unused'\n" "${var_name}"
   fi
 
-  echo "${pgo_backup_env#s3://}"
+  # Always export the variable and value
+  printf '\tSetting "%s" to "%s"\n' "${var_name}" "${var_value}"
+  export "${var_name}=${var_value}"
 }

@@ -11,6 +11,7 @@ metadata:
     argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/argocd-image-updater-ssh-key
     argocd-image-updater.argoproj.io/write-back-target: kustomization
     notifications.argoproj.io/subscribe.on-sync-failed.slack: ${SLACK_CHANNEL}
+    notifications.argoproj.io/subscribe.on-sync-status-unknown.slack: ${SLACK_CHANNEL}
 spec:
   ignoreDifferences:
   - group: batch

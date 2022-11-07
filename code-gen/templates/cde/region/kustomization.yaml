@@ -148,13 +148,6 @@ configMapGenerator:
   - ../base/env_vars
   - env_vars
 
-# Pingcloud-radsecproxy
-- name: pingcloud-radsecproxy-environment-variables
-  behavior: merge
-  envs:
-  - ../base/env_vars
-  - env_vars
-
 # Pingcloud-healthcheck
 - name: pingcloud-healthcheck-environment-variables
   namespace: ${PING_CLOUD_NAMESPACE}
