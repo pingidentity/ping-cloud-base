@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/bash -e
 
 # This script copies the kustomization templates into a temporary directory, performs substitution into them using
 # environment variables defined in an env_vars file and builds the uber deploy.yaml file. It is run by the CD tool on
@@ -66,6 +66,36 @@ relative_path() {
   done
 
   echo ${dot_dots}${relative_to#${to_transform}/}
+}
+
+########################################################################################################################
+# Comments out feature flagged resources from k8s-configs kustomization.yaml files.
+#
+# Arguments
+#   $1 -> The directory containing k8s-configs.
+########################################################################################################################
+feature_flags() {
+  cd "${1}/k8s-configs"
+
+  # Map with the feature flag environment variable & the term to search to find the kustomization files
+  flag_map="${RADIUS_PROXY_ENABLED}:ff-radius-proxy"
+
+  for flag in $flag_map ; do
+    enabled="${flag%%:*}"
+    search_term="${flag##*:}"
+    log "git-ops-command: ${search_term} is set to ${enabled}"
+
+    # If the feature flag is disabled, comment the search term lines out of the kustomization files
+    if [[ ${enabled} != "true" ]]; then
+      for kust_file in $(git grep -l "${search_term}" | grep "kustomization.yaml"); do
+        log "git-ops-command: Commenting out ${search_term} in ${kust_file}"
+        sed -i.bak \
+            -e "/${search_term}/ s|^#*|#|g" \
+            "${kust_file}"
+        rm -f "${kust_file}".bak
+      done
+    fi
+  done
 }
 
 ########################################################################################################################
@@ -157,6 +187,8 @@ if test -f 'env_vars'; then
           "${kust_file}"
       rm -f "${kust_file}".bak
     done
+
+    feature_flags "${TMP_DIR}/${K8S_GIT_BRANCH}"
   )
   test $? -ne 0 && exit 1
 fi

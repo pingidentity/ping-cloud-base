@@ -87,6 +87,8 @@ metadata:
     app.kubernetes.io/name: argocd-image-updater-secret
     app.kubernetes.io/part-of: argocd-image-updater
   name: argocd-image-updater-secret
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
 ---
 apiVersion: v1
 kind: Secret
@@ -95,6 +97,8 @@ metadata:
     app.kubernetes.io/name: argocd-image-updater-ssh-key
     app.kubernetes.io/part-of: argocd-image-updater
   name: argocd-image-updater-ssh-key
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
 ---
 apiVersion: apps/v1
 kind: Deployment

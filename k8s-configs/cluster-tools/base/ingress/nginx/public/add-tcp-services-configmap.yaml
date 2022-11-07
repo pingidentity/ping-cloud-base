@@ -1,0 +1,5 @@
+# expose radsec proxy tcp service
+- op: add
+  path: /data
+  value:
+    2083: "ping-cloud/pingfederate:2083"
