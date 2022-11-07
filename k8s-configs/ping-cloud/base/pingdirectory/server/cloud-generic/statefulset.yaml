@@ -18,7 +18,7 @@ spec:
   template:
     metadata:
       annotations:
-        lastUpdateReason: "restart PD"
+        lastUpdateReason: "restart PD 1"
       labels:
         class: pingdirectory-server
         entitled-app: "true"
