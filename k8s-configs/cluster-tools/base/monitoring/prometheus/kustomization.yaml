@@ -8,10 +8,10 @@ resources:
 - prometheus.yaml
 - prometheus-job-exporter.yaml
 - alertmanager.yaml
-- dashboards
 - prometheus-config.yaml
 - prometheus-agent-config.yaml
 - prometheus-agent.yaml
+- https://github.com/pingidentity/ping-cloud-dashboards/grafana?ref=v1.17-release-branch
 
 configMapGenerator:
 - name: prometheus-environment-variables
