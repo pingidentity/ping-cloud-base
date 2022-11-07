@@ -26,7 +26,7 @@ spec:
           message: this is default message from argo-events
           slackToken:
             key: token
-            name: test-secret
+            name: slack-secret
       parameters:
         - src:
             dependencyName: trigger-slack

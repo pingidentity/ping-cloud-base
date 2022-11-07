@@ -15,5 +15,5 @@ configMapGenerator:
   - env_vars
 
 resources:
-- ingress.yaml
 - serviceaccount.yaml
+

@@ -40,6 +40,7 @@ _Changes:_
 - Fix: New relic not reporting accurate pod metrics for some environments
 - Switch Delegated Admin to use OAuth Authorization Flow instead of Implicit Flow
 - Added ArgoCD slack notifications
+- Upgraded Prometheus to v2.39.1
 
 _Changes:_
 
@@ -72,11 +73,22 @@ _Changes:_
 - [X] PDO-4401 LEGACY_LOGGING mode: Change default from true to false (off) - Leave flag available
 - [X] PDO-4438 PostgreSQL pods and secrets not deployed
 - [X] PDO-4442 Update healthcheck service keys to use consistent format
+- [X] PDO-4446 Handle missing SSM parameters
 - [X] PDO-4454 Implement Prometheus Alerting
 - [X] PDO-4476 Modify PGO feature flag to not require update-cluster script
 - [X] PDO-4480 newrelic-license-secret-exporter job not present in newrelic namespace
 - [X] PDO-4491 Run Radius as a sidecar container alongside PingFederate engine
+- [X] PDO-4492 Enable/disable Radius with environment variable
 - [X] PDO-4498 Move nri-kubernetes images to dev ECR within PCB
+- [X] PDO-4580 Prometheus Pod is being OOMKilled
+
+### 1.15.0.1
+
+- Allow multiple Pass-Through-Authentication plugin instances
+
+_Changes:_
+
+- [X] PDO-4558 Allow multiple Pass-Through-Authentication plugin instances
 
 ### 1.15.0.0
 
@@ -129,6 +141,14 @@ _Changes:_
 - [X] PDO-4265 Increase memory limits for prometheus pod
 - [X] PDO-4268 Fix Fluent-bit raw logs sending to S3
 - [X] PDO-4301 Fix secrets sealing
+
+### 1.14.0.1
+
+- Allow multiple Pass-Through-Authentication plugin instances
+
+_Changes:_
+
+- [X] PDO-4547 Allow multiple Pass-Through-Authentication plugin instances
 
 ### 1.14.0.0
 
