@@ -5,5 +5,4 @@ resources:
 - config
 - admin
 - engine
-# Provisioning, while added here, is manually uncommented only if enabled
-- provisioning
+#- ff-pf-provisioning

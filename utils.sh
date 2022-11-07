@@ -512,10 +512,12 @@ build_dev_deploy_file() {
   local dev_cluster_state_dir='dev-cluster-state'
   cp -pr "${dev_cluster_state_dir}" "${build_dir}"
 
-  pgo_dev_deploy "${build_dir}"
+  #pgo_dev_deploy "${build_dir}"
 
   substitute_vars "${build_dir}" "${DEFAULT_VARS}"
   set_kustomize_load_arg_and_value
+
+  feature_flags "${build_dir}"
   kustomize build "${build_load_arg}" "${build_load_arg_value}" "${build_dir}/${cluster_type}" > "${deploy_file}"
 
   if [[ "${DEBUG}" != "true" ]]; then
