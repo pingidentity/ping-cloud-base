@@ -12,7 +12,7 @@ spec:
           - path: k8s-configs/${REGION_NICK_NAME}/*
   template:
     metadata:
-      name: "'{{path.basename}}'-${REGION_NICK_NAME}"
+      name: '{{path.basename}}-${REGION_NICK_NAME}'
     spec:
       project: default
       source:
