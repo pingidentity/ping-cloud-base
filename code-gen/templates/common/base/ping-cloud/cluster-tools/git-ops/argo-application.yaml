@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
-kind: Application
+kind: ApplicationSet
 metadata:
-  name: "ping-cloud-${CLUSTER_STATE_REPO_BRANCH}-${TENANT_NAME}-${REGION_NICK_NAME}"
+  name: "appset-example"
   namespace: argocd
   annotations:
     argocd-image-updater.argoproj.io/git-branch: ${CLUSTER_STATE_REPO_BRANCH}
