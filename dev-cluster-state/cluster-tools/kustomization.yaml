@@ -2,11 +2,11 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-- ../../k8s-configs/cluster-tools
-- pgo
+  - ../../k8s-configs/cluster-tools
+  - ff-pgo
 
 components:
-  - monitoring/pgo
+  - monitoring/ff-pgo
 
 generatorOptions:
   disableNameSuffixHash: true

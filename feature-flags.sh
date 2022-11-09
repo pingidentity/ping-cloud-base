@@ -28,8 +28,9 @@ feature_flags() {
 
     # If the feature flag is disabled, comment the search term lines out of the kustomization files
     if [[ ${enabled} != "true" ]]; then
-      for kust_file in $(git grep -l "${search_term}" | grep "kustomization.yaml"); do
-        log "git-ops-command: Commenting out ${search_term} in ${kust_file}"
+      # TODO: probably need to restrict to git repo items only?
+      for kust_file in $(grep -rl "${search_term}" * | grep "kustomization.yaml"); do
+        log "feature-flags.sh: Commenting out ${search_term} in ${kust_file}"
         sed -i.bak \
             -e "/${search_term}/ s|^#*|#|g" \
             "${kust_file}"

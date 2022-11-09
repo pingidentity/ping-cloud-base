@@ -1,6 +1,3 @@
-# NOTE - this file is automatically overwritten by dev-env.sh/utils.sh
-# DO NOT modify it directly without taking into account what is being done in that script
-
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
