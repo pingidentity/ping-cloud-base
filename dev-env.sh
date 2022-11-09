@@ -202,6 +202,7 @@ test -f ~/.pingidentity/devops && . ~/.pingidentity/devops
 
 # Source some utility methods.
 . utils.sh
+. feature-flags.sh
 
 declare dryrun='false'
 declare skipTest='false'

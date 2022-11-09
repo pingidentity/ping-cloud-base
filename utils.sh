@@ -512,10 +512,12 @@ build_dev_deploy_file() {
   local dev_cluster_state_dir='dev-cluster-state'
   cp -pr "${dev_cluster_state_dir}" "${build_dir}"
 
-  pgo_dev_deploy "${build_dir}"
-
   substitute_vars "${build_dir}" "${DEFAULT_VARS}"
   set_kustomize_load_arg_and_value
+
+  pwd
+  feature_flags "${build_dir}"
+  pwd
   kustomize build "${build_load_arg}" "${build_load_arg_value}" "${build_dir}/${cluster_type}" > "${deploy_file}"
 
   if [[ "${DEBUG}" != "true" ]]; then
@@ -588,34 +590,34 @@ get_ssm_value() {
   fi
 }
 
-# Deploy PGO - only if the feature flag is enabled!
-# Arg $1 - directory containing pgo CRDs
-pgo_dev_deploy() {
-  local build_dir=${1}
+# # Deploy PGO - only if the feature flag is enabled!
+# # Arg $1 - directory containing pgo CRDs
+# pgo_dev_deploy() {
+#   local build_dir=${1}
 
-  kust_file="${build_dir}/cluster-tools/pgo/kustomization.yaml"
-  prov_kust_file="${build_dir}/ping-cloud/pingfederate/provisioning/kustomization.yaml"
-  monitor_kust_file="${build_dir}/cluster-tools/monitoring/pgo/kustomization.yaml"
-  pgo_feature_flag "${kust_file}" "${prov_kust_file}" "${monitor_kust_file}"
-}
+#   kust_file="${build_dir}/cluster-tools/pgo/kustomization.yaml"
+#   prov_kust_file="${build_dir}/ping-cloud/pingfederate/provisioning/kustomization.yaml"
+#   monitor_kust_file="${build_dir}/cluster-tools/monitoring/pgo/kustomization.yaml"
+#   pgo_feature_flag "${kust_file}" "${prov_kust_file}" "${monitor_kust_file}"
+# }
 
-# Clear the kustomize file, effectively turning off that block of kustomize code
-pgo_feature_flag() {
-  local pgo_kust_file="${1}"
-  local prov_kust_file="${2}"
-  local monitor_kust_file="${3}"
+# # Clear the kustomize file, effectively turning off that block of kustomize code
+# pgo_feature_flag() {
+#   local pgo_kust_file="${1}"
+#   local prov_kust_file="${2}"
+#   local monitor_kust_file="${3}"
 
-  if [[ $PF_PROVISIONING_ENABLED != "true" ]]; then
-    log "FEATURE FLAG - PF Provisioning is disabled, removing"
-    message="# PF_PROVISIONING_ENABLED has been set to 'false', therefore this file has been cleared to disable the feature"
-    component_message="kind: Component
-apiVersion: kustomize.config.k8s.io/v1alpha1
-# PF_PROVISIONING_ENABLED has been set to 'false', therefore this file has been cleared to disable the feature"
-    echo "${message}" > "${pgo_kust_file}"
-    echo "${message}" > "${prov_kust_file}"
-    echo "${component_message}" > "${monitor_kust_file}"
-  fi
-}
+#   if [[ $PF_PROVISIONING_ENABLED != "true" ]]; then
+#     log "FEATURE FLAG - PF Provisioning is disabled, removing"
+#     message="# PF_PROVISIONING_ENABLED has been set to 'false', therefore this file has been cleared to disable the feature"
+#     component_message="kind: Component
+# apiVersion: kustomize.config.k8s.io/v1alpha1
+# # PF_PROVISIONING_ENABLED has been set to 'false', therefore this file has been cleared to disable the feature"
+#     echo "${message}" > "${pgo_kust_file}"
+#     echo "${message}" > "${prov_kust_file}"
+#     echo "${component_message}" > "${monitor_kust_file}"
+#   fi
+# }
 
 ########################################################################################################################
 # Gets rollout status and waits to return until either the timeout is reached or the rollout is ready
