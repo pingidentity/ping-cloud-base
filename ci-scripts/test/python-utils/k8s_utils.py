@@ -1,5 +1,6 @@
 import json
 import unittest
+
 from datetime import datetime
 
 import kubernetes as k8s
@@ -77,3 +78,10 @@ class K8sUtils(unittest.TestCase):
             ].status.phase in ["Succeeded", "Failed"]:
                 watch.stop()
                 return
+
+    def get_latest_pod_logs(self, pod_name: str, container_name: str, pod_namespace: str, log_lines: int):
+        pod_logs = self.core_client.read_namespaced_pod_log(
+            name=pod_name, container=container_name, namespace=pod_namespace, tail_lines=int(log_lines)
+        )
+        pod_logs = pod_logs.splitlines()
+        return pod_logs
