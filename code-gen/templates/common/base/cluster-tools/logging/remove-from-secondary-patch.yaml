@@ -1,5 +1,5 @@
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
   name: elasticsearch
   namespace: elastic-stack-logging
@@ -7,3 +7,136 @@ spec:
   type: ExternalName
   externalName: elasticsearch.${PRIMARY_DNS_ZONE}
   $patch: replace
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: es-cluster-hot
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: es-cluster-warm
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: es-log4j-properties
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: elasticsearch-sc1
+provisioner: kubernetes.io/aws-ebs
+$patch: delete
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: elasticsearch-gp2
+provisioner: kubernetes.io/aws-ebs
+$patch: delete
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kibana
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kibana
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: elasticsearch-bootstrap
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kibana-bootstrap
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: enrichment-elasticsearch-ilm-policies
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: enrichment-elasticsearch-index-bootstraps
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: enrichment-elasticsearch-index-templates
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kibana-dashboard-pa
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kibana-dashboard-pf
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kibana-dashboard-pd
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kibana-dashboard-pf-basic
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kibana-dashboard-pa-was-basic
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kibana-admin-index-patterns
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kibana-alerts
+  namespace: elastic-stack-logging
+$patch: delete
