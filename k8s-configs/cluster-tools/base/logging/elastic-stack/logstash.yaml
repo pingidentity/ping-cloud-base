@@ -65,7 +65,7 @@ spec:
           allowPrivilegeEscalation: false
         image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
         imagePullPolicy: IfNotPresent
-        command: ["sh", "-c", "kubectl wait --for=condition=complete --timeout=300s -n elastic-stack-logging job/enrichment-bootstrap"]
+        command: ["sh", "-c", "kubectl wait --for=condition=complete --timeout=300s -n elastic-stack-logging job/logging-bootstrap"]
 
       - name: create-enrichment-cache-files
         securityContext:
