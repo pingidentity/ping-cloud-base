@@ -160,7 +160,8 @@ if test -f 'env_vars'; then
 
     # Get the feature_flags method
     source "${TMP_DIR}/${K8S_GIT_BRANCH}/feature-flags.sh"
-    feature_flags "${TMP_DIR}/${K8S_GIT_BRANCH}"
+    # TODO: feature flag entire dir - too much??!!
+    feature_flags "${TMP_DIR}"
   )
   test $? -ne 0 && exit 1
 fi
