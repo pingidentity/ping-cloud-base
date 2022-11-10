@@ -88,13 +88,6 @@ $patch: delete
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: enrichment-elasticsearch-index-templates
-  namespace: elastic-stack-logging
-$patch: delete
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
   name: kibana-dashboard-pa
   namespace: elastic-stack-logging
 $patch: delete
