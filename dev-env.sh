@@ -228,9 +228,6 @@ do
   esac
 done
 
-# We assume we always run dev-env.sh from the top-level of the repo
-CUR_DIR=$(pwd)
-
 # Checking required tools and environment variables.
 check_binaries "openssl" "base64" "kustomize" "kubectl" "envsubst"
 HAS_REQUIRED_TOOLS=${?}

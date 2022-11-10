@@ -19,7 +19,7 @@ feature_flags() {
   fi
 
   # Map with the feature flag environment variable & the term to search to find the kustomization files
-  flag_map="${RADIUS_PROXY_ENABLED}:ff-radius-proxy ${PF_PROVISIONING_ENABLED}:ff-pf-provisioning ${pgo_enabled}:ff-pgo"
+  flag_map="${RADIUS_PROXY_ENABLED}:ff-radius-proxy ${PF_PROVISIONING_ENABLED}:ff-provisioning ${pgo_enabled}:ff-pgo"
 
   for flag in $flag_map ; do
     enabled="${flag%%:*}"

@@ -515,10 +515,12 @@ build_dev_deploy_file() {
   substitute_vars "${build_dir}" "${DEFAULT_VARS}"
   set_kustomize_load_arg_and_value
 
-  pwd
   feature_flags "${build_dir}"
-  pwd
-  kustomize build "${build_load_arg}" "${build_load_arg_value}" "${build_dir}/${cluster_type}" > "${deploy_file}"
+
+  log "Building via kustomize......"
+  set -o pipefail
+
+  kustomize build "${build_load_arg}" "${build_load_arg_value}" "${build_dir}/${cluster_type}" > "${deploy_file}"# || echo "Failure, check above ^^" && exit 1
 
   if [[ "${DEBUG}" != "true" ]]; then
     rm -rf "${build_dir}"
