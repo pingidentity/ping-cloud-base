@@ -43,13 +43,13 @@ patchesStrategicMerge:
       purpose: service-account-for-ping-cloud-stack
       ${IRSA_PING_ANNOTATION_KEY_VALUE}
 
-patchesJson6902:
-- target:
-    kind: Service
-    name: elasticsearch
-    namespace: elastic-stack-logging
-    version: v1
-  patch: |-
-    - op: replace
-      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
-      value: elasticsearch.${DNS_ZONE}
+#patchesJson6902:
+#- target:
+#    kind: Service
+#    name: elasticsearch
+#    namespace: elastic-stack-logging
+#    version: v1
+#  patch: |-
+#    - op: replace
+#      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+#      value: elasticsearch.${DNS_ZONE}
