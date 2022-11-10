@@ -108,8 +108,10 @@ cleanup() {
 TARGET_DIR="${1:-.}"
 cd "${TARGET_DIR}" >/dev/null 2>&1
 
-# Trap all exit codes from here on so cleanup is run
-trap "cleanup" EXIT
+if [[ "${DEBUG}" != "true" ]]; then
+  # Trap all exit codes from here on so cleanup is run
+  trap "cleanup" EXIT
+fi
 
 # Get short and full directory names of the target directory
 TARGET_DIR_FULL="$(pwd)"
