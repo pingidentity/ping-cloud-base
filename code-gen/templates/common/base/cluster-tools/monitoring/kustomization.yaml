@@ -5,7 +5,7 @@ resources:
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/base/monitoring?ref=${K8S_GIT_BRANCH}
 
 components:
-  - pgo
+  - ff-pgo
 
 patchesStrategicMerge:
 

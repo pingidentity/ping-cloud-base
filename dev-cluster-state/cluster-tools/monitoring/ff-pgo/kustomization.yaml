@@ -2,4 +2,4 @@ kind: Component
 apiVersion: kustomize.config.k8s.io/v1alpha1
 
 components:
-- ../../../../k8s-configs/cluster-tools/base/monitoring/pgo
+- ../../../../k8s-configs/cluster-tools/base/monitoring/ff-pgo

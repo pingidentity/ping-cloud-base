@@ -2,7 +2,7 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-- ../../../k8s-configs/cluster-tools/base/pgo/base
+- ../../../k8s-configs/cluster-tools/base/ff-pgo/base
 
 # Remove the CRDs from the dev environments so that they can be applied server-side
 patches:

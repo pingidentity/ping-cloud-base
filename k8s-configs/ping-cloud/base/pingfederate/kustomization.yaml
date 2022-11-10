@@ -7,4 +7,4 @@ resources:
 - engine
 # TODO: figure out what to do with this provisioning
 # Provisioning, while added here, is manually uncommented only if enabled
-#- provisioning
+#- ff-provisioning
