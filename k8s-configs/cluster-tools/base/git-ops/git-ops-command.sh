@@ -159,7 +159,7 @@ if test -f 'env_vars'; then
     done
 
     # Get the feature_flags method
-    source "${TMP_DIR}/${K8S_GIT_BRANCH}/code-gen/feature-flags.sh"
+    source "${TMP_DIR}/${K8S_GIT_BRANCH}/feature-flags.sh"
     feature_flags "${TMP_DIR}/${K8S_GIT_BRANCH}"
   )
   test $? -ne 0 && exit 1
