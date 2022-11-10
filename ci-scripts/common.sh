@@ -190,6 +190,7 @@ set_env_vars
 
 # Source some utility methods.
 . ${PROJECT_DIR}/utils.sh
+. ${PROJECT_DIR}/feature-flags.sh
 
 ########################################################################################################################
 # Sets env vars specific to PingOne API integration
