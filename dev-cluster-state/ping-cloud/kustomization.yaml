@@ -4,8 +4,9 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 resources:
 # NOTE: The kustomization.yaml under this directory refers to all of the "k8s-config/ping-cloud/test" directory env
 - ../../k8s-configs/ping-cloud
-# Provisioning is not enabled by default, but the kustomize file is managed directly by dev-env.sh/utils.sh
+# Feature flags are not enabled by default, and will be commented out automatically by dev-env.sh if disabled
 - pingfederate/ff-provisioning
+- pingfederate/ff-radius-proxy
 
 configMapGenerator:
 
@@ -81,12 +82,6 @@ configMapGenerator:
 
 # Pingcloud-metadata
 - name: pingcloud-metadata-environment-variables
-  behavior: merge
-  envs:
-  - env_vars
-
-# Pingcloud-radsecproxy
-- name: pingcloud-radsecproxy-environment-variables
   behavior: merge
   envs:
   - env_vars
@@ -481,5 +476,4 @@ patchesStrategicMerge:
     descriptor.json: |-
       ${TOPOLOGY_DESCRIPTOR}
 
-### Comment this out to deploy the Radius Proxy
-- disable-radsec.yaml
+- ../../k8s-configs/ping-cloud/base/pingfederate/engine/cloud-generic/ff-radius-proxy/pingfederate-radsecproxy.yaml

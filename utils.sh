@@ -519,8 +519,8 @@ build_dev_deploy_file() {
 
   log "Building via kustomize......"
 
-  kustomize build "${build_load_arg}" "${build_load_arg_value}" "${build_dir}/${cluster_type}" -o "${deploy_file}"
-    #log "ERROR in kustomize build, see above ^^" && exit 1
+  kustomize build "${build_load_arg}" "${build_load_arg_value}" "${build_dir}/${cluster_type}" -o "${deploy_file}" || \
+    ( log "ERROR in kustomize build, see above ^^" && exit 1 )
 
   if [[ "${DEBUG}" != "true" ]]; then
     rm -rf "${build_dir}"
