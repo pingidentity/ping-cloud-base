@@ -7,7 +7,7 @@ commonLabels:
   app: ping-cloud
 
 resources:
-- ../../../base/pingfederate/provisioning/aws
+- ../../../base/pingfederate/ff-provisioning/aws
 
 
 patchesJson6902:

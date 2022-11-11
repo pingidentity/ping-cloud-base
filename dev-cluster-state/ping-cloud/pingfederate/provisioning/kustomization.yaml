@@ -3,7 +3,7 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-- ../../../../k8s-configs/ping-cloud/base/pingfederate/provisioning/aws
+- ../../../../k8s-configs/ping-cloud/base/pingfederate/ff-provisioning/aws
 
 patchesJson6902:
 # Change the number of pingfederate provisioning replicas to 2 for dev clusters
