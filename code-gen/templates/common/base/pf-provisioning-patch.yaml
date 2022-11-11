@@ -1,38 +1,25 @@
-# If PGO enabled, add this
-configMapGenerator:
-  - name: prom-alerts
-    behavior: merge
-    files:
-      - custom-alerts.yml
-
-
----
-
-# If pf-provisioning enabled, add this
-patchesStrategicMerge:
-- |-
-  apiVersion: postgres-operator.crunchydata.com/v1beta1
-  kind: PostgresCluster
+apiVersion: postgres-operator.crunchydata.com/v1beta1
+kind: PostgresCluster
+metadata:
+  name: pf-provisioning
+spec:
   metadata:
-    name: pf-provisioning
-  spec:
-    metadata:
-      annotations:
-        purpose: service-account-for-pgo-stack
-        ${IRSA_PING_ANNOTATION_KEY_VALUE}
-    backups:
-      pgbackrest:
-        global:
-          # Use IRSA role authentication in CDEs
-          # FIXME: This value needs to be auto if running a CDE like deployment from the CSG account
-          # This manual change will not be needed once PDO-4406 is completed
-          repo1-s3-key-type: web-id
-        repos:
-          - name: repo1
-            s3:
-              bucket: "${PGO_BACKUP_BUCKET_NAME}"
-              endpoint: "s3.${REGION}.amazonaws.com"
-              region: "${REGION}"
-            schedules:
-              full: "0 0 * * *"
-              differential: "30 */6 * * *"
+    annotations:
+      purpose: service-account-for-pgo-stack
+      ${IRSA_PING_ANNOTATION_KEY_VALUE}
+  backups:
+    pgbackrest:
+      global:
+        # Use IRSA role authentication in CDEs
+        # FIXME: This value needs to be auto if running a CDE like deployment from the CSG account
+        # This manual change will not be needed once PDO-4406 is completed
+        repo1-s3-key-type: web-id
+      repos:
+        - name: repo1
+          s3:
+            bucket: "${PGO_BACKUP_BUCKET_NAME}"
+            endpoint: "s3.${REGION}.amazonaws.com"
+            region: "${REGION}"
+          schedules:
+            full: "0 0 * * *"
+            differential: "30 */6 * * *"
