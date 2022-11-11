@@ -234,8 +234,6 @@ spec:
       - name: enrichment-cache-files
         emptyDir: {}
 
-      tolerations:   
-      - operator: Exists
   serviceName: logstash-elastic
   volumeClaimTemplates:
     - metadata:
