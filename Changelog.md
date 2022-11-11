@@ -1,5 +1,13 @@
 # Changelog
 
+### 1.14.0.2
+
+- Backport logstash tolerations fix
+
+_Changes:_
+
+- [X] PDO-4432 Logstash has broken tolerations
+
 ### 1.14.0.1
 
 - Allow multiple Pass-Through-Authentication plugin instances
