@@ -62,7 +62,7 @@ patchesStrategicMerge:
       ${IRSA_PING_ANNOTATION_KEY_VALUE}
 
 ### Radsec proxy patch against PF engine ###
-- ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingfederate/engine/cloud-generic/ff-radius-proxy/pingfederate-radsecproxy.yaml?ref=${K8S_GIT_BRANCH}
+- ${K8S_GIT_URL}/k8s-configs/ping-cloud/base/pingfederate/engine/cloud-generic/ff-radius-proxy/pingfederate-radsecproxy.yaml?ref=${K8S_GIT_BRANCH}
 
 patchesJson6902:
 
