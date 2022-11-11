@@ -61,6 +61,14 @@ _Changes:_
 - [X] PDO-4268 Fix Fluent-bit raw logs sending to S3
 - [X] PDO-4301 Fix secrets sealing
 
+### 1.14.1.0
+
+- Backport logstash tolerations fix
+
+_Changes:_
+
+- [X] PDO-4432 Logstash has broken tolerations
+
 ### 1.14.0.1
 
 - Allow multiple Pass-Through-Authentication plugin instances
