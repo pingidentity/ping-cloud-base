@@ -65,7 +65,6 @@ resources:
 # PingFederate admin and engine resources
 - ../pingfederate/admin
 - ../pingfederate/engine
-- ../pingfederate/provisioning
 
 # Delegated admin resources
 - ../pingdelegator/server

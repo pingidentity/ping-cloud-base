@@ -81,8 +81,15 @@ relative_path() {
 feature_flags() {
   cd "${1}/k8s-configs"
 
+  local pgo_enabled=false
+
+  # PGO can be used by multiple features. If any of them are enabled, we need to enable PGO.
+  if [[ ${PF_PROVISIONING_ENABLED} == "true" ]]; then
+    pgo_enabled=true
+  fi
+
   # Map with the feature flag environment variable & the term to search to find the kustomization files
-  flag_map="${RADIUS_PROXY_ENABLED}:ff-radius-proxy"
+  flag_map="${RADIUS_PROXY_ENABLED}:ff-radius-proxy ${PF_PROVISIONING_ENABLED}:ff-provisioning ${pgo_enabled}:ff-pgo"
 
   for flag in $flag_map ; do
     enabled="${flag%%:*}"
