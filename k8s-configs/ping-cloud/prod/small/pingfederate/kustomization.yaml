@@ -5,4 +5,4 @@ resources:
 - config
 - admin
 - engine
-- provisioning
+- ff-provisioning
