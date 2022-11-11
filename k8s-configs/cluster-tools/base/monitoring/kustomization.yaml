@@ -5,3 +5,4 @@ resources:
 - newrelic
 - prometheus
 - container-insights
+- ff-pgo
