@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-if [[ ! "$(pwd)" =~ "k8s-configs/cluster-tools/base/pgo/base" ]]; then
+if [[ ! "$(pwd)" =~ "k8s-configs/cluster-tools/base/pgo/ff-pgo-base" ]]; then
     echo "Script run source sanity check failed. Please only run this script in k8s-configs/cluster-tools/base/pgo/base"
     exit 1
 fi

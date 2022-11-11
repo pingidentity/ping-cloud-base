@@ -1,4 +1,0 @@
-# Intentionally left as is - this file will be overwritten by the code-gen/templates/base/cde/cluster-tools/monitoring/pgo/kustomization.yaml
-# when in use with a CDE, otherwise it is left as is for use in customer-hub
-kind: Component
-apiVersion: kustomize.config.k8s.io/v1alpha1

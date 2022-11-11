@@ -14,4 +14,4 @@ resources:
 - efs-driver
 - pod-reaper
 - notification
-- ff-pgo
+- pgo/ff-pgo-base

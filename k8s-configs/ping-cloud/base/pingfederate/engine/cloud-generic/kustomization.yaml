@@ -13,6 +13,7 @@ resources:
 - hpa.yaml
 - disruption-budget.yaml
 - ff-radius-proxy
+- ff-provisioning
 
 patchesStrategicMerge:
 - ff-radius-proxy/pingfederate-radsecproxy.yaml
