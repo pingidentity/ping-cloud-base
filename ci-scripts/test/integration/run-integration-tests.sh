@@ -55,7 +55,7 @@ execute_test_scripts() {
 
     log "Installing python requirements"
     REQUIREMENTS="${PROJECT_DIR}/ci-scripts/test/python-utils/requirements.txt"
-    pip3.9 install -r ${REQUIREMENTS}
+    pip3.9 install -rq ${REQUIREMENTS}
     log "Running python tests from: ${test_directory}"
     START=$(pwd)
     cd ${test_directory}
