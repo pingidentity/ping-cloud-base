@@ -1,0 +1,14 @@
+apiVersion: postgres-operator.crunchydata.com/v1beta1
+kind: PostgresCluster
+metadata:
+  name: pf-provisioning
+  namespace: postgres-operator
+$patch: delete
+
+---
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: pgo-gp2
+$patch: delete

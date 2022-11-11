@@ -483,3 +483,5 @@ patchesStrategicMerge:
 
 ### Comment this out to deploy the Radius Proxy
 - disable-radsec.yaml
+### Comment this out as well as disable-pgo.yaml in ../cluster-tools/kustomization.yaml to enable PF Provisioning
+- disable-pf-provisioning.yaml

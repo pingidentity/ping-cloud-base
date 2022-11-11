@@ -3,10 +3,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 - ../../k8s-configs/cluster-tools
-- pgo
-
-components:
-  - monitoring/pgo
 
 generatorOptions:
   disableNameSuffixHash: true
@@ -45,6 +41,13 @@ configMapGenerator:
     - PROMETHEUS_PING_NAMESPACE=${PING_CLOUD_NAMESPACE}
 
 patchesStrategicMerge:
+
+# Always remove PGO CRDs, they are too large to apply directly
+- remove-pgo-crds.yaml
+
+### Comment this out as well as disable-pf-provisoining.yaml in ../ping-cloud/kustomization.yaml
+### to enable PF Provisioning
+- disable-pgo.yaml
 
 ### Lets encrypt ACME certificate issuer for the cluster ###
 - |-
@@ -261,6 +264,7 @@ patchesStrategicMerge:
     namespace: elastic-stack-logging
   data:
     NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY_BASE64}
+
 
 patchesJson6902:
 
