@@ -14,7 +14,11 @@ LOG_FILE=/tmp/git-ops-command.log
 ########################################################################################################################
 log() {
   msg="$1"
-  echo "${msg}" >> "${LOG_FILE}"
+  if [[ "${DEBUG}" == "true" ]]; then
+    echo "${msg}"
+  else
+    echo "${msg}" >> "${LOG_FILE}"
+  fi
 }
 
 ########################################################################################################################
@@ -134,8 +138,10 @@ cleanup() {
 TARGET_DIR="${1:-.}"
 cd "${TARGET_DIR}" >/dev/null 2>&1
 
-# Trap all exit codes from here on so cleanup is run
-trap "cleanup" EXIT
+if [[ "${DEBUG}" != "true" ]]; then
+  # Trap all exit codes from here on so cleanup is run
+  trap "cleanup" EXIT
+fi
 
 # Get short and full directory names of the target directory
 TARGET_DIR_FULL="$(pwd)"
@@ -211,9 +217,14 @@ else
 fi
 
 # Build the uber deploy yaml
-if test -z "${OUT_DIR}" || test ! -d "${OUT_DIR}"; then
+if [[ ${DEBUG} == "true" ]]; then
+  log "git-ops-command: DEBUG - generating uber yaml file from '${BUILD_DIR}' to /tmp/uber-debug.yaml"
+  kustomize build ${build_load_arg} ${build_load_arg_value} "${BUILD_DIR}" --output /tmp/uber-debug.yaml
+elif test -z "${OUT_DIR}" || test ! -d "${OUT_DIR}"; then
   log "git-ops-command: generating uber yaml file from '${BUILD_DIR}' to stdout"
   kustomize build ${build_load_arg} ${build_load_arg_value} "${BUILD_DIR}"
+# TODO: leave this functionality for now - it outputs many yaml files to the OUT_DIR
+# it isn't clear if this is still used in actual CDEs
 else
   log "git-ops-command: generating yaml files from '${BUILD_DIR}' to '${OUT_DIR}'"
   kustomize build ${build_load_arg} ${build_load_arg_value} "${BUILD_DIR}" --output "${OUT_DIR}"
