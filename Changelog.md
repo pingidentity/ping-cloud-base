@@ -1,6 +1,6 @@
 # Changelog
 
-### 1.14.0.2
+### 1.14.1.0
 
 - Backport logstash tolerations fix
 
