@@ -17,12 +17,12 @@ patchesStrategicMerge:
 ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
 - custom-patches.yaml
 
-# Uncomment this if PF Provisioning is enabled!
-- pf-provisioning-patch.yaml
+# # Uncomment this if PF Provisioning is enabled!
+# - pf-provisioning-patch.yaml
 
-# Uncomment If PGO enabled, add this
-configMapGenerator:
-  - name: prom-alerts
-    behavior: merge
-    files:
-      - pgo-custom-alerts.yml
+# # Uncomment If PGO enabled, add this
+# configMapGenerator:
+#   - name: prom-alerts
+#     behavior: merge
+#     files:
+#       - pgo-custom-alerts.yml
