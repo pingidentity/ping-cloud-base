@@ -670,7 +670,7 @@ apply_crds() {
   apply_crd "${argo_crd_yaml}" "${timeout}"
 
   if [[ $PF_PROVISIONING_ENABLED == "true" ]]; then
-    pgo_crd_dir="${base_dir}/k8s-configs/cluster-tools/base/pgo/base/crd/"
+    pgo_crd_dir="${base_dir}/k8s-configs/cluster-tools/base/pgo/ff-pgo-base/crd/"
     log "FEATURE FLAG - PF Provisioning is enabled, deploying PGO CRD"
     # PGO CRDs are so large, they have to be applied server-side
     kubectl apply --server-side -k "${pgo_crd_dir}"
