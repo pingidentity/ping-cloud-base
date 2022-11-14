@@ -9,10 +9,12 @@
 - Send logs from second region to main Elasticsearch
 - Add HTTP server pod for PingAccess-WAS healthchecks
 - Remove unneeded resources from secondary region
+- Added CICD integration health test to check certificate results
 
 _Changes:_
 
 - [X] PDO-2799 Rewrite CloudWatch log tests
+- [X] PDO-4240 PF Health Check Tests - Certificates
 - [X] PDO-4312 PA-WAS Health Check Tests - object creation, unauthenticated proxy requests
 - [X] PDO-4432 Logstash has broken tolerations
 - [X] PDO-4565 Prometheus: Configure It to Take Metrics from Second Region
