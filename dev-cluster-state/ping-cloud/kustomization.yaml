@@ -467,6 +467,7 @@ patchesJson6902:
     version: v1beta1
     kind: PostgresCluster
     name: pf-provisioning
+    namespace: postgres-operator
   patch: |-
     - op: replace
       path: /spec/instances/0/replicas
@@ -496,6 +497,7 @@ patchesStrategicMerge:
   kind: PostgresCluster
   metadata:
     name: pf-provisioning
+    namespace: postgres-operator
   spec:
     backups:
       pgbackrest:
