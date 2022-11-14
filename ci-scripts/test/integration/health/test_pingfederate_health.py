@@ -43,3 +43,6 @@ class TestPingFederateHealth(TestHealthBase):
         self.assertTrue(
             len(res) > 0, "No 'responds to requests' checks found in health check results"
         )
+        
+    def test_health_check_has_certificate_results(self):
+        self.assertIn("No certificates are expiring within 30 days", self.get_test_results(self.pingfederate, Categories.pod_status).keys())
