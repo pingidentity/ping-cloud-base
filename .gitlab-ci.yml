@@ -24,13 +24,21 @@ variables:
   K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.3.0
 
 ## Compile stage ##
-compile:
+all-kustomizations:
  stage: compile
  tags:
    - default-gitlab-runner
  image: ${K8S_DEPLOY_TOOLS}
  script:
-   - ./ci-scripts/compile/compile.sh
+   - ./ci-scripts/compile/all-kustomizations.sh
+
+generated-kustomizations:
+ stage: compile
+ tags:
+   - default-gitlab-runner
+ image: ${K8S_DEPLOY_TOOLS}
+ script:
+   - ./ci-scripts/compile/generated-kustomizations.sh
 
 ## Find cluster stage ##
 find-cluster:
