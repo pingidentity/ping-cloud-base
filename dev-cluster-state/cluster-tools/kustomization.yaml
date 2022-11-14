@@ -47,7 +47,7 @@ patchesStrategicMerge:
 
 ### Comment this out as well as disable-pf-provisoining.yaml in ../ping-cloud/kustomization.yaml
 ### to enable PF Provisioning
-- disable-pgo.yaml
+#- disable-pgo.yaml
 
 ### Lets encrypt ACME certificate issuer for the cluster ###
 - |-
