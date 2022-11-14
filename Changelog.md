@@ -1,5 +1,13 @@
 # Changelog
 
+### 1.15.1.0
+
+- Fix Logstash broken tolerations
+
+_Changes:_
+
+- [X] PDO-4432 Logstash has broken tolerations
+
 ### 1.15.0.1
 
 - Allow multiple Pass-Through-Authentication plugin instances
@@ -7,7 +15,6 @@
 _Changes:_
 
 - [X] PDO-4558 Allow multiple Pass-Through-Authentication plugin instances
-- [x] PDO-4432 Logstash has broken tolerations
 
 ### 1.15.0.0
 
