@@ -34,33 +34,33 @@ spec:
       containers:
       - name: kube-state-metrics
         args:
-        - --collectors=certificatesigningrequests
-        - --collectors=configmaps
-        - --collectors=cronjobs
-        - --collectors=daemonsets
-        - --collectors=deployments
-        - --collectors=endpoints
-        - --collectors=horizontalpodautoscalers
-        - --collectors=ingresses
-        - --collectors=jobs
-        - --collectors=limitranges
-        - --collectors=mutatingwebhookconfigurations
-        - --collectors=namespaces
-        - --collectors=networkpolicies
-        - --collectors=nodes
-        - --collectors=persistentvolumeclaims
-        - --collectors=persistentvolumes
-        - --collectors=poddisruptionbudgets
-        - --collectors=pods
-        - --collectors=replicasets
-        - --collectors=replicationcontrollers
-        - --collectors=resourcequotas
-        - --collectors=secrets
-        - --collectors=services
-        - --collectors=statefulsets
-        - --collectors=storageclasses
-        - --collectors=validatingwebhookconfigurations
-        - --collectors=volumeattachments
+        - --resources=certificatesigningrequests
+        - --resources=configmaps
+        - --resources=cronjobs
+        - --resources=daemonsets
+        - --resources=deployments
+        - --resources=endpoints
+        - --resources=horizontalpodautoscalers
+        - --resources=ingresses
+        - --resources=jobs
+        - --resources=limitranges
+        - --resources=mutatingwebhookconfigurations
+        - --resources=namespaces
+        - --resources=networkpolicies
+        - --resources=nodes
+        - --resources=persistentvolumeclaims
+        - --resources=persistentvolumes
+        - --resources=poddisruptionbudgets
+        - --resources=pods
+        - --resources=replicasets
+        - --resources=replicationcontrollers
+        - --resources=resourcequotas
+        - --resources=secrets
+        - --resources=services
+        - --resources=statefulsets
+        - --resources=storageclasses
+        - --resources=validatingwebhookconfigurations
+        - --resources=volumeattachments
         - --telemetry-port=8081
         imagePullPolicy: IfNotPresent
         image: k8s.gcr.io/kube-state-metrics/kube-state-metrics:v2.0.0
@@ -298,21 +298,21 @@ spec:
               value: "newrelic-license-key"
       containers:
         - name: kube-events
-          image: public.ecr.aws/r2h3l6e4/newrelic/nri-kube-events:1.8.0
+          image: public.ecr.aws/r2h3l6e4/newrelic/nri-kube-events:1.9.1
           imagePullPolicy: IfNotPresent
-          securityContext:
-            privileged: false
-            runAsGroup: 2000
-            runAsUser: 1000
-            runAsNonRoot: true
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
+          # securityContext:
+          #   privileged: false
+          #   runAsGroup: 2000
+          #   runAsUser: 1000
+          #   runAsNonRoot: true
+          #   allowPrivilegeEscalation: false
+          #   readOnlyRootFilesystem: true
           args: ["-config", "/app/config/config.yaml", "-loglevel", "debug"]
           volumeMounts:
             - name: config-volume
               mountPath: /app/config
         - name: forwarder
-          image: public.ecr.aws/r2h3l6e4/newrelic/k8s-events-forwarder:1.22.0
+          image: public.ecr.aws/r2h3l6e4/newrelic/k8s-events-forwarder:1.33.1
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: false

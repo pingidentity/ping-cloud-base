@@ -23,7 +23,8 @@ data:
         agentEndpoint: http://localhost:8001/v1/data
         clusterName: k8s-cluster-name
         agentHTTPTimeout: 60s
-      stdout: true
+    - name: stdout
+      config: {}
 
 ---
 # Source: nri-bundle/charts/nri-prometheus/templates/configmap.yaml
