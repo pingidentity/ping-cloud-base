@@ -22,6 +22,7 @@ data:
       config:
         agentEndpoint: http://localhost:8001/v1/data
         clusterName: k8s-cluster-name
+        verbose: "true"
         agentHTTPTimeout: 60s
     - name: stdout
       config: {}

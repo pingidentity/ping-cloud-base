@@ -298,7 +298,7 @@ spec:
               value: "newrelic-license-key"
       containers:
         - name: kube-events
-          image: public.ecr.aws/r2h3l6e4/newrelic/nri-kube-events:1.9.1
+          image: newrelic/nri-kube-events:1.9.1
           imagePullPolicy: IfNotPresent
           # securityContext:
           #   privileged: false
@@ -308,11 +308,14 @@ spec:
           #   allowPrivilegeEscalation: false
           #   readOnlyRootFilesystem: true
           args: ["-config", "/app/config/config.yaml", "-loglevel", "debug"]
+          env:
+            - name: NRIA_VERBOSE
+              value: "1"
           volumeMounts:
             - name: config-volume
               mountPath: /app/config
         - name: forwarder
-          image: public.ecr.aws/r2h3l6e4/newrelic/k8s-events-forwarder:1.33.1
+          image: newrelic/k8s-events-forwarder:1.33.1
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: false
@@ -341,7 +344,8 @@ spec:
                 fieldRef:
                   apiVersion: v1
                   fieldPath: spec.nodeName
-
+            - name: NRIA_VERBOSE
+              value: "1"
           volumeMounts:
             - mountPath: /var/db/newrelic-infra/data
               name: tmpfs-data
