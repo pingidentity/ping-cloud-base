@@ -66,6 +66,14 @@ _Changes:_
 - [X] PDO-4498 Move nri-kubernetes images to dev ECR within PCB
 - [X] PDO-4580 Prometheus Pod is being OOMKilled
 
+### 1.15.1.0
+
+- Fix Logstash broken tolerations
+
+_Changes:_
+
+- [X] PDO-4432 Logstash has broken tolerations
+
 ### 1.15.0.1
 
 - Allow multiple Pass-Through-Authentication plugin instances
@@ -125,6 +133,14 @@ _Changes:_
 - [X] PDO-4265 Increase memory limits for prometheus pod
 - [X] PDO-4268 Fix Fluent-bit raw logs sending to S3
 - [X] PDO-4301 Fix secrets sealing
+
+### 1.14.1.0
+
+- Backport logstash tolerations fix
+
+_Changes:_
+
+- [X] PDO-4432 Logstash has broken tolerations
 
 ### 1.14.0.1
 
