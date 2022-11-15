@@ -1,5 +1,5 @@
 # Update this environment variable to trigger updates to PingCentral
-LAST_UPDATE_REASON="this is a test"
+LAST_UPDATE_REASON="${LAST_UPDATE_REASON}"
 
 SERVER_PROFILE_PATH=profiles/pingcentral
 

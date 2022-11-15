@@ -3,14 +3,3 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 - cloud-generic
-
-generatorOptions:
-  disableNameSuffixHash: false
-
-configMapGenerator:
-
-# PingCentral
-# Create the config maps that hold the variable for triggering updates of PingCentral
-- name: pingcentral-last-update-config
-  envs:
-    - env_vars
