@@ -16,7 +16,7 @@ class TestCloudWatchLogs(k8s_utils.K8sUtils):
     pod_name = "es-cluster-hot-0"
     pod_namespace = "elastic-stack-logging"
     container_name = "elasticsearch"
-    k8s_cluster_name = os.getenv("TENANT_NAME")
+    k8s_cluster_name = os.getenv("CLUSTER_NAME")
     log_group_name = f"/aws/containerinsights/{k8s_cluster_name}/application"
     log_stream_name = f"{pod_name}_{pod_namespace}_{container_name}.cw_out"
 
@@ -54,7 +54,6 @@ class TestCloudWatchLogs(k8s_utils.K8sUtils):
 
     def test_pod_logs_exists(self):
         pod_logs = self.get_latest_pod_logs(self.pod_name, self.container_name, self.pod_namespace, self.log_lines)
-        print(pod_logs)
         self.assertNotEqual(len(pod_logs), 0, "No pod logs found")
 
     def test_cw_logs_equal_pod_logs(self):
