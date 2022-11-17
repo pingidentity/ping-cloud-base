@@ -134,6 +134,9 @@
 # NEW_RELIC_LICENSE_KEY      | The key of NewRelic APM Agent used to send data to | The SSM path: ssm://pcpt/sre/new-relic/java-agent-license-key
 #                            | NewRelic account.                                  |
 #                            |                                                    |
+# NOTIFICATION_ENABLED       | Flag indicating if alerts should be sent to the    | False
+#                            | endpoint configured in the argo-events             |
+#                            |                                                    |
 # NLB_EIP_PATH_PREFIX        | The SSM path prefix which stores comma separated   | The string "unused".
 #                            | AWS Elastic IP allocation IDs that exist in the    |
 #                            | CDE account of the Ping Cloud customers.           |
@@ -174,6 +177,12 @@
 # PRIMARY_TENANT_DOMAIN      | In multi-cluster environments, the primary domain. | Same as TENANT_DOMAIN.
 #                            | Only used if IS_MULTI_CLUSTER is true.             |
 #                            |                                                    |
+# PROM_NOTIFICATION_ENABLED  | Flag indicating if PGO alerts should be sent to    | False
+#                            | the endpoint configured in the argo-events         |
+#                            |                                                    |
+# PROM_SLACK_CHANNEL         | The Slack channel name for PGO argo-events to send | CDE environment: p1as-application-oncall
+#                            | notification.                                      |
+#                            |                                                    |
 # RADIUS_PROXY_ENABLED       | Feature Flag - Indicates if the radius proxy       | False
 #                            | feature for PingFederate engines is enabled        |
 #                            |                                                    |
@@ -200,6 +209,10 @@
 #                            |                                                    |
 # SERVICE_SSM_PATH_PREFIX    | The prefix of the SSM path that contains service   | /pcpt/service
 #                            | state data required for the cluster.               |
+#                            |                                                    |
+# SLACK_CHANNEL           `  | The Slack channel name for argo-events to send     | CDE environment: p1as-application-oncall
+#                            | notification.                                      |
+#                            |                                                    |
 #                            |                                                    |
 # SIZE                       | Size of the environment, which pertains to the     | x-small
 #                            | number of user identities. Legal values are        |
@@ -351,12 +364,13 @@ ${PINGDELEGATOR_IMAGE_TAG}
 ${IRSA_PING_ANNOTATION_KEY_VALUE}
 ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}
 ${NOTIFICATION_ENABLED}
-${SLACK_CHANNEL}
 ${NOTIFICATION_ENDPOINT}
 ${PF_PROVISIONING_ENABLED}
 ${RADIUS_PROXY_ENABLED}
 ${IMAGE_TAG_PREFIX}
-${ARGOCD_SLACK_TOKEN_BASE64}'
+${ARGOCD_SLACK_TOKEN_BASE64}
+${SLACK_CHANNEL}
+${PROM_SLACK_CHANNEL}'
 
 # Variables to replace within the generated cluster state code
 REPO_VARS="${REPO_VARS:-${DEFAULT_VARS}}"
@@ -550,6 +564,9 @@ echo "Initial PGO_BUCKET_URI_SUFFIX: ${PGO_BUCKET_URI_SUFFIX}"
 
 echo "Initial IRSA_PING_ANNOTATION_KEY_VALUE: ${IRSA_PING_ANNOTATION_KEY_VALUE}"
 echo "Initial NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE: ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
+
+echo "Initial SLACK_CHANNEL: ${SLACK_CHANNEL}"
+echo "Initial PROM_SLACK_CHANNEL: ${PROM_SLACK_CHANNEL}"
 echo ---
 
 # Use defaults for other variables, if not present.
@@ -644,6 +661,9 @@ export ECR_REGISTRY_NAME='public.ecr.aws/r2h3l6e4'
 export PING_CLOUD_NAMESPACE='ping-cloud'
 export MYSQL_DATABASE='pingcentral'
 
+export SLACK_CHANNEL="${SLACK_CHANNEL:-p1as-application-oncall}"
+export PROM_SLACK_CHANNEL="${PROM_SLACK_CHANNEL:-p1as-application-oncall}"
+
 # Print out the values being used for each variable.
 echo "Using TENANT_NAME: ${TENANT_NAME}"
 echo "Using SIZE: ${SIZE}"
@@ -693,6 +713,9 @@ echo "Using PGO_BUCKET_URI_SUFFIX: ${PGO_BUCKET_URI_SUFFIX}"
 
 echo "Using IRSA_PING_ANNOTATION_KEY_VALUE: ${IRSA_PING_ANNOTATION_KEY_VALUE}"
 echo "Using NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE: ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
+
+echo "Using SLACK_CHANNEL: ${SLACK_CHANNEL}"
+echo "Using PROM_SLACK_CHANNEL: ${PROM_SLACK_CHANNEL}"
 echo ---
 
 NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY:-ssm://pcpt/sre/new-relic/java-agent-license-key}"

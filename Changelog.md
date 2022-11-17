@@ -9,6 +9,7 @@
 - Send logs from second region to main Elasticsearch
 - Add HTTP server pod for PingAccess-WAS healthchecks
 - Remove unneeded resources from secondary region
+- Retain set value for slack channel alerts
 - Added CICD integration health test to check certificate results
 - Modified Kibana dashboards to show second region logs and metrics
 
@@ -23,6 +24,7 @@ _Changes:_
 - [X] PDO-4566 Logstash: Configure It to Send Logs from Second Region to Primary Region
 - [X] PDO-4568 Kibana: Modify Dashboards to Show Second Region Logs and Metrics
 - [X] PDO-4569 Remove ES, Kibana and Grafana from second region
+- [X] PDO-4610 Retain set value for slack channel alerts
 
 ### 1.16.0.0
 
