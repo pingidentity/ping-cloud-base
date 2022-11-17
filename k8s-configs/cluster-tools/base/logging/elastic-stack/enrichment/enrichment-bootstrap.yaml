@@ -3,6 +3,8 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: logging-bootstrap
+  annotations:
+    argocd.argoproj.io/sync-options: Replace=true
 spec:
   template:
     spec:
@@ -46,6 +48,8 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: elasticsearch-bootstrap
+  annotations:
+    argocd.argoproj.io/sync-options: Replace=true
 spec:
   template:
     spec:
@@ -103,6 +107,8 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: kibana-bootstrap
+  annotations:
+     argocd.argoproj.io/sync-options: Replace=true
 spec:
   template:
     spec:
@@ -132,21 +138,12 @@ spec:
             runAsGroup: 1000
             allowPrivilegeEscalation: false
           volumeMounts:
-            - name: kibana-dashboard-pa
-              mountPath: /scripts/dashboards/pa.ndjson
-              subPath: pa.ndjson
-            - name: kibana-dashboard-pd
-              mountPath: /scripts/dashboards/pd.ndjson
-              subPath: pd.ndjson
-            - name: kibana-dashboard-pf
-              mountPath: /scripts/dashboards/pf.ndjson
-              subPath: pf.ndjson
-            - name: kibana-dashboard-pf-basic
-              mountPath: /scripts/dashboards/pf-basic.ndjson
-              subPath: pf-basic.ndjson
-            - name: kibana-dashboard-pa-was-basic
-              mountPath: /scripts/dashboards/pa-was-basic.ndjson
-              subPath: pa-was-basic.ndjson
+            - name: kibana-dashboards-pa
+              mountPath: /scripts/dashboards/pa
+            - name: kibana-dashboards-pd
+              mountPath: /scripts/dashboards/pd
+            - name: kibana-dashboards-pf
+              mountPath: /scripts/dashboards/pf
             - name: enrichment-elasticsearch-index-templates
               mountPath: /scripts/index-templates
             - name: kibana-alerts
@@ -160,21 +157,15 @@ spec:
               cpu: "500m"
       restartPolicy: OnFailure
       volumes:
-        - name: kibana-dashboard-pa
+        - name: kibana-dashboards-pa
           configMap:
-            name: kibana-dashboard-pa
-        - name: kibana-dashboard-pd
+            name: kibana-dashboards-pa
+        - name: kibana-dashboards-pd
           configMap:
-            name: kibana-dashboard-pd
-        - name: kibana-dashboard-pf
+            name: kibana-dashboards-pd
+        - name: kibana-dashboards-pf
           configMap:
-            name: kibana-dashboard-pf
-        - name: kibana-dashboard-pf-basic
-          configMap:
-            name: kibana-dashboard-pf-basic
-        - name: kibana-dashboard-pa-was-basic
-          configMap:
-            name: kibana-dashboard-pa-was-basic
+            name: kibana-dashboards-pf
         - name: kibana-alerts
           configMap:
             name: kibana-alerts
