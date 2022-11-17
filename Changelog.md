@@ -10,6 +10,7 @@
 - Add HTTP server pod for PingAccess-WAS healthchecks
 - Remove unneeded resources from secondary region
 - Added CICD integration health test to check certificate results
+- Modified Kibana dashboards to show second region logs and metrics
 
 _Changes:_
 
@@ -20,6 +21,7 @@ _Changes:_
 - [X] PDO-4565 Prometheus: Configure It to Take Metrics from Second Region
 - [X] PDO-4496 Create new global repo for dashboards
 - [X] PDO-4566 Logstash: Configure It to Send Logs from Second Region to Primary Region
+- [X] PDO-4568 Kibana: Modify Dashboards to Show Second Region Logs and Metrics
 - [X] PDO-4569 Remove ES, Kibana and Grafana from second region
 
 ### 1.16.0.0

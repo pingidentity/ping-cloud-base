@@ -115,6 +115,7 @@ metadata:
 spec:
   serviceName: elasticsearch
   replicas: 3
+  podManagementPolicy: Parallel
   updateStrategy:
     type: RollingUpdate
   selector:
@@ -177,6 +178,21 @@ spec:
         - containerPort: 9300
           name: inter-node
           protocol: TCP
+        
+        readinessProbe:
+          failureThreshold: 3
+          periodSeconds: 5
+          tcpSocket:
+            port: 9200
+          timeoutSeconds: 3
+        startupProbe:
+          failureThreshold: 30
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          tcpSocket:
+            port: 9200
+          timeoutSeconds: 3
+
 
         env:
         - name: CONTAINER_NAME
@@ -190,7 +206,7 @@ spec:
         - name: network.host
           value: "0.0.0.0"
         - name: discovery.seed_hosts
-          value: "es-cluster-hot-0.elasticsearch, es-cluster-hot-1.elasticsearch, es-cluster-hot-2.elasticsearch"
+          value: "elasticsearch"
         - name: cluster.initial_master_nodes
           value: "es-cluster-hot-0, es-cluster-hot-1, es-cluster-hot-2"
         - name: xpack.license.self_generated.type
@@ -288,7 +304,7 @@ spec:
         - name: network.host
           value: "0.0.0.0"
         - name: discovery.seed_hosts
-          value: "es-cluster-hot-0.elasticsearch, es-cluster-hot-1.elasticsearch, es-cluster-hot-2.elasticsearch"
+          value: "elasticsearch"
         - name: cluster.initial_master_nodes
           value: "es-cluster-hot-0, es-cluster-hot-1, es-cluster-hot-2"
         - name: xpack.license.self_generated.type
