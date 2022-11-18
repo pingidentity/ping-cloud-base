@@ -52,7 +52,7 @@
   {
     "name": "pf-slack-connector",
     "version": "3.0.2",
-    "is_myping_only": "true"
+    "is_myping_only": "false"
   },
   {
     "name": "pf-webex-connector",
