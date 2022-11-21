@@ -35,3 +35,6 @@ SKIP_CONFIGURE_KUBE=true
 SKIP_CONFIGURE_AWS=true
 
 DEV_TEST_ENV=true
+
+DASH_REPO_URL=https://github.com/pingidentity/ping-cloud-dashboards
+DASH_REPO_BRANCH=main

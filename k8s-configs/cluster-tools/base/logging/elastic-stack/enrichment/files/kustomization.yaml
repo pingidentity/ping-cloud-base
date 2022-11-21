@@ -8,6 +8,5 @@ resources:
 - elasticsearch-index-bootstraps.yaml
 - elasticsearch-index-templates.yaml
 - enrichment-cache.yaml
-- https://github.com/pingidentity/ping-cloud-dashboards/kibana?ref=v1.17-dev-branch
 - logstash-search-templates.yaml
 - kibana-alerts.yaml

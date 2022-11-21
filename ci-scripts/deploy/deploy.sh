@@ -26,6 +26,10 @@ fi
 export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KEY}")
 export DATASYNC_P1AS_SYNC_SERVER="pingdirectory-0"
 
+
+export DASH_REPO_URL="https://github.com/pingidentity/ping-cloud-dashboards"
+export DASH_REPO_BRANCH="main"
+
 # Deploy the configuration to Kubernetes
 if [[ -n ${PINGONE} ]]; then
   set_pingone_api_env_vars

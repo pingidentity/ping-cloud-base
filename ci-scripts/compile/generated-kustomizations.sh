@@ -8,6 +8,8 @@ export TENANT_NAME="${TENANT_NAME:-ci-cd}"
 export K8S_GIT_URL=${K8S_GIT_URL:-${CI_REPOSITORY_URL}}
 export K8S_GIT_BRANCH=${K8S_GIT_BRANCH:-${CI_COMMIT_REF_NAME}}
 export TARGET_DIR=/tmp/sandbox
+export DASH_REPO_URL="https://github.com/pingidentity/ping-cloud-dashboards"
+export DASH_REPO_BRANCH="main"
 
 STATUS=0
 
