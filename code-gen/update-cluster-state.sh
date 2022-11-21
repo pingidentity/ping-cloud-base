@@ -922,253 +922,253 @@ BASE_ENV_VARS="${K8S_CONFIGS_DIR}/${BASE_DIR}/${ENV_VARS_FILE_NAME}"
 # Get the minimum required ping-cloud secrets (currently, the New Relic key and SSH git key).
 get_min_required_secrets
 
-# # For each environment:
-# #   - Generate code for all its regions
-# #   - Push code for all its regions into new branches
-# for ENV in ${ENVIRONMENTS}; do # ENV loop
-#   test "${ENV}" = 'prod' &&
-#       DEFAULT_GIT_BRANCH='master' ||
-#       DEFAULT_GIT_BRANCH="${ENV}"
+# For each environment:
+#   - Generate code for all its regions
+#   - Push code for all its regions into new branches
+for ENV in ${ENVIRONMENTS}; do # ENV loop
+  test "${ENV}" = 'prod' &&
+      DEFAULT_GIT_BRANCH='master' ||
+      DEFAULT_GIT_BRANCH="${ENV}"
 
-#   if echo "${ENV}" | grep -q "${CUSTOMER_HUB}"; then
-#     IS_CUSTOMER_HUB=true
-#   else
-#     IS_CUSTOMER_HUB=false
-#   fi
+  if echo "${ENV}" | grep -q "${CUSTOMER_HUB}"; then
+    IS_CUSTOMER_HUB=true
+  else
+    IS_CUSTOMER_HUB=false
+  fi
 
-#   NEW_BRANCH="${NEW_VERSION}-${DEFAULT_GIT_BRANCH}"
-#   log "Updating branch '${NEW_BRANCH}' for environment '${ENV}'"
+  NEW_BRANCH="${NEW_VERSION}-${DEFAULT_GIT_BRANCH}"
+  log "Updating branch '${NEW_BRANCH}' for environment '${ENV}'"
 
-#   log "Switching to branch ${DEFAULT_GIT_BRANCH} to determine deployed regions"
-#   git checkout --quiet "${DEFAULT_GIT_BRANCH}"
+  log "Switching to branch ${DEFAULT_GIT_BRANCH} to determine deployed regions"
+  git checkout --quiet "${DEFAULT_GIT_BRANCH}"
 
-#   # Get the names of all the regional directories. Note that this may not be the actual region, rather it's the nick
-#   # name of the region.
-#   REGION_DIRS="$(find "${K8S_CONFIGS_DIR}" \
-#       -mindepth 1 -maxdepth 1 \
-#       -type d \( ! -name "${BASE_DIR}" \) \
-#       -exec basename {} \;)"
+  # Get the names of all the regional directories. Note that this may not be the actual region, rather it's the nick
+  # name of the region.
+  REGION_DIRS="$(find "${K8S_CONFIGS_DIR}" \
+      -mindepth 1 -maxdepth 1 \
+      -type d \( ! -name "${BASE_DIR}" \) \
+      -exec basename {} \;)"
 
-#   log "Environment '${ENV}' has the following region directories:"
-#   echo "${REGION_DIRS}"
+  log "Environment '${ENV}' has the following region directories:"
+  echo "${REGION_DIRS}"
 
-#   # Code for this environment will be generated in the following directory. Each region will get its own sub-directory
-#   # under this directory.
-#   TENANT_CODE_DIR="$(mktemp -d)"
+  # Code for this environment will be generated in the following directory. Each region will get its own sub-directory
+  # under this directory.
+  TENANT_CODE_DIR="$(mktemp -d)"
 
-#   # The file into which the primary region directory name will be stored for later use.
-#   PRIMARY_REGION_DIR_FILE="$(mktemp)"
+  # The file into which the primary region directory name will be stored for later use.
+  PRIMARY_REGION_DIR_FILE="$(mktemp)"
 
-#   for REGION_DIR in ${REGION_DIRS}; do # REGION loop for generate
-#     # Perform the code generation in a sub-shell so it doesn't pollute the current shell with environment variables.
-#     (
+  for REGION_DIR in ${REGION_DIRS}; do # REGION loop for generate
+    # Perform the code generation in a sub-shell so it doesn't pollute the current shell with environment variables.
+    (
 
-#       # Common environment variables for the region
-#       REGION_ENV_VARS="${K8S_CONFIGS_DIR}/${REGION_DIR}/${ENV_VARS_FILE_NAME}"
+      # Common environment variables for the region
+      REGION_ENV_VARS="${K8S_CONFIGS_DIR}/${REGION_DIR}/${ENV_VARS_FILE_NAME}"
 
-#       # App-specific environment variables for the region
-#       APP_ENV_VARS_FILES="$(find "${K8S_CONFIGS_DIR}/${REGION_DIR}" -type f -mindepth 2 -name "${ENV_VARS_FILE_NAME}")"
+      # App-specific environment variables for the region
+      APP_ENV_VARS_FILES="$(find "${K8S_CONFIGS_DIR}/${REGION_DIR}" -type f -mindepth 2 -name "${ENV_VARS_FILE_NAME}")"
 
-#       # Set the environment variables in the order: region-specific, app-specific (within the region directories),
-#       # base. This will ensure that derived variables are set correctly.
-#       set_env_vars "${REGION_ENV_VARS}"
-#       for ENV_VARS_FILE in ${APP_ENV_VARS_FILES}; do
-#         set_env_vars "${ENV_VARS_FILE}"
-#       done
-#       set_env_vars "${BASE_ENV_VARS}"
+      # Set the environment variables in the order: region-specific, app-specific (within the region directories),
+      # base. This will ensure that derived variables are set correctly.
+      set_env_vars "${REGION_ENV_VARS}"
+      for ENV_VARS_FILE in ${APP_ENV_VARS_FILES}; do
+        set_env_vars "${ENV_VARS_FILE}"
+      done
+      set_env_vars "${BASE_ENV_VARS}"
 
-#       # Set the TARGET_DIR to the right directory for the region.
-#       TARGET_DIR="${TENANT_CODE_DIR}/${REGION_DIR}"
+      # Set the TARGET_DIR to the right directory for the region.
+      TARGET_DIR="${TENANT_CODE_DIR}/${REGION_DIR}"
 
-#       # Generate code now that we have set all the required environment variables
-#       log "Generating code for region '${REGION_DIR}' and branch '${NEW_BRANCH}' into '${TARGET_DIR}'"
-#       (
-#         # If resetting to default, then use defaults for these variables instead of migrating them.
-#         if "${RESET_TO_DEFAULT}"; then
-#           log "Resetting variables to the default or out-of-the-box values per request"
-#           unset LETS_ENCRYPT_SERVER
-#         fi
+      # Generate code now that we have set all the required environment variables
+      log "Generating code for region '${REGION_DIR}' and branch '${NEW_BRANCH}' into '${TARGET_DIR}'"
+      (
+        # If resetting to default, then use defaults for these variables instead of migrating them.
+        if "${RESET_TO_DEFAULT}"; then
+          log "Resetting variables to the default or out-of-the-box values per request"
+          unset LETS_ENCRYPT_SERVER
+        fi
 
-#         export NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY}"
+        export NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY}"
 
-#         export ARGOCD_SLACK_TOKEN_SSM_PATH="${ARGOCD_SLACK_TOKEN_SSM_PATH}"
+        export ARGOCD_SLACK_TOKEN_SSM_PATH="${ARGOCD_SLACK_TOKEN_SSM_PATH}"
 
-#         # If customer-hub branch, reset the LETS_ENCRYPT_SERVER so the prod one is set by default.
-#         if "${IS_CUSTOMER_HUB}"; then
-#           log "Unsetting LETS_ENCRYPT_SERVER for the ${CUSTOMER_HUB} branch"
-#           unset LETS_ENCRYPT_SERVER
-#         fi
+        # If customer-hub branch, reset the LETS_ENCRYPT_SERVER so the prod one is set by default.
+        if "${IS_CUSTOMER_HUB}"; then
+          log "Unsetting LETS_ENCRYPT_SERVER for the ${CUSTOMER_HUB} branch"
+          unset LETS_ENCRYPT_SERVER
+        fi
 
-#         log "Using LETS_ENCRYPT_SERVER: ${LETS_ENCRYPT_SERVER}"
+        log "Using LETS_ENCRYPT_SERVER: ${LETS_ENCRYPT_SERVER}"
 
-#         # Also set SERVER_PROFILE_URL to empty so the new default (i.e. profile-repo with the same URL as the CSR)
-#         # is automatically used.
+        # Also set SERVER_PROFILE_URL to empty so the new default (i.e. profile-repo with the same URL as the CSR)
+        # is automatically used.
 
-#         # Last but not least, set the PING_IDENTITY_DEVOPS_USER/KEY to empty so they are fetched from SSM going forward.
-#         # Also set the MYSQL_USER/PASSWORD to empty so they are fetched from AWS Secrets Manager going forward.
-#         set -x
-#         QUIET=true \
-#             TARGET_DIR="${TARGET_DIR}" \
-#             SERVER_PROFILE_URL='' \
-#             K8S_GIT_URL="${PING_CLOUD_BASE_REPO_URL}" \
-#             K8S_GIT_BRANCH="${NEW_VERSION}" \
-#             ENVIRONMENTS="${NEW_BRANCH}" \
-#             PING_IDENTITY_DEVOPS_USER='' \
-#             PING_IDENTITY_DEVOPS_KEY='' \
-#             MYSQL_USER='' \
-#             MYSQL_PASSWORD='' \
-#             PLATFORM_EVENT_QUEUE_NAME='' \
-#             SSH_ID_PUB_FILE="${ID_RSA_FILE}" \
-#             SSH_ID_KEY_FILE="${ID_RSA_FILE}" \
-#             "${NEW_PING_CLOUD_BASE_REPO}/${CODE_GEN_DIR}/generate-cluster-state.sh"
-#       )
-#       GEN_RC=$?
-#       if test ${GEN_RC} -ne 0; then
-#         log "Error generating code for region '${REGION_DIR}' and branch '${NEW_BRANCH}': ${GEN_RC}"
-#         exit ${GEN_RC}
-#       fi
-#       log "Done generating code for region '${REGION_DIR}' and branch '${NEW_BRANCH}' into '${TARGET_DIR}'"
+        # Last but not least, set the PING_IDENTITY_DEVOPS_USER/KEY to empty so they are fetched from SSM going forward.
+        # Also set the MYSQL_USER/PASSWORD to empty so they are fetched from AWS Secrets Manager going forward.
+        set -x
+        QUIET=true \
+            TARGET_DIR="${TARGET_DIR}" \
+            SERVER_PROFILE_URL='' \
+            K8S_GIT_URL="${PING_CLOUD_BASE_REPO_URL}" \
+            K8S_GIT_BRANCH="${NEW_VERSION}" \
+            ENVIRONMENTS="${NEW_BRANCH}" \
+            PING_IDENTITY_DEVOPS_USER='' \
+            PING_IDENTITY_DEVOPS_KEY='' \
+            MYSQL_USER='' \
+            MYSQL_PASSWORD='' \
+            PLATFORM_EVENT_QUEUE_NAME='' \
+            SSH_ID_PUB_FILE="${ID_RSA_FILE}" \
+            SSH_ID_KEY_FILE="${ID_RSA_FILE}" \
+            "${NEW_PING_CLOUD_BASE_REPO}/${CODE_GEN_DIR}/generate-cluster-state.sh"
+      )
+      GEN_RC=$?
+      if test ${GEN_RC} -ne 0; then
+        log "Error generating code for region '${REGION_DIR}' and branch '${NEW_BRANCH}': ${GEN_RC}"
+        exit ${GEN_RC}
+      fi
+      log "Done generating code for region '${REGION_DIR}' and branch '${NEW_BRANCH}' into '${TARGET_DIR}'"
 
-#       # Persist the primary region's directory name for later use.
-#       IS_PRIMARY=false
-#       if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
-#         IS_PRIMARY=true
-#         echo "${REGION_DIR}" > "${PRIMARY_REGION_DIR_FILE}"
-#       fi
+      # Persist the primary region's directory name for later use.
+      IS_PRIMARY=false
+      if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
+        IS_PRIMARY=true
+        echo "${REGION_DIR}" > "${PRIMARY_REGION_DIR_FILE}"
+      fi
 
-#       # Import new env_vars into cluster-state-repo and rename original env_vars as env_vars.old.
-#       ENV_VARS_FILES="$(find "${TARGET_DIR}" -name "${ENV_VARS_FILE_NAME}" -type f)"
+      # Import new env_vars into cluster-state-repo and rename original env_vars as env_vars.old.
+      ENV_VARS_FILES="$(find "${TARGET_DIR}" -name "${ENV_VARS_FILE_NAME}" -type f)"
 
-#       # Add some derived environment variables for substitution.
-#       add_derived_variables
+      # Add some derived environment variables for substitution.
+      add_derived_variables
 
-#       for TEMPLATE_ENV_VARS_FILE in ${ENV_VARS_FILES}; do # Loop through env_vars from ping-cloud-base/code-gen
+      for TEMPLATE_ENV_VARS_FILE in ${ENV_VARS_FILES}; do # Loop through env_vars from ping-cloud-base/code-gen
 
-#         DIR_NAME="$(dirname "${TEMPLATE_ENV_VARS_FILE}")"
-#         PARENT_DIR_NAME="$(dirname "${DIR_NAME}")"
+        DIR_NAME="$(dirname "${TEMPLATE_ENV_VARS_FILE}")"
+        PARENT_DIR_NAME="$(dirname "${DIR_NAME}")"
 
-#         DIR_NAME="${DIR_NAME##*/}"
-#         PARENT_DIR_NAME="${PARENT_DIR_NAME##*/}"
+        DIR_NAME="${DIR_NAME##*/}"
+        PARENT_DIR_NAME="${PARENT_DIR_NAME##*/}"
 
-#         if test "${DIR_NAME}" = "${BASE_DIR}"; then
-#           # Capture original env_var for primary or customer-hub region only.
-#           if "${IS_PRIMARY}" = "true" || "${IS_CUSTOMER_HUB}" = "true"; then
-#             ORIG_ENV_VARS_FILE="${BASE_ENV_VARS}"
-#           else
-#             # skip to next iteration when its secondary-region.
-#             continue
-#           fi
-#         elif test "${DIR_NAME}" = "${REGION_DIR}"; then
-#           ORIG_ENV_VARS_FILE="${REGION_ENV_VARS}"
-#         else
-#           # Capture original env_var for ping app-specific directory.
-#           if echo "${DIR_NAME}" | grep -q 'ping'; then
-#              ORIG_ENV_VARS_FILE="${K8S_CONFIGS_DIR}/${REGION_DIR}/${DIR_NAME}/${ENV_VARS_FILE_NAME}"
-#           elif test "${DIR_NAME}" = 'admin' || test "${DIR_NAME}" = 'engine'; then
-#              ORIG_ENV_VARS_FILE="${K8S_CONFIGS_DIR}/${REGION_DIR}/${PARENT_DIR_NAME}/${DIR_NAME}/${ENV_VARS_FILE_NAME}"
-#           else
-#             log "Not an app-specific env_vars file: ${TEMPLATE_ENV_VARS_FILE}"
-#             # skip to next iteration.
-#             continue
-#           fi
-#         fi
+        if test "${DIR_NAME}" = "${BASE_DIR}"; then
+          # Capture original env_var for primary or customer-hub region only.
+          if "${IS_PRIMARY}" = "true" || "${IS_CUSTOMER_HUB}" = "true"; then
+            ORIG_ENV_VARS_FILE="${BASE_ENV_VARS}"
+          else
+            # skip to next iteration when its secondary-region.
+            continue
+          fi
+        elif test "${DIR_NAME}" = "${REGION_DIR}"; then
+          ORIG_ENV_VARS_FILE="${REGION_ENV_VARS}"
+        else
+          # Capture original env_var for ping app-specific directory.
+          if echo "${DIR_NAME}" | grep -q 'ping'; then
+             ORIG_ENV_VARS_FILE="${K8S_CONFIGS_DIR}/${REGION_DIR}/${DIR_NAME}/${ENV_VARS_FILE_NAME}"
+          elif test "${DIR_NAME}" = 'admin' || test "${DIR_NAME}" = 'engine'; then
+             ORIG_ENV_VARS_FILE="${K8S_CONFIGS_DIR}/${REGION_DIR}/${PARENT_DIR_NAME}/${DIR_NAME}/${ENV_VARS_FILE_NAME}"
+          else
+            log "Not an app-specific env_vars file: ${TEMPLATE_ENV_VARS_FILE}"
+            # skip to next iteration.
+            continue
+          fi
+        fi
 
-#         # Backup original env_vars by generating env_vars.old file.
-#         OLD_ENV_VARS_FILE="$(dirname "${TEMPLATE_ENV_VARS_FILE}")/${ENV_VARS_FILE_NAME}".old
-#         log "Backing up '${ORIG_ENV_VARS_FILE}' for region '${REGION_DIR}' and branch '${NEW_BRANCH}'"
-#         cp -f "${ORIG_ENV_VARS_FILE}" "${OLD_ENV_VARS_FILE}"
+        # Backup original env_vars by generating env_vars.old file.
+        OLD_ENV_VARS_FILE="$(dirname "${TEMPLATE_ENV_VARS_FILE}")/${ENV_VARS_FILE_NAME}".old
+        log "Backing up '${ORIG_ENV_VARS_FILE}' for region '${REGION_DIR}' and branch '${NEW_BRANCH}'"
+        cp -f "${ORIG_ENV_VARS_FILE}" "${OLD_ENV_VARS_FILE}"
 
-#         # Substitute variables into new imported env_vars.
-#         tmp_file=$(mktemp)
-#         envsubst "${ENV_VARS_TO_SUBST}" < "${TEMPLATE_ENV_VARS_FILE}" > "${tmp_file}"
-#         mv "${tmp_file}" "${TEMPLATE_ENV_VARS_FILE}"
+        # Substitute variables into new imported env_vars.
+        tmp_file=$(mktemp)
+        envsubst "${ENV_VARS_TO_SUBST}" < "${TEMPLATE_ENV_VARS_FILE}" > "${tmp_file}"
+        mv "${tmp_file}" "${TEMPLATE_ENV_VARS_FILE}"
 
-#         # If there are no differences between env_vars and env_vars.old, delete the old one.
-#         if diff -qbB "${TEMPLATE_ENV_VARS_FILE}" "${OLD_ENV_VARS_FILE}"; then
-#           log "No difference found between ${TEMPLATE_ENV_VARS_FILE} and ${OLD_ENV_VARS_FILE} - removing the old one"
-#           rm -f "${OLD_ENV_VARS_FILE}"
-#         else
-#           log "Difference found between ${TEMPLATE_ENV_VARS_FILE} and ${OLD_ENV_VARS_FILE} - keeping the old one"
-#         fi
+        # If there are no differences between env_vars and env_vars.old, delete the old one.
+        if diff -qbB "${TEMPLATE_ENV_VARS_FILE}" "${OLD_ENV_VARS_FILE}"; then
+          log "No difference found between ${TEMPLATE_ENV_VARS_FILE} and ${OLD_ENV_VARS_FILE} - removing the old one"
+          rm -f "${OLD_ENV_VARS_FILE}"
+        else
+          log "Difference found between ${TEMPLATE_ENV_VARS_FILE} and ${OLD_ENV_VARS_FILE} - keeping the old one"
+        fi
 
-#       done # Loop for env_vars
-#     )
-#   done # REGION loop for generate
+      done # Loop for env_vars
+    )
+  done # REGION loop for generate
 
-#   # Determine the primary region. If we can't, then error out.
-#   PRIMARY_REGION_DIR="$(cat "${PRIMARY_REGION_DIR_FILE}")"
-#   if test "${PRIMARY_REGION_DIR}"; then
-#     log "Primary region directory for '${ENV}': '${PRIMARY_REGION_DIR}'"
-#   elif "${IS_CUSTOMER_HUB}"; then
-#     log "Primary region not found for '${ENV}'. Will default to first region found."
-#   else
-#     log "Primary region is unknown for '${ENV}'"
-#     exit 1
-#   fi
+  # Determine the primary region. If we can't, then error out.
+  PRIMARY_REGION_DIR="$(cat "${PRIMARY_REGION_DIR_FILE}")"
+  if test "${PRIMARY_REGION_DIR}"; then
+    log "Primary region directory for '${ENV}': '${PRIMARY_REGION_DIR}'"
+  elif "${IS_CUSTOMER_HUB}"; then
+    log "Primary region not found for '${ENV}'. Will default to first region found."
+  else
+    log "Primary region is unknown for '${ENV}'"
+    exit 1
+  fi
 
-#   # Sort the regions such that the primary region is first in order.
-#   REGION_DIRS_SORTED="${PRIMARY_REGION_DIR}"
-#   for REGION_DIR in ${REGION_DIRS}; do # REGION sort loop
-#     # If primary region not set and it's the customer-hub branch, then default it to the first region.
-#     if test ! "${PRIMARY_REGION_DIR}" && "${IS_CUSTOMER_HUB}"; then
-#       PRIMARY_REGION_DIR="${REGION_DIR}"
-#       REGION_DIRS_SORTED="${PRIMARY_REGION_DIR}"
-#       log "Defaulting primary region to '${ENV}' to: '${PRIMARY_REGION_DIR}'."
-#     fi
-#     if test "${PRIMARY_REGION_DIR}" != "${REGION_DIR}"; then
-#       REGION_DIRS_SORTED="${REGION_DIRS_SORTED} ${REGION_DIR}"
-#     fi
-#   done # REGION sort loop
+  # Sort the regions such that the primary region is first in order.
+  REGION_DIRS_SORTED="${PRIMARY_REGION_DIR}"
+  for REGION_DIR in ${REGION_DIRS}; do # REGION sort loop
+    # If primary region not set and it's the customer-hub branch, then default it to the first region.
+    if test ! "${PRIMARY_REGION_DIR}" && "${IS_CUSTOMER_HUB}"; then
+      PRIMARY_REGION_DIR="${REGION_DIR}"
+      REGION_DIRS_SORTED="${PRIMARY_REGION_DIR}"
+      log "Defaulting primary region to '${ENV}' to: '${PRIMARY_REGION_DIR}'."
+    fi
+    if test "${PRIMARY_REGION_DIR}" != "${REGION_DIR}"; then
+      REGION_DIRS_SORTED="${REGION_DIRS_SORTED} ${REGION_DIR}"
+    fi
+  done # REGION sort loop
 
-#   log "Region directories in sorted order for '${ENV}': ${REGION_DIRS_SORTED}"
-#   for REGION_DIR in ${REGION_DIRS_SORTED}; do # REGION loop for push
-#     if test "${PRIMARY_REGION_DIR}" = "${REGION_DIR}"; then
-#       IS_PRIMARY=true
-#       TYPE='primary'
-#     else
-#       IS_PRIMARY=false
-#       TYPE='secondary'
-#     fi
+  log "Region directories in sorted order for '${ENV}': ${REGION_DIRS_SORTED}"
+  for REGION_DIR in ${REGION_DIRS_SORTED}; do # REGION loop for push
+    if test "${PRIMARY_REGION_DIR}" = "${REGION_DIR}"; then
+      IS_PRIMARY=true
+      TYPE='primary'
+    else
+      IS_PRIMARY=false
+      TYPE='secondary'
+    fi
 
-#     if "${IS_CUSTOMER_HUB}" && ! "${IS_PRIMARY}"; then
-#       log "Not pushing '${CUSTOMER_HUB}' branch for secondary region"
-#       continue
-#     fi
+    if "${IS_CUSTOMER_HUB}" && ! "${IS_PRIMARY}"; then
+      log "Not pushing '${CUSTOMER_HUB}' branch for secondary region"
+      continue
+    fi
 
-#     TARGET_DIR="${TENANT_CODE_DIR}/${REGION_DIR}"
-#     log "Generated code directory for ${TYPE} region '${REGION_DIR}' and '${ENV}': ${TARGET_DIR}"
+    TARGET_DIR="${TENANT_CODE_DIR}/${REGION_DIR}"
+    log "Generated code directory for ${TYPE} region '${REGION_DIR}' and '${ENV}': ${TARGET_DIR}"
 
-#     log "Creating branch for ${TYPE} region '${REGION_DIR}' and '${ENV}': ${NEW_BRANCH}"
-#     (
-#       set -x;
-#       QUIET=true \
-#           GENERATED_CODE_DIR="${TARGET_DIR}" \
-#           IS_PRIMARY=${IS_PRIMARY} \
-#           ENVIRONMENTS="${NEW_BRANCH}" \
-#           PUSH_TO_SERVER=false \
-#           "${NEW_PING_CLOUD_BASE_REPO}/${CODE_GEN_DIR}/push-cluster-state.sh"
-#     )
-#     PUSH_RC=$?
-#     if test ${PUSH_RC} -ne 0; then
-#       log "Error creating branch '${NEW_BRANCH}' for ${TYPE} region '${REGION_DIR}' and '${ENV}': ${PUSH_RC}"
-#       exit ${PUSH_RC}
-#     fi
-#     log "Done creating branch '${NEW_BRANCH}' for ${TYPE} region '${REGION_DIR}' and '${ENV}'"
+    log "Creating branch for ${TYPE} region '${REGION_DIR}' and '${ENV}': ${NEW_BRANCH}"
+    (
+      set -x;
+      QUIET=true \
+          GENERATED_CODE_DIR="${TARGET_DIR}" \
+          IS_PRIMARY=${IS_PRIMARY} \
+          ENVIRONMENTS="${NEW_BRANCH}" \
+          PUSH_TO_SERVER=false \
+          "${NEW_PING_CLOUD_BASE_REPO}/${CODE_GEN_DIR}/push-cluster-state.sh"
+    )
+    PUSH_RC=$?
+    if test ${PUSH_RC} -ne 0; then
+      log "Error creating branch '${NEW_BRANCH}' for ${TYPE} region '${REGION_DIR}' and '${ENV}': ${PUSH_RC}"
+      exit ${PUSH_RC}
+    fi
+    log "Done creating branch '${NEW_BRANCH}' for ${TYPE} region '${REGION_DIR}' and '${ENV}'"
 
-#   done # REGION loop for push
+  done # REGION loop for push
 
-#   # Create .old files for secrets.yaml and sealed-secrets.yaml files so it's easy to see the differences in a pinch.
-#   handle_changed_k8s_secrets "${NEW_BRANCH}" "${PRIMARY_REGION_DIR}"
+  # Create .old files for secrets.yaml and sealed-secrets.yaml files so it's easy to see the differences in a pinch.
+  handle_changed_k8s_secrets "${NEW_BRANCH}" "${PRIMARY_REGION_DIR}"
 
-#   # If requested, copy new k8s-configs files from the default git branches into their corresponding new branches.
-#   if "${RESET_TO_DEFAULT}"; then
-#     log "Not migrating '${K8S_CONFIGS_DIR}' because migration was explicitly skipped"
-#   else
-#     handle_changed_k8s_configs "${NEW_BRANCH}"
-#   fi
+  # If requested, copy new k8s-configs files from the default git branches into their corresponding new branches.
+  if "${RESET_TO_DEFAULT}"; then
+    log "Not migrating '${K8S_CONFIGS_DIR}' because migration was explicitly skipped"
+  else
+    handle_changed_k8s_configs "${NEW_BRANCH}"
+  fi
 
-#   log "Done updating branch '${NEW_BRANCH}' for '${ENV}'"
-# done # ENV loop
+  log "Done updating branch '${NEW_BRANCH}' for '${ENV}'"
+done # ENV loop
 
-# # Print a README of next steps to take.
-# print_readme
+# Print a README of next steps to take.
+print_readme
