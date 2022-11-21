@@ -173,7 +173,9 @@ ${ARGOCD_SLACK_TOKEN_BASE64}
 ${RADIUS_PROXY_ENABLED}
 ${PF_PROVISIONING_ENABLED}
 ${SLACK_CHANNEL}
-${PROM_SLACK_CHANNEL}'
+${PROM_SLACK_CHANNEL}
+${DASH_REPO_URL}
+${DASH_REPO_BRANCH}'
 
 ########################################################################################################################
 # Export some derived environment variables.

@@ -250,6 +250,7 @@
 #                            | provided, this value will be used for the cluster  | value. E.g. it will default to "ci-cd"
 #                            | name and must have the correct case (e.g. ci-cd    | for tenant domain "ci-cd.ping-oasis.com"
 #                            | vs. CI-CD).                                        |
+#                            |                                                    |
 ########################################################################################################################
 
 #### SCRIPT START ####
@@ -370,7 +371,9 @@ ${RADIUS_PROXY_ENABLED}
 ${IMAGE_TAG_PREFIX}
 ${ARGOCD_SLACK_TOKEN_BASE64}
 ${SLACK_CHANNEL}
-${PROM_SLACK_CHANNEL}'
+${PROM_SLACK_CHANNEL}
+${DASH_REPO_URL}
+${DASH_REPO_BRANCH}'
 
 # Variables to replace within the generated cluster state code
 REPO_VARS="${REPO_VARS:-${DEFAULT_VARS}}"

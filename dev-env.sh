@@ -189,6 +189,10 @@
 #                           | pingdirectory/topology/descriptor.json.sample.     |
 #                           | This file will be mounted into the Ping containers |
 #                           | at /opt/staging/topology/descriptor.json.          |
+#                           |                                                    |
+# DASH_REPO_URL             | The repository with Kibana\Grafana dashboards      | https://github.com/pingidentity/ping-cloud-dashboards
+#                           |                                                    |
+# DASH_REPO_BRANCH          | Branch where dashboards will be taken from         | main
 ########################################################################################################################
 
 #
@@ -285,6 +289,9 @@ log "Initial PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
 log "Initial DEPLOY_FILE: ${DEPLOY_FILE}"
 log "Initial K8S_CONTEXT: ${K8S_CONTEXT}"
 log "Initial PF_PROVISIONING_ENABLED: ${PF_PROVISIONING_ENABLED}"
+
+log "Initial DASH_REPO_URL: ${DASH_REPO_URL}"
+log "Initial DASH_REPO_BRANCH: ${DASH_REPO_BRANCH}"
 log ---
 
 # A script that may be used to set up a dev/test environment against the
@@ -344,6 +351,10 @@ export SLACK_CHANNEL=${SLACK_CHANNEL:-nowhere}
 export PROM_NOTIFICATION_ENABLED=${PROM_NOTIFICATION_ENABLED:-false}
 export PROM_SLACK_CHANNEL=${PROM_SLACK_CHANNEL:-nowhere}
 
+# Dashboards repo
+export DASH_REPO_URL="${DASH_REPO_URL:-https://github.com/pingidentity/ping-cloud-dashboards}"
+export DASH_REPO_BRANCH="${DASH_REPO_BRANCH:-main}"
+
 # MySQL database names cannot have dashes. So transform dashes into underscores.
 ENV_NAME_NO_DASHES=$(echo ${BELUGA_ENV_NAME} | tr '-' '_')
 export MYSQL_DATABASE="pingcentral_${ENV_NAME_NO_DASHES}"
@@ -389,6 +400,9 @@ log "Using LEGACY_LOGGING: ${LEGACY_LOGGING}"
 log "Using DEPLOY_FILE: ${DEPLOY_FILE}"
 log "Using K8S_CONTEXT: ${K8S_CONTEXT}"
 log "Using PF_PROVISIONING_ENABLED: ${PF_PROVISIONING_ENABLED}"
+
+log "Using DASH_REPO_URL: ${DASH_REPO_URL}"
+log "Using DASH_REPO_BRANCH: ${DASH_REPO_BRANCH}"
 log ---
 
 NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY:-ssm://pcpt/sre/new-relic/java-agent-license-key}"
@@ -511,6 +525,9 @@ export PING_IDENTITY_DEVOPS_USER=${PING_IDENTITY_DEVOPS_USER}
 export PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 
 export LEGACY_LOGGING=${LEGACY_LOGGING}
+
+export DASH_REPO_URL=${DASH_REPO_URL}
+export DASH_REPO_BRANCH=${DASH_REPO_BRANCH}
 
 export PROJECT_DIR=${PWD}
 export AWS_PROFILE=${AWS_PROFILE:-csg}

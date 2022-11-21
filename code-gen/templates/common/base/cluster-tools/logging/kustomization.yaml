@@ -3,6 +3,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/base/logging?ref=${K8S_GIT_BRANCH}
+- ${DASH_REPO_URL}/kibana?ref=${DASH_REPO_BRANCH}
+
 
 generatorOptions:
   disableNameSuffixHash: true
