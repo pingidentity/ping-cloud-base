@@ -376,8 +376,9 @@ get_min_required_secrets() {
   log "Attempting to get ping-cloud secrets.yaml into ${ping_cloud_secrets_yaml}"
 
   # Try to get a secrets.yaml file from the initial git revision.
-  get_ping_cloud_secrets_file "${ping_cloud_secrets_yaml}" "$(get_initial_git_rev)"
+  #get_ping_cloud_secrets_file "${ping_cloud_secrets_yaml}" "$(get_initial_git_rev)"
 
+  # Always use the latest secrets file, right??
   # If secrets.yaml has no contents, then try to get it from the latest git revision.
   if ! test -s "${ping_cloud_secrets_yaml}"; then
     get_ping_cloud_secrets_file "${ping_cloud_secrets_yaml}"
