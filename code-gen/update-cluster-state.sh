@@ -357,7 +357,6 @@ get_secret_from_file() {
   secret="$1"
   secret_file="$2"
   secret_value="$(jq -r ".items[].data.${secret}" < "${secret_file}" | grep -v ^null)"
-  log "secret value: ${secret_value}"
   if test "${secret_value}"; then
     echo "${secret_value}" | base64 "${BASE64_DECODE_OPT}"
   fi
