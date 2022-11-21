@@ -357,6 +357,7 @@ get_secret_from_file() {
   secret="$1"
   secret_file="$2"
   secret_value="$(jq -r ".items[].data.${secret}" < "${secret_file}" | grep -v ^null)"
+  log "secret value: ${secret_value}"
   if test "${secret_value}"; then
     echo "${secret_value}" | base64 "${BASE64_DECODE_OPT}"
   fi
@@ -385,6 +386,7 @@ get_min_required_secrets() {
 
   # If secrets.yaml has contents, then attempt to retrieve each required secret.
   ALL_MIN_SECRETS_FOUND=false
+  # If size greater than 0
   if test -s "${ping_cloud_secrets_yaml}"; then
     ALL_MIN_SECRETS_FOUND=true
 
@@ -395,6 +397,7 @@ get_min_required_secrets() {
 
     ID_RSA_FILE="$(mktemp)"
     get_secret_from_file 'id_rsa' "${ping_cloud_secrets_yaml}" > "${ID_RSA_FILE}"
+    log "INFO: Created a file for the ssh key with value: ${ID_RSA_FILE}"
     if ! test -s "${ID_RSA_FILE}"; then
       log "SSH key not found in ${ID_RSA_FILE}"
       ALL_MIN_SECRETS_FOUND=false
