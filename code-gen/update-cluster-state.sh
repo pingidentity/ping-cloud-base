@@ -507,8 +507,8 @@ handle_changed_k8s_secrets() {
   old_secrets_dir="$(mktemp -d)"
 
   for secrets_file_name in "${SECRETS_FILE_NAME}" "${ORIG_SECRETS_FILE_NAME}" "${SEALED_SECRETS_FILE_NAME}"; do
-    log "Grabbing original ${secrets_file_name} in branch '${DEFAULT_GIT_BRANCH}'"
-    cp ${secrets_file_name} ${old_secrets_dir}
+    log "Copying original ${secrets_file_name} in branch '${DEFAULT_GIT_BRANCH}' to tmp dir"
+    cp "${K8S_CONFIGS_DIR}/${BASE_DIR}/${secrets_file_name}" "${old_secrets_dir}"
   done
 
   git checkout --quiet "${NEW_BRANCH}"
@@ -516,7 +516,7 @@ handle_changed_k8s_secrets() {
   # TODO: we might be in the wrong dir here, we should check
   for secrets_file_name in "${SECRETS_FILE_NAME}" "${ORIG_SECRETS_FILE_NAME}" "${SEALED_SECRETS_FILE_NAME}"; do
     log "Overwriting ${secrets_file_name} from ${DEFAULT_GIT_BRANCH} since this was the original secret file"
-    cp "${old_secrets_dir}/${secrets_file_name}" .
+    cp "${old_secrets_dir}/${secrets_file_name}" "${K8S_CONFIGS_DIR}/${BASE_DIR}/."
   done
 
   # log "Handling changes to ${SECRETS_FILE_NAME} and ${SEALED_SECRETS_FILE_NAME} in branch '${DEFAULT_GIT_BRANCH}'"
