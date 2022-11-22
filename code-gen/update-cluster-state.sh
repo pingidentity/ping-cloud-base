@@ -502,64 +502,78 @@ handle_changed_k8s_secrets() {
     DEFAULT_GIT_BRANCH="${NEW_BRANCH##*-}"
   fi
 
-  log "Handling changes to ${SECRETS_FILE_NAME} and ${SEALED_SECRETS_FILE_NAME} in branch '${DEFAULT_GIT_BRANCH}'"
 
-  # In v1.6:
-  #   - Secrets and the OOTB secrets for a release are present under <region>/ping-cloud/[orig-]secrets.yaml and
-  #     <region>/cluster-tools/[orig-]secrets.yaml for each region.
-  #   - Sealed secrets are present under <region>/sealed-secrets.yaml.
-
-  # In v1.7 and later:
-  #   - Secrets, OOTB secrets and sealed secrets are all present under base/.
-
-  # First switch to the default git branch.
   git checkout --quiet "${DEFAULT_GIT_BRANCH}"
   old_secrets_dir="$(mktemp -d)"
 
   for secrets_file_name in "${SECRETS_FILE_NAME}" "${ORIG_SECRETS_FILE_NAME}" "${SEALED_SECRETS_FILE_NAME}"; do
-    log "Handling changes to ${secrets_file_name} in branch '${DEFAULT_GIT_BRANCH}'"
-    old_secrets_file="${old_secrets_dir}/${secrets_file_name}"
-
-    # The >= v1.7 case:
-    all_secret_files="$(git ls-files "${K8S_CONFIGS_DIR}/${BASE_DIR}/${secrets_file_name}")"
-    if ! test "${all_secret_files}"; then
-      # The v1.6 case:
-      if test "${secrets_file_name}" = "${SEALED_SECRETS_FILE_NAME}"; then
-        file_path="${K8S_CONFIGS_DIR}/${PRIMARY_REGION}/${secrets_file_name}"
-      else
-        # The '*' below may be one of 'ping-cloud' or 'cluster-tools' as noted above.
-        file_path="${K8S_CONFIGS_DIR}/${PRIMARY_REGION}/*/${secrets_file_name}"
-      fi
-      all_secret_files="$(git ls-files "${file_path}")"
-    fi
-
-    log "Found '${secrets_file_name}' files: ${all_secret_files}"
-    for secret_file in ${all_secret_files}; do
-      git show "${DEFAULT_GIT_BRANCH}:${secret_file}" >> "${old_secrets_file}"
-      echo >> "${old_secrets_file}"
-    done
-  done # secrets loop
-
-  # Switch to the new git branch and copy over the old secrets, if they're different.
-  git checkout --quiet "${NEW_BRANCH}"
-
-  secret_files="$(find "${old_secrets_dir}" -type f)"
-  for file in ${secret_files}; do
-    file_name="$(basename "${file}")"
-    dst_file="${K8S_CONFIGS_DIR}/${BASE_DIR}/${file_name}"
-
-    if diff -qbB "${file}" "${dst_file}"; then
-      log "No difference found between ${file_name} and ${dst_file}"
-    else
-      cp "${file}" "${dst_file}.old"
-    fi
+    log "Grabbing original ${secrets_file_name} in branch '${DEFAULT_GIT_BRANCH}'"
+    cp ${secrets_file_name} ${old_secrets_dir}
   done
 
-  msg="Done creating ${SECRETS_FILE_NAME}.old and ${SEALED_SECRETS_FILE_NAME}.old in branch '${NEW_BRANCH}'"
-  log "${msg}"
+  git checkout --quiet "${NEW_BRANCH}"
 
-  git add .
-  git commit --allow-empty -m "${msg}"
+  # TODO: we might be in the wrong dir here, we should check
+  for secrets_file_name in "${SECRETS_FILE_NAME}" "${ORIG_SECRETS_FILE_NAME}" "${SEALED_SECRETS_FILE_NAME}"; do
+    log "Overwriting ${secrets_file_name} from ${DEFAULT_GIT_BRANCH} since this was the original secret file"
+    cp "${old_secrets_dir}/${secrets_file_name}" .
+  done
+
+  # log "Handling changes to ${SECRETS_FILE_NAME} and ${SEALED_SECRETS_FILE_NAME} in branch '${DEFAULT_GIT_BRANCH}'"
+
+  # # In v1.6:
+  # #   - Secrets and the OOTB secrets for a release are present under <region>/ping-cloud/[orig-]secrets.yaml and
+  # #     <region>/cluster-tools/[orig-]secrets.yaml for each region.
+  # #   - Sealed secrets are present under <region>/sealed-secrets.yaml.
+
+  # # In v1.7 and later:
+  # #   - Secrets, OOTB secrets and sealed secrets are all present under base/.
+
+  # # First switch to the default git branch.
+
+ 
+  #   old_secrets_file="${old_secrets_dir}/${secrets_file_name}"
+
+  #   # The >= v1.7 case:
+  #   all_secret_files="$(git ls-files "${K8S_CONFIGS_DIR}/${BASE_DIR}/${secrets_file_name}")"
+  #   if ! test "${all_secret_files}"; then
+  #     # The v1.6 case:
+  #     if test "${secrets_file_name}" = "${SEALED_SECRETS_FILE_NAME}"; then
+  #       file_path="${K8S_CONFIGS_DIR}/${PRIMARY_REGION}/${secrets_file_name}"
+  #     else
+  #       # The '*' below may be one of 'ping-cloud' or 'cluster-tools' as noted above.
+  #       file_path="${K8S_CONFIGS_DIR}/${PRIMARY_REGION}/*/${secrets_file_name}"
+  #     fi
+  #     all_secret_files="$(git ls-files "${file_path}")"
+  #   fi
+
+  #   log "Found '${secrets_file_name}' files: ${all_secret_files}"
+  #   for secret_file in ${all_secret_files}; do
+  #     git show "${DEFAULT_GIT_BRANCH}:${secret_file}" >> "${old_secrets_file}"
+  #     echo >> "${old_secrets_file}"
+  #   done
+  # done # secrets loop
+
+  # # Switch to the new git branch and copy over the old secrets, if they're different.
+  # git checkout --quiet "${NEW_BRANCH}"
+
+  # secret_files="$(find "${old_secrets_dir}" -type f)"
+  # for file in ${secret_files}; do
+  #   file_name="$(basename "${file}")"
+  #   dst_file="${K8S_CONFIGS_DIR}/${BASE_DIR}/${file_name}"
+
+  #   if diff -qbB "${file}" "${dst_file}"; then
+  #     log "No difference found between ${file_name} and ${dst_file}"
+  #   else
+  #     cp "${file}" "${dst_file}.old"
+  #   fi
+  # done
+
+  # msg="Done creating ${SECRETS_FILE_NAME}.old and ${SEALED_SECRETS_FILE_NAME}.old in branch '${NEW_BRANCH}'"
+  # log "${msg}"
+
+  # git add .
+  # git commit --allow-empty -m "${msg}"
 }
 
 ########################################################################################################################
@@ -1158,7 +1172,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
   done # REGION loop for push
 
   # Create .old files for secrets.yaml and sealed-secrets.yaml files so it's easy to see the differences in a pinch.
-  #handle_changed_k8s_secrets "${NEW_BRANCH}" "${PRIMARY_REGION_DIR}"
+  handle_changed_k8s_secrets "${NEW_BRANCH}" "${PRIMARY_REGION_DIR}"
 
   # If requested, copy new k8s-configs files from the default git branches into their corresponding new branches.
   if "${RESET_TO_DEFAULT}"; then
