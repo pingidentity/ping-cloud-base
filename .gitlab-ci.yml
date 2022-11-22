@@ -23,14 +23,14 @@ variables:
   PINGONE_DEPLOY: $PINGONE_DEPLOY
   K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.3.0
 
-## Compile stage ##
-compile:
- stage: compile
- tags:
-   - default-gitlab-runner
- image: ${K8S_DEPLOY_TOOLS}
- script:
-   - ./ci-scripts/compile/compile.sh
+# ## Compile stage ##
+# compile:
+#  stage: compile
+#  tags:
+#    - default-gitlab-runner
+#  image: ${K8S_DEPLOY_TOOLS}
+#  script:
+#    - ./ci-scripts/compile/compile.sh
 
 ## Find cluster stage ##
 find-cluster:
