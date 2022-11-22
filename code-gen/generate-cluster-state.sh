@@ -1014,7 +1014,6 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   # Rename to the actual region nick name.
   mv "${ENV_DIR}/region" "${ENV_DIR}/${REGION_NICK_NAME}"
 
-  # Secrets.yaml generated here won't actually be used
   substitute_vars "${ENV_DIR}" "${REPO_VARS}" secrets.yaml env_vars
 
   # Regional enablement - add admins, backups, etc. to primary.

@@ -22,8 +22,6 @@
 #       cluster-state repo.
 
 ### Global values and utility functions ###
-BASE64_DECODE_OPT="${BASE64_DECODE_OPT:--D}"
-
 K8S_CONFIGS_DIR='k8s-configs'
 COMMON_DIR='common'
 BASE_DIR='base'
@@ -732,9 +730,6 @@ fi
 
 # The base environment variables file that's common to all regions.
 BASE_ENV_VARS="${K8S_CONFIGS_DIR}/${BASE_DIR}/${ENV_VARS_FILE_NAME}"
-
-# Get the minimum required ping-cloud secrets (currently, the New Relic key and SSH git key).
-#get_min_required_secrets
 
 # For each environment:
 #   - Generate code for all its regions
