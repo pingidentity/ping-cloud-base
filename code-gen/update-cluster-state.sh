@@ -370,20 +370,22 @@ git_diff() {
 # Overwrite the secrets files from the previous git branch such that we maintain the secrets across upgrades
 ########################################################################################################################
 handle_k8s_secrets() {
-  git checkout --quiet "${DEFAULT_GIT_BRANCH}"
   old_secrets_dir="$(mktemp -d)"
+
+  # Checkout the original branch to get the old secrets files
+  git checkout --quiet "${DEFAULT_GIT_BRANCH}"
 
   # Copy all secrets files to a tmp dir
   for secrets_file_name in "${SECRETS_FILE_NAME}" "${SEALED_SECRETS_FILE_NAME}"; do
-    log "Copying original ${secrets_file_name} in branch '${DEFAULT_GIT_BRANCH}' to tmp dir"
     cp "${K8S_CONFIGS_DIR}/${BASE_DIR}/${secrets_file_name}" "${old_secrets_dir}"
   done
 
+  # Checkout the new, upgraded branch to copy the original secrets files into
   git checkout --quiet "${NEW_BRANCH}"
 
   # Copy all secrets to current branch, overwriting current secrets
   for secrets_file_name in "${SECRETS_FILE_NAME}" "${SEALED_SECRETS_FILE_NAME}"; do
-    log "Overwriting ${secrets_file_name} from ${NEW_BRANCH} since this was the original secret file"
+    log "Overwriting ${secrets_file_name} with file from '${DEFAULT_GIT_BRANCH}' - this was the original secret file"
     cp "${old_secrets_dir}/${secrets_file_name}" "${K8S_CONFIGS_DIR}/${BASE_DIR}/."
   done
 }
