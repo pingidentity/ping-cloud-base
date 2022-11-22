@@ -920,7 +920,7 @@ fi
 BASE_ENV_VARS="${K8S_CONFIGS_DIR}/${BASE_DIR}/${ENV_VARS_FILE_NAME}"
 
 # Get the minimum required ping-cloud secrets (currently, the New Relic key and SSH git key).
-get_min_required_secrets
+#get_min_required_secrets
 
 # For each environment:
 #   - Generate code for all its regions
@@ -1158,7 +1158,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
   done # REGION loop for push
 
   # Create .old files for secrets.yaml and sealed-secrets.yaml files so it's easy to see the differences in a pinch.
-  handle_changed_k8s_secrets "${NEW_BRANCH}" "${PRIMARY_REGION_DIR}"
+  #handle_changed_k8s_secrets "${NEW_BRANCH}" "${PRIMARY_REGION_DIR}"
 
   # If requested, copy new k8s-configs files from the default git branches into their corresponding new branches.
   if "${RESET_TO_DEFAULT}"; then
