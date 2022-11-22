@@ -44,7 +44,6 @@ PING_CLOUD_REL_DIR="${K8S_CONFIGS_DIR}/${BASE_DIR}/${PING_CLOUD_DIR}"
 
 ENV_VARS_FILE_NAME='env_vars'
 SECRETS_FILE_NAME='secrets.yaml'
-ORIG_SECRETS_FILE_NAME='orig-secrets.yaml'
 SEALED_SECRETS_FILE_NAME='sealed-secrets.yaml'
 
 CLUSTER_STATE_REPO='cluster-state-repo'
@@ -369,35 +368,22 @@ git_diff() {
 
 ########################################################################################################################
 # Overwrite the secrets files from the previous git branch such that we maintain the secrets across upgrades
-#
-# Arguments
-#   $1 -> The new branch for a default git branch.
 ########################################################################################################################
 handle_k8s_secrets() {
-  NEW_BRANCH="$1"
-
-  if echo "${NEW_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
-    DEFAULT_GIT_BRANCH="${CUSTOMER_HUB}"
-  else
-    DEFAULT_GIT_BRANCH="${NEW_BRANCH##*-}"
-  fi
-
-  # Checkout previous branch
   git checkout --quiet "${DEFAULT_GIT_BRANCH}"
   old_secrets_dir="$(mktemp -d)"
 
   # Copy all secrets files to a tmp dir
-  for secrets_file_name in "${SECRETS_FILE_NAME}" "${ORIG_SECRETS_FILE_NAME}" "${SEALED_SECRETS_FILE_NAME}"; do
+  for secrets_file_name in "${SECRETS_FILE_NAME}" "${SEALED_SECRETS_FILE_NAME}"; do
     log "Copying original ${secrets_file_name} in branch '${DEFAULT_GIT_BRANCH}' to tmp dir"
     cp "${K8S_CONFIGS_DIR}/${BASE_DIR}/${secrets_file_name}" "${old_secrets_dir}"
   done
 
-  # Checkout new branch
   git checkout --quiet "${NEW_BRANCH}"
 
   # Copy all secrets to current branch, overwriting current secrets
-  for secrets_file_name in "${SECRETS_FILE_NAME}" "${ORIG_SECRETS_FILE_NAME}" "${SEALED_SECRETS_FILE_NAME}"; do
-    log "Overwriting ${secrets_file_name} from ${DEFAULT_GIT_BRANCH} since this was the original secret file"
+  for secrets_file_name in "${SECRETS_FILE_NAME}" "${SEALED_SECRETS_FILE_NAME}"; do
+    log "Overwriting ${secrets_file_name} from ${NEW_BRANCH} since this was the original secret file"
     cp "${old_secrets_dir}/${secrets_file_name}" "${K8S_CONFIGS_DIR}/${BASE_DIR}/."
   done
 }
