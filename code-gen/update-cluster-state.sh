@@ -485,16 +485,13 @@ git_diff() {
 }
 
 ########################################################################################################################
-# Create secrets.yaml.old and sealed-secrets.yaml.old files if different between the default git branch and its new
-# one. This makes it easier for the operator to see the differences in secrets between the two branches.
+# Overwrite the secrets files from the previous git branch such that we maintain the secrets across upgrades
 #
 # Arguments
 #   $1 -> The new branch for a default git branch.
-#   $2 -> The primary region.
 ########################################################################################################################
-handle_changed_k8s_secrets() {
+handle_k8s_secrets() {
   NEW_BRANCH="$1"
-  PRIMARY_REGION="$2"
 
   if echo "${NEW_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
     DEFAULT_GIT_BRANCH="${CUSTOMER_HUB}"
@@ -502,78 +499,24 @@ handle_changed_k8s_secrets() {
     DEFAULT_GIT_BRANCH="${NEW_BRANCH##*-}"
   fi
 
-
+  # Checkout previous branch
   git checkout --quiet "${DEFAULT_GIT_BRANCH}"
   old_secrets_dir="$(mktemp -d)"
 
+  # Copy all secrets files to a tmp dir
   for secrets_file_name in "${SECRETS_FILE_NAME}" "${ORIG_SECRETS_FILE_NAME}" "${SEALED_SECRETS_FILE_NAME}"; do
     log "Copying original ${secrets_file_name} in branch '${DEFAULT_GIT_BRANCH}' to tmp dir"
     cp "${K8S_CONFIGS_DIR}/${BASE_DIR}/${secrets_file_name}" "${old_secrets_dir}"
   done
 
+  # Checkout new branch
   git checkout --quiet "${NEW_BRANCH}"
 
-  # TODO: we might be in the wrong dir here, we should check
+  # Copy all secrets to current branch, overwriting current secrets
   for secrets_file_name in "${SECRETS_FILE_NAME}" "${ORIG_SECRETS_FILE_NAME}" "${SEALED_SECRETS_FILE_NAME}"; do
     log "Overwriting ${secrets_file_name} from ${DEFAULT_GIT_BRANCH} since this was the original secret file"
     cp "${old_secrets_dir}/${secrets_file_name}" "${K8S_CONFIGS_DIR}/${BASE_DIR}/."
   done
-
-  # log "Handling changes to ${SECRETS_FILE_NAME} and ${SEALED_SECRETS_FILE_NAME} in branch '${DEFAULT_GIT_BRANCH}'"
-
-  # # In v1.6:
-  # #   - Secrets and the OOTB secrets for a release are present under <region>/ping-cloud/[orig-]secrets.yaml and
-  # #     <region>/cluster-tools/[orig-]secrets.yaml for each region.
-  # #   - Sealed secrets are present under <region>/sealed-secrets.yaml.
-
-  # # In v1.7 and later:
-  # #   - Secrets, OOTB secrets and sealed secrets are all present under base/.
-
-  # # First switch to the default git branch.
-
- 
-  #   old_secrets_file="${old_secrets_dir}/${secrets_file_name}"
-
-  #   # The >= v1.7 case:
-  #   all_secret_files="$(git ls-files "${K8S_CONFIGS_DIR}/${BASE_DIR}/${secrets_file_name}")"
-  #   if ! test "${all_secret_files}"; then
-  #     # The v1.6 case:
-  #     if test "${secrets_file_name}" = "${SEALED_SECRETS_FILE_NAME}"; then
-  #       file_path="${K8S_CONFIGS_DIR}/${PRIMARY_REGION}/${secrets_file_name}"
-  #     else
-  #       # The '*' below may be one of 'ping-cloud' or 'cluster-tools' as noted above.
-  #       file_path="${K8S_CONFIGS_DIR}/${PRIMARY_REGION}/*/${secrets_file_name}"
-  #     fi
-  #     all_secret_files="$(git ls-files "${file_path}")"
-  #   fi
-
-  #   log "Found '${secrets_file_name}' files: ${all_secret_files}"
-  #   for secret_file in ${all_secret_files}; do
-  #     git show "${DEFAULT_GIT_BRANCH}:${secret_file}" >> "${old_secrets_file}"
-  #     echo >> "${old_secrets_file}"
-  #   done
-  # done # secrets loop
-
-  # # Switch to the new git branch and copy over the old secrets, if they're different.
-  # git checkout --quiet "${NEW_BRANCH}"
-
-  # secret_files="$(find "${old_secrets_dir}" -type f)"
-  # for file in ${secret_files}; do
-  #   file_name="$(basename "${file}")"
-  #   dst_file="${K8S_CONFIGS_DIR}/${BASE_DIR}/${file_name}"
-
-  #   if diff -qbB "${file}" "${dst_file}"; then
-  #     log "No difference found between ${file_name} and ${dst_file}"
-  #   else
-  #     cp "${file}" "${dst_file}.old"
-  #   fi
-  # done
-
-  # msg="Done creating ${SECRETS_FILE_NAME}.old and ${SEALED_SECRETS_FILE_NAME}.old in branch '${NEW_BRANCH}'"
-  # log "${msg}"
-
-  # git add .
-  # git commit --allow-empty -m "${msg}"
 }
 
 ########################################################################################################################
@@ -720,34 +663,6 @@ print_readme() {
   echo "      replica set of the apps. Make those changes to '${CUSTOM_PATCHES_FILE_NAME}'."
   echo "      There is a '${CUSTOM_PATCHES_SAMPLE_FILE_NAME}' peer file with some examples"
   echo "      showing how to patch HPA settings, replica count, mem/cpu request/limits, etc."
-  echo
-
-  if "${ALL_MIN_SECRETS_FOUND}"; then
-    echo "- All secrets have been reset to the default for '${NEW_VERSION}'."
-  else
-    echo "- All but the following secrets have been reset to the default for '${NEW_VERSION}'"
-    echo
-    echo "    - The git SSH key in 'argo-git-deploy' and 'ssh-id-key-secret' also"
-    echo "      contain fake values and must be updated."
-    echo
-    echo "    - Reach out to the platform team to get the right values for these secrets."
-  fi
-  echo
-  echo "- The '${SECRETS_FILE_NAME}', '${ORIG_SECRETS_FILE_NAME}' and '${SEALED_SECRETS_FILE_NAME}'"
-  echo "  files have been copied over from the default git branch with a suffix of '.old',"
-  echo "  but they are not sourced from any kustomization.yaml. Use the '*secrets.yaml.old'"
-  echo "  files as a reference to fix up the new ones in the following manner:"
-  echo
-  echo "    - Secrets that are new in '${NEW_VERSION}' must be configured and re-sealed."
-  echo
-  echo "    - Secrets that are no longer used in '${NEW_VERSION}' must be removed."
-  echo
-  echo "    - The '${ORIG_SECRETS_FILE_NAME}' file contains the complete list of secrets"
-  echo "      for '${NEW_VERSION}'."
-  echo
-  echo "    - Note that the seal.sh script is recommended if sealing all secrets at once"
-  echo "      since it handles both secrets inherited from '${PING_CLOUD_BASE}' and"
-  echo "      those defined directly within '${CLUSTER_STATE_REPO}'."
   echo
 
   if ! "${RESET_TO_DEFAULT}"; then
@@ -1003,8 +918,6 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
           unset LETS_ENCRYPT_SERVER
         fi
 
-        export NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY}"
-
         export ARGOCD_SLACK_TOKEN_SSM_PATH="${ARGOCD_SLACK_TOKEN_SSM_PATH}"
 
         # If customer-hub branch, reset the LETS_ENCRYPT_SERVER so the prod one is set by default.
@@ -1032,8 +945,8 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
             MYSQL_USER='' \
             MYSQL_PASSWORD='' \
             PLATFORM_EVENT_QUEUE_NAME='' \
-            SSH_ID_PUB_FILE="${ID_RSA_FILE}" \
-            SSH_ID_KEY_FILE="${ID_RSA_FILE}" \
+            SSH_ID_PUB_FILE='' \
+            SSH_ID_KEY_FILE='' \
             "${NEW_PING_CLOUD_BASE_REPO}/${CODE_GEN_DIR}/generate-cluster-state.sh"
       )
       GEN_RC=$?
@@ -1171,8 +1084,9 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
 
   done # REGION loop for push
 
-  # Create .old files for secrets.yaml and sealed-secrets.yaml files so it's easy to see the differences in a pinch.
-  handle_changed_k8s_secrets "${NEW_BRANCH}" "${PRIMARY_REGION_DIR}"
+  # Get the old secrets files from the previous branch and overwrite them in the new branch
+  # TODO: we should probably have generate-cluster-state.sh skip generating these files since we don't use them
+  handle_k8s_secrets "${NEW_BRANCH}"
 
   # If requested, copy new k8s-configs files from the default git branches into their corresponding new branches.
   if "${RESET_TO_DEFAULT}"; then
