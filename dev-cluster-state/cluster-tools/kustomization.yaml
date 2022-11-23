@@ -6,6 +6,7 @@ resources:
 - pgo
 - monitoring/prometheus
 - logging
+- priorityclass.yaml
 
 components:
   - monitoring/pgo
@@ -453,4 +454,28 @@ patchesJson6902:
   patch: |-
     - op: replace
       path: /spec/template/metadata/annotations/CLUSTER_NAME
-      value: ${NEW_RELIC_ENVIRONMENT_NAME}  
+      value: ${NEW_RELIC_ENVIRONMENT_NAME}
+
+# Add a priorityclass for newrelic daemons to try to make sure it preempts existing pods on a very
+# busy node to try to improve node use efficiency/scaling without breaking things
+- target:
+    group: apps
+    version: v1
+    kind: DaemonSet
+    name: nri-bundle-nrk8s-controlplane
+    namespace: newrelic
+  patch: |-
+    - op: add
+      path: /spec/template/spec/PriorityClassName
+      value: newrelic-daemonset-priority
+
+- target:
+    group: apps
+    version: v1
+    kind: DaemonSet
+    name: nri-bundle-nrk8s-kubelet
+    namespace: newrelic
+  patch: |-
+    - op: add
+      path: /spec/template/spec/PriorityClassName
+      value: newrelic-daemonset-priority
