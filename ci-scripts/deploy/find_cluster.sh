@@ -36,7 +36,8 @@ find_cluster() {
 
       # Typically, all CI/CD clusters should have 6 nodes ready (2 per AZ)
       # We make the minimum 4 in case of random failures with a node (since the pipeline can run with 4)
-      min_nodes=4
+      # TODO: change back if we don't use scaling
+      min_nodes=0
       # Get nodes with ONLY 'Ready' state, count them
       num_nodes=$(kubectl get nodes | awk '{ print $2 }' | grep -c '^Ready$' )
 
