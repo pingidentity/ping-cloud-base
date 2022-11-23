@@ -46,6 +46,9 @@ find-cluster:
 
 ## Deploy stage ##
 deploy:
+  # Retry once. There are a ton of factors that go into deploying to the cluster, so we just retry to capture some
+  # of those edge cases
+  retry: 1
   stage: deploy
   tags:
     - default-gitlab-runner
