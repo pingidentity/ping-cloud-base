@@ -466,7 +466,7 @@ patchesJson6902:
     namespace: newrelic
   patch: |-
     - op: add
-      path: /spec/template/spec/PriorityClassName
+      path: /spec/template/spec/priorityClassName
       value: newrelic-daemonset-priority
 
 - target:
@@ -477,5 +477,5 @@ patchesJson6902:
     namespace: newrelic
   patch: |-
     - op: add
-      path: /spec/template/spec/PriorityClassName
+      path: /spec/template/spec/priorityClassName
       value: newrelic-daemonset-priority
