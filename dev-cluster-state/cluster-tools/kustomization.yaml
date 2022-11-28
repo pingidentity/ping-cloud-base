@@ -467,7 +467,7 @@ patchesJson6902:
   patch: |-
     - op: add
       path: /spec/template/spec/priorityClassName
-      value: newrelic-daemonset-priority
+      value: cluster-tool-daemonset-priority
 
 - target:
     group: apps
@@ -478,4 +478,26 @@ patchesJson6902:
   patch: |-
     - op: add
       path: /spec/template/spec/priorityClassName
-      value: newrelic-daemonset-priority
+      value: cluster-tool-daemonset-priority
+
+- target:
+    group: apps
+    version: v1
+    kind: DaemonSet
+    name: cloudwatch-agent
+    namespace: amazon-cloudwatch
+  patch: |-
+    - op: add
+      path: /spec/template/spec/priorityClassName
+      value: cluster-tool-daemonset-priority
+
+- target:
+    group: apps
+    version: v1
+    kind: DaemonSet
+    name: fluent-bit
+    namespace: elastic-stack-logging
+  patch: |-
+    - op: add
+      path: /spec/template/spec/priorityClassName
+      value: cluster-tool-daemonset-priority
