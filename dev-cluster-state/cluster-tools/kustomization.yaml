@@ -456,7 +456,7 @@ patchesJson6902:
       path: /spec/template/metadata/annotations/CLUSTER_NAME
       value: ${NEW_RELIC_ENVIRONMENT_NAME}
 
-# Add a priorityclass for newrelic daemons to try to make sure it preempts existing pods on a very
+# Add a priorityclass for monitoring daemons to try to make sure it pre-empts existing pods on a very
 # busy node to try to improve node use efficiency/scaling without breaking things
 - target:
     group: apps
