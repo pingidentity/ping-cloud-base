@@ -21,7 +21,7 @@ find_cluster() {
     exit 1
   fi
 
-  cluster_postfixes=$("_3")
+  cluster_postfixes="_3"
   found_cluster=false
   sleep_wait_seconds=300
   current_check=1
