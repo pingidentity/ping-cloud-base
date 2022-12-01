@@ -5,6 +5,8 @@ metadata:
   name: logging-bootstrap
   annotations:
     argocd.argoproj.io/sync-options: Replace=true
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
 spec:
   template:
     spec:
@@ -50,6 +52,8 @@ metadata:
   name: elasticsearch-bootstrap
   annotations:
     argocd.argoproj.io/sync-options: Replace=true
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
 spec:
   template:
     spec:
@@ -109,6 +113,8 @@ metadata:
   name: kibana-bootstrap
   annotations:
      argocd.argoproj.io/sync-options: Replace=true
+     argocd.argoproj.io/hook: Sync
+     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
 spec:
   template:
     spec:
@@ -146,8 +152,14 @@ spec:
               mountPath: /scripts/dashboards/pf
             - name: enrichment-elasticsearch-index-templates
               mountPath: /scripts/index-templates
-            - name: kibana-alerts
-              mountPath: /scripts/alerts
+            - name: kibana-alerts-common
+              mountPath: /scripts/alerts/common
+            - name: kibana-alerts-pd
+              mountPath: /scripts/alerts/pd
+            - name: kibana-alerts-pds
+              mountPath: /scripts/alerts/pds
+            - name: kibana-alerts-pf
+              mountPath: /scripts/alerts/pf
           resources:
             requests:
               memory: "256Mi"
@@ -166,9 +178,18 @@ spec:
         - name: kibana-dashboards-pf
           configMap:
             name: kibana-dashboards-pf
-        - name: kibana-alerts
+        - name: kibana-alerts-common
           configMap:
-            name: kibana-alerts
+            name: kibana-alerts-common
+        - name: kibana-alerts-pd
+          configMap:
+            name: kibana-alerts-pd
+        - name: kibana-alerts-pds
+          configMap:
+            name: kibana-alerts-pds
+        - name: kibana-alerts-pf
+          configMap:
+            name: kibana-alerts-pf
         - name: enrichment-elasticsearch-index-templates
           configMap:
             name: enrichment-elasticsearch-index-templates
