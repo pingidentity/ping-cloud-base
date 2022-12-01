@@ -12,6 +12,7 @@
 - Retain set value for slack channel alerts
 - Added CICD integration health test to check certificate results
 - Modified Kibana dashboards to show second region logs and metrics
+- Allow release branches to update image names using the kustomize image patch
 
 _Changes:_
 
@@ -27,6 +28,7 @@ _Changes:_
 - [X] PDO-4610 Retain set value for slack channel alerts
 - [X] PDO-4614 Automate pinning the branch for ping-cloud-dashboards in PCB
 - [X] PDO-4632 ALERT from the secondary region is shown as an ALERT from the primary region in the email message
+- [X] PDO-4648: Allow release branches to update image names using the kustomize image patch
 
 ### 1.16.0.0
 

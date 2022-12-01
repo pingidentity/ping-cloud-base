@@ -6,7 +6,7 @@ resources:
 - ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingaccess-was/engine?ref=${K8S_GIT_BRANCH}
 
 images:
-- name: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess-was
+- name: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess-was${ECR_ENV}
   newName: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess-was${ECR_ENV}
   newTag: ${PINGACCESS_WAS_IMAGE_TAG}
 
