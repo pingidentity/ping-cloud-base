@@ -9,4 +9,4 @@ resources:
 - elasticsearch-index-templates.yaml
 - enrichment-cache.yaml
 - logstash-search-templates.yaml
-- kibana-alerts.yaml
+- kibana-alerts
