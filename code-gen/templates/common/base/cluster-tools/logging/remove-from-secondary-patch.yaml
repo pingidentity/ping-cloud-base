@@ -111,7 +111,28 @@ $patch: delete
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: kibana-alerts
+  name: kibana-alerts-common
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kibana-alerts-pd
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kibana-alerts-pds
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kibana-alerts-pf
   namespace: elastic-stack-logging
 $patch: delete
 ---
