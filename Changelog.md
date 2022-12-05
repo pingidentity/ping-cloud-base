@@ -2,7 +2,6 @@
 
 ### 1.17.0.0
 
-- Remove logstash tolerations
 - Prometheus configured to take metrics from second region
 - Prometheus upgraded to 2.39.1
 - Create new global repo for dashboards
@@ -19,7 +18,6 @@ _Changes:_
 - [X] PDO-2799 Rewrite CloudWatch log tests
 - [X] PDO-4240 PF Health Check Tests - Certificates
 - [X] PDO-4312 PA-WAS Health Check Tests - object creation, unauthenticated proxy requests
-- [X] PDO-4432 Logstash has broken tolerations
 - [X] PDO-4565 Prometheus: Configure It to Take Metrics from Second Region
 - [X] PDO-4496 Create new global repo for dashboards
 - [X] PDO-4566 Logstash: Configure It to Send Logs from Second Region to Primary Region
@@ -84,6 +82,7 @@ _Changes:_
 - [X] PDO-4397 Add new env_var "DEFAULT_USER_BASE_DN"
 - [X] PDO-4391 Notification Framework: alert on backup failure
 - [X] PDO-4401 LEGACY_LOGGING mode: Change default from true to false (off) - Leave flag available
+- [X] PDO-4432 Logstash has broken tolerations
 - [X] PDO-4438 PostgreSQL pods and secrets not deployed
 - [X] PDO-4442 Update healthcheck service keys to use consistent format
 - [X] PDO-4446 Handle missing SSM parameters
@@ -94,6 +93,14 @@ _Changes:_
 - [X] PDO-4492 Enable/disable Radius with environment variable
 - [X] PDO-4498 Move nri-kubernetes images to dev ECR within PCB
 - [X] PDO-4580 Prometheus Pod is being OOMKilled
+
+### 1.15.1.0
+
+- Fix Logstash broken tolerations
+
+_Changes:_
+
+- [X] PDO-4432 Logstash has broken tolerations
 
 ### 1.15.0.1
 
@@ -154,6 +161,14 @@ _Changes:_
 - [X] PDO-4265 Increase memory limits for prometheus pod
 - [X] PDO-4268 Fix Fluent-bit raw logs sending to S3
 - [X] PDO-4301 Fix secrets sealing
+
+### 1.14.1.0
+
+- Backport logstash tolerations fix
+
+_Changes:_
+
+- [X] PDO-4432 Logstash has broken tolerations
 
 ### 1.14.0.1
 
