@@ -34,15 +34,36 @@ class TestPingFederateHealth(TestHealthBase):
         test_results = self.get_test_results(self.pingfederate, Categories.pod_status)
         res = [key for key in test_results if "registered" in key]
         self.assertTrue(
-            len(res) > 0, "No 'registered with PF Admin' checks found in health check results"
+            len(res) > 0,
+            "No 'registered with PF Admin' checks found in health check results",
         )
 
     def test_health_check_has_responsive_results(self):
         test_results = self.get_test_results(self.pingfederate, Categories.connectivity)
         res = [key for key in test_results if "responds" in key]
         self.assertTrue(
-            len(res) > 0, "No 'responds to requests' checks found in health check results"
+            len(res) > 0,
+            "No 'responds to requests' checks found in health check results",
         )
-        
+
     def test_health_check_has_certificate_results(self):
-        self.assertIn("No certificates are expiring within 30 days", self.get_test_results(self.pingfederate, Categories.pod_status).keys())
+        self.assertIn(
+            "No certificates are expiring within 30 days",
+            self.get_test_results(self.pingfederate, Categories.pod_status).keys(),
+        )
+
+    def test_health_check_has_authenticate_a_user_results(self):
+        test_results = self.get_test_results(self.pingfederate, Categories.connectivity)
+        test_name = "Can authenticate a user"
+        self.assertTrue(
+            test_name in test_results,
+            f"No '{test_name}' checks found in health check results",
+        )
+
+    def test_health_check_has_create_an_object_results(self):
+        test_results = self.get_test_results(self.pingfederate, Categories.connectivity)
+        test_name = "Can create an object in PF Admin"
+        self.assertTrue(
+            test_name in test_results,
+            f"No '{test_name}' checks found in health check results",
+        )
