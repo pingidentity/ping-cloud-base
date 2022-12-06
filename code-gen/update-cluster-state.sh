@@ -22,7 +22,6 @@
 #       cluster-state repo.
 
 ### Global values and utility functions ###
-BASE64_DECODE_OPT="${BASE64_DECODE_OPT:--D}"
 
 K8S_CONFIGS_DIR='k8s-configs'
 COMMON_DIR='common'
@@ -53,6 +52,10 @@ CLUSTER_STATE_REPO='cluster-state-repo'
 CUSTOMER_HUB='customer-hub'
 
 PING_CLOUD_BASE='ping-cloud-base'
+
+# README global vars
+TAB='    '
+SEPARATOR='^'
 
 # If true, reset to the OOTB cluster state for the new version, i.e. perform no migration.
 RESET_TO_DEFAULT="${RESET_TO_DEFAULT:-false}"
@@ -293,54 +296,56 @@ set_env_vars() {
   fi
 }
 
-########################################################################################################################
-# Returns the initial git revision.
-#
-# Returns
-#   The initial git revision
-########################################################################################################################
-get_initial_git_rev() {
-  git log --reverse --format=format:%H 2> /dev/null | head -1
+# Determine if macOS - oftentimes upgrades run on macOS but sometimes they run on other machines too
+# Returns 0 if macOS, 1 otherwise
+is_macos() {
+  os=$(uname)
+  if [[ "${os}" == *"Darwin"* ]]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+# Automatically set the base64 decode option based on OS
+get_base64_decode_opt() {
+  if is_macos; then
+    echo "-d"
+  else
+    echo "-D"
+  fi
+}
+
+# Kubectl must have a connection to a cluster in order to run - currently used to convert yaml to json
+check_kubectl() {
+  if ! kubectl get ns > /dev/null 2>&1; then
+    log "Warn: You are not connected to a k8s cluster - automatic secret replacement may be affected"
+  fi
 }
 
 ########################################################################################################################
 # Gets the file that has all ping-cloud secrets. If the file is found, then its contents will be written to the provided
-# output file. If the git_rev revision is provided, then the secrets file will be obtained from that revision. Otherwise,
-# it will be obtained from the HEAD of the current revision.
+# output file. The secrets file is obtained from the currently checked out branch when the method runs.
 #
 # Arguments
-#   $1 -> The output file to which to write secrets.yaml. If the secrets.yaml file is not found, then nothing will be
-#         written to the file.
-#   $2 -> Optional. The git revision.
+#   $1 secrets_json -> The output file to which to write secrets.yaml in json format.
+#         If the secrets.yaml file is not found, then nothing will be written to the file.
 ########################################################################################################################
-get_ping_cloud_secrets_file() {
-  out_file="$1"
-  git_rev="$2"
+get_secrets_file_json() {
+  secrets_json="$1"
 
-  # Switch to the git revision, if provided.
-  if test "${git_rev}"; then
-    log "Switching to git revision ${git_rev}"
-    git checkout --quiet "${git_rev}"
-  fi
-
-  # Get the full path of the secrets.yaml file that has all ping-cloud secrets.
-  secrets_yaml="$(git grep -e NEW_RELIC_LICENSE_KEY | grep -v '\$' | head -1 | cut -d: -f1)"
+  # Get the path of the secrets.yaml file that has all ping-cloud secrets.
+  secrets_yaml="$(find . -name secrets.yaml -type f)"
 
   # If found, copy it to the provided output file in JSON format.
   # NOTE: it's safer to use kubectl here than a YAML parser like yq, whose options vary by version of the tool, OS, etc.
   if test "${secrets_yaml}"; then
-    log "Attempting to transform ${secrets_yaml} from YAML to JSON into ${out_file}"
-    if ! kubectl apply -f "${secrets_yaml}" -o json --dry-run 2>/dev/null > "${out_file}"; then
+    log "Attempting to transform ${secrets_yaml} from YAML to JSON into ${secrets_json}"
+    if ! kubectl apply -f "${secrets_yaml}" -o json --dry-run 2>/dev/null > "${secrets_json}"; then
       log "Unable to parse secrets from file ${secrets_yaml}"
     fi
   else
-    log "ping-cloud secrets.yaml file not found in revision: ${git_rev:-HEAD}"
-  fi
-
-  # Switch back to previous git revision.
-  if test "${git_rev}"; then
-    log "Switching back to previous git revision"
-    git checkout --quiet -
+    log "ping-cloud secrets.yaml file not found."
   fi
 }
 
@@ -368,35 +373,22 @@ get_secret_from_file() {
 # Retrieve the minimum required secrets required to stand up the out-of-the-box ping-cloud stack into the following
 # environment variables:
 #
-#   - NEW_RELIC_LICENSE_KEY - used to send data to NewRelic account
 #   - ID_RSA_FILE - SSH key for cloning from git
 #
 # If all the secrets are found, then a global variable named ALL_MIN_SECRETS_FOUND will be set to true.
 ########################################################################################################################
 get_min_required_secrets() {
-  ping_cloud_secrets_yaml="$(mktemp)"
-  log "Attempting to get ping-cloud secrets.yaml into ${ping_cloud_secrets_yaml}"
+  secrets_yaml_json="$(mktemp)"
+  log "Attempting to get ping-cloud secrets.yaml into ${secrets_yaml_json}"
 
-  # Try to get a secrets.yaml file from the initial git revision.
-  get_ping_cloud_secrets_file "${ping_cloud_secrets_yaml}" "$(get_initial_git_rev)"
-
-  # If secrets.yaml has no contents, then try to get it from the latest git revision.
-  if ! test -s "${ping_cloud_secrets_yaml}"; then
-    get_ping_cloud_secrets_file "${ping_cloud_secrets_yaml}"
-  fi
+  get_secrets_file_json "${secrets_yaml_json}"
 
   # If secrets.yaml has contents, then attempt to retrieve each required secret.
   ALL_MIN_SECRETS_FOUND=false
-  if test -s "${ping_cloud_secrets_yaml}"; then
+  if test -s "${secrets_yaml_json}"; then
     ALL_MIN_SECRETS_FOUND=true
-
-    NEW_RELIC_LICENSE_KEY="$(get_secret_from_file 'NEW_RELIC_LICENSE_KEY' "${ping_cloud_secrets_yaml}")"
-    if ! test "${NEW_RELIC_LICENSE_KEY}"; then
-      log "NEW_RELIC_LICENSE_KEY not found in ${ping_cloud_secrets_yaml}"
-    fi
-
     ID_RSA_FILE="$(mktemp)"
-    get_secret_from_file 'id_rsa' "${ping_cloud_secrets_yaml}" > "${ID_RSA_FILE}"
+    get_secret_from_file 'id_rsa' "${secrets_yaml_json}" > "${ID_RSA_FILE}"
     if ! test -s "${ID_RSA_FILE}"; then
       log "SSH key not found in ${ID_RSA_FILE}"
       ALL_MIN_SECRETS_FOUND=false
@@ -484,77 +476,39 @@ git_diff() {
 }
 
 ########################################################################################################################
-# Create secrets.yaml.old and sealed-secrets.yaml.old files if different between the default git branch and its new
+# Create .old secrets files for $all_secrets
 # one. This makes it easier for the operator to see the differences in secrets between the two branches.
 #
 # Arguments
 #   $1 -> The new branch for a default git branch.
-#   $2 -> The primary region.
 ########################################################################################################################
-handle_changed_k8s_secrets() {
-  NEW_BRANCH="$1"
-  PRIMARY_REGION="$2"
+create_dot_old_files() {
+  local update_branch="$1"
+  local all_secrets=("${SECRETS_FILE_NAME}" "${ORIG_SECRETS_FILE_NAME}" "${SEALED_SECRETS_FILE_NAME}")
 
-  if echo "${NEW_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
-    DEFAULT_GIT_BRANCH="${CUSTOMER_HUB}"
-  else
-    DEFAULT_GIT_BRANCH="${NEW_BRANCH##*-}"
-  fi
+  log "Handling changes to ${all_secrets[*]} in branch '${OLD_BRANCH}'"
 
-  log "Handling changes to ${SECRETS_FILE_NAME} and ${SEALED_SECRETS_FILE_NAME} in branch '${DEFAULT_GIT_BRANCH}'"
-
-  # In v1.6:
-  #   - Secrets and the OOTB secrets for a release are present under <region>/ping-cloud/[orig-]secrets.yaml and
-  #     <region>/cluster-tools/[orig-]secrets.yaml for each region.
-  #   - Sealed secrets are present under <region>/sealed-secrets.yaml.
-
-  # In v1.7 and later:
-  #   - Secrets, OOTB secrets and sealed secrets are all present under base/.
-
-  # First switch to the default git branch.
-  git checkout --quiet "${DEFAULT_GIT_BRANCH}"
+  # First switch to the old git branch.
+  git checkout --quiet "${OLD_BRANCH}"
   old_secrets_dir="$(mktemp -d)"
 
-  for secrets_file_name in "${SECRETS_FILE_NAME}" "${ORIG_SECRETS_FILE_NAME}" "${SEALED_SECRETS_FILE_NAME}"; do
-    log "Handling changes to ${secrets_file_name} in branch '${DEFAULT_GIT_BRANCH}'"
-    old_secrets_file="${old_secrets_dir}/${secrets_file_name}"
-
-    # The >= v1.7 case:
-    all_secret_files="$(git ls-files "${K8S_CONFIGS_DIR}/${BASE_DIR}/${secrets_file_name}")"
-    if ! test "${all_secret_files}"; then
-      # The v1.6 case:
-      if test "${secrets_file_name}" = "${SEALED_SECRETS_FILE_NAME}"; then
-        file_path="${K8S_CONFIGS_DIR}/${PRIMARY_REGION}/${secrets_file_name}"
-      else
-        # The '*' below may be one of 'ping-cloud' or 'cluster-tools' as noted above.
-        file_path="${K8S_CONFIGS_DIR}/${PRIMARY_REGION}/*/${secrets_file_name}"
-      fi
-      all_secret_files="$(git ls-files "${file_path}")"
-    fi
-
-    log "Found '${secrets_file_name}' files: ${all_secret_files}"
-    for secret_file in ${all_secret_files}; do
-      git show "${DEFAULT_GIT_BRANCH}:${secret_file}" >> "${old_secrets_file}"
-      echo >> "${old_secrets_file}"
-    done
-  done # secrets loop
-
-  # Switch to the new git branch and copy over the old secrets, if they're different.
-  git checkout --quiet "${NEW_BRANCH}"
-
-  secret_files="$(find "${old_secrets_dir}" -type f)"
-  for file in ${secret_files}; do
-    file_name="$(basename "${file}")"
-    dst_file="${K8S_CONFIGS_DIR}/${BASE_DIR}/${file_name}"
-
-    if diff -qbB "${file}" "${dst_file}"; then
-      log "No difference found between ${file_name} and ${dst_file}"
-    else
-      cp "${file}" "${dst_file}.old"
-    fi
+  for old_secrets_file in "${all_secrets[@]}"; do
+    log "Copying old ${old_secrets_file} in branch '${OLD_BRANCH}'"
+    secret_path=$(find . -name "${old_secrets_file}" -type f)
+    git show "${OLD_BRANCH}:${secret_path}" >> "${old_secrets_dir}/${old_secrets_file}"
   done
 
-  msg="Done creating ${SECRETS_FILE_NAME}.old and ${SEALED_SECRETS_FILE_NAME}.old in branch '${NEW_BRANCH}'"
+  # Switch to the new git branch and copy over the old secrets
+  git checkout --quiet "${update_branch}"
+
+  secret_files="$(find "${old_secrets_dir}" -type f)"
+  for secret_path in ${secret_files}; do
+    file_name="$(basename "${secret_path}")"
+    dst_file="${K8S_CONFIGS_DIR}/${BASE_DIR}/${file_name}"
+    cp "${secret_path}" "${dst_file}.old"
+  done
+
+  msg="Done creating .old files for ${all_secrets[*]}"
   log "${msg}"
 
   git add .
@@ -568,25 +522,19 @@ handle_changed_k8s_secrets() {
 #   $1 -> The new branch for a default git branch.
 ########################################################################################################################
 handle_changed_k8s_configs() {
-  NEW_BRANCH="$1"
+  local update_branch="$1"
 
-  if echo "${NEW_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
-    DEFAULT_GIT_BRANCH="${CUSTOMER_HUB}"
-  else
-    DEFAULT_GIT_BRANCH="${NEW_BRANCH##*-}"
-  fi
+  log "Handling non Beluga-owned files in branch '${OLD_BRANCH}'"
 
-  log "Handling non Beluga-owned files in branch '${DEFAULT_GIT_BRANCH}'"
-
-  log "Reconciling '${K8S_CONFIGS_DIR}' diffs between '${DEFAULT_GIT_BRANCH}' and its new branch '${NEW_BRANCH}'"
-  git checkout --quiet "${NEW_BRANCH}"
-  new_files="$(git_diff "${DEFAULT_GIT_BRANCH}" HEAD "${K8S_CONFIGS_DIR}")"
+  log "Reconciling '${K8S_CONFIGS_DIR}' diffs between '${OLD_BRANCH}' and its new branch '${update_branch}'"
+  git checkout --quiet "${update_branch}"
+  new_files="$(git_diff "${OLD_BRANCH}" HEAD "${K8S_CONFIGS_DIR}")"
 
   if ! test "${new_files}"; then
-    log "No changed '${K8S_CONFIGS_DIR}' files to copy '${DEFAULT_GIT_BRANCH}' to its new branch '${NEW_BRANCH}'"
+    log "No changed '${K8S_CONFIGS_DIR}' files to copy '${OLD_BRANCH}' to its new branch '${update_branch}'"
   fi
 
-  log "DEBUG: Found the following new files in branch '${DEFAULT_GIT_BRANCH}':"
+  log "DEBUG: Found the following new files in branch '${OLD_BRANCH}':"
   echo "${new_files}"
 
   KUSTOMIZATION_FILE="${CUSTOM_RESOURCES_REL_DIR}/kustomization.yaml"
@@ -600,11 +548,11 @@ handle_changed_k8s_configs() {
   for file in ${CUSTOM_RESOURCES_REL_DIR}/kustomization.yaml \
               ${CUSTOM_PATCHES_REL_FILE_NAME} \
               ${PING_CLOUD_REL_DIR}/${DESCRIPTOR_JSON_FILE_NAME}; do
-    if git show "${DEFAULT_GIT_BRANCH}:${file}" &> /dev/null; then
-      log "Copying file ${DEFAULT_GIT_BRANCH}:${file} to the same location on ${NEW_BRANCH}"
-      git show "${DEFAULT_GIT_BRANCH}:${file}" > "${file}"
+    if git show "${OLD_BRANCH}:${file}" &> /dev/null; then
+      log "Copying file ${OLD_BRANCH}:${file} to the same location on ${update_branch}"
+      git show "${OLD_BRANCH}:${file}" > "${file}"
     else
-      log "${file} does not exist in default git branch ${DEFAULT_GIT_BRANCH}"
+      log "${file} does not exist in default git branch ${OLD_BRANCH}"
     fi
   done
 
@@ -612,29 +560,29 @@ handle_changed_k8s_configs() {
     # Ignore Beluga-owned files.
     new_file_basename="$(basename "${new_file}")"
     if echo "${beluga_owned_k8s_files}" | grep -q "@${new_file_basename}"; then
-      log "Ignoring file ${DEFAULT_GIT_BRANCH}:${new_file} since it is a Beluga-owned file"
+      log "Ignoring file ${OLD_BRANCH}:${new_file} since it is a Beluga-owned file"
       continue
     fi
 
     # Copy files in the custom-resources section (owned by PS/GSO) as is.
     new_file_dirname="$(dirname "${new_file}")"
     if test "${new_file_dirname##*/}" = "${CUSTOM_RESOURCES_DIR}"; then
-      log "Copying custom resource file ${DEFAULT_GIT_BRANCH}:${new_file} to the same location on ${NEW_BRANCH}"
-      git show "${DEFAULT_GIT_BRANCH}:${new_file}" > "${new_file}"
+      log "Copying custom resource file ${OLD_BRANCH}:${new_file} to the same location on ${update_branch}"
+      git show "${OLD_BRANCH}:${new_file}" > "${new_file}"
       continue
     fi
 
     # Copy non-YAML files (owned by PS/GSO) to the same location on the new branch, e.g. sealingkey.pem
     new_file_ext="${new_file_basename##*.}"
     if test "${new_file_ext}" != 'yaml'; then
-      log "Copying non-YAML file ${DEFAULT_GIT_BRANCH}:${new_file} to the same location on ${NEW_BRANCH}"
+      log "Copying non-YAML file ${OLD_BRANCH}:${new_file} to the same location on ${update_branch}"
       mkdir -p "${new_file_dirname}"
-      git show "${DEFAULT_GIT_BRANCH}:${new_file}" > "${new_file}"
+      git show "${OLD_BRANCH}:${new_file}" > "${new_file}"
       continue
     fi
 
-    log "Copying custom file ${DEFAULT_GIT_BRANCH}:${new_file} into directory ${CUSTOM_RESOURCES_REL_DIR}"
-    git show "${DEFAULT_GIT_BRANCH}:${new_file}" > "${CUSTOM_RESOURCES_REL_DIR}/${new_file_basename}"
+    log "Copying custom file ${OLD_BRANCH}:${new_file} into directory ${CUSTOM_RESOURCES_REL_DIR}"
+    git show "${OLD_BRANCH}:${new_file}" > "${CUSTOM_RESOURCES_REL_DIR}/${new_file_basename}"
 
     log "Adding new resource file ${new_file_basename} to ${KUSTOMIZATION_FILE}"
     new_resource_line="- ${new_file_basename}"
@@ -647,7 +595,7 @@ handle_changed_k8s_configs() {
     fi
   done
 
-  msg="Copied new '${K8S_CONFIGS_DIR}' files '${DEFAULT_GIT_BRANCH}' to its new branch '${NEW_BRANCH}'"
+  msg="Copied new '${K8S_CONFIGS_DIR}' files '${OLD_BRANCH}' to its new branch '${update_branch}'"
   log "${msg}"
 
   git add .
@@ -658,21 +606,6 @@ handle_changed_k8s_configs() {
 # Prints a README containing next steps to take.
 ########################################################################################################################
 print_readme() {
-  TAB='    '
-  SEPARATOR='^'
-
-  for NEW_BRANCH in ${NEW_BRANCHES}; do
-    if echo "${NEW_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
-      ENV="${CUSTOMER_HUB}"
-    else
-      ENV="${NEW_BRANCH##*-}"
-    fi
-    BRANCH_LINE="${TAB} ${NEW_BRANCH} -> ${ENV}"
-    test "${ENV_BRANCH_MAP}" &&
-        ENV_BRANCH_MAP="${ENV_BRANCH_MAP}${SEPARATOR}${BRANCH_LINE}" ||
-        ENV_BRANCH_MAP="${BRANCH_LINE}"
-  done
-
   echo
   echo '################################################################################'
   echo '#                                    README                                    #'
@@ -717,6 +650,7 @@ print_readme() {
     echo
     echo "    - Reach out to the platform team to get the right values for these secrets."
   fi
+
   echo
   echo "- The '${SECRETS_FILE_NAME}', '${ORIG_SECRETS_FILE_NAME}' and '${SEALED_SECRETS_FILE_NAME}'"
   echo "  files have been copied over from the default git branch with a suffix of '.old',"
@@ -826,6 +760,8 @@ SCRIPT_NAME="$(basename "$0")"
 # Check required binaries.
 check_binaries 'kubectl' 'git' 'base64' 'jq' 'envsubst' 'rsync' || exit 1
 
+check_kubectl
+
 # Verify that required environment variable NEW_VERSION is set.
 if test -z "${NEW_VERSION}"; then
   log 'NEW_VERSION environment variable must be set before invoking this script'
@@ -859,6 +795,9 @@ if test -n "$(git status -s)"; then
   exit 1
 fi
 
+AUTO_BASE64_DECODE_OPT=$(get_base64_decode_opt)
+BASE64_DECODE_OPT="${BASE64_DECODE_OPT:-${AUTO_BASE64_DECODE_OPT}}"
+
 # Save off the current branch so we can switch back to it at the end of the script.
 CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 
@@ -871,17 +810,17 @@ REPO_STATUS=0
 
 for ENV in ${ENVIRONMENTS}; do
   test "${ENV}" = 'prod' &&
-      DEFAULT_GIT_BRANCH='master' ||
-      DEFAULT_GIT_BRANCH="${ENV}"
+      OLD_BRANCH='master' ||
+      OLD_BRANCH="${ENV}"
 
-  log "Validating that '${CLUSTER_STATE_REPO}' has branch: '${DEFAULT_GIT_BRANCH}'"
-  git checkout --quiet "${DEFAULT_GIT_BRANCH}"
+  log "Validating that '${CLUSTER_STATE_REPO}' has branch: '${OLD_BRANCH}'"
+  git checkout --quiet "${OLD_BRANCH}"
   if test $? -ne 0; then
-    log "git branch '${DEFAULT_GIT_BRANCH}' does not exist in '${CLUSTER_STATE_REPO}'"
+    log "git branch '${OLD_BRANCH}' does not exist in '${CLUSTER_STATE_REPO}'"
     REPO_STATUS=1
   fi
 
-  NEW_BRANCH="${NEW_VERSION}-${DEFAULT_GIT_BRANCH}"
+  NEW_BRANCH="${NEW_VERSION}-${OLD_BRANCH}"
   test "${NEW_BRANCHES}" &&
       NEW_BRANCHES="${NEW_BRANCHES} ${NEW_BRANCH}" ||
       NEW_BRANCHES="${NEW_BRANCH}"
@@ -926,8 +865,8 @@ get_min_required_secrets
 #   - Push code for all its regions into new branches
 for ENV in ${ENVIRONMENTS}; do # ENV loop
   test "${ENV}" = 'prod' &&
-      DEFAULT_GIT_BRANCH='master' ||
-      DEFAULT_GIT_BRANCH="${ENV}"
+      OLD_BRANCH='master' ||
+      OLD_BRANCH="${ENV}"
 
   if echo "${ENV}" | grep -q "${CUSTOMER_HUB}"; then
     IS_CUSTOMER_HUB=true
@@ -935,11 +874,11 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
     IS_CUSTOMER_HUB=false
   fi
 
-  NEW_BRANCH="${NEW_VERSION}-${DEFAULT_GIT_BRANCH}"
+  NEW_BRANCH="${NEW_VERSION}-${OLD_BRANCH}"
   log "Updating branch '${NEW_BRANCH}' for environment '${ENV}'"
 
-  log "Switching to branch ${DEFAULT_GIT_BRANCH} to determine deployed regions"
-  git checkout --quiet "${DEFAULT_GIT_BRANCH}"
+  log "Switching to branch ${OLD_BRANCH} to determine deployed regions"
+  git checkout --quiet "${OLD_BRANCH}"
 
   # Get the names of all the regional directories. Note that this may not be the actual region, rather it's the nick
   # name of the region.
@@ -988,8 +927,6 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
           unset LETS_ENCRYPT_SERVER
         fi
 
-        export NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY}"
-
         export ARGOCD_SLACK_TOKEN_SSM_PATH="${ARGOCD_SLACK_TOKEN_SSM_PATH}"
 
         # If customer-hub branch, reset the LETS_ENCRYPT_SERVER so the prod one is set by default.
@@ -1017,7 +954,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
             MYSQL_USER='' \
             MYSQL_PASSWORD='' \
             PLATFORM_EVENT_QUEUE_NAME='' \
-            SSH_ID_PUB_FILE="${ID_RSA_FILE}" \
+            SSH_ID_PUB_FILE='' \
             SSH_ID_KEY_FILE="${ID_RSA_FILE}" \
             "${NEW_PING_CLOUD_BASE_REPO}/${CODE_GEN_DIR}/generate-cluster-state.sh"
       )
@@ -1156,8 +1093,8 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
 
   done # REGION loop for push
 
-  # Create .old files for secrets.yaml and sealed-secrets.yaml files so it's easy to see the differences in a pinch.
-  handle_changed_k8s_secrets "${NEW_BRANCH}" "${PRIMARY_REGION_DIR}"
+  # Create .old files for secrets files so it's easy to see the differences in a pinch.
+  create_dot_old_files "${NEW_BRANCH}" "${PRIMARY_REGION_DIR}"
 
   # If requested, copy new k8s-configs files from the default git branches into their corresponding new branches.
   if "${RESET_TO_DEFAULT}"; then
@@ -1167,6 +1104,14 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
   fi
 
   log "Done updating branch '${NEW_BRANCH}' for '${ENV}'"
+
+  # Keep track of branches for the README
+  BRANCH_LINE="${TAB}${NEW_BRANCH} -> ${OLD_BRANCH}" 
+  if test "${ENV_BRANCH_MAP}"; then
+    ENV_BRANCH_MAP="${ENV_BRANCH_MAP}${SEPARATOR}${BRANCH_LINE}"
+  else
+    ENV_BRANCH_MAP="${BRANCH_LINE}"
+  fi
 done # ENV loop
 
 # Print a README of next steps to take.
