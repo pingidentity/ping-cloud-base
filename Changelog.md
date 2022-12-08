@@ -13,6 +13,7 @@
 - Added CICD integration health test to check certificate results
 - Modified Kibana dashboards to show second region logs and metrics
 - Allow release branches to update image names using the kustomize image patch
+- Remove EFS access points directories when deleting PV
 
 _Changes:_
 
@@ -31,6 +32,7 @@ _Changes:_
 - [X] PDO-4614 Automate pinning the branch for ping-cloud-dashboards in PCB
 - [X] PDO-4632 ALERT from the secondary region is shown as an ALERT from the primary region in the email message
 - [X] PDO-4648: Allow release branches to update image names using the kustomize image patch
+- [X] PDO-4669: EFS access point dir doesn't remove during PVC removal
 
 ### 1.16.0.0
 
