@@ -15,15 +15,10 @@ SKIP_TESTS="${SKIP_TESTS:-pingdirectory/03-backup-restore.sh \
   pingaccess-was/09-csd-upload-test.sh \
   pingaccess/11-heartbeat-endpoint.sh \
   pingaccess/09-csd-upload-test.sh \
-  pingaccess/05-test-cloudwatch-logs.sh \
   pingaccess/03-change-default-db-password-test.sh \
-  pingaccess-was/05-test-cloudwatch-logs.sh \
-  pingfederate/05-test-cloudwatch-logs.sh \
-  pingdirectory/05-test-cloudwatch-logs.sh \
   pingfederate/09-heartbeat-endpoint.sh \
   pingaccess/08-artifact-test.sh \
   pingdelegator/01-admin-user-login.sh \
-  pingaccess-was/05-test-cloudwatch-logs.sh \
   chaos/01-delete-pa-admin-pod.sh }"
 
 # environment variables that are determined based on deployment type (traditional or PingOne)
@@ -447,108 +442,38 @@ set_log_file() {
   kubectl logs -n "${PING_CLOUD_NAMESPACE}" "${server}" -c "${container}" --since=60m > ${log_file}
 }
 
-########################################################################################################################
-# Compares a sample of logs within Kubernetes and AWS CloudWatch
-#
-# Arguments
-#   ${1} -> Name of log stream within CloudWatch
-#   ${2} -> Full pathname to log file within the container, unused for default log stream tests
-#   ${3} -> Name of pod
-#   ${4} -> Name of container within pod
-#   ${5} -> A flag indicating whether or not to run the default log stream test
-#
-# Returns
-#   0 -> If all logs present within Kubernetes are also present within CloudWatch
-#   1 -> If a log entry within Kubernetes does not appear within CloudWatch
-########################################################################################################################
-function log_events_exist() {
-  local log_stream=$1
-  local full_pathname=$2
-  local pod=$3
-  local container=$4
-  local default="${5:-false}"
-  local temp_log_file=$(mktemp)
-  local cwatch_log_events=
-
-  if "${default}"; then
-    # Save current state of logs into a temp file
-    kubectl logs "${pod}" -c "${container}" -n "${PING_CLOUD_NAMESPACE}" |
-      # Filter out logs that belong to specific log file or that originate from SIEM logs not sent to CW
-      grep -vE "^(/opt/out/instance/log|<[0-9]+>)" |
-      grep -vE "^\/opt\/out\/instance\/log\/admin-api.*127\.0\.0\.1\| GET\| \/version\| 200" |
-      grep -vE "^\/opt\/out\/instance\/log\/pingaccess_api_audit.*127\.0\.0\.1\| GET\| \/pa-admin-api\/v3\/version\| 200" |
-      tail -50 |
-      # remove all ansi escape sequences, remove all '\' and '-', remove '\r'
-      sed -E 's/'"$(printf '\x1b')"'\[(([0-9]+)(;[0-9]+)*)?[m,K,H,f,J]//g' |
-      sed -E 's/\\//g' |
-      sed -E 's/-//g' |
-      tr -d '\r' > "${temp_log_file}"
-  else
-    # Save current state of logs into a temp file
-    kubectl logs "${pod}" -c "${container}" -n "${PING_CLOUD_NAMESPACE}" |
-      grep ^"${full_pathname}" |
-      grep -vE "^\/opt\/out\/instance\/log\/admin-api.*127\.0\.0\.1\| GET\| \/version\| 200" |
-      grep -vE "^\/opt\/out\/instance\/log\/pingaccess_api_audit.*127\.0\.0\.1\| GET\| \/pa-admin-api\/v3\/version\| 200" |
-      tail -50 |
-      # remove all ansi escape sequences, remove all '\' and '-', remove '\r'
-      sed -E 's/'"$(printf '\x1b')"'\[(([0-9]+)(;[0-9]+)*)?[m,K,H,f,J]//g' |
-      sed -E 's/\\//g' |
-      sed -E 's/-//g' |
-      tr -d '\r' > "${temp_log_file}"
-  fi
-
-  # Let the aws logs catch up to the kubectl logs in temp file
-  sleep "${LOG_SYNC_SECONDS}"
-
-  cwatch_log_events=$(aws logs --profile "${AWS_PROFILE}" get-log-events \
-    --log-group-name "${LOG_GROUP_NAME}" \
-    --log-stream-name "${log_stream}" \
-    --no-start-from-head --limit 500 |
-    # Replace groups of 3 and 2 '\' with 1 '\', remove '\r', '\n', replace '\t' with tab spaces,
-    # remove all ansi escape sequences, remove all '\' and '-'
-    sed -E 's/\\{3,}/\\/g' |
-    sed -E 's/\\{1,}/\\/g' |
-    sed -E 's/\\r//g' |
-    sed -E 's/\\n//g' |
-    sed -E 's/\\t/'"$(printf '\t')"'/g' |
-    sed -E 's/\\u001B\[(([0-9]+)(;[0-9]+)*)?[m,K,H,f,J]//g' |
-    sed -E 's/\\//g' |
-    sed -E 's/-//g')
-  
-  while read -r event; do
-    count=$(echo "${cwatch_log_events}" | grep -Fc "${event}")
-    if test "${count}" -lt 1; then
-      echo "Event not found: "
-      echo "${event}"
-      rm "${temp_log_file}"
-      return 1
-    fi
-  done< <(cat "${temp_log_file}")
-  rm "${temp_log_file}"
-  return 0
+function find_shunit_dir() {
+  # use egrep here or find will always return 0
+  find . -type d -name "shunit*" | egrep '.*'
 }
 
-########################################################################################################################
-# Checks for existence of a particular log stream within AWS CloudWatch
-#
-# Arguments
-#   ${1} -> Name of log stream within CloudWatch
-#
-# Returns
-#   0 -> If log stream is present within CloudWatch
-#   1 -> If log stream is not present within CloudWatch
-########################################################################################################################
-function log_streams_exist() {
-  local log_stream_prefixes=$1
-  for log in ${log_stream_prefixes}; do
-    log_stream_count=$(aws logs --profile "${AWS_PROFILE}" describe-log-streams \
-      --log-group-name "${LOG_GROUP_NAME}" \
-      --log-stream-name-prefix "${log}" | jq '.logStreams | length')
-    if test "${log_stream_count}" -lt 1; then
-      echo "Log stream with prefix '$log' not found in CloudWatch"
-      return 1
-    fi
-  done
+function find_shunit_symlink() {
+  # use egrep here or find will always return 0
+  find . -type l -name shunit | egrep '.*'
+}
+
+function prepareShunit() {
+
+  # Check to see if shunit2 is ready
+  pushd "${PROJECT_DIR}"/ci-scripts/test/shunit > /dev/null
+
+  shunit_dir_name=$(find_shunit_dir)
+  shunit_dir_found=$?
+
+  echo
+  if [[ ${shunit_dir_found} -eq 0 ]]; then
+    echo "Found ${shunit_dir_name}.  Skipping shunit configuration."
+  else
+    echo "shunit not found.  Unpacking it..."
+
+    unzip shunit*.zip 1>/dev/null
+    shunit_dir_name=$(find_shunit_dir)
+
+    echo "Unpacking of ${shunit_dir_name} complete."
+  fi
+
+  popd > /dev/null
+
   return 0
 }
 
