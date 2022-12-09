@@ -14,6 +14,7 @@
 - Modified Kibana dashboards to show second region logs and metrics
 - Allow release branches to update image names using the kustomize image patch
 - Remove EFS access points directories when deleting PV
+- Refactor elastic-stack manifests
 - Remove outdated CW logs test methods
 
 _Changes:_
@@ -35,6 +36,7 @@ _Changes:_
 - [X] PDO-4632 ALERT from the secondary region is shown as an ALERT from the primary region in the email message
 - [X] PDO-4648: Allow release branches to update image names using the kustomize image patch
 - [X] PDO-4669: EFS access point dir doesn't remove during PVC removal
+- [X] PDO-4671 Refactor elastic-stack manifests
 
 ### 1.16.0.0
 
