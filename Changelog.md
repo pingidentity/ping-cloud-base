@@ -15,6 +15,7 @@
 - Allow release branches to update image names using the kustomize image patch
 - Changed Slack channel for Argo notifications depending on IS_GA value
 - Remove EFS access points directories when deleting PV
+- NewRelic Java Agent upgraded to 7.11.1
 - Refactor elastic-stack manifests
 - Remove outdated CW logs test methods
 
@@ -36,6 +37,7 @@ _Changes:_
 - [X] PDO-4615 Remove outdated CW logs test methods
 - [X] PDO-4618 Default slack notifications using `IS_GA` env var
 - [X] PDO-4632 ALERT from the secondary region is shown as an ALERT from the primary region in the email message
+- [X] PDO-4644 Update cluster tools to latest version: NewRelic Java agent v7.11.1
 - [X] PDO-4648: Allow release branches to update image names using the kustomize image patch
 - [X] PDO-4649: prometheus-0/logstash-elastic-0 pod does not come up upon changing LEGACY_LOGGING or LS_JAVA_OPTS
 - [X] PDO-4669: EFS access point dir doesn't remove during PVC removal
