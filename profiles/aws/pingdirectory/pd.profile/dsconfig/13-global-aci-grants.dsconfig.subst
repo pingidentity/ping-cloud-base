@@ -6,4 +6,4 @@ dsconfig set-access-control-handler-prop \
 #
 # At the time the environment is created we will not know the customers DN so this rule can't be specified in advance
 #
-    --add 'global-aci:(target="ldap:///ou=people,${USER_BASE_DN}")(targetattr="*||+")(version 3.0; acl "pingdatagovernance access to user store data"; allow(all) userdn="ldap:///cn=pingdatagovernance,cn=Root DNs,cn=config";)'
+    --add 'global-aci:(target="ldap:///ou=people,${USER_BASE_DN_1}")(targetattr="*||+")(version 3.0; acl "pingdatagovernance access to user store data"; allow(all) userdn="ldap:///cn=pingdatagovernance,cn=Root DNs,cn=config";)'

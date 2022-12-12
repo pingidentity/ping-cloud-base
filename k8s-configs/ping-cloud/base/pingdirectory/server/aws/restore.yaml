@@ -24,12 +24,12 @@ data:
 
     DN_LIST=
     if test -z "${REPLICATION_BASE_DNS}"; then
-      DN_LIST="${USER_BASE_DN}"
+      DN_LIST="${USER_BASE_DN_1}"
     else
-      if echo "${REPLICATION_BASE_DNS}" | grep -q "${USER_BASE_DN}"; then
+      if echo "${REPLICATION_BASE_DNS}" | grep -q "${USER_BASE_DN_1}"; then
         DN_LIST="${REPLICATION_BASE_DNS}"
       else
-        DN_LIST="${REPLICATION_BASE_DNS};${USER_BASE_DN}"
+        DN_LIST="${REPLICATION_BASE_DNS};${USER_BASE_DN_1}"
       fi
     fi
     DNS_LIST=$(echo "${DN_LIST}" | tr ';' ' ')

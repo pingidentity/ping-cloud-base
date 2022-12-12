@@ -16,7 +16,7 @@
     --type "exact-match" \
     --set enabled:true \
     --set "match-attribute:entryUUID" \
-    --set "match-base-dn:${USER_BASE_DN}"
+    --set "match-base-dn:${USER_BASE_DN_1}"
 
   dsconfig create-access-token-validator \
     --validator-name "${DA_PINGFEDERATE_ATV_NAME}" \
@@ -36,25 +36,25 @@ dsconfig create-rest-resource-type \
   --type-name users \
   --set "display-name:Users" \
   --set enabled:false \
-  --set "search-base-dn:${USER_BASE_DN}" \
+  --set "search-base-dn:${USER_BASE_DN_1}" \
   --set primary-display-attribute-type:cn \
   --set resource-endpoint:users \
   --set "search-filter-pattern:(|(cn=*%%*)(mail=*%%*)(uid=*%%*)(sn=*%%*))" \
   --set structural-ldap-objectclass:inetOrgPerson \
-  --set "parent-dn:${USER_BASE_DN}"
+  --set "parent-dn:${USER_BASE_DN_1}"
 
 dsconfig create-rest-resource-type \
   --type group \
   --type-name groups \
   --set "display-name:Groups" \
   --set enabled:false \
-  --set "search-base-dn:${USER_BASE_DN}" \
+  --set "search-base-dn:${USER_BASE_DN_1}" \
   --set create-rdn-attribute-type:cn \
   --set primary-display-attribute-type:cn \
   --set resource-endpoint:groups \
   --set "search-filter-pattern:(cn=*%%*)" \
   --set structural-ldap-objectclass:groupOfUniqueNames \
-  --set "parent-dn:${USER_BASE_DN}"
+  --set "parent-dn:${USER_BASE_DN_1}"
 
 #
 # Specify the attributes that will be made available through the Delegated Admin API.
@@ -92,14 +92,14 @@ dsconfig set-http-servlet-extension-prop \
 dsconfig set-virtual-attribute-prop \
   --name "Delegated Admin Privilege" \
   --set enabled:true \
-  --set "base-dn:${USER_BASE_DN}" \
+  --set "base-dn:${USER_BASE_DN_1}" \
   --set "filter:(|(objectClass=ds-cfg-user)(objectClass=inetOrgPerson)(objectClass=ubidPerson))"
 
 dsconfig set-virtual-attribute-prop \
   --name "Password Policy State JSON" \
   --set enabled:true \
   --set require-explicit-request-by-name:true \
-  --set "base-dn:${USER_BASE_DN}" \
+  --set "base-dn:${USER_BASE_DN_1}" \
   --set "filter:(objectClass=inetOrgPerson)"
 
 #
@@ -125,7 +125,7 @@ dsconfig set-http-servlet-extension-prop \
 #
 dsconfig create-delegated-admin-rights \
   --rights-name "administrator-user-${DA_DEFAULT_GRANT_TYPE_CLIENT_ID}" \
-  --set "admin-user-dn:uid=admin,${USER_BASE_DN}" \
+  --set "admin-user-dn:uid=admin,${USER_BASE_DN_1}" \
   --set enabled:true
 
 #

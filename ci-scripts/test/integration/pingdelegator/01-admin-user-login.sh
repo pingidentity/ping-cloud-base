@@ -7,7 +7,7 @@ DELETE_USER_LDIF_FILE="${PROJECT_DIR}"/ci-scripts/test/integration/pingdelegator
 
 SERVER="pingdirectory-0"
 CONTAINER="pingdirectory"
-USER_BASE_DN="dc=example,dc=com"
+USER_BASE_DN_1="dc=example,dc=com"
 
 if skipTest "${0}"; then
   log "Skipping test ${0}"
@@ -93,7 +93,7 @@ create_delegated_rights_for_admin_user() {
   cat > ${TEST_CONFIG_FILE} <<-EOF
     dsconfig create-delegated-admin-rights \
       --rights-name dadmin \
-      --set "admin-user-dn:uid=administrator,ou=people,${USER_BASE_DN}" \
+      --set "admin-user-dn:uid=administrator,ou=people,${USER_BASE_DN_1}" \
       --set enabled:true
 
     dsconfig create-delegated-admin-resource-rights \

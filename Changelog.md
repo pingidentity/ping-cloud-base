@@ -56,7 +56,7 @@ _Changes:_
 - Added argo-events version 1.7.2
 - Enable newrelic-logging for host logs and service cluster-tools pods(kube-system namespace + external-dns)
 - Resolve tag _grokparsefailure and log components are missing 
-- Add new env_var "DEFAULT_USER_BASE_DN"
+- Add new env_var "DEFAULT_USER_BASE_DN_1"
 - Added event source and webhook for argo-events to enable notification
 - LEGACY_LOGGING defaulted to False
 - update pingcloud-bom and pingcloud-oauth securityContext with allowPrivilegeEscalation set to false 
@@ -96,7 +96,7 @@ _Changes:_
 - [X] PDO-4326 Implement must-have monitoring/alerting of PGO
 - [X] PDO-4327 Implement PGO resource sizing per environment
 - [X] PDO-4351 Events are not displayed in New Relic for some pods in some namespaces
-- [X] PDO-4397 Add new env_var "DEFAULT_USER_BASE_DN"
+- [X] PDO-4397 Add new env_var "DEFAULT_USER_BASE_DN_1"
 - [X] PDO-4391 Notification Framework: alert on backup failure
 - [X] PDO-4401 LEGACY_LOGGING mode: Change default from true to false (off) - Leave flag available
 - [X] PDO-4432 Logstash has broken tolerations
@@ -397,7 +397,7 @@ _Changes:_
 - [X] PDO-3479 Change PA integration test 01-agent-config-test.sh to be idempotent
 - [X] PDO-3488 Solutions Ansible entrypoint.sh script null evaluation
 - [X] PDO-3501 Consolidate and rename PingDataSync, external PD, and P1AS PD shared variables
-- [X] PDO-3502 Update DataSync to use USER_BASE_DN variable
+- [X] PDO-3502 Update DataSync to use USER_BASE_DN_1 variable
 - [X] PDO-3513 (BugFix) Logstash crashlooping due to updated plugin dependencies
 - [X] PDO-3518 Fix fluentd PD logs parsing configuration
 - [X] PDO-3540 Fix metadata by updating flask to v2.0.3
@@ -538,7 +538,7 @@ _Changes:_
 - [X] PDO-2935 Increase memory for FluentD to avoid memory issues in GA deployments
 - [X] PDO-2936 Error in run.sh when New Relic key isn't provided
 - [X] PDO-2941 Add New Relic support for PingCentral
-- [X] PDO-2950 Fixed error in PingDirectory's utils.lib.sh for USER_BASE_DN that's 1-level deep, e.g. o=data
+- [X] PDO-2950 Fixed error in PingDirectory's utils.lib.sh for USER_BASE_DN_1 that's 1-level deep, e.g. o=data
 - [X] PDO-2958 newrelic-tags-exporter container crashes if 'entitlements' configmap not found
 - [X] PDO-2986 Fixed issue with P14C bootstrap image where k8s resource data for SSM params are deleted on param update
 - [X] PDO-2989 Add the Beluga version to the cluster-state and profile repos in a version.txt file
@@ -818,7 +818,7 @@ _Changes:_
 - [X] PDO-1821 Upload json_exporter Docker image to ECR
 - [X] PDO-2025 PA engine crash looping due to excessive public key creation
 - [X] PDO-2042 Change the staging directory for restore to not use the tmp file system
-- [X] PDO-2058 PD fails when changing out USER_BASE_DN
+- [X] PDO-2058 PD fails when changing out USER_BASE_DN_1
 - [X] PDO-2061 PA post-start failure does not stop the server as intended
 - [X] PDO-2066 Update script not handling files with spaces in the name
 
@@ -1186,7 +1186,7 @@ _Changes:_
 
 - [X] PDO-561 PF administrative configuration (e.g. admin users) were only being imported on the first PD server
 - [X] PDO-564 PD extensions default to public even if something incorrect is entered
-- [X] PDO-568 PD updates to USER_BASE_DN should automatically enable/initialize replication for that baseDN
+- [X] PDO-568 PD updates to USER_BASE_DN_1 should automatically enable/initialize replication for that baseDN
 - [X] PDO-578 Sealed secrets do not overwrite secrets if they already exist
 - [X] PDO-611 Unable to set TLS version and ciphers for the LDAPS endpoint via environment variables
 

@@ -5,7 +5,7 @@
 dsconfig create-sync-source \
   --source-name p1as_pd_endpoint \
   --type ping-identity \
-  --set "base-dn:${USER_BASE_DN}" \
+  --set "base-dn:${USER_BASE_DN_1}" \
   --set "ignore-changes-by-dn:${P1AS_PD_SYNC_BIND_DN}" \
   --set use-changelog-batch-request:true \
   --set server:external_p1as_pd_server
@@ -13,7 +13,7 @@ dsconfig create-sync-source \
 dsconfig create-sync-destination \
   --destination-name external_pd_endpoint \
   --type ping-identity \
-  --set "base-dn:${USER_BASE_DN}" \
+  --set "base-dn:${USER_BASE_DN_1}" \
   --set server:external_pd_server
 
 #
@@ -33,8 +33,8 @@ dsconfig create-sync-pipe \
 
 dsconfig create-dn-map \
   --map-name p1as_pd_to_external_pd_map \
-  --set "from-dn-pattern:**,${USER_BASE_DN}" \
-  --set "to-dn-pattern:{1},${USER_BASE_DN}"
+  --set "from-dn-pattern:**,${USER_BASE_DN_1}" \
+  --set "to-dn-pattern:{1},${USER_BASE_DN_1}"
 
 #
 # Create Sync Classes

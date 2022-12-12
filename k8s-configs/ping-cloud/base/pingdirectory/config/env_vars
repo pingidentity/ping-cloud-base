@@ -13,8 +13,8 @@ ENCRYPTION_PASSWORD_FILE=/usr/local/secrets/encryption-password
 ADS_CRT_FILE=/usr/local/secrets/ads.crt
 ADS_KEY_FILE=/usr/local/secrets/ads.key
 
-USER_BACKEND_ID=userRoot
-DISABLE_ALL_OLDER_USER_BASE_DN=true
+USER_BACKEND_ID_1=userRoot
+DISABLE_ALL_OLDER_USER_BASE_DN_1=true
 
 REPLICATION_BASE_DNS=o=platformconfig;o=appintegrations
 PAUSE_REPLICATION_BEFORE_RESTORE=true
