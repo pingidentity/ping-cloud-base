@@ -32,6 +32,7 @@ _Changes:_
 - [X] PDO-4614 Automate pinning the branch for ping-cloud-dashboards in PCB
 - [X] PDO-4632 ALERT from the secondary region is shown as an ALERT from the primary region in the email message
 - [X] PDO-4648: Allow release branches to update image names using the kustomize image patch
+- [X] PDO-4649: prometheus-0/logstash-elastic-0 pod does not come up upon changing LEGACY_LOGGING or LS_JAVA_OPTS
 - [X] PDO-4669: EFS access point dir doesn't remove during PVC removal
 
 ### 1.16.0.0

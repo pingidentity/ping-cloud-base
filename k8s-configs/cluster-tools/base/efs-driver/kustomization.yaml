@@ -3,7 +3,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 namespace: kube-system
 
 resources:
-- github.com/kubernetes-sigs/aws-efs-csi-driver/deploy/kubernetes/overlays/stable/?ref=release-1.3
+- github.com/kubernetes-sigs/aws-efs-csi-driver/deploy/kubernetes/overlays/stable/?ref=v1.4.7
 
 patchesStrategicMerge:
   - |-
@@ -22,3 +22,10 @@ patchesStrategicMerge:
               - --v=2
               - --delete-access-point-root-dir=true
               - --vol-metrics-opt-in=false
+            resources:
+              limits:
+                memory: "1024Mi"
+                cpu: "1000m"
+              requests:
+                memory: "32Mi"
+                cpu: "20m"
