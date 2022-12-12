@@ -13,6 +13,7 @@
 - Added CICD integration health test to check certificate results
 - Modified Kibana dashboards to show second region logs and metrics
 - Allow release branches to update image names using the kustomize image patch
+- Changed Slack channel for Argo notifications depending on IS_GA value
 - Remove EFS access points directories when deleting PV
 - Refactor elastic-stack manifests
 - Remove outdated CW logs test methods
@@ -33,6 +34,7 @@ _Changes:_
 - [X] PDO-4610 Retain set value for slack channel alerts
 - [X] PDO-4614 Automate pinning the branch for ping-cloud-dashboards in PCB
 - [X] PDO-4615 Remove outdated CW logs test methods
+- [X] PDO-4618 Default slack notifications using `IS_GA` env var
 - [X] PDO-4632 ALERT from the secondary region is shown as an ALERT from the primary region in the email message
 - [X] PDO-4648: Allow release branches to update image names using the kustomize image patch
 - [X] PDO-4649: prometheus-0/logstash-elastic-0 pod does not come up upon changing LEGACY_LOGGING or LS_JAVA_OPTS

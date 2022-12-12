@@ -210,9 +210,15 @@
 # SERVICE_SSM_PATH_PREFIX    | The prefix of the SSM path that contains service   | /pcpt/service
 #                            | state data required for the cluster.               |
 #                            |                                                    |
-# SLACK_CHANNEL           `  | The Slack channel name for argo-events to send     | CDE environment: p1as-application-oncall
+# SLACK_CHANNEL              | The Slack channel name for argo-events to send     | CDE environment: p1as-application-oncall
 #                            | notification.                                      |
 #                            |                                                    |
+# NON_GA_SLACK_CHANNEL       | The Slack channel name for argo-events to send     | CDE environment: nowhere
+#                            | notification in case of IS_GA set to 'false' to    | Dev environment: nowhere
+#                            | reduce amount of unnecessary notifications sent    |
+#                            | to on-call channel. Overrides SLACK_CHANNEL        |
+#                            | variable value if IS_GA=false. By default, set     |
+#                            | to non-existent channel name to prevent flooding.  |
 #                            |                                                    |
 # SIZE                       | Size of the environment, which pertains to the     | x-small
 #                            | number of user identities. Legal values are        |
@@ -594,6 +600,7 @@ echo "Initial IRSA_PING_ANNOTATION_KEY_VALUE: ${IRSA_PING_ANNOTATION_KEY_VALUE}"
 echo "Initial NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE: ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
 
 echo "Initial SLACK_CHANNEL: ${SLACK_CHANNEL}"
+echo "Initial NON_GA_SLACK_CHANNEL: ${NON_GA_SLACK_CHANNEL}"
 echo "Initial PROM_SLACK_CHANNEL: ${PROM_SLACK_CHANNEL}"
 echo ---
 
@@ -689,8 +696,17 @@ export ECR_REGISTRY_NAME='public.ecr.aws/r2h3l6e4'
 export PING_CLOUD_NAMESPACE='ping-cloud'
 export MYSQL_DATABASE='pingcentral'
 
-export SLACK_CHANNEL="${SLACK_CHANNEL:-p1as-application-oncall}"
-export PROM_SLACK_CHANNEL="${PROM_SLACK_CHANNEL:-p1as-application-oncall}"
+# Set Slack-related environmets variables and override it's values depending on IS_GA value.
+get_is_ga_variable '/pcpt/stage/is-ga'
+export NON_GA_SLACK_CHANNEL="${NON_GA_SLACK_CHANNEL:-nowhere}"
+# If IS_GA=true, use default Slack channel; if IS_GA=false, use NON_GA_SLACK_CHANNEL value as Slack channel.
+if "${IS_GA}"; then
+  export SLACK_CHANNEL="${SLACK_CHANNEL:-p1as-application-oncall}"
+  export PROM_SLACK_CHANNEL="${PROM_SLACK_CHANNEL:-p1as-application-oncall}"
+else
+  export SLACK_CHANNEL="${NON_GA_SLACK_CHANNEL}"
+  export PROM_SLACK_CHANNEL="${NON_GA_SLACK_CHANNEL}"
+fi
 
 # Print out the values being used for each variable.
 echo "Using TENANT_NAME: ${TENANT_NAME}"
@@ -836,7 +852,6 @@ ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
 
 export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL}"
 
-get_is_ga_variable '/pcpt/stage/is-ga'
 get_is_myping_variable '/pcpt/orch-api/is-myping'
 
 # The ENVIRONMENTS variable can either be the CDE names (e.g. dev, test, stage, prod) or the CHUB name "customer-hub",
