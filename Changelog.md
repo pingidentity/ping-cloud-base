@@ -2,6 +2,8 @@
 
 ### 1.17.0.0
 
+- Remove logstash tolerations
+- Argo CD non-root user changes
 - Prometheus configured to take metrics from second region
 - Prometheus upgraded to 2.39.1
 - Create new global repo for dashboards
@@ -28,10 +30,8 @@ _Changes:_
 - [X] PDO-4240 PF Health Check Tests - Certificates
 - [X] PDO-4312 PA-WAS Health Check Tests - object creation, unauthenticated proxy requests
 - [X] PDO-4432 Logstash has broken tolerations
-- [X] PDO-4439 PF Health Check Tests - object creation, authentication
-- [X] PDO-4565 Prometheus: Configure It to Take Metrics from Second Region
+- [X] PDO-4535 Argo CD non-root user changes
 - [X] PDO-4496 Create new global repo for dashboards
-- [X] PDO-4566 Logstash: Configure It to Send Logs from Second Region to Primary Region
 - [X] PDO-4568 Kibana: Modify Dashboards to Show Second Region Logs and Metrics
 - [X] PDO-4569 Remove ES, Kibana and Grafana from second region
 - [X] PDO-4610 Retain set value for slack channel alerts
