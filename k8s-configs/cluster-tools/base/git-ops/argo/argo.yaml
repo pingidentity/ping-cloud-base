@@ -9948,14 +9948,6 @@ spec:
         name: redis
         ports:
         - containerPort: 6379
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - all
-      securityContext:
-        readOnlyRootFilesystem: true
-        runAsNonRoot: true
       serviceAccountName: argocd-redis
 ---
 apiVersion: apps/v1
