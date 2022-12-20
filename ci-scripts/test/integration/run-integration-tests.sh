@@ -59,7 +59,7 @@ execute_test_scripts() {
     log "Running python tests from: ${test_directory}"
     START=$(pwd)
     cd ${test_directory}
-    pytest -v
+    python3 -Wignore::ResourceWarning -m unittest -v
 
     test_result=$?
     cd "$START"
