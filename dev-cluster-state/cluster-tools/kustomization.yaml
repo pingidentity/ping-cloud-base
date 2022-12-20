@@ -253,6 +253,14 @@ patchesStrategicMerge:
   apiVersion: batch/v1
   kind: CronJob
   metadata:
+    name: healthcheck-pingdirectory
+  spec: 
+    schedule: "@hourly"
+
+- |-
+  apiVersion: batch/v1
+  kind: CronJob
+  metadata:
     name: healthcheck-pingfederate
   spec: 
     schedule: "@hourly"
