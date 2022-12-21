@@ -36,6 +36,7 @@ _Changes:_
 - [X] PDO-4439 PF Health Check Tests - object creation, authentication
 - [X] PDO-4440 PD Health Check Tests - appintegrations
 - [X] PDO-4496 Create new global repo for dashboards
+- [X] PDO-4533 Move PCB CI/CD env vars from deploy script to common script
 - [X] PDO-4543 Create K8s serviceAccount for PA, PD and PF
 - [X] PDO-4565 Prometheus: Configure It to Take Metrics from Second Region
 - [X] PDO-4566 Logstash: Configure It to Send Logs from Second Region to Primary Region

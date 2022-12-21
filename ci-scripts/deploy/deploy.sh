@@ -12,24 +12,6 @@ configure_kube
 
 pushd "${PROJECT_DIR}"
 
-NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY:-ssm://pcpt/sre/new-relic/java-agent-license-key}"
-if [[ ${NEW_RELIC_LICENSE_KEY} == "ssm://"* ]]; then
-  if ! ssm_value=$(get_ssm_value "${NEW_RELIC_LICENSE_KEY#ssm:/}"); then
-    echo "Warn: ${ssm_value}"
-    echo "Setting NEW_RELIC_LICENSE_KEY to unused"
-    NEW_RELIC_LICENSE_KEY="unused"
-  else
-    NEW_RELIC_LICENSE_KEY="${ssm_value}"
-  fi
-fi
-
-export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KEY}")
-export DATASYNC_P1AS_SYNC_SERVER="pingdirectory-0"
-
-
-export DASH_REPO_URL="https://github.com/pingidentity/ping-cloud-dashboards"
-export DASH_REPO_BRANCH="main"
-
 # Deploy the configuration to Kubernetes
 if [[ -n ${PINGONE} ]]; then
   set_pingone_api_env_vars
