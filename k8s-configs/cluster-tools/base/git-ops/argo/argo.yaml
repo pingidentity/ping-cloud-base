@@ -9731,7 +9731,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v2.4.6-1.0.1
+        image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v2.4.6-1.0.2
         imagePullPolicy: Always
         name: argocd-applicationset-controller
         ports:
@@ -9828,7 +9828,7 @@ spec:
         - -n
         - /usr/local/bin/argocd
         - /shared/argocd-dex
-        image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v2.4.6-1.0.1
+        image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v2.4.6-1.0.2
         imagePullPolicy: Always
         name: copyutil
         securityContext:
@@ -9868,7 +9868,7 @@ spec:
       containers:
       - command:
         - argocd-notifications
-        image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v2.4.6-1.0.1
+        image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v2.4.6-1.0.2
         imagePullPolicy: Always
         livenessProbe:
           tcpSocket:
@@ -9990,7 +9990,7 @@ spec:
         - -n
         - /usr/local/bin/argocd
         - /var/run/argocd/argocd-cmp-server
-        image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v2.4.6-1.0.1
+        image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v2.4.6-1.0.2
         name: copyutil
         securityContext:
           allowPrivilegeEscalation: false
@@ -10116,7 +10116,7 @@ spec:
           value: /helm-working-dir
         - name: HELM_DATA_HOME
           value: /helm-working-dir
-        image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v2.4.6-1.0.1
+        image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v2.4.6-1.0.2
         imagePullPolicy: Always
         livenessProbe:
           failureThreshold: 3
@@ -10414,7 +10414,7 @@ spec:
               key: server.http.cookie.maxnumber
               name: argocd-cmd-params-cm
               optional: true
-        image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v2.4.6-1.0.1
+        image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v2.4.6-1.0.2
         imagePullPolicy: Always
         livenessProbe:
           httpGet:
@@ -10618,7 +10618,7 @@ spec:
               key: controller.default.cache.expiration
               name: argocd-cmd-params-cm
               optional: true
-        image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v2.4.6-1.0.1
+        image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v2.4.6-1.0.2
         imagePullPolicy: Always
         livenessProbe:
           httpGet:
