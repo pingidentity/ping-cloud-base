@@ -73,7 +73,7 @@ replace_and_commit() {
     image_repo=$(get_image_repo ${image} | xargs)
 
     echo ---
-    echo "Changing values for ${image} in expected files"
+    echo "Changing values for ${image_repo}/${image} in expected files"
 
     if test "${ref_value}" = 'tag'; then
       # If tag, search registry for latest image version
