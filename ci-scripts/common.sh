@@ -6,6 +6,10 @@
 
 test "${VERBOSE}" && set -x
 
+# Source some utility methods.
+export PROJECT_DIR="${CI_PROJECT_DIR}"
+. ${PROJECT_DIR}/utils.sh
+
 # Override environment variables with optional file supplied from the outside
 ENV_VARS_FILE="${1}"
 
@@ -86,7 +90,6 @@ set_env_vars() {
     export MYSQL_USER=ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username
     export MYSQL_PASSWORD=ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#password
 
-    export PROJECT_DIR="${CI_PROJECT_DIR}"
     export AWS_PROFILE=csg
 
     export LEGACY_LOGGING=False
@@ -98,6 +101,9 @@ set_env_vars() {
     # Service SSM should be available for all environments
     export SERVICE_SSM_PATH_PREFIX="/${SELECTED_KUBE_NAME}/pcpt/service"
 
+    export DASH_REPO_URL="https://github.com/pingidentity/ping-cloud-dashboards"
+    export DASH_REPO_BRANCH="main"
+
   elif test -f "${ENV_VARS_FILE}"; then
     echo "Using environment variables defined in file ${ENV_VARS_FILE}"
     set -a; source "${ENV_VARS_FILE}"; set +a
@@ -105,6 +111,20 @@ set_env_vars() {
     echo "ENV_VARS_FILE points to a non-existent file: ${ENV_VARS_FILE}"
     exit 1
   fi
+
+  NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY:-ssm://pcpt/sre/new-relic/java-agent-license-key}"
+  if [[ ${NEW_RELIC_LICENSE_KEY} == "ssm://"* ]]; then
+    if ! ssm_value=$(get_ssm_value "${NEW_RELIC_LICENSE_KEY#ssm:/}"); then
+      echo "Warn: ${ssm_value}"
+      echo "Setting NEW_RELIC_LICENSE_KEY to unused"
+      NEW_RELIC_LICENSE_KEY="unused"
+    else
+      NEW_RELIC_LICENSE_KEY="${ssm_value}"
+    fi
+  fi
+
+  export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KEY}")
+  export DATASYNC_P1AS_SYNC_SERVER="pingdirectory-0"
 
   # Timing
   export LOG_SYNC_SECONDS="${LOG_SYNC_SECONDS:-5}"
@@ -184,9 +204,6 @@ set_env_vars() {
 
 set_deploy_type_env_vars
 set_env_vars
-
-# Source some utility methods.
-. ${PROJECT_DIR}/utils.sh
 
 ########################################################################################################################
 # Sets env vars specific to PingOne API integration
