@@ -704,8 +704,8 @@ if "${IS_GA}"; then
   export SLACK_CHANNEL="${SLACK_CHANNEL:-p1as-application-oncall}"
   export PROM_SLACK_CHANNEL="${PROM_SLACK_CHANNEL:-p1as-application-oncall}"
 else
-  export SLACK_CHANNEL="${NON_GA_SLACK_CHANNEL}"
-  export PROM_SLACK_CHANNEL="${NON_GA_SLACK_CHANNEL}"
+  export SLACK_CHANNEL="${SLACK_CHANNEL:-${NON_GA_SLACK_CHANNEL}}"
+  export PROM_SLACK_CHANNEL="${PROM_SLACK_CHANNEL:-${NON_GA_SLACK_CHANNEL}}"
 fi
 
 # Print out the values being used for each variable.
