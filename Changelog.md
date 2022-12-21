@@ -49,6 +49,7 @@ _Changes:_
 - [X] PDO-4649: prometheus-0/logstash-elastic-0 pod does not come up upon changing LEGACY_LOGGING or LS_JAVA_OPTS
 - [X] PDO-4669: EFS access point dir doesn't remove during PVC removal
 - [X] PDO-4671 Refactor elastic-stack manifests
+- [X] PDO-4809 Refactor generate-cluster-state.sh to retain set value for slack channel alerts on upgrade
 
 ### 1.16.0.0
 
