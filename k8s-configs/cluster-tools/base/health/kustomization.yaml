@@ -20,3 +20,4 @@ resources:
 - httpbin.yaml
 - httpbin-pa-was.yaml
 - secrets.yaml
+- httpbin-pa.yaml

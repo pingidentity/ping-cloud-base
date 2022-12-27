@@ -9,6 +9,7 @@
 - Create new global repo for dashboards
 - Send logs from second region to main Elasticsearch
 - Add HTTP server pod for PingAccess-WAS healthchecks
+- Add HTTP server pod for PingAccess healthchecks
 - Add HTTP server pod for PingFederate healthchecks
 - Remove unneeded resources from secondary region
 - Retain set value for slack channel alerts
@@ -43,6 +44,7 @@ _Changes:_
 - [X] PDO-4568 Kibana: Modify Dashboards to Show Second Region Logs and Metrics
 - [X] PDO-4569 Remove ES, Kibana and Grafana from second region
 - [X] PDO-4574 Pod Reaper pod should re-spin, when env_vars is updated
+- [X] PDO-4583 PA Health Check Tests - object creation, unauthenticated proxy requests
 - [X] PDO-4610 Retain set value for slack channel alerts
 - [X] PDO-4614 Automate pinning the branch for ping-cloud-dashboards in PCB
 - [X] PDO-4615 Remove outdated CW logs test methods

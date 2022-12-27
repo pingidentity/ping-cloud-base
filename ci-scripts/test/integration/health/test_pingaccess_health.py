@@ -45,3 +45,23 @@ class TestPingAccessHealth(TestHealthBase):
             len(res) > 0,
             "No 'responds to requests' checks found in health check results",
         )
+
+    def test_health_check_has_create_object_results(self):
+        test_results = self.get_test_results(
+            self.pingaccess, Categories.connectivity
+        )
+        res = [key for key in test_results if "create an object" in key]
+        self.assertTrue(
+            len(res) > 0,
+            "No 'create an object' checks found in health check results",
+        )
+
+    def test_health_check_has_proxy_results(self):
+        test_results = self.get_test_results(
+            self.pingaccess, Categories.connectivity
+        )
+        res = [key for key in test_results if "proxy an unauthenticated request" in key]
+        self.assertTrue(
+            len(res) > 0,
+            "No 'proxy an unauthenticated request' checks found in health check results",
+        )
