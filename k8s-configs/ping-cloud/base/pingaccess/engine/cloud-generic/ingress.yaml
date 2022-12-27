@@ -15,6 +15,7 @@ spec:
   tls:
   - hosts:
     - pingaccess-dev.ping-demo.com
+    - healthcheck-httpbin-pa-dev.ping-demo.com
   rules:
   - host: pingaccess-dev.ping-demo.com
     http:
@@ -27,6 +28,18 @@ spec:
             name: pingaccess
             port:
               number: 443
+  - host: healthcheck-httpbin-pa-dev.ping-demo.com
+    http:
+      paths:
+      # This rule allows external access to the healthcheck-httpbin-pa service via the pingaccess runtime service
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: pingaccess
+            port:
+              number: 443
+
 
 ---
 
@@ -56,3 +69,4 @@ spec:
             name: pingaccess
             port:
               number: 3030
+

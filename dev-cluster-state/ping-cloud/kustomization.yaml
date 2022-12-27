@@ -248,7 +248,14 @@ patchesJson6902:
                 name: pingaccess
                 port:
                   number: 443
-
+    # Healthcheck httpbin service through PA engines
+    - op: replace
+      path: /spec/tls/0/hosts/1
+      value: healthcheck-httpbin-pa${ENVIRONMENT}.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/1/host
+      value: healthcheck-httpbin-pa${ENVIRONMENT}.${TENANT_DOMAIN}
+                  
 # pingaccess admin api
 - target:
     group: networking.k8s.io
