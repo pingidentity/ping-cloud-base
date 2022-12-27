@@ -51,6 +51,36 @@ patchesStrategicMerge:
       purpose: service-account-for-ping-cloud-stack
       ${IRSA_PING_ANNOTATION_KEY_VALUE}
 
+### Ping access service account ###
+- |-
+  apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: pingaccess-serviceaccount
+    annotations:
+      purpose: service-account-for-ping-access
+      ${IRSA_PA_ANNOTATION_KEY_VALUE}
+
+### Ping directory service account ###
+- |-
+  apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: pingdirectory-serviceaccount
+    annotations:
+      purpose: service-account-for-ping-directory
+      ${IRSA_PD_ANNOTATION_KEY_VALUE}
+
+### Ping federate service account ###
+- |-
+  apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: pingfederate-serviceaccount
+    annotations:
+      purpose: service-account-for-ping-federate
+      ${IRSA_PF_ANNOTATION_KEY_VALUE}
+
 ### P14C Bootstrap service account ###
 - |-
   apiVersion: v1

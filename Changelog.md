@@ -2,6 +2,8 @@
 
 ### 1.17.0.0
 
+- Remove logstash tolerations
+- Argo CD non-root user changes
 - Prometheus configured to take metrics from second region
 - Prometheus upgraded to 2.39.1
 - Create new global repo for dashboards
@@ -19,6 +21,8 @@
 - NewRelic Java Agent upgraded to 7.11.1
 - Refactor elastic-stack manifests
 - Remove outdated CW logs test methods
+- Add healthcheck-pingdirectory cronjob
+- Added k8s serviceAccount for PA, PD & PF
 
 _Changes:_
 
@@ -28,12 +32,17 @@ _Changes:_
 - [X] PDO-4240 PF Health Check Tests - Certificates
 - [X] PDO-4312 PA-WAS Health Check Tests - object creation, unauthenticated proxy requests
 - [X] PDO-4432 Logstash has broken tolerations
+- [X] PDO-4535 Argo CD non-root user changes
 - [X] PDO-4439 PF Health Check Tests - object creation, authentication
-- [X] PDO-4565 Prometheus: Configure It to Take Metrics from Second Region
+- [X] PDO-4440 PD Health Check Tests - appintegrations
 - [X] PDO-4496 Create new global repo for dashboards
+- [X] PDO-4533 Move PCB CI/CD env vars from deploy script to common script
+- [X] PDO-4543 Create K8s serviceAccount for PA, PD and PF
+- [X] PDO-4565 Prometheus: Configure It to Take Metrics from Second Region
 - [X] PDO-4566 Logstash: Configure It to Send Logs from Second Region to Primary Region
 - [X] PDO-4568 Kibana: Modify Dashboards to Show Second Region Logs and Metrics
 - [X] PDO-4569 Remove ES, Kibana and Grafana from second region
+- [X] PDO-4574 Pod Reaper pod should re-spin, when env_vars is updated
 - [X] PDO-4610 Retain set value for slack channel alerts
 - [X] PDO-4614 Automate pinning the branch for ping-cloud-dashboards in PCB
 - [X] PDO-4615 Remove outdated CW logs test methods
@@ -44,6 +53,7 @@ _Changes:_
 - [X] PDO-4649: prometheus-0/logstash-elastic-0 pod does not come up upon changing LEGACY_LOGGING or LS_JAVA_OPTS
 - [X] PDO-4669: EFS access point dir doesn't remove during PVC removal
 - [X] PDO-4671 Refactor elastic-stack manifests
+- [X] PDO-4809 Refactor generate-cluster-state.sh to retain set value for slack channel alerts on upgrade
 
 ### 1.16.0.0
 
