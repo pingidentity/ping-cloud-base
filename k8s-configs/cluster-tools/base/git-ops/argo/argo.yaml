@@ -9803,7 +9803,7 @@ spec:
       - command:
         - /shared/argocd-dex
         - rundex
-        image: public.ecr.aws/r2h3l6e4/dexidp/dex:v2.4.6
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/dexidp/dex:v2.30.2
         imagePullPolicy: Always
         name: dex
         ports:
@@ -9943,7 +9943,7 @@ spec:
         - ""
         - --appendonly
         - "no"
-        image: public.ecr.aws/r2h3l6e4/redis:7.0.0-alpine
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/redis:7.0.0-alpine
         imagePullPolicy: Always
         name: redis
         ports:
@@ -10005,7 +10005,7 @@ spec:
 
       # Installs custom tools
       - name: install-custom-tools
-        image: public.ecr.aws/r2h3l6e4/python:3.9.1-slim
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/python:3.9.1-slim
         command: [ "install-custom-tools.sh" ]
         volumeMounts:
         - name: tools-dir
