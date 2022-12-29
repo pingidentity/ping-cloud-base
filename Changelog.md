@@ -32,6 +32,7 @@ _Changes:_
 - [X] PDO-4186 beluga_log is not respecting verbosity levels
 - [X] PDO-4224 Properly propagate SSH key when upgrading CSR
 - [X] PDO-4240 PF Health Check Tests - Certificates
+- [X] PDO-4279 Add Pod Disruption Budgets for PA-WAS Engine, PingDelegator
 - [X] PDO-4312 PA-WAS Health Check Tests - object creation, unauthenticated proxy requests
 - [X] PDO-4432 Logstash has broken tolerations
 - [X] PDO-4535 Argo CD non-root user changes
