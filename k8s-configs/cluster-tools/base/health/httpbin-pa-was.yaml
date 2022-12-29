@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: healthcheck-httpbin-pa-was
-        image: public.ecr.aws/r2h3l6e4/kennethreitz/httpbin
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/kennethreitz/httpbin
         imagePullPolicy: IfNotPresent
         resources:
           limits:

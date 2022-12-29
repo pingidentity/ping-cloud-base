@@ -775,7 +775,7 @@ spec:
     spec:
       containers:
       - name: fluent-bit
-        image: public.ecr.aws/r2h3l6e4/amazon/aws-for-fluent-bit:2.24.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-for-fluent-bit:2.24.0
         imagePullPolicy: Always
         command:
           - "/bin/sh"
