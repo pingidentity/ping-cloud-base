@@ -17,7 +17,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: healthcheck-cluster-health
-            image: public.ecr.aws/r2h3l6e4/pingcloud-services/robot-framework/dev:v1.17-release-branch-latest
+            image: public.ecr.aws/r2h3l6e4/pingcloud-services/robot-framework:v1.17.0.0_RC2
             imagePullPolicy: Always
             securityContext:
               runAsGroup: 9999
