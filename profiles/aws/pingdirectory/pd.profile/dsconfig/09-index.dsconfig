@@ -130,7 +130,17 @@ dsconfig set-local-db-index-prop \
     --add index-type:substring
 
 dsconfig set-local-db-index-prop \
+    --backend-name userRoot_2 \
+    --index-name cn \
+    --add index-type:substring
+
+dsconfig set-local-db-index-prop \
     --backend-name userRoot \
+    --index-name sn \
+    --add index-type:substring
+
+dsconfig set-local-db-index-prop \
+    --backend-name userRoot_2 \
     --index-name sn \
     --add index-type:substring
 
@@ -140,6 +150,16 @@ dsconfig set-local-db-index-prop \
     --add index-type:substring
 
 dsconfig set-local-db-index-prop \
+    --backend-name userRoot_2 \
+    --index-name mail \
+    --add index-type:substring
+
+dsconfig set-local-db-index-prop \
     --backend-name userRoot \
+    --index-name uid \
+    --add index-type:substring
+
+dsconfig set-local-db-index-prop \
+    --backend-name userRoot_2 \
     --index-name uid \
     --add index-type:substring

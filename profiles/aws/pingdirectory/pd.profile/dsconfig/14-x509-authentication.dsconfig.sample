@@ -7,6 +7,11 @@ dsconfig create-local-db-index \
 
 dsconfig create-local-db-index \
     --index-name ds-certificate-subject-dn \
+    --backend-name userRoot_2 \
+    --set index-type:equality
+
+dsconfig create-local-db-index \
+    --index-name ds-certificate-subject-dn \
     --backend-name platformconfig \
     --set index-type:equality
 

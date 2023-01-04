@@ -3,6 +3,11 @@ dsconfig set-backend-prop \
         --set db-cache-percent:35 \
         --set import-thread-count:1
 
+dsconfig set-backend-prop \
+        --backend-name "userRoot_2" \
+        --set db-cache-percent:35 \
+        --set import-thread-count:1
+
 dsconfig create-backend \
         --backend-name "platformconfig" \
         --type local-db \
@@ -31,8 +36,16 @@ dsconfig set-backend-prop \
         --backend-name userRoot \
         --set prime-thread-count:1
 
+dsconfig set-backend-prop \
+        --backend-name userRoot_2 \
+        --set prime-thread-count:1
+
 dsconfig set-local-db-index-prop \
         --backend-name userRoot --index-name cn \
+        --remove index-type:substring
+
+dsconfig set-local-db-index-prop \
+        --backend-name userRoot_2 --index-name cn \
         --remove index-type:substring
 
 dsconfig set-local-db-index-prop \
@@ -41,7 +54,17 @@ dsconfig set-local-db-index-prop \
         --remove index-type:substring
 
 dsconfig set-local-db-index-prop \
+        --backend-name userRoot_2 \
+        --index-name givenName \
+        --remove index-type:substring
+
+dsconfig set-local-db-index-prop \
         --backend-name userRoot \
+        --index-name sn \
+        --remove index-type:substring
+
+dsconfig set-local-db-index-prop \
+        --backend-name userRoot_2 \
         --index-name sn \
         --remove index-type:substring
 
@@ -52,12 +75,28 @@ dsconfig set-local-db-index-prop \
         --set exploded-index-entry-threshold:100
 
 dsconfig set-local-db-index-prop \
+        --backend-name userRoot_2 \
+        --index-name sn \
+        --set index-entry-limit:50000 \
+        --set exploded-index-entry-threshold:100
+
+dsconfig set-local-db-index-prop \
         --backend-name userRoot \
+        --index-name givenName \
+        --set index-entry-limit:50000 \
+        --set exploded-index-entry-threshold:100
+
+dsconfig set-local-db-index-prop \
+        --backend-name userRoot_2 \
         --index-name givenName \
         --set index-entry-limit:50000 \
         --set exploded-index-entry-threshold:100
 
 dsconfig set-backend-prop \
         --backend-name userRoot \
+        --set default-cache-mode:cache-keys-only
+
+dsconfig set-backend-prop \
+        --backend-name userRoot_2 \
         --set default-cache-mode:cache-keys-only
 
