@@ -26,6 +26,7 @@
 - Add healthcheck-pingdirectory cronjob
 - Added k8s serviceAccount for PA, PD & PF
 - Update ping-cloud-base to use the cluster tools from new ECR repo
+- Configure Argo Redis container to run as nonroot
 
 _Changes:_
 
@@ -60,6 +61,7 @@ _Changes:_
 - [X] PDO-4669: EFS access point dir doesn't remove during PVC removal
 - [X] PDO-4671 Refactor elastic-stack manifests
 - [X] PDO-4686 Update ping-cloud-base to use the cluster tools from new ECR repo
+- [X] PDO-4807 Configure Argo Redis container to run as nonroot
 - [X] PDO-4809 Refactor generate-cluster-state.sh to retain set value for slack channel alerts on upgrade
 
 ### 1.16.0.0
