@@ -124,6 +124,14 @@ dsconfig create-local-db-index \
     --set index-type:ordering \
     --set prime-index:true
 
+dsconfig create-local-db-index \
+    --backend-name "userRoot_2" \
+    --index-name "pf-authn-session-group-last-activity-time" \
+    --set index-entry-limit:4000 \
+    --set exploded-index-entry-threshold:4000 \
+    --set index-type:ordering \
+    --set prime-index:true
+
 dsconfig set-local-db-index-prop \
     --backend-name userRoot \
     --index-name cn \
