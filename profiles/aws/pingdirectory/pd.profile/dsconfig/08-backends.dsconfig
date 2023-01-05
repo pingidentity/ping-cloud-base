@@ -26,6 +26,7 @@ dsconfig create-backend \
         --backend-name "userRoot_2" \
         --type local-db \
         --set enabled:true \
+        --set base-dn:"o=userRoot_2" \
         --set prime-method:preload
 
 dsconfig set-backend-prop \
