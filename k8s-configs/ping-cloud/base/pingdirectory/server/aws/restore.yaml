@@ -77,6 +77,7 @@ data:
     echo "Running restore script within ${SERVER} pod"
     /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
         "test -x ${SCRIPT} && \
+            export OVERRIDE_BACKEND_ID=${OVERRIDE_BACKEND_ID} && \
             export BACKUP_FILE_NAME=${BACKUP_FILE_NAME} && \
             ${SCRIPT}"> "${LOG_FILE}"
 
@@ -136,6 +137,8 @@ spec:
         env:
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
           value: "true"
+        - name: OVERRIDE_BACKEND_ID
+          value: "userRoot_2"
       volumes:
       - name: restore-script
         configMap:
