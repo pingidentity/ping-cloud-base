@@ -3,11 +3,6 @@ dsconfig set-backend-prop \
         --set db-cache-percent:35 \
         --set import-thread-count:1
 
-dsconfig set-backend-prop \
-        --backend-name "userRoot_2" \
-        --set db-cache-percent:35 \
-        --set import-thread-count:1
-
 dsconfig create-backend \
         --backend-name "platformconfig" \
         --type local-db \
@@ -26,6 +21,17 @@ dsconfig create-backend \
         --set enabled:true \
         --set base-dn:"o=appintegrations" \
         --set prime-method:preload
+
+dsconfig create-backend \
+        --backend-name "userRoot_2" \
+        --type local-db \
+        --set enabled:true \
+        --set prime-method:preload
+
+dsconfig set-backend-prop \
+        --backend-name "userRoot_2" \
+        --set db-cache-percent:35 \
+        --set import-thread-count:1
 
 dsconfig set-backend-prop \
       --backend-name "appintegrations" \
