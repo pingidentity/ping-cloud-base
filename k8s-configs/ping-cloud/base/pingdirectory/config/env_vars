@@ -14,6 +14,7 @@ ADS_CRT_FILE=/usr/local/secrets/ads.crt
 ADS_KEY_FILE=/usr/local/secrets/ads.key
 
 USER_BACKEND_ID_1=userRoot
+USER_BACKEND_ID_2=userRoot_2
 DISABLE_ALL_OLDER_USER_BASE_DN_1=true
 
 REPLICATION_BASE_DNS=o=platformconfig;o=appintegrations

@@ -11,6 +11,7 @@ PC_ADMIN_USER_USERNAME=administrator
 
 # PD USER_BASE_DN_1
 USER_BASE_DN_1=dc=example,dc=com
+USER_BASE_DN_2=dc=example,dc=com
 
 # This is the OOTB USER_BASE_DN_1 value and is always set to "dc=example,dc=com"
 DEFAULT_USER_BASE_DN_1=dc=example,dc=com
