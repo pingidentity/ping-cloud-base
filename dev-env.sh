@@ -17,6 +17,7 @@
 #   - kustomize
 #   - kubectl
 #   - envsubst
+#   - cmctl
 #
 # In addition, the assumption is that kubectl is configured to authenticate and apply manifests to the Kubernetes
 # cluster. For EKS clusters, this requires an AWS key and secret with the appropriate IAM policies to be configured and
@@ -235,7 +236,7 @@ done
 CUR_DIR=$(pwd)
 
 # Checking required tools and environment variables.
-check_binaries "openssl" "base64" "kustomize" "kubectl" "envsubst"
+check_binaries "openssl" "base64" "kustomize" "kubectl" "envsubst" "cmctl"
 HAS_REQUIRED_TOOLS=${?}
 
 if test ${HAS_REQUIRED_TOOLS} -ne 0; then
