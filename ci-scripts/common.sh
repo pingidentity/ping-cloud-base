@@ -218,8 +218,6 @@ set_pingone_api_env_vars() {
 ########################################################################################################################
 # Configures kubectl to be able to talk to the Kubernetes API server based on the following environment variables:
 #
-#   - KUBE_CA_PEM
-#   - KUBE_URL
 #   - SELECTED_KUBE_NAME
 #   - AWS_ACCOUNT_ROLE_ARN
 #
@@ -231,36 +229,23 @@ configure_kube() {
     return
   fi
 
-  ca_pem_var="KUBE_CA_PEM$SELECTED_POSTFIX"
-  kube_url_var="KUBE_URL$SELECTED_POSTFIX"
-
-  check_env_vars "SELECTED_POSTFIX" "SELECTED_KUBE_NAME" "AWS_ACCOUNT_ROLE_ARN" ca_pem_var kube_url_var
+  check_env_vars "SELECTED_KUBE_NAME" "AWS_ACCOUNT_ROLE_ARN"
   HAS_REQUIRED_VARS=${?}
 
   if test ${HAS_REQUIRED_VARS} -ne 0; then
     exit 1
   fi
 
-  SELECTED_CA_PEM=$(eval "echo \"\$$ca_pem_var\"")
-  SELECTED_KUBE_URL=$(eval "echo \"\$$kube_url_var\"")
-
   log "Configuring KUBE"
-  echo "${SELECTED_CA_PEM}" > "$(pwd)/kube.ca.pem"
 
-  kubectl config set-cluster "${SELECTED_KUBE_NAME}" \
-    --server="${SELECTED_KUBE_URL}" \
-    --certificate-authority="$(pwd)/kube.ca.pem"
-
-  kubectl config set-credentials aws \
-    --exec-command aws-iam-authenticator \
-    --exec-api-version client.authentication.k8s.io/v1alpha1 \
-    --exec-arg=token \
-    --exec-arg=-i --exec-arg="${SELECTED_KUBE_NAME}" \
-    --exec-arg=-r --exec-arg="${AWS_ACCOUNT_ROLE_ARN}"
-
-  kubectl config set-context "${SELECTED_KUBE_NAME}" \
-    --cluster="${SELECTED_KUBE_NAME}" \
-    --user=aws
+  # Use AWS profile 'default' because this is the profile the AWS Access Key/Secret key go under in the 'configure_aws'
+  # function. This profile then assumes the role specified by $AWS_ACCOUNT_ROLE_ARN, within the kube config.
+  aws eks update-kubeconfig \
+    --profile "default" \
+    --role-arn "${AWS_ACCOUNT_ROLE_ARN}" \
+    --alias "${SELECTED_KUBE_NAME}" \
+    --name "${SELECTED_KUBE_NAME}" \
+    --region us-west-2
 
   kubectl config use-context "${SELECTED_KUBE_NAME}"
 }
@@ -283,7 +268,7 @@ configure_aws() {
     return
   fi
 
-  check_env_vars "AWS_ACCESS_KEY_ID" "AWS_SECRET_ACCESS_KEY" "AWS_DEFAULT_REGION" "AWS_ACCOUNT_ROLE_ARN"
+  check_env_vars "AWS_ACCESS_KEY_ID" "AWS_SECRET_ACCESS_KEY" "AWS_DEFAULT_REGION" "AWS_ACCOUNT_ROLE_ARN" "AWS_PROFILE"
   HAS_REQUIRED_VARS=${?}
 
   if test ${HAS_REQUIRED_VARS} -ne 0; then

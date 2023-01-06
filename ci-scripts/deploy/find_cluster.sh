@@ -21,6 +21,8 @@ find_cluster() {
     exit 1
   fi
 
+  configure_aws
+
   cluster_postfixes=($CLUSTER_POSTFIXES)
   found_cluster=false
   sleep_wait_seconds=300

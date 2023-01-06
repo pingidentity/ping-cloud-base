@@ -664,8 +664,10 @@ apply_crds() {
   # First, we need to deploy cert-manager. This is due to it using Dynamic Admission Control - Mutating Webhooks which
   # must be available before we make use cert-manager
   kubectl apply -f "${base_dir}/k8s-configs/cluster-tools/base/cert-manager/base/cert-manager.yaml"
-  # Wait until the webhook deployment is fully available
-  wait_for_rollout "deployment/cert-manager-webhook" "cert-manager" "20"
+
+  # Set namespace to cert-manager - somehow cmctl is not able to automatically use the correct namespace
+  # Might be related to https://stackoverflow.com/questions/56980287/namespaces-not-found
+  cmctl check api --wait=2m -n cert-manager
 
   # argo-events CRDs
   argo_crd_yaml="${base_dir}/k8s-configs/cluster-tools/base/notification/argo-events/argo-events-crd.yaml"
