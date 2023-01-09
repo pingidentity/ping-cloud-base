@@ -72,7 +72,7 @@ data:
     # This guarantees that resume_replication is always run, even if the restore job exits due to an error
     trap "resume_replication" EXIT
 
-    pause_replication
+    #pause_replication
 
     echo "Running restore script within ${SERVER} pod"
     /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
