@@ -1,7 +1,7 @@
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: pingfederate
+  name: pingaccess-was
 spec:
-  minReplicas: 6
-  maxReplicas: 16
+  minReplicas: 3
+  maxReplicas: 8

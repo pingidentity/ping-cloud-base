@@ -335,7 +335,7 @@ patchesJson6902:
 - target:
     group: autoscaling
     version: v1
-    kind: HorizontalPodAutoscaler       
+    kind: HorizontalPodAutoscaler
     name: nginx-ingress-controller
     namespace: ingress-nginx-public
   patch: |-
@@ -344,7 +344,7 @@ patchesJson6902:
       value: 3
     - op: replace
       path: /spec/maxReplicas
-      value: 3  
+      value: 3
 
 # Cluster auto-scaler
 - target:
