@@ -151,22 +151,22 @@ PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 ############################################################
 # Ping application image tags
 ############################################################
-PINGACCESS_IMAGE_TAG=v1.17-release-branch-latest
-PINGACCESS_WAS_IMAGE_TAG=v1.17-release-branch-latest
-PINGFEDERATE_IMAGE_TAG=v1.17-release-branch-latest
-PINGDIRECTORY_IMAGE_TAG=v1.17-release-branch-latest
-PINGDELEGATOR_IMAGE_TAG=v1.17-release-branch-latest
-PINGCENTRAL_IMAGE_TAG=v1.17-release-branch-latest
-PINGDATASYNC_IMAGE_TAG=v1.17-release-branch-latest
+PINGACCESS_IMAGE_TAG=v1.18-release-branch-latest
+PINGACCESS_WAS_IMAGE_TAG=v1.18-release-branch-latest
+PINGFEDERATE_IMAGE_TAG=v1.18-release-branch-latest
+PINGDIRECTORY_IMAGE_TAG=v1.18-release-branch-latest
+PINGDELEGATOR_IMAGE_TAG=v1.18-release-branch-latest
+PINGCENTRAL_IMAGE_TAG=v1.18-release-branch-latest
+PINGDATASYNC_IMAGE_TAG=v1.18-release-branch-latest
 
 ############################################################
 # Ping solution image tags
 ############################################################
-METADATA_IMAGE_TAG=v1.17-release-branch-latest
-BOOTSTRAP_IMAGE_TAG=v1.17-release-branch-latest
-HEALTHCHECK_IMAGE_TAG=v1.17-release-branch-latest
-P14C_INTEGRATION_IMAGE_TAG=v1.17-release-branch-latest
-ANSIBLE_BELUGA_IMAGE_TAG=v1.17-release-branch-latest
+METADATA_IMAGE_TAG=v1.18-release-branch-latest
+BOOTSTRAP_IMAGE_TAG=v1.18-release-branch-latest
+HEALTHCHECK_IMAGE_TAG=v1.18-release-branch-latest
+P14C_INTEGRATION_IMAGE_TAG=v1.18-release-branch-latest
+ANSIBLE_BELUGA_IMAGE_TAG=v1.18-release-branch-latest
 
 ############################################################
 # Cluster name variables
@@ -256,4 +256,4 @@ IMAGE_LIST="apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingfederate,apps=${ECR_REG
 
 # Dashboards repo variables
 DASH_REPO_URL=https://github.com/pingidentity/ping-cloud-dashboards
-DASH_REPO_BRANCH=v1.17-dev-branch
+DASH_REPO_BRANCH=v1.18-dev-branch
