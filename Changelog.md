@@ -1,5 +1,13 @@
 # Changelog
 
+### 1.16.0.1
+
+- Force PingFederate engines to get its certificate ID from the engines endpoint instead of HTTP Listener
+
+_Changes:_
+
+- [X] PDO-4804 Force PingFederate engines to get its certificate ID from the engines endpoint instead of HTTP Listener
+
 ### 1.16.0.0
 
 - Implemented Radius Proxy as optional installation
