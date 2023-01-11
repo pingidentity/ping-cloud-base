@@ -28,6 +28,7 @@
 - Update ping-cloud-base to use the cluster tools from new ECR repo
 - Configure Argo Redis container to run as nonroot
 - Update applications logs location
+- Upgrade kubectl to match K8s version
 
 _Changes:_
 
@@ -41,6 +42,7 @@ _Changes:_
 - [X] PDO-4535 Argo CD non-root user changes
 - [X] PDO-4439 PF Health Check Tests - object creation, authentication
 - [X] PDO-4440 PD Health Check Tests - appintegrations
+- [X] PDO-4481 Upgrade kubectl to match K8s version
 - [X] PDO-4496 Create new global repo for dashboards
 - [X] PDO-4533 Move PCB CI/CD env vars from deploy script to common script
 - [X] PDO-4543 Create K8s serviceAccount for PA, PD and PF
