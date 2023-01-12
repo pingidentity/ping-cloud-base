@@ -29,6 +29,7 @@
 - Configure Argo Redis container to run as nonroot
 - Update applications logs location
 - Refactor offline-enable script to use "dsreplication enable-with-static-topology" subcommand
+- Healthcheck logs now stored in separate index with 7 days retention period
 
 _Changes:_
 
@@ -67,6 +68,7 @@ _Changes:_
 - [X] PDO-4807 Configure Argo Redis container to run as nonroot
 - [X] PDO-4808 Update applications logs location
 - [X] PDO-4809 Refactor generate-cluster-state.sh to retain set value for slack channel alerts on upgrade
+- [X] PDO-4877: ELK logs for healthcheck pods should be storing for 7 days
 
 ### 1.16.0.0
 
