@@ -4,6 +4,8 @@ metadata:
   name: elasticsearch
   labels:
     app: elasticsearch
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: elasticsearch-dev.ping-demo.com
 spec:
   selector:
     app: elasticsearch

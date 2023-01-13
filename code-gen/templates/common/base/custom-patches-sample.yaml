@@ -382,6 +382,23 @@ spec:
 
 ---
 
+### Update pingaccess-was engine HPA min/max replicas and target CPU utilization ###
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: pingaccess-was
+  namespace: ping-cloud
+spec:
+  minReplicas: 1
+  maxReplicas: 2
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: pingaccess
+  targetCPUUtilizationPercentage: 70
+
+---
+
 ### Update pingaccess backup cronjob to adjust schedule
 apiVersion: batch/v1beta1
 kind: CronJob
