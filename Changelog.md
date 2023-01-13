@@ -72,6 +72,24 @@ _Changes:_
 - [X] PDO-4809 Refactor generate-cluster-state.sh to retain set value for slack channel alerts on upgrade
 - [X] PDO-4877: ELK logs for healthcheck pods should be storing for 7 days
 
+### 1.16.1.0
+
+- Added ENVIRONMENT_TYPE to backup failure notification
+- Remove all out-of-the-box IKs from PingFederate base image
+
+_Changes:_
+
+- [X] PDO-4844 Environment Key is missing in Product Backup Failure Alert Message
+- [X] PDO-4893 Remove all out-of-the-box IKs from PingFederate base image
+
+### 1.16.0.1
+
+- Force PingAccess engines to get its certificate ID from the engines endpoint instead of HTTP Listener
+
+_Changes:_
+
+- [X] PDO-4804 Force PingAccess engines to get its certificate ID from the engines endpoint instead of HTTP Listener
+
 ### 1.16.0.0
 
 - Implemented Radius Proxy as optional installation
