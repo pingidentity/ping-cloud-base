@@ -30,6 +30,7 @@
 - Update applications logs location
 - Refactor offline-enable script to use "dsreplication enable-with-static-topology" subcommand
 - Healthcheck logs now stored in separate index with 7 days retention period
+- Upgrade kubectl to match K8s version
 
 _Changes:_
 
