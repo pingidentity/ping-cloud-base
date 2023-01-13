@@ -25,6 +25,8 @@ spec:
         envFrom:
         - configMapRef:
             name: pingfederate-admin-environment-variables
+        - configMapRef:
+            name: pingcommon-environment-variables
         env:
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
           value: "true"
