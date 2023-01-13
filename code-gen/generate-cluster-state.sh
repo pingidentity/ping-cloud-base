@@ -674,7 +674,7 @@ CLUSTER_STATE_REPO_NAME="${CLUSTER_STATE_REPO_URL##*/}"
 SERVER_PROFILE_URL_DERIVED="$(echo "${CLUSTER_STATE_REPO_URL}" | sed -e "s/${CLUSTER_STATE_REPO_NAME}/profile-repo/")"
 export SERVER_PROFILE_URL="${SERVER_PROFILE_URL:-${SERVER_PROFILE_URL_DERIVED}}"
 
-export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
+export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base.git}"
 export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-${CURRENT_GIT_BRANCH}}"
 
 export SSH_ID_PUB_FILE="${SSH_ID_PUB_FILE}"
@@ -682,7 +682,7 @@ export SSH_ID_KEY_FILE="${SSH_ID_KEY_FILE}"
 
 export TARGET_DIR="${TARGET_DIR:-/tmp/sandbox}"
 
-export ACCOUNT_BASE_PATH=${ACCOUNT_BASE_PATH:-ssm://pcpt/config/k8s-config/accounts}
+export ACCOUNT_BASE_PATH=${ACCOUNT_BASE_PATH:-ssm://pcpt/config/k8s-config/accounts/}
 export PGO_BUCKET_URI_SUFFIX=${PGO_BUCKET_URI_SUFFIX:-/pgo-bucket/uri}
 
 # IRSA for ping product pods. The role name is predefined as a part of the interface contract.
