@@ -41,6 +41,7 @@ _Changes:_
 - [X] PDO-4186 beluga_log is not respecting verbosity levels
 - [X] PDO-4224 Properly propagate SSH key when upgrading CSR
 - [X] PDO-4240 PF Health Check Tests - Certificates
+- [X] PDO-4249 Remove unused networking yaml from PCB
 - [X] PDO-4279 Add Pod Disruption Budgets for PA-WAS Engine, PingDelegator
 - [X] PDO-4291 PF Health Check Tests - connectivity
 - [X] PDO-4312 PA-WAS Health Check Tests - object creation, unauthenticated proxy requests
