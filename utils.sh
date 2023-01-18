@@ -716,7 +716,7 @@ set_var() {
     echo "${var_name} is not set, trying to find it in SSM..."
     if ! ssm_value=$(get_ssm_value "${ssm_prefix}${ssm_suffix}"); then
       printf '\tWARN: Issue fetching SSM path '%s%s' - %s...\nContinuing as this could be a disabled environment\n' \
-             "${ssm_suffix}" "${ssm_prefix}" "${ssm_value}"
+             "${ssm_prefix}" "${ssm_suffix}" "${ssm_value}"
     else
       printf '\tFound "%s%s" in SSM\n' "${ssm_prefix}" "${ssm_suffix}"
       # Substitute ssm_value within the supplied ssm template, if template given
