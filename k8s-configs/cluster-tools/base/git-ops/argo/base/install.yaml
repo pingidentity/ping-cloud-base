@@ -1,24 +1,4 @@
-# The base yaml was obtained from:
-# https://raw.githubusercontent.com/argoproj/argo-cd/v2.4.6/manifests/install.yaml
-
-# The following modifications have been made to it:
-#   - Added an "argocd" Namespace for all namespace-scoped resources
-#   - Added an "argo-git-deploy" Secret to hold the SSH key for git cloning
-#   - Set the ArgoCD UI password to "admin" in the "argocd-secret" secret object
-#   - Added the "sealedsecrets.bitnami.com/managed: true" annotation to the above secret so it's manageable by Bitnami
-#   - Added git-ops-command.sh as the config management tool to build the uber Kubernetes YAML
-#   - Ignore diffs in webhook client CA bundle (ref: https://argo-cd-docs.readthedocs.io/en/latest/user-guide/diffing/)
-#   - Added an init container to install a few custom tools into the ArgoCD repo server
-#   - Changed the docker image repo to Amazon ECR repo in CSG AWS account
-#   - Set the "server.log.level" to "warn" in argocd-cmd-params-cm configMap
-#   - Set the "controller.log.level" to "warn" in argocd-cmd-params-cm configMap
-#   - Set the "reposerver.log.level" to "warn" in argocd-cmd-params-cm configMap
-
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: argocd
----
+# This is an auto-generated file. DO NOT EDIT
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -356,8 +336,8 @@ spec:
                           and is only valid for applications sourced from Git.
                         type: string
                       plugin:
-                        description: ConfigManagementPlugin holds config management
-                          plugin specific options
+                        description: Plugin holds config management plugin specific
+                          options
                         properties:
                           env:
                             description: Env is a list of environment variable entries
@@ -702,8 +682,7 @@ spec:
                       and is only valid for applications sourced from Git.
                     type: string
                   plugin:
-                    description: ConfigManagementPlugin holds config management plugin
-                      specific options
+                    description: Plugin holds config management plugin specific options
                     properties:
                       env:
                         description: Env is a list of environment variable entries
@@ -1058,8 +1037,8 @@ spec:
                             and is only valid for applications sourced from Git.
                           type: string
                         plugin:
-                          description: ConfigManagementPlugin holds config management
-                            plugin specific options
+                          description: Plugin holds config management plugin specific
+                            options
                           properties:
                             env:
                               description: Env is a list of environment variable entries
@@ -1430,8 +1409,8 @@ spec:
                                   from Git.
                                 type: string
                               plugin:
-                                description: ConfigManagementPlugin holds config management
-                                  plugin specific options
+                                description: Plugin holds config management plugin
+                                  specific options
                                 properties:
                                   env:
                                     description: Env is a list of environment variable
@@ -1774,8 +1753,8 @@ spec:
                               and is only valid for applications sourced from Git.
                             type: string
                           plugin:
-                            description: ConfigManagementPlugin holds config management
-                              plugin specific options
+                            description: Plugin holds config management plugin specific
+                              options
                             properties:
                               env:
                                 description: Env is a list of environment variable
@@ -1826,6 +1805,10 @@ spec:
                   reconciled using the latest git version
                 format: date-time
                 type: string
+              resourceHealthSource:
+                description: 'ResourceHealthSource indicates where the resource health
+                  status is stored: inline if not set or appTree'
+                type: string
               resources:
                 description: Resources is a list of Kubernetes resources managed by
                   this application
@@ -1862,6 +1845,9 @@ spec:
                       description: SyncStatusCode is a type which represents possible
                         comparison results
                       type: string
+                    syncWave:
+                      format: int64
+                      type: integer
                     version:
                       type: string
                   type: object
@@ -2108,8 +2094,8 @@ spec:
                               and is only valid for applications sourced from Git.
                             type: string
                           plugin:
-                            description: ConfigManagementPlugin holds config management
-                              plugin specific options
+                            description: Plugin holds config management plugin specific
+                              options
                             properties:
                               env:
                                 description: Env is a list of environment variable
@@ -2175,6 +2161,7 @@ kind: CustomResourceDefinition
 metadata:
   labels:
     app.kubernetes.io/name: applicationsets.argoproj.io
+    app.kubernetes.io/part-of: argocd
   name: applicationsets.argoproj.io
 spec:
   group: argoproj.io
@@ -2397,25 +2384,6 @@ spec:
                                           type: string
                                         version:
                                           type: string
-                                      type: object
-                                    ksonnet:
-                                      properties:
-                                        environment:
-                                          type: string
-                                        parameters:
-                                          items:
-                                            properties:
-                                              component:
-                                                type: string
-                                              name:
-                                                type: string
-                                              value:
-                                                type: string
-                                            required:
-                                            - name
-                                            - value
-                                            type: object
-                                          type: array
                                       type: object
                                     kustomize:
                                       properties:
@@ -2703,25 +2671,6 @@ spec:
                                           type: string
                                         version:
                                           type: string
-                                      type: object
-                                    ksonnet:
-                                      properties:
-                                        environment:
-                                          type: string
-                                        parameters:
-                                          items:
-                                            properties:
-                                              component:
-                                                type: string
-                                              name:
-                                                type: string
-                                              value:
-                                                type: string
-                                            required:
-                                            - name
-                                            - value
-                                            type: object
-                                          type: array
                                       type: object
                                     kustomize:
                                       properties:
@@ -3012,25 +2961,6 @@ spec:
                                         version:
                                           type: string
                                       type: object
-                                    ksonnet:
-                                      properties:
-                                        environment:
-                                          type: string
-                                        parameters:
-                                          items:
-                                            properties:
-                                              component:
-                                                type: string
-                                              name:
-                                                type: string
-                                              value:
-                                                type: string
-                                            required:
-                                            - name
-                                            - value
-                                            type: object
-                                          type: array
-                                      type: object
                                     kustomize:
                                       properties:
                                         commonAnnotations:
@@ -3295,25 +3225,6 @@ spec:
                                           type: string
                                         version:
                                           type: string
-                                      type: object
-                                    ksonnet:
-                                      properties:
-                                        environment:
-                                          type: string
-                                        parameters:
-                                          items:
-                                            properties:
-                                              component:
-                                                type: string
-                                              name:
-                                                type: string
-                                              value:
-                                                type: string
-                                            required:
-                                            - name
-                                            - value
-                                            type: object
-                                          type: array
                                       type: object
                                     kustomize:
                                       properties:
@@ -3610,25 +3521,6 @@ spec:
                                                   version:
                                                     type: string
                                                 type: object
-                                              ksonnet:
-                                                properties:
-                                                  environment:
-                                                    type: string
-                                                  parameters:
-                                                    items:
-                                                      properties:
-                                                        component:
-                                                          type: string
-                                                        name:
-                                                          type: string
-                                                        value:
-                                                          type: string
-                                                      required:
-                                                      - name
-                                                      - value
-                                                      type: object
-                                                    type: array
-                                                type: object
                                               kustomize:
                                                 properties:
                                                   commonAnnotations:
@@ -3915,25 +3807,6 @@ spec:
                                                     type: string
                                                   version:
                                                     type: string
-                                                type: object
-                                              ksonnet:
-                                                properties:
-                                                  environment:
-                                                    type: string
-                                                  parameters:
-                                                    items:
-                                                      properties:
-                                                        component:
-                                                          type: string
-                                                        name:
-                                                          type: string
-                                                        value:
-                                                          type: string
-                                                      required:
-                                                      - name
-                                                      - value
-                                                      type: object
-                                                    type: array
                                                 type: object
                                               kustomize:
                                                 properties:
@@ -4224,25 +4097,6 @@ spec:
                                                   version:
                                                     type: string
                                                 type: object
-                                              ksonnet:
-                                                properties:
-                                                  environment:
-                                                    type: string
-                                                  parameters:
-                                                    items:
-                                                      properties:
-                                                        component:
-                                                          type: string
-                                                        name:
-                                                          type: string
-                                                        value:
-                                                          type: string
-                                                      required:
-                                                      - name
-                                                      - value
-                                                      type: object
-                                                    type: array
-                                                type: object
                                               kustomize:
                                                 properties:
                                                   commonAnnotations:
@@ -4508,25 +4362,6 @@ spec:
                                                   version:
                                                     type: string
                                                 type: object
-                                              ksonnet:
-                                                properties:
-                                                  environment:
-                                                    type: string
-                                                  parameters:
-                                                    items:
-                                                      properties:
-                                                        component:
-                                                          type: string
-                                                        name:
-                                                          type: string
-                                                        value:
-                                                          type: string
-                                                      required:
-                                                      - name
-                                                      - value
-                                                      type: object
-                                                    type: array
-                                                type: object
                                               kustomize:
                                                 properties:
                                                   commonAnnotations:
@@ -4628,9 +4463,74 @@ spec:
                                 x-kubernetes-preserve-unknown-fields: true
                               pullRequest:
                                 properties:
+                                  bitbucketServer:
+                                    properties:
+                                      api:
+                                        type: string
+                                      basicAuth:
+                                        properties:
+                                          passwordRef:
+                                            properties:
+                                              key:
+                                                type: string
+                                              secretName:
+                                                type: string
+                                            required:
+                                            - key
+                                            - secretName
+                                            type: object
+                                          username:
+                                            type: string
+                                        required:
+                                        - passwordRef
+                                        - username
+                                        type: object
+                                      project:
+                                        type: string
+                                      repo:
+                                        type: string
+                                    required:
+                                    - api
+                                    - project
+                                    - repo
+                                    type: object
+                                  filters:
+                                    items:
+                                      properties:
+                                        branchMatch:
+                                          type: string
+                                      type: object
+                                    type: array
+                                  gitea:
+                                    properties:
+                                      api:
+                                        type: string
+                                      insecure:
+                                        type: boolean
+                                      owner:
+                                        type: string
+                                      repo:
+                                        type: string
+                                      tokenRef:
+                                        properties:
+                                          key:
+                                            type: string
+                                          secretName:
+                                            type: string
+                                        required:
+                                        - key
+                                        - secretName
+                                        type: object
+                                    required:
+                                    - api
+                                    - owner
+                                    - repo
+                                    type: object
                                   github:
                                     properties:
                                       api:
+                                        type: string
+                                      appSecretName:
                                         type: string
                                       labels:
                                         items:
@@ -4653,6 +4553,31 @@ spec:
                                     required:
                                     - owner
                                     - repo
+                                    type: object
+                                  gitlab:
+                                    properties:
+                                      api:
+                                        type: string
+                                      labels:
+                                        items:
+                                          type: string
+                                        type: array
+                                      project:
+                                        type: string
+                                      pullRequestState:
+                                        type: string
+                                      tokenRef:
+                                        properties:
+                                          key:
+                                            type: string
+                                          secretName:
+                                            type: string
+                                        required:
+                                        - key
+                                        - secretName
+                                        type: object
+                                    required:
+                                    - project
                                     type: object
                                   requeueAfterSeconds:
                                     format: int64
@@ -4820,25 +4745,6 @@ spec:
                                                   version:
                                                     type: string
                                                 type: object
-                                              ksonnet:
-                                                properties:
-                                                  environment:
-                                                    type: string
-                                                  parameters:
-                                                    items:
-                                                      properties:
-                                                        component:
-                                                          type: string
-                                                        name:
-                                                          type: string
-                                                        value:
-                                                          type: string
-                                                      required:
-                                                      - name
-                                                      - value
-                                                      type: object
-                                                    type: array
-                                                type: object
                                               kustomize:
                                                 properties:
                                                   commonAnnotations:
@@ -4934,6 +4840,84 @@ spec:
                                 type: object
                               scmProvider:
                                 properties:
+                                  azureDevOps:
+                                    properties:
+                                      accessTokenRef:
+                                        properties:
+                                          key:
+                                            type: string
+                                          secretName:
+                                            type: string
+                                        required:
+                                        - key
+                                        - secretName
+                                        type: object
+                                      allBranches:
+                                        type: boolean
+                                      api:
+                                        type: string
+                                      organization:
+                                        type: string
+                                      teamProject:
+                                        type: string
+                                    required:
+                                    - accessTokenRef
+                                    - organization
+                                    - teamProject
+                                    type: object
+                                  bitbucket:
+                                    properties:
+                                      allBranches:
+                                        type: boolean
+                                      appPasswordRef:
+                                        properties:
+                                          key:
+                                            type: string
+                                          secretName:
+                                            type: string
+                                        required:
+                                        - key
+                                        - secretName
+                                        type: object
+                                      owner:
+                                        type: string
+                                      user:
+                                        type: string
+                                    required:
+                                    - appPasswordRef
+                                    - owner
+                                    - user
+                                    type: object
+                                  bitbucketServer:
+                                    properties:
+                                      allBranches:
+                                        type: boolean
+                                      api:
+                                        type: string
+                                      basicAuth:
+                                        properties:
+                                          passwordRef:
+                                            properties:
+                                              key:
+                                                type: string
+                                              secretName:
+                                                type: string
+                                            required:
+                                            - key
+                                            - secretName
+                                            type: object
+                                          username:
+                                            type: string
+                                        required:
+                                        - passwordRef
+                                        - username
+                                        type: object
+                                      project:
+                                        type: string
+                                    required:
+                                    - api
+                                    - project
+                                    type: object
                                   cloneProtocol:
                                     type: string
                                   filters:
@@ -4955,11 +4939,37 @@ spec:
                                           type: string
                                       type: object
                                     type: array
+                                  gitea:
+                                    properties:
+                                      allBranches:
+                                        type: boolean
+                                      api:
+                                        type: string
+                                      insecure:
+                                        type: boolean
+                                      owner:
+                                        type: string
+                                      tokenRef:
+                                        properties:
+                                          key:
+                                            type: string
+                                          secretName:
+                                            type: string
+                                        required:
+                                        - key
+                                        - secretName
+                                        type: object
+                                    required:
+                                    - api
+                                    - owner
+                                    type: object
                                   github:
                                     properties:
                                       allBranches:
                                         type: boolean
                                       api:
+                                        type: string
+                                      appSecretName:
                                         type: string
                                       organization:
                                         type: string
@@ -5165,25 +5175,6 @@ spec:
                                                   version:
                                                     type: string
                                                 type: object
-                                              ksonnet:
-                                                properties:
-                                                  environment:
-                                                    type: string
-                                                  parameters:
-                                                    items:
-                                                      properties:
-                                                        component:
-                                                          type: string
-                                                        name:
-                                                          type: string
-                                                        value:
-                                                          type: string
-                                                      required:
-                                                      - name
-                                                      - value
-                                                      type: object
-                                                    type: array
-                                                type: object
                                               kustomize:
                                                 properties:
                                                   commonAnnotations:
@@ -5275,6 +5266,29 @@ spec:
                                     required:
                                     - metadata
                                     - spec
+                                    type: object
+                                type: object
+                              selector:
+                                properties:
+                                  matchExpressions:
+                                    items:
+                                      properties:
+                                        key:
+                                          type: string
+                                        operator:
+                                          type: string
+                                        values:
+                                          items:
+                                            type: string
+                                          type: array
+                                      required:
+                                      - key
+                                      - operator
+                                      type: object
+                                    type: array
+                                  matchLabels:
+                                    additionalProperties:
+                                      type: string
                                     type: object
                                 type: object
                             type: object
@@ -5441,25 +5455,6 @@ spec:
                                           type: string
                                         version:
                                           type: string
-                                      type: object
-                                    ksonnet:
-                                      properties:
-                                        environment:
-                                          type: string
-                                        parameters:
-                                          items:
-                                            properties:
-                                              component:
-                                                type: string
-                                              name:
-                                                type: string
-                                              value:
-                                                type: string
-                                            required:
-                                            - name
-                                            - value
-                                            type: object
-                                          type: array
                                       type: object
                                     kustomize:
                                       properties:
@@ -5756,25 +5751,6 @@ spec:
                                                   version:
                                                     type: string
                                                 type: object
-                                              ksonnet:
-                                                properties:
-                                                  environment:
-                                                    type: string
-                                                  parameters:
-                                                    items:
-                                                      properties:
-                                                        component:
-                                                          type: string
-                                                        name:
-                                                          type: string
-                                                        value:
-                                                          type: string
-                                                      required:
-                                                      - name
-                                                      - value
-                                                      type: object
-                                                    type: array
-                                                type: object
                                               kustomize:
                                                 properties:
                                                   commonAnnotations:
@@ -6061,25 +6037,6 @@ spec:
                                                     type: string
                                                   version:
                                                     type: string
-                                                type: object
-                                              ksonnet:
-                                                properties:
-                                                  environment:
-                                                    type: string
-                                                  parameters:
-                                                    items:
-                                                      properties:
-                                                        component:
-                                                          type: string
-                                                        name:
-                                                          type: string
-                                                        value:
-                                                          type: string
-                                                      required:
-                                                      - name
-                                                      - value
-                                                      type: object
-                                                    type: array
                                                 type: object
                                               kustomize:
                                                 properties:
@@ -6370,25 +6327,6 @@ spec:
                                                   version:
                                                     type: string
                                                 type: object
-                                              ksonnet:
-                                                properties:
-                                                  environment:
-                                                    type: string
-                                                  parameters:
-                                                    items:
-                                                      properties:
-                                                        component:
-                                                          type: string
-                                                        name:
-                                                          type: string
-                                                        value:
-                                                          type: string
-                                                      required:
-                                                      - name
-                                                      - value
-                                                      type: object
-                                                    type: array
-                                                type: object
                                               kustomize:
                                                 properties:
                                                   commonAnnotations:
@@ -6654,25 +6592,6 @@ spec:
                                                   version:
                                                     type: string
                                                 type: object
-                                              ksonnet:
-                                                properties:
-                                                  environment:
-                                                    type: string
-                                                  parameters:
-                                                    items:
-                                                      properties:
-                                                        component:
-                                                          type: string
-                                                        name:
-                                                          type: string
-                                                        value:
-                                                          type: string
-                                                      required:
-                                                      - name
-                                                      - value
-                                                      type: object
-                                                    type: array
-                                                type: object
                                               kustomize:
                                                 properties:
                                                   commonAnnotations:
@@ -6774,9 +6693,74 @@ spec:
                                 x-kubernetes-preserve-unknown-fields: true
                               pullRequest:
                                 properties:
+                                  bitbucketServer:
+                                    properties:
+                                      api:
+                                        type: string
+                                      basicAuth:
+                                        properties:
+                                          passwordRef:
+                                            properties:
+                                              key:
+                                                type: string
+                                              secretName:
+                                                type: string
+                                            required:
+                                            - key
+                                            - secretName
+                                            type: object
+                                          username:
+                                            type: string
+                                        required:
+                                        - passwordRef
+                                        - username
+                                        type: object
+                                      project:
+                                        type: string
+                                      repo:
+                                        type: string
+                                    required:
+                                    - api
+                                    - project
+                                    - repo
+                                    type: object
+                                  filters:
+                                    items:
+                                      properties:
+                                        branchMatch:
+                                          type: string
+                                      type: object
+                                    type: array
+                                  gitea:
+                                    properties:
+                                      api:
+                                        type: string
+                                      insecure:
+                                        type: boolean
+                                      owner:
+                                        type: string
+                                      repo:
+                                        type: string
+                                      tokenRef:
+                                        properties:
+                                          key:
+                                            type: string
+                                          secretName:
+                                            type: string
+                                        required:
+                                        - key
+                                        - secretName
+                                        type: object
+                                    required:
+                                    - api
+                                    - owner
+                                    - repo
+                                    type: object
                                   github:
                                     properties:
                                       api:
+                                        type: string
+                                      appSecretName:
                                         type: string
                                       labels:
                                         items:
@@ -6799,6 +6783,31 @@ spec:
                                     required:
                                     - owner
                                     - repo
+                                    type: object
+                                  gitlab:
+                                    properties:
+                                      api:
+                                        type: string
+                                      labels:
+                                        items:
+                                          type: string
+                                        type: array
+                                      project:
+                                        type: string
+                                      pullRequestState:
+                                        type: string
+                                      tokenRef:
+                                        properties:
+                                          key:
+                                            type: string
+                                          secretName:
+                                            type: string
+                                        required:
+                                        - key
+                                        - secretName
+                                        type: object
+                                    required:
+                                    - project
                                     type: object
                                   requeueAfterSeconds:
                                     format: int64
@@ -6966,25 +6975,6 @@ spec:
                                                   version:
                                                     type: string
                                                 type: object
-                                              ksonnet:
-                                                properties:
-                                                  environment:
-                                                    type: string
-                                                  parameters:
-                                                    items:
-                                                      properties:
-                                                        component:
-                                                          type: string
-                                                        name:
-                                                          type: string
-                                                        value:
-                                                          type: string
-                                                      required:
-                                                      - name
-                                                      - value
-                                                      type: object
-                                                    type: array
-                                                type: object
                                               kustomize:
                                                 properties:
                                                   commonAnnotations:
@@ -7080,6 +7070,84 @@ spec:
                                 type: object
                               scmProvider:
                                 properties:
+                                  azureDevOps:
+                                    properties:
+                                      accessTokenRef:
+                                        properties:
+                                          key:
+                                            type: string
+                                          secretName:
+                                            type: string
+                                        required:
+                                        - key
+                                        - secretName
+                                        type: object
+                                      allBranches:
+                                        type: boolean
+                                      api:
+                                        type: string
+                                      organization:
+                                        type: string
+                                      teamProject:
+                                        type: string
+                                    required:
+                                    - accessTokenRef
+                                    - organization
+                                    - teamProject
+                                    type: object
+                                  bitbucket:
+                                    properties:
+                                      allBranches:
+                                        type: boolean
+                                      appPasswordRef:
+                                        properties:
+                                          key:
+                                            type: string
+                                          secretName:
+                                            type: string
+                                        required:
+                                        - key
+                                        - secretName
+                                        type: object
+                                      owner:
+                                        type: string
+                                      user:
+                                        type: string
+                                    required:
+                                    - appPasswordRef
+                                    - owner
+                                    - user
+                                    type: object
+                                  bitbucketServer:
+                                    properties:
+                                      allBranches:
+                                        type: boolean
+                                      api:
+                                        type: string
+                                      basicAuth:
+                                        properties:
+                                          passwordRef:
+                                            properties:
+                                              key:
+                                                type: string
+                                              secretName:
+                                                type: string
+                                            required:
+                                            - key
+                                            - secretName
+                                            type: object
+                                          username:
+                                            type: string
+                                        required:
+                                        - passwordRef
+                                        - username
+                                        type: object
+                                      project:
+                                        type: string
+                                    required:
+                                    - api
+                                    - project
+                                    type: object
                                   cloneProtocol:
                                     type: string
                                   filters:
@@ -7089,6 +7157,10 @@ spec:
                                           type: string
                                         labelMatch:
                                           type: string
+                                        pathsDoNotExist:
+                                          items:
+                                            type: string
+                                          type: array
                                         pathsExist:
                                           items:
                                             type: string
@@ -7097,11 +7169,37 @@ spec:
                                           type: string
                                       type: object
                                     type: array
+                                  gitea:
+                                    properties:
+                                      allBranches:
+                                        type: boolean
+                                      api:
+                                        type: string
+                                      insecure:
+                                        type: boolean
+                                      owner:
+                                        type: string
+                                      tokenRef:
+                                        properties:
+                                          key:
+                                            type: string
+                                          secretName:
+                                            type: string
+                                        required:
+                                        - key
+                                        - secretName
+                                        type: object
+                                    required:
+                                    - api
+                                    - owner
+                                    type: object
                                   github:
                                     properties:
                                       allBranches:
                                         type: boolean
                                       api:
+                                        type: string
+                                      appSecretName:
                                         type: string
                                       organization:
                                         type: string
@@ -7307,25 +7405,6 @@ spec:
                                                   version:
                                                     type: string
                                                 type: object
-                                              ksonnet:
-                                                properties:
-                                                  environment:
-                                                    type: string
-                                                  parameters:
-                                                    items:
-                                                      properties:
-                                                        component:
-                                                          type: string
-                                                        name:
-                                                          type: string
-                                                        value:
-                                                          type: string
-                                                      required:
-                                                      - name
-                                                      - value
-                                                      type: object
-                                                    type: array
-                                                type: object
                                               kustomize:
                                                 properties:
                                                   commonAnnotations:
@@ -7417,6 +7496,29 @@ spec:
                                     required:
                                     - metadata
                                     - spec
+                                    type: object
+                                type: object
+                              selector:
+                                properties:
+                                  matchExpressions:
+                                    items:
+                                      properties:
+                                        key:
+                                          type: string
+                                        operator:
+                                          type: string
+                                        values:
+                                          items:
+                                            type: string
+                                          type: array
+                                      required:
+                                      - key
+                                      - operator
+                                      type: object
+                                    type: array
+                                  matchLabels:
+                                    additionalProperties:
+                                      type: string
                                     type: object
                                 type: object
                             type: object
@@ -7588,25 +7690,6 @@ spec:
                                         version:
                                           type: string
                                       type: object
-                                    ksonnet:
-                                      properties:
-                                        environment:
-                                          type: string
-                                        parameters:
-                                          items:
-                                            properties:
-                                              component:
-                                                type: string
-                                              name:
-                                                type: string
-                                              value:
-                                                type: string
-                                            required:
-                                            - name
-                                            - value
-                                            type: object
-                                          type: array
-                                      type: object
                                     kustomize:
                                       properties:
                                         commonAnnotations:
@@ -7705,9 +7788,74 @@ spec:
                       type: object
                     pullRequest:
                       properties:
+                        bitbucketServer:
+                          properties:
+                            api:
+                              type: string
+                            basicAuth:
+                              properties:
+                                passwordRef:
+                                  properties:
+                                    key:
+                                      type: string
+                                    secretName:
+                                      type: string
+                                  required:
+                                  - key
+                                  - secretName
+                                  type: object
+                                username:
+                                  type: string
+                              required:
+                              - passwordRef
+                              - username
+                              type: object
+                            project:
+                              type: string
+                            repo:
+                              type: string
+                          required:
+                          - api
+                          - project
+                          - repo
+                          type: object
+                        filters:
+                          items:
+                            properties:
+                              branchMatch:
+                                type: string
+                            type: object
+                          type: array
+                        gitea:
+                          properties:
+                            api:
+                              type: string
+                            insecure:
+                              type: boolean
+                            owner:
+                              type: string
+                            repo:
+                              type: string
+                            tokenRef:
+                              properties:
+                                key:
+                                  type: string
+                                secretName:
+                                  type: string
+                              required:
+                              - key
+                              - secretName
+                              type: object
+                          required:
+                          - api
+                          - owner
+                          - repo
+                          type: object
                         github:
                           properties:
                             api:
+                              type: string
+                            appSecretName:
                               type: string
                             labels:
                               items:
@@ -7730,6 +7878,31 @@ spec:
                           required:
                           - owner
                           - repo
+                          type: object
+                        gitlab:
+                          properties:
+                            api:
+                              type: string
+                            labels:
+                              items:
+                                type: string
+                              type: array
+                            project:
+                              type: string
+                            pullRequestState:
+                              type: string
+                            tokenRef:
+                              properties:
+                                key:
+                                  type: string
+                                secretName:
+                                  type: string
+                              required:
+                              - key
+                              - secretName
+                              type: object
+                          required:
+                          - project
                           type: object
                         requeueAfterSeconds:
                           format: int64
@@ -7897,25 +8070,6 @@ spec:
                                         version:
                                           type: string
                                       type: object
-                                    ksonnet:
-                                      properties:
-                                        environment:
-                                          type: string
-                                        parameters:
-                                          items:
-                                            properties:
-                                              component:
-                                                type: string
-                                              name:
-                                                type: string
-                                              value:
-                                                type: string
-                                            required:
-                                            - name
-                                            - value
-                                            type: object
-                                          type: array
-                                      type: object
                                     kustomize:
                                       properties:
                                         commonAnnotations:
@@ -8011,6 +8165,84 @@ spec:
                       type: object
                     scmProvider:
                       properties:
+                        azureDevOps:
+                          properties:
+                            accessTokenRef:
+                              properties:
+                                key:
+                                  type: string
+                                secretName:
+                                  type: string
+                              required:
+                              - key
+                              - secretName
+                              type: object
+                            allBranches:
+                              type: boolean
+                            api:
+                              type: string
+                            organization:
+                              type: string
+                            teamProject:
+                              type: string
+                          required:
+                          - accessTokenRef
+                          - organization
+                          - teamProject
+                          type: object
+                        bitbucket:
+                          properties:
+                            allBranches:
+                              type: boolean
+                            appPasswordRef:
+                              properties:
+                                key:
+                                  type: string
+                                secretName:
+                                  type: string
+                              required:
+                              - key
+                              - secretName
+                              type: object
+                            owner:
+                              type: string
+                            user:
+                              type: string
+                          required:
+                          - appPasswordRef
+                          - owner
+                          - user
+                          type: object
+                        bitbucketServer:
+                          properties:
+                            allBranches:
+                              type: boolean
+                            api:
+                              type: string
+                            basicAuth:
+                              properties:
+                                passwordRef:
+                                  properties:
+                                    key:
+                                      type: string
+                                    secretName:
+                                      type: string
+                                  required:
+                                  - key
+                                  - secretName
+                                  type: object
+                                username:
+                                  type: string
+                              required:
+                              - passwordRef
+                              - username
+                              type: object
+                            project:
+                              type: string
+                          required:
+                          - api
+                          - project
+                          type: object
                         cloneProtocol:
                           type: string
                         filters:
@@ -8020,6 +8252,10 @@ spec:
                                 type: string
                               labelMatch:
                                 type: string
+                              pathsDoNotExist:
+                                items:
+                                  type: string
+                                type: array
                               pathsExist:
                                 items:
                                   type: string
@@ -8028,11 +8264,37 @@ spec:
                                 type: string
                             type: object
                           type: array
+                        gitea:
+                          properties:
+                            allBranches:
+                              type: boolean
+                            api:
+                              type: string
+                            insecure:
+                              type: boolean
+                            owner:
+                              type: string
+                            tokenRef:
+                              properties:
+                                key:
+                                  type: string
+                                secretName:
+                                  type: string
+                              required:
+                              - key
+                              - secretName
+                              type: object
+                          required:
+                          - api
+                          - owner
+                          type: object
                         github:
                           properties:
                             allBranches:
                               type: boolean
                             api:
+                              type: string
+                            appSecretName:
                               type: string
                             organization:
                               type: string
@@ -8238,25 +8500,6 @@ spec:
                                         version:
                                           type: string
                                       type: object
-                                    ksonnet:
-                                      properties:
-                                        environment:
-                                          type: string
-                                        parameters:
-                                          items:
-                                            properties:
-                                              component:
-                                                type: string
-                                              name:
-                                                type: string
-                                              value:
-                                                type: string
-                                            required:
-                                            - name
-                                            - value
-                                            type: object
-                                          type: array
-                                      type: object
                                     kustomize:
                                       properties:
                                         commonAnnotations:
@@ -8350,8 +8593,33 @@ spec:
                           - spec
                           type: object
                       type: object
+                    selector:
+                      properties:
+                        matchExpressions:
+                          items:
+                            properties:
+                              key:
+                                type: string
+                              operator:
+                                type: string
+                              values:
+                                items:
+                                  type: string
+                                type: array
+                            required:
+                            - key
+                            - operator
+                            type: object
+                          type: array
+                        matchLabels:
+                          additionalProperties:
+                            type: string
+                          type: object
+                      type: object
                   type: object
                 type: array
+              goTemplate:
+                type: boolean
               syncPolicy:
                 properties:
                   preserveResourcesOnDeletion:
@@ -8512,87 +8780,49 @@ spec:
                               skipCrds:
                                 type: boolean
                               valueFiles:
-                                description: ValuesFiles is a list of Helm value files
-                                  to use when generating a template
                                 items:
                                   type: string
                                 type: array
                               values:
-                                description: Values specifies Helm values to be passed
-                                  to helm template, typically defined as a block
                                 type: string
                               version:
-                                description: Version is the Helm version to use for
-                                  templating ("3")
                                 type: string
                             type: object
                           kustomize:
-                            description: Kustomize holds kustomize specific options
                             properties:
                               commonAnnotations:
                                 additionalProperties:
                                   type: string
-                                description: CommonAnnotations is a list of additional
-                                  annotations to add to rendered manifests
                                 type: object
                               commonLabels:
                                 additionalProperties:
                                   type: string
-                                description: CommonLabels is a list of additional
-                                  labels to add to rendered manifests
                                 type: object
                               forceCommonAnnotations:
-                                description: ForceCommonAnnotations specifies whether
-                                  to force applying common annotations to resources
-                                  for Kustomize apps
                                 type: boolean
                               forceCommonLabels:
-                                description: ForceCommonLabels specifies whether to
-                                  force applying common labels to resources for Kustomize
-                                  apps
                                 type: boolean
                               images:
-                                description: Images is a list of Kustomize image override
-                                  specifications
                                 items:
-                                  description: KustomizeImage represents a Kustomize
-                                    image definition in the format [old_image_name=]<image_name>:<image_tag>
                                   type: string
                                 type: array
                               namePrefix:
-                                description: NamePrefix is a prefix appended to resources
-                                  for Kustomize apps
                                 type: string
                               nameSuffix:
-                                description: NameSuffix is a suffix appended to resources
-                                  for Kustomize apps
                                 type: string
                               version:
-                                description: Version controls which version of Kustomize
-                                  to use for rendering manifests
                                 type: string
                             type: object
                           path:
-                            description: Path is a directory path within the Git repository,
-                              and is only valid for applications sourced from Git.
                             type: string
                           plugin:
-                            description: ConfigManagementPlugin holds config management
-                              plugin specific options
                             properties:
                               env:
-                                description: Env is a list of environment variable
-                                  entries
                                 items:
-                                  description: EnvEntry represents an entry in the
-                                    application's environment
                                   properties:
                                     name:
-                                      description: Name is the name of the variable,
-                                        usually expressed in uppercase
                                       type: string
                                     value:
-                                      description: Value is the value of the variable
                                       type: string
                                   required:
                                   - name
@@ -8603,15 +8833,8 @@ spec:
                                 type: string
                             type: object
                           repoURL:
-                            description: RepoURL is the URL to the repository (Git
-                              or Helm) that contains the application manifests
                             type: string
                           targetRevision:
-                            description: TargetRevision defines the revision of the
-                              source to sync the application to. In case of Git, this
-                              can be commit, tag, or branch. If omitted, will equal
-                              to HEAD. In case of Helm, this is a semver tag for the
-                              Chart's version.
                             type: string
                         required:
                         - repoURL
@@ -8855,6 +9078,10 @@ spec:
                       for apps which have orphaned resources
                     type: boolean
                 type: object
+              permitOnlyProjectScopedClusters:
+                description: PermitOnlyProjectScopedClusters determines whether destinations
+                  can only reference clusters which are project-scoped
+                type: boolean
               roles:
                 description: Roles are user defined RBAC roles associated with this
                   project
@@ -8916,6 +9143,12 @@ spec:
                   required:
                   - keyID
                   type: object
+                type: array
+              sourceNamespaces:
+                description: SourceNamespaces defines the namespaces application resources
+                  are allowed to be created in
+                items:
+                  type: string
                 type: array
               sourceRepos:
                 description: SourceRepos contains list of repository URLs which can
@@ -9037,6 +9270,10 @@ metadata:
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  labels:
+    app.kubernetes.io/component: notifications-controller
+    app.kubernetes.io/name: argocd-notifications-controller
+    app.kubernetes.io/part-of: argocd
   name: argocd-notifications-controller
 ---
 apiVersion: v1
@@ -9145,6 +9382,16 @@ rules:
 - apiGroups:
   - ""
   resources:
+  - events
+  verbs:
+  - create
+  - get
+  - list
+  - patch
+  - watch
+- apiGroups:
+  - ""
+  resources:
   - secrets
   - configmaps
   verbs:
@@ -9248,6 +9495,7 @@ rules:
   resources:
   - applications
   - appprojects
+  - applicationsets
   verbs:
   - create
   - get
@@ -9314,6 +9562,14 @@ rules:
   - pods/log
   verbs:
   - get
+- apiGroups:
+  - argoproj.io
+  resources:
+  - applications
+  verbs:
+  - get
+  - list
+  - watch
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -9448,18 +9704,6 @@ metadata:
     app.kubernetes.io/name: argocd-cm
     app.kubernetes.io/part-of: argocd
   name: argocd-cm
-data:
-  accounts.image-updater: apikey
-  accounts.config-team: apiKey,login
-  configManagementPlugins: |
-    - name: git-ops-command
-      generate:
-        command: [ "git-ops-command.sh" ]
-  resource.customizations: |
-    admissionregistration.k8s.io/MutatingWebhookConfiguration:
-      ignoreDifferences: |
-        jsonPointers:
-        - /webhooks/0/clientConfig/caBundle
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -9468,13 +9712,6 @@ metadata:
     app.kubernetes.io/name: argocd-cmd-params-cm
     app.kubernetes.io/part-of: argocd
   name: argocd-cmd-params-cm
-data:
-  # Set the logging level. One of: debug|info|warn|error (default "info")
-  controller.log.level: "warn"
-  # Set the logging level. One of: debug|info|warn|error (default "info")
-  server.log.level: "warn"
-  # Set the logging level. One of: debug|info|warn|error (default "info")
-  reposerver.log.level: "warn"
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -9486,10 +9723,11 @@ metadata:
 ---
 apiVersion: v1
 kind: ConfigMap
-data:
-  policy.csv: |
-    p, config-team, applications, action/apps/StatefulSet/restart, *, allow
-  policy.default: role:readonly
+metadata:
+  name: argocd-notifications-cm
+---
+apiVersion: v1
+kind: ConfigMap
 metadata:
   labels:
     app.kubernetes.io/name: argocd-rbac-cm
@@ -9516,7 +9754,6 @@ metadata:
   name: argocd-ssh-known-hosts-cm
 ---
 apiVersion: v1
-data: null
 kind: ConfigMap
 metadata:
   labels:
@@ -9528,8 +9765,6 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: argocd-notifications-secret
-  annotations:
-    sealedsecrets.bitnami.com/managed: "true"
 type: Opaque
 ---
 apiVersion: v1
@@ -9539,8 +9774,6 @@ metadata:
     app.kubernetes.io/name: argocd-secret
     app.kubernetes.io/part-of: argocd
   name: argocd-secret
-  annotations:
-    sealedsecrets.bitnami.com/managed: "true"
 type: Opaque
 ---
 apiVersion: v1
@@ -9563,15 +9796,6 @@ spec:
     targetPort: metrics
   selector:
     app.kubernetes.io/name: argocd-applicationset-controller
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: argo-git-deploy
-  annotations:
-    sealedsecrets.bitnami.com/managed: "true"
-    managed-by: argocd.argoproj.io
-type: Opaque
 ---
 apiVersion: v1
 kind: Service
@@ -9731,7 +9955,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v2.4.6-1.0.2
+        image: quay.io/argoproj/argocd:v2.5.5
         imagePullPolicy: Always
         name: argocd-applicationset-controller
         ports:
@@ -9746,6 +9970,8 @@ spec:
             - ALL
           readOnlyRootFilesystem: true
           runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
         volumeMounts:
         - mountPath: /app/config/ssh
           name: ssh-known-hosts
@@ -9769,9 +9995,9 @@ spec:
           name: argocd-gpg-keys-cm
         name: gpg-keys
       - emptyDir: {}
-        name: tmp
-      - emptyDir: {}
         name: gpg-keyring
+      - emptyDir: {}
+        name: tmp
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -9803,7 +10029,14 @@ spec:
       - command:
         - /shared/argocd-dex
         - rundex
-        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/dexidp/dex:v2.30.2
+        env:
+        - name: ARGOCD_DEX_SERVER_DISABLE_TLS
+          valueFrom:
+            configMapKeyRef:
+              key: dexserver.disable.tls
+              name: argocd-cmd-params-cm
+              optional: true
+        image: ghcr.io/dexidp/dex:v2.35.3
         imagePullPolicy: Always
         name: dex
         ports:
@@ -9817,18 +10050,22 @@ spec:
             - ALL
           readOnlyRootFilesystem: true
           runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
         volumeMounts:
         - mountPath: /shared
           name: static-files
         - mountPath: /tmp
           name: dexconfig
+        - mountPath: /tls
+          name: argocd-dex-server-tls
       initContainers:
       - command:
         - cp
         - -n
         - /usr/local/bin/argocd
         - /shared/argocd-dex
-        image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v2.4.6-1.0.2
+        image: quay.io/argoproj/argocd:v2.5.5
         imagePullPolicy: Always
         name: copyutil
         securityContext:
@@ -9838,6 +10075,8 @@ spec:
             - ALL
           readOnlyRootFilesystem: true
           runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
         volumeMounts:
         - mountPath: /shared
           name: static-files
@@ -9849,6 +10088,17 @@ spec:
         name: static-files
       - emptyDir: {}
         name: dexconfig
+      - name: argocd-dex-server-tls
+        secret:
+          items:
+          - key: tls.crt
+            path: tls.crt
+          - key: tls.key
+            path: tls.key
+          - key: ca.crt
+            path: ca.crt
+          optional: true
+          secretName: argocd-dex-server-tls
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -9868,7 +10118,7 @@ spec:
       containers:
       - command:
         - argocd-notifications
-        image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v2.4.6-1.0.2
+        image: quay.io/argoproj/argocd:v2.5.5
         imagePullPolicy: Always
         livenessProbe:
           tcpSocket:
@@ -9880,14 +10130,16 @@ spec:
             drop:
             - ALL
           readOnlyRootFilesystem: true
-          runAsNonRoot: true
         volumeMounts:
         - mountPath: /app/config/tls
           name: tls-certs
         - mountPath: /app/config/reposerver/tls
           name: argocd-repo-server-tls
         workingDir: /app
-
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       serviceAccountName: argocd-notifications-controller
       volumes:
       - configMap:
@@ -9943,16 +10195,22 @@ spec:
         - ""
         - --appendonly
         - "no"
-        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/redis:7.0.0-alpine
+        image: redis:7.0.5-alpine
         imagePullPolicy: Always
         name: redis
         ports:
         - containerPort: 6379
-      serviceAccountName: argocd-redis
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
       securityContext:
-        runAsGroup: 1000
         runAsNonRoot: true
-        runAsUser: 1000
+        runAsUser: 999
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: argocd-redis
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -9987,61 +10245,12 @@ spec:
               topologyKey: kubernetes.io/hostname
             weight: 5
       automountServiceAccountToken: false
-      serviceAccountName: argocd-repo-server
-      initContainers:
-      - command:
-        - cp
-        - -n
-        - /usr/local/bin/argocd
-        - /var/run/argocd/argocd-cmp-server
-        image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v2.4.6-1.0.2
-        name: copyutil
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - all
-          readOnlyRootFilesystem: true
-          runAsNonRoot: true
-        volumeMounts:
-        - mountPath: /var/run/argocd
-          name: var-files
-
-      # Installs custom tools
-      - name: install-custom-tools
-        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/python:3.9.1-slim
-        command: [ "install-custom-tools.sh" ]
-        volumeMounts:
-        - name: tools-dir
-          mountPath: /tools
-        - name: install-custom-tools
-          mountPath: /usr/local/bin/install-custom-tools.sh
-          subPath: install-custom-tools.sh
-
       containers:
       - command:
         - sh
         - -c
         - entrypoint.sh argocd-repo-server --redis argocd-redis:6379
         env:
-        - name: ARGOCD_REPO_SERVER_OTLP_ADDRESS
-          valueFrom:
-            configMapKeyRef:
-              key: otlp.address
-              name: argocd-cmd-params-cm
-              optional: true
-        - name: ARGOCD_REPO_SERVER_MAX_COMBINED_DIRECTORY_MANIFESTS_SIZE
-          valueFrom:
-            configMapKeyRef:
-              key: reposerver.max.combined.directory.manifests.size
-              name: argocd-cmd-params-cm
-              optional: true
-        - name: ARGOCD_REPO_SERVER_PLUGIN_TAR_EXCLUSIONS
-          valueFrom:
-            configMapKeyRef:
-              key: reposerver.plugin.tar.exclusions
-              name: argocd-cmd-params-cm
-              optional: true
         - name: ARGOCD_RECONCILIATION_TIMEOUT
           valueFrom:
             configMapKeyRef:
@@ -10102,6 +10311,12 @@ spec:
               key: redis.server
               name: argocd-cmd-params-cm
               optional: true
+        - name: REDIS_COMPRESSION
+          valueFrom:
+            configMapKeyRef:
+              key: redis.compression
+              name: argocd-cmd-params-cm
+              optional: true
         - name: REDISDB
           valueFrom:
             configMapKeyRef:
@@ -10114,13 +10329,49 @@ spec:
               key: reposerver.default.cache.expiration
               name: argocd-cmd-params-cm
               optional: true
+        - name: ARGOCD_REPO_SERVER_OTLP_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: otlp.address
+              name: argocd-cmd-params-cm
+              optional: true
+        - name: ARGOCD_REPO_SERVER_MAX_COMBINED_DIRECTORY_MANIFESTS_SIZE
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.max.combined.directory.manifests.size
+              name: argocd-cmd-params-cm
+              optional: true
+        - name: ARGOCD_REPO_SERVER_PLUGIN_TAR_EXCLUSIONS
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.plugin.tar.exclusions
+              name: argocd-cmd-params-cm
+              optional: true
+        - name: ARGOCD_REPO_SERVER_ALLOW_OUT_OF_BOUNDS_SYMLINKS
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.allow.oob.symlinks
+              name: argocd-cmd-params-cm
+              optional: true
+        - name: ARGOCD_REPO_SERVER_STREAMED_MANIFEST_MAX_TAR_SIZE
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.streamed.manifest.max.tar.size
+              name: argocd-cmd-params-cm
+              optional: true
+        - name: ARGOCD_REPO_SERVER_STREAMED_MANIFEST_MAX_EXTRACTED_SIZE
+          valueFrom:
+            configMapKeyRef:
+              key: reposerver.streamed.manifest.max.extracted.size
+              name: argocd-cmd-params-cm
+              optional: true
         - name: HELM_CACHE_HOME
           value: /helm-working-dir
         - name: HELM_CONFIG_HOME
           value: /helm-working-dir
         - name: HELM_DATA_HOME
           value: /helm-working-dir
-        image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v2.4.6-1.0.2
+        image: quay.io/argoproj/argocd:v2.5.5
         imagePullPolicy: Always
         livenessProbe:
           failureThreshold: 3
@@ -10143,9 +10394,11 @@ spec:
           allowPrivilegeEscalation: false
           capabilities:
             drop:
-            - all
+            - ALL
           readOnlyRootFilesystem: true
           runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
         volumeMounts:
         - mountPath: /app/config/ssh
           name: ssh-known-hosts
@@ -10163,21 +10416,27 @@ spec:
           name: helm-working-dir
         - mountPath: /home/argocd/cmp-server/plugins
           name: plugins
-        - name: git-ops-command
-          mountPath: /usr/local/bin/git-ops-command.sh
-          subPath: git-ops-command.sh
-        - name: tools-dir
-          mountPath: /usr/local/bin/envsubst
-          subPath: envsubst
-        - name: tools-dir
-          mountPath: /usr/local/bin/kustomize
-          subPath: kustomize
-        - name: tools-dir
-          mountPath: /usr/local/bin/git-remote-codecommit
-          subPath: git-remote-codecommit
-        - name: tools-dir
-          mountPath: /home/argocd/.local/lib/python3.7/site-packages/git_remote_codecommit/__init__.py
-          subPath: __init__.py
+      initContainers:
+      - command:
+        - cp
+        - -n
+        - /usr/local/bin/argocd
+        - /var/run/argocd/argocd-cmp-server
+        image: quay.io/argoproj/argocd:v2.5.5
+        name: copyutil
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
+        volumeMounts:
+        - mountPath: /var/run/argocd
+          name: var-files
+      serviceAccountName: argocd-repo-server
       volumes:
       - configMap:
           name: argocd-ssh-known-hosts-cm
@@ -10190,16 +10449,6 @@ spec:
         name: gpg-keys
       - emptyDir: {}
         name: gpg-keyring
-      - name: tools-dir
-        emptyDir: {}
-      - name: git-ops-command
-        configMap:
-          name: git-ops-command
-          defaultMode: 0555
-      - name: install-custom-tools
-        configMap:
-          name: install-custom-tools
-          defaultMode: 0555
       - emptyDir: {}
         name: tmp
       - emptyDir: {}
@@ -10256,18 +10505,6 @@ spec:
       - command:
         - argocd-server
         env:
-        - name: ARGOCD_SERVER_CONTENT_SECURITY_POLICY
-          valueFrom:
-            configMapKeyRef:
-              key: server.content.security.policy
-              name: argocd-cmd-params-cm
-              optional: true
-        - name: ARGOCD_SERVER_OTLP_ADDRESS
-          valueFrom:
-            configMapKeyRef:
-              key: otlp.address
-              name: argocd-cmd-params-cm
-              optional: true
         - name: ARGOCD_SERVER_INSECURE
           valueFrom:
             configMapKeyRef:
@@ -10292,7 +10529,7 @@ spec:
               key: server.log.format
               name: argocd-cmd-params-cm
               optional: true
-        - name: ARGOCD_REPO_SERVER_LOGLEVEL
+        - name: ARGOCD_SERVER_LOG_LEVEL
           valueFrom:
             configMapKeyRef:
               key: server.log.level
@@ -10334,6 +10571,12 @@ spec:
               key: server.x.frame.options
               name: argocd-cmd-params-cm
               optional: true
+        - name: ARGOCD_SERVER_CONTENT_SECURITY_POLICY
+          valueFrom:
+            configMapKeyRef:
+              key: server.content.security.policy
+              name: argocd-cmd-params-cm
+              optional: true
         - name: ARGOCD_SERVER_REPO_SERVER_PLAINTEXT
           valueFrom:
             configMapKeyRef:
@@ -10344,6 +10587,18 @@ spec:
           valueFrom:
             configMapKeyRef:
               key: server.repo.server.strict.tls
+              name: argocd-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_DEX_SERVER_PLAINTEXT
+          valueFrom:
+            configMapKeyRef:
+              key: server.dex.server.plaintext
+              name: argocd-cmd-params-cm
+              optional: true
+        - name: ARGOCD_SERVER_DEX_SERVER_STRICT_TLS
+          valueFrom:
+            configMapKeyRef:
+              key: server.dex.server.strict.tls
               name: argocd-cmd-params-cm
               optional: true
         - name: ARGOCD_TLS_MIN_VERSION
@@ -10400,6 +10655,12 @@ spec:
               key: redis.server
               name: argocd-cmd-params-cm
               optional: true
+        - name: REDIS_COMPRESSION
+          valueFrom:
+            configMapKeyRef:
+              key: redis.compression
+              name: argocd-cmd-params-cm
+              optional: true
         - name: REDISDB
           valueFrom:
             configMapKeyRef:
@@ -10418,7 +10679,19 @@ spec:
               key: server.http.cookie.maxnumber
               name: argocd-cmd-params-cm
               optional: true
-        image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v2.4.6-1.0.2
+        - name: ARGOCD_SERVER_OTLP_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: otlp.address
+              name: argocd-cmd-params-cm
+              optional: true
+        - name: ARGOCD_APPLICATION_NAMESPACES
+          valueFrom:
+            configMapKeyRef:
+              key: application.namespaces
+              name: argocd-cmd-params-cm
+              optional: true
+        image: quay.io/argoproj/argocd:v2.5.5
         imagePullPolicy: Always
         livenessProbe:
           httpGet:
@@ -10440,9 +10713,11 @@ spec:
           allowPrivilegeEscalation: false
           capabilities:
             drop:
-            - all
+            - ALL
           readOnlyRootFilesystem: true
           runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
         volumeMounts:
         - mountPath: /app/config/ssh
           name: ssh-known-hosts
@@ -10450,6 +10725,8 @@ spec:
           name: tls-certs
         - mountPath: /app/config/server/tls
           name: argocd-repo-server-tls
+        - mountPath: /app/config/dex/tls
+          name: argocd-dex-server-tls
         - mountPath: /home/argocd
           name: plugins-home
         - mountPath: /tmp
@@ -10460,8 +10737,6 @@ spec:
         name: plugins-home
       - emptyDir: {}
         name: tmp
-      - emptyDir: {}
-        name: static-files
       - configMap:
           name: argocd-ssh-known-hosts-cm
         name: ssh-known-hosts
@@ -10479,6 +10754,15 @@ spec:
             path: ca.crt
           optional: true
           secretName: argocd-repo-server-tls
+      - name: argocd-dex-server-tls
+        secret:
+          items:
+          - key: tls.crt
+            path: tls.crt
+          - key: ca.crt
+            path: ca.crt
+          optional: true
+          secretName: argocd-dex-server-tls
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -10520,22 +10804,16 @@ spec:
         env:
         - name: ARGOCD_CONTROLLER_REPLICAS
           value: "1"
-        - name: ARGOCD_HARD_RECONCILIATION_TIMEOUT
-          valueFrom:
-            configMapKeyRef:
-              key: timeout.hard.reconciliation
-              name: argocd-cm
-              optional: true
-        - name: ARGOCD_APPLICATION_CONTROLLER_OTLP_ADDRESS
-          valueFrom:
-            configMapKeyRef:
-              key: otlp.address
-              name: argocd-cmd-params-cm
-              optional: true
         - name: ARGOCD_RECONCILIATION_TIMEOUT
           valueFrom:
             configMapKeyRef:
               key: timeout.reconciliation
+              name: argocd-cm
+              optional: true
+        - name: ARGOCD_HARD_RECONCILIATION_TIMEOUT
+          valueFrom:
+            configMapKeyRef:
+              key: timeout.hard.reconciliation
               name: argocd-cm
               optional: true
         - name: ARGOCD_APPLICATION_CONTROLLER_REPO_SERVER
@@ -10598,6 +10876,12 @@ spec:
               key: controller.repo.server.strict.tls
               name: argocd-cmd-params-cm
               optional: true
+        - name: ARGOCD_APPLICATION_CONTROLLER_PERSIST_RESOURCE_HEALTH
+          valueFrom:
+            configMapKeyRef:
+              key: controller.resource.health.persist
+              name: argocd-cmd-params-cm
+              optional: true
         - name: ARGOCD_APP_STATE_CACHE_EXPIRATION
           valueFrom:
             configMapKeyRef:
@@ -10608,6 +10892,12 @@ spec:
           valueFrom:
             configMapKeyRef:
               key: redis.server
+              name: argocd-cmd-params-cm
+              optional: true
+        - name: REDIS_COMPRESSION
+          valueFrom:
+            configMapKeyRef:
+              key: redis.compression
               name: argocd-cmd-params-cm
               optional: true
         - name: REDISDB
@@ -10622,14 +10912,20 @@ spec:
               key: controller.default.cache.expiration
               name: argocd-cmd-params-cm
               optional: true
-        image: public.ecr.aws/r2h3l6e4/argoproj/argocd:v2.4.6-1.0.2
+        - name: ARGOCD_APPLICATION_CONTROLLER_OTLP_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: otlp.address
+              name: argocd-cmd-params-cm
+              optional: true
+        - name: ARGOCD_APPLICATION_NAMESPACES
+          valueFrom:
+            configMapKeyRef:
+              key: application.namespaces
+              name: argocd-cmd-params-cm
+              optional: true
+        image: quay.io/argoproj/argocd:v2.5.5
         imagePullPolicy: Always
-        livenessProbe:
-          httpGet:
-            path: /healthz
-            port: 8082
-          initialDelaySeconds: 5
-          periodSeconds: 10
         name: argocd-application-controller
         ports:
         - containerPort: 8082
@@ -10643,9 +10939,11 @@ spec:
           allowPrivilegeEscalation: false
           capabilities:
             drop:
-            - all
+            - ALL
           readOnlyRootFilesystem: true
           runAsNonRoot: true
+          seccompProfile:
+            type: RuntimeDefault
         volumeMounts:
         - mountPath: /app/config/controller/tls
           name: argocd-repo-server-tls
@@ -10687,6 +10985,25 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
+  name: argocd-applicationset-controller-network-policy
+spec:
+  ingress:
+  - from:
+    - namespaceSelector: {}
+    ports:
+    - port: 7000
+      protocol: TCP
+    - port: 8080
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-applicationset-controller
+  policyTypes:
+  - Ingress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
   name: argocd-dex-server-network-policy
 spec:
   ingress:
@@ -10713,8 +11030,31 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
+  name: argocd-notifications-controller-network-policy
+spec:
+  ingress:
+  - from:
+    - namespaceSelector: {}
+    ports:
+    - port: 9001
+      protocol: TCP
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-notifications-controller
+  policyTypes:
+  - Ingress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
   name: argocd-redis-network-policy
 spec:
+  egress:
+  - ports:
+    - port: 53
+      protocol: UDP
+    - port: 53
+      protocol: TCP
   ingress:
   - from:
     - podSelector:
@@ -10734,6 +11074,7 @@ spec:
       app.kubernetes.io/name: argocd-redis
   policyTypes:
   - Ingress
+  - Egress
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy

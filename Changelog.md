@@ -1,5 +1,13 @@
 # Changelog
 
+### 1.18.0.0
+
+- Upgrade ArgoCD to v2.5.5
+
+_Changes:_
+
+- [X] PDO-4575 Upgrade ArgoCD to v2.5.5
+
 ### 1.17.0.0
 
 - Remove logstash tolerations
