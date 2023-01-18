@@ -36,6 +36,8 @@ spec:
             envFrom:
             - configMapRef:
                 name: pingfederate-environment-variables
+            - configMapRef:
+                name: pingcommon-environment-variables
             volumeMounts:
             - name: pingfederate-periodic-csd-upload
               mountPath: /opt/in/backup-csd-data.sh

@@ -22,6 +22,14 @@ data:
         }
     }
 
+  healthchecks.json: |
+    {
+        "aliases": {
+            "healthchecks": {
+                "is_write_index": true
+            }
+        }
+    }
   pa-audit.json: |
     {
         "aliases": {

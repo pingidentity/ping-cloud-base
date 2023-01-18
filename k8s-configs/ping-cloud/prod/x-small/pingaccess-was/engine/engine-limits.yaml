@@ -14,4 +14,3 @@ spec:
           requests:
             memory: 3Gi
             cpu: 1
-  replicas: 2

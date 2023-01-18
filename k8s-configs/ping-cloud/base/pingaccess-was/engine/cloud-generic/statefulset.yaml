@@ -11,7 +11,6 @@ spec:
   selector:
     matchLabels:
       role: pingaccess-was-engine
-  replicas: 1
   serviceName: pingaccess-was
   podManagementPolicy: OrderedReady
   template:
@@ -45,7 +44,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.15.3
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.23.0
         imagePullPolicy: IfNotPresent
         command:
         - /copy-dependencies.sh

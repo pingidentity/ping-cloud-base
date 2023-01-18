@@ -4,27 +4,6 @@ kind: ConfigMap
 metadata:
   name: enrichment-elasticsearch-ilm-policies
 data:
-  ping-2-day-retention.json: |
-    {
-        "policy": {                      
-            "phases": {
-                "hot": {                     
-                    "actions": {
-                        "rollover": {            
-                            "max_size": "2GB"
-                        }
-                    }
-                },
-                "delete": {
-                    "min_age": "2d",          
-                    "actions": {
-                        "delete": {}             
-                    }
-                }
-            }
-        }
-    }
-
   ping-7-day-retention.json: |
     {
         "policy": {                      
@@ -32,7 +11,7 @@ data:
                 "hot": {                     
                     "actions": {
                         "rollover": {            
-                            "max_size": "8GB"
+                            "max_age": "1d"
                         }
                     }
                 },

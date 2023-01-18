@@ -41,3 +41,5 @@ DA_IDENTITY_MAPPER_NAME=DAEntryUUIDMatch
 NOTIFICATION_ENABLED=false
 SLACK_CHANNEL=p1as-application-oncall
 NOTIFICATION_ENDPOINT=http://webhook-eventsource-svc.argo-events:12999/notification
+
+KUBECTL_VERSION=v1.23.0

@@ -7,9 +7,9 @@ data:
     #!/bin/sh
 
     # Install kubectl
-    curl -sS https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl \
+    curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
     -o /tmp/kubectl
-    
+
     chmod +x /tmp/kubectl
 
     UPLOAD_FILES=
@@ -78,6 +78,8 @@ spec:
             envFrom:
             - configMapRef:
                 name: pingaccess-admin-environment-variables
+            - configMapRef:
+                name: pingcommon-environment-variables
             env:
             - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
               value: "true"

@@ -202,7 +202,7 @@ spec:
             runAsNonRoot: true
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
-          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.15.3
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.23.0
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
           env:
@@ -286,7 +286,7 @@ spec:
             runAsNonRoot: true
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
-          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.15.3
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.23.0
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
           env:
@@ -413,7 +413,7 @@ spec:
             runAsNonRoot: true
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
-          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.15.3
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.23.0
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
           env:
@@ -572,7 +572,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       initContainers:
         - name: wait-for-nr-license-secret
-          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.15.3
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.23.0
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
           env:
