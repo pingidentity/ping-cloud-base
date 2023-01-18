@@ -33,6 +33,7 @@
 - Upgrade kubectl to match K8s version and bitnami kubectl image.
 - Mirror our own version of PGO/crunchy images
 - Add pod exec privileges to cluster-healthcheck-serviceaccount
+- Add delete patch to remove pingaccess-was healthcheck cronjob from multi-region
 
 _Changes:_
 
@@ -54,6 +55,7 @@ _Changes:_
 - [X] PDO-4496 Create new global repo for dashboards
 - [X] PDO-4533 Move PCB CI/CD env vars from deploy script to common script
 - [X] PDO-4543 Create K8s serviceAccount for PA, PD and PF
+- [X] PDO-4545 Add delete patch to remove pingaccess-was healthcheck cronjob from multi-region
 - [X] PDO-4565 Prometheus: Configure It to Take Metrics from Second Region
 - [X] PDO-4566 Logstash: Configure It to Send Logs from Second Region to Primary Region
 - [X] PDO-4568 Kibana: Modify Dashboards to Show Second Region Logs and Metrics
