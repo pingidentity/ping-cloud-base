@@ -836,6 +836,7 @@ BOOTSTRAP_DIR="${TARGET_DIR}/${BOOTSTRAP_SHORT_DIR}"
 
 CLUSTER_STATE_REPO_DIR="${TARGET_DIR}/cluster-state"
 K8S_CONFIGS_DIR="${CLUSTER_STATE_REPO_DIR}/k8s-configs"
+GIT_OPS_VALIDATION_FOLDER="${K8S_CONFIGS_DIR}/validation"
 
 PROFILE_REPO_DIR="${TARGET_DIR}/profile-repo"
 PROFILES_DIR="${PROFILE_REPO_DIR}/profiles"
@@ -854,6 +855,9 @@ cp ../.gitignore "${CLUSTER_STATE_REPO_DIR}"
 cp ../.gitignore "${PROFILE_REPO_DIR}"
 
 cp ../k8s-configs/cluster-tools/base/git-ops/git-ops-command.sh "${K8S_CONFIGS_DIR}"
+cp ../k8s-configs/cluster-tools/base/git-ops/validation/verify_descriptor_json.py "${GIT_OPS_VALIDATION_FOLDER}"
+cp ../k8s-configs/cluster-tools/base/git-ops/validation/json_util.py "${GIT_OPS_VALIDATION_FOLDER}
+
 find "${TEMPLATES_HOME}" -type f -maxdepth 1 | xargs -I {} cp {} "${K8S_CONFIGS_DIR}"
 
 echo "${PING_CLOUD_BASE_COMMIT_SHA}" > "${TARGET_DIR}/pcb-commit-sha.txt"
