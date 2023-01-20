@@ -38,12 +38,13 @@ substitute_vars() {
 
   # Create a list of variables to substitute
   vars="$(grep -Ev "^$|#" "${env_file}" | cut -d= -f1 | awk '{ print "${" $1 "}" }')"
-  log "substituting variables '${vars}'"
+  #log "substituting variables '${vars}'"
 
   # Export the environment variables
   set -a; . "${env_file}"; set +a
 
   for file in $(find "${subst_dir}" -type f); do
+    log "Substituting for file ${file}"
     old_file="${file}.bak"
     cp "${file}" "${old_file}"
 
@@ -179,15 +180,28 @@ if test -f 'env_vars'; then
     cd "${BUILD_DIR}"
 
     BASE_ENV_VARS="${BASE_DIR}"/env_vars
-    env_vars_file=env_vars
+    REGIONAL_ENV_VARS="env_vars"
+    #env_vars_file=env_vars
 
-    if test -f "${BASE_ENV_VARS}"; then
-      env_vars_file="$(mktemp)"
-      awk 1 env_vars "${BASE_ENV_VARS}" > "${env_vars_file}"
-      substitute_vars "${env_vars_file}" "${BASE_DIR}"
-    fi
+    subst_vars_file="$(mktemp)"
 
-    substitute_vars "${env_vars_file}" .
+    # Get the base env vars and add them to a temp file for use with substitution
+    awk 1 "${BASE_ENV_VARS}" > subst_vars_file
+    substitute_vars "${subst_vars_file}" .
+    awk 1 "${REGIONAL_ENV_VARS}" >> subst_vars_file
+    substitute_vars "${subst_vars_file}" ${BASE_DIR}
+    awk 1 "${BASE_ENV_VARS}" >> subst_vars_file
+    substitute_vars "${subst_vars_file}" .
+
+    # if test -f "${BASE_ENV_VARS}"; then
+    #   env_vars_file="$(mktemp)"
+    #   log "Using env vars file ${env_vars_file}"
+    #   awk 1 env_vars "${BASE_ENV_VARS}" > "${env_vars_file}"
+    #   substitute_vars "${env_vars_file}" "${BASE_DIR}"
+    # fi
+
+    #log "Using env vars file ${env_vars_file}"
+    #substitute_vars "${env_vars_file}" .
 
     PCB_TMP="${TMP_DIR}/${K8S_GIT_BRANCH}"
 
