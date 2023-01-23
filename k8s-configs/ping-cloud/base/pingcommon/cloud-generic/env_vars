@@ -22,7 +22,7 @@ USER_BASE_DN=dc=example,dc=com
 #  USER_BASE_DN_5 is set for userRoot_5 backend
 #
 #  NOTE : Currently 5 multiple backends(userRoot , userRoot_2, 3 ..userRoot_5) and 
-#          user_base_dn's(USER_BASE_DN , USER_BASE_DN_2, 3 ..USER_BASE_DN_5) are supported.
+#          user_base_dn's(USER_BASE_DN, USER_BASE_DN_2, 3 ..USER_BASE_DN_5) are supported.
 ########################################################################################################################
 USER_BASE_DN_2=
 USER_BASE_DN_3=
