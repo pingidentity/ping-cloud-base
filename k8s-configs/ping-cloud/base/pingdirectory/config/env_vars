@@ -14,6 +14,23 @@ ADS_CRT_FILE=/usr/local/secrets/ads.crt
 ADS_KEY_FILE=/usr/local/secrets/ads.key
 
 USER_BACKEND_ID=userRoot
+
+########################################################################################################################
+#  Multiple Backend IDs :
+#
+#  Set the following vars to the below values for multiple backends.
+#  USER_BACKEND_ID_2 = userRoot_2
+#  USER_BACKEND_ID_3 = userRoot_3
+#  USER_BACKEND_ID_4 = userRoot_4
+#  USER_BACKEND_ID_5 = userRoot_5
+#
+#  NOTE : Currently 5 multiple backends(userRoot , userRoot_2, 3 ..userRoot_5) are supported.
+########################################################################################################################
+USER_BACKEND_ID_2=
+USER_BACKEND_ID_3=
+USER_BACKEND_ID_4=
+USER_BACKEND_ID_5=
+
 DISABLE_ALL_OLDER_USER_BASE_DN=true
 
 REPLICATION_BASE_DNS=o=platformconfig;o=appintegrations
