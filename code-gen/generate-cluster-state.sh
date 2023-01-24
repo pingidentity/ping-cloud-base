@@ -856,7 +856,7 @@ cp ../.gitignore "${PROFILE_REPO_DIR}"
 
 cp ../k8s-configs/cluster-tools/base/git-ops/git-ops-command.sh "${K8S_CONFIGS_DIR}"
 cp ../k8s-configs/cluster-tools/base/git-ops/validation/verify_descriptor_json.py "${GIT_OPS_VALIDATION_FOLDER}"
-cp ../k8s-configs/cluster-tools/base/git-ops/validation/json_util.py "${GIT_OPS_VALIDATION_FOLDER}
+cp ../k8s-configs/cluster-tools/base/git-ops/validation/json_util.py "${GIT_OPS_VALIDATION_FOLDER}"
 
 find "${TEMPLATES_HOME}" -type f -maxdepth 1 | xargs -I {} cp {} "${K8S_CONFIGS_DIR}"
 
