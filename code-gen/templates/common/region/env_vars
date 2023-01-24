@@ -5,6 +5,9 @@
 REGION=${REGION}
 REGION_NICK_NAME=${REGION_NICK_NAME}
 
+# The name of the tenant
+TENANT_NAME=${TENANT_NAME}
+
 # Tenant domain suffix for customer for region
 TENANT_DOMAIN=${TENANT_DOMAIN}
 
