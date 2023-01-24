@@ -19,6 +19,12 @@ data:
       external_labels:
         slack_channel: ${PROM_SLACK_CHANNEL}
         notifications_enabled: ${PROM_NOTIFICATION_ENABLED}
+    
+    alerting:
+      alertmanagers:
+        - scheme: http
+          static_configs:
+          - targets: ['alertmanager:9093']
 
     rule_files:
       - /etc/prometheus/alert-rules.d/*.yml

@@ -34,6 +34,7 @@
 - Mirror our own version of PGO/crunchy images
 - Add pod exec privileges to cluster-healthcheck-serviceaccount
 - Add delete patch to remove pingaccess-was healthcheck cronjob from multi-region
+- Revert removing alertmanager from the prometheus config
 
 _Changes:_
 
@@ -78,6 +79,7 @@ _Changes:_
 - [X] PDO-4808 Update applications logs location
 - [X] PDO-4809 Refactor generate-cluster-state.sh to retain set value for slack channel alerts on upgrade
 - [X] PDO-4877: ELK logs for healthcheck pods should be storing for 7 days
+- [X] PDO-4921: Revert removing alertmanager from the prometheus config
 
 ### 1.16.1.0
 
