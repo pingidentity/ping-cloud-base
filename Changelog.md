@@ -5,12 +5,14 @@
 - Validate descriptor JSON file before deployment to k8s cluster
 - Upgrade ArgoCD to v2.5.5
 - Move Descriptor Validator to git-ops-command.sh
+- Upgrade nginx-ingress-controller to v1.5.1
 
 _Changes:_
 
 - [X] PDO-4570 Validate descriptor JSON file before deployment to k8s cluster
 - [X] PDO-4575 Upgrade ArgoCD to v2.5.5
 - [X] PDO-4636 Move Descriptor Validator to git-ops-command.sh
+- [X] PDO-4698 Upgrade nginx-ingress-controller to v1.5.1
 
 ### 1.17.0.0
 
