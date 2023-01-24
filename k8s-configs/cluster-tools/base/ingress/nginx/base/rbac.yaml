@@ -44,6 +44,28 @@ rules:
       - endpoints
     verbs:
       - get
+  - apiGroups:
+    - coordination.k8s.io
+    resourceNames:
+    - ingress-controller-leader
+    resources:
+    - leases
+    verbs:
+    - get
+    - update
+  - apiGroups:
+    - coordination.k8s.io
+    resources:
+    - leases
+    verbs:
+    - create
+  - apiGroups:
+    - ""
+    resources:
+    - events
+    verbs:
+    - create
+    - patch
 
 ---
 
