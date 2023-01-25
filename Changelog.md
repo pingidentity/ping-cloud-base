@@ -7,6 +7,7 @@
 - Move Descriptor Validator to git-ops-command.sh
 - Upgrade nginx-ingress-controller to v1.5.1
 - Add base & region values.yaml files for Helm migration
+- Fix regional variable for new customer creation
 
 _Changes:_
 
@@ -15,6 +16,7 @@ _Changes:_
 - [X] PDO-4636 Move Descriptor Validator to git-ops-command.sh
 - [X] PDO-4698 Upgrade nginx-ingress-controller to v1.5.1
 - [X] PDO-4773 Update generate-cluster-state script to create base and region values.yaml files
+- [X] PDO-4922 Fix regional variable for new customer creation
 
 ### 1.17.0.0
 
