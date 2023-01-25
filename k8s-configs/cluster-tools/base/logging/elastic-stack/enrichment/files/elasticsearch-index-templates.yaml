@@ -1123,6 +1123,37 @@ data:
       }
     }
 
+  pf-transaction.json: |
+    {
+      "index_patterns": [
+        "pf-transaction-*"
+      ],
+      "template": {
+        "settings": {
+          "number_of_shards": 3,
+          "number_of_replicas": 1,
+          "index.lifecycle.name": "ping-2-day-retention",
+          "index.lifecycle.rollover_alias": "pf-transaction"
+        },
+        "mappings": {
+          "properties": {
+            "@timestamp": {
+              "type": "date"
+            },
+            "@version": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword",
+                  "ignore_above": 256
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
   pa-admin-audit.json: |
     {
       "index_patterns": [
