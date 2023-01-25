@@ -856,7 +856,7 @@ cp ../.gitignore "${PROFILE_REPO_DIR}"
 
 cp ../k8s-configs/cluster-tools/base/git-ops/git-ops-command.sh "${K8S_CONFIGS_DIR}"
 cp ../k8s-configs/cluster-tools/base/git-ops/validation/verify_descriptor_json.py "${GIT_OPS_VALIDATION_FOLDER}"
-cp ../k8s-configs/cluster-tools/base/git-ops/validation/json_util.py "${GIT_OPS_VALIDATION_FOLDER}
+cp ../k8s-configs/cluster-tools/base/git-ops/validation/json_util.py "${GIT_OPS_VALIDATION_FOLDER}"
 
 find "${TEMPLATES_HOME}" -type f -maxdepth 1 | xargs -I {} cp {} "${K8S_CONFIGS_DIR}"
 
@@ -1064,7 +1064,12 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   # Rename to the actual region nick name.
   mv "${ENV_DIR}/region" "${ENV_DIR}/${REGION_NICK_NAME}"
 
-  substitute_vars "${ENV_DIR}" "${REPO_VARS}" secrets.yaml env_vars
+  substitute_vars "${ENV_DIR}" "${REPO_VARS}" secrets.yaml env_vars values.yaml
+  # TODO: This duplicate calls are needed to substitute the derived variables & the IS_BELUGA_ENV in values files only
+  #  clean this up with PDO-4842 when all apps are migrated to values files by adding IS_BELUGA_ENV to DEFAULT_VARS
+  #  and redoing how derived variables are set
+  substitute_vars "${ENV_DIR}" "${REPO_VARS}" values.yaml
+  substitute_vars "${ENV_DIR}" '${IS_BELUGA_ENV}' values.yaml
 
   # Regional enablement - add admins, backups, etc. to primary.
   if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
