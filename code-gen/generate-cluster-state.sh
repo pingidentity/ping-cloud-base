@@ -433,7 +433,7 @@ add_derived_variables() {
   export ENVIRONMENT_PREFIX="\${TENANT_NAME}-\${CLUSTER_STATE_REPO_BRANCH}-\${REGION_NICK_NAME}"
 
   # The name of the environment as it will appear on the NewRelic console.
-  export NEW_RELIC_ENVIRONMENT_NAME="\${TENANT_NAME}_\${ENV}_\${REGION_NICK_NAME}_k8s-cluster"
+  export NEW_RELIC_ENVIRONMENT_NAME="\${TENANT_NAME}_\${REGION_ENV}_\${REGION_NICK_NAME}_k8s-cluster"
 }
 
 ########################################################################################################################
