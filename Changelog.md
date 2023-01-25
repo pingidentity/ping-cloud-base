@@ -36,6 +36,7 @@
 - Add delete patch to remove pingaccess-was healthcheck cronjob from multi-region
 - Revert removing alertmanager from the prometheus config
 - Add PF transaction logs parsing and indexing
+- Fix regional variable for new customer creation
 
 _Changes:_
 
@@ -71,17 +72,18 @@ _Changes:_
 - [X] PDO-4632 ALERT from the secondary region is shown as an ALERT from the primary region in the email message
 - [X] PDO-4636 Remove "PING_CONTAINER_PRIVILEGED" from env_vars 
 - [X] PDO-4644 Update cluster tools to latest version: NewRelic Java agent v7.11.1
-- [X] PDO-4648: Allow release branches to update image names using the kustomize image patch
-- [X] PDO-4649: prometheus-0/logstash-elastic-0 pod does not come up upon changing LEGACY_LOGGING or LS_JAVA_OPTS
-- [X] PDO-4669: EFS access point dir doesn't remove during PVC removal
+- [X] PDO-4648 Allow release branches to update image names using the kustomize image patch
+- [X] PDO-4649 prometheus-0/logstash-elastic-0 pod does not come up upon changing LEGACY_LOGGING or LS_JAVA_OPTS
+- [X] PDO-4669 EFS access point dir doesn't remove during PVC removal
 - [X] PDO-4671 Refactor elastic-stack manifests 
 - [X] PDO-4686 Update ping-cloud-base to use the cluster tools from new ECR repo
 - [X] PDO-4807 Configure Argo Redis container to run as nonroot
 - [X] PDO-4808 Update applications logs location
 - [X] PDO-4809 Refactor generate-cluster-state.sh to retain set value for slack channel alerts on upgrade
-- [X] PDO-4877: ELK logs for healthcheck pods should be storing for 7 days
-- [X] PDO-4921: Revert removing alertmanager from the prometheus config
+- [X] PDO-4877 ELK logs for healthcheck pods should be storing for 7 days
+- [X] PDO-4921 Revert removing alertmanager from the prometheus config
 - [X] PDO-4918 Missing PF Transaction Log
+- [X] PDO-4922 Fix regional variable for new customer creation
 
 ### 1.16.1.0
 
