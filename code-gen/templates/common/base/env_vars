@@ -78,9 +78,6 @@ K8S_GIT_BRANCH=${K8S_GIT_BRANCH}
 # The name of the Docker image registry
 ECR_REGISTRY_NAME=${ECR_REGISTRY_NAME}
 
-# The tenant or customer name
-TENANT_NAME=${TENANT_NAME}
-
 ############################################################
 # Server profile variables
 ############################################################

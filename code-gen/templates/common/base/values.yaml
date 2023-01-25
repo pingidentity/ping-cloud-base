@@ -71,9 +71,6 @@ ecrRegistryName: "${ECR_REGISTRY_NAME}"
 # ecr_env is the suffix used to denote to use dev image repositories
 ecrEnv: "/dev"
 
-# tenantName is the tenant or customer name
-tenantName: "${TENANT_NAME}"
-
 # clusterName is the eks cluster name
 clusterName: "${CLUSTER_NAME}"
 
