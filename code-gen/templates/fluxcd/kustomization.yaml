@@ -17,6 +17,7 @@ resources:
 
 # Deploy the CD application
 - argo-application.yaml
+- argo-application-set.yaml
 
 patchesStrategicMerge:
 
