@@ -1,21 +1,26 @@
 from dataclasses import dataclass
+import os
 
 import requests
+import urllib3
 
 from k8s_utils import K8sUtils
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 @dataclass
 class Categories:
-    pod_status = "pod-status"
+    pod_status = "podStatus"
     synthetic = "synthetic"
     data = "data"
     connectivity = "connectivity"
-    cluster_members = "cluster-members"
+    cluster_members = "clusterMembers"
 
 
 class TestHealthBase(K8sUtils):
     job_name = ""
+    ping_cloud = os.getenv("PING_CLOUD_NAMESPACE", "ping-cloud")
 
     @classmethod
     def setUpClass(cls):

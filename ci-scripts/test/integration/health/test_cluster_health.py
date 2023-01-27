@@ -7,7 +7,7 @@ from health_common import Categories, TestHealthBase
 
 class TestClusterHealth(TestHealthBase):
     job_name = "healthcheck-cluster-health"
-    cluster_health = "cluster-health"
+    cluster_health = "clusterHealth"
 
     def setUp(self):
         self.test_results = self.get_test_results(self.cluster_health, Categories.cluster_members)

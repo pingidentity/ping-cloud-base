@@ -8,3 +8,11 @@ commonLabels:
 
 resources:
 - postgres.yaml
+
+images:
+  - name: registry.developers.crunchydata.com/crunchydata/crunchy-postgres
+    newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/crunchydata/crunchy-postgres
+  - name: registry.developers.crunchydata.com/crunchydata/crunchy-pgbackrest
+    newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/crunchydata/crunchy-pgbackrest
+  - name: registry.developers.crunchydata.com/crunchydata/crunchy-postgres-exporter
+    newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/crunchydata/crunchy-postgres-exporter

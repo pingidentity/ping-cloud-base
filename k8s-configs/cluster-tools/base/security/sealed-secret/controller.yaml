@@ -49,6 +49,7 @@ rules:
   - create
   - update
   - delete
+  - watch 
 - apiGroups:
   - ""
   resources:
@@ -56,6 +57,12 @@ rules:
   verbs:
   - create
   - patch
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  verbs:
+  - get
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -181,7 +188,7 @@ spec:
         # This turns off the default automatic key renewal that happens every 30 days
         - name: SEALED_SECRETS_KEY_RENEW_PERIOD
           value: "0"
-        image: public.ecr.aws/r2h3l6e4/bitnami/sealed-secrets-controller:v0.18.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/sealed-secrets-controller:v0.19.3
         resources:
           limits:
             cpu: 500m

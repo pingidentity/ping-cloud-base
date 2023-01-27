@@ -6,13 +6,17 @@ resources:
 - namespace.yaml
 - grafana.yaml
 - prometheus.yaml
-- grafana-dashboards.yaml
 - prometheus-job-exporter.yaml
+- alertmanager.yaml
+- prometheus-config.yaml
+- prometheus-agent-config.yaml
+- prometheus-agent.yaml
 
 configMapGenerator:
 - name: prometheus-environment-variables
   envs:
     - env_vars
 
-
-
+- name: prom-alerts
+  files:
+   - default-rule.yml

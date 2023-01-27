@@ -10,9 +10,11 @@ resources:
 namespace: ingress-nginx-public
 
 commonLabels:
+  app.kubernetes.io/component: controller
   app.kubernetes.io/name: ingress-nginx
   app.kubernetes.io/part-of: ingress-nginx
   app.kubernetes.io/role: ingress-nginx-public
+  app.kubernetes.io/version: 1.5.1
 
 patchesJson6902:
 - path: add-deployment-args.yaml
@@ -39,3 +41,15 @@ patchesJson6902:
     version: v1
     kind: ConfigMap
     name: nginx-configuration
+- path: add-tcp-services-configmap.yaml
+  target:
+    group: ""
+    version: v1
+    kind: ConfigMap
+    name: tcp-services
+- path: add-tcp-protocol-service.yaml
+  target:
+    group: ""
+    version: v1
+    kind: Service
+    name: ingress-nginx

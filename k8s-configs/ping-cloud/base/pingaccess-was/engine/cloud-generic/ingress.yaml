@@ -31,6 +31,7 @@ spec:
         - logs-dev.ping-demo.com
         - argocd-dev.ping-demo.com
         - pingcentral-admin-dev.ping-demo.com
+        - healthcheck-httpbin-pa-was-dev.ping-demo.com
 
   rules:
     - host: pingaccess-admin-dev.ping-demo.com
@@ -103,6 +104,17 @@ spec:
       http:
         paths:
           # This rule allows external access to PingCentral via the pingaccess-was runtime service
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: pingaccess-was
+                port:
+                  number: 443
+    - host: healthcheck-httpbin-pa-was-dev.ping-demo.com
+      http:
+        paths:
+          # This rule allows external access to the healthcheck-httpbin-pa-was service via the pingaccess-was runtime service
           - pathType: Prefix
             path: /
             backend:

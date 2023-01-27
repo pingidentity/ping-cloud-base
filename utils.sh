@@ -297,6 +297,12 @@ build_kustomizations_in_dir() {
   for KUSTOMIZATION_FILE in ${KUSTOMIZATION_FILES}; do
     KUSTOMIZATION_DIR=$(dirname ${KUSTOMIZATION_FILE})
 
+    if grep "kind: Component" ${KUSTOMIZATION_FILE}
+    then
+      log "${KUSTOMIZATION_DIR} is a Component. Skipping"
+      continue
+    fi
+
     log "Processing kustomization.yaml in ${KUSTOMIZATION_DIR}"
     set_kustomize_load_arg_and_value
     kustomize build "${build_load_arg}" "${build_load_arg_value}" "${KUSTOMIZATION_DIR}" 1> /dev/null
@@ -449,7 +455,7 @@ ${ARTIFACT_REPO_URL}
 ${PING_ARTIFACT_REPO_URL}
 ${LOG_ARCHIVE_URL}
 ${BACKUP_URL}
-${BACKUP_BUCKET_NAME}
+${PGO_BACKUP_BUCKET_NAME}
 ${MYSQL_SERVICE_HOST}
 ${MYSQL_USER}
 ${MYSQL_PASSWORD}
@@ -460,7 +466,10 @@ ${TENANT_NAME}
 ${NEW_RELIC_ENVIRONMENT_NAME}
 ${DATASYNC_P1AS_SYNC_SERVER}
 ${LEGACY_LOGGING}
-${PF_PROVISIONING_ENABLED}'
+${PF_PROVISIONING_ENABLED}
+${RADIUS_PROXY_ENABLED}
+${DASH_REPO_URL}
+${DASH_REPO_BRANCH}'
 
 substitute_vars() {
   local subst_dir="$1"
@@ -588,42 +597,140 @@ pgo_dev_deploy() {
 
   kust_file="${build_dir}/cluster-tools/pgo/kustomization.yaml"
   prov_kust_file="${build_dir}/ping-cloud/pingfederate/provisioning/kustomization.yaml"
-  pgo_feature_flag "${kust_file}" "${prov_kust_file}"
+  monitor_kust_file="${build_dir}/cluster-tools/monitoring/pgo/kustomization.yaml"
+  pgo_feature_flag "${kust_file}" "${prov_kust_file}" "${monitor_kust_file}"
 }
 
 # Clear the kustomize file, effectively turning off that block of kustomize code
 pgo_feature_flag() {
   local pgo_kust_file="${1}"
   local prov_kust_file="${2}"
+  local monitor_kust_file="${3}"
 
   if [[ $PF_PROVISIONING_ENABLED != "true" ]]; then
     log "FEATURE FLAG - PF Provisioning is disabled, removing"
     message="# PF_PROVISIONING_ENABLED has been set to 'false', therefore this file has been cleared to disable the feature"
+    component_message="kind: Component
+apiVersion: kustomize.config.k8s.io/v1alpha1
+# PF_PROVISIONING_ENABLED has been set to 'false', therefore this file has been cleared to disable the feature"
     echo "${message}" > "${pgo_kust_file}"
     echo "${message}" > "${prov_kust_file}"
+    echo "${component_message}" > "${monitor_kust_file}"
   fi
 }
 
-# Apply CRDs server-side to prevent errors around manifest size
+########################################################################################################################
+# Gets rollout status and waits to return until either the timeout is reached or the rollout is ready
+#
+# Arguments
+#   $1 -> resource to check rollout status
+#   $2 -> namespace for resource
+#   $3 -> timeout for check
+########################################################################################################################
+wait_for_rollout() {
+  local resource="${1}"
+  local namespace="${2}"
+  local timeout="${3}"
+  time kubectl rollout status "${resource}" --timeout "${timeout}s" -n "${namespace}" -w
+}
+
+########################################################################################################################
+# Apply CRD yaml and wait until cluster reports CRD established
+#
+# Arguments
+#   $1 -> CRD yaml file - *** must only contain CRDs *** otherwise will hang waiting for other objects to be "established"
+#   $2 -> timeout for waiting for CRD to be established
+########################################################################################################################
+apply_crd() {
+  local crd_yaml=${1}
+  local timeout=${2}
+
+  kubectl apply -f "${crd_yaml}"
+  kubectl wait --for condition="established" --timeout="${timeout}s" -f "${crd_yaml}"
+}
+
+########################################################################################################################
+# Apply Custom Resource Definitions
+#
+# Add any CRDs that need to be set up before deploying custom objects to this function
+#
+# Arguments
+#   $1 -> base directory where k8s-configs dir exists
+########################################################################################################################
 apply_crds() {
   local base_dir=${1}
+  local timeout="60"
 
-  pgo_crd_dir="${base_dir}/k8s-configs/cluster-tools/base/pgo/base/crd/"
+  # First, we need to deploy cert-manager. This is due to it using Dynamic Admission Control - Mutating Webhooks which
+  # must be available before we make use cert-manager
+  kubectl apply -f "${base_dir}/k8s-configs/cluster-tools/base/cert-manager/base/cert-manager.yaml"
+
+  # Set namespace to cert-manager - somehow cmctl is not able to automatically use the correct namespace
+  # Might be related to https://stackoverflow.com/questions/56980287/namespaces-not-found
+  cmctl check api --wait=2m -n cert-manager
+
+  # argo-events CRDs
+  argo_crd_yaml="${base_dir}/k8s-configs/cluster-tools/base/notification/argo-events/argo-events-crd.yaml"
+  apply_crd "${argo_crd_yaml}" "${timeout}"
+
   if [[ $PF_PROVISIONING_ENABLED == "true" ]]; then
+    pgo_crd_dir="${base_dir}/k8s-configs/cluster-tools/base/pgo/base/crd/"
     log "FEATURE FLAG - PF Provisioning is enabled, deploying PGO CRD"
     # PGO CRDs are so large, they have to be applied server-side
     kubectl apply --server-side -k "${pgo_crd_dir}"
   fi
 }
 
-# Get the backups bucket name from the BACKUP_URL env
-get_backup_bucket_name() {
-  local backup_env=${1}
+########################################################################################################################
+# Set a given variable name based on an SSM prefix and suffix. If SSM exists, the ssm_template will
+# be used to set the value. If the SSM prefix is 'unused', no value is set and SSM isn't checked.
+#
+# Arguments
+#   $1 -> var_name - the name of the variable to set
+#   $2 -> var_default - the default value for the variable if SSM is unused or there is an error
+#   $3 -> ssm_prefix - SSM prefix
+#   $4 -> ssm_suffix - The rest of the SSM key past the prefix
+#   $5 -> ssm_template - [OPTIONAL] A template to render with ${ssm_value} - for example -
+#                        'Hello my name is ${ssm_value}' will set the variable $var_name to that rendered value
+########################################################################################################################
+set_var() {
+  local var_name="${1}"
+  local var_default="${2}"
+  local ssm_prefix="${3}"
+  local ssm_suffix="${4}"
+  local ssm_template="${5}"
 
-  if [[ "${backup_env}" == "ssm://"* ]]; then
-      # env var is an ssm parameter
-      backup_env=$(get_ssm_value "${backup_env#ssm:/}")
+  # Set a default that will always be returned
+  local var_value="${var_default}"
+
+  # Get the actual variable value from the passed in var string
+  if [[ "${!1}" != '' ]]; then
+    var_value="${!1}"
+    echo "${var_name} already set to '${var_value}'"
+    return
+  elif [[ ${ssm_prefix} != "unused" ]]; then
+    # Remove ssm:/ if provided - all paths should start with '/'
+    if [[ ${ssm_prefix} == *"ssm://"* ]]; then
+      ssm_prefix="${ssm_prefix#ssm:/}"
+    fi
+    echo "${var_name} is not set, trying to find it in SSM..."
+    if ! ssm_value=$(get_ssm_value "${ssm_prefix}${ssm_suffix}"); then
+      printf '\tWARN: Issue fetching SSM path '%s%s' - %s...\nContinuing as this could be a disabled environment\n' \
+             "${ssm_prefix}" "${ssm_suffix}" "${ssm_value}"
+    else
+      printf '\tFound "%s%s" in SSM\n' "${ssm_prefix}" "${ssm_suffix}"
+      # Substitute ssm_value within the supplied ssm template, if template given
+      if [ -n "${ssm_template}" ]; then
+        var_value=$(echo "${ssm_template}" | ssm_value=${ssm_value} envsubst)
+      else
+        var_value="${ssm_value}"
+      fi
+    fi
+  else
+    printf "%s - not fetching SSM - prefix is set to 'unused'\n" "${var_name}"
   fi
 
-  echo "${backup_env#s3://}"
+  # Always export the variable and value
+  printf '\tSetting "%s" to "%s"\n' "${var_name}" "${var_value}"
+  export "${var_name}=${var_value}"
 }

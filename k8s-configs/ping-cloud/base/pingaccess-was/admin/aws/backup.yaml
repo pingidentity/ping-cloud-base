@@ -15,7 +15,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: pingaccess-was-backup
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was/dev:v1.16-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was/dev:v1.18-release-branch-latest
         imagePullPolicy: Always
         securityContext:
           runAsGroup: 9999
@@ -27,6 +27,8 @@ spec:
         envFrom:
         - configMapRef:
             name: pingaccess-was-admin-environment-variables
+        - configMapRef:
+            name: pingcommon-environment-variables
         env:
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
           value: "true"

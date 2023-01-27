@@ -139,7 +139,7 @@ spec:
     spec:
       serviceAccountName: cluster-autoscaler
       containers:
-        - image: public.ecr.aws/r2h3l6e4/autoscaling/cluster-autoscaler:v1.21.1
+        - image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/autoscaling/cluster-autoscaler:v1.21.1
           name: cluster-autoscaler
           resources:
             limits:

@@ -20,7 +20,7 @@ spec:
       serviceAccount: ping-serviceaccount
       containers:
       - name: pingcloud-healthcheck
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/healthcheck/dev:v1.16-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/healthcheck/dev:v1.18-release-branch-latest
         imagePullPolicy: Always
         env:
         - name: NAMESPACE

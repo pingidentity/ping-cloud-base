@@ -6,7 +6,7 @@ resources:
 - ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingaccess/engine?ref=${K8S_GIT_BRANCH}
 
 images:
-- name: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess
+- name: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess${ECR_ENV}
   newName: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess${ECR_ENV}
   newTag: ${PINGACCESS_IMAGE_TAG}
 
@@ -58,6 +58,14 @@ patchesJson6902:
                 name: pingaccess
                 port:
                   number: 443
+    # Healthcheck httpbin service through PA engines
+    - op: replace
+      path: /spec/tls/0/hosts/1
+      value: healthcheck-httpbin-pa.${DNS_ZONE}
+    - op: replace
+      path: /spec/rules/1/host
+      value: healthcheck-httpbin-pa.${DNS_ZONE}
+
 
 # pingaccess agent
 - target:
@@ -72,3 +80,4 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingaccess-agent.${DNS_ZONE}
+

@@ -7,7 +7,7 @@ resources:
 
 images:
 
-- name: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess-was
+- name: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess-was${ECR_ENV}
   newName: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess-was${ECR_ENV}
   newTag: ${PINGACCESS_WAS_IMAGE_TAG}
 

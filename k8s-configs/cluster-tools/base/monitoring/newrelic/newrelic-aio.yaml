@@ -973,7 +973,7 @@ spec:
             runAsNonRoot: true
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
-          image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.23.0
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
           env:
@@ -985,7 +985,7 @@ spec:
               value: "newrelic-license-key"
       containers:
         - name: controlplane
-          image: "public.ecr.aws/r2h3l6e4/pingcloud-monitoring/nri-kubernetes:v1.16-release-branch-latest"
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/nri-kubernetes/dev:v1.18-release-branch-latest
           imagePullPolicy: Always
           securityContext:
             privileged: false
@@ -1025,7 +1025,7 @@ spec:
               cpu: 100m
               memory: 150M
         - name: forwarder
-          image: "public.ecr.aws/r2h3l6e4/newrelic/k8s-events-forwarder:1.24.1"
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/k8s-events-forwarder:1.24.1
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: false
@@ -1156,7 +1156,7 @@ spec:
             runAsNonRoot: true
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
-          image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.23.0
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
           env:
@@ -1168,7 +1168,7 @@ spec:
               value: "newrelic-license-key"
       containers:
         - name: kubelet
-          image: "public.ecr.aws/r2h3l6e4/pingcloud-monitoring/nri-kubernetes:v1.16-release-branch-latest"
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/nri-kubernetes/dev:v1.18-release-branch-latest
           imagePullPolicy: Always
           securityContext:
             privileged: false
@@ -1209,7 +1209,7 @@ spec:
               cpu: 100m
               memory: 150M
         - name: agent
-          image: "public.ecr.aws/r2h3l6e4/newrelic/infrastructure-bundle:2.8.15"
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/infrastructure-bundle:2.8.15
           args: [ "newrelic-infra" ]
           imagePullPolicy: IfNotPresent
           securityContext:
@@ -1390,7 +1390,7 @@ spec:
         - --collectors=volumeattachments
         - --telemetry-port=8081
         imagePullPolicy: IfNotPresent
-        image: "k8s.gcr.io/kube-state-metrics/kube-state-metrics:v1.9.8"
+        image: k8s.gcr.io/kube-state-metrics/kube-state-metrics:v1.9.8
         securityContext:
           privileged: false
           runAsGroup: 65534
@@ -1453,7 +1453,7 @@ spec:
       hostNetwork: false
       containers:
       - name: nri-metadata-injection
-        image: "public.ecr.aws/r2h3l6e4/newrelic/k8s-metadata-injection:1.7.0"
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/k8s-metadata-injection:1.7.0
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: false
@@ -1529,7 +1529,7 @@ spec:
             runAsNonRoot: true
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
-          image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.23.0
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
           env:
@@ -1541,7 +1541,7 @@ spec:
               value: "newrelic-license-key"
       containers:
       - name: nri-prometheus
-        image: "public.ecr.aws/r2h3l6e4/newrelic/nri-prometheus:2.16.1"
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/nri-prometheus:2.16.1
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: false
@@ -1613,7 +1613,7 @@ spec:
             runAsNonRoot: true
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
-          image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.23.0
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
           env:
@@ -1625,7 +1625,7 @@ spec:
               value: "newrelic-license-key"
       containers:
         - name: kube-events
-          image: public.ecr.aws/r2h3l6e4/newrelic/nri-kube-events:1.8.0
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/nri-kube-events:1.8.0
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: false
@@ -1639,7 +1639,7 @@ spec:
             - name: config-volume
               mountPath: /app/config
         - name: forwarder
-          image: public.ecr.aws/r2h3l6e4/newrelic/k8s-events-forwarder:1.22.0
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/k8s-events-forwarder:1.22.0
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: false
@@ -1748,7 +1748,7 @@ spec:
             runAsNonRoot: true
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
-          image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.23.0
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
           env:
@@ -1760,7 +1760,7 @@ spec:
               value: "newrelic-license-key"
       containers:
         - name: ksm
-          image: "public.ecr.aws/r2h3l6e4/pingcloud-monitoring/nri-kubernetes:v1.16-release-branch-latest"
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/nri-kubernetes/dev:v1.18-release-branch-latest
           imagePullPolicy: Always
           securityContext:
             privileged: false
@@ -1797,7 +1797,7 @@ spec:
               cpu: 100m
               memory: 150M
         - name: forwarder
-          image: "public.ecr.aws/r2h3l6e4/newrelic/k8s-events-forwarder:1.24.1"
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/k8s-events-forwarder:1.24.1
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: false
@@ -1918,7 +1918,7 @@ spec:
     spec:
       containers:
         - name: create
-          image: "k8s.gcr.io/ingress-nginx/kube-webhook-certgen:v1.1.1"
+          image: k8s.gcr.io/ingress-nginx/kube-webhook-certgen:v1.1.1
           imagePullPolicy: IfNotPresent
           args:
             - create
@@ -1967,7 +1967,7 @@ spec:
     spec:
       containers:
         - name: patch
-          image: "k8s.gcr.io/ingress-nginx/kube-webhook-certgen:v1.1.1"
+          image: k8s.gcr.io/ingress-nginx/kube-webhook-certgen:v1.1.1
           imagePullPolicy: IfNotPresent
           args:
             - patch
@@ -2017,7 +2017,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 1000
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.23.0
         command:
           - /tmp/copy-secret.sh
         env:

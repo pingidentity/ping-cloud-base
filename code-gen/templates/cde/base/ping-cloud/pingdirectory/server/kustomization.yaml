@@ -6,7 +6,7 @@ resources:
 - ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingdirectory/server?ref=${K8S_GIT_BRANCH}
 
 images:
-- name: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingdirectory
+- name: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingdirectory${ECR_ENV}
   newName: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingdirectory${ECR_ENV}
   newTag: ${PINGDIRECTORY_IMAGE_TAG}
 

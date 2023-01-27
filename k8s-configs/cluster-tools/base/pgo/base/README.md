@@ -1,7 +1,6 @@
 # PGO: The Postgres Operator from Crunchy Data
 
-This directory contains UNMODIFIED manifest yamls. They are copied directly from the `./kustomize/install` directory
-in this repository:
+This directory contains UNMODIFIED manifest yamls with the exception for the image repositories being changed to our ECR repo. They are copied directly from the `./kustomize/install` directory
 https://github.com/CrunchyData/postgres-operator-examples
 
 ALL directories/files are copied here, even if they are unused. The only portion of this directory that is Ping-specific

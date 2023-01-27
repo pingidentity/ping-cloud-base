@@ -72,17 +72,70 @@ data:
         storage.backlog.mem_limit 5M
         
     @INCLUDE ping-log.conf
+    @INCLUDE p14c.conf
     @INCLUDE nr.conf
     @INCLUDE nonping-log.conf
     @INCLUDE dataplane-log.conf
     @INCLUDE host-log.conf
     @INCLUDE outputs.conf
 
+  p14c.conf: | 
+    [INPUT]
+        Name                tail
+        Tag                 p14c.*
+        Path                /var/log/containers/p14c-*_ping-cloud*.log
+        multiline.parser    docker, cri
+        DB                  /fluent-bit/state/flb_p14c.db
+        Mem_Buf_Limit       50MB
+        Skip_Long_Lines     Off
+        Refresh_Interval    10
+        Rotate_Wait         30
+        storage.type        filesystem
+        Read_from_Head      ${READ_FROM_HEAD}
+
+    # Multiline exceptions
+    [FILTER]
+        Name                  multiline
+        match                 p14c.*  
+        multiline.key_content log
+        multiline.parser      multiline_java_log
+    
+    [FILTER]
+        Name                kubernetes
+        Match               p14c.*
+        Kube_URL            https://kubernetes.default.svc:443
+        Kube_Tag_Prefix     p14c.var.log.containers.
+        Merge_Log           On
+        Merge_Log_Key       log_processed
+        K8S-Logging.Parser  On
+        K8S-Logging.Exclude Off
+        Annotations         Off
+        Labels              On
+        Buffer_Size         1Mb
+    
+    [FILTER]
+        Name                lua
+        Match               p14c.*
+        script              record_modifier.lua
+        call                record_modifier
+
+    # P14C
+    [FILTER]
+        Name                rewrite_tag
+        Match               p14c.*
+        Rule                $log ^.*$ $stream_name.cw_out true
+
+    [FILTER]
+        Name                rewrite_tag
+        Match               p14c.*
+        Rule                $log ^.*$ $stream_name.s3_app_out false
+
   ping-log.conf: |
     [INPUT]
         Name                tail
         Tag                 ping.*
         Path                /var/log/containers/*_ping-cloud*.log
+        Exclude_Path        /var/log/containers/p14c-*
         multiline.parser    docker, cri
         DB                  /fluent-bit/state/flb_ping.db
         Mem_Buf_Limit       50MB
@@ -122,6 +175,19 @@ data:
         Name                rewrite_tag
         Match               ping.*
         Rule                $log ^.+$ app.$stream_name true
+    
+    # Ping-cloud healthcheck
+    [FILTER]
+        Name                rewrite_tag
+        Match               ping.*healthcheck*
+        Rule                $log ^.+$ $stream_name.elk_out false
+
+    # Ping-cloud metadata
+    [FILTER]
+        Name                rewrite_tag
+        Match               ping.*metadata*
+        Rule                $log ^.*$ $stream_name.s3_app_out false
+        Emitter_Name        ping_metadata
 
     [FILTER]
         Name                lua
@@ -369,7 +435,7 @@ data:
         Match               ping.*
         Rule                $log ^\/opt\/out\/instance\/logs\/error error_logs.$stream_name.cw_out false
         Emitter_Name        error_logs
-    
+
     # Everything else
     [FILTER]
         Name                rewrite_tag
@@ -394,6 +460,7 @@ data:
         Name                tail
         Tag                 newrelic_kube.*
         Path                /var/log/containers/*external-dns*.log, /var/log/containers/*kube-system*.log
+        Exclude_Path        /var/log/containers/*kube-proxy*.log, /var/log/containers/*sealed-secrets-controller*.log
         multiline.parser    docker, cri
         DB                  /fluent-bit/state/flb_nr.db
         Mem_Buf_Limit       50MB
@@ -432,7 +499,7 @@ data:
         Name                tail
         Tag                 nonping.*
         Path                /var/log/containers/*.log
-        Exclude_Path        *_ping-cloud*.log, *fluent-bit*.log, *nri-bundle*.log, *grafana*.log, *prometheus*.log, *cloudwatch-agent*.log
+        Exclude_Path        *_ping-cloud*.log, *fluent-bit*.log, *nri-bundle*.log, *grafana*.log, *prometheus-*, *cloudwatch-agent*.log
         multiline.parser    docker, cri
         DB                  /fluent-bit/state/flb_nonping.db
         Mem_Buf_Limit       50MB
@@ -460,11 +527,41 @@ data:
         Match               nonping.*
         script              record_modifier.lua
         call                record_modifier
+        
+    [FILTER]
+        Name                rewrite_tag
+        Match               nonping.*elasticsearch-bootstrap*
+        rule                $log ^.*$ $stream_name.s3_app_out false
     
+    [FILTER]
+        Name                rewrite_tag
+        Match               nonping.*logging-bootstrap*
+        rule                $log ^.*$ $stream_name.s3_app_out false
+    
+    [FILTER]
+        Name                rewrite_tag
+        Match               nonping.*kibana-bootstrap*
+        rule                $log ^.*$ $stream_name.s3_app_out false
+  
     [FILTER]
         Name                rewrite_tag
         Match               nonping.*
         Rule                $log ^.+$ app.$stream_name true
+    
+    [FILTER]
+        Name                rewrite_tag
+        Match               nonping.*healthcheck*
+        Rule                $log ^.+$ $stream_name.elk_out false
+    
+    [FILTER]
+        Name                rewrite_tag
+        Match               nonping.*postgres-operator*
+        rule                $log ^.*$ $stream_name.elk_out true
+
+    [FILTER]
+        Name                rewrite_tag
+        Match               nonping.*postgres-operator*
+        rule                $log ^.*$ $stream_name.s3_app_out false
 
     [FILTER]
         Name                lua
@@ -693,19 +790,19 @@ data:
         upload_timeout      5m
 
     [OUTPUT]
-        Name           nrlogs
-        Match          newrelic_kube.*
-        license_key    ${NR_LICENSE_KEY}
+        Name                nrlogs
+        Match               newrelic_kube.*
+        license_key         ${NR_LICENSE_KEY}
 
     [OUTPUT]
-        Name           nrlogs
-        Match          dataplane.systemd.*
-        license_key    ${NR_LICENSE_KEY}
+        Name                nrlogs
+        Match               dataplane.systemd.docker.*
+        license_key         ${NR_LICENSE_KEY}
 
     [OUTPUT]
-        Name           nrlogs
-        Match          host.*
-        license_key    ${NR_LICENSE_KEY}
+        Name                nrlogs
+        Match               host.*
+        license_key         ${NR_LICENSE_KEY}
   time.lua: |
     # This script is called by fluent-bit to append a time to the log message.
     function append_tag(tag, timestamp, record)
@@ -774,7 +871,7 @@ spec:
     spec:
       containers:
       - name: fluent-bit
-        image: public.ecr.aws/r2h3l6e4/amazon/aws-for-fluent-bit:2.24.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-for-fluent-bit:2.24.0
         imagePullPolicy: Always
         command:
           - "/bin/sh"

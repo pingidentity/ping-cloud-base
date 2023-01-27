@@ -1,0 +1,70 @@
+#
+# This defines the httpbin-pa deployment.
+#
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthcheck-httpbin-pa
+  labels:
+    role: healthcheck-httpbin-pa
+spec:
+  selector:
+    matchLabels:
+      role: healthcheck-httpbin-pa
+  template:
+    metadata:
+      name: healthcheck-httpbin-pa
+      labels:
+        role: healthcheck-httpbin-pa
+    spec:
+      containers:
+      - name: healthcheck-httpbin-pa
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/kennethreitz/httpbin
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: "60Mi"
+            cpu: "200m"
+          requests:
+            memory: "10Mi"
+            cpu: "100m"
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          failureThreshold: 3
+          successThreshold: 1
+          timeoutSeconds: 3
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          failureThreshold: 3
+          successThreshold: 1
+          timeoutSeconds: 3
+        ports:
+        - containerPort: 80
+---
+#
+# This service exposes the httpbin-pa port to the cluster.
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: healthcheck-httpbin-pa
+  labels:
+    role: healthcheck-httpbin-pa
+spec:
+  externalName: healthcheck-httpbin-pa.health.svc.cluster.local
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    role: healthcheck-httpbin-pa
+
+
+

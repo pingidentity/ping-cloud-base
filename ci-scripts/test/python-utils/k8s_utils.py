@@ -1,5 +1,7 @@
 import json
+import re
 import unittest
+
 from datetime import datetime
 
 import kubernetes as k8s
@@ -77,3 +79,31 @@ class K8sUtils(unittest.TestCase):
             ].status.phase in ["Succeeded", "Failed"]:
                 watch.stop()
                 return
+
+    def get_latest_pod_logs(self, pod_name: str, container_name: str, pod_namespace: str, log_lines: int):
+        pod_logs = self.core_client.read_namespaced_pod_log(
+            name=pod_name, container=container_name, namespace=pod_namespace, tail_lines=int(log_lines)
+        )
+        pod_logs = pod_logs.splitlines()
+        return pod_logs
+
+    def get_namespace_names(self):
+        namespaces = self.core_client.list_namespace()
+        return [
+            ns.metadata.name
+            for ns in namespaces.items
+        ]
+
+    def get_namespaced_pod_names(self, namespace: str, pod_name_pattern: str) -> [str]:
+        """
+        Get a list of pod_names for pods in a namespace that match a naming pattern
+        :param namespace: Namespace to check pod names
+        :param pod_name_pattern: Regex pod name pattern to check against pod names
+        :returns: {pod_name: pod_IP}
+        """
+        pods = self.core_client.list_namespaced_pod(namespace)
+        return [
+            pod.metadata.name
+            for pod in pods.items
+            if re.search(pod_name_pattern, pod.metadata.name)
+        ]

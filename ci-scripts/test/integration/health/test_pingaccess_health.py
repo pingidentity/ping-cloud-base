@@ -5,7 +5,7 @@ from health_common import Categories, TestHealthBase
 
 class TestPingAccessHealth(TestHealthBase):
     job_name = "healthcheck-pingaccess"
-    pingaccess = "pingaccess"
+    pingaccess = "pingAccess"
 
     def test_pingaccess_health_cron_job_exists(self):
         cron_jobs = self.batch_client.list_cron_job_for_all_namespaces()
@@ -44,4 +44,24 @@ class TestPingAccessHealth(TestHealthBase):
         self.assertTrue(
             len(res) > 0,
             "No 'responds to requests' checks found in health check results",
+        )
+
+    def test_health_check_has_create_object_results(self):
+        test_results = self.get_test_results(
+            self.pingaccess, Categories.connectivity
+        )
+        res = [key for key in test_results if "create an object" in key]
+        self.assertTrue(
+            len(res) > 0,
+            "No 'create an object' checks found in health check results",
+        )
+
+    def test_health_check_has_proxy_results(self):
+        test_results = self.get_test_results(
+            self.pingaccess, Categories.connectivity
+        )
+        res = [key for key in test_results if "proxy an unauthenticated request" in key]
+        self.assertTrue(
+            len(res) > 0,
+            "No 'proxy an unauthenticated request' checks found in health check results",
         )

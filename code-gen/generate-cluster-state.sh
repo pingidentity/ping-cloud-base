@@ -62,180 +62,201 @@
 # The following environment variables, if present, will be used for the following purposes:
 #
 # ----------------------------------------------------------------------------------------------------------------------
-# Variable                 | Purpose                                            | Default (if not present)
+# Variable                   | Purpose                                            | Default (if not present)
 # ----------------------------------------------------------------------------------------------------------------------
-# TENANT_NAME              | The name of the tenant, e.g. k8s-icecream. If      | First segment of the TENANT_DOMAIN
-#                          | provided, this value will be used for the cluster  | value. E.g. it will default to "ci-cd" 
-#                          | name and must have the correct case (e.g. ci-cd    | for tenant domain "ci-cd.ping-oasis.com"
-#                          | vs. CI-CD).                                        |
-#                          |                                                    |
-# TENANT_DOMAIN            | The tenant's domain suffix that's common to all    | ci-cd.ping-oasis.com
-#                          | CDEs e.g. k8s-icecream.com. The tenant domain in   |
-#                          | each CDE is assumed to have the CDE name as the    |
-#                          | prefix, followed by a hyphen. For example, for the |
-#                          | above suffix, the tenant domain for stage is       |
-#                          | assumed to be stage-k8s-icecream.com and a hosted  |
-#                          | zone assumed to exist on Route53 for that domain.  |
-#                          |                                                    |
-# GLOBAL_TENANT_DOMAIN     | Region-independent URL used for DNS failover/      | Replaces the first segment of
-#                          | routing.                                           | the TENANT_DOMAIN value with the
-#                          |                                                    | string "global". For example, it will
-#                          |                                                    | default to "global.poc.ping.com" for
-#                          |                                                    | tenant domain "us1.poc.ping.cloud".
-#                          |                                                    |
-# SECONDARY_TENANT_DOMAINS | A comma-separated list of tenant domain suffixes   | No default.
-#                          | of secondary regions in multi-region environments, |
-#                          | e.g. "xxx.eu1.ping.cloud,xxx.au1.ping.cloud".      |
-#                          | The primary tenant domain suffix must not be in    |
-#                          | the list. Only used if IS_MULTI_CLUSTER is true.   |
-#                          |                                                    |
-# REGION                   | The region where the tenant environment is         | us-west-2
-#                          | deployed. For PCPT, this is a required parameter   |
-#                          | to Container Insights, an AWS-specific logging     |
-#                          | and monitoring solution.                           |
-#                          |                                                    |
-# REGION_NICK_NAME         | An optional nick name for the region. For example, | Same as REGION.
-#                          | this variable may be set to a unique name in       |
-#                          | multi-cluster deployments which live in the same   |
-#                          | region. The nick name will be used as the name of  |
-#                          | the region-specific code directory in the cluster  |
-#                          | state repo.                                        |
-#                          |                                                    |
-# IS_MULTI_CLUSTER         | Flag indicating whether or not this is a           | false
-#                          | multi-cluster deployment.                          |
-#                          |                                                    |
-# PRIMARY_TENANT_DOMAIN    | In multi-cluster environments, the primary domain. | Same as TENANT_DOMAIN.
-#                          | Only used if IS_MULTI_CLUSTER is true.             |
-#                          |                                                    |
-# PRIMARY_REGION           | In multi-cluster environments, the primary region. | Same as REGION.
-#                          | Only used if IS_MULTI_CLUSTER is true.             |
-#                          |                                                    |
-# SIZE                     | Size of the environment, which pertains to the     | x-small
-#                          | number of user identities. Legal values are        |
-#                          | x-small, small, medium or large.                   |
-#                          |                                                    |
-# CLUSTER_STATE_REPO_URL   | The URL of the cluster-state repo.                 | https://github.com/pingidentity/ping-cloud-base
-#                          |                                                    |
-# SERVER_PROFILE_URL       | The URL for the server-profiles repo.              | URL of CLUSTER_STATE_REPO_URL with the
-#                          |                                                    | name profile-repo, if not provided.
-#                          |                                                    |
-# ARTIFACT_REPO_URL        | The URL for plugins (e.g. PF kits, PD extensions). | The string "unused".
-#                          | If not provided, the Ping stack will be            |
-#                          | provisioned without plugins. This URL must always  |
-#                          | have an s3 scheme, e.g.                            |
-#                          | s3://customer-repo-bucket-name.                    |
-#                          |                                                    |
-# PING_ARTIFACT_REPO_URL   | This environment variable can be used to overwrite | https://ping-artifacts.s3-us-west-2.amazonaws.com
-#                          | the default endpoint for public plugins. This URL  |
-#                          | must use an https scheme as shown by the default   |
-#                          | value.                                             |
-#                          |                                                    |
-# LOG_ARCHIVE_URL          | The URL of the log archives. If provided, logs are | The string "unused".
-#                          | periodically captured and sent to this URL. For    |
-#                          | AWS S3 buckets, it must be an S3 URL, e.g.         |
-#                          | s3://logs.                                         |
-#                          |                                                    |
-# BACKUP_URL               | The URL of the backup location. If provided, data  | The string "unused".
-#                          | backups are periodically captured and sent to this |
-#                          | URL. For AWS S3 buckets, it must be an S3 URL,     |
-#                          | e.g. s3://backups.                                 |
-#                          |                                                    |
-# K8S_GIT_URL              | The Git URL of the Kubernetes base manifest files. | https://github.com/pingidentity/ping-cloud-base
-#                          |                                                    |
-# K8S_GIT_BRANCH           | The Git branch within the above Git URL.           | The git branch where this script
-#                          |                                                    | exists, i.e. CI_COMMIT_REF_NAME
-#                          |                                                    |
-# SSH_ID_PUB_FILE          | The file containing the public-key (in PEM format) | No default
-#                          | used by the CD tool and Ping containers to access  |
-#                          | the cluster state and config repos, respectively.  |
-#                          | If not provided, a new key-pair will be generated  |
-#                          | by the script. If provided, the SSH_ID_KEY_FILE    |
-#                          | must also be provided and correspond to this       |
-#                          | public key.                                        |
-#                          |                                                    |
-# SSH_ID_KEY_FILE          | The file containing the private-key (in PEM        | No default
-#                          | format) used by the CD tool and Ping containers to |
-#                          | access the cluster state and config repos,         |
-#                          | respectively. If not provided, a new key-pair      |
-#                          | will be generated by the script. If provided, the  |
-#                          | SSH_ID_PUB_FILE must also be provided and          |
-#                          | correspond to this private key.                    |
-#                          |                                                    |
-# TARGET_DIR               | The directory where the manifest files will be     | /tmp/sandbox
-#                          | generated. If the target directory exists, it will |
-#                          | be deleted.                                        |
-#                          |                                                    |
-# IS_BELUGA_ENV            | An optional flag that may be provided to indicate  | false. Only intended for Beluga
-#                          | that the cluster state is being generated for      | developers.
-#                          | testing during Beluga development. If set to true, |
-#                          | the cluster name is assumed to be the tenant name  |
-#                          | and the tenant domain assumed to be the same       |
-#                          | across all 4 CDEs. On the other hand, in PCPT, the |
-#                          | cluster name for the CDEs are hardcoded to dev,    |
-#                          | test, stage and prod. The domain names for the     |
-#                          | CDEs are derived from the TENANT_DOMAIN variable   |
-#                          | as documented above. This flag exists because the  |
-#                          | Beluga developers only have access to one domain   |
-#                          | and hosted zone in their Ping IAM account role.    |
-#                          |                                                    |  
-# IS_GA                    | A flag indicating whether or not this is a GA      | The SSM path: /pcpt/stage/is-ga
-#                          | customer.                                          |
-#                          |                                                    |        
-# IS_MY_PING               | A flag indicating whether or not this is a MyPing  | The SSM path: /pcpt/orch-api/is-myping
-#                          | customer.                                          |         
-#                          |                                                    |
-# ACCOUNT_ID_PATH_PREFIX   | The SSM path prefix which stores CDE account IDs   | The string "unused".
-#                          | of the Ping Cloud customers. The environment type  |
-#                          | is appended to the key path before the value is    |
-#                          | retrieved from the SSM endpoint. The IAM role with |
-#                          | the AWS account ID must be added as an annotation  |
-#                          | to the corresponding Kubernetes service account to |
-#                          | enable IRSA (IAM Role for Service Accounts).       |
-#                          |                                                    |
-# NLB_EIP_PATH_PREFIX      | The SSM path prefix which stores comma separated   | The string "unused".
-#                          | AWS Elastic IP allocation IDs that exist in the    |
-#                          | CDE account of the Ping Cloud customers.           |
-#                          | The environment type is appended to the SSM key    | 
-#                          | path before the value is retrieved from the        |
-#                          | AWS SSM endpoint. The EIP allocation IDs must be   |
-#                          | added as an annotation to the corresponding K8s    |
-#                          | service for the AWS NLB to use the AWS Elastic IP. |
-#                          |                                                    |
-# PLATFORM_EVENT_QUEUE_NAME| The name of the queue that may be used to notify   | v2_platform_event_queue.fifo
-#                          | PingCloud applications of platform events. This    |
-#                          | is currently only used if the orchestrator for     |
-#                          | PingCloud environments is MyPing.                  |
-#                          |                                                    |
-# ORCH_API_SSM_PATH_PREFIX | The prefix of the SSM path that contains MyPing    | /pcpt/orch-api
-#                          | state data required for the P14C/P1AS integration. |
-#                          |                                                    |
-# SERVICE_SSM_PATH_PREFIX  | The prefix of the SSM path that contains service   | /pcpt/service
-#                          | state data required for the cluster.               |
-#                          |                                                    |
-# NEW_RELIC_LICENSE_KEY    | The key of NewRelic APM Agent used to send data to | The SSM path: ssm://pcpt/sre/new-relic/java-agent-license-key
-#                          | NewRelic account.                                  |
-#                          |                                                    |
-# MYSQL_SERVICE_HOST       | The hostname of the MySQL database server.         | pingcentraldb.${PRIMARY_TENANT_DOMAIN}
-#                          |                                                    |
-# MYSQL_USER               | The DBA user of the PingCentral MySQL RDS          | The SSM path:
-#                          | database.                                          | ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username
-#                          |                                                    |
-# MYSQL_PASSWORD           | The DBA password of the PingCentral MySQL RDS      | The SSM path:
-#                          | database.                                          | ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#password
-#                          |                                                    |
-# PING_IDENTITY_DEVOPS_USER| A user with license to run Ping Software.          | The SSM path:
-#                          |                                                    | ssm://pcpt/devops-license/user
-#                          |                                                    |
-# PING_IDENTITY_DEVOPS_KEY | The key to the above user.                         | The SSM path:
-#                          |                                                    | ssm://pcpt/devops-license/key
-#                          |                                                    |
-# LEGACY_LOGGING           | Flag indicating where we should send app logs -    | False
-#                          | to CloudWatch(if True) or to ELK (if False)        |
-#                          |                                                    |
-# PF_PROVISIONING_ENABLED  | Feature Flag - Indicates if the outbound           | False
-#                          | provisioning feature for PingFederate is enabled   |
-#                          | !! Not yet available for multi-region customers !! |
-#                          |                                                    |
+# ACCOUNT_BASE_PATH          | The account's SSM base path                        | The SSM path: /pcpt/config/k8s-config/accounts/
+#                            |                                                    |
+# ARGOCD_SLACK_TOKEN_SSM_PATH| SSM path to secret token for ArgoCD slack          | The SSM path:
+#                            | notifications                                      | ssm://pcpt/argocd/notification/slack/access_token
+#                            |                                                    |
+# ARTIFACT_REPO_URL          | The URL for plugins (e.g. PF kits, PD extensions). | The string "unused".
+#                            | If not provided, the Ping stack will be            |
+#                            | provisioned without plugins. This URL must always  |
+#                            | have an s3 scheme, e.g.                            |
+#                            | s3://customer-repo-bucket-name.                    |
+#                            |                                                    |
+# BACKUP_URL                 | The URL of the backup location. If provided, data  | The string "unused".
+#                            | backups are periodically captured and sent to this |
+#                            | URL. For AWS S3 buckets, it must be an S3 URL,     |
+#                            | e.g. s3://backups.                                 |
+#                            |                                                    |
+# CLUSTER_STATE_REPO_URL     | The URL of the cluster-state repo.                 | https://github.com/pingidentity/ping-cloud-base
+#                            |                                                    |
+# GLOBAL_TENANT_DOMAIN       | Region-independent URL used for DNS failover/      | Replaces the first segment of
+#                            | routing.                                           | the TENANT_DOMAIN value with the
+#                            |                                                    | string "global". For example, it will
+#                            |                                                    | default to "global.poc.ping.com" for
+#                            |                                                    | tenant domain "us1.poc.ping.cloud".
+#                            |                                                    |
+# IS_BELUGA_ENV              | An optional flag that may be provided to indicate  | false. Only intended for Beluga
+#                            | that the cluster state is being generated for      | developers.
+#                            | testing during Beluga development. If set to true, |
+#                            | the cluster name is assumed to be the tenant name  |
+#                            | and the tenant domain assumed to be the same       |
+#                            | across all 4 CDEs. On the other hand, in PCPT, the |
+#                            | cluster name for the CDEs are hardcoded to dev,    |
+#                            | test, stage and prod. The domain names for the     |
+#                            | CDEs are derived from the TENANT_DOMAIN variable   |
+#                            | as documented above. This flag exists because the  |
+#                            | Beluga developers only have access to one domain   |
+#                            | and hosted zone in their Ping IAM account role.    |
+#                            |                                                    |
+# IS_GA                      | A flag indicating whether or not this is a GA      | The SSM path: /pcpt/stage/is-ga
+#                            | customer.                                          |
+#                            |                                                    |
+# IS_MULTI_CLUSTER           | Flag indicating whether or not this is a           | false
+#                            | multi-cluster deployment.                          |
+#                            |                                                    |
+# IS_MY_PING                 | A flag indicating whether or not this is a MyPing  | The SSM path: /pcpt/orch-api/is-myping
+#                            | customer.                                          |
+#                            |                                                    |
+# K8S_GIT_BRANCH             | The Git branch within the above Git URL.           | The git branch where this script
+#                            |                                                    | exists, i.e. CI_COMMIT_REF_NAME
+#                            |                                                    |
+# K8S_GIT_URL                | The Git URL of the Kubernetes base manifest files. | https://github.com/pingidentity/ping-cloud-base
+#                            |                                                    |
+# LEGACY_LOGGING             | Flag indicating where we should send app logs -    | True
+#                            | to CloudWatch(if True) or to ELK (if False)        |
+#                            |                                                    |
+# LOG_ARCHIVE_URL            | The URL of the log archives. If provided, logs are | The string "unused".
+#                            | periodically captured and sent to this URL. For    |
+#                            | AWS S3 buckets, it must be an S3 URL, e.g.         |
+#                            | s3://logs.                                         |
+#                            |                                                    |
+# MYSQL_PASSWORD             | The DBA password of the PingCentral MySQL RDS      | The SSM path:
+#                            | database.                                          | ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#password
+#                            |                                                    |
+# MYSQL_SERVICE_HOST         | The hostname of the MySQL database server.         | pingcentraldb.${PRIMARY_TENANT_DOMAIN}
+#                            |                                                    |
+# MYSQL_USER                 | The DBA user of the PingCentral MySQL RDS          | The SSM path:
+#                            | database.                                          | ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username
+#                            |                                                    |
+# NEW_RELIC_LICENSE_KEY      | The key of NewRelic APM Agent used to send data to | The SSM path: ssm://pcpt/sre/new-relic/java-agent-license-key
+#                            | NewRelic account.                                  |
+#                            |                                                    |
+# NOTIFICATION_ENABLED       | Flag indicating if alerts should be sent to the    | False
+#                            | endpoint configured in the argo-events             |
+#                            |                                                    |
+# NLB_EIP_PATH_PREFIX        | The SSM path prefix which stores comma separated   | The string "unused".
+#                            | AWS Elastic IP allocation IDs that exist in the    |
+#                            | CDE account of the Ping Cloud customers.           |
+#                            | The environment type is appended to the SSM key    |
+#                            | path before the value is retrieved from the        |
+#                            | AWS SSM endpoint. The EIP allocation IDs must be   |
+#                            | added as an annotation to the corresponding K8s    |
+#                            | service for the AWS NLB to use the AWS Elastic IP. |
+#                            |                                                    |
+# ORCH_API_SSM_PATH_PREFIX   | The prefix of the SSM path that contains MyPing    | /pcpt/orch-api
+#                            | state data required for the P14C/P1AS integration. |
+#                            |                                                    |
+# PF_PROVISIONING_ENABLED    | Feature Flag - Indicates if the outbound           | False
+#                            | provisioning feature for PingFederate is enabled   |
+#                            | !! Not yet available for multi-region customers !! |
+#                            |                                                    |
+# PGO_BUCKET_URI_SUFFIX      | The SSM path suffix to the pgo backups bucket uri  | The SSM path: /pgo-bucket/uri
+#                            |                                                    |
+# PING_ARTIFACT_REPO_URL     | This environment variable can be used to overwrite | https://ping-artifacts.s3-us-west-2.amazonaws.com
+#                            | the default endpoint for public plugins. This URL  |
+#                            | must use an https scheme as shown by the default   |
+#                            | value.                                             |
+#                            |                                                    |
+# PING_IDENTITY_DEVOPS_KEY   | The key to the devops user.                         | The SSM path:
+#                            |                                                    | ssm://pcpt/devops-license/key
+#                            |                                                    |
+# PING_IDENTITY_DEVOPS_USER  | A user with license to run Ping Software.          | The SSM path:
+#                            |                                                    | ssm://pcpt/devops-license/user
+#                            |                                                    |
+# PLATFORM_EVENT_QUEUE_NAME  | The name of the queue that may be used to notify   | v2_platform_event_queue.fifo
+#                            | PingCloud applications of platform events. This    |
+#                            | is currently only used if the orchestrator for     |
+#                            | PingCloud environments is MyPing.                  |
+#                            |                                                    |
+# PRIMARY_REGION             | In multi-cluster environments, the primary region. | Same as REGION.
+#                            | Only used if IS_MULTI_CLUSTER is true.             |
+#                            |                                                    |
+# PRIMARY_TENANT_DOMAIN      | In multi-cluster environments, the primary domain. | Same as TENANT_DOMAIN.
+#                            | Only used if IS_MULTI_CLUSTER is true.             |
+#                            |                                                    |
+# PROM_NOTIFICATION_ENABLED  | Flag indicating if PGO alerts should be sent to    | False
+#                            | the endpoint configured in the argo-events         |
+#                            |                                                    |
+# PROM_SLACK_CHANNEL         | The Slack channel name for PGO argo-events to send | CDE environment: p1as-application-oncall
+#                            | notification.                                      |
+#                            |                                                    |
+# RADIUS_PROXY_ENABLED       | Feature Flag - Indicates if the radius proxy       | False
+#                            | feature for PingFederate engines is enabled        |
+#                            |                                                    |
+# REGION                     | The region where the tenant environment is         | us-west-2
+#                            | deployed. For PCPT, this is a required parameter   |
+#                            | to Container Insights, an AWS-specific logging     |
+#                            | and monitoring solution.                           |
+#                            |                                                    |
+# REGION_NICK_NAME           | An optional nick name for the region. For example, | Same as REGION.
+#                            | this variable may be set to a unique name in       |
+#                            | multi-cluster deployments which live in the same   |
+#                            | region. The nick name will be used as the name of  |
+#                            | the region-specific code directory in the cluster  |
+#                            | state repo.                                        |
+#                            |                                                    |
+# SECONDARY_TENANT_DOMAINS   | A comma-separated list of tenant domain suffixes   | No default.
+#                            | of secondary regions in multi-region environments, |
+#                            | e.g. "xxx.eu1.ping.cloud,xxx.au1.ping.cloud".      |
+#                            | The primary tenant domain suffix must not be in    |
+#                            | the list. Only used if IS_MULTI_CLUSTER is true.   |
+#                            |                                                    |
+# SERVER_PROFILE_URL         | The URL for the server-profiles repo.              | URL of CLUSTER_STATE_REPO_URL with the
+#                            |                                                    | name profile-repo, if not provided.
+#                            |                                                    |
+# SERVICE_SSM_PATH_PREFIX    | The prefix of the SSM path that contains service   | /pcpt/service
+#                            | state data required for the cluster.               |
+#                            |                                                    |
+# SLACK_CHANNEL              | The Slack channel name for argo-events to send     | CDE environment: p1as-application-oncall
+#                            | notification.                                      |
+#                            |                                                    |
+# NON_GA_SLACK_CHANNEL       | The Slack channel name for argo-events to send     | CDE environment: nowhere
+#                            | notification in case of IS_GA set to 'false' to    | Dev environment: nowhere
+#                            | reduce amount of unnecessary notifications sent    |
+#                            | to on-call channel. Overrides SLACK_CHANNEL        |
+#                            | variable value if IS_GA=false. By default, set     |
+#                            | to non-existent channel name to prevent flooding.  |
+#                            |                                                    |
+# SIZE                       | Size of the environment, which pertains to the     | x-small
+#                            | number of user identities. Legal values are        |
+#                            | x-small, small, medium or large.                   |
+#                            |                                                    |
+# SSH_ID_KEY_FILE            | The file containing the private-key (in PEM        | No default
+#                            | format) used by the CD tool and Ping containers to |
+#                            | access the cluster state and config repos,         |
+#                            | respectively. If not provided, a new key-pair      |
+#                            | will be generated by the script. If provided, the  |
+#                            | SSH_ID_PUB_FILE must also be provided and          |
+#                            | correspond to this private key.                    |
+#                            |                                                    |
+# SSH_ID_PUB_FILE            | The file containing the public-key (in PEM format) | No default
+#                            | used by the CD tool and Ping containers to access  |
+#                            | the cluster state and config repos, respectively.  |
+#                            | If not provided, a new key-pair will be generated  |
+#                            | by the script. If provided, the SSH_ID_KEY_FILE    |
+#                            | must also be provided and correspond to this       |
+#                            | public key.                                        |
+#                            |                                                    |
+# TARGET_DIR                 | The directory where the manifest files will be     | /tmp/sandbox
+#                            | generated. If the target directory exists, it will |
+#                            | be deleted.                                        |
+#                            |                                                    |
+# TENANT_DOMAIN              | The tenant's domain suffix that's common to all    | ci-cd.ping-oasis.com
+#                            | CDEs e.g. k8s-icecream.com. The tenant domain in   |
+#                            | each CDE is assumed to have the CDE name as the    |
+#                            | prefix, followed by a hyphen. For example, for the |
+#                            | above suffix, the tenant domain for stage is       |
+#                            | assumed to be stage-k8s-icecream.com and a hosted  |
+#                            | zone assumed to exist on Route53 for that domain.  |
+#                            |                                                    |
+# TENANT_NAME                | The name of the tenant, e.g. k8s-icecream. If      | First segment of the TENANT_DOMAIN
+#                            | provided, this value will be used for the cluster  | value. E.g. it will default to "ci-cd"
+#                            | name and must have the correct case (e.g. ci-cd    | for tenant domain "ci-cd.ping-oasis.com"
+#                            | vs. CI-CD).                                        |
+#                            |                                                    |
 ########################################################################################################################
 
 #### SCRIPT START ####
@@ -262,7 +283,7 @@ QUIET="${QUIET:-false}"
 
 # The list of variables in the template files that will be substituted by default.
 # Note: DEFAULT_VARS is a superset of ENV_VARS_TO_SUBST within update-cluster-state.sh. These variables should be kept
-# in sync with the following exceptions: LAST_UPDATE_REASON, and NEW_RELIC_LICENSE_KEY_BASE64 should only be found
+# in sync with the following exceptions: LAST_UPDATE_REASON and NEW_RELIC_LICENSE_KEY_BASE64 should only be found
 # within DEFAULT_VARS
 # Note: only secret variables are substituted into YAML files. Environments variables are just written to an env_vars
 # file and substituted at runtime by the continuous delivery tool running in cluster.
@@ -290,7 +311,7 @@ ${ARTIFACT_REPO_URL}
 ${PING_ARTIFACT_REPO_URL}
 ${LOG_ARCHIVE_URL}
 ${BACKUP_URL}
-${BACKUP_BUCKET_NAME}
+${PGO_BACKUP_BUCKET_NAME}
 ${PING_CLOUD_NAMESPACE}
 ${K8S_GIT_URL}
 ${K8S_GIT_BRANCH}
@@ -307,6 +328,10 @@ ${ENVIRONMENT_TYPE}
 ${KUSTOMIZE_BASE}
 ${LETS_ENCRYPT_SERVER}
 ${USER_BASE_DN}
+${USER_BASE_DN_2}
+${USER_BASE_DN_3}
+${USER_BASE_DN_4}
+${USER_BASE_DN_5}
 ${ADMIN_CONSOLE_BRANDING}
 ${ENVIRONMENT_PREFIX}
 ${NEW_RELIC_ENVIRONMENT_NAME}
@@ -348,11 +373,20 @@ ${PINGFEDERATE_IMAGE_TAG}
 ${PINGDIRECTORY_IMAGE_TAG}
 ${PINGDELEGATOR_IMAGE_TAG}
 ${IRSA_PING_ANNOTATION_KEY_VALUE}
+${IRSA_PA_ANNOTATION_KEY_VALUE}
+${IRSA_PD_ANNOTATION_KEY_VALUE}
+${IRSA_PF_ANNOTATION_KEY_VALUE}
 ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}
 ${NOTIFICATION_ENABLED}
-${SLACK_CHANNEL}
 ${NOTIFICATION_ENDPOINT}
-${PF_PROVISIONING_ENABLED}'
+${PF_PROVISIONING_ENABLED}
+${RADIUS_PROXY_ENABLED}
+${IMAGE_TAG_PREFIX}
+${ARGOCD_SLACK_TOKEN_BASE64}
+${SLACK_CHANNEL}
+${PROM_SLACK_CHANNEL}
+${DASH_REPO_URL}
+${DASH_REPO_BRANCH}'
 
 # Variables to replace within the generated cluster state code
 REPO_VARS="${REPO_VARS:-${DEFAULT_VARS}}"
@@ -366,7 +400,8 @@ ${REGION_NICK_NAME}
 ${TENANT_NAME}
 ${PING_CLOUD_NAMESPACE}
 ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
-${SSH_ID_KEY_BASE64}'
+${SSH_ID_KEY_BASE64}
+${PGO_BACKUP_BUCKET_NAME}'
 
 ########################################################################################################################
 # Export some derived environment variables.
@@ -402,73 +437,7 @@ add_derived_variables() {
   export ENVIRONMENT_PREFIX="\${TENANT_NAME}-\${CLUSTER_STATE_REPO_BRANCH}-\${REGION_NICK_NAME}"
 
   # The name of the environment as it will appear on the NewRelic console.
-  export NEW_RELIC_ENVIRONMENT_NAME="\${TENANT_NAME}_\${ENV}_\${REGION_NICK_NAME}_k8s-cluster"
-}
-
-########################################################################################################################
-# Export IRSA annotation for the provided environment.
-#
-# Arguments
-#   ${1} -> The SSM path prefix which stores CDE account IDs of Ping Cloud environments.
-#   ${2} -> The environment name.
-########################################################################################################################
-add_irsa_variables() {
-  if test "${IRSA_PING_ANNOTATION_KEY_VALUE}"; then
-    export IRSA_PING_ANNOTATION_KEY_VALUE="${IRSA_PING_ANNOTATION_KEY_VALUE}"
-    return
-  fi
-
-  local ssm_path_prefix="$1"
-  local env="$2"
-
-  # Default empty string
-  IRSA_PING_ANNOTATION_KEY_VALUE=''
-
-  if [ "${ssm_path_prefix}" != "unused" ]; then
-
-    # Getting value from ssm parameter store.
-    if ! ssm_value=$(get_ssm_value "${ssm_path_prefix}/${env}"); then
-      echo "Error: ${ssm_value}"
-      exit 1
-    fi
-
-    # IRSA for ping product pods. The role name is predefined as a part of the interface contract.
-    IRSA_PING_ANNOTATION_KEY_VALUE="eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role/pcpt/irsa-roles/irsa-ping"
-  fi
-
-  export IRSA_PING_ANNOTATION_KEY_VALUE="${IRSA_PING_ANNOTATION_KEY_VALUE}"
-}
-
-########################################################################################################################
-# Export NLB EIP annotation for the provided environment.
-#
-# Arguments
-#   ${1} -> The SSM path prefix which stores CDE account IDs of Ping Cloud environments.
-#   ${2} -> The environment name.
-########################################################################################################################
-add_nlb_variables() {
-  local ssm_path_prefix="$1"
-  local env="$2"
-
-  if test "${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"; then
-    export NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE="${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
-  else
-    # Default empty string
-    NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE=''
-
-    if [ "${ssm_path_prefix}" != "unused" ]; then
-
-      # Getting value from ssm parameter store.
-      if ! ssm_value=$(get_ssm_value "${ssm_path_prefix}/${env}/nginx-public"); then
-        echo "Error: ${ssm_value}"
-        exit 1
-      fi
-
-      NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE="service.beta.kubernetes.io/aws-load-balancer-eip-allocations: ${ssm_value}"
-    fi
-
-    export NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE="${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
-  fi
+  export NEW_RELIC_ENVIRONMENT_NAME="\${TENANT_NAME}_\${REGION_ENV}_\${REGION_NICK_NAME}_k8s-cluster"
 }
 
 ########################################################################################################################
@@ -487,7 +456,7 @@ get_is_ga_variable() {
   fi
 
   local ssm_path_prefix="$1"
-  
+
   # Default false
   IS_GA='false'
 
@@ -545,6 +514,31 @@ get_is_myping_variable() {
   fi
 }
 
+# Support the various ways to actually set the SSH key pair env vars
+set_ssh_key_pair() {
+  # Autogenerate if no keys provided
+  if test -z "${SSH_ID_PUB_FILE}" && test -z "${SSH_ID_KEY_FILE}"; then
+    echo 'Generating key-pair for SSH access'
+    generate_ssh_key_pair
+
+  # Upgrade flow - we only get a private key from update-cluster-state.sh
+  elif test -z "${SSH_ID_PUB_FILE}" && test -f "${SSH_ID_KEY_FILE}"; then
+    echo 'This is an upgrade - using provided private key for SSH access. No public key available'
+    export SSH_ID_KEY_BASE64=$(base64_no_newlines "${SSH_ID_KEY_FILE}")
+
+  # Both public file and key file provided
+  elif test -f "${SSH_ID_PUB_FILE}" && test -f "${SSH_ID_KEY_FILE}"; then
+    echo 'Using provided key-pair for SSH access'
+    export SSH_ID_PUB=$(cat "${SSH_ID_PUB_FILE}")
+    export SSH_ID_KEY_BASE64=$(base64_no_newlines "${SSH_ID_KEY_FILE}")
+
+  # Unsupported flow - no private key provided at all or not a file
+  else
+    echo 'Provide SSH key-pair files via SSH_ID_PUB_FILE/SSH_ID_KEY_FILE env vars, or omit both for key-pair to be generated'
+    exit 1
+  fi
+}
+
 # Checking required tools and environment variables.
 check_binaries "openssl" "ssh-keygen" "ssh-keyscan" "base64" "envsubst" "git" "aws" "rsync"
 HAS_REQUIRED_TOOLS=${?}
@@ -599,9 +593,25 @@ echo "Initial SSH_ID_PUB_FILE: ${SSH_ID_PUB_FILE}"
 echo "Initial SSH_ID_KEY_FILE: ${SSH_ID_KEY_FILE}"
 
 echo "Initial PF_PROVISIONING_ENABLED: ${PF_PROVISIONING_ENABLED}"
+echo "Initial PGO_BACKUP_BUCKET_NAME: ${PGO_BACKUP_BUCKET_NAME}"
+
+echo "Initial RADIUS_PROXY_ENABLED: ${RADIUS_PROXY_ENABLED}"
 
 echo "Initial TARGET_DIR: ${TARGET_DIR}"
 echo "Initial IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
+
+echo "Initial ACCOUNT_BASE_PATH: ${ACCOUNT_BASE_PATH}"
+echo "Initial PGO_BUCKET_URI_SUFFIX: ${PGO_BUCKET_URI_SUFFIX}"
+
+echo "Initial IRSA_PING_ANNOTATION_KEY_VALUE: ${IRSA_PING_ANNOTATION_KEY_VALUE}"
+echo "Initial IRSA_PA_ANNOTATION_KEY_VALUE: ${IRSA_PA_ANNOTATION_KEY_VALUE}"
+echo "Initial IRSA_PD_ANNOTATION_KEY_VALUE: ${IRSA_PD_ANNOTATION_KEY_VALUE}"
+echo "Initial IRSA_PF_ANNOTATION_KEY_VALUE: ${IRSA_PF_ANNOTATION_KEY_VALUE}"
+echo "Initial NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE: ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
+
+echo "Initial SLACK_CHANNEL: ${SLACK_CHANNEL}"
+echo "Initial NON_GA_SLACK_CHANNEL: ${NON_GA_SLACK_CHANNEL}"
+echo "Initial PROM_SLACK_CHANNEL: ${PROM_SLACK_CHANNEL}"
 echo ---
 
 # Use defaults for other variables, if not present.
@@ -646,7 +656,6 @@ export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.
 
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
-export BACKUP_BUCKET_NAME=$(get_backup_bucket_name "${BACKUP_URL}")
 
 export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-"pingcentraldb.\${PRIMARY_TENANT_DOMAIN}"}"
 export MYSQL_USER="${MYSQL_USER:-ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username}"
@@ -669,7 +678,7 @@ CLUSTER_STATE_REPO_NAME="${CLUSTER_STATE_REPO_URL##*/}"
 SERVER_PROFILE_URL_DERIVED="$(echo "${CLUSTER_STATE_REPO_URL}" | sed -e "s/${CLUSTER_STATE_REPO_NAME}/profile-repo/")"
 export SERVER_PROFILE_URL="${SERVER_PROFILE_URL:-${SERVER_PROFILE_URL_DERIVED}}"
 
-export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
+export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base.git}"
 export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-${CURRENT_GIT_BRANCH}}"
 
 export SSH_ID_PUB_FILE="${SSH_ID_PUB_FILE}"
@@ -677,13 +686,40 @@ export SSH_ID_KEY_FILE="${SSH_ID_KEY_FILE}"
 
 export TARGET_DIR="${TARGET_DIR:-/tmp/sandbox}"
 
+export ACCOUNT_BASE_PATH=${ACCOUNT_BASE_PATH:-ssm://pcpt/config/k8s-config/accounts/}
+export PGO_BUCKET_URI_SUFFIX=${PGO_BUCKET_URI_SUFFIX:-/pgo-bucket/uri}
+
+# IRSA for ping product pods. The role name is predefined as a part of the interface contract.
+export IRSA_PING_ANNOTATION_KEY_VALUE=${IRSA_PING_ANNOTATION_KEY_VALUE:-''}
+export IRSA_PA_ANNOTATION_KEY_VALUE=${IRSA_PA_ANNOTATION_KEY_VALUE:-''}
+export IRSA_PD_ANNOTATION_KEY_VALUE=${IRSA_PD_ANNOTATION_KEY_VALUE:-''}
+export IRSA_PF_ANNOTATION_KEY_VALUE=${IRSA_PF_ANNOTATION_KEY_VALUE:-''}
+
+export NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE=${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE:-''}
+
+### Variable used by argocd-image-updater to scan container image tags matching the prefix.
+export IMAGE_TAG_PREFIX="${K8S_GIT_BRANCH%.*}"
+
 ### FEATURE FLAG DEFAULTS ###
-PF_PROVISIONING_ENABLED="${PF_PROVISIONING_ENABLED:-false}"
+export PF_PROVISIONING_ENABLED="${PF_PROVISIONING_ENABLED:-false}"
+export RADIUS_PROXY_ENABLED="${RADIUS_PROXY_ENABLED:-false}"
 
 ### Default environment variables ###
 export ECR_REGISTRY_NAME='public.ecr.aws/r2h3l6e4'
 export PING_CLOUD_NAMESPACE='ping-cloud'
 export MYSQL_DATABASE='pingcentral'
+
+# Set Slack-related environmets variables and override it's values depending on IS_GA value.
+get_is_ga_variable '/pcpt/stage/is-ga'
+export NON_GA_SLACK_CHANNEL="${NON_GA_SLACK_CHANNEL:-nowhere}"
+# If IS_GA=true, use default Slack channel; if IS_GA=false, use NON_GA_SLACK_CHANNEL value as Slack channel.
+if "${IS_GA}"; then
+  export SLACK_CHANNEL="${SLACK_CHANNEL:-p1as-application-oncall}"
+  export PROM_SLACK_CHANNEL="${PROM_SLACK_CHANNEL:-p1as-application-oncall}"
+else
+  export SLACK_CHANNEL="${SLACK_CHANNEL:-${NON_GA_SLACK_CHANNEL}}"
+  export PROM_SLACK_CHANNEL="${PROM_SLACK_CHANNEL:-${NON_GA_SLACK_CHANNEL}}"
+fi
 
 # Print out the values being used for each variable.
 echo "Using TENANT_NAME: ${TENANT_NAME}"
@@ -719,14 +755,26 @@ echo "Using PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
 echo "Using K8S_GIT_URL: ${K8S_GIT_URL}"
 echo "Using K8S_GIT_BRANCH: ${K8S_GIT_BRANCH}"
 
-AUTO_GENERATED_STR='<auto-generated>'
-echo "Using SSH_ID_PUB_FILE: ${SSH_ID_PUB_FILE:-${AUTO_GENERATED_STR}}"
-echo "Using SSH_ID_KEY_FILE: ${SSH_ID_KEY_FILE:-${AUTO_GENERATED_STR}}"
+echo "Using SSH_ID_PUB_FILE: ${SSH_ID_PUB_FILE:-'<auto-generated>'}"
+echo "Using SSH_ID_KEY_FILE: ${SSH_ID_KEY_FILE:-'<auto-generated>'}"
 
 echo "Using PF_PROVISIONING_ENABLED: ${PF_PROVISIONING_ENABLED}"
+echo "Using RADIUS_PROXY_ENABLED: ${RADIUS_PROXY_ENABLED}"
 
 echo "Using TARGET_DIR: ${TARGET_DIR}"
 echo "Using IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
+
+echo "Using ACCOUNT_BASE_PATH: ${ACCOUNT_BASE_PATH}"
+echo "Using PGO_BUCKET_URI_SUFFIX: ${PGO_BUCKET_URI_SUFFIX}"
+
+echo "Using IRSA_PING_ANNOTATION_KEY_VALUE: ${IRSA_PING_ANNOTATION_KEY_VALUE}"
+echo "Using IRSA_PA_ANNOTATION_KEY_VALUE: ${IRSA_PA_ANNOTATION_KEY_VALUE}"
+echo "Using IRSA_PD_ANNOTATION_KEY_VALUE: ${IRSA_PD_ANNOTATION_KEY_VALUE}"
+echo "Using IRSA_PF_ANNOTATION_KEY_VALUE: ${IRSA_PF_ANNOTATION_KEY_VALUE}"
+echo "Using NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE: ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
+
+echo "Using SLACK_CHANNEL: ${SLACK_CHANNEL}"
+echo "Using PROM_SLACK_CHANNEL: ${PROM_SLACK_CHANNEL}"
 echo ---
 
 NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY:-ssm://pcpt/sre/new-relic/java-agent-license-key}"
@@ -751,18 +799,20 @@ COMMON_TEMPLATES_DIR="${TEMPLATES_HOME}/common"
 CHUB_TEMPLATES_DIR="${TEMPLATES_HOME}/customer-hub"
 CDE_TEMPLATES_DIR="${TEMPLATES_HOME}/cde"
 
-# Generate an SSH key pair for the CD tool.
-if test -z "${SSH_ID_PUB_FILE}" && test -z "${SSH_ID_KEY_FILE}"; then
-  echo 'Generating key-pair for SSH access'
-  generate_ssh_key_pair
-elif test -z "${SSH_ID_PUB_FILE}" || test -z "${SSH_ID_KEY_FILE}"; then
-  echo 'Provide SSH key-pair files via SSH_ID_PUB_FILE/SSH_ID_KEY_FILE env vars, or omit both for key-pair to be generated'
-  exit 1
+#Adding an ArgoCD notification slack token
+ARGOCD_SLACK_TOKEN_SSM_PATH="${ARGOCD_SLACK_TOKEN_SSM_PATH:-ssm://pcpt/argocd/notification/slack/access_token}"
+if ! ssm_value=$(get_ssm_value "${ARGOCD_SLACK_TOKEN_SSM_PATH#ssm:/}"); then
+  echo "Warn: ${ssm_value}"
+  echo "ARGOCD_SLACK_TOKEN is unset, slack notification and argo-events will not work"
+  echo "Using default invalid token"
+  ARGOCD_SLACK_TOKEN="using_default_invalid_token"
 else
-  echo 'Using provided key-pair for SSH access'
-  export SSH_ID_PUB=$(cat "${SSH_ID_PUB_FILE}")
-  export SSH_ID_KEY_BASE64=$(base64_no_newlines "${SSH_ID_KEY_FILE}")
+  ARGOCD_SLACK_TOKEN="${ssm_value}"
 fi
+
+export ARGOCD_SLACK_TOKEN_BASE64=$(base64_no_newlines "${ARGOCD_SLACK_TOKEN}")
+
+set_ssh_key_pair
 
 # Get the known hosts contents for the cluster state repo host to pass it into the CD container.
 parse_url "${CLUSTER_STATE_REPO_URL}"
@@ -790,6 +840,7 @@ BOOTSTRAP_DIR="${TARGET_DIR}/${BOOTSTRAP_SHORT_DIR}"
 
 CLUSTER_STATE_REPO_DIR="${TARGET_DIR}/cluster-state"
 K8S_CONFIGS_DIR="${CLUSTER_STATE_REPO_DIR}/k8s-configs"
+GIT_OPS_VALIDATION_FOLDER="${K8S_CONFIGS_DIR}/validation"
 
 PROFILE_REPO_DIR="${TARGET_DIR}/profile-repo"
 PROFILES_DIR="${PROFILE_REPO_DIR}/profiles"
@@ -808,6 +859,9 @@ cp ../.gitignore "${CLUSTER_STATE_REPO_DIR}"
 cp ../.gitignore "${PROFILE_REPO_DIR}"
 
 cp ../k8s-configs/cluster-tools/base/git-ops/git-ops-command.sh "${K8S_CONFIGS_DIR}"
+cp ../k8s-configs/cluster-tools/base/git-ops/validation/verify_descriptor_json.py "${GIT_OPS_VALIDATION_FOLDER}"
+cp ../k8s-configs/cluster-tools/base/git-ops/validation/json_util.py "${GIT_OPS_VALIDATION_FOLDER}"
+
 find "${TEMPLATES_HOME}" -type f -maxdepth 1 | xargs -I {} cp {} "${K8S_CONFIGS_DIR}"
 
 echo "${PING_CLOUD_BASE_COMMIT_SHA}" > "${TARGET_DIR}/pcb-commit-sha.txt"
@@ -818,7 +872,6 @@ ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
 
 export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL}"
 
-get_is_ga_variable '/pcpt/stage/is-ga'
 get_is_myping_variable '/pcpt/orch-api/is-myping'
 
 # The ENVIRONMENTS variable can either be the CDE names (e.g. dev, test, stage, prod) or the CHUB name "customer-hub",
@@ -852,6 +905,8 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   export ENV="${ENV}"
   export ENVIRONMENT_TYPE="\${ENV}"
 
+  echo "-----> Starting to create environment '${ENV}'"
+
   # The base URL for kustomization files and environment will be different for each CDE.
   # On migrated customers, we must preserve the size of the customers.
   case "${ENV}" in
@@ -884,6 +939,10 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   export LETS_ENCRYPT_SERVER="${LETS_ENCRYPT_SERVER}"
 
   export USER_BASE_DN="${USER_BASE_DN:-dc=example,dc=com}"
+  export USER_BASE_DN_2="${USER_BASE_DN_2}"
+  export USER_BASE_DN_3="${USER_BASE_DN_3}"
+  export USER_BASE_DN_4="${USER_BASE_DN_4}"
+  export USER_BASE_DN_5="${USER_BASE_DN_5}"
 
   # Set PF variables based on ENV
   if echo "${LETS_ENCRYPT_SERVER}" | grep -q 'staging'; then
@@ -943,8 +1002,22 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   export CLUSTER_NAME_LC="${CLUSTER_NAME_LC}"
 
   add_derived_variables
-  add_irsa_variables "${ACCOUNT_ID_PATH_PREFIX:-unused}" "${ENV}"
-  add_nlb_variables "${NLB_EIP_PATH_PREFIX:-unused}" "${ENV}"
+
+  # shellcheck disable=SC2016
+  IRSA_TEMPLATE='eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role/pcpt/irsa-roles'
+  set_var "IRSA_PING_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-ping"
+  set_var "IRSA_PA_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-pingaccess"
+  set_var "IRSA_PD_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-pingdirectory"
+  set_var "IRSA_PF_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-pingfederate"
+
+  # shellcheck disable=SC2016
+  NLB_TEMPLATE='service.beta.kubernetes.io/aws-load-balancer-eip-allocations: ${ssm_value}'
+  set_var "NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE" "" "${NLB_EIP_PATH_PREFIX:-unused}" "/${ENV}/nginx-public" \
+          "${NLB_TEMPLATE}"
+
+  set_var "PGO_BACKUP_BUCKET_NAME" "not_set" "${ACCOUNT_BASE_PATH}${ENV}" "${PGO_BUCKET_URI_SUFFIX}"
+  # Remove s3:// prefix if present
+  export PGO_BACKUP_BUCKET_NAME=${PGO_BACKUP_BUCKET_NAME#s3://}
 
   echo ---
   echo "For environment ${ENV}, using variable values:"
@@ -959,7 +1032,9 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   echo "PRIMARY_DNS_ZONE: ${PRIMARY_DNS_ZONE}"
   echo "LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
   echo "BACKUP_URL: ${BACKUP_URL}"
-  echo "BACKUP_BUCKET_NAME: ${BACKUP_BUCKET_NAME}"
+  echo "PGO_BACKUP_BUCKET_NAME: ${PGO_BACKUP_BUCKET_NAME}"
+  echo "IRSA_PING_ANNOTATION_KEY_VALUE: ${IRSA_PING_ANNOTATION_KEY_VALUE}"
+  echo "NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE: ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
 
   # Build the kustomization file for the bootstrap tools for each environment
   echo "Generating bootstrap yaml for ${ENV}"
@@ -997,7 +1072,12 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   # Rename to the actual region nick name.
   mv "${ENV_DIR}/region" "${ENV_DIR}/${REGION_NICK_NAME}"
 
-  substitute_vars "${ENV_DIR}" "${REPO_VARS}" secrets.yaml env_vars
+  substitute_vars "${ENV_DIR}" "${REPO_VARS}" secrets.yaml env_vars values.yaml
+  # TODO: This duplicate calls are needed to substitute the derived variables & the IS_BELUGA_ENV in values files only
+  #  clean this up with PDO-4842 when all apps are migrated to values files by adding IS_BELUGA_ENV to DEFAULT_VARS
+  #  and redoing how derived variables are set
+  substitute_vars "${ENV_DIR}" "${REPO_VARS}" values.yaml
+  substitute_vars "${ENV_DIR}" '${IS_BELUGA_ENV}' values.yaml
 
   # Regional enablement - add admins, backups, etc. to primary.
   if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
@@ -1016,12 +1096,6 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   ENV_PROFILES_DIR="${PROFILES_DIR}/${ENV_OR_BRANCH}"
   mkdir -p "${ENV_PROFILES_DIR}"
 
-  ###### ---- ALL FEATURE FLAGS GO HERE ----- #######
-
-  pgo_feature_flag "${ENV_DIR}/base/cluster-tools/pgo/kustomization.yaml" "${ENV_DIR}/base/ping-cloud/pingfederate/provisioning/kustomization.yaml"
-
-  ###################################################
-
   cp -pr ../profiles/aws/. "${ENV_PROFILES_DIR}"
 
   if test "${ENV}" = "${CUSTOMER_HUB}"; then
@@ -1031,6 +1105,8 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     # Remove the pingcentral profiles
     rm -rf "${ENV_PROFILES_DIR}/${PING_CENTRAL}"
   fi
+
+  echo "=====> Done creating environment '${ENV}'"
 )
 done
 

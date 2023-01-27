@@ -5,10 +5,12 @@ resources:
   - ${K8S_GIT_URL}/k8s-configs/cluster-tools/base/pod-reaper?ref=${K8S_GIT_BRANCH}
 
 generatorOptions:
-  disableNameSuffixHash: true
+  disableNameSuffixHash: false
+  annotations:
+    argocd.argoproj.io/sync-options: Replace=true
 
 configMapGenerator:
 - name: pod-reaper-environment-variables
-  behavior: merge
+  behavior: replace
   envs:
   - env_vars

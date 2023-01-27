@@ -8,7 +8,7 @@ data:
     set -e
 
     # Install kubectl
-    curl -sS https://storage.googleapis.com/kubernetes-release/release/v1.15.0/bin/linux/amd64/kubectl \
+    curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
     -o /tmp/kubectl
 
     chmod +x /tmp/kubectl
@@ -52,7 +52,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: pingdatasync-backup
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdatasync/dev:v1.16-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdatasync/dev:v1.18-release-branch-latest
         imagePullPolicy: Always
         securityContext:
           runAsGroup: 9999
@@ -64,6 +64,8 @@ spec:
         envFrom:
         - configMapRef:
             name: pingdatasync-environment-variables
+        - configMapRef:
+            name: pingcommon-environment-variables
         volumeMounts:
         - name: backup-script
           mountPath: /opt/in/backup-sync-state.sh

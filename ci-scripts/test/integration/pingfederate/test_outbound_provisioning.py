@@ -1,11 +1,16 @@
 import base64
+import os
 import unittest
 
 import requests
+import urllib3
 
 import k8s_utils
 
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+
+@unittest.skipIf(os.getenv("PF_PROVISIONING_ENABLED", "false") != "true", "PingFederate provisioning feature disabled")
 class TestPingFederateProvisioning(k8s_utils.K8sUtils):
     def setUp(self) -> None:
         pf_admin_api_endpoint = self.get_endpoint("pingfederate-admin")

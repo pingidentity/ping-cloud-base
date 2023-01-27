@@ -6,3 +6,6 @@ seleniumbase==2.5.4
 
 # Kubernetes testing
 kubernetes~=23.6.0
+
+# AWS Boto3 library
+boto3~=1.25.0
