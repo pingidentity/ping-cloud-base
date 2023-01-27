@@ -9,6 +9,7 @@
 - Add base & region values.yaml files for Helm migration
 - Add ArgoCD application set definition for microservice architecture
 - Update sealed-secrets-controller to v0.19.3
+- Add multiple USER_BASE_DNs and BACKEND_IDs env vars 
 
 _Changes:_
 
@@ -20,6 +21,7 @@ _Changes:_
 - [X] PDO-4701 Update cluster tools to latest version: sealed-secrets-controller v0.19.3
 - [X] PDO-4773 Update generate-cluster-state script to create base and region values.yaml files
 - [X] PDO-4775 Add new ArgoCD application definition to PCB
+- [X] PDO-4818 Add multiple USER_BASE_DNs and BACKEND_IDs env vars 
 
 ### 1.17.0.0
 
