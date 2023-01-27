@@ -41,7 +41,7 @@ _Changes:_
 - Allow release branches to update image names using the kustomize image patch
 - Add beluga_log verbosity level to control logging level
 - Changed Slack channel for Argo notifications depending on IS_GA value
-- Remove "PING_CONTAINER_PRIVILEGED" from env_vars 
+- Remove "PING_CONTAINER_PRIVILEGED" from env_vars
 - Remove EFS access points directories when deleting PV
 - NewRelic Java Agent upgraded to 7.11.1
 - Refactor elastic-stack manifests
@@ -57,6 +57,9 @@ _Changes:_
 - Mirror our own version of PGO/crunchy images
 - Add pod exec privileges to cluster-healthcheck-serviceaccount
 - Add delete patch to remove pingaccess-was healthcheck cronjob from multi-region
+- Revert removing alertmanager from the prometheus config
+- Add PF transaction logs parsing and indexing
+- Fix regional variable for new customer creation
 
 _Changes:_
 
@@ -71,12 +74,12 @@ _Changes:_
 - [X] PDO-4312 PA-WAS Health Check Tests - object creation, unauthenticated proxy requests
 - [X] PDO-4343 Mirror our own version of PGO/crunchy images
 - [X] PDO-4432 Logstash has broken tolerations
-- [X] PDO-4535 Argo CD non-root user changes
 - [X] PDO-4439 PF Health Check Tests - object creation, authentication
 - [X] PDO-4440 PD Health Check Tests - appintegrations
 - [X] PDO-4481 Upgrade kubectl to match K8s version
 - [X] PDO-4496 Create new global repo for dashboards
 - [X] PDO-4533 Move PCB CI/CD env vars from deploy script to common script
+- [X] PDO-4535 Argo CD non-root user changes
 - [X] PDO-4543 Create K8s serviceAccount for PA, PD and PF
 - [X] PDO-4545 Add delete patch to remove pingaccess-was healthcheck cronjob from multi-region
 - [X] PDO-4565 Prometheus: Configure It to Take Metrics from Second Region
@@ -90,17 +93,20 @@ _Changes:_
 - [X] PDO-4615 Remove outdated CW logs test methods
 - [X] PDO-4618 Default slack notifications using `IS_GA` env var
 - [X] PDO-4632 ALERT from the secondary region is shown as an ALERT from the primary region in the email message
-- [X] PDO-4636 Remove "PING_CONTAINER_PRIVILEGED" from env_vars 
+- [X] PDO-4636 Remove "PING_CONTAINER_PRIVILEGED" from env_vars
 - [X] PDO-4644 Update cluster tools to latest version: NewRelic Java agent v7.11.1
-- [X] PDO-4648: Allow release branches to update image names using the kustomize image patch
-- [X] PDO-4649: prometheus-0/logstash-elastic-0 pod does not come up upon changing LEGACY_LOGGING or LS_JAVA_OPTS
-- [X] PDO-4669: EFS access point dir doesn't remove during PVC removal
-- [X] PDO-4671 Refactor elastic-stack manifests 
+- [X] PDO-4648 Allow release branches to update image names using the kustomize image patch
+- [X] PDO-4649 prometheus-0/logstash-elastic-0 pod does not come up upon changing LEGACY_LOGGING or LS_JAVA_OPTS
+- [X] PDO-4669 EFS access point dir doesn't remove during PVC removal
+- [X] PDO-4671 Refactor elastic-stack manifests
 - [X] PDO-4686 Update ping-cloud-base to use the cluster tools from new ECR repo
 - [X] PDO-4807 Configure Argo Redis container to run as nonroot
 - [X] PDO-4808 Update applications logs location
 - [X] PDO-4809 Refactor generate-cluster-state.sh to retain set value for slack channel alerts on upgrade
-- [X] PDO-4877: ELK logs for healthcheck pods should be storing for 7 days
+- [X] PDO-4877 ELK logs for healthcheck pods should be storing for 7 days
+- [X] PDO-4918 Missing PF Transaction Log
+- [X] PDO-4921 Revert removing alertmanager from the prometheus config
+- [X] PDO-4922 Fix regional variable for new customer creation
 
 ### 1.16.1.0
 
