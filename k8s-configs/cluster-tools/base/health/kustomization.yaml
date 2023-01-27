@@ -13,6 +13,11 @@ resources:
 - cluster-health.yaml
 - pingaccess-health.yaml
 - pingaccess-was-health.yaml
+- pingdirectory-health.yaml
 - pingfederate-health.yaml
 - namespace.yaml
 - serviceaccount.yaml
+- httpbin.yaml
+- httpbin-pa-was.yaml
+- secrets.yaml
+- httpbin-pa.yaml

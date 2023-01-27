@@ -3,7 +3,7 @@ VERBOSE=false
 
 SERVER_PROFILE_URL=https://github.com/pingidentity/ping-cloud-base.git
 SERVER_PROFILE_PATH=profiles/aws/pingdatasync
-SERVER_PROFILE_BRANCH=v1.16-release-branch
+SERVER_PROFILE_BRANCH=v1.18-release-branch
 
 REGION=us-west-2
 LOCATION=Austin

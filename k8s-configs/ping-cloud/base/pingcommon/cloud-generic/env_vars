@@ -12,6 +12,23 @@ PC_ADMIN_USER_USERNAME=administrator
 # PD USER_BASE_DN
 USER_BASE_DN=dc=example,dc=com
 
+########################################################################################################################
+#  Multiple Backend IDs : 
+#
+#  Set the following vars for multiple backends.
+#  USER_BASE_DN_2 is set for userRoot_2 backend
+#  USER_BASE_DN_3 is set for userRoot_3 backend
+#  USER_BASE_DN_4 is set for userRoot_4 backend
+#  USER_BASE_DN_5 is set for userRoot_5 backend
+#
+#  NOTE : Currently 5 multiple backends(userRoot , userRoot_2, 3 ..userRoot_5) and 
+#          user_base_dn's(USER_BASE_DN, USER_BASE_DN_2, 3 ..USER_BASE_DN_5) are supported.
+########################################################################################################################
+USER_BASE_DN_2=
+USER_BASE_DN_3=
+USER_BASE_DN_4=
+USER_BASE_DN_5=
+
 # This is the OOTB USER_BASE_DN value and is always set to "dc=example,dc=com"
 DEFAULT_USER_BASE_DN=dc=example,dc=com
 PD_PCV_SEARCH_FILTER=(&(objectClass=person)(|(mail=${username})(cn=${username})(uid=${username})))
@@ -30,7 +47,7 @@ DA_PCV_SEARCH_FILTER=uid=${username}
 DA_IDP_ADAPTER_HTML_FORM_ID=daidphtml
 DA_JWT_ID=dajwt
 DA_OIDC_POLICY_ID=dapolicy
-DA_IMPLICIT_GRANT_TYPE_CLIENT_ID=dadmin
+DA_DEFAULT_GRANT_TYPE_CLIENT_ID=dadmin
 DA_EXCLUSIVE_SCOPE_NAME=urn:pingidentity:directory-delegated-admin
 DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID=dapingdirectory
 DA_PINGFEDERATE_ATV_NAME=DAPingFederateValidator
@@ -42,4 +59,4 @@ NOTIFICATION_ENABLED=false
 SLACK_CHANNEL=p1as-application-oncall
 NOTIFICATION_ENDPOINT=http://webhook-eventsource-svc.argo-events:12999/notification
 
-
+KUBECTL_VERSION=v1.23.0

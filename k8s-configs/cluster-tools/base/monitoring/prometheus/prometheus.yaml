@@ -1,243 +1,4 @@
 # For more information on prometheus configuration go to https://prometheus.io/docs/prometheus/latest/configuration/configuration/
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: prometheus-config
-  namespace: prometheus
-  labels:
-    name: prometheus-config
-data:
-  prometheus.yml: |-
-    global:
-      # How frequently to scrape targets by default.
-      scrape_interval: 15s
-      # How long until a scrape request times out.
-      scrape_timeout: 5s
-      # How frequently to evaluate rules.
-      evaluation_interval: 5s
-
-    scrape_configs:
-    # Monitor prometheus itself
-    - job_name: 'prometheus'
-      scrape_interval: 10s
-      static_configs:
-      - targets: ['localhost:9090']
-    # Monitor kube-state-metrics
-    - job_name: 'kube-state-metrics'
-      static_configs:
-      - targets: ['kube-state-metrics.kube-system.svc.cluster.local:8080']
-
-    # Discover and monitor PD instances
-    - job_name: 'pd-statsd-exporter'
-      kubernetes_sd_configs:
-      - role: endpoints
-      relabel_configs:
-      - source_labels: [__meta_kubernetes_endpoint_port_name, __meta_kubernetes_service_name]
-        action: keep
-        regex: metrics;pingdirectory
-      - source_labels: [__meta_kubernetes_pod_name]
-        action: replace
-        target_label: instance
-      - source_labels: [__meta_kubernetes_namespace]
-        action: replace
-        target_label: namespace
-
-    # Discover and monitor PD JMX instances
-    - job_name: 'pd-jmx-exporter'
-      scrape_interval: 10s
-      kubernetes_sd_configs:
-      - role: endpoints
-      relabel_configs:
-      - source_labels: [__meta_kubernetes_endpoint_port_name, __meta_kubernetes_service_name]
-        action: keep
-        regex: jmx-metrics;pingdirectory
-      - source_labels: [__meta_kubernetes_pod_name]
-        action: replace
-        target_label: instance
-      - source_labels: [__meta_kubernetes_namespace]
-        action: replace
-        target_label: namespace
-
-    # Discover and monitor PD instances
-    - job_name: 'prometheus-job-exporter'
-      kubernetes_sd_configs:
-      - role: endpoints
-      relabel_configs:
-      - source_labels: [__meta_kubernetes_endpoint_port_name, __meta_kubernetes_service_name]
-        action: keep
-        regex: metrics;prometheus-job-exporter
-      - source_labels: [__meta_kubernetes_pod_name]
-        action: replace
-        target_label: instance
-      - source_labels: [__meta_kubernetes_namespace]
-        action: replace
-        target_label: namespace
-
-    # Discover and monitor PF instances
-    - job_name: 'pf-jmx-exporter'
-      scrape_interval: 10s
-      kubernetes_sd_configs:
-      - role: endpoints
-      relabel_configs:
-      - source_labels: [__meta_kubernetes_endpoint_port_name, __meta_kubernetes_service_name]
-        action: keep
-        regex: metrics;pingfederate
-      - source_labels: [__meta_kubernetes_pod_name]
-        action: replace
-        target_label: instance
-      - source_labels: [__meta_kubernetes_namespace]
-        action: replace
-        target_label: namespace
-
-    # Discover and monitor PF instances
-    - job_name: 'pf-heartbeat-exporter'
-      scrape_interval: 10s
-      metrics_path: /
-      kubernetes_sd_configs:
-      - role: endpoints
-      relabel_configs:
-      - source_labels: [__meta_kubernetes_endpoint_port_name, __meta_kubernetes_service_name]
-        action: keep
-        regex: pf-heartbeat;pingfederate
-      - source_labels: [__meta_kubernetes_pod_name]
-        action: replace
-        target_label: instance
-      - source_labels: [__meta_kubernetes_namespace]
-        action: replace
-        target_label: namespace
-
-    # Discover and monitor PA instances
-    - job_name: 'pa-jmx-exporter'
-      scrape_interval: 10s
-      kubernetes_sd_configs:
-      - role: endpoints
-      relabel_configs:
-      - source_labels: [__meta_kubernetes_endpoint_port_name, __meta_kubernetes_service_name]
-        action: keep
-        regex: metrics;pingaccess
-      - source_labels: [__meta_kubernetes_pod_name]
-        action: replace
-        target_label: instance
-      - source_labels: [__meta_kubernetes_namespace]
-        action: replace
-        target_label: namespace
-
-    # Discover and monitor PA instances
-    - job_name: 'pa-heartbeat-exporter'
-      scrape_interval: 10s
-      metrics_path: /
-      kubernetes_sd_configs:
-      - role: endpoints
-      relabel_configs:
-      - source_labels: [__meta_kubernetes_endpoint_port_name, __meta_kubernetes_service_name]
-        action: keep
-        regex: pa-heartbeat;pingaccess
-      - source_labels: [__meta_kubernetes_pod_name]
-        action: replace
-        target_label: instance
-      - source_labels: [__meta_kubernetes_namespace]
-        action: replace
-        target_label: namespace
-
-    # Other k8s jobs to scrape - see https://devopscube.com/setup-prometheus-monitoring-on-kubernetes/
-    - job_name: 'kubernetes-apiservers'
-      kubernetes_sd_configs:
-      - role: endpoints
-      scheme: https
-      tls_config:
-        ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-      bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
-      relabel_configs:
-      - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
-        action: keep
-        regex: default;kubernetes;https
-    - job_name: 'kubernetes-nodes'
-      scheme: https
-      tls_config:
-        ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-      bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
-      kubernetes_sd_configs:
-      - role: node
-      relabel_configs:
-      - action: labelmap
-        regex: __meta_kubernetes_node_label_(.+)
-      - target_label: __address__
-        replacement: kubernetes.default.svc:443
-      - source_labels: [__meta_kubernetes_node_name]
-        regex: (.+)
-        target_label: __metrics_path__
-        replacement: /api/v1/nodes/${1}/proxy/metrics
-    - job_name: 'kubernetes-pods'
-      kubernetes_sd_configs:
-      - role: pod
-      relabel_configs:
-      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
-        action: keep
-        regex: true
-      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
-        action: replace
-        target_label: __metrics_path__
-        regex: (.+)
-      - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
-        action: replace
-        regex: ([^:]+)(?::\d+)?;(\d+)
-        replacement: $1:$2
-        target_label: __address__
-      - action: labelmap
-        regex: __meta_kubernetes_pod_label_(.+)
-      - source_labels: [__meta_kubernetes_namespace]
-        action: replace
-        target_label: kubernetes_namespace
-      - source_labels: [__meta_kubernetes_pod_name]
-        action: replace
-        target_label: kubernetes_pod_name
-    - job_name: 'kubernetes-cadvisor'
-      scheme: https
-      tls_config:
-        ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
-      bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
-      kubernetes_sd_configs:
-      - role: node
-      relabel_configs:
-      - action: labelmap
-        regex: __meta_kubernetes_node_label_(.+)
-      - target_label: __address__
-        replacement: kubernetes.default.svc:443
-      - source_labels: [__meta_kubernetes_node_name]
-        regex: (.+)
-        target_label: __metrics_path__
-        replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
-    - job_name: 'kubernetes-service-endpoints'
-      kubernetes_sd_configs:
-      - role: endpoints
-      relabel_configs:
-      - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
-        action: keep
-        regex: true
-      - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
-        action: replace
-        target_label: __scheme__
-        regex: (https?)
-      - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
-        action: replace
-        target_label: __metrics_path__
-        regex: (.+)
-      - source_labels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
-        action: replace
-        target_label: __address__
-        regex: ([^:]+)(?::\d+)?;(\d+)
-        replacement: $1:$2
-      - action: labelmap
-        regex: __meta_kubernetes_service_label_(.+)
-      - source_labels: [__meta_kubernetes_namespace]
-        action: replace
-        target_label: kubernetes_namespace
-      - source_labels: [__meta_kubernetes_service_name]
-        action: replace
-        target_label: kubernetes_name
-
----
-
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -257,34 +18,47 @@ spec:
       serviceAccountName: prometheus
       containers:
       - name: prometheus
-        image: public.ecr.aws/r2h3l6e4/prom/prometheus:v2.37.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/prom/prometheus:v2.39.1
         args:
           - "--config.file=/etc/prometheus/prometheus.yml"
           - "--storage.tsdb.retention.time=$(PROMETHEUS_RETENTION_TIME)"
+          - "--web.enable-remote-write-receiver"
+          - "--enable-feature=memory-snapshot-on-shutdown"
+          - "--enable-feature=expand-external-labels"
+          - "--enable-feature=memory-snapshot-on-shutdown"
         env:
           - name: PROMETHEUS_RETENTION_TIME
             valueFrom:
               configMapKeyRef:
                 key: PROMETHEUS_RETENTION_TIME
                 name: prometheus-environment-variables
+        envFrom:
+          - configMapRef:
+              name: prometheus-environment-variables
         volumeMounts:
           - name: prometheus-config-volume
             mountPath: /etc/prometheus/
           - name: prometheus-storage-volume
             mountPath: /prometheus/data
+          - name: alertsconfig
+            mountPath: /etc/prometheus/alert-rules.d
+
         ports:
         - containerPort: 9090
         resources:
           limits:
-            cpu: 500m
+            cpu: 1000m
             memory: 4000Mi
           requests:
             cpu: 100m
-            memory: 512Mi
+            memory: 2000Mi
       volumes:
       - name: prometheus-config-volume
         configMap:
           name: prometheus-config
+      - name: alertsconfig
+        configMap:
+          name: prom-alerts
 
   volumeClaimTemplates:
   - metadata:
@@ -305,6 +79,8 @@ apiVersion: v1
 metadata:
   name: prometheus
   namespace: prometheus
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: prometheus-central-dev.ping-demo.com
 spec:
   selector:
     app: prometheus

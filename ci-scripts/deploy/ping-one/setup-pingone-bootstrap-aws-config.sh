@@ -10,8 +10,9 @@ if [[ $PINGCLOUD_CLIENT_ID == "" ]]; then
     exit 1
 fi
 
+# TODO: we must make sure CLUSTER_NAME is set and make it the only option for the path
+# to match Terraform changes in: ping-cloud-tools/create-cluster/terraform/ssm.tf
 param_store_path_base="/${CLUSTER_NAME:-${USER}}/pcpt/orch-api"
-
 
 # Product Entitlements SSM Param for legacy (pre 1.13) deployments
 legacy_product_entitlements_path="${param_store_path_base}/product-entitlements"

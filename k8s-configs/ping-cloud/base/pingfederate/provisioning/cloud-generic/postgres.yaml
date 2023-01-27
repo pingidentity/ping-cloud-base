@@ -12,16 +12,19 @@ spec:
       role: pf-provisioning
   instances:
     - name: instance1
-      replicas: 2
+      replicas: 3
       minAvailable: 1
+      resources:
+        requests:
+          cpu: 2
+          memory: 2Gi
       dataVolumeClaimSpec:
         storageClassName: pgo-gp2
         accessModes:
         - "ReadWriteOnce"
         resources:
           requests:
-            # TODO: higher default to be addressed by PDO-3866
-            storage: 1Gi
+            storage: 20Gi
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -66,3 +69,7 @@ spec:
         repoName: repo1
         options:
           - --type=default
+  monitoring:
+    pgmonitor:
+      exporter:
+        image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres-exporter:ubi8-5.2.0-0

@@ -13,8 +13,13 @@ spec:
     name: metrics
   - port: 8079
     name: pf-heartbeat
+  - port: 1812
+    name: pf-radius-listener
+  - port: 1813
+    name: pf-radius-accounting
   selector:
     role: pingfederate-engine
+
 
 ---
 
@@ -32,13 +37,13 @@ spec:
   externalTrafficPolicy: Local
   type: LoadBalancer
   selector:
-    class: pingfederate-engine
+    role: pingfederate-engine
   ports:
-  - name: radius1
+  - name: radius-listener
     protocol: UDP
     port: 1812
     targetPort: 1812
-  - name: radius2
+  - name: radius-accounting
     protocol: UDP
     port: 1813
     targetPort: 1813

@@ -35,7 +35,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v1.16-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v1.18-release-branch-latest
         imagePullPolicy: Always
         env:
         - name: NAMESPACE
@@ -52,7 +52,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.23.0
         imagePullPolicy: IfNotPresent
         command:
         - /copy-dependencies.sh
@@ -87,7 +87,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v1.16-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v1.18-release-branch-latest
         imagePullPolicy: Always
         envFrom:
         - configMapRef:
@@ -122,7 +122,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/busybox:1.32
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/busybox:1.32
         imagePullPolicy: IfNotPresent
         command:
         - /wait-for-services.sh
@@ -143,7 +143,7 @@ spec:
             name: pingcommon-environment-variables
       containers:
       - name: pingfederate-admin
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate/dev:v1.16-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate/dev:v1.18-release-branch-latest
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true

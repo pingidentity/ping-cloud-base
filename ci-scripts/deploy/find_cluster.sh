@@ -21,6 +21,8 @@ find_cluster() {
     exit 1
   fi
 
+  configure_aws
+
   cluster_postfixes=($CLUSTER_POSTFIXES)
   found_cluster=false
   sleep_wait_seconds=300
@@ -33,9 +35,10 @@ find_cluster() {
       export SELECTED_KUBE_NAME=$(echo "ci-cd$postfix" | tr '_' '-')
       configure_kube
 
-      # Typically, all CI/CD clusters should have 6 nodes ready (2 per AZ)
-      # We make the minimum 4 in case of random failures with a node (since the pipeline can run with 4)
-      min_nodes=4
+      # TODO: consider removing this if we ever scale from 0 nodes
+      # Typically, all CI/CD clusters should have at least 2 nodes ready (1 per AZ), then they will scale up when we
+      # deploy the uber yaml
+      min_nodes=2
       # Get nodes with ONLY 'Ready' state, count them
       num_nodes=$(kubectl get nodes | awk '{ print $2 }' | grep -c '^Ready$' )
 

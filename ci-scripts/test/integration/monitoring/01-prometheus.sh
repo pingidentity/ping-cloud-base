@@ -14,11 +14,6 @@ testPrometheusAPIAccessible() {
 
 testPrometheusTargets() {
   targets=$(curl -s -k ${PROMETHEUS}/api/v1/targets | jq .data.activeTargets[].labels)
-  assertContains "${targets}" "pa-heartbeat-exporter"
-  assertContains "${targets}" "pa-jmx-exporter"
-  assertContains "${targets}" "pf-heartbeat-exporter"
-  assertContains "${targets}" "pf-jmx-exporter"
-  assertContains "${targets}" "pd-statsd-exporter"
   assertContains "${targets}" "prometheus"
 }
 

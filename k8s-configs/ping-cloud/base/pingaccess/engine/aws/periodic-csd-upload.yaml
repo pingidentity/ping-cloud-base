@@ -17,7 +17,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: pingaccess-periodic-csd-upload
-            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v1.16-release-branch-latest
+            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v1.18-release-branch-latest
             imagePullPolicy: Always
             securityContext:
               runAsGroup: 9999
@@ -36,6 +36,8 @@ spec:
             envFrom:
             - configMapRef:
                 name: pingaccess-environment-variables
+            - configMapRef:
+                name: pingcommon-environment-variables
             volumeMounts:
             - name: pingaccess-periodic-csd-upload
               mountPath: /opt/in/backup-csd-data.sh

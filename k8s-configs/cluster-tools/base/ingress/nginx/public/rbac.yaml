@@ -4,6 +4,14 @@ metadata:
   name: nginx-ingress-clusterrole-public
 rules:
   - apiGroups:
+      - discovery.k8s.io
+    resources:
+      - endpointslices
+    verbs:
+      - list
+      - watch
+      - get
+  - apiGroups:
       - ""
     resources:
       - configmaps

@@ -1301,7 +1301,7 @@ spec:
         fsGroup: 472
       containers:
         - name: grafana
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/grafana/dev:v1.16-release-branch-latest
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/grafana/dev:v1.18-release-branch-latest
           imagePullPolicy: Always
           securityContext:
             runAsUser: 472
@@ -1325,8 +1325,10 @@ spec:
             - mountPath: /etc/grafana/provisioning/datasources
               name: grafana-datasources
               readOnly: false
+            - mountPath: /etc/grafana/dashboards/ping
+              name: ping-dashboards
             - mountPath: /etc/grafana/provisioning/dashboards
-              name: grafana-dashboards
+              name: dashboard-providers
             - mountPath: /etc/grafana/grafana.ini
               subPath: grafana.ini
               name: grafana-config
@@ -1342,9 +1344,12 @@ spec:
         - name: grafana-datasources
           configMap:
             name: grafana-datasources
-        - name: grafana-dashboards
+        - name: ping-dashboards
           configMap:
-            name: grafana-dashboards
+            name: ping-dashboards
+        - name: dashboard-providers
+          configMap:
+            name: dashboard-providers
         - name: grafana-config
           configMap:
             name: grafana-config

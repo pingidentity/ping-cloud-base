@@ -6,7 +6,7 @@ resources:
 - ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingaccess-was/engine?ref=${K8S_GIT_BRANCH}
 
 images:
-- name: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess-was
+- name: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess-was${ECR_ENV}
   newName: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess-was${ECR_ENV}
   newTag: ${PINGACCESS_WAS_IMAGE_TAG}
 
@@ -89,3 +89,11 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/6/host
       value: pingcentral-admin.${DNS_ZONE}
+    
+    # Healthcheck httpbin service through PA-WAS engines
+    - op: replace
+      path: /spec/tls/0/hosts/7
+      value: healthcheck-httpbin-pa-was.${DNS_ZONE}
+    - op: replace
+      path: /spec/rules/7/host
+      value: healthcheck-httpbin-pa-was.${DNS_ZONE}

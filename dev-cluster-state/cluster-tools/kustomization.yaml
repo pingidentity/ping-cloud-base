@@ -4,11 +4,23 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 resources:
 - ../../k8s-configs/cluster-tools
 - pgo
+- monitoring/prometheus
+- logging
+- priorityclass.yaml
+
+components:
+  - monitoring/pgo
 
 generatorOptions:
   disableNameSuffixHash: true
 
 # In the "kustomize" overlay for CI/CD environments, manually create the "newrelic-license-key" secret in the "newrelic" namespace instead of using the "newrelic-license-secret-exporter" job to automate it. Otherwise, concurrent branch pipelines can fail because the "newrelic" namespace is shared across all "ping-cloud" branch pipelines and the updating immutable fields in the exporter job can fail.
+
+secretGenerator:
+- name: newrelic-license-key
+  namespace: newrelic
+  literals:
+  - NEW_RELIC_LICENSE_KEY=${NEW_RELIC_LICENSE_KEY}
 
 configMapGenerator:
 - name: logging-bootstrap-environment-variables
@@ -241,6 +253,14 @@ patchesStrategicMerge:
   apiVersion: batch/v1
   kind: CronJob
   metadata:
+    name: healthcheck-pingdirectory
+  spec: 
+    schedule: "@hourly"
+
+- |-
+  apiVersion: batch/v1
+  kind: CronJob
+  metadata:
     name: healthcheck-pingfederate
   spec: 
     schedule: "@hourly"
@@ -315,7 +335,7 @@ patchesJson6902:
 - target:
     group: autoscaling
     version: v1
-    kind: HorizontalPodAutoscaler       
+    kind: HorizontalPodAutoscaler
     name: nginx-ingress-controller
     namespace: ingress-nginx-public
   patch: |-
@@ -324,7 +344,7 @@ patchesJson6902:
       value: 3
     - op: replace
       path: /spec/maxReplicas
-      value: 3  
+      value: 3
 
 # Cluster auto-scaler
 - target:
@@ -442,4 +462,50 @@ patchesJson6902:
   patch: |-
     - op: replace
       path: /spec/template/metadata/annotations/CLUSTER_NAME
-      value: ${NEW_RELIC_ENVIRONMENT_NAME}  
+      value: ${NEW_RELIC_ENVIRONMENT_NAME}
+
+# Add a priorityclass for monitoring daemons to try to make sure it pre-empts existing pods on a very
+# busy node to try to improve node use efficiency/scaling without breaking things
+- target:
+    group: apps
+    version: v1
+    kind: DaemonSet
+    name: nri-bundle-nrk8s-controlplane
+    namespace: newrelic
+  patch: |-
+    - op: add
+      path: /spec/template/spec/priorityClassName
+      value: cluster-tool-daemonset-priority
+
+- target:
+    group: apps
+    version: v1
+    kind: DaemonSet
+    name: nri-bundle-nrk8s-kubelet
+    namespace: newrelic
+  patch: |-
+    - op: add
+      path: /spec/template/spec/priorityClassName
+      value: cluster-tool-daemonset-priority
+
+- target:
+    group: apps
+    version: v1
+    kind: DaemonSet
+    name: cloudwatch-agent
+    namespace: amazon-cloudwatch
+  patch: |-
+    - op: add
+      path: /spec/template/spec/priorityClassName
+      value: cluster-tool-daemonset-priority
+
+- target:
+    group: apps
+    version: v1
+    kind: DaemonSet
+    name: fluent-bit
+    namespace: elastic-stack-logging
+  patch: |-
+    - op: add
+      path: /spec/template/spec/priorityClassName
+      value: cluster-tool-daemonset-priority

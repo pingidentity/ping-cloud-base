@@ -2,7 +2,7 @@ ORCHESTRATION_TYPE=kubernetes
 VERBOSE=false
 
 SERVER_PROFILE_PATH=profiles/aws/pingcentral
-SERVER_PROFILE_BRANCH=v1.16-release-branch
+SERVER_PROFILE_BRANCH=v1.18-release-branch
 
 REGION=us-west-2
 

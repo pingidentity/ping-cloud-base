@@ -5152,7 +5152,7 @@ spec:
         runAsNonRoot: true
       containers:
         - name: cert-manager
-          image: "public.ecr.aws/r2h3l6e4/jetstack/cert-manager-cainjector:v1.9.1"
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/jetstack/cert-manager-cainjector:v1.9.1
           imagePullPolicy: IfNotPresent
           args:
           - --v=2
@@ -5201,7 +5201,7 @@ spec:
         runAsNonRoot: true
       containers:
         - name: cert-manager
-          image: "public.ecr.aws/r2h3l6e4/jetstack/cert-manager-controller:v1.9.1"
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/jetstack/cert-manager-controller:v1.9.1
           imagePullPolicy: IfNotPresent
           args:
           - --v=2
@@ -5252,7 +5252,7 @@ spec:
         runAsNonRoot: true
       containers:
         - name: cert-manager
-          image: "public.ecr.aws/r2h3l6e4/jetstack/cert-manager-webhook:v1.9.1"
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/jetstack/cert-manager-webhook:v1.9.1
           imagePullPolicy: IfNotPresent
           args:
           - --v=2

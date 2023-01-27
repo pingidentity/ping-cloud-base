@@ -17,6 +17,7 @@
 #   - kustomize
 #   - kubectl
 #   - envsubst
+#   - cmctl
 #
 # In addition, the assumption is that kubectl is configured to authenticate and apply manifests to the Kubernetes
 # cluster. For EKS clusters, this requires an AWS key and secret with the appropriate IAM policies to be configured and
@@ -38,16 +39,25 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # Variable                  | Purpose                                            | Default (if not present)
 # ----------------------------------------------------------------------------------------------------------------------
-# TENANT_NAME               | The name of the tenant, e.g. k8s-icecream. If      | PingPOC
-#                           | provided, this value will be used for the cluster  |
-#                           | name and must have the correct case (e.g. PingPOC  |
-#                           | vs. pingpoc). If not provided, this variable is    |
-#                           | not used, and the cluster name defaults to the CDE |
-#                           | name. On AWS, the cluster name is a required       |
-#                           | parameter to Container Insights, an AWS-specific   |
-#                           | logging and monitoring solution, and cluster       |
-#                           | autoscaler, which is used for automatic scaling of |
-#                           | of Kubernetes worker nodes.                        |
+# ARTIFACT_REPO_URL         | The URL for private plugins (e.g. PF kits, PD      | The string "unused".
+#                           | extensions). If not provided, the Ping stack will  |
+#                           | be provisioned without private plugins. This URL   |
+#                           | must use an s3 scheme, e.g.                        |
+#                           | s3://customer-repo-bucket-name.                    |
+#                           |                                                    |
+# BACKUP_URL                | The URL of the backup location. If provided, data  | The string "unused".
+#                           | backups are periodically captured and sent to this |
+#                           | URL. For AWS S3 buckets, it must be an S3 URL,     |
+#                           | e.g. s3://backups.                                 |
+#                           |                                                    |
+# CONFIG_PARENT_DIR         | The parent directory for server profiles within    | aws
+#                           | the "profiles" base directory, e.g. dev, aws, etc. |
+#                           |                                                    |
+# CONFIG_REPO_BRANCH        | The branch within this repository for server       | master
+#                           | profiles, i.e. configuration.                      |
+#                           |                                                    |
+# DEPLOY_FILE               | The name of the file where the final deployment    | /tmp/deploy.yaml
+#                           | spec is saved before applying it.                  |
 #                           |                                                    |
 # ENVIRONMENT               | An environment to isolate the Ping stack into its  | The value of the USER environment
 #                           | own namespace within the Kubernetes cluster. The   | variable.
@@ -63,13 +73,77 @@
 #                           | which case, the namespace used for the Ping stack  |
 #                           | will be "ping-cloud-$USER".                        |
 #                           |                                                    |
-# TENANT_DOMAIN             | The tenant's domain, e.g. us1.poc.ping.cloud       | us1.poc.ping.cloud
-#                           |                                                    |
 # GLOBAL_TENANT_DOMAIN      | Region-independent URL used for DNS failover/      | Replaces the first segment of
 #                           | routing.                                           | the TENANT_DOMAIN value with the
 #                           |                                                    | string "global". For example, it will
 #                           |                                                    | default to "global.poc.ping.com" for
 #                           |                                                    | tenant domain "us1.poc.ping.cloud".
+#                           |                                                    |
+# IS_MULTI_CLUSTER          | Flag indicating whether or not this is a           | false
+#                           | multi-cluster deployment.                          |
+#                           |                                                    |
+# K8S_CONTEXT               | The current Kubernetes context, i.e. cluster.      | The current context as set in
+#                           | spec is saved before applying it.                  | ~/.kube/config or the config file
+#                           |                                                    | to which KUBECONFIG is set.
+#                           |                                                    |
+# LEGACY_LOGGING            | Flag indicating where we should send app logs -    | True
+#                           | to CloudWatch(if True) or to ELK (if False)        |
+#                           |                                                    |
+# LOG_ARCHIVE_URL           | The URL of the log archives. If provided, logs     | The string "unused"
+#                           | are periodically captured and sent to this URL.    |
+#                           |                                                    |
+# MYSQL_SERVICE_HOST        | The hostname of the MySQL database server.         | beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
+#                           |                                                    |
+# MYSQL_PASSWORD            | The DBA password of the PingCentral MySQL RDS      | The SSM path:
+#                           | database.                                          | ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#password
+#                           |                                                    |
+# MYSQL_USER                | The DBA user of the PingCentral MySQL RDS          | The SSM path:
+#                           | database.                                          | ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username
+#                           |                                                    |
+# NEW_RELIC_LICENSE_KEY     | The key of NewRelic APM Agent used to send data to | The SSM path: ssm://pcpt/sre/new-relic/java-agent-license-key
+#                           | NewRelic account                                   |
+#                           |                                                    |
+# NOTIFICATION_ENABLED      | Flag indicating if alerts should be sent to the    | False
+#                           | endpoint configured in the argo-events             |
+#                           |                                                    |
+# ORCH_API_SSM_PATH_PREFIX  | The prefix of the SSM path that contains MyPing    | /pcpt/orch-api
+#                           | state data required for the P14C/P1AS integration. |
+#                           |                                                    |
+# PF_PROVISIONING_ENABLED   | Feature Flag - Indicates if the outbound           | False
+#                           | provisioning feature for PingFederate is enabled   |
+#                           |                                                    |
+# PGO_BACKUP_BUCKET_NAME    | The S3 bucket name for the PGO backups bucket      | An empty string
+#                           |                                                    |
+# PING_ARTIFACT_REPO_URL    | This environment variable can be used to overwrite | https://ping-artifacts.s3-us-west-2.amazonaws.com
+#                           | the default endpoint for public plugins. This URL  |
+#                           | must use an https scheme as shown by the default   |
+#                           | value.                                             |
+#                           |                                                    |
+# PING_IDENTITY_DEVOPS_KEY  | The key to the devops user.                        | The SSM path:
+#                           |                                                    | ssm://pcpt/devops-license/key
+#                           |                                                    |
+# PING_IDENTITY_DEVOPS_USER | A user with license to run Ping Software.          | The SSM path:
+#                           |                                                    | ssm://pcpt/devops-license/user
+#                           |                                                    |
+# PLATFORM_EVENT_QUEUE_NAME | The name of the queue that may be used to notify   | v2_platform_event_queue.fifo
+#                           | PingCloud applications of platform events. This    |
+#                           | is currently only used if the orchestrator for     |
+#                           | PingCloud environments is MyPing.                  |
+#                           |                                                    |
+# PRIMARY_REGION            | The region where the tenant's primary environment  | Same as REGION.
+#                           | is deployed. On AWS, this is a required parameter  |
+#                           | to Container Insights, an AWS-specific logging     |
+#                           | and monitoring solution.                           |
+#                           | Only used if IS_MULTI_CLUSTER is true.             |
+#                           |                                                    |
+# PRIMARY_TENANT_DOMAIN     | The tenant's domain in the primary region.         | Same as TENANT_DOMAIN.
+#                           | Only used if IS_MULTI_CLUSTER is true.             |
+#                           |                                                    |
+# PROM_NOTIFICATION_ENABLED | Flag indicating if PGO alerts should be sent to    | False
+#                           | the endpoint configured in the argo-events         |
+#                           |                                                    |
+# PROM_SLACK_CHANNEL        | The Slack channel name for PGO argo-events to send | CDE environment: p1as-application-oncall
+#                           | notification.                                      | Dev environment: nowhere
 #                           |                                                    |
 # REGION                    | The region where the tenant environment is         | us-east-2
 #                           | deployed. On AWS, this is a required parameter     |
@@ -83,8 +157,29 @@
 #                           | the region-specific code directory in the cluster  |
 #                           | state repo.                                        |
 #                           |                                                    |
-# IS_MULTI_CLUSTER          | Flag indicating whether or not this is a           | false
-#                           | multi-cluster deployment.                          |
+# SECONDARY_TENANT_DOMAINS  | A comma-separated list of tenant domains of the    | No default.
+#                           | secondary regions in multi-region environments,    |
+#                           | e.g. "mini.ping-demo.com,mini.ping-oasis.com".     |
+#                           | Only used if IS_MULTI_CLUSTER is true.             |
+#                           |                                                    |
+# SERVICE_SSM_PATH_PREFIX   | The prefix of the SSM path that contains Services  |
+#                           | data for the cluster                               | /pcpt/service
+#                           |                                                    |
+# SLACK_CHANNEL           ` | The Slack channel name for argo-events to send     | CDE environment: p1as-application-oncall
+#                           | notification.                                      | Dev environment: nowhere
+#                           |                                                    |
+# TENANT_DOMAIN             | The tenant's domain, e.g. us1.poc.ping.cloud       | us1.poc.ping.cloud
+#                           |                                                    |
+# TENANT_NAME               | The name of the tenant, e.g. k8s-icecream. If      | PingPOC
+#                           | provided, this value will be used for the cluster  |
+#                           | name and must have the correct case (e.g. PingPOC  |
+#                           | vs. pingpoc). If not provided, this variable is    |
+#                           | not used, and the cluster name defaults to the CDE |
+#                           | name. On AWS, the cluster name is a required       |
+#                           | parameter to Container Insights, an AWS-specific   |
+#                           | logging and monitoring solution, and cluster       |
+#                           | autoscaler, which is used for automatic scaling of |
+#                           | of Kubernetes worker nodes.                        |
 #                           |                                                    |
 # TOPOLOGY_DESCRIPTOR_FILE  | An optional file that may be provided in           | No default. If not provided, a
 #                           | multi-cluster dev environments. This file must     | descriptor file containing the
@@ -96,91 +191,9 @@
 #                           | This file will be mounted into the Ping containers |
 #                           | at /opt/staging/topology/descriptor.json.          |
 #                           |                                                    |
-# PRIMARY_TENANT_DOMAIN     | The tenant's domain in the primary region.         | Same as TENANT_DOMAIN.
-#                           | Only used if IS_MULTI_CLUSTER is true.             |
+# DASH_REPO_URL             | The repository with Kibana\Grafana dashboards      | https://github.com/pingidentity/ping-cloud-dashboards
 #                           |                                                    |
-# PRIMARY_REGION            | The region where the tenant's primary environment  | Same as REGION.
-#                           | is deployed. On AWS, this is a required parameter  |
-#                           | to Container Insights, an AWS-specific logging     |
-#                           | and monitoring solution.                           |
-#                           | Only used if IS_MULTI_CLUSTER is true.             |
-#                           |                                                    |
-# SECONDARY_TENANT_DOMAINS  | A comma-separated list of tenant domains of the    | No default.
-#                           | secondary regions in multi-region environments,    |
-#                           | e.g. "mini.ping-demo.com,mini.ping-oasis.com".     |
-#                           | Only used if IS_MULTI_CLUSTER is true.             |
-#                           |                                                    |
-# CONFIG_REPO_BRANCH        | The branch within this repository for server       | master
-#                           | profiles, i.e. configuration.                      |
-#                           |                                                    |
-# CONFIG_PARENT_DIR         | The parent directory for server profiles within    | aws
-#                           | the "profiles" base directory, e.g. dev, aws, etc. |
-#                           |                                                    |
-# ARTIFACT_REPO_URL         | The URL for private plugins (e.g. PF kits, PD      | The string "unused".
-#                           | extensions). If not provided, the Ping stack will  |
-#                           | be provisioned without private plugins. This URL   |
-#                           | must use an s3 scheme, e.g.                        |
-#                           | s3://customer-repo-bucket-name.                    |
-#                           |                                                    |
-# PING_ARTIFACT_REPO_URL    | This environment variable can be used to overwrite | https://ping-artifacts.s3-us-west-2.amazonaws.com
-#                           | the default endpoint for public plugins. This URL  |
-#                           | must use an https scheme as shown by the default   |
-#                           | value.                                             |
-#                           |                                                    |
-# LOG_ARCHIVE_URL           | The URL of the log archives. If provided, logs     | The string "unused"
-#                           | are periodically captured and sent to this URL.    |
-#                           |                                                    |
-# BACKUP_URL                | The URL of the backup location. If provided, data  | The string "unused".
-#                           | backups are periodically captured and sent to this |
-#                           | URL. For AWS S3 buckets, it must be an S3 URL,     |
-#                           | e.g. s3://backups.                                 |
-#                           |                                                    |
-# PLATFORM_EVENT_QUEUE_NAME | The name of the queue that may be used to notify   | v2_platform_event_queue.fifo
-#                           | PingCloud applications of platform events. This    |
-#                           | is currently only used if the orchestrator for     |
-#                           | PingCloud environments is MyPing.                  |
-#                           |                                                    |
-# ORCH_API_SSM_PATH_PREFIX  | The prefix of the SSM path that contains MyPing    | /pcpt/orch-api
-#                           | state data required for the P14C/P1AS integration. |
-#                           |                                                    |
-# SERVICE_SSM_PATH_PREFIX   | The prefix of the SSM path that contains Services  |
-#                           | data for the cluster                               | /pcpt/service
-#                           |                                                    |
-# DEPLOY_FILE               | The name of the file where the final deployment    | /tmp/deploy.yaml
-#                           | spec is saved before applying it.                  |
-#                           |                                                    |
-# K8S_CONTEXT               | The current Kubernetes context, i.e. cluster.      | The current context as set in
-#                           | spec is saved before applying it.                  | ~/.kube/config or the config file
-#                           |                                                    | to which KUBECONFIG is set.
-#                           |                                                    |
-# NEW_RELIC_LICENSE_KEY     | The key of NewRelic APM Agent used to send data to | The SSM path: ssm://pcpt/sre/new-relic/java-agent-license-key
-#                           | NewRelic account                                   |
-#                           |                                                    |
-# MYSQL_SERVICE_HOST        | The hostname of the MySQL database server.         | beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
-#                           |                                                    |
-# MYSQL_USER                | The DBA user of the PingCentral MySQL RDS          | The SSM path:
-#                           | database.                                          | ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username
-#                           |                                                    |
-# MYSQL_PASSWORD            | The DBA password of the PingCentral MySQL RDS      | The SSM path:
-#                           | database.                                          | ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#password
-#                           |                                                    |
-# PING_IDENTITY_DEVOPS_USER | A user with license to run Ping Software.          | The SSM path:
-#                           |                                                    | ssm://pcpt/devops-license/user
-#                           |                                                    |
-# PING_IDENTITY_DEVOPS_KEY  | The key to the above user.                         | The SSM path:
-#                           |                                                    | ssm://pcpt/devops-license/key
-#                           |                                                    |
-# LEGACY_LOGGING            | Flag indicating where we should send app logs -    | True
-#                           | to CloudWatch(if True) or to ELK (if False)        |
-#                           |                                                    |
-# PF_PROVISIONING_ENABLED   | Feature Flag - Indicates if the outbound           | False
-#                           | provisioning feature for PingFederate is enabled   |
-#                           |                                                    |
-# NOTIFICATION_ENABLED       | Flag indicating if alerts should be sent to the    | False
-#                           | endpoint configured in the argo-events             |
-#                           |                                                    |
-# SLACK_CHANNEL           ` | The Slack channel name for argo-events to send     | CDE environment: p1as-application-oncall
-#                           | notification.                                      | Dev environment: nowhere
+# DASH_REPO_BRANCH          | Branch where dashboards will be taken from         | main
 ########################################################################################################################
 
 #
@@ -223,7 +236,7 @@ done
 CUR_DIR=$(pwd)
 
 # Checking required tools and environment variables.
-check_binaries "openssl" "base64" "kustomize" "kubectl" "envsubst"
+check_binaries "openssl" "base64" "kustomize" "kubectl" "envsubst" "cmctl"
 HAS_REQUIRED_TOOLS=${?}
 
 if test ${HAS_REQUIRED_TOOLS} -ne 0; then
@@ -264,6 +277,7 @@ log "Initial ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 log "Initial PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 log "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 log "Initial BACKUP_URL: ${BACKUP_URL}"
+log "Initial PGO_BACKUP_BUCKET_NAME: ${PGO_BACKUP_BUCKET_NAME}"
 
 log "Initial MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 log "Initial MYSQL_USER: ${MYSQL_USER}"
@@ -276,6 +290,9 @@ log "Initial PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
 log "Initial DEPLOY_FILE: ${DEPLOY_FILE}"
 log "Initial K8S_CONTEXT: ${K8S_CONTEXT}"
 log "Initial PF_PROVISIONING_ENABLED: ${PF_PROVISIONING_ENABLED}"
+
+log "Initial DASH_REPO_URL: ${DASH_REPO_URL}"
+log "Initial DASH_REPO_BRANCH: ${DASH_REPO_BRANCH}"
 log ---
 
 # A script that may be used to set up a dev/test environment against the
@@ -308,7 +325,12 @@ export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
 export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
-export BACKUP_BUCKET_NAME=$(get_backup_bucket_name "${BACKUP_URL}")
+
+# Only for dev envs, we set the PGO_BACKUP_BUCKET_NAME to BACKUP_URL
+# BACKUP_URL contains the prefix and suffix of the SSM value, so we don't set a suffix
+set_var "PGO_BACKUP_BUCKET_NAME" "not_set" "${BACKUP_URL}"
+# Remove s3:// prefix if present
+export PGO_BACKUP_BUCKET_NAME=${PGO_BACKUP_BUCKET_NAME#s3://}
 
 export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com}"
 export MYSQL_USER="${MYSQL_USER:-ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username}"
@@ -328,6 +350,14 @@ export PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED:-false}
 # Default notification configuration for dev environment.
 export NOTIFICATION_ENABLED=${NOTIFICATION_ENABLED:-false}
 export SLACK_CHANNEL=${SLACK_CHANNEL:-nowhere}
+
+# PGO Prometheus notification.
+export PROM_NOTIFICATION_ENABLED=${PROM_NOTIFICATION_ENABLED:-false}
+export PROM_SLACK_CHANNEL=${PROM_SLACK_CHANNEL:-nowhere}
+
+# Dashboards repo
+export DASH_REPO_URL="${DASH_REPO_URL:-https://github.com/pingidentity/ping-cloud-dashboards}"
+export DASH_REPO_BRANCH="${DASH_REPO_BRANCH:-main}"
 
 # MySQL database names cannot have dashes. So transform dashes into underscores.
 ENV_NAME_NO_DASHES=$(echo ${BELUGA_ENV_NAME} | tr '-' '_')
@@ -360,7 +390,7 @@ log "Using ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 log "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 log "Using LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 log "Using BACKUP_URL: ${BACKUP_URL}"
-log "Using BACKUP_BUCKET_NAME: ${BACKUP_BUCKET_NAME}"
+log "Using PGO_BACKUP_BUCKET_NAME: ${PGO_BACKUP_BUCKET_NAME}"
 
 log "Using MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 log "Using MYSQL_USER: ${MYSQL_USER}"
@@ -374,6 +404,9 @@ log "Using LEGACY_LOGGING: ${LEGACY_LOGGING}"
 log "Using DEPLOY_FILE: ${DEPLOY_FILE}"
 log "Using K8S_CONTEXT: ${K8S_CONTEXT}"
 log "Using PF_PROVISIONING_ENABLED: ${PF_PROVISIONING_ENABLED}"
+
+log "Using DASH_REPO_URL: ${DASH_REPO_URL}"
+log "Using DASH_REPO_BRANCH: ${DASH_REPO_BRANCH}"
 log ---
 
 NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY:-ssm://pcpt/sre/new-relic/java-agent-license-key}"
@@ -481,7 +514,7 @@ export ARTIFACT_REPO_URL=${ARTIFACT_REPO_URL}
 export PING_ARTIFACT_REPO_URL=${PING_ARTIFACT_REPO_URL}
 export LOG_ARCHIVE_URL=${LOG_ARCHIVE_URL}
 export BACKUP_URL=${BACKUP_URL}
-export BACKUP_BUCKET_NAME=${BACKUP_BUCKET_NAME}
+export PGO_BACKUP_BUCKET_NAME=${PGO_BACKUP_BUCKET_NAME}
 
 export MYSQL_SERVICE_HOST=${MYSQL_SERVICE_HOST}
 export MYSQL_USER=${MYSQL_USER}
@@ -496,6 +529,9 @@ export PING_IDENTITY_DEVOPS_USER=${PING_IDENTITY_DEVOPS_USER}
 export PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 
 export LEGACY_LOGGING=${LEGACY_LOGGING}
+
+export DASH_REPO_URL=${DASH_REPO_URL}
+export DASH_REPO_BRANCH=${DASH_REPO_BRANCH}
 
 export PROJECT_DIR=${PWD}
 export AWS_PROFILE=${AWS_PROFILE:-csg}

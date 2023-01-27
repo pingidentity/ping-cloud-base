@@ -41,7 +41,7 @@ PING_ARTIFACT_REPO_URL=${PING_ARTIFACT_REPO_URL}
 # Customer-specific log and backup URLs for region
 LOG_ARCHIVE_URL=${LOG_ARCHIVE_URL}
 BACKUP_URL=${BACKUP_URL}
-BACKUP_BUCKET_NAME=${BACKUP_BUCKET_NAME}
+PGO_BACKUP_BUCKET_NAME=${PGO_BACKUP_BUCKET_NAME}
 
 ############################################################
 # Platform event queue and SSM variables
@@ -78,9 +78,6 @@ K8S_GIT_BRANCH=${K8S_GIT_BRANCH}
 # The name of the Docker image registry
 ECR_REGISTRY_NAME=${ECR_REGISTRY_NAME}
 
-# The tenant or customer name
-TENANT_NAME=${TENANT_NAME}
-
 ############################################################
 # Server profile variables
 ############################################################
@@ -109,6 +106,19 @@ LETS_ENCRYPT_SERVER=${LETS_ENCRYPT_SERVER}
 # PingCommon environment variables
 ############################################################
 USER_BASE_DN=${USER_BASE_DN}
+
+# Multiple Backend IDs Base DNs
+USER_BASE_DN_2=${USER_BASE_DN_2}
+USER_BASE_DN_3=${USER_BASE_DN_3}
+USER_BASE_DN_4=${USER_BASE_DN_4}
+USER_BASE_DN_5=${USER_BASE_DN_5}
+
+# Multiple Backend IDs
+USER_BACKEND_ID_2=userRoot_2
+USER_BACKEND_ID_3=userRoot_3
+USER_BACKEND_ID_4=userRoot_4
+USER_BACKEND_ID_5=userRoot_5
+
 ECR_ENV=/dev
 
 ############################################################
@@ -151,22 +161,22 @@ PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 ############################################################
 # Ping application image tags
 ############################################################
-PINGACCESS_IMAGE_TAG=v1.16-release-branch-latest
-PINGACCESS_WAS_IMAGE_TAG=v1.16-release-branch-latest
-PINGFEDERATE_IMAGE_TAG=v1.16-release-branch-latest
-PINGDIRECTORY_IMAGE_TAG=v1.16-release-branch-latest
-PINGDELEGATOR_IMAGE_TAG=v1.16-release-branch-latest
-PINGCENTRAL_IMAGE_TAG=v1.16-release-branch-latest
-PINGDATASYNC_IMAGE_TAG=v1.16-release-branch-latest
+PINGACCESS_IMAGE_TAG=v1.18-release-branch-latest
+PINGACCESS_WAS_IMAGE_TAG=v1.18-release-branch-latest
+PINGFEDERATE_IMAGE_TAG=v1.18-release-branch-latest
+PINGDIRECTORY_IMAGE_TAG=v1.18-release-branch-latest
+PINGDELEGATOR_IMAGE_TAG=v1.18-release-branch-latest
+PINGCENTRAL_IMAGE_TAG=v1.18-release-branch-latest
+PINGDATASYNC_IMAGE_TAG=v1.18-release-branch-latest
 
 ############################################################
 # Ping solution image tags
 ############################################################
-METADATA_IMAGE_TAG=v1.16-release-branch-latest
-BOOTSTRAP_IMAGE_TAG=v1.16-release-branch-latest
-HEALTHCHECK_IMAGE_TAG=v1.16-release-branch-latest
-P14C_INTEGRATION_IMAGE_TAG=v1.16-release-branch-latest
-ANSIBLE_BELUGA_IMAGE_TAG=v1.16-release-branch-latest
+METADATA_IMAGE_TAG=v1.18-release-branch-latest
+BOOTSTRAP_IMAGE_TAG=v1.18-release-branch-latest
+HEALTHCHECK_IMAGE_TAG=v1.18-release-branch-latest
+P14C_INTEGRATION_IMAGE_TAG=v1.18-release-branch-latest
+ANSIBLE_BELUGA_IMAGE_TAG=v1.18-release-branch-latest
 
 ############################################################
 # Cluster name variables
@@ -211,6 +221,9 @@ GRAFANA_PUBLIC_HOSTNAME=monitoring.${DNS_ZONE_DERIVED}
 KIBANA_PUBLIC_HOSTNAME=logs.${DNS_ZONE_DERIVED}
 ARGOCD_PUBLIC_HOSTNAME=argocd.${DNS_ZONE_DERIVED}
 
+HEALTHCHECK_HTTPBIN_PA_WAS_PUBLIC_HOSTNAME=healthcheck-httpbin-pa-was.${DNS_ZONE_DERIVED}
+HEALTHCHECK_HTTPBIN_PA_PUBLIC_HOSTNAME=healthcheck-httpbin-pa.${DNS_ZONE_DERIVED}
+
 # Retention time for Prometheus. Could be set in years(y), weeks(w), days(d), hours(h), minutes(m) or seconds(s)
 PROMETHEUS_RETENTION_TIME=15d
 
@@ -229,14 +242,28 @@ PROMETHEUS_PING_NAMESPACE=${PING_CLOUD_NAMESPACE}
 
 #### FEATURE FLAGS #####################################################################################################
 # Set to true to enable, most are disabled by default
-# NOTE: You must re-run update-cluster-state.sh after flipping a feature flag
+# Please follow runbook instructions for the given feature flag to enable/disable
 
 # !!! Provisioning for PingFederate is not yet available for multi-region customers !!!
+# Runbook: https://confluence.pingidentity.com/display/PingCloud/How+to+Enable+and+Configure+PingFederate+Provisioning
 PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED}
 
+RADIUS_PROXY_ENABLED=${RADIUS_PROXY_ENABLED}
 ########################################################################################################################
 
 # Default argo-events notification configuration
 NOTIFICATION_ENABLED=false
-SLACK_CHANNEL=p1as-application-oncall
+SLACK_CHANNEL=${SLACK_CHANNEL}
 NOTIFICATION_ENDPOINT=http://webhook-eventsource-svc.argo-events:12999/notification
+
+# Prometheus argo-events notification configuration
+PROM_NOTIFICATION_ENABLED=true
+PROM_SLACK_CHANNEL=${PROM_SLACK_CHANNEL}
+
+# Variables used by argocd-image-updater to automatically update the container images managed by ArgoCD
+IMAGE_TAG_PREFIX=${IMAGE_TAG_PREFIX}
+IMAGE_LIST="apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingfederate,apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess,apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess-was"
+
+# Dashboards repo variables
+DASH_REPO_URL=https://github.com/pingidentity/ping-cloud-dashboards
+DASH_REPO_BRANCH=v1.18-dev-branch

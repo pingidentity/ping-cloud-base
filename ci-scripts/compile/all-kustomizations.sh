@@ -14,6 +14,12 @@ STATUS=${?}
 # All kustomizations in dev cluster state directory
 PING_CLOUD_TEST_DIR="${PROJECT_DIR}/dev-cluster-state"
 
+export DASH_REPO_URL="https://github.com/pingidentity/ping-cloud-dashboards"
+export DASH_REPO_BRANCH="main"
+VARS_FOR_CI='${DASH_REPO_URL}
+${DASH_REPO_BRANCH}'
+
+substitute_vars "${PING_CLOUD_TEST_DIR}" "${VARS_FOR_CI}"
 build_kustomizations_in_dir "${PING_CLOUD_TEST_DIR}"
 BUILD_RESULT=${?}
 test ${STATUS} -eq 0 && STATUS=${BUILD_RESULT}

@@ -40,6 +40,8 @@ replace_and_commit() {
   local source_value=${1}
   local target_value=${2}
   local ref_value=${3}
+  local source_dash_branch
+  local target_dash_branch
 
   local image_map=(
     "pingaccess"
@@ -71,7 +73,7 @@ replace_and_commit() {
     image_repo=$(get_image_repo ${image} | xargs)
 
     echo ---
-    echo "Changing values for ${image} in expected files"
+    echo "Changing values for ${image_repo}/${image} in expected files"
 
     if test "${ref_value}" = 'tag'; then
       # If tag, search registry for latest image version
@@ -87,6 +89,22 @@ replace_and_commit() {
     # update k8s yaml files
     grep_yaml "${image}" "${source_value}" "${target_image}" "${ref_value}"
   done
+
+# Getting source and tagret branch for dashboards repo. Current development release branch becomes $release-dev-branch
+# and current tag becomes $release-release-branch. E.g. v1.17-release-branch becomes v1.17-dev-branch and v1.17.0 becomes
+# v1.17-release-branch for dashboard repo
+# Regex will work until release branch will be v#.##-release-branch and tag will be v#.##.* since it replaces one of two
+# expressions:
+# 1) ^(v[[:digit:]]+\.[[:digit:]]+)-release-branch.*
+# 2) ^(v[[:digit:]]+\.[[:digit:]]{2})(\..*)
+# Round brackets here used for grouping, so sed can replace only needed group.
+# At perl regex these expressions should be:
+# 1) ^(v\d+\.\d+)-release-branch.*
+# 2) ^(v\d+\.\d{2})(\..*)
+  source_dash_branch=$(echo "${source_value}"|sed -r 's/^(v[[:digit:]]+\.[[:digit:]]+)-release-branch.*/\1-dev-branch/;s/^(v[[:digit:]]+\.[[:digit:]]{2})(\..*)/\1-release-branch/g')
+  target_dash_branch=$(echo "${target_value}"|sed -r 's/^(v[[:digit:]]+\.[[:digit:]]+)-release-branch.*/\1-dev-branch/;s/^(v[[:digit:]]+\.[[:digit:]]{2})(\..*)/\1-release-branch/g')
+
+  grep_var "DASH_REPO_BRANCH" "${source_dash_branch}" "${target_dash_branch}"
 
   echo ---
   echo "Committing changes for new ${ref_value} ${target_value}"

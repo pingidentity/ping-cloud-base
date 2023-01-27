@@ -6,6 +6,10 @@
 
 test "${VERBOSE}" && set -x
 
+# Source some utility methods.
+export PROJECT_DIR="${CI_PROJECT_DIR}"
+. ${PROJECT_DIR}/utils.sh
+
 # Override environment variables with optional file supplied from the outside
 ENV_VARS_FILE="${1}"
 
@@ -15,15 +19,10 @@ SKIP_TESTS="${SKIP_TESTS:-pingdirectory/03-backup-restore.sh \
   pingaccess-was/09-csd-upload-test.sh \
   pingaccess/11-heartbeat-endpoint.sh \
   pingaccess/09-csd-upload-test.sh \
-  pingaccess/05-test-cloudwatch-logs.sh \
   pingaccess/03-change-default-db-password-test.sh \
-  pingaccess-was/05-test-cloudwatch-logs.sh \
-  pingfederate/05-test-cloudwatch-logs.sh \
-  pingdirectory/05-test-cloudwatch-logs.sh \
   pingfederate/09-heartbeat-endpoint.sh \
   pingaccess/08-artifact-test.sh \
   pingdelegator/01-admin-user-login.sh \
-  pingaccess-was/05-test-cloudwatch-logs.sh \
   chaos/01-delete-pa-admin-pod.sh }"
 
 # environment variables that are determined based on deployment type (traditional or PingOne)
@@ -84,20 +83,26 @@ set_env_vars() {
     export ARTIFACT_REPO_URL=s3://${CLUSTER_NAME}-artifacts-bucket
     export PING_ARTIFACT_REPO_URL=https://ping-artifacts.s3-us-west-2.amazonaws.com
     export LOG_ARCHIVE_URL=s3://${CLUSTER_NAME}-logs-bucket
-    export BACKUP_BUCKET_NAME=${CLUSTER_NAME}-backup-bucket
-    export BACKUP_URL=s3://${BACKUP_BUCKET_NAME}
+    export PGO_BACKUP_BUCKET_NAME=${CLUSTER_NAME}-backup-bucket
+    export BACKUP_URL=s3://${PGO_BACKUP_BUCKET_NAME}
 
     export MYSQL_SERVICE_HOST=beluga-${CLUSTER_NAME}-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
     export MYSQL_USER=ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username
     export MYSQL_PASSWORD=ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#password
 
-    export PROJECT_DIR="${CI_PROJECT_DIR}"
     export AWS_PROFILE=csg
 
     export LEGACY_LOGGING=False
 
+    export PF_PROVISIONING_ENABLED=true
+
+    export LOG_LINES_TO_TEST=2
+
     # Service SSM should be available for all environments
     export SERVICE_SSM_PATH_PREFIX="/${SELECTED_KUBE_NAME}/pcpt/service"
+
+    export DASH_REPO_URL="https://github.com/pingidentity/ping-cloud-dashboards"
+    export DASH_REPO_BRANCH="main"
 
   elif test -f "${ENV_VARS_FILE}"; then
     echo "Using environment variables defined in file ${ENV_VARS_FILE}"
@@ -106,6 +111,20 @@ set_env_vars() {
     echo "ENV_VARS_FILE points to a non-existent file: ${ENV_VARS_FILE}"
     exit 1
   fi
+
+  NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY:-ssm://pcpt/sre/new-relic/java-agent-license-key}"
+  if [[ ${NEW_RELIC_LICENSE_KEY} == "ssm://"* ]]; then
+    if ! ssm_value=$(get_ssm_value "${NEW_RELIC_LICENSE_KEY#ssm:/}"); then
+      echo "Warn: ${ssm_value}"
+      echo "Setting NEW_RELIC_LICENSE_KEY to unused"
+      NEW_RELIC_LICENSE_KEY="unused"
+    else
+      NEW_RELIC_LICENSE_KEY="${ssm_value}"
+    fi
+  fi
+
+  export NEW_RELIC_LICENSE_KEY_BASE64=$(base64_no_newlines "${NEW_RELIC_LICENSE_KEY}")
+  export DATASYNC_P1AS_SYNC_SERVER="pingdirectory-0"
 
   # Timing
   export LOG_SYNC_SECONDS="${LOG_SYNC_SECONDS:-5}"
@@ -186,9 +205,6 @@ set_env_vars() {
 set_deploy_type_env_vars
 set_env_vars
 
-# Source some utility methods.
-. ${PROJECT_DIR}/utils.sh
-
 ########################################################################################################################
 # Sets env vars specific to PingOne API integration
 ########################################################################################################################
@@ -202,8 +218,6 @@ set_pingone_api_env_vars() {
 ########################################################################################################################
 # Configures kubectl to be able to talk to the Kubernetes API server based on the following environment variables:
 #
-#   - KUBE_CA_PEM
-#   - KUBE_URL
 #   - SELECTED_KUBE_NAME
 #   - AWS_ACCOUNT_ROLE_ARN
 #
@@ -215,36 +229,23 @@ configure_kube() {
     return
   fi
 
-  ca_pem_var="KUBE_CA_PEM$SELECTED_POSTFIX"
-  kube_url_var="KUBE_URL$SELECTED_POSTFIX"
-
-  check_env_vars "SELECTED_POSTFIX" "SELECTED_KUBE_NAME" "AWS_ACCOUNT_ROLE_ARN" ca_pem_var kube_url_var
+  check_env_vars "SELECTED_KUBE_NAME" "AWS_ACCOUNT_ROLE_ARN"
   HAS_REQUIRED_VARS=${?}
 
   if test ${HAS_REQUIRED_VARS} -ne 0; then
     exit 1
   fi
 
-  SELECTED_CA_PEM=$(eval "echo \"\$$ca_pem_var\"")
-  SELECTED_KUBE_URL=$(eval "echo \"\$$kube_url_var\"")
-
   log "Configuring KUBE"
-  echo "${SELECTED_CA_PEM}" > "$(pwd)/kube.ca.pem"
 
-  kubectl config set-cluster "${SELECTED_KUBE_NAME}" \
-    --server="${SELECTED_KUBE_URL}" \
-    --certificate-authority="$(pwd)/kube.ca.pem"
-
-  kubectl config set-credentials aws \
-    --exec-command aws-iam-authenticator \
-    --exec-api-version client.authentication.k8s.io/v1alpha1 \
-    --exec-arg=token \
-    --exec-arg=-i --exec-arg="${SELECTED_KUBE_NAME}" \
-    --exec-arg=-r --exec-arg="${AWS_ACCOUNT_ROLE_ARN}"
-
-  kubectl config set-context "${SELECTED_KUBE_NAME}" \
-    --cluster="${SELECTED_KUBE_NAME}" \
-    --user=aws
+  # Use AWS profile 'default' because this is the profile the AWS Access Key/Secret key go under in the 'configure_aws'
+  # function. This profile then assumes the role specified by $AWS_ACCOUNT_ROLE_ARN, within the kube config.
+  aws eks update-kubeconfig \
+    --profile "default" \
+    --role-arn "${AWS_ACCOUNT_ROLE_ARN}" \
+    --alias "${SELECTED_KUBE_NAME}" \
+    --name "${SELECTED_KUBE_NAME}" \
+    --region us-west-2
 
   kubectl config use-context "${SELECTED_KUBE_NAME}"
 }
@@ -267,7 +268,7 @@ configure_aws() {
     return
   fi
 
-  check_env_vars "AWS_ACCESS_KEY_ID" "AWS_SECRET_ACCESS_KEY" "AWS_DEFAULT_REGION" "AWS_ACCOUNT_ROLE_ARN"
+  check_env_vars "AWS_ACCESS_KEY_ID" "AWS_SECRET_ACCESS_KEY" "AWS_DEFAULT_REGION" "AWS_ACCOUNT_ROLE_ARN" "AWS_PROFILE"
   HAS_REQUIRED_VARS=${?}
 
   if test ${HAS_REQUIRED_VARS} -ne 0; then
@@ -443,108 +444,38 @@ set_log_file() {
   kubectl logs -n "${PING_CLOUD_NAMESPACE}" "${server}" -c "${container}" --since=60m > ${log_file}
 }
 
-########################################################################################################################
-# Compares a sample of logs within Kubernetes and AWS CloudWatch
-#
-# Arguments
-#   ${1} -> Name of log stream within CloudWatch
-#   ${2} -> Full pathname to log file within the container, unused for default log stream tests
-#   ${3} -> Name of pod
-#   ${4} -> Name of container within pod
-#   ${5} -> A flag indicating whether or not to run the default log stream test
-#
-# Returns
-#   0 -> If all logs present within Kubernetes are also present within CloudWatch
-#   1 -> If a log entry within Kubernetes does not appear within CloudWatch
-########################################################################################################################
-function log_events_exist() {
-  local log_stream=$1
-  local full_pathname=$2
-  local pod=$3
-  local container=$4
-  local default="${5:-false}"
-  local temp_log_file=$(mktemp)
-  local cwatch_log_events=
-
-  if "${default}"; then
-    # Save current state of logs into a temp file
-    kubectl logs "${pod}" -c "${container}" -n "${PING_CLOUD_NAMESPACE}" |
-      # Filter out logs that belong to specific log file or that originate from SIEM logs not sent to CW
-      grep -vE "^(/opt/out/instance/log|<[0-9]+>)" |
-      grep -vE "^\/opt\/out\/instance\/log\/admin-api.*127\.0\.0\.1\| GET\| \/version\| 200" |
-      grep -vE "^\/opt\/out\/instance\/log\/pingaccess_api_audit.*127\.0\.0\.1\| GET\| \/pa-admin-api\/v3\/version\| 200" |
-      tail -50 |
-      # remove all ansi escape sequences, remove all '\' and '-', remove '\r'
-      sed -E 's/'"$(printf '\x1b')"'\[(([0-9]+)(;[0-9]+)*)?[m,K,H,f,J]//g' |
-      sed -E 's/\\//g' |
-      sed -E 's/-//g' |
-      tr -d '\r' > "${temp_log_file}"
-  else
-    # Save current state of logs into a temp file
-    kubectl logs "${pod}" -c "${container}" -n "${PING_CLOUD_NAMESPACE}" |
-      grep ^"${full_pathname}" |
-      grep -vE "^\/opt\/out\/instance\/log\/admin-api.*127\.0\.0\.1\| GET\| \/version\| 200" |
-      grep -vE "^\/opt\/out\/instance\/log\/pingaccess_api_audit.*127\.0\.0\.1\| GET\| \/pa-admin-api\/v3\/version\| 200" |
-      tail -50 |
-      # remove all ansi escape sequences, remove all '\' and '-', remove '\r'
-      sed -E 's/'"$(printf '\x1b')"'\[(([0-9]+)(;[0-9]+)*)?[m,K,H,f,J]//g' |
-      sed -E 's/\\//g' |
-      sed -E 's/-//g' |
-      tr -d '\r' > "${temp_log_file}"
-  fi
-
-  # Let the aws logs catch up to the kubectl logs in temp file
-  sleep "${LOG_SYNC_SECONDS}"
-
-  cwatch_log_events=$(aws logs --profile "${AWS_PROFILE}" get-log-events \
-    --log-group-name "${LOG_GROUP_NAME}" \
-    --log-stream-name "${log_stream}" \
-    --no-start-from-head --limit 500 |
-    # Replace groups of 3 and 2 '\' with 1 '\', remove '\r', '\n', replace '\t' with tab spaces,
-    # remove all ansi escape sequences, remove all '\' and '-'
-    sed -E 's/\\{3,}/\\/g' |
-    sed -E 's/\\{1,}/\\/g' |
-    sed -E 's/\\r//g' |
-    sed -E 's/\\n//g' |
-    sed -E 's/\\t/'"$(printf '\t')"'/g' |
-    sed -E 's/\\u001B\[(([0-9]+)(;[0-9]+)*)?[m,K,H,f,J]//g' |
-    sed -E 's/\\//g' |
-    sed -E 's/-//g')
-  
-  while read -r event; do
-    count=$(echo "${cwatch_log_events}" | grep -Fc "${event}")
-    if test "${count}" -lt 1; then
-      echo "Event not found: "
-      echo "${event}"
-      rm "${temp_log_file}"
-      return 1
-    fi
-  done< <(cat "${temp_log_file}")
-  rm "${temp_log_file}"
-  return 0
+function find_shunit_dir() {
+  # use egrep here or find will always return 0
+  find . -type d -name "shunit*" | egrep '.*'
 }
 
-########################################################################################################################
-# Checks for existence of a particular log stream within AWS CloudWatch
-#
-# Arguments
-#   ${1} -> Name of log stream within CloudWatch
-#
-# Returns
-#   0 -> If log stream is present within CloudWatch
-#   1 -> If log stream is not present within CloudWatch
-########################################################################################################################
-function log_streams_exist() {
-  local log_stream_prefixes=$1
-  for log in ${log_stream_prefixes}; do
-    log_stream_count=$(aws logs --profile "${AWS_PROFILE}" describe-log-streams \
-      --log-group-name "${LOG_GROUP_NAME}" \
-      --log-stream-name-prefix "${log}" | jq '.logStreams | length')
-    if test "${log_stream_count}" -lt 1; then
-      echo "Log stream with prefix '$log' not found in CloudWatch"
-      return 1
-    fi
-  done
+function find_shunit_symlink() {
+  # use egrep here or find will always return 0
+  find . -type l -name shunit | egrep '.*'
+}
+
+function prepareShunit() {
+
+  # Check to see if shunit2 is ready
+  pushd "${PROJECT_DIR}"/ci-scripts/test/shunit > /dev/null
+
+  shunit_dir_name=$(find_shunit_dir)
+  shunit_dir_found=$?
+
+  echo
+  if [[ ${shunit_dir_found} -eq 0 ]]; then
+    echo "Found ${shunit_dir_name}.  Skipping shunit configuration."
+  else
+    echo "shunit not found.  Unpacking it..."
+
+    unzip shunit*.zip 1>/dev/null
+    shunit_dir_name=$(find_shunit_dir)
+
+    echo "Unpacking of ${shunit_dir_name} complete."
+  fi
+
+  popd > /dev/null
+
   return 0
 }
 
@@ -658,16 +589,6 @@ expected_files() {
     tr ' ' '\n' |
     sort
   done
-}
-
-########################################################################################################################
-# Gets rollout status and waits to return until either the timeout is reached or the rollout is ready
-########################################################################################################################
-wait_for_rollout() {
-  resource="${1}"
-  namespace="${2}"
-  timeout="${3}"
-  time kubectl rollout status "${resource}" --timeout "${timeout}s" -n "${namespace}" -w
 }
 
 ########################################################################################################################

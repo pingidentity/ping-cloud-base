@@ -10,6 +10,12 @@ SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 configure_aws
 configure_kube
 
+PWD=$(pwd)
+PCB_ROOT=${PWD/ping-cloud-base\/*/ping-cloud-base}
+source "${PCB_ROOT}/pcb_common.sh"
+
+pcb_common::source_k8s_utils 1.0.0
+
 # If PingOne teardown just delete the PingOne environment and exit
 if [[ -n ${PINGONE} ]]; then
   set_pingone_api_env_vars
@@ -27,21 +33,7 @@ if test "${CI_COMMIT_REF_SLUG}" = 'master' || test "${DELETE_ENV_AFTER_PIPELINE}
   exit 0
 fi
 
-# Delete the PF provisioning db correctly so the namespace deletes properly
-kubectl delete -n postgres-operator postgrescluster pf-provisioning
-
-all_namespaces=$(kubectl get ns -o name)
-deleting_ns=()
-
-for ns in $all_namespaces; do
-  if [[ $ns == *"kube-"* || $ns == "namespace/default" || $ns == *"cluster-in-use-lock"* ]]; then
-    log "Skipping namespace ${ns}"
-    continue
-  fi
-  log "Deleting namespace asynchronously: ${ns}"
-  kubectl delete "${ns}" --wait=false
-  deleting_ns+=($ns)
-done
+utils::cleanup_k8s_resources
 
 pod_name="mysql-client-${CI_COMMIT_REF_SLUG}"
 MYSQL_USER=$(get_ssm_val "${MYSQL_USER_SSM}")
@@ -52,16 +44,6 @@ kubectl run -n default -i "${pod_name}" --restart=Never --rm --image=arey/mysql-
       -h "${MYSQL_SERVICE_HOST}" -P ${MYSQL_SERVICE_PORT} \
       -u "${MYSQL_USER}" -p"${MYSQL_PASSWORD}" \
       -e "drop database IF EXISTS ${MYSQL_DATABASE}; drop database IF EXISTS p1_${MYSQL_DATABASE}"
-
-wait_time=15
-
-for ns in "${deleting_ns[@]}"; do
-  while kubectl get ns -o name | grep $ns > /dev/null; do
-    log "Waiting for namespace ${ns} to terminate"
-    log "Sleeping for ${wait_time} seconds and trying again"
-    sleep ${wait_time}
-  done
-done
 
 # Sometimes, the cron job on the cluster - "cleanup-nondefault-namespaces" might clean up the lock before we can. 
 # So check if it exists first.

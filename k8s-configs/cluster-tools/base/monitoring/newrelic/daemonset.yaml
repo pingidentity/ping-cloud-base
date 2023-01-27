@@ -43,7 +43,7 @@ spec:
             runAsNonRoot: true
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
-          image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.23.0
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
           env:
@@ -55,7 +55,7 @@ spec:
               value: "newrelic-license-key"
       containers:
         - name: controlplane
-          image: "public.ecr.aws/r2h3l6e4/pingcloud-monitoring/nri-kubernetes:v1.16-release-branch-latest"
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/nri-kubernetes/dev:v1.18-release-branch-latest
           imagePullPolicy: Always
           securityContext:
             privileged: false
@@ -73,7 +73,6 @@ spec:
                   fieldPath: metadata.annotations['CLUSTER_NAME']
             - name: "NRI_KUBERNETES_VERBOSE"
               value: "false"
-
             - name: "NRI_KUBERNETES_NODENAME"
               valueFrom:
                 fieldRef:
@@ -95,7 +94,7 @@ spec:
               cpu: 100m
               memory: 150M
         - name: forwarder
-          image: "public.ecr.aws/r2h3l6e4/newrelic/k8s-events-forwarder:1.24.1"
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/k8s-events-forwarder:1.24.1
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: false
@@ -107,6 +106,8 @@ spec:
           ports:
             - containerPort: 8001
           env:
+            - name: "NRI_KUBERNETES_VERBOSE"
+              value: "false"
             - name: "NRIA_LICENSE_KEY"
               valueFrom:
                 secretKeyRef:
@@ -226,7 +227,7 @@ spec:
             runAsNonRoot: true
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
-          image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.23.0
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
           env:
@@ -238,7 +239,7 @@ spec:
               value: "newrelic-license-key"
       containers:
         - name: kubelet
-          image: "public.ecr.aws/r2h3l6e4/pingcloud-monitoring/nri-kubernetes:v1.16-release-branch-latest"
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/nri-kubernetes/dev:v1.18-release-branch-latest
           imagePullPolicy: Always
           securityContext:
             privileged: false
@@ -256,7 +257,6 @@ spec:
                   fieldPath: metadata.annotations['CLUSTER_NAME']
             - name: "NRI_KUBERNETES_VERBOSE"
               value: "false"
-
             - name: "NRI_KUBERNETES_NODENAME"
               valueFrom:
                 fieldRef:
@@ -279,7 +279,7 @@ spec:
               cpu: 100m
               memory: 150M
         - name: agent
-          image: "public.ecr.aws/r2h3l6e4/newrelic/infrastructure-bundle:2.8.15"
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/infrastructure-bundle:2.8.15
           args: [ "newrelic-infra" ]
           imagePullPolicy: IfNotPresent
           securityContext:
@@ -292,6 +292,8 @@ spec:
           ports:
             - containerPort: 8003
           env:
+            - name: "NRI_KUBERNETES_VERBOSE"
+              value: "false"
             - name: NRIA_LICENSE_KEY
               valueFrom:
                 secretKeyRef:

@@ -53,7 +53,7 @@ spec:
         fsGroup: 65534 # For ExternalDNS to be able to read Kubernetes and AWS token files
       containers:
       - name: external-dns
-        image: public.ecr.aws/r2h3l6e4/external-dns/external-dns:v0.11.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/external-dns/external-dns:v0.11.0
         resources:
           limits:
             cpu: 500m

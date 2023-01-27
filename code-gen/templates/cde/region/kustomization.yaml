@@ -189,6 +189,12 @@ configMapGenerator:
   envs:
     - logging/env_vars
 
+- name: prometheus-environment-variables
+  behavior: merge
+  envs:
+    - ../base/env_vars
+    - env_vars
+
 patchesStrategicMerge:
 
 ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
@@ -208,3 +214,6 @@ patchesStrategicMerge:
 - ../base/ping-cloud/pingcommon/my-ping/remove-from-secondary-patch.yaml
 
 - ../base/ping-cloud/pingdatasync/server/remove-from-secondary-patch.yaml
+- ../base/cluster-tools/monitoring/remove-from-secondary-patch.yaml
+- ../base/cluster-tools/logging/remove-from-secondary-patch.yaml
+- ../base/cluster-tools/health/remove-from-secondary-patch.yaml

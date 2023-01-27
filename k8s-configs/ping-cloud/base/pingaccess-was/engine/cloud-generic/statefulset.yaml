@@ -11,7 +11,6 @@ spec:
   selector:
     matchLabels:
       role: pingaccess-was-engine
-  replicas: 1
   serviceName: pingaccess-was
   podManagementPolicy: OrderedReady
   template:
@@ -45,7 +44,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/bitnami/kubectl:1.15.3
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.23.0
         imagePullPolicy: IfNotPresent
         command:
         - /copy-dependencies.sh
@@ -79,7 +78,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/busybox:1.32
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/busybox:1.32
         imagePullPolicy: IfNotPresent
         command:
         - /wait-for-services.sh
@@ -102,7 +101,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v1.16-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v1.18-release-branch-latest
         imagePullPolicy: Always
         envFrom:
         - configMapRef:
@@ -132,7 +131,7 @@ spec:
           mountPath: /opt/shared-dir
       containers:
       - name: pingaccess-was
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was/dev:v1.16-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was/dev:v1.18-release-branch-latest
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -142,7 +141,7 @@ spec:
         resources:
           requests:
             memory: "1280Mi"
-            cpu: "20m"
+            cpu: 100m
           limits:
             memory: "2560Mi"
             cpu: 1
