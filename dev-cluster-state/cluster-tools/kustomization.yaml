@@ -273,6 +273,16 @@ patchesStrategicMerge:
   data:
     NEW_RELIC_LICENSE_KEY: ${NEW_RELIC_LICENSE_KEY_BASE64}
 
+# Delete the CloudWatch DaemonSet to reduce costs in a developer environment
+# Comment out to in order to enable CloudWatch if required for testing
+- |-
+  apiVersion: apps/v1
+  kind: DaemonSet
+  metadata:
+    name: cloudwatch-agent
+    namespace: amazon-cloudwatch
+  $patch: delete
+
 patchesJson6902:
 
 ### Patch to inject environment variables to SigSci agent container ###

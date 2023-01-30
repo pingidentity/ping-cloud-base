@@ -19,6 +19,7 @@ _Changes:_
 - [X] PDO-4636 Move Descriptor Validator to git-ops-command.sh
 - [X] PDO-4698 Upgrade nginx-ingress-controller to v1.5.1
 - [X] PDO-4701 Update cluster tools to latest version: sealed-secrets-controller v0.19.3
+- [X] PDO-4765 Disable the CloudWatch Agent in development environments and development CDEs
 - [X] PDO-4773 Update generate-cluster-state script to create base and region values.yaml files
 - [X] PDO-4775 Add new ArgoCD application definition to PCB
 - [X] PDO-4818 Add multiple USER_BASE_DNs and BACKEND_IDs env vars 
