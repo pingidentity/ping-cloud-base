@@ -371,7 +371,7 @@ data:
     [FILTER]
         Name                rewrite_tag
         Match               ping.*
-        Rule                $log ^\/opt\/out\/instance\/log\/transaction transaction_logs.$stream_name.cw_out false
+        Rule                $log ^\/opt\/out\/instance\/log\/transaction transaction_logs.$stream_name.elk_out false
         Emitter_Name        transaction_logs
     
     [FILTER]
