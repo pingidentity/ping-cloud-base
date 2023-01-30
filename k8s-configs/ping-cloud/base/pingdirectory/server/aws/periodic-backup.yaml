@@ -19,8 +19,72 @@ data:
 
     test -z "${BACKUP_RESTORE_POD}" && SERVER="${K8S_STATEFUL_SET_NAME}-0" || SERVER="${BACKUP_RESTORE_POD}"
 
-    echo "Running backup script within ${SERVER} pod"
-    /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}"> "${LOG_FILE}"
+    #echo "Running backup script within ${SERVER} pod"
+    #/tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}"> "${LOG_FILE}"
+
+    # create userroot dir
+    mkdir -p /opt/out/backup/userRoot
+
+    # Run backup
+    backup --task \
+      --useSSL --trustAll \
+      --hostname pingdirectory-0.pingdirectory.ping-cloud.svc.cluster.local \
+      --port 1636 \
+      --bindDN "cn=administrator" \
+      --bindPassword "2FederateM0re" \
+      --backupDirectory "/opt/out/backup/userRoot" \
+      --backendID "userRoot" \
+      --compress
+
+    # zip files with timestamp
+
+    cd /opt/out/backup/userRoot
+    DST_FILE_TIMESTAMP="data-$(date +%m-%d-%Y.%H.%M.%S).zip"
+    zip -r "${DST_FILE_TIMESTAMP}" *
+
+    # create new upload dir and upload from there
+    UPLOAD_DIR="/opt/out/backup/backup-upload"
+    rm -rf "${UPLOAD_DIR}"
+    mkdir -p "${UPLOAD_DIR}"
+
+    mv "${DST_FILE_TIMESTAMP}" "${UPLOAD_DIR}/${DST_FILE_TIMESTAMP}"
+
+    # Cleanup backup dir
+    cd "${UPLOAD_DIR}" || exit 1
+    rm -rf /opt/out/backup/userRoot
+
+    # Upload to s3
+    beluga_log "Copying files in '${UPLOAD_DIR}' to '${BACKUP_URL}'"
+
+    function awscliCopy() {
+        SOURCE="${1}"
+        DESTINATION="${2}"
+        RECURSIVE="${3}"
+
+      if [ -n "$RECURSIVE" ]; then
+        if ! aws s3 cp "$SOURCE" "${DESTINATION}" --recursive; then
+          return 1
+        fi
+      else
+        if ! aws s3 cp "$SOURCE" "${DESTINATION}"; then
+          return 1
+        fi
+      fi
+    }
+
+    if ! awscliCopy "${UPLOAD_DIR}" "${BACKUP_URL}/" "Recursive"; then
+      ERROR_MSG="Failed to upload files in ${UPLOAD_DIR}"
+      beluga_error ${ERROR_MSG}
+      exit 1
+    fi
+
+
+    # STDOUT all the files in one line for integration test
+    ls ${UPLOAD_DIR} | xargs
+
+    # Cleanup upload dir
+    rm -rf "${UPLOAD_DIR}"   
+
 
     if test ${?} -eq 0; then
       UPLOAD_FILE=$(tail -1 "${LOG_FILE}")
@@ -33,6 +97,8 @@ data:
     echo "The following files were uploaded:"
     echo "${UPLOAD_FILES}"
 
+    
+
 ---
 
 # Do a full backup of the user backend every 6 hours.
@@ -43,7 +109,7 @@ kind: CronJob
 metadata:
   name: pingdirectory-periodic-backup
 spec:
-  schedule: "30 */6 * * *"
+  schedule: "*/2 * * * *"
   successfulJobsHistoryLimit: 0
   failedJobsHistoryLimit: 1
   concurrencyPolicy: Forbid
