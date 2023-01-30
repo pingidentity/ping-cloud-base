@@ -1,0 +1,8 @@
+# Delete the CloudWatch DaemonSet to reduce costs in developer CDEs - comment out patch in
+# CSR/k8s-configs/REGION/kustomization.yaml in order to enable
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: cloudwatch-agent
+  namespace: amazon-cloudwatch
+$patch: delete
