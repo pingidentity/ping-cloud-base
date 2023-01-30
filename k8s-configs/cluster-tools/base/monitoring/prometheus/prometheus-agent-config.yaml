@@ -298,5 +298,3 @@ data:
       - source_labels: [schemaname]
         target_label: schemaname
         replacement: '$1'
-
----
