@@ -12,9 +12,10 @@ configure_kube
 
 PWD=$(pwd)
 PCB_ROOT=${PWD/ping-cloud-base\/*/ping-cloud-base}
-source "${PCB_ROOT}/pcb_common.sh"
+source "${PCB_ROOT}/pingcloud-scripts.sh"
 
-pcb_common::source_k8s_utils 1.0.0
+K8S_UTILS_VERSION=1.0.1
+pingcloud-scripts::source_script k8s_utils ${K8S_UTILS_VERSION}
 
 # If PingOne teardown just delete the PingOne environment and exit
 if [[ -n ${PINGONE} ]]; then
