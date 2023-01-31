@@ -328,6 +328,10 @@ ${ENVIRONMENT_TYPE}
 ${KUSTOMIZE_BASE}
 ${LETS_ENCRYPT_SERVER}
 ${USER_BASE_DN}
+${USER_BASE_DN_2}
+${USER_BASE_DN_3}
+${USER_BASE_DN_4}
+${USER_BASE_DN_5}
 ${ADMIN_CONSOLE_BRANDING}
 ${ENVIRONMENT_PREFIX}
 ${NEW_RELIC_ENVIRONMENT_NAME}
@@ -433,7 +437,7 @@ add_derived_variables() {
   export ENVIRONMENT_PREFIX="\${TENANT_NAME}-\${CLUSTER_STATE_REPO_BRANCH}-\${REGION_NICK_NAME}"
 
   # The name of the environment as it will appear on the NewRelic console.
-  export NEW_RELIC_ENVIRONMENT_NAME="\${TENANT_NAME}_\${ENV}_\${REGION_NICK_NAME}_k8s-cluster"
+  export NEW_RELIC_ENVIRONMENT_NAME="\${TENANT_NAME}_\${REGION_ENV}_\${REGION_NICK_NAME}_k8s-cluster"
 }
 
 ########################################################################################################################
@@ -935,6 +939,10 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   export LETS_ENCRYPT_SERVER="${LETS_ENCRYPT_SERVER}"
 
   export USER_BASE_DN="${USER_BASE_DN:-dc=example,dc=com}"
+  export USER_BASE_DN_2="${USER_BASE_DN_2}"
+  export USER_BASE_DN_3="${USER_BASE_DN_3}"
+  export USER_BASE_DN_4="${USER_BASE_DN_4}"
+  export USER_BASE_DN_5="${USER_BASE_DN_5}"
 
   # Set PF variables based on ENV
   if echo "${LETS_ENCRYPT_SERVER}" | grep -q 'staging'; then
@@ -1071,9 +1079,9 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   substitute_vars "${ENV_DIR}" "${REPO_VARS}" values.yaml
   substitute_vars "${ENV_DIR}" '${IS_BELUGA_ENV}' values.yaml
 
+  PRIMARY_PING_KUST_FILE="${ENV_DIR}/${REGION_NICK_NAME}/kustomization.yaml"
   # Regional enablement - add admins, backups, etc. to primary.
   if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
-    PRIMARY_PING_KUST_FILE="${ENV_DIR}/${REGION_NICK_NAME}/kustomization.yaml"
     sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/g' "${PRIMARY_PING_KUST_FILE}"
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
   fi
@@ -1082,6 +1090,9 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     BASE_ENV_VARS="${ENV_DIR}/base/env_vars"
     echo >> "${BASE_ENV_VARS}"
     echo "IS_BELUGA_ENV=true" >> "${BASE_ENV_VARS}"
+    # Update patches related to Beluga developer CDEs
+    sed -i.bak 's/^# \(.*remove-from-developer-cde-patch.yaml\)$/\1/g' "${PRIMARY_PING_KUST_FILE}"
+    rm -f "${PRIMARY_PING_KUST_FILE}.bak"
   fi
 
   echo "Copying server profiles for environment ${ENV}"
