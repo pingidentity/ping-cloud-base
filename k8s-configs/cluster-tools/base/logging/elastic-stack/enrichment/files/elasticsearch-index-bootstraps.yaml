@@ -108,6 +108,15 @@ data:
                 "is_write_index": true
             }
         }
+    }  
+
+  pf-transaction.json: |
+    {
+        "aliases": {
+            "pf-transaction": {
+                "is_write_index": true
+            }
+        }
     }
 
   pa-admin-audit.json: |

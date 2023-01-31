@@ -82,6 +82,7 @@ beluga_owned_k8s_files="@.flux.yaml \
 @sealed-secrets.yaml \
 @region-promotion.txt \
 @remove-from-secondary-patch.yaml \
+@remove-from-developer-cde-patch.yaml \
 @ext-ingresses.yaml \
 @seal.sh"
 
@@ -127,6 +128,10 @@ ${ENVIRONMENT_TYPE}
 ${KUSTOMIZE_BASE}
 ${LETS_ENCRYPT_SERVER}
 ${USER_BASE_DN}
+${USER_BASE_DN_2}
+${USER_BASE_DN_3}
+${USER_BASE_DN_4}
+${USER_BASE_DN_5}
 ${ADMIN_CONSOLE_BRANDING}
 ${ENVIRONMENT_PREFIX}
 ${NEW_RELIC_ENVIRONMENT_NAME}
@@ -217,7 +222,7 @@ add_derived_variables() {
   export ENVIRONMENT_PREFIX="\${TENANT_NAME}-\${CLUSTER_STATE_REPO_BRANCH}-\${REGION_NICK_NAME}"
 
   # The name of the environment as it will appear on the NewRelic console.
-  export NEW_RELIC_ENVIRONMENT_NAME="\${TENANT_NAME}_\${ENV}_\${REGION_NICK_NAME}_k8s-cluster"
+  export NEW_RELIC_ENVIRONMENT_NAME="\${TENANT_NAME}_\${REGION_ENV}_\${REGION_NICK_NAME}_k8s-cluster"
 }
 
 ########################################################################################################################
