@@ -851,6 +851,7 @@ PING_CENTRAL='pingcentral'
 mkdir -p "${BOOTSTRAP_DIR}"
 mkdir -p "${K8S_CONFIGS_DIR}"
 mkdir -p "${PROFILE_REPO_DIR}"
+mkdir -p "${GIT_OPS_VALIDATION_FOLDER}"
 
 cp ./update-cluster-state-wrapper.sh "${CLUSTER_STATE_REPO_DIR}"
 cp ./update-profile-wrapper.sh "${PROFILE_REPO_DIR}"
