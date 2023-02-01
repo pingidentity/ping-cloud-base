@@ -34,6 +34,21 @@ data:
     echo "${UPLOAD_FILES}"
 
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mypvc
+  labels:
+    class: pingdirectory-server
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: pingdirectory-enc-gp2
+  resources:
+    requests:
+      storage: 40Gi
+
+---
 
 # Do a full backup of the user backend every 6 hours.
 # A manual restore can be performed using the restore job (restore.yaml) when
@@ -90,4 +105,4 @@ spec:
               defaultMode: 0555
           - name: my-pod-volume
             persistentVolumeClaim:
-              claimName: out-dir-pingdirectory-0
+              claimName: mypvc
