@@ -90,10 +90,11 @@ spec:
             - -c
             - |
               echo "Running PVC patch"
-              curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
-              -o /tmp/kubectl
-              chmod +x /tmp/kubectl
-              /tmp/kubectl patch pvc mypvc -p '{ "spec": { "resources": { "requests": { "storage": "50Gi" }}}}'  -n ping-cloud-vathsalyakidambi-secondary
+              #curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
+              #-o /tmp/kubectl
+              
+              #chmod +x /tmp/kubectl
+              #/tmp/kubectl patch pvc mypvc -p '{ "spec": { "resources": { "requests": { "storage": "50Gi" }}}}'  -n ping-cloud-vathsalyakidambi-secondary
           containers:
           - name: pingdirectory-backup
             image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.18-release-branch-latest
