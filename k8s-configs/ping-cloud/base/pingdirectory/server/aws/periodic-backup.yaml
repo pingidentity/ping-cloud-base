@@ -47,13 +47,6 @@ spec:
   resources:
     requests:
       storage: 40Gi
-data:
-  test.sh: |-
-    #!/bin/sh
-    set -e
-
-    echo "Running test script "
-
 
 
 ---
