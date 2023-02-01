@@ -76,6 +76,24 @@ spec:
             value: "true"
             effect: "NoSchedule"
           restartPolicy: OnFailure
+          initContainers:
+          - name: init-backup
+            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.18-release-branch-latest
+            imagePullPolicy: Always
+            securityContext:
+              runAsGroup: 9999
+              runAsNonRoot: true
+              runAsUser: 9031
+              allowPrivilegeEscalation: false
+            command:
+            - /bin/sh
+            - -c
+            - |
+              echo "Running PVC patch"
+              curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
+              -o /tmp/kubectl
+              chmod +x /tmp/kubectl
+              /tmp/kubectl patch pvc mypvc -p '{ "spec": { "resources": { "requests": { "storage": "50Gi" }}}}'  -n ping-cloud-vathsalyakidambi-secondary
           containers:
           - name: pingdirectory-backup
             image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.18-release-branch-latest
