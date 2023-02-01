@@ -47,6 +47,14 @@ spec:
   resources:
     requests:
       storage: 40Gi
+data:
+  test.sh: |-
+    #!/bin/sh
+    set -e
+
+    echo "Running test script "
+
+
 
 ---
 
@@ -98,6 +106,9 @@ spec:
             - name: backup-script
               mountPath: /opt/in/backup.sh
               subPath: backup.sh
+            - name: my-pod-volume
+              mountPath: /opt/in/test.sh
+              subPath: test.sh
           volumes:
           - name: backup-script
             configMap:
