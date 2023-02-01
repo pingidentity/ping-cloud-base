@@ -100,10 +100,10 @@ spec:
               allowPrivilegeEscalation: false
             command:
             - /opt/in/patch_pvc.sh
-          volumeMounts:
-          - name: patch_pvc
-            mountPath: /opt/in/patch_pvc.sh
-            subPath: patch_pvc.sh
+            volumeMounts:
+            - name: patch_pvc
+              mountPath: /opt/in/patch_pvc.sh
+              subPath: patch_pvc.sh
           containers:
           - name: pingdirectory-backup
             image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.18-release-branch-latest
