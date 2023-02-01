@@ -53,9 +53,9 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: patch_pvc
+  name: patch-pvc
 data:
-  patch_pvc.sh: |-
+  patch-pvc.sh: |-
     #!/bin/sh
     set -e
     echo "Running PVC patch"
@@ -99,11 +99,11 @@ spec:
               runAsUser: 9031
               allowPrivilegeEscalation: false
             command:
-            - /opt/in/patch_pvc.sh
+            - /opt/in/patch-pvc.sh
             volumeMounts:
-            - name: patch_pvc
-              mountPath: /opt/in/patch_pvc.sh
-              subPath: patch_pvc.sh
+            - name: patch-pvc
+              mountPath: /opt/in/patch-pvc.sh
+              subPath: patch-pvc.sh
           containers:
           - name: pingdirectory-backup
             image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.18-release-branch-latest
@@ -138,9 +138,9 @@ spec:
             configMap:
               name: pingdirectory-backup
               defaultMode: 0555
-          - name: patch_pvc
+          - name: patch-pvc
             configMap:
-              name: patch_pvc
+              name: patch-pvc
               defaultMode: 0555
           - name: my-pod-volume
             persistentVolumeClaim:
