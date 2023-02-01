@@ -42,3 +42,7 @@ spec:
         configMap:
           name: pingdirectory-backup
           defaultMode: 0555
+      - name: my-pod-volume2
+        persistentVolumeClaim:
+          claimName: out-dir-pingdirectory-0
+
