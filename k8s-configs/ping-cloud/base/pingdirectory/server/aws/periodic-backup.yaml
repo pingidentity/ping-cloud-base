@@ -100,8 +100,7 @@ spec:
               mountPath: /opt/in/backup.sh
               subPath: backup.sh
             - name: my-pod-volume
-              mountPath: /opt/in/test.sh
-              subPath: test.sh
+              mountPath: /opt/out/backup
           volumes:
           - name: backup-script
             configMap:
