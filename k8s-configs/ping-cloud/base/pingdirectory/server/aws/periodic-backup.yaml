@@ -50,6 +50,19 @@ spec:
 
 
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: patch_pvc
+data:
+  patch_pvc.sh: |-
+    #!/bin/sh
+    set -e
+    echo "Running PVC patch"
+    curl -sS https://storage.googleapis.com/kubernetes-release/release/v1.23.0/bin/linux/amd64/kubectl -o /tmp/kubectl
+    chmod +x /tmp/kubectl
+    /tmp/kubectl patch pvc mypvc -p '{ "spec": { "resources": { "requests": { "storage": "50Gi" }}}}'
+---
 
 # Do a full backup of the user backend every 6 hours.
 # A manual restore can be performed using the restore job (restore.yaml) when
@@ -86,13 +99,11 @@ spec:
               runAsUser: 9031
               allowPrivilegeEscalation: false
             command:
-            - /bin/sh
-            - -c
-            - |
-              echo "Running PVC patch"
-              curl -sS https://storage.googleapis.com/kubernetes-release/release/v1.23.0/bin/linux/amd64/kubectl -o /tmp/kubectl
-              chmod +x /tmp/kubectl
-              /tmp/kubectl patch pvc mypvc -p '{ "spec": { "resources": { "requests": { "storage": "50Gi" }}}}'  -n ping-cloud-vathsalyakidambi-secondary
+            - /opt/in/patch_pvc.sh
+          volumeMounts:
+          - name: patch_pvc
+            mountPath: /opt/in/patch_pvc.sh
+            subPath: patch_pvc.sh
           containers:
           - name: pingdirectory-backup
             image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.18-release-branch-latest
@@ -126,6 +137,10 @@ spec:
           - name: backup-script
             configMap:
               name: pingdirectory-backup
+              defaultMode: 0555
+          - name: patch_pvc
+            configMap:
+              name: patch_pvc
               defaultMode: 0555
           - name: my-pod-volume
             persistentVolumeClaim:
