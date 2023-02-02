@@ -404,6 +404,12 @@ data:
         Rule                $log ^\/opt\/out\/instance\/log\/jvm-garbage-collection jvm_garbage_collection_logs.$stream_name.cw_out false
         Emitter_Name        jvm_garbage_collection_logs
     
+    [FILTER]
+        Name                rewrite_tag
+        Match               ping.*
+        Rule                $log ^\/opt\/out\/instance\/log\/request request_logs.$stream_name.elk_out false
+        Emitter_Name        requests_logs
+    
     # PC
     [FILTER]
         Name                rewrite_tag

@@ -118,6 +118,14 @@ data:
             }
         }
     }
+  pf-requests.json: |
+    {
+        "aliases": {
+            "pf-requests": {
+                "is_write_index": true
+            }
+        }
+    }
 
   pa-admin-audit.json: |
     {
