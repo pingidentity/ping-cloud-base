@@ -429,7 +429,7 @@
                         <New id="RequestLog" class="org.eclipse.jetty.server.handler.RequestLogHandler">
                             <Set name="requestLog">
                                 <New id="RequestLogImpl" class="org.eclipse.jetty.server.NCSARequestLog">
-                                    <Set name="filename"><SystemProperty name="pf.log.dir" default="."/>/yyyy_mm_dd.request.log</Set>
+                                    <Set name="filename"><SystemProperty name="pf.log.dir" default="."/>/request.log</Set>
                                     <Set name="filenameDateFormat">yyyy_MM_dd</Set>
                                     <Set name="retainDays">1</Set>
                                     <Set name="append">true</Set>
