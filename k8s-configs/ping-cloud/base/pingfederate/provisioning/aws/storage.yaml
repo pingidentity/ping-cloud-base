@@ -13,3 +13,4 @@ mountOptions:
 reclaimPolicy: Delete
 provisioner: kubernetes.io/aws-ebs
 volumeBindingMode: WaitForFirstConsumer
+allowVolumeExpansion: true
