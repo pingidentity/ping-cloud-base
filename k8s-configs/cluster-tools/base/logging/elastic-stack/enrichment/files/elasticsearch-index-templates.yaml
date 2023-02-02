@@ -1182,9 +1182,6 @@ data:
                   "ignore_above": 256
                 }
               }
-            },
-            "timestamp": {
-              "type": "text"
             }
           }
         }
