@@ -1011,6 +1011,9 @@ data:
             "@version": {
               "type": "keyword"
             },
+            "timestamp": {
+              "type": "text"
+            },
             "geoip": {
               "dynamic": "true",
               "properties": {
