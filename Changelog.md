@@ -81,10 +81,11 @@ _Changes:_
 - [X] PDO-4808 Update applications logs location
 - [X] PDO-4809 Refactor generate-cluster-state.sh to retain set value for slack channel alerts on upgrade
 - [X] PDO-4877 ELK logs for healthcheck pods should be storing for 7 days
-- [X] PDO-4921 Revert removing alertmanager from the prometheus config
 - [X] PDO-4918 Missing PF Transaction Log
+- [X] PDO-4921 Revert removing alertmanager from the prometheus config
 - [X] PDO-4922 Fix regional variable for new customer creation
 - [X] PDO-4967 Enable storage class resizing for PGO storageclass
+- [X] PDO-4973 REGION_ENV should be defined before using it in ENVIRONMENT_PREFIX in Region env_vars
 
 ### 1.16.1.0
 
