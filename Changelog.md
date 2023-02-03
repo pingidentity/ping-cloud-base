@@ -12,6 +12,7 @@
 - Update sealed-secrets-controller to v0.19.3
 - Add multiple USER_BASE_DNs and BACKEND_IDs env vars
 - Updated external-dns to v0.13.1 
+- Updated cluster-autoscaler to v1.23.0
 
 _Changes:_
 
@@ -20,6 +21,7 @@ _Changes:_
 - [X] PDO-4570 Validate descriptor JSON file before deployment to k8s cluster
 - [X] PDO-4575 Upgrade ArgoCD to v2.5.5
 - [X] PDO-4636 Move Descriptor Validator to git-ops-command.sh
+- [X] PDO-4697 Update cluster tools to latest version: cluster-autoscaler v1.23.0
 - [X] PDO-4698 Upgrade nginx-ingress-controller to v1.5.1
 - [X] PDO-4701 Update cluster tools to latest version: sealed-secrets-controller v0.19.3
 - [X] PDO-4702 Update cluster tools to latest version: external-dns v0.13.1
