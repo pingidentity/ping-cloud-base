@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
-
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_0.dtd">
 
 <!-- =============================================================== -->
 <!-- Documentation of this file format can be found at:              -->
@@ -8,8 +7,8 @@
 <!--                                                                 -->
 <!-- Additional configuration files are available in $JETTY_HOME/etc -->
 <!-- and can be mixed in. See start.ini file for the default         -->
-<!-- configuration files. The default values defined in start.ini        -->
-<!-- override the values defined in this file.                                           -->
+<!-- configuration files.The default values defined in start.ini	 -->
+<!-- override the values defined in this file.                       -->
 <!--                                                                 -->
 <!-- For a description of the configuration mechanism, see the       -->
 <!-- output of:                                                      -->
@@ -17,43 +16,25 @@
 <!-- =============================================================== -->
 
 <!-- =============================================================== -->
-<!-- Configure a Jetty Server instance with an ID "RuntimeServer"    -->
-<!-- Other configuration files may also configure the "RuntimeServer"-->
+<!-- Configure a Jetty Server instance with an ID "AdminServer"      -->
+<!-- Other configuration files may also configure the "AdminServer"  -->
 <!-- ID, in which case they are adding configuration to the same     -->
-<!-- instance.  If other configuration have a different ID, they     -->
+<!-- instance.  If other configurations have a different ID, they    -->
 <!-- will create and configure another instance of Jetty.            -->
 <!-- Consult the javadoc of o.e.j.server.Server for all              -->
 <!-- configuration that may be set here.                             -->
 <!-- =============================================================== -->
 
-<Configure id="RuntimeServer" class="org.eclipse.jetty.server.Server">
+<Configure id="AdminServer" class="org.eclipse.jetty.server.Server">
 
-    <Arg name="threadpool">
-        <New id="threadpool" class="org.eclipse.jetty.util.thread.QueuedThreadPool" />
-    </Arg>
+    <Arg name="threadpool"><New id="threadpool" class="org.eclipse.jetty.util.thread.QueuedThreadPool"/></Arg>
 
     <!-- =========================================================== -->
-    <!-- Get the platform mbean server                               -->
+    <!-- Initialize the MBean                                      -->
     <!-- =========================================================== -->
-    <Call id="MBeanServer" class="java.lang.management.ManagementFactory" name="getPlatformMBeanServer" />
-
-    <!-- =========================================================== -->
-    <!-- Initialize the Jetty MBean container -->
-    <!-- =========================================================== -->
-
-    <New id="MBeanContainer" class="org.eclipse.jetty.jmx.MBeanContainer">
-        <Arg>
-            <Ref refid="MBeanServer" />
-        </Arg>
-    </New>
+    <!-- Add to the Server to listen for object events -->
 
     <Call name="addEventListener">
-        <Arg>
-            <Ref refid="MBeanContainer" />
-        </Arg>
-    </Call>
-
-    <Call name="addBean">
         <Arg>
             <Ref refid="MBeanContainer" />
         </Arg>
@@ -85,8 +66,8 @@
     <!-- =========================================================== -->
 
     <Get name="ThreadPool">
-        <Set name="minThreads" type="int"><Property name="pf.runtime.threads.min" default="10"/></Set>
-        <Set name="maxThreads" type="int"><Property name="pf.runtime.threads.max" default="200"/></Set>
+        <Set name="minThreads" type="int"><Property name="pf.admin.threads.min" default="1"/></Set>
+        <Set name="maxThreads" type="int"><Property name="pf.admin.threads.max" default="10"/></Set>
         <Set name="detailedDump">false</Set>
     </Get>
 
@@ -105,9 +86,9 @@
     <!-- Consult the javadoc of o.e.j.server.HttpConfiguration       -->
     <!-- for all configuration that may be set here.                 -->
     <!-- =========================================================== -->
-    <New id="baseHttpConfig" class="org.eclipse.jetty.server.HttpConfiguration">
+    <New id="httpConfig" class="org.eclipse.jetty.server.HttpConfiguration">
         <Set name="secureScheme">https</Set>
-        <Set name="securePort"><SystemProperty name="pf.https.port" default="9031" /></Set>
+        <Set name="securePort"><Property name="jetty.secure.port" default="8443" /></Set>
         <Set name="outputBufferSize"><Property name="jetty.output.buffer.size" default="32768" /></Set>
         <Set name="outputAggregationSize"><Property name="jetty.output.aggregation.size" default="8192" /></Set>
         <Set name="requestHeaderSize"><Property name="jetty.request.header.size" default="16384" /></Set>
@@ -115,7 +96,7 @@
         <Set name="sendServerVersion">false</Set>
         <Set name="sendDateHeader">true</Set>
         <Set name="headerCacheSize">512</Set>
-        <!-- SameSite default has moved to WebAppContext (below) -->
+        <!-- SameSite default has moved to DeploymentManager (below) -->
         <!--
         Some web browsers have known incompatibilities with the SameSite cookie attribute
         and must be filtered out from receiving the SameSite attribute. As additional incompatible
@@ -143,21 +124,13 @@
                 <Item>.*PAN GlobalProtect.*Mac OS X 10.*14</Item>
             </Array>
         </Set>
-        <Set name="delayDispatchUntilContent"><Property name="jetty.delayDispatchUntilContent" default="false" /></Set>
-        <!-- This customizer should run first, to ensure the request thread uses the current active service set  -->
-        <Call name="addCustomizer">
-            <Arg><New class="com.pingidentity.appserver.jetty.server.customizer.RuntimeServiceSetCustomizer"/></Arg>
-        </Call>
+        <Set name="delayDispatchUntilContent">
+            <Property name="jetty.delayDispatchUntilContent" default="false" />
+        </Set>
         <Call name="addCustomizer">
             <Arg>
                 <New class="com.pingidentity.appserver.jetty.server.customizer.RequestTimestampCustomizer" />
             </Arg>
-        </Call>
-        <Call name="addCustomizer">
-            <Arg><New class="com.pingidentity.appserver.jetty.server.customizer.ForwardedRequestCustomizer"/></Arg>
-        </Call>
-        <Call name="addCustomizer">
-            <Arg><New class="com.pingidentity.appserver.jetty.server.customizer.OAuthIssuerRequestCustomizer"/></Arg>
         </Call>
     </New>
 
@@ -166,10 +139,10 @@
     <!-- This configuration must be used in conjunction with jetty.xml -->
     <!-- and either jetty-https.xml or jetty-spdy.xml (but not both)   -->
     <!-- ============================================================= -->
-    <New id="primarySSLContextFactory" class="com.pingidentity.appserver.jetty.server.connector.ssl.RuntimeSslContextFactory">
+    <New id="sslContextFactory" class="com.pingidentity.appserver.jetty.server.connector.ssl.AdminSslContextFactory">
         <Set name="renegotiationAllowed">true</Set>
         <Set name="needClientAuth">false</Set>
-        <Set name="wantClientAuth">false</Set>
+        <Set name="wantClientAuth"><SystemProperty name="pf.admin.authentication.cert" default="false" /></Set>
         <Set name="protocol">TLS</Set>
         <Set name="IncludeProtocols">
             <Call name="getEnabledProtocols"/>
@@ -187,42 +160,6 @@
         <!--  <Set name="setTrustStore"></Set> -->
         <!--  <Set name="IncludeCipherSuites"></Set> -->
         <!--  <Set name="ExcludeCipherSuites"></Set> -->
-    </New>
-
-    <New id="secondarySSLContextFactory" class="com.pingidentity.appserver.jetty.server.connector.ssl.RuntimeSslContextFactory">
-        <Set name="renegotiationAllowed">true</Set>
-        <Set name="needClientAuth">false</Set>
-        <Set name="wantClientAuth">true</Set>
-        <Set name="protocol">TLS</Set>
-        <Set name="IncludeProtocols">
-            <Call name="getEnabledProtocols"/>
-        </Set>
-
-        <!--  USING DEFAULTS -->
-        <!--  <Set name="KeyStoreType">JKS</Set> -->
-        <!--  <Set name="TrustStoreType">JKS</Set> -->
-        <!--  <Set name="Provider"></Set> -->
-        <!--  <Set name="SslKeyManagerFactoryAlgorithm"></Set> -->
-        <!--  <Set name="SslTrustManagerFactoryAlgorithm"></Set> -->
-
-        <!--  NOT SUPPORTED -->
-        <!--  <Set name="setKeyStore"></Set> -->
-        <!--  <Set name="setTrustStore"></Set> -->
-        <!--  <Set name="IncludeCipherSuites"></Set> -->
-        <!--  <Set name="ExcludeCipherSuites"></Set> -->
-    </New>
-
-    <!-- =========================================================== -->
-    <!-- Create a HTTP specific HttpConfiguration based on the        -->
-    <!-- common HttpConfiguration defined in jetty.xml               -->
-    <!-- Add a SecureRequestCustomizer to extract certificate and    -->
-    <!-- session information                                         -->
-    <!-- =========================================================== -->
-    <New id="httpConfig" class="org.eclipse.jetty.server.HttpConfiguration">
-        <Arg><Ref refid="baseHttpConfig"/></Arg>
-        <Call name="addCustomizer">
-            <Arg><New class="com.pingidentity.appserver.jetty.server.customizer.X509CertificateCustomizer"/></Arg>
-        </Call>
     </New>
 
     <!-- =========================================================== -->
@@ -232,7 +169,7 @@
     <!-- session information                                         -->
     <!-- =========================================================== -->
     <New id="sslHttpConfig" class="org.eclipse.jetty.server.HttpConfiguration">
-        <Arg><Ref refid="baseHttpConfig"/></Arg>
+        <Arg><Ref refid="httpConfig"/></Arg>
         <Call name="addCustomizer">
             <Arg><New class="org.eclipse.jetty.server.SecureRequestCustomizer"/></Arg>
         </Call>
@@ -256,10 +193,10 @@
     <!-- o.e.j.server.HttpConnectionFactory for all configuration    -->
     <!-- that may be set here.                                       -->
     <!-- =========================================================== -->
-    <Call id="httpsPrimaryConnector" name="addConnector">
+    <Call id="httpsConnector" name="addConnector">
         <Arg>
             <New class="com.pingidentity.appserver.jetty.server.connector.ServerConnector">
-                <Arg name="server"><Ref refid="RuntimeServer" /></Arg>
+                <Arg name="server"><Ref refid="AdminServer" /></Arg>
                 <Arg name="acceptors" type="int"><Property name="ssl.acceptors" default="0"/></Arg>
                 <Arg name="selectors" type="int"><Property name="ssl.selectors" default="1"/></Arg>
                 <Arg name="factories">
@@ -267,7 +204,7 @@
                         <Item>
                             <New class="org.eclipse.jetty.server.SslConnectionFactory">
                                 <Arg name="next">alpn</Arg>
-                                <Arg name="sslContextFactory"><Ref refid="primarySSLContextFactory"/></Arg>
+                                <Arg name="sslContextFactory"><Ref refid="sslContextFactory"/></Arg>
                             </New>
                         </Item>
                         <Item>
@@ -292,95 +229,12 @@
                         </Item>
                     </Array>
                 </Arg>
-                <Set name="host"><SystemProperty name="pf.engine.bind.address" default="0.0.0.0"/></Set>
-                <Set name="port"><SystemProperty name="pf.https.port" default="9031" /></Set>
-                <Set name="idleTimeout"><Property name="pf.runtime.http.idleTimeout" default="30000"/></Set>
+                <Set name="host"><SystemProperty name="pf.console.bind.address" default="0.0.0.0"/></Set>
+                <Set name="port"><SystemProperty name="pf.admin.https.port" default="9999"/></Set>
+                <Set name="idleTimeout"><Property name="pf.admin.http.idleTimeout" default="30000"/></Set>
                 <Set name="soLingerTime"><Property name="http.soLingerTime" default="-1"/></Set>
                 <Set name="acceptorPriorityDelta"><Property name="ssl.acceptorPriorityDelta" default="0"/></Set>
-                <Set name="acceptQueueSize"><Property name="pf.runtime.acceptQueueSize" default="512"/></Set>
-            </New>
-        </Arg>
-    </Call>
-
-    <Call id="httpsSecondaryConnector" name="addConnector">
-        <Arg>
-            <New class="com.pingidentity.appserver.jetty.server.connector.ServerConnector">
-                <Arg name="server"><Ref refid="RuntimeServer" /></Arg>
-                <Arg name="acceptors" type="int"><Property name="ssl.acceptors" default="0"/></Arg>
-                <Arg name="selectors" type="int"><Property name="ssl.selectors" default="1"/></Arg>
-                <Arg name="factories">
-                    <Array type="org.eclipse.jetty.server.ConnectionFactory">
-                        <Item>
-                            <New class="org.eclipse.jetty.server.SslConnectionFactory">
-                                <Arg name="next">alpn</Arg>
-                                <Arg name="sslContextFactory"><Ref refid="secondarySSLContextFactory"/></Arg>
-                            </New>
-                        </Item>
-                        <Item>
-                            <New class="org.eclipse.jetty.alpn.server.ALPNServerConnectionFactory">
-                                <Arg>h2, http/1.1</Arg>
-                            </New>
-                        </Item>
-                        <Item>
-                            <New class="org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory">
-                                <Arg name="config"><Ref refid="sslHttpConfig"/></Arg>
-                            </New>
-                        </Item>
-                        <Item>
-                            <New class="org.eclipse.jetty.server.HttpConnectionFactory">
-                                <Arg name="config"><Ref refid="sslHttpConfig"/></Arg>
-                                <Arg name="compliance">
-                                    <Call class="org.eclipse.jetty.http.HttpCompliance" name="valueOf">
-                                        <Arg><Property name="http.compliance" default="RFC7230_LEGACY"/></Arg>
-                                    </Call>
-                                </Arg>
-                            </New>
-                        </Item>
-                    </Array>
-                </Arg>
-                <Set name="host"><SystemProperty name="pf.engine.bind.address" default="0.0.0.0"/></Set>
-                <Set name="port"><SystemProperty name="pf.secondary.https.port" default="-1" /></Set>
-                <Set name="idleTimeout"><Property name="pf.runtime.http.idleTimeout" default="30000"/></Set>
-                <Set name="soLingerTime"><Property name="http.soLingerTime" default="-1"/></Set>
-                <Set name="acceptorPriorityDelta"><Property name="ssl.acceptorPriorityDelta" default="0"/></Set>
-                <Set name="acceptQueueSize"><Property name="pf.runtime.acceptQueueSize" default="512"/></Set>
-            </New>
-        </Arg>
-    </Call>
-
-    <Call id="httpConnector" name="addConnector">
-        <Arg>
-            <New
-                class="com.pingidentity.appserver.jetty.server.connector.ServerConnector">
-                <Arg name="server">
-                    <Ref refid="RuntimeServer" />
-                </Arg>
-                <Arg name="acceptors" type="int">
-                    <Property name="http.acceptors" default="0"/>
-                </Arg>
-                <Arg name="selectors" type="int">
-                    <Property name="http.selectors" default="1" />
-                </Arg>
-                <Arg name="factories">
-                    <Array type="org.eclipse.jetty.server.ConnectionFactory">
-                        <Item>
-                            <New class="org.eclipse.jetty.server.HttpConnectionFactory">
-                                <Arg name="config"><Ref refid="httpConfig" /></Arg>
-                                <Arg name="compliance">
-                                    <Call class="org.eclipse.jetty.http.HttpCompliance" name="valueOf">
-                                        <Arg><Property name="http.compliance" default="RFC7230_LEGACY"/></Arg>
-                                    </Call>
-                                </Arg>
-                            </New>
-                        </Item>
-                    </Array>
-                </Arg>
-                <Set name="host"><SystemProperty name="pf.engine.bind.address" default="0.0.0.0" /></Set>
-                <Set name="port"><SystemProperty name="pf.http.port" default="-1" /></Set>
-                <Set name="idleTimeout"><Property name="pf.runtime.http.idleTimeout" default="30000"/></Set>
-                <Set name="soLingerTime"><Property name="http.soLingerTime" default="-1"/></Set>
-                <Set name="acceptorPriorityDelta"><Property name="http.acceptorPriorityDelta" default="0" /></Set>
-                <Set name="acceptQueueSize"><Property name="pf.runtime.acceptQueueSize" default="512"/></Set>
+                <Set name="acceptQueueSize"><Property name="pf.admin.acceptQueueSize" default="512"/></Set>
             </New>
         </Arg>
     </Call>
@@ -388,52 +242,22 @@
     <!-- =========================================================== -->
     <!-- Set handler Collection Structure                            -->
     <!-- =========================================================== -->
-
-    <New id="Contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection">
-        <Call name="addHandler">
-            <Arg>
-                <New class="org.eclipse.jetty.webapp.WebAppContext">
-                    <!-- put pf-runtime at the root -->
-                    <Set name="contextPath"><SystemProperty name="pf.runtime.context.path" default="/" /></Set>
-                    <Set name="war"><SystemProperty name="jetty.home" default="." />/server/default/deploy/pf-runtime.war</Set>
-                    <Set name="extractWAR">true</Set>
-                    <Set name="copyWebDir">false</Set>
-                    <Set name="defaultsDescriptor"><SystemProperty name="jetty.home" default="." />/etc/webdefault.xml</Set>
-                    <Set name="errorHandler"><New class="com.pingidentity.appserver.jetty.PFRuntimeErrorHandler"/></Set>
-                    <Set name="distributable"><SystemProperty name="pf.saml2.engine.web.app.distributable" default="false" /></Set>
-                    <Set name="maxFormContentSize"><Property name="pf.runtime.http.maxRequestBodySize" default="200000"/></Set>
-                    <Call name="setAttribute">
-                        <Arg>org.eclipse.jetty.webapp.basetempdir</Arg>
-                        <Arg><SystemProperty name="jetty.home" default="."/>/work</Arg>
-                    </Call>
-                    <Call name="setAttribute">
-                        <Arg>org.eclipse.jetty.cookie.sameSiteDefault</Arg>
-                        <Arg>None</Arg>
-                    </Call>
-                </New>
-             </Arg>
-         </Call>
-    </New>
-
     <Set name="handler">
         <New id="Handlers" class="org.eclipse.jetty.server.handler.HandlerCollection">
             <Set name="handlers">
                 <Array type="org.eclipse.jetty.server.Handler">
                     <Item>
-                        <New id="DefaultHandler" class="com.pingidentity.appserver.jetty.PFDefaultHandler"/>
-                    </Item>
-                    <Item>
-                        <Ref refid="Contexts" />
+                        <New id="Contexts" class="org.eclipse.jetty.server.handler.ContextHandlerCollection"/>
                     </Item>
                     <Item>
                         <New id="RequestLog" class="org.eclipse.jetty.server.handler.RequestLogHandler">
                             <Set name="requestLog">
                                 <New id="RequestLogImpl" class="org.eclipse.jetty.server.NCSARequestLog">
-                                    <Set name="filename"><SystemProperty name="pf.log.dir" default="."/>/request.log</Set>
+                                    <Set name="filename"><SystemProperty name="pf.log.dir" default="."/>/request2.log</Set>
                                     <Set name="filenameDateFormat">yyyy_MM_dd</Set>
-                                    <Set name="retainDays">1</Set>
+                                    <Set name="retainDays">90</Set>
                                     <Set name="append">true</Set>
-                                    <Set name="extended">false</Set>
+                                    <Set name="extended">true</Set>
                                     <Set name="logCookies">false</Set>
                                     <Set name="LogTimeZone">GMT</Set>
                                 </New>
@@ -444,18 +268,6 @@
             </Set>
         </New>
     </Set>
-
-    <!-- Enable JMX request statistics -->
-    <Get id="oldhandler" name="handler" />
-    <Set name="handler">
-        <New id="StatsHandler" class="org.eclipse.jetty.server.handler.StatisticsHandler">
-            <Set name="handler"><Ref refid="oldhandler" /></Set>
-        </New>
-    </Set>
-    <Call class="org.eclipse.jetty.server.ConnectorStatistics"
-        name="addToAllConnectors">
-        <Arg><Ref refid="RuntimeServer" /></Arg>
-    </Call>
 
     <!-- =========================================================== -->
     <!-- Create & configure the deployment manager -->
@@ -468,22 +280,24 @@
                     <Arg>org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern</Arg>
                     <Arg>.*/servlet-api-[^/]*\.jar$</Arg>
                 </Call>
+                <Call name="setContextAttribute">
+                    <Arg>org.eclipse.jetty.cookie.sameSiteDefault</Arg>
+                    <Arg>None</Arg>
+                </Call>
             </New>
         </Arg>
     </Call>
 
-  <!-- Add a WebAppProvider to the deployment manager -->
     <Ref id="DeploymentManager">
         <Call id="webappprovider" name="addAppProvider">
             <Arg>
                 <New class="com.pingidentity.appserver.jetty.PFWebAppProvider">
-                    <Set name="tempDir"><Property name="jetty.home" default="." />/work</Set>
-                    <Set name="monitoredDirName"><Property name="jetty.home" default="." />/server/default/deploy</Set>
+                    <Set name="tempDir"><Property name="jetty.home" default="."/>/work</Set>
+                    <Set name="monitoredDirName"><Property name="jetty.home" default="." />/server/default/deploy2</Set>
                     <Set name="defaultsDescriptor"><Property name="jetty.home" default="." />/etc/webdefault.xml</Set>
                     <Set name="scanInterval">1</Set>
                     <Set name="extractWars">true</Set>
-                    <Set name="applyContextPathConfigurationToWebArchiveFile">true</Set>
-                    <Set name="errorHandler"><New class="com.pingidentity.appserver.jetty.PFRuntimeErrorHandler"/></Set>
+                    <Set name="applyContextPathConfigurationToWebArchiveFile">false</Set>
                     <Set name="configurationClasses">
                         <Array type="java.lang.String">
                             <Item>org.eclipse.jetty.webapp.WebInfConfiguration</Item>
@@ -496,22 +310,15 @@
                             <Item>org.eclipse.jetty.webapp.JettyWebXmlConfiguration</Item>
                         </Array>
                     </Set>
-                    <Set name="exclusions">
-                        <Array type="java.lang.String">
-                            <Item>pf-runtime</Item>
-                        </Array>
-                    </Set>
-                    <Call name="setAttribute">
-                        <Arg>org.eclipse.jetty.cookie.sameSiteDefault</Arg>
-                        <Arg>None</Arg>
-                    </Call>
+                    <Set name="maxFormContentSize"><Property name="pf.admin.http.maxFormContentSize" default="1000000"/></Set>
+                    <Set name="maxFormKeys"><Property name="pf.admin.http.maxFormKeys" default="20000"/></Set>
                 </New>
             </Arg>
         </Call>
     </Ref>
 
     <!-- =========================================================== -->
-    <!-- extra options -->
+    <!-- extra options                                               -->
     <!-- =========================================================== -->
     <Set name="stopAtShutdown">true</Set>
     <Set name="stopTimeout">1000</Set>
