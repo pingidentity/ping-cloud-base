@@ -127,7 +127,7 @@
           "expr": "avg((idelta(ccp_nodemx_cpuacct_usage{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}[30s])/1000000000)/idelta(ccp_nodemx_cpuacct_usage_ts{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}[30s])*100) without(instance,ip,role)",
           "format": "time_series",
           "hide": false,
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "% Usage",
           "refId": "A"
@@ -136,7 +136,7 @@
           "expr": "avg((ccp_nodemx_cpucfs_quota_us{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}*100/ccp_nodemx_cpucfs_period_us{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"})) without (instance,ip,role)",
           "format": "time_series",
           "hide": false,
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Limit",
           "refId": "D"
@@ -256,7 +256,7 @@
           "expr": "avg(ccp_nodemx_process_count{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
           "format": "time_series",
           "hide": false,
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Process count",
           "refId": "B"
@@ -265,7 +265,7 @@
           "expr": "avg((idelta(ccp_nodemx_cpustat_throttled_time{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}[30s])/1000000000)/idelta(ccp_nodemx_cpustat_snap_ts{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}[30s])*100) without (instance,ip,role)",
           "format": "time_series",
           "hide": false,
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "% Throttled",
           "refId": "C"
@@ -379,7 +379,7 @@
         {
           "expr": "avg(ccp_nodemx_mem_limit{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Limit",
           "refId": "A"
@@ -387,7 +387,7 @@
         {
           "expr": "avg(ccp_nodemx_mem_request{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Request",
           "refId": "B"
@@ -395,7 +395,7 @@
         {
           "expr": "avg(ccp_nodemx_mem_usage_in_bytes{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Usage",
           "refId": "J"
@@ -404,7 +404,7 @@
           "expr": "avg(clamp_min((ccp_nodemx_mem_limit{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"} - ccp_nodemx_mem_usage_in_bytes{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}),0)) without (instance,ip,role)",
           "format": "time_series",
           "hide": false,
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Free",
           "refId": "D"
@@ -508,7 +508,7 @@
         {
           "expr": "avg(rate(ccp_nodemx_network_rx_bytes{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\", interface!=\"tunl0\"}[1m])) without(instance,ip,role)",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{interface}} - rx bytes",
           "refId": "A"
@@ -516,7 +516,7 @@
         {
           "expr": "avg(rate(ccp_nodemx_network_tx_bytes{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\", interface!=\"tunl0\"}[1m])) without(instance,ip,role)",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 2,
           "legendFormat": "{{interface}} - tx bytes",
           "refId": "B"
@@ -615,7 +615,7 @@
         {
           "expr": "avg((ccp_nodemx_data_disk_total_bytes{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"}-ccp_nodemx_data_disk_available_bytes{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})*100/ccp_nodemx_data_disk_total_bytes{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"}) without (instance,ip,role)",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{mount_point}}",
           "refId": "A"
@@ -623,7 +623,7 @@
         {
           "expr": "avg((ccp_nodemx_data_disk_total_file_nodes{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"}-ccp_nodemx_data_disk_free_file_nodes{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"})*100/ccp_nodemx_data_disk_total_file_nodes{pg_cluster=\"[[cluster]]\",pod=~\"[[pod]]\"}) without(instance,ip,role)",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{mount_point}} - Inodes",
           "refId": "B"
@@ -727,7 +727,7 @@
         {
           "expr": "avg(rate(ccp_nodemx_disk_activity_sectors_read{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}[1m])*512) without(instance,ip,role)",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{mount_point}} - Reads",
           "refId": "A"
@@ -735,7 +735,7 @@
         {
           "expr": "avg(rate(ccp_nodemx_disk_activity_sectors_written{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}[1m])*512) without(instance,ip,role)",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{mount_point}} - Writes ",
           "refId": "B"
@@ -841,7 +841,7 @@
         {
           "expr": "avg(ccp_nodemx_mem_cache{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Cached",
           "refId": "C"
@@ -849,7 +849,7 @@
         {
           "expr": "avg(ccp_nodemx_mem_dirty{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Dirty",
           "refId": "D"
@@ -857,7 +857,7 @@
         {
           "expr": "avg(ccp_nodemx_mem_shmem{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "shared mem",
           "refId": "E"
@@ -865,7 +865,7 @@
         {
           "expr": "avg(ccp_nodemx_mem_rss{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "RSS",
           "refId": "F"
@@ -873,7 +873,7 @@
         {
           "expr": "avg(ccp_nodemx_mem_mapped_file{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Mapped file",
           "refId": "G"
@@ -881,7 +881,7 @@
         {
           "expr": "avg(ccp_nodemx_mem_kmem_usage_in_bytes{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "kmem",
           "refId": "H"
@@ -889,7 +889,7 @@
         {
           "expr": "avg(ccp_nodemx_mem_inactive_anon{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Inactive anon",
           "refId": "I"
@@ -897,7 +897,7 @@
         {
           "expr": "avg(ccp_nodemx_mem_active_file{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Active file",
           "refId": "J"
@@ -905,7 +905,7 @@
         {
           "expr": "avg(ccp_nodemx_mem_inactive_file{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Inactive file",
           "refId": "K"
@@ -1018,7 +1018,7 @@
         {
           "expr": "avg(ccp_nodemx_cpu_limit{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "CPU limit",
           "refId": "A"
@@ -1026,7 +1026,7 @@
         {
           "expr": "avg(ccp_nodemx_cpu_request{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "CPU request",
           "refId": "B"
@@ -1034,7 +1034,7 @@
         {
           "expr": "avg(ccp_nodemx_mem_limit{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Memory limit",
           "refId": "C"
@@ -1042,7 +1042,7 @@
         {
           "expr": "avg(ccp_nodemx_mem_request{pg_cluster=\"[[cluster]]\",pod=\"[[pod]]\"}) without (instance,ip,role)",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Memory request",
           "refId": "D"

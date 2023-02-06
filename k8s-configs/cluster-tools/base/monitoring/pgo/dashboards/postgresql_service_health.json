@@ -117,7 +117,7 @@
           "expr": "sum(ccp_connection_stats_total{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"}) without (pod,instance,ip) / sum(ccp_connection_stats_max_connections{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"}) without (pod,instance,ip)",
           "format": "time_series",
           "instant": false,
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Connections",
           "refId": "C"
@@ -125,7 +125,7 @@
         {
           "expr": "100 - 100 * avg(ccp_nodemx_data_disk_available_bytes{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"}) without (pod,instance,ip) / avg(ccp_nodemx_data_disk_total_bytes{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"})  without (pod,instance,ip)",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Mount:{{mount_point}}",
           "refId": "A"
@@ -230,7 +230,7 @@
           "exemplar": false,
           "expr": "  sum(irate(ccp_stat_database_xact_commit{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"}[1m])) \n+ sum(irate(ccp_stat_database_xact_rollback{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"}[1m]))",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Transactions",
           "refId": "A"
@@ -238,7 +238,7 @@
         {
           "expr": "max(ccp_connection_stats_active{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"}) without (pod,instance,ip,dbname)",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Active connections",
           "refId": "C"
@@ -247,7 +247,7 @@
           "expr": "sum(irate(ccp_pg_stat_statements_total_calls_count{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"}[1m]))",
           "format": "time_series",
           "hide": false,
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Queries",
           "refId": "B"
@@ -351,7 +351,7 @@
           "expr": "sum(irate(ccp_stat_database_xact_rollback{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"}[1m]) without(pod,instance,ip))",
           "format": "time_series",
           "hide": true,
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Rollbacks",
           "refId": "A"
@@ -360,7 +360,7 @@
           "expr": "sum(irate(ccp_stat_database_deadlocks{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"}[1m]))  without(pod,instance,ip,dbname)",
           "format": "time_series",
           "hide": false,
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Deadlock ",
           "refId": "D"
@@ -369,7 +369,7 @@
           "expr": "sum(irate(ccp_stat_database_conflicts{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"}[1m])) without(pod,instance,ip,dbname)",
           "format": "time_series",
           "hide": false,
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Conflicts",
           "refId": "B"
@@ -378,7 +378,7 @@
           "expr": "max(pg_exporter_last_scrape_error{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"}) without(pod,instance,ip,dbname)",
           "format": "time_series",
           "hide": false,
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "scrape error",
           "refId": "C"
@@ -387,7 +387,7 @@
           "expr": "max(clamp_max(ccp_archive_command_status_seconds_since_last_fail{pg_cluster=\"[[cluster]]\",role=\"[[role]]\"},1)) without (instance,pod,ip)",
           "format": "time_series",
           "hide": false,
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "archive error",
           "refId": "E"
@@ -502,7 +502,7 @@
           "format": "time_series",
           "hide": false,
           "instant": false,
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Avg: {{exported_role}}({{dbname}})",
           "refId": "A"
@@ -512,7 +512,7 @@
           "format": "time_series",
           "hide": false,
           "instant": false,
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Max: {{exported_role}}({{dbname}})",
           "refId": "B"
