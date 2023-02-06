@@ -117,7 +117,7 @@
         "y": 1
       },
       "id": 6,
-      "interval": null,
+      "fixed_interval": null,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -139,7 +139,7 @@
           "expr": "count(count by (kubernetes_namespace) (pg_up))",
           "format": "time_series",
           "instant": true,
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 2,
           "legendFormat": "Namespaces",
           "refId": "A"
@@ -187,7 +187,7 @@
         "y": 1
       },
       "id": 13,
-      "interval": null,
+      "fixed_interval": null,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -211,7 +211,7 @@
           "expr": "count(count by (pg_cluster) (pg_up))",
           "format": "time_series",
           "instant": true,
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 2,
           "legendFormat": "PostgreSQL Clusters",
           "refId": "A"
@@ -259,7 +259,7 @@
         "y": 1
       },
       "id": 14,
-      "interval": null,
+      "fixed_interval": null,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -283,7 +283,7 @@
           "expr": "count(pg_up)",
           "format": "time_series",
           "instant": true,
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 2,
           "legendFormat": "PostgreSQL Clusters",
           "refId": "A"
@@ -352,7 +352,7 @@
         "y": 4
       },
       "id": 2,
-      "interval": null,
+      "fixed_interval": null,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -377,7 +377,7 @@
             {
               "id": "2",
               "settings": {
-                "interval": "auto",
+                "fixed_interval": "auto",
                 "min_doc_count": 0,
                 "trimEdges": 0
               },
@@ -388,7 +388,7 @@
           "expr": "sum(ALERTS{alertstate=\"firing\",severity=\"critical\"} > 0) OR on() vector(0)",
           "format": "time_series",
           "instant": true,
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Critical",
           "metrics": [
@@ -442,7 +442,7 @@
         "y": 4
       },
       "id": 5,
-      "interval": null,
+      "fixed_interval": null,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -464,7 +464,7 @@
           "expr": "sum(ALERTS{alertstate=\"firing\",severity=\"warning\"} > 0) OR on() vector(0)",
           "format": "time_series",
           "instant": true,
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 2,
           "legendFormat": "",
           "refId": "A"
@@ -511,7 +511,7 @@
         "y": 4
       },
       "id": 9,
-      "interval": null,
+      "fixed_interval": null,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -534,7 +534,7 @@
         {
           "expr": "sum(ALERTS{alertstate=\"firing\",severity=\"info\"} > 0) OR on() vector(0)",
           "format": "time_series",
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 2,
           "legendFormat": "",
           "refId": "A"
@@ -690,7 +690,7 @@
           "expr": "ALERTS{alertstate='firing'} > 0",
           "format": "table",
           "instant": true,
-          "interval": "2s",
+          "fixed_interval": "2s",
           "intervalFactor": 1,
           "legendFormat": "",
           "refId": "A"
@@ -882,7 +882,7 @@
           "expr": "ALERTS{alertstate=\"pending\"}",
           "format": "table",
           "instant": false,
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "",
           "refId": "A"
