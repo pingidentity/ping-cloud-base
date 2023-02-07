@@ -1482,7 +1482,7 @@
         <Logger name="org.sourceid.saml20.util.SystemUtil" level="INFO" additivity="false">
             <AppenderRef ref="CONSOLE" />
             <AppenderRef ref="FILE" />
-            <AppenderRef ref="CONSOLE-SIEM" />
+            <!--<AppenderRef ref="CONSOLE-SIEM" />-->
         </Logger>
         <!--
             Uncomment HttpRequestHeaderFilter logger for logging of all HTTP request header values
@@ -1516,7 +1516,7 @@
         <Logger name="com.pingidentity.common.util.ErrorHandler" level="INFO" additivity="false">
             <AppenderRef ref="CONSOLE" />
             <AppenderRef ref="FILE" />
-            <AppenderRef ref="CONSOLE-SIEM" />
+            <!--<AppenderRef ref="CONSOLE-SIEM" />-->
         </Logger>
         <Logger name="com.pingidentity.appserver.jetty" level="INFO" />
         <Logger name="org.apache" level="INFO" />
@@ -1563,8 +1563,8 @@
         <Logger name="org.sourceid.websso.profiles.sp.SpAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
             <appender-ref ref="SecurityAudit2File" />
-            <appender-ref ref="SecurityAudit2Console4SIEM" />    
             <!--
+                <appender-ref ref="SecurityAudit2Console4SIEM" />
                 <appender-ref ref="SecurityAuditToSQLServerDB-FAILOVER"/>
                 <appender-ref ref="SecurityAuditToOracleDB-FAILOVER"/>
                 <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
@@ -1592,8 +1592,8 @@
         <Logger name="org.sourceid.websso.profiles.idp.IdpAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
             <appender-ref ref="SecurityAudit2File" />
-            <appender-ref ref="SecurityAudit2Console4SIEM" />    
             <!--
+                <appender-ref ref="SecurityAudit2Console4SIEM"
                 <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
                 <appender-ref ref="SecurityAuditToCEFFile"/>
                 <appender-ref ref="SecurityAuditToMySQLDB-FAILOVER"/>
@@ -1621,8 +1621,8 @@
         <Logger name="org.sourceid.websso.profiles.idp.AsAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
             <appender-ref ref="SecurityAudit2File" />
-            <appender-ref ref="SecurityAudit2Console4SIEM" />    
             <!--
+                <appender-ref ref="SecurityAudit2Console4SIEM" />
                 <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
                 <appender-ref ref="SecurityAuditToCEFFile"/>
                 <appender-ref ref="SecurityAuditToMySQLDB-FAILOVER"/>
@@ -1649,8 +1649,8 @@
         <Logger name="org.sourceid.websso.profiles.idp.ClientRegistrationAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
             <appender-ref ref="SecurityAudit2File" />
-            <appender-ref ref="SecurityAudit2Console4SIEM" />    
             <!--
+                <appender-ref ref="SecurityAudit2Console4SIEM" />
                 <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
                 <appender-ref ref="SecurityAuditToCEFFile"/>
                 <appender-ref ref="SecurityAuditToMySQLDB-FAILOVER"/>
@@ -1677,8 +1677,8 @@
         <Logger name="org.sourceid.wstrust.log.STSAuditLogger"
                 level="INFO" additivity="false" includeLocation="false">
             <appender-ref ref="SecurityAudit2File" />
-            <appender-ref ref="SecurityAudit2Console4SIEM" />    
             <!--
+                <appender-ref ref="SecurityAudit2Console4SIEM" />
                 <appender-ref ref="SecurityAuditToCEFSyslog-FAILOVER"/>
                 <appender-ref ref="SecurityAuditToCEFFile"/>
                 <appender-ref ref="SecurityAuditToMySQLDB-FAILOVER"/>
@@ -1705,9 +1705,9 @@
         <AsyncLogger name="com.pingidentity.provisioner"
                      level="INFO" additivity="false" includeLocation="false">
             <appender-ref ref="ProvisionerLog" />
-            <appender-ref ref="ProvisionerLogForSIEM" />
 
             <!--
+                <appender-ref ref="ProvisionerLogForSIEM" />
                 <appender-ref ref="CONSOLE-PROVISIONER" />
                 <appender-ref ref="ProvisionerLogToOracleDB-FAILOVER"/>
                 <appender-ref ref="ProvisionerLogToSQLServerDB-FAILOVER"/>
@@ -1726,7 +1726,7 @@
 
         <Logger name="AdminApiAuditLogger" level="INFO" additivity="false" includeLocation="false">
             <appender-ref ref="AdminApiAudit" />
-            <appender-ref ref="AdminApiAudit2Console" />
+            <!--<appender-ref ref="AdminApiAudit2Console" />-->
         </Logger>
 
         <Logger name="RuntimeApiAuditLogger" level="INFO" additivity="false" includeLocation="false">
@@ -1797,7 +1797,7 @@
 		  <AsyncRoot level="${PF_LOG_LEVEL}" includeLocation="false">
             <!-- <AppenderRef ref="CONSOLE" /> -->
             <AppenderRef ref="FILE" />
-            <AppenderRef ref="CONSOLE-SIEM" />
+            <!--<AppenderRef ref="CONSOLE-SIEM" />-->
         </AsyncRoot>
 
         <!--

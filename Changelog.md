@@ -12,6 +12,7 @@
 - Update sealed-secrets-controller to v0.19.3
 - Add multiple USER_BASE_DNs and BACKEND_IDs env vars
 - Updated external-dns to v0.13.1 
+- Remove PA/PF SIEM console logging
 - Updated cluster-autoscaler to v1.23.0
 - Upgrade Grafana to v9.3.6
 - Add PF requests logs parsing and indexing
@@ -31,6 +32,7 @@ _Changes:_
 - [X] PDO-4765 Disable the CloudWatch Agent in development environments and development CDEs
 - [X] PDO-4773 Update generate-cluster-state script to create base and region values.yaml files
 - [X] PDO-4775 Add new ArgoCD application definition to PCB
+- [X] PDO-4817 Remove SIEM console logging for PA/PF
 - [X] PDO-4818 Add multiple USER_BASE_DNs and BACKEND_IDs env vars
 - [X] PDO-4916 Missing PF request log
 
