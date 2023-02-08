@@ -119,7 +119,7 @@
           "expr": "time()-ccp_backrest_oldest_full_backup_time_seconds{pg_cluster=\"[[cluster]]\", role=\"master\"}",
           "format": "table",
           "instant": true,
-          "interval": "",
+          "fixed_interval": "",
           "legendFormat": "Recovery window",
           "refId": "A"
         }
@@ -190,7 +190,7 @@
           "expr": "min(ccp_backrest_last_incr_backup_time_since_completion_seconds{pg_cluster=\"[[cluster]]\", role=\"master\"}) without(deployment,instance,ip,pod)",
           "format": "time_series",
           "instant": false,
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Incremental Backup",
           "refId": "A"
@@ -198,21 +198,21 @@
         {
           "expr": "min(ccp_backrest_last_diff_backup_time_since_completion_seconds{pg_cluster=\"[[cluster]]\", role=\"master\"}) without(deployment, instance,ip,pod)",
           "hide": false,
-          "interval": "",
+          "fixed_interval": "",
           "legendFormat": "Differential Backup",
           "refId": "B"
         },
         {
           "expr": "min(ccp_backrest_last_full_backup_time_since_completion_seconds{pg_cluster=\"[[cluster]]\", role=\"master\"}) without(deployment, instance,ip,pod)",
           "hide": false,
-          "interval": "",
+          "fixed_interval": "",
           "legendFormat": "Full Backup",
           "refId": "C"
         },
         {
           "expr": "min(ccp_archive_command_status_seconds_since_last_archive{pg_cluster=\"[[cluster]]\", role=\"master\"}) without(deployment, instance,ip,pod)",
           "hide": false,
-          "interval": "",
+          "fixed_interval": "",
           "legendFormat": "WAL Archive",
           "refId": "D"
         }
@@ -320,7 +320,7 @@
           "expr": "min(ccp_backrest_last_info_backup_runtime_seconds{pg_cluster=\"[[cluster]]\", role=\"master\", backup_type=\"incr\"}) without (deployment,instance,pod,ip)",
           "format": "time_series",
           "instant": false,
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Incremental",
           "refId": "A"
@@ -328,14 +328,14 @@
         {
           "expr": "min(ccp_backrest_last_info_backup_runtime_seconds{pg_cluster=\"[[cluster]]\", role=\"master\", backup_type=\"diff\"}) without (deployment,instance,pod,ip)",
           "hide": false,
-          "interval": "",
+          "fixed_interval": "",
           "legendFormat": "Differential",
           "refId": "B"
         },
         {
           "expr": "min(ccp_backrest_last_info_backup_runtime_seconds{pg_cluster=\"[[cluster]]\", role=\"master\", backup_type=\"full\"}) without (deployment,instance,pod,ip)",
           "hide": false,
-          "interval": "",
+          "fixed_interval": "",
           "legendFormat": "Full",
           "refId": "C"
         }
@@ -444,7 +444,7 @@
           "expr": "min(ccp_backrest_last_info_repo_backup_size_bytes{pg_cluster=\"[[cluster]]\", role=\"master\", backup_type=\"incr\"}) without (deployment, instance,pod,ip)",
           "format": "time_series",
           "instant": false,
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Incremental",
           "refId": "A"
@@ -452,14 +452,14 @@
         {
           "expr": "min(ccp_backrest_last_info_repo_backup_size_bytes{pg_cluster=\"[[cluster]]\", role=\"master\", backup_type=\"diff\"}) without (deployment,instance,pod,ip)",
           "hide": false,
-          "interval": "",
+          "fixed_interval": "",
           "legendFormat": "Differential",
           "refId": "B"
         },
         {
           "expr": "min(ccp_backrest_last_info_repo_backup_size_bytes{pg_cluster=\"[[cluster]]\", role=\"master\", backup_type=\"full\"}) without (deployment,instance,pod,ip)",
           "hide": false,
-          "interval": "",
+          "fixed_interval": "",
           "legendFormat": "Full",
           "refId": "C"
         }
@@ -571,7 +571,7 @@
           "expr": "avg(idelta(ccp_archive_command_status_failed_count{pg_cluster=\"[[cluster]]\", role=\"master\"}[1m])) without (instance,ip)",
           "format": "time_series",
           "instant": false,
-          "interval": "",
+          "fixed_interval": "",
           "intervalFactor": 1,
           "legendFormat": "Failed count",
           "refId": "A"
@@ -579,7 +579,7 @@
         {
           "expr": "avg(idelta(ccp_archive_command_status_archived_count{pg_cluster=\"[[cluster]]\", role=\"master\"}[1m])) without (instance,pod, ip)",
           "hide": false,
-          "interval": "",
+          "fixed_interval": "",
           "legendFormat": "Archive count",
           "refId": "B"
         }

@@ -2,6 +2,7 @@
 
 ### 1.18.0.0
 
+- Enable users to download or upload user reports in Delegated Admin
 - Validate descriptor JSON file before deployment to k8s cluster
 - Upgrade ArgoCD to v2.5.5
 - Move Descriptor Validator to git-ops-command.sh
@@ -11,20 +12,29 @@
 - Update sealed-secrets-controller to v0.19.3
 - Add multiple USER_BASE_DNs and BACKEND_IDs env vars
 - Updated external-dns to v0.13.1 
+- Remove PA/PF SIEM console logging
+- Updated cluster-autoscaler to v1.23.0
+- Upgrade Grafana to v9.3.6
+- Add PF requests logs parsing and indexing
 
 _Changes:_
 
+- [X] PDO-2419 Enable users to download or upload user reports in Delegated Admin
 - [X] PDO-3335 Set PingFederate Engines minReplicas count to 3 in prod/small deployment
 - [X] PDO-4570 Validate descriptor JSON file before deployment to k8s cluster
 - [X] PDO-4575 Upgrade ArgoCD to v2.5.5
 - [X] PDO-4636 Move Descriptor Validator to git-ops-command.sh
+- [X] PDO-4697 Update cluster tools to latest version: cluster-autoscaler v1.23.0
 - [X] PDO-4698 Upgrade nginx-ingress-controller to v1.5.1
 - [X] PDO-4701 Update cluster tools to latest version: sealed-secrets-controller v0.19.3
 - [X] PDO-4702 Update cluster tools to latest version: external-dns v0.13.1
+- [X] PDO-4709 Update cluster tools to latest version: Grafana v9.3.6
 - [X] PDO-4765 Disable the CloudWatch Agent in development environments and development CDEs
 - [X] PDO-4773 Update generate-cluster-state script to create base and region values.yaml files
 - [X] PDO-4775 Add new ArgoCD application definition to PCB
-- [X] PDO-4818 Add multiple USER_BASE_DNs and BACKEND_IDs env vars 
+- [X] PDO-4817 Remove SIEM console logging for PA/PF
+- [X] PDO-4818 Add multiple USER_BASE_DNs and BACKEND_IDs env vars
+- [X] PDO-4916 Missing PF request log
 
 ### 1.17.0.0
 

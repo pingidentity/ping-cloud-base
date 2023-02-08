@@ -114,7 +114,9 @@ dsconfig create-http-servlet-cross-origin-policy \
   --set "cors-allowed-methods: POST" \
   --set "cors-allowed-methods: DELETE" \
   --set "cors-allowed-methods: PATCH" \
-  --set "cors-allowed-origins: *"
+  --set "cors-allowed-origins: *" \
+  --set "cors-exposed-headers: Content-Disposition"
+
 
 dsconfig set-http-servlet-extension-prop \
   --extension-name "Delegated Admin" \
@@ -130,13 +132,15 @@ dsconfig create-delegated-admin-rights \
 
 #
 # Create Delegated Admin Rights for users.
-#
+# Added upload and download permissions to enable the user to download
 dsconfig create-delegated-admin-resource-rights \
   --rights-name "administrator-user-${DA_DEFAULT_GRANT_TYPE_CLIENT_ID}" \
   --rest-resource-type users \
   --set admin-permission:create \
   --set admin-permission:read \
   --set admin-permission:update \
+  --set admin-permission:download \
+  --set admin-permission:upload \
   --set admin-permission:delete \
   --set admin-permission:manage-group-membership \
   --set admin-scope:all-resources-in-base \
@@ -148,6 +152,8 @@ dsconfig create-delegated-admin-resource-rights  \
   --set admin-permission:create \
   --set admin-permission:read \
   --set admin-permission:update \
+  --set admin-permission:download \
+  --set admin-permission:upload \
   --set admin-permission:delete \
   --set admin-permission:manage-group-membership \
   --set admin-scope:all-resources-in-base \

@@ -8,8 +8,8 @@ configMapGenerator:
   files:
     - 01-input.conf
     - 02-input-filters.conf
-    - 03-siem-sort-filters.conf
-    - 04-ingress-filters.conf
-    - 05-ping-apps-filters.conf
+    - 03-ingress-filters.conf
+    - 04-ping-apps-filters.conf
+    - 05-siem-sort-filters.conf
     - 06-siem-detailed-filters.conf
     - 07-outputs.conf

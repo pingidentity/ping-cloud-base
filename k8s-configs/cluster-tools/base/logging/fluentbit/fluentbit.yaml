@@ -150,7 +150,7 @@ data:
         Name                  multiline
         match                 ping.*  
         multiline.key_content log
-        multiline.parser      multiline_java_log
+        multiline.parser      multiline_java_log, ping_system_log
     
     [FILTER]
         Name                kubernetes
@@ -403,6 +403,12 @@ data:
         Match               ping.*
         Rule                $log ^\/opt\/out\/instance\/log\/jvm-garbage-collection jvm_garbage_collection_logs.$stream_name.cw_out false
         Emitter_Name        jvm_garbage_collection_logs
+    
+    [FILTER]
+        Name                rewrite_tag
+        Match               ping.*
+        Rule                $log ^\/opt\/out\/instance\/log\/request request_logs.$stream_name.elk_out false
+        Emitter_Name        requests_logs
     
     # PC
     [FILTER]
@@ -728,7 +734,19 @@ data:
         rule "start_state" "/(?:\/.*\/log[s]?\/\w+(?:\.log)?) ([0-9\-:T, ]+) (ERROR) (.*)/" "cont"
         rule "cont" "/(?:\/.*\/log[s]?\/\w+(?:\.log)?)[ \t]+(\w+\..*)/" "cont"
         rule "cont" "/(?:\/.*\/log[s]?\/\w+(?:\.log)?)[ \t]+(at \w+\..*|Caused by:.*|\.\.\. \d+ more)/" "cont"
+    
+    [MULTILINE_PARSER]
+        Name ping_system_log
+        type regex
+        parser json
+        key_content log
+        flush_timeout 1000
 
+        rule "start_state" "/(?:\/.*\/log[s]?\/\w+(?:\.log)?) ([0-9\-:T, ]+) (INFO) (.*)/" "cont"
+        rule "cont" "/(?:\/.*\/log[s]?\/\w+(?:\.log)?)\n/" "cont"
+        rule "cont" "/(?:\/.*\/log[s]?\/\w+(?:\.log)?) [a-zA-Z]/" "cont"
+        rule "cont" "/(?:\/.*\/log[s]?\/\w+(?:\.log)?) -+/" "cont"
+        rule "cont" "/(?:\/.*\/log[s]?\/\w+(?:\.log)?) (.*)/" "cont"
 
   outputs.conf: |
     [OUTPUT]
