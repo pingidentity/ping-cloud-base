@@ -114,7 +114,7 @@
         {
           "expr": "sum(sum_over_time(ccp_pg_stat_statements_total_calls_count{pg_cluster=\"[[cluster]]\", role=\"[[role]]\",dbname=~\"[[dbname]]\",exported_role=~\"[[dbuser]]\"}[$__range])) without(instance, ip, deployment,pod,dbname,exported_role)",
           "instant": false,
-          "interval": "",
+          "fixed_interval": "",
           "legendFormat": "",
           "refId": "A"
         }
@@ -169,7 +169,7 @@
           "expr": "sum(sum_over_time(ccp_pg_stat_statements_total_exec_time_ms{pg_cluster=\"[[cluster]]\", role=\"[[role]]\",dbname=~\"[[dbname]]\",exported_role=~\"[[dbuser]]\"}[$__range])) without(instance, ip, deployment,pod,dbname,exported_role)",
           "format": "time_series",
           "instant": false,
-          "interval": "",
+          "fixed_interval": "",
           "legendFormat": "",
           "refId": "A"
         }
@@ -226,7 +226,7 @@
           "expr": "avg(sum_over_time(ccp_pg_stat_statements_total_mean_exec_time_ms{pg_cluster=\"[[cluster]]\", role=\"[[role]]\",dbname=~\"[[dbname]]\",exported_role=~\"[[dbuser]]\"}[$__range])) without(instance, ip, deployment,pod,dbname,exported_role)",
           "format": "time_series",
           "instant": false,
-          "interval": "",
+          "fixed_interval": "",
           "legendFormat": "",
           "refId": "A"
         }
@@ -283,7 +283,7 @@
           "expr": "sum(sum_over_time(ccp_pg_stat_statements_total_row_count{pg_cluster=\"[[cluster]]\", role=\"[[role]]\",dbname=~\"[[dbname]]\",exported_role=~\"[[dbuser]]\"}[$__range])) without(instance, ip, deployment, pod,dbname,exported_role)",
           "format": "time_series",
           "instant": false,
-          "interval": "",
+          "fixed_interval": "",
           "legendFormat": "",
           "refId": "A"
         }
@@ -346,7 +346,7 @@
         {
           "expr": "sum(irate(ccp_pg_stat_statements_total_calls_count{pg_cluster=\"[[cluster]]\", role=\"[[role]]\",dbname=~\"[[dbname]]\",exported_role=~\"[[dbuser]]\"}[$__range])) without(instance, ip, deployment, pod)",
           "instant": false,
-          "interval": "",
+          "fixed_interval": "",
           "legendFormat": "db: {{dbname}}, user: {{exported_role}}",
           "refId": "A"
         }
@@ -526,7 +526,7 @@
           "format": "table",
           "hide": false,
           "instant": true,
-          "interval": "",
+          "fixed_interval": "",
           "legendFormat": "",
           "refId": "B"
         }
@@ -702,7 +702,7 @@
           "format": "table",
           "hide": false,
           "instant": true,
-          "interval": "",
+          "fixed_interval": "",
           "legendFormat": "",
           "refId": "B"
         }
@@ -876,7 +876,7 @@
           "expr": "sum(irate(ccp_pg_stat_statements_top_total_exec_time_ms{pg_cluster=\"[[cluster]]\", role=\"[[role]]\",dbname=~\"[[dbname]]\",exported_role=~\"[[dbuser]]\"}[$__range])) without(instance, ip, deployment,pod)",
           "format": "table",
           "instant": true,
-          "interval": "",
+          "fixed_interval": "",
           "legendFormat": "",
           "refId": "A"
         }
