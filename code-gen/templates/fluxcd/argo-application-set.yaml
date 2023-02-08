@@ -9,7 +9,9 @@ spec:
         repoURL: ${CLUSTER_STATE_REPO_URL}
         revision: ${CLUSTER_STATE_REPO_BRANCH}
         directories:
-          - path: ${REGION_NICK_NAME}/*
+          - path: '*'
+          - path: k8s-configs
+            exclude: true
   template:
     metadata:
       name: '${REGION_NICK_NAME}-{{path.basename}}'
@@ -18,7 +20,7 @@ spec:
       source:
         repoURL: ${CLUSTER_STATE_REPO_URL}
         targetRevision: ${CLUSTER_STATE_REPO_BRANCH}
-        path: '{{path}}'
+        path: '{{path}}/${REGION_NICK_NAME}'
       destination:
         server: https://kubernetes.default.svc
       ignoreDifferences:
