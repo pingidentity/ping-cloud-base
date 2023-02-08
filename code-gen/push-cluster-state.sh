@@ -125,7 +125,7 @@ if ! ${DISABLE_GIT}; then
 fi
 
 # This is a destructive script by design. Add a warning to the user if local changes are being destroyed though.
-CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD 2> /dev/null)"
+CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
 if test "${CURRENT_BRANCH}" && test -n "$(git status -s)"; then
   echo "WARN: The following local changes in current branch '${CURRENT_BRANCH}' will be destroyed:"
   git status
@@ -140,8 +140,8 @@ REMOTE_BRANCHES=""
 
 # Get a list of the remote branches from the server.
 if ! ${DISABLE_GIT}; then
-  git pull &> /dev/null
-  REMOTE_BRANCHES="$(git ls-remote --quiet --heads 2> /dev/null)"
+  git pull &>/dev/null
+  REMOTE_BRANCHES="$(git ls-remote --quiet --heads 2>/dev/null)"
   LS_REMOTE_EXIT_CODE=$?
 
   if test ${LS_REMOTE_EXIT_CODE} -ne 0; then
@@ -169,14 +169,14 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     ENV="${CUSTOMER_HUB}"
   else
     test "${ENV_OR_BRANCH}" = 'prod' &&
-        GIT_BRANCH='master' ||
-        GIT_BRANCH="${ENV_OR_BRANCH}"
+      GIT_BRANCH='master' ||
+      GIT_BRANCH="${ENV_OR_BRANCH}"
     DEFAULT_CDE_BRANCH="${GIT_BRANCH##*-}"
 
     ENV_OR_BRANCH_SUFFIX="${ENV_OR_BRANCH##*-}"
     test "${ENV_OR_BRANCH_SUFFIX}" = 'master' &&
-        ENV='prod' ||
-        ENV="${ENV_OR_BRANCH_SUFFIX}"
+      ENV='prod' ||
+      ENV="${ENV_OR_BRANCH_SUFFIX}"
   fi
 
   echo "Processing branch '${GIT_BRANCH}' for environment '${ENV}' and default branch '${DEFAULT_CDE_BRANCH}'"
@@ -185,7 +185,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
 
   if ! ${DISABLE_GIT}; then
     # Check if the branch exists locally. If so, switch to it.
-    if git rev-parse --verify "${GIT_BRANCH}" &> /dev/null; then
+    if git rev-parse --verify "${GIT_BRANCH}" &>/dev/null; then
       echo "Branch ${GIT_BRANCH} exists locally. Switching to it."
       git checkout "${GIT_BRANCH}"
 
@@ -194,7 +194,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
       # Attempt to create the branch from its default CDE or CHUB branch name.
       echo "Branch ${GIT_BRANCH} does not exist locally"
 
-      if git rev-parse --verify "${DEFAULT_CDE_BRANCH}" &> /dev/null; then
+      if git rev-parse --verify "${DEFAULT_CDE_BRANCH}" &>/dev/null; then
         # This block will be executed only during updates. At the time, we want to capture history
         # of all changes in the old CDE or customer-hub branches onto the new ones that are created.
         echo "Creating ${GIT_BRANCH} from its default branch ${DEFAULT_CDE_BRANCH}"
@@ -212,7 +212,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   fi
 
   # Check if the branch exists on remote. If so, pull the latest code from remote.
-  if echo "${REMOTE_BRANCHES}" | grep -q "${GIT_BRANCH}" 2> /dev/null; then
+  if echo "${REMOTE_BRANCHES}" | grep -q "${GIT_BRANCH}" 2>/dev/null; then
     echo "Branch ${GIT_BRANCH} exists on server. Checking out latest code from server."
     git pull --no-edit origin "${GIT_BRANCH}" -X theirs
   elif ${DISABLE_GIT}; then
@@ -265,6 +265,16 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
         src_dir="${app_path}/${BASE_DIR}"
         echo "Copying ${src_dir} to ${app_name}"
         cp -pr "${src_dir}" "${app_name}/"
+
+        # Copy the validation directory
+        src_dir="${app_path}/validation"
+        folder_exists_check="$(find "${src_dir}" -type d -maxdepth 1)"
+        echo "${folder_exists_check}"
+        
+        if test -n "${folder_exists_check}"; then
+          echo "Copying ${src_dir} to ${app_name}"
+          cp -pr "${src_dir}" "${app_name}/"
+        fi
       done
     fi
 
@@ -272,7 +282,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     beluga_version="$(find "${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}/${ENV_OR_BRANCH}/${K8S_CONFIGS_DIR}" \
       -name env_vars -exec grep '^K8S_GIT_BRANCH=' {} \; | cut -d= -f2)"
     echo "Beluga version is ${beluga_version} for environment ${ENV}"
-    echo "${beluga_version}" > version.txt
+    echo "${beluga_version}" >version.txt
   fi
 
   if "${IS_PROFILE_REPO}"; then
