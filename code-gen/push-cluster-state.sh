@@ -265,6 +265,14 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
         src_dir="${app_path}/${BASE_DIR}"
         echo "Copying ${src_dir} to ${app_name}"
         cp -pr "${src_dir}" "${app_name}/"
+
+        # Copy the validation directory
+        src_dir="${app_path}/validation"
+        
+        if test -d "${src_dir}"; then
+          echo "Copying ${src_dir} to ${app_name}"
+          cp -pr "${src_dir}" "${app_name}/"
+        fi
       done
     fi
 
