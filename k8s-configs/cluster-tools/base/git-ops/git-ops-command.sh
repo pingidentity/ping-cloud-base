@@ -138,14 +138,6 @@ cleanup() {
 
 # Main script
 
-# Validate descriptor.json file in a multi-region environment
-if [[ "${IS_MULTI_CLUSTER}" == "true" ]]; then
-  if [[ -f ./base/ping-cloud/descriptor.json ]]; then
-    # Verify JSON and descriptor file content is valid
-    python3 ./validation/verify_descriptor_json.py ./base/ping-cloud/descriptor.json
-  fi
-
-fi
 TARGET_DIR="${1:-.}"
 cd "${TARGET_DIR}" >/dev/null 2>&1
 
@@ -180,11 +172,13 @@ if test -d "${BASE_DIR}"; then
   cp -pr "${BASE_DIR}" "${TMP_DIR}"
 fi
 
+IS_MULTI_CLUSTER=""
+
 # If there's an environment file, then perform substitution
 if test -f 'env_vars'; then
   # Perform the substitutions in a sub-shell so it doesn't pollute the current shell.
   log "substituting env_vars into templates"
-  (
+  IS_MULTI_CLUSTER=$(
     cd "${BUILD_DIR}"
 
     BASE_ENV_VARS="${BASE_DIR}"/env_vars
@@ -228,8 +222,25 @@ if test -f 'env_vars'; then
     done
 
     feature_flags "${TMP_DIR}/${K8S_GIT_BRANCH}"
+
+    echo "$IS_MULTI_CLUSTER"
+    # export IS_MULTI_CLUSTER="${IS_MULTI_CLUSTER}"
+    # IS_MULTI_CLUSTER=$(echo "$IS_MULTI_CLUSTER")
   )
   test $? -ne 0 && exit 1
+fi
+
+log "<<< ${IS_MULTI_CLUSTER} >>>"
+# Validate descriptor.json file in a multi-region environment
+if [[ "${IS_MULTI_CLUSTER}" == "true" ]]; then
+  log "<<< Validating descriptor >>>"
+  log "${BASE_DIR}"
+  if [[ -f ../base/ping-cloud/descriptor.json ]]; then
+    log "<<< Validating descriptor >>>"
+    # Verify JSON and descriptor file content is valid
+    result="$(python3 ../validation/verify_descriptor_json.py ../base/ping-cloud/descriptor.json)"
+    log "${result}"
+  fi
 fi
 
 KUST_VER="$(kustomize_version)"

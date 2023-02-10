@@ -8,6 +8,7 @@
 - Move Descriptor Validator to git-ops-command.sh
 - Upgrade nginx-ingress-controller to v1.5.1
 - Add base & region values.yaml files for Helm migration
+- Update values.yaml in region and base path sync with env_vars file
 - Add ArgoCD application set definition for microservice architecture
 - Update sealed-secrets-controller to v0.19.3
 - Add multiple USER_BASE_DNs and BACKEND_IDs env vars
@@ -36,6 +37,7 @@ _Changes:_
 - [X] PDO-4817 Remove SIEM console logging for PA/PF
 - [X] PDO-4818 Add multiple USER_BASE_DNs and BACKEND_IDs env vars
 - [X] PDO-4916 Missing PF request log
+- [X] PDO-4997 Update values.yaml in region and base path sync with env_vars file
 
 ### 1.17.0.0
 
