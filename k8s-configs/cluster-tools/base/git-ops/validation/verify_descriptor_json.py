@@ -20,9 +20,9 @@ def verify_json_schema(descriptor_json):
         if region == "":
             raise ValueError("region value is null within descriptor.json")
         if "hostname" not in descriptor_json[region]:
-            raise ValueError("'hostname' key must be present within descriptor.json")
+            raise KeyError("'hostname' key must be present within descriptor.json")
         if "replicas" not in descriptor_json[region]:
-            raise ValueError("'replicas' key must be present within descriptor.json")
+            raise KeyError("'replicas' key must be present within descriptor.json")
         if descriptor_json[region]["hostname"] == "":
             raise ValueError("hostname value is null within descriptor.json")
         if not isinstance(descriptor_json[region]["replicas"], int):
