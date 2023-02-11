@@ -239,7 +239,7 @@ if [[ "${IS_MULTI_CLUSTER}" == "true" ]]; then
     log "<<< Validating descriptor >>>"
     # Verify JSON and descriptor file content is valid
     result="$(python3 ../validation/verify_descriptor_json.py ../base/ping-cloud/descriptor.json)"
-    log "${result}"
+    return "${result}"
   fi
 fi
 
