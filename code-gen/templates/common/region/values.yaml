@@ -5,12 +5,18 @@
 region: "${REGION}"
 regionNickname: "${REGION_NICK_NAME}"
 
+# The name of the tenant
+tenantName: "${TENANT_NAME}"
+
 # tenantDomain is the domain suffix for customer for region
 tenantDomain: "${TENANT_DOMAIN}"
 
 # environmentPrefix is the prefix used to distinguish between worker apps for different CDEs in P14C
 # and to form the Signal Science Agent name as displayed in SigSci Dashboard.
 environmentPrefix: "${ENVIRONMENT_PREFIX}"
+
+# TODO: we can only substitute env vars region->base PDO-3957 to fix
+regionEnv: "${ENV}"
 
 # artifactRepoUrl is the Customer-specific artifacts URL for region
 artifactRepoUrl: "${ARTIFACT_REPO_URL}"
