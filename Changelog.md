@@ -8,14 +8,17 @@
 - Move Descriptor Validator to git-ops-command.sh
 - Upgrade nginx-ingress-controller to v1.5.1
 - Add base & region values.yaml files for Helm migration
+- Update values.yaml in region and base path sync with env_vars file
 - Add ArgoCD application set definition for microservice architecture
 - Update sealed-secrets-controller to v0.19.3
 - Add multiple USER_BASE_DNs and BACKEND_IDs env vars
 - Updated external-dns to v0.13.1 
+- Update cluster tools to latest version: kube-state-metrics v2.6.0
 - Remove PA/PF SIEM console logging
 - Updated cluster-autoscaler to v1.23.0
 - Upgrade Grafana to v9.3.6
 - Add PF requests logs parsing and indexing
+
 
 _Changes:_
 
@@ -28,6 +31,7 @@ _Changes:_
 - [X] PDO-4698 Upgrade nginx-ingress-controller to v1.5.1
 - [X] PDO-4701 Update cluster tools to latest version: sealed-secrets-controller v0.19.3
 - [X] PDO-4702 Update cluster tools to latest version: external-dns v0.13.1
+- [X] PDO-4705 Update cluster tools to latest version: kube-state-metrics v2.6.0
 - [X] PDO-4709 Update cluster tools to latest version: Grafana v9.3.6
 - [X] PDO-4765 Disable the CloudWatch Agent in development environments and development CDEs
 - [X] PDO-4773 Update generate-cluster-state script to create base and region values.yaml files
@@ -36,6 +40,7 @@ _Changes:_
 - [X] PDO-4817 Remove SIEM console logging for PA/PF
 - [X] PDO-4818 Add multiple USER_BASE_DNs and BACKEND_IDs env vars
 - [X] PDO-4916 Missing PF request log
+- [X] PDO-4997 Update values.yaml in region and base path sync with env_vars file
 
 ### 1.17.0.0
 
