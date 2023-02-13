@@ -16,7 +16,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: pingdirectory-backup
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory:pdo-4820
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:pdo-4820
         imagePullPolicy: Always
         securityContext:
           runAsGroup: 9999
