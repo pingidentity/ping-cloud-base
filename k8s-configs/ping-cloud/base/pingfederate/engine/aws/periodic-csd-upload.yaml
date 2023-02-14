@@ -14,7 +14,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: pingfederate-periodic-csd-upload
-            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:10.3.7-v1.0.23-no-IKs
+            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:10.3.12-v1.0.23
             imagePullPolicy: IfNotPresent
             securityContext:
               runAsGroup: 9999
