@@ -60,7 +60,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: pingfederate-backup
-            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:11.0.2-v1.0.39
+            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate:11.0.7-v1.0.39
             imagePullPolicy: IfNotPresent
             securityContext:
               runAsGroup: 9999
