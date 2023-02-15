@@ -1,5 +1,7 @@
 ## This is a test Prometheus alerting rule.
 ## For testing purpose uncoment alert, deploy changes, delete pingdirectory/pingfederate/pingacess pod and wait for alert.
+---
+
 #groups:
 #- name: prom-default-rules
 #  rules:
@@ -11,3 +13,4 @@
 #    annotations:
 #      summary: Prometheus target missing (instance {{ $labels.instance }})
 #      description: "A Prometheus target has disappeared. An exporter might be crashed.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
