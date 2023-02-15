@@ -642,27 +642,3 @@ check_if_ready() {
   printf '\n\n--- Pod status ---'
   kubectl get pods -n "${ns_to_check}"
 }
-
-########################################################################################################################
-# Method to check if the containers inside the pods of a given namespace is configured with bash.
-# Arguments
-#   ${1} -> NAMESPACE
-########################################################################################################################
-check_bash_version(){
-  local ns_to_check=${1}
-  kubectl get pods -n "${ns_to_check}" | awk 'NR!=1 {print $1}' | while read current_pod_info; do
-      pod_name=$(echo $current_pod_info | awk '{print $1}')
-      # Get all the containers within the pod
-        for container_name in $(kubectl get pod $pod_name -n "${ns_to_check}" -o jsonpath="{.spec['containers'][*].name}"); do
-          #exec into the pod and check for bash in the list of shells installed in the containers
-          bash_path=$(kubectl exec $pod_name -c $container_name -n "${ns_to_check}" -- cat /etc/shells 2>&1 | grep '/bin/bash')
-          shell_status=$?
-          if [[ shell_status -eq 0 ]]; then
-              bash_version=$(kubectl exec $pod_name -c $container_name -n "${ns_to_check}" -- bash --version 2>&1 | awk 'NR==1 {print $4}')
-              echo "Container : ^^^^ $container_name ^^^^ is configured with bash version : ^^^^ $bash_version ^^^^ located at path : $bash_path"
-          else
-              echo "Container : ^^^^ $container_name ^^^^ does not have bash configured"
-          fi
-        done
-  done
-}
