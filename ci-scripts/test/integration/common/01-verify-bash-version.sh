@@ -21,7 +21,6 @@ test_check_bash_version(){
     assertEquals 0 ${success}
 }
 
-
 ########################################################################################################################
 # Method to check if the containers inside the pods of a given namespace is configured with bash.
 # Arguments
