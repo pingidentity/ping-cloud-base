@@ -84,7 +84,7 @@ feature_flags() {
   cd "${1}/k8s-configs"
 
   # Map with the feature flag environment variable & the term to search to find the kustomization files
-  flag_map="${RADIUS_PROXY_ENABLED}:ff-radius-proxy"
+  flag_map="${RADIUS_PROXY_ENABLED}:ff-radius-proxy ${EXTERNAL_INGRESS_ENABLED}:ff-external-ingress"
 
   for flag in $flag_map ; do
     enabled="${flag%%:*}"
