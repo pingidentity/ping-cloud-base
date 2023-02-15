@@ -18,6 +18,7 @@
 - Updated cluster-autoscaler to v1.23.0
 - Upgrade Grafana to v9.3.6
 - Add PF requests logs parsing and indexing
+- Change retry interval for PGO firing alert notification in slack from 5 min to 60 min
 
 
 _Changes:_
@@ -40,6 +41,7 @@ _Changes:_
 - [X] PDO-4817 Remove SIEM console logging for PA/PF
 - [X] PDO-4818 Add multiple USER_BASE_DNs and BACKEND_IDs env vars
 - [X] PDO-4916 Missing PF request log
+- [X] PDO-4974 Change retry interval for PGO firing alert notification in slack from 5 min to 60 min
 - [X] PDO-4997 Update values.yaml in region and base path sync with env_vars file
 
 ### 1.17.0.0
