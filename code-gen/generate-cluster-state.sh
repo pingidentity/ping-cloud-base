@@ -1121,12 +1121,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   K8S_CONFIGS_DIR="${ENV_DIR}/k8s-configs"
   mkdir -p "${K8S_CONFIGS_DIR}"
 
-  GIT_OPS_VALIDATION_FOLDER="${K8S_CONFIGS_DIR}/validation"
-  mkdir -p "${GIT_OPS_VALIDATION_FOLDER}"
-
   cp ../k8s-configs/cluster-tools/base/git-ops/git-ops-command.sh "${K8S_CONFIGS_DIR}"
-  cp ../k8s-configs/cluster-tools/base/git-ops/validation/verify_descriptor_json.py "${GIT_OPS_VALIDATION_FOLDER}"
-  cp ../k8s-configs/cluster-tools/base/git-ops/validation/json_util.py "${GIT_OPS_VALIDATION_FOLDER}"
 
   # Copy the templates directory files (ex: seal.sh, region-promotion.txt) to the tmp dir
   find "${TEMPLATES_HOME}" -type f -maxdepth 1 | xargs -I {} cp {} "${K8S_CONFIGS_DIR}"
