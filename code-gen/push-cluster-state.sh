@@ -265,14 +265,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
         src_dir="${app_path}/${BASE_DIR}"
         echo "Copying ${src_dir} to ${app_name}"
         cp -pr "${src_dir}" "${app_name}/"
-
-        # Copy the validation directory
-        src_dir="${app_path}/validation"
         
-        if test -d "${src_dir}"; then
-          echo "Copying ${src_dir} to ${app_name}"
-          cp -pr "${src_dir}" "${app_name}/"
-        fi
       done
     fi
 
@@ -291,7 +284,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
       app_name=$(basename "${app_path}")
 
       # shellcheck disable=SC2010
-      region_path="$(find "${app_path}" -type d -depth 1 ! -path '*/base' ! -path '*/validation')"
+      region_path="$(find "${app_path}" -type d -depth 1 ! -path '*/base')"
       region=$(basename "${region_path}")
       src_dir="${app_path}/$region"
 
