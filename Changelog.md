@@ -10,6 +10,7 @@
 - Add ArgoCD application set definition for microservice architecture
 - Update sealed-secrets-controller to v0.19.3
 - Add multiple USER_BASE_DNs and BACKEND_IDs env vars
+- Selectively restore a backend in PD
 - Updated external-dns to v0.13.1 
 - Update cluster tools to latest version: kube-state-metrics v2.6.0
 - Remove PA/PF SIEM console logging
@@ -38,6 +39,7 @@ _Changes:_
 - [X] PDO-4817 Remove SIEM console logging for PA/PF
 - [X] PDO-4818 Add multiple USER_BASE_DNs and BACKEND_IDs env vars
 - [X] PDO-4836 Copy PCD ci-scripts to shared location
+- [X] PDO-4861 Selectively restore a backend in PD
 - [X] PDO-4895 Added karpenter v0.24.0 and required parameters, KarpenterControllerRole & ClusterEndPoint
 - [X] PDO-4916 Missing PF request log
 - [X] PDO-4974 Change retry interval for PGO firing alert notification in slack from 5 min to 60 min
