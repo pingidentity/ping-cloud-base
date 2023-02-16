@@ -88,6 +88,7 @@ _Changes:_
 - [X] PDO-4967 Enable storage class resizing for PGO storageclass
 - [X] PDO-4973 REGION_ENV should be defined before using it in ENVIRONMENT_PREFIX in Region env_vars
 - [X] PDO-4984 Install EBS CSI driver
+- [X] PDO-5015 Disable integration test for PF user authentication healthcheck
 
 ### 1.16.1.0
 

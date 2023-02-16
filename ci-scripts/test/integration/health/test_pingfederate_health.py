@@ -1,3 +1,5 @@
+import unittest
+
 import requests
 
 from health_common import Categories, TestHealthBase
@@ -56,6 +58,7 @@ class TestPingFederateHealth(TestHealthBase):
             self.get_test_results(self.pingfederate, Categories.pod_status).keys(),
         )
 
+    @unittest.skip("Skipping until check is re-enabled, ref: PDO-5015")
     def test_health_check_has_authenticate_a_user_results(self):
         test_results = self.get_test_results(self.pingfederate, Categories.connectivity)
         test_name = "Can authenticate a user"
