@@ -52,7 +52,7 @@ BACKENDS_TO_BACKUP=userRoot;appintegrations;platformconfig
 # This is the environment variable to select the backend(s) to restore in PD during start and restart
 # Allowed values:"appintegrations","platformconfig","userRoot" "userRoot_2" , "userRoot_3" ,"userRoot_4","userRoot_5"
 # No values set would just restore all backends in PD during start and restart
-BACKENDS_TO_RESTORE="userRoot_2"
+BACKENDS_TO_RESTORE="userRoot"
 
 ACCEPT_EULA=YES
 PING_IDENTITY_ACCEPT_EULA=YES
