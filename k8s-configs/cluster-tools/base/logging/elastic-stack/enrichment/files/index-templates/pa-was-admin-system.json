@@ -1,0 +1,42 @@
+{
+  "index_patterns": [
+    "pa-was-admin-system-*"
+  ],
+  "template": {
+    "settings": {
+      "number_of_shards": 3,
+      "number_of_replicas": 1,
+      "index.lifecycle.name": "ping-logstash-policy",
+      "index.lifecycle.rollover_alias": "pa-was-admin-system"
+    },
+    "mappings": {
+      "properties": {
+        "geoip": {
+          "dynamic": true,
+          "properties": {
+            "ip": {
+              "type": "ip"
+            },
+            "latitude": {
+              "type": "half_float"
+            },
+            "location": {
+              "type": "geo_point"
+            },
+            "longitude": {
+              "type": "half_float"
+            }
+          }
+        },
+        "timestamp": {
+          "type": "text"
+        }
+      }
+    },
+    "aliases": {
+      "pa-was-admin-system": {
+        "is_write_index": true
+      }
+    }
+  }
+}
