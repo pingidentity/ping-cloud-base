@@ -138,14 +138,6 @@ cleanup() {
 
 # Main script
 
-# Validate descriptor.json file in a multi-region environment
-if [[ "${IS_MULTI_CLUSTER}" == "true" ]]; then
-  if [[ -f ./base/ping-cloud/descriptor.json ]]; then
-    # Verify JSON and descriptor file content is valid
-    python3 ./validation/verify_descriptor_json.py ./base/ping-cloud/descriptor.json
-  fi
-
-fi
 TARGET_DIR="${1:-.}"
 cd "${TARGET_DIR}" >/dev/null 2>&1
 

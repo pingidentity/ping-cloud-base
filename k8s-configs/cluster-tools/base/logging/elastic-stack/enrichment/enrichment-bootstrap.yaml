@@ -84,8 +84,6 @@ spec:
         volumeMounts:
           - name: enrichment-elasticsearch-ilm-policies
             mountPath: /usr/share/elasticsearch/data/ilm-policies
-          - name: enrichment-elasticsearch-index-bootstraps
-            mountPath: /usr/share/elasticsearch/data/index-bootstraps
           - name: enrichment-elasticsearch-index-templates
             mountPath: /usr/share/elasticsearch/data/index-templates
         resources:
@@ -100,9 +98,6 @@ spec:
         - name: enrichment-elasticsearch-ilm-policies
           configMap:
             name: enrichment-elasticsearch-ilm-policies
-        - name: enrichment-elasticsearch-index-bootstraps
-          configMap:
-            name: enrichment-elasticsearch-index-bootstraps
         - name: enrichment-elasticsearch-index-templates
           configMap:
             name: enrichment-elasticsearch-index-templates
