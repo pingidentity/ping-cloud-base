@@ -23,13 +23,21 @@ data:
     echo "restore: number of replicas: ${NUM_REPLICAS}"
 
     DN_LIST=
+    BASE_DNS_LIST="${USER_BASE_DN} ${USER_BASE_DN_2} ${USER_BASE_DN_3} ${USER_BASE_DN_4} ${USER_BASE_DN_5}"
+    # Separate each USER_BASE_DN with a ';'
+    BASE_DNS_LIST=$(echo ${BASE_DNS_LIST} | tr '[[:blank:]]/' ';')
+
     if test -z "${REPLICATION_BASE_DNS}"; then
-      DN_LIST="${USER_BASE_DN}"
+      DN_LIST="${BASE_DNS_LIST}"
     else
-      if echo "${REPLICATION_BASE_DNS}" | grep -q "${USER_BASE_DN}"; then
+    # Separate each USER_BASE_DN with a '|' to grep with a regex pattern.
+    # Example: grep -qE "dc=example,dc=com|dc=test,dc=com"
+
+      GREP_BASE_DNS_LIST=$(echo ${BASE_DNS_LIST} | tr ';' '|')
+      if echo "${REPLICATION_BASE_DNS}" | grep -qE "${GREP_BASE_DNS_LIST}"; then
         DN_LIST="${REPLICATION_BASE_DNS}"
       else
-        DN_LIST="${REPLICATION_BASE_DNS};${USER_BASE_DN}"
+        DN_LIST="${REPLICATION_BASE_DNS};${BASE_DNS_LIST}"
       fi
     fi
     DNS_LIST=$(echo "${DN_LIST}" | tr ';' ' ')

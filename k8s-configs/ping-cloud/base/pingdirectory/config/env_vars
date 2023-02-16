@@ -48,6 +48,13 @@ BACKUP_FILE_NAME=
 BACKUP_RESTORE_POD=pingdirectory-0
 BACKENDS_TO_BACKUP=userRoot;appintegrations;platformconfig
 
+
+# This is the environment variable to select the backend(s) to restore in PD
+# Allowed values:appintegrations platformconfig userRoot userRoot_2 userRoot_3 userRoot_4 userRoot_5
+# Seperated with a semi-colon(;) Example: userRoot;userRoot_2
+# No values set would just restore all backends in PD 
+BACKENDS_TO_RESTORE=
+
 ACCEPT_EULA=YES
 PING_IDENTITY_ACCEPT_EULA=YES
 
