@@ -29,11 +29,6 @@ USER_BASE_DN_3=
 USER_BASE_DN_4=
 USER_BASE_DN_5=
 
-# This is the environment variable to select the backend(s) to restore in PD during start and restart
-# Allowed values:"appintegrations","platformconfig","userRoot" "userRoot_2" , "userRoot_3" ,"userRoot_4","userRoot_5"
-# No values set would just restore all backends in PD during start and restart
-BACKEND_TO_RESTORE="userRoot_2"
-
 # This is the OOTB USER_BASE_DN value and is always set to "dc=example,dc=com"
 DEFAULT_USER_BASE_DN=dc=example,dc=com
 PD_PCV_SEARCH_FILTER=(&(objectClass=person)(|(mail=${username})(cn=${username})(uid=${username})))
