@@ -79,11 +79,6 @@
           "type": "text"
         }
       }
-    },
-    "aliases": {
-      "logstash": {
-        "is_write_index": true
-      }
     }
   }
 }

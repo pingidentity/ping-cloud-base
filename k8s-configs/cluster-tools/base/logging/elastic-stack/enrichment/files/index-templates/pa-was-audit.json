@@ -6,8 +6,12 @@
     "settings": {
       "number_of_shards": 3,
       "number_of_replicas": 1,
-      "index.lifecycle.name": "ping-logstash-policy",
-      "index.lifecycle.rollover_alias": "pa-was-audit"
+      "index": {
+        "lifecycle": {
+          "name": "ping-logstash-policy",
+          "rollover_alias": "pa-was-audit"
+        }
+      }
     },
     "mappings": {
       "properties": {
@@ -64,11 +68,6 @@
             }
           }
         }
-      }
-    },
-    "aliases": {
-      "pa-was-audit": {
-        "is_write_index": true
       }
     }
   }
