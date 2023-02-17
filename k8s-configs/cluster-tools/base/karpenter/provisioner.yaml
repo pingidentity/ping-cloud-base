@@ -41,7 +41,8 @@ spec:
       values: ["on-demand"]
   taints:
   - effect: NoSchedule
-    key: pd-only
+    key: pingidentity.com/pd-only
+    value: "true"
   providerRef:
     name: pd-only
 ---

@@ -84,7 +84,7 @@ metadata:
     app.kubernetes.io/instance: karpenter
     app.kubernetes.io/version: "0.24.0"
 data:
-    "aws.defaultInstanceProfile": "KarpenterInstanceProfile"
+    "aws.defaultInstanceProfile": "KarpenterNodeInstanceProfile"
     "aws.enableENILimitedPodDensity": "true"
     "aws.enablePodENI": "false"
     "aws.interruptionQueueName": ""
