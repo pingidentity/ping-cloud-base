@@ -52,11 +52,6 @@
           "type": "text"
         }
       }
-    },
-    "aliases": {
-      "pa-admin-audit": {
-        "is_write_index": true
-      }
     }
   }
 }

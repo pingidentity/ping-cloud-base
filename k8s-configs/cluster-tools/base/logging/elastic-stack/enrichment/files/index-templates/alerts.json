@@ -33,11 +33,6 @@
           "type": "text"
         }
       }
-    },
-    "aliases": {
-      "alerts": {
-        "is_write_index": true
-      }
     }
   }
 }
