@@ -20,6 +20,7 @@
 - Fix index template creation race condition issue
 - Change retry interval for PGO firing alert notification in slack from 5 min to 60 min
 - Added karpenter v0.24.0 and required parameters, KarpenterControllerRole & ClusterEndPoint
+- ILM policy for alerts index changed to move index to warm after 7 days in hot and delete index after 30 days
 
 _Changes:_
 
