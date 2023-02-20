@@ -12,9 +12,9 @@ metadata:
 spec:
   tls:
   - hosts:
-    - ext-pingdirectory.${DNS_ZONE}
+    - ext-pingdirectory.ping-demo.com
   rules:
-  - host: ext-pingdirectory.${DNS_ZONE}
+  - host: ext-pingdirectory.ping-demo.com
     http:
       paths:
       - pathType: Prefix

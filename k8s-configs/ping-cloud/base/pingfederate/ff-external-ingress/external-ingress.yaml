@@ -4,7 +4,6 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: pingfederate-admin-ext-ingress
-  namespace: ${PING_CLOUD_NAMESPACE}
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
@@ -12,9 +11,9 @@ metadata:
 spec:
   tls:
     - hosts:
-        - ext-pingfederate-admin-api.${DNS_ZONE}
+        - ext-pingfederate-admin-api.ping-demo.com
   rules:
-    - host: ext-pingfederate-admin-api.${DNS_ZONE}
+    - host: ext-pingfederate-admin-api.ping-demo.com
       http:
         paths:
           - path: /pf-admin-api/
