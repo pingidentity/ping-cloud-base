@@ -46,7 +46,7 @@ K8S_ACME_CERT_SECRET_NAME=acme-tls-cert
 
 BACKUP_FILE_NAME=
 BACKUP_RESTORE_POD=pingdirectory-0
-BACKENDS_TO_BACKUP=userRoot;appintegrations;platformconfig
+BACKENDS_TO_BACKUP=userRoot;appintegrations;platformconfig;userRoot_2;userRoot_3;userRoot_4;userRoot_5
 
 
 # This is the environment variable to select the backend(s) to restore in PD
