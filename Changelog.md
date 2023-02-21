@@ -21,6 +21,7 @@
 - Change retry interval for PGO firing alert notification in slack from 5 min to 60 min
 - Added karpenter v0.24.0 and required parameters, KarpenterControllerRole & ClusterEndPoint
 - ILM policy for alerts index changed to move index to warm after 7 days in hot and delete index after 30 days
+- Add PA-WAS to customer-hub env
 
 _Changes:_
 
@@ -47,6 +48,7 @@ _Changes:_
 - [X] PDO-4980 Index lifecycle error: illegal_argument_exception: policy [healthchecks] does not exist
 - [X] PDO-4981 Index templates are not applied to indexes in case elastic-stack-logging ns respinned
 - [X] PDO-4983 Index lifecycle error: illegal_argument_exception: policy [ping-2-day-retention] does not exist
+- [X] PDO-4986 Add PA-WAS in customer-hub
 - [X] PDO-4997 Update values.yaml in region and base path sync with env_vars file
 
 ### 1.17.0.0

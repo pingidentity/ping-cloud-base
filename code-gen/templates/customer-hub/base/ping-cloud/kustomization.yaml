@@ -6,6 +6,9 @@ resources:
 # PingCloud common resources and configs. These should always be included. DO NOT comment them out.
 - pingcommon
 - pingcentral
+- pingaccess-was/config
+- pingaccess-was/admin
+- pingaccess-was/engine
 
 configMapGenerator:
 
