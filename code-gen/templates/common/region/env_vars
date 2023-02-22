@@ -11,13 +11,13 @@ TENANT_NAME=${TENANT_NAME}
 # Tenant domain suffix for customer for region
 TENANT_DOMAIN=${TENANT_DOMAIN}
 
+# TODO: we can only substitute env vars region->base PDO-3957 to fix
+REGION_ENV=${ENV}
+
 # This variable's value will be used as the prefix to distinguish between worker apps for different CDEs for a
 # single P14C customer. All of these apps will be created within the "Administrators" environment in the tenant.
 # This variable name is also used in forming the Signal Science Agent name as displayed in SigSci Dashboard.
 ENVIRONMENT_PREFIX=${ENVIRONMENT_PREFIX}
-
-# TODO: we can only substitute env vars region->base PDO-3957 to fix
-REGION_ENV=${ENV}
 
 # The name of the environment as it will appear on the NewRelic console.
 NEW_RELIC_ENVIRONMENT_NAME=${NEW_RELIC_ENVIRONMENT_NAME}
