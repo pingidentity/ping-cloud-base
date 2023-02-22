@@ -47,7 +47,7 @@ spec:
                     operator: In
                     values:
                       - ingress-nginx
-              topologyKey: "failure-domain.beta.kubernetes.io/zone"
+              topologyKey: "topology.kubernetes.io/zone"
       securityContext:
         runAsNonRoot: true
       containers:

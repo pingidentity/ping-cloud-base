@@ -33,7 +33,7 @@ spec:
                       operator: In
                       values:
                         - pingcentral
-                topologyKey: "failure-domain.beta.kubernetes.io/zone"
+                topologyKey: "topology.kubernetes.io/zone"
       initContainers:
       - name: pingcentral-init
         securityContext:

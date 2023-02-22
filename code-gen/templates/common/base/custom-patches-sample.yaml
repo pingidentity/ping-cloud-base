@@ -430,7 +430,7 @@ spec:
                       operator: In
                       values:
                         - pf-provisioning
-                topologyKey: "failure-domain.beta.kubernetes.io/zone"
+                topologyKey: "topology.kubernetes.io/zone"
 
 ---
 
