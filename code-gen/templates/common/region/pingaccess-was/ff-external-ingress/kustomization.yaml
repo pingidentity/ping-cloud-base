@@ -13,9 +13,9 @@ patchesStrategicMerge:
   patch: |
     - op: replace
       path: /spec/tls/0/hosts/0
-      value: ext-pingaccess-admin-api.${DNS_ZONE}
+      value: ext-pingaccess-was-admin.${DNS_ZONE}
     - op: replace
       path: /spec/rules/0/host
-      value: ext-pingaccess-admin-api.${DNS_ZONE}
+      value: ext-pingaccess-was-admin.${DNS_ZONE}
 
-- remove-external-ingress.yaml
+#- remove-external-ingress.yaml
