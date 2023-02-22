@@ -18,4 +18,4 @@ patchesStrategicMerge:
       path: /spec/rules/0/host
       value: ext-pingaccess-admin-api.${DNS_ZONE}
 
-- remove-external-ingress.yaml
+

@@ -84,7 +84,7 @@ feature_flags() {
   cd "${1}/k8s-configs"
 
   # Map with the feature flag environment variable & the term to search to find the kustomization files
-  flag_map="${RADIUS_PROXY_ENABLED}:ff-radius-proxy"
+  flag_map="${RADIUS_PROXY_ENABLED}:ff-radius-proxy ${EXTERNAL_INGRESS_ENABLED}:remove-external-ingress"
 
   for flag in $flag_map ; do
     enabled="${flag%%:*}"
@@ -93,36 +93,6 @@ feature_flags() {
 
     # If the feature flag is disabled, comment the search term lines out of the kustomization files
     if [[ ${enabled} != "true" ]]; then
-      for kust_file in $(git grep -l "${search_term}" | grep "kustomization.yaml"); do
-        log "Commenting out ${search_term} in ${kust_file}"
-        sed -i.bak \
-            -e "/${search_term}/ s|^#*|#|g" \
-            "${kust_file}"
-        rm -f "${kust_file}".bak
-      done
-    fi
-  done
-}
-
-########################################################################################################################
-# Comments out feature flagged resources from k8s-configs kustomization.yaml files.
-#
-# Arguments
-#   $1 -> The directory containing k8s-configs.
-########################################################################################################################
-feature_flags_extended() {
-  cd "${1}/cde"
-
-  # Map with the feature flag environment variable & the term to search to find the kustomization files
-  flag_map="${EXTERNAL_INGRESS_ENABLED}:remove-external-ingress"
-
-  for flag in $flag_map ; do
-    enabled="${flag%%:*}"
-    search_term="${flag##*:}"
-    log "${search_term} is set to ${enabled}"
-
-    # If the feature flag is disabled, comment the search term lines out of the kustomization files
-    if [[ ${enabled} == "true" ]]; then
       for kust_file in $(git grep -l "${search_term}" | grep "kustomization.yaml"); do
         log "Commenting out ${search_term} in ${kust_file}"
         sed -i.bak \

@@ -17,5 +17,3 @@ patchesStrategicMerge:
     - op: replace
       path: /spec/rules/0/host
       value: ext-pingdirectory.${DNS_ZONE}
-
-- remove-external-ingress.yaml
