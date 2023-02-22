@@ -5,4 +5,4 @@ resources:
 - config
 - admin
 - engine
-#- ff-external-ingress
+- ff-external-ingress

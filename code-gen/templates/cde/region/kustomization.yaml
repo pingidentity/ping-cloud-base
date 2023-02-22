@@ -223,11 +223,11 @@ patchesStrategicMerge:
 - ../base/cluster-tools/logging/remove-from-secondary-patch.yaml
 - ../base/cluster-tools/health/remove-from-secondary-patch.yaml
 
-- pingaccess/ff-external-ingress/remove-external-ingress.yaml
-- pingaccess-was/ff-external-ingress/remove-external-ingress.yaml
-- pingdelegator/ff-external-ingress/remove-external-ingress.yaml
-- pingdirectory/ff-external-ingress/remove-external-ingress.yaml
-- pingfederate/ff-external-ingress/remove-external-ingress.yaml
+#- pingaccess/ff-external-ingress/remove-external-ingress.yaml
+#- pingaccess-was/ff-external-ingress/remove-external-ingress.yaml
+#- pingdelegator/ff-external-ingress/remove-external-ingress.yaml
+#- pingdirectory/ff-external-ingress/remove-external-ingress.yaml
+#- pingfederate/ff-external-ingress/remove-external-ingress.yaml
 
 ### Developer CDE Environments - the following will be UNCOMMENTED if we are in a developer CDE
 
