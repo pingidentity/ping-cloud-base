@@ -5,3 +5,6 @@ namespace: ping-cloud
 
 resources:
 - external-ingress.yaml
+
+patchesStrategicMerge:
+#- ff-radius-proxy/pingfederate-radsecproxy.yaml
