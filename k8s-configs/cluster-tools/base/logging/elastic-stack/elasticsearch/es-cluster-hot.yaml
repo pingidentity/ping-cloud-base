@@ -37,7 +37,7 @@ spec:
                       operator: In
                       values:
                         - elasticsearch
-                topologyKey: failure-domain.beta.kubernetes.io/zone
+                topologyKey: topology.kubernetes.io/zone
       containers:
         - name: elasticsearch
           image: 'public.ecr.aws/r2h3l6e4/pingcloud-clustertools/elasticsearch/elasticsearch:8.1.3'

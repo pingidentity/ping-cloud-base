@@ -36,7 +36,7 @@ spec:
                   operator: In
                   values:
                   - pingaccess-was-engine
-              topologyKey: "failure-domain.beta.kubernetes.io/zone"
+              topologyKey: "topology.kubernetes.io/zone"
       initContainers:
       - name: pingaccess-was-init
         securityContext:
