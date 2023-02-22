@@ -23,11 +23,13 @@
 - Added karpenter v0.24.0 and required parameters, KarpenterControllerRole & ClusterEndPoint
 - ILM policy for alerts index changed to move index to warm after 7 days in hot and delete index after 30 days
 - Add PA-WAS to customer-hub env
+- Revisit some storage class options
 
 _Changes:_
 
 - [X] PDO-2419 Enable users to download or upload user reports in Delegated Admin
 - [X] PDO-3335 Set PingFederate Engines minReplicas count to 3 in prod/small deployment
+- [X] PDO-4339 Revisit some storage class options
 - [X] PDO-4575 Upgrade ArgoCD to v2.5.5
 - [X] PDO-4697 Update cluster tools to latest version: cluster-autoscaler v1.23.0
 - [X] PDO-4698 Upgrade nginx-ingress-controller to v1.5.1
