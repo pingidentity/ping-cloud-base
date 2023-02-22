@@ -38,6 +38,7 @@
 - Add PF transaction logs parsing and indexing
 - Fix regional variable for new customer creation
 - Installed EBS CSI driver
+- Replace deprecated topologyKey
 
 _Changes:_
 
@@ -89,6 +90,7 @@ _Changes:_
 - [X] PDO-4973 REGION_ENV should be defined before using it in ENVIRONMENT_PREFIX in Region env_vars
 - [X] PDO-4984 Install EBS CSI driver
 - [X] PDO-5015 Disable integration test for PF user authentication healthcheck
+- [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone
 
 ### 1.16.1.0
 
