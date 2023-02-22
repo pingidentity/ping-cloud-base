@@ -17,6 +17,7 @@
 - Remove PA/PF SIEM console logging
 - Updated cluster-autoscaler to v1.23.0
 - Upgrade Grafana to v9.3.6
+- Upgrade prometheus to v2.42.0
 - Add PF requests logs parsing and indexing
 - Fix index template creation race condition issue
 - Change retry interval for PGO firing alert notification in slack from 5 min to 60 min
@@ -35,6 +36,7 @@ _Changes:_
 - [X] PDO-4702 Update cluster tools to latest version: external-dns v0.13.1
 - [X] PDO-4705 Update cluster tools to latest version: kube-state-metrics v2.6.0
 - [X] PDO-4709 Update cluster tools to latest version: Grafana v9.3.6
+- [X] PDO-4713 Update cluster tools to latest version: prometheus to v2.42.0
 - [X] PDO-4765 Disable the CloudWatch Agent in development environments and development CDEs
 - [X] PDO-4773 Update generate-cluster-state script to create base and region values.yaml files
 - [X] PDO-4774 Update generate-cluster-state script to massage the new code-gen structure files into the new CSR structure
