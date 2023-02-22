@@ -10,6 +10,6 @@ parameters:
 # Revisit mountOptions/reclaimPolicy with PDO-4339
 mountOptions:
   - discard
-reclaimPolicy: Delete
+reclaimPolicy: Retain
 provisioner: kubernetes.io/aws-ebs
 volumeBindingMode: WaitForFirstConsumer
