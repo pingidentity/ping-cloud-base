@@ -24,6 +24,7 @@
 - Added karpenter v0.24.0 and required parameters, KarpenterControllerRole & ClusterEndPoint
 - ILM policy for alerts index changed to move index to warm after 7 days in hot and delete index after 30 days
 - Add PA-WAS to customer-hub env
+- Replace deprecated topologyKey
 
 _Changes:_
 
@@ -54,6 +55,7 @@ _Changes:_
 - [X] PDO-4983 Index lifecycle error: illegal_argument_exception: policy [ping-2-day-retention] does not exist
 - [X] PDO-4986 Add PA-WAS in customer-hub
 - [X] PDO-4997 Update values.yaml in region and base path sync with env_vars file
+- [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone 
 
 ### 1.17.0.0
 
