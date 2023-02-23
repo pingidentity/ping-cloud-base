@@ -27,6 +27,7 @@
 - Replace deprecated topologyKey
 - Automate creation of ping-cloud-dashboards new release branch 
 - Update cluster tools to latest version: metrics-server v0.6.2
+- Update all PodDisruptionBudget resources to API v1
 
 _Changes:_
 
@@ -48,6 +49,7 @@ _Changes:_
 - [X] PDO-4817 Remove SIEM console logging for PA/PF
 - [X] PDO-4818 Add multiple USER_BASE_DNs and BACKEND_IDs env vars
 - [X] PDO-4822 Add multiple backends to 'BACKENDS_TO_BACKUP' env var
+- [X] PDO-4835 Update all PodDisruptionBudget resources to API v1
 - [X] PDO-4836 Copy PCD ci-scripts to shared location
 - [X] PDO-4861 Selectively restore a backend in PD
 - [X] PDO-4874 Automate creation of ping-cloud-dashboards new release branch
