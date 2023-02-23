@@ -25,6 +25,7 @@
 - ILM policy for alerts index changed to move index to warm after 7 days in hot and delete index after 30 days
 - Add PA-WAS to customer-hub env
 - Replace deprecated topologyKey
+- Automate creation of ping-cloud-dashboards new release branch 
 - Update cluster tools to latest version: metrics-server v0.6.2
 
 _Changes:_
@@ -49,6 +50,7 @@ _Changes:_
 - [X] PDO-4822 Add multiple backends to 'BACKENDS_TO_BACKUP' env var
 - [X] PDO-4836 Copy PCD ci-scripts to shared location
 - [X] PDO-4861 Selectively restore a backend in PD
+- [X] PDO-4874 Automate creation of ping-cloud-dashboards new release branch
 - [X] PDO-4895 Added karpenter v0.24.0 and required parameters, KarpenterControllerRole & ClusterEndPoint
 - [X] PDO-4916 Missing PF request log
 - [X] PDO-4974 Change retry interval for PGO firing alert notification in slack from 5 min to 60 min
