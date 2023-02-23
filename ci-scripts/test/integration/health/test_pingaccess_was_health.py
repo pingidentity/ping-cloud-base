@@ -4,24 +4,11 @@ from health_common import Categories, TestHealthBase
 
 
 class TestPingAccessWASHealth(TestHealthBase):
-    job_name = "healthcheck-pingaccess-was"
+    deployment_name = "healthcheck-pingaccess-was"
     pingaccess_was = "pingAccessWas"
 
-    def test_pingaccess_was_health_cron_job_exists(self):
-        cron_jobs = self.batch_client.list_cron_job_for_all_namespaces()
-        cron_job_name = next(
-            (
-                cron_job.metadata.name
-                for cron_job in cron_jobs.items
-                if cron_job.metadata.name == self.job_name
-            ),
-            "",
-        )
-        self.assertEqual(
-            self.job_name,
-            cron_job_name,
-            f"Cron job '{self.job_name}' not found in cluster",
-        )
+    def test_pingaccess_was_health_deployment_exists(self):
+        self.deployment_exists()
 
     def test_health_check_has_pingaccess_was_results(self):
         res = requests.get(self.endpoint, verify=False)
