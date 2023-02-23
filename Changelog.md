@@ -25,6 +25,7 @@
 - ILM policy for alerts index changed to move index to warm after 7 days in hot and delete index after 30 days
 - Add PA-WAS to customer-hub env
 - Replace deprecated topologyKey
+- Update cluster tools to latest version: metrics-server v0.6.2
 
 _Changes:_
 
@@ -36,6 +37,7 @@ _Changes:_
 - [X] PDO-4701 Update cluster tools to latest version: sealed-secrets-controller v0.19.3
 - [X] PDO-4702 Update cluster tools to latest version: external-dns v0.13.1
 - [X] PDO-4705 Update cluster tools to latest version: kube-state-metrics v2.6.0
+- [X] PDO-4706 Update cluster tools to latest version: metrics-server v0.6.2
 - [X] PDO-4709 Update cluster tools to latest version: Grafana v9.3.6
 - [X] PDO-4713 Update cluster tools to latest version: prometheus to v2.42.0
 - [X] PDO-4765 Disable the CloudWatch Agent in development environments and development CDEs
