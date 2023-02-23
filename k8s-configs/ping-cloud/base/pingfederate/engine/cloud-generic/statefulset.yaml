@@ -37,7 +37,7 @@ spec:
                       operator: In
                       values:
                         - pingfederate-engine
-                topologyKey: "failure-domain.beta.kubernetes.io/zone"
+                topologyKey: "topology.kubernetes.io/zone"
       initContainers:
       - name: pingfederate-p14c-init
         securityContext:

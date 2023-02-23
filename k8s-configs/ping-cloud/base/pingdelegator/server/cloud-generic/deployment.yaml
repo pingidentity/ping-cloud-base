@@ -32,7 +32,7 @@ spec:
                       operator: In
                       values:
                         - pingdelegator
-                topologyKey: "failure-domain.beta.kubernetes.io/zone"
+                topologyKey: "topology.kubernetes.io/zone"
       initContainers:
       - name: pingdelegator-init
         securityContext:

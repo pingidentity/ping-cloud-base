@@ -45,7 +45,7 @@ spec:
                       operator: In
                       values:
                         - pingdirectory
-                topologyKey: "failure-domain.beta.kubernetes.io/zone"
+                topologyKey: "topology.kubernetes.io/zone"
         # this does not apply in dev/test and is removed via kustomize
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

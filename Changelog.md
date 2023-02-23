@@ -1,5 +1,14 @@
 # Changelog
 
+### 1.16.2.0
+
+- Replace deprecated topologyKey
+
+_Changes:_
+
+- [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone
+
+
 ### 1.16.1.0
 
 - Added ENVIRONMENT_TYPE to backup failure notification
