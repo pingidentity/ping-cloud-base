@@ -9,6 +9,8 @@ usage() {
   echo "    SOURCE_REF => source ref from where to create the target ref, e.g. v1.14-release-branch"
   echo "    TARGET_REF => the target ref, e.g. v1.15-release-branch, v1.15.0.0_RC1"
   echo "    REF_TYPE => the target ref type - tag or branch"
+  echo " When REF_TYPE is 'branch' new branches in ping-cloud-dashboard will be also created."
+  echo " You should have GITLAB_PERSONAL_TOKEN env var set"
 }
 
 ########################################################################################################################
@@ -161,6 +163,27 @@ verify_k8s_image_repositories() {
     return 1
   fi
 }
+###########################################################################################################################
+# Creates new release branch and new dev branch in ping-cloud-dashboards repo via GitLab API
+# Runs only if 'REF_TYPE' is 'branch'
+# It will print the name of created branches in case of success or error message with the reason in case of fail.
+# E.g.
+# "v1.111-release-branch" - in case of success
+# "Branch already exists" - in case of failure because branch exist
+# "401 Unauthorized" - in case of incorrect token
+# "403 Forbidden" - in case you don't have permissions in ping-cloud-dashboard repo to create a branch
+###########################################################################################################################
+create_dashboard_branches() {
+  source_branch=${1}
+  target_branch=${2}
+  token=${GITLAB_PERSONAL_TOKEN}
+  dev_branch=${target_branch/release/dev}
+
+  echo "Creating release branch in ping-cloud-dashboards"
+  curl -s -X POST -H "PRIVATE-TOKEN: ${token}" "https://gitlab.corp.pingidentity.com/api/v4/projects/8761/repository/branches?branch=${target_branch}&ref=${source_branch}" | jq '.name // .message'
+  echo "Creating dev branch in ping-cloud-dashboards"
+  curl -s -X POST -H "PRIVATE-TOKEN: ${token}" "https://gitlab.corp.pingidentity.com/api/v4/projects/8761/repository/branches?branch=${dev_branch}&ref=${target_branch}" | jq '.name // .message'
+}
 
 ###########################################################################################################################
 # Verifies the 'REF_TYPE' if its a 'tag' or 'branch'.
@@ -210,16 +233,22 @@ cd ping-cloud-base
 git checkout "${SOURCE_REF}"
 
 if test "${REF_TYPE}" = 'branch'; then
+  if test -z "${GITLAB_PERSONAL_TOKEN}"; then
+    echo "GITLAB_PERSONAL_TOKEN is not set, ping-cloud-dashboard branches cannot be created"
+    exit 1
+  else
   # Create and checkout to target branch
-  git checkout -b "${TARGET_REF}"
+    git checkout -b "${TARGET_REF}"
 
-  # Update 'SERVER_PROFILE_BRANCH' variable
-  echo "Changing ${SOURCE_REF} -> ${TARGET_REF} in SERVER_PROFILE_BRANCH variable"
-  git grep -l "^SERVER_PROFILE_BRANCH=${SOURCE_REF}" | xargs sed -i.bak "s/^\(SERVER_PROFILE_BRANCH=\)${SOURCE_REF}$/\1${TARGET_REF}/g"
+    # Update 'SERVER_PROFILE_BRANCH' variable
+    echo "Changing ${SOURCE_REF} -> ${TARGET_REF} in SERVER_PROFILE_BRANCH variable"
+    git grep -l "^SERVER_PROFILE_BRANCH=${SOURCE_REF}" | xargs sed -i.bak "s/^\(SERVER_PROFILE_BRANCH=\)${SOURCE_REF}$/\1${TARGET_REF}/g"
 
-  # Update 'base/env_vars' image tags and yaml files
-  replace_and_commit "${SOURCE_REF}-latest" "${TARGET_REF}-latest" "${REF_TYPE}"
+    # Update 'base/env_vars' image tags and yaml files
+    replace_and_commit "${SOURCE_REF}-latest" "${TARGET_REF}-latest" "${REF_TYPE}"
 
+    create_dashboard_branches "${SOURCE_REF}" "${TARGET_REF}"
+  fi
 elif test "${REF_TYPE}" = 'tag'; then
   # Update 'SERVER_PROFILE_BRANCH' variable
   echo "Changing ${SOURCE_REF} -> ${TARGET_REF} in SERVER_PROFILE_BRANCH variable"
