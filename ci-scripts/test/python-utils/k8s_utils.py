@@ -1,10 +1,15 @@
 import json
 import re
+import time
 import unittest
 
 from datetime import datetime
 
 import kubernetes as k8s
+
+
+def timeout_reached(start_time: float, timeout_seconds: int):
+    return time.time() > start_time + timeout_seconds
 
 
 class K8sUtils(unittest.TestCase):
@@ -22,6 +27,7 @@ class K8sUtils(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         k8s.config.load_kube_config()
+        cls.app_client = k8s.client.AppsV1Api()
         cls.batch_client = k8s.client.BatchV1Api()
         cls.core_client = k8s.client.CoreV1Api()
         cls.network_client = k8s.client.NetworkingV1Api()
@@ -80,9 +86,56 @@ class K8sUtils(unittest.TestCase):
                 watch.stop()
                 return
 
-    def get_latest_pod_logs(self, pod_name: str, container_name: str, pod_namespace: str, log_lines: int):
+    @classmethod
+    def get_deployment_pod_names(cls, label: str, namespace: str):
+        res = cls.core_client.list_namespaced_pod(
+            namespace=namespace, label_selector=label
+        )
+        return [pod.metadata.name for pod in res.items]
+
+    @classmethod
+    def kill_pods(cls, label: str, namespace: str, timeout_seconds: int = 300):
+        pod_names = cls.get_deployment_pod_names(label=label, namespace=namespace)
+        for pod_name in pod_names:
+            cls.core_client.delete_namespaced_pod(
+                name=pod_name,
+                namespace=namespace,
+                body=k8s.client.V1DeleteOptions(
+                    propagation_policy="Foreground", grace_period_seconds=5
+                ),
+            )
+        # Wait for the pods to be deleted
+        start_time = time.time()
+        for pod_name in pod_names:
+            while not timeout_reached(start_time, timeout_seconds):
+                try:
+                    cls.core_client.read_namespaced_pod_status(pod_name, namespace)
+                except k8s.client.exceptions.ApiException as e:
+                    # The pod has been deleted
+                    if e.status == 404:
+                        break
+
+    @classmethod
+    def wait_for_pod_running(cls, label: str, namespace: str):
+        watch = k8s.watch.Watch()
+        for event in watch.stream(
+            func=cls.core_client.list_namespaced_pod,
+            namespace=namespace,
+            label_selector=label,
+            timeout_seconds=60,
+        ):
+            if event["object"].status.phase == "Running":
+                watch.stop()
+                return
+
+    def get_latest_pod_logs(
+        self, pod_name: str, container_name: str, pod_namespace: str, log_lines: int
+    ):
         pod_logs = self.core_client.read_namespaced_pod_log(
-            name=pod_name, container=container_name, namespace=pod_namespace, tail_lines=int(log_lines)
+            name=pod_name,
+            container=container_name,
+            namespace=pod_namespace,
+            tail_lines=int(log_lines),
         )
         pod_logs = pod_logs.splitlines()
         return pod_logs

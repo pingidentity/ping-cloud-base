@@ -267,3 +267,10 @@ IMAGE_LIST="apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingfederate,apps=${ECR_REG
 # Dashboards repo variables
 DASH_REPO_URL=https://github.com/pingidentity/ping-cloud-dashboards
 DASH_REPO_BRANCH=v1.18-dev-branch
+
+# Healthcheck variables
+CLUSTER_HEALTHCHECK_SCHEDULE="* * * * *"
+PINGACCESS_HEALTHCHECK_SCHEDULE="* * * * *"
+PINGACCESS_WAS_HEALTHCHECK_SCHEDULE="* * * * *"
+PINGDIRECTORY_HEALTHCHECK_SCHEDULE="* * * * *"
+PINGFEDERATE_HEALTHCHECK_SCHEDULE="* * * * *"

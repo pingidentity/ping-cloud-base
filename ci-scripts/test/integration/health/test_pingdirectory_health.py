@@ -4,7 +4,7 @@ from health_common import Categories, TestHealthBase
 
 
 class TestPingDirectoryHealth(TestHealthBase):
-    job_name = "healthcheck-pingdirectory"
+    deployment_name = "healthcheck-pingdirectory"
     pingdirectory = "pingDirectory"
 
     def setUp(self) -> None:
@@ -18,21 +18,8 @@ class TestPingDirectoryHealth(TestHealthBase):
         patterns += [f"{name} o_appintegrations_{query}" for name in self.pod_names]
         return patterns
 
-    def test_pingdirectory_health_cron_job_exists(self):
-        cron_jobs = self.batch_client.list_cron_job_for_all_namespaces()
-        cron_job_name = next(
-            (
-                cron_job.metadata.name
-                for cron_job in cron_jobs.items
-                if cron_job.metadata.name == self.job_name
-            ),
-            "",
-        )
-        self.assertEqual(
-            self.job_name,
-            cron_job_name,
-            f"Cron job '{self.job_name}' not found in cluster",
-        )
+    def test_pingdirectory_health_deployment_exists(self):
+        self.deployment_exists()
 
     def test_health_check_has_pingdirectory_results(self):
         res = requests.get(self.endpoint, verify=False)

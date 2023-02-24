@@ -102,6 +102,8 @@ _Changes:_
 - Revert removing alertmanager from the prometheus config
 - Add PF transaction logs parsing and indexing
 - Fix regional variable for new customer creation
+- Installed EBS CSI driver
+- Replace deprecated topologyKey
 
 _Changes:_
 
@@ -151,6 +153,20 @@ _Changes:_
 - [X] PDO-4922 Fix regional variable for new customer creation
 - [X] PDO-4967 Enable storage class resizing for PGO storageclass
 - [X] PDO-4973 REGION_ENV should be defined before using it in ENVIRONMENT_PREFIX in Region env_vars
+- [X] PDO-4984 Install EBS CSI driver
+- [X] PDO-5015 Disable integration test for PF user authentication healthcheck
+- [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone
+- [X] PDO-5061 Replace healthcheck jobs with deployments
+
+### 1.16.2.0
+
+- Healthcheck cronjobs replaced with deployments
+- Replace deprecated topologyKey
+
+_Changes:_
+
+- [X] PDO-5014 Replace healthcheck jobs with deployments
+- [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone
 
 ### 1.16.1.0
 

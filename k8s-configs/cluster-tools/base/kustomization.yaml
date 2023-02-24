@@ -11,6 +11,7 @@ resources:
 - metrics
 - monitoring
 - security
+- ebs-driver
 - efs-driver
 - pod-reaper
 - notification
