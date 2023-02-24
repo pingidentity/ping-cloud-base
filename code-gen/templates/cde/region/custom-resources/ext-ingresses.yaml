@@ -18,8 +18,8 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    kubernetes.io/ingress.class: nginx-public
 spec:
+  ingressClassName: nginx-public
   tls:
   - hosts:
     - ext-pingdelegator.${DNS_ZONE}
@@ -47,8 +47,8 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    kubernetes.io/ingress.class: nginx-public
 spec:
+  ingressClassName: nginx-public
   tls:
   - hosts:
     - ext-pingaccess-was-admin.${DNS_ZONE}
@@ -76,8 +76,8 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    kubernetes.io/ingress.class: nginx-public
 spec:
+  ingressClassName: nginx-public
   tls:
     - hosts:
         - ext-pingaccess-admin-api.${DNS_ZONE}
@@ -105,8 +105,8 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    kubernetes.io/ingress.class: nginx-public
 spec:
+  ingressClassName: nginx-public
   tls:
     - hosts:
         - ext-pingfederate-admin-api.${DNS_ZONE}
@@ -134,8 +134,8 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    kubernetes.io/ingress.class: nginx-public
 spec:
+  ingressClassName: nginx-public
   tls:
   - hosts:
     - ext-pingdirectory.${DNS_ZONE}
