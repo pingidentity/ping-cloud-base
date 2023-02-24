@@ -6,28 +6,15 @@ from health_common import Categories, TestHealthBase
 
 
 class TestPingFederateHealth(TestHealthBase):
-    job_name = "healthcheck-pingfederate"
+    deployment_name = "healthcheck-pingfederate"
     pingfederate = "pingFederate"
 
     def setUp(self) -> None:
         self.ping_cloud_ns = next((ns for ns in self.get_namespace_names() if ns.startswith(self.ping_cloud)), self.ping_cloud)
         self.pod_names = self.get_namespaced_pod_names(self.ping_cloud_ns, r"pingfederate-(?:|admin-)\d+")
 
-    def test_pingfederate_health_cron_job_exists(self):
-        cron_jobs = self.batch_client.list_cron_job_for_all_namespaces()
-        cron_job_name = next(
-            (
-                cron_job.metadata.name
-                for cron_job in cron_jobs.items
-                if cron_job.metadata.name == self.job_name
-            ),
-            "",
-        )
-        self.assertEqual(
-            self.job_name,
-            cron_job_name,
-            f"Cron job '{self.job_name}' not found in cluster",
-        )
+    def test_pingfederate_health_deployment_exists(self):
+        self.deployment_exists()
 
     def test_health_check_has_pingfederate_results(self):
         res = requests.get(self.endpoint, verify=False)
