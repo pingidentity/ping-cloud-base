@@ -17,5 +17,3 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: ext-pingaccess-was-admin.${DNS_ZONE}
-
-#- remove-external-ingress.yaml
