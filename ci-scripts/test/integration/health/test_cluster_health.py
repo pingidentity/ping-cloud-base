@@ -6,27 +6,14 @@ from health_common import Categories, TestHealthBase
 
 
 class TestClusterHealth(TestHealthBase):
-    job_name = "healthcheck-cluster-health"
+    deployment_name = "healthcheck-cluster-health"
     cluster_health = "clusterHealth"
 
     def setUp(self):
         self.test_results = self.get_test_results(self.cluster_health, Categories.cluster_members)
 
-    def test_cluster_health_cron_job_exists(self):
-        cron_jobs = self.batch_client.list_cron_job_for_all_namespaces()
-        cron_job_name = next(
-            (
-                cron_job.metadata.name
-                for cron_job in cron_jobs.items
-                if cron_job.metadata.name == self.job_name
-            ),
-            "",
-        )
-        self.assertEqual(
-            self.job_name,
-            cron_job_name,
-            f"Cron job '{self.job_name}' not found in cluster",
-        )
+    def test_cluster_health_deployment_exists(self):
+        self.deployment_exists()
 
     def test_health_check_has_cluster_health_results(self):
         res = requests.get(self.endpoint, verify=False)
