@@ -4,11 +4,13 @@
 
 - Healthcheck cronjobs replaced with deployments
 - Replace deprecated topologyKey
+- Add IngressClassName to replace the deprecated annotation
 
 _Changes:_
 
 - [X] PDO-5014 Replace healthcheck jobs with deployments
 - [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone
+- [X] PDO-5060 Add IngressClassName to replace the deprecated annotation to support K8s v1.22 onwards
 
 ### 1.16.1.0
 
