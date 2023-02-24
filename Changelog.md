@@ -91,6 +91,7 @@ _Changes:_
 - [X] PDO-4984 Install EBS CSI driver
 - [X] PDO-5015 Disable integration test for PF user authentication healthcheck
 - [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone
+- [X] PDO-5061 Replace healthcheck jobs with deployments
 
 ### 1.16.2.0
 
