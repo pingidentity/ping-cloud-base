@@ -34,7 +34,7 @@ data:
     echo "${UPLOAD_FILES}"
 ---
 
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: pingfederate-periodic-backup

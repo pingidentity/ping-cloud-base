@@ -28,11 +28,13 @@
 - Automate creation of ping-cloud-dashboards new release branch 
 - Update cluster tools to latest version: metrics-server v0.6.2
 - Update all PodDisruptionBudget resources to API v1
+- [need before EKS 1.25] batch/v1beta1 CronJob is deprecated in v1.21+, unavailable in v1.25+; use batch/v1 CronJob
 
 _Changes:_
 
 - [X] PDO-2419 Enable users to download or upload user reports in Delegated Admin
 - [X] PDO-3335 Set PingFederate Engines minReplicas count to 3 in prod/small deployment
+- [X] PDO-4556 [need before EKS 1.25] batch/v1beta1 CronJob is deprecated in v1.21+, unavailable in v1.25+; use batch/v1 CronJob
 - [X] PDO-4575 Upgrade ArgoCD to v2.5.5
 - [X] PDO-4697 Update cluster tools to latest version: cluster-autoscaler v1.23.0
 - [X] PDO-4698 Upgrade nginx-ingress-controller to v1.5.1
