@@ -212,7 +212,7 @@ metadata:
 ---
 
 ### Update pingaccess-was backup cronjob to adjust schedule
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: pingaccess-was-periodic-backup
@@ -297,7 +297,7 @@ spec:
 ---
 
 ### Update pingfederate backup cronjob to adjust schedule
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: pingfederate-periodic-backup
@@ -400,7 +400,7 @@ spec:
 ---
 
 ### Update pingaccess backup cronjob to adjust schedule
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: pingaccess-periodic-backup
