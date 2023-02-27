@@ -224,46 +224,6 @@ patchesStrategicMerge:
     namespace: newrelic
   $patch: delete
 
-# Healthcheck tests
-- |-
-  apiVersion: batch/v1
-  kind: CronJob
-  metadata:
-    name: healthcheck-cluster-health
-  spec: 
-    schedule: "@hourly"
-
-- |-
-  apiVersion: batch/v1
-  kind: CronJob
-  metadata:
-    name: healthcheck-pingaccess
-  spec: 
-    schedule: "@hourly"
-
-- |-
-  apiVersion: batch/v1
-  kind: CronJob
-  metadata:
-    name: healthcheck-pingaccess-was
-  spec: 
-    schedule: "@hourly"
-
-- |-
-  apiVersion: batch/v1
-  kind: CronJob
-  metadata:
-    name: healthcheck-pingdirectory
-  spec: 
-    schedule: "@hourly"
-
-- |-
-  apiVersion: batch/v1
-  kind: CronJob
-  metadata:
-    name: healthcheck-pingfederate
-  spec: 
-    schedule: "@hourly"
 - |-
   apiVersion: v1
   kind: Secret

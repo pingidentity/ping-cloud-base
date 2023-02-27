@@ -10,43 +10,60 @@
 - Add ArgoCD application set definition for microservice architecture
 - Update sealed-secrets-controller to v0.19.3
 - Add multiple USER_BASE_DNs and BACKEND_IDs env vars
+- Add multiple backends to 'BACKENDS_TO_BACKUP' env var
 - Selectively restore a backend in PD
 - Updated external-dns to v0.13.1 
 - Update cluster tools to latest version: kube-state-metrics v2.6.0
 - Remove PA/PF SIEM console logging
 - Updated cluster-autoscaler to v1.23.0
 - Upgrade Grafana to v9.3.6
+- Upgrade prometheus to v2.42.0
 - Add PF requests logs parsing and indexing
 - Fix index template creation race condition issue
 - Change retry interval for PGO firing alert notification in slack from 5 min to 60 min
 - Added karpenter v0.24.0 and required parameters, KarpenterControllerRole & ClusterEndPoint
+- ILM policy for alerts index changed to move index to warm after 7 days in hot and delete index after 30 days
+- Add PA-WAS to customer-hub env
+- Replace deprecated topologyKey
+- Automate creation of ping-cloud-dashboards new release branch 
+- Update cluster tools to latest version: metrics-server v0.6.2
+- Update all PodDisruptionBudget resources to API v1
+- [need before EKS 1.25] batch/v1beta1 CronJob is deprecated in v1.21+, unavailable in v1.25+; use batch/v1 CronJob
 
 _Changes:_
 
 - [X] PDO-2419 Enable users to download or upload user reports in Delegated Admin
 - [X] PDO-3335 Set PingFederate Engines minReplicas count to 3 in prod/small deployment
+- [X] PDO-4556 [need before EKS 1.25] batch/v1beta1 CronJob is deprecated in v1.21+, unavailable in v1.25+; use batch/v1 CronJob
 - [X] PDO-4575 Upgrade ArgoCD to v2.5.5
 - [X] PDO-4697 Update cluster tools to latest version: cluster-autoscaler v1.23.0
 - [X] PDO-4698 Upgrade nginx-ingress-controller to v1.5.1
 - [X] PDO-4701 Update cluster tools to latest version: sealed-secrets-controller v0.19.3
 - [X] PDO-4702 Update cluster tools to latest version: external-dns v0.13.1
 - [X] PDO-4705 Update cluster tools to latest version: kube-state-metrics v2.6.0
+- [X] PDO-4706 Update cluster tools to latest version: metrics-server v0.6.2
 - [X] PDO-4709 Update cluster tools to latest version: Grafana v9.3.6
+- [X] PDO-4713 Update cluster tools to latest version: prometheus to v2.42.0
 - [X] PDO-4765 Disable the CloudWatch Agent in development environments and development CDEs
 - [X] PDO-4773 Update generate-cluster-state script to create base and region values.yaml files
 - [X] PDO-4774 Update generate-cluster-state script to massage the new code-gen structure files into the new CSR structure
 - [X] PDO-4775 Add new ArgoCD application definition to PCB
 - [X] PDO-4817 Remove SIEM console logging for PA/PF
 - [X] PDO-4818 Add multiple USER_BASE_DNs and BACKEND_IDs env vars
+- [X] PDO-4822 Add multiple backends to 'BACKENDS_TO_BACKUP' env var
+- [X] PDO-4835 Update all PodDisruptionBudget resources to API v1
 - [X] PDO-4836 Copy PCD ci-scripts to shared location
 - [X] PDO-4861 Selectively restore a backend in PD
+- [X] PDO-4874 Automate creation of ping-cloud-dashboards new release branch
 - [X] PDO-4895 Added karpenter v0.24.0 and required parameters, KarpenterControllerRole & ClusterEndPoint
 - [X] PDO-4916 Missing PF request log
 - [X] PDO-4974 Change retry interval for PGO firing alert notification in slack from 5 min to 60 min
 - [X] PDO-4980 Index lifecycle error: illegal_argument_exception: policy [healthchecks] does not exist
 - [X] PDO-4981 Index templates are not applied to indexes in case elastic-stack-logging ns respinned
 - [X] PDO-4983 Index lifecycle error: illegal_argument_exception: policy [ping-2-day-retention] does not exist
+- [X] PDO-4986 Add PA-WAS in customer-hub
 - [X] PDO-4997 Update values.yaml in region and base path sync with env_vars file
+- [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone 
 
 ### 1.17.0.0
 
@@ -85,6 +102,8 @@ _Changes:_
 - Revert removing alertmanager from the prometheus config
 - Add PF transaction logs parsing and indexing
 - Fix regional variable for new customer creation
+- Installed EBS CSI driver
+- Replace deprecated topologyKey
 
 _Changes:_
 
@@ -132,6 +151,22 @@ _Changes:_
 - [X] PDO-4918 Missing PF Transaction Log
 - [X] PDO-4921 Revert removing alertmanager from the prometheus config
 - [X] PDO-4922 Fix regional variable for new customer creation
+- [X] PDO-4967 Enable storage class resizing for PGO storageclass
+- [X] PDO-4973 REGION_ENV should be defined before using it in ENVIRONMENT_PREFIX in Region env_vars
+- [X] PDO-4984 Install EBS CSI driver
+- [X] PDO-5015 Disable integration test for PF user authentication healthcheck
+- [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone
+- [X] PDO-5061 Replace healthcheck jobs with deployments
+
+### 1.16.2.0
+
+- Healthcheck cronjobs replaced with deployments
+- Replace deprecated topologyKey
+
+_Changes:_
+
+- [X] PDO-5014 Replace healthcheck jobs with deployments
+- [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone
 
 ### 1.16.1.0
 

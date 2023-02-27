@@ -436,7 +436,7 @@ add_derived_variables() {
 
   # This variable's value will be used as the prefix to distinguish between worker apps for different CDEs for a
   # single P14C tenant. All of these apps will be created within the "Administrators" environment in the tenant.
-  export ENVIRONMENT_PREFIX="\${TENANT_NAME}-\${CLUSTER_STATE_REPO_BRANCH}-\${REGION_NICK_NAME}"
+  export ENVIRONMENT_PREFIX="\${TENANT_NAME}-\${REGION_ENV}-\${REGION_NICK_NAME}"
 
   # The name of the environment as it will appear on the NewRelic console.
   export NEW_RELIC_ENVIRONMENT_NAME="\${TENANT_NAME}_\${REGION_ENV}_\${REGION_NICK_NAME}_k8s-cluster"
@@ -923,6 +923,7 @@ PROFILES_DIR="${PROFILE_REPO_DIR}/profiles"
 
 CUSTOMER_HUB='customer-hub'
 PING_CENTRAL='pingcentral'
+PING_ACCESS='pingaccess'
 
 mkdir -p "${BOOTSTRAP_DIR}"
 mkdir -p "${CLUSTER_STATE_REPO_DIR}"
@@ -1177,8 +1178,8 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   cp -pr ../profiles/aws/. "${ENV_PROFILES_DIR}"
 
   if test "${ENV}" = "${CUSTOMER_HUB}"; then
-    # Retain only the pingcentral profiles
-    find "${ENV_PROFILES_DIR}" -type d -mindepth 1 -maxdepth 1 -not -name "${PING_CENTRAL}" -exec rm -rf {} +
+    # Retain only the pingcentral & pingaccess profiles
+    find "${ENV_PROFILES_DIR}" -type d -mindepth 1 -maxdepth 1 -not -name "${PING_CENTRAL}" -not -name "${PING_ACCESS}" -exec rm -rf {} +
   else
     # Remove the pingcentral profiles
     rm -rf "${ENV_PROFILES_DIR}/${PING_CENTRAL}"

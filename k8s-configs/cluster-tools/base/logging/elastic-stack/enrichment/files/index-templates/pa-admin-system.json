@@ -43,11 +43,6 @@
           "type": "text"
         }
       }
-    },
-    "aliases": {
-      "pa-admin-system": {
-        "is_write_index": true
-      }
     }
   }
 }

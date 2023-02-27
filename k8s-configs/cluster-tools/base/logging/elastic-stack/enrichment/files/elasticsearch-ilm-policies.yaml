@@ -82,7 +82,7 @@ data:
             }
           },
           "warm": {
-            "min_age": "2d",
+            "min_age": "7d",
             "actions": {
               "forcemerge": {
                 "max_num_segments": 1
@@ -97,7 +97,7 @@ data:
             }
           },
           "delete": {
-            "min_age": "7d",
+            "min_age": "30d",
             "actions": {
               "delete": {}
             }

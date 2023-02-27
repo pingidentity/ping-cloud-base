@@ -18,8 +18,8 @@ data:
         - receiver: alert-webhook
           continue: true
           group_wait: 10s
-          group_interval: 5m
-          repeat_interval: 55m
+          group_interval: 10s
+          repeat_interval: 60m
  
     receivers:
     - name: alert-webhook

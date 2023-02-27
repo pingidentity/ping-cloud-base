@@ -6,8 +6,12 @@
     "settings": {
       "number_of_shards": 3,
       "number_of_replicas": 1,
-      "index.lifecycle.name": "ping-logstash-policy",
-      "index.lifecycle.rollover_alias": "pf-audit"
+      "index": {
+        "lifecycle": {
+          "name": "ping-logstash-policy",
+          "rollover_alias": "pf-audit"
+        }
+      }
     },
     "mappings": {
       "properties": {
@@ -279,11 +283,6 @@
             }
           }
         }
-      }
-    },
-    "aliases": {
-      "pf-audit": {
-        "is_write_index": true
       }
     }
   }
