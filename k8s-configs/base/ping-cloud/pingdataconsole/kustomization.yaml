@@ -1,0 +1,19 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+- ${K8S_GIT_URL}/k8s-configs/ping-cloud/test/pingdataconsole?ref=${K8S_GIT_BRANCH}
+
+patchesJson6902:
+- target:
+    group: networking.k8s.io
+    version: v1
+    kind: Ingress
+    name: pingdataconsole-ingress
+  patch: |-
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingdataconsole.${DNS_ZONE}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingdataconsole.${DNS_ZONE}
