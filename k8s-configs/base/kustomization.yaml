@@ -1,0 +1,18 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+- cluster-tools
+- ping-cloud
+- sealed-secrets.yaml
+
+### PSO/GSO teams should only add new custom resources in this directory. Otherwise, CSR auto-updates will break. ###
+- custom-resources
+
+patchesStrategicMerge:
+
+### Reference to all secrets ###
+- secrets.yaml
+
+### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
+- custom-patches.yaml

@@ -1,2 +1,0 @@
-dsconfig set-http-servlet-extension-prop \
-    --extension-name 'Directory REST API'

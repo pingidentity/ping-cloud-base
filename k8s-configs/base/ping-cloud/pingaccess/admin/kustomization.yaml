@@ -1,0 +1,52 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+# Apply PingAccess admin deployment resources
+- ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingaccess/admin?ref=${K8S_GIT_BRANCH}
+
+images:
+- name: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess${ECR_ENV}
+  newName: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess${ECR_ENV}
+  newTag: ${PINGACCESS_IMAGE_TAG}
+
+patchesJson6902:
+
+### PingAccess Admin Last Update Config Map ###
+- target:
+    group: apps
+    version: v1
+    kind: StatefulSet
+    name: pingaccess-admin
+  patch: |
+    - op: add
+      path: /spec/template/spec/containers/0/envFrom/-
+      value:
+        configMapRef:
+          name: pingaccess-admin-last-update-config
+
+### Ingress patches ###
+
+# pingaccess admin api
+- target:
+    group: networking.k8s.io
+    version: v1
+    kind: Ingress
+    name: pingaccess-admin-ingress
+  patch: |
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingaccess-admin-api.${DNS_ZONE}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingaccess-admin-api.${DNS_ZONE}
+
+# Set a hostname for all the headless services so their endpoint IPs are published to Route53
+- target:
+    version: v1
+    kind: Service
+    name: pingaccess-admin
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+      value: pingaccess-cluster.${DNS_ZONE}
