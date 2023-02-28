@@ -8,6 +8,7 @@ resources:
 - pingdirectory/config
 - pingaccess-was/config
 - pingaccess/config
+- pingaccess/ff-external-ingress
 - pingfederate/config
 - pingdelegator/config
 - pingdatasync/config
