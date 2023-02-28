@@ -66,6 +66,7 @@ _Changes:_
 - [X] PDO-4986 Add PA-WAS in customer-hub
 - [X] PDO-4997 Update values.yaml in region and base path sync with env_vars file
 - [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone 
+- [X] PDO-5039 Automate cleanup of external dns records for CI/CD clusters 
 
 ### 1.17.0.0
 

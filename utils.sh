@@ -734,3 +734,48 @@ set_var() {
   printf '\tSetting "%s" to "%s"\n' "${var_name}" "${var_value}"
   export "${var_name}=${var_value}"
 }
+
+########################################################################################################################
+# Clean up DNS records in route53
+#
+# NOTE: the below logic for removing dns-records has to removed in future when we update the external-dns version
+# https://github.com/kubernetes-sigs/external-dns/issues/3219 #should follow this bug for more updates
+#
+# Arguments
+#   $1 -> TENANT_DOMAIN
+########################################################################################################################
+delete_dns_records(){
+  #get the list of DNS records for the cluster(TENANT_DOMAIN) and delete them
+  #since we should have the access to TENANT_DOMAIN use that to figure out DNS records
+  log "Cleaning up the External DNS domain records"
+  local hosted_zone_name="${1}"
+  #get the hosted_zone_id using the aws cli
+  local hosted_zone_id=$(aws --profile "${AWS_PROFILE}" route53 list-hosted-zones-by-name \
+                      --dns-name "${hosted_zone_name}" 2>/dev/null | \
+                      jq -r ".HostedZones[] | select(.Name == \"${hosted_zone_name}.\") | .Id" | \
+                      cut -d'/' -f3)
+  #add a if condition to check hosted_zone_id and then delete the record sets
+  #if the hosted zone id is not returned or empty then error out and exit the script.
+  if test -n "${hosted_zone_id}"; then
+    #since now we have hosted_zone_id, get the records sets excluding NS and SOA using the hosted_zone_id
+    #redirect the error messages to /dev/null when the command get executed.
+    record_sets=$(aws --profile "${AWS_PROFILE}" route53 list-resource-record-sets \
+                    --hosted-zone-id "${hosted_zone_id}" \
+                    --query "ResourceRecordSets[?Type != 'NS' && Type != 'SOA']" 2>/dev/null | jq -c ".[]")
+    #now we have the record_sets, loop over and delete one by one if record_sets is non-empty
+      if test -n "${record_sets}"; then
+        record_sets_size=$(echo "${record_sets}" | jq -s "length")
+        log "Found ^^ $record_sets_size ^^ records inside ${hosted_zone_name}" 
+        for record_set in ${record_sets}; do
+            aws --profile "${AWS_PROFILE}" route53 change-resource-record-sets --hosted-zone-id "${hosted_zone_id}" \
+                --change-batch "{\"Changes\":[{\"Action\":\"DELETE\",\"ResourceRecordSet\":${record_set}}]}" > /dev/null 2>&1
+        done
+        log "DNS records clean up complete for ${hosted_zone_name}"
+      else
+        log "No DNS records found in ${hosted_zone_name} except the default records"
+      fi
+  else
+    log "no hosted_zone_id returned for ${hosted_zone_name}. Exiting the script now"
+    exit 1
+  fi
+}
