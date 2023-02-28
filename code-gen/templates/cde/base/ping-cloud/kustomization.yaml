@@ -7,11 +7,15 @@ resources:
 - pingcommon
 - pingdirectory/config
 - pingaccess-was/config
+- pingaccess-was/ff-external-ingress
 - pingaccess/config
 - pingaccess/ff-external-ingress
 - pingfederate/config
+- pingfederate/ff-external-ingress
 - pingdelegator/config
+- pingdelegator/ff-external-ingress
 - pingdatasync/config
+- pingdirectory/ff-external-ingress
 # Provisioning is not enabled by default, but the kustomize file is managed directly by generate-cluster/update-cluster
 - pingfederate/provisioning
 
