@@ -213,7 +213,7 @@ serviceSSMPathPrefix: "/abhalla-secondary/pcpt/service"
 # Cluster state repo details
 ############################################################
 # knownHostsClusterStateRepo is the known-hosts file to trust the cluster state repo server for git/ssh cloning
-knownHostsClusterStateRepo: "|1|wbk34Tl/snXTeJ+SKBKHbUQJBP4=|7jw0EK70HuAQduunYQXJ9tMa1is= ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCqyQh/szYdP7ykDdwp8pWMgrFmuXU4mEf27Wzz6QcR/ZJsIRVCdslVjmt9RA1ljanAVPI8zjp/oI6NPICh8l638vRLt8lFbNMfMMfkzxiIXs0mLAuQ2XSbRglPDF4mAQ7C+oD/B01XXKWU4Vack37i0R9RMtkl3spFB8Hq7HJi4/wy87U7FMHfjHWYXr3GAOg1PfRyTAyHij0XXuBhxzz1vMoiI5DkgH8CKuKf+AmW5KHxKX3zPCoKe7nDw3/Re4ghYhc34ldOSZlQin/dIyT/GQy0ayRWGXc0KB2ijrDCxd4N4INBhdqCRDPwkxwqVRUToBFw6Q1zBdlVlK5ViFEV"
+knownHostsClusterStateRepo: "|1|pMkJoBH600xboGLxBzT99S9IuU8=|3g98vndhWJrB3D0IF7nLMJKU2iE= ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCqyQh/szYdP7ykDdwp8pWMgrFmuXU4mEf27Wzz6QcR/ZJsIRVCdslVjmt9RA1ljanAVPI8zjp/oI6NPICh8l638vRLt8lFbNMfMMfkzxiIXs0mLAuQ2XSbRglPDF4mAQ7C+oD/B01XXKWU4Vack37i0R9RMtkl3spFB8Hq7HJi4/wy87U7FMHfjHWYXr3GAOg1PfRyTAyHij0XXuBhxzz1vMoiI5DkgH8CKuKf+AmW5KHxKX3zPCoKe7nDw3/Re4ghYhc34ldOSZlQin/dIyT/GQy0ayRWGXc0KB2ijrDCxd4N4INBhdqCRDPwkxwqVRUToBFw6Q1zBdlVlK5ViFEV"
 
 # clusterStateRepoUrl is the Cluster State Repo URL
 clusterStateRepoUrl: "ssh://AIDA2IO25QZRQC5SE4FL5@git-codecommit.us-west-2.amazonaws.com/v1/repos/abhalla-secondary-cluster-state-repo"
