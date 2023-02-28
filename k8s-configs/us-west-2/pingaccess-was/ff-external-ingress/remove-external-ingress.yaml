@@ -1,5 +1,0 @@
-apiVersion: v1
-kind: Ingress
-metadata:
-  name: pingaccess-was-admin-ext-ingress
-$patch: delete

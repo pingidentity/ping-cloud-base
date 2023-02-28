@@ -1,0 +1,63 @@
+dsconfig set-backend-prop \
+        --backend-name "userRoot" \
+        --set db-cache-percent:35 \
+        --set import-thread-count:1
+
+dsconfig create-backend \
+        --backend-name "platformconfig" \
+        --type local-db \
+        --set enabled:true \
+        --set base-dn:"o=platformconfig" \
+        --set prime-method:preload
+
+dsconfig set-backend-prop \
+      --backend-name "platformconfig" \
+      --set db-cache-percent:5 \
+      --set import-thread-count:1
+
+dsconfig create-backend \
+        --backend-name "appintegrations" \
+        --type local-db \
+        --set enabled:true \
+        --set base-dn:"o=appintegrations" \
+        --set prime-method:preload
+
+dsconfig set-backend-prop \
+      --backend-name "appintegrations" \
+      --set db-cache-percent:15 \
+      --set import-thread-count:1
+
+dsconfig set-backend-prop \
+        --backend-name userRoot \
+        --set prime-thread-count:1
+
+dsconfig set-local-db-index-prop \
+        --backend-name userRoot --index-name cn \
+        --remove index-type:substring
+
+dsconfig set-local-db-index-prop \
+        --backend-name userRoot \
+        --index-name givenName \
+        --remove index-type:substring
+
+dsconfig set-local-db-index-prop \
+        --backend-name userRoot \
+        --index-name sn \
+        --remove index-type:substring
+
+dsconfig set-local-db-index-prop \
+        --backend-name userRoot \
+        --index-name sn \
+        --set index-entry-limit:50000 \
+        --set exploded-index-entry-threshold:100
+
+dsconfig set-local-db-index-prop \
+        --backend-name userRoot \
+        --index-name givenName \
+        --set index-entry-limit:50000 \
+        --set exploded-index-entry-threshold:100
+
+dsconfig set-backend-prop \
+        --backend-name userRoot \
+        --set default-cache-mode:cache-keys-only
+

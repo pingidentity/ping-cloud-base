@@ -1,0 +1,67 @@
+##
+##    Available values:
+##
+##    $monitor.getTotalJvmMemory() - bytes by default
+##    $monitor.getTotalJvmMemory('KB' | 'MB' | 'GB')
+##    $monitor.getUsedJvmMemory() - bytes by default
+##    $monitor.getUsedJvmMemory('KB' | 'MB' | 'GB')
+##    $monitor.getFreeJvmMemory() - bytes by default
+##    $monitor.getFreeJvmMemory('KB' | 'MB' | 'GB')
+##    $monitor.getTotalPhysicalSystemMemory()	- bytes by default
+##    $monitor.getTotalPhysicalSystemMemory('bytes' | 'KB' | 'MB' | 'GB')
+##    $monitor.getTotalFreePhysicalSystemMemory()	- bytes by default
+##    $monitor.getTotalFreePhysicalSystemMemory('bytes' | 'KB' | 'MB' | 'GB')
+##    $monitor.getTotalUsedPhysicalSystemMemory()	- bytes by default
+##    $monitor.getTotalUsedPhysicalSystemMemory('bytes' | 'KB' | 'MB' | 'GB')
+##    $monitor.getHostname()
+##    $monitor.getNumberOfCpus()
+##    $monitor.getCpuLoad('###.##') - insert custom format
+##    $monitor.getOpenClientConnections()
+##    $monitor.getNumberOfVirtualHosts()
+##    $monitor.getNumberOfApplications()
+##    $monitor.getNumberOfSites()
+##    $monitor.getLastRefreshTime() - default is ISO 8601 format
+##    $monitor.getLastRefreshTime('yyyy/MM/dd HH:mm:ss') - insert custom format
+##    $monitor.getRequestHeaderValues('headerName') - a java.util.List<java.lang.String> of the request header values for the provided header name
+##
+##    $monitor.getProcessingStatistics() - a ProcessingStatistics object containing statistics of the response time contribution by PingAccess processing for recent requests
+##       ProcessingStatistics.getWindowLengthSeconds() - the number of minutes the statistic window is over - defined by the pa.statistics.window.seconds property
+##       ProcessingStatistics.getResponseCount() - the number of responses in the statistic window
+##       ProcessingStatistics.getResponseTimePercentileMs(p, '###.##') - the pth percentile of the response time contributions in the window in milliseconds - 0 < p <= 100
+##       ProcessingStatistics.getResponseTimeMeanMs('###.##') - the mean of the of the response time contributions in the window in milliseconds
+##       ProcessingStatistics.getResponseTimeMaximumMs() - the maximum response time contribution in the window in milliseconds
+##       ProcessingStatistics.getResponseTimeMinimumMs() - the minimum response time contribution in the window in milliseconds
+##       ProcessingStatistics.getConcurrencyPercentile(p, '###.##') - the pth percentile of the concurrent requests in the window - 0 < p <= 100
+##       ProcessingStatistics.getConcurrencyMean('###.##') - the mean of the of the concurrent requests in the window
+##       ProcessingStatistics.getConcurrencyMaximum() - the maximum concurrent requests in the window
+##       ProcessingStatistics.getConcurrencyMinimum() - the minimum concurrent requests in the window
+##
+##    $monitor.setContentType('application/json') - insert custom content type set in the response header
+##
+$monitor.setContentType('application/json')##
+{
+## Set pa.statistics.window.seconds property and uncomment to enable ProcessingStatistics
+    "response.statistics.window.seconds": "$monitor.getProcessingStatistics().getWindowLengthSeconds()",
+    "response.statistics.count": "$monitor.getProcessingStatistics().getResponseCount()",
+    "response.time.statistics.90.percentile": "$monitor.getProcessingStatistics().getResponseTimePercentileMs(90.0, '###.##')",
+    "response.time.statistics.mean": "$monitor.getProcessingStatistics().getResponseTimeMeanMs('###.##')",
+    "response.time.statistics.max": "$monitor.getProcessingStatistics().getResponseTimeMaximumMs()",
+    "response.time.statistics.min": "$monitor.getProcessingStatistics().getResponseTimeMinimumMs()",
+    "response.concurrency.statistics.90.percentile": "$monitor.getProcessingStatistics().getConcurrencyPercentile(90.0, '###.##')",
+    "response.concurrency.statistics.mean": "$monitor.getProcessingStatistics().getConcurrencyMean('###.##')",
+    "response.concurrency.statistics.max": "$monitor.getProcessingStatistics().getConcurrencyMaximum()",
+    "response.concurrency.statistics.min": "$monitor.getProcessingStatistics().getConcurrencyMinimum()",
+    "cpu.load": "$monitor.getCpuLoad('###.##')",
+    "total.jvm.memory": "$monitor.getTotalJvmMemory('MB') MB",
+    "free.jvm.memory": "$monitor.getFreeJvmMemory('MB') MB",
+    "used.jvm.memory": "$monitor.getUsedJvmMemory('MB') MB",
+    "total.physical.system.memory": "$monitor.getTotalPhysicalSystemMemory('GB') GB",
+    "total.free.physical.system.memory": "$monitor.getTotalFreePhysicalSystemMemory('MB') MB",
+    "total.used.physical.system.memory": "$monitor.getTotalUsedPhysicalSystemMemory('GB') GB",
+    "number.of.cpus": "$monitor.getNumberOfCpus()",
+    "hostname": "$monitor.getHostname()",
+    "open.client.connections": "$monitor.getOpenClientConnections()",
+    "number.of.applications": "$monitor.getNumberOfApplications()",
+    "number.of.virtual.hosts": "$monitor.getNumberOfVirtualHosts()",
+    "last.refresh.time": "$monitor.getLastRefreshTime()"
+}##

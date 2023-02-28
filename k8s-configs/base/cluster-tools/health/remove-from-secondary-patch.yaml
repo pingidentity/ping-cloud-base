@@ -1,6 +1,0 @@
-apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: healthcheck-pingaccess-was
-  namespace: health
-$patch: delete

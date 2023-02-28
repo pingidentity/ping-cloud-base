@@ -1,0 +1,52 @@
+#
+# Create external endpoint
+# One way sync endpoint from external PD to internal (P1AS) PD
+
+dsconfig create-sync-source \
+  --source-name external_pd_endpoint \
+  --type ping-identity \
+  --set "base-dn:${USER_BASE_DN}" \
+  --set "ignore-changes-by-dn:${EXT_PD_SYNC_BIND_DN}" \
+  --set use-changelog-batch-request:true \
+  --set server:external_pd_server
+
+dsconfig create-sync-destination \
+  --destination-name p1as_pd_endpoint \
+  --type ping-identity \
+  --set "base-dn:${USER_BASE_DN}" \
+  --set server:external_p1as_pd_server
+
+#
+# Create Sync Pipes
+# Create sync pipe for external PD to internal (P1AS) PD
+
+dsconfig create-sync-pipe \
+  --pipe-name "${EXT_PD_TO_P1AS_PD_PIPE}" \
+  --set sync-source:external_pd_endpoint \
+  --set sync-destination:p1as_pd_endpoint \
+  --set synchronization-mode:standard \
+  --set "shared-mutex-name:Mutex for 'external_pd_to_p1as_pd' and 'p1as_pd_to_external_pd'"
+
+#
+# Create Attribute and DN Mappings
+# Create dn map for external PD to internal (P1AS) PD
+
+dsconfig create-dn-map \
+  --map-name external_pd_to_p1as_pd_map  \
+  --set "from-dn-pattern:**,${USER_BASE_DN}"  \
+  --set "to-dn-pattern:{1},${USER_BASE_DN}"
+
+#
+# Create Sync Classes
+# Create sync class for external PD to internal (P1AS) PD
+
+dsconfig create-sync-class \
+  --pipe-name "${EXT_PD_TO_P1AS_PD_PIPE}" \
+  --class-name DEFAULT \
+  --set dn-map:external_pd_to_p1as_pd_map \
+  --set evaluation-order-index:9999 \
+  --set synchronize-creates:true \
+  --set synchronize-modifies:true \
+  --set synchronize-deletes:true \
+  --set auto-mapped-source-attribute:-all- \
+  --set modifies-as-creates:true
