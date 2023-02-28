@@ -39,6 +39,7 @@
 - Fix regional variable for new customer creation
 - Installed EBS CSI driver
 - Replace deprecated topologyKey
+- Add IngressClassName to replace the deprecated annotation
 
 _Changes:_
 
@@ -92,6 +93,7 @@ _Changes:_
 - [X] PDO-5015 Disable integration test for PF user authentication healthcheck
 - [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone
 - [X] PDO-5061 Replace healthcheck jobs with deployments
+- [X] PDO-5060 Add IngressClassName to replace the deprecated annotation to support K8s v1.22 onwards
 
 ### 1.16.2.0
 
