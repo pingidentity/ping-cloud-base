@@ -1,0 +1,87 @@
+#
+# As per the following section of PingFederate 9.1.2.0 documentation:
+#   https://documentation.pingidentity.com/pingfederate/pf91/index.shtml#adminGuide/pf_t_configureLdapDirectoryForGrantStorage.html
+#
+# This LDIF file creates the schema objects required by PingFederate to store grants in PingDirectory.
+#
+# It is a combination of two LDIF files from the PingFederate install directory:
+#   <pf_install>/pingfederate/server/default/conf/access-grant/ldif-scripts
+#     1) access-grant-attributes-ldap-pingdirectory.ldif
+#     2) access-grant-ldap-pingdirectory.ldif
+#
+# Note that the accessGrantExpires attribute from access-grant-attributes-ldap-pingdirectory.ldif is NOT present in
+# this LDIF file as it is already defined by the 20-ping-federate.ldif LDIF file included with PingDirectory.
+dn: cn=schema
+# Attributes from access-grant-attributes-ldap-pingdirectory.ldif (except accessGrantExpires)
+attributeTypes: ( 1.3.6.1.4.1.28867.9.2.1
+  NAME ( 'accessGrantAttributes' )
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE
+  X-MIN-VALUE-LENGTH '0'
+  X-MAX-VALUE-LENGTH '8192' )
+attributeTypes: ( 1.3.6.1.4.1.28867.9.2.2
+  NAME ( 'accessGrantContextualQualifier' )
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE
+  X-MIN-VALUE-LENGTH '0'
+  X-MAX-VALUE-LENGTH '64' )
+attributeTypes: ( 1.3.6.1.4.1.28867.9.2.3
+  NAME ( 'accessGrantClientId' )
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE
+  X-MIN-VALUE-LENGTH '0'
+  X-MAX-VALUE-LENGTH '256' )
+attributeTypes: ( 1.3.6.1.4.1.28867.9.2.5
+  NAME ( 'accessGrantGuid' )
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE
+  X-MIN-VALUE-LENGTH '0'
+  X-MAX-VALUE-LENGTH '32' )
+attributeTypes: ( 1.3.6.1.4.1.28867.9.2.6
+  NAME ( 'accessGrantGrantType' )
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE
+  X-MIN-VALUE-LENGTH '0'
+  X-MAX-VALUE-LENGTH '128' )
+attributeTypes: ( 1.3.6.1.4.1.28867.9.2.7
+  NAME ( 'accessGrantHashedRefreshTokenValue' )
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE
+  X-MIN-VALUE-LENGTH '0'
+  X-MAX-VALUE-LENGTH '256')
+attributeTypes: ( 1.3.6.1.4.1.28867.9.2.8
+  NAME ( 'accessGrantIssued' )
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+  SINGLE-VALUE )
+attributeTypes: ( 1.3.6.1.4.1.28867.9.2.9
+  NAME ( 'accessGrantScope' )
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE
+  X-MIN-VALUE-LENGTH '0'
+  X-MAX-VALUE-LENGTH '256')
+attributeTypes: ( 1.3.6.1.4.1.28867.9.2.10
+  NAME ( 'accessGrantUniqueUserIdentifier' )
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.15
+  SINGLE-VALUE
+  X-MIN-VALUE-LENGTH '0'
+  X-MAX-VALUE-LENGTH '256')
+attributeTypes: ( 1.3.6.1.4.1.28867.9.2.11
+  NAME ( 'accessGrantUpdated' )
+  SYNTAX 1.3.6.1.4.1.1466.115.121.1.27
+  SINGLE-VALUE )
+# objectClass from access-grant-ldap-pingdirectory.ldif
+objectClasses: ( 1.3.6.1.4.1.28867.9.1.1
+  NAME 'accessGrant'
+  DESC 'access grant'
+  STRUCTURAL
+  MUST accessGrantGuid
+  MAY ( accessGrantAttributes
+    $ accessGrantContextualQualifier
+    $ accessGrantClientId
+    $ accessGrantExpires
+    $ accessGrantGrantType
+    $ accessGrantHashedRefreshTokenValue
+    $ accessGrantIssued
+    $ accessGrantScope
+    $ accessGrantUniqueUserIdentifier
+    $ accessGrantUpdated ) )

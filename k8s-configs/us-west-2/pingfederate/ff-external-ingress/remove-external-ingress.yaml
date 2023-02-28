@@ -1,5 +1,0 @@
-apiVersion: v1
-kind: Ingress
-metadata:
-  name: pingfederate-admin-ext-ingress
-$patch: delete
