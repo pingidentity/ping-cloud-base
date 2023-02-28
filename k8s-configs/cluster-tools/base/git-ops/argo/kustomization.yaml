@@ -163,3 +163,20 @@ patchesStrategicMerge:
       name: argocd-secret
       annotations:
         sealedsecrets.bitnami.com/managed: "true"
+
+  # Add init container to create Argo clusters for all CDEs from customer-hub
+  - |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-server
+    spec:
+      template:
+        spec:
+          initContainers:
+          - name: argocd-bootstrap
+            image: public.ecr.aws/r2h3l6e4/pingcloud-services/argocd-bootstrap/dev:v1.18-release-branch-latest
+            imagePullPolicy: Always
+            envFrom:
+              - configMapRef:
+                  name: argocd-bootstrap

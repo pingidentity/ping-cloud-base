@@ -53,6 +53,7 @@ replace_and_commit() {
     "pingdelegator"
     "pingcentral"
     "pingdatasync"
+    "argocd-bootstrap"
     "bootstrap"
     "p14c-integration"
     "metadata"
