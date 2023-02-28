@@ -1,0 +1,25 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+- ${K8S_GIT_URL}/k8s-configs/cluster-tools/base/cluster-autoscaler?ref=${K8S_GIT_BRANCH}
+
+patchesJson6902:
+
+### Cluster auto-scaler ###
+- target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: cluster-autoscaler
+    namespace: kube-system
+  patch: |-
+    - op: add
+      path: /spec/template/spec/containers/0/command/-
+      value:
+        --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/${CLUSTER_NAME}
+    - op: add
+      path: /spec/template/spec/containers/0/env
+      value:
+        - name: AWS_REGION
+          value: ${REGION}

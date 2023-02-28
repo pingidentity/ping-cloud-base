@@ -1,0 +1,11 @@
+# Update this environment variable to trigger updates to PingCentral
+LAST_UPDATE_REASON="NA"
+
+SERVER_PROFILE_PATH=profiles/pingcentral
+
+# AWS RDS environment variables
+MYSQL_SERVICE_HOST=beluga-shared-dev-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
+MYSQL_USER=ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username
+MYSQL_PASSWORD=ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#password
+MYSQL_DATABASE=pingcentral
+
