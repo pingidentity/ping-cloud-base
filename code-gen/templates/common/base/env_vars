@@ -51,6 +51,7 @@ PLATFORM_EVENT_QUEUE_POLL_BATCH_SIZE=1
 PLATFORM_EVENT_QUEUE_POLL_INTERVAL_SECONDS=2
 ORCH_API_SSM_PATH_PREFIX=${ORCH_API_SSM_PATH_PREFIX}
 SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX}
+ARGOCD_CDE_ROLE_SSM_TEMPLATE=${ARGOCD_CDE_ROLE_SSM_TEMPLATE}
 
 ############################################################
 # Cluster state repo details
@@ -89,6 +90,10 @@ SERVER_PROFILE_BRANCH=${SERVER_PROFILE_BRANCH_DERIVED}
 ############################################################
 # Used by server profile hooks
 ENVIRONMENT_TYPE=${ENVIRONMENT_TYPE}
+
+# A space-delimited list of the environments a customer is paying for
+# This will lengthen or shorten should a customer add or remove environments
+ENVIRONMENTS="${ENVIRONMENTS}"
 
 # Used by Kubernetes manifests
 ENV=${ENV}
@@ -249,6 +254,8 @@ PROMETHEUS_PING_NAMESPACE=${PING_CLOUD_NAMESPACE}
 PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED}
 
 RADIUS_PROXY_ENABLED=${RADIUS_PROXY_ENABLED}
+
+ARGOCD_BOOTSTRAP_ENABLED=${ARGOCD_BOOTSTRAP_ENABLED}
 ########################################################################################################################
 
 # Default argo-events notification configuration

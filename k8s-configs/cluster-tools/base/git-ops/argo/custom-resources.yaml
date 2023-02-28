@@ -13,3 +13,10 @@ metadata:
     sealedsecrets.bitnami.com/managed: "true"
     managed-by: argocd.argoproj.io
 type: Opaque
+---
+# Add a configmap for Argo to use to configure itself
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-bootstrap
+  namespace: argocd
