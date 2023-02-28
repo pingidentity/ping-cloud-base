@@ -24,6 +24,9 @@ fi
 
 deploy_file=/tmp/deploy.yaml
 
+#clean up the previous deployment dns rcords before deploying
+delete_dns_records "${TENANT_DOMAIN}"
+
 # Apply Custom Resource Definitions separate, due to size, if applicable
 apply_crds "${PROJECT_DIR}"
 
