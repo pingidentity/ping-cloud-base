@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingfederate-admin
+$patch: delete
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: pingfederate-admin
+$patch: delete
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pingfederate-backup
+$patch: delete
+
+---
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: pingfederate-periodic-backup
+$patch: delete
+
+---
+
