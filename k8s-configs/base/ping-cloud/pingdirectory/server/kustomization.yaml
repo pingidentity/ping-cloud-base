@@ -1,0 +1,65 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+# Apply PingDirectory deployment resources
+- ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingdirectory/server?ref=${K8S_GIT_BRANCH}
+
+images:
+- name: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingdirectory${ECR_ENV}
+  newName: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingdirectory${ECR_ENV}
+  newTag: ${PINGDIRECTORY_IMAGE_TAG}
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+patchesJson6902:
+
+### PingDirectory Last Update Config Map ###
+- target:
+    group: apps
+    version: v1
+    kind: StatefulSet
+    name: pingdirectory
+  patch: |
+    - op: add
+      path: /spec/template/spec/containers/0/envFrom/-
+      value:
+        configMapRef:
+          name: pingdirectory-last-update-config
+
+### Ingress patches ###
+
+# pingdirectory HTTP
+- target:
+    group: networking.k8s.io
+    version: v1
+    kind: Ingress
+    name: pingdirectory-http-ingress
+  patch: |
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingdirectory.${DNS_ZONE}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingdirectory.${DNS_ZONE}
+
+# Set a hostname for all the headless services so their endpoint IPs are published to Route53
+- target:
+    version: v1
+    kind: Service
+    name: pingdirectory
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+      value: pingdirectory-cluster.${DNS_ZONE}
+
+# pingdirectory admin
+- target:
+    version: v1
+    kind: Service
+    name: pingdirectory-admin
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+      value: pingdirectory-admin.${DNS_ZONE}

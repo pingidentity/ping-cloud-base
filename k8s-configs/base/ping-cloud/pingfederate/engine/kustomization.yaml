@@ -1,0 +1,75 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+# Apply PingFederate runtime engine deployment resources
+- ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingfederate/engine?ref=${K8S_GIT_BRANCH}
+
+images:
+
+- name: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingfederate${ECR_ENV}
+  newName: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingfederate${ECR_ENV}
+  newTag: ${PINGFEDERATE_IMAGE_TAG}
+
+- name: ${ECR_REGISTRY_NAME}/pingcloud-services/p14c-integration${ECR_ENV}
+  newName: ${ECR_REGISTRY_NAME}/pingcloud-services/p14c-integration${ECR_ENV}
+  newTag: ${P14C_INTEGRATION_IMAGE_TAG}
+
+patchesJson6902:
+
+### PingFederate Engine Last Update Config Map ###
+- target:
+    group: apps
+    version: v1
+    kind: StatefulSet
+    name: pingfederate
+  patch: |
+    - op: add
+      path: /spec/template/spec/containers/0/envFrom/-
+      value:
+        configMapRef:
+          name: pingfederate-last-update-config
+
+### Ingress patches ###
+
+# pingfederate runtime
+- target:
+    group: networking.k8s.io
+    version: v1
+    kind: Ingress
+    name: pingfederate-ingress
+  patch: |
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: pingfederate.${DNS_ZONE}
+    - op: replace
+      path: /spec/rules/0/host
+      value: pingfederate.${DNS_ZONE}
+    # PingFederate global ingress
+    - op: add
+      path: /spec/tls/0/hosts/-
+      value: pf.${ENV}.${GLOBAL_TENANT_DOMAIN}
+    - op: add
+      path: /spec/rules/-
+      value:
+        host: pf.${ENV}.${GLOBAL_TENANT_DOMAIN}
+        http:
+          paths:
+          # This rule gives external access to the global pingfederate runtime service
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+               name: pingfederate
+               port:
+                 number: 9031
+
+# pingfederate radius
+- target:
+    version: v1
+    kind: Service
+    name: udp-loadbalancer
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+      value: pingfederate-radius.${DNS_ZONE}

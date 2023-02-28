@@ -1,0 +1,58 @@
+########################################################################################################################
+# Customer region-specific parameters that are shared by multiple apps
+########################################################################################################################
+# region is the AWS region name
+region: "us-west-2"
+regionNickname: "us-west-2"
+
+# The name of the tenant
+tenantName: "abhalla-secondary"
+
+# tenantDomain is the domain suffix for customer for region
+tenantDomain: "abhalla-secondary.ping-demo.com"
+
+# environmentPrefix is the prefix used to distinguish between worker apps for different CDEs in P14C
+# and to form the Signal Science Agent name as displayed in SigSci Dashboard.
+environmentPrefix: "abhalla-secondary-${REGION_ENV}-us-west-2"
+
+# TODO: we can only substitute env vars region->base PDO-3957 to fix
+regionEnv: "dev"
+
+# artifactRepoUrl is the Customer-specific artifacts URL for region
+artifactRepoUrl: "s3://abhalla-secondary-binarybucket"
+
+# dnsZone is the Customer-specific region DNS zone
+dnsZone: "abhalla-secondary.ping-demo.com"
+
+# irsaPingAnnotationKeyValue is the IAM roles for service accounts
+irsaPingAnnotationKeyValue: ""
+
+
+
+
+########################################################################################################################
+#TODO: Are these needed anymore now that we're using values files?
+# If they are needed uncomment & move to the 1st section
+# If they are still commented out when we get to PDO-4842, they will be deleted
+########################################################################################################################
+# TODO: we can only substitute env vars region->base PDO-3957 to fix
+#regionEnv: dev
+
+
+########################################################################################################################
+#TODO: Move these to app values.yaml files as apps migrate
+# If they are needed by more than 1 app, move to the 1st section
+########################################################################################################################
+# irsaAnnotationKeyValue is the IAM roles for service accounts
+irsaPaAnnotationKeyValue: ""
+irsaPdAnnotationKeyValue: ""
+irsaPfAnnotationKeyValue: ""
+
+# nlbNgxPublicAnnotationKeyValue is the annotation used by ingress-nginx service in ingress-nginx-public namespace
+nlbNgxPublicAnnotationKeyValue: ""
+
+# newRelicEnvironmentName is the name of the environment as it will appear on the NewRelic console.
+newRelicEnvironmentName: "abhalla-secondary_${REGION_ENV}_us-west-2_k8s-cluster"
+
+# clusterStateRepoPath is the customer-specific region name
+clusterStateRepoPath: "us-west-2"

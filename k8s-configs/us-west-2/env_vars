@@ -1,0 +1,44 @@
+############################################################
+# Region-specific parameters
+############################################################
+# Region name and nick name. REGION must be valid AWS region name.
+REGION=us-west-2
+REGION_NICK_NAME=us-west-2
+
+# The name of the tenant
+TENANT_NAME=abhalla-secondary
+
+# Tenant domain suffix for customer for region
+TENANT_DOMAIN=abhalla-secondary.ping-demo.com
+
+# TODO: we can only substitute env vars region->base PDO-3957 to fix
+REGION_ENV=dev
+
+# This variable's value will be used as the prefix to distinguish between worker apps for different CDEs for a
+# single P14C customer. All of these apps will be created within the "Administrators" environment in the tenant.
+# This variable name is also used in forming the Signal Science Agent name as displayed in SigSci Dashboard.
+ENVIRONMENT_PREFIX=${TENANT_NAME}-${REGION_ENV}-${REGION_NICK_NAME}
+
+# The name of the environment as it will appear on the NewRelic console.
+NEW_RELIC_ENVIRONMENT_NAME=${TENANT_NAME}_${REGION_ENV}_${REGION_NICK_NAME}_k8s-cluster
+
+# Customer-specific artifacts URL for region
+ARTIFACT_REPO_URL=s3://abhalla-secondary-binarybucket
+
+# Customer-specific region name
+CLUSTER_STATE_REPO_PATH=${REGION_NICK_NAME}
+
+# Customer-specific region DNS zone
+DNS_ZONE=${TENANT_DOMAIN}
+
+############################################################
+# IRSA - IAM role for service accounts
+############################################################
+# Used by ping product pods
+IRSA_PING_ANNOTATION_KEY_VALUE=""
+IRSA_PA_ANNOTATION_KEY_VALUE=""
+IRSA_PD_ANNOTATION_KEY_VALUE=""
+IRSA_PF_ANNOTATION_KEY_VALUE=""
+
+# Annotation used by ingress-nginx service in ingress-nginx-public namespace
+NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE=""
