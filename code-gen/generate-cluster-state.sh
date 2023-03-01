@@ -193,6 +193,8 @@
 # RADIUS_PROXY_ENABLED         | Feature Flag - Indicates if the radius proxy       | False
 #                              | feature for PingFederate engines is enabled        |
 #                              |                                                    |
+# EXTERNAL_INGRESS_ENABLED   | Feature Flag - Indicates if external ingress       | True
+#                            | is enabled                                         |                            |                                                    |
 # REGION                       | The region where the tenant environment is         | us-west-2
 #                              | deployed. For PCPT, this is a required parameter   |
 #                              | to Container Insights, an AWS-specific logging     |
@@ -969,9 +971,13 @@ export PF_PROVISIONING_ENABLED="${PF_PROVISIONING_ENABLED:-false}"
 export RADIUS_PROXY_ENABLED="${RADIUS_PROXY_ENABLED:-false}"
 <<<<<<< HEAD
 export ARGOCD_BOOTSTRAP_ENABLED="${ARGOCD_BOOTSTRAP_ENABLED:-false}"
+<<<<<<< HEAD
 =======
 export EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED:-true}"
 >>>>>>> 282fba88e (PDO-4388)
+=======
+export EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED:-true}"
+>>>>>>> 00f58442d (change log update)
 
 ### Default environment variables ###
 export ECR_REGISTRY_NAME='public.ecr.aws/r2h3l6e4'
@@ -1098,9 +1104,13 @@ echo "Using PF_PROVISIONING_ENABLED: ${PF_PROVISIONING_ENABLED}"
 echo "Using RADIUS_PROXY_ENABLED: ${RADIUS_PROXY_ENABLED}"
 <<<<<<< HEAD
 echo "Using ARGOCD_BOOTSTRAP_ENABLED: ${ARGOCD_BOOTSTRAP_ENABLED}"
+<<<<<<< HEAD
 =======
 echo "Using EXTERNAL_INGRESS_ENABLED: ${EXTERNAL_INGRESS_ENABLED}"
 >>>>>>> 27e1be144 (PDO-4388)
+=======
+echo "Using EXTERNAL_INGRESS_ENABLED: ${EXTERNAL_INGRESS_ENABLED}"
+>>>>>>> 00f58442d (change log update)
 
 echo "Using TARGET_DIR: ${TARGET_DIR}"
 echo "Using IS_BELUGA_ENV: ${IS_BELUGA_ENV}"

@@ -40,6 +40,7 @@
 - Update tagging script to return correct tag
 - Add logstash HPA and upgrade resources
 - Add init container for ArgoCD to create clusters for itself
+<<<<<<< HEAD
 - Add ArgoCD Applications for each CDE via ApplicationSet
 - Remove LEGACY_LOGGING flag and logic
 <<<<<<< HEAD
@@ -50,6 +51,8 @@
 - Add ArgoCD ApplicationSet support for multiple CDEs
 =======
 =======
+=======
+>>>>>>> 00f58442d (change log update)
 - Flag in env_var to enable/disable external ingresses for admin endpoints
 
 >>>>>>> b94dd84bd (PDO-4388)
@@ -60,6 +63,10 @@ _Changes:_
 - [X] PDO-2419 Enable users to download or upload user reports in Delegated Admin
 - [X] PDO-3335 Set PingFederate Engines minReplicas count to 3 in prod/small deployment
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+- [X] PDO-4388 Flag in env_var to enable/disable external ingresses for admin endpoints
+>>>>>>> 00f58442d (change log update)
 - [X] PDO-4556 [need before EKS 1.25] batch/v1beta1 CronJob is deprecated in v1.21+, unavailable in v1.25+; use batch/v1 CronJob
 =======
 - [X] PDO-4388 Flag in env_var to enable/disable external ingresses for admin endpoints
