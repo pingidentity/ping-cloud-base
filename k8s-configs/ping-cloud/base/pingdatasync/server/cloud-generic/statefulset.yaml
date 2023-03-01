@@ -4,11 +4,11 @@ kind: StatefulSet
 metadata:
   name: pingdatasync
   labels:
-    role: pingdatasync-server
+    class: pingdatasync-server
 spec:
   selector:
     matchLabels:
-      role: pingdatasync-server
+      class: pingdatasync-server
   replicas: 1
   serviceName: pingdatasync-admin
   updateStrategy:
@@ -18,7 +18,7 @@ spec:
     metadata:
       name: pingdatasync
       labels:
-        role: pingdatasync-server
+        class: pingdatasync-server
       annotations:
         lastUpdateReason: "NA"
     spec:

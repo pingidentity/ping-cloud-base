@@ -91,6 +91,8 @@ _Changes:_
 - [X] PDO-4973 REGION_ENV should be defined before using it in ENVIRONMENT_PREFIX in Region env_vars
 - [X] PDO-4984 Install EBS CSI driver
 - [X] PDO-5015 Disable integration test for PF user authentication healthcheck
+- [X] PDO-5029 Remove bypass-acl privilege from PingDataSync account
+- [X] PDO-5035 Fix PingDataSync service to send requests to PingDataSync pods
 - [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone
 - [X] PDO-5060 Add IngressClassName to replace the deprecated annotation to support K8s v1.22 onwards
 - [X] PDO-5061 Replace healthcheck jobs with deployments
