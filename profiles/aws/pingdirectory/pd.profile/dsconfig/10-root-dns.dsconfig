@@ -14,7 +14,6 @@ dsconfig create-root-dn-user \
     --set "alternate-bind-dn:${SYNC_BIND_DN}"  \
     --set alternate-bind-dn:cn=datasync  \
     --set inherit-default-root-privileges:false  \
-    --set privilege:bypass-acl  \
     --set privilege:bypass-pw-policy  \
     --set privilege:config-read  \
     --set privilege:password-reset  \
