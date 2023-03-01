@@ -1,6 +1,8 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
+resources:
+- ${K8S_GIT_URL}/k8s-configs/ping-cloud/base/pingaccess/ff-external-ingress?ref=${K8S_GIT_BRANCH}
 
 patchesJson6902:
 
@@ -9,7 +11,7 @@ patchesJson6902:
     group: networking.k8s.io
     version: v1
     kind: Ingress
-    name: metadata-ingress
+    name: pingaccess-admin-ext-ingress
   patch: |
     - op: replace
       path: /spec/tls/0/hosts/0
@@ -17,5 +19,3 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: ext-pingaccess-admin-api.${DNS_ZONE}
-
-
