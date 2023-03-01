@@ -46,6 +46,9 @@ kubectl run -n default -i "${pod_name}" --restart=Never --rm --image=arey/mysql-
       -u "${MYSQL_USER}" -p"${MYSQL_PASSWORD}" \
       -e "drop database IF EXISTS ${MYSQL_DATABASE}; drop database IF EXISTS p1_${MYSQL_DATABASE}"
 
+#cleanup the dns records before we release the ci-cd cluster that is currently in use
+delete_dns_records "${TENANT_DOMAIN}"
+
 # Sometimes, the cron job on the cluster - "cleanup-nondefault-namespaces" might clean up the lock before we can. 
 # So check if it exists first.
 if kubectl get ns cluster-in-use-lock > /dev/null 2>&1; then

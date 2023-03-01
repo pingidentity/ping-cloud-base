@@ -29,6 +29,10 @@
 - Update cluster tools to latest version: metrics-server v0.6.2
 - Update all PodDisruptionBudget resources to API v1
 - [need before EKS 1.25] batch/v1beta1 CronJob is deprecated in v1.21+, unavailable in v1.25+; use batch/v1 CronJob
+- Update cluster tools to latest version: newrelic java agent to v8.0.1
+- Update cluster tools to latest version: cloudwatch-agent to v1.247357.0
+- Add init container for ArgoCD to create clusters for itself
+
 
 _Changes:_
 
@@ -44,6 +48,8 @@ _Changes:_
 - [X] PDO-4706 Update cluster tools to latest version: metrics-server v0.6.2
 - [X] PDO-4709 Update cluster tools to latest version: Grafana v9.3.6
 - [X] PDO-4713 Update cluster tools to latest version: prometheus to v2.42.0
+- [X] PDO-4715 Update cluster tools to latest version: newrelic java agent to v8.0.1
+- [X] PDo-4716 Update cluster tools to latest version: cloudwatch-agent to v1.247357.0
 - [X] PDO-4765 Disable the CloudWatch Agent in development environments and development CDEs
 - [X] PDO-4773 Update generate-cluster-state script to create base and region values.yaml files
 - [X] PDO-4774 Update generate-cluster-state script to massage the new code-gen structure files into the new CSR structure
@@ -62,8 +68,10 @@ _Changes:_
 - [X] PDO-4981 Index templates are not applied to indexes in case elastic-stack-logging ns respinned
 - [X] PDO-4983 Index lifecycle error: illegal_argument_exception: policy [ping-2-day-retention] does not exist
 - [X] PDO-4986 Add PA-WAS in customer-hub
+- [X] PDO-4987 Add ArgoCD Bootstrap init container to create clusters
 - [X] PDO-4997 Update values.yaml in region and base path sync with env_vars file
 - [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone 
+- [X] PDO-5039 Automate cleanup of external dns records for CI/CD clusters 
 
 ### 1.17.0.0
 

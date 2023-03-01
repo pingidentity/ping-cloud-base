@@ -55,3 +55,16 @@ patchesJson6902:
     - op: add
       path: /data/timeout.reconciliation
       value: ${APP_RESYNC_SECONDS}s
+
+- target:
+    version: v1
+    kind: ConfigMap
+    name: argocd-bootstrap
+    namespace: argocd
+  patch: |
+    - op: add
+      path: /data
+      value:
+        ARGOCD_BOOTSTRAP_ENABLED: "${ARGOCD_BOOTSTRAP_ENABLED}"
+        ARGOCD_CDE_ROLE_SSM_TEMPLATE: "${ARGOCD_CDE_ROLE_SSM_TEMPLATE}"
+        ENVIRONMENTS: "${ENVIRONMENTS}"
