@@ -1,3 +1,5 @@
 dsconfig set-log-publisher-prop \
   --publisher-name "File-Based Debug Logger" \
   --set enabled:true
+
+dsconfig set-log-publisher-prop --publisher-name "Debug ACI Logger" --set enabled:true
