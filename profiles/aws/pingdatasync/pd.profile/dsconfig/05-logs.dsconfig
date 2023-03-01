@@ -1,0 +1,1 @@
+dsconfig set-log-publisher-prop --publisher-name "Debug ACI Logger" --set enabled:true
