@@ -19,7 +19,7 @@ log() {
   if [[ "${DEBUG}" == "true" ]]; then
     echo "git-ops-command: ${msg}"
   else
-    echo "git-ops-command: ${msg}" >>"${LOG_FILE}"
+    echo "git-ops-command: ${msg}" >> "${LOG_FILE}"
   fi
 }
 
@@ -41,15 +41,13 @@ substitute_vars() {
   log "substituting variables '${vars}'"
 
   # Export the environment variables
-  set -a
-  . "${env_file}"
-  set +a
+  set -a; . "${env_file}"; set +a
 
   for file in $(find "${subst_dir}" -type f); do
     old_file="${file}.bak"
     cp "${file}" "${old_file}"
 
-    envsubst "${vars}" <"${old_file}" >"${file}"
+    envsubst "${vars}" < "${old_file}" > "${file}"
     rm -f "${old_file}"
   done
 }
@@ -62,14 +60,8 @@ substitute_vars() {
 #   $2 -> The directory relative to which the first directory must be transformed.
 ########################################################################################################################
 relative_path() {
-  to_transform="$(
-    cd "${1%%/}"
-    pwd
-  )"
-  relative_to="$(
-    cd "$2"
-    pwd
-  )"
+  to_transform="$(cd "${1%%/}"; pwd)"
+  relative_to="$(cd "$2"; pwd)"
 
   # Move up from the directory to transform while counting the number of directories traversed until the other
   # directory is reached.
@@ -188,8 +180,8 @@ log "copying '${TARGET_DIR_FULL}' templates into '${TMP_DIR}'"
 cp -pr "${TARGET_DIR_FULL}" "${TMP_DIR}"
 
 if test -d "${BASE_DIR}"; then
-  log "copying '${BASE_DIR}' templates into '${TMP_DIR}'" &&
-    cp -pr "${BASE_DIR}" "${TMP_DIR}"
+  log "copying '${BASE_DIR}' templates into '${TMP_DIR}'" && \
+  cp -pr "${BASE_DIR}" "${TMP_DIR}"
 fi
 
 # If there's an environment file, then perform substitution
@@ -204,7 +196,7 @@ if test -f 'env_vars'; then
 
     if test -f "${BASE_ENV_VARS}"; then
       env_vars_file="$(mktemp)"
-      awk 1 env_vars "${BASE_ENV_VARS}" >"${env_vars_file}"
+      awk 1 env_vars "${BASE_ENV_VARS}" > "${env_vars_file}"
       substitute_vars "${env_vars_file}" "${BASE_DIR}"
     fi
 
@@ -233,9 +225,9 @@ if test -f 'env_vars'; then
       rel_resource_dir="$(relative_path "$(dirname "${kust_file}")" "${PCB_TMP}")"
       log "replacing ${K8S_GIT_URL} in file ${kust_file} with ${rel_resource_dir}"
       sed -i.bak \
-        -e "s|${K8S_GIT_URL}|${rel_resource_dir}|g" \
-        -e "s|\?ref=${K8S_GIT_BRANCH}$||g" \
-        "${kust_file}"
+          -e "s|${K8S_GIT_URL}|${rel_resource_dir}|g" \
+          -e "s|\?ref=${K8S_GIT_BRANCH}$||g" \
+          "${kust_file}"
       rm -f "${kust_file}".bak
     done
 
