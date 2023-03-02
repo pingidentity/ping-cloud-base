@@ -5,7 +5,7 @@ metadata:
   labels:
     app: logstash-elastic
 spec:
-  replicas: 2
+  replicas: 1
   updateStrategy:
     type: RollingUpdate
   selector:
@@ -105,9 +105,9 @@ spec:
             - name: LOG_FORMAT
               value: json
             - name: PIPELINE_BATCH_DELAY
-              value: '50'
+              value: '20'
             - name: PIPELINE_BATCH_SIZE
-              value: '500'
+              value: '100'
             - name: PIPELINE_ECS_COMPATIBILITY
               value: disabled
             - name: PIPELINE_ORDERED
@@ -121,9 +121,10 @@ spec:
                 name: elk-environment-variables
           resources:
             limits:
+              cpu: "500m"
               memory: 4Gi
             requests:
-              cpu: 150m
+              cpu: "150m"
               memory: 1Gi
           ports:
             - containerPort: 9600
@@ -185,6 +186,13 @@ spec:
             - name: enrichment-cache-files
               mountPath: /enrichment-cache-files
               readOnly: false
+          resources:
+            limits:
+              cpu: "500m"
+              memory: 500Mi
+            requests:
+              cpu: "150m"
+              memory: 100Mi
       terminationGracePeriodSeconds: 30
       volumes:
         - name: logstash-pipeline-main
