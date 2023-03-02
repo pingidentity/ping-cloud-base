@@ -31,8 +31,8 @@
 - [need before EKS 1.25] batch/v1beta1 CronJob is deprecated in v1.21+, unavailable in v1.25+; use batch/v1 CronJob
 - Update cluster tools to latest version: newrelic java agent to v8.0.1
 - Update cluster tools to latest version: cloudwatch-agent to v1.247357.0
+- Add logstash HPA and upgrade resources
 - Add init container for ArgoCD to create clusters for itself
-
 
 _Changes:_
 
@@ -70,6 +70,7 @@ _Changes:_
 - [X] PDO-4986 Add PA-WAS in customer-hub
 - [X] PDO-4987 Add ArgoCD Bootstrap init container to create clusters
 - [X] PDO-4997 Update values.yaml in region and base path sync with env_vars file
+- [X] PDO-5009 Add logstash HPA and upgrade resources
 - [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone 
 - [X] PDO-5039 Automate cleanup of external dns records for CI/CD clusters 
 

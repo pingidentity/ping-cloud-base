@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: logstash-elastic
+spec:
+  template:
+    spec:
+      containers:
+        - name: logstash
+          resources:
+            limits:
+              cpu: "2"
+              memory: 4Gi
+            requests:
+              cpu: "1"
+              memory: 3Gi
+          env:
+            - name: LS_JAVA_OPTS
+              value: '-Xms3500m -Xmx3500m'
+            - name: PIPELINE_WORKERS
+              value: "2"
+            - name: QUEUE_MAX_BYTES
+              value: 2000gb
