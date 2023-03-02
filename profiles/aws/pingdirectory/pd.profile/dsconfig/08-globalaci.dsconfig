@@ -17,12 +17,12 @@ dsconfig set-access-control-handler-prop --add 'global-aci:(targetcontrol="1.2.8
 
 dsconfig set-access-control-handler-prop --add global-aci:'(targetattr="*") \
 (version 3.0; acl "Give PingDataSync Access to all to handle syncing between servers"; \
-allow(all) userdn="ldap:///cn=Directory Manager,cn=Root DNs,cn=config";)'
+allow(all) userdn="ldap:///cn=sync,cn=Root DNs,cn=config";)'
 
 dsconfig set-access-control-handler-prop --add global-aci:'(target="ldap:///cn=config")(targetscope="subtree")(targetattr="*||+") \
 (version 3.0; acl "Give PingDataSync Access to cn=config"; \
-allow(all) userdn="ldap:///cn=Directory Manager,cn=Root DNs,cn=config";)'
+allow(all) userdn="ldap:///cn=sync,cn=Root DNs,cn=config";)'
 
 dsconfig set-access-control-handler-prop --add global-aci:'(target="ldap:///cn=Tasks")(targetscope="subtree")(targetattr="*||+") \
 (version 3.0; acl "Give PingDataSync Access to cn=Tasks"; \
-allow(all) userdn="ldap:///cn=Directory Manager,cn=Root DNs,cn=config";)'
+allow(all) userdn="ldap:///cn=sync,cn=Root DNs,cn=config";)'

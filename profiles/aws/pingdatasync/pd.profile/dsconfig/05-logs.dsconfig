@@ -4,14 +4,29 @@
 
 dsconfig set-access-control-handler-prop --add global-aci:'(targetattr="*") \
 (version 3.0; acl "Give PingDataSync Access to all to handle syncing between servers"; \
-allow(all) userdn="ldap:///cn=directory manager,cn=Root DNs,cn=config";)'
+allow(all) userdn="ldap:///cn=sync,cn=Root DNs,cn=config";)'
 
 dsconfig set-access-control-handler-prop --add global-aci:'(target="ldap:///cn=config")(targetscope="subtree")(targetattr="*||+") \
 (version 3.0; acl "Give PingDataSync Access to cn=config"; \
-allow(all) userdn="ldap:///cn=directory manager,cn=Root DNs,cn=config";)'
+allow(all) userdn="ldap:///cn=sync,cn=Root DNs,cn=config";)'
 
 dsconfig set-access-control-handler-prop --add global-aci:'(target="ldap:///cn=Tasks")(targetscope="subtree")(targetattr="*||+") \
 (version 3.0; acl "Give PingDataSync Access to cn=Tasks"; \
-allow(all) userdn="ldap:///cn=directory manager,cn=Root DNs,cn=config";)'
+allow(all) userdn="ldap:///cn=sync,cn=Root DNs,cn=config";)'
+
+
+#
+# Ping Data Sync User
+#
+dsconfig create-root-dn-user \
+    --user-name "pingdatasync" \
+    --set "alternate-bind-dn:cn=sync"  \
+    --set inherit-default-root-privileges:false  \
+    --set privilege:bypass-pw-policy  \
+    --set privilege:config-read \
+    --set privilege:password-reset \
+    --set privilege:unindexed-search \
+    --set privilege:-bypass-acl \
+    --set password<${ROOT_USER_PASSWORD_FILE}
 
 dsconfig set-log-publisher-prop --publisher-name "Debug ACI Logger" --set enabled:true
