@@ -1103,7 +1103,7 @@ spec:
               - key: node-role.kubernetes.io/etcd
                 operator: Exists
             - matchExpressions:
-              - key: node-role.kubernetes.io/master
+              - key: node-role.kubernetes.io/controlplane
                 operator: Exists
       tolerations:
         - effect: NoSchedule
