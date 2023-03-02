@@ -18,6 +18,7 @@
 - Updated cluster-autoscaler to v1.23.0
 - Upgrade Grafana to v9.3.6
 - Upgrade prometheus to v2.42.0
+- Upgrade EFS Driver to v1.5.1
 - Add PF requests logs parsing and indexing
 - Fix index template creation race condition issue
 - Change retry interval for PGO firing alert notification in slack from 5 min to 60 min
@@ -67,6 +68,7 @@ _Changes:_
 - [X] PDO-4974 Change retry interval for PGO firing alert notification in slack from 5 min to 60 min
 - [X] PDO-4980 Index lifecycle error: illegal_argument_exception: policy [healthchecks] does not exist
 - [X] PDO-4981 Index templates are not applied to indexes in case elastic-stack-logging ns respinned
+- [X] PDO-4982 Update cluster tools to latest version: EFS Driver to v1.5.1
 - [X] PDO-4983 Index lifecycle error: illegal_argument_exception: policy [ping-2-day-retention] does not exist
 - [X] PDO-4986 Add PA-WAS in customer-hub
 - [X] PDO-4987 Add ArgoCD Bootstrap init container to create clusters
