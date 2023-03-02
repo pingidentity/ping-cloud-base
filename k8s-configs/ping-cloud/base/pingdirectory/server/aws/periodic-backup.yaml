@@ -32,12 +32,29 @@ data:
     # Print the names of the uploaded files so callers know exactly what was uploaded
     echo "The following files were uploaded:"
     echo "${UPLOAD_FILES}"
+    echo "Deleting PingDirectory backup pvc"
+    /tmp/kubectl delete pvc pingdirectory-backup
+---
+# Persistance Volume to run backup process
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pingdirectory-backup
+  labels:
+    class: pingdirectory-server
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: pingdirectory-enc-gp2
+  resources:
+    requests:
+      storage: 40Gi
 
 ---
-
 # Do a full backup of the user backend every 6 hours.
 # A manual restore can be performed using the restore job (restore.yaml) when
 # necessary.
+
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -83,8 +100,18 @@ spec:
             - name: backup-script
               mountPath: /opt/in/backup.sh
               subPath: backup.sh
+            - name: pd-backup-volume
+              mountPath: /opt/out/backup
+              subPath: backup
+            - name: pd-backup-volume
+              mountPath: /opt/out/backup-upload
+              subPath: backup-upload
           volumes:
           - name: backup-script
             configMap:
               name: pingdirectory-backup
               defaultMode: 0555
+          - name: pd-backup-volume
+            persistentVolumeClaim:
+              claimName: pingdirectory-backup
+
