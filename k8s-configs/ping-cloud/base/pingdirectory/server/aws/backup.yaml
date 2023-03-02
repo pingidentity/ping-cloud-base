@@ -37,8 +37,33 @@ spec:
         - name: backup-script
           mountPath: /opt/in/backup.sh
           subPath: backup.sh
+        - name: pd-backup-volume
+          mountPath: /opt/out/backup
+          subPath: backup
+        - name: pd-backup-volume
+          mountPath: /opt/out/backup-upload
+          subPath: backup-upload
       volumes:
       - name: backup-script
         configMap:
           name: pingdirectory-backup
           defaultMode: 0555
+      - name: pd-backup-volume
+        persistentVolumeClaim:
+          claimName: pingdirectory-backup
+
+---
+# Persistent Volume to run backup process
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pingdirectory-backup
+  labels:
+    class: pingdirectory-server
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: pingdirectory-enc-gp2
+  resources:
+    requests:
+      storage: 40Gi

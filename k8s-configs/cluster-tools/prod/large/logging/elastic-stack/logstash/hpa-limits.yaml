@@ -1,0 +1,20 @@
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: logstash-elastic
+spec:
+  minReplicas: 4
+  maxReplicas: 6
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Value
+        averageValue: "3.8"
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Value
+        averageValue: 7.6Gi

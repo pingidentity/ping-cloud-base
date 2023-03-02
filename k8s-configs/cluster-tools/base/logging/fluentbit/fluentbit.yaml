@@ -986,7 +986,7 @@ spec:
           path: /var/log/dmesg
       serviceAccountName: fluent-bit
       tolerations:
-      - key: node-role.kubernetes.io/master
+      - key: node-role.kubernetes.io/controlplane
         operator: Exists
         effect: NoSchedule
       - operator: "Exists"
