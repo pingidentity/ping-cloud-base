@@ -5,21 +5,6 @@
 dsconfig set-root-dn-user-prop \
     --user-name "Directory Manager"  \
     --add "alternate-bind-dn:${ROOT_USER_DN}"
-
-#
-# Ping Data Sync User
-#
-dsconfig create-root-dn-user \
-    --user-name "pingdatasync"  \
-    --set "alternate-bind-dn:${SYNC_BIND_DN}"  \
-    --set alternate-bind-dn:cn=datasync  \
-    --set inherit-default-root-privileges:false  \
-    --set privilege:bypass-pw-policy  \
-    --set privilege:config-read  \
-    --set privilege:password-reset  \
-    --set privilege:unindexed-search \
-    --set password<${ROOT_USER_PASSWORD_FILE}
-
 #
 # Create a user for pingdirectoryproxy
 #
