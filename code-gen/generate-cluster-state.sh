@@ -193,8 +193,8 @@
 # RADIUS_PROXY_ENABLED         | Feature Flag - Indicates if the radius proxy       | False
 #                              | feature for PingFederate engines is enabled        |
 #                              |                                                    |
-# EXTERNAL_INGRESS_ENABLED   | Feature Flag - Indicates if external ingress       | True
-#                            | is enabled                                         |                            |                                                    |
+# EXTERNAL_INGRESS_ENABLED     | Feature Flag - Indicates if external ingress       | True
+#                              | is enabled                                         |                            |                                                    |
 # REGION                       | The region where the tenant environment is         | us-west-2
 #                              | deployed. For PCPT, this is a required parameter   |
 #                              | to Container Insights, an AWS-specific logging     |
