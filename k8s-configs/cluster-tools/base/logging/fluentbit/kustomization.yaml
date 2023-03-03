@@ -5,3 +5,4 @@ namespace: elastic-stack-logging
 
 resources:
 - fluentbit.yaml
+- configs

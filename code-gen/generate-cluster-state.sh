@@ -121,9 +121,6 @@
 #                              |                                                    |
 # K8S_GIT_URL                  | The Git URL of the Kubernetes base manifest files. | https://github.com/pingidentity/ping-cloud-base
 #                              |                                                    |
-# LEGACY_LOGGING               | Flag indicating where we should send app logs -    | True
-#                              | to CloudWatch(if True) or to ELK (if False)        |
-#                              |                                                    |
 # LOG_ARCHIVE_URL              | The URL of the log archives. If provided, logs are | The string "unused".
 #                              | periodically captured and sent to this URL. For    |
 #                              | AWS S3 buckets, it must be an S3 URL, e.g.         |
@@ -298,7 +295,6 @@ DEFAULT_VARS='${LAST_UPDATE_REASON}
 ${PING_IDENTITY_DEVOPS_USER}
 ${PING_IDENTITY_DEVOPS_KEY}
 ${NEW_RELIC_LICENSE_KEY_BASE64}
-${LEGACY_LOGGING}
 ${TENANT_NAME}
 ${SSH_ID_KEY_BASE64}
 ${IS_MULTI_CLUSTER}
@@ -632,8 +628,6 @@ echo "Initial MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 echo "Initial MYSQL_USER: ${MYSQL_USER}"
 echo "Initial MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
 
-echo "Initial LEGACY_LOGGING: ${LEGACY_LOGGING}"
-
 echo "Initial PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
 
 echo "Initial K8S_GIT_URL: ${K8S_GIT_URL}"
@@ -724,8 +718,6 @@ export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://aws/reference/secretsmanager//pcp
 
 export PING_IDENTITY_DEVOPS_USER="${PING_IDENTITY_DEVOPS_USER:-ssm://pcpt/devops-license/user}"
 export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY:-ssm://pcpt/devops-license/key}"
-
-export LEGACY_LOGGING=${LEGACY_LOGGING:-False}
 
 PING_CLOUD_BASE_COMMIT_SHA=$(git rev-parse HEAD)
 CURRENT_GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
@@ -881,8 +873,6 @@ echo "Using BACKUP_URL: ${BACKUP_URL}"
 echo "Using MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 echo "Using MYSQL_USER: ${MYSQL_USER}"
 echo "Using MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
-
-echo "Using LEGACY_LOGGING: ${LEGACY_LOGGING}"
 
 echo "Using PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
 

@@ -28,7 +28,6 @@ patchesStrategicMerge:
   metadata:
     name: cluster-info
   data:
-    legacy_logging: "${LEGACY_LOGGING}"
     cluster.name: ${CLUSTER_NAME}
     logs.region: ${REGION}
     newrelic_cluster_name: ${NEW_RELIC_ENVIRONMENT_NAME}

@@ -101,9 +101,26 @@ data:
     # Print the names of the uploaded files so callers know exactly what was uploaded
     echo "The following files were restored:"
     echo "${RESTORE_FILES}"
-    
----
 
+    echo "Deleting PingDirectory restore pvc"
+    /tmp/kubectl delete pvc pingdirectory-restore
+---
+# Persistent Volume to run restore process
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pingdirectory-restore
+  labels:
+    class: pingdirectory-server
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: pingdirectory-enc-gp2
+  resources:
+    requests:
+      storage: 40Gi
+
+---
 # A manual restore can be performed by deploying this job. It will restore
 # data that was backed up by the periodic backup job to pingdirectory-0. All other servers
 # must initialize the data from pingdirectory-0 via dsreplication initialize-all. This
@@ -138,6 +155,9 @@ spec:
         - name: restore-script
           mountPath: /opt/in/restore.sh
           subPath: restore.sh
+        - name: pd-restore-volume
+          mountPath: /opt/out/restore
+          subPath: restore
         envFrom:
         - configMapRef:
             name: pingdirectory-environment-variables
@@ -151,3 +171,6 @@ spec:
         configMap:
           name: pingdirectory-restore
           defaultMode: 0555
+      - name: pd-restore-volume
+        persistentVolumeClaim:
+          claimName: pingdirectory-restore
