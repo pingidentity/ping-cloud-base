@@ -104,6 +104,7 @@ feature_flags() {
             fi
         else
             if [[ ${enabled} != "true" ]]; then
+                cd "${1}/code-gen"
                 for kust_file in $(git grep -l "${search_term}" | grep "kustomization.yaml"); do
                     log "UnCommenting out ${search_term} in ${kust_file}"
                     sed -i.bak \
