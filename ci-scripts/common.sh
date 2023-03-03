@@ -92,8 +92,6 @@ set_env_vars() {
 
     export AWS_PROFILE=csg
 
-    export LEGACY_LOGGING=False
-
     export PF_PROVISIONING_ENABLED=true
 
     export LOG_LINES_TO_TEST=2

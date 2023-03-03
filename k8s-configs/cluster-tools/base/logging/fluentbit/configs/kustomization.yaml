@@ -1,0 +1,20 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+namespace: elastic-stack-logging
+
+generatorOptions:
+  labels:
+    k8s-app: fluent-bit
+
+configMapGenerator:
+  - name: fluent-bit-config
+    files:
+      - fluent-bit.conf
+      - parsers.conf
+      - pipelines/cw.conf
+      - pipelines/elk.conf
+      - pipelines/nr.conf
+      - pipelines/s3.conf
+      - scripts/time.lua
+      - scripts/record_modifier.lua

@@ -91,7 +91,6 @@ patchesStrategicMerge:
   data:
     cluster.name: ${CLUSTER_NAME}
     logs.region: ${REGION}
-    legacy_logging: "${LEGACY_LOGGING}"
     newrelic_cluster_name: ${NEW_RELIC_ENVIRONMENT_NAME}
   kind: ConfigMap
   metadata:

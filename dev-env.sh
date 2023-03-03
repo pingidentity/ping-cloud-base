@@ -86,9 +86,6 @@
 #                           | spec is saved before applying it.                  | ~/.kube/config or the config file
 #                           |                                                    | to which KUBECONFIG is set.
 #                           |                                                    |
-# LEGACY_LOGGING            | Flag indicating where we should send app logs -    | True
-#                           | to CloudWatch(if True) or to ELK (if False)        |
-#                           |                                                    |
 # LOG_ARCHIVE_URL           | The URL of the log archives. If provided, logs     | The string "unused"
 #                           | are periodically captured and sent to this URL.    |
 #                           |                                                    |
@@ -283,8 +280,6 @@ log "Initial MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 log "Initial MYSQL_USER: ${MYSQL_USER}"
 log "Initial MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
 
-log "Initial LEGACY_LOGGING: ${LEGACY_LOGGING}"
-
 log "Initial PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
 
 log "Initial DEPLOY_FILE: ${DEPLOY_FILE}"
@@ -338,8 +333,6 @@ export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://aws/reference/secretsmanager//pcp
 
 export PING_IDENTITY_DEVOPS_USER="${PING_IDENTITY_DEVOPS_USER:-ssm://pcpt/devops-license/user}"
 export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY:-ssm://pcpt/devops-license/key}"
-
-export LEGACY_LOGGING="${LEGACY_LOGGING:-False}"
 
 #### FEATURE FLAGS #####################################################################################################
 
@@ -398,8 +391,6 @@ log "Using MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
 log "Using MYSQL_DATABASE: ${MYSQL_DATABASE}"
 
 log "Using PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
-
-log "Using LEGACY_LOGGING: ${LEGACY_LOGGING}"
 
 log "Using DEPLOY_FILE: ${DEPLOY_FILE}"
 log "Using K8S_CONTEXT: ${K8S_CONTEXT}"
@@ -527,8 +518,6 @@ export SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX}
 
 export PING_IDENTITY_DEVOPS_USER=${PING_IDENTITY_DEVOPS_USER}
 export PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
-
-export LEGACY_LOGGING=${LEGACY_LOGGING}
 
 export DASH_REPO_URL=${DASH_REPO_URL}
 export DASH_REPO_BRANCH=${DASH_REPO_BRANCH}

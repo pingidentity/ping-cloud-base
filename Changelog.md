@@ -38,6 +38,7 @@
 - Add logstash HPA and upgrade resources
 - Add init container for ArgoCD to create clusters for itself
 - Add ArgoCD Applications for each CDE via ApplicationSet
+- Remove LEGACY_LOGGING flag and logic
 
 _Changes:_
 
@@ -83,6 +84,7 @@ _Changes:_
 - [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone 
 - [X] PDO-5039 Automate cleanup of external dns records for CI/CD clusters
 - [X] PDO-5041 node-role.kubernetes.io/master (deprecated)
+- [X] PDO-5043 Legacy Logging Mode: Remove Feature Flag, Code Logic and Refactor Filters
 
 ### 1.17.0.0
 
