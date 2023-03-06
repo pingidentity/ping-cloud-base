@@ -7,7 +7,7 @@ metadata:
   name: nri-bundle-nri-metadata-injection
   namespace: newrelic
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: nri-metadata-injection
     app.kubernetes.io/version: 1.7.0
@@ -29,11 +29,11 @@ metadata:
   name: nri-bundle-kube-state-metrics
   namespace: newrelic
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app.kubernetes.io/name: kube-state-metrics
-    helm.sh/chart: "kube-state-metrics-2.13.2"
-    app.kubernetes.io/instance: "nri-bundle"
-    app.kubernetes.io/managed-by: "Helm"
+    helm.sh/chart: kube-state-metrics-4.23.0
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/managed-by: Helm
   annotations:
     prometheus.io/scrape: 'true'
 spec:

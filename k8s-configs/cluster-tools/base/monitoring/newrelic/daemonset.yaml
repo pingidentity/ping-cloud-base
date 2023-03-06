@@ -6,7 +6,7 @@ kind: DaemonSet
 metadata:
   namespace: newrelic
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: newrelic-infrastructure
     app.kubernetes.io/version: 3.2.0
@@ -25,7 +25,7 @@ spec:
   template:
     metadata:
       labels:
-        nri-bundle.version: 4.5.8
+        nri-bundle.version: 5.0.4
         app.kubernetes.io/instance: nri-bundle
         app.kubernetes.io/name: newrelic-infrastructure
         app.kubernetes.io/component: controlplane
@@ -94,7 +94,7 @@ spec:
               cpu: 100m
               memory: 150M
         - name: forwarder
-          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/k8s-events-forwarder:1.24.1
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/k8s-events-forwarder:1.36.1
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: false
@@ -190,7 +190,7 @@ kind: DaemonSet
 metadata:
   namespace: newrelic
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: newrelic-infrastructure
     app.kubernetes.io/version: 3.2.0
@@ -209,7 +209,7 @@ spec:
   template:
     metadata:
       labels:
-        nri-bundle.version: 4.5.8
+        nri-bundle.version: 5.0.4
         app.kubernetes.io/instance: nri-bundle
         app.kubernetes.io/name: newrelic-infrastructure
         app.kubernetes.io/component: kubelet
@@ -279,7 +279,7 @@ spec:
               cpu: 100m
               memory: 150M
         - name: agent
-          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/infrastructure-bundle:2.8.15
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/infrastructure-bundle:2.8.38
           args: [ "newrelic-infra" ]
           imagePullPolicy: IfNotPresent
           securityContext:

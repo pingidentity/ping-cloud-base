@@ -10,7 +10,7 @@ metadata:
     argocd.argoproj.io/hook: Sync,PostSync
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app: nri-metadata-injection-admission
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: nri-metadata-injection

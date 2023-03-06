@@ -10,7 +10,7 @@ metadata:
     argocd.argoproj.io/hook: Sync
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app: nri-metadata-injection-admission-create
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: nri-metadata-injection
@@ -22,7 +22,7 @@ spec:
     metadata:
       name: nri-bundle-nri-metadata-injection-admission-create
       labels:
-        nri-bundle.version: 4.5.8
+        nri-bundle.version: 5.0.4
         app: nri-metadata-injection-admission-create
         app.kubernetes.io/instance: nri-bundle
         app.kubernetes.io/name: nri-metadata-injection
@@ -59,7 +59,7 @@ metadata:
     argocd.argoproj.io/hook: PostSync
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app: nri-metadata-injection-admission-patch
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: nri-metadata-injection
@@ -71,7 +71,7 @@ spec:
     metadata:
       name: nri-bundle-nri-metadata-injection-admission-patch
       labels:
-        nri-bundle.version: 4.5.8
+        nri-bundle.version: 5.0.4
         app: nri-metadata-injection-admission-patch
         app.kubernetes.io/instance: nri-bundle
         app.kubernetes.io/name: nri-metadata-injection
