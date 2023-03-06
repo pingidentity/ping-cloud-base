@@ -7,12 +7,12 @@ metadata:
   name: nri-bundle-kube-state-metrics
   namespace: newrelic
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app.kubernetes.io/name: kube-state-metrics
-    helm.sh/chart: "kube-state-metrics-2.13.2"
-    app.kubernetes.io/instance: "nri-bundle"
-    app.kubernetes.io/managed-by: "Helm"
-    app.kubernetes.io/version: "1.9.8"
+    helm.sh/chart: kube-state-metrics-4.23.0
+    app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/version: 2.6.0
 spec:
   selector:
     matchLabels:
@@ -21,9 +21,9 @@ spec:
   template:
     metadata:
       labels:
-        nri-bundle.version: 4.5.8
+        nri-bundle.version: 5.0.4
         app.kubernetes.io/name: kube-state-metrics
-        app.kubernetes.io/instance: "nri-bundle"
+        app.kubernetes.io/instance: nri-bundle
     spec:
       hostNetwork: false
       serviceAccountName: nri-bundle-kube-state-metrics
@@ -34,36 +34,37 @@ spec:
       containers:
       - name: kube-state-metrics
         args:
-        - --collectors=certificatesigningrequests
-        - --collectors=configmaps
-        - --collectors=cronjobs
-        - --collectors=daemonsets
-        - --collectors=deployments
-        - --collectors=endpoints
-        - --collectors=horizontalpodautoscalers
-        - --collectors=ingresses
-        - --collectors=jobs
-        - --collectors=limitranges
-        - --collectors=mutatingwebhookconfigurations
-        - --collectors=namespaces
-        - --collectors=networkpolicies
-        - --collectors=nodes
-        - --collectors=persistentvolumeclaims
-        - --collectors=persistentvolumes
-        - --collectors=poddisruptionbudgets
-        - --collectors=pods
-        - --collectors=replicasets
-        - --collectors=replicationcontrollers
-        - --collectors=resourcequotas
-        - --collectors=secrets
-        - --collectors=services
-        - --collectors=statefulsets
-        - --collectors=storageclasses
-        - --collectors=validatingwebhookconfigurations
-        - --collectors=volumeattachments
+        - --resources=certificatesigningrequests
+        - --resources=configmaps
+        - --resources=cronjobs
+        - --resources=daemonsets
+        - --resources=deployments
+        - --resources=endpoints
+        - --resources=horizontalpodautoscalers
+        - --resources=ingresses
+        - --resources=jobs
+        - --resources=leases
+        - --resources=limitranges
+        - --resources=mutatingwebhookconfigurations
+        - --resources=namespaces
+        - --resources=networkpolicies
+        - --resources=nodes
+        - --resources=persistentvolumeclaims
+        - --resources=persistentvolumes
+        - --resources=poddisruptionbudgets
+        - --resources=pods
+        - --resources=replicasets
+        - --resources=replicationcontrollers
+        - --resources=resourcequotas
+        - --resources=secrets
+        - --resources=services
+        - --resources=statefulsets
+        - --resources=storageclasses
+        - --resources=validatingwebhookconfigurations
+        - --resources=volumeattachments
         - --telemetry-port=8081
         imagePullPolicy: IfNotPresent
-        image: k8s.gcr.io/kube-state-metrics/kube-state-metrics:v1.9.8
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/coreos/kube-state-metrics:v2.6.0
         securityContext:
           privileged: false
           runAsGroup: 65534
@@ -95,7 +96,7 @@ metadata:
   name: nri-bundle-nri-metadata-injection
   namespace: newrelic
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: nri-metadata-injection
     app.kubernetes.io/version: 1.7.0
@@ -108,7 +109,7 @@ spec:
   template:
     metadata:
       labels:
-        nri-bundle.version: 4.5.8
+        nri-bundle.version: 5.0.4
         app.kubernetes.io/instance: nri-bundle
         app.kubernetes.io/name: nri-metadata-injection
         app.kubernetes.io/version: 1.7.0
@@ -126,7 +127,7 @@ spec:
       hostNetwork: false
       containers:
       - name: nri-metadata-injection
-        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/k8s-metadata-injection:1.7.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/k8s-metadata-injection:1.7.5
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: false
@@ -173,7 +174,7 @@ metadata:
   name: nri-bundle-nri-prometheus
   namespace: newrelic
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: nri-prometheus
     app.kubernetes.io/version: 2.16.1
@@ -188,7 +189,7 @@ spec:
       annotations:
         checksum/config: ccb1eaf63851097c4abf7fd036baccf66b0979e728f14bbe687d21a691119c17
       labels:
-        nri-bundle.version: 4.5.8
+        nri-bundle.version: 5.0.4
         app.kubernetes.io/instance: nri-bundle
         app.kubernetes.io/name: nri-prometheus
     spec:
@@ -214,7 +215,7 @@ spec:
               value: "newrelic-license-key"
       containers:
       - name: nri-prometheus
-        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/nri-prometheus:2.16.1
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/nri-prometheus:2.17.0
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: false
@@ -254,7 +255,7 @@ metadata:
   name: nri-bundle-nri-kube-events
   namespace: newrelic
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: nri-kube-events
     app.kubernetes.io/version: 1.8.0
@@ -267,7 +268,7 @@ spec:
   template:
     metadata:
       labels:
-        nri-bundle.version: 4.5.8
+        nri-bundle.version: 5.0.4
         app.kubernetes.io/instance: nri-bundle
         app.kubernetes.io/name: nri-kube-events
         app.kubernetes.io/version: 1.8.0
@@ -298,7 +299,7 @@ spec:
               value: "newrelic-license-key"
       containers:
         - name: kube-events
-          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/nri-kube-events:1.8.0
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/nri-kube-events:1.9.1
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: false
@@ -312,7 +313,7 @@ spec:
             - name: config-volume
               mountPath: /app/config
         - name: forwarder
-          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/k8s-events-forwarder:1.22.0
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/k8s-events-forwarder:1.36.1
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: false
@@ -378,7 +379,7 @@ kind: Deployment
 metadata:
   namespace: newrelic
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: newrelic-infrastructure
     app.kubernetes.io/version: 3.2.0
@@ -395,7 +396,7 @@ spec:
   template:
     metadata:
       labels:
-        nri-bundle.version: 4.5.8
+        nri-bundle.version: 5.0.4
         app.kubernetes.io/instance: nri-bundle
         app.kubernetes.io/name: newrelic-infrastructure
         app.kubernetes.io/component: ksm
@@ -459,7 +460,7 @@ spec:
               cpu: 100m
               memory: 150M
         - name: forwarder
-          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/k8s-events-forwarder:1.24.1
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/k8s-events-forwarder:1.36.1
           imagePullPolicy: IfNotPresent
           securityContext:
             privileged: false
@@ -584,7 +585,7 @@ spec:
               value: "newrelic-license-key"
       containers:
         - name: newrelic-infrastructure
-          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/infrastructure:1.28.0
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/infrastructure:1.37.2
           imagePullPolicy: "IfNotPresent"
           securityContext:
             privileged: true

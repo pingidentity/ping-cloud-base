@@ -14,11 +14,11 @@ spec:
     resource:
       name: cpu
       target:
-        type: Value
+        type: AverageValue
         averageValue: "0.4"
   - type: Resource
     resource:
       name: memory
       target:
-        type: Value
+        type: AverageValue
         averageValue: 400Mi
