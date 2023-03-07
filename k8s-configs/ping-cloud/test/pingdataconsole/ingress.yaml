@@ -2,9 +2,8 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: pingdataconsole-ingress
-  annotations:
-    kubernetes.io/ingress.class: nginx-public
 spec:
+  ingressClassName: nginx-public
   tls:
   - hosts:
     - pingdataconsole-dev.ping-demo.com
