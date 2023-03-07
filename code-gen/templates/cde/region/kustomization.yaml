@@ -5,7 +5,6 @@ resources:
 - ../base
 - pingdirectory
 - pingfederate
-- pingaccess-was
 - pingaccess
 - pingdelegator
 - custom-resources
@@ -224,7 +223,6 @@ patchesStrategicMerge:
 - ../base/cluster-tools/health/remove-from-secondary-patch.yaml
 
 #- pingaccess/ff-external-ingress/remove-external-ingress.yaml
-#- pingaccess-was/ff-external-ingress/remove-external-ingress.yaml
 #- pingdelegator/ff-external-ingress/remove-external-ingress.yaml
 #- pingdirectory/ff-external-ingress/remove-external-ingress.yaml
 #- pingfederate/ff-external-ingress/remove-external-ingress.yaml
