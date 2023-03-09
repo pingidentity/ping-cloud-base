@@ -34,7 +34,8 @@ set_deploy_type_env_vars() {
     # Set PingOne deploy env vars
     echo "Setting env vars for PingOne deployment"
     export PING_CLOUD_NAMESPACE=ping-p1-${CI_COMMIT_REF_SLUG}
-    export PLATFORM_EVENT_QUEUE_NAME="${SELECTED_KUBE_NAME}_v2_platform_event_queue.fifo"
+    KUBE_NAME_UNDERSCORES=$(echo ${SELECTED_KUBE_NAME} | tr '-' '_')
+    export PLATFORM_EVENT_QUEUE_NAME="${KUBE_NAME_UNDERSCORES}_platform_event_queue.fifo"
     export ORCH_API_SSM_PATH_PREFIX="/${SELECTED_KUBE_NAME}/pcpt/orch-api"
     export MYSQL_DATABASE="p1_pingcentral${ENV_NAME_NO_DASHES}"
     export BELUGA_ENV_NAME=p1-${CI_COMMIT_REF_SLUG}
@@ -209,8 +210,6 @@ set_env_vars
 set_pingone_api_env_vars() {
   P1_BASE_ENV_VARS=$(get_ssm_val "/pcpt/pingone/env-vars")
   eval $P1_BASE_ENV_VARS
-  P1_CLUSTER_ENV_VARS=$(get_ssm_val "/pcpt/pingone/${SELECTED_KUBE_NAME}/env-vars")
-  eval $P1_CLUSTER_ENV_VARS
 }
 
 ########################################################################################################################
