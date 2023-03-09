@@ -3,7 +3,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/base/git-ops?ref=${K8S_GIT_BRANCH}
-- argo-application.yaml
 - argo-application-set.yaml
 
 patchesStrategicMerge:
@@ -67,4 +66,8 @@ patchesJson6902:
       value:
         ARGOCD_BOOTSTRAP_ENABLED: "${ARGOCD_BOOTSTRAP_ENABLED}"
         ARGOCD_CDE_ROLE_SSM_TEMPLATE: "${ARGOCD_CDE_ROLE_SSM_TEMPLATE}"
+        ARGOCD_CDE_URL_SSM_TEMPLATE: "${ARGOCD_CDE_URL_SSM_TEMPLATE}"
+        CLUSTER_STATE_REPO_BRANCH: "${CLUSTER_STATE_REPO_BRANCH}"
         ENVIRONMENTS: "${ENVIRONMENTS}"
+        REGION: "${REGION}"
+
