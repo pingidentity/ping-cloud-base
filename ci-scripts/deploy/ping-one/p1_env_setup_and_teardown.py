@@ -6,7 +6,11 @@ import pathlib
 import subprocess
 import time
 import json
+from dataclasses import dataclass
+from typing import Optional
+
 import inquirer
+import tenacity
 from oauthlib.oauth2 import BackendApplicationClient, InvalidClientError
 from requests import Response
 from requests.auth import HTTPBasicAuth
@@ -38,6 +42,27 @@ DELETE = "DELETE"
 BASE_REQUIRED_ENV_VARS = ["DEPLOYMENTS_CLIENT_ID", "DEPLOYMENTS_CLIENT_SECRET", "WORKERAPP_CLIENT_SECRET",
                           "ORG_ID", "PINGCLOUD_CLIENT_ID", "PINGCLOUD_CLIENT_SECRET"]
 CICD_REQUIRED_ENV_VARS = ["ADMIN_ENV_ID", "P1_LICENSE_ID", "WORKERAPP_CLIENT_ID", "CLUSTER_NAME"]
+
+
+@dataclass
+class EnvironmentEndpoints:
+    """
+    Data class for api endpoints.
+    """
+
+    def __init__(self, api_location: str, env_id: str):
+        """
+        :param api_location: base api url for endpoints
+        :param env_id: environment ID
+        """
+        self.env = f"{api_location}/environments/{env_id}"
+        self.applications = f"{self.env}/applications"
+        self.bom = f"{self.env}/billOfMaterials"
+        self.groups = f"{self.env}/groups"
+        self.populations = f"{self.env}/populations"
+        self.roles = f"{self.env}/roles"
+        self.schemas = f"{self.env}/schemas"
+        self.users = f"{self.env}/users"
 
 
 def api_call(token_session: OAuth2Session, call_type: str, endpoint: str, payload: dict = None,
@@ -92,7 +117,7 @@ def get_client(client_type: str) -> dict:
 
 class PingOneSetup:
 
-    def __init__(self, action_type: str, deployment: str, app_selection: list[str] = None):
+    def __init__(self, deployment: str, app_selection: list[str] = None):
         self.deploy_type = deployment
         self.apps = app_selection
         self.deploymentIds = {}
@@ -107,21 +132,32 @@ class PingOneSetup:
         deployment_client = get_client(DEPLOYMENT_CLIENT)
         self.deployment_client_session = OAuth2Session(deployment_client["client_id"],
                                                        token=deployment_client["token"])
-
-        if action_type == SETUP:
-            self.setup()
-        else:
-            self.teardown()
+        self.cluster_env_endpoints = None
+        self.population_name = os.getenv("CI_COMMIT_REF_SLUG")
+        self.population_id = None
 
     def setup(self):
-        # check if environment already exists
+        """
+        Full setup
+        """
         if self.get_environment() is not None:
             raise Exception("Environment already exists. Please teardown before proceeding.")
 
+        self.ci_setup()
+        self.create_admin_user()
+
+    def ci_setup(self):
+        """
+        Setup for shared P1 tenant in CICD
+        """
+        self.envId = self.get_environment()
         try:
             self.create_deployment_ids()
             self.create_bom()
-            self.create_environment()
+            if not self.envId:
+                self.create_environment()
+            self.cluster_env_endpoints = EnvironmentEndpoints(API_LOCATION, self.envId)
+            self.population_id = self.create_population(self.population_name)
         except Exception as e:
             print(e)
             print("Something went wrong... trying to delete any deployment IDs created")
@@ -129,24 +165,30 @@ class PingOneSetup:
             self.delete_deployment_ids()
             sys.exit(1)
 
-        if "CI_SERVER" not in os.environ:
-            self.create_admin_user()
-
         self.create_ssm_params()
 
     def teardown(self):
+        """
+        Full teardown
+        """
+        self.ci_teardown()
+        self.undeploy_deployment_ids()
+        self.delete_environment()
+        self.delete_deployment_ids()
+        self.delete_admin_user()
+
+    def ci_teardown(self):
+        """
+        Teardown for shared P1 tenant in CICD
+        """
         # get environment id
         self.envId = self.get_environment()
         if self.envId is None:
             raise Exception("Environment does not exist.")
 
+        self.cluster_env_endpoints = EnvironmentEndpoints(API_LOCATION, self.envId)
         self.get_bom()
-        self.undeploy_deployment_ids()
-        self.delete_environment()
-        self.delete_deployment_ids()
-
-        if "CI_SERVER" not in os.environ:
-            self.delete_admin_user()
+        self.delete_population(self.population_name)
 
     def create_deployment_ids(self):
         create_deployment_endpoint = API_LOCATION + "/organizations/" + os.getenv("ORG_ID") + "/deployments"
@@ -398,12 +440,41 @@ class PingOneSetup:
         os.environ["ENV_ID"] = self.envId
         os.environ["PRODUCT_ENTITLEMENTS"] = self.entitlements
         os.environ["DEPLOYMENT_IDS"] = self.metadata
+        os.environ["POPULATION_ID"] = self.population_id
 
         command = "bash " + str(pathlib.Path(__file__).parent) + "/setup-pingone-bootstrap-aws-config.sh"
         result = subprocess.call(command, env=None, shell=True)
         if result != 0:
             message = "setup-pingone-bootstrap-aws-config.sh script failed with exit code " + str(result)
             raise Exception(message)
+
+    def create_population(self, name: str) -> str:
+        print(f"Creating population {name}")
+        payload = {
+            "name": name,
+            "description": name,
+        }
+        api_call(token_session=self.workerapp_client_session, call_type=POST, endpoint=self.cluster_env_endpoints.populations, payload=payload)
+        return self.get_population_id(name)
+
+    @tenacity.retry(
+        wait=tenacity.wait_fixed(1),
+        stop=tenacity.stop_after_attempt(5),
+    )
+    def get_population_id(self, name: str) -> str:
+        res = api_call(token_session=self.workerapp_client_session, call_type=GET, endpoint=self.cluster_env_endpoints.populations)
+        for pop in res.json()["_embedded"]["populations"]:
+            if pop["name"] == name:
+                print("Population: " + self.population_name + " ID: " + pop["id"])
+                return pop["id"]
+        raise KeyError(f"Population {name} not found")
+
+    def delete_population(self, name: str) -> None:
+        try:
+            pop_id = self.get_population_id(name)
+            api_call(self.workerapp_client_session, DELETE, f"{self.cluster_env_endpoints.populations}/{pop_id}")
+        except KeyError as err:
+            print(f"Unable to delete population: {err}")
 
 
 def interactive_execution():
@@ -451,7 +522,11 @@ def interactive_execution():
 
     if answers["continue"]:
         print("Starting...")
-        PingOneSetup(action, deploy_type, apps)
+        p1_setup = PingOneSetup(deploy_type, apps)
+        if action == SETUP:
+            p1_setup.setup()
+        else:
+            p1_setup.teardown()
 
 
 def cluster_execution():
@@ -479,7 +554,11 @@ def cluster_execution():
     else:
         deploy_type = CUSTOMER
     print("%s: %s environment with %s apps" % (action, os.getenv("CLUSTER_NAME"), str(APP_NAMES)))
-    PingOneSetup(action, deploy_type, APP_NAMES)
+    p1_setup = PingOneSetup(deploy_type, APP_NAMES)
+    if action == SETUP:
+        p1_setup.ci_setup()
+    else:
+        p1_setup.ci_teardown()
 
 
 if __name__ == "__main__":

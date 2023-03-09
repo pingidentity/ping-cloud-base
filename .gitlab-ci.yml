@@ -20,7 +20,7 @@ stages:
 ## Global environment variables ##
 variables:
   DELETE_ENV_AFTER_PIPELINE: 'true'
-  PINGONE_DEPLOY: $PINGONE_DEPLOY
+  PINGONE_DEPLOY: 'true'
   K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.6.0
 
 ## Compile stage ##
@@ -45,16 +45,6 @@ find-cluster:
       dotenv: cluster.env
 
 ## Deploy stage ##
-deploy:
-  stage: deploy
-  tags:
-    - default-gitlab-runner
-  image: ${K8S_DEPLOY_TOOLS}
-  script:
-    - ./ci-scripts/deploy/deploy.sh
-  dependencies:
-    - find-cluster
-
 p1-deploy:
   stage: deploy
   tags:
@@ -65,23 +55,10 @@ p1-deploy:
     - PINGONE=true ./ci-scripts/deploy/deploy.sh
   dependencies:
     - find-cluster
-  only:
-    variables:
-      - $PINGONE_DEPLOY == "true"
 
 ## Unit tests have moved into ping-cloud-docker (PDO-1739) ##
 
 ## PA-WAS stage ##
-pa-was-integration-tests:
-  stage: pa-was-test
-  tags:
-    - default-gitlab-runner
-  image: ${K8S_DEPLOY_TOOLS}
-  script:
-    - ./ci-scripts/test/integration/run-integration-tests.sh pingaccess-was
-  dependencies:
-    - find-cluster
-
 p1-pa-was-integration-tests:
   stage: pa-was-test
   tags:
@@ -92,9 +69,6 @@ p1-pa-was-integration-tests:
     - PINGONE=true ./ci-scripts/test/integration/run-integration-tests.sh pingaccess-was
   dependencies:
     - find-cluster
-  only:
-    variables:
-      - $PINGONE_DEPLOY == "true"
 
  ## Integration Test stage ##
 
@@ -113,35 +87,7 @@ p1-pa-was-integration-tests:
   - common
   - monitoring
   - health
-
-################################################
-# All integration tests defined to run on the  #
-# PingOne deployed P1AS                        #
-################################################
-.all-p1-tests: &all-p1-tests
-  - pingcloud-services
-  - common
   - pingone
-
-.integration-tests-base:
-  variables:
-    TEST: ""
-  stage: integration-test
-  tags:
-    - default-gitlab-runner
-  image: ${K8S_DEPLOY_TOOLS}
-  script:
-    - ./ci-scripts/test/integration/run-integration-tests.sh ${TEST}
-  dependencies:
-    - find-cluster
-
-integration-tests:
-  extends: .integration-tests-base
-  variables:
-    TEST: ${TEST}
-  parallel:
-    matrix:
-      - TEST: *all-tests
 
 .p1-integration-tests-base:
   variables:
@@ -155,9 +101,6 @@ integration-tests:
     - PINGONE=true ./ci-scripts/test/integration/run-integration-tests.sh ${TEST}
   dependencies:
     - find-cluster
-  only:
-    variables:
-      - $PINGONE_DEPLOY == "true"
   artifacts:
     name: "integration_test_logs"
     paths:
@@ -170,19 +113,9 @@ p1-integration-tests:
     TEST: ${TEST}
   parallel:
     matrix:
-      - TEST: *all-p1-tests
+      - TEST: *all-tests
 
 ## Chaos testing stage ##
-chaos-tests:
-  stage: chaos
-  tags:
-    - default-gitlab-runner
-  image: ${K8S_DEPLOY_TOOLS}
-  script:
-    - ./ci-scripts/test/integration/run-integration-tests.sh chaos
-  dependencies:
-    - find-cluster
-
 p1-chaos-tests:
   stage: chaos
   tags:
@@ -192,21 +125,8 @@ p1-chaos-tests:
     - PINGONE=true ./ci-scripts/test/integration/run-integration-tests.sh chaos
   dependencies:
     - find-cluster
-  only:
-    variables:
-      - $PINGONE_DEPLOY == "true"
 
 ## Cleanup stage ##
-cleanup:
-  stage: cleanup
-  tags:
-    - default-gitlab-runner
-  image: ${K8S_DEPLOY_TOOLS}
-  script:
-    - ./ci-scripts/cleanup/teardown.sh
-  dependencies:
-    - find-cluster
-
 p1-cleanup:
   stage: cleanup
   tags:
@@ -216,8 +136,3 @@ p1-cleanup:
     - PINGONE=true ./ci-scripts/cleanup/teardown.sh
   dependencies:
     - find-cluster
-  only:
-    variables:
-      - $PINGONE_DEPLOY == "true"
-
-

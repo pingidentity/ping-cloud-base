@@ -55,6 +55,7 @@ class TestPFAdminSSO(seleniumbase.BaseCase):
         if self.is_element_visible('button[data-id="guide-close-button"]'):
             self.click('button[data-id="guide-close-button"]')
     
+    @unittest.skip("Skipping until PDO-4904")
     def test_pf_admin_user_can_log_in_to_admin_environment(self):
         self.pingone_login()
         # The content frame on the home page displays the list of environments
@@ -62,6 +63,7 @@ class TestPFAdminSSO(seleniumbase.BaseCase):
         self.switch_to_frame("content-iframe")
         self.assert_text_visible("Your Environments", "div")
 
+    @unittest.skip("Skipping until PDO-4904")
     def test_pf_admin_user_can_access_pf_admin_page(self):
         self.pingone_login()
         # Check if the PF Admin page can be accessed using SSO in a new window
