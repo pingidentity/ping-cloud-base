@@ -105,7 +105,8 @@ feature_flags() {
         else
             # enabling remove external ingress yaml if the feature flag EXTERNAL_INGRESS_ENABLED is false
             if [[ ${enabled} != "true" ]]; then
-                for kust_file in $(git grep -l "${search_term}" | grep "kustomization.yaml"); do
+                cd "${TMP_DIR}"
+                for kust_file in $(grep --exclude-dir=.git -rwl -e "${search_term}" | grep "kustomization.yaml"); do
                     log "UnCommenting out ${search_term} in ${kust_file}"
                     sed -i.bak \
                         -e "/${search_term}/ s|^#*||g" \
