@@ -43,6 +43,7 @@
 - Remove LEGACY_LOGGING flag and logic
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 - Update Prometheus CPU/MEM limits
 =======
 <<<<<<< HEAD
@@ -50,17 +51,10 @@
 =======
 <<<<<<< HEAD
 >>>>>>> c8bc0911c (Rebase)
+=======
+>>>>>>> dc8c8310c (Rebase)
 - Add ArgoCD ApplicationSet support for multiple CDEs
-=======
-=======
-=======
->>>>>>> 00f58442d (change log update)
 - Flag in env_var to enable/disable external ingresses for admin endpoints
-
->>>>>>> b94dd84bd (PDO-4388)
->>>>>>> f7c7370c8 (PDO-4388)
-=======
->>>>>>> b45c67e17 (Rebase)
 
 _Changes:_
 
