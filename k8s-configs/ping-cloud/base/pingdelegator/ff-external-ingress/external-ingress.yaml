@@ -1,0 +1,25 @@
+# This defines the external ingress for the pingdelegator service
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pingdelegator-ext-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  ingressClassName: nginx-public
+  tls:
+  - hosts:
+    - ext-pingdelegator.ping-demo.com
+  rules:
+  - host: ext-pingdelegator.ping-demo.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: pingdelegator
+            port:
+              number: 1443
