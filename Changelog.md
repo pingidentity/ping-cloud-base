@@ -41,18 +41,7 @@
 - Add init container for ArgoCD to create clusters for itself
 - Add ArgoCD Applications for each CDE via ApplicationSet
 - Remove LEGACY_LOGGING flag and logic
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 - Update Prometheus CPU/MEM limits
-=======
-<<<<<<< HEAD
->>>>>>> 3f7974c4e (PDO-4388)
-=======
-<<<<<<< HEAD
->>>>>>> c8bc0911c (Rebase)
-=======
->>>>>>> dc8c8310c (Rebase)
 - Add ArgoCD ApplicationSet support for multiple CDEs
 - Flag in env_var to enable/disable external ingresses for admin endpoints
 
