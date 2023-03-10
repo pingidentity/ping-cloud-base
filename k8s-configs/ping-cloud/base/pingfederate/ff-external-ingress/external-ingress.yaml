@@ -1,0 +1,25 @@
+# This defines the external ingress for the pingfederate admin services.
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pingfederate-admin-ext-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  ingressClassName: nginx-public
+  tls:
+    - hosts:
+        - ext-pingfederate-admin-api.ping-demo.com
+  rules:
+    - host: ext-pingfederate-admin-api.ping-demo.com
+      http:
+        paths:
+          - path: /pf-admin-api/
+            pathType: Prefix
+            backend:
+              service:
+                name: pingfederate-admin
+                port:
+                  number: 9999
