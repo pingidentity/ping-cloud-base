@@ -20,6 +20,7 @@
 - Upgrade prometheus to v2.42.0
 - Upgrade EFS Driver to v1.5.1
 - Add PF requests logs parsing and indexing
+<<<<<<< HEAD
 - Fix index template creation race condition issue
 - Update the PD backup job to create new PV at the start of the job and mount it
 - Update the PD restore job to create new PV at the start of the job and mount it
@@ -41,14 +42,29 @@
 - Add init container for ArgoCD to create clusters for itself
 - Add ArgoCD Applications for each CDE via ApplicationSet
 - Remove LEGACY_LOGGING flag and logic
+<<<<<<< HEAD
 - Update Prometheus CPU/MEM limits
+=======
+<<<<<<< HEAD
+>>>>>>> 3f7974c4e (PDO-4388)
 - Add ArgoCD ApplicationSet support for multiple CDEs
+=======
+=======
+- Flag in env_var to enable/disable external ingresses for admin endpoints
+
+>>>>>>> b94dd84bd (PDO-4388)
+>>>>>>> f7c7370c8 (PDO-4388)
 
 _Changes:_
 
 - [X] PDO-2419 Enable users to download or upload user reports in Delegated Admin
 - [X] PDO-3335 Set PingFederate Engines minReplicas count to 3 in prod/small deployment
+<<<<<<< HEAD
 - [X] PDO-4556 [need before EKS 1.25] batch/v1beta1 CronJob is deprecated in v1.21+, unavailable in v1.25+; use batch/v1 CronJob
+=======
+- [X] PDO-4388 Flag in env_var to enable/disable external ingresses for admin endpoints
+- [X] PDO-4570 Validate descriptor JSON file before deployment to k8s cluster
+>>>>>>> b94dd84bd (PDO-4388)
 - [X] PDO-4575 Upgrade ArgoCD to v2.5.5
 - [X] PDO-4697 Update cluster tools to latest version: cluster-autoscaler v1.23.0
 - [X] PDO-4698 Upgrade nginx-ingress-controller to v1.5.1
