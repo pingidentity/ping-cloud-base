@@ -41,6 +41,7 @@
 - Add init container for ArgoCD to create clusters for itself
 - Add ArgoCD Applications for each CDE via ApplicationSet
 - Remove LEGACY_LOGGING flag and logic
+- Update Prometheus CPU/MEM limits
 - Add ArgoCD ApplicationSet support for multiple CDEs
 
 _Changes:_
@@ -92,6 +93,7 @@ _Changes:_
 - [X] PDO-5039 Automate cleanup of external dns records for CI/CD clusters
 - [X] PDO-5041 node-role.kubernetes.io/master (deprecated)
 - [X] PDO-5043 Legacy Logging Mode: Remove Feature Flag, Code Logic and Refactor Filters
+- [X] PDO-5104 Update Prometheus CPU/MEM limits
 
 ### 1.17.0.0
 
