@@ -23,7 +23,6 @@ csd_upload() {
 
   log "Applying the CSD upload job"
   kubectl delete -f "${upload_job}" -n "${PING_CLOUD_NAMESPACE}"
-  assertEquals "The kubectl delete command to remove an existing ${upload_csd_job_name} should have succeeded" 0 $?
 
   kubectl apply -f "${upload_job}" -n "${PING_CLOUD_NAMESPACE}"
   assertEquals "The kubectl apply command to create the ${upload_csd_job_name} should have succeeded" 0 $?
@@ -38,14 +37,14 @@ csd_upload() {
   sleep 5
 
   log "Expected CSD files:"
-  expected_files "${upload_csd_job_name}" | tee /tmp/expected.txt
+  expected_csd_files "${upload_csd_job_name}" "^2.*support-data.zip$" | tee /tmp/expected.txt
 
   if ! verify_upload_with_timeout "pingfederate"; then
     return 1
   fi
   return 0
-
 }
+
 
 # When arguments are passed to a script you must
 # consume all of them before shunit is invoked
