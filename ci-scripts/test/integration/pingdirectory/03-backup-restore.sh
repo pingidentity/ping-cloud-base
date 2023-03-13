@@ -10,9 +10,11 @@ fi
 expected_files() {
   kubectl logs -n "${PING_CLOUD_NAMESPACE}" \
     $(kubectl get pod -o name -n "${PING_CLOUD_NAMESPACE}" | grep pingdirectory-backup | cut -d/ -f2) |
-  tail -1 |
+  tail -10 |
   tr ' ' '\n' |
-  sort
+  sort |
+  grep '^data.*zip$' |
+  uniq 
 }
 
 actual_files() {
@@ -72,11 +74,11 @@ testBackupAndRestore() {
   # We expect 3 backends to be restored successfully
   RESTORE_SUCCESS_MESSAGE='Restore task .* has been successfully completed'
   RESTORE_POD=$(kubectl get pod -n "${PING_CLOUD_NAMESPACE}" -o name | grep pingdirectory-restore)
-  NUM_SUCCESSFUL=$(kubectl logs -n "${PING_CLOUD_NAMESPACE}" "${RESTORE_POD}" | grep -c "${RESTORE_SUCCESS_MESSAGE}")
+  NUM_SUCCESSFUL=$(kubectl logs -n "${PING_CLOUD_NAMESPACE}" "${RESTORE_POD}" | grep -o "${RESTORE_SUCCESS_MESSAGE}" | sort -u | wc -l )
 
   NUM_EXPECTED=3
-  assertNotEquals "Restore job failed" 4 ${NUM_SUCCESSFUL}
-  if test "${NUM_SUCCESSFUL}" -ne 4; then
+  assertEquals "Restore job failed" "${NUM_EXPECTED}" "${NUM_SUCCESSFUL}"
+  if test "${NUM_SUCCESSFUL}" -ne ${NUM_EXPECTED}; then
     log "Restore job failed. Restore logs:"
     kubectl logs -n "${PING_CLOUD_NAMESPACE}" "${RESTORE_POD}"
   fi
