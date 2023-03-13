@@ -45,6 +45,7 @@
 - Update Prometheus CPU/MEM limits
 - Add ArgoCD ApplicationSet support for multiple CDEs
 - Flag in env_var to enable/disable external ingresses for admin endpoints
+- Fix test that file has been copied is not working in init container
 
 _Changes:_
 
@@ -97,6 +98,7 @@ _Changes:_
 - [X] PDO-5039 Automate cleanup of external dns records for CI/CD clusters
 - [X] PDO-5041 node-role.kubernetes.io/master (deprecated)
 - [X] PDO-5043 Legacy Logging Mode: Remove Feature Flag, Code Logic and Refactor Filters
+- [X] PDO-5080 Test that file has been copied is not working in init container
 - [X] PDO-5104 Update Prometheus CPU/MEM limits
 
 ### 1.17.0.0
