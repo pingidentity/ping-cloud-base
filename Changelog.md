@@ -46,6 +46,7 @@
 - Add ArgoCD ApplicationSet support for multiple CDEs
 - Flag in env_var to enable/disable external ingresses for admin endpoints
 - Fix test that file has been copied is not working in init container
+- OpenSearch installed in cluster
 
 _Changes:_
 
@@ -100,6 +101,7 @@ _Changes:_
 - [X] PDO-5043 Legacy Logging Mode: Remove Feature Flag, Code Logic and Refactor Filters
 - [X] PDO-5080 Test that file has been copied is not working in init container
 - [X] PDO-5104 Update Prometheus CPU/MEM limits
+- [X] PDO-5110 Install Opensearch side-by-side with Elastic
 
 ### 1.17.0.0
 

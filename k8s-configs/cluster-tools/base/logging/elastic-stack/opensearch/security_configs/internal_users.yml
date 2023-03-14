@@ -1,0 +1,52 @@
+_meta:
+  type: "internalusers"
+  config_version: 2
+
+# Define your internal users here
+
+## Demo users
+
+admin:
+  hash: "$2y$12$t2gdM6InqaPHdC.lHeXW7OEH6B5PI2UMnfGZ0lq4MutfAiYQy4FaW"
+  reserved: true
+  backend_roles:
+  - "admin"
+  description: "Demo admin user"
+
+kibanaserver:
+  hash: "$2y$12$wHh6/b7i8CuzQEvBCw/lyOzvHw/6ZBEoeKPxMgWhkkqpD2Vls6VcS"
+  reserved: true
+  description: "Demo OpenSearch Dashboards user"
+
+kibanaro:
+  hash: "$2y$12$O7ZpyD71zss2i.KafEA9GeRtKs8Ch2hSN8HtbcT1xCUwJPWVN7Y3u"
+  reserved: false
+  backend_roles:
+  - "kibanauser"
+  - "readall"
+  attributes:
+    attribute1: "value1"
+    attribute2: "value2"
+    attribute3: "value3"
+  description: "Demo OpenSearch Dashboards read only user"
+
+logstash:
+  hash: "$2y$12$.iY36ILKEixrPF1ioV8in.vNlFVCW8wsy1Gf9m.mXlbT0U9QmvBK2"
+  reserved: false
+  backend_roles:
+  - "logstash"
+  description: "Demo logstash user"
+
+readall:
+  hash: "$2y$12$15huaUhaiNxHiP0JIhf.QeB9NVsB/nTiSytIT1DQJfXCEKKJaIy8C"
+  reserved: false
+  backend_roles:
+  - "readall"
+  description: "Demo readall user"
+
+snapshotrestore:
+  hash: "$2y$12$dyT.lMC1GdPwOVBSxfnS5ebGBH9S2.SkVI/F6D6ASy90oX8SdAxV."
+  reserved: false
+  backend_roles:
+  - "snapshotrestore"
+  description: "Demo snapshotrestore user"
