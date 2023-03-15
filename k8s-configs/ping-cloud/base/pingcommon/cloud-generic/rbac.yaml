@@ -45,6 +45,8 @@ rules:
     - "persistentvolumeclaims"
     verbs:
     - delete
+    - patch
+    - create
   - apiGroups:
     - ""
     - "apps"

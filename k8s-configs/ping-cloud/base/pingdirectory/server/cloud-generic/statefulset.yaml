@@ -260,6 +260,12 @@ spec:
               subPath: jmx_prometheus_javaagent-0.14.0.jar
             - name: out-dir
               mountPath: /opt/out
+            - name: out-dir
+              mountPath: /opt/out/backup
+              subPath: backup
+            - name: out-dir
+              mountPath: /opt/out/backup-upload
+              subPath: backup-upload
             - name: pingdirectory-passwords
               mountPath: /usr/local/secrets
               readOnly: true

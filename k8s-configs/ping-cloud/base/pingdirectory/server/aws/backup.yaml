@@ -43,6 +43,14 @@ spec:
         - name: pd-backup-volume
           mountPath: /opt/out/backup-upload
           subPath: backup-upload
+        - name: pingdirectory-passwords
+          mountPath: /usr/local/secrets
+          readOnly: true
+        - name: pingdirectory-init
+          mountPath: /logger.lib.sh
+          subPath: logger.lib.sh
+      securityContext:
+        fsGroup: 9999
       volumes:
       - name: backup-script
         configMap:
@@ -51,6 +59,15 @@ spec:
       - name: pd-backup-volume
         persistentVolumeClaim:
           claimName: pingdirectory-backup
+      - name: pingdirectory-passwords
+        secret:
+          secretName: pingdirectory-passwords
+          optional: true
+          defaultMode: 0400
+      - name: pingdirectory-init
+        configMap:
+          name: pingcommon-init
+          defaultMode: 0555
 
 ---
 # Persistent Volume to run backup process

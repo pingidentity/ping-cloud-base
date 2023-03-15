@@ -19,43 +19,18 @@ data:
     LOG_FILE=/tmp/upload.log
 
     test -z "${BACKUP_RESTORE_POD}" && SERVER="${K8S_STATEFUL_SET_NAME}-0" || SERVER="${BACKUP_RESTORE_POD}"
-
-    echo "test"
-  
-    ls /opt/in/hooks
-    
-    test -x ${SCRIPT} && ${SCRIPT}
-
+   
     echo "Running backup script within ${SERVER} pod"
-    #/tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}"> "${LOG_FILE}"
+    echo "${BACKENDS_TO_BACKUP}"
+    cp /logger.lib.sh "${HOOKS_DIR}"/logger.lib.sh
 
-    if test ${?} -eq 0; then
-      UPLOAD_FILE=$(tail -1 "${LOG_FILE}")
-      test -z "${UPLOAD_FILES}" && UPLOAD_FILES="${UPLOAD_FILE}" || UPLOAD_FILES="${UPLOAD_FILES} ${UPLOAD_FILE}"
-    else
-      echo "Upload script not found on server ${SERVER}"
-    fi
-    
-    # Print the names of the uploaded files so callers know exactly what was uploaded
-    echo "The following files were uploaded:"
-    echo "${UPLOAD_FILES}"
+    #/tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}"> "${LOG_FILE}"
+    test -x ${SCRIPT} && sh ${SCRIPT}
+    #/tmp/kubectl cp ping-cloud-vathsalyakidambi-dev/pingdirectory-0:/opt/out/backup /opt/out/backup 
+    ls -al /opt/out/backup
+
     echo "Deleting PingDirectory backup pvc"
     /tmp/kubectl delete pvc pingdirectory-backup
----
-# Persistance Volume to run backup process
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pingdirectory-backup
-  labels:
-    class: pingdirectory-server
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: pingdirectory-enc-gp2
-  resources:
-    requests:
-      storage: 40Gi
 
 ---
 # Do a full backup of the user backend every 6 hours.
