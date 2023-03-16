@@ -1,3 +1,4 @@
+import time
 from dataclasses import dataclass
 import os
 
@@ -5,6 +6,7 @@ import kubernetes as k8s
 import requests
 import urllib3
 
+import k8s_utils
 from k8s_utils import K8sUtils
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -37,8 +39,19 @@ class TestHealthBase(K8sUtils):
         pod_names = cls.get_deployment_pod_names(label=label, namespace=namespace)
         watch = k8s.watch.Watch()
         for pod_name in pod_names:
-            for event in watch.stream(func=cls.core_client.read_namespaced_pod_log, namespace=namespace, name=pod_name):
-                if event.endswith(f"sent to http://healthcheck.{cls.ping_cloud}:5000"):
+            watch_start = time.time()
+            watch_timeout_seconds = 120
+            for event in watch.stream(
+                func=cls.core_client.read_namespaced_pod_log,
+                namespace=namespace,
+                name=pod_name,
+            ):
+                if (
+                    event.endswith(".xml")
+                    or k8s_utils.timeout_reached(
+                        start_time=watch_start, timeout_seconds=watch_timeout_seconds
+                    )
+                ):
                     watch.stop()
                     return
 

@@ -17,7 +17,7 @@ Note: annotations take precedence over a ConfigMap.
 
 Example Settings:
 ```sh
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: test-ingress
@@ -31,7 +31,7 @@ metadata:
 NGINX writes the logs in a file once the request has been processed. They are enabled by default in NGINX, if you want to disable them for a given ingress. To do this, use this annotation:
 
 ```sh
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: test-ingress

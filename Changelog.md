@@ -28,6 +28,7 @@
 - ILM policy for alerts index changed to move index to warm after 7 days in hot and delete index after 30 days
 - Add PA-WAS to customer-hub env
 - Replace deprecated topologyKey
+- Enable the skipped integration tests.
 - Automate creation of ping-cloud-dashboards new release branch 
 - Update cluster tools to latest version: metrics-server v0.6.2
 - Update all PodDisruptionBudget resources to API v1
@@ -41,11 +42,17 @@
 - Add init container for ArgoCD to create clusters for itself
 - Add ArgoCD Applications for each CDE via ApplicationSet
 - Remove LEGACY_LOGGING flag and logic
+- Update Prometheus CPU/MEM limits
+- Add ArgoCD ApplicationSet support for multiple CDEs
+- Flag in env_var to enable/disable external ingresses for admin endpoints
+- Fix test that file has been copied is not working in init container
+- Deploy ArgoCD to customer-hub only
 
 _Changes:_
 
 - [X] PDO-2419 Enable users to download or upload user reports in Delegated Admin
 - [X] PDO-3335 Set PingFederate Engines minReplicas count to 3 in prod/small deployment
+- [X] PDO-4388 Flag in env_var to enable/disable external ingresses for admin endpoints
 - [X] PDO-4556 [need before EKS 1.25] batch/v1beta1 CronJob is deprecated in v1.21+, unavailable in v1.25+; use batch/v1 CronJob
 - [X] PDO-4575 Upgrade ArgoCD to v2.5.5
 - [X] PDO-4697 Update cluster tools to latest version: cluster-autoscaler v1.23.0
@@ -69,8 +76,10 @@ _Changes:_
 - [X] PDO-4835 Update all PodDisruptionBudget resources to API v1
 - [X] PDO-4836 Copy PCD ci-scripts to shared location
 - [X] PDO-4861 Selectively restore a backend in PD
+- [X] PDO-4870 Enable the skipped integration tests.
 - [X] PDO-4874 Automate creation of ping-cloud-dashboards new release branch
 - [X] PDO-4895 Added karpenter v0.24.0 and required parameters, KarpenterControllerRole & ClusterEndPoint
+- [X] PDO-4903 Deploy PingOne in CICD like Shared P1 Tenant
 - [X] PDO-4916 Missing PF request log
 - [X] PDO-4959 Update the PD backup job to create new PV at the start of the job and mount it
 - [X] PDO-4974 Change retry interval for PGO firing alert notification in slack from 5 min to 60 min
@@ -82,6 +91,8 @@ _Changes:_
 - [X] PDO-4986 Add PA-WAS in customer-hub
 - [X] PDO-4987 Add ArgoCD Bootstrap init container to create clusters
 - [X] PDO-4988 Add ArgoCD Applications for each CDE via ApplicationSet
+- [X] PDO-4989 Add ArgoCD ApplicationSet support for multiple CDEs
+- [X] PDO-4991 Deploy ArgoCD to customer-hub only
 - [X] PDO-4997 Update values.yaml in region and base path sync with env_vars file
 - [X] PDO-5008 Update tagging script to return correct tag
 - [X] PDO-5009 Add logstash HPA and upgrade resources
@@ -89,6 +100,8 @@ _Changes:_
 - [X] PDO-5039 Automate cleanup of external dns records for CI/CD clusters
 - [X] PDO-5041 node-role.kubernetes.io/master (deprecated)
 - [X] PDO-5043 Legacy Logging Mode: Remove Feature Flag, Code Logic and Refactor Filters
+- [X] PDO-5080 Test that file has been copied is not working in init container
+- [X] PDO-5104 Update Prometheus CPU/MEM limits
 
 ### 1.17.0.0
 
@@ -129,6 +142,7 @@ _Changes:_
 - Fix regional variable for new customer creation
 - Installed EBS CSI driver
 - Replace deprecated topologyKey
+- Add IngressClassName to replace the deprecated annotation
 
 _Changes:_
 
@@ -180,8 +194,12 @@ _Changes:_
 - [X] PDO-4973 REGION_ENV should be defined before using it in ENVIRONMENT_PREFIX in Region env_vars
 - [X] PDO-4984 Install EBS CSI driver
 - [X] PDO-5015 Disable integration test for PF user authentication healthcheck
+- [X] PDO-5029 Remove bypass-acl privilege from PingDataSync account
+- [X] PDO-5035 Fix PingDataSync service to send requests to PingDataSync pods
 - [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone
+- [X] PDO-5060 Add IngressClassName to replace the deprecated annotation to support K8s v1.22 onwards
 - [X] PDO-5061 Replace healthcheck jobs with deployments
+- [X] PDO-5070 Delete patch for healthcheck-pa-was in multi-region removes deployment
 
 ### 1.16.2.0
 

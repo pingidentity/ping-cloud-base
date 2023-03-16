@@ -75,6 +75,7 @@ environment_metadata_value=$(cat <<EOF
       "webhookBaseUrl": "https://api-staging.pingone.com",
       "environmentId": "${ENV_ID}",
       "deploymentIds": ${DEPLOYMENT_IDS},
+      "populationId": "${POPULATION_ID}",
       "environmentType": "dev"
     }
 }

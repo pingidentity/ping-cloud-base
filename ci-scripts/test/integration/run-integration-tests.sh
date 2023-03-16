@@ -25,7 +25,7 @@ prepareShunit
 export SHUNIT_PATH="${PROJECT_DIR}/ci-scripts/test/shunit/shunit2-2.1.x/shunit2"
 
 # set PYTHONPATH
-export PYTHONPATH="${PROJECT_DIR}/ci-scripts/test/python-utils"
+export PYTHONPATH="${PROJECT_DIR}/ci-scripts/test/python-utils:${PROJECT_DIR}/ci-scripts/deploy/ping-one"
 
 execute_test_scripts() {
 
@@ -54,6 +54,7 @@ execute_test_scripts() {
     source venv/bin/activate
 
     log "Installing python requirements"
+    pip3.9 install -r "${PROJECT_DIR}/ci-scripts/deploy/ping-one/requirements.txt"
     REQUIREMENTS="${PROJECT_DIR}/ci-scripts/test/python-utils/requirements.txt"
     pip3.9 install -r ${REQUIREMENTS}
     log "Running python tests from: ${test_directory}"

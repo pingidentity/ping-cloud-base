@@ -9,6 +9,7 @@ resources:
 - pingaccess-was/config
 - pingaccess-was/admin
 - pingaccess-was/engine
+- pingaccess-was/ff-external-ingress
 
 configMapGenerator:
 
@@ -20,6 +21,8 @@ configMapGenerator:
   - descriptor.json
 
 patchesStrategicMerge:
+
+#- pingaccess-was/ff-external-ingress/remove-external-ingress.yaml
 
 ### Ping app known_hosts file ###
 

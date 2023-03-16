@@ -14,16 +14,8 @@ export PROJECT_DIR="${CI_PROJECT_DIR}"
 ENV_VARS_FILE="${1}"
 
 # Integration tests to skip.  Unit tests cannot be skipped.
-SKIP_TESTS="${SKIP_TESTS:-pingdirectory/03-backup-restore.sh \
-  pingfederate/02-csd-upload-test.sh \
-  pingaccess-was/09-csd-upload-test.sh \
-  pingaccess/11-heartbeat-endpoint.sh \
-  pingaccess/09-csd-upload-test.sh \
-  pingaccess/03-change-default-db-password-test.sh \
-  pingfederate/09-heartbeat-endpoint.sh \
-  pingaccess/08-artifact-test.sh \
-  pingdelegator/01-admin-user-login.sh \
-  chaos/01-delete-pa-admin-pod.sh }"
+SKIP_TESTS="${SKIP_TESTS:-pingdelegator/01-admin-user-login.sh \
+  pingaccess/08-artifact-test.sh}"
 
 # environment variables that are determined based on deployment type (traditional or PingOne)
 set_deploy_type_env_vars() {
@@ -34,7 +26,8 @@ set_deploy_type_env_vars() {
     # Set PingOne deploy env vars
     echo "Setting env vars for PingOne deployment"
     export PING_CLOUD_NAMESPACE=ping-p1-${CI_COMMIT_REF_SLUG}
-    export PLATFORM_EVENT_QUEUE_NAME="${SELECTED_KUBE_NAME}_v2_platform_event_queue.fifo"
+    KUBE_NAME_UNDERSCORES=$(echo ${SELECTED_KUBE_NAME} | tr '-' '_')
+    export PLATFORM_EVENT_QUEUE_NAME="${KUBE_NAME_UNDERSCORES}_platform_event_queue.fifo"
     export ORCH_API_SSM_PATH_PREFIX="/${SELECTED_KUBE_NAME}/pcpt/orch-api"
     export MYSQL_DATABASE="p1_pingcentral${ENV_NAME_NO_DASHES}"
     export BELUGA_ENV_NAME=p1-${CI_COMMIT_REF_SLUG}
@@ -209,8 +202,6 @@ set_env_vars
 set_pingone_api_env_vars() {
   P1_BASE_ENV_VARS=$(get_ssm_val "/pcpt/pingone/env-vars")
   eval $P1_BASE_ENV_VARS
-  P1_CLUSTER_ENV_VARS=$(get_ssm_val "/pcpt/pingone/${SELECTED_KUBE_NAME}/env-vars")
-  eval $P1_CLUSTER_ENV_VARS
 }
 
 ########################################################################################################################
@@ -586,6 +577,25 @@ expected_files() {
     tail -1 |
     tr ' ' '\n' |
     sort
+  done
+}
+
+########################################################################################################################
+# Searches CSD upload job logs and returns CSD support-data files found
+# This method is added for PA/PF as we have admins APIs and csd data is generated for them also.
+# Arguments
+#   ${1} -> The upload CSD job name
+#   ${2} -> regex of the file name to search in the logs
+########################################################################################################################
+expected_csd_files() {
+  local upload_csd_job_pods=$(kubectl get pod -o name -n "${PING_CLOUD_NAMESPACE}" | grep "${1}" | cut -d/ -f2)
+  for upload_csd_job_pod in $upload_csd_job_pods; do
+    kubectl logs -n "${PING_CLOUD_NAMESPACE}" ${upload_csd_job_pod} |
+    tail -10 |
+    tr ' ' '\n' |
+    sort |
+    grep "${2}" |
+    uniq
   done
 }
 
