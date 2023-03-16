@@ -1,0 +1,120 @@
+{
+    "id": "ping_standard_policy",
+    "seqNo": 635,
+    "primaryTerm": 3,
+    "policy": {
+        "policy_id": "ping_standard_policy",
+        "description": "Standard ping policy (after 90 days to warm(ebs), after 270 days delete)",
+        "last_updated_time": 1678887648656,
+        "schema_version": 17,
+        "error_notification": null,
+        "default_state": "hot",
+        "states": [
+            {
+                "name": "hot",
+                "actions": [
+                    {
+                        "retry": {
+                            "count": 3,
+                            "backoff": "exponential",
+                            "delay": "1m"
+                        },
+                        "rollover": {
+                            "min_index_age": "1d"
+                        }
+                    }
+                ],
+                "transitions": [
+                    {
+                        "state_name": "warm",
+                        "conditions": {
+                            "min_index_age": "90d"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "warm",
+                "actions": [
+                    {
+                        "retry": {
+                            "count": 3,
+                            "backoff": "exponential",
+                            "delay": "1m"
+                        },
+                        "force_merge": {
+                            "max_num_segments": 1
+                        }
+                    },
+                    {
+                        "retry": {
+                            "count": 3,
+                            "backoff": "exponential",
+                            "delay": "1m"
+                        },
+                        "replica_count": {
+                            "number_of_replicas": 0
+                        }
+                    },
+                    {
+                        "retry": {
+                            "count": 3,
+                            "backoff": "exponential",
+                            "delay": "1m"
+                        },
+                        "allocation": {
+                            "require": {
+                                "temp": "warm"
+                            },
+                            "include": {},
+                            "exclude": {},
+                            "wait_for": false
+                        }
+                    },
+                    {
+                        "retry": {
+                            "count": 3,
+                            "backoff": "exponential",
+                            "delay": "1m"
+                        },
+                        "read_only": {}
+                    }
+                ],
+                "transitions": [
+                    {
+                        "state_name": "delete",
+                        "conditions": {
+                            "min_index_age": "270d"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "delete",
+                "actions": [
+                    {
+                        "retry": {
+                            "count": 3,
+                            "backoff": "exponential",
+                            "delay": "1m"
+                        },
+                        "delete": {}
+                    }
+                ],
+                "transitions": []
+            }
+        ],
+        "ism_template": [
+            {
+                "index_patterns": [
+                    "logstash-*",
+                    "pa-*",
+                    "pf-*",
+                    "pd-*"
+                ],
+                "priority": 1,
+                "last_updated_time": 1678805214436
+            }
+        ]
+    }
+}

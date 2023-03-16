@@ -114,12 +114,142 @@ spec:
           value: "opensearch-cluster-headless"
         - name: cluster.name
           value: "opensearch-cluster"
+        - name: node.attr.temp
+          value: hot
         - name: network.host
           value: "0.0.0.0"
         - name: OPENSEARCH_JAVA_OPTS
           value: "-Xmx512M -Xms512M"
         - name: node.roles
           value: "master,ingest,data,remote_cluster_client,"
+        volumeMounts:
+        - name: "data"
+          mountPath: /usr/share/opensearch/data
+        - mountPath: /usr/share/opensearch/config/opensearch-security
+          name: security-config-data
+        - name: config
+          mountPath: /usr/share/opensearch/config/opensearch.yml
+          subPath: opensearch.yml
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: opensearch-cluster-warm
+  labels:
+    app.kubernetes.io/name: opensearch
+    app.kubernetes.io/instance: opensearch-cluster-warm
+spec:
+  serviceName: opensearch-cluster-headless
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: opensearch
+      app.kubernetes.io/instance: opensearch-cluster-warm
+  replicas: 1
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes:
+      - "ReadWriteOnce"
+      resources:
+        requests:
+          storage: "125Gi"
+      storageClassName: "elasticsearch-sc1"
+  template:
+    metadata:
+      name: "opensearch-cluster-warm"
+      labels:
+        app.kubernetes.io/name: opensearch
+        app.kubernetes.io/instance: opensearch-cluster-warm
+    spec:
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+      serviceAccountName: "opensearch"
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - opensearch
+      terminationGracePeriodSeconds: 120
+      volumes:
+      - name: config
+        configMap:
+          name: opensearch-config
+      - name: security-config-data
+        secret:
+          secretName: opensearch-securityconfig
+      enableServiceLinks: false
+      containers:
+      - name: "opensearch"
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          runAsNonRoot: true
+          runAsUser: 1000
+        command:
+        - sh
+        - -c
+        - |
+          #!/usr/bin/env bash
+          set -euo pipefail
+          ./bin/opensearch-plugin install -b repository-s3
+
+          bash opensearch-docker-entrypoint.sh
+
+        image: "opensearchproject/opensearch:2.6.0"
+        imagePullPolicy: "IfNotPresent"
+        readinessProbe:
+          failureThreshold: 3
+          periodSeconds: 5
+          tcpSocket:
+            port: 9200
+          timeoutSeconds: 3
+        startupProbe:
+          failureThreshold: 30
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          tcpSocket:
+            port: 9200
+          timeoutSeconds: 3
+        ports:
+        - name: http
+          containerPort: 9200
+        - name: transport
+          containerPort: 9300
+        resources:
+          requests:
+            cpu: 1000m
+            memory: 100Mi
+        env:
+        - name: node.name
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: cluster.initial_master_nodes
+          value: "opensearch-cluster-hot-0,opensearch-cluster-hot-1,opensearch-cluster-hot-2,"
+        - name: discovery.seed_hosts
+          value: "opensearch-cluster-headless"
+        - name: cluster.name
+          value: "opensearch-cluster"
+        - name: node.attr.temp
+          value: warm
+        - name: network.host
+          value: "0.0.0.0"
+        - name: OPENSEARCH_JAVA_OPTS
+          value: "-Xmx512M -Xms512M"
+        - name: node.roles
+          value: "data,remote_cluster_client,"
         volumeMounts:
         - name: "data"
           mountPath: /usr/share/opensearch/data

@@ -1,0 +1,61 @@
+{
+    "id": "ping_healthcheck_policy",
+    "seqNo": 640,
+    "primaryTerm": 3,
+    "policy": {
+        "policy_id": "ping_healthcheck_policy",
+        "description": "Ping policy for healthcheck logs(after 7 days delete)",
+        "last_updated_time": 1678887761113,
+        "schema_version": 17,
+        "error_notification": null,
+        "default_state": "hot",
+        "states": [
+            {
+                "name": "hot",
+                "actions": [
+                    {
+                        "retry": {
+                            "count": 3,
+                            "backoff": "exponential",
+                            "delay": "1m"
+                        },
+                        "rollover": {
+                            "min_index_age": "1d"
+                        }
+                    }
+                ],
+                "transitions": [
+                    {
+                        "state_name": "delete",
+                        "conditions": {
+                            "min_index_age": "7d"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "delete",
+                "actions": [
+                    {
+                        "retry": {
+                            "count": 3,
+                            "backoff": "exponential",
+                            "delay": "1m"
+                        },
+                        "delete": {}
+                    }
+                ],
+                "transitions": []
+            }
+        ],
+        "ism_template": [
+            {
+                "index_patterns": [
+                    "healthchecks-*"
+                ],
+                "priority": 1,
+                "last_updated_time": 1678887761113
+            }
+        ]
+    }
+}
