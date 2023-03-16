@@ -1,0 +1,53 @@
+{
+  "index_patterns": [
+    "pa-admin-system-*"
+  ],
+  "template": {
+    "settings": {
+      "index.number_of_shards": "3",
+      "index.number_of_replicas": "1",
+      "index.refresh_interval": "1s",
+      "index": {
+        "routing": {
+          "allocation": {
+            "require": {
+              "temp": "hot"
+            }
+          }
+        },
+        "plugins": {
+          "index_state_management": {
+            "rollover_alias": "pa-admin-system"
+          }
+        }
+      }
+    },
+    "mappings": {
+      "properties": {
+        "geoip": {
+          "dynamic": "true",
+          "properties": {
+            "ip": {
+              "type": "ip"
+            },
+            "latitude": {
+              "type": "half_float"
+            },
+            "location": {
+              "type": "geo_point"
+            },
+            "longitude": {
+              "type": "half_float"
+            }
+          }
+        },
+        "timestamp": {
+          "type": "text"
+        }
+      }
+    }
+  },
+  "composed_of": [],
+  "priority": 0,
+  "name": "pa-admin-system-template"
+}
