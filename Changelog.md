@@ -46,6 +46,7 @@
 - Add ArgoCD ApplicationSet support for multiple CDEs
 - Flag in env_var to enable/disable external ingresses for admin endpoints
 - Fix test that file has been copied is not working in init container
+- Deploy ArgoCD to customer-hub only
 
 _Changes:_
 
@@ -91,6 +92,7 @@ _Changes:_
 - [X] PDO-4987 Add ArgoCD Bootstrap init container to create clusters
 - [X] PDO-4988 Add ArgoCD Applications for each CDE via ApplicationSet
 - [X] PDO-4989 Add ArgoCD ApplicationSet support for multiple CDEs
+- [X] PDO-4991 Deploy ArgoCD to customer-hub only
 - [X] PDO-4997 Update values.yaml in region and base path sync with env_vars file
 - [X] PDO-5008 Update tagging script to return correct tag
 - [X] PDO-5009 Add logstash HPA and upgrade resources

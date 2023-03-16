@@ -711,6 +711,8 @@ export SECONDARY_TENANT_DOMAINS="${SECONDARY_TENANT_DOMAINS}"
 
 if "${IS_BELUGA_ENV}"; then
   DERIVED_GLOBAL_TENANT_DOMAIN="global.${TENANT_DOMAIN_NO_DOT_SUFFIX}"
+  # 'yq' is only checked here because it is only used within Developer CDEs
+  check_binaries "yq" || { popd >/dev/null 2>&1 && exit 1; }
 else
   DERIVED_GLOBAL_TENANT_DOMAIN="$(echo "${TENANT_DOMAIN_NO_DOT_SUFFIX}" | sed -e "s/\([^.]*\).[^.]*.\(.*\)/global.\1.\2/")"
 fi
@@ -1172,6 +1174,29 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   # Massage files from new microservice architecture
   organize_code_for_csr
 
+  PRIMARY_PING_KUST_FILE="${K8S_CONFIGS_DIR}/${REGION_NICK_NAME}/kustomization.yaml"
+
+  # Copy around files for Developer CDE before substituting vars
+  if "${IS_BELUGA_ENV}"; then
+    # Add IS_BELUGA_ENV to the base env_vars
+    BASE_ENV_VARS="${K8S_CONFIGS_DIR}/base/env_vars"
+    echo >> "${BASE_ENV_VARS}"
+    echo "IS_BELUGA_ENV=true" >> "${BASE_ENV_VARS}"
+
+    # Update patches related to Beluga developer CDEs
+    sed -i.bak 's/^# \(.*remove-from-developer-cde-patch.yaml\)$/\1/g' "${PRIMARY_PING_KUST_FILE}"
+    rm -f "${PRIMARY_PING_KUST_FILE}.bak"
+
+    # Add ArgoCD to Beluga Environments since it normally runs only in customer-hub
+    echo "This is a Beluga Development Environment, copying ArgoCD into the CSR"
+    cp -R "${CHUB_TEMPLATES_DIR}/base/cluster-tools/git-ops" "${K8S_CONFIGS_DIR}/base/cluster-tools/"
+
+    # Append the secrets from customer-hub to the CDE secrets, except PingCentral since that doesn't exist in the CDE
+    printf "\n# %%%% NOTE: Below secrets are for the Developer CDE only (when IS_BELUGA_ENV is 'true') to make sure Argo works properly %%%%#\n" >> "${K8S_CONFIGS_DIR}/base/secrets.yaml"
+    yq 'del(select(.metadata.name | contains("pingcentral")))' "${CHUB_TEMPLATES_DIR}/base/secrets.yaml" >> "${K8S_CONFIGS_DIR}/base/secrets.yaml"
+    printf "\n# %%%% END automatically appended secrets from generate-cluster-state.sh\n" >> "${K8S_CONFIGS_DIR}/base/secrets.yaml"
+  fi
+
   substitute_vars "${ENV_DIR}" "${REPO_VARS}" secrets.yaml env_vars values.yaml
   # TODO: These duplicate calls are needed to substitute the derived variables & the IS_BELUGA_ENV in values files only
   #  clean this up with PDO-4842 when all apps are migrated to values files by adding IS_BELUGA_ENV to DEFAULT_VARS
@@ -1179,19 +1204,9 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   substitute_vars "${ENV_DIR}" "${REPO_VARS}" values.yaml
   substitute_vars "${ENV_DIR}" '${IS_BELUGA_ENV}' values.yaml
 
-  PRIMARY_PING_KUST_FILE="${K8S_CONFIGS_DIR}/${REGION_NICK_NAME}/kustomization.yaml"
   # Regional enablement - add admins, backups, etc. to primary.
   if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
     sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/g' "${PRIMARY_PING_KUST_FILE}"
-    rm -f "${PRIMARY_PING_KUST_FILE}.bak"
-  fi
-
-  if "${IS_BELUGA_ENV}"; then
-    BASE_ENV_VARS="${K8S_CONFIGS_DIR}/base/env_vars"
-    echo >> "${BASE_ENV_VARS}"
-    echo "IS_BELUGA_ENV=true" >> "${BASE_ENV_VARS}"
-    # Update patches related to Beluga developer CDEs
-    sed -i.bak 's/^# \(.*remove-from-developer-cde-patch.yaml\)$/\1/g' "${PRIMARY_PING_KUST_FILE}"
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
   fi
 
