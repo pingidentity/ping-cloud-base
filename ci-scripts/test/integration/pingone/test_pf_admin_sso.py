@@ -4,7 +4,7 @@ import unittest
 
 import seleniumbase
 
-import pingone as p1
+import pingone_ui as p1_ui
 
 
 class TestPFAdminSSO(seleniumbase.BaseCase):
@@ -31,7 +31,7 @@ class TestPFAdminSSO(seleniumbase.BaseCase):
         username = "PingFederateAdmin"
         old_password = "2FederateM0re!"
         new_password = "TestNewPassword1!"
-        self.open(p1.admin_env_ui_url)
+        self.open(p1_ui.admin_env_ui_url)
         self.type("#username", username)
         self.type("#password", old_password)
         self.click('button[data-id="submit-button"]')
