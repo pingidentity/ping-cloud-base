@@ -341,6 +341,20 @@ spec:
             requests:
               cpu: 100m
               memory: 100Mi
+        - name: pingdirectory-side-car
+          securityContext:
+            runAsGroup: 9999
+            runAsNonRoot: true
+            runAsUser: 9031
+            allowPrivilegeEscalation: false
+          image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:pdo-4959-1
+          volumeMounts:
+            - name: out-dir
+              mountPath: /opt/out/backup
+              subPath: backup
+            - name: out-dir
+              mountPath: /opt/out/backup-upload
+              subPath: backup-upload    
       securityContext:
         fsGroup: 9999
       volumes:
