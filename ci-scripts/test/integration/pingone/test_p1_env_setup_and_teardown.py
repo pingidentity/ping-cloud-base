@@ -2,7 +2,7 @@ import os
 import unittest
 from typing import Optional
 
-import p1_env_setup_and_teardown as p1_utils
+from pingone import p1_env_setup_and_teardown as p1_utils
 from requests_oauthlib import OAuth2Session
 
 

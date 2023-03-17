@@ -20,7 +20,6 @@ stages:
 ## Global environment variables ##
 variables:
   DELETE_ENV_AFTER_PIPELINE: 'true'
-  PINGONE_DEPLOY: 'true'
   K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.6.0
 
 ## Compile stage ##
@@ -45,28 +44,28 @@ find-cluster:
       dotenv: cluster.env
 
 ## Deploy stage ##
-p1-deploy:
+deploy:
   stage: deploy
   tags:
     - default-gitlab-runner
   image: ${K8S_DEPLOY_TOOLS}
   script:
     - sleep 30 #sleep so that the kubectl apply doesn't execute at the same time as the deploy job
-    - PINGONE=true ./ci-scripts/deploy/deploy.sh
+    - ./ci-scripts/deploy/deploy.sh
   dependencies:
     - find-cluster
 
 ## Unit tests have moved into ping-cloud-docker (PDO-1739) ##
 
 ## PA-WAS stage ##
-p1-pa-was-integration-tests:
+pa-was-integration-tests:
   stage: pa-was-test
   tags:
     - default-gitlab-runner
   image: ${K8S_DEPLOY_TOOLS}
   script:
     - sleep 30 #sleep because both pa-was tests running at the exact same time conflicts
-    - PINGONE=true ./ci-scripts/test/integration/run-integration-tests.sh pingaccess-was
+    - ./ci-scripts/test/integration/run-integration-tests.sh pingaccess-was
   dependencies:
     - find-cluster
 
@@ -89,7 +88,7 @@ p1-pa-was-integration-tests:
   - health
   - pingone
 
-.p1-integration-tests-base:
+.integration-tests-base:
   variables:
     TEST: ""
   stage: integration-test
@@ -98,7 +97,7 @@ p1-pa-was-integration-tests:
   image: ${K8S_DEPLOY_TOOLS}
   script:
     - sleep 30 #sleep so that simultaneous tests don't conflict
-    - PINGONE=true ./ci-scripts/test/integration/run-integration-tests.sh ${TEST}
+    - ./ci-scripts/test/integration/run-integration-tests.sh ${TEST}
   dependencies:
     - find-cluster
   artifacts:
@@ -107,8 +106,8 @@ p1-pa-was-integration-tests:
       - ci-scripts/test/integration/pingone/latest_logs/
     when: on_failure
 
-p1-integration-tests:
-  extends: .p1-integration-tests-base
+integration-tests:
+  extends: .integration-tests-base
   variables:
     TEST: ${TEST}
   parallel:
@@ -116,23 +115,23 @@ p1-integration-tests:
       - TEST: *all-tests
 
 ## Chaos testing stage ##
-p1-chaos-tests:
+chaos-tests:
   stage: chaos
   tags:
     - default-gitlab-runner
   image: ${K8S_DEPLOY_TOOLS}
   script:
-    - PINGONE=true ./ci-scripts/test/integration/run-integration-tests.sh chaos
+    - ./ci-scripts/test/integration/run-integration-tests.sh chaos
   dependencies:
     - find-cluster
 
 ## Cleanup stage ##
-p1-cleanup:
+cleanup:
   stage: cleanup
   tags:
     - default-gitlab-runner
   image: ${K8S_DEPLOY_TOOLS}
   script:
-    - PINGONE=true ./ci-scripts/cleanup/teardown.sh
+    - ./ci-scripts/cleanup/teardown.sh
   dependencies:
     - find-cluster

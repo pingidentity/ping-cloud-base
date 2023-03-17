@@ -79,6 +79,7 @@ _Changes:_
 - [X] PDO-4870 Enable the skipped integration tests.
 - [X] PDO-4874 Automate creation of ping-cloud-dashboards new release branch
 - [X] PDO-4895 Added karpenter v0.24.0 and required parameters, KarpenterControllerRole & ClusterEndPoint
+- [X] PDO-4902 Code sharing for PingOne deployments
 - [X] PDO-4903 Deploy PingOne in CICD like Shared P1 Tenant
 - [X] PDO-4916 Missing PF request log
 - [X] PDO-4959 Update the PD backup job to create new PV at the start of the job and mount it
