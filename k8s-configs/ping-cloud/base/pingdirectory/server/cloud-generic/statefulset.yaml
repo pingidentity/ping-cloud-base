@@ -349,12 +349,51 @@ spec:
             allowPrivilegeEscalation: false
           image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:pdo-4959-1
           volumeMounts:
+            - name: ssh-dir
+              mountPath: /home/ping/.ssh
+            - name: shared-dir
+              mountPath: /opt/shared-dir
+            - name: topology-descriptor
+              mountPath: /opt/staging/topology/descriptor.json
+              subPath: descriptor.json
+            - name: data-dir
+              mountPath: /opt/staging/topology.json
+              subPath: topology.json
+            - name: data-dir
+              mountPath: /usr/local/bin/kubectl
+              subPath: kubectl
+            - name: data-dir
+              mountPath: /opt/staging/hooks/logger.lib.sh
+              subPath: logger.lib.sh
+            - name: data-dir
+              mountPath: /opt/staging/newrelic.jar
+              subPath: newrelic.jar
+            - name: data-dir
+              mountPath: /opt/staging/jmx_prometheus_javaagent-0.14.0.jar
+              subPath: jmx_prometheus_javaagent-0.14.0.jar
+            - name: out-dir
+              mountPath: /opt/out
             - name: out-dir
               mountPath: /opt/out/backup
               subPath: backup
             - name: out-dir
               mountPath: /opt/out/backup-upload
-              subPath: backup-upload    
+              subPath: backup-upload
+            - name: pingdirectory-passwords
+              mountPath: /usr/local/secrets
+              readOnly: true
+            - name: acme-tls-cert
+              mountPath: /usr/local/secrets/certs
+              readOnly: true
+            - name: pingdirectory-license
+              mountPath: /opt/in/instance/PingDirectory.lic
+              subPath: PingDirectory.lic
+            - name: data-dir
+              mountPath: /opt/staging/ds_env_vars
+              subPath: ds_env_vars
+            - name: pingdirectory-truststore-certs
+              mountPath: /usr/local/secrets/truststore_certs
+              readOnly: true  
       securityContext:
         fsGroup: 9999
       volumes:
