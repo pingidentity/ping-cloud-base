@@ -21,7 +21,7 @@ data:
 
     echo "Running backup script within ${SERVER} pod"
     /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}"> "${LOG_FILE}"
-
+    cat "${LOG_FILE}"
     if test ${?} -eq 0; then
       UPLOAD_FILE=$(tail -1 "${LOG_FILE}")
       test -z "${UPLOAD_FILES}" && UPLOAD_FILES="${UPLOAD_FILE}" || UPLOAD_FILES="${UPLOAD_FILES} ${UPLOAD_FILE}"
