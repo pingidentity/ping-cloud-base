@@ -20,7 +20,7 @@ data:
     test -z "${BACKUP_RESTORE_POD}" && SERVER="${K8S_STATEFUL_SET_NAME}-0" || SERVER="${BACKUP_RESTORE_POD}"
 
     echo "Running backup script within ${SERVER} pod"
-    /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}"> "${LOG_FILE}"
+    /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" > "${LOG_FILE}" | tee "${LOG_FILE}"
     cat "${LOG_FILE}"
     if test ${?} -eq 0; then
       UPLOAD_FILE=$(tail -1 "${LOG_FILE}")
