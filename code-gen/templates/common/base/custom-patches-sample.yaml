@@ -102,6 +102,76 @@ spec:
 ---
 
 ################################################
+#                Logstash
+################################################
+
+### Update logstash replicas count
+
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: logstash-elastic
+spec:
+  minReplicas: 1
+  maxReplicas: 6
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: logstash-elastic
+
+---
+
+### Update logstash replicas count and adjust resources
+
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: logstash-elastic
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: logstash-elastic
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: AverageValue
+        averageValue: "1.7"
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: AverageValue
+        averageValue: 3.7Gi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: logstash-elastic
+  namespace: elastic-stack-logging
+spec:
+  template:
+    spec:
+      containers:
+        - name: logstash
+          resources:
+            limits:
+              cpu: "2"
+              memory: 4Gi
+            requests:
+              cpu: "1"
+              memory: 2Gi
+          env:
+            - name: LS_JAVA_OPTS
+              value: '-Xms3500m -Xmx3500m'
+            - name: PIPELINE_WORKERS
+              value: "2"
+
+---
+
+################################################
 #                PingDirectory
 ################################################
 
