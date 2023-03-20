@@ -157,10 +157,10 @@ fi
 for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   if echo "${ENV_OR_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
     # Do not push any changes to the customer-hub branch when this script is run on secondary regions.
-    if ! "${IS_PRIMARY}"; then
-      echo "Not pushing any changes to ${CUSTOMER_HUB} branch for secondary region"
-      continue
-    fi
+    # if ! "${IS_PRIMARY}"; then
+    #   echo "Not pushing any changes to ${CUSTOMER_HUB} branch for secondary region"
+    #   continue
+    # fi
 
     GIT_BRANCH="${ENV_OR_BRANCH}"
     DEFAULT_CDE_BRANCH="${CUSTOMER_HUB}"
