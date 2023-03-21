@@ -13,6 +13,7 @@ data:
     
     chmod +x /tmp/kubectl
 
+
     UPLOAD_FILES=
     SCRIPT="${HOOKS_DIR}"/90-upload-backup-s3.sh
     LOG_FILE=/tmp/upload.log

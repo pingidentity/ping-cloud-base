@@ -124,10 +124,10 @@ spec:
       - name: pingaccess-admin
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v1.18-release-branch-latest
         securityContext:
-          runAsGroup: 9999
-          runAsNonRoot: true
-          runAsUser: 9031
-          allowPrivilegeEscalation: false
+          runAsGroup: 0
+          runAsNonRoot: false
+          runAsUser: 0
+          privileged: true
         imagePullPolicy: Always
         resources:
           requests:
@@ -207,7 +207,7 @@ spec:
             name: newrelic-license-key
             optional: false
       securityContext:
-        fsGroup: 9999
+        fsGroup: 0
       volumes:
       - name: ssh-dir
         emptyDir: {}
