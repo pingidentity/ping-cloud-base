@@ -94,7 +94,7 @@ spec:
     spec:
       accessModes:
       - ReadWriteOnce
-      storageClassName: elasticsearch-gp2
+      storageClassName: elasticsearch-csi-sc1
       resources:
         requests:
           storage: 40Gi
@@ -193,7 +193,7 @@ spec:
     spec:
       accessModes:
       - ReadWriteOnce
-      storageClassName: pingdirectory-enc-gp2
+      storageClassName: pingdirectory-gp3
       resources:
         requests:
           storage: 40Gi
@@ -230,7 +230,7 @@ spec:
     spec:
       accessModes:
       - ReadWriteOnce
-      storageClassName: pingaccess-was-gp2
+      storageClassName: pingaccess-was-gp3
       resources:
         requests:
           storage: 20Gi
@@ -310,7 +310,7 @@ spec:
     spec:
       accessModes:
       - ReadWriteOnce
-      storageClassName: pingfederate-gp2
+      storageClassName: pingfederate-gp3
       resources:
         requests:
           storage: 20Gi
@@ -396,7 +396,7 @@ spec:
     spec:
       accessModes:
       - ReadWriteOnce
-      storageClassName: pingaccess-gp2
+      storageClassName: pingaccess-gp3
       resources:
         requests:
           storage: 20Gi
@@ -500,7 +500,7 @@ spec:
           cpu: 2
           memory: 2Gi
       dataVolumeClaimSpec:
-        storageClassName: pgo-gp2
+        storageClassName: pgo-gp3
         accessModes:
           - "ReadWriteOnce"
         resources:

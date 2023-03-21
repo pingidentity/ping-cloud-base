@@ -63,7 +63,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: pingdirectory-enc-gp2
+  storageClassName: pingdirectory-gp3
   resources:
     requests:
       storage: 40Gi
