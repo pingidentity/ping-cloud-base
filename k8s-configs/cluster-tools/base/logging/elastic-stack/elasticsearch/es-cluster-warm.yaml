@@ -82,7 +82,7 @@ spec:
       spec:
         accessModes:
           - ReadWriteOnce
-        storageClassName: elasticsearch-sc1
+        storageClassName: elasticsearch-csi-sc1
         resources:
           requests:
             storage: 125Gi

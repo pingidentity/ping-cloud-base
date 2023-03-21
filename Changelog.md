@@ -49,11 +49,14 @@
 - Deploy ArgoCD to customer-hub only
 - Fix the ArgoCD App name
 - Add ArgoCD IRSA role
+- Updated StorageClass provisoner to CSI and type to gp3
 
 _Changes:_
 
 - [X] PDO-2419 Enable users to download or upload user reports in Delegated Admin
 - [X] PDO-3335 Set PingFederate Engines minReplicas count to 3 in prod/small deployment
+- [X] PDO-3834 Updated StorageClass type to gp3
+- [X] PDO-4009 Update k8s StorageClass provisoner to use CSI driver
 - [X] PDO-4388 Flag in env_var to enable/disable external ingresses for admin endpoints
 - [X] PDO-4556 [need before EKS 1.25] batch/v1beta1 CronJob is deprecated in v1.21+, unavailable in v1.25+; use batch/v1 CronJob
 - [X] PDO-4575 Upgrade ArgoCD to v2.5.5
