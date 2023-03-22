@@ -1,0 +1,7 @@
+dsconfig create-local-db-vlv-index \
+    --index-name employeeType \
+    --backend-name userRoot \
+    --set base-dn:ou=people,dc=fil,dc=com \
+    --set scope:whole-subtree \
+    --set filter:"(&(objectClass=inetOrgPerson)(!(employeeType=Automation)))" \
+    --set "sort-order:+cn"
