@@ -136,6 +136,9 @@ spec:
             requests:
               cpu: 200m
               memory: 100Mi
+        ports:
+          - containerPort: 2020
+            name: metrics
         volumeMounts:
         # Please don't change below read-only permissions
         - name: fluentbitstate
@@ -184,3 +187,16 @@ spec:
         effect: "NoExecute"
       - operator: "Exists"
         effect: "NoSchedule"
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: fluent-bit
+  labels:
+    k8s-app: fluent-bit
+spec:
+  selector:
+    k8s-app: fluent-bit
+  ports:
+    - port: 2020
+      name: api
