@@ -51,6 +51,7 @@
 - Add ArgoCD IRSA role
 - Improve fluent-bit multiline log parsing
 - Updated StorageClass provisoner to CSI and type to gp3
+- Add logstash and fluent-bit metrics to prometheus
 
 _Changes:_
 
@@ -112,6 +113,7 @@ _Changes:_
 - [X] PDO-5080 Test that file has been copied is not working in init container
 - [X] PDO-5104 Update Prometheus CPU/MEM limits
 - [X] PDO-5141 Fix the ArgoCD App name
+- [X] PDO-5147 Add logstash metrics to prometheus
 
 ### 1.17.0.0
 
