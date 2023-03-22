@@ -49,6 +49,7 @@
 - Deploy ArgoCD to customer-hub only
 - Fix the ArgoCD App name
 - Add ArgoCD IRSA role
+- Improve fluent-bit multiline log parsing
 - Updated StorageClass provisoner to CSI and type to gp3
 
 _Changes:_
@@ -103,6 +104,7 @@ _Changes:_
 - [X] PDO-4997 Update values.yaml in region and base path sync with env_vars file
 - [X] PDO-5008 Update tagging script to return correct tag
 - [X] PDO-5009 Add logstash HPA and upgrade resources
+- [X] PDO-5025 Improve fluent-bit multiline log parsing
 - [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone 
 - [X] PDO-5039 Automate cleanup of external dns records for CI/CD clusters
 - [X] PDO-5041 node-role.kubernetes.io/master (deprecated)
