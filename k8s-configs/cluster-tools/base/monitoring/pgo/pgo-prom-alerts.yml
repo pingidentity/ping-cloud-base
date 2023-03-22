@@ -314,7 +314,7 @@ groups:
 #   ccp_backrest_last_diff_time_since_completion_seconds
 #
   - alert: PGBackRestLastCompletedFull_main
-    expr: ccp_backrest_last_full_backup_time_since_completion_seconds{stanza="db"} > 604800
+    expr: ccp_backrest_last_full_backup_time_since_completion_seconds{stanza="db", role="master"} > 604800
     for: 60s
     labels:
        service: postgresql
@@ -324,7 +324,7 @@ groups:
        summary: 'Full backup for stanza [db] on cluster {{ $labels.cluster }} has not completed in the last week.'
 
   - alert: PGBackRestLastCompletedIncr_main
-    expr: ccp_backrest_last_incr_backup_time_since_completion_seconds{stanza="db"} > 86400
+    expr: ccp_backrest_last_incr_backup_time_since_completion_seconds{stanza="db", role="master"} > 86400
     for: 60s
     labels:
        service: postgresql
@@ -353,7 +353,7 @@ groups:
 #       summary: 'Expected runtime of full backup for stanza [main] has exceeded 4 hours'
 #
   - alert: PGBackRestLastRuntimeDiff_main
-    expr: ccp_backrest_last_runtime_backup_runtime_seconds{backup_type="diff", stanza="db"} > 3600
+    expr: ccp_backrest_last_runtime_backup_runtime_seconds{backup_type="diff", stanza="db", role="master"} > 3600
     for: 60s
     labels:
        service: postgresql
@@ -370,7 +370,7 @@ groups:
 ## check gives a clearer answer as to what is causing it and that something is wrong with the backups.
 #
   - alert: PGBackrestAbsentFull_Prod
-    expr: absent(ccp_backrest_last_full_backup_time_since_completion_seconds{cluster="pf-provisioning"})
+    expr: absent(ccp_backrest_last_full_backup_time_since_completion_seconds{cluster="pf-provisioning", role="master"})
     for: 10s
     labels:
       service: postgresql

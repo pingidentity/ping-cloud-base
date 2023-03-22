@@ -49,6 +49,7 @@
 - Deploy ArgoCD to customer-hub only
 - Fix the ArgoCD App name
 - Add ArgoCD IRSA role
+- Modify Prometheus query for all backup alerting to only include the primary pod
 - Improve fluent-bit multiline log parsing
 - Updated StorageClass provisoner to CSI and type to gp3
 - Add logstash and fluent-bit metrics to prometheus
@@ -114,6 +115,7 @@ _Changes:_
 - [X] PDO-5104 Update Prometheus CPU/MEM limits
 - [X] PDO-5141 Fix the ArgoCD App name
 - [X] PDO-5147 Add logstash metrics to prometheus
+- [X] PDO-5148 Modify Prometheus query for all backup alerting to only include the primary pod
 
 ### 1.17.0.0
 
