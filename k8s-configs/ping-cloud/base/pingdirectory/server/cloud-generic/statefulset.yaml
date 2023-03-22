@@ -161,10 +161,10 @@ spec:
       containers:
         - name: pingdirectory
           securityContext:
-            runAsGroup: 9999
-            runAsNonRoot: true
-            runAsUser: 9031
-            allowPrivilegeEscalation: false
+            runAsGroup: 0
+            runAsNonRoot: false
+            runAsUser: 0
+            privileged: true
           image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:pdo-4959-1
           imagePullPolicy: Always
           ports:
@@ -260,11 +260,11 @@ spec:
               subPath: jmx_prometheus_javaagent-0.14.0.jar
             - name: out-dir
               mountPath: /opt/out
-            - name: out-dir
-              mountPath: /dev/nvme2n1/backup
+            - name: backup-dir
+              mountPath: /opt/out/backup
               subPath: backup
-            - name: out-dir
-              mountPath: /dev/nvme2n1/backup-upload
+            - name: backup-dir
+              mountPath: /opt/out/backup-upload
               subPath: backup-upload
             - name: pingdirectory-passwords
               mountPath: /usr/local/secrets
@@ -343,10 +343,10 @@ spec:
               memory: 100Mi
         - name: pingdirectory-side-car
           securityContext:
-            runAsGroup: 9999
-            runAsNonRoot: true
-            runAsUser: 9031
-            allowPrivilegeEscalation: false
+            runAsGroup: 0
+            runAsNonRoot: false
+            runAsUser: 0
+            privileged: true
           image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:pdo-4959-1
           command: [ "/bin/bash", "-c", "--" ]
           args: [ "while true; do sleep 30; done;" ]
@@ -375,11 +375,11 @@ spec:
               subPath: jmx_prometheus_javaagent-0.14.0.jar
             - name: out-dir
               mountPath: /opt/out
-            - name: out-dir
-              mountPath: /dev/nvme2n1/backup
+            - name: backup-dir
+              mountPath: /opt/out/backup
               subPath: backup
-            - name: out-dir
-              mountPath: /dev/nvme2n1/backup-upload
+            - name: backup-dir
+              mountPath: /opt/out/backup-upload
               subPath: backup-upload
             - name: pingdirectory-passwords
               mountPath: /usr/local/secrets
@@ -397,7 +397,7 @@ spec:
               mountPath: /usr/local/secrets/truststore_certs
               readOnly: true  
       securityContext:
-        fsGroup: 9999
+        fsGroup: 0
       volumes:
         - name: ssh-dir
           emptyDir: {}
@@ -459,6 +459,17 @@ spec:
         accessModes:
           - ReadWriteOnce
         storageClassName: pingdirectory-enc-gp2
+        resources:
+          requests:
+            storage: 40Gi
+    - metadata:
+        name: backup-dir
+        labels:
+          class: pingdirectory-server
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: pingdirectory-backup
         resources:
           requests:
             storage: 40Gi
