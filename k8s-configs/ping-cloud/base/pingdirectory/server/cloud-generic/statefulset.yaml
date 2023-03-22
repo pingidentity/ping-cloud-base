@@ -261,10 +261,10 @@ spec:
             - name: out-dir
               mountPath: /opt/out
             - name: out-dir
-              mountPath: /opt/out/backup
+              mountPath: /dev/nvme2n1/backup
               subPath: backup
             - name: out-dir
-              mountPath: /opt/out/backup-upload
+              mountPath: /dev/nvme2n1/backup-upload
               subPath: backup-upload
             - name: pingdirectory-passwords
               mountPath: /usr/local/secrets
@@ -376,10 +376,10 @@ spec:
             - name: out-dir
               mountPath: /opt/out
             - name: out-dir
-              mountPath: /opt/out/backup
+              mountPath: /dev/nvme2n1/backup
               subPath: backup
             - name: out-dir
-              mountPath: /opt/out/backup-upload
+              mountPath: /dev/nvme2n1/backup-upload
               subPath: backup-upload
             - name: pingdirectory-passwords
               mountPath: /usr/local/secrets
