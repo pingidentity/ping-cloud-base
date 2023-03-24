@@ -1,0 +1,97 @@
+---
+### Update the ArgoCD polling interval ###
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: argocd-application-controller
+  namespace: argocd
+spec:
+  template:
+    spec:
+      containers:
+      - name: argocd-application-controller
+        env:
+        - name: APP_RESYNC_SECONDS
+          value: "${APP_RESYNC_SECONDS}"
+---
+### Known hosts file for cloning the cluster state repo over SSH ###
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-ssh-known-hosts-cm
+  namespace: argocd
+data:
+  ssh_known_hosts: |-
+    ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
+---
+# Add IRSA role annotation to all Argo Service Accounts
+# TODO: eventually we can whittle this down more but we want to make sure all aspects of Argo can function correctly
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argocd-application-controller
+  annotations:
+    ${IRSA_ARGOCD_ANNOTATION_KEY_VALUE}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argocd-applicationset-controller
+  annotations:
+    ${IRSA_ARGOCD_ANNOTATION_KEY_VALUE}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argocd-dex-server
+  annotations:
+    ${IRSA_ARGOCD_ANNOTATION_KEY_VALUE}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argocd-image-updater
+  annotations:
+    ${IRSA_ARGOCD_ANNOTATION_KEY_VALUE}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argocd-notifications-controller
+  annotations:
+    ${IRSA_ARGOCD_ANNOTATION_KEY_VALUE}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argocd-redis
+  annotations:
+    ${IRSA_ARGOCD_ANNOTATION_KEY_VALUE}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argocd-repo-server
+  annotations:
+    ${IRSA_ARGOCD_ANNOTATION_KEY_VALUE}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argocd-server
+  annotations:
+    ${IRSA_ARGOCD_ANNOTATION_KEY_VALUE}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-bootstrap
+  namespace: argocd
+data:
+  ARGOCD_BOOTSTRAP_ENABLED: "${ARGOCD_BOOTSTRAP_ENABLED}"
+  ARGOCD_CDE_ROLE_SSM_TEMPLATE: "${ARGOCD_CDE_ROLE_SSM_TEMPLATE}"
+  ARGOCD_CDE_URL_SSM_TEMPLATE: "${ARGOCD_CDE_URL_SSM_TEMPLATE}"
+  CLUSTER_STATE_REPO_BRANCH: "${CLUSTER_STATE_REPO_BRANCH}"
+  ENVIRONMENTS: "${ENVIRONMENTS}"
+  REGION: "${REGION}"
+---

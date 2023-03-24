@@ -407,20 +407,25 @@ ${DASH_REPO_BRANCH}'
 REPO_VARS="${REPO_VARS:-${DEFAULT_VARS}}"
 
 # Variables to replace in the generated bootstrap code
-BOOTSTRAP_VARS='${K8S_GIT_URL}
-${K8S_GIT_BRANCH}
-${CLUSTER_STATE_REPO_URL}
-${CLUSTER_STATE_REPO_BRANCH}
-${ENVIRONMENTS}
-${REGION_NICK_NAME}
-${TENANT_NAME}
-${PING_CLOUD_NAMESPACE}
-${KNOWN_HOSTS_CLUSTER_STATE_REPO}
-${SSH_ID_KEY_BASE64}
-${PGO_BACKUP_BUCKET_NAME}
+BOOTSTRAP_VARS='${APP_RESYNC_SECONDS}
 ${ARGOCD_BOOTSTRAP_ENABLED}
 ${ARGOCD_CDE_ROLE_SSM_TEMPLATE}
-${ARGOCD_CDE_URL_SSM_TEMPLATE}'
+${ARGOCD_CDE_URL_SSM_TEMPLATE}
+${CLUSTER_STATE_REPO_BRANCH}
+${CLUSTER_STATE_REPO_URL}
+${ENVIRONMENTS}
+${IRSA_ARGOCD_ANNOTATION_KEY_VALUE}
+${K8S_GIT_BRANCH}
+${K8S_GIT_URL}
+${KNOWN_HOSTS_CLUSTER_STATE_REPO}
+${PGO_BACKUP_BUCKET_NAME}
+${PING_CLOUD_NAMESPACE}
+${REGION_NICK_NAME}
+${REGION}
+${SLACK_CHANNEL}
+${SSH_ID_KEY_BASE64}
+${TENANT_NAME}'
+
 
 ########################################################################################################################
 # Export some derived environment variables.
@@ -674,6 +679,8 @@ echo "Initial CLUSTER_ENDPOINT: ${CLUSTER_ENDPOINT}"
 echo "Initial SLACK_CHANNEL: ${SLACK_CHANNEL}"
 echo "Initial NON_GA_SLACK_CHANNEL: ${NON_GA_SLACK_CHANNEL}"
 echo "Initial PROM_SLACK_CHANNEL: ${PROM_SLACK_CHANNEL}"
+
+echo "Initial APP_RESYNC_SECONDS: ${APP_RESYNC_SECONDS}"
 echo ---
 
 
@@ -858,6 +865,7 @@ export PA_MIN_YGEN=512m
 export PA_MAX_YGEN=512m
 export PA_GCOPTION='-XX:+UseParallelGC'
 
+export APP_RESYNC_SECONDS="${APP_RESYNC_SECONDS:-60}"
 
 ########################################################################################################################
 # Print out the final value being used for each variable.
@@ -926,6 +934,8 @@ echo "Using NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE: ${NLB_NGX_PUBLIC_ANNOTATION_KEY
 
 echo "Using SLACK_CHANNEL: ${SLACK_CHANNEL}"
 echo "Using PROM_SLACK_CHANNEL: ${PROM_SLACK_CHANNEL}"
+
+echo "Using APP_RESYNC_SECONDS: ${APP_RESYNC_SECONDS}"
 
 echo "Using USER_BASE_DN: ${USER_BASE_DN}"
 echo ---
@@ -1139,17 +1149,20 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   # Massage files into correct structure for push-cluster-state script
   ######################################################################################################################
 
-  # Build the kustomization file for the bootstrap tools for each environment
+  ####### Bootstrap logic ##############################################################################################
   echo "Generating bootstrap yaml for ${ENV}"
-
-  # The code for an environment is generated under a directory of the same name as what's provided in ENVIRONMENTS.
   ENV_BOOTSTRAP_DIR="${BOOTSTRAP_DIR}/${ENV_OR_BRANCH}"
   mkdir -p "${ENV_BOOTSTRAP_DIR}"
-
-  cp "${TEMPLATES_HOME}/${BOOTSTRAP_SHORT_DIR}"/* "${ENV_BOOTSTRAP_DIR}"
-
-  # Create a list of variables to substitute for the bootstrap tools
+  cp "${TEMPLATES_HOME}/${BOOTSTRAP_SHORT_DIR}"/common/* "${ENV_BOOTSTRAP_DIR}"
+  if [[ "${ENV}" == "${CUSTOMER_HUB}" || "${IS_BELUGA_ENV}" == "true" ]]; then
+    cp "${TEMPLATES_HOME}/${BOOTSTRAP_SHORT_DIR}"/customer-hub/* "${ENV_BOOTSTRAP_DIR}"
+    # Copy all files from customer-hub code-gen, except kustomization.yaml to re-use the yaml there and prevent duplication
+    find "${CHUB_TEMPLATES_DIR}/base/cluster-tools/git-ops" -type f -name "*.yaml" ! -name kustomization.yaml | xargs -I {} cp {} "${ENV_BOOTSTRAP_DIR}"
+  else
+    cp "${TEMPLATES_HOME}/${BOOTSTRAP_SHORT_DIR}"/cde/* "${ENV_BOOTSTRAP_DIR}"
+  fi
   substitute_vars "${ENV_BOOTSTRAP_DIR}" "${BOOTSTRAP_VARS}"
+  ####### END Bootstrap logic ##########################################################################################
 
   # Copy the shared cluster tools and Ping yaml templates into their target directories
   echo "Generating tools and ping yaml for ${ENV}"

@@ -65,7 +65,7 @@ CLUSTER_STATE_REPO_BRANCH=${CLUSTER_STATE_REPO_BRANCH}
 
 # The application reconciliation timeout in seconds for ArgoCD, i.e. how frequently ArgoCD should poll the
 # cluster-state-repo for changes. To disable reconciliation set it to 0.
-APP_RESYNC_SECONDS=60
+APP_RESYNC_SECONDS=${APP_RESYNC_SECONDS}
 
 ############################################################
 # Miscellaneous ping-cloud-base variables
