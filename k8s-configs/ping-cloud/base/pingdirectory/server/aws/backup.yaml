@@ -58,7 +58,7 @@ spec:
           defaultMode: 0555
       - name: pd-backup-volume
         persistentVolumeClaim:
-          claimName: pingdirectory-backup
+          claimName: clone-of-pvc-1
       - name: pingdirectory-passwords
         secret:
           secretName: pingdirectory-passwords
@@ -71,16 +71,16 @@ spec:
 
 ---
 # Persistent Volume to run backup process
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pingdirectory-backup
-  labels:
-    class: pingdirectory-server
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: pingdirectory-enc-gp2
-  resources:
-    requests:
-      storage: 40Gi
+#apiVersion: v1
+#kind: PersistentVolumeClaim
+#metadata:
+#  name: pingdirectory-backup
+#  labels:
+#    class: pingdirectory-server
+#spec:
+#  accessModes:
+#    - ReadWriteOnce
+#  storageClassName: pingdirectory-enc-gp2
+#  resources:
+#    requests:
+#      storage: 40Gi
