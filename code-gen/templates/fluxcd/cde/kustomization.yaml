@@ -1,0 +1,14 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+
+# Deploy cert-manager as part of the bootstrap process so that it's running before its CRD resources are created
+- ${K8S_GIT_URL}/k8s-configs/cluster-tools/base/cert-manager/base?ref=${K8S_GIT_BRANCH}
+
+# Deploy sealed-secrets controller so it's up and ready before ping-cloud namespace is created
+- ${K8S_GIT_URL}/k8s-configs/cluster-tools/base/security?ref=${K8S_GIT_BRANCH}
+
+# generate-cluster-state.sh copies this from code-gen/templates/fluxcd/common/
+# The minimal bootstrap required for the ping-cloud stack
+- ping-cloud.yaml

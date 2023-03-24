@@ -190,7 +190,8 @@ ${PF_PROVISIONING_ENABLED}
 ${SLACK_CHANNEL}
 ${PROM_SLACK_CHANNEL}
 ${DASH_REPO_URL}
-${DASH_REPO_BRANCH}'
+${DASH_REPO_BRANCH}
+${APP_RESYNC_SECONDS}'
 
 ########################################################################################################################
 # Export some derived environment variables.
