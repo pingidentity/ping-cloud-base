@@ -7,19 +7,21 @@ metadata:
   name: "ping-cloud-all-cdes"
   namespace: argocd
 spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
   generators:
     - clusters:
         selector:
           matchLabels:
             # Custom label created by argocd-bootstrap, only target these clusters
-            ping.cloud.argo.auto-configure: "true"
+            argocd-auto-configure: "true"
   template:
     metadata:
-      # {{name}} is cluster name from the cluster generator above
-      name: "ping-cloud-{{name}}-${TENANT_NAME}-${REGION_NICK_NAME}"
+      # metadata comes from argocd-bootstrap
+      name: "${TENANT_NAME}-${REGION_NICK_NAME}-{{metadata.labels.argocd-env}}"
       namespace: argocd
       annotations:
-        argocd-image-updater.argoproj.io/git-branch: "{{name}}"
+        argocd-image-updater.argoproj.io/git-branch: "{{metadata.labels.argocd-branch}}"
         argocd-image-updater.argoproj.io/image-list: ${IMAGE_LIST}
         argocd-image-updater.argoproj.io/apps.update-strategy: latest
         argocd-image-updater.argoproj.io/apps.allow-tags: regexp:^${IMAGE_TAG_PREFIX}.[0-9]+$
@@ -42,7 +44,7 @@ spec:
       source:
         path: k8s-configs/${REGION_NICK_NAME}
         repoURL: ${CLUSTER_STATE_REPO_URL}
-        targetRevision: "{{name}}"
+        targetRevision: "{{metadata.labels.argocd-branch}}"
         plugin:
           name: git-ops-command
 
@@ -51,23 +53,37 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  # TODO: maybe change this name since it matches the old application name?
-  name: "ping-cloud-${CLUSTER_STATE_REPO_BRANCH}-${TENANT_NAME}-${REGION_NICK_NAME}-per-app"
+  name: "ping-cloud-all-cdes-per-app"
   namespace: argocd
 spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
   generators:
-    - git:
-        repoURL: ${CLUSTER_STATE_REPO_URL}
-        revision: ${CLUSTER_STATE_REPO_BRANCH}
-        directories:
-          - path: "*"
-          - path: k8s-configs
-            exclude: true
+    # Matrix generator - enumerate all matching clusters, use metadata from each cluster to determine which branch
+    # and therefore environment to point to. Labels are added by the custom argocd-bootstrap script.
+    # Also enumerate all matching directories in the cluster-state-repo, creating an Application for each
+    # combination of cluster + application in the CSR
+    - matrix:
+        generators:
+          - clusters:
+              selector:
+                matchLabels:
+                  # Custom label created by argocd-bootstrap, only target these clusters
+                  argocd-auto-configure: "true"
+          - git:
+              repoURL: ${CLUSTER_STATE_REPO_URL}
+              # Reference the branch metadata in the cluster to generate per-app for that branch
+              revision: "{{metadata.labels.argocd-branch}}"
+              directories:
+                - path: "*"
+                - path: k8s-configs
+                  exclude: true
   template:
     metadata:
-      name: "${REGION_NICK_NAME}-{{path.basename}}"
+      # metadata comes from argocd-bootstrap, path.basename from the git generator
+      name: "${TENANT_NAME}-${REGION_NICK_NAME}-{{metadata.labels.argocd-env}}-{{path.basename}}"
       annotations:
-        argocd-image-updater.argoproj.io/git-branch: ${CLUSTER_STATE_REPO_BRANCH}
+        argocd-image-updater.argoproj.io/git-branch: "{{metadata.labels.argocd-branch}}"
         argocd-image-updater.argoproj.io/image-list: ${IMAGE_LIST}
         argocd-image-updater.argoproj.io/apps.update-strategy: latest
         argocd-image-updater.argoproj.io/apps.allow-tags: regexp:^${IMAGE_TAG_PREFIX}.[0-9]+$
@@ -79,10 +95,10 @@ spec:
       project: default
       source:
         repoURL: ${CLUSTER_STATE_REPO_URL}
-        targetRevision: ${CLUSTER_STATE_REPO_BRANCH}
+        targetRevision: "{{metadata.labels.argocd-branch}}"
         path: "{{path}}/${REGION_NICK_NAME}"
       destination:
-        server: https://kubernetes.default.svc
+        server: "{{server}}"
       ignoreDifferences:
         - group: batch
           kind: Job

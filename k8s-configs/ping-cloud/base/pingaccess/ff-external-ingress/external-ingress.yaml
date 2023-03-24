@@ -1,0 +1,25 @@
+# This defines the external ingress for the pingaccess admin service
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pingaccess-admin-ext-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  ingressClassName: nginx-public
+  tls:
+    - hosts:
+        - ext-pingaccess-admin-api.ping-demo.com
+  rules:
+    - host: ext-pingaccess-admin-api.ping-demo.com
+      http:
+        paths:
+          - path: /pa-admin-api/
+            pathType: Prefix
+            backend:
+              service:
+                name: pingaccess-admin
+                port:
+                  number: 9000

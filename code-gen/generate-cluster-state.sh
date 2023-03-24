@@ -70,7 +70,10 @@
 #                              | notifications                                      | ssm://pcpt/argocd/notification/slack/access_token
 #                              |                                                    |
 # ARGOCD_CDE_ROLE_SSM_TEMPLATE | SSM template path for the ArgoCD Chub -> CDE roles | The SSM template (to be rendered in python script) path:
-#                              | notifications                                      | '/argo-bootstrap-integration/pcpt/config/k8s-config/accounts/{env}/argo/role/arn'
+#                              |                                                    | '/pcpt/config/k8s-config/accounts/{env}/argo/role/arn'
+#                              |                                                    |
+# ARGOCD_CDE_URL_SSM_TEMPLATE  | SSM template path for the ArgoCD Chub -> CDE URLs  | The SSM template (to be rendered in python script) path:
+#                              |                                                    | '/pcpt/config/k8s-config/accounts/{env}/cluster/url'
 #                              |                                                    |
 # ARGOCD_BOOTSTRAP_ENABLED     | Feature flag to enabled/disable ArgoCD Chub -> CDE | The string "false"
 #                              | bootstrapping itself                               |
@@ -189,6 +192,8 @@
 # RADIUS_PROXY_ENABLED         | Feature Flag - Indicates if the radius proxy       | False
 #                              | feature for PingFederate engines is enabled        |
 #                              |                                                    |
+# EXTERNAL_INGRESS_ENABLED     | Feature Flag - Indicates if external ingress       | True
+#                              | is enabled                                         |                            |                                                    |
 # REGION                       | The region where the tenant environment is         | us-west-2
 #                              | deployed. For PCPT, this is a required parameter   |
 #                              | to Container Insights, an AWS-specific logging     |
@@ -380,16 +385,19 @@ ${IRSA_PING_ANNOTATION_KEY_VALUE}
 ${IRSA_PA_ANNOTATION_KEY_VALUE}
 ${IRSA_PD_ANNOTATION_KEY_VALUE}
 ${IRSA_PF_ANNOTATION_KEY_VALUE}
+${IRSA_ARGOCD_ANNOTATION_KEY_VALUE}
 ${KARPENTER_ROLE_ANNOTATION_KEY_VALUE}
 ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}
 ${NOTIFICATION_ENABLED}
 ${NOTIFICATION_ENDPOINT}
 ${PF_PROVISIONING_ENABLED}
 ${RADIUS_PROXY_ENABLED}
+${EXTERNAL_INGRESS_ENABLED}
 ${IMAGE_TAG_PREFIX}
-${ARGOCD_SLACK_TOKEN_BASE64}
-${ARGOCD_CDE_ROLE_SSM_TEMPLATE}
 ${ARGOCD_BOOTSTRAP_ENABLED}
+${ARGOCD_CDE_ROLE_SSM_TEMPLATE}
+${ARGOCD_CDE_URL_SSM_TEMPLATE}
+${ARGOCD_SLACK_TOKEN_BASE64}
 ${SLACK_CHANNEL}
 ${PROM_SLACK_CHANNEL}
 ${DASH_REPO_URL}
@@ -410,8 +418,9 @@ ${PING_CLOUD_NAMESPACE}
 ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
 ${SSH_ID_KEY_BASE64}
 ${PGO_BACKUP_BUCKET_NAME}
+${ARGOCD_BOOTSTRAP_ENABLED}
 ${ARGOCD_CDE_ROLE_SSM_TEMPLATE}
-${ARGOCD_BOOTSTRAP_ENABLED}'
+${ARGOCD_CDE_URL_SSM_TEMPLATE}'
 
 ########################################################################################################################
 # Export some derived environment variables.
@@ -640,9 +649,11 @@ echo "Initial PF_PROVISIONING_ENABLED: ${PF_PROVISIONING_ENABLED}"
 echo "Initial PGO_BACKUP_BUCKET_NAME: ${PGO_BACKUP_BUCKET_NAME}"
 
 echo "Initial RADIUS_PROXY_ENABLED: ${RADIUS_PROXY_ENABLED}"
+echo "Initial EXTERNAL_INGRESS_ENABLED: ${EXTERNAL_INGRESS_ENABLED}"
 
 echo "Initial ARGOCD_BOOTSTRAP_ENABLED: ${ARGOCD_BOOTSTRAP_ENABLED}"
 echo "Initial ARGOCD_CDE_ROLE_SSM_TEMPLATE: ${ARGOCD_CDE_ROLE_SSM_TEMPLATE}"
+echo "Initial ARGOCD_CDE_URL_SSM_TEMPLATE: ${ARGOCD_CDE_URL_SSM_TEMPLATE}"
 
 echo "Initial TARGET_DIR: ${TARGET_DIR}"
 echo "Initial IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
@@ -654,6 +665,7 @@ echo "Initial IRSA_PING_ANNOTATION_KEY_VALUE: ${IRSA_PING_ANNOTATION_KEY_VALUE}"
 echo "Initial IRSA_PA_ANNOTATION_KEY_VALUE: ${IRSA_PA_ANNOTATION_KEY_VALUE}"
 echo "Initial IRSA_PD_ANNOTATION_KEY_VALUE: ${IRSA_PD_ANNOTATION_KEY_VALUE}"
 echo "Initial IRSA_PF_ANNOTATION_KEY_VALUE: ${IRSA_PF_ANNOTATION_KEY_VALUE}"
+echo "Initial IRSA_ARGOCD_ANNOTATION_KEY_VALUE: ${IRSA_ARGOCD_ANNOTATION_KEY_VALUE}"
 echo "Initial KARPENTER_ROLE_ANNOTATION_KEY_VALUE: ${KARPENTER_ROLE_ANNOTATION_KEY_VALUE}"
 echo "Initial NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE: ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
 
@@ -701,6 +713,8 @@ export SECONDARY_TENANT_DOMAINS="${SECONDARY_TENANT_DOMAINS}"
 
 if "${IS_BELUGA_ENV}"; then
   DERIVED_GLOBAL_TENANT_DOMAIN="global.${TENANT_DOMAIN_NO_DOT_SUFFIX}"
+  # 'yq' is only checked here because it is only used within Developer CDEs
+  check_binaries "yq" || { popd >/dev/null 2>&1 && exit 1; }
 else
   DERIVED_GLOBAL_TENANT_DOMAIN="$(echo "${TENANT_DOMAIN_NO_DOT_SUFFIX}" | sed -e "s/\([^.]*\).[^.]*.\(.*\)/global.\1.\2/")"
 fi
@@ -740,6 +754,7 @@ export SSH_ID_KEY_FILE="${SSH_ID_KEY_FILE}"
 export TARGET_DIR="${TARGET_DIR:-/tmp/sandbox}"
 
 export ACCOUNT_BASE_PATH=${ACCOUNT_BASE_PATH:-ssm://pcpt/config/k8s-config/accounts/}
+export IRSA_BASE_PATH=${IRSA_BASE_PATH:-ssm://pcpt/irsa-role/}
 export PGO_BUCKET_URI_SUFFIX=${PGO_BUCKET_URI_SUFFIX:-/pgo-bucket/uri}
 
 # IRSA for ping product pods. The role name is predefined as a part of the interface contract.
@@ -747,6 +762,7 @@ export IRSA_PING_ANNOTATION_KEY_VALUE=${IRSA_PING_ANNOTATION_KEY_VALUE:-''}
 export IRSA_PA_ANNOTATION_KEY_VALUE=${IRSA_PA_ANNOTATION_KEY_VALUE:-''}
 export IRSA_PD_ANNOTATION_KEY_VALUE=${IRSA_PD_ANNOTATION_KEY_VALUE:-''}
 export IRSA_PF_ANNOTATION_KEY_VALUE=${IRSA_PF_ANNOTATION_KEY_VALUE:-''}
+export IRSA_ARGOCD_ANNOTATION_KEY_VALUE=${IRSA_ARGOCD_ANNOTATION_KEY_VALUE:-''}
 
 export CLUSTER_ENDPOINT=${CLUSTER_ENDPOINT:-''}
 
@@ -761,12 +777,14 @@ export IMAGE_TAG_PREFIX="${K8S_GIT_BRANCH%.*}"
 export PF_PROVISIONING_ENABLED="${PF_PROVISIONING_ENABLED:-false}"
 export RADIUS_PROXY_ENABLED="${RADIUS_PROXY_ENABLED:-false}"
 export ARGOCD_BOOTSTRAP_ENABLED="${ARGOCD_BOOTSTRAP_ENABLED:-false}"
+export EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED:-true}"
 
 ### Default environment variables ###
 export ECR_REGISTRY_NAME='public.ecr.aws/r2h3l6e4'
 export PING_CLOUD_NAMESPACE='ping-cloud'
 export MYSQL_DATABASE='pingcentral'
 export ARGOCD_CDE_ROLE_SSM_TEMPLATE="${ARGOCD_CDE_ROLE_SSM_TEMPLATE:-'/pcpt/config/k8s-config/accounts/{env}/argo/role/arn'}"
+export ARGOCD_CDE_URL_SSM_TEMPLATE="${ARGOCD_CDE_URL_SSM_TEMPLATE:-'/pcpt/config/k8s-config/accounts/{env}/cluster/private-link/cname'}"
 
 # Set Slack-related environment variables and override it's values depending on IS_GA value.
 get_is_ga_variable '/pcpt/stage/is-ga'
@@ -885,18 +903,20 @@ echo "Using SSH_ID_KEY_FILE: ${SSH_ID_KEY_FILE:-'<auto-generated>'}"
 echo "Using PF_PROVISIONING_ENABLED: ${PF_PROVISIONING_ENABLED}"
 echo "Using RADIUS_PROXY_ENABLED: ${RADIUS_PROXY_ENABLED}"
 echo "Using ARGOCD_BOOTSTRAP_ENABLED: ${ARGOCD_BOOTSTRAP_ENABLED}"
-
+echo "Using EXTERNAL_INGRESS_ENABLED: ${EXTERNAL_INGRESS_ENABLED}"
 echo "Using TARGET_DIR: ${TARGET_DIR}"
 echo "Using IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
 
 echo "Using ACCOUNT_BASE_PATH: ${ACCOUNT_BASE_PATH}"
 echo "Using PGO_BUCKET_URI_SUFFIX: ${PGO_BUCKET_URI_SUFFIX}"
 echo "Using ARGOCD_CDE_ROLE_SSM_TEMPLATE: ${ARGOCD_CDE_ROLE_SSM_TEMPLATE}"
+echo "Using ARGOCD_CDE_URL_SSM_TEMPLATE: ${ARGOCD_CDE_URL_SSM_TEMPLATE}"
 
 echo "Using IRSA_PING_ANNOTATION_KEY_VALUE: ${IRSA_PING_ANNOTATION_KEY_VALUE}"
 echo "Using IRSA_PA_ANNOTATION_KEY_VALUE: ${IRSA_PA_ANNOTATION_KEY_VALUE}"
 echo "Using IRSA_PD_ANNOTATION_KEY_VALUE: ${IRSA_PD_ANNOTATION_KEY_VALUE}"
 echo "Using IRSA_PF_ANNOTATION_KEY_VALUE: ${IRSA_PF_ANNOTATION_KEY_VALUE}"
+echo "Using IRSA_ARGOCD_ANNOTATION_KEY_VALUE: ${IRSA_ARGOCD_ANNOTATION_KEY_VALUE}"
 
 echo "Using CLUSTER_ENDPOINT: ${CLUSTER_ENDPOINT}"
 
@@ -1070,6 +1090,8 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
 
   add_derived_variables
 
+  # TODO: With https://pingidentity.atlassian.net/browse/PP-5719 we should see all of the IRSA roles represented like
+  # ArgoCD, then we can change this IRSA SSM fetch code to be consistent
   # shellcheck disable=SC2016
   IRSA_TEMPLATE='eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role/pcpt/irsa-roles'
   set_var "IRSA_PING_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-ping"
@@ -1077,6 +1099,11 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   set_var "IRSA_PD_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-pingdirectory"
   set_var "IRSA_PF_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-pingfederate"
 
+  # shellcheck disable=SC2016
+  IRSA_TEMPLATE='eks.amazonaws.com/role-arn: ${ssm_value}'
+  set_var "IRSA_ARGOCD_ANNOTATION_KEY_VALUE" "" "${IRSA_BASE_PATH}" "irsa-argocd/arn" "${IRSA_TEMPLATE}"
+
+  # shellcheck disable=SC2016
   KARPENTER_ROLE_TEMPLATE='eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role/pcpt/KarpenterControllerRole'
   set_var "KARPENTER_ROLE_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" \
           "${KARPENTER_ROLE_TEMPLATE}/KarpenterControllerRole"
@@ -1159,6 +1186,29 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   # Massage files from new microservice architecture
   organize_code_for_csr
 
+  PRIMARY_PING_KUST_FILE="${K8S_CONFIGS_DIR}/${REGION_NICK_NAME}/kustomization.yaml"
+
+  # Copy around files for Developer CDE before substituting vars
+  if "${IS_BELUGA_ENV}"; then
+    # Add IS_BELUGA_ENV to the base env_vars
+    BASE_ENV_VARS="${K8S_CONFIGS_DIR}/base/env_vars"
+    echo >> "${BASE_ENV_VARS}"
+    echo "IS_BELUGA_ENV=true" >> "${BASE_ENV_VARS}"
+
+    # Update patches related to Beluga developer CDEs
+    sed -i.bak 's/^# \(.*remove-from-developer-cde-patch.yaml\)$/\1/g' "${PRIMARY_PING_KUST_FILE}"
+    rm -f "${PRIMARY_PING_KUST_FILE}.bak"
+
+    # Add ArgoCD to Beluga Environments since it normally runs only in customer-hub
+    echo "This is a Beluga Development Environment, copying ArgoCD into the CSR"
+    cp -R "${CHUB_TEMPLATES_DIR}/base/cluster-tools/git-ops" "${K8S_CONFIGS_DIR}/base/cluster-tools/"
+
+    # Append the secrets from customer-hub to the CDE secrets, except PingCentral since that doesn't exist in the CDE
+    printf "\n# %%%% NOTE: Below secrets are for the Developer CDE only (when IS_BELUGA_ENV is 'true') to make sure Argo works properly %%%%#\n" >> "${K8S_CONFIGS_DIR}/base/secrets.yaml"
+    yq 'del(select(.metadata.name | contains("pingcentral")))' "${CHUB_TEMPLATES_DIR}/base/secrets.yaml" >> "${K8S_CONFIGS_DIR}/base/secrets.yaml"
+    printf "\n# %%%% END automatically appended secrets from generate-cluster-state.sh\n" >> "${K8S_CONFIGS_DIR}/base/secrets.yaml"
+  fi
+
   substitute_vars "${ENV_DIR}" "${REPO_VARS}" secrets.yaml env_vars values.yaml
   # TODO: These duplicate calls are needed to substitute the derived variables & the IS_BELUGA_ENV in values files only
   #  clean this up with PDO-4842 when all apps are migrated to values files by adding IS_BELUGA_ENV to DEFAULT_VARS
@@ -1166,19 +1216,9 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   substitute_vars "${ENV_DIR}" "${REPO_VARS}" values.yaml
   substitute_vars "${ENV_DIR}" '${IS_BELUGA_ENV}' values.yaml
 
-  PRIMARY_PING_KUST_FILE="${K8S_CONFIGS_DIR}/${REGION_NICK_NAME}/kustomization.yaml"
   # Regional enablement - add admins, backups, etc. to primary.
   if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
     sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/g' "${PRIMARY_PING_KUST_FILE}"
-    rm -f "${PRIMARY_PING_KUST_FILE}.bak"
-  fi
-
-  if "${IS_BELUGA_ENV}"; then
-    BASE_ENV_VARS="${K8S_CONFIGS_DIR}/base/env_vars"
-    echo >> "${BASE_ENV_VARS}"
-    echo "IS_BELUGA_ENV=true" >> "${BASE_ENV_VARS}"
-    # Update patches related to Beluga developer CDEs
-    sed -i.bak 's/^# \(.*remove-from-developer-cde-patch.yaml\)$/\1/g' "${PRIMARY_PING_KUST_FILE}"
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
   fi
 

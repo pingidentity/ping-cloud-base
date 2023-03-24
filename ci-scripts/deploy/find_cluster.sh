@@ -21,8 +21,6 @@ find_cluster() {
     exit 1
   fi
 
-  configure_aws
-
   cluster_postfixes=($CLUSTER_POSTFIXES)
   found_cluster=false
   sleep_wait_seconds=300
@@ -65,7 +63,6 @@ find_cluster() {
         log "Found cluster $SELECTED_KUBE_NAME available to deploy to"
         echo "SELECTED_POSTFIX=$SELECTED_POSTFIX" > cluster.env
         echo "SELECTED_KUBE_NAME=$SELECTED_KUBE_NAME" >> cluster.env
-        set_deploy_type_env_vars
         set_env_vars
         break
       fi
