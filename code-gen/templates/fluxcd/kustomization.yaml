@@ -16,7 +16,6 @@ resources:
 - ping-cloud.yaml
 
 # Deploy the CD application
-- argo-application.yaml
 - argo-application-set.yaml
 
 patchesStrategicMerge:

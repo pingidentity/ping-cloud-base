@@ -5,8 +5,7 @@ import re as regex
 from pkg_resources import parse_version
 
 # Constants
-SEMANTIC_VERSION_REGEX = "([0-9]+)\.([0-9]+)\.([0-9]+)\.([0-9]+)(_RC[0-9]+)?"
-
+SEMANTIC_VERSION_REGEX = "([0-9]+)\.([0-9]+)\.([0-9]+)(?:\.([0-9]+))?(?:\_RC([0-9]+))?"
 
 # This class is very similar to the script located in
 # ping-cloud-docker/ci-scripts/python/src/get_latest_release_candidate_image.py
@@ -41,12 +40,8 @@ class LatestImageManager:
         self.client = boto_session.client("ecr-public", config=config)
 
     def regex_for_image_within_specific_release(self):
-        if "RC" in self.orig_gitlab_name:
-            # We only care about the infrastructure version & beluga major version
-            return f"({self.infrastructure_version_num})\.({self.beluga_major_version_num})\.([0-9]+)\.([0-9]+)(_RC([0-9]+))?$"
-        else:
-            # We care about the infrastructure version, beluga major version, & the beluga patch version
-            return f"({self.infrastructure_version_num})\.({self.beluga_major_version_num})\.({self.pcb_patch_num})\.([0-9]+)(_RC([0-9]+))?$"
+        # We care about the infrastructure version, beluga major version, & the beluga patch version
+        return f"({self.infrastructure_version_num})\.({self.beluga_major_version_num})\.({self.pcb_patch_num})\.([0-9]+)(_RC([0-9]+))?$"
 
     def normalize_gitlab_tag(self):
         """

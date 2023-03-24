@@ -20,7 +20,6 @@ stages:
 ## Global environment variables ##
 variables:
   DELETE_ENV_AFTER_PIPELINE: 'true'
-  PINGONE_DEPLOY: $PINGONE_DEPLOY
   K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.6.0
 
 ## Compile stage ##
@@ -51,23 +50,10 @@ deploy:
     - default-gitlab-runner
   image: ${K8S_DEPLOY_TOOLS}
   script:
+    - sleep 30 #sleep so that the kubectl apply doesn't execute at the same time as the deploy job
     - ./ci-scripts/deploy/deploy.sh
   dependencies:
     - find-cluster
-
-p1-deploy:
-  stage: deploy
-  tags:
-    - default-gitlab-runner
-  image: ${K8S_DEPLOY_TOOLS}
-  script:
-    - sleep 30 #sleep so that the kubectl apply doesn't execute at the same time as the deploy job
-    - PINGONE=true ./ci-scripts/deploy/deploy.sh
-  dependencies:
-    - find-cluster
-  only:
-    variables:
-      - $PINGONE_DEPLOY == "true"
 
 ## Unit tests have moved into ping-cloud-docker (PDO-1739) ##
 
@@ -78,23 +64,10 @@ pa-was-integration-tests:
     - default-gitlab-runner
   image: ${K8S_DEPLOY_TOOLS}
   script:
+    - sleep 30 #sleep because both pa-was tests running at the exact same time conflicts
     - ./ci-scripts/test/integration/run-integration-tests.sh pingaccess-was
   dependencies:
     - find-cluster
-
-p1-pa-was-integration-tests:
-  stage: pa-was-test
-  tags:
-    - default-gitlab-runner
-  image: ${K8S_DEPLOY_TOOLS}
-  script:
-    - sleep 30 #sleep because both pa-was tests running at the exact same time conflicts
-    - PINGONE=true ./ci-scripts/test/integration/run-integration-tests.sh pingaccess-was
-  dependencies:
-    - find-cluster
-  only:
-    variables:
-      - $PINGONE_DEPLOY == "true"
 
  ## Integration Test stage ##
 
@@ -113,14 +86,6 @@ p1-pa-was-integration-tests:
   - common
   - monitoring
   - health
-
-################################################
-# All integration tests defined to run on the  #
-# PingOne deployed P1AS                        #
-################################################
-.all-p1-tests: &all-p1-tests
-  - pingcloud-services
-  - common
   - pingone
 
 .integration-tests-base:
@@ -131,9 +96,15 @@ p1-pa-was-integration-tests:
     - default-gitlab-runner
   image: ${K8S_DEPLOY_TOOLS}
   script:
+    - sleep 30 #sleep so that simultaneous tests don't conflict
     - ./ci-scripts/test/integration/run-integration-tests.sh ${TEST}
   dependencies:
     - find-cluster
+  artifacts:
+    name: "integration_test_logs"
+    paths:
+      - ci-scripts/test/integration/pingone/latest_logs/
+    when: on_failure
 
 integration-tests:
   extends: .integration-tests-base
@@ -142,35 +113,6 @@ integration-tests:
   parallel:
     matrix:
       - TEST: *all-tests
-
-.p1-integration-tests-base:
-  variables:
-    TEST: ""
-  stage: integration-test
-  tags:
-    - default-gitlab-runner
-  image: ${K8S_DEPLOY_TOOLS}
-  script:
-    - sleep 30 #sleep so that simultaneous tests don't conflict
-    - PINGONE=true ./ci-scripts/test/integration/run-integration-tests.sh ${TEST}
-  dependencies:
-    - find-cluster
-  only:
-    variables:
-      - $PINGONE_DEPLOY == "true"
-  artifacts:
-    name: "integration_test_logs"
-    paths:
-      - ci-scripts/test/integration/pingone/latest_logs/
-    when: on_failure
-
-p1-integration-tests:
-  extends: .p1-integration-tests-base
-  variables:
-    TEST: ${TEST}
-  parallel:
-    matrix:
-      - TEST: *all-p1-tests
 
 ## Chaos testing stage ##
 chaos-tests:
@@ -183,19 +125,6 @@ chaos-tests:
   dependencies:
     - find-cluster
 
-p1-chaos-tests:
-  stage: chaos
-  tags:
-    - default-gitlab-runner
-  image: ${K8S_DEPLOY_TOOLS}
-  script:
-    - PINGONE=true ./ci-scripts/test/integration/run-integration-tests.sh chaos
-  dependencies:
-    - find-cluster
-  only:
-    variables:
-      - $PINGONE_DEPLOY == "true"
-
 ## Cleanup stage ##
 cleanup:
   stage: cleanup
@@ -206,18 +135,3 @@ cleanup:
     - ./ci-scripts/cleanup/teardown.sh
   dependencies:
     - find-cluster
-
-p1-cleanup:
-  stage: cleanup
-  tags:
-    - default-gitlab-runner
-  image: ${K8S_DEPLOY_TOOLS}
-  script:
-    - PINGONE=true ./ci-scripts/cleanup/teardown.sh
-  dependencies:
-    - find-cluster
-  only:
-    variables:
-      - $PINGONE_DEPLOY == "true"
-
-

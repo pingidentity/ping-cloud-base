@@ -31,6 +31,22 @@ data:
 
     echo "Deleting PingDirectory backup pvc"
     /tmp/kubectl delete pvc pingdirectory-backup
+# ---
+
+# # Persistance Volume to run backup process
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: pingdirectory-backup
+#   labels:
+#     class: pingdirectory-server
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   storageClassName: pingdirectory-gp3
+#   resources:
+#     requests:
+#       storage: 40Gi
 
 ---
 # Do a full backup of the user backend every 6 hours.

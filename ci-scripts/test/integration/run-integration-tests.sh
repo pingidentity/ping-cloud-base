@@ -6,16 +6,11 @@ ENV_VARS_FILE="${2}"
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 . "${SCRIPT_HOME}"/../../common.sh "${ENV_VARS_FILE}"
 
-# Configure aws and kubectl, unless skipped
-configure_aws
+# Configure kubectl, unless skipped
 configure_kube
 
 if test ! -z "${SKIP_TESTS}"; then
   log "The following tests will be skipped: ${SKIP_TESTS}"
-fi
-
-if [[ -n ${PINGONE} ]]; then
-  set_pingone_api_env_vars
 fi
 
 prepareShunit
@@ -25,7 +20,7 @@ prepareShunit
 export SHUNIT_PATH="${PROJECT_DIR}/ci-scripts/test/shunit/shunit2-2.1.x/shunit2"
 
 # set PYTHONPATH
-export PYTHONPATH="${PROJECT_DIR}/ci-scripts/test/python-utils"
+export PYTHONPATH="${PROJECT_DIR}/ci-scripts/test/python-utils:${PROJECT_DIR}/ci-scripts/deploy/ping-one"
 
 execute_test_scripts() {
 
@@ -49,11 +44,12 @@ execute_test_scripts() {
   if [ ${#python_files[@]} -gt 0 ]; then
     log "Activating Python virtual environment"
     if [[ ! -d venv ]]; then
-      python -m venv venv
+      python3 -m venv venv
     fi
     source venv/bin/activate
 
     log "Installing python requirements"
+    pip_install_shared_pingone_scripts
     REQUIREMENTS="${PROJECT_DIR}/ci-scripts/test/python-utils/requirements.txt"
     pip3.9 install -r ${REQUIREMENTS}
     log "Running python tests from: ${test_directory}"

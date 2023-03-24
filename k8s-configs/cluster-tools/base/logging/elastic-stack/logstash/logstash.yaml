@@ -82,6 +82,13 @@ spec:
             - name: enrichment-cache-files
               mountPath: /enrichment-cache-files
       containers:
+        - name: exporter
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/prom/logstash-exporter:v0.0.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9198
+              name: metrics
+              protocol: TCP
         - name: logstash
           image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logstash/dev:v1.18-release-branch-latest
           imagePullPolicy: Always
@@ -247,6 +254,8 @@ spec:
       name: rest
     - port: 8080
       name: http-log-input
+    - port: 9198
+      name: metrics
 
 ---
 apiVersion: v1

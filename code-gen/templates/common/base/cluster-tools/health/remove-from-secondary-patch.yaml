@@ -1,5 +1,5 @@
-apiVersion: batch/v1
-kind: CronJob
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: healthcheck-pingaccess-was
   namespace: health

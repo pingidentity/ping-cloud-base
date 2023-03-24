@@ -6,6 +6,7 @@ resources:
 - ../base
 - rbac.yaml
 - hpa.yaml
+- ingress-class.yaml
 
 namespace: ingress-nginx-public
 

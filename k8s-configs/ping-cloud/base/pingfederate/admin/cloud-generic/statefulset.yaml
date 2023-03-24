@@ -323,7 +323,7 @@ spec:
     spec:
       accessModes:
       - ReadWriteOnce
-      storageClassName: pingfederate-gp2
+      storageClassName: pingfederate-gp3
       resources:
         requests:
           storage: 20Gi

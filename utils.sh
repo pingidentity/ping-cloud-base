@@ -119,14 +119,14 @@ testUrl() {
   log "Testing URL: ${url} with basic auth set to ${use_basic_auth}"
 
   if [[ "${use_basic_auth}" = true ]];then
-    http_code="$(curl -k --max-time "${CURL_TIMEOUT_SECONDS}" \
+    http_code="$(curl -kL --max-time "${CURL_TIMEOUT_SECONDS}" \
       -w '%{http_code}' "${url}" \
       -u "${ADMIN_USER}:${ADMIN_PASS}" \
       -H 'X-Xsrf-Header: PingAccess' \
       -o /dev/null 2>/dev/null)"
     exit_code=$?
   else
-    http_code="$(curl -k --max-time "${CURL_TIMEOUT_SECONDS}" \
+    http_code="$(curl -kL --max-time "${CURL_TIMEOUT_SECONDS}" \
       -w '%{http_code}' "${url}" \
       -o /dev/null 2>/dev/null)"
     exit_code=$?
@@ -467,6 +467,7 @@ ${NEW_RELIC_ENVIRONMENT_NAME}
 ${DATASYNC_P1AS_SYNC_SERVER}
 ${PF_PROVISIONING_ENABLED}
 ${RADIUS_PROXY_ENABLED}
+${EXTERNAL_INGRESS_ENABLED}
 ${DASH_REPO_URL}
 ${DASH_REPO_BRANCH}'
 
