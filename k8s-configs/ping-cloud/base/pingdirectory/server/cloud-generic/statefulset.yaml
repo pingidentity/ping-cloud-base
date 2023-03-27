@@ -376,11 +376,7 @@ spec:
             - name: out-dir
               mountPath: /opt/out
             - name: backup-dir
-              mountPath: /opt/out/backup
-              subPath: backup
-            - name: backup-dir
-              mountPath: /opt/out/backup-upload
-              subPath: backup-upload
+              mountPath: /opt/backup
             - name: pingdirectory-passwords
               mountPath: /usr/local/secrets
               readOnly: true
@@ -395,7 +391,7 @@ spec:
               subPath: ds_env_vars
             - name: pingdirectory-truststore-certs
               mountPath: /usr/local/secrets/truststore_certs
-              readOnly: true  
+              readOnly: true
       securityContext:
         fsGroup: 0
       volumes:
@@ -427,6 +423,9 @@ spec:
         - name: out-dir
           persistentVolumeClaim:
             claimName: out-dir
+        - name: backup-dir
+          persistentVolumeClaim:
+            claimName: backup-dir
         - name: pingdirectory-license
           secret:
             secretName: pingdirectory-license
@@ -469,8 +468,7 @@ spec:
       spec:
         accessModes:
           - ReadWriteOnce
-        storageClassName: pingdirectory-backup
+        storageClassName: pingdirectory-gp3
         resources:
           requests:
-            storage: 40Gi
-      
+            storage: 1Gi
