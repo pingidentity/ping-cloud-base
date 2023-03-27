@@ -55,6 +55,7 @@
 - Add logstash and fluent-bit metrics to prometheus
 - Enable bootstrapping a new customer with ArgoCD
 - Add logstash/fluent-bit readiness/liveness probe
+- Add priorityClassName into CAWAgent daemonset
 
 _Changes:_
 
@@ -117,6 +118,7 @@ _Changes:_
 - [X] PDO-5080 Test that file has been copied is not working in init container
 - [X] PDO-5104 Update Prometheus CPU/MEM limits
 - [X] PDO-5124 Enable bootstrapping a new customer with ArgoCD
+- [X] PDO-5131 Pods (typically cloudwatch) Stuck in pending state
 - [X] PDO-5141 Fix the ArgoCD App name
 - [X] PDO-5144 Add logstash/fluent-bit readiness/liveness probe
 - [X] PDO-5147 Add logstash metrics to prometheus
