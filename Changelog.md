@@ -54,6 +54,7 @@
 - Updated StorageClass provisoner to CSI and type to gp3
 - Add logstash and fluent-bit metrics to prometheus
 - Enable bootstrapping a new customer with ArgoCD
+- Add logstash/fluent-bit readiness/liveness probe
 
 _Changes:_
 
@@ -117,6 +118,7 @@ _Changes:_
 - [X] PDO-5104 Update Prometheus CPU/MEM limits
 - [X] PDO-5124 Enable bootstrapping a new customer with ArgoCD
 - [X] PDO-5141 Fix the ArgoCD App name
+- [X] PDO-5144 Add logstash/fluent-bit readiness/liveness probe
 - [X] PDO-5147 Add logstash metrics to prometheus
 - [X] PDO-5148 Modify Prometheus query for all backup alerting to only include the primary pod
 
