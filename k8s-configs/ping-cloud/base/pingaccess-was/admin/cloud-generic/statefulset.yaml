@@ -156,8 +156,8 @@ spec:
             memory: "2560Mi"
             cpu: "1"
         volumeMounts:
-        - name: pd-backup-volume
-          mountPath: /opt/backup
+        # - name: pd-backup-volume
+        #   mountPath: /opt/backup
         - name: ssh-dir
           mountPath: /home/ping/.ssh
         - name: shared-dir
@@ -283,9 +283,9 @@ spec:
           secretName: pingaccess-was-passwords
           optional: true
           defaultMode: 0400
-      - name: pd-backup-volume
-        persistentVolumeClaim:
-          claimName: clone-of-pvc-2
+      # - name: pd-backup-volume
+      #   persistentVolumeClaim:
+      #     claimName: clone-of-pvc-2
   volumeClaimTemplates:
   - metadata:
       name: out-dir

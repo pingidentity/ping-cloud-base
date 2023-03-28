@@ -38,11 +38,7 @@ spec:
           mountPath: /opt/in/backup.sh
           subPath: backup.sh
         - name: pd-backup-volume
-          mountPath: /opt/out/backup
-          subPath: backup
-        - name: pd-backup-volume
-          mountPath: /opt/out/backup-upload
-          subPath: backup-upload
+          mountPath: /opt/backup
         - name: pingdirectory-passwords
           mountPath: /usr/local/secrets
           readOnly: true
@@ -58,7 +54,7 @@ spec:
           defaultMode: 0555
       - name: pd-backup-volume
         persistentVolumeClaim:
-          claimName: clone-of-pvc-1
+          claimName: clone-of-pvc
       - name: pingdirectory-passwords
         secret:
           secretName: pingdirectory-passwords
@@ -69,18 +65,21 @@ spec:
           name: pingcommon-init
           defaultMode: 0555
 
-# ---
-# Persistent Volume to run backup process
-# apiVersion: v1
-# kind: PersistentVolumeClaim
-# metadata:
-#   name: pingdirectory-backup
-#   labels:
-#     class: pingdirectory-server
-# spec:
-#   accessModes:
-#     - ReadWriteOnce
-#   storageClassName: pingdirectory-gp3
-#   resources:
-#     requests:
-#       storage: 40Gi
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: clone-of-pvc
+    namespace: ping-cloud-calvincarter
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: pingdirectory-gp3
+  resources:
+    requests:
+      storage: 50Gi
+  dataSource:
+      name: ebs-volume-snapshot
+      kind: VolumeSnapshot
+      apiGroup: snapshot.storage.k8s.io

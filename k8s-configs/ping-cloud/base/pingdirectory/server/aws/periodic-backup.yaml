@@ -10,7 +10,7 @@ data:
     # Install kubectl
     curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
     -o /tmp/kubectl
-    
+
     chmod +x /tmp/kubectl
 
     UPLOAD_FILES=
@@ -19,18 +19,22 @@ data:
     LOG_FILE=/tmp/upload.log
 
     test -z "${BACKUP_RESTORE_POD}" && SERVER="${K8S_STATEFUL_SET_NAME}-0" || SERVER="${BACKUP_RESTORE_POD}"
-   
+
     echo "Running backup script within ${SERVER} pod"
     echo "${BACKENDS_TO_BACKUP}"
-    cp /logger.lib.sh "${HOOKS_DIR}"/logger.lib.sh
+    #cp /logger.lib.sh "${HOOKS_DIR}"/logger.lib.sh
+
+    /opt/server/bin/backup --backupDirectory "/opt/backup/userRoot" --backendID "userRoot"
+    ls -al /opt/backup
+
+    /tmp/kubectl cp ping-cloud-vathsalyakidambi-dev/pingdirectory-0:/opt/out/backup /opt/backup 
 
     #/tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}"> "${LOG_FILE}"
-    test -x ${SCRIPT} && sh ${SCRIPT}
-    #/tmp/kubectl cp ping-cloud-vathsalyakidambi-dev/pingdirectory-0:/opt/out/backup /opt/out/backup 
-    ls -al /opt/out/backup
+    # test -x ${SCRIPT} && sh ${SCRIPT}
+    # ls -al /opt/out/backup
 
-    echo "Deleting PingDirectory backup pvc"
-    /tmp/kubectl delete pvc pingdirectory-backup
+    # echo "Deleting PingDirectory backup pvc"
+    # /tmp/kubectl delete pvc pingdirectory-backup
 # ---
 
 # # Persistance Volume to run backup process
