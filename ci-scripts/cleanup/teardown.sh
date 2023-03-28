@@ -17,8 +17,10 @@ K8S_UTILS_VERSION=1.0.1
 pingcloud-scripts::source_script k8s_utils ${K8S_UTILS_VERSION}
 
 # PingOne teardown
-log "Deleting P1 Environment"
 pip_install_shared_pingone_scripts
+log "Deleting P1 resources created by deployment"
+p1_deployment_cleanup
+log "Deleting P1 Environment"
 cicd_p1_env_setup_and_teardown Teardown
 
 # Do not ever delete the environment on the master branch. And only delete an environment,

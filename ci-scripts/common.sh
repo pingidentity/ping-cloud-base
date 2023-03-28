@@ -20,7 +20,8 @@ SKIP_TESTS="${SKIP_TESTS:-pingdelegator/01-admin-user-login.sh \
 # all environment variables
 set_env_vars() {
 
-  export BELUGA_ENV_NAME=${CI_COMMIT_REF_SLUG}
+  export CLUSTER_NAME="${SELECTED_KUBE_NAME:-ci-cd}"
+  export BELUGA_ENV_NAME="${CLUSTER_NAME}-${CI_COMMIT_REF_SLUG}"
   if [[ ${CI_COMMIT_REF_SLUG} != master ]]; then
     export ENVIRONMENT=-${CI_COMMIT_REF_SLUG}
   fi
@@ -28,7 +29,6 @@ set_env_vars() {
   if test -z "${ENV_VARS_FILE}"; then
     echo "Using environment variables based on CI variables"
 
-    export CLUSTER_NAME="${SELECTED_KUBE_NAME:-ci-cd}"
     export IS_MULTI_CLUSTER=false
 
     export TENANT_NAME="${CLUSTER_NAME}"
