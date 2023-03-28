@@ -196,6 +196,7 @@ spec:
         hostPath:
           path: /var/log/dmesg
       serviceAccountName: fluent-bit
+      priorityClassName: system-node-critical
       tolerations:
       - key: node-role.kubernetes.io/controlplane
         operator: Exists

@@ -56,6 +56,7 @@
 - Enable bootstrapping a new customer with ArgoCD
 - Add logstash/fluent-bit readiness/liveness probe
 - Add priorityClassName into CAWAgent daemonset
+- Fluent-bit pods stuck in pending state
 
 _Changes:_
 
@@ -117,6 +118,7 @@ _Changes:_
 - [X] PDO-5043 Legacy Logging Mode: Remove Feature Flag, Code Logic and Refactor Filters
 - [X] PDO-5080 Test that file has been copied is not working in init container
 - [X] PDO-5104 Update Prometheus CPU/MEM limits
+- [X] PDO-5107 Fluent-bit pods stuck in pending state
 - [X] PDO-5124 Enable bootstrapping a new customer with ArgoCD
 - [X] PDO-5131 Pods (typically cloudwatch) Stuck in pending state
 - [X] PDO-5141 Fix the ArgoCD App name
