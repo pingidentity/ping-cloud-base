@@ -13,6 +13,8 @@ pushd "${PROJECT_DIR}"
 
 # Deploy the configuration to Kubernetes
 pip_install_shared_pingone_scripts
+log "Deleting P1 resources created by deployment if they already exist"
+p1_deployment_cleanup
 log "Deleting P1 Environment if it already exists"
 cicd_p1_env_setup_and_teardown Teardown 2>/dev/null || true
 log "Creating P1 Environment"
