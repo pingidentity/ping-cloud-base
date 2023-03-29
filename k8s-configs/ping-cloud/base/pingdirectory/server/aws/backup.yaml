@@ -13,6 +13,24 @@ spec:
   template:
     spec:
       serviceAccount: ping-serviceaccount
+      affinity:
+        # This podAffinity rule is designed to deploy PingDataSync to the same AZ as its targeted PingDirectory syncing server.
+        # The default is set to deploy to the same AZ as "pingdirectory-0".
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: statefulset.kubernetes.io/pod-name
+                operator: In
+                values:
+                - pingdirectory-0
+            topologyKey: "kubernetes.io/hostname"
+      # this does not apply in dev/test and is removed via kustomize
+      tolerations:
+        - key: "pingidentity.com/pd-only"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
       restartPolicy: Never
       containers:
       - name: pingdirectory-backup
@@ -37,6 +55,8 @@ spec:
         - name: backup-script
           mountPath: /opt/in/backup.sh
           subPath: backup.sh
+        - name: out-dir
+          mountPath: /opt/out
         - name: pd-backup-volume
           mountPath: /opt/backup
         - name: pingdirectory-passwords
@@ -52,9 +72,12 @@ spec:
         configMap:
           name: pingdirectory-backup
           defaultMode: 0555
+      - name: out-dir
+        persistentVolumeClaim:
+          claimName: out-dir-pingdirectory-0
       - name: pd-backup-volume
         persistentVolumeClaim:
-          claimName: clone-of-pvc
+          claimName: custom-of-pvc
       - name: pingdirectory-passwords
         secret:
           secretName: pingdirectory-passwords
@@ -67,10 +90,29 @@ spec:
 
 ---
 
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#     name: clone-of-pvc
+#     namespace: ping-cloud-calvincarter
+# spec:
+#   accessModes:
+#   - ReadWriteOnce
+#   storageClassName: pingdirectory-gp3
+#   resources:
+#     requests:
+#       storage: 50Gi
+#   dataSource:
+#       name: ebs-volume-snapshot
+#       kind: VolumeSnapshot
+#       apiGroup: snapshot.storage.k8s.io
+
+---
+
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-    name: clone-of-pvc
+    name: custom-of-pvc
     namespace: ping-cloud-calvincarter
 spec:
   accessModes:
@@ -78,8 +120,4 @@ spec:
   storageClassName: pingdirectory-gp3
   resources:
     requests:
-      storage: 50Gi
-  dataSource:
-      name: ebs-volume-snapshot
-      kind: VolumeSnapshot
-      apiGroup: snapshot.storage.k8s.io
+      storage: 30Gi

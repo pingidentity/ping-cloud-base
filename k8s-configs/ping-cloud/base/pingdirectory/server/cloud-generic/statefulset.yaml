@@ -161,10 +161,9 @@ spec:
       containers:
         - name: pingdirectory
           securityContext:
-            runAsGroup: 0
-            runAsNonRoot: false
-            runAsUser: 0
-            privileged: true
+            runAsGroup: 9999
+            runAsNonRoot: true
+            runAsUser: 9031
           image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:pdo-4959-1
           imagePullPolicy: Always
           ports:
@@ -336,7 +335,7 @@ spec:
               cpu: 100m
               memory: 100Mi
       securityContext:
-        fsGroup: 0
+        fsGroup: 9999
       volumes:
         - name: ssh-dir
           emptyDir: {}

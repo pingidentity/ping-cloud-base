@@ -22,12 +22,17 @@ data:
 
     echo "Running backup script within ${SERVER} pod"
     echo "${BACKENDS_TO_BACKUP}"
-    #cp /logger.lib.sh "${HOOKS_DIR}"/logger.lib.sh
+    # #cp /logger.lib.sh "${HOOKS_DIR}"/logger.lib.sh
 
-    /opt/server/bin/backup --backupDirectory "/opt/backup/userRoot" --backendID "userRoot"
+    echo "PD volume"
+    ls -al /opt/out
+
+    /opt/out/instance/bin/backup --backupDirectory "/opt/backup/userRoot" --backendID "userRoot"
+
+    echo "Backup from dynamic volume"
     ls -al /opt/backup
 
-    /tmp/kubectl cp ping-cloud-vathsalyakidambi-dev/pingdirectory-0:/opt/out/backup /opt/backup 
+    # /tmp/kubectl cp ping-cloud-vathsalyakidambi-dev/pingdirectory-0:/opt/out/backup /opt/backup 
 
     #/tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}"> "${LOG_FILE}"
     # test -x ${SCRIPT} && sh ${SCRIPT}
