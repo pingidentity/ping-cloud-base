@@ -6,8 +6,7 @@ set -e
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 . ${SCRIPT_HOME}/../common.sh
 
-# Configure aws and kubectl, unless skipped
-configure_aws
+# Configure kubectl, unless skipped
 configure_kube
 
 PWD=$(pwd)
@@ -17,14 +16,12 @@ source "${PCB_ROOT}/pingcloud-scripts.sh"
 K8S_UTILS_VERSION=1.0.1
 pingcloud-scripts::source_script k8s_utils ${K8S_UTILS_VERSION}
 
-# If PingOne teardown just delete the PingOne environment and exit
-if [[ -n ${PINGONE} ]]; then
-  set_pingone_api_env_vars
-  log "Deleting P1 Environment"
-  pip3 install -r ${PROJECT_DIR}/ci-scripts/deploy/ping-one/requirements.txt
-  python3 ${PROJECT_DIR}/ci-scripts/deploy/ping-one/p1_env_setup_and_teardown.py Teardown
-  exit 0
-fi
+# PingOne teardown
+pip_install_shared_pingone_scripts
+log "Deleting P1 resources created by deployment"
+p1_deployment_cleanup
+log "Deleting P1 Environment"
+cicd_p1_env_setup_and_teardown Teardown
 
 # Do not ever delete the environment on the master branch. And only delete an environment,
 # if the DELETE_ENV_AFTER_PIPELINE flag is true

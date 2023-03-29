@@ -17,8 +17,8 @@ spec:
             argocd-auto-configure: "true"
   template:
     metadata:
-      # CLUSTER_TARGET is typically {{name}} which is the cluster name from the generator above
-      name: "{{name}}-${REGION_NICK_NAME}"
+      # metadata comes from argocd-bootstrap
+      name: "${TENANT_NAME}-${REGION_NICK_NAME}-{{metadata.labels.argocd-env}}"
       namespace: argocd
       annotations:
         argocd-image-updater.argoproj.io/git-branch: "{{metadata.labels.argocd-branch}}"
@@ -80,8 +80,8 @@ spec:
                   exclude: true
   template:
     metadata:
-      # {{name}} is cluster name from the cluster generator above
-      name: "{{name}}-${REGION_NICK_NAME}-{{path.basename}}"
+      # metadata comes from argocd-bootstrap, path.basename from the git generator
+      name: "${TENANT_NAME}-${REGION_NICK_NAME}-{{metadata.labels.argocd-env}}-{{path.basename}}"
       annotations:
         argocd-image-updater.argoproj.io/git-branch: "{{metadata.labels.argocd-branch}}"
         argocd-image-updater.argoproj.io/image-list: ${IMAGE_LIST}

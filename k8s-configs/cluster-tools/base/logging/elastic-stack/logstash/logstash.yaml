@@ -82,6 +82,13 @@ spec:
             - name: enrichment-cache-files
               mountPath: /enrichment-cache-files
       containers:
+        - name: exporter
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/prom/logstash-exporter:v0.0.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9198
+              name: metrics
+              protocol: TCP
         - name: logstash
           image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logstash/dev:v1.18-release-branch-latest
           imagePullPolicy: Always
@@ -118,6 +125,24 @@ spec:
           envFrom:
             - configMapRef:
                 name: elk-environment-variables
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 9600
+            initialDelaySeconds: 300
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 9600
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            successThreshold: 3
+            timeoutSeconds: 5
           resources:
             limits:
               cpu: "500m"
@@ -247,6 +272,8 @@ spec:
       name: rest
     - port: 8080
       name: http-log-input
+    - port: 9198
+      name: metrics
 
 ---
 apiVersion: v1

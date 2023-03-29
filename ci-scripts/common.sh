@@ -17,43 +17,18 @@ ENV_VARS_FILE="${1}"
 SKIP_TESTS="${SKIP_TESTS:-pingdelegator/01-admin-user-login.sh \
   pingaccess/08-artifact-test.sh}"
 
-# environment variables that are determined based on deployment type (traditional or PingOne)
-set_deploy_type_env_vars() {
-  # MySQL database names cannot have dashes. So transform dashes into underscores.
-  ENV_NAME_NO_DASHES=$(echo ${CI_COMMIT_REF_SLUG} | tr '-' '_')
-
-  if [[ -n ${PINGONE} ]]; then
-    # Set PingOne deploy env vars
-    echo "Setting env vars for PingOne deployment"
-    export PING_CLOUD_NAMESPACE=ping-p1-${CI_COMMIT_REF_SLUG}
-    KUBE_NAME_UNDERSCORES=$(echo ${SELECTED_KUBE_NAME} | tr '-' '_')
-    export PLATFORM_EVENT_QUEUE_NAME="${KUBE_NAME_UNDERSCORES}_platform_event_queue.fifo"
-    export ORCH_API_SSM_PATH_PREFIX="/${SELECTED_KUBE_NAME}/pcpt/orch-api"
-    export MYSQL_DATABASE="p1_pingcentral${ENV_NAME_NO_DASHES}"
-    export BELUGA_ENV_NAME=p1-${CI_COMMIT_REF_SLUG}
-    if [[ ${CI_COMMIT_REF_SLUG} != master ]]; then
-      export ENVIRONMENT=-p1-${CI_COMMIT_REF_SLUG}
-    fi
-  else
-    # Set traditional deploy env vars
-    echo "Setting env vars for traditional deployment"
-    export PING_CLOUD_NAMESPACE=ping-cloud-${CI_COMMIT_REF_SLUG}
-    export PLATFORM_EVENT_QUEUE_NAME="v2_platform_event_queue.fifo"
-    export ORCH_API_SSM_PATH_PREFIX="/pcpt/orch-api"
-    export MYSQL_DATABASE="pingcentral_${ENV_NAME_NO_DASHES}"
-    export BELUGA_ENV_NAME=${CI_COMMIT_REF_SLUG}
-    if [[ ${CI_COMMIT_REF_SLUG} != master ]]; then
-      export ENVIRONMENT=-${CI_COMMIT_REF_SLUG}
-    fi
-  fi
-}
-
-# all other environment variables
+# all environment variables
 set_env_vars() {
+
+  export CLUSTER_NAME="${SELECTED_KUBE_NAME:-ci-cd}"
+  export BELUGA_ENV_NAME="${CLUSTER_NAME}-${CI_COMMIT_REF_SLUG}"
+  if [[ ${CI_COMMIT_REF_SLUG} != master ]]; then
+    export ENVIRONMENT=-${CI_COMMIT_REF_SLUG}
+  fi
+
   if test -z "${ENV_VARS_FILE}"; then
     echo "Using environment variables based on CI variables"
 
-    export CLUSTER_NAME="${SELECTED_KUBE_NAME:-ci-cd}"
     export IS_MULTI_CLUSTER=false
 
     export TENANT_NAME="${CLUSTER_NAME}"
@@ -191,10 +166,18 @@ set_env_vars() {
 
   # PingCentral service
   PINGCENTRAL_CONSOLE=https://pingcentral${FQDN}
-}
 
-set_deploy_type_env_vars
-set_env_vars
+  # MySQL database names cannot have dashes. So transform dashes into underscores.
+  ENV_NAME_NO_DASHES=$(echo ${CI_COMMIT_REF_SLUG} | tr '-' '_')
+
+  # PingOne deploy env vars
+  echo "Setting env vars for PingOne deployment"
+  export PING_CLOUD_NAMESPACE=ping-cloud-${CI_COMMIT_REF_SLUG}
+  KUBE_NAME_UNDERSCORES=$(echo ${SELECTED_KUBE_NAME} | tr '-' '_')
+  export PLATFORM_EVENT_QUEUE_NAME="${KUBE_NAME_UNDERSCORES}_platform_event_queue.fifo"
+  export ORCH_API_SSM_PATH_PREFIX="/${SELECTED_KUBE_NAME}/pcpt/orch-api"
+  export MYSQL_DATABASE="pingcentral${ENV_NAME_NO_DASHES}"
+}
 
 ########################################################################################################################
 # Sets env vars specific to PingOne API integration
@@ -650,3 +633,12 @@ check_if_ready() {
   printf '\n\n--- Pod status ---'
   kubectl get pods -n "${ns_to_check}"
 }
+
+pip_install_shared_pingone_scripts() {
+  pip install git+https://gitlab.corp.pingidentity.com/ping-cloud-private-tenant/ping-cloud-tools.git@master#subdirectory=pingone
+}
+
+
+set_env_vars
+configure_aws
+set_pingone_api_env_vars

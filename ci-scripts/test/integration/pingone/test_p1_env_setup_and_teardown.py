@@ -2,7 +2,7 @@ import os
 import unittest
 from typing import Optional
 
-import p1_env_setup_and_teardown as p1_utils
+from pingone import common as p1_utils
 from requests_oauthlib import OAuth2Session
 
 
@@ -17,8 +17,9 @@ class TestP1EnvSetupAndTeardown(unittest.TestCase):
     def setUpClass(cls) -> None:
         client = p1_utils.get_client(p1_utils.WORKERAPP_CLIENT)
         TestP1EnvSetupAndTeardown.worker_app_token_session = OAuth2Session(client["client_id"], token=client["token"])
-        TestP1EnvSetupAndTeardown.environment_name = os.getenv("CLUSTER_NAME")
-        TestP1EnvSetupAndTeardown.population_name = os.getenv("CI_COMMIT_REF_SLUG")
+        cluster_name = os.getenv("CLUSTER_NAME", "not_set")
+        TestP1EnvSetupAndTeardown.environment_name = "ci-cd" if cluster_name.startswith("ci-cd") else cluster_name
+        TestP1EnvSetupAndTeardown.population_name = f"{cluster_name}-{os.getenv('CI_COMMIT_REF_SLUG')}"
         TestP1EnvSetupAndTeardown.cluster_env_id = cls.get_id(endpoint=f"{p1_utils.API_LOCATION}/environments", name=TestP1EnvSetupAndTeardown.environment_name)
         TestP1EnvSetupAndTeardown.cluster_env_endpoints = p1_utils.EnvironmentEndpoints(p1_utils.API_LOCATION, TestP1EnvSetupAndTeardown.cluster_env_id)
 

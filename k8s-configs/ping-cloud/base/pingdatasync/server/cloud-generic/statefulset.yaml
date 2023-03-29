@@ -252,7 +252,7 @@ spec:
       spec:
         accessModes:
           - ReadWriteOnce
-        storageClassName: pingdatasync-gp2
+        storageClassName: pingdatasync-gp3
         resources:
           requests:
             storage: 20Gi

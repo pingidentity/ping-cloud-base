@@ -72,7 +72,7 @@ spec:
     spec:
       containers:
       - name: fluent-bit
-        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-for-fluent-bit:2.24.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-for-fluent-bit:2.31.7
         imagePullPolicy: Always
         command:
           - "/bin/sh"
@@ -130,12 +130,32 @@ spec:
                 configMapKeyRef:
                   name: cluster-info
                   key: newrelic_cluster_name
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /api/v1/health
+            port: 2020
+          initialDelaySeconds: 20
+          periodSeconds: 180
+          timeoutSeconds: 5
+        readinessProbe:
+          initialDelaySeconds: 10
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 2020
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
         resources:
             limits:
               memory: 200Mi
             requests:
               cpu: 200m
               memory: 100Mi
+        ports:
+          - containerPort: 2020
+            name: metrics
         volumeMounts:
         # Please don't change below read-only permissions
         - name: fluentbitstate
@@ -176,6 +196,7 @@ spec:
         hostPath:
           path: /var/log/dmesg
       serviceAccountName: fluent-bit
+      priorityClassName: system-node-critical
       tolerations:
       - key: node-role.kubernetes.io/controlplane
         operator: Exists
@@ -184,3 +205,16 @@ spec:
         effect: "NoExecute"
       - operator: "Exists"
         effect: "NoSchedule"
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: fluent-bit
+  labels:
+    k8s-app: fluent-bit
+spec:
+  selector:
+    k8s-app: fluent-bit
+  ports:
+    - port: 2020
+      name: api

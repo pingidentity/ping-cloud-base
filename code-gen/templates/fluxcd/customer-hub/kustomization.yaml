@@ -12,24 +12,17 @@ resources:
 # Deploy sealed-secrets controller so it's up and ready before ping-cloud namespace is created
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/base/security?ref=${K8S_GIT_BRANCH}
 
+# generate-cluster-state.sh copies this from code-gen/templates/fluxcd/common/
 # The minimal bootstrap required for the ping-cloud stack
 - ping-cloud.yaml
 
-# Deploy the CD application
-- argo-application-set.yaml
+# generate-cluster-state.sh copies this from code-gen/templates/customer-hub/base/cluster-tools/git-ops/
+# Create all argo applications
+- argocd-application-set.yaml
 
 patchesStrategicMerge:
-
-### Known hosts file for cloning the cluster state repo over SSH ###
-- |-
-  apiVersion: v1
-  kind: ConfigMap
-  metadata:
-    name: argocd-ssh-known-hosts-cm
-    namespace: argocd
-  data:
-    ssh_known_hosts: |-
-      ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
+# generate-cluster-state.sh copies this from code-gen/templates/customer-hub/base/cluster-tools/git-ops/
+- argocd-strategic-patches.yaml
 
 ### Deploy key to the cluster state repo ###
 - |-
@@ -51,15 +44,5 @@ patchesJson6902:
     kind: ConfigMap
     name: argocd-cm
     namespace: argocd
-  patch: |
-    - op: add
-      path: /data/repositories
-      value: |
-        - url: ${CLUSTER_STATE_REPO_URL}
-          type: git
-          sshPrivateKeySecret:
-            name: argo-git-deploy
-            key: identity
-    - op: add
-      path: /data/timeout.reconciliation
-      value: 60s
+  # generate-cluster-state.sh copies this from code-gen/templates/customer-hub/base/cluster-tools/git-ops/
+  path: argocd-cm-patch.yaml

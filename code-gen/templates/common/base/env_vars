@@ -52,7 +52,7 @@ PLATFORM_EVENT_QUEUE_POLL_INTERVAL_SECONDS=2
 ORCH_API_SSM_PATH_PREFIX=${ORCH_API_SSM_PATH_PREFIX}
 SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX}
 ARGOCD_CDE_ROLE_SSM_TEMPLATE=${ARGOCD_CDE_ROLE_SSM_TEMPLATE}
-ARGOCD_CDE_URL_SSM_TEMPLATE=${ARGOCD_CDE_ROLE_SSM_TEMPLATE}
+ARGOCD_CDE_URL_SSM_TEMPLATE=${ARGOCD_CDE_URL_SSM_TEMPLATE}
 
 ############################################################
 # Cluster state repo details
@@ -65,7 +65,7 @@ CLUSTER_STATE_REPO_BRANCH=${CLUSTER_STATE_REPO_BRANCH}
 
 # The application reconciliation timeout in seconds for ArgoCD, i.e. how frequently ArgoCD should poll the
 # cluster-state-repo for changes. To disable reconciliation set it to 0.
-APP_RESYNC_SECONDS=60
+APP_RESYNC_SECONDS=${APP_RESYNC_SECONDS}
 
 ############################################################
 # Miscellaneous ping-cloud-base variables

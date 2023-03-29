@@ -227,6 +227,8 @@ patchesStrategicMerge:
 #- pingdirectory/ff-external-ingress/remove-external-ingress.yaml
 #- pingfederate/ff-external-ingress/remove-external-ingress.yaml
 
+#- ../base/ping-cloud/pingfederate/provisioning/remove-from-secondary-patch.yaml
+
 ### Developer CDE Environments - the following will be UNCOMMENTED if we are in a developer CDE
 
 ### CloudWatch is disabled by default in developer CDEs for cost savings

@@ -46,6 +46,17 @@
 - Add ArgoCD ApplicationSet support for multiple CDEs
 - Flag in env_var to enable/disable external ingresses for admin endpoints
 - Fix test that file has been copied is not working in init container
+- Deploy ArgoCD to customer-hub only
+- Fix the ArgoCD App name
+- Add ArgoCD IRSA role
+- Modify Prometheus query for all backup alerting to only include the primary pod
+- Improve fluent-bit multiline log parsing
+- Updated StorageClass provisoner to CSI and type to gp3
+- Add logstash and fluent-bit metrics to prometheus
+- Enable bootstrapping a new customer with ArgoCD
+- Add logstash/fluent-bit readiness/liveness probe
+- Add priorityClassName into CAWAgent daemonset
+- Fluent-bit pods stuck in pending state
 - OpenSearch installed in cluster
 - OpenSearch migration: Migrate index templates
 
@@ -53,6 +64,9 @@ _Changes:_
 
 - [X] PDO-2419 Enable users to download or upload user reports in Delegated Admin
 - [X] PDO-3335 Set PingFederate Engines minReplicas count to 3 in prod/small deployment
+- [X] PDO-3834 Updated StorageClass type to gp3
+- [X] PDO-3908 Clean up P1 artifacts in Admin environment during CI/CD teardown
+- [X] PDO-4009 Update k8s StorageClass provisoner to use CSI driver
 - [X] PDO-4388 Flag in env_var to enable/disable external ingresses for admin endpoints
 - [X] PDO-4556 [need before EKS 1.25] batch/v1beta1 CronJob is deprecated in v1.21+, unavailable in v1.25+; use batch/v1 CronJob
 - [X] PDO-4575 Upgrade ArgoCD to v2.5.5
@@ -80,6 +94,7 @@ _Changes:_
 - [X] PDO-4870 Enable the skipped integration tests.
 - [X] PDO-4874 Automate creation of ping-cloud-dashboards new release branch
 - [X] PDO-4895 Added karpenter v0.24.0 and required parameters, KarpenterControllerRole & ClusterEndPoint
+- [X] PDO-4902 Code sharing for PingOne deployments
 - [X] PDO-4903 Deploy PingOne in CICD like Shared P1 Tenant
 - [X] PDO-4916 Missing PF request log
 - [X] PDO-4959 Update the PD backup job to create new PV at the start of the job and mount it
@@ -93,15 +108,26 @@ _Changes:_
 - [X] PDO-4987 Add ArgoCD Bootstrap init container to create clusters
 - [X] PDO-4988 Add ArgoCD Applications for each CDE via ApplicationSet
 - [X] PDO-4989 Add ArgoCD ApplicationSet support for multiple CDEs
+- [X] PDO-4990 Add ArgoCD IRSA role
+- [X] PDO-4991 Deploy ArgoCD to customer-hub only
 - [X] PDO-4997 Update values.yaml in region and base path sync with env_vars file
 - [X] PDO-5008 Update tagging script to return correct tag
 - [X] PDO-5009 Add logstash HPA and upgrade resources
+- [X] PDO-5018 PGO resources - handle secondary region v1.18
+- [X] PDO-5025 Improve fluent-bit multiline log parsing
 - [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone 
 - [X] PDO-5039 Automate cleanup of external dns records for CI/CD clusters
 - [X] PDO-5041 node-role.kubernetes.io/master (deprecated)
 - [X] PDO-5043 Legacy Logging Mode: Remove Feature Flag, Code Logic and Refactor Filters
 - [X] PDO-5080 Test that file has been copied is not working in init container
 - [X] PDO-5104 Update Prometheus CPU/MEM limits
+- [X] PDO-5107 Fluent-bit pods stuck in pending state
+- [X] PDO-5124 Enable bootstrapping a new customer with ArgoCD
+- [X] PDO-5131 Pods (typically cloudwatch) Stuck in pending state
+- [X] PDO-5141 Fix the ArgoCD App name
+- [X] PDO-5144 Add logstash/fluent-bit readiness/liveness probe
+- [X] PDO-5147 Add logstash metrics to prometheus
+- [X] PDO-5148 Modify Prometheus query for all backup alerting to only include the primary pod
 - [X] PDO-5110 Install Opensearch side-by-side with Elastic
 - [X] PDO-5112 OpenSearch migration: Migrate index templates
 
