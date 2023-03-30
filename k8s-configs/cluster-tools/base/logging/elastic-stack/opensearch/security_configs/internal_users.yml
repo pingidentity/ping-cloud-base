@@ -31,11 +31,11 @@ kibanaro:
   description: "Demo OpenSearch Dashboards read only user"
 
 logstash:
-  hash: "$2y$12$.iY36ILKEixrPF1ioV8in.vNlFVCW8wsy1Gf9m.mXlbT0U9QmvBK2"
+  hash: "$2y$12$u7eZEY3Otjcvjd.cIKN.Z.S3vQzWmMKh0zfeLnc6CzE20UstZo64a"
   reserved: false
   backend_roles:
   - "logstash"
-  description: "Demo logstash user"
+  description: "Logstash user"
 
 readall:
   hash: "$2y$12$15huaUhaiNxHiP0JIhf.QeB9NVsB/nTiSytIT1DQJfXCEKKJaIy8C"
