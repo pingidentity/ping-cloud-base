@@ -183,6 +183,7 @@ ${DATASYNC_P1AS_SYNC_SERVER}
 ${ARGOCD_BOOTSTRAP_ENABLED}
 ${ARGOCD_CDE_ROLE_SSM_TEMPLATE}
 ${ARGOCD_CDE_URL_SSM_TEMPLATE}
+${ARGOCD_ENVIRONMENTS}
 ${ARGOCD_SLACK_TOKEN_BASE64}
 ${RADIUS_PROXY_ENABLED}
 ${EXTERNAL_INGRESS_ENABLED}
@@ -924,6 +925,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
         # Also set the MYSQL_USER/PASSWORD to empty so they are fetched from AWS Secrets Manager going forward.
         set -x
         QUIET=true \
+            UPGRADE="true" \
             TARGET_DIR="${TARGET_DIR}" \
             SERVER_PROFILE_URL='' \
             K8S_GIT_URL="${PING_CLOUD_BASE_REPO_URL}" \
@@ -1044,11 +1046,6 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
     else
       IS_PRIMARY=false
       TYPE='secondary'
-    fi
-
-    if "${IS_CUSTOMER_HUB}" && ! "${IS_PRIMARY}"; then
-      log "Not pushing '${CUSTOMER_HUB}' branch for secondary region"
-      continue
     fi
 
     TARGET_DIR="${TENANT_CODE_DIR}/${REGION_DIR}"
