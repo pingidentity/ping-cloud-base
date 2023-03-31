@@ -57,6 +57,8 @@
 - Add logstash/fluent-bit readiness/liveness probe
 - Add priorityClassName into CAWAgent daemonset
 - Fluent-bit pods stuck in pending state
+- OpenSearch installed in cluster
+- OpenSearch migration: Migrate index templates
 
 _Changes:_
 
@@ -126,6 +128,8 @@ _Changes:_
 - [X] PDO-5144 Add logstash/fluent-bit readiness/liveness probe
 - [X] PDO-5147 Add logstash metrics to prometheus
 - [X] PDO-5148 Modify Prometheus query for all backup alerting to only include the primary pod
+- [X] PDO-5110 Install Opensearch side-by-side with Elastic
+- [X] PDO-5112 OpenSearch migration: Migrate index templates
 
 ### 1.17.0.0
 

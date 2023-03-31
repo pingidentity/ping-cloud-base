@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: opensearch-dashboards
+  labels:
+    app.kubernetes.io/name: opensearch-dashboards
+spec:
+  type: ClusterIP
+  ports:
+  - port: 5601
+    protocol: TCP
+    name: http
+    targetPort: 5601
+  selector:
+    app.kubernetes.io/name: opensearch-dashboards
