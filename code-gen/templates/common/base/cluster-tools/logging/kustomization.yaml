@@ -65,3 +65,13 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: os-dash.${DNS_ZONE}
+
+- target:
+    kind: Service
+    name: opensearch-cluster-master
+    namespace: elastic-stack-logging
+    version: v1
+  patch: |-
+    - op: replace
+      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+      value: opensearch.${DNS_ZONE}

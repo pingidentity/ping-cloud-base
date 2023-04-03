@@ -59,6 +59,7 @@
 - Fluent-bit pods stuck in pending state
 - OpenSearch installed in cluster
 - OpenSearch migration: Migrate index templates
+- OpenSearch migration: Change logstash pipelines to send data to OS instead ES
 
 _Changes:_
 
@@ -122,14 +123,16 @@ _Changes:_
 - [X] PDO-5080 Test that file has been copied is not working in init container
 - [X] PDO-5104 Update Prometheus CPU/MEM limits
 - [X] PDO-5107 Fluent-bit pods stuck in pending state
+- [X] PDO-5110 Install Opensearch side-by-side with Elastic
+- [X] PDO-5112 OpenSearch migration: Migrate index templates
+- [X] PDO-5113 OpenSearch migration: Change logstash pipelines to send data to OS instead ES
 - [X] PDO-5124 Enable bootstrapping a new customer with ArgoCD
 - [X] PDO-5131 Pods (typically cloudwatch) Stuck in pending state
 - [X] PDO-5141 Fix the ArgoCD App name
+- [X] PDO-5142 Add logstash metrics to prometheus
 - [X] PDO-5144 Add logstash/fluent-bit readiness/liveness probe
-- [X] PDO-5147 Add logstash metrics to prometheus
 - [X] PDO-5148 Modify Prometheus query for all backup alerting to only include the primary pod
-- [X] PDO-5110 Install Opensearch side-by-side with Elastic
-- [X] PDO-5112 OpenSearch migration: Migrate index templates
+
 
 ### 1.17.0.0
 

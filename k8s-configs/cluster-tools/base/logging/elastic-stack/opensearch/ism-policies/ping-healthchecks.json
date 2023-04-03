@@ -1,7 +1,4 @@
 {
-    "id": "ping_healthcheck_policy",
-    "seqNo": 640,
-    "primaryTerm": 3,
     "policy": {
         "policy_id": "ping_healthcheck_policy",
         "description": "Ping policy for healthcheck logs(after 7 days delete)",

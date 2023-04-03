@@ -289,6 +289,5 @@
     }
   },
   "composed_of": [],
-  "priority": 0,
-  "name": "pf-audit-template"
+  "priority": 0
 }

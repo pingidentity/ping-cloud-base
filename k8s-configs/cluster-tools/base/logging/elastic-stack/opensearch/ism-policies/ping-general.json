@@ -1,7 +1,4 @@
 {
-    "id": "ping_standard_policy",
-    "seqNo": 635,
-    "primaryTerm": 3,
     "policy": {
         "policy_id": "ping_standard_policy",
         "description": "Standard ping policy (after 90 days to warm(ebs), after 270 days delete)",

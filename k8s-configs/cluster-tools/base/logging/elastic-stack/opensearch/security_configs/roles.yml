@@ -6,6 +6,22 @@ _meta:
 kibana_read_only:
   reserved: true
 
+logstash_write:
+  reserved: true
+  cluster_permissions:
+    - 'cluster_monitor'
+    - 'cluster_composite_ops'
+    - 'cluster_manage_index_templates'
+    - 'indices:admin/index_template/*'
+    - 'cluster:admin/ingest/pipeline/put'
+    - 'cluster:admin/ingest/pipeline/get'
+  index_permissions:
+    - index_patterns:
+        - '*'
+      allowed_actions:
+        - 'crud'
+        - 'create_index'
+
 # The security REST API access role is used to assign specific users access to change the security settings through the REST API.
 security_rest_api_access:
   reserved: true

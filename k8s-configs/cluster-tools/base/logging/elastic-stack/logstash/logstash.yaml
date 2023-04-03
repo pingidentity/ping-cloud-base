@@ -17,40 +17,40 @@ spec:
     spec:
       serviceAccountName: logstash-elastic
       initContainers:
-        - name: check-service-availability
-          securityContext:
-            runAsNonRoot: true
-            runAsUser: 1000
-            runAsGroup: 1000
-            allowPrivilegeEscalation: false
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v1.18-release-branch-latest
-          imagePullPolicy: Always
-          command:
-            - sh
-            - $(CONTAINER_NAME).sh
-          env:
-            - name: CONTAINER_NAME
-              value: check-service-availability
-            - name: CHECK_SERVICE_URL
-              value: 'http://elasticsearch'
-            - name: CHECK_SERVICE_PORT
-              value: '9200'
-            - name: DESIRED_STATUS
-              value: green
-        - name: wait-for-bootstrap-completed
-          securityContext:
-            runAsGroup: 2000
-            runAsNonRoot: true
-            runAsUser: 1000
-            allowPrivilegeEscalation: false
-          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.23.0
-          imagePullPolicy: IfNotPresent
-          command:
-            - sh
-            - '-c'
-            - >-
-              kubectl wait --for=condition=complete --timeout=300s -n
-              elastic-stack-logging job/logging-bootstrap
+#        - name: check-service-availability
+#          securityContext:
+#            runAsNonRoot: true
+#            runAsUser: 1000
+#            runAsGroup: 1000
+#            allowPrivilegeEscalation: false
+#          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v1.18-release-branch-latest
+#          imagePullPolicy: Always
+#          command:
+#            - sh
+#            - $(CONTAINER_NAME).sh
+#          env:
+#            - name: CONTAINER_NAME
+#              value: check-service-availability
+#            - name: CHECK_SERVICE_URL
+#              value: 'https://opensearch-cluster-master'
+#            - name: CHECK_SERVICE_PORT
+#              value: '9200'
+#            - name: DESIRED_STATUS
+#              value: green
+#        - name: wait-for-bootstrap-completed
+#          securityContext:
+#            runAsGroup: 2000
+#            runAsNonRoot: true
+#            runAsUser: 1000
+#            allowPrivilegeEscalation: false
+#          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.23.0
+#          imagePullPolicy: IfNotPresent
+#          command:
+#            - sh
+#            - '-c'
+#            - >-
+#              kubectl wait --for=condition=complete --timeout=300s -n
+#              elastic-stack-logging job/logging-bootstrap
         - name: create-enrichment-cache-files
           securityContext:
             runAsNonRoot: true
@@ -168,13 +168,10 @@ spec:
             - name: logstash-pipeline-customer
               mountPath: /usr/share/logstash/pipeline/customer
               readOnly: true
-            - name: logstash-pipeline-alerts
-              mountPath: /usr/share/logstash/pipeline/alerts
-              readOnly: true
             - name: enrichment-logstash-search-templates
               mountPath: /etc/logstash/templates
               readOnly: true
-            - name: enrichment-elasticsearch-index-templates
+            - name: opensearch-index-templates
               mountPath: /usr/share/logstash/index_templates
               readOnly: true
             - name: enrichment-cache-files
@@ -225,18 +222,15 @@ spec:
         - name: logstash-pipeline-customer
           configMap:
             name: logstash-pipeline-customer
-        - name: logstash-pipeline-alerts
-          configMap:
-            name: logstash-pipeline-alerts
         - name: logstash-pipelines
           configMap:
             name: logstash-pipelines
         - name: enrichment-logstash-search-templates
           configMap:
             name: enrichment-logstash-search-templates
-        - name: enrichment-elasticsearch-index-templates
+        - name: opensearch-index-templates
           configMap:
-            name: enrichment-elasticsearch-index-templates
+            name: enrichment-opensearch-index-templates
         - name: enrichment-cache
           configMap:
             name: enrichment-cache

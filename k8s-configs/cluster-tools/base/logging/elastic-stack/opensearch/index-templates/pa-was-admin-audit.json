@@ -62,6 +62,5 @@
     }
   },
   "composed_of": [],
-  "priority": 0,
-  "name": "pa-was-admin-audit-template"
+  "priority": 0
 }
