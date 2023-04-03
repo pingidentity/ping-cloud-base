@@ -20,3 +20,4 @@ configMapGenerator:
 - name: prom-alerts
   files:
    - default-rule.yml
+   - logging.yml
