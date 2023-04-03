@@ -68,6 +68,11 @@ logstash:
   backend_roles:
   - "logstash"
 
+logstash_write:
+  reserved: false
+  backend_roles:
+  - "logstash"
+
 kibana_user:
   reserved: false
   backend_roles:

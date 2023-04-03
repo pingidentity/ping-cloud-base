@@ -6,7 +6,7 @@ metadata:
     app.kubernetes.io/name: opensearch
     app.kubernetes.io/instance: opensearch-cluster-hot
   annotations:
-    {}
+    external-dns.alpha.kubernetes.io/hostname: opensearch-dev.ping-demo.com
 spec:
   type: ClusterIP
   selector:
