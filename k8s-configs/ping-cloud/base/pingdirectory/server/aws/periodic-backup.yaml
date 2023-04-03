@@ -19,7 +19,7 @@ data:
     LOG_FILE=/tmp/upload.log
 
     test -z "${BACKUP_RESTORE_POD}" && SERVER="${K8S_STATEFUL_SET_NAME}-0" || SERVER="${BACKUP_RESTORE_POD}"
-
+    rm -rf /opt/backup
     echo "Running backup script within ${SERVER} pod"
     echo "${BACKENDS_TO_BACKUP}"
     # #cp /logger.lib.sh "${HOOKS_DIR}"/logger.lib.sh
@@ -31,6 +31,32 @@ data:
 
     echo "Backup from dynamic volume"
     ls -al /opt/backup
+
+    # This is the backup directory on the server
+    SERVER_BACKUP_DIR="/opt/backup"
+
+    # Zip backup files and append the current timestamp to zip filename
+    cd "${SERVER_BACKUP_DIR}"
+    DST_FILE_TIMESTAMP="data-$(date +%m-%d-%Y.%H.%M.%S).zip"
+    zip -r "${DST_FILE_TIMESTAMP}" *
+
+    UPLOAD_DIR="${SERVER_BACKUP_DIR}/backup-upload"
+    mkdir -p "${UPLOAD_DIR}"
+
+    mv "${DST_FILE_TIMESTAMP}" "${UPLOAD_DIR}/${DST_FILE_TIMESTAMP}"
+
+    cd "${UPLOAD_DIR}" || exit 1
+
+    # Make a copy: latest.zip
+    DST_FILE_LATEST=latest.zip
+
+    cp "${UPLOAD_DIR}/${DST_FILE_TIMESTAMP}" "${UPLOAD_DIR}/${DST_FILE_LATEST}"
+
+    echo "Copying files in '${UPLOAD_DIR}' to S3"
+    aws s3 cp "${UPLOAD_DIR}" s3://vathsalyakidambi-dev-backupbucket/pingdirectory --recursive
+
+    # STDOUT all the files in one line for integration test
+    ls ${UPLOAD_DIR} | xargs
 
     # /tmp/kubectl cp ping-cloud-vathsalyakidambi-dev/pingdirectory-0:/opt/out/backup /opt/backup 
 
