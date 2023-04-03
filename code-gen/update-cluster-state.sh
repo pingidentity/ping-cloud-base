@@ -69,8 +69,15 @@ RESET_TO_DEFAULT="${RESET_TO_DEFAULT:-false}"
 #     find "${K8S_CONFIGS_DIR}" -type f -exec basename {} + | sort -u   # Run this command on each tag
 #     cat v1.7-k8s-files v1.8-k8s-files | sort -u                       # Create a union of the k8s files
 
+# TODO: `argo-application.yaml` included here to prevent unintentionally adding it to custom_resources when upgrading
+# from pre-1.18 versions. Remove it when all customers are on 1.18.
+# Jira ticket: https://pingidentity.atlassian.net/browse/PDO-5247
+
 beluga_owned_k8s_files="@.flux.yaml \
 @argo-application.yaml \
+@argocd-application-set.yaml \
+@argocd-cm-patch.yaml \
+@argocd-strategic-patches.yaml \
 @custom-patches-sample.yaml \
 @env_vars \
 @flux-command.sh \
