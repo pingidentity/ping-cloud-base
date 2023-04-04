@@ -13,6 +13,22 @@ spec:
   template:
     spec:
       serviceAccount: ping-serviceaccount
+      affinity:
+        # This podAffinity rule is designed to deploy Backup/restore job to the same AZ as its targeted PingDirectory server("pindirectory-0")
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: statefulset.kubernetes.io/pod-name
+                operator: In
+                values:
+                - pingdirectory-0
+            topologyKey: "kubernetes.io/hostname"
+      tolerations:
+        - key: "pingidentity.com/pd-only"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
       restartPolicy: Never
       containers:
       - name: pingdirectory-backup
@@ -37,12 +53,18 @@ spec:
         - name: backup-script
           mountPath: /opt/in/backup.sh
           subPath: backup.sh
+        - name: out-dir
+          mountPath: /opt/out
         - name: pd-backup-volume
-          mountPath: /opt/out/backup
-          subPath: backup
-        - name: pd-backup-volume
-          mountPath: /opt/out/backup-upload
-          subPath: backup-upload
+          mountPath: /opt/backup
+        - name: pingdirectory-passwords
+          mountPath: /usr/local/secrets
+          readOnly: true
+        - name: pingdirectory-init
+          mountPath: /logger.lib.sh
+          subPath: logger.lib.sh
+      securityContext:
+        fsGroup: 9999
       volumes:
       - name: backup-script
         configMap:
@@ -51,6 +73,18 @@ spec:
       - name: pd-backup-volume
         persistentVolumeClaim:
           claimName: pingdirectory-backup
+      - name: out-dir
+        persistentVolumeClaim:
+          claimName: out-dir-pingdirectory-0
+      - name: pingdirectory-passwords
+        secret:
+          secretName: pingdirectory-passwords
+          optional: true
+          defaultMode: 0400
+      - name: pingdirectory-init
+        configMap:
+          name: pingcommon-init
+          defaultMode: 0555
 
 ---
 # Persistent Volume to run backup process
