@@ -19,7 +19,7 @@ data:
     LOG_FILE=/tmp/upload.log
 
     test -z "${BACKUP_RESTORE_POD}" && SERVER="${K8S_STATEFUL_SET_NAME}-0" || SERVER="${BACKUP_RESTORE_POD}"
-    rm -rf /opt/backup
+    #rm -rf /opt/backup
     echo "Running backup script within ${SERVER} pod"
     echo "${BACKENDS_TO_BACKUP}"
     # #cp /logger.lib.sh "${HOOKS_DIR}"/logger.lib.sh
