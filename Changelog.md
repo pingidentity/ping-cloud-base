@@ -53,12 +53,18 @@
 - Improve fluent-bit multiline log parsing
 - Updated StorageClass provisoner to CSI and type to gp3
 - Add logstash and fluent-bit metrics to prometheus
+- Enable bootstrapping a new customer with ArgoCD
+- Add logstash/fluent-bit readiness/liveness probe
+- Add priorityClassName into CAWAgent daemonset
+- Fluent-bit pods stuck in pending state
+- Add logstash and fluent-bit alerts
 
 _Changes:_
 
 - [X] PDO-2419 Enable users to download or upload user reports in Delegated Admin
 - [X] PDO-3335 Set PingFederate Engines minReplicas count to 3 in prod/small deployment
 - [X] PDO-3834 Updated StorageClass type to gp3
+- [X] PDO-3908 Clean up P1 artifacts in Admin environment during CI/CD teardown
 - [X] PDO-4009 Update k8s StorageClass provisoner to use CSI driver
 - [X] PDO-4388 Flag in env_var to enable/disable external ingresses for admin endpoints
 - [X] PDO-4556 [need before EKS 1.25] batch/v1beta1 CronJob is deprecated in v1.21+, unavailable in v1.25+; use batch/v1 CronJob
@@ -78,6 +84,7 @@ _Changes:_
 - [X] PDO-4773 Update generate-cluster-state script to create base and region values.yaml files
 - [X] PDO-4774 Update generate-cluster-state script to massage the new code-gen structure files into the new CSR structure
 - [X] PDO-4775 Add new ArgoCD application definition to PCB
+- [X] PDO-4780 Move tag-release.sh and PCB ci-scripts to shared location
 - [X] PDO-4817 Remove SIEM console logging for PA/PF
 - [X] PDO-4818 Add multiple USER_BASE_DNs and BACKEND_IDs env vars
 - [X] PDO-4822 Add multiple backends to 'BACKENDS_TO_BACKUP' env var
@@ -114,7 +121,12 @@ _Changes:_
 - [X] PDO-5043 Legacy Logging Mode: Remove Feature Flag, Code Logic and Refactor Filters
 - [X] PDO-5080 Test that file has been copied is not working in init container
 - [X] PDO-5104 Update Prometheus CPU/MEM limits
+- [X] PDO-5107 Fluent-bit pods stuck in pending state
+- [X] PDO-5124 Enable bootstrapping a new customer with ArgoCD
+- [X] PDO-5131 Pods (typically cloudwatch) Stuck in pending state
 - [X] PDO-5141 Fix the ArgoCD App name
+- [X] PDO-5143 Add logstash and fluent-bit alerts
+- [X] PDO-5144 Add logstash/fluent-bit readiness/liveness probe
 - [X] PDO-5147 Add logstash metrics to prometheus
 - [X] PDO-5148 Modify Prometheus query for all backup alerting to only include the primary pod
 

@@ -125,6 +125,24 @@ spec:
           envFrom:
             - configMapRef:
                 name: elk-environment-variables
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 9600
+            initialDelaySeconds: 300
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 9600
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            successThreshold: 3
+            timeoutSeconds: 5
           resources:
             limits:
               cpu: "500m"

@@ -130,6 +130,23 @@ spec:
                 configMapKeyRef:
                   name: cluster-info
                   key: newrelic_cluster_name
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /api/v1/health
+            port: 2020
+          initialDelaySeconds: 20
+          periodSeconds: 180
+          timeoutSeconds: 5
+        readinessProbe:
+          initialDelaySeconds: 10
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 2020
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
         resources:
             limits:
               memory: 200Mi
@@ -179,6 +196,7 @@ spec:
         hostPath:
           path: /var/log/dmesg
       serviceAccountName: fluent-bit
+      priorityClassName: system-node-critical
       tolerations:
       - key: node-role.kubernetes.io/controlplane
         operator: Exists

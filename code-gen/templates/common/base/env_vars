@@ -65,7 +65,7 @@ CLUSTER_STATE_REPO_BRANCH=${CLUSTER_STATE_REPO_BRANCH}
 
 # The application reconciliation timeout in seconds for ArgoCD, i.e. how frequently ArgoCD should poll the
 # cluster-state-repo for changes. To disable reconciliation set it to 0.
-APP_RESYNC_SECONDS=60
+APP_RESYNC_SECONDS=${APP_RESYNC_SECONDS}
 
 ############################################################
 # Miscellaneous ping-cloud-base variables
@@ -91,10 +91,6 @@ SERVER_PROFILE_BRANCH=${SERVER_PROFILE_BRANCH_DERIVED}
 ############################################################
 # Used by server profile hooks
 ENVIRONMENT_TYPE=${ENVIRONMENT_TYPE}
-
-# A space-delimited list of the environments a customer is paying for
-# This will lengthen or shorten should a customer add or remove environments
-ENVIRONMENTS="${ENVIRONMENTS}"
 
 # Used by Kubernetes manifests
 ENV=${ENV}
@@ -253,7 +249,6 @@ PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED}
 
 RADIUS_PROXY_ENABLED=${RADIUS_PROXY_ENABLED}
 EXTERNAL_INGRESS_ENABLED=${EXTERNAL_INGRESS_ENABLED}
-ARGOCD_BOOTSTRAP_ENABLED=${ARGOCD_BOOTSTRAP_ENABLED}
 ########################################################################################################################
 
 # Default argo-events notification configuration

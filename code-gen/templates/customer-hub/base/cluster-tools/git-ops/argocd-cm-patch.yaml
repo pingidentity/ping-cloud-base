@@ -1,0 +1,11 @@
+- op: add
+  path: /data/repositories
+  value: |
+    - url: ${CLUSTER_STATE_REPO_URL}
+      type: git
+      sshPrivateKeySecret:
+        name: argo-git-deploy
+        key: identity
+- op: add
+  path: /data/timeout.reconciliation
+  value: ${APP_RESYNC_SECONDS}s

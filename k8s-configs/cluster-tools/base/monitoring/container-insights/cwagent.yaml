@@ -176,3 +176,4 @@ spec:
             path: /dev/disk/
       terminationGracePeriodSeconds: 60
       serviceAccountName: cloudwatch-agent
+      priorityClassName: system-node-critical

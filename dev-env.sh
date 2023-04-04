@@ -204,6 +204,12 @@ test -f ~/.pingidentity/devops && . ~/.pingidentity/devops
 
 # Source some utility methods.
 . utils.sh
+PWD=$(pwd)
+PCB_ROOT=${PWD/ping-cloud-base\/*/ping-cloud-base}
+source "${PCB_ROOT}/pingcloud-scripts.sh"
+
+BASH_UTILS_VERSION=1.0.0
+pingcloud-scripts::source_script bash_utils ${BASH_UTILS_VERSION}
 
 declare dryrun='false'
 declare skipTest='false'
@@ -436,11 +442,11 @@ if "${IS_MULTI_CLUSTER}"; then
   fi
 fi
 
-build_dev_deploy_file "${DEPLOY_FILE}" "${CLUSTER_TYPE}"
+utils::build_dev_deploy_file "${DEPLOY_FILE}" "${CLUSTER_TYPE}"
 
 if test "${dryrun}" = 'false'; then
   # Apply large CRDs depending on feature flags
-  apply_crds "${homeDir}"
+  utils::apply_crds "${homeDir}"
 
   log "Deploying ${DEPLOY_FILE} to cluster ${CLUSTER_NAME}, namespace ${PING_CLOUD_NAMESPACE} for tenant ${TENANT_DOMAIN}"
   kubectl apply -f "${DEPLOY_FILE}" --context "${K8S_CONTEXT}" | tee -a "${LOG_FILE}"
@@ -548,14 +554,16 @@ EOF
         -n "${PING_CLOUD_NAMESPACE}" -w --context "${K8S_CONTEXT}" | tee -a "${LOG_FILE}"
     done
 
+    CI_SCRIPTS_DIR="${SHARED_CI_SCRIPTS_DIR:-/ci-scripts}"
+
     log "Running integration tests"
-    for integration_test_dir in $(find 'ci-scripts/test/integration' -type d -mindepth 1 -maxdepth 1 -exec basename '{}' \;); do
+    for integration_test_dir in $(find 'tests' -type d -mindepth 1 -maxdepth 1 -exec basename '{}' \;); do
       log
       log "==============================================================================================="
-      log "      Executing integration tests in directory: ${integration_test_dir}            "
+      log "      Executing tests in directory: ${integration_test_dir}            "
       log "==============================================================================================="
 
-      ci-scripts/test/integration/run-integration-tests.sh "${integration_test_dir}" "${TEST_ENV_VARS_FILE}"
+      "${CI_SCRIPTS_DIR}"/test/run-tests.sh "${integration_test_dir}" "${TEST_ENV_VARS_FILE}"
       test_result=$?
 
       integration_test_failures=$((${integration_test_failures} + ${test_result}))
