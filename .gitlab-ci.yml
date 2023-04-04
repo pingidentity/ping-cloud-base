@@ -11,7 +11,6 @@ stages:
 - compile
 - find-cluster
 - deploy
-- unit-test
 - pa-was-test
 - integration-test
 - chaos
@@ -20,7 +19,8 @@ stages:
 ## Global environment variables ##
 variables:
   DELETE_ENV_AFTER_PIPELINE: 'true'
-  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.6.0
+  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.10.0
+  SHARED_CI_SCRIPTS_DIR: "/ci-scripts"
 
 ## Compile stage ##
 compile:
@@ -29,7 +29,7 @@ compile:
    - default-gitlab-runner
  image: ${K8S_DEPLOY_TOOLS}
  script:
-   - ./ci-scripts/compile/compile.sh
+   - ${SHARED_CI_SCRIPTS_DIR}/k8s/compile/compile.sh
 
 ## Find cluster stage ##
 find-cluster:
@@ -38,7 +38,7 @@ find-cluster:
     - default-gitlab-runner
   image: ${K8S_DEPLOY_TOOLS}
   script:
-    - ./ci-scripts/deploy/find_cluster.sh
+    - ${SHARED_CI_SCRIPTS_DIR}/k8s/deploy/find_cluster.sh
   artifacts:
     reports:
       dotenv: cluster.env
@@ -50,12 +50,11 @@ deploy:
     - default-gitlab-runner
   image: ${K8S_DEPLOY_TOOLS}
   script:
-    - sleep 30 #sleep so that the kubectl apply doesn't execute at the same time as the deploy job
-    - ./ci-scripts/deploy/deploy.sh
+    - ${SHARED_CI_SCRIPTS_DIR}/k8s/deploy/deploy.sh
   dependencies:
     - find-cluster
 
-## Unit tests have moved into ping-cloud-docker (PDO-1739) ##
+## Integration Test stage ##
 
 ## PA-WAS stage ##
 pa-was-integration-tests:
@@ -64,12 +63,9 @@ pa-was-integration-tests:
     - default-gitlab-runner
   image: ${K8S_DEPLOY_TOOLS}
   script:
-    - sleep 30 #sleep because both pa-was tests running at the exact same time conflicts
-    - ./ci-scripts/test/integration/run-integration-tests.sh pingaccess-was
+    - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pingaccess-was
   dependencies:
     - find-cluster
-
- ## Integration Test stage ##
 
 ################################################
 # All integration tests defined to run on the  #
@@ -96,14 +92,13 @@ pa-was-integration-tests:
     - default-gitlab-runner
   image: ${K8S_DEPLOY_TOOLS}
   script:
-    - sleep 30 #sleep so that simultaneous tests don't conflict
-    - ./ci-scripts/test/integration/run-integration-tests.sh ${TEST}
+    - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh ${TEST}
   dependencies:
     - find-cluster
   artifacts:
     name: "integration_test_logs"
     paths:
-      - ci-scripts/test/integration/pingone/latest_logs/
+      - tests/pingone/latest_logs/
     when: on_failure
 
 integration-tests:
@@ -121,7 +116,7 @@ chaos-tests:
     - default-gitlab-runner
   image: ${K8S_DEPLOY_TOOLS}
   script:
-    - ./ci-scripts/test/integration/run-integration-tests.sh chaos
+    - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh chaos
   dependencies:
     - find-cluster
 
@@ -132,6 +127,6 @@ cleanup:
     - default-gitlab-runner
   image: ${K8S_DEPLOY_TOOLS}
   script:
-    - ./ci-scripts/cleanup/teardown.sh
+    - ${SHARED_CI_SCRIPTS_DIR}/k8s/cleanup/teardown.sh
   dependencies:
     - find-cluster
