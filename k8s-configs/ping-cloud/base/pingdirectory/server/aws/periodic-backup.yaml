@@ -61,13 +61,6 @@ data:
     # Print the names of the uploaded files so callers know exactly what was uploaded
     echo "The following files were uploaded:"
     ls ${UPLOAD_DIR} | xargs
-
-    if test ${?} -eq 0; then
-      UPLOAD_FILE=$(tail -1 "${LOG_FILE}")
-      test -z "${UPLOAD_FILES}" && UPLOAD_FILES="${UPLOAD_FILE}" || UPLOAD_FILES="${UPLOAD_FILES} ${UPLOAD_FILE}"
-    else
-      echo "Upload script not found on server ${SERVER}"
-    fi
     
     echo "Deleting PingDirectory backup pvc"
     /tmp/kubectl delete pvc pingdirectory-backup
