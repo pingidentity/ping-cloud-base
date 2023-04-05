@@ -12,15 +12,55 @@ data:
     -o /tmp/kubectl
     
     chmod +x /tmp/kubectl
+    echo "Running backup script within pingdirectory pod"
 
-    UPLOAD_FILES=
-    SCRIPT="${HOOKS_DIR}"/90-upload-backup-s3.sh
-    LOG_FILE=/tmp/upload.log
+    # This is the backup directory on the Pingdirectory-backup persistant volume
+    SERVER_BACKUP_DIR="/opt/backup"
+    
+    BACKENDS=$(echo "${BACKENDS_TO_BACKUP}" | tr ';' ' ')
+    echo "Doing a full backup of backends \"${BACKENDS}\" to ${SERVER_BACKUP_DIR}"
+    for BACKEND_ID in ${BACKENDS}; do
+      # Doing LDAP search on backends before running backups such that only the backends available in the server are uploaded to S3 .
+      ldapsearch -D "${ROOT_USER_DN}" -w "${ROOT_USER_PASSWORD}" -h "localhost" -p ${LDAPS_PORT} --baseDN="cn=Backends,cn=config" "(objectclass=ds-cfg-backend)" ds-cfg-backend-id | grep -w "${BACKEND_ID},cn=Backends,cn=config" >/dev/null
+      is_backend_found=$?
 
-    test -z "${BACKUP_RESTORE_POD}" && SERVER="${K8S_STATEFUL_SET_NAME}-0" || SERVER="${BACKUP_RESTORE_POD}"
+      if test ${is_backend_found} -eq 0; then
+        BACKEND_BACKUP_DIR="${SERVER_BACKUP_DIR}/${BACKEND_ID}"
+        printf "\n----- Doing a full backup of ${BACKEND_ID} backend to ${BACKEND_BACKUP_DIR} -----\n"
+        /opt/out/instance/bin/backup --backupDirectory "${BACKEND_BACKUP_DIR}" --backendID "${BACKEND_ID}"
+        backup_status=$?
+      
+        if test ${backup_status} -ne 0; then
+          echo "exiting backup status is ${backup_status}"
+          exit ${backup_status}
+        fi
+      else
+        "BACKEND_ID='${BACKEND_ID}' was not found on the PingDirectory server"
+      fi
+    done 
 
-    echo "Running backup script within ${SERVER} pod"
-    /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}"> "${LOG_FILE}"
+    # Zip backup files and append the current timestamp to zip filename
+    cd "${SERVER_BACKUP_DIR}"
+    DST_FILE_TIMESTAMP="data-$(date +%m-%d-%Y.%H.%M.%S).zip"
+    zip -r "${DST_FILE_TIMESTAMP}" *
+
+    UPLOAD_DIR="${SERVER_BACKUP_DIR}/backup-upload"
+    mkdir -p "${UPLOAD_DIR}"
+
+    mv "${DST_FILE_TIMESTAMP}" "${UPLOAD_DIR}/${DST_FILE_TIMESTAMP}"
+    cd "${UPLOAD_DIR}" || exit 1
+
+    # Make a copy: latest.zip
+    DST_FILE_LATEST=latest.zip
+
+    cp "${UPLOAD_DIR}/${DST_FILE_TIMESTAMP}" "${UPLOAD_DIR}/${DST_FILE_LATEST}"
+
+    echo "Copying files in '${UPLOAD_DIR}' to S3"
+    aws s3 cp "${UPLOAD_DIR}" "${BACKUP_CLOUD_PREFIX}"/pingdirectory --recursive
+
+    # Print the names of the uploaded files so callers know exactly what was uploaded
+    echo "The following files were uploaded:"
+    ls ${UPLOAD_DIR} | xargs
 
     if test ${?} -eq 0; then
       UPLOAD_FILE=$(tail -1 "${LOG_FILE}")
@@ -29,26 +69,8 @@ data:
       echo "Upload script not found on server ${SERVER}"
     fi
     
-    # Print the names of the uploaded files so callers know exactly what was uploaded
-    echo "The following files were uploaded:"
-    echo "${UPLOAD_FILES}"
     echo "Deleting PingDirectory backup pvc"
     /tmp/kubectl delete pvc pingdirectory-backup
----
-# Persistance Volume to run backup process
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pingdirectory-backup
-  labels:
-    class: pingdirectory-server
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: pingdirectory-gp3
-  resources:
-    requests:
-      storage: 40Gi
 
 ---
 # Do a full backup of the user backend every 6 hours.
