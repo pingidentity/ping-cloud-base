@@ -57,6 +57,7 @@
 - Add logstash/fluent-bit readiness/liveness probe
 - Add priorityClassName into CAWAgent daemonset
 - Fluent-bit pods stuck in pending state
+- Add logstash and fluent-bit alerts
 - OpenSearch installed in cluster
 - OpenSearch migration: Migrate index templates
 - OpenSearch migration: Change logstash pipelines to send data to OS instead ES
@@ -86,6 +87,7 @@ _Changes:_
 - [X] PDO-4773 Update generate-cluster-state script to create base and region values.yaml files
 - [X] PDO-4774 Update generate-cluster-state script to massage the new code-gen structure files into the new CSR structure
 - [X] PDO-4775 Add new ArgoCD application definition to PCB
+- [X] PDO-4780 Move tag-release.sh and PCB ci-scripts to shared location
 - [X] PDO-4817 Remove SIEM console logging for PA/PF
 - [X] PDO-4818 Add multiple USER_BASE_DNs and BACKEND_IDs env vars
 - [X] PDO-4822 Add multiple backends to 'BACKENDS_TO_BACKUP' env var
@@ -130,9 +132,11 @@ _Changes:_
 - [X] PDO-5131 Pods (typically cloudwatch) Stuck in pending state
 - [X] PDO-5141 Fix the ArgoCD App name
 - [X] PDO-5142 Add logstash metrics to prometheus
+- [X] PDO-5143 Add logstash and fluent-bit alerts
 - [X] PDO-5144 Add logstash/fluent-bit readiness/liveness probe
+- [X] PDO-5147 Add logstash metrics to prometheus
 - [X] PDO-5148 Modify Prometheus query for all backup alerting to only include the primary pod
-
+- [X] PDO-5223 Remove pa-was config for ArgoCD from non customer-hub CDEs
 
 ### 1.17.0.0
 

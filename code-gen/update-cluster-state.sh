@@ -69,8 +69,15 @@ RESET_TO_DEFAULT="${RESET_TO_DEFAULT:-false}"
 #     find "${K8S_CONFIGS_DIR}" -type f -exec basename {} + | sort -u   # Run this command on each tag
 #     cat v1.7-k8s-files v1.8-k8s-files | sort -u                       # Create a union of the k8s files
 
+# TODO: `argo-application.yaml` included here to prevent unintentionally adding it to custom_resources when upgrading
+# from pre-1.18 versions. Remove it when all customers are on 1.18.
+# Jira ticket: https://pingidentity.atlassian.net/browse/PDO-5247
+
 beluga_owned_k8s_files="@.flux.yaml \
 @argo-application.yaml \
+@argocd-application-set.yaml \
+@argocd-cm-patch.yaml \
+@argocd-strategic-patches.yaml \
 @custom-patches-sample.yaml \
 @env_vars \
 @flux-command.sh \
@@ -183,6 +190,7 @@ ${DATASYNC_P1AS_SYNC_SERVER}
 ${ARGOCD_BOOTSTRAP_ENABLED}
 ${ARGOCD_CDE_ROLE_SSM_TEMPLATE}
 ${ARGOCD_CDE_URL_SSM_TEMPLATE}
+${ARGOCD_ENVIRONMENTS}
 ${ARGOCD_SLACK_TOKEN_BASE64}
 ${RADIUS_PROXY_ENABLED}
 ${EXTERNAL_INGRESS_ENABLED}
@@ -924,6 +932,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
         # Also set the MYSQL_USER/PASSWORD to empty so they are fetched from AWS Secrets Manager going forward.
         set -x
         QUIET=true \
+            UPGRADE="true" \
             TARGET_DIR="${TARGET_DIR}" \
             SERVER_PROFILE_URL='' \
             K8S_GIT_URL="${PING_CLOUD_BASE_REPO_URL}" \
@@ -1044,11 +1053,6 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
     else
       IS_PRIMARY=false
       TYPE='secondary'
-    fi
-
-    if "${IS_CUSTOMER_HUB}" && ! "${IS_PRIMARY}"; then
-      log "Not pushing '${CUSTOMER_HUB}' branch for secondary region"
-      continue
     fi
 
     TARGET_DIR="${TENANT_CODE_DIR}/${REGION_DIR}"
