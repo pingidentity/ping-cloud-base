@@ -61,6 +61,7 @@
 - OpenSearch installed in cluster
 - OpenSearch migration: Migrate index templates
 - OpenSearch migration: Change logstash pipelines to send data to OS instead ES
+- OpenSearch migration: Rewrite bootstrap script
 
 _Changes:_
 
@@ -134,8 +135,8 @@ _Changes:_
 - [X] PDO-5142 Add logstash metrics to prometheus
 - [X] PDO-5143 Add logstash and fluent-bit alerts
 - [X] PDO-5144 Add logstash/fluent-bit readiness/liveness probe
-- [X] PDO-5147 Add logstash metrics to prometheus
 - [X] PDO-5148 Modify Prometheus query for all backup alerting to only include the primary pod
+- [X] PDO-5152 OpenSearch migration: Rewrite bootstrap scripts
 - [X] PDO-5223 Remove pa-was config for ArgoCD from non customer-hub CDEs
 
 ### 1.17.0.0
