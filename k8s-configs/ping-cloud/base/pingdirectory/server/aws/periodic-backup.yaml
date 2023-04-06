@@ -21,7 +21,7 @@ data:
     echo "Doing a full backup of backends \"${BACKENDS}\" to ${SERVER_BACKUP_DIR}"
     for BACKEND_ID in ${BACKENDS}; do
       # Doing LDAP search on backends before running backups such that only the backends available in the server are uploaded to S3 .
-      ldapsearch -D "${ROOT_USER_DN}" -w "${ROOT_USER_PASSWORD}" -h "localhost" -p ${LDAPS_PORT} --baseDN="cn=Backends,cn=config" "(objectclass=ds-cfg-backend)" ds-cfg-backend-id | grep -w "${BACKEND_ID},cn=Backends,cn=config" >/dev/null
+      /opt/server/bin/ldapsearch -D "${ROOT_USER_DN}" -w "${ROOT_USER_PASSWORD}" -h "localhost" -p ${LDAPS_PORT} --baseDN="cn=Backends,cn=config" "(objectclass=ds-cfg-backend)" ds-cfg-backend-id | grep -w "${BACKEND_ID},cn=Backends,cn=config" >/dev/null
       is_backend_found=$?
 
       if test ${is_backend_found} -eq 0; then
