@@ -46,6 +46,7 @@
 - Add ArgoCD ApplicationSet support for multiple CDEs
 - Flag in env_var to enable/disable external ingresses for admin endpoints
 - Fix test that file has been copied is not working in init container
+- Update default version of pf-pingid-integration-kit to 2.24.0 in PingFederate
 - Deploy ArgoCD to customer-hub only
 - Fix the ArgoCD App name
 - Add ArgoCD IRSA role
@@ -120,6 +121,7 @@ _Changes:_
 - [X] PDO-5041 node-role.kubernetes.io/master (deprecated)
 - [X] PDO-5043 Legacy Logging Mode: Remove Feature Flag, Code Logic and Refactor Filters
 - [X] PDO-5080 Test that file has been copied is not working in init container
+- [X] PDO-5090 Update default version of pf-pingid-integration-kit to 2.24.0 in PingFederate
 - [X] PDO-5104 Update Prometheus CPU/MEM limits
 - [X] PDO-5107 Fluent-bit pods stuck in pending state
 - [X] PDO-5124 Enable bootstrapping a new customer with ArgoCD
