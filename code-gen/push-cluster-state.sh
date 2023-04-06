@@ -16,9 +16,9 @@
 #   INCLUDE_PROFILES_IN_CSR -> A flag indicating whether or not to include profile code into the CSR. Defaults to
 #       true, if unset. This flag will be removed (or its default set to true) when Versent provisions a new profile
 #       repo exclusively for server profiles.
-#   ENVIRONMENTS -> A space-separated list of environments. Defaults to 'dev test stage prod', if unset. If provided,
-#       it must contain all or a subset of the environments currently created by the generate-cluster-state.sh script,
-#       i.e. dev, test, stage, prod.
+#   SUPPORTED_ENVIRONMENT_TYPES -> A space-separated list of environments. Defaults to 'dev test stage prod customer-hub',
+#       if unset. If provided, it must contain all or a subset of the environments currently created by the
+#       generate-cluster-state.sh script, i.e. dev, test, stage, prod, customer-hub.
 #   PUSH_RETRY_COUNT -> The number of times to try pushing to the cluster state repo with a 2s sleep between each
 #       attempt to avoid IAM permission to repo sync issue.
 #   PUSH_TO_SERVER -> A flag indicating whether or not to push the code to the remote server. Defaults to true.
@@ -109,7 +109,7 @@ fi
 QUIET="${QUIET:-false}"
 
 ALL_ENVIRONMENTS='dev test stage prod customer-hub'
-ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
+SUPPORTED_ENVIRONMENT_TYPES="${SUPPORTED_ENVIRONMENT_TYPES:-${ALL_ENVIRONMENTS}}"
 
 GENERATED_CODE_DIR="${GENERATED_CODE_DIR:-/tmp/sandbox}"
 
@@ -149,12 +149,12 @@ if ! ${DISABLE_GIT}; then
   fi
 fi
 
-# The ENVIRONMENTS variable can either be the CDE names or CHUB name (e.g. dev, test, stage, prod or customer-hub) or
+# The SUPPORTED_ENVIRONMENT_TYPES variable can either be the CDE names or CHUB name (e.g. dev, test, stage, prod or customer-hub) or
 # the branch names (e.g. v1.8.0-dev, v1.8.0-test, v1.8.0-stage, v1.8.0-master or v1.8.0-customer-hub). It will be the
 # CDE names or CHUB name on initial seeding of the cluster state repo. On upgrade of the cluster state repo it will be
 # the branch names. We must handle both cases. Note that the 'prod' environment will have a branch name suffix
 # of 'master'.
-for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
+for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   if echo "${ENV_OR_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
     GIT_BRANCH="${ENV_OR_BRANCH}"
     DEFAULT_CDE_BRANCH="${CUSTOMER_HUB}"
