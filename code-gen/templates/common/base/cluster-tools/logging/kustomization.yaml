@@ -4,6 +4,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 resources:
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/${KUSTOMIZE_BASE}/logging?ref=${K8S_GIT_BRANCH}
 - ${DASH_REPO_URL}/kibana?ref=${DASH_REPO_BRANCH}
+- ${DASH_REPO_URL}/os-dashboards?ref=${DASH_REPO_BRANCH}
 
 
 generatorOptions:
