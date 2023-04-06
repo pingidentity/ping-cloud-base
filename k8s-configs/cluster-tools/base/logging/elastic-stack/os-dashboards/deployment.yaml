@@ -24,6 +24,9 @@ spec:
         - name: config
           configMap:
             name: opensearch-dashboards-config
+        - name: os-certs
+          secret:
+            secretName: opensearch-cert
       containers:
       - name: dashboards
         securityContext:
@@ -60,7 +63,7 @@ spec:
           timeoutSeconds: 5
         env:
         - name: OPENSEARCH_HOSTS
-          value: "https://opensearch-cluster-master:9200"
+          value: "https://opensearch-cluster-master.elastic-stack-logging.svc.cluster.local:9200"
         - name: SERVER_HOST
           value: "0.0.0.0"
         ports:
@@ -78,3 +81,5 @@ spec:
           - name: config
             mountPath: /usr/share/opensearch-dashboards/config/opensearch_dashboards.yml
             subPath: opensearch_dashboards.yml
+          - name: os-certs
+            mountPath: /usr/share/opensearch-dashboards/config/certs

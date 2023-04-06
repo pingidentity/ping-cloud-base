@@ -60,6 +60,9 @@ spec:
       - name: security-config-data
         secret:
           secretName: opensearch-securityconfig
+      - name: node-cert
+        secret:
+          secretName: opensearch-cert
       enableServiceLinks: false
       containers:
       - name: "opensearch"
@@ -122,6 +125,8 @@ spec:
           value: "-Xmx512M -Xms512M"
         - name: node.roles
           value: "master,ingest,data,remote_cluster_client,"
+        - name: DISABLE_INSTALL_DEMO_CONFIG
+          value: "true"
         volumeMounts:
         - name: "data"
           mountPath: /usr/share/opensearch/data
@@ -130,6 +135,8 @@ spec:
         - name: config
           mountPath: /usr/share/opensearch/config/opensearch.yml
           subPath: opensearch.yml
+        - name: node-cert
+          mountPath: /usr/share/opensearch/config/certs
 
 ---
 
@@ -188,6 +195,9 @@ spec:
       - name: security-config-data
         secret:
           secretName: opensearch-securityconfig
+      - name: node-cert
+        secret:
+          secretName: opensearch-cert
       enableServiceLinks: false
       containers:
       - name: "opensearch"
@@ -250,6 +260,8 @@ spec:
           value: "-Xmx512M -Xms512M"
         - name: node.roles
           value: "data,remote_cluster_client,"
+        - name: DISABLE_INSTALL_DEMO_CONFIG
+          value: "true"
         volumeMounts:
         - name: "data"
           mountPath: /usr/share/opensearch/data
@@ -258,3 +270,5 @@ spec:
         - name: config
           mountPath: /usr/share/opensearch/config/opensearch.yml
           subPath: opensearch.yml
+        - name: node-cert
+          mountPath: /usr/share/opensearch/config/certs
