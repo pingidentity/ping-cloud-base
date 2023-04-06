@@ -5,17 +5,17 @@
 
 # This script may be used to upgrade an existing cluster state repo. It is designed to be non-destructive in that it
 # won't push any changes to the server. Instead, it will set up a parallel branch for every CDE branch and/or the
-# customer-hub branch as specified through the ENVIRONMENTS environment variable. For example, if the new version is
-# v1.7.1 and the ENVIRONMENTS variable override is not provided, then it’ll set up 4 new CDE branches at the new
-# version for the default set of environments: v1.7.1-dev, v1.7.1-test, v1.7.1-stage and v1.7.1-master and 1 new
-# customer-hub branch v1.7.1-customer-hub.
+# customer-hub branch as specified through the SUPPORTED_ENVIRONMENT_TYPES environment variable. For example, if the
+# new version is v1.7.1 and the SUPPORTED_ENVIRONMENT_TYPES variable override is not provided, then it’ll set up 4 new
+# CDE branches at the new version for the default set of environments: v1.7.1-dev, v1.7.1-test, v1.7.1-stage and
+# v1.7.1-master and 1 new customer-hub branch v1.7.1-customer-hub.
 
 # NOTE: The script must be run from the root of the cluster state repo clone directory. It acts on the following
 # environment variables.
 #
 #   NEW_VERSION -> Required. The new version of Beluga to which to update the cluster state repo.
-#   ENVIRONMENTS -> A space-separated list of environments. Defaults to 'dev test stage prod customer-hub', if unset.
-#       If provided, it must contain all or a subset of the environments currently created by the
+#   SUPPORTED_ENVIRONMENT_TYPES -> A space-separated list of environments. Defaults to 'dev test stage prod customer-hub',
+#       if unset. If provided, it must contain all or a subset of the environments currently created by the
 #       generate-cluster-state.sh script, i.e. dev, test, stage, prod and customer-hub.
 #   RESET_TO_DEFAULT -> An optional flag, which if set to true will reset the cluster-state-repo to the OOTB state
 #       for the new version. This has the same effect as running the platform code build job that initially seeds the
@@ -786,12 +786,12 @@ CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 
 # Validate that a git branch exists for every environment.
 ALL_ENVIRONMENTS='dev test stage prod customer-hub'
-ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
+SUPPORTED_ENVIRONMENT_TYPES="${SUPPORTED_ENVIRONMENT_TYPES:-${ALL_ENVIRONMENTS}}"
 
 NEW_BRANCHES=
 REPO_STATUS=0
 
-for ENV in ${ENVIRONMENTS}; do
+for ENV in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   test "${ENV}" = 'prod' &&
       OLD_BRANCH='master' ||
       OLD_BRANCH="${ENV}"
@@ -851,7 +851,7 @@ fi
 # For each environment:
 #   - Generate code for all its regions
 #   - Push code for all its regions into new branches
-for ENV in ${ENVIRONMENTS}; do # ENV loop
+for ENV in ${SUPPORTED_ENVIRONMENT_TYPES}; do # ENV loop
   test "${ENV}" = 'prod' &&
       OLD_BRANCH='master' ||
       OLD_BRANCH="${ENV}"
@@ -937,7 +937,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
             SERVER_PROFILE_URL='' \
             K8S_GIT_URL="${PING_CLOUD_BASE_REPO_URL}" \
             K8S_GIT_BRANCH="${NEW_VERSION}" \
-            ENVIRONMENTS="${NEW_BRANCH}" \
+            SUPPORTED_ENVIRONMENT_TYPES="${NEW_BRANCH}" \
             PING_IDENTITY_DEVOPS_USER='' \
             PING_IDENTITY_DEVOPS_KEY='' \
             MYSQL_USER='' \
@@ -1064,7 +1064,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
       QUIET=true \
           GENERATED_CODE_DIR="${TARGET_DIR}" \
           IS_PRIMARY=${IS_PRIMARY} \
-          ENVIRONMENTS="${NEW_BRANCH}" \
+          SUPPORTED_ENVIRONMENT_TYPES="${NEW_BRANCH}" \
           PUSH_TO_SERVER=false \
           "${NEW_PING_CLOUD_BASE_REPO}/${CODE_GEN_DIR}/push-cluster-state.sh"
     )
