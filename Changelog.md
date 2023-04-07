@@ -60,6 +60,7 @@
 - Fluent-bit pods stuck in pending state
 - Add logstash and fluent-bit alerts
 - Fix Kibana Visualization "Ping Access - Response Codes Over Time"
+- No longer move files into custom-resources directory when upgrading
 
 _Changes:_
 
@@ -70,6 +71,7 @@ _Changes:_
 - [X] PDO-4009 Update k8s StorageClass provisoner to use CSI driver
 - [X] PDO-4309 Add integration test for PingDirectory Java args 
 - [X] PDO-4388 Flag in env_var to enable/disable external ingresses for admin endpoints
+- [X] PDO-4548 Find and destroy file moving to custom-resources code from generate-cluster-state.sh to fix reoccuring issue when upgrading
 - [X] PDO-4556 [need before EKS 1.25] batch/v1beta1 CronJob is deprecated in v1.21+, unavailable in v1.25+; use batch/v1 CronJob
 - [X] PDO-4575 Upgrade ArgoCD to v2.5.5
 - [X] PDO-4697 Update cluster tools to latest version: cluster-autoscaler v1.23.0
