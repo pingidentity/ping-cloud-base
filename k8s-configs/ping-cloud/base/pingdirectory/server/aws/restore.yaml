@@ -5,6 +5,9 @@ metadata:
 data:
   restore.sh: |
     #!/bin/sh
+
+    . "/opt/in/logger.lib.sh"
+
     set -e
 
     # Install kubectl
@@ -14,10 +17,7 @@ data:
     chmod +x /tmp/kubectl
 
     RESTORE_FILES=
-    SCRIPT="${HOOKS_DIR}"/90-restore-backup-s3.sh
-    LOG_FILE=/tmp/restore.log
-
-    test -z "${BACKUP_RESTORE_POD}" && SERVER="${K8S_STATEFUL_SET_NAME}-0" || SERVER="${BACKUP_RESTORE_POD}"
+    SCRIPT="/opt/in/hooks/90-restore-backup-s3.sh"
 
     NUM_REPLICAS=$(/tmp/kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
     echo "restore: number of replicas: ${NUM_REPLICAS}"
@@ -82,26 +82,9 @@ data:
 
     pause_replication
 
-    echo "Running restore script within ${SERVER} pod"
-    /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
-        "test -x ${SCRIPT} && \
-            export BACKUP_FILE_NAME=${BACKUP_FILE_NAME} && \
-            ${SCRIPT}"> "${LOG_FILE}"
-
-    if test ${?} -eq 0; then
-      # Sending logs to STDOUT
-      cat ${LOG_FILE}
-      RESTORE_FILE=$(tail -1 "${LOG_FILE}")
-      test -z "${RESTORE_FILES}" && RESTORE_FILES="${RESTORE_FILE}" || RESTORE_FILES="${RESTORE_FILES} ${RESTORE_FILE}"
-    else
-      echo "Restore script not found on server ${SERVER}"
-    fi
-
-
-    # Print the names of the uploaded files so callers know exactly what was uploaded
-    echo "The following files were restored:"
-    echo "${RESTORE_FILES}"
-
+     beluga_log "Running restore script within pingdirectory pod"
+    test -x ${SCRIPT} && ${SCRIPT} 
+      
     echo "Deleting PingDirectory restore pvc"
     /tmp/kubectl delete pvc pingdirectory-restore
 ---
@@ -139,6 +122,22 @@ spec:
   template:
     spec:
       serviceAccount: ping-serviceaccount
+      affinity:
+        # This podAffinity rule is designed to deploy Backup/restore job to the same AZ as its targeted PingDirectory server("pindirectory-0")
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: statefulset.kubernetes.io/pod-name
+                operator: In
+                values:
+                - pingdirectory-0
+            topologyKey: "kubernetes.io/hostname"
+      tolerations:
+        - key: "pingidentity.com/pd-only"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
       restartPolicy: Never
       containers:
       - name: pingdirectory-restore
@@ -147,7 +146,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.18-release-branch-latest
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:pdo-5123
         imagePullPolicy: Always
         command:
         - /opt/in/restore.sh
@@ -156,8 +155,18 @@ spec:
           mountPath: /opt/in/restore.sh
           subPath: restore.sh
         - name: pd-restore-volume
-          mountPath: /opt/out/restore
-          subPath: restore
+          mountPath: /opt/restore
+        - name: out-dir
+          mountPath: /opt/out
+        - name: pingdirectory-passwords
+          mountPath: /usr/local/secrets
+          readOnly: true
+        - name: pingdirectory-init
+          mountPath: /opt/in/logger.lib.sh
+          subPath: logger.lib.sh
+        - name: pingdirectory-init
+          mountPath: /opt/in/utils.lib.sh
+          subPath: utils.lib.sh
         envFrom:
         - configMapRef:
             name: pingdirectory-environment-variables
@@ -166,6 +175,13 @@ spec:
         env:
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
           value: "true"
+        - name: ROOT_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingdirectory-passwords
+              key: root-user-password
+      securityContext:
+        fsGroup: 9999
       volumes:
       - name: restore-script
         configMap:
@@ -174,3 +190,15 @@ spec:
       - name: pd-restore-volume
         persistentVolumeClaim:
           claimName: pingdirectory-restore
+      - name: out-dir
+        persistentVolumeClaim:
+          claimName: out-dir-pingdirectory-0
+      - name: pingdirectory-passwords
+        secret:
+          secretName: pingdirectory-passwords
+          optional: true
+          defaultMode: 0400
+      - name: pingdirectory-init
+        configMap:
+          name: pingcommon-init
+          defaultMode: 0555

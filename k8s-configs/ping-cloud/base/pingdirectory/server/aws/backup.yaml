@@ -32,7 +32,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: pingdirectory-backup
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.18-release-branch-latest
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:pdo-5123
         imagePullPolicy: Always
         securityContext:
           runAsGroup: 9999
@@ -49,6 +49,11 @@ spec:
         env:
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
           value: "true"
+        - name: ROOT_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingdirectory-passwords
+              key: root-user-password
         volumeMounts:
         - name: backup-script
           mountPath: /opt/in/backup.sh
@@ -61,8 +66,11 @@ spec:
           mountPath: /usr/local/secrets
           readOnly: true
         - name: pingdirectory-init
-          mountPath: /logger.lib.sh
+          mountPath: /opt/in/logger.lib.sh
           subPath: logger.lib.sh
+        - name: pingdirectory-init
+          mountPath: /opt/in/utils.lib.sh
+          subPath: utils.lib.sh
       securityContext:
         fsGroup: 9999
       volumes:
