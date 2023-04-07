@@ -74,24 +74,22 @@ patchesJson6902:
       path: /spec/rules/4/host
       value: logs.${DNS_ZONE}
 
-    # PingCentral console through PA-WAS engines
-    - op: replace
+    # Remove PingCentral from PA-WAS in CDE
+    - op: remove
       path: /spec/tls/0/hosts/5
-      value: pingcentral-admin.${DNS_ZONE}
-    - op: replace
-      path: /spec/rules/5/host
-      value: pingcentral-admin.${DNS_ZONE}
+    - op: remove
+      path: /spec/rules/5
 
     # Healthcheck httpbin service through PA-WAS engines
     - op: replace
-      path: /spec/tls/0/hosts/6
+      path: /spec/tls/0/hosts/5
       value: healthcheck-httpbin-pa-was.${DNS_ZONE}
     - op: replace
-      path: /spec/rules/6/host
+      path: /spec/rules/5/host
       value: healthcheck-httpbin-pa-was.${DNS_ZONE}
 
     # Remove Argo CD from PA-WAS in CDE 
     - op: remove
-      path: /spec/tls/0/hosts/7
+      path: /spec/tls/0/hosts/6
     - op: remove
-      path: /spec/rules/7/host
+      path: /spec/rules/6
