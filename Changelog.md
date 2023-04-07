@@ -59,6 +59,7 @@
 - Add priorityClassName into CAWAgent daemonset
 - Fluent-bit pods stuck in pending state
 - Add logstash and fluent-bit alerts
+- Fix Kibana Visualization "Ping Access - Response Codes Over Time"
 
 _Changes:_
 
@@ -132,6 +133,7 @@ _Changes:_
 - [X] PDO-5144 Add logstash/fluent-bit readiness/liveness probe
 - [X] PDO-5147 Add logstash metrics to prometheus
 - [X] PDO-5148 Modify Prometheus query for all backup alerting to only include the primary pod
+- [X] PDO-5221 'Field "responseCode.keyword" not found' on the 'Ping Access - Response Codes Over Time' visualization
 - [X] PDO-5223 Remove pa-was config for ArgoCD from non customer-hub CDEs
 
 ### 1.17.0.0
