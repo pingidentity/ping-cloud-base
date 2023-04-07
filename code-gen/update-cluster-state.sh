@@ -524,9 +524,6 @@ handle_changed_k8s_configs() {
   log "DEBUG: Found the following new files in branch '${OLD_BRANCH}':"
   echo "${new_files}"
 
-  KUSTOMIZATION_FILE="${CUSTOM_RESOURCES_REL_DIR}/kustomization.yaml"
-  KUSTOMIZATION_BAK_FILE="${KUSTOMIZATION_FILE}.bak"
-
   # Special-case the handling all files owned by PS/GSO.
 
   # 1. Copy the custom-patches.yaml file (owned by PS/GSO) as is.
@@ -566,19 +563,6 @@ handle_changed_k8s_configs() {
       mkdir -p "${new_file_dirname}"
       git show "${OLD_BRANCH}:${new_file}" > "${new_file}"
       continue
-    fi
-
-    log "Copying custom file ${OLD_BRANCH}:${new_file} into directory ${CUSTOM_RESOURCES_REL_DIR}"
-    git show "${OLD_BRANCH}:${new_file}" > "${CUSTOM_RESOURCES_REL_DIR}/${new_file_basename}"
-
-    log "Adding new resource file ${new_file_basename} to ${KUSTOMIZATION_FILE}"
-    new_resource_line="- ${new_file_basename}"
-
-    grep_opts=(-q -e "${new_resource_line}")
-    if ! grep "${grep_opts[@]}" "${KUSTOMIZATION_FILE}"; then
-      # shellcheck disable=SC1003
-      sed -i.bak -e '/^resources:$/a\'$'\n'"${new_resource_line}" "${KUSTOMIZATION_FILE}"
-      rm -f "${KUSTOMIZATION_BAK_FILE}"
     fi
   done
 
