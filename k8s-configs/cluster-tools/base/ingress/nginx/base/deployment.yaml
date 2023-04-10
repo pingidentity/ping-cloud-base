@@ -52,7 +52,7 @@ spec:
         runAsNonRoot: true
       containers:
         - name: nginx-ingress-controller
-          image: public.ecr.aws/r2h3l6e4/pingcloud-services/sigsci-nginx-ingress-controller/dev:v1.18-release-branch-latest
+          image: public.ecr.aws/r2h3l6e4/pingcloud-services/sigsci-nginx-ingress-controller/dev:v1.19-release-branch-latest
           imagePullPolicy: Always
           resources:
             limits:
