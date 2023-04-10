@@ -1,0 +1,14 @@
+# Test frameworks
+pytest==7.1.2
+
+# Web browser testing
+seleniumbase==2.5.4
+
+# Kubernetes testing
+kubernetes~=23.6.0
+
+# AWS Boto3 library
+boto3~=1.25.0
+
+# PingOne shared scripts
+git+https://gitlab.corp.pingidentity.com/ping-cloud-private-tenant/ping-cloud-tools.git@master#subdirectory=pingone

@@ -29,9 +29,9 @@ spec:
         - monitoring-dev.ping-demo.com
         - prometheus-dev.ping-demo.com
         - logs-dev.ping-demo.com
-        - argocd-dev.ping-demo.com
         - pingcentral-admin-dev.ping-demo.com
         - healthcheck-httpbin-pa-was-dev.ping-demo.com
+        - argocd-dev.ping-demo.com
 
   rules:
     - host: pingaccess-admin-dev.ping-demo.com
@@ -89,17 +89,6 @@ spec:
                 name: pingaccess-was
                 port:
                   number: 443
-    - host: argocd-dev.ping-demo.com
-      http:
-        paths:
-          # This rule allows external access to Argo CD via the pingaccess-was runtime service
-          - pathType: Prefix
-            path: /
-            backend:
-              service:
-                name: pingaccess-was
-                port:
-                  number: 443
     - host: pingcentral-admin-dev.ping-demo.com
       http:
         paths:
@@ -115,6 +104,17 @@ spec:
       http:
         paths:
           # This rule allows external access to the healthcheck-httpbin-pa-was service via the pingaccess-was runtime service
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: pingaccess-was
+                port:
+                  number: 443
+    - host: argocd-dev.ping-demo.com
+      http:
+        paths:
+          # This rule allows external access to Argo CD via the pingaccess-was runtime service
           - pathType: Prefix
             path: /
             backend:
