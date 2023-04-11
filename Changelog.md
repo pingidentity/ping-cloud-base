@@ -61,6 +61,7 @@
 - Add logstash and fluent-bit alerts
 - Fix Kibana Visualization "Ping Access - Response Codes Over Time"
 - No longer move files into custom-resources directory when upgrading
+- Configure Fluent-bit kubernetes filter to prevent caching for statefulsets
 
 _Changes:_
 
@@ -139,6 +140,7 @@ _Changes:_
 - [X] PDO-5191 Update image_map to align with tagging process
 - [X] PDO-5221 'Field "responseCode.keyword" not found' on the 'Ping Access - Response Codes Over Time' visualization
 - [X] PDO-5223 Remove pa-was config for ArgoCD from non customer-hub CDEs
+- [X] PDO-5232 Configure Fluent-bit kubernetes filter to prevent caching for statefulsets
 - [X] PDO-5261 Remove PF and PA from pa-was config in customer-hub
 
 ### 1.17.0.0
