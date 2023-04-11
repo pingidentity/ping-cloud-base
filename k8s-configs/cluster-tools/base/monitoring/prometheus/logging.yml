@@ -23,13 +23,22 @@ groups:
       description: "A FluentBit has many retries in the output. Possible {{ $labels.name }} output is down.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
   - alert: Logstash pipeline is growing
-    expr: sum(increase(logstash_node_queue_events[1m])) by (instance, pipeline) > 100000
+    expr: delta(logstash_node_queue_events[1m]) > 10000
     for: 10m
     labels:
       severity: critical
     annotations:
       summary: Logstash pipeline {{ $labels.pipeline }} is growing on {{ $labels.instance }}.
       description: "A Logstash pipeline is growing. Possible {{ $labels.pipeline }} is overloaded or logs spike.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  - alert: Logstash pipeline backlog alert
+    expr: logstash_node_queue_events > 1000000
+    for: 10m
+    labels:
+      severity: critical
+    annotations:
+      summary: Logstash Queue Backlog Alert for {{ $labels.pipeline }} on {{ $labels.instance }}
+      description: "This alert is triggered when the length of the Logstash event queue for {{ $labels.pipeline }} on {{ $labels.instance }} exceeds a certain threshold.\nInvestigate the cause of the backlog for the specified pipeline on the specified instance.\nPossible reason is logstash or Elasticsearch performance issue.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
   - alert: Logstash has no outgoing events
     expr: sum(increase(logstash_node_pipeline_events_out_total{pipeline!="alerts"}[1m])) by (pipeline) == 0
