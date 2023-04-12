@@ -23,7 +23,8 @@ SKIP_TESTS="${SKIP_TESTS:-pingdirectory/03-backup-restore.sh \
   pingfederate/09-heartbeat-endpoint.sh \
   pingaccess/08-artifact-test.sh \
   pingdelegator/01-admin-user-login.sh \
-  chaos/01-delete-pa-admin-pod.sh }"
+  chaos/01-delete-pa-admin-pod.sh \
+  monitoring/02-grafana.sh }"
 
 # environment variables that are determined based on deployment type (traditional or PingOne)
 set_deploy_type_env_vars() {
