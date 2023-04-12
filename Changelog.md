@@ -62,6 +62,7 @@
 - Fix Kibana Visualization "Ping Access - Response Codes Over Time"
 - No longer move files into custom-resources directory when upgrading
 - Configure Fluent-bit kubernetes filter to prevent caching for statefulsets
+- Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
 
 _Changes:_
 
@@ -70,6 +71,7 @@ _Changes:_
 - [X] PDO-3834 Updated StorageClass type to gp3
 - [X] PDO-3908 Clean up P1 artifacts in Admin environment during CI/CD teardown
 - [X] PDO-4009 Update k8s StorageClass provisoner to use CSI driver
+- [X] PDO-4161 [need before EKS 1.25] Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
 - [X] PDO-4309 Add integration test for PingDirectory Java args 
 - [X] PDO-4388 Flag in env_var to enable/disable external ingresses for admin endpoints
 - [X] PDO-4548 Find and destroy file moving to custom-resources code from generate-cluster-state.sh to fix reoccuring issue when upgrading
