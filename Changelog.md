@@ -1,5 +1,13 @@
 # Changelog
 
+### 1.17.1.0
+
+- Modify Prometheus query for all backup alerting to only include the primary pod
+
+_Changes:_
+
+- [X] PDO-5237 Modify Prometheus query for all backup alerting to only include the primary pod
+
 ### 1.17.0.0
 
 - Remove logstash tolerations
