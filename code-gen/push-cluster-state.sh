@@ -242,6 +242,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       echo "Copying base files from ${src_dir} to ${PWD}"
       cp "${src_dir}"/.gitignore ./
       cp "${src_dir}"/update-cluster-state-wrapper.sh ./
+      cp "${src_dir}"/csr-validation.sh ./
 
       # Copy each app's base files into the repo
       for app_path in ${APP_PATHS}; do
