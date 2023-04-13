@@ -61,6 +61,7 @@
 - Add logstash and fluent-bit alerts
 - Fix Kibana Visualization "Ping Access - Response Codes Over Time"
 - No longer move files into custom-resources directory when upgrading
+- Set 7-day-retention policy to all backup jobs logs
 - Configure Fluent-bit kubernetes filter to prevent caching for statefulsets
 - Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
 
@@ -145,6 +146,7 @@ _Changes:_
 - [X] PDO-5223 Remove pa-was config for ArgoCD from non customer-hub CDEs
 - [X] PDO-5232 Configure Fluent-bit kubernetes filter to prevent caching for statefulsets
 - [X] PDO-5261 Remove PF and PA from pa-was config in customer-hub
+- [X] PDO-5264 Set 7-day-retention policy to all backup jobs logs
 
 ### 1.17.0.0
 
