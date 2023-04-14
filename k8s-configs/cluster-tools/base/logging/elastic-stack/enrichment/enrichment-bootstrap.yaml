@@ -248,4 +248,4 @@ spec:
             name: enrichment-opensearch-ism-policies
         - name: enrichment-opensearch-index-templates
           configMap:
-            name: enrichment-opensearch-index-templates
+            name: enrichment-opensearch-index-templates-gbgdkc96g9
