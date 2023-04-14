@@ -419,7 +419,8 @@ ${SLACK_CHANNEL}
 ${PROM_SLACK_CHANNEL}
 ${DASH_REPO_URL}
 ${DASH_REPO_BRANCH}
-${APP_RESYNC_SECONDS}'
+${APP_RESYNC_SECONDS}
+${IMAGE_LIST}'
 
 # Variables to replace within the generated cluster state code
 REPO_VARS="${REPO_VARS:-${DEFAULT_VARS}}"
@@ -700,6 +701,9 @@ echo "Initial SLACK_CHANNEL: ${SLACK_CHANNEL}"
 echo "Initial NON_GA_SLACK_CHANNEL: ${NON_GA_SLACK_CHANNEL}"
 echo "Initial PROM_SLACK_CHANNEL: ${PROM_SLACK_CHANNEL}"
 
+echo "Initial IMAGE_LIST: ${IMAGE_LIST}"
+echo "Initial IMAGE_TAG_PREFIX: ${IMAGE_TAG_PREFIX}"
+
 echo "Initial APP_RESYNC_SECONDS: ${APP_RESYNC_SECONDS}"
 echo ---
 
@@ -812,6 +816,9 @@ export PING_CLOUD_NAMESPACE='ping-cloud'
 export MYSQL_DATABASE='pingcentral'
 export ARGOCD_CDE_ROLE_SSM_TEMPLATE="${ARGOCD_CDE_ROLE_SSM_TEMPLATE:-"/pcpt/config/k8s-config/accounts/{env}/argo/role/arn"}"
 export ARGOCD_CDE_URL_SSM_TEMPLATE="${ARGOCD_CDE_URL_SSM_TEMPLATE:-"/pcpt/config/k8s-config/accounts/{env}/cluster/private-link/cname"}"
+
+DEFAULT_IMAGE_LIST="apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingfederate,apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess,apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess-was"
+export IMAGE_LIST="${IMAGE_LIST:-${DEFAULT_IMAGE_LIST}}"
 
 ALL_ENVIRONMENTS='dev test stage prod customer-hub'
 SUPPORTED_ENVIRONMENT_TYPES="${SUPPORTED_ENVIRONMENT_TYPES:-${ALL_ENVIRONMENTS}}"
@@ -970,6 +977,9 @@ echo "Using PROM_SLACK_CHANNEL: ${PROM_SLACK_CHANNEL}"
 echo "Using APP_RESYNC_SECONDS: ${APP_RESYNC_SECONDS}"
 
 echo "Using USER_BASE_DN: ${USER_BASE_DN}"
+
+echo "Using IMAGE_LIST: ${IMAGE_LIST}"
+echo "Using IMAGE_TAG_PREFIX: ${IMAGE_TAG_PREFIX}"
 echo ---
 
 
@@ -1186,7 +1196,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   if [[ "${ENV}" == "${CUSTOMER_HUB}" || "${IS_BELUGA_ENV}" == "true" ]]; then
     cp "${TEMPLATES_HOME}/${BOOTSTRAP_SHORT_DIR}"/customer-hub/* "${ENV_BOOTSTRAP_DIR}"
     # Copy all files from customer-hub code-gen, except kustomization.yaml to re-use the yaml there and prevent duplication
-    find "${CHUB_TEMPLATES_DIR}/base/cluster-tools/git-ops" -type f -name "*.yaml" ! -name kustomization.yaml | xargs -I {} cp {} "${ENV_BOOTSTRAP_DIR}"
+    find "${CHUB_TEMPLATES_DIR}/base/cluster-tools/git-ops" -type f ! -name kustomization.yaml | xargs -I {} cp {} "${ENV_BOOTSTRAP_DIR}"
   else
     cp "${TEMPLATES_HOME}/${BOOTSTRAP_SHORT_DIR}"/cde/* "${ENV_BOOTSTRAP_DIR}"
   fi
@@ -1251,6 +1261,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     printf "\n# %%%% END automatically appended secrets from generate-cluster-state.sh\n" >> "${K8S_CONFIGS_DIR}/base/secrets.yaml"
   fi
 
+  echo "Substituting env vars, this may take some time..."
   substitute_vars "${ENV_DIR}" "${REPO_VARS}" secrets.yaml env_vars values.yaml
   # TODO: These duplicate calls are needed to substitute the derived variables & the IS_BELUGA_ENV in values files only
   #  clean this up with PDO-4842 when all apps are migrated to values files by adding IS_BELUGA_ENV to DEFAULT_VARS

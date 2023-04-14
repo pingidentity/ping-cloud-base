@@ -126,7 +126,7 @@ fi
 
 # This is a destructive script by design. Add a warning to the user if local changes are being destroyed though.
 CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD 2> /dev/null)"
-if test "${CURRENT_BRANCH}" && test -n "$(git status -s)"; then
+if test "${CURRENT_BRANCH}" && test -n "$(git status -s)" && ! ${DISABLE_GIT}; then
   echo "WARN: The following local changes in current branch '${CURRENT_BRANCH}' will be destroyed:"
   git status
 
