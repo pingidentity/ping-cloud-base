@@ -208,7 +208,7 @@ spec:
       serviceAccountName: enrichment
       containers:
       - name: opensearch-bootstrap
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v1.18-release-branch-latest
+        image: 7es7/os-bootsrap:0.1_test
         imagePullPolicy: Always
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
@@ -248,4 +248,4 @@ spec:
             name: enrichment-opensearch-ism-policies
         - name: enrichment-opensearch-index-templates
           configMap:
-            name: enrichment-opensearch-index-templates
+            name: enrichment-opensearch-index-templates-5md4df9k9k
