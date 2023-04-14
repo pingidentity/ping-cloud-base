@@ -18,17 +18,17 @@ spec:
   template:
     metadata:
       # metadata comes from argocd-bootstrap
-      name: "${TENANT_NAME}-${REGION_NICK_NAME}-{{metadata.labels.argocd-env}}"
+      name: "${TENANT_NAME}-${REGION_NICK_NAME}-{{metadata.annotations.argocd-env}}"
       namespace: argocd
       annotations:
-        argocd-image-updater.argoproj.io/git-branch: "{{metadata.labels.argocd-branch}}"
-        argocd-image-updater.argoproj.io/image-list: ${IMAGE_LIST}
+        argocd-image-updater.argoproj.io/git-branch: "{{metadata.annotations.argocd-branch}}"
+        argocd-image-updater.argoproj.io/image-list: "{{metadata.annotations.argocd-image-list}}"
         argocd-image-updater.argoproj.io/apps.update-strategy: latest
-        argocd-image-updater.argoproj.io/apps.allow-tags: regexp:^${IMAGE_TAG_PREFIX}.[0-9]+$
+        argocd-image-updater.argoproj.io/apps.allow-tags: regexp:^{{metadata.annotations.argocd-image-prefix}}.[0-9]+$
         argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/argocd-image-updater-ssh-key
         argocd-image-updater.argoproj.io/write-back-target: kustomization
-        notifications.argoproj.io/subscribe.on-sync-failed.slack: ${SLACK_CHANNEL}
-        notifications.argoproj.io/subscribe.on-sync-status-unknown.slack: ${SLACK_CHANNEL}
+        notifications.argoproj.io/subscribe.on-sync-failed.slack: "{{metadata.annotations.argocd-slack-channel}}"
+        notifications.argoproj.io/subscribe.on-sync-status-unknown.slack: "{{metadata.annotations.argocd-slack-channel}}"
     spec:
       ignoreDifferences:
         - group: batch
@@ -44,7 +44,7 @@ spec:
       source:
         path: k8s-configs/${REGION_NICK_NAME}
         repoURL: ${CLUSTER_STATE_REPO_URL}
-        targetRevision: "{{metadata.labels.argocd-branch}}"
+        targetRevision: "{{metadata.annotations.argocd-branch}}"
         plugin:
           name: git-ops-command
 
@@ -73,7 +73,7 @@ spec:
           - git:
               repoURL: ${CLUSTER_STATE_REPO_URL}
               # Reference the branch metadata in the cluster to generate per-app for that branch
-              revision: "{{metadata.labels.argocd-branch}}"
+              revision: "{{metadata.annotations.argocd-branch}}"
               directories:
                 - path: "*"
                 - path: k8s-configs
@@ -81,21 +81,21 @@ spec:
   template:
     metadata:
       # metadata comes from argocd-bootstrap, path.basename from the git generator
-      name: "${TENANT_NAME}-${REGION_NICK_NAME}-{{metadata.labels.argocd-env}}-{{path.basename}}"
+      name: "${TENANT_NAME}-${REGION_NICK_NAME}-{{metadata.annotations.argocd-env}}-{{path.basename}}"
       annotations:
-        argocd-image-updater.argoproj.io/git-branch: "{{metadata.labels.argocd-branch}}"
-        argocd-image-updater.argoproj.io/image-list: ${IMAGE_LIST}
+        argocd-image-updater.argoproj.io/git-branch: "{{metadata.annotations.argocd-branch}}"
+        argocd-image-updater.argoproj.io/image-list: "{{metadata.annotations.argocd-image-list}}"
         argocd-image-updater.argoproj.io/apps.update-strategy: latest
-        argocd-image-updater.argoproj.io/apps.allow-tags: regexp:^${IMAGE_TAG_PREFIX}.[0-9]+$
+        argocd-image-updater.argoproj.io/apps.allow-tags: regexp:^{{metadata.annotations.argocd-image-prefix}}.[0-9]+$
         argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/argocd-image-updater-ssh-key
         argocd-image-updater.argoproj.io/write-back-target: kustomization
-        notifications.argoproj.io/subscribe.on-sync-failed.slack: ${SLACK_CHANNEL}
-        notifications.argoproj.io/subscribe.on-sync-status-unknown.slack: ${SLACK_CHANNEL}
+        notifications.argoproj.io/subscribe.on-sync-failed.slack: "{{metadata.annotations.argocd-slack-channel}}"
+        notifications.argoproj.io/subscribe.on-sync-status-unknown.slack: "{{metadata.annotations.argocd-slack-channel}}"
     spec:
       project: default
       source:
         repoURL: ${CLUSTER_STATE_REPO_URL}
-        targetRevision: "{{metadata.labels.argocd-branch}}"
+        targetRevision: "{{metadata.annotations.argocd-branch}}"
         path: "{{path}}/${REGION_NICK_NAME}"
       destination:
         server: "{{server}}"

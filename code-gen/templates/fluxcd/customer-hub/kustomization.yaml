@@ -46,3 +46,12 @@ patchesJson6902:
     namespace: argocd
   # generate-cluster-state.sh copies this from code-gen/templates/customer-hub/base/cluster-tools/git-ops/
   path: argocd-cm-patch.yaml
+
+configMapGenerator:
+  - name: argocd-bootstrap
+    namespace: argocd
+    behavior: merge
+    envs:
+      - env_vars
+    options:
+      disableNameSuffixHash: true
