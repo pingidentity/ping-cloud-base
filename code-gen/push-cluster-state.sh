@@ -279,7 +279,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       app_name=$(basename "${app_path}")
 
       # shellcheck disable=SC2010
-      region_path="$(find "${app_path}" -type d -depth 1 ! -path '*/base')"
+      region_path="$(find "${app_path}" -mindepth 1 -maxdepth 1 -type d ! -path '*/base')"
       region=$(basename "${region_path}")
       src_dir="${app_path}/$region"
 
