@@ -10,3 +10,4 @@ resources:
 - rbac.yaml
 - service.yaml
 - sts.yaml
+- index-templates
