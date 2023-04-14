@@ -2,6 +2,7 @@
 
 # If VERBOSE is true, then output line-by-line execution
 "${VERBOSE:-false}" && set -x
+"${EXIT_ON_FAILURE:-false}" && set -e
 
 # This script may be used to upgrade an existing cluster state repo. It is designed to be non-destructive in that it
 # won't push any changes to the server. Instead, it will set up a parallel branch for every CDE branch and/or the
