@@ -1,0 +1,12 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+namespace: elastic-stack-logging
+
+resources:
+- configs
+- security_configs
+- pdb.yaml
+- rbac.yaml
+- service.yaml
+- sts.yaml
