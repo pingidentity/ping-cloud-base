@@ -47,7 +47,7 @@ spec:
           subPath: get_ssm_env_vars.sh
       containers:
       - name: pingdirectory-backup
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:pdo-5123
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.18-release-branch-latest
         imagePullPolicy: Always
         securityContext:
           runAsGroup: 9999
