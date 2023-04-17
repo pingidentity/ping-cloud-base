@@ -6,9 +6,9 @@ data:
   restore.sh: |
     #!/bin/sh
 
-    . "/opt/in/logger.lib.sh"
-
     set -e
+
+    export HOOKS_DIR="/opt/in/hooks"
 
     # Install kubectl
     curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
@@ -17,7 +17,9 @@ data:
     chmod +x /tmp/kubectl
 
     RESTORE_FILES=
+    
     SCRIPT="/opt/in/hooks/90-restore-backup-s3.sh"
+    test -z "${BACKUP_RESTORE_POD}" && SERVER="${K8S_STATEFUL_SET_NAME}-0" || SERVER="${BACKUP_RESTORE_POD}"
 
     NUM_REPLICAS=$(/tmp/kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
     echo "restore: number of replicas: ${NUM_REPLICAS}"
@@ -78,11 +80,11 @@ data:
     }
 
     # This guarantees that resume_replication is always run, even if the restore job exits due to an error
-    trap "resume_replication" EXIT
+    #trap "resume_replication" EXIT
 
-    pause_replication
+    #pause_replication
 
-     beluga_log "Running restore script within pingdirectory pod"
+    echo "Running restore script within pingdirectory pod"
     test -x ${SCRIPT} && ${SCRIPT} 
       
     echo "Deleting PingDirectory restore pvc"
@@ -139,6 +141,21 @@ spec:
           value: "true"
           effect: "NoSchedule"
       restartPolicy: Never
+      initContainers:
+      - name: pingdirectory-discovery-service
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-cli:2.0.17
+        imagePullPolicy: IfNotPresent
+        command:
+        - /get_ssm_env_vars.sh
+        envFrom:
+        - configMapRef:
+            name: pingdirectory-environment-variables
+        volumeMounts:
+        - name: data-dir
+          mountPath: /config
+        - name: discovery-service
+          mountPath: /get_ssm_env_vars.sh
+          subPath: get_ssm_env_vars.sh
       containers:
       - name: pingdirectory-restore
         securityContext:
@@ -162,11 +179,14 @@ spec:
           mountPath: /usr/local/secrets
           readOnly: true
         - name: pingdirectory-init
-          mountPath: /opt/in/logger.lib.sh
+          mountPath: /opt/in/hooks/logger.lib.sh
           subPath: logger.lib.sh
         - name: pingdirectory-init
           mountPath: /opt/in/utils.lib.sh
           subPath: utils.lib.sh
+        - name: data-dir
+          mountPath: /opt/staging/ds_env_vars
+          subPath: ds_env_vars
         envFrom:
         - configMapRef:
             name: pingdirectory-environment-variables
@@ -202,3 +222,9 @@ spec:
         configMap:
           name: pingcommon-init
           defaultMode: 0555
+      - name: discovery-service
+        configMap:
+          name: discovery-service
+          defaultMode: 0555
+      - name: data-dir
+        emptyDir: {}

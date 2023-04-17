@@ -5,20 +5,20 @@ metadata:
 data:
   backup.sh: |-
     #!/bin/sh
-
-    . "/opt/in/logger.lib.sh"
-  
     set -e
+   
+    export HOOKS_DIR="/opt/in/hooks"
 
     # Install kubectl
     curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
     -o /tmp/kubectl
-    
+    #sleep 360s
     chmod +x /tmp/kubectl
     SCRIPT="/opt/in/hooks/90-upload-backup-s3.sh"
-   
-    beluga_log "Running backup script within pingdirectory pod"
-      
+
+    test -z "${BACKUP_RESTORE_POD}" && SERVER="${K8S_STATEFUL_SET_NAME}-0" || SERVER="${BACKUP_RESTORE_POD}"
+
+    echo "Running backup script within pingdirectory pod"
     test -x ${SCRIPT} && ${SCRIPT} 
       
     echo "Deleting PingDirectory backup pvc"

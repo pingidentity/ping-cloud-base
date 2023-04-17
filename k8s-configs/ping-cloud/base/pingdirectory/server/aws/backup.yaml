@@ -30,6 +30,21 @@ spec:
           value: "true"
           effect: "NoSchedule"
       restartPolicy: Never
+      initContainers:
+      - name: pingdirectory-discovery-service
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-cli:2.0.17
+        imagePullPolicy: IfNotPresent
+        command:
+        - /get_ssm_env_vars.sh
+        envFrom:
+        - configMapRef:
+            name: pingdirectory-environment-variables
+        volumeMounts:
+        - name: data-dir
+          mountPath: /config
+        - name: discovery-service
+          mountPath: /get_ssm_env_vars.sh
+          subPath: get_ssm_env_vars.sh
       containers:
       - name: pingdirectory-backup
         image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:pdo-5123
@@ -66,11 +81,11 @@ spec:
           mountPath: /usr/local/secrets
           readOnly: true
         - name: pingdirectory-init
-          mountPath: /opt/in/logger.lib.sh
+          mountPath: /opt/in/hooks/logger.lib.sh
           subPath: logger.lib.sh
-        - name: pingdirectory-init
-          mountPath: /opt/in/utils.lib.sh
-          subPath: utils.lib.sh
+        - name: data-dir
+          mountPath: /opt/staging/ds_env_vars
+          subPath: ds_env_vars
       securityContext:
         fsGroup: 9999
       volumes:
@@ -84,6 +99,8 @@ spec:
       - name: out-dir
         persistentVolumeClaim:
           claimName: out-dir-pingdirectory-0
+      - name: data-dir
+        emptyDir: {}
       - name: pingdirectory-passwords
         secret:
           secretName: pingdirectory-passwords
@@ -92,6 +109,10 @@ spec:
       - name: pingdirectory-init
         configMap:
           name: pingcommon-init
+          defaultMode: 0555
+      - name: discovery-service
+        configMap:
+          name: discovery-service
           defaultMode: 0555
 
 ---
