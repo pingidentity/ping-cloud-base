@@ -5,8 +5,7 @@ metadata:
 data:
   backup.sh: |-
     #!/bin/sh
-    set -e
-   
+       
     export HOOKS_DIR="/opt/in/hooks"
 
     # Install kubectl
@@ -19,10 +18,25 @@ data:
     test -z "${BACKUP_RESTORE_POD}" && SERVER="${K8S_STATEFUL_SET_NAME}-0" || SERVER="${BACKUP_RESTORE_POD}"
 
     echo "Running backup script within pingdirectory pod"
-    test -x ${SCRIPT} && ${SCRIPT} 
-      
+    set -o pipefail
+    (/opt/out/instance/bin/dsconfig get-backend-prop --no-prompt --hostname "${BACKUP_RESTORE_POD}.${K8S_STATEFUL_SET_SERVICE_NAME}" -p 1636 --backend-name userRoot_2)|tee
+    exit 1;
+  
+    is_backend_found=${?}
+    set +o pipefail 
+
+    if test ${is_backend_found} -eq 0; then
+    echo "backend exists echo statement"
+    #test -x ${SCRIPT} && ${SCRIPT} 
+    else
+    echo "backend does not exists echo statement"
+    fi  
     echo "Deleting PingDirectory backup pvc"
     /tmp/kubectl delete pvc pingdirectory-backup
+
+    
+    
+    
 
 ---
 apiVersion: v1
