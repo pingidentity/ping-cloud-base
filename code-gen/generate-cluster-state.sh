@@ -6,6 +6,9 @@
 
 ########################################################################################################################
 #
+# PREREQUISITES: Should be compatible with Debian.
+#                This script is used by platform automation on Ubuntu (Debian) to generate K8s manifest.
+#
 # Note: This script must be executed within its git checkout tree after switching to the desired branch.
 #
 # This script may be used to generate the initial Kubernetes configurations to push into the cluster-state repository
@@ -585,7 +588,7 @@ set_ssh_key_pair() {
 # Organizes the files from code-gen directory to a tmp directory for push-cluster-state script
 organize_code_for_csr() {
   # find all the apps under code-gen/templates directory
-  local app_paths=$(find "${TEMPLATES_HOME}" -type d -depth 1 ! -path '*/cde' ! -path '*/common' ! -path '*/customer-hub' ! -path '*/fluxcd')
+  local app_paths=$(find "${TEMPLATES_HOME}" -maxdepth 1 -mindepth 1 -type d ! -path '*/cde' ! -path '*/common' ! -path '*/customer-hub' ! -path '*/fluxcd')
 
   for app_path in ${app_paths}; do
     local app_name=$(basename "${app_path}")
