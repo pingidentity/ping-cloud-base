@@ -1,6 +1,5 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
-
 resources:
 # Apply pingdatasync deployment resources
 - ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingdatasync/server?ref=${K8S_GIT_BRANCH}
@@ -9,7 +8,6 @@ images:
 - name: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingdatasync${ECR_ENV}
   newName: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingdatasync${ECR_ENV}
   newTag: ${PINGDATASYNC_IMAGE_TAG}
-
 patchesJson6902:
 
 ### pingdatasync Last Update Config Map ###
@@ -24,10 +22,6 @@ patchesJson6902:
       value:
         configMapRef:
           name: pingdatasync-last-update-config
-
-### Ingress patches ###
-
-# pingdatasync admin
 - target:
     version: v1
     kind: Service
@@ -36,4 +30,3 @@ patchesJson6902:
     - op: replace
       path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
       value: pingdatasync-admin.${DNS_ZONE}
-

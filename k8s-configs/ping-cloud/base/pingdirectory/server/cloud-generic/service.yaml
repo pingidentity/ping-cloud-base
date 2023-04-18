@@ -25,7 +25,6 @@ spec:
   clusterIP: None
   selector:
     class: pingdirectory-server
-
 ---
 
 # Service that exposes the pingdirectory LDAPS port on the admin subnet.
@@ -47,7 +46,6 @@ spec:
   - name: ldaps
     port: 636
     targetPort: ldaps
-
 ---
 
 apiVersion: v1

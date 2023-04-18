@@ -16,32 +16,31 @@ kind: ServiceAccount
 metadata:
   name: cloudwatch-agent
   namespace: amazon-cloudwatch
-
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: cloudwatch-agent-role
 rules:
-  - apiGroups: [""]
-    resources: ["pods", "nodes", "endpoints"]
-    verbs: ["list", "watch"]
-  - apiGroups: ["apps"]
-    resources: ["replicasets"]
-    verbs: ["list", "watch"]
-  - apiGroups: ["batch"]
-    resources: ["jobs"]
-    verbs: ["list", "watch"]
-  - apiGroups: [""]
-    resources: ["nodes/proxy"]
-    verbs: ["get"]
-  - apiGroups: [""]
-    resources: ["nodes/stats", "configmaps", "events"]
-    verbs: ["create"]
-  - apiGroups: [""]
-    resources: ["configmaps"]
-    resourceNames: ["cwagent-clusterleader"]
-    verbs: ["get","update"]
+- apiGroups: ['']
+  resources: [pods, nodes, endpoints]
+  verbs: [list, watch]
+- apiGroups: [apps]
+  resources: [replicasets]
+  verbs: [list, watch]
+- apiGroups: [batch]
+  resources: [jobs]
+  verbs: [list, watch]
+- apiGroups: ['']
+  resources: [nodes/proxy]
+  verbs: [get]
+- apiGroups: ['']
+  resources: [nodes/stats, configmaps, events]
+  verbs: [create]
+- apiGroups: ['']
+  resources: [configmaps]
+  resourceNames: [cwagent-clusterleader]
+  verbs: [get, update]
 
 ---
 kind: ClusterRoleBinding
@@ -49,9 +48,9 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: cloudwatch-agent-role-binding
 subjects:
-  - kind: ServiceAccount
-    name: cloudwatch-agent
-    namespace: amazon-cloudwatch
+- kind: ServiceAccount
+  name: cloudwatch-agent
+  namespace: amazon-cloudwatch
 roleRef:
   kind: ClusterRole
   name: cloudwatch-agent-role
@@ -82,7 +81,6 @@ kind: ConfigMap
 metadata:
   name: cwagentconfig
   namespace: amazon-cloudwatch
-
 ---
 
 # deploy cwagent as daemonset
@@ -101,79 +99,73 @@ spec:
         name: cloudwatch-agent
     spec:
       containers:
-        - name: cloudwatch-agent
-          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/cloudwatch-agent:1.247357.0b252275
-          #ports:
-          #  - containerPort: 8125
-          #    hostPort: 8125
-          #    protocol: UDP
-          resources:
-            limits:
-              cpu:  200m
-              memory: 200Mi
-            requests:
-              cpu: 200m
-              memory: 200Mi
-          # Please don't change below envs
-          env:
-            - name: HOST_IP
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.hostIP
-            - name: HOST_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: spec.nodeName
-            - name: K8S_NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-            - name: CI_VERSION
-              value: "k8s/1.0.1"
-          # Please don't change the mountPath
-          volumeMounts:
-            - name: cwagentconfig
-              mountPath: /etc/cwagentconfig
-            - name: rootfs
-              mountPath: /rootfs
-              readOnly: true
-            - name: dockersock
-              mountPath: /var/run/docker.sock
-              readOnly: true
-            - name: varlibdocker
-              mountPath: /var/lib/docker
-              readOnly: true
-            - name: containerdsock
-              mountPath: /run/containerd/containerd.sock
-              readOnly: true
-            - name: sys
-              mountPath: /sys
-              readOnly: true
-            - name: devdisk
-              mountPath: /dev/disk
-              readOnly: true
-      volumes:
+      - name: cloudwatch-agent
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/cloudwatch-agent:1.247357.0b252275
+        resources:
+          limits:
+            cpu: 200m
+            memory: 200Mi
+          requests:
+            cpu: 200m
+            memory: 200Mi
+        env:
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: HOST_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: K8S_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: CI_VERSION
+          value: k8s/1.0.1
+        volumeMounts:
         - name: cwagentconfig
-          configMap:
-            name: cwagentconfig
+          mountPath: /etc/cwagentconfig
         - name: rootfs
-          hostPath:
-            path: /
+          mountPath: /rootfs
+          readOnly: true
         - name: dockersock
-          hostPath:
-            path: /var/run/docker.sock
+          mountPath: /var/run/docker.sock
+          readOnly: true
         - name: varlibdocker
-          hostPath:
-            path: /var/lib/docker
+          mountPath: /var/lib/docker
+          readOnly: true
         - name: containerdsock
-          hostPath:
-            path: /run/containerd/containerd.sock
+          mountPath: /run/containerd/containerd.sock
+          readOnly: true
         - name: sys
-          hostPath:
-            path: /sys
+          mountPath: /sys
+          readOnly: true
         - name: devdisk
-          hostPath:
-            path: /dev/disk/
+          mountPath: /dev/disk
+          readOnly: true
+      volumes:
+      - name: cwagentconfig
+        configMap:
+          name: cwagentconfig
+      - name: rootfs
+        hostPath:
+          path: /
+      - name: dockersock
+        hostPath:
+          path: /var/run/docker.sock
+      - name: varlibdocker
+        hostPath:
+          path: /var/lib/docker
+      - name: containerdsock
+        hostPath:
+          path: /run/containerd/containerd.sock
+      - name: sys
+        hostPath:
+          path: /sys
+      - name: devdisk
+        hostPath:
+          path: /dev/disk/
       terminationGracePeriodSeconds: 60
       serviceAccountName: cloudwatch-agent
       priorityClassName: system-node-critical

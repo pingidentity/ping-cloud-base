@@ -20,7 +20,7 @@ spec:
         image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/busybox:1.32
         imagePullPolicy: IfNotPresent
         command:
-          - /wait-for-services.sh
+        - /wait-for-services.sh
         volumeMounts:
         - name: pingone-config
           mountPath: /utils.lib.sh
@@ -33,7 +33,7 @@ spec:
           subPath: wait-for-services.sh
         env:
         - name: WAIT_FOR_SERVICES
-          value: "pingfederate-cluster"
+          value: pingfederate-cluster
         envFrom:
         - configMapRef:
             name: pingfederate-admin-environment-variables
@@ -43,11 +43,11 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "300m"
+            memory: 256Mi
+            cpu: 300m
           limits:
-            memory: "512Mi"
-            cpu: "500m"
+            memory: 512Mi
+            cpu: 500m
         env:
         - name: ENVIRONMENT_METADATA_JSON
           valueFrom:

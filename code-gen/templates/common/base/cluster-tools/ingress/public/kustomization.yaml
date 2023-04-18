@@ -1,6 +1,5 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
-
 resources:
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/${KUSTOMIZE_BASE}/ingress/nginx/public?ref=${K8S_GIT_BRANCH}
 
@@ -30,8 +29,6 @@ patchesJson6902:
       path: /spec/template/spec/containers/0/args/-
       value:
         --default-ssl-certificate=${PING_CLOUD_NAMESPACE}/acme-tls-cert
-
-### Patch to inject environment variables to SigSci agent container ###
 - target:
     group: apps
     version: v1

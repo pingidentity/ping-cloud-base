@@ -6,8 +6,8 @@ metadata:
   name: pingcentral
 spec:
   ports:
-    - port: 9022
-      name: pingcentral
-      targetPort: https
+  - port: 9022
+    name: pingcentral
+    targetPort: https
   selector:
     role: pingcentral

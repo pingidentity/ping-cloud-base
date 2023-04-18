@@ -25,29 +25,28 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "300m"
+            memory: 256Mi
+            cpu: 300m
           limits:
-            memory: "512Mi"
-            cpu: "500m"
+            memory: 512Mi
+            cpu: 500m
         envFrom:
         - configMapRef:
             name: p14c-oauth-service-environment-variables
         env:
-          - name: PA_ADMIN_USER_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: pingaccess-passwords
-                key: PA_ADMIN_USER_PASSWORD
-          - name: NAMESPACE
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.namespace
-        # The -u flag is necessary for python to emit logging to standard out
-        command: [ 'python3', '-u', '/app/oauth_client_services_controller.py' ]
+        - name: PA_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingaccess-passwords
+              key: PA_ADMIN_USER_PASSWORD
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        command: [python3, -u, /app/oauth_client_services_controller.py]
         livenessProbe:
           exec:
-            command: [ 'python3', '-u', '/app/liveness.py' ]
+            command: [python3, -u, /app/liveness.py]
           initialDelaySeconds: 60
           periodSeconds: 30
           failureThreshold: 3

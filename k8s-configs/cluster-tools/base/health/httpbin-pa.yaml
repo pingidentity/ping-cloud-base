@@ -23,11 +23,11 @@ spec:
         imagePullPolicy: IfNotPresent
         resources:
           limits:
-            memory: "60Mi"
-            cpu: "200m"
+            memory: 60Mi
+            cpu: 200m
           requests:
-            memory: "10Mi"
-            cpu: "100m"
+            memory: 10Mi
+            cpu: 100m
         readinessProbe:
           httpGet:
             path: /
@@ -65,6 +65,3 @@ spec:
     targetPort: 80
   selector:
     role: healthcheck-httpbin-pa
-
-
-

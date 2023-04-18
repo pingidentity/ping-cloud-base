@@ -1,6 +1,5 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
-
 resources:
 
 # Include the CD tool here so it can update itself in the future
@@ -44,5 +43,4 @@ patchesJson6902:
     kind: ConfigMap
     name: argocd-cm
     namespace: argocd
-  # generate-cluster-state.sh copies this from code-gen/templates/customer-hub/base/cluster-tools/git-ops/
   path: argocd-cm-patch.yaml

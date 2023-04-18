@@ -15,7 +15,7 @@ spec:
       name: cpu
       target:
         type: AverageValue
-        averageValue: "0.4"
+        averageValue: '0.4'
   - type: Resource
     resource:
       name: memory

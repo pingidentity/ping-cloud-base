@@ -4,24 +4,24 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: "ping-cloud-all-cdes"
+  name: ping-cloud-all-cdes
   namespace: argocd
 spec:
   syncPolicy:
     preserveResourcesOnDeletion: true
   generators:
-    - clusters:
-        selector:
-          matchLabels:
+  - clusters:
+      selector:
+        matchLabels:
             # Custom label created by argocd-bootstrap, only target these clusters
-            argocd-auto-configure: "true"
+          argocd-auto-configure: 'true'
   template:
     metadata:
       # metadata comes from argocd-bootstrap
-      name: "${TENANT_NAME}-${REGION_NICK_NAME}-{{metadata.labels.argocd-env}}"
+      name: ${TENANT_NAME}-${REGION_NICK_NAME}-{{metadata.labels.argocd-env}}
       namespace: argocd
       annotations:
-        argocd-image-updater.argoproj.io/git-branch: "{{metadata.labels.argocd-branch}}"
+        argocd-image-updater.argoproj.io/git-branch: '{{metadata.labels.argocd-branch}}'
         argocd-image-updater.argoproj.io/image-list: ${IMAGE_LIST}
         argocd-image-updater.argoproj.io/apps.update-strategy: latest
         argocd-image-updater.argoproj.io/apps.allow-tags: regexp:^${IMAGE_TAG_PREFIX}.[0-9]+$
@@ -31,29 +31,28 @@ spec:
         notifications.argoproj.io/subscribe.on-sync-status-unknown.slack: ${SLACK_CHANNEL}
     spec:
       ignoreDifferences:
-        - group: batch
-          kind: Job
-          jsonPointers:
-            - /spec/ttlSecondsAfterFinished
+      - group: batch
+        kind: Job
+        jsonPointers:
+        - /spec/ttlSecondsAfterFinished
       syncPolicy:
         automated:
           prune: true
       destination:
-        server: "{{server}}"
+        server: '{{server}}'
       project: default
       source:
         path: k8s-configs/${REGION_NICK_NAME}
         repoURL: ${CLUSTER_STATE_REPO_URL}
-        targetRevision: "{{metadata.labels.argocd-branch}}"
+        targetRevision: '{{metadata.labels.argocd-branch}}'
         plugin:
           name: git-ops-command
-
 ---
 # The per-app application set, for splitting up the monorepo
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: "ping-cloud-all-cdes-per-app"
+  name: ping-cloud-all-cdes-per-app
   namespace: argocd
 spec:
   syncPolicy:
@@ -63,27 +62,26 @@ spec:
     # and therefore environment to point to. Labels are added by the custom argocd-bootstrap script.
     # Also enumerate all matching directories in the cluster-state-repo, creating an Application for each
     # combination of cluster + application in the CSR
-    - matrix:
-        generators:
-          - clusters:
-              selector:
-                matchLabels:
+  - matrix:
+      generators:
+      - clusters:
+          selector:
+            matchLabels:
                   # Custom label created by argocd-bootstrap, only target these clusters
-                  argocd-auto-configure: "true"
-          - git:
-              repoURL: ${CLUSTER_STATE_REPO_URL}
-              # Reference the branch metadata in the cluster to generate per-app for that branch
-              revision: "{{metadata.labels.argocd-branch}}"
-              directories:
-                - path: "*"
-                - path: k8s-configs
-                  exclude: true
+              argocd-auto-configure: 'true'
+      - git:
+          repoURL: ${CLUSTER_STATE_REPO_URL}
+          revision: '{{metadata.labels.argocd-branch}}'
+          directories:
+          - path: '*'
+          - path: k8s-configs
+            exclude: true
   template:
     metadata:
       # metadata comes from argocd-bootstrap, path.basename from the git generator
-      name: "${TENANT_NAME}-${REGION_NICK_NAME}-{{metadata.labels.argocd-env}}-{{path.basename}}"
+      name: ${TENANT_NAME}-${REGION_NICK_NAME}-{{metadata.labels.argocd-env}}-{{path.basename}}
       annotations:
-        argocd-image-updater.argoproj.io/git-branch: "{{metadata.labels.argocd-branch}}"
+        argocd-image-updater.argoproj.io/git-branch: '{{metadata.labels.argocd-branch}}'
         argocd-image-updater.argoproj.io/image-list: ${IMAGE_LIST}
         argocd-image-updater.argoproj.io/apps.update-strategy: latest
         argocd-image-updater.argoproj.io/apps.allow-tags: regexp:^${IMAGE_TAG_PREFIX}.[0-9]+$
@@ -95,15 +93,15 @@ spec:
       project: default
       source:
         repoURL: ${CLUSTER_STATE_REPO_URL}
-        targetRevision: "{{metadata.labels.argocd-branch}}"
-        path: "{{path}}/${REGION_NICK_NAME}"
+        targetRevision: '{{metadata.labels.argocd-branch}}'
+        path: '{{path}}/${REGION_NICK_NAME}'
       destination:
-        server: "{{server}}"
+        server: '{{server}}'
       ignoreDifferences:
-        - group: batch
-          kind: Job
-          jsonPointers:
-            - /spec/ttlSecondsAfterFinished
+      - group: batch
+        kind: Job
+        jsonPointers:
+        - /spec/ttlSecondsAfterFinished
       syncPolicy:
         automated:
           prune: true

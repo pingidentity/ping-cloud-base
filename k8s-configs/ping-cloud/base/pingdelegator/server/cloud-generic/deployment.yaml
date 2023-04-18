@@ -15,7 +15,7 @@ spec:
     metadata:
       name: pingdelegator
       annotations:
-        lastUpdateReason: "NA"
+        lastUpdateReason: NA
       labels:
         role: pingdelegator
     spec:
@@ -24,15 +24,15 @@ spec:
         podAntiAffinity:
           # Add a soft requirement for each DA pod to be deployed to a different AZ
           preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 1
-              podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                    - key: role
-                      operator: In
-                      values:
-                        - pingdelegator
-                topologyKey: "topology.kubernetes.io/zone"
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: role
+                  operator: In
+                  values:
+                  - pingdelegator
+              topologyKey: topology.kubernetes.io/zone
       initContainers:
       - name: pingdelegator-init
         securityContext:
@@ -43,30 +43,30 @@ spec:
         image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.23.0
         imagePullPolicy: IfNotPresent
         command:
-          - /copy-dependencies.sh
+        - /copy-dependencies.sh
         volumeMounts:
-          - name: ssh-dir
-            mountPath: /.ssh
-          - name: data-dir
-            mountPath: /data
-          - name: ssh-id-key-secret
-            mountPath: /id_rsa
-            subPath: id_rsa
-          - name: known-hosts-config
-            mountPath: /known_hosts
-            subPath: known_hosts
-          - name: pingdelegator-init
-            mountPath: /copy-dependencies.sh
-            subPath: copy-dependencies.sh
-          - name: pingdelegator-init
-            mountPath: /utils.lib.sh
-            subPath: utils.lib.sh
-          - name: pingdelegator-init
-            mountPath: /logger.lib.sh
-            subPath: logger.lib.sh
+        - name: ssh-dir
+          mountPath: /.ssh
+        - name: data-dir
+          mountPath: /data
+        - name: ssh-id-key-secret
+          mountPath: /id_rsa
+          subPath: id_rsa
+        - name: known-hosts-config
+          mountPath: /known_hosts
+          subPath: known_hosts
+        - name: pingdelegator-init
+          mountPath: /copy-dependencies.sh
+          subPath: copy-dependencies.sh
+        - name: pingdelegator-init
+          mountPath: /utils.lib.sh
+          subPath: utils.lib.sh
+        - name: pingdelegator-init
+          mountPath: /logger.lib.sh
+          subPath: logger.lib.sh
         envFrom:
-          - configMapRef:
-              name: pingdelegator-environment-variables
+        - configMapRef:
+            name: pingdelegator-environment-variables
       containers:
       - name: pingdelegator
         securityContext:
@@ -78,26 +78,26 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "80m"
+            memory: 256Mi
+            cpu: 80m
           limits:
-            memory: "1Gi"
-            cpu: "1"
+            memory: 1Gi
+            cpu: '1'
         volumeMounts:
-          - name: ssh-dir
-            mountPath: /home/ping/.ssh
-          - name: topology-descriptor
-            mountPath: /opt/staging/topology/descriptor.json
-            subPath: descriptor.json
-          - name: data-dir
-            mountPath: /usr/local/bin/kubectl
-            subPath: kubectl
-          - name: data-dir
-            mountPath: /opt/staging/hooks/logger.lib.sh
-            subPath: logger.lib.sh
-          - name: data-dir
-            mountPath: /opt/staging/ds_env_vars
-            subPath: ds_env_vars
+        - name: ssh-dir
+          mountPath: /home/ping/.ssh
+        - name: topology-descriptor
+          mountPath: /opt/staging/topology/descriptor.json
+          subPath: descriptor.json
+        - name: data-dir
+          mountPath: /usr/local/bin/kubectl
+          subPath: kubectl
+        - name: data-dir
+          mountPath: /opt/staging/hooks/logger.lib.sh
+          subPath: logger.lib.sh
+        - name: data-dir
+          mountPath: /opt/staging/ds_env_vars
+          subPath: ds_env_vars
         readinessProbe:
           exec:
             command: [/opt/liveness.sh]
@@ -113,44 +113,39 @@ spec:
           failureThreshold: 4
           timeoutSeconds: 5
         ports:
-          - name: https
-            containerPort: 1443
+        - name: https
+          containerPort: 1443
         lifecycle:
           preStop:
             exec:
-              command: [
-                  # Gracefully shutdown nginx
-                  "/bin/sh",
-                  "-c",
-                  "nginx -s quit",
-                  "while killall -0 nginx; do sleep 1; done",
-                ]
+              command: [/bin/sh, -c, nginx -s quit, while killall -0 nginx; do sleep
+                  1; done]
         envFrom:
         - configMapRef:
             name: pingdelegator-environment-variables
       securityContext:
         fsGroup: 9999
       volumes:
-        - name: ssh-dir
-          emptyDir: {}
-        - name: data-dir
-          emptyDir: {}
-        - name: pingdelegator-init
-          configMap:
-            name: pingcommon-init
-            defaultMode: 0555
-        - name: topology-descriptor
-          configMap:
-            name: topology-descriptor
-            optional: true
-            defaultMode: 0644
-        - name: ssh-id-key-secret
-          secret:
-            secretName: ssh-id-key-secret
-            optional: true
-            defaultMode: 0400
-        - name: known-hosts-config
-          configMap:
-            name: known-hosts-config
-            optional: true
-            defaultMode: 0644
+      - name: ssh-dir
+        emptyDir: {}
+      - name: data-dir
+        emptyDir: {}
+      - name: pingdelegator-init
+        configMap:
+          name: pingcommon-init
+          defaultMode: 0555
+      - name: topology-descriptor
+        configMap:
+          name: topology-descriptor
+          optional: true
+          defaultMode: 0644
+      - name: ssh-id-key-secret
+        secret:
+          secretName: ssh-id-key-secret
+          optional: true
+          defaultMode: 0400
+      - name: known-hosts-config
+        configMap:
+          name: known-hosts-config
+          optional: true
+          defaultMode: 0644

@@ -31,7 +31,6 @@ data:
     fi
 
     echo "${UPLOAD_FILES}"
-
 ---
 
 # A manual backup job to backup config/sync-state.ldif - it may be configured to be triggered in reaction

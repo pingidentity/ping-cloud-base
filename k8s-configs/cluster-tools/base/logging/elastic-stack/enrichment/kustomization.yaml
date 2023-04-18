@@ -1,8 +1,6 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
-
 namespace: elastic-stack-logging
-
 resources:
 - files
 - enrichment-resources.yaml
@@ -10,13 +8,12 @@ resources:
 
 generatorOptions:
   disableNameSuffixHash: true
-
 configMapGenerator:
 - name: logging-bootstrap-environment-variables
   literals:
-    - SERVICE_SSM_PATH_PREFIX=/pcpt/service
-    - REGION=${REGION}
+  - SERVICE_SSM_PATH_PREFIX=/pcpt/service
+  - REGION=${REGION}
 
 - name: logging-bootstrap-resources
   files:
-    - logging-bootstrap-resources.yaml
+  - logging-bootstrap-resources.yaml

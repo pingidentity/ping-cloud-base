@@ -32,7 +32,7 @@ spec:
             name: pingcommon-environment-variables
         env:
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
-          value: "true"
+          value: 'true'
         volumeMounts:
         - name: backup-script
           mountPath: /opt/in/backup.sh
@@ -51,7 +51,6 @@ spec:
       - name: pd-backup-volume
         persistentVolumeClaim:
           claimName: pingdirectory-backup
-
 ---
 # Persistent Volume to run backup process
 apiVersion: v1
@@ -62,7 +61,7 @@ metadata:
     class: pingdirectory-server
 spec:
   accessModes:
-    - ReadWriteOnce
+  - ReadWriteOnce
   storageClassName: pingdirectory-gp3
   resources:
     requests:

@@ -37,7 +37,6 @@ data:
     # Print the names of the uploaded files so callers know exactly what was uploaded
     echo "The following files were uploaded:"
     echo "${CSD_FILES}"
-
 ---
 
 # A manual job to upload CSD to s3 - this does the same thing as the recurring task on the server except it may be
@@ -78,7 +77,7 @@ spec:
             name: pingcommon-environment-variables
         env:
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
-          value: "true"
+          value: 'true'
       volumes:
       - name: upload-script
         configMap:

@@ -6,8 +6,8 @@ metadata:
   name: pingaccess-was
 spec:
   ports:
-    - port: 443
-      name: pingaccess-was-engine
-      targetPort: 3000
+  - port: 443
+    name: pingaccess-was-engine
+    targetPort: 3000
   selector:
     role: pingaccess-was-engine

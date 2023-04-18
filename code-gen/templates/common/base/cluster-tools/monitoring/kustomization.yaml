@@ -1,12 +1,11 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
-
 resources:
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/base/monitoring?ref=${K8S_GIT_BRANCH}
 - prometheus
 
 components:
-  - pgo
+- pgo
 
 patchesStrategicMerge:
 
@@ -161,7 +160,6 @@ patchesJson6902:
     - op: replace
       path: /spec/template/metadata/annotations/CLUSTER_NAME
       value: ${NEW_RELIC_ENVIRONMENT_NAME}
-
 - target:
     group: apps
     version: v1
@@ -172,7 +170,6 @@ patchesJson6902:
     - op: replace
       path: /spec/template/metadata/annotations/CLUSTER_NAME
       value: ${NEW_RELIC_ENVIRONMENT_NAME}
-
 - target:
     group: apps
     version: v1
@@ -183,7 +180,6 @@ patchesJson6902:
     - op: replace
       path: /spec/template/metadata/annotations/CLUSTER_NAME
       value: ${NEW_RELIC_ENVIRONMENT_NAME}
-
 - target:
     group: apps
     version: v1
@@ -194,7 +190,6 @@ patchesJson6902:
     - op: replace
       path: /spec/template/metadata/annotations/CLUSTER_NAME
       value: ${NEW_RELIC_ENVIRONMENT_NAME}
-
 - target:
     group: batch
     version: v1
@@ -205,7 +200,6 @@ patchesJson6902:
     - op: replace
       path: /spec/template/metadata/annotations/SECRET_NAMESPACE
       value: ${PING_CLOUD_NAMESPACE}
-
 - target:
     group: apps
     version: v1
@@ -216,7 +210,6 @@ patchesJson6902:
     - op: replace
       path: /spec/template/metadata/annotations/CLUSTER_NAME
       value: ${NEW_RELIC_ENVIRONMENT_NAME}
-
 - target:
     kind: Service
     name: prometheus

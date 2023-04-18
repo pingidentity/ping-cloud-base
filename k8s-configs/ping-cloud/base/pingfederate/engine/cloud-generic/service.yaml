@@ -19,8 +19,6 @@ spec:
     name: pf-radius-accounting
   selector:
     role: pingfederate-engine
-
-
 ---
 
 # Service that exposes the pingfederate engine radius ports

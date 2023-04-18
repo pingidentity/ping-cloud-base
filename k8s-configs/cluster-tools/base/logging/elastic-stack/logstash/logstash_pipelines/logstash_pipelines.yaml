@@ -5,7 +5,7 @@ metadata:
   labels:
     app: logstash-elastic
 data:
-  pipelines.yml: |
+  pipelines.yml: |-
     - pipeline.id: main
       path.config: "/usr/share/logstash/pipeline/main"
     - pipeline.id: customer

@@ -1,6 +1,5 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
-
 resources:
 # Apply PingAccess runtime engine deployment resources
 - ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingaccess/engine?ref=${K8S_GIT_BRANCH}
@@ -9,7 +8,6 @@ images:
 - name: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess${ECR_ENV}
   newName: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess${ECR_ENV}
   newTag: ${PINGACCESS_IMAGE_TAG}
-
 patchesJson6902:
 
 ### PingAccess Engine Last Update Config Map ###
@@ -24,10 +22,6 @@ patchesJson6902:
       value:
         configMapRef:
           name: pingaccess-last-update-config
-
-### Ingress patches ###
-
-# pingaccess runtime
 - target:
     group: networking.k8s.io
     version: v1
@@ -65,9 +59,6 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/1/host
       value: healthcheck-httpbin-pa.${DNS_ZONE}
-
-
-# pingaccess agent
 - target:
     group: networking.k8s.io
     version: v1
@@ -80,4 +71,3 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingaccess-agent.${DNS_ZONE}
-

@@ -9,5 +9,5 @@ reclaimPolicy: Delete
 volumeBindingMode: WaitForFirstConsumer
 parameters:
   csi.storage.k8s.io/fstype: ext4
-  encrypted: "true"
+  encrypted: 'true'
   type: gp3

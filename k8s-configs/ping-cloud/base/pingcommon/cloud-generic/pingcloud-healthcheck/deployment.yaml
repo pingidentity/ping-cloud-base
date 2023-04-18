@@ -32,11 +32,11 @@ spec:
             name: pingcloud-healthcheck-environment-variables
         resources:
           limits:
-            memory: "600Mi"
-            cpu: "400m"
+            memory: 600Mi
+            cpu: 400m
           requests:
-            memory: "400Mi"
-            cpu: "200m"
+            memory: 400Mi
+            cpu: 200m
         readinessProbe:
           httpGet:
             path: /
@@ -45,7 +45,7 @@ spec:
           periodSeconds: 10
           failureThreshold: 3
           successThreshold: 1
-          timeoutSeconds: 3          
+          timeoutSeconds: 3
         livenessProbe:
           httpGet:
             path: /

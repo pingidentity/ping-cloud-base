@@ -25,4 +25,3 @@ spec:
         configMap:
           name: discovery-service
           defaultMode: 0555
-

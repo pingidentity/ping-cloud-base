@@ -6,18 +6,10 @@ spec:
   acme:
     # The ACME server URL
     server: https://acme-v02.api.letsencrypt.org/directory
-
-    # Chain to use for Let's Encrypt production server
-    preferredChain: 'ISRG Root X1'
-
-    # Email address used for ACME registration
+    preferredChain: ISRG Root X1
     email: support@pingidentity.com
-
-    # Name of a secret used to store the ACME account private key
     privateKeySecretRef:
       name: letsencrypt-prod
-
-    # ACME DNS-01 provider configurations
     solvers:
     - dns01:
         route53:

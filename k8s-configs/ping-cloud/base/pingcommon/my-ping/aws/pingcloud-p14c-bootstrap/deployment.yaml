@@ -10,7 +10,7 @@ spec:
     metadata:
       name: p14c-bootstrap
       annotations:
-        lastUpdateReason: "NA"
+        lastUpdateReason: NA
     spec:
       serviceAccount: p14c-bootstrap-serviceaccount
       securityContext:
@@ -28,23 +28,23 @@ spec:
             fieldRef:
               fieldPath: metadata.namespace
         - name: DAEMONIZE
-          value: "true"
+          value: 'true'
         envFrom:
         - configMapRef:
             name: pingcloud-p14c-bootstrap-environment-variables
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "300m"
+            memory: 256Mi
+            cpu: 300m
           limits:
-            memory: "512Mi"
-            cpu: "500m"
+            memory: 512Mi
+            cpu: 500m
         volumeMounts:
-          - mountPath: /app/config/app_config.yaml
-            name: pingcloud-p14c-bootstrap-resources
-            readOnly: true
-            subPath: p14c-bootstrap-resources.yaml
+        - mountPath: /app/config/app_config.yaml
+          name: pingcloud-p14c-bootstrap-resources
+          readOnly: true
+          subPath: p14c-bootstrap-resources.yaml
       volumes:
-        - name: pingcloud-p14c-bootstrap-resources
-          configMap:
-            name: pingcloud-p14c-bootstrap-resources
+      - name: pingcloud-p14c-bootstrap-resources
+        configMap:
+          name: pingcloud-p14c-bootstrap-resources

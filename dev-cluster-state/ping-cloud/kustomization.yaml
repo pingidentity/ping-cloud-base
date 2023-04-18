@@ -1,6 +1,5 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
-
 resources:
 # NOTE: The kustomization.yaml under this directory refers to all of the "k8s-config/ping-cloud/test" directory env
 - ../../k8s-configs/ping-cloud
@@ -128,8 +127,6 @@ patchesJson6902:
     - op: replace
       path: /spec/replicas
       value: 2
-
-# pingcloud-metadata ingress
 - target:
     group: networking.k8s.io
     version: v1
@@ -142,8 +139,6 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: metadata${ENVIRONMENT}.${TENANT_DOMAIN}
-
-# pingcloud-healthcheck ingress
 - target:
     group: networking.k8s.io
     version: v1
@@ -156,8 +151,6 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: healthcheck${ENVIRONMENT}.${TENANT_DOMAIN}
-
-# pingdirectory HTTP
 - target:
     group: networking.k8s.io
     version: v1
@@ -170,8 +163,6 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingdirectory${ENVIRONMENT}.${TENANT_DOMAIN}
-
-# pingfederate runtime
 - target:
     group: networking.k8s.io
     version: v1
@@ -202,8 +193,6 @@ patchesJson6902:
                 name: pingfederate
                 port:
                   number: 9031
-
-# pingfederate admin api
 - target:
     group: networking.k8s.io
     version: v1
@@ -216,8 +205,6 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingfederate-admin-api${ENVIRONMENT}.${TENANT_DOMAIN}
-
-# pingaccess runtime
 - target:
     group: networking.k8s.io
     version: v1
@@ -256,7 +243,6 @@ patchesJson6902:
       path: /spec/rules/1/host
       value: healthcheck-httpbin-pa${ENVIRONMENT}.${TENANT_DOMAIN}
                   
-# pingaccess admin api
 - target:
     group: networking.k8s.io
     version: v1
@@ -269,8 +255,6 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingaccess-admin-api${ENVIRONMENT}.${TENANT_DOMAIN}
-
-# pingaccess agent
 - target:
     group: networking.k8s.io
     version: v1
@@ -283,8 +267,6 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingaccess-agent${ENVIRONMENT}.${TENANT_DOMAIN}
-
-# pingaccess was admin
 - target:
     group: networking.k8s.io
     version: v1
@@ -297,8 +279,6 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingaccess-was-admin${ENVIRONMENT}.${TENANT_DOMAIN}
-
-# pingaccess was runtime
 - target:
     group: networking.k8s.io
     version: v1
@@ -368,8 +348,6 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/7/host
       value: healthcheck-httpbin-pa-was${ENVIRONMENT}.${TENANT_DOMAIN}
-
-# Ping Delegated Admin
 - target:
     group: networking.k8s.io
     version: v1
@@ -382,8 +360,6 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingdelegator${ENVIRONMENT}.${TENANT_DOMAIN}
-
-# PingCentral
 - target:
     group: networking.k8s.io
     version: v1
@@ -396,8 +372,6 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/0/host
       value: pingcentral${ENVIRONMENT}.${TENANT_DOMAIN}
-
-# Set a hostname for all the headless services so their endpoint IPs are published to Route53
 - target:
     version: v1
     kind: Service
@@ -406,7 +380,6 @@ patchesJson6902:
     - op: replace
       path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
       value: pingdirectory-cluster${ENVIRONMENT}.${TENANT_DOMAIN}
-
 - target:
     version: v1
     kind: Service
@@ -415,7 +388,6 @@ patchesJson6902:
     - op: replace
       path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
       value: pingfederate-cluster${ENVIRONMENT}.${TENANT_DOMAIN}
-
 - target:
     version: v1
     kind: Service
@@ -424,7 +396,6 @@ patchesJson6902:
     - op: replace
       path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
       value: pingaccess-cluster${ENVIRONMENT}.${TENANT_DOMAIN}
-
 - target:
     version: v1
     kind: Service
@@ -433,8 +404,6 @@ patchesJson6902:
     - op: replace
       path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
       value: pingaccess-was-cluster${ENVIRONMENT}.${TENANT_DOMAIN}
-
-# pingdirectory put ldaps on public and change the hostname
 - target:
     version: v1
     kind: Service
@@ -445,8 +414,6 @@ patchesJson6902:
       value: pingdirectory-admin${ENVIRONMENT}.${TENANT_DOMAIN}
     - op: remove
       path: /metadata/annotations/service.beta.kubernetes.io~1aws-load-balancer-internal
-
-# Service that exposes the pingfederate engine radius ports
 - target:
     version: v1
     kind: Service
@@ -457,8 +424,6 @@ patchesJson6902:
       value: pingfederate-radius${ENVIRONMENT}.${TENANT_DOMAIN}
     - op: remove
       path: /metadata/annotations/service.beta.kubernetes.io~1aws-load-balancer-internal
-
-# pingdatasync put ldaps on public and change the hostname
 - target:
     version: v1
     kind: Service
@@ -469,7 +434,6 @@ patchesJson6902:
       value: pingdatasync-admin${ENVIRONMENT}.${TENANT_DOMAIN}
     - op: remove
       path: /metadata/annotations/service.beta.kubernetes.io~1aws-load-balancer-internal
-
 patchesStrategicMerge:
 - |-
   apiVersion: v1

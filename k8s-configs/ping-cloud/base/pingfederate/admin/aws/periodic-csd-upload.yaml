@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: pingfederate-admin-periodic-csd-upload
 spec:
-  schedule: "0 * * * *"
+  schedule: 0 * * * *
   successfulJobsHistoryLimit: 0
   failedJobsHistoryLimit: 1
   concurrencyPolicy: Forbid
@@ -28,11 +28,11 @@ spec:
             - /opt/in/backup-csd-data.sh
             env:
             - name: CSD_POD_ROLE
-              value: "pingfederate-admin"
+              value: pingfederate-admin
             - name: CSD_CONTAINER_NAME
-              value: "pingfederate-admin"
+              value: pingfederate-admin
             - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
-              value: "true"
+              value: 'true'
             envFrom:
             - configMapRef:
                 name: pingfederate-admin-environment-variables

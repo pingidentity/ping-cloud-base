@@ -56,5 +56,5 @@ data:
       labels:
         environment: pingfederate
         source: heartbeat
-
----
+--- null
+...

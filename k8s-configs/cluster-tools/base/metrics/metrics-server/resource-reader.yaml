@@ -1,4 +1,3 @@
----
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -7,13 +6,13 @@ metadata:
   name: system:metrics-server
 rules:
 - apiGroups:
-  - ""
+  - ''
   resources:
   - nodes/metrics
   verbs:
   - get
 - apiGroups:
-  - ""
+  - ''
   resources:
   - pods
   - nodes

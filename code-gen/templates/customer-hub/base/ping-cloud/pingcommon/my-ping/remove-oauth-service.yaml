@@ -3,5 +3,5 @@ kind: Deployment
 metadata:
   name: p14c-oauth-service
 $patch: delete
-
----
+--- null
+...

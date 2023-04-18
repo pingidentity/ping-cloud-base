@@ -5,21 +5,21 @@ kind: Ingress
 metadata:
   name: pingaccess-admin-ext-ingress
   annotations:
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
 spec:
   ingressClassName: nginx-public
   tls:
-    - hosts:
-        - ext-pingaccess-admin-api.ping-demo.com
+  - hosts:
+    - ext-pingaccess-admin-api.ping-demo.com
   rules:
-    - host: ext-pingaccess-admin-api.ping-demo.com
-      http:
-        paths:
-          - path: /pa-admin-api/
-            pathType: Prefix
-            backend:
-              service:
-                name: pingaccess-admin
-                port:
-                  number: 9000
+  - host: ext-pingaccess-admin-api.ping-demo.com
+    http:
+      paths:
+      - path: /pa-admin-api/
+        pathType: Prefix
+        backend:
+          service:
+            name: pingaccess-admin
+            port:
+              number: 9000

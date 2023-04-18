@@ -1,5 +1,3 @@
-## This is a Prometheus alerting rules for the logging
----
 
 groups:
 - name: elastic-stack-logging
@@ -11,8 +9,8 @@ groups:
       severity: critical
     annotations:
       summary: FluentBit dropping records for output {{ $labels.name }}
-      description: "A FluentBit outputs dropping records. Possible {{ $labels.name }} output is down.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-
+      description: "A FluentBit outputs dropping records. Possible {{ $labels.name\
+        \ }} output is down.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
   - alert: FluentBit retries is growing
     expr: sum(increase(fluentbit_output_retries_total[1m])) by (name) > 50
     for: 10m
@@ -20,35 +18,44 @@ groups:
       severity: critical
     annotations:
       summary: FluentBit has many retries in the output {{ $labels.name }}
-      description: "A FluentBit has many retries in the output. Possible {{ $labels.name }} output is down.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-
+      description: "A FluentBit has many retries in the output. Possible {{ $labels.name\
+        \ }} output is down.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
   - alert: Logstash pipeline is growing
-    expr: sum(increase(logstash_node_queue_events[1m])) by (instance, pipeline) > 100000
+    expr: sum(increase(logstash_node_queue_events[1m])) by (instance, pipeline) >
+      100000
     for: 10m
     labels:
       severity: critical
     annotations:
-      summary: Logstash pipeline {{ $labels.pipeline }} is growing on {{ $labels.instance }}.
-      description: "A Logstash pipeline is growing. Possible {{ $labels.pipeline }} is overloaded or logs spike.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-
+      summary: Logstash pipeline {{ $labels.pipeline }} is growing on {{ $labels.instance
+        }}.
+      description: "A Logstash pipeline is growing. Possible {{ $labels.pipeline }}\
+        \ is overloaded or logs spike.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels\
+        \ }}"
   - alert: Logstash has no outgoing events
-    expr: sum(increase(logstash_node_pipeline_events_out_total{pipeline!="alerts"}[1m])) by (pipeline) == 0
+    expr: sum(increase(logstash_node_pipeline_events_out_total{pipeline!="alerts"}[1m]))
+      by (pipeline) == 0
     for: 10m
     labels:
       severity: critical
     annotations:
-      summary: Logstash pipeline {{ $labels.pipeline }} didn't produce any outgoing events.
-      description: "An outgoing Logstash pipeline {{ $labels.pipeline }} is dead. Possible no outgoing events.\nCheck logs destination availability.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-
+      summary: Logstash pipeline {{ $labels.pipeline }} didn't produce any outgoing
+        events.
+      description: "An outgoing Logstash pipeline {{ $labels.pipeline }} is dead.\
+        \ Possible no outgoing events.\nCheck logs destination availability.\n  VALUE\
+        \ = {{ $value }}\n  LABELS = {{ $labels }}"
   - alert: Logstash has no incoming events
-    expr: sum(increase(logstash_node_pipeline_events_in_total{pipeline!="alerts"}[1m])) by (pipeline) == 0
+    expr: sum(increase(logstash_node_pipeline_events_in_total{pipeline!="alerts"}[1m]))
+      by (pipeline) == 0
     for: 10m
     labels:
       severity: critical
     annotations:
-      summary: Logstash pipeline {{ $labels.pipeline }} didn't recieve any incoming events.
-      description: "An incoming Logstash pipeline {{ $labels.pipeline }} is dead. Possible some inputs stuck.\nCheck fluent-bit logs.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
-
+      summary: Logstash pipeline {{ $labels.pipeline }} didn't recieve any incoming
+        events.
+      description: "An incoming Logstash pipeline {{ $labels.pipeline }} is dead.\
+        \ Possible some inputs stuck.\nCheck fluent-bit logs.\n  VALUE = {{ $value\
+        \ }}\n  LABELS = {{ $labels }}"
   - alert: Logstash pods count 0
     expr: sum(logstash_node_up) == 0 or absent(logstash_node_up) == 1
     for: 10m
@@ -56,4 +63,5 @@ groups:
       severity: critical
     annotations:
       summary: Running logstash pods is count 0
-      description: "Running logstash pods is 0. Looks like they're died or didn't return any metrics.\nCheck logstash pods"
+      description: "Running logstash pods is 0. Looks like they're died or didn't\
+        \ return any metrics.\nCheck logstash pods"

@@ -5,4 +5,3 @@ metadata:
 spec:
   minReplicas: 6
   maxReplicas: 16
-

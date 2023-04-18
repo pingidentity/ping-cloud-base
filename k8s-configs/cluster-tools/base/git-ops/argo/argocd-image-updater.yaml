@@ -24,7 +24,7 @@ metadata:
   name: argocd-image-updater
 rules:
 - apiGroups:
-  - ""
+  - ''
   resources:
   - secrets
   - configmaps
@@ -42,7 +42,7 @@ rules:
   - update
   - patch
 - apiGroups:
-  - ""
+  - ''
   resources:
   - events
   verbs:
@@ -88,7 +88,7 @@ metadata:
     app.kubernetes.io/part-of: argocd-image-updater
   name: argocd-image-updater-secret
   annotations:
-    sealedsecrets.bitnami.com/managed: "true"
+    sealedsecrets.bitnami.com/managed: 'true'
 ---
 apiVersion: v1
 kind: Secret
@@ -98,7 +98,7 @@ metadata:
     app.kubernetes.io/part-of: argocd-image-updater
   name: argocd-image-updater-ssh-key
   annotations:
-    sealedsecrets.bitnami.com/managed: "true"
+    sealedsecrets.bitnami.com/managed: 'true'
 ---
 apiVersion: apps/v1
 kind: Deployment

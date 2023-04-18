@@ -4,6 +4,5 @@ metadata:
   name: httpbin
 spec:
   ports:
-    - port: 80
-      name: httpbin
-
+  - port: 80
+    name: httpbin

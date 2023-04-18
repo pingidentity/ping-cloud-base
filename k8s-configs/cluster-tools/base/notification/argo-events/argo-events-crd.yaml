@@ -117,4 +117,5 @@ spec:
     storage: true
     subresources:
       status: {}
----
+--- null
+...

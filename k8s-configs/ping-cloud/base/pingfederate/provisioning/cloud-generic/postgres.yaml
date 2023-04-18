@@ -11,64 +11,59 @@ spec:
     labels:
       role: pf-provisioning
   instances:
-    - name: instance1
-      replicas: 3
-      minAvailable: 1
+  - name: instance1
+    replicas: 3
+    minAvailable: 1
+    resources:
+      requests:
+        cpu: 2
+        memory: 2Gi
+    dataVolumeClaimSpec:
+      storageClassName: pgo-gp3
+      accessModes:
+      - ReadWriteOnce
       resources:
         requests:
-          cpu: 2
-          memory: 2Gi
-      dataVolumeClaimSpec:
-        storageClassName: pgo-gp3
-        accessModes:
-        - "ReadWriteOnce"
-        resources:
-          requests:
-            storage: 20Gi
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 1
-              podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                    - key: role
-                      operator: In
-                      values:
-                        - pf-provisioning
-                topologyKey: "topology.kubernetes.io/zone"
+          storage: 20Gi
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - pf-provisioning
+            topologyKey: topology.kubernetes.io/zone
   users:
     # Service account used by PingFederate
-    - name: pf-service
-      databases:
-        - pf-provisioning
+  - name: pf-service
+    databases:
+    - pf-provisioning
     # Account used by Ping Beluga Ops team
-    - name: ping-beluga-ops
-      databases:
-        - pf-provisioning
-      options: "SUPERUSER"
+  - name: ping-beluga-ops
+    databases:
+    - pf-provisioning
+    options: SUPERUSER
   backups:
     pgbackrest:
       image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbackrest:ubi8-2.40-0
       global:
         repo1-path: /pingfederate/provisioning
-        # Allow storage solution to handle retention (retain max from PGO perspective)
-        repo1-retention-full: "256"
-      # Manual backup option allows easy one-off backups via annotation
-      # See: https://access.crunchydata.com/documentation/postgres-operator/v5/tutorial/backup-management/
+        repo1-retention-full: '256'
       manual:
         repoName: repo1
         options:
-         - --type=full
+        - --type=full
       repos:
       - name: repo1
-        # S3 configuration & schedule set via patches
-      # Manual restore option. Needs custom-patch to execute.
       restore:
         enabled: true
         repoName: repo1
         options:
-          - --type=default
+        - --type=default
   monitoring:
     pgmonitor:
       exporter:

@@ -25,17 +25,19 @@ spec:
           runAsUser: 9031
           allowPrivilegeEscalation: false
         command:
-          - /bin/bash
-          - -c
+        - /bin/bash
+        - -c
           # Eval schedule env var to strip any extra quotes from value
-          - eval PINGACCESS_HEALTHCHECK_SCHEDULE="${PINGACCESS_HEALTHCHECK_SCHEDULE}" && ./robot_wrapper.py --path tests/pingaccess --include pingAccess --output pingAccess.xml --cron "${PINGACCESS_HEALTHCHECK_SCHEDULE}"
+        - eval PINGACCESS_HEALTHCHECK_SCHEDULE="${PINGACCESS_HEALTHCHECK_SCHEDULE}"
+          && ./robot_wrapper.py --path tests/pingaccess --include pingAccess --output
+          pingAccess.xml --cron "${PINGACCESS_HEALTHCHECK_SCHEDULE}"
         envFrom:
         - configMapRef:
             name: cluster-health-environment-variables
         resources:
           limits:
-            memory: "600Mi"
-            cpu: "400m"
+            memory: 600Mi
+            cpu: 400m
           requests:
-            memory: "400Mi"
-            cpu: "200m"
+            memory: 400Mi
+            cpu: 200m

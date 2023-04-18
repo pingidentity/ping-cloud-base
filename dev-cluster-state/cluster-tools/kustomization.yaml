@@ -1,6 +1,5 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
-
 resources:
 - ../../k8s-configs/cluster-tools
 - pgo
@@ -9,13 +8,10 @@ resources:
 - priorityclass.yaml
 
 components:
-  - monitoring/pgo
+- monitoring/pgo
 
 generatorOptions:
   disableNameSuffixHash: true
-
-# In the "kustomize" overlay for CI/CD environments, manually create the "newrelic-license-key" secret in the "newrelic" namespace instead of using the "newrelic-license-secret-exporter" job to automate it. Otherwise, concurrent branch pipelines can fail because the "newrelic" namespace is shared across all "ping-cloud" branch pipelines and the updating immutable fields in the exporter job can fail.
-
 secretGenerator:
 - name: newrelic-license-key
   namespace: newrelic
@@ -26,13 +22,13 @@ configMapGenerator:
 - name: logging-bootstrap-environment-variables
   behavior: merge
   literals:
-    - SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX}
-    - REGION=${REGION}
+  - SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX}
+  - REGION=${REGION}
 
 - name: elk-environment-variables
   behavior: merge
   literals:
-    - CLUSTER_NAME=${CLUSTER_NAME}
+  - CLUSTER_NAME=${CLUSTER_NAME}
 
 # Pingcloud-healthcheck
 - name: cluster-health-environment-variables
@@ -43,9 +39,9 @@ configMapGenerator:
 - name: prometheus-environment-variables
   behavior: merge
   envs:
-    - ../ping-cloud/env_vars
+  - ../ping-cloud/env_vars
   literals:
-    - PROMETHEUS_PING_NAMESPACE=${PING_CLOUD_NAMESPACE}
+  - PROMETHEUS_PING_NAMESPACE=${PING_CLOUD_NAMESPACE}
 
 patchesStrategicMerge:
 
@@ -259,8 +255,6 @@ patchesJson6902:
     - op: replace
       path: /spec/template/spec/containers/1/env/1/value
       value: ${BELUGA_ENV_NAME}
-
-# Change the default TLS secret for the ingress controllers
 - target:
     group: apps
     version: v1
@@ -272,7 +266,6 @@ patchesJson6902:
       path: /spec/template/spec/containers/0/args/-
       value:
         --default-ssl-certificate=${PING_CLOUD_NAMESPACE}/acme-tls-cert
-
 - target:
     group: apps
     version: v1
@@ -284,8 +277,6 @@ patchesJson6902:
       path: /spec/template/spec/containers/0/args/-
       value:
         --default-ssl-certificate=${PING_CLOUD_NAMESPACE}/acme-tls-cert
-
-# Update nginx memory request & limit to support dev-env and CI/CD workloads
 - target:
     group: apps
     version: v1
@@ -299,8 +290,6 @@ patchesJson6902:
     - op: replace
       path: /spec/template/spec/containers/0/resources/requests/memory
       value: 2.5Gi
-
-  # Update nginx replica count to support dev-env and CI/CD workloads.
 - target:
     group: autoscaling
     version: v1
@@ -314,8 +303,6 @@ patchesJson6902:
     - op: replace
       path: /spec/maxReplicas
       value: 3
-
-# Cluster auto-scaler
 - target:
     group: apps
     version: v1
@@ -332,8 +319,6 @@ patchesJson6902:
       value:
         - name: AWS_REGION
           value: ${REGION}
-
-# Change the namespace of the ACME certificate to the ping-cloud namespace
 - target:
     group: cert-manager.io
     version: v1
@@ -344,9 +329,6 @@ patchesJson6902:
     - op: replace
       path: /metadata/namespace
       value: ${PING_CLOUD_NAMESPACE}
-
-# Configure external-dns to only own the hosted zone for the tenant domain
-# Also, change its update policy to "sync" so records are cleaned up in dev hosted zones
 - target:
     group: apps
     version: v1
@@ -365,9 +347,6 @@ patchesJson6902:
         - --registry=txt
         - --publish-internal-services
         - --domain-filter=${TENANT_DOMAIN}.
-
-# Make the admin nodes available externally for test purposes. In general, they
-# will be behind a VPN gateway on all CDEs so only admins have access to them.
 - target:
     version: v1
     kind: Service
@@ -376,8 +355,6 @@ patchesJson6902:
   patch: |-
     - op: remove
       path: /metadata/annotations/service.beta.kubernetes.io~1aws-load-balancer-internal
-
-# Newrelic resources
 - target:
     group: apps
     version: v1
@@ -388,7 +365,6 @@ patchesJson6902:
     - op: replace
       path: /spec/template/metadata/annotations/CLUSTER_NAME
       value: ${NEW_RELIC_ENVIRONMENT_NAME}
-
 - target:
     group: apps
     version: v1
@@ -399,7 +375,6 @@ patchesJson6902:
     - op: replace
       path: /spec/template/metadata/annotations/CLUSTER_NAME
       value: ${NEW_RELIC_ENVIRONMENT_NAME}
-
 - target:
     group: apps
     version: v1
@@ -410,7 +385,6 @@ patchesJson6902:
     - op: replace
       path: /spec/template/metadata/annotations/CLUSTER_NAME
       value: ${NEW_RELIC_ENVIRONMENT_NAME}
-
 - target:
     group: apps
     version: v1
@@ -421,7 +395,6 @@ patchesJson6902:
     - op: replace
       path: /spec/template/metadata/annotations/CLUSTER_NAME
       value: ${NEW_RELIC_ENVIRONMENT_NAME}
-
 - target:
     group: apps
     version: v1
@@ -432,9 +405,6 @@ patchesJson6902:
     - op: replace
       path: /spec/template/metadata/annotations/CLUSTER_NAME
       value: ${NEW_RELIC_ENVIRONMENT_NAME}
-
-# Add a priorityclass for monitoring daemons to try to make sure it pre-empts existing pods on a very
-# busy node to try to improve node use efficiency/scaling without breaking things
 - target:
     group: apps
     version: v1
@@ -445,7 +415,6 @@ patchesJson6902:
     - op: add
       path: /spec/template/spec/priorityClassName
       value: cluster-tool-daemonset-priority
-
 - target:
     group: apps
     version: v1
@@ -456,7 +425,6 @@ patchesJson6902:
     - op: add
       path: /spec/template/spec/priorityClassName
       value: cluster-tool-daemonset-priority
-
 - target:
     group: apps
     version: v1
@@ -467,7 +435,6 @@ patchesJson6902:
     - op: add
       path: /spec/template/spec/priorityClassName
       value: cluster-tool-daemonset-priority
-
 - target:
     group: apps
     version: v1

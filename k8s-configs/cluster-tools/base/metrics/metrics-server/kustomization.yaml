@@ -1,6 +1,5 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
-
 resources:
 
 # These yamls were obtained from: https://api.github.com/repos/kubernetes-sigs/metrics-server/releases/latest

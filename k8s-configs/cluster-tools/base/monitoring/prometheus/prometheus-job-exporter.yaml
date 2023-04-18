@@ -33,7 +33,6 @@ data:
         pod_name: pingdirectory-0
         container_name: pingdirectory
         namespace: '${PROMETHEUS_PING_NAMESPACE}'
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -52,37 +51,36 @@ spec:
     spec:
       serviceAccountName: prometheus-job-exporter
       containers:
-        - name: prometheus-job-exporter
-          securityContext:
-            runAsGroup: 9999
-            runAsNonRoot: true
-            runAsUser: 9031
-            allowPrivilegeEscalation: false
-          envFrom:
-            - configMapRef:
-                name: prometheus-environment-variables
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-job-exporter/dev:v1.19-release-branch-latest
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 8000
-              protocol: TCP
-          volumeMounts:
-            - mountPath: /app/config.yaml
-              name: prometheus-job-exporter-config
-              subPath: config.yaml
-              readOnly: false
-          resources:
-            limits:
-              cpu: 100m
-              memory: 300Mi
-            requests:
-              cpu: 100m
-              memory: 100Mi
+      - name: prometheus-job-exporter
+        securityContext:
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+          allowPrivilegeEscalation: false
+        envFrom:
+        - configMapRef:
+            name: prometheus-environment-variables
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-job-exporter/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /app/config.yaml
+          name: prometheus-job-exporter-config
+          subPath: config.yaml
+          readOnly: false
+        resources:
+          limits:
+            cpu: 100m
+            memory: 300Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
       volumes:
-        - name: prometheus-job-exporter-config
-          configMap:
-            name: prometheus-job-exporter-config
-
+      - name: prometheus-job-exporter-config
+        configMap:
+          name: prometheus-job-exporter-config
 ---
 kind: Service
 apiVersion: v1
@@ -103,18 +101,18 @@ kind: ClusterRole
 metadata:
   name: prometheus-job-exporter
 rules:
-- apiGroups: [""]
+- apiGroups: ['']
   resources:
   - pods
   - namespaces
-  verbs: ["get", "list", "watch"]
-- apiGroups: [""]
+  verbs: [get, list, watch]
+- apiGroups: ['']
   resources:
   - configmaps
-  verbs: ["get"]
-- apiGroups: [ "" ]
-  resources: [ "pods/exec", "pods/log"]
-  verbs: [ "get", "create" ]
+  verbs: [get]
+- apiGroups: ['']
+  resources: [pods/exec, pods/log]
+  verbs: [get, create]
 
 ---
 
@@ -123,7 +121,6 @@ kind: ServiceAccount
 metadata:
   name: prometheus-job-exporter
   namespace: prometheus
-
 ---
 
 apiVersion: rbac.authorization.k8s.io/v1

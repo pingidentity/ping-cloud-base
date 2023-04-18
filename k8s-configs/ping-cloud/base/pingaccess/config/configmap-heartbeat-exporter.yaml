@@ -31,5 +31,5 @@ data:
       labels:
         environment: pingaccess
         source: heartbeat
-
----
+--- null
+...

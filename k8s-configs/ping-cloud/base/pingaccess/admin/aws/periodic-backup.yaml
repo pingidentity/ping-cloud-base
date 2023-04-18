@@ -30,11 +30,10 @@ data:
     else
       echo "Upload script not found on server ${SERVER}"
     fi
-    
+
     # Print the names of the uploaded files so callers know exactly what was uploaded
     echo "The following files were uploaded:"
     echo "${UPLOAD_FILES}"
-
 ---
 
 apiVersion: batch/v1
@@ -42,7 +41,7 @@ kind: CronJob
 metadata:
   name: pingaccess-periodic-backup
 spec:
-  schedule: "30 * * * *"
+  schedule: 30 * * * *
   successfulJobsHistoryLimit: 0
   failedJobsHistoryLimit: 1
   concurrencyPolicy: Forbid
@@ -61,8 +60,8 @@ spec:
                   - key: statefulset.kubernetes.io/pod-name
                     operator: In
                     values:
-                    - "pingaccess-admin-0"
-                topologyKey: "kubernetes.io/hostname"
+                    - pingaccess-admin-0
+                topologyKey: kubernetes.io/hostname
           restartPolicy: OnFailure
           containers:
           - name: pingaccess-backup
@@ -82,7 +81,7 @@ spec:
                 name: pingcommon-environment-variables
             env:
             - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
-              value: "true"
+              value: 'true'
             volumeMounts:
             - name: pingaccess-backup
               mountPath: /opt/in/backup-archive-data.sh

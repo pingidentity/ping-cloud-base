@@ -5,5 +5,4 @@
 # in an unexpected namespace (e.g. default) and not work as expected.
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
-
 resources:

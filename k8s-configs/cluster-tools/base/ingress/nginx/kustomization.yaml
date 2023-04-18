@@ -1,6 +1,5 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
-
 resources:
 # Add a private and public controller and load balancer. The private controller
 # will manage the LB for admin services (to be accessed by administrators),
