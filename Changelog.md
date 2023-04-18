@@ -50,6 +50,7 @@
 - Fix the ArgoCD App name
 - Add ArgoCD IRSA role
 - Modify Prometheus query for all backup alerting to only include the primary pod
+- Update PD backups and restore scripts to run on external persistant volumes
 - Improve fluent-bit multiline log parsing
 - Updated StorageClass provisoner to CSI and type to gp3
 - Add logstash and fluent-bit metrics to prometheus
@@ -122,6 +123,7 @@ _Changes:_
 - [X] PDO-5080 Test that file has been copied is not working in init container
 - [X] PDO-5104 Update Prometheus CPU/MEM limits
 - [X] PDO-5107 Fluent-bit pods stuck in pending state
+- [X] PDO-5123 Update PD backups and restore scripts to run on external persistant volumes
 - [X] PDO-5124 Enable bootstrapping a new customer with ArgoCD
 - [X] PDO-5131 Pods (typically cloudwatch) Stuck in pending state
 - [X] PDO-5141 Fix the ArgoCD App name
