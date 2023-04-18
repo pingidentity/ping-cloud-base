@@ -19,10 +19,15 @@ rules:
       - nodes
       - pods
       - secrets
+      - jobs
+      - persistentvolumeclaims
+      - persistentvolumes
     verbs:
       - list
       - watch
       - update
+      - create
+      - delete
   - apiGroups:
       - ""
     resources:

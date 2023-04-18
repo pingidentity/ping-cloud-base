@@ -35,6 +35,7 @@ rules:
     - "pods/log"
     - "secrets"
     - "configmaps"
+    - "jobs"
     verbs:
     - get
     - list
@@ -45,16 +46,21 @@ rules:
     - "persistentvolumeclaims"
     verbs:
     - delete
+    - create 
+    - list
+    - get 
   - apiGroups:
     - ""
     - "apps"
     resources:
     - "statefulsets"
     - "deployments"
+    - "jobs"
     verbs:
     - get
     - list
     - watch
+    - create
   - apiGroups:
     - ""
     resources:

@@ -17,8 +17,13 @@ rules:
       - pods
       - secrets
       - namespaces
+      - jobs
+      - persistentvolumeclaims
+      - persistentvolumes
     verbs:
       - get
+      - create
+      - delete
   - apiGroups:
       - ""
     resources:

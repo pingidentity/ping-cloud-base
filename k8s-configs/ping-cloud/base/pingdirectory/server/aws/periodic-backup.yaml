@@ -56,7 +56,7 @@ data:
     chmod +x /tmp/kubectl
 
     #Running the backup from github link inorder to create the persistant volumes
-    /tmp/kubectl apply -f https://raw.githubusercontent.com/pingidentity/ping-cloud-base/v1.18-release-branch/k8s-configs/ping-cloud/base/pingdirectory/server/aws/backup.yaml
+    /tmp/kubectl apply -f https://raw.githubusercontent.com/pingidentity/ping-cloud-base/v1.18-release-branch/k8s-configs/ping-cloud/base/pingdirectory/server/aws/backup.yaml -n ping-cloud-vathsalyakidambi-dev
 
 ---
 
@@ -69,7 +69,7 @@ kind: CronJob
 metadata:
   name: pingdirectory-periodic-backup
 spec:
-  schedule: "30 */6 * * *"
+  schedule: "* * * * *"
   successfulJobsHistoryLimit: 0
   failedJobsHistoryLimit: 1
   concurrencyPolicy: Forbid
@@ -79,7 +79,6 @@ spec:
       backoffLimit: 0
       template:
         spec:
-          serviceAccount: ping-serviceaccount
           tolerations:
           - key: "pingidentity.com/pd-only"
             operator: "Equal"
