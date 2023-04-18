@@ -10,5 +10,3 @@ apiVersion: v1
 metadata:
   name: pingdatasync-admin
 $patch: delete
---- null
-...

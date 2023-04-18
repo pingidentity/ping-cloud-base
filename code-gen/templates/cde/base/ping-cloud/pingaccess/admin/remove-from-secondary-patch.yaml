@@ -24,5 +24,3 @@ kind: CronJob
 metadata:
   name: pingaccess-periodic-backup
 $patch: delete
---- null
-...

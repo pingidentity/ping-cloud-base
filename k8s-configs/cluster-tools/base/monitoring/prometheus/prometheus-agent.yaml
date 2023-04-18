@@ -42,5 +42,3 @@ spec:
       - name: prometheus-config-volume
         configMap:
           name: prometheus-agent-config
---- null
-...

@@ -24,5 +24,3 @@ kind: CronJob
 metadata:
   name: pingfederate-periodic-backup
 $patch: delete
---- null
-...

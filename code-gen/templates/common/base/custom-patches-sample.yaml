@@ -512,5 +512,3 @@ metadata:
   name: pf-provisioning
   annotations:
     postgres-operator.crunchydata.com/pgbackrest-restore: id1
---- null
-...

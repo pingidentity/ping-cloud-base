@@ -36,5 +36,3 @@ spec:
       initContainers:
       - name: pingfederate-p14c-init
         $patch: delete
---- null
-...
