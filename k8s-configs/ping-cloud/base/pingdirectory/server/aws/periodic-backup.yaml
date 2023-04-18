@@ -41,7 +41,7 @@ data:
     chmod +x /tmp/kubectl
 
     #Running the backup from github link inorder to create the persistant volumes
-    /tmp/kubectl apply -f https://raw.githubusercontent.com/pingidentity/ping-cloud-base/v1.18-release-branch/k8s-configs/ping-cloud/base/pingdirectory/server/aws/backup.yaml
+    /tmp/kubectl apply -f https://raw.githubusercontent.com/pingidentity/ping-cloud-base/"${SERVER_PROFILE_BRANCH}"/k8s-configs/ping-cloud/base/pingdirectory/server/aws/backup.yaml -n "${PING_CLOUD_NAMESPACE}"
 
 ---
 
