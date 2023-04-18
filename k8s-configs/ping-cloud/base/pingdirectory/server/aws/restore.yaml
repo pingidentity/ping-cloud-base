@@ -6,8 +6,6 @@ data:
   restore.sh: |
     #!/bin/sh
 
-    set -e
-
     export HOOKS_DIR="/opt/in/hooks"
 
     # Install kubectl
@@ -18,7 +16,7 @@ data:
 
     RESTORE_FILES=
     
-    SCRIPT="/opt/in/hooks/90-restore-backup-s3.sh"
+    SCRIPT="${HOOKS_DIR}"/90-restore-backup-s3.sh
     test -z "${BACKUP_RESTORE_POD}" && SERVER="${K8S_STATEFUL_SET_NAME}-0" || SERVER="${BACKUP_RESTORE_POD}"
 
     NUM_REPLICAS=$(/tmp/kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
