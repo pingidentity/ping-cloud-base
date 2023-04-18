@@ -141,8 +141,8 @@ spec:
           volumeMounts:
             - name: os-dashboards-pd
               mountPath: /scripts/dashboards/pd
-          #   - name: os-dashboards-pd
-          #     mountPath: /scripts/dashboards/pd
+            - name: os-dashboards-pa
+              mountPath: /scripts/dashboards/pa
           #   - name: os-dashboards-pf
           #     mountPath: /scripts/dashboards/pf
             - name: enrichment-opensearch-index-templates
@@ -170,9 +170,9 @@ spec:
         - name: os-dashboards-pd
           configMap:
             name: os-dashboards-pd
-        # - name: os-dashboards-pd
-        #   configMap:
-        #     name: os-dashboards-pd
+        - name: os-dashboards-pa
+          configMap:
+            name: os-dashboards-pa
         # - name: os-dashboards-pf
         #   configMap:
         #     name: os-dashboards-pf
