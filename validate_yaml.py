@@ -44,9 +44,10 @@ def validate_yaml_file_data():
                         except Exception as e:
                             print(f"No Kind key {file_path}", e)
                     except Exception as e:
-                        print(f"invalid yaml {file_path}", e)
+                        print(f"invalid yaml {file_path}", e)         
             except Exception as e:
                 print("yaml file not valid", e)
+    print("successfully validated all yaml files")
 
 
 # call method for output
