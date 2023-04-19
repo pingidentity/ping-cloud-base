@@ -9,7 +9,7 @@ kind: CustomResourceDefinition
 metadata:
   name: certificaterequests.cert-manager.io
   labels:
-    app: cert-manager
+   app: cert-manager
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/version: v1.9.1
 spec:
