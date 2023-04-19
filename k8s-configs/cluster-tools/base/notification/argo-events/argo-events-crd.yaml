@@ -104,7 +104,7 @@ spec:
           metadata:
             type: object
           spec:
-            type: object
+           type: object
             x-kubernetes-preserve-unknown-fields: true
           status:
            type: object
