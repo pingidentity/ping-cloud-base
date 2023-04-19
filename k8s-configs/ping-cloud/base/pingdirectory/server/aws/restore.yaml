@@ -85,7 +85,15 @@ data:
     echo "Running restore script within pingdirectory pod"
     #test -x ${SCRIPT} && ${SCRIPT} 
     aws s3 cp s3://vathsalyakidambi-dev-backupbucket/pingdirectory/latest.zip /opt/restore/latest.zip
-    /opt/out/instance/bin/restore --task --bindDN cn=administrator --bindPasswordFile "${ROOT_USER_PASSWORD_FILE}" --backupDirectory /opt/restore/userRoot --ignoreCompatibilityWarnings  
+    cd /opt/restore
+    unzip -o /opt/restore/latest.zip 
+    ls -al /opt/restore/userRoot
+    dsconfig set-backend-prop --backend-name userRoot --set enabled:false --no-prompt --hostname "${SERVER}.${K8S_STATEFUL_SET_SERVICE_NAME}" -p ${LDAPS_PORT}
+
+    /opt/out/instance/bin/restore --backupDirectory /opt/restore/userRoot --ignoreCompatibilityWarnings  
+    echo "test vathsalya"
+    cat /opt/out/instance/logs/tools/restore.log
+    dsconfig set-backend-prop --backend-name userRoot --set enabled:true --no-prompt --hostname "${SERVER}.${K8S_STATEFUL_SET_SERVICE_NAME}" -p ${LDAPS_PORT}
     echo "Deleting PingDirectory restore pvc"
     /tmp/kubectl delete pvc pingdirectory-restore
 ---

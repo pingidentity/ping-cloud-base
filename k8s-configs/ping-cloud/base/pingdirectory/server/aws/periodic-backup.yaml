@@ -19,15 +19,14 @@ data:
 
     echo "Running backup script within pingdirectory pod"
     set -o pipefail
-    (/opt/out/instance/bin/dsconfig get-backend-prop --no-prompt --hostname "${BACKUP_RESTORE_POD}.${K8S_STATEFUL_SET_SERVICE_NAME}" -p 1636 --backend-name userRoot_2)|tee
-    exit 1;
-  
+    (/opt/out/instance/bin/dsconfig get-backend-prop --no-prompt --hostname "${BACKUP_RESTORE_POD}.${K8S_STATEFUL_SET_SERVICE_NAME}" -p 1636 --backend-name userRoot)|tee
+      
     is_backend_found=${?}
     set +o pipefail 
 
     if test ${is_backend_found} -eq 0; then
     echo "backend exists echo statement"
-    #test -x ${SCRIPT} && ${SCRIPT} 
+    test -x ${SCRIPT} && ${SCRIPT} 
     else
     echo "backend does not exists echo statement"
     fi  
@@ -87,7 +86,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: pingdirectory-backup
-            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.18-release-branch-latest
+            image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:pdo-5123-1
             imagePullPolicy: Always
             securityContext:
               runAsGroup: 9999
