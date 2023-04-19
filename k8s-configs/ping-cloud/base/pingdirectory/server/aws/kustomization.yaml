@@ -11,5 +11,10 @@ resources:
 - ../cloud-generic
 - periodic-backup.yaml
 
+configMapGenerator:
+- name: periodic-backup-ops-script
+  files:
+  - backup-ops/backup-ops.sh
+
 patchesStrategicMerge:
 - discovery-service.yaml

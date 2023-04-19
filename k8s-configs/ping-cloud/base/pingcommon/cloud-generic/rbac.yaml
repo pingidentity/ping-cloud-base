@@ -31,10 +31,19 @@ rules:
   - apiGroups:
     - ""
     resources:
+    - "configmaps"
+    verbs:
+    - delete
+    - create
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - ""
+    resources:
     - "pods"
     - "pods/log"
     - "secrets"
-    - "configmaps"
     verbs:
     - get
     - list
