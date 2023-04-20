@@ -5,6 +5,7 @@ configMapGenerator:
   - name: enrichment-elasticsearch-index-templates
     files:
       - alerts.json
+      - backup-jobs.json
       - healthchecks.json
       - logstash.json
       - pa-admin-audit.json
