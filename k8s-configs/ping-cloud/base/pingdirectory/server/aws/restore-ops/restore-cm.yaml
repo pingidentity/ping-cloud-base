@@ -82,5 +82,3 @@ data:
 
     echo "Running restore script"
     test -x ${SCRIPT} && sh "${SCRIPT}"
-
-    # /tmp/kubectl delete pvc pingdirectory-restore -n "${PING_CLOUD_NAMESPACE}"

@@ -5,7 +5,7 @@
 # e.g.
 # A CDE with ping-cloud namespace will set the variable NAMESPACE as 'ping-cloud'
 # A CDE with ping-cloud-username namespace will set the variable NAMESPACE as 'ping-cloud-username'
-PING_CLOUD_NAMESPACE=$(kubectl get namespaces -o jsonpath='{.items[*].metadata.name}{"\n"}' | grep -o -E "\bping-cloud\S*")
+export PING_CLOUD_NAMESPACE=$(kubectl get namespaces -o jsonpath='{.items[*].metadata.name}{"\n"}' | grep -o -E "\bping-cloud\S*")
 
 # Get desired PingDirectory pod name
 BACKUP_RESTORE_POD=$(kubectl get configmap pingdirectory-environment-variables -o jsonpath='{.data.BACKUP_RESTORE_POD}' -n "${PING_CLOUD_NAMESPACE}")
