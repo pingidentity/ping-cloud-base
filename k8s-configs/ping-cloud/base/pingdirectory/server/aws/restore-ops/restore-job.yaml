@@ -17,7 +17,7 @@ spec:
   backoffLimit: 0
   template:
     spec:
-      serviceAccount: ping-serviceaccount
+      serviceAccountName: ping-serviceaccount
       affinity:
         # This podAffinity rule is designed to deploy Backup/restore job to the same AZ as its targeted PingDirectory server("pindirectory-0")
         podAffinity:

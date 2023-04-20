@@ -6,22 +6,14 @@ data:
   backup-cronjob.sh: |-
     #!/bin/sh
 
-    export HOOKS_DIR="/opt/in/hooks"
-
     # Install kubectl
     curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
     -o /tmp/kubectl
     chmod +x /tmp/kubectl
 
-    # Create alias kubectl
-    alias kubectl=/tmp/kubectl
-
+    # Execute backup-ops.sh script (which kicks off the k8s pingdirectory-backup Job)
     SCRIPT="/opt/in/backup-ops.sh"
-
-    echo /opt/in location
-    ls ${SCRIPT}
-
-    test -x ${SCRIPT} && ${SCRIPT}
+    test -x ${SCRIPT} && ${SCRIPT} "scheduled-cronjob"
 
 ---
 
@@ -34,17 +26,17 @@ kind: CronJob
 metadata:
   name: pingdirectory-periodic-backup
 spec:
-  schedule: "*/2 * * * *"
-  successfulJobsHistoryLimit: 0
-  failedJobsHistoryLimit: 1
-  concurrencyPolicy: Forbid
-  startingDeadlineSeconds: 90
+  schedule: "*/1 * * * *"
+  # successfulJobsHistoryLimit: 0
+  # failedJobsHistoryLimit: 1
+  # concurrencyPolicy: Forbid
+  # startingDeadlineSeconds: 90
   jobTemplate:
     spec:
-      backoffLimit: 0
+      # backoffLimit: 0
       template:
         spec:
-          serviceAccount: ping-serviceaccount
+          serviceAccountName: ping-serviceaccount
           restartPolicy: OnFailure
           containers:
           - name: pingdirectory-backup
@@ -65,6 +57,10 @@ spec:
             env:
             - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
               value: "true"
+            - name: PING_CLOUD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
             volumeMounts:
             - name: backup-cronjob-script
               mountPath: /opt/in/backup-cronjob.sh
