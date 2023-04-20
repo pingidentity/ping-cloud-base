@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Set ping-cloud namespace
+# Set ping-cloud PING_CLOUD_NAMESPACE
 # Note: The regular expression \bping-cloud\S* matches any string that starts with "ping-cloud" (\bping-cloud) and has zero or more non-space characters after it (\S*).
 # e.g.
 # A CDE with ping-cloud namespace will set the variable NAMESPACE as 'ping-cloud'
@@ -15,7 +15,6 @@ test -z "${BACKUP_RESTORE_POD}" && export PINGDIRECTORY_POD_NAME="${K8S_STATEFUL
 # Get desired PingDirectory PVC size
 export PINGDIRECTORY_PVC_SIZE=$(kubectl get pvc "out-dir-${PINGDIRECTORY_POD_NAME}" -o jsonpath='{.spec.resources.requests.storage}' -n "${PING_CLOUD_NAMESPACE}")
 
-# TODO leverage wget to get all resources from github
 parent_directory="$(dirname "$(realpath "$0")")"
 cat "${parent_directory}/restore-pvc.yaml" | envsubst | kubectl apply -f -
 cat "${parent_directory}/restore-cm.yaml"  | kubectl apply -f -

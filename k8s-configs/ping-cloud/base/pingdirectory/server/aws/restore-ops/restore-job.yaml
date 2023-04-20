@@ -64,7 +64,7 @@ spec:
         # Remove PingDirectory restore PVC once job is completed in k8s
         lifecycle:
           preStop:
-            exec: {command: ["/bin/sh", "-c", "/tmp/kubectl delete pvc pingdirectory-restore -n ${PING_CLOUD_NAMESPACE}"]}
+            exec: {command: ["/bin/sh", "-c", "/tmp/kubectl delete pvc pingdirectory-restore -n ${PING_CLOUD_NAMESPACE} --grace-period=0 --force"]}
         ports:
           - containerPort: 1636
             name: ldaps

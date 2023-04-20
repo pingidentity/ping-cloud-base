@@ -59,7 +59,7 @@ spec:
         # Remove PingDirectory backup PVC once job is completed in k8s
         lifecycle:
           preStop:
-            exec: {command: ["/bin/sh", "-c", "/tmp/kubectl delete pvc pingdirectory-backup -n ${PING_CLOUD_NAMESPACE}"]}
+            exec: {command: ["/bin/sh", "-c", "/tmp/kubectl delete pvc pingdirectory-backup -n ${PING_CLOUD_NAMESPACE} --grace-period=0 --force"]}
         envFrom:
         - configMapRef:
             name: pingdirectory-environment-variables

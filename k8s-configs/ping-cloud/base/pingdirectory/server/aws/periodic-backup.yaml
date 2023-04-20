@@ -26,14 +26,14 @@ kind: CronJob
 metadata:
   name: pingdirectory-periodic-backup
 spec:
-  schedule: "*/1 * * * *"
-  # successfulJobsHistoryLimit: 0
-  # failedJobsHistoryLimit: 1
-  # concurrencyPolicy: Forbid
-  # startingDeadlineSeconds: 90
+  schedule: "*/10 * * * *"
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 1
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 90
   jobTemplate:
     spec:
-      # backoffLimit: 0
+      backoffLimit: 0
       template:
         spec:
           serviceAccountName: ping-serviceaccount

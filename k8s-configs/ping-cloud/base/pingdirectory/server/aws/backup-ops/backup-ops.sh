@@ -21,9 +21,9 @@ if test "${execution_type}" == "manual-job"; then
   export PINGDIRECTORY_PVC_SIZE=$(kubectl get pvc "out-dir-${PINGDIRECTORY_POD_NAME}" -o jsonpath='{.spec.resources.requests.storage}' -n "${PING_CLOUD_NAMESPACE}")
 
   parent_directory="$(dirname "$(realpath "$0")")"
-  cat "${parent_directory}/backup-pvc.yaml" | envsubst | kubectl apply -f -
-  cat "${parent_directory}/backup-cm.yaml"  | kubectl apply -f -
-  cat "${parent_directory}/backup-job.yaml" | envsubst | kubectl apply -f -
+  cat "${parent_directory}/backup-pvc.yaml" | envsubst
+  cat "${parent_directory}/backup-cm.yaml"  | kubectl
+  cat "${parent_directory}/backup-job.yaml" | envsubst
 
 else
 
@@ -36,9 +36,9 @@ else
   export PINGDIRECTORY_PVC_SIZE=$(/tmp/kubectl get pvc "out-dir-${PINGDIRECTORY_POD_NAME}" -o jsonpath='{.spec.resources.requests.storage}' -n "${PING_CLOUD_NAMESPACE}")
 
   # TODO figure out a way to support dev environments by pulling remote resources from dev branch
-  github_url="https://raw.githubusercontent.com/calvincarter-ping/ping-cloud-base/${SERVER_PROFILE_BRANCH}/backups-ops"
+  github_url="https://raw.githubusercontent.com/calvincarter-ping/ping-cloud-base/${SERVER_PROFILE_BRANCH}/backup-ops"
   curl "${github_url}/backup-pvc.yaml" | envsubst | /tmp/kubectl apply -f -
-  curl "${github_url}/backup-ops/backup-cm.yaml"  | /tmp/kubectl apply -f -
+  curl "${github_url}/backup-cm.yaml"  | /tmp/kubectl apply -f -
   curl "${github_url}/backup-job.yaml" | envsubst | /tmp/kubectl apply -f -
 
 fi
