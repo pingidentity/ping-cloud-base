@@ -286,7 +286,10 @@
           }
         }
       }
-    }
+    },
+      "aliases":{
+        "pf-audit-read": {}
+      }
   },
   "composed_of": [],
   "priority": 0

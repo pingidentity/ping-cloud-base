@@ -143,8 +143,8 @@ spec:
               mountPath: /scripts/dashboards/pd
             - name: os-dashboards-pa
               mountPath: /scripts/dashboards/pa
-          #   - name: os-dashboards-pf
-          #     mountPath: /scripts/dashboards/pf
+            - name: os-dashboards-pf
+              mountPath: /scripts/dashboards/pf
             - name: enrichment-opensearch-index-templates
               mountPath: /scripts/index-templates
           #   - name: os-dash-alerts-common
@@ -173,9 +173,9 @@ spec:
         - name: os-dashboards-pa
           configMap:
             name: os-dashboards-pa
-        # - name: os-dashboards-pf
-        #   configMap:
-        #     name: os-dashboards-pf
+        - name: os-dashboards-pf
+          configMap:
+            name: os-dashboards-pf
         # - name: os-dash-alerts-common
         #   configMap:
         #     name: os-dash-alerts-common
