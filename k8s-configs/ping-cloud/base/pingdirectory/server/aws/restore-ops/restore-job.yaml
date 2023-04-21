@@ -19,7 +19,7 @@ spec:
     spec:
       serviceAccountName: ping-serviceaccount
       affinity:
-        # This podAffinity rule is designed to deploy Backup/restore job to the same AZ as its targeted PingDirectory server("pindirectory-0")
+        # This podAffinity rule is designed to deploy Backup/restore job to the same AZ as its targeted PingDirectory server
         podAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
@@ -61,10 +61,6 @@ spec:
         imagePullPolicy: Always
         command:
         - /opt/in/restore.sh
-        # Remove PingDirectory restore PVC once job is completed in k8s
-        lifecycle:
-          preStop:
-            exec: {command: ["/bin/sh", "-c", "/tmp/kubectl delete pvc pingdirectory-restore -n ${PING_CLOUD_NAMESPACE} --grace-period=0 --force"]}
         ports:
           - containerPort: 1636
             name: ldaps

@@ -6,6 +6,7 @@ data:
   restore.sh: |
     #!/bin/sh
 
+    # Job will not be using /opt/out, therefore force it to use its own /opt/in directory
     export HOOKS_DIR="/opt/in/hooks"
     SCRIPT="/opt/in/hooks/90-restore-backup-s3.sh"
     test -z "${BACKUP_RESTORE_POD}" && export SERVER="${K8S_STATEFUL_SET_NAME}-0" || export SERVER="${BACKUP_RESTORE_POD}"
@@ -46,8 +47,17 @@ data:
       fi
     }
 
-    # This guarantees that resume_replication method will always run, even if the restore job exits due to an error
-    trap "resume_replication" EXIT
+    delete_pvc() {
+      /tmp/kubectl delete pvc pingdirectory-restore -n ${PING_CLOUD_NAMESPACE} --grace-period=0 --force
+    }
+
+    cleanup () {
+      resume_replication
+      delete_pvc
+    }
+
+    # This guarantees that cleanup method will always run, even if the restore job exits due to an error
+    trap "cleanup" EXIT
 
     # Install kubectl
     curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
