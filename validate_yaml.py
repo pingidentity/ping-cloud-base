@@ -2,12 +2,14 @@ import os
 from pathlib import Path
 from ruamel import yaml
 
+
 def repr_str(dumper, data):
     text_list = [line.rstrip() for line in data.splitlines()]
     fixed_data = "\n".join(text_list)
     if len(data.splitlines()) > 1:
         return dumper.represent_scalar("tag:yaml.org,2002:str", fixed_data, style="|")
     return dumper.represent_scalar("tag:yaml.org,2002:str", data)
+
 
 def validate_yaml_file_data():
     # Get current working directory
@@ -38,14 +40,15 @@ def validate_yaml_file_data():
                                         Dumper=yaml.RoundTripDumper,
                                     )
                                 except Exception as e:
-                                    print("yaml update failed {}".format(os.path.join(root, name)), e)
+                                    print("file path is ", os.path.join(root, name),e)
+                            #print("file path is ", os.path.join(root, name))
                         except Exception as e:
                             print(f"No Kind key {file_path}", e)
                     except Exception as e:
-                        print(f"invalid yaml {file_path}", e)         
+                        print(f"invalid yaml {file_path}", e)
             except Exception as e:
                 print("yaml file not valid", e)
-    print("successfully validated all yaml files")
+
 
 # call method for output
 validate_yaml_file_data()
