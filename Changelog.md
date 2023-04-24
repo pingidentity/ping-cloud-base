@@ -66,6 +66,7 @@
 - Configure Fluent-bit kubernetes filter to prevent caching for statefulsets
 - Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
 - Allow configuration of certain ArgoCD values per-CDE
+- Bug fix, remove-from-secondary-patch.yaml not getting applied
 
 _Changes:_
 
@@ -152,6 +153,7 @@ _Changes:_
 - [X] PDO-5261 Remove PF and PA from pa-was config in customer-hub
 - [X] PDO-5264 Set 7-day-retention policy to all backup jobs logs
 - [X] PDO-5298 Bugfix - make scripts compatible with Debian
+- [X] PDO-5248:Bug fix, remove-from-secondary-patch.yaml not getting applied
 
 ### 1.17.0.0
 
