@@ -1,0 +1,16 @@
+# ArgoCD region-specific environment variables
+
+# AWS REGION for ArgoCD bootstrap process to make api calls to AWS services.
+REGION=${REGION}
+
+# A space-delimited list of the environments we want ArgoCD to manage from customer-hub in each region
+# NOTE: ARGOCD_ENVIRONMENTS should NOT be changed manually. The value will NOT change after initial CSR generation.
+ARGOCD_ENVIRONMENTS="${ARGOCD_ENVIRONMENTS}"
+
+#### FEATURE FLAGS #####################################################################################################
+# Set to true to enable, most are disabled by default
+# Please follow runbook instructions for the given feature flag to enable/disable
+
+# NOTE: ARGOCD_BOOTSTRAP_ENABLED should NOT be disabled unless there is an issue in the environment
+ARGOCD_BOOTSTRAP_ENABLED=${ARGOCD_BOOTSTRAP_ENABLED}
+########################################################################################################################

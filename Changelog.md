@@ -150,6 +150,7 @@ _Changes:_
 - [X] PDO-5261 Remove PF and PA from pa-was config in customer-hub
 - [X] PDO-5264 Set 7-day-retention policy to all backup jobs logs
 - [X] PDO-5298 Bugfix - make scripts compatible with Debian
+- [X] PDO-5315 Bugfix - argocd-bootstrap to use region specific env vars
 
 ### 1.17.0.0
 
