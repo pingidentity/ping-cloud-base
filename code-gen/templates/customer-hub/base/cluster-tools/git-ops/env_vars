@@ -1,12 +1,9 @@
 ########################################################################################################################
 # ArgoCD Bootstrap ConfigMap variables
 ########################################################################################################################
-ARGOCD_BOOTSTRAP_ENABLED=${ARGOCD_BOOTSTRAP_ENABLED}
 ARGOCD_CDE_ROLE_SSM_TEMPLATE=${ARGOCD_CDE_ROLE_SSM_TEMPLATE}
 ARGOCD_CDE_URL_SSM_TEMPLATE=${ARGOCD_CDE_URL_SSM_TEMPLATE}
-ARGOCD_ENVIRONMENTS=${ARGOCD_ENVIRONMENTS}
 CLUSTER_STATE_REPO_BRANCH=${CLUSTER_STATE_REPO_BRANCH}
-REGION=${REGION}
 ########################################################################################################################
 
 ########################################################################################################################
