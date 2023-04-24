@@ -55,8 +55,9 @@
 - Updated StorageClass provisoner to CSI and type to gp3
 - Add logstash and fluent-bit metrics to prometheus
 - Enable bootstrapping a new customer with ArgoCD
+- Add a new hook script '02-health-check.sh' to support readiness and liveness probes
 - Add logstash/fluent-bit readiness/liveness probe
-- Add priorityClassName into CAWAgent daemonset
+- Add priorityClassName into CWAgent daemonset
 - Fluent-bit pods stuck in pending state
 - Add logstash and fluent-bit alerts
 - Fix Kibana Visualization "Ping Access - Response Codes Over Time"
@@ -137,6 +138,7 @@ _Changes:_
 - [X] PDO-5107 Fluent-bit pods stuck in pending state
 - [X] PDO-5124 Enable bootstrapping a new customer with ArgoCD
 - [X] PDO-5131 Pods (typically cloudwatch) Stuck in pending state
+- [X] PDO-5138 Add a new hook script '02-health-check.sh' to support readiness and liveness probes 
 - [X] PDO-5141 Fix the ArgoCD App name
 - [X] PDO-5143 Add logstash and fluent-bit alerts
 - [X] PDO-5144 Add logstash/fluent-bit readiness/liveness probe
@@ -150,6 +152,7 @@ _Changes:_
 - [X] PDO-5261 Remove PF and PA from pa-was config in customer-hub
 - [X] PDO-5264 Set 7-day-retention policy to all backup jobs logs
 - [X] PDO-5298 Bugfix - make scripts compatible with Debian
+- [X] PDO-5315 Bugfix - argocd-bootstrap to use region specific env vars
 
 ### 1.17.0.0
 
