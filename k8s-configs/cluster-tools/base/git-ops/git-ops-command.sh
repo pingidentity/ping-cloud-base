@@ -19,7 +19,7 @@ log() {
   if [[ "${DEBUG}" == "true" ]]; then
     echo "git-ops-command: ${msg}"
   else
-    echo "git-ops-command: ${msg}" >> "${LOG_FILE}"
+    echo "git-ops-command: ${msg}" >>"${LOG_FILE}"
   fi
 }
 
@@ -41,13 +41,15 @@ substitute_vars() {
   log "substituting variables '${vars}'"
 
   # Export the environment variables
-  set -a; . "${env_file}"; set +a
+  set -a
+  . "${env_file}"
+  set +a
 
   for file in $(find "${subst_dir}" -type f); do
     old_file="${file}.bak"
     cp "${file}" "${old_file}"
 
-    envsubst "${vars}" < "${old_file}" > "${file}"
+    envsubst "${vars}" <"${old_file}" >"${file}"
     rm -f "${old_file}"
   done
 }
@@ -60,8 +62,14 @@ substitute_vars() {
 #   $2 -> The directory relative to which the first directory must be transformed.
 ########################################################################################################################
 relative_path() {
-  to_transform="$(cd "${1%%/}"; pwd)"
-  relative_to="$(cd "$2"; pwd)"
+  to_transform="$(
+    cd "${1%%/}"
+    pwd
+  )"
+  relative_to="$(
+    cd "$2"
+    pwd
+  )"
 
   # Move up from the directory to transform while counting the number of directories traversed until the other
   # directory is reached.
@@ -81,41 +89,62 @@ relative_path() {
 #   $1 -> The directory containing k8s-configs.
 ########################################################################################################################
 feature_flags() {
-    cd "${1}/k8s-configs"
+  cd "${1}/k8s-configs"
 
-    # Map with the feature flag environment variable & the term to search to find the kustomization files
-    flag_map="${RADIUS_PROXY_ENABLED}:ff-radius-proxy ${EXTERNAL_INGRESS_ENABLED}:remove-external-ingress"
+  # Map with the feature flag environment variable & the term to search to find the kustomization files
+  flag_map="${RADIUS_PROXY_ENABLED}:ff-radius-proxy ${EXTERNAL_INGRESS_ENABLED}:remove-external-ingress"
 
-    for flag in $flag_map; do
-        enabled="${flag%%:*}"
-        search_term="${flag##*:}"
-        log "${search_term} is set to ${enabled}"
+  for flag in $flag_map; do
+    enabled="${flag%%:*}"
+    search_term="${flag##*:}"
+    log "${search_term} is set to ${enabled}"
 
-        if [[ ${search_term} != "remove-external-ingress" ]]; then
-            # If the feature flag is disabled, comment the search term lines out of the kustomization files
-            if [[ ${enabled} != "true" ]]; then
-                for kust_file in $(git grep -l "${search_term}" | grep "kustomization.yaml"); do
-                    log "Commenting out ${search_term} in ${kust_file}"
-                    sed -i.bak \
-                        -e "/${search_term}/ s|^#*|#|g" \
-                        "${kust_file}"
-                    rm -f "${kust_file}".bak
-                done
-            fi
-        else
-            # enabling remove external ingress yaml if the feature flag EXTERNAL_INGRESS_ENABLED is false
-            if [[ ${enabled} != "true" ]]; then
-                cd "${TMP_DIR}"
-                for kust_file in $(grep --exclude-dir=.git -rwl -e "${search_term}" | grep "kustomization.yaml"); do
-                    log "UnCommenting out ${search_term} in ${kust_file}"
-                    sed -i.bak \
-                        -e "/${search_term}/ s|^#*||g" \
-                        "${kust_file}"
-                    rm -f "${kust_file}".bak
-                done
-            fi
-        fi
+    if [[ ${search_term} != "remove-external-ingress" ]]; then
+      # If the feature flag is disabled, comment the search term lines out of the kustomization files
+      if [[ ${enabled} != "true" ]]; then
+        for kust_file in $(git grep -l "${search_term}" | grep "kustomization.yaml"); do
+          log "Commenting out ${search_term} in ${kust_file}"
+          sed -i.bak \
+            -e "/${search_term}/ s|^#*|#|g" \
+            "${kust_file}"
+          rm -f "${kust_file}".bak
+        done
+      fi
+    else
+      # enabling remove external ingress yaml if the feature flag EXTERNAL_INGRESS_ENABLED is false
+      if [[ ${enabled} != "true" ]]; then
+        cd "${TMP_DIR}"
+        for kust_file in $(grep --exclude-dir=.git -rwl -e "${search_term}" | grep "kustomization.yaml"); do
+          log "UnCommenting out ${search_term} in ${kust_file}"
+          sed -i.bak \
+            -e "/${search_term}/ s|^#*||g" \
+            "${kust_file}"
+          rm -f "${kust_file}".bak
+        done
+      fi
+    fi
+  done
+}
+########################################################################################################################
+# UnComments out remove-from-secondary-patch for secondary regions from k8s-configs kustomization.yaml files.
+#
+########################################################################################################################
+remove_from_secondary() {
+  search_term="remove-from-secondary-patch"
+  if [[ -z "${REGION}" ]]; then
+    REGION=${PRIMARY_REGION}
+  fi
+  if [[ ${PRIMARY_REGION} != ${REGION} ]]; then
+    log "Secondary Region"
+    cd "${TMP_DIR}"
+    for kust_file in $(grep --exclude-dir=.git -rwl -e "${search_term}" | grep "kustomization.yaml"); do
+      log "UnCommenting out "${search_term}".yaml  in ${kust_file} as not required in secondary regions"
+      sed -i.bak \
+        -e "/${search_term}/ s|^#*||g" \
+        "${kust_file}"
+      rm -f "${kust_file}".bak
     done
+  fi
 }
 
 ########################################################################################################################
@@ -182,8 +211,8 @@ log "copying '${TARGET_DIR_FULL}' templates into '${TMP_DIR}'"
 cp -pr "${TARGET_DIR_FULL}" "${TMP_DIR}"
 
 if test -d "${BASE_DIR}"; then
-  log "copying '${BASE_DIR}' templates into '${TMP_DIR}'" && \
-  cp -pr "${BASE_DIR}" "${TMP_DIR}"
+  log "copying '${BASE_DIR}' templates into '${TMP_DIR}'" &&
+    cp -pr "${BASE_DIR}" "${TMP_DIR}"
 fi
 
 # If there's an environment file, then perform substitution
@@ -198,7 +227,7 @@ if test -f 'env_vars'; then
 
     if test -f "${BASE_ENV_VARS}"; then
       env_vars_file="$(mktemp)"
-      awk 1 env_vars "${BASE_ENV_VARS}" > "${env_vars_file}"
+      awk 1 env_vars "${BASE_ENV_VARS}" >"${env_vars_file}"
       substitute_vars "${env_vars_file}" "${BASE_DIR}"
     fi
 
@@ -227,13 +256,14 @@ if test -f 'env_vars'; then
       rel_resource_dir="$(relative_path "$(dirname "${kust_file}")" "${PCB_TMP}")"
       log "replacing ${K8S_GIT_URL} in file ${kust_file} with ${rel_resource_dir}"
       sed -i.bak \
-          -e "s|${K8S_GIT_URL}|${rel_resource_dir}|g" \
-          -e "s|\?ref=${K8S_GIT_BRANCH}$||g" \
-          "${kust_file}"
+        -e "s|${K8S_GIT_URL}|${rel_resource_dir}|g" \
+        -e "s|\?ref=${K8S_GIT_BRANCH}$||g" \
+        "${kust_file}"
       rm -f "${kust_file}".bak
     done
 
     feature_flags "${TMP_DIR}/${K8S_GIT_BRANCH}"
+    remove_from_secondary
   )
   test $? -ne 0 && exit 1
 fi
