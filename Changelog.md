@@ -57,7 +57,7 @@
 - Enable bootstrapping a new customer with ArgoCD
 - Add a new hook script '02-health-check.sh' to support readiness and liveness probes
 - Add logstash/fluent-bit readiness/liveness probe
-- Add priorityClassName into CAWAgent daemonset
+- Add priorityClassName into CWAgent daemonset
 - Fluent-bit pods stuck in pending state
 - Add logstash and fluent-bit alerts
 - Fix Kibana Visualization "Ping Access - Response Codes Over Time"
