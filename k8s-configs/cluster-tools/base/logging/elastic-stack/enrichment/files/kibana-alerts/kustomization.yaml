@@ -9,15 +9,15 @@ generatorOptions:
     argocd.argoproj.io/sync-options: Replace=true
 
 configMapGenerator:
-  - name: kibana-alerts-common
-    files:
-      - 01-log-source.ndjson
-  - name: kibana-alerts-pd
-    files:
-      - 02-pd-rules.ndjson
-  - name: kibana-alerts-pds
-    files:
-      - 03-pds-rules.ndjson
-  - name: kibana-alerts-pf
-    files:
-      - 04-pf-rules.ndjson
+- name: kibana-alerts-common
+  files:
+  - 01-log-source.ndjson
+- name: kibana-alerts-pd
+  files:
+  - 02-pd-rules.ndjson
+- name: kibana-alerts-pds
+  files:
+  - 03-pds-rules.ndjson
+- name: kibana-alerts-pf
+  files:
+  - 04-pf-rules.ndjson

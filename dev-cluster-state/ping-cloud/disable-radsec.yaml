@@ -7,15 +7,14 @@ spec:
     spec:
       serviceAccountName: ping-serviceaccount
       initContainers:
-        - name: wait-for-tls-secret
-          $patch: delete
+      - name: wait-for-tls-secret
+        $patch: delete
       containers:
-        - name: pingcloud-radsecproxy
-          $patch: delete
+      - name: pingcloud-radsecproxy
+        $patch: delete
       volumes:
-        - name: acme-tls-cert
-          $patch: delete
-
+      - name: acme-tls-cert
+        $patch: delete
 ---
 
 apiVersion: v1
@@ -24,9 +23,8 @@ metadata:
   name: pingfederate
 spec:
   ports:
-    - port: 2083
-      $patch: delete
-
+  - port: 2083
+    $patch: delete
 ---
 
 apiVersion: v1
@@ -35,7 +33,6 @@ metadata:
   name: pingcloud-radsecproxy-serviceaccount
   namespace: ping-cloud
 $patch: delete
-
 ---
 
 apiVersion: rbac.authorization.k8s.io/v1
@@ -44,7 +41,6 @@ metadata:
   name: radsecproxy-ping-role
   namespace: ping-cloud
 $patch: delete
-
 ---
 
 apiVersion: rbac.authorization.k8s.io/v1

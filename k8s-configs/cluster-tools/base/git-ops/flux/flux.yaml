@@ -52,7 +52,7 @@ metadata:
   name: flux-git-deploy
   namespace: flux
   annotations:
-    sealedsecrets.bitnami.com/managed: "true"
+    sealedsecrets.bitnami.com/managed: 'true'
 type: Opaque
 ---
 apiVersion: v1
@@ -82,7 +82,7 @@ spec:
   template:
     metadata:
       annotations:
-        prometheus.io/port: "3031"
+        prometheus.io/port: '3031'
       labels:
         name: flux
     spec:

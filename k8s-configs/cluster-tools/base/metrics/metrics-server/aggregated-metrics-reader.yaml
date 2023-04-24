@@ -4,10 +4,10 @@ metadata:
   name: system:aggregated-metrics-reader
   labels:
     k8s-app: metrics-server
-    rbac.authorization.k8s.io/aggregate-to-view: "true"
-    rbac.authorization.k8s.io/aggregate-to-edit: "true"
-    rbac.authorization.k8s.io/aggregate-to-admin: "true"
+    rbac.authorization.k8s.io/aggregate-to-view: 'true'
+    rbac.authorization.k8s.io/aggregate-to-edit: 'true'
+    rbac.authorization.k8s.io/aggregate-to-admin: 'true'
 rules:
-- apiGroups: ["metrics.k8s.io"]
-  resources: ["pods", "nodes"]
-  verbs: ["get", "list", "watch"]
+- apiGroups: [metrics.k8s.io]
+  resources: [pods, nodes]
+  verbs: [get, list, watch]

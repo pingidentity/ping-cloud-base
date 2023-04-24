@@ -6,7 +6,7 @@ resources:
 - prometheus
 
 components:
-  - pgo
+- pgo
 
 patchesStrategicMerge:
 

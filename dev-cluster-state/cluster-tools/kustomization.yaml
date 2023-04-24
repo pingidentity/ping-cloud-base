@@ -9,7 +9,7 @@ resources:
 - priorityclass.yaml
 
 components:
-  - monitoring/pgo
+- monitoring/pgo
 
 generatorOptions:
   disableNameSuffixHash: true
@@ -26,13 +26,13 @@ configMapGenerator:
 - name: logging-bootstrap-environment-variables
   behavior: merge
   literals:
-    - SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX}
-    - REGION=${REGION}
+  - SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX}
+  - REGION=${REGION}
 
 - name: elk-environment-variables
   behavior: merge
   literals:
-    - CLUSTER_NAME=${CLUSTER_NAME}
+  - CLUSTER_NAME=${CLUSTER_NAME}
 
 # Pingcloud-healthcheck
 - name: cluster-health-environment-variables
@@ -43,9 +43,9 @@ configMapGenerator:
 - name: prometheus-environment-variables
   behavior: merge
   envs:
-    - ../ping-cloud/env_vars
+  - ../ping-cloud/env_vars
   literals:
-    - PROMETHEUS_PING_NAMESPACE=${PING_CLOUD_NAMESPACE}
+  - PROMETHEUS_PING_NAMESPACE=${PING_CLOUD_NAMESPACE}
 
 patchesStrategicMerge:
 

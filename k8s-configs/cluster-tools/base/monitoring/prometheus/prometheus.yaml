@@ -20,28 +20,28 @@ spec:
       - name: prometheus
         image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/prom/prometheus:v2.42.0
         args:
-          - "--config.file=/etc/prometheus/prometheus.yml"
-          - "--storage.tsdb.retention.time=$(PROMETHEUS_RETENTION_TIME)"
-          - "--web.enable-remote-write-receiver"
-          - "--enable-feature=memory-snapshot-on-shutdown"
-          - "--enable-feature=expand-external-labels"
-          - "--enable-feature=memory-snapshot-on-shutdown"
+        - --config.file=/etc/prometheus/prometheus.yml
+        - --storage.tsdb.retention.time=$(PROMETHEUS_RETENTION_TIME)
+        - --web.enable-remote-write-receiver
+        - --enable-feature=memory-snapshot-on-shutdown
+        - --enable-feature=expand-external-labels
+        - --enable-feature=memory-snapshot-on-shutdown
         env:
-          - name: PROMETHEUS_RETENTION_TIME
-            valueFrom:
-              configMapKeyRef:
-                key: PROMETHEUS_RETENTION_TIME
-                name: prometheus-environment-variables
-        envFrom:
-          - configMapRef:
+        - name: PROMETHEUS_RETENTION_TIME
+          valueFrom:
+            configMapKeyRef:
+              key: PROMETHEUS_RETENTION_TIME
               name: prometheus-environment-variables
+        envFrom:
+        - configMapRef:
+            name: prometheus-environment-variables
         volumeMounts:
-          - name: prometheus-config-volume
-            mountPath: /etc/prometheus/
-          - name: prometheus-storage-volume
-            mountPath: /prometheus/data
-          - name: alertsconfig
-            mountPath: /etc/prometheus/alert-rules.d
+        - name: prometheus-config-volume
+          mountPath: /etc/prometheus/
+        - name: prometheus-storage-volume
+          mountPath: /prometheus/data
+        - name: alertsconfig
+          mountPath: /etc/prometheus/alert-rules.d
 
         ports:
         - containerPort: 9090
@@ -66,12 +66,11 @@ spec:
       labels:
         app: prometheus
     spec:
-      accessModes: [ "ReadWriteOnce" ]
+      accessModes: [ReadWriteOnce]
       storageClassName: efs
       resources:
         requests:
           storage: 1Mi
-
 ---
 
 kind: Service
@@ -88,7 +87,6 @@ spec:
   - port: 9090
     name: prometheus
   clusterIP: None
-
 ---
 
 # Define role which allows access to endpoint /metrics within the cluster
@@ -97,23 +95,23 @@ kind: ClusterRole
 metadata:
   name: prometheus
 rules:
-- apiGroups: [""]
+- apiGroups: ['']
   resources:
   - nodes
   - nodes/proxy
   - services
   - endpoints
   - pods
-  verbs: ["get", "list", "watch"]
-- apiGroups: [""]
+  verbs: [get, list, watch]
+- apiGroups: ['']
   resources:
   - configmaps
-  verbs: ["get"]
-- nonResourceURLs: ["/metrics"]
-  verbs: ["get"]
-- apiGroups: [ "" ]
-  resources: [ "pods/exec" ]
-  verbs: [ "create" ]
+  verbs: [get]
+- nonResourceURLs: [/metrics]
+  verbs: [get]
+- apiGroups: ['']
+  resources: [pods/exec]
+  verbs: [create]
 
 ---
 
@@ -122,7 +120,6 @@ kind: ServiceAccount
 metadata:
   name: prometheus
   namespace: prometheus
-
 ---
 
 apiVersion: rbac.authorization.k8s.io/v1

@@ -1,14 +1,13 @@
----
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  creationTimestamp: null
+  creationTimestamp:
   name: postgres-operator-upgrade
   labels:
     postgres-operator.crunchydata.com/control-plane: postgres-operator-upgrade
 rules:
 - apiGroups:
-  - ""
+  - ''
   resources:
   - endpoints
   verbs:

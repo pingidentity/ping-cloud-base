@@ -7,17 +7,17 @@ spec:
     enabled: true
   limits:
     resources:
-      cpu: "1000"
+      cpu: '1000'
       memory: 1000Gi
   ttlSecondsAfterEmpty: 30
   ttlSecondsUntilExpired: 2592000
   requirements:
-    - key: "kubernetes.io/arch"
-      operator: In
-      values: ["amd64"]
-    - key: "karpenter.sh/capacity-type"
-      operator: In
-      values: ["spot", "on-demand"]
+  - key: kubernetes.io/arch
+    operator: In
+    values: [amd64]
+  - key: karpenter.sh/capacity-type
+    operator: In
+    values: [spot, on-demand]
   providerRef:
     name: default
 ---
@@ -27,18 +27,18 @@ metadata:
   name: pd-only
 spec:
   annotations:
-    karpenter.sh/do-not-consolidate: "true"
+    karpenter.sh/do-not-consolidate: 'true'
   limits:
     resources:
-      cpu: "1000"
+      cpu: '1000'
       memory: 1000Gi
   requirements:
-    - key: "kubernetes.io/arch"
-      operator: In
-      values: ["amd64"]
-    - key: "karpenter.sh/capacity-type"
-      operator: In
-      values: ["on-demand"]
+  - key: kubernetes.io/arch
+    operator: In
+    values: [amd64]
+  - key: karpenter.sh/capacity-type
+    operator: In
+    values: [on-demand]
   taints:
   - effect: NoSchedule
     key: pd-only
@@ -51,7 +51,7 @@ metadata:
   name: default
 spec:
   tags:
-    KarpenerProvisionerName: "default"
+    KarpenerProvisionerName: default
 ---
 apiVersion: karpenter.k8s.aws/v1alpha1
 kind: AWSNodeTemplate
@@ -59,4 +59,4 @@ metadata:
   name: pd-only
 spec:
   tags:
-    KarpenerProvisionerName: "pd-only"
+    KarpenerProvisionerName: pd-only

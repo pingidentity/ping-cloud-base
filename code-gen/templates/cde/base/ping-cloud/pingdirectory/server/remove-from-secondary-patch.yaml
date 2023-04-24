@@ -3,7 +3,6 @@ kind: ConfigMap
 metadata:
   name: pingdirectory-backup
 $patch: delete
-
 ---
 
 apiVersion: batch/v1
@@ -11,6 +10,3 @@ kind: CronJob
 metadata:
   name: pingdirectory-periodic-backup
 $patch: delete
-
----
-

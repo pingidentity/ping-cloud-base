@@ -6,7 +6,7 @@ type: Opaque
 metadata:
   name: nr-license-key
   annotations:
-    sealedsecrets.bitnami.com/managed: "true"
+    sealedsecrets.bitnami.com/managed: 'true'
 
 ---
 apiVersion: v1
@@ -16,9 +16,9 @@ metadata:
 data:
   cluster.name: cluster_name
   logs.region: region_name
-  log.level: "error"
-  read.head: "True"
-  read.tail: "Off"
+  log.level: error
+  read.head: 'True'
+  read.tail: Off
   newrelic_cluster_name: cluster_name
 ---
 apiVersion: v1
@@ -31,16 +31,16 @@ kind: ClusterRole
 metadata:
   name: fluent-bit-role
 rules:
-  - nonResourceURLs:
-      - /metrics
-    verbs:
-      - get
-  - apiGroups: [""]
-    resources:
-      - namespaces
-      - pods
-      - pods/logs
-    verbs: ["get", "list", "watch"]
+- nonResourceURLs:
+  - /metrics
+  verbs:
+  - get
+- apiGroups: ['']
+  resources:
+  - namespaces
+  - pods
+  - pods/logs
+  verbs: [get, list, watch]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -51,9 +51,8 @@ roleRef:
   kind: ClusterRole
   name: fluent-bit-role
 subjects:
-  - kind: ServiceAccount
-    name: fluent-bit
-
+- kind: ServiceAccount
+  name: fluent-bit
 ---
 apiVersion: apps/v1
 kind: DaemonSet
@@ -75,61 +74,61 @@ spec:
         image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-for-fluent-bit:2.31.7
         imagePullPolicy: Always
         command:
-          - "/bin/sh"
+        - /bin/sh
         args:
-          - "-c"
-          - "S3_BUCKET_NAME=${S3_BUCKET#s3://} /entrypoint.sh"
+        - -c
+        - S3_BUCKET_NAME=${S3_BUCKET#s3://} /entrypoint.sh
         securityContext:
           capabilities:
             drop:
-              - ALL
+            - ALL
             add:
-              - CAP_FOWNER
+            - CAP_FOWNER
         env:
-            - name: AWS_REGION
-              valueFrom:
-                configMapKeyRef:
-                  name: cluster-info
-                  key: logs.region
-            - name: CLUSTER_NAME
-              valueFrom:
-                configMapKeyRef:
-                  name: cluster-info
-                  key: cluster.name
-            - name: READ_FROM_HEAD
-              valueFrom:
-                configMapKeyRef:
-                  name: cluster-info
-                  key: read.head
-            - name: READ_FROM_TAIL
-              valueFrom:
-                configMapKeyRef:
-                  name: cluster-info
-                  key: read.tail
-            - name: HOST_NAME
-              valueFrom:
-                fieldRef:
-                  fieldPath: spec.nodeName
-            - name: FLB_LOG_LEVEL
-              valueFrom:
-                configMapKeyRef:
-                  name: cluster-info
-                  key: log.level
-            - name: NR_LICENSE_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: nr-license-key
-                  key: NEW_RELIC_LICENSE_KEY
-            - name: S3_BUCKET
-              valueFrom:
-                  configMapKeyRef:
-                    name: s3-raw-logs-bucket
-                    key: bucketName
-            - name: NR_CLUSTER_NAME
-              valueFrom:
-                configMapKeyRef:
-                  name: cluster-info
-                  key: newrelic_cluster_name
+        - name: AWS_REGION
+          valueFrom:
+            configMapKeyRef:
+              name: cluster-info
+              key: logs.region
+        - name: CLUSTER_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: cluster-info
+              key: cluster.name
+        - name: READ_FROM_HEAD
+          valueFrom:
+            configMapKeyRef:
+              name: cluster-info
+              key: read.head
+        - name: READ_FROM_TAIL
+          valueFrom:
+            configMapKeyRef:
+              name: cluster-info
+              key: read.tail
+        - name: HOST_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: FLB_LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: cluster-info
+              key: log.level
+        - name: NR_LICENSE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: nr-license-key
+              key: NEW_RELIC_LICENSE_KEY
+        - name: S3_BUCKET
+          valueFrom:
+            configMapKeyRef:
+              name: s3-raw-logs-bucket
+              key: bucketName
+        - name: NR_CLUSTER_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: cluster-info
+              key: newrelic_cluster_name
         livenessProbe:
           failureThreshold: 3
           httpGet:
@@ -148,14 +147,14 @@ spec:
           successThreshold: 1
           timeoutSeconds: 5
         resources:
-            limits:
-              memory: 200Mi
-            requests:
-              cpu: 200m
-              memory: 100Mi
+          limits:
+            memory: 200Mi
+          requests:
+            cpu: 200m
+            memory: 100Mi
         ports:
-          - containerPort: 2020
-            name: metrics
+        - containerPort: 2020
+          name: metrics
         volumeMounts:
         # Please don't change below read-only permissions
         - name: fluentbitstate
@@ -201,10 +200,10 @@ spec:
       - key: node-role.kubernetes.io/controlplane
         operator: Exists
         effect: NoSchedule
-      - operator: "Exists"
-        effect: "NoExecute"
-      - operator: "Exists"
-        effect: "NoSchedule"
+      - operator: Exists
+        effect: NoExecute
+      - operator: Exists
+        effect: NoSchedule
 ---
 kind: Service
 apiVersion: v1
@@ -216,5 +215,5 @@ spec:
   selector:
     k8s-app: fluent-bit
   ports:
-    - port: 2020
-      name: api
+  - port: 2020
+    name: api

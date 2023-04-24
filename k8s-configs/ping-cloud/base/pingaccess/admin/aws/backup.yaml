@@ -32,7 +32,7 @@ spec:
             name: pingcommon-environment-variables
         env:
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
-          value: "true"
+          value: 'true'
         volumeMounts:
         - name: pingaccess-backup
           mountPath: /opt/in/backup-archive-data.sh

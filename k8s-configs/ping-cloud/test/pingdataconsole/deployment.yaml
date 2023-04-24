@@ -10,7 +10,7 @@ spec:
     metadata:
       name: pingdataconsole
       annotations:
-        lastUpdateTime: "NA"
+        lastUpdateTime: NA
     spec:
       serviceAccount: ping-serviceaccount
       containers:

@@ -25,11 +25,11 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "256Mi"
-            cpu: "300m"
+            memory: 256Mi
+            cpu: 300m
           limits:
-            memory: "512Mi"
-            cpu: "500m"
+            memory: 512Mi
+            cpu: 500m
         envFrom:
         - configMapRef:
             name: p14c-bom-service-environment-variables
@@ -39,10 +39,10 @@ spec:
             fieldRef:
               fieldPath: metadata.namespace
         # The -u flag is necessary for python to emit logging to standard out
-        command: [ 'python3', '-u', '/app/bom_service_controller.py' ]
+        command: [python3, -u, /app/bom_service_controller.py]
         livenessProbe:
           exec:
-            command: [ 'python3', '-u', '/app/liveness.py'  ]
+            command: [python3, -u, /app/liveness.py]
           initialDelaySeconds: 60
           periodSeconds: 30
           failureThreshold: 3

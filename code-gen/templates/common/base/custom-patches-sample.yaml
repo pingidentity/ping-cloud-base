@@ -29,7 +29,6 @@ spec:
     kind: Deployment
     name: nginx-ingress-controller
   targetCPUUtilizationPercentage: 70
-
 ---
 
 ### Update the header size max for customers needing larger sized cookies/headers ###
@@ -39,8 +38,7 @@ metadata:
   name: nginx-configuration
   namespace: ingress-nginx-private
 data:
-  large_client_header_buffers: "4 128k"
-
+  large_client_header_buffers: 4 128k
 ---
 
 ### Update the header size max for customers needing larger sized cookies/headers ###
@@ -50,8 +48,7 @@ metadata:
   name: nginx-configuration
   namespace: ingress-nginx-public
 data:
-  large_client_header_buffers: "4 128k"
-
+  large_client_header_buffers: 4 128k
 ---
 
 ################################################
@@ -72,7 +69,6 @@ spec:
     kind: Deployment
     name: nginx-ingress-controller
   targetCPUUtilizationPercentage: 70
-
 ---
 
 ################################################
@@ -98,7 +94,6 @@ spec:
       resources:
         requests:
           storage: 40Gi
-
 ---
 
 ################################################
@@ -118,7 +113,6 @@ spec:
     apiVersion: apps/v1
     kind: StatefulSet
     name: logstash-elastic
-
 ---
 
 ### Update logstash replicas count and adjust resources
@@ -138,7 +132,7 @@ spec:
       name: cpu
       target:
         type: AverageValue
-        averageValue: "1.7"
+        averageValue: '1.7'
   - type: Resource
     resource:
       name: memory
@@ -155,19 +149,19 @@ spec:
   template:
     spec:
       containers:
-        - name: logstash
-          resources:
-            limits:
-              cpu: "2"
-              memory: 4Gi
-            requests:
-              cpu: "1"
-              memory: 2Gi
-          env:
-            - name: LS_JAVA_OPTS
-              value: '-Xms3500m -Xmx3500m'
-            - name: PIPELINE_WORKERS
-              value: "2"
+      - name: logstash
+        resources:
+          limits:
+            cpu: '2'
+            memory: 4Gi
+          requests:
+            cpu: '1'
+            memory: 2Gi
+        env:
+        - name: LS_JAVA_OPTS
+          value: -Xms3500m -Xmx3500m
+        - name: PIPELINE_WORKERS
+          value: '2'
 
 ---
 
@@ -203,11 +197,11 @@ spec:
       - name: pingdirectory
         resources:
           requests:
-            memory: "1Gi"
-            cpu: "1"
+            memory: 1Gi
+            cpu: '1'
           limits:
-            memory: "1Gi"
-            cpu: "1"
+            memory: 1Gi
+            cpu: '1'
 
 ---
 
@@ -240,11 +234,11 @@ spec:
       - name: pingaccess-was-admin
         resources:
           requests:
-            memory: "1Gi"
-            cpu: "1"
+            memory: 1Gi
+            cpu: '1'
           limits:
-            memory: "1Gi"
-            cpu: "1"
+            memory: 1Gi
+            cpu: '1'
 
 ---
 
@@ -262,11 +256,11 @@ spec:
       - name: pingaccess-was
         resources:
           requests:
-            memory: "1Gi"
-            cpu: "1"
+            memory: 1Gi
+            cpu: '1'
           limits:
-            memory: "1Gi"
-            cpu: "1"
+            memory: 1Gi
+            cpu: '1'
 
 ---
 
@@ -278,7 +272,6 @@ metadata:
   namespace: ping-cloud
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: 16m
-
 ---
 
 ### Update pingaccess-was backup cronjob to adjust schedule
@@ -288,8 +281,7 @@ metadata:
   name: pingaccess-was-periodic-backup
   namespace: ping-cloud
 spec:
-  schedule: "0 * * * *"
-
+  schedule: 0 * * * *
 ---
 ################################################
 #                PingFederate
@@ -320,11 +312,11 @@ spec:
       - name: pingfederate-admin
         resources:
           requests:
-            memory: "1Gi"
-            cpu: "1"
+            memory: 1Gi
+            cpu: '1'
           limits:
-            memory: "1Gi"
-            cpu: "1"
+            memory: 1Gi
+            cpu: '1'
 
 ---
 
@@ -341,11 +333,11 @@ spec:
       - name: pingfederate
         resources:
           requests:
-            memory: "1Gi"
-            cpu: "1"
+            memory: 1Gi
+            cpu: '1'
           limits:
-            memory: "1Gi"
-            cpu: "1"
+            memory: 1Gi
+            cpu: '1'
 
 ---
 
@@ -363,7 +355,6 @@ spec:
     kind: StatefulSet
     name: pingfederate
   targetCPUUtilizationPercentage: 70
-
 ---
 
 ### Update pingfederate backup cronjob to adjust schedule
@@ -373,8 +364,7 @@ metadata:
   name: pingfederate-periodic-backup
   namespace: ping-cloud
 spec:
-  schedule: "0 * * * *"
-
+  schedule: 0 * * * *
 ---
 
 ################################################
@@ -406,11 +396,11 @@ spec:
       - name: pingaccess-admin
         resources:
           requests:
-            memory: "1Gi"
-            cpu: "1"
+            memory: 1Gi
+            cpu: '1'
           limits:
-            memory: "1Gi"
-            cpu: "1"
+            memory: 1Gi
+            cpu: '1'
 
 ---
 
@@ -427,11 +417,11 @@ spec:
       - name: pingaccess
         resources:
           requests:
-            memory: "1Gi"
-            cpu: "1"
+            memory: 1Gi
+            cpu: '1'
           limits:
-            memory: "1Gi"
-            cpu: "1"
+            memory: 1Gi
+            cpu: '1'
 
 ---
 
@@ -449,7 +439,6 @@ spec:
     kind: StatefulSet
     name: pingaccess
   targetCPUUtilizationPercentage: 70
-
 ---
 
 ### Update pingaccess-was engine HPA min/max replicas and target CPU utilization ###
@@ -466,7 +455,6 @@ spec:
     kind: StatefulSet
     name: pingaccess
   targetCPUUtilizationPercentage: 70
-
 ---
 
 ### Update pingaccess backup cronjob to adjust schedule
@@ -476,8 +464,7 @@ metadata:
   name: pingaccess-periodic-backup
   namespace: ping-cloud
 spec:
-  schedule: "0 * * * *"
-
+  schedule: 0 * * * *
 ---
 
 ################################################
@@ -492,33 +479,32 @@ metadata:
 spec:
   instances:
     # Must specify entire instance definition because CRD replaces instead of merges list item
-    - name: instance1
-      replicas: 3
-      minAvailable: 1
+  - name: instance1
+    replicas: 3
+    minAvailable: 1
+    resources:
+      requests:
+        cpu: 2
+        memory: 2Gi
+    dataVolumeClaimSpec:
+      storageClassName: pgo-gp3
+      accessModes:
+      - ReadWriteOnce
       resources:
         requests:
-          cpu: 2
-          memory: 2Gi
-      dataVolumeClaimSpec:
-        storageClassName: pgo-gp3
-        accessModes:
-          - "ReadWriteOnce"
-        resources:
-          requests:
-            storage: 20Gi
-      affinity:
-        podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 1
-              podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                    - key: role
-                      operator: In
-                      values:
-                        - pf-provisioning
-                topologyKey: "topology.kubernetes.io/zone"
-
+          storage: 20Gi
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          podAffinityTerm:
+            labelSelector:
+              matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - pf-provisioning
+            topologyKey: topology.kubernetes.io/zone
 ---
 
 ################################################
@@ -534,5 +520,3 @@ metadata:
   name: pf-provisioning
   annotations:
     postgres-operator.crunchydata.com/pgbackrest-restore: id1
-
----

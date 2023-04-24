@@ -1,4 +1,3 @@
----
 # Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/mutatingWebhookConfiguration.yaml
 
 apiVersion: admissionregistration.k8s.io/v1
@@ -17,13 +16,13 @@ webhooks:
     service:
       name: nri-bundle-nri-metadata-injection
       namespace: newrelic
-      path: "/mutate"
-    caBundle: ""
+      path: /mutate
+    caBundle: ''
   rules:
-  - operations: ["CREATE"]
-    apiGroups: [""]
-    apiVersions: ["v1"]
-    resources: ["pods"]
+  - operations: [CREATE]
+    apiGroups: ['']
+    apiVersions: [v1]
+    resources: [pods]
   failurePolicy: Ignore
   timeoutSeconds: 30
   sideEffects: None

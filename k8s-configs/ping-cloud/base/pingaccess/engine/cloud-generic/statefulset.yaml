@@ -21,22 +21,22 @@ spec:
         role: pingaccess-engine
         pod-reaper: enabled
       annotations:
-        lastUpdateReason: "NA"
+        lastUpdateReason: NA
     spec:
       serviceAccountName: ping-serviceaccount
       affinity:
         podAntiAffinity:
           # Add a soft requirement for each PA runtime pod to be deployed to a different AZ
           preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 1
-              podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                    - key: role
-                      operator: In
-                      values:
-                        - pingaccess-engine
-                topologyKey: "topology.kubernetes.io/zone"
+          - weight: 1
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: role
+                  operator: In
+                  values:
+                  - pingaccess-engine
+              topologyKey: topology.kubernetes.io/zone
       initContainers:
       - name: pingaccess-init
         securityContext:
@@ -111,11 +111,11 @@ spec:
             optional: false
         env:
         - name: NEW_RELIC_APP_NAME
-          value: "pingaccess"
+          value: pingaccess
         - name: METADATA_EP_URL
-          value: "http://metadata:5000"
+          value: http://metadata:5000
         - name: NEW_RELIC_CONFIG_FILEPATH
-          value: "/opt/shared-dir/newrelic.yml"
+          value: /opt/shared-dir/newrelic.yml
         - name: NAMESPACE
           valueFrom:
             fieldRef:
@@ -125,7 +125,7 @@ spec:
             fieldRef:
               fieldPath: metadata.name
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
-          value: "true"
+          value: 'true'
         volumeMounts:
         - name: shared-dir
           mountPath: /opt/shared-dir
@@ -140,10 +140,10 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "2Gi"
+            memory: 2Gi
             cpu: 1
           limits:
-            memory: "2Gi"
+            memory: 2Gi
             cpu: 1
         volumeMounts:
         - name: ssh-dir
@@ -173,14 +173,14 @@ spec:
           subPath: ds_env_vars
         readinessProbe:
           exec:
-            command: [ /opt/staging/hooks/99-pa-engine-liveness.sh ]
+            command: [/opt/staging/hooks/99-pa-engine-liveness.sh]
           initialDelaySeconds: 60
           periodSeconds: 5
           failureThreshold: 3
           timeoutSeconds: 5
         livenessProbe:
           exec:
-            command: [ /opt/staging/hooks/99-pa-engine-liveness.sh ]
+            command: [/opt/staging/hooks/99-pa-engine-liveness.sh]
           initialDelaySeconds: 60
           periodSeconds: 30
           failureThreshold: 4
@@ -203,9 +203,9 @@ spec:
               name: pingaccess-passwords
               key: PA_ADMIN_USER_PASSWORD
         - name: NEW_RELIC_CONFIG_FILE
-          value: "/opt/shared-dir/newrelic.yml"
+          value: /opt/shared-dir/newrelic.yml
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
-          value: "true"
+          value: 'true'
         envFrom:
         - configMapRef:
             name: pingaccess-environment-variables
@@ -221,20 +221,20 @@ spec:
         image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-json-exporter/dev:v1.19-release-branch-latest
         imagePullPolicy: Always
         env:
-          - name: SERVICE_SHORTNAME
-            value: pa
-          - name: SERVICE_PORT
-            value: "3000"
-          - name: REPEAT_SEC
-            value: "10"
+        - name: SERVICE_SHORTNAME
+          value: pa
+        - name: SERVICE_PORT
+          value: '3000'
+        - name: REPEAT_SEC
+          value: '10'
         ports:
-          - containerPort: 8079
-            name: pa-heartbeat
-            protocol: TCP
+        - containerPort: 8079
+          name: pa-heartbeat
+          protocol: TCP
         volumeMounts:
-          - mountPath: /opt/config.yml
-            subPath: config.yml
-            name: pa-exporter-config
+        - mountPath: /opt/config.yml
+          subPath: config.yml
+          name: pa-exporter-config
         resources:
           limits:
             cpu: 100m

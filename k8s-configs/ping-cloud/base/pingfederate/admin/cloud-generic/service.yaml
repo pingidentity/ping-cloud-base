@@ -14,7 +14,6 @@ spec:
     targetPort: pf-admin
   selector:
     role: pingfederate-admin
-
 ---
 
 #
@@ -25,20 +24,20 @@ kind: Service
 metadata:
   name: pingfederate-cluster
   annotations:
-    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: 'true'
     external-dns.alpha.kubernetes.io/hostname: pingfederate-cluster-dev.ping-demo.com
 spec:
   publishNotReadyAddresses: true
   clusterIP: None
   ports:
-    - name: pingfederate-cluster-bind
-      protocol: TCP
-      port: 7600
-      targetPort: 7600
-    - name: pingfederate-cluster-health
-      protocol: TCP
-      port: 7700
-      targetPort: 7700
+  - name: pingfederate-cluster-bind
+    protocol: TCP
+    port: 7600
+    targetPort: 7600
+  - name: pingfederate-cluster-health
+    protocol: TCP
+    port: 7700
+    targetPort: 7700
   selector:
-     cluster: pingfederate-cluster
+    cluster: pingfederate-cluster
 

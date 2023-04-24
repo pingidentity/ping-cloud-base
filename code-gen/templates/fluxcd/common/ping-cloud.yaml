@@ -7,7 +7,6 @@ metadata:
   name: ${PING_CLOUD_NAMESPACE}
   labels:
     app: ${PING_CLOUD_NAMESPACE}
-
 ---
 
 apiVersion: v1
@@ -28,5 +27,5 @@ metadata:
   name: known-hosts-config
   namespace: ${PING_CLOUD_NAMESPACE}
 data:
-  known_hosts: |
+  known_hosts: |-
     ${KNOWN_HOSTS_CLUSTER_STATE_REPO}

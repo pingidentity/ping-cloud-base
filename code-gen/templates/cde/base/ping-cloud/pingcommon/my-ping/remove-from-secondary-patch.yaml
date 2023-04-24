@@ -3,7 +3,6 @@ kind: Deployment
 metadata:
   name: p14c-bootstrap
 $patch: delete
-
 ---
 
 apiVersion: apps/v1
@@ -11,7 +10,6 @@ kind: Deployment
 metadata:
   name: p14c-bom-service
 $patch: delete
-
 ---
 
 apiVersion: apps/v1
@@ -19,7 +17,6 @@ kind: Deployment
 metadata:
   name: p14c-oauth-service
 $patch: delete
-
 ---
 
 apiVersion: batch/v1
@@ -27,7 +24,6 @@ kind: Job
 metadata:
   name: pingone-configurator
 $patch: delete
-
 ---
 
 apiVersion: apps/v1
@@ -40,6 +36,3 @@ spec:
       initContainers:
       - name: pingfederate-p14c-init
         $patch: delete
-
----
-

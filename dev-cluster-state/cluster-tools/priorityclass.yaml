@@ -8,4 +8,4 @@ metadata:
   name: cluster-tool-daemonset-priority
 value: 50
 globalDefault: false
-description: "Make sure cluster-tool daemonsets always get deployed on a busy node"
+description: Make sure cluster-tool daemonsets always get deployed on a busy node

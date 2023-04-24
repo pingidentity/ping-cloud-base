@@ -41,7 +41,7 @@ data:
       fi
     fi
     DNS_LIST=$(echo "${DN_LIST}" | tr ';' ' ')
-    
+
     pause_replication () {
       if "${PAUSE_REPLICATION_BEFORE_RESTORE}" && test ${NUM_REPLICAS} -gt 1; then
         echo "Executing pre-initialization from within ${SERVER} pod for DNs: ${DNS_LIST}"
@@ -114,12 +114,11 @@ metadata:
     class: pingdirectory-server
 spec:
   accessModes:
-    - ReadWriteOnce
+  - ReadWriteOnce
   storageClassName: pingdirectory-gp3
   resources:
     requests:
       storage: 40Gi
-
 ---
 # A manual restore can be performed by deploying this job. It will restore
 # data that was backed up by the periodic backup job to pingdirectory-0. All other servers
@@ -165,7 +164,7 @@ spec:
             name: pingcommon-environment-variables
         env:
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
-          value: "true"
+          value: 'true'
       volumes:
       - name: restore-script
         configMap:

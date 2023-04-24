@@ -12,7 +12,7 @@ patchesJson6902:
     version: v1
     kind: Ingress
     name: pingaccess-admin-ext-ingress
-  patch: |
+  patch: |-
     - op: replace
       path: /spec/tls/0/hosts/0
       value: ext-pingaccess-admin-api.${DNS_ZONE}

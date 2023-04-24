@@ -6,8 +6,8 @@ metadata:
   name: pingdelegator
 spec:
   ports:
-    - port: 1443
-      name: pingdelegator
-      targetPort: https
+  - port: 1443
+    name: pingdelegator
+    targetPort: https
   selector:
     role: pingdelegator

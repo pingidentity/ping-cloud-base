@@ -1,4 +1,3 @@
----
 # Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/clusterrolebinding.yaml
 
 apiVersion: rbac.authorization.k8s.io/v1
@@ -20,10 +19,9 @@ roleRef:
   kind: ClusterRole
   name: nri-bundle-nri-metadata-injection-admission
 subjects:
-  - kind: ServiceAccount
-    name: nri-bundle-nri-metadata-injection-admission
-    namespace: newrelic
-
+- kind: ServiceAccount
+  name: nri-bundle-nri-metadata-injection-admission
+  namespace: newrelic
 ---
 # Source: nri-bundle/charts/kube-state-metrics/templates/clusterrolebinding.yaml
 
@@ -44,7 +42,6 @@ subjects:
 - kind: ServiceAccount
   name: nri-bundle-kube-state-metrics
   namespace: newrelic
-
 ---
 # Source: nri-bundle/charts/newrelic-infrastructure/templates/clusterrolebinding.yaml
 
@@ -66,7 +63,6 @@ subjects:
 - kind: ServiceAccount
   name: nri-bundle-newrelic-infrastructure
   namespace: newrelic
-
 ---
 # Source: nri-bundle/charts/nri-kube-events/templates/clusterrolebinding.yaml
 
@@ -88,7 +84,6 @@ subjects:
 - kind: ServiceAccount
   name: nri-bundle-nri-kube-events
   namespace: newrelic
-
 ---
 # Source: nri-bundle/charts/newrelic-infrastructure/templates/controlplane/clusterrolebinding.yaml
 
@@ -107,10 +102,9 @@ roleRef:
   kind: ClusterRole
   name: nri-bundle-nrk8s-controlplane
 subjects:
-  - kind: ServiceAccount
-    name: nri-bundle-newrelic-infrastructure-controlplane
-    namespace: newrelic
-
+- kind: ServiceAccount
+  name: nri-bundle-newrelic-infrastructure-controlplane
+  namespace: newrelic
 ---
 # Source: nri-bundle/charts/nri-prometheus/templates/clusterrolebinding.yaml
 

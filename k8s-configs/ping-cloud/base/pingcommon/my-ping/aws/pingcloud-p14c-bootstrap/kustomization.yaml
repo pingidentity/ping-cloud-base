@@ -13,7 +13,7 @@ generatorOptions:
 configMapGenerator:
 - name: pingcloud-p14c-bootstrap-resources
   files:
-    - p14c-bootstrap-resources.yaml
+  - p14c-bootstrap-resources.yaml
 
 - name: pingcloud-p14c-bootstrap-environment-variables
   envs:

@@ -22,10 +22,10 @@ spec:
       labels:
         cluster: pingaccess-cluster
         role: pingaccess-admin
-        entitled-app: "true"
+        entitled-app: 'true'
         pod-reaper: enabled
       annotations:
-        lastUpdateReason: "NA"
+        lastUpdateReason: NA
     spec:
       serviceAccountName: ping-serviceaccount
       initContainers:
@@ -102,11 +102,11 @@ spec:
             optional: false
         env:
         - name: NEW_RELIC_APP_NAME
-          value: "pingaccess-admin"
+          value: pingaccess-admin
         - name: METADATA_EP_URL
-          value: "http://metadata:5000"
+          value: http://metadata:5000
         - name: NEW_RELIC_CONFIG_FILEPATH
-          value: "/opt/shared-dir/newrelic.yml"
+          value: /opt/shared-dir/newrelic.yml
         - name: NAMESPACE
           valueFrom:
             fieldRef:
@@ -116,7 +116,7 @@ spec:
             fieldRef:
               fieldPath: metadata.name
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
-          value: "true"
+          value: 'true'
         volumeMounts:
         - name: shared-dir
           mountPath: /opt/shared-dir
@@ -131,10 +131,10 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "4Gi"
+            memory: 4Gi
             cpu: 2
           limits:
-            memory: "4Gi"
+            memory: 4Gi
             cpu: 2
         volumeMounts:
         - name: ssh-dir
@@ -166,14 +166,14 @@ spec:
           subPath: ds_env_vars
         readinessProbe:
           exec:
-            command: [ /opt/staging/hooks/85-pa-admin-readiness.sh ]
+            command: [/opt/staging/hooks/85-pa-admin-readiness.sh]
           initialDelaySeconds: 60
           periodSeconds: 5
           failureThreshold: 3
           timeoutSeconds: 5
         livenessProbe:
           exec:
-            command: [ /opt/staging/hooks/99-pa-admin-liveness.sh ]
+            command: [/opt/staging/hooks/99-pa-admin-liveness.sh]
           initialDelaySeconds: 60
           periodSeconds: 30
           failureThreshold: 4
@@ -185,7 +185,7 @@ spec:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_CONSOLE
         - name: HTTPS_PORT
-          value: "9090"
+          value: '9090'
         - name: OLD_PA_ADMIN_USER_PASSWORD
           valueFrom:
             secretKeyRef:
@@ -197,9 +197,9 @@ spec:
               name: pingaccess-passwords
               key: PA_ADMIN_USER_PASSWORD
         - name: NEW_RELIC_CONFIG_FILE
-          value: "/opt/shared-dir/newrelic.yml"
+          value: /opt/shared-dir/newrelic.yml
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
-          value: "true"
+          value: 'true'
         envFrom:
         - configMapRef:
             name: pingaccess-admin-environment-variables

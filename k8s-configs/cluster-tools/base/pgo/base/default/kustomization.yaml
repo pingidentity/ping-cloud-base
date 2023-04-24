@@ -18,7 +18,7 @@ images:
   newTag: ubi8-5.1.3-0
 
 patchesJson6902:
-- target: { group: apps, version: v1, kind: Deployment, name: pgo }
+- target: {group: apps, version: v1, kind: Deployment, name: pgo}
   path: selectors.yaml
-- target: { group: apps, version: v1, kind: Deployment, name: pgo-upgrade }
+- target: {group: apps, version: v1, kind: Deployment, name: pgo-upgrade}
   path: selectors.yaml

@@ -9313,7 +9313,7 @@ metadata:
   name: argocd-application-controller
 rules:
 - apiGroups:
-  - ""
+  - ''
   resources:
   - secrets
   - configmaps
@@ -9335,7 +9335,7 @@ rules:
   - patch
   - delete
 - apiGroups:
-  - ""
+  - ''
   resources:
   - events
   verbs:
@@ -9380,7 +9380,7 @@ rules:
   - patch
   - update
 - apiGroups:
-  - ""
+  - ''
   resources:
   - events
   verbs:
@@ -9390,7 +9390,7 @@ rules:
   - patch
   - watch
 - apiGroups:
-  - ""
+  - ''
   resources:
   - secrets
   - configmaps
@@ -9418,7 +9418,7 @@ metadata:
   name: argocd-dex-server
 rules:
 - apiGroups:
-  - ""
+  - ''
   resources:
   - secrets
   - configmaps
@@ -9444,7 +9444,7 @@ rules:
   - update
   - patch
 - apiGroups:
-  - ""
+  - ''
   resources:
   - configmaps
   - secrets
@@ -9452,7 +9452,7 @@ rules:
   - list
   - watch
 - apiGroups:
-  - ""
+  - ''
   resourceNames:
   - argocd-notifications-cm
   resources:
@@ -9460,7 +9460,7 @@ rules:
   verbs:
   - get
 - apiGroups:
-  - ""
+  - ''
   resourceNames:
   - argocd-notifications-secret
   resources:
@@ -9478,7 +9478,7 @@ metadata:
   name: argocd-server
 rules:
 - apiGroups:
-  - ""
+  - ''
   resources:
   - secrets
   - configmaps
@@ -9505,7 +9505,7 @@ rules:
   - delete
   - patch
 - apiGroups:
-  - ""
+  - ''
   resources:
   - events
   verbs:
@@ -9550,13 +9550,13 @@ rules:
   - get
   - patch
 - apiGroups:
-  - ""
+  - ''
   resources:
   - events
   verbs:
   - list
 - apiGroups:
-  - ""
+  - ''
   resources:
   - pods
   - pods/log
@@ -10192,9 +10192,9 @@ spec:
       containers:
       - args:
         - --save
-        - ""
+        - ''
         - --appendonly
-        - "no"
+        - no
         image: redis:7.0.5-alpine
         imagePullPolicy: Always
         name: redis
@@ -10803,7 +10803,7 @@ spec:
         - argocd-application-controller
         env:
         - name: ARGOCD_CONTROLLER_REPLICAS
-          value: "1"
+          value: '1'
         - name: ARGOCD_RECONCILIATION_TIMEOUT
           valueFrom:
             configMapKeyRef:

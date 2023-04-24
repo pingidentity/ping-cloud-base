@@ -15,9 +15,9 @@ resources:
 configMapGenerator:
 - name: prometheus-environment-variables
   envs:
-    - env_vars
+  - env_vars
 
 - name: prom-alerts
   files:
-   - default-rule.yml
-   - logging.yml
+  - default-rule.yml
+  - logging.yml

@@ -22,10 +22,10 @@ spec:
       labels:
         cluster: pingfederate-cluster
         role: pingfederate-admin
-        entitled-app: "true"
+        entitled-app: 'true'
         pod-reaper: enabled
       annotations:
-        lastUpdateReason: "NA"
+        lastUpdateReason: NA
     spec:
       serviceAccountName: pingfederate-admin-serviceaccount
       initContainers:
@@ -42,7 +42,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        command: [ 'python3', '-u', '/app/pingfederate_p1_init.py' ]
+        command: [python3, -u, /app/pingfederate_p1_init.py]
         volumeMounts:
         - name: data-dir
           mountPath: /opt/staging
@@ -97,11 +97,11 @@ spec:
             optional: false
         env:
         - name: NEW_RELIC_APP_NAME
-          value: "pingfederate-admin"
+          value: pingfederate-admin
         - name: METADATA_EP_URL
-          value: "http://metadata:5000"
+          value: http://metadata:5000
         - name: NEW_RELIC_CONFIG_FILEPATH
-          value: "/opt/shared-dir/newrelic.yml"
+          value: /opt/shared-dir/newrelic.yml
         - name: NAMESPACE
           valueFrom:
             fieldRef:
@@ -111,7 +111,7 @@ spec:
             fieldRef:
               fieldPath: metadata.name
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
-          value: "true"
+          value: 'true'
         volumeMounts:
         - name: shared-dir
           mountPath: /opt/shared-dir
@@ -188,9 +188,9 @@ spec:
               name: pingcommon-passwords
               key: DA_OAUTH_TOKEN_VALIDATOR_SECRET
         - name: NEW_RELIC_CONFIG_FILE
-          value: "/opt/shared-dir/newrelic.yml"
+          value: /opt/shared-dir/newrelic.yml
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
-          value: "true"
+          value: 'true'
         envFrom:
         - configMapRef:
             name: pingfederate-admin-environment-variables
@@ -201,10 +201,10 @@ spec:
             optional: false
         resources:
           requests:
-            memory: "2Gi"
+            memory: 2Gi
             cpu: 1
           limits:
-            memory: "2Gi"
+            memory: 2Gi
             cpu: 1
         volumeMounts:
         - name: ssh-dir
@@ -247,14 +247,14 @@ spec:
           name: podinfo
         readinessProbe:
           exec:
-            command: [ /opt/staging/hooks/85-pf-admin-readiness.sh ]
+            command: [/opt/staging/hooks/85-pf-admin-readiness.sh]
           initialDelaySeconds: 90
           periodSeconds: 5
           failureThreshold: 3
           timeoutSeconds: 5
         livenessProbe:
           exec:
-            command: [ /opt/staging/hooks/99-pf-admin-liveness.sh ]
+            command: [/opt/staging/hooks/99-pf-admin-liveness.sh]
           initialDelaySeconds: 90
           periodSeconds: 30
           failureThreshold: 3
@@ -268,22 +268,22 @@ spec:
       - name: podinfo
         downwardAPI:
           items:
-            - path: labels
-              fieldRef:
-                fieldPath: metadata.labels
-            - path: annotations
-              fieldRef:
-                fieldPath: metadata.annotations
-            - path: cpu_limit
-              resourceFieldRef:
-                containerName: pingfederate-admin
-                divisor: 1m
-                resource: limits.cpu
-            - path: cpu_request
-              resourceFieldRef:
-                containerName: pingfederate-admin
-                divisor: 1m
-                resource: requests.cpu
+          - path: labels
+            fieldRef:
+              fieldPath: metadata.labels
+          - path: annotations
+            fieldRef:
+              fieldPath: metadata.annotations
+          - path: cpu_limit
+            resourceFieldRef:
+              containerName: pingfederate-admin
+              divisor: 1m
+              resource: limits.cpu
+          - path: cpu_request
+            resourceFieldRef:
+              containerName: pingfederate-admin
+              divisor: 1m
+              resource: requests.cpu
       - name: ssh-dir
         emptyDir: {}
       - name: shared-dir

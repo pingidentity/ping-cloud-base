@@ -21,7 +21,7 @@ spec:
         role: pingaccess-was-engine
         pod-reaper: enabled
       annotations:
-        lastUpdateReason: "NA"
+        lastUpdateReason: NA
     spec:
       serviceAccountName: ping-serviceaccount
       affinity:
@@ -36,7 +36,7 @@ spec:
                   operator: In
                   values:
                   - pingaccess-was-engine
-              topologyKey: "topology.kubernetes.io/zone"
+              topologyKey: topology.kubernetes.io/zone
       initContainers:
       - name: pingaccess-was-init
         securityContext:
@@ -111,11 +111,11 @@ spec:
             optional: false
         env:
         - name: NEW_RELIC_APP_NAME
-          value: "pingaccess-was"
+          value: pingaccess-was
         - name: METADATA_EP_URL
-          value: "http://metadata:5000"
+          value: http://metadata:5000
         - name: NEW_RELIC_CONFIG_FILEPATH
-          value: "/opt/shared-dir/newrelic.yml"
+          value: /opt/shared-dir/newrelic.yml
         - name: NAMESPACE
           valueFrom:
             fieldRef:
@@ -125,7 +125,7 @@ spec:
             fieldRef:
               fieldPath: metadata.name
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
-          value: "true"
+          value: 'true'
         volumeMounts:
         - name: shared-dir
           mountPath: /opt/shared-dir
@@ -140,10 +140,10 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "1280Mi"
+            memory: 1280Mi
             cpu: 100m
           limits:
-            memory: "2560Mi"
+            memory: 2560Mi
             cpu: 1
         volumeMounts:
         - name: ssh-dir
@@ -170,14 +170,14 @@ spec:
           subPath: ds_env_vars
         readinessProbe:
           exec:
-            command: [ /opt/staging/hooks/99-pa-was-engine-liveness.sh ]
+            command: [/opt/staging/hooks/99-pa-was-engine-liveness.sh]
           initialDelaySeconds: 60
           periodSeconds: 5
           failureThreshold: 3
           timeoutSeconds: 5
         livenessProbe:
           exec:
-            command: [ /opt/staging/hooks/99-pa-was-engine-liveness.sh ]
+            command: [/opt/staging/hooks/99-pa-was-engine-liveness.sh]
           initialDelaySeconds: 60
           periodSeconds: 30
           failureThreshold: 3
@@ -198,9 +198,9 @@ spec:
               name: pingaccess-was-passwords
               key: PA_ADMIN_USER_PASSWORD
         - name: NEW_RELIC_CONFIG_FILE
-          value: "/opt/shared-dir/newrelic.yml"
+          value: /opt/shared-dir/newrelic.yml
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
-          value: "true"
+          value: 'true'
         envFrom:
         - configMapRef:
             name: pingaccess-was-environment-variables

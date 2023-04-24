@@ -19,16 +19,16 @@ spec:
       - name: prometheus
         image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/prom/prometheus:v2.42.0
         args:
-          - "--config.file=/etc/prometheus/prometheus.yml"
-          - "--web.enable-lifecycle"
-          - "--enable-feature=agent"
-          - "--enable-feature=expand-external-labels"
+        - --config.file=/etc/prometheus/prometheus.yml
+        - --web.enable-lifecycle
+        - --enable-feature=agent
+        - --enable-feature=expand-external-labels
         envFrom:
-          - configMapRef:
-              name: prometheus-environment-variables
+        - configMapRef:
+            name: prometheus-environment-variables
         volumeMounts:
-          - name: prometheus-config-volume
-            mountPath: /etc/prometheus/
+        - name: prometheus-config-volume
+          mountPath: /etc/prometheus/
         ports:
         - containerPort: 9090
         resources:
@@ -42,6 +42,3 @@ spec:
       - name: prometheus-config-volume
         configMap:
           name: prometheus-agent-config
-
-
----

@@ -9,6 +9,6 @@ generatorOptions:
 configMapGenerator:
 - name: logstash-pipeline-alerts
   files:
-    - 01-input.conf
-    - 02-filters.conf
-    - 03-output.conf
+  - 01-input.conf
+  - 02-filters.conf
+  - 03-output.conf

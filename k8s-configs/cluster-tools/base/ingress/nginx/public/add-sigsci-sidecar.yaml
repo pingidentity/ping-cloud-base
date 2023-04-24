@@ -1,14 +1,14 @@
 - op: add
   path: /spec/template/spec/volumes
   value:
-    - emptyDir: {}
-      name: sigsci-socket
+  - emptyDir: {}
+    name: sigsci-socket
 
 - op: add
   path: /spec/template/spec/containers/0/volumeMounts
   value:
-    - mountPath: /var/run/
-      name: sigsci-socket
+  - mountPath: /var/run/
+    name: sigsci-socket
 
 - op: add
   path: /spec/template/spec/containers/-
@@ -20,7 +20,7 @@
       allowPrivilegeEscalation: false
       capabilities:
         drop:
-          - ALL 
+        - ALL
       # SigSci needs to be able to write to the root fs
       readOnlyRootFilesystem: false
       runAsNonRoot: true

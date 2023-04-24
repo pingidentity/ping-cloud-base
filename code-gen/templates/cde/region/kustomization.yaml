@@ -185,19 +185,19 @@ configMapGenerator:
 - name: logging-bootstrap-environment-variables
   behavior: merge
   literals:
-    - SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX}
-    - REGION=${REGION}
+  - SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX}
+  - REGION=${REGION}
 
 - name: elk-environment-variables
   behavior: merge
   envs:
-    - logging/env_vars
+  - logging/env_vars
 
 - name: prometheus-environment-variables
   behavior: merge
   envs:
-    - ../base/env_vars
-    - env_vars
+  - ../base/env_vars
+  - env_vars
 
 patchesStrategicMerge:
 

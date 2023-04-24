@@ -10,7 +10,7 @@ kind: Secret
 metadata:
   name: argo-git-deploy
   annotations:
-    sealedsecrets.bitnami.com/managed: "true"
+    sealedsecrets.bitnami.com/managed: 'true'
     managed-by: argocd.argoproj.io
 type: Opaque
 ---

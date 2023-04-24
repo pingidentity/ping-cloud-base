@@ -2,4 +2,4 @@
 - op: add
   path: /data
   value:
-    2083: "ping-cloud/pingfederate:2083"
+    2083: ping-cloud/pingfederate:2083

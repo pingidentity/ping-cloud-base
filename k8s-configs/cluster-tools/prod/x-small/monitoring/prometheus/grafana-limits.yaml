@@ -7,11 +7,11 @@ spec:
   template:
     spec:
       containers:
-        - name: grafana
-          resources:
-            limits:
-              cpu: "250m"
-              memory: "1300Mi"
-            requests:
-              cpu: "100m"
-              memory: "800Mi"
+      - name: grafana
+        resources:
+          limits:
+            cpu: 250m
+            memory: 1300Mi
+          requests:
+            cpu: 100m
+            memory: 800Mi

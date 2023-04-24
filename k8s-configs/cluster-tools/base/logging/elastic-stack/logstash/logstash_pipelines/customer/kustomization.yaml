@@ -6,6 +6,6 @@ namespace: elastic-stack-logging
 configMapGenerator:
 - name: logstash-pipeline-customer
   files:
-    - 01-input.conf
-    - 02-filters.conf
-    - 99-outputs.conf
+  - 01-input.conf
+  - 02-filters.conf
+  - 99-outputs.conf

@@ -2,14 +2,12 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: known-hosts-config
-
 ---
 
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: topology-descriptor
-
 ---
 
 apiVersion: v1

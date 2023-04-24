@@ -15,7 +15,6 @@ subjects:
 - kind: ServiceAccount
   name: kube-state-metrics
   namespace: kube-system
-
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -27,7 +26,7 @@ metadata:
   name: kube-state-metrics
 rules:
 - apiGroups:
-  - ""
+  - ''
   resources:
   - configmaps
   - secrets
@@ -126,7 +125,6 @@ rules:
   verbs:
   - list
   - watch
-
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -178,7 +176,6 @@ spec:
           readOnlyRootFilesystem: true
           runAsUser: 65534
       serviceAccountName: kube-state-metrics
-
 ---
 apiVersion: v1
 automountServiceAccountToken: false
@@ -190,7 +187,6 @@ metadata:
     app.kubernetes.io/version: 2.6.0
   name: kube-state-metrics
   namespace: kube-system
-
 ---
 apiVersion: v1
 kind: Service
