@@ -46,6 +46,7 @@
 - Add ArgoCD ApplicationSet support for multiple CDEs
 - Flag in env_var to enable/disable external ingresses for admin endpoints
 - Fix test that file has been copied is not working in init container
+- Update default version of pf-pingid-integration-kit to 2.24.0 in PingFederate
 - Deploy ArgoCD to customer-hub only
 - Fix the ArgoCD App name
 - Add ArgoCD IRSA role
@@ -55,10 +56,17 @@
 - Updated StorageClass provisoner to CSI and type to gp3
 - Add logstash and fluent-bit metrics to prometheus
 - Enable bootstrapping a new customer with ArgoCD
+- Add a new hook script '02-health-check.sh' to support readiness and liveness probes
 - Add logstash/fluent-bit readiness/liveness probe
-- Add priorityClassName into CAWAgent daemonset
+- Add priorityClassName into CWAgent daemonset
 - Fluent-bit pods stuck in pending state
 - Add logstash and fluent-bit alerts
+- Fix Kibana Visualization "Ping Access - Response Codes Over Time"
+- No longer move files into custom-resources directory when upgrading
+- Set 7-day-retention policy to all backup jobs logs
+- Configure Fluent-bit kubernetes filter to prevent caching for statefulsets
+- Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
+- Allow configuration of certain ArgoCD values per-CDE
 
 _Changes:_
 
@@ -67,7 +75,10 @@ _Changes:_
 - [X] PDO-3834 Updated StorageClass type to gp3
 - [X] PDO-3908 Clean up P1 artifacts in Admin environment during CI/CD teardown
 - [X] PDO-4009 Update k8s StorageClass provisoner to use CSI driver
+- [X] PDO-4161 [need before EKS 1.25] Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
+- [X] PDO-4309 Add integration test for PingDirectory Java args 
 - [X] PDO-4388 Flag in env_var to enable/disable external ingresses for admin endpoints
+- [X] PDO-4548 Find and destroy file moving to custom-resources code from generate-cluster-state.sh to fix reoccuring issue when upgrading
 - [X] PDO-4556 [need before EKS 1.25] batch/v1beta1 CronJob is deprecated in v1.21+, unavailable in v1.25+; use batch/v1 CronJob
 - [X] PDO-4575 Upgrade ArgoCD to v2.5.5
 - [X] PDO-4697 Update cluster tools to latest version: cluster-autoscaler v1.23.0
@@ -85,6 +96,7 @@ _Changes:_
 - [X] PDO-4773 Update generate-cluster-state script to create base and region values.yaml files
 - [X] PDO-4774 Update generate-cluster-state script to massage the new code-gen structure files into the new CSR structure
 - [X] PDO-4775 Add new ArgoCD application definition to PCB
+- [X] PDO-4777 Create gitlab-ci for CSR
 - [X] PDO-4780 Move tag-release.sh and PCB ci-scripts to shared location
 - [X] PDO-4817 Remove SIEM console logging for PA/PF
 - [X] PDO-4818 Add multiple USER_BASE_DNs and BACKEND_IDs env vars
@@ -114,6 +126,7 @@ _Changes:_
 - [X] PDO-4997 Update values.yaml in region and base path sync with env_vars file
 - [X] PDO-5008 Update tagging script to return correct tag
 - [X] PDO-5009 Add logstash HPA and upgrade resources
+- [X] PDO-5017 Use SUPPORTED_ENVIRONMENT_TYPES for generate/update scripts
 - [X] PDO-5018 PGO resources - handle secondary region v1.18
 - [X] PDO-5025 Improve fluent-bit multiline log parsing
 - [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone 
@@ -121,16 +134,27 @@ _Changes:_
 - [X] PDO-5041 node-role.kubernetes.io/master (deprecated)
 - [X] PDO-5043 Legacy Logging Mode: Remove Feature Flag, Code Logic and Refactor Filters
 - [X] PDO-5080 Test that file has been copied is not working in init container
+- [X] PDO-5090 Update default version of pf-pingid-integration-kit to 2.24.0 in PingFederate
 - [X] PDO-5104 Update Prometheus CPU/MEM limits
 - [X] PDO-5107 Fluent-bit pods stuck in pending state
 - [X] PDO-5123 Update PD backups and restore scripts to run on external persistant volumes
 - [X] PDO-5124 Enable bootstrapping a new customer with ArgoCD
 - [X] PDO-5131 Pods (typically cloudwatch) Stuck in pending state
+- [X] PDO-5138 Add a new hook script '02-health-check.sh' to support readiness and liveness probes 
 - [X] PDO-5141 Fix the ArgoCD App name
 - [X] PDO-5143 Add logstash and fluent-bit alerts
 - [X] PDO-5144 Add logstash/fluent-bit readiness/liveness probe
 - [X] PDO-5147 Add logstash metrics to prometheus
 - [X] PDO-5148 Modify Prometheus query for all backup alerting to only include the primary pod
+- [X] PDO-5191 Update image_map to align with tagging process
+- [X] PDO-5221 'Field "responseCode.keyword" not found' on the 'Ping Access - Response Codes Over Time' visualization
+- [X] PDO-5223 Remove pa-was config for ArgoCD from non customer-hub CDEs
+- [X] PDO-5232 Configure Fluent-bit kubernetes filter to prevent caching for statefulsets
+- [X] PDO-5255 Allow configuration of certain ArgoCD values per-CDE
+- [X] PDO-5261 Remove PF and PA from pa-was config in customer-hub
+- [X] PDO-5264 Set 7-day-retention policy to all backup jobs logs
+- [X] PDO-5298 Bugfix - make scripts compatible with Debian
+- [X] PDO-5315 Bugfix - argocd-bootstrap to use region specific env vars
 
 ### 1.17.0.0
 
