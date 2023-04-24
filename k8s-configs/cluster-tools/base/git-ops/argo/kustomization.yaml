@@ -63,7 +63,7 @@ patchesStrategicMerge:
           ignoreDifferences: |
             jsonPointers:
             - /webhooks/0/clientConfig/caBundle
-      kustomize.buildOptions: --load-restrictor LoadRestrictionsNone --enable-helm
+      kustomize.buildOptions: --load-restrictor LoadRestrictionsNone --enable-helm --helm-command ./usr/local/bin/helm-command.sh
 
   # Policy for a user 'config-team` to allow restart on K8s StatefulSets
   - |-
@@ -91,6 +91,9 @@ patchesStrategicMerge:
               - name: git-ops-command
                 mountPath: /usr/local/bin/git-ops-command.sh
                 subPath: git-ops-command.sh
+              - name: helm-command
+                mountPath: /usr/local/bin/helm-command.sh
+                subPath: helm-command.sh
               - name: tools-dir
                 mountPath: /usr/local/bin/envsubst
                 subPath: envsubst
@@ -142,6 +145,10 @@ patchesStrategicMerge:
             configMap:
               name: git-ops-command
               defaultMode: 0555
+          - name: helm-command
+            configMap:
+              name: helm-command
+              defaultMode: 0555              
           - name: install-custom-tools
             configMap:
               name: install-custom-tools
