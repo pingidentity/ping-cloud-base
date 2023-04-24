@@ -1,5 +1,13 @@
 # Changelog
 
+### 1.19.0.0
+
+- Format and validate all yaml files in ping-cloud-base
+
+_Changes:_
+
+- [X] PDO-3199 Format and validate all yaml files in ping-cloud-base
+
 ### 1.18.0.0
 
 - Enable users to download or upload user reports in Delegated Admin
