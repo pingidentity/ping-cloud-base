@@ -1,54 +1,31 @@
-import os
 from pathlib import Path
-from ruamel import yaml
+import os
+import sys
+import logging
+import ruamel.yaml
 
-
-def repr_str(dumper, data):
-    text_list = [line.rstrip() for line in data.splitlines()]
-    fixed_data = "\n".join(text_list)
-    if len(data.splitlines()) > 1:
-        return dumper.represent_scalar("tag:yaml.org,2002:str", fixed_data, style="|")
-    return dumper.represent_scalar("tag:yaml.org,2002:str", data)
-
+yaml = ruamel.yaml.YAML()
 
 def validate_yaml_file_data():
-    # Get current working directory
     path = os.getcwd()
-    # list out folders and files
-    for root, directories, files in os.walk(path):
-        # list out yaml and yml extension files
-        for name in files:
-            # condition accept only yaml and yml extension files
-            try:
-                if name.endswith(".yaml") or name.endswith(".yml"):
-                    file_path = os.path.join(root, name)
-                    file_directory = os.path.join(root)
-                    yaml_file_contents = Path(file_path).read_text()
-                    try:
-                        yaml_object = yaml.round_trip_load_all(yaml_file_contents)
-                        try:
-                            yaml.add_representer(str, repr_str, Dumper=yaml.SafeDumper)
-                            yaml.representer.SafeRepresenter.add_representer(
-                                str, repr_str
-                            )
-                            with open(file_path, "w") as write:
-                                try:
-                                    yaml.dump_all(
-                                        yaml_object,
-                                        write,
-                                        allow_unicode=True,
-                                        Dumper=yaml.RoundTripDumper,
-                                    )
-                                except Exception as e:
-                                    print("file path is ", os.path.join(root, name),e)
-                            #print("file path is ", os.path.join(root, name))
-                        except Exception as e:
-                            print(f"No Kind key {file_path}", e)
-                    except Exception as e:
-                        print(f"invalid yaml {file_path}", e)
-            except Exception as e:
-                print("yaml file not valid", e)
+    logger = logging.getLogger(__name__)
+    for file_path in Path(path).rglob("*.[yY][aA][mM][lL]"):
+        yaml_file_data = Path(file_path).read_text()
+        try:
+            yaml_object = yaml.load_all(yaml_file_data)
+            with open(file_path, "w") as write:
+                yaml.dump_all(
+                    yaml_object,
+                    write,
+                )
+        except yaml.YAMLError as e:
+            with open(file_path, "w") as write:
+                write.writelines(yaml_file_data)
+            logger.error(f"Invalid YAML data in {file_path}: {e}")
+        except Exception as e:
+            logger.error(f"Error processing {file_path}: {e}")
+    logger.info("Validation complete.")
 
-
-# call method for output
-validate_yaml_file_data()
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
+    validate_yaml_file_data()
