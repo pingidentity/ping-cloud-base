@@ -128,10 +128,9 @@ remove_from_secondary() {
     REGION=${PRIMARY_REGION}
   fi
   if [[ ${PRIMARY_REGION} != ${REGION} ]]; then
-    log "Secondary Region"
     cd "${TMP_DIR}"
     for kust_file in $(grep --exclude-dir=.git -rwl -e "${search_term}" | grep "kustomization.yaml"); do
-      log "UnCommenting out "${search_term}".yaml  in ${kust_file} as not required in secondary regions"
+      log "Uncommenting out "${search_term}".yaml  in ${kust_file} as not required in secondary regions"
       sed -i.bak \
         -e "/${search_term}/ s|^#*||g" \
         "${kust_file}"
