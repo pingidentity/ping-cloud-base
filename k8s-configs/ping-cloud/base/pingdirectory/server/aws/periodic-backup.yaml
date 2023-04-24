@@ -5,7 +5,15 @@ metadata:
 data:
   backup.sh: |-
     #!/bin/sh
-       
+
+    delete_pvc() {
+      /tmp/kubectl delete pvc pingdirectory-backup -n ${PING_CLOUD_NAMESPACE} --grace-period=0 --force
+    }
+
+    # This guarantees that delete_pvc method will always run, even if the backup job exits due to an error
+    trap "delete_pvc" EXIT
+   
+    # Job will not be using /opt/out, therefore force it to use its own /opt/in directory
     export HOOKS_DIR="/opt/in/hooks"
 
     # Install kubectl
@@ -73,7 +81,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: pingdirectory-backup
-            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.18-release-branch-latest
+            image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:pdo-5123
             imagePullPolicy: Always
             securityContext:
               runAsGroup: 9999
