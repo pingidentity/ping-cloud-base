@@ -26,6 +26,7 @@ patchesStrategicMerge:
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 ### Regional enablement - remove admins, backups, etc. from secondary ###
 ### The removal of these patches is handled automatically via generate-cluster-state script, manual toggling is not needed ###
 - pingaccess-was/admin/remove-from-secondary-patch.yaml
@@ -35,6 +36,11 @@ patchesStrategicMerge:
 =======
 #- pingcentral/server/remove-from-secondary-patch.yaml
 >>>>>>> 578eb0ed8 (PDO-5248)
+=======
+### Regional enablement - remove admins, backups, etc. from secondary ###
+### These patches should be commented out on the primary region ###
+- pingcentral/server/remove-from-secondary-patch.yaml
+>>>>>>> d365f2353 (PDO-5263)
 
 ### Ping app known_hosts file ###
 
