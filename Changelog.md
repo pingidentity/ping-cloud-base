@@ -67,9 +67,13 @@
 - Configure Fluent-bit kubernetes filter to prevent caching for statefulsets
 - Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
 - Allow configuration of certain ArgoCD values per-CDE
+<<<<<<< HEAD
 - Replaced PSA privileged policy by more restricted policies for newrelic components
 - Update kube-state-metrics to v2.7.0
 - Bug fix, remove-from-secondary-patch.yaml not getting applied
+=======
+- Remove PC resources from secondary customer-hub
+>>>>>>> f80de296d (PDO-5248)
 
 _Changes:_
 
@@ -159,8 +163,12 @@ _Changes:_
 - [X] PDO-5271 Replace PSA privileged policy by more restricted policies for newrelic components if needed
 - [X] PDO-5279 Update kube-state-metrics cluster tool to v2.7.0 for EKS 1.25
 - [X] PDO-5298 Bugfix - make scripts compatible with Debian
+<<<<<<< HEAD
 - [X] PDO-5315 Bugfix - argocd-bootstrap to use region specific env vars
 - [X] PDO-5248:Bug fix,remove-from-secondary-patch.yaml not getting applied
+=======
+- [X] PDO-5248 Remove PC resources from secondary customer-hub
+>>>>>>> f80de296d (PDO-5248)
 
 ### 1.17.0.0
 
