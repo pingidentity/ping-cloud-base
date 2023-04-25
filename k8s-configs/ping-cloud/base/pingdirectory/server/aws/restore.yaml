@@ -77,8 +77,17 @@ data:
       fi
     }
 
+    delete_pvc() {
+      /tmp/kubectl delete pvc pingdirectory-restore -n ${PING_CLOUD_NAMESPACE} --grace-period=0 --force
+    }
+
+    cleanup () {
+      resume_replication
+      delete_pvc
+    }
+
     # This guarantees that resume_replication is always run, even if the restore job exits due to an error
-    trap "resume_replication" EXIT
+    trap "cleanup" EXIT
 
     pause_replication
 
@@ -161,7 +170,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.18-release-branch-latest
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:pdo-5123
         imagePullPolicy: Always
         command:
         - /opt/in/restore.sh

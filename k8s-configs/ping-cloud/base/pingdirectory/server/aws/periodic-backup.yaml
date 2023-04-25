@@ -27,7 +27,7 @@ data:
 
     echo "Running backup script within pingdirectory pod"
     test -x ${SCRIPT} && ${SCRIPT} 
-      
+
     echo "Deleting PingDirectory backup pvc"
     /tmp/kubectl delete pvc pingdirectory-backup
 
@@ -62,7 +62,7 @@ kind: CronJob
 metadata:
   name: pingdirectory-periodic-backup
 spec:
-  schedule: "30 */6 * * *"
+  schedule: "* * * * *"
   successfulJobsHistoryLimit: 0
   failedJobsHistoryLimit: 1
   concurrencyPolicy: Forbid
