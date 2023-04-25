@@ -63,7 +63,7 @@ patchesStrategicMerge:
           ignoreDifferences: |
             jsonPointers:
             - /webhooks/0/clientConfig/caBundle
-      kustomize.buildOptions: --load-restrictor LoadRestrictionsNone --enable-helm --helm-command ./usr/local/bin/helm-command.sh
+      kustomize.buildOptions: --load-restrictor LoadRestrictionsNone --enable-helm --helm-command /usr/local/bin/helm-command.sh
 
   # Policy for a user 'config-team` to allow restart on K8s StatefulSets
   - |-

@@ -10,6 +10,7 @@ if [[ $@ = pull* ]]; then
 else
     args="$@"
 fi
+#TODO: add which helm so it's always executing the binary as expected
 cmd="/usr/local/bin/helm --registry-config ~/.config/helm/registry/config.json $args"
 echo "Running '$cmd' " >> /tmp/helm-debug
 eval $cmd
