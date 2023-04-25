@@ -10,6 +10,7 @@ commonLabels:
 resources:
 - secret.yaml
 - configmap.yaml
+- configmap-csd-upload.yaml
 
 generatorOptions:
   disableNameSuffixHash: true
