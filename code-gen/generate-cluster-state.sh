@@ -144,6 +144,11 @@
 #                                  | AWS S3 buckets, it must be an S3 URL, e.g.         |
 #                                  | s3://logs.                                         |
 #                                  |                                                    |
+# PD_MONITOR_BUCKET_URL            | The URL of the monitor,ldif exports and csd-log    |
+#                                  | archives.If provided, logs are periodically        | The string "unused"
+#                                  | captured and sent to this URL. Used only for       |
+#                                  | PingDirectory at the moment                        |
+#                                  |                                                    |
 # MYSQL_PASSWORD                   | The DBA password of the PingCentral MySQL RDS      | The SSM path:
 #                                  | database.                                          | ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#password
 #                                  |                                                    |
@@ -336,6 +341,7 @@ ${SECONDARY_TENANT_DOMAINS}
 ${GLOBAL_TENANT_DOMAIN}
 ${ARTIFACT_REPO_URL}
 ${PING_ARTIFACT_REPO_URL}
+${PD_MONITOR_BUCKET_URL}
 ${LOG_ARCHIVE_URL}
 ${BACKUP_URL}
 ${PGO_BACKUP_BUCKET_NAME}
@@ -658,6 +664,7 @@ echo "Initial SERVER_PROFILE_URL: ${SERVER_PROFILE_URL}"
 echo "Initial ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Initial PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 
+echo "Initial PD_MONITOR_BUCKET_URL: ${PD_MONITOR_BUCKET_URL}"
 echo "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 echo "Initial BACKUP_URL: ${BACKUP_URL}"
 
@@ -757,6 +764,7 @@ export GLOBAL_TENANT_DOMAIN="${GLOBAL_TENANT_DOMAIN_NO_DOT_SUFFIX:-${DERIVED_GLO
 
 export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
 
+export PD_MONITOR_BUCKET_URL="${PD_MONITOR_BUCKET_URL:-unused}"
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
 
@@ -934,6 +942,7 @@ echo "Using CLUSTER_STATE_REPO_PATH: ${REGION_NICK_NAME}"
 
 echo "Using ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
+echo "Using PD_MONITOR_BUCKET_URL: ${PD_MONITOR_BUCKET_URL}"
 echo "Using LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 echo "Using BACKUP_URL: ${BACKUP_URL}"
 
