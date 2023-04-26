@@ -17,6 +17,10 @@ patchesStrategicMerge:
 - ../base/ping-cloud/pingcommon/my-ping/remove-oauth-service.yaml
 - ../base/ping-cloud/pingcommon/my-ping/remove-pingone-configurator.yaml
 
+### Remove healthchecks for undeployed products
+- ../base/cluster-tools/health/remove-from-primary-patch.yaml
+- ../base/cluster-tools/health/remove-from-secondary-patch.yaml
+
 configMapGenerator:
 
 ### Regional env vars for ELK
