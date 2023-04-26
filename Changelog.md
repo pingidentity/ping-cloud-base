@@ -69,6 +69,7 @@
 - Allow configuration of certain ArgoCD values per-CDE
 - Replaced PSA privileged policy by more restricted policies for newrelic components
 - Update kube-state-metrics to v2.7.0
+- Bug fix, remove-from-secondary-patch.yaml not getting applied
 
 _Changes:_
 
