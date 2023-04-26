@@ -1,15 +1,20 @@
-# A manual backup job - this does the same thing as the CronJob except it may be configured to be triggered in reaction
-# to a ClickOps event.
+---
+
+# A manual restore can be performed by deploying this job. It will restore
+# data that was backed up by the periodic backup job to desired pingdirectory pod using the variable BACKUP_RESTORE_POD. All other servers
+# must initialize the data from the desired BACKUP_RESTORE_POD pod via dsreplication initialize-all. This
+# job can also be used to load the data initially from a backup created in
+# another environment, e.g. dev.
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: pingdirectory-backup
+  name: pingdirectory-restore
   labels:
     app: ping-cloud
     role: pingdirectory
 spec:
   ttlSecondsAfterFinished: 30
-  backoffLimit: 5
+  backoffLimit: 0
   template:
     spec:
       serviceAccountName: ping-serviceaccount
@@ -22,7 +27,7 @@ spec:
               - key: statefulset.kubernetes.io/pod-name
                 operator: In
                 values:
-                - ${PINGDIRECTORY_POD_NAME}
+                - ${BACKUP_RESTORE_POD}
             topologyKey: "kubernetes.io/hostname"
       tolerations:
         - key: "pingidentity.com/pd-only"
@@ -46,16 +51,39 @@ spec:
           mountPath: /get_ssm_env_vars.sh
           subPath: get_ssm_env_vars.sh
       containers:
-      - name: pingdirectory-backup
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:calvin-test-pdo-5123
-        imagePullPolicy: Always
+      - name: pingdirectory-restore
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:calvin-test-pdo-5123
+        imagePullPolicy: Always
         command:
-        - /opt/in/backup.sh
+        - /opt/in/restore.sh
+        ports:
+          - containerPort: 1636
+            name: ldaps
+        volumeMounts:
+        - name: restore-script
+          mountPath: /opt/in/restore.sh
+          subPath: restore.sh
+        - name: pd-restore-volume
+          mountPath: /opt/restore
+        - name: out-dir
+          mountPath: /opt/out
+        - name: pingdirectory-passwords
+          mountPath: /usr/local/secrets
+          readOnly: true
+        - name: pingdirectory-init
+          mountPath: /opt/in/hooks/logger.lib.sh
+          subPath: logger.lib.sh
+        - name: pingdirectory-init
+          mountPath: /opt/in/utils.lib.sh
+          subPath: utils.lib.sh
+        - name: data-dir
+          mountPath: /opt/staging/ds_env_vars
+          subPath: ds_env_vars
         envFrom:
         - configMapRef:
             name: pingdirectory-environment-variables
@@ -73,38 +101,19 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        volumeMounts:
-        - name: pingdirectory-backup-script
-          mountPath: /opt/in/backup.sh
-          subPath: backup.sh
-        - name: out-dir
-          mountPath: /opt/out
-        - name: pd-backup-volume
-          mountPath: /opt/backup
-        - name: pingdirectory-passwords
-          mountPath: /usr/local/secrets
-          readOnly: true
-        - name: pingdirectory-init
-          mountPath: /opt/in/hooks/logger.lib.sh
-          subPath: logger.lib.sh
-        - name: data-dir
-          mountPath: /opt/staging/ds_env_vars
-          subPath: ds_env_vars
       securityContext:
         fsGroup: 9999
       volumes:
-      - name: pingdirectory-backup-script
+      - name: restore-script
         configMap:
-          name: pingdirectory-backup-script
+          name: pingdirectory-restore
           defaultMode: 0555
-      - name: pd-backup-volume
+      - name: pd-restore-volume
         persistentVolumeClaim:
-          claimName: pingdirectory-backup
+          claimName: pingdirectory-restore
       - name: out-dir
         persistentVolumeClaim:
-          claimName: out-dir-${PINGDIRECTORY_POD_NAME}
-      - name: data-dir
-        emptyDir: {}
+          claimName: out-dir-${BACKUP_RESTORE_POD}
       - name: pingdirectory-passwords
         secret:
           secretName: pingdirectory-passwords
@@ -118,3 +127,5 @@ spec:
         configMap:
           name: discovery-service
           defaultMode: 0555
+      - name: data-dir
+        emptyDir: {}

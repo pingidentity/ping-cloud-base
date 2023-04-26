@@ -17,10 +17,17 @@ generatorOptions:
 configMapGenerator:
 - name: pingdirectory-backup-ops-template-files
   files:
-  - backup-ops/backup-ops.sh
-  - backup-ops/backup-cm.yaml
-  - backup-ops/backup-job.yaml
-  - backup-ops/backup-pvc.yaml
+  - backup-ops-template/backup-ops.sh
+  - backup-ops-template/backup-cm.yaml
+  - backup-ops-template/backup-job.yaml
+  - backup-ops-template/backup-pvc.yaml
+
+- name: pingdirectory-restore-ops-template-files
+  files:
+  - restore-ops-template/restore-ops.sh
+  - restore-ops-template/restore-cm.yaml
+  - restore-ops-template/restore-job.yaml
+  - restore-ops-template/restore-pvc.yaml
 
 patchesStrategicMerge:
 - discovery-service.yaml
