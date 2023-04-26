@@ -1251,6 +1251,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   organize_code_for_csr
 
   PRIMARY_PING_KUST_FILE="${K8S_CONFIGS_DIR}/${REGION_NICK_NAME}/kustomization.yaml"
+  PING_BASE_KUST_FILE="${K8S_CONFIGS_DIR}/base/ping-cloud/kustomization.yaml"
 
   # Copy around files for Developer CDE before substituting vars
   if "${IS_BELUGA_ENV}"; then
@@ -1281,10 +1282,12 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   substitute_vars "${ENV_DIR}" "${REPO_VARS}" values.yaml
   substitute_vars "${ENV_DIR}" '${IS_BELUGA_ENV}' values.yaml
 
-  # Regional enablement - add admins, backups, etc. to primary.
+  # Regional enablement - add admins, backups, etc. to primary and adding pingaccess-was and pingcentral to primary.
   if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
     sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/g' "${PRIMARY_PING_KUST_FILE}"
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
+    sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/g' "${PING_BASE_KUST_FILE}"
+    rm -f "${PING_BASE_KUST_FILE}.bak"
   fi
 
   echo "Copying server profiles for environment ${ENV}"
