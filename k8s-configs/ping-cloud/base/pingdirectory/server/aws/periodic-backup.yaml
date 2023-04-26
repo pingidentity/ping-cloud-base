@@ -49,7 +49,7 @@ data:
     chmod +x /tmp/kubectl
 
     #Running the backup from github link inorder to create the persistant volumes
-    /tmp/kubectl apply -f https://raw.githubusercontent.com/pingidentity/ping-cloud-base/"${SERVER_PROFILE_BRANCH}"/k8s-configs/ping-cloud/base/pingdirectory/server/aws/backup.yaml -n "${PING_CLOUD_NAMESPACE}"
+    /tmp/kubectl apply -f https://raw.githubusercontent.com/vathsalyakidambi/ping-cloud-base/pdo-5123/k8s-configs/ping-cloud/base/pingdirectory/server/aws/backup.yaml -n ping-cloud-vathsalyakidambi-dev
 
 ---
 
@@ -73,11 +73,6 @@ spec:
       template:
         spec:
           serviceAccount: ping-serviceaccount
-          tolerations:
-          - key: "pingidentity.com/pd-only"
-            operator: "Equal"
-            value: "true"
-            effect: "NoSchedule"
           restartPolicy: OnFailure
           containers:
           - name: pingdirectory-backup
