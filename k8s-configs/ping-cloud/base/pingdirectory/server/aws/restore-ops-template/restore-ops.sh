@@ -28,6 +28,11 @@ if [ -z "${PINGDIRECTORY_PVC_SIZE}" ]; then
   export PINGDIRECTORY_PVC_SIZE=$(kubectl get pvc "out-dir-${BACKUP_RESTORE_POD}" -o jsonpath='{.spec.resources.requests.storage}' -n "${PING_CLOUD_NAMESPACE}")
 fi
 
+# Get desired restore file name
+if [ -z "${BACKUP_FILE_NAME}" ]; then
+  export BACKUP_FILE_NAME=$(kubectl get cm "pingdirectory-environment-variables" -o jsonpath='{.spec.resources.requests.storage}' -n "${PING_CLOUD_NAMESPACE}")
+fi
+
 kubectl get configmap pingdirectory-restore-ops-template-files -o jsonpath='{.data.restore-cm\.yaml}'  -n "${PING_CLOUD_NAMESPACE}" | kubectl apply -f - -n "${PING_CLOUD_NAMESPACE}"
 kubectl get configmap pingdirectory-restore-ops-template-files -o jsonpath='{.data.restore-pvc\.yaml}' -n "${PING_CLOUD_NAMESPACE}" | envsubst | kubectl apply -f - -n "${PING_CLOUD_NAMESPACE}"
 kubectl get configmap pingdirectory-restore-ops-template-files -o jsonpath='{.data.restore-job\.yaml}' -n "${PING_CLOUD_NAMESPACE}" | envsubst | kubectl apply -f - -n "${PING_CLOUD_NAMESPACE}"

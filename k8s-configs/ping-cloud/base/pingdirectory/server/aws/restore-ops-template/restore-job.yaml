@@ -92,6 +92,8 @@ spec:
         env:
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
           value: "true"
+        - name: BACKUP_FILE_NAME
+          value: "${BACKUP_FILE_NAME}"
         - name: ROOT_USER_PASSWORD
           valueFrom:
             secretKeyRef:
