@@ -68,7 +68,7 @@
 - Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
 - Allow configuration of certain ArgoCD values per-CDE
 - Replaced PSA privileged policy by more restricted policies for newrelic components
-- Bug fix, remove-from-secondary-patch.yaml not getting applied
+- Update kube-state-metrics to v2.7.0
 
 _Changes:_
 
@@ -156,6 +156,7 @@ _Changes:_
 - [X] PDO-5261 Remove PF and PA from pa-was config in customer-hub
 - [X] PDO-5264 Set 7-day-retention policy to all backup jobs logs
 - [X] PDO-5271 Replace PSA privileged policy by more restricted policies for newrelic components if needed
+- [X] PDO-5279 Update kube-state-metrics cluster tool to v2.7.0 for EKS 1.25
 - [X] PDO-5298 Bugfix - make scripts compatible with Debian
 - [X] PDO-5315 Bugfix - argocd-bootstrap to use region specific env vars
 - [X] PDO-5248:Bug fix, remove-from-secondary-patch.yaml not getting applied
