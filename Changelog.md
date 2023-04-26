@@ -71,9 +71,13 @@
 - Replaced PSA privileged policy by more restricted policies for newrelic components
 - Update kube-state-metrics to v2.7.0
 - Bug fix, remove-from-secondary-patch.yaml not getting applied
+<<<<<<< HEAD
 =======
 - Remove PC resources from secondary customer-hub
 >>>>>>> f80de296d (PDO-5248)
+=======
+- Remove PC resources from secondary customer-hub
+>>>>>>> 0f89acc38 (PDO-5263)
 
 _Changes:_
 
@@ -167,12 +171,16 @@ _Changes:_
 - [X] PDO-5315 Bugfix - argocd-bootstrap to use region specific env vars
 <<<<<<< HEAD
 - [X] PDO-5248:Bug fix,remove-from-secondary-patch.yaml not getting applied
+<<<<<<< HEAD
 =======
 - [X] PDO-5248 Remove PC resources from secondary customer-hub
 >>>>>>> f80de296d (PDO-5248)
 =======
 - [X] PDO-5248 Remove PC resources from secondary customer-hub
 >>>>>>> d365f2353 (PDO-5263)
+=======
+- [X] PDO-5248 Remove PC resources from secondary customer-hub
+>>>>>>> 0f89acc38 (PDO-5263)
 
 ### 1.17.0.0
 
