@@ -11,10 +11,16 @@ resources:
 - ../cloud-generic
 - periodic-backup.yaml
 
+generatorOptions:
+  disableNameSuffixHash: true
+
 configMapGenerator:
-- name: periodic-backup-ops-script
+- name: pingdirectory-backup-ops-template-files
   files:
   - backup-ops/backup-ops.sh
+  - backup-ops/backup-cm.yaml
+  - backup-ops/backup-job.yaml
+  - backup-ops/backup-pvc.yaml
 
 patchesStrategicMerge:
 - discovery-service.yaml
