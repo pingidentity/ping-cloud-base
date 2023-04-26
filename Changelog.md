@@ -70,6 +70,7 @@
 - Replaced PSA privileged policy by more restricted policies for newrelic components
 - Update kube-state-metrics to v2.7.0
 - Bug fix, remove-from-secondary-patch.yaml not getting applied
+- Remove healthchecks for undeployed products in customer-hub
 
 _Changes:_
 
@@ -153,14 +154,15 @@ _Changes:_
 - [X] PDO-5221 'Field "responseCode.keyword" not found' on the 'Ping Access - Response Codes Over Time' visualization
 - [X] PDO-5223 Remove pa-was config for ArgoCD from non customer-hub CDEs
 - [X] PDO-5232 Configure Fluent-bit kubernetes filter to prevent caching for statefulsets
+- [X] PDO-5248 Bug fix,remove-from-secondary-patch.yaml not getting applied
 - [X] PDO-5255 Allow configuration of certain ArgoCD values per-CDE
 - [X] PDO-5261 Remove PF and PA from pa-was config in customer-hub
 - [X] PDO-5264 Set 7-day-retention policy to all backup jobs logs
 - [X] PDO-5271 Replace PSA privileged policy by more restricted policies for newrelic components if needed
 - [X] PDO-5279 Update kube-state-metrics cluster tool to v2.7.0 for EKS 1.25
+- [X] PDO-5288 Update health check. healthcheck should only test the resources that have been deployed
 - [X] PDO-5298 Bugfix - make scripts compatible with Debian
 - [X] PDO-5315 Bugfix - argocd-bootstrap to use region specific env vars
-- [X] PDO-5248:Bug fix,remove-from-secondary-patch.yaml not getting applied
 
 ### 1.17.0.0
 
