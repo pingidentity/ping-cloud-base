@@ -160,7 +160,7 @@ _Changes:_
 - [X] PDO-5279 Update kube-state-metrics cluster tool to v2.7.0 for EKS 1.25
 - [X] PDO-5298 Bugfix - make scripts compatible with Debian
 - [X] PDO-5315 Bugfix - argocd-bootstrap to use region specific env vars
-- [X] PDO-5248:Bug fix, remove-from-secondary-patch.yaml not getting applied
+- [X] PDO-5248:Bug fix,remove-from-secondary-patch.yaml not getting applied
 
 ### 1.17.0.0
 
