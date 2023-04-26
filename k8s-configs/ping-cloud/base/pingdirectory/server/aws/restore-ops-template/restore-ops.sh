@@ -28,7 +28,7 @@ if [ -z "${PINGDIRECTORY_PVC_SIZE}" ]; then
   export PINGDIRECTORY_PVC_SIZE=$(kubectl get pvc "out-dir-${BACKUP_RESTORE_POD}" -o jsonpath='{.spec.resources.requests.storage}' -n "${PING_CLOUD_NAMESPACE}")
 fi
 
-# Get desired restore file name
+# Get desired backup file name to restore in pingdirectory pod
 if [ -z "${BACKUP_FILE_NAME}" ]; then
   export BACKUP_FILE_NAME=$(kubectl get cm "pingdirectory-environment-variables" -o jsonpath='{.spec.resources.requests.storage}' -n "${PING_CLOUD_NAMESPACE}")
 fi
