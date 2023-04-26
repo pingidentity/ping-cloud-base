@@ -68,6 +68,7 @@
 - Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
 - Allow configuration of certain ArgoCD values per-CDE
 - Replaced PSA privileged policy by more restricted policies for newrelic components
+- Bug fix, remove-from-secondary-patch.yaml not getting applied
 
 _Changes:_
 
@@ -157,6 +158,7 @@ _Changes:_
 - [X] PDO-5271 Replace PSA privileged policy by more restricted policies for newrelic components if needed
 - [X] PDO-5298 Bugfix - make scripts compatible with Debian
 - [X] PDO-5315 Bugfix - argocd-bootstrap to use region specific env vars
+- [X] PDO-5248:Bug fix, remove-from-secondary-patch.yaml not getting applied
 
 ### 1.17.0.0
 

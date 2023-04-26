@@ -26,7 +26,7 @@ patchesStrategicMerge:
 
 ### Regional enablement - remove admins, backups, etc. from secondary ###
 ### These removal of these patches is handled automatically via the gitops, manuall toggling is not needed ###
-#- pingaccess-was/admin/remove-from-secondary-patch.yaml
+- pingaccess-was/admin/remove-from-secondary-patch.yaml
 
 ### Ping app known_hosts file ###
 

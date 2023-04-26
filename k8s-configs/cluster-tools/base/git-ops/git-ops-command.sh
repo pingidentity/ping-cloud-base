@@ -119,27 +119,6 @@ feature_flags() {
 }
 
 ########################################################################################################################
-# UnComments out remove-from-secondary-patch for secondary regions from k8s-configs kustomization.yaml files.
-#
-########################################################################################################################
-remove_from_secondary() {
-  search_term="remove-from-secondary-patch"
-  if [[ -z "${REGION}" ]]; then
-    REGION=${PRIMARY_REGION}
-  fi
-  if [[ ${PRIMARY_REGION} != ${REGION} ]]; then
-    cd "${TMP_DIR}"
-    for kust_file in $(grep --exclude-dir=.git -rwl -e "${search_term}" | grep "kustomization.yaml"); do
-      log "Uncommenting out "${search_term}".yaml  in ${kust_file} as not required in secondary regions"
-      sed -i.bak \
-        -e "/${search_term}/ s|^#*||g" \
-        "${kust_file}"
-      rm -f "${kust_file}".bak
-    done
-  fi
-}
-
-########################################################################################################################
 # Format the provided kustomize version for numeric comparison. For example, if the kustomize version is 4.0.5, it
 # returns 004000005000.
 #
@@ -255,7 +234,6 @@ if test -f 'env_vars'; then
     done
 
     feature_flags "${TMP_DIR}/${K8S_GIT_BRANCH}"
-    remove_from_secondary
   )
   test $? -ne 0 && exit 1
 fi
