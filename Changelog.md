@@ -67,7 +67,7 @@
 - Configure Fluent-bit kubernetes filter to prevent caching for statefulsets
 - Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
 - Allow configuration of certain ArgoCD values per-CDE
-- Bug fix, remove-from-secondary-patch.yaml not getting applied
+- Replaced PSA privileged policy by more restricted policies for newrelic components
 
 _Changes:_
 
@@ -154,6 +154,7 @@ _Changes:_
 - [X] PDO-5255 Allow configuration of certain ArgoCD values per-CDE
 - [X] PDO-5261 Remove PF and PA from pa-was config in customer-hub
 - [X] PDO-5264 Set 7-day-retention policy to all backup jobs logs
+- [X] PDO-5271 Replace PSA privileged policy by more restricted policies for newrelic components if needed
 - [X] PDO-5298 Bugfix - make scripts compatible with Debian
 - [X] PDO-5315 Bugfix - argocd-bootstrap to use region specific env vars
 
