@@ -172,6 +172,7 @@ _Changes:_
 <<<<<<< HEAD
 - [X] PDO-5248:Bug fix,remove-from-secondary-patch.yaml not getting applied
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 - [X] PDO-5248 Remove PC resources from secondary customer-hub
 >>>>>>> f80de296d (PDO-5248)
@@ -181,6 +182,9 @@ _Changes:_
 =======
 - [X] PDO-5248 Remove PC resources from secondary customer-hub
 >>>>>>> 0f89acc38 (PDO-5263)
+=======
+- [X] PDO-5263 Remove PC resources from secondary customer-hub
+>>>>>>> bf1eb3565 (PDO-5263)
 
 ### 1.17.0.0
 
