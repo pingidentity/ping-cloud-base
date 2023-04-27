@@ -29,6 +29,12 @@ configMapGenerator:
   envs:
     - logging/env_vars
 
+- name: prometheus-environment-variables
+  behavior: merge
+  envs:
+    - ../base/env_vars
+    - env_vars
+
 # PingCentral
 # Create the config maps that hold the variable for triggering updates of PingCentral
 - name: pingcentral-last-update-config
