@@ -71,7 +71,7 @@
 - Update kube-state-metrics to v2.7.0
 - Bug fix, remove-from-secondary-patch.yaml not getting applied
 - Remove healthchecks for undeployed products in customer-hub
-- Remove PC resources from secondary customer-hub
+- Default ngnix hpa configuration in medium environment is lower than small
 
 _Changes:_
 
@@ -162,6 +162,7 @@ _Changes:_
 - [X] PDO-5264 Set 7-day-retention policy to all backup jobs logs
 - [X] PDO-5271 Replace PSA privileged policy by more restricted policies for newrelic components if needed
 - [X] PDO-5279 Update kube-state-metrics cluster tool to v2.7.0 for EKS 1.25
+- [X] PDO-5281 Default ngnix hpa configuration in medium environment is lower than small
 - [X] PDO-5288 Update health check. healthcheck should only test the resources that have been deployed
 - [X] PDO-5298 Bugfix - make scripts compatible with Debian
 - [X] PDO-5315 Bugfix - argocd-bootstrap to use region specific env vars
