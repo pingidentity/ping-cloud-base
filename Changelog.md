@@ -73,6 +73,7 @@
 - Remove healthchecks for undeployed products in customer-hub
 - Default ngnix hpa configuration in medium environment is lower than small
 - Fix cluster_name variable in Grafana Dashboards for CHUB
+- Remove PC resources from secondary customer-hub
 
 _Changes:_
 
