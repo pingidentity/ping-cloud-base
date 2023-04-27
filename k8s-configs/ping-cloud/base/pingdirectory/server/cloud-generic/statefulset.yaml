@@ -203,6 +203,11 @@ spec:
                 secretKeyRef:
                   name: pingdirectory-passwords
                   key: root-user-password
+            - name: DMANAGER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pingdirectory-dmanager-password
+                  key: DMANAGER_PASSWORD
             - name: PF_ADMIN_USER_PASSWORD
               valueFrom:
                 secretKeyRef:
