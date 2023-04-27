@@ -72,6 +72,7 @@
 - Bug fix, remove-from-secondary-patch.yaml not getting applied
 - Remove healthchecks for undeployed products in customer-hub
 - Default ngnix hpa configuration in medium environment is lower than small
+- Remove PC resources from secondary customer-hub
 
 _Changes:_
 
