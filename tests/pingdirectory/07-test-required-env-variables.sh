@@ -10,7 +10,7 @@ fi
 
 oneTimeSetUp() {
   # The list of variables that are required to be set within product container. Append to string if you'd like to test more variables.
-  REQUIRED_VARS='BACKUP_URL LOG_ARCHIVE_URL'
+  REQUIRED_VARS='BACKUP_URL LOG_ARCHIVE_URL PD_MONITOR_BUCKET_URL'
   PRODUCT_NAME="pingdirectory"
 
   NUM_REPLICAS=$(kubectl get statefulset "${PRODUCT_NAME}" -o jsonpath='{.spec.replicas}' -n "${PING_CLOUD_NAMESPACE}")
