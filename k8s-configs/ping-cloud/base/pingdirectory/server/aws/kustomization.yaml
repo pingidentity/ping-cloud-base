@@ -11,6 +11,7 @@ resources:
 - ../cloud-generic
 - periodic-backup.yaml
 - periodic-csd-upload.yaml
+- periodic-monitor-log-upload.yaml
 
 patchesStrategicMerge:
 - discovery-service.yaml
