@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pingdirectory-periodic-csd-upload
+data:
+  upload-csd-data.sh: |-
+    #!/bin/sh
+
+    # Install kubectl
+    curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl -o /tmp/kubectl
+    chmod +x /tmp/kubectl
+
+    NUM_REPLICAS=$(/tmp/kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
+
+    START=0
+    END=$((${NUM_REPLICAS} - 1))
+
+    CSD_FILES=
+    for i in $(seq ${START} ${END}); do
+      SERVER="${K8S_STATEFUL_SET_NAME}-${i}"
+      SCRIPT="${HOOKS_DIR}"/82-upload-csd-s3.sh
+      LOG_FILE=/tmp/upload.log
+
+      echo "Uploading CSD on server ${SERVER}"
+      /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}"> "${LOG_FILE}"
+
+      if test ${?} -eq 0; then
+        # Sending logs to STDOUT
+        cat ${LOG_FILE}
+        CSD_FILE=$(tail -1 "${LOG_FILE}")
+        test -z "${CSD_FILES}" && CSD_FILES="${CSD_FILE}" || CSD_FILES="${CSD_FILES} ${CSD_FILE}"
+      else
+        echo "Upload script not found on server ${SERVER}"
+      fi
+    done
+
+    # Print the names of the uploaded files so callers know exactly what was uploaded
+    echo "The following files were uploaded:"
+    echo "${CSD_FILES}"

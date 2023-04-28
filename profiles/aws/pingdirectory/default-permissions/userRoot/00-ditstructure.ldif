@@ -1,0 +1,48 @@
+dn: ${USER_BASE_DN}
+objectClass: top
+objectClass: domain
+dc: ${USER_BASE_NAME}
+
+dn: ou=admins,${USER_BASE_DN}
+objectClass: top
+objectClass: organizationalUnit
+ou: admins
+description: Container for admin-related groups and users
+
+dn: ou=admingroups,ou=admins,${USER_BASE_DN}
+objectClass: top
+objectClass: organizationalUnit
+ou: admingroups
+description: Container for admin-related groups
+
+dn: cn=superadmin,ou=admingroups,ou=admins,${USER_BASE_DN}
+objectClass: groupofURLs
+objectClass: top
+cn: superadmin
+description: Members of this group can perform all CRUD operations.
+ou: admingroups
+memberURL: ldap:///ou=adminusers,ou=admins,${USER_BASE_DN}??sub?(title=superadmin)
+
+dn: cn=readonly,ou=admingroups,ou=admins,${USER_BASE_DN}
+objectClass: groupofURLs
+objectClass: top
+cn: readonly
+description: Members of this group can only read data.
+ou: admingroups
+memberURL: ldap:///ou=adminusers,ou=admins,${USER_BASE_DN}??sub?(title=readonly)
+
+dn: cn=Admin,ou=admingroups,ou=admins,${USER_BASE_DN}
+objectClass: groupofURLs
+objectClass: top
+cn: Admin
+description: Members of this group can only read data.
+ou: admingroups
+memberURL: ldap:///ou=adminusers,ou=admins,${USER_BASE_DN}??sub?(title=admin)
+
+dn: cn=EmployeeAdmin,ou=admingroups,ou=admins,${USER_BASE_DN}
+objectClass: groupofURLs
+objectClass: top
+cn: EmployeeAdmin
+description: Members of this group can only read data.
+ou: admingroups
+memberURL: ldap:///ou=adminusers,ou=admins,${USER_BASE_DN}??sub?(title=employeeadmin)

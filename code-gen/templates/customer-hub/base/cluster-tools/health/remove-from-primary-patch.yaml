@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthcheck-pingaccess
+  namespace: health
+$patch: delete
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthcheck-pingdirectory
+  namespace: health
+$patch: delete
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthcheck-pingfederate
+  namespace: health
+$patch: delete
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthcheck-httpbin
+  namespace: health
+$patch: delete
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: healthcheck-httpbin
+  namespace: health
+$patch: delete
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthcheck-httpbin-pa
+  namespace: health
+$patch: delete
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: healthcheck-httpbin-pa
+  namespace: health
+$patch: delete
+
+---

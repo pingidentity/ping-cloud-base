@@ -39,6 +39,7 @@ GLOBAL_TENANT_DOMAIN=${GLOBAL_TENANT_DOMAIN}
 PING_ARTIFACT_REPO_URL=${PING_ARTIFACT_REPO_URL}
 
 # Customer-specific log and backup URLs for region
+PD_MONITOR_BUCKET_URL=${PD_MONITOR_BUCKET_URL}
 LOG_ARCHIVE_URL=${LOG_ARCHIVE_URL}
 BACKUP_URL=${BACKUP_URL}
 PGO_BACKUP_BUCKET_NAME=${PGO_BACKUP_BUCKET_NAME}
@@ -259,10 +260,6 @@ NOTIFICATION_ENDPOINT=http://webhook-eventsource-svc.argo-events:12999/notificat
 # Prometheus argo-events notification configuration
 PROM_NOTIFICATION_ENABLED=true
 PROM_SLACK_CHANNEL=${PROM_SLACK_CHANNEL}
-
-# Variables used by argocd-image-updater to automatically update the container images managed by ArgoCD
-IMAGE_TAG_PREFIX=${IMAGE_TAG_PREFIX}
-IMAGE_LIST="apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingfederate,apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess,apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess-was"
 
 # Dashboards repo variables
 DASH_REPO_URL=https://github.com/pingidentity/ping-cloud-dashboards

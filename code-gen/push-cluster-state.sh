@@ -3,6 +3,9 @@
 # If VERBOSE is true, then output line-by-line execution
 "${VERBOSE:-false}" && set -x
 
+# PREREQUISITES: Should be compatible with Debian.
+#                This script is used by platform automation on Ubuntu (Debian) to push generated K8s manifest.
+#
 # WARNING: This script must only be used to seed the initial cluster state. It is destructive and will replace the
 # contents of the remote branches corresponding to the different Customer Deployment Environments with new state.
 
@@ -16,9 +19,9 @@
 #   INCLUDE_PROFILES_IN_CSR -> A flag indicating whether or not to include profile code into the CSR. Defaults to
 #       true, if unset. This flag will be removed (or its default set to true) when Versent provisions a new profile
 #       repo exclusively for server profiles.
-#   ENVIRONMENTS -> A space-separated list of environments. Defaults to 'dev test stage prod', if unset. If provided,
-#       it must contain all or a subset of the environments currently created by the generate-cluster-state.sh script,
-#       i.e. dev, test, stage, prod.
+#   SUPPORTED_ENVIRONMENT_TYPES -> A space-separated list of environments. Defaults to 'dev test stage prod customer-hub',
+#       if unset. If provided, it must contain all or a subset of the environments currently created by the
+#       generate-cluster-state.sh script, i.e. dev, test, stage, prod, customer-hub.
 #   PUSH_RETRY_COUNT -> The number of times to try pushing to the cluster state repo with a 2s sleep between each
 #       attempt to avoid IAM permission to repo sync issue.
 #   PUSH_TO_SERVER -> A flag indicating whether or not to push the code to the remote server. Defaults to true.
@@ -109,7 +112,7 @@ fi
 QUIET="${QUIET:-false}"
 
 ALL_ENVIRONMENTS='dev test stage prod customer-hub'
-ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
+SUPPORTED_ENVIRONMENT_TYPES="${SUPPORTED_ENVIRONMENT_TYPES:-${ALL_ENVIRONMENTS}}"
 
 GENERATED_CODE_DIR="${GENERATED_CODE_DIR:-/tmp/sandbox}"
 
@@ -126,7 +129,7 @@ fi
 
 # This is a destructive script by design. Add a warning to the user if local changes are being destroyed though.
 CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD 2> /dev/null)"
-if test "${CURRENT_BRANCH}" && test -n "$(git status -s)"; then
+if test "${CURRENT_BRANCH}" && test -n "$(git status -s)" && ! ${DISABLE_GIT}; then
   echo "WARN: The following local changes in current branch '${CURRENT_BRANCH}' will be destroyed:"
   git status
 
@@ -149,12 +152,12 @@ if ! ${DISABLE_GIT}; then
   fi
 fi
 
-# The ENVIRONMENTS variable can either be the CDE names or CHUB name (e.g. dev, test, stage, prod or customer-hub) or
+# The SUPPORTED_ENVIRONMENT_TYPES variable can either be the CDE names or CHUB name (e.g. dev, test, stage, prod or customer-hub) or
 # the branch names (e.g. v1.8.0-dev, v1.8.0-test, v1.8.0-stage, v1.8.0-master or v1.8.0-customer-hub). It will be the
 # CDE names or CHUB name on initial seeding of the cluster state repo. On upgrade of the cluster state repo it will be
 # the branch names. We must handle both cases. Note that the 'prod' environment will have a branch name suffix
 # of 'master'.
-for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
+for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   if echo "${ENV_OR_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
     GIT_BRANCH="${ENV_OR_BRANCH}"
     DEFAULT_CDE_BRANCH="${CUSTOMER_HUB}"
@@ -175,7 +178,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
 
   echo "Processing branch '${GIT_BRANCH}' for environment '${ENV}' and default branch '${DEFAULT_CDE_BRANCH}'"
   # Get app paths
-  APP_PATHS=$(find "${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}/${ENV_OR_BRANCH}" -type d -depth 1)
+  APP_PATHS=$(find "${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}/${ENV_OR_BRANCH}" -mindepth 1 -maxdepth 1 -type d)
 
   if ! ${DISABLE_GIT}; then
     # Check if the branch exists locally. If so, switch to it.
@@ -242,6 +245,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
       echo "Copying base files from ${src_dir} to ${PWD}"
       cp "${src_dir}"/.gitignore ./
       cp "${src_dir}"/update-cluster-state-wrapper.sh ./
+      cp "${src_dir}"/csr-validation.sh ./
 
       # Copy each app's base files into the repo
       for app_path in ${APP_PATHS}; do
@@ -278,7 +282,7 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
       app_name=$(basename "${app_path}")
 
       # shellcheck disable=SC2010
-      region_path="$(find "${app_path}" -type d -depth 1 ! -path '*/base')"
+      region_path="$(find "${app_path}" -mindepth 1 -maxdepth 1 -type d ! -path '*/base')"
       region=$(basename "${region_path}")
       src_dir="${app_path}/$region"
 

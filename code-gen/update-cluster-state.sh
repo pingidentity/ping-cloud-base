@@ -2,20 +2,21 @@
 
 # If VERBOSE is true, then output line-by-line execution
 "${VERBOSE:-false}" && set -x
+"${EXIT_ON_FAILURE:-false}" && set -e
 
 # This script may be used to upgrade an existing cluster state repo. It is designed to be non-destructive in that it
 # won't push any changes to the server. Instead, it will set up a parallel branch for every CDE branch and/or the
-# customer-hub branch as specified through the ENVIRONMENTS environment variable. For example, if the new version is
-# v1.7.1 and the ENVIRONMENTS variable override is not provided, then it’ll set up 4 new CDE branches at the new
-# version for the default set of environments: v1.7.1-dev, v1.7.1-test, v1.7.1-stage and v1.7.1-master and 1 new
-# customer-hub branch v1.7.1-customer-hub.
+# customer-hub branch as specified through the SUPPORTED_ENVIRONMENT_TYPES environment variable. For example, if the
+# new version is v1.7.1 and the SUPPORTED_ENVIRONMENT_TYPES variable override is not provided, then it’ll set up 4 new
+# CDE branches at the new version for the default set of environments: v1.7.1-dev, v1.7.1-test, v1.7.1-stage and
+# v1.7.1-master and 1 new customer-hub branch v1.7.1-customer-hub.
 
 # NOTE: The script must be run from the root of the cluster state repo clone directory. It acts on the following
 # environment variables.
 #
 #   NEW_VERSION -> Required. The new version of Beluga to which to update the cluster state repo.
-#   ENVIRONMENTS -> A space-separated list of environments. Defaults to 'dev test stage prod customer-hub', if unset.
-#       If provided, it must contain all or a subset of the environments currently created by the
+#   SUPPORTED_ENVIRONMENT_TYPES -> A space-separated list of environments. Defaults to 'dev test stage prod customer-hub',
+#       if unset. If provided, it must contain all or a subset of the environments currently created by the
 #       generate-cluster-state.sh script, i.e. dev, test, stage, prod and customer-hub.
 #   RESET_TO_DEFAULT -> An optional flag, which if set to true will reset the cluster-state-repo to the OOTB state
 #       for the new version. This has the same effect as running the platform code build job that initially seeds the
@@ -93,7 +94,7 @@ beluga_owned_k8s_files="@.flux.yaml \
 @ext-ingresses.yaml \
 @seal.sh"
 
-# The list of variables to substitute in env_vars.old files.
+# The list of variables to substitute in upgraded env_vars files.
 # shellcheck disable=SC2016
 # Note: ENV_VARS_TO_SUBST is a subset of DEFAULT_VARS within generate-cluster-state.sh. These variables should be kept
 # in sync with the following exceptions: LAST_UPDATE_REASON and NEW_RELIC_LICENSE_KEY_BASE64 should only be found
@@ -116,6 +117,7 @@ ${SECONDARY_TENANT_DOMAINS}
 ${GLOBAL_TENANT_DOMAIN}
 ${ARTIFACT_REPO_URL}
 ${PING_ARTIFACT_REPO_URL}
+${PD_MONITOR_BUCKET_URL}
 ${LOG_ARCHIVE_URL}
 ${BACKUP_URL}
 ${PGO_BACKUP_BUCKET_NAME}
@@ -524,9 +526,6 @@ handle_changed_k8s_configs() {
   log "DEBUG: Found the following new files in branch '${OLD_BRANCH}':"
   echo "${new_files}"
 
-  KUSTOMIZATION_FILE="${CUSTOM_RESOURCES_REL_DIR}/kustomization.yaml"
-  KUSTOMIZATION_BAK_FILE="${KUSTOMIZATION_FILE}.bak"
-
   # Special-case the handling all files owned by PS/GSO.
 
   # 1. Copy the custom-patches.yaml file (owned by PS/GSO) as is.
@@ -566,19 +565,6 @@ handle_changed_k8s_configs() {
       mkdir -p "${new_file_dirname}"
       git show "${OLD_BRANCH}:${new_file}" > "${new_file}"
       continue
-    fi
-
-    log "Copying custom file ${OLD_BRANCH}:${new_file} into directory ${CUSTOM_RESOURCES_REL_DIR}"
-    git show "${OLD_BRANCH}:${new_file}" > "${CUSTOM_RESOURCES_REL_DIR}/${new_file_basename}"
-
-    log "Adding new resource file ${new_file_basename} to ${KUSTOMIZATION_FILE}"
-    new_resource_line="- ${new_file_basename}"
-
-    grep_opts=(-q -e "${new_resource_line}")
-    if ! grep "${grep_opts[@]}" "${KUSTOMIZATION_FILE}"; then
-      # shellcheck disable=SC1003
-      sed -i.bak -e '/^resources:$/a\'$'\n'"${new_resource_line}" "${KUSTOMIZATION_FILE}"
-      rm -f "${KUSTOMIZATION_BAK_FILE}"
     fi
   done
 
@@ -786,12 +772,12 @@ CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 
 # Validate that a git branch exists for every environment.
 ALL_ENVIRONMENTS='dev test stage prod customer-hub'
-ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
+SUPPORTED_ENVIRONMENT_TYPES="${SUPPORTED_ENVIRONMENT_TYPES:-${ALL_ENVIRONMENTS}}"
 
 NEW_BRANCHES=
 REPO_STATUS=0
 
-for ENV in ${ENVIRONMENTS}; do
+for ENV in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   test "${ENV}" = 'prod' &&
       OLD_BRANCH='master' ||
       OLD_BRANCH="${ENV}"
@@ -851,7 +837,7 @@ fi
 # For each environment:
 #   - Generate code for all its regions
 #   - Push code for all its regions into new branches
-for ENV in ${ENVIRONMENTS}; do # ENV loop
+for ENV in ${SUPPORTED_ENVIRONMENT_TYPES}; do # ENV loop
   test "${ENV}" = 'prod' &&
       OLD_BRANCH='master' ||
       OLD_BRANCH="${ENV}"
@@ -937,7 +923,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
             SERVER_PROFILE_URL='' \
             K8S_GIT_URL="${PING_CLOUD_BASE_REPO_URL}" \
             K8S_GIT_BRANCH="${NEW_VERSION}" \
-            ENVIRONMENTS="${NEW_BRANCH}" \
+            SUPPORTED_ENVIRONMENT_TYPES="${NEW_BRANCH}" \
             PING_IDENTITY_DEVOPS_USER='' \
             PING_IDENTITY_DEVOPS_KEY='' \
             MYSQL_USER='' \
@@ -991,6 +977,8 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
              ORIG_ENV_VARS_FILE="${K8S_CONFIGS_DIR}/${REGION_DIR}/${DIR_NAME}/${ENV_VARS_FILE_NAME}"
           elif test "${DIR_NAME}" = 'admin' || test "${DIR_NAME}" = 'engine'; then
              ORIG_ENV_VARS_FILE="${K8S_CONFIGS_DIR}/${REGION_DIR}/${PARENT_DIR_NAME}/${DIR_NAME}/${ENV_VARS_FILE_NAME}"
+          elif test "${DIR_NAME}" = 'git-ops'; then
+            ORIG_ENV_VARS_FILE="${K8S_CONFIGS_DIR}/${BASE_DIR}/${PARENT_DIR_NAME}/${DIR_NAME}/${ENV_VARS_FILE_NAME}"
           else
             log "Not an app-specific env_vars file: ${TEMPLATE_ENV_VARS_FILE}"
             # skip to next iteration.
@@ -1064,7 +1052,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
       QUIET=true \
           GENERATED_CODE_DIR="${TARGET_DIR}" \
           IS_PRIMARY=${IS_PRIMARY} \
-          ENVIRONMENTS="${NEW_BRANCH}" \
+          SUPPORTED_ENVIRONMENT_TYPES="${NEW_BRANCH}" \
           PUSH_TO_SERVER=false \
           "${NEW_PING_CLOUD_BASE_REPO}/${CODE_GEN_DIR}/push-cluster-state.sh"
     )

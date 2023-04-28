@@ -28,12 +28,6 @@ rules:
       - secrets
     verbs: ["get", "create", "patch"]
 
-  - apiGroups: ['policy']
-    resources: ['podsecuritypolicies']
-    verbs: ['use']
-    resourceNames:
-    - nri-bundle-nri-metadata-injection-admission
-
 ---
 # Source: nri-bundle/charts/newrelic-infrastructure/templates/clusterrole.yaml
 

@@ -205,7 +205,7 @@ patchesStrategicMerge:
 - custom-patches.yaml
 
 ### Regional enablement - remove admins, backups, etc. from secondary ###
-### These patches should be commented out on the primary region ###
+### The removal of these patches is handled automatically via generate-cluster-state script, manual toggling is not needed ###
 
 - ../base/ping-cloud/pingdirectory/server/remove-from-secondary-patch.yaml
 

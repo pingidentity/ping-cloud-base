@@ -5,17 +5,17 @@
 
 # This script may be used to upgrade an existing profile repo. It is designed to be non-destructive in that it
 # won't push any changes to the server. Instead, it will set up a parallel branch for every CDE branch and/or the
-# customer-hub branch as specified through the ENVIRONMENTS environment variable. For example, if the new version is
-# v1.11.0 and the ENVIRONMENTS variable override is not provided, then it’ll set up 4 new CDE branches at the new
-# version for the default set of environments: v1.11.0-dev, v1.11.0-test, v1.11.0-stage and v1.11.0-master and 1 new
-# customer-hub branch v1.11.0-customer-hub.
+# customer-hub branch as specified through the SUPPORTED_ENVIRONMENT_TYPES environment variable. For example, if the
+# new version is v1.11.0 and the SUPPORTED_ENVIRONMENT_TYPES variable override is not provided, then it’ll set up 4 new
+# CDE branches at the new version for the default set of environments: v1.11.0-dev, v1.11.0-test, v1.11.0-stage and
+# v1.11.0-master and 1 new customer-hub branch v1.11.0-customer-hub.
 
 # NOTE: The script must be run from the root of the profile repo clone directory. It acts on the following
 # environment variables.
 #
 #   NEW_VERSION -> Required. The new version of Beluga to which to update the profile repo.
-#   ENVIRONMENTS -> A space-separated list of environments. Defaults to 'dev test stage prod customer-hub', if unset.
-#       If provided, it must contain all or a subset of the environments currently created by the
+#   SUPPORTED_ENVIRONMENT_TYPES -> A space-separated list of environments. Defaults to 'dev test stage prod customer-hub',
+#       if unset. If provided, it must contain all or a subset of the environments currently created by the
 #       generate-cluster-state.sh script, i.e. dev, test, stage, prod and customer-hub.
 #   RESET_TO_DEFAULT -> An optional flag, which if set to true will reset the profile repo to the OOTB state
 #       for the new version. This has the same effect as running the platform code build job that initially seeds the
@@ -356,12 +356,12 @@ CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
 
 # Validate that a git branch exists for every environment.
 ALL_ENVIRONMENTS='dev test stage prod customer-hub'
-ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
+SUPPORTED_ENVIRONMENT_TYPES="${SUPPORTED_ENVIRONMENT_TYPES:-${ALL_ENVIRONMENTS}}"
 
 NEW_BRANCHES=
 REPO_STATUS=0
 
-for ENV in ${ENVIRONMENTS}; do
+for ENV in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   test "${ENV}" = 'prod' &&
       DEFAULT_GIT_BRANCH='master' ||
       DEFAULT_GIT_BRANCH="${ENV}"
@@ -413,7 +413,7 @@ fi
 # Code for all environments will be generated in sub-directories of the following directory.
 TEMP_DIR="$(mktemp -d)"
 
-for ENV in ${ENVIRONMENTS}; do # ENV loop
+for ENV in ${SUPPORTED_ENVIRONMENT_TYPES}; do # ENV loop
   test "${ENV}" = 'prod' &&
       DEFAULT_GIT_BRANCH='master' ||
       DEFAULT_GIT_BRANCH="${ENV}"
@@ -426,7 +426,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
     log "Generating code into '${TARGET_DIR}'"
     QUIET=true \
         TARGET_DIR="${TARGET_DIR}" \
-        ENVIRONMENTS="${NEW_BRANCH}" \
+        SUPPORTED_ENVIRONMENT_TYPES="${NEW_BRANCH}" \
         "${NEW_PING_CLOUD_BASE_REPO}/${CODE_GEN_DIR}/generate-cluster-state.sh"
 
     GEN_RC=$?
@@ -442,7 +442,7 @@ for ENV in ${ENVIRONMENTS}; do # ENV loop
       GENERATED_CODE_DIR="${TARGET_DIR}" \
       IS_PRIMARY=true \
       IS_PROFILE_REPO=true \
-      ENVIRONMENTS="${NEW_BRANCH}" \
+      SUPPORTED_ENVIRONMENT_TYPES="${NEW_BRANCH}" \
       PUSH_TO_SERVER=false \
       "${NEW_PING_CLOUD_BASE_REPO}/${CODE_GEN_DIR}/push-cluster-state.sh"
 
