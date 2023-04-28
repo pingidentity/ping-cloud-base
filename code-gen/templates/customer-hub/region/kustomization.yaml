@@ -21,6 +21,13 @@ patchesStrategicMerge:
 - ../base/cluster-tools/health/remove-from-primary-patch.yaml
 - ../base/cluster-tools/health/remove-from-secondary-patch.yaml
 
+### Regional enablement - remove admins, backups, etc. from secondary ###
+### The removal of these patches is handled automatically via generate-cluster-state script, manual toggling is not needed ###
+- pingaccess-was/admin/remove-from-secondary-patch.yaml
+
+- pingcentral/server/remove-from-secondary-patch.yaml
+
+
 configMapGenerator:
 
 ### Regional env vars for ELK
