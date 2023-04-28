@@ -23,9 +23,9 @@ patchesStrategicMerge:
 
 ### Regional enablement - remove admins, backups, etc. from secondary ###
 ### The removal of these patches is handled automatically via generate-cluster-state script, manual toggling is not needed ###
-- pingaccess-was/admin/remove-from-secondary-patch.yaml
+- ../base/ping-cloud/pingaccess-was/admin/remove-from-secondary-patch.yaml
 
-- pingcentral/server/remove-from-secondary-patch.yaml
+- ../base/ping-cloud/pingcentral/server/remove-from-secondary-patch.yaml
 
 
 configMapGenerator:
