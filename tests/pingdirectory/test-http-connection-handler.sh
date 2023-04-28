@@ -128,7 +128,7 @@ EOF
 add_users() {
   kubectl cp ${ADD_USER_LDIF_FILE} pingdirectory-0:"${TEST_LDIF_FILE}" -c "${CONTAINER}" -n "${PING_CLOUD_NAMESPACE}"
   kubectl exec pingdirectory-0 -c "${CONTAINER}" -n "${PING_CLOUD_NAMESPACE}" -- \
-    sh -c "ldapmodify --defaultAdd --ldifFile ${TEST_LDIF_FILE} > /dev/null"
+    sh -c "ldapmodify --defaultAdd --ldifFile ${TEST_LDIF_FILE} -c > /dev/null"
 }
 
 delete_users() {
