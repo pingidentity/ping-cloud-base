@@ -26,7 +26,7 @@ kind: CronJob
 metadata:
   name: pingdirectory-periodic-backup
 spec:
-  schedule: "*/10 * * * *"
+  schedule: "30 */6 * * *"
   successfulJobsHistoryLimit: 0
   failedJobsHistoryLimit: 1
   concurrencyPolicy: Forbid
@@ -40,7 +40,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: pingdirectory-backup
-            image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:calvin-test-pdo-5123
+            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.18-release-branch-latest
             imagePullPolicy: Always
             securityContext:
               runAsGroup: 9999
