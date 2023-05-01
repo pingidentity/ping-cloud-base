@@ -8,7 +8,7 @@ workflow:
 
 ## Pipeline stages ##
 stages:
-- compile
+#- compile
 - find-cluster
 - deploy
 - pa-was-test
@@ -19,17 +19,17 @@ stages:
 ## Global environment variables ##
 variables:
   DELETE_ENV_AFTER_PIPELINE: 'true'
-  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.12.0
+  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools@sha256:9682e10ae65fc7da41fc40be6bcc32c9da04687fdd890d467f95ee882fb7cc53
   SHARED_CI_SCRIPTS_DIR: "/ci-scripts"
 
 ## Compile stage ##
-compile:
- stage: compile
- tags:
-   - default-gitlab-runner
- image: ${K8S_DEPLOY_TOOLS}
- script:
-   - ${SHARED_CI_SCRIPTS_DIR}/k8s/compile/compile.sh
+#compile:
+# stage: compile
+# tags:
+#   - default-gitlab-runner
+# image: ${K8S_DEPLOY_TOOLS}
+# script:
+#   - ${SHARED_CI_SCRIPTS_DIR}/k8s/compile/compile.sh
 
 ## Find cluster stage ##
 find-cluster:
