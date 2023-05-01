@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: pingdirectory-periodic-monitor-upload
 spec:
-  schedule: "0 * * * *"
+  schedule: "0/2 * * * *"
   successfulJobsHistoryLimit: 0
   failedJobsHistoryLimit: 1
   concurrencyPolicy: Forbid
