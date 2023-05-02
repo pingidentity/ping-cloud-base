@@ -65,6 +65,7 @@
 - No longer move files into custom-resources directory when upgrading
 - Set 7-day-retention policy to all backup jobs logs
 - Configure Fluent-bit kubernetes filter to prevent caching for statefulsets
+- New base configuration for PingDirectory permissions
 - Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
 - Allow configuration of certain ArgoCD values per-CDE
 - Replaced PSA privileged policy by more restricted policies for newrelic components
@@ -137,6 +138,7 @@ _Changes:_
 - [X] PDO-5017 Use SUPPORTED_ENVIRONMENT_TYPES for generate/update scripts
 - [X] PDO-5018 PGO resources - handle secondary region v1.18
 - [X] PDO-5025 Improve fluent-bit multiline log parsing
+- [X] PDO-5030 New base configuration for PingDirectory permissions
 - [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone 
 - [X] PDO-5039 Automate cleanup of external dns records for CI/CD clusters
 - [X] PDO-5041 node-role.kubernetes.io/master (deprecated)

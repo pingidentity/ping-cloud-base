@@ -236,7 +236,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       # Copy the profiles.
       src_dir="${GENERATED_CODE_DIR}/${PROFILE_REPO_DIR}/${PROFILES_DIR}/${ENV_OR_BRANCH}/"
       echo "Copying ${src_dir} to ${PROFILES_DIR}"
-      find "${src_dir}" -type d -maxdepth 1 -exec cp -pr {} "${PROFILES_DIR}"/ \;
+      find "${src_dir}" -maxdepth 1 -mindepth 1 -type d -exec cp -pr {} "${PROFILES_DIR}"/ \;
     fi
 
     if ! "${IS_PROFILE_REPO}"; then
