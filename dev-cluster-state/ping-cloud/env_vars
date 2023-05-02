@@ -81,7 +81,7 @@ NEW_RELIC_ENVIRONMENT_NAME=${NEW_RELIC_ENVIRONMENT_NAME}
 # NOTE: You must re-run dev-env.sh after flipping a feature flag
 
 PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED}
-
+SKIP_LIVENESS_PROBE=${SKIP_LIVENESS_PROBE}
 ########################################################################################################################
 
 # Default argo-events notification configuration

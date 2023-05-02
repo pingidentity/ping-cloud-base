@@ -370,6 +370,9 @@ export DASH_REPO_BRANCH="${DASH_REPO_BRANCH:-main}"
 ENV_NAME_NO_DASHES=$(echo ${BELUGA_ENV_NAME} | tr '-' '_')
 export MYSQL_DATABASE="pingcentral_${ENV_NAME_NO_DASHES}"
 
+#Disable liveness probe
+export SKIP_LIVENESS_PROBE=${SKIP_LIVENESS_PROBE:-true}
+
 DEPLOY_FILE=${DEPLOY_FILE:-/tmp/deploy.yaml}
 test -z "${K8S_CONTEXT}" && K8S_CONTEXT=$(kubectl config current-context)
 
