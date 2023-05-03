@@ -74,6 +74,7 @@
 - Default ngnix hpa configuration in medium environment is lower than small
 - Fix cluster_name variable in Grafana Dashboards for CHUB
 - Remove PC resources from secondary customer-hub
+- Introduce a flag to toggle between the pods liveness probes test
 
 _Changes:_
 
@@ -144,6 +145,7 @@ _Changes:_
 - [X] PDO-5080 Test that file has been copied is not working in init container
 - [X] PDO-5090 Update default version of pf-pingid-integration-kit to 2.24.0 in PingFederate
 - [X] PDO-5104 Update Prometheus CPU/MEM limits
+- [X] PDO-5105 Introduce a flag to toggle between the pods liveness probes test
 - [X] PDO-5107 Fluent-bit pods stuck in pending state
 - [X] PDO-5124 Enable bootstrapping a new customer with ArgoCD
 - [X] PDO-5131 Pods (typically cloudwatch) Stuck in pending state
