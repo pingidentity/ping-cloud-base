@@ -236,7 +236,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       # Copy the profiles.
       src_dir="${GENERATED_CODE_DIR}/${PROFILE_REPO_DIR}/${PROFILES_DIR}/${ENV_OR_BRANCH}/"
       echo "Copying ${src_dir} to ${PROFILES_DIR}"
-      find "${src_dir}" -maxdepth 1 -type d -exec cp -pr {} "${PROFILES_DIR}"/ \;
+      find "${src_dir}" -maxdepth 1 -mindepth 1 -type d -exec cp -pr {} "${PROFILES_DIR}"/ \;
     fi
 
     if ! "${IS_PROFILE_REPO}"; then
@@ -257,7 +257,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
         # Copy base files into the app directory.
         src_dir="${app_path}"
         echo "Copying base files from ${src_dir} to ${app_name}"
-        find "${src_dir}" -maxdepth 1 -type f -exec cp {} "${app_name}" \;
+        find "${src_dir}" -type f -maxdepth 1 -exec cp {} "${app_name}" \;
 
         # Copy the base directory, which is common code for all regions.
         src_dir="${app_path}/${BASE_DIR}"
