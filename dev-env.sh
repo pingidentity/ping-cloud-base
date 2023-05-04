@@ -352,6 +352,9 @@ export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY:-ssm://pcpt/devops-l
 
 export PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED:-false}
 
+#Disable liveness probe
+export SKIP_LIVENESS_PROBE=${SKIP_LIVENESS_PROBE:-false}
+
 ########################################################################################################################
 
 # Default notification configuration for dev environment.
@@ -369,9 +372,6 @@ export DASH_REPO_BRANCH="${DASH_REPO_BRANCH:-main}"
 # MySQL database names cannot have dashes. So transform dashes into underscores.
 ENV_NAME_NO_DASHES=$(echo ${BELUGA_ENV_NAME} | tr '-' '_')
 export MYSQL_DATABASE="pingcentral_${ENV_NAME_NO_DASHES}"
-
-#Disable liveness probe
-export SKIP_LIVENESS_PROBE=${SKIP_LIVENESS_PROBE:-true}
 
 DEPLOY_FILE=${DEPLOY_FILE:-/tmp/deploy.yaml}
 test -z "${K8S_CONTEXT}" && K8S_CONTEXT=$(kubectl config current-context)
