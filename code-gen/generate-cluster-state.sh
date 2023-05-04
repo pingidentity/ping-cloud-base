@@ -764,7 +764,7 @@ export GLOBAL_TENANT_DOMAIN="${GLOBAL_TENANT_DOMAIN_NO_DOT_SUFFIX:-${DERIVED_GLO
 
 export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
 
-export PD_MONITOR_BUCKET_URL="${PD_MONITOR_BUCKET_URL:-unused}"
+export PD_MONITOR_BUCKET_URL="${PD_MONITOR_BUCKET_URL:-ssm://pcpt/service/storage/pd-monitor/uri}"
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
 
@@ -1251,7 +1251,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   organize_code_for_csr
 
   PRIMARY_PING_KUST_FILE="${K8S_CONFIGS_DIR}/${REGION_NICK_NAME}/kustomization.yaml"
-  PING_BASE_KUST_FILE="${K8S_CONFIGS_DIR}/base/ping-cloud/kustomization.yaml"
 
   # Copy around files for Developer CDE before substituting vars
   if "${IS_BELUGA_ENV}"; then
@@ -1286,8 +1285,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
     sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/g' "${PRIMARY_PING_KUST_FILE}"
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
-    sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/g' "${PING_BASE_KUST_FILE}"
-    rm -f "${PING_BASE_KUST_FILE}.bak"
   fi
 
   echo "Copying server profiles for environment ${ENV}"
