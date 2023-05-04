@@ -76,6 +76,7 @@
 - Default ngnix hpa configuration in medium environment is lower than small
 - Fix cluster_name variable in Grafana Dashboards for CHUB
 - Remove PC resources from secondary customer-hub
+- Allow users to pick and enable only the external ingress they want. 
 
 _Changes:_
 
@@ -164,6 +165,7 @@ _Changes:_
 - [X] PDO-5248 Bug fix,remove-from-secondary-patch.yaml not getting applied
 - [X] PDO-5255 Allow configuration of certain ArgoCD values per-CDE
 - [X] PDO-5261 Remove PF and PA from pa-was config in customer-hub
+- [X] PDO-5262 Allow users to pick and enable only the external ingress they want.
 - [X] PDO-5263 Remove PC resources from secondary customer-hub
 - [X] PDO-5264 Set 7-day-retention policy to all backup jobs logs
 - [X] PDO-5271 Replace PSA privileged policy by more restricted policies for newrelic components if needed
