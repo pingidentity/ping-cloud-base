@@ -22,6 +22,11 @@ configMapGenerator:
     - SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX}
     - REGION=${REGION}
 
+- name: os-notifications-channels
+  behavior: merge
+  files:
+    - notifications/sns.json
+
 patchesStrategicMerge:
 - |-
   apiVersion: v1

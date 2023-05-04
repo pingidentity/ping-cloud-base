@@ -14,4 +14,7 @@ resources:
 - storageclass.yaml
 - certs.yaml
 - ism-policies
+- alerts
+- notifications
+- bootstrap.yaml
 

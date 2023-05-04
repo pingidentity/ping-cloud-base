@@ -17,40 +17,40 @@ spec:
     spec:
       serviceAccountName: logstash-elastic
       initContainers:
-#        - name: check-service-availability
-#          securityContext:
-#            runAsNonRoot: true
-#            runAsUser: 1000
-#            runAsGroup: 1000
-#            allowPrivilegeEscalation: false
-#          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v1.18-release-branch-latest
-#          imagePullPolicy: Always
-#          command:
-#            - sh
-#            - $(CONTAINER_NAME).sh
-#          env:
-#            - name: CONTAINER_NAME
-#              value: check-service-availability
-#            - name: CHECK_SERVICE_URL
-#              value: 'https://opensearch-cluster-master'
-#            - name: CHECK_SERVICE_PORT
-#              value: '9200'
-#            - name: DESIRED_STATUS
-#              value: green
-#        - name: wait-for-bootstrap-completed
-#          securityContext:
-#            runAsGroup: 2000
-#            runAsNonRoot: true
-#            runAsUser: 1000
-#            allowPrivilegeEscalation: false
-#          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.23.0
-#          imagePullPolicy: IfNotPresent
-#          command:
-#            - sh
-#            - '-c'
-#            - >-
-#              kubectl wait --for=condition=complete --timeout=300s -n
-#              elastic-stack-logging job/logging-bootstrap
+        - name: check-opensearch-availability
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v1.18-release-branch-latest
+          imagePullPolicy: Always
+          command:
+            - sh
+            - $(CONTAINER_NAME).sh
+          env:
+            - name: CONTAINER_NAME
+              value: check-opensearch-availability
+            - name: CHECK_SERVICE_URL
+              value: 'https://opensearch-cluster-master'
+            - name: CHECK_SERVICE_PORT
+              value: '9200'
+            - name: DESIRED_STATUS
+              value: green
+        - name: wait-for-bootstrap-completed
+          securityContext:
+            runAsGroup: 2000
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.23.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+            - '-c'
+            - >-
+              kubectl wait --for=condition=complete --timeout=900s -n
+              elastic-stack-logging job/opensearch-bootstrap
         - name: create-enrichment-cache-files
           securityContext:
             runAsNonRoot: true
@@ -122,6 +122,8 @@ spec:
               value: persisted
             - name: QUEUE_MAX_BYTES
               value: 1000gb
+            - name: XPACK_MONITORING_ENABLED
+              value: "false"
           envFrom:
             - configMapRef:
                 name: elk-environment-variables
@@ -266,6 +268,7 @@ metadata:
 spec:
   selector:
     app: logstash-elastic
+  clusterIP: None
   ports:
     - port: 9600
       name: rest

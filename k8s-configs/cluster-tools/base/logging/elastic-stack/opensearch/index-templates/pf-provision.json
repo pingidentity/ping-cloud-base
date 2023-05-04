@@ -6,7 +6,7 @@
     "settings": {
       "index.number_of_shards": "3",
       "index.number_of_replicas": "1",
-      "index.refresh_interval": "1s",
+      "index.refresh_interval": "30s",
       "index": {
         "plugins": {
           "index_state_management": {
@@ -31,6 +31,9 @@
         },
         "timestamp": {
           "type": "text"
+        },
+        "cluster_name": {
+          "type": "keyword"
         }
       }
     }
