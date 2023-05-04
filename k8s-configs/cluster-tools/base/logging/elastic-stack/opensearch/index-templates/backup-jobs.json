@@ -1,0 +1,41 @@
+{
+  "index_patterns": [
+    "backup-jobs-*"
+  ],
+  "template": {
+    "settings": {
+      "index.number_of_shards": "3",
+      "index.number_of_replicas": "0",
+      "index.refresh_interval": "30s",
+      "index": {
+        "routing": {
+          "allocation": {
+            "require": {
+              "temp": "hot"
+            }
+          }
+        },
+        "plugins": {
+          "index_state_management": {
+            "rollover_alias": "healthchecks"
+          }
+        }
+      }
+    },
+    "mappings": {
+      "properties": {
+        "@timestamp": {
+          "type": "date"
+        },
+        "message": {
+          "type": "text"
+        },
+        "timestamp": {
+          "type": "text"
+        }
+      }
+    }
+  },
+  "composed_of": [],
+  "priority": 0
+}

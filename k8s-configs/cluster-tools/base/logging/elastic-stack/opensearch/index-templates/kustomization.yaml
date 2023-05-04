@@ -5,6 +5,7 @@ configMapGenerator:
   - name: enrichment-opensearch-index-templates
     files:
       - healthchecks.json
+      - backup-jobs.json
       - logstash.json
       - pa-admin-audit.json
       - pa-admin-system.json

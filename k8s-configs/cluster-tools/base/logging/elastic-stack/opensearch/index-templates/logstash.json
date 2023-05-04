@@ -6,7 +6,7 @@
     "settings": {
       "index.number_of_shards": "3",
       "index.number_of_replicas": "2",
-      "index.refresh_interval": "5s",
+      "index.refresh_interval": "30s",
       "index": {
         "routing": {
           "allocation": {
@@ -78,6 +78,9 @@
         },
         "timestamp": {
           "type": "text"
+        },
+        "cluster_name": {
+          "type": "keyword"
         }
       }
     }

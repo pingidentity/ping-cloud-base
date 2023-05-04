@@ -83,6 +83,7 @@
 - OpenSearch migration: enable TLS
 - OpenSearch migration: PA dashboard migrated from Elasticsearch to Opensearch
 - OpenSearch migration: Migrate PF dashboards
+- OpenSearch migration: Migrate alerts
 
 
 _Changes:_
@@ -190,6 +191,7 @@ _Changes:_
 - [X] PDO-5152 OpenSearch migration: Rewrite bootstrap scripts
 - [X] PDO-5223 Remove pa-was config for ArgoCD from non customer-hub CDEs
 - [X] PDO-5244 OpenSearch migration: Enable transport layer security
+- [X] PDO-5246 Opensearch migration: migrate alerts
 
 ### 1.17.0.0
 

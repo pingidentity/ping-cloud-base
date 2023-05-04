@@ -35,7 +35,8 @@ spec:
             - ALL
           runAsNonRoot: true
           runAsUser: 1000
-        image: "opensearchproject/opensearch-dashboards:2.6.0"
+        # TODO: change image to production and place it in ECR
+        image: "opensearchproject/opensearch-dashboards:2.7.0"
         imagePullPolicy: "IfNotPresent"
         readinessProbe:
           failureThreshold: 10
@@ -72,8 +73,8 @@ spec:
           protocol: TCP
         resources:
           limits:
-            cpu: 100m
-            memory: 512M
+            cpu: 500m
+            memory: 1024M
           requests:
             cpu: 100m
             memory: 512M

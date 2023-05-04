@@ -78,11 +78,11 @@ spec:
         - |
           #!/usr/bin/env bash
           set -euo pipefail
-          ./bin/opensearch-plugin install -b repository-s3
+          #./bin/opensearch-plugin install -b repository-s3
 
           bash opensearch-docker-entrypoint.sh
-
-        image: "opensearchproject/opensearch:2.6.0"
+# TODO: change image to production one and place it in ECR
+        image: "opensearchproject/opensearch:2.7.0"
         imagePullPolicy: "IfNotPresent"
         readinessProbe:
           failureThreshold: 3
@@ -104,8 +104,11 @@ spec:
           containerPort: 9300
         resources:
           requests:
-            cpu: 1000m
-            memory: 100Mi
+            cpu: "1"
+            memory: 4Gi
+          limits:
+            cpu: "4"
+            memory: 4Gi
         env:
         - name: node.name
           valueFrom:
@@ -122,7 +125,7 @@ spec:
         - name: network.host
           value: "0.0.0.0"
         - name: OPENSEARCH_JAVA_OPTS
-          value: "-Xmx512M -Xms512M"
+          value: "-Xmx3000M -Xms3000M"
         - name: node.roles
           value: "master,ingest,data,remote_cluster_client,"
         - name: DISABLE_INSTALL_DEMO_CONFIG
@@ -213,11 +216,12 @@ spec:
         - |
           #!/usr/bin/env bash
           set -euo pipefail
-          ./bin/opensearch-plugin install -b repository-s3
+          #./bin/opensearch-plugin install -b repository-s3
 
           bash opensearch-docker-entrypoint.sh
 
-        image: "opensearchproject/opensearch:2.6.0"
+# TODO: change image to production one and place it in ECR
+        image: "opensearchproject/opensearch:2.7.0"
         imagePullPolicy: "IfNotPresent"
         readinessProbe:
           failureThreshold: 3
@@ -239,8 +243,11 @@ spec:
           containerPort: 9300
         resources:
           requests:
-            cpu: 1000m
-            memory: 100Mi
+            cpu: "1"
+            memory: 4Gi
+          limits:
+            cpu: "2"
+            memory: 4Gi
         env:
         - name: node.name
           valueFrom:
@@ -257,7 +264,7 @@ spec:
         - name: network.host
           value: "0.0.0.0"
         - name: OPENSEARCH_JAVA_OPTS
-          value: "-Xmx512M -Xms512M"
+          value: "-Xmx3000M -Xms3000M"
         - name: node.roles
           value: "data,remote_cluster_client,"
         - name: DISABLE_INSTALL_DEMO_CONFIG

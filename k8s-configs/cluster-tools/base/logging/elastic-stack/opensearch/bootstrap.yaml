@@ -1,0 +1,90 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: opensearch-bootstrap
+  annotations:
+    argocd.argoproj.io/sync-options: Replace=true
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  template:
+    spec:
+      serviceAccountName: enrichment
+      containers:
+      - name: opensearch-bootstrap
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v1.18-release-branch-latest
+        imagePullPolicy: Always
+        workingDir: /scripts
+        command: ["sh", '$(CONTAINER_NAME).sh']
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
+        env:
+        - name: CONTAINER_NAME
+          value: "opensearch-bootstrap"
+        - name: OS_PATH_CONF
+          value: "/usr/share/opensearch/data/config"
+        # Service checking related env vars
+        - name: CHECK_SERVICE_URL
+          value: "https://opensearch-cluster-master"
+        - name: CHECK_SERVICE_PORT
+          value: "9200"
+        - name: DESIRED_STATUS
+          value: "green"
+        volumeMounts:
+          - name: enrichment-opensearch-ism-policies
+            mountPath: /usr/share/opensearch/data/ism-policies
+          - name: enrichment-opensearch-index-templates
+            mountPath: /usr/share/opensearch/data/index-templates
+          - name: os-notifications-channels
+            mountPath: /usr/share/opensearch/data/notifications
+          - name: os-alerts-pd-1
+            mountPath: /usr/share/opensearch/data/alerts/pd-1
+          - name: os-alerts-pd-2
+            mountPath: /usr/share/opensearch/data/alerts/pd-2
+          - name: os-alerts-pd-3
+            mountPath: /usr/share/opensearch/data/alerts/pd-3
+          - name: os-alerts-pd-4
+            mountPath: /usr/share/opensearch/data/alerts/pd-4
+          - name: os-alerts-pds
+            mountPath: /usr/share/opensearch/data/alerts/pds
+          - name: os-alerts-pf
+            mountPath: /usr/share/opensearch/data/alerts/pf
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "300m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      restartPolicy: OnFailure
+      volumes:
+        - name: enrichment-opensearch-ism-policies
+          configMap:
+            name: enrichment-opensearch-ism-policies
+        - name: enrichment-opensearch-index-templates
+          configMap:
+            name: enrichment-opensearch-index-templates
+        - name: os-notifications-channels
+          configMap:
+            name: os-notifications-channels
+        - name: os-alerts-pd-1
+          configMap:
+            name: os-alerts-pd-1
+        - name: os-alerts-pd-2
+          configMap:
+            name: os-alerts-pd-2
+        - name: os-alerts-pd-3
+          configMap:
+            name: os-alerts-pd-3
+        - name: os-alerts-pd-4
+          configMap:
+            name: os-alerts-pd-4
+        - name: os-alerts-pds
+          configMap:
+            name: os-alerts-pds
+        - name: os-alerts-pf
+          configMap:
+            name: os-alerts-pf

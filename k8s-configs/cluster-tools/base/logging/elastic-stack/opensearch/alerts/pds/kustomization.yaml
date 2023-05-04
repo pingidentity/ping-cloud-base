@@ -1,0 +1,18 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+namespace: elastic-stack-logging
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+  - name: os-alerts-pds
+    files:
+      - pds_pipe_backlog.json
+      - pds_conn_error.json
+      - pds_ops_error.json
+      - pds_user_err.json
+      - pds_user_fatal.json
+      - pds_work_queue_back.json
+      - pds_work_queue_full.json

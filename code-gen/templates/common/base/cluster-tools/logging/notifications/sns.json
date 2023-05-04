@@ -1,0 +1,26 @@
+[
+  {
+    "config_id": "sns_sreappalerts",
+    "config": {
+      "name": "sns_sreappalerts",
+      "description": "",
+      "config_type": "sns",
+      "is_enabled": true,
+      "sns": {
+        "topic_arn": "arn:aws:sns:us-west-2:000000000000:PLACEHOLDER"
+      }
+    }
+  },
+  {
+    "config_id": "sns_customerhub",
+    "config": {
+      "name": "sns_customerhub",
+      "description": "",
+      "config_type": "sns",
+      "is_enabled": true,
+      "sns": {
+        "topic_arn": "arn:aws:sns:us-west-2:000000000000:PLACEHOLDER"
+      }
+    }
+  }
+]

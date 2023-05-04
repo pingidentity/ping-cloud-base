@@ -9,3 +9,4 @@ resources:
   - ingress.yaml
   - rbac.yaml
   - service.yaml
+  - bootstrap.yaml
