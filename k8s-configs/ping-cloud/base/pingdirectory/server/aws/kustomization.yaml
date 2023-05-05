@@ -12,6 +12,7 @@ resources:
 - periodic-backup.yaml
 - periodic-csd-upload.yaml
 - periodic-monitor-log-upload.yaml
+- periodic-export-ldif.yaml
 
 patchesStrategicMerge:
 - discovery-service.yaml

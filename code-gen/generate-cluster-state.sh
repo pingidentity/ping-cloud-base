@@ -101,8 +101,11 @@
 # ENVIRONMENTS                     | The environments the customer is entitled to. This | dev test stage prod customer-hub
 #                                  | will be a subset of SUPPORTED_ENVIRONMENT_TYPES    |
 #                                  |                                                    |
-# EXTERNAL_INGRESS_ENABLED         | Feature Flag - Indicates if external ingress       | True
-#                                  | is enabled                                         |
+# EXTERNAL_INGRESS_ENABLED         | List of ping apps(pingaccess,pingaccess-was,       | No defaults
+#                                  | pingdirectory,pingdelegator,pingfederate) for      |
+#                                  | which you can enable external ingress(the values   |
+#                                  | are ping app names )                               |
+#                                  | Examplelist:(pingaccess pingdirectory pingfederate)|
 #                                  |                                                    |
 # GLOBAL_TENANT_DOMAIN             | Region-independent URL used for DNS failover/      | Replaces the first segment of
 #                                  | routing.                                           | the TENANT_DOMAIN value with the
@@ -764,11 +767,11 @@ export GLOBAL_TENANT_DOMAIN="${GLOBAL_TENANT_DOMAIN_NO_DOT_SUFFIX:-${DERIVED_GLO
 
 export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
 
-export PD_MONITOR_BUCKET_URL="${PD_MONITOR_BUCKET_URL:-unused}"
+export PD_MONITOR_BUCKET_URL="${PD_MONITOR_BUCKET_URL:-ssm://pcpt/service/storage/pd-monitor/uri}"
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
 
-export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-"pingcentraldb.\${PRIMARY_TENANT_DOMAIN}"}"
+export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-"pingcentraldb.${PRIMARY_TENANT_DOMAIN}"}"
 export MYSQL_USER="${MYSQL_USER:-ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username}"
 export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#password}"
 
@@ -819,7 +822,7 @@ export IMAGE_TAG_PREFIX="${K8S_GIT_BRANCH%.*}"
 export PF_PROVISIONING_ENABLED="${PF_PROVISIONING_ENABLED:-false}"
 export RADIUS_PROXY_ENABLED="${RADIUS_PROXY_ENABLED:-false}"
 export ARGOCD_BOOTSTRAP_ENABLED="${ARGOCD_BOOTSTRAP_ENABLED:-true}"
-export EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED:-true}"
+export EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED:-''}"
 
 ### Default environment variables ###
 export ECR_REGISTRY_NAME='public.ecr.aws/r2h3l6e4'
@@ -1251,7 +1254,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   organize_code_for_csr
 
   PRIMARY_PING_KUST_FILE="${K8S_CONFIGS_DIR}/${REGION_NICK_NAME}/kustomization.yaml"
-  PING_BASE_KUST_FILE="${K8S_CONFIGS_DIR}/base/ping-cloud/kustomization.yaml"
 
   # Copy around files for Developer CDE before substituting vars
   if "${IS_BELUGA_ENV}"; then
@@ -1286,8 +1288,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
     sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/g' "${PRIMARY_PING_KUST_FILE}"
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
-    sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/g' "${PING_BASE_KUST_FILE}"
-    rm -f "${PING_BASE_KUST_FILE}.bak"
   fi
 
   echo "Copying server profiles for environment ${ENV}"

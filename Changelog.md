@@ -13,6 +13,7 @@
 - Add multiple backends to 'BACKENDS_TO_BACKUP' env var
 - Selectively restore a backend in PD
 - Capture hourly PingDirectory CSD data
+- Enable and manage daily encrypted exports
 - Updated external-dns to v0.13.1 
 - Update cluster tools to latest version: kube-state-metrics v2.6.0
 - Remove PA/PF SIEM console logging
@@ -75,6 +76,7 @@
 - Default ngnix hpa configuration in medium environment is lower than small
 - Fix cluster_name variable in Grafana Dashboards for CHUB
 - Remove PC resources from secondary customer-hub
+- Allow users to pick and enable only the external ingress they want. 
 
 _Changes:_
 
@@ -85,6 +87,7 @@ _Changes:_
 - [X] PDO-4009 Update k8s StorageClass provisoner to use CSI driver
 - [X] PDO-4161 [need before EKS 1.25] Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
 - [X] PDO-4257 Capture hourly PingDirectory CSD data
+- [X] PDO-4258 Enable and manage daily encrypted exports
 - [X] PDO-4309 Add integration test for PingDirectory Java args 
 - [X] PDO-4388 Flag in env_var to enable/disable external ingresses for admin endpoints
 - [X] PDO-4548 Find and destroy file moving to custom-resources code from generate-cluster-state.sh to fix reoccuring issue when upgrading
@@ -162,6 +165,7 @@ _Changes:_
 - [X] PDO-5248 Bug fix,remove-from-secondary-patch.yaml not getting applied
 - [X] PDO-5255 Allow configuration of certain ArgoCD values per-CDE
 - [X] PDO-5261 Remove PF and PA from pa-was config in customer-hub
+- [X] PDO-5262 Allow users to pick and enable only the external ingress they want.
 - [X] PDO-5263 Remove PC resources from secondary customer-hub
 - [X] PDO-5264 Set 7-day-retention policy to all backup jobs logs
 - [X] PDO-5271 Replace PSA privileged policy by more restricted policies for newrelic components if needed
@@ -169,6 +173,7 @@ _Changes:_
 - [X] PDO-5281 Default ngnix hpa configuration in medium environment is lower than small
 - [X] PDO-5288 Update health check. healthcheck should only test the resources that have been deployed
 - [X] PDO-5298 Bugfix - make scripts compatible with Debian
+- [X] PDO-5302 Fix PF multiline parsing
 - [X] PDO-5315 Bugfix - argocd-bootstrap to use region specific env vars
 - [X] PDO-5319 The cluster name is not displayed correctly in Grafana Dashboard for the CHUB cluster
 
@@ -213,6 +218,7 @@ _Changes:_
 - Installed EBS CSI driver
 - Replace deprecated topologyKey
 - Add IngressClassName to replace the deprecated annotation
+- Fix PingFederate multiline logs parsing
 
 _Changes:_
 

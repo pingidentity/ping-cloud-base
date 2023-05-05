@@ -81,41 +81,44 @@ relative_path() {
 #   $1 -> The directory containing k8s-configs.
 ########################################################################################################################
 feature_flags() {
-    cd "${1}/k8s-configs"
+  cd "${1}/k8s-configs"
 
-    # Map with the feature flag environment variable & the term to search to find the kustomization files
-    flag_map="${RADIUS_PROXY_ENABLED}:ff-radius-proxy ${EXTERNAL_INGRESS_ENABLED}:remove-external-ingress"
+  # Map with the feature flag environment variable & the term to search to find the kustomization files
+  flag_map="${RADIUS_PROXY_ENABLED}:ff-radius-proxy"
 
-    for flag in $flag_map; do
-        enabled="${flag%%:*}"
-        search_term="${flag##*:}"
-        log "${search_term} is set to ${enabled}"
+  for flag in $flag_map; do
+    enabled="${flag%%:*}"
+    search_term="${flag##*:}"
+    log "${search_term} is set to ${enabled}"
 
-        if [[ ${search_term} != "remove-external-ingress" ]]; then
-            # If the feature flag is disabled, comment the search term lines out of the kustomization files
-            if [[ ${enabled} != "true" ]]; then
-                for kust_file in $(git grep -l "${search_term}" | grep "kustomization.yaml"); do
-                    log "Commenting out ${search_term} in ${kust_file}"
-                    sed -i.bak \
-                        -e "/${search_term}/ s|^#*|#|g" \
-                        "${kust_file}"
-                    rm -f "${kust_file}".bak
-                done
-            fi
-        else
-            # enabling remove external ingress yaml if the feature flag EXTERNAL_INGRESS_ENABLED is false
-            if [[ ${enabled} != "true" ]]; then
-                cd "${TMP_DIR}"
-                for kust_file in $(grep --exclude-dir=.git -rwl -e "${search_term}" | grep "kustomization.yaml"); do
-                    log "UnCommenting out ${search_term} in ${kust_file}"
-                    sed -i.bak \
-                        -e "/${search_term}/ s|^#*||g" \
-                        "${kust_file}"
-                    rm -f "${kust_file}".bak
-                done
-            fi
-        fi
+    # If the feature flag is disabled, comment the search term lines out of the kustomization files
+    if [[ ${enabled} != "true" ]]; then
+      for kust_file in $(git grep -l "${search_term}" | grep "kustomization.yaml"); do
+        log "Commenting out ${search_term} in ${kust_file}"
+        sed -i.bak \
+          -e "/${search_term}/ s|^#*|#|g" \
+          "${kust_file}"
+        rm -f "${kust_file}".bak
+      done
+    fi
+  done
+}
+########################################################################################################################
+# Comments the remove external ingress patch for ping apps from k8s-configs kustomization.yaml files.
+# Hence the apps which are part of list in EXTERNAL_INGRESS_ENABLED will have external ingress enabled.
+########################################################################################################################
+enable_external_ingress() {
+  cd "${TMP_DIR}"
+  for apps in ${EXTERNAL_INGRESS_ENABLED}; do
+    search_term="${apps}.*remove-external-ingress"
+    for kust_file in $(grep --exclude-dir=.git -rwl -e "${search_term}" | grep "kustomization.yaml"); do
+      log "Commenting external ingress for ${apps} in ${kust_file}"
+      sed -i.bak \
+        -e "/${search_term}/ s|^#*|#|g" \
+        "${kust_file}"
+      rm -f "${kust_file}".bak
     done
+  done
 }
 
 ########################################################################################################################
@@ -234,6 +237,7 @@ if test -f 'env_vars'; then
     done
 
     feature_flags "${TMP_DIR}/${K8S_GIT_BRANCH}"
+    enable_external_ingress
   )
   test $? -ne 0 && exit 1
 fi
