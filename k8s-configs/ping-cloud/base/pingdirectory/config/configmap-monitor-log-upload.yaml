@@ -21,19 +21,13 @@ data:
       SCRIPT="${HOOKS_DIR}"/82-upload-monitor-s3.sh
       CONTAINER_LOG_FILE=/tmp/upload.log
 
-      echo "Uploading CSD on server ${SERVER}"
-      /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}"> "${CONTAINER_LOG_FILE}"
+      echo "Uploading monitor logs on server ${SERVER}"
+      /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" > "${CONTAINER_LOG_FILE}"
 
       if test ${?} -eq 0; then
         # Sending logs to STDOUT
         cat ${CONTAINER_LOG_FILE}
-        MONITOR_LOG_FILE=$(tail -1 "${CONTAINER_LOG_FILE}")
-        test -z "${MONITOR_LOG_FILES}" && MONITOR_LOG_FILES="${MONITOR_LOG_FILE}" || MONITOR_LOG_FILES="${MONITOR_LOG_FILES} ${MONITOR_LOG_FILE}"
       else
         echo "Upload script not found on server ${SERVER}"
       fi
     done
-
-    # Print the names of the uploaded files so callers know exactly what was uploaded
-    echo "The following files were uploaded:"
-    echo "${MONITOR_LOG_FILES}"
