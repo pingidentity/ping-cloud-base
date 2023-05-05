@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   name: pingdirectory-periodic-monitor-upload
 spec:
-  schedule: "0/2 * * * *"
+  schedule: "0/10 * * * *"
   successfulJobsHistoryLimit: 0
   failedJobsHistoryLimit: 1
   concurrencyPolicy: Forbid
@@ -17,7 +17,7 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: pingdirectory-periodic-monitor-upload
-            image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingdirectory:pdo-4259-pd-monitor-logs
+            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.18-release-branch-latest
             imagePullPolicy: Always
             securityContext:
               runAsGroup: 9999
