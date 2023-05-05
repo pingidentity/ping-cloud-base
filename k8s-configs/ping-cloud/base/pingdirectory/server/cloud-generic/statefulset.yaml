@@ -203,6 +203,11 @@ spec:
                 secretKeyRef:
                   name: pingdirectory-passwords
                   key: root-user-password
+            - name: DMANAGER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pingdirectory-dmanager-password
+                  key: DMANAGER_PASSWORD
             - name: PF_ADMIN_USER_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -284,8 +289,7 @@ spec:
             timeoutSeconds: 5
           startupProbe:
             exec:
-              command:
-                - /opt/staging/hooks/84-startup-probe.sh
+              command: ["sh", "-c", "echo 'Finished delaying PingDirectory by 180s using startupProbe'"]
             # Do not start the startup probe for 3 minutes after starting the
             # container because PD will never finish its start/restart sequence
             # before then, in practice. Run the startup probe every 5 seconds
@@ -293,7 +297,7 @@ spec:
             initialDelaySeconds: 180
             periodSeconds: 5
             failureThreshold: 100
-            timeoutSeconds: 5
+            timeoutSeconds: 5          
           livenessProbe:
             exec:
               command:

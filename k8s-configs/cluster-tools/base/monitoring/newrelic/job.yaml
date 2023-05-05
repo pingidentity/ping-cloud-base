@@ -29,8 +29,19 @@ spec:
         app.kubernetes.io/version: 1.7.0
         helm.sh/chart: nri-metadata-injection-3.0.4
     spec:
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      securityContext:
+        runAsNonRoot: true
+        runAsGroup: 2000
+        runAsUser: 2000
       containers:
         - name: create
+          securityContext:
+            privileged: false
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
           image: k8s.gcr.io/ingress-nginx/kube-webhook-certgen:v1.1.1
           imagePullPolicy: IfNotPresent
           args:
@@ -42,10 +53,6 @@ spec:
             - --key-name=tls.key
       restartPolicy: OnFailure
       serviceAccountName: nri-bundle-nri-metadata-injection-admission
-      securityContext:
-        runAsGroup: 2000
-        runAsUser: 2000
-        runAsNonRoot: true
 
 ---
 # Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/job-patchWebhook.yaml

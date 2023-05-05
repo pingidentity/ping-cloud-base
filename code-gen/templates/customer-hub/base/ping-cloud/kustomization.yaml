@@ -22,7 +22,8 @@ configMapGenerator:
 
 patchesStrategicMerge:
 
-#- pingaccess-was/ff-external-ingress/remove-external-ingress.yaml
+### The removal of these patches is handled automatically via git-ops-command.sh script, manual toggling is not needed ###
+- pingaccess-was/ff-external-ingress/remove-external-ingress.yaml
 
 ### Ping app known_hosts file ###
 

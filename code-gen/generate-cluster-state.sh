@@ -2,8 +2,12 @@
 
 # If VERBOSE is true, then output line-by-line execution
 "${VERBOSE:-false}" && set -x
+"${EXIT_ON_FAILURE:-false}" && set -e
 
 ########################################################################################################################
+#
+# PREREQUISITES: Should be compatible with Debian.
+#                This script is used by platform automation on Ubuntu (Debian) to generate K8s manifest.
 #
 # Note: This script must be executed within its git checkout tree after switching to the desired branch.
 #
@@ -97,8 +101,11 @@
 # ENVIRONMENTS                     | The environments the customer is entitled to. This | dev test stage prod customer-hub
 #                                  | will be a subset of SUPPORTED_ENVIRONMENT_TYPES    |
 #                                  |                                                    |
-# EXTERNAL_INGRESS_ENABLED         | Feature Flag - Indicates if external ingress       | True
-#                                  | is enabled                                         |
+# EXTERNAL_INGRESS_ENABLED         | List of ping apps(pingaccess,pingaccess-was,       | No defaults
+#                                  | pingdirectory,pingdelegator,pingfederate) for      |
+#                                  | which you can enable external ingress(the values   |
+#                                  | are ping app names )                               |
+#                                  | Examplelist:(pingaccess pingdirectory pingfederate)|
 #                                  |                                                    |
 # GLOBAL_TENANT_DOMAIN             | Region-independent URL used for DNS failover/      | Replaces the first segment of
 #                                  | routing.                                           | the TENANT_DOMAIN value with the
@@ -139,6 +146,11 @@
 #                                  | periodically captured and sent to this URL. For    |
 #                                  | AWS S3 buckets, it must be an S3 URL, e.g.         |
 #                                  | s3://logs.                                         |
+#                                  |                                                    |
+# PD_MONITOR_BUCKET_URL            | The URL of the monitor,ldif exports and csd-log    |
+#                                  | archives.If provided, logs are periodically        | The string "unused"
+#                                  | captured and sent to this URL. Used only for       |
+#                                  | PingDirectory at the moment                        |
 #                                  |                                                    |
 # MYSQL_PASSWORD                   | The DBA password of the PingCentral MySQL RDS      | The SSM path:
 #                                  | database.                                          | ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#password
@@ -332,6 +344,7 @@ ${SECONDARY_TENANT_DOMAINS}
 ${GLOBAL_TENANT_DOMAIN}
 ${ARTIFACT_REPO_URL}
 ${PING_ARTIFACT_REPO_URL}
+${PD_MONITOR_BUCKET_URL}
 ${LOG_ARCHIVE_URL}
 ${BACKUP_URL}
 ${PGO_BACKUP_BUCKET_NAME}
@@ -418,7 +431,8 @@ ${SLACK_CHANNEL}
 ${PROM_SLACK_CHANNEL}
 ${DASH_REPO_URL}
 ${DASH_REPO_BRANCH}
-${APP_RESYNC_SECONDS}'
+${APP_RESYNC_SECONDS}
+${IMAGE_LIST}'
 
 # Variables to replace within the generated cluster state code
 REPO_VARS="${REPO_VARS:-${DEFAULT_VARS}}"
@@ -583,7 +597,7 @@ set_ssh_key_pair() {
 # Organizes the files from code-gen directory to a tmp directory for push-cluster-state script
 organize_code_for_csr() {
   # find all the apps under code-gen/templates directory
-  local app_paths=$(find "${TEMPLATES_HOME}" -type d -depth 1 ! -path '*/cde' ! -path '*/common' ! -path '*/customer-hub' ! -path '*/fluxcd')
+  local app_paths=$(find "${TEMPLATES_HOME}" -maxdepth 1 -mindepth 1 -type d ! -path '*/cde' ! -path '*/common' ! -path '*/customer-hub' ! -path '*/fluxcd')
 
   for app_path in ${app_paths}; do
     local app_name=$(basename "${app_path}")
@@ -653,6 +667,7 @@ echo "Initial SERVER_PROFILE_URL: ${SERVER_PROFILE_URL}"
 echo "Initial ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Initial PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 
+echo "Initial PD_MONITOR_BUCKET_URL: ${PD_MONITOR_BUCKET_URL}"
 echo "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 echo "Initial BACKUP_URL: ${BACKUP_URL}"
 
@@ -698,6 +713,9 @@ echo "Initial CLUSTER_ENDPOINT: ${CLUSTER_ENDPOINT}"
 echo "Initial SLACK_CHANNEL: ${SLACK_CHANNEL}"
 echo "Initial NON_GA_SLACK_CHANNEL: ${NON_GA_SLACK_CHANNEL}"
 echo "Initial PROM_SLACK_CHANNEL: ${PROM_SLACK_CHANNEL}"
+
+echo "Initial IMAGE_LIST: ${IMAGE_LIST}"
+echo "Initial IMAGE_TAG_PREFIX: ${IMAGE_TAG_PREFIX}"
 
 echo "Initial APP_RESYNC_SECONDS: ${APP_RESYNC_SECONDS}"
 echo ---
@@ -749,10 +767,11 @@ export GLOBAL_TENANT_DOMAIN="${GLOBAL_TENANT_DOMAIN_NO_DOT_SUFFIX:-${DERIVED_GLO
 
 export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
 
+export PD_MONITOR_BUCKET_URL="${PD_MONITOR_BUCKET_URL:-ssm://pcpt/service/storage/pd-monitor/uri}"
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
 
-export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-"pingcentraldb.\${PRIMARY_TENANT_DOMAIN}"}"
+export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-"pingcentraldb.${PRIMARY_TENANT_DOMAIN}"}"
 export MYSQL_USER="${MYSQL_USER:-ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username}"
 export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#password}"
 
@@ -803,7 +822,7 @@ export IMAGE_TAG_PREFIX="${K8S_GIT_BRANCH%.*}"
 export PF_PROVISIONING_ENABLED="${PF_PROVISIONING_ENABLED:-false}"
 export RADIUS_PROXY_ENABLED="${RADIUS_PROXY_ENABLED:-false}"
 export ARGOCD_BOOTSTRAP_ENABLED="${ARGOCD_BOOTSTRAP_ENABLED:-true}"
-export EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED:-true}"
+export EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED:-''}"
 
 ### Default environment variables ###
 export ECR_REGISTRY_NAME='public.ecr.aws/r2h3l6e4'
@@ -811,6 +830,9 @@ export PING_CLOUD_NAMESPACE='ping-cloud'
 export MYSQL_DATABASE='pingcentral'
 export ARGOCD_CDE_ROLE_SSM_TEMPLATE="${ARGOCD_CDE_ROLE_SSM_TEMPLATE:-"/pcpt/config/k8s-config/accounts/{env}/argo/role/arn"}"
 export ARGOCD_CDE_URL_SSM_TEMPLATE="${ARGOCD_CDE_URL_SSM_TEMPLATE:-"/pcpt/config/k8s-config/accounts/{env}/cluster/private-link/cname"}"
+
+DEFAULT_IMAGE_LIST="apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingfederate,apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess,apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess-was"
+export IMAGE_LIST="${IMAGE_LIST:-${DEFAULT_IMAGE_LIST}}"
 
 ALL_ENVIRONMENTS='dev test stage prod customer-hub'
 SUPPORTED_ENVIRONMENT_TYPES="${SUPPORTED_ENVIRONMENT_TYPES:-${ALL_ENVIRONMENTS}}"
@@ -923,6 +945,7 @@ echo "Using CLUSTER_STATE_REPO_PATH: ${REGION_NICK_NAME}"
 
 echo "Using ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
+echo "Using PD_MONITOR_BUCKET_URL: ${PD_MONITOR_BUCKET_URL}"
 echo "Using LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 echo "Using BACKUP_URL: ${BACKUP_URL}"
 
@@ -969,6 +992,9 @@ echo "Using PROM_SLACK_CHANNEL: ${PROM_SLACK_CHANNEL}"
 echo "Using APP_RESYNC_SECONDS: ${APP_RESYNC_SECONDS}"
 
 echo "Using USER_BASE_DN: ${USER_BASE_DN}"
+
+echo "Using IMAGE_LIST: ${IMAGE_LIST}"
+echo "Using IMAGE_TAG_PREFIX: ${IMAGE_TAG_PREFIX}"
 echo ---
 
 
@@ -1002,6 +1028,7 @@ mkdir -p "${CLUSTER_STATE_REPO_DIR}"
 mkdir -p "${PROFILE_REPO_DIR}"
 
 cp ./update-cluster-state-wrapper.sh "${CLUSTER_STATE_REPO_DIR}"
+cp ./csr-validation.sh "${CLUSTER_STATE_REPO_DIR}"
 cp ./update-profile-wrapper.sh "${PROFILE_REPO_DIR}"
 
 cp ../.gitignore "${CLUSTER_STATE_REPO_DIR}"
@@ -1184,7 +1211,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   if [[ "${ENV}" == "${CUSTOMER_HUB}" || "${IS_BELUGA_ENV}" == "true" ]]; then
     cp "${TEMPLATES_HOME}/${BOOTSTRAP_SHORT_DIR}"/customer-hub/* "${ENV_BOOTSTRAP_DIR}"
     # Copy all files from customer-hub code-gen, except kustomization.yaml to re-use the yaml there and prevent duplication
-    find "${CHUB_TEMPLATES_DIR}/base/cluster-tools/git-ops" -type f -name "*.yaml" ! -name kustomization.yaml | xargs -I {} cp {} "${ENV_BOOTSTRAP_DIR}"
+    find "${CHUB_TEMPLATES_DIR}/base/cluster-tools/git-ops" -type f ! -name kustomization.yaml | xargs -I {} cp {} "${ENV_BOOTSTRAP_DIR}"
   else
     cp "${TEMPLATES_HOME}/${BOOTSTRAP_SHORT_DIR}"/cde/* "${ENV_BOOTSTRAP_DIR}"
   fi
@@ -1249,6 +1276,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     printf "\n# %%%% END automatically appended secrets from generate-cluster-state.sh\n" >> "${K8S_CONFIGS_DIR}/base/secrets.yaml"
   fi
 
+  echo "Substituting env vars, this may take some time..."
   substitute_vars "${ENV_DIR}" "${REPO_VARS}" secrets.yaml env_vars values.yaml
   # TODO: These duplicate calls are needed to substitute the derived variables & the IS_BELUGA_ENV in values files only
   #  clean this up with PDO-4842 when all apps are migrated to values files by adding IS_BELUGA_ENV to DEFAULT_VARS
@@ -1256,7 +1284,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   substitute_vars "${ENV_DIR}" "${REPO_VARS}" values.yaml
   substitute_vars "${ENV_DIR}" '${IS_BELUGA_ENV}' values.yaml
 
-  # Regional enablement - add admins, backups, etc. to primary.
+  # Regional enablement - add admins, backups, etc. to primary and adding pingaccess-was and pingcentral to primary.
   if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
     sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/g' "${PRIMARY_PING_KUST_FILE}"
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"

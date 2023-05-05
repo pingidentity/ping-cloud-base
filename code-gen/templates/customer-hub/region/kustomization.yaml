@@ -17,6 +17,17 @@ patchesStrategicMerge:
 - ../base/ping-cloud/pingcommon/my-ping/remove-oauth-service.yaml
 - ../base/ping-cloud/pingcommon/my-ping/remove-pingone-configurator.yaml
 
+### Remove healthchecks for undeployed products
+- ../base/cluster-tools/health/remove-from-primary-patch.yaml
+- ../base/cluster-tools/health/remove-from-secondary-patch.yaml
+
+### Regional enablement - remove admins, backups, etc. from secondary ###
+### The removal of these patches is handled automatically via generate-cluster-state script, manual toggling is not needed ###
+- ../base/ping-cloud/pingaccess-was/admin/remove-from-secondary-patch.yaml
+
+- ../base/ping-cloud/pingcentral/server/remove-from-secondary-patch.yaml
+
+
 configMapGenerator:
 
 ### Regional env vars for ELK
@@ -24,6 +35,12 @@ configMapGenerator:
   behavior: merge
   envs:
     - logging/env_vars
+
+- name: prometheus-environment-variables
+  behavior: merge
+  envs:
+    - ../base/env_vars
+    - env_vars
 
 # PingCentral
 # Create the config maps that hold the variable for triggering updates of PingCentral
@@ -97,3 +114,12 @@ configMapGenerator:
   envs:
     - ../base/env_vars
     - env_vars
+
+# ArgoCD
+# Merge global and regional env_vars
+- name: argocd-bootstrap
+  namespace: argocd
+  behavior: merge
+  envs:
+    - ../base/cluster-tools/git-ops/env_vars
+    - git-ops/env_vars

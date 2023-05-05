@@ -46,6 +46,9 @@ globalTenantDomain: "${GLOBAL_TENANT_DOMAIN}"
 # pingArtifactRepoUrl is the ping-hosted common artifacts URL
 pingArtifactRepoUrl: "${PING_ARTIFACT_REPO_URL}"
 
+# pdMonitorLogUrl is the customer-specific monitor-log URL for region
+pdMonitorLogUrl: "${PD_MONITOR_BUCKET_URL}"
+
 # logArchiveUrl is the customer-specific log URL for region
 logArchiveUrl: "${LOG_ARCHIVE_URL}"
 
