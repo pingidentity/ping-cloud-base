@@ -16,7 +16,7 @@ data:
     END=$((${NUM_REPLICAS} - 1))
 
     LDIF_FILES=
-    test -z "${BACKUP_RESTORE_POD}" && SERVER="${K8S_STATEFUL_SET_NAME}-0" || SERVER="${BACKUP_RESTORE_POD}"
+    SERVER="${K8S_STATEFUL_SET_NAME}-1"
     SCRIPT="${HOOKS_DIR}"/90-export-ldif-s3.sh
     LOG_FILE=/tmp/upload.log
 
