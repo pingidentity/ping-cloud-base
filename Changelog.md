@@ -77,6 +77,7 @@
 - Fix cluster_name variable in Grafana Dashboards for CHUB
 - Remove PC resources from secondary customer-hub
 - Allow users to pick and enable only the external ingress they want. 
+- Add pingaccess-was-license secret placeholder entry to CHUB
 
 _Changes:_
 
@@ -175,7 +176,7 @@ _Changes:_
 - [X] PDO-5298 Bugfix - make scripts compatible with Debian
 - [X] PDO-5315 Bugfix - argocd-bootstrap to use region specific env vars
 - [X] PDO-5319 The cluster name is not displayed correctly in Grafana Dashboard for the CHUB cluster
-
+- [X] PDO-5328 Add pingaccess-was-license secret placeholder entry to CHUB 
 
 ### 1.17.0.0
 
