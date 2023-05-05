@@ -171,6 +171,7 @@ _Changes:_
 - [X] PDO-5281 Default ngnix hpa configuration in medium environment is lower than small
 - [X] PDO-5288 Update health check. healthcheck should only test the resources that have been deployed
 - [X] PDO-5298 Bugfix - make scripts compatible with Debian
+- [X] PDO-5302 Fix PF multiline parsing
 - [X] PDO-5315 Bugfix - argocd-bootstrap to use region specific env vars
 - [X] PDO-5319 The cluster name is not displayed correctly in Grafana Dashboard for the CHUB cluster
 
@@ -215,6 +216,7 @@ _Changes:_
 - Installed EBS CSI driver
 - Replace deprecated topologyKey
 - Add IngressClassName to replace the deprecated annotation
+- Fix PingFederate multiline logs parsing
 
 _Changes:_
 
