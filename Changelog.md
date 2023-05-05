@@ -3,10 +3,12 @@
 ### 1.17.1.0
 
 - Modify Prometheus query for all backup alerting to only include the primary pod
+- Add is_primary condition to pf-provisioning setup
 
 _Changes:_
 
 - [X] PDO-5237 Modify Prometheus query for all backup alerting to only include the primary pod
+- [X] PDO-5347 PGO resources - handle secondary region v1.17.1
 
 ### 1.17.0.0
 
