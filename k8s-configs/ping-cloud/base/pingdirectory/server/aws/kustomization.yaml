@@ -10,6 +10,8 @@ commonLabels:
 resources:
 - ../cloud-generic
 - periodic-backup.yaml
+- periodic-csd-upload.yaml
+- periodic-export-ldif.yaml
 
 patchesStrategicMerge:
 - discovery-service.yaml

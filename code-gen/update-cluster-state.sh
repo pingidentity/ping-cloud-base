@@ -2,6 +2,7 @@
 
 # If VERBOSE is true, then output line-by-line execution
 "${VERBOSE:-false}" && set -x
+"${EXIT_ON_FAILURE:-false}" && set -e
 
 # This script may be used to upgrade an existing cluster state repo. It is designed to be non-destructive in that it
 # won't push any changes to the server. Instead, it will set up a parallel branch for every CDE branch and/or the
@@ -93,7 +94,7 @@ beluga_owned_k8s_files="@.flux.yaml \
 @ext-ingresses.yaml \
 @seal.sh"
 
-# The list of variables to substitute in env_vars.old files.
+# The list of variables to substitute in upgraded env_vars files.
 # shellcheck disable=SC2016
 # Note: ENV_VARS_TO_SUBST is a subset of DEFAULT_VARS within generate-cluster-state.sh. These variables should be kept
 # in sync with the following exceptions: LAST_UPDATE_REASON and NEW_RELIC_LICENSE_KEY_BASE64 should only be found
@@ -116,6 +117,7 @@ ${SECONDARY_TENANT_DOMAINS}
 ${GLOBAL_TENANT_DOMAIN}
 ${ARTIFACT_REPO_URL}
 ${PING_ARTIFACT_REPO_URL}
+${PD_MONITOR_BUCKET_URL}
 ${LOG_ARCHIVE_URL}
 ${BACKUP_URL}
 ${PGO_BACKUP_BUCKET_NAME}
@@ -975,6 +977,8 @@ for ENV in ${SUPPORTED_ENVIRONMENT_TYPES}; do # ENV loop
              ORIG_ENV_VARS_FILE="${K8S_CONFIGS_DIR}/${REGION_DIR}/${DIR_NAME}/${ENV_VARS_FILE_NAME}"
           elif test "${DIR_NAME}" = 'admin' || test "${DIR_NAME}" = 'engine'; then
              ORIG_ENV_VARS_FILE="${K8S_CONFIGS_DIR}/${REGION_DIR}/${PARENT_DIR_NAME}/${DIR_NAME}/${ENV_VARS_FILE_NAME}"
+          elif test "${DIR_NAME}" = 'git-ops'; then
+            ORIG_ENV_VARS_FILE="${K8S_CONFIGS_DIR}/${BASE_DIR}/${PARENT_DIR_NAME}/${DIR_NAME}/${ENV_VARS_FILE_NAME}"
           else
             log "Not an app-specific env_vars file: ${TEMPLATE_ENV_VARS_FILE}"
             # skip to next iteration.

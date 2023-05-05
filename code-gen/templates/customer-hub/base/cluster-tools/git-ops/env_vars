@@ -1,0 +1,17 @@
+########################################################################################################################
+# ArgoCD Bootstrap ConfigMap variables
+########################################################################################################################
+ARGOCD_CDE_ROLE_SSM_TEMPLATE=${ARGOCD_CDE_ROLE_SSM_TEMPLATE}
+ARGOCD_CDE_URL_SSM_TEMPLATE=${ARGOCD_CDE_URL_SSM_TEMPLATE}
+CLUSTER_STATE_REPO_BRANCH=${CLUSTER_STATE_REPO_BRANCH}
+########################################################################################################################
+
+########################################################################################################################
+# Per-CDE environment variables - Add CUSTOMER_HUB_/DEV_/TEST_/STAGE_/PROD_ prefixes as necessary
+# to override IMAGE_LIST, IMAGE_TAG_PREFIX, or SLACK_CHANNEL.
+# See https://pingidentity.atlassian.net/l/cp/0KtvCPei for more info
+########################################################################################################################
+DEFAULT_IMAGE_LIST=${IMAGE_LIST}
+DEFAULT_IMAGE_TAG_PREFIX=${IMAGE_TAG_PREFIX}
+DEFAULT_SLACK_CHANNEL=${SLACK_CHANNEL}
+########################################################################################################################

@@ -3,6 +3,9 @@
 # If VERBOSE is true, then output line-by-line execution
 "${VERBOSE:-false}" && set -x
 
+# PREREQUISITES: Should be compatible with Debian.
+#                This script is used by platform automation on Ubuntu (Debian) to push generated K8s manifest.
+#
 # WARNING: This script must only be used to seed the initial cluster state. It is destructive and will replace the
 # contents of the remote branches corresponding to the different Customer Deployment Environments with new state.
 
@@ -126,7 +129,7 @@ fi
 
 # This is a destructive script by design. Add a warning to the user if local changes are being destroyed though.
 CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD 2> /dev/null)"
-if test "${CURRENT_BRANCH}" && test -n "$(git status -s)"; then
+if test "${CURRENT_BRANCH}" && test -n "$(git status -s)" && ! ${DISABLE_GIT}; then
   echo "WARN: The following local changes in current branch '${CURRENT_BRANCH}' will be destroyed:"
   git status
 
@@ -175,7 +178,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
 
   echo "Processing branch '${GIT_BRANCH}' for environment '${ENV}' and default branch '${DEFAULT_CDE_BRANCH}'"
   # Get app paths
-  APP_PATHS=$(find "${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}/${ENV_OR_BRANCH}" -type d -depth 1)
+  APP_PATHS=$(find "${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}/${ENV_OR_BRANCH}" -mindepth 1 -maxdepth 1 -type d)
 
   if ! ${DISABLE_GIT}; then
     # Check if the branch exists locally. If so, switch to it.
@@ -233,7 +236,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       # Copy the profiles.
       src_dir="${GENERATED_CODE_DIR}/${PROFILE_REPO_DIR}/${PROFILES_DIR}/${ENV_OR_BRANCH}/"
       echo "Copying ${src_dir} to ${PROFILES_DIR}"
-      find "${src_dir}" -type d -maxdepth 1 -exec cp -pr {} "${PROFILES_DIR}"/ \;
+      find "${src_dir}" -maxdepth 1 -mindepth 1 -type d -exec cp -pr {} "${PROFILES_DIR}"/ \;
     fi
 
     if ! "${IS_PROFILE_REPO}"; then
@@ -242,6 +245,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       echo "Copying base files from ${src_dir} to ${PWD}"
       cp "${src_dir}"/.gitignore ./
       cp "${src_dir}"/update-cluster-state-wrapper.sh ./
+      cp "${src_dir}"/csr-validation.sh ./
 
       # Copy each app's base files into the repo
       for app_path in ${APP_PATHS}; do
@@ -278,7 +282,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       app_name=$(basename "${app_path}")
 
       # shellcheck disable=SC2010
-      region_path="$(find "${app_path}" -type d -depth 1 ! -path '*/base')"
+      region_path="$(find "${app_path}" -mindepth 1 -maxdepth 1 -type d ! -path '*/base')"
       region=$(basename "${region_path}")
       src_dir="${app_path}/$region"
 
