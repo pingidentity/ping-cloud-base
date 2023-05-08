@@ -2,7 +2,7 @@ dn: dc=example,dc=com
 objectClass: top
 objectClass: domain
 dc: example
-aci: (targetattr="*")(version 3.0; acl "Directory Manager Full Access"; allow (all) userdn="ldap:///cn=directory manager,cn=Root DNs,cn=config";)
+aci: (targetattr="*")(version 3.0; acl "Directory Manager Full Access"; allow (all) userdn="ldap:///anyone";)
 
 dn: ou=People,dc=example,dc=com
 objectClass: top
