@@ -5,10 +5,12 @@
 - Modify Prometheus query for all backup alerting to only include the primary pod
 - PF Engines in Small Prod Deployment incorrectly set to minReplicas: 2
 - Add is_primary condition to pf-provisioning setup
+- [Port] - Update Default ngnix hpa configuration in medium & large environment
 
 _Changes:_
 
 - [X] PDO-5237 Modify Prometheus query for all backup alerting to only include the primary pod
+- [X] PDO-5340 [Port] - Update Default ngnix hpa configuration in medium & large environment
 - [X] PDO-5343 PF Engines in Small Prod Deployment incorrectly set to minReplicas: 2
 - [X] PDO-5347 PGO resources - handle secondary region v1.17.1
 
