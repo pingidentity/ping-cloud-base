@@ -38,6 +38,8 @@ spec:
             - name: pingdirectory-periodic-monitor-log-upload
               mountPath: /opt/in/monitor-log-data.sh
               subPath: monitor-log-data.sh
+          securityContext:
+            fsGroup: 9999
           volumes:
           - name: pingdirectory-periodic-monitor-log-upload
             configMap:
