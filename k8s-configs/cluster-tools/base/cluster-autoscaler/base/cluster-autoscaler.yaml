@@ -155,8 +155,13 @@ spec:
             - --stderrthreshold=info
             - --skip-nodes-with-local-storage=false
             - --expander=least-waste
-            - --balance-similar-node-groups
+            - --balance-similar-node-groups=true
             - --skip-nodes-with-system-pods=false
+            - --balancing-ignore-label=eks.amazonaws.com/sourceLaunchTemplateId
+            - --balancing-ignore-label=eks.amazonaws.com/sourceLaunchTemplateVersion
+            - --balancing-ignore-label=failure-domain.beta.kubernetes.io/zone
+            - --balancing-ignore-label=topology.ebs.csi.aws.com/zone
+            - --balancing-ignore-label=topology.kubernetes.io/zone
           volumeMounts:
             - name: ssl-certs
               mountPath: /etc/ssl/certs/ca-certificates.crt
