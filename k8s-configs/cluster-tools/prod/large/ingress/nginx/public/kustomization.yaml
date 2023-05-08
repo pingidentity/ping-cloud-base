@@ -11,5 +11,5 @@ patchesStrategicMerge:
   metadata:
     name: nginx-ingress-controller
   spec:
-    minReplicas: 3
-    maxReplicas: 5
+    minReplicas: 7
+    maxReplicas: 9

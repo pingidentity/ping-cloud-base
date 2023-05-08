@@ -78,6 +78,7 @@
 - Remove PC resources from secondary customer-hub
 - Allow users to pick and enable only the external ingress they want. 
 - Add pingaccess-was-license secret placeholder entry to CHUB
+- Increase replica count (min=7, max=9) within prod/large for Nginx Ingress Controller
 
 _Changes:_
 
@@ -160,6 +161,7 @@ _Changes:_
 - [X] PDO-5147 Add logstash metrics to prometheus
 - [X] PDO-5148 Modify Prometheus query for all backup alerting to only include the primary pod
 - [X] PDO-5191 Update image_map to align with tagging process
+- [X] PDO-5217 Increase replica count (min=7, max=9) within prod/large for Nginx Ingress Controller
 - [X] PDO-5221 'Field "responseCode.keyword" not found' on the 'Ping Access - Response Codes Over Time' visualization
 - [X] PDO-5223 Remove pa-was config for ArgoCD from non customer-hub CDEs
 - [X] PDO-5232 Configure Fluent-bit kubernetes filter to prevent caching for statefulsets
