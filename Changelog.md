@@ -1,5 +1,13 @@
 # Changelog
 
+### 1.19.0.0
+
+- Update bootstrap to create davinci-configuration secret
+
+_Changes:_
+
+- PDO-5314 Update bootstrap to create davinci-configuration secret
+
 ### 1.18.0.0
 
 - Enable users to download or upload user reports in Delegated Admin

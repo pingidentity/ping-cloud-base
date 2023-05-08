@@ -209,6 +209,7 @@ pgoBackupBucketName: "${PGO_BACKUP_BUCKET_NAME}"
 platformEventQueueName: "${PLATFORM_EVENT_QUEUE_NAME}"
 platformEventQueuePollBatchSize: 1
 platformEventQueuePollIntervalSeconds: 2
+customerSSOSSMPathPrefix: "${CUSTOMER_SSO_SSM_PATH_PREFIX}"
 orchAPISSMPathPrefix: "${ORCH_API_SSM_PATH_PREFIX}"
 serviceSSMPathPrefix: "${SERVICE_SSM_PATH_PREFIX}"
 
