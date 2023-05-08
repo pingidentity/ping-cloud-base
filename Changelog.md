@@ -178,6 +178,7 @@ _Changes:_
 - [X] PDO-5315 Bugfix - argocd-bootstrap to use region specific env vars
 - [X] PDO-5319 The cluster name is not displayed correctly in Grafana Dashboard for the CHUB cluster
 - [X] PDO-5328 Add pingaccess-was-license secret placeholder entry to CHUB 
+- [X] PDO-5393 Bugfix - secondary CSR missing app dir
 
 ### 1.17.0.0
 
