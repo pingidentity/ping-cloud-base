@@ -1,7 +1,7 @@
 dn: ${USER_BASE_DN}
 objectClass: top
 objectClass: domain
-dc: ${USER_BASE_NAME}
+dc: example
 
 dn: ou=admins,${USER_BASE_DN}
 objectClass: top
