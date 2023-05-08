@@ -23,8 +23,6 @@
 - Upgrade EFS Driver to v1.5.1
 - Add PF requests logs parsing and indexing
 - Fix index template creation race condition issue
-- Update the PD backup job to create new PV at the start of the job and mount it
-- Update the PD restore job to create new PV at the start of the job and mount it
 - Change retry interval for PGO firing alert notification in slack from 5 min to 60 min
 - Added karpenter v0.24.0 and required parameters, KarpenterControllerRole & ClusterEndPoint
 - ILM policy for alerts index changed to move index to warm after 7 days in hot and delete index after 30 days
@@ -61,6 +59,7 @@
 - Add logstash/fluent-bit readiness/liveness probe
 - Add priorityClassName into CWAgent daemonset
 - Fluent-bit pods stuck in pending state
+- Create new folders "Backup-ops-template" "restore-ops-template" for PD backups,restore process
 - Add logstash and fluent-bit alerts
 - Fix Kibana Visualization "Ping Access - Response Codes Over Time"
 - No longer move files into custom-resources directory when upgrading
@@ -124,9 +123,7 @@ _Changes:_
 - [X] PDO-4902 Code sharing for PingOne deployments
 - [X] PDO-4903 Deploy PingOne in CICD like Shared P1 Tenant
 - [X] PDO-4916 Missing PF request log
-- [X] PDO-4959 Update the PD backup job to create new PV at the start of the job and mount it
 - [X] PDO-4974 Change retry interval for PGO firing alert notification in slack from 5 min to 60 min
-- [X] PDO-4977 Update the PD restore job to create new PV at the start of the job and mount it
 - [X] PDO-4980 Index lifecycle error: illegal_argument_exception: policy [healthchecks] does not exist
 - [X] PDO-4981 Index templates are not applied to indexes in case elastic-stack-logging ns respinned
 - [X] PDO-4982 Update cluster tools to latest version: EFS Driver to v1.5.1
@@ -152,6 +149,7 @@ _Changes:_
 - [X] PDO-5090 Update default version of pf-pingid-integration-kit to 2.24.0 in PingFederate
 - [X] PDO-5104 Update Prometheus CPU/MEM limits
 - [X] PDO-5107 Fluent-bit pods stuck in pending state
+- [X] PDO-5123 Create new folders "Backup-ops-template" "restore-ops-template" for PD backups,restore process
 - [X] PDO-5124 Enable bootstrapping a new customer with ArgoCD
 - [X] PDO-5131 Pods (typically cloudwatch) Stuck in pending state
 - [X] PDO-5138 Add a new hook script '02-health-check.sh' to support readiness and liveness probes 
