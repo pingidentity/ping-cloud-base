@@ -1897,7 +1897,7 @@ metadata:
     argocd.argoproj.io/hook: Sync
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app: nri-metadata-injection-admission-create
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: nri-metadata-injection
@@ -1909,15 +1909,26 @@ spec:
     metadata:
       name: nri-bundle-nri-metadata-injection-admission-create
       labels:
-        nri-bundle.version: 4.5.8
+        nri-bundle.version: 5.0.4
         app: nri-metadata-injection-admission-create
         app.kubernetes.io/instance: nri-bundle
         app.kubernetes.io/name: nri-metadata-injection
         app.kubernetes.io/version: 1.7.0
         helm.sh/chart: nri-metadata-injection-3.0.4
     spec:
+      hostIPC: false
+      hostNetwork: false
+      hostPID: false
+      securityContext:
+        runAsNonRoot: true
+        runAsGroup: 2000
+        runAsUser: 2000
       containers:
         - name: create
+          securityContext:
+            privileged: false
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
           image: k8s.gcr.io/ingress-nginx/kube-webhook-certgen:v1.1.1
           imagePullPolicy: IfNotPresent
           args:
@@ -1929,10 +1940,6 @@ spec:
             - --key-name=tls.key
       restartPolicy: OnFailure
       serviceAccountName: nri-bundle-nri-metadata-injection-admission
-      securityContext:
-        runAsGroup: 2000
-        runAsUser: 2000
-        runAsNonRoot: true
 
 ---
 # Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/job-patchWebhook.yaml
@@ -2073,6 +2080,3 @@ metadata:
   name: newrelic
   annotations:
     argocd.argoproj.io/sync-wave: "-1"
-  labels:
-    pod-security.kubernetes.io/enforce: restricted
-    pod-security.kubernetes.io/enforce-version: latest

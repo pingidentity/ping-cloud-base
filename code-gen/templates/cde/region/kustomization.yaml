@@ -222,10 +222,12 @@ patchesStrategicMerge:
 - ../base/cluster-tools/logging/remove-from-secondary-patch.yaml
 - ../base/cluster-tools/health/remove-from-secondary-patch.yaml
 
-#- pingaccess/ff-external-ingress/remove-external-ingress.yaml
-#- pingdelegator/ff-external-ingress/remove-external-ingress.yaml
-#- pingdirectory/ff-external-ingress/remove-external-ingress.yaml
-#- pingfederate/ff-external-ingress/remove-external-ingress.yaml
+### The removal of these patches is handled automatically via git-ops-command.sh script, manual toggling is not needed ###
+
+- pingaccess/ff-external-ingress/remove-external-ingress.yaml
+- pingdelegator/ff-external-ingress/remove-external-ingress.yaml
+- pingdirectory/ff-external-ingress/remove-external-ingress.yaml
+- pingfederate/ff-external-ingress/remove-external-ingress.yaml
 
 #- ../base/ping-cloud/pingfederate/provisioning/remove-from-secondary-patch.yaml
 
