@@ -117,6 +117,13 @@ patchesStrategicMerge:
   $patch: delete
 
 - |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: pingdirectory-restore-ops-template-files
+  $patch: delete
+
+- |-
   apiVersion: batch/v1
   kind: CronJob
   metadata:
