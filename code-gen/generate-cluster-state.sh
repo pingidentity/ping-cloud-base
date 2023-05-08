@@ -175,6 +175,9 @@
 #                                  | added as an annotation to the corresponding K8s    |
 #                                  | service for the AWS NLB to use the AWS Elastic IP. |
 #                                  |                                                    |
+# CUSTOMER_SSO_SSM_PATH_PREFIX     | The prefix of the SSM path that contains PingOne   | /pcpt/customer/sso
+#                                  | state data required for the P14C/P1AS integration. |
+#                                  |                                                    |
 # ORCH_API_SSM_PATH_PREFIX         | The prefix of the SSM path that contains MyPing    | /pcpt/orch-api
 #                                  | state data required for the P14C/P1AS integration. |
 #                                  |                                                    |
@@ -332,6 +335,7 @@ ${TENANT_NAME}
 ${SSH_ID_KEY_BASE64}
 ${IS_MULTI_CLUSTER}
 ${PLATFORM_EVENT_QUEUE_NAME}
+${CUSTOMER_SSO_SSM_PATH_PREFIX}
 ${ORCH_API_SSM_PATH_PREFIX}
 ${SERVICE_SSM_PATH_PREFIX}
 ${REGION}
@@ -651,6 +655,7 @@ echo "Initial SUPPORTED_ENVIRONMENT_TYPES: ${SUPPORTED_ENVIRONMENT_TYPES}"
 echo "Initial ENVIRONMENTS: ${ENVIRONMENTS}"
 echo "Initial IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 echo "Initial PLATFORM_EVENT_QUEUE_NAME: ${PLATFORM_EVENT_QUEUE_NAME}"
+echo "Initial CUSTOMER_SSO_SSM_PATH_PREFIX: ${CUSTOMER_SSO_SSM_PATH_PREFIX}"
 echo "Initial ORCH_API_SSM_PATH_PREFIX: ${ORCH_API_SSM_PATH_PREFIX}"
 echo "Initial SERVICE_SSM_PATH_PREFIX: ${SERVICE_SSM_PATH_PREFIX}"
 echo "Initial REGION: ${REGION}"
@@ -742,6 +747,7 @@ export TENANT_DOMAIN="${TENANT_DOMAIN_NO_DOT_SUFFIX}"
 export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
 
 export PLATFORM_EVENT_QUEUE_NAME=${PLATFORM_EVENT_QUEUE_NAME:-v2_platform_event_queue.fifo}
+export CUSTOMER_SSO_SSM_PATH_PREFIX=${CUSTOMER_SSO_SSM_PATH_PREFIX:-/pcpt/customer/sso}
 export ORCH_API_SSM_PATH_PREFIX=${ORCH_API_SSM_PATH_PREFIX:-/pcpt/orch-api}
 export SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX:-/pcpt/service}
 
@@ -928,6 +934,7 @@ echo "Using SIZE: ${SIZE}"
 echo "Using SUPPORTED_ENVIRONMENT_TYPES: ${SUPPORTED_ENVIRONMENT_TYPES}"
 echo "Using IS_MULTI_CLUSTER: ${IS_MULTI_CLUSTER}"
 echo "Using PLATFORM_EVENT_QUEUE_NAME: ${PLATFORM_EVENT_QUEUE_NAME}"
+echo "Using CUSTOMER_SSO_SSM_PATH_PREFIX: ${CUSTOMER_SSO_SSM_PATH_PREFIX}"
 echo "Using ORCH_API_SSM_PATH_PREFIX: ${ORCH_API_SSM_PATH_PREFIX}"
 echo "Using SERVICE_SSM_PATH_PREFIX: ${SERVICE_SSM_PATH_PREFIX}"
 echo "Using REGION: ${REGION}"

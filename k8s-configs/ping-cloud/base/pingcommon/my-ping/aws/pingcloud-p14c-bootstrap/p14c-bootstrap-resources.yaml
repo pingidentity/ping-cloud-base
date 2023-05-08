@@ -33,3 +33,10 @@ is-myping:
   values_container_key: P1
   ssm_type: boolean
   ssm_path_prefix: ORCH_API_SSM_PATH_PREFIX
+davinci-configuration:
+  kind: Secret
+  name: davinci-configuration
+  template: templates/davinci-configuration.yaml
+  values_container_key: davinciConfiguration
+  ssm_type: json
+  ssm_path_prefix: CUSTOMER_SSO_SSM_PATH_PREFIX
