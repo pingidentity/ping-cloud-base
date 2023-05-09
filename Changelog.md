@@ -7,11 +7,13 @@
 - Add is_primary condition to pf-provisioning setup
 - [Port] - Update Default ngnix hpa configuration in medium & large environment
 - Upgraded & patched CA to balance node across all 3 AZs.
+- Fix PGO namespace for large-size customers
 
 _Changes:_
 
 - [X] PDO-5237 Modify Prometheus query for all backup alerting to only include the primary pod
 - [X] PDO-5340 [Port] - Update Default ngnix hpa configuration in medium & large environment
+- [X] PDO-5342 Fix PGO namespace for large-size customers
 - [X] PDO-5343 PF Engines in Small Prod Deployment incorrectly set to minReplicas: 2
 - [X] PDO-5347 PGO resources - handle secondary region v1.17.1
 - [X] PDO-5376 Cluster-Autoscaler - update to balance node across all AZs
