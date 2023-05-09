@@ -27,5 +27,15 @@ configMapGenerator:
       - backup-ops-template/backup-job.yaml
       - backup-ops-template/backup-pvc.yaml
 
+  - name: pingdirectory-restore-ops-template-files
+    # The following files will be added to cluster as a configmap.
+    # The restore-ops.sh will be called later job which will then create
+    # these resources (restore-cm, restore-job, and restore-pvc) dynamically.
+    files:
+      - restore-ops-template/restore-ops.sh
+      - restore-ops-template/restore-cm.yaml
+      - restore-ops-template/restore-job.yaml
+      - restore-ops-template/restore-pvc.yaml
+
 patchesStrategicMerge:
 - discovery-service.yaml
