@@ -26,7 +26,8 @@ spec:
   - host: ext-pingcentral.${DNS_ZONE}
     http:
       paths:
-      - path: /
+      - pathType: Prefix
+        path: /
         backend:
           service:
             name: pingcentral

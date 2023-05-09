@@ -8,6 +8,7 @@
 - [Port] - Update Default ngnix hpa configuration in medium & large environment
 - Upgraded & patched CA to balance node across all 3 AZs.
 - Fix PGO namespace for large-size customers
+- Fix pingcentral external ingress pathType
 
 _Changes:_
 
@@ -17,6 +18,7 @@ _Changes:_
 - [X] PDO-5343 PF Engines in Small Prod Deployment incorrectly set to minReplicas: 2
 - [X] PDO-5347 PGO resources - handle secondary region v1.17.1
 - [X] PDO-5376 Cluster-Autoscaler - update to balance node across all AZs
+- [X] PDO-5341 pingcentral-ext-ingress - fix pathType
 
 ### 1.17.0.0
 
