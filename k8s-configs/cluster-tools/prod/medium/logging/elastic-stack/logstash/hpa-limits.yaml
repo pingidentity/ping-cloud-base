@@ -3,18 +3,5 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: logstash-elastic
 spec:
-  minReplicas: 1
-  maxReplicas: 4
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: AverageValue
-        averageValue: "1.8"
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: AverageValue
-        averageValue: 3.6Gi
+  minReplicas: 3
+  maxReplicas: 8

@@ -9,15 +9,17 @@ spec:
         - name: logstash
           resources:
             limits:
-              cpu: "2"
-              memory: 4Gi
+              cpu: "4"
+              memory: 6Gi
             requests:
-              cpu: "1"
-              memory: 3Gi
+              cpu: "4"
+              memory: 6Gi
           env:
             - name: LS_JAVA_OPTS
-              value: '-Xms3500m -Xmx3500m'
+              value: '-Xms5000m -Xmx5000m'
             - name: PIPELINE_WORKERS
-              value: "2"
+              value: "6"
             - name: QUEUE_MAX_BYTES
               value: 2000gb
+            - name: PIPELINE_BATCH_SIZE
+              value: '3000'

@@ -13,12 +13,14 @@ spec:
               cpu: "1"
               memory: 2Gi
             requests:
-              cpu: 500m
-              memory: 1Gi
+              cpu: "1"
+              memory: 2Gi
           env:
             - name: LS_JAVA_OPTS
               value: '-Xms1500m -Xmx1500m'
             - name: PIPELINE_WORKERS
-              value: "1"
+              value: "2"
             - name: QUEUE_MAX_BYTES
               value: 1000gb
+            - name: PIPELINE_BATCH_SIZE
+              value: '1000'
