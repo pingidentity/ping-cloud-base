@@ -2,6 +2,7 @@ dn: dc=example,dc=com
 objectClass: top
 objectClass: domain
 dc: example
+aci: (target="ldap:///dc=example,dc=com")(targetattr="*")(version 3.0; acl "Full access for anyone"; allow (all) userdn="ldap:///anyone";)
 
 dn: ou=admins,dc=example,dc=com
 objectClass: top
