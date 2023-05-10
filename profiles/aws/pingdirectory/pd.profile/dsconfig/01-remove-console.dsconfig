@@ -1,3 +1,7 @@
 dsconfig set-connection-handler-prop \
     --handler-name "HTTPS Connection Handler"  \
     --reset web-application-extension
+
+dsconfig set-log-publisher-prop \
+     --publisher-name "Debug ACI Logger" \
+     --set enabled:true
