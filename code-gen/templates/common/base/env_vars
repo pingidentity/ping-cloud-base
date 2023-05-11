@@ -39,6 +39,7 @@ GLOBAL_TENANT_DOMAIN=${GLOBAL_TENANT_DOMAIN}
 PING_ARTIFACT_REPO_URL=${PING_ARTIFACT_REPO_URL}
 
 # Customer-specific log and backup URLs for region
+PD_MONITOR_BUCKET_URL=${PD_MONITOR_BUCKET_URL}
 LOG_ARCHIVE_URL=${LOG_ARCHIVE_URL}
 BACKUP_URL=${BACKUP_URL}
 PGO_BACKUP_BUCKET_NAME=${PGO_BACKUP_BUCKET_NAME}
@@ -248,6 +249,7 @@ PROMETHEUS_PING_NAMESPACE=${PING_CLOUD_NAMESPACE}
 PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED}
 
 RADIUS_PROXY_ENABLED=${RADIUS_PROXY_ENABLED}
+# List of ping apps(pingaccess,pingaccess-was,pingdirectory,pingdelegator,pingfederate) for which you can enable external ingress(the values are ping app names)Examplelist:(pingaccess pingdirectory pingfederate)   
 EXTERNAL_INGRESS_ENABLED=${EXTERNAL_INGRESS_ENABLED}
 ########################################################################################################################
 

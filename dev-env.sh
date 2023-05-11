@@ -89,6 +89,11 @@
 # LOG_ARCHIVE_URL           | The URL of the log archives. If provided, logs     | The string "unused"
 #                           | are periodically captured and sent to this URL.    |
 #                           |                                                    |
+# PD_MONITOR_BUCKET_URL     | The URL of the monitor,ldif exports and csd-log    |
+#                           | archives.If provided, logs are periodically        | The string "unused"
+#                           | captured and sent to this URL. Used only for       |
+#                           | PingDirectory at the moment                        |
+#                           |                                                    |
 # MYSQL_SERVICE_HOST        | The hostname of the MySQL database server.         | beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
 #                           |                                                    |
 # MYSQL_PASSWORD            | The DBA password of the PingCentral MySQL RDS      | The SSM path:
@@ -278,6 +283,8 @@ log "Initial CONFIG_PARENT_DIR: ${CONFIG_PARENT_DIR}"
 
 log "Initial ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 log "Initial PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
+
+log "Initial PD_MONITOR_BUCKET_URL: ${PD_MONITOR_BUCKET_URL}"
 log "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 log "Initial BACKUP_URL: ${BACKUP_URL}"
 log "Initial PGO_BACKUP_BUCKET_NAME: ${PGO_BACKUP_BUCKET_NAME}"
@@ -324,6 +331,7 @@ export CONFIG_PARENT_DIR="${CONFIG_PARENT_DIR:-aws}"
 
 export ARTIFACT_REPO_URL="${ARTIFACT_REPO_URL:-unused}"
 export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
+export PD_MONITOR_BUCKET_URL="${PD_MONITOR_BUCKET_URL:-unused}"
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
 
@@ -387,6 +395,7 @@ log "Using CONFIG_PARENT_DIR: ${CONFIG_PARENT_DIR}"
 
 log "Using ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 log "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
+log "Using PD_MONITOR_BUCKET_URL: ${PD_MONITOR_BUCKET_URL}"
 log "Using LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 log "Using BACKUP_URL: ${BACKUP_URL}"
 log "Using PGO_BACKUP_BUCKET_NAME: ${PGO_BACKUP_BUCKET_NAME}"
@@ -509,6 +518,7 @@ export CONFIG_REPO_BRANCH=${CONFIG_REPO_BRANCH}
 
 export ARTIFACT_REPO_URL=${ARTIFACT_REPO_URL}
 export PING_ARTIFACT_REPO_URL=${PING_ARTIFACT_REPO_URL}
+export PD_MONITOR_BUCKET_URL=${PD_MONITOR_BUCKET_URL}
 export LOG_ARCHIVE_URL=${LOG_ARCHIVE_URL}
 export BACKUP_URL=${BACKUP_URL}
 export PGO_BACKUP_BUCKET_NAME=${PGO_BACKUP_BUCKET_NAME}

@@ -12,6 +12,8 @@
 - Add multiple USER_BASE_DNs and BACKEND_IDs env vars
 - Add multiple backends to 'BACKENDS_TO_BACKUP' env var
 - Selectively restore a backend in PD
+- Capture hourly PingDirectory CSD data
+- Enable and manage daily encrypted exports
 - Updated external-dns to v0.13.1 
 - Update cluster tools to latest version: kube-state-metrics v2.6.0
 - Remove PA/PF SIEM console logging
@@ -21,8 +23,6 @@
 - Upgrade EFS Driver to v1.5.1
 - Add PF requests logs parsing and indexing
 - Fix index template creation race condition issue
-- Update the PD backup job to create new PV at the start of the job and mount it
-- Update the PD restore job to create new PV at the start of the job and mount it
 - Change retry interval for PGO firing alert notification in slack from 5 min to 60 min
 - Added karpenter v0.24.0 and required parameters, KarpenterControllerRole & ClusterEndPoint
 - ILM policy for alerts index changed to move index to warm after 7 days in hot and delete index after 30 days
@@ -59,13 +59,26 @@
 - Add logstash/fluent-bit readiness/liveness probe
 - Add priorityClassName into CWAgent daemonset
 - Fluent-bit pods stuck in pending state
+- Create new folders "Backup-ops-template" "restore-ops-template" for PD backups,restore process
 - Add logstash and fluent-bit alerts
 - Fix Kibana Visualization "Ping Access - Response Codes Over Time"
 - No longer move files into custom-resources directory when upgrading
 - Set 7-day-retention policy to all backup jobs logs
 - Configure Fluent-bit kubernetes filter to prevent caching for statefulsets
+- New base configuration for PingDirectory permissions
 - Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
 - Allow configuration of certain ArgoCD values per-CDE
+- Replaced PSA privileged policy by more restricted policies for newrelic components
+- Update kube-state-metrics to v2.7.0
+- Bug fix, remove-from-secondary-patch.yaml not getting applied
+- Remove healthchecks for undeployed products in customer-hub
+- Default ngnix hpa configuration in medium environment is lower than small
+- Fix cluster_name variable in Grafana Dashboards for CHUB
+- Remove PC resources from secondary customer-hub
+- Allow users to pick and enable only the external ingress they want. 
+- Fixed Pending state of nri-bundle-nrk8s-kubelet pods running by CDE
+- Add pingaccess-was-license secret placeholder entry to CHUB
+- Increase replica count (min=7, max=9) within prod/large for Nginx Ingress Controller
 
 _Changes:_
 
@@ -75,6 +88,8 @@ _Changes:_
 - [X] PDO-3908 Clean up P1 artifacts in Admin environment during CI/CD teardown
 - [X] PDO-4009 Update k8s StorageClass provisoner to use CSI driver
 - [X] PDO-4161 [need before EKS 1.25] Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
+- [X] PDO-4257 Capture hourly PingDirectory CSD data
+- [X] PDO-4258 Enable and manage daily encrypted exports
 - [X] PDO-4309 Add integration test for PingDirectory Java args 
 - [X] PDO-4388 Flag in env_var to enable/disable external ingresses for admin endpoints
 - [X] PDO-4548 Find and destroy file moving to custom-resources code from generate-cluster-state.sh to fix reoccuring issue when upgrading
@@ -109,9 +124,7 @@ _Changes:_
 - [X] PDO-4902 Code sharing for PingOne deployments
 - [X] PDO-4903 Deploy PingOne in CICD like Shared P1 Tenant
 - [X] PDO-4916 Missing PF request log
-- [X] PDO-4959 Update the PD backup job to create new PV at the start of the job and mount it
 - [X] PDO-4974 Change retry interval for PGO firing alert notification in slack from 5 min to 60 min
-- [X] PDO-4977 Update the PD restore job to create new PV at the start of the job and mount it
 - [X] PDO-4980 Index lifecycle error: illegal_argument_exception: policy [healthchecks] does not exist
 - [X] PDO-4981 Index templates are not applied to indexes in case elastic-stack-logging ns respinned
 - [X] PDO-4982 Update cluster tools to latest version: EFS Driver to v1.5.1
@@ -128,6 +141,7 @@ _Changes:_
 - [X] PDO-5017 Use SUPPORTED_ENVIRONMENT_TYPES for generate/update scripts
 - [X] PDO-5018 PGO resources - handle secondary region v1.18
 - [X] PDO-5025 Improve fluent-bit multiline log parsing
+- [X] PDO-5030 New base configuration for PingDirectory permissions
 - [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone 
 - [X] PDO-5039 Automate cleanup of external dns records for CI/CD clusters
 - [X] PDO-5041 node-role.kubernetes.io/master (deprecated)
@@ -136,6 +150,7 @@ _Changes:_
 - [X] PDO-5090 Update default version of pf-pingid-integration-kit to 2.24.0 in PingFederate
 - [X] PDO-5104 Update Prometheus CPU/MEM limits
 - [X] PDO-5107 Fluent-bit pods stuck in pending state
+- [X] PDO-5123 Create new folders "Backup-ops-template" "restore-ops-template" for PD backups,restore process
 - [X] PDO-5124 Enable bootstrapping a new customer with ArgoCD
 - [X] PDO-5131 Pods (typically cloudwatch) Stuck in pending state
 - [X] PDO-5138 Add a new hook script '02-health-check.sh' to support readiness and liveness probes 
@@ -145,14 +160,28 @@ _Changes:_
 - [X] PDO-5147 Add logstash metrics to prometheus
 - [X] PDO-5148 Modify Prometheus query for all backup alerting to only include the primary pod
 - [X] PDO-5191 Update image_map to align with tagging process
+- [X] PDO-5217 Increase replica count (min=7, max=9) within prod/large for Nginx Ingress Controller
 - [X] PDO-5221 'Field "responseCode.keyword" not found' on the 'Ping Access - Response Codes Over Time' visualization
 - [X] PDO-5223 Remove pa-was config for ArgoCD from non customer-hub CDEs
 - [X] PDO-5232 Configure Fluent-bit kubernetes filter to prevent caching for statefulsets
+- [X] PDO-5248 Bug fix,remove-from-secondary-patch.yaml not getting applied
 - [X] PDO-5255 Allow configuration of certain ArgoCD values per-CDE
 - [X] PDO-5261 Remove PF and PA from pa-was config in customer-hub
+- [X] PDO-5262 Allow users to pick and enable only the external ingress they want.
+- [X] PDO-5263 Remove PC resources from secondary customer-hub
 - [X] PDO-5264 Set 7-day-retention policy to all backup jobs logs
+- [X] PDO-5271 Replace PSA privileged policy by more restricted policies for newrelic components if needed
+- [X] PDO-5279 Update kube-state-metrics cluster tool to v2.7.0 for EKS 1.25
+- [X] PDO-5281 Default ngnix hpa configuration in medium environment is lower than small
+- [X] PDO-5288 Update health check. healthcheck should only test the resources that have been deployed
 - [X] PDO-5298 Bugfix - make scripts compatible with Debian
+- [X] PDO-5302 Fix PF multiline parsing
 - [X] PDO-5315 Bugfix - argocd-bootstrap to use region specific env vars
+- [X] PDO-5319 The cluster name is not displayed correctly in Grafana Dashboard for the CHUB cluster
+- [X] PDO-5328 Add pingaccess-was-license secret placeholder entry to CHUB 
+- [X] PDO-5377 Patch CA to balance node across all AZs
+- [X] PDO-5390 nri-bundle-nrk8s-kubelet-* pods running by CDE stuck in Pending state
+- [X] PDO-5393 Bugfix - secondary CSR missing app dir
 
 ### 1.17.0.0
 
@@ -194,6 +223,7 @@ _Changes:_
 - Installed EBS CSI driver
 - Replace deprecated topologyKey
 - Add IngressClassName to replace the deprecated annotation
+- Fix PingFederate multiline logs parsing
 
 _Changes:_
 

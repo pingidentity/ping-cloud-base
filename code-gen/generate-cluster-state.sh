@@ -101,8 +101,11 @@
 # ENVIRONMENTS                     | The environments the customer is entitled to. This | dev test stage prod customer-hub
 #                                  | will be a subset of SUPPORTED_ENVIRONMENT_TYPES    |
 #                                  |                                                    |
-# EXTERNAL_INGRESS_ENABLED         | Feature Flag - Indicates if external ingress       | True
-#                                  | is enabled                                         |
+# EXTERNAL_INGRESS_ENABLED         | List of ping apps(pingaccess,pingaccess-was,       | No defaults
+#                                  | pingdirectory,pingdelegator,pingfederate) for      |
+#                                  | which you can enable external ingress(the values   |
+#                                  | are ping app names )                               |
+#                                  | Examplelist:(pingaccess pingdirectory pingfederate)|
 #                                  |                                                    |
 # GLOBAL_TENANT_DOMAIN             | Region-independent URL used for DNS failover/      | Replaces the first segment of
 #                                  | routing.                                           | the TENANT_DOMAIN value with the
@@ -143,6 +146,11 @@
 #                                  | periodically captured and sent to this URL. For    |
 #                                  | AWS S3 buckets, it must be an S3 URL, e.g.         |
 #                                  | s3://logs.                                         |
+#                                  |                                                    |
+# PD_MONITOR_BUCKET_URL            | The URL of the monitor,ldif exports and csd-log    |
+#                                  | archives.If provided, logs are periodically        | The string "unused"
+#                                  | captured and sent to this URL. Used only for       |
+#                                  | PingDirectory at the moment                        |
 #                                  |                                                    |
 # MYSQL_PASSWORD                   | The DBA password of the PingCentral MySQL RDS      | The SSM path:
 #                                  | database.                                          | ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#password
@@ -336,6 +344,7 @@ ${SECONDARY_TENANT_DOMAINS}
 ${GLOBAL_TENANT_DOMAIN}
 ${ARTIFACT_REPO_URL}
 ${PING_ARTIFACT_REPO_URL}
+${PD_MONITOR_BUCKET_URL}
 ${LOG_ARCHIVE_URL}
 ${BACKUP_URL}
 ${PGO_BACKUP_BUCKET_NAME}
@@ -658,6 +667,7 @@ echo "Initial SERVER_PROFILE_URL: ${SERVER_PROFILE_URL}"
 echo "Initial ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Initial PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
 
+echo "Initial PD_MONITOR_BUCKET_URL: ${PD_MONITOR_BUCKET_URL}"
 echo "Initial LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 echo "Initial BACKUP_URL: ${BACKUP_URL}"
 
@@ -757,10 +767,11 @@ export GLOBAL_TENANT_DOMAIN="${GLOBAL_TENANT_DOMAIN_NO_DOT_SUFFIX:-${DERIVED_GLO
 
 export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.s3-us-west-2.amazonaws.com}"
 
+export PD_MONITOR_BUCKET_URL="${PD_MONITOR_BUCKET_URL:-ssm://pcpt/service/storage/pd-monitor/uri}"
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
 
-export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-"pingcentraldb.\${PRIMARY_TENANT_DOMAIN}"}"
+export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-"pingcentraldb.${PRIMARY_TENANT_DOMAIN}"}"
 export MYSQL_USER="${MYSQL_USER:-ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username}"
 export MYSQL_PASSWORD="${MYSQL_PASSWORD:-ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#password}"
 
@@ -811,7 +822,7 @@ export IMAGE_TAG_PREFIX="${K8S_GIT_BRANCH%.*}"
 export PF_PROVISIONING_ENABLED="${PF_PROVISIONING_ENABLED:-false}"
 export RADIUS_PROXY_ENABLED="${RADIUS_PROXY_ENABLED:-false}"
 export ARGOCD_BOOTSTRAP_ENABLED="${ARGOCD_BOOTSTRAP_ENABLED:-true}"
-export EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED:-true}"
+export EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED:-''}"
 
 ### Default environment variables ###
 export ECR_REGISTRY_NAME='public.ecr.aws/r2h3l6e4'
@@ -934,6 +945,7 @@ echo "Using CLUSTER_STATE_REPO_PATH: ${REGION_NICK_NAME}"
 
 echo "Using ARTIFACT_REPO_URL: ${ARTIFACT_REPO_URL}"
 echo "Using PING_ARTIFACT_REPO_URL: ${PING_ARTIFACT_REPO_URL}"
+echo "Using PD_MONITOR_BUCKET_URL: ${PD_MONITOR_BUCKET_URL}"
 echo "Using LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
 echo "Using BACKUP_URL: ${BACKUP_URL}"
 
@@ -1272,7 +1284,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   substitute_vars "${ENV_DIR}" "${REPO_VARS}" values.yaml
   substitute_vars "${ENV_DIR}" '${IS_BELUGA_ENV}' values.yaml
 
-  # Regional enablement - add admins, backups, etc. to primary.
+  # Regional enablement - add admins, backups, etc. to primary and adding pingaccess-was and pingcentral to primary.
   if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
     sed -i.bak 's/^\(.*remove-from-secondary-patch.yaml\)$/# \1/g' "${PRIMARY_PING_KUST_FILE}"
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
