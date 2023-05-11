@@ -192,6 +192,7 @@ _Changes:_
 - [X] PDO-5223 Remove pa-was config for ArgoCD from non customer-hub CDEs
 - [X] PDO-5244 OpenSearch migration: Enable transport layer security
 - [X] PDO-5246 Opensearch migration: migrate alerts
+- [X] PDO-5258 OpenSearch migration: refactor bootstrap scripts
 
 ### 1.17.0.0
 
