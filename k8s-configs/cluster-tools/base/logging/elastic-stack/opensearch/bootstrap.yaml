@@ -7,39 +7,63 @@ metadata:
     argocd.argoproj.io/hook: Sync
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
 spec:
+  backoffLimit: 10
   template:
     spec:
-      serviceAccountName: enrichment
       containers:
       - name: opensearch-bootstrap
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v1.18-release-branch-latest
+        # TODO: change the image to production one
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-monitoring/os-bootstrap:PDO-5258
         imagePullPolicy: Always
-        workingDir: /scripts
-        command: ["sh", '$(CONTAINER_NAME).sh']
         securityContext:
           runAsNonRoot: true
-          runAsUser: 1000
-          runAsGroup: 1000
+          runAsUser: 9031
+          runAsGroup: 9999
           allowPrivilegeEscalation: false
         env:
-        - name: CONTAINER_NAME
-          value: "opensearch-bootstrap"
-        - name: OS_PATH_CONF
-          value: "/usr/share/opensearch/data/config"
-        # Service checking related env vars
-        - name: CHECK_SERVICE_URL
-          value: "https://opensearch-cluster-master"
-        - name: CHECK_SERVICE_PORT
-          value: "9200"
-        - name: DESIRED_STATUS
-          value: "green"
+          - name: OS_HOST
+            value: "opensearch-cluster-headless.elastic-stack-logging.svc.cluster.local"
+          - name: OS_PORT
+            value: "9200"
+          - name: VERBOSE
+            value: "true"
+          - name: BOOTSTRAP_USER
+            valueFrom:
+              secretKeyRef:
+                key: username
+                name: os-bootstrap-creds
+          - name: BOOTSTRAP_PASS
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: os-bootstrap-creds
+          - name: INDEX_TEMPLATES_PATH
+            value: "/usr/share/opensearch/data/index-templates"
+          - name: ALERTS_PATH
+            value: "/usr/share/opensearch/data/alerts"
+          - name: NOTIFICATIONS_PATH
+            value: "/usr/share/opensearch/data/notifications"
+          - name: ISM_PATH
+            value: "/usr/share/opensearch/data/ism-policies"
+          - name: OSD_URL
+            value: "http://opensearch-dashboards:5601"
+          - name: DASHBOARDS_PATH
+            value: "/usr/share/opensearch/data/dashboards"
         volumeMounts:
-          - name: enrichment-opensearch-ism-policies
+          - name: os-ism-policies
             mountPath: /usr/share/opensearch/data/ism-policies
-          - name: enrichment-opensearch-index-templates
+          - name: os-index-templates
             mountPath: /usr/share/opensearch/data/index-templates
           - name: os-notifications-channels
             mountPath: /usr/share/opensearch/data/notifications
+          - name: os-dashboards-pd
+            mountPath: /usr/share/opensearch/data/dashboards/pd
+          - name: os-dashboards-pf
+            mountPath: /usr/share/opensearch/data/dashboards/pf
+          - name: os-dashboards-pa
+            mountPath: /usr/share/opensearch/data/dashboards/pa
+          - name: os-dashboards-pa-was
+            mountPath: /usr/share/opensearch/data/dashboards/pa-was
           - name: os-alerts-pd-1
             mountPath: /usr/share/opensearch/data/alerts/pd-1
           - name: os-alerts-pd-2
@@ -61,15 +85,27 @@ spec:
             cpu: "500m"
       restartPolicy: OnFailure
       volumes:
-        - name: enrichment-opensearch-ism-policies
+        - name: os-ism-policies
           configMap:
-            name: enrichment-opensearch-ism-policies
-        - name: enrichment-opensearch-index-templates
+            name: os-ism-policies
+        - name: os-index-templates
           configMap:
-            name: enrichment-opensearch-index-templates
+            name: os-index-templates
         - name: os-notifications-channels
           configMap:
             name: os-notifications-channels
+        - name: os-dashboards-pd
+          configMap:
+            name: os-dashboards-pd
+        - name: os-dashboards-pf
+          configMap:
+            name: os-dashboards-pf
+        - name: os-dashboards-pa
+          configMap:
+            name: os-dashboards-pa
+        - name: os-dashboards-pa-was
+          configMap:
+            name: os-dashboards-pa-was
         - name: os-alerts-pd-1
           configMap:
             name: os-alerts-pd-1
@@ -88,3 +124,13 @@ spec:
         - name: os-alerts-pf
           configMap:
             name: os-alerts-pf
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: os-bootstrap-creds
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+data:
+  username: YWRtaW4=
+  password: YWRtaW4=
