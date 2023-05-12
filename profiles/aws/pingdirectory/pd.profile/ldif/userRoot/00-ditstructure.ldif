@@ -1,0 +1,17 @@
+dn: dc=example,dc=com
+objectClass: top
+objectClass: domain
+dc: example
+
+dn: ou=admins,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: admins
+description: Container for admin-related groups and users
+
+dn: ou=admingroups,ou=admins,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: admingroups
+description: Container for admin-related groups
+
