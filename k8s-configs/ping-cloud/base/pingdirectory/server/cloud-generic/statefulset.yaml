@@ -294,7 +294,7 @@ spec:
             # container because PD will never finish its start/restart sequence
             # before then, in practice. Run the startup probe every 5 seconds
             # and tolerate up to 100 failures, so PD will be marked as ready as far as it really be ready
-            initialDelaySeconds: 180
+            initialDelaySeconds: 10
             periodSeconds: 5
             failureThreshold: 100
             timeoutSeconds: 5          
