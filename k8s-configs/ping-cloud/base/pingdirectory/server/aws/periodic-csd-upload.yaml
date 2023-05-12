@@ -38,6 +38,8 @@ spec:
             - name: pingdirectory-periodic-csd-upload
               mountPath: /opt/in/upload-csd-data.sh
               subPath: upload-csd-data.sh
+          securityContext:
+            fsGroup: 9999
           volumes:
           - name: pingdirectory-periodic-csd-upload
             configMap:
