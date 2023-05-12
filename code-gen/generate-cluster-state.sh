@@ -1212,6 +1212,8 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     cp "${TEMPLATES_HOME}/${BOOTSTRAP_SHORT_DIR}"/customer-hub/* "${ENV_BOOTSTRAP_DIR}"
     # Copy all files from customer-hub code-gen, except kustomization.yaml to re-use the yaml there and prevent duplication
     find "${CHUB_TEMPLATES_DIR}/base/cluster-tools/git-ops" -type f ! -name kustomization.yaml | xargs -I {} cp {} "${ENV_BOOTSTRAP_DIR}"
+    # Append the regional env-vars to the common env_vars to make sure all env vars are available for initial bootstrap
+    cat "${CHUB_TEMPLATES_DIR}/region/git-ops/env_vars" >> "${ENV_BOOTSTRAP_DIR}/env_vars"
   else
     cp "${TEMPLATES_HOME}/${BOOTSTRAP_SHORT_DIR}"/cde/* "${ENV_BOOTSTRAP_DIR}"
   fi

@@ -977,8 +977,12 @@ for ENV in ${SUPPORTED_ENVIRONMENT_TYPES}; do # ENV loop
              ORIG_ENV_VARS_FILE="${K8S_CONFIGS_DIR}/${REGION_DIR}/${DIR_NAME}/${ENV_VARS_FILE_NAME}"
           elif test "${DIR_NAME}" = 'admin' || test "${DIR_NAME}" = 'engine'; then
              ORIG_ENV_VARS_FILE="${K8S_CONFIGS_DIR}/${REGION_DIR}/${PARENT_DIR_NAME}/${DIR_NAME}/${ENV_VARS_FILE_NAME}"
-          elif test "${DIR_NAME}" = 'git-ops'; then
+          # Base git-ops file
+          elif echo "${TEMPLATE_ENV_VARS_FILE}" | grep -q "${BASE_DIR}/cluster-tools/git-ops"; then
             ORIG_ENV_VARS_FILE="${K8S_CONFIGS_DIR}/${BASE_DIR}/${PARENT_DIR_NAME}/${DIR_NAME}/${ENV_VARS_FILE_NAME}"
+          # Regional git-ops file
+          elif echo "${TEMPLATE_ENV_VARS_FILE}" | grep -q "${REGION_DIR}/git-ops"; then
+            ORIG_ENV_VARS_FILE="${K8S_CONFIGS_DIR}/${PARENT_DIR_NAME}/${DIR_NAME}/${ENV_VARS_FILE_NAME}"
           else
             log "Not an app-specific env_vars file: ${TEMPLATE_ENV_VARS_FILE}"
             # skip to next iteration.
