@@ -290,7 +290,7 @@ spec:
           startupProbe:
             exec:
               command:
-              - sh
+              - /bin/sh
               - -c
               - |-
                 echo "Finished delaying PingDirectory by 180s using startupProbe"
