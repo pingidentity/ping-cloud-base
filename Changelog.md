@@ -7,16 +7,16 @@
 _Changes:_
 
 - PDO-5314 Update bootstrap to create davinci-configuration secret
-- [X] PDO-5110 Install Opensearch side-by-side with Elastic
+- [X] PDO-5110 OpenSearch migration: Install Opensearch side-by-side with Elastic
 - [X] PDO-5112 OpenSearch migration: Migrate index templates
 - [X] PDO-5113 OpenSearch migration: Change logstash pipelines to send data to OS instead ES
 - [X] PDO-5114 OpenSearch migration: Migrate PA dashboard
 - [X] PDO-5116 OpenSearch migration: Migrate PF dashboards
 - [X] PDO-5152 OpenSearch migration: Rewrite bootstrap scripts
 - [X] PDO-5244 OpenSearch migration: Enable transport layer security
-- [X] PDO-5245 Update grafana dashboards datasource
-- [X] PDO-5246 Opensearch migration: migrate alerts
-- [X] PDO-5258 OpenSearch migration: refactor bootstrap scripts
+- [X] PDO-5245 OpenSearch migration: Update grafana dashboards datasource
+- [X] PDO-5246 Opensearch migration: Migrate alerts
+- [X] PDO-5258 OpenSearch migration: Refactor bootstrap scripts
 
 ### 1.18.0.0
 
