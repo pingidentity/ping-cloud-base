@@ -1,10 +1,10 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
-namespace: pod-reaper
+namespace: default
 
 helmCharts:
-  - name: minecraft
+  - name: p1as-beluga-tools
     includeCRDs: false
     valuesInline:
       minecraftServer:
@@ -12,6 +12,6 @@ helmCharts:
         difficulty: hard
         rcon:
           enabled: true
-    releaseName: minecraft
-    version: 4.7.4
-    repo: oci://public.ecr.aws/r2h3l6e4/minecraft
+    releaseName: p1as-beluga-tools
+    version: ~1.0.0
+    repo:  oci://705370621539.dkr.ecr.us-west-2.amazonaws.com/p1as-beluga-tools
