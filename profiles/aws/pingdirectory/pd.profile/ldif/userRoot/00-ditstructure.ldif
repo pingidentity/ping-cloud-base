@@ -3,7 +3,7 @@ objectClass: top
 objectClass: domain
 dc: example
 aci: (targetattr="*")(version 3.0; acl "Directory Manager Full Access"; allow (read,search,compare) userdn="ldap:///o=platformconfig";)
-aci: (targetattr="*")(version 3.0; acl "Directory Manager Full Access"; allow (read,search,compare) userdn="ldap:///o=o=appintegrations";)
+aci: (targetattr="*")(version 3.0; acl "Directory Manager Full Access"; allow (read,search,compare) userdn="ldap:///o=appintegrations";)
 
 dn: ou=admins,dc=example,dc=com
 objectClass: top
