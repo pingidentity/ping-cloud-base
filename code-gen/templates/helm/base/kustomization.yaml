@@ -13,5 +13,5 @@ helmCharts:
         rcon:
           enabled: true
     releaseName: p1as-beluga-tools
-    version: ~18.0.0-PDO-5322
-    repo:  oci://705370621539.dkr.ecr.us-west-2.amazonaws.com/p1as-beluga-tools
+    version: ~1.0.0
+    repo:  oci://public.ecr.aws/r2h3l6e4/p1as-beluga-tools

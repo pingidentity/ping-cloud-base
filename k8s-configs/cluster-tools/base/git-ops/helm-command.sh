@@ -1,5 +1,4 @@
 #!/bin/bash
-#export HELM_CONFIG_HOME="/helm-working-dir"
 
 if [[ $@ = pull* ]]; then
     # If the command is `helm pull (..)` skips --repo flag and chartName
