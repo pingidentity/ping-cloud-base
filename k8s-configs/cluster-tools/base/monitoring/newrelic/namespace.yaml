@@ -4,6 +4,3 @@ metadata:
   name: newrelic
   annotations:
     argocd.argoproj.io/sync-wave: "-1"
-  labels:
-    pod-security.kubernetes.io/enforce: restricted
-    pod-security.kubernetes.io/enforce-version: latest
