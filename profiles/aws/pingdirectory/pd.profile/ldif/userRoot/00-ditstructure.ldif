@@ -1,0 +1,18 @@
+dn: dc=example,dc=com
+objectClass: top
+objectClass: domain
+dc: example
+aci: (target="ldap:///dc=example,dc=com")(targetattr="*")(version 3.0; acl "Access for devopsaccount pingfederate user"; allow (read,search,compare) userdn="ldap:///uid=pingfederate,ou=devopsaccount,o=platformconfig";)
+
+dn: ou=admins,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: admins
+description: Container for admin-related groups and users
+
+dn: ou=admingroups,ou=admins,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: admingroups
+description: Container for admin-related groups
+
