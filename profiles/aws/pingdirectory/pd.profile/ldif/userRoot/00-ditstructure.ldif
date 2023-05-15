@@ -2,7 +2,7 @@ dn: dc=example,dc=com
 objectClass: top
 objectClass: domain
 dc: example
-aci: (target="ldap:///dc=example,dc=com")(targetattr="*")(version 3.0; acl "Access for devopsaccount pingfederate user"; allow (read,search,compare) userdn="ldap:///uid=pingfederate,ou=devopsaccount,o=platformconfig";)
+aci: (target="ldap:///dc=example,dc=com")(targetattr!="userPassword")(version 3.0; acl "Access for platformconfig pingfederate user"; allow (read,search,compare) userdn="ldap:///uid=pingfederate,ou=devopsaccount,o=platformconfig";)
 
 dn: ou=admins,dc=example,dc=com
 objectClass: top
