@@ -14,3 +14,8 @@ $patch: delete
 
 ---
 
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: pingdirectory-periodic-export-ldif
+$patch: delete
