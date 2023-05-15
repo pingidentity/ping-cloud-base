@@ -9,6 +9,8 @@ resources:
 - kibana
 - logstash
 - elasticsearch
+- opensearch
+- os-dashboards
 
 configMapGenerator:
 - name: elk-environment-variables

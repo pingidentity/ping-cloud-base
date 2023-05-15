@@ -1,0 +1,132 @@
+{
+   "name": "PingDirectory Entering Lockdown Mode",
+   "type": "monitor",
+   "monitor_type": "bucket_level_monitor",
+   "enabled": true,
+   "schedule": {
+      "period": {
+         "unit": "MINUTES",
+         "interval": 1
+      }
+   },
+   "inputs": [
+      {
+         "search": {
+            "indices": [
+               "logstash*"
+            ],
+            "query": {
+               "size": 0,
+               "aggregations": {
+                  "composite_agg": {
+                     "composite": {
+                        "sources": [
+                           {
+                              "cluster_name": {
+                                 "terms": {
+                                    "field": "cluster_name"
+                                 }
+                              }
+                           }
+                        ]
+                     },
+                     "aggs": {}
+                  }
+               },
+               "query": {
+                  "bool": {
+                     "filter": [
+                        {
+                           "range": {
+                              "@timestamp": {
+                                 "gte": "{{period_end}}||-1m",
+                                 "lte": "{{period_end}}",
+                                 "format": "epoch_millis"
+                              }
+                           }
+                        },
+                        {
+                          "match_phrase": {
+                            "kubernetes.container_name": "pingdirectory"
+                          }
+                        },
+                        {
+                          "match_phrase": {
+                            "msg": "\"*entering-lockdown-mode*\""
+                          }
+                        }
+                     ]
+                  }
+               }
+            }
+         }
+      }
+   ],
+   "triggers": [
+      {
+         "bucket_level_trigger": {
+            "name": "Count more than 1",
+            "severity": "1",
+            "condition": {
+               "buckets_path": {
+                  "_count": "_count"
+               },
+               "parent_bucket_path": "composite_agg",
+               "script": {
+                  "source": "params._count > 1",
+                  "lang": "painless"
+               },
+               "gap_policy": "skip"
+            },
+            "actions": [
+              {
+                    "name": "SREAPPALERTS",
+                    "destination_id": "sns_sreappalerts",
+                    "message_template": {
+                      "source": "Alert '{{ctx.monitor.name}}' is active:\n- Value: {{ctx.results.0.hits.total.value}}\n- Conditions Met: Number of matching documents is greater than 1 over 1m\n- Timestamp: {{ctx.periodEnd}}",
+                      "lang": "mustache"
+                    },
+                    "throttle_enabled": false,
+                    "subject_template": {
+                      "source": "ALERT: {{ctx.monitor.name}} in {{#ctx.newAlerts}}{{bucket_keys}}{{/ctx.newAlerts}}{{#ctx.dedupedAlerts}}{{bucket_keys}}{{/ctx.dedupedAlerts}}",
+                      "lang": "mustache"
+                    },
+                    "action_execution_policy": {
+                      "action_execution_scope": {
+                        "per_alert": {
+                          "actionable_alerts": [
+                            "DEDUPED",
+                            "NEW"
+                          ]
+                        }
+                      }
+                    }
+                  },
+               {
+                    "name": "CUSTOMERHUB",
+                    "destination_id": "sns_customerhub",
+                    "message_template": {
+                      "source": "Alert '{{ctx.monitor.name}}' is active:\n- Value: {{ctx.results.0.hits.total.value}}\n- Conditions Met: Number of matching documents is greater than 1 over 1m\n- Timestamp: {{ctx.periodEnd}}",
+                      "lang": "mustache"
+                    },
+                    "throttle_enabled": false,
+                    "subject_template": {
+                      "source": "ALERT: {{ctx.monitor.name}} in {{#ctx.newAlerts}}{{bucket_keys}}{{/ctx.newAlerts}}{{#ctx.dedupedAlerts}}{{bucket_keys}}{{/ctx.dedupedAlerts}}",
+                      "lang": "mustache"
+                    },
+                    "action_execution_policy": {
+                      "action_execution_scope": {
+                        "per_alert": {
+                          "actionable_alerts": [
+                            "DEDUPED",
+                            "NEW"
+                          ]
+                        }
+                      }
+                    }
+                  }
+              ]
+         }
+      }
+   ]
+}

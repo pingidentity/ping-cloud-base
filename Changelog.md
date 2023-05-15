@@ -7,6 +7,16 @@
 _Changes:_
 
 - PDO-5314 Update bootstrap to create davinci-configuration secret
+- [X] PDO-5110 Install Opensearch side-by-side with Elastic
+- [X] PDO-5112 OpenSearch migration: Migrate index templates
+- [X] PDO-5113 OpenSearch migration: Change logstash pipelines to send data to OS instead ES
+- [X] PDO-5114 OpenSearch migration: Migrate PA dashboard
+- [X] PDO-5116 OpenSearch migration: Migrate PF dashboards
+- [X] PDO-5152 OpenSearch migration: Rewrite bootstrap scripts
+- [X] PDO-5244 OpenSearch migration: Enable transport layer security
+- [X] PDO-5245 Update grafana dashboards datasource
+- [X] PDO-5246 Opensearch migration: migrate alerts
+- [X] PDO-5258 OpenSearch migration: refactor bootstrap scripts
 
 ### 1.18.0.0
 
@@ -72,19 +82,6 @@ _Changes:_
 - Add logstash and fluent-bit alerts
 - Fix Kibana Visualization "Ping Access - Response Codes Over Time"
 - No longer move files into custom-resources directory when upgrading
-- Set 7-day-retention policy to all backup jobs logs
-- Configure Fluent-bit kubernetes filter to prevent caching for statefulsets
-- New base configuration for PingDirectory permissions
-- Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
-- Allow configuration of certain ArgoCD values per-CDE
-- Replaced PSA privileged policy by more restricted policies for newrelic components
-- Update kube-state-metrics to v2.7.0
-- Bug fix, remove-from-secondary-patch.yaml not getting applied
-- Remove healthchecks for undeployed products in customer-hub
-- Default ngnix hpa configuration in medium environment is lower than small
-- Fix cluster_name variable in Grafana Dashboards for CHUB
-- Remove PC resources from secondary customer-hub
-- Allow users to pick and enable only the external ingress they want. 
 
 _Changes:_
 
@@ -184,8 +181,6 @@ _Changes:_
 - [X] PDO-5302 Fix PF multiline parsing
 - [X] PDO-5315 Bugfix - argocd-bootstrap to use region specific env vars
 - [X] PDO-5319 The cluster name is not displayed correctly in Grafana Dashboard for the CHUB cluster
-
-
 ### 1.17.0.0
 
 - Remove logstash tolerations
@@ -226,7 +221,6 @@ _Changes:_
 - Installed EBS CSI driver
 - Replace deprecated topologyKey
 - Add IngressClassName to replace the deprecated annotation
-- Fix PingFederate multiline logs parsing
 
 _Changes:_
 
