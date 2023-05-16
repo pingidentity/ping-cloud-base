@@ -112,6 +112,9 @@
             },
             "longitude": {
               "type": "half_float"
+            },
+            "line": {
+              "type": "geo_shape"
             }
           }
         },
