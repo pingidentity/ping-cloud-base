@@ -17,6 +17,7 @@ _Changes:_
 - [X] PDO-5245 OpenSearch migration: Update grafana dashboards datasource
 - [X] PDO-5246 Opensearch migration: Migrate alerts
 - [X] PDO-5258 OpenSearch migration: Refactor bootstrap scripts
+- [X] PDO-5320 BUGFIX: found_distance_alert and other found* fields are not present in pf-audit* index documents
 
 ### 1.18.0.0
 
