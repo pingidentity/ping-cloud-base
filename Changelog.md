@@ -3,10 +3,13 @@
 ### 1.19.0.0
 
 - Update bootstrap to create davinci-configuration secret
+- Updating kustomize build options within ArgoCD to support Helm
+
 
 _Changes:_
 
 - PDO-5314 Update bootstrap to create davinci-configuration secret
+- PDO-5333 ArgoCD authentication to private ECR for Helm
 
 ### 1.18.0.0
 
