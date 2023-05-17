@@ -19,8 +19,6 @@ if [ $? != 0 ]; then
   exit 1
 fi
 
-echo "HELM_CONFIG_HOME before is: ${HELM_CONFIG_HOME}" >> /tmp/helm-debug
 cmd="${helm_install} --registry-config /helm-working-dir/registry/config.json $args"
 echo "Running '$cmd' " >> /tmp/helm-debug
-echo "HELM_CONFIG_HOME after is: ${HELM_CONFIG_HOME}" >> /tmp/helm-debug
 eval $cmd
