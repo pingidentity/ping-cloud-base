@@ -5,7 +5,7 @@ REGION=${REGION}
 
 # A space-delimited list of the environments we want ArgoCD to manage from customer-hub in each region
 # NOTE: ARGOCD_ENVIRONMENTS should NOT be changed manually. The value will NOT change after initial CSR generation.
-ARGOCD_ENVIRONMENTS=${ARGOCD_ENVIRONMENTS}
+ARGOCD_ENVIRONMENTS="${ARGOCD_ENVIRONMENTS}"
 
 #### FEATURE FLAGS #####################################################################################################
 # Set to true to enable, most are disabled by default

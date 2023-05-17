@@ -16,6 +16,7 @@ data:
     END=$((${NUM_REPLICAS} - 1))
 
     CSD_FILES=
+    ERROR_MSG=
     for i in $(seq ${START} ${END}); do
       SERVER="${K8S_STATEFUL_SET_NAME}-${i}"
       SCRIPT="${HOOKS_DIR}"/82-upload-csd-s3.sh
@@ -23,16 +24,26 @@ data:
 
       echo "Uploading CSD on server ${SERVER}"
       /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}"> "${LOG_FILE}"
+      csd_status=$?
 
-      if test ${?} -eq 0; then
+      if test ${csd_status} -eq 0; then
         # Sending logs to STDOUT
         cat ${LOG_FILE}
         CSD_FILE=$(tail -1 "${LOG_FILE}")
         test -z "${CSD_FILES}" && CSD_FILES="${CSD_FILE}" || CSD_FILES="${CSD_FILES} ${CSD_FILE}"
       else
-        echo "Upload script not found on server ${SERVER}"
+        # Append last 10 lines to ERROR_MSG
+        CSD_ERROR=$(tail -10 "${LOG_FILE}")
+        ERROR_MSG="${ERROR_MSG} ${SERVER} failed - ${CSD_ERROR}"
       fi
     done
+
+    # Fail script if any of the servers failed during CSD upload to S3
+    if [ -n "${ERROR_MSG}" ]; then
+      echo "${ERROR_MSG}"
+      echo "Script failed exiting"
+      exit 1
+    fi
 
     # Print the names of the uploaded files so callers know exactly what was uploaded
     echo "The following files were uploaded:"

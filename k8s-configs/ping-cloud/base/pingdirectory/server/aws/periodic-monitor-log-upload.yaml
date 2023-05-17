@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: pingdirectory-periodic-export-ldif
+  name: pingdirectory-periodic-monitor-upload
 spec:
   schedule: "0 0 * * *"
   successfulJobsHistoryLimit: 0
@@ -16,7 +16,7 @@ spec:
           serviceAccount: ping-serviceaccount
           restartPolicy: OnFailure
           containers:
-          - name: pingdirectory-periodic-export-ldif
+          - name: pingdirectory-periodic-monitor-upload
             image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.18-release-branch-latest
             imagePullPolicy: Always
             securityContext:
@@ -25,7 +25,7 @@ spec:
               runAsUser: 9031
               allowPrivilegeEscalation: false
             command:
-            - /opt/in/export-ldif-data.sh
+            - /opt/in/monitor-log-data.sh
             env:
             - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
               value: "true"
@@ -35,13 +35,13 @@ spec:
             - configMapRef:
                 name: pingcommon-environment-variables
             volumeMounts:
-            - name: pingdirectory-export-ldif
-              mountPath: /opt/in/export-ldif-data.sh
-              subPath: export-ldif-data.sh
+            - name: pingdirectory-periodic-monitor-log-upload
+              mountPath: /opt/in/monitor-log-data.sh
+              subPath: monitor-log-data.sh
           securityContext:
             fsGroup: 9999
           volumes:
-          - name: pingdirectory-export-ldif
+          - name: pingdirectory-periodic-monitor-log-upload
             configMap:
-              name: pingdirectory-export-ldif
+              name: pingdirectory-periodic-monitor-log-upload
               defaultMode: 0555

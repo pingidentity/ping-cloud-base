@@ -79,6 +79,8 @@
 - Fixed Pending state of nri-bundle-nrk8s-kubelet pods running by CDE
 - Add pingaccess-was-license secret placeholder entry to CHUB
 - Increase replica count (min=7, max=9) within prod/large for Nginx Ingress Controller
+- Backup monitor history everyday for PingDirectory
+- PA-WAS ext ingress is missing from non-customer-hub environments
 
 _Changes:_
 
@@ -90,7 +92,8 @@ _Changes:_
 - [X] PDO-4161 [need before EKS 1.25] Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
 - [X] PDO-4257 Capture hourly PingDirectory CSD data
 - [X] PDO-4258 Enable and manage daily encrypted exports
-- [X] PDO-4309 Add integration test for PingDirectory Java args 
+- [X] PDO-4259 Backup monitor history everyday for PingDirectory
+- [X] PDO-4309 Add integration test for PingDirectory Java args
 - [X] PDO-4388 Flag in env_var to enable/disable external ingresses for admin endpoints
 - [X] PDO-4548 Find and destroy file moving to custom-resources code from generate-cluster-state.sh to fix reoccuring issue when upgrading
 - [X] PDO-4556 [need before EKS 1.25] batch/v1beta1 CronJob is deprecated in v1.21+, unavailable in v1.25+; use batch/v1 CronJob
@@ -182,6 +185,8 @@ _Changes:_
 - [X] PDO-5377 Patch CA to balance node across all AZs
 - [X] PDO-5390 nri-bundle-nrk8s-kubelet-* pods running by CDE stuck in Pending state
 - [X] PDO-5393 Bugfix - secondary CSR missing app dir
+- [X] PDO-5419 Bugfix - remove monitoring & logging from secondary
+- [X] PDO-5415 Bugfix - PA-WAS ext ingress is missing from non-customer-hub environments
 
 ### 1.17.0.0
 
