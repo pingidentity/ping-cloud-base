@@ -5,7 +5,6 @@
 - Update bootstrap to create davinci-configuration secret
 - Updating kustomize build options within ArgoCD to support Helm
 
-
 _Changes:_
 
 - PDO-5314 Update bootstrap to create davinci-configuration secret
