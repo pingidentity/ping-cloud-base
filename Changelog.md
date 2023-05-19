@@ -10,6 +10,7 @@
 - Fix PGO namespace for large-size customers
 - Fix pingcentral external ingress pathType
 - batch/v1beta1 CronJob, v1.25 release stopped serving the deprecated API versions
+- policy/v1beta1 PodDisruptionBudget is deprecated is unavailable in v1.25
 
 _Changes:_
 
@@ -21,6 +22,7 @@ _Changes:_
 - [X] PDO-5376 Cluster-Autoscaler - update to balance node across all AZs
 - [X] PDO-5341 pingcentral-ext-ingress - fix pathType
 - [X] PDO-5489 batch/v1beta1 CronJob, v1.25 release stopped serving the deprecated API versions
+- [X] PDO-5490 policy/v1beta1 PodDisruptionBudget is deprecated is unavailable in v1.25
 
 ### 1.17.0.0
 
