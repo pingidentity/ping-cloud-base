@@ -1327,8 +1327,10 @@ spec:
               readOnly: false
             - mountPath: /etc/grafana/dashboards/ping
               name: ping-dashboards
-            - mountPath: /etc/grafana/dashboards/kubernetes
-              name: kubernetes-dashboards
+            - mountPath: /etc/grafana/dashboards/kubernetes/cluster
+              name: kubernetes-cluster-dashboards
+            - mountPath: /etc/grafana/dashboards/kubernetes/storage
+              name: kubernetes-storage-dashboards
             - mountPath: /etc/grafana/provisioning/dashboards
               name: dashboard-providers
             - mountPath: /etc/grafana/grafana.ini
@@ -1349,9 +1351,12 @@ spec:
         - name: ping-dashboards
           configMap:
             name: ping-dashboards
-        - name: kubernetes-dashboards
+        - name: kubernetes-cluster-dashboards
           configMap:
-            name: kubernetes-dashboards
+            name: kubernetes-cluster-dashboards
+        - name: kubernetes-storage-dashboards
+          configMap:
+            name: kubernetes-storage-dashboards
         - name: dashboard-providers
           configMap:
             name: dashboard-providers
