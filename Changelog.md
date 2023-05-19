@@ -9,6 +9,7 @@
 - Upgraded & patched CA to balance node across all 3 AZs.
 - Fix PGO namespace for large-size customers
 - Fix pingcentral external ingress pathType
+- batch/v1beta1 CronJob, v1.25 release stopped serving the deprecated API versions
 
 _Changes:_
 
@@ -19,6 +20,7 @@ _Changes:_
 - [X] PDO-5347 PGO resources - handle secondary region v1.17.1
 - [X] PDO-5376 Cluster-Autoscaler - update to balance node across all AZs
 - [X] PDO-5341 pingcentral-ext-ingress - fix pathType
+- [X] PDO-5489 batch/v1beta1 CronJob, v1.25 release stopped serving the deprecated API versions
 
 ### 1.17.0.0
 

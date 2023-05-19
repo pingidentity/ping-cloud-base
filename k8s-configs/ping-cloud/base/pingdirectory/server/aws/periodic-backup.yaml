@@ -38,7 +38,7 @@ data:
 # Do a full backup of the user backend every 6 hours.
 # A manual restore can be performed using the restore job (restore.yaml) when
 # necessary.
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: pingdirectory-periodic-backup
