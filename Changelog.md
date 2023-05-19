@@ -3,6 +3,7 @@
 ### 1.19.0.0
 
 - Update bootstrap to create davinci-configuration secret
+- Fix: kubernetes-dashboards configmap "Too long" error
 
 _Changes:_
 
