@@ -29,7 +29,7 @@ patchesStrategicMerge:
   $patch: delete
 
 - |-
-  apiVersion: batch/v1beta1
+  apiVersion: batch/v1
   kind: CronJob
   metadata:
     name: pingaccess-periodic-backup
@@ -65,7 +65,7 @@ patchesStrategicMerge:
   $patch: delete
 
 - |-
-  apiVersion: batch/v1beta1
+  apiVersion: batch/v1
   kind: CronJob
   metadata:
     name: pingaccess-was-periodic-backup
@@ -101,7 +101,7 @@ patchesStrategicMerge:
   $patch: delete
 
 - |-
-  apiVersion: batch/v1beta1
+  apiVersion: batch/v1
   kind: CronJob
   metadata:
     name: pingfederate-periodic-backup
@@ -117,7 +117,7 @@ patchesStrategicMerge:
   $patch: delete
 
 - |-
-  apiVersion: batch/v1beta1
+  apiVersion: batch/v1
   kind: CronJob
   metadata:
     name: pingdirectory-periodic-backup
