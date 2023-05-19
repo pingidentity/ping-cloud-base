@@ -187,6 +187,7 @@ _Changes:_
 - [X] PDO-5393 Bugfix - secondary CSR missing app dir
 - [X] PDO-5419 Bugfix - remove monitoring & logging from secondary
 - [X] PDO-5415 Bugfix - PA-WAS ext ingress is missing from non-customer-hub environments
+- [X] PDO-5436 Bugfix - Uneven load distribution among logstash pods
 
 ### 1.17.0.0
 
