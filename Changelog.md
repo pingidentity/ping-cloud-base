@@ -3,10 +3,13 @@
 ### 1.19.0.0
 
 - Update bootstrap to create davinci-configuration secret
+- Updating kustomize build options within ArgoCD to support Helm
+- Fix: kubernetes-dashboards configmap "Too long" error
 
 _Changes:_
 
 - PDO-5314 Update bootstrap to create davinci-configuration secret
+- PDO-5333 ArgoCD authentication to private ECR for Helm
 - [X] PDO-5110 OpenSearch migration: Install Opensearch side-by-side with Elastic
 - [X] PDO-5112 OpenSearch migration: Migrate index templates
 - [X] PDO-5113 OpenSearch migration: Change logstash pipelines to send data to OS instead ES
