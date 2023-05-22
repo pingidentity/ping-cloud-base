@@ -93,3 +93,9 @@ kibana_server:
   reserved: true
   users:
   - "kibanaserver"
+
+index_migration:
+  reserved: true
+  users:
+  - "indexmigration"
+  
