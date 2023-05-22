@@ -11,6 +11,7 @@
 - Fix pingcentral external ingress pathType
 - batch/v1beta1 CronJob, v1.25 release stopped serving the deprecated API versions
 - policy/v1beta1 PodDisruptionBudget is deprecated is unavailable in v1.25
+- Update kube-state-metrics to v2.7.0
 
 _Changes:_
 
@@ -21,6 +22,7 @@ _Changes:_
 - [X] PDO-5347 PGO resources - handle secondary region v1.17.1
 - [X] PDO-5376 Cluster-Autoscaler - update to balance node across all AZs
 - [X] PDO-5341 pingcentral-ext-ingress - fix pathType
+- [X] PDO-5482 [PORT] Update kube-state-metrics cluster tool to v2.7.0 for EKS 1.25
 - [X] PDO-5489 batch/v1beta1 CronJob, v1.25 release stopped serving the deprecated API versions
 - [X] PDO-5490 policy/v1beta1 PodDisruptionBudget is deprecated is unavailable in v1.25
 
