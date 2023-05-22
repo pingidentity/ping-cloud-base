@@ -12,10 +12,12 @@
 - batch/v1beta1 CronJob, v1.25 release stopped serving the deprecated API versions
 - policy/v1beta1 PodDisruptionBudget is deprecated is unavailable in v1.25
 - Update kube-state-metrics to v2.7.0
+- Update cert-manager to v1.10.2 or higher for EKS 1.25
 
 _Changes:_
 
 - [X] PDO-5237 Modify Prometheus query for all backup alerting to only include the primary pod
+- [X] PDO-5278 Update cert-manager to v1.10.2 or higher for EKS 1.25
 - [X] PDO-5340 [Port] - Update Default ngnix hpa configuration in medium & large environment
 - [X] PDO-5342 Fix PGO namespace for large-size customers
 - [X] PDO-5343 PF Engines in Small Prod Deployment incorrectly set to minReplicas: 2
