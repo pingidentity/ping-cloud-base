@@ -2,6 +2,24 @@
 # Customer parameters that are shared by multiple apps
 ########################################################################################################################
 
+global:
+
+  ############################################################
+  # Secrets
+  ############################################################
+  # Expected format for each secret:
+  # NAMESPACE:
+  #   SECRETNAME:
+  #     KEY1: VALUE1
+  #     KEY2: VALUE2
+  # Note: NAMESPACE & SECRETNAME need to match exactly,
+  #   but secret keys should follow Helm's camelCase guidance
+  ############################################################
+
+  sealedSecrets: false
+  secrets:
+
+
 ########################################################
 # Multi-region parameters
 ########################################################
@@ -230,7 +248,7 @@ clusterStateRepoBranch: "${CLUSTER_STATE_REPO_BRANCH}"
 appResyncSeconds: 60
 
 # Current app logs destination (True :  CW, False :  ELK)
-legacyLogging: False
+legacyLogging: "False"
 
 ############################################################
 # Lets Encrypt server
@@ -295,7 +313,8 @@ promSlackChannel: "${PROM_SLACK_CHANNEL}"
 
 # Variables used by argocd-image-updater to automatically update the container images managed by ArgoCD
 imageTagPrefix: "${IMAGE_TAG_PREFIX}"
-imageList: "apps: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingfederate,apps: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess,apps: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess-was"
+imageList: "apps: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingfederate,apps: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess,apps:
+  ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess-was"
 
 # Dashboards repo variables
 dashRepoUrl: "https://github.com/pingidentity/ping-cloud-dashboards"

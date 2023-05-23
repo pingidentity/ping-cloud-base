@@ -246,6 +246,9 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       cp "${src_dir}"/.gitignore ./
       cp "${src_dir}"/update-cluster-state-wrapper.sh ./
       cp "${src_dir}"/csr-validation.sh ./
+      cp "${src_dir}"/values.yaml ./
+      cp "${src_dir}"/values_region.yaml ./
+      cp "${src_dir}"/seal-secret-values.py ./
 
       # Copy each app's base files into the repo
       for app_path in ${APP_PATHS}; do

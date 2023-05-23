@@ -12,3 +12,5 @@ boto3~=1.25.0
 
 # PingOne shared scripts
 git+https://gitlab.corp.pingidentity.com/ping-cloud-private-tenant/ping-cloud-tools.git@master#subdirectory=pingone
+
+ruamel.yaml==0.17.26
