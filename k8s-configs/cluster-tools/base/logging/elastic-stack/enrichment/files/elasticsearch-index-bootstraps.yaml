@@ -22,6 +22,14 @@ data:
         }
     }
 
+  healthchecks.json: |
+    {
+        "aliases": {
+            "healthchecks": {
+                "is_write_index": true
+            }
+        }
+    }
   pa-audit.json: |
     {
         "aliases": {
@@ -97,6 +105,15 @@ data:
     {
         "aliases": {
             "pf-system": {
+                "is_write_index": true
+            }
+        }
+    }  
+
+  pf-transaction.json: |
+    {
+        "aliases": {
+            "pf-transaction": {
                 "is_write_index": true
             }
         }

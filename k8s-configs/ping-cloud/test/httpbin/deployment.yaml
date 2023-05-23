@@ -10,7 +10,7 @@ spec:
     spec:
       containers:
       - name: httpbin
-        image: public.ecr.aws/r2h3l6e4/kennethreitz/httpbin
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/kennethreitz/httpbin
         resources:
           requests:
             memory: 100Mi

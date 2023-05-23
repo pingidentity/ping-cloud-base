@@ -66,14 +66,6 @@
 # ----------------------------------------------------------------------------------------------------------------------
 # ACCOUNT_BASE_PATH          | The account's SSM base path                        | The SSM path: /pcpt/config/k8s-config/accounts/
 #                            |                                                    |
-# ACCOUNT_ID_PATH_PREFIX     | The SSM path prefix which stores CDE account IDs   | The string "unused".
-#                            | of the Ping Cloud customers. The environment type  |
-#                            | is appended to the key path before the value is    |
-#                            | retrieved from the SSM endpoint. The IAM role with |
-#                            | the AWS account ID must be added as an annotation  |
-#                            | to the corresponding Kubernetes service account to |
-#                            | enable IRSA (IAM Role for Service Accounts).       |
-#                            |                                                    |
 # ARGOCD_SLACK_TOKEN_SSM_PATH| SSM path to secret token for ArgoCD slack          | The SSM path:
 #                            | notifications                                      | ssm://pcpt/argocd/notification/slack/access_token
 #                            |                                                    |
@@ -142,6 +134,9 @@
 # NEW_RELIC_LICENSE_KEY      | The key of NewRelic APM Agent used to send data to | The SSM path: ssm://pcpt/sre/new-relic/java-agent-license-key
 #                            | NewRelic account.                                  |
 #                            |                                                    |
+# NOTIFICATION_ENABLED       | Flag indicating if alerts should be sent to the    | False
+#                            | endpoint configured in the argo-events             |
+#                            |                                                    |
 # NLB_EIP_PATH_PREFIX        | The SSM path prefix which stores comma separated   | The string "unused".
 #                            | AWS Elastic IP allocation IDs that exist in the    |
 #                            | CDE account of the Ping Cloud customers.           |
@@ -182,6 +177,15 @@
 # PRIMARY_TENANT_DOMAIN      | In multi-cluster environments, the primary domain. | Same as TENANT_DOMAIN.
 #                            | Only used if IS_MULTI_CLUSTER is true.             |
 #                            |                                                    |
+# PROM_NOTIFICATION_ENABLED  | Flag indicating if PGO alerts should be sent to    | False
+#                            | the endpoint configured in the argo-events         |
+#                            |                                                    |
+# PROM_SLACK_CHANNEL         | The Slack channel name for PGO argo-events to send | CDE environment: p1as-application-oncall
+#                            | notification.                                      |
+#                            |                                                    |
+# RADIUS_PROXY_ENABLED       | Feature Flag - Indicates if the radius proxy       | False
+#                            | feature for PingFederate engines is enabled        |
+#                            |                                                    |
 # REGION                     | The region where the tenant environment is         | us-west-2
 #                            | deployed. For PCPT, this is a required parameter   |
 #                            | to Container Insights, an AWS-specific logging     |
@@ -205,6 +209,16 @@
 #                            |                                                    |
 # SERVICE_SSM_PATH_PREFIX    | The prefix of the SSM path that contains service   | /pcpt/service
 #                            | state data required for the cluster.               |
+#                            |                                                    |
+# SLACK_CHANNEL              | The Slack channel name for argo-events to send     | CDE environment: p1as-application-oncall
+#                            | notification.                                      |
+#                            |                                                    |
+# NON_GA_SLACK_CHANNEL       | The Slack channel name for argo-events to send     | CDE environment: nowhere
+#                            | notification in case of IS_GA set to 'false' to    | Dev environment: nowhere
+#                            | reduce amount of unnecessary notifications sent    |
+#                            | to on-call channel. Overrides SLACK_CHANNEL        |
+#                            | variable value if IS_GA=false. By default, set     |
+#                            | to non-existent channel name to prevent flooding.  |
 #                            |                                                    |
 # SIZE                       | Size of the environment, which pertains to the     | x-small
 #                            | number of user identities. Legal values are        |
@@ -242,6 +256,7 @@
 #                            | provided, this value will be used for the cluster  | value. E.g. it will default to "ci-cd"
 #                            | name and must have the correct case (e.g. ci-cd    | for tenant domain "ci-cd.ping-oasis.com"
 #                            | vs. CI-CD).                                        |
+#                            |                                                    |
 ########################################################################################################################
 
 #### SCRIPT START ####
@@ -354,13 +369,20 @@ ${PINGFEDERATE_IMAGE_TAG}
 ${PINGDIRECTORY_IMAGE_TAG}
 ${PINGDELEGATOR_IMAGE_TAG}
 ${IRSA_PING_ANNOTATION_KEY_VALUE}
+${IRSA_PA_ANNOTATION_KEY_VALUE}
+${IRSA_PD_ANNOTATION_KEY_VALUE}
+${IRSA_PF_ANNOTATION_KEY_VALUE}
 ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}
 ${NOTIFICATION_ENABLED}
-${SLACK_CHANNEL}
 ${NOTIFICATION_ENDPOINT}
 ${PF_PROVISIONING_ENABLED}
+${RADIUS_PROXY_ENABLED}
 ${IMAGE_TAG_PREFIX}
-${ARGOCD_SLACK_TOKEN_BASE64}'
+${ARGOCD_SLACK_TOKEN_BASE64}
+${SLACK_CHANNEL}
+${PROM_SLACK_CHANNEL}
+${DASH_REPO_URL}
+${DASH_REPO_BRANCH}'
 
 # Variables to replace within the generated cluster state code
 REPO_VARS="${REPO_VARS:-${DEFAULT_VARS}}"
@@ -408,76 +430,10 @@ add_derived_variables() {
 
   # This variable's value will be used as the prefix to distinguish between worker apps for different CDEs for a
   # single P14C tenant. All of these apps will be created within the "Administrators" environment in the tenant.
-  export ENVIRONMENT_PREFIX="\${TENANT_NAME}-\${CLUSTER_STATE_REPO_BRANCH}-\${REGION_NICK_NAME}"
+  export ENVIRONMENT_PREFIX="\${TENANT_NAME}-\${REGION_ENV}-\${REGION_NICK_NAME}"
 
   # The name of the environment as it will appear on the NewRelic console.
-  export NEW_RELIC_ENVIRONMENT_NAME="\${TENANT_NAME}_\${ENV}_\${REGION_NICK_NAME}_k8s-cluster"
-}
-
-########################################################################################################################
-# Export IRSA annotation for the provided environment.
-#
-# Arguments
-#   ${1} -> The SSM path prefix which stores CDE account IDs of Ping Cloud environments.
-#   ${2} -> The environment name.
-########################################################################################################################
-add_irsa_variables() {
-  if test "${IRSA_PING_ANNOTATION_KEY_VALUE}"; then
-    export IRSA_PING_ANNOTATION_KEY_VALUE="${IRSA_PING_ANNOTATION_KEY_VALUE}"
-    return
-  fi
-
-  local ssm_path_prefix="$1"
-  local env="$2"
-
-  # Default empty string
-  IRSA_PING_ANNOTATION_KEY_VALUE=''
-
-  if [ "${ssm_path_prefix}" != "unused" ]; then
-
-    # Getting value from ssm parameter store.
-    if ! ssm_value=$(get_ssm_value "${ssm_path_prefix}/${env}"); then
-      echo "Error: ${ssm_value}"
-      exit 1
-    fi
-
-    # IRSA for ping product pods. The role name is predefined as a part of the interface contract.
-    IRSA_PING_ANNOTATION_KEY_VALUE="eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role/pcpt/irsa-roles/irsa-ping"
-  fi
-
-  export IRSA_PING_ANNOTATION_KEY_VALUE="${IRSA_PING_ANNOTATION_KEY_VALUE}"
-}
-
-########################################################################################################################
-# Export NLB EIP annotation for the provided environment.
-#
-# Arguments
-#   ${1} -> The SSM path prefix which stores CDE account IDs of Ping Cloud environments.
-#   ${2} -> The environment name.
-########################################################################################################################
-add_nlb_variables() {
-  local ssm_path_prefix="$1"
-  local env="$2"
-
-  if test "${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"; then
-    export NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE="${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
-  else
-    # Default empty string
-    NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE=''
-
-    if [ "${ssm_path_prefix}" != "unused" ]; then
-
-      # Getting value from ssm parameter store.
-      if ! ssm_value=$(get_ssm_value "${ssm_path_prefix}/${env}/nginx-public"); then
-        echo "Error: ${ssm_value}"
-        exit 1
-      fi
-
-      NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE="service.beta.kubernetes.io/aws-load-balancer-eip-allocations: ${ssm_value}"
-    fi
-
-    export NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE="${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
-  fi
+  export NEW_RELIC_ENVIRONMENT_NAME="\${TENANT_NAME}_\${REGION_ENV}_\${REGION_NICK_NAME}_k8s-cluster"
 }
 
 ########################################################################################################################
@@ -554,6 +510,31 @@ get_is_myping_variable() {
   fi
 }
 
+# Support the various ways to actually set the SSH key pair env vars
+set_ssh_key_pair() {
+  # Autogenerate if no keys provided
+  if test -z "${SSH_ID_PUB_FILE}" && test -z "${SSH_ID_KEY_FILE}"; then
+    echo 'Generating key-pair for SSH access'
+    generate_ssh_key_pair
+
+  # Upgrade flow - we only get a private key from update-cluster-state.sh
+  elif test -z "${SSH_ID_PUB_FILE}" && test -f "${SSH_ID_KEY_FILE}"; then
+    echo 'This is an upgrade - using provided private key for SSH access. No public key available'
+    export SSH_ID_KEY_BASE64=$(base64_no_newlines "${SSH_ID_KEY_FILE}")
+
+  # Both public file and key file provided
+  elif test -f "${SSH_ID_PUB_FILE}" && test -f "${SSH_ID_KEY_FILE}"; then
+    echo 'Using provided key-pair for SSH access'
+    export SSH_ID_PUB=$(cat "${SSH_ID_PUB_FILE}")
+    export SSH_ID_KEY_BASE64=$(base64_no_newlines "${SSH_ID_KEY_FILE}")
+
+  # Unsupported flow - no private key provided at all or not a file
+  else
+    echo 'Provide SSH key-pair files via SSH_ID_PUB_FILE/SSH_ID_KEY_FILE env vars, or omit both for key-pair to be generated'
+    exit 1
+  fi
+}
+
 # Checking required tools and environment variables.
 check_binaries "openssl" "ssh-keygen" "ssh-keyscan" "base64" "envsubst" "git" "aws" "rsync"
 HAS_REQUIRED_TOOLS=${?}
@@ -610,11 +591,23 @@ echo "Initial SSH_ID_KEY_FILE: ${SSH_ID_KEY_FILE}"
 echo "Initial PF_PROVISIONING_ENABLED: ${PF_PROVISIONING_ENABLED}"
 echo "Initial PGO_BACKUP_BUCKET_NAME: ${PGO_BACKUP_BUCKET_NAME}"
 
+echo "Initial RADIUS_PROXY_ENABLED: ${RADIUS_PROXY_ENABLED}"
+
 echo "Initial TARGET_DIR: ${TARGET_DIR}"
 echo "Initial IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
 
 echo "Initial ACCOUNT_BASE_PATH: ${ACCOUNT_BASE_PATH}"
 echo "Initial PGO_BUCKET_URI_SUFFIX: ${PGO_BUCKET_URI_SUFFIX}"
+
+echo "Initial IRSA_PING_ANNOTATION_KEY_VALUE: ${IRSA_PING_ANNOTATION_KEY_VALUE}"
+echo "Initial IRSA_PA_ANNOTATION_KEY_VALUE: ${IRSA_PA_ANNOTATION_KEY_VALUE}"
+echo "Initial IRSA_PD_ANNOTATION_KEY_VALUE: ${IRSA_PD_ANNOTATION_KEY_VALUE}"
+echo "Initial IRSA_PF_ANNOTATION_KEY_VALUE: ${IRSA_PF_ANNOTATION_KEY_VALUE}"
+echo "Initial NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE: ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
+
+echo "Initial SLACK_CHANNEL: ${SLACK_CHANNEL}"
+echo "Initial NON_GA_SLACK_CHANNEL: ${NON_GA_SLACK_CHANNEL}"
+echo "Initial PROM_SLACK_CHANNEL: ${PROM_SLACK_CHANNEL}"
 echo ---
 
 # Use defaults for other variables, if not present.
@@ -681,7 +674,7 @@ CLUSTER_STATE_REPO_NAME="${CLUSTER_STATE_REPO_URL##*/}"
 SERVER_PROFILE_URL_DERIVED="$(echo "${CLUSTER_STATE_REPO_URL}" | sed -e "s/${CLUSTER_STATE_REPO_NAME}/profile-repo/")"
 export SERVER_PROFILE_URL="${SERVER_PROFILE_URL:-${SERVER_PROFILE_URL_DERIVED}}"
 
-export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base}"
+export K8S_GIT_URL="${K8S_GIT_URL:-https://github.com/pingidentity/ping-cloud-base.git}"
 export K8S_GIT_BRANCH="${K8S_GIT_BRANCH:-${CURRENT_GIT_BRANCH}}"
 
 export SSH_ID_PUB_FILE="${SSH_ID_PUB_FILE}"
@@ -689,19 +682,40 @@ export SSH_ID_KEY_FILE="${SSH_ID_KEY_FILE}"
 
 export TARGET_DIR="${TARGET_DIR:-/tmp/sandbox}"
 
-export ACCOUNT_BASE_PATH=${ACCOUNT_BASE_PATH:-ssm://pcpt/config/k8s-config/accounts}
+export ACCOUNT_BASE_PATH=${ACCOUNT_BASE_PATH:-ssm://pcpt/config/k8s-config/accounts/}
 export PGO_BUCKET_URI_SUFFIX=${PGO_BUCKET_URI_SUFFIX:-/pgo-bucket/uri}
+
+# IRSA for ping product pods. The role name is predefined as a part of the interface contract.
+export IRSA_PING_ANNOTATION_KEY_VALUE=${IRSA_PING_ANNOTATION_KEY_VALUE:-''}
+export IRSA_PA_ANNOTATION_KEY_VALUE=${IRSA_PA_ANNOTATION_KEY_VALUE:-''}
+export IRSA_PD_ANNOTATION_KEY_VALUE=${IRSA_PD_ANNOTATION_KEY_VALUE:-''}
+export IRSA_PF_ANNOTATION_KEY_VALUE=${IRSA_PF_ANNOTATION_KEY_VALUE:-''}
+
+export NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE=${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE:-''}
 
 ### Variable used by argocd-image-updater to scan container image tags matching the prefix.
 export IMAGE_TAG_PREFIX="${K8S_GIT_BRANCH%.*}"
 
 ### FEATURE FLAG DEFAULTS ###
 export PF_PROVISIONING_ENABLED="${PF_PROVISIONING_ENABLED:-false}"
+export RADIUS_PROXY_ENABLED="${RADIUS_PROXY_ENABLED:-false}"
 
 ### Default environment variables ###
 export ECR_REGISTRY_NAME='public.ecr.aws/r2h3l6e4'
 export PING_CLOUD_NAMESPACE='ping-cloud'
 export MYSQL_DATABASE='pingcentral'
+
+# Set Slack-related environmets variables and override it's values depending on IS_GA value.
+get_is_ga_variable '/pcpt/stage/is-ga'
+export NON_GA_SLACK_CHANNEL="${NON_GA_SLACK_CHANNEL:-nowhere}"
+# If IS_GA=true, use default Slack channel; if IS_GA=false, use NON_GA_SLACK_CHANNEL value as Slack channel.
+if "${IS_GA}"; then
+  export SLACK_CHANNEL="${SLACK_CHANNEL:-p1as-application-oncall}"
+  export PROM_SLACK_CHANNEL="${PROM_SLACK_CHANNEL:-p1as-application-oncall}"
+else
+  export SLACK_CHANNEL="${SLACK_CHANNEL:-${NON_GA_SLACK_CHANNEL}}"
+  export PROM_SLACK_CHANNEL="${PROM_SLACK_CHANNEL:-${NON_GA_SLACK_CHANNEL}}"
+fi
 
 # Print out the values being used for each variable.
 echo "Using TENANT_NAME: ${TENANT_NAME}"
@@ -737,17 +751,26 @@ echo "Using PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
 echo "Using K8S_GIT_URL: ${K8S_GIT_URL}"
 echo "Using K8S_GIT_BRANCH: ${K8S_GIT_BRANCH}"
 
-AUTO_GENERATED_STR='<auto-generated>'
-echo "Using SSH_ID_PUB_FILE: ${SSH_ID_PUB_FILE:-${AUTO_GENERATED_STR}}"
-echo "Using SSH_ID_KEY_FILE: ${SSH_ID_KEY_FILE:-${AUTO_GENERATED_STR}}"
+echo "Using SSH_ID_PUB_FILE: ${SSH_ID_PUB_FILE:-'<auto-generated>'}"
+echo "Using SSH_ID_KEY_FILE: ${SSH_ID_KEY_FILE:-'<auto-generated>'}"
 
 echo "Using PF_PROVISIONING_ENABLED: ${PF_PROVISIONING_ENABLED}"
+echo "Using RADIUS_PROXY_ENABLED: ${RADIUS_PROXY_ENABLED}"
 
 echo "Using TARGET_DIR: ${TARGET_DIR}"
 echo "Using IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
 
 echo "Using ACCOUNT_BASE_PATH: ${ACCOUNT_BASE_PATH}"
 echo "Using PGO_BUCKET_URI_SUFFIX: ${PGO_BUCKET_URI_SUFFIX}"
+
+echo "Using IRSA_PING_ANNOTATION_KEY_VALUE: ${IRSA_PING_ANNOTATION_KEY_VALUE}"
+echo "Using IRSA_PA_ANNOTATION_KEY_VALUE: ${IRSA_PA_ANNOTATION_KEY_VALUE}"
+echo "Using IRSA_PD_ANNOTATION_KEY_VALUE: ${IRSA_PD_ANNOTATION_KEY_VALUE}"
+echo "Using IRSA_PF_ANNOTATION_KEY_VALUE: ${IRSA_PF_ANNOTATION_KEY_VALUE}"
+echo "Using NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE: ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
+
+echo "Using SLACK_CHANNEL: ${SLACK_CHANNEL}"
+echo "Using PROM_SLACK_CHANNEL: ${PROM_SLACK_CHANNEL}"
 echo ---
 
 NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY:-ssm://pcpt/sre/new-relic/java-agent-license-key}"
@@ -774,29 +797,18 @@ CDE_TEMPLATES_DIR="${TEMPLATES_HOME}/cde"
 
 #Adding an ArgoCD notification slack token
 ARGOCD_SLACK_TOKEN_SSM_PATH="${ARGOCD_SLACK_TOKEN_SSM_PATH:-ssm://pcpt/argocd/notification/slack/access_token}"
-  if ! ssm_value=$(get_ssm_value "${ARGOCD_SLACK_TOKEN_SSM_PATH#ssm:/}"); then
-    echo "Warn: ${ssm_value}"
-    echo "ARGOCD_SLACK_TOKEN is unset, slack notification and argo-events will not work"
-    echo "Using default invalid token"
-    ARGOCD_SLACK_TOKEN="using_default_invalid_token"
-  else
-    ARGOCD_SLACK_TOKEN="${ssm_value}"
+if ! ssm_value=$(get_ssm_value "${ARGOCD_SLACK_TOKEN_SSM_PATH#ssm:/}"); then
+  echo "Warn: ${ssm_value}"
+  echo "ARGOCD_SLACK_TOKEN is unset, slack notification and argo-events will not work"
+  echo "Using default invalid token"
+  ARGOCD_SLACK_TOKEN="using_default_invalid_token"
+else
+  ARGOCD_SLACK_TOKEN="${ssm_value}"
 fi
 
 export ARGOCD_SLACK_TOKEN_BASE64=$(base64_no_newlines "${ARGOCD_SLACK_TOKEN}")
 
-# Generate an SSH key pair for the CD tool.
-if test -z "${SSH_ID_PUB_FILE}" && test -z "${SSH_ID_KEY_FILE}"; then
-  echo 'Generating key-pair for SSH access'
-  generate_ssh_key_pair
-elif test -z "${SSH_ID_PUB_FILE}" || test -z "${SSH_ID_KEY_FILE}"; then
-  echo 'Provide SSH key-pair files via SSH_ID_PUB_FILE/SSH_ID_KEY_FILE env vars, or omit both for key-pair to be generated'
-  exit 1
-else
-  echo 'Using provided key-pair for SSH access'
-  export SSH_ID_PUB=$(cat "${SSH_ID_PUB_FILE}")
-  export SSH_ID_KEY_BASE64=$(base64_no_newlines "${SSH_ID_KEY_FILE}")
-fi
+set_ssh_key_pair
 
 # Get the known hosts contents for the cluster state repo host to pass it into the CD container.
 parse_url "${CLUSTER_STATE_REPO_URL}"
@@ -852,7 +864,6 @@ ENVIRONMENTS="${ENVIRONMENTS:-${ALL_ENVIRONMENTS}}"
 
 export CLUSTER_STATE_REPO_URL="${CLUSTER_STATE_REPO_URL}"
 
-get_is_ga_variable '/pcpt/stage/is-ga'
 get_is_myping_variable '/pcpt/orch-api/is-myping'
 
 # The ENVIRONMENTS variable can either be the CDE names (e.g. dev, test, stage, prod) or the CHUB name "customer-hub",
@@ -885,6 +896,8 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   # Export all the environment variables required for envsubst
   export ENV="${ENV}"
   export ENVIRONMENT_TYPE="\${ENV}"
+
+  echo "-----> Starting to create environment '${ENV}'"
 
   # The base URL for kustomization files and environment will be different for each CDE.
   # On migrated customers, we must preserve the size of the customers.
@@ -977,11 +990,22 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   export CLUSTER_NAME_LC="${CLUSTER_NAME_LC}"
 
   add_derived_variables
-  add_irsa_variables "${ACCOUNT_ID_PATH_PREFIX:-unused}" "${ENV}"
-  add_nlb_variables "${NLB_EIP_PATH_PREFIX:-unused}" "${ENV}"
 
-  PGO_BACKUP_BUCKET_NAME=${PGO_BACKUP_BUCKET_NAME:-"${ACCOUNT_BASE_PATH}/${ENV}${PGO_BUCKET_URI_SUFFIX}"}
-  export PGO_BACKUP_BUCKET_NAME=$(get_pgo_backup_bucket_name "${PGO_BACKUP_BUCKET_NAME}")
+  # shellcheck disable=SC2016
+  IRSA_TEMPLATE='eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role/pcpt/irsa-roles'
+  set_var "IRSA_PING_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-ping"
+  set_var "IRSA_PA_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-pingaccess"
+  set_var "IRSA_PD_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-pingdirectory"
+  set_var "IRSA_PF_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-pingfederate"
+
+  # shellcheck disable=SC2016
+  NLB_TEMPLATE='service.beta.kubernetes.io/aws-load-balancer-eip-allocations: ${ssm_value}'
+  set_var "NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE" "" "${NLB_EIP_PATH_PREFIX:-unused}" "/${ENV}/nginx-public" \
+          "${NLB_TEMPLATE}"
+
+  set_var "PGO_BACKUP_BUCKET_NAME" "not_set" "${ACCOUNT_BASE_PATH}${ENV}" "${PGO_BUCKET_URI_SUFFIX}"
+  # Remove s3:// prefix if present
+  export PGO_BACKUP_BUCKET_NAME=${PGO_BACKUP_BUCKET_NAME#s3://}
 
   echo ---
   echo "For environment ${ENV}, using variable values:"
@@ -997,6 +1021,8 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   echo "LOG_ARCHIVE_URL: ${LOG_ARCHIVE_URL}"
   echo "BACKUP_URL: ${BACKUP_URL}"
   echo "PGO_BACKUP_BUCKET_NAME: ${PGO_BACKUP_BUCKET_NAME}"
+  echo "IRSA_PING_ANNOTATION_KEY_VALUE: ${IRSA_PING_ANNOTATION_KEY_VALUE}"
+  echo "NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE: ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
 
   # Build the kustomization file for the bootstrap tools for each environment
   echo "Generating bootstrap yaml for ${ENV}"
@@ -1062,6 +1088,8 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     # Remove the pingcentral profiles
     rm -rf "${ENV_PROFILES_DIR}/${PING_CENTRAL}"
   fi
+
+  echo "=====> Done creating environment '${ENV}'"
 )
 done
 

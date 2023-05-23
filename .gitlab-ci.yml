@@ -21,7 +21,7 @@ stages:
 variables:
   DELETE_ENV_AFTER_PIPELINE: 'true'
   PINGONE_DEPLOY: $PINGONE_DEPLOY
-  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.3.0
+  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.5.0
 
 ## Compile stage ##
 compile:

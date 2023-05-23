@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
       - name: metrics-server
-        image: public.ecr.aws/r2h3l6e4/metrics-server/metrics-server:v.0.6.1
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/metrics-server/metrics-server:v0.6.1
         imagePullPolicy: IfNotPresent
         args:
         - --cert-dir=/tmp

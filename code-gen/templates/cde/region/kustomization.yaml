@@ -148,13 +148,6 @@ configMapGenerator:
   - ../base/env_vars
   - env_vars
 
-# Pingcloud-radsecproxy
-- name: pingcloud-radsecproxy-environment-variables
-  behavior: merge
-  envs:
-  - ../base/env_vars
-  - env_vars
-
 # Pingcloud-healthcheck
 - name: pingcloud-healthcheck-environment-variables
   namespace: ${PING_CLOUD_NAMESPACE}
@@ -221,3 +214,8 @@ patchesStrategicMerge:
 - ../base/ping-cloud/pingcommon/my-ping/remove-from-secondary-patch.yaml
 
 - ../base/ping-cloud/pingdatasync/server/remove-from-secondary-patch.yaml
+- ../base/cluster-tools/monitoring/remove-from-secondary-patch.yaml
+- ../base/cluster-tools/logging/remove-from-secondary-patch.yaml
+- ../base/cluster-tools/health/remove-from-secondary-patch.yaml
+
+#- ../base/ping-cloud/pingfederate/provisioning/remove-from-secondary-patch.yaml

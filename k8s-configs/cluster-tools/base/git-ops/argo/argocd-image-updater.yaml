@@ -87,6 +87,8 @@ metadata:
     app.kubernetes.io/name: argocd-image-updater-secret
     app.kubernetes.io/part-of: argocd-image-updater
   name: argocd-image-updater-secret
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
 ---
 apiVersion: v1
 kind: Secret
@@ -95,6 +97,8 @@ metadata:
     app.kubernetes.io/name: argocd-image-updater-ssh-key
     app.kubernetes.io/part-of: argocd-image-updater
   name: argocd-image-updater-ssh-key
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -180,7 +184,7 @@ spec:
               key: kube.events
               name: argocd-image-updater-config
               optional: true
-        image: public.ecr.aws/r2h3l6e4/argoproj/argocd-image-updater:v0.12.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/argo/argocd-image-updater:v0.12.0
         imagePullPolicy: Always
         livenessProbe:
           httpGet:

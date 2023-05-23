@@ -1,0 +1,9 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: pa-was-engine-pdb
+spec:
+  minAvailable: "30%"
+  selector:
+    matchLabels:
+      role: pingaccess-was-engine

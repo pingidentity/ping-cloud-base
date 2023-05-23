@@ -6,3 +6,10 @@ $patch: delete
 
 ---
 
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: pingaccess-was
+$patch: delete
+
+---

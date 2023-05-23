@@ -212,7 +212,7 @@ metadata:
 ---
 
 ### Update pingaccess-was backup cronjob to adjust schedule
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: pingaccess-was-periodic-backup
@@ -297,7 +297,7 @@ spec:
 ---
 
 ### Update pingfederate backup cronjob to adjust schedule
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: pingfederate-periodic-backup
@@ -382,8 +382,25 @@ spec:
 
 ---
 
+### Update pingaccess-was engine HPA min/max replicas and target CPU utilization ###
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: pingaccess-was
+  namespace: ping-cloud
+spec:
+  minReplicas: 1
+  maxReplicas: 2
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: pingaccess
+  targetCPUUtilizationPercentage: 70
+
+---
+
 ### Update pingaccess backup cronjob to adjust schedule
-apiVersion: batch/v1beta1
+apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: pingaccess-periodic-backup
@@ -430,7 +447,7 @@ spec:
                       operator: In
                       values:
                         - pf-provisioning
-                topologyKey: "failure-domain.beta.kubernetes.io/zone"
+                topologyKey: "topology.kubernetes.io/zone"
 
 ---
 

@@ -13,7 +13,7 @@ data:
           "color": "#f4c030",
           "fields": [
             { "Title": "Health status",
-              "value": "{{.app.status.health.status}}"б
+              "value": "{{.app.status.health.status}}",
               "short": true
             },
             {
@@ -51,8 +51,8 @@ data:
     slack:
       attachments: |
         [{
-          "title": "{{ .app.metadata.name}} - Sync status unknown",
-          "color": "#d3d3d3",
+          "title": "{{ .app.metadata.name}} - Sync status unknown, sync did not work!",
+          "color": "#E96D76",
           "fields": [
             {
               "title": "Current Sync Status",

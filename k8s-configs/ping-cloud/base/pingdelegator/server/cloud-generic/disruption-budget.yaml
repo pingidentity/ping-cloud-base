@@ -1,0 +1,9 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: pingdelegator-pdb
+spec:
+  minAvailable: "30%"
+  selector:
+    matchLabels:
+      role: pingdelegator

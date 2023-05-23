@@ -1,5 +1,157 @@
 # Changelog
 
+### 1.17.1.0
+
+- Modify Prometheus query for all backup alerting to only include the primary pod
+- PF Engines in Small Prod Deployment incorrectly set to minReplicas: 2
+- Add is_primary condition to pf-provisioning setup
+- [Port] - Update Default ngnix hpa configuration in medium & large environment
+- Upgraded & patched CA to balance node across all 3 AZs.
+- Fix PGO namespace for large-size customers
+- Fix pingcentral external ingress pathType
+- batch/v1beta1 CronJob, v1.25 release stopped serving the deprecated API versions
+- policy/v1beta1 PodDisruptionBudget is deprecated is unavailable in v1.25
+- Update kube-state-metrics to v2.7.0
+
+_Changes:_
+
+- [X] PDO-5237 Modify Prometheus query for all backup alerting to only include the primary pod
+- [X] PDO-5340 [Port] - Update Default ngnix hpa configuration in medium & large environment
+- [X] PDO-5342 Fix PGO namespace for large-size customers
+- [X] PDO-5343 PF Engines in Small Prod Deployment incorrectly set to minReplicas: 2
+- [X] PDO-5347 PGO resources - handle secondary region v1.17.1
+- [X] PDO-5376 Cluster-Autoscaler - update to balance node across all AZs
+- [X] PDO-5341 pingcentral-ext-ingress - fix pathType
+- [X] PDO-5482 [PORT] Update kube-state-metrics cluster tool to v2.7.0 for EKS 1.25
+- [X] PDO-5489 batch/v1beta1 CronJob, v1.25 release stopped serving the deprecated API versions
+- [X] PDO-5490 policy/v1beta1 PodDisruptionBudget is deprecated is unavailable in v1.25
+
+### 1.17.0.0
+
+- Remove logstash tolerations
+- Argo CD non-root user changes
+- Prometheus configured to take metrics from second region
+- Prometheus upgraded to 2.39.1
+- Create new global repo for dashboards
+- Send logs from second region to main Elasticsearch
+- Add HTTP server pod for PingAccess-WAS healthchecks
+- Add HTTP server pod for PingAccess healthchecks
+- Add HTTP server pod for PingFederate healthchecks
+- Remove unneeded resources from secondary region
+- Retain set value for slack channel alerts
+- Added CICD integration health test to check certificate results
+- Modified Kibana dashboards to show second region logs and metrics
+- Allow release branches to update image names using the kustomize image patch
+- Add beluga_log verbosity level to control logging level
+- Changed Slack channel for Argo notifications depending on IS_GA value
+- Remove "PING_CONTAINER_PRIVILEGED" from env_vars 
+- Remove EFS access points directories when deleting PV
+- NewRelic Java Agent upgraded to 7.11.1
+- Refactor elastic-stack manifests
+- Remove outdated CW logs test methods
+- Add healthcheck-pingdirectory cronjob
+- Added k8s serviceAccount for PA, PD & PF
+- Update ping-cloud-base to use the cluster tools from new ECR repo
+- Configure Argo Redis container to run as nonroot
+- Update applications logs location
+- Refactor offline-enable script to use "dsreplication enable-with-static-topology" subcommand
+- Healthcheck logs now stored in separate index with 7 days retention period
+- Upgrade kubectl to match K8s version and bitnami kubectl image.
+- Mirror our own version of PGO/crunchy images
+- Add pod exec privileges to cluster-healthcheck-serviceaccount
+- Add delete patch to remove pingaccess-was healthcheck cronjob from multi-region
+- Revert removing alertmanager from the prometheus config
+- Add PF transaction logs parsing and indexing
+- Fix regional variable for new customer creation
+- Installed EBS CSI driver
+- Replace deprecated topologyKey
+- Add IngressClassName to replace the deprecated annotation
+
+_Changes:_
+
+- [X] PDO-2799 Rewrite CloudWatch log tests
+- [X] PDO-3165 Refactor offline-enable script to use "dsreplication enable-with-static-topology" subcommand
+- [X] PDO-4186 beluga_log is not respecting verbosity levels
+- [X] PDO-4224 Properly propagate SSH key when upgrading CSR
+- [X] PDO-4240 PF Health Check Tests - Certificates
+- [X] PDO-4249 Remove unused networking yaml from PCB
+- [X] PDO-4279 Add Pod Disruption Budgets for PA-WAS Engine, PingDelegator
+- [X] PDO-4291 PF Health Check Tests - connectivity
+- [X] PDO-4312 PA-WAS Health Check Tests - object creation, unauthenticated proxy requests
+- [X] PDO-4343 Mirror our own version of PGO/crunchy images
+- [X] PDO-4432 Logstash has broken tolerations
+- [X] PDO-4535 Argo CD non-root user changes
+- [X] PDO-4439 PF Health Check Tests - object creation, authentication
+- [X] PDO-4440 PD Health Check Tests - appintegrations
+- [X] PDO-4481 Upgrade kubectl to match K8s version
+- [X] PDO-4496 Create new global repo for dashboards
+- [X] PDO-4533 Move PCB CI/CD env vars from deploy script to common script
+- [X] PDO-4543 Create K8s serviceAccount for PA, PD and PF
+- [X] PDO-4545 Add delete patch to remove pingaccess-was healthcheck cronjob from multi-region
+- [X] PDO-4565 Prometheus: Configure It to Take Metrics from Second Region
+- [X] PDO-4566 Logstash: Configure It to Send Logs from Second Region to Primary Region
+- [X] PDO-4568 Kibana: Modify Dashboards to Show Second Region Logs and Metrics
+- [X] PDO-4569 Remove ES, Kibana and Grafana from second region
+- [X] PDO-4574 Pod Reaper pod should re-spin, when env_vars is updated
+- [X] PDO-4583 PA Health Check Tests - object creation, unauthenticated proxy requests
+- [X] PDO-4610 Retain set value for slack channel alerts
+- [X] PDO-4614 Automate pinning the branch for ping-cloud-dashboards in PCB
+- [X] PDO-4615 Remove outdated CW logs test methods
+- [X] PDO-4618 Default slack notifications using `IS_GA` env var
+- [X] PDO-4632 ALERT from the secondary region is shown as an ALERT from the primary region in the email message
+- [X] PDO-4636 Remove "PING_CONTAINER_PRIVILEGED" from env_vars 
+- [X] PDO-4644 Update cluster tools to latest version: NewRelic Java agent v7.11.1
+- [X] PDO-4648 Allow release branches to update image names using the kustomize image patch
+- [X] PDO-4649 prometheus-0/logstash-elastic-0 pod does not come up upon changing LEGACY_LOGGING or LS_JAVA_OPTS
+- [X] PDO-4669 EFS access point dir doesn't remove during PVC removal
+- [X] PDO-4671 Refactor elastic-stack manifests 
+- [X] PDO-4686 Update ping-cloud-base to use the cluster tools from new ECR repo
+- [X] PDO-4807 Configure Argo Redis container to run as nonroot
+- [X] PDO-4808 Update applications logs location
+- [X] PDO-4809 Refactor generate-cluster-state.sh to retain set value for slack channel alerts on upgrade
+- [X] PDO-4877 ELK logs for healthcheck pods should be storing for 7 days
+- [X] PDO-4918 Missing PF Transaction Log
+- [X] PDO-4921 Revert removing alertmanager from the prometheus config
+- [X] PDO-4922 Fix regional variable for new customer creation
+- [X] PDO-4967 Enable storage class resizing for PGO storageclass
+- [X] PDO-4973 REGION_ENV should be defined before using it in ENVIRONMENT_PREFIX in Region env_vars
+- [X] PDO-4984 Install EBS CSI driver
+- [X] PDO-5015 Disable integration test for PF user authentication healthcheck
+- [X] PDO-5029 Remove bypass-acl privilege from PingDataSync account
+- [X] PDO-5035 Fix PingDataSync service to send requests to PingDataSync pods
+- [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone
+- [X] PDO-5060 Add IngressClassName to replace the deprecated annotation to support K8s v1.22 onwards
+- [X] PDO-5061 Replace healthcheck jobs with deployments
+- [X] PDO-5070 Delete patch for healthcheck-pa-was in multi-region removes deployment
+
+### 1.16.2.0
+
+- Healthcheck cronjobs replaced with deployments
+- Replace deprecated topologyKey
+
+_Changes:_
+
+- [X] PDO-5014 Replace healthcheck jobs with deployments
+- [X] PDO-5037 Update to replace deprecated topologyKey to topology.kubernetes.io/zone
+
+### 1.16.1.0
+
+- Added ENVIRONMENT_TYPE to backup failure notification
+- Remove all out-of-the-box IKs from PingFederate base image
+
+_Changes:_
+
+- [X] PDO-4844 Environment Key is missing in Product Backup Failure Alert Message
+- [X] PDO-4893 Remove all out-of-the-box IKs from PingFederate base image
+
+### 1.16.0.1
+
+- Force PingAccess engines to get its certificate ID from the engines endpoint instead of HTTP Listener
+
+_Changes:_
+
+- [X] PDO-4804 Force PingAccess engines to get its certificate ID from the engines endpoint instead of HTTP Listener
+
 ### 1.16.0.0
 
 - Implemented Radius Proxy as optional installation
@@ -23,7 +175,7 @@
 - Fix: New relic not reporting accurate pod metrics for some environments
 - Switch Delegated Admin to use OAuth Authorization Flow instead of Implicit Flow
 - Added ArgoCD slack notifications
-- Allow multiple Pass-Through-Authentication plugin instances
+- Upgraded Prometheus to v2.39.1
 
 _Changes:_
 
@@ -54,13 +206,32 @@ _Changes:_
 - [X] PDO-4397 Add new env_var "DEFAULT_USER_BASE_DN"
 - [X] PDO-4391 Notification Framework: alert on backup failure
 - [X] PDO-4401 LEGACY_LOGGING mode: Change default from true to false (off) - Leave flag available
+- [X] PDO-4432 Logstash has broken tolerations
 - [X] PDO-4438 PostgreSQL pods and secrets not deployed
 - [X] PDO-4442 Update healthcheck service keys to use consistent format
+- [X] PDO-4446 Handle missing SSM parameters
 - [X] PDO-4454 Implement Prometheus Alerting
 - [X] PDO-4476 Modify PGO feature flag to not require update-cluster script
 - [X] PDO-4480 newrelic-license-secret-exporter job not present in newrelic namespace
 - [X] PDO-4491 Run Radius as a sidecar container alongside PingFederate engine
+- [X] PDO-4492 Enable/disable Radius with environment variable
 - [X] PDO-4498 Move nri-kubernetes images to dev ECR within PCB
+- [X] PDO-4580 Prometheus Pod is being OOMKilled
+
+### 1.15.1.0
+
+- Fix Logstash broken tolerations
+
+_Changes:_
+
+- [X] PDO-4432 Logstash has broken tolerations
+
+### 1.15.0.1
+
+- Allow multiple Pass-Through-Authentication plugin instances
+
+_Changes:_
+
 - [X] PDO-4558 Allow multiple Pass-Through-Authentication plugin instances
 
 ### 1.15.0.0
@@ -114,6 +285,22 @@ _Changes:_
 - [X] PDO-4265 Increase memory limits for prometheus pod
 - [X] PDO-4268 Fix Fluent-bit raw logs sending to S3
 - [X] PDO-4301 Fix secrets sealing
+
+### 1.14.1.0
+
+- Backport logstash tolerations fix
+
+_Changes:_
+
+- [X] PDO-4432 Logstash has broken tolerations
+
+### 1.14.0.1
+
+- Allow multiple Pass-Through-Authentication plugin instances
+
+_Changes:_
+
+- [X] PDO-4547 Allow multiple Pass-Through-Authentication plugin instances
 
 ### 1.14.0.0
 

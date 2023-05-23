@@ -3,8 +3,11 @@ import os
 import unittest
 
 import requests
+import urllib3
 
 import k8s_utils
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 @unittest.skipIf(os.getenv("PF_PROVISIONING_ENABLED", "false") != "true", "PingFederate provisioning feature disabled")

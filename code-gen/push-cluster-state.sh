@@ -22,6 +22,8 @@
 #   PUSH_RETRY_COUNT -> The number of times to try pushing to the cluster state repo with a 2s sleep between each
 #       attempt to avoid IAM permission to repo sync issue.
 #   PUSH_TO_SERVER -> A flag indicating whether or not to push the code to the remote server. Defaults to true.
+#   DISABLE_GIT -> Don't interact with git, only change the file structure locally - best used for testing
+#       git-ops-command.sh rendering of files as if in a CSR
 
 # Global variables
 CLUSTER_STATE_REPO_DIR='cluster-state'
@@ -32,6 +34,8 @@ PROFILE_REPO_DIR='profile-repo'
 PROFILES_DIR='profiles'
 
 CUSTOMER_HUB='customer-hub'
+
+DISABLE_GIT=${DISABLE_GIT:-false}
 
 ########################################################################################################################
 # Delete all files and directories under the provided directory. All hidden files and directories directly under the
@@ -160,7 +164,9 @@ PUSH_TO_SERVER="${PUSH_TO_SERVER:-true}"
 PCB_COMMIT_SHA=$(cat "${GENERATED_CODE_DIR}"/pcb-commit-sha.txt)
 
 # Set the git merge strategy to avoid noisy hints in the output.
-git config pull.rebase false
+if ! ${DISABLE_GIT}; then
+  git config pull.rebase false
+fi
 
 # This is a destructive script by design. Add a warning to the user if local changes are being destroyed though.
 CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD 2> /dev/null)"
@@ -174,13 +180,17 @@ if test "${CURRENT_BRANCH}" && test -n "$(git status -s)"; then
   git clean -fd
 fi
 
-# Get a list of the remote branches from the server.
-git pull &> /dev/null
-REMOTE_BRANCHES="$(git ls-remote --quiet --heads 2> /dev/null)"
-LS_REMOTE_EXIT_CODE=$?
+REMOTE_BRANCHES=""
 
-if test ${LS_REMOTE_EXIT_CODE} -ne 0; then
-  echo "WARN: Unable to retrieve remote branches from the server. Exit code: ${LS_REMOTE_EXIT_CODE}"
+# Get a list of the remote branches from the server.
+if ! ${DISABLE_GIT}; then
+  git pull &> /dev/null
+  REMOTE_BRANCHES="$(git ls-remote --quiet --heads 2> /dev/null)"
+  LS_REMOTE_EXIT_CODE=$?
+
+  if test ${LS_REMOTE_EXIT_CODE} -ne 0; then
+    echo "WARN: Unable to retrieve remote branches from the server. Exit code: ${LS_REMOTE_EXIT_CODE}"
+  fi
 fi
 
 # The ENVIRONMENTS variable can either be the CDE names or CHUB name (e.g. dev, test, stage, prod or customer-hub) or
@@ -218,29 +228,31 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   ENV_CODE_DIR=$(mktemp -d)
   organize_code_for_environment "${GENERATED_CODE_DIR}" "${ENV_OR_BRANCH}" "${ENV}" "${ENV_CODE_DIR}" "${IS_PRIMARY}"
 
-  # Check if the branch exists locally. If so, switch to it.
-  if git rev-parse --verify "${GIT_BRANCH}" &> /dev/null; then
-    echo "Branch ${GIT_BRANCH} exists locally. Switching to it."
-    git checkout "${GIT_BRANCH}"
+  if ! ${DISABLE_GIT}; then
+    # Check if the branch exists locally. If so, switch to it.
+    if git rev-parse --verify "${GIT_BRANCH}" &> /dev/null; then
+      echo "Branch ${GIT_BRANCH} exists locally. Switching to it."
+      git checkout "${GIT_BRANCH}"
 
-  # Otherwise, create it.
-  else
-    # Attempt to create the branch from its default CDE or CHUB branch name.
-    echo "Branch ${GIT_BRANCH} does not exist locally"
-
-    if git rev-parse --verify "${DEFAULT_CDE_BRANCH}" &> /dev/null; then
-      # This block will be executed only during updates. At the time, we want to capture history
-      # of all changes in the old CDE or customer-hub branches onto the new ones that are created.
-      echo "Creating ${GIT_BRANCH} from its default branch ${DEFAULT_CDE_BRANCH}"
-      git checkout -b "${GIT_BRANCH}" "${DEFAULT_CDE_BRANCH}"
+    # Otherwise, create it.
     else
-      # This block will be executed on initial seeding of the repo or if the default CDE branch does not
-      # exist for some reason during an update. Our only option is to create it as an orphan branch.
-      # If it's an update and we have access to the remote, then we'll pull the remote branch, if it
-      # exists, onto the orphan branch in the following block.
-      echo "Default branch ${DEFAULT_CDE_BRANCH} does not exist for branch ${GIT_BRANCH}"
-      echo "Creating ${GIT_BRANCH} as an orphan branch"
-      git checkout --orphan "${GIT_BRANCH}"
+      # Attempt to create the branch from its default CDE or CHUB branch name.
+      echo "Branch ${GIT_BRANCH} does not exist locally"
+
+      if git rev-parse --verify "${DEFAULT_CDE_BRANCH}" &> /dev/null; then
+        # This block will be executed only during updates. At the time, we want to capture history
+        # of all changes in the old CDE or customer-hub branches onto the new ones that are created.
+        echo "Creating ${GIT_BRANCH} from its default branch ${DEFAULT_CDE_BRANCH}"
+        git checkout -b "${GIT_BRANCH}" "${DEFAULT_CDE_BRANCH}"
+      else
+        # This block will be executed on initial seeding of the repo or if the default CDE branch does not
+        # exist for some reason during an update. Our only option is to create it as an orphan branch.
+        # If it's an update and we have access to the remote, then we'll pull the remote branch, if it
+        # exists, onto the orphan branch in the following block.
+        echo "Default branch ${DEFAULT_CDE_BRANCH} does not exist for branch ${GIT_BRANCH}"
+        echo "Creating ${GIT_BRANCH} as an orphan branch"
+        git checkout --orphan "${GIT_BRANCH}"
+      fi
     fi
   fi
 
@@ -248,6 +260,8 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
   if echo "${REMOTE_BRANCHES}" | grep -q "${GIT_BRANCH}" 2> /dev/null; then
     echo "Branch ${GIT_BRANCH} exists on server. Checking out latest code from server."
     git pull --no-edit origin "${GIT_BRANCH}" -X theirs
+  elif ${DISABLE_GIT}; then
+    echo "Not checking for branch in git, disabled by DISABLE_GIT"
   elif test "${REMOTE_BRANCHES}"; then
     echo "Branch ${GIT_BRANCH} does not exist on server."
   fi
@@ -307,15 +321,16 @@ for ENV_OR_BRANCH in ${ENVIRONMENTS}; do
     commit_msg="Initial commit of k8s code for environment '${ENV}' in region '${region}' - ping-cloud-base@${PCB_COMMIT_SHA}"
   fi
 
-  echo "${commit_msg}"
+  if ! ${DISABLE_GIT}; then
+    echo "Adding commit to repo: ${commit_msg}"
+    git add .
+    git commit --allow-empty -m "${commit_msg}"
+  fi
 
-  git add .
-  git commit --allow-empty -m "${commit_msg}"
-
-  if "${PUSH_TO_SERVER}"; then
+  if "${PUSH_TO_SERVER}" && ! "${DISABLE_GIT}"; then
     push_with_retries "${PUSH_RETRY_COUNT}" "${GIT_BRANCH}"
   else
-    echo "Not pushing changes to the server for branch '${GIT_BRANCH}'"
+    echo "Not pushing changes to the server for branch '${GIT_BRANCH}' - PUSH_TO_SERVER set to false or DISABLE_GIT set to true"
   fi
 
   if ! "${QUIET}"; then

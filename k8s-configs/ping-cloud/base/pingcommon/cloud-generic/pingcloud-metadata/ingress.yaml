@@ -7,8 +7,8 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-    kubernetes.io/ingress.class: nginx-public
 spec:
+  ingressClassName: nginx-public
   tls:
   - hosts:
     - metadata.ping-demo.com

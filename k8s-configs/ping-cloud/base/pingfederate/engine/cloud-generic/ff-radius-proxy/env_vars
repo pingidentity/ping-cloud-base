@@ -1,0 +1,7 @@
+# Pingcloud-radsecproxy service:
+GRP_PORT=2083
+GRP_CERT_FILE=/usr/local/secrets/certs/tls.crt
+GRP_KEY_FILE=/usr/local/secrets/certs/tls.key
+GRP_CA_FILE=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+GRP_RADIUS_PORT=1812
+GRP_RADIUS_ACCT_PORT=1813

@@ -17,6 +17,7 @@
 #   - kustomize
 #   - kubectl
 #   - envsubst
+#   - cmctl
 #
 # In addition, the assumption is that kubectl is configured to authenticate and apply manifests to the Kubernetes
 # cluster. For EKS clusters, this requires an AWS key and secret with the appropriate IAM policies to be configured and
@@ -189,6 +190,10 @@
 #                           | pingdirectory/topology/descriptor.json.sample.     |
 #                           | This file will be mounted into the Ping containers |
 #                           | at /opt/staging/topology/descriptor.json.          |
+#                           |                                                    |
+# DASH_REPO_URL             | The repository with Kibana\Grafana dashboards      | https://github.com/pingidentity/ping-cloud-dashboards
+#                           |                                                    |
+# DASH_REPO_BRANCH          | Branch where dashboards will be taken from         | main
 ########################################################################################################################
 
 #
@@ -231,7 +236,7 @@ done
 CUR_DIR=$(pwd)
 
 # Checking required tools and environment variables.
-check_binaries "openssl" "base64" "kustomize" "kubectl" "envsubst"
+check_binaries "openssl" "base64" "kustomize" "kubectl" "envsubst" "cmctl"
 HAS_REQUIRED_TOOLS=${?}
 
 if test ${HAS_REQUIRED_TOOLS} -ne 0; then
@@ -285,6 +290,9 @@ log "Initial PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
 log "Initial DEPLOY_FILE: ${DEPLOY_FILE}"
 log "Initial K8S_CONTEXT: ${K8S_CONTEXT}"
 log "Initial PF_PROVISIONING_ENABLED: ${PF_PROVISIONING_ENABLED}"
+
+log "Initial DASH_REPO_URL: ${DASH_REPO_URL}"
+log "Initial DASH_REPO_BRANCH: ${DASH_REPO_BRANCH}"
 log ---
 
 # A script that may be used to set up a dev/test environment against the
@@ -318,8 +326,11 @@ export PING_ARTIFACT_REPO_URL="${PING_ARTIFACT_REPO_URL:-https://ping-artifacts.
 export LOG_ARCHIVE_URL="${LOG_ARCHIVE_URL:-unused}"
 export BACKUP_URL="${BACKUP_URL:-unused}"
 
-PGO_BACKUP_BUCKET_NAME=${PGO_BACKUP_BUCKET_NAME:-${BACKUP_URL}}
-export PGO_BACKUP_BUCKET_NAME=$(get_pgo_backup_bucket_name "${PGO_BACKUP_BUCKET_NAME}")
+# Only for dev envs, we set the PGO_BACKUP_BUCKET_NAME to BACKUP_URL
+# BACKUP_URL contains the prefix and suffix of the SSM value, so we don't set a suffix
+set_var "PGO_BACKUP_BUCKET_NAME" "not_set" "${BACKUP_URL}"
+# Remove s3:// prefix if present
+export PGO_BACKUP_BUCKET_NAME=${PGO_BACKUP_BUCKET_NAME#s3://}
 
 export MYSQL_SERVICE_HOST="${MYSQL_SERVICE_HOST:-beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com}"
 export MYSQL_USER="${MYSQL_USER:-ssm://aws/reference/secretsmanager//pcpt/ping-central/dbserver#username}"
@@ -343,6 +354,10 @@ export SLACK_CHANNEL=${SLACK_CHANNEL:-nowhere}
 # PGO Prometheus notification.
 export PROM_NOTIFICATION_ENABLED=${PROM_NOTIFICATION_ENABLED:-false}
 export PROM_SLACK_CHANNEL=${PROM_SLACK_CHANNEL:-nowhere}
+
+# Dashboards repo
+export DASH_REPO_URL="${DASH_REPO_URL:-https://github.com/pingidentity/ping-cloud-dashboards}"
+export DASH_REPO_BRANCH="${DASH_REPO_BRANCH:-main}"
 
 # MySQL database names cannot have dashes. So transform dashes into underscores.
 ENV_NAME_NO_DASHES=$(echo ${BELUGA_ENV_NAME} | tr '-' '_')
@@ -389,6 +404,9 @@ log "Using LEGACY_LOGGING: ${LEGACY_LOGGING}"
 log "Using DEPLOY_FILE: ${DEPLOY_FILE}"
 log "Using K8S_CONTEXT: ${K8S_CONTEXT}"
 log "Using PF_PROVISIONING_ENABLED: ${PF_PROVISIONING_ENABLED}"
+
+log "Using DASH_REPO_URL: ${DASH_REPO_URL}"
+log "Using DASH_REPO_BRANCH: ${DASH_REPO_BRANCH}"
 log ---
 
 NEW_RELIC_LICENSE_KEY="${NEW_RELIC_LICENSE_KEY:-ssm://pcpt/sre/new-relic/java-agent-license-key}"
@@ -511,6 +529,9 @@ export PING_IDENTITY_DEVOPS_USER=${PING_IDENTITY_DEVOPS_USER}
 export PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 
 export LEGACY_LOGGING=${LEGACY_LOGGING}
+
+export DASH_REPO_URL=${DASH_REPO_URL}
+export DASH_REPO_BRANCH=${DASH_REPO_BRANCH}
 
 export PROJECT_DIR=${PWD}
 export AWS_PROFILE=${AWS_PROFILE:-csg}

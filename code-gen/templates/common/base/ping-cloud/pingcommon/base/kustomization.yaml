@@ -6,11 +6,11 @@ resources:
 - ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingcommon/base?ref=${K8S_GIT_BRANCH}
 
 images:
-- name: ${ECR_REGISTRY_NAME}/pingcloud-services/metadata
+- name: ${ECR_REGISTRY_NAME}/pingcloud-services/metadata${ECR_ENV}
   newName: ${ECR_REGISTRY_NAME}/pingcloud-services/metadata${ECR_ENV}
   newTag: ${METADATA_IMAGE_TAG}
 
-- name: ${ECR_REGISTRY_NAME}/pingcloud-services/healthcheck
+- name: ${ECR_REGISTRY_NAME}/pingcloud-services/healthcheck${ECR_ENV}
   newName: ${ECR_REGISTRY_NAME}/pingcloud-services/healthcheck${ECR_ENV}
   newTag: ${HEALTHCHECK_IMAGE_TAG}
 

@@ -248,7 +248,14 @@ patchesJson6902:
                 name: pingaccess
                 port:
                   number: 443
-
+    # Healthcheck httpbin service through PA engines
+    - op: replace
+      path: /spec/tls/0/hosts/1
+      value: healthcheck-httpbin-pa${ENVIRONMENT}.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/1/host
+      value: healthcheck-httpbin-pa${ENVIRONMENT}.${TENANT_DOMAIN}
+                  
 # pingaccess admin api
 - target:
     group: networking.k8s.io
@@ -353,6 +360,14 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/6/host
       value: pingcentral-admin${ENVIRONMENT}.${TENANT_DOMAIN}
+
+    # Healthcheck httpbin service through PA-WAS engines
+    - op: replace
+      path: /spec/tls/0/hosts/7
+      value: healthcheck-httpbin-pa-was${ENVIRONMENT}.${TENANT_DOMAIN}
+    - op: replace
+      path: /spec/rules/7/host
+      value: healthcheck-httpbin-pa-was${ENVIRONMENT}.${TENANT_DOMAIN}
 
 # Ping Delegated Admin
 - target:
@@ -474,4 +489,4 @@ patchesStrategicMerge:
       ${TOPOLOGY_DESCRIPTOR}
 
 ### Comment this out to deploy the Radius Proxy
-#- disable-radsec.yaml
+- disable-radsec.yaml

@@ -8,6 +8,5 @@ resources:
 - elasticsearch-index-bootstraps.yaml
 - elasticsearch-index-templates.yaml
 - enrichment-cache.yaml
-- kibana-dashboards.yaml
 - logstash-search-templates.yaml
-- kibana-alerts.yaml
+- kibana-alerts
