@@ -1036,6 +1036,9 @@ mkdir -p "${PROFILE_REPO_DIR}"
 
 cp ./update-cluster-state-wrapper.sh "${CLUSTER_STATE_REPO_DIR}"
 cp ./csr-validation.sh "${CLUSTER_STATE_REPO_DIR}"
+cp ./values.yaml "${CLUSTER_STATE_REPO_DIR}"
+cp ./values_region.yaml "${CLUSTER_STATE_REPO_DIR}"
+cp ./seal-secret-values.py "${CLUSTER_STATE_REPO_DIR}"
 cp ./update-profile-wrapper.sh "${PROFILE_REPO_DIR}"
 
 cp ../.gitignore "${CLUSTER_STATE_REPO_DIR}"
@@ -1284,12 +1287,15 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   fi
 
   echo "Substituting env vars, this may take some time..."
-  substitute_vars "${ENV_DIR}" "${REPO_VARS}" secrets.yaml env_vars values.yaml
-  # TODO: These duplicate calls are needed to substitute the derived variables & the IS_BELUGA_ENV in values files only
+  substitute_vars "${ENV_DIR}" "${REPO_VARS}" secrets.yaml env_vars
+
+  echo "Substituting values.yaml"
+  substitute_vars "${CLUSTER_STATE_REPO_DIR}" "${REPO_VARS}" values.yaml values_region.yaml
+  # TODO: These duplicate calls are needed to substitute the derived variables & the IS_BELUGA_ENV in values files
   #  clean this up with PDO-4842 when all apps are migrated to values files by adding IS_BELUGA_ENV to DEFAULT_VARS
   #  and redoing how derived variables are set
-  substitute_vars "${ENV_DIR}" "${REPO_VARS}" values.yaml
-  substitute_vars "${ENV_DIR}" '${IS_BELUGA_ENV}' values.yaml
+  substitute_vars "${CLUSTER_STATE_REPO_DIR}" "${REPO_VARS}" values.yaml values_region.yaml
+  substitute_vars "${CLUSTER_STATE_REPO_DIR}" '${IS_BELUGA_ENV}' values.yaml
 
   # Regional enablement - add admins, backups, etc. to primary and adding pingaccess-was and pingcentral to primary.
   if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then

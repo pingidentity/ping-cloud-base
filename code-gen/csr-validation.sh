@@ -2,7 +2,7 @@
 
 #**********************************************************************************************************************
 # This script is for validating the new microservice Helm apps in the Cluster-State-Repo
-#   Note: This script does not work on the 'ks-configs' directory, it is intended for the new microservice apps
+#   Note: This script does not work on the 'k8s-configs' directory, it is intended for the new microservice apps
 #         that will be using Helm.
 #**********************************************************************************************************************
 

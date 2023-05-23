@@ -3,11 +3,13 @@
 ### 1.19.0.0
 
 - Update bootstrap to create davinci-configuration secret
+- Add new seal secrets script for MonoRepo breakup
 - Updating kustomize build options within ArgoCD to support Helm
 - Fix: kubernetes-dashboards configmap "Too long" error
 
 _Changes:_
 
+- PDO-4779 Modify seal.sh script to work for microservices
 - PDO-5314 Update bootstrap to create davinci-configuration secret
 - PDO-5333 ArgoCD authentication to private ECR for Helm
 
