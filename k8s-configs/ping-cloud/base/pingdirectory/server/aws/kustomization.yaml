@@ -12,6 +12,7 @@ resources:
   - periodic-backup.yaml
   - periodic-csd-upload.yaml
   - periodic-export-ldif.yaml
+  - periodic-monitor-log-upload.yaml
 
 generatorOptions:
   disableNameSuffixHash: true

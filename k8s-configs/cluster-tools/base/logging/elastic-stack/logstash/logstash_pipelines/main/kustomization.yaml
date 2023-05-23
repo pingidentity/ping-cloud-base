@@ -12,4 +12,5 @@ configMapGenerator:
     - 04-ping-apps-filters.conf
     - 05-siem-sort-filters.conf
     - 06-siem-detailed-filters.conf
-    - 07-outputs.conf
+    - 07-pre-outputs-filter.conf
+    - 08-outputs.conf
