@@ -4,14 +4,13 @@ _meta:
 
 # Define your internal users here
 
-## Demo users
 
 admin:
-  hash: "$2y$12$t2gdM6InqaPHdC.lHeXW7OEH6B5PI2UMnfGZ0lq4MutfAiYQy4FaW"
+  hash: "$2y$12$x0W/bb.rCExntDszzTQMGO46BjhcabBlY/j44cLQlQgpNCPImb00m"
   reserved: true
   backend_roles:
   - "admin"
-  description: "Demo admin user"
+  description: "Admin user"
 
 kibanaserver:
   hash: "$2y$12$wHh6/b7i8CuzQEvBCw/lyOzvHw/6ZBEoeKPxMgWhkkqpD2Vls6VcS"
@@ -37,21 +36,13 @@ logstash:
   - "logstash"
   description: "Logstash user"
 
-readall:
-  hash: "$2y$12$15huaUhaiNxHiP0JIhf.QeB9NVsB/nTiSytIT1DQJfXCEKKJaIy8C"
-  reserved: false
-  backend_roles:
-  - "readall"
-  description: "Demo readall user"
-
-snapshotrestore:
-  hash: "$2y$12$dyT.lMC1GdPwOVBSxfnS5ebGBH9S2.SkVI/F6D6ASy90oX8SdAxV."
-  reserved: false
-  backend_roles:
-  - "snapshotrestore"
-  description: "Demo snapshotrestore user"
 
 indexmigration:
   hash: "$2y$12$nnNxuzpFcBlpO/FesnUA7O8oZRFF.zBZaBpKKk0zeokYOzq.Y4plu"
   reserved: true
   description: "Index migration user"
+
+bootstrap:
+  hash: "$2y$12$rKbj1eVYptD9uw5B7COX4uOKffCoTLaDwZftW8VKVwZmmT4mJRWsy"
+  reserved: true
+  description: "Bootstrap user"

@@ -6,3 +6,5 @@ configMapGenerator:
     files:
       - ping-general.json
       - ping-healthchecks.json
+      - ping-imported.json
+      - ping-shrunken.json

@@ -12,8 +12,7 @@ spec:
     spec:
       containers:
       - name: opensearch-bootstrap
-        # TODO: change the image to production one
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-monitoring/os-bootstrap:PDO-5258
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/os-bootstrap/dev:v1.19-release-branch-latest
         imagePullPolicy: Always
         securityContext:
           runAsNonRoot: true
@@ -132,5 +131,5 @@ metadata:
   annotations:
     sealedsecrets.bitnami.com/managed: "true"
 data:
-  username: YWRtaW4=
-  password: YWRtaW4=
+  username: Ym9vdHN0cmFw
+  password: eGFSYWUxeGFlbmdhaG5pZTBpZURvbzdub2htYWlyb2o=

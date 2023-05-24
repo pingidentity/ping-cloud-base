@@ -57,12 +57,6 @@ all_access:
   - "opendistro_security_anonymous_backendrole"
   description: "Maps admin to all_access"
 
-own_index:
-  reserved: false
-  users:
-  - "*"
-  description: "Allow full access to an index named like the username"
-
 logstash:
   reserved: false
   backend_roles:
@@ -79,16 +73,6 @@ kibana_user:
   - "kibanauser"
   description: "Maps kibanauser to kibana_user"
 
-readall:
-  reserved: false
-  backend_roles:
-  - "readall"
-
-manage_snapshots:
-  reserved: false
-  backend_roles:
-  - "snapshotrestore"
-
 kibana_server:
   reserved: true
   users:
@@ -98,4 +82,9 @@ index_migration:
   reserved: true
   users:
   - "indexmigration"
+
+bootstrap:
+  reserved: true
+  users:
+  - "bootstrap"
   

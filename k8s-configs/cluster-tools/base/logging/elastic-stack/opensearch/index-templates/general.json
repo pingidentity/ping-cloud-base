@@ -1,11 +1,11 @@
 {
   "index_patterns": [
-    "pf-requests-*"
+    "*"
   ],
   "template": {
     "settings": {
       "index.unassigned.node_left.delayed_timeout": "10m",
-      "index.number_of_shards": "3",
+      "index.number_of_shards": "1",
       "index.number_of_replicas": "1",
       "index.refresh_interval": "30s",
       "index": {
@@ -23,18 +23,6 @@
         "@timestamp": {
           "type": "date"
         },
-        "@version": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "ignore_above": 256,
-              "type": "keyword"
-            }
-          }
-        },
-        "timestamp": {
-          "type": "text"
-        },
         "cluster_name": {
           "type": "keyword"
         }
@@ -42,5 +30,5 @@
     }
   },
   "composed_of": [],
-  "priority": 100
+  "priority": 0
 }

@@ -4,6 +4,7 @@
   ],
   "template": {
     "settings": {
+      "index.unassigned.node_left.delayed_timeout": "10m",
       "index.number_of_shards": "3",
       "index.number_of_replicas": "1",
       "index.refresh_interval": "30s",
@@ -13,11 +14,6 @@
             "require": {
               "temp": "hot"
             }
-          }
-        },
-        "plugins": {
-          "index_state_management": {
-            "rollover_alias": "pa-audit"
           }
         }
       }
@@ -90,5 +86,5 @@
     }
   },
   "composed_of": [],
-  "priority": 0
+  "priority": 100
 }

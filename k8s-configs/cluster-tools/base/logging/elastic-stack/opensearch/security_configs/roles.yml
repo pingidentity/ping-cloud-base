@@ -276,28 +276,6 @@ opendistro_security_anonymous_role:
     - "indices:data/read/scroll*"
   index_permissions:
     - index_patterns:
-      - ".kibana"
-      - ".kibana-6"
-      - ".kibana_*"
-      - ".opensearch_dashboards"
-      - ".opensearch_dashboards-6"
-      - ".opensearch_dashboards_*"
-      allowed_actions:
-        - "read"
-    - index_patterns:
-      - ".tasks"
-      - ".management-beats"
-      - "*:.tasks"
-      - "*:.management-beats"
-      allowed_actions:
-        - "read"
-    - index_patterns:
-      - 'opensearch_dashboards_sample_data_logs'
-      - 'opensearch_dashboards_sample_data_flights'
-      - 'opensearch_dashboards_sample_data_ecommerce'
-      allowed_actions:
-        - "read"
-    - index_patterns:
       - '*'
       allowed_actions:
         - "read"
@@ -334,3 +312,30 @@ index_migration:
         - "indices:data/write/reindex"
         - "indices:data/write/index"
         - "indices:data/write/bulk*"
+
+bootstrap:
+  reserved: true
+  cluster_permissions:
+    - 'cluster_monitor'
+    - 'cluster_manage_index_templates'
+    - "cluster:admin/opendistro/ism/*"
+    - "cluster:admin/opensearch/notifications/*"
+    - "cluster:admin/opendistro/alerting/*"
+    - "kibana_all_write"
+    - "kibana_all_read"
+    - 'indices:data/write/bulk'
+    - "indices:data/read/mget"
+  index_permissions:
+    - index_patterns:
+        - '*'
+      allowed_actions:
+        - 'indices:admin/opensearch/ism/*'
+        - 'indices:admin/index_template/*'
+        - 'indices:admin/template/*'
+        - 'read'
+        - 'indices_monitor'
+    - index_patterns:
+        - '.kibana*'
+      allowed_actions:
+        - 'crud'
+        - 'create_index'

@@ -24,3 +24,4 @@ configMapGenerator:
       - pf-requests.json
       - pf-system.json
       - pf-transaction.json
+      - general.json

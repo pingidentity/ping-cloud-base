@@ -27,6 +27,7 @@ config:
     # ignore_users: ["test-user", "employee-*"]
     ignore_users:
       - kibanaserver
+      - logstash
 
     # Requests to be excluded from auditing. Wildcard patterns are supported. Eg:
     # ignore_requests: ["indices:data/read/*", "SearchRequest"]
@@ -83,3 +84,4 @@ config:
     # write_ignore_users: ["test-user", "employee-*"]
     write_ignore_users:
       - kibanaserver
+      - logstash

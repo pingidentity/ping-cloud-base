@@ -1,26 +1,26 @@
 {
     "policy": {
-        "policy_id": "ping_standard_policy",
-        "description": "Standard ping policy (after 7 days read-only, after 90 days shrunk and delete, shrunken index will be processed via shrunken policy)",
-        "last_updated_time": 1684846142111,
+        "policy_id": "ping_imported",
+        "description": "Ping policy for everything imported from ES(after 1 day shrink to 1 shard and delete, shrunken index will be processed via shrunken policy)",
+        "last_updated_time": 1684846188882,
         "schema_version": 17,
         "error_notification": null,
-        "default_state": "hot",
+        "default_state": "init",
         "states": [
             {
-                "name": "hot",
+                "name": "init",
                 "actions": [],
                 "transitions": [
                     {
-                        "state_name": "RO",
+                        "state_name": "store",
                         "conditions": {
-                            "min_index_age": "7d"
+                            "min_index_age": "1d"
                         }
                     }
                 ]
             },
             {
-                "name": "RO",
+                "name": "store",
                 "actions": [
                     {
                         "retry": {
@@ -29,20 +29,7 @@
                             "delay": "1m"
                         },
                         "read_only": {}
-                    }
-                ],
-                "transitions": [
-                    {
-                        "state_name": "delete",
-                        "conditions": {
-                            "min_index_age": "90d"
-                        }
-                    }
-                ]
-            },
-            {
-                "name": "delete",
-                "actions": [
+                    },
                     {
                         "retry": {
                             "count": 3,
@@ -57,7 +44,17 @@
                             },
                             "force_unsafe": true
                         }
-                    },
+                    }
+                ],
+                "transitions": [
+                    {
+                        "state_name": "delete"
+                    }
+                ]
+            },
+            {
+                "name": "delete",
+                "actions": [
                     {
                         "retry": {
                             "count": 3,
@@ -73,13 +70,10 @@
         "ism_template": [
             {
                 "index_patterns": [
-                    "pd-*",
-                    "pf-*",
-                    "pa-*",
-                    "logstash-*"
+                    "*-imported"
                 ],
-                "priority": 1,
-                "last_updated_time": 1684842823048
+                "priority": 100,
+                "last_updated_time": 1684841250879
             }
         ]
     }

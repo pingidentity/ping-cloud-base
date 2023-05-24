@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: es-cluster-hot
+spec:
+  serviceName: elasticsearch
+  replicas: 5
+  template:
+    spec:
+      containers:
+        - name: elasticsearch
+          resources:
+            limits:
+              memory: 8Gi
+              cpu: "6"
+            requests:
+              memory: 6Gi
+              cpu: "2"
+          env:
+            - name: ES_JAVA_OPTS
+              value: "-Xms6g -Xmx6g"
