@@ -6,7 +6,7 @@ kind: MutatingWebhookConfiguration
 metadata:
   name: nri-bundle-nri-metadata-injection
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: nri-metadata-injection
     app.kubernetes.io/version: 1.7.0

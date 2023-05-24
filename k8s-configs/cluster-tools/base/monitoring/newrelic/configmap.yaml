@@ -5,7 +5,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: nri-kube-events
     app.kubernetes.io/version: 1.8.0
@@ -66,7 +66,7 @@ kind: ConfigMap
 metadata:
   namespace: newrelic
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: newrelic-infrastructure
     app.kubernetes.io/version: 3.2.0
@@ -94,7 +94,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: newrelic-infrastructure
     app.kubernetes.io/version: 3.2.0
@@ -240,7 +240,7 @@ kind: ConfigMap
 metadata:
   namespace: newrelic
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: newrelic-infrastructure
     app.kubernetes.io/version: 3.2.0
@@ -266,11 +266,11 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: newrelic-infrastructure
-    app.kubernetes.io/version: 3.2.0
-    helm.sh/chart: newrelic-infrastructure-3.5.3
+    app.kubernetes.io/version: 3.6.0
+    helm.sh/chart: newrelic-infrastructure-3.12.0
   name: nri-bundle-nrk8s-ksm
   namespace: newrelic
 data:
@@ -291,7 +291,7 @@ kind: ConfigMap
 metadata:
   namespace: newrelic
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: newrelic-infrastructure
     app.kubernetes.io/version: 3.2.0
@@ -319,7 +319,7 @@ kind: ConfigMap
 metadata:
   namespace: newrelic
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: newrelic-infrastructure
     app.kubernetes.io/version: 3.2.0
@@ -407,7 +407,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: newrelic-infrastructure
     app.kubernetes.io/version: 3.2.0
@@ -454,7 +454,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: nri-kube-events
     app.kubernetes.io/version: 1.8.0
