@@ -17,26 +17,6 @@ spec:
     spec:
       serviceAccountName: logstash-elastic
       initContainers:
-        - name: check-opensearch-availability
-          securityContext:
-            runAsNonRoot: true
-            runAsUser: 1000
-            runAsGroup: 1000
-            allowPrivilegeEscalation: false
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v1.19-release-branch-latest
-          imagePullPolicy: Always
-          command:
-            - sh
-            - $(CONTAINER_NAME).sh
-          env:
-            - name: CONTAINER_NAME
-              value: check-opensearch-availability
-            - name: CHECK_SERVICE_URL
-              value: 'https://opensearch-cluster-master'
-            - name: CHECK_SERVICE_PORT
-              value: '9200'
-            - name: DESIRED_STATUS
-              value: green
         - name: wait-for-bootstrap-completed
           securityContext:
             runAsGroup: 2000
@@ -89,6 +69,13 @@ spec:
             - containerPort: 9198
               name: metrics
               protocol: TCP
+          resources:
+            limits:
+              cpu: "500m"
+              memory: 500Mi
+            requests:
+              cpu: "150m"
+              memory: 100Mi
         - name: logstash
           image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logstash/dev:v1.19-release-branch-latest
           imagePullPolicy: Always
@@ -105,15 +92,11 @@ spec:
                 fieldRef:
                   fieldPath: spec.nodeName
             - name: CONFIG_RELOAD_AUTOMATIC
-              value: 'true'
-            - name: CONFIG_RELOAD_INTERVAL
-              value: 5s
+              value: 'false'
             - name: LOG_FORMAT
               value: json
-            - name: PIPELINE_BATCH_DELAY
-              value: '20'
             - name: PIPELINE_BATCH_SIZE
-              value: '100'
+              value: '1000'
             - name: PIPELINE_ECS_COMPATIBILITY
               value: disabled
             - name: PIPELINE_ORDERED
@@ -122,6 +105,10 @@ spec:
               value: persisted
             - name: QUEUE_MAX_BYTES
               value: 1000gb
+            - name: QUEUE_DRAIN
+              value: "true"
+            - name: LS_JAVA_OPTS
+              value: "-Xms1g -Xmx1g"
             - name: XPACK_MONITORING_ENABLED
               value: "false"
           envFrom:
@@ -137,11 +124,11 @@ spec:
             successThreshold: 1
             timeoutSeconds: 5
           readinessProbe:
-            failureThreshold: 3
+            failureThreshold: 10
             httpGet:
               path: /
-              port: 9600
-            initialDelaySeconds: 60
+              port: 8080
+            initialDelaySeconds: 30
             periodSeconds: 10
             successThreshold: 3
             timeoutSeconds: 5
@@ -218,7 +205,7 @@ spec:
             requests:
               cpu: "150m"
               memory: 100Mi
-      terminationGracePeriodSeconds: 30
+      terminationGracePeriodSeconds: 60
       volumes:
         - name: logstash-pipeline-main
           configMap:
@@ -268,7 +255,6 @@ metadata:
 spec:
   selector:
     app: logstash-elastic
-  clusterIP: None
   ports:
     - port: 9600
       name: rest

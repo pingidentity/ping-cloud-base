@@ -4,17 +4,4 @@ metadata:
   name: logstash-elastic
 spec:
   minReplicas: 1
-  maxReplicas: 4
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: AverageValue
-        averageValue: "0.8"
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: AverageValue
-        averageValue: 1600Mi
+  maxReplicas: 2
