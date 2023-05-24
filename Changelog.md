@@ -13,6 +13,7 @@
 - policy/v1beta1 PodDisruptionBudget is deprecated is unavailable in v1.25
 - Update kube-state-metrics to v2.7.0
 - [Port] PingFederate server.log events do not appear as a single Kibana document
+- Update cert-manager to v1.11.2 or higher for EKS 1.25
 
 _Changes:_
 
