@@ -725,9 +725,8 @@ data:
         parser json
         key_content log
     
-        rule "start_state" "/(?:\/.*\/log[s]?\/\w+(?:\.log)?) ([0-9\-:T, ]+) (ERROR) (.*)/" "cont"
-        rule "cont" "/(?:\/.*\/log[s]?\/\w+(?:\.log)?)[ \t]+(\w+\..*)/" "cont"
-        rule "cont" "/(?:\/.*\/log[s]?\/\w+(?:\.log)?)[ \t]+(at \w+\..*|Caused by:.*|\.\.\. \d+ more)/" "cont"
+        rule "start_state" "/^(\/.*\/log[s]?\/\w+(\.log)?)( \d{4}-\d{2}-\d{2}[T ]?\d{2}:\d{2}:\d{2}(,\d{3})?)\s+(\w+[: ]{1,2})(.*)/" "cont"
+        rule "cont" "/^((?!INFO|WARN|ERROR|DEBUG|(admin-api|audit|jvm-garbage-collection|provisioner-audit|provisioner|request(2?)|transaction)\.log).)*$/" "cont"
 
 
   outputs.conf: |
@@ -764,6 +763,7 @@ data:
         Host                logstash-elastic.elastic-stack-logging
         Port                8080
         Format              json_lines
+        Retry_Limit         False
     
     [OUTPUT]
         Name                s3
