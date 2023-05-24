@@ -9,7 +9,7 @@ metadata:
     argocd.argoproj.io/hook: Sync,PostSync
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: nri-metadata-injection
     app.kubernetes.io/version: 1.7.0
@@ -31,9 +31,9 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app.kubernetes.io/name: kube-state-metrics
-    helm.sh/chart: kube-state-metrics-2.13.2
+    helm.sh/chart: kube-state-metrics-4.23.0
     app.kubernetes.io/instance: nri-bundle
   name: nri-bundle-kube-state-metrics
 roleRef:
@@ -52,7 +52,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: newrelic-infrastructure
     app.kubernetes.io/version: 3.2.0
@@ -74,7 +74,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: nri-kube-events
     app.kubernetes.io/version: 1.8.0
@@ -96,7 +96,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: newrelic-infrastructure
     app.kubernetes.io/version: 3.2.0
@@ -119,7 +119,7 @@ kind: ClusterRoleBinding
 metadata:
   name: nri-bundle-nri-prometheus
   labels:
-    nri-bundle.version: 4.5.8
+    nri-bundle.version: 5.0.4
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/name: nri-prometheus
     app.kubernetes.io/version: 2.16.1

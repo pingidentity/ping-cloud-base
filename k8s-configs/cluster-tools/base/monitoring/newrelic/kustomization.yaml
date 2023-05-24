@@ -12,6 +12,5 @@ resources:
 - mutationwebhookconfiguration.yaml
 - service.yaml
 - serviceaccount.yaml
-- podsecuritypolicy.yaml
 - role.yaml
 - rolebinding.yaml

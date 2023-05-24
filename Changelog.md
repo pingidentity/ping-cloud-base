@@ -14,6 +14,7 @@
 - Update kube-state-metrics to v2.7.0
 - [Port] PingFederate server.log events do not appear as a single Kibana document
 - Update cert-manager to v1.11.2 or higher for EKS 1.25
+- Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
 
 _Changes:_
 
@@ -27,6 +28,7 @@ _Changes:_
 - [X] PDO-5341 pingcentral-ext-ingress - fix pathType
 - [X] PDO-5413 [Port] PingFederate server.log events do not appear as a single Kibana document
 - [X] PDO-5482 [PORT] Update kube-state-metrics cluster tool to v2.7.0 for EKS 1.25
+- [X] PDO-5488 Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
 - [X] PDO-5489 batch/v1beta1 CronJob, v1.25 release stopped serving the deprecated API versions
 - [X] PDO-5490 policy/v1beta1 PodDisruptionBudget is deprecated is unavailable in v1.25
 
