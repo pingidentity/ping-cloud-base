@@ -72,18 +72,8 @@ spec:
             - ALL
           runAsNonRoot: true
           runAsUser: 1000
-        command:
-        - sh
-        - -c
-        - |
-          #!/usr/bin/env bash
-          set -euo pipefail
-          #./bin/opensearch-plugin install -b repository-s3
-
-          bash opensearch-docker-entrypoint.sh
-# TODO: change image to production one and place it in ECR
-        image: "opensearchproject/opensearch:2.7.0"
-        imagePullPolicy: "IfNotPresent"
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/opensearch/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
         readinessProbe:
           failureThreshold: 3
           periodSeconds: 5
@@ -210,19 +200,8 @@ spec:
             - ALL
           runAsNonRoot: true
           runAsUser: 1000
-        command:
-        - sh
-        - -c
-        - |
-          #!/usr/bin/env bash
-          set -euo pipefail
-          #./bin/opensearch-plugin install -b repository-s3
-
-          bash opensearch-docker-entrypoint.sh
-
-# TODO: change image to production one and place it in ECR
-        image: "opensearchproject/opensearch:2.7.0"
-        imagePullPolicy: "IfNotPresent"
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/opensearch/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
         readinessProbe:
           failureThreshold: 3
           periodSeconds: 5
