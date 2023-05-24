@@ -11,7 +11,7 @@ spec:
     name: logstash-elastic
   behavior:
     scaleDown:
-      stabilizationWindowSeconds: 300
+      stabilizationWindowSeconds: 120
     scaleUp:
       stabilizationWindowSeconds: 60
   metrics:
