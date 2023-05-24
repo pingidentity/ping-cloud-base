@@ -1,6 +1,8 @@
 cluster.name: opensearch-cluster
 network.host: 0.0.0.0
 reindex.remote.whitelist: "*:9200"
+prometheus:
+  indices: false
 
 ### TODO: change security configuration to our certs/values
 plugins:

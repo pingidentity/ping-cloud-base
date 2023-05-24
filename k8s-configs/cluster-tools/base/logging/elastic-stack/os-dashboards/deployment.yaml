@@ -35,9 +35,8 @@ spec:
             - ALL
           runAsNonRoot: true
           runAsUser: 1000
-        # TODO: change image to production and place it in ECR
-        image: "opensearchproject/opensearch-dashboards:2.7.0"
-        imagePullPolicy: "IfNotPresent"
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/opensearchproject/opensearch-dashboards:2.6.0
+        imagePullPolicy: Always
         readinessProbe:
           failureThreshold: 10
           initialDelaySeconds: 10

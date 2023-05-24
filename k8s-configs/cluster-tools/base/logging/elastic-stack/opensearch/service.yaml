@@ -29,6 +29,10 @@ metadata:
     app.kubernetes.io/name: opensearch
   annotations:
     service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+    prometheus.io/scrape: "true"
+    prometheus.io.scheme: "https"
+    prometheus.io/path: "/_prometheus/metrics"
+    prometheus.io/port: "9200"
 spec:
   clusterIP: None # This is needed for statefulset hostnames like opensearch-0 to resolve
   # Create endpoints also if the related pod isn't ready

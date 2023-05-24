@@ -1367,6 +1367,8 @@ spec:
               name: kubernetes-cluster-dashboards
             - mountPath: /etc/grafana/dashboards/kubernetes/storage
               name: kubernetes-storage-dashboards
+            - mountPath: /etc/grafana/dashboards/monitoring
+              name: monitoring-dashboards
             - mountPath: /etc/grafana/provisioning/dashboards
               name: dashboard-providers
             - mountPath: /etc/grafana/grafana.ini
@@ -1389,6 +1391,9 @@ spec:
         - name: kubernetes-storage-dashboards
           configMap:
             name: kubernetes-storage-dashboards
+        - name: monitoring-dashboards
+          configMap:
+            name: monitoring-dashboards
         - name: dashboard-providers
           configMap:
             name: dashboard-providers

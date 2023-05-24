@@ -5,11 +5,10 @@
 - Update bootstrap to create davinci-configuration secret
 - Updating kustomize build options within ArgoCD to support Helm
 - Fix: kubernetes-dashboards configmap "Too long" error
+- Add OpenSearch monitoring and alerting
 
 _Changes:_
 
-- PDO-5314 Update bootstrap to create davinci-configuration secret
-- PDO-5333 ArgoCD authentication to private ECR for Helm
 - [X] PDO-5110 OpenSearch migration: Install Opensearch side-by-side with Elastic
 - [X] PDO-5112 OpenSearch migration: Migrate index templates
 - [X] PDO-5113 OpenSearch migration: Change logstash pipelines to send data to OS instead ES
@@ -21,7 +20,10 @@ _Changes:_
 - [X] PDO-5245 OpenSearch migration: Update grafana dashboards datasource
 - [X] PDO-5246 Opensearch migration: Migrate alerts
 - [X] PDO-5258 OpenSearch migration: Refactor bootstrap scripts
+- [X] PDO-5307 OpenSearch migration: Implement Monitoring
+- [X] PDO-5314 Update bootstrap to create davinci-configuration secret
 - [X] PDO-5320 BUGFIX: found_distance_alert and other found* fields are not present in pf-audit* index documents
+- [X] PDO-5333 ArgoCD authentication to private ECR for Helm
 
 ### 1.18.0.0
 
