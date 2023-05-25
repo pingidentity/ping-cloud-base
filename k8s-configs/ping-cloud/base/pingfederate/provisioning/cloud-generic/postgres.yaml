@@ -1,11 +1,13 @@
-# NOTE: image and postgres version will need to updated manually according to support in the
-# postgres-operator-examples repo: https://github.com/CrunchyData/postgres-operator-examples/blob/main/kustomize/postgres/postgres.yaml
 apiVersion: postgres-operator.crunchydata.com/v1beta1
 kind: PostgresCluster
 metadata:
   name: pf-provisioning
 spec:
-  image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres:ubi8-14.5-0
+  # NOTE: image and postgres version will need to updated manually accordingly in order to support in the
+  # postgres-operator-examples repo: https://github.com/CrunchyData/postgres-operator-examples/blob/main/kustomize/postgres/postgres.yaml
+  image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/crunchydata/crunchy-postgres:ubi8-14.7-0
+  # We can choose a Postgres version independently from PGO (so long as it's supported)
+  # Here we keep the version at 14 so existing customers aren't doing a major version upgrade in addition to PGO upgrade
   postgresVersion: 14
   metadata:
     labels:
@@ -49,7 +51,8 @@ spec:
       options: "SUPERUSER"
   backups:
     pgbackrest:
-      image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbackrest:ubi8-2.40-0
+      # NOTE: As above, must be manually updated
+      image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/crunchydata/crunchy-pgbackrest:ubi8-2.41-4
       global:
         repo1-path: /pingfederate/provisioning
         # Allow storage solution to handle retention (retain max from PGO perspective)
@@ -72,4 +75,5 @@ spec:
   monitoring:
     pgmonitor:
       exporter:
-        image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres-exporter:ubi8-5.2.0-0
+        # NOTE: As above, must be manually updated
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/crunchydata/crunchy-postgres-exporter:ubi8-5.3.1-0
