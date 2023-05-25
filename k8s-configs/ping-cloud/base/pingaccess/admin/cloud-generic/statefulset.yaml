@@ -120,9 +120,82 @@ spec:
         volumeMounts:
         - name: shared-dir
           mountPath: /opt/shared-dir
+      - name: pingaccess-upgrade
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess:pdo-4604
+        securityContext:
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+          allowPrivilegeEscalation: false
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: 2
+          limits:
+            memory: "4Gi"
+            cpu: 2  
+        volumeMounts:
+        - name: ssh-dir
+          mountPath: /home/ping/.ssh
+        - name: shared-dir
+          mountPath: /opt/shared-dir
+        - name: topology-descriptor
+          mountPath: /opt/staging/topology/descriptor.json
+          subPath: descriptor.json
+        - name: data-dir
+          mountPath: /usr/local/bin/kubectl
+          subPath: kubectl
+        - name: data-dir
+          mountPath: /opt/staging/hooks/logger.lib.sh
+          subPath: logger.lib.sh
+        - name: data-dir
+          mountPath: /opt/staging/jmx_prometheus_javaagent-0.14.0.jar
+          subPath: jmx_prometheus_javaagent-0.14.0.jar
+        - name: data-dir
+          mountPath: /opt/staging/newrelic.jar
+          subPath: newrelic.jar
+        - name: out-dir
+          mountPath: /opt/out
+        - name: pingaccess-license
+          mountPath: /opt/in/instance/conf/pingaccess.lic
+          subPath: pingaccess.lic
+        - name: data-dir
+          mountPath: /opt/staging/ds_env_vars
+          subPath: ds_env_vars    
+        ports:
+        - containerPort: 9000
+        - containerPort: 9090
+        env:
+        - name: OPERATIONAL_MODE
+          value: CLUSTERED_CONSOLE
+        - name: IS_UPGRADE
+          value: YES
+        - name: HTTPS_PORT
+          value: "9090"
+        - name: OLD_PA_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingaccess-passwords
+              key: OLD_PA_ADMIN_USER_PASSWORD
+        - name: PA_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingaccess-passwords
+              key: PA_ADMIN_USER_PASSWORD
+        - name: NEW_RELIC_CONFIG_FILE
+          value: "/opt/shared-dir/newrelic.yml"
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
+        envFrom:
+        - configMapRef:
+            name: pingaccess-admin-environment-variables
+        - secretRef:
+            name: newrelic-license-key
+            optional: false
       containers:
       - name: pingaccess-admin
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v1.19-release-branch-latest
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess:pdo-4604
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -184,6 +257,8 @@ spec:
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_CONSOLE
+        - name: IS_UPGRADE
+          value: NO
         - name: HTTPS_PORT
           value: "9090"
         - name: OLD_PA_ADMIN_USER_PASSWORD
