@@ -201,7 +201,7 @@ data:
         target_label: kubernetes_namespace
       - source_labels: [__meta_kubernetes_pod_name]
         action: replace
-        target_label: kubernetes_pod_name
+        target_label: instance
     
     - job_name: 'kubernetes-cadvisor'
       scheme: https
@@ -250,6 +250,9 @@ data:
       - source_labels: [__meta_kubernetes_service_name]
         action: replace
         target_label: kubernetes_name
+      - source_labels: [__meta_kubernetes_pod_name]
+        action: replace
+        target_label: instance
     
     - job_name: 'crunchy-postgres-exporter'
       kubernetes_sd_configs:
