@@ -32,7 +32,7 @@ data:
               "basicAuth": false,
               "isDefault": false,
               "jsonData": {
-                "database": "pa-admin-audit",
+                "database": "pa-admin-audit-*",
                 "esVersion": "8.0.0",
                 "flavor": "opensearch",
                 "includeFrozen": false,
@@ -42,7 +42,7 @@ data:
                 "pplEnabled": true,
                 "timeField": "@timestamp",
                 "tlsSkipVerify": true,
-                "version": "1.0.0"
+                "version": "2.6.0"
               },
               "readOnly": false
             },
@@ -61,7 +61,7 @@ data:
               "basicAuth": false,
               "isDefault": false,
               "jsonData": {
-                "database": "pa-admin-system",
+                "database": "pa-admin-system-*",
                 "flavor": "opensearch",
                 "logLevelField": "",
                 "logMessageField": "",
@@ -69,7 +69,7 @@ data:
                 "pplEnabled": true,
                 "timeField": "@timestamp",
                 "tlsSkipVerify": true,
-                "version": "1.0.0"
+                "version": "2.6.0"
               },
               "readOnly": false
             },
@@ -88,7 +88,7 @@ data:
               "basicAuth": false,
               "isDefault": false,
               "jsonData": {
-                "database": "pa-audit",
+                "database": "pa-audit-*",
                 "flavor": "opensearch",
                 "logLevelField": "",
                 "logMessageField": "",
@@ -96,7 +96,7 @@ data:
                 "pplEnabled": true,
                 "timeField": "@timestamp",
                 "tlsSkipVerify": true,
-                "version": "1.0.0"
+                "version": "2.6.0"
               },
               "readOnly": false
             },
@@ -115,7 +115,7 @@ data:
               "basicAuth": false,
               "isDefault": false,
               "jsonData": {
-                "database": "pf-admin-audit",
+                "database": "pf-admin-audit-*",
                 "flavor": "opensearch",
                 "logLevelField": "",
                 "logMessageField": "",
@@ -123,7 +123,7 @@ data:
                 "pplEnabled": true,
                 "timeField": "@timestamp",
                 "tlsSkipVerify": true,
-                "version": "1.0.0"
+                "version": "2.6.0"
               },
               "readOnly": false
             },
@@ -142,7 +142,7 @@ data:
               "basicAuth": false,
               "isDefault": false,
               "jsonData": {
-                "database": "pf-admin-system",
+                "database": "pf-admin-system-*",
                 "flavor": "opensearch",
                 "logLevelField": "",
                 "logMessageField": "",
@@ -150,7 +150,7 @@ data:
                 "pplEnabled": true,
                 "timeField": "@timestamp",
                 "tlsSkipVerify": true,
-                "version": "1.0.0"
+                "version": "2.6.0"
               },
               "readOnly": false
             },
@@ -169,7 +169,7 @@ data:
             "basicAuth": false,
             "isDefault": false,
             "jsonData": {
-              "database": "pf-audit",
+              "database": "pf-audit-*",
               "flavor": "opensearch",
               "logLevelField": "",
               "logMessageField": "",
@@ -177,7 +177,7 @@ data:
               "pplEnabled": true,
               "timeField": "@timestamp",
               "tlsSkipVerify": true,
-              "version": "1.0.0"
+              "version": "2.6.0"
             },
             "readOnly": false
           }
