@@ -19,9 +19,6 @@
   # Updated webhook deployment to use 'hostNetwork: true',
   # Ref: https://cert-manager.io/docs/installation/compatibility/#aws-eks
   #
-  # Updated the cert-manager-webhook deployment to use port 10260 instead of 10250,
-  # Ref: https://github.com/cert-manager/cert-manager/issues/3237
-  #
   # Removed 'app.kubernetes.io/instance' annotation, 
   # Ref: https://jira.pingidentity.com/browse/PDO-3175
 ---
