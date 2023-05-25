@@ -24,6 +24,7 @@ _Changes:_
 - [X] PDO-5314 Update bootstrap to create davinci-configuration secret
 - [X] PDO-5320 BUGFIX: found_distance_alert and other found* fields are not present in pf-audit* index documents
 - [X] PDO-5333 ArgoCD authentication to private ECR for Helm
+- [X] PDO-5358 OpenSearch Migration: Refactor OS Code as Needed
 
 ### 1.18.0.0
 

@@ -24,7 +24,7 @@
                            {
                               "cluster_name": {
                                  "terms": {
-                                    "field": "cluster_name"
+                                    "field": "cluster_name.keyword"
                                  }
                               }
                            }

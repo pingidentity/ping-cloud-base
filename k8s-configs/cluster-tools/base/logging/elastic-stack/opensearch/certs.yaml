@@ -54,3 +54,7 @@ spec:
   - 'opensearch-cluster-headless.elastic-stack-logging.svc.cluster.local'
   - '*.opensearch-cluster-headless.elastic-stack-logging.svc.cluster.local'
   - '*.opensearch-cluster-master.elastic-stack-logging.svc.cluster.local'
+  - 'opensearch-cluster-headless.elastic-stack-logging.svc'
+  - 'opensearch-cluster-master.elastic-stack-logging.svc'
+  - '*.opensearch-cluster-headless.elastic-stack-logging.svc'
+  - '*.opensearch-cluster-master.elastic-stack-logging.svc'

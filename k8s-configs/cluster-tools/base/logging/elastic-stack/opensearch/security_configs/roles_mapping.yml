@@ -48,8 +48,6 @@ snapshot_management_read_access:
   backend_roles:
   - "opendistro_security_anonymous_backendrole"
 
-## Demo roles mapping
-
 all_access:
   reserved: false
   backend_roles:

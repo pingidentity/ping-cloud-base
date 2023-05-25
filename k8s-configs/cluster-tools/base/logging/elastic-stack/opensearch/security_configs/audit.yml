@@ -69,6 +69,7 @@ config:
     # read_ignore_users: ["test-user", "employee-*"]
     read_ignore_users:
       - kibanaserver
+      - logstash
 
     # Log only metadata of the document for write events
     write_metadata_only: true

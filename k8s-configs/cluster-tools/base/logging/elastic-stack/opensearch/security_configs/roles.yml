@@ -8,13 +8,6 @@ kibana_read_only:
 
 logstash_write:
   reserved: true
-  cluster_permissions:
-    - 'cluster_monitor'
-    - 'cluster_composite_ops'
-    - 'cluster_manage_index_templates'
-    - 'indices:admin/index_template/*'
-    - 'cluster:admin/ingest/pipeline/put'
-    - 'cluster:admin/ingest/pipeline/get'
   index_permissions:
     - index_patterns:
         - '*'
