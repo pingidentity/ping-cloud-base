@@ -5,7 +5,6 @@ cluster.max_shards_per_node: 10000
 prometheus:
   indices: false
 
-### TODO: change security configuration to our certs/values
 plugins:
   security:
     ssl:
@@ -23,9 +22,6 @@ plugins:
     allow_default_init_securityindex: true
     nodes_dn:
       - CN=elastic-stack-logging.svc.cluster.local
-    authcz:
-      admin_dn:
-        - CN=kirk,OU=client,O=client,L=test,C=de
     audit.type: internal_opensearch
     enable_snapshot_restore_privilege: true
     check_snapshot_restore_write_privileges: true

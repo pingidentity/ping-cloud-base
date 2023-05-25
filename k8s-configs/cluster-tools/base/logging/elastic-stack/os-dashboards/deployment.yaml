@@ -66,6 +66,16 @@ spec:
           value: "https://opensearch-cluster-master.elastic-stack-logging.svc.cluster.local:9200"
         - name: SERVER_HOST
           value: "0.0.0.0"
+        - name: OPENSEARCH_USERNAME
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: os-dashboard-creds
+        - name: OPENSEARCH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: os-dashboard-creds
         ports:
         - containerPort: 5601
           name: http

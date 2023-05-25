@@ -8,8 +8,6 @@ data:
   opensearch_dashboards.yml: |
     opensearch.ssl.verificationMode: full
     opensearch.ssl.certificateAuthorities: /usr/share/opensearch-dashboards/config/certs/ca.crt
-    opensearch.username: kibanaserver
-    opensearch.password: kibanaserver
     opensearch.requestHeadersWhitelist: [authorization, securitytenant]
     opensearch_security.auth.anonymous_auth_enabled: true
     opensearch_security.multitenancy.enabled: false

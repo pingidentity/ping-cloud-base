@@ -6,6 +6,5 @@ namespace: elastic-stack-logging
 resources:
 - elasticsearch-ilm-policies.yaml
 - enrichment-cache.yaml
-- logstash-search-templates.yaml
 - kibana-alerts
 - index-templates

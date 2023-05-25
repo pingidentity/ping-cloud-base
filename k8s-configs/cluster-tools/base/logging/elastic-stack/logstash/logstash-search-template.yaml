@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: enrichment-logstash-search-templates
+  name: logstash-search-template
 data:
   6hr-1200km-template.json: |
     {
