@@ -807,6 +807,7 @@ cp ./values.yaml "${CLUSTER_STATE_REPO_DIR}"
 cp ./values_region.yaml "${CLUSTER_STATE_REPO_DIR}"
 cp ./seal-secret-values.py "${CLUSTER_STATE_REPO_DIR}"
 cp ./update-profile-wrapper.sh "${PROFILE_REPO_DIR}"
+cp ./interface-env-vars.sh "{CLUSTER_STATE_REPO_DIR}"
 
 cp ../.gitignore "${CLUSTER_STATE_REPO_DIR}"
 cp ../.gitignore "${PROFILE_REPO_DIR}"
