@@ -63,6 +63,8 @@ spec:
         repoName: repo1
         options:
          - --type=full
+      jobs:
+        ttlSecondsAfterFinished: 60 # Minimum is 60
       repos:
       - name: repo1
         # S3 configuration & schedule set via patches
