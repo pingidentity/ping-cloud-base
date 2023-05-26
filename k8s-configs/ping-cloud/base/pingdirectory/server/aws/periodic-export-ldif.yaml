@@ -38,6 +38,8 @@ spec:
             - name: pingdirectory-export-ldif
               mountPath: /opt/in/export-ldif-data.sh
               subPath: export-ldif-data.sh
+          securityContext:
+            fsGroup: 9999
           volumes:
           - name: pingdirectory-export-ldif
             configMap:

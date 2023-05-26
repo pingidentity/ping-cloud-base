@@ -289,6 +289,9 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       region=$(basename "${region_path}")
       src_dir="${app_path}/$region"
 
+      # Make the app dir
+      mkdir -p "${app_name}"
+
       echo "Copying ${src_dir} to ${app_name}"
       cp -pr "${src_dir}" "${app_name}/"
     done

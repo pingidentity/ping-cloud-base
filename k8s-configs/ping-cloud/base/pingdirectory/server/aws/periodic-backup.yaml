@@ -1,56 +1,22 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: pingdirectory-backup
+  name: pingdirectory-backup-cronjob
 data:
-  backup.sh: |-
+  backup-cronjob.sh: |-
     #!/bin/sh
-    set -e
 
     # Install kubectl
     curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
     -o /tmp/kubectl
-    
     chmod +x /tmp/kubectl
 
-    UPLOAD_FILES=
-    SCRIPT="${HOOKS_DIR}"/90-upload-backup-s3.sh
-    LOG_FILE=/tmp/upload.log
-
-    test -z "${BACKUP_RESTORE_POD}" && SERVER="${K8S_STATEFUL_SET_NAME}-0" || SERVER="${BACKUP_RESTORE_POD}"
-
-    echo "Running backup script within ${SERVER} pod"
-    /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}"> "${LOG_FILE}"
-
-    if test ${?} -eq 0; then
-      UPLOAD_FILE=$(tail -1 "${LOG_FILE}")
-      test -z "${UPLOAD_FILES}" && UPLOAD_FILES="${UPLOAD_FILE}" || UPLOAD_FILES="${UPLOAD_FILES} ${UPLOAD_FILE}"
-    else
-      echo "Upload script not found on server ${SERVER}"
-    fi
-    
-    # Print the names of the uploaded files so callers know exactly what was uploaded
-    echo "The following files were uploaded:"
-    echo "${UPLOAD_FILES}"
-    echo "Deleting PingDirectory backup pvc"
-    /tmp/kubectl delete pvc pingdirectory-backup
----
-# Persistance Volume to run backup process
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pingdirectory-backup
-  labels:
-    class: pingdirectory-server
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: pingdirectory-gp3
-  resources:
-    requests:
-      storage: 40Gi
+    # Execute backup-ops.sh script (which kicks off the k8s pingdirectory-backup Job)
+    SCRIPT="/opt/in/backup-ops.sh"
+    test -x ${SCRIPT} && ${SCRIPT} "scheduled-cronjob"
 
 ---
+
 # Do a full backup of the user backend every 6 hours.
 # A manual restore can be performed using the restore job (restore.yaml) when
 # necessary.
@@ -70,12 +36,7 @@ spec:
       backoffLimit: 0
       template:
         spec:
-          serviceAccount: ping-serviceaccount
-          tolerations:
-          - key: "pingidentity.com/pd-only"
-            operator: "Equal"
-            value: "true"
-            effect: "NoSchedule"
+          serviceAccountName: ping-serviceaccount
           restartPolicy: OnFailure
           containers:
           - name: pingdirectory-backup
@@ -87,7 +48,7 @@ spec:
               runAsUser: 9031
               allowPrivilegeEscalation: false
             command:
-            - /opt/in/backup.sh
+            - /opt/in/backup-cronjob.sh
             envFrom:
             - configMapRef:
                 name: pingdirectory-environment-variables
@@ -96,22 +57,35 @@ spec:
             env:
             - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
               value: "true"
+            - name: PING_CLOUD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
             volumeMounts:
-            - name: backup-script
-              mountPath: /opt/in/backup.sh
-              subPath: backup.sh
-            - name: pd-backup-volume
-              mountPath: /opt/out/backup
-              subPath: backup
-            - name: pd-backup-volume
-              mountPath: /opt/out/backup-upload
-              subPath: backup-upload
+            - name: backup-cronjob-script
+              mountPath: /opt/in/backup-cronjob.sh
+              subPath: backup-cronjob.sh
+            - name: backup-ops-script
+              mountPath: /opt/in/backup-ops.sh
+              subPath: backup-ops.sh
+            - name: pingdirectory-init
+              mountPath: /opt/in/hooks/logger.lib.sh
+              subPath: logger.lib.sh
+          securityContext:
+            fsGroup: 9999
           volumes:
-          - name: backup-script
+          - name: backup-cronjob-script
             configMap:
-              name: pingdirectory-backup
+              name: pingdirectory-backup-cronjob
               defaultMode: 0555
-          - name: pd-backup-volume
-            persistentVolumeClaim:
-              claimName: pingdirectory-backup
-
+          - name: backup-ops-script
+            configMap:
+              name: pingdirectory-backup-ops-template-files
+              items:
+              - key: backup-ops.sh
+                path: backup-ops.sh
+              defaultMode: 0555
+          - name: pingdirectory-init
+            configMap:
+              name: pingcommon-init
+              defaultMode: 0555

@@ -149,7 +149,8 @@ spec:
           timeoutSeconds: 5
         resources:
             limits:
-              memory: 200Mi
+              cpu: "1"
+              memory: 1Gi
             requests:
               cpu: 200m
               memory: 100Mi
@@ -196,7 +197,7 @@ spec:
         hostPath:
           path: /var/log/dmesg
       serviceAccountName: fluent-bit
-      priorityClassName: system-node-critical
+      priorityClassName: high-priority-apps-to-avoid-pending-state
       tolerations:
       - key: node-role.kubernetes.io/controlplane
         operator: Exists

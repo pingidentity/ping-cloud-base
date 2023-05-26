@@ -7,6 +7,7 @@ resources:
 - pingcommon
 - pingdirectory/config
 - pingaccess-was/config
+- pingaccess-was/ff-external-ingress
 - pingaccess/config
 - pingfederate/config
 - pingdelegator/config

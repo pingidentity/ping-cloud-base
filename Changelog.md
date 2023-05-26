@@ -36,8 +36,6 @@ _Changes:_
 - Upgrade EFS Driver to v1.5.1
 - Add PF requests logs parsing and indexing
 - Fix index template creation race condition issue
-- Update the PD backup job to create new PV at the start of the job and mount it
-- Update the PD restore job to create new PV at the start of the job and mount it
 - Change retry interval for PGO firing alert notification in slack from 5 min to 60 min
 - Added karpenter v0.24.0 and required parameters, KarpenterControllerRole & ClusterEndPoint
 - ILM policy for alerts index changed to move index to warm after 7 days in hot and delete index after 30 days
@@ -74,6 +72,7 @@ _Changes:_
 - Add logstash/fluent-bit readiness/liveness probe
 - Add priorityClassName into CWAgent daemonset
 - Fluent-bit pods stuck in pending state
+- Create new folders "Backup-ops-template" "restore-ops-template" for PD backups,restore process
 - Add logstash and fluent-bit alerts
 - Fix Kibana Visualization "Ping Access - Response Codes Over Time"
 - No longer move files into custom-resources directory when upgrading
@@ -90,6 +89,11 @@ _Changes:_
 - Fix cluster_name variable in Grafana Dashboards for CHUB
 - Remove PC resources from secondary customer-hub
 - Allow users to pick and enable only the external ingress they want. 
+- Fixed Pending state of nri-bundle-nrk8s-kubelet pods running by CDE
+- Add pingaccess-was-license secret placeholder entry to CHUB
+- Increase replica count (min=7, max=9) within prod/large for Nginx Ingress Controller
+- Backup monitor history everyday for PingDirectory
+- PA-WAS ext ingress is missing from non-customer-hub environments
 
 _Changes:_
 
@@ -101,7 +105,8 @@ _Changes:_
 - [X] PDO-4161 [need before EKS 1.25] Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
 - [X] PDO-4257 Capture hourly PingDirectory CSD data
 - [X] PDO-4258 Enable and manage daily encrypted exports
-- [X] PDO-4309 Add integration test for PingDirectory Java args 
+- [X] PDO-4259 Backup monitor history everyday for PingDirectory
+- [X] PDO-4309 Add integration test for PingDirectory Java args
 - [X] PDO-4388 Flag in env_var to enable/disable external ingresses for admin endpoints
 - [X] PDO-4548 Find and destroy file moving to custom-resources code from generate-cluster-state.sh to fix reoccuring issue when upgrading
 - [X] PDO-4556 [need before EKS 1.25] batch/v1beta1 CronJob is deprecated in v1.21+, unavailable in v1.25+; use batch/v1 CronJob
@@ -135,9 +140,7 @@ _Changes:_
 - [X] PDO-4902 Code sharing for PingOne deployments
 - [X] PDO-4903 Deploy PingOne in CICD like Shared P1 Tenant
 - [X] PDO-4916 Missing PF request log
-- [X] PDO-4959 Update the PD backup job to create new PV at the start of the job and mount it
 - [X] PDO-4974 Change retry interval for PGO firing alert notification in slack from 5 min to 60 min
-- [X] PDO-4977 Update the PD restore job to create new PV at the start of the job and mount it
 - [X] PDO-4980 Index lifecycle error: illegal_argument_exception: policy [healthchecks] does not exist
 - [X] PDO-4981 Index templates are not applied to indexes in case elastic-stack-logging ns respinned
 - [X] PDO-4982 Update cluster tools to latest version: EFS Driver to v1.5.1
@@ -163,6 +166,7 @@ _Changes:_
 - [X] PDO-5090 Update default version of pf-pingid-integration-kit to 2.24.0 in PingFederate
 - [X] PDO-5104 Update Prometheus CPU/MEM limits
 - [X] PDO-5107 Fluent-bit pods stuck in pending state
+- [X] PDO-5123 Create new folders "Backup-ops-template" "restore-ops-template" for PD backups,restore process
 - [X] PDO-5124 Enable bootstrapping a new customer with ArgoCD
 - [X] PDO-5131 Pods (typically cloudwatch) Stuck in pending state
 - [X] PDO-5138 Add a new hook script '02-health-check.sh' to support readiness and liveness probes 
@@ -173,6 +177,7 @@ _Changes:_
 - [X] PDO-5148 Modify Prometheus query for all backup alerting to only include the primary pod
 - [X] PDO-5157 Configure customer group from Shared P1 Tenant
 - [X] PDO-5191 Update image_map to align with tagging process
+- [X] PDO-5217 Increase replica count (min=7, max=9) within prod/large for Nginx Ingress Controller
 - [X] PDO-5221 'Field "responseCode.keyword" not found' on the 'Ping Access - Response Codes Over Time' visualization
 - [X] PDO-5223 Remove pa-was config for ArgoCD from non customer-hub CDEs
 - [X] PDO-5232 Configure Fluent-bit kubernetes filter to prevent caching for statefulsets
@@ -190,7 +195,13 @@ _Changes:_
 - [X] PDO-5302 Fix PF multiline parsing
 - [X] PDO-5315 Bugfix - argocd-bootstrap to use region specific env vars
 - [X] PDO-5319 The cluster name is not displayed correctly in Grafana Dashboard for the CHUB cluster
-
+- [X] PDO-5328 Add pingaccess-was-license secret placeholder entry to CHUB 
+- [X] PDO-5377 Patch CA to balance node across all AZs
+- [X] PDO-5390 nri-bundle-nrk8s-kubelet-* pods running by CDE stuck in Pending state
+- [X] PDO-5393 Bugfix - secondary CSR missing app dir
+- [X] PDO-5419 Bugfix - remove monitoring & logging from secondary
+- [X] PDO-5415 Bugfix - PA-WAS ext ingress is missing from non-customer-hub environments
+- [X] PDO-5436 Bugfix - Uneven load distribution among logstash pods
 
 ### 1.17.0.0
 

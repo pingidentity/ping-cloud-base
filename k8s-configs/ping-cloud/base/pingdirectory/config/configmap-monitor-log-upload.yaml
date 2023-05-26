@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pingdirectory-periodic-monitor-log-upload
+data:
+  monitor-log-data.sh: |-
+    #!/bin/sh
+
+    # Install kubectl
+    curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl -o /tmp/kubectl
+    chmod +x /tmp/kubectl
+
+    NUM_REPLICAS=$(/tmp/kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
+
+    START=0
+    END=$((${NUM_REPLICAS} - 1))
+
+    MONITOR_LOG_FILES=
+    ERROR_MSG=
+    for i in $(seq ${START} ${END}); do
+      SERVER="${K8S_STATEFUL_SET_NAME}-${i}"
+      SCRIPT="${HOOKS_DIR}"/82-upload-monitor-s3.sh
+      MONITOR_LOG_FILE=/tmp/upload.log
+
+      echo "Uploading monitor logs on server ${SERVER}"
+      /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" > "${MONITOR_LOG_FILE}"
+      monitor_log_status=$?
+
+      if test ${monitor_log_status} -eq 0; then
+        # Sending logs to STDOUT
+        cat ${MONITOR_LOG_FILE}
+      else
+        # Append last 10 lines to ERROR_MSG
+        MONITOR_LOG_ERROR=$(tail -10 "${MONITOR_LOG_FILE}")
+        ERROR_MSG="${ERROR_MSG} ${SERVER} failed - ${MONITOR_LOG_ERROR}"
+      fi
+    done
+
+    # Fail script if any of the servers failed during monitor log upload to S3
+    if [ -n "${ERROR_MSG}" ]; then
+      echo "${ERROR_MSG}"
+      echo "Script failed exiting"
+      exit 1
+    fi
