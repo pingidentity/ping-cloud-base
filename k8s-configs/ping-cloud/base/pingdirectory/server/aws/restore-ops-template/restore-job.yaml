@@ -1,0 +1,133 @@
+---
+
+# A manual restore can be performed by deploying this job. It will restore
+# data that was backed up by the periodic backup job to desired pingdirectory pod using the variable BACKUP_RESTORE_POD. All other servers
+# must initialize the data from the desired BACKUP_RESTORE_POD pod via dsreplication initialize-all. This
+# job can also be used to load the data initially from a backup created in
+# another environment, e.g. dev.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pingdirectory-restore
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+spec:
+  ttlSecondsAfterFinished: 30
+  backoffLimit: 0
+  template:
+    spec:
+      serviceAccountName: ping-serviceaccount
+      affinity:
+        # This podAffinity rule is designed to deploy Backup/restore job to the same AZ as its targeted PingDirectory server
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: statefulset.kubernetes.io/pod-name
+                operator: In
+                values:
+                - ${BACKUP_RESTORE_POD}
+            topologyKey: "kubernetes.io/hostname"
+      tolerations:
+        - key: "pingidentity.com/pd-only"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+      restartPolicy: Never
+      initContainers:
+      - name: pingdirectory-discovery-service
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-cli:2.0.17
+        imagePullPolicy: IfNotPresent
+        command:
+        - /get_ssm_env_vars.sh
+        envFrom:
+        - configMapRef:
+            name: pingdirectory-environment-variables
+        volumeMounts:
+        - name: data-dir
+          mountPath: /config
+        - name: discovery-service
+          mountPath: /get_ssm_env_vars.sh
+          subPath: get_ssm_env_vars.sh
+      containers:
+      - name: pingdirectory-restore
+        securityContext:
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+          allowPrivilegeEscalation: false
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.18-release-branch-latest
+        imagePullPolicy: Always
+        command:
+        - /opt/in/restore.sh
+        ports:
+          - containerPort: 1636
+            name: ldaps
+        volumeMounts:
+        - name: restore-script
+          mountPath: /opt/in/restore.sh
+          subPath: restore.sh
+        - name: pd-restore-volume
+          mountPath: /opt/restore
+        - name: out-dir
+          mountPath: /opt/out
+        - name: pingdirectory-passwords
+          mountPath: /usr/local/secrets
+          readOnly: true
+        - name: pingdirectory-init
+          mountPath: /opt/in/hooks/logger.lib.sh
+          subPath: logger.lib.sh
+        - name: pingdirectory-init
+          mountPath: /opt/in/utils.lib.sh
+          subPath: utils.lib.sh
+        - name: data-dir
+          mountPath: /opt/staging/ds_env_vars
+          subPath: ds_env_vars
+        envFrom:
+        - configMapRef:
+            name: pingdirectory-environment-variables
+        - configMapRef:
+            name: pingcommon-environment-variables
+        env:
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
+        - name: BACKUP_FILE_NAME
+          value: "${BACKUP_FILE_NAME}"
+        - name: ROOT_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingdirectory-passwords
+              key: root-user-password
+        - name: PING_CLOUD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+      securityContext:
+        fsGroup: 9999
+      volumes:
+      - name: restore-script
+        configMap:
+          name: pingdirectory-restore
+          defaultMode: 0555
+      - name: pd-restore-volume
+        persistentVolumeClaim:
+          claimName: pingdirectory-restore
+      - name: out-dir
+        persistentVolumeClaim:
+          claimName: out-dir-${BACKUP_RESTORE_POD}
+      - name: pingdirectory-passwords
+        secret:
+          secretName: pingdirectory-passwords
+          optional: true
+          defaultMode: 0400
+      - name: pingdirectory-init
+        configMap:
+          name: pingcommon-init
+          defaultMode: 0555
+      - name: discovery-service
+        configMap:
+          name: discovery-service
+          defaultMode: 0555
+      - name: data-dir
+        emptyDir: {}

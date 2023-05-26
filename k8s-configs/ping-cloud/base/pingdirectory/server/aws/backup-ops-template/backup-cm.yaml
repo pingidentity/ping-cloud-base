@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name:  pingdirectory-backup-script
+data:
+  backup.sh: |-
+    #!/bin/sh
+
+    delete_pvc() {
+      /tmp/kubectl delete pvc pingdirectory-backup -n ${PING_CLOUD_NAMESPACE} --grace-period=0 --force
+    }
+
+    # This guarantees that delete_pvc method will always run, even if the backup job exits due to an error
+    trap "delete_pvc" EXIT
+
+    # Job will not be using /opt/out, therefore force it to use its own /opt/in directory
+    export HOOKS_DIR="/opt/in/hooks"
+
+    # Install kubectl
+    curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
+    -o /tmp/kubectl
+    chmod +x /tmp/kubectl
+
+    echo "Running backup script for PingDirectory"
+    SCRIPT="/opt/in/hooks/90-upload-backup-s3.sh"
+    test -x ${SCRIPT} && ${SCRIPT}

@@ -89,6 +89,13 @@ spec:
             - containerPort: 9198
               name: metrics
               protocol: TCP
+          resources:
+            limits:
+              cpu: "500m"
+              memory: 500Mi
+            requests:
+              cpu: "150m"
+              memory: 100Mi
         - name: logstash
           image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logstash/dev:v1.19-release-branch-latest
           imagePullPolicy: Always
@@ -105,15 +112,11 @@ spec:
                 fieldRef:
                   fieldPath: spec.nodeName
             - name: CONFIG_RELOAD_AUTOMATIC
-              value: 'true'
-            - name: CONFIG_RELOAD_INTERVAL
-              value: 5s
+              value: 'false'
             - name: LOG_FORMAT
               value: json
-            - name: PIPELINE_BATCH_DELAY
-              value: '20'
             - name: PIPELINE_BATCH_SIZE
-              value: '100'
+              value: '1000'
             - name: PIPELINE_ECS_COMPATIBILITY
               value: disabled
             - name: PIPELINE_ORDERED
@@ -122,6 +125,10 @@ spec:
               value: persisted
             - name: QUEUE_MAX_BYTES
               value: 1000gb
+            - name: QUEUE_DRAIN
+              value: "true"
+            - name: LS_JAVA_OPTS
+              value: "-Xms1g -Xmx1g"
           envFrom:
             - configMapRef:
                 name: elk-environment-variables
@@ -135,11 +142,11 @@ spec:
             successThreshold: 1
             timeoutSeconds: 5
           readinessProbe:
-            failureThreshold: 3
+            failureThreshold: 10
             httpGet:
               path: /
-              port: 9600
-            initialDelaySeconds: 60
+              port: 8080
+            initialDelaySeconds: 30
             periodSeconds: 10
             successThreshold: 3
             timeoutSeconds: 5
@@ -217,7 +224,7 @@ spec:
             requests:
               cpu: "150m"
               memory: 100Mi
-      terminationGracePeriodSeconds: 30
+      terminationGracePeriodSeconds: 60
       volumes:
         - name: logstash-pipeline-main
           configMap:

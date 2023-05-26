@@ -29,12 +29,27 @@ metadata:
   name: ping-role
 rules:
   - apiGroups:
+    - "batch"
+    resources:
+    - "jobs"
+    verbs:
+    - get
+    - create
+  - apiGroups:
+    - ""
+    resources:
+    - "configmaps"
+    verbs:
+    - create
+    - get
+    - list
+    - watch
+  - apiGroups:
     - ""
     resources:
     - "pods"
     - "pods/log"
     - "secrets"
-    - "configmaps"
     verbs:
     - get
     - list
@@ -45,6 +60,8 @@ rules:
     - "persistentvolumeclaims"
     verbs:
     - delete
+    - get
+    - create
   - apiGroups:
     - ""
     - "apps"

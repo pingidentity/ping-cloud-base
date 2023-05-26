@@ -228,6 +228,8 @@ patchesStrategicMerge:
 - pingdelegator/ff-external-ingress/remove-external-ingress.yaml
 - pingdirectory/ff-external-ingress/remove-external-ingress.yaml
 - pingfederate/ff-external-ingress/remove-external-ingress.yaml
+### The patch is copied from pingcommon
+- ../base/ping-cloud/pingaccess-was/ff-external-ingress/remove-external-ingress.yaml
 
 #- ../base/ping-cloud/pingfederate/provisioning/remove-from-secondary-patch.yaml
 

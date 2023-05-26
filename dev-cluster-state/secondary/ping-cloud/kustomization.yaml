@@ -113,7 +113,14 @@ patchesStrategicMerge:
   apiVersion: v1
   kind: ConfigMap
   metadata:
-    name: pingdirectory-backup
+    name: pingdirectory-backup-ops-template-files
+  $patch: delete
+
+- |-
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: pingdirectory-restore-ops-template-files
   $patch: delete
 
 - |-

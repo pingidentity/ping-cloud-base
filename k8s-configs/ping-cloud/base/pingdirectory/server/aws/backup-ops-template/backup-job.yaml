@@ -1,0 +1,120 @@
+# A manual backup job - this does the same thing as the CronJob except it may be configured to be triggered in reaction
+# to a ClickOps event.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pingdirectory-backup
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+spec:
+  ttlSecondsAfterFinished: 30
+  backoffLimit: 5
+  template:
+    spec:
+      serviceAccountName: ping-serviceaccount
+      affinity:
+        # This podAffinity rule is designed to deploy Backup/restore job to the same AZ as its targeted PingDirectory server
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: statefulset.kubernetes.io/pod-name
+                operator: In
+                values:
+                - ${BACKUP_RESTORE_POD}
+            topologyKey: "kubernetes.io/hostname"
+      tolerations:
+        - key: "pingidentity.com/pd-only"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+      restartPolicy: Never
+      initContainers:
+      - name: pingdirectory-discovery-service
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-cli:2.0.17
+        imagePullPolicy: IfNotPresent
+        command:
+        - /get_ssm_env_vars.sh
+        envFrom:
+        - configMapRef:
+            name: pingdirectory-environment-variables
+        volumeMounts:
+        - name: data-dir
+          mountPath: /config
+        - name: discovery-service
+          mountPath: /get_ssm_env_vars.sh
+          subPath: get_ssm_env_vars.sh
+      containers:
+      - name: pingdirectory-backup
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.18-release-branch-latest
+        imagePullPolicy: Always
+        securityContext:
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+          allowPrivilegeEscalation: false
+        command:
+        - /opt/in/backup.sh
+        envFrom:
+        - configMapRef:
+            name: pingdirectory-environment-variables
+        - configMapRef:
+            name: pingcommon-environment-variables
+        env:
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
+        - name: ROOT_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingdirectory-passwords
+              key: root-user-password
+        - name: PING_CLOUD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        volumeMounts:
+        - name: pingdirectory-backup-script
+          mountPath: /opt/in/backup.sh
+          subPath: backup.sh
+        - name: out-dir
+          mountPath: /opt/out
+        - name: pd-backup-volume
+          mountPath: /opt/backup
+        - name: pingdirectory-passwords
+          mountPath: /usr/local/secrets
+          readOnly: true
+        - name: pingdirectory-init
+          mountPath: /opt/in/hooks/logger.lib.sh
+          subPath: logger.lib.sh
+        - name: data-dir
+          mountPath: /opt/staging/ds_env_vars
+          subPath: ds_env_vars
+      securityContext:
+        fsGroup: 9999
+      volumes:
+      - name: pingdirectory-backup-script
+        configMap:
+          name: pingdirectory-backup-script
+          defaultMode: 0555
+      - name: pd-backup-volume
+        persistentVolumeClaim:
+          claimName: pingdirectory-backup
+      - name: out-dir
+        persistentVolumeClaim:
+          claimName: out-dir-${BACKUP_RESTORE_POD}
+      - name: data-dir
+        emptyDir: {}
+      - name: pingdirectory-passwords
+        secret:
+          secretName: pingdirectory-passwords
+          optional: true
+          defaultMode: 0400
+      - name: pingdirectory-init
+        configMap:
+          name: pingcommon-init
+          defaultMode: 0555
+      - name: discovery-service
+        configMap:
+          name: discovery-service
+          defaultMode: 0555

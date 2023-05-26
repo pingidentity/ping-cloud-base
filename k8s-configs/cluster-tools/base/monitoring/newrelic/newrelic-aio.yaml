@@ -964,6 +964,7 @@ spec:
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
       serviceAccountName: nri-bundle-newrelic-infrastructure-controlplane
+      priorityClassName: high-priority-apps-to-avoid-pending-state
       initContainers:
         - name: wait-for-nr-license-secret
           securityContext:
@@ -1145,6 +1146,7 @@ spec:
       annotations: {}
     spec:
       serviceAccountName: nri-bundle-newrelic-infrastructure
+      priorityClassName: high-priority-apps-to-avoid-pending-state
       hostNetwork: false
       dnsPolicy: ClusterFirstWithHostNet
       initContainers:
