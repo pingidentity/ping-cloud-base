@@ -1164,23 +1164,26 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
 
   add_derived_variables
 
-  # TODO: With https://pingidentity.atlassian.net/browse/PP-5719 we should see all of the IRSA roles represented like
-  # ArgoCD, then we can change this IRSA SSM fetch code to be consistent
+  #IRSA_TEMPLATE='eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role/pcpt/irsa-roles'
   # shellcheck disable=SC2016
-  IRSA_TEMPLATE='eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role/pcpt/irsa-roles'
-  set_var "IRSA_PING_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-ping"
-  set_var "IRSA_PA_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-pingaccess"
-  set_var "IRSA_PD_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-pingdirectory"
-  set_var "IRSA_PF_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-pingfederate"
 
-  # shellcheck disable=SC2016
+  # TODO: validate this new int contract with Versent before merging!
   IRSA_TEMPLATE='eks.amazonaws.com/role-arn: ${ssm_value}'
+
+  # TODO: is this going to be just ping?
+  set_var "IRSA_PING_ANNOTATION_KEY_VALUE" "" "${IRSA_BASE_PATH}" "ping/arn" "${IRSA_TEMPLATE}"
+  set_var "IRSA_PA_ANNOTATION_KEY_VALUE" "" "${IRSA_BASE_PATH}" "pingaccess/arn" "${IRSA_TEMPLATE}"
+  set_var "IRSA_PD_ANNOTATION_KEY_VALUE" "" "${IRSA_BASE_PATH}" "pingdirectory/arn" "${IRSA_TEMPLATE}"
+  set_var "IRSA_PF_ANNOTATION_KEY_VALUE" "" "${IRSA_BASE_PATH}" "pingfederate/arn" "${IRSA_TEMPLATE}"
+
+  # TODO: should this change to just argocd?
   set_var "IRSA_ARGOCD_ANNOTATION_KEY_VALUE" "" "${IRSA_BASE_PATH}" "irsa-argocd/arn" "${IRSA_TEMPLATE}"
 
+  # TODO: is this already agreed to? Seems like we should make it consistent as well - irsa_base_path/karpenter/arn
+  set_var "KARPENTER_ROLE_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}"
+
   # shellcheck disable=SC2016
-  KARPENTER_ROLE_TEMPLATE='eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role/pcpt/KarpenterControllerRole'
-  set_var "KARPENTER_ROLE_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" \
-          "${KARPENTER_ROLE_TEMPLATE}/KarpenterControllerRole"
+  #KARPENTER_ROLE_TEMPLATE='eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role/pcpt/KarpenterControllerRole'
 
   set_var "CLUSTER_ENDPOINT" "" "${ACCOUNT_BASE_PATH}${ENV}" "/cluster-endpoint"
 
