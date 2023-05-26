@@ -1,0 +1,9 @@
+# This is custom priorityClass object to prevent some pods to stuck in Pending state while deploying cluster resources
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: high-priority-apps-to-avoid-pending-state
+value: 1
+preemptionPolicy: PreemptLowerPriority
+globalDefault: false
+description: "Flag for apps that remain in pending state"
