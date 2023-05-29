@@ -171,6 +171,8 @@ spec:
           value: CLUSTERED_CONSOLE
         - name: IS_UPGRADE
           value: YES
+        - name: STARTUP_COMMAND
+          value: "/opt/staging/hooks/99-pa-upgrade-run.sh"
         - name: HTTPS_PORT
           value: "9090"
         - name: OLD_PA_ADMIN_USER_PASSWORD
