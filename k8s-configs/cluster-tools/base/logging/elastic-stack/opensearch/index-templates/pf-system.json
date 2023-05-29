@@ -1,7 +1,12 @@
 {
   "index_patterns": [
-    "pf-system-*"
+    "pf-system"
   ],
+  "data_stream": {
+    "timestamp_field": {
+      "name": "@timestamp"
+    }
+  },
   "template": {
     "settings": {
       "index.unassigned.node_left.delayed_timeout": "10m",
