@@ -1,10 +1,11 @@
 import json
 import re
 import time
-import unittest
 
 from datetime import datetime
+from typing import Optional
 
+import kubernetes
 import kubernetes as k8s
 
 
@@ -12,9 +13,9 @@ def timeout_reached(start_time: float, timeout_seconds: int):
     return time.time() > start_time + timeout_seconds
 
 
-class K8sUtils(unittest.TestCase):
+class K8sUtils:
     """
-    Base class for Healthcheck test suites
+    Utility class for interacting with a Kubernetes deployment
 
     Sets up basic kubernetes API clients and helper methods
     """
@@ -22,20 +23,16 @@ class K8sUtils(unittest.TestCase):
     batch_client = None
     core_client = None
     network_client = None
-    endpoint = None
 
-    @classmethod
-    def setUpClass(cls):
+    def __init__(self):
         k8s.config.load_kube_config()
-        cls.app_client = k8s.client.AppsV1Api()
-        cls.batch_client = k8s.client.BatchV1Api()
-        cls.core_client = k8s.client.CoreV1Api()
-        cls.network_client = k8s.client.NetworkingV1Api()
-        cls.endpoint = cls.get_endpoint("healthcheck")
+        self.app_client = k8s.client.AppsV1Api()
+        self.batch_client = k8s.client.BatchV1Api()
+        self.core_client = k8s.client.CoreV1Api()
+        self.network_client = k8s.client.NetworkingV1Api()
 
-    @classmethod
-    def get_endpoint(cls, substring: str) -> str:
-        response = cls.network_client.list_ingress_for_all_namespaces(
+    def get_endpoint(self, substring: str) -> str:
+        response = self.network_client.list_ingress_for_all_namespaces(
             _preload_content=False
         )
         routes = json.loads(response.data)
@@ -49,9 +46,8 @@ class K8sUtils(unittest.TestCase):
         )
         return f"http://{hostname}"
 
-    @classmethod
-    def run_job(cls, name: str, wait: bool = True) -> k8s.client.V1Job:
-        cron_jobs = cls.batch_client.list_cron_job_for_all_namespaces()
+    def run_job(self, name: str, wait: bool = True) -> k8s.client.V1Job:
+        cron_jobs = self.batch_client.list_cron_job_for_all_namespaces()
         try:
             job_body, job_namespace = next(
                 (cron_job.spec.job_template, cron_job.metadata.namespace)
@@ -63,20 +59,19 @@ class K8sUtils(unittest.TestCase):
 
         curr_time = datetime.now().strftime("%Y%m%d%H%M%S.%f")
         job_body.metadata.name = f"{name}-test-{curr_time}"
-        job = cls.batch_client.create_namespaced_job(
+        job = self.batch_client.create_namespaced_job(
             body=job_body, namespace=job_namespace
         )
 
         if wait:
-            cls.wait_for_job_complete(job_body.metadata.name, job_namespace)
+            self.wait_for_job_complete(job_body.metadata.name, job_namespace)
 
         return job
 
-    @classmethod
-    def wait_for_job_complete(cls, name: str, namespace: str):
+    def wait_for_job_complete(self, name: str, namespace: str):
         watch = k8s.watch.Watch()
         for event in watch.stream(
-            func=cls.core_client.list_namespaced_pod,
+            func=self.core_client.list_namespaced_pod,
             namespace=namespace,
             timeout_seconds=60,
         ):
@@ -86,18 +81,16 @@ class K8sUtils(unittest.TestCase):
                 watch.stop()
                 return
 
-    @classmethod
-    def get_deployment_pod_names(cls, label: str, namespace: str):
-        res = cls.core_client.list_namespaced_pod(
+    def get_deployment_pod_names(self, label: str, namespace: str):
+        res = self.core_client.list_namespaced_pod(
             namespace=namespace, label_selector=label
         )
         return [pod.metadata.name for pod in res.items]
 
-    @classmethod
-    def kill_pods(cls, label: str, namespace: str, timeout_seconds: int = 300):
-        pod_names = cls.get_deployment_pod_names(label=label, namespace=namespace)
+    def kill_pods(self, label: str, namespace: str, timeout_seconds: int = 300):
+        pod_names = self.get_deployment_pod_names(label=label, namespace=namespace)
         for pod_name in pod_names:
-            cls.core_client.delete_namespaced_pod(
+            self.core_client.delete_namespaced_pod(
                 name=pod_name,
                 namespace=namespace,
                 body=k8s.client.V1DeleteOptions(
@@ -109,17 +102,16 @@ class K8sUtils(unittest.TestCase):
         for pod_name in pod_names:
             while not timeout_reached(start_time, timeout_seconds):
                 try:
-                    cls.core_client.read_namespaced_pod_status(pod_name, namespace)
+                    self.core_client.read_namespaced_pod_status(pod_name, namespace)
                 except k8s.client.exceptions.ApiException as e:
                     # The pod has been deleted
                     if e.status == 404:
                         break
 
-    @classmethod
-    def wait_for_pod_running(cls, label: str, namespace: str):
+    def wait_for_pod_running(self, label: str, namespace: str):
         watch = k8s.watch.Watch()
         for event in watch.stream(
-            func=cls.core_client.list_namespaced_pod,
+            func=self.core_client.list_namespaced_pod,
             namespace=namespace,
             label_selector=label,
             timeout_seconds=60,
@@ -140,19 +132,73 @@ class K8sUtils(unittest.TestCase):
         pod_logs = pod_logs.splitlines()
         return pod_logs
 
+    def wait_for_pod_log(
+        self,
+        pod_name: str,
+        namespace: str,
+        log_message: str,
+        timeout_seconds: int = 120,
+    ):
+        """
+        Wait until a message has been logged or timeout reached
+        :param pod_name: Pod name to watch the logs
+        :param namespace: Namespace of pod name
+        :param log_message: Log message to wait for
+        :param timeout_seconds: Timeout seconds
+        """
+        pods = self.core_client.list_namespaced_pod(namespace)
+        try:
+            pod = next(
+                pod.metadata.name
+                for pod in pods.items
+                if pod.metadata.name.startswith(pod_name)
+            )
+        except StopIteration as err:
+            print(f"Pod '{pod_name}' not found. {err}")
+            raise
+
+        watch = k8s.watch.Watch()
+        watch_start = time.time()
+        for event in watch.stream(
+            func=self.core_client.read_namespaced_pod_log,
+            namespace=namespace,
+            name=pod,
+        ):
+            if log_message in event or timeout_reached(
+                start_time=watch_start, timeout_seconds=timeout_seconds
+            ):
+                watch.stop()
+                return
+
     def get_namespace_names(self):
         namespaces = self.core_client.list_namespace()
-        return [
-            ns.metadata.name
-            for ns in namespaces.items
-        ]
+        return [ns.metadata.name for ns in namespaces.items]
+
+    def get_namespaced_pod_name(
+        self, namespace: str, pod_name_pattern: str
+    ) -> Optional[str]:
+        """
+        Get the first matching pod name from pods in a namespace that match a naming pattern
+        :param namespace: Namespace to check pod names
+        :param pod_name_pattern: Regex pod name pattern to check against pod names
+        :returns: pod name
+        """
+        pods = self.core_client.list_namespaced_pod(namespace)
+        return next(
+            (
+                pod.metadata.name
+                for pod in pods.items
+                if re.search(pod_name_pattern, pod.metadata.name)
+            ),
+            None,
+        )
 
     def get_namespaced_pod_names(self, namespace: str, pod_name_pattern: str) -> [str]:
         """
         Get a list of pod_names for pods in a namespace that match a naming pattern
         :param namespace: Namespace to check pod names
         :param pod_name_pattern: Regex pod name pattern to check against pod names
-        :returns: {pod_name: pod_IP}
+        :returns: [pod_names]
         """
         pods = self.core_client.list_namespaced_pod(namespace)
         return [
@@ -160,3 +206,22 @@ class K8sUtils(unittest.TestCase):
             for pod in pods.items
             if re.search(pod_name_pattern, pod.metadata.name)
         ]
+
+    def get_namespaced_secret(
+        self, name: str, namespace: str
+    ) -> Optional[kubernetes.client.V1Secret]:
+        """
+        Get a secret from a namespace
+        :param name: Name of the secret
+        :param namespace: Namespace of the secret
+        :return: V1Secret object
+        """
+        secrets = self.core_client.list_namespaced_secret(namespace)
+        return next(
+            (
+                secret
+                for secret in secrets.items
+                if secret.metadata.name.startswith(name)
+            ),
+            None,
+        )

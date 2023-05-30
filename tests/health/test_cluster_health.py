@@ -16,7 +16,7 @@ class TestClusterHealth(TestHealthBase):
         self.deployment_exists()
 
     def test_health_check_has_cluster_health_results(self):
-        res = requests.get(self.endpoint, verify=False)
+        res = requests.get(self.healthcheck_endpoint, verify=False)
         self.assertTrue(
             self.cluster_health in res.json()["health"].keys(),
             "No cluster health in health check results",
