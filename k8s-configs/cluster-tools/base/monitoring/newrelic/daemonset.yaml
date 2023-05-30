@@ -44,7 +44,7 @@ spec:
             runAsNonRoot: true
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
-          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.23.0
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.24.0
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
           env:
@@ -229,7 +229,7 @@ spec:
             runAsNonRoot: true
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
-          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.23.0
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.24.0
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
           env:
