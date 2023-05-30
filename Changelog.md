@@ -31,6 +31,7 @@ _Changes:_
 - [X] PDO-5376 Cluster-Autoscaler - update to balance node across all AZs
 - [X] PDO-5341 pingcentral-ext-ingress - fix pathType
 - [X] PDO-5388 Add PGO Back Jobs TTL
+- [X] PDO-5432 Update/Disable healthchecks
 - [X] PDO-5413 [Port] PingFederate server.log events do not appear as a single Kibana document
 - [X] PDO-5482 [PORT] Update kube-state-metrics cluster tool to v2.7.0 for EKS 1.25
 - [X] PDO-5488 Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
