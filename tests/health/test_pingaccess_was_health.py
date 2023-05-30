@@ -11,7 +11,7 @@ class TestPingAccessWASHealth(TestHealthBase):
         self.deployment_exists()
 
     def test_health_check_has_pingaccess_was_results(self):
-        res = requests.get(self.endpoint, verify=False)
+        res = requests.get(self.healthcheck_endpoint, verify=False)
         self.assertTrue(
             self.pingaccess_was in res.json()["health"].keys(),
             f"No {self.pingaccess_was} in health check results",

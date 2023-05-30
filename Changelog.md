@@ -9,9 +9,10 @@
 
 _Changes:_
 
-- PDO-4779 Modify seal.sh script to work for microservices
-- PDO-5314 Update bootstrap to create davinci-configuration secret
-- PDO-5333 ArgoCD authentication to private ECR for Helm
+- [X] PDO-4779 Modify seal.sh script to work for microservices
+- [X] PDO-5158 Configure PA WAS from Shared P1 Tenant
+- [X] PDO-5314 Update bootstrap to create davinci-configuration secret
+- [X] PDO-5333 ArgoCD authentication to private ECR for Helm
 
 ### 1.18.0.0
 
