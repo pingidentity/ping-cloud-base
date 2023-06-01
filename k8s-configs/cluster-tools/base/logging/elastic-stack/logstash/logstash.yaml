@@ -5,6 +5,7 @@ metadata:
   labels:
     app: logstash-elastic
 spec:
+  podManagementPolicy: Parallel
   updateStrategy:
     type: RollingUpdate
   selector:
