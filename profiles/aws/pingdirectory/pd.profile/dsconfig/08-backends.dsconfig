@@ -1,5 +1,7 @@
 dsconfig set-backend-prop \
         --backend-name "userRoot" \
+        --set "base-dn:${USER_BASE_DN}" \
+        --set enabled:true \
         --set db-cache-percent:35 \
         --set import-thread-count:1
 

@@ -18,6 +18,7 @@
 - [Port] Update kubectl to 1.24.0 for EKS 1.25 - 1.17.1.0
 - Upgrade Postgres Operator (PGO) to 5.3.1 to support EKS v1.25
 - Add PGO Backups Jobs TTL
+- Move the update of USER_BASE_DN to manage-profile, Rebuild the indexes for all backends
 
 _Changes:_
 
@@ -38,6 +39,7 @@ _Changes:_
 - [X] PDO-5489 batch/v1beta1 CronJob, v1.25 release stopped serving the deprecated API versions
 - [X] PDO-5490 policy/v1beta1 PodDisruptionBudget is deprecated is unavailable in v1.25
 - [X] PDO-5474 upgrade Postgres Operator (PGO) to 5.3.1 to support EKS v1.25
+- [X] PDO-5507 Move the update of USER_BASE_DN to manage-profile, Rebuild the indexes for all backends
 
 ### 1.17.0.0
 

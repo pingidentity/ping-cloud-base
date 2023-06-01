@@ -9,11 +9,15 @@ TOPOLOGY_DESCRIPTOR_PROFILES_JSON=/opt/staging/topology/descriptor-profiles.json
 # PingCentral admin username to the application
 PC_ADMIN_USER_USERNAME=administrator
 
-# PD USER_BASE_DN
+# PingDirectory Backends and USER_BASE_DNs
+PLATFORM_CONFIG_BACKEND_ID=platformconfig
+PLATFORM_CONFIG_BASE_DN=o=platformconfig
+APP_INTEGRATIONS_BACKEND_ID=appintegrations
+APP_INTEGRATIONS_BASE_DN=o=appintegrations
+
+USER_BACKEND_ID=userRoot
 USER_BASE_DN=dc=example,dc=com
 
-# This is the OOTB USER_BASE_DN value and is always set to "dc=example,dc=com"
-DEFAULT_USER_BASE_DN=dc=example,dc=com
 PD_PCV_SEARCH_FILTER=(&(objectClass=person)(|(mail=${username})(cn=${username})(uid=${username})))
 
 # PD Datastore ID from PingFederate
