@@ -6,6 +6,7 @@
 - Add new seal secrets script for MonoRepo breakup
 - Updating kustomize build options within ArgoCD to support Helm
 - Fix: kubernetes-dashboards configmap "Too long" error
+- Update es-cluster-warm patch in custom-patches-sample.yaml file 
 
 _Changes:_
 
@@ -13,6 +14,7 @@ _Changes:_
 - [X] PDO-5158 Configure PA WAS from Shared P1 Tenant
 - [X] PDO-5314 Update bootstrap to create davinci-configuration secret
 - [X] PDO-5333 ArgoCD authentication to private ECR for Helm
+- [X] PDO-5203 Review patch samples in custom-patches.yaml.sample file
 
 ### 1.18.0.0
 
