@@ -121,7 +121,7 @@ spec:
         - name: shared-dir
           mountPath: /opt/shared-dir
       - name: pingaccess-upgrade
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess:pdo-4604
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess:pdo-4604-1
         command: ["/bin/sh"]
         args: ["-c", "echo >> /opt/staging/hooks/01-start-server.sh && echo >> /opt/staging/hooks/50-before-post-start.sh && echo >> /opt/staging/hooks/80-post-start.sh && echo >> /opt/staging/hooks/10-start-sequence.sh && echo >> /opt/staging/hooks/20-restart-sequence.sh && cd /opt/in/hooks &&  echo 'test' && /opt/in/hooks/22-upgrade-server.sh "]
         securityContext:
@@ -199,7 +199,7 @@ spec:
             optional: false
       containers:
       - name: pingaccess-admin
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess:pdo-4604
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess:pdo-4604-1
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
