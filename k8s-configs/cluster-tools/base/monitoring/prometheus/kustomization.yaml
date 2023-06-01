@@ -3,14 +3,14 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 namespace: prometheus
 
 resources:
-- namespace.yaml
-- grafana.yaml
-- prometheus.yaml
-- prometheus-job-exporter.yaml
-- alertmanager.yaml
-- prometheus-config.yaml
-- prometheus-agent-config.yaml
-- prometheus-agent.yaml
+# - namespace.yaml
+# - grafana.yaml
+# - prometheus.yaml
+# - prometheus-job-exporter.yaml
+# - alertmanager.yaml
+# - prometheus-config.yaml
+# - prometheus-agent-config.yaml
+# - prometheus-agent.yaml
 
 configMapGenerator:
 - name: prometheus-environment-variables
