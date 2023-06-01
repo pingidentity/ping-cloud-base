@@ -123,7 +123,7 @@ spec:
       - name: pingaccess-upgrade
         image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess:pdo-4604
         command: ["/bin/sh"]
-        args: ["-c", "echo >> /opt/staging/hooks/01-start-server.sh && echo >> /opt/staging/hooks/50-before-post-start.sh && echo >> /opt/staging/hooks/80-post-start.sh && echo >> /opt/staging/hooks/10-start-sequence.sh && echo >> /opt/staging/hooks/20-restart-sequence.sh && cd /opt/in/hooks && ls -al && /opt/in/hooks/22-upgrade-server.sh "]
+        args: ["-c", "echo >> /opt/staging/hooks/01-start-server.sh && echo >> /opt/staging/hooks/50-before-post-start.sh && echo >> /opt/staging/hooks/80-post-start.sh && echo >> /opt/staging/hooks/10-start-sequence.sh && echo >> /opt/staging/hooks/20-restart-sequence.sh && cd /opt/in/hooks && ls -al && echo 'test' && ls -al /opt/out/instance && /opt/in/hooks/22-upgrade-server.sh "]
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
