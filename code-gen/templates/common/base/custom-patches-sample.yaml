@@ -83,7 +83,7 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: es-cluster
+  name: es-cluster-warm
   namespace: elastic-stack-logging
 spec:
   volumeClaimTemplates:
