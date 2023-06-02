@@ -2,12 +2,16 @@ import unittest
 
 import requests
 
-from health_common import Categories, TestHealthBase
+from health_common import Categories, TestHealthBase, get_variable_value
 
 
 class TestPingFederateHealth(TestHealthBase):
     deployment_name = "healthcheck-pingfederate"
     pingfederate = "pingFederate"
+    pod_name_pattern = "healthcheck-pingfederate-.+"
+    admin_configmap_name = "pingfederate-admin-environment-variables"
+    admin_service_name_env_var = "K8S_SERVICE_NAME_PINGFEDERATE_ADMIN"
+    admin_port_env_var = "PF_ADMIN_PORT"
 
     def setUp(self) -> None:
         self.ping_cloud_ns = next((ns for ns in self.get_namespace_names() if ns.startswith(self.ping_cloud)), self.ping_cloud)
@@ -63,7 +67,7 @@ class TestPingFederateHealth(TestHealthBase):
             test_name in test_results,
             f"No '{test_name}' checks found in health check results",
         )
-      
+
     def test_health_check_has_pingdirectory_connection_results(self):
         test_results = self.get_test_results(self.pingfederate, Categories.connectivity)
         test_results = " ".join(test_results.keys())
@@ -76,3 +80,18 @@ class TestPingFederateHealth(TestHealthBase):
                         expected_test,
                         f"No '{expected_test}' checks found in health check results",
                     )
+
+    def test_admin_api_url_uses_service_name_in_primary_region(self):
+        admin_env_vars = self.get_configmap_values(
+            self.ping_cloud, self.admin_configmap_name
+        )
+        admin_service_name = admin_env_vars.get(self.admin_service_name_env_var)
+        admin_port = admin_env_vars.get(self.admin_port_env_var)
+        expected = f"{admin_service_name}.{self.ping_cloud}:{admin_port}"
+
+        variables = self.run_python_script_in_pod(
+            self.health, self.pod_name_pattern, "/app/PFVariables.py"
+        )
+        pf_admin_api_host = get_variable_value(variables, "pf_admin_api_host=")
+
+        self.assertEqual(expected, pf_admin_api_host)

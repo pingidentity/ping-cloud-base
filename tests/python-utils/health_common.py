@@ -80,3 +80,16 @@ class TestHealthBase(K8sUtils):
             deployment_name,
             f"Deployment '{self.deployment_name}' not found in cluster",
         )
+
+
+def get_variable_value(variables: [str], name: str) -> str:
+    """
+    Get the value of a variable in a list of variables in the format ["name=value",...]
+    :param variables: List of variables
+    :param name: Variable name
+    :return: Value, or empty string if variable name not found
+    """
+    try:
+        return next(ev.split("=")[-1] for ev in variables if ev.startswith(name))
+    except StopIteration:
+        return ""

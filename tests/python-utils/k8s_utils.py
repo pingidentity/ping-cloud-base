@@ -158,6 +158,18 @@ class K8sUtils(unittest.TestCase):
             if re.search(pod_name_pattern, pod.metadata.name)
         ]
 
+    def get_first_matching_pod_name(self, namespace: str, pod_name_pattern: str) -> "":
+        try:
+            return next(
+                name
+                for name in self.get_namespaced_pod_names(namespace, pod_name_pattern)
+            )
+        except StopIteration:
+            print(
+                f"Pod not found for pattern {pod_name_pattern} in namespace {namespace}"
+            )
+            return ""
+
     def get_pod_env_vars(self, namespace: str, pod_name_pattern: str) -> [str]:
         """
         Exec into a pod and get the environment variables
@@ -166,17 +178,22 @@ class K8sUtils(unittest.TestCase):
         :param pod_name_pattern: Pod name pattern
         :return: List of environment variables
         """
-        try:
-            pod_name = next(
-                    name
-                    for name in self.get_namespaced_pod_names(namespace, pod_name_pattern)
-            )
-            return self.exec_command(namespace, pod_name, "env").split("\n")
-        except StopIteration:
-            print(f"Pod not found for pattern {pod_name_pattern} in namespace {namespace}")
+        pod_name = self.get_first_matching_pod_name(namespace, pod_name_pattern)
+        if not pod_name:
             return []
+        return self.exec_command(namespace, pod_name, ["env"]).split("\n")
 
-    def exec_command(self, namespace: str, pod_name: str, command: str) -> str:
+    def run_python_script_in_pod(
+        self, namespace: str, pod_name_pattern: str, script_path: str
+    ) -> [str]:
+        pod_name = self.get_first_matching_pod_name(namespace, pod_name_pattern)
+        if not pod_name:
+            return []
+        return self.exec_command(namespace, pod_name, ["python", script_path]).split(
+            "\n"
+        )
+
+    def exec_command(self, namespace: str, pod_name: str, command: [str]) -> str:
         """
         Execute a command in a running pod
 
@@ -200,3 +217,13 @@ class K8sUtils(unittest.TestCase):
         except k8s.client.exceptions.ApiException as err:
             print(f"Unable to exec in pod {pod_name}. {err}")
             return ""
+
+    def get_configmap_values(self, namespace: str, configmap_name: str) -> {str: str}:
+        try:
+            res = self.core_client.read_namespaced_config_map(configmap_name, namespace)
+            return res.data
+        except k8s.client.exceptions.ApiException as err:
+            print(
+                f"Unable to get values for configmap {configmap_name} in namespace {namespace}. {err}"
+            )
+            return {}
