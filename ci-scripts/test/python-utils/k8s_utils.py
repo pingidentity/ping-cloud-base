@@ -142,10 +142,7 @@ class K8sUtils(unittest.TestCase):
 
     def get_namespace_names(self):
         namespaces = self.core_client.list_namespace()
-        return [
-            ns.metadata.name
-            for ns in namespaces.items
-        ]
+        return [ns.metadata.name for ns in namespaces.items]
 
     def get_namespaced_pod_names(self, namespace: str, pod_name_pattern: str) -> [str]:
         """
@@ -160,3 +157,46 @@ class K8sUtils(unittest.TestCase):
             for pod in pods.items
             if re.search(pod_name_pattern, pod.metadata.name)
         ]
+
+    def get_pod_env_vars(self, namespace: str, pod_name_pattern: str) -> [str]:
+        """
+        Exec into a pod and get the environment variables
+
+        :param namespace: Namespace of pod
+        :param pod_name_pattern: Pod name pattern
+        :return: List of environment variables
+        """
+        try:
+            pod_name = next(
+                    name
+                    for name in self.get_namespaced_pod_names(namespace, pod_name_pattern)
+            )
+            return self.exec_command(namespace, pod_name, "env").split("\n")
+        except StopIteration:
+            print(f"Pod not found for pattern {pod_name_pattern} in namespace {namespace}")
+            return []
+
+    def exec_command(self, namespace: str, pod_name: str, command: str) -> str:
+        """
+        Execute a command in a running pod
+
+        :param namespace: Namespace of pod
+        :param pod_name: Pod name
+        :param command: Command to run in pod
+        :return: response
+        """
+        try:
+            res = k8s.stream.stream(
+                self.core_client.connect_get_namespaced_pod_exec,
+                pod_name,
+                namespace,
+                command=command,
+                stderr=True,
+                stdin=False,
+                stdout=True,
+                tty=False,
+            )
+            return res
+        except k8s.client.exceptions.ApiException as err:
+            print(f"Unable to exec in pod {pod_name}. {err}")
+            return ""
