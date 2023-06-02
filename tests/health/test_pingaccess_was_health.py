@@ -6,6 +6,15 @@ from health_common import Categories, TestHealthBase
 class TestPingAccessWASHealth(TestHealthBase):
     deployment_name = "healthcheck-pingaccess-was"
     pingaccess_was = "pingAccessWas"
+    pod_name_pattern = "healthcheck-pingaccess-was-.+"
+
+    def test_region_env_vars_in_pod(self):
+        env_vars = self.get_pod_env_vars(self.health, self.pod_name_pattern)
+        for expected_ev in ["REGION=", "TENANT_DOMAIN="]:
+            with self.subTest(env_var=expected_ev):
+                self.assertTrue(
+                    any(env_var.startswith(expected_ev) for env_var in env_vars)
+                )
 
     def test_pingaccess_was_health_deployment_exists(self):
         self.deployment_exists()
@@ -54,4 +63,3 @@ class TestPingAccessWASHealth(TestHealthBase):
             len(res) > 0,
             "No 'proxy an unauthenticated request' checks found in health check results",
         )
-

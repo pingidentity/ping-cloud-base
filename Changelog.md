@@ -85,6 +85,7 @@
 - Update cert-manager to v1.11.2 for EKS 1.25
 - Upgrade Postgres Operator (PGO) to 5.3.1 to support EKS v1.25
 - Add PGO Backups Jobs TTL
+- Add region env vars to cluster-health-environment-variables configmap
 
 _Changes:_
 
