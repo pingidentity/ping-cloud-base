@@ -165,6 +165,9 @@ spec:
         - name: data-dir
           mountPath: /opt/staging/ds_env_vars
           subPath: ds_env_vars    
+        - name: upgrade-dir
+          mountPath: /tmp/instance
+          subPath: instance
         ports:
         - containerPort: 9000
         - containerPort: 9090
@@ -241,6 +244,9 @@ spec:
         - name: data-dir
           mountPath: /opt/staging/ds_env_vars
           subPath: ds_env_vars
+        - name: upgrade-dir
+          mountPath: /tmp/instance
+          subPath: instance
         readinessProbe:
           exec:
             command: [ /opt/staging/hooks/85-pa-admin-readiness.sh ]
@@ -293,6 +299,8 @@ spec:
       - name: shared-dir
         emptyDir: {}
       - name: data-dir
+        emptyDir: {}
+      - name: upgrade-dir
         emptyDir: {}
       - name: pingaccess-init
         configMap:
