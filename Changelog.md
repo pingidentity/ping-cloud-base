@@ -19,6 +19,7 @@
 - Upgrade Postgres Operator (PGO) to 5.3.1 to support EKS v1.25
 - Add PGO Backups Jobs TTL
 - Move the update of USER_BASE_DN to manage-profile, Rebuild the indexes for all backends
+- Add region env vars to cluster-health-environment-variables configmap
 
 _Changes:_
 
@@ -29,16 +30,16 @@ _Changes:_
 - [X] PDO-5342 Fix PGO namespace for large-size customers
 - [X] PDO-5343 PF Engines in Small Prod Deployment incorrectly set to minReplicas: 2
 - [X] PDO-5347 PGO resources - handle secondary region v1.17.1
-- [X] PDO-5376 Cluster-Autoscaler - update to balance node across all AZs
 - [X] PDO-5341 pingcentral-ext-ingress - fix pathType
+- [X] PDO-5376 Cluster-Autoscaler - update to balance node across all AZs
 - [X] PDO-5388 Add PGO Back Jobs TTL
-- [X] PDO-5432 Update/Disable healthchecks
 - [X] PDO-5413 [Port] PingFederate server.log events do not appear as a single Kibana document
+- [X] PDO-5432 Update/Disable healthchecks
+- [X] PDO-5474 upgrade Postgres Operator (PGO) to 5.3.1 to support EKS v1.25
 - [X] PDO-5482 [PORT] Update kube-state-metrics cluster tool to v2.7.0 for EKS 1.25
 - [X] PDO-5488 Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
 - [X] PDO-5489 batch/v1beta1 CronJob, v1.25 release stopped serving the deprecated API versions
 - [X] PDO-5490 policy/v1beta1 PodDisruptionBudget is deprecated is unavailable in v1.25
-- [X] PDO-5474 upgrade Postgres Operator (PGO) to 5.3.1 to support EKS v1.25
 - [X] PDO-5507 Move the update of USER_BASE_DN to manage-profile, Rebuild the indexes for all backends
 
 ### 1.17.0.0
