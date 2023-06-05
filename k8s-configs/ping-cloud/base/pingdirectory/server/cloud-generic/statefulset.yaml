@@ -284,8 +284,7 @@ spec:
             timeoutSeconds: 5
           startupProbe:
             exec:
-              command:
-                - /opt/staging/hooks/84-startup-probe.sh
+              command: [ "sh", "-c", "echo 'Finished delaying PingDirectory by 180s using startupProbe'" ]
             # Do not start the startup probe for 3 minutes after starting the
             # container because PD will never finish its start/restart sequence
             # before then, in practice. Run the startup probe every 5 seconds
