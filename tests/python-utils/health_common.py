@@ -89,7 +89,4 @@ def get_variable_value(variables: [str], name: str) -> str:
     :param name: Variable name
     :return: Value, or empty string if variable name not found
     """
-    try:
-        return next(ev.split("=")[-1] for ev in variables if ev.startswith(name))
-    except StopIteration:
-        return ""
+    return next((ev.split("=")[-1] for ev in variables if ev.startswith(name)), "")
