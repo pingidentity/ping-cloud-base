@@ -10,7 +10,7 @@
 
 _Changes:_
 
-- PDO-4605 Create a new init container to upgrade PA and PA-WAS and mount volume to admin pod once upgrade is successful
+- PDO-4606 Create a new init container to upgrade PA and PA-WAS and mount volume to admin pod once upgrade is successful
 - PDO-4779 Modify seal.sh script to work for microservices
 - PDO-5314 Update bootstrap to create davinci-configuration secret
 - PDO-5333 ArgoCD authentication to private ECR for Helm
