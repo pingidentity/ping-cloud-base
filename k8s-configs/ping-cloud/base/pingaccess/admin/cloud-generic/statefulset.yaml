@@ -130,13 +130,6 @@ spec:
           runAsUser: 9031
           allowPrivilegeEscalation: false
         imagePullPolicy: Always
-        resources:
-          requests:
-            memory: "4Gi"
-            cpu: 2
-          limits:
-            memory: "4Gi"
-            cpu: 2  
         volumeMounts:
         - name: ssh-dir
           mountPath: /home/ping/.ssh
