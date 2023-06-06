@@ -121,9 +121,9 @@ spec:
         - name: shared-dir
           mountPath: /opt/shared-dir
       - name: pingaccess-upgrade
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess:pdo-4604
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v1.19-release-branch-latest
         command: ["/bin/sh"]
-        args: ["-c", "echo >> /opt/staging/hooks/01-start-server.sh && echo >> /opt/staging/hooks/50-before-post-start.sh && echo >> /opt/staging/hooks/80-post-start.sh && echo >> /opt/staging/hooks/10-start-sequence.sh && echo >> /opt/staging/hooks/20-restart-sequence.sh && cd /opt/in/hooks &&  echo 'test' && /opt/in/hooks/22-upgrade-server.sh "]
+        args: ["-c", " /opt/in/hooks/22-upgrade-server.sh "]
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -174,8 +174,6 @@ spec:
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_CONSOLE
-        - name: IS_UPGRADE
-          value: YES
         - name: STARTUP_COMMAND
           value: "/opt/staging/hooks/22-upgrade-server.sh"
         - name: HTTPS_PORT
@@ -202,7 +200,7 @@ spec:
             optional: false
       containers:
       - name: pingaccess-admin
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess:pdo-4604
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v1.19-release-branch-latest
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -267,8 +265,6 @@ spec:
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_CONSOLE
-        - name: IS_UPGRADE
-          value: NO
         - name: HTTPS_PORT
           value: "9090"
         - name: OLD_PA_ADMIN_USER_PASSWORD
