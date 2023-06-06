@@ -51,12 +51,12 @@ testPfSite() {
   assertEquals "Name value was ${name}" 'PingFederate Admin Console' "$(strip_double_quotes "${name}")"
 }
 
-testKibanaSite() {
+testOSDSite() {
   response=$(get_site "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "21")
   assertEquals "Response value was ${response}" 0 $?
 
   name=$(parse_value_from_response "${response}" 'name')
-  assertEquals "Name value was ${name}" 'Kibana' "$(strip_double_quotes "${name}")"
+  assertEquals "Name value was ${name}" 'OpenSearch Dashboards' "$(strip_double_quotes "${name}")"
 }
 
 testGrafanaSite() {
@@ -111,7 +111,7 @@ testPfVirtualHost() {
   fi
 }
 
-testKibanaVirtualHost() {
+testOSDVirtualHost() {
   response=$(get_virtual_host "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "21")
   assertEquals "Response value was ${response}" 0 $?
 
@@ -121,7 +121,7 @@ testKibanaVirtualHost() {
   if [[ ${stripped_host} =~ ^logs.* ]]; then
     assertContains "${stripped_host}" 'logs'
   else
-    fail 'The Kibana virtual host should have a host value starting with logs'
+    fail 'The OpenSearch Dashboards virtual host should have a host value starting with logs'
   fi
 }
 
@@ -183,12 +183,12 @@ testPfApplication() {
   assertEquals "Name value was ${name}" 'PingFederate App' "$(strip_double_quotes "${name}")"
 }
 
-testKibanaApplication() {
+testOSDApplication() {
   response=$(get_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "21")
   assertEquals "Response value was ${response}" 0 $?
 
   name=$(parse_value_from_response "${response}" 'name')
-  assertEquals "Name value was ${name}" 'Kibana App' "$(strip_double_quotes "${name}")"
+  assertEquals "Name value was ${name}" 'OpenSearch Dashboards App' "$(strip_double_quotes "${name}")"
 }
 
 testGrafanaApplication() {

@@ -177,39 +177,7 @@ data:
         regex: (.+)
         target_label: __metrics_path__
         replacement: /api/v1/nodes/${1}/proxy/metrics
-    
-    - job_name: 'logstash-exporter'
-      scrape_interval: 10s
-      metrics_path: /metrics
-      kubernetes_sd_configs:
-      - role: endpoints
-      relabel_configs:
-      - source_labels: [__meta_kubernetes_endpoint_port_name, __meta_kubernetes_service_name]
-        action: keep
-        regex: metrics;logstash-elastic
-      - source_labels: [__meta_kubernetes_pod_name]
-        action: replace
-        target_label: instance
-      - source_labels: [__meta_kubernetes_namespace]
-        action: replace
-        target_label: namespace
-  
-    - job_name: 'fluentbit-exporter'
-      scrape_interval: 10s
-      metrics_path: /api/v1/metrics/prometheus
-      kubernetes_sd_configs:
-      - role: endpoints
-      relabel_configs:
-      - source_labels: [__meta_kubernetes_endpoint_port_name, __meta_kubernetes_service_name]
-        action: keep
-        regex: api;fluent-bit
-      - source_labels: [__meta_kubernetes_pod_name]
-        action: replace
-        target_label: instance
-      - source_labels: [__meta_kubernetes_namespace]
-        action: replace
-        target_label: namespace
-    
+        
     - job_name: 'kubernetes-pods'
       kubernetes_sd_configs:
       - role: pod
@@ -233,7 +201,7 @@ data:
         target_label: kubernetes_namespace
       - source_labels: [__meta_kubernetes_pod_name]
         action: replace
-        target_label: kubernetes_pod_name
+        target_label: instance
     
     - job_name: 'kubernetes-cadvisor'
       scheme: https
@@ -255,6 +223,8 @@ data:
     - job_name: 'kubernetes-service-endpoints'
       kubernetes_sd_configs:
       - role: endpoints
+      tls_config:
+        insecure_skip_verify: true
       relabel_configs:
       - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
         action: keep
@@ -280,6 +250,9 @@ data:
       - source_labels: [__meta_kubernetes_service_name]
         action: replace
         target_label: kubernetes_name
+      - source_labels: [__meta_kubernetes_pod_name]
+        action: replace
+        target_label: instance
     
     - job_name: 'crunchy-postgres-exporter'
       kubernetes_sd_configs:

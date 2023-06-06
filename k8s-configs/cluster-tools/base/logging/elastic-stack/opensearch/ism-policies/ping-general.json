@@ -1,0 +1,86 @@
+{
+    "policy": {
+        "policy_id": "ping_standard_policy",
+        "description": "Standard ping policy (after 7 days read-only, after 90 days shrunk and delete, shrunken index will be processed via shrunken policy)",
+        "last_updated_time": 1684846142111,
+        "schema_version": 17,
+        "error_notification": null,
+        "default_state": "hot",
+        "states": [
+            {
+                "name": "hot",
+                "actions": [],
+                "transitions": [
+                    {
+                        "state_name": "RO",
+                        "conditions": {
+                            "min_index_age": "7d"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "RO",
+                "actions": [
+                    {
+                        "retry": {
+                            "count": 3,
+                            "backoff": "exponential",
+                            "delay": "1m"
+                        },
+                        "read_only": {}
+                    }
+                ],
+                "transitions": [
+                    {
+                        "state_name": "delete",
+                        "conditions": {
+                            "min_index_age": "90d"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "delete",
+                "actions": [
+                    {
+                        "retry": {
+                            "count": 3,
+                            "backoff": "exponential",
+                            "delay": "1m"
+                        },
+                        "shrink": {
+                            "num_new_shards": 1,
+                            "target_index_name_template": {
+                                "source": "{{ctx.index}}_shrunken",
+                                "lang": "mustache"
+                            },
+                            "force_unsafe": true
+                        }
+                    },
+                    {
+                        "retry": {
+                            "count": 3,
+                            "backoff": "exponential",
+                            "delay": "1m"
+                        },
+                        "delete": {}
+                    }
+                ],
+                "transitions": []
+            }
+        ],
+        "ism_template": [
+            {
+                "index_patterns": [
+                    "pd-*",
+                    "pf-*",
+                    "pa-*",
+                    "logstash-*"
+                ],
+                "priority": 1,
+                "last_updated_time": 1684842823048
+            }
+        ]
+    }
+}

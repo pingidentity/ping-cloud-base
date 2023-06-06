@@ -1,0 +1,52 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+namespace: elastic-stack-logging
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+  - name: os-alerts-pd-1
+    files:
+      - pd_backend_disabled.json
+      - pd_back_init_fail.json
+      - pd_garbage_collection.json
+      - pd_critical_alarm.json
+      - pd_deadlock.json
+      - pd_lockdown.json
+      - pd_ext_init_fail.json
+      - pd_fail_mirror_conf.json
+      - pd_index_corrupt.json
+      - pd_index_degrade.json
+  - name: os-alerts-pd-2
+    files:
+      - pd_je_recovery.json
+      - pd_ldap_conn_fails.json
+      - pd_ldap_start_err.json
+      - pd_ldap_uncaught_err.json
+      - pd_large_attr_fail.json
+      - pd_low_disk.json
+      - pd_low_disk_warn.json
+      - pd_major_alarm.json
+      - pd_out_of_disk.json
+      - pd_priv_assign.json
+  - name: os-alerts-pd-3
+    files:
+      - pd_cert_replace_fail.json
+      - pd_repl_backlog.json
+      - pd_repl_changelog_fail.json
+      - pd_repl_genid_mismatch.json
+      - pd_repl_missing_changes.json
+      - pd_repl_replay_fail.json
+      - pd_repl_server_fail.json
+      - pd_3rd_party_ext.json
+      - pd_uncaught.json
+      - pd_unresolved_repl_conflict.json
+  - name: os-alerts-pd-4
+    files:
+      - pd_user_err.json
+      - pd_user_fatal.json
+      - pd_work_queue_back.json
+      - pd_work_queue_full.json
+      - pd_worker_threads_termin.json

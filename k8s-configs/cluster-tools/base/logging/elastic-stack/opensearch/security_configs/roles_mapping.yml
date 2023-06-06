@@ -1,0 +1,88 @@
+_meta:
+  type: "rolesmapping"
+  config_version: 2
+
+# Define your roles mapping here
+
+opendistro_security_anonymous_role:
+  backend_roles:
+  - "opendistro_security_anonymous_backendrole"
+
+alerting_read_access:
+  backend_roles:
+  - "opendistro_security_anonymous_backendrole"
+
+anomaly_read_access:
+  backend_roles:
+  - "opendistro_security_anonymous_backendrole"
+
+notebooks_read_access:
+  backend_roles:
+  - "opendistro_security_anonymous_backendrole"
+
+observability_read_access:
+  backend_roles:
+  - "opendistro_security_anonymous_backendrole"
+
+reports_instances_read_access:
+  backend_roles:
+  - "opendistro_security_anonymous_backendrole"
+
+reports_read_access:
+  backend_roles:
+  - "opendistro_security_anonymous_backendrole"
+
+asynchronous_search_read_access:
+  backend_roles:
+  - "opendistro_security_anonymous_backendrole"
+
+ml_read_access:
+  backend_roles:
+  - "opendistro_security_anonymous_backendrole"
+
+notifications_read_access:
+  backend_roles:
+  - "opendistro_security_anonymous_backendrole"
+
+snapshot_management_read_access:
+  backend_roles:
+  - "opendistro_security_anonymous_backendrole"
+
+all_access:
+  reserved: false
+  backend_roles:
+  - "admin"
+  - "opendistro_security_anonymous_backendrole"
+  description: "Maps admin to all_access"
+
+logstash:
+  reserved: false
+  backend_roles:
+  - "logstash"
+
+logstash_write:
+  reserved: false
+  backend_roles:
+  - "logstash"
+
+kibana_user:
+  reserved: false
+  backend_roles:
+  - "kibanauser"
+  description: "Maps kibanauser to kibana_user"
+
+kibana_server:
+  reserved: true
+  users:
+  - "kibanaserver"
+
+index_migration:
+  reserved: true
+  users:
+  - "indexmigration"
+
+bootstrap:
+  reserved: true
+  users:
+  - "bootstrap"
+  

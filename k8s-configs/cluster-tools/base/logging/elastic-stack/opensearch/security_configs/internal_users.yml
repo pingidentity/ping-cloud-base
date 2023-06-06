@@ -1,0 +1,36 @@
+_meta:
+  type: "internalusers"
+  config_version: 2
+
+# Define your internal users here
+
+
+admin:
+  hash: "$2y$12$x0W/bb.rCExntDszzTQMGO46BjhcabBlY/j44cLQlQgpNCPImb00m"
+  reserved: true
+  backend_roles:
+  - "admin"
+  description: "Admin user"
+
+kibanaserver:
+  hash: "$2y$12$KLiCHmtIiXpojpsriqFBBedlHyuOB6QSWFK932S1DELwzKdZ0ioAq"
+  reserved: true
+  description: "OpenSearch Dashboards user"
+
+logstash:
+  hash: "$2y$12$eTCIRWius.Lix5/5zwJwHOJCqILQmaWDRx6fn3IDR54K59snwlURa"
+  reserved: true
+  backend_roles:
+  - "logstash"
+  description: "Logstash user"
+
+
+indexmigration:
+  hash: "$2y$12$nnNxuzpFcBlpO/FesnUA7O8oZRFF.zBZaBpKKk0zeokYOzq.Y4plu"
+  reserved: true
+  description: "Index migration user"
+
+bootstrap:
+  hash: "$2y$12$rKbj1eVYptD9uw5B7COX4uOKffCoTLaDwZftW8VKVwZmmT4mJRWsy"
+  reserved: true
+  description: "Bootstrap user"

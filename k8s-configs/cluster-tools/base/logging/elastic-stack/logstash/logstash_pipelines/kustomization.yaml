@@ -5,4 +5,3 @@ resources:
 - logstash_pipelines.yaml
 - main
 - customer
-- alerts

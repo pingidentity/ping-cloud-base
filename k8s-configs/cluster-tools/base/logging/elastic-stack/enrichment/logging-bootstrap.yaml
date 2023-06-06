@@ -1,0 +1,48 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: logging-bootstrap
+  annotations:
+    argocd.argoproj.io/sync-options: Replace=true
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  template:
+    spec:
+      serviceAccountName: enrichment
+      containers:
+      - name: logging-bootstrap
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+          runAsGroup: 1000
+          allowPrivilegeEscalation: false
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/bootstrap/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        env:
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+        envFrom:
+        - configMapRef:
+            name: logging-bootstrap-environment-variables
+        volumeMounts:
+          - mountPath: /app/config/app_config.yaml
+            name: logging-bootstrap-resources
+            subPath: logging-bootstrap-resources.yaml
+            readOnly: true
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "300m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      restartPolicy: OnFailure
+      volumes:
+      - name: logging-bootstrap-resources
+        configMap:
+          name: logging-bootstrap-resources
+---

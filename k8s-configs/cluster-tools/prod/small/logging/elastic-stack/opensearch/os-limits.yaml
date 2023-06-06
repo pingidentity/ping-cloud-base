@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: opensearch-cluster-hot
+spec:
+  replicas: 5
+  template:
+    spec:
+      containers:
+        - name: opensearch
+          resources:
+            limits:
+              memory: 8Gi
+              cpu: "6"
+            requests:
+              memory: 6Gi
+              cpu: "2"
+          env:
+            - name: OPENSEARCH_JAVA_OPTS
+              value: "-Xms6g -Xmx6g"

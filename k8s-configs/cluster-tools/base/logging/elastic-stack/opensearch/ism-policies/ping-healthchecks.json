@@ -1,0 +1,48 @@
+{
+    "policy": {
+        "policy_id": "ping_7day_policy",
+        "description": "Ping policy for healthcheck and backup logs(after 7 days delete)",
+        "last_updated_time": 1684842849484,
+        "schema_version": 17,
+        "error_notification": null,
+        "default_state": "hot",
+        "states": [
+            {
+                "name": "hot",
+                "actions": [],
+                "transitions": [
+                    {
+                        "state_name": "delete",
+                        "conditions": {
+                            "min_index_age": "7d"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "delete",
+                "actions": [
+                    {
+                        "retry": {
+                            "count": 3,
+                            "backoff": "exponential",
+                            "delay": "1m"
+                        },
+                        "delete": {}
+                    }
+                ],
+                "transitions": []
+            }
+        ],
+        "ism_template": [
+            {
+                "index_patterns": [
+                    "healthchecks-*",
+                    "backup-*"
+                ],
+                "priority": 1,
+                "last_updated_time": 1678887761113
+            }
+        ]
+    }
+}

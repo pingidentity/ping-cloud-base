@@ -179,7 +179,7 @@ pawasEnginePublicHostname: "pingaccess-was.${DNS_ZONE_DERIVED}"
 
 prometheusPublicHostname: "prometheus.${DNS_ZONE_DERIVED}"
 grafanaPublicHostname: "monitoring.${DNS_ZONE_DERIVED}"
-kibanaPublicHostname: "logs.${DNS_ZONE_DERIVED}"
+osdPublicHostname: "logs.${DNS_ZONE_DERIVED}"
 argocdPublicHostname: "argocd.${DNS_ZONE_DERIVED}"
 
 healthcheckHttpbinPawasPublicHostname: "healthcheck-httpbin-pa-was.${DNS_ZONE_DERIVED}"

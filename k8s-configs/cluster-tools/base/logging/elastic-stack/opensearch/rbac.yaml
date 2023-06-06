@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: "opensearch"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: "opensearch-cluster-master"
+rules:
+  - apiGroups:
+      - extensions
+    resources:
+      - podsecuritypolicies
+    resourceNames:
+      - "opensearch-cluster-master"
+    verbs:
+      - use
+---
+# Source: opensearch/templates/rolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: "opensearch-cluster-master"
+subjects:
+  - kind: ServiceAccount
+    name: "opensearch"
+    namespace: "elastic-stack-logging"
+roleRef:
+  kind: Role
+  name: "opensearch-cluster-master"
+  apiGroup: rbac.authorization.k8s.io

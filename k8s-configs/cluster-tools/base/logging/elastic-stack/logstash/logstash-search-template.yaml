@@ -1,0 +1,63 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logstash-search-template
+data:
+  6hr-1200km-template.json: |
+    {
+      "query": {
+        "bool": {
+          "must": [],
+          "filter": [
+            {
+              "range": {
+                "@timestamp": {
+                  "gte": "now-6h/h",
+                  "lte": "now"
+                }
+              }
+            },
+            {
+              "match_phrase": {
+                "status": "success"
+              }
+            },
+            {
+              "match_phrase": {
+                "event": "AUTHN_ATTEMPT"
+              }
+            },
+            {
+              "match_phrase": {
+                "subject": "%{subject}"
+              }
+            },
+            {
+              "exists": {
+                "field": "geoip.ip"
+              }
+            }
+          ],
+          "should": [],
+          "must_not": {
+            "geo_distance": {
+              "distance": "1200km",
+              "geoip.location": {
+                "lat": "%{[geoip][latitude]}",
+                "lon": "%{[geoip][longitude]}"
+              }
+            }
+          }
+        }
+      },
+      "size": 1,
+      "sort": [
+        {
+          "@timestamp": {
+            "order": "desc"
+          }
+        }
+      ],
+      "_source": ["subject", "geoip.location", "geoip.latitude", "geoip.longitude", "geoip.country_name", "geoip.city_name", "protocol", "ip", "malicious_country", "suspicious_country", "_id"]
+    }
