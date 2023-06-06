@@ -141,6 +141,7 @@ spec:
           mountPath: /opt/shared-dir
       - name: pingaccess-was-upgrade
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always 
         command: ["/bin/sh"]
         args: ["-c", " /opt/in/hooks/22-upgrade-server.sh "]
         securityContext:
@@ -148,7 +149,6 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        imagePullPolicy: Always 
         volumeMounts:
         - name: ssh-dir
           mountPath: /home/ping/.ssh
@@ -213,12 +213,12 @@ spec:
       containers:
       - name: pingaccess-was-admin
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        imagePullPolicy: Always
         resources:
           requests:
             memory: "1280Mi"
