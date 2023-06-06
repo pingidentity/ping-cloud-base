@@ -1,18 +1,18 @@
 import requests
 
-from health_common import Categories, TestHealthBase, get_variable_value
+from health_common import Categories, TestHealthBase
 
 
 class TestPingAccessHealth(TestHealthBase):
     deployment_name = "healthcheck-pingaccess"
+    label = f"role={deployment_name}"
     pingaccess = "pingAccess"
-    pod_name_pattern = "healthcheck-pingaccess-[0-9a-zA-Z]{4,}-.+"
     admin_configmap_name = "pingaccess-admin-environment-variables"
     admin_service_name_env_var = "K8S_SERVICE_NAME_PINGACCESS_ADMIN"
     admin_port_env_var = "PA_ADMIN_PORT"
 
     def test_region_env_vars_in_pod(self):
-        env_vars = self.get_pod_env_vars(self.health, self.pod_name_pattern)
+        env_vars = self.get_pod_env_vars(self.health, self.label)
         for expected_ev in ["REGION=", "TENANT_DOMAIN="]:
             with self.subTest(env_var=expected_ev):
                 self.assertTrue(
@@ -62,16 +62,6 @@ class TestPingAccessHealth(TestHealthBase):
         )
 
     def test_admin_api_url_uses_service_name_in_primary_region(self):
-        admin_env_vars = self.get_configmap_values(
-            self.ping_cloud, self.admin_configmap_name
+        self.assert_admin_api_url_uses_service_name(
+            "/app/PAVariables.py", "pa_admin_api_host"
         )
-        admin_service_name = admin_env_vars.get(self.admin_service_name_env_var)
-        admin_port = admin_env_vars.get(self.admin_port_env_var)
-        expected = f"{admin_service_name}.{self.ping_cloud}:{admin_port}"
-
-        variables = self.run_python_script_in_pod(
-            self.health, self.pod_name_pattern, "/app/PAVariables.py"
-        )
-        pa_admin_api_host = get_variable_value(variables, "pa_admin_api_host=")
-
-        self.assertEqual(expected, pa_admin_api_host)

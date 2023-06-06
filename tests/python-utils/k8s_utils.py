@@ -144,49 +144,35 @@ class K8sUtils(unittest.TestCase):
         namespaces = self.core_client.list_namespace()
         return [ns.metadata.name for ns in namespaces.items]
 
-    def get_namespaced_pod_names(self, namespace: str, pod_name_pattern: str) -> [str]:
-        """
-        Get a list of pod_names for pods in a namespace that match a naming pattern
-        :param namespace: Namespace to check pod names
-        :param pod_name_pattern: Regex pod name pattern to check against pod names
-        :returns: {pod_name: pod_IP}
-        """
-        pods = self.core_client.list_namespaced_pod(namespace)
-        return [
-            pod.metadata.name
-            for pod in pods.items
-            if re.search(pod_name_pattern, pod.metadata.name)
-        ]
-
-    def get_first_matching_pod_name(self, namespace: str, pod_name_pattern: str) -> "":
+    def get_first_matching_pod_name(self, namespace: str, label: str) -> "":
         try:
             return next(
                 name
-                for name in self.get_namespaced_pod_names(namespace, pod_name_pattern)
+                for name in self.get_deployment_pod_names(label, namespace)
             )
         except StopIteration:
             print(
-                f"Pod not found for pattern {pod_name_pattern} in namespace {namespace}"
+                f"Pod not found for label {label} in namespace {namespace}"
             )
             return ""
 
-    def get_pod_env_vars(self, namespace: str, pod_name_pattern: str) -> [str]:
+    def get_pod_env_vars(self, namespace: str, label: str) -> [str]:
         """
         Exec into a pod and get the environment variables
 
         :param namespace: Namespace of pod
-        :param pod_name_pattern: Pod name pattern
+        :param label: Pod label
         :return: List of environment variables
         """
-        pod_name = self.get_first_matching_pod_name(namespace, pod_name_pattern)
+        pod_name = self.get_first_matching_pod_name(namespace, label)
         if not pod_name:
             return []
         return self.exec_command(namespace, pod_name, ["env"]).split("\n")
 
     def run_python_script_in_pod(
-        self, namespace: str, pod_name_pattern: str, script_path: str
+        self, namespace: str, label: str, script_path: str
     ) -> [str]:
-        pod_name = self.get_first_matching_pod_name(namespace, pod_name_pattern)
+        pod_name = self.get_first_matching_pod_name(namespace, label)
         if not pod_name:
             return []
         return self.exec_command(namespace, pod_name, ["python", script_path]).split(
