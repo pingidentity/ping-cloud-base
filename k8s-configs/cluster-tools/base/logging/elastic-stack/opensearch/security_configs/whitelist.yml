@@ -1,0 +1,7 @@
+config:
+  enabled: false
+  requests:
+    /_cluster/settings:
+      - GET
+    /_cat/nodes:
+      - GET

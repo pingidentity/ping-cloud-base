@@ -3,7 +3,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/${KUSTOMIZE_BASE}/logging?ref=${K8S_GIT_BRANCH}
-- ${DASH_REPO_URL}/kibana?ref=${DASH_REPO_BRANCH}
+- ${DASH_REPO_URL}/os-dashboards?ref=${DASH_REPO_BRANCH}
 
 
 generatorOptions:
@@ -20,6 +20,11 @@ configMapGenerator:
   literals:
     - SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX}
     - REGION=${REGION}
+
+- name: os-notifications-channels
+  behavior: merge
+  files:
+    - notifications/sns.json
 
 patchesStrategicMerge:
 - |-
@@ -44,13 +49,14 @@ patchesStrategicMerge:
       purpose: service-account-for-ping-cloud-stack
       ${IRSA_PING_ANNOTATION_KEY_VALUE}
 
+
 patchesJson6902:
 - target:
     kind: Service
-    name: elasticsearch
+    name: opensearch-cluster-master
     namespace: elastic-stack-logging
     version: v1
   patch: |-
     - op: replace
       path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
-      value: elasticsearch.${DNS_ZONE}
+      value: opensearch.${DNS_ZONE}

@@ -76,32 +76,6 @@ spec:
 ---
 
 ################################################
-#                ElasticSearch
-################################################
-
-### Update elasticsearch disk size  ###
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: es-cluster
-  namespace: elastic-stack-logging
-spec:
-  volumeClaimTemplates:
-  - metadata:
-      name: data
-      labels:
-        app: elasticsearch
-    spec:
-      accessModes:
-      - ReadWriteOnce
-      storageClassName: elasticsearch-csi-sc1
-      resources:
-        requests:
-          storage: 40Gi
-
----
-
-################################################
 #                Logstash
 ################################################
 

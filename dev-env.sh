@@ -196,7 +196,7 @@
 #                              | This file will be mounted into the Ping containers |
 #                              | at /opt/staging/topology/descriptor.json.          |
 #                              |                                                    |
-# DASH_REPO_URL                | The repository with Kibana\Grafana dashboards      | https://github.com/pingidentity/ping-cloud-dashboards
+# DASH_REPO_URL                | The repository with OSD\Grafana dashboards      | https://github.com/pingidentity/ping-cloud-dashboards
 #                              |                                                    |
 # DASH_REPO_BRANCH             | Branch where dashboards will be taken from         | main
 ########################################################################################################################

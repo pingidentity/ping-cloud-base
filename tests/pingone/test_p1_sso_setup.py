@@ -45,7 +45,7 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
             "PA_WAS_ADMIN_PUBLIC_HOSTNAME",
             "PROMETHEUS_PUBLIC_HOSTNAME",
             "GRAFANA_PUBLIC_HOSTNAME",
-            "KIBANA_PUBLIC_HOSTNAME",
+            "OSD_PUBLIC_HOSTNAME",
             "ARGOCD_PUBLIC_HOSTNAME",
         ]
         expected_redirect_uris = {

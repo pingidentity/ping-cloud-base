@@ -69,6 +69,11 @@ spec:
     metadata:
       labels:
         k8s-app: fluent-bit
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/scheme: "http"
+        prometheus.io/path: "/api/v1/metrics/prometheus"
+        prometheus.io/port: "2020"
     spec:
       containers:
       - name: fluent-bit
@@ -207,15 +212,3 @@ spec:
       - operator: "Exists"
         effect: "NoSchedule"
 ---
-kind: Service
-apiVersion: v1
-metadata:
-  name: fluent-bit
-  labels:
-    k8s-app: fluent-bit
-spec:
-  selector:
-    k8s-app: fluent-bit
-  ports:
-    - port: 2020
-      name: api

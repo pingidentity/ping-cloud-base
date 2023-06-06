@@ -81,7 +81,7 @@ spec:
     - host: logs-dev.ping-demo.com
       http:
         paths:
-          # This rule allows external access to Kibana via the pingaccess-was runtime service
+          # This rule allows external access to OpenSearch Dashboards via the pingaccess-was runtime service
           - pathType: Prefix
             path: /
             backend:

@@ -6,7 +6,7 @@ namespace: elastic-stack-logging
 resources:
 - files
 - enrichment-resources.yaml
-- enrichment-bootstrap.yaml
+- logging-bootstrap.yaml
 
 generatorOptions:
   disableNameSuffixHash: true

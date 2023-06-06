@@ -62,7 +62,7 @@ patchesJson6902:
       path: /spec/rules/1/host
       value: prometheus.${DNS_ZONE}
 
-    # Kibana pingaccess was runtime
+    # OpenSearch Dashboards pingaccess was runtime
     - op: replace
       path: /spec/tls/0/hosts/2
       value: logs.${DNS_ZONE}

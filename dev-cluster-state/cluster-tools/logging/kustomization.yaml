@@ -1,6 +1,0 @@
-kind: Kustomization
-apiVersion: kustomize.config.k8s.io/v1beta1
-namespace: elastic-stack-logging
-
-resources:
-  - ${DASH_REPO_URL}/kibana?ref=${DASH_REPO_BRANCH}

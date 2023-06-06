@@ -17,26 +17,6 @@ spec:
     spec:
       serviceAccountName: logstash-elastic
       initContainers:
-        - name: check-service-availability
-          securityContext:
-            runAsNonRoot: true
-            runAsUser: 1000
-            runAsGroup: 1000
-            allowPrivilegeEscalation: false
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v1.19-release-branch-latest
-          imagePullPolicy: Always
-          command:
-            - sh
-            - $(CONTAINER_NAME).sh
-          env:
-            - name: CONTAINER_NAME
-              value: check-service-availability
-            - name: CHECK_SERVICE_URL
-              value: 'http://elasticsearch'
-            - name: CHECK_SERVICE_PORT
-              value: '9200'
-            - name: DESIRED_STATUS
-              value: green
         - name: wait-for-bootstrap-completed
           securityContext:
             runAsGroup: 2000
@@ -49,8 +29,8 @@ spec:
             - sh
             - '-c'
             - >-
-              kubectl wait --for=condition=complete --timeout=300s -n
-              elastic-stack-logging job/logging-bootstrap
+              kubectl wait --for=condition=complete --timeout=900s -n
+              elastic-stack-logging job/opensearch-bootstrap
         - name: create-enrichment-cache-files
           securityContext:
             runAsNonRoot: true
@@ -129,6 +109,18 @@ spec:
               value: "true"
             - name: LS_JAVA_OPTS
               value: "-Xms1g -Xmx1g"
+            - name: XPACK_MONITORING_ENABLED
+              value: "false"
+            - name: OS_USER
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: os-logstash-creds
+            - name: OS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: os-logstash-creds
           envFrom:
             - configMapRef:
                 name: elk-environment-variables
@@ -175,13 +167,10 @@ spec:
             - name: logstash-pipeline-customer
               mountPath: /usr/share/logstash/pipeline/customer
               readOnly: true
-            - name: logstash-pipeline-alerts
-              mountPath: /usr/share/logstash/pipeline/alerts
-              readOnly: true
-            - name: enrichment-logstash-search-templates
+            - name: logstash-search-template
               mountPath: /etc/logstash/templates
               readOnly: true
-            - name: enrichment-elasticsearch-index-templates
+            - name: os-index-templates
               mountPath: /usr/share/logstash/index_templates
               readOnly: true
             - name: enrichment-cache-files
@@ -190,6 +179,8 @@ spec:
             - name: logstash-efs
               mountPath: /usr/share/logstash/data/queue
               readOnly: false
+            - name: os-certs
+              mountPath: /usr/share/logstash/certs
         # Sidecar enrichment container which updates Logstash dictionaries
         - name: enrichment-sidecar
           image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v1.19-release-branch-latest
@@ -232,23 +223,23 @@ spec:
         - name: logstash-pipeline-customer
           configMap:
             name: logstash-pipeline-customer
-        - name: logstash-pipeline-alerts
-          configMap:
-            name: logstash-pipeline-alerts
         - name: logstash-pipelines
           configMap:
             name: logstash-pipelines
-        - name: enrichment-logstash-search-templates
+        - name: logstash-search-template
           configMap:
-            name: enrichment-logstash-search-templates
-        - name: enrichment-elasticsearch-index-templates
+            name: logstash-search-template
+        - name: os-index-templates
           configMap:
-            name: enrichment-elasticsearch-index-templates
+            name: os-index-templates
         - name: enrichment-cache
           configMap:
             name: enrichment-cache
         - name: enrichment-cache-files
           emptyDir: {}
+        - name: os-certs
+          secret:
+            secretName: opensearch-cert
   serviceName: logstash-elastic
   volumeClaimTemplates:
     - metadata:
@@ -271,6 +262,11 @@ metadata:
   name: logstash-elastic
   labels:
     app: logstash-elastic
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/scheme: "http"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "9198"
 spec:
   selector:
     app: logstash-elastic
@@ -322,4 +318,13 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: logstash-elastic
-
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: os-logstash-creds
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+data:
+  username: bG9nc3Rhc2g=
+  password: bWk3ZWl0ZTJvb25vbzhFa3UxdWZvbzRlZ2gxamFpajI=

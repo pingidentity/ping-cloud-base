@@ -337,10 +337,10 @@ patchesJson6902:
       path: /spec/rules/3/host
       value: prometheus${ENVIRONMENT}.${TENANT_DOMAIN}
 
-    # Kibana through PA-WAS engines
+    # OpenSearch Dashboards through PA-WAS engines
     - op: replace
       path: /spec/tls/0/hosts/4
-      value: kibana${ENVIRONMENT}.${TENANT_DOMAIN}
+      value: os-dash${ENVIRONMENT}.${TENANT_DOMAIN}
     - op: replace
       path: /spec/rules/4/host
       value: logs${ENVIRONMENT}.${TENANT_DOMAIN}
