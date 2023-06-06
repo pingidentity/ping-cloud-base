@@ -27,5 +27,6 @@ resources:
 - rbac.yaml
 - secret.yaml
 - configmap.yaml
+- priorityclass.yaml
 - pingcloud-healthcheck
 - pingcloud-metadata

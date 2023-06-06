@@ -49,10 +49,10 @@ spec:
           resources:
             limits:
               memory: 8Gi
-              cpu: 2000m
+              cpu: "2"
             requests:
               memory: 4Gi
-              cpu: 100m
+              cpu: "1"
           ports:
             - containerPort: 9200
               name: rest
@@ -96,6 +96,8 @@ spec:
               value: >-
                 master, data_hot, data_content, ingest, ml, transform,
                 remote_cluster_client
+            - name: ES_JAVA_OPTS
+              value: "-Xms4g -Xmx4g"
           envFrom:
             - configMapRef:
                 name: elk-environment-variables

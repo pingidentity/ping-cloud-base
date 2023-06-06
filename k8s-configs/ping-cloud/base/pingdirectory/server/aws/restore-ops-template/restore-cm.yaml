@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pingdirectory-restore
+data:
+  restore.sh: |
+    #!/bin/sh
+
+    # Job will not be using /opt/out, therefore force it to use its own /opt/in directory
+    export HOOKS_DIR="/opt/in/hooks"
+    SCRIPT="/opt/in/hooks/90-restore-backup-s3.sh"
+    test -z "${BACKUP_RESTORE_POD}" && export SERVER="${K8S_STATEFUL_SET_NAME}-0" || export SERVER="${BACKUP_RESTORE_POD}"
+
+    pause_replication () {
+      if "${PAUSE_REPLICATION_BEFORE_RESTORE}" && test ${NUM_REPLICAS} -gt 1; then
+        echo "Executing pre-initialization from within ${SERVER} pod for DNs: ${DNS_LIST}"
+        for DN in ${DNS_LIST}; do
+          /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
+            "dsreplication pre-external-initialization \
+              --retryTimeoutSeconds \"${RETRY_TIMEOUT_SECONDS}\" \
+              --baseDN \"${DN}\" \
+              --no-prompt --ignoreWarnings"
+        done
+      fi
+    }
+
+    resume_replication() {
+      if "${PAUSE_REPLICATION_BEFORE_RESTORE}" && test ${NUM_REPLICAS} -gt 1; then
+        echo "Initializing replication from within ${SERVER} pod for DNs: ${DN_LIST} "
+        for DN in ${DNS_LIST}; do
+          /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
+            "dsreplication initialize-all \
+              --retryTimeoutSeconds \"${RETRY_TIMEOUT_SECONDS}\" \
+              --baseDN \"${DN}\" \
+              --no-prompt --ignoreWarnings"
+        done
+
+        echo "Executing post-initialization from within ${SERVER} pod for DNs: ${DNS_LIST}"
+        for DN in ${DNS_LIST}; do
+          /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
+            "dsreplication post-external-initialization \
+              --retryTimeoutSeconds \"${RETRY_TIMEOUT_SECONDS}\" \
+              --baseDN \"${DN}\" \
+              --no-prompt --ignoreWarnings"
+        done
+      fi
+    }
+
+    delete_pvc() {
+      /tmp/kubectl delete pvc pingdirectory-restore -n ${PING_CLOUD_NAMESPACE} --grace-period=0 --force
+    }
+
+    cleanup () {
+      resume_replication
+      delete_pvc
+    }
+
+    # This guarantees that cleanup method will always run, even if the restore job exits due to an error
+    trap "cleanup" EXIT
+
+    # Install kubectl
+    curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
+    -o /tmp/kubectl
+
+    chmod +x /tmp/kubectl
+
+    NUM_REPLICAS=$(/tmp/kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
+    echo "restore: number of replicas: ${NUM_REPLICAS}"
+
+    DN_LIST=
+    BASE_DNS_LIST="${USER_BASE_DN} ${USER_BASE_DN_2} ${USER_BASE_DN_3} ${USER_BASE_DN_4} ${USER_BASE_DN_5}"
+    # Separate each USER_BASE_DN with a ';'
+    BASE_DNS_LIST=$(echo ${BASE_DNS_LIST} | tr '[[:blank:]]/' ';')
+
+    if test -z "${REPLICATION_BASE_DNS}"; then
+      DN_LIST="${BASE_DNS_LIST}"
+    else
+    # Separate each USER_BASE_DN with a '|' to grep with a regex pattern.
+    # Example: grep -qE "dc=example,dc=com|dc=test,dc=com"
+
+      GREP_BASE_DNS_LIST=$(echo ${BASE_DNS_LIST} | tr ';' '|')
+      if echo "${REPLICATION_BASE_DNS}" | grep -qE "${GREP_BASE_DNS_LIST}"; then
+        DN_LIST="${REPLICATION_BASE_DNS}"
+      else
+        DN_LIST="${REPLICATION_BASE_DNS};${BASE_DNS_LIST}"
+      fi
+    fi
+    DNS_LIST=$(echo "${DN_LIST}" | tr ';' ' ')
+
+    pause_replication
+
+    echo "Running restore script"
+    test -x ${SCRIPT} && sh "${SCRIPT}"

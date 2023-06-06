@@ -10,25 +10,28 @@ data:
     curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl -o /tmp/kubectl
     chmod +x /tmp/kubectl
 
-    NUM_REPLICAS=$(/tmp/kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
-
-    START=0
-    END=$((${NUM_REPLICAS} - 1))
-
-    LDIF_FILES=
-    test -z "${BACKUP_RESTORE_POD}" && SERVER="${K8S_STATEFUL_SET_NAME}-0" || SERVER="${BACKUP_RESTORE_POD}"
+    ERROR_MSG=
+    SERVER="${K8S_STATEFUL_SET_NAME}-1"
     SCRIPT="${HOOKS_DIR}"/90-export-ldif-s3.sh
     LOG_FILE=/tmp/upload.log
 
-    echo "Uploading LDIF_FILES on server ${SERVER}"
+    echo "Uploading LDIF_FILE on server ${SERVER}"
     /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}">"${LOG_FILE}"
+    export_ldif_status=$?
 
-    if test ${?} -eq 0; then
-      # Sending logs to STDOUT
+    if test ${export_ldif_status} -eq 0; then
+      # Sending successful logs to STDOUT
       cat ${LOG_FILE}
-      LDIF_FILE=$(tail -1 "${LOG_FILE}")
-      test -z "${LDIF_FILES}" && LDIF_FILES="${LDIF_FILE}" || LDIF_FILES="${LDIF_FILES} ${LDIF_FILE}"
     else
-      echo "Error occurred while uploading LDIF_FILES on server ${SERVER}"
+      # Append last 10 lines to ERROR_MSG
+      EXPORT_LDIF_ERROR=$(tail -10 "${LOG_FILE}")
+      ERROR_MSG="${SERVER} failed - ${EXPORT_LDIF_ERROR}"
+      exit 1
+    fi
+
+    # Fail script if the desired server failed during export-ldif upload to S3
+    if [ -n "${ERROR_MSG}" ]; then
+      echo "${ERROR_MSG}"
+      echo "Script failed exiting"
       exit 1
     fi

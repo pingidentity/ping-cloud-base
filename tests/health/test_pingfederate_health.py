@@ -10,14 +10,14 @@ class TestPingFederateHealth(TestHealthBase):
     pingfederate = "pingFederate"
 
     def setUp(self) -> None:
-        self.ping_cloud_ns = next((ns for ns in self.get_namespace_names() if ns.startswith(self.ping_cloud)), self.ping_cloud)
-        self.pod_names = self.get_namespaced_pod_names(self.ping_cloud_ns, r"pingfederate-(?:|admin-)\d+")
+        self.ping_cloud_ns = next((ns for ns in self.k8s.get_namespace_names() if ns.startswith(self.ping_cloud)), self.ping_cloud)
+        self.pod_names = self.k8s.get_namespaced_pod_names(self.ping_cloud_ns, r"pingfederate-(?:|admin-)\d+")
 
     def test_pingfederate_health_deployment_exists(self):
         self.deployment_exists()
 
     def test_health_check_has_pingfederate_results(self):
-        res = requests.get(self.endpoint, verify=False)
+        res = requests.get(self.healthcheck_endpoint, verify=False)
         self.assertTrue(
             self.pingfederate in res.json()["health"].keys(),
             f"No {self.pingfederate} in health check results",

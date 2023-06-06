@@ -1,0 +1,14 @@
+# Persistent Volume to run backup process
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pingdirectory-backup
+  labels:
+    class: pingdirectory-server
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: pingdirectory-gp3
+  resources:
+    requests:
+      storage: ${PINGDIRECTORY_PVC_SIZE}
