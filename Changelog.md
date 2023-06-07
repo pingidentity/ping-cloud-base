@@ -45,6 +45,7 @@ _Changes:_
 - [X] PDO-5507 Move the update of USER_BASE_DN to manage-profile, Rebuild the indexes for all backends
 - [X] PDO-5508 Extend PingDirectory replica count to up to 50 pods per region and 11 base DNs if needed
 - [X] PDO-5533 [PORT] Add a new hook script '02-health-check.sh' to support readiness and liveness probes
+- [X] PDO-5553 Bugfix: remove-from-secondary-patch is broken for logstash-pipeline-alerts
 
 ### 1.17.0.0
 
