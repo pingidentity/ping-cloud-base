@@ -96,8 +96,13 @@ data:
     # Multiline exceptions
     [FILTER]
         Name                  multiline
-        match                 p14c.*  
+        match                 p14c.*
         multiline.key_content log
+        buffer                true
+        flush_ms              500
+        emitter_name          p14c.multiline
+        emitter_storage.type  filesystem
+        emitter_mem_buf_limit 100M
         multiline.parser      multiline_java_log
     
     [FILTER]
@@ -150,6 +155,11 @@ data:
         Name                  multiline
         match                 ping.*  
         multiline.key_content log
+        buffer                true
+        flush_ms              500
+        emitter_name          ping.multiline
+        emitter_storage.type  filesystem
+        emitter_mem_buf_limit 100M
         multiline.parser      multiline_java_log
     
     [FILTER]
@@ -724,6 +734,7 @@ data:
         type regex
         parser json
         key_content log
+        flush_timeout 500
     
         rule "start_state" "/^(\/.*\/log[s]?\/\w+(\.log)?)( \d{4}-\d{2}-\d{2}[T ]?\d{2}:\d{2}:\d{2}(,\d{3})?)\s+(\w+[: ]{1,2})(.*)/" "cont"
         rule "cont" "/^((?!INFO|WARN|ERROR|DEBUG|(admin-api|audit|jvm-garbage-collection|provisioner-audit|provisioner|request(2?)|transaction)\.log).)*$/" "cont"
