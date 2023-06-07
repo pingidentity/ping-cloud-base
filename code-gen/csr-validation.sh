@@ -17,7 +17,7 @@ NO_COLOR="\033[0m"
 find . -type d -name "charts" -exec rm -rf {} +
 
 # find all the apps in the CSR directory except k8s-configs, hidden ('.'), or base directories
-app_region_paths=$(find . -type d -depth 2 ! -path './k8s-configs*' ! -path './.*' ! -path './*/base')
+app_region_paths=$(find . -type d -depth 2 ! -path './k8s-configs*' ! -path './values-files*' ! -path './.*' ! -path './*/base')
 echo "Validating the following app paths:"
 echo "${app_region_paths}"
 
