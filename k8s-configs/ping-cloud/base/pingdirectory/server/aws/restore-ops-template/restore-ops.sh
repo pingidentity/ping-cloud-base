@@ -32,7 +32,7 @@ fi
 
 # Get desired backup file name to restore in pingdirectory pod
 if [ -z "${BACKUP_FILE_NAME}" ]; then
-  export BACKUP_FILE_NAME=$(kubectl get cm "pingdirectory-environment-variables" -o jsonpath='{.spec.resources.requests.storage}' -n "${PING_CLOUD_NAMESPACE}")
+  export BACKUP_FILE_NAME=$(kubectl get cm "pingdirectory-environment-variables" -o jsonpath='{.data.BACKUP_FILE_NAME}' -n "${PING_CLOUD_NAMESPACE}")
 fi
 
 # Create ConfigMap and PersistentVolumeClaim first as the Job is dependent on these resources during the mounting stage of the pod.

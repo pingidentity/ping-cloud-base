@@ -39,13 +39,14 @@ class TestPingFederateHealth(TestHealthBase):
             "No 'responds to requests' checks found in health check results",
         )
 
+    @unittest.skip("Skipping until check is re-enabled, ref: PDO-5511")
     def test_health_check_has_certificate_results(self):
         self.assertIn(
             "No certificates are expiring within 30 days",
             self.get_test_results(self.pingfederate, Categories.pod_status).keys(),
         )
 
-    @unittest.skip("Skipping until check is re-enabled, ref: PDO-5015")
+    @unittest.skip("Skipping until check is re-enabled, ref: PDO-5015, PDO-5026")
     def test_health_check_has_authenticate_a_user_results(self):
         test_results = self.get_test_results(self.pingfederate, Categories.connectivity)
         test_name = "Can authenticate a user"
@@ -54,6 +55,7 @@ class TestPingFederateHealth(TestHealthBase):
             f"No '{test_name}' checks found in health check results",
         )
 
+    @unittest.skip("Skipping until check is re-enabled, ref: PDO-5015, PDO-5026")
     def test_health_check_has_create_an_object_results(self):
         test_results = self.get_test_results(self.pingfederate, Categories.connectivity)
         test_name = "Can create an object in PF Admin"
