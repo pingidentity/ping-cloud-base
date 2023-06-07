@@ -1138,21 +1138,21 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   PROD_LETS_ENCRYPT_SERVER='https://acme-v02.api.letsencrypt.org/directory'
   STAGE_LETS_ENCRYPT_SERVER='https://acme-staging-v02.api.letsencrypt.org/directory'
 
-  if test ! "${LETS_ENCRYPT_SERVER}"; then
-    if "${IS_GA}" || "${IS_MY_PING}"; then
-      LETS_ENCRYPT_SERVER="${PROD_LETS_ENCRYPT_SERVER}"
-    else
-      case "${ENV}" in
-        dev | test | stage)
-          LETS_ENCRYPT_SERVER="${STAGE_LETS_ENCRYPT_SERVER}"
-          ;;
-        prod | customer-hub)
-          LETS_ENCRYPT_SERVER="${PROD_LETS_ENCRYPT_SERVER}"
-          ;;
-      esac
-    fi
-  fi
-  export LETS_ENCRYPT_SERVER="${LETS_ENCRYPT_SERVER}"
+#  if test ! "${LETS_ENCRYPT_SERVER}"; then
+#    if "${IS_GA}" || "${IS_MY_PING}"; then
+#      LETS_ENCRYPT_SERVER="${PROD_LETS_ENCRYPT_SERVER}"
+#    else
+#      case "${ENV}" in
+#        dev | test | stage)
+#          LETS_ENCRYPT_SERVER="${STAGE_LETS_ENCRYPT_SERVER}"
+#          ;;
+#        prod | customer-hub)
+#          LETS_ENCRYPT_SERVER="${PROD_LETS_ENCRYPT_SERVER}"
+#          ;;
+#      esac
+#    fi
+#  fi
+  export LETS_ENCRYPT_SERVER="${STAGE_LETS_ENCRYPT_SERVER}"
 
   # Set PF variables based on ENV
   if echo "${LETS_ENCRYPT_SERVER}" | grep -q 'staging'; then
