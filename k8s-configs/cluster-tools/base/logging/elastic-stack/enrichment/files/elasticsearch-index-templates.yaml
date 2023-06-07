@@ -1624,7 +1624,7 @@ data:
         "settings": {
           "index": {
             "lifecycle": {
-              "name": "healthchecks",
+              "name": "ping-7-day-retention",
               "rollover_alias": "healthchecks"
             },
             "routing": {
