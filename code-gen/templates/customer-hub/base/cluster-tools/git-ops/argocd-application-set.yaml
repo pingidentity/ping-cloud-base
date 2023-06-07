@@ -78,6 +78,9 @@ spec:
                 - path: "*"
                 - path: k8s-configs
                   exclude: true
+                - path: values-files
+                  exclude: true
+
   template:
     metadata:
       # metadata comes from argocd-bootstrap, path.basename from the git generator
