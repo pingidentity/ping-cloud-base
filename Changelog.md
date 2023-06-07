@@ -113,6 +113,11 @@ _Changes:_
 - Increase replica count (min=7, max=9) within prod/large for Nginx Ingress Controller
 - Backup monitor history everyday for PingDirectory
 - PA-WAS ext ingress is missing from non-customer-hub environments
+- Update kubectl to 1.24.0 for EKS 1.25
+- Update cert-manager to v1.11.2 for EKS 1.25
+- Upgrade Postgres Operator (PGO) to 5.3.1 to support EKS v1.25
+- Add PGO Backups Jobs TTL
+- Add region env vars to cluster-health-environment-variables configmap
 
 _Changes:_
 
@@ -220,7 +225,12 @@ _Changes:_
 - [X] PDO-5393 Bugfix - secondary CSR missing app dir
 - [X] PDO-5419 Bugfix - remove monitoring & logging from secondary
 - [X] PDO-5415 Bugfix - PA-WAS ext ingress is missing from non-customer-hub environments
+- [X] PDO-5433 Update/Disable healthchecks
 - [X] PDO-5436 Bugfix - Uneven load distribution among logstash pods
+- [X] PDO-5459 Update cert-manager to v1.11.2 for EKS 1.25
+- [X] PDO-5460 Update kubectl to 1.24.0 for EKS 1.25
+- [X] PDO-5474 upgrade Postgres Operator (PGO) to 5.3.1 to support EKS v1.25
+- [X] PDO-5525 Add PGO Backups Jobs TTL
 
 ### 1.17.0.0
 
