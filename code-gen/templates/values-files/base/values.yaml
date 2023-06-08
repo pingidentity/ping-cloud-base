@@ -291,4 +291,4 @@ imageList: "apps: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingfederate,apps: ${ECR_R
 
 # Dashboards repo variables
 dashRepoUrl: "https://github.com/pingidentity/ping-cloud-dashboards"
-dashRepoBranch: "v1.18-dev-branch"
+dashRepoBranch: "v1.19-dev-branch"
