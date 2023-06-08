@@ -197,6 +197,7 @@ _Changes:_
 - [X] PDO-5459 Update cert-manager to v1.11.2 for EKS 1.25
 - [X] PDO-5460 Update kubectl to 1.24.0 for EKS 1.25
 - [X] PDO-5474 upgrade Postgres Operator (PGO) to 5.3.1 to support EKS v1.25
+- [X] PDO-5510 Update all healthchecks to use k8s service endpoints
 - [X] PDO-5525 Add PGO Backups Jobs TTL
 - [X] PDO-5553 Bugfix: remove-from-secondary-patch is broken for logstash-pipeline-alerts
 
