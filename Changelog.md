@@ -200,6 +200,7 @@ _Changes:_
 - [X] PDO-5510 Update all healthchecks to use k8s service endpoints
 - [X] PDO-5525 Add PGO Backups Jobs TTL
 - [X] PDO-5553 Bugfix: remove-from-secondary-patch is broken for logstash-pipeline-alerts
+- [X] PDO-5611 PD Healthchecks include k8s cluster name
 
 ### 1.17.0.0
 
