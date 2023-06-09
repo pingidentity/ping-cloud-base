@@ -33,6 +33,7 @@ _Changes:_
 - [X] PDO-5343 PF Engines in Small Prod Deployment incorrectly set to minReplicas: 2
 - [X] PDO-5347 PGO resources - handle secondary region v1.17.1
 - [X] PDO-5341 pingcentral-ext-ingress - fix pathType
+- [X] PDO-5369 Healthchecks run for N engine pods
 - [X] PDO-5376 Cluster-Autoscaler - update to balance node across all AZs
 - [X] PDO-5388 Add PGO Back Jobs TTL
 - [X] PDO-5413 [Port] PingFederate server.log events do not appear as a single Kibana document
