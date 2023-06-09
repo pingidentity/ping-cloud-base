@@ -5,11 +5,15 @@ from health_common import Categories, TestHealthBase
 
 class TestPingDirectoryHealth(TestHealthBase):
     deployment_name = "healthcheck-pingdirectory"
+    label = f"role={deployment_name}"
     pingdirectory = "pingDirectory"
+    prometheus_service_name = "prometheus"
+    prometheus_namespace = "prometheus"
+    prometheus_port = "9090"
 
     def setUp(self) -> None:
         self.ping_cloud_ns = next((ns for ns in self.get_namespace_names() if ns.startswith(self.ping_cloud)), self.ping_cloud)
-        self.pod_names = self.get_namespaced_pod_names(self.ping_cloud_ns, r"pingdirectory-\d+")
+        self.pod_names = self.get_deployment_pod_names("role=pingdirectory", self.ping_cloud_ns)
 
     def prometheus_test_patterns_by_pod(self, query: str):
         # baseDN pattern (pingdirectory-N example.com query)
@@ -73,3 +77,15 @@ class TestPingDirectoryHealth(TestHealthBase):
                     expected_test,
                     f"No '{expected_test}' checks found in health check results",
                 )
+
+    def test_prometheus_url_uses_service_name_in_primary_region(self):
+        expected = f"{self.prometheus_service_name}.{self.prometheus_namespace}:{self.prometheus_port}"
+
+        prometheus_service_endpoint = self.get_runtime_value_from_pod(
+            self.health,
+            self.label,
+            "/app/PrometheusVariables.py",
+            "prometheus_service_endpoint",
+        )
+
+        self.assertEqual(expected, prometheus_service_endpoint)
