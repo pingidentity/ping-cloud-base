@@ -32,6 +32,7 @@ _Changes:_
 - [X] PDO-5333 ArgoCD authentication to private ECR for Helm
 - [X] PDO-5358 OpenSearch Migration: Refactor OS Code as Needed
 - [X] PDO-5435 Update values.yaml files structure
+- [X] PDO-5601 os-dashboards-pf configMap breaks developer, and new ci/cd deploys
 
 ### 1.18.0.0
 
