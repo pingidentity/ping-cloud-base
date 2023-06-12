@@ -22,6 +22,7 @@
 - Extend PingDirectory replica count to up to 50 pods per region and 11 base DNs if needed
 - [PORT] Add a new hook script '02-health-check.sh' to support readiness and liveness probes
 - Add region env vars to cluster-health-environment-variables configmap
+- Fix cluster_name in prometheus labels to be the same with ELK cluster_name
 
 _Changes:_
 
@@ -50,6 +51,7 @@ _Changes:_
 - [X] PDO-5553 Bugfix: remove-from-secondary-patch is broken for logstash-pipeline-alerts
 - [X] PDO-5555 Bugfix: Index templates uses incorrect ILM policy
 - [X] PDO-5606 Bugfix: Index lifecycle error
+- [X] PDO-5614 Bugfix: 'cluster_name' filter issue in ELK and Grafana on prod CDE
 
 ### 1.17.0.0
 
