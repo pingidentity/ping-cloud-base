@@ -12,8 +12,12 @@ data:
         "settings": {
           "number_of_shards": 3,
           "number_of_replicas": 1,
-          "index.lifecycle.name": "ping-logstash-policy",
-          "index.lifecycle.rollover_alias": "pa-audit"
+          "index": {
+            "lifecycle": { 
+              "name": "ping-logstash-policy",
+              "rollover_alias": "pa-audit"
+            }
+          }
         },
         "mappings": {
           "properties": {
@@ -99,8 +103,12 @@ data:
         "settings": {
           "number_of_shards": 3,
           "number_of_replicas": 1,
-          "index.lifecycle.name": "ping-logstash-policy",
-          "index.lifecycle.rollover_alias": "pa-system"
+          "index":{
+            "lifecycle": {
+              "name":"ping-logstash-policy",
+              "rollover_alias": "pa-system"
+            }
+          }
         },
         "mappings": {
           "properties": {
@@ -147,8 +155,12 @@ data:
         "settings": {
           "number_of_shards": 3,
           "number_of_replicas": 1,
-          "index.lifecycle.name": "ping-logstash-policy",
-          "index.lifecycle.rollover_alias": "pa-was-audit"
+          "index": {
+            "lifecycle": {
+              "name": "ping-logstash-policy",
+              "rollover_alias": "pa-was-audit"
+            }
+          }
         },
         "mappings": {
           "properties": {
@@ -216,8 +228,12 @@ data:
         "settings": {
           "number_of_shards": 3,
           "number_of_replicas": 1,
-          "index.lifecycle.name": "ping-logstash-policy",
-          "index.lifecycle.rollover_alias": "pa-was-system"
+          "index": {
+            "lifecycle": {
+              "name": "ping-logstash-policy",
+              "rollover_alias": "pa-was-system"
+            }
+          }
         },
         "mappings": {
           "properties": {
@@ -264,8 +280,12 @@ data:
         "settings": {
           "number_of_shards": 3,
           "number_of_replicas": 1,
-          "index.lifecycle.name": "ping-logstash-policy",
-          "index.lifecycle.rollover_alias": "pd-access"
+          "index": {
+            "lifecycle": {
+              "name": "ping-logstash-policy",
+              "rollover_alias": "pd-access"
+            }
+          }
         },
         "mappings": {
           "properties": {
@@ -646,8 +666,12 @@ data:
         "settings": {
           "number_of_shards": 3,
           "number_of_replicas": 1,
-          "index.lifecycle.name": "ping-logstash-policy",
-          "index.lifecycle.rollover_alias": "pd-failed-ops"
+          "index": {
+            "lifecycle": {
+              "name": "ping-logstash-policy",
+              "rollover_alias": "pd-failed-ops"
+            }
+          }
         },
         "mappings": {
           "properties": {
@@ -682,8 +706,12 @@ data:
         "settings": {
           "number_of_shards": 3,
           "number_of_replicas": 1,
-          "index.lifecycle.name": "ping-logstash-policy",
-          "index.lifecycle.rollover_alias": "pf-audit"
+          "index": {
+            "lifecycle": {
+              "name": "ping-logstash-policy",
+              "rollover_alias": "pf-audit"
+            }
+          }
         },
         "mappings": {
           "properties": {
@@ -1087,8 +1115,12 @@ data:
         "settings": {
           "number_of_shards": 3,
           "number_of_replicas": 1,
-          "index.lifecycle.name": "ping-logstash-policy",
-          "index.lifecycle.rollover_alias": "pf-system"
+          "index": {
+            "lifecycle": {
+              "name": "ping-logstash-policy",
+              "rollover_alias": "pf-system"
+            }
+          },
         },
         "mappings": {
           "properties": {
@@ -1135,8 +1167,12 @@ data:
         "settings": {
           "number_of_shards": 3,
           "number_of_replicas": 1,
-          "index.lifecycle.name": "ping-logstash-policy",
-          "index.lifecycle.rollover_alias": "pf-transaction"
+          "index": {
+            "lifecycle": {
+              "name": "ping-logstash-policy",
+              "rollover_alias": "pf-transaction"
+            }
+          }
         },
         "mappings": {
           "properties": {
@@ -1166,8 +1202,12 @@ data:
         "settings": {
           "number_of_shards": 3,
           "number_of_replicas": 1,
-          "index.lifecycle.name": "ping-logstash-policy",
-          "index.lifecycle.rollover_alias": "pa-admin-audit"
+          "index": {
+            "lifecycle": {
+              "name": "ping-logstash-policy",
+              "rollover_alias": "pa-admin-audit"
+            }
+          }
         },
         "mappings": {
           "properties": {
@@ -1223,8 +1263,12 @@ data:
         "settings": {
           "number_of_shards": 3,
           "number_of_replicas": 1,
-          "index.lifecycle.name": "ping-logstash-policy",
-          "index.lifecycle.rollover_alias": "pa-admin-system"
+          "index": {
+            "lifecycle": {
+              "name": "ping-logstash-policy",
+              "rollover_alias": "pa-admin-system"
+            }
+          }
         },
         "mappings": {
           "properties": {
@@ -1259,8 +1303,12 @@ data:
         "settings": {
           "number_of_shards": 3,
           "number_of_replicas": 1,
-          "index.lifecycle.name": "ping-logstash-policy",
-          "index.lifecycle.rollover_alias": "pa-was-admin-audit"
+          "index": {
+            "lifecycle": {
+              "name": "ping-logstash-policy",
+              "rollover_alias": "pa-was-admin-audit",
+            }
+          }
         },
         "mappings": {
           "properties": {
@@ -1316,8 +1364,12 @@ data:
         "settings": {
           "number_of_shards": 3,
           "number_of_replicas": 1,
-          "index.lifecycle.name": "ping-logstash-policy",
-          "index.lifecycle.rollover_alias": "pa-was-admin-system"
+          "index": {
+            "lifecycle": {
+              "name": "ping-logstash-policy",
+              "rollover_alias": "pa-was-admin-system"
+            }
+          }
         },
         "mappings": {
           "properties": {
@@ -1352,8 +1404,12 @@ data:
         "settings": {
           "number_of_shards": 3,
           "number_of_replicas": 1,
-          "index.lifecycle.name": "ping-logstash-policy",
-          "index.lifecycle.rollover_alias": "pf-admin-system"
+          "index": {
+            "lifecycle": {
+              "name": "ping-logstash-policy",
+              "rollover_alias": "pf-admin-system"
+            }
+          }
         },
         "mappings": {
           "properties": {
@@ -1388,8 +1444,12 @@ data:
         "settings": {
           "number_of_shards": 3,
           "number_of_replicas": 1,
-          "index.lifecycle.name": "ping-logstash-policy",
-          "index.lifecycle.rollover_alias": "pf-admin-audit"
+          "index": {
+            "lifecycle": {
+              "name": "ping-logstash-policy",
+              "rollover_alias": "pf-admin-audit"
+            }
+          }
         },
         "mappings": {
           "properties": {
