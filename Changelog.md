@@ -201,6 +201,7 @@ _Changes:_
 - [X] PDO-5525 Add PGO Backups Jobs TTL
 - [X] PDO-5553 Bugfix: remove-from-secondary-patch is broken for logstash-pipeline-alerts
 - [X] PDO-5611 PD Healthchecks include k8s cluster name
+- [X] PDO-5614 Bugfix: 'cluster_name' filter issue in ELK and Grafana on prod CDE
 
 ### 1.17.0.0
 
