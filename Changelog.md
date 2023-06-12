@@ -49,6 +49,7 @@ _Changes:_
 - [X] PDO-5533 [PORT] Add a new hook script '02-health-check.sh' to support readiness and liveness probes
 - [X] PDO-5553 Bugfix: remove-from-secondary-patch is broken for logstash-pipeline-alerts
 - [X] PDO-5555 Bugfix: Index templates uses incorrect ILM policy
+- [X] PDO-5606 Bugfix: Index lifecycle error
 
 ### 1.17.0.0
 
