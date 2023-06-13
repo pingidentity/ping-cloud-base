@@ -206,7 +206,7 @@ spec:
           value: "true"
         envFrom:
         - configMapRef:
-            name: pingaccess-admin-environment-variables
+            name: pingaccess-was-admin-environment-variables
         - secretRef:
             name: newrelic-license-key
             optional: false
