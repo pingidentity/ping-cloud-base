@@ -186,19 +186,17 @@ spec:
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_CONSOLE
-        - name: STARTUP_COMMAND
-          value: "/opt/staging/hooks/22-upgrade-server.sh"
         - name: HTTPS_PORT
           value: "9090"
         - name: OLD_PA_ADMIN_USER_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: pingaccess-passwords
+              name: pingaccess-was-passwords
               key: OLD_PA_ADMIN_USER_PASSWORD
         - name: PA_ADMIN_USER_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: pingaccess-passwords
+              name: pingaccess-was-passwords
               key: PA_ADMIN_USER_PASSWORD
         - name: NEW_RELIC_CONFIG_FILE
           value: "/opt/shared-dir/newrelic.yml"
