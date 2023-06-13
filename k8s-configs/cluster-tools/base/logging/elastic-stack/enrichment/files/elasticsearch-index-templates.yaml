@@ -1120,7 +1120,7 @@ data:
               "name": "ping-logstash-policy",
               "rollover_alias": "pf-system"
             }
-          },
+          }
         },
         "mappings": {
           "properties": {
@@ -1306,7 +1306,7 @@ data:
           "index": {
             "lifecycle": {
               "name": "ping-logstash-policy",
-              "rollover_alias": "pa-was-admin-audit",
+              "rollover_alias": "pa-was-admin-audit"
             }
           }
         },
