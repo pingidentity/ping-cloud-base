@@ -11,3 +11,6 @@ PURGE_BATCH_SIZE=10000
 # NOTE: do not put quotes around the value of this env var, they will be escaped and added as part of the var itself
 # Example: PD_X509_AUTH_CERTS=cert_one cert_two
 PD_X509_AUTH_CERTS=
+
+# Set to false to avoid skipping liveness probe. Skipping the liveness (SKIP_LIVENESS=true) is the default for PingDirectory.
+SKIP_LIVENESS=true

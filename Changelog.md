@@ -33,6 +33,7 @@ _Changes:_
 - [X] PDO-5320 BUGFIX: found_distance_alert and other found* fields are not present in pf-audit* index documents
 - [X] PDO-5333 ArgoCD authentication to private ECR for Helm
 - [X] PDO-5358 OpenSearch Migration: Refactor OS Code as Needed
+- [X] PDO-5408 Add boolean flag to skip pod liveness probe script for PingFederate engines, PingAccess/WAS engines, and PingDirectory
 - [X] PDO-5435 Update values.yaml files structure
 - [X] PDO-5601 os-dashboards-pf configMap breaks developer, and new ci/cd deploys
 
@@ -50,7 +51,7 @@ _Changes:_
 - Selectively restore a backend in PD
 - Capture hourly PingDirectory CSD data
 - Enable and manage daily encrypted exports
-- Updated external-dns to v0.13.1 
+- Updated external-dns to v0.13.1
 - Update cluster tools to latest version: kube-state-metrics v2.6.0
 - Remove PA/PF SIEM console logging
 - Updated cluster-autoscaler to v1.23.0

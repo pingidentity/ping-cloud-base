@@ -73,3 +73,6 @@ PD_CLUSTER_PORT=8989
 # - Set this to false
 # - 90-restore-backup-s3.sh script exit before proceeding if value is false
 RESTORE_BACKUP=true
+
+# Set to true to skip liveness probe.
+SKIP_LIVENESS=false
