@@ -75,3 +75,6 @@ PD_CLUSTER_PORT=8989
 RESTORE_BACKUP=true
 
 JAVA_OPTS=-javaagent:/opt/staging/jmx_prometheus_javaagent-0.14.0.jar=8080:/opt/in/instance/conf/jmx_export_config.yaml
+
+# Set to true to skip liveness probe.
+SKIP_LIVENESS=false

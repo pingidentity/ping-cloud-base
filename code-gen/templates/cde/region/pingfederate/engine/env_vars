@@ -2,3 +2,6 @@
 LAST_UPDATE_REASON="${LAST_UPDATE_REASON}"
 
 SERVER_PROFILE_PATH=profiles/pingfederate
+
+# Set to true to skip liveness probe.
+SKIP_LIVENESS=false
