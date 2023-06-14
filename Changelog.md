@@ -2,6 +2,7 @@
 
 ### 1.19.0.0
 
+- Create a new init container to upgrade PA and PA-WAS and mount volume to admin pod once upgrade is successful
 - Update bootstrap to create davinci-configuration secret
 - Add new seal secrets script for MonoRepo breakup
 - Updating kustomize build options within ArgoCD to support Helm
@@ -12,6 +13,7 @@
 
 _Changes:_
 
+- [X] PDO-4606 Create a new init container to upgrade PA and PA-WAS and mount volume to admin pod once upgrade is successful
 - [X] PDO-4779 Modify seal.sh script to work for microservices
 - [X] PDO-5110 OpenSearch migration: Install Opensearch side-by-side with Elastic
 - [X] PDO-5112 OpenSearch migration: Migrate index templates
