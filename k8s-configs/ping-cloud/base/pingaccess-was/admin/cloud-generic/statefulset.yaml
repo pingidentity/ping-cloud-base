@@ -139,15 +139,84 @@ spec:
         volumeMounts:
         - name: shared-dir
           mountPath: /opt/shared-dir
-      containers:
-      - name: pingaccess-was-admin
+      - name: pingaccess-was-upgrade
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always 
+        command: ["/bin/sh"]
+        args: ["-c", " /opt/in/hooks/22-upgrade-server.sh "]
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
+        volumeMounts:
+        - name: ssh-dir
+          mountPath: /home/ping/.ssh
+        - name: shared-dir
+          mountPath: /opt/shared-dir
+        - name: topology-descriptor
+          mountPath: /opt/staging/topology/descriptor.json
+          subPath: descriptor.json
+        - name: data-dir
+          mountPath: /usr/local/bin/kubectl
+          subPath: kubectl
+        - name: data-dir
+          mountPath: /opt/staging/hooks/logger.lib.sh
+          subPath: logger.lib.sh
+        - name: data-dir
+          mountPath: /opt/staging/jmx_prometheus_javaagent-0.14.0.jar
+          subPath: jmx_prometheus_javaagent-0.14.0.jar
+        - name: data-dir
+          mountPath: /opt/staging/newrelic.jar
+          subPath: newrelic.jar
+        - name: out-dir
+          mountPath: /opt/out
+        - name: pingaccess-was-license
+          mountPath: /opt/in/instance/conf/pingaccess.lic
+          subPath: pingaccess.lic
+        - name: data-dir
+          mountPath: /opt/staging/ds_env_vars
+          subPath: ds_env_vars    
+        - name: upgrade-dir
+          mountPath: /tmp/instance
+          subPath: instance
+        ports:
+        - containerPort: 9000
+        - containerPort: 9090
+        env:
+        - name: OPERATIONAL_MODE
+          value: CLUSTERED_CONSOLE
+        - name: HTTPS_PORT
+          value: "9090"
+        - name: OLD_PA_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingaccess-was-passwords
+              key: OLD_PA_ADMIN_USER_PASSWORD
+        - name: PA_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pingaccess-was-passwords
+              key: PA_ADMIN_USER_PASSWORD
+        - name: NEW_RELIC_CONFIG_FILE
+          value: "/opt/shared-dir/newrelic.yml"
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
+        envFrom:
+        - configMapRef:
+            name: pingaccess-was-admin-environment-variables
+        - secretRef:
+            name: newrelic-license-key
+            optional: false
+      containers:
+      - name: pingaccess-was-admin
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was/dev:v1.19-release-branch-latest
         imagePullPolicy: Always
+        securityContext:
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+          allowPrivilegeEscalation: false
         resources:
           requests:
             memory: "1280Mi"
@@ -183,6 +252,9 @@ spec:
         - name: data-dir
           mountPath: /opt/staging/p14c_env_vars
           subPath: p14c_env_vars
+        - name: upgrade-dir
+          mountPath: /tmp/instance
+          subPath: instance
         readinessProbe:
           exec:
             command: [ /opt/staging/hooks/85-pa-admin-readiness.sh ]
@@ -248,6 +320,8 @@ spec:
       - name: shared-dir
         emptyDir: {}
       - name: data-dir
+        emptyDir: {}
+      - name: upgrade-dir
         emptyDir: {}
       - name: pingaccess-was-init
         configMap:
