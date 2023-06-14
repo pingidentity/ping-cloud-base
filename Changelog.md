@@ -1,5 +1,21 @@
 # Changelog
 
+### 1.16.4.0
+
+- Upgrade PingFederate to fix binary attributes within PingOne LDAP Gateway Datastore
+
+_Changes:_
+
+- [X] PDO-5638 Upgrade PingFederate to fix binary attributes within PingOne LDAP Gateway Datastore
+
+### 1.16.3.0
+
+- Upgrade PingFederate
+
+_Changes:_
+
+- [X] PDO-5492 Upgrade PingFederate
+
 ### 1.16.2.0
 
 - Healthcheck cronjobs replaced with deployments
