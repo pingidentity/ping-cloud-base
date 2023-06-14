@@ -52,6 +52,7 @@ _Changes:_
 - [X] PDO-5555 Bugfix: Index templates uses incorrect ILM policy
 - [X] PDO-5606 Bugfix: Index lifecycle error
 - [X] PDO-5614 Bugfix: 'cluster_name' filter issue in ELK and Grafana on prod CDE
+- [X] PDO-5645 Update cert-manager to v1.12.1
 
 ### 1.17.0.0
 
