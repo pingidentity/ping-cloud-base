@@ -737,7 +737,7 @@ data:
         flush_timeout 500
     
         rule "start_state" "/^(\/.*\/log[s]?\/\w+(\.log)?)( \d{4}-\d{2}-\d{2}[T ]?\d{2}:\d{2}:\d{2}(,\d{3})?)\s+(\w+[: ]{1,2})(.*)/" "cont"
-        rule "cont" "/^((?!INFO|WARN|ERROR|DEBUG|(admin-api|audit|jvm-garbage-collection|provisioner-audit|provisioner|request(2?)|transaction)\.log).)*$/" "cont"
+        rule "cont" "/^((?!INFO|WARN|ERROR|DEBUG|(admin-api|audit|jvm-garbage-collection|provisioner-audit|provisioner|request(2?)|transaction|monitor|application-api)\.log).)*$/" "cont"
 
 
   outputs.conf: |
@@ -767,14 +767,20 @@ data:
         log_stream_name     $(tag[2]).$(tag[3])-$(hostname)
         auto_create_group   true
         extra_user_agent    container-insight
-
+    
     [OUTPUT]
         Name                http
+        Alias               logstash_out
         Match               *.elk_out
         Host                logstash-elastic.elastic-stack-logging
         Port                8080
         Format              json_lines
+        Workers             5
         Retry_Limit         False
+        compress            gzip
+        net.keepalive_idle_timeout  10
+        net.keepalive_max_recycle   100
+        storage.total_limit_size    1000M
     
     [OUTPUT]
         Name                s3
