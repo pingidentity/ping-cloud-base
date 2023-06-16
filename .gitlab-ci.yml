@@ -231,5 +231,5 @@ copy-images:
     - ./ci-scripts/security/copy-images.sh
   tags:
     - platform-publish-docker
- only:
-   - tags
+  only:
+    - tags
