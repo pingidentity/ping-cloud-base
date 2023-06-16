@@ -230,5 +230,7 @@ copy-images:
     CI_DEBUG_TRACE: "true"
   script: 
     - ./ci-scripts/security/copy-images.sh
+  tags:
+    - platform-publish-docker
 #  only:
 #    - tags
