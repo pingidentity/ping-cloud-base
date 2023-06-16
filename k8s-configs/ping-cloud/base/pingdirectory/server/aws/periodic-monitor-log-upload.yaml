@@ -1,0 +1,47 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: pingdirectory-periodic-monitor-upload
+spec:
+  schedule: "0 0 * * *"
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 1
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 90
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        spec:
+          serviceAccount: ping-serviceaccount
+          restartPolicy: OnFailure
+          containers:
+          - name: pingdirectory-periodic-monitor-upload
+            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.19-release-branch-latest
+            imagePullPolicy: Always
+            securityContext:
+              runAsGroup: 9999
+              runAsNonRoot: true
+              runAsUser: 9031
+              allowPrivilegeEscalation: false
+            command:
+            - /opt/in/monitor-log-data.sh
+            env:
+            - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+              value: "true"
+            envFrom:
+            - configMapRef:
+                name: pingdirectory-environment-variables
+            - configMapRef:
+                name: pingcommon-environment-variables
+            volumeMounts:
+            - name: pingdirectory-periodic-monitor-log-upload
+              mountPath: /opt/in/monitor-log-data.sh
+              subPath: monitor-log-data.sh
+          securityContext:
+            fsGroup: 9999
+          volumes:
+          - name: pingdirectory-periodic-monitor-log-upload
+            configMap:
+              name: pingdirectory-periodic-monitor-log-upload
+              defaultMode: 0555

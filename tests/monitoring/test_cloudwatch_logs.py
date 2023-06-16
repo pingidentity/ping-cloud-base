@@ -19,9 +19,9 @@ class TestCloudWatchLogs(k8s_utils.K8sUtils):
     aws_client = boto3.client("logs", region_name=aws_region)
 
     # Change the pod_name, pod_namespace, and container_name to use this test with another application.
-    pod_name = "es-cluster-hot-0"
+    pod_name = "opensearch-cluster-hot-0"
     pod_namespace = "elastic-stack-logging"
-    container_name = "elasticsearch"
+    container_name = "opensearch"
     k8s_cluster_name = os.getenv("CLUSTER_NAME")
     log_group_name = f"/aws/containerinsights/{k8s_cluster_name}/application"
     log_stream_name = f"{pod_name}_{pod_namespace}_{container_name}"

@@ -16,7 +16,7 @@ PA_ADMIN_API_RATE_LIMIT=5000
 PA_ADMIN_API_RATE_LIMIT_POLICY=
 
 # Allowed values=space-separated list of a combination of AR, GR, KI, PA, PC, PF, PR, e.g. AR GR KI PR
-# where [AR=Argo CD App; GR=Grafana App; KI=Kibana App; PA=PingAccess App; PC=PingCentral App; PF=PingFederate App; PR=Prometheus App]
+# where [AR=Argo CD App; GR=Grafana App; OD=OpenSearch Dashboards App; PA=PingAccess App; PC=PingCentral App; PF=PingFederate App; PR=Prometheus App]
 # No value means default rate limit policies are not applied to any application
 PA_ADMIN_APPLICATIONS=
 
@@ -73,3 +73,6 @@ PD_CLUSTER_PORT=8989
 # - Set this to false
 # - 90-restore-backup-s3.sh script exit before proceeding if value is false
 RESTORE_BACKUP=true
+
+# Set to true to skip liveness probe.
+SKIP_LIVENESS=false

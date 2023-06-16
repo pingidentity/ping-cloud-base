@@ -1,0 +1,60 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: selfsigned-issuer
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: opensearch-self-ca
+  namespace: elastic-stack-logging
+spec:
+  isCA: true
+  commonName: opensearch-self-ca
+  secretName: opensearch-self-ca
+  privateKey:
+    algorithm: ECDSA
+    size: 256
+  issuerRef:
+    name: selfsigned-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: opensearch-self
+  namespace: elastic-stack-logging
+spec:
+  ca:
+    secretName: opensearch-self-ca
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: opensearch-cert
+  namespace: elastic-stack-logging
+spec:
+  secretName: opensearch-cert
+  issuerRef:
+    name: opensearch-self
+    kind: Issuer
+  privateKey:
+    algorithm: RSA
+    encoding: PKCS8
+    size: 2048
+  usages:
+    - server auth
+    - client auth
+  commonName: "elastic-stack-logging.svc.cluster.local"
+  dnsNames:
+  - 'opensearch-cluster-master.elastic-stack-logging.svc.cluster.local'
+  - 'opensearch-cluster-headless.elastic-stack-logging.svc.cluster.local'
+  - '*.opensearch-cluster-headless.elastic-stack-logging.svc.cluster.local'
+  - '*.opensearch-cluster-master.elastic-stack-logging.svc.cluster.local'
+  - 'opensearch-cluster-headless.elastic-stack-logging.svc'
+  - 'opensearch-cluster-master.elastic-stack-logging.svc'
+  - '*.opensearch-cluster-headless.elastic-stack-logging.svc'
+  - '*.opensearch-cluster-master.elastic-stack-logging.svc'

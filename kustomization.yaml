@@ -24,7 +24,7 @@ patchesStrategicMerge:
     PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
     PROMETHEUS_PUBLIC_HOSTNAME: prometheus.${TENANT_DOMAIN}
     GRAFANA_PUBLIC_HOSTNAME: monitoring.${TENANT_DOMAIN}
-    KIBANA_PUBLIC_HOSTNAME: logs.${TENANT_DOMAIN}
+    OSD_PUBLIC_HOSTNAME: logs.${TENANT_DOMAIN}
     ARGOCD_PUBLIC_HOSTNAME: argocd.${TENANT_DOMAIN}
     HEALTHCHECK_HTTPBIN_PA_WAS_PUBLIC_HOSTNAME: healthcheck-httpbin-pa-was.${TENANT_DOMAIN}
     HEALTHCHECK_HTTPBIN_PA_PUBLIC_HOSTNAME: healthcheck-httpbin-pa.${TENANT_DOMAIN}
@@ -49,7 +49,7 @@ patchesStrategicMerge:
     PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
     PROMETHEUS_PUBLIC_HOSTNAME: prometheus.${TENANT_DOMAIN}
     GRAFANA_PUBLIC_HOSTNAME: monitoring.${TENANT_DOMAIN}
-    KIBANA_PUBLIC_HOSTNAME: logs.${TENANT_DOMAIN}
+    OSD_PUBLIC_HOSTNAME: logs.${TENANT_DOMAIN}
     ARGOCD_PUBLIC_HOSTNAME: argocd.${TENANT_DOMAIN}
     HEALTHCHECK_HTTPBIN_PA_WAS_PUBLIC_HOSTNAME: healthcheck-httpbin-pa-was.${TENANT_DOMAIN}
     HEALTHCHECK_HTTPBIN_PA_PUBLIC_HOSTNAME: healthcheck-httpbin-pa.${TENANT_DOMAIN}
@@ -110,7 +110,7 @@ patchesStrategicMerge:
     PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
     PROMETHEUS_PUBLIC_HOSTNAME: prometheus.${TENANT_DOMAIN}
     GRAFANA_PUBLIC_HOSTNAME: monitoring.${TENANT_DOMAIN}
-    KIBANA_PUBLIC_HOSTNAME: logs.${TENANT_DOMAIN}
+    OSD_PUBLIC_HOSTNAME: logs.${TENANT_DOMAIN}
     ARGOCD_PUBLIC_HOSTNAME: argocd.${TENANT_DOMAIN}
     HEALTHCHECK_HTTPBIN_PA_WAS_PUBLIC_HOSTNAME: healthcheck-httpbin-pa-was.${TENANT_DOMAIN}
     HEALTHCHECK_HTTPBIN_PA_PUBLIC_HOSTNAME: healthcheck-httpbin-pa.${TENANT_DOMAIN}
@@ -363,7 +363,7 @@ patchesJson6902:
       path: /spec/rules/3/host
       value: prometheus.${TENANT_DOMAIN}
 
-    ### Kibana ###
+    ### OpenSearch Dashboards ###
     - op: replace
       path: /spec/tls/0/hosts/4
       value: logs.${TENANT_DOMAIN}

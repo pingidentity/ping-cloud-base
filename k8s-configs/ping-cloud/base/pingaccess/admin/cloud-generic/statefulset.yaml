@@ -35,7 +35,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.23.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.24.0
         imagePullPolicy: IfNotPresent
         command:
         - /copy-dependencies.sh
@@ -121,14 +121,22 @@ spec:
         - name: shared-dir
           mountPath: /opt/shared-dir
       - name: pingaccess-upgrade
+<<<<<<< HEAD
         image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess:pdo-4604
         command: ["/bin/sh"]
         args: ["-c", "echo >> /opt/staging/hooks/01-start-server.sh && echo >> /opt/staging/hooks/50-before-post-start.sh && echo >> /opt/staging/hooks/80-post-start.sh && echo >> /opt/staging/hooks/10-start-sequence.sh && echo >> /opt/staging/hooks/20-restart-sequence.sh && cd /opt/in/hooks &&  echo 'test' && /opt/in/hooks/22-upgrade-server.sh "]
+=======
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        command: ["/bin/sh"]
+        args: ["-c", " /opt/in/hooks/22-upgrade-server.sh "]
+>>>>>>> v1.19-release-branch
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
+<<<<<<< HEAD
         imagePullPolicy: Always
         resources:
           requests:
@@ -137,6 +145,8 @@ spec:
           limits:
             memory: "4Gi"
             cpu: 2  
+=======
+>>>>>>> v1.19-release-branch
         volumeMounts:
         - name: ssh-dir
           mountPath: /home/ping/.ssh
@@ -174,8 +184,11 @@ spec:
         env:
         - name: OPERATIONAL_MODE
           value: CLUSTERED_CONSOLE
+<<<<<<< HEAD
         - name: IS_UPGRADE
           value: YES
+=======
+>>>>>>> v1.19-release-branch
         - name: STARTUP_COMMAND
           value: "/opt/staging/hooks/22-upgrade-server.sh"
         - name: HTTPS_PORT
@@ -202,13 +215,17 @@ spec:
             optional: false
       containers:
       - name: pingaccess-admin
+<<<<<<< HEAD
         image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess:pdo-4604
+=======
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+>>>>>>> v1.19-release-branch
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        imagePullPolicy: Always
         resources:
           requests:
             memory: "4Gi"

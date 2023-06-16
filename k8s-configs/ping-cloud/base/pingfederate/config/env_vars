@@ -82,3 +82,6 @@ JAVA_AGENT_OPTS=-javaagent:/opt/staging/jmx_prometheus_javaagent-0.14.0.jar=8080
 PF_PROVISIONER_GRACE_PERIOD=600
 # Synchronization frequency in seconds (default: 60)
 PF_PROVISIONER_SYNC_FREQ=60
+
+# Set to true to skip liveness probe.
+SKIP_LIVENESS=false

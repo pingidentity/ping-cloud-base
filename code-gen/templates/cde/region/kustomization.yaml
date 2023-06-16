@@ -154,11 +154,17 @@ configMapGenerator:
 
 # Pingcloud-healthcheck
 - name: pingcloud-healthcheck-environment-variables
-  namespace: ${PING_CLOUD_NAMESPACE}
   behavior: merge
   envs:
   - ../base/env_vars
   - env_vars
+
+# Health namespace environment variables
+- name: cluster-health-environment-variables
+  behavior: merge
+  envs:
+    - ../base/env_vars
+    - env_vars
 
 # PingCloud-oauth
 - name: p14c-oauth-service-environment-variables
@@ -228,6 +234,8 @@ patchesStrategicMerge:
 - pingdelegator/ff-external-ingress/remove-external-ingress.yaml
 - pingdirectory/ff-external-ingress/remove-external-ingress.yaml
 - pingfederate/ff-external-ingress/remove-external-ingress.yaml
+### The patch is copied from pingcommon
+- ../base/ping-cloud/pingaccess-was/ff-external-ingress/remove-external-ingress.yaml
 
 #- ../base/ping-cloud/pingfederate/provisioning/remove-from-secondary-patch.yaml
 

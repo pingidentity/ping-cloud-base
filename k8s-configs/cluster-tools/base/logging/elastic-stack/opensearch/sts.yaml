@@ -1,0 +1,260 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: opensearch-cluster-hot
+  labels:
+    app.kubernetes.io/name: opensearch
+    app.kubernetes.io/instance: opensearch-cluster-hot
+spec:
+  serviceName: opensearch-cluster-headless
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: opensearch
+      app.kubernetes.io/instance: opensearch-cluster-hot
+  replicas: 3
+  podManagementPolicy: Parallel
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes:
+      - "ReadWriteOnce"
+      resources:
+        requests:
+          storage: "8Gi"
+      storageClassName: "efs"
+  template:
+    metadata:
+      name: "opensearch-cluster-hot"
+      labels:
+        app.kubernetes.io/name: opensearch
+        app.kubernetes.io/instance: opensearch-cluster-hot
+    spec:
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+      serviceAccountName: "opensearch"
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - opensearch-cluster-hot
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - opensearch
+      terminationGracePeriodSeconds: 120
+      volumes:
+      - name: config
+        configMap:
+          name: opensearch-config
+      - name: security-config-data
+        secret:
+          secretName: opensearch-securityconfig
+      - name: node-cert
+        secret:
+          secretName: opensearch-cert
+      enableServiceLinks: false
+      containers:
+      - name: opensearch
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          runAsNonRoot: true
+          runAsUser: 1000
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/opensearch/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        readinessProbe:
+          failureThreshold: 3
+          periodSeconds: 5
+          tcpSocket:
+            port: 9200
+          timeoutSeconds: 3
+        startupProbe:
+          failureThreshold: 30
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          tcpSocket:
+            port: 9200
+          timeoutSeconds: 3
+        ports:
+        - name: http
+          containerPort: 9200
+        - name: transport
+          containerPort: 9300
+        resources:
+          requests:
+            cpu: "1"
+            memory: 4Gi
+          limits:
+            cpu: "4"
+            memory: 4Gi
+        env:
+        - name: node.name
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: cluster.initial_master_nodes
+          value: "opensearch-cluster-hot-0,opensearch-cluster-hot-1,opensearch-cluster-hot-2,"
+        - name: discovery.seed_hosts
+          value: "opensearch-cluster-headless"
+        - name: cluster.name
+          value: "opensearch-cluster"
+        - name: node.attr.temp
+          value: hot
+        - name: network.host
+          value: "0.0.0.0"
+        - name: OPENSEARCH_JAVA_OPTS
+          value: "-Xmx3000M -Xms3000M"
+        - name: node.roles
+          value: "master,ingest,data,remote_cluster_client,search,"
+        - name: DISABLE_INSTALL_DEMO_CONFIG
+          value: "true"
+        volumeMounts:
+        - name: "data"
+          mountPath: /usr/share/opensearch/data
+        - mountPath: /usr/share/opensearch/config/opensearch-security
+          name: security-config-data
+        - name: config
+          mountPath: /usr/share/opensearch/config/opensearch.yml
+          subPath: opensearch.yml
+        - name: node-cert
+          mountPath: /usr/share/opensearch/config/certs
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: opensearch-cluster-warm
+  labels:
+    app.kubernetes.io/name: opensearch
+    app.kubernetes.io/instance: opensearch-cluster-warm
+spec:
+  serviceName: opensearch-cluster-headless
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: opensearch
+      app.kubernetes.io/instance: opensearch-cluster-warm
+  replicas: 1
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes:
+      - "ReadWriteOnce"
+      resources:
+        requests:
+          storage: "125Gi"
+      storageClassName: "opensearch-sc1"
+  template:
+    metadata:
+      name: "opensearch-cluster-warm"
+      labels:
+        app.kubernetes.io/name: opensearch
+        app.kubernetes.io/instance: opensearch-cluster-warm
+    spec:
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+      serviceAccountName: "opensearch"
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - opensearch
+      terminationGracePeriodSeconds: 120
+      volumes:
+      - name: config
+        configMap:
+          name: opensearch-config
+      - name: security-config-data
+        secret:
+          secretName: opensearch-securityconfig
+      - name: node-cert
+        secret:
+          secretName: opensearch-cert
+      enableServiceLinks: false
+      containers:
+      - name: "opensearch"
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          runAsNonRoot: true
+          runAsUser: 1000
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/opensearch/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        readinessProbe:
+          failureThreshold: 3
+          periodSeconds: 5
+          tcpSocket:
+            port: 9200
+          timeoutSeconds: 3
+        startupProbe:
+          failureThreshold: 30
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          tcpSocket:
+            port: 9200
+          timeoutSeconds: 3
+        ports:
+        - name: http
+          containerPort: 9200
+        - name: transport
+          containerPort: 9300
+        resources:
+          requests:
+            cpu: "1"
+            memory: 4Gi
+          limits:
+            cpu: "2"
+            memory: 4Gi
+        env:
+        - name: node.name
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: cluster.initial_master_nodes
+          value: "opensearch-cluster-hot-0,opensearch-cluster-hot-1,opensearch-cluster-hot-2,"
+        - name: discovery.seed_hosts
+          value: "opensearch-cluster-headless"
+        - name: cluster.name
+          value: "opensearch-cluster"
+        - name: node.attr.temp
+          value: warm
+        - name: network.host
+          value: "0.0.0.0"
+        - name: OPENSEARCH_JAVA_OPTS
+          value: "-Xmx3000M -Xms3000M"
+        - name: node.roles
+          value: "data,remote_cluster_client,"
+        - name: DISABLE_INSTALL_DEMO_CONFIG
+          value: "true"
+        volumeMounts:
+        - name: "data"
+          mountPath: /usr/share/opensearch/data
+        - mountPath: /usr/share/opensearch/config/opensearch-security
+          name: security-config-data
+        - name: config
+          mountPath: /usr/share/opensearch/config/opensearch.yml
+          subPath: opensearch.yml
+        - name: node-cert
+          mountPath: /usr/share/opensearch/config/certs

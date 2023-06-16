@@ -24,21 +24,24 @@ class P1TestBase(unittest.TestCase):
             "ci-cd" if cluster_name.startswith("ci-cd") else cluster_name
         )
         P1TestBase.population_name = f"{cluster_name}-{os.getenv('CI_COMMIT_REF_SLUG')}"
-        P1TestBase.cluster_env_id = cls.get_id(
+        P1TestBase.cluster_env_id = cls.get(
             endpoint=f"{p1_utils.API_LOCATION}/environments",
             name=P1TestBase.environment_name,
-        )
+        ).get("id")
         P1TestBase.cluster_env_endpoints = p1_utils.EnvironmentEndpoints(
             p1_utils.API_LOCATION, P1TestBase.cluster_env_id
         )
 
     @classmethod
-    def get_id(cls, endpoint: str, name: str) -> Optional[str]:
+    def get(cls, endpoint: str, name: str = "") -> Optional[dict]:
         res = cls.worker_app_token_session.get(endpoint)
         embedded_key = endpoint.split("/")[-1]
+        if not name:
+            return res.json()["_embedded"][embedded_key]
+
         for e in res.json()["_embedded"][embedded_key]:
             if e["name"] == name:
                 print(f"{embedded_key}: {name} ID: {e['id']}")
-                return e["id"]
+                return e
         print(f"{embedded_key} {name} not found")
         return None

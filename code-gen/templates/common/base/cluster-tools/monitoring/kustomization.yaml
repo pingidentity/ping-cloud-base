@@ -48,7 +48,7 @@ patchesStrategicMerge:
     config.yaml: |
       cluster_name: ${NEW_RELIC_ENVIRONMENT_NAME}
       audit: false
-      insecure_skip_verify: false
+      insecure_skip_verify: true
       require_scrape_enabled_label_for_nodes: true
       scrape_enabled_label: prometheus.io/scrape
       scrape_endpoints: false

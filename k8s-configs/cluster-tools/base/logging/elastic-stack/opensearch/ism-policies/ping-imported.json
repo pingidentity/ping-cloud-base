@@ -1,0 +1,80 @@
+{
+    "policy": {
+        "policy_id": "ping_imported",
+        "description": "Ping policy for everything imported from ES(after 1 day shrink to 1 shard and delete, shrunken index will be processed via shrunken policy)",
+        "last_updated_time": 1684846188882,
+        "schema_version": 17,
+        "error_notification": null,
+        "default_state": "init",
+        "states": [
+            {
+                "name": "init",
+                "actions": [],
+                "transitions": [
+                    {
+                        "state_name": "store",
+                        "conditions": {
+                            "min_index_age": "1d"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "store",
+                "actions": [
+                    {
+                        "retry": {
+                            "count": 3,
+                            "backoff": "exponential",
+                            "delay": "1m"
+                        },
+                        "read_only": {}
+                    },
+                    {
+                        "retry": {
+                            "count": 3,
+                            "backoff": "exponential",
+                            "delay": "1m"
+                        },
+                        "shrink": {
+                            "num_new_shards": 1,
+                            "target_index_name_template": {
+                                "source": "{{ctx.index}}_shrunken",
+                                "lang": "mustache"
+                            },
+                            "force_unsafe": true
+                        }
+                    }
+                ],
+                "transitions": [
+                    {
+                        "state_name": "delete"
+                    }
+                ]
+            },
+            {
+                "name": "delete",
+                "actions": [
+                    {
+                        "retry": {
+                            "count": 3,
+                            "backoff": "exponential",
+                            "delay": "1m"
+                        },
+                        "delete": {}
+                    }
+                ],
+                "transitions": []
+            }
+        ],
+        "ism_template": [
+            {
+                "index_patterns": [
+                    "*-imported"
+                ],
+                "priority": 100,
+                "last_updated_time": 1684841250879
+            }
+        ]
+    }
+}

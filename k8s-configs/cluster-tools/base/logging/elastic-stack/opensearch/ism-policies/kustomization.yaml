@@ -1,0 +1,10 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+configMapGenerator:
+  - name: os-ism-policies
+    files:
+      - ping-general.json
+      - ping-healthchecks.json
+      - ping-imported.json
+      - ping-shrunken.json

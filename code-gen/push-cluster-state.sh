@@ -246,8 +246,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       cp "${src_dir}"/.gitignore ./
       cp "${src_dir}"/update-cluster-state-wrapper.sh ./
       cp "${src_dir}"/csr-validation.sh ./
-      cp "${src_dir}"/values.yaml ./
-      cp "${src_dir}"/values_region.yaml ./
       cp "${src_dir}"/seal-secret-values.py ./
 
       # Copy each app's base files into the repo
@@ -288,6 +286,9 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       region_path="$(find "${app_path}" -mindepth 1 -maxdepth 1 -type d ! -path '*/base')"
       region=$(basename "${region_path}")
       src_dir="${app_path}/$region"
+
+      # Make the app dir
+      mkdir -p "${app_name}"
 
       echo "Copying ${src_dir} to ${app_name}"
       cp -pr "${src_dir}" "${app_name}/"

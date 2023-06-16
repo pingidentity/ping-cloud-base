@@ -8,8 +8,8 @@ class TestPingDirectoryHealth(TestHealthBase):
     pingdirectory = "pingDirectory"
 
     def setUp(self) -> None:
-        self.ping_cloud_ns = next((ns for ns in self.get_namespace_names() if ns.startswith(self.ping_cloud)), self.ping_cloud)
-        self.pod_names = self.get_namespaced_pod_names(self.ping_cloud_ns, r"pingdirectory-\d+")
+        self.ping_cloud_ns = next((ns for ns in self.k8s.get_namespace_names() if ns.startswith(self.ping_cloud)), self.ping_cloud)
+        self.pod_names = self.k8s.get_namespaced_pod_names(self.ping_cloud_ns, r"pingdirectory-\d+")
 
     def prometheus_test_patterns_by_pod(self, query: str):
         # baseDN pattern (pingdirectory-N example.com query)
@@ -22,7 +22,7 @@ class TestPingDirectoryHealth(TestHealthBase):
         self.deployment_exists()
 
     def test_health_check_has_pingdirectory_results(self):
-        res = requests.get(self.endpoint, verify=False)
+        res = requests.get(self.healthcheck_endpoint, verify=False)
         self.assertIn(
             self.pingdirectory,
             res.json()["health"].keys(),

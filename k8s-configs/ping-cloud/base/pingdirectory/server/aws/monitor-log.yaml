@@ -1,0 +1,45 @@
+# A manual job to upload PingDirectory monitor logs to s3 - this does the same thing as the recurring task on the server except it may be configured to trigger in reaction to a ClickOps event.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pingdirectory-monitor-upload
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+spec:
+  ttlSecondsAfterFinished: 30
+  backoffLimit: 5
+  template:
+    spec:
+      serviceAccount: ping-serviceaccount
+      restartPolicy: Never
+      containers:
+      - name: pingdirectory-monitor-upload
+        securityContext:
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+          allowPrivilegeEscalation: false
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        command:
+        - /opt/in/monitor-log-data.sh
+        env:
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
+        envFrom:
+        - configMapRef:
+            name: pingdirectory-environment-variables
+        - configMapRef:
+            name: pingcommon-environment-variables
+        volumeMounts:
+        - name: pingdirectory-periodic-monitor-log-upload
+          mountPath: /opt/in/monitor-log-data.sh
+          subPath: monitor-log-data.sh
+      securityContext:
+        fsGroup: 9999
+      volumes:
+      - name: pingdirectory-periodic-monitor-log-upload
+        configMap:
+          name: pingdirectory-periodic-monitor-log-upload
+          defaultMode: 0555

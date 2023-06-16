@@ -107,7 +107,7 @@ https://pingaccess-was-admin.k8s-icecream.ping-devops.com/pa-admin-api/v3/api-do
 Pingaccess WAS runtime endpoint:
 https://pingaccess-was.k8s-icecream.ping-devops.com
 
-Kibana console:
+OpenSearch Dashboards console:
 https://logs.k8s-icecream.ping-devops.com
 ```
 

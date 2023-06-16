@@ -16,12 +16,12 @@ testGrafanaAPIAccessible() {
 testGrafanaDatasourcesExists() {
   sources=$(curl -s -k ${GRAFANA}/api/datasources | jq .[].name)
   
-  assertContains "${sources}" "ES-PA-Admin-Audit"
-  assertContains "${sources}" "ES-PA-Audit"
-  assertContains "${sources}" "ES-PA-Admin-System"
-  assertContains "${sources}" "ES-PF-Admin-Audit"
-  assertContains "${sources}" "ES-PF-Audit"
-  assertContains "${sources}" "ES-PF-Admin-System"
+  assertContains "${sources}" "OS-PA-Admin-Audit"
+  assertContains "${sources}" "OS-PA-Audit"
+  assertContains "${sources}" "OS-PA-Admin-System"
+  assertContains "${sources}" "OS-PF-Admin-Audit"
+  assertContains "${sources}" "OS-PF-Audit"
+  assertContains "${sources}" "OS-PF-Admin-System"
   assertContains "${sources}" "prometheus"
 }
 
