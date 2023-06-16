@@ -11,8 +11,6 @@ SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 deploy_file=/tmp/deploy.yaml
 build_dev_deploy_file "${deploy_file}"
 
-docker version
-
 for image in $(cat $deploy_file | grep "image:" | awk -F: 'BEGIN { OFS=":"} {print $2,$3}' | tr '\n' ' '); do
   name=""
   
@@ -23,8 +21,8 @@ for image in $(cat $deploy_file | grep "image:" | awk -F: 'BEGIN { OFS=":"} {pri
   else                                                                                                            # dockerhub images without domain
     name=$image
   fi
-  #docker pull $image
-  #docker tag $image $ARTIFACTORY_URL/$BELUGA_VERSION/$name
-  #docker push $ARTIFACTORY_URL/$BELUGA_VERSION/$name
+  docker pull $image
+  docker tag $image $ARTIFACTORY_URL/$BELUGA_VERSION/$name
+  docker push $ARTIFACTORY_URL/$BELUGA_VERSION/$name
   echo "Copied $image to location $ARTIFACTORY_URL/$BELUGA_VERSION/$name"
 done
