@@ -223,7 +223,7 @@ p1-cleanup:
 
 copy-images:
   stage: deploy
-  image: ${K8S_DEPLOY_TOOLS}
+  image: pingdevops.com/ci-utils/docker-builds-runner:07072022-aarch64
   variables:
     BELUGA_VERSION: geoff-test #$CI_COMMIT_TAG
     ARTIFACTORY_URL: docker.corp.pingidentity.com:5000
