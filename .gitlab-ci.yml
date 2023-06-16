@@ -223,8 +223,6 @@ p1-cleanup:
 
 copy-images:
   stage: deploy
-  tags:
-    - default-gitlab-runner
   image: ${K8S_DEPLOY_TOOLS}
   variables:
     BELUGA_VERSION: geoff-test #$CI_COMMIT_TAG
