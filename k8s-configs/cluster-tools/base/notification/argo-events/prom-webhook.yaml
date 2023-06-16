@@ -22,7 +22,7 @@ spec:
     - template:
         name: trigger-slack
         slack:
-          channel: p1as-application-oncall # Can be overridden by setting PROMETHEUS_SLACK_CHANNEL in env_vars
+          channel: p1as-application-oncall # Can be overridden by setting PROM_SLACK_CHANNEL in env_vars
           message: this is default message from argo-events
           slackToken:
             key: token
@@ -34,6 +34,9 @@ spec:
               *Status*: {{ .Input.body.emoji }}{{ (index .Input.body.alerts 0).status }}
               *Description*: {{ (index .Input.body.alerts 0).annotations.description }}
               *Summary*: {{ (index .Input.body.alerts 0).annotations.summary }}
+              {{if (index .Input.body.alerts 0).annotations.runbook}}
+              *Runbook*: {{ (index .Input.body.alerts 0).annotations.runbook }}
+              {{end}}
               *Cluster*: {{ (index .Input.body.alerts 0).labels.k8s_cluster_name }}
           dest: slack.message
         - src:

@@ -142,7 +142,45 @@ spec:
               value: '-Xms3500m -Xmx3500m'
             - name: PIPELINE_WORKERS
               value: "2"
+---
+################################################
+#                OpenSearch
+################################################
 
+# Increase CPU resources
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: opensearch-cluster-hot
+spec:
+  template:
+    spec:
+      containers:
+        - name: opensearch
+          resources:
+            limits:
+              cpu: "8"
+            requests:
+              cpu: "4"
+---
+# Increase Memory Resources
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: opensearch-cluster-hot
+spec:
+  template:
+    spec:
+      containers:
+        - name: opensearch
+          resources:
+            limits:
+              memory: 10Gi
+            requests:
+              memory: 8Gi
+          env:
+            - name: OPENSEARCH_JAVA_OPTS
+              value: "-Xms8g -Xmx8g" # Adjust JVM parameters to the memory JVM <= limits.memory -1 Gb
 ---
 
 ################################################
