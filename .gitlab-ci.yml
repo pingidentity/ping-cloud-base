@@ -225,8 +225,8 @@ copy-images:
   stage: deploy
   image: docker.corp.pingidentity.com:5800/docker-kustomize
   variables:
-    BELUGA_VERSION: "geoff-test"
-    ARTIFACTORY_URL: "docker.corp.pingidentity.com:5000"
+    BELUGA_VERSION: "geoff-test" #Change to $CI_PROJECT_TAG for real world use
+    ARTIFACTORY_URL: "docker.corp.pingidentity.com:5800"
   script: 
     - ./ci-scripts/security/copy-images.sh
   tags:
