@@ -233,7 +233,7 @@ kind: CustomResourceDefinition
 metadata:
   name: sealedsecrets.bitnami.com
   annotations:
-    sealedsecrets.bitnami.com/managed: "true"
+    sealedsecrets.bitnami.com/managed: true
 spec:
   group: bitnami.com
   names:
