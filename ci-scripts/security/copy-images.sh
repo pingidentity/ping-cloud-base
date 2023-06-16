@@ -10,9 +10,11 @@ SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 deploy_file=/tmp/deploy.yaml
 build_dev_deploy_file "${deploy_file}"
 
+docker version
+
 for image in $(cat $deploy_file | grep "image:" | awk -F: 'BEGIN { OFS=":"} {print $2,$3}' | tr '\n' ' '); do
   name=""
-  echo $image
+  
   if [[ "$image" =~ "^public.ecr.aws" ]]; then
     name=$(echo "$image" | awk -F\/ 'BEGIN {OFS="/"}{for(i=3;i<=NF;i++) {printf $i"\/"}}' | rev | cut -c2- | rev) # remove trailing / and space from string
   elif [[ "$image" =~ "^\w*(\.\w*){1,}.*:.*" ]]; then                                                             # if other repo
@@ -23,4 +25,5 @@ for image in $(cat $deploy_file | grep "image:" | awk -F: 'BEGIN { OFS=":"} {pri
   #docker pull $image
   #docker tag $image $ARTIFACTORY_URL/$BELUGA_VERSION/$name
   #docker push $ARTIFACTORY_URL/$BELUGA_VERSION/$name
+  echo "Copied $image to location $ARTIFACTORY_URL/$BELUGA_VERSION/$name"
 done
