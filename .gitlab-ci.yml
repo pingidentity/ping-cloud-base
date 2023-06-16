@@ -222,7 +222,7 @@ stages:
 
 
 copy-images:
-  stage: deploy
+  stage: deploy # this could move to another stage like compile
   image: docker.corp.pingidentity.com:5800/docker-kustomize
   variables:
     BELUGA_VERSION: "geoff-test" #Change to $CI_PROJECT_TAG for real world use
