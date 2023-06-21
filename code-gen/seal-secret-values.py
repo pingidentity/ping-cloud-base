@@ -25,7 +25,7 @@ SEALED_SECRETS_VAR = "sealedSecrets"
 
 class SealSecrets:
 
-    def __init__(self, cert: str, values_file: str = "values.yaml"):
+    def __init__(self, cert: str, values_file: str = "values-files/base/values.yaml"):
         self.cert = cert
         self.values_file = values_file
         self.values = self.load_values()
