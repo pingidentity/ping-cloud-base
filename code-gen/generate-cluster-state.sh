@@ -321,7 +321,7 @@ QUIET="${QUIET:-false}"
 ########################################################################################################################
 
 # The list of variables in the template files that will be substituted by default.
-# Note: DEFAULT_VARS is a superset of ENV_VARS_TO_SUBST within update-cluster-state.sh. These variables should be kept
+# Note: DEFAULT_VARS is a superset of ENV_VARS_TO_SUBST within upgrade-cluster-state.sh. These variables should be kept
 # in sync with the following exceptions: LAST_UPDATE_REASON and NEW_RELIC_LICENSE_KEY_BASE64 should only be found
 # within DEFAULT_VARS
 # Note: only secret variables are substituted into YAML files. Environments variables are just written to an env_vars
@@ -580,7 +580,7 @@ set_ssh_key_pair() {
     echo 'Generating key-pair for SSH access'
     generate_ssh_key_pair
 
-  # Upgrade flow - we only get a private key from update-cluster-state.sh
+  # Upgrade flow - we only get a private key from upgrade-cluster-state.sh
   elif test -z "${SSH_ID_PUB_FILE}" && test -f "${SSH_ID_KEY_FILE}"; then
     echo 'This is an upgrade - using provided private key for SSH access. No public key available'
     export SSH_ID_KEY_BASE64=$(base64_no_newlines "${SSH_ID_KEY_FILE}")
@@ -1041,10 +1041,10 @@ mkdir -p "${BOOTSTRAP_DIR}"
 mkdir -p "${CLUSTER_STATE_REPO_DIR}"
 mkdir -p "${PROFILE_REPO_DIR}"
 
-cp ./update-cluster-state-wrapper.sh "${CLUSTER_STATE_REPO_DIR}"
+cp ./upgrade-cluster-state-wrapper.sh "${CLUSTER_STATE_REPO_DIR}"
 cp ./csr-validation.sh "${CLUSTER_STATE_REPO_DIR}"
 cp ./seal-secret-values.py "${CLUSTER_STATE_REPO_DIR}"
-cp ./update-profile-wrapper.sh "${PROFILE_REPO_DIR}"
+cp ./upgrade-profile-wrapper.sh "${PROFILE_REPO_DIR}"
 
 cp ../.gitignore "${CLUSTER_STATE_REPO_DIR}"
 cp ../.gitignore "${PROFILE_REPO_DIR}"
