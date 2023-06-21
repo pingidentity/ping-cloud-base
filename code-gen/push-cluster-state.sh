@@ -228,7 +228,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       src_dir="${GENERATED_CODE_DIR}/${PROFILE_REPO_DIR}"
       echo "Copying base files from ${src_dir} to ${PWD}"
       cp "${src_dir}"/.gitignore ./
-      cp "${src_dir}"/update-profile-wrapper.sh ./
+      cp "${src_dir}"/upgrade-profile-wrapper.sh ./
 
       # Copy the profiles.
       mkdir -p "${PROFILES_DIR}"
@@ -244,7 +244,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       src_dir="${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}"
       echo "Copying base files from ${src_dir} to ${PWD}"
       cp "${src_dir}"/.gitignore ./
-      cp "${src_dir}"/update-cluster-state-wrapper.sh ./
+      cp "${src_dir}"/upgrade-cluster-state-wrapper.sh ./
       cp "${src_dir}"/csr-validation.sh ./
       cp "${src_dir}"/seal-secret-values.py ./
 

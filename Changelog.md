@@ -36,6 +36,7 @@ _Changes:_
 - [X] PDO-5333 ArgoCD authentication to private ECR for Helm
 - [X] PDO-5358 OpenSearch Migration: Refactor OS Code as Needed
 - [X] PDO-5408 Add boolean flag to skip pod liveness probe script for PingFederate engines, PingAccess/WAS engines, and PingDirectory
+- [X] PDO-5409 Add ability to Update Upgrade Scripts w/o Release of New Beluga Version
 - [X] PDO-5435 Update values.yaml files structure
 - [X] PDO-5601 os-dashboards-pf configMap breaks developer, and new ci/cd deploys
 

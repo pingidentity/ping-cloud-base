@@ -32,7 +32,7 @@
 #   - Wait for the CD replicas to be rolled out.
 #
 # Upgrade:
-#   - Update the cluster-state-repo to the new Beluga version using the update-cluster-state-wrapper.sh script.
+#   - Upgrade the cluster-state-repo to the new Beluga version using the upgrade-cluster-state-wrapper.sh script.
 #     Refer to the upgrade doc for the Beluga release for more details.
 #   - Set "prune: false" in argo-application.yaml.
 #   - Update the APP_RESYNC_SECONDS environment variable in k8s-configs/base/cluster-tools/kustomization.yaml to
