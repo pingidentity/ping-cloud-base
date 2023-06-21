@@ -202,6 +202,7 @@ _Changes:_
 - [X] PDO-5553 Bugfix: remove-from-secondary-patch is broken for logstash-pipeline-alerts
 - [X] PDO-5611 PD Healthchecks include k8s cluster name
 - [X] PDO-5614 Bugfix: 'cluster_name' filter issue in ELK and Grafana on prod CDE
+- [X] PDO-5646 Warning messages in cert-manager pod logs
 
 ### 1.17.0.0
 
