@@ -5,6 +5,7 @@ import yaml
 
 PCB_DIR = os.getenv("PROJECT_DIR", os.getenv("PCB_PATH", "ping-cloud-base"))
 SEAL_SCRIPT_PATH = os.getenv("SEAL_SCRIPT", ("%s/code-gen/seal-secret-values.py" % PCB_DIR))
+VALUES_FILE_PATH = "values-files/base"
 
 
 def run_seal_script(cert) -> subprocess.CompletedProcess:
@@ -18,7 +19,7 @@ def get_valid_yaml():
 
 
 def write_values_file(values):
-    with open("values.yaml", "w") as file:
+    with open(VALUES_FILE_PATH+"/values.yaml", "w") as file:
         try:
             yaml.dump(values, file)
         except Exception as e:
@@ -32,6 +33,7 @@ class TestSealScript(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
+        os.makedirs(VALUES_FILE_PATH, exist_ok=True)
         cls.cert_file = "cert.pem"
         p1 = subprocess.run(args=["kubeseal", "--fetch-cert", "--controller-namespace", "kube-system"],
                             capture_output=True, text=True)
@@ -51,11 +53,12 @@ class TestSealScript(unittest.TestCase):
         # Delete cert.pem
         if os.path.exists("cert.pem"):
             os.remove("cert.pem")
+        os.removedirs(VALUES_FILE_PATH)
 
     def tearDown(self) -> None:
         # Delete values.yaml
-        if os.path.exists("values.yaml"):
-            os.remove("values.yaml")
+        if os.path.exists(VALUES_FILE_PATH+"/values.yaml"):
+            os.remove(VALUES_FILE_PATH+"/values.yaml")
 
     def test_incorrect_usage(self):
         results = subprocess.run(args=["python3", SEAL_SCRIPT_PATH], capture_output=True, text=True)
@@ -66,7 +69,7 @@ class TestSealScript(unittest.TestCase):
     def test_values_file_not_exists(self):
         results = run_seal_script(self.cert_file)
         self.assertEqual(results.returncode, 1, "seal script succeeded when values.yaml doesn't exist")
-        self.assertIn("Values file 'values.yaml' not found", results.stderr,
+        self.assertIn(("Values file '%s/values.yaml' not found" % VALUES_FILE_PATH), results.stderr,
                       "seal script returned incorrect error message")
 
     def test_secrets_already_sealed(self):
