@@ -86,6 +86,7 @@
 - Upgrade Postgres Operator (PGO) to 5.3.1 to support EKS v1.25
 - Add PGO Backups Jobs TTL
 - Add region env vars to cluster-health-environment-variables configmap
+- Auto update LAST_UPDATE_REASON within app env_vars on upgrade
 
 _Changes:_
 
@@ -190,6 +191,7 @@ _Changes:_
 - [X] PDO-5377 Patch CA to balance node across all AZs
 - [X] PDO-5390 nri-bundle-nrk8s-kubelet-* pods running by CDE stuck in Pending state
 - [X] PDO-5393 Bugfix - secondary CSR missing app dir
+- [X] PDO-5410 Auto-Update the Last Update Reason
 - [X] PDO-5419 Bugfix - remove monitoring & logging from secondary
 - [X] PDO-5415 Bugfix - PA-WAS ext ingress is missing from non-customer-hub environments
 - [X] PDO-5433 Update/Disable healthchecks
@@ -202,6 +204,7 @@ _Changes:_
 - [X] PDO-5553 Bugfix: remove-from-secondary-patch is broken for logstash-pipeline-alerts
 - [X] PDO-5611 PD Healthchecks include k8s cluster name
 - [X] PDO-5614 Bugfix: 'cluster_name' filter issue in ELK and Grafana on prod CDE
+- [X] PDO-5646 Warning messages in cert-manager pod logs
 
 ### 1.17.0.0
 

@@ -505,6 +505,19 @@ create_dot_old_files() {
 }
 
 ########################################################################################################################
+# Update the LAST_UPDATE_REASON variable in app env_vars files
+########################################################################################################################
+update_last_update_reason(){
+  # Find all env_vars files and update variable
+  find "${K8S_CONFIGS_DIR}" -type f -name "${ENV_VARS_FILE_NAME}" \
+    -exec sed -i "" "s/\(LAST_UPDATE_REASON=\).*/\1\"${NEW_VERSION}-upgrade\"/" {} \;
+
+  msg="Auto-update LAST_UPDATE_REASON"
+  git add .
+  git commit --allow-empty -m "${msg}"
+}
+
+########################################################################################################################
 # Copy new k8s-configs files from the default git branch into its new one.
 #
 # Arguments
@@ -1078,6 +1091,9 @@ for ENV in ${SUPPORTED_ENVIRONMENT_TYPES}; do # ENV loop
   else
     handle_changed_k8s_configs "${NEW_BRANCH}"
   fi
+
+  # Update LAST_UPDATE_REASON within app env_vars
+  update_last_update_reason
 
   log "Done updating branch '${NEW_BRANCH}' for '${ENV}'"
 
