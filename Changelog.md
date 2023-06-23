@@ -12,6 +12,7 @@
 - Improve logstash grok patterns to prevent execution timeouts
 - Update prometheus alerts with links to the runbooks
 - Update nginx-ingress-controller to v1.6.4 to support EKS 1.26
+- Create new RBAC rules , ping role and service accounts for PD backups and restore
 
 _Changes:_
 
@@ -36,6 +37,7 @@ _Changes:_
 - [X] PDO-5320 BUGFIX: found_distance_alert and other found* fields are not present in pf-audit* index documents
 - [X] PDO-5333 ArgoCD authentication to private ECR for Helm
 - [X] PDO-5358 OpenSearch Migration: Refactor OS Code as Needed
+- [X] PDO-5396 Create new RBAC rules , ping role and service accounts for PD backups and restore 
 - [X] PDO-5408 Add boolean flag to skip pod liveness probe script for PingFederate engines, PingAccess/WAS engines, and PingDirectory
 - [X] PDO-5409 Add ability to Update Upgrade Scripts w/o Release of New Beluga Version
 - [X] PDO-5435 Update values.yaml files structure
