@@ -52,6 +52,16 @@ patchesStrategicMerge:
       purpose: service-account-for-ping-cloud-stack
       ${IRSA_PING_ANNOTATION_KEY_VALUE}
 
+### Ping directory backup restore  service account ###
+- |-
+  apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: pingdirectory-ops-serviceaccount
+    annotations:
+      purpose: service-account-for-ping-directory-ops
+      ${IRSA_PING_ANNOTATION_KEY_VALUE}
+
 ### Ping access service account ###
 - |-
   apiVersion: v1

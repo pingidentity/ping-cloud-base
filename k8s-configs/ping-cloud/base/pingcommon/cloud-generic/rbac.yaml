@@ -4,6 +4,13 @@ metadata:
   name: ping-serviceaccount
 
 ---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pingdirectory-ops-serviceaccount
+
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -27,6 +34,55 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: ping-role
+rules:
+  - apiGroups:
+    - ""
+    resources:
+    - "pods"
+    - "pods/log"
+    - "secrets"
+    - "configmaps"
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - ""
+    resources:
+    - "persistentvolumeclaims"
+    verbs:
+    - delete
+  - apiGroups:
+    - ""
+    - "apps"
+    resources:
+    - "statefulsets"
+    - "deployments"
+    verbs:
+    - get
+    - list
+    - watch
+  - apiGroups:
+    - ""
+    resources:
+    - "pods/exec"
+    verbs:
+    - create
+  - apiGroups:
+    - networking.k8s.io
+    resources:
+    - ingresses
+    verbs:
+    - list
+    - watch
+    - get
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pingdirectory-ops-role
 rules:
   - apiGroups:
     - "batch"
@@ -86,6 +142,20 @@ rules:
       - list
       - watch
       - get
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pingdirectory-ops-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: pingdirectory-ops-role
+subjects:
+  - kind: ServiceAccount
+    name: pingdirectory-ops-serviceaccount
 
 ---
 
