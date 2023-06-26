@@ -1,11 +1,11 @@
 dsconfig set-backend-prop \
-        --backend-name "${PLATFORM_CONFIG_BACKEND_ID}" \
-        --set "base-dn:${PLATFORM_CONFIG_BASE_DN}" \
+        --backend-name "platformconfig" \
+        --set "base-dn:o=platformconfig" \
         --set enabled:true
 
 dsconfig set-backend-prop \
-        --backend-name "${APP_INTEGRATIONS_BACKEND_ID}" \
-        --set "base-dn:o=${APP_INTEGRATIONS_BASE_DN}" \
+        --backend-name "appintegrations" \
+        --set "base-dn:o=appintegrations" \
         --set enabled:true
 
 dsconfig create-backend \
