@@ -1,5 +1,5 @@
 dsconfig create-backend \
-        --backend-name "platformconfig" \
+        --backend-name "${PLATFORM_CONFIG_BACKEND_ID}" \
         --type local-db \
         --set enabled:true \
         --set base-dn:"o=platformconfig" \
@@ -11,13 +11,4 @@ dsconfig create-backend \
         --set enabled:true \
         --set base-dn:"o=appintegrations" \
         --set prime-method:preload
-        
-dsconfig set-backend-prop \
-        --backend-name "platformconfig" \
-        --set "base-dn:o=platformconfig" \
-        --set enabled:true
 
-dsconfig set-backend-prop \
-        --backend-name "appintegrations" \
-        --set "base-dn:o=appintegrations" \
-        --set enabled:true
