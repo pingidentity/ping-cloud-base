@@ -1,3 +1,12 @@
+apiVersion: v1
+kind: Secret
+type: Opaque
+metadata:
+  name: nr-license-key
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -80,6 +89,11 @@ spec:
         - name: logstash
           image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logstash/dev:v1.19-release-branch-latest
           imagePullPolicy: Always
+          command:
+            - "/bin/sh"
+          args:
+            - "-c"
+            - "S3_BUCKET_NAME=${S3_BUCKET#s3://} /usr/local/bin/docker-entrypoint"
           securityContext:
             runAsNonRoot: true
             runAsUser: 1000
@@ -122,6 +136,26 @@ spec:
                 secretKeyRef:
                   key: password
                   name: os-logstash-creds
+            - name: S3_BUCKET
+              valueFrom:
+                  configMapKeyRef:
+                    name: s3-raw-logs-bucket
+                    key: bucketName
+            - name: AWS_REGION
+              valueFrom:
+                configMapKeyRef:
+                  name: cluster-info
+                  key: logs.region
+            - name: CW_CLUSTER_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: cluster-info
+                  key: cluster.name
+            - name: NR_LICENSE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: nr-license-key
+                  key: NEW_RELIC_LICENSE_KEY
           envFrom:
             - configMapRef:
                 name: elk-environment-variables
@@ -157,6 +191,15 @@ spec:
             - containerPort: 8080
               name: http-log-input
               protocol: TCP
+            - containerPort: 8081
+              name: http-s3-input
+              protocol: TCP
+            - containerPort: 8082
+              name: http-cw-input
+              protocol: TCP
+            - containerPort: 8083
+              name: http-nr-input
+              protocol: TCP
           volumeMounts:
             - name: logstash-pipelines
               mountPath: /usr/share/logstash/config/pipelines.yml
@@ -167,6 +210,14 @@ spec:
               readOnly: true
             - name: logstash-pipeline-customer
               mountPath: /usr/share/logstash/pipeline/customer
+              readOnly: true
+            - name: logstash-pipeline-s3
+              mountPath: /usr/share/logstash/pipeline/s3
+              readOnly: true
+            - name: logstash-pipeline-cw
+              mountPath: /usr/share/logstash/pipeline/cloudwatch
+            - name: logstash-pipeline-nr
+              mountPath: /usr/share/logstash/pipeline/newrelic
               readOnly: true
             - name: logstash-search-template
               mountPath: /etc/logstash/templates
@@ -224,6 +275,15 @@ spec:
         - name: logstash-pipeline-customer
           configMap:
             name: logstash-pipeline-customer
+        - name: logstash-pipeline-s3
+          configMap:
+            name: logstash-pipeline-s3
+        - name: logstash-pipeline-cw
+          configMap:
+            name: logstash-pipeline-cw
+        - name: logstash-pipeline-nr
+          configMap:
+            name: logstash-pipeline-nr
         - name: logstash-pipelines
           configMap:
             name: logstash-pipelines
@@ -278,6 +338,12 @@ spec:
       name: http-log-input
     - port: 9198
       name: metrics
+    - port: 8081
+      name: http-s3-input
+    - port: 8082
+      name: http-cw-input
+    - port: 8083
+      name: http-nr-input
 
 ---
 apiVersion: v1

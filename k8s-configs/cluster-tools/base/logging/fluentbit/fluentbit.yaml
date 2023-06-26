@@ -1,15 +1,6 @@
 # create configmap for cluster name and aws region for CloudWatch Logs
 # need to replace the placeholders cluster_name and region_name
 apiVersion: v1
-kind: Secret
-type: Opaque
-metadata:
-  name: nr-license-key
-  annotations:
-    sealedsecrets.bitnami.com/managed: "true"
-
----
-apiVersion: v1
 kind: ConfigMap
 metadata:
   name: cluster-info
@@ -79,11 +70,6 @@ spec:
       - name: fluent-bit
         image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-for-fluent-bit:2.31.7
         imagePullPolicy: Always
-        command:
-          - "/bin/sh"
-        args:
-          - "-c"
-          - "S3_BUCKET_NAME=${S3_BUCKET#s3://} /entrypoint.sh"
         securityContext:
           capabilities:
             drop:
@@ -91,16 +77,6 @@ spec:
             add:
               - CAP_FOWNER
         env:
-            - name: AWS_REGION
-              valueFrom:
-                configMapKeyRef:
-                  name: cluster-info
-                  key: logs.region
-            - name: CLUSTER_NAME
-              valueFrom:
-                configMapKeyRef:
-                  name: cluster-info
-                  key: cluster.name
             - name: READ_FROM_HEAD
               valueFrom:
                 configMapKeyRef:
@@ -120,16 +96,6 @@ spec:
                 configMapKeyRef:
                   name: cluster-info
                   key: log.level
-            - name: NR_LICENSE_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: nr-license-key
-                  key: NEW_RELIC_LICENSE_KEY
-            - name: S3_BUCKET
-              valueFrom:
-                  configMapKeyRef:
-                    name: s3-raw-logs-bucket
-                    key: bucketName
             - name: NR_CLUSTER_NAME
               valueFrom:
                 configMapKeyRef:

@@ -13,7 +13,8 @@
 - Update prometheus alerts with links to the runbooks
 - Update nginx-ingress-controller to v1.6.4 to support EKS 1.26
 - Create new RBAC rules , ping role and service accounts for PD backups and restore
-- - Update kube-state-metrics to v2.8.1
+- Update kube-state-metrics to v2.8.1
+- Move S3, CloudWarch, Newrelic outputs from Fluentbit to Logstash pipelines
 
 _Changes:_
 
@@ -30,6 +31,7 @@ _Changes:_
 - [X] PDO-5244 OpenSearch migration: Enable transport layer security
 - [X] PDO-5245 OpenSearch migration: Update grafana dashboards datasource
 - [X] PDO-5246 Opensearch migration: Migrate alerts
+- [X] PDO-5254 Move all external outputs from Fluentbit to Logstash pipelines
 - [X] PDO-5258 OpenSearch migration: Refactor bootstrap scripts
 - [X] PDO-5270 Replace all  long alerts descriptions by short ones with links to runbook
 - [X] PDO-5301 Logstash: Improve grok patterns to prevent execution timeouts
