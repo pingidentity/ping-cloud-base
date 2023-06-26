@@ -7,8 +7,3 @@ dsconfig set-backend-prop \
         --backend-name "appintegrations" \
         --set "base-dn:o=appintegrations" \
         --set enabled:true
-
-dsconfig create-backend \
-        --backend-name "userRoot_2" \
-        --type local-db \
-        --set enabled:true \
