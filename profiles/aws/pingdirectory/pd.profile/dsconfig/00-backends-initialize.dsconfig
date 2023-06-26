@@ -1,0 +1,14 @@
+dsconfig set-backend-prop \
+        --backend-name "${PLATFORM_CONFIG_BACKEND_ID}" \
+        --set "base-dn:${PLATFORM_CONFIG_BASE_DN}" \
+        --set enabled:true
+
+dsconfig set-backend-prop \
+        --backend-name "${APP_INTEGRATIONS_BACKEND_ID}" \
+        --set "base-dn:o=${APP_INTEGRATIONS_BASE_DN}" \
+        --set enabled:true
+
+dsconfig create-backend \
+        --backend-name "userRoot_2" \
+        --type local-db \
+        --set enabled:true \
