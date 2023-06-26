@@ -16,5 +16,3 @@ configMapGenerator:
       - pipelines/elk.conf
       - pipelines/nr.conf
       - pipelines/s3.conf
-      - scripts/time.lua
-      - scripts/record_modifier.lua
