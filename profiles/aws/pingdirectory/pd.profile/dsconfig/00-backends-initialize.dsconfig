@@ -1,0 +1,23 @@
+dsconfig create-backend \
+        --backend-name "${PLATFORM_CONFIG_BACKEND_ID}" \
+        --type local-db \
+        --set enabled:true \
+        --set base-dn:"${PLATFORM_CONFIG_BASE_DN}" \
+        --set prime-method:preload
+
+dsconfig create-backend \
+        --backend-name "${APP_INTEGRATIONS_BACKEND_ID}" \
+        --type local-db \
+        --set enabled:true \
+        --set base-dn:"${APP_INTEGRATIONS_BASE_DN}" \
+        --set prime-method:preload
+        
+dsconfig set-backend-prop \
+      --backend-name "platformconfig" \
+      --set "base-dn:o=platformconfig" \
+      --set enabled:true
+
+dsconfig set-backend-prop \
+      --backend-name "appintegrations" \
+      --set "base-dn:o=appintegrations" \
+      --set enabled:true
