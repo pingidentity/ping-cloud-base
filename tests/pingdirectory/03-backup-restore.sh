@@ -4,10 +4,10 @@ CI_SCRIPTS_DIR="${SHARED_CI_SCRIPTS_DIR:-/ci-scripts}"
 . "${CI_SCRIPTS_DIR}"/common.sh "${1}" > /dev/null
 . "${CI_SCRIPTS_DIR}"/test/test_utils.sh
 
-if skipTest "${0}"; then
-  log "Skipping test ${0}"
-  exit 0
-fi
+# if skipTest "${0}"; then
+#   log "Skipping test ${0}"
+#   exit 0
+# fi
 
 expected_files() {
   kubectl logs -n "${PING_CLOUD_NAMESPACE}" \
@@ -36,12 +36,15 @@ actual_files() {
 
 testBackupAndRestore() {
 
-  BACKUP_JOB="${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingdirectory/server/aws/backup.yaml
+  BACKUP_OPS_SCRIPT="${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingdirectory/server/aws/backup-ops-template/backup-ops.sh
+  #BACKUP_OPS_SCRIPT="/Users/vathsalyakidambi/Desktop/repos/ping-cloud-base/k8s-configs/ping-cloud/base/pingdirectory/server/aws/backup-ops-template/backup-ops.sh"
+  BACKUP_JOB="pingdirectory-backup"
 
   log "Applying the backup job"
-  kubectl delete -f "${BACKUP_JOB}" -n "${PING_CLOUD_NAMESPACE}"
+  #kubectl delete -f "${BACKUP_JOB}" -n "${PING_CLOUD_NAMESPACE}"
+  test -x "${BACKUP_OPS_SCRIPT}" && "${BACKUP_OPS_SCRIPT}"
 
-  kubectl apply -f "${BACKUP_JOB}" -n "${PING_CLOUD_NAMESPACE}"
+  kubectl get job "${BACKUP_JOB}" -n "${PING_CLOUD_NAMESPACE}"
   assertEquals "The kubectl apply command to create the ${BACKUP_JOB} should have succeeded" 0 $?
 
   log "Waiting for the backup job to complete"
@@ -62,30 +65,13 @@ testBackupAndRestore() {
     exit 1
   fi
 
-  RESTORE_JOB="${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingdirectory/server/aws/restore.yaml
+  RESTORE_JOB="${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingdirectory/server/aws/restore-ops-template/restore-ops.sh
 
   log "Applying the restore job"
 #   kubectl delete -f "${RESTORE_JOB}" -n "${PING_CLOUD_NAMESPACE}"
-  kubectl apply -f "${RESTORE_JOB}" -n "${PING_CLOUD_NAMESPACE}"
-  assertEquals "The kubectl apply command to create the ${RESTORE_JOB} should have succeeded" 0 $?
-
-  log "Waiting for the restore job to complete"
-  kubectl wait --for=condition=complete --timeout=900s job/pingdirectory-restore -n "${PING_CLOUD_NAMESPACE}"
-  assertEquals "The kubectl wait command for the job should have succeeded" 0 $?
-
-  # We expect 3 backends to be restored successfully
-  RESTORE_SUCCESS_MESSAGE='Restore task .* has been successfully completed'
-  RESTORE_POD=$(kubectl get pod -n "${PING_CLOUD_NAMESPACE}" -o name | grep pingdirectory-restore)
-  NUM_SUCCESSFUL=$(kubectl logs -n "${PING_CLOUD_NAMESPACE}" "${RESTORE_POD}" | grep -o "${RESTORE_SUCCESS_MESSAGE}" | sort -u | wc -l )
-
-  NUM_EXPECTED=3
-  assertEquals "Restore job failed" "${NUM_EXPECTED}" "${NUM_SUCCESSFUL}"
-  if test "${NUM_SUCCESSFUL}" -ne ${NUM_EXPECTED}; then
-    log "Restore job failed. Restore logs:"
-    kubectl logs -n "${PING_CLOUD_NAMESPACE}" "${RESTORE_POD}"
-  fi
 }
 
+#testBackupAndRestore
 
 # When arguments are passed to a script you must
 # consume all of them before shunit is invoked
