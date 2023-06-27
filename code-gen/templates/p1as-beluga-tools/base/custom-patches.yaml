@@ -1,0 +1,7 @@
+### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
+
+### Always leave in at least this customization. Otherwise, kustomize will complain about an empty patch file. ###
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: beluga-tools-custom-environment-variables
