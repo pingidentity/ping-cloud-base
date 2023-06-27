@@ -13,6 +13,7 @@
 - Update prometheus alerts with links to the runbooks
 - Update nginx-ingress-controller to v1.6.4 to support EKS 1.26
 - Create new RBAC rules , ping role and service accounts for PD backups and restore
+- Configure Lifecycle policy for PingFederate Engines
 - Update kube-state-metrics to v2.8.1
 - Move S3, CloudWarch, Newrelic outputs from Fluentbit to Logstash pipelines
 
@@ -44,6 +45,7 @@ _Changes:_
 - [X] PDO-5408 Add boolean flag to skip pod liveness probe script for PingFederate engines, PingAccess/WAS engines, and PingDirectory
 - [X] PDO-5409 Add ability to Update Upgrade Scripts w/o Release of New Beluga Version
 - [X] PDO-5435 Update values.yaml files structure
+- [X] PDO-5467 When rolling pods NLB connection draining isn't occuring causing service interruption
 - [X] PDO-5549 Update kube-state-metrics cluster tool to v2.8.1 for EKS 1.26
 - [X] PDO-5571 Update nginx-ingress-controller to v1.6.4 to support EKS 1.26
 - [X] PDO-5601 os-dashboards-pf configMap breaks developer, and new ci/cd deploys

@@ -230,6 +230,10 @@ spec:
         - name: data-dir
           mountPath: /opt/staging/solutions_artifacts
           subPath: solutions_artifacts
+        lifecycle:
+          preStop:
+            exec:
+              command: ["sh", "-c", "sleep 5"]
         readinessProbe:
           exec:
             command: [ /opt/staging/hooks/99-pf-engine-liveness.sh ]
