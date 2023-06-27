@@ -88,19 +88,19 @@ configMapGenerator:
 
 # PingCloud services
 # Pingcloud-metadata
-- name: pingcloud-metadata-environment-variables
-  behavior: merge
-  envs:
-  - ../base/env_vars
-  - env_vars
+#- name: pingcloud-metadata-environment-variables
+#  behavior: merge
+#  envs:
+#  - ../base/env_vars
+#  - env_vars
 
 # Pingcloud-healthcheck
-- name: pingcloud-healthcheck-environment-variables
-  namespace: ${PING_CLOUD_NAMESPACE}
-  behavior: merge
-  envs:
-  - ../base/env_vars
-  - env_vars
+#- name: pingcloud-healthcheck-environment-variables
+#  namespace: ${PING_CLOUD_NAMESPACE}
+#  behavior: merge
+#  envs:
+#  - ../base/env_vars
+#  - env_vars
 
 # PingCloud BOM service
 - name: p14c-bom-service-environment-variables
