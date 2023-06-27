@@ -16,6 +16,7 @@
 - Configure Lifecycle policy for PingFederate Engines
 - Update kube-state-metrics to v2.8.1
 - Move S3, CloudWarch, Newrelic outputs from Fluentbit to Logstash pipelines
+- Mirror our own version of newrelic images
 
 _Changes:_
 
@@ -47,6 +48,7 @@ _Changes:_
 - [X] PDO-5435 Update values.yaml files structure
 - [X] PDO-5467 When rolling pods NLB connection draining isn't occuring causing service interruption
 - [X] PDO-5549 Update kube-state-metrics cluster tool to v2.8.1 for EKS 1.26
+- [X] PDO-5558 Mirror our own version of newrelic images
 - [X] PDO-5571 Update nginx-ingress-controller to v1.6.4 to support EKS 1.26
 - [X] PDO-5601 os-dashboards-pf configMap breaks developer, and new ci/cd deploys
 
