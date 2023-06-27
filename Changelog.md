@@ -205,6 +205,7 @@ _Changes:_
 - [X] PDO-5611 PD Healthchecks include k8s cluster name
 - [X] PDO-5614 Bugfix: 'cluster_name' filter issue in ELK and Grafana on prod CDE
 - [X] PDO-5646 Warning messages in cert-manager pod logs
+- [X] PDO-5690 v1.18 Prepare for Ability to Update Upgrade Scripts w/o Release of New Beluga Version
 
 ### 1.17.0.0
 
