@@ -17,12 +17,12 @@ get_expected_files() {
 }
 
 get_actual_files() {
-  BUCKET_URL_NO_PROTOCOL=${BACKUP_URL#s3://}
-  BUCKET_NAME=$(echo "${BUCKET_URL_NO_PROTOCOL}" | cut -d/ -f1)
+  local bucket_url=$(get_ssm_val "${BACKUP_URL#ssm:/}")
+  local bucket_url_no_protocol=${bucket_url#s3://}
   DAYS_AGO=1
-
+  
   aws s3api list-objects \
-    --bucket "${BUCKET_NAME}" \
+    --bucket "${bucket_url_no_protocol}" \
     --prefix 'pingfederate/' \
     --query "reverse(sort_by(Contents[?LastModified>='${DAYS_AGO}'], &LastModified))[].Key" \
     --profile "${AWS_PROFILE}" |
