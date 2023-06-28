@@ -65,10 +65,31 @@ testBackupAndRestore() {
     exit 1
   fi
 
-  RESTORE_JOB="${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingdirectory/server/aws/restore-ops-template/restore-ops.sh
+  RESTORE_OPS_SCRIPT="/Users/vathsalyakidambi/Desktop/repos/ping-cloud-base/k8s-configs/ping-cloud/base/pingdirectory/server/aws/restore-ops-template/restore-ops.sh"
+  RESTORE_JOB="pingdirectory-restore"
 
   log "Applying the restore job"
 #   kubectl delete -f "${RESTORE_JOB}" -n "${PING_CLOUD_NAMESPACE}"
+  test -x "${RESTORE_OPS_SCRIPT}" && "${RESTORE_OPS_SCRIPT}"
+
+  kubectl get job "${RESTORE_JOB}" -n "${PING_CLOUD_NAMESPACE}"
+  assertEquals "The kubectl apply command to create the ${RESTORE_JOB} should have succeeded" 0 $?
+
+  log "Waiting for the restore job to complete"
+  kubectl wait --for=condition=complete --timeout=900s job/pingdirectory-restore -n "${PING_CLOUD_NAMESPACE}"
+  assertEquals "The kubectl wait command for the job should have succeeded" 0 $?
+
+  # We expect 3 backends to be restored successfully
+  RESTORE_SUCCESS_MESSAGE='The restore process completed successfully'
+  RESTORE_POD=$(kubectl get pod -n "${PING_CLOUD_NAMESPACE}" -o name | grep pingdirectory-restore)
+  NUM_SUCCESSFUL=$(kubectl logs -n "${PING_CLOUD_NAMESPACE}" "${RESTORE_POD}" | grep -o "${RESTORE_SUCCESS_MESSAGE}" | wc -l )
+
+  NUM_EXPECTED=3
+  assertEquals "Restore job failed" "${NUM_EXPECTED}" "${NUM_SUCCESSFUL}"
+  if test "${NUM_SUCCESSFUL}" -ne ${NUM_EXPECTED}; then
+    log "Restore job failed. Restore logs:"
+    kubectl logs -n "${PING_CLOUD_NAMESPACE}" "${RESTORE_POD}"
+  fi
 }
 
 #testBackupAndRestore
