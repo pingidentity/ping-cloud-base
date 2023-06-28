@@ -10,10 +10,10 @@ class TestHealthcheck(TestHealthBase):
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
-        cls.healthcheck_pod_name_pattern = "pingcloud-healthcheck-[0-9a-zA-Z]+-[0-9a-zA-Z]+"
+        cls.healthcheck_pod_label = "role=pingcloud-healthcheck"
 
     def test_healthcheck_pod_exists(self):
-        pod_name = self.k8s.get_namespaced_pod_name(self.ping_cloud, self.healthcheck_pod_name_pattern)
+        pod_name = self.k8s.get_deployment_pod_name(self.healthcheck_pod_label, self.ping_cloud)
         self.assertIsNotNone(pod_name)
 
     def test_healthcheck_get_route_ok_response(self):

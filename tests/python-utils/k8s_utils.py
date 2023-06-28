@@ -1,5 +1,4 @@
 import json
-import re
 import time
 
 from datetime import datetime
@@ -81,11 +80,18 @@ class K8sUtils:
                 watch.stop()
                 return
 
-    def get_deployment_pod_names(self, label: str, namespace: str):
+    def get_deployment_pod_names(self, label: str, namespace: str) -> [str]:
         res = self.core_client.list_namespaced_pod(
             namespace=namespace, label_selector=label
         )
         return [pod.metadata.name for pod in res.items]
+
+    def get_deployment_pod_name(self, label: str, namespace: str) -> str:
+        try:
+            return next(name for name in self.get_deployment_pod_names(label, namespace))
+        except StopIteration:
+            print(f"Pod not found for label {label} in namespace {namespace}")
+            return ""
 
     def kill_pods(self, label: str, namespace: str, timeout_seconds: int = 300):
         pod_names = self.get_deployment_pod_names(label=label, namespace=namespace)
@@ -146,23 +152,12 @@ class K8sUtils:
         :param log_message: Log message to wait for
         :param timeout_seconds: Timeout seconds
         """
-        pods = self.core_client.list_namespaced_pod(namespace)
-        try:
-            pod = next(
-                pod.metadata.name
-                for pod in pods.items
-                if pod.metadata.name.startswith(pod_name)
-            )
-        except StopIteration as err:
-            print(f"Pod '{pod_name}' not found. {err}")
-            raise
-
         watch = k8s.watch.Watch()
         watch_start = time.time()
         for event in watch.stream(
             func=self.core_client.read_namespaced_pod_log,
             namespace=namespace,
-            name=pod,
+            name=pod_name,
         ):
             if log_message in event or timeout_reached(
                 start_time=watch_start, timeout_seconds=timeout_seconds
@@ -173,39 +168,6 @@ class K8sUtils:
     def get_namespace_names(self):
         namespaces = self.core_client.list_namespace()
         return [ns.metadata.name for ns in namespaces.items]
-
-    def get_namespaced_pod_name(
-        self, namespace: str, pod_name_pattern: str
-    ) -> Optional[str]:
-        """
-        Get the first matching pod name from pods in a namespace that match a naming pattern
-        :param namespace: Namespace to check pod names
-        :param pod_name_pattern: Regex pod name pattern to check against pod names
-        :returns: pod name
-        """
-        pods = self.core_client.list_namespaced_pod(namespace)
-        return next(
-            (
-                pod.metadata.name
-                for pod in pods.items
-                if re.search(pod_name_pattern, pod.metadata.name)
-            ),
-            None,
-        )
-
-    def get_namespaced_pod_names(self, namespace: str, pod_name_pattern: str) -> [str]:
-        """
-        Get a list of pod_names for pods in a namespace that match a naming pattern
-        :param namespace: Namespace to check pod names
-        :param pod_name_pattern: Regex pod name pattern to check against pod names
-        :returns: [pod_names]
-        """
-        pods = self.core_client.list_namespaced_pod(namespace)
-        return [
-            pod.metadata.name
-            for pod in pods.items
-            if re.search(pod_name_pattern, pod.metadata.name)
-        ]
 
     def get_namespaced_secret(
         self, name: str, namespace: str
@@ -226,23 +188,18 @@ class K8sUtils:
             None,
         )
 
-    def get_pod_env_vars(self, namespace: str, pod_name_pattern: str) -> [str]:
+    def get_pod_env_vars(self, namespace: str, label: str) -> [str]:
         """
         Exec into a pod and get the environment variables
 
         :param namespace: Namespace of pod
-        :param pod_name_pattern: Pod name pattern
+        :param label: Pod label
         :return: List of environment variables
         """
-        try:
-            pod_name = next(
-                    name
-                    for name in self.get_namespaced_pod_names(namespace, pod_name_pattern)
-            )
-            return self.exec_command(namespace, pod_name, "env").split("\n")
-        except StopIteration:
-            print(f"Pod not found for pattern {pod_name_pattern} in namespace {namespace}")
+        pod_name = self.get_deployment_pod_name(label, namespace)
+        if not pod_name:
             return []
+        return self.exec_command(namespace, pod_name, "env").split("\n")
 
     def exec_command(self, namespace: str, pod_name: str, command: str) -> str:
         """

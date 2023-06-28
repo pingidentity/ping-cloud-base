@@ -8,10 +8,14 @@ from health_common import Categories, TestHealthBase
 class TestPingFederateHealth(TestHealthBase):
     deployment_name = "healthcheck-pingfederate"
     pingfederate = "pingFederate"
+    admin_label = "role=pingfederate-admin"
+    engine_label = "role=pingfederate-engine"
 
     def setUp(self) -> None:
         self.ping_cloud_ns = next((ns for ns in self.k8s.get_namespace_names() if ns.startswith(self.ping_cloud)), self.ping_cloud)
-        self.pod_names = self.k8s.get_namespaced_pod_names(self.ping_cloud_ns, r"pingfederate-(?:|admin-)\d+")
+        admin_pod_names = self.k8s.get_deployment_pod_names(self.admin_label, self.ping_cloud_ns)
+        engine_pod_names = self.k8s.get_deployment_pod_names(self.engine_label, self.ping_cloud_ns)
+        self.pod_names = admin_pod_names + engine_pod_names
 
     def test_pingfederate_health_deployment_exists(self):
         self.deployment_exists()

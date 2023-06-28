@@ -6,10 +6,11 @@ from health_common import Categories, TestHealthBase
 class TestPingDirectoryHealth(TestHealthBase):
     deployment_name = "healthcheck-pingdirectory"
     pingdirectory = "pingDirectory"
+    label = "class=pingdirectory-server"
 
     def setUp(self) -> None:
         self.ping_cloud_ns = next((ns for ns in self.k8s.get_namespace_names() if ns.startswith(self.ping_cloud)), self.ping_cloud)
-        self.pod_names = self.k8s.get_namespaced_pod_names(self.ping_cloud_ns, r"pingdirectory-\d+")
+        self.pod_names = self.k8s.get_deployment_pod_names(self.label, self.ping_cloud_ns)
 
     def prometheus_test_patterns_by_pod(self, query: str):
         # baseDN pattern (pingdirectory-N example.com query)
