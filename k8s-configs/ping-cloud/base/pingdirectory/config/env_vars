@@ -92,3 +92,10 @@ JAVA_AGENT_OPTS=-javaagent:/opt/staging/jmx_prometheus_javaagent-0.14.0.jar=8080
 ADMIN_BIND_DN=cn=admin
 SYNC_BIND_DN=cn=sync
 CHANGELOG_SYNC_MAX_AGE=2h
+
+# Overriding these numbers will force PingDirectory to produce duplicate server IDs if not fully tested.
+# As of now PD_POD_LIMIT_INDEX=1000 and PD_BASE_DN_LIMIT_INDEX=20 will allow up to 50 pingdirectory pods per cluster with up to 11
+# 11 backends/base_dns.
+# These variables are used by pingcloud-apps/pingdirectory/src/hooks/offline-mode/manage_offline_mode.py
+PD_POD_LIMIT_INDEX=1000
+PD_BASE_DN_LIMIT_INDEX=20
