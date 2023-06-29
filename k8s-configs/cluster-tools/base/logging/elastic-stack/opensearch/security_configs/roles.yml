@@ -332,3 +332,34 @@ bootstrap:
       allowed_actions:
         - 'crud'
         - 'create_index'
+
+---
+test-role:
+  reserved: false
+  hidden: false
+  cluster_permissions:
+  - "cluster_composite_ops"
+  - "indices_monitor"
+  - "cluster_monitor"
+  - "cluster_manage_index_templates"
+  - "cluster:admin/opendistro/ism/*"
+  - "cluster:admin/opensearch/notifications/*"
+  - "cluster:admin/opendistro/alerting/*"
+  - "kibana_all_write"
+  - "kibana_all_read"
+  - "indices:data/write/bulk"
+  - "indices:data/read/mget"
+  index_permissions:
+  - index_patterns:
+    - "*"
+    dls: ""
+    fls: []
+    masked_fields: []
+    allowed_actions:
+    - "read"
+  tenant_permissions:
+  - tenant_patterns:
+    - "human_resources"
+    allowed_actions:
+    - "kibana_all_read"
+  static: false

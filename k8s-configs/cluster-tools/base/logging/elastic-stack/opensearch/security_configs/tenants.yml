@@ -2,4 +2,9 @@ _meta:
   type: "tenants"
   config_version: 2
 
+## Demo tenants
+human_resources:
+  reserved: false
+  description: "Demo tenant"
+
 # Define your tenants here

@@ -11,8 +11,10 @@ config:
     #do_not_fail_on_forbidden: false
     kibana:
      #Kibana multitenancy
-      multitenancy_enabled: false
+      multitenancy_enabled: true
       server_username: kibanaserver
+      private_tenant_enabled: true
+      default_tenant: global tenant
       index: '.kibana'
     http:
       anonymous_auth_enabled: true
