@@ -10,6 +10,7 @@
 - Replace ElasticSearch and Kibana by OpenSearch stack
 - Add OpenSearch monitoring and alerting
 - Improve logstash grok patterns to prevent execution timeouts
+- Add resource (cpu & memory) limit and request for every product Job and Cronjob
 - Update prometheus alerts with links to the runbooks
 - Update integration tests to handle SSM parameters, rather than an explicit s3 bucket prefix
 - Update nginx-ingress-controller to v1.6.4 to support EKS 1.26
@@ -47,6 +48,7 @@ _Changes:_
 - [X] PDO-5396 Create new RBAC rules , ping role and service accounts for PD backups and restore 
 - [X] PDO-5408 Add boolean flag to skip pod liveness probe script for PingFederate engines, PingAccess/WAS engines, and PingDirectory
 - [X] PDO-5409 Add ability to Update Upgrade Scripts w/o Release of New Beluga Version
+- [X] PDO-5418 Add resource (cpu & memory) limit and request for every product Job and Cronjob
 - [X] PDO-5435 Update values.yaml files structure
 - [X] PDO-5467 When rolling pods NLB connection draining isn't occuring causing service interruption
 - [X] PDO-5549 Update kube-state-metrics cluster tool to v2.8.1 for EKS 1.26
