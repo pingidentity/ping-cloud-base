@@ -55,6 +55,7 @@ _Changes:_
 - [X] PDO-5558 Mirror our own version of newrelic images
 - [X] PDO-5571 Update nginx-ingress-controller to v1.6.4 to support EKS 1.26
 - [X] PDO-5601 os-dashboards-pf configMap breaks developer, and new ci/cd deploys
+- [X] PDO-5709 Fix intermittent pingone integration test failures
 
 ### 1.18.0.0
 
