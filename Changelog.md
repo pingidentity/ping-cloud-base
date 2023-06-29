@@ -19,6 +19,7 @@
 - Update kube-state-metrics to v2.8.1
 - Move S3, CloudWarch, Newrelic outputs from Fluentbit to Logstash pipelines
 - Mirror our own version of newrelic images
+- [need before EKS 1.26] autoscaling/v2beta2 API version of HorizontalPodAutoscaler is no longer served as of v1.25
 
 _Changes:_
 
@@ -35,6 +36,7 @@ _Changes:_
 - [X] PDO-5244 OpenSearch migration: Enable transport layer security
 - [X] PDO-5245 OpenSearch migration: Update grafana dashboards datasource
 - [X] PDO-5246 Opensearch migration: Migrate alerts
+- [X] PDO-5249 [need before EKS 1.26] autoscaling/v2beta2 API version of HorizontalPodAutoscaler is no longer served as of v1.25
 - [X] PDO-5254 Move all external outputs from Fluentbit to Logstash pipelines
 - [X] PDO-5258 OpenSearch migration: Refactor bootstrap scripts
 - [X] PDO-5270 Replace all  long alerts descriptions by short ones with links to runbook
