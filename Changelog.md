@@ -87,6 +87,8 @@
 - Add PGO Backups Jobs TTL
 - Add region env vars to cluster-health-environment-variables configmap
 - Auto update LAST_UPDATE_REASON within app env_vars on upgrade
+- Update healthcheck configmaps to include primary region admin API pod names
+- Update PingAccess configmap patch to include HEALTHCHECK_HTTPBIN_PA_PUBLIC_HOSTNAME
 
 _Changes:_
 
@@ -202,6 +204,7 @@ _Changes:_
 - [X] PDO-5510 Update all healthchecks to use k8s service endpoints
 - [X] PDO-5525 Add PGO Backups Jobs TTL
 - [X] PDO-5553 Bugfix: remove-from-secondary-patch is broken for logstash-pipeline-alerts
+- [X] PDO-5556 Fix PingAccess healthchecks
 - [X] PDO-5611 PD Healthchecks include k8s cluster name
 - [X] PDO-5614 Bugfix: 'cluster_name' filter issue in ELK and Grafana on prod CDE
 - [X] PDO-5646 Warning messages in cert-manager pod logs
