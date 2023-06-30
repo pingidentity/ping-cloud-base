@@ -52,9 +52,10 @@ for image in $(cat $deploy_file | grep "image:" | awk -F: 'BEGIN { OFS=":"} {pri
 done
 
 if [[ "${#errors[@]}" -ne 0 ]]; then
+    echo "Error when trying to copy the following: "
     for i in "${!errors[@]}"
     do
-      echo "$image - ${errors[$i]}"
+      echo "$image"
     done
     if [[ "$FAIL_ON_ERROR" == "false" ]]; then
       exit 0
