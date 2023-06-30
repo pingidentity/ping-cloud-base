@@ -21,6 +21,7 @@ cat $ARTIFACTORY_REGISTRY_PW | docker_command login $ARTIFACTORY_URL -u $ARTIFAC
 deploy_file=/tmp/deploy.yaml
 build_dev_deploy_file "${deploy_file}"
 
+i=0
 for image in $(cat $deploy_file | grep "image:" | awk -F: 'BEGIN { OFS=":"} {print $2,$3}' | tr '\n' ' '); do
   name=""
   
@@ -41,6 +42,12 @@ for image in $(cat $deploy_file | grep "image:" | awk -F: 'BEGIN { OFS=":"} {pri
     echo "Error copying $image"
     errors[$image]=$output
   }
+
+  # every 10 images, do a cleanup. This way we can try to take advantage of layer caching but won't fill the system
+  if [[ "$i" -eq 10 ]]; then
+    docker rmi -f $(docker images -aq)
+  fi
+  i=$((i+1))
 done
 
 if [[ "${#errors[@]}" -ne 0 ]]; then
