@@ -4,6 +4,8 @@ set -e
 
 test "${VERBOSE}" && set -x
 
+declare -A errors
+
 function docker_command() {
   HOME=/tmp docker "${@:1}"
 }
@@ -30,8 +32,24 @@ for image in $(cat $deploy_file | grep "image:" | awk -F: 'BEGIN { OFS=":"} {pri
     name=$image
   fi
 
-  docker_command pull $image
-  docker_command tag $image $ARTIFACTORY_URL/$BELUGA_VERSION/$name
-  docker_command push $ARTIFACTORY_URL/$BELUGA_VERSION/$name
-  echo "Copied $image to location $ARTIFACTORY_URL/$BELUGA_VERSION/$name"
+  {
+    output=$(docker_command pull $image &&
+    docker_command tag $image $ARTIFACTORY_URL/$BELUGA_VERSION/$name &&
+    docker_command push $ARTIFACTORY_URL/$BELUGA_VERSION/$name &&
+    echo "Copied $image to location $ARTIFACTORY_URL/$BELUGA_VERSION/$name")
+  } || {
+    echo "Error copying $image"
+    errors[$image]=$output
+  }
 done
+
+if [[ "${#errors[@]}" -ne 0 ]]; then
+    for i in "${!errors[@]}"
+    do
+      echo "$image - ${errors[$i]}"
+    done
+    if [[ "$FAIL_ON_ERROR" == "false" ]];
+      exit 0
+    fi
+    exit 1
+fi
