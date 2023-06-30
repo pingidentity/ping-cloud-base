@@ -46,6 +46,7 @@ for image in $(cat $deploy_file | grep "image:" | awk -F: 'BEGIN { OFS=":"} {pri
   # every 10 images, do a cleanup. This way we can try to take advantage of layer caching but won't fill the system
   if [[ "$i" -eq 10 ]]; then
     docker rmi -f $(docker images -aq)
+    i=-1
   fi
   i=$((i+1))
 done
