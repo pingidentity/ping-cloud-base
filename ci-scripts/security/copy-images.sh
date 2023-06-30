@@ -8,6 +8,10 @@ test "${VERBOSE}" && set -x
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 . ${SCRIPT_HOME}/../common.sh
 
+# login first so we can error immediately if this isn't going to work
+# may also need to login to ECR or other repos that we need to pull images from before pushing
+docker login $ARTIFACTORY_URL -u $ARTIFACTORY_REGISTRY_USER -p $ARTIFACTORY_REGISTRY_PW
+
 deploy_file=/tmp/deploy.yaml
 build_dev_deploy_file "${deploy_file}"
 
@@ -21,6 +25,7 @@ for image in $(cat $deploy_file | grep "image:" | awk -F: 'BEGIN { OFS=":"} {pri
   else                                                                                                            # dockerhub images without domain
     name=$image
   fi
+  
   docker pull $image
   docker tag $image $ARTIFACTORY_URL/$BELUGA_VERSION/$name
   docker push $ARTIFACTORY_URL/$BELUGA_VERSION/$name
