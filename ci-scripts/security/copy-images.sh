@@ -57,7 +57,7 @@ if [[ "${#errors[@]}" -ne 0 ]]; then
     do
       echo "$image"
     done
-    if [[ "$FAIL_ON_ERROR" == "false" ]]; then
+    if [[ "$WARN_ON_ERROR" == "true" ]]; then
       exit 0
     fi
     exit 1
