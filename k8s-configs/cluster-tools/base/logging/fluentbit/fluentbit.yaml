@@ -68,7 +68,7 @@ spec:
     spec:
       containers:
       - name: fluent-bit
-        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-for-fluent-bit:2.31.7
+        image: cr.fluentbit.io/fluent/fluent-bit:2.1.6
         imagePullPolicy: Always
         securityContext:
           capabilities:
