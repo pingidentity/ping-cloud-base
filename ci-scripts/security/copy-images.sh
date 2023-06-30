@@ -5,7 +5,7 @@ set -e
 test "${VERBOSE}" && set -x
 
 function docker_command() {
-  HOME=/tmp docker "${@:2}"
+  HOME=/tmp docker "${@:1}"
 }
 
 # Source common environment variables
