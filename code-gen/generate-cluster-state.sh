@@ -730,6 +730,9 @@ echo "Initial IMAGE_LIST: ${IMAGE_LIST}"
 echo "Initial IMAGE_TAG_PREFIX: ${IMAGE_TAG_PREFIX}"
 
 echo "Initial APP_RESYNC_SECONDS: ${APP_RESYNC_SECONDS}"
+
+echo "Initial DASHBOARD_REPO_URL: ${DASHBOARD_REPO_URL}"
+
 echo ---
 
 
@@ -1009,6 +1012,9 @@ echo "Using USER_BASE_DN: ${USER_BASE_DN}"
 
 echo "Using IMAGE_LIST: ${IMAGE_LIST}"
 echo "Using IMAGE_TAG_PREFIX: ${IMAGE_TAG_PREFIX}"
+
+echo "Using DASHBOARD_REPO_URL: ${DASHBOARD_REPO_URL}"
+
 echo ---
 
 

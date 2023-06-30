@@ -22,10 +22,11 @@ testPingFederateAdminCsdUpload() {
 csd_upload() {
   local upload_csd_job_name="${1}"
   local upload_job="${2}"
-
-  log "Applying the CSD upload job"
+  
+  log "Deleting the CSD upload job"
   kubectl delete -f "${upload_job}" -n "${PING_CLOUD_NAMESPACE}"
-
+  
+  log "Applying the CSD upload job"
   kubectl apply -f "${upload_job}" -n "${PING_CLOUD_NAMESPACE}"
   assertEquals "The kubectl apply command to create the ${upload_csd_job_name} should have succeeded" 0 $?
 

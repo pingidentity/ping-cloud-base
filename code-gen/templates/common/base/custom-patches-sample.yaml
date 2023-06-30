@@ -81,7 +81,7 @@ spec:
 
 ### Update logstash replicas count
 
-apiVersion: autoscaling/v2beta2
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: logstash-elastic
@@ -97,7 +97,7 @@ spec:
 
 ### Update logstash replicas count and adjust resources
 
-apiVersion: autoscaling/v2beta2
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: logstash-elastic

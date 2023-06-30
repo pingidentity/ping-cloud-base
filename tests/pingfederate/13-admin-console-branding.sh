@@ -18,7 +18,7 @@ testPFAdminConsoleBrandingValues() {
   test "${title}" = "${expected}"
   assertEquals "The PingFederate Admin Console Tab Title was ${title} but expected ${expected}" 0 $?
 
-  expected="pf.console.environment=${ENV}-${REGION}"
+  expected="pf.console.environment=${ENV_TYPE}-${REGION}"
   header_bar=$(kubectl exec pingfederate-admin-0 -n "${PING_CLOUD_NAMESPACE}" -c pingfederate-admin -- sh -c \
               "grep pf.console.environment /opt/out/instance/bin/run.properties")
   test "${header_bar}" = "${expected}"
