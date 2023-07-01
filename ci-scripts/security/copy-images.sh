@@ -4,7 +4,7 @@ set -e
 
 test "${VERBOSE}" && set -x
 
-declare -A errors
+errors=()
 
 function docker_command() {
   HOME=/tmp docker "${@:1}"
@@ -40,7 +40,7 @@ for image in $(cat $deploy_file | grep "image:" | awk -F: 'BEGIN { OFS=":"} {pri
     echo "Copied $image to location $ARTIFACTORY_URL/$BELUGA_VERSION/$name")
   } || {
     echo "Error copying $image"
-    errors[$image]=$output
+    errors+=("$image")
   }
 
   # every 10 images, do a cleanup. This way we can try to take advantage of layer caching but won't fill the system
@@ -53,7 +53,7 @@ done
 
 if [[ "${#errors[@]}" -ne 0 ]]; then
     echo "Error when trying to copy the following: "
-    for i in "${!errors[@]}"
+    for i in "${errors[@]}"
     do
       echo "$image"
     done
