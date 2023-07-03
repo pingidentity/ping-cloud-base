@@ -216,7 +216,7 @@ PWD=$(pwd)
 PCB_ROOT=${PWD/ping-cloud-base\/*/ping-cloud-base}
 source "${PCB_ROOT}/pingcloud-scripts.sh"
 
-BASH_UTILS_VERSION=1.0.0
+BASH_UTILS_VERSION=1.1.0
 pingcloud-scripts::source_script bash_utils ${BASH_UTILS_VERSION}
 
 declare dryrun='false'
