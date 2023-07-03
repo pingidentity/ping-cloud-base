@@ -181,7 +181,7 @@ patchesStrategicMerge:
       template:
         spec:
           containers:
-          - name: argocd-repo-server
+          - name: argocd-server
             volumeMounts:
               - name: tools-dir
                 mountPath: /usr/local/bin/envsubst
