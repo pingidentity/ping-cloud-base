@@ -17,7 +17,7 @@ helmCharts:
     includeCRDs: true
     # TODO: Test this being set for feature testing, release branch testing, & releases/release candidates
     version: v1.18-kfox-test
-    repo: oci://${ECR_REGISTRY_NAME}/p1as-beluga-tools
+    repo: oci://${ECR_REGISTRY_NAME}/dev/p1as-beluga-tools
 
 patchesStrategicMerge:
   ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
