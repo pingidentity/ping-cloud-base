@@ -19,7 +19,7 @@ rm -rf /var/lib/apt/lists/*
 cp /usr/bin/envsubst /tools
 
 ### Install specific Kustomize version ###
-KUSTOMIZE_VERSION=4.5.7
+KUSTOMIZE_VERSION=5.0.3
 
 wget -qO /tools/kustomize \
     "https://ping-artifacts.s3.us-west-2.amazonaws.com/pingcommon/kustomize/${KUSTOMIZE_VERSION}/linux_amd64/kustomize"
