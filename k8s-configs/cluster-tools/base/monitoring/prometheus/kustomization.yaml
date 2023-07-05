@@ -19,3 +19,4 @@ configMapGenerator:
   files:
    - default-rule.yml
    - logging.yml
+   - kube-alerts.yml
