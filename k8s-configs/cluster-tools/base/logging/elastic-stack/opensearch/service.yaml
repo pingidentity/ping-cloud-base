@@ -28,7 +28,6 @@ metadata:
   labels:
     app.kubernetes.io/name: opensearch
   annotations:
-    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
     prometheus.io/scrape: "true"
     prometheus.io/scheme: "https"
     prometheus.io/path: "/_prometheus/metrics"
