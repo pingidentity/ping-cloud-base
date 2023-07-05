@@ -55,7 +55,7 @@ DA_PINGFEDERATE_INSTANCE_NAME=DAPingFederate
 DA_IDENTITY_MAPPER_NAME=DAEntryUUIDMatch
 
 # Default argo-events notification configuration
-NOTIFICATION_ENABLED=false
+NOTIFICATION_ENABLED=true
 SLACK_CHANNEL=p1as-application-oncall
 NOTIFICATION_ENDPOINT=http://webhook-eventsource-svc.argo-events:12999/notification
 

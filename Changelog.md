@@ -90,6 +90,7 @@
 - Update healthcheck configmaps to include primary region admin API pod names
 - Update PingAccess configmap patch to include HEALTHCHECK_HTTPBIN_PA_PUBLIC_HOSTNAME
 - Add BACKENDS_TO_RESTORE variable to restore-op.sh script for running PingDirectory restore job
+- Backup scripts notifications are enabled by default
 
 _Changes:_
 
@@ -211,6 +212,7 @@ _Changes:_
 - [X] PDO-5614 Bugfix: 'cluster_name' filter issue in ELK and Grafana on prod CDE
 - [X] PDO-5646 Warning messages in cert-manager pod logs
 - [X] PDO-5648 [PORT PDO-5508] Extend PingDirectory replica count to up to 50 pods per region and 11 base DNs if needed
+- [X] PDO-5650 set NOTIFICATION_ENABLED to True by default
 - [X] PDO-5690 v1.18 Prepare for Ability to Update Upgrade Scripts w/o Release of New Beluga Version
 
 ### 1.17.0.0

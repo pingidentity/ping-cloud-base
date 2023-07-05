@@ -254,7 +254,7 @@ EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED}"
 ########################################################################################################################
 
 # Default argo-events notification configuration
-NOTIFICATION_ENABLED=false
+NOTIFICATION_ENABLED=true
 SLACK_CHANNEL=${SLACK_CHANNEL}
 NOTIFICATION_ENDPOINT=http://webhook-eventsource-svc.argo-events:12999/notification
 
