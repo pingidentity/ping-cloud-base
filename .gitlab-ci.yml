@@ -225,7 +225,7 @@ copy-images:
   stage: deploy # this could move to another stage like compile
   image: docker.corp.pingidentity.com:5800/docker-kustomize
   variables:
-    BELUGA_VERSION: $CI_PROJECT_TAG
+    BELUGA_VERSION: $CI_COMMIT_REF_NAME
     ARTIFACTORY_URL: "docker.corp.pingidentity.com:5900/beluga-xray"
     WARN_ON_ERROR: "true"
   script: 
@@ -233,4 +233,4 @@ copy-images:
   tags:
     - platform-publish-docker
   only:
-    - tags
+    - /^.*-release-branch$/
