@@ -20,12 +20,12 @@ expected_files() {
 }
 
 actual_files() {
-  BUCKET_URL_NO_PROTOCOL=${BACKUP_URL#s3://}
-  BUCKET_NAME=$(echo "${BUCKET_URL_NO_PROTOCOL}" | cut -d/ -f1)
+  local bucket_url=$(get_ssm_val "${BACKUP_URL#ssm:/}")
+  local bucket_url_no_protocol=${bucket_url#s3://}
   DAYS_AGO=1
 
   aws s3api list-objects \
-    --bucket "${BUCKET_NAME}" \
+    --bucket "${bucket_url_no_protocol}" \
     --prefix 'pingdirectory/' \
     --query "reverse(sort_by(Contents[?LastModified>='${DAYS_AGO}'], &LastModified))[].Key" \
     --profile "${AWS_PROFILE}" |
@@ -36,8 +36,13 @@ actual_files() {
 
 testBackupAndRestore() {
 
-  BACKUP_OPS_SCRIPT="${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingdirectory/server/aws/backup-ops-template/backup-ops.sh
+  BACKUP_OPS_SCRIPT="/tmp/backup-ops.sh"
   BACKUP_JOB="pingdirectory-backup"
+
+  # Download backup-ops.sh script from k8s cluster
+  kubectl get configmap pingdirectory-backup-ops-template-files -o jsonpath='{.data.backup-ops\.sh}' > "${BACKUP_OPS_SCRIPT}" && \
+  
+  chmod +x "${BACKUP_OPS_SCRIPT}"
 
   log "Applying the backup job"
   test -x "${BACKUP_OPS_SCRIPT}" && "${BACKUP_OPS_SCRIPT}"
@@ -63,8 +68,13 @@ testBackupAndRestore() {
     exit 1
   fi
 
-  RESTORE_OPS_SCRIPT="${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingdirectory/server/aws/restore-ops-template/restore-ops.sh
+  RESTORE_OPS_SCRIPT="/tmp/restore-ops.sh"
   RESTORE_JOB="pingdirectory-restore"
+
+  # Download restore-ops.sh script from k8s cluster
+  kubectl get configmap pingdirectory-restore-ops-template-files -o jsonpath='{.data.restore-ops\.sh}' > "${RESTORE_OPS_SCRIPT}" && \
+  
+  chmod +x "${RESTORE_OPS_SCRIPT}"
 
   log "Applying the restore job"
   test -x "${RESTORE_OPS_SCRIPT}" && "${RESTORE_OPS_SCRIPT}"
