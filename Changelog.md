@@ -10,7 +10,9 @@
 - Replace ElasticSearch and Kibana by OpenSearch stack
 - Add OpenSearch monitoring and alerting
 - Improve logstash grok patterns to prevent execution timeouts
+- Add resource (cpu & memory) limit and request for every product Job and Cronjob
 - Update prometheus alerts with links to the runbooks
+- Added new Prometheus alerts for Kubernetes metrics
 - Update integration tests to handle SSM parameters, rather than an explicit s3 bucket prefix
 - Update nginx-ingress-controller to v1.6.4 to support EKS 1.26
 - Create new RBAC rules , ping role and service accounts for PD backups and restore
@@ -19,6 +21,8 @@
 - Update kube-state-metrics to v2.8.1
 - Move S3, CloudWarch, Newrelic outputs from Fluentbit to Logstash pipelines
 - Mirror our own version of newrelic images
+- [need before EKS 1.26] autoscaling/v2beta2 API version of HorizontalPodAutoscaler is no longer served as of v1.25
+- Update PGO dashboards to use grafana CRD
 
 _Changes:_
 
@@ -35,6 +39,7 @@ _Changes:_
 - [X] PDO-5244 OpenSearch migration: Enable transport layer security
 - [X] PDO-5245 OpenSearch migration: Update grafana dashboards datasource
 - [X] PDO-5246 Opensearch migration: Migrate alerts
+- [X] PDO-5249 [need before EKS 1.26] autoscaling/v2beta2 API version of HorizontalPodAutoscaler is no longer served as of v1.25
 - [X] PDO-5254 Move all external outputs from Fluentbit to Logstash pipelines
 - [X] PDO-5258 OpenSearch migration: Refactor bootstrap scripts
 - [X] PDO-5270 Replace all  long alerts descriptions by short ones with links to runbook
@@ -49,12 +54,18 @@ _Changes:_
 - [X] PDO-5400 Update PD backup/restore integration tests
 - [X] PDO-5408 Add boolean flag to skip pod liveness probe script for PingFederate engines, PingAccess/WAS engines, and PingDirectory
 - [X] PDO-5409 Add ability to Update Upgrade Scripts w/o Release of New Beluga Version
+- [X] PDO-5418 Add resource (cpu & memory) limit and request for every product Job and Cronjob
 - [X] PDO-5435 Update values.yaml files structure
 - [X] PDO-5467 When rolling pods NLB connection draining isn't occuring causing service interruption
+- [X] PDO-5543 New Prometheus alerts for Kubernetes metrics
 - [X] PDO-5549 Update kube-state-metrics cluster tool to v2.8.1 for EKS 1.26
 - [X] PDO-5558 Mirror our own version of newrelic images
 - [X] PDO-5571 Update nginx-ingress-controller to v1.6.4 to support EKS 1.26
 - [X] PDO-5601 os-dashboards-pf configMap breaks developer, and new ci/cd deploys
+- [X] PDO-5654 Fluentbit Kubernetes filter is not adding metadata into some events
+- [X] PDO-5671 OS: grokparsefailure in pingaccess logs
+- [X] PDO-5709 Fix intermittent pingone integration test failures
+- [X] PDO-5718 Update PGO dashboards to use grafana CRD
 
 ### 1.18.0.0
 

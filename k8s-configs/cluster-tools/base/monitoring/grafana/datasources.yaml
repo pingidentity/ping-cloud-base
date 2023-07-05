@@ -1,0 +1,117 @@
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: prometheus
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  datasource:
+    name: prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: true
+    uid: P1809F7CD0C75ACF3
+
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: os-pa-admin-audit
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  datasource:
+    name: OS-PA-Admin-Audit
+    type: grafana-opensearch-datasource
+    access: proxy
+    url: https://opensearch-cluster-master.elastic-stack-logging.svc.cluster.local:9200
+    isDefault: false
+    uid: fPADfUs4k
+    jsonData:
+      database: "pa-admin-audit-*"
+      esVersion: 8.0.0
+      flavor: opensearch
+      pplEnabled: true
+      timeField: "@timestamp"
+      version: 2.6.0
+      tlsSkipVerify: true
+
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: os-pa-audit
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  datasource:
+    name: OS-PA-Audit
+    type: grafana-opensearch-datasource
+    access: proxy
+    url: https://opensearch-cluster-master.elastic-stack-logging.svc.cluster.local:9200
+    isDefault: false
+    uid: muQHLUs4k
+    jsonData:
+      database: "pa-audit-*"
+      esVersion: 8.0.0
+      flavor: opensearch
+      pplEnabled: true
+      timeField: "@timestamp"
+      version: 2.6.0
+      tlsSkipVerify: true
+
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: os-pf-admin-audit
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  datasource:
+    name: OS-PF-Admin-Audit
+    type: grafana-opensearch-datasource
+    access: proxy
+    url: https://opensearch-cluster-master.elastic-stack-logging.svc.cluster.local:9200
+    isDefault: false
+    uid: HZX0Y8yVz
+    jsonData:
+      database: "pf-admin-audit-*"
+      esVersion: 8.0.0
+      flavor: opensearch
+      pplEnabled: true
+      timeField: "@timestamp"
+      version: 2.6.0
+      tlsSkipVerify: true
+
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: os-pf-audit
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  datasource:
+    name: OS-PF-Audit
+    type: grafana-opensearch-datasource
+    access: proxy
+    url: https://opensearch-cluster-master.elastic-stack-logging.svc.cluster.local:9200
+    isDefault: false
+    uid: xCysL8y4z
+    jsonData:
+      database: "pf-audit-*"
+      esVersion: 8.0.0
+      flavor: opensearch
+      pplEnabled: true
+      timeField: "@timestamp"
+      version: 2.6.0
+      tlsSkipVerify: true
