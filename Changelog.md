@@ -12,6 +12,7 @@
 - Improve logstash grok patterns to prevent execution timeouts
 - Add resource (cpu & memory) limit and request for every product Job and Cronjob
 - Update prometheus alerts with links to the runbooks
+- Added new Prometheus alerts for Kubernetes metrics
 - Update integration tests to handle SSM parameters, rather than an explicit s3 bucket prefix
 - Update nginx-ingress-controller to v1.6.4 to support EKS 1.26
 - Create new RBAC rules , ping role and service accounts for PD backups and restore
@@ -54,6 +55,7 @@ _Changes:_
 - [X] PDO-5418 Add resource (cpu & memory) limit and request for every product Job and Cronjob
 - [X] PDO-5435 Update values.yaml files structure
 - [X] PDO-5467 When rolling pods NLB connection draining isn't occuring causing service interruption
+- [X] PDO-5543 New Prometheus alerts for Kubernetes metrics
 - [X] PDO-5549 Update kube-state-metrics cluster tool to v2.8.1 for EKS 1.26
 - [X] PDO-5558 Mirror our own version of newrelic images
 - [X] PDO-5571 Update nginx-ingress-controller to v1.6.4 to support EKS 1.26
