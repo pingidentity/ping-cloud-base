@@ -1,44 +1,12 @@
-kind: Component
-apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
 
-configMapGenerator:
-- name: pgo-dashboards
-  namespace: prometheus
-  files:
-    - pgbackrest.json
-    - crud_details.json
-    - pod_details.json
-    - postgresql_details.json
-    - postgresql_service_health.json
-    - prometheus_alerts.json
-    - query_statistics.json
-- name: dashboard-providers
-  namespace: prometheus
-  behavior: merge
-  files:
-    - pgo-dashboards.yaml
-
-generatorOptions:
- disableNameSuffixHash: true
- annotations:
-   argocd.argoproj.io/sync-options: Replace=true
-
-patchesJson6902:
-  - target:
-      group: apps
-      version: v1
-      kind: Deployment
-      name: grafana
-      namespace: prometheus
-    patch: |-
-      - op: add
-        path: /spec/template/spec/volumes/-
-        value:
-          name: pgo-dashboards
-          configMap:
-            name: pgo-dashboards
-      - op: add
-        path: /spec/template/spec/containers/0/volumeMounts/-
-        value:
-          name: pgo-dashboards
-          mountPath: /etc/grafana/dashboards/pgo
+resources:
+  - pgo-dashboards-folder.yaml
+  - crud_details.yaml
+  - pgbackrest.yaml
+  - pod_details.yaml
+  - postgresql_details.yaml
+  - postgresql_service_health.yaml
+  - prometheus_alerts.yaml
+  - query_statistics.yaml

@@ -20,6 +20,7 @@
 - Move S3, CloudWarch, Newrelic outputs from Fluentbit to Logstash pipelines
 - Mirror our own version of newrelic images
 - [need before EKS 1.26] autoscaling/v2beta2 API version of HorizontalPodAutoscaler is no longer served as of v1.25
+- Update PGO dashboards to use grafana CRD
 
 _Changes:_
 
@@ -59,6 +60,7 @@ _Changes:_
 - [X] PDO-5601 os-dashboards-pf configMap breaks developer, and new ci/cd deploys
 - [X] PDO-5709 Fix intermittent pingone integration test failures
 - [X] PDO-5671 OS: grokparsefailure in pingaccess logs
+- [X] PDO-5718 Update PGO dashboards to use grafana CRD
 
 ### 1.18.0.0
 
