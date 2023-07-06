@@ -78,8 +78,8 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
 
         self.k8s.kill_pods(label=self.oauth_service_label, namespace=self.ping_cloud_ns)
         self.k8s.wait_for_pod_running(label=self.oauth_service_label, namespace=self.ping_cloud_ns)
-        new_oauth_pod_name = self.k8s.get_namespaced_pod_name(
-            self.ping_cloud_ns, self.oauth_service_pod_pattern
+        new_oauth_pod_name = self.k8s.get_first_matching_pod_name(
+            self.ping_cloud_ns, self.oauth_service_label
         )
         self.k8s.wait_for_pod_log(
             new_oauth_pod_name,
@@ -165,8 +165,8 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
         )
         self.k8s.kill_pods(self.oauth_service_label, self.ping_cloud_ns)
         self.k8s.wait_for_pod_running(label=self.oauth_service_label, namespace=self.ping_cloud_ns)
-        new_oauth_pod_name = self.k8s.get_namespaced_pod_name(
-            self.ping_cloud_ns, self.oauth_service_pod_pattern
+        new_oauth_pod_name = self.k8s.get_first_matching_pod_name(
+            self.ping_cloud_ns, self.oauth_service_label
         )
         self.k8s.wait_for_pod_log(
             new_oauth_pod_name,

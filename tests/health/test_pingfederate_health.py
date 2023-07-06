@@ -7,11 +7,15 @@ from health_common import Categories, TestHealthBase
 
 class TestPingFederateHealth(TestHealthBase):
     deployment_name = "healthcheck-pingfederate"
+    label = f"role={deployment_name}"
     pingfederate = "pingFederate"
+    admin_configmap_name = "pingfederate-admin-environment-variables"
+    admin_service_name_env_var = "K8S_SERVICE_NAME_PINGFEDERATE_ADMIN"
+    admin_port_env_var = "PF_ADMIN_PORT"
 
     def setUp(self) -> None:
         self.ping_cloud_ns = next((ns for ns in self.k8s.get_namespace_names() if ns.startswith(self.ping_cloud)), self.ping_cloud)
-        self.pod_names = self.k8s.get_namespaced_pod_names(self.ping_cloud_ns, r"pingfederate-(?:|admin-)\d+")
+        self.pod_names = self.k8s.get_deployment_pod_names("role=pingfederate-engine", self.ping_cloud_ns)
 
     def test_pingfederate_health_deployment_exists(self):
         self.deployment_exists()
@@ -63,7 +67,7 @@ class TestPingFederateHealth(TestHealthBase):
             test_name in test_results,
             f"No '{test_name}' checks found in health check results",
         )
-      
+
     def test_health_check_has_pingdirectory_connection_results(self):
         test_results = self.get_test_results(self.pingfederate, Categories.connectivity)
         test_results = " ".join(test_results.keys())
@@ -76,3 +80,8 @@ class TestPingFederateHealth(TestHealthBase):
                         expected_test,
                         f"No '{expected_test}' checks found in health check results",
                     )
+
+    def test_admin_api_url_uses_service_name_in_primary_region(self):
+        self.assert_admin_api_url_uses_service_name(
+            "/app/PFVariables.py", "pf_admin_api_host"
+        )

@@ -89,11 +89,11 @@
 # LOG_ARCHIVE_URL              | The URL of the log archives. If provided, logs     | The string "unused"
 #                              | are periodically captured and sent to this URL.    |
 #                              |                                                    |
-# PD_MONITOR_BUCKET_URL     | The URL of the monitor,ldif exports and csd-log    |
-#                           | archives.If provided, logs are periodically        | The string "unused"
-#                           | captured and sent to this URL. Used only for       |
-#                           | PingDirectory at the moment                        |
-#                           |                                                    |
+# PD_MONITOR_BUCKET_URL        | The URL of the monitor,ldif exports and csd-log    |
+#                              | archives.If provided, logs are periodically        | The string "unused"
+#                              | captured and sent to this URL. Used only for       |
+#                              | PingDirectory at the moment                        |
+#                              |                                                    |
 # MYSQL_SERVICE_HOST           | The hostname of the MySQL database server.         | beluga-ci-cd-mysql.cmpxy5bpieb9.us-west-2.rds.amazonaws.com
 #                              |                                                    |
 # MYSQL_PASSWORD               | The DBA password of the PingCentral MySQL RDS      | The SSM path:
@@ -105,7 +105,7 @@
 # NEW_RELIC_LICENSE_KEY        | The key of NewRelic APM Agent used to send data to | The SSM path: ssm://pcpt/sre/new-relic/java-agent-license-key
 #                              | NewRelic account                                   |
 #                              |                                                    |
-# NOTIFICATION_ENABLED         | Flag indicating if alerts should be sent to the    | False
+# NOTIFICATION_ENABLED         | Flag indicating if alerts should be sent to the    | True
 #                              | endpoint configured in the argo-events             |
 #                              |                                                    |
 # CUSTOMER_SSO_SSM_PATH_PREFIX | The prefix of the SSM path that contains PingOne   | /pcpt/customer/sso
@@ -196,7 +196,7 @@
 #                              | This file will be mounted into the Ping containers |
 #                              | at /opt/staging/topology/descriptor.json.          |
 #                              |                                                    |
-# DASH_REPO_URL                | The repository with OSD\Grafana dashboards      | https://github.com/pingidentity/ping-cloud-dashboards
+# DASH_REPO_URL                | The repository with OSD\Grafana dashboards         | https://github.com/pingidentity/ping-cloud-dashboards
 #                              |                                                    |
 # DASH_REPO_BRANCH             | Branch where dashboards will be taken from         | main
 ########################################################################################################################
@@ -360,7 +360,7 @@ export PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED:-false}
 ########################################################################################################################
 
 # Default notification configuration for dev environment.
-export NOTIFICATION_ENABLED=${NOTIFICATION_ENABLED:-false}
+export NOTIFICATION_ENABLED=${NOTIFICATION_ENABLED:-true}
 export SLACK_CHANNEL=${SLACK_CHANNEL:-nowhere}
 
 # PGO Prometheus notification.
