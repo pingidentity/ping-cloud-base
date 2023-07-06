@@ -63,6 +63,7 @@ _Changes:_
 - [X] PDO-5571 Update nginx-ingress-controller to v1.6.4 to support EKS 1.26
 - [X] PDO-5601 os-dashboards-pf configMap breaks developer, and new ci/cd deploys
 - [X] PDO-5654 Fluentbit Kubernetes filter is not adding metadata into some events
+- [X] PDO-5655 OS: Logs for the pf-transaction-* index are not filtered
 - [X] PDO-5671 OS: grokparsefailure in pingaccess logs
 - [X] PDO-5709 Fix intermittent pingone integration test failures
 - [X] PDO-5718 Update PGO dashboards to use grafana CRD
