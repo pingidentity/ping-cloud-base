@@ -40,7 +40,7 @@ testBackupAndRestore() {
   BACKUP_JOB="pingdirectory-backup"
 
   # Download backup-ops.sh script from k8s cluster
-  kubectl get configmap pingdirectory-backup-ops-template-files -o jsonpath='{.data.backup-ops\.sh}' > "${BACKUP_OPS_SCRIPT}" && \
+  kubectl get configmap pingdirectory-backup-ops-template-files -n "${PING_CLOUD_NAMESPACE}" -o jsonpath='{.data.backup-ops\.sh}' > "${BACKUP_OPS_SCRIPT}" && \
   
   chmod +x "${BACKUP_OPS_SCRIPT}"
 
@@ -72,7 +72,7 @@ testBackupAndRestore() {
   RESTORE_JOB="pingdirectory-restore"
 
   # Download restore-ops.sh script from k8s cluster
-  kubectl get configmap pingdirectory-restore-ops-template-files -o jsonpath='{.data.restore-ops\.sh}' > "${RESTORE_OPS_SCRIPT}" && \
+  kubectl get configmap pingdirectory-restore-ops-template-files -n "${PING_CLOUD_NAMESPACE}" -o jsonpath='{.data.restore-ops\.sh}' > "${RESTORE_OPS_SCRIPT}" && \
   
   chmod +x "${RESTORE_OPS_SCRIPT}"
 
