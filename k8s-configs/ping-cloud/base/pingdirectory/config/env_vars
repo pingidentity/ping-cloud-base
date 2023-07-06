@@ -95,3 +95,10 @@ CHANGELOG_SYNC_MAX_AGE=2h
 
 # Set to false to avoid skipping liveness probe. Skipping the liveness (SKIP_LIVENESS=true) is the default for PingDirectory.
 SKIP_LIVENESS=true
+
+# Overriding these numbers will force PingDirectory to produce duplicate server IDs if not fully tested.
+# As of now PD_POD_LIMIT_INDEX=1000 and PD_BASE_DN_LIMIT_INDEX=20 will allow up to 50 pingdirectory pods per cluster with up to 11
+# 11 backends/base_dns.
+# These variables are used by pingcloud-apps/pingdirectory/src/hooks/offline-mode/manage_offline_mode.py
+PD_POD_LIMIT_INDEX=1000
+PD_BASE_DN_LIMIT_INDEX=20

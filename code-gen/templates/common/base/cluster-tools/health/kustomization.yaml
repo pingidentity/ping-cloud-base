@@ -12,3 +12,4 @@ configMapGenerator:
   behavior: merge
   envs:
   - ../../env_vars
+  - env_vars

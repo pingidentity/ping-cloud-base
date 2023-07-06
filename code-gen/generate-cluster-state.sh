@@ -101,11 +101,12 @@
 # ENVIRONMENTS                     | The environments the customer is entitled to. This | dev test stage prod customer-hub
 #                                  | will be a subset of SUPPORTED_ENVIRONMENT_TYPES    |
 #                                  |                                                    |
-# EXTERNAL_INGRESS_ENABLED         | List of ping apps(pingaccess,pingaccess-was,       | No defaults
-#                                  | pingdirectory,pingdelegator,pingfederate) for      |
+# EXTERNAL_INGRESS_ENABLED         | List of ping apps(pingaccess pingaccess-was        | No defaults
+#                                  | pingdirectory pingdelegator pingfederate) for      |
 #                                  | which you can enable external ingress(the values   |
-#                                  | are ping app names )                               |
-#                                  | Examplelist:(pingaccess pingdirectory pingfederate)|
+#                                  | are ping app names)                                |
+#                                  | Examplelist:"pingaccess pingdirectory pingfederate |
+#                                  | pingaccess-was pingdelegator"                      |
 #                                  |                                                    |
 # GLOBAL_TENANT_DOMAIN             | Region-independent URL used for DNS failover/      | Replaces the first segment of
 #                                  | routing.                                           | the TENANT_DOMAIN value with the
@@ -163,7 +164,7 @@
 # NEW_RELIC_LICENSE_KEY            | The key of NewRelic APM Agent used to send data to | The SSM path: ssm://pcpt/sre/new-relic/java-agent-license-key
 #                                  | NewRelic account.                                  |
 #                                  |                                                    |
-# NOTIFICATION_ENABLED             | Flag indicating if alerts should be sent to the    | False
+# NOTIFICATION_ENABLED             | Flag indicating if alerts should be sent to the    | True
 #                                  | endpoint configured in the argo-events             |
 #                                  |                                                    |
 # NLB_EIP_PATH_PREFIX              | The SSM path prefix which stores comma separated   | The string "unused".
@@ -838,7 +839,7 @@ export IMAGE_TAG_PREFIX="${K8S_GIT_BRANCH%.*}"
 export PF_PROVISIONING_ENABLED="${PF_PROVISIONING_ENABLED:-false}"
 export RADIUS_PROXY_ENABLED="${RADIUS_PROXY_ENABLED:-false}"
 export ARGOCD_BOOTSTRAP_ENABLED="${ARGOCD_BOOTSTRAP_ENABLED:-true}"
-export EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED:-''}"
+export EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED:-""}"
 
 ### Default environment variables ###
 export ECR_REGISTRY_NAME='public.ecr.aws/r2h3l6e4'
