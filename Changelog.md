@@ -16,6 +16,7 @@
 - Update integration tests to handle SSM parameters, rather than an explicit s3 bucket prefix
 - Update nginx-ingress-controller to v1.6.4 to support EKS 1.26
 - Create new RBAC rules , ping role and service accounts for PD backups and restore
+- Update PD backup/restore integration tests
 - Configure Lifecycle policy for PingFederate Engines
 - Update kube-state-metrics to v2.8.1
 - Move S3, CloudWarch, Newrelic outputs from Fluentbit to Logstash pipelines
@@ -52,6 +53,7 @@ _Changes:_
 - [X] PDO-5358 OpenSearch Migration: Refactor OS Code as Needed
 - [X] PDO-5371 Update PCB Pipeline to deploy CDE dev Environment
 - [X] PDO-5396 Create new RBAC rules , ping role and service accounts for PD backups and restore 
+- [X] PDO-5400 Update PD backup/restore integration tests
 - [X] PDO-5408 Add boolean flag to skip pod liveness probe script for PingFederate engines, PingAccess/WAS engines, and PingDirectory
 - [X] PDO-5409 Add ability to Update Upgrade Scripts w/o Release of New Beluga Version
 - [X] PDO-5418 Add resource (cpu & memory) limit and request for every product Job and Cronjob
