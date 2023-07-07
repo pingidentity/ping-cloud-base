@@ -235,14 +235,14 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   fi
 
   if "${IS_PRIMARY}"; then
-    # Clean-up everything in the repo.
+    # Clean-up the repo.
     if is_all_apps; then
       echo "Cleaning up ${PWD}"
       dir_deep_clean "${PWD}"
     else
       for app_path in ${APP_PATHS}; do
         echo "Cleaning up ${PWD}/${app_path}"
-        dir_deep_clean "${PWD}/${app_path}"
+        rm -rf "${PWD}/${app_path}"
       done
     fi
 
