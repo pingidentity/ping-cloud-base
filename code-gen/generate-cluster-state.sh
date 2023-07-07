@@ -164,7 +164,7 @@
 # NEW_RELIC_LICENSE_KEY            | The key of NewRelic APM Agent used to send data to | The SSM path: ssm://pcpt/sre/new-relic/java-agent-license-key
 #                                  | NewRelic account.                                  |
 #                                  |                                                    |
-# NOTIFICATION_ENABLED             | Flag indicating if alerts should be sent to the    | False
+# NOTIFICATION_ENABLED             | Flag indicating if alerts should be sent to the    | True
 #                                  | endpoint configured in the argo-events             |
 #                                  |                                                    |
 # NLB_EIP_PATH_PREFIX              | The SSM path prefix which stores comma separated   | The string "unused".
