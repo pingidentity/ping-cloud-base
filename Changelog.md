@@ -64,6 +64,7 @@ _Changes:_
 - [X] PDO-5601 os-dashboards-pf configMap breaks developer, and new ci/cd deploys
 - [X] PDO-5654 Fluentbit Kubernetes filter is not adding metadata into some events
 - [X] PDO-5671 OS: grokparsefailure in pingaccess logs
+- [x] PDO-5673 OS: Missed logs in PingAccess Indices
 - [X] PDO-5709 Fix intermittent pingone integration test failures
 - [X] PDO-5718 Update PGO dashboards to use grafana CRD
 
