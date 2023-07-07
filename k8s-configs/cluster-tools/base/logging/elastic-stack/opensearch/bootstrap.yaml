@@ -83,7 +83,7 @@ spec:
       #       memory: "512Mi"
       #       cpu: "500m"
       - name: opensearch-bootstrap-multi-tenancy-test
-        image: 7es7/opensearch-bootstrap-multi-tenancy-test:1
+        image: 7es7/opensearch-bootstrap-multi-tenancy-test:4
         imagePullPolicy: Always
         securityContext:
           runAsNonRoot: true

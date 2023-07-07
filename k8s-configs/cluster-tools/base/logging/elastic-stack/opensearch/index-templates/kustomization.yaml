@@ -26,5 +26,5 @@ configMapGenerator:
       - pf-transaction.json
       - general.json
 
-generatorOptions:
-  disableNameSuffixHash: true
+# generatorOptions:
+#   disableNameSuffixHash: true

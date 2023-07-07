@@ -9,5 +9,5 @@ configMapGenerator:
       - ping-imported.json
       - ping-shrunken.json
 
-generatorOptions:
-  disableNameSuffixHash: true
+# generatorOptions:
+#   disableNameSuffixHash: true

@@ -7,3 +7,6 @@ configMapGenerator:
   - name: opensearch-config
     files:
       - opensearch.yml
+
+# generatorOptions:
+#  disableNameSuffixHash: true
