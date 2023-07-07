@@ -67,6 +67,7 @@ _Changes:_
 - [X] PDO-5654 Fluentbit Kubernetes filter is not adding metadata into some events
 - [X] PDO-5655 OS: Logs for the pf-transaction-* index are not filtered
 - [X] PDO-5671 OS: grokparsefailure in pingaccess logs
+- [x] PDO-5673 OS: Missed logs in PingAccess Indices
 - [X] PDO-5709 Fix intermittent pingone integration test failures
 - [X] PDO-5718 Update PGO dashboards to use grafana CRD
 
