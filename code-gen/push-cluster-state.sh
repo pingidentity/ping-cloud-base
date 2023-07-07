@@ -193,7 +193,9 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     # Get app paths
     APP_PATHS=$(find "${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}/${ENV_OR_BRANCH}" -mindepth 1 -maxdepth 1 -type d)
   else
-    APP_PATHS="${APPS_TO_PUSH}"
+    for app in ${APPS_TO_PUSH}; do
+      APP_PATHS="${APP_PATHS}${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}/${ENV_OR_BRANCH}/${app} "
+    done
   fi
 
   if ! ${DISABLE_GIT}; then
@@ -242,7 +244,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     else
       for app_path in ${APP_PATHS}; do
         echo "Cleaning up ${PWD}/${app_path}"
-        rm -rf "${PWD}/${app_path}"
+        dir_deep_clean "${PWD}/${app_path}"
       done
     fi
 
