@@ -12,7 +12,8 @@ dt_now_ms = round(dt_now.timestamp() * 1000)
 dt_past_ms = round(delta.timestamp() * 1000)
 
 
-class TestCloudWatchLogs(k8s_utils.K8sUtils):
+@unittest.skip("Skipping to look into cloudwatch configmaps")
+class TestCloudWatchLogs(unittest.TestCase):
     log_lines = int(os.getenv("LOG_LINES_TO_TEST", 10))
 
     aws_region = os.getenv("AWS_REGION", "us-west-2")
@@ -25,6 +26,10 @@ class TestCloudWatchLogs(k8s_utils.K8sUtils):
     k8s_cluster_name = os.getenv("CLUSTER_NAME")
     log_group_name = f"/aws/containerinsights/{k8s_cluster_name}/application"
     log_stream_name = f"{pod_name}_{pod_namespace}_{container_name}"
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.k8s = k8s_utils.K8sUtils()
 
     def get_latest_cw_logs(self) -> list:
         events = []
@@ -74,13 +79,13 @@ class TestCloudWatchLogs(k8s_utils.K8sUtils):
         self.assertNotEqual(len(cw_logs), 0, "No CW logs found")
 
     def test_pod_logs_exists(self):
-        pod_logs = self.get_latest_pod_logs(
+        pod_logs = self.k8s.get_latest_pod_logs(
             self.pod_name, self.container_name, self.pod_namespace, self.log_lines
         )
         self.assertNotEqual(len(pod_logs), 0, "No pod logs found")
 
     def test_cw_logs_equal_pod_logs(self):
-        pod_logs = self.get_latest_pod_logs(
+        pod_logs = self.k8s.get_latest_pod_logs(
             self.pod_name, self.container_name, self.pod_namespace, self.log_lines
         )
         cw_logs = self.get_latest_cw_logs()

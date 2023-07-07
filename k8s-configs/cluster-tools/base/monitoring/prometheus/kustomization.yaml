@@ -3,8 +3,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 namespace: prometheus
 
 resources:
-- namespace.yaml
-- grafana.yaml
 - prometheus.yaml
 - prometheus-job-exporter.yaml
 - alertmanager.yaml
@@ -21,3 +19,4 @@ configMapGenerator:
   files:
    - default-rule.yml
    - logging.yml
+   - kube-alerts.yml

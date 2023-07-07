@@ -19,10 +19,10 @@ stages:
 ## Global environment variables ##
 variables:
   DELETE_ENV_AFTER_PIPELINE: 'true'
-  K8S_DEPLOY_TOOLS: "docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.19.2.0"
+  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.19.4.0
   SHARED_CI_SCRIPTS_DIR: "/ci-scripts"
 
-# Compile stage ##
+## Compile stage ##
 compile:
  stage: compile
  tags:
