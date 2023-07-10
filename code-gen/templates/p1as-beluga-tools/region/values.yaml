@@ -9,11 +9,11 @@ healthcheck:
     # Set container limits for the healthcheck deployment
     resources:
       limits:
-        memory: 700Mi
-        cpu:  500m
+        memory: 600Mi
+        cpu:  400m
       requests:
-        memory: 500Mi
-        cpu: 300m
+        memory: 400Mi
+        cpu: 200m
 
 # Metadata application settings
 metadata:
@@ -26,8 +26,8 @@ metadata:
     # Set container limits for the metadata deployment
     resources:
       limits:
-        memory: 700Mi
-        cpu:  500m
+        memory: 600Mi
+        cpu:  400m
       requests:
-        memory: 500Mi
-        cpu: 300m
+        memory: 400Mi
+        cpu: 200m
