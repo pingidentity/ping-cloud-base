@@ -91,6 +91,8 @@
 - Update PingAccess configmap patch to include HEALTHCHECK_HTTPBIN_PA_PUBLIC_HOSTNAME
 - Add BACKENDS_TO_RESTORE variable to restore-op.sh script for running PingDirectory restore job
 - Backup scripts notifications are enabled by default
+- Update healthcheck-httpbin-pa and healthcheck-httpbin-pa-was hostnames to use PRIMARY_DNS_ZONE
+- Remove healthcheck-httpbin-pa from child regions
 
 _Changes:_
 
