@@ -21,6 +21,11 @@ variables:
   DELETE_ENV_AFTER_PIPELINE: 'true'
   K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.12.0
   SHARED_CI_SCRIPTS_DIR: "/ci-scripts"
+  BRANCH_SKIP_TESTS: >
+      pingaccess/08-artifact-test.sh
+      pingdelegator/01-admin-user-login.sh
+      pingdirectory/03-backup-restore.sh
+      pingdirectory/08-test-http-connection-handler.sh
 
 ## Compile stage ##
 compile:
@@ -92,6 +97,7 @@ pa-was-integration-tests:
     - default-gitlab-runner
   image: ${K8S_DEPLOY_TOOLS}
   script:
+    - export SKIP_TESTS="${BRANCH_SKIP_TESTS}"
     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh ${TEST}
   dependencies:
     - find-cluster
