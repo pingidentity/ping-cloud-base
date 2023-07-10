@@ -172,29 +172,29 @@ patchesStrategicMerge:
         sealedsecrets.bitnami.com/managed: "true"
 
   # Mount Beluga-specific scripts within the container
-#  - |-
-#    apiVersion: apps/v1
-#    kind: Deployment
-#    metadata:
-#      name: argocd-server
-#    spec:
-#      template:
-#        spec:
-#          containers:
-#          - name: argocd-server
-#            volumeMounts:
-#              - name: tools-dir
-#                mountPath: /usr/local/bin/envsubst
-#                subPath: envsubst
-#              - name: tools-dir
-#                mountPath: /usr/local/bin/kustomize
-#                subPath: kustomize
-#              - name: tools-dir
-#                mountPath: /usr/local/bin/git-remote-codecommit
-#                subPath: git-remote-codecommit
-#              - name: tools-dir
-#                mountPath: /home/argocd/.local/lib/python3.7/site-packages/git_remote_codecommit/__init__.py
-#                subPath: __init__.py
+  - |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-server
+    spec:
+      template:
+        spec:
+          containers:
+          - name: argocd-server
+            volumeMounts:
+              - name: tools-dir
+                mountPath: /usr/local/bin/envsubst
+                subPath: envsubst
+              - name: tools-dir
+                mountPath: /usr/local/bin/kustomize
+                subPath: kustomize
+              - name: tools-dir
+                mountPath: /usr/local/bin/git-remote-codecommit
+                subPath: git-remote-codecommit
+              - name: tools-dir
+                mountPath: /home/argocd/.local/lib/python3.7/site-packages/git_remote_codecommit/__init__.py
+                subPath: __init__.py
 
   # Add init container to create Argo clusters for all CDEs from customer-hub
   - |-
@@ -212,30 +212,30 @@ patchesStrategicMerge:
             envFrom:
               - configMapRef:
                   name: argocd-bootstrap
-          # Installs custom tools
-#          - name: install-custom-tools
-#            image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/python:3.9.1-slim
-#            command: [ "install-custom-tools.sh" ]
-#            volumeMounts:
-#            - name: tools-dir
-#              mountPath: /tools
-#            - name: install-custom-tools
-#              mountPath: /usr/local/bin/install-custom-tools.sh
-#              subPath: install-custom-tools.sh
+           Installs custom tools
+          - name: install-custom-tools
+            image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/python:3.9.1-slim
+            command: [ "install-custom-tools.sh" ]
+            volumeMounts:
+            - name: tools-dir
+              mountPath: /tools
+            - name: install-custom-tools
+              mountPath: /usr/local/bin/install-custom-tools.sh
+              subPath: install-custom-tools.sh
 
   # Add Beluga-specific volumes to the pod
-#  - |-
-#    apiVersion: apps/v1
-#    kind: Deployment
-#    metadata:
-#      name: argocd-server
-#    spec:
-#      template:
-#        spec:
-#          volumes:
-#          - name: tools-dir
-#            emptyDir: {}
-#          - name: install-custom-tools
-#            configMap:
-#              name: install-custom-tools
-#              defaultMode: 0555
+  - |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-server
+    spec:
+      template:
+        spec:
+          volumes:
+          - name: tools-dir
+            emptyDir: {}
+          - name: install-custom-tools
+            configMap:
+              name: install-custom-tools
+              defaultMode: 0555
