@@ -13,8 +13,6 @@ config:
      #Kibana multitenancy
       multitenancy_enabled: true
       server_username: kibanaserver
-      # private_tenant_enabled: true
-      # default_tenant: global
       index: '.kibana'
     http:
       anonymous_auth_enabled: true

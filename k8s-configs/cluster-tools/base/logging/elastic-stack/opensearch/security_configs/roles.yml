@@ -242,7 +242,7 @@ ml_full_access:
 
 # Anonymous access role
 opendistro_security_anonymous_role:
-  reserved: false
+  reserved: true
   cluster_permissions:
     # For using _cat/indices
     - 'cluster:monitor/state'
@@ -267,7 +267,6 @@ opendistro_security_anonymous_role:
     - cluster:admin/opensearch/securityanalytics/detector/get
     # For using sql join query
     - "indices:data/read/scroll*"
-    - "kibana_all_read"
   index_permissions:
     - index_patterns:
       - '*'
@@ -285,13 +284,9 @@ opendistro_security_anonymous_role:
         - "indices:monitor/stats"
   tenant_permissions:
     - tenant_patterns:
-      - 'global*'
+      - '*'
       allowed_actions:
         - "kibana_all_read"
-    - tenant_patterns:
-      - 'opendistro_security_anonymous_role*'
-      allowed_actions:
-        - "kibana_all_write"
 
 # Allows index-migration.py script to perform indices migration from ElasticSearch to OpenSearch
 index_migration:
@@ -312,7 +307,7 @@ index_migration:
         - "indices:data/write/bulk*"
 
 bootstrap:
-  reserved: false
+  reserved: true
   cluster_permissions:
     - 'cluster_monitor'
     - 'cluster_manage_index_templates'
