@@ -80,6 +80,7 @@
 - Add pingaccess-was-license secret placeholder entry to CHUB
 - Increase replica count (min=7, max=9) within prod/large for Nginx Ingress Controller
 - Backup monitor history everyday for PingDirectory
+- Create backends dynamically through manage-profile for PingDirectory
 - PA-WAS ext ingress is missing from non-customer-hub environments
 - Update kubectl to 1.24.0 for EKS 1.25
 - Update cert-manager to v1.11.2 for EKS 1.25
@@ -207,6 +208,7 @@ _Changes:_
 - [X] PDO-5474 upgrade Postgres Operator (PGO) to 5.3.1 to support EKS v1.25
 - [X] PDO-5510 Update all healthchecks to use k8s service endpoints
 - [X] PDO-5525 Add PGO Backups Jobs TTL
+- [X] PDO-5547 Create backends dynamically through manage-profile for PingDirectory
 - [X] PDO-5553 Bugfix: remove-from-secondary-patch is broken for logstash-pipeline-alerts
 - [X] PDO-5556 Fix PingAccess healthchecks
 - [X] PDO-5610 Add BACKENDS_TO_RESTORE variable to restore-op.sh script for running PingDirectory restore job
