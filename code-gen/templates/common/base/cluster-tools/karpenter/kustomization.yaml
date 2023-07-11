@@ -13,8 +13,8 @@ patchesStrategicMerge:
     name: karpenter-global-settings
     namespace: karpenter
   data:
-    "aws.clusterEndpoint": "${CLUSTER_ENDPOINT}"
-    "aws.clusterName": "${CLUSTER_NAME}"
+    "aws.clusterEndpoint": "${KARPENTER_CLUSTER_ENDPOINT}"
+    "aws.clusterName": "${KARPENTER_CLUSTER_NAME}"
 
 - |-
   apiVersion: v1
@@ -33,9 +33,9 @@ patchesStrategicMerge:
     name: default
   spec:
     securityGroupSelector:
-      karpenter.sh/discovery: "${CLUSTER_NAME}"
+      karpenter.sh/discovery: "${KARPENTER_CLUSTER_NAME}"
     subnetSelector:
-      karpenter.sh/discovery: "${CLUSTER_NAME}"
+      karpenter.sh/discovery: "${KARPENTER_CLUSTER_NAME}"
 
 - |-
   apiVersion: karpenter.k8s.aws/v1alpha1
@@ -44,6 +44,17 @@ patchesStrategicMerge:
     name: pd-only
   spec:
     securityGroupSelector:
-      karpenter.sh/discovery: "${CLUSTER_NAME}"
+      karpenter.sh/discovery: "${KARPENTER_CLUSTER_NAME}"
     subnetSelector:
-      karpenter.sh/discovery: "${CLUSTER_NAME}"
+      karpenter.sh/discovery: "${KARPENTER_CLUSTER_NAME}"
+
+- |-
+  apiVersion: karpenter.k8s.aws/v1alpha1
+  kind: AWSNodeTemplate
+  metadata:
+    name: pgo-only
+  spec:
+    securityGroupSelector:
+      karpenter.sh/discovery: "${KARPENTER_CLUSTER_NAME}"
+    subnetSelector:
+      karpenter.sh/discovery: "${KARPENTER_CLUSTER_NAME}"
