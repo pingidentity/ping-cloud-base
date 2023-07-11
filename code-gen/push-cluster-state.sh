@@ -264,7 +264,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
         src_dir="${app_path}/${BASE_DIR}"
         echo "Copying ${src_dir} to ${app_name}"
         cp -pr "${src_dir}" "${app_name}/"
-
+        
       done
     fi
 
