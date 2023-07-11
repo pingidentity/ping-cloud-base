@@ -4,9 +4,9 @@ _meta:
 
 # Define your roles mapping here
 
-# opendistro_security_anonymous_role:
-#   backend_roles:
-#   - "opendistro_security_anonymous_backendrole"
+opendistro_security_anonymous_role:
+  backend_roles:
+  - "opendistro_security_anonymous_backendrole"
 
 alerting_read_access:
   backend_roles:
@@ -52,7 +52,7 @@ all_access:
   reserved: false
   backend_roles:
   - "admin"
-  # - "opendistro_security_anonymous_backendrole"
+  - "opendistro_security_anonymous_backendrole"
   description: "Maps admin to all_access"
 
 logstash:
@@ -85,4 +85,8 @@ bootstrap:
   reserved: true
   users:
   - "bootstrap"
-  - "opendistro_security_anonymous"
+
+demo_user:
+  reserved: true
+  users:
+  - "demo-user"

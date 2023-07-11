@@ -11,80 +11,9 @@ spec:
   template:
     spec:
       containers:
-      # - name: opensearch-bootstrap
-      #   image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/os-bootstrap/dev:v1.19-release-branch-latest
-      #   imagePullPolicy: Always
-      #   securityContext:
-      #     runAsNonRoot: true
-      #     runAsUser: 9031
-      #     runAsGroup: 9999
-      #     allowPrivilegeEscalation: false
-      #   env:
-      #     - name: OS_HOST
-      #       value: "opensearch-cluster-headless.elastic-stack-logging.svc.cluster.local"
-      #     - name: OS_PORT
-      #       value: "9200"
-      #     - name: BOOTSTRAP_USER
-      #       valueFrom:
-      #         secretKeyRef:
-      #           key: username
-      #           name: os-bootstrap-creds
-      #     - name: BOOTSTRAP_PASS
-      #       valueFrom:
-      #         secretKeyRef:
-      #           key: password
-      #           name: os-bootstrap-creds
-      #     - name: INDEX_TEMPLATES_PATH
-      #       value: "/usr/share/opensearch/data/index-templates"
-      #     - name: ALERTS_PATH
-      #       value: "/usr/share/opensearch/data/alerts"
-      #     - name: NOTIFICATIONS_PATH
-      #       value: "/usr/share/opensearch/data/notifications"
-      #     - name: ISM_PATH
-      #       value: "/usr/share/opensearch/data/ism-policies"
-      #     - name: OSD_URL
-      #       value: "http://opensearch-dashboards:5601"
-      #     - name: DASHBOARDS_PATH
-      #       value: "/usr/share/opensearch/data/dashboards"
-      #   volumeMounts:
-      #     - name: os-ism-policies
-      #       mountPath: /usr/share/opensearch/data/ism-policies
-      #     - name: os-index-templates
-      #       mountPath: /usr/share/opensearch/data/index-templates
-      #     - name: os-notifications-channels
-      #       mountPath: /usr/share/opensearch/data/notifications
-      #     - name: os-dashboards-pd
-      #       mountPath: /usr/share/opensearch/data/dashboards/pd
-      #     - name: os-dashboards-pf
-      #       mountPath: /usr/share/opensearch/data/dashboards/pf
-      #     - name: os-dashboards-pf-threat
-      #       mountPath: /usr/share/opensearch/data/dashboards/pf-threat
-      #     - name: os-dashboards-pa
-      #       mountPath: /usr/share/opensearch/data/dashboards/pa
-      #     - name: os-dashboards-pa-was
-      #       mountPath: /usr/share/opensearch/data/dashboards/pa-was
-      #     - name: os-alerts-pd-1
-      #       mountPath: /usr/share/opensearch/data/alerts/pd-1
-      #     - name: os-alerts-pd-2
-      #       mountPath: /usr/share/opensearch/data/alerts/pd-2
-      #     - name: os-alerts-pd-3
-      #       mountPath: /usr/share/opensearch/data/alerts/pd-3
-      #     - name: os-alerts-pd-4
-      #       mountPath: /usr/share/opensearch/data/alerts/pd-4
-      #     - name: os-alerts-pds
-      #       mountPath: /usr/share/opensearch/data/alerts/pds
-      #     - name: os-alerts-pf
-      #       mountPath: /usr/share/opensearch/data/alerts/pf
-      #   resources:
-      #     requests:
-      #       memory: "256Mi"
-      #       cpu: "300m"
-      #     limits:
-      #       memory: "512Mi"
-      #       cpu: "500m"
-      - name: opensearch-bootstrap-multi-tenancy-test
-        image: 7es7/opensearch-bootstrap-multi-tenancy-test:4
-
+      - name: opensearch-bootstrap
+        # image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/os-bootstrap/dev:v1.19-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/os-bootstrap/dev:poc_0.1
         imagePullPolicy: Always
         securityContext:
           runAsNonRoot: true

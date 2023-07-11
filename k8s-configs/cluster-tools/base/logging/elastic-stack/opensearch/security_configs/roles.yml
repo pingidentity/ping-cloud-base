@@ -346,3 +346,58 @@ bootstrap:
       - 'bootstrap*'
       allowed_actions:
         - "kibana_all_write"
+
+
+demo_user:
+  reserved: true
+  cluster_permissions:
+    # For using _cat/indices
+    - 'cluster:monitor/state'
+    - 'cluster:monitor/health'
+    - 'cluster:monitor/nodes/info'
+    # To enable read access to ISM
+    - cluster:admin/opendistro/ism/policy/search
+    - cluster:admin/opendistro/ism/managedindex/explain
+    - cluster:admin/opendistro/rollup/search
+    - cluster:admin/opendistro/transform/get_transforms
+    # To enable read access to various ISM Jobs
+    - cluster:admin/opendistro/rollup/explain
+    - cluster:admin/opendistro/ism/policy/get
+    - cluster:admin/opendistro/rollup/get
+    - cluster:admin/opendistro/transform/explain
+    - cluster:admin/opendistro/transform/get
+    # To enable read access to security analytics
+    - cluster:admin/opensearch/securityanalytics/rule/search
+    - cluster:admin/opensearch/securityanalytics/detector/search
+    - cluster:admin/opensearch/securityanalytics/findings/get
+    - cluster:admin/opensearch/securityanalytics/alerts/get
+    - cluster:admin/opensearch/securityanalytics/detector/get
+    # For using sql join query
+    - "indices:data/read/scroll*"
+    - "kibana_all_read"
+  index_permissions:
+    - index_patterns:
+      - '*'
+      allowed_actions:
+        - "read"
+        - "indices:data/read/mget"
+        - "indices:data/read/msearch"
+        - "indices:data/read/mtv"
+        - "indices:admin/get"
+        - "indices:admin/aliases/exists*"
+        - "indices:admin/aliases/get*"
+        - "indices:admin/mappings/get"
+        - "indices:data/read/scroll"
+        - "indices:monitor/settings/get"
+        - "indices:monitor/stats"
+        - 'indices:admin/index_template/*'
+        - 'indices:admin/template/*'
+  tenant_permissions:
+    - tenant_patterns:
+      - 'global*'
+      allowed_actions:
+        - "kibana_all_read"
+    - tenant_patterns:
+      - 'demo-user*'
+      allowed_actions:
+        - "kibana_all_write"

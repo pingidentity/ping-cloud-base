@@ -15,12 +15,8 @@ spec:
   commonName: opensearch-self-ca
   secretName: opensearch-self-ca
   privateKey:
-    algorithm: RSA
-    encoding: PKCS8
-    size: 2048
-    rotationPolicy: Always
-    # algorithm: ECDSA
-    # size: 256
+    algorithm: ECDSA
+    size: 256
   issuerRef:
     name: selfsigned-issuer
     kind: ClusterIssuer

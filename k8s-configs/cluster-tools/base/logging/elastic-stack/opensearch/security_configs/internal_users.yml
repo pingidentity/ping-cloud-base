@@ -34,3 +34,8 @@ bootstrap:
   hash: "$2y$12$rKbj1eVYptD9uw5B7COX4uOKffCoTLaDwZftW8VKVwZmmT4mJRWsy"
   reserved: true
   description: "Bootstrap user"
+
+demo-user:
+  hash: "$2y$12$uERdQeC7ofhEdGjhc3x15O3IJ8ISLFlGJc4o00H1171FAUL3lM41S"
+  reserved: true
+  description: "OpenSearch Dashboards user"

@@ -63,9 +63,6 @@ spec:
       - name: node-cert
         secret:
           secretName: opensearch-cert
-      - name: admin-cert
-        secret:
-          secretName: opensearch-admin-cert
       enableServiceLinks: false
       containers:
       - name: opensearch
@@ -133,8 +130,6 @@ spec:
           subPath: opensearch.yml
         - name: node-cert
           mountPath: /usr/share/opensearch/config/certs
-        - name: admin-cert
-          mountPath: /usr/share/opensearch/config/admin-certs
 
 ---
 
@@ -196,9 +191,6 @@ spec:
       - name: node-cert
         secret:
           secretName: opensearch-cert
-      - name: admin-cert
-        secret:
-          secretName: opensearch-admin-cert
       enableServiceLinks: false
       containers:
       - name: "opensearch"
@@ -266,5 +258,3 @@ spec:
           subPath: opensearch.yml
         - name: node-cert
           mountPath: /usr/share/opensearch/config/certs
-        - name: admin-cert
-          mountPath: /usr/share/opensearch/config/admin-certs
