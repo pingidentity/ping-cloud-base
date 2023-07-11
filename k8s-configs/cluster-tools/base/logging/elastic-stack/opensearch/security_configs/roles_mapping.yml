@@ -52,7 +52,7 @@ all_access:
   reserved: false
   backend_roles:
   - "admin"
-  - "opendistro_security_anonymous_backendrole"
+  # - "opendistro_security_anonymous_backendrole"
   description: "Maps admin to all_access"
 
 logstash:

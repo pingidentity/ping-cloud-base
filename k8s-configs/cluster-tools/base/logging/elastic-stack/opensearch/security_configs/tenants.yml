@@ -3,3 +3,7 @@ _meta:
   config_version: 2
 
 # Define your tenants here
+
+global-tenant-custom:
+  reserved: false
+  description: "Custom global tenant"

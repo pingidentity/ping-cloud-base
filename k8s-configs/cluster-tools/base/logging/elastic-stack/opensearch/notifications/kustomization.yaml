@@ -7,3 +7,6 @@ configMapGenerator:
   - name: os-notifications-channels
     files:
       - sns.json
+
+generatorOptions:
+  disableNameSuffixHash: true
