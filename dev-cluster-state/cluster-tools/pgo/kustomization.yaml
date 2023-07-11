@@ -8,5 +8,5 @@ resources:
 - ../../../k8s-configs/cluster-tools/base/pgo/base
 
 # Remove the CRDs from the dev environments so that they can be applied server-side
-patches:
+patchesStrategicMerge:
 - remove-crds.yaml

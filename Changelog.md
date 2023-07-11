@@ -25,6 +25,7 @@
 - Update PGO dashboards to use grafana CRD
 - [EKS 1.26] service.alpha.kubernetes.io/tolerate-unready-endpoints (deprecated)
 - Update PCB with toolkit image used as replacement for bitnami/kubectl
+- Upgrade Kustomize to 5.0.3
 
 _Changes:_
 
@@ -58,6 +59,7 @@ _Changes:_
 - [X] PDO-5408 Add boolean flag to skip pod liveness probe script for PingFederate engines, PingAccess/WAS engines, and PingDirectory
 - [X] PDO-5409 Add ability to Update Upgrade Scripts w/o Release of New Beluga Version
 - [X] PDO-5418 Add resource (cpu & memory) limit and request for every product Job and Cronjob
+- [X] PDO-5434 Upgrade Kustomize to 5.0.3
 - [X] PDO-5435 Update values.yaml files structure
 - [X] PDO-5467 When rolling pods NLB connection draining isn't occuring causing service interruption
 - [X] PDO-5543 New Prometheus alerts for Kubernetes metrics
