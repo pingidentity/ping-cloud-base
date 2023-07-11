@@ -38,7 +38,11 @@ configMapGenerator:
 - name: cluster-health-environment-variables
   behavior: merge
   envs:
-  - ../ping-cloud/env_vars
+    - ../ping-cloud/env_vars
+  literals:
+    - PA_ADMIN_SERVER_NAME=pingaccess-admin-0
+    - PA_WAS_ADMIN_SERVER_NAME=pingaccess-was-admin-0
+    - PF_ADMIN_SERVER_NAME=pingfederate-admin-0
 
 - name: prometheus-environment-variables
   behavior: merge

@@ -2,6 +2,9 @@ dn: ${USER_BASE_DN}
 objectClass: top
 objectClass: domain
 dc: ${USER_BASE_NAME}
+aci: (targetattr!="userPassword")(version 3.0; acl "Allow self-read access to all user attributes except the password"; allow (read,search,compare) userdn="ldap:///self";)
+aci: (targetattr="*")(version 3.0; acl "Allow users to update their own entries"; allow (write) userdn="ldap:///self";)
+aci: (targetattr="* || +")(version 3.0; acl "Allow PF Administrator to update user entries"; allow (all,proxy) groupdn="ldap:///cn=pfadmingrp,ou=Groups,o=platformconfig";)
 
 dn: ou=admins,${USER_BASE_DN}
 objectClass: top

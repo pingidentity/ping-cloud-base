@@ -27,7 +27,6 @@ patchesStrategicMerge:
     KIBANA_PUBLIC_HOSTNAME: logs.${TENANT_DOMAIN}
     ARGOCD_PUBLIC_HOSTNAME: argocd.${TENANT_DOMAIN}
     HEALTHCHECK_HTTPBIN_PA_WAS_PUBLIC_HOSTNAME: healthcheck-httpbin-pa-was.${TENANT_DOMAIN}
-    HEALTHCHECK_HTTPBIN_PA_PUBLIC_HOSTNAME: healthcheck-httpbin-pa.${TENANT_DOMAIN}
     PC_ADMIN_PUBLIC_HOSTNAME: pingcentral-admin.${TENANT_DOMAIN}
     BACKUP_URL: ${BACKUP_URL}
     REGION: ${REGION}
@@ -52,7 +51,6 @@ patchesStrategicMerge:
     KIBANA_PUBLIC_HOSTNAME: logs.${TENANT_DOMAIN}
     ARGOCD_PUBLIC_HOSTNAME: argocd.${TENANT_DOMAIN}
     HEALTHCHECK_HTTPBIN_PA_WAS_PUBLIC_HOSTNAME: healthcheck-httpbin-pa-was.${TENANT_DOMAIN}
-    HEALTHCHECK_HTTPBIN_PA_PUBLIC_HOSTNAME: healthcheck-httpbin-pa.${TENANT_DOMAIN}
     PC_ADMIN_PUBLIC_HOSTNAME: pingcentral-admin.${TENANT_DOMAIN}
     BACKUP_URL: ${BACKUP_URL}
     REGION: ${REGION}
@@ -73,6 +71,7 @@ patchesStrategicMerge:
     PF_ADMIN_PUBLIC_HOSTNAME: pingfederate-admin.${TENANT_DOMAIN}
     PF_ADMIN_API_PUBLIC_HOSTNAME: pingfederate-admin-api.${TENANT_DOMAIN}
     PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
+    HEALTHCHECK_HTTPBIN_PA_PUBLIC_HOSTNAME: healthcheck-httpbin-pa.${TENANT_DOMAIN}
     REGION: ${REGION}
 - |-
   apiVersion: v1
@@ -91,6 +90,7 @@ patchesStrategicMerge:
     PF_ADMIN_PUBLIC_HOSTNAME: pingfederate-admin.${TENANT_DOMAIN}
     PF_ADMIN_API_PUBLIC_HOSTNAME: pingfederate-admin-api.${TENANT_DOMAIN}
     PF_ENGINE_PUBLIC_HOSTNAME: pingfederate.${TENANT_DOMAIN}
+    HEALTHCHECK_HTTPBIN_PA_PUBLIC_HOSTNAME: healthcheck-httpbin-pa.${TENANT_DOMAIN}
     REGION: ${REGION}
 - |-
   apiVersion: v1

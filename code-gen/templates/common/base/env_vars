@@ -221,8 +221,8 @@ GRAFANA_PUBLIC_HOSTNAME=monitoring.${DNS_ZONE_DERIVED}
 KIBANA_PUBLIC_HOSTNAME=logs.${DNS_ZONE_DERIVED}
 ARGOCD_PUBLIC_HOSTNAME=argocd.${DNS_ZONE_DERIVED}
 
-HEALTHCHECK_HTTPBIN_PA_WAS_PUBLIC_HOSTNAME=healthcheck-httpbin-pa-was.${DNS_ZONE_DERIVED}
-HEALTHCHECK_HTTPBIN_PA_PUBLIC_HOSTNAME=healthcheck-httpbin-pa.${DNS_ZONE_DERIVED}
+HEALTHCHECK_HTTPBIN_PA_WAS_PUBLIC_HOSTNAME=healthcheck-httpbin-pa-was.${PRIMARY_DNS_ZONE_DERIVED}
+HEALTHCHECK_HTTPBIN_PA_PUBLIC_HOSTNAME=healthcheck-httpbin-pa.${PRIMARY_DNS_ZONE_DERIVED}
 
 # Retention time for Prometheus. Could be set in years(y), weeks(w), days(d), hours(h), minutes(m) or seconds(s)
 PROMETHEUS_RETENTION_TIME=15d
@@ -254,7 +254,7 @@ EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED}"
 ########################################################################################################################
 
 # Default argo-events notification configuration
-NOTIFICATION_ENABLED=false
+NOTIFICATION_ENABLED=true
 SLACK_CHANNEL=${SLACK_CHANNEL}
 NOTIFICATION_ENDPOINT=http://webhook-eventsource-svc.argo-events:12999/notification
 

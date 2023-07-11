@@ -105,7 +105,7 @@
 # NEW_RELIC_LICENSE_KEY     | The key of NewRelic APM Agent used to send data to | The SSM path: ssm://pcpt/sre/new-relic/java-agent-license-key
 #                           | NewRelic account                                   |
 #                           |                                                    |
-# NOTIFICATION_ENABLED      | Flag indicating if alerts should be sent to the    | False
+# NOTIFICATION_ENABLED      | Flag indicating if alerts should be sent to the    | True
 #                           | endpoint configured in the argo-events             |
 #                           |                                                    |
 # ORCH_API_SSM_PATH_PREFIX  | The prefix of the SSM path that contains MyPing    | /pcpt/orch-api
@@ -355,7 +355,7 @@ export PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED:-false}
 ########################################################################################################################
 
 # Default notification configuration for dev environment.
-export NOTIFICATION_ENABLED=${NOTIFICATION_ENABLED:-false}
+export NOTIFICATION_ENABLED=${NOTIFICATION_ENABLED:-true}
 export SLACK_CHANNEL=${SLACK_CHANNEL:-nowhere}
 
 # PGO Prometheus notification.
