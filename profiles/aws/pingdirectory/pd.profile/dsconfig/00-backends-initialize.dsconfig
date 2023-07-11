@@ -11,3 +11,8 @@ dsconfig create-backend \
         --set enabled:true \
         --set base-dn:"${APP_INTEGRATIONS_BASE_DN}" \
         --set prime-method:preload
+
+dsconfig set-backend-prop \
+        --backend-name "userRoot" \
+        --set "base-dn:${USER_BASE_DN}" \
+        --set enabled:true
