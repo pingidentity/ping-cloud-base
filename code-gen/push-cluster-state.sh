@@ -32,7 +32,6 @@
 CLUSTER_STATE_REPO_DIR='cluster-state'
 K8S_CONFIGS_DIR='k8s-configs'
 BASE_DIR='base'
-ALL_APPS='all'
 
 PROFILE_REPO_DIR='profile-repo'
 PROFILES_DIR='profiles'
@@ -89,14 +88,6 @@ push_with_retries() {
 }
 
 ########################################################################################################################
-# Returns a flag indicating whether this is for all apps or not
-# Returns 0 if true, 1 if false
-########################################################################################################################
-is_all_apps() {
-  test "${APPS_TO_PUSH}" = "${ALL_APPS}"
-}
-
-########################################################################################################################
 # Switch back to the previous branch and delete the staging branch.
 ########################################################################################################################
 finalize() {
@@ -116,8 +107,6 @@ if "${IS_PROFILE_REPO}" && ! "${IS_PRIMARY}"; then
   echo "Nothing to push to the profile repo for secondary regions"
   exit 0
 fi
-
-APPS_TO_PUSH=${APPS_TO_PUSH:-${ALL_APPS}}
 
 # Quiet mode where pretty console-formatting is omitted.
 QUIET="${QUIET:-false}"
@@ -188,15 +177,8 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   fi
 
   echo "Processing branch '${GIT_BRANCH}' for environment '${ENV}' and default branch '${DEFAULT_CDE_BRANCH}'"
-
-  if is_all_apps; then
-    # Get app paths
-    APP_PATHS=$(find "${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}/${ENV_OR_BRANCH}" -mindepth 1 -maxdepth 1 -type d)
-  else
-    for app in ${APPS_TO_PUSH}; do
-      APP_PATHS="${APP_PATHS}${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}/${ENV_OR_BRANCH}/${app} "
-    done
-  fi
+  # Get app paths
+  APP_PATHS=$(find "${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}/${ENV_OR_BRANCH}" -mindepth 1 -maxdepth 1 -type d)
 
   if ! ${DISABLE_GIT}; then
     # Check if the branch exists locally. If so, switch to it.
@@ -237,45 +219,34 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   fi
 
   if "${IS_PRIMARY}"; then
-    # Clean-up the repo.
-    if is_all_apps; then
-      echo "Cleaning up ${PWD}"
-      dir_deep_clean "${PWD}"
-    else
-      for app_path in ${APP_PATHS}; do
-        echo "Cleaning up ${PWD}/${app_path}"
-        dir_deep_clean "${PWD}/${app_path}"
-      done
-    fi
+    # Clean-up everything in the repo.
+    echo "Cleaning up ${PWD}"
+    dir_deep_clean "${PWD}"
 
     if "${IS_PROFILE_REPO}" || "${INCLUDE_PROFILES_IN_CSR}"; then
-      if is_all_apps; then
-        # Copy the base files into the repo.
-        src_dir="${GENERATED_CODE_DIR}/${PROFILE_REPO_DIR}"
-        echo "Copying base files from ${src_dir} to ${PWD}"
-        cp "${src_dir}"/.gitignore ./
-        cp "${src_dir}"/upgrade-profile-wrapper.sh ./
+      # Copy the base files into the repo.
+      src_dir="${GENERATED_CODE_DIR}/${PROFILE_REPO_DIR}"
+      echo "Copying base files from ${src_dir} to ${PWD}"
+      cp "${src_dir}"/.gitignore ./
+      cp "${src_dir}"/upgrade-profile-wrapper.sh ./
 
-        # Copy the profiles.
-        mkdir -p "${PROFILES_DIR}"
+      # Copy the profiles.
+      mkdir -p "${PROFILES_DIR}"
 
-        # Copy the profiles.
-        src_dir="${GENERATED_CODE_DIR}/${PROFILE_REPO_DIR}/${PROFILES_DIR}/${ENV_OR_BRANCH}/"
-        echo "Copying ${src_dir} to ${PROFILES_DIR}"
-        find "${src_dir}" -maxdepth 1 -mindepth 1 -type d -exec cp -pr {} "${PROFILES_DIR}"/ \;
-      fi
+      # Copy the profiles.
+      src_dir="${GENERATED_CODE_DIR}/${PROFILE_REPO_DIR}/${PROFILES_DIR}/${ENV_OR_BRANCH}/"
+      echo "Copying ${src_dir} to ${PROFILES_DIR}"
+      find "${src_dir}" -maxdepth 1 -mindepth 1 -type d -exec cp -pr {} "${PROFILES_DIR}"/ \;
     fi
 
     if ! "${IS_PROFILE_REPO}"; then
-      if is_all_apps; then
-        # Copy the base files into the repo.
-        src_dir="${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}"
-        echo "Copying base files from ${src_dir} to ${PWD}"
-        cp "${src_dir}"/.gitignore ./
-        cp "${src_dir}"/upgrade-cluster-state-wrapper.sh ./
-        cp "${src_dir}"/csr-validation.sh ./
-        cp "${src_dir}"/seal-secret-values.py ./
-      fi
+      # Copy the base files into the repo.
+      src_dir="${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}"
+      echo "Copying base files from ${src_dir} to ${PWD}"
+      cp "${src_dir}"/.gitignore ./
+      cp "${src_dir}"/upgrade-cluster-state-wrapper.sh ./
+      cp "${src_dir}"/csr-validation.sh ./
+      cp "${src_dir}"/seal-secret-values.py ./
 
       # Copy each app's base files into the repo
       for app_path in ${APP_PATHS}; do
@@ -293,17 +264,15 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
         src_dir="${app_path}/${BASE_DIR}"
         echo "Copying ${src_dir} to ${app_name}"
         cp -pr "${src_dir}" "${app_name}/"
-        
+
       done
     fi
 
-    if is_all_apps; then
-      # Last but not least, stick the version of Beluga into a version.txt file.
-      beluga_version="$(find "${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}/${ENV_OR_BRANCH}/${K8S_CONFIGS_DIR}" \
-        -name env_vars -exec grep '^K8S_GIT_BRANCH=' {} \; | cut -d= -f2)"
-      echo "Beluga version is ${beluga_version} for environment ${ENV}"
-      echo "${beluga_version}" > version.txt
-    fi
+    # Last but not least, stick the version of Beluga into a version.txt file.
+    beluga_version="$(find "${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}/${ENV_OR_BRANCH}/${K8S_CONFIGS_DIR}" \
+      -name env_vars -exec grep '^K8S_GIT_BRANCH=' {} \; | cut -d= -f2)"
+    echo "Beluga version is ${beluga_version} for environment ${ENV}"
+    echo "${beluga_version}" > version.txt
   fi
 
   if "${IS_PROFILE_REPO}"; then
@@ -325,7 +294,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       cp -pr "${src_dir}" "${app_name}/"
     done
 
-    commit_msg="Initial commit of cluster state code for environment '${ENV}' in region '${region}' - ping-cloud-base@${PCB_COMMIT_SHA}"
+    commit_msg="Initial commit of k8s code for environment '${ENV}' in region '${region}' - ping-cloud-base@${PCB_COMMIT_SHA}"
   fi
 
   if ! ${DISABLE_GIT}; then
