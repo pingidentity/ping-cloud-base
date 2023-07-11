@@ -4,9 +4,9 @@ _meta:
 
 # Define your roles mapping here
 
-opendistro_security_anonymous_role:
-  backend_roles:
-  - "opendistro_security_anonymous_backendrole"
+# opendistro_security_anonymous_role:
+#   backend_roles:
+#   - "opendistro_security_anonymous_backendrole"
 
 alerting_read_access:
   backend_roles:
@@ -85,4 +85,4 @@ bootstrap:
   reserved: true
   users:
   - "bootstrap"
-  
+  - "opendistro_security_anonymous"
