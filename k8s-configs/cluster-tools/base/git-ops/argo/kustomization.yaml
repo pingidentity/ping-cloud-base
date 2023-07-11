@@ -123,11 +123,11 @@ patchesStrategicMerge:
             image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/python:3.9.1-slim
             command: [ "install-custom-tools.sh" ]
             volumeMounts:
-              - name: tools-dir
-                mountPath: /tools
-              - name: install-custom-tools
-                mountPath: /usr/local/bin/install-custom-tools.sh
-                subPath: install-custom-tools.sh
+            - name: tools-dir
+              mountPath: /tools
+            - name: install-custom-tools
+              mountPath: /usr/local/bin/install-custom-tools.sh
+              subPath: install-custom-tools.sh
 
   # Add Beluga-specific volumes to the pod
   - |-
@@ -148,7 +148,7 @@ patchesStrategicMerge:
           - name: helm-command
             configMap:
               name: helm-command
-              defaultMode: 0555
+              defaultMode: 0555              
           - name: install-custom-tools
             configMap:
               name: install-custom-tools
