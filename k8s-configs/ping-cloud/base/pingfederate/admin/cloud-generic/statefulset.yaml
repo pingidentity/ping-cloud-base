@@ -143,7 +143,7 @@ spec:
             name: pingcommon-environment-variables
       containers:
       - name: pingfederate-admin
-        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingfederate/dev:v1.19-release-branch-latest
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingfederate:PDO-5316-poc
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true

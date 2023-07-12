@@ -164,7 +164,7 @@ PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 ############################################################
 PINGACCESS_IMAGE_TAG=v1.19-release-branch-latest
 PINGACCESS_WAS_IMAGE_TAG=v1.19-release-branch-latest
-PINGFEDERATE_IMAGE_TAG=v1.19-release-branch-latest
+PINGFEDERATE_IMAGE_TAG=PDO-5316-poc
 PINGDIRECTORY_IMAGE_TAG=v1.19-release-branch-latest
 PINGDELEGATOR_IMAGE_TAG=v1.19-release-branch-latest
 PINGCENTRAL_IMAGE_TAG=v1.19-release-branch-latest
