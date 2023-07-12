@@ -75,6 +75,7 @@ _Changes:_
 - [X] PDO-5705 Update PCB with toolkit image used as replacement for bitnami/kubectl
 - [X] PDO-5709 Fix intermittent pingone integration test failures
 - [X] PDO-5718 Update PGO dashboards to use grafana CRD
+- [X] PDO-5741 OS: Index migration fails for shrink-*-logstash-* indexes
 
 ### 1.18.0.0
 
