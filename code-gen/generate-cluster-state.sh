@@ -687,6 +687,8 @@ echo "Initial BACKUP_URL: ${BACKUP_URL}"
 echo "Initial MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 echo "Initial MYSQL_USER: ${MYSQL_USER}"
 echo "Initial MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
+echo "Initial MYSQL_DATABASE: ${MYSQL_DATABASE}"
+
 
 echo "Initial PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
 
@@ -844,7 +846,7 @@ export EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED:-""}"
 ### Default environment variables ###
 export ECR_REGISTRY_NAME='public.ecr.aws/r2h3l6e4'
 export PING_CLOUD_NAMESPACE='ping-cloud'
-export MYSQL_DATABASE='pingcentral'
+export MYSQL_DATABASE="${MYSQL_DATABASE:-pingcentral}"
 export ARGOCD_CDE_ROLE_SSM_TEMPLATE="${ARGOCD_CDE_ROLE_SSM_TEMPLATE:-"/pcpt/config/k8s-config/accounts/{env}/argo/role/arn"}"
 export ARGOCD_CDE_URL_SSM_TEMPLATE="${ARGOCD_CDE_URL_SSM_TEMPLATE:-"/pcpt/config/k8s-config/accounts/{env}/cluster/private-link/cname"}"
 
@@ -970,6 +972,7 @@ echo "Using BACKUP_URL: ${BACKUP_URL}"
 echo "Using MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 echo "Using MYSQL_USER: ${MYSQL_USER}"
 echo "Using MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
+echo "Using MYSQL_DATABASE: ${MYSQL_DATABASE}"
 
 echo "Using PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
 
@@ -1290,13 +1293,12 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     substitute_vars "${ENV_DIR}/values-files" '${IS_BELUGA_ENV}'
 
     # Update patches related to Beluga developer CDEs
-    sed -i.bak 's/^# \(.*remove-from-developer-cde-patch.yaml\)$/\1/g' "${PRIMARY_PING_KUST_FILE}"
+    sed -i.bak 's/^  # \(.*remove-from-developer-cde-patch.yaml\)$/  \1/g' "${PRIMARY_PING_KUST_FILE}"
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
 
     # Add ArgoCD to Beluga Environments since it normally runs only in customer-hub
     echo "This is a Beluga Development Environment, copying ArgoCD into the CSR"
     cp -R "${CHUB_TEMPLATES_DIR}/base/cluster-tools/git-ops" "${K8S_CONFIGS_DIR}/base/cluster-tools/"
-
     # Append the secrets from customer-hub to the CDE secrets, except PingCentral since that doesn't exist in the CDE
     printf "\n# %%%% NOTE: Below secrets are for the Developer CDE only (when IS_BELUGA_ENV is 'true') to make sure Argo works properly %%%%#\n" >> "${K8S_CONFIGS_DIR}/base/secrets.yaml"
     yq 'del(select(.metadata.name | contains("pingcentral")))' "${CHUB_TEMPLATES_DIR}/base/secrets.yaml" >> "${K8S_CONFIGS_DIR}/base/secrets.yaml"
@@ -1319,10 +1321,14 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   cp -pr ../profiles/aws/. "${ENV_PROFILES_DIR}"
 
   if test "${ENV}" = "${CUSTOMER_HUB}"; then
+    echo "CHUB deploy identified, retaining only PingCentral and PingAccess profiles"
     # Retain only the pingcentral & pingaccess profiles
     find "${ENV_PROFILES_DIR}" -type d -mindepth 1 -maxdepth 1 -not -name "${PING_CENTRAL}" -not -name "${PING_ACCESS}" -exec rm -rf {} +
+  elif test "${ENV}" = "dev" && "${IS_BELUGA_ENV}" &&  test "${CI_SERVER}" = "yes"; then
+    echo "Running a dev cluster in CI/CD pipeline, not removing PingCentral profiles"
   else
     # Remove the pingcentral profiles
+    echo "Not CI/CD or CHUB deploy, removing PingCentral profiles"
     rm -rf "${ENV_PROFILES_DIR}/${PING_CENTRAL}"
   fi
 

@@ -27,6 +27,7 @@
 - Update PCB with toolkit image used as replacement for bitnami/kubectl
 - Modified git-ops-command.sh script to handle the SIGTERM signal appropriately.
 - Upgrade Kustomize to 5.0.3
+- Re-enable PingCentral for CI/CD dev environments which are now deployed using generate-cluster-state.sh
 
 _Changes:_
 
@@ -56,6 +57,7 @@ _Changes:_
 - [X] PDO-5333 ArgoCD authentication to private ECR for Helm
 - [X] PDO-5358 OpenSearch Migration: Refactor OS Code as Needed
 - [X] PDO-5371 Update PCB Pipeline to deploy CDE dev Environment
+- [X] PDO-5373 PingCentral testing in PCB Pipeline CDE deployment
 - [X] PDO-5396 Create new RBAC rules , ping role and service accounts for PD backups and restore 
 - [X] PDO-5400 Update PD backup/restore integration tests
 - [X] PDO-5408 Add boolean flag to skip pod liveness probe script for PingFederate engines, PingAccess/WAS engines, and PingDirectory
