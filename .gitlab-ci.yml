@@ -19,7 +19,7 @@ stages:
 ## Global environment variables ##
 variables:
   DELETE_ENV_AFTER_PIPELINE: 'true'
-  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.19.5.0
+  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.19.6.0
   SHARED_CI_SCRIPTS_DIR: "/ci-scripts"
   BRANCH_SKIP_TESTS: >
     pingaccess/08-artifact-test.sh
@@ -81,7 +81,7 @@ pa-was-integration-tests:
   - pingfederate
   - pingaccess
   - pingcloud-services
-  # - pingcentral        (will be re-added when PingCentral is added to CI/CD)
+  - pingcentral     
   - pingdatasync
   - common
   - monitoring

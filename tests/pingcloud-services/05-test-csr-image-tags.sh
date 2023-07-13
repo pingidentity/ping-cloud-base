@@ -96,17 +96,16 @@ testPingDelegatorImageTag() {
   assertEquals "PingDelegator CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
 }
 
-# This is being disabled from CI/CD until PingCentral is deployed
-# testPingCentralImageTag() {
-#   $(test "${PINGCENTRAL_IMAGE_TAG}")
-#   assertEquals "PINGCENTRAL_IMAGE_TAG missing from env_vars file" 0 $?
+testPingCentralImageTag() {
+  $(test "${PINGCENTRAL_IMAGE_TAG}")
+  assertEquals "PINGCENTRAL_IMAGE_TAG missing from env_vars file" 0 $?
 
-#   unique_count=$(getUniqueTagCount "pingcentral")
-#   assertEquals "PingCentral is using multiple image tag versions" 1 "${unique_count}"
+  unique_count=$(getUniqueTagCount "pingcentral")
+  assertEquals "PingCentral is using multiple image tag versions" 1 "${unique_count}"
 
-#   matched_count=$(getMatchedTagCount "${PINGCENTRAL_IMAGE_TAG}" "pingcentral")
-#   assertEquals "PingCentral CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
-# }
+  matched_count=$(getMatchedTagCount "${PINGCENTRAL_IMAGE_TAG}" "pingcentral")
+  assertEquals "PingCentral CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
+}
 
 testMetadataImageTag() {
   $(test "${METADATA_IMAGE_TAG}")
