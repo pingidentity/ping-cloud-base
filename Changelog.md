@@ -25,6 +25,7 @@
 - Update PGO dashboards to use grafana CRD
 - [EKS 1.26] service.alpha.kubernetes.io/tolerate-unready-endpoints (deprecated)
 - Update PCB with toolkit image used as replacement for bitnami/kubectl
+- Modified git-ops-command.sh script to handle the SIGTERM signal appropriately.
 - Upgrade Kustomize to 5.0.3
 
 _Changes:_
@@ -70,6 +71,7 @@ _Changes:_
 - [X] PDO-5601 os-dashboards-pf configMap breaks developer, and new ci/cd deploys
 - [X] PDO-5654 Fluentbit Kubernetes filter is not adding metadata into some events
 - [X] PDO-5655 OS: Logs for the pf-transaction-* index are not filtered
+- [X] PDO-5659 git-ops-command.sh responds properly to SIGTERM
 - [X] PDO-5671 OS: grokparsefailure in pingaccess logs
 - [x] PDO-5673 OS: Missed logs in PingAccess Indices
 - [X] PDO-5705 Update PCB with toolkit image used as replacement for bitnami/kubectl

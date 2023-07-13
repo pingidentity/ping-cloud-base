@@ -5,7 +5,6 @@
 # every poll interval.
 
 # Developing this script? Check out https://confluence.pingidentity.com/x/2StOCw
-
 LOG_FILE=/tmp/git-ops-command.log
 
 ########################################################################################################################
@@ -153,7 +152,20 @@ cleanup() {
   test ! -z "${TMP_DIR}" && rm -rf "${TMP_DIR}"
 }
 
+########################################################################################################################
+# Terminates script on SIGTERM signal. Kustomize tends to hang, so needed to explicitly kill it if it exists.
+########################################################################################################################
+on_terminate() {
+  log "Terminating on SIGTERM command"
+  # kill kustomize command as it tends to hang
+  kill -9 $kustomize_pid
+  # kill rest of current script
+  exit 0
+}
+
 # Main script
+
+trap on_terminate SIGTERM
 
 TARGET_DIR="${1:-.}"
 cd "${TARGET_DIR}" >/dev/null 2>&1
@@ -266,7 +278,9 @@ if [[ ${DEBUG} == "true" ]]; then
 # Output the yaml to stdout for Argo when operating normally
 elif test -z "${OUT_DIR}" || test ! -d "${OUT_DIR}"; then
   log "generating uber yaml file from '${BUILD_DIR}' to stdout"
-  kustomize build ${build_load_arg} ${build_load_arg_value} "${BUILD_DIR}"
+  kustomize build ${build_load_arg} ${build_load_arg_value} "${BUILD_DIR}" &
+  kustomize_pid=$!
+  wait
 # TODO: leave this functionality for now - it outputs many yaml files to the OUT_DIR
 # it isn't clear if this is still used in actual CDEs
 else
