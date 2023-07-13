@@ -17,17 +17,157 @@ metadata:
   namespace: prometheus
 $patch: delete
 ---
-apiVersion: v1
-kind: ConfigMap
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
 metadata:
-  name: grafana-datasources
+  name: kubernetesapiserver
   namespace: prometheus
 $patch: delete
 ---
-apiVersion: v1
-kind: ConfigMap
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
 metadata:
-  name: grafana-config
+  name: kubernetesapiserverperfomance
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: kubernetesclusterautoscaler
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: kubernetesclusterstorage
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: kubernetesstoragenamespace
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: logging
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: opensearch
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: p1asingress
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: pabyserver
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: patopology
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: pdbyserver
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: pdtopology
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: pfbyserver
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: pftopology
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: prometheus
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: os-pa-admin-audit
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: os-pa-audit
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: os-pf-admin-audit
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: os-pf-audit
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaFolder
+metadata:
+  name: kubernetesdashboards
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaFolder
+metadata:
+  name: monitoringdashboards
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaFolder
+metadata:
+  name: pingdashboards
   namespace: prometheus
 $patch: delete
 ---
@@ -38,8 +178,8 @@ metadata:
   namespace: prometheus
 $patch: delete
 ---
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: grafana.integreatly.org/v1beta1
+kind: Grafana
 metadata:
   name: grafana
   namespace: prometheus
@@ -52,24 +192,17 @@ metadata:
   namespace: prometheus
 $patch: delete
 ---
+kind: Service
 apiVersion: v1
-kind: ConfigMap
 metadata:
-  name: dashboard-providers
+  name: grafana-operator-metrics-service
   namespace: prometheus
 $patch: delete
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: ping-dashboards
-  namespace: prometheus
-$patch: delete
----
-kind: ConfigMap
+kind: Service
 apiVersion: v1
 metadata:
-  name: alertmanager-config
+  name: grafana-service
   namespace: prometheus
 $patch: delete
 ---
