@@ -26,17 +26,23 @@
 #       git-ops-command.sh rendering of files as if in a CSR
 
 # Global variables
-CLUSTER_STATE_REPO_DIR='cluster-state'
-K8S_CONFIGS_DIR='k8s-configs'
+ALL_ENVIRONMENTS='dev test stage prod customer-hub'
 BASE_DIR='base'
-
+CLUSTER_STATE_REPO_DIR='cluster-state'
+DISABLE_GIT=${DISABLE_GIT:-false}
+GENERATED_CODE_DIR="${GENERATED_CODE_DIR:-/tmp/sandbox}"
+INCLUDE_PROFILES_IN_CSR="${INCLUDE_PROFILES_IN_CSR:-false}"
+IS_PRIMARY="${IS_PRIMARY:-false}"
+IS_PROFILE_REPO="${IS_PROFILE_REPO:-false}"
+K8S_CONFIGS_DIR='k8s-configs'
+PCB_COMMIT_SHA=$(cat "${GENERATED_CODE_DIR}"/pcb-commit-sha.txt)
 PROFILE_REPO_DIR='profile-repo'
 PROFILES_DIR='profiles'
-
-CUSTOMER_HUB='customer-hub'
-
-DISABLE_GIT=${DISABLE_GIT:-false}
-
+PUSH_RETRY_COUNT="${PUSH_RETRY_COUNT:-30}"
+PUSH_TO_SERVER="${PUSH_TO_SERVER:-true}"
+# Quiet mode where pretty console-formatting is omitted.
+QUIET="${QUIET:-false}"
+SUPPORTED_ENVIRONMENT_TYPES="${SUPPORTED_ENVIRONMENT_TYPES:-${ALL_ENVIRONMENTS}}"
 ########################################################################################################################
 # Delete all files and directories under the provided directory. All hidden files and directories directly under the
 # provided directory will be left intact. Any glob specified through the RETAIN_GLOB environment variable will be
@@ -97,23 +103,10 @@ finalize() {
 
 # If profile repo and secondary region, early-out. The profiles will be exactly identical for all regions and should
 # already have been seeded when this script was run on primary region.
-IS_PRIMARY="${IS_PRIMARY:-false}"
-IS_PROFILE_REPO="${IS_PROFILE_REPO:-false}"
-
 if "${IS_PROFILE_REPO}" && ! "${IS_PRIMARY}"; then
   echo "Nothing to push to the profile repo for secondary regions"
   exit 0
 fi
-
-# Quiet mode where pretty console-formatting is omitted.
-QUIET="${QUIET:-false}"
-ALL_ENVIRONMENTS='dev test stage prod customer-hub'
-SUPPORTED_ENVIRONMENT_TYPES="${SUPPORTED_ENVIRONMENT_TYPES:-${ALL_ENVIRONMENTS}}"
-GENERATED_CODE_DIR="${GENERATED_CODE_DIR:-/tmp/sandbox}"
-INCLUDE_PROFILES_IN_CSR="${INCLUDE_PROFILES_IN_CSR:-false}"
-PUSH_RETRY_COUNT="${PUSH_RETRY_COUNT:-30}"
-PUSH_TO_SERVER="${PUSH_TO_SERVER:-true}"
-PCB_COMMIT_SHA=$(cat "${GENERATED_CODE_DIR}"/pcb-commit-sha.txt)
 
 # Set the git merge strategy to avoid noisy hints in the output.
 if ! ${DISABLE_GIT}; then
@@ -215,7 +208,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   dir_deep_clean "${PWD}"
 
   if "${IS_PROFILE_REPO}"; then
-    # Copy the base files into the repo.
     src_dir="${GENERATED_CODE_DIR}/${PROFILE_REPO_DIR}"
     echo "Copying base files from ${src_dir} to ${PWD}"
     cp "${src_dir}"/.gitignore ./
@@ -223,14 +215,12 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
 
     # Copy the profiles.
     mkdir -p "${PROFILES_DIR}"
-
-    # Copy the profiles.
     src_dir="${GENERATED_CODE_DIR}/${PROFILE_REPO_DIR}/${PROFILES_DIR}/${ENV_OR_BRANCH}/"
     echo "Copying ${src_dir} to ${PROFILES_DIR}"
     find "${src_dir}" -maxdepth 1 -mindepth 1 -type d -exec cp -pr {} "${PROFILES_DIR}"/ \;
 
-    commit_msg="Initial commit of profile code for environment '${ENV}' - ping-cloud-base@${PCB_COMMIT_SHA}"
-  elif ! "${IS_PROFILE_REPO}"; then
+    commit_msg="push-cluster-state.sh: Initial commit of profile code for environment '${ENV}' - ping-cloud-base@${PCB_COMMIT_SHA}"
+  else
     # Copy the base files into the repo.
     src_dir="${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}"
     echo "Copying base files from ${src_dir} to ${PWD}"
@@ -271,8 +261,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       echo "Copying ${src_dir} to ${app_name}"
       cp -pr "${src_dir}" "${app_name}/"
     done
-
-    commit_msg="Initial commit of k8s code for environment '${ENV}' in region '${region}' - ping-cloud-base@${PCB_COMMIT_SHA}"
+    commit_msg="push-cluster-state.sh: Initial commit of k8s code for environment '${ENV}' in region '${region}' - ping-cloud-base@${PCB_COMMIT_SHA}"
   fi
 
   # Last but not least, stick the version of Beluga into a version.txt file.
