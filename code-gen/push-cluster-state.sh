@@ -16,9 +16,6 @@
 #   IS_PRIMARY -> A flag indicating whether or not this is the primary region. Defaults to false, if unset.
 #   IS_PROFILE_REPO -> A flag indicating whether or not this push is targeted for the server profile repo. Defaults to
 #       false, if unset.
-#   INCLUDE_PROFILES_IN_CSR -> A flag indicating whether or not to include profile code into the CSR. Defaults to
-#       true, if unset. This flag will be removed (or its default set to true) when Versent provisions a new profile
-#       repo exclusively for server profiles.
 #   SUPPORTED_ENVIRONMENT_TYPES -> A space-separated list of environments. Defaults to 'dev test stage prod customer-hub',
 #       if unset. If provided, it must contain all or a subset of the environments currently created by the
 #       generate-cluster-state.sh script, i.e. dev, test, stage, prod, customer-hub.
@@ -110,14 +107,10 @@ fi
 
 # Quiet mode where pretty console-formatting is omitted.
 QUIET="${QUIET:-false}"
-
 ALL_ENVIRONMENTS='dev test stage prod customer-hub'
 SUPPORTED_ENVIRONMENT_TYPES="${SUPPORTED_ENVIRONMENT_TYPES:-${ALL_ENVIRONMENTS}}"
-
 GENERATED_CODE_DIR="${GENERATED_CODE_DIR:-/tmp/sandbox}"
-
 INCLUDE_PROFILES_IN_CSR="${INCLUDE_PROFILES_IN_CSR:-false}"
-
 PUSH_RETRY_COUNT="${PUSH_RETRY_COUNT:-30}"
 PUSH_TO_SERVER="${PUSH_TO_SERVER:-true}"
 PCB_COMMIT_SHA=$(cat "${GENERATED_CODE_DIR}"/pcb-commit-sha.txt)
@@ -135,6 +128,8 @@ if test "${CURRENT_BRANCH}" && test -n "$(git status -s)" && ! ${DISABLE_GIT}; t
 
   # Get rid of staged/un-staged modifications and untracked files/directories
   # on current branch. Otherwise, you cannot switch to another branch.
+
+  # DO THIS AFTER CREATING ORPHAN BRANCH AS WELL???
   git reset --hard HEAD
   git clean -fd
 fi
@@ -158,22 +153,19 @@ fi
 # the branch names. We must handle both cases. Note that the 'prod' environment will have a branch name suffix
 # of 'master'.
 for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
-  if echo "${ENV_OR_BRANCH}" | grep -q "${CUSTOMER_HUB}"; then
-    GIT_BRANCH="${ENV_OR_BRANCH}"
-    DEFAULT_CDE_BRANCH="${CUSTOMER_HUB}"
+  # Branches are suffixed with the branch name for upgrades, so just grab the last part
+  ENV_OR_BRANCH_SUFFIX="${ENV_OR_BRANCH##*-}"
 
-    ENV_OR_BRANCH_SUFFIX="${CUSTOMER_HUB}"
-    ENV="${CUSTOMER_HUB}"
+  # For production, either the branch is 'master' or 'upgrade-version-master'
+  if test "${ENV_OR_BRANCH_SUFFIX}" = "prod" || test "${ENV_OR_BRANCH_SUFFIX}" = 'master'; then
+    GIT_BRANCH='master'
+    DEFAULT_CDE_BRANCH='master'
+    ENV='prod'
+  # For all other environments, the original branch is always the suffix, and the git branch is passed in
   else
-    test "${ENV_OR_BRANCH}" = 'prod' &&
-        GIT_BRANCH='master' ||
-        GIT_BRANCH="${ENV_OR_BRANCH}"
-    DEFAULT_CDE_BRANCH="${GIT_BRANCH##*-}"
-
-    ENV_OR_BRANCH_SUFFIX="${ENV_OR_BRANCH##*-}"
-    test "${ENV_OR_BRANCH_SUFFIX}" = 'master' &&
-        ENV='prod' ||
-        ENV="${ENV_OR_BRANCH_SUFFIX}"
+    GIT_BRANCH="${ENV_OR_BRANCH}"
+    DEFAULT_CDE_BRANCH="{ENV_OR_BRANCH_SUFFIX}"
+    ENV="${ENV_OR_BRANCH_SUFFIX}"
   fi
 
   echo "Processing branch '${GIT_BRANCH}' for environment '${ENV}' and default branch '${DEFAULT_CDE_BRANCH}'"
@@ -218,65 +210,52 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     echo "Branch ${GIT_BRANCH} does not exist on server."
   fi
 
-  if "${IS_PRIMARY}"; then
-    # Clean-up everything in the repo.
-    echo "Cleaning up ${PWD}"
-    dir_deep_clean "${PWD}"
-
-    if "${IS_PROFILE_REPO}" || "${INCLUDE_PROFILES_IN_CSR}"; then
-      # Copy the base files into the repo.
-      src_dir="${GENERATED_CODE_DIR}/${PROFILE_REPO_DIR}"
-      echo "Copying base files from ${src_dir} to ${PWD}"
-      cp "${src_dir}"/.gitignore ./
-      cp "${src_dir}"/update-profile-wrapper.sh ./
-
-      # Copy the profiles.
-      mkdir -p "${PROFILES_DIR}"
-
-      # Copy the profiles.
-      src_dir="${GENERATED_CODE_DIR}/${PROFILE_REPO_DIR}/${PROFILES_DIR}/${ENV_OR_BRANCH}/"
-      echo "Copying ${src_dir} to ${PROFILES_DIR}"
-      find "${src_dir}" -maxdepth 1 -mindepth 1 -type d -exec cp -pr {} "${PROFILES_DIR}"/ \;
-    fi
-
-    if ! "${IS_PROFILE_REPO}"; then
-      # Copy the base files into the repo.
-      src_dir="${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}"
-      echo "Copying base files from ${src_dir} to ${PWD}"
-      cp "${src_dir}"/.gitignore ./
-      cp "${src_dir}"/update-cluster-state-wrapper.sh ./
-      cp "${src_dir}"/csr-validation.sh ./
-
-      # Copy each app's base files into the repo
-      for app_path in ${APP_PATHS}; do
-        app_name=$(basename "${app_path}")
-
-        # Make the app dir
-        mkdir -p "${app_name}"
-
-        # Copy base files into the app directory.
-        src_dir="${app_path}"
-        echo "Copying base files from ${src_dir} to ${app_name}"
-        find "${src_dir}" -type f -maxdepth 1 -exec cp {} "${app_name}" \;
-
-        # Copy the base directory, which is common code for all regions.
-        src_dir="${app_path}/${BASE_DIR}"
-        echo "Copying ${src_dir} to ${app_name}"
-        cp -pr "${src_dir}" "${app_name}/"
-        
-      done
-    fi
-
-    # Last but not least, stick the version of Beluga into a version.txt file.
-    beluga_version="$(find "${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}/${ENV_OR_BRANCH}/${K8S_CONFIGS_DIR}" \
-      -name env_vars -exec grep '^K8S_GIT_BRANCH=' {} \; | cut -d= -f2)"
-    echo "Beluga version is ${beluga_version} for environment ${ENV}"
-    echo "${beluga_version}" > version.txt
-  fi
+  # Clean-up everything in the repo.
+  echo "Cleaning up ${PWD}"
+  dir_deep_clean "${PWD}"
 
   if "${IS_PROFILE_REPO}"; then
+    # Copy the base files into the repo.
+    src_dir="${GENERATED_CODE_DIR}/${PROFILE_REPO_DIR}"
+    echo "Copying base files from ${src_dir} to ${PWD}"
+    cp "${src_dir}"/.gitignore ./
+    cp "${src_dir}"/update-profile-wrapper.sh ./
+
+    # Copy the profiles.
+    mkdir -p "${PROFILES_DIR}"
+
+    # Copy the profiles.
+    src_dir="${GENERATED_CODE_DIR}/${PROFILE_REPO_DIR}/${PROFILES_DIR}/${ENV_OR_BRANCH}/"
+    echo "Copying ${src_dir} to ${PROFILES_DIR}"
+    find "${src_dir}" -maxdepth 1 -mindepth 1 -type d -exec cp -pr {} "${PROFILES_DIR}"/ \;
+
     commit_msg="Initial commit of profile code for environment '${ENV}' - ping-cloud-base@${PCB_COMMIT_SHA}"
-  else
+  elif ! "${IS_PROFILE_REPO}"; then
+    # Copy the base files into the repo.
+    src_dir="${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}"
+    echo "Copying base files from ${src_dir} to ${PWD}"
+    cp "${src_dir}"/.gitignore ./
+    cp "${src_dir}"/update-cluster-state-wrapper.sh ./
+    cp "${src_dir}"/csr-validation.sh ./
+
+    # Copy each app's base files into the repo
+    for app_path in ${APP_PATHS}; do
+      app_name=$(basename "${app_path}")
+
+      # Make the app dir
+      mkdir -p "${app_name}"
+
+      # Copy base files into the app directory.
+      src_dir="${app_path}"
+      echo "Copying base files from ${src_dir} to ${app_name}"
+      find "${src_dir}" -type f -maxdepth 1 -exec cp {} "${app_name}" \;
+
+      # Copy the base directory, which is common code for all regions.
+      src_dir="${app_path}/${BASE_DIR}"
+      echo "Copying ${src_dir} to ${app_name}"
+      cp -pr "${src_dir}" "${app_name}/"
+    done
+
     # Copy each app's region files into the repo
     for app_path in ${APP_PATHS}; do
       app_name=$(basename "${app_path}")
@@ -296,6 +275,12 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     commit_msg="Initial commit of k8s code for environment '${ENV}' in region '${region}' - ping-cloud-base@${PCB_COMMIT_SHA}"
   fi
 
+  # Last but not least, stick the version of Beluga into a version.txt file.
+  beluga_version="$(find "${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}/${ENV_OR_BRANCH}/${K8S_CONFIGS_DIR}" \
+    -name env_vars -exec grep '^K8S_GIT_BRANCH=' {} \; | cut -d= -f2)"
+  echo "Beluga version is ${beluga_version} for environment ${ENV}"
+  echo "${beluga_version}" > version.txt
+
   if ! ${DISABLE_GIT}; then
     echo "Adding commit to repo: ${commit_msg}"
     git add .
@@ -306,12 +291,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     push_with_retries "${PUSH_RETRY_COUNT}" "${GIT_BRANCH}"
   else
     echo "Not pushing changes to the server for branch '${GIT_BRANCH}' - PUSH_TO_SERVER set to false or DISABLE_GIT set to true"
-  fi
-
-  if ! "${QUIET}"; then
-    echo
-    echo ---
-    echo
   fi
 done
 
