@@ -176,7 +176,7 @@ global:
 pgoBackupBucketName: "${PGO_BACKUP_BUCKET_NAME}"
 
 # pdMonitorLogUrl is the customer-specific monitor-log URL for region
-pdMonitorLogUrl: "${PD_MONITOR_BUCKET_URL}"
+pdMonitorBucketUrl: "${PD_MONITOR_BUCKET_URL}"
 
 # userBaseDN is the variable used by Ping products
 userBaseDN: "${USER_BASE_DN}"
@@ -242,7 +242,7 @@ pfMaxYgen: ${PF_MAX_YGEN}
 
 # This variable's value will make it onto the branding for the PF admin console and
 # will include the name of the environment and the region where it's deployed.
-pfAdminConsoleEnvironment: "${ADMIN_CONSOLE_BRANDING}"
+adminConsoleBranding: "${ADMIN_CONSOLE_BRANDING}"
 
 ############################################################
 # PingAccess variables for environment

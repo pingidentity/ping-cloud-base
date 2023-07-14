@@ -31,6 +31,7 @@ _Changes:_
 
 - [X] PDO-4606 Create a new init container to upgrade PA and PA-WAS and mount volume to admin pod once upgrade is successful
 - [X] PDO-4779 Modify seal.sh script to work for microservices
+- [X] PDO-4868 Update update-cluster-state script for MonoRepo
 - [X] PDO-4896 Update ping-cloud-base karpenter version to v0.28.1
 - [X] PDO-5110 OpenSearch migration: Install Opensearch side-by-side with Elastic
 - [X] PDO-5112 OpenSearch migration: Migrate index templates
