@@ -29,6 +29,7 @@
 ALL_ENVIRONMENTS='dev test stage prod customer-hub'
 BASE_DIR='base'
 CLUSTER_STATE_REPO_DIR='cluster-state'
+CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD 2> /dev/null)"
 DISABLE_GIT=${DISABLE_GIT:-false}
 GENERATED_CODE_DIR="${GENERATED_CODE_DIR:-/tmp/sandbox}"
 INCLUDE_PROFILES_IN_CSR="${INCLUDE_PROFILES_IN_CSR:-false}"
@@ -42,6 +43,7 @@ PUSH_RETRY_COUNT="${PUSH_RETRY_COUNT:-30}"
 PUSH_TO_SERVER="${PUSH_TO_SERVER:-true}"
 # Quiet mode where pretty console-formatting is omitted.
 QUIET="${QUIET:-false}"
+REMOTE_BRANCHES=""
 SUPPORTED_ENVIRONMENT_TYPES="${SUPPORTED_ENVIRONMENT_TYPES:-${ALL_ENVIRONMENTS}}"
 ########################################################################################################################
 # Delete all files and directories under the provided directory. All hidden files and directories directly under the
@@ -114,7 +116,6 @@ if ! ${DISABLE_GIT}; then
 fi
 
 # This is a destructive script by design. Add a warning to the user if local changes are being destroyed though.
-CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD 2> /dev/null)"
 if test "${CURRENT_BRANCH}" && test -n "$(git status -s)" && ! ${DISABLE_GIT}; then
   echo "WARN: The following local changes in current branch '${CURRENT_BRANCH}' will be destroyed:"
   git status
@@ -126,8 +127,6 @@ if test "${CURRENT_BRANCH}" && test -n "$(git status -s)" && ! ${DISABLE_GIT}; t
   git reset --hard HEAD
   git clean -fd
 fi
-
-REMOTE_BRANCHES=""
 
 # Get a list of the remote branches from the server.
 if ! ${DISABLE_GIT}; then
@@ -204,6 +203,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   fi
 
   # Clean-up everything in the repo.
+  # TODO: cannot clean up everything if this is multi-region, otherwise for primary we don't care about the remote repo
   echo "Cleaning up ${PWD}"
   dir_deep_clean "${PWD}"
 
