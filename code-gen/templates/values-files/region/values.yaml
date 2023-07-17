@@ -21,6 +21,7 @@ global:
   irsaPaAnnotationKeyValue: "${IRSA_PA_ANNOTATION_KEY_VALUE}"
   irsaPdAnnotationKeyValue: "${IRSA_PD_ANNOTATION_KEY_VALUE}"
   irsaPfAnnotationKeyValue: "${IRSA_PF_ANNOTATION_KEY_VALUE}"
+  irsaCwAgentAnnotationKeyValue: "${IRSA_CWAGENT_ANNOTATION_KEY_VALUE}"
 
   # nlbNgxPublicAnnotationKeyValue is the annotation used by ingress-nginx service in ingress-nginx-public namespace
   nlbNgxPublicAnnotationKeyValue: "${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
