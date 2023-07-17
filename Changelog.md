@@ -24,6 +24,7 @@
 - [need before EKS 1.26] autoscaling/v2beta2 API version of HorizontalPodAutoscaler is no longer served as of v1.25
 - Update PGO dashboards to use grafana CRD
 - [EKS 1.26] service.alpha.kubernetes.io/tolerate-unready-endpoints (deprecated)
+- Add CW Agent IRSA role
 - Update PCB with toolkit image used as replacement for bitnami/kubectl
 - Modified git-ops-command.sh script to handle the SIGTERM signal appropriately.
 - Upgrade Kustomize to 5.0.3
@@ -40,6 +41,7 @@ _Changes:_
 - [X] PDO-5113 OpenSearch migration: Change logstash pipelines to send data to OS instead ES
 - [X] PDO-5114 OpenSearch migration: Migrate PA dashboard
 - [X] PDO-5116 OpenSearch migration: Migrate PF dashboards
+- [X] PDO-5135 Implement IRSA role for aws cloud watch agent
 - [X] PDO-5145 OpenSearch migration: Develop index migration job
 - [X] PDO-5152 OpenSearch migration: Rewrite bootstrap scripts
 - [X] PDO-5158 Configure PA WAS from Shared P1 Tenant
