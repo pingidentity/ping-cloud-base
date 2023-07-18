@@ -1323,7 +1323,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   ENV_PROFILES_DIR="${PROFILES_DIR}/${ENV_OR_BRANCH}"
   mkdir -p "${ENV_PROFILES_DIR}"
 
-  cp -pr ../profiles/aws/. "${ENV_PROFILES_DIR}"
+  cp -pr profiles/. "${ENV_PROFILES_DIR}"
 
   if test "${ENV}" = "${CUSTOMER_HUB}"; then
     echo "CHUB deploy identified, retaining only PingCentral and PingAccess profiles"
