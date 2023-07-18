@@ -22,7 +22,7 @@ Use the following steps for testing server profiles during development.
    3.b. Each product uses its own directory for SERVER_PROFILE_PATH by default. It is typically in the format
         profiles/${CONFIG_PARENT_DIR}/${PRODUCT}. CONFIG_PARENT_DIR is the parent directory within which the profiles
         for the different products exist, e.g. dev, aws, etc. PRODUCT is the well-known DevOps product name for the
-        Ping apps, e.g. pingdirectory, pingfederate, etc. For example, pingdirectory uses profiles/aws/pingdirectory by
+        Ping apps, e.g. pingdirectory, pingfederate, etc. For example, pingdirectory uses profiles/pingdirectory by
         default. So the only variable in this format is CONFIG_PARENT_DIR, and it can be supplied as a variable to the
         dev-env.sh script, if desired.
 
