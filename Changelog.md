@@ -95,6 +95,7 @@
 - Update healthcheck-httpbin-pa and healthcheck-httpbin-pa-was hostnames to use PRIMARY_DNS_ZONE
 - Remove healthcheck-httpbin-pa from child regions
 - Remove integration kits from PingFederate deployment (excluding pf-pingid) and upgrade opentoken-adapter to v2.7.2
+- Add REGION env var for healthcheck probes in customer hub
 
 _Changes:_
 
@@ -220,6 +221,7 @@ _Changes:_
 - [X] PDO-5648 [PORT PDO-5508] Extend PingDirectory replica count to up to 50 pods per region and 11 base DNs if needed
 - [X] PDO-5650 set NOTIFICATION_ENABLED to True by default
 - [X] PDO-5690 v1.18 Prepare for Ability to Update Upgrade Scripts w/o Release of New Beluga Version
+- [X] PDO-5804 Add REGION env var for healthcheck probes in customer hub
 
 ### 1.17.0.0
 
