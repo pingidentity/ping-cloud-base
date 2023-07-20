@@ -94,6 +94,7 @@
 - Backup scripts notifications are enabled by default
 - Update healthcheck-httpbin-pa and healthcheck-httpbin-pa-was hostnames to use PRIMARY_DNS_ZONE
 - Remove healthcheck-httpbin-pa from child regions
+- Remove integration kits from PingFederate deployment (excluding pf-pingid) and upgrade opentoken-adapter to v2.7.2
 
 _Changes:_
 
@@ -179,6 +180,7 @@ _Changes:_
 - [X] PDO-5217 Increase replica count (min=7, max=9) within prod/large for Nginx Ingress Controller
 - [X] PDO-5221 'Field "responseCode.keyword" not found' on the 'Ping Access - Response Codes Over Time' visualization
 - [X] PDO-5223 Remove pa-was config for ArgoCD from non customer-hub CDEs
+- [X] PDD-5226 Remove integration kits from PingFederate deployment (excluding pf-pingid) and upgrade opentoken-adapter to v2.7.2
 - [X] PDO-5232 Configure Fluent-bit kubernetes filter to prevent caching for statefulsets
 - [X] PDO-5248 Bug fix,remove-from-secondary-patch.yaml not getting applied
 - [X] PDO-5255 Allow configuration of certain ArgoCD values per-CDE
