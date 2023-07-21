@@ -80,6 +80,7 @@
 - Add pingaccess-was-license secret placeholder entry to CHUB
 - Increase replica count (min=7, max=9) within prod/large for Nginx Ingress Controller
 - Backup monitor history everyday for PingDirectory
+- Create backends dynamically through manage-profile for PingDirectory
 - PA-WAS ext ingress is missing from non-customer-hub environments
 - Update kubectl to 1.24.0 for EKS 1.25
 - Update cert-manager to v1.11.2 for EKS 1.25
@@ -93,6 +94,8 @@
 - Backup scripts notifications are enabled by default
 - Update healthcheck-httpbin-pa and healthcheck-httpbin-pa-was hostnames to use PRIMARY_DNS_ZONE
 - Remove healthcheck-httpbin-pa from child regions
+- Remove integration kits from PingFederate deployment (excluding pf-pingid) and upgrade opentoken-adapter to v2.7.2
+- Add REGION env var for healthcheck probes in customer hub
 
 _Changes:_
 
@@ -178,6 +181,7 @@ _Changes:_
 - [X] PDO-5217 Increase replica count (min=7, max=9) within prod/large for Nginx Ingress Controller
 - [X] PDO-5221 'Field "responseCode.keyword" not found' on the 'Ping Access - Response Codes Over Time' visualization
 - [X] PDO-5223 Remove pa-was config for ArgoCD from non customer-hub CDEs
+- [X] PDD-5226 Remove integration kits from PingFederate deployment (excluding pf-pingid) and upgrade opentoken-adapter to v2.7.2
 - [X] PDO-5232 Configure Fluent-bit kubernetes filter to prevent caching for statefulsets
 - [X] PDO-5248 Bug fix,remove-from-secondary-patch.yaml not getting applied
 - [X] PDO-5255 Allow configuration of certain ArgoCD values per-CDE
@@ -207,6 +211,7 @@ _Changes:_
 - [X] PDO-5474 upgrade Postgres Operator (PGO) to 5.3.1 to support EKS v1.25
 - [X] PDO-5510 Update all healthchecks to use k8s service endpoints
 - [X] PDO-5525 Add PGO Backups Jobs TTL
+- [X] PDO-5547 Create backends dynamically through manage-profile for PingDirectory
 - [X] PDO-5553 Bugfix: remove-from-secondary-patch is broken for logstash-pipeline-alerts
 - [X] PDO-5556 Fix PingAccess healthchecks
 - [X] PDO-5610 Add BACKENDS_TO_RESTORE variable to restore-op.sh script for running PingDirectory restore job
@@ -216,6 +221,7 @@ _Changes:_
 - [X] PDO-5648 [PORT PDO-5508] Extend PingDirectory replica count to up to 50 pods per region and 11 base DNs if needed
 - [X] PDO-5650 set NOTIFICATION_ENABLED to True by default
 - [X] PDO-5690 v1.18 Prepare for Ability to Update Upgrade Scripts w/o Release of New Beluga Version
+- [X] PDO-5804 Add REGION env var for healthcheck probes in customer hub
 
 ### 1.17.0.0
 

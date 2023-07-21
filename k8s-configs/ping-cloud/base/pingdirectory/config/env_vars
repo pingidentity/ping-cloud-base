@@ -13,18 +13,6 @@ ENCRYPTION_PASSWORD_FILE=/usr/local/secrets/encryption-password
 ADS_CRT_FILE=/usr/local/secrets/ads.crt
 ADS_KEY_FILE=/usr/local/secrets/ads.key
 
-USER_BACKEND_ID=userRoot
-
-########################################################################################################################
-#  Multiple Backend IDs :
-#
-#  NOTE : Currently 5 multiple backends(userRoot, userRoot_2, 3 ..userRoot_5) are supported.
-########################################################################################################################
-USER_BACKEND_ID_2=userRoot_2
-USER_BACKEND_ID_3=userRoot_3
-USER_BACKEND_ID_4=userRoot_4
-USER_BACKEND_ID_5=userRoot_5
-
 DISABLE_ALL_OLDER_USER_BASE_DN=true
 
 REPLICATION_BASE_DNS=o=platformconfig;o=appintegrations
@@ -92,6 +80,9 @@ JAVA_AGENT_OPTS=-javaagent:/opt/staging/jmx_prometheus_javaagent-0.14.0.jar=8080
 ADMIN_BIND_DN=cn=admin
 SYNC_BIND_DN=cn=sync
 CHANGELOG_SYNC_MAX_AGE=2h
+
+# Flag to skip rebuilding backend indexes
+SKIP_INDEX_BUILD=false
 
 # Overriding these numbers will force PingDirectory to produce duplicate server IDs if not fully tested.
 # As of now PD_POD_LIMIT_INDEX=1000 and PD_BASE_DN_LIMIT_INDEX=20 will allow up to 50 pingdirectory pods per cluster with up to 11
