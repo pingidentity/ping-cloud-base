@@ -30,5 +30,8 @@
     --instanceName "${LOCAL_INSTANCE_NAME}" \
     --location "${REGION}" \
     --doNotStart \
-    --no-prompt
-
+    --no-prompt \
+    --ldapsPort ${LDAPS_PORT} \
+    --httpsPort ${HTTPS_PORT} \
+    --enableStartTLS \
+    --generateSelfSignedCertificate
