@@ -17,19 +17,18 @@
 # --rootUserPassword argument, and the --encryptDataWithRandomPassphrase
 # argument can be used to encrypt data with a randomly generated key.
     --verbose \
-    --acceptLicense \
-    --skipPortCheck \
+    --acceptLicense  \
     --licenseKeyFile "${LICENSE_KEY_FILE}" \
-    --location "${REGION}" \
-    --instanceName "${LOCAL_INSTANCE_NAME}" \
+    --baseDN ${USER_BASE_DN}  \
+    --localHostName "${LOCAL_INSTANCE_NAME}" \
+    --skipHostnameCheck  \
     --ldapPort ${LDAP_PORT} \
-    --ldapsPort ${LDAPS_PORT} \
-    --httpsPort ${HTTPS_PORT} \
-    --enableStartTLS \
-    --maxHeapSize "${MAX_HEAP_SIZE}" --jvmTuningParameter AGGRESSIVE \
-    --generateSelfSignedCertificate \
-    --encryptDataWithPassphraseFromFile "${ENCRYPTION_PASSWORD_FILE}" \
+    --skipPortCheck
     --rootUserDN "${ROOT_USER_DN}" \
     --rootUserPasswordFile "${ROOT_USER_PASSWORD_FILE}" \
-    --interServerCertPEMFile "${ADS_CRT_FILE}" \
-    --interServerCertPrivateKeyFile "${ADS_KEY_FILE}"
+    --maxHeapSize 768m  \
+    --instanceName "${LOCAL_INSTANCE_NAME}" \
+    --location "${REGION}" \
+    --doNotStart \
+    --no-prompt
+
