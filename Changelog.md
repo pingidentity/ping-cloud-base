@@ -30,6 +30,7 @@
 - Upgrade Kustomize to 5.0.3
 - Re-enable PingCentral for CI/CD dev environments which are now deployed using generate-cluster-state.sh
 - Migrated 'profiles' directory away from root of PCB, and into 'code-gen' root dir.  Also removed 'aws' subdir.
+- enrichment-bootstrap Docker image scripts refactoring
 
 _Changes:_
 
@@ -76,6 +77,7 @@ _Changes:_
 - [X] PDO-5558 Mirror our own version of newrelic images
 - [X] PDO-5571 Update nginx-ingress-controller to v1.6.4 to support EKS 1.26
 - [X] PDO-5601 os-dashboards-pf configMap breaks developer, and new ci/cd deploys
+- [X] PDO-5647 Handle SIGTERM properly in enrichment-bootstrap
 - [X] PDO-5654 Fluentbit Kubernetes filter is not adding metadata into some events
 - [X] PDO-5655 OS: Logs for the pf-transaction-* index are not filtered
 - [X] PDO-5659 git-ops-command.sh responds properly to SIGTERM

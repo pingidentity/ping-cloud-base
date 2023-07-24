@@ -49,13 +49,9 @@ spec:
             allowPrivilegeEscalation: false
           image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v1.19-release-branch-latest
           imagePullPolicy: Always
-          workingDir: /scripts
-          command:
-            - sh
-            - $(CONTAINER_NAME).sh
+          args:
+            - create_enrichment_cache_files
           env:
-            - name: CONTAINER_NAME
-              value: create-enrichment-cache-files
             - name: ENRICHMENT_TOR_FEED_URL
               value: 'https://check.torproject.org/exit-addresses'
             - name: ENRICHMENT_ALIEN_VAULT_FEED_URL
@@ -235,15 +231,16 @@ spec:
               mountPath: /usr/share/logstash/certs
         # Sidecar enrichment container which updates Logstash dictionaries
         - name: enrichment-sidecar
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
           image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v1.19-release-branch-latest
           imagePullPolicy: Always
-          workingDir: /scripts
-          command:
-            - sh
-            - $(CONTAINER_NAME).sh
+          args:
+            - enrichment_sidecar
           env:
-            - name: CONTAINER_NAME
-              value: enrichment-sidecar
             - name: ENRICHMENT_TOR_FEED_URL
               value: 'https://check.torproject.org/exit-addresses'
             - name: ENRICHMENT_ALIEN_VAULT_FEED_URL
