@@ -23,7 +23,7 @@
     --localHostName "${LOCAL_INSTANCE_NAME}" \
     --skipHostnameCheck  \
     --ldapPort ${LDAP_PORT} \
-    --skipPortCheck
+    --skipPortCheck \
     --rootUserDN "${ROOT_USER_DN}" \
     --rootUserPasswordFile "${ROOT_USER_PASSWORD_FILE}" \
     --maxHeapSize 768m  \
