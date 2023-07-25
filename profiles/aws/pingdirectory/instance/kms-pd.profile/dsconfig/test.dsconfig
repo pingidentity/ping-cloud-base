@@ -1,0 +1,17 @@
+dsconfig create-external-server \
+    --server-name AWS \
+    --type amazon-aws \
+    --set authentication-method:irsa-role \
+    --set aws-region-name:us-west-2
+
+dsconfig create-cipher-stream-provider \
+    --provider-name kms-name-but-doesnt-matter \
+    --type amazon-key-management-service \
+    --set "description:testing kms in aws" \
+    --set enabled:true \
+    --set aws-region-name:us-west-2 \
+    --set kms-encryption-key-arn:"34a9faf8-0a70-4837-a4c5-d0be05cb82d9"
+
+dsconfig set-global-configuration-prop \
+     --set "encryption-settings-cipher-stream-provider:kms-name-but-doesnt-matter" \
+     --set encrypt-data:true
