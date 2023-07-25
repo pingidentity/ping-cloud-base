@@ -39,44 +39,32 @@
                         {
                            "range": {
                               "@timestamp": {
-                                 "gte": "{{period_end}}||-1m",
+                                 "gte": "{{period_end}}||-90s",
                                  "lte": "{{period_end}}",
                                  "format": "epoch_millis"
                               }
                            }
                         },
                         {
-                          "bool": {
-                            "filter": [
-                              {
-                                "multi_match": {
-                                  "type": "phrase",
-                                  "query": "com.pingidentity.adapters.pingid.DefaultHeartbeatService",
-                                  "lenient": true
-                                }
-                              },
-                              {
-                                "multi_match": {
-                                  "type": "phrase",
-                                  "query": "ERROR",
-                                  "lenient": true
-                                }
-                              },
-                                            {
-                                "multi_match": {
-                                  "type": "phrase",
-                                  "query": "Connection refused",
-                                  "lenient": true
-                                }
-                              }
-                            ]
+                           "term": {
+                             "className.keyword": "com.pingidentity.adapters.pingid.DefaultHeartbeatService"
+                           }
+                         },
+                         {
+                            "match_phrase": {
+                              "message": "Connection refused"
+                            }
+                          },
+                          {
+                            "term": {
+                              "logLevel.keyword": "ERROR"
+                            }
+                          },
+                          {
+                            "term": {
+                              "kubernetes.labels.role.keyword": "pingfederate-engine"
+                            }
                           }
-                        },
-                        {
-                          "match_phrase": {
-                            "kubernetes.labels.role": "pingfederate-engine"
-                          }
-                        }
                      ]
                   }
                }
@@ -105,12 +93,12 @@
                     "name": "SREAPPALERTS",
                     "destination_id": "sns_sreappalerts",
                     "message_template": {
-                      "source": "Alert '{{ctx.monitor.name}}' is active:\n- Value: {{ctx.results.0.hits.total.value}}\n- Conditions Met: Number of matching documents is greater than 1 over 1m\n- Timestamp: {{ctx.periodEnd}}",
+                      "source": "{\n  \"alert\": \"{{ctx.monitor.name}}\",\n  \"documents\": {{ctx.results.0.hits.total.value}},\n  \"cluster\": \"{{#ctx.newAlerts}}{{bucket_keys}}{{/ctx.newAlerts}}{{#ctx.dedupedAlerts}}{{bucket_keys}}{{/ctx.dedupedAlerts}}\",\n  \"timestamp\": \"{{ctx.periodEnd}}\",\n  \"runbook\": \"https://pingidentity.atlassian.net/wiki/spaces/ST/pages/154796220/ALERT+PingFederate+PingID+Connection+Lost+in+CDE\"\n}",
                       "lang": "mustache"
                     },
                     "throttle_enabled": false,
                     "subject_template": {
-                      "source": "ALERT: {{ctx.monitor.name}} in {{#ctx.newAlerts}}{{bucket_keys}}{{/ctx.newAlerts}}{{#ctx.dedupedAlerts}}{{bucket_keys}}{{/ctx.dedupedAlerts}}",
+                      "source": "ALERT: {{ctx.monitor.name}}",
                       "lang": "mustache"
                     },
                     "action_execution_policy": {
@@ -128,12 +116,12 @@
                     "name": "CUSTOMERHUB",
                     "destination_id": "sns_customerhub",
                     "message_template": {
-                      "source": "Alert '{{ctx.monitor.name}}' is active:\n- Value: {{ctx.results.0.hits.total.value}}\n- Conditions Met: Number of matching documents is greater than 1 over 1m\n- Timestamp: {{ctx.periodEnd}}",
+                      "source": "{\n  \"alert\": \"{{ctx.monitor.name}}\",\n  \"documents\": {{ctx.results.0.hits.total.value}},\n  \"cluster\": \"{{#ctx.newAlerts}}{{bucket_keys}}{{/ctx.newAlerts}}{{#ctx.dedupedAlerts}}{{bucket_keys}}{{/ctx.dedupedAlerts}}\",\n  \"timestamp\": \"{{ctx.periodEnd}}\",\n  \"runbook\": \"https://pingidentity.atlassian.net/wiki/spaces/ST/pages/154796220/ALERT+PingFederate+PingID+Connection+Lost+in+CDE\"\n}",
                       "lang": "mustache"
                     },
                     "throttle_enabled": false,
                     "subject_template": {
-                      "source": "ALERT: {{ctx.monitor.name}} in {{#ctx.newAlerts}}{{bucket_keys}}{{/ctx.newAlerts}}{{#ctx.dedupedAlerts}}{{bucket_keys}}{{/ctx.dedupedAlerts}}",
+                      "source": "ALERT: {{ctx.monitor.name}}",
                       "lang": "mustache"
                     },
                     "action_execution_policy": {
