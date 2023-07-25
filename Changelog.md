@@ -30,6 +30,7 @@
 - Upgrade Kustomize to 5.0.3
 - Re-enable PingCentral for CI/CD dev environments which are now deployed using generate-cluster-state.sh
 - Migrated 'profiles' directory away from root of PCB, and into 'code-gen' root dir.  Also removed 'aws' subdir.
+- Improve alerts. JSON format + link to runbook
 - enrichment-bootstrap Docker image scripts refactoring
 
 _Changes:_
@@ -72,6 +73,7 @@ _Changes:_
 - [X] PDO-5434 Upgrade Kustomize to 5.0.3
 - [X] PDO-5435 Update values.yaml files structure
 - [X] PDO-5467 When rolling pods NLB connection draining isn't occuring causing service interruption
+- [X] PDO-5527 OpenSearch Post-Migration: Alerting improvements
 - [X] PDO-5543 New Prometheus alerts for Kubernetes metrics
 - [X] PDO-5549 Update kube-state-metrics cluster tool to v2.8.1 for EKS 1.26
 - [X] PDO-5558 Mirror our own version of newrelic images

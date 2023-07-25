@@ -39,30 +39,22 @@
                         {
                            "range": {
                               "@timestamp": {
-                                 "gte": "{{period_end}}||-1m",
+                                 "gte": "{{period_end}}||-90s",
                                  "lte": "{{period_end}}",
                                  "format": "epoch_millis"
                               }
                            }
                         },
                         {
-                          "bool": {
-                            "filter": [
-                              {
-                                "multi_match": {
-                                  "type": "phrase",
-                                  "query": "Profile Message ID Missing",
-                                  "lenient": true
-                                }
-                              }
-                            ]
-                          }
-                        },
-                        {
-                          "match_phrase": {
-                            "kubernetes.labels.role": "pingfederate-engine"
-                          }
-                        }
+                           "match_phrase": {
+                             "message": "Profile Message ID Missing"
+                           }
+                         },
+                         {
+                           "term": {
+                             "kubernetes.labels.role.keyword": "pingfederate-engine"
+                           }
+                         }
                      ]
                   }
                }
@@ -91,12 +83,12 @@
                     "name": "SREAPPALERTS",
                     "destination_id": "sns_sreappalerts",
                     "message_template": {
-                      "source": "Alert '{{ctx.monitor.name}}' is active:\n- Value: {{ctx.results.0.hits.total.value}}\n- Conditions Met: Number of matching documents is greater than 1 over 1m\n- Timestamp: {{ctx.periodEnd}}",
+                      "source": "{\n  \"alert\": \"{{ctx.monitor.name}}\",\n  \"documents\": {{ctx.results.0.hits.total.value}},\n  \"cluster\": \"{{#ctx.newAlerts}}{{bucket_keys}}{{/ctx.newAlerts}}{{#ctx.dedupedAlerts}}{{bucket_keys}}{{/ctx.dedupedAlerts}}\",\n  \"timestamp\": \"{{ctx.periodEnd}}\",\n  \"runbook\": \"https://pingidentity.atlassian.net/wiki/spaces/ST/pages/154796228/ALERT+PingFederate+Profile+Message+Missing+ID+in+CDE\"\n}",
                       "lang": "mustache"
                     },
                     "throttle_enabled": false,
                     "subject_template": {
-                      "source": "ALERT: {{ctx.monitor.name}} in {{#ctx.newAlerts}}{{bucket_keys}}{{/ctx.newAlerts}}{{#ctx.dedupedAlerts}}{{bucket_keys}}{{/ctx.dedupedAlerts}}",
+                      "source": "ALERT: {{ctx.monitor.name}}",
                       "lang": "mustache"
                     },
                     "action_execution_policy": {
@@ -114,12 +106,12 @@
                     "name": "CUSTOMERHUB",
                     "destination_id": "sns_customerhub",
                     "message_template": {
-                      "source": "Alert '{{ctx.monitor.name}}' is active:\n- Value: {{ctx.results.0.hits.total.value}}\n- Conditions Met: Number of matching documents is greater than 1 over 1m\n- Timestamp: {{ctx.periodEnd}}",
+                      "source": "{\n  \"alert\": \"{{ctx.monitor.name}}\",\n  \"documents\": {{ctx.results.0.hits.total.value}},\n  \"cluster\": \"{{#ctx.newAlerts}}{{bucket_keys}}{{/ctx.newAlerts}}{{#ctx.dedupedAlerts}}{{bucket_keys}}{{/ctx.dedupedAlerts}}\",\n  \"timestamp\": \"{{ctx.periodEnd}}\",\n  \"runbook\": \"https://pingidentity.atlassian.net/wiki/spaces/ST/pages/154796228/ALERT+PingFederate+Profile+Message+Missing+ID+in+CDE\"\n}",
                       "lang": "mustache"
                     },
                     "throttle_enabled": false,
                     "subject_template": {
-                      "source": "ALERT: {{ctx.monitor.name}} in {{#ctx.newAlerts}}{{bucket_keys}}{{/ctx.newAlerts}}{{#ctx.dedupedAlerts}}{{bucket_keys}}{{/ctx.dedupedAlerts}}",
+                      "source": "ALERT: {{ctx.monitor.name}}",
                       "lang": "mustache"
                     },
                     "action_execution_policy": {
