@@ -629,6 +629,21 @@ organize_code_for_csr() {
       # Rename to the actual region nick name.
       mv "${app_target_dir}/region" "${app_target_dir}/${REGION_NICK_NAME}"
 
+      # Handle prod vs. non-prod values files
+      case "${ENV}" in
+        dev | test)
+          # delete all prod-values.yaml files
+          find "${app_target_dir}" -type f -name "prod-values.yaml" -exec rm -f {} +
+          ;;
+        stage | prod | customer-hub)
+          # rename prod-values.yaml to values.yaml (overwriting values.yaml if it exists)
+          prod_values_files=$(find "${app_target_dir}" -type f -name "prod-values.yaml")
+          for prod_values_file in ${prod_values_files}; do
+            mv -f "${prod_values_file}" "${prod_values_file//prod-/}"
+          done
+          ;;
+      esac
+
       # Substitute the env vars in the app directories
       substitute_vars "${app_target_dir}" "${REPO_VARS}"
       # TODO: These duplicate calls are needed to substitute the derived variables & the IS_BELUGA_ENV

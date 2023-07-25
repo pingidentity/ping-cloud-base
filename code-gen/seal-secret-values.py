@@ -29,6 +29,7 @@ class SealSecrets:
         self.cert = cert
         self.values_file = values_file
         self.values = self.load_values()
+        self.sealed_secrets = []
 
     def load_values(self) -> dict:
         """
@@ -65,10 +66,6 @@ class SealSecrets:
               KEY: VALUE
         """
 
-        # Check if secrets are already sealed
-        if self.values[GLOBAL_KEY][SEALED_SECRETS_VAR]:
-            raise Exception("Secrets have already been sealed. Update secrets manually.")
-
         # Check that secrets exist
         if not self.values[GLOBAL_KEY][SECRETS_KEY]:
             print("No secrets found to seal")
@@ -83,8 +80,21 @@ class SealSecrets:
                     # Get the value
                     value = self.values[GLOBAL_KEY][SECRETS_KEY][k8s_namespace][k8s_secret][key]
                     if value is not None:
-                        print("Sealing secret '%s, %s, %s'" % (k8s_namespace, k8s_secret, key))
-                        decoded_value = b64.b64decode(value.encode("ascii")).decode("ascii")
+                        # Try to base64 decode the value
+                        try:
+                            decoded_value = b64.b64decode(value.encode("ascii"), validate=True).decode("ascii")
+                        except UnicodeDecodeError as err:
+                            if self.values[GLOBAL_KEY][SEALED_SECRETS_VAR]:
+                                # Value couldn't be base64 decoded, so it may already be sealed or an invalid value
+                                # Move on to the next secret
+                                print("Warning: secret '%s: %s: %s' could not be base64 decoded. It is either already "
+                                      "sealed or an invalid value."
+                                      % (k8s_namespace, k8s_secret, key))
+                                continue
+                            else:
+                                raise Exception("Error sealing secret. See following output:\n%s" % err)
+
+                        print("Sealing secret '%s: %s: %s'" % (k8s_namespace, k8s_secret, key))
 
                         # Run seal secret command to get the sealed value
                         p1 = subprocess.run(args=["kubeseal", "--cert", self.cert, "--raw", "--namespace",
@@ -100,13 +110,17 @@ class SealSecrets:
                         # Update yaml with sealed value
                         self.values[GLOBAL_KEY][SECRETS_KEY][k8s_namespace][k8s_secret][key] = sealed_value
 
+                        # Update sealed secrets list with key
+                        self.sealed_secrets.append("%s: %s: %s" % (k8s_namespace, k8s_secret, key))
+
         # Update sealedSecrets variable to true
         self.values[GLOBAL_KEY][SEALED_SECRETS_VAR] = True
 
         # Write new values.yaml file
         self.write_new_values()
 
-        print("Secrets successfully sealed!")
+        print("The following secrets were successfully sealed:")
+        print(self.sealed_secrets)
 
 
 if __name__ == "__main__":

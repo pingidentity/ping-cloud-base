@@ -73,10 +73,28 @@ class TestSealScript(unittest.TestCase):
                       "seal script returned incorrect error message")
 
     def test_secrets_already_sealed(self):
-        write_values_file({'global': {'sealedSecrets': True, 'secrets': {}}})
+        # Seal some secrets initially
+        write_values_file(get_valid_yaml())
         results = run_seal_script(self.cert_file)
-        self.assertEqual(results.returncode, 1, "seal script succeeded when secrets are already sealed")
-        self.assertIn("Secrets have already been sealed", results.stderr, "seal script returned incorrect response")
+        self.assertEqual(results.returncode, 0, "seal script failed when it should have succeeded")
+        self.assertIn("secrets were successfully sealed", results.stdout, "seal script returned incorrect response")
+
+        # Add a secret & run seal script again
+        p1 = subprocess.run(args=["yq", "eval", "--inplace",
+                                  '.global.secrets.test-ns.test-secret += {"valuethree": "VGhpcyBpcyBhIHRlc3Q="}',
+                                  VALUES_FILE_PATH + "/values.yaml"], capture_output=True, text=True)
+        self.assertEqual(p1.returncode, 0, "could not add additional secret to values.yaml file")
+        results = run_seal_script(self.cert_file)
+        self.assertEqual(results.returncode, 0, "seal script failed when it should have succeeded")
+        self.assertIn("secrets were successfully sealed", results.stdout, "seal script returned incorrect response")
+
+    def test_secret_decode_error(self):
+        write_values_file({'global': {'sealedSecrets': False, 'secrets': {
+            'test-ns': {'test-secret': {'valueone': 'notbase64encoded'}}}}})
+        results = run_seal_script(self.cert_file)
+        self.assertEqual(results.returncode, 1, "seal script succeeded when non-base64encoded value passed")
+        self.assertIn("Error sealing secret. See following output", results.stderr,
+                      "seal script returned incorrect error message")
 
     def test_no_secrets_found(self):
         write_values_file({'global': {'sealedSecrets': False, 'secrets': {}}})
@@ -95,4 +113,4 @@ class TestSealScript(unittest.TestCase):
         write_values_file(get_valid_yaml())
         results = run_seal_script(self.cert_file)
         self.assertEqual(results.returncode, 0, "seal script failed when it should have succeeded")
-        self.assertIn("Secrets successfully sealed!", results.stdout, "seal script returned incorrect response")
+        self.assertIn("secrets were successfully sealed", results.stdout, "seal script returned incorrect response")
