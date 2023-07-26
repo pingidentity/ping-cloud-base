@@ -1,6 +1,7 @@
 dsconfig create-external-server \
     --server-name AWS \
     --type amazon-aws \
+    --set "description:External Server that connects to AWS via IRSA Role" \
     --set authentication-method:irsa-role \
     --set aws-region-name:us-west-2
 
