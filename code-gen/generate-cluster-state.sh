@@ -370,6 +370,7 @@ ${SERVER_PROFILE_PATH}
 ${ENV}
 ${ENVIRONMENT_TYPE}
 ${KUSTOMIZE_BASE}
+${ACCOUNT_TYPE}
 ${LETS_ENCRYPT_SERVER}
 ${USER_BASE_DN}
 ${USER_BASE_DN_2}
@@ -454,9 +455,11 @@ ${ARGOCD_BOOTSTRAP_ENABLED}
 ${ARGOCD_CDE_ROLE_SSM_TEMPLATE}
 ${ARGOCD_CDE_URL_SSM_TEMPLATE}
 ${ARGOCD_ENVIRONMENTS}
+${CLUSTER_ENDPOINT}
 ${CLUSTER_STATE_REPO_BRANCH}
 ${CLUSTER_STATE_REPO_URL}
 ${IRSA_ARGOCD_ANNOTATION_KEY_VALUE}
+${KARPENTER_ROLE_ANNOTATION_KEY_VALUE}
 ${K8S_GIT_BRANCH}
 ${K8S_GIT_URL}
 ${KNOWN_HOSTS_CLUSTER_STATE_REPO}
@@ -896,6 +899,14 @@ fi
 
 # Set Slack-related environment variables and override it's values depending on IS_GA value.
 get_is_ga_variable '/pcpt/stage/is-ga'
+
+# The Kustomize path to determine configuration to use, either ga or non-ga, Default non-ga
+if [[ "${IS_GA}" == "true" ]]; then
+  export ACCOUNT_TYPE='ga'
+else
+  export ACCOUNT_TYPE='non-ga'
+fi
+
 export NON_GA_SLACK_CHANNEL="${NON_GA_SLACK_CHANNEL:-nowhere}"
 # If IS_GA=true, use default Slack channel; if IS_GA=false, use NON_GA_SLACK_CHANNEL value as Slack channel.
 if "${IS_GA}"; then
@@ -1228,11 +1239,11 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   set_var "IRSA_INGRESS_ANNOTATION_KEY_VALUE" "" "${IRSA_BASE_PATH}" "ingress-controller/arn" "${IRSA_TEMPLATE}"
 
   # shellcheck disable=SC2016
-  KARPENTER_ROLE_TEMPLATE='eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role/pcpt/KarpenterControllerRole'
+  KARPENTER_ROLE_TEMPLATE='eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role'
   set_var "KARPENTER_ROLE_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" \
           "${KARPENTER_ROLE_TEMPLATE}/KarpenterControllerRole"
 
-  set_var "CLUSTER_ENDPOINT" "" "${ACCOUNT_BASE_PATH}${ENV}" "/cluster-endpoint"
+  set_var "CLUSTER_ENDPOINT" "" "${ACCOUNT_BASE_PATH}${ENV}" "/cluster_endpoint"
 
   # shellcheck disable=SC2016
   NLB_TEMPLATE='service.beta.kubernetes.io/aws-load-balancer-eip-allocations: ${ssm_value}'
@@ -1251,6 +1262,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   echo "Using CLUSTER_STATE_REPO_BRANCH: ${CLUSTER_STATE_REPO_BRANCH}"
   echo "Using ENVIRONMENT_TYPE: ${ENVIRONMENT_TYPE}"
   echo "Using KUSTOMIZE_BASE: ${KUSTOMIZE_BASE}"
+  echo "Using ACCOUNT_TYPE: ${ACCOUNT_TYPE}"
   echo "Using LETS_ENCRYPT_SERVER: ${LETS_ENCRYPT_SERVER}"
   echo "Using CLUSTER_NAME: ${CLUSTER_NAME}"
   echo "Using DNS_ZONE: ${DNS_ZONE}"
