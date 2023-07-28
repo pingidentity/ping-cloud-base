@@ -1,17 +1,19 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: grafana.integreatly.org/v1beta1
+kind: Grafana
 metadata:
   name: grafana
   namespace: prometheus
 spec:
-  template:
+  deployment:
     spec:
-      containers:
-        - name: grafana
-          resources:
-            limits:
-              cpu: "400m"
-              memory: "2000Mi"
-            requests:
-              cpu: "100m"
-              memory: "1000Mi"
+      template:
+        spec:
+          containers:
+            - name: grafana
+              resources:
+                limits:
+                  cpu: "400m"
+                  memory: "2000Mi"
+                requests:
+                  cpu: "100m"
+                  memory: "1000Mi"
