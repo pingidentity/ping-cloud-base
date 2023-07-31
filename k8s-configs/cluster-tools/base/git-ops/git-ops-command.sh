@@ -271,6 +271,12 @@ else
   build_load_arg_value='none'
 fi
 
+if [[ "${LOCAL}" == "true" ]]; then
+  # include local grafana patch
+  cp uber-yaml-patch.yaml "${PCB_TMP}/k8s-configs/cluster-tools/base/monitoring/"
+  printf "patchesStrategicMerge:\n\t- uber-yaml-patch.yaml" >> "${PCB_TMP}/k8s-configs/cluster-tools/base/monitoring/"
+fi
+
 # Build the uber deploy yaml
 if [[ ${DEBUG} == "true" ]]; then
   log "DEBUG - generating uber yaml file from '${BUILD_DIR}' to /tmp/uber-debug.yaml"
