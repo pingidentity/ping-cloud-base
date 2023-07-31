@@ -3,3 +3,64 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 - cluster-autoscaler.yaml
+                   
+patches:
+  - target:
+      # Specify the resource you want to modify
+      kind: Deployment
+      name: cluster-autoscaler
+    patch: | 
+
+      # Add annotation to the Deployment
+
+      - op: add
+        path: /metadata/annotations
+        value:
+          cluster-autoscaler.kubernetes.io/safe-to-evict: "false"
+
+      # Add multiple commands using YAML-style array
+
+      - op: remove
+        path: /spec/template/spec/containers/0/command/3
+        value: --cloud-provider=aws
+
+      - op: remove
+        path: /spec/template/spec/containers/0/command/5
+        value: --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/<YOUR CLUSTER NAME>
+
+      - op: replace
+        path: /spec/template/spec/containers/0/command/1
+        value: --v=1
+
+      - op: add
+        path: /spec/template/spec/containers/0/command/-
+        value:
+          "--balancing-ignore-label=eks.amazonaws.com/sourceLaunchTemplateId"
+
+      - op: add
+        path: /spec/template/spec/containers/0/command/-
+        value:
+          "--balancing-ignore-label=eks.amazonaws.com/sourceLaunchTemplateVersion"
+
+      - op: add
+        path: /spec/template/spec/containers/0/command/-
+        value:
+          "--balancing-ignore-label=failure-domain.beta.kubernetes.io/zone"
+
+      - op: add
+        path: /spec/template/spec/containers/0/command/-
+        value:
+          "--balancing-ignore-label=topology.ebs.csi.aws.com/zone"
+
+      - op: add
+        path: /spec/template/spec/containers/0/command/-
+        value:
+          "--balancing-ignore-label=topology.kubernetes.io/zone"
+
+      - op: replace
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: IfNotPresent
+
+      - op: replace
+        path: /spec/template/spec/containers/0/image
+        value: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/autoscaling/cluster-autoscaler:v1.27.1
