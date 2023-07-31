@@ -50,3 +50,20 @@ configMapGenerator:
       - pd_work_queue_back.json
       - pd_work_queue_full.json
       - pd_worker_threads_termin.json
+      - pd_active_cleaner_threads.json
+      - pd_available_file_descriptors.json
+      - pd_changelog_database_target_size.json
+      - pd_cpu_usage.json
+      - pd_db_cache_full_appintegrations.json
+  - name: os-alerts-pd-5
+    files:
+      - pd_db_cache_full_userroot.json
+      - pd_disk_busy.json
+      - pd_http_processing.json
+      - pd_jvm_mem_usage.json
+      - pd_license_exp_crit.json
+      - pd_license_exp_major.json
+      - pd_purge_expired_data_backlog.json
+      - pd_repl_purge_delay.json
+      - pd_undeletable_db_files.json
+      - pd_work_q_size.json
