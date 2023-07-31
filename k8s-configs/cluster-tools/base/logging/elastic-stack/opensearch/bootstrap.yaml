@@ -71,6 +71,8 @@ spec:
             mountPath: /usr/share/opensearch/data/alerts/pd-3
           - name: os-alerts-pd-4
             mountPath: /usr/share/opensearch/data/alerts/pd-4
+          - name: os-alerts-pd-5
+            mountPath: /usr/share/opensearch/data/alerts/pd-5
           - name: os-alerts-pds
             mountPath: /usr/share/opensearch/data/alerts/pds
           - name: os-alerts-pf
@@ -120,6 +122,9 @@ spec:
         - name: os-alerts-pd-4
           configMap:
             name: os-alerts-pd-4
+        - name: os-alerts-pd-5
+          configMap:
+            name: os-alerts-pd-5
         - name: os-alerts-pds
           configMap:
             name: os-alerts-pds
