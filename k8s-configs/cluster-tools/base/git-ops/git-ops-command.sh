@@ -273,8 +273,8 @@ fi
 
 if [[ "${LOCAL}" == "true" ]]; then
   # include local grafana patch
-  cp uber-yaml-patch.yaml "${PCB_TMP}/k8s-configs/cluster-tools/base/monitoring/"
-  printf "patchesStrategicMerge:\n\t- uber-yaml-patch.yaml" >> "${PCB_TMP}/k8s-configs/cluster-tools/base/monitoring/"
+  cp ${PCB_TMP}/k8s-configs/cluster-tools/base/git-ops/uber-yaml-patch.yaml "${BUILD_DIR}/k8s-configs/base/"
+  printf "- uber-yaml-patch.yaml" >> "${BUILD_DIR}/k8s-configs/base/kustomization.yaml"
 fi
 
 # Build the uber deploy yaml
