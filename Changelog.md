@@ -31,6 +31,7 @@
 - Re-enable PingCentral for CI/CD dev environments which are now deployed using generate-cluster-state.sh
 - Migrated 'profiles' directory away from root of PCB, and into 'code-gen' root dir.  Also removed 'aws' subdir.
 - Improve alerts. JSON format + link to runbook
+- Limit backup/restore logging for PD
 - enrichment-bootstrap Docker image scripts refactoring
 - Change PD alerts to see more specific errors
 
@@ -90,6 +91,7 @@ _Changes:_
 - [X] PDO-5705 Update PCB with toolkit image used as replacement for bitnami/kubectl
 - [X] PDO-5709 Fix intermittent pingone integration test failures
 - [X] PDO-5718 Update PGO dashboards to use grafana CRD
+- [X] PDO-5724 Limit backup/restore logging for PD
 - [X] PDO-5741 OS: Index migration fails for shrink-*-logstash-* indexes
 
 ### 1.18.0.0
