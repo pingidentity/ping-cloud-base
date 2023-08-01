@@ -121,6 +121,21 @@ enable_external_ingress() {
 }
 
 ########################################################################################################################
+# Disable grafana operator CRDs if not argo environment.
+########################################################################################################################
+disable_grafana_crds() {
+  cd "${TMP_DIR}"
+  search_term="grafana-operator\/base"
+  for kust_file in $(grep --exclude-dir=.git -rwl -e "${search_term}" | grep "kustomization.yaml"); do
+      log "Commenting grafana ${kust_file}"
+      sed -i.bak \
+        -e "/${search_term}/ s|^#*|#|g" \
+        "${kust_file}"
+      rm -f "${kust_file}".bak
+    done
+}
+
+########################################################################################################################
 # Format the provided kustomize version for numeric comparison. For example, if the kustomize version is 4.0.5, it
 # returns 004000005000.
 #
@@ -269,6 +284,10 @@ if test ${KUST_VER} -ge ${VER_4_0_1}; then
 else
   build_load_arg='--load_restrictor'
   build_load_arg_value='none'
+fi
+
+if ! command -v argocd &> /dev/null ; then
+  disable_grafana_crds
 fi
 
 # Build the uber deploy yaml

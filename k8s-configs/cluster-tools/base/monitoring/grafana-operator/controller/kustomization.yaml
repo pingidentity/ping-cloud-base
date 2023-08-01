@@ -1,0 +1,7 @@
+namespace: prometheus
+
+resources:
+  - rbac.yaml
+  - service.yaml
+  - serviceaccount.yaml
+  - deployment.yaml

@@ -22,9 +22,7 @@ spec:
             - --health-probe-bind-address=:8081
             - --metrics-bind-address=0.0.0.0:9090
             - --leader-elect
-          # This is a default operator image
-          # Overwritten in ../overlays/namespace_scoped/deployment.yaml
-          image: ghcr.io/grafana-operator/grafana-operator:v5.3.0
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/grafana-operator/grafana-operator:v5.3.0
           imagePullPolicy: Always
           ports:
             - containerPort: 9090
@@ -37,6 +35,11 @@ spec:
             initialDelaySeconds: 15
             periodSeconds: 20
           name: manager
+          env:
+            - name: WATCH_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
           readinessProbe:
             httpGet:
               path: /readyz
