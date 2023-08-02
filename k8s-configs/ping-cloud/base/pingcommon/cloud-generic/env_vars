@@ -9,11 +9,17 @@ TOPOLOGY_DESCRIPTOR_PROFILES_JSON=/opt/staging/topology/descriptor-profiles.json
 # PingCentral admin username to the application
 PC_ADMIN_USER_USERNAME=administrator
 
-# PD USER_BASE_DN
+# PingDirectory Backends and USER_BASE_DNs
+PLATFORM_CONFIG_BACKEND_ID=platformconfig
+PLATFORM_CONFIG_BASE_DN=o=platformconfig
+APP_INTEGRATIONS_BACKEND_ID=appintegrations
+APP_INTEGRATIONS_BASE_DN=o=appintegrations
+
+USER_BACKEND_ID=userRoot
 USER_BASE_DN=dc=example,dc=com
 
 ########################################################################################################################
-#  Multiple Backend IDs : 
+#  Multiple Backend IDs :
 #
 #  Set the following vars for multiple backends.
 #  USER_BASE_DN_2 is set for userRoot_2 backend
@@ -21,7 +27,7 @@ USER_BASE_DN=dc=example,dc=com
 #  USER_BASE_DN_4 is set for userRoot_4 backend
 #  USER_BASE_DN_5 is set for userRoot_5 backend
 #
-#  NOTE : Currently 5 multiple backends(userRoot , userRoot_2, 3 ..userRoot_5) and 
+#  NOTE : Currently 5 multiple backends(userRoot , userRoot_2, 3 ..userRoot_5) and
 #          user_base_dn's(USER_BASE_DN, USER_BASE_DN_2, 3 ..USER_BASE_DN_5) are supported.
 ########################################################################################################################
 USER_BASE_DN_2=
