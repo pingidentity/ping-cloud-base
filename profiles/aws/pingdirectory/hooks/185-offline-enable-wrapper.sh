@@ -69,7 +69,7 @@ if test -z "${DESCRIPTOR_FILE}"; then
   tr -d '[:space:]' <<EOF > "${DESCRIPTOR_FILE}"
 {
   "${REGION_NICK_NAME}": {
-    "hostname": "${PD_CLUSTER_DOMAIN_NAME}",
+    "hostname": "",
     "replicas": ${NUM_REPLICAS}
   }
 }
