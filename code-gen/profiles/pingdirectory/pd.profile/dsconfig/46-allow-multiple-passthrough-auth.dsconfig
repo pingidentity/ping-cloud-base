@@ -1,4 +1,0 @@
-# Bypass the restriction that forbids multiple concurrent PTA plugin instances.
-
-dsconfig set-global-configuration-prop \
-  --add use-undocumented-workaround:issue-ds-46516-allow-multiple-pta-plugin-instances
