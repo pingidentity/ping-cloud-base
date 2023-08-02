@@ -326,7 +326,7 @@ spec:
     - port: 9600
       name: rest
     - port: 8080
-      name: http-log-input
+      name: http-main-input
     - port: 9198
       name: metrics
     - port: 8081
@@ -335,6 +335,8 @@ spec:
       name: http-cw-input
     - port: 8083
       name: http-nr-input
+    - port: 8084
+      name: http-customer-input
 
 ---
 apiVersion: v1
