@@ -6,44 +6,6 @@ metadata:
   namespace: elastic-stack-logging
 $patch: delete
 ---
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: opensearch-bootstrap
-  namespace: elastic-stack-logging
-$patch: delete
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: os-dashboards-pa
-  namespace: elastic-stack-logging
-$patch: delete
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: os-dashboards-pf
-  namespace: elastic-stack-logging
-$patch: delete
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: os-dashboards-pd
-  namespace: elastic-stack-logging
-$patch: delete
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: logstash-pipeline-alerts
-  namespace: elastic-stack-logging
-data:
-  01-input.conf: -|
-    input {}
-$patch: merge
----
 apiVersion: v1
 kind: Service
 metadata:
@@ -55,6 +17,13 @@ spec:
   type: ExternalName
   externalName: opensearch.${PRIMARY_DNS_ZONE}
   $patch: replace
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: opensearch-cluster-headless
+  namespace: elastic-stack-logging
+$patch: delete
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -80,48 +49,6 @@ $patch: delete
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: os-alerts-pf
-  namespace: elastic-stack-logging
-$patch: delete
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: os-alerts-pds
-  namespace: elastic-stack-logging
-$patch: delete
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: os-alerts-pd-1
-  namespace: elastic-stack-logging
-$patch: delete
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: os-alerts-pd-2
-  namespace: elastic-stack-logging
-$patch: delete
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: os-alerts-pd-3
-  namespace: elastic-stack-logging
-$patch: delete
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: os-alerts-pd-4
-  namespace: elastic-stack-logging
-$patch: delete
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
   name: opensearch-dashboards-config
   namespace: elastic-stack-logging
 $patch: delete
@@ -130,27 +57,6 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: opensearch-config
-  namespace: elastic-stack-logging
-$patch: delete
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: os-index-templates
-  namespace: elastic-stack-logging
-$patch: delete
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: os-ism-policies
-  namespace: elastic-stack-logging
-$patch: delete
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: os-notifications-channels
   namespace: elastic-stack-logging
 $patch: delete
 ---

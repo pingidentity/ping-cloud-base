@@ -95,6 +95,7 @@ _Changes:_
 - [X] PDO-5724 Limit backup/restore logging for PD
 - [X] PDO-5741 OS: Index migration fails for shrink-*-logstash-* indexes
 - [X] PDO-5801 Update cluster-autoscaler v1.27.0/1.27.1 for eks 1.27
+- [X] PDO-5813 Remove excessive patches for the second region
 
 ### 1.18.0.0
 
