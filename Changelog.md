@@ -36,6 +36,7 @@
 - Change PD alerts to see more specific errors
 - Update pd.profile to align with PingDirectory upgrade
 - Update cluster-autoscaler v1.27.0/1.27.1 for eks 1.27
+- Update PCB with new Radius Proxy Image
 
 _Changes:_
 
