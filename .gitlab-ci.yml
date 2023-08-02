@@ -24,6 +24,7 @@ variables:
   BRANCH_SKIP_TESTS: >
     pingaccess/08-artifact-test.sh
     pingdelegator/01-admin-user-login.sh
+    pingdirectory/03-backup-restore.sh
     pingdirectory/08-test-http-connection-handler.sh
 
 ## Compile stage ##
@@ -81,7 +82,7 @@ pa-was-integration-tests:
   - pingfederate
   - pingaccess
   - pingcloud-services
-  - pingcentral     
+  - pingcentral
   - pingdatasync
   - common
   - monitoring

@@ -123,3 +123,12 @@ configMapGenerator:
   envs:
     - ../base/cluster-tools/git-ops/env_vars
     - git-ops/env_vars
+
+# Healthcheck probes
+- name: cluster-health-environment-variables
+  namespace: health
+  behavior: merge
+  envs:
+    - ../base/cluster-tools/health/env_vars
+    - ../base/env_vars
+    - env_vars

@@ -13,18 +13,6 @@ ENCRYPTION_PASSWORD_FILE=/usr/local/secrets/encryption-password
 ADS_CRT_FILE=/usr/local/secrets/ads.crt
 ADS_KEY_FILE=/usr/local/secrets/ads.key
 
-USER_BACKEND_ID=userRoot
-
-########################################################################################################################
-#  Multiple Backend IDs :
-#
-#  NOTE : Currently 5 multiple backends(userRoot, userRoot_2, 3 ..userRoot_5) are supported.
-########################################################################################################################
-USER_BACKEND_ID_2=userRoot_2
-USER_BACKEND_ID_3=userRoot_3
-USER_BACKEND_ID_4=userRoot_4
-USER_BACKEND_ID_5=userRoot_5
-
 DISABLE_ALL_OLDER_USER_BASE_DN=true
 
 REPLICATION_BASE_DNS=o=platformconfig;o=appintegrations
@@ -102,3 +90,6 @@ SKIP_LIVENESS=true
 # These variables are used by pingcloud-apps/pingdirectory/src/hooks/offline-mode/manage_offline_mode.py
 PD_POD_LIMIT_INDEX=1000
 PD_BASE_DN_LIMIT_INDEX=20
+
+# Flag to skip rebuilding backend indexes
+SKIP_INDEX_BUILD=false
