@@ -91,6 +91,9 @@ else
   DESCRIPTOR_FILE="${TMP_FILE}"
 fi
 
+beluga_log "Adding DESCRIPTOR_FILE"
+cat "${DESCRIPTOR_FILE}"
+
 # Verify that ADS Certificate file is present
 if [ ! -f "${ADS_CRT_FILE}" ] || [ ! -s "${ADS_CRT_FILE}" ]; then
   beluga_error "A certificate is needed for new local server instance, but none was specified"
