@@ -3,14 +3,14 @@ dsconfig create-backend \
         --type local-db \
         --set enabled:true \
         --set base-dn:"${PLATFORM_CONFIG_BASE_DN}" \
-        --set prime-method:preload
+        --set prime-method:none
 
 dsconfig create-backend \
         --backend-name "${APP_INTEGRATIONS_BACKEND_ID}" \
         --type local-db \
         --set enabled:true \
         --set base-dn:"${APP_INTEGRATIONS_BASE_DN}" \
-        --set prime-method:preload
+        --set prime-method:none
 
 dsconfig set-backend-prop \
         --backend-name "userRoot" \
