@@ -47,12 +47,6 @@ spec:
               runAsNonRoot: true
               runAsUser: 9031
               allowPrivilegeEscalation: false
-            resources:
-              requests:
-                memory: "128Mi"
-                cpu: "100m"
-              limits:
-                memory: "512Mi"
             command:
             - /opt/in/backup-cronjob.sh
             envFrom:
