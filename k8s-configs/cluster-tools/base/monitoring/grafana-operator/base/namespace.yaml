@@ -1,7 +1,0 @@
-# This is a default operator namespace
-# We override this namespace in ../overlays/namespace_scoped/kustomization.yaml
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: default
