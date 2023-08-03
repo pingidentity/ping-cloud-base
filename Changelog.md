@@ -36,6 +36,7 @@
 - Change PD alerts to see more specific errors
 - Update pd.profile to align with PingDirectory upgrade
 - Update cluster-autoscaler v1.27.0/1.27.1 for eks 1.27
+- Healthcheck pods respond properly to SIGTERM
 - Update PCB with new Radius Proxy Image
 
 _Changes:_
@@ -89,6 +90,7 @@ _Changes:_
 - [X] PDO-5654 Fluentbit Kubernetes filter is not adding metadata into some events
 - [X] PDO-5655 OS: Logs for the pf-transaction-* index are not filtered
 - [X] PDO-5659 git-ops-command.sh responds properly to SIGTERM
+- [X] PDO-5660 Healthcheck pods respond properly to SIGTERM
 - [X] PDO-5671 OS: grokparsefailure in pingaccess logs
 - [x] PDO-5673 OS: Missed logs in PingAccess Indices
 - [X] PDO-5705 Update PCB with toolkit image used as replacement for bitnami/kubectl
