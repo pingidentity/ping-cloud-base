@@ -1,6 +1,5 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: prometheus
 resources:
 - crds.yaml
 
@@ -10,38 +9,34 @@ patchesJson6902:
       version: v1
       kind: CustomResourceDefinition
       name: grafanas.grafana.integreatly.org
-      namespace: prometheus
     patch: |-
       - op: add
         path: /metadata/annotations/argocd.argoproj.io~1sync-options
-        value: "Replace=true"
+        value: "ServerSideApply=true"
 
   - target:
       version: v1
       kind: CustomResourceDefinition
       name: grafanadashboards.grafana.integreatly.org
-      namespace: prometheus
     patch: |-
       - op: add
         path: /metadata/annotations/argocd.argoproj.io~1sync-options
-        value: "Replace=true"  
+        value: "ServerSideApply=true"  
 
   - target:
       version: v1
       kind: CustomResourceDefinition
       name: grafanadatasources.grafana.integreatly.org
-      namespace: prometheus
     patch: |-
       - op: add
         path: /metadata/annotations/argocd.argoproj.io~1sync-options
-        value: "Replace=true"  
+        value: "ServerSideApply=true"  
 
   - target:
       version: v1
       kind: CustomResourceDefinition
       name: grafanafolders.grafana.integreatly.org
-      namespace: prometheus
     patch: |-
       - op: add
         path: /metadata/annotations/argocd.argoproj.io~1sync-options
-        value: "Replace=true"
+        value: "ServerSideApply=true"
