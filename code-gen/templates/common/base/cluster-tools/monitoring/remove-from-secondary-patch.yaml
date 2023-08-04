@@ -192,20 +192,6 @@ metadata:
   namespace: prometheus
 $patch: delete
 ---
-kind: Service
-apiVersion: v1
-metadata:
-  name: grafana-operator-metrics-service
-  namespace: prometheus
-$patch: delete
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: grafana-service
-  namespace: prometheus
-$patch: delete
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
