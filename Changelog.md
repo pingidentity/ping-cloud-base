@@ -14,6 +14,7 @@
 - Added new Prometheus alerts for Kubernetes metrics
 - Update integration tests to handle SSM parameters, rather than an explicit s3 bucket prefix
 - Update nginx-ingress-controller to v1.6.4 to support EKS 1.26
+- Automate a test to ensure passwords dont leak in pod logs
 - Create new RBAC rules , ping role and service accounts for PD backups and restore
 - Update PD backup/restore integration tests
 - Configure Lifecycle policy for PingFederate Engines
@@ -70,6 +71,7 @@ _Changes:_
 - [X] PDO-5358 OpenSearch Migration: Refactor OS Code as Needed
 - [X] PDO-5371 Update PCB Pipeline to deploy CDE dev Environment
 - [X] PDO-5373 PingCentral testing in PCB Pipeline CDE deployment
+- [X] PDO-5378 Automate a test to ensure passwords dont leak in pod logs
 - [X] PDO-5396 Create new RBAC rules , ping role and service accounts for PD backups and restore 
 - [X] PDO-5400 Update PD backup/restore integration tests
 - [X] PDO-5408 Add boolean flag to skip pod liveness probe script for PingFederate engines, PingAccess/WAS engines, and PingDirectory
