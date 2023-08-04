@@ -13,6 +13,6 @@ dsconfig create-backend \
         --set prime-method:none
 
 dsconfig set-backend-prop \
-        --backend-name "userRoot" \
+        --backend-name "${USER_BACKEND_ID}" \
         --set "base-dn:${USER_BASE_DN}" \
         --set enabled:true
