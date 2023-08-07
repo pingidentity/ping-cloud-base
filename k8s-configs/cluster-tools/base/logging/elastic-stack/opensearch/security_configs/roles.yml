@@ -314,10 +314,14 @@ bootstrap:
     - "cluster:admin/opendistro/ism/*"
     - "cluster:admin/opensearch/notifications/*"
     - "cluster:admin/opendistro/alerting/*"
+    - "cluster:admin/reroute"
     - "kibana_all_write"
     - "kibana_all_read"
     - 'indices:data/write/bulk'
     - "indices:data/read/mget"
+    - 'indices:data/write/index'
+    - 'indices:data/write/update'
+    - 'indices:data/write/delete'
   index_permissions:
     - index_patterns:
         - '*'
@@ -325,6 +329,13 @@ bootstrap:
         - 'indices:admin/opensearch/ism/*'
         - 'indices:admin/index_template/*'
         - 'indices:admin/template/*'
+        - 'indices:admin/settings/update'
+        - 'indices:admin/delete'
+        - 'indices:admin/resize'
+        - 'indices:data/write/index'
+        - 'indices:data/write/bulk*'
+        - 'indices:data/write/update'
+        - 'indices:data/write/delete'
         - 'read'
         - 'indices_monitor'
     - index_patterns:
