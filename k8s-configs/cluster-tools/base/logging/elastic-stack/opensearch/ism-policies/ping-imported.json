@@ -1,7 +1,7 @@
 {
     "policy": {
         "policy_id": "ping_imported",
-        "description": "Ping policy for everything imported from ES(after 1 day shrink to 1 shard and delete, shrunken index will be processed via shrunken policy)",
+        "description": "Ping policy for everything imported from ES(after 7 days shrink to 1 shard and delete, shrunken index will be processed via shrunken policy)",
         "last_updated_time": 1684846188882,
         "schema_version": 17,
         "error_notification": null,
@@ -14,7 +14,7 @@
                     {
                         "state_name": "store",
                         "conditions": {
-                            "min_index_age": "1d"
+                            "min_index_age": "7d"
                         }
                     }
                 ]
