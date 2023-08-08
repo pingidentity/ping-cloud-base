@@ -401,6 +401,7 @@ ${CLUSTER_NAME}
 ${CLUSTER_NAME_LC}
 ${CLUSTER_ENDPOINT}
 ${DNS_ZONE}
+${VALUES_FILES_DNS_ZONE}
 ${DNS_ZONE_DERIVED}
 ${PRIMARY_DNS_ZONE}
 ${PRIMARY_DNS_ZONE_DERIVED}
@@ -479,11 +480,16 @@ add_derived_variables() {
   export PRIMARY_DNS_ZONE_DERIVED="\${PRIMARY_DNS_ZONE}"
 
   # Zone for this region and the primary region.
+  # Note: VALUES_FILES_DNS_ZONE is a hack around the issue of ${REGION_ENV} not substituting for values.yaml files
+  # That variable is only substituted by git-ops-command.sh which values.yaml file do not use. This should be cleaned
+  # up with PDO-5769
   if "${IS_BELUGA_ENV}" || test "${ENV}" = "${CUSTOMER_HUB}"; then
     export DNS_ZONE="\${TENANT_DOMAIN}"
+    export VALUES_FILES_DNS_ZONE="\${TENANT_DOMAIN}"
     export PRIMARY_DNS_ZONE="\${PRIMARY_TENANT_DOMAIN}"
   else
     export DNS_ZONE="\${REGION_ENV}-\${TENANT_DOMAIN}"
+    export VALUES_FILES_DNS_ZONE="\${ENV}-\${TENANT_DOMAIN}"
     export PRIMARY_DNS_ZONE="\${ENV}-\${PRIMARY_TENANT_DOMAIN}"
   fi
 
@@ -647,7 +653,7 @@ organize_code_for_csr() {
       # Substitute the env vars in the app directories
       substitute_vars "${app_target_dir}" "${REPO_VARS}"
       # TODO: These duplicate calls are needed to substitute the derived variables & the IS_BELUGA_ENV
-      #  clean this up with PDO-4842 when all apps are migrated to values files by adding IS_BELUGA_ENV to DEFAULT_VARS
+      #  clean this up with PDO-5769 when all apps are migrated to values files by adding IS_BELUGA_ENV to DEFAULT_VARS
       #  and redoing how derived variables are set
       substitute_vars "${app_target_dir}" "${REPO_VARS}"
     fi

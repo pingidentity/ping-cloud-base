@@ -10,13 +10,13 @@ generatorOptions:
   disableNameSuffixHash: true
 
 configMapGenerator:
-- name: pingcommon-init
-  files:
-  - scripts/copy-dependencies.sh
-  - scripts/wait-for-services.sh
-  - scripts/wait-for-pds.sh
-  - scripts/utils.lib.sh
-  - scripts/logger.lib.sh
+#- name: pingcommon-init
+#  files:
+#  - scripts/copy-dependencies.sh
+#  - scripts/wait-for-services.sh
+#  - scripts/wait-for-pds.sh
+#  - scripts/utils.lib.sh
+#  - scripts/logger.lib.sh
 - name: pingcommon-environment-variables
   envs:
   - env_vars
@@ -28,5 +28,5 @@ resources:
 - secret.yaml
 - configmap.yaml
 - priorityclass.yaml
-- pingcloud-healthcheck
-- pingcloud-metadata
+#- pingcloud-healthcheck
+#- pingcloud-metadata

@@ -14,35 +14,7 @@ global:
   tenantDomain: "${TENANT_DOMAIN}"
 
   # dnsZone is the Customer-specific region DNS zone
-  dnsZone: "${DNS_ZONE}"
+  dnsZone: "${VALUES_FILES_DNS_ZONE}"
 
   # irsaPingAnnotationKeyValue is the IAM roles for service accounts
   irsaPingAnnotationKeyValue: "${IRSA_PING_ANNOTATION_KEY_VALUE}"
-  irsaPaAnnotationKeyValue: "${IRSA_PA_ANNOTATION_KEY_VALUE}"
-  irsaPdAnnotationKeyValue: "${IRSA_PD_ANNOTATION_KEY_VALUE}"
-  irsaPfAnnotationKeyValue: "${IRSA_PF_ANNOTATION_KEY_VALUE}"
-  irsaCwAgentAnnotationKeyValue: "${IRSA_CWAGENT_ANNOTATION_KEY_VALUE}"
-
-  # nlbNgxPublicAnnotationKeyValue is the annotation used by ingress-nginx service in ingress-nginx-public namespace
-  nlbNgxPublicAnnotationKeyValue: "${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
-
-  ########################################################################################################################
-  #TODO: Are these needed anymore now that we're using values files?
-  # If they are needed uncomment & move above this section
-  # If they are still commented out when we get to PDO-4842, they will be deleted
-  ########################################################################################################################
-  # TODO: we can only substitute env vars region->base PDO-3957 to fix
-  #regionEnv: ${ENV}
-
-  # environmentPrefix is the prefix used to distinguish between worker apps for different CDEs in P14C
-  # and to form the Signal Science Agent name as displayed in SigSci Dashboard.
-  #environmentPrefix: "${ENVIRONMENT_PREFIX}"
-
-  # newRelicEnvironmentName is the name of the environment as it will appear on the NewRelic console.
-  #newRelicEnvironmentName: "${NEW_RELIC_ENVIRONMENT_NAME}"
-
-  # artifactRepoUrl is the Customer-specific artifacts URL for region
-  #artifactRepoUrl: "${ARTIFACT_REPO_URL}"
-
-  # clusterStateRepoPath is the customer-specific region name
-  #clusterStateRepoPath: "${CLUSTER_STATE_REPO_PATH_DERIVED}"

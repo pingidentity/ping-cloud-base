@@ -123,27 +123,6 @@ parse_url() {
 }
 
 ########################################################################################################################
-# Format the provided kustomize version for numeric comparison. For example, if the kustomize version is 4.0.5, it
-# returns 004000005000.
-#
-# Arguments
-#   ${1} -> The kustomize short version, e.g. v4.0.5.
-########################################################################################################################
-format_version() {
-  version="$1"
-  printf "%03d%03d%03d%03d" $(echo "${version}" | tr '.' ' ')
-}
-
-########################################################################################################################
-# Returns the version of kustomize formatted for numeric comparison. For example, if the kustomize version is 4.0.5,
-# it returns 004000005000.
-########################################################################################################################
-kustomize_version() {
-  version="$(kustomize version --short | grep -oE '[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+')"
-  format_version "${version}"
-}
-
-########################################################################################################################
 # Substitute variables in all files in the provided directory.
 #
 # Arguments
