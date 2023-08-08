@@ -194,11 +194,19 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
 
   if is_all_apps; then
     # Get all app paths
-    APP_PATHS=$(find "${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}/${ENV_OR_BRANCH}" -mindepth 1 -maxdepth 1 -type d)
+    if "${IS_PROFILE_REPO}"; then
+      APP_PATHS=$(find "${GENERATED_CODE_DIR}/${PROFILE_REPO_DIR}/${PROFILES_DIR}/${ENV_OR_BRANCH}" -mindepth 1 -maxdepth 1 -type d)
+    else
+      APP_PATHS=$(find "${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}/${ENV_OR_BRANCH}" -mindepth 1 -maxdepth 1 -type d)
+    fi
   else
     # Get only APPS_TO_PUSH paths
     for app in ${APPS_TO_PUSH}; do
-      APP_PATHS="${APP_PATHS}${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}/${ENV_OR_BRANCH}/${app} "
+      if "${IS_PROFILE_REPO}"; then
+        APP_PATHS="${APP_PATHS}${GENERATED_CODE_DIR}/${PROFILE_REPO_DIR}/${PROFILES_DIR}/${ENV_OR_BRANCH}/${app} "
+      else
+        APP_PATHS="${APP_PATHS}${GENERATED_CODE_DIR}/${CLUSTER_STATE_REPO_DIR}/${ENV_OR_BRANCH}/${app} "
+      fi
     done
   fi
 
@@ -248,25 +256,37 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     else
       # Clean up only APPS_TO_PUSH directories
       for app in ${APPS_TO_PUSH}; do
-        echo "Cleaning up ${PWD}/${app}"
-        dir_deep_clean "${PWD}/${app}"
+        if "${IS_PROFILE_REPO}"; then
+          echo "Cleaning up ${PWD}/${PROFILES_DIR}/${app}"
+          dir_deep_clean "${PWD}/${PROFILES_DIR}/${app}"
+        else
+          echo "Cleaning up ${PWD}/${app}"
+          dir_deep_clean "${PWD}/${app}"
+        fi
       done
     fi
 
     if "${IS_PROFILE_REPO}" || "${INCLUDE_PROFILES_IN_CSR}"; then
-      # Copy the base files into the repo.
-      src_dir="${GENERATED_CODE_DIR}/${PROFILE_REPO_DIR}"
-      echo "Copying base files from ${src_dir} to ${PWD}"
-      cp "${src_dir}"/.gitignore ./
-      cp "${src_dir}"/upgrade-profile-wrapper.sh ./
+      if is_all_apps; then
+        # Copy the base files into the repo.
+        src_dir="${GENERATED_CODE_DIR}/${PROFILE_REPO_DIR}"
+        echo "Copying base files from ${src_dir} to ${PWD}"
+        cp "${src_dir}"/.gitignore ./
+        cp "${src_dir}"/upgrade-profile-wrapper.sh ./
+      fi
 
-      # Copy the profiles.
-      mkdir -p "${PROFILES_DIR}"
+      # Copy each app's profile files into the repo.
+      for pr_app_path in ${APP_PATHS}; do
+        pr_app_name=$(basename "${pr_app_path}")
 
-      # Copy the profiles.
-      src_dir="${GENERATED_CODE_DIR}/${PROFILE_REPO_DIR}/${PROFILES_DIR}/${ENV_OR_BRANCH}/"
-      echo "Copying ${src_dir} to ${PROFILES_DIR}"
-      find "${src_dir}" -maxdepth 1 -mindepth 1 -type d -exec cp -pr {} "${PROFILES_DIR}"/ \;
+        # Make the app dir
+        mkdir -p "${PROFILES_DIR}/${pr_app_name}"
+
+        # Copy the app profiles
+        src_dir="${pr_app_path}"
+        echo "Copying ${src_dir} to ${PROFILES_DIR}"
+        cp -pr "${src_dir}" "${PROFILES_DIR}/"
+      done
     fi
 
     if ! "${IS_PROFILE_REPO}"; then
