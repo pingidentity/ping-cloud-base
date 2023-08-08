@@ -20,6 +20,8 @@
 #         generate-cluster-state.sh script, i.e. dev, test, stage, prod, customer-hub.
 #     RESET_TO_DEFAULT -> An optional flag, which if set to true will reset the profile-repo to the OOTB state
 #         for the new version. This has the same effect as running the platform code build job.
+#     APPS_TO_UPGRADE -> An optional space-separated list of apps to upgrade. Defaults to everything, if unset
+#         If provided, it must match the app directories in the profile repo, i.e. 'pingaccess pingdirectory'
 #
 # The script is non-destructive by design and doesn't push any new state to the server. Instead, it will set up a
 # parallel branch for every CDE branch corresponding to the environments specified through the SUPPORTED_ENVIRONMENT_TYPES environment
@@ -34,6 +36,7 @@
 P1AS_UPGRADES='p1as-upgrades'
 UPGRADE_SCRIPT_NAME='upgrade-profile-repo.sh'
 UPGRADE_DIR_NAME='upgrade-scripts'
+ALL_APPS='all'
 
 ########################################################################################################################
 # Invokes pushd on the provided directory but suppresses stdout and stderr.
@@ -60,6 +63,12 @@ popd_quiet() {
 if test -z "${NEW_VERSION}"; then
   echo '=====> NEW_VERSION environment variable must be set before invoking this script'
   exit 1
+fi
+
+# If APPS_TO_UPGRADE not set, default to all apps
+if test -z "${APPS_TO_UPGRADE}"; then
+  echo '=====> APPS_TO_UPGRADE not set, continuing with upgrading everything'
+  APPS_TO_UPGRADE="${ALL_APPS}"
 fi
 
 PING_CLOUD_BASE_REPO_URL="${PING_CLOUD_BASE_REPO_URL:-$(git grep ^K8S_GIT_URL= | head -1 | cut -d= -f2)}"
@@ -104,7 +113,7 @@ UPGRADE_SCRIPT_PATH="${P1AS_UPGRADES_REPO}/${UPGRADE_DIR_NAME}/${UPGRADE_SCRIPT_
 
 if test -f "${UPGRADE_SCRIPT_PATH}"; then
   # Execute the upgrade script
-  PING_CLOUD_BASE_REPO_URL="${PING_CLOUD_BASE_REPO_URL}" "${UPGRADE_SCRIPT_PATH}"
+  PING_CLOUD_BASE_REPO_URL="${PING_CLOUD_BASE_REPO_URL}" APPS_TO_UPGRADE="${APPS_TO_UPGRADE}" "${UPGRADE_SCRIPT_PATH}"
   exit $?
 else
   echo "=====> Unable to download Upgrade script version: ${UPGRADE_SCRIPT_VERSION}"
