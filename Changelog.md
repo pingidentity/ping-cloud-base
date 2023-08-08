@@ -97,6 +97,7 @@
 - Remove integration kits from PingFederate deployment (excluding pf-pingid) and upgrade opentoken-adapter to v2.7.2
 - Add REGION env var for healthcheck probes in customer hub
 - Fix IRSA role for pingfederate-admin-serviceaccount
+- Add "--skipPrime" flag to PD start-server script
 
 _Changes:_
 
@@ -223,6 +224,7 @@ _Changes:_
 - [X] PDO-5650 set NOTIFICATION_ENABLED to True by default
 - [X] PDO-5690 v1.18 Prepare for Ability to Update Upgrade Scripts w/o Release of New Beluga Version
 - [X] PDO-5804 Add REGION env var for healthcheck probes in customer hub
+- [X] PDO-5832 Add "--skipPrime" flag to PD start-server script
 - [X] PDO-5869 Fix IRSA role for pingfederate-admin-serviceaccount
 
 ### 1.17.0.0
