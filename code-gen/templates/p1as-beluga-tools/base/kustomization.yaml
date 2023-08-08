@@ -1,0 +1,15 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+namespace: ${PING_CLOUD_NAMESPACE}
+
+resources:
+  - custom-resources
+
+configMapGenerator:
+  ### This is needed for the empty custom-patches.yaml file to work ###
+  - name: beluga-tools-custom-environment-variables
+
+patchesStrategicMerge:
+  ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
+  - custom-patches.yaml

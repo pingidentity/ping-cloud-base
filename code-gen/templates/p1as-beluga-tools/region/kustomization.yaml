@@ -1,0 +1,27 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+namespace: ${PING_CLOUD_NAMESPACE}
+
+resources:
+  - ../base
+  - custom-resources
+
+helmCharts:
+  - name: p1as-beluga-tools
+    additionalValuesFiles:
+      - ../../values-files/base/values.yaml   # base values.yaml
+      - ../../values-files/${REGION_NICK_NAME}/values.yaml   # regional values.yaml
+      - values.yaml   # app specific values.yaml
+    version: v1.19-release-branch-latest
+    repo: oci://${ECR_REGISTRY_NAME}/dev/p1as-beluga-tools
+
+### This field is used to trigger a resync of the p1as-beluga-tools helm chart ###
+configMapGenerator:
+  - name: last-update-reason
+    literals:
+      - UPDATE_REASON=""
+
+patchesStrategicMerge:
+  ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
+  - custom-patches.yaml
