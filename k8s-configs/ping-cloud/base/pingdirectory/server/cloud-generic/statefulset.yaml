@@ -167,7 +167,7 @@ spec:
           image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.18-release-branch-latest
           imagePullPolicy: Always
           # Todo - Add script here for pulling the KMS keys from DB and pushing to S3
-          command: [ echo "kms init container" ]
+          command: [ 'sh', '-c', 'echo "kms init container"' ]
           envFrom:
             - configMapRef:
                 name: pingdirectory-environment-variables
