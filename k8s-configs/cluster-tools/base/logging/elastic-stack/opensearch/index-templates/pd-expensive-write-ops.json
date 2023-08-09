@@ -146,6 +146,7 @@
                   }
                 },
                 "statefulset_kubernetes_io/pod-name": {
+                  "type": "text",
                   "fields": {
                     "keyword": {
                       "type": "keyword",
