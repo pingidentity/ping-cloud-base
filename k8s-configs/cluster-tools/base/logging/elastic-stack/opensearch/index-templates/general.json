@@ -4,7 +4,7 @@
   ],
   "template": {
     "settings": {
-      "index.unassigned.node_left.delayed_timeout": "10m",
+      "index.unassigned.node_left.delayed_timeout": "15m",
       "index.number_of_shards": "1",
       "index.number_of_replicas": "1",
       "index.refresh_interval": "30s",

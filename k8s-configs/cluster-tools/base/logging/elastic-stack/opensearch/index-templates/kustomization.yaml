@@ -8,8 +8,11 @@ configMapGenerator:
       - backup-jobs.json
       - logstash.json
       - shrink-logstash.json
+      - ingress-access.json
+      - ingress-errors.json
       - pa-admin-audit.json
       - pa-admin-system.json
+      - pa-api-audit.json
       - pa-audit.json
       - pa-system.json
       - pa-was-admin-audit.json
