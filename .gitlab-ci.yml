@@ -29,7 +29,7 @@ variables:
 compile:
  stage: compile
  tags:
-   - default-gitlab-runner
+   - default-gitlab-runner-test
  image: ${K8S_DEPLOY_TOOLS}
  script:
    - ${SHARED_CI_SCRIPTS_DIR}/test.sh
