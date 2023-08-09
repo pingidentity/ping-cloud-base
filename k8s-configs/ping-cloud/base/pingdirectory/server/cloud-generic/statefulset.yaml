@@ -158,6 +158,38 @@ spec:
             - name: pingdirectory-init
               mountPath: /wait-for-services.sh
               subPath: wait-for-services.sh
+        - name: kms-init-container
+          securityContext:
+            runAsGroup: 9999
+            runAsNonRoot: true
+            runAsUser: 9031
+            allowPrivilegeEscalation: false
+          image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.19-release-branch-latest
+          imagePullPolicy: Always
+          # Todo - Add script here for pulling the KMS keys from DB and pushing to S3
+          command: [ 'sh', '-c', 'echo "kms init container"' ]
+          envFrom:
+            - configMapRef:
+                name: pingdirectory-environment-variables
+            - configMapRef:
+                name: pingcommon-environment-variables
+          volumeMounts:
+            - name: ssh-dir
+              mountPath: /.ssh
+            - name: data-dir
+              mountPath: /data
+            - name: ssh-id-key-secret
+              mountPath: /id_rsa
+              subPath: id_rsa
+            - name: known-hosts-config
+              mountPath: /known_hosts
+              subPath: known_hosts
+            - name: pingdirectory-init
+              mountPath: /utils.lib.sh
+              subPath: utils.lib.sh
+            - name: pingdirectory-init
+              mountPath: /logger.lib.sh
+              subPath: logger.lib.sh
       containers:
         - name: pingdirectory
           securityContext:
