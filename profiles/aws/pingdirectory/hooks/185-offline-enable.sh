@@ -57,10 +57,23 @@ EOF
   done
 
   # Remove all existing multimaster synchronization entries
-  local ms_top_dn=",cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config"
+  local ms_top_dn="cn=domains,cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config"
 
   beluga_log "Removing all existing multimaster synchronization entries"
   grep -i "^dn:.*${ms_top_dn}$" < "${conf}" | tac |
+  while read -r dn; do
+    cat <<EOF >> "${mods}"
+${dn}
+changeType: delete
+
+EOF
+  done
+
+  # Remove all existing multimaster synchronization entries
+  local rs_top_dn="cn=replication-servers,cn=Server Groups,cn=Topology,cn=config"
+
+  beluga_log "Removing all existing multimaster synchronization entries"
+  grep -i "^dn:.*${rs_top_dn}$" < "${conf}" | tac |
   while read -r dn; do
     cat <<EOF >> "${mods}"
 ${dn}
