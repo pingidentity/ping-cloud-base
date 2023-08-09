@@ -1,7 +1,7 @@
 {
   "index_patterns": [
-    "pa-api-audit-*",
-    "pa-was-api-audit-*"
+    "pd-expensive-write-ops-*",
+    "pds-expensive-write-ops-*"
   ],
   "template": {
     "settings": {
@@ -33,24 +33,6 @@
             }
           }
         },
-        "authMech": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "client": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
         "cluster_name": {
           "type": "text",
           "fields": {
@@ -59,18 +41,6 @@
               "ignore_above": 256
             }
           }
-        },
-        "exchangeId": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "geoip": {
-          "type": "object"
         },
         "host": {
           "type": "text",
@@ -139,7 +109,7 @@
                     }
                   }
                 },
-                "cluster": {
+                "class": {
                   "type": "text",
                   "fields": {
                     "keyword": {
@@ -166,15 +136,6 @@
                     }
                   }
                 },
-                "pod-reaper": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword",
-                      "ignore_above": 256
-                    }
-                  }
-                },
                 "role": {
                   "type": "text",
                   "fields": {
@@ -185,7 +146,6 @@
                   }
                 },
                 "statefulset_kubernetes_io/pod-name": {
-                  "type": "text",
                   "fields": {
                     "keyword": {
                       "type": "keyword",
@@ -233,41 +193,8 @@
             }
           }
         },
-        "method": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "requestUri": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "responseCode": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "roundTripMS": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
+        "log_string": {
+          "type": "text"
         },
         "stream": {
           "type": "text",
@@ -278,43 +205,7 @@
             }
           }
         },
-        "subject": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
         "tags": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "threat_intel": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "tor_intel": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "trackingId": {
           "type": "text",
           "fields": {
             "keyword": {

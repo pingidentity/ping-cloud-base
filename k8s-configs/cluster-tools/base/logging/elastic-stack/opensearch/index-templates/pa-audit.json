@@ -1,6 +1,7 @@
 {
   "index_patterns": [
-    "pa-audit-*"
+    "pa-audit-*",
+    "pa-was-audit-*"
   ],
   "template": {
     "settings": {

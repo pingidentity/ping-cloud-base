@@ -1,7 +1,6 @@
 {
   "index_patterns": [
-    "pa-api-audit-*",
-    "pa-was-api-audit-*"
+    "pf-admin-log-*"
   ],
   "template": {
     "settings": {
@@ -33,24 +32,6 @@
             }
           }
         },
-        "authMech": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "client": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
         "cluster_name": {
           "type": "text",
           "fields": {
@@ -60,7 +41,25 @@
             }
           }
         },
-        "exchangeId": {
+        "component": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "event": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "eventDetailId": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -72,14 +71,8 @@
         "geoip": {
           "type": "object"
         },
-        "host": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
+        "ip": {
+          "type": "ip"
         },
         "kubernetes": {
           "properties": {
@@ -233,7 +226,7 @@
             }
           }
         },
-        "method": {
+        "message": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -242,43 +235,7 @@
             }
           }
         },
-        "requestUri": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "responseCode": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "roundTripMS": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "stream": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "subject": {
+        "roles": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -314,7 +271,7 @@
             }
           }
         },
-        "trackingId": {
+        "user": {
           "type": "text",
           "fields": {
             "keyword": {

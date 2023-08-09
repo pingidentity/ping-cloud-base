@@ -1,7 +1,7 @@
 {
   "index_patterns": [
-    "pa-api-audit-*",
-    "pa-was-api-audit-*"
+    "pa-pingaccess-*",
+    "pa-was-pingaccess-*"
   ],
   "template": {
     "settings": {
@@ -33,16 +33,7 @@
             }
           }
         },
-        "authMech": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "client": {
+        "className": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -68,9 +59,6 @@
               "ignore_above": 256
             }
           }
-        },
-        "geoip": {
-          "type": "object"
         },
         "host": {
           "type": "text",
@@ -224,6 +212,15 @@
             }
           }
         },
+        "logLevel": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
         "log_name": {
           "type": "text",
           "fields": {
@@ -233,34 +230,7 @@
             }
           }
         },
-        "method": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "requestUri": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "responseCode": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "roundTripMS": {
+        "message": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -270,51 +240,6 @@
           }
         },
         "stream": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "subject": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "tags": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "threat_intel": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "tor_intel": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "trackingId": {
           "type": "text",
           "fields": {
             "keyword": {

@@ -24,8 +24,8 @@ configMapGenerator:
       - pf-admin-audit.json
       - pf-admin-system.json
       - pf-audit.json
-      - pf-provision.json
+      - pf-provisioner.json
       - pf-requests.json
-      - pf-system.json
+      - pf-server.json
       - pf-transaction.json
       - general.json

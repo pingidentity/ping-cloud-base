@@ -1,6 +1,7 @@
 {
   "index_patterns": [
-    "pf-requests-*"
+    "pf-request-*",
+    "pf-request2-*"
   ],
   "template": {
     "settings": {

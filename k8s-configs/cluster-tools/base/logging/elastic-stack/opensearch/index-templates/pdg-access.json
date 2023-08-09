@@ -1,7 +1,6 @@
 {
   "index_patterns": [
-    "pa-api-audit-*",
-    "pa-was-api-audit-*"
+    "pdg-access-*"
   ],
   "template": {
     "settings": {
@@ -33,23 +32,11 @@
             }
           }
         },
-        "authMech": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
+        "bodySentBytes": {
+          "type": "integer"
         },
         "client": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
+          "type": "ip"
         },
         "cluster_name": {
           "type": "text",
@@ -60,18 +47,6 @@
             }
           }
         },
-        "exchangeId": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "geoip": {
-          "type": "object"
-        },
         "host": {
           "type": "text",
           "fields": {
@@ -80,6 +55,18 @@
               "ignore_above": 256
             }
           }
+        },
+        "httpForwardedFor": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "httpVersion": {
+          "type": "float"
         },
         "kubernetes": {
           "properties": {
@@ -139,34 +126,7 @@
                     }
                   }
                 },
-                "cluster": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword",
-                      "ignore_above": 256
-                    }
-                  }
-                },
-                "controller-revision-hash": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword",
-                      "ignore_above": 256
-                    }
-                  }
-                },
-                "entitled-app": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword",
-                      "ignore_above": 256
-                    }
-                  }
-                },
-                "pod-reaper": {
+                "pod-template-hash": {
                   "type": "text",
                   "fields": {
                     "keyword": {
@@ -176,15 +136,6 @@
                   }
                 },
                 "role": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword",
-                      "ignore_above": 256
-                    }
-                  }
-                },
-                "statefulset_kubernetes_io/pod-name": {
                   "type": "text",
                   "fields": {
                     "keyword": {
@@ -242,7 +193,7 @@
             }
           }
         },
-        "requestUri": {
+        "referrer": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -252,22 +203,7 @@
           }
         },
         "responseCode": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "roundTripMS": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
+          "type": "integer"
         },
         "stream": {
           "type": "text",
@@ -278,7 +214,7 @@
             }
           }
         },
-        "subject": {
+        "url": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -287,7 +223,7 @@
             }
           }
         },
-        "tags": {
+        "user": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -296,25 +232,7 @@
             }
           }
         },
-        "threat_intel": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "tor_intel": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "trackingId": {
+        "userAgent": {
           "type": "text",
           "fields": {
             "keyword": {

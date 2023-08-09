@@ -1,7 +1,7 @@
 {
   "index_patterns": [
-    "pa-api-audit-*",
-    "pa-was-api-audit-*"
+    "pd-replication-*",
+    "pds-replication-*"
   ],
   "template": {
     "settings": {
@@ -33,7 +33,7 @@
             }
           }
         },
-        "authMech": {
+        "attrs": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -42,7 +42,7 @@
             }
           }
         },
-        "client": {
+        "base": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -60,7 +60,34 @@
             }
           }
         },
-        "exchangeId": {
+        "conn": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "entriesReturned": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "etime": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "filter": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -70,9 +97,32 @@
           }
         },
         "geoip": {
-          "type": "object"
+          "dynamic": "true",
+          "properties": {
+            "ip": {
+              "type": "ip"
+            },
+            "latitude": {
+              "type": "half_float"
+            },
+            "location": {
+              "type": "geo_point"
+            },
+            "longitude": {
+              "type": "half_float"
+            }
+          }
         },
         "host": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "instanceName": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -139,7 +189,7 @@
                     }
                   }
                 },
-                "cluster": {
+                "class": {
                   "type": "text",
                   "fields": {
                     "keyword": {
@@ -158,15 +208,6 @@
                   }
                 },
                 "entitled-app": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword",
-                      "ignore_above": 256
-                    }
-                  }
-                },
-                "pod-reaper": {
                   "type": "text",
                   "fields": {
                     "keyword": {
@@ -224,6 +265,15 @@
             }
           }
         },
+        "ldapType": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
         "log_name": {
           "type": "text",
           "fields": {
@@ -233,7 +283,7 @@
             }
           }
         },
-        "method": {
+        "log_string": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -242,7 +292,7 @@
             }
           }
         },
-        "requestUri": {
+        "matchedDN": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -251,7 +301,7 @@
             }
           }
         },
-        "responseCode": {
+        "message": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -260,7 +310,115 @@
             }
           }
         },
-        "roundTripMS": {
+        "msgID": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "op": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "passwordUpdateBehaviorAllowPreEncodedPassword": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "preAuthZUsedPrivileges": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "qtime": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "requestControls": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "requestOID": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "requestType": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "requesterDN": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "requesterIP": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "resultCode": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "resultCodeName": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "scope": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -278,15 +436,6 @@
             }
           }
         },
-        "subject": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
         "tags": {
           "type": "text",
           "fields": {
@@ -296,7 +445,7 @@
             }
           }
         },
-        "threat_intel": {
+        "targetEntry": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -305,7 +454,7 @@
             }
           }
         },
-        "tor_intel": {
+        "threadID": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -314,7 +463,19 @@
             }
           }
         },
-        "trackingId": {
+        "timestamp": {
+          "type": "text"
+        },
+        "usedPrivileges": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "usingAdminSessionWorkerThread": {
           "type": "text",
           "fields": {
             "keyword": {

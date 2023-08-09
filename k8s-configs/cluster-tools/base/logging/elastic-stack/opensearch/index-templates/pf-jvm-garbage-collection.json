@@ -1,12 +1,11 @@
 {
   "index_patterns": [
-    "pa-api-audit-*",
-    "pa-was-api-audit-*"
+    "pf-jvm-garbage-collection-*"
   ],
   "template": {
     "settings": {
       "index.unassigned.node_left.delayed_timeout": "10m",
-      "index.number_of_shards": "3",
+      "index.number_of_shards": "1",
       "index.number_of_replicas": "1",
       "index.refresh_interval": "30s",
       "index": {
@@ -33,16 +32,7 @@
             }
           }
         },
-        "authMech": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "client": {
+        "categories": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -59,18 +49,6 @@
               "ignore_above": 256
             }
           }
-        },
-        "exchangeId": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "geoip": {
-          "type": "object"
         },
         "host": {
           "type": "text",
@@ -224,6 +202,15 @@
             }
           }
         },
+        "logLevel": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
         "log_name": {
           "type": "text",
           "fields": {
@@ -233,7 +220,7 @@
             }
           }
         },
-        "method": {
+        "message": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -242,25 +229,7 @@
             }
           }
         },
-        "requestUri": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "responseCode": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "roundTripMS": {
+        "secondsFromStart": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -270,51 +239,6 @@
           }
         },
         "stream": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "subject": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "tags": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "threat_intel": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "tor_intel": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
-        "trackingId": {
           "type": "text",
           "fields": {
             "keyword": {

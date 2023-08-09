@@ -1,7 +1,7 @@
 {
   "index_patterns": [
-    "pa-api-audit-*",
-    "pa-was-api-audit-*"
+    "pd-server-*",
+    "pds-server-*"
   ],
   "template": {
     "settings": {
@@ -33,7 +33,7 @@
             }
           }
         },
-        "authMech": {
+        "addedACIs": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -42,7 +42,16 @@
             }
           }
         },
-        "client": {
+        "admin-user": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "category": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -60,7 +69,7 @@
             }
           }
         },
-        "exchangeId": {
+        "conn": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -68,9 +77,6 @@
               "ignore_above": 256
             }
           }
-        },
-        "geoip": {
-          "type": "object"
         },
         "host": {
           "type": "text",
@@ -139,7 +145,7 @@
                     }
                   }
                 },
-                "cluster": {
+                "class": {
                   "type": "text",
                   "fields": {
                     "keyword": {
@@ -158,15 +164,6 @@
                   }
                 },
                 "entitled-app": {
-                  "type": "text",
-                  "fields": {
-                    "keyword": {
-                      "type": "keyword",
-                      "ignore_above": 256
-                    }
-                  }
-                },
-                "pod-reaper": {
                   "type": "text",
                   "fields": {
                     "keyword": {
@@ -233,7 +230,7 @@
             }
           }
         },
-        "method": {
+        "log_string": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -242,7 +239,7 @@
             }
           }
         },
-        "requestUri": {
+        "message": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -251,7 +248,7 @@
             }
           }
         },
-        "responseCode": {
+        "msgID": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -260,7 +257,52 @@
             }
           }
         },
-        "roundTripMS": {
+        "op": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "removedACIs": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "requesterDN": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "requesterIP": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "resource": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "severity": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -278,15 +320,6 @@
             }
           }
         },
-        "subject": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
-        },
         "tags": {
           "type": "text",
           "fields": {
@@ -296,7 +329,7 @@
             }
           }
         },
-        "threat_intel": {
+        "timestamp": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -305,7 +338,7 @@
             }
           }
         },
-        "tor_intel": {
+        "triggeredByConn": {
           "type": "text",
           "fields": {
             "keyword": {
@@ -314,7 +347,16 @@
             }
           }
         },
-        "trackingId": {
+        "triggeredByOp": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "userdn": {
           "type": "text",
           "fields": {
             "keyword": {
