@@ -30,7 +30,9 @@ compile:
  stage: compile
  tags:
    - default-gitlab-runner-test
- image: ${K8S_DEPLOY_TOOLS}
+ image:
+   name: ${K8S_DEPLOY_TOOLS}
+   pull_policy: always
  script:
    - ${SHARED_CI_SCRIPTS_DIR}/test.sh
 
