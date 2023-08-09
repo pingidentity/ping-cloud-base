@@ -14,16 +14,19 @@ configMapGenerator:
       - pa-admin-system.json
       - pa-api-audit.json
       - pa-audit.json
-      - pa-system.json
-      - pa-was-admin-audit.json
-      - pa-was-admin-system.json
-      - pa-was-audit.json
-      - pa-was-system.json
+      - pa-engine-audit.json
+      - pa-pingaccess.json
       - pd-access.json
+      - pd-errors.json
+      - pd-expensive-write-ops.json
       - pd-failed-ops.json
-      - pf-admin-audit.json
-      - pf-admin-system.json
+      - pd-replication.json
+      - pd-server.json
+      - pdg-access.json
+      - pf-admin-api.json
+      - pf-admin-log.json
       - pf-audit.json
+      - pf-jvm-garbage-collection.json
       - pf-provisioner.json
       - pf-requests.json
       - pf-server.json
