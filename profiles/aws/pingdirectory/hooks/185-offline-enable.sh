@@ -70,7 +70,7 @@ EOF
   done
 
   # Remove all existing multimaster synchronization entries
-  local rs_top_dn="cn=replication-servers,cn=Server Groups,cn=Topology,cn=config"
+  local rs_top_dn="cn=replication server,cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config"
 
   beluga_log "Removing all existing multimaster synchronization entries"
   grep -i "^dn:.*${rs_top_dn}$" < "${conf}" | tac |
