@@ -39,6 +39,7 @@
 - Healthcheck pods respond properly to SIGTERM
 - Update PCB with new Radius Proxy Image
 - Add p1as-beluga-tools microservice to PCB
+- Create PD init container for KMS
 
 _Changes:_
 
@@ -105,6 +106,7 @@ _Changes:_
 - [X] PDO-5801 Update cluster-autoscaler v1.27.0/1.27.1 for eks 1.27
 - [X] PDO-5813 Remove excessive patches for the second region
 - [X] PDO-5774 OS Index Policies: State Transitions Errors
+- [X] PDO-5835 Create PD init container for KMS
 
 ### 1.18.0.0
 
