@@ -36,13 +36,13 @@ compile:
  script:
    - ${SHARED_CI_SCRIPTS_DIR}/test.sh
 
-compile2:
-  stage: compile
-  tags:
-    - ecr-runner
-  image: ${K8S_DEPLOY_TOOLS}
-  script:
-    - ${SHARED_CI_SCRIPTS_DIR}/test.sh
+#compile2:
+#  stage: compile
+#  tags:
+#    - ecr-runner
+#  image: ${K8S_DEPLOY_TOOLS}
+#  script:
+#    - ${SHARED_CI_SCRIPTS_DIR}/test.sh
 
 ## Compile stage ##
 #compile:
