@@ -244,3 +244,4 @@ patchesStrategicMerge:
   ### CloudWatch is disabled by default in developer CDEs for cost savings
   ### If you want CloudWatch enabled in a developer CDE, make sure the below is commented out *in your CSR*
   # - ../base/cluster-tools/monitoring/remove-from-developer-cde-patch.yaml
+  # - ../base/cluster-tools/logging/remove-from-developer-cde-patch.yaml
