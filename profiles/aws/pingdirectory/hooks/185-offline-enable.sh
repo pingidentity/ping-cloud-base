@@ -57,7 +57,7 @@ EOF
   done
 
   # Remove all existing multimaster synchronization entries
-  local ms_top_dn="cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config"
+  local ms_top_dn=",cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config"
 
   beluga_log "Removing all existing multimaster synchronization entries"
   grep -i "^dn:.*${ms_top_dn}$" < "${conf}" | tac |
