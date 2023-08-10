@@ -127,8 +127,8 @@ replace: ds-cfg-replication-port
 ds-cfg-replication-port: 8989
 
 EOF
-    fi
-fi
+      fi
+  fi
 
   # Apply the list of modifications above to the configuration in order to produce
   # a new configuration.
