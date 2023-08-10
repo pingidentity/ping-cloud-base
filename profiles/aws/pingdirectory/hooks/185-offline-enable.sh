@@ -56,7 +56,7 @@ changeType: delete
 EOF
   done
 
-  # Remove all existing multimaster synchronization entries
+  # Remove all host domains entries from multimaster synchronization
   local ms_top_dn="cn=domains,cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config"
 
   beluga_log "Removing all existing multimaster synchronization entries"
@@ -69,52 +69,28 @@ changeType: delete
 EOF
   done
 
-  if [ "$(hostname)" = "pingdirectory-0" ]; then
-    # Do something if hostname is pingdirectory-0
-    echo "The hostname is pingdirectory-0"
+  local local_replication_server_id=$(cat "${removed_based_dns_topology_file}" | \
+    jq --arg host "${LOCAL_HOST_NAME}" '.serverInstances[] | select(.hostname == $host) | .replicationServerID')
 
-    # The DN of the replication server. This does not need to be quoted since it has
-    # no special characters.
-    rs_dn="cn=replication server,cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config"
+  echo "testing123: ${local_replication_server_id} ${PD_REPL_PORT}"
 
-    if grep -qi "^ *dn: *${rs_dn}$" < "${conf}"; then
-      beluga_log "Updating existing replication entries for replication server DN '${rs_dn}'"
-      cat << EOF >> "${mods}"
+  # The DN of the replication server. This does not need to be quoted since it has
+  # no special characters.
+  rs_dn="cn=replication server,cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config"
 
-dn: ${rs_dn}
-changeType: modify
-replace: ds-cfg-replication-server-id
-ds-cfg-replication-server-id: 1000
--
-replace: ds-cfg-replication-port
-ds-cfg-replication-port: 8989
-
-EOF
-    fi
-
-else
-
-    # Do something if hostname is pingdirectory-1
-    echo "The hostname is pingdirectory-1"
-
-    # The DN of the replication server. This does not need to be quoted since it has
-    # no special characters.
-    rs_dn="cn=replication server,cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config"
-
-    if grep -qi "^ *dn: *${rs_dn}$" < "${conf}"; then
-      beluga_log "Updating existing replication entries for replication server DN '${rs_dn}'"
-      cat << EOF >> "${mods}"
+  if grep -qi "^ *dn: *${rs_dn}$" < "${conf}"; then
+    beluga_log "Updating existing replication entries for replication server DN '${rs_dn}'"
+    cat << EOF >> "${mods}"
 
 dn: ${rs_dn}
 changeType: modify
 replace: ds-cfg-replication-server-id
-ds-cfg-replication-server-id: 1020
+ds-cfg-replication-server-id: ${local_replication_server_id}
 -
 replace: ds-cfg-replication-port
-ds-cfg-replication-port: 8989
+ds-cfg-replication-port: ${PD_REPL_PORT}
 
 EOF
-      fi
   fi
 
   # Apply the list of modifications above to the configuration in order to produce
