@@ -82,6 +82,54 @@ changeType: delete
 EOF
   done
 
+  if [ "$(hostname)" = "pingdirectory-0" ]; then
+    # Do something if hostname is pingdirectory-0
+    echo "The hostname is pingdirectory-0"
+
+    # The DN of the replication server. This does not need to be quoted since it has
+    # no special characters.
+    rs_dn="cn=replication server,cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config"
+
+    if grep -qi "^ *dn: *${rs_dn}$" < "${conf}"; then
+      beluga_log "Updating existing replication entries for replication server DN '${rs_dn}'"
+      cat << EOF >> "${mods}"
+
+dn: ${rs_dn}
+changeType: modify
+replace: ds-cfg-replication-server-id
+ds-cfg-replication-server-id: 1000
+-
+replace: ds-cfg-replication-port
+ds-cfg-replication-port: 8989
+
+EOF
+    fi
+
+else
+
+# Do something if hostname is pingdirectory-0
+    echo "The hostname is pingdirectory-1"
+
+    # The DN of the replication server. This does not need to be quoted since it has
+    # no special characters.
+    rs_dn="cn=replication server,cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config"
+
+    if grep -qi "^ *dn: *${rs_dn}$" < "${conf}"; then
+      beluga_log "Updating existing replication entries for replication server DN '${rs_dn}'"
+      cat << EOF >> "${mods}"
+
+dn: ${rs_dn}
+changeType: modify
+replace: ds-cfg-replication-server-id
+ds-cfg-replication-server-id: 1020
+-
+replace: ds-cfg-replication-port
+ds-cfg-replication-port: 8989
+
+EOF
+    fi
+fi
+
   # Apply the list of modifications above to the configuration in order to produce
   # a new configuration.
   if [ -s "${mods}" ]; then
