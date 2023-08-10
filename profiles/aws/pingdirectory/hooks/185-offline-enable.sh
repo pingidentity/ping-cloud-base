@@ -69,19 +69,6 @@ changeType: delete
 EOF
   done
 
-  # Remove all existing multimaster synchronization entries
-  local rs_top_dn="cn=replication server,cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config"
-
-  beluga_log "Removing all existing multimaster synchronization entries"
-  grep -i "^dn:.*${rs_top_dn}$" < "${conf}" | tac |
-  while read -r dn; do
-    cat <<EOF >> "${mods}"
-${dn}
-changeType: delete
-
-EOF
-  done
-
   if [ "$(hostname)" = "pingdirectory-0" ]; then
     # Do something if hostname is pingdirectory-0
     echo "The hostname is pingdirectory-0"
