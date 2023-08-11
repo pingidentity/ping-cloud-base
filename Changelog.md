@@ -41,11 +41,13 @@
 - Add p1as-beluga-tools microservice to PCB
 - Create PD init container for KMS
 - CloudWatch / New Relic: Disable logging for Dev clusters
+- Enabling weekend scheduled runs to different CDE types (dev/test/stage/prod/customer-hub)
 
 _Changes:_
 
 - [X] PDO-4606 Create a new init container to upgrade PA and PA-WAS and mount volume to admin pod once upgrade is successful
 - [X] PDO-4779 Modify seal.sh script to work for microservices
+- [X] PDO-4847 Add weekly pipeline run logic for PCB
 - [X] PDO-4857 Add Beluga Tools code-gen directory to PCB
 - [X] PDO-4868 Update update-cluster-state script for MonoRepo
 - [X] PDO-4896 Update ping-cloud-base karpenter version to v0.28.1

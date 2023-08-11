@@ -36,6 +36,10 @@ testWebSession() {
 }
 
 testPaSite() {
+  if [ "${ENV_TYPE}" == "customer-hub" ]; then
+    log "Customer-hub deployment, skipping test"
+    return 0
+  fi
   response=$(get_site "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "10")
   assertEquals "Response value was ${response}" 0 $?
 
@@ -44,6 +48,10 @@ testPaSite() {
 }
 
 testPfSite() {
+  if [ "${ENV_TYPE}" == "customer-hub" ]; then
+    log "Customer-hub deployment, skipping test"
+    return 0
+  fi
   response=$(get_site "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "20")
   assertEquals "Response value was ${response}" 0 $?
 
@@ -84,6 +92,10 @@ testArgocdSite() {
 }
 
 testPaVirtualHost() {
+  if [ "${ENV_TYPE}" == "customer-hub" ]; then
+    log "Customer-hub deployment, skipping test"
+    return 0
+  fi
   response=$(get_virtual_host "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "10")
   assertEquals "Response value was ${response}" 0 $?
 
@@ -98,6 +110,10 @@ testPaVirtualHost() {
 }
 
 testPfVirtualHost() {
+  if [ "${ENV_TYPE}" == "customer-hub" ]; then
+    log "Customer-hub deployment, skipping test"
+    return 0
+  fi
   response=$(get_virtual_host "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "20")
   assertEquals "Response value was ${response}" 0 $?
 
@@ -168,6 +184,10 @@ testArgocdVirtualHost() {
 }
 
 testPaApplication() {
+  if [ "${ENV_TYPE}" == "customer-hub" ]; then
+    log "Customer-hub deployment, skipping test"
+    return 0
+  fi
   response=$(get_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "10")
   assertEquals "Response value was ${response}" 0 $?
 
@@ -176,6 +196,10 @@ testPaApplication() {
 }
 
 testPfApplication() {
+  if [ "${ENV_TYPE}" == "customer-hub" ]; then
+    log "Customer-hub deployment, skipping test"
+    return 0
+  fi
   response=$(get_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "20")
   assertEquals "Response value was ${response}" 0 $?
 
@@ -227,7 +251,7 @@ testPaWasIdempotent() {
   export APP_ID=123
   export APP_NAME="TestApp"
   export VIRTUAL_HOST_ID=1
-  export SITE_ID=20
+  export SITE_ID=24 # SiteID coorelating to ArgoCD.  This will test will create a new application referencing the ArgoCD site.
 
   # Cleanup from possible previous run failures
   log "Deleting app: ${APP_NAME} if it exists"
@@ -241,10 +265,12 @@ testPaWasIdempotent() {
   response=$(create_site_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}")
   assertEquals "Response value was ${response}" 0 $?
 
-  log "Deleting PingAccess App"
-  pa_app_id=10
-  response=$(delete_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "${pa_app_id}")
-  assertEquals "Response value was ${response}" 0 $?
+  if [ "${ENV_TYPE}" != "customer-hub" ]; then
+    log "Deleting PingAccess App"
+    pa_app_id=10
+    response=$(delete_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "${pa_app_id}")
+    assertEquals "Response value was ${response}" 0 $?
+  fi
 
   log "Backing up PA-WAS"
   kubectl apply -f "${upload_job}" -n "${PING_CLOUD_NAMESPACE}"
@@ -262,9 +288,11 @@ testPaWasIdempotent() {
   kubectl wait --for=condition=ready --timeout=300s pod -l role=pingaccess-was-admin -n "${PING_CLOUD_NAMESPACE}"
   sleep 3
 
-  log "Verifying the PingAccess App recreated on restart"
-  response=$(get_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "${pa_app_id}")
-  assertEquals "The PingAccess App not present after restart: ${response}"  0 $?
+  if [ "${ENV_TYPE}" != "customer-hub" ]; then
+    log "Verifying the PingAccess App recreated on restart"
+    response=$(get_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "${pa_app_id}")
+    assertEquals "The PingAccess App not present after restart: ${response}"  0 $?
+  fi
 
   APP_ID=123 # Unset elsewhere
   log "Verifying the new App: ${APP_NAME} still present"

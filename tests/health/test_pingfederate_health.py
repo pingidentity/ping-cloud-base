@@ -1,10 +1,12 @@
-import unittest
-
-import requests
+import unittest, requests, os
 
 from health_common import Categories, TestHealthBase
 
 
+@unittest.skipIf(
+    os.environ.get("ENV_TYPE") == "customer-hub",
+    "Customer-hub CDE detected, skipping test module",
+)
 class TestPingFederateHealth(TestHealthBase):
     deployment_name = "healthcheck-pingfederate"
     label = f"role={deployment_name}"
@@ -14,8 +16,17 @@ class TestPingFederateHealth(TestHealthBase):
     admin_port_env_var = "PF_ADMIN_PORT"
 
     def setUp(self) -> None:
-        self.ping_cloud_ns = next((ns for ns in self.k8s.get_namespace_names() if ns.startswith(self.ping_cloud)), self.ping_cloud)
-        self.pod_names = self.k8s.get_deployment_pod_names("role=pingfederate-engine", self.ping_cloud_ns)
+        self.ping_cloud_ns = next(
+            (
+                ns
+                for ns in self.k8s.get_namespace_names()
+                if ns.startswith(self.ping_cloud)
+            ),
+            self.ping_cloud,
+        )
+        self.pod_names = self.k8s.get_deployment_pod_names(
+            "role=pingfederate-engine", self.ping_cloud_ns
+        )
 
     def test_pingfederate_health_deployment_exists(self):
         self.deployment_exists()
@@ -71,7 +82,10 @@ class TestPingFederateHealth(TestHealthBase):
     def test_health_check_has_pingdirectory_connection_results(self):
         test_results = self.get_test_results(self.pingfederate, Categories.connectivity)
         test_results = " ".join(test_results.keys())
-        expected_test_patterns = [f"{pod_name} can connect to datastore pingdirectory" for pod_name in self.pod_names]
+        expected_test_patterns = [
+            f"{pod_name} can connect to datastore pingdirectory"
+            for pod_name in self.pod_names
+        ]
         if self.assertTrue(len(expected_test_patterns) > 0):
             for expected_test in expected_test_patterns:
                 with self.subTest(expected_test):
