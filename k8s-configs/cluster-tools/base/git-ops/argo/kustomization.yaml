@@ -17,13 +17,13 @@ configMapGenerator:
       - install-custom-tools.sh
 
 # Point to the ping-cluster-tools repo equivalents pushed to ECR
-images:
-  - name: quay.io/argoproj/argocd
-    newName: argoproj/argocd
+# images:
+  # - name: quay.io/argoproj/argocd
+  #   newName: argoproj/argocd
   # - name: redis
   #   newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/redis
-  - name: ghcr.io/dexidp/dex
-    newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/dexidp/dex
+  # - name: ghcr.io/dexidp/dex
+  #   newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/dexidp/dex
 
 patches:
   - path: argo-notifications-cm.yaml
