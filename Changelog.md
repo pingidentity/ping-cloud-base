@@ -41,6 +41,7 @@
 - Add p1as-beluga-tools microservice to PCB
 - Create PD init container for KMS
 - CloudWatch / New Relic: Disable logging for Dev clusters
+- Fluent-Bit: change IMDS version to v2
 
 _Changes:_
 
@@ -108,6 +109,7 @@ _Changes:_
 - [X] PDO-5800 Update pd.profile to align with PingDirectory upgrade
 - [X] PDO-5801 Update cluster-autoscaler v1.27.0/1.27.1 for eks 1.27
 - [X] PDO-5813 Remove excessive patches for the second region
+- [X] PDO-5815 Fluent-Bit: change IMDS version to v2
 - [X] PDO-5835 Create PD init container for KMS
 
 ### 1.18.0.0
