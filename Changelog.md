@@ -98,6 +98,7 @@
 - Add REGION env var for healthcheck probes in customer hub
 - Fix IRSA role for pingfederate-admin-serviceaccount
 - Add "--skipPrime" flag to PD start-server script
+- Update PA-WAS admin/engine CSD upload job to reference PA-WAS CSD upload configMaps, rather than just pingaccess.  
 
 _Changes:_
 
@@ -226,6 +227,7 @@ _Changes:_
 - [X] PDO-5804 Add REGION env var for healthcheck probes in customer hub
 - [X] PDO-5832 Add "--skipPrime" flag to PD start-server script
 - [X] PDO-5869 Fix IRSA role for pingfederate-admin-serviceaccount
+- [X] PDO-5911 Update PA-WAS Admin CSD Upload job to use PA-WAS cm
 
 ### 1.17.0.0
 
