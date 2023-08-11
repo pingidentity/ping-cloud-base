@@ -32,6 +32,7 @@ spec:
             dependencyName: trigger-slack
             dataTemplate: |-
               *Status*: {{ .Input.body.emoji }}{{ (index .Input.body.alerts 0).status }}
+              *Severity*: {{ (index .Input.body.alerts 0).labels.severity }}
               *Description*: {{ (index .Input.body.alerts 0).annotations.description }}
               *Summary*: {{ (index .Input.body.alerts 0).annotations.summary }}
               {{if (index .Input.body.alerts 0).annotations.runbook}}
