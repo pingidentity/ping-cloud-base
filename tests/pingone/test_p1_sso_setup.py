@@ -5,7 +5,7 @@ import unittest
 import k8s_utils
 import p1_test_base
 
-
+@unittest.skipIf(os.environ.get('ENV_TYPE') == "customer-hub", "Customer-hub CDE detected, skipping test module")
 class TestP1SsoSetup(p1_test_base.P1TestBase):
     k8s = None
     ping_cloud_ns = ""

@@ -1,8 +1,12 @@
-import requests
+import requests, unittest, os
 
 from health_common import Categories, TestHealthBase
 
 
+@unittest.skipIf(
+    os.environ.get("ENV_TYPE") == "customer-hub",
+    "Customer-hub CDE detected, skipping test module",
+)
 class TestPingDirectoryHealth(TestHealthBase):
     deployment_name = "healthcheck-pingdirectory"
     label = f"role={deployment_name}"
@@ -13,16 +17,33 @@ class TestPingDirectoryHealth(TestHealthBase):
     prometheus_port = "9090"
 
     def setUp(self) -> None:
-        self.ping_cloud_ns = next((ns for ns in self.k8s.get_namespace_names() if ns.startswith(self.ping_cloud)), self.ping_cloud)
-        self.pod_names = self.k8s.get_deployment_pod_names("class=pingdirectory-server", self.ping_cloud_ns)
-        self.env_vars = self.k8s.get_configmap_values(self.ping_cloud, self.configmap_name)
+        self.ping_cloud_ns = next(
+            (
+                ns
+                for ns in self.k8s.get_namespace_names()
+                if ns.startswith(self.ping_cloud)
+            ),
+            self.ping_cloud,
+        )
+        self.pod_names = self.k8s.get_deployment_pod_names(
+            "class=pingdirectory-server", self.ping_cloud_ns
+        )
+        self.env_vars = self.k8s.get_configmap_values(
+            self.ping_cloud, self.configmap_name
+        )
         self.k8s_cluster_name = f"{self.env_vars.get('CLUSTER_NAME', '')}-{self.env_vars.get('TENANT_NAME')}-{self.env_vars.get('REGION')}"
 
     def prometheus_test_patterns_by_pod(self, query: str):
         # baseDN pattern (k8s-cluster-name pingdirectory-N example.com query)
-        patterns = [rf"{self.k8s_cluster_name} {name} \w+\.*\w+ {query}" for name in self.pod_names]
+        patterns = [
+            rf"{self.k8s_cluster_name} {name} \w+\.*\w+ {query}"
+            for name in self.pod_names
+        ]
         # appintegrations pattern (k8s-cluster-name pingdirectory-N o_appintegrations_query)
-        patterns += [f"{self.k8s_cluster_name} {name} o_appintegrations_{query}" for name in self.pod_names]
+        patterns += [
+            f"{self.k8s_cluster_name} {name} o_appintegrations_{query}"
+            for name in self.pod_names
+        ]
         return patterns
 
     def test_pingdirectory_health_deployment_exists(self):
@@ -60,7 +81,9 @@ class TestPingDirectoryHealth(TestHealthBase):
     def test_health_check_has_failed_replayed_updates_results(self):
         test_results = self.get_test_results(self.pingdirectory, Categories.data)
         test_results = " ".join(test_results.keys())
-        expected_test_patterns = self.prometheus_test_patterns_by_pod("replica_failed_replayed_updates")
+        expected_test_patterns = self.prometheus_test_patterns_by_pod(
+            "replica_failed_replayed_updates"
+        )
         for expected_test in expected_test_patterns:
             with self.subTest(expected_test):
                 self.assertRegex(
@@ -72,7 +95,9 @@ class TestPingDirectoryHealth(TestHealthBase):
     def test_health_check_has_unresolved_naming_conflicts_results(self):
         test_results = self.get_test_results(self.pingdirectory, Categories.data)
         test_results = " ".join(test_results.keys())
-        expected_test_patterns = self.prometheus_test_patterns_by_pod("replica_unresolved_naming_conflicts")
+        expected_test_patterns = self.prometheus_test_patterns_by_pod(
+            "replica_unresolved_naming_conflicts"
+        )
         for expected_test in expected_test_patterns:
             with self.subTest(expected_test):
                 self.assertRegex(

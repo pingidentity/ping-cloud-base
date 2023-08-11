@@ -10,6 +10,10 @@ fi
 
 # test ping access admin user
 test_ping_user_pa_admin() {
+  if [ "${ENV_TYPE}" == "customer-hub" ]; then
+    log "Customer-hub deployment, skipping test"
+    return 0
+  fi
 
   verify_ping_user "pingaccess-admin-0" "pingaccess-admin"
 
@@ -17,6 +21,10 @@ test_ping_user_pa_admin() {
 
 # test ping access engine user
 test_ping_user_pa_engine() {
+  if [ "${ENV_TYPE}" == "customer-hub" ]; then
+    log "Customer-hub deployment, skipping test"
+    return 0
+  fi
 
   # test pingaccess-0 server
   verify_ping_user "pingaccess-0" "pingaccess"
@@ -43,6 +51,10 @@ test_ping_user_pa_was_engine() {
 
 # test ping federate admin user
 test_ping_user_pf_admin() {
+  if [ "${ENV_TYPE}" == "customer-hub" ]; then
+    log "Customer-hub deployment, skipping test"
+    return 0
+  fi  
 
   verify_ping_user "pingfederate-admin-0" "pingfederate-admin"
 
@@ -50,6 +62,10 @@ test_ping_user_pf_admin() {
 
 # test ping federate engine user
 test_ping_user_pf_engine() {
+  if [ "${ENV_TYPE}" == "customer-hub" ]; then
+    log "Customer-hub deployment, skipping test"
+    return 0
+  fi  
  
   # test pingfederate-0 server
   verify_ping_user "pingfederate-0" "pingfederate"
@@ -61,6 +77,10 @@ test_ping_user_pf_engine() {
 
 # test ping directory user
 test_ping_user_pd() {
+  if [ "${ENV_TYPE}" == "customer-hub" ]; then
+    log "Customer-hub deployment, skipping test"
+    return 0
+  fi  
   
   # test pingdirectory-0 server
   verify_ping_user "pingdirectory-0" "pingdirectory"
@@ -72,7 +92,11 @@ test_ping_user_pd() {
 
 # test ping delegator user
 test_ping_user_pdel() {
-  
+  if [ "${ENV_TYPE}" == "customer-hub" ]; then
+    log "Customer-hub deployment, skipping test"
+    return 0
+  fi
+
   # get pingdelegator pod name
   pingdelegator_pods=$(kubectl get pod -n "${PING_CLOUD_NAMESPACE}" --field-selector=status.phase=Running --no-headers -o custom-columns=":metadata.name"  | grep pingdelegator)
 
@@ -98,6 +122,10 @@ test_ping_user_pc() {
 
   # test ping datasync user
 test_ping_user_pds() {
+  if [ "${ENV_TYPE}" == "customer-hub" ]; then
+    log "Customer-hub deployment, skipping test"
+    return 0
+  fi  
   
   # get pingdatasync pod name
   pingdatasync_pods=$(kubectl get pod -n "${PING_CLOUD_NAMESPACE}" --field-selector=status.phase=Running --no-headers -o custom-columns=":metadata.name"  | grep pingdatasync)

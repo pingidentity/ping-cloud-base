@@ -6,7 +6,7 @@ import seleniumbase
 
 import pingone_ui as p1_ui
 
-
+@unittest.skipIf(os.environ.get('ENV_TYPE') == "customer-hub", "Customer-hub CDE detected, skipping test module")
 class TestPFAdminSSO(seleniumbase.BaseCase):
     pf_admin_public_hostname = os.getenv(
         "PF_ADMIN_PUBLIC_HOSTNAME",
