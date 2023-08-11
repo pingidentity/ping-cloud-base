@@ -13,9 +13,10 @@ groups:
     for: 60s
     labels:
       service: postgresql
-      severity: critical
+      severity: alert
       severity_num: 300
     annotations:
+      description: 'Postgres Exporter scrape errors'
       summary: 'Postgres Exporter running on {{ $labels.cluster }} (instance: {{ $labels.pod }}) is encountering scrape errors processing queries. Error count: ( {{ $value }} )'
 
 
@@ -28,7 +29,8 @@ groups:
       severity: critical
       severity_num: 300
     annotations:
-      summary: 'postgres_exporter running on {{ $labels.pod }} is unable to communicate with the configured database'
+      description: 'Postgres Exporter connections issue'
+      summary: 'Postgres Exporter running on {{ $labels.pod }} is unable to communicate with the configured database'
 
 
 # Example to check for current version of PostgreSQL. Metric returns the version that the exporter is running on, so you can set a rule to check for the minimum version you'd like all systems to be on. Number returned is the 6 digit integer representation contained in the setting "server_version_num".
@@ -178,7 +180,7 @@ groups:
       severity_num: 200
     annotations:
       description: 'PGSQL Instance {{ $labels.deployment }} over 75% disk usage at mount point "{{ $labels.mount_point }}": {{ $value }}%'
-      summary: PGSQL Instance usage warning
+      summary: 'PGSQL Instance usage warning'
 
   - alert: PGDiskSize
     expr: 100 * ((ccp_nodemx_data_disk_total_bytes - ccp_nodemx_data_disk_available_bytes) / ccp_nodemx_data_disk_total_bytes) > 90
@@ -288,6 +290,7 @@ groups:
         severity_num: 300
     annotations:
         description: 'Count of sequences on instance {{ $labels.cluster }} at over 75% usage: {{ $value }}. Run following query to see full sequence status: SELECT * FROM monitor.sequence_status() WHERE percent >= 75'
+        summary: 'PG Sequences too high usage'
 
   - alert: PGSettingsPendingRestart
     expr: ccp_settings_pending_restart_count > 0
@@ -298,6 +301,7 @@ groups:
         severity_num: 300
     annotations:
         description: 'One or more settings in the pg_settings system catalog on system {{ $labels.cluster }} are in a pending_restart state. Check the system catalog for which settings are pending and review postgresql.conf for changes.'
+        summary: 'PG configuration changed. Restart pending'
 
 ########## PGBACKREST RULES ##########
 #
@@ -321,7 +325,8 @@ groups:
        severity: critical
        severity_num: 300
     annotations:
-       summary: 'Full backup for stanza [db] on cluster {{ $labels.cluster }} has not completed in the last week.'
+       summary: 'Full backup too old'
+       description: 'Full backup for stanza [db] on cluster {{ $labels.cluster }} has not completed in the last week.'
 
   - alert: PGBackRestLastCompletedIncr_main
     expr: ccp_backrest_last_incr_backup_time_since_completion_seconds{stanza="db", role="master"} > 86400
@@ -331,7 +336,8 @@ groups:
        severity: critical
        severity_num: 300
     annotations:
-       summary: 'Incremental backup for stanza [db] on cluster {{ $labels.cluster }} has not completed in the last 24 hours.'
+       summary: 'Incremental backup too old'
+       description: 'Incremental backup for stanza [db] on cluster {{ $labels.cluster }} has not completed in the last 24 hours.'
 #
 #
 # Runtime monitoring is handled with a single metric:
@@ -357,10 +363,11 @@ groups:
     for: 60s
     labels:
        service: postgresql
-       severity: critical
+       severity: alert
        severity_num: 300
     annotations:
-       summary: 'Expected runtime of diff backup for stanza [db] has exceeded 1 hour'
+      summary: 'Diff backup took too long'
+      description: 'Expected runtime of diff backup for stanza [db] has exceeded 1 hour'
 ##
 #
 ## If the pgbackrest command fails to run, the metric disappears from the exporter output and the alert never fires.
@@ -377,5 +384,5 @@ groups:
       severity: critical
       severity_num: 300
     annotations:
-      summary: Full backup missing
+      summary: 'Full backup missing'
       description: 'Backup Full status missing for pf-provisioning. Check that pgbackrest info command is working on target system.'

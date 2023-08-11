@@ -18,7 +18,7 @@ groups:
     expr: sum(increase(fluentbit_output_retries_total[1m])) by (name) > 50
     for: 10m
     labels:
-      severity: critical
+      severity: alert
     annotations:
       summary: FluentBit has many retries in the output {{ $labels.name }}
       description: "A FluentBit has many retries in the output. Possible {{ $labels.name }} output is down.\n  VALUE = {{ $value }}\nLABELS = {{ $labels }}"
@@ -28,7 +28,7 @@ groups:
     expr: delta(logstash_node_queue_events[1m]) > 10000
     for: 10m
     labels:
-      severity: critical
+      severity: alert
     annotations:
       summary: Logstash pipeline {{ $labels.pipeline }} is growing on {{ $labels.instance }}.
       description: "A Logstash pipeline is growing. Possible {{ $labels.pipeline }} is overloaded or logs spike.\nVALUE = {{ $value }}\nLABELS = {{ $labels }}"
@@ -151,7 +151,7 @@ groups:
       ) > 90
     for: 5m
     labels:
-      severity: high
+      severity: critical
   - alert: OpenSearchJVMHeapUseHigh
     annotations:
       description: "JVM Heap usage on the node {{ $labels.node }} in {{ $labels.cluster }} cluster is {{ $value }}%."
