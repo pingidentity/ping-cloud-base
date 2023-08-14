@@ -56,7 +56,7 @@ changeType: delete
 EOF
   done
 
-  # Remove all host domains entries from multimaster synchronization
+  # Remove all existing multimaster synchronization entries
   local ms_top_dn="cn=domains,cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config"
 
   beluga_log "Removing all existing multimaster synchronization entries"
@@ -68,6 +68,49 @@ changeType: delete
 
 EOF
   done
+
+  # Apply the list of modifications above to the configuration in order to produce
+  # a new configuration.
+  if [ -s "${mods}" ]; then
+    beluga_log "Modifications being applied from ${mods} LDIF file:"
+    cat "${mods}"
+
+    beluga_log "Calling ldifmodify for mods '${mods}'"
+    ldifmodify --doNotWrap --stripTrailingSpaces --sourceLDIF "${conf}" --changesLDIF "${mods}" --targetLDIF  "${conf}.new"
+    if test $? -ne 0; then
+      return 1
+    fi
+
+    # Since the above was successful move the new configuration into place so that
+    # dsconfig can act on it.
+    mv -f "${conf}.new" "${conf}"
+
+    # Remove zero ports (unused ports).
+    local conf_no_zero_ports="${tmp_dir}/conf-no-zero-ports.ldif"
+    grep -vE "^ *ds-cfg-(ldap|ldaps|replication)-port *: * 0 *$" "${conf}" > "${conf_no_zero_ports}"
+
+    local lines_with=$(set -- $(wc -l "${conf}"); echo $1)
+    local lines_without=$(set -- $(wc -l "${conf_no_zero_ports}"); echo $1)
+    local lines_removed=$((lines_with - lines_without))
+
+    if [ ${lines_removed} -gt 0 ]; then
+      mv -f "${conf_no_zero_ports}" "${conf}"
+      beluga_log "Removed ${lines_removed} zero (unused) ports from ${conf}."
+    else
+      beluga_log "There are no zero (unused) ports in ${conf}."
+    fi
+
+    chmod 600 "${conf}"
+  fi
+
+  return 0
+}
+
+update_cn_replication_server() {
+
+  # Modifications to be applied to config.ldif.
+  local mods="${tmp_dir}/mods.ldif"
+  rm -f "${mods}"
 
   set -o pipefail # set status to failure if jq command fails in pipe.
     local jq_status
@@ -143,7 +186,7 @@ EOF
 
   echo "testing 123 ${local_host} ${local_replication_server_id} ${repl_port_base}"
 
-  # Update cn=replication server with the replicationServerID from topology JSON file
+  # If cn=replication is found, update its entry with the correct local replicationServerID from topology JSON file
   rs_dn="cn=replication server,cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config"
 
   if grep -qi "^ *dn: *${rs_dn}$" < "${conf}"; then
@@ -176,22 +219,6 @@ EOF
     # Since the above was successful move the new configuration into place so that
     # dsconfig can act on it.
     mv -f "${conf}.new" "${conf}"
-
-    # Remove zero ports (unused ports).
-    local conf_no_zero_ports="${tmp_dir}/conf-no-zero-ports.ldif"
-    grep -vE "^ *ds-cfg-(ldap|ldaps|replication)-port *: * 0 *$" "${conf}" > "${conf_no_zero_ports}"
-
-    local lines_with=$(set -- $(wc -l "${conf}"); echo $1)
-    local lines_without=$(set -- $(wc -l "${conf_no_zero_ports}"); echo $1)
-    local lines_removed=$((lines_with - lines_without))
-
-    if [ ${lines_removed} -gt 0 ]; then
-      mv -f "${conf_no_zero_ports}" "${conf}"
-      beluga_log "Removed ${lines_removed} zero (unused) ports from ${conf}."
-    else
-      beluga_log "There are no zero (unused) ports in ${conf}."
-    fi
-
     chmod 600 "${conf}"
   fi
 
@@ -249,6 +276,11 @@ dsreplication enable-with-static-topology \
   ${all_base_dns}
 if test $? -ne 0; then
   beluga_error "An error occurred calling dsreplication enable-with-static-topology"
+  exit 1
+fi
+
+if ! update_cn_replication_server; then
+  beluga_error "Updating CN replication server"
   exit 1
 fi
 
