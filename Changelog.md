@@ -43,6 +43,7 @@
 - Create PD init container for KMS
 - CloudWatch / New Relic: Disable logging for Dev clusters
 - Enabling weekend scheduled runs to different CDE types (dev/test/stage/prod/customer-hub)
+- Fix: opensearch-bootstrap job in a second region can't connect to OpenSearch
 
 _Changes:_
 
@@ -113,6 +114,7 @@ _Changes:_
 - [X] PDO-5801 Update cluster-autoscaler v1.27.0/1.27.1 for eks 1.27
 - [X] PDO-5813 Remove excessive patches for the second region
 - [X] PDO-5835 Create PD init container for KMS
+- [X] PDO-5924 Multi-Region CDE: opensearch-bootstrap job in a second region can't connect to OpenSearch
 
 ### 1.18.0.0
 
