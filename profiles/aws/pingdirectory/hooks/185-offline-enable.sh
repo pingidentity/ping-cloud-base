@@ -95,7 +95,7 @@ EOF
 
     # Get local region hostname from the descriptor JSON file
     local_host_name=$(cat "${descriptor_json_file}" | \
-      jq -r --arg region_nick_name "${REGION_NICK_NAME}" '.[${region_nick_name}].hostname')
+      jq -r --arg region_nick_name "${REGION_NICK_NAME}" '.[$region_nick_name].hostname')
     jq_status=$?
 
     test ${jq_status} -ne 0 && \
@@ -104,7 +104,7 @@ EOF
 
     # Get local replicationServerID from the topology JSON file
     local_replication_server_id=$(cat "${removed_based_dns_topology_file}" | \
-      jq --arg host "${local_host_name}" '.serverInstances[] | select(.hostname == ${host}) | .replicationServerID')
+      jq --arg host "${local_host_name}" '.serverInstances[] | select(.hostname == $host) | .replicationServerID')
     jq_status=$?
 
     test ${jq_status} -ne 0 && \
