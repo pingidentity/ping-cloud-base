@@ -69,13 +69,52 @@ changeType: delete
 EOF
   done
 
-  local local_replication_server_id=$(cat "${removed_based_dns_topology_file}" | \
-    jq --arg host "${LOCAL_HOST_NAME}" '.serverInstances[] | select(.hostname == $host) | .replicationServerID')
+  set -o pipefail # set status to failure if jq command fails in pipe.
+    local jq_status
+    local descriptor_json_file
+    local repl_port_base
+    local local_host_name
+    local local_replication_server_id
 
-  echo "testing123: ${local_replication_server_id} ${PD_REPL_PORT}"
+    # Get the descriptor JSON file that is set by the 185-offline-enable-wrapper.sh file
+    descriptor_json_file=$(cat "${offline_wrapper_json}" | \
+      jq -r '.descriptor_json')
+    jq_status=$?
 
-  # The DN of the replication server. This does not need to be quoted since it has
-  # no special characters.
+    test ${jq_status} -ne 0 && \
+      beluga_error "Something went wrong parsing and retrieving the descriptor_json from the offline_wrapper_json file" && \
+      return 1
+
+    repl_port_base=$(cat "${offline_wrapper_json}" | \
+          jq -r '.repl_port_base')
+    jq_status=$?
+
+    test ${jq_status} -ne 0 && \
+      beluga_error "Something went wrong parsing and retrieving the repl_port_base from the offline_wrapper_json file" && \
+      return 1
+
+    # Get local region hostname from the descriptor JSON file
+    local_host_name=$(cat "${descriptor_json_file}" | \
+      jq -r --arg region_nick_name "${REGION_NICK_NAME}" '.[${region_nick_name}].hostname')
+    jq_status=$?
+
+    test ${jq_status} -ne 0 && \
+      beluga_error "Something went wrong parsing and retrieving the region nick name from the descriptor json file" && \
+      return 1
+
+    # Get local replicationServerID from the topology JSON file
+    local_replication_server_id=$(cat "${removed_based_dns_topology_file}" | \
+      jq --arg host "${local_host_name}" '.serverInstances[] | select(.hostname == ${host}) | .replicationServerID')
+    jq_status=$?
+
+    test ${jq_status} -ne 0 && \
+      beluga_error "Something went wrong parsing and retrieving the replicationServerID from the topology JSON file" && \
+      return 1
+  set +o pipefail # reset status handling when future pipes fail.
+
+  echo "testing 123 ${local_host_name} ${local_replication_server_id} ${repl_port_base}"
+
+  # Update cn=replication server with the replicationServerID from topology JSON file
   rs_dn="cn=replication server,cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config"
 
   if grep -qi "^ *dn: *${rs_dn}$" < "${conf}"; then
@@ -88,7 +127,7 @@ replace: ds-cfg-replication-server-id
 ds-cfg-replication-server-id: ${local_replication_server_id}
 -
 replace: ds-cfg-replication-port
-ds-cfg-replication-port: ${PD_REPL_PORT}
+ds-cfg-replication-port: ${repl_port_base}
 
 EOF
   fi
