@@ -21,7 +21,7 @@ spec:
           allowPrivilegeEscalation: false
         env:
           - name: OS_HOST
-            value: "opensearch-cluster-headless.elastic-stack-logging.svc.cluster.local"
+            value: "opensearch-cluster-master.elastic-stack-logging.svc.cluster.local"
           - name: OS_PORT
             value: "9200"
           - name: BOOTSTRAP_USER
