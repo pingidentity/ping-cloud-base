@@ -1,5 +1,13 @@
 # Changelog
 
+### 1.17.2.0
+
+- Create new AES-256 encryption settings for all PingDirectory servers
+
+_Changes:_
+
+- [X] PDO-5955 Create new AES-256 encryption settings for all PingDirectory servers
+
 ### 1.17.1.0
 
 - Modify Prometheus query for all backup alerting to only include the primary pod
