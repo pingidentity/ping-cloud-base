@@ -75,6 +75,10 @@ EOF
     local repl_port_base
     local local_host_name
     local local_replication_server_id
+    local local_region
+    local local_ordinal
+    local k8s_statefulset_name
+    local local_host
 
     # Get the descriptor JSON file that is set by the 185-offline-enable-wrapper.sh file
     descriptor_json_file=$(cat "${offline_wrapper_json}" | \
@@ -93,9 +97,33 @@ EOF
       beluga_error "Something went wrong parsing and retrieving the repl_port_base from the offline_wrapper_json file" && \
       return 1
 
+    local_region=$(cat "${offline_wrapper_json}" | \
+          jq -r '.local_region')
+    jq_status=$?
+
+    test ${jq_status} -ne 0 && \
+      beluga_error "Something went wrong parsing and retrieving the local_region from the offline_wrapper_json file" && \
+      return 1
+
+    local_ordinal=$(cat "${offline_wrapper_json}" | \
+          jq -r '.local_ordinal')
+    jq_status=$?
+
+    test ${jq_status} -ne 0 && \
+      beluga_error "Something went wrong parsing and retrieving the local_ordinal from the offline_wrapper_json file" && \
+      return 1
+
+    k8s_statefulset_name=$(cat "${offline_wrapper_json}" | \
+          jq -r '.k8s_statefulset_name')
+    jq_status=$?
+
+    test ${jq_status} -ne 0 && \
+      beluga_error "Something went wrong parsing and retrieving the k8s_statefulset_name from the offline_wrapper_json file" && \
+      return 1
+
     # Get local region hostname from the descriptor JSON file
     local_host_name=$(cat "${descriptor_json_file}" | \
-      jq -r --arg region_nick_name "${REGION_NICK_NAME}" '.[$region_nick_name].hostname')
+      jq -r --arg local_region "${local_region}" '.[$local_region].hostname')
     jq_status=$?
 
     test ${jq_status} -ne 0 && \
@@ -103,8 +131,9 @@ EOF
       return 1
 
     # Get local replicationServerID from the topology JSON file
+    local_host="${k8s_statefulset_name}-${local_ordinal}.${local_host_name}"
     local_replication_server_id=$(cat "${removed_based_dns_topology_file}" | \
-      jq --arg host "${local_host_name}" '.serverInstances[] | select(.hostname == $host) | .replicationServerID')
+      jq --arg local_host "${local_host}" '.serverInstances[] | select(.hostname == $local_host) | .replicationServerID')
     jq_status=$?
 
     test ${jq_status} -ne 0 && \
@@ -112,7 +141,7 @@ EOF
       return 1
   set +o pipefail # reset status handling when future pipes fail.
 
-  echo "testing 123 ${local_host_name} ${local_replication_server_id} ${repl_port_base}"
+  echo "testing 123 ${local_host} ${local_replication_server_id} ${repl_port_base}"
 
   # Update cn=replication server with the replicationServerID from topology JSON file
   rs_dn="cn=replication server,cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config"
