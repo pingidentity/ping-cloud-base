@@ -19,7 +19,7 @@ stages:
 ## Global environment variables ##
 variables:
   DELETE_ENV_AFTER_PIPELINE: 'true'
-  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.19.8.0
+  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.19.9.0
   SHARED_CI_SCRIPTS_DIR: "/ci-scripts"
   BRANCH_SKIP_TESTS: >
     pingaccess/08-artifact-test.sh
@@ -89,6 +89,33 @@ pa-was-integration-tests:
   - health
   - pingone
 
+#################################################
+# All integration tests defined to run on the  #
+# traditionally deployed P1AS                  #
+################################################
+.schedule-tests: &schedule-tests
+  - pingdirectory
+  - pingdelegator
+  - pingfederate
+  - pingaccess
+  - pingcloud-services
+  - pingdatasync
+  - common
+  - monitoring
+  - health
+  - pingone
+
+################################################
+# All integration tests defined to run on the  #
+# traditionally deployed P1AS                  #
+################################################
+.chub-tests: &chub-tests
+  - pingcloud-services
+  - pingcentral
+  - common
+  - monitoring
+  - health
+  
 .integration-tests-base:
   variables:
     TEST: ""
@@ -114,7 +141,29 @@ integration-tests:
   parallel:
     matrix:
       - TEST: *all-tests
+  rules:
+    - if:  '$ENV_TYPE == null && $CI_PIPELINE_SOURCE != "schedule"'
 
+integration-tests-scheduled-pipeline:
+  extends: .integration-tests-base
+  variables:
+    TEST: ${TEST}
+  parallel:
+    matrix:
+      - TEST: *schedule-tests
+  rules:
+    - if: '$ENV_TYPE != "customer-hub" && $CI_PIPELINE_SOURCE == "schedule"'
+
+integration-tests-chub:
+  extends: .integration-tests-base
+  variables:
+    TEST: ${TEST}
+  parallel:
+    matrix:
+      - TEST: *chub-tests
+  rules:
+  - if: '$ENV_TYPE == "customer-hub"'
+      
 ## Chaos testing stage ##
 chaos-tests:
   stage: chaos

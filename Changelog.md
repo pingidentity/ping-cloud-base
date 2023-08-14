@@ -38,14 +38,17 @@
 - Update cluster-autoscaler v1.27.0/1.27.1 for eks 1.27
 - Healthcheck pods respond properly to SIGTERM
 - Update PCB with new Radius Proxy Image
+- Unify severity format for all prometheus alerts
 - Add p1as-beluga-tools microservice to PCB
 - Create PD init container for KMS
 - CloudWatch / New Relic: Disable logging for Dev clusters
+- Enabling weekend scheduled runs to different CDE types (dev/test/stage/prod/customer-hub)
 
 _Changes:_
 
 - [X] PDO-4606 Create a new init container to upgrade PA and PA-WAS and mount volume to admin pod once upgrade is successful
 - [X] PDO-4779 Modify seal.sh script to work for microservices
+- [X] PDO-4847 Add weekly pipeline run logic for PCB
 - [X] PDO-4857 Add Beluga Tools code-gen directory to PCB
 - [X] PDO-4868 Update update-cluster-state script for MonoRepo
 - [X] PDO-4896 Update ping-cloud-base karpenter version to v0.28.1
@@ -105,6 +108,7 @@ _Changes:_
 - [X] PDO-5762 CloudWatch / New Relic: Disable logging for Dev clusters
 - [X] PDO-5770 Update update-profile-repo script for MonoRepo
 - [X] PDO-5774 OS Index Policies: State Transitions Errors
+- [X] PDO-5797 Unify severity format for all prometheus alerts
 - [X] PDO-5800 Update pd.profile to align with PingDirectory upgrade
 - [X] PDO-5801 Update cluster-autoscaler v1.27.0/1.27.1 for eks 1.27
 - [X] PDO-5813 Remove excessive patches for the second region
