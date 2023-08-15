@@ -69,17 +69,17 @@ changeType: delete
 EOF
   done
 
-    # If cn=replication is found, update its entry with the correct local replicationServerID from topology JSON file
-    rs_dn="cn=replication server,cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config"
+  # If cn=replication is found, update its entry with the correct local replicationServerID from topology JSON file
+  rs_dn="cn=replication server,cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config"
 
-    beluga_log "Removing replication server entry"
-    grep -i "^dn:.*${rs_dn}$" < "${conf}" | tac |
-    while read -r dn; do
-  cat <<EOF >> "${mods}"
-  ${dn}
-  changeType: delete
+  beluga_log "Removing replication server entry"
+  grep -i "^dn:.*${rs_dn}$" < "${conf}" | tac |
+  while read -r dn; do
+    cat <<EOF >> "${mods}"
+${dn}
+changeType: delete
 
-  EOF
+EOF
     done
 
   # Apply the list of modifications above to the configuration in order to produce
