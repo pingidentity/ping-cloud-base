@@ -69,6 +69,19 @@ changeType: delete
 EOF
   done
 
+    # If cn=replication is found, update its entry with the correct local replicationServerID from topology JSON file
+    rs_dn="cn=replication server,cn=Multimaster Synchronization,cn=Synchronization Providers,cn=config"
+
+    beluga_log "Removing replication server entry"
+    grep -i "^dn:.*${rs_dn}$" < "${conf}" | tac |
+    while read -r dn; do
+  cat <<EOF >> "${mods}"
+  ${dn}
+  changeType: delete
+
+  EOF
+    done
+
   # Apply the list of modifications above to the configuration in order to produce
   # a new configuration.
   if [ -s "${mods}" ]; then
@@ -279,10 +292,10 @@ if test $? -ne 0; then
   exit 1
 fi
 
-if ! update_cn_replication_server; then
-  beluga_error "Updating CN replication server"
-  exit 1
-fi
+#if ! update_cn_replication_server; then
+#  beluga_error "Updating CN replication server"
+#  exit 1
+#fi
 
 dsconfig --no-prompt --offline --suppressMirroredDataChecks set-topology-admin-user-prop \
   --user-name "${ADMIN_USER_NAME}" \
