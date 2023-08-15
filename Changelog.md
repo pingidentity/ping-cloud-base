@@ -14,6 +14,7 @@
 - Added new Prometheus alerts for Kubernetes metrics
 - Update integration tests to handle SSM parameters, rather than an explicit s3 bucket prefix
 - Update nginx-ingress-controller to v1.6.4 to support EKS 1.26
+- Update .gitlab-ci.yml file to run a new 'merge_branch' job to automatically merge release branches
 - Automate a test to ensure passwords dont leak in pod logs
 - Create new RBAC rules , ping role and service accounts for PD backups and restore
 - Update PD backup/restore integration tests
@@ -94,6 +95,7 @@ _Changes:_
 - [X] PDO-5558 Mirror our own version of newrelic images
 - [X] PDO-5571 Update nginx-ingress-controller to v1.6.4 to support EKS 1.26
 - [X] PDO-5601 os-dashboards-pf configMap breaks developer, and new ci/cd deploys
+- [X] PDO-5615 Update .gitlab-ci.yml file to run a new 'merge_branch' job to automatically merge release branches 
 - [X] PDO-5647 Handle SIGTERM properly in enrichment-bootstrap
 - [X] PDO-5654 Fluentbit Kubernetes filter is not adding metadata into some events
 - [X] PDO-5655 OS: Logs for the pf-transaction-* index are not filtered

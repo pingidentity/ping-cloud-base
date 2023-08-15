@@ -185,3 +185,12 @@ cleanup:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/cleanup/teardown.sh
   dependencies:
     - find-cluster
+
+merge-branch-job:   # Merge current release branch to next upstream release branch .
+  stage: merge_branch   
+  tags:
+    - default-gitlab-runner
+  script:
+    - ${SHARED_CI_SCRIPTS_DIR}/release/merge_branch.sh
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /^v*.*-release-branch$/
