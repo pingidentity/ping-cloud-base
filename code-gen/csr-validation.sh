@@ -110,7 +110,7 @@ NO_COLOR="\033[0m"
 cleanup_charts
 
 # find all the apps in the CSR directory except k8s-configs, values-files, hidden ('.'), or base directories
-app_region_paths=$(find . -type d -depth 2 -path "./*${BUILD_REGION}" ! -path './k8s-configs*' ! -path './values-files*' ! -path './.*' ! -path './*/base')
+app_region_paths=$(find . -maxdepth 2 -mindepth 2 -type d -path "./*${BUILD_REGION}" ! -path './k8s-configs*' ! -path './values-files*' ! -path './.*' ! -path './*/base')
 
 if test -z "${app_region_paths}"; then
   echo "No microservices to validate!"
