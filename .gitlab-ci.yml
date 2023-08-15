@@ -15,7 +15,7 @@ stages:
 - integration-test
 - chaos
 - cleanup
-- merge-branch-job
+- merge-branch
 
 ## Global environment variables ##
 variables:
@@ -187,7 +187,7 @@ cleanup:
   dependencies:
     - find-cluster
 
-merge-branch-job:   # Merge current release branch to next upstream release branch .
+merge-branch:   # Merge current release branch to next upstream release branch .
   stage: merge_branch   
   tags:
     - default-gitlab-runner
