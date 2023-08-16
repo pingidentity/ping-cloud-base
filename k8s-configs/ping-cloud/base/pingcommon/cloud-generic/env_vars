@@ -9,28 +9,42 @@ TOPOLOGY_DESCRIPTOR_PROFILES_JSON=/opt/staging/topology/descriptor-profiles.json
 # PingCentral admin username to the application
 PC_ADMIN_USER_USERNAME=administrator
 
-# PD USER_BASE_DN
-USER_BASE_DN=dc=example,dc=com
+# PingDirectory Backends and USER_BASE_DNs
+PLATFORM_CONFIG_BACKEND_ID=platformconfig
+PLATFORM_CONFIG_BASE_DN=o=platformconfig
+APP_INTEGRATIONS_BACKEND_ID=appintegrations
+APP_INTEGRATIONS_BASE_DN=o=appintegrations
 
 ########################################################################################################################
-#  Multiple Backend IDs : 
+#  Multiple Backend IDs :
+#
+#  NOTE : Currently 5 multiple backends(userRoot, userRoot_2, 3 ..userRoot_5) are supported.
+########################################################################################################################
+USER_BACKEND_ID=userRoot
+USER_BACKEND_ID_2=userRoot_2
+USER_BACKEND_ID_3=userRoot_3
+USER_BACKEND_ID_4=userRoot_4
+USER_BACKEND_ID_5=userRoot_5
+
+########################################################################################################################
+#  Multiple Backend IDs :
 #
 #  Set the following vars for multiple backends.
+#  USER_BASE_DN   is set for userRoot   backend
 #  USER_BASE_DN_2 is set for userRoot_2 backend
 #  USER_BASE_DN_3 is set for userRoot_3 backend
 #  USER_BASE_DN_4 is set for userRoot_4 backend
 #  USER_BASE_DN_5 is set for userRoot_5 backend
 #
-#  NOTE : Currently 5 multiple backends(userRoot , userRoot_2, 3 ..userRoot_5) and 
+#  NOTE : Currently 5 multiple backends(userRoot, userRoot_2, 3 ..userRoot_5) and
 #          user_base_dn's(USER_BASE_DN, USER_BASE_DN_2, 3 ..USER_BASE_DN_5) are supported.
 ########################################################################################################################
+USER_BASE_DN=dc=example,dc=com
 USER_BASE_DN_2=
 USER_BASE_DN_3=
 USER_BASE_DN_4=
 USER_BASE_DN_5=
 
-# This is the OOTB USER_BASE_DN value and is always set to "dc=example,dc=com"
-DEFAULT_USER_BASE_DN=dc=example,dc=com
 PD_PCV_SEARCH_FILTER=(&(objectClass=person)(|(mail=${username})(cn=${username})(uid=${username})))
 
 # PD Datastore ID from PingFederate

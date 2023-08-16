@@ -70,6 +70,11 @@ spec:
       labels:
         k8s-app: fluent-bit
     spec:
+      # There's no information about dnsPolicy and hostNetwork being needed for IMDS,
+      # but fluentbit won't start without it.
+      # So probably it's required to communicate with metadata and not lock the whole process
+      dnsPolicy: ClusterFirstWithHostNet
+      hostNetwork: true
       containers:
       - name: fluent-bit
         image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-for-fluent-bit:2.31.7
