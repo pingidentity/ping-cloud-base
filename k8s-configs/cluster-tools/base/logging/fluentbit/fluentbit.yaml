@@ -141,7 +141,23 @@ spec:
           mountPath: /var/lib/docker/containers
           readOnly: true
         - name: fluent-bit-config
-          mountPath: /fluent-bit/etc/
+          mountPath: /fluent-bit/etc/fluent-bit.conf
+          subPath: fluent-bit.conf
+        - name: fluent-bit-parsers
+          mountPath: /fluent-bit/etc/parsers.conf
+          subPath: parsers.conf
+        - name: fluent-bit-pipeline-cw
+          mountPath: /fluent-bit/etc/pipelines_cw.conf
+          subPath: cw.conf
+        - name: fluent-bit-pipeline-elk
+          mountPath: /fluent-bit/etc/pipelines_elk.conf
+          subPath: elk.conf
+        - name: fluent-bit-pipeline-nr
+          mountPath: /fluent-bit/etc/pipelines_nr.conf
+          subPath: nr.conf
+        - name: fluent-bit-pipeline-s3
+          mountPath: /fluent-bit/etc/pipelines_s3.conf
+          subPath: s3.conf
         - name: runlogjournal
           mountPath: /run/log/journal
           readOnly: true
@@ -165,6 +181,21 @@ spec:
       - name: fluent-bit-config
         configMap:
           name: fluent-bit-config
+      - name: fluent-bit-parsers
+        configMap:
+          name: fluent-bit-parsers
+      - name: fluent-bit-pipeline-cw
+        configMap:
+          name: fluent-bit-pipeline-cw
+      - name: fluent-bit-pipeline-elk
+        configMap:
+          name: fluent-bit-pipeline-elk
+      - name: fluent-bit-pipeline-nr
+        configMap:
+          name: fluent-bit-pipeline-nr
+      - name: fluent-bit-pipeline-s3
+        configMap:
+          name: fluent-bit-pipeline-s3
       - name: runlogjournal
         hostPath:
           path: /run/log/journal
@@ -179,6 +210,4 @@ spec:
         effect: NoSchedule
       - operator: "Exists"
         effect: "NoExecute"
-      - operator: "Exists"
-        effect: "NoSchedule"
 ---
