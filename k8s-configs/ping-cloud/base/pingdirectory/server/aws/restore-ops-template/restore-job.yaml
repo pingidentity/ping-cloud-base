@@ -94,6 +94,8 @@ spec:
           value: "true"
         - name: BACKUP_FILE_NAME
           value: "${BACKUP_FILE_NAME}"
+        - name: BACKENDS_TO_RESTORE
+          value: "${BACKENDS_TO_RESTORE}"
         - name: ROOT_USER_PASSWORD
           valueFrom:
             secretKeyRef:

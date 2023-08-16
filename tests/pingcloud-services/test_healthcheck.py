@@ -2,21 +2,18 @@ import unittest
 
 import requests
 
-from k8s_utils import K8sUtils
+from health_common import TestHealthBase
 
 
-class TestHealthcheck(K8sUtils):
+class TestHealthcheck(TestHealthBase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        super().setUpClass()
+        cls.healthcheck_pod_label = "role=pingcloud-healthcheck"
+
     def test_healthcheck_pod_exists(self):
-        pods = self.core_client.list_pod_for_all_namespaces(watch=False)
-        res = next(
-            (
-                pod.metadata.name
-                for pod in pods.items
-                if pod.metadata.name.startswith("pingcloud-healthcheck")
-            ),
-            False,
-        )
-        self.assertTrue(res)
+        pod_name = self.get_first_matching_pod_name(self.ping_cloud, self.healthcheck_pod_label)
+        self.assertIsNotNone(pod_name)
 
     def test_healthcheck_get_route_ok_response(self):
         res = requests.get(self.endpoint, verify=False)

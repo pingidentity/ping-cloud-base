@@ -20,6 +20,11 @@ if [ -z "${PING_CLOUD_NAMESPACE}" ]; then
   export PING_CLOUD_NAMESPACE=$(kubectl get namespaces -o jsonpath='{.items[*].metadata.name}{"\n"}' | grep -o -E "\bping-cloud\S*")
 fi
 
+# Get desired backends to restore in pingdirectory pod
+if [ -z "${BACKENDS_TO_RESTORE}" ]; then
+  export BACKENDS_TO_RESTORE=$(kubectl get cm "pingdirectory-environment-variables" -o jsonpath='{.data.BACKENDS_TO_RESTORE}' -n "${PING_CLOUD_NAMESPACE}")
+fi
+
 # Get desired PingDirectory pod name
 if [ -z "${BACKUP_RESTORE_POD}" ]; then
   export BACKUP_RESTORE_POD=$(kubectl get configmap pingdirectory-environment-variables -o jsonpath='{.data.BACKUP_RESTORE_POD}' -n "${PING_CLOUD_NAMESPACE}")

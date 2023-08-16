@@ -1,0 +1,3 @@
+PA_ADMIN_SERVER_NAME=pingaccess-admin-0
+PA_WAS_ADMIN_SERVER_NAME=pingaccess-was-admin-0
+PF_ADMIN_SERVER_NAME=pingfederate-admin-0
