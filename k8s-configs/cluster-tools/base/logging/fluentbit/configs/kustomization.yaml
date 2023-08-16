@@ -11,8 +11,9 @@ configMapGenerator:
   - name: fluent-bit-config
     files:
       - fluent-bit.conf
+  - name: fluent-bit-parsers
+    files:
       - parsers.conf
-      - pipelines/cw.conf
-      - pipelines/elk.conf
-      - pipelines/nr.conf
-      - pipelines/s3.conf
+
+resources:
+  - pipelines
