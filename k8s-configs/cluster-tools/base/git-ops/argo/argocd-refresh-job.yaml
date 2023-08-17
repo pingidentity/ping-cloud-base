@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: argocd-presync-refresh-
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+spec:
+  backoffLimit: 2
+  template:
+    spec:
+      containers:
+      - name: argocd-presync-refresh
+        image: public.ecr.aws/r2h3l6e4/awscli-kubectl:latest
+        command:
+        - /bin/bash
+        - -c
+        args:
+        - |
+          argo_server_pod=$(kubectl get pod -n argocd -l app.kubernetes.io/name=argocd-server | grep argocd-server | cut -d " " -f 1)
+          echo "argo pod: $argo_server_pod"
+          if [ -z "$argo_server_pod" ];then echo "argocd-server pod isn't running" && exit 0; fi
+          kubectl exec -n argocd "$argo_server_pod" -c argocd-server -- bash -c "argocd login localhost:8080 --username admin --password admin --insecure && 
+          argocd app list -o name | xargs -I {} argocd app diff {} --hard-refresh"
+          echo "hello"
+        imagePullPolicy: Always
+        securityContext:
+          runAsNonRoot: false
+      restartPolicy: OnFailure
+      serviceAccount: argocd-auth-setup
+      serviceAccountName: argocd-auth-setup
+      terminationGracePeriodSeconds: 30
+
