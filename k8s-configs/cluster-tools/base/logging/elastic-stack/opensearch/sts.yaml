@@ -104,7 +104,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        - name: cluster.initial_master_nodes
+        - name: cluster.initial_cluster_manager_nodes
           value: "opensearch-cluster-hot-0,opensearch-cluster-hot-1,opensearch-cluster-hot-2,"
         - name: discovery.seed_hosts
           value: "opensearch-cluster-headless"
@@ -117,7 +117,7 @@ spec:
         - name: OPENSEARCH_JAVA_OPTS
           value: "-Xmx3000M -Xms3000M"
         - name: node.roles
-          value: "master,ingest,data,remote_cluster_client,search,"
+          value: "cluster_manager,ingest,data,remote_cluster_client,search,"
         - name: DISABLE_INSTALL_DEMO_CONFIG
           value: "true"
         volumeMounts:
@@ -232,7 +232,7 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
-        - name: cluster.initial_master_nodes
+        - name: cluster.initial_cluster_manager_nodes
           value: "opensearch-cluster-hot-0,opensearch-cluster-hot-1,opensearch-cluster-hot-2,"
         - name: discovery.seed_hosts
           value: "opensearch-cluster-headless"

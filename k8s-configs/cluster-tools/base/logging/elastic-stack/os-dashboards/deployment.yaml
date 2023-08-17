@@ -35,7 +35,7 @@ spec:
             - ALL
           runAsNonRoot: true
           runAsUser: 1000
-        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/opensearchproject/opensearch-dashboards:2.6.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/opensearchproject/opensearch-dashboards:2.8.0
         imagePullPolicy: Always
         readinessProbe:
           failureThreshold: 10
