@@ -2,7 +2,6 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: argocd-presync-refresh
-  namespace: argocd
   annotations:
     argocd.argoproj.io/hook: PreSync
     argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
@@ -28,7 +27,52 @@ spec:
         securityContext:
           runAsNonRoot: false
       restartPolicy: OnFailure
-      serviceAccount: argocd-auth-setup
-      serviceAccountName: argocd-auth-setup
+      serviceAccountName: argocd-presync-refresh
       terminationGracePeriodSeconds: 30
 
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: argocd
+  name: argocd-presync-refresh
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - get
+  - list
+- apiGroups:
+  - ""
+  resources:
+  - pods/exec
+  verbs:
+  - create
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: argocd-presync-refresh
+  namespace: argocd
+subjects:
+# You can specify more than one "subject"
+- kind: ServiceAccount
+  name: argocd-presync-refresh # "name" is case sensitive
+roleRef:
+  # "roleRef" specifies the binding to a Role / ClusterRole
+  kind: Role #this must be Role or ClusterRole
+  name: argocd-presync-refresh # this must match the name of the Role or ClusterRole you wish to bind to
+  apiGroup: rbac.authorization.k8s.io
+
+--- 
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: argocd-presync-refresh
+automountServiceAccountToken: false
