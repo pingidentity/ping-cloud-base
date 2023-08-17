@@ -1,4 +1,4 @@
-# Nginx ingress controller v1.5.1 configuration 
+# Nginx ingress controller v1.8.0 configuration 
 
 The NGINX ingress controller has additional configuration options that can be customized and configured to create a more dynamic application. This can be done in two ways:
 
@@ -68,5 +68,5 @@ Sets the number of worker processes. The default of "auto" means the number of a
 
 # References
 
-[NGINX Configuration](https://github.com/kubernetes/ingress-nginx/blob/controller-v1.5.1/docs/user-guide/nginx-configuration/index.md)
+[NGINX Configuration](https://github.com/kubernetes/ingress-nginx/blob/controller-v1.8.0/docs/user-guide/nginx-configuration/index.md)
 

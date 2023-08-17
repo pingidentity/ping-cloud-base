@@ -15,7 +15,7 @@ commonLabels:
   app.kubernetes.io/name: ingress-nginx
   app.kubernetes.io/part-of: ingress-nginx
   app.kubernetes.io/role: ingress-nginx-private
-  app.kubernetes.io/version: 1.6.4
+  app.kubernetes.io/version: 1.8.0
 
 patchesJson6902:
 - path: add-deployment-args.yaml

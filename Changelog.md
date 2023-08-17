@@ -36,6 +36,7 @@
 - Change PD alerts to see more specific errors
 - Update pd.profile to align with PingDirectory upgrade
 - Update cluster-autoscaler v1.27.0/1.27.1 for eks 1.27
+- Update nginx-ingress-controller to v1.8.0 to support EKS 1.27
 - Healthcheck pods respond properly to SIGTERM
 - Update PCB with new Radius Proxy Image
 - Unify severity format for all prometheus alerts
@@ -106,6 +107,7 @@ _Changes:_
 - [X] PDO-5718 Update PGO dashboards to use grafana CRD
 - [X] PDO-5724 Limit backup/restore logging for PD
 - [X] PDO-5741 OS: Index migration fails for shrink-*-logstash-* indexes
+- [X] PDO-5781 Update nginx-ingress-controller to v1.8.0 to support EKS 1.27
 - [X] PDO-5762 CloudWatch / New Relic: Disable logging for Dev clusters
 - [X] PDO-5770 Update update-profile-repo script for MonoRepo
 - [X] PDO-5774 OS Index Policies: State Transitions Errors
