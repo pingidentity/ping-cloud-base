@@ -609,6 +609,7 @@ data:
         Name                systemd
         Tag                 dataplane.systemd.*
         Systemd_Filter      _SYSTEMD_UNIT=docker.service
+        Systemd_Filter      _SYSTEMD_UNIT=containerd.service
         Systemd_Filter      _SYSTEMD_UNIT=kubelet.service
         DB                  /fluent-bit/state/systemd.db
         Path                /var/log/journal
@@ -814,6 +815,11 @@ data:
     [OUTPUT]
         Name                nrlogs
         Match               dataplane.systemd.docker.*
+        license_key         ${NR_LICENSE_KEY}
+    
+    [OUTPUT]
+        Name                nrlogs
+        Match               dataplane.systemd.containerd.*
         license_key         ${NR_LICENSE_KEY}
 
     [OUTPUT]
