@@ -1,9 +1,5 @@
 [
   {
-    "name": "pf-pingid-integration-kit",
-    "version": "2.24.0"
-  },
-  {
     "name": "opentoken-adapter",
     "version": "2.7.2"
   },

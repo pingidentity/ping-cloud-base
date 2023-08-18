@@ -98,6 +98,7 @@
 - Add REGION env var for healthcheck probes in customer hub
 - Fix IRSA role for pingfederate-admin-serviceaccount
 - Add "--skipPrime" flag to PD start-server script
+- Upgrade PingFederate to v11.3.1
 - Update PA-WAS admin/engine CSD upload job to reference PA-WAS CSD upload configMaps, rather than just pingaccess.  
 - Fluent-Bit: change IMDS vesrion to v2
 
@@ -229,6 +230,7 @@ _Changes:_
 - [X] PDO-5815 Fluent-Bit: change IMDS version to v2
 - [X] PDO-5832 Add "--skipPrime" flag to PD start-server script
 - [X] PDO-5869 Fix IRSA role for pingfederate-admin-serviceaccount
+- [X] PDO-5906 Upgrade PingFederate to v11.3.1
 - [X] PDO-5911 Update PA-WAS Admin CSD Upload job to use PA-WAS cm
 
 ### 1.17.0.0
