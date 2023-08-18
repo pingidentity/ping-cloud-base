@@ -28,6 +28,12 @@ configMapGenerator:
     - SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX}
     - REGION=${REGION}
 
+- name: ingress-bootstrap-environment-variables
+  behavior: merge
+  literals:
+    - SSM_PATH_DHPARAM=/pcpt/beluga/ingress-keys/ingress-nginx-public
+    - REGION=${REGION}
+
 - name: elk-environment-variables
   behavior: merge
   literals:

@@ -17,6 +17,12 @@ commonLabels:
   app.kubernetes.io/role: ingress-nginx-public
   app.kubernetes.io/version: 1.6.4
 
+configMapGenerator:
+- name: ingress-bootstrap-environment-variables
+  literals:
+    - SSM_PATH_DHPARAM=/pcpt/beluga/ingress-keys/ingress-nginx-public"
+    - REGION=${REGION}
+
 patchesJson6902:
 - path: add-deployment-args.yaml
   target:
@@ -54,3 +60,7 @@ patchesJson6902:
     version: v1
     kind: Service
     name: ingress-nginx
+
+patchesStrategicMerge:
+
+- add-init-container.yaml

@@ -38,9 +38,11 @@
 - Update cluster-autoscaler v1.27.0/1.27.1 for eks 1.27
 - Healthcheck pods respond properly to SIGTERM
 - Update PCB with new Radius Proxy Image
+- Support DHE Ciphers out of the box
 
 _Changes:_
 
+- [X] PDO-3541 Support DHE Ciphers out of the box
 - [X] PDO-4606 Create a new init container to upgrade PA and PA-WAS and mount volume to admin pod once upgrade is successful
 - [X] PDO-4779 Modify seal.sh script to work for microservices
 - [X] PDO-4868 Update update-cluster-state script for MonoRepo
