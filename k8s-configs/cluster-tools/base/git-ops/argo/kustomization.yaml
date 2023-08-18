@@ -7,7 +7,6 @@ resources:
   - base
   - argocd-image-updater.yaml
   - custom-resources.yaml
-  - argocd-refresh-job.yaml
 
 generatorOptions:
   disableNameSuffixHash: true
