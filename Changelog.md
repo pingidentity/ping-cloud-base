@@ -44,6 +44,9 @@
 - CloudWatch / New Relic: Disable logging for Dev clusters
 - Enabling weekend scheduled runs to different CDE types (dev/test/stage/prod/customer-hub)
 - Fix: opensearch-bootstrap job in a second region can't connect to OpenSearch
+- Update OpenSearch/OpenSearch Dashboards to v2.8.0
+- Update AWS EFS CSI Driver to v1.5.8
+
 
 _Changes:_
 
@@ -114,6 +117,8 @@ _Changes:_
 - [X] PDO-5801 Update cluster-autoscaler v1.27.0/1.27.1 for eks 1.27
 - [X] PDO-5813 Remove excessive patches for the second region
 - [X] PDO-5835 Create PD init container for KMS
+- [X] PDO-5871 Update AWS EFS CSI Driver to v1.5.8
+- [X] PDO-5873 Update OpenSearch/OSD to v2.8.0
 - [X] PDO-5924 Multi-Region CDE: opensearch-bootstrap job in a second region can't connect to OpenSearch
 
 ### 1.18.0.0
