@@ -16,6 +16,8 @@ rules:
   verbs:
   - list
   - watch
+  - get
+  - create
 - apiGroups:
   - coordination.k8s.io
   resources:
