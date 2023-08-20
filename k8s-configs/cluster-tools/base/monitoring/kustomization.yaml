@@ -5,6 +5,6 @@ resources:
 - newrelic
 - prometheus
 - container-insights
-- grafana
-- grafana-operator/base
-- grafana-operator/controller
+#- grafana
+#- grafana-operator/base
+#- grafana-operator/controller

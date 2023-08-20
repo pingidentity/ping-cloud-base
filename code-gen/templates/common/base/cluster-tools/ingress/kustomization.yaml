@@ -13,4 +13,4 @@ patchesStrategicMerge:
   metadata:
     name: nginx-ingress-serviceaccount
     annotations:
-      ${IRSA_PING_ANNOTATION_KEY_VALUE}
+      ${IRSA_INGRESS_ANNOTATION_KEY_VALUE}
