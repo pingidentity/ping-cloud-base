@@ -86,20 +86,20 @@ configMapGenerator:
     - pingaccess-was/engine/env_vars
 
 
-PingCloud services
-Pingcloud-metadata
-- name: pingcloud-metadata-environment-variables
- behavior: merge
- envs:
- - ../base/env_vars
- - env_vars
+# PingCloud services
+# Pingcloud-metadata
+#- name: pingcloud-metadata-environment-variables
+#  behavior: merge
+#  envs:
+#  - ../base/env_vars
+#  - env_vars
 
-Pingcloud-healthcheck
-- name: pingcloud-healthcheck-environment-variables
- behavior: merge
- envs:
- - ../base/env_vars
- - env_vars
+# Pingcloud-healthcheck
+#- name: pingcloud-healthcheck-environment-variables
+#  behavior: merge
+#  envs:
+#  - ../base/env_vars
+#  - env_vars
 
 # PingCloud BOM service
 - name: p14c-bom-service-environment-variables
