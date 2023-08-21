@@ -144,20 +144,20 @@ configMapGenerator:
   - pingdelegator/env_vars
 
 
-PingCloud services
-Pingcloud-metadata
-- name: pingcloud-metadata-environment-variables
- behavior: merge
- envs:
- - ../base/env_vars
- - env_vars
+# PingCloud services
+# Pingcloud-metadata
+#- name: pingcloud-metadata-environment-variables
+#  behavior: merge
+#  envs:
+#  - ../base/env_vars
+#  - env_vars
 
-Pingcloud-healthcheck
-- name: pingcloud-healthcheck-environment-variables
- behavior: merge
- envs:
- - ../base/env_vars
- - env_vars
+# Pingcloud-healthcheck
+#- name: pingcloud-healthcheck-environment-variables
+#  behavior: merge
+#  envs:
+#  - ../base/env_vars
+#  - env_vars
 
 # Health namespace environment variables
 - name: cluster-health-environment-variables
@@ -192,12 +192,6 @@ Pingcloud-healthcheck
   behavior: merge
   literals:
     - SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX}
-    - REGION=${REGION}
-
-- name: ingress-bootstrap-environment-variables
-  behavior: merge
-  literals:
-    - SSM_PATH_DHPARAM=/pcpt/beluga/ingress-keys/ingress-nginx-public
     - REGION=${REGION}
 
 - name: elk-environment-variables
