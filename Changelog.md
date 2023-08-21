@@ -48,6 +48,7 @@
 - Update OpenSearch/OpenSearch Dashboards to v2.8.0
 - Update AWS EFS CSI Driver to v1.5.8
 - Improve Prometheus pods respond properly to SIGTERM
+- Support DHE Ciphers out of the box
 
 
 _Changes:_
