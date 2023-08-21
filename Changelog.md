@@ -47,6 +47,7 @@
 - Fix: opensearch-bootstrap job in a second region can't connect to OpenSearch
 - Update OpenSearch/OpenSearch Dashboards to v2.8.0
 - Update AWS EFS CSI Driver to v1.5.8
+- Improve Prometheus pods respond properly to SIGTERM
 
 
 _Changes:_
@@ -103,6 +104,7 @@ _Changes:_
 - [X] PDO-5655 OS: Logs for the pf-transaction-* index are not filtered
 - [X] PDO-5659 git-ops-command.sh responds properly to SIGTERM
 - [X] PDO-5660 Healthcheck pods respond properly to SIGTERM
+- [X] PDO-5662 prometheus pods respond properly to SIGTERM
 - [X] PDO-5671 OS: grokparsefailure in pingaccess logs
 - [x] PDO-5673 OS: Missed logs in PingAccess Indices
 - [X] PDO-5705 Update PCB with toolkit image used as replacement for bitnami/kubectl
