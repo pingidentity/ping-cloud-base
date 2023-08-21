@@ -24,6 +24,15 @@ patchesStrategicMerge:
       service.beta.kubernetes.io/aws-load-balancer-type: nlb
       ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}
 
+### Ingress service account ###
+- |-
+  apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: nginx-ingress-serviceaccount
+    annotations:
+      ${IRSA_INGRESS_ANNOTATION_KEY_VALUE}
+
 patchesJson6902:
 
 - target:
