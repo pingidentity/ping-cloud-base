@@ -47,6 +47,7 @@
 - Fix: opensearch-bootstrap job in a second region can't connect to OpenSearch
 - Update OpenSearch/OpenSearch Dashboards to v2.8.0
 - Update AWS EFS CSI Driver to v1.5.8
+- Export fluent-bit containerd runtime logs to CloudWatch and NewRelic
 
 
 _Changes:_
@@ -122,6 +123,7 @@ _Changes:_
 - [X] PDO-5871 Update AWS EFS CSI Driver to v1.5.8
 - [X] PDO-5873 Update OpenSearch/OSD to v2.8.0
 - [X] PDO-5924 Multi-Region CDE: opensearch-bootstrap job in a second region can't connect to OpenSearch
+- [X] PDO-6016 Export fluent-bit containerd runtime logs to CloudWatch and NewRelic
 
 ### 1.18.0.0
 
