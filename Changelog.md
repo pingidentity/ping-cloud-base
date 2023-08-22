@@ -233,7 +233,7 @@ _Changes:_
 - [X] PDO-5869 Fix IRSA role for pingfederate-admin-serviceaccount
 - [X] PDO-5906 Upgrade PingFederate to v11.3.1
 - [X] PDO-5911 Update PA-WAS Admin CSD Upload job to use PA-WAS cm
-- [X] PDO-6018 Export fluent-bit containerd runtime logs to CloudWatch and NewRelic
+- [X] PDO-6015 Export fluent-bit containerd runtime logs to CloudWatch and NewRelic
 
 ### 1.17.0.0
 
