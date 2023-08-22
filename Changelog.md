@@ -48,6 +48,7 @@
 - Update OpenSearch/OpenSearch Dashboards to v2.8.0
 - Update AWS EFS CSI Driver to v1.5.8
 - Improve Prometheus pods respond properly to SIGTERM
+- Update alertmeneger image with self-hosted ECR URI
 
 
 _Changes:_
@@ -91,6 +92,7 @@ _Changes:_
 - [X] PDO-5409 Add ability to Update Upgrade Scripts w/o Release of New Beluga Version
 - [X] PDO-5434 Upgrade Kustomize to 5.0.3
 - [X] PDO-5435 Update values.yaml files structure
+- [X] PDO-5695 Move alertmanager image to self-hosted ECR
 - [X] PDO-5467 When rolling pods NLB connection draining isn't occuring causing service interruption
 - [X] PDO-5527 OpenSearch Post-Migration: Alerting improvements
 - [X] PDO-5543 New Prometheus alerts for Kubernetes metrics
