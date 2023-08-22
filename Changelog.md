@@ -49,6 +49,7 @@
 - Update AWS EFS CSI Driver to v1.5.8
 - Improve Prometheus pods respond properly to SIGTERM
 - Update alertmeneger image with self-hosted ECR URI
+- Support DHE Ciphers out of the box
 
 
 _Changes:_
