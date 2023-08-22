@@ -18,4 +18,3 @@ global:
 
   # irsaPingAnnotationKeyValue is the IAM roles for service accounts
   irsaPingAnnotationKeyValue: "${IRSA_PING_ANNOTATION_KEY_VALUE}"
-  irsaIngressAnnotationKeyValue: "${IRSA_INGRESS_ANNOTATION_KEY_VALUE}"

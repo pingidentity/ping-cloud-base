@@ -1221,7 +1221,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   set_var "IRSA_PF_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-pingfederate"
   set_var "IRSA_CWAGENT_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-cloudwatch-agent"
 
-
   # shellcheck disable=SC2016
   IRSA_TEMPLATE='eks.amazonaws.com/role-arn: ${ssm_value}'
   set_var "IRSA_ARGOCD_ANNOTATION_KEY_VALUE" "" "${IRSA_BASE_PATH}" "irsa-argocd/arn" "${IRSA_TEMPLATE}"
