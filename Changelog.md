@@ -46,7 +46,7 @@
 - Enabling weekend scheduled runs to different CDE types (dev/test/stage/prod/customer-hub)
 - Fix: opensearch-bootstrap job in a second region can't connect to OpenSearch
 - Update OpenSearch/OpenSearch Dashboards to v2.8.0
-- Update AWS EFS CSI Driver to v1.5.8
+- Update AWS EFS CSI Driver to v1.5.8 & set requests/limits to efs-csi-node
 - Improve Prometheus pods respond properly to SIGTERM
 - Update alertmeneger image with self-hosted ECR URI
 
