@@ -3,7 +3,6 @@
 ### 1.17.2.0
 
 - Create new AES-256 encryption settings for all PingDirectory servers
-- Export fluent-bit containerd runtime logs to CloudWatch and NewRelic
 - Fix PingDirectory wrong hostname error during replication
 - Disable ArgoCD Image Updater
 
@@ -11,7 +10,6 @@ _Changes:_
 
 - [X] PDO-5955 Create new AES-256 encryption settings for all PingDirectory servers
 - [X] PDO-5961 Disable ArgoCD Image Updater
-- [X] PDO-6018 Export fluent-bit containerd runtime logs to CloudWatch and NewRelic
 - [X] PDO-6019 Fix PingDirectory wrong hostname error during replication
 
 ### 1.17.1.0
