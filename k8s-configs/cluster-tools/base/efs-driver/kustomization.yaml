@@ -24,6 +24,24 @@ patchesStrategicMerge:
               - --vol-metrics-opt-in=false
             resources:
               limits:
+                memory: "1024Mi"
+                cpu: "1000m"
+              requests:
+                memory: "32Mi"
+                cpu: "20m"
+
+  - |-
+    kind: DaemonSet
+    apiVersion: apps/v1
+    metadata:
+      name: efs-csi-node
+    spec:
+      template:
+        spec:
+          containers:
+          - name: efs-plugin
+            resources:
+              limits:
                 memory: "300Mi"
                 cpu: "40m"
               requests:
