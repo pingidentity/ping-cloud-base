@@ -49,7 +49,7 @@
 - Update AWS EFS CSI Driver to v1.5.8
 - Improve Prometheus pods respond properly to SIGTERM
 - Update alertmeneger image with self-hosted ECR URI
-
+- Remove docker systemd logs
 
 _Changes:_
 
@@ -126,6 +126,7 @@ _Changes:_
 - [X] PDO-5871 Update AWS EFS CSI Driver to v1.5.8
 - [X] PDO-5873 Update OpenSearch/OSD to v2.8.0
 - [X] PDO-5924 Multi-Region CDE: opensearch-bootstrap job in a second region can't connect to OpenSearch
+- [X] PDO-6016 Remove docker logs
 
 ### 1.18.0.0
 
