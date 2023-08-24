@@ -152,8 +152,6 @@ _Changes:_
 - Upgrade EFS Driver to v1.5.1
 - Add PF requests logs parsing and indexing
 - Fix index template creation race condition issue
-- Update the PD backup job to create new PV at the start of the job and mount it
-- Update the PD restore job to create new PV at the start of the job and mount it
 - Change retry interval for PGO firing alert notification in slack from 5 min to 60 min
 - Added karpenter v0.24.0 and required parameters, KarpenterControllerRole & ClusterEndPoint
 - ILM policy for alerts index changed to move index to warm after 7 days in hot and delete index after 30 days
@@ -228,7 +226,11 @@ _Changes:_
 - Remove integration kits from PingFederate deployment (excluding pf-pingid) and upgrade opentoken-adapter to v2.7.2
 - Add REGION env var for healthcheck probes in customer hub
 - Fix IRSA role for pingfederate-admin-serviceaccount
-- Replace SSMs /pcpt/orch-api with /pcpt/customer
+- Add "--skipPrime" flag to PD start-server script
+- Upgrade PingFederate to v11.3.1
+- Update PA-WAS admin/engine CSD upload job to reference PA-WAS CSD upload configMaps, rather than just pingaccess.  
+- Fluent-Bit: change IMDS vesrion to v2
+- Export fluent-bit containerd runtime logs to CloudWatch and NewRelic
 
 _Changes:_
 
@@ -310,7 +312,6 @@ _Changes:_
 - [X] PDO-5144 Add logstash/fluent-bit readiness/liveness probe
 - [X] PDO-5147 Add logstash metrics to prometheus
 - [X] PDO-5148 Modify Prometheus query for all backup alerting to only include the primary pod
-- [X] PDO-5153 Update SSM params to use /pcpt/customer path
 - [X] PDO-5191 Update image_map to align with tagging process
 - [X] PDO-5217 Increase replica count (min=7, max=9) within prod/large for Nginx Ingress Controller
 - [X] PDO-5221 'Field "responseCode.keyword" not found' on the 'Ping Access - Response Codes Over Time' visualization
@@ -356,7 +357,12 @@ _Changes:_
 - [X] PDO-5650 set NOTIFICATION_ENABLED to True by default
 - [X] PDO-5690 v1.18 Prepare for Ability to Update Upgrade Scripts w/o Release of New Beluga Version
 - [X] PDO-5804 Add REGION env var for healthcheck probes in customer hub
+- [X] PDO-5815 Fluent-Bit: change IMDS version to v2
+- [X] PDO-5832 Add "--skipPrime" flag to PD start-server script
 - [X] PDO-5869 Fix IRSA role for pingfederate-admin-serviceaccount
+- [X] PDO-5906 Upgrade PingFederate to v11.3.1
+- [X] PDO-5911 Update PA-WAS Admin CSD Upload job to use PA-WAS cm
+- [X] PDO-6015 Export fluent-bit containerd runtime logs to CloudWatch and NewRelic
 
 ### 1.17.0.0
 

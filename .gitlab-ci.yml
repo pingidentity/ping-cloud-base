@@ -22,10 +22,10 @@ variables:
   K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:1.19.11.0
   SHARED_CI_SCRIPTS_DIR: "/ci-scripts"
   BRANCH_SKIP_TESTS: >
-    pingaccess/08-artifact-test.sh
-    pingdelegator/01-admin-user-login.sh
-    pingdirectory/03-backup-restore.sh
-    pingdirectory/08-test-http-connection-handler.sh
+      pingaccess/08-artifact-test.sh
+      pingdelegator/01-admin-user-login.sh
+      pingdirectory/03-backup-restore.sh
+      pingdirectory/08-test-http-connection-handler.sh
 
 ## Compile stage ##
 compile:
@@ -115,7 +115,7 @@ pa-was-integration-tests:
   - common
   - monitoring
   - health
-  
+
 .integration-tests-base:
   variables:
     TEST: ""
@@ -163,7 +163,7 @@ integration-tests-chub:
       - TEST: *chub-tests
   rules:
   - if: '$ENV_TYPE == "customer-hub"'
-      
+
 ## Chaos testing stage ##
 chaos-tests:
   stage: chaos

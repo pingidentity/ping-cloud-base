@@ -1,0 +1,10 @@
+[
+  {
+    "name": "opentoken-adapter",
+    "version": "2.7.2"
+  },
+  {
+    "name": "postgresql-jdbc-driver",
+    "version": "42.4.0"
+  }
+]
