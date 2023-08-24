@@ -230,7 +230,7 @@ _Changes:_
 - Upgrade PingFederate to v11.3.1
 - Update PA-WAS admin/engine CSD upload job to reference PA-WAS CSD upload configMaps, rather than just pingaccess.  
 - Fluent-Bit: change IMDS vesrion to v2
-- Export fluent-bit containerd runtime logs to CloudWatch and NewRelic
+- Remove docker logs from fluent-bit
 
 _Changes:_
 
@@ -362,7 +362,7 @@ _Changes:_
 - [X] PDO-5869 Fix IRSA role for pingfederate-admin-serviceaccount
 - [X] PDO-5906 Upgrade PingFederate to v11.3.1
 - [X] PDO-5911 Update PA-WAS Admin CSD Upload job to use PA-WAS cm
-- [X] PDO-6015 Export fluent-bit containerd runtime logs to CloudWatch and NewRelic
+- [X] PDO-6015 Remove docker logs from fluent-bit
 
 ### 1.17.0.0
 
