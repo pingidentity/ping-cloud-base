@@ -38,7 +38,6 @@ spec:
       syncPolicy:
         automated:
           prune: true
-          selfHeal: true
       destination:
         server: "{{server}}"
       project: default
@@ -111,4 +110,3 @@ spec:
       syncPolicy:
         automated:
           prune: true
-          selfHeal: true
