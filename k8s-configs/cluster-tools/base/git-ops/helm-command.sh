@@ -27,5 +27,6 @@ ls -al /tmp/_argocd-repo >> /tmp/helm-debug
 if [[ $@ = template* ]]; then
     chart_dir_argument=$(echo "$@" | grep -oP -- '--generate-name \K[^ ]*');
     rm -rf "${chart_dir_argument}"
+    echo "return code is :$?" >> /tmp/helm-debug
     echo "Found chart in ${chart_dir_argument}, removed" >> /tmp/helm-debug
 fi
