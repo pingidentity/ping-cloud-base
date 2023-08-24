@@ -8,6 +8,10 @@ if [[ $@ = pull* ]]; then
     # https://github.com/kubernetes-sigs/kustomize/issues/4381
     arr=(${@//--repo/});  # Skipping --repo
     args="${arr[@]:0:5} ${arr[@]:6}";  # Skipping chartName
+elif [[ $@ = template* ]]; then
+    chart_dir_argument=$(echo "$@" | grep -oP -- '--generate-name \K[^ ]*');
+    rm -rf "${chart_dir_argument}"
+    echo "Found chart in ${chart_dir_argument}, removed" >> /tmp/helm-debug
 else
     args="$@"
 fi
