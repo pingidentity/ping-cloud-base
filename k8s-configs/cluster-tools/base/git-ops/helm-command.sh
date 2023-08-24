@@ -23,6 +23,7 @@ cmd="${helm_install} --registry-config /helm-working-dir/registry/config.json $a
 echo "Running '$cmd' " >> /tmp/helm-debug
 eval $cmd
 
+ls -al /tmp/_argocd-repo >> /tmp/helm-debug
 if [[ $@ = template* ]]; then
     chart_dir_argument=$(echo "$@" | grep -oP -- '--generate-name \K[^ ]*');
     rm -rf "${chart_dir_argument}"
