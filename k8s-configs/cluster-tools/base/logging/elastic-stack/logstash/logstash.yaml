@@ -210,6 +210,9 @@ spec:
             - name: logstash-pipeline-s3
               mountPath: /usr/share/logstash/pipeline/s3
               readOnly: true
+            - name: logstash-pipeline-dlq
+              mountPath: /usr/share/logstash/pipeline/dlq
+              readOnly: true
             - name: logstash-pipeline-cw
               mountPath: /usr/share/logstash/pipeline/cloudwatch
             - name: logstash-pipeline-nr
@@ -272,6 +275,9 @@ spec:
         - name: logstash-pipeline-s3
           configMap:
             name: logstash-pipeline-s3
+        - name: logstash-pipeline-dlq
+          configMap:
+            name: logstash-pipeline-dlq
         - name: logstash-pipeline-cw
           configMap:
             name: logstash-pipeline-cw
