@@ -62,5 +62,4 @@ patchesJson6902:
     name: ingress-nginx
 
 patchesStrategicMerge:
-
 - add-init-container.yaml
