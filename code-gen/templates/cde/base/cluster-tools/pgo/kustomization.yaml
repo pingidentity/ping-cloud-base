@@ -1,6 +1,7 @@
-### Feature flag - Uncomment this file to enable Postgres Operator (PGO)
-# kind: Kustomization
-# apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
 
-# resources:
+resources:
+  - placeholder.yaml
+### Feature flag - Uncomment this line to enable Postgres Operator (PGO)
 # - ${K8S_GIT_URL}/k8s-configs/cluster-tools/base/pgo/base?ref=${K8S_GIT_BRANCH}
