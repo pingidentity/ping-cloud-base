@@ -13,7 +13,7 @@
       {
          "search": {
             "indices": [
-               "logstash*"
+               "pf-server-*"
             ],
             "query": {
                "size": 0,

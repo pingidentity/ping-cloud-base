@@ -27,6 +27,7 @@ configMapGenerator:
       - pf-admin-log.json
       - pf-audit.json
       - pf-jvm-garbage-collection.json
+      - pf-init.json
       - pf-provisioner.json
       - pf-requests.json
       - pf-server.json
