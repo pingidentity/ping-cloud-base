@@ -60,6 +60,7 @@ spec:
             configMapKeyRef:
               name: is-pingone
               key: P1
+              optional: true
         - name: PF_USERNAME
           value: Administrator
         - name: PF_PASSWORD
