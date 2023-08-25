@@ -50,6 +50,7 @@
 - Improve Prometheus pods respond properly to SIGTERM
 - Update alertmeneger image with self-hosted ECR URI
 - Update fluent-bit image with v2.1.8
+- Support DHE Ciphers out of the box
 
 
 _Changes:_
