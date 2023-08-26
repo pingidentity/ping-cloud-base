@@ -183,7 +183,44 @@ function is_secondary_cluster() {
 get_base_entry_ldif() {
   COMPUTED_DOMAIN=$(echo "${USER_BASE_DN}" | sed 's/^dc=\([^,]*\).*/\1/')
   COMPUTED_ORG=$(echo "${USER_BASE_DN}" | sed 's/^o=\([^,]*\).*/\1/')
-  
+
+  USER_BASE_ENTRY_LDIF=$(mktemp)
+
+  if ! test "${USER_BASE_DN}" = "${COMPUTED_DOMAIN}"; then
+    cat > "${USER_BASE_ENTRY_LDIF}" <<EOF
+dn: ${USER_BASE_DN}
+objectClass: top
+objectClass: domain
+dc: ${COMPUTED_DOMAIN}
+EOF
+  elif ! test "${USER_BASE_DN}" = "${COMPUTED_ORG}"; then
+    cat > "${USER_BASE_ENTRY_LDIF}" <<EOF
+dn: ${USER_BASE_DN}
+objectClass: top
+objectClass: organization
+o: ${COMPUTED_ORG}
+EOF
+  else
+    beluga_error "User base DN must be either 1 or 2-level deep, for example: dc=foobar,dc=com or o=data"
+    return 80
+  fi
+
+  # Append some required ACIs to the base entry file. Without these, PF SSO will not work.
+  cat >> "${USER_BASE_ENTRY_LDIF}" <<EOF
+aci: (targetattr!="userPassword")(version 3.0; acl "Allow read access for all"; allow (read,search,compare) userdn="ldap:///all";)
+aci: (targetattr!="userPassword")(version 3.0; acl "Allow self-read access to all user attributes except the password"; allow (read,search,compare) userdn="ldap:///self";)
+aci: (targetattr="*")(version 3.0; acl "Allow users to update their own entries"; allow (write) userdn="ldap:///self";)
+aci: (targetattr="*")(version 3.0; acl "Grant full access for the admin user"; allow (all) userdn="ldap:///uid=admin,${USER_BASE_DN}";)
+EOF
+
+  echo "${USER_BASE_ENTRY_LDIF}"
+}
+
+
+get_base_entry_ldif_generation_id() {
+  COMPUTED_DOMAIN=$(echo "${USER_BASE_DN}" | sed 's/^dc=\([^,]*\).*/\1/')
+  COMPUTED_ORG=$(echo "${USER_BASE_DN}" | sed 's/^o=\([^,]*\).*/\1/')
+
   USER_BASE_ENTRY_LDIF=$(mktemp)
 
   if ! test "${USER_BASE_DN}" = "${COMPUTED_DOMAIN}"; then
@@ -215,7 +252,7 @@ aci: (targetattr="*")(version 3.0; acl "Allow users to update their own entries"
 aci: (targetattr="*")(version 3.0; acl "Grant full access for the admin user"; allow (all) userdn="ldap:///uid=admin,${USER_BASE_DN}";)
 EOF
 
-  echo "${USER_BASE_ENTRY_LDIF}"  
+  echo "${USER_BASE_ENTRY_LDIF}"
 }
 
 ########################################################################################################################
