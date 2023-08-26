@@ -443,7 +443,7 @@ function get_running_pingdirectory_pods() {
   echo "${selected_pingdirectory_pod}"
 }
 
-function is_genisis_server() {
+function is_genesis_server() {
   if ! is_primary_cluster; then
     return 1
   fi
