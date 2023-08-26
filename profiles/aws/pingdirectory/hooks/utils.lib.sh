@@ -426,14 +426,18 @@ decrypt_file() {
   fi
 }
 
-function get_other_running_pingdirectory_pods() {
-  local running_pingdirectory_pods=$(kubectl get pods \
-    -l class=pingdirectory-server \
-    -o=jsonpath='{range .items[*]}{.metadata.name}{" "}{.status.containerStatuses[*].ready}{"\n"}{end}' |\
-      awk '$2=="true"{print $1}')
+function get_all_running_pingdirectory_pods() {
+  local pods=$(kubectl get pods \
+      -l class=pingdirectory-server \
+      -o=jsonpath='{range .items[*]}{.metadata.name}{" "}{.status.containerStatuses[*].ready}{"\n"}{end}' |\
+        awk '$2=="true"{print $1}')
+  echo -e "${pods}"
+}
 
+function get_other_running_pingdirectory_pods() {
+  pods=$(get_all_running_pingdirectory_pods)
   local selected_pingdirectory_pod=""
-  for current_pingdirectory_pod in ${running_pingdirectory_pods}; do
+  for current_pingdirectory_pod in ${pods}; do
     if test "${SHORT_HOST_NAME}" = "${current_pingdirectory_pod}"; then
       continue
     fi
@@ -448,11 +452,8 @@ function is_genesis_server() {
     return 1
   fi
 
-  local all_running_pingdirectory_pods=$(kubectl get pods \
-      -l class=pingdirectory-server \
-      -o=jsonpath='{range .items[*]}{.metadata.name}{" "}{.status.containerStatuses[*].ready}{"\n"}{end}' |\
-        awk '$2=="true"{print $1}')
-  num_of_running_pods=$(all_running_pingdirectory_pods | wc -l)
+  pods=$(get_all_running_pingdirectory_pods)
+  num_of_running_pods=$(pods | wc -l)
   test ${num_of_running_pods} -eq 0
 }
 
