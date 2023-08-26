@@ -70,7 +70,7 @@ function export_config_settings() {
   # traffic between the regions, then each PD server will be directly addressable, and so will have a unique hostname
   # and may use the same port.
 
-  # NOTE: If using NLB, then corresponding changes will be required to the 80-post-start.sh script to export port 6360,
+  # NOTE: If using NLB, then corresponding changes will be required to the 80-post-start.sh.test script to export port 6360,
   # 6361, etc. on each server in a region. Since we have VPC peering in Ping Cloud, all servers can use the same LDAPS
   # port, i.e. 1636, so we don't expose 636${ORDINAL} anymore.
 
