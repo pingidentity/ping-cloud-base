@@ -2,11 +2,11 @@
 
 ${VERBOSE} && set -x
 
-. "${HOOKS_DIR}/pingcommon.lib.sh"
-. "${HOOKS_DIR}/utils.lib.sh"
+. "${HOOKS_DIR}/pingcommon.lib.sh" >/dev/null
+. "${HOOKS_DIR}/utils.lib.sh" >/dev/null
 
-echo get_running_pingdirectory_pods
-
+name=$(get_other_running_pingdirectory_pods)
+echo "$name"
 
 if test is_genesis_server; then
   echo "is_genesis_server yay"
@@ -14,4 +14,5 @@ else
   echo "is NOT genesis_server"
 fi
 
-find_replicated_host_server
+replicated=$(find_replicated_host_server)
+echo $replicated

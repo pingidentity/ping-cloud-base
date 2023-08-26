@@ -426,7 +426,7 @@ decrypt_file() {
   fi
 }
 
-function get_running_pingdirectory_pods() {
+function get_other_running_pingdirectory_pods() {
   local running_pingdirectory_pods=$(kubectl get pods \
     -l class=pingdirectory-server \
     -o=jsonpath='{range .items[*]}{.metadata.name}{" "}{.status.containerStatuses[*].ready}{"\n"}{end}' |\
@@ -440,24 +440,24 @@ function get_running_pingdirectory_pods() {
     selected_pingdirectory_pod="${current_pingdirectory_pod}\n"
   done
 
-  echo "${selected_pingdirectory_pod}"
+  echo -e "${selected_pingdirectory_pod}"
 }
 
 function is_genesis_server() {
-  if ! is_primary_cluster; then
-    return 1
-  fi
-
   if test "${RUN_PLAN}" != "START"; then
     return 1
   fi
 
-  num_of_running_pods=$(get_running_pingdirectory_pods | wc -l)
-  test ${num_of_running_pods} -eq 1
+  local all_running_pingdirectory_pods=$(kubectl get pods \
+      -l class=pingdirectory-server \
+      -o=jsonpath='{range .items[*]}{.metadata.name}{" "}{.status.containerStatuses[*].ready}{"\n"}{end}' |\
+        awk '$2=="true"{print $1}')
+  num_of_running_pods=$(all_running_pingdirectory_pods | wc -l)
+  test ${num_of_running_pods} -eq 0
 }
 
 function find_replicated_host_server() {
-  echo $(get_running_pingdirectory_pods | head -n 1)
+  get_other_running_pingdirectory_pods | head -n 1
 }
 
 # These are needed by every script - so export them when this script is sourced.
