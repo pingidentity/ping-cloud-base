@@ -23,34 +23,36 @@ test -f "${SECRETS_DIR}"/encryption-settings.pin &&
 beluga_log "Using ${ENCRYPTION_PIN_FILE} as the encryption-setting.pin file"
 cp "${ENCRYPTION_PIN_FILE}" "${SERVER_ROOT_DIR}"/config
 
-# Easily access all global variables of base_dns for PingDirectory
-all_base_dns="${PLATFORM_CONFIG_BASE_DN} \
-  ${APP_INTEGRATIONS_BASE_DN} \
-  ${USER_BASE_DN}"
+! (test "${ORDINAL}" -eq 0 && is_primary_cluster); then
+  # Easily access all global variables of base_dns for PingDirectory
+  all_base_dns="${PLATFORM_CONFIG_BASE_DN} \
+    ${APP_INTEGRATIONS_BASE_DN} \
+    ${USER_BASE_DN}"
 
-# Iterate over all base DNs
-modify_ldif=$(mktemp)
-for base_dn in ${all_base_dns}; do
-  cat > "${modify_ldif}" <<EOF
+  # Iterate over all base DNs
+  modify_ldif=$(mktemp)
+  for base_dn in ${all_base_dns}; do
+    cat > "${modify_ldif}" <<EOF
 dn: ${base_dn}
 changetype: modify
 add: ds-sync-generation-id
 ds-sync-generation-id: -1
-EOF
+  EOF
 
-  # Use -E flag to provide regex
-  # '\s*' matches zero or more whitespace characters between 'dn:' and base_dn
-  # e.g. the following will still be found in PD_PROFILE
-  # a) dn: dc=example,dc=com
-  # b) dn:     dc=example,dc=com
-  profile_ldif=$(grep -rlE "dn:\s${base_dn}" "${PD_PROFILE}"/ldif/* | head -1)
-  test ! -z "${profile_ldif}" && \
-    ldifmodify --doNotWrap --suppressComments \
-      --sourceLDIF ${profile_ldif} --changesLDIF ${modify_ldif} --targetLDIF ${profile_ldif}
+    # Use -E flag to provide regex
+    # '\s*' matches zero or more whitespace characters between 'dn:' and base_dn
+    # e.g. the following will still be found in PD_PROFILE
+    # a) dn: dc=example,dc=com
+    # b) dn:     dc=example,dc=com
+    profile_ldif=$(grep -rlE "dn:\s${base_dn}" "${PD_PROFILE}"/ldif/* | head -1)
+    test ! -z "${profile_ldif}" && \
+      ldifmodify --doNotWrap --suppressComments \
+        --sourceLDIF ${profile_ldif} --changesLDIF ${modify_ldif} --targetLDIF ${profile_ldif}
 
-  beluga_log "testing 123"
-  cat "${profile_ldif}"
-done
+    beluga_log "testing 123"
+    cat "${profile_ldif}"
+  done
+fi
 
 "${SERVER_ROOT_DIR}"/bin/manage-profile setup \
     --profile "${PD_PROFILE}" \

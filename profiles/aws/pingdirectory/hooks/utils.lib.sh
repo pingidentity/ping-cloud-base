@@ -389,6 +389,20 @@ decrypt_file() {
   fi
 }
 
+function is_genisis_server() {
+  if ! is_primary_cluster; then
+    return 1
+  fi
+
+  local running_pods=$(kubectl get pods \
+    -l class=pingdirectory-server
+    -o=jsonpath='{.items[*].metadata.name}'
+    --output json)
+
+  local num_of_running_pods=$(echo "${running_pods}" | jq -r '.items | length')
+  test ${num_of_running_pods} -eq 1
+}
+
 # These are needed by every script - so export them when this script is sourced.
 beluga_log "export config settings"
 export_config_settings
