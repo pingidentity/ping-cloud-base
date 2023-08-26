@@ -37,7 +37,7 @@ dn: ${base_dn}
 changetype: modify
 add: ds-sync-generation-id
 ds-sync-generation-id: -1
-  EOF
+EOF
 
     # Use -E flag to provide regex
     # '\s*' matches zero or more whitespace characters between 'dn:' and base_dn
