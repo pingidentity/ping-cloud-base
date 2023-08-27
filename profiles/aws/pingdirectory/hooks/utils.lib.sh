@@ -185,6 +185,12 @@ get_base_entry_ldif() {
   COMPUTED_DOMAIN=$(echo "${USER_BASE_DN}" | sed 's/^dc=\([^,]*\).*/\1/')
   COMPUTED_ORG=$(echo "${USER_BASE_DN}" | sed 's/^o=\([^,]*\).*/\1/')
 
+  if is_first_time_deploy_child_server; then
+    SYNC_ID="ds-sync-generation-id: -1"
+  else
+    SYNC_ID=""
+  fi
+
   USER_BASE_ENTRY_LDIF=$(mktemp)
 
   if ! test "${USER_BASE_DN}" = "${COMPUTED_DOMAIN}"; then
@@ -193,7 +199,7 @@ dn: ${USER_BASE_DN}
 objectClass: top
 objectClass: domain
 dc: ${COMPUTED_DOMAIN}
-$(if is_first_time_deploy_child_server; then echo "ds-sync-generation-id: -1"; fi)
+${SYNC_ID}
 EOF
   elif ! test "${USER_BASE_DN}" = "${COMPUTED_ORG}"; then
     cat > "${USER_BASE_ENTRY_LDIF}" <<EOF
@@ -201,7 +207,7 @@ dn: ${USER_BASE_DN}
 objectClass: top
 objectClass: organization
 o: ${COMPUTED_ORG}
-$(if is_first_time_deploy_child_server; then echo "ds-sync-generation-id: -1"; fi)
+${SYNC_ID}
 EOF
   else
     beluga_error "User base DN must be either 1 or 2-level deep, for example: dc=foobar,dc=com or o=data"
