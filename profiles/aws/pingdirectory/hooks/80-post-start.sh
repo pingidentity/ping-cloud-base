@@ -78,10 +78,17 @@ initialize_server_for_dn() {
 
   # Initialize the first server in the secondary cluster from the first server in the primary cluster.
   # Initialize all other servers from the first successful running server within the same cluster.
-  FROM_RUNNING_POD_NAME=$(find_running_pingdirectory_pod_name_in_cluster)
-  is_secondary_cluster && test "${ORDINAL}" -eq 0 &&
-    FROM_HOST="${K8S_STATEFUL_SET_NAME}-0.${PD_CLUSTER_PUBLIC_HOSTNAME}" ||
+  if is_secondary_cluster && test "${ORDINAL}" -eq 0; then
+    FROM_HOST="${K8S_STATEFUL_SET_NAME}-0.${PD_CLUSTER_PUBLIC_HOSTNAME}"
+  else
+    other_successful_pingdirectory_pods=$(get_other_running_pingdirectory_pods)
+    if test -z "${other_successful_pingdirectory_pods}"; then
+      beluga_error "Something went wrong as there are no other successful pods to get replicaticated data FROM"
+      return 1
+    fi
+    FROM_RUNNING_POD_NAME=$(other_successful_pingdirectory_pods | head -n 1)
     FROM_HOST="${FROM_RUNNING_POD_NAME}.${LOCAL_DOMAIN_NAME}"
+  fi
   FROM_PORT="${PD_LDAPS_PORT}"
 
   TO_HOST="${K8S_STATEFUL_SET_NAME}-${ORDINAL}.${LOCAL_DOMAIN_NAME}"

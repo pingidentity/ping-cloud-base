@@ -432,25 +432,17 @@ function get_other_running_pingdirectory_pods() {
 # Detect if this is the first pod within the cluster. This method doesn't just assume pingdirectory-0 as the first pod
 # it filters successful pods only.
 # Returns
-#   True, if there are no other success pingdirectory pods
+#   True, if there are no other success pingdirectory pods running in cluster
 #   False, if there are other successful pingdirectory pods currently running in the cluster
 ########################################################################################################################
 function is_first_pingdirectory_pod_in_cluster() {
-  num_of_running_pods=$(get_other_running_pingdirectory_pods | wc -l)
-  test ${num_of_running_pods} -eq 0
-}
+  other_successful_pods=$(get_other_running_pingdirectory_pods)
 
-########################################################################################################################
-# Get the name of the first found successful pingdirectory pod.
-# Extract the first pod starting from ordinal {0,[until there are no more pods]}
-# Any other pod that is successfully running is the goal.
-# Returns
-#   1 pingdirectory pod name
-#   OR
-#   Nothing
-########################################################################################################################
-function find_running_pingdirectory_pod_name_in_cluster() {
-  get_other_running_pingdirectory_pods | head -n 1
+  if test -z "${other_successful_pods}"; then
+    return 0 # Return true, there are no other success pingdirectory pods running in cluster
+  fi
+
+  return 1 # Return false
 }
 
 ########################################################################################################################
