@@ -26,35 +26,13 @@ test -f "${SECRETS_DIR}"/encryption-settings.pin &&
 beluga_log "Using ${ENCRYPTION_PIN_FILE} as the encryption-setting.pin file"
 cp "${ENCRYPTION_PIN_FILE}" "${SERVER_ROOT_DIR}"/config
 
+# If a child non-seed server, add 'ds-sync-generation-id: -1' attribute to all backends base_dn
 if is_first_time_deploy_child_server; then
-  # Easily access all global variables of base_dns for PingDirectory
-  all_base_dns="${PLATFORM_CONFIG_BASE_DN} \
-    ${APP_INTEGRATIONS_BASE_DN} \
-    ${USER_BASE_DN}"
-
-  # Iterate over all base DNs
-  modify_ldif=$(mktemp)
-  for base_dn in ${all_base_dns}; do
-    cat > "${modify_ldif}" <<EOF
-dn: ${base_dn}
-changetype: modify
-add: ds-sync-generation-id
-ds-sync-generation-id: -1
-EOF
-
-    # Use -E flag to provide regex
-    # '\s*' matches zero or more whitespace characters between 'dn:' and base_dn
-    # e.g. the following will still be found in PD_PROFILE
-    # a) dn: dc=example,dc=com
-    # b) dn:     dc=example,dc=com
-    profile_ldif=$(grep -rlE "dn:\s${base_dn}" "${PD_PROFILE}"/ldif/* | head -1)
-    test ! -z "${profile_ldif}" && \
-      ldifmodify --doNotWrap --suppressComments \
-        --sourceLDIF ${profile_ldif} --changesLDIF ${modify_ldif} --targetLDIF ${profile_ldif}
-
-    beluga_log "testing 123"
-    cat "${profile_ldif}"
-  done
+  add_sync_generation_id_to_base_dn
+  sync_generation_id_status=$?
+  if test ${sync_generation_id_status} -ne 0; then
+    beluga_error "add_sync_generation_id_to_base_dn method failed. Exiting..."
+  fi
 fi
 
 "${SERVER_ROOT_DIR}"/bin/manage-profile setup \

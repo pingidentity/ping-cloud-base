@@ -475,6 +475,52 @@ function is_first_time_deploy_child_server() {
   return 1 # Return false as the default
 }
 
+########################################################################################################################
+# Add ds-sync-generation-id: -1 attribute to all backends base_dn
+########################################################################################################################
+function add_sync_generation_id_to_base_dn() {
+  # Easily access all global variables of base_dns for PingDirectory
+  all_base_dns="${PLATFORM_CONFIG_BASE_DN} \
+    ${APP_INTEGRATIONS_BASE_DN} \
+    ${USER_BASE_DN}"
+
+  # Iterate over all base DNs
+  modify_ldif=$(mktemp)
+  for base_dn in ${all_base_dns}; do
+    cat > "${modify_ldif}" <<EOF
+dn: ${base_dn}
+changetype: modify
+add: ds-sync-generation-id
+ds-sync-generation-id: -1
+EOF
+
+    # Use -E flag to provide regex
+    # '\s*' matches zero or more whitespace characters between 'dn:' and base_dn
+    # e.g. the following will still be found in PD_PROFILE
+    # a) dn: dc=example,dc=com
+    # b) dn:     dc=example,dc=com
+    profile_ldif=$(grep -rlE "dn:\s${base_dn}" "${PD_PROFILE}"/ldif/* | head -1)
+    if test ! -z "${profile_ldif}"; then
+      ldifmodify --doNotWrap \
+                 --suppressComments \
+                 --sourceLDIF ${profile_ldif} \
+                 --changesLDIF ${modify_ldif} \
+                 --targetLDIF ${profile_ldif}
+      ldif_status=$?
+
+      if test ${ldif_status} -ne 0; then
+        beluga_error "Adding 'ds-sync-generation-id: -1' to base dn, ${base_dn}, failed with status: ${ldif_status}"
+        cat "${modify_ldif}"
+        rm -f "${modify_ldif}"
+        return ${add_base_entry_status}
+      fi
+    fi
+  done
+
+  rm -f "${modify_ldif}"
+  return 0
+}
+
 # These are needed by every script - so export them when this script is sourced.
 beluga_log "export config settings"
 export_config_settings
