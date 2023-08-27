@@ -17,9 +17,8 @@ fi
 replicated=$(find_running_pingdirectory_pod_name_in_cluster)
 echo $replicated
 
-if [[ "${RUN_PLAN}" = "START" && \
-  ( is_primary_cluster && ! is_first_running_pingdirectory_pod_in_cluster) || \
-  is_secondary_cluster) ]]; then
-
+if [[ "${RUN_PLAN}" = "START" ]] && \
+   [[ is_primary_cluster && ! is_first_running_pingdirectory_pod_in_cluster ]] || \
+   [[ is_secondary_cluster ]]; then
     echo "yay it worked"
 fi
