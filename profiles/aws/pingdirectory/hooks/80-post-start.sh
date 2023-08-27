@@ -83,7 +83,7 @@ initialize_server_for_dn() {
   else
     other_successful_pingdirectory_pods=$(get_other_running_pingdirectory_pods)
     if test -z "${other_successful_pingdirectory_pods}"; then
-      beluga_error "Something went wrong as there are no other successful pods to get replicaticated data FROM"
+      beluga_error "Something went wrong as there are no other successful pods to get replicated data FROM"
       return 1
     fi
     FROM_RUNNING_POD_NAME=$(echo "${other_successful_pingdirectory_pods}" | head -n 1)

@@ -409,7 +409,8 @@ function get_all_running_pingdirectory_pods() {
   # Then, use 'awk' to filter out only those pods where all containers have a 'ready' status of 'true'.
   local pods=$(kubectl get pods \
       -l class=pingdirectory-server \
-      -o=jsonpath='{range .items[*]}{.metadata.name}{" "}{.status.containerStatuses[*].ready}{"\n"}{end}' |\
+      --sort-by='{.metadata.name}' \
+      --output=jsonpath='{range .items[*]}{.metadata.name}{" "}{.status.containerStatuses[*].ready}{"\n"}{end}' |\
         awk '$2=="true"{print $1}')
   echo -e "${pods}"
 }
@@ -464,7 +465,7 @@ function is_first_pingdirectory_pod_in_cluster() {
 #   False, as the default
 ########################################################################################################################
 function is_first_time_deploy_child_server() {
-  # Detect if this is a first time deployment (1st time PVC was mounted to pod)
+  # Detect if this is a first time deployment (1st time PVC mounting to pod)
   if [ "${PD_LIFE_CYCLE}" = "START" ]; then
     if (is_primary_cluster && ! is_first_pingdirectory_pod_in_cluster) || is_secondary_cluster; then
       return 0 # Return true
