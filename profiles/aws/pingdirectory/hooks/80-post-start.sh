@@ -77,10 +77,11 @@ initialize_server_for_dn() {
   TIMEOUT_SECONDS=${2:-0}
 
   # Initialize the first server in the secondary cluster from the first server in the primary cluster.
-  # Initialize all other servers from the first server within the same cluster.
+  # Initialize all other servers from the first successful running server within the same cluster.
+  FROM_RUNNING_POD_NAME=$(find_running_pingdirectory_pod_name_in_cluster)
   is_secondary_cluster && test "${ORDINAL}" -eq 0 &&
     FROM_HOST="${K8S_STATEFUL_SET_NAME}-0.${PD_CLUSTER_PUBLIC_HOSTNAME}" ||
-    FROM_HOST="$(echo find_running_pingdirectory_pod_name_in_cluster).${LOCAL_DOMAIN_NAME}"
+    FROM_HOST="${FROM_RUNNING_POD_NAME}.${LOCAL_DOMAIN_NAME}"
   FROM_PORT="${PD_LDAPS_PORT}"
 
   TO_HOST="${K8S_STATEFUL_SET_NAME}-${ORDINAL}.${LOCAL_DOMAIN_NAME}"
