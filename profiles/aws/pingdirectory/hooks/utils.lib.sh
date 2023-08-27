@@ -389,7 +389,18 @@ decrypt_file() {
   fi
 }
 
+########################################################################################################################
+# Get the names of all the pingdirectory pods that are successfully running within cluster.
+# Returns
+#   pingdirectory pod names per line
+#   OR
+#   Nothing
+########################################################################################################################
 function get_all_running_pingdirectory_pods() {
+  # Use jsonpath to:
+  # 1) extract all pingdirectoory pod names using "metadata.name" property
+  # 2) extract every container within pod status using "status.containerStatuses[*].ready" property
+  # Then, use 'awk' to filter out only those pods where all containers have a 'ready' status of 'true'.
   local pods=$(kubectl get pods \
       -l class=pingdirectory-server \
       -o=jsonpath='{range .items[*]}{.metadata.name}{" "}{.status.containerStatuses[*].ready}{"\n"}{end}' |\
@@ -397,30 +408,67 @@ function get_all_running_pingdirectory_pods() {
   echo -e "${pods}"
 }
 
+########################################################################################################################
+# Get the names of all (except for pingdirectory pod that executes this method) the pingdirectory pods that are
+# successfully running within cluster.
+# Returns
+#   pingdirectory pod names per line
+#   OR
+#   Nothing
+########################################################################################################################
 function get_other_running_pingdirectory_pods() {
   pods=$(get_all_running_pingdirectory_pods)
-  local selected_pingdirectory_pod=""
+  local other_pingdirectory_pods=""
   for current_pingdirectory_pod in ${pods}; do
     if test "${SHORT_HOST_NAME}" = "${current_pingdirectory_pod}"; then
       continue
     fi
-    selected_pingdirectory_pod="${current_pingdirectory_pod}\n"
+    other_pingdirectory_pods="${current_pingdirectory_pod}\n"
   done
-  echo -e "${selected_pingdirectory_pod}"
+  echo -e "${other_pingdirectory_pods}"
 }
 
-function is_first_running_pingdirectory_pod_in_cluster() {
-  num_of_running_pods=$(get_all_running_pingdirectory_pods | wc -l)
+########################################################################################################################
+# Detect if this is the first pod within the cluster. This method doesn't just assume pingdirectory-0 as the first pod
+# it filters successful pods only.
+# Returns
+#   True, if there are no other success pingdirectory pods
+#   False, if there are other successful pingdirectory pods currently running in the cluster
+########################################################################################################################
+function is_first_pingdirectory_pod_in_cluster() {
+  num_of_running_pods=$(get_other_running_pingdirectory_pods | wc -l)
   test ${num_of_running_pods} -eq 0
 }
 
+########################################################################################################################
+# Get the name of the first found successful pingdirectory pod.
+# Extract the first pod starting from ordinal {0,[until there are no more pods]}
+# Any other pod that is successfully running is the goal.
+# Returns
+#   1 pingdirectory pod name
+#   OR
+#   Nothing
+########################################################################################################################
 function find_running_pingdirectory_pod_name_in_cluster() {
   get_other_running_pingdirectory_pods | head -n 1
 }
 
+########################################################################################################################
+# Return true if this pod is a 1st time deployment and is the 2nd successful pod to be deployed into the cluster.
+# If true, this pod is consider as a child server.
+# Child servers can also be referenced as a non-seed server.
+#
+# Child servers are detected differently by region:
+# 1) In primary region, if the pod is the 2nd pod running in the cluster then this is considered to be a child
+# 2) In secondary region, all pods are considered a child because primary region always deploy before secondary
+# Returns
+#   True, if child server is detected
+#   False, as the default
+########################################################################################################################
 function is_first_time_deploy_child_server() {
+  # Detect if this is a first time deployment (1st time PVC was mounted to pod)
   if [ "${PD_LIFE_CYCLE}" = "START" ]; then
-    if (is_primary_cluster && ! is_first_running_pingdirectory_pod_in_cluster) || is_secondary_cluster; then
+    if (is_primary_cluster && ! is_first_pingdirectory_pod_in_cluster) || is_secondary_cluster; then
       return 0 # Return true
     fi
   fi

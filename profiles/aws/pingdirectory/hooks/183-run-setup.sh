@@ -3,11 +3,11 @@
 ${VERBOSE} && set -x
 
 PD_LIFE_CYCLE="START"
+export_container_env PD_LIFE_CYCLE
 
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 
-export_container_env PD_LIFE_CYCLE
 
 test -f "${HOOKS_DIR}/pingdata.lib.sh" && . "${HOOKS_DIR}/pingdata.lib.sh"
 
