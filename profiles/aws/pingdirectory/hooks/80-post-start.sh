@@ -193,6 +193,8 @@ if ! "${INITIALIZE_REPLICATION_DATA}"; then
   exit 0
 fi
 
+beluga_log "testing123 $PD_LIFE_CYCLE"
+
 if is_first_time_deploy_child_server; then
   beluga_log "non-seed server - will initialize data from another server"
 

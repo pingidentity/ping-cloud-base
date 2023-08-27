@@ -7,6 +7,8 @@ export PD_LIFE_CYCLE="START"
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 
+beluga_log "testing123 $PD_LIFE_CYCLE"
+
 test -f "${HOOKS_DIR}/pingdata.lib.sh" && . "${HOOKS_DIR}/pingdata.lib.sh"
 
 beluga_log "initial launch of container"

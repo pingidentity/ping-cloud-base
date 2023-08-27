@@ -410,8 +410,7 @@ function get_other_running_pingdirectory_pods() {
 }
 
 function is_first_running_pingdirectory_pod_in_cluster() {
-  pods=$(get_all_running_pingdirectory_pods)
-  num_of_running_pods=$(pods | wc -l)
+  num_of_running_pods=$(get_all_running_pingdirectory_pods | wc -l)
   test ${num_of_running_pods} -eq 0
 }
 
