@@ -192,6 +192,7 @@ dn: ${USER_BASE_DN}
 objectClass: top
 objectClass: domain
 dc: ${COMPUTED_DOMAIN}
+$(is_first_time_deploy_child_server && echo "ds-sync-generation-id: -1")
 EOF
   elif ! test "${USER_BASE_DN}" = "${COMPUTED_ORG}"; then
     cat > "${USER_BASE_ENTRY_LDIF}" <<EOF
@@ -199,45 +200,7 @@ dn: ${USER_BASE_DN}
 objectClass: top
 objectClass: organization
 o: ${COMPUTED_ORG}
-EOF
-  else
-    beluga_error "User base DN must be either 1 or 2-level deep, for example: dc=foobar,dc=com or o=data"
-    return 80
-  fi
-
-  # Append some required ACIs to the base entry file. Without these, PF SSO will not work.
-  cat >> "${USER_BASE_ENTRY_LDIF}" <<EOF
-aci: (targetattr!="userPassword")(version 3.0; acl "Allow read access for all"; allow (read,search,compare) userdn="ldap:///all";)
-aci: (targetattr!="userPassword")(version 3.0; acl "Allow self-read access to all user attributes except the password"; allow (read,search,compare) userdn="ldap:///self";)
-aci: (targetattr="*")(version 3.0; acl "Allow users to update their own entries"; allow (write) userdn="ldap:///self";)
-aci: (targetattr="*")(version 3.0; acl "Grant full access for the admin user"; allow (all) userdn="ldap:///uid=admin,${USER_BASE_DN}";)
-EOF
-
-  echo "${USER_BASE_ENTRY_LDIF}"
-}
-
-
-get_base_entry_ldif_generation_id() {
-  COMPUTED_DOMAIN=$(echo "${USER_BASE_DN}" | sed 's/^dc=\([^,]*\).*/\1/')
-  COMPUTED_ORG=$(echo "${USER_BASE_DN}" | sed 's/^o=\([^,]*\).*/\1/')
-
-  USER_BASE_ENTRY_LDIF=$(mktemp)
-
-  if ! test "${USER_BASE_DN}" = "${COMPUTED_DOMAIN}"; then
-    cat > "${USER_BASE_ENTRY_LDIF}" <<EOF
-dn: ${USER_BASE_DN}
-objectClass: top
-objectClass: domain
-dc: ${COMPUTED_DOMAIN}
-ds-sync-generation-id: -1
-EOF
-  elif ! test "${USER_BASE_DN}" = "${COMPUTED_ORG}"; then
-    cat > "${USER_BASE_ENTRY_LDIF}" <<EOF
-dn: ${USER_BASE_DN}
-objectClass: top
-objectClass: organization
-o: ${COMPUTED_ORG}
-ds-sync-generation-id: -1
+$(is_first_time_deploy_child_server && echo "ds-sync-generation-id: -1")
 EOF
   else
     beluga_error "User base DN must be either 1 or 2-level deep, for example: dc=foobar,dc=com or o=data"
@@ -443,22 +406,23 @@ function get_other_running_pingdirectory_pods() {
     fi
     selected_pingdirectory_pod="${current_pingdirectory_pod}\n"
   done
-
   echo -e "${selected_pingdirectory_pod}"
 }
 
-function is_genesis_server() {
-  if test "${RUN_PLAN}" != "START"; then
-    return 1
-  fi
-
+function is_first_running_pingdirectory_pod_in_cluster() {
   pods=$(get_all_running_pingdirectory_pods)
   num_of_running_pods=$(pods | wc -l)
   test ${num_of_running_pods} -eq 0
 }
 
-function find_replicated_host_server() {
+function find_running_pingdirectory_pod_name_in_cluster() {
   get_other_running_pingdirectory_pods | head -n 1
+}
+
+function is_first_time_deploy_child_server() {
+  return test "${RUN_PLAN}" = "START" && \
+    (is_primary_cluster && ! is_first_running_pingdirectory_pod_in_cluster) || \
+    (is_secondary_cluster)
 }
 
 # These are needed by every script - so export them when this script is sourced.

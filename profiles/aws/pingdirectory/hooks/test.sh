@@ -8,11 +8,11 @@ ${VERBOSE} && set -x
 name=$(get_other_running_pingdirectory_pods)
 echo "$name"
 
-if test is_genesis_server; then
-  echo "is_genesis_server yay"
-else
+if test is_first_time_deploy_child_server; then
   echo "is NOT genesis_server"
+else
+  echo "is_genesis_server yay"
 fi
 
-replicated=$(find_replicated_host_server)
+replicated=$(find_running_pingdirectory_pod_name_in_cluster)
 echo $replicated

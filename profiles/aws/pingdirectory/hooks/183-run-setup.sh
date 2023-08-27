@@ -23,7 +23,7 @@ test -f "${SECRETS_DIR}"/encryption-settings.pin &&
 beluga_log "Using ${ENCRYPTION_PIN_FILE} as the encryption-setting.pin file"
 cp "${ENCRYPTION_PIN_FILE}" "${SERVER_ROOT_DIR}"/config
 
-if ! (test "${ORDINAL}" -eq 0 && is_primary_cluster); then
+if is_first_time_deploy_child_server; then
   # Easily access all global variables of base_dns for PingDirectory
   all_base_dns="${PLATFORM_CONFIG_BASE_DN} \
     ${APP_INTEGRATIONS_BASE_DN} \
