@@ -419,8 +419,8 @@ function find_running_pingdirectory_pod_name_in_cluster() {
 }
 
 function is_first_time_deploy_child_server() {
-  if [[ "${PD_LIFE_CYCLE}" = "START" ]]; then
-    if [[ is_primary_cluster &&  ! is_first_running_pingdirectory_pod_in_cluster ]] || is_secondary_cluster; then
+  if [ "${PD_LIFE_CYCLE}" = "START" ]; then
+    if (is_primary_cluster && ! is_first_running_pingdirectory_pod_in_cluster) || is_secondary_cluster; then
       return 0 # Return true
     fi
   fi
