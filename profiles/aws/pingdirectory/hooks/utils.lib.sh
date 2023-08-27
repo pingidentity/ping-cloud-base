@@ -420,11 +420,12 @@ function find_running_pingdirectory_pod_name_in_cluster() {
 }
 
 function is_first_time_deploy_child_server() {
-  if [[ "${RUN_PLAN}" = "START" ]] && \
-     [[ is_primary_cluster && ! is_first_running_pingdirectory_pod_in_cluster ]] || \
-     [[ is_secondary_cluster ]]; then
-       return 0 # Return true
+  if [ "${RUN_PLAN}" = "START" ]; then
+    if ( is_primary_cluster && ! is_first_running_pingdirectory_pod_in_cluster ) || is_secondary_cluster; then
+      return 0 # Return true
+    fi
   fi
+
   return 1 # Return false as the default
 }
 
