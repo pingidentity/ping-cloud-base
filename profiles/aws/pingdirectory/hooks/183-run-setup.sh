@@ -2,12 +2,12 @@
 
 ${VERBOSE} && set -x
 
-export PD_LIFE_CYCLE="START"
+PD_LIFE_CYCLE="START"
 
 . "${HOOKS_DIR}/pingcommon.lib.sh"
 . "${HOOKS_DIR}/utils.lib.sh"
 
-beluga_log "testing123 $PD_LIFE_CYCLE"
+export_container_env PD_LIFE_CYCLE
 
 test -f "${HOOKS_DIR}/pingdata.lib.sh" && . "${HOOKS_DIR}/pingdata.lib.sh"
 
