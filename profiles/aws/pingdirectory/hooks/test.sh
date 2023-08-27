@@ -23,6 +23,7 @@ echo find_running_pingdirectory_pod_name_in_cluster
 replicated=$(find_running_pingdirectory_pod_name_in_cluster)
 echo $replicated
 
+echo "PD_LIFE_CYCLE: $PD_LIFE_CYCLE"
 if [ "${PD_LIFE_CYCLE}" = "START" ]; then
   if (is_primary_cluster && ! is_first_pingdirectory_pod_in_cluster) || is_secondary_cluster; then
     echo "I am a child non-seed server"
