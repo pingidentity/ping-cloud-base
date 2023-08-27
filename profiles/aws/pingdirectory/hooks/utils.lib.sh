@@ -420,7 +420,7 @@ function find_running_pingdirectory_pod_name_in_cluster() {
 }
 
 function is_first_time_deploy_child_server() {
-  return 0
+  return 1
 }
 
 # These are needed by every script - so export them when this script is sourced.
