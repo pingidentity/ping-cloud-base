@@ -2,7 +2,7 @@
 
 ${VERBOSE} && set -x
 
-PD_LIFE_CYCLE="START"
+export PD_LIFE_CYCLE="START"
 export_container_env PD_LIFE_CYCLE
 
 . "${HOOKS_DIR}/pingcommon.lib.sh"
