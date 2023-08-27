@@ -79,13 +79,8 @@ fi
 beluga_log "Copy beluga profile files after setup"
 run_hook "07-apply-server-profile.sh"
 
-if ! (test "${ORDINAL}" -eq 0 && is_primary_cluster); then
-  get_base_entry_ldif_generation_id
-  add_base_entry_status=$?
-else
-  add_base_entry_if_needed
-  add_base_entry_status=$?
-fi
+add_base_entry_if_needed
+add_base_entry_status=$?
 
 beluga_log "add base DN ${USER_BASE_DN} status: ${add_base_entry_status}"
 if test ${add_base_entry_status} -ne 0; then
