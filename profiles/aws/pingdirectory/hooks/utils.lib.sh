@@ -185,12 +185,6 @@ get_base_entry_ldif() {
   COMPUTED_DOMAIN=$(echo "${USER_BASE_DN}" | sed 's/^dc=\([^,]*\).*/\1/')
   COMPUTED_ORG=$(echo "${USER_BASE_DN}" | sed 's/^o=\([^,]*\).*/\1/')
 
-  if is_first_time_deploy_child_server; then
-    SYNC_ID="ds-sync-generation-id: -1"
-  else
-    SYNC_ID=""
-  fi
-
   USER_BASE_ENTRY_LDIF=$(mktemp)
 
   if ! test "${USER_BASE_DN}" = "${COMPUTED_DOMAIN}"; then
@@ -199,7 +193,6 @@ dn: ${USER_BASE_DN}
 objectClass: top
 objectClass: domain
 dc: ${COMPUTED_DOMAIN}
-${SYNC_ID}
 EOF
   elif ! test "${USER_BASE_DN}" = "${COMPUTED_ORG}"; then
     cat > "${USER_BASE_ENTRY_LDIF}" <<EOF
@@ -207,11 +200,17 @@ dn: ${USER_BASE_DN}
 objectClass: top
 objectClass: organization
 o: ${COMPUTED_ORG}
-${SYNC_ID}
 EOF
   else
     beluga_error "User base DN must be either 1 or 2-level deep, for example: dc=foobar,dc=com or o=data"
     return 80
+  fi
+
+  # Append by setting ds-sync-generation-id to -1 if this is a child non-seed server
+  if is_first_time_deploy_child_server; then
+    cat >> "${USER_BASE_ENTRY_LDIF}" <<EOF
+ds-sync-generation-id: -1
+EOF
   fi
 
   # Append some required ACIs to the base entry file. Without these, PF SSO will not work.
