@@ -13,19 +13,11 @@ echo get_other_running_pingdirectory_pods
 name=$(get_other_running_pingdirectory_pods)
 echo "$name"
 
-echo testing123
-get_all_running_pingdirectory_pods | wc -l
-get_other_running_pingdirectory_pods | wc -l
-
 if test is_first_pingdirectory_pod_in_cluster; then
-  echo "is NOT genesis_server"
+  echo "is genesis_server"
 else
-  echo "is_genesis_server"
+  echo "is NOT genesis_server"
 fi
-
-echo find_running_pingdirectory_pod_name_in_cluster
-replicated=$(find_running_pingdirectory_pod_name_in_cluster)
-echo $replicated
 
 echo "PD_LIFE_CYCLE: $PD_LIFE_CYCLE"
 if [ "${PD_LIFE_CYCLE}" = "START" ]; then

@@ -192,7 +192,7 @@ dn: ${USER_BASE_DN}
 objectClass: top
 objectClass: domain
 dc: ${COMPUTED_DOMAIN}
-$(is_first_time_deploy_child_server && echo "ds-sync-generation-id: -1")
+$(if is_first_time_deploy_child_server; then echo "ds-sync-generation-id: -1"; fi)
 EOF
   elif ! test "${USER_BASE_DN}" = "${COMPUTED_ORG}"; then
     cat > "${USER_BASE_ENTRY_LDIF}" <<EOF
@@ -200,7 +200,7 @@ dn: ${USER_BASE_DN}
 objectClass: top
 objectClass: organization
 o: ${COMPUTED_ORG}
-$(is_first_time_deploy_child_server && echo "ds-sync-generation-id: -1")
+$(if is_first_time_deploy_child_server; then echo "ds-sync-generation-id: -1"; fi)
 EOF
   else
     beluga_error "User base DN must be either 1 or 2-level deep, for example: dc=foobar,dc=com or o=data"

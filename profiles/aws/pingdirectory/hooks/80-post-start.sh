@@ -86,7 +86,7 @@ initialize_server_for_dn() {
       beluga_error "Something went wrong as there are no other successful pods to get replicaticated data FROM"
       return 1
     fi
-    FROM_RUNNING_POD_NAME=$(other_successful_pingdirectory_pods | head -n 1)
+    FROM_RUNNING_POD_NAME=$(echo "${other_successful_pingdirectory_pods}" | head -n 1)
     FROM_HOST="${FROM_RUNNING_POD_NAME}.${LOCAL_DOMAIN_NAME}"
   fi
   FROM_PORT="${PD_LDAPS_PORT}"
