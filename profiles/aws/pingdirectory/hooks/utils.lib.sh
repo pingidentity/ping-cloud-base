@@ -179,6 +179,7 @@ function is_secondary_cluster() {
 
 ########################################################################################################################
 # Get LDIF for the base entry of USER_BASE_DN and return the LDIF file as stdout
+# Add ds-sync-generation-id: -1 to attribute if this is a child non-seed server
 ########################################################################################################################
 get_base_entry_ldif() {
   COMPUTED_DOMAIN=$(echo "${USER_BASE_DN}" | sed 's/^dc=\([^,]*\).*/\1/')
