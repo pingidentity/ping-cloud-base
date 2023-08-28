@@ -25,18 +25,18 @@ patchesStrategicMerge:
             resources:
               limits:
                 memory: "1024Mi"
-                cpu: "1000m"
+                cpu: "150m"
               requests:
-                memory: "32Mi"
-                cpu: "20m"
+                memory: "500Mi"
+                cpu: "100m"
           - name: csi-provisioner
             resources:
               limits:
                 memory: "50Mi"
-                cpu: "60m"
+                cpu: "30m"
               requests:
                 memory: "30Mi"
-                cpu: "30m"
+                cpu: "20m"
           - name: liveness-probe
             resources:
               limits:
