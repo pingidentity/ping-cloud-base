@@ -56,6 +56,16 @@ spec:
             value: "http://opensearch-dashboards:5601"
           - name: DASHBOARDS_PATH
             value: "/usr/share/opensearch/data/dashboards"
+          - name: TENANT_DOMAIN
+            valueFrom:
+              configMapKeyRef:
+                name: cluster-info
+                key: tenant_domain
+          - name: PRIMARY_TENANT_DOMAIN
+            valueFrom:
+              configMapKeyRef:
+                name: cluster-info
+                key: primary_tenant_domain
         volumeMounts:
           - name: os-ism-policies
             mountPath: /usr/share/opensearch/data/ism-policies
