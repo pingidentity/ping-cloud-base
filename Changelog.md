@@ -49,17 +49,20 @@
 - Update AWS EFS CSI Driver to v1.5.8 & set requests/limits to efs-csi-node
 - Improve Prometheus pods respond properly to SIGTERM
 - Update alertmeneger image with self-hosted ECR URI
+- Update fluent-bit image with v2.1.8
+- Support DHE Ciphers out of the box
 
 
 _Changes:_
 
+- [X] PDO-3541 Support DHE Ciphers out of the box
 - [X] PDO-4606 Create a new init container to upgrade PA and PA-WAS and mount volume to admin pod once upgrade is successful
 - [X] PDO-4779 Modify seal.sh script to work for microservices
 - [X] PDO-4847 Add weekly pipeline run logic for PCB
 - [X] PDO-4857 Add Beluga Tools code-gen directory to PCB
 - [X] PDO-4868 Update update-cluster-state script for MonoRepo
 - [X] PDO-4896 Update ping-cloud-base karpenter version to v0.28.1
-= [X] PDO-5005 Update generate-cluster-state script to pull profiles from code-gen dir
+- [X] PDO-5005 Update generate-cluster-state script to pull profiles from code-gen dir
 - [X] PDO-5110 OpenSearch migration: Install Opensearch side-by-side with Elastic
 - [X] PDO-5112 OpenSearch migration: Migrate index templates
 - [X] PDO-5113 OpenSearch migration: Change logstash pipelines to send data to OS instead ES
@@ -125,7 +128,9 @@ _Changes:_
 - [X] PDO-5835 Create PD init container for KMS
 - [X] PDO-5871 Update AWS EFS CSI Driver to v1.5.8
 - [X] PDO-5873 Update OpenSearch/OSD to v2.8.0
+- [X] PDO-5874 Migrate from AWS-for-fluent-bit to fluent-bit v2.1.8
 - [X] PDO-5924 Multi-Region CDE: opensearch-bootstrap job in a second region can't connect to OpenSearch
+- [X] PDO-6061 Fix pingone-configurator pod crashing when missing ConfigMap ping-cloud/is-pingone
 
 ### 1.18.0.0
 
