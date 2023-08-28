@@ -191,7 +191,11 @@ display_all_certs() {
 # Check upon initial startup that we are still using the newest cert provided by cert-manager,
 # and only replace if the certs don't match
 initial_startup_check() {
-  readiness_check
+  if ! readiness_check; then
+    # Terminate hook as required certificates must be present on initial startup
+    exit 1
+  fi
+
   display_all_certs
 
   beluga_log "Checking if PD started with a different cert than provided by cert-manager currently..."
@@ -215,14 +219,11 @@ watch_for_cert_update() {
   while true; do
     sleep $check_interval;
 
-    display_all_certs
-
     if ! readiness_check; then
-      beluga_log "Testing123 File not present"
+      beluga_warn "Missing required certificates will keep trying until certificates are present"
+      continue
     else
-
       if ! certs_equal; then
-        beluga_log "Testing123 preparing to change certs"
         display_all_certs
         beluga_log "${CM_KEYSTORE_FILE} was changed, running replace-certificate script"
         replace_server_cert
