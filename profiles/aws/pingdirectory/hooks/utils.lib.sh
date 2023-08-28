@@ -416,7 +416,7 @@ function get_all_running_pingdirectory_pods() {
 }
 
 ########################################################################################################################
-# Get the names of all the pingdirectory pods (except for current pingdirectory pod that executes this method) that are
+# Get the names of all the pingdirectory pods (except for current pod that executes this method) that are
 # successfully running within cluster.
 # Returns
 #   pingdirectory pod names per line
@@ -428,6 +428,7 @@ function get_other_running_pingdirectory_pods() {
   local other_pingdirectory_pods=""
   for current_pingdirectory_pod in ${pods}; do
     if test "${SHORT_HOST_NAME}" = "${current_pingdirectory_pod}"; then
+      # Skip current pod that executes this method
       continue
     fi
     other_pingdirectory_pods="${current_pingdirectory_pod}\n"
@@ -436,8 +437,8 @@ function get_other_running_pingdirectory_pods() {
 }
 
 ########################################################################################################################
-# Detect if this is the first pod within the cluster. This method doesn't just assume pingdirectory-0 as the first pod
-# it filters successful pods only.
+# Detect if this is the first pingdirectory pod within the cluster.
+# This method doesn't just assume pingdirectory-0 as the first pod it filters successful pods only.
 # Returns
 #   True, if there are no other success pingdirectory pods running in cluster
 #   False, if there are other successful pingdirectory pods currently running in the cluster
@@ -453,12 +454,14 @@ function is_first_pingdirectory_pod_in_cluster() {
 }
 
 ########################################################################################################################
-# Return true if this pod is a 1st time deployment and is the 2nd successful pod to be deployed into the cluster.
+# Return true if this pingdirectory pod is a 1st time deployment and is the 2nd(or more) successful pod to be deployed
+# into the cluster.
+#
 # If true, this pod is consider as a child server.
 # Child servers can also be referenced as a non-seed server.
 #
 # Child servers are detected differently by region:
-# 1) In primary region, if the pod is the 2nd pod running in the cluster then this is considered to be a
+# 1) In primary region, if the pod is the 2nd(or more) pod running in the cluster then this is considered to be a
 #                       child non-seed server
 # 2) In secondary region, all pods are considered a child non-seed server because primary region
 #                       always deploy before secondary
@@ -486,7 +489,8 @@ function add_sync_generation_id_to_base_dn() {
     ${APP_INTEGRATIONS_BASE_DN} \
     ${USER_BASE_DN}"
 
-  # Iterate over all base DNs
+  # Iterate over all base DNs by searching for its DIT file within pd.profile/ldif/<backend>/<whatever>.ldif
+  # Once found add 'ds-sync-generation-id: -1' to its base DN
   modify_ldif=$(mktemp)
   for base_dn in ${all_base_dns}; do
     cat > "${modify_ldif}" <<EOF

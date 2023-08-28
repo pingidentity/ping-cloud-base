@@ -13,6 +13,10 @@ echo get_other_running_pingdirectory_pods
 name=$(get_other_running_pingdirectory_pods)
 echo "$name"
 
+echo "head -n1"
+name=$(get_other_running_pingdirectory_pods)
+echo "$name" | head -n 1
+
 if test is_first_pingdirectory_pod_in_cluster; then
   echo "is genesis_server"
 else

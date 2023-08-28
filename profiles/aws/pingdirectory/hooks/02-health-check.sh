@@ -38,20 +38,21 @@ while true; do
     # Continue to wait until all base DNs have been initialized
     for base_dn in ${all_base_dns}; do
       while true; do
-        # An un-initialized baseDN is determined with the attribute ds-sync-generation-id set to -1
+        # An un-initialized base DN is determined with the attribute ds-sync-generation-id set to -1
         init_status=$(ldapsearch \
           --outputFormat values-only \
           --baseDN "${base_dn}" \
           --scope base '(&)' ds-sync-generation-id)
 
-        # if init_status is set to -1 then we must try again until this baseDN is initialized
+        # if init_status is set to -1 then we must wait and try again until this base DN is initialized
         beluga_log "int_status for ${base_dn}: ${init_status}"
         if [[ "${init_status}" = "-1" ]]; then
-          # Add a sleep to not overwhelm the system or the LDAP server
-          echo "Directory not available, ${base_dn} is not yet initialized"
+          # Add a sleep to not overwhelm the system or the PingDirectory LDAP server
+          echo "PingDirectory not available, ${base_dn} is not yet initialized"
           sleep 5
         else
-          beluga_log "Directory base_dn:'${base_dn}' is initialized"
+          beluga_log "PingDirectory base_dn:'${base_dn}' is initialized"
+          # Break out of infinite while loop and move to the next base DN and check its ds-sync-generation-id value
           break
         fi
       done

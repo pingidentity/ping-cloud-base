@@ -77,7 +77,7 @@ initialize_server_for_dn() {
   TIMEOUT_SECONDS=${2:-0}
 
   # Initialize the first server in the secondary cluster from the first server in the primary cluster.
-  # Initialize all other servers from the first successful running server within the same cluster.
+  # Initialize all other servers a first successful running server within the same cluster.
   if is_secondary_cluster && test "${ORDINAL}" -eq 0; then
     FROM_HOST="${K8S_STATEFUL_SET_NAME}-0.${PD_CLUSTER_PUBLIC_HOSTNAME}"
   else
