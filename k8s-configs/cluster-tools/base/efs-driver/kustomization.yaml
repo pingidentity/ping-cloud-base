@@ -24,7 +24,7 @@ patchesStrategicMerge:
               - --vol-metrics-opt-in=false
             resources:
               limits:
-                memory: "500Mi"
+                memory: "600Mi"
                 cpu: "100m"
               requests:
                 memory: "350Mi"
