@@ -416,7 +416,7 @@ function get_all_running_pingdirectory_pods() {
 }
 
 ########################################################################################################################
-# Get the names of all (except for pingdirectory pod that executes this method) the pingdirectory pods that are
+# Get the names of all the pingdirectory pods (except for current pingdirectory pod that executes this method) that are
 # successfully running within cluster.
 # Returns
 #   pingdirectory pod names per line
@@ -458,8 +458,10 @@ function is_first_pingdirectory_pod_in_cluster() {
 # Child servers can also be referenced as a non-seed server.
 #
 # Child servers are detected differently by region:
-# 1) In primary region, if the pod is the 2nd pod running in the cluster then this is considered to be a child
-# 2) In secondary region, all pods are considered a child because primary region always deploy before secondary
+# 1) In primary region, if the pod is the 2nd pod running in the cluster then this is considered to be a
+#                       child non-seed server
+# 2) In secondary region, all pods are considered a child non-seed server because primary region
+#                       always deploy before secondary
 # Returns
 #   True, if child server is detected
 #   False, as the default

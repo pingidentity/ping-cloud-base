@@ -28,9 +28,7 @@ while true; do
   PD_STATUS=$(status | grep 'Operational Status' | cut -d ':' -f 2 | tr -d '[:space:]')
 
   if test "${PD_STATUS}" == "Available"; then
-
-    beluga_log "PingDirectory not available"
-
+    # START workaround for STAGING-18792; PDO-6021;
     # Easily access all global variables of base_dns for PingDirectory
     all_base_dns="${PLATFORM_CONFIG_BASE_DN} \
       ${APP_INTEGRATIONS_BASE_DN} \
@@ -41,13 +39,16 @@ while true; do
     for base_dn in ${all_base_dns}; do
       while true; do
         # An un-initialized baseDN is determined with the attribute ds-sync-generation-id set to -1
-        init_status=$(ldapsearch --outputFormat values-only --baseDN "${base_dn}" --scope base '(&)' ds-sync-generation-id)
+        init_status=$(ldapsearch \
+          --outputFormat values-only \
+          --baseDN "${base_dn}" \
+          --scope base '(&)' ds-sync-generation-id)
 
         # if init_status is set to -1 then we must try again until this baseDN is initialized
         beluga_log "int_status for ${base_dn}: ${init_status}"
         if [[ "${init_status}" = "-1" ]]; then
           # Add a sleep to not overwhelm the system or the LDAP server
-          echo "Directory ${base_dn} is not yet initialized"
+          echo "Directory not available, ${base_dn} is not yet initialized"
           sleep 5
         else
           beluga_log "Directory base_dn:'${base_dn}' is initialized"
@@ -55,7 +56,7 @@ while true; do
         fi
       done
     done
-    # END workaround for STAGING-18792;
+    # END workaround for STAGING-18792; PDO-6021;
 
     # Explicitly call finalize to restore readiness and liveness before exiting the script
     finalize

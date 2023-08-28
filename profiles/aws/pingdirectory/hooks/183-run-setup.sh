@@ -32,6 +32,7 @@ if is_first_time_deploy_child_server; then
   sync_generation_id_status=$?
   if test ${sync_generation_id_status} -ne 0; then
     beluga_error "add_sync_generation_id_to_base_dn method failed. Exiting..."
+    exit ${sync_generation_id_status}
   fi
 fi
 
