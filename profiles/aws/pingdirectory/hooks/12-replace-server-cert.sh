@@ -220,7 +220,7 @@ watch_for_cert_update() {
     sleep $check_interval;
 
     if ! readiness_check; then
-      beluga_warn "Missing required certificates will keep trying until certificates are present"
+      beluga_warn "Missing required certificate(s) will keep trying until certificate(s) are present"
       continue
     else
       if ! certs_equal; then
