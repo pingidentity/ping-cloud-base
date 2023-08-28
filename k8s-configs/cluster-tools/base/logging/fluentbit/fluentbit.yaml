@@ -162,7 +162,7 @@ spec:
           subPath: s3.conf
         - name: fluent-bit-pipeline-customer
           mountPath: /fluent-bit/etc/pipelines_customer.conf
-          subPath: s3.conf
+          subPath: customer.conf
         - name: runlogjournal
           mountPath: /run/log/journal
           readOnly: true
