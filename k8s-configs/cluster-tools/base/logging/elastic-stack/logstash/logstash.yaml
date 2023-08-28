@@ -118,6 +118,10 @@ spec:
               value: 1000gb
             - name: QUEUE_DRAIN
               value: "true"
+            - name: DEAD_LETTER_QUEUE_ENABLE
+              value: "true"
+            - name: PATH_DEAD_LETTER_QUEUE
+              value: "/usr/share/logstash/data/queue/dead_letter"
             - name: LS_JAVA_OPTS
               value: "-Xms1g -Xmx1g"
             - name: XPACK_MONITORING_ENABLED
