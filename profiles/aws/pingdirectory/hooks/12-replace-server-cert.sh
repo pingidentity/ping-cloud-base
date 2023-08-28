@@ -158,13 +158,13 @@ readiness_check() {
   # Do both the CM keystore and cert files exist?
   if [ ! -f "${CM_KEYSTORE_FILE}" ] || [ ! -f "${CM_CERT_FILE}" ]; then
     beluga_error "Missing ${CM_KEYSTORE_FILE} and/or ${CM_CERT_FILE} - check mounted secrets"
-    exit 1
+    return 1
   fi
 
   # Do all of the PD keystores and truststore exist?
   if [ ! -f "${PD_KEYSTORE_FILE}" ] || [ ! -f "${PD_KEYSTORE_PW_FILE}" ] || [ ! -f "${PD_TRUSTSTORE_FILE}" ] || [ ! -f "${PD_TRUSTSTORE_PW_FILE}" ]; then
     beluga_error "Missing one of the following PingDirectory keystore/truststore files: ${PD_KEYSTORE_FILE}, ${PD_KEYSTORE_PW_FILE}, ${PD_TRUSTSTORE_FILE}, or ${PD_TRUSTSTORE_PW_FILE}"
-    exit 1
+    return 1
   fi
 }
 
