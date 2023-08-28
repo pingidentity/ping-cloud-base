@@ -51,6 +51,7 @@
 - Update alertmeneger image with self-hosted ECR URI
 - Update fluent-bit image with v2.1.8
 - Support DHE Ciphers out of the box
+- Update kubectl to 1.26.0 for EKS 1.27
 
 
 _Changes:_
@@ -121,6 +122,7 @@ _Changes:_
 - [X] PDO-5762 CloudWatch / New Relic: Disable logging for Dev clusters
 - [X] PDO-5770 Update update-profile-repo script for MonoRepo
 - [X] PDO-5774 OS Index Policies: State Transitions Errors
+- [X] PDO-5780 Update kubectl to 1.26.0 for EKS 1.27
 - [X] PDO-5797 Unify severity format for all prometheus alerts
 - [X] PDO-5800 Update pd.profile to align with PingDirectory upgrade
 - [X] PDO-5801 Update cluster-autoscaler v1.27.0/1.27.1 for eks 1.27
