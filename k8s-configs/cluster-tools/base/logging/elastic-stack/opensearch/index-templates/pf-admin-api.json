@@ -1,6 +1,7 @@
 {
   "index_patterns": [
-    "pf-admin-api-*"
+    "pf-admin-api-*",
+    "pf-runtime-api-*"
   ],
   "template": {
     "settings": {

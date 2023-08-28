@@ -11,13 +11,20 @@ configMapGenerator:
       - ingress-access.json
       - ingress-errors.json
       - pa-api-audit.json
+      - pa-agent-audit.json
       - pa-audit.json
       - pa-engine-audit.json
       - pa-pingaccess.json
+      - pa-sideband-audit.json
+      - pa-sideband-client-audit.json
+      - pa-upgrade.json
       - pa-was-api-audit.json
       - pa-was-audit.json
       - pa-was-engine-audit.json
       - pa-was-pingaccess.json
+      - pc-application-api.json
+      - pc-application.json
+      - pc-monitor.json
       - pd-access.json
       - pd-errors.json
       - pd-expensive-write-ops.json
@@ -25,12 +32,15 @@ configMapGenerator:
       - pd-replication.json
       - pd-server.json
       - pdg-access.json
+      - pdg-error.json
       - pf-admin-api.json
+      - pf-admin-event-detail.json
       - pf-admin-log.json
       - pf-audit.json
       - pf-jvm-garbage-collection.json
       - pf-init.json
       - pf-provisioner.json
+      - pf-provisioner-audit.json
       - pf-requests.json
       - pf-server.json
       - pf-transaction.json
