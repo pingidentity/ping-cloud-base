@@ -24,11 +24,27 @@ patchesStrategicMerge:
               - --vol-metrics-opt-in=false
             resources:
               limits:
-                memory: "1024Mi"
-                cpu: "1000m"
+                memory: "300Mi"
+                cpu: "40m"
               requests:
-                memory: "32Mi"
+                memory: "200Mi"
                 cpu: "20m"
+          - name: csi-provisioner
+            resources:
+              limits:
+                memory: "50Mi"
+                cpu: "20m"
+              requests:
+                memory: "30Mi"
+                cpu: "10m"
+          - name: liveness-probe
+            resources:
+              limits:
+                memory: "50Mi"
+                cpu: "20m"
+              requests:
+                memory: "30Mi"
+                cpu: "10m"
 
   - |-
     kind: DaemonSet
