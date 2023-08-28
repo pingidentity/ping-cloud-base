@@ -24,11 +24,11 @@ patchesStrategicMerge:
               - --vol-metrics-opt-in=false
             resources:
               limits:
-                memory: "600Mi"
-                cpu: "100m"
+                memory: "1024Mi"
+                cpu: "1000m"
               requests:
-                memory: "350Mi"
-                cpu: "50m"
+                memory: "32Mi"
+                cpu: "20m"
           - name: csi-provisioner
             resources:
               limits:
