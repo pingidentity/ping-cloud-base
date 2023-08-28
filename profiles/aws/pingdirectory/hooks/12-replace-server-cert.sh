@@ -215,10 +215,15 @@ watch_for_cert_update() {
   while true; do
     sleep $check_interval;
 
+    display_all_certs
+
     if ! readiness_check; then
       beluga_log "Testing123 File not present"
     else
+
       if ! certs_equal; then
+        beluga_log "Testing123 preparing to change certs"
+        display_all_certs
         beluga_log "${CM_KEYSTORE_FILE} was changed, running replace-certificate script"
         replace_server_cert
       fi
