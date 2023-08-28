@@ -1,7 +1,6 @@
 {
   "index_patterns": [
-    "pa-engine-audit-*",
-    "pa-was-engine-audit-*"
+    "pa-engine-audit-*"
   ],
   "template": {
     "settings": {
@@ -459,6 +458,9 @@
           "type": "date"
         }
       }
+    },
+    "aliases":{
+      "pa-audit-ro": {}
     }
   },
   "composed_of": [],

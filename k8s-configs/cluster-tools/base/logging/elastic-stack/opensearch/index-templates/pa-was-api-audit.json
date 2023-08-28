@@ -1,6 +1,6 @@
 {
   "index_patterns": [
-    "pa-api-audit-*"
+    "pa-was-api-audit-*"
   ],
   "template": {
     "settings": {
@@ -304,7 +304,7 @@
       }
     },
     "aliases":{
-      "pa-audit-ro": {}
+      "pa-was-audit-ro": {}
     }
   },
   "composed_of": [],

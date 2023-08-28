@@ -14,6 +14,10 @@ configMapGenerator:
       - pa-audit.json
       - pa-engine-audit.json
       - pa-pingaccess.json
+      - pa-was-api-audit.json
+      - pa-was-audit.json
+      - pa-was-engine-audit.json
+      - pa-was-pingaccess.json
       - pd-access.json
       - pd-errors.json
       - pd-expensive-write-ops.json
