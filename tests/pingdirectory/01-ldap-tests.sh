@@ -9,9 +9,9 @@ if skipTest "${0}"; then
 fi
 
 testLdap() {
-  log "DEV_TEST_ENV set to: ${DEV_TEST_ENV}"
+  log "IS_BELUGA_ENV set to: ${IS_BELUGA_ENV}"
   log "Using the hostname: ${PINGDIRECTORY_ADMIN} and port: ${PD_SEED_LDAPS_PORT}"
-  if test "${DEV_TEST_ENV}" = 'true'; then
+  if test "${IS_BELUGA_ENV}" = 'true'; then
     log "Running process grep and ldapsearch..."
     if pgrep -f docker > /dev/null; then
       docker run --rm pingidentity/ldap-sdk-tools ldapsearch \
