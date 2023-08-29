@@ -22,7 +22,6 @@ configMapGenerator:
       - pa-was-audit.json
       - pa-was-engine-audit.json
       - pa-was-pingaccess.json
-      - pc-application-api.json
       - pc-application.json
       - pc-monitor.json
       - pd-access.json
