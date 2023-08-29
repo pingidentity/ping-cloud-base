@@ -46,12 +46,16 @@
 - Enabling weekend scheduled runs to different CDE types (dev/test/stage/prod/customer-hub)
 - Fix: opensearch-bootstrap job in a second region can't connect to OpenSearch
 - Update OpenSearch/OpenSearch Dashboards to v2.8.0
-- Update AWS EFS CSI Driver to v1.5.8
+- Update AWS EFS CSI Driver to v1.5.8 & set requests/limits
 - Improve Prometheus pods respond properly to SIGTERM
 - Update alertmeneger image with self-hosted ECR URI
 - Update fluent-bit image with v2.1.8
 - Support DHE Ciphers out of the box
+- Update metrics-server image to v0.6.4
+- Update kubectl to 1.26.0 for EKS 1.27
 - Remove dev-env.sh, dev-cluster-state (dir), and corresponding variables.
+
+>>>>>>> Changelog.md
 
 _Changes:_
 
@@ -62,7 +66,7 @@ _Changes:_
 - [X] PDO-4857 Add Beluga Tools code-gen directory to PCB
 - [X] PDO-4868 Update update-cluster-state script for MonoRepo
 - [X] PDO-4896 Update ping-cloud-base karpenter version to v0.28.1
-= [X] PDO-5005 Update generate-cluster-state script to pull profiles from code-gen dir
+- [X] PDO-5005 Update generate-cluster-state script to pull profiles from code-gen dir
 - [X] PDO-5110 OpenSearch migration: Install Opensearch side-by-side with Elastic
 - [X] PDO-5112 OpenSearch migration: Migrate index templates
 - [X] PDO-5113 OpenSearch migration: Change logstash pipelines to send data to OS instead ES
@@ -122,6 +126,7 @@ _Changes:_
 - [X] PDO-5762 CloudWatch / New Relic: Disable logging for Dev clusters
 - [X] PDO-5770 Update update-profile-repo script for MonoRepo
 - [X] PDO-5774 OS Index Policies: State Transitions Errors
+- [X] PDO-5780 Update kubectl to 1.26.0 for EKS 1.27
 - [X] PDO-5797 Unify severity format for all prometheus alerts
 - [X] PDO-5800 Update pd.profile to align with PingDirectory upgrade
 - [X] PDO-5801 Update cluster-autoscaler v1.27.0/1.27.1 for eks 1.27
@@ -130,7 +135,9 @@ _Changes:_
 - [X] PDO-5871 Update AWS EFS CSI Driver to v1.5.8
 - [X] PDO-5873 Update OpenSearch/OSD to v2.8.0
 - [X] PDO-5874 Migrate from AWS-for-fluent-bit to fluent-bit v2.1.8
+- [X] PDO-5877 Update metrics-server to v0.6.4
 - [X] PDO-5924 Multi-Region CDE: opensearch-bootstrap job in a second region can't connect to OpenSearch
+- [X] PDO-6061 Fix pingone-configurator pod crashing when missing ConfigMap ping-cloud/is-pingone
 
 ### 1.18.0.0
 
