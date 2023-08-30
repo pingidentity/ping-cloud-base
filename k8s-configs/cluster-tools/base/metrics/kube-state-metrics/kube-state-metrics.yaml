@@ -151,7 +151,7 @@ spec:
     spec:
       automountServiceAccountToken: true
       containers:
-      - image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/coreos/kube-state-metrics:v2.8.1
+      - image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/coreos/kube-state-metrics:v2.9.2
         livenessProbe:
           httpGet:
             path: /healthz
