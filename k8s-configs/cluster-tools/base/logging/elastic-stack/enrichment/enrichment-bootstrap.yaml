@@ -18,7 +18,7 @@ spec:
           runAsUser: 1000
           runAsGroup: 1000
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/bootstrap/dev:v1.17-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/bootstrap:v1.17.2.0_RC2
         imagePullPolicy: Always
         env:
           - name: NAMESPACE
@@ -60,7 +60,7 @@ spec:
       serviceAccountName: enrichment
       containers:
       - name: elasticsearch-bootstrap
-        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v1.17-release-branch-latest
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:v1.17.2.0_RC2
         imagePullPolicy: Always
         workingDir: /scripts
         command: ["sh", '$(CONTAINER_NAME).sh']
@@ -121,7 +121,7 @@ spec:
       serviceAccountName: enrichment
       containers:
         - name: kibana-bootstrap
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v1.17-release-branch-latest
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:v1.17.2.0_RC2
           imagePullPolicy: Always
           workingDir: /scripts
           command: [ "sh", '$(CONTAINER_NAME).sh' ]
