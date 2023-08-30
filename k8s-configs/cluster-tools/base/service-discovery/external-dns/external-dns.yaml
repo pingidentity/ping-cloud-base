@@ -69,3 +69,4 @@ spec:
         - --aws-zone-type=public # only look at public hosted zones (valid values are public, private or no value for both)
         - --registry=txt
         - --publish-internal-services
+        - --log-level=error
