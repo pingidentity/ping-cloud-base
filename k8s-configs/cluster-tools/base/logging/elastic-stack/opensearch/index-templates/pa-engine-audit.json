@@ -1,0 +1,468 @@
+{
+  "index_patterns": [
+    "pa-engine-audit-*"
+  ],
+  "template": {
+    "settings": {
+      "index.routing.allocation.require.temp": "hot",
+      "index.refresh_interval": "30s",
+      "index.unassigned.node_left.delayed_timeout": "10m",
+      "index.number_of_shards": "3",
+      "index.number_of_replicas": "1"
+    },
+    "mappings": {
+      "properties": {
+        "kubernetes": {
+          "properties": {
+            "container_name": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "ignore_above": 256,
+                  "type": "keyword"
+                }
+              }
+            },
+            "container_hash": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "ignore_above": 256,
+                  "type": "keyword"
+                }
+              }
+            },
+            "host": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "ignore_above": 256,
+                  "type": "keyword"
+                }
+              }
+            },
+            "docker_id": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "ignore_above": 256,
+                  "type": "keyword"
+                }
+              }
+            },
+            "pod_id": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "ignore_above": 256,
+                  "type": "keyword"
+                }
+              }
+            },
+            "container_image": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "ignore_above": 256,
+                  "type": "keyword"
+                }
+              }
+            },
+            "labels": {
+              "properties": {
+                "app": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "ignore_above": 256,
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "cluster": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "ignore_above": 256,
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "controller-revision-hash": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "ignore_above": 256,
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "role": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "ignore_above": 256,
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "pod-reaper": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "ignore_above": 256,
+                      "type": "keyword"
+                    }
+                  }
+                },
+                "statefulset_kubernetes_io/pod-name": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "ignore_above": 256,
+                      "type": "keyword"
+                    }
+                  }
+                }
+              }
+            },
+            "namespace_name": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "ignore_above": 256,
+                  "type": "keyword"
+                }
+              }
+            },
+            "pod_name": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "ignore_above": 256,
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        },
+        "malicious_country": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "subject": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "roundTripMS": {
+          "type": "integer"
+        },
+        "pathPrefix": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "responseCode": {
+          "type": "integer"
+        },
+        "stream": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "@version": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "host": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "client": {
+          "type": "ip"
+        },
+        "proxyRoundTripMS": {
+          "type": "integer"
+        },
+        "applicationName": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "authMech": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "failedRuleType": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "trackingId": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "cluster_name": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "geoip": {
+          "properties": {
+            "timezone": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "ignore_above": 256,
+                  "type": "keyword"
+                }
+              }
+            },
+            "ip": {
+              "type": "ip"
+            },
+            "latitude": {
+              "type": "float"
+            },
+            "continent_code": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "ignore_above": 256,
+                  "type": "keyword"
+                }
+              }
+            },
+            "city_name": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "ignore_above": 256,
+                  "type": "keyword"
+                }
+              }
+            },
+            "country_code2": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "ignore_above": 256,
+                  "type": "keyword"
+                }
+              }
+            },
+            "country_name": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "ignore_above": 256,
+                  "type": "keyword"
+                }
+              }
+            },
+            "dma_code": {
+              "type": "long"
+            },
+            "country_code3": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "ignore_above": 256,
+                  "type": "keyword"
+                }
+              }
+            },
+            "location": {
+              "properties": {
+                "lon": {
+                  "type": "float"
+                },
+                "lat": {
+                  "type": "float"
+                }
+              }
+            },
+            "region_name": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "ignore_above": 256,
+                  "type": "keyword"
+                }
+              }
+            },
+            "postal_code": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "ignore_above": 256,
+                  "type": "keyword"
+                }
+              }
+            },
+            "longitude": {
+              "type": "float"
+            },
+            "region_code": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "ignore_above": 256,
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        },
+        "method": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "log_name": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "resource": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "threat_intel": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "resourceName": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "requestUri": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "tor_intel": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "failedRuleName": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "known_country": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "exchangeId": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "ignore_above": 256,
+              "type": "keyword"
+            }
+          }
+        },
+        "@timestamp": {
+          "type": "date"
+        }
+      }
+    },
+    "aliases":{
+      "pa-audit-ro": {}
+    }
+  },
+  "composed_of": [],
+  "priority": 100
+}

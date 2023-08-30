@@ -20,3 +20,6 @@ configMapGenerator:
   - name: fluent-bit-pipeline-s3
     files:
       - s3.conf
+  - name: fluent-bit-pipeline-customer
+    files:
+      - customer.conf
