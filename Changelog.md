@@ -52,6 +52,7 @@
 - Update fluent-bit image with v2.1.8
 - Logstash pipelines refactored
 - Support DHE Ciphers out of the box
+- external-dns pod log level changed to 'ERROR'
 - Update metrics-server image to v0.6.4
 - Update kubectl to 1.26.0 for EKS 1.27
 - Remove dev-env.sh, dev-cluster-state (dir), and corresponding variables.
@@ -139,6 +140,7 @@ _Changes:_
 - [X] PDO-5874 Migrate from AWS-for-fluent-bit to fluent-bit v2.1.8
 - [X] PDO-5877 Update metrics-server to v0.6.4
 - [X] PDO-5924 Multi-Region CDE: opensearch-bootstrap job in a second region can't connect to OpenSearch
+- [X] PDO-6007 Change external-dns pod log to 'ERROR' level
 - [X] PDO-6061 Fix pingone-configurator pod crashing when missing ConfigMap ping-cloud/is-pingone
 
 ### 1.18.0.0
