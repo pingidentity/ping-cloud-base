@@ -1,11 +1,11 @@
 {
   "index_patterns": [
-    "pa-admin-system-*"
+    "pdg-error-*"
   ],
   "template": {
     "settings": {
-      "index.unassigned.node_left.delayed_timeout": "10m",
-      "index.number_of_shards": "3",
+      "index.unassigned.node_left.delayed_timeout": "15m",
+      "index.number_of_shards": "1",
       "index.number_of_replicas": "1",
       "index.refresh_interval": "30s",
       "index": {
@@ -20,25 +20,8 @@
     },
     "mappings": {
       "properties": {
-        "geoip": {
-          "dynamic": "true",
-          "properties": {
-            "ip": {
-              "type": "ip"
-            },
-            "latitude": {
-              "type": "half_float"
-            },
-            "location": {
-              "type": "geo_point"
-            },
-            "longitude": {
-              "type": "half_float"
-            }
-          }
-        },
-        "timestamp": {
-          "type": "text"
+        "@timestamp": {
+          "type": "date"
         },
         "cluster_name": {
           "type": "text",

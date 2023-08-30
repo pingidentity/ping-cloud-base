@@ -50,6 +50,7 @@
 - Improve Prometheus pods respond properly to SIGTERM
 - Update alertmeneger image with self-hosted ECR URI
 - Update fluent-bit image with v2.1.8
+- Logstash pipelines refactored
 - Support DHE Ciphers out of the box
 - Update metrics-server image to v0.6.4
 - Update kubectl to 1.26.0 for EKS 1.27
@@ -100,6 +101,7 @@ _Changes:_
 - [X] PDO-5695 Move alertmanager image to self-hosted ECR
 - [X] PDO-5467 When rolling pods NLB connection draining isn't occuring causing service interruption
 - [X] PDO-5527 OpenSearch Post-Migration: Alerting improvements
+- [X] PDO-5528 Logstash: Refactor Main Pipeline
 - [X] PDO-5543 New Prometheus alerts for Kubernetes metrics
 - [X] PDO-5545 Change PD alerts to see more specific errors
 - [X] PDO-5549 Update kube-state-metrics cluster tool to v2.8.1 for EKS 1.26
