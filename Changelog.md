@@ -54,7 +54,9 @@
 - Support DHE Ciphers out of the box
 - Update metrics-server image to v0.6.4
 - Update kubectl to 1.26.0 for EKS 1.27
+- Remove dev-env.sh, dev-cluster-state (dir), and corresponding variables.
 
+>>>>>>> Changelog.md
 
 _Changes:_
 
@@ -117,6 +119,7 @@ _Changes:_
 - [X] PDO-5671 OS: grokparsefailure in pingaccess logs
 - [x] PDO-5673 OS: Missed logs in PingAccess Indices
 - [X] PDO-5705 Update PCB with toolkit image used as replacement for bitnami/kubectl
+- [X] PDO-5707 Remove dev-env.sh and dev-cluster-state from PCB
 - [X] PDO-5709 Fix intermittent pingone integration test failures
 - [X] PDO-5718 Update PGO dashboards to use grafana CRD
 - [X] PDO-5724 Limit backup/restore logging for PD
