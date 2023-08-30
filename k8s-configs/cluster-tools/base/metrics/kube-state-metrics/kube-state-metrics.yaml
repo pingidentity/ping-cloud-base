@@ -177,6 +177,13 @@ spec:
             - ALL
           readOnlyRootFilesystem: true
           runAsUser: 65534
+        resources:
+          limits:
+            memory: "80Mi"
+            cpu: "30m"
+          requests:
+            memory: "50Mi"
+            cpu: "10m"
       serviceAccountName: kube-state-metrics
 
 ---

@@ -86,6 +86,13 @@ spec:
             port: 8080
           initialDelaySeconds: 5
           timeoutSeconds: 5
+        resources:
+          limits:
+            memory: "80Mi"
+            cpu: "30m"
+          requests:
+            memory: "50Mi"
+            cpu: "10m"
 
 ---
 # Source: nri-bundle/charts/nri-metadata-injection/templates/deployment.yaml
