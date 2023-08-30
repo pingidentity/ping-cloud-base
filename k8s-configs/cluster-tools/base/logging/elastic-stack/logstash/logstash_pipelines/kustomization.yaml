@@ -8,3 +8,4 @@ resources:
 - s3
 - cloudwatch
 - newrelic
+- dlq

@@ -89,6 +89,9 @@
           }
         }
       }
+    },
+    "aliases":{
+      "pa-audit-ro": {}
     }
   },
   "composed_of": [],

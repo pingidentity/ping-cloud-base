@@ -1342,12 +1342,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   fi
 
   echo "Substituting env vars, this may take some time..."
-  substitute_vars "${ENV_DIR}" "${REPO_VARS}" secrets.yaml env_vars values.yaml
-  # TODO: These duplicate calls are needed to substitute the derived variables & the IS_BELUGA_ENV in values files only
-  #  clean this up with PDO-4842 when all apps are migrated to values files by adding IS_BELUGA_ENV to DEFAULT_VARS
-  #  and redoing how derived variables are set
-  substitute_vars "${ENV_DIR}" "${REPO_VARS}" values.yaml
-  substitute_vars "${ENV_DIR}" '${IS_BELUGA_ENV}' values.yaml
+  substitute_vars "${ENV_DIR}" "${REPO_VARS}" secrets.yaml env_vars
 
   # Regional enablement - add admins, backups, etc. to primary and adding pingaccess-was and pingcentral to primary.
   if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
