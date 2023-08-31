@@ -57,6 +57,7 @@
 - Update kubectl to 1.26.0 for EKS 1.27
 - Update kube-state-metrics to v2.9.2
 - Remove dev-env.sh, dev-cluster-state (dir), and corresponding variables.
+- Update Grafana to v10.1.0
 
 _Changes:_
 
@@ -138,6 +139,7 @@ _Changes:_
 - [X] PDO-5871 Update AWS EFS CSI Driver to v1.5.8
 - [X] PDO-5873 Update OpenSearch/OSD to v2.8.0
 - [X] PDO-5874 Migrate from AWS-for-fluent-bit to fluent-bit v2.1.8
+- [X] PDO-5875 Update Grafana to v10.1.0
 - [X] PDO-5877 Update metrics-server to v0.6.4
 - [X] PDO-5924 Multi-Region CDE: opensearch-bootstrap job in a second region can't connect to OpenSearch
 - [X] PDO-6007 Change external-dns pod log to 'ERROR' level
