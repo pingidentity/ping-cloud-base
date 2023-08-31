@@ -52,6 +52,7 @@
 - Update fluent-bit image with v2.1.8
 - Logstash pipelines refactored
 - Support DHE Ciphers out of the box
+- Argo CD log level changed to 'ERROR'
 - external-dns pod log level changed to 'ERROR'
 - Opensearch closter log level changed to 'WARNING'
 - Update metrics-server image to v0.6.4
@@ -141,6 +142,7 @@ _Changes:_
 - [X] PDO-5874 Migrate from AWS-for-fluent-bit to fluent-bit v2.1.8
 - [X] PDO-5877 Update metrics-server to v0.6.4
 - [X] PDO-5924 Multi-Region CDE: opensearch-bootstrap job in a second region can't connect to OpenSearch
+- [X] PDO-6006 Change Argo CD log to 'ERROR' level
 - [X] PDO-6007 Change external-dns pod log to 'ERROR' level
 - [X] PDO-6008 Change Opensearch log to 'WARNING' level
 - [X] PDO-6061 Fix pingone-configurator pod crashing when missing ConfigMap ping-cloud/is-pingone
