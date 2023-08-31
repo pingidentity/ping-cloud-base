@@ -54,7 +54,7 @@
 - Support DHE Ciphers out of the box
 - Argo CD log level changed to 'ERROR'
 - external-dns pod log level changed to 'ERROR'
-- Opensearch closter log level changed to 'WARNING'
+- Opensearch cluster log level changed to 'WARNING'
 - Update metrics-server image to v0.6.4
 - Update kubectl to 1.26.0 for EKS 1.27
 - Update kube-state-metrics to v2.9.2

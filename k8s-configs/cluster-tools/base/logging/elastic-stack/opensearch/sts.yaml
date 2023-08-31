@@ -248,6 +248,8 @@ spec:
           value: "data,remote_cluster_client,"
         - name: DISABLE_INSTALL_DEMO_CONFIG
           value: "true"
+        - name: logger.level
+          value: "WARN"
         volumeMounts:
         - name: "data"
           mountPath: /usr/share/opensearch/data
