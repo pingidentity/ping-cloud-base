@@ -53,6 +53,7 @@
 - Logstash pipelines refactored
 - Support DHE Ciphers out of the box
 - external-dns pod log level changed to 'ERROR'
+- Opensearch closter log level changed to 'WARNING'
 - Update metrics-server image to v0.6.4
 - Update kubectl to 1.26.0 for EKS 1.27
 - Update kube-state-metrics to v2.9.2
@@ -141,6 +142,7 @@ _Changes:_
 - [X] PDO-5877 Update metrics-server to v0.6.4
 - [X] PDO-5924 Multi-Region CDE: opensearch-bootstrap job in a second region can't connect to OpenSearch
 - [X] PDO-6007 Change external-dns pod log to 'ERROR' level
+- [X] PDO-6008 Change Opensearch log to 'WARNING' level
 - [X] PDO-6061 Fix pingone-configurator pod crashing when missing ConfigMap ping-cloud/is-pingone
 
 ### 1.18.0.0
