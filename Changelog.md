@@ -52,9 +52,12 @@
 - Update fluent-bit image with v2.1.8
 - Logstash pipelines refactored
 - Support DHE Ciphers out of the box
+- Argo CD log level changed to 'ERROR'
+- external-dns pod log level changed to 'ERROR'
 - Update metrics-server image to v0.6.4
 - Update kubectl to 1.26.0 for EKS 1.27
-
+- Update kube-state-metrics to v2.9.2
+- Remove dev-env.sh, dev-cluster-state (dir), and corresponding variables.
 
 _Changes:_
 
@@ -117,6 +120,7 @@ _Changes:_
 - [X] PDO-5671 OS: grokparsefailure in pingaccess logs
 - [x] PDO-5673 OS: Missed logs in PingAccess Indices
 - [X] PDO-5705 Update PCB with toolkit image used as replacement for bitnami/kubectl
+- [X] PDO-5707 Remove dev-env.sh and dev-cluster-state from PCB
 - [X] PDO-5709 Fix intermittent pingone integration test failures
 - [X] PDO-5718 Update PGO dashboards to use grafana CRD
 - [X] PDO-5724 Limit backup/restore logging for PD
@@ -126,6 +130,7 @@ _Changes:_
 - [X] PDO-5770 Update update-profile-repo script for MonoRepo
 - [X] PDO-5774 OS Index Policies: State Transitions Errors
 - [X] PDO-5780 Update kubectl to 1.26.0 for EKS 1.27
+- [X] PDO-5785 Update kube-state-metrics cluster tool to v2.9.2
 - [X] PDO-5797 Unify severity format for all prometheus alerts
 - [X] PDO-5800 Update pd.profile to align with PingDirectory upgrade
 - [X] PDO-5801 Update cluster-autoscaler v1.27.0/1.27.1 for eks 1.27
@@ -136,6 +141,8 @@ _Changes:_
 - [X] PDO-5874 Migrate from AWS-for-fluent-bit to fluent-bit v2.1.8
 - [X] PDO-5877 Update metrics-server to v0.6.4
 - [X] PDO-5924 Multi-Region CDE: opensearch-bootstrap job in a second region can't connect to OpenSearch
+- [X] PDO-6006 Change Argo CD log to 'ERROR' level
+- [X] PDO-6007 Change external-dns pod log to 'ERROR' level
 - [X] PDO-6061 Fix pingone-configurator pod crashing when missing ConfigMap ping-cloud/is-pingone
 
 ### 1.18.0.0
