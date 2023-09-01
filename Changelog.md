@@ -144,6 +144,7 @@ _Changes:_
 - [X] PDO-6006 Change Argo CD log to 'ERROR' level
 - [X] PDO-6007 Change external-dns pod log to 'ERROR' level
 - [X] PDO-6061 Fix pingone-configurator pod crashing when missing ConfigMap ping-cloud/is-pingone
+- [X] PDO-6076 git-ops-command.sh is failing for secondary region in multi-region cluster
 
 ### 1.18.0.0
 
