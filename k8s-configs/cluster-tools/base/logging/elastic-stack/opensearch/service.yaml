@@ -5,8 +5,6 @@ metadata:
   labels:
     app.kubernetes.io/name: opensearch
     app.kubernetes.io/instance: opensearch-cluster-hot
-  annotations:
-    external-dns.alpha.kubernetes.io/hostname: opensearch-dev.ping-demo.com
 spec:
   type: ClusterIP
   selector:
@@ -28,6 +26,7 @@ metadata:
   labels:
     app.kubernetes.io/name: opensearch
   annotations:
+    external-dns.alpha.kubernetes.io/hostname: opensearch-dev.ping-demo.com
     prometheus.io/scrape: "true"
     prometheus.io/scheme: "https"
     prometheus.io/path: "/_prometheus/metrics"
