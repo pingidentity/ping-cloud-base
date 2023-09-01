@@ -3,4 +3,44 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 namespace: kube-system
 
 resources:
-- github.com/kubernetes-sigs/aws-ebs-csi-driver/deploy/kubernetes/overlays/stable/?ref=v1.17.0
+- github.com/kubernetes-sigs/aws-ebs-csi-driver/deploy/kubernetes/overlays/stable/?ref=v1.21.0
+
+patches:
+- target:
+    # Adding resource cpu limit in controller.yaml
+    kind: Deployment
+    name: ebs-csi-controller
+  patch: |
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/requests/cpu
+      value: 20m
+    - op: replace
+      path: /spec/template/spec/containers/1/resources/requests/cpu
+      value: 20m
+    - op: replace
+      path: /spec/template/spec/containers/2/resources/requests/cpu
+      value: 20m
+    - op: replace
+      path: /spec/template/spec/containers/3/resources/requests/cpu
+      value: 20m
+    - op: replace
+      path: /spec/template/spec/containers/4/resources/requests/cpu
+      value: 20m
+    - op: replace
+      path: /spec/template/spec/containers/5/resources/requests/cpu
+      value: 20m
+
+- target:
+    # Adding resource cpu limit in node.yaml
+    kind: DaemonSet
+    name: ebs-csi-node
+  patch: |
+    - op: replace
+      path: /spec/template/spec/containers/0/resources/requests/cpu
+      value: 20m
+    - op: replace
+      path: /spec/template/spec/containers/1/resources/requests/cpu
+      value: 20m
+    - op: replace
+      path: /spec/template/spec/containers/2/resources/requests/cpu
+      value: 20m
