@@ -264,8 +264,8 @@ PROM_NOTIFICATION_ENABLED=true
 PROM_SLACK_CHANNEL=${PROM_SLACK_CHANNEL}
 
 # Dashboards repo variables
-DASH_REPO_URL=https://github.com/oliabent/-ping-cloud-dashboards
-DASH_REPO_BRANCH=PDO-5923
+DASH_REPO_URL=https://github.com/pingidentity/ping-cloud-dashboards
+DASH_REPO_BRANCH=v1.19-dev-branch
 
 # Healthcheck variables
 CLUSTER_HEALTHCHECK_SCHEDULE="* * * * *"
