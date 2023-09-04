@@ -12,7 +12,7 @@ metadata:
     helm.sh/chart: kube-state-metrics-4.23.0
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/version: 2.8.1
+    app.kubernetes.io/version: 2.9.2
 spec:
   selector:
     matchLabels:
@@ -64,7 +64,7 @@ spec:
         - --resources=volumeattachments
         - --telemetry-port=8081
         imagePullPolicy: IfNotPresent
-        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/coreos/kube-state-metrics:v2.8.1
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/coreos/kube-state-metrics:v2.9.2
         securityContext:
           privileged: false
           runAsGroup: 65534
@@ -86,6 +86,13 @@ spec:
             port: 8080
           initialDelaySeconds: 5
           timeoutSeconds: 5
+        resources:
+          limits:
+            memory: "80Mi"
+            cpu: "30m"
+          requests:
+            memory: "50Mi"
+            cpu: "10m"
 
 ---
 # Source: nri-bundle/charts/nri-metadata-injection/templates/deployment.yaml
@@ -203,7 +210,7 @@ spec:
             runAsNonRoot: true
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
-          image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.12.1
+          image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.15.0
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
           env:
@@ -287,7 +294,7 @@ spec:
             runAsNonRoot: true
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
-          image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.12.1
+          image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.15.0
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
           env:
@@ -414,7 +421,7 @@ spec:
             runAsNonRoot: true
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
-          image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.12.1
+          image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.15.0
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
           env:
@@ -573,7 +580,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       initContainers:
         - name: wait-for-nr-license-secret
-          image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.12.1
+          image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.15.0
           command: [ "/bin/sh", "-c" ]
           args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
           env:

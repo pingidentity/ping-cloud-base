@@ -27,13 +27,22 @@
           "type": "date"
         },
         "geoip": {
-          "dynamic": true,
+          "dynamic": "true",
           "properties": {
             "ip": {
               "type": "ip"
             },
             "latitude": {
               "type": "half_float"
+            },
+            "country_name": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "ignore_above": 256,
+                  "type": "keyword"
+                }
+              }
             },
             "location": {
               "type": "geo_point"
@@ -52,26 +61,23 @@
             }
           }
         },
-        "roundTripMS": {
-          "type": "long",
+        "requestUri": {
+          "type": "text",
           "fields": {
             "keyword": {
               "ignore_above": 256,
               "type": "keyword"
             }
           }
+        },
+        "roundTripMS": {
+          "type": "long"
+        },
+        "responseCode": {
+          "type": "long"
         },
         "timestamp": {
           "type": "text"
-        },
-        "responseCode": {
-          "type": "long",
-          "fields": {
-            "keyword": {
-              "ignore_above": 256,
-              "type": "keyword"
-            }
-          }
         },
         "cluster_name": {
           "type": "text",
@@ -83,6 +89,9 @@
           }
         }
       }
+    },
+    "aliases":{
+      "pa-was-audit-ro": {}
     }
   },
   "composed_of": [],

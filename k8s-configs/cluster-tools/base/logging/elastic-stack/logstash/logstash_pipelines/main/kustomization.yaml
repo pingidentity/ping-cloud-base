@@ -9,8 +9,10 @@ configMapGenerator:
     - 01-input.conf
     - 02-input-filters.conf
     - 03-ingress-filters.conf
-    - 04-ping-apps-filters.conf
-    - 05-siem-sort-filters.conf
-    - 06-siem-detailed-filters.conf
-    - 07-pre-outputs-filter.conf
-    - 08-outputs.conf
+    - 04-pa-filters.conf
+    - 05-pd-filters.conf
+    - 06-pds-filters.conf
+    - 07-pf-filters.conf
+    - 08-pc-filters.conf
+    - 09-pdg-filters.conf
+    - 10-outputs.conf

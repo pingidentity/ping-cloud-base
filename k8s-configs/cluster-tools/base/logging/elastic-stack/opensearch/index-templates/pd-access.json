@@ -1,6 +1,7 @@
 {
   "index_patterns": [
-    "pd-access-*"
+    "pd-access-*",
+    "pds-access-*"
   ],
   "template": {
     "settings": {

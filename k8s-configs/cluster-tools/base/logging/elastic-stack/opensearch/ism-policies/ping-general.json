@@ -76,6 +76,9 @@
                     "pd-*",
                     "pf-*",
                     "pa-*",
+                    "pc-*",
+                    "pdg-*",
+                    "ingress-*",
                     "logstash-*"
                 ],
                 "priority": 1,

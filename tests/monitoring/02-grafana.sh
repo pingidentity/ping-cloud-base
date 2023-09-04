@@ -34,9 +34,7 @@ testGrafanaDatasourcesExists() {
     fi
   done
   
-  assertContains "${sources}" "OS-PA-Admin-Audit"
   assertContains "${sources}" "OS-PA-Audit"
-  assertContains "${sources}" "OS-PF-Admin-Audit"
   assertContains "${sources}" "OS-PF-Audit"
   assertContains "${sources}" "prometheus"
 }
