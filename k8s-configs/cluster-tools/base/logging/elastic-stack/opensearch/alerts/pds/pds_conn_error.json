@@ -13,7 +13,7 @@
       {
          "search": {
             "indices": [
-               "logstash*"
+               "pds-errors-*"
             ],
             "query": {
                "size": 0,

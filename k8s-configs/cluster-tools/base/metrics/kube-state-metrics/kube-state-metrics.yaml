@@ -5,7 +5,7 @@ metadata:
   labels:
     app.kubernetes.io/component: exporter
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: 2.8.1
+    app.kubernetes.io/version: 2.9.2
   name: kube-state-metrics
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -23,7 +23,7 @@ metadata:
   labels:
     app.kubernetes.io/component: exporter
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: 2.8.1
+    app.kubernetes.io/version: 2.9.2
   name: kube-state-metrics
 rules:
 - apiGroups:
@@ -134,7 +134,7 @@ metadata:
   labels:
     app.kubernetes.io/component: exporter
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: 2.8.1
+    app.kubernetes.io/version: 2.9.2
   name: kube-state-metrics
   namespace: kube-system
 spec:
@@ -147,11 +147,11 @@ spec:
       labels:
         app.kubernetes.io/component: exporter
         app.kubernetes.io/name: kube-state-metrics
-        app.kubernetes.io/version: 2.8.1
+        app.kubernetes.io/version: 2.9.2
     spec:
       automountServiceAccountToken: true
       containers:
-      - image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/coreos/kube-state-metrics:v2.8.1
+      - image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/coreos/kube-state-metrics:v2.9.2
         livenessProbe:
           httpGet:
             path: /healthz
@@ -177,6 +177,13 @@ spec:
             - ALL
           readOnlyRootFilesystem: true
           runAsUser: 65534
+        resources:
+          limits:
+            memory: "80Mi"
+            cpu: "30m"
+          requests:
+            memory: "50Mi"
+            cpu: "10m"
       serviceAccountName: kube-state-metrics
 
 ---
@@ -187,7 +194,7 @@ metadata:
   labels:
     app.kubernetes.io/component: exporter
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: 2.8.1
+    app.kubernetes.io/version: 2.9.2
   name: kube-state-metrics
   namespace: kube-system
 
@@ -198,7 +205,7 @@ metadata:
   labels:
     app.kubernetes.io/component: exporter
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: 2.8.1
+    app.kubernetes.io/version: 2.9.2
   name: kube-state-metrics
   namespace: kube-system
 spec:

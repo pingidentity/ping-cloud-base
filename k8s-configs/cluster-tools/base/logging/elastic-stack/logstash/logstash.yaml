@@ -33,7 +33,7 @@ spec:
             runAsNonRoot: true
             runAsUser: 1000
             allowPrivilegeEscalation: false
-          image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.12.1
+          image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.15.0
           imagePullPolicy: IfNotPresent
           command:
             - sh
@@ -118,6 +118,10 @@ spec:
               value: 1000gb
             - name: QUEUE_DRAIN
               value: "true"
+            - name: DEAD_LETTER_QUEUE_ENABLE
+              value: "true"
+            - name: PATH_DEAD_LETTER_QUEUE
+              value: "/usr/share/logstash/data/queue/dead_letter"
             - name: LS_JAVA_OPTS
               value: "-Xms1g -Xmx1g"
             - name: XPACK_MONITORING_ENABLED
@@ -210,6 +214,9 @@ spec:
             - name: logstash-pipeline-s3
               mountPath: /usr/share/logstash/pipeline/s3
               readOnly: true
+            - name: logstash-pipeline-dlq
+              mountPath: /usr/share/logstash/pipeline/dlq
+              readOnly: true
             - name: logstash-pipeline-cw
               mountPath: /usr/share/logstash/pipeline/cloudwatch
             - name: logstash-pipeline-nr
@@ -272,6 +279,9 @@ spec:
         - name: logstash-pipeline-s3
           configMap:
             name: logstash-pipeline-s3
+        - name: logstash-pipeline-dlq
+          configMap:
+            name: logstash-pipeline-dlq
         - name: logstash-pipeline-cw
           configMap:
             name: logstash-pipeline-cw
@@ -326,7 +336,7 @@ spec:
     - port: 9600
       name: rest
     - port: 8080
-      name: http-log-input
+      name: http-main-input
     - port: 9198
       name: metrics
     - port: 8081
@@ -335,6 +345,8 @@ spec:
       name: http-cw-input
     - port: 8083
       name: http-nr-input
+    - port: 8084
+      name: http-customer-input
 
 ---
 apiVersion: v1

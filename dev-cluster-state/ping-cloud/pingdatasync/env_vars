@@ -1,5 +1,0 @@
-SERVER_PROFILE_BRANCH=${CONFIG_REPO_BRANCH}
-SERVER_PROFILE_PATH=profiles/${CONFIG_PARENT_DIR}/pingdatasync
-EXT_PD_HOST=pingdirectory-ingress.pingdirectory-primary.ping-demo.com
-EXT_PD_LDAPS_PORT=1636
-IS_P1AS_TEST_MODE=false
