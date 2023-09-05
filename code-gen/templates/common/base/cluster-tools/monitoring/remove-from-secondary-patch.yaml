@@ -20,6 +20,20 @@ $patch: delete
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
 metadata:
+  name: karpentercapacity
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: karpenterperformance
+  namespace: prometheus
+$patch: delete
+---
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
   name: kubernetesapiserver
   namespace: prometheus
 $patch: delete
