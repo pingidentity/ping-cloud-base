@@ -148,6 +148,7 @@ _Changes:_
 - [X] PDO-6007 Change external-dns pod log to 'ERROR' level
 - [X] PDO-6008 Change Opensearch log to 'WARNING' level
 - [X] PDO-6061 Fix pingone-configurator pod crashing when missing ConfigMap ping-cloud/is-pingone
+- [X] PDO-6077 Multiple issues with OpenSearch connect from secondary region
 
 ### 1.18.0.0
 
