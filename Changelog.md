@@ -60,6 +60,7 @@
 - Remove dev-env.sh, dev-cluster-state (dir), and corresponding variables.
 - Update Grafana to v10.1.0
 - Add Karpenter capacity and performance Grafana dashboard
+- Add fluent-bit input filter to Karpenter logs 
 
 _Changes:_
 
@@ -144,6 +145,7 @@ _Changes:_
 - [X] PDO-5877 Update metrics-server to v0.6.4
 - [X] PDO-5923 Karpenter capacity and performance Grafana dashboard
 - [X] PDO-5924 Multi-Region CDE: opensearch-bootstrap job in a second region can't connect to OpenSearch
+- [X] PDO-5972 Karpenter Pods: Verify Logs are sent to CloudWatch
 - [X] PDO-6006 Change Argo CD log to 'ERROR' level
 - [X] PDO-6007 Change external-dns pod log to 'ERROR' level
 - [X] PDO-6008 Change Opensearch log to 'WARNING' level
