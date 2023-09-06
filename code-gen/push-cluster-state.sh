@@ -99,6 +99,11 @@ is_all_apps() {
   test "${APPS_TO_PUSH}" = "${ALL_APPS}"
 }
 
+# Check that this is indeed a profile or cluster-state-repo before making irreversible changes
+# check_repo() {
+
+# }
+
 ########################################################################################################################
 # Switch back to the previous branch and delete the staging branch.
 ########################################################################################################################
