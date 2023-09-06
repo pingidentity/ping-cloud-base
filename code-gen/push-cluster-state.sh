@@ -106,7 +106,8 @@ is_all_apps() {
 # is empty (besides hidden/dotfiles) in the case of a brand-new CSR/PR
 ########################################################################################################################
 dir_sanity_check() {
-  if [[ -d "profiles" || -d "values-files" || $(find . -not -path "./.*" | wc -l | tr -d '[:space:]') == 0 ]]; then
+  echo "Checking if in a CSR or PR..."
+  if [[ -d "profiles" || -d "values-files" || $(find . -mindepth 1 -not -path "./.*" | wc -l | tr -d '[:space:]') == 0 ]]; then
     return 0
   else
     return 1
