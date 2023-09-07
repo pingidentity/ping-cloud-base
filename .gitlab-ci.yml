@@ -29,7 +29,7 @@ variables:
 compile:
  stage: compile
  tags:
-   - test-ping-cloud-base-v1-gitlab
+   - default-gitlab-runner-test
  image:
    name: ${K8S_DEPLOY_TOOLS}
    pull_policy: always
