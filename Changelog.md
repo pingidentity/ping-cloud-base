@@ -59,6 +59,7 @@
 - Update kube-state-metrics to v2.9.2
 - Remove dev-env.sh, dev-cluster-state (dir), and corresponding variables.
 - Update Grafana to v10.1.0
+- Update Alertmanager to v0.26
 - Add Karpenter capacity and performance Grafana dashboard
 - Update Amazon-Cloudwatch-agent to v1.300026.3b189
 
@@ -144,6 +145,7 @@ _Changes:_
 - [X] PDO-5875 Update Grafana to v10.1.0
 - [X] PDO-5876 Update Amazon-Cloudwatch-agent to v1.300026.3b189
 - [X] PDO-5877 Update metrics-server to v0.6.4
+- [X] PDO-5881 Update Alertmanager to v0.26
 - [X] PDO-5923 Karpenter capacity and performance Grafana dashboard
 - [X] PDO-5924 Multi-Region CDE: opensearch-bootstrap job in a second region can't connect to OpenSearch
 - [X] PDO-6006 Change Argo CD log to 'ERROR' level
