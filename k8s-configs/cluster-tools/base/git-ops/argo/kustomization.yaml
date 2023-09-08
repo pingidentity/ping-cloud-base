@@ -7,6 +7,7 @@ resources:
 - base
 - argocd-image-updater.yaml
 - custom-resources.yaml
+- argocd-p1as-bootstrap.yaml
 
 generatorOptions:
   disableNameSuffixHash: true
@@ -15,6 +16,11 @@ configMapGenerator:
 - files:
   - install-custom-tools.sh
   name: install-custom-tools
+
+- files:
+  - argocd-p1as-bootstrap-resources.yaml
+  name: argocd-p1as-bootstrap-resources
+
 
 # Point to the ping-cluster-tools repo equivalents pushed to ECR
 images:
@@ -229,16 +235,6 @@ patches:
             - /webhooks/0/clientConfig/caBundle
       kustomize.buildOptions: --load-restrictor LoadRestrictionsNone --enable-helm --helm-command /usr/local/bin/helm-command.sh
 - patch: |-
-    # Policy for a user 'config-team` to allow restart on K8s StatefulSets
-    apiVersion: v1
-    kind: ConfigMap
-    metadata:
-      name: argocd-rbac-cm
-    data:
-      policy.csv: |
-        p, config-team, applications, action/apps/StatefulSet/restart, *, allow
-      policy.default: role:readonly
-- patch: |-
       # Mount Beluga-specific scripts within the container
       apiVersion: apps/v1
       kind: Deployment
@@ -400,6 +396,31 @@ patches:
             envFrom:
               - configMapRef:
                   name: argocd-bootstrap
+- patch: |-
+    # Add init container to set up PingOne SSO for argo-server
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-server
+    spec:
+      template:
+        spec:
+          initContainers:
+          - name: argocd-p1as-oauth
+            image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-services/p14c-integration:PDO-5594-argo-sso
+            imagePullPolicy: Always
+            env:
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            envFrom:
+              - configMapRef:
+                  name: argocd-bootstrap
+            command:
+              - /bin/sh
+              - -c
+              - python3 -u /app/oauth_client_services_controller.py --app argocd
 - patch: |-
     # Enabling the deployment of argocd resources on a node belonging to the 'core' node group by adding tolerations
     apiVersion: apps/v1
