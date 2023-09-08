@@ -47,17 +47,24 @@
 - Fix: opensearch-bootstrap job in a second region can't connect to OpenSearch
 - Update OpenSearch/OpenSearch Dashboards to v2.8.0
 - Update AWS EFS CSI Driver to v1.5.8 & set requests/limits
-- Improve Prometheus pods respond properly to SIGTERM
 - Update alertmeneger image with self-hosted ECR URI
 - Update fluent-bit image with v2.1.8
 - Logstash pipelines refactored
 - Support DHE Ciphers out of the box
 - Argo CD log level changed to 'ERROR'
 - external-dns pod log level changed to 'ERROR'
+- Opensearch cluster log level changed to 'WARNING'
 - Update metrics-server image to v0.6.4
 - Update kubectl to 1.26.0 for EKS 1.27
 - Update kube-state-metrics to v2.9.2
 - Remove dev-env.sh, dev-cluster-state (dir), and corresponding variables.
+- Update Grafana to v10.1.0
+- Update Alertmanager to v0.26
+- Add Karpenter capacity and performance Grafana dashboard
+- Add fluent-bit input filter to Karpenter logs 
+- Update Amazon-Cloudwatch-agent to v1.300026.3b189
+- Update EBS Driver to 1.21.0 for EKS 1.27
+
 
 _Changes:_
 
@@ -116,7 +123,6 @@ _Changes:_
 - [X] PDO-5655 OS: Logs for the pf-transaction-* index are not filtered
 - [X] PDO-5659 git-ops-command.sh responds properly to SIGTERM
 - [X] PDO-5660 Healthcheck pods respond properly to SIGTERM
-- [X] PDO-5662 prometheus pods respond properly to SIGTERM
 - [X] PDO-5671 OS: grokparsefailure in pingaccess logs
 - [x] PDO-5673 OS: Missed logs in PingAccess Indices
 - [X] PDO-5705 Update PCB with toolkit image used as replacement for bitnami/kubectl
@@ -134,16 +140,24 @@ _Changes:_
 - [X] PDO-5797 Unify severity format for all prometheus alerts
 - [X] PDO-5800 Update pd.profile to align with PingDirectory upgrade
 - [X] PDO-5801 Update cluster-autoscaler v1.27.0/1.27.1 for eks 1.27
+- [X] PDO-5803 Update EBS Driver to 1.21.0 for EKS 1.27
 - [X] PDO-5813 Remove excessive patches for the second region
 - [X] PDO-5835 Create PD init container for KMS
 - [X] PDO-5871 Update AWS EFS CSI Driver to v1.5.8
 - [X] PDO-5873 Update OpenSearch/OSD to v2.8.0
 - [X] PDO-5874 Migrate from AWS-for-fluent-bit to fluent-bit v2.1.8
+- [X] PDO-5875 Update Grafana to v10.1.0
+- [X] PDO-5876 Update Amazon-Cloudwatch-agent to v1.300026.3b189
 - [X] PDO-5877 Update metrics-server to v0.6.4
+- [X] PDO-5881 Update Alertmanager to v0.26
+- [X] PDO-5923 Karpenter capacity and performance Grafana dashboard
 - [X] PDO-5924 Multi-Region CDE: opensearch-bootstrap job in a second region can't connect to OpenSearch
+- [X] PDO-5972 Karpenter Pods: Verify Logs are sent to CloudWatch
 - [X] PDO-6006 Change Argo CD log to 'ERROR' level
 - [X] PDO-6007 Change external-dns pod log to 'ERROR' level
+- [X] PDO-6008 Change Opensearch log to 'WARNING' level
 - [X] PDO-6061 Fix pingone-configurator pod crashing when missing ConfigMap ping-cloud/is-pingone
+- [X] PDO-6077 Multiple issues with OpenSearch connect from secondary region
 
 ### 1.18.0.0
 
