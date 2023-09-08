@@ -99,7 +99,6 @@ is_all_apps() {
   test "${APPS_TO_PUSH}" = "${ALL_APPS}"
 }
 
-
 ########################################################################################################################
 # We need some way to identify that we are indeed within a cluster-state-repo or profile-repo before making irreversible
 # changes. Therefore, check that either a 'profiles' directory exists, a 'values-files' directory exists, or that the
