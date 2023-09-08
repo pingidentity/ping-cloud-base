@@ -64,6 +64,7 @@
 - Add fluent-bit input filter to Karpenter logs 
 - Update Amazon-Cloudwatch-agent to v1.300026.3b189
 - Update EBS Driver to 1.21.0 for EKS 1.27
+- Add oidc.properties.subst to profile repo
 
 
 _Changes:_
@@ -85,6 +86,7 @@ _Changes:_
 - [X] PDO-5145 OpenSearch migration: Develop index migration job
 - [X] PDO-5152 OpenSearch migration: Rewrite bootstrap scripts
 - [X] PDO-5158 Configure PA WAS from Shared P1 Tenant
+- [X] PDO-5159 Configure PF Admin SSO from Shared P1 Tenant flow
 - [X] PDO-5164 [EKS 1.26] service.alpha.kubernetes.io/tolerate-unready-endpoints (deprecated)
 - [X] PDO-5244 OpenSearch migration: Enable transport layer security
 - [X] PDO-5245 OpenSearch migration: Update grafana dashboards datasource
