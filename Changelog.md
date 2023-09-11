@@ -1,14 +1,26 @@
 # Changelog
 
+### 1.17.3.0
+
+- Initialize Replication on New PingDirectory Child Non-Seed Servers
+- Upgrade PingDirectory
+
+_Changes:_
+
+- [X] PDO-6021 Initialize Replication on New PingDirectory Child Non-Seed Servers
+- [X] PDO-6094 Upgrade PingDirectory
+
 ### 1.17.2.0
 
 - Create new AES-256 encryption settings for all PingDirectory servers
 - Fix PingDirectory wrong hostname error during replication
 - Disable ArgoCD Image Updater
 - Reset 'cn=replication' server ID entry within PingDirectory on startup
+- Upgrade PingFederate
 
 _Changes:_
 
+- [X] PDO-5925 Upgrade PingFederate
 - [X] PDO-5955 Create new AES-256 encryption settings for all PingDirectory servers
 - [X] PDO-5961 Disable ArgoCD Image Updater
 - [X] PDO-5979 Reset 'cn=replication' server ID entry within PingDirectory on startup
