@@ -3,3 +3,49 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 - controller.yaml
+
+patches:
+  - target:
+      # Specify the resource to modify for P1AS needs
+      kind: Deployment
+      name: sealed-secrets-controller
+    patch: | 
+      - op: replace
+        path: /spec/template/spec/containers/0/image
+        value: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/sealed-secrets-controller:v0.23.1
+
+      - op: replace
+        path: /spec/template/spec/containers/0/resources
+        value: 
+          limits:
+            cpu: 500m
+            memory: 100Mi
+          requests:
+            cpu: 500m
+            memory: 100Mi
+
+      - op: add
+        path: /spec/template/spec/containers/0/env
+        value:
+        - name: SEALED_SECRETS_KEY_RENEW_PERIOD
+          value: "0"
+
+  - target:
+      # Specify the resource to modify for P1AS needs
+      kind: CustomResourceDefinition
+      name: sealedsecrets.bitnami.com
+    patch: | 
+      - op: replace
+        path: /spec/versions/0/schema/openAPIV3Schema/properties
+        value:
+          spec:
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
+          status:
+            x-kubernetes-preserve-unknown-fields: true
+        type: object
+      - op: remove
+        path: /spec/versions/0/schema/openAPIV3Schema/description
+
+      - op: remove
+        path: /spec/versions/0/schema/openAPIV3Schema/required
