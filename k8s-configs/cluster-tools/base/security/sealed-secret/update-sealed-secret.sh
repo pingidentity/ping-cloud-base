@@ -16,8 +16,6 @@ fi
 
 SEALED_SECRET_VERSION="${1}"
 
-# curl "https://raw.githubusercontent.com/kubernetes/autoscaler/cluster-autoscaler-${CLUSTER_AUTOSCALER_VERSION}/cluster-autoscaler/cloudprovider/aws/examples/cluster-autoscaler-autodiscover.yaml" -o cluster-autoscaler.yaml
-
 wget -q "https://github.com/bitnami-labs/sealed-secrets/releases/download/${SEALED_SECRET_VERSION}/controller.yaml" -O controller.yaml
 
 echo "sealed-secret update complete, check your 'git diff' to see what changed"
