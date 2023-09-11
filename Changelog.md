@@ -65,6 +65,7 @@
 - Update Amazon-Cloudwatch-agent to v1.300026.3b189
 - Update EBS Driver to 1.21.0 for EKS 1.27
 - Add oidc.properties.subst to profile repo
+- Update Prometheus to v2.47.0
 
 
 _Changes:_
@@ -151,6 +152,7 @@ _Changes:_
 - [X] PDO-5875 Update Grafana to v10.1.0
 - [X] PDO-5876 Update Amazon-Cloudwatch-agent to v1.300026.3b189
 - [X] PDO-5877 Update metrics-server to v0.6.4
+- [X] PDO-5880 Update Prometheus to v2.47.0
 - [X] PDO-5881 Update Alertmanager to v0.26
 - [X] PDO-5923 Karpenter capacity and performance Grafana dashboard
 - [X] PDO-5924 Multi-Region CDE: opensearch-bootstrap job in a second region can't connect to OpenSearch
