@@ -65,6 +65,7 @@
 - Update Amazon-Cloudwatch-agent to v1.300026.3b189
 - Update EBS Driver to 1.21.0 for EKS 1.27
 - Add oidc.properties.subst to profile repo
+- Upgrade sealed secrets controller to v0.23+
 
 
 _Changes:_
@@ -139,6 +140,7 @@ _Changes:_
 - [X] PDO-5774 OS Index Policies: State Transitions Errors
 - [X] PDO-5780 Update kubectl to 1.26.0 for EKS 1.27
 - [X] PDO-5785 Update kube-state-metrics cluster tool to v2.9.2
+- [X] PDO-5789 Upgrade sealed secrets controller to v0.23+
 - [X] PDO-5797 Unify severity format for all prometheus alerts
 - [X] PDO-5800 Update pd.profile to align with PingDirectory upgrade
 - [X] PDO-5801 Update cluster-autoscaler v1.27.0/1.27.1 for eks 1.27
