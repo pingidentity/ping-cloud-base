@@ -100,6 +100,22 @@ is_all_apps() {
 }
 
 ########################################################################################################################
+# We need some way to identify that we are indeed within a cluster-state-repo or profile-repo before making irreversible
+# changes. Therefore, check that either a 'profiles' directory exists, a 'values-files' directory exists, or that the
+# directory is empty (besides hidden/dotfiles) in the case of a brand-new CSR/PR empty cloned repo
+########################################################################################################################
+dir_sanity_check() {
+  echo "Checking if in a CSR or PR..."
+  if [[ -d "profiles" || \
+        -d "values-files" || \
+        $(find . -mindepth 1 -not -path "./.*" | wc -l | tr -d '[:space:]') == 0 ]]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+########################################################################################################################
 # Switch back to the previous branch and delete the staging branch.
 ########################################################################################################################
 finalize() {
@@ -109,6 +125,13 @@ finalize() {
 }
 
 ### Script start ###
+
+if [[ "${IS_BELUGA_ENV}" == "true" ]]; then
+  if ! dir_sanity_check; then
+    echo "Directory sanity check failed, please check that you are running push-cluster-state.sh from a CSR or PR!!"
+    exit 1
+  fi
+fi
 
 # If profile repo and secondary region, early-out. The profiles will be exactly identical for all regions and should
 # already have been seeded when this script was run on primary region.
