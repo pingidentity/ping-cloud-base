@@ -6,14 +6,15 @@ resources:
 
 patches:
   - target:
-      # Specify the resource to modify for P1AS needs
       kind: Deployment
       name: sealed-secrets-controller
     patch: | 
+      # Changing image to P1AS internal copy
       - op: replace
         path: /spec/template/spec/containers/0/image
         value: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/sealed-secrets-controller:v0.23.1
 
+      # updating cpu/memory limits
       - op: replace
         path: /spec/template/spec/containers/0/resources
         value: 
@@ -24,6 +25,7 @@ patches:
             cpu: 500m
             memory: 100Mi
 
+      # turning off key renewal
       - op: add
         path: /spec/template/spec/containers/0/env
         # SEALED_SECRETS_KEY_RENEW_PERIOD=0 is another way to set flag --key-renew-period=0
@@ -33,10 +35,10 @@ patches:
           value: "0"
 
   - target:
-      # Specify the resource to modify for P1AS needs
       kind: CustomResourceDefinition
       name: sealedsecrets.bitnami.com
-    patch: | 
+    patch: |
+      # updating properties in kind crds 
       - op: replace
         path: /spec/versions/0/schema/openAPIV3Schema/properties
         value:
@@ -46,8 +48,11 @@ patches:
           status:
             x-kubernetes-preserve-unknown-fields: true
         type: object
+
+      # removing description in openAPIV3Schema
       - op: remove
         path: /spec/versions/0/schema/openAPIV3Schema/description
 
+      # removing required in openAPIV3Schema
       - op: remove
         path: /spec/versions/0/schema/openAPIV3Schema/required
