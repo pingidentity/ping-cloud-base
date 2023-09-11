@@ -29,7 +29,7 @@ variables:
 compile:
  stage: compile
  tags:
-   - default-gitlab-runner-test
+   - default-gitlab-runner
  image:
    name: ${K8S_DEPLOY_TOOLS}
    pull_policy: always
