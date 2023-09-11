@@ -6,7 +6,6 @@ from health_common import TestHealthBase
 
 
 class TestHealthcheck(TestHealthBase):
-
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
