@@ -102,6 +102,7 @@
 - Update PA-WAS admin/engine CSD upload job to reference PA-WAS CSD upload configMaps, rather than just pingaccess.  
 - Fluent-Bit: change IMDS vesrion to v2
 - Remove docker logs from fluent-bit
+- Add ACIs for PingDataSync
 
 _Changes:_
 
@@ -234,6 +235,7 @@ _Changes:_
 - [X] PDO-5906 Upgrade PingFederate to v11.3.1
 - [X] PDO-5911 Update PA-WAS Admin CSD Upload job to use PA-WAS cm
 - [X] PDO-6015 Remove docker logs from fluent-bit
+- [X] PDO-6058 Add ACIs for PingDataSync
 
 ### 1.17.0.0
 
