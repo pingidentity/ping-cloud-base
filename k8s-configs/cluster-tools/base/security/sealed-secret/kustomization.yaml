@@ -33,26 +33,4 @@ patches:
         value:
         - name: SEALED_SECRETS_KEY_RENEW_PERIOD
           value: "0"
-
-  - target:
-      kind: CustomResourceDefinition
-      name: sealedsecrets.bitnami.com
-    patch: |
-      # updating properties in kind crds 
-      - op: replace
-        path: /spec/versions/0/schema/openAPIV3Schema/properties
-        value:
-          spec:
-            type: object
-            x-kubernetes-preserve-unknown-fields: true
-          status:
-            x-kubernetes-preserve-unknown-fields: true
-        type: object
-
-      # removing description in openAPIV3Schema
-      - op: remove
-        path: /spec/versions/0/schema/openAPIV3Schema/description
-
-      # removing required in openAPIV3Schema
-      - op: remove
-        path: /spec/versions/0/schema/openAPIV3Schema/required
+          
