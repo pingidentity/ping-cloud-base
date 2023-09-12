@@ -38,7 +38,7 @@ SECRETS_DIR=/usr/local/secrets
 
 # External PingDirectory server information
 EXT_PD_ADMIN_BIND_DN=cn=administrator
-EXT_PD_SYNC_BIND_DN=cn=sync
+EXT_PD_SYNC_BIND_DN=cn=datasync
 
 EXT_PD_CHANGELOG_SYNC_MAX_AGE=2h
 

@@ -78,7 +78,7 @@ JAVA_AGENT_OPTS=-javaagent:/opt/staging/jmx_prometheus_javaagent-0.14.0.jar=8080
 
 # PingDataSync required information for syncing with P1AS PD
 ADMIN_BIND_DN=cn=admin
-SYNC_BIND_DN=cn=sync
+SYNC_BIND_DN=cn=datasync
 CHANGELOG_SYNC_MAX_AGE=2h
 
 # Flag to skip rebuilding backend indexes
