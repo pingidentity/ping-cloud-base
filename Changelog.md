@@ -71,6 +71,7 @@
 _Changes:_
 
 - [X] PDO-3541 Support DHE Ciphers out of the box
+- [X] PDO-4264 Upgraded karpenter to v0.29.2 and adjusted its config to integrate with platform resource.
 - [X] PDO-4606 Create a new init container to upgrade PA and PA-WAS and mount volume to admin pod once upgrade is successful
 - [X] PDO-4779 Modify seal.sh script to work for microservices
 - [X] PDO-4847 Add weekly pipeline run logic for PCB

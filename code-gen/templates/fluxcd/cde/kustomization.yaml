@@ -4,7 +4,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 resources:
 
 # As part of the bootstrap process, initiate the deployment of the foundational Karpenter resources.
-- ${K8S_GIT_URL}/k8s-configs/cluster-tools/base/karpenter/base/bootstrap?ref=${K8S_GIT_BRANCH}
+- ${K8S_GIT_URL}/k8s-configs/cluster-tools/base/karpenter/bootstrap?ref=${K8S_GIT_BRANCH}
 
 # Deploy cert-manager as part of the bootstrap process so that it's running before its CRD resources are created
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/base/cert-manager/base?ref=${K8S_GIT_BRANCH}
