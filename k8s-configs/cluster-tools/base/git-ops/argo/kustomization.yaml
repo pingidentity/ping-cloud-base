@@ -37,9 +37,12 @@ patchesStrategicMerge:
       name: argocd-cmd-params-cm
     data:
       # Set the logging level. One of: debug|info|warn|error (default "info")
+      # See https://argo-cd.readthedocs.io/en/stable/operator-manual/argocd-cmd-params-cm-yaml/ for example
       controller.log.level: "error"
       server.log.level: "error"
       reposerver.log.level: "error"
+      applicationsetcontroller.log.level: "error"
+      notificationscontroller.log.level: "error"
 
   # Add git-ops-command.sh as the config management tool to build the uber Kubernetes YAML
   # TODO: update the configManagementPlugins to run via a Sidecar - this won't happen until at least Argo 2.6
