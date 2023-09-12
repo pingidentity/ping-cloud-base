@@ -9955,6 +9955,12 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
+        - name: ARGOCD_APPLICATIONSET_CONTROLLER_LOGLEVEL
+          valueFrom:
+            configMapKeyRef:
+              key: applicationsetcontroller.log.level
+              name: argocd-cmd-params-cm
+              optional: true
         image: quay.io/argoproj/argocd:v2.5.5
         imagePullPolicy: Always
         name: argocd-applicationset-controller
@@ -10130,6 +10136,13 @@ spec:
             drop:
             - ALL
           readOnlyRootFilesystem: true
+        env:
+        - name: ARGOCD_NOTIFICATIONS_CONTROLLER_LOGLEVEL
+          valueFrom:
+            configMapKeyRef:
+              key: notificationscontroller.log.level
+              name: argocd-cmd-params-cm
+              optional: true
         volumeMounts:
         - mountPath: /app/config/tls
           name: tls-certs
