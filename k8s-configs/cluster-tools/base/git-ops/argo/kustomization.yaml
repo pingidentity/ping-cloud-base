@@ -44,6 +44,42 @@ patchesStrategicMerge:
       applicationsetcontroller.log.level: "error"
       notificationscontroller.log.level: "error"
 
+  - |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-applicationset-controller
+    spec:
+      template:
+        spec:
+          containers:
+          - name: argocd-applicationset-controller
+            env:
+            - name: ARGOCD_APPLICATIONSET_CONTROLLER_LOGLEVEL
+              valueFrom:
+                configMapKeyRef:
+                  key: applicationsetcontroller.log.level
+                  name: argocd-cmd-params-cm
+                  optional: true
+
+  - |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-notifications-controller
+    spec:
+      template:
+        spec:
+          containers:
+          - name: argocd-notifications-controller
+            env:
+            - name: ARGOCD_NOTIFICATIONS_CONTROLLER_LOGLEVEL
+              valueFrom:
+                configMapKeyRef:
+                  key: notificationscontroller.log.level
+                  name: argocd-cmd-params-cm
+                  optional: true
+
   # Add git-ops-command.sh as the config management tool to build the uber Kubernetes YAML
   # TODO: update the configManagementPlugins to run via a Sidecar - this won't happen until at least Argo 2.6
   # NOTE: This shouldn't be necessary since we will remove git-ops-command.sh as part of breaking down the monorepo
