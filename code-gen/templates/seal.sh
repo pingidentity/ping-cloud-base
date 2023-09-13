@@ -126,7 +126,6 @@ kind: Secret
 metadata:
   name: ${NAME}
   namespace: ${NAMESPACE}
-\$patch: delete
 
 ---
 
