@@ -3,10 +3,16 @@
 ### 1.17.2.0
 
 - Create new AES-256 encryption settings for all PingDirectory servers
+- Fix PingDirectory wrong hostname error during replication
+- Disable ArgoCD Image Updater
+- Reset 'cn=replication' server ID entry within PingDirectory on startup
 
 _Changes:_
 
 - [X] PDO-5955 Create new AES-256 encryption settings for all PingDirectory servers
+- [X] PDO-5961 Disable ArgoCD Image Updater
+- [X] PDO-5979 Reset 'cn=replication' server ID entry within PingDirectory on startup
+- [X] PDO-6019 Fix PingDirectory wrong hostname error during replication
 
 ### 1.17.1.0
 
