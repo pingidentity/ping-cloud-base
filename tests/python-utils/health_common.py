@@ -36,9 +36,9 @@ class TestHealthBase(unittest.TestCase):
         cls.k8s = K8sUtils()
         cls.healthcheck_endpoint = cls.k8s.get_endpoint("healthcheck")
         # Handle cases where the tests are still retrying by killing the pods and running the check
-        cls.k8s.kill_pods(label=f"role={cls.deployment_name}", namespace=cls.health)
-        cls.k8s.wait_for_pod_running(label=f"role={cls.deployment_name}", namespace=cls.health)
-        cls.wait_for_healthcheck_sent(label=f"role={cls.deployment_name}", namespace=cls.health)
+        # cls.k8s.kill_pods(label=f"role={cls.deployment_name}", namespace=cls.health)
+        # cls.k8s.wait_for_pod_running(label=f"role={cls.deployment_name}", namespace=cls.health)
+        # cls.wait_for_healthcheck_sent(label=f"role={cls.deployment_name}", namespace=cls.health)
 
     @classmethod
     def wait_for_healthcheck_sent(cls, label: str, namespace: str):
