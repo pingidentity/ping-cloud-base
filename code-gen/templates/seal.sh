@@ -120,17 +120,6 @@ for FILE in ${YAML_FILES}; do
   NAME=$(grep '^  name:' "${FILE}" | cut -d: -f2 | tr -d '[:space:]')
   NAMESPACE=$(grep '^  namespace:' "${FILE}" | cut -d: -f2 | tr -d '[:space:]')
 
-  cat >> "${SECRETS_FILE}" <<EOF
-apiVersion: v1
-kind: Secret
-metadata:
-  name: ${NAME}
-  namespace: ${NAMESPACE}
-
----
-
-EOF
-
   # Only seal secrets that have data in them.
   if grep '^data' "${FILE}" &> /dev/null; then
     echo "Creating sealed secret for \"${NAMESPACE}:${NAME}\""
