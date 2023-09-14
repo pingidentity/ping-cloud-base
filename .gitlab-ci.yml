@@ -194,6 +194,6 @@ merge-branch:   # Merge current release branch to next upstream release branch .
   script:
     - ${SHARED_CI_SCRIPTS_DIR}/release/merge_branch.sh
   variables:
-    CREATE_MR: yes
+    CREATE_MR: "yes"
   rules:
     - if: $CI_COMMIT_BRANCH =~ /^v*.*-release-branch$/
