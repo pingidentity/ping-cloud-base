@@ -1,0 +1,32 @@
+# Adjusting the log level to decrease undesired default log noise. Configuring it to the info level.
+#
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-logging
+  namespace: karpenter
+data:
+  zap-logger-config: |
+    {
+      "level": "info",
+      "development": false,
+      "disableStacktrace": true,
+      "disableCaller": true,
+      "sampling": {
+        "initial": 100,
+        "thereafter": 100
+      },
+      "outputPaths": ["stdout"],
+      "errorOutputPaths": ["stderr"],
+      "encoding": "console",
+      "encoderConfig": {
+        "timeKey": "time",
+        "levelKey": "level",
+        "nameKey": "logger",
+        "callerKey": "caller",
+        "messageKey": "message",
+        "stacktraceKey": "stacktrace",
+        "levelEncoder": "capital",
+        "timeEncoder": "iso8601"
+      }
+    }

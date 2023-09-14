@@ -548,3 +548,18 @@ metadata:
     postgres-operator.crunchydata.com/pgbackrest-restore: id1
 
 ---
+
+################################################
+#                Karpenter
+################################################
+### The karpenter will stay disabled until all customers have been upgraded.
+### Scale down cluster-autoscaler replicas to zero
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cluster-autoscaler
+  namespace: kube-system
+spec:
+  replicas: 0
+
+---
