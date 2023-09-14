@@ -265,6 +265,7 @@ _Changes:_
 - Update PA-WAS admin/engine CSD upload job to reference PA-WAS CSD upload configMaps, rather than just pingaccess.  
 - Fluent-Bit: change IMDS vesrion to v2
 - Remove docker logs from fluent-bit
+- Remove unneeded OS\Grafana dashboards from CHUB
 
 _Changes:_
 
@@ -391,6 +392,7 @@ _Changes:_
 - [X] PDO-5650 set NOTIFICATION_ENABLED to True by default
 - [X] PDO-5690 v1.18 Prepare for Ability to Update Upgrade Scripts w/o Release of New Beluga Version
 - [X] PDO-5804 Add REGION env var for healthcheck probes in customer hub
+- [X] PDO-5806 Remove unneeded OS\Grafana dashboards from CHUB
 - [X] PDO-5815 Fluent-Bit: change IMDS version to v2
 - [X] PDO-5832 Add "--skipPrime" flag to PD start-server script
 - [X] PDO-5869 Fix IRSA role for pingfederate-admin-serviceaccount
