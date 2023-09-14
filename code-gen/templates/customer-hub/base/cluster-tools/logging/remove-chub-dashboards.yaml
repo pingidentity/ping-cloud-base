@@ -1,0 +1,32 @@
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: os-dashboards-pd
+  namespace: elastic-stack-logging
+data:
+
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: os-dashboards-pf
+  namespace: elastic-stack-logging
+data:
+
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: os-dashboards-pf-threat
+  namespace: elastic-stack-logging
+data:
+
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: os-dashboards-pa
+  namespace: elastic-stack-logging
+data:
+
