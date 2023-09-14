@@ -8,7 +8,7 @@ workflow:
 
 ## Pipeline stages ##
 stages:
-- compile
+#- compile
 - find-cluster
 - deploy
 - pa-was-test
@@ -28,13 +28,13 @@ variables:
     pingdirectory/08-test-http-connection-handler.sh
 
 ## Compile stage ##
-compile:
- stage: compile
- tags:
-   - default-gitlab-runner
- image: ${K8S_DEPLOY_TOOLS}
- script:
-   - ${SHARED_CI_SCRIPTS_DIR}/k8s/compile/compile.sh
+#compile:
+# stage: compile
+# tags:
+#   - default-gitlab-runner
+# image: ${K8S_DEPLOY_TOOLS}
+# script:
+#   - ${SHARED_CI_SCRIPTS_DIR}/k8s/compile/compile.sh
 
 ## Find cluster stage ##
 find-cluster:
