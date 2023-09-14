@@ -1,7 +1,7 @@
-# Karpenter v0.28.1
+# Karpenter v0.29.2
 
 ## Compatibility
-Karpenter is tested with Kubernetes v1.21-v1.27
+Karpenter is tested with Kubernetes v1.21+
 
 
 ## WorkerNode
@@ -35,9 +35,11 @@ Resource limits constrain the total size of the cluster. Limits prevent Karpente
 ```sh
 limits:
     resources:
-      cpu: 400
-      memory: 400Gi
+      cpu: 250
+      memory: 750Gi
 ```
+
+Note: With the specified limits the scaling of PF/PA/PA-WAS runtimes up to 15 replicas is accommodates for v1.19 release deployment. 
 
 2. pd-only,
 ```sh
@@ -46,6 +48,8 @@ limits:
       cpu: 64
       memory: 500Gi
 ```
+
+Note: With the specified limits the scaling of PD runtimes up to 10 replicas is accommodates for v1.19 release deployment.
 
 2. pgo-only,
 ```sh
@@ -72,14 +76,9 @@ Note:
 
 ### Enables consolidation
 ```sh
-  consolidation:
-    enabled: true
+ttlSecondsAfterEmpty: 30
 ```
-Karpenter will attempts to reduce cluster cost by both removing un-needed nodes and down-sizing those that can't be removed.
-
-Note:
-- We may choose to disable this feature for the PingDirectory provisioner to avoid frequent recycling of pod in customer environments.
-- We will reassess this configuration after conducting QA and performance testing.
+It is a configuration setting that specifies how long Karpenter should wait before terminating an empty resource.
 
 
 ### Architecture
@@ -122,12 +121,13 @@ Pods can be opted out of eviction by setting the annotation karpenter.sh/do-not-
 ## Generate Karpenter manifest
 
 ```sh
-helm template karpenter oci://public.ecr.aws/karpenter/karpenter --version ${KARPENTER_VERSION} --namespace karpenter \
-    --set settings.aws.defaultInstanceProfile=KarpenterInstanceProfile \
-    --set settings.aws.clusterEndpoint="${CLUSTER_ENDPOINT}" \
-    --set settings.aws.clusterName=${CLUSTER_NAME} \
-    --set serviceAccount.annotations."eks\.amazonaws\.com/role-arn"="arn:aws:iam::${AWS_ACCOUNT_ID}:role/KarpenterControllerRole-${CLUSTER_NAME}" \
-    --version ${KARPENTER_VERSION} > karpenter.yaml
+./update-karpenter.sh <KARPENTER_VERSION>
+```
+
+Note: If you face `failed to download` error you may need to logout from public.ecr.aws,
+
+```sh
+docker logout public.ecr.aws
 ```
 
 

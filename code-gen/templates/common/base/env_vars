@@ -97,6 +97,7 @@ ENVIRONMENT_TYPE=${ENVIRONMENT_TYPE}
 # Used by Kubernetes manifests
 ENV=${ENV}
 KUSTOMIZE_BASE=${KUSTOMIZE_BASE}
+ACCOUNT_TYPE=${ACCOUNT_TYPE}
 
 ############################################################
 # Lets Encrypt server
