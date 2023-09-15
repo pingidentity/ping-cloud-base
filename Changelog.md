@@ -400,6 +400,7 @@ _Changes:_
 - [X] PDO-5906 Upgrade PingFederate to v11.3.1
 - [X] PDO-5911 Update PA-WAS Admin CSD Upload job to use PA-WAS cm
 - [X] PDO-6015 Remove docker logs from fluent-bit
+- [X] PDO-6078 Exclude dlq pipeline from alerts
 
 ### 1.17.0.0
 
@@ -442,6 +443,7 @@ _Changes:_
 - Replace deprecated topologyKey
 - Add IngressClassName to replace the deprecated annotation
 - Fix PingFederate multiline logs parsing
+- Exclude dlq pipeline from alerts
 
 _Changes:_
 
