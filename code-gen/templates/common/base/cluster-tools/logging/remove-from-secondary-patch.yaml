@@ -9,7 +9,7 @@ $patch: delete
 apiVersion: v1
 kind: Service
 metadata:
-  name: opensearch-cluster-headless
+  name: opensearch-cluster-master
   namespace: elastic-stack-logging
   annotations:
     $patch: delete
