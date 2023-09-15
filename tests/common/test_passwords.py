@@ -31,19 +31,24 @@ class TestPasswords(unittest.TestCase):
         volume_mounts = None
         container_name = None
         password_list = []
+        container_statuses = []
+        is_container_started = False
         # iterate through list of pods in the namespace
         for pod in pods.items:
             pod_name = pod.metadata.name
             volumes = pod.spec.volumes
+            container_statuses = pod.status.container_statuses
             # iterate through the list of containers inside the current pod
             for container in pod.spec.containers:
                 volume_mounts = container.volume_mounts
                 container_name = container.name
-                # get the container logs
-                container_logs = self.get_container_logs(ns, pod_name, container_name)
-                # validate the container logs for any passwords
-                self.validate_container_logs(ns,volumes,volume_mounts,
-                    pod_name,container_name,password_list,container_logs)
+                is_container_started = self.check_container_status(container_statuses, container_name)
+                if is_container_started : 
+                    # get the container logs
+                    container_logs = self.get_container_logs(ns, pod_name, container_name)
+                    # validate the container logs for any passwords
+                    self.validate_container_logs(ns, volumes, volume_mounts,
+                        pod_name, container_name, password_list, container_logs)
         return password_list
 
     def validate_container_logs( 
@@ -73,7 +78,7 @@ class TestPasswords(unittest.TestCase):
                                 if 'keystore' in key or value is None:
                                     continue
                                 decoded_value = base64.b64decode(value).decode("utf-8")
-                                if decoded_value in container_logs:
+                                if container_logs and decoded_value in container_logs:
                                     password_list.append(key)
                                     print(f"{key} found in {container_name} logs in {pod_name}")
 
@@ -98,3 +103,14 @@ class TestPasswords(unittest.TestCase):
                 name=pod_name, container=container_name, namespace=ns, pretty=True
             )
         )
+    
+    def check_container_status(self, container_statuses, container_name):
+        """
+        Check the container status 
+        """
+        container_started = False
+        for container_status in container_statuses:
+            if container_status.name == container_name:
+                if container_status.started == True:
+                    container_started = True
+        return container_started
