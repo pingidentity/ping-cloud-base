@@ -68,7 +68,7 @@
 - Add oidc.properties.subst to profile repo
 - Upgrade sealed secrets controller to v0.23+
 - Fix common integration tests
-
+- Update csr-valdation.sh to create a single .yaml file per microservice, rather than directory
 
 _Changes:_
 
@@ -131,6 +131,7 @@ _Changes:_
 - [X] PDO-5660 Healthcheck pods respond properly to SIGTERM
 - [X] PDO-5671 OS: grokparsefailure in pingaccess logs
 - [x] PDO-5673 OS: Missed logs in PingAccess Indices
+- [X] PDO-5680 Implement a solution for ArgoCD CRD race condition
 - [X] PDO-5705 Update PCB with toolkit image used as replacement for bitnami/kubectl
 - [X] PDO-5707 Remove dev-env.sh and dev-cluster-state from PCB
 - [X] PDO-5709 Fix intermittent pingone integration test failures
