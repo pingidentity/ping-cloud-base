@@ -64,6 +64,7 @@
 - Add fluent-bit input filter to Karpenter logs 
 - Update Amazon-Cloudwatch-agent to v1.300026.3b189
 - Update EBS Driver to 1.21.0 for EKS 1.27
+- Update newrelic-java-agent to v8.6.0
 - Add oidc.properties.subst to profile repo
 - Upgrade sealed secrets controller to v0.23+
 
@@ -153,6 +154,7 @@ _Changes:_
 - [X] PDO-5875 Update Grafana to v10.1.0
 - [X] PDO-5876 Update Amazon-Cloudwatch-agent to v1.300026.3b189
 - [X] PDO-5877 Update metrics-server to v0.6.4
+- [X] PDO-5878 Update newrelic-java-agent to v8.6.0
 - [X] PDO-5881 Update Alertmanager to v0.26
 - [X] PDO-5923 Karpenter capacity and performance Grafana dashboard
 - [X] PDO-5924 Multi-Region CDE: opensearch-bootstrap job in a second region can't connect to OpenSearch
