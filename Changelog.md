@@ -66,6 +66,7 @@
 - Update EBS Driver to 1.21.0 for EKS 1.27
 - Add oidc.properties.subst to profile repo
 - Upgrade sealed secrets controller to v0.23+
+- Fix common integration tests
 
 
 _Changes:_
@@ -163,6 +164,7 @@ _Changes:_
 - [X] PDO-6008 Change Opensearch log to 'WARNING' level
 - [X] PDO-6061 Fix pingone-configurator pod crashing when missing ConfigMap ping-cloud/is-pingone
 - [X] PDO-6077 Multiple issues with OpenSearch connect from secondary region
+- [X] PDO-6136 Fix common integration tests
 
 ### 1.18.0.0
 
