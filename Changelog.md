@@ -66,11 +66,14 @@
 - Update EBS Driver to 1.21.0 for EKS 1.27
 - Add oidc.properties.subst to profile repo
 - Update Prometheus to v2.47.0
+- Upgrade sealed secrets controller to v0.23+
+- Fix common integration tests
 
 
 _Changes:_
 
 - [X] PDO-3541 Support DHE Ciphers out of the box
+- [X] PDO-4264 Upgraded karpenter to v0.29.2 and adjusted its config to integrate with platform resource.
 - [X] PDO-4606 Create a new init container to upgrade PA and PA-WAS and mount volume to admin pod once upgrade is successful
 - [X] PDO-4779 Modify seal.sh script to work for microservices
 - [X] PDO-4847 Add weekly pipeline run logic for PCB
@@ -140,6 +143,7 @@ _Changes:_
 - [X] PDO-5774 OS Index Policies: State Transitions Errors
 - [X] PDO-5780 Update kubectl to 1.26.0 for EKS 1.27
 - [X] PDO-5785 Update kube-state-metrics cluster tool to v2.9.2
+- [X] PDO-5789 Upgrade sealed secrets controller to v0.23+
 - [X] PDO-5797 Unify severity format for all prometheus alerts
 - [X] PDO-5800 Update pd.profile to align with PingDirectory upgrade
 - [X] PDO-5801 Update cluster-autoscaler v1.27.0/1.27.1 for eks 1.27
@@ -162,6 +166,7 @@ _Changes:_
 - [X] PDO-6008 Change Opensearch log to 'WARNING' level
 - [X] PDO-6061 Fix pingone-configurator pod crashing when missing ConfigMap ping-cloud/is-pingone
 - [X] PDO-6077 Multiple issues with OpenSearch connect from secondary region
+- [X] PDO-6136 Fix common integration tests
 
 ### 1.18.0.0
 
@@ -186,8 +191,6 @@ _Changes:_
 - Upgrade EFS Driver to v1.5.1
 - Add PF requests logs parsing and indexing
 - Fix index template creation race condition issue
-- Update the PD backup job to create new PV at the start of the job and mount it
-- Update the PD restore job to create new PV at the start of the job and mount it
 - Change retry interval for PGO firing alert notification in slack from 5 min to 60 min
 - Added karpenter v0.24.0 and required parameters, KarpenterControllerRole & ClusterEndPoint
 - ILM policy for alerts index changed to move index to warm after 7 days in hot and delete index after 30 days
@@ -262,7 +265,12 @@ _Changes:_
 - Remove integration kits from PingFederate deployment (excluding pf-pingid) and upgrade opentoken-adapter to v2.7.2
 - Add REGION env var for healthcheck probes in customer hub
 - Fix IRSA role for pingfederate-admin-serviceaccount
-- Replace SSMs /pcpt/orch-api with /pcpt/customer
+- Add "--skipPrime" flag to PD start-server script
+- Upgrade PingFederate to v11.3.1
+- Update PA-WAS admin/engine CSD upload job to reference PA-WAS CSD upload configMaps, rather than just pingaccess.  
+- Fluent-Bit: change IMDS vesrion to v2
+- Remove docker logs from fluent-bit
+- Remove unneeded OS\Grafana dashboards from CHUB
 
 _Changes:_
 
@@ -344,7 +352,6 @@ _Changes:_
 - [X] PDO-5144 Add logstash/fluent-bit readiness/liveness probe
 - [X] PDO-5147 Add logstash metrics to prometheus
 - [X] PDO-5148 Modify Prometheus query for all backup alerting to only include the primary pod
-- [X] PDO-5153 Update SSM params to use /pcpt/customer path
 - [X] PDO-5191 Update image_map to align with tagging process
 - [X] PDO-5217 Increase replica count (min=7, max=9) within prod/large for Nginx Ingress Controller
 - [X] PDO-5221 'Field "responseCode.keyword" not found' on the 'Ping Access - Response Codes Over Time' visualization
@@ -390,7 +397,14 @@ _Changes:_
 - [X] PDO-5650 set NOTIFICATION_ENABLED to True by default
 - [X] PDO-5690 v1.18 Prepare for Ability to Update Upgrade Scripts w/o Release of New Beluga Version
 - [X] PDO-5804 Add REGION env var for healthcheck probes in customer hub
+- [X] PDO-5806 Remove unneeded OS\Grafana dashboards from CHUB
+- [X] PDO-5815 Fluent-Bit: change IMDS version to v2
+- [X] PDO-5832 Add "--skipPrime" flag to PD start-server script
 - [X] PDO-5869 Fix IRSA role for pingfederate-admin-serviceaccount
+- [X] PDO-5906 Upgrade PingFederate to v11.3.1
+- [X] PDO-5911 Update PA-WAS Admin CSD Upload job to use PA-WAS cm
+- [X] PDO-6015 Remove docker logs from fluent-bit
+- [X] PDO-6078 Exclude dlq pipeline from alerts
 
 ### 1.17.0.0
 
@@ -433,6 +447,7 @@ _Changes:_
 - Replace deprecated topologyKey
 - Add IngressClassName to replace the deprecated annotation
 - Fix PingFederate multiline logs parsing
+- Exclude dlq pipeline from alerts
 
 _Changes:_
 
