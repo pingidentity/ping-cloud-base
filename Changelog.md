@@ -102,6 +102,8 @@
 - Update PA-WAS admin/engine CSD upload job to reference PA-WAS CSD upload configMaps, rather than just pingaccess.  
 - Fluent-Bit: change IMDS vesrion to v2
 - Remove docker logs from fluent-bit
+- Reset 'cn=replication' server ID entry within PingDirectory on startup
+- Initialize Replication on New PingDirectory Child Non-Seed Servers
 
 _Changes:_
 
@@ -233,7 +235,9 @@ _Changes:_
 - [X] PDO-5869 Fix IRSA role for pingfederate-admin-serviceaccount
 - [X] PDO-5906 Upgrade PingFederate to v11.3.1
 - [X] PDO-5911 Update PA-WAS Admin CSD Upload job to use PA-WAS cm
+- [X] PDO-5979 Reset 'cn=replication' server ID entry within PingDirectory on startup
 - [X] PDO-6015 Remove docker logs from fluent-bit
+- [X] PDO-6021 Initialize Replication on New PingDirectory Child Non-Seed Servers
 
 ### 1.17.0.0
 
