@@ -54,10 +54,12 @@ patchesStrategicMerge:
         spec:
           containers:
           - name: argocd-applicationset-controller
+            # This command patched to temporarily add '--loglevel' parameter. It should be removed after upgrading ArgoCD probably to 2.8.0+
             command:
             - sh
             - -c
             - entrypoint.sh argocd-applicationset-controller --loglevel error
+            # This env vars added for further compatibility with ArgoCD 2.8.0+ - do not delete this after upgrade
             env:
             - name: ARGOCD_APPLICATIONSET_CONTROLLER_LOGLEVEL
               valueFrom:
@@ -76,10 +78,12 @@ patchesStrategicMerge:
         spec:
           containers:
           - name: argocd-notifications-controller
+            # This command patched to temporarily add '--loglevel' parameter. It should be removed after upgrading ArgoCD probably to 2.8.0+
             command:
             - sh
             - -c
             - entrypoint.sh argocd-notifications --loglevel error
+            # This env vars added for further compatibility with ArgoCD 2.8.0+ - do not delete this after upgrade
             env:
             - name: ARGOCD_NOTIFICATIONS_CONTROLLER_LOGLEVEL
               valueFrom:
