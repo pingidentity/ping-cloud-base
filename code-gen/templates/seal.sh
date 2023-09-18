@@ -113,16 +113,15 @@ echo "Using certificate file ${CERT_FILE} for encrypting secrets"
 SEALED_SECRETS_FILE=/tmp/sealed-secrets.yaml
 rm -f "${SEALED_SECRETS_FILE}"
 
+# Create default secret file under /tmp. This is required so that ping-serets.yaml can override secrets.yaml
 SECRETS_FILE=/tmp/ping-secrets.yaml
 rm -f "${SECRETS_FILE}"
+touch "${SECRETS_FILE}"
 
 for FILE in ${YAML_FILES}; do
   NAME=$(grep '^  name:' "${FILE}" | cut -d: -f2 | tr -d '[:space:]')
   NAMESPACE=$(grep '^  namespace:' "${FILE}" | cut -d: -f2 | tr -d '[:space:]')
 
-  cat >> "${SECRETS_FILE}" <<EOF
-
-EOF
   # Only seal secrets that have data in them.
   if grep '^data' "${FILE}" &> /dev/null; then
     echo "Creating sealed secret for \"${NAMESPACE}:${NAME}\""
