@@ -124,14 +124,14 @@ echo "${app_region_paths}"
 for app_path in ${app_region_paths}; do
   # pull the helm charts
   pull_helm_charts "${app_path}"
-
+  
   # kustomize build
   if test -z "${OUT_DIR}"; then
     result=$( (kustomize build --load-restrictor LoadRestrictionsNone --enable-helm "${app_path}" ) 2>&1)
   else
     full_out_dir="${OUT_DIR}/${app_path#./}"
     mkdir -p "${full_out_dir}"
-    result=$( (kustomize build --load-restrictor LoadRestrictionsNone --enable-helm --output "${full_out_dir}" "${app_path}" ) 2>&1)
+    result=$( (kustomize build --load-restrictor LoadRestrictionsNone --enable-helm --output "${full_out_dir}/uber.yaml" "${app_path}" ) 2>&1)
   fi
   # if kustomize build fails: add to failure list and output the error
   # note: this check needs to be immediately after the above "results=" command so that it can check the exit code

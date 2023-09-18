@@ -64,14 +64,17 @@
 - Add fluent-bit input filter to Karpenter logs 
 - Update Amazon-Cloudwatch-agent to v1.300026.3b189
 - Update EBS Driver to 1.21.0 for EKS 1.27
+- Update newrelic-java-agent to v8.6.0
 - Add oidc.properties.subst to profile repo
 - Upgrade sealed secrets controller to v0.23+
 - SealedSecrets: Overwrite existing k8s secrets
-
+- Fix common integration tests
+- Update csr-valdation.sh to create a single .yaml file per microservice, rather than directory
 
 _Changes:_
 
 - [X] PDO-3541 Support DHE Ciphers out of the box
+- [X] PDO-4264 Upgraded karpenter to v0.29.2 and adjusted its config to integrate with platform resource.
 - [X] PDO-4606 Create a new init container to upgrade PA and PA-WAS and mount volume to admin pod once upgrade is successful
 - [X] PDO-4779 Modify seal.sh script to work for microservices
 - [X] PDO-4847 Add weekly pipeline run logic for PCB
@@ -130,6 +133,7 @@ _Changes:_
 - [X] PDO-5660 Healthcheck pods respond properly to SIGTERM
 - [X] PDO-5671 OS: grokparsefailure in pingaccess logs
 - [x] PDO-5673 OS: Missed logs in PingAccess Indices
+- [X] PDO-5680 Implement a solution for ArgoCD CRD race condition
 - [X] PDO-5705 Update PCB with toolkit image used as replacement for bitnami/kubectl
 - [X] PDO-5707 Remove dev-env.sh and dev-cluster-state from PCB
 - [X] PDO-5709 Fix intermittent pingone integration test failures
@@ -155,6 +159,7 @@ _Changes:_
 - [X] PDO-5875 Update Grafana to v10.1.0
 - [X] PDO-5876 Update Amazon-Cloudwatch-agent to v1.300026.3b189
 - [X] PDO-5877 Update metrics-server to v0.6.4
+- [X] PDO-5878 Update newrelic-java-agent to v8.6.0
 - [X] PDO-5881 Update Alertmanager to v0.26
 - [X] PDO-5923 Karpenter capacity and performance Grafana dashboard
 - [X] PDO-5924 Multi-Region CDE: opensearch-bootstrap job in a second region can't connect to OpenSearch
@@ -164,6 +169,7 @@ _Changes:_
 - [X] PDO-6008 Change Opensearch log to 'WARNING' level
 - [X] PDO-6061 Fix pingone-configurator pod crashing when missing ConfigMap ping-cloud/is-pingone
 - [X] PDO-6077 Multiple issues with OpenSearch connect from secondary region
+- [X] PDO-6136 Fix common integration tests
 
 ### 1.18.0.0
 
@@ -267,6 +273,7 @@ _Changes:_
 - Update PA-WAS admin/engine CSD upload job to reference PA-WAS CSD upload configMaps, rather than just pingaccess.  
 - Fluent-Bit: change IMDS vesrion to v2
 - Remove docker logs from fluent-bit
+- Remove unneeded OS\Grafana dashboards from CHUB
 
 _Changes:_
 
@@ -393,12 +400,14 @@ _Changes:_
 - [X] PDO-5650 set NOTIFICATION_ENABLED to True by default
 - [X] PDO-5690 v1.18 Prepare for Ability to Update Upgrade Scripts w/o Release of New Beluga Version
 - [X] PDO-5804 Add REGION env var for healthcheck probes in customer hub
+- [X] PDO-5806 Remove unneeded OS\Grafana dashboards from CHUB
 - [X] PDO-5815 Fluent-Bit: change IMDS version to v2
 - [X] PDO-5832 Add "--skipPrime" flag to PD start-server script
 - [X] PDO-5869 Fix IRSA role for pingfederate-admin-serviceaccount
 - [X] PDO-5906 Upgrade PingFederate to v11.3.1
 - [X] PDO-5911 Update PA-WAS Admin CSD Upload job to use PA-WAS cm
 - [X] PDO-6015 Remove docker logs from fluent-bit
+- [X] PDO-6078 Exclude dlq pipeline from alerts
 
 ### 1.17.0.0
 
@@ -441,6 +450,7 @@ _Changes:_
 - Replace deprecated topologyKey
 - Add IngressClassName to replace the deprecated annotation
 - Fix PingFederate multiline logs parsing
+- Exclude dlq pipeline from alerts
 
 _Changes:_
 
