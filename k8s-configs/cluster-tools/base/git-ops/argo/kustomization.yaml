@@ -72,6 +72,36 @@ patchesStrategicMerge:
     apiVersion: apps/v1
     kind: Deployment
     metadata:
+      name: argocd-dex-server
+    spec:
+      template:
+        spec:
+          containers:
+          - name: dex
+            command:
+            - sh
+            - -c
+            - /shared/argocd-dex rundex --loglevel error
+
+  - |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-image-updater
+    spec:
+      template:
+        spec:
+          containers:
+          - name: argocd-image-updater
+            command:
+            - sh
+            - -c
+            - /usr/local/bin/argocd-image-updater run --loglevel error
+
+  - |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
       name: argocd-notifications-controller
     spec:
       template:
