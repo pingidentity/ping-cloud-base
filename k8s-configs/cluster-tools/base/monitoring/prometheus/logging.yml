@@ -45,7 +45,7 @@ groups:
       runbook: "https://pingidentity.atlassian.net/l/cp/ARLdMfXF"
 
   - alert: Logstash has no outgoing events
-    expr: sum(increase(logstash_node_pipeline_events_out_total{pipeline!="alerts"}[1m])) by (pipeline) == 0
+    expr: sum(increase(logstash_node_pipeline_events_out_total{pipeline!~"alerts|dlq"}[1m])) by (pipeline) == 0
     for: 10m
     labels:
       severity: critical
@@ -55,7 +55,7 @@ groups:
       runbook: "https://pingidentity.atlassian.net/l/cp/2Y87TfgA"
 
   - alert: Logstash has no incoming events
-    expr: sum(increase(logstash_node_pipeline_events_in_total{pipeline!="alerts"}[1m])) by (pipeline) == 0
+    expr: sum(increase(logstash_node_pipeline_events_in_total{pipeline!~"alerts|dlq"}[1m])) by (pipeline) == 0
     for: 10m
     labels:
       severity: critical
