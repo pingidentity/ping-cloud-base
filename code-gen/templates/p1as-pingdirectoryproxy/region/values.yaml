@@ -1,13 +1,13 @@
 pingdirectoryproxy:
+  serverProfilePath: "profiles/pingdirectoryproxy"
+  serverProfileUrl: "https://github.com/hjk-ping/ping-cloud-base"
+  serverProfileBranch: "pds-sandbox"
+  location: "Austin"
   # PingDirectoryProxy statefulset
   statefulSet:
-    metadata:
-      name: pingdirectoryproxy
-      labels:
-        class: pingdirectoryproxy
-    serviceName: pingdirectoryproxy
+    lastUpdateReason: "NA"
+    replicas: 1
     # set container limits
-    serviceAccountName: ping-serviceaccount
     resources:
       limits:
         memory: "4Gi"
