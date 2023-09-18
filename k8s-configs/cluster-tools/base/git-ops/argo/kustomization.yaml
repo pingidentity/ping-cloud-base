@@ -54,6 +54,10 @@ patchesStrategicMerge:
         spec:
           containers:
           - name: argocd-applicationset-controller
+            command:
+            - sh
+            - -c
+            - entrypoint.sh argocd-applicationset-controller --loglevel error
             env:
             - name: ARGOCD_APPLICATIONSET_CONTROLLER_LOGLEVEL
               valueFrom:
@@ -72,6 +76,10 @@ patchesStrategicMerge:
         spec:
           containers:
           - name: argocd-notifications-controller
+            command:
+            - sh
+            - -c
+            - entrypoint.sh argocd-notifications --loglevel error
             env:
             - name: ARGOCD_NOTIFICATIONS_CONTROLLER_LOGLEVEL
               valueFrom:
