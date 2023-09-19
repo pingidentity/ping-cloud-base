@@ -1,0 +1,17 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+- ../../../base/kube-downscaler
+
+patchesStrategicMerge:
+
+# Patch kube-downscaler to zero replicas
+- |-
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: kube-downscaler
+    namespace: default
+  spec:
+    replicas: 0

@@ -1,0 +1,39 @@
+# This patch file will remove the kube-downscaler resources from the deployment.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-downscaler
+$patch: delete
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kube-downscaler
+$patch: delete
+
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kube-downscaler
+$patch: delete
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kube-downscaler
+$patch: delete
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kube-downscaler
+$patch: delete
