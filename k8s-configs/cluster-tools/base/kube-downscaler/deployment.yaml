@@ -27,7 +27,7 @@ spec:
           - --matching-labels=.*
           #- --debug
           - --include-resources=deployments,statefulsets,horizontalpodautoscalers,cronjobs
-          - --exclude-namespaces=karpenter
+          - --exclude-namespaces=karpenter,kube-system
           # run every minute
           - --interval=300
         envFrom:
