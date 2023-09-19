@@ -101,13 +101,15 @@ is_all_apps() {
 
 ########################################################################################################################
 # We need some way to identify that we are indeed within a cluster-state-repo or profile-repo before making irreversible
-# changes. Therefore, check that either a 'profiles' directory exists, a 'values-files' directory exists, or that the
-# directory is empty (besides hidden/dotfiles) in the case of a brand-new CSR/PR empty cloned repo
+# changes. Therefore, check that either a 'profiles', 'values-files', or 'k8s-configs' (for monorepo backwards
+# compatibility) directory exists, or that the directory is empty (besides hidden/dotfiles) in the case of a brand-new
+# CSR/PR empty cloned repo
 ########################################################################################################################
 dir_sanity_check() {
   echo "Checking if in a CSR or PR..."
   if [[ -d "profiles" || \
         -d "values-files" || \
+        -d "k8s-configs" || \
         $(find . -mindepth 1 -not -path "./.*" | wc -l | tr -d '[:space:]') == 0 ]]; then
     return 0
   else
