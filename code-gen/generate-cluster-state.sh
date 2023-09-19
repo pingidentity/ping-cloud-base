@@ -891,8 +891,8 @@ export EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED:-""}"
 export ECR_REGISTRY_NAME='public.ecr.aws/r2h3l6e4'
 export PING_CLOUD_NAMESPACE='ping-cloud'
 export MYSQL_DATABASE="${MYSQL_DATABASE:-pingcentral}"
-export ARGOCD_CDE_ROLE_SSM_TEMPLATE="${ARGOCD_CDE_ROLE_SSM_TEMPLATE:-"/pcpt/config/k8s-config/accounts/{env}/argo/role/arn"}"
-export ARGOCD_CDE_URL_SSM_TEMPLATE="${ARGOCD_CDE_URL_SSM_TEMPLATE:-"/pcpt/config/k8s-config/accounts/{env}/cluster/private-link/cname"}"
+export ARGOCD_CDE_ROLE_SSM_TEMPLATE="${ARGOCD_CDE_ROLE_SSM_TEMPLATE:-"${ACCOUNT_BASE_PATH}{env}/argo/role/arn"}"
+export ARGOCD_CDE_URL_SSM_TEMPLATE="${ARGOCD_CDE_URL_SSM_TEMPLATE:-"${ACCOUNT_BASE_PATH}{env}/cluster/private-link/cname"}"
 
 DEFAULT_IMAGE_LIST="apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingfederate,apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess,apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess-was"
 export IMAGE_LIST="${IMAGE_LIST:-${DEFAULT_IMAGE_LIST}}"
