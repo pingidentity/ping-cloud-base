@@ -12,5 +12,6 @@ patchesStrategicMerge:
   kind: Deployment
   metadata:
     name: kube-downscaler
+    namespace: default
   spec:
     replicas: 0
