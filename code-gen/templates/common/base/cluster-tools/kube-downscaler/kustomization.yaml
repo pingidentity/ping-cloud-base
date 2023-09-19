@@ -14,5 +14,5 @@ patchesStrategicMerge:
 
 # Initially, by default we will disable kube-downscaler As we migrate to karpenter, we will gradually enable this feature.
 # To enable kube-downscaler, you need to comment out the line below.
-# This patch will not work for GA Environment as we don't deploy kube-downscaler their.
+# Until there is a specific requirement, we will keep kubedownscaler disabled and it should not be enabled for GA environment/account type.
 - disable-kubedownscaler.yaml
