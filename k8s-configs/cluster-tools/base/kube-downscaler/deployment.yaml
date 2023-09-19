@@ -1,0 +1,53 @@
+#Documentation: https://pingidentity.atlassian.net/wiki/spaces/PDA/pages/246382660/Kube-Downscaler+in+PCB
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    application: kube-downscaler
+    version: v24.0.0
+  name: kube-downscaler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      application: kube-downscaler
+  template:
+    metadata:
+      labels:
+        application: kube-downscaler
+        version: v24.0.0
+    spec:
+      serviceAccountName: kube-downscaler
+      containers:
+      - name: downscaler
+        image: public.ecr.aws/r2h3l6e4/kube-downscaler:24.0.0  
+        args:
+          # dry run by default, remove to perform downscaling
+          #- --dry-run
+          - --matching-labels=.*
+          #- --debug
+          - --include-resources=deployments,statefulsets,horizontalpodautoscalers,cronjobs
+          - --exclude-namespaces=karpenter,kube-system
+          # run every minute
+          - --interval=300
+        envFrom:
+          - configMapRef:
+              name: kube-downscaler
+              optional: true
+        resources:
+          limits:
+            memory: 100Mi
+            cpu: 100m
+          requests:
+            cpu: 5m
+            memory: 100Mi
+        securityContext:
+          readOnlyRootFilesystem: true
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Equal
+          value: core
+          effect: NoSchedule

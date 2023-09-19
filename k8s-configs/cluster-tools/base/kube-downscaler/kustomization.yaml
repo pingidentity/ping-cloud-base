@@ -1,0 +1,15 @@
+#Deploy resources needed for Kube-downscaler which is used for downscaling the cluster resources in non working hours
+#Source Code : https://codeberg.org/hjacobs/kube-downscaler
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+namespace: default
+
+resources:
+- rbac.yaml
+- deployment.yaml
+
+configMapGenerator:
+- name: kube-downscaler
+  literals:
+    - DEFAULT_UPTIME="Mon-Fri 09:00-18:00 UTC"
