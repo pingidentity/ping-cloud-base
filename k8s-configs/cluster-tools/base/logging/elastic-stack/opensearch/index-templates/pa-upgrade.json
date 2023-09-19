@@ -1,7 +1,11 @@
 {
   "index_patterns": [
-    "pa-upgrade-*",
-    "pa-was-upgrade-*"
+    "pa-upgrade-log-*",
+    "pa-was-upgrade-log-*",
+    "pa-upgrade-audit-*",
+    "pa-was-upgrade-audit-*",
+    "pa-upgrade-status-*",
+    "pa-was-upgrade-status-*"
   ],
   "template": {
     "settings": {
