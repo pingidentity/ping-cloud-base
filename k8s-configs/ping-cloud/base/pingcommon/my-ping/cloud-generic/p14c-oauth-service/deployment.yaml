@@ -4,14 +4,9 @@ metadata:
   name: p14c-oauth-service
   annotations:
     argocd.argoproj.io/hook: Sync
-  labels:
-    role: p14c-oauth-service
 spec:
   # 24-hour TTL for debugging
   ttlSecondsAfterFinished: 86400
-  selector:
-    matchLabels:
-      role: p14c-oauth-service
   template:
     spec:
       serviceAccountName: p14c-oauth-serviceaccount
