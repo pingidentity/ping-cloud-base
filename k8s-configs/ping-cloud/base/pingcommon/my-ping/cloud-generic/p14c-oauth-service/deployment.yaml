@@ -1,19 +1,20 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: Job
 metadata:
   name: p14c-oauth-service
+  annotations:
+    argocd.argoproj.io/hook: Sync
+  labels:
+    role: p14c-oauth-service
 spec:
+  # 24-hour TTL for debugging
+  ttlSecondsAfterFinished: 86400
   selector:
     matchLabels:
       role: p14c-oauth-service
-  replicas: 1
   template:
-    metadata:
-      name: p14c-oauth-service
-      labels:
-        role: p14c-oauth-service
     spec:
-      serviceAccount: p14c-oauth-serviceaccount
+      serviceAccountName: p14c-oauth-serviceaccount
       containers:
       - name: pingcloud-oauth
         securityContext:
@@ -45,10 +46,4 @@ spec:
                 fieldPath: metadata.namespace
         # The -u flag is necessary for python to emit logging to standard out
         command: [ 'python3', '-u', '/app/oauth_client_services_controller.py' ]
-        livenessProbe:
-          exec:
-            command: [ 'python3', '-u', '/app/liveness.py' ]
-          initialDelaySeconds: 60
-          periodSeconds: 30
-          failureThreshold: 3
-          timeoutSeconds: 3
+      restartPolicy: Never
