@@ -113,7 +113,7 @@ echo "Using certificate file ${CERT_FILE} for encrypting secrets"
 SEALED_SECRETS_FILE=/tmp/sealed-secrets.yaml
 rm -f "${SEALED_SECRETS_FILE}"
 
-# Create default secret file under /tmp. This is required so that ping-serets.yaml can override secrets.yaml
+# Create default secret file under /tmp. This is required so that ping-secrets.yaml can override secrets.yaml
 SECRETS_FILE=/tmp/ping-secrets.yaml
 rm -f "${SECRETS_FILE}"
 touch "${SECRETS_FILE}"
