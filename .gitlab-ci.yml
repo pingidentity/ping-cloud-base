@@ -19,7 +19,7 @@ stages:
 ## Global environment variables ##
 variables:
   DELETE_ENV_AFTER_PIPELINE: 'true'
-  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.12.0
+  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:v1.18-release-branch
   SHARED_CI_SCRIPTS_DIR: "/ci-scripts"
   BRANCH_SKIP_TESTS: >
       pingaccess/08-artifact-test.sh
@@ -31,7 +31,7 @@ variables:
 compile:
  stage: compile
  tags:
-   - default-gitlab-runner
+   - default-gitlab-runner-ping-cloud
  image: ${K8S_DEPLOY_TOOLS}
  script:
    - ${SHARED_CI_SCRIPTS_DIR}/k8s/compile/compile.sh
@@ -40,7 +40,7 @@ compile:
 find-cluster:
   stage: find-cluster
   tags:
-    - default-gitlab-runner
+    - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
   script:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/deploy/find_cluster.sh
@@ -52,7 +52,7 @@ find-cluster:
 deploy:
   stage: deploy
   tags:
-    - default-gitlab-runner
+    - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
   script:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/deploy/deploy.sh
@@ -65,7 +65,7 @@ deploy:
 pa-was-integration-tests:
   stage: pa-was-test
   tags:
-    - default-gitlab-runner
+    - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
   script:
     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pingaccess-was
@@ -94,7 +94,7 @@ pa-was-integration-tests:
     TEST: ""
   stage: integration-test
   tags:
-    - default-gitlab-runner
+    - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
   script:
     - export SKIP_TESTS="${BRANCH_SKIP_TESTS}"
@@ -119,7 +119,7 @@ integration-tests:
 chaos-tests:
   stage: chaos
   tags:
-    - default-gitlab-runner
+    - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
   script:
     - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh chaos
@@ -130,7 +130,7 @@ chaos-tests:
 cleanup:
   stage: cleanup
   tags:
-    - default-gitlab-runner
+    - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
   script:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/cleanup/teardown.sh
