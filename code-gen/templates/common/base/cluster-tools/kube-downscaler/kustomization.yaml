@@ -1,0 +1,18 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+- ${K8S_GIT_URL}/k8s-configs/cluster-tools/${KUSTOMIZE_BASE}/kube-downscaler/${ACCOUNT_TYPE}?ref=${K8S_GIT_BRANCH}
+
+configMapGenerator:
+- name: kube-downscaler
+  behavior: merge
+  literals:
+    - DEFAULT_UPTIME=${DEFAULT_CLUSTER_UPTIME}
+
+patchesStrategicMerge:
+
+# Initially, by default we will disable kube-downscaler As we migrate to karpenter, we will gradually enable this feature.
+# To enable kube-downscaler, you need to comment out the line below.
+# Until there is a specific requirement, we will keep kubedownscaler disabled and it should not be enabled for GA environment/account type.
+- disable-kubedownscaler.yaml
