@@ -1,7 +1,6 @@
 {
   "index_patterns": [
-    "pd-expensive-write-ops-*",
-    "pds-expensive-write-ops-*"
+    "pd-expensive-write-ops-*"
   ],
   "template": {
     "settings": {
