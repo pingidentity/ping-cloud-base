@@ -159,6 +159,7 @@ _Changes:_
 - [X] PDO-5877 Update metrics-server to v0.6.4
 - [X] PDO-5878 Update newrelic-java-agent to v8.6.0
 - [X] PDO-5881 Update Alertmanager to v0.26
+- [X] PDO-5916 Set resource specifications for cert-manager pods
 - [X] PDO-5923 Karpenter capacity and performance Grafana dashboard
 - [X] PDO-5924 Multi-Region CDE: opensearch-bootstrap job in a second region can't connect to OpenSearch
 - [X] PDO-5972 Karpenter Pods: Verify Logs are sent to CloudWatch
