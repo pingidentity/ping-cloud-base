@@ -69,6 +69,7 @@
 - Upgrade sealed secrets controller to v0.23+
 - Fix common integration tests
 - Update csr-valdation.sh to create a single .yaml file per microservice, rather than directory
+- Kube-downscaler excluding grafana deployment from downscaling
 
 _Changes:_
 
