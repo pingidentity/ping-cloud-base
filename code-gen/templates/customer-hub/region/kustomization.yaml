@@ -104,6 +104,13 @@ configMapGenerator:
 #  - ../base/env_vars
 #  - env_vars
 
+# PingCloud-oauth
+- name: p14c-oauth-service-environment-variables
+  behavior: merge
+  envs:
+    - ../base/env_vars
+    - env_vars
+
 # PingCloud BOM service
 - name: p14c-bom-service-environment-variables
   behavior: merge
