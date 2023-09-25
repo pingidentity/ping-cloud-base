@@ -1,6 +1,0 @@
-apiVersion: builtin
-kind: SecretTransformer
-metadata:
-  name: annotations-transformer
-annotations:
-  sealedsecrets.bitnami.com/managed: "true"

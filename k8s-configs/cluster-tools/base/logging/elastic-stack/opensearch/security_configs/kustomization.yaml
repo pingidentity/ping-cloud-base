@@ -16,5 +16,6 @@ secretGenerator:
       - roles_mapping.yml
       - tenants.yml
       - whitelist.yml
-configurations:
-  - annotations-transformer.yaml  
+generatorOptions:
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"  
