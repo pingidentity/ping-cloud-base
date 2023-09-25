@@ -397,7 +397,7 @@ spec:
                 }
               ],
               "dsType": "elasticsearch",
-              "expr": "sum(ALERTS{alertstate=\"firing\",severity=\"critical\"} > 0) OR on() vector(0)",
+              "expr": "sum(ALERTS{alertstate=\"firing\",severity=\"critical\",service=\"postgresql\"} > 0) OR on() vector(0)",
               "format": "time_series",
               "instant": true,
               "fixed_interval": "",
@@ -473,12 +473,12 @@ spec:
           "pluginVersion": "7.4.5",
           "targets": [
             {
-              "expr": "sum(ALERTS{alertstate=\"firing\",severity=\"warning\"} > 0) OR on() vector(0)",
+              "expr": "sum(ALERTS{alertstate=\"firing\",severity=\"warning\",service=\"postgresql\"} > 0) OR on() vector(0)",
               "format": "time_series",
               "instant": true,
               "fixed_interval": "",
               "intervalFactor": 2,
-              "legendFormat": "",
+              "legendFormat": "Warning",
               "refId": "A"
             }
           ],
@@ -544,11 +544,11 @@ spec:
           "pluginVersion": "7.4.5",
           "targets": [
             {
-              "expr": "sum(ALERTS{alertstate=\"firing\",severity=\"info\"} > 0) OR on() vector(0)",
+              "expr": "sum(ALERTS{alertstate=\"firing\",severity=\"info\",service=\"postgresql\"} > 0) OR on() vector(0)",
               "format": "time_series",
               "fixed_interval": "",
               "intervalFactor": 2,
-              "legendFormat": "",
+              "legendFormat": "Info",
               "refId": "A"
             }
           ],
@@ -699,7 +699,7 @@ spec:
           "pluginVersion": "7.4.5",
           "targets": [
             {
-              "expr": "ALERTS{alertstate='firing'} > 0",
+              "expr": "ALERTS{alertstate='firing',service=\"postgresql\"} > 0",
               "format": "table",
               "instant": true,
               "fixed_interval": "2s",
@@ -891,7 +891,7 @@ spec:
           "pluginVersion": "7.4.5",
           "targets": [
             {
-              "expr": "ALERTS{alertstate=\"pending\"}",
+              "expr": "ALERTS{alertstate=\"pending\",service=\"postgresql\"}",
               "format": "table",
               "instant": false,
               "fixed_interval": "",

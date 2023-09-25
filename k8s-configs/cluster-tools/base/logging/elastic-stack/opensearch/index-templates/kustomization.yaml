@@ -30,6 +30,7 @@ configMapGenerator:
       - pd-server.json
       - pdg-access.json
       - pdg-error.json
+      - pds-sync-failed-ops.json
       - pf-admin-api.json
       - pf-admin-event-detail.json
       - pf-admin-log.json
