@@ -16,7 +16,4 @@ secretGenerator:
       - roles_mapping.yml
       - tenants.yml
       - whitelist.yml
-# Added this annotation to overwrite sealdsecret 
-generatorOptions:
- annotations:
-   sealedsecrets.bitnami.com/managed: true
+      
