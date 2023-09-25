@@ -168,6 +168,7 @@ _Changes:_
 - [X] PDO-6061 Fix pingone-configurator pod crashing when missing ConfigMap ping-cloud/is-pingone
 - [X] PDO-6077 Multiple issues with OpenSearch connect from secondary region
 - [X] PDO-6136 Fix common integration tests
+- [X] PDO-6166 Add PingFederate periodic backup limits
 
 ### 1.18.0.0
 
