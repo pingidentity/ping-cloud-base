@@ -1,13 +1,11 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
+
 namespace: elastic-stack-logging
 
 secretGenerator:
   - name: opensearch-securityconfig
     type: Opaque
-    generatorOptions:
-      annotations:
-        sealedsecrets.bitnami.com/managed: true
     files:
       - action_groups.yml
       - audit.yml
@@ -18,3 +16,5 @@ secretGenerator:
       - roles_mapping.yml
       - tenants.yml
       - whitelist.yml
+configurations:
+  - annotations-transformer.yaml  
