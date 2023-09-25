@@ -72,6 +72,7 @@
 - Update kube-state-metrics to v2.7.0
 - Bug fix, remove-from-secondary-patch.yaml not getting applied
 - Remove healthchecks for undeployed products in customer-hub
+- Add Argo Secondary Region Ingress URL as a Virtual Host within PA-WAS
 - Default ngnix hpa configuration in medium environment is lower than small
 - Fix cluster_name variable in Grafana Dashboards for CHUB
 - Remove PC resources from secondary customer-hub
@@ -199,6 +200,7 @@ _Changes:_
 - [X] PDO-5279 Update kube-state-metrics cluster tool to v2.7.0 for EKS 1.25
 - [X] PDO-5281 Default ngnix hpa configuration in medium environment is lower than small
 - [X] PDO-5288 Update health check. healthcheck should only test the resources that have been deployed
+- [X] PDO-5289 Add Argo Secondary Region Ingress URL as a Virtual Host within PA-WAS
 - [X] PDO-5298 Bugfix - make scripts compatible with Debian
 - [X] PDO-5302 Fix PF multiline parsing
 - [X] PDO-5315 Bugfix - argocd-bootstrap to use region specific env vars
