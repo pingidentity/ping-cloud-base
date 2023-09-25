@@ -5,8 +5,9 @@ namespace: elastic-stack-logging
 secretGenerator:
   - name: opensearch-securityconfig
     type: Opaque
-    annotations:
-      sealedsecrets.bitnami.com/managed: true
+    generatorOptions:
+      annotations:
+        sealedsecrets.bitnami.com/managed: true
     files:
       - action_groups.yml
       - audit.yml
@@ -17,4 +18,3 @@ secretGenerator:
       - roles_mapping.yml
       - tenants.yml
       - whitelist.yml
-      
