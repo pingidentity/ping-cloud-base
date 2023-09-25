@@ -406,6 +406,7 @@ _Changes:_
 - [X] PDO-5911 Update PA-WAS Admin CSD Upload job to use PA-WAS cm
 - [X] PDO-6015 Remove docker logs from fluent-bit
 - [X] PDO-6078 Exclude dlq pipeline from alerts
+- [X] PDO-6115 Exclude non-PGO alerts from the PGO Prometheus Alerts dashboard
 
 ### 1.17.0.0
 
@@ -449,6 +450,7 @@ _Changes:_
 - Add IngressClassName to replace the deprecated annotation
 - Fix PingFederate multiline logs parsing
 - Exclude dlq pipeline from alerts
+- Exclude non-PGO alerts from the PGO Prometheus Alerts dashboard
 
 _Changes:_
 
