@@ -54,6 +54,12 @@ patchesStrategicMerge:
         spec:
           containers:
           - name: argocd-applicationset-controller
+            # This command patched to temporarily add '--loglevel' parameter. It should be removed after upgrading ArgoCD probably to 2.8.0+
+            command:
+            - sh
+            - -c
+            - entrypoint.sh argocd-applicationset-controller --loglevel error
+            # This env vars added for further compatibility with ArgoCD 2.8.0+ - do not delete this after upgrade
             env:
             - name: ARGOCD_APPLICATIONSET_CONTROLLER_LOGLEVEL
               valueFrom:
@@ -66,12 +72,48 @@ patchesStrategicMerge:
     apiVersion: apps/v1
     kind: Deployment
     metadata:
+      name: argocd-dex-server
+    spec:
+      template:
+        spec:
+          containers:
+          - name: dex
+            command:
+            - sh
+            - -c
+            - /shared/argocd-dex rundex --loglevel error
+
+  - |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-image-updater
+    spec:
+      template:
+        spec:
+          containers:
+          - name: argocd-image-updater
+            command:
+            - sh
+            - -c
+            - /usr/local/bin/argocd-image-updater run --loglevel error
+
+  - |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
       name: argocd-notifications-controller
     spec:
       template:
         spec:
           containers:
           - name: argocd-notifications-controller
+            # This command patched to temporarily add '--loglevel' parameter. It should be removed after upgrading ArgoCD probably to 2.8.0+
+            command:
+            - sh
+            - -c
+            - entrypoint.sh argocd-notifications --loglevel error
+            # This env vars added for further compatibility with ArgoCD 2.8.0+ - do not delete this after upgrade
             env:
             - name: ARGOCD_NOTIFICATIONS_CONTROLLER_LOGLEVEL
               valueFrom:
