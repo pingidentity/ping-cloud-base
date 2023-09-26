@@ -34,6 +34,7 @@ rules:
   - nodes
   - pods
   - services
+  - serviceaccounts
   - resourcequotas
   - replicationcontrollers
   - limitranges
@@ -96,6 +97,13 @@ rules:
   - list
   - watch
 - apiGroups:
+  - discovery.k8s.io
+  resources:
+  - endpointslices
+  verbs:
+  - list
+  - watch
+- apiGroups:
   - storage.k8s.io
   resources:
   - storageclasses
@@ -115,6 +123,7 @@ rules:
   - networking.k8s.io
   resources:
   - networkpolicies
+  - ingressclasses
   - ingresses
   verbs:
   - list
@@ -123,6 +132,16 @@ rules:
   - coordination.k8s.io
   resources:
   - leases
+  verbs:
+  - list
+  - watch
+- apiGroups:
+  - rbac.authorization.k8s.io
+  resources:
+  - clusterrolebindings
+  - clusterroles
+  - rolebindings
+  - roles
   verbs:
   - list
   - watch
@@ -151,7 +170,7 @@ spec:
     spec:
       automountServiceAccountToken: true
       containers:
-      - image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/coreos/kube-state-metrics:v2.9.2
+      - image: registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.9.2
         livenessProbe:
           httpGet:
             path: /healthz
@@ -176,14 +195,12 @@ spec:
             drop:
             - ALL
           readOnlyRootFilesystem: true
+          runAsNonRoot: true
           runAsUser: 65534
-        resources:
-          limits:
-            memory: "80Mi"
-            cpu: "30m"
-          requests:
-            memory: "50Mi"
-            cpu: "10m"
+          seccompProfile:
+            type: RuntimeDefault
+      nodeSelector:
+        kubernetes.io/os: linux
       serviceAccountName: kube-state-metrics
 
 ---
@@ -209,6 +226,7 @@ metadata:
   name: kube-state-metrics
   namespace: kube-system
 spec:
+  clusterIP: None
   ports:
   - name: http-metrics
     port: 8080
