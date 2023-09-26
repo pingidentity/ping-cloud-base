@@ -68,6 +68,7 @@
 - Add oidc.properties.subst to profile repo
 - Update Prometheus to v2.47.0
 - Upgrade sealed secrets controller to v0.23+
+- SealedSecrets: Overwrite existing k8s secrets
 - Fix common integration tests
 - Update csr-valdation.sh to create a single .yaml file per microservice, rather than directory
 
@@ -128,6 +129,7 @@ _Changes:_
 - [X] PDO-5647 Handle SIGTERM properly in enrichment-bootstrap
 - [X] PDO-5654 Fluentbit Kubernetes filter is not adding metadata into some events
 - [X] PDO-5655 OS: Logs for the pf-transaction-* index are not filtered
+- [X] PDO-5658 SealedSecrets: Overwrite existing k8s secrets
 - [X] PDO-5659 git-ops-command.sh responds properly to SIGTERM
 - [X] PDO-5660 Healthcheck pods respond properly to SIGTERM
 - [X] PDO-5671 OS: grokparsefailure in pingaccess logs
