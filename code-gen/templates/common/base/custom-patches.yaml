@@ -1,4 +1,12 @@
-### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
+##################################################################################################################
+# NOTE:  This is a temporary file that is used to deploy custom patches as an interim solution while P1AS CI/CD
+#        moves away from dev-cluster-state for deploying clusters.  It's contents will be copied over to 
+#        ping-cloud-base/code-gen/templates/common/base/custom-patches.yaml and overwrite any data there.  
+#
+#        Currently we have no way to access private endpoints from our CI/CD runners, so we make them publicly 
+#        available in CI/CD only.  The below kustomize patch merges replaces the annotations of services,
+#        w/o the 'internal' annotation, making it default to public.
+##################################################################################################################
 
 ### Always leave in at least this customization. Otherwise, kustomize will complain about an empty patch file. ###
 apiVersion: v1
@@ -6,3 +14,48 @@ kind: ConfigMap
 metadata:
   name: custom-environment-variables
   namespace: ping-cloud
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: ingress-nginx
+  namespace: ingress-nginx-private
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    $patch: replace
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pingdirectory-admin
+  namespace: ping-cloud
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: pingdirectory-admin.${TENANT_DOMAIN}
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    $patch: replace
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: udp-loadbalancer
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    external-dns.alpha.kubernetes.io/hostname: pingfederate-radius-dev.${TENANT_DOMAIN}
+    $patch: replace
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: pingdatasync-admin
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    external-dns.alpha.kubernetes.io/hostname: pingdatasync-dev.${TENANT_DOMAIN}
+    $patch: replace
