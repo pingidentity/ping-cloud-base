@@ -18,6 +18,7 @@ spec:
   template:
     spec:
       serviceAccountName: ping-serviceaccount
+      priorityClassName: high-priority-apps-to-avoid-pending-state
       affinity:
         # This podAffinity rule is designed to deploy Backup/restore job to the same AZ as its targeted PingDirectory server
         podAffinity:
