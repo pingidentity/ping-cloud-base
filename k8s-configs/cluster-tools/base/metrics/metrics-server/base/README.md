@@ -1,9 +1,9 @@
-# Kube State Metrics Base Yaml
+# Metrics Server Yaml
 The base yaml is obtained from:
-https://github.com/kubernetes/kube-state-metrics/tree/main/examples/standard
+https://github.com/kubernetes-sigs/metrics-server/tree/master/manifests/base
 
-Run `./update-kube-state-metrics.sh NEW_VERSION` to upgrade files
+Run `./update-metrics-server.sh NEW_VERSION` to upgrade files
 
 Example:
-Step1: `cd k8s-configs/cluster-tools/base/metrics/kube-state-metrics/base`
-Step2: `./update-kube-state-metrics.sh 2.9.2`
+Step1: `cd k8s-configs/cluster-tools/base/metrics/metrics-server/base`
+Step2: `./update-metrics-server.sh 0.6.4`
