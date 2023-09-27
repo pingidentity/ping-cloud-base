@@ -111,7 +111,7 @@ pf.console.authentication=${PF_CONSOLE_AUTHENTICATION}
 #     RADIUS - External RADIUS authentication.
 #     OAuth2 - External or Internal OAuth2 authorization.
 # Default is native.
-pf.admin.api.authentication=LDAP
+pf.admin.api.authentication=${PF_API_AUTHENTICATION}
 
 #
 # When LDAP administrative-console authentication is enabled, this property
@@ -136,7 +136,7 @@ oidc.properties.file=oidc.properties
 #
 # When OAuth 2.0 administrative-API authentication is enabled, this property
 # indicates the name of the file containing configuration properties.
-# oauth2.properties.file=oauth2.properties
+oauth2.properties.file=oauth2.properties
 
 
 # -------------------------
