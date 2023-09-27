@@ -30,6 +30,4 @@ for file in "${files[@]}"; do
   curl "https://raw.githubusercontent.com/kubernetes-sigs/metrics-server/v${METRICS_SERVER_VERSION}/manifests/base/$file" -o "$file"
 done
 
-curl https://raw.githubusercontent.com/kubernetes-sigs/metrics-server/v${METRICS_SERVER_VERSION}/manifests/release/kustomization.yaml -o ../release/kustomization.yaml
-
 echo "Metrics Server update complete, check your 'git diff' to see what changed"
