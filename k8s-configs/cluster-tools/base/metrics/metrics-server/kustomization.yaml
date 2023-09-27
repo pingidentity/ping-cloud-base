@@ -4,10 +4,21 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 resources:
 
 # These yamls were obtained from: https://api.github.com/repos/kubernetes-sigs/metrics-server/releases/latest
-- aggregated-metrics-reader.yaml
-- auth-delegator.yaml
-- auth-reader.yaml
-- metrics-apiservice.yaml
-- metrics-server-deployment.yaml
-- metrics-server-service.yaml
-- resource-reader.yaml
+- base
+- release
+
+patchesStrategicMerge:
+
+### metrics-server deployment custom patch ###
+- |-
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: metrics-server
+    namespace: kube-system
+  spec:
+    template:
+      spec:
+        containers:
+          - image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/metrics-server/metrics-server:v0.6.4
+            name: metrics-server
