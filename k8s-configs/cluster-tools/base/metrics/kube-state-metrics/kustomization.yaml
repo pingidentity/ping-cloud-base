@@ -3,7 +3,36 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 - base
-
+### kube-state-metrics service custom patch ###
+patches:
+  - target:
+      kind: Service
+      name: kube-state-metrics
+      namespace: kube-system
+    patch: |-
+      # Remove clusterIP: None, seamless update to prevent CI-CD failure
+      - op: remove
+        path: /spec/clusterIP
 
 patchesStrategicMerge:
-  - patch-resources.yaml
+
+### kube-state-metrics deployment custom patch ###
+- |-
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: kube-state-metrics
+    namespace: kube-system
+  spec:
+    template:
+      spec:
+        containers:
+          - image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/coreos/kube-state-metrics:v2.9.2
+            name: kube-state-metrics
+            resources:
+              limits:
+                cpu: 30m
+                memory: 80Mi
+              requests:
+                cpu: 10m
+                memory: 50Mi
