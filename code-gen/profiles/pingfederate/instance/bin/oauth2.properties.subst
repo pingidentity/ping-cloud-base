@@ -66,7 +66,7 @@ introspection.endpoint=${PF_P14C_INTROSPECTION_ENDPOINT}
 #   -----------------
 #   The required scopes of validated ATs authorized to call the PingFederate administrative API. Space delimit multiple values.
 #
-required.scopes=${PF_P14C_REQUIRED_SCOPES}
+required.scopes=${PF_P14C_SCOPES}
 
 #   ----------------------------------
 #   Username Attribute Name (REQUIRED)
@@ -117,9 +117,9 @@ role.attribute.name=${PF_P14C_ROLE_ATTRIBUTE_NAME}
 #     role.admin.2=
 #     role.admin.3=
 #
-role.admin.1=${PF_P14C_ROLE_ADMIN}
+role.admin.1=${PF_P14C_ROLE_ADMIN_1}
 role.cryptoManager.1=${PF_P14C_ROLE_CRYPTOMANAGER_1}
-role.userAdmin.1=${PF_P14C_ROLE_USERADMIN}
+role.userAdmin.1=${PF_P14C_ROLE_USERADMIN_1}
 
 # The expressionAdmin role must only be granted to the administrators with admin role.
 role.expressionAdmin=${PF_P14C_ROLE_EXPRESSIONADMIN}
