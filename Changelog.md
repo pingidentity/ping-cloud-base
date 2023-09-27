@@ -68,6 +68,7 @@
 - Add oidc.properties.subst to profile repo
 - Update Prometheus to v2.47.0
 - Upgrade sealed secrets controller to v0.23+
+- Upgrade argocd to 2.8.3 version that works with EKS 1.27
 - SealedSecrets: Overwrite existing k8s secrets
 - Fix common integration tests
 - Update csr-valdation.sh to create a single .yaml file per microservice, rather than directory
@@ -148,6 +149,7 @@ _Changes:_
 - [X] PDO-5780 Update kubectl to 1.26.0 for EKS 1.27
 - [X] PDO-5785 Update kube-state-metrics cluster tool to v2.9.2
 - [X] PDO-5789 Upgrade sealed secrets controller to v0.23+
+- [X] PDO-5791 Upgrade argocd to 2.8.3 version that works with EKS 1.27
 - [X] PDO-5797 Unify severity format for all prometheus alerts
 - [X] PDO-5800 Update pd.profile to align with PingDirectory upgrade
 - [X] PDO-5801 Update cluster-autoscaler v1.27.0/1.27.1 for eks 1.27
