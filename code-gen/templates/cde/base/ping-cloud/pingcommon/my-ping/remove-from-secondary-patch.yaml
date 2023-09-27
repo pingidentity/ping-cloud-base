@@ -14,8 +14,8 @@ $patch: delete
 
 ---
 
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: batch/v1
+kind: Job
 metadata:
   name: p14c-oauth-service
 $patch: delete

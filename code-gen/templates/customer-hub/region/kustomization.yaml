@@ -14,7 +14,6 @@ patchesStrategicMerge:
 - custom-patches.yaml
 
 ### Remove unneccessary MyPing pods
-- ../base/ping-cloud/pingcommon/my-ping/remove-oauth-service.yaml
 - ../base/ping-cloud/pingcommon/my-ping/remove-pingone-configurator.yaml
 
 ### Remove healthchecks for undeployed products
@@ -104,6 +103,13 @@ configMapGenerator:
 #  envs:
 #  - ../base/env_vars
 #  - env_vars
+
+# PingCloud-oauth
+- name: p14c-oauth-service-environment-variables
+  behavior: merge
+  envs:
+    - ../base/env_vars
+    - env_vars
 
 # PingCloud BOM service
 - name: p14c-bom-service-environment-variables
