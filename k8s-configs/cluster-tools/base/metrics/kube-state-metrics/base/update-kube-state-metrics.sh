@@ -16,11 +16,22 @@ fi
 
 KUBE_STATE_METRICS_VERSION="${1}"
 
-curl "https://raw.githubusercontent.com/kubernetes/kube-state-metrics/v${KUBE_STATE_METRICS_VERSION}/examples/standard/cluster-role-binding.yaml" -o cluster-role-binding.yaml
-curl "https://raw.githubusercontent.com/kubernetes/kube-state-metrics/v${KUBE_STATE_METRICS_VERSION}/examples/standard/cluster-role.yaml" -o cluster-role.yaml
-curl "https://raw.githubusercontent.com/kubernetes/kube-state-metrics/v${KUBE_STATE_METRICS_VERSION}/examples/standard/deployment.yaml" -o deployment.yaml
-curl "https://raw.githubusercontent.com/kubernetes/kube-state-metrics/v${KUBE_STATE_METRICS_VERSION}/examples/standard/service-account.yaml" -o service-account.yaml
-curl "https://raw.githubusercontent.com/kubernetes/kube-state-metrics/v${KUBE_STATE_METRICS_VERSION}/examples/standard/service.yaml" -o service.yaml
+
+
+file_names=$(curl https://github.com/kubernetes/kube-state-metrics/tree/v${KUBE_STATE_METRICS_VERSION}/examples/standard/ | jq -r '.payload.tree.items[].name')
+
+files=()
+
+while IFS= read -r line; do
+  if [ "$line" != "index.html" ]; then
+    files+=("$line")
+  fi
+done <<< "$file_names"
+
+# Iterate through the files array
+for file in "${files[@]}"; do
+  curl "https://raw.githubusercontent.com/kubernetes/kube-state-metrics/v${KUBE_STATE_METRICS_VERSION}/examples/standard/$file" -o "$file"
+done
 
 
 echo "Kube State Metrics update complete, check your 'git diff' to see what changed"
