@@ -1161,7 +1161,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   STAGE_LETS_ENCRYPT_SERVER='https://acme-staging-v02.api.letsencrypt.org/directory'
 
   if test ! "${LETS_ENCRYPT_SERVER}"; then
-    if "${IS_GA}" || "${IS_MY_PING}"; then
+    if "${IS_GA}"; then
       LETS_ENCRYPT_SERVER="${PROD_LETS_ENCRYPT_SERVER}"
     else
       case "${ENV}" in
