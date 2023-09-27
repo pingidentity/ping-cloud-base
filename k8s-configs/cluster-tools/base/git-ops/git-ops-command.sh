@@ -299,7 +299,10 @@ elif test -z "${OUT_DIR}" || test ! -d "${OUT_DIR}"; then
   log "generating uber yaml file from '${BUILD_DIR}' to stdout"
   kustomize build ${build_load_arg} ${build_load_arg_value} "${BUILD_DIR}" &
   kustomize_pid=$!
-  wait
+  # Wait for the process ID of the Kustomize build to forward the corresponding return code to Argo CD.
+  wait $kustomize_pid
+  exit $?
+
 # TODO: leave this functionality for now - it outputs many yaml files to the OUT_DIR
 # it isn't clear if this is still used in actual CDEs
 else
