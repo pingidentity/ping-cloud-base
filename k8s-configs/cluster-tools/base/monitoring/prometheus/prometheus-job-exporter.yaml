@@ -61,7 +61,7 @@ spec:
           envFrom:
             - configMapRef:
                 name: prometheus-environment-variables
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-job-exporter/dev:v1.17-release-branch-latest
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-job-exporter:v1.17.3.0_RC4
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
