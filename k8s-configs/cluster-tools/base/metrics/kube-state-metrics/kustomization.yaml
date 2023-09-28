@@ -10,7 +10,7 @@ patches:
       name: kube-state-metrics
       namespace: kube-system
     patch: |-
-      # Remove clusterIP: None, seamless update to prevent CI-CD failure
+      # Remove `clusterIP: None` It prevents service update failure as `spec.clusterip` field is immutable
       - op: remove
         path: /spec/clusterIP
 
