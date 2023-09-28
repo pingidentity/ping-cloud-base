@@ -9,8 +9,7 @@ class TestArgoSSO(p1_test_base.P1TestBase):
         self.group_names = [
             "argo-beluga",
             f"{self.tenant_name}-argo-config-team",
-            "argo-gso",
-            "argo-platform-team",
+            "argo-platform",
         ]
 
     def test_groups_created(self):
