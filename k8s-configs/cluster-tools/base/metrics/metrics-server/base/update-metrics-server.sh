@@ -30,4 +30,6 @@ for file in "${files[@]}"; do
   curl "https://raw.githubusercontent.com/kubernetes-sigs/metrics-server/v${METRICS_SERVER_VERSION}/manifests/base/$file" -o "$file"
 done
 
+sed "s/\(newTag: \)[^ ]*/\1v${METRICS_SERVER_VERSION}/" ../kustomization.yaml > temp_file && mv temp_file ../kustomization.yaml
+
 echo "Metrics Server update complete, check your 'git diff' to see what changed"
