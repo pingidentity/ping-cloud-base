@@ -71,6 +71,7 @@
 - SealedSecrets: Overwrite existing k8s secrets
 - Fix common integration tests
 - Update csr-valdation.sh to create a single .yaml file per microservice, rather than directory
+- Metrics-Server : Refactoring with Third-Party Manifest Policy
 
 _Changes:_
 
@@ -172,6 +173,7 @@ _Changes:_
 - [X] PDO-6007 Change external-dns pod log to 'ERROR' level
 - [X] PDO-6008 Change Opensearch log to 'WARNING' level
 - [X] PDO-6061 Fix pingone-configurator pod crashing when missing ConfigMap ping-cloud/is-pingone
+- [X] PDO-6075 Metrics-Server : Refactoring with Third-Party Manifest Policy
 - [X] PDO-6077 Multiple issues with OpenSearch connect from secondary region
 - [X] PDO-6136 Fix common integration tests
 - [X] PDO-6187 Increase wait time for backup alerts for PGO
