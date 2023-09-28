@@ -272,7 +272,7 @@ groups:
 
   - alert: PGArchiveCommandStatus
     expr: ccp_archive_command_status_seconds_since_last_fail > 300
-    for: 60s
+    for: 120s
     labels:
         service: postgresql
         severity: critical
@@ -378,7 +378,7 @@ groups:
 #
   - alert: PGBackrestAbsentFull_Prod
     expr: absent(ccp_backrest_last_full_backup_time_since_completion_seconds{cluster="pf-provisioning", role="master"})
-    for: 10s
+    for: 30s
     labels:
       service: postgresql
       severity: critical
