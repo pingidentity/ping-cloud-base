@@ -9,6 +9,7 @@ workflow:
 ## Pipeline stages ##
 stages:
 - compile
+- security
 - find-cluster
 - deploy
 - unit-test
@@ -222,7 +223,7 @@ p1-cleanup:
 
 # Security request to copy images into arfactory for scanning
 copy-images:
-  stage: deploy # this could move to another stage like compile
+  stage: security
   image: docker.corp.pingidentity.com:5800/docker-kustomize
   variables:
     BELUGA_VERSION: $CI_COMMIT_REF_NAME
@@ -234,3 +235,18 @@ copy-images:
     - platform-publish-docker
   only:
     - /^.*-release-branch$/
+
+scan:
+  stage: security
+  image: docker.corp.pingidentity.com:5800/docker-kustomize
+  variables:
+    BELUGA_VERSION: $CI_COMMIT_REF_NAME
+    ARTIFACTORY_URL: "docker.corp.pingidentity.com:5900/beluga-xray"
+    WARN_ON_ERROR: "true"
+  script: 
+    - curl -s https://raw.githubusercontent.com/kubescape/kubescape/master/install.sh | /bin/bash
+    - ./ci-scripts/security/scan.sh
+  tags:
+    - platform-publish-docker
+  # only:
+  #   - /^.*-release-branch$/
