@@ -4,4 +4,4 @@
 dsconfig set-backend-prop \
     --backend-name changelog \
     --set enabled:true \
-    --set "changelog-maximum-age:60s"
+    --set "changelog-maximum-age:1ms"
