@@ -73,6 +73,7 @@
 - Update csr-valdation.sh to create a single .yaml file per microservice, rather than directory
 - Metrics-Server : Refactoring with Third-Party Manifest Policy
 - Add PingOne ArgoCD groups integration tests
+- Kube-downscaler excluding grafana deployment from downscaling
 
 
 _Changes:_
