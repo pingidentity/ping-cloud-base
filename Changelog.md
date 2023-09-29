@@ -72,6 +72,8 @@
 - Fix common integration tests
 - Update csr-valdation.sh to create a single .yaml file per microservice, rather than directory
 - Kube-State-Metrics: Refactoring with Third-Party Manifest Policy
+- Metrics-Server : Refactoring with Third-Party Manifest Policy
+- Add PingOne ArgoCD groups integration tests
 
 _Changes:_
 
@@ -126,6 +128,7 @@ _Changes:_
 - [X] PDO-5549 Update kube-state-metrics cluster tool to v2.8.1 for EKS 1.26
 - [X] PDO-5558 Mirror our own version of newrelic images
 - [X] PDO-5571 Update nginx-ingress-controller to v1.6.4 to support EKS 1.26
+- [X] PDO-5594 PingOne configuration required for ArgoCD SSO authentication
 - [X] PDO-5601 os-dashboards-pf configMap breaks developer, and new ci/cd deploys
 - [X] PDO-5647 Handle SIGTERM properly in enrichment-bootstrap
 - [X] PDO-5654 Fluentbit Kubernetes filter is not adding metadata into some events
@@ -174,6 +177,7 @@ _Changes:_
 - [X] PDO-6008 Change Opensearch log to 'WARNING' level
 - [X] PDO-6061 Fix pingone-configurator pod crashing when missing ConfigMap ping-cloud/is-pingone
 - [X] PDO-6074 Kube-State-Metrics: Refactoring with Third-Party Manifest Policy
+- [X] PDO-6075 Metrics-Server : Refactoring with Third-Party Manifest Policy
 - [X] PDO-6077 Multiple issues with OpenSearch connect from secondary region
 - [X] PDO-6136 Fix common integration tests
 - [X] PDO-6187 Increase wait time for backup alerts for PGO

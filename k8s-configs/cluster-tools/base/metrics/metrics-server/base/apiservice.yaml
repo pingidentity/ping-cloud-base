@@ -2,8 +2,6 @@
 apiVersion: apiregistration.k8s.io/v1
 kind: APIService
 metadata:
-  labels:
-    k8s-app: metrics-server
   name: v1beta1.metrics.k8s.io
 spec:
   service:
