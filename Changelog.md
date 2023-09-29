@@ -73,6 +73,7 @@
 - Update csr-valdation.sh to create a single .yaml file per microservice, rather than directory
 - Metrics-Server : Refactoring with Third-Party Manifest Policy
 - Add PingOne ArgoCD groups integration tests
+- Defined the resource specifications for PGO pods
 
 
 _Changes:_
@@ -168,6 +169,7 @@ _Changes:_
 - [X] PDO-5880 Update Prometheus to v2.47.0
 - [X] PDO-5881 Update Alertmanager to v0.26
 - [X] PDO-5916 Set resource specifications for cert-manager pods
+- [X] PDO-5918 Define the resource specifications for PGO pods
 - [X] PDO-5923 Karpenter capacity and performance Grafana dashboard
 - [X] PDO-5924 Multi-Region CDE: opensearch-bootstrap job in a second region can't connect to OpenSearch
 - [X] PDO-5928 Configure PA-WAS in P1 for customer hub deployments

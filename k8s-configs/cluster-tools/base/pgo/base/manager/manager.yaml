@@ -51,4 +51,11 @@ spec:
           capabilities: { drop: [ALL] }
           readOnlyRootFilesystem: true
           runAsNonRoot: true
+        resources:
+          requests:
+            memory: "100Mi"
+            cpu: "10m"
+          limits:
+            memory: "150Mi"
+            cpu: "30m"
       serviceAccountName: pgo
