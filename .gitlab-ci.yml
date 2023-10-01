@@ -32,8 +32,8 @@ compile:
  image: ${K8S_DEPLOY_TOOLS}
  script:
    - ./ci-scripts/compile/compile.sh
-   - kustomize build /tmp/sandbox/fluxcd/prod/
-#   - kustomize build /tmp/sandbox/fluxcd/customer-hub > /tmp/chub.yaml
+   - kustomize build /tmp/sandbox/fluxcd/prod/ -o /tmp/prod.yaml
+   - kustomize build /tmp/sandbox/fluxcd/customer-hub/ -o /tmp/chub.yaml
  artifacts:
    paths:
      - /tmp/prod.yaml
