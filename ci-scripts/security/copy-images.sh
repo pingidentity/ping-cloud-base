@@ -19,7 +19,9 @@ SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 cat $ARTIFACTORY_REGISTRY_PW | docker_command login $ARTIFACTORY_URL -u $ARTIFACTORY_REGISTRY_USER --password-stdin
 
 deploy_file=/tmp/deploy.yaml
-build_dev_deploy_file "${deploy_file}"
+
+cat prod.yaml >> $deploy_file
+cat chub.yaml >> $deploy_file
 
 i=0
 for image in $(cat $deploy_file | grep "image:" | awk -F: 'BEGIN { OFS=":"} {print $2,$3}' | sort | uniq | tr '\n' ' '); do

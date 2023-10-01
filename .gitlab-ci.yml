@@ -232,6 +232,8 @@ p1-cleanup:
 copy-images:
   stage: security
   image: docker.corp.pingidentity.com:5100/platform-pipeline/p1as-security-tools:1.0.0
+  dependencies:
+    - compile
   variables:
     BELUGA_VERSION: $CI_COMMIT_REF_NAME
     ARTIFACTORY_URL: "docker.corp.pingidentity.com:5900/beluga-xray"
@@ -240,19 +242,40 @@ copy-images:
     - ./ci-scripts/security/copy-images.sh
   tags:
     - platform-publish-docker
-  only:
-    - /^.*-release-branch$/
+  # only:
+  #   - /^.*-release-branch$/
 
-scan:
+scan_prod:
   stage: security
   image: docker.corp.pingidentity.com:5100/platform-pipeline/p1as-security-tools:1.0.0
+  dependencies:
+    - compile
   variables:
     BELUGA_VERSION: $CI_COMMIT_REF_NAME
     ARTIFACTORY_URL: "docker.corp.pingidentity.com:5900/beluga-xray"
     WARN_ON_ERROR: "true"
-  script: 
+  before_script:
     - curl -s https://raw.githubusercontent.com/kubescape/kubescape/master/install.sh | /bin/bash
-    - ./ci-scripts/security/scan.sh
+  script: 
+    - kubescape scan prod.yaml
+  tags:
+    - platform-publish-docker
+  # only:
+  #   - /^.*-release-branch$/
+
+scan_chub:
+  stage: security
+  image: docker.corp.pingidentity.com:5100/platform-pipeline/p1as-security-tools:1.0.0
+  dependencies:
+    - compile
+  variables:
+    BELUGA_VERSION: $CI_COMMIT_REF_NAME
+    ARTIFACTORY_URL: "docker.corp.pingidentity.com:5900/beluga-xray"
+    WARN_ON_ERROR: "true"
+  before_script:
+    - curl -s https://raw.githubusercontent.com/kubescape/kubescape/master/install.sh | /bin/bash
+  script: 
+    - kubescape scan chub.yaml
   tags:
     - platform-publish-docker
   # only:
