@@ -10,17 +10,22 @@
 SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 . ${SCRIPT_HOME}/../common.sh "${1}"
 
-SCRIPTS=$(find ${SCRIPT_HOME} -type f -name '*-kustomizations.sh')
-STATUS=0
 
-for SCRIPT in ${SCRIPTS}; do
-  log "Running script ${SCRIPT}"
-  ${SCRIPT} "${1}"
+# create output file for security scans
+deploy_file=$CI_PROJECT_DIR/deploy.yaml
+build_dev_deploy_file $deploy_file
 
-  RESULT=${?}
-  log "Result of script ${SCRIPT}: ${RESULT}"
+# SCRIPTS=$(find ${SCRIPT_HOME} -type f -name '*-kustomizations.sh')
+# STATUS=0
 
-  test ${STATUS} -eq 0 && STATUS=${RESULT}
-done
+# for SCRIPT in ${SCRIPTS}; do
+#   log "Running script ${SCRIPT}"
+#   ${SCRIPT} "${1}"
 
-exit ${STATUS}
+#   RESULT=${?}
+#   log "Result of script ${SCRIPT}: ${RESULT}"
+
+#   test ${STATUS} -eq 0 && STATUS=${RESULT}
+# done
+
+# exit ${STATUS}

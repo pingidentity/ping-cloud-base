@@ -10,21 +10,16 @@ function docker_command() {
   HOME=/tmp docker "${@:1}"
 }
 
-# Source common environment variables
-SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
-. ${SCRIPT_HOME}/../common.sh
-
 # login first so we can error immediately if this isn't going to work
 # may also need to login to ECR or other repos that we need to pull images from before pushing
 cat $ARTIFACTORY_REGISTRY_PW | docker_command login $ARTIFACTORY_URL -u $ARTIFACTORY_REGISTRY_USER --password-stdin
 
-deploy_file=/tmp/deploy.yaml
+deploy_file=$CI_PROJECT_DIR/deploy.yaml
 
-cat prod.yaml >> $deploy_file
-cat chub.yaml >> $deploy_file
-
+images=$(cat $deploy_file | grep "image:" | awk -F: 'BEGIN { OFS=":"} {print $2,$3}' | sort | uniq | tr '\n' ' ')
+echo $images
 i=0
-for image in $(cat $deploy_file | grep "image:" | awk -F: 'BEGIN { OFS=":"} {print $2,$3}' | sort | uniq | tr '\n' ' '); do
+for image in $images; do
   name=""
   
   if [[ "$image" =~ ^public.ecr.aws ]]; then

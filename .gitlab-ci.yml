@@ -32,12 +32,9 @@ compile:
  image: ${K8S_DEPLOY_TOOLS}
  script:
    - ./ci-scripts/compile/compile.sh
-   - kustomize build /tmp/sandbox/fluxcd/prod/ -o $CI_PROJECT_DIR/prod.yaml
-   - kustomize build /tmp/sandbox/fluxcd/customer-hub/ -o $CI_PROJECT_DIR/chub.yaml
  artifacts:
    paths:
-     - prod.yaml
-     - chub.yaml
+     - deploy.yaml
    expire_in: 1 day
 
 ## Find cluster stage ##
