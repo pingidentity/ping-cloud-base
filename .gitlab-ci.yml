@@ -32,10 +32,12 @@ compile:
  image: ${K8S_DEPLOY_TOOLS}
  script:
    - ./ci-scripts/compile/compile.sh
-   - ls -latr /tmp/sandbox/fluxcd/prod
+   - kustomize build /tmp/sandbox/fluxcd/prod > /tmp/prod.yaml
+   - kustomize build /tmp/sandbox/fluxcd/customer-hub > /tmp/chub.yaml
  artifacts:
    paths:
-     - /tmp/sandbox/fluxcd/prod
+     - /tmp/prod.yaml
+     - /tmp/chub.yaml
 
 ## Find cluster stage ##
 find-cluster:
