@@ -253,31 +253,11 @@ scan_prod:
     WARN_ON_ERROR: "true"
     GIT_STRATEGY: none
   script: 
-    - kubescape scan framework all prod.yaml | tee prod_scan.out
+    - kubescape scan framework all deploy.yaml | tee scan.out
   tags:
     - platform-publish-docker
   artifacts:
     paths:
-    - prod_scan.out
-  # only:
-  #   - /^.*-release-branch$/
-
-scan_chub:
-  stage: security
-  image: docker.corp.pingidentity.com:5100/platform-pipeline/p1as-security-tools:1.0.1
-  dependencies:
-    - compile
-  variables:
-    BELUGA_VERSION: $CI_COMMIT_REF_NAME
-    ARTIFACTORY_URL: "docker.corp.pingidentity.com:5900/beluga-xray"
-    WARN_ON_ERROR: "true"
-    GIT_STRATEGY: none
-  script: 
-    - kubescape scan framework all chub.yaml | tee chub_scan.out
-  tags:
-    - platform-publish-docker
-  artifacts:
-    paths:
-    - chub_scan.out
+    - scan.out
   # only:
   #   - /^.*-release-branch$/
