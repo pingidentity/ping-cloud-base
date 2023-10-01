@@ -234,7 +234,7 @@ copy-images:
   variables:
     BELUGA_VERSION: $CI_COMMIT_REF_NAME
     ARTIFACTORY_URL: "docker.corp.pingidentity.com:5900/beluga-xray"
-    WARN_ON_ERROR: "true"
+  allow_failure: true
   script: 
     - ./ci-scripts/security/copy-images.sh
   tags:
@@ -242,7 +242,7 @@ copy-images:
   # only:
   #   - /^.*-release-branch$/
 
-scan_prod:
+scan:
   stage: security
   image: docker.corp.pingidentity.com:5100/platform-pipeline/p1as-security-tools:1.0.1
   dependencies:
@@ -250,8 +250,8 @@ scan_prod:
   variables:
     BELUGA_VERSION: $CI_COMMIT_REF_NAME
     ARTIFACTORY_URL: "docker.corp.pingidentity.com:5900/beluga-xray"
-    WARN_ON_ERROR: "true"
     GIT_STRATEGY: none
+  allow_failure: true
   script: 
     - kubescape scan framework all deploy.yaml | tee scan.out
   tags:
