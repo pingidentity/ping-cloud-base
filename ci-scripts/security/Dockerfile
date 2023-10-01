@@ -1,4 +1,8 @@
-FROM docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:2.5.0
+FROM docker:24-cli
 
-RUN curl -fsSL https://get.docker.com -o get-docker.sh && \
-  sh ./get-docker.sh
+RUN apk add curl bash && \
+  curl -O "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" && \
+  chmod +x ./install_kustomize.sh && \
+  ./install_kustomize.sh 3.8.1 && \
+  mv kustomize /usr/local/bin/ && \
+  chmod u+x /usr/local/bin/kustomize
