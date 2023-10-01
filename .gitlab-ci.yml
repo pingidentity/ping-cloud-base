@@ -38,7 +38,7 @@ compile:
    paths:
      - prod.yaml
      - chub.yaml
-  expire_in: 1 day
+   expire_in: 1 day
 
 ## Find cluster stage ##
 find-cluster:
