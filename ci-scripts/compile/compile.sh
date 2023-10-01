@@ -15,17 +15,17 @@ SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 deploy_file=$CI_PROJECT_DIR/deploy.yaml
 build_dev_deploy_file $deploy_file
 
-# SCRIPTS=$(find ${SCRIPT_HOME} -type f -name '*-kustomizations.sh')
-# STATUS=0
+SCRIPTS=$(find ${SCRIPT_HOME} -type f -name '*-kustomizations.sh')
+STATUS=0
 
-# for SCRIPT in ${SCRIPTS}; do
-#   log "Running script ${SCRIPT}"
-#   ${SCRIPT} "${1}"
+for SCRIPT in ${SCRIPTS}; do
+  log "Running script ${SCRIPT}"
+  ${SCRIPT} "${1}"
 
-#   RESULT=${?}
-#   log "Result of script ${SCRIPT}: ${RESULT}"
+  RESULT=${?}
+  log "Result of script ${SCRIPT}: ${RESULT}"
 
-#   test ${STATUS} -eq 0 && STATUS=${RESULT}
-# done
+  test ${STATUS} -eq 0 && STATUS=${RESULT}
+done
 
-# exit ${STATUS}
+exit ${STATUS}

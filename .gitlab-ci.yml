@@ -239,8 +239,8 @@ copy-images:
     - ./ci-scripts/security/copy-images.sh
   tags:
     - platform-publish-docker
-  # only:
-  #   - /^.*-release-branch$/
+  only:
+    - /^.*-release-branch$/
 
 scan:
   stage: security
@@ -259,5 +259,5 @@ scan:
   artifacts:
     paths:
     - scan.out
-  # only:
-  #   - /^.*-release-branch$/
+  only:
+    - /^.*-release-branch$/
