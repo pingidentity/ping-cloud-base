@@ -231,7 +231,7 @@ p1-cleanup:
 # Security request to copy images into arfactory for scanning
 copy-images:
   stage: security
-  image: docker.corp.pingidentity.com:5100/platform-pipeline/p1as-security-tools:1.0.0
+  image: docker.corp.pingidentity.com:5100/platform-pipeline/p1as-security-tools:1.0.1
   dependencies:
     - compile
   variables:
@@ -247,15 +247,13 @@ copy-images:
 
 scan_prod:
   stage: security
-  image: docker.corp.pingidentity.com:5100/platform-pipeline/p1as-security-tools:1.0.0
+  image: docker.corp.pingidentity.com:5100/platform-pipeline/p1as-security-tools:1.0.1
   dependencies:
     - compile
   variables:
     BELUGA_VERSION: $CI_COMMIT_REF_NAME
     ARTIFACTORY_URL: "docker.corp.pingidentity.com:5900/beluga-xray"
     WARN_ON_ERROR: "true"
-  before_script:
-    - curl -s https://raw.githubusercontent.com/kubescape/kubescape/master/install.sh | /bin/bash
   script: 
     - kubescape scan prod.yaml
   tags:
@@ -265,15 +263,13 @@ scan_prod:
 
 scan_chub:
   stage: security
-  image: docker.corp.pingidentity.com:5100/platform-pipeline/p1as-security-tools:1.0.0
+  image: docker.corp.pingidentity.com:5100/platform-pipeline/p1as-security-tools:1.0.1
   dependencies:
     - compile
   variables:
     BELUGA_VERSION: $CI_COMMIT_REF_NAME
     ARTIFACTORY_URL: "docker.corp.pingidentity.com:5900/beluga-xray"
     WARN_ON_ERROR: "true"
-  before_script:
-    - curl -s https://raw.githubusercontent.com/kubescape/kubescape/master/install.sh | /bin/bash
   script: 
     - kubescape scan chub.yaml
   tags:
