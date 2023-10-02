@@ -47,7 +47,7 @@ find-cluster:
     - ./ci-scripts/deploy/find_cluster.sh
   artifacts:
     reports:
-       dotenv: cluster.env
+      dotenv: cluster.env
 
 ## Deploy stage ##
 deploy:
@@ -248,8 +248,6 @@ scan:
   dependencies:
     - compile
   variables:
-    BELUGA_VERSION: $CI_COMMIT_REF_NAME
-    ARTIFACTORY_URL: "docker.corp.pingidentity.com:5900/beluga-xray"
     GIT_STRATEGY: none
   allow_failure: true
   script: 
