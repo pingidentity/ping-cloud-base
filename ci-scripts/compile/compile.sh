@@ -11,10 +11,6 @@ SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
 . ${SCRIPT_HOME}/../common.sh "${1}"
 
 
-# create output file for security scans
-deploy_file=$CI_PROJECT_DIR/deploy.yaml
-build_dev_deploy_file $deploy_file
-
 SCRIPTS=$(find ${SCRIPT_HOME} -type f -name '*-kustomizations.sh')
 STATUS=0
 

@@ -1,6 +1,9 @@
 #!/bin/bash
 
-SCRIPT_HOME=$(cd $(dirname ${0}); pwd)
+SCRIPT_HOME=$(
+    cd $(dirname ${0})
+    pwd
+)
 . ${SCRIPT_HOME}/../common.sh "${1}"
 
 STATUS=0
@@ -27,8 +30,15 @@ test ${STATUS} -eq 0 && STATUS=${BUILD_RESULT}
 # Root kustomization.yaml file
 log "Building root ${PROJECT_DIR} kustomization.yaml"
 
+if [[ $YAML_OUT_DIR != "" ]]; then
+    mkdir -p $YAML_OUT_DIR
+    out_file="$YAML_OUT_DIR/${PROJECT_DIR//\//_}.yaml"
+else
+    out_file=/dev/null
+fi
+
 set_kustomize_load_arg_and_value
-kustomize build "${build_load_arg}" "${build_load_arg_value}" "${PROJECT_DIR}" 1> /dev/null
+kustomize build "${build_load_arg}" "${build_load_arg_value}" "${PROJECT_DIR}" 1>$out_file
 BUILD_RESULT=${?}
 test ${STATUS} -eq 0 && STATUS=${BUILD_RESULT}
 

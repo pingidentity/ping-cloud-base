@@ -30,11 +30,15 @@ compile:
  tags:
    - default-gitlab-runner
  image: ${K8S_DEPLOY_TOOLS}
+ variables:
+   YAML_OUT_DIR=$CI_PROJECT_DIR/out/
+ before_script:
+   - mkdir -p $YAML_OUT_DIR
  script:
    - ./ci-scripts/compile/compile.sh
  artifacts:
    paths:
-     - deploy.yaml
+     - out/
    expire_in: 1 day
 
 ## Find cluster stage ##
@@ -234,13 +238,14 @@ copy-images:
   variables:
     BELUGA_VERSION: $CI_COMMIT_REF_NAME
     ARTIFACTORY_URL: "docker.corp.pingidentity.com:5900/beluga-xray"
+    YAML_OUT_DIR: $CI_PROJECT_DIR/out/
   allow_failure: true
   script: 
     - ./ci-scripts/security/copy-images.sh
   tags:
     - platform-publish-docker
-  only:
-    - /^.*-release-branch$/
+  # only:
+  #   - /^.*-release-branch$/
 
 scan:
   stage: security

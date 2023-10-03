@@ -303,9 +303,16 @@ build_kustomizations_in_dir() {
       continue
     fi
 
+     if [[ $YAML_OUT_DIR != "" ]]; then
+      mkdir -p $YAML_OUT_DIR
+      out_file="$YAML_OUT_DIR/${KUSTOMIZATION_DIR//\//_}.yaml"
+    else
+      out_file=/dev/null
+    fi
+
     log "Processing kustomization.yaml in ${KUSTOMIZATION_DIR}"
     set_kustomize_load_arg_and_value
-    kustomize build "${build_load_arg}" "${build_load_arg_value}" "${KUSTOMIZATION_DIR}" 1> /dev/null
+    kustomize build "${build_load_arg}" "${build_load_arg_value}" "${KUSTOMIZATION_DIR}" 1> $out_file
     BUILD_RESULT=${?}
     log "Build result for directory ${KUSTOMIZATION_DIR}: ${BUILD_RESULT}"
 
@@ -369,11 +376,18 @@ build_cluster_state_code() {
     CDE="$(basename "${DIR_NAME}")"
     REGION="$(ls "${DIR_NAME}" | grep -v 'base')"
 
+    if [[ $YAML_OUT_DIR != "" ]]; then
+      mkdir -p $YAML_OUT_DIR
+      out_file="$YAML_OUT_DIR/${BASE_DIR//\//_}.yaml"
+    else
+      out_file=/dev/null
+    fi
+
     log "Processing manifests for region '${REGION}' and CDE '${CDE}'"
     cd "${BASE_DIR}"/..
 
     cp "${GIT_OPS_CMD}" .
-    ./"${GIT_OPS_CMD_NAME}" "${REGION}" > /dev/null
+    ./"${GIT_OPS_CMD_NAME}" "${REGION}" > $out_file
     BUILD_RESULT=$?
     log "Build result for manifests for region '${REGION}' and CDE '${CDE}': ${BUILD_RESULT}"
 
