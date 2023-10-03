@@ -78,13 +78,13 @@ patchesStrategicMerge:
         spec:
           containers:
           - name: argocd-applicationset-controller
-              resources:
-                requests:
-                  memory: "50Mi"
-                  cpu: "20m"
-                limits:
-                  memory: "100Mi"
-                  cpu: "40m"
+            resources:
+              requests:
+                memory: "50Mi"
+                cpu: "20m"
+              limits:
+                memory: "100Mi"
+                cpu: "40m"
 
   - |-
     apiVersion: apps/v1
@@ -132,13 +132,13 @@ patchesStrategicMerge:
         spec:
           containers:
           - name: argocd-notifications-controller
-              resources:
-                requests:
-                  memory: "50Mi"
-                  cpu: "10m"
-                limits:
-                  memory: "100Mi"
-                  cpu: "30m"
+            resources:
+              requests:
+                memory: "50Mi"
+                cpu: "10m"
+              limits:
+                memory: "100Mi"
+                cpu: "30m"
 
   - |-
     apiVersion: apps/v1
