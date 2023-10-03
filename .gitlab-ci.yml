@@ -56,6 +56,8 @@ copy-images:
     ARTIFACTORY_URL: "docker.corp.pingidentity.com:5900/beluga-xray"
     YAML_OUT_DIR: $CI_PROJECT_DIR/out/
   allow_failure: true
+  before_script:
+    - aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
   script:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/security/copy-images.sh
   tags:
