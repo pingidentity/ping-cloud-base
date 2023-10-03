@@ -72,6 +72,193 @@ patchesStrategicMerge:
     apiVersion: apps/v1
     kind: Deployment
     metadata:
+      name: argocd-applicationset-controller
+    spec:
+      template:
+        spec:
+          containers:
+          - name: argocd-applicationset-controller
+              resources:
+                requests:
+                  memory: "50Mi"
+                  cpu: "20m"
+                limits:
+                  memory: "100Mi"
+                  cpu: "40m"
+
+  - |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-dex-server
+    spec:
+      template:
+        spec:
+          containers:
+          - name: dex
+            resources:
+              requests:
+                memory: "50Mi"
+                cpu: "10m"
+              limits:
+                memory: "100Mi"
+                cpu: "30m"
+
+  - |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-image-updater
+    spec:
+      template:
+        spec:
+          containers:
+          - name: argocd-image-updater
+            resources:
+              requests:
+                memory: "40Mi"
+                cpu: "10m"
+              limits:
+                memory: "80Mi"
+                cpu: "30m"
+
+  - |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-notifications-controller
+    spec:
+      template:
+        spec:
+          containers:
+          - name: argocd-notifications-controller
+              resources:
+                requests:
+                  memory: "50Mi"
+                  cpu: "10m"
+                limits:
+                  memory: "100Mi"
+                  cpu: "30m"
+
+  - |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-redis
+    spec:
+      template:
+        spec:
+          containers:
+          - name: redis
+            resources:
+              requests:
+                memory: "50Mi"
+                cpu: "10m"
+              limits:
+                memory: "100Mi"
+                cpu: "30m"
+
+  - |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-repo-server
+    spec:
+      template:
+        spec:
+          containers:
+          - name: argocd-repo-server
+            resources:
+              requests:
+                memory: "100Mi"
+                cpu: "30m"
+              limits:
+                memory: "200Mi"
+                cpu: "50m"
+
+  - |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-server
+    spec:
+      template:
+        spec:
+          containers:
+          - name: argocd-server
+            resources:
+              requests:
+                memory: "50Mi"
+                cpu: "20m"
+              limits:
+                memory: "100Mi"
+                cpu: "50m"
+
+  - |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-notifications-controller
+    spec:
+      template:
+        spec:
+          containers:
+          - name: argocd-notifications-controller
+            resources:
+              requests:
+                memory: "800Mi"
+                cpu: "800m"
+              limits:
+                memory: "1000Mi"
+                cpu: "1000m"
+
+  - |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: controller-manager
+    spec:
+      template:
+        spec:
+          containers:
+          - name: controller-manager
+            resources:
+              requests:
+                memory: "50Mi"
+                cpu: "10m"
+              limits:
+                memory: "100Mi"
+                cpu: "30m"
+
+  - |-
+    apiVersion: argoproj.io/v1alpha1
+    kind: EventBus
+    metadata:
+      name: default
+    spec:
+      nats:
+        native:
+          containerTemplate:
+            resources:
+              requests:
+                memory: "50Mi"
+                cpu: "10m"
+              limits:
+                memory: "100Mi"
+                cpu: "30m"
+          metricsContainerTemplate:
+            resources:
+              requests:
+                memory: "50Mi"
+                cpu: "10m"
+              limits:
+                memory: "100Mi"
+                cpu: "30m"
+
+  - |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
       name: argocd-dex-server
     spec:
       template:

@@ -75,6 +75,7 @@
 - Metrics-Server : Refactoring with Third-Party Manifest Policy
 - Add PingOne ArgoCD groups integration tests
 - Kube-downscaler excluding grafana deployment from downscaling
+- Defined the resource specifications for ArgoCD pods
 
 _Changes:_
 
@@ -169,6 +170,7 @@ _Changes:_
 - [X] PDO-5880 Update Prometheus to v2.47.0
 - [X] PDO-5881 Update Alertmanager to v0.26
 - [X] PDO-5916 Set resource specifications for cert-manager pods
+- [X] PDO-5917 Define the resource specifications for ArgoCD pods
 - [X] PDO-5923 Karpenter capacity and performance Grafana dashboard
 - [X] PDO-5924 Multi-Region CDE: opensearch-bootstrap job in a second region can't connect to OpenSearch
 - [X] PDO-5928 Configure PA-WAS in P1 for customer hub deployments
