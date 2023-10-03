@@ -25,11 +25,13 @@ i=0
 for image in $images; do
   name=""
 
+  # Detect images that are published in public AWS ECR
   if [[ "$image" =~ ^public.ecr.aws ]]; then
     name=$(echo "$image" | awk -F\/ 'BEGIN {OFS="/"}{for(i=3;i<=NF;i++) {printf $i"/"}}' | rev | cut -c2- | rev) # remove trailing / and space from string
+  # Detect external images with a domain  
   elif [[ "$image" =~ ^([a-zA-Z]*(.[a-zA-Z]+)+)/ ]]; then
     name=$(echo "$image" | awk -F\/ 'BEGIN {OFS="/"}{for(i=2;i<=NF;i++) {printf $i"/"}}' | rev | cut -c2- | rev) # remove trailing / and space from string
-  else                                                                                                           # dockerhub images without domain
+  else # From dockerhub
     name="$image"
   fi
 
@@ -58,7 +60,7 @@ done
 if [[ "${#errors[@]}" -ne 0 ]]; then
   echo "Error when trying to copy the following: "
   for i in "${errors[@]}"; do
-    echo "$image"
+    echo "$i"
   done
   exit 1
 fi
