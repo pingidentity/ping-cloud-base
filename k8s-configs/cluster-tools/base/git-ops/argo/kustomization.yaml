@@ -231,31 +231,6 @@ patchesStrategicMerge:
                 cpu: "30m"
 
   - |-
-    apiVersion: argoproj.io/v1alpha1
-    kind: EventBus
-    metadata:
-      name: default
-    spec:
-      nats:
-        native:
-          containerTemplate:
-            resources:
-              requests:
-                memory: "50Mi"
-                cpu: "10m"
-              limits:
-                memory: "100Mi"
-                cpu: "30m"
-          metricsContainerTemplate:
-            resources:
-              requests:
-                memory: "50Mi"
-                cpu: "10m"
-              limits:
-                memory: "100Mi"
-                cpu: "30m"
-
-  - |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
