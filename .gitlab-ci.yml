@@ -57,7 +57,7 @@ copy-images:
     YAML_OUT_DIR: $CI_PROJECT_DIR/out/
   allow_failure: true
   script:
-    - ./ci-scripts/security/copy-images.sh
+    - ./security/copy-images.sh
   tags:
     - platform-publish-docker
   # only:
