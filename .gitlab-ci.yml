@@ -31,7 +31,7 @@ compile:
    - default-gitlab-runner
  image: ${K8S_DEPLOY_TOOLS}
  variables:
-   YAML_OUT_DIR=$CI_PROJECT_DIR/out/
+   YAML_OUT_DIR: $CI_PROJECT_DIR/out/
  before_script:
    - mkdir -p $YAML_OUT_DIR
  script:
