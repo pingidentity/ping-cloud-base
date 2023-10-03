@@ -57,7 +57,7 @@ copy-images:
     YAML_OUT_DIR: $CI_PROJECT_DIR/out/
   allow_failure: true
   script:
-    - ./security/copy-images.sh
+    - ${SHARED_CI_SCRIPTS_DIR}/k8s/security/copy-images.sh
   tags:
     - platform-publish-docker
   # only:
