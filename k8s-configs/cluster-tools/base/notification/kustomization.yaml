@@ -43,11 +43,11 @@ patchesStrategicMerge:
         container:
           resources:
             requests:
-              cpu: 10m
-              memory: 50Mi
+              cpu: "10m"
+              memory: "50Mi"
             limits:
-              cpu: 30m
-              memory: 100Mi
+              cpu: "30m"
+              memory: "100Mi"
 
   - |-
     apiVersion: argoproj.io/v1alpha1
@@ -59,8 +59,26 @@ patchesStrategicMerge:
         container:
           resources:
             requests:
-              cpu: 10m
-              memory: 50Mi
+              cpu: "10m"
+              memory: "50Mi"
             limits:
-              cpu: 30m
-              memory: 100Mi
+              cpu: "30m"
+              memory: "100Mi"
+
+  - |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: controller-manager
+    spec:
+      template:
+        spec:
+          containers:
+          - name: controller-manager
+            resources:
+              requests:
+                memory: "50Mi"
+                cpu: "10m"
+              limits:
+                memory: "100Mi"
+                cpu: "30m"
