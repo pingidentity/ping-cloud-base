@@ -59,10 +59,10 @@ groups:
       description: "An incoming Logstash pipeline {{ $labels.pipeline }} is dead. Possible some inputs stuck.\nCheck fluent-bit logs.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
   - alert: Logstash pods count 0
-    expr: sum(logstash_node_up) == 0 or absent(logstash_node_up) == 1
+    expr: group by (k8s_cluster_name) (present_over_time(logstash_node_up[3h])) unless group by (k8s_cluster_name) (logstash_node_up) > 0
     for: 10m
     labels:
       severity: critical
     annotations:
-      summary: Running logstash pods is count 0
-      description: "Running logstash pods is 0. Looks like they're died or didn't return any metrics.\nCheck logstash pods"
+      summary: No available logstash in cluster {{ $labels.k8s_cluster_name }}
+      description: "Running logstash pods is 0 in cluster {{ $labels.k8s_cluster_name }}. Looks like they're died or didn't return any metrics.\n Check logstash pods"

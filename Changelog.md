@@ -106,6 +106,7 @@
 - Reset 'cn=replication' server ID entry within PingDirectory on startup
 - Initialize Replication on New PingDirectory Child Non-Seed Servers
 - Avoid pending stating by prioritizing PingDirectory pods and its backup / restore Job using k8s pod PriorityClass
+- Improve logstash alerting in multi-regional cluster
 
 _Changes:_
 
@@ -242,6 +243,7 @@ _Changes:_
 - [X] PDO-6015 Remove docker logs from fluent-bit
 - [X] PDO-6021 Initialize Replication on New PingDirectory Child Non-Seed Servers
 - [X] PDO-6159 Avoid pending stating by prioritizing PingDirectory pods and its backup / restore Job using k8s pod PriorityClass
+- [X] PDO-6235 Improve logstash alerting in multi-regional cluster
 
 ### 1.17.0.0
 
