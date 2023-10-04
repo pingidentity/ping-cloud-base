@@ -5,7 +5,7 @@ groups:
 - name: elastic-stack-logging
   rules:
   - alert: FluentBit dropping records
-    expr: sum(increase(fluentbit_output_dropped_records_total[1m])) by (name) > 10
+    expr: sum(increase(fluentbit_output_dropped_records_total[1m])) by (name, k8s_cluster_name) > 10
     for: 10m
     labels:
       severity: critical
@@ -14,7 +14,7 @@ groups:
       description: "A FluentBit outputs dropping records. Possible {{ $labels.name }} output is down.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
   - alert: FluentBit retries is growing
-    expr: sum(increase(fluentbit_output_retries_total[1m])) by (name) > 50
+    expr: sum(increase(fluentbit_output_retries_total[1m])) by (name, k8s_cluster_name) > 50
     for: 10m
     labels:
       severity: critical
@@ -41,7 +41,7 @@ groups:
       description: "This alert is triggered when the length of the Logstash event queue for {{ $labels.pipeline }} on {{ $labels.instance }} exceeds a certain threshold.\nInvestigate the cause of the backlog for the specified pipeline on the specified instance.\nPossible reason is logstash or Elasticsearch performance issue.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
   - alert: Logstash has no outgoing events
-    expr: sum(increase(logstash_node_pipeline_events_out_total{pipeline!="alerts"}[1m])) by (pipeline) == 0
+    expr: sum(increase(logstash_node_pipeline_events_out_total{pipeline!="alerts"}[1m])) by (pipeline, k8s_cluster_name) == 0
     for: 10m
     labels:
       severity: critical
@@ -50,7 +50,7 @@ groups:
       description: "An outgoing Logstash pipeline {{ $labels.pipeline }} is dead. Possible no outgoing events.\nCheck logs destination availability.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
 
   - alert: Logstash has no incoming events
-    expr: sum(increase(logstash_node_pipeline_events_in_total{pipeline!="alerts"}[1m])) by (pipeline) == 0
+    expr: sum(increase(logstash_node_pipeline_events_in_total{pipeline!="alerts"}[1m])) by (pipeline, k8s_cluster_name) == 0
     for: 10m
     labels:
       severity: critical
