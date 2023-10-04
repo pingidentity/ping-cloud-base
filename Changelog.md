@@ -187,7 +187,6 @@ _Changes:_
 - [X] PDO-6166 Add PingFederate periodic backup limits
 - [X] PDO-6187 Increase wait time for backup alerts for PGO
 
-
 ### 1.18.0.0
 
 - Enable users to download or upload user reports in Delegated Admin
