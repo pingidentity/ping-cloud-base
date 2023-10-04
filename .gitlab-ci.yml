@@ -63,8 +63,8 @@ copy-images:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/security/copy-images.sh
   tags:
     - platform-publish-docker
-  # only:
-  #   - /^.*-release-branch$/
+  only:
+    - /^.*-release-branch$/
 
 scan:
   stage: security
@@ -82,8 +82,9 @@ scan:
   artifacts:
     paths:
     - scan.out
-  # only:
-  #   - /^.*-release-branch$/
+    expire_in: 1 year
+  only:
+    - /^.*-release-branch$/
 ## end security stage ##
 
 ## Find cluster stage ##
