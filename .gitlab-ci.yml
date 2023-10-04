@@ -53,7 +53,8 @@ copy-images:
   #   - compile
   variables:
     BELUGA_VERSION: $CI_COMMIT_REF_NAME
-    ARTIFACTORY_URL: "docker.corp.pingidentity.com:5900/beluga-xray"
+    ARTIFACTORY_URL: "docker.corp.pingidentity.com:5900"
+    ARTIFACTORY_PATH: "beluga-xray"
     UBER_YAML: $CI_PROJECT_DIR/test/out/_builds_ping-cloud-private-tenant_ping-cloud-base.yaml
   allow_failure: true
   before_script:
