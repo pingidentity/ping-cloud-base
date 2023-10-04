@@ -58,6 +58,7 @@ copy-images:
     UBER_YAML: $CI_PROJECT_DIR/test/out/_builds_ping-cloud-private-tenant_ping-cloud-base.yaml
   allow_failure: true
   before_script:
+    - env
     - aws sts get-caller-identity
     - aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | HOME=/tmp docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
   script:
