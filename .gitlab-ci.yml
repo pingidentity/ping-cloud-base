@@ -76,7 +76,7 @@ scan:
     UBER_YAML: $CI_PROJECT_DIR/out/_builds_ping-cloud-private-tenant_ping-cloud-base.yaml
   allow_failure: true
   script:
-    - kubescape scan framework all $UBER_YAML | tee scan.out
+    - kubescape scan --format json --format-version v2 --verbose framework all $UBER_YAML | tee scan_out.json
   tags:
     - platform-publish-docker
   artifacts:
