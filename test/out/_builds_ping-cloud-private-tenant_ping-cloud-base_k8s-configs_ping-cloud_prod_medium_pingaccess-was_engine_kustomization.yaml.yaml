@@ -1,0 +1,430 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingaccess-was
+  namespace: ping-cloud
+spec:
+  ports:
+  - name: pingaccess-was-engine
+    port: 443
+    targetPort: 3000
+  selector:
+    app: ping-cloud
+    role: pingaccess-was-engine
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: ping-cloud
+    cluster: pingaccess-was-cluster
+    role: pingaccess-was-engine
+  name: pingaccess-was
+  namespace: ping-cloud
+spec:
+  podManagementPolicy: OrderedReady
+  selector:
+    matchLabels:
+      app: ping-cloud
+      role: pingaccess-was-engine
+  serviceName: pingaccess-was
+  template:
+    metadata:
+      annotations:
+        lastUpdateReason: NA
+      labels:
+        app: ping-cloud
+        cluster: pingaccess-was-cluster
+        pod-reaper: enabled
+        role: pingaccess-was-engine
+      name: pingaccess-was-engine
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: role
+                  operator: In
+                  values:
+                  - pingaccess-was-engine
+              topologyKey: topology.kubernetes.io/zone
+            weight: 1
+      containers:
+      - env:
+        - name: OPERATIONAL_MODE
+          value: CLUSTERED_ENGINE
+        - name: PA_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: PA_ADMIN_USER_PASSWORD
+              name: pingaccess-was-passwords
+        - name: NEW_RELIC_CONFIG_FILE
+          value: /opt/shared-dir/newrelic.yml
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
+        envFrom:
+        - configMapRef:
+            name: pingaccess-was-environment-variables
+        - secretRef:
+            name: newrelic-license-key
+            optional: true
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess-was/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - /opt/staging/hooks/86-pre-stop.sh
+        livenessProbe:
+          exec:
+            command:
+            - /opt/staging/hooks/99-pa-was-engine-liveness.sh
+          failureThreshold: 3
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 5
+        name: pingaccess-was
+        ports:
+        - containerPort: 3000
+        readinessProbe:
+          exec:
+            command:
+            - /opt/staging/hooks/99-pa-was-engine-liveness.sh
+          failureThreshold: 3
+          initialDelaySeconds: 60
+          periodSeconds: 5
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 2
+            memory: 3Gi
+          requests:
+            cpu: 2
+            memory: 3Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /home/ping/.ssh
+          name: ssh-dir
+        - mountPath: /opt/shared-dir
+          name: shared-dir
+        - mountPath: /opt/staging/topology/descriptor.json
+          name: topology-descriptor
+          subPath: descriptor.json
+        - mountPath: /usr/local/bin/kubectl
+          name: data-dir
+          subPath: kubectl
+        - mountPath: /opt/staging/hooks/logger.lib.sh
+          name: data-dir
+          subPath: logger.lib.sh
+        - mountPath: /opt/staging/newrelic.jar
+          name: data-dir
+          subPath: newrelic.jar
+        - mountPath: /opt/in/instance/conf/pingaccess.lic
+          name: pingaccess-was-license
+          subPath: pingaccess.lic
+        - mountPath: /opt/staging/ds_env_vars
+          name: data-dir
+          subPath: ds_env_vars
+      initContainers:
+      - command:
+        - /wait-for-services.sh
+        env:
+        - name: WAIT_FOR_SERVICES
+          value: pingaccess-was-admin
+        envFrom:
+        - configMapRef:
+            name: pingaccess-was-environment-variables
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/busybox:1.32
+        imagePullPolicy: IfNotPresent
+        name: wait-for-services
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /utils.lib.sh
+          name: pingaccess-was-init
+          subPath: utils.lib.sh
+        - mountPath: /logger.lib.sh
+          name: pingaccess-was-init
+          subPath: logger.lib.sh
+        - mountPath: /wait-for-services.sh
+          name: pingaccess-was-init
+          subPath: wait-for-services.sh
+      - command:
+        - /get_ssm_env_vars.sh
+        envFrom:
+        - configMapRef:
+            name: pingaccess-was-environment-variables
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-cli:2.0.17
+        imagePullPolicy: IfNotPresent
+        name: pingaccess-was-discovery-service
+        volumeMounts:
+        - mountPath: /config
+          name: data-dir
+        - mountPath: /get_ssm_env_vars.sh
+          name: discovery-service
+          subPath: get_ssm_env_vars.sh
+      - command:
+        - /copy-dependencies.sh
+        envFrom:
+        - configMapRef:
+            name: pingaccess-was-environment-variables
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.15.0
+        imagePullPolicy: IfNotPresent
+        name: pingaccess-was-init
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /.ssh
+          name: ssh-dir
+        - mountPath: /data
+          name: data-dir
+        - mountPath: /id_rsa
+          name: ssh-id-key-secret
+          subPath: id_rsa
+        - mountPath: /known_hosts
+          name: known-hosts-config
+          subPath: known_hosts
+        - mountPath: /copy-dependencies.sh
+          name: pingaccess-was-init
+          subPath: copy-dependencies.sh
+        - mountPath: /utils.lib.sh
+          name: pingaccess-was-init
+          subPath: utils.lib.sh
+        - mountPath: /logger.lib.sh
+          name: pingaccess-was-init
+          subPath: logger.lib.sh
+      - env:
+        - name: NEW_RELIC_APP_NAME
+          value: pingaccess-was
+        - name: METADATA_EP_URL
+          value: http://metadata:5000
+        - name: NEW_RELIC_CONFIG_FILEPATH
+          value: /opt/shared-dir/newrelic.yml
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
+        envFrom:
+        - configMapRef:
+            name: pingaccess-was-environment-variables
+        - secretRef:
+            name: newrelic-license-key
+            optional: false
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        name: newrelic-tags-exporter
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /opt/shared-dir
+          name: shared-dir
+      securityContext:
+        fsGroup: 9999
+      serviceAccountName: ping-serviceaccount
+      volumes:
+      - configMap:
+          defaultMode: 365
+          name: discovery-service
+        name: discovery-service
+      - emptyDir: {}
+        name: ssh-dir
+      - emptyDir: {}
+        name: shared-dir
+      - emptyDir: {}
+        name: data-dir
+      - configMap:
+          defaultMode: 365
+          name: pingcommon-init
+        name: pingaccess-was-init
+      - configMap:
+          defaultMode: 420
+          name: topology-descriptor
+          optional: true
+        name: topology-descriptor
+      - name: ssh-id-key-secret
+        secret:
+          defaultMode: 256
+          optional: true
+          secretName: ssh-id-key-secret
+      - configMap:
+          defaultMode: 420
+          name: known-hosts-config
+          optional: true
+        name: known-hosts-config
+      - name: pingaccess-was-license
+        secret:
+          defaultMode: 256
+          optional: true
+          secretName: pingaccess-was-license
+      - name: pingaccess-was-passwords
+        secret:
+          defaultMode: 256
+          optional: true
+          secretName: pingaccess-was-passwords
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  labels:
+    app: ping-cloud
+  name: pa-was-engine-pdb
+  namespace: ping-cloud
+spec:
+  minAvailable: 30%
+  selector:
+    matchLabels:
+      app: ping-cloud
+      role: pingaccess-was-engine
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingaccess-was
+  namespace: ping-cloud
+spec:
+  maxReplicas: 12
+  minReplicas: 4
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: pingaccess-was
+  targetCPUUtilizationPercentage: 70
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    nginx.ingress.kubernetes.io/enable-modsecurity: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/modsecurity-snippet: |
+      Include /etc/nginx/owasp-modsecurity-crs/nginx-modsecurity.conf
+      SecRuleEngine DetectionOnly
+      SecRequestBodyAccess On
+      SecAuditEngine RelevantOnly
+      SecAuditLogParts ABCDEFGHIJKZ
+      SecAuditLogType Serial
+      SecAuditLogFormat JSON
+      SecAuditLog /dev/stdout
+  labels:
+    app: ping-cloud
+  name: pingaccess-was-ingress
+  namespace: ping-cloud
+spec:
+  ingressClassName: nginx-public
+  rules:
+  - host: pingaccess-admin-dev.ping-demo.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: pingaccess-was
+            port:
+              number: 443
+        path: /
+        pathType: Prefix
+  - host: pingfederate-admin-dev.ping-demo.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: pingaccess-was
+            port:
+              number: 443
+        path: /
+        pathType: Prefix
+  - host: monitoring-dev.ping-demo.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: pingaccess-was
+            port:
+              number: 443
+        path: /
+        pathType: Prefix
+  - host: prometheus-dev.ping-demo.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: pingaccess-was
+            port:
+              number: 443
+        path: /
+        pathType: Prefix
+  - host: logs-dev.ping-demo.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: pingaccess-was
+            port:
+              number: 443
+        path: /
+        pathType: Prefix
+  - host: pingcentral-admin-dev.ping-demo.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: pingaccess-was
+            port:
+              number: 443
+        path: /
+        pathType: Prefix
+  - host: healthcheck-httpbin-pa-was-dev.ping-demo.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: pingaccess-was
+            port:
+              number: 443
+        path: /
+        pathType: Prefix
+  - host: argocd-dev.ping-demo.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: pingaccess-was
+            port:
+              number: 443
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - pingaccess-admin-dev.ping-demo.com
+    - pingfederate-admin-dev.ping-demo.com
+    - monitoring-dev.ping-demo.com
+    - prometheus-dev.ping-demo.com
+    - logs-dev.ping-demo.com
+    - pingcentral-admin-dev.ping-demo.com
+    - healthcheck-httpbin-pa-was-dev.ping-demo.com
+    - argocd-dev.ping-demo.com

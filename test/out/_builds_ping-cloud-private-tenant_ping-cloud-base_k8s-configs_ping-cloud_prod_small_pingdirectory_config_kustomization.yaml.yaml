@@ -1,0 +1,429 @@
+apiVersion: v1
+data:
+  ACCEPT_EULA: "YES"
+  ADMIN_BIND_DN: cn=admin
+  ADMIN_USER_PASSWORD_FILE: /usr/local/secrets/admin-user-password
+  ADS_CRT_FILE: /usr/local/secrets/ads.crt
+  ADS_KEY_FILE: /usr/local/secrets/ads.key
+  BACKENDS_TO_BACKUP: userRoot;appintegrations;platformconfig;userRoot_2;userRoot_3;userRoot_4;userRoot_5
+  BACKENDS_TO_RESTORE: ""
+  BACKUP_FILE_NAME: ""
+  BACKUP_RESTORE_POD: pingdirectory-0
+  CHANGELOG_SYNC_MAX_AGE: 2h
+  DISABLE_ALL_OLDER_USER_BASE_DN: "true"
+  DISABLE_SCHEMA_REPLICATION: "true"
+  ENCRYPTION_PASSWORD_FILE: /usr/local/secrets/encryption-password
+  HTTPS_PORT: "1443"
+  INITIALIZE_REPLICATION_DATA: "false"
+  JAVA_AGENT_OPTS: -javaagent:/opt/staging/jmx_prometheus_javaagent-0.14.0.jar=8080:/opt/in/instance/conf/jmx_export_config.yaml
+  K8S_ACME_CERT_SECRET_NAME: acme-tls-cert
+  K8S_STATEFUL_SET_NAME: pingdirectory
+  K8S_STATEFUL_SET_SERVICE_NAME: pingdirectory
+  K8S_TAIL_LOG_FILES: /opt/out/instance/logs/access /opt/out/instance/logs/errors
+    /opt/out/instance/logs/failed-ops /opt/out/instance/logs/expensive-write-ops /opt/out/instance/logs/replication
+    /opt/out/instance/logs/server.out
+  LDAP_PORT: "1389"
+  LDAPS_PORT: "1636"
+  LEAVE_DISK_AFTER_SERVER_DELETE: "false"
+  LOCATION: Austin
+  MAX_HEAP_SIZE: 15g
+  OPTIMIZE_REPLACE_PROFILE: "true"
+  ORCHESTRATION_TYPE: kubernetes
+  PA_CLUSTER_PORT: "9090"
+  PA_CLUSTER_PRIVATE_HOSTNAME: pingaccess-admin
+  PA_WAS_CLUSTER_PORT: "9090"
+  PA_WAS_CLUSTER_PRIVATE_HOSTNAME: pingaccess-was-admin
+  PAUSE_REPLICATION_BEFORE_RESTORE: "true"
+  PD_BASE_DN_LIMIT_INDEX: "20"
+  PD_CLUSTER_PORT: "8989"
+  PD_CLUSTER_PRIVATE_HOSTNAME: pingdirectory
+  PD_POD_LIMIT_INDEX: "1000"
+  PF_CLUSTER_PORT: "7600"
+  PF_CLUSTER_PRIVATE_HOSTNAME: pingfederate-cluster
+  PING_IDENTITY_ACCEPT_EULA: "YES"
+  REGION: us-west-2
+  REPLICATION_BASE_DNS: o=platformconfig;o=appintegrations
+  REPLICATION_PORT: "8989"
+  RETRY_TIMEOUT_SECONDS: "300"
+  ROOT_USER_PASSWORD_FILE: /usr/local/secrets/root-user-password
+  SECRETS_DIR: /usr/local/secrets
+  SERVER_PROFILE_BRANCH: v1.19-release-branch
+  SERVER_PROFILE_PATH: profiles/pingdirectory
+  SERVER_PROFILE_URL: https://github.com/pingidentity/ping-cloud-base.git
+  SKIP_INDEX_BUILD: "false"
+  SKIP_LIVENESS: "true"
+  SYNC_BIND_DN: cn=sync
+  TAIL_LOG_FILES: ""
+  TLS_TUNNEL_CIPHER_LIST: "null"
+  TLS_TUNNEL_VERSIONS: TLSv1.2
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-environment-variables
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  export-ldif-data.sh: |-
+    #!/bin/sh
+
+    # Install kubectl
+    curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl -o /tmp/kubectl
+    chmod +x /tmp/kubectl
+
+    ERROR_MSG=
+    SERVER="${K8S_STATEFUL_SET_NAME}-1"
+    SCRIPT="${HOOKS_DIR}"/90-export-ldif-s3.sh
+    LOG_FILE=/tmp/upload.log
+
+    echo "Uploading LDIF_FILE on server ${SERVER}"
+    /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}">"${LOG_FILE}"
+    export_ldif_status=$?
+
+    if test ${export_ldif_status} -eq 0; then
+      # Sending successful logs to STDOUT
+      cat ${LOG_FILE}
+    else
+      # Append last 10 lines to ERROR_MSG
+      EXPORT_LDIF_ERROR=$(tail -10 "${LOG_FILE}")
+      ERROR_MSG="${SERVER} failed - ${EXPORT_LDIF_ERROR}"
+      exit 1
+    fi
+
+    # Fail script if the desired server failed during export-ldif upload to S3
+    if [ -n "${ERROR_MSG}" ]; then
+      echo "${ERROR_MSG}"
+      echo "Script failed exiting"
+      exit 1
+    fi
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-export-ldif
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  upload-csd-data.sh: |-
+    #!/bin/sh
+
+    # Install kubectl
+    curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl -o /tmp/kubectl
+    chmod +x /tmp/kubectl
+
+    NUM_REPLICAS=$(/tmp/kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
+
+    START=0
+    END=$((${NUM_REPLICAS} - 1))
+
+    CSD_FILES=
+    ERROR_MSG=
+    for i in $(seq ${START} ${END}); do
+      SERVER="${K8S_STATEFUL_SET_NAME}-${i}"
+      SCRIPT="${HOOKS_DIR}"/82-upload-csd-s3.sh
+      LOG_FILE=/tmp/upload.log
+
+      echo "Uploading CSD on server ${SERVER}"
+      /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}"> "${LOG_FILE}"
+      csd_status=$?
+
+      if test ${csd_status} -eq 0; then
+        # Sending logs to STDOUT
+        cat ${LOG_FILE}
+        CSD_FILE=$(tail -1 "${LOG_FILE}")
+        test -z "${CSD_FILES}" && CSD_FILES="${CSD_FILE}" || CSD_FILES="${CSD_FILES} ${CSD_FILE}"
+      else
+        # Append last 10 lines to ERROR_MSG
+        CSD_ERROR=$(tail -10 "${LOG_FILE}")
+        ERROR_MSG="${ERROR_MSG} ${SERVER} failed - ${CSD_ERROR}"
+      fi
+    done
+
+    # Fail script if any of the servers failed during CSD upload to S3
+    if [ -n "${ERROR_MSG}" ]; then
+      echo "${ERROR_MSG}"
+      echo "Script failed exiting"
+      exit 1
+    fi
+
+    # Print the names of the uploaded files so callers know exactly what was uploaded
+    echo "The following files were uploaded:"
+    echo "${CSD_FILES}"
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-periodic-csd-upload
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  monitor-log-data.sh: |-
+    #!/bin/sh
+
+    # Install kubectl
+    curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl -o /tmp/kubectl
+    chmod +x /tmp/kubectl
+
+    NUM_REPLICAS=$(/tmp/kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
+
+    START=0
+    END=$((${NUM_REPLICAS} - 1))
+
+    MONITOR_LOG_FILES=
+    ERROR_MSG=
+    for i in $(seq ${START} ${END}); do
+      SERVER="${K8S_STATEFUL_SET_NAME}-${i}"
+      SCRIPT="${HOOKS_DIR}"/82-upload-monitor-s3.sh
+      MONITOR_LOG_FILE=/tmp/upload.log
+
+      echo "Uploading monitor logs on server ${SERVER}"
+      /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" > "${MONITOR_LOG_FILE}"
+      monitor_log_status=$?
+
+      if test ${monitor_log_status} -eq 0; then
+        # Sending logs to STDOUT
+        cat ${MONITOR_LOG_FILE}
+      else
+        # Append last 10 lines to ERROR_MSG
+        MONITOR_LOG_ERROR=$(tail -10 "${MONITOR_LOG_FILE}")
+        ERROR_MSG="${ERROR_MSG} ${SERVER} failed - ${MONITOR_LOG_ERROR}"
+      fi
+    done
+
+    # Fail script if any of the servers failed during monitor log upload to S3
+    if [ -n "${ERROR_MSG}" ]; then
+      echo "${ERROR_MSG}"
+      echo "Script failed exiting"
+      exit 1
+    fi
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-periodic-monitor-log-upload
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  pingdirectory-statsd-mapping.yml: |-
+    mappings:
+        # operation response time and throughput
+      - match: "*.*.response-time"
+        name: "response_time"
+        labels:
+          operation: "$2"
+      - match: "*.*.throughput"
+        name: "throughput"
+        labels:
+          operation: "$2"
+        # connection handler metrics
+      - match: "*.*.*.*.ldap-conn-handler-bytes-read"
+        name: "LDAP_connection_handler_bytes_read"
+        labels:
+          port: "$4"
+      - match: "*.*.*.*.ldap-conn-handler-bytes-written"
+        name: "LDAP_connection_handler_bytes_written"
+        labels:
+          port: "$4"
+      - match: "*.*.*.*.ldap-conn-handler-messages-read"
+        name: "LDAP_connection_handler_messages_read"
+        labels:
+          port: "$4"
+      - match: "*.*.*.*.ldap-conn-handler-messages-written"
+        name: "LDAP_connection_handler_messages_written"
+        labels:
+          port: "$4"
+      - match: "*.*.*.*.ldap-conn-handler-search-requests"
+        name: "LDAP_connection_handler_search_requests"
+        labels:
+          port: "$4"
+      - match: "*.*.*.*.ldap-conn-handler-search-entries-returned"
+        name: "LDAP_connection_handler_search_entries_returned"
+        labels:
+          port: "$4"
+        # backend metrics
+      - match: "*.backend-entry-count"
+        name: "backend_entry_count"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-db-cache-percent-full"
+        name: "backend_db_cache_percent_full"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-size-on-disk"
+        name: "backend_size_on_disk"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-active-cleaner-threads"
+        name: "backend_active_cleaner_threads"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-cleaner-backlog"
+        name: "backend_cleaner_backlog"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-nodes-evicted"
+        name: "backend_nodes_evicted"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-checkpoints"
+        name: "backend_checkpoints"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-avg-checkpoint-duration"
+        name: "backend_avg_checkpoint_duration"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-time-since-last-checkpoint"
+        name: "backend_time_since_last_checkpoint"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-new-db-logs"
+        name: "backend_new_db_logs"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-random-reads"
+        name: "backend_random_reads"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-random-writes"
+        name: "backend_random_writes"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-sequential-reads"
+        name: "backend_sequential_reads"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-sequential-writes"
+        name: "backend_sequential_writes"
+        labels:
+          backendID: "$1"
+        # entry cache metrics
+      - match: "*.entry-cache-hit-ratio"
+        name: "entry_cache_hit_ratio"
+        labels:
+          entryCache: "$1"
+      - match: "*.entry-cache-hit-count"
+        name: "entry_cache_hit_count"
+        labels:
+          entryCache: "$1"
+      - match: "*.entry-cache-attempts"
+        name: "entry_cache_attempts"
+        labels:
+          entryCache: "$1"
+      - match: "*.entry-cache-add-or-update"
+        name: "entry_cache_add_or_update"
+        labels:
+          entryCache: "$1"
+      - match: "*.entry-cache-size"
+        name: "entry_cache_size"
+        labels:
+          entryCache: "$1"
+      - match: "*.entry-cache-pct-full"
+        name: "entry_cache_pct_full"
+        labels:
+          entryCache: "$1"
+        # changelog metrics?
+      - match: "changelog.*"
+        name: "$1"
+        lables:
+          backendID: "changelog"
+        # GC metrics
+      - match: "*.*.*.garbage-collections"
+        name: "garbage_collections"
+        labels:
+          gcType: "$1"
+          size: "$2"
+          cause: "$3"
+      - match: "*.*.*.garbage-collection-duration"
+        name: "garbage_collection_duration"
+        labels:
+          gcType: "$1"
+          size: "$2"
+          cause: "$3"
+      - match: "*.garbage-collection-live-mbytes"
+        name: "garbage_collection_live_megabytes"
+        labels:
+          region: "$1"
+        #PD replicas
+      - match: "^dc=(.*)_dc=(.*)\\.replica(.*)"
+        match_type: regex
+        name: "replica${3}"
+        labels:
+          UserBaseDN1: "$1"
+          UserBaseDN2: "$2"
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-statsd-mapping
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  DMANAGER_PASSWORD: MkZlZGVyYXRlTTByZQ==
+kind: Secret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-dmanager-password
+  namespace: ping-cloud
+type: Opaque
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-license
+  namespace: ping-cloud
+type: Opaque
+---
+apiVersion: v1
+data:
+  P14C_CLIENT_ID: ODkwNzM2NTQtNGVkMy00YTViLWI4OWMtZmY2YjVlMWI3ZDFi
+  P14C_CLIENT_SECRET: UXA4aTAudHg4U3dVSWphdnlYWn5KYTZLQlA5SzN+azljTUYuUWF4UTZYclBvdHpmOU5DbFk2bHRLLjBJUU42MA==
+  P14C_ENVIRONMENT_ID: YzNlMzczNTctNTA2Mi00MWJjLTk5NzItYTdlYTlkMTRhNWEy
+  admin-user-password: MkZlZGVyYXRlTTByZQ==
+  ads.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUN2akNDQWFZQ0NRQ3NMaEptdEYwQ3VEQU5CZ2txaGtpRzl3MEJBUXNGQURBZ01SNHdIQVlEVlFRRERCVnMKYjJOaGJHaHZjM1F1Ykc5allXeGtiMjFoYVc0d0lCY05NakF3TmpNd01UZ3hOekkwV2hnUE1qRXlNREEyTURZeApPREUzTWpSYU1DQXhIakFjQmdOVkJBTU1GV3h2WTJGc2FHOXpkQzVzYjJOaGJHUnZiV0ZwYmpDQ0FTSXdEUVlKCktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQUtmalRHZVgweHhubG5LbXBodFB1Z21jRjNXRHREZmsKOUgyWGh4aXpsTzliNzhPWlk3ZGRxZXVpRktBU3ZZZEtzSE80cUVLMXhtMitvTHZaa2RIandFYlc5dVJYQ2Zucgo3cUpRaHpiemZpemtFOXE2MVBHazJTNGNlcytyUlBDZVlFSEUrd1J5bUdnMnNabXgrdVNLb1RvQk5lMnNnQ2lWCkw0YmpBZ3NKdkdxUzI2T0ZleTF6WTVRYXRmUkI0QlFKSis1eFJ3Z3BCSXdJOExRN3ozS0pkQlVyTll3TDlUemYKSVc2UjcxMHlORVhWWkxqa0pwemJTeGtub3kxQlc3SFJwYmxxNFZaWEFEWDNSYlpuV2xKRWhubkRBVGxPcWtregp5cHBUSnhvaEtkK0pZYXRFRUxWNC9DajkyR3UwcEJtSXorazkrWnJob3J1RTBkSHM2T0tlYStVQ0F3RUFBVEFOCkJna3Foa2lHOXcwQkFRc0ZBQU9DQVFFQVNVcUU1RUw1ZEttNDJWcmFEclpRM0prNXlTUUNtZE1HNGFoYmFndVUKNDk1aEV5NDlhNVhDL3NoS0hCUnJaVy95RTJiS1dTOTBKdzA2aVpUWkk0a3JXZnk5NUtxVlJhWkNYUHc4K0lWdwpLMjJZSTJ1MWVUNlpWYkpuL1dJL2VuMDBwNk1mRjhFTmF3STZTc081dzlVUnRhSFpRK2lhc1BSUERqeVljUC93CnNpbWlBeTB2a2hZSUM5Qmw1K0QxV3FwWm1PRnMvdW5EZC8xUFRxSXF5cHZINUcyYjBvUmdLTTUzQlBIZFBKajAKcEpObFBTblJFNThVNkM5RG5BcSt2cFlJZFE1UWdtQWVaMVA0T2E0cGdHY0NHNlBVYVRoalUxeFhFL01CQWFFRgpwV0pYT2pqWHUwdVpFbXE0bHFJakZEcmZDSkVISkliRmtzMUJjZVVQK3BkU2F3PT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+  ads.key: LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUV2d0lCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktrd2dnU2xBZ0VBQW9JQkFRQ240MHhubDlNY1o1WnkKcHFZYlQ3b0puQmQxZzdRMzVQUjlsNGNZczVUdlcrL0RtV08zWGFucm9oU2dFcjJIU3JCenVLaEN0Y1p0dnFDNwoyWkhSNDhCRzF2YmtWd241Nis2aVVJYzI4MzRzNUJQYXV0VHhwTmt1SEhyUHEwVHdubUJCeFBzRWNwaG9OckdaCnNmcmtpcUU2QVRYdHJJQW9sUytHNHdJTENieHFrdHVqaFhzdGMyT1VHclgwUWVBVUNTZnVjVWNJS1FTTUNQQzAKTzg5eWlYUVZLeldNQy9VODN5RnVrZTlkTWpSRjFXUzQ1Q2FjMjBzWko2TXRRVnV4MGFXNWF1RldWd0ExOTBXMgpaMXBTUklaNXd3RTVUcXBKTThxYVV5Y2FJU25maVdHclJCQzFlUHdvL2RocnRLUVppTS9wUGZtYTRhSzdoTkhSCjdPamlubXZsQWdNQkFBRUNnZ0VCQUp4NXMwcVNMUWM2WFBTNjhmSmVtb3crV1hjRHE4SzB1Rk1lR2FJaUxsdngKR2tUNkFBQjFZZHZta3NhbThOTGFBQis3S2NnVFY4QU5mZzNYT0p1aFpDSWlWTFo1a1NqSWh2L3RnampyTk54dQpMenNjQzBDMVhsNGwyU2tZL2dZdDlwVVdITWNHYjVvaDcrSEtDb2RiMWUwVUY4bFBqNXREZ0twOWhmZjN1UTZ5CkUxRWl0WHJ6Yk9qNzU4QllXRXc1cXdPS2orWGZIS3FJcDc2dGp6NEM3dlJPUDF5OFBaN1BuYUV2V3VSVXNIdkUKVTB1aXJVc3doYjZJSE10UUxGM21EUEo5Y2lEWmI3NWFjbmtEZTRHc1ZQSHJ5bDNKMGpnZnpNS2dtT1RKZWVFTAprcEsvUHI1eVNMTEZnNjloYVlDU0hLVEt6ME9OUjVXc3dmdjl2WnBjQXNFQ2dZRUEwNEZ3cjcwMitVK3R5d1NNCmlZM0JvNFZEeXVLVXlsQThxUE1COGlCK0cxaXdJenBWSk1hakNZR2dLcUhMZUpGWjM0RGNCUkNiVnZ0RlhpU0UKSW5NQ0taYStlOTh1UXVjcGJzV2tBM3oxT0hMN1dscFp3OTMwZlBkVkNVYW1KZEhYUTJjQ01udDFMRmwyWmVQTwpyVG1rMmdXMHMzYTNHMWRvNjFJM3NZamNHc2tDZ1lFQXl6VFhKa3RUVXZ6L1hqVDhrMDBoUFREWjZzR1RUOEt2CjBERzU0c1ZNYWRTb2hXYi9oUkZ6WHo4Q21YMWQyRDZSS3NaK3pVNjcydCtqY0pDdmd2L3phRWpBZ3M5cXVMTFIKd2s1S29qbmZGT2FobEN3TDladVA0c01kcHZwU2JUS0RPTGdzMXQ1TkcreTlkZEFiSzdMNDFkMTRSbEw4bHZ4OApzdnk4eitvR3VqMENnWUJaU1NGYTd0T1FONVMwU1gxU2JDYzhjbnVGNEZUVGV6L0FTcVdkb3gzWlNYMUJ3ZFJECnJCOFRXa2RVOSt3L1A0empEekRTYW9wSkU5WGF3aXVOcDJOWVR5eW1lamE3UTM1NEpyTHdUZ1h2Q0lzWFAyRDUKa0c4dmVmSEo4cXNjK0JLWmY1aXIydlpCL0pwQXRRU0FsLzhCa3JzUHI2UG94T09qdzVlRE9MVkNFUUtCZ1FDegptNExISURFSDJ3TEQrOFY3Vk9NYU9NR0VFNURuSU1kUkY0S2JnNVBrdnNndEVUcXNIUjZDZ3lrRERhSVM3a3BWCktwa05VcGdML3p0dzFSR3NraHBNaEhGVHJZMUFyeDFqeHR1RXcrMy9oVkl2cXpidTRZNnQrWk9OOFJkRjJTM08KeGtzcnA5VXo1MjRXWWRpQ0tYQnpaNHRWYlNoQk0rM3NMaU9kQ2Ria2FRS0JnUUN4b3ZCYXpjR2VEMXFsRjREUgo0eXZpYUpCeUNPM3ludEQwMXAvUGRCTDJNWHA2bjAzWVZEa1BHUytqamZtamt3QVV0ek9RU2pZUGViWWtlb21yClZMZ2N1YkN1VGZsNmNQbnRxUHZxM1pVT2ZqUlB1REI4MjZ0Rm82RDZEUHYwQ043WnE4Y3ZpK3h0RExqWjRDbG8KdFd3a3JWZ3JTeEljd1dyaTBMcXNXTExmV2c9PQotLS0tLUVORCBQUklWQVRFIEtFWS0tLS0tCg==
+  encryption-password: MkZlZGVyYXRlTTByZQ==
+  encryption-settings.pin: MkZlZGVyYXRlTTByZQ==
+  old-encryption-passwords: MkZlZGVyYXRlTTByZQ==
+  root-user-password: MkZlZGVyYXRlTTByZQ==
+kind: Secret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-passwords
+  namespace: ping-cloud
+type: Opaque
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-truststore-certs
+  namespace: ping-cloud
+type: Opaque

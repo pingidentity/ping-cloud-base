@@ -1,0 +1,216 @@
+apiVersion: v1
+data:
+  config.yml: |-
+    ---
+    metrics:
+    - name: metric_pingaccess_response_concurrency_statistics_90_percentile
+      path: '{.response\.concurrency\.statistics\.90\.percentile}'
+      labels:
+        environment: pingaccess
+        source: heartbeat
+    - name: metric_pingaccess_response_statistics_count
+      path: '{.response\.statistics\.count}'
+      labels:
+        environment: pingaccess
+        source: heartbeat
+    - name: metric_pingaccess_response_time_statistics_90_percentile
+      path: '{.response\.time\.statistics\.90\.percentile}'
+      labels:
+        environment: pingaccess
+        source: heartbeat
+    - name: metric_pingaccess_response_concurrency_statistics_mean
+      path: '{.response\.concurrency\.statistics\.mean}'
+      labels:
+        environment: pingaccess
+        source: heartbeat
+    - name: metric_pingaccess_response_time_statistics_mean
+      path: '{.response\.time\.statistics\.mean}'
+      labels:
+        environment: pingaccess
+        source: heartbeat
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+  name: pa-exporter-config
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  ACCEPT_EULA: "YES"
+  API_RETRY_LIMIT: "10"
+  API_TIMEOUT_WAIT: "5"
+  BACKUP_FILE_NAME: ""
+  CONFIG_QUERY_KP_VALID_DAYS: "365"
+  JAVA_OPTS: -javaagent:/opt/staging/jmx_prometheus_javaagent-0.14.0.jar=8080:/opt/in/instance/conf/jmx_export_config.yaml
+  K8S_ACME_CERT_SECRET_NAME: acme-tls-cert
+  K8S_SERVICE_NAME_PINGACCESS_ADMIN: pingaccess-admin
+  K8S_STATEFUL_SET_NAME_PINGACCESS: pingaccess-admin
+  K8S_TAIL_LOG_FILES: /opt/out/instance/log/pingaccess_engine_audit.log /opt/out/instance/log/pingaccess_api_audit.log
+    /opt/out/instance/log/pingaccess_agent_audit.log /opt/out/instance/log/pingaccess_sideband_audit.log
+    /opt/out/instance/log/pingaccess_sideband_client_audit.log /opt/out/instance/log/pingaccess.log
+    /opt/out/instance/upgrade/log/upgrade.log /opt/out/instance/upgrade/log/audit.log
+    /opt/out/instance/upgrade/log/upgrade_status.log
+  ORCHESTRATION_TYPE: kubernetes
+  PA_ADMIN_API_RATE_LIMIT: "5000"
+  PA_ADMIN_API_RATE_LIMIT_POLICY: ""
+  PA_ADMIN_APPLICATIONS: ""
+  PA_ADMIN_PORT: "9000"
+  PA_ADMIN_SERVER: pingaccess-admin
+  PA_ADMIN_USER_USERNAME: Administrator
+  PA_CLUSTER_PORT: "9090"
+  PA_CLUSTER_PRIVATE_HOSTNAME: pingaccess-admin
+  PA_ENGINE_PORT: "3000"
+  PA_GCOPTION: -XX:-UseParallelGC -XX:MinHeapFreeRatio=20 -XX:MaxHeapFreeRatio=40
+    -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90
+  PA_MAX_HEAP: 1024m
+  PA_MAX_YGEN: 512m
+  PA_MIN_HEAP: 1024m
+  PA_MIN_YGEN: 512m
+  PA_WAS_CLUSTER_PORT: "9090"
+  PA_WAS_CLUSTER_PRIVATE_HOSTNAME: pingaccess-was-admin
+  PD_CLUSTER_PORT: "8989"
+  PD_CLUSTER_PRIVATE_HOSTNAME: pingdirectory
+  PF_CLUSTER_PORT: "7600"
+  PF_CLUSTER_PRIVATE_HOSTNAME: pingfederate-cluster
+  PING_IDENTITY_ACCEPT_EULA: "YES"
+  REGION: us-west-2
+  RESTORE_BACKUP: "true"
+  SECRETS_DIR: /usr/local/secrets
+  SERVER_PROFILE_BRANCH: v1.19-release-branch
+  SERVER_PROFILE_PATH: profiles/pingaccess
+  SERVER_PROFILE_URL: https://github.com/pingidentity/ping-cloud-base.git
+  SKIP_LIVENESS: "false"
+  TAIL_LOG_FILES: ""
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingaccess-admin-environment-variables
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  ACCEPT_EULA: "YES"
+  API_RETRY_LIMIT: "10"
+  API_TIMEOUT_WAIT: "5"
+  BACKUP_FILE_NAME: ""
+  CONFIG_QUERY_KP_VALID_DAYS: "365"
+  JAVA_OPTS: -javaagent:/opt/staging/jmx_prometheus_javaagent-0.14.0.jar=8080:/opt/in/instance/conf/jmx_export_config.yaml
+  K8S_ACME_CERT_SECRET_NAME: acme-tls-cert
+  K8S_SERVICE_NAME_PINGACCESS_ADMIN: pingaccess-admin
+  K8S_STATEFUL_SET_NAME_PINGACCESS: pingaccess-admin
+  K8S_TAIL_LOG_FILES: /opt/out/instance/log/pingaccess_engine_audit.log /opt/out/instance/log/pingaccess_api_audit.log
+    /opt/out/instance/log/pingaccess_agent_audit.log /opt/out/instance/log/pingaccess_sideband_audit.log
+    /opt/out/instance/log/pingaccess_sideband_client_audit.log /opt/out/instance/log/pingaccess.log
+    /opt/out/instance/upgrade/log/upgrade.log /opt/out/instance/upgrade/log/audit.log
+    /opt/out/instance/upgrade/log/upgrade_status.log
+  ORCHESTRATION_TYPE: kubernetes
+  PA_ADMIN_API_RATE_LIMIT: "5000"
+  PA_ADMIN_API_RATE_LIMIT_POLICY: ""
+  PA_ADMIN_APPLICATIONS: ""
+  PA_ADMIN_PORT: "9000"
+  PA_ADMIN_SERVER: pingaccess-admin
+  PA_ADMIN_USER_USERNAME: Administrator
+  PA_CLUSTER_PORT: "9090"
+  PA_CLUSTER_PRIVATE_HOSTNAME: pingaccess-admin
+  PA_ENGINE_PORT: "3000"
+  PA_GCOPTION: -XX:-UseParallelGC -XX:MinHeapFreeRatio=20 -XX:MaxHeapFreeRatio=40
+    -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90
+  PA_MAX_HEAP: 1024m
+  PA_MAX_YGEN: 512m
+  PA_MIN_HEAP: 1024m
+  PA_MIN_YGEN: 512m
+  PA_WAS_CLUSTER_PORT: "9090"
+  PA_WAS_CLUSTER_PRIVATE_HOSTNAME: pingaccess-was-admin
+  PD_CLUSTER_PORT: "8989"
+  PD_CLUSTER_PRIVATE_HOSTNAME: pingdirectory
+  PF_CLUSTER_PORT: "7600"
+  PF_CLUSTER_PRIVATE_HOSTNAME: pingfederate-cluster
+  PING_IDENTITY_ACCEPT_EULA: "YES"
+  REGION: us-west-2
+  RESTORE_BACKUP: "true"
+  SECRETS_DIR: /usr/local/secrets
+  SERVER_PROFILE_BRANCH: v1.19-release-branch
+  SERVER_PROFILE_PATH: profiles/pingaccess
+  SERVER_PROFILE_URL: https://github.com/pingidentity/ping-cloud-base.git
+  SKIP_LIVENESS: "false"
+  TAIL_LOG_FILES: ""
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingaccess-environment-variables
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  backup-csd-data.sh: |-
+    #!/bin/sh
+
+    # Install kubectl
+    curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
+    -o /tmp/kubectl
+
+    chmod +x /tmp/kubectl
+
+    REPLICAS=$(/tmp/kubectl get pods -l=role="${CSD_POD_ROLE}" -o name)
+
+    CSD_FILES=
+    for REPLICA in ${REPLICAS}; do
+      SERVER=${REPLICA}
+      SCRIPT="${HOOKS_DIR}"/82-upload-csd-s3.sh
+      LOG_FILE=/tmp/upload.log
+
+      echo "Uploading CSD on server ${SERVER}"
+      /tmp/kubectl exec "${SERVER}" -c "${CSD_CONTAINER_NAME}" -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" >"${LOG_FILE}"
+
+      # Sending logs to STDOUT
+      cat ${LOG_FILE}
+
+      if test ${?} -eq 0; then
+        CSD_FILE=$(tail -1 "${LOG_FILE}")
+        test -z "${CSD_FILES}" && CSD_FILES="${CSD_FILE}" || CSD_FILES="${CSD_FILES} ${CSD_FILE}"
+
+        # Print the names of the uploaded files so callers know exactly what was uploaded
+        echo "The following files were uploaded:"
+        echo "${CSD_FILES}"
+      else
+        exit_code=${?}
+        echo "The kubectl command attempting to invoke the script exited with: ${exit_code}"
+        echo "This may be because: "
+        echo "1) The ${SCRIPT} script is not currently available on the ${SERVER}.  This is expected if ${SERVER} is not running yet."
+        echo "2) The ${SCRIPT} script exited with an error.  Please review the logs above to determine if this is the case."
+      fi
+    done
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingaccess-periodic-csd-upload
+  namespace: ping-cloud
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+  labels:
+    app: ping-cloud
+  name: pingaccess-license
+  namespace: ping-cloud
+type: Opaque
+---
+apiVersion: v1
+data:
+  OLD_PA_ADMIN_USER_PASSWORD: MkFjY2Vzcw==
+  PA_ADMIN_USER_PASSWORD: MkZlZGVyYXRlTTByZQ==
+kind: Secret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+  labels:
+    app: ping-cloud
+  name: pingaccess-passwords
+  namespace: ping-cloud
+type: Opaque

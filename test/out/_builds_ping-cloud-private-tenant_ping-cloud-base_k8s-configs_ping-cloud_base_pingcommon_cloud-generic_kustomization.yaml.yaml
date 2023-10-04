@@ -1,0 +1,397 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app: ping-cloud
+  name: ping-cloud
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: ping-cloud
+  name: ping-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingaccess-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingdirectory-ops-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingdirectory-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingfederate-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app: ping-cloud
+  name: ping-role
+  namespace: ping-cloud
+rules:
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  verbs:
+  - get
+  - create
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - pods/log
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - persistentvolumeclaims
+  verbs:
+  - delete
+  - get
+  - create
+- apiGroups:
+  - ""
+  - apps
+  resources:
+  - statefulsets
+  - deployments
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods/exec
+  verbs:
+  - create
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingresses
+  verbs:
+  - list
+  - watch
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingdirectory-ops-role
+  namespace: ping-cloud
+rules:
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  verbs:
+  - get
+  - create
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - pods/log
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - persistentvolumeclaims
+  verbs:
+  - delete
+  - get
+  - create
+- apiGroups:
+  - ""
+  - apps
+  resources:
+  - statefulsets
+  - deployments
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods/exec
+  verbs:
+  - create
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingresses
+  verbs:
+  - list
+  - watch
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app: ping-cloud
+  name: cluster-secrets-reader
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: ping-cloud
+  name: ping-role-binding
+  namespace: ping-cloud
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ping-role
+subjects:
+- kind: ServiceAccount
+  name: ping-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingaccess-role-binding
+  namespace: ping-cloud
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ping-role
+subjects:
+- kind: ServiceAccount
+  name: pingaccess-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingdirectory-ops-role-binding
+  namespace: ping-cloud
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: pingdirectory-ops-role
+subjects:
+- kind: ServiceAccount
+  name: pingdirectory-ops-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingdirectory-role-binding
+  namespace: ping-cloud
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ping-role
+subjects:
+- kind: ServiceAccount
+  name: pingdirectory-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingfederate-role-binding
+  namespace: ping-cloud
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ping-role
+subjects:
+- kind: ServiceAccount
+  name: pingfederate-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+  name: custom-environment-variables
+  namespace: ping-cloud
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+  name: known-hosts-config
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  APP_INTEGRATIONS_BACKEND_ID: appintegrations
+  APP_INTEGRATIONS_BASE_DN: o=appintegrations
+  DA_DEFAULT_GRANT_TYPE_CLIENT_ID: dadmin
+  DA_EXCLUSIVE_SCOPE_NAME: urn:pingidentity:directory-delegated-admin
+  DA_IDENTITY_MAPPER_NAME: DAEntryUUIDMatch
+  DA_IDP_ADAPTER_HTML_FORM_ID: daidphtml
+  DA_JWT_ID: dajwt
+  DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID: dapingdirectory
+  DA_OIDC_POLICY_ID: dapolicy
+  DA_PCV_ID: dapcv
+  DA_PCV_SEARCH_FILTER: uid=${username}
+  DA_PINGFEDERATE_ATV_NAME: DAPingFederateValidator
+  DA_PINGFEDERATE_INSTANCE_NAME: DAPingFederate
+  ENABLE_DEL_ADMIN: "true"
+  KUBECTL_VERSION: v1.24.0
+  LDAP_CLIENT_MANAGER_SEARCH_BASE: ou=clients,o=appintegrations
+  LDAP_DS_ID: LDAP-FA8D375DFAC589A222E13AA059319ABF9823B552
+  NOTIFICATION_ENABLED: "true"
+  NOTIFICATION_ENDPOINT: http://webhook-eventsource-svc.argo-events:12999/notification
+  PC_ADMIN_USER_USERNAME: administrator
+  PD_PCV_SEARCH_FILTER: (&(objectClass=person)(|(mail=${username})(cn=${username})(uid=${username})))
+  PINGFEDERATE_ENGINE_PORT: "9031"
+  PINGFEDERATE_ENGINE_SERVER: pingfederate
+  PLATFORM_CONFIG_BACKEND_ID: platformconfig
+  PLATFORM_CONFIG_BASE_DN: o=platformconfig
+  SLACK_CHANNEL: p1as-application-oncall
+  TOPOLOGY_DESCRIPTOR_JSON: /opt/staging/topology/descriptor.json
+  TOPOLOGY_DESCRIPTOR_PROFILES_JSON: /opt/staging/topology/descriptor-profiles.json
+  USER_BACKEND_ID: userRoot
+  USER_BACKEND_ID_2: userRoot_2
+  USER_BACKEND_ID_3: userRoot_3
+  USER_BACKEND_ID_4: userRoot_4
+  USER_BACKEND_ID_5: userRoot_5
+  USER_BASE_DN: dc=example,dc=com
+  USER_BASE_DN_2: ""
+  USER_BASE_DN_3: ""
+  USER_BASE_DN_4: ""
+  USER_BASE_DN_5: ""
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingcommon-environment-variables
+  namespace: ping-cloud
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+  name: topology-descriptor
+  namespace: ping-cloud
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+  labels:
+    app: ping-cloud
+  name: newrelic-license-key
+  namespace: ping-cloud
+type: Opaque
+---
+apiVersion: v1
+data:
+  ACME_CERT_KEYSTORE_PASSWORD: MkZlZGVyYXRlTTByZQ==
+  DA_OAUTH_TOKEN_VALIDATOR_SECRET: MkZlZGVyYXRlTTByZQ==
+  PC_ADMIN_USER_PASSWORD: MkZlZGVyYXRl
+  PF_ADMIN_USER_PASSWORD: MkZlZGVyYXRlTTByZQ==
+  PF_LDAP_PASSWORD: MkZlZGVyYXRlTTByZQ==
+kind: Secret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+  labels:
+    app: ping-cloud
+  name: pingcommon-passwords
+  namespace: ping-cloud
+type: Opaque
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+  labels:
+    app: ping-cloud
+  name: ssh-id-key-secret
+  namespace: ping-cloud
+type: Opaque
+---
+apiVersion: scheduling.k8s.io/v1
+description: Flag for apps that remain in pending state
+globalDefault: false
+kind: PriorityClass
+metadata:
+  labels:
+    app: ping-cloud
+  name: high-priority-apps-to-avoid-pending-state
+preemptionPolicy: PreemptLowerPriority
+value: 1

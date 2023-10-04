@@ -1,0 +1,15 @@
+apiVersion: v1
+data:
+  newrelic.conf: "input {\n  http {\n    port => 8083\n    id => \"NR_in\"\n  }\n}\nfilter
+    {\n### Remove unneeded fields came from fluent-bit\n  mutate {\n          remove_field
+    => [ \"headers\",\"host\",\"date\"]\n      }\n\n  if [private_ip] {\n    ### Add
+    temp field to get the correct host field inside NR\n    mutate {\n        add_field
+    => { \"[@metadata][transf_host]\" => \"%{private_ip}\" }\n      }\n    mutate
+    {\n        gsub => [ \"[@metadata][transf_host]\", \"\\.\", \"-\" ]\n        add_field
+    => { \"host\" => \"ip-%{[@metadata][transf_host]}\" }\n      }\n  }      \n}\noutput
+    {\n  newrelic {\n    license_key => \"${NR_LICENSE_KEY}\"\n    id => \"NR_out\"\n
+    \ }\n}"
+kind: ConfigMap
+metadata:
+  name: logstash-pipeline-nr-6tcc6f926g
+  namespace: elastic-stack-logging

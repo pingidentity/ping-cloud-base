@@ -1,0 +1,852 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: prometheus
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus
+  namespace: prometheus
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus-job-exporter
+  namespace: prometheus
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prometheus
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  - nodes/proxy
+  - services
+  - endpoints
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+- nonResourceURLs:
+  - /metrics
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - pods/exec
+  verbs:
+  - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prometheus-job-exporter
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - namespaces
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - pods/exec
+  - pods/log
+  verbs:
+  - get
+  - create
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus
+subjects:
+- kind: ServiceAccount
+  name: prometheus
+  namespace: prometheus
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus-job-exporter
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus-job-exporter
+subjects:
+- kind: ServiceAccount
+  name: prometheus-job-exporter
+  namespace: prometheus
+---
+apiVersion: v1
+data:
+  config.yml: |-
+    global:
+    templates:
+    - '/etc/alertmanager/*.tmpl'
+    route:
+      receiver: alert-webhook
+      group_by: ['...']
+      group_wait: 10s
+      routes:
+        - receiver: alert-webhook
+          continue: true
+          group_wait: 10s
+          group_interval: 10s
+          repeat_interval: 60m
+
+    receivers:
+    - name: alert-webhook
+      webhook_configs:
+      - url: http://webhook-eventsource-svc.argo-events:13000/notification
+        send_resolved: true
+kind: ConfigMap
+metadata:
+  name: alertmanager-config
+  namespace: prometheus
+---
+apiVersion: v1
+data:
+  default-rule.yml: |+
+    ## This is a test Prometheus alerting rule.
+    ## For testing purpose uncoment alert, deploy changes, delete pingdirectory/pingfederate/pingacess pod and wait for alert.
+    ---
+
+    #groups:
+    #- name: prom-default-rules
+    #  rules:
+    #  - alert: PrometheusTargetMissing
+    #    expr: up == 0
+    #    for: 0m
+    #    labels:
+    #      severity: critical
+    #    annotations:
+    #      summary: Prometheus target missing (instance {{ $labels.instance }})
+    #      description: "A Prometheus target has disappeared. An exporter might be crashed.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+  kube-alerts.yml: |-
+    ---
+
+    groups:
+    - name: kube-alerts
+      rules:
+      # Trigger alert when there are 1 or more unscheduled pods for greater than 5+ mins
+      - alert: ClusterAutoscalerNumberOfUnscheduledPods
+        expr: sum(cluster_autoscaler_unschedulable_pods_count) > 0
+        for: 5m
+        labels:
+          severity: alert
+        annotations:
+          summary: "Cluster Autoscaler has {{ $value }} unschedulable pods."
+          description: "The cluster autoscaler is unable to scale up and is alerting that there are unschedulable pods because of this condition. This may be caused by the cluster autoscaler reaching its resources limits, or by Kubernetes waiting for new nodes to become ready."
+          runbook: "https://pingidentity.atlassian.net/l/cp/1m9sGcLD"
+
+      # Trigger warning alert (avoids PagerDuty) when 1 or more volumes are predicted to run out of space within a week.
+      - alert: VolumesFullInWeekBasedOnDailyUseRate
+        expr: |
+          predict_linear(kubelet_volume_stats_available_bytes [1d], 7 * 24 * 60 * 60) <= 0
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary:  "PVCs could be full in week according to prediction based on Daily Use Rate. PVC \"{{ $labels.persistentvolumeclaim }}\" located in \"{{ $labels.namespace }}\" namespace."
+          description: "To prevent ping-cloud/Infrastructure namespace volumes to become full unexpectedly, there is a prediction based on Daily Use Rate which count what exactly volumes could be full in week. This may be caused by initensive daily usage and needs to be checked to prevent any issues with applications using these volumes."
+          runbook: "https://pingidentity.atlassian.net/l/cp/qDQbzSc1"
+
+      # Trigger alert when 1 or more PVCs are using 80% or more of their capacity.
+      - alert: RunningPVCsAboveUsedWarningThreshold
+        expr: |
+          (max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_used_bytes)) / (max by (persistentvolumeclaim,namespace) (kubelet_volume_stats_capacity_bytes)) >= (80 / 100)
+        for: 10m
+        labels:
+          severity: alert
+        annotations:
+          summary: "PVC running above 80% threshold. PVC \"{{ $labels.persistentvolumeclaim }}\" located in \"{{ $labels.namespace }}\" namespace."
+          description: "Indicates which PVCs currently running above 80% threshold. To prevent any service interruption, these volumes have to be checked."
+          runbook: "https://pingidentity.atlassian.net/l/cp/ttpWJDzW"
+  logging.yml: |-
+    ## This is a Prometheus alerting rules for the logging
+    ---
+
+    groups:
+    - name: elastic-stack-logging
+      rules:
+      - alert: FluentBit dropping records
+        expr: sum(increase(fluentbit_output_dropped_records_total[1m])) by (name) > 10
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: FluentBit dropping records for output {{ $labels.name }}
+          description: "A FluentBit outputs dropping records.\nVALUE = {{ $value }}\nLABELS = {{ $labels }}"
+          runbook: "https://pingidentity.atlassian.net/l/cp/1LNbK1h1"
+
+      - alert: FluentBit retries is growing
+        expr: sum(increase(fluentbit_output_retries_total[1m])) by (name) > 50
+        for: 10m
+        labels:
+          severity: alert
+        annotations:
+          summary: FluentBit has many retries in the output {{ $labels.name }}
+          description: "A FluentBit has many retries in the output. Possible {{ $labels.name }} output is down.\n  VALUE = {{ $value }}\nLABELS = {{ $labels }}"
+          runbook: "https://pingidentity.atlassian.net/l/cp/vQCAwBPs"
+
+      - alert: Logstash pipeline is growing
+        expr: delta(logstash_node_queue_events[1m]) > 10000
+        for: 10m
+        labels:
+          severity: alert
+        annotations:
+          summary: Logstash pipeline {{ $labels.pipeline }} is growing on {{ $labels.instance }}.
+          description: "A Logstash pipeline is growing. Possible {{ $labels.pipeline }} is overloaded or logs spike.\nVALUE = {{ $value }}\nLABELS = {{ $labels }}"
+          runbook: "https://pingidentity.atlassian.net/l/cp/fKEd3bpy"
+
+      - alert: Logstash pipeline backlog alert
+        expr: logstash_node_queue_events > 1000000
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: Logstash Queue Backlog Alert for {{ $labels.pipeline }} on {{ $labels.instance }}
+          description: "This alert is triggered when the length of the Logstash event queue for {{ $labels.pipeline }} on {{ $labels.instance }} exceeds a certain threshold.\nVALUE = {{ $value }}\nLABELS = {{ $labels }}"
+          runbook: "https://pingidentity.atlassian.net/l/cp/ARLdMfXF"
+
+      - alert: Logstash has no outgoing events
+        expr: sum(increase(logstash_node_pipeline_events_out_total{pipeline!~"alerts|dlq"}[1m])) by (pipeline) == 0
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: Logstash pipeline {{ $labels.pipeline }} didn't produce any outgoing events.
+          description: "An outgoing Logstash pipeline {{ $labels.pipeline }} is dead.\nVALUE = {{ $value }}\nLABELS = {{ $labels }}"
+          runbook: "https://pingidentity.atlassian.net/l/cp/2Y87TfgA"
+
+      - alert: Logstash has no incoming events
+        expr: sum(increase(logstash_node_pipeline_events_in_total{pipeline!~"alerts|dlq"}[1m])) by (pipeline) == 0
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: Logstash pipeline {{ $labels.pipeline }} didn't recieve any incoming events.
+          description: "An incoming Logstash pipeline {{ $labels.pipeline }} is dead.\nVALUE = {{ $value }}\nLABELS = {{ $labels }}"
+          runbook: "https://pingidentity.atlassian.net/l/cp/RvB39RpB"
+
+      - alert: Logstash pods count 0
+        expr: sum(logstash_node_up) == 0 or absent(logstash_node_up) == 1
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: Running logstash pods is count 0
+          description: "Running logstash pods is 0. Looks like they're died or didn't return any metrics."
+          runbook: "https://pingidentity.atlassian.net/l/cp/Rub1Qv6f"
+
+    - name: opensearch.rules
+      rules:
+      - expr: |
+          rate(opensearch_threadpool_threads_count{name="bulk", type="rejected"}[2m])
+        record: bulk:rejected_requests:rate2m
+      - expr: |
+          rate(opensearch_threadpool_threads_count{name="bulk", type="completed"}[2m])
+        record: bulk:completed_requests:rate2m
+      - expr: |
+          sum by (cluster, instance, node) (bulk:rejected_requests:rate2m) / on (cluster, instance, node) (bulk:completed_requests:rate2m)
+        record: bulk:reject_ratio:rate2m
+
+    - name: opensearch.alerts
+      rules:
+      - alert: OpenSearchClusterNotHealthy
+        annotations:
+          description: "Cluster {{ $labels.cluster }} health status has been RED for at least 2m. Cluster does not accept writes, shards may be missing or master node hasn't been elected yet."
+          summary: "Cluster health status is RED"
+          runbook: "https://pingidentity.atlassian.net/l/cp/s1hJ29Go"
+        expr: |
+          sum by (cluster) (opensearch_cluster_status == 2)
+        for: 2m
+        labels:
+          severity: critical
+      - alert: OpenSearchClusterNotHealthy
+        annotations:
+          description: "Cluster {{ $labels.cluster }} health status has been YELLOW for at least 20m. Some shard replicas are not allocated."
+          summary: "Cluster health status is YELLOW"
+          runbook: "https://pingidentity.atlassian.net/l/cp/s1hJ29Go"
+        expr: |
+          sum by (cluster) (opensearch_cluster_status == 1)
+        for: 20m
+        labels:
+          severity: warning
+      - alert: OpenSearchBulkRequestsRejectionJumps
+        annotations:
+          description: "High Bulk Rejection Ratio at {{ $labels.node }} node in {{ $labels.cluster }} cluster. This node may not be keeping up with the indexing speed."
+          summary: "High Bulk Rejection Ratio - {{ $value }}%"
+          runbook: "https://pingidentity.atlassian.net/l/cp/9HSdgGTX"
+        expr: |
+          round( bulk:reject_ratio:rate2m * 100, 0.001 ) > 5
+        for: 10m
+        labels:
+          severity: warning
+      - alert: OpenSearchNodeDiskWatermarkReached
+        annotations:
+          description: "Disk Low Watermark Reached at {{ $labels.node }} node in {{ $labels.cluster }} cluster. Shards can not be allocated to this node anymore. You should consider adding more disk to the node."
+          summary: "Disk Low Watermark Reached - disk saturation is {{ $value }}%"
+          runbook: "https://pingidentity.atlassian.net/l/cp/ceuvTPL0"
+        expr: |
+          sum by (cluster, instance, node) (
+            round(
+              (1 - (
+                opensearch_fs_path_available_bytes /
+                opensearch_fs_path_total_bytes
+              )
+            ) * 100, 0.001)
+          ) > 85
+        for: 5m
+        labels:
+          severity: alert
+      - alert: OpenSearchNodeDiskWatermarkReached
+        annotations:
+          description: "Disk High Watermark Reached at {{ $labels.node }} node in {{ $labels.cluster }} cluster. Some shards will be re-allocated to different nodes if possible. Make sure more disk space is added to the node or drop old indices allocated to this node."
+          summary: "Disk High Watermark Reached - disk saturation is {{ $value }}%"
+          runbook: "https://pingidentity.atlassian.net/l/cp/ceuvTPL0"
+        expr: |
+          sum by (cluster, instance, node) (
+            round(
+              (1 - (
+                opensearch_fs_path_available_bytes /
+                opensearch_fs_path_total_bytes
+              )
+            ) * 100, 0.001)
+          ) > 90
+        for: 5m
+        labels:
+          severity: critical
+      - alert: OpenSearchJVMHeapUseHigh
+        annotations:
+          description: "JVM Heap usage on the node {{ $labels.node }} in {{ $labels.cluster }} cluster is {{ $value }}%."
+          summary: "JVM Heap usage on the node is high"
+          runbook: "https://pingidentity.atlassian.net/l/cp/KMH9013e"
+        expr: |
+          sum by (cluster, instance, node) (opensearch_jvm_mem_heap_used_percent) > 75
+        for: 10m
+        labels:
+          severity: alert
+      - alert: OpenSearchHostSystemCPUHigh
+        annotations:
+          description: "System CPU usage on the node {{ $labels.node }} in {{ $labels.cluster }} cluster is {{ $value }}%"
+          summary: "System CPU usage is high"
+          runbook: "https://pingidentity.atlassian.net/l/cp/8qTf1caL"
+        expr: |
+          sum by (cluster, instance, node) (opensearch_os_cpu_percent) > 90
+        for: 1m
+        labels:
+          severity: alert
+      - alert: OpenSearchProcessCPUHigh
+        annotations:
+          description: "OSE process CPU usage on the node {{ $labels.node }} in {{ $labels.cluster }} cluster is {{ $value }}%"
+          summary: "OSE process CPU usage is high"
+          runbook: "https://pingidentity.atlassian.net/l/cp/8qTf1caL"
+        expr: |
+          sum by (cluster, instance, node) (opensearch_process_cpu_percent) > 90
+        for: 1m
+        labels:
+          severity: alert
+kind: ConfigMap
+metadata:
+  name: prom-alerts-4b8bg79c7b
+  namespace: prometheus
+---
+apiVersion: v1
+data:
+  prometheus.yml: "global:\n  # How frequently to scrape targets by default.\n  scrape_interval:
+    15s\n  # How long until a scrape request times out.\n  scrape_timeout: 5s\n  #
+    How frequently to evaluate rules.\n  evaluation_interval: 5s\n  external_labels:\n
+    \   k8s_cluster_name: ${CLUSTER_NAME}-${TENANT_NAME}-${REGION_NICK_NAME}\nremote_write:\n-
+    url: 'http://prometheus:9090/api/v1/write'\n\nstorage:\n  tsdb:\n    out_of_order_time_window:
+    1d\n\nscrape_configs:\n# Monitor prometheus itself\n- job_name: 'prometheus'\n
+    \ scrape_interval: 10s\n  static_configs:\n  - targets: ['localhost:9090']\n#
+    Monitor kube-state-metrics\n- job_name: 'kube-state-metrics'\n  static_configs:\n
+    \ - targets: ['kube-state-metrics.kube-system.svc.cluster.local:8080']\n\n# Discover
+    and monitor PD instances\n- job_name: 'pd-statsd-exporter'\n  kubernetes_sd_configs:\n
+    \ - role: endpoints\n  relabel_configs:\n  - source_labels: [__meta_kubernetes_endpoint_port_name,
+    __meta_kubernetes_service_name]\n    action: keep\n    regex: metrics;pingdirectory\n
+    \ - source_labels: [__meta_kubernetes_pod_name]\n    action: replace\n    target_label:
+    instance\n  - source_labels: [__meta_kubernetes_namespace]\n    action: replace\n
+    \   target_label: namespace\n\n# Discover and monitor PD JMX instances\n- job_name:
+    'pd-jmx-exporter'\n  scrape_interval: 10s\n  kubernetes_sd_configs:\n  - role:
+    endpoints\n  relabel_configs:\n  - source_labels: [__meta_kubernetes_endpoint_port_name,
+    __meta_kubernetes_service_name]\n    action: keep\n    regex: jmx-metrics;pingdirectory\n
+    \ - source_labels: [__meta_kubernetes_pod_name]\n    action: replace\n    target_label:
+    instance\n  - source_labels: [__meta_kubernetes_namespace]\n    action: replace\n
+    \   target_label: namespace\n\n# Discover and monitor PD instances\n- job_name:
+    'prometheus-job-exporter'\n  kubernetes_sd_configs:\n  - role: endpoints\n  relabel_configs:\n
+    \ - source_labels: [__meta_kubernetes_endpoint_port_name, __meta_kubernetes_service_name]\n
+    \   action: keep\n    regex: metrics;prometheus-job-exporter\n  - source_labels:
+    [__meta_kubernetes_pod_name]\n    action: replace\n    target_label: instance\n
+    \ - source_labels: [__meta_kubernetes_namespace]\n    action: replace\n    target_label:
+    namespace\n\n# Discover and monitor PF instances\n- job_name: 'pf-jmx-exporter'\n
+    \ scrape_interval: 10s\n  kubernetes_sd_configs:\n  - role: endpoints\n  relabel_configs:\n
+    \ - source_labels: [__meta_kubernetes_endpoint_port_name, __meta_kubernetes_service_name]\n
+    \   action: keep\n    regex: metrics;pingfederate\n  - source_labels: [__meta_kubernetes_pod_name]\n
+    \   action: replace\n    target_label: instance\n  - source_labels: [__meta_kubernetes_namespace]\n
+    \   action: replace\n    target_label: namespace\n\n# Discover and monitor PF
+    instances\n- job_name: 'pf-heartbeat-exporter'\n  scrape_interval: 10s\n  metrics_path:
+    /\n  kubernetes_sd_configs:\n  - role: endpoints\n  relabel_configs:\n  - source_labels:
+    [__meta_kubernetes_endpoint_port_name, __meta_kubernetes_service_name]\n    action:
+    keep\n    regex: pf-heartbeat;pingfederate\n  - source_labels: [__meta_kubernetes_pod_name]\n
+    \   action: replace\n    target_label: instance\n  - source_labels: [__meta_kubernetes_namespace]\n
+    \   action: replace\n    target_label: namespace\n\n# Discover and monitor PA
+    instances\n- job_name: 'pa-jmx-exporter'\n  scrape_interval: 10s\n  kubernetes_sd_configs:\n
+    \ - role: endpoints\n  relabel_configs:\n  - source_labels: [__meta_kubernetes_endpoint_port_name,
+    __meta_kubernetes_service_name]\n    action: keep\n    regex: metrics;pingaccess\n
+    \ - source_labels: [__meta_kubernetes_pod_name]\n    action: replace\n    target_label:
+    instance\n  - source_labels: [__meta_kubernetes_namespace]\n    action: replace\n
+    \   target_label: namespace\n\n# Discover and monitor PA instances\n- job_name:
+    'pa-heartbeat-exporter'\n  scrape_interval: 10s\n  metrics_path: /\n  kubernetes_sd_configs:\n
+    \ - role: endpoints\n  relabel_configs:\n  - source_labels: [__meta_kubernetes_endpoint_port_name,
+    __meta_kubernetes_service_name]\n    action: keep\n    regex: pa-heartbeat;pingaccess\n
+    \ - source_labels: [__meta_kubernetes_pod_name]\n    action: replace\n    target_label:
+    instance\n  - source_labels: [__meta_kubernetes_namespace]\n    action: replace\n
+    \   target_label: namespace\n\n# Other k8s jobs to scrape - see https://devopscube.com/setup-prometheus-monitoring-on-kubernetes/\n-
+    job_name: 'kubernetes-apiservers'\n  kubernetes_sd_configs:\n  - role: endpoints\n
+    \ scheme: https\n  tls_config:\n    ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt\n
+    \ bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token\n  relabel_configs:\n
+    \ - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name,
+    __meta_kubernetes_endpoint_port_name]\n    action: keep\n    regex: default;kubernetes;https\n\n-
+    job_name: 'kubernetes-nodes'\n  scheme: https\n  tls_config:\n    ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt\n
+    \ bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token\n  kubernetes_sd_configs:\n
+    \ - role: node\n  relabel_configs:\n  - action: labelmap\n    regex: __meta_kubernetes_node_label_(.+)\n
+    \ - target_label: __address__\n    replacement: kubernetes.default.svc:443\n  -
+    source_labels: [__meta_kubernetes_node_name]\n    regex: (.+)\n    target_label:
+    __metrics_path__\n    replacement: /api/v1/nodes/${1}/proxy/metrics\n    \n- job_name:
+    'kubernetes-pods'\n  kubernetes_sd_configs:\n  - role: pod\n  relabel_configs:\n
+    \ - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]\n    action:
+    keep\n    regex: true\n  - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]\n
+    \   action: replace\n    target_label: __metrics_path__\n    regex: (.+)\n  -
+    source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]\n
+    \   action: replace\n    regex: ([^:]+)(?::\\d+)?;(\\d+)\n    replacement: $1:$2\n
+    \   target_label: __address__\n  - action: labelmap\n    regex: __meta_kubernetes_pod_label_(.+)\n
+    \ - source_labels: [__meta_kubernetes_namespace]\n    action: replace\n    target_label:
+    kubernetes_namespace\n  - source_labels: [__meta_kubernetes_pod_name]\n    action:
+    replace\n    target_label: instance\n\n- job_name: 'kubernetes-cadvisor'\n  scheme:
+    https\n  tls_config:\n    ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt\n
+    \ bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token\n  kubernetes_sd_configs:\n
+    \ - role: node\n  relabel_configs:\n  - action: labelmap\n    regex: __meta_kubernetes_node_label_(.+)\n
+    \ - target_label: __address__\n    replacement: kubernetes.default.svc:443\n  -
+    source_labels: [__meta_kubernetes_node_name]\n    regex: (.+)\n    target_label:
+    __metrics_path__\n    replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor\n\n-
+    job_name: 'kubernetes-service-endpoints'\n  kubernetes_sd_configs:\n  - role:
+    endpoints\n  tls_config:\n    insecure_skip_verify: true\n  relabel_configs:\n
+    \ - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]\n
+    \   action: keep\n    regex: true\n  - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]\n
+    \   action: replace\n    target_label: __scheme__\n    regex: (https?)\n  - source_labels:
+    [__meta_kubernetes_service_annotation_prometheus_io_path]\n    action: replace\n
+    \   target_label: __metrics_path__\n    regex: (.+)\n  - source_labels: [__address__,
+    __meta_kubernetes_service_annotation_prometheus_io_port]\n    action: replace\n
+    \   target_label: __address__\n    regex: ([^:]+)(?::\\d+)?;(\\d+)\n    replacement:
+    $1:$2\n  - action: labelmap\n    regex: __meta_kubernetes_service_label_(.+)\n
+    \ - source_labels: [__meta_kubernetes_namespace]\n    action: replace\n    target_label:
+    kubernetes_namespace\n  - source_labels: [__meta_kubernetes_service_name]\n    action:
+    replace\n    target_label: kubernetes_name\n  - source_labels: [__meta_kubernetes_pod_name]\n
+    \   action: replace\n    target_label: instance\n\n- job_name: 'crunchy-postgres-exporter'\n
+    \ kubernetes_sd_configs:\n  - role: pod\n  relabel_configs:\n  - source_labels:
+    [__meta_kubernetes_pod_label_postgres_operator_crunchydata_com_crunchy_postgres_exporter,__meta_kubernetes_pod_label_crunchy_postgres_exporter]\n
+    \   action: keep\n    regex: true\n    separator: \"\"\n  - source_labels: [__meta_kubernetes_pod_container_port_number]\n
+    \   action: drop\n    regex: 5432\n  - source_labels: [__meta_kubernetes_pod_container_port_number]\n
+    \   action: drop\n    regex: 10000\n  - source_labels: [__meta_kubernetes_pod_container_port_number]\n
+    \   action: drop\n    regex: 8009\n  - source_labels: [__meta_kubernetes_pod_container_port_number]\n
+    \   action: drop\n    regex: 2022\n  - source_labels: [__meta_kubernetes_pod_container_port_number]\n
+    \   action: drop\n    regex: ^$\n  - source_labels: [__meta_kubernetes_namespace]\n
+    \   action: replace\n    target_label: kubernetes_namespace\n  - source_labels:
+    [__meta_kubernetes_pod_name]\n    target_label: pod\n  - source_labels: [__meta_kubernetes_pod_label_postgres_operator_crunchydata_com_cluster,__meta_kubernetes_pod_label_pg_cluster]\n
+    \   target_label: cluster\n    separator: \"\"\n    replacement: '$1'\n  - source_labels:
+    [__meta_kubernetes_namespace,cluster]\n    target_label: pg_cluster\n    separator:
+    \":\"\n    replacement: '$1$2'\n  - source_labels: [__meta_kubernetes_pod_ip]\n
+    \   target_label: ip\n    replacement: '$1'\n  - source_labels: [__meta_kubernetes_pod_label_postgres_operator_crunchydata_com_instance,__meta_kubernetes_pod_label_deployment_name]\n
+    \   target_label: deployment\n    replacement: '$1'\n    separator: \"\"\n  -
+    source_labels: [__meta_kubernetes_pod_label_postgres_operator_crunchydata_com_role]\n
+    \   target_label: role\n  - source_labels: [dbname]\n    target_label: dbname\n
+    \   replacement: '$1'\n  - source_labels: [relname]\n    target_label: relname\n
+    \   replacement: '$1'\n  - source_labels: [schemaname]\n    target_label: schemaname\n
+    \   replacement: '$1'"
+kind: ConfigMap
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-options: Replace=true
+  labels:
+    name: prometheus-agent-config
+  name: prometheus-agent-config
+  namespace: prometheus
+---
+apiVersion: v1
+data:
+  prometheus.yml: |-
+    global:
+      # How frequently to scrape targets by default.
+      scrape_interval: 15s
+      # How long until a scrape request times out.
+      scrape_timeout: 5s
+      # How frequently to evaluate rules.
+      evaluation_interval: 5s
+      external_labels:
+        slack_channel: ${PROM_SLACK_CHANNEL}
+        notifications_enabled: ${PROM_NOTIFICATION_ENABLED}
+        k8s_cluster_name: ${CLUSTER_NAME}-${TENANT_NAME}-${REGION_NICK_NAME}
+    alerting:
+      alertmanagers:
+        - scheme: http
+          static_configs:
+          - targets: ['alertmanager:9093']
+
+    rule_files:
+      - /etc/prometheus/alert-rules.d/*.yml
+
+    storage:
+      tsdb:
+        out_of_order_time_window: 1d
+    scrape_configs:
+    # Monitor prometheus itself
+    - job_name: 'prometheus'
+      scrape_interval: 10s
+      static_configs:
+      - targets: ['localhost:9090']
+kind: ConfigMap
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-options: Replace=true
+  labels:
+    name: prometheus-config
+  name: prometheus-config
+  namespace: prometheus
+---
+apiVersion: v1
+data:
+  PROMETHEUS_RETENTION_TIME: 15d
+  PROMETHEUS_USER_COUNT_1_COMMAND: '''echo 0'''
+  PROMETHEUS_USER_COUNT_1_SCHEDULE: '''* * * * *'''
+  PROMETHEUS_USER_COUNT_2_COMMAND: '''echo 0'''
+  PROMETHEUS_USER_COUNT_2_SCHEDULE: '''* * * * *'''
+  PROMETHEUS_USER_COUNT_3_COMMAND: '''echo 0'''
+  PROMETHEUS_USER_COUNT_3_SCHEDULE: '''* * * * *'''
+  PROMETHEUS_USER_COUNT_4_COMMAND: '''echo 0'''
+  PROMETHEUS_USER_COUNT_4_SCHEDULE: '''* * * * *'''
+kind: ConfigMap
+metadata:
+  name: prometheus-environment-variables-89d8mghhg8
+  namespace: prometheus
+---
+apiVersion: v1
+data:
+  config.yaml: |
+    metrics:
+      users_count_1:
+        command: ${PROMETHEUS_USER_COUNT_1_COMMAND}
+        interval: ${PROMETHEUS_USER_COUNT_1_SCHEDULE}
+        description: Count of users
+        pod_name: pingdirectory-0
+        container_name: pingdirectory
+        namespace: '${PROMETHEUS_PING_NAMESPACE}'
+      users_count_2:
+        command: ${PROMETHEUS_USER_COUNT_2_COMMAND}
+        interval: ${PROMETHEUS_USER_COUNT_2_SCHEDULE}
+        description: Count of users
+        pod_name: pingdirectory-0
+        container_name: pingdirectory
+        namespace: '${PROMETHEUS_PING_NAMESPACE}'
+      users_count_3:
+        command: ${PROMETHEUS_USER_COUNT_3_COMMAND}
+        interval: ${PROMETHEUS_USER_COUNT_3_SCHEDULE}
+        description: Count of users
+        pod_name: pingdirectory-0
+        container_name: pingdirectory
+        namespace: '${PROMETHEUS_PING_NAMESPACE}'
+      users_count_4:
+        command: ${PROMETHEUS_USER_COUNT_4_COMMAND}
+        interval: ${PROMETHEUS_USER_COUNT_4_SCHEDULE}
+        description: Count of users
+        pod_name: pingdirectory-0
+        container_name: pingdirectory
+        namespace: '${PROMETHEUS_PING_NAMESPACE}'
+kind: ConfigMap
+metadata:
+  name: prometheus-job-exporter-config
+  namespace: prometheus
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    prometheus.io/port: "9093"
+    prometheus.io/scrape: "true"
+  name: alertmanager
+  namespace: prometheus
+spec:
+  clusterIP: None
+  ports:
+  - name: alertmanager
+    port: 9093
+  selector:
+    app: alertmanager
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: prometheus-central-dev.ping-demo.com
+  name: prometheus
+  namespace: prometheus
+spec:
+  clusterIP: None
+  ports:
+  - name: prometheus
+    port: 9090
+  selector:
+    app: prometheus
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-job-exporter
+  namespace: prometheus
+spec:
+  clusterIP: None
+  ports:
+  - name: metrics
+    port: 8000
+  selector:
+    app: prometheus-job-exporter
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-options: Replace=true
+  name: alertmanager
+  namespace: prometheus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alertmanager
+  template:
+    metadata:
+      labels:
+        app: alertmanager
+      name: alertmanager
+    spec:
+      containers:
+      - args:
+        - --config.file=/etc/alertmanager/config.yml
+        - --storage.path=/alertmanager
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/prom/alertmanager:v0.26.0
+        name: alertmanager
+        ports:
+        - containerPort: 9093
+          name: alertmanager
+        resources:
+          limits:
+            cpu: 1
+            memory: 1Gi
+          requests:
+            cpu: 500m
+            memory: 500M
+        volumeMounts:
+        - mountPath: /etc/alertmanager
+          name: config-volume
+        - mountPath: /alertmanager
+          name: alertmanager
+      volumes:
+      - configMap:
+          name: alertmanager-config
+        name: config-volume
+      - emptyDir: {}
+        name: alertmanager
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-agent
+  namespace: prometheus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus-agent
+  template:
+    metadata:
+      labels:
+        app: prometheus-agent
+    spec:
+      containers:
+      - args:
+        - --config.file=/etc/prometheus/prometheus.yml
+        - --web.enable-lifecycle
+        - --enable-feature=agent
+        - --enable-feature=expand-external-labels
+        envFrom:
+        - configMapRef:
+            name: prometheus-environment-variables-89d8mghhg8
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/prom/prometheus:v2.47.0
+        name: prometheus
+        ports:
+        - containerPort: 9090
+        resources:
+          limits:
+            cpu: 500m
+            memory: 4000Mi
+          requests:
+            cpu: 100m
+            memory: 512Mi
+        volumeMounts:
+        - mountPath: /etc/prometheus/
+          name: prometheus-config-volume
+      serviceAccountName: prometheus
+      volumes:
+      - configMap:
+          name: prometheus-agent-config
+        name: prometheus-config-volume
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-job-exporter
+  namespace: prometheus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus-job-exporter
+  template:
+    metadata:
+      labels:
+        app: prometheus-job-exporter
+    spec:
+      containers:
+      - envFrom:
+        - configMapRef:
+            name: prometheus-environment-variables-89d8mghhg8
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-job-exporter/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        name: prometheus-job-exporter
+        ports:
+        - containerPort: 8000
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 100m
+            memory: 300Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /app/config.yaml
+          name: prometheus-job-exporter-config
+          readOnly: false
+          subPath: config.yaml
+      serviceAccountName: prometheus-job-exporter
+      volumes:
+      - configMap:
+          name: prometheus-job-exporter-config
+        name: prometheus-job-exporter-config
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: prometheus
+  namespace: prometheus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  serviceName: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+      - args:
+        - --config.file=/etc/prometheus/prometheus.yml
+        - --storage.tsdb.retention.time=$(PROMETHEUS_RETENTION_TIME)
+        - --web.enable-remote-write-receiver
+        - --enable-feature=memory-snapshot-on-shutdown
+        - --enable-feature=expand-external-labels
+        - --enable-feature=memory-snapshot-on-shutdown
+        env:
+        - name: PROMETHEUS_RETENTION_TIME
+          valueFrom:
+            configMapKeyRef:
+              key: PROMETHEUS_RETENTION_TIME
+              name: prometheus-environment-variables-89d8mghhg8
+        envFrom:
+        - configMapRef:
+            name: prometheus-environment-variables-89d8mghhg8
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/prom/prometheus:v2.47.0
+        name: prometheus
+        ports:
+        - containerPort: 9090
+        resources:
+          limits:
+            cpu: 1500m
+            memory: 5500Mi
+          requests:
+            cpu: 100m
+            memory: 2000Mi
+        volumeMounts:
+        - mountPath: /etc/prometheus/
+          name: prometheus-config-volume
+        - mountPath: /prometheus/data
+          name: prometheus-storage-volume
+        - mountPath: /etc/prometheus/alert-rules.d
+          name: alertsconfig
+      serviceAccountName: prometheus
+      volumes:
+      - configMap:
+          name: prometheus-config
+        name: prometheus-config-volume
+      - configMap:
+          name: prom-alerts-4b8bg79c7b
+        name: alertsconfig
+  volumeClaimTemplates:
+  - metadata:
+      labels:
+        app: prometheus
+      name: prometheus-storage-volume
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 1Mi
+      storageClassName: efs

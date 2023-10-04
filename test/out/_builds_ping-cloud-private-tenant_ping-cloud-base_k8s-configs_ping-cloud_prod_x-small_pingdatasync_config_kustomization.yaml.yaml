@@ -1,0 +1,66 @@
+apiVersion: v1
+data:
+  API_RETRY_LIMIT: "15"
+  API_TIMEOUT_WAIT: "10"
+  EXT_PD_ADMIN_BIND_DN: cn=administrator
+  EXT_PD_CHANGELOG_SYNC_MAX_AGE: 2h
+  EXT_PD_HOST: example.com
+  EXT_PD_HOST_INITIAL_CONNECTIONS: "1"
+  EXT_PD_HOST_MAX_CONNECTIONS: "4"
+  EXT_PD_HTTPS_PORT: "1443"
+  EXT_PD_LDAP_PORT: "1389"
+  EXT_PD_LDAPS_PORT: "443"
+  EXT_PD_SERVER: external_pd_server
+  EXT_PD_SYNC_BIND_DN: cn=sync
+  EXT_PD_TO_P1AS_PD_PIPE: external_pd_to_p1as_pd
+  HTTPS_PORT: "1443"
+  IS_P1AS_TEST_MODE: "false"
+  K8S_STATEFUL_SET_NAME: pingdatasync
+  K8S_STATEFUL_SET_SERVICE_NAME: pingdatasync-admin
+  K8S_TAIL_LOG_FILES: /opt/out/instance/logs/access /opt/out/instance/logs/errors
+    /opt/out/instance/logs/failed-ops /opt/out/instance/logs/server.out /opt/out/instance/logs/sync-failed-ops
+  LDAP_PORT: "1389"
+  LDAPS_PORT: "1636"
+  LOCATION: Austin
+  MAX_HEAP_SIZE: 3g
+  ORCHESTRATION_TYPE: kubernetes
+  P1AS_PD_CLUSTER_PRIVATE_HOSTNAME: pingdirectory
+  P1AS_PD_HOST_INITIAL_CONNECTIONS: "1"
+  P1AS_PD_HOST_MAX_CONNECTIONS: "4"
+  P1AS_PD_POD_NAME: pingdirectory-0
+  P1AS_PD_SERVER: p1as_pd_server
+  P1AS_PD_TO_EXT_PD_PIPE: p1as_pd_to_external_pd
+  PING_IDENTITY_ACCEPT_EULA: "YES"
+  REGION: us-west-2
+  ROOT_BIND_DN: cn=administrator
+  ROOT_USER_PASSWORD_FILE: /usr/local/secrets/root-user-password
+  SECRETS_DIR: /usr/local/secrets
+  SERVER_PROFILE_BRANCH: v1.19-release-branch
+  SERVER_PROFILE_PATH: profiles/pingdatasync
+  SERVER_PROFILE_URL: https://github.com/pingidentity/ping-cloud-base.git
+  SYNC_SERVER_NAME: sync
+  TAIL_LOG_FILES: ""
+  VERBOSE: "false"
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingdatasync
+  name: pingdatasync-environment-variables
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  EXT_PD_ADMIN_BIND_DN_PASSWORD: MkZlZGVyYXRlTTByZQ==
+  EXT_PD_SYNC_BIND_DN_PASSWORD: MkZlZGVyYXRlTTByZQ==
+  root-user-password: MkZlZGVyYXRlTTByZQ==
+kind: Secret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+  labels:
+    app: ping-cloud
+    role: pingdatasync
+  name: pingdatasync-passwords
+  namespace: ping-cloud
+type: Opaque

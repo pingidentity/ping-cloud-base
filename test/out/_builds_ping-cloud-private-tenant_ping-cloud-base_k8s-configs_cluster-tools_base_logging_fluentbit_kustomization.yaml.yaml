@@ -1,0 +1,1017 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: fluent-bit
+  namespace: elastic-stack-logging
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: fluent-bit-role
+rules:
+- nonResourceURLs:
+  - /metrics
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - namespaces
+  - pods
+  - pods/logs
+  - nodes
+  - nodes/proxy
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: fluent-bit-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: fluent-bit-role
+subjects:
+- kind: ServiceAccount
+  name: fluent-bit
+  namespace: elastic-stack-logging
+---
+apiVersion: v1
+data:
+  cluster.name: cluster_name
+  log.level: error
+  logs.region: region_name
+  newrelic_cluster_name: cluster_name
+  primary_tenant_domain: tenant_domain
+  read.head: "True"
+  read.tail: "Off"
+  tenant_domain: tenant_domain
+kind: ConfigMap
+metadata:
+  name: cluster-info
+  namespace: elastic-stack-logging
+---
+apiVersion: v1
+data:
+  fluent-bit.conf: |-
+    [SERVICE]
+        Flush                     1
+        Daemon                    off
+        Parsers_File              parsers.conf
+        storage.path              /fluent-bit/state/flb-storage/
+        storage.sync              normal
+        storage.checksum          off
+        storage.backlog.mem_limit 50M
+        storage.max_chunks_up     256
+        storage.metrics           on
+        HTTP_Server  On
+        HTTP_Listen  0.0.0.0
+        HTTP_Port    2020
+        Health_Check On
+
+    @INCLUDE pipelines_*.conf
+kind: ConfigMap
+metadata:
+  labels:
+    k8s-app: fluent-bit
+  name: fluent-bit-config-gbbk7dtckh
+  namespace: elastic-stack-logging
+---
+apiVersion: v1
+data:
+  parsers.conf: |
+    [PARSER]
+        Name                docker
+        Format              json
+        Time_Key            time
+        Time_Format         %Y-%m-%dT%H:%M:%S.%LZ
+
+    [PARSER]
+        Name                dmesg
+        Format              regex
+        Regex               ^\[.*?\](?<log>.*)$
+
+    [PARSER]
+        Name                syslog
+        Format              regex
+        Regex               ^(?<time>[^ ]* {1,2}[^ ]* [^ ]*) (?<host>[^ ]*) (?<ident>[a-zA-Z0-9_\/\.\-]*)(?:\[(?<pid>[0-9]+)\])?(?:[^\:]*\:)? *(?<log>.*)$
+        Time_Key            time
+        Time_Format         %b %d %H:%M:%S
+
+    [PARSER]
+        Name                container_firstline
+        Format              regex
+        Regex               (?<log>(?<="log":")\S(?!\.).*?)(?<!\\)".*(?<stream>(?<="stream":").*?)".*(?<time>\d{4}-\d{1,2}-\d{1,2}T\d{2}:\d{2}:\d{2}\.\w*).*(?=})
+        Time_Key            time
+        Time_Format         %Y-%m-%dT%H:%M:%S.%LZ
+
+    [PARSER]
+        Name                cwagent_firstline
+        Format              regex
+        Regex               (?<log>(?<="log":")\d{4}[\/-]\d{1,2}[\/-]\d{1,2}[ T]\d{2}:\d{2}:\d{2}(?!\.).*?)(?<!\\)".*(?<stream>(?<="stream":").*?)".*(?<time>\d{4}-\d{1,2}-\d{1,2}T\d{2}:\d{2}:\d{2}\.\w*).*(?=})
+        Time_Key            time
+        Time_Format         %Y-%m-%dT%H:%M:%S.%LZ
+
+    [MULTILINE_PARSER]
+        Name multiline_system_log
+        type regex
+        parser json
+        key_content log
+        flush_timeout 500
+
+        rule "start_state" "/^(\/.*\/log[s]?\/\w+(\.log)?)( \d{4}-\d{2}-\d{2}[T ]?\d{2}:\d{2}:\d{2}(,\d{3})?)\s+(\w+[: ]{1,2})(.*)/" "cont"
+        rule "cont" "/^((?!INFO|WARN|ERROR|DEBUG|(admin-api|audit|jvm-garbage-collection|provisioner-audit|provisioner|request(2?)|transaction)\.log).)*$/" "cont"
+kind: ConfigMap
+metadata:
+  labels:
+    k8s-app: fluent-bit
+  name: fluent-bit-parsers-9kt7db5k5c
+  namespace: elastic-stack-logging
+---
+apiVersion: v1
+data:
+  customer.conf: |
+    # Inputs
+
+    [INPUT]
+        Name                tail
+        Tag                 customer.kube.general.*
+        Path                /var/log/containers/*_ingress-nginx-*.log
+        multiline.parser    docker, cri
+        DB                  /fluent-bit/state/flb_customer_ingress.db
+        Skip_Long_Lines     Off
+        Refresh_Interval    10
+        Rotate_Wait         30
+        Mem_Buf_Limit       200MB
+        storage.type        filesystem
+        Read_from_Head      ${READ_FROM_HEAD}
+        storage.pause_on_chunks_overlimit on
+
+    [INPUT]
+        Name                tail
+        Tag                 customer.kube.general.*
+        Path                /var/log/containers/*_ping-cloud_*.log
+        Exclude_Path        /var/log/containers/p14c-*.log, *pingcloud-metadata*.log
+        multiline.parser    docker, cri
+        DB                  /fluent-bit/state/flb_customer_ping.db
+        Skip_Long_Lines     Off
+        Refresh_Interval    10
+        Rotate_Wait         30
+        Mem_Buf_Limit       200MB
+        storage.type        filesystem
+        Read_from_Head      ${READ_FROM_HEAD}
+        storage.pause_on_chunks_overlimit on
+
+    [INPUT]
+        Name                tail
+        Tag                 customer.kube.general.*
+        Path                /var/log/containers/*_postgres-operator_*.log
+        multiline.parser    docker, cri
+        DB                  /fluent-bit/state/flb_customer_postgres.db
+        Skip_Long_Lines     Off
+        Refresh_Interval    10
+        Rotate_Wait         30
+        Mem_Buf_Limit       20MB
+        storage.type        filesystem
+        Read_from_Head      ${READ_FROM_HEAD}
+        storage.pause_on_chunks_overlimit on
+
+    # Filters
+
+    [FILTER]
+        Name                  multiline
+        match                 customer.kube.*_ping-cloud_*
+        multiline.key_content log
+        buffer                true
+        flush_ms              500
+        emitter_name          customer.multiline
+        emitter_storage.type  filesystem
+        emitter_mem_buf_limit 100M
+        multiline.parser      multiline_system_log
+
+    [FILTER]
+        Name                kubernetes
+        Match               customer.kube.general.*
+        Kube_URL            https://kubernetes.default.svc:443
+        Kube_Tag_Prefix     customer.kube.general.var.log.containers.
+        K8S-Logging.Parser  On
+        K8S-Logging.Exclude Off
+        Annotations         Off
+        Labels              On
+        Buffer_Size         50Mb
+        Cache_Use_Docker_Id On
+        Kube_Meta_Cache_TTL 1800
+
+    # Output
+    [OUTPUT]
+        Name                http
+        Alias               logstash_out
+        Match               customer.kube.*
+        Host                logstash-elastic.elastic-stack-logging
+        Port                8084
+        Format              json
+        Workers             5
+        Retry_Limit         False
+        compress            gzip
+        net.keepalive_idle_timeout  10
+        net.keepalive_max_recycle   100
+        storage.total_limit_size    1000M
+kind: ConfigMap
+metadata:
+  labels:
+    k8s-app: fluent-bit
+  name: fluent-bit-pipeline-customer-h29h8f4cfh
+  namespace: elastic-stack-logging
+---
+apiVersion: v1
+data:
+  cw.conf: |
+    # Kubernetes inputs
+    [INPUT]
+        Name                tail
+        Tag                 cw.kube.*
+        Path                /var/log/containers/*_argo-events_*.log, /var/log/containers/*_argocd*.log
+        multiline.parser    docker, cri
+        DB                  /fluent-bit/state/flb_cw_argo.db
+        Skip_Long_Lines     Off
+        Refresh_Interval    10
+        Rotate_Wait         30
+        storage.type        filesystem
+        Read_from_Head      ${READ_FROM_HEAD}
+        storage.pause_on_chunks_overlimit on
+
+    [INPUT]
+        Name                tail
+        Tag                 cw.kube.*
+        Path                /var/log/containers/*_cert-manager_*.log
+        multiline.parser    docker, cri
+        DB                  /fluent-bit/state/flb_cw_cert.db
+        Skip_Long_Lines     Off
+        Refresh_Interval    10
+        Rotate_Wait         30
+        storage.type        filesystem
+        Read_from_Head      ${READ_FROM_HEAD}
+        storage.pause_on_chunks_overlimit on
+
+    [INPUT]
+        Name                tail
+        Tag                 cw.kube.*
+        Path                /var/log/containers/*_elastic-stack-logging_*.log
+        Exclude_Path        *bootstrap*.log
+        multiline.parser    docker, cri
+        DB                  /fluent-bit/state/flb_cw_elastic.db
+        Skip_Long_Lines     Off
+        Refresh_Interval    10
+        Rotate_Wait         30
+        storage.type        filesystem
+        Read_from_Head      ${READ_FROM_HEAD}
+        storage.pause_on_chunks_overlimit on
+
+    [INPUT]
+        Name                tail
+        Tag                 cw.kube.*
+        Path                /var/log/containers/*_external-dns_*.log
+        multiline.parser    docker, cri
+        DB                  /fluent-bit/state/flb_cw_dns.db
+        Skip_Long_Lines     Off
+        Refresh_Interval    10
+        Rotate_Wait         30
+        storage.type        filesystem
+        Read_from_Head      ${READ_FROM_HEAD}
+        storage.pause_on_chunks_overlimit on
+
+    [INPUT]
+        Name                tail
+        Tag                 cw.kube.*
+        Path                /var/log/containers/*_kube-system_*.log
+        multiline.parser    docker, cri
+        DB                  /fluent-bit/state/flb_cw_system.db
+        Skip_Long_Lines     Off
+        Refresh_Interval    10
+        Rotate_Wait         30
+        storage.type        filesystem
+        Read_from_Head      ${READ_FROM_HEAD}
+        storage.pause_on_chunks_overlimit on
+
+    [INPUT]
+        Name                tail
+        Tag                 cw.kube.*
+        Path                /var/log/containers/p14c-*.log
+        multiline.parser    docker, cri
+        DB                  /fluent-bit/state/flb_cw_p14c.db
+        Skip_Long_Lines     Off
+        Refresh_Interval    10
+        Rotate_Wait         30
+        storage.type        filesystem
+        Read_from_Head      ${READ_FROM_HEAD}
+        storage.pause_on_chunks_overlimit on
+
+    [INPUT]
+        Name                tail
+        Tag                 cw.kube.*
+        Path                /var/log/containers/*_pod-reaper_*.log
+        multiline.parser    docker, cri
+        DB                  /fluent-bit/state/flb_cw_reaper.db
+        Skip_Long_Lines     Off
+        Refresh_Interval    10
+        Rotate_Wait         30
+        storage.type        filesystem
+        Read_from_Head      ${READ_FROM_HEAD}
+        storage.pause_on_chunks_overlimit on
+
+    [INPUT]
+        Name                tail
+        Tag                 cw.kube.*
+        Path                /var/log/containers/*alertmanager*.log
+        multiline.parser    docker, cri
+        DB                  /fluent-bit/state/flb_cw_alertmanager.db
+        Skip_Long_Lines     Off
+        Refresh_Interval    10
+        Rotate_Wait         30
+        storage.type        filesystem
+        Read_from_Head      ${READ_FROM_HEAD}
+        storage.pause_on_chunks_overlimit on
+
+    [INPUT]
+        Name                tail
+        Tag                 cw.kube.*
+        Path                /var/log/containers/*_karpenter_*.log
+        multiline.parser    docker, cri
+        DB                  /fluent-bit/state/flb_cw_karpenter.db
+        Skip_Long_Lines     Off
+        Refresh_Interval    10
+        Rotate_Wait         30
+        storage.type        filesystem
+        Read_from_Head      ${READ_FROM_HEAD}
+        storage.pause_on_chunks_overlimit on
+
+    # Node log inputs
+    [INPUT]
+        Name                tail
+        Tag                 cw.host.dmesg
+        Path                /var/log/dmesg
+        Parser              dmesg
+        DB                  /fluent-bit/state/flb_cw_dmesg.db
+        Mem_Buf_Limit       10MB
+        Skip_Long_Lines     On
+        Refresh_Interval    10
+        Read_from_Head      ${READ_FROM_HEAD}
+
+    [INPUT]
+        Name                tail
+        Tag                 cw.host.messages
+        Path                /var/log/messages
+        Parser              syslog
+        DB                  /fluent-bit/state/flb_cw_messages.db
+        Mem_Buf_Limit       10MB
+        Skip_Long_Lines     On
+        Refresh_Interval    10
+        Read_from_Head      ${READ_FROM_HEAD}
+
+    [INPUT]
+        Name                tail
+        Tag                 cw.host.secure
+        Path                /var/log/secure
+        Parser              syslog
+        DB                  /fluent-bit/state/flb_cw_secure.db
+        Mem_Buf_Limit       10MB
+        Skip_Long_Lines     On
+        Refresh_Interval    10
+        Read_from_Head      ${READ_FROM_HEAD}
+
+    [INPUT]
+        Name                systemd
+        Tag                 cw.dataplane.systemd.*
+        Systemd_Filter      _SYSTEMD_UNIT=kubelet.service
+        DB                  /fluent-bit/state/flb_cw_systemd.db
+        Path                /var/log/journal
+        Read_From_Tail      ${READ_FROM_TAIL}
+
+    # Kubernetes filters
+    [FILTER]
+        Name                kubernetes
+        Match               cw.kube.*
+        Kube_URL            https://kubernetes.default.svc:443
+        Kube_Tag_Prefix     cw.kube.var.log.containers.
+        K8S-Logging.Parser  On
+        K8S-Logging.Exclude Off
+        Annotations         Off
+        Labels              Off
+        Buffer_Size         1Mb
+        Cache_Use_Docker_Id On
+        Kube_Meta_Cache_TTL 1800
+
+    # Node logs filters
+
+    [FILTER]
+        Name                modify
+        Match               cw.dataplane.systemd.*
+        Rename              _HOSTNAME                   hostname
+        Rename              _SYSTEMD_UNIT               systemd_unit
+        Rename              MESSAGE                     log
+        Remove_regex        ^((?!hostname|systemd_unit|log).)*$
+
+    [FILTER]
+        Name                aws
+        Match               cw.dataplane.*
+        imds_version        v2
+
+    [FILTER]
+        Name                aws
+        Match               cw.host.*
+        private_ip          true
+        imds_version        v2
+        hostname            true
+
+    [FILTER]
+        Name                modify
+        Match               cw.host.dmesg
+        Add                 log_name                    dmesg
+
+    [FILTER]
+        Name                modify
+        Match               cw.host.messages
+        Add                 log_name                    messages
+
+    [FILTER]
+        Name                modify
+        Match               cw.host.secure
+        Add                 log_name                    secure
+
+    # Outputs
+
+    [OUTPUT]
+        Name                http
+        Alias               cw
+        Match               cw.*
+        Host                logstash-elastic.elastic-stack-logging
+        Port                8082
+        Format              json
+        Retry_Limit         False
+        compress            gzip
+        net.keepalive_idle_timeout  10
+        net.keepalive_max_recycle   100
+kind: ConfigMap
+metadata:
+  labels:
+    k8s-app: fluent-bit
+  name: fluent-bit-pipeline-cw-k65k95kkfc
+  namespace: elastic-stack-logging
+---
+apiVersion: v1
+data:
+  elk.conf: |
+    # Inputs
+
+    [INPUT]
+        Name                tail
+        Tag                 elk.kube.general.*
+        Path                /var/log/containers/*_health*.log
+        multiline.parser    docker, cri
+        DB                  /fluent-bit/state/flb_elk_health.db
+        Skip_Long_Lines     Off
+        Refresh_Interval    10
+        Rotate_Wait         30
+        Mem_Buf_Limit       20MB
+        storage.type        filesystem
+        storage.pause_on_chunks_overlimit on
+        Read_from_Head      ${READ_FROM_HEAD}
+
+
+    [INPUT]
+        Name                tail
+        Tag                 elk.kube.general.*
+        Path                /var/log/containers/*_ingress-nginx-*.log
+        multiline.parser    docker, cri
+        DB                  /fluent-bit/state/flb_elk_ingress.db
+        Skip_Long_Lines     Off
+        Refresh_Interval    10
+        Rotate_Wait         30
+        Mem_Buf_Limit       200MB
+        storage.type        filesystem
+        Read_from_Head      ${READ_FROM_HEAD}
+        storage.pause_on_chunks_overlimit on
+
+    [INPUT]
+        Name                tail
+        Tag                 elk.kube.general.*
+        Path                /var/log/containers/*_ping-cloud_*.log
+        Exclude_Path        /var/log/containers/p14c-*.log, *pingcloud-metadata*.log
+        multiline.parser    docker, cri
+        DB                  /fluent-bit/state/flb_elk_ping.db
+        Skip_Long_Lines     Off
+        Refresh_Interval    10
+        Rotate_Wait         30
+        Mem_Buf_Limit       200MB
+        storage.type        filesystem
+        Read_from_Head      ${READ_FROM_HEAD}
+        storage.pause_on_chunks_overlimit on
+
+    [INPUT]
+        Name                tail
+        Tag                 elk.kube.general.*
+        Path                /var/log/containers/*_postgres-operator_*.log
+        multiline.parser    docker, cri
+        DB                  /fluent-bit/state/flb_elk_postgres.db
+        Skip_Long_Lines     Off
+        Refresh_Interval    10
+        Rotate_Wait         30
+        Mem_Buf_Limit       20MB
+        storage.type        filesystem
+        Read_from_Head      ${READ_FROM_HEAD}
+        storage.pause_on_chunks_overlimit on
+
+    # Filters
+
+    [FILTER]
+        Name                  multiline
+        match                 elk.kube.*_ping-cloud_*
+        multiline.key_content log
+        buffer                true
+        flush_ms              500
+        emitter_name          elk.multiline
+        emitter_storage.type  filesystem
+        emitter_mem_buf_limit 100M
+        multiline.parser      multiline_system_log
+
+    [FILTER]
+        Name                kubernetes
+        Match               elk.kube.general.*
+        Kube_URL            https://kubernetes.default.svc:443
+        Kube_Tag_Prefix     elk.kube.general.var.log.containers.
+        K8S-Logging.Parser  On
+        K8S-Logging.Exclude Off
+        Annotations         Off
+        Labels              On
+        Buffer_Size         50Mb
+        Cache_Use_Docker_Id On
+        Kube_Meta_Cache_TTL 1800
+
+    # Output
+    [OUTPUT]
+        Name                http
+        Alias               logstash_out
+        Match               elk.kube.*
+        Host                logstash-elastic.elastic-stack-logging
+        Port                8080
+        Format              json
+        Workers             5
+        Retry_Limit         False
+        compress            gzip
+        net.keepalive_idle_timeout  10
+        net.keepalive_max_recycle   100
+        storage.total_limit_size    1000M
+kind: ConfigMap
+metadata:
+  labels:
+    k8s-app: fluent-bit
+  name: fluent-bit-pipeline-elk-gtmf85g8k8
+  namespace: elastic-stack-logging
+---
+apiVersion: v1
+data:
+  nr.conf: |
+    # Kubernetes inputs
+    [INPUT]
+        Name                tail
+        Tag                 nr.kube.*
+        Path                /var/log/containers/*_external-dns_*.log
+        multiline.parser    docker, cri
+        DB                  /fluent-bit/state/flb_nr_dns.db
+        Skip_Long_Lines     Off
+        Refresh_Interval    10
+        Rotate_Wait         30
+        storage.type        filesystem
+        Read_from_Head      ${READ_FROM_HEAD}
+        storage.pause_on_chunks_overlimit on
+
+    [INPUT]
+        Name                tail
+        Tag                 nr.kube.*
+        Path                /var/log/containers/*_kube-system_*.log
+        Exclude_Path        *kube-proxy*.log, *sealed-secrets-controller*.log
+        multiline.parser    docker, cri
+        DB                  /fluent-bit/state/flb_nr_system.db
+        Skip_Long_Lines     Off
+        Refresh_Interval    10
+        Rotate_Wait         30
+        storage.type        filesystem
+        Read_from_Head      ${READ_FROM_HEAD}
+        storage.pause_on_chunks_overlimit on
+
+    # Node log inputs
+    [INPUT]
+        Name                tail
+        Tag                 nr.host.dmesg
+        Path                /var/log/dmesg
+        Parser              dmesg
+        DB                  /fluent-bit/state/flb_nr_dmesg.db
+        Mem_Buf_Limit       10MB
+        Skip_Long_Lines     On
+        Refresh_Interval    10
+        Read_from_Head      ${READ_FROM_HEAD}
+
+
+    [INPUT]
+        Name                tail
+        Tag                 nr.host.messages
+        Path                /var/log/messages
+        Parser              syslog
+        DB                  /fluent-bit/state/flb_nr_messages.db
+        Mem_Buf_Limit       10MB
+        Skip_Long_Lines     On
+        Refresh_Interval    10
+        Read_from_Head      ${READ_FROM_HEAD}
+
+    [INPUT]
+        Name                tail
+        Tag                 nr.host.secure
+        Path                /var/log/secure
+        Parser              syslog
+        DB                  /fluent-bit/state/flb_nr_secure.db
+        Mem_Buf_Limit       10MB
+        Skip_Long_Lines     On
+        Refresh_Interval    10
+        Read_from_Head      ${READ_FROM_HEAD}
+
+    # Kubernetes filters
+
+    [FILTER]
+        Name           kubernetes
+        Match          nr.kube.*
+        Kube_URL       https://kubernetes.default.svc:443
+        Kube_Tag_Prefix nr.kube.var.log.containers.
+        Buffer_Size    32k
+        K8S-Logging.Exclude Off
+        Labels         Off
+        Annotations    Off
+        Cache_Use_Docker_Id On
+        Kube_Meta_Cache_TTL 1800
+
+    [FILTER]
+        Name           nest
+        Match          nr.kube.*
+        Operation      lift
+        Nested_under   kubernetes
+
+    [FILTER]
+        Name           record_modifier
+        Match          nr.kube.*
+        Record         cluster_name ${NR_CLUSTER_NAME}
+        Allowlist_key  container_name
+        Allowlist_key  namespace_name
+        Allowlist_key  pod_name
+        Allowlist_key  stream
+        Allowlist_key  message
+        Allowlist_key  log
+
+    # Node log filters
+
+    [FILTER]
+        Name                aws
+        Match               nr.dataplane.*
+        imds_version        v2
+
+    [FILTER]
+        Name                record_modifier
+        Match               nr.dataplane.*
+        Record              cluster_name ${NR_CLUSTER_NAME}
+
+    [FILTER]
+        Name                aws
+        Match               nr.host.*
+        private_ip          true
+        imds_version        v2
+        hostname            true
+
+    [FILTER]
+        Name                record_modifier
+        Match               nr.host.*
+        Record              cluster_name ${NR_CLUSTER_NAME}
+
+    # Output
+
+    [OUTPUT]
+        Name                http
+        Alias               nr_out
+        Match               nr.*
+        Host                logstash-elastic.elastic-stack-logging
+        Port                8083
+        Format              json
+        Retry_Limit         False
+        compress            gzip
+        net.keepalive_idle_timeout  10
+        net.keepalive_max_recycle   100
+kind: ConfigMap
+metadata:
+  labels:
+    k8s-app: fluent-bit
+  name: fluent-bit-pipeline-nr-ff7c55h5fb
+  namespace: elastic-stack-logging
+---
+apiVersion: v1
+data:
+  s3.conf: |
+    # Inputs
+
+    [INPUT]
+        Name                tail
+        Tag                 s3.kube.*
+        Path                /var/log/containers/*_amazon-cloudwatch_*.log
+        multiline.parser    docker, cri
+        DB                  /fluent-bit/state/flb_s3_cw.db
+        Skip_Long_Lines     Off
+        Refresh_Interval    10
+        Rotate_Wait         30
+        storage.type        filesystem
+        Read_from_Head      ${READ_FROM_HEAD}
+        storage.pause_on_chunks_overlimit on
+
+    [INPUT]
+        Name                tail
+        Tag                 s3.kube.*
+        Path                /var/log/containers/*_health*.log
+        multiline.parser    docker, cri
+        DB                  /fluent-bit/state/flb_s3_health.db
+        Skip_Long_Lines     Off
+        Refresh_Interval    10
+        Rotate_Wait         30
+        storage.type        filesystem
+        storage.pause_on_chunks_overlimit on
+        Read_from_Head      ${READ_FROM_HEAD}
+
+    [INPUT]
+        Name                tail
+        Tag                 s3.kube.*
+        Path                /var/log/containers/*_ingress-nginx-*.log
+        multiline.parser    docker, cri
+        DB                  /fluent-bit/state/flb_s3_ingress.db
+        Skip_Long_Lines     Off
+        Refresh_Interval    10
+        Rotate_Wait         30
+        storage.type        filesystem
+        storage.pause_on_chunks_overlimit on
+        Read_from_Head      ${READ_FROM_HEAD}
+
+    [INPUT]
+        Name                tail
+        Tag                 s3.kube.*
+        Path                /var/log/containers/*_ping-cloud_*.log
+        Exclude_Path        /var/log/containers/p14c-*.log
+        multiline.parser    docker, cri
+        DB                  /fluent-bit/state/flb_s3_ping.db
+        Skip_Long_Lines     Off
+        Refresh_Interval    10
+        Rotate_Wait         30
+        Mem_Buf_Limit       200MB
+        storage.type        filesystem
+        storage.pause_on_chunks_overlimit on
+        Read_from_Head      ${READ_FROM_HEAD}
+
+    [INPUT]
+        Name                tail
+        Tag                 s3.kube.*
+        Path                /var/log/containers/*_postgres-operator_*.log
+        multiline.parser    docker, cri
+        DB                  /fluent-bit/state/flb_s3_postgres.db
+        Skip_Long_Lines     Off
+        Refresh_Interval    10
+        Rotate_Wait         30
+        storage.type        filesystem
+        storage.pause_on_chunks_overlimit on
+        Read_from_Head      ${READ_FROM_HEAD}
+
+    [INPUT]
+        Name                tail
+        Tag                 s3.kube.*
+        Path                /var/log/containers/*_prometheus_*.log
+        Exclude_Path        *alertmanager*.log
+        multiline.parser    docker, cri
+        DB                  /fluent-bit/state/flb_s3_prometheus.db
+        Skip_Long_Lines     Off
+        Refresh_Interval    10
+        Rotate_Wait         30
+        storage.type        filesystem
+        storage.pause_on_chunks_overlimit on
+        Read_from_Head      ${READ_FROM_HEAD}
+
+    # Filters
+
+    [FILTER]
+        Name                  multiline
+        match                 s3.kube.*_ping-cloud_*
+        multiline.key_content log
+        buffer                true
+        flush_ms              500
+        emitter_name          s3.multiline
+        emitter_storage.type  filesystem
+        emitter_mem_buf_limit 500M
+        multiline.parser      multiline_system_log
+
+    [FILTER]
+        Name                kubernetes
+        Match               s3.kube.*
+        Kube_URL            https://kubernetes.default.svc:443
+        Kube_Tag_Prefix     s3.kube.var.log.containers.
+        K8S-Logging.Parser  On
+        K8S-Logging.Exclude Off
+        Annotations         Off
+        Labels              On
+        Buffer_Size         50Mb
+        Cache_Use_Docker_Id On
+        Kube_Meta_Cache_TTL 1800
+        Use_Kubelet         On
+
+
+    # Output
+
+    [OUTPUT]
+        Name                http
+        Alias               s3_app_out
+        Match               s3.kube.*
+        Host                logstash-elastic.elastic-stack-logging
+        Port                8081
+        Format              json
+        Retry_Limit         False
+        compress            gzip
+        net.keepalive_idle_timeout  10
+        net.keepalive_max_recycle   100
+kind: ConfigMap
+metadata:
+  labels:
+    k8s-app: fluent-bit
+  name: fluent-bit-pipeline-s3-5k42bb26bf
+  namespace: elastic-stack-logging
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    k8s-app: fluent-bit
+  name: fluent-bit
+  namespace: elastic-stack-logging
+spec:
+  selector:
+    matchLabels:
+      k8s-app: fluent-bit
+  template:
+    metadata:
+      annotations:
+        prometheus.io/path: /api/v1/metrics/prometheus
+        prometheus.io/port: "2020"
+        prometheus.io/scheme: http
+        prometheus.io/scrape: "true"
+      labels:
+        k8s-app: fluent-bit
+    spec:
+      containers:
+      - env:
+        - name: READ_FROM_HEAD
+          valueFrom:
+            configMapKeyRef:
+              key: read.head
+              name: cluster-info
+        - name: READ_FROM_TAIL
+          valueFrom:
+            configMapKeyRef:
+              key: read.tail
+              name: cluster-info
+        - name: HOST_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: FLB_LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              key: log.level
+              name: cluster-info
+        - name: NR_CLUSTER_NAME
+          valueFrom:
+            configMapKeyRef:
+              key: newrelic_cluster_name
+              name: cluster-info
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/fluent/fluent-bit:2.1.8
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /api/v1/health
+            port: 2020
+          initialDelaySeconds: 20
+          periodSeconds: 180
+          timeoutSeconds: 5
+        name: fluent-bit
+        ports:
+        - containerPort: 2020
+          name: metrics
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /
+            port: 2020
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: "1"
+            memory: 1Gi
+          requests:
+            cpu: 200m
+            memory: 100Mi
+        securityContext:
+          capabilities:
+            add:
+            - CAP_FOWNER
+            drop:
+            - ALL
+        volumeMounts:
+        - mountPath: /fluent-bit/state
+          name: fluentbitstate
+        - mountPath: /var/log
+          name: varlog
+          readOnly: true
+        - mountPath: /var/lib/docker/containers
+          name: varlibdockercontainers
+          readOnly: true
+        - mountPath: /fluent-bit/etc/fluent-bit.conf
+          name: fluent-bit-config
+          subPath: fluent-bit.conf
+        - mountPath: /fluent-bit/etc/parsers.conf
+          name: fluent-bit-parsers
+          subPath: parsers.conf
+        - mountPath: /fluent-bit/etc/pipelines_cw.conf
+          name: fluent-bit-pipeline-cw
+          subPath: cw.conf
+        - mountPath: /fluent-bit/etc/pipelines_elk.conf
+          name: fluent-bit-pipeline-elk
+          subPath: elk.conf
+        - mountPath: /fluent-bit/etc/pipelines_nr.conf
+          name: fluent-bit-pipeline-nr
+          subPath: nr.conf
+        - mountPath: /fluent-bit/etc/pipelines_s3.conf
+          name: fluent-bit-pipeline-s3
+          subPath: s3.conf
+        - mountPath: /fluent-bit/etc/pipelines_customer.conf
+          name: fluent-bit-pipeline-customer
+          subPath: customer.conf
+        - mountPath: /run/log/journal
+          name: runlogjournal
+          readOnly: true
+        - mountPath: /var/log/dmesg
+          name: dmesg
+          readOnly: true
+      dnsPolicy: ClusterFirstWithHostNet
+      hostNetwork: true
+      priorityClassName: high-priority-apps-to-avoid-pending-state
+      serviceAccountName: fluent-bit
+      terminationGracePeriodSeconds: 10
+      tolerations:
+      - effect: NoSchedule
+        key: node-role.kubernetes.io/controlplane
+        operator: Exists
+      - effect: NoExecute
+        operator: Exists
+      - effect: NoSchedule
+        operator: Exists
+      volumes:
+      - hostPath:
+          path: /fluent-bit/state
+        name: fluentbitstate
+      - hostPath:
+          path: /var/log
+        name: varlog
+      - hostPath:
+          path: /var/lib/docker/containers
+        name: varlibdockercontainers
+      - configMap:
+          name: fluent-bit-config-gbbk7dtckh
+        name: fluent-bit-config
+      - configMap:
+          name: fluent-bit-parsers-9kt7db5k5c
+        name: fluent-bit-parsers
+      - configMap:
+          name: fluent-bit-pipeline-cw-k65k95kkfc
+        name: fluent-bit-pipeline-cw
+      - configMap:
+          name: fluent-bit-pipeline-elk-gtmf85g8k8
+        name: fluent-bit-pipeline-elk
+      - configMap:
+          name: fluent-bit-pipeline-nr-ff7c55h5fb
+        name: fluent-bit-pipeline-nr
+      - configMap:
+          name: fluent-bit-pipeline-s3-5k42bb26bf
+        name: fluent-bit-pipeline-s3
+      - configMap:
+          name: fluent-bit-pipeline-customer-h29h8f4cfh
+        name: fluent-bit-pipeline-customer
+      - hostPath:
+          path: /run/log/journal
+        name: runlogjournal
+      - hostPath:
+          path: /var/log/dmesg
+        name: dmesg

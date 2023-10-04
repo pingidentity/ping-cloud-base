@@ -8,7 +8,7 @@ workflow:
 
 ## Pipeline stages ##
 stages:
-- compile
+# - compile
 - security
 - find-cluster
 - deploy
@@ -29,21 +29,21 @@ variables:
     pingdirectory/08-test-http-connection-handler.sh
 
 ## Compile stage ##
-compile:
- stage: compile
- tags:
-   - default-gitlab-runner-ping-cloud
- image: ${K8S_DEPLOY_TOOLS}
- variables:
-   YAML_OUT_DIR: $CI_PROJECT_DIR/out
- before_script:
-   - mkdir -p $YAML_OUT_DIR
- script:
-   - ${SHARED_CI_SCRIPTS_DIR}/k8s/compile/compile.sh
- artifacts:
-   paths:
-     - out/
-   expire_in: 1 day
+# compile:
+#  stage: compile
+#  tags:
+#    - default-gitlab-runner-ping-cloud
+#  image: ${K8S_DEPLOY_TOOLS}
+#  variables:
+#    YAML_OUT_DIR: $CI_PROJECT_DIR/out
+#  before_script:
+#    - mkdir -p $YAML_OUT_DIR
+#  script:
+#    - ${SHARED_CI_SCRIPTS_DIR}/k8s/compile/compile.sh
+#  artifacts:
+#    paths:
+#      - out/
+#    expire_in: 1 day
    
 ## start security stage ##
 copy-images:
@@ -54,10 +54,11 @@ copy-images:
   variables:
     BELUGA_VERSION: $CI_COMMIT_REF_NAME
     ARTIFACTORY_URL: "docker.corp.pingidentity.com:5900/beluga-xray"
-    YAML_OUT_DIR: $CI_PROJECT_DIR/out/
+    YAML_OUT_DIR: $CI_PROJECT_DIR/test/out/
   allow_failure: true
   before_script:
-    - aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
+    - aws sts get-caller-identity
+    - aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | HOME=/tmp docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
   script:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/security/copy-images.sh
   tags:

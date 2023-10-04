@@ -1,0 +1,329 @@
+allowVolumeExpansion: true
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingdatasync
+  name: pingdatasync-gp3
+parameters:
+  csi.storage.k8s.io/fstype: ext4
+  encrypted: "true"
+  type: gp3
+provisioner: ebs.csi.aws.com
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: pingdatasync-dev.ping-demo.com
+    service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+  labels:
+    app: ping-cloud
+    role: pingdatasync
+  name: pingdatasync-admin
+  namespace: ping-cloud
+spec:
+  externalTrafficPolicy: Local
+  ports:
+  - name: ldap
+    port: 1389
+  - name: ldaps
+    port: 1636
+  - name: https
+    port: 1443
+  selector:
+    app: ping-cloud
+    class: pingdatasync-server
+    role: pingdatasync
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: ping-cloud
+    class: pingdatasync-server
+    role: pingdatasync
+  name: pingdatasync
+  namespace: ping-cloud
+spec:
+  podManagementPolicy: OrderedReady
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ping-cloud
+      class: pingdatasync-server
+      role: pingdatasync
+  serviceName: pingdatasync-admin
+  template:
+    metadata:
+      annotations:
+        lastUpdateReason: NA
+      labels:
+        app: ping-cloud
+        class: pingdatasync-server
+        role: pingdatasync
+      name: pingdatasync
+    spec:
+      containers:
+      - env:
+        - name: ROOT_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: root-user-password
+              name: pingdatasync-passwords
+        - name: EXT_PD_SYNC_BIND_DN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: EXT_PD_SYNC_BIND_DN_PASSWORD
+              name: pingdatasync-passwords
+        - name: EXT_PD_ADMIN_BIND_DN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: EXT_PD_ADMIN_BIND_DN_PASSWORD
+              name: pingdatasync-passwords
+        - name: P1AS_PD_SYNC_BIND_DN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: root-user-password
+              name: pingdirectory-passwords
+        - name: P1AS_PD_LDAP_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: LDAP_PORT
+              name: pingdirectory-environment-variables
+        - name: P1AS_PD_LDAPS_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: LDAPS_PORT
+              name: pingdirectory-environment-variables
+        - name: P1AS_PD_ADMIN_BIND_DN
+          valueFrom:
+            configMapKeyRef:
+              key: ADMIN_BIND_DN
+              name: pingdirectory-environment-variables
+        - name: P1AS_PD_SYNC_BIND_DN
+          valueFrom:
+            configMapKeyRef:
+              key: SYNC_BIND_DN
+              name: pingdirectory-environment-variables
+        - name: PINGDATASYNC_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: PINGDATASYNC_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        envFrom:
+        - configMapRef:
+            name: pingdatasync-environment-variables
+        - configMapRef:
+            name: pingcommon-environment-variables
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdatasync/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        livenessProbe:
+          exec:
+            command:
+            - /opt/liveness.sh
+          failureThreshold: 5
+          initialDelaySeconds: 90
+          periodSeconds: 30
+          timeoutSeconds: 5
+        name: pingdatasync
+        ports:
+        - containerPort: 1389
+          name: ldap
+        - containerPort: 1636
+          name: ldaps
+        - containerPort: 1443
+          name: https
+        readinessProbe:
+          exec:
+            command:
+            - /opt/readiness.sh
+          failureThreshold: 5
+          initialDelaySeconds: 90
+          periodSeconds: 5
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: "2"
+            memory: 4Gi
+          requests:
+            cpu: "2"
+            memory: 4Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /home/ping/.ssh
+          name: ssh-dir
+        - mountPath: /opt/out
+          name: out-dir
+        - mountPath: /usr/local/bin/kubectl
+          name: data-dir
+          subPath: kubectl
+        - mountPath: /opt/staging/ds_env_vars
+          name: data-dir
+          subPath: ds_env_vars
+        - mountPath: /opt/staging/hooks/logger.lib.sh
+          name: data-dir
+          subPath: logger.lib.sh
+        - mountPath: /opt/staging/topology/descriptor.json
+          name: topology-descriptor
+          subPath: descriptor.json
+        - mountPath: /usr/local/secrets
+          name: pingdatasync-passwords
+          readOnly: true
+        - mountPath: /opt/in/instance/conf/PingDirectory.lic
+          name: pingdirectory-license
+          subPath: PingDirectory.lic
+      initContainers:
+      - command:
+        - /get_ssm_env_vars.sh
+        envFrom:
+        - configMapRef:
+            name: pingdatasync-environment-variables
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-cli:2.0.17
+        imagePullPolicy: IfNotPresent
+        name: pingdatasync-discovery-service
+        volumeMounts:
+        - mountPath: /config
+          name: data-dir
+        - mountPath: /get_ssm_env_vars.sh
+          name: discovery-service
+          subPath: get_ssm_env_vars.sh
+      - command:
+        - /wait-for-pds.sh
+        env:
+        - name: P1AS_PD_LDAP_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: LDAP_PORT
+              name: pingdirectory-environment-variables
+        - name: P1AS_PD_LDAPS_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: LDAPS_PORT
+              name: pingdirectory-environment-variables
+        envFrom:
+        - configMapRef:
+            name: pingdatasync-environment-variables
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/busybox:1.32
+        imagePullPolicy: IfNotPresent
+        name: wait-for-pds
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /utils.lib.sh
+          name: pingdatasync-init
+          subPath: utils.lib.sh
+        - mountPath: /logger.lib.sh
+          name: pingdatasync-init
+          subPath: logger.lib.sh
+        - mountPath: /wait-for-pds.sh
+          name: pingdatasync-init
+          subPath: wait-for-pds.sh
+      - command:
+        - /copy-dependencies.sh
+        envFrom:
+        - configMapRef:
+            name: pingdatasync-environment-variables
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.15.0
+        imagePullPolicy: IfNotPresent
+        name: pingdatasync-init
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /.ssh
+          name: ssh-dir
+        - mountPath: /data
+          name: data-dir
+        - mountPath: /id_rsa
+          name: ssh-id-key-secret
+          subPath: id_rsa
+        - mountPath: /known_hosts
+          name: known-hosts-config
+          subPath: known_hosts
+        - mountPath: /copy-dependencies.sh
+          name: pingdatasync-init
+          subPath: copy-dependencies.sh
+        - mountPath: /utils.lib.sh
+          name: pingdatasync-init
+          subPath: utils.lib.sh
+        - mountPath: /logger.lib.sh
+          name: pingdatasync-init
+          subPath: logger.lib.sh
+      securityContext:
+        fsGroup: 9999
+      serviceAccountName: ping-serviceaccount
+      terminationGracePeriodSeconds: 300
+      volumes:
+      - configMap:
+          defaultMode: 365
+          name: discovery-service
+        name: discovery-service
+      - emptyDir: {}
+        name: ssh-dir
+      - emptyDir: {}
+        name: data-dir
+      - configMap:
+          defaultMode: 365
+          name: pingcommon-init
+        name: pingdatasync-init
+      - configMap:
+          defaultMode: 420
+          name: topology-descriptor
+          optional: true
+        name: topology-descriptor
+      - name: ssh-id-key-secret
+        secret:
+          defaultMode: 256
+          optional: true
+          secretName: ssh-id-key-secret
+      - configMap:
+          defaultMode: 420
+          name: known-hosts-config
+          optional: true
+        name: known-hosts-config
+      - name: out-dir
+        persistentVolumeClaim:
+          claimName: out-dir
+      - name: pingdatasync-passwords
+        secret:
+          defaultMode: 288
+          optional: true
+          secretName: pingdatasync-passwords
+      - name: pingdirectory-license
+        secret:
+          defaultMode: 256
+          optional: true
+          secretName: pingdirectory-license
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - metadata:
+      labels:
+        app: ping-cloud
+        role: pingdatasync
+      name: out-dir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 20Gi
+      storageClassName: pingdatasync-gp3

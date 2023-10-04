@@ -1,0 +1,1174 @@
+allowVolumeExpansion: true
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingaccess-gp3
+parameters:
+  csi.storage.k8s.io/fstype: ext4
+  encrypted: "true"
+  type: gp3
+provisioner: ebs.csi.aws.com
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: v1
+data:
+  config.yml: |-
+    ---
+    metrics:
+    - name: metric_pingaccess_response_concurrency_statistics_90_percentile
+      path: '{.response\.concurrency\.statistics\.90\.percentile}'
+      labels:
+        environment: pingaccess
+        source: heartbeat
+    - name: metric_pingaccess_response_statistics_count
+      path: '{.response\.statistics\.count}'
+      labels:
+        environment: pingaccess
+        source: heartbeat
+    - name: metric_pingaccess_response_time_statistics_90_percentile
+      path: '{.response\.time\.statistics\.90\.percentile}'
+      labels:
+        environment: pingaccess
+        source: heartbeat
+    - name: metric_pingaccess_response_concurrency_statistics_mean
+      path: '{.response\.concurrency\.statistics\.mean}'
+      labels:
+        environment: pingaccess
+        source: heartbeat
+    - name: metric_pingaccess_response_time_statistics_mean
+      path: '{.response\.time\.statistics\.mean}'
+      labels:
+        environment: pingaccess
+        source: heartbeat
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+  name: pa-exporter-config
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  ACCEPT_EULA: "YES"
+  API_RETRY_LIMIT: "10"
+  API_TIMEOUT_WAIT: "5"
+  BACKUP_FILE_NAME: ""
+  CONFIG_QUERY_KP_VALID_DAYS: "365"
+  JAVA_OPTS: -javaagent:/opt/staging/jmx_prometheus_javaagent-0.14.0.jar=8080:/opt/in/instance/conf/jmx_export_config.yaml
+  K8S_ACME_CERT_SECRET_NAME: acme-tls-cert
+  K8S_SERVICE_NAME_PINGACCESS_ADMIN: pingaccess-admin
+  K8S_STATEFUL_SET_NAME_PINGACCESS: pingaccess-admin
+  K8S_TAIL_LOG_FILES: /opt/out/instance/log/pingaccess_engine_audit.log /opt/out/instance/log/pingaccess_api_audit.log
+    /opt/out/instance/log/pingaccess_agent_audit.log /opt/out/instance/log/pingaccess_sideband_audit.log
+    /opt/out/instance/log/pingaccess_sideband_client_audit.log /opt/out/instance/log/pingaccess.log
+    /opt/out/instance/upgrade/log/upgrade.log /opt/out/instance/upgrade/log/audit.log
+    /opt/out/instance/upgrade/log/upgrade_status.log
+  ORCHESTRATION_TYPE: kubernetes
+  PA_ADMIN_API_RATE_LIMIT: "5000"
+  PA_ADMIN_API_RATE_LIMIT_POLICY: ""
+  PA_ADMIN_APPLICATIONS: ""
+  PA_ADMIN_PORT: "9000"
+  PA_ADMIN_SERVER: pingaccess-admin
+  PA_ADMIN_USER_USERNAME: Administrator
+  PA_CLUSTER_PORT: "9090"
+  PA_CLUSTER_PRIVATE_HOSTNAME: pingaccess-admin
+  PA_ENGINE_PORT: "3000"
+  PA_GCOPTION: -XX:-UseParallelGC -XX:MinHeapFreeRatio=20 -XX:MaxHeapFreeRatio=40
+    -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90
+  PA_MAX_HEAP: 1024m
+  PA_MAX_YGEN: 512m
+  PA_MIN_HEAP: 1024m
+  PA_MIN_YGEN: 512m
+  PA_WAS_CLUSTER_PORT: "9090"
+  PA_WAS_CLUSTER_PRIVATE_HOSTNAME: pingaccess-was-admin
+  PD_CLUSTER_PORT: "8989"
+  PD_CLUSTER_PRIVATE_HOSTNAME: pingdirectory
+  PF_CLUSTER_PORT: "7600"
+  PF_CLUSTER_PRIVATE_HOSTNAME: pingfederate-cluster
+  PING_IDENTITY_ACCEPT_EULA: "YES"
+  REGION: us-west-2
+  RESTORE_BACKUP: "true"
+  SECRETS_DIR: /usr/local/secrets
+  SERVER_PROFILE_BRANCH: v1.19-release-branch
+  SERVER_PROFILE_PATH: profiles/pingaccess
+  SERVER_PROFILE_URL: https://github.com/pingidentity/ping-cloud-base.git
+  SKIP_LIVENESS: "false"
+  TAIL_LOG_FILES: ""
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingaccess-admin-environment-variables
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  backup-archive-data.sh: |-
+    #!/bin/sh
+
+    # Install kubectl
+    curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
+    -o /tmp/kubectl
+
+    chmod +x /tmp/kubectl
+
+    UPLOAD_FILES=
+    SERVER="${K8S_STATEFUL_SET_NAME_PINGACCESS}-0"
+    SCRIPT="${HOOKS_DIR}"/90-upload-backup-s3.sh
+    LOG_FILE=/tmp/upload.log
+
+    echo "Uploading pingaccess backup data on server ${SERVER}"
+    /tmp/kubectl exec "${SERVER}" -- sh -c \
+            "test -x ${SCRIPT} && \
+            ${SCRIPT}"> "${LOG_FILE}"
+
+    if test ${?} -eq 0; then
+      # Sending logs to STDOUT
+      cat ${LOG_FILE}
+      UPLOAD_FILE=$(tail -1 "${LOG_FILE}")
+      test -z "${UPLOAD_FILES}" && UPLOAD_FILES="${UPLOAD_FILE}" || UPLOAD_FILES="${UPLOAD_FILES} ${UPLOAD_FILE}"
+    else
+      echo "Upload script not found on server ${SERVER}"
+    fi
+
+    # Print the names of the uploaded files so callers know exactly what was uploaded
+    echo "The following files were uploaded:"
+    echo "${UPLOAD_FILES}"
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingaccess-backup
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  ACCEPT_EULA: "YES"
+  API_RETRY_LIMIT: "10"
+  API_TIMEOUT_WAIT: "5"
+  BACKUP_FILE_NAME: ""
+  CONFIG_QUERY_KP_VALID_DAYS: "365"
+  JAVA_OPTS: -javaagent:/opt/staging/jmx_prometheus_javaagent-0.14.0.jar=8080:/opt/in/instance/conf/jmx_export_config.yaml
+  K8S_ACME_CERT_SECRET_NAME: acme-tls-cert
+  K8S_SERVICE_NAME_PINGACCESS_ADMIN: pingaccess-admin
+  K8S_STATEFUL_SET_NAME_PINGACCESS: pingaccess-admin
+  K8S_TAIL_LOG_FILES: /opt/out/instance/log/pingaccess_engine_audit.log /opt/out/instance/log/pingaccess_api_audit.log
+    /opt/out/instance/log/pingaccess_agent_audit.log /opt/out/instance/log/pingaccess_sideband_audit.log
+    /opt/out/instance/log/pingaccess_sideband_client_audit.log /opt/out/instance/log/pingaccess.log
+    /opt/out/instance/upgrade/log/upgrade.log /opt/out/instance/upgrade/log/audit.log
+    /opt/out/instance/upgrade/log/upgrade_status.log
+  ORCHESTRATION_TYPE: kubernetes
+  PA_ADMIN_API_RATE_LIMIT: "5000"
+  PA_ADMIN_API_RATE_LIMIT_POLICY: ""
+  PA_ADMIN_APPLICATIONS: ""
+  PA_ADMIN_PORT: "9000"
+  PA_ADMIN_SERVER: pingaccess-admin
+  PA_ADMIN_USER_USERNAME: Administrator
+  PA_CLUSTER_PORT: "9090"
+  PA_CLUSTER_PRIVATE_HOSTNAME: pingaccess-admin
+  PA_ENGINE_PORT: "3000"
+  PA_GCOPTION: -XX:-UseParallelGC -XX:MinHeapFreeRatio=20 -XX:MaxHeapFreeRatio=40
+    -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90
+  PA_MAX_HEAP: 1024m
+  PA_MAX_YGEN: 512m
+  PA_MIN_HEAP: 1024m
+  PA_MIN_YGEN: 512m
+  PA_WAS_CLUSTER_PORT: "9090"
+  PA_WAS_CLUSTER_PRIVATE_HOSTNAME: pingaccess-was-admin
+  PD_CLUSTER_PORT: "8989"
+  PD_CLUSTER_PRIVATE_HOSTNAME: pingdirectory
+  PF_CLUSTER_PORT: "7600"
+  PF_CLUSTER_PRIVATE_HOSTNAME: pingfederate-cluster
+  PING_IDENTITY_ACCEPT_EULA: "YES"
+  REGION: us-west-2
+  RESTORE_BACKUP: "true"
+  SECRETS_DIR: /usr/local/secrets
+  SERVER_PROFILE_BRANCH: v1.19-release-branch
+  SERVER_PROFILE_PATH: profiles/pingaccess
+  SERVER_PROFILE_URL: https://github.com/pingidentity/ping-cloud-base.git
+  SKIP_LIVENESS: "false"
+  TAIL_LOG_FILES: ""
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingaccess-environment-variables
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  backup-csd-data.sh: |-
+    #!/bin/sh
+
+    # Install kubectl
+    curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
+    -o /tmp/kubectl
+
+    chmod +x /tmp/kubectl
+
+    REPLICAS=$(/tmp/kubectl get pods -l=role="${CSD_POD_ROLE}" -o name)
+
+    CSD_FILES=
+    for REPLICA in ${REPLICAS}; do
+      SERVER=${REPLICA}
+      SCRIPT="${HOOKS_DIR}"/82-upload-csd-s3.sh
+      LOG_FILE=/tmp/upload.log
+
+      echo "Uploading CSD on server ${SERVER}"
+      /tmp/kubectl exec "${SERVER}" -c "${CSD_CONTAINER_NAME}" -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" >"${LOG_FILE}"
+
+      # Sending logs to STDOUT
+      cat ${LOG_FILE}
+
+      if test ${?} -eq 0; then
+        CSD_FILE=$(tail -1 "${LOG_FILE}")
+        test -z "${CSD_FILES}" && CSD_FILES="${CSD_FILE}" || CSD_FILES="${CSD_FILES} ${CSD_FILE}"
+
+        # Print the names of the uploaded files so callers know exactly what was uploaded
+        echo "The following files were uploaded:"
+        echo "${CSD_FILES}"
+      else
+        exit_code=${?}
+        echo "The kubectl command attempting to invoke the script exited with: ${exit_code}"
+        echo "This may be because: "
+        echo "1) The ${SCRIPT} script is not currently available on the ${SERVER}.  This is expected if ${SERVER} is not running yet."
+        echo "2) The ${SCRIPT} script exited with an error.  Please review the logs above to determine if this is the case."
+      fi
+    done
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingaccess-periodic-csd-upload
+  namespace: ping-cloud
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+  labels:
+    app: ping-cloud
+  name: pingaccess-license
+  namespace: ping-cloud
+type: Opaque
+---
+apiVersion: v1
+data:
+  OLD_PA_ADMIN_USER_PASSWORD: MkFjY2Vzcw==
+  PA_ADMIN_USER_PASSWORD: MkZlZGVyYXRlTTByZQ==
+kind: Secret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+  labels:
+    app: ping-cloud
+  name: pingaccess-passwords
+  namespace: ping-cloud
+type: Opaque
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingaccess
+  namespace: ping-cloud
+spec:
+  ports:
+  - name: pingaccess-engine
+    port: 443
+    targetPort: 3000
+  - name: pingaccess-agent
+    port: 3030
+  - name: metrics
+    port: 8080
+  - name: pa-heartbeat
+    port: 8079
+  selector:
+    app: ping-cloud
+    role: pingaccess-engine
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: pingaccess-cluster-dev.ping-demo.com
+  labels:
+    app: ping-cloud
+  name: pingaccess-admin
+  namespace: ping-cloud
+spec:
+  clusterIP: None
+  ports:
+  - name: pingaccess-admin
+    port: 9000
+  - name: pingaccess-cluster
+    port: 9090
+  selector:
+    app: ping-cloud
+    role: pingaccess-admin
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: ping-cloud
+    cluster: pingaccess-cluster
+    role: pingaccess-engine
+  name: pingaccess
+  namespace: ping-cloud
+spec:
+  podManagementPolicy: OrderedReady
+  selector:
+    matchLabels:
+      app: ping-cloud
+      role: pingaccess-engine
+  serviceName: pingaccess
+  template:
+    metadata:
+      annotations:
+        lastUpdateReason: NA
+      labels:
+        app: ping-cloud
+        cluster: pingaccess-cluster
+        pod-reaper: enabled
+        role: pingaccess-engine
+      name: pingaccess-engine
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: role
+                  operator: In
+                  values:
+                  - pingaccess-engine
+              topologyKey: topology.kubernetes.io/zone
+            weight: 1
+      containers:
+      - env:
+        - name: OPERATIONAL_MODE
+          value: CLUSTERED_ENGINE
+        - name: PA_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: PA_ADMIN_USER_PASSWORD
+              name: pingaccess-passwords
+        - name: NEW_RELIC_CONFIG_FILE
+          value: /opt/shared-dir/newrelic.yml
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
+        envFrom:
+        - configMapRef:
+            name: pingaccess-environment-variables
+        - secretRef:
+            name: newrelic-license-key
+            optional: false
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - /opt/staging/hooks/86-pre-stop.sh
+        livenessProbe:
+          exec:
+            command:
+            - /opt/staging/hooks/99-pa-engine-liveness.sh
+          failureThreshold: 4
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 5
+        name: pingaccess
+        ports:
+        - containerPort: 3000
+        - containerPort: 3030
+        - containerPort: 8080
+        readinessProbe:
+          exec:
+            command:
+            - /opt/staging/hooks/99-pa-engine-liveness.sh
+          failureThreshold: 3
+          initialDelaySeconds: 60
+          periodSeconds: 5
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: "1"
+            memory: 2Gi
+          requests:
+            cpu: "1"
+            memory: 2Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /home/ping/.ssh
+          name: ssh-dir
+        - mountPath: /opt/shared-dir
+          name: shared-dir
+        - mountPath: /opt/staging/topology/descriptor.json
+          name: topology-descriptor
+          subPath: descriptor.json
+        - mountPath: /usr/local/bin/kubectl
+          name: data-dir
+          subPath: kubectl
+        - mountPath: /opt/staging/hooks/logger.lib.sh
+          name: data-dir
+          subPath: logger.lib.sh
+        - mountPath: /opt/staging/jmx_prometheus_javaagent-0.14.0.jar
+          name: data-dir
+          subPath: jmx_prometheus_javaagent-0.14.0.jar
+        - mountPath: /opt/staging/newrelic.jar
+          name: data-dir
+          subPath: newrelic.jar
+        - mountPath: /opt/in/instance/conf/pingaccess.lic
+          name: pingaccess-license
+          subPath: pingaccess.lic
+        - mountPath: /opt/staging/ds_env_vars
+          name: data-dir
+          subPath: ds_env_vars
+      - env:
+        - name: SERVICE_SHORTNAME
+          value: pa
+        - name: SERVICE_PORT
+          value: "3000"
+        - name: REPEAT_SEC
+          value: "10"
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/prometheus-json-exporter/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        name: pingaccess-heartbeat-exporter
+        ports:
+        - containerPort: 8079
+          name: pa-heartbeat
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 100m
+            memory: 300Mi
+          requests:
+            cpu: 100m
+            memory: 300Mi
+        securityContext:
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /opt/config.yml
+          name: pa-exporter-config
+          subPath: config.yml
+      initContainers:
+      - command:
+        - /wait-for-services.sh
+        env:
+        - name: WAIT_FOR_SERVICES
+          value: pingaccess-admin
+        envFrom:
+        - configMapRef:
+            name: pingaccess-environment-variables
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/busybox:1.32
+        imagePullPolicy: IfNotPresent
+        name: wait-for-services
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /utils.lib.sh
+          name: pingaccess-init
+          subPath: utils.lib.sh
+        - mountPath: /logger.lib.sh
+          name: pingaccess-init
+          subPath: logger.lib.sh
+        - mountPath: /wait-for-services.sh
+          name: pingaccess-init
+          subPath: wait-for-services.sh
+      - command:
+        - /get_ssm_env_vars.sh
+        envFrom:
+        - configMapRef:
+            name: pingaccess-environment-variables
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-cli:2.0.17
+        imagePullPolicy: IfNotPresent
+        name: pingaccess-discovery-service
+        volumeMounts:
+        - mountPath: /config
+          name: data-dir
+        - mountPath: /get_ssm_env_vars.sh
+          name: discovery-service
+          subPath: get_ssm_env_vars.sh
+      - command:
+        - /copy-dependencies.sh
+        envFrom:
+        - configMapRef:
+            name: pingaccess-environment-variables
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.15.0
+        imagePullPolicy: IfNotPresent
+        name: pingaccess-init
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /.ssh
+          name: ssh-dir
+        - mountPath: /data
+          name: data-dir
+        - mountPath: /id_rsa
+          name: ssh-id-key-secret
+          subPath: id_rsa
+        - mountPath: /known_hosts
+          name: known-hosts-config
+          subPath: known_hosts
+        - mountPath: /copy-dependencies.sh
+          name: pingaccess-init
+          subPath: copy-dependencies.sh
+        - mountPath: /utils.lib.sh
+          name: pingaccess-init
+          subPath: utils.lib.sh
+        - mountPath: /logger.lib.sh
+          name: pingaccess-init
+          subPath: logger.lib.sh
+      - env:
+        - name: NEW_RELIC_APP_NAME
+          value: pingaccess
+        - name: METADATA_EP_URL
+          value: http://metadata:5000
+        - name: NEW_RELIC_CONFIG_FILEPATH
+          value: /opt/shared-dir/newrelic.yml
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
+        envFrom:
+        - configMapRef:
+            name: pingaccess-environment-variables
+        - secretRef:
+            name: newrelic-license-key
+            optional: false
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        name: newrelic-tags-exporter
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /opt/shared-dir
+          name: shared-dir
+      securityContext:
+        fsGroup: 9999
+      serviceAccountName: ping-serviceaccount
+      volumes:
+      - configMap:
+          defaultMode: 365
+          name: discovery-service
+        name: discovery-service
+      - emptyDir: {}
+        name: ssh-dir
+      - emptyDir: {}
+        name: shared-dir
+      - emptyDir: {}
+        name: data-dir
+      - configMap:
+          defaultMode: 365
+          name: pingcommon-init
+        name: pingaccess-init
+      - configMap:
+          defaultMode: 420
+          name: topology-descriptor
+          optional: true
+        name: topology-descriptor
+      - name: ssh-id-key-secret
+        secret:
+          defaultMode: 256
+          optional: true
+          secretName: ssh-id-key-secret
+      - configMap:
+          defaultMode: 420
+          name: known-hosts-config
+          optional: true
+        name: known-hosts-config
+      - name: pingaccess-license
+        secret:
+          defaultMode: 256
+          optional: true
+          secretName: pingaccess-license
+      - name: pingaccess-passwords
+        secret:
+          defaultMode: 256
+          optional: true
+          secretName: pingaccess-passwords
+      - configMap:
+          defaultMode: 420
+          name: pa-exporter-config
+        name: pa-exporter-config
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: ping-cloud
+    cluster: pingaccess-cluster
+    role: pingaccess-admin
+  name: pingaccess-admin
+  namespace: ping-cloud
+spec:
+  podManagementPolicy: OrderedReady
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ping-cloud
+      role: pingaccess-admin
+  serviceName: pingaccess-admin
+  template:
+    metadata:
+      annotations:
+        lastUpdateReason: NA
+      labels:
+        app: ping-cloud
+        cluster: pingaccess-cluster
+        entitled-app: "true"
+        pod-reaper: enabled
+        role: pingaccess-admin
+      name: pingaccess-admin
+    spec:
+      containers:
+      - env:
+        - name: OPERATIONAL_MODE
+          value: CLUSTERED_CONSOLE
+        - name: HTTPS_PORT
+          value: "9090"
+        - name: OLD_PA_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: OLD_PA_ADMIN_USER_PASSWORD
+              name: pingaccess-passwords
+        - name: PA_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: PA_ADMIN_USER_PASSWORD
+              name: pingaccess-passwords
+        - name: NEW_RELIC_CONFIG_FILE
+          value: /opt/shared-dir/newrelic.yml
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
+        envFrom:
+        - configMapRef:
+            name: pingaccess-admin-environment-variables
+        - secretRef:
+            name: newrelic-license-key
+            optional: false
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        livenessProbe:
+          exec:
+            command:
+            - /opt/staging/hooks/99-pa-admin-liveness.sh
+          failureThreshold: 4
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 5
+        name: pingaccess-admin
+        ports:
+        - containerPort: 9000
+        - containerPort: 9090
+        readinessProbe:
+          exec:
+            command:
+            - /opt/staging/hooks/85-pa-admin-readiness.sh
+          failureThreshold: 3
+          initialDelaySeconds: 60
+          periodSeconds: 5
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 1
+            memory: 4Gi
+          requests:
+            cpu: 1
+            memory: 4Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /home/ping/.ssh
+          name: ssh-dir
+        - mountPath: /opt/shared-dir
+          name: shared-dir
+        - mountPath: /opt/staging/topology/descriptor.json
+          name: topology-descriptor
+          subPath: descriptor.json
+        - mountPath: /usr/local/bin/kubectl
+          name: data-dir
+          subPath: kubectl
+        - mountPath: /opt/staging/hooks/logger.lib.sh
+          name: data-dir
+          subPath: logger.lib.sh
+        - mountPath: /opt/staging/jmx_prometheus_javaagent-0.14.0.jar
+          name: data-dir
+          subPath: jmx_prometheus_javaagent-0.14.0.jar
+        - mountPath: /opt/staging/newrelic.jar
+          name: data-dir
+          subPath: newrelic.jar
+        - mountPath: /opt/out
+          name: out-dir
+        - mountPath: /opt/in/instance/conf/pingaccess.lic
+          name: pingaccess-license
+          subPath: pingaccess.lic
+        - mountPath: /opt/staging/ds_env_vars
+          name: data-dir
+          subPath: ds_env_vars
+        - mountPath: /tmp/instance
+          name: upgrade-dir
+          subPath: instance
+      initContainers:
+      - command:
+        - /wait-for-services.sh
+        env:
+        - name: WAIT_FOR_SERVICES
+          value: pingfederate-cluster
+        envFrom:
+        - configMapRef:
+            name: pingaccess-admin-environment-variables
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/busybox:1.32
+        imagePullPolicy: IfNotPresent
+        name: wait-for-services
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /utils.lib.sh
+          name: pingaccess-init
+          subPath: utils.lib.sh
+        - mountPath: /logger.lib.sh
+          name: pingaccess-init
+          subPath: logger.lib.sh
+        - mountPath: /wait-for-services.sh
+          name: pingaccess-init
+          subPath: wait-for-services.sh
+      - command:
+        - /get_ssm_env_vars.sh
+        envFrom:
+        - configMapRef:
+            name: pingaccess-admin-environment-variables
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-cli:2.0.17
+        imagePullPolicy: IfNotPresent
+        name: pingaccess-discovery-service
+        volumeMounts:
+        - mountPath: /config
+          name: data-dir
+        - mountPath: /get_ssm_env_vars.sh
+          name: discovery-service
+          subPath: get_ssm_env_vars.sh
+      - command:
+        - /copy-dependencies.sh
+        envFrom:
+        - configMapRef:
+            name: pingaccess-admin-environment-variables
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.15.0
+        imagePullPolicy: IfNotPresent
+        name: pingaccess-init
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /.ssh
+          name: ssh-dir
+        - mountPath: /data
+          name: data-dir
+        - mountPath: /id_rsa
+          name: ssh-id-key-secret
+          subPath: id_rsa
+        - mountPath: /known_hosts
+          name: known-hosts-config
+          subPath: known_hosts
+        - mountPath: /copy-dependencies.sh
+          name: pingaccess-init
+          subPath: copy-dependencies.sh
+        - mountPath: /utils.lib.sh
+          name: pingaccess-init
+          subPath: utils.lib.sh
+        - mountPath: /logger.lib.sh
+          name: pingaccess-init
+          subPath: logger.lib.sh
+      - env:
+        - name: NEW_RELIC_APP_NAME
+          value: pingaccess-admin
+        - name: METADATA_EP_URL
+          value: http://metadata:5000
+        - name: NEW_RELIC_CONFIG_FILEPATH
+          value: /opt/shared-dir/newrelic.yml
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
+        envFrom:
+        - configMapRef:
+            name: pingaccess-admin-environment-variables
+        - secretRef:
+            name: newrelic-license-key
+            optional: false
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        name: newrelic-tags-exporter
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /opt/shared-dir
+          name: shared-dir
+      - args:
+        - -c
+        - ' /opt/in/hooks/22-upgrade-server.sh '
+        command:
+        - /bin/sh
+        env:
+        - name: OPERATIONAL_MODE
+          value: CLUSTERED_CONSOLE
+        - name: STARTUP_COMMAND
+          value: /opt/staging/hooks/22-upgrade-server.sh
+        - name: HTTPS_PORT
+          value: "9090"
+        - name: OLD_PA_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: OLD_PA_ADMIN_USER_PASSWORD
+              name: pingaccess-passwords
+        - name: PA_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: PA_ADMIN_USER_PASSWORD
+              name: pingaccess-passwords
+        - name: NEW_RELIC_CONFIG_FILE
+          value: /opt/shared-dir/newrelic.yml
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
+        envFrom:
+        - configMapRef:
+            name: pingaccess-admin-environment-variables
+        - secretRef:
+            name: newrelic-license-key
+            optional: false
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        name: pingaccess-upgrade
+        ports:
+        - containerPort: 9000
+        - containerPort: 9090
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /home/ping/.ssh
+          name: ssh-dir
+        - mountPath: /opt/shared-dir
+          name: shared-dir
+        - mountPath: /opt/staging/topology/descriptor.json
+          name: topology-descriptor
+          subPath: descriptor.json
+        - mountPath: /usr/local/bin/kubectl
+          name: data-dir
+          subPath: kubectl
+        - mountPath: /opt/staging/hooks/logger.lib.sh
+          name: data-dir
+          subPath: logger.lib.sh
+        - mountPath: /opt/staging/jmx_prometheus_javaagent-0.14.0.jar
+          name: data-dir
+          subPath: jmx_prometheus_javaagent-0.14.0.jar
+        - mountPath: /opt/staging/newrelic.jar
+          name: data-dir
+          subPath: newrelic.jar
+        - mountPath: /opt/out
+          name: out-dir
+        - mountPath: /opt/in/instance/conf/pingaccess.lic
+          name: pingaccess-license
+          subPath: pingaccess.lic
+        - mountPath: /opt/staging/ds_env_vars
+          name: data-dir
+          subPath: ds_env_vars
+        - mountPath: /tmp/instance
+          name: upgrade-dir
+          subPath: instance
+      securityContext:
+        fsGroup: 9999
+      serviceAccountName: ping-serviceaccount
+      volumes:
+      - configMap:
+          defaultMode: 365
+          name: discovery-service
+        name: discovery-service
+      - emptyDir: {}
+        name: ssh-dir
+      - emptyDir: {}
+        name: shared-dir
+      - emptyDir: {}
+        name: data-dir
+      - emptyDir: {}
+        name: upgrade-dir
+      - configMap:
+          defaultMode: 365
+          name: pingcommon-init
+        name: pingaccess-init
+      - configMap:
+          defaultMode: 420
+          name: topology-descriptor
+          optional: true
+        name: topology-descriptor
+      - name: ssh-id-key-secret
+        secret:
+          defaultMode: 256
+          optional: true
+          secretName: ssh-id-key-secret
+      - configMap:
+          defaultMode: 420
+          name: known-hosts-config
+          optional: true
+        name: known-hosts-config
+      - name: out-dir
+        persistentVolumeClaim:
+          claimName: out-dir
+      - name: pingaccess-license
+        secret:
+          defaultMode: 256
+          optional: true
+          secretName: pingaccess-license
+      - name: pingaccess-passwords
+        secret:
+          defaultMode: 256
+          optional: true
+          secretName: pingaccess-passwords
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - metadata:
+      labels:
+        app: ping-cloud
+      name: out-dir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 20Gi
+      storageClassName: pingaccess-gp3
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingaccess-periodic-backup
+  namespace: ping-cloud
+spec:
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    metadata:
+      labels:
+        app: ping-cloud
+    spec:
+      backoffLimit: 0
+      template:
+        metadata:
+          labels:
+            app: ping-cloud
+        spec:
+          affinity:
+            podAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchExpressions:
+                  - key: statefulset.kubernetes.io/pod-name
+                    operator: In
+                    values:
+                    - pingaccess-admin-0
+                topologyKey: kubernetes.io/hostname
+          containers:
+          - command:
+            - /opt/in/backup-archive-data.sh
+            env:
+            - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+              value: "true"
+            envFrom:
+            - configMapRef:
+                name: pingaccess-admin-environment-variables
+            - configMapRef:
+                name: pingcommon-environment-variables
+            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v1.19-release-branch-latest
+            imagePullPolicy: Always
+            name: pingaccess-backup
+            securityContext:
+              allowPrivilegeEscalation: false
+              runAsGroup: 9999
+              runAsNonRoot: true
+              runAsUser: 9031
+            volumeMounts:
+            - mountPath: /opt/in/backup-archive-data.sh
+              name: pingaccess-backup
+              subPath: backup-archive-data.sh
+          restartPolicy: OnFailure
+          serviceAccount: ping-serviceaccount
+          volumes:
+          - configMap:
+              defaultMode: 365
+              name: pingaccess-backup
+            name: pingaccess-backup
+  schedule: 30 * * * *
+  startingDeadlineSeconds: 90
+  successfulJobsHistoryLimit: 0
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  labels:
+    app: ping-cloud
+  name: pa-engine-pdb
+  namespace: ping-cloud
+spec:
+  minAvailable: 30%
+  selector:
+    matchLabels:
+      app: ping-cloud
+      role: pingaccess-engine
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingaccess
+  namespace: ping-cloud
+spec:
+  maxReplicas: 2
+  minReplicas: 2
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: StatefulSet
+    name: pingaccess
+  targetCPUUtilizationPercentage: 70
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  labels:
+    app: ping-cloud
+  name: pingaccess-admin-ingress
+  namespace: ping-cloud
+spec:
+  ingressClassName: nginx-private
+  rules:
+  - host: pingaccess-admin-api-dev.ping-demo.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: pingaccess-admin
+            port:
+              number: 9000
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - pingaccess-admin-api-dev.ping-demo.com
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  labels:
+    app: ping-cloud
+  name: pingaccess-agent-ingress
+  namespace: ping-cloud
+spec:
+  ingressClassName: nginx-public
+  rules:
+  - host: pingaccess-agent-dev.ping-demo.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: pingaccess
+            port:
+              number: 3030
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - pingaccess-agent-dev.ping-demo.com
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  labels:
+    app: ping-cloud
+  name: pingaccess-ingress
+  namespace: ping-cloud
+spec:
+  ingressClassName: nginx-public
+  rules:
+  - host: pingaccess-dev.ping-demo.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: pingaccess
+            port:
+              number: 443
+        path: /
+        pathType: Prefix
+  - host: healthcheck-httpbin-pa-dev.ping-demo.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: pingaccess
+            port:
+              number: 443
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - pingaccess-dev.ping-demo.com
+    - healthcheck-httpbin-pa-dev.ping-demo.com

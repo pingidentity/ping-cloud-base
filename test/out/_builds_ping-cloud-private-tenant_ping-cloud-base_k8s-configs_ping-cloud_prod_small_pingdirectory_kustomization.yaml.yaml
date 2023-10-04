@@ -1,0 +1,1831 @@
+allowVolumeExpansion: true
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-gp3
+mountOptions:
+- discard
+parameters:
+  csi.storage.k8s.io/fstype: ext4
+  encrypted: "true"
+  type: gp3
+provisioner: ebs.csi.aws.com
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: v1
+data:
+  backup-cronjob.sh: |-
+    #!/bin/sh
+
+    # Install kubectl
+    curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
+    -o /tmp/kubectl
+    chmod +x /tmp/kubectl
+
+    # Execute backup-ops.sh script (which kicks off the k8s pingdirectory-backup Job)
+    SCRIPT="/opt/in/backup-ops.sh"
+    test -x ${SCRIPT} && ${SCRIPT} "scheduled-cronjob"
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-backup-cronjob
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  backup-cm.yaml: |-
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name:  pingdirectory-backup-script
+    data:
+      backup.sh: |-
+        #!/bin/sh
+
+        delete_pvc() {
+          /tmp/kubectl delete pvc pingdirectory-backup -n ${PING_CLOUD_NAMESPACE} --grace-period=0 --force
+        }
+
+        # This guarantees that delete_pvc method will always run, even if the backup job exits due to an error
+        trap "delete_pvc" EXIT
+
+        # Job will not be using /opt/out, therefore force it to use its own /opt/in directory
+        export HOOKS_DIR="/opt/in/hooks"
+
+        # Install kubectl
+        curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
+        -o /tmp/kubectl
+        chmod +x /tmp/kubectl
+
+        echo "Running backup script for PingDirectory"
+        SCRIPT="/opt/in/hooks/90-upload-backup-s3.sh"
+        test -x ${SCRIPT} && ${SCRIPT}
+  backup-job.yaml: |-
+    # A manual backup job - this does the same thing as the CronJob except it may be configured to be triggered in reaction
+    # to a ClickOps event.
+    apiVersion: batch/v1
+    kind: Job
+    metadata:
+      name: pingdirectory-backup
+      labels:
+        app: ping-cloud
+        role: pingdirectory
+    spec:
+      ttlSecondsAfterFinished: 30
+      backoffLimit: 5
+      template:
+        spec:
+          serviceAccountName: pingdirectory-ops-serviceaccount
+          affinity:
+            # This podAffinity rule is designed to deploy Backup/restore job to the same AZ as its targeted PingDirectory server
+            podAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchExpressions:
+                  - key: statefulset.kubernetes.io/pod-name
+                    operator: In
+                    values:
+                    - ${BACKUP_RESTORE_POD}
+                topologyKey: "kubernetes.io/hostname"
+          tolerations:
+            - key: "pingidentity.com/pd-only"
+              operator: "Equal"
+              value: "true"
+              effect: "NoSchedule"
+          restartPolicy: Never
+          initContainers:
+          - name: pingdirectory-discovery-service
+            image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-cli:2.0.17
+            imagePullPolicy: IfNotPresent
+            command:
+            - /get_ssm_env_vars.sh
+            envFrom:
+            - configMapRef:
+                name: pingdirectory-environment-variables
+            volumeMounts:
+            - name: data-dir
+              mountPath: /config
+            - name: discovery-service
+              mountPath: /get_ssm_env_vars.sh
+              subPath: get_ssm_env_vars.sh
+          containers:
+          - name: pingdirectory-backup
+            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.19-release-branch-latest
+            imagePullPolicy: Always
+            securityContext:
+              runAsGroup: 9999
+              runAsNonRoot: true
+              runAsUser: 9031
+              allowPrivilegeEscalation: false
+            command:
+            - /opt/in/backup.sh
+            envFrom:
+            - configMapRef:
+                name: pingdirectory-environment-variables
+            - configMapRef:
+                name: pingcommon-environment-variables
+            env:
+            - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+              value: "true"
+            - name: ROOT_USER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pingdirectory-passwords
+                  key: root-user-password
+            - name: PING_CLOUD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            volumeMounts:
+            - name: pingdirectory-backup-script
+              mountPath: /opt/in/backup.sh
+              subPath: backup.sh
+            - name: out-dir
+              mountPath: /opt/out
+            - name: pd-backup-volume
+              mountPath: /opt/backup
+            - name: pingdirectory-passwords
+              mountPath: /usr/local/secrets
+              readOnly: true
+            - name: pingdirectory-init
+              mountPath: /opt/in/hooks/logger.lib.sh
+              subPath: logger.lib.sh
+            - name: data-dir
+              mountPath: /opt/staging/ds_env_vars
+              subPath: ds_env_vars
+          securityContext:
+            fsGroup: 9999
+          volumes:
+          - name: pingdirectory-backup-script
+            configMap:
+              name: pingdirectory-backup-script
+              defaultMode: 0555
+          - name: pd-backup-volume
+            persistentVolumeClaim:
+              claimName: pingdirectory-backup
+          - name: out-dir
+            persistentVolumeClaim:
+              claimName: out-dir-${BACKUP_RESTORE_POD}
+          - name: data-dir
+            emptyDir: {}
+          - name: pingdirectory-passwords
+            secret:
+              secretName: pingdirectory-passwords
+              optional: true
+              defaultMode: 0400
+          - name: pingdirectory-init
+            configMap:
+              name: pingcommon-init
+              defaultMode: 0555
+          - name: discovery-service
+            configMap:
+              name: discovery-service
+              defaultMode: 0555
+  backup-ops.sh: |
+    #!/bin/bash
+
+    # Set as a function for this script if kubectl isn't installed.
+    # Assume kubectl is available for pod under /tmp/kubectl.
+    if ! command -v kubectl >/dev/null 2>&1; then
+      # Check and see if kubectl is installed under /tmp.
+      # If so, then source kubectl method which will be used by pod
+      test -f /tmp/kubectl || (echo "kubectl is not installed: exiting" && exit 1)
+      function kubectl() {
+        /tmp/kubectl "${@}"
+      }
+    fi
+
+    execution_type=${1-"manual-job"}
+
+    echo "Executed By: ${execution_type}"
+
+    # Set ping-cloud PING_CLOUD_NAMESPACE
+    # Note: The regular expression \bping-cloud\S* matches any string that starts with "ping-cloud" (\bping-cloud) and has zero or more non-space characters after it (\S*).
+    # e.g.
+    # A CDE with ping-cloud namespace will set the variable NAMESPACE as 'ping-cloud'
+    # A CDE with ping-cloud-username namespace will set the variable NAMESPACE as 'ping-cloud-username'
+    if [ -z "${PING_CLOUD_NAMESPACE}" ]; then
+      export PING_CLOUD_NAMESPACE=$(kubectl get namespaces -o jsonpath='{.items[*].metadata.name}{"\n"}' | grep -o -E "\bping-cloud\S*")
+    fi
+
+    # Get desired PingDirectory pod name
+    if [ -z "${BACKUP_RESTORE_POD}" ]; then
+      export BACKUP_RESTORE_POD=$(kubectl get configmap pingdirectory-environment-variables -o jsonpath='{.data.BACKUP_RESTORE_POD}' -n "${PING_CLOUD_NAMESPACE}")
+    fi
+
+    # Get desired PingDirectory PVC size
+    # TODO- Ticket to dynamically get the PD size using kubemetrics/prometheus https://pingidentity.atlassian.net/browse/PDO-4958
+    if [ -z "${PINGDIRECTORY_PVC_SIZE}" ]; then
+      export PINGDIRECTORY_PVC_SIZE=$(kubectl get pvc "out-dir-${BACKUP_RESTORE_POD}" -o jsonpath='{.spec.resources.requests.storage}' -n "${PING_CLOUD_NAMESPACE}")
+    fi
+
+    # Create ConfigMap and PersistentVolumeClaim first as the Job is dependent on these resources during the mounting stage of the pod.
+    # However, the configmap and pvc are independent and can be created in any order.
+    kubectl get configmap pingdirectory-backup-ops-template-files -o jsonpath='{.data.backup-cm\.yaml}' -n "${PING_CLOUD_NAMESPACE}" | kubectl apply -f - -n "${PING_CLOUD_NAMESPACE}"
+    kubectl get configmap pingdirectory-backup-ops-template-files -o jsonpath='{.data.backup-pvc\.yaml}' -n "${PING_CLOUD_NAMESPACE}" | envsubst | kubectl apply -f - -n "${PING_CLOUD_NAMESPACE}"
+    kubectl get configmap pingdirectory-backup-ops-template-files -o jsonpath='{.data.backup-job\.yaml}' -n "${PING_CLOUD_NAMESPACE}" | envsubst | kubectl apply -f - -n "${PING_CLOUD_NAMESPACE}"
+  backup-pvc.yaml: |-
+    # Persistent Volume to run backup process
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: pingdirectory-backup
+      labels:
+        class: pingdirectory-server
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: pingdirectory-gp3
+      resources:
+        requests:
+          storage: ${PINGDIRECTORY_PVC_SIZE}
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-backup-ops-template-files
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  ACCEPT_EULA: "YES"
+  ADMIN_BIND_DN: cn=admin
+  ADMIN_USER_PASSWORD_FILE: /usr/local/secrets/admin-user-password
+  ADS_CRT_FILE: /usr/local/secrets/ads.crt
+  ADS_KEY_FILE: /usr/local/secrets/ads.key
+  BACKENDS_TO_BACKUP: userRoot;appintegrations;platformconfig;userRoot_2;userRoot_3;userRoot_4;userRoot_5
+  BACKENDS_TO_RESTORE: ""
+  BACKUP_FILE_NAME: ""
+  BACKUP_RESTORE_POD: pingdirectory-0
+  CHANGELOG_SYNC_MAX_AGE: 2h
+  DISABLE_ALL_OLDER_USER_BASE_DN: "true"
+  DISABLE_SCHEMA_REPLICATION: "true"
+  ENCRYPTION_PASSWORD_FILE: /usr/local/secrets/encryption-password
+  HTTPS_PORT: "1443"
+  INITIALIZE_REPLICATION_DATA: "false"
+  JAVA_AGENT_OPTS: -javaagent:/opt/staging/jmx_prometheus_javaagent-0.14.0.jar=8080:/opt/in/instance/conf/jmx_export_config.yaml
+  K8S_ACME_CERT_SECRET_NAME: acme-tls-cert
+  K8S_STATEFUL_SET_NAME: pingdirectory
+  K8S_STATEFUL_SET_SERVICE_NAME: pingdirectory
+  K8S_TAIL_LOG_FILES: /opt/out/instance/logs/access /opt/out/instance/logs/errors
+    /opt/out/instance/logs/failed-ops /opt/out/instance/logs/expensive-write-ops /opt/out/instance/logs/replication
+    /opt/out/instance/logs/server.out
+  LDAP_PORT: "1389"
+  LDAPS_PORT: "1636"
+  LEAVE_DISK_AFTER_SERVER_DELETE: "false"
+  LOCATION: Austin
+  MAX_HEAP_SIZE: 15g
+  OPTIMIZE_REPLACE_PROFILE: "true"
+  ORCHESTRATION_TYPE: kubernetes
+  PA_CLUSTER_PORT: "9090"
+  PA_CLUSTER_PRIVATE_HOSTNAME: pingaccess-admin
+  PA_WAS_CLUSTER_PORT: "9090"
+  PA_WAS_CLUSTER_PRIVATE_HOSTNAME: pingaccess-was-admin
+  PAUSE_REPLICATION_BEFORE_RESTORE: "true"
+  PD_BASE_DN_LIMIT_INDEX: "20"
+  PD_CLUSTER_PORT: "8989"
+  PD_CLUSTER_PRIVATE_HOSTNAME: pingdirectory
+  PD_POD_LIMIT_INDEX: "1000"
+  PF_CLUSTER_PORT: "7600"
+  PF_CLUSTER_PRIVATE_HOSTNAME: pingfederate-cluster
+  PING_IDENTITY_ACCEPT_EULA: "YES"
+  REGION: us-west-2
+  REPLICATION_BASE_DNS: o=platformconfig;o=appintegrations
+  REPLICATION_PORT: "8989"
+  RETRY_TIMEOUT_SECONDS: "300"
+  ROOT_USER_PASSWORD_FILE: /usr/local/secrets/root-user-password
+  SECRETS_DIR: /usr/local/secrets
+  SERVER_PROFILE_BRANCH: v1.19-release-branch
+  SERVER_PROFILE_PATH: profiles/pingdirectory
+  SERVER_PROFILE_URL: https://github.com/pingidentity/ping-cloud-base.git
+  SKIP_INDEX_BUILD: "false"
+  SKIP_LIVENESS: "true"
+  SYNC_BIND_DN: cn=sync
+  TAIL_LOG_FILES: ""
+  TLS_TUNNEL_CIPHER_LIST: "null"
+  TLS_TUNNEL_VERSIONS: TLSv1.2
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-environment-variables
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  export-ldif-data.sh: |-
+    #!/bin/sh
+
+    # Install kubectl
+    curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl -o /tmp/kubectl
+    chmod +x /tmp/kubectl
+
+    ERROR_MSG=
+    SERVER="${K8S_STATEFUL_SET_NAME}-1"
+    SCRIPT="${HOOKS_DIR}"/90-export-ldif-s3.sh
+    LOG_FILE=/tmp/upload.log
+
+    echo "Uploading LDIF_FILE on server ${SERVER}"
+    /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}">"${LOG_FILE}"
+    export_ldif_status=$?
+
+    if test ${export_ldif_status} -eq 0; then
+      # Sending successful logs to STDOUT
+      cat ${LOG_FILE}
+    else
+      # Append last 10 lines to ERROR_MSG
+      EXPORT_LDIF_ERROR=$(tail -10 "${LOG_FILE}")
+      ERROR_MSG="${SERVER} failed - ${EXPORT_LDIF_ERROR}"
+      exit 1
+    fi
+
+    # Fail script if the desired server failed during export-ldif upload to S3
+    if [ -n "${ERROR_MSG}" ]; then
+      echo "${ERROR_MSG}"
+      echo "Script failed exiting"
+      exit 1
+    fi
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-export-ldif
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  upload-csd-data.sh: |-
+    #!/bin/sh
+
+    # Install kubectl
+    curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl -o /tmp/kubectl
+    chmod +x /tmp/kubectl
+
+    NUM_REPLICAS=$(/tmp/kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
+
+    START=0
+    END=$((${NUM_REPLICAS} - 1))
+
+    CSD_FILES=
+    ERROR_MSG=
+    for i in $(seq ${START} ${END}); do
+      SERVER="${K8S_STATEFUL_SET_NAME}-${i}"
+      SCRIPT="${HOOKS_DIR}"/82-upload-csd-s3.sh
+      LOG_FILE=/tmp/upload.log
+
+      echo "Uploading CSD on server ${SERVER}"
+      /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}"> "${LOG_FILE}"
+      csd_status=$?
+
+      if test ${csd_status} -eq 0; then
+        # Sending logs to STDOUT
+        cat ${LOG_FILE}
+        CSD_FILE=$(tail -1 "${LOG_FILE}")
+        test -z "${CSD_FILES}" && CSD_FILES="${CSD_FILE}" || CSD_FILES="${CSD_FILES} ${CSD_FILE}"
+      else
+        # Append last 10 lines to ERROR_MSG
+        CSD_ERROR=$(tail -10 "${LOG_FILE}")
+        ERROR_MSG="${ERROR_MSG} ${SERVER} failed - ${CSD_ERROR}"
+      fi
+    done
+
+    # Fail script if any of the servers failed during CSD upload to S3
+    if [ -n "${ERROR_MSG}" ]; then
+      echo "${ERROR_MSG}"
+      echo "Script failed exiting"
+      exit 1
+    fi
+
+    # Print the names of the uploaded files so callers know exactly what was uploaded
+    echo "The following files were uploaded:"
+    echo "${CSD_FILES}"
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-periodic-csd-upload
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  monitor-log-data.sh: |-
+    #!/bin/sh
+
+    # Install kubectl
+    curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl -o /tmp/kubectl
+    chmod +x /tmp/kubectl
+
+    NUM_REPLICAS=$(/tmp/kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
+
+    START=0
+    END=$((${NUM_REPLICAS} - 1))
+
+    MONITOR_LOG_FILES=
+    ERROR_MSG=
+    for i in $(seq ${START} ${END}); do
+      SERVER="${K8S_STATEFUL_SET_NAME}-${i}"
+      SCRIPT="${HOOKS_DIR}"/82-upload-monitor-s3.sh
+      MONITOR_LOG_FILE=/tmp/upload.log
+
+      echo "Uploading monitor logs on server ${SERVER}"
+      /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c "test -x ${SCRIPT} && ${SCRIPT}" > "${MONITOR_LOG_FILE}"
+      monitor_log_status=$?
+
+      if test ${monitor_log_status} -eq 0; then
+        # Sending logs to STDOUT
+        cat ${MONITOR_LOG_FILE}
+      else
+        # Append last 10 lines to ERROR_MSG
+        MONITOR_LOG_ERROR=$(tail -10 "${MONITOR_LOG_FILE}")
+        ERROR_MSG="${ERROR_MSG} ${SERVER} failed - ${MONITOR_LOG_ERROR}"
+      fi
+    done
+
+    # Fail script if any of the servers failed during monitor log upload to S3
+    if [ -n "${ERROR_MSG}" ]; then
+      echo "${ERROR_MSG}"
+      echo "Script failed exiting"
+      exit 1
+    fi
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-periodic-monitor-log-upload
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  restore-cm.yaml: |-
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: pingdirectory-restore
+    data:
+      restore.sh: |
+        #!/bin/sh
+
+        # Job will not be using /opt/out, therefore force it to use its own /opt/in directory
+        export HOOKS_DIR="/opt/in/hooks"
+        SCRIPT="/opt/in/hooks/90-restore-backup-s3.sh"
+        test -z "${BACKUP_RESTORE_POD}" && export SERVER="${K8S_STATEFUL_SET_NAME}-0" || export SERVER="${BACKUP_RESTORE_POD}"
+
+        pause_replication () {
+          if "${PAUSE_REPLICATION_BEFORE_RESTORE}" && test ${NUM_REPLICAS} -gt 1; then
+            echo "Executing pre-initialization from within ${SERVER} pod for DNs: ${DNS_LIST}"
+            for DN in ${DNS_LIST}; do
+            # redirect stdout to /dev/null and stderr to logs
+              /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
+                "dsreplication pre-external-initialization \
+                  --retryTimeoutSeconds \"${RETRY_TIMEOUT_SECONDS}\" \
+                  --baseDN \"${DN}\" \
+                  --no-prompt --ignoreWarnings >/dev/null"
+            done
+          fi
+        }
+
+        resume_replication() {
+          if "${PAUSE_REPLICATION_BEFORE_RESTORE}" && test ${NUM_REPLICAS} -gt 1; then
+            echo "Initializing replication from within ${SERVER} pod for DNs: ${DN_LIST} "
+            for DN in ${DNS_LIST}; do
+            # redirect stdout to /dev/null and stderr to logs
+              /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
+                "dsreplication initialize-all \
+                  --retryTimeoutSeconds \"${RETRY_TIMEOUT_SECONDS}\" \
+                  --baseDN \"${DN}\" \
+                  --no-prompt --ignoreWarnings >/dev/null"
+            done
+
+            echo "Executing post-initialization from within ${SERVER} pod for DNs: ${DNS_LIST}"
+            for DN in ${DNS_LIST}; do
+            # redirect stdout to /dev/null and stderr to logs
+              /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
+                "dsreplication post-external-initialization \
+                  --retryTimeoutSeconds \"${RETRY_TIMEOUT_SECONDS}\" \
+                  --baseDN \"${DN}\" \
+                  --no-prompt --ignoreWarnings >/dev/null"
+            done
+          fi
+        }
+
+        delete_pvc() {
+          /tmp/kubectl delete pvc pingdirectory-restore -n ${PING_CLOUD_NAMESPACE} --grace-period=0 --force
+        }
+
+        cleanup () {
+          resume_replication
+          delete_pvc
+        }
+
+        # This guarantees that cleanup method will always run, even if the restore job exits due to an error
+        trap "cleanup" EXIT
+
+        # Install kubectl
+        curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
+        -o /tmp/kubectl
+
+        chmod +x /tmp/kubectl
+
+        NUM_REPLICAS=$(/tmp/kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
+        echo "restore: number of replicas: ${NUM_REPLICAS}"
+
+        DN_LIST=
+        BASE_DNS_LIST="${USER_BASE_DN} ${USER_BASE_DN_2} ${USER_BASE_DN_3} ${USER_BASE_DN_4} ${USER_BASE_DN_5}"
+        # Separate each USER_BASE_DN with a ';'
+        BASE_DNS_LIST=$(echo ${BASE_DNS_LIST} | tr '[[:blank:]]/' ';')
+
+        if test -z "${REPLICATION_BASE_DNS}"; then
+          DN_LIST="${BASE_DNS_LIST}"
+        else
+        # Separate each USER_BASE_DN with a '|' to grep with a regex pattern.
+        # Example: grep -qE "dc=example,dc=com|dc=test,dc=com"
+
+          GREP_BASE_DNS_LIST=$(echo ${BASE_DNS_LIST} | tr ';' '|')
+          if echo "${REPLICATION_BASE_DNS}" | grep -qE "${GREP_BASE_DNS_LIST}"; then
+            DN_LIST="${REPLICATION_BASE_DNS}"
+          else
+            DN_LIST="${REPLICATION_BASE_DNS};${BASE_DNS_LIST}"
+          fi
+        fi
+        DNS_LIST=$(echo "${DN_LIST}" | tr ';' ' ')
+
+        pause_replication
+
+        echo "Running restore script"
+        test -x ${SCRIPT} && sh "${SCRIPT}"
+  restore-job.yaml: |-
+    ---
+
+    # A manual restore can be performed by deploying this job. It will restore
+    # data that was backed up by the periodic backup job to desired pingdirectory pod using the variable BACKUP_RESTORE_POD. All other servers
+    # must initialize the data from the desired BACKUP_RESTORE_POD pod via dsreplication initialize-all. This
+    # job can also be used to load the data initially from a backup created in
+    # another environment, e.g. dev.
+    apiVersion: batch/v1
+    kind: Job
+    metadata:
+      name: pingdirectory-restore
+      labels:
+        app: ping-cloud
+        role: pingdirectory
+    spec:
+      ttlSecondsAfterFinished: 30
+      backoffLimit: 0
+      template:
+        spec:
+          serviceAccountName: pingdirectory-ops-serviceaccount
+          affinity:
+            # This podAffinity rule is designed to deploy Backup/restore job to the same AZ as its targeted PingDirectory server
+            podAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchExpressions:
+                  - key: statefulset.kubernetes.io/pod-name
+                    operator: In
+                    values:
+                    - ${BACKUP_RESTORE_POD}
+                topologyKey: "kubernetes.io/hostname"
+          tolerations:
+            - key: "pingidentity.com/pd-only"
+              operator: "Equal"
+              value: "true"
+              effect: "NoSchedule"
+          restartPolicy: Never
+          initContainers:
+          - name: pingdirectory-discovery-service
+            image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-cli:2.0.17
+            imagePullPolicy: IfNotPresent
+            command:
+            - /get_ssm_env_vars.sh
+            envFrom:
+            - configMapRef:
+                name: pingdirectory-environment-variables
+            volumeMounts:
+            - name: data-dir
+              mountPath: /config
+            - name: discovery-service
+              mountPath: /get_ssm_env_vars.sh
+              subPath: get_ssm_env_vars.sh
+          containers:
+          - name: pingdirectory-restore
+            securityContext:
+              runAsGroup: 9999
+              runAsNonRoot: true
+              runAsUser: 9031
+              allowPrivilegeEscalation: false
+            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.19-release-branch-latest
+            imagePullPolicy: Always
+            command:
+            - /opt/in/restore.sh
+            ports:
+              - containerPort: 1636
+                name: ldaps
+            volumeMounts:
+            - name: restore-script
+              mountPath: /opt/in/restore.sh
+              subPath: restore.sh
+            - name: pd-restore-volume
+              mountPath: /opt/restore
+            - name: out-dir
+              mountPath: /opt/out
+            - name: pingdirectory-passwords
+              mountPath: /usr/local/secrets
+              readOnly: true
+            - name: pingdirectory-init
+              mountPath: /opt/in/hooks/logger.lib.sh
+              subPath: logger.lib.sh
+            - name: pingdirectory-init
+              mountPath: /opt/in/utils.lib.sh
+              subPath: utils.lib.sh
+            - name: data-dir
+              mountPath: /opt/staging/ds_env_vars
+              subPath: ds_env_vars
+            envFrom:
+            - configMapRef:
+                name: pingdirectory-environment-variables
+            - configMapRef:
+                name: pingcommon-environment-variables
+            env:
+            - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+              value: "true"
+            - name: BACKUP_FILE_NAME
+              value: "${BACKUP_FILE_NAME}"
+            - name: BACKENDS_TO_RESTORE
+              value: "${BACKENDS_TO_RESTORE}"
+            - name: ROOT_USER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pingdirectory-passwords
+                  key: root-user-password
+            - name: PING_CLOUD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          securityContext:
+            fsGroup: 9999
+          volumes:
+          - name: restore-script
+            configMap:
+              name: pingdirectory-restore
+              defaultMode: 0555
+          - name: pd-restore-volume
+            persistentVolumeClaim:
+              claimName: pingdirectory-restore
+          - name: out-dir
+            persistentVolumeClaim:
+              claimName: out-dir-${BACKUP_RESTORE_POD}
+          - name: pingdirectory-passwords
+            secret:
+              secretName: pingdirectory-passwords
+              optional: true
+              defaultMode: 0400
+          - name: pingdirectory-init
+            configMap:
+              name: pingcommon-init
+              defaultMode: 0555
+          - name: discovery-service
+            configMap:
+              name: discovery-service
+              defaultMode: 0555
+          - name: data-dir
+            emptyDir: {}
+  restore-ops.sh: |-
+    #!/bin/bash
+
+    # Set as a function for this script if kubectl isn't installed.
+    # Assume kubectl is available for pod under /tmp/kubectl.
+    if ! command -v kubectl >/dev/null 2>&1; then
+      # Check and see if kubectl is installed under /tmp.
+      # If so, then source kubectl method which will be used by pod
+      test -f /tmp/kubectl || (echo "kubectl is not installed: exiting" && exit 1)
+      function kubectl() {
+        /tmp/kubectl "${@}"
+      }
+    fi
+
+    # Set ping-cloud PING_CLOUD_NAMESPACE
+    # Note: The regular expression \bping-cloud\S* matches any string that starts with "ping-cloud" (\bping-cloud) and has zero or more non-space characters after it (\S*).
+    # e.g.
+    # A CDE with ping-cloud namespace will set the variable NAMESPACE as 'ping-cloud'
+    # A CDE with ping-cloud-username namespace will set the variable NAMESPACE as 'ping-cloud-username'
+    if [ -z "${PING_CLOUD_NAMESPACE}" ]; then
+      export PING_CLOUD_NAMESPACE=$(kubectl get namespaces -o jsonpath='{.items[*].metadata.name}{"\n"}' | grep -o -E "\bping-cloud\S*")
+    fi
+
+    # Get desired backends to restore in pingdirectory pod
+    if [ -z "${BACKENDS_TO_RESTORE}" ]; then
+      export BACKENDS_TO_RESTORE=$(kubectl get cm "pingdirectory-environment-variables" -o jsonpath='{.data.BACKENDS_TO_RESTORE}' -n "${PING_CLOUD_NAMESPACE}")
+    fi
+
+    # Get desired PingDirectory pod name
+    if [ -z "${BACKUP_RESTORE_POD}" ]; then
+      export BACKUP_RESTORE_POD=$(kubectl get configmap pingdirectory-environment-variables -o jsonpath='{.data.BACKUP_RESTORE_POD}' -n "${PING_CLOUD_NAMESPACE}")
+    fi
+
+    # Get desired PingDirectory PVC size
+    if [ -z "${PINGDIRECTORY_PVC_SIZE}" ]; then
+      export PINGDIRECTORY_PVC_SIZE=$(kubectl get pvc "out-dir-${BACKUP_RESTORE_POD}" -o jsonpath='{.spec.resources.requests.storage}' -n "${PING_CLOUD_NAMESPACE}")
+    fi
+
+    # Get desired backup file name to restore in pingdirectory pod
+    if [ -z "${BACKUP_FILE_NAME}" ]; then
+      export BACKUP_FILE_NAME=$(kubectl get cm "pingdirectory-environment-variables" -o jsonpath='{.data.BACKUP_FILE_NAME}' -n "${PING_CLOUD_NAMESPACE}")
+    fi
+
+    # Create ConfigMap and PersistentVolumeClaim first as the Job is dependent on these resources during the mounting stage of the pod.
+    # However, the configmap and pvc are independent and can be created in any order.
+    kubectl get configmap pingdirectory-restore-ops-template-files -o jsonpath='{.data.restore-cm\.yaml}'  -n "${PING_CLOUD_NAMESPACE}" | kubectl apply -f - -n "${PING_CLOUD_NAMESPACE}"
+    kubectl get configmap pingdirectory-restore-ops-template-files -o jsonpath='{.data.restore-pvc\.yaml}' -n "${PING_CLOUD_NAMESPACE}" | envsubst | kubectl apply -f - -n "${PING_CLOUD_NAMESPACE}"
+    kubectl get configmap pingdirectory-restore-ops-template-files -o jsonpath='{.data.restore-job\.yaml}' -n "${PING_CLOUD_NAMESPACE}" | envsubst | kubectl apply -f - -n "${PING_CLOUD_NAMESPACE}"
+  restore-pvc.yaml: |-
+    # Persistent Volume to run restore process
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: pingdirectory-restore
+      labels:
+        class: pingdirectory-server
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: pingdirectory-gp3
+      resources:
+        requests:
+          storage: ${PINGDIRECTORY_PVC_SIZE}
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-restore-ops-template-files
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  pingdirectory-statsd-mapping.yml: |-
+    mappings:
+        # operation response time and throughput
+      - match: "*.*.response-time"
+        name: "response_time"
+        labels:
+          operation: "$2"
+      - match: "*.*.throughput"
+        name: "throughput"
+        labels:
+          operation: "$2"
+        # connection handler metrics
+      - match: "*.*.*.*.ldap-conn-handler-bytes-read"
+        name: "LDAP_connection_handler_bytes_read"
+        labels:
+          port: "$4"
+      - match: "*.*.*.*.ldap-conn-handler-bytes-written"
+        name: "LDAP_connection_handler_bytes_written"
+        labels:
+          port: "$4"
+      - match: "*.*.*.*.ldap-conn-handler-messages-read"
+        name: "LDAP_connection_handler_messages_read"
+        labels:
+          port: "$4"
+      - match: "*.*.*.*.ldap-conn-handler-messages-written"
+        name: "LDAP_connection_handler_messages_written"
+        labels:
+          port: "$4"
+      - match: "*.*.*.*.ldap-conn-handler-search-requests"
+        name: "LDAP_connection_handler_search_requests"
+        labels:
+          port: "$4"
+      - match: "*.*.*.*.ldap-conn-handler-search-entries-returned"
+        name: "LDAP_connection_handler_search_entries_returned"
+        labels:
+          port: "$4"
+        # backend metrics
+      - match: "*.backend-entry-count"
+        name: "backend_entry_count"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-db-cache-percent-full"
+        name: "backend_db_cache_percent_full"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-size-on-disk"
+        name: "backend_size_on_disk"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-active-cleaner-threads"
+        name: "backend_active_cleaner_threads"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-cleaner-backlog"
+        name: "backend_cleaner_backlog"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-nodes-evicted"
+        name: "backend_nodes_evicted"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-checkpoints"
+        name: "backend_checkpoints"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-avg-checkpoint-duration"
+        name: "backend_avg_checkpoint_duration"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-time-since-last-checkpoint"
+        name: "backend_time_since_last_checkpoint"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-new-db-logs"
+        name: "backend_new_db_logs"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-random-reads"
+        name: "backend_random_reads"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-random-writes"
+        name: "backend_random_writes"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-sequential-reads"
+        name: "backend_sequential_reads"
+        labels:
+          backendID: "$1"
+      - match: "*.backend-sequential-writes"
+        name: "backend_sequential_writes"
+        labels:
+          backendID: "$1"
+        # entry cache metrics
+      - match: "*.entry-cache-hit-ratio"
+        name: "entry_cache_hit_ratio"
+        labels:
+          entryCache: "$1"
+      - match: "*.entry-cache-hit-count"
+        name: "entry_cache_hit_count"
+        labels:
+          entryCache: "$1"
+      - match: "*.entry-cache-attempts"
+        name: "entry_cache_attempts"
+        labels:
+          entryCache: "$1"
+      - match: "*.entry-cache-add-or-update"
+        name: "entry_cache_add_or_update"
+        labels:
+          entryCache: "$1"
+      - match: "*.entry-cache-size"
+        name: "entry_cache_size"
+        labels:
+          entryCache: "$1"
+      - match: "*.entry-cache-pct-full"
+        name: "entry_cache_pct_full"
+        labels:
+          entryCache: "$1"
+        # changelog metrics?
+      - match: "changelog.*"
+        name: "$1"
+        lables:
+          backendID: "changelog"
+        # GC metrics
+      - match: "*.*.*.garbage-collections"
+        name: "garbage_collections"
+        labels:
+          gcType: "$1"
+          size: "$2"
+          cause: "$3"
+      - match: "*.*.*.garbage-collection-duration"
+        name: "garbage_collection_duration"
+        labels:
+          gcType: "$1"
+          size: "$2"
+          cause: "$3"
+      - match: "*.garbage-collection-live-mbytes"
+        name: "garbage_collection_live_megabytes"
+        labels:
+          region: "$1"
+        #PD replicas
+      - match: "^dc=(.*)_dc=(.*)\\.replica(.*)"
+        match_type: regex
+        name: "replica${3}"
+        labels:
+          UserBaseDN1: "$1"
+          UserBaseDN2: "$2"
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-statsd-mapping
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  DMANAGER_PASSWORD: MkZlZGVyYXRlTTByZQ==
+kind: Secret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-dmanager-password
+  namespace: ping-cloud
+type: Opaque
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-license
+  namespace: ping-cloud
+type: Opaque
+---
+apiVersion: v1
+data:
+  P14C_CLIENT_ID: ODkwNzM2NTQtNGVkMy00YTViLWI4OWMtZmY2YjVlMWI3ZDFi
+  P14C_CLIENT_SECRET: UXA4aTAudHg4U3dVSWphdnlYWn5KYTZLQlA5SzN+azljTUYuUWF4UTZYclBvdHpmOU5DbFk2bHRLLjBJUU42MA==
+  P14C_ENVIRONMENT_ID: YzNlMzczNTctNTA2Mi00MWJjLTk5NzItYTdlYTlkMTRhNWEy
+  admin-user-password: MkZlZGVyYXRlTTByZQ==
+  ads.crt: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUN2akNDQWFZQ0NRQ3NMaEptdEYwQ3VEQU5CZ2txaGtpRzl3MEJBUXNGQURBZ01SNHdIQVlEVlFRRERCVnMKYjJOaGJHaHZjM1F1Ykc5allXeGtiMjFoYVc0d0lCY05NakF3TmpNd01UZ3hOekkwV2hnUE1qRXlNREEyTURZeApPREUzTWpSYU1DQXhIakFjQmdOVkJBTU1GV3h2WTJGc2FHOXpkQzVzYjJOaGJHUnZiV0ZwYmpDQ0FTSXdEUVlKCktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQUtmalRHZVgweHhubG5LbXBodFB1Z21jRjNXRHREZmsKOUgyWGh4aXpsTzliNzhPWlk3ZGRxZXVpRktBU3ZZZEtzSE80cUVLMXhtMitvTHZaa2RIandFYlc5dVJYQ2Zucgo3cUpRaHpiemZpemtFOXE2MVBHazJTNGNlcytyUlBDZVlFSEUrd1J5bUdnMnNabXgrdVNLb1RvQk5lMnNnQ2lWCkw0YmpBZ3NKdkdxUzI2T0ZleTF6WTVRYXRmUkI0QlFKSis1eFJ3Z3BCSXdJOExRN3ozS0pkQlVyTll3TDlUemYKSVc2UjcxMHlORVhWWkxqa0pwemJTeGtub3kxQlc3SFJwYmxxNFZaWEFEWDNSYlpuV2xKRWhubkRBVGxPcWtregp5cHBUSnhvaEtkK0pZYXRFRUxWNC9DajkyR3UwcEJtSXorazkrWnJob3J1RTBkSHM2T0tlYStVQ0F3RUFBVEFOCkJna3Foa2lHOXcwQkFRc0ZBQU9DQVFFQVNVcUU1RUw1ZEttNDJWcmFEclpRM0prNXlTUUNtZE1HNGFoYmFndVUKNDk1aEV5NDlhNVhDL3NoS0hCUnJaVy95RTJiS1dTOTBKdzA2aVpUWkk0a3JXZnk5NUtxVlJhWkNYUHc4K0lWdwpLMjJZSTJ1MWVUNlpWYkpuL1dJL2VuMDBwNk1mRjhFTmF3STZTc081dzlVUnRhSFpRK2lhc1BSUERqeVljUC93CnNpbWlBeTB2a2hZSUM5Qmw1K0QxV3FwWm1PRnMvdW5EZC8xUFRxSXF5cHZINUcyYjBvUmdLTTUzQlBIZFBKajAKcEpObFBTblJFNThVNkM5RG5BcSt2cFlJZFE1UWdtQWVaMVA0T2E0cGdHY0NHNlBVYVRoalUxeFhFL01CQWFFRgpwV0pYT2pqWHUwdVpFbXE0bHFJakZEcmZDSkVISkliRmtzMUJjZVVQK3BkU2F3PT0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+  ads.key: LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUV2d0lCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktrd2dnU2xBZ0VBQW9JQkFRQ240MHhubDlNY1o1WnkKcHFZYlQ3b0puQmQxZzdRMzVQUjlsNGNZczVUdlcrL0RtV08zWGFucm9oU2dFcjJIU3JCenVLaEN0Y1p0dnFDNwoyWkhSNDhCRzF2YmtWd241Nis2aVVJYzI4MzRzNUJQYXV0VHhwTmt1SEhyUHEwVHdubUJCeFBzRWNwaG9OckdaCnNmcmtpcUU2QVRYdHJJQW9sUytHNHdJTENieHFrdHVqaFhzdGMyT1VHclgwUWVBVUNTZnVjVWNJS1FTTUNQQzAKTzg5eWlYUVZLeldNQy9VODN5RnVrZTlkTWpSRjFXUzQ1Q2FjMjBzWko2TXRRVnV4MGFXNWF1RldWd0ExOTBXMgpaMXBTUklaNXd3RTVUcXBKTThxYVV5Y2FJU25maVdHclJCQzFlUHdvL2RocnRLUVppTS9wUGZtYTRhSzdoTkhSCjdPamlubXZsQWdNQkFBRUNnZ0VCQUp4NXMwcVNMUWM2WFBTNjhmSmVtb3crV1hjRHE4SzB1Rk1lR2FJaUxsdngKR2tUNkFBQjFZZHZta3NhbThOTGFBQis3S2NnVFY4QU5mZzNYT0p1aFpDSWlWTFo1a1NqSWh2L3RnampyTk54dQpMenNjQzBDMVhsNGwyU2tZL2dZdDlwVVdITWNHYjVvaDcrSEtDb2RiMWUwVUY4bFBqNXREZ0twOWhmZjN1UTZ5CkUxRWl0WHJ6Yk9qNzU4QllXRXc1cXdPS2orWGZIS3FJcDc2dGp6NEM3dlJPUDF5OFBaN1BuYUV2V3VSVXNIdkUKVTB1aXJVc3doYjZJSE10UUxGM21EUEo5Y2lEWmI3NWFjbmtEZTRHc1ZQSHJ5bDNKMGpnZnpNS2dtT1RKZWVFTAprcEsvUHI1eVNMTEZnNjloYVlDU0hLVEt6ME9OUjVXc3dmdjl2WnBjQXNFQ2dZRUEwNEZ3cjcwMitVK3R5d1NNCmlZM0JvNFZEeXVLVXlsQThxUE1COGlCK0cxaXdJenBWSk1hakNZR2dLcUhMZUpGWjM0RGNCUkNiVnZ0RlhpU0UKSW5NQ0taYStlOTh1UXVjcGJzV2tBM3oxT0hMN1dscFp3OTMwZlBkVkNVYW1KZEhYUTJjQ01udDFMRmwyWmVQTwpyVG1rMmdXMHMzYTNHMWRvNjFJM3NZamNHc2tDZ1lFQXl6VFhKa3RUVXZ6L1hqVDhrMDBoUFREWjZzR1RUOEt2CjBERzU0c1ZNYWRTb2hXYi9oUkZ6WHo4Q21YMWQyRDZSS3NaK3pVNjcydCtqY0pDdmd2L3phRWpBZ3M5cXVMTFIKd2s1S29qbmZGT2FobEN3TDladVA0c01kcHZwU2JUS0RPTGdzMXQ1TkcreTlkZEFiSzdMNDFkMTRSbEw4bHZ4OApzdnk4eitvR3VqMENnWUJaU1NGYTd0T1FONVMwU1gxU2JDYzhjbnVGNEZUVGV6L0FTcVdkb3gzWlNYMUJ3ZFJECnJCOFRXa2RVOSt3L1A0empEekRTYW9wSkU5WGF3aXVOcDJOWVR5eW1lamE3UTM1NEpyTHdUZ1h2Q0lzWFAyRDUKa0c4dmVmSEo4cXNjK0JLWmY1aXIydlpCL0pwQXRRU0FsLzhCa3JzUHI2UG94T09qdzVlRE9MVkNFUUtCZ1FDegptNExISURFSDJ3TEQrOFY3Vk9NYU9NR0VFNURuSU1kUkY0S2JnNVBrdnNndEVUcXNIUjZDZ3lrRERhSVM3a3BWCktwa05VcGdML3p0dzFSR3NraHBNaEhGVHJZMUFyeDFqeHR1RXcrMy9oVkl2cXpidTRZNnQrWk9OOFJkRjJTM08KeGtzcnA5VXo1MjRXWWRpQ0tYQnpaNHRWYlNoQk0rM3NMaU9kQ2Ria2FRS0JnUUN4b3ZCYXpjR2VEMXFsRjREUgo0eXZpYUpCeUNPM3ludEQwMXAvUGRCTDJNWHA2bjAzWVZEa1BHUytqamZtamt3QVV0ek9RU2pZUGViWWtlb21yClZMZ2N1YkN1VGZsNmNQbnRxUHZxM1pVT2ZqUlB1REI4MjZ0Rm82RDZEUHYwQ043WnE4Y3ZpK3h0RExqWjRDbG8KdFd3a3JWZ3JTeEljd1dyaTBMcXNXTExmV2c9PQotLS0tLUVORCBQUklWQVRFIEtFWS0tLS0tCg==
+  encryption-password: MkZlZGVyYXRlTTByZQ==
+  encryption-settings.pin: MkZlZGVyYXRlTTByZQ==
+  old-encryption-passwords: MkZlZGVyYXRlTTByZQ==
+  root-user-password: MkZlZGVyYXRlTTByZQ==
+kind: Secret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-passwords
+  namespace: ping-cloud
+type: Opaque
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-truststore-certs
+  namespace: ping-cloud
+type: Opaque
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: pingdirectory-cluster-dev.ping-demo.com
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory
+  namespace: ping-cloud
+spec:
+  clusterIP: None
+  ports:
+  - name: ldap
+    port: 1389
+    targetPort: ldap
+  - name: ldaps
+    port: 1636
+    targetPort: ldaps
+  - name: repl
+    port: 8989
+    targetPort: repl
+  - name: jmx-metrics
+    port: 8080
+  - name: metrics
+    port: 9102
+  selector:
+    app: ping-cloud
+    class: pingdirectory-server
+    role: pingdirectory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: pingdirectory-admin-dev.ping-demo.com
+    service.beta.kubernetes.io/aws-load-balancer-internal: 0.0.0.0/0
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-admin
+  namespace: ping-cloud
+spec:
+  externalTrafficPolicy: Local
+  ports:
+  - name: ldaps
+    port: 636
+    targetPort: ldaps
+  selector:
+    app: ping-cloud
+    class: pingdirectory-server
+    role: pingdirectory
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-http
+  namespace: ping-cloud
+spec:
+  ports:
+  - name: https
+    port: 1443
+    targetPort: https
+  selector:
+    app: ping-cloud
+    class: pingdirectory-server
+    role: pingdirectory
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: ping-cloud
+    class: pingdirectory-server
+    role: pingdirectory
+  name: pingdirectory
+  namespace: ping-cloud
+spec:
+  podManagementPolicy: OrderedReady
+  replicas: 3
+  selector:
+    matchLabels:
+      app: ping-cloud
+      class: pingdirectory-server
+      role: pingdirectory
+  serviceName: pingdirectory
+  template:
+    metadata:
+      annotations:
+        lastUpdateReason: NA
+      labels:
+        app: ping-cloud
+        class: pingdirectory-server
+        entitled-app: "true"
+        role: pingdirectory
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pingidentity.com/pd
+                operator: In
+                values:
+                - "true"
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: role
+                  operator: In
+                  values:
+                  - pingdirectory
+              topologyKey: topology.kubernetes.io/zone
+            weight: 1
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - pingdirectory
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - env:
+        - name: P14C_ENVIRONMENT_ID
+          valueFrom:
+            secretKeyRef:
+              key: P14C_ENVIRONMENT_ID
+              name: pingdirectory-passwords
+        - name: P14C_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              key: P14C_CLIENT_ID
+              name: pingdirectory-passwords
+        - name: P14C_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              key: P14C_CLIENT_SECRET
+              name: pingdirectory-passwords
+        - name: ROOT_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: root-user-password
+              name: pingdirectory-passwords
+        - name: DMANAGER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: DMANAGER_PASSWORD
+              name: pingdirectory-dmanager-password
+        - name: PF_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: PF_ADMIN_USER_PASSWORD
+              name: pingcommon-passwords
+        - name: PF_LDAP_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: PF_LDAP_PASSWORD
+              name: pingcommon-passwords
+        - name: ACME_CERT_KEYSTORE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: ACME_CERT_KEYSTORE_PASSWORD
+              name: pingcommon-passwords
+        - name: DA_OAUTH_TOKEN_VALIDATOR_SECRET
+          valueFrom:
+            secretKeyRef:
+              key: DA_OAUTH_TOKEN_VALIDATOR_SECRET
+              name: pingcommon-passwords
+        - name: NEW_RELIC_CONFIG_FILE
+          value: /opt/shared-dir/newrelic.yml
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
+        envFrom:
+        - configMapRef:
+            name: pingdirectory-environment-variables
+        - configMapRef:
+            name: pingcommon-environment-variables
+        - secretRef:
+            name: newrelic-license-key
+            optional: false
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - /opt/staging/hooks/86-pre-stop.sh
+        livenessProbe:
+          exec:
+            command:
+            - /opt/staging/hooks/86-liveness.sh
+          failureThreshold: 3
+          periodSeconds: 30
+          timeoutSeconds: 5
+        name: pingdirectory
+        ports:
+        - containerPort: 1389
+          name: ldap
+        - containerPort: 1636
+          name: ldaps
+        - containerPort: 1443
+          name: https
+        - containerPort: 8989
+          name: repl
+        readinessProbe:
+          exec:
+            command:
+            - /opt/staging/hooks/85-readiness.sh
+          failureThreshold: 3
+          periodSeconds: 5
+          timeoutSeconds: 5
+        resources:
+          limits:
+            memory: 22Gi
+          requests:
+            cpu: "2"
+            memory: 22Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        startupProbe:
+          exec:
+            command:
+            - sh
+            - -c
+            - echo 'Finished delaying PingDirectory by 180s using startupProbe'
+          failureThreshold: 100
+          initialDelaySeconds: 180
+          periodSeconds: 5
+          timeoutSeconds: 5
+        volumeMounts:
+        - mountPath: /home/ping/.ssh
+          name: ssh-dir
+        - mountPath: /opt/shared-dir
+          name: shared-dir
+        - mountPath: /opt/staging/topology/descriptor.json
+          name: topology-descriptor
+          subPath: descriptor.json
+        - mountPath: /opt/staging/topology.json
+          name: data-dir
+          subPath: topology.json
+        - mountPath: /usr/local/bin/kubectl
+          name: data-dir
+          subPath: kubectl
+        - mountPath: /opt/staging/hooks/logger.lib.sh
+          name: data-dir
+          subPath: logger.lib.sh
+        - mountPath: /opt/staging/newrelic.jar
+          name: data-dir
+          subPath: newrelic.jar
+        - mountPath: /opt/staging/jmx_prometheus_javaagent-0.14.0.jar
+          name: data-dir
+          subPath: jmx_prometheus_javaagent-0.14.0.jar
+        - mountPath: /opt/out
+          name: out-dir
+        - mountPath: /usr/local/secrets
+          name: pingdirectory-passwords
+          readOnly: true
+        - mountPath: /usr/local/secrets/certs
+          name: acme-tls-cert
+          readOnly: true
+        - mountPath: /opt/in/instance/PingDirectory.lic
+          name: pingdirectory-license
+          subPath: PingDirectory.lic
+        - mountPath: /opt/staging/ds_env_vars
+          name: data-dir
+          subPath: ds_env_vars
+        - mountPath: /usr/local/secrets/truststore_certs
+          name: pingdirectory-truststore-certs
+          readOnly: true
+      - args:
+        - --statsd.mapping-config=/tmp/mapping/pingdirectory-statsd-mapping.yml
+        - --statsd.listen-udp=:8125
+        - --web.listen-address=:9102
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/prom/statsd-exporter:v0.14.1
+        name: pingdirectory-statsd-exporter
+        ports:
+        - containerPort: 9102
+          protocol: TCP
+        - containerPort: 8080
+          protocol: TCP
+        - containerPort: 8125
+          protocol: UDP
+        resources:
+          limits:
+            cpu: 100m
+            memory: 300Mi
+          requests:
+            cpu: 100m
+            memory: 300Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /tmp/mapping/
+          name: pingdirectory-statsd-mapping
+          readOnly: false
+      initContainers:
+      - command:
+        - /wait-for-services.sh
+        env:
+        - name: WAIT_FOR_SERVICES
+          value: pingdirectory
+        envFrom:
+        - configMapRef:
+            name: pingdirectory-environment-variables
+        - configMapRef:
+            name: pingcommon-environment-variables
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/busybox:1.32
+        imagePullPolicy: IfNotPresent
+        name: wait-for-services
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /utils.lib.sh
+          name: pingdirectory-init
+          subPath: utils.lib.sh
+        - mountPath: /logger.lib.sh
+          name: pingdirectory-init
+          subPath: logger.lib.sh
+        - mountPath: /wait-for-services.sh
+          name: pingdirectory-init
+          subPath: wait-for-services.sh
+      - command:
+        - /get_ssm_env_vars.sh
+        envFrom:
+        - configMapRef:
+            name: pingdirectory-environment-variables
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-cli:2.0.17
+        imagePullPolicy: IfNotPresent
+        name: pingdirectory-discovery-service
+        volumeMounts:
+        - mountPath: /config
+          name: data-dir
+        - mountPath: /get_ssm_env_vars.sh
+          name: discovery-service
+          subPath: get_ssm_env_vars.sh
+      - command:
+        - /copy-dependencies.sh
+        envFrom:
+        - configMapRef:
+            name: pingdirectory-environment-variables
+        - configMapRef:
+            name: pingcommon-environment-variables
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.15.0
+        imagePullPolicy: IfNotPresent
+        name: pingdirectory-init
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /.ssh
+          name: ssh-dir
+        - mountPath: /data
+          name: data-dir
+        - mountPath: /id_rsa
+          name: ssh-id-key-secret
+          subPath: id_rsa
+        - mountPath: /known_hosts
+          name: known-hosts-config
+          subPath: known_hosts
+        - mountPath: /copy-dependencies.sh
+          name: pingdirectory-init
+          subPath: copy-dependencies.sh
+        - mountPath: /utils.lib.sh
+          name: pingdirectory-init
+          subPath: utils.lib.sh
+        - mountPath: /logger.lib.sh
+          name: pingdirectory-init
+          subPath: logger.lib.sh
+      - env:
+        - name: NEW_RELIC_APP_NAME
+          value: pingdirectory
+        - name: METADATA_EP_URL
+          value: http://metadata:5000
+        - name: NEW_RELIC_CONFIG_FILEPATH
+          value: /opt/shared-dir/newrelic.yml
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
+        envFrom:
+        - configMapRef:
+            name: pingdirectory-environment-variables
+        - secretRef:
+            name: newrelic-license-key
+            optional: false
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        name: newrelic-tags-exporter
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /opt/shared-dir
+          name: shared-dir
+      - command:
+        - sh
+        - -c
+        - echo "kms init container"
+        envFrom:
+        - configMapRef:
+            name: pingdirectory-environment-variables
+        - configMapRef:
+            name: pingcommon-environment-variables
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        name: kms-init-container
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /.ssh
+          name: ssh-dir
+        - mountPath: /data
+          name: data-dir
+        - mountPath: /id_rsa
+          name: ssh-id-key-secret
+          subPath: id_rsa
+        - mountPath: /known_hosts
+          name: known-hosts-config
+          subPath: known_hosts
+        - mountPath: /utils.lib.sh
+          name: pingdirectory-init
+          subPath: utils.lib.sh
+        - mountPath: /logger.lib.sh
+          name: pingdirectory-init
+          subPath: logger.lib.sh
+      securityContext:
+        fsGroup: 9999
+      serviceAccount: ping-serviceaccount
+      terminationGracePeriodSeconds: 300
+      tolerations:
+      - effect: NoSchedule
+        key: pingidentity.com/pd-only
+        operator: Equal
+        value: "true"
+      volumes:
+      - configMap:
+          defaultMode: 365
+          name: discovery-service
+        name: discovery-service
+      - emptyDir: {}
+        name: ssh-dir
+      - emptyDir: {}
+        name: shared-dir
+      - emptyDir: {}
+        name: data-dir
+      - configMap:
+          defaultMode: 365
+          name: pingcommon-init
+        name: pingdirectory-init
+      - configMap:
+          defaultMode: 420
+          name: topology-descriptor
+          optional: true
+        name: topology-descriptor
+      - name: ssh-id-key-secret
+        secret:
+          defaultMode: 256
+          optional: true
+          secretName: ssh-id-key-secret
+      - configMap:
+          defaultMode: 420
+          name: known-hosts-config
+          optional: true
+        name: known-hosts-config
+      - name: out-dir
+        persistentVolumeClaim:
+          claimName: out-dir
+      - name: pingdirectory-license
+        secret:
+          defaultMode: 256
+          optional: true
+          secretName: pingdirectory-license
+      - name: pingdirectory-passwords
+        secret:
+          defaultMode: 256
+          optional: true
+          secretName: pingdirectory-passwords
+      - name: acme-tls-cert
+        secret:
+          defaultMode: 256
+          optional: true
+          secretName: acme-tls-cert
+      - configMap:
+          name: pingdirectory-statsd-mapping
+        name: pingdirectory-statsd-mapping
+      - name: pingdirectory-truststore-certs
+        secret:
+          defaultMode: 256
+          optional: true
+          secretName: pingdirectory-truststore-certs
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - metadata:
+      labels:
+        app: ping-cloud
+        role: pingdirectory
+      name: out-dir
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 50Gi
+      storageClassName: pingdirectory-gp3
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-periodic-backup
+  namespace: ping-cloud
+spec:
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    metadata:
+      labels:
+        app: ping-cloud
+        role: pingdirectory
+    spec:
+      backoffLimit: 0
+      template:
+        metadata:
+          labels:
+            app: ping-cloud
+            role: pingdirectory
+        spec:
+          containers:
+          - command:
+            - /opt/in/backup-cronjob.sh
+            env:
+            - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+              value: "true"
+            - name: PING_CLOUD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            envFrom:
+            - configMapRef:
+                name: pingdirectory-environment-variables
+            - configMapRef:
+                name: pingcommon-environment-variables
+            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.19-release-branch-latest
+            imagePullPolicy: Always
+            name: pingdirectory-backup
+            securityContext:
+              allowPrivilegeEscalation: false
+              runAsGroup: 9999
+              runAsNonRoot: true
+              runAsUser: 9031
+            volumeMounts:
+            - mountPath: /opt/in/backup-cronjob.sh
+              name: backup-cronjob-script
+              subPath: backup-cronjob.sh
+            - mountPath: /opt/in/backup-ops.sh
+              name: backup-ops-script
+              subPath: backup-ops.sh
+            - mountPath: /opt/in/hooks/logger.lib.sh
+              name: pingdirectory-init
+              subPath: logger.lib.sh
+          restartPolicy: OnFailure
+          securityContext:
+            fsGroup: 9999
+          serviceAccountName: pingdirectory-ops-serviceaccount
+          volumes:
+          - configMap:
+              defaultMode: 365
+              name: pingdirectory-backup-cronjob
+            name: backup-cronjob-script
+          - configMap:
+              defaultMode: 365
+              items:
+              - key: backup-ops.sh
+                path: backup-ops.sh
+              name: pingdirectory-backup-ops-template-files
+            name: backup-ops-script
+          - configMap:
+              defaultMode: 365
+              name: pingcommon-init
+            name: pingdirectory-init
+  schedule: 30 */6 * * *
+  startingDeadlineSeconds: 90
+  successfulJobsHistoryLimit: 0
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-periodic-csd-upload
+  namespace: ping-cloud
+spec:
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    metadata:
+      labels:
+        app: ping-cloud
+        role: pingdirectory
+    spec:
+      backoffLimit: 0
+      template:
+        metadata:
+          labels:
+            app: ping-cloud
+            role: pingdirectory
+        spec:
+          containers:
+          - command:
+            - /opt/in/upload-csd-data.sh
+            env:
+            - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+              value: "true"
+            envFrom:
+            - configMapRef:
+                name: pingdirectory-environment-variables
+            - configMapRef:
+                name: pingcommon-environment-variables
+            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.19-release-branch-latest
+            imagePullPolicy: Always
+            name: pingdirectory-periodic-csd-upload
+            securityContext:
+              allowPrivilegeEscalation: false
+              runAsGroup: 9999
+              runAsNonRoot: true
+              runAsUser: 9031
+            volumeMounts:
+            - mountPath: /opt/in/upload-csd-data.sh
+              name: pingdirectory-periodic-csd-upload
+              subPath: upload-csd-data.sh
+          restartPolicy: OnFailure
+          securityContext:
+            fsGroup: 9999
+          serviceAccount: ping-serviceaccount
+          volumes:
+          - configMap:
+              defaultMode: 365
+              name: pingdirectory-periodic-csd-upload
+            name: pingdirectory-periodic-csd-upload
+  schedule: 0 * * * *
+  startingDeadlineSeconds: 90
+  successfulJobsHistoryLimit: 0
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-periodic-export-ldif
+  namespace: ping-cloud
+spec:
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    metadata:
+      labels:
+        app: ping-cloud
+        role: pingdirectory
+    spec:
+      backoffLimit: 0
+      template:
+        metadata:
+          labels:
+            app: ping-cloud
+            role: pingdirectory
+        spec:
+          containers:
+          - command:
+            - /opt/in/export-ldif-data.sh
+            env:
+            - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+              value: "true"
+            envFrom:
+            - configMapRef:
+                name: pingdirectory-environment-variables
+            - configMapRef:
+                name: pingcommon-environment-variables
+            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.19-release-branch-latest
+            imagePullPolicy: Always
+            name: pingdirectory-periodic-export-ldif
+            securityContext:
+              allowPrivilegeEscalation: false
+              runAsGroup: 9999
+              runAsNonRoot: true
+              runAsUser: 9031
+            volumeMounts:
+            - mountPath: /opt/in/export-ldif-data.sh
+              name: pingdirectory-export-ldif
+              subPath: export-ldif-data.sh
+          restartPolicy: OnFailure
+          securityContext:
+            fsGroup: 9999
+          serviceAccount: ping-serviceaccount
+          volumes:
+          - configMap:
+              defaultMode: 365
+              name: pingdirectory-export-ldif
+            name: pingdirectory-export-ldif
+  schedule: 0 0 * * *
+  startingDeadlineSeconds: 90
+  successfulJobsHistoryLimit: 0
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-periodic-monitor-upload
+  namespace: ping-cloud
+spec:
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    metadata:
+      labels:
+        app: ping-cloud
+        role: pingdirectory
+    spec:
+      backoffLimit: 0
+      template:
+        metadata:
+          labels:
+            app: ping-cloud
+            role: pingdirectory
+        spec:
+          containers:
+          - command:
+            - /opt/in/monitor-log-data.sh
+            env:
+            - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+              value: "true"
+            envFrom:
+            - configMapRef:
+                name: pingdirectory-environment-variables
+            - configMapRef:
+                name: pingcommon-environment-variables
+            image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.19-release-branch-latest
+            imagePullPolicy: Always
+            name: pingdirectory-periodic-monitor-upload
+            securityContext:
+              allowPrivilegeEscalation: false
+              runAsGroup: 9999
+              runAsNonRoot: true
+              runAsUser: 9031
+            volumeMounts:
+            - mountPath: /opt/in/monitor-log-data.sh
+              name: pingdirectory-periodic-monitor-log-upload
+              subPath: monitor-log-data.sh
+          restartPolicy: OnFailure
+          securityContext:
+            fsGroup: 9999
+          serviceAccount: ping-serviceaccount
+          volumes:
+          - configMap:
+              defaultMode: 365
+              name: pingdirectory-periodic-monitor-log-upload
+            name: pingdirectory-periodic-monitor-log-upload
+  schedule: 0 0 * * *
+  startingDeadlineSeconds: 90
+  successfulJobsHistoryLimit: 0
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pd-pdb
+  namespace: ping-cloud
+spec:
+  minAvailable: 30%
+  selector:
+    matchLabels:
+      app: ping-cloud
+      class: pingdirectory-server
+      role: pingdirectory
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  labels:
+    app: ping-cloud
+    role: pingdirectory
+  name: pingdirectory-http-ingress
+  namespace: ping-cloud
+spec:
+  ingressClassName: nginx-private
+  rules:
+  - host: pingdirectory-dev.ping-demo.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: pingdirectory-http
+            port:
+              number: 1443
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - pingdirectory-dev.ping-demo.com

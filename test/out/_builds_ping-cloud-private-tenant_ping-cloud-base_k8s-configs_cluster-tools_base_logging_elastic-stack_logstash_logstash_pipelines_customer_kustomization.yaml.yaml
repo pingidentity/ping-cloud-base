@@ -1,0 +1,12 @@
+apiVersion: v1
+data:
+  01-input.conf: "input {\n  http {\n    port => 8084\n    add_field => { \"cluster_name\"
+    => \"${CLUSTER_NAME}\" }\n    threads => 5\n    id => \"customer_in\"\n  }\n}\n###
+    Remove unneeded fields came from fluent-bit\nfilter {\n\tmutate {\n\t    remove_field
+    => [\"date\", \"headers\", \"time\"]\n\t}\n}"
+  02-filters.conf: filter {}
+  99-outputs.conf: output { }
+kind: ConfigMap
+metadata:
+  name: logstash-pipeline-customer-97tc4thm7t
+  namespace: elastic-stack-logging

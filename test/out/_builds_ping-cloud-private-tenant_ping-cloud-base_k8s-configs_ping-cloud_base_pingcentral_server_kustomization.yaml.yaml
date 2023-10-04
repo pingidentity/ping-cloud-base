@@ -1,0 +1,272 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingcentral
+  name: pingcentral
+  namespace: ping-cloud
+spec:
+  ports:
+  - name: pingcentral
+    port: 9022
+    targetPort: https
+  selector:
+    app: ping-cloud
+    role: pingcentral
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingcentral
+  name: pingcentral
+  namespace: ping-cloud
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ping-cloud
+      role: pingcentral
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        lastUpdateReason: NA
+      labels:
+        app: ping-cloud
+        entitled-app: "true"
+        role: pingcentral
+      name: pingcentral
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: role
+                  operator: In
+                  values:
+                  - pingcentral
+              topologyKey: topology.kubernetes.io/zone
+            weight: 1
+      containers:
+      - env:
+        - name: OLD_PC_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: OLD_PC_ADMIN_USER_PASSWORD
+              name: pingcentral-passwords
+        - name: PC_ADMIN_USER_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: PC_ADMIN_USER_PASSWORD
+              name: pingcentral-passwords
+        - name: NEW_RELIC_CONFIG_FILE
+          value: /opt/shared-dir/newrelic.yml
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
+        envFrom:
+        - configMapRef:
+            name: pingcentral-environment-variables
+        - secretRef:
+            name: newrelic-license-key
+            optional: false
+        image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingcentral/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        livenessProbe:
+          exec:
+            command:
+            - /opt/liveness.sh
+          failureThreshold: 4
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 5
+        name: pingcentral
+        ports:
+        - containerPort: 9022
+          name: https
+        readinessProbe:
+          exec:
+            command:
+            - /opt/readiness.sh
+          failureThreshold: 3
+          initialDelaySeconds: 60
+          periodSeconds: 5
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: "2"
+            memory: 5Gi
+          requests:
+            cpu: "1"
+            memory: 2Gi
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /home/ping/.ssh
+          name: ssh-dir
+        - mountPath: /opt/shared-dir
+          name: shared-dir
+        - mountPath: /opt/staging/topology/descriptor.json
+          name: topology-descriptor
+          subPath: descriptor.json
+        - mountPath: /usr/local/bin/kubectl
+          name: data-dir
+          subPath: kubectl
+        - mountPath: /opt/staging/ds_env_vars
+          name: data-dir
+          subPath: ds_env_vars
+        - mountPath: /opt/staging/hooks/logger.lib.sh
+          name: data-dir
+          subPath: logger.lib.sh
+        - mountPath: /usr/local/secrets
+          name: pingcentral-passwords
+          readOnly: true
+        - mountPath: /opt/in/instance/conf/pingcentral.lic
+          name: pingcentral-license
+          subPath: pingcentral.lic
+        - mountPath: /opt/staging/newrelic.jar
+          name: data-dir
+          subPath: newrelic.jar
+      initContainers:
+      - command:
+        - /copy-dependencies.sh
+        envFrom:
+        - configMapRef:
+            name: pingcentral-environment-variables
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.15.0
+        imagePullPolicy: IfNotPresent
+        name: pingcentral-init
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /.ssh
+          name: ssh-dir
+        - mountPath: /data
+          name: data-dir
+        - mountPath: /id_rsa
+          name: ssh-id-key-secret
+          subPath: id_rsa
+        - mountPath: /known_hosts
+          name: known-hosts-config
+          subPath: known_hosts
+        - mountPath: /copy-dependencies.sh
+          name: pingcentral-init
+          subPath: copy-dependencies.sh
+        - mountPath: /utils.lib.sh
+          name: pingcentral-init
+          subPath: utils.lib.sh
+        - mountPath: /logger.lib.sh
+          name: pingcentral-init
+          subPath: logger.lib.sh
+      - env:
+        - name: NEW_RELIC_APP_NAME
+          value: pingcentral
+        - name: METADATA_EP_URL
+          value: http://metadata:5000
+        - name: NEW_RELIC_CONFIG_FILEPATH
+          value: /opt/shared-dir/newrelic.yml
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
+          value: "true"
+        envFrom:
+        - configMapRef:
+            name: pingcentral-environment-variables
+        - secretRef:
+            name: newrelic-license-key
+            optional: false
+        image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        name: newrelic-tags-exporter
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /opt/shared-dir
+          name: shared-dir
+      securityContext:
+        fsGroup: 9999
+      serviceAccount: ping-serviceaccount
+      volumes:
+      - emptyDir: {}
+        name: ssh-dir
+      - emptyDir: {}
+        name: shared-dir
+      - emptyDir: {}
+        name: data-dir
+      - configMap:
+          defaultMode: 365
+          name: pingcommon-init
+        name: pingcentral-init
+      - configMap:
+          defaultMode: 420
+          name: topology-descriptor
+          optional: true
+        name: topology-descriptor
+      - name: ssh-id-key-secret
+        secret:
+          defaultMode: 256
+          optional: true
+          secretName: ssh-id-key-secret
+      - configMap:
+          defaultMode: 420
+          name: known-hosts-config
+          optional: true
+        name: known-hosts-config
+      - name: pingcentral-license
+        secret:
+          defaultMode: 256
+          optional: true
+          secretName: pingcentral-license
+      - name: pingcentral-passwords
+        secret:
+          defaultMode: 256
+          optional: true
+          secretName: pingcentral-passwords
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  labels:
+    app: ping-cloud
+    role: pingcentral
+  name: pingcentral-ingress
+  namespace: ping-cloud
+spec:
+  ingressClassName: nginx-private
+  rules:
+  - host: pingcentral.ping-demo.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: pingcentral
+            port:
+              number: 9022
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - pingcentral.ping-demo.com

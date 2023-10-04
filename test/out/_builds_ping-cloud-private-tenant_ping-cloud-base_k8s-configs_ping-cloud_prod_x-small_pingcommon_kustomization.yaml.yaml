@@ -1,0 +1,1040 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  labels:
+    app: ping-cloud
+  name: ping-cloud
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingone-configurator
+  name: p1-config-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: ping-cloud
+    role: p14c-bom-service
+  name: p14c-bom-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: ping-cloud
+    role: p14c-bootstrap
+  name: p14c-bootstrap-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: ping-cloud
+    role: p14c-oauth-service
+  name: p14c-oauth-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: ping-cloud
+  name: ping-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingaccess-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingdirectory-ops-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingdirectory-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingfederate-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingone-configurator
+  name: p1-config-role
+  namespace: ping-cloud
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app: ping-cloud
+    role: p14c-bom-service
+  name: p14c-bom-role
+  namespace: ping-cloud
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app: ping-cloud
+    role: p14c-bootstrap
+  name: p14c-bootstrap-role
+  namespace: ping-cloud
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  - configmaps
+  verbs:
+  - create
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app: ping-cloud
+    role: p14c-oauth-service
+  name: p14c-oauth-role
+  namespace: ping-cloud
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - watch
+  - create
+  - update
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app: ping-cloud
+  name: ping-role
+  namespace: ping-cloud
+rules:
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  verbs:
+  - get
+  - create
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - pods/log
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - persistentvolumeclaims
+  verbs:
+  - delete
+  - get
+  - create
+- apiGroups:
+  - ""
+  - apps
+  resources:
+  - statefulsets
+  - deployments
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods/exec
+  verbs:
+  - create
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingresses
+  verbs:
+  - list
+  - watch
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingdirectory-ops-role
+  namespace: ping-cloud
+rules:
+- apiGroups:
+  - batch
+  resources:
+  - jobs
+  verbs:
+  - get
+  - create
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - create
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - pods/log
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - persistentvolumeclaims
+  verbs:
+  - delete
+  - get
+  - create
+- apiGroups:
+  - ""
+  - apps
+  resources:
+  - statefulsets
+  - deployments
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods/exec
+  verbs:
+  - create
+- apiGroups:
+  - networking.k8s.io
+  resources:
+  - ingresses
+  verbs:
+  - list
+  - watch
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  labels:
+    app: ping-cloud
+  name: cluster-secrets-reader
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - list
+  - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: ping-cloud
+    role: pingone-configurator
+  name: p1-config-role-binding
+  namespace: ping-cloud
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: p1-config-role
+subjects:
+- kind: ServiceAccount
+  name: p1-config-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: ping-cloud
+    role: p14c-bom-service
+  name: p14c-bom-role-binding
+  namespace: ping-cloud
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: p14c-bom-role
+subjects:
+- kind: ServiceAccount
+  name: p14c-bom-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: ping-cloud
+    role: p14c-bootstrap
+  name: p14c-bootstrap-role-binding
+  namespace: ping-cloud
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: p14c-bootstrap-role
+subjects:
+- kind: ServiceAccount
+  name: p14c-bootstrap-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: ping-cloud
+    role: p14c-oauth-service
+  name: p14c-oauth-role-binding
+  namespace: ping-cloud
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: p14c-oauth-role
+subjects:
+- kind: ServiceAccount
+  name: p14c-oauth-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: ping-cloud
+  name: ping-role-binding
+  namespace: ping-cloud
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ping-role
+subjects:
+- kind: ServiceAccount
+  name: ping-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingaccess-role-binding
+  namespace: ping-cloud
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ping-role
+subjects:
+- kind: ServiceAccount
+  name: pingaccess-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingdirectory-ops-role-binding
+  namespace: ping-cloud
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: pingdirectory-ops-role
+subjects:
+- kind: ServiceAccount
+  name: pingdirectory-ops-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingdirectory-role-binding
+  namespace: ping-cloud
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ping-role
+subjects:
+- kind: ServiceAccount
+  name: pingdirectory-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingfederate-role-binding
+  namespace: ping-cloud
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ping-role
+subjects:
+- kind: ServiceAccount
+  name: pingfederate-serviceaccount
+  namespace: ping-cloud
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+  name: custom-environment-variables
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  get_ssm_env_vars.sh: |
+    #!/bin/sh
+
+    VERBOSE="${VERBOSE:-false}"
+
+    # Configuration file to share environment variables with main container.
+    CONFIG_FILE='/config/ds_env_vars'
+
+    # Enable debug flag for aws cli if VERBOSE is true
+    if "${VERBOSE}"; then
+      AWS_DEBUG='--debug'
+    fi
+
+    # Verify that the mandatory variable is set.
+    if test -z "${REGION}"; then
+      echo "REGION environment variable must be set"
+      exit 1
+    fi
+
+    echo "AWSCLI VERSON: $(aws --version)"
+    echo "AWS_REGION: ${REGION}"
+
+    # Query aws endpoint to get value associated with the key.
+    get_ssm_val() {
+      param_name="$1"
+      if ! ssm_val="$(aws ${AWS_DEBUG} ssm --region "${REGION}" get-parameters \
+                --names "${param_name%#*}" \
+                --query 'Parameters[*].Value' \
+                --with-decryption \
+                --output text)"; then
+        echo "$ssm_val"
+        return 1
+      fi
+      if [[ "$param_name" == *"secretsmanager"* ]]; then
+        # grep for the value of the secrets manager object's key
+        # the object's key is the string following the '#' in the param_name variable
+        # Using python 2.7 available in docker image to retrieve JSON value.
+        # Retrieved value should not contain any special characters so quoting is not required.
+        echo "$ssm_val" | python -c "import sys, json; print json.load(sys.stdin)['${param_name#*#}']"
+      else
+        echo "$ssm_val"
+      fi
+    }
+
+    # Check all the environment variables
+    get_ssm_key() {
+      for i in $(printenv); do
+        key=${i%=*}
+        val=${i#*=}
+        case "$val" in "ssm://"*)
+          if ! ssm_rv=$(get_ssm_val "${val#ssm:/}"); then
+            return 1
+          fi
+          echo "$key=$ssm_rv" >>"${CONFIG_FILE}"
+        esac
+      done
+    }
+
+    echo "# Start Discovery Service" >>"${CONFIG_FILE}"
+
+    if ! get_ssm_key; then
+      exit 1
+    fi
+
+    echo "# End Discovery Service" >>"${CONFIG_FILE}"
+
+    exit 0
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+  name: discovery-service
+  namespace: ping-cloud
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+  name: known-hosts-config
+  namespace: ping-cloud
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+    role: p14c-bom-service
+  name: p14c-bom-service-environment-variables
+  namespace: ping-cloud
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+    role: p14c-oauth-service
+  name: p14c-oauth-service-environment-variables
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  CUSTOMER_SSM_PATH_PREFIX: /pcpt/customer
+  CUSTOMER_SSO_SSM_PATH_PREFIX: /pcpt/customer/sso
+  PLATFORM_EVENT_QUEUE_NAME: v2_platform_event_queue.fifo
+  PLATFORM_EVENT_QUEUE_POLL_BATCH_SIZE: "1"
+  PLATFORM_EVENT_QUEUE_POLL_INTERVAL_SECONDS: "2"
+  REGION: us-west-2
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+    role: p14c-bootstrap
+  name: pingcloud-p14c-bootstrap-environment-variables
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  p14c-bootstrap-resources.yaml: |
+    product-entitlements:
+      kind: ConfigMap
+      name: entitlements
+      template:
+      values_container_key: entitlements.json
+      ssm_type: json
+      ssm_path_prefix: CUSTOMER_SSM_PATH_PREFIX
+    bootstrap-configuration:
+      kind: Secret
+      name: p14c-bootstrap-secret
+      template: templates/p14c-bootstrap-secret.yaml
+      values_container_key: bootstrapConfiguration
+      ssm_type: json
+      ssm_path_prefix: CUSTOMER_SSO_SSM_PATH_PREFIX
+    environment-metadata:
+      kind: ConfigMap
+      name: p14c-environment-metadata
+      template:
+      values_container_key: information.json
+      ssm_type: json
+      ssm_path_prefix: CUSTOMER_SSO_SSM_PATH_PREFIX
+    customer-id:
+      kind: ConfigMap
+      name: customer-id
+      template:
+      values_container_key: id
+      ssm_type: string
+      ssm_path_prefix: CUSTOMER_SSM_PATH_PREFIX
+    customer-metadata:
+      kind: ConfigMap
+      name: customer-metadata
+      template:
+      values_container_key: customer-metadata.json
+      ssm_type: json
+      ssm_path_prefix: CUSTOMER_SSM_PATH_PREFIX
+    is-myping:
+      kind: ConfigMap
+      name: is-pingone
+      template:
+      values_container_key: P1
+      ssm_type: boolean
+      ssm_path_prefix: CUSTOMER_SSO_SSM_PATH_PREFIX
+    davinci-configuration:
+      kind: Secret
+      name: davinci-configuration
+      template: templates/davinci-configuration.yaml
+      values_container_key: davinciConfiguration
+      ssm_type: json
+      ssm_path_prefix: CUSTOMER_SSO_SSM_PATH_PREFIX
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+    role: p14c-bootstrap
+  name: pingcloud-p14c-bootstrap-resources
+  namespace: ping-cloud
+---
+apiVersion: v1
+data:
+  APP_INTEGRATIONS_BACKEND_ID: appintegrations
+  APP_INTEGRATIONS_BASE_DN: o=appintegrations
+  DA_DEFAULT_GRANT_TYPE_CLIENT_ID: dadmin
+  DA_EXCLUSIVE_SCOPE_NAME: urn:pingidentity:directory-delegated-admin
+  DA_IDENTITY_MAPPER_NAME: DAEntryUUIDMatch
+  DA_IDP_ADAPTER_HTML_FORM_ID: daidphtml
+  DA_JWT_ID: dajwt
+  DA_OAUTH_TOKEN_VALIDATOR_CLIENT_ID: dapingdirectory
+  DA_OIDC_POLICY_ID: dapolicy
+  DA_PCV_ID: dapcv
+  DA_PCV_SEARCH_FILTER: uid=${username}
+  DA_PINGFEDERATE_ATV_NAME: DAPingFederateValidator
+  DA_PINGFEDERATE_INSTANCE_NAME: DAPingFederate
+  ENABLE_DEL_ADMIN: "true"
+  KUBECTL_VERSION: v1.24.0
+  LDAP_CLIENT_MANAGER_SEARCH_BASE: ou=clients,o=appintegrations
+  LDAP_DS_ID: LDAP-FA8D375DFAC589A222E13AA059319ABF9823B552
+  NOTIFICATION_ENABLED: "true"
+  NOTIFICATION_ENDPOINT: http://webhook-eventsource-svc.argo-events:12999/notification
+  PC_ADMIN_USER_USERNAME: administrator
+  PD_PCV_SEARCH_FILTER: (&(objectClass=person)(|(mail=${username})(cn=${username})(uid=${username})))
+  PINGFEDERATE_ENGINE_PORT: "9031"
+  PINGFEDERATE_ENGINE_SERVER: pingfederate
+  PLATFORM_CONFIG_BACKEND_ID: platformconfig
+  PLATFORM_CONFIG_BASE_DN: o=platformconfig
+  SLACK_CHANNEL: p1as-application-oncall
+  TOPOLOGY_DESCRIPTOR_JSON: /opt/staging/topology/descriptor.json
+  TOPOLOGY_DESCRIPTOR_PROFILES_JSON: /opt/staging/topology/descriptor-profiles.json
+  USER_BACKEND_ID: userRoot
+  USER_BACKEND_ID_2: userRoot_2
+  USER_BACKEND_ID_3: userRoot_3
+  USER_BACKEND_ID_4: userRoot_4
+  USER_BACKEND_ID_5: userRoot_5
+  USER_BASE_DN: dc=example,dc=com
+  USER_BASE_DN_2: ""
+  USER_BASE_DN_3: ""
+  USER_BASE_DN_4: ""
+  USER_BASE_DN_5: ""
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+  name: pingcommon-environment-variables
+  namespace: ping-cloud
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app: ping-cloud
+  name: topology-descriptor
+  namespace: ping-cloud
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+  labels:
+    app: ping-cloud
+  name: newrelic-license-key
+  namespace: ping-cloud
+type: Opaque
+---
+apiVersion: v1
+data:
+  ACME_CERT_KEYSTORE_PASSWORD: MkZlZGVyYXRlTTByZQ==
+  DA_OAUTH_TOKEN_VALIDATOR_SECRET: MkZlZGVyYXRlTTByZQ==
+  PC_ADMIN_USER_PASSWORD: MkZlZGVyYXRl
+  PF_ADMIN_USER_PASSWORD: MkZlZGVyYXRlTTByZQ==
+  PF_LDAP_PASSWORD: MkZlZGVyYXRlTTByZQ==
+kind: Secret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+  labels:
+    app: ping-cloud
+  name: pingcommon-passwords
+  namespace: ping-cloud
+type: Opaque
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+  labels:
+    app: ping-cloud
+  name: ssh-id-key-secret
+  namespace: ping-cloud
+type: Opaque
+---
+apiVersion: scheduling.k8s.io/v1
+description: Flag for apps that remain in pending state
+globalDefault: false
+kind: PriorityClass
+metadata:
+  labels:
+    app: ping-cloud
+  name: high-priority-apps-to-avoid-pending-state
+preemptionPolicy: PreemptLowerPriority
+value: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ping-cloud
+    role: p14c-bom-service
+  name: p14c-bom-service
+  namespace: ping-cloud
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ping-cloud
+      role: p14c-bom-service
+  template:
+    metadata:
+      labels:
+        app: ping-cloud
+        role: p14c-bom-service
+      name: p14c-bom-service
+    spec:
+      containers:
+      - command:
+        - python3
+        - -u
+        - /app/bom_service_controller.py
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        envFrom:
+        - configMapRef:
+            name: p14c-bom-service-environment-variables
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        livenessProbe:
+          exec:
+            command:
+            - python3
+            - -u
+            - /app/liveness.py
+          failureThreshold: 3
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 3
+        name: pingcloud-bom
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 300m
+            memory: 256Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+      serviceAccount: p14c-bom-serviceaccount
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: ping-cloud
+    role: p14c-bootstrap
+  name: p14c-bootstrap
+  namespace: ping-cloud
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ping-cloud
+      role: p14c-bootstrap
+  template:
+    metadata:
+      annotations:
+        lastUpdateReason: NA
+      labels:
+        app: ping-cloud
+        role: p14c-bootstrap
+      name: p14c-bootstrap
+    spec:
+      containers:
+      - env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: DAEMONIZE
+          value: "true"
+        envFrom:
+        - configMapRef:
+            name: pingcloud-p14c-bootstrap-environment-variables
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/bootstrap/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        name: p14c-bootstrap
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 300m
+            memory: 256Mi
+        volumeMounts:
+        - mountPath: /app/config/app_config.yaml
+          name: pingcloud-p14c-bootstrap-resources
+          readOnly: true
+          subPath: p14c-bootstrap-resources.yaml
+      securityContext:
+        fsGroup: 9999
+        runAsGroup: 9999
+        runAsNonRoot: true
+        runAsUser: 9031
+      serviceAccount: p14c-bootstrap-serviceaccount
+      volumes:
+      - configMap:
+          name: pingcloud-p14c-bootstrap-resources
+        name: pingcloud-p14c-bootstrap-resources
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    argocd.argoproj.io/hook: Sync
+  labels:
+    app: ping-cloud
+    role: p14c-oauth-service
+  name: p14c-oauth-service
+  namespace: ping-cloud
+spec:
+  template:
+    metadata:
+      labels:
+        app: ping-cloud
+        role: p14c-oauth-service
+    spec:
+      containers:
+      - command:
+        - python3
+        - -u
+        - /app/oauth_client_services_controller.py
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        envFrom:
+        - configMapRef:
+            name: p14c-oauth-service-environment-variables
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        name: pingcloud-oauth
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 300m
+            memory: 256Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+      restartPolicy: Never
+      serviceAccountName: p14c-oauth-serviceaccount
+  ttlSecondsAfterFinished: 86400
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  annotations:
+    argocd.argoproj.io/hook: Sync
+  labels:
+    app: ping-cloud
+    role: pingone-configurator
+  name: pingone-configurator
+  namespace: ping-cloud
+spec:
+  backoffLimit: 4
+  template:
+    metadata:
+      labels:
+        app: ping-cloud
+        role: pingone-configurator
+    spec:
+      containers:
+      - env:
+        - name: ENVIRONMENT_METADATA_JSON
+          valueFrom:
+            configMapKeyRef:
+              key: information.json
+              name: p14c-environment-metadata
+              optional: true
+        - name: IS_PINGONE
+          valueFrom:
+            configMapKeyRef:
+              key: P1
+              name: is-pingone
+              optional: true
+        - name: PF_USERNAME
+          value: Administrator
+        - name: PF_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: PF_ADMIN_USER_PASSWORD
+              name: pingcommon-passwords
+        envFrom:
+        - configMapRef:
+            name: pingfederate-admin-environment-variables
+        - secretRef:
+            name: p14c-bootstrap-secret
+        image: public.ecr.aws/r2h3l6e4/pingcloud-solutions/ansible-beluga/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        name: pingone-configurator
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 300m
+            memory: 256Mi
+      initContainers:
+      - command:
+        - /wait-for-services.sh
+        env:
+        - name: WAIT_FOR_SERVICES
+          value: pingfederate-cluster
+        envFrom:
+        - configMapRef:
+            name: pingfederate-admin-environment-variables
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/busybox:1.32
+        imagePullPolicy: IfNotPresent
+        name: wait-for-services
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        volumeMounts:
+        - mountPath: /utils.lib.sh
+          name: pingone-config
+          subPath: utils.lib.sh
+        - mountPath: /logger.lib.sh
+          name: pingone-config
+          subPath: logger.lib.sh
+        - mountPath: /wait-for-services.sh
+          name: pingone-config
+          subPath: wait-for-services.sh
+      restartPolicy: Never
+      serviceAccount: p1-config-serviceaccount
+      volumes:
+      - configMap:
+          defaultMode: 365
+          name: pingcommon-init
+        name: pingone-config
+  ttlSecondsAfterFinished: 86400
