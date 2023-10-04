@@ -66,9 +66,16 @@
 - Update EBS Driver to 1.21.0 for EKS 1.27
 - Update newrelic-java-agent to v8.6.0
 - Add oidc.properties.subst to profile repo
+- Update Prometheus to v2.47.0
 - Upgrade sealed secrets controller to v0.23+
+- SealedSecrets: Overwrite existing k8s secrets
 - Fix common integration tests
 - Update csr-valdation.sh to create a single .yaml file per microservice, rather than directory
+- Kube-State-Metrics: Refactoring with Third-Party Manifest Policy
+- Metrics-Server : Refactoring with Third-Party Manifest Policy
+- Add PingOne ArgoCD groups integration tests
+- Defined the resource specifications for PGO pods
+- Kube-downscaler excluding grafana deployment from downscaling
 
 _Changes:_
 
@@ -123,10 +130,12 @@ _Changes:_
 - [X] PDO-5549 Update kube-state-metrics cluster tool to v2.8.1 for EKS 1.26
 - [X] PDO-5558 Mirror our own version of newrelic images
 - [X] PDO-5571 Update nginx-ingress-controller to v1.6.4 to support EKS 1.26
+- [X] PDO-5594 PingOne configuration required for ArgoCD SSO authentication
 - [X] PDO-5601 os-dashboards-pf configMap breaks developer, and new ci/cd deploys
 - [X] PDO-5647 Handle SIGTERM properly in enrichment-bootstrap
 - [X] PDO-5654 Fluentbit Kubernetes filter is not adding metadata into some events
 - [X] PDO-5655 OS: Logs for the pf-transaction-* index are not filtered
+- [X] PDO-5658 SealedSecrets: Overwrite existing k8s secrets
 - [X] PDO-5659 git-ops-command.sh responds properly to SIGTERM
 - [X] PDO-5660 Healthcheck pods respond properly to SIGTERM
 - [X] PDO-5671 OS: grokparsefailure in pingaccess logs
@@ -158,17 +167,26 @@ _Changes:_
 - [X] PDO-5876 Update Amazon-Cloudwatch-agent to v1.300026.3b189
 - [X] PDO-5877 Update metrics-server to v0.6.4
 - [X] PDO-5878 Update newrelic-java-agent to v8.6.0
+- [X] PDO-5880 Update Prometheus to v2.47.0
 - [X] PDO-5881 Update Alertmanager to v0.26
+- [X] PDO-5916 Set resource specifications for cert-manager pods
+- [X] PDO-5918 Define the resource specifications for PGO pods
 - [X] PDO-5923 Karpenter capacity and performance Grafana dashboard
 - [X] PDO-5924 Multi-Region CDE: opensearch-bootstrap job in a second region can't connect to OpenSearch
+- [X] PDO-5928 Configure PA-WAS in P1 for customer hub deployments
 - [X] PDO-5972 Karpenter Pods: Verify Logs are sent to CloudWatch
 - [X] PDO-6006 Change Argo CD log to 'ERROR' level
 - [X] PDO-6007 Change external-dns pod log to 'ERROR' level
 - [X] PDO-6008 Change Opensearch log to 'WARNING' level
 - [X] PDO-6061 Fix pingone-configurator pod crashing when missing ConfigMap ping-cloud/is-pingone
+- [X] PDO-6074 Kube-State-Metrics: Refactoring with Third-Party Manifest Policy
+- [X] PDO-6075 Metrics-Server : Refactoring with Third-Party Manifest Policy
 - [X] PDO-6077 Multiple issues with OpenSearch connect from secondary region
 - [X] PDO-6136 Fix common integration tests
+- [X] PDO-6138 Kube-downscaler excluding grafana deployment from downscaling
 - [X] PDO-6166 Add PingFederate periodic backup limits
+- [X] PDO-6187 Increase wait time for backup alerts for PGO
+
 
 ### 1.18.0.0
 
@@ -407,6 +425,7 @@ _Changes:_
 - [X] PDO-5911 Update PA-WAS Admin CSD Upload job to use PA-WAS cm
 - [X] PDO-6015 Remove docker logs from fluent-bit
 - [X] PDO-6078 Exclude dlq pipeline from alerts
+- [X] PDO-6115 Exclude non-PGO alerts from the PGO Prometheus Alerts dashboard
 
 ### 1.17.0.0
 
@@ -450,6 +469,7 @@ _Changes:_
 - Add IngressClassName to replace the deprecated annotation
 - Fix PingFederate multiline logs parsing
 - Exclude dlq pipeline from alerts
+- Exclude non-PGO alerts from the PGO Prometheus Alerts dashboard
 
 _Changes:_
 

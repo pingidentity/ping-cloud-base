@@ -1161,7 +1161,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   STAGE_LETS_ENCRYPT_SERVER='https://acme-staging-v02.api.letsencrypt.org/directory'
 
   if test ! "${LETS_ENCRYPT_SERVER}"; then
-    if "${IS_GA}" || "${IS_MY_PING}"; then
+    if "${IS_GA}"; then
       LETS_ENCRYPT_SERVER="${PROD_LETS_ENCRYPT_SERVER}"
     else
       case "${ENV}" in
@@ -1240,7 +1240,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   IRSA_TEMPLATE='eks.amazonaws.com/role-arn: ${ssm_value}'
   set_var "IRSA_ARGOCD_ANNOTATION_KEY_VALUE" "" "${IRSA_BASE_PATH}" "irsa-argocd/arn" "${IRSA_TEMPLATE}"
   
-  set_var "IRSA_INGRESS_ANNOTATION_KEY_VALUE" "" "${IRSA_BASE_PATH}" "ingress-controller/arn" "${IRSA_TEMPLATE}"
+  set_var "IRSA_INGRESS_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}/irsa-role/ingress-controller/arn" "${IRSA_TEMPLATE}"
 
   # shellcheck disable=SC2016
   KARPENTER_ROLE_TEMPLATE='eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role'

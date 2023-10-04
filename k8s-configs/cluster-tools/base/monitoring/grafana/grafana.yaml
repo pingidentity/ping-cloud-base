@@ -24,6 +24,9 @@ spec:
     security:
       admin_user: admin
   deployment:
+    metadata:
+      labels:
+        app: grafana
     spec:
       template:
         spec:

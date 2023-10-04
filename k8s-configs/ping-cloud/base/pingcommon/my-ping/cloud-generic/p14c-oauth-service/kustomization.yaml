@@ -14,5 +14,5 @@ configMapGenerator:
 - name: p14c-oauth-service-environment-variables
 
 resources:
-- deployment.yaml
+- job.yaml
 - rbac.yaml

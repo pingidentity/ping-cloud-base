@@ -9,10 +9,10 @@ if skipTest "${0}"; then
 fi
 
 testP14COAuthPodAvailability() {
-
-  status=$(kubectl get pods --selector=role=p14c-oauth-service -n ${PING_CLOUD_NAMESPACE} -o json | jq -r '.items[].status.containerStatuses[].ready')
+  status=$(kubectl get pods --selector=role=p14c-oauth-service -n ${PING_CLOUD_NAMESPACE} -o json | jq -r '.items[].status.phase')
   assertEquals 0 $?
-  assertEquals "The status of the p14c-oauth-service pod should be ready but was: ${status}" 'true' ${status}
+  # There may be multiple pods from failed jobs, but if at least one succeeds we're good
+  assertContains "The status phase of the p14c-oauth-service pod should be Succeeded but was: ${status}" "${status}" "Succeeded"
 }
 
 # When arguments are passed to a script you must
