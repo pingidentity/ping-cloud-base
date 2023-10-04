@@ -1,7 +1,0 @@
-apiVersion: v1
-data:
-  sns.json: '[]'
-kind: ConfigMap
-metadata:
-  name: os-notifications-channels-dc7547gk9b
-  namespace: elastic-stack-logging
