@@ -1,19 +1,19 @@
 ---
-# Source: nri-bundle/charts/newrelic-infrastructure/templates/controlplane/daemonset.yaml
-
+# Source: p1as-newrelic/charts/nri-bundle/charts/newrelic-infrastructure/templates/controlplane/daemonset.yaml
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   namespace: newrelic
   labels:
-    nri-bundle.version: 5.0.4
     app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: newrelic-infrastructure
-    app.kubernetes.io/version: 3.2.0
-    helm.sh/chart: newrelic-infrastructure-3.5.3
+    app.kubernetes.io/version: 3.17.0
+    helm.sh/chart: newrelic-infrastructure-3.22.0
+    mode: privileged
   name: nri-bundle-nrk8s-controlplane
 spec:
-  updateStrategy: 
+  updateStrategy:
     rollingUpdate:
       maxUnavailable: 1
     type: RollingUpdate
@@ -24,56 +24,35 @@ spec:
       app.kubernetes.io/component: controlplane
   template:
     metadata:
+      annotations:
+        checksum/nri-kubernetes: f06308845e7d3835b7a44c9fc9555af871bdf58cf6e74704bf764ecc2ee8de2d
+        checksum/agent-config: 1dde6e957a86f1f061ca8c1a762c23e445e57d0176cf6da0a544dca7dcc81c2f
       labels:
-        nri-bundle.version: 5.0.4
         app.kubernetes.io/instance: nri-bundle
         app.kubernetes.io/name: newrelic-infrastructure
+        mode: privileged
         app.kubernetes.io/component: controlplane
-      annotations: {}
     spec:
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
-      serviceAccountName: nri-bundle-newrelic-infrastructure-controlplane
-      priorityClassName: high-priority-apps-to-avoid-pending-state
-      initContainers:
-        - name: wait-for-nr-license-secret
-          securityContext:
-            privileged: false
-            runAsGroup: 2000
-            runAsUser: 1000
-            runAsNonRoot: true
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-          image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.15.0
-          command: [ "/bin/sh", "-c" ]
-          args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
-          env:
-            - name: "WAIT_TIMEOUT_SEC"
-              value: "300"
-            - name: "JOB_NAME"
-              value: "newrelic-license-secret-exporter"
-            - name: "SECRET_NAME"
-              value: "newrelic-license-key"
+      serviceAccountName: nri-bundle-nrk8s-controlplane
       containers:
         - name: controlplane
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/nri-kubernetes/dev:v1.19-release-branch-latest
-          imagePullPolicy: Always
+          image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/nri-kubernetes:3.17.0"
+          imagePullPolicy: IfNotPresent
           securityContext:
-            privileged: false
-            runAsGroup: 2000
-            runAsUser: 1000
-            runAsNonRoot: true
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
+            runAsGroup: 2000
+            runAsUser: 1000
           env:
             - name: "NRI_KUBERNETES_SINK_HTTP_PORT"
               value: "8001"
             - name: "NRI_KUBERNETES_CLUSTERNAME"
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.annotations['CLUSTER_NAME']
+              value: test-cluster
             - name: "NRI_KUBERNETES_VERBOSE"
               value: "false"
+
             - name: "NRI_KUBERNETES_NODENAME"
               valueFrom:
                 fieldRef:
@@ -88,38 +67,31 @@ spec:
             - name: nri-kubernetes-config
               mountPath: /etc/newrelic-infra/nri-kubernetes.yml
               subPath: nri-kubernetes.yml
-          resources: 
+          resources:
             limits:
               memory: 300M
             requests:
               cpu: 100m
               memory: 150M
         - name: forwarder
-          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/k8s-events-forwarder:1.36.1
+          image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/k8s-events-forwarder:1.47.0"
           imagePullPolicy: IfNotPresent
           securityContext:
-            privileged: false
-            runAsGroup: 2000
-            runAsUser: 1000
-            runAsNonRoot: true
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
+            runAsGroup: 2000
+            runAsUser: 1000
           ports:
             - containerPort: 8001
           env:
-            - name: "NRI_KUBERNETES_VERBOSE"
-              value: "false"
             - name: "NRIA_LICENSE_KEY"
               valueFrom:
                 secretKeyRef:
                   name: newrelic-license-key
                   key: NEW_RELIC_LICENSE_KEY
 
-            - name: "NRIA_OVERRIDE_HOSTNAME_SHORT"
-              valueFrom:
-                fieldRef:
-                  apiVersion: "v1"
-                  fieldPath: "spec.nodeName"
+            - name: "NRIA_DNS_HOSTNAME_RESOLUTION"
+              value: "false"
 
             - name: "K8S_NODE_NAME"
               valueFrom:
@@ -136,7 +108,7 @@ spec:
             - name: config
               mountPath: /etc/newrelic-infra.yml
               subPath: newrelic-infra.yml
-          resources: 
+          resources:
             limits:
               memory: 300M
             requests:
@@ -165,40 +137,39 @@ spec:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
-            - matchExpressions:
-              - key: node-role.kubernetes.io/control-plane
-                operator: Exists
-            - matchExpressions:
-              - key: node-role.kubernetes.io/controlplane
-                operator: Exists
-            - matchExpressions:
-              - key: node-role.kubernetes.io/etcd
-                operator: Exists
-            - matchExpressions:
-              - key: node-role.kubernetes.io/controlplane
-                operator: Exists
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: Exists
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/controlplane
+                    operator: Exists
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/etcd
+                    operator: Exists
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/master
+                    operator: Exists
       tolerations:
         - effect: NoSchedule
           operator: Exists
         - effect: NoExecute
           operator: Exists
-
 ---
-# Source: nri-bundle/charts/newrelic-infrastructure/templates/kubelet/daemonset.yaml
-
+# Source: p1as-newrelic/charts/nri-bundle/charts/newrelic-infrastructure/templates/kubelet/daemonset.yaml
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   namespace: newrelic
   labels:
-    nri-bundle.version: 5.0.4
     app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: newrelic-infrastructure
-    app.kubernetes.io/version: 3.2.0
-    helm.sh/chart: newrelic-infrastructure-3.5.3
+    app.kubernetes.io/version: 3.17.0
+    helm.sh/chart: newrelic-infrastructure-3.22.0
+    mode: privileged
   name: nri-bundle-nrk8s-kubelet
 spec:
-  updateStrategy: 
+  updateStrategy:
     rollingUpdate:
       maxUnavailable: 1
     type: RollingUpdate
@@ -209,56 +180,35 @@ spec:
       app.kubernetes.io/component: kubelet
   template:
     metadata:
+      annotations:
+        checksum/nri-kubernetes: a9f754eb46e131d5147b7c61a9b678f28df65c3f97ccb7cc1e8318ea16b8533e
+        checksum/agent-config: cd36e8e618d56a836234f184e77141a3c2a97b88095917c2ceafe07a16a5deb8
+        checksum/integrations_config: e38299779e980abc1c5b138caab1429671a77af6564c10102d89ecb752355a0c
       labels:
-        nri-bundle.version: 5.0.4
         app.kubernetes.io/instance: nri-bundle
         app.kubernetes.io/name: newrelic-infrastructure
+        mode: privileged
         app.kubernetes.io/component: kubelet
-      annotations: {}
     spec:
       serviceAccountName: nri-bundle-newrelic-infrastructure
-      priorityClassName: high-priority-apps-to-avoid-pending-state
       hostNetwork: false
-      dnsPolicy: ClusterFirstWithHostNet
-      initContainers:
-        - name: wait-for-nr-license-secret
-          securityContext:
-            privileged: false
-            runAsGroup: 2000
-            runAsUser: 1000
-            runAsNonRoot: true
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-          image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.15.0
-          command: [ "/bin/sh", "-c" ]
-          args: [ "kubectl get secret $(SECRET_NAME) && echo 'INFO: NR secret object found, skipping waiting for job completion.' || kubectl wait --for=condition=Complete --timeout=$(WAIT_TIMEOUT_SEC)s job/$(JOB_NAME)" ]
-          env:
-            - name: "WAIT_TIMEOUT_SEC"
-              value: "300"
-            - name: "JOB_NAME"
-              value: "newrelic-license-secret-exporter"
-            - name: "SECRET_NAME"
-              value: "newrelic-license-key"
       containers:
         - name: kubelet
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/nri-kubernetes/dev:v1.19-release-branch-latest
-          imagePullPolicy: Always
+          image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/nri-kubernetes:3.17.0"
+          imagePullPolicy: IfNotPresent
           securityContext:
-            privileged: false
-            runAsGroup: 2000
-            runAsUser: 1000
-            runAsNonRoot: true
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
+            runAsGroup: 2000
+            runAsUser: 1000
           env:
             - name: "NRI_KUBERNETES_SINK_HTTP_PORT"
               value: "8003"
             - name: "NRI_KUBERNETES_CLUSTERNAME"
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.annotations['CLUSTER_NAME']
+              value: test-cluster
             - name: "NRI_KUBERNETES_VERBOSE"
               value: "false"
+
             - name: "NRI_KUBERNETES_NODENAME"
               valueFrom:
                 fieldRef:
@@ -274,56 +224,57 @@ spec:
             - name: nri-kubernetes-config
               mountPath: /etc/newrelic-infra/nri-kubernetes.yml
               subPath: nri-kubernetes.yml
-          resources: 
+          resources:
             limits:
               memory: 300M
             requests:
               cpu: 100m
               memory: 150M
         - name: agent
-          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/infrastructure-bundle:2.8.38
+          image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/infrastructure-bundle:3.2.16"
           args: [ "newrelic-infra" ]
           imagePullPolicy: IfNotPresent
           securityContext:
+            allowPrivilegeEscalation: true
             privileged: true
+            readOnlyRootFilesystem: true
             runAsGroup: 0
             runAsUser: 0
-            runAsNonRoot: false
-            allowPrivilegeEscalation: true
-            readOnlyRootFilesystem: true
           ports:
             - containerPort: 8003
           env:
-            - name: "NRI_KUBERNETES_VERBOSE"
-              value: "false"
             - name: NRIA_LICENSE_KEY
               valueFrom:
                 secretKeyRef:
                   name: newrelic-license-key
                   key: NEW_RELIC_LICENSE_KEY
-            - name: "CLUSTER_NAME"
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.annotations['CLUSTER_NAME']
-            - name: "NRIA_HOST"
-              valueFrom:
-                fieldRef:
-                  apiVersion: "v1"
-                  fieldPath: "status.hostIP"
+
             - name: "NRIA_OVERRIDE_HOSTNAME_SHORT"
               valueFrom:
                 fieldRef:
                   apiVersion: "v1"
                   fieldPath: "spec.nodeName"
+
+            - name: "NRIA_OVERRIDE_HOSTNAME"
+              valueFrom:
+                fieldRef:
+                  apiVersion: "v1"
+                  fieldPath: "spec.nodeName"
+
             - name: "NRI_KUBERNETES_NODE_NAME"
               valueFrom:
                 fieldRef:
                   apiVersion: "v1"
                   fieldPath: "spec.nodeName"
-            - name: "NRIA_CUSTOM_ATTRIBUTES"
-              value: '{"clusterName":"$(CLUSTER_NAME)"}'
+            - name: "CLUSTER_NAME"
+              value: test-cluster
             - name: "NRIA_PASSTHROUGH_ENVIRONMENT"
-              value: "KUBERNETES_SERVICE_HOST,KUBERNETES_SERVICE_PORT,CLUSTER_NAME,CADVISOR_PORT,NRK8S_NODE_NAME,KUBE_STATE_METRICS_URL,KUBE_STATE_METRICS_POD_LABEL,TIMEOUT,ETCD_TLS_SECRET_NAME,ETCD_TLS_SECRET_NAMESPACE,API_SERVER_SECURE_PORT,KUBE_STATE_METRICS_SCHEME,KUBE_STATE_METRICS_PORT,KUBE_STATE_METRICS_NAMESPACE,SCHEDULER_ENDPOINT_URL,ETCD_ENDPOINT_URL,CONTROLLER_MANAGER_ENDPOINT_URL,API_SERVER_ENDPOINT_URL,DISABLE_KUBE_STATE_METRICS,DISCOVERY_CACHE_TTL"
+              value: "CLUSTER_NAME"
+            - name: "NRIA_HOST"
+              valueFrom:
+                fieldRef:
+                  apiVersion: "v1"
+                  fieldPath: "status.hostIP"
           volumeMounts:
             - name: config
               mountPath: /etc/newrelic-infra.yml
@@ -332,6 +283,8 @@ spec:
               mountPath: /etc/newrelic-infra/integrations.d/
             - name: dev
               mountPath: /dev
+            - name: host-containerd-socket
+              mountPath: /run/containerd/containerd.sock
             - name: host-docker-socket
               mountPath: /var/run/docker.sock
             - name: log
@@ -339,17 +292,13 @@ spec:
             - name: host-volume
               mountPath: /host
               readOnly: true
-            # Volume Mount added for custom defintion file used to set scrape interval
-            # - mountPath: /var/db/newrelic-infra/newrelic-integrations/nri-kubernetes-definition.yml
-            #   name: nri-kubernetes-definition-cfg-volume
-            #   subPath: nri-kubernetes-definition.yml
             - mountPath: /var/db/newrelic-infra/data
               name: agent-tmpfs-data
             - mountPath: /var/db/newrelic-infra/user_data
               name: agent-tmpfs-user-data
             - mountPath: /tmp
               name: agent-tmpfs-tmp
-          resources: 
+          resources:
             limits:
               memory: 300M
             requests:
@@ -359,6 +308,9 @@ spec:
         - name: dev
           hostPath:
             path: /dev
+        - name: host-containerd-socket
+          hostPath:
+            path: /run/containerd/containerd.sock
         - name: host-docker-socket
           hostPath:
             path: /var/run/docker.sock
@@ -368,10 +320,6 @@ spec:
         - name: host-volume
           hostPath:
             path: /
-        # Volume added for custom defintion file used to set scrape interval
-        # - name: nri-kubernetes-definition-cfg-volume
-        #   configMap:
-        #     name: nri-kubernetes-definition-cfg
         - name: agent-tmpfs-data
           emptyDir: {}
         - name: agent-tmpfs-user-data
