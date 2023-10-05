@@ -75,7 +75,6 @@
 - Metrics-Server : Refactoring with Third-Party Manifest Policy
 - Add PingOne ArgoCD groups integration tests
 - Defined the resource specifications for PGO pods
-
 - Kube-downscaler excluding grafana deployment from downscaling
 
 _Changes:_
@@ -185,6 +184,7 @@ _Changes:_
 - [X] PDO-6077 Multiple issues with OpenSearch connect from secondary region
 - [X] PDO-6136 Fix common integration tests
 - [X] PDO-6138 Kube-downscaler excluding grafana deployment from downscaling
+- [X] PDO-6166 Add PingFederate periodic backup limits
 - [X] PDO-6187 Increase wait time for backup alerts for PGO
 
 ### 1.18.0.0
