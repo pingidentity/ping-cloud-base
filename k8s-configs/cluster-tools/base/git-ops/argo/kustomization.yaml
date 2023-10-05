@@ -254,10 +254,6 @@ patches:
     data:
       accounts.image-updater: apiKey
       accounts.config-team: apiKey,login
-      configManagementPlugins: |
-        - name: git-ops-command
-          generate:
-            command: [ "git-ops-command.sh" ]
       resource.customizations: |
         admissionregistration.k8s.io/MutatingWebhookConfiguration:
           ignoreDifferences: |
