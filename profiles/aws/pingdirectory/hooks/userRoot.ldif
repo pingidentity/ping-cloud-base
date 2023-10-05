@@ -1,0 +1,51 @@
+# LDIF export started at 20231005203647.245Z
+# Included branch:  dc=example,dc=com
+
+dn: dc=example,dc=com
+objectClass: top
+objectClass: domain
+dc: example
+aci: (targetattr!="userPassword")(version 3.0; acl "Allow read access for all"; allow (read,search,compare) userdn="ldap:///all";)
+aci: (targetattr!="userPassword")(version 3.0; acl "Allow self-read access to all user attributes except the password"; allow (read,search,compare) userdn="ldap:///self";)
+aci: (targetattr="*")(version 3.0; acl "Allow users to update their own entries"; allow (write) userdn="ldap:///self";)
+aci: (targetattr="*")(version 3.0; acl "Grant full access for the admin user"; allow (all) userdn="ldap:///uid=admin,dc=example,dc=com";)
+aci: (targetcontrol="1.3.6.1.4.1.42.2.27.9.5.8||1.3.6.1.4.1.30221.2.5.36||1.3.6.1.1.13.2||1.3.6.1.4.1.30221.2.5.58||1.3.6.1.4.1.30221.2.5.40||1.2.840.113556.1.4.1413||1.3.6.1.4.1.30221.2.5.44||1.3.6.1.4.1.30221.2.5.45")(version 3.0; acl "GENERATED D-ADMIN ACCESS DO NOT COPY AND PASTE TO REQUEST CONTROLS"; allow (all) userdn="ldap:///all";)
+aci: (targetfilter="(objectclass=inetOrgPerson)")(targetattr="ds-pwp-state-json")(version 3.0; acl "GENERATED D-ADMIN ACCESS DO NOT COPY AND PASTE TO ATTRIBUTES - resource=users admin-user=administrator-user-dadmin"; allow (read) userdn="ldap:///uid=admin,dc=example,dc=com";)
+aci: (targetfilter="(objectclass=inetOrgPerson)")(targetattr="isMemberOf||isDirectMemberOf")(version 3.0; acl "GENERATED D-ADMIN ACCESS DO NOT COPY AND PASTE TO ATTRIBUTES - resource=users admin-user=administrator-user-dadmin"; allow (compare,read,search) userdn="ldap:///uid=admin,dc=example,dc=com";)
+aci: (targetfilter="(objectclass=groupOfUniqueNames)")(targetattr="description||cn")(version 3.0; acl "GENERATED D-ADMIN ACCESS DO NOT COPY AND PASTE TO ATTRIBUTES - resource=groups admin-user=administrator-user-dadmin"; allow (add,compare,search,read,selfwrite,write,delete) userdn="ldap:///uid=admin,dc=example,dc=com";)
+aci: (targetfilter="(objectclass=groupOfUniqueNames)")(targattrfilters="add=objectclass:(objectclass=groupOfUniqueNames)")(targetattr="objectclass")(version 3.0; acl "GENERATED D-ADMIN ACCESS DO NOT COPY AND PASTE TO OBJECTCLASS - resource=groups admin-user=administrator-user-dadmin"; allow (add,compare,search,read,selfwrite,write,delete) userdn="ldap:///uid=admin,dc=example,dc=com";)
+aci: (targetfilter="(objectclass=inetOrgPerson)")(targattrfilters="add=objectclass:(objectclass=inetOrgPerson)")(targetattr="objectclass")(version 3.0; acl "GENERATED D-ADMIN ACCESS DO NOT COPY AND PASTE TO OBJECTCLASS - resource=users admin-user=administrator-user-dadmin"; allow (add,compare,search,read,selfwrite,write,delete) userdn="ldap:///uid=admin,dc=example,dc=com";)
+aci: (targetfilter="(objectclass=groupOfUniqueNames)")(targetattr="member||uniqueMember")(version 3.0; acl "GENERATED D-ADMIN ACCESS DO NOT COPY AND PASTE TO ATTRIBUTES - resource=groups admin-user=administrator-user-dadmin"; allow (compare,read,search,write,selfwrite,delete) userdn="ldap:///uid=admin,dc=example,dc=com";)
+aci: (targetfilter="(objectclass=inetOrgPerson)")(targetattr="uid||mail||ds-pwp-modifiable-state-json||givenName||ds-pwp-account-disabled||cn||sn")(version 3.0; acl "GENERATED D-ADMIN ACCESS DO NOT COPY AND PASTE TO ATTRIBUTES - resource=users admin-user=administrator-user-dadmin"; allow (add,compare,search,read,selfwrite,write,delete) userdn="ldap:///uid=admin,dc=example,dc=com";)
+aci: (targetfilter="(objectclass=groupOfUniqueNames)")(targetattr="isMemberOf||isDirectMemberOf")(version 3.0; acl "GENERATED D-ADMIN ACCESS DO NOT COPY AND PASTE TO ATTRIBUTES - resource=groups admin-user=administrator-user-dadmin"; allow (compare,read,search) userdn="ldap:///uid=admin,dc=example,dc=com";)
+aci: (targetfilter="(objectclass=inetOrgPerson)")(targetattr="userPassword||ds-pwp-modifiable-state-json")(version 3.0; acl "GENERATED D-ADMIN ACCESS DO NOT COPY AND PASTE TO ATTRIBUTES - resource=users admin-user=administrator-user-dadmin"; allow (write,delete) userdn="ldap:///uid=admin,dc=example,dc=com";)
+entryUUID: 54c89c45-327b-3d38-8a2e-b7814de651a4
+ds-sync-generation-id: 1085022570
+ds-sync-state: 0000018B018E158A03ED00000003
+
+dn: ou=appProfile,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: appProfile
+createTimestamp: 20231005201317.056Z
+creatorsName: cn=Directory Manager,cn=Root DNs,cn=config
+modifyTimestamp: 20231005201317.056Z
+modifiersName: cn=Directory Manager,cn=Root DNs,cn=config
+entryUUID: 22de22ab-1eb6-45cf-b5a2-157ec505200d
+ds-sync-hist:: ZHMtY3JlYXRlLXRpbWU6MDAwMDAxOEIwMTc5MUY4MDAzRUQwMDAwMDAwMTpyZXBsOgAAAe+/vQF5H++/vQ==
+
+dn: assetID=663B66E04AC2001D,ou=appprofile,dc=example,dc=com
+objectClass: top
+objectClass: cvsappProfile
+riskTier: Low Risk
+appName: Aetna Enterprise Secure
+pci: Yes
+assetID: 663B66E04AC2001D
+pii: Yes
+sox: No
+createTimestamp: 20231005201317.098Z
+creatorsName: cn=Directory Manager,cn=Root DNs,cn=config
+entryUUID: 87328ae8-f84e-485d-a557-3459550ba29d
+modifiersName: cn=Directory Manager,cn=Root DNs,cn=config
+modifyTimestamp: 20231005203610.763Z
+ds-sync-hist:: ZHMtY3JlYXRlLXRpbWU6MDAwMDAxOEIwMTc5MUZBQTAzRUQwMDAwMDAwMjpyZXBsOgAAAe+/vQF5H++/vQ==
