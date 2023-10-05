@@ -72,6 +72,12 @@
 - SealedSecrets: Overwrite existing k8s secrets
 - Fix common integration tests
 - Update csr-valdation.sh to create a single .yaml file per microservice, rather than directory
+- Kube-State-Metrics: Refactoring with Third-Party Manifest Policy
+- Metrics-Server : Refactoring with Third-Party Manifest Policy
+- Add PingOne ArgoCD groups integration tests
+- Defined the resource specifications for PGO pods
+- Kube-downscaler excluding grafana deployment from downscaling
+- Defined the resource specifications for ArgoCD pods
 
 _Changes:_
 
@@ -126,6 +132,7 @@ _Changes:_
 - [X] PDO-5549 Update kube-state-metrics cluster tool to v2.8.1 for EKS 1.26
 - [X] PDO-5558 Mirror our own version of newrelic images
 - [X] PDO-5571 Update nginx-ingress-controller to v1.6.4 to support EKS 1.26
+- [X] PDO-5594 PingOne configuration required for ArgoCD SSO authentication
 - [X] PDO-5601 os-dashboards-pf configMap breaks developer, and new ci/cd deploys
 - [X] PDO-5647 Handle SIGTERM properly in enrichment-bootstrap
 - [X] PDO-5654 Fluentbit Kubernetes filter is not adding metadata into some events
@@ -166,6 +173,8 @@ _Changes:_
 - [X] PDO-5880 Update Prometheus to v2.47.0
 - [X] PDO-5881 Update Alertmanager to v0.26
 - [X] PDO-5916 Set resource specifications for cert-manager pods
+- [X] PDO-5917 Define the resource specifications for ArgoCD pods
+- [X] PDO-5918 Define the resource specifications for PGO pods
 - [X] PDO-5923 Karpenter capacity and performance Grafana dashboard
 - [X] PDO-5924 Multi-Region CDE: opensearch-bootstrap job in a second region can't connect to OpenSearch
 - [X] PDO-5928 Configure PA-WAS in P1 for customer hub deployments
@@ -174,8 +183,13 @@ _Changes:_
 - [X] PDO-6007 Change external-dns pod log to 'ERROR' level
 - [X] PDO-6008 Change Opensearch log to 'WARNING' level
 - [X] PDO-6061 Fix pingone-configurator pod crashing when missing ConfigMap ping-cloud/is-pingone
+- [X] PDO-6074 Kube-State-Metrics: Refactoring with Third-Party Manifest Policy
+- [X] PDO-6075 Metrics-Server : Refactoring with Third-Party Manifest Policy
 - [X] PDO-6077 Multiple issues with OpenSearch connect from secondary region
 - [X] PDO-6136 Fix common integration tests
+- [X] PDO-6138 Kube-downscaler excluding grafana deployment from downscaling
+- [X] PDO-6166 Add PingFederate periodic backup limits
+- [X] PDO-6187 Increase wait time for backup alerts for PGO
 
 ### 1.18.0.0
 

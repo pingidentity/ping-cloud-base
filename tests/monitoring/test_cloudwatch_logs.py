@@ -12,7 +12,6 @@ dt_now_ms = round(dt_now.timestamp() * 1000)
 dt_past_ms = round(delta.timestamp() * 1000)
 
 
-@unittest.skip("Skipping to look into cloudwatch configmaps")
 class TestCloudWatchLogs(unittest.TestCase):
     log_lines = int(os.getenv("LOG_LINES_TO_TEST", 10))
 
@@ -40,7 +39,7 @@ class TestCloudWatchLogs(unittest.TestCase):
             logStreamName=self.log_stream_name,
             startTime=dt_past_ms,
             endTime=dt_now_ms,
-            startFromHead=False)
+            startFromHead=True)
         events.extend(response['events'])
 
         # second and later

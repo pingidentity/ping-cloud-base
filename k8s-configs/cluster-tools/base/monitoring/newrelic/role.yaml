@@ -1,21 +1,20 @@
 ---
-# Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/role.yaml
-
+# Source: p1as-newrelic/charts/nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/role.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: nri-bundle-nri-metadata-injection-admission
   namespace: newrelic
   annotations:
-    argocd.argoproj.io/hook: Sync,PostSync
-    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+    "helm.sh/hook": pre-install,pre-upgrade,post-install,post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
   labels:
-    nri-bundle.version: 5.0.4
     app: nri-metadata-injection-admission
     app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: nri-metadata-injection
-    app.kubernetes.io/version: 1.7.0
-    helm.sh/chart: nri-metadata-injection-3.0.4
+    app.kubernetes.io/version: 1.15.0
+    helm.sh/chart: nri-metadata-injection-4.7.0
 rules:
   - apiGroups:
       - ""
