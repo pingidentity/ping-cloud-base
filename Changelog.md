@@ -186,6 +186,7 @@ _Changes:_
 - [X] PDO-6077 Multiple issues with OpenSearch connect from secondary region
 - [X] PDO-6136 Fix common integration tests
 - [X] PDO-6138 Kube-downscaler excluding grafana deployment from downscaling
+- [X] PDO-6166 Add PingFederate periodic backup limits
 - [X] PDO-6187 Increase wait time for backup alerts for PGO
 
 ### 1.18.0.0
