@@ -35,7 +35,7 @@ class TestCloudWatchLogs(k8s_utils.K8sUtils):
             logStreamName=self.log_stream_name,
             startTime=dt_past_ms,
             endTime=dt_now_ms,
-            startFromHead=False)
+            startFromHead=True)
         events.extend(response['events'])
 
         # second and later

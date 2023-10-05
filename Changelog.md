@@ -108,6 +108,7 @@
 - Avoid pending stating by prioritizing PingDirectory pods and its backup / restore Job using k8s pod PriorityClass
 - Disable ArgoCD Image Updater
 - Prometheus alerts from secondary region display correct region in alerts
+- Improve logstash alerting in multi-regional cluster
 
 _Changes:_
 
@@ -246,6 +247,7 @@ _Changes:_
 - [X] PDO-6021 Initialize Replication on New PingDirectory Child Non-Seed Servers
 - [X] PDO-6159 Avoid pending stating by prioritizing PingDirectory pods and its backup / restore Job using k8s pod PriorityClass
 - [X] PDO-6234 Prometheus alerts from secondary region display correct region in alerts
+- [X] PDO-6235 Improve logstash alerting in multi-regional cluster
 
 ### 1.17.0.0
 
