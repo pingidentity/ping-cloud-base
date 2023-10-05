@@ -28,12 +28,10 @@ metadata:
   namespace: argocd
 data:
   plugin.yaml: |
-    ---
     apiVersion: argoproj.io/v1alpha1
     kind: ConfigManagementPlugin
     metadata:
       name: git-ops-command
-      namespace: argocd
     spec:
       version: v1.0
       generate:

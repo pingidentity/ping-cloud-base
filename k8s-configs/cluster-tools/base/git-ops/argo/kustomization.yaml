@@ -154,7 +154,7 @@ patches:
                 mountPath: /usr/local/bin/git-ops-command.sh
                 subPath: git-ops-command.sh
               - name: cmp-plugin
-                mountPath: /home/argocd/cmp-server/plugins/plugin.yaml
+                mountPath: /home/argocd/cmp-server/config/plugin.yaml
                 subPath: plugin.yaml
               - name: helm-command
                 mountPath: /usr/local/bin/helm-command.sh
