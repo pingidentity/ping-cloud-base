@@ -303,6 +303,8 @@ patches:
               - name: tools-dir
                 mountPath: /home/argocd/.local/lib/python3.7/site-packages/git_remote_codecommit/__init__.py
                 subPath: __init__.py
+            securityContext:
+              runAsUser: 999      
           volumes:
             - name: cmp-plugin
               configMap:
