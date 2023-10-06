@@ -156,7 +156,7 @@ patchesStrategicMerge:
                 cpu: "10m"
               limits:
                 memory: "100Mi"
-                cpu: "30m"
+                cpu: "100m"
 
   - |-
     apiVersion: apps/v1
@@ -173,8 +173,8 @@ patchesStrategicMerge:
                 memory: "100Mi"
                 cpu: "30m"
               limits:
-                memory: "200Mi"
-                cpu: "50m"
+                memory: "300Mi"
+                cpu: "300m"
 
   - |-
     apiVersion: apps/v1
