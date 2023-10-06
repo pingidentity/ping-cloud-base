@@ -35,4 +35,4 @@ data:
     spec:
       version: v1.0
       generate:
-        command: [ "git-ops-command.sh" ]
+        command: [ sh, /usr/local/bin/git-ops-command.sh]
