@@ -371,6 +371,7 @@ patches:
           initContainers:
           # Add an init container to runs alongside the argocd-server and this will mount everything and run a command prior to argocd-server starting
           - name: init-cmp
+            image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/argo/argocd:v2.8.3
             securityContext:
               runAsNonRoot: true
               runAsUser: 999
