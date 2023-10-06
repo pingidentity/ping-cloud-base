@@ -306,6 +306,7 @@ patches:
           volumes:
             - name: cmp-plugin
               configMap:
+                defaultMode: 365
                 name: cmp-plugin
 - patch: |-
     # Add an init container to install a few custom tools into the ArgoCD repo server
