@@ -188,6 +188,7 @@ _Changes:_
 - [X] PDO-6138 Kube-downscaler excluding grafana deployment from downscaling
 - [X] PDO-6166 Add PingFederate periodic backup limits
 - [X] PDO-6187 Increase wait time for backup alerts for PGO
+- [X] PDO-6263 ArgoCD sync failing due to timeout on v1.19-release-branch
 
 ### 1.18.0.0
 
@@ -292,6 +293,7 @@ _Changes:_
 - Fluent-Bit: change IMDS vesrion to v2
 - Remove docker logs from fluent-bit
 - Remove unneeded OS\Grafana dashboards from CHUB
+- Fix: ArgoCD sync failing due to timeout on v1.19-release-branch
 
 _Changes:_
 
