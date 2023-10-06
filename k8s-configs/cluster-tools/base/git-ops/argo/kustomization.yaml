@@ -12,9 +12,12 @@ generatorOptions:
   disableNameSuffixHash: true
 
 configMapGenerator:
-- files:
-  - install-custom-tools.sh
-  name: install-custom-tools
+  - name: install-custom-tools
+    files:
+    - install-custom-tools.sh
+  - name: cmp-plugin
+    files:
+    - plugin.yaml
 
 # Point to the ping-cluster-tools repo equivalents pushed to ECR
 images:
@@ -368,27 +371,39 @@ patches:
     spec:
       template:
         spec:
+          initContainers:
+            - name: cm-plugin-setup
+              image: busybox
           containers:
-          # Add an init container to runs alongside the argocd-server and this will mount everything and run a command prior to argocd-server starting
-          - name: init-cmp
-            securityContext:
-              runAsNonRoot: true
-              runAsUser: 999
-            volumeMounts:
-            - name: cmp-plugin
-              mountPath: /home/argocd/cmp-server/config/plugin.yaml
-              subPath: plugin.yaml
-              # Starting with v2.4, do NOT mount the same tmp volume as the repo-server container. The filesystem separation helps 
-              # mitigate path traversal attacks.
-            - name: cmp-tmp
-              mountPath: /tmp             
+            - name: cm-plugin
+              command: [/var/run/argocd/argocd-cmp-server]
+              image: busybox
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 999
+              volumeMounts:
+                - mountPath: /var/run/argocd
+                  name: var-files
+                - mountPath: /home/argocd/cmp-server/plugins
+                  name: plugins
+                - mountPath: /cm-working-dir
+                  name: cm-plugin-tmp
+                - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+                  subPath: plugin.yaml
+                  name: cm-plugin-config
+                - mountPath: /var/run/argocd/cm-plugin/git-ops-command.sh
+                  subPath: git-ops-command.sh
+                  name: cm-plugin-config
+                - mountPath: /usr/local/bin
+                  name: cm-plugin-tools
           volumes:
-          - configMap:
-              name: cmp-plugin
-            name: cmp-plugin
-          - emptyDir: {}
-            name: cmp-tmp
-
+            - configMap:
+                name: cm-plugin-config
+              name: cm-plugin-config
+            - emptyDir: {}
+              name: cm-plugin-tmp
+            - emptyDir: {}
+              name: cm-plugin-tools
 - patch: |-
     # Enabling the deployment of argocd resources on a node belonging to the 'core' node group by adding tolerations
     apiVersion: apps/v1
