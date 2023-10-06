@@ -368,7 +368,7 @@ patches:
     spec:
       template:
         spec:
-          initContainers:
+          containers:
           # Add an init container to runs alongside the argocd-server and this will mount everything and run a command prior to argocd-server starting
           - name: init-cmp
             securityContext:
