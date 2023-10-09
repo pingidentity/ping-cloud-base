@@ -189,6 +189,7 @@ _Changes:_
 - [X] PDO-6166 Add PingFederate periodic backup limits
 - [X] PDO-6187 Increase wait time for backup alerts for PGO
 - [X] PDO-6263 ArgoCD sync failing due to timeout on v1.19-release-branch
+- [X] PDO-6267 Update to enable detailed monitoring on instances
 
 ### 1.18.0.0
 
