@@ -4,7 +4,7 @@
 
 # Define variables
 SCRIPT_NAME="$(basename $0)"
-ERROR_MSG=""
+ERROR_MSG="Fail me"
 
 upload_to_s3() {
 
