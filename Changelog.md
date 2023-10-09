@@ -70,6 +70,7 @@
 - Upgrade sealed secrets controller to v0.23+
 - SealedSecrets: Overwrite existing k8s secrets
 - Fix common integration tests
+- Add Request and Limit resources to PingAccess/PingAccess-WAS Upgrade Init Container
 - Update csr-valdation.sh to create a single .yaml file per microservice, rather than directory
 - Kube-State-Metrics: Refactoring with Third-Party Manifest Policy
 - Metrics-Server : Refactoring with Third-Party Manifest Policy
@@ -184,6 +185,7 @@ _Changes:_
 - [X] PDO-6074 Kube-State-Metrics: Refactoring with Third-Party Manifest Policy
 - [X] PDO-6075 Metrics-Server : Refactoring with Third-Party Manifest Policy
 - [X] PDO-6077 Multiple issues with OpenSearch connect from secondary region
+- [X] PDO-6124 Add Request and Limit resources to PingAccess/PingAccess-WAS Upgrade Init Container
 - [X] PDO-6136 Fix common integration tests
 - [X] PDO-6138 Kube-downscaler excluding grafana deployment from downscaling
 - [X] PDO-6166 Add PingFederate periodic backup limits
