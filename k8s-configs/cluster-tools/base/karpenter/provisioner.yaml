@@ -21,6 +21,7 @@ spec:
     - key: "karpenter.sh/capacity-type"
       operator: In
       values: ["spot", "on-demand"]
+  ttlSecondsAfterEmpty: 30
 ---
 apiVersion: karpenter.sh/v1alpha5
 kind: Provisioner
@@ -95,6 +96,7 @@ kind: AWSNodeTemplate
 metadata:
   name: default
 spec:
+  detailedMonitoring: true
   metadataOptions:
     httpEndpoint: enabled
     httpProtocolIPv6: disabled
@@ -115,6 +117,7 @@ kind: AWSNodeTemplate
 metadata:
   name: pd-only
 spec:
+  detailedMonitoring: true
   metadataOptions:
     httpEndpoint: enabled
     httpProtocolIPv6: disabled
@@ -135,6 +138,7 @@ kind: AWSNodeTemplate
 metadata:
   name: pgo-only
 spec:
+  detailedMonitoring: true
   metadataOptions:
     httpEndpoint: enabled
     httpProtocolIPv6: disabled
