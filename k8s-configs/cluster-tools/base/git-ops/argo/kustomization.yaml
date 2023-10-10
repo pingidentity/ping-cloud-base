@@ -315,12 +315,12 @@ patches:
                   name: git-ops-command
                 - mountPath: /tmp
                   name: cmp-tmp
-          volumes:
-              - name: git-ops-command
-                configMap:
-                  name: git-ops-command
-              - emptyDir: {}
-                name: cmp-tmp
+            volumes:
+                - name: git-ops-command
+                  configMap:
+                    name: git-ops-command
+                - emptyDir: {}
+                  name: cmp-tmp
 - patch: |-
     # Add an init container to install a few custom tools into the ArgoCD repo server
     # TODO: try to manage this image in a way that isn't inline to aid with upgrading/finding the image
