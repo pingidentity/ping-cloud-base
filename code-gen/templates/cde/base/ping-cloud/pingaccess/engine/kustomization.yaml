@@ -1,8 +1,8 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
-resources:
 # Apply PingAccess runtime engine deployment resources
+resources:
 - ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingaccess/engine?ref=${K8S_GIT_BRANCH}
 
 images:
@@ -10,30 +10,20 @@ images:
   newName: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess${ECR_ENV}
   newTag: ${PINGACCESS_IMAGE_TAG}
 
-patchesJson6902:
-
-### PingAccess Engine Last Update Config Map ###
-- target:
-    group: apps
-    version: v1
-    kind: StatefulSet
-    name: pingaccess
-  patch: |
+# pingaccess agent
+patches:
+- patch: |
     - op: add
       path: /spec/template/spec/containers/0/envFrom/-
       value:
         configMapRef:
           name: pingaccess-last-update-config
-
-### Ingress patches ###
-
-# pingaccess runtime
-- target:
-    group: networking.k8s.io
+  target:
+    group: apps
+    kind: StatefulSet
+    name: pingaccess
     version: v1
-    kind: Ingress
-    name: pingaccess-ingress
-  patch: |
+- patch: |
     - op: replace
       path: /spec/tls/0/hosts/0
       value: pingaccess.${DNS_ZONE}
@@ -65,19 +55,20 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/1/host
       value: healthcheck-httpbin-pa.${DNS_ZONE}
-
-
-# pingaccess agent
-- target:
+  target:
     group: networking.k8s.io
-    version: v1
     kind: Ingress
-    name: pingaccess-agent-ingress
-  patch: |
+    name: pingaccess-ingress
+    version: v1
+- patch: |
     - op: replace
       path: /spec/tls/0/hosts/0
       value: pingaccess-agent.${DNS_ZONE}
     - op: replace
       path: /spec/rules/0/host
       value: pingaccess-agent.${DNS_ZONE}
-
+  target:
+    group: networking.k8s.io
+    kind: Ingress
+    name: pingaccess-agent-ingress
+    version: v1

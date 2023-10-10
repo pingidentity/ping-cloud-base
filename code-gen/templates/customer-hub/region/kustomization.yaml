@@ -5,89 +5,7 @@ resources:
 - ../base
 - custom-resources
 
-generatorOptions:
-  disableNameSuffixHash: false
-
-patchesStrategicMerge:
-
-### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
-- custom-patches.yaml
-
-### Remove unneccessary MyPing pods
-- ../base/ping-cloud/pingcommon/my-ping/remove-pingone-configurator.yaml
-
-### Remove healthchecks for undeployed products
-- ../base/cluster-tools/health/remove-from-primary-patch.yaml
-- ../base/cluster-tools/health/remove-from-secondary-patch.yaml
-
-### Remove observability dashboards for undeployed products
-- ../base/cluster-tools/monitoring/remove-chub-dashboards.yaml
-- ../base/cluster-tools/logging/remove-chub-dashboards.yaml
-
-### Regional enablement - remove admins, backups, etc. from secondary ###
-### The removal of these patches is handled automatically via generate-cluster-state script, manual toggling is not needed ###
-- ../base/ping-cloud/pingaccess-was/admin/remove-from-secondary-patch.yaml
-- ../base/ping-cloud/pingcentral/server/remove-from-secondary-patch.yaml
-- ../base/cluster-tools/monitoring/remove-from-secondary-patch.yaml
-- ../base/cluster-tools/logging/remove-from-secondary-patch.yaml
-
-
-configMapGenerator:
-
-### Regional env vars for ELK
-- name: elk-environment-variables
-  behavior: merge
-  envs:
-    - logging/env_vars
-
-- name: prometheus-environment-variables
-  behavior: merge
-  envs:
-    - ../base/env_vars
-    - env_vars
-
-# PingCentral
-# Create the config maps that hold the variable for triggering updates of PingCentral
-- name: pingcentral-last-update-config
-  namespace: ${PING_CLOUD_NAMESPACE}
-  envs:
-  - pingcentral/env_vars
-
-# Merge all env_vars into PingCentral common environment variables configmap
-- name: pingcentral-environment-variables
-  behavior: merge
-  envs:
-  - ../base/env_vars
-  - env_vars
-  - pingcentral/env_vars
-
-# PingAccess WAS
-# Create the config maps that hold the variable for triggering updates of PA WAS servers
-- name: pingaccess-was-admin-last-update-config
-  namespace: ${PING_CLOUD_NAMESPACE}
-  envs:
-    - pingaccess-was/admin/env_vars
-
-- name: pingaccess-was-last-update-config
-  namespace: ${PING_CLOUD_NAMESPACE}
-  envs:
-    - pingaccess-was/engine/env_vars
-
-# Merge all env_vars into PingAccess WAS environment variables configmaps
-- name: pingaccess-was-admin-environment-variables
-  behavior: merge
-  envs:
-    - ../base/env_vars
-    - env_vars
-    - pingaccess-was/admin/env_vars
-
-- name: pingaccess-was-environment-variables
-  behavior: merge
-  envs:
-    - ../base/env_vars
-    - env_vars
-    - pingaccess-was/engine/env_vars
-
+generatorOptions: {}
 
 # PingCloud services
 # Pingcloud-metadata
@@ -104,41 +22,82 @@ configMapGenerator:
 #  - ../base/env_vars
 #  - env_vars
 
-# PingCloud-oauth
-- name: p14c-oauth-service-environment-variables
-  behavior: merge
+configMapGenerator:
+- behavior: merge
   envs:
-    - ../base/env_vars
-    - env_vars
-
-# PingCloud BOM service
-- name: p14c-bom-service-environment-variables
-  behavior: merge
+  - logging/env_vars
+  name: elk-environment-variables
+- behavior: merge
   envs:
-    - ../base/env_vars
-    - env_vars
-
-# PingCloud P14C bootstrap
-- name: pingcloud-p14c-bootstrap-environment-variables
-  behavior: merge
+  - ../base/env_vars
+  - env_vars
+  name: prometheus-environment-variables
+- envs:
+  - pingcentral/env_vars
+  name: pingcentral-last-update-config
+  namespace: ${PING_CLOUD_NAMESPACE}
+- behavior: merge
   envs:
-    - ../base/env_vars
-    - env_vars
-
-# ArgoCD
-# Merge global and regional env_vars
-- name: argocd-bootstrap
+  - ../base/env_vars
+  - env_vars
+  - pingcentral/env_vars
+  name: pingcentral-environment-variables
+- envs:
+  - pingaccess-was/admin/env_vars
+  name: pingaccess-was-admin-last-update-config
+  namespace: ${PING_CLOUD_NAMESPACE}
+- envs:
+  - pingaccess-was/engine/env_vars
+  name: pingaccess-was-last-update-config
+  namespace: ${PING_CLOUD_NAMESPACE}
+- behavior: merge
+  envs:
+  - ../base/env_vars
+  - env_vars
+  - pingaccess-was/admin/env_vars
+  name: pingaccess-was-admin-environment-variables
+- behavior: merge
+  envs:
+  - ../base/env_vars
+  - env_vars
+  - pingaccess-was/engine/env_vars
+  name: pingaccess-was-environment-variables
+- behavior: merge
+  envs:
+  - ../base/env_vars
+  - env_vars
+  name: p14c-oauth-service-environment-variables
+- behavior: merge
+  envs:
+  - ../base/env_vars
+  - env_vars
+  name: p14c-bom-service-environment-variables
+- behavior: merge
+  envs:
+  - ../base/env_vars
+  - env_vars
+  name: pingcloud-p14c-bootstrap-environment-variables
+- behavior: merge
+  envs:
+  - ../base/cluster-tools/git-ops/env_vars
+  - git-ops/env_vars
+  name: argocd-bootstrap
   namespace: argocd
-  behavior: merge
+- behavior: merge
   envs:
-    - ../base/cluster-tools/git-ops/env_vars
-    - git-ops/env_vars
-
-# Healthcheck probes
-- name: cluster-health-environment-variables
+  - ../base/cluster-tools/health/env_vars
+  - ../base/env_vars
+  - env_vars
+  name: cluster-health-environment-variables
   namespace: health
-  behavior: merge
-  envs:
-    - ../base/cluster-tools/health/env_vars
-    - ../base/env_vars
-    - env_vars
+patches:
+- patch: custom-patches.yaml
+- path: ../base/ping-cloud/pingcommon/my-ping/remove-pingone-configurator.yaml
+- path: ../base/cluster-tools/health/remove-from-primary-patch.yaml
+- path: ../base/cluster-tools/health/remove-from-secondary-patch.yaml
+- path: ../base/cluster-tools/monitoring/remove-chub-dashboards.yaml
+- path: ../base/cluster-tools/logging/remove-chub-dashboards.yaml
+- path: ../base/ping-cloud/pingaccess-was/admin/remove-from-secondary-patch.yaml
+- path: ../base/ping-cloud/pingcentral/server/remove-from-secondary-patch.yaml
+- patch: ../base/cluster-tools/monitoring/remove-from-secondary-patch.yaml
+- patch: ../base/cluster-tools/logging/remove-from-secondary-patch.yaml

@@ -4,63 +4,53 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 resources:
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/${KUSTOMIZE_BASE}/karpenter/${ACCOUNT_TYPE}?ref=${K8S_GIT_BRANCH}
 
-patchesStrategicMerge:
-
-# Patch karpenter configuration by incorporating specific details related to CDE
-- |-
-  apiVersion: v1
-  kind: ConfigMap
-  metadata:
-    name: karpenter-global-settings
-    namespace: karpenter
-  data:
-    "aws.clusterEndpoint": "${CLUSTER_ENDPOINT}"
-    "aws.clusterName": "${REGION_ENV}"
-
-- |-
-  apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    name: karpenter
-    namespace: karpenter
-    annotations:
-      purpose: karpenter-provisioner
-      ${KARPENTER_ROLE_ANNOTATION_KEY_VALUE}
-
-- |-
-  apiVersion: karpenter.k8s.aws/v1alpha1
-  kind: AWSNodeTemplate
-  metadata:
-    name: default
-  spec:
-    securityGroupSelector:
-      karpenter.sh/discovery: "${REGION_ENV}"
-    subnetSelector:
-      karpenter.sh/discovery: "${REGION_ENV}"
-
-- |-
-  apiVersion: karpenter.k8s.aws/v1alpha1
-  kind: AWSNodeTemplate
-  metadata:
-    name: pd-only
-  spec:
-    securityGroupSelector:
-      karpenter.sh/discovery: "${REGION_ENV}"
-    subnetSelector:
-      karpenter.sh/discovery: "${REGION_ENV}"
-
-- |-
-  apiVersion: karpenter.k8s.aws/v1alpha1
-  kind: AWSNodeTemplate
-  metadata:
-    name: pgo-only
-  spec:
-    securityGroupSelector:
-      karpenter.sh/discovery: "${REGION_ENV}"
-    subnetSelector:
-      karpenter.sh/discovery: "${REGION_ENV}"
-
-# Initially, by default we will disable Karpenter from taking over node deployment. As customers migrate, we will gradually enable this feature.
-# Once all of our customers have finished migrating, we will enable Karpenter by default.
-# To enable Karpenter, you need to comment out the line below.
-- disable-karpenter.yaml
+patches:
+- patch: |-
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: karpenter-global-settings
+      namespace: karpenter
+    data:
+      "aws.clusterEndpoint": "${CLUSTER_ENDPOINT}"
+      "aws.clusterName": "${REGION_ENV}"
+- patch: |-
+    apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      name: karpenter
+      namespace: karpenter
+      annotations:
+        purpose: karpenter-provisioner
+        ${KARPENTER_ROLE_ANNOTATION_KEY_VALUE}
+- patch: |-
+    apiVersion: karpenter.k8s.aws/v1alpha1
+    kind: AWSNodeTemplate
+    metadata:
+      name: default
+    spec:
+      securityGroupSelector:
+        karpenter.sh/discovery: "${REGION_ENV}"
+      subnetSelector:
+        karpenter.sh/discovery: "${REGION_ENV}"
+- patch: |-
+    apiVersion: karpenter.k8s.aws/v1alpha1
+    kind: AWSNodeTemplate
+    metadata:
+      name: pd-only
+    spec:
+      securityGroupSelector:
+        karpenter.sh/discovery: "${REGION_ENV}"
+      subnetSelector:
+        karpenter.sh/discovery: "${REGION_ENV}"
+- patch: |-
+    apiVersion: karpenter.k8s.aws/v1alpha1
+    kind: AWSNodeTemplate
+    metadata:
+      name: pgo-only
+    spec:
+      securityGroupSelector:
+        karpenter.sh/discovery: "${REGION_ENV}"
+      subnetSelector:
+        karpenter.sh/discovery: "${REGION_ENV}"
+- path: disable-karpenter.yaml

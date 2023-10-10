@@ -4,33 +4,30 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 namespace: argocd
 
 resources:
-  - base
-  - argocd-image-updater.yaml
-  - custom-resources.yaml
+- base
+- argocd-image-updater.yaml
+- custom-resources.yaml
 
 generatorOptions:
   disableNameSuffixHash: true
 
 configMapGenerator:
-  - name: install-custom-tools
-    files:
-      - install-custom-tools.sh
+- files:
+  - install-custom-tools.sh
+  name: install-custom-tools
 
 # Point to the ping-cluster-tools repo equivalents pushed to ECR
 images:
-  - name: quay.io/argoproj/argocd
-    newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/argo/argocd
-  - name: redis
-    newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/redis
-  - name: ghcr.io/dexidp/dex
-    newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/dexidp/dex
+- name: quay.io/argoproj/argocd
+  newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/argo/argocd
+- name: redis
+  newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/redis
+- name: ghcr.io/dexidp/dex
+  newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/dexidp/dex
 
 patches:
-  - path: argo-notifications-cm.yaml
-
-patchesStrategicMerge:
-  # Set the several log values to "warn"
-  - |-
+- path: argo-notifications-cm.yaml
+- patch: |-
     apiVersion: v1
     kind: ConfigMap
     metadata:
@@ -43,8 +40,7 @@ patchesStrategicMerge:
       reposerver.log.level: "error"
       applicationsetcontroller.log.level: "error"
       notificationscontroller.log.level: "error"
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -67,8 +63,7 @@ patchesStrategicMerge:
                   key: applicationsetcontroller.log.level
                   name: argocd-cmd-params-cm
                   optional: true
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -82,8 +77,7 @@ patchesStrategicMerge:
             - sh
             - -c
             - /shared/argocd-dex rundex --loglevel error
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -97,8 +91,7 @@ patchesStrategicMerge:
             - sh
             - -c
             - /usr/local/bin/argocd-image-updater run --loglevel error
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -121,13 +114,7 @@ patchesStrategicMerge:
                   key: notificationscontroller.log.level
                   name: argocd-cmd-params-cm
                   optional: true
-
-  # Add git-ops-command.sh as the config management tool to build the uber Kubernetes YAML
-  # TODO: update the configManagementPlugins to run via a Sidecar - this won't happen until at least Argo 2.6
-  # NOTE: This shouldn't be necessary since we will remove git-ops-command.sh as part of breaking down the monorepo
-  # -> Issue: https://github.com/argoproj/argo-cd/issues/8117
-  # Ignore diffs in webhook client CA bundle (ref: https://argo-cd-docs.readthedocs.io/en/latest/user-guide/diffing/)
-  - |-
+- patch: |-
     apiVersion: v1
     kind: ConfigMap
     metadata:
@@ -145,9 +132,7 @@ patchesStrategicMerge:
             jsonPointers:
             - /webhooks/0/clientConfig/caBundle
       kustomize.buildOptions: --load-restrictor LoadRestrictionsNone --enable-helm --helm-command /usr/local/bin/helm-command.sh
-
-  # Policy for a user 'config-team` to allow restart on K8s StatefulSets
-  - |-
+- patch: |-
     apiVersion: v1
     kind: ConfigMap
     metadata:
@@ -156,9 +141,7 @@ patchesStrategicMerge:
       policy.csv: |
         p, config-team, applications, action/apps/StatefulSet/restart, *, allow
       policy.default: role:readonly
-
-  # Mount Beluga-specific scripts within the container
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -187,10 +170,7 @@ patchesStrategicMerge:
               - name: tools-dir
                 mountPath: /home/argocd/.local/lib/python3.7/site-packages/git_remote_codecommit/__init__.py
                 subPath: __init__.py
-
-  # Add an init container to install a few custom tools into the ArgoCD repo server
-  # TODO: try to manage this image in a way that isn't inline to aid with upgrading/finding the image
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -209,42 +189,21 @@ patchesStrategicMerge:
             - name: install-custom-tools
               mountPath: /usr/local/bin/install-custom-tools.sh
               subPath: install-custom-tools.sh
-
-  # Add Beluga-specific volumes to the pod
-  - |-
-    apiVersion: apps/v1
-    kind: Deployment
-    metadata:
-      name: argocd-repo-server
-    spec:
-      template:
-        spec:
-          volumes:
-          - name: tools-dir
-            emptyDir: {}
-          - name: git-ops-command
-            configMap:
-              name: git-ops-command
-              defaultMode: 0555
-          - name: helm-command
-            configMap:
-              name: helm-command
-              defaultMode: 0555              
-          - name: install-custom-tools
-            configMap:
-              name: install-custom-tools
-              defaultMode: 0555
-
-  # Add the "sealedsecrets.bitnami.com/managed: true" annotation to secrets so they are manageable by Bitnami
-  - |-
+- patch: "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: argocd-repo-server\nspec:\n
+    \ template:\n    spec:\n      volumes:\n      - name: tools-dir\n        emptyDir:
+    {}\n      - name: git-ops-command\n        configMap:\n          name: git-ops-command\n
+    \         defaultMode: 0555\n      - name: helm-command\n        configMap:\n
+    \         name: helm-command\n          defaultMode: 0555              \n      -
+    name: install-custom-tools\n        configMap:\n          name: install-custom-tools\n
+    \         defaultMode: 0555"
+- patch: |-
     apiVersion: v1
     kind: Secret
     metadata:
       name: argocd-notifications-secret
       annotations:
         sealedsecrets.bitnami.com/managed: "true"
-
-  - |-
+- patch: |-
     apiVersion: v1
     kind: Secret
     metadata:
@@ -252,9 +211,7 @@ patchesStrategicMerge:
       annotations:
         sealedsecrets.bitnami.com/managed: "true"
         sealedsecrets.bitnami.com/patch: "true"
-
-  # Add init container to create Argo clusters for all CDEs from customer-hub
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -269,9 +226,7 @@ patchesStrategicMerge:
             envFrom:
               - configMapRef:
                   name: argocd-bootstrap
-
-  # Enabling the deployment of argocd resources on a node belonging to the 'core' node group by adding tolerations
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -284,8 +239,7 @@ patchesStrategicMerge:
               operator: Equal
               value: core
               effect: NoSchedule
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -298,8 +252,7 @@ patchesStrategicMerge:
               operator: Equal
               value: core
               effect: NoSchedule
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -312,8 +265,7 @@ patchesStrategicMerge:
               operator: Equal
               value: core
               effect: NoSchedule
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -326,8 +278,7 @@ patchesStrategicMerge:
               operator: Equal
               value: core
               effect: NoSchedule
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -340,8 +291,7 @@ patchesStrategicMerge:
               operator: Equal
               value: core
               effect: NoSchedule
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -354,8 +304,7 @@ patchesStrategicMerge:
               operator: Equal
               value: core
               effect: NoSchedule
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -368,8 +317,7 @@ patchesStrategicMerge:
               operator: Equal
               value: core
               effect: NoSchedule
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: StatefulSet
     metadata:

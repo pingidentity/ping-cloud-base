@@ -1,8 +1,8 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
-resources:
 # Apply PingAccess-WAS runtime engine deployment resources
+resources:
 - ${K8S_GIT_URL}/k8s-configs/ping-cloud/${KUSTOMIZE_BASE}/pingaccess-was/engine?ref=${K8S_GIT_BRANCH}
 
 images:
@@ -10,30 +10,19 @@ images:
   newName: ${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess-was${ECR_ENV}
   newTag: ${PINGACCESS_WAS_IMAGE_TAG}
 
-patchesJson6902:
-
-### PingAccess WAS Engine Last Update Config Map ###
-- target:
-    group: apps
-    version: v1
-    kind: StatefulSet
-    name: pingaccess-was
-  patch: |
+patches:
+- patch: |
     - op: add
       path: /spec/template/spec/containers/0/envFrom/-
       value:
         configMapRef:
           name: pingaccess-was-last-update-config
-
-### Ingress patches ###
-
-# PingAccess admin and PingFederate admin through PingAccess-WAS
-- target:
-    group: networking.k8s.io
+  target:
+    group: apps
+    kind: StatefulSet
+    name: pingaccess-was
     version: v1
-    kind: Ingress
-    name: pingaccess-was-ingress
-  patch: |
+- patch: |
     # Remove PingAccess admin from PingAccess-WAS
     - op: remove
       path: /spec/tls/0/hosts/0
@@ -93,3 +82,8 @@ patchesJson6902:
     - op: replace
       path: /spec/rules/5/host
       value: argocd.${DNS_ZONE}
+  target:
+    group: networking.k8s.io
+    kind: Ingress
+    name: pingaccess-was-ingress
+    version: v1

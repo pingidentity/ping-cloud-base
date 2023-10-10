@@ -10,55 +10,52 @@ generatorOptions:
   disableNameSuffixHash: true
 
 configMapGenerator:
-- name: elk-environment-variables
-  behavior: merge
+- behavior: merge
   envs:
   - env_vars
-
-- name: logging-bootstrap-environment-variables
-  behavior: merge
+  name: elk-environment-variables
+- behavior: merge
   literals:
-    - SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX}
-    - REGION=${REGION}
-
-- name: os-notifications-channels
-  behavior: merge
+  - SERVICE_SSM_PATH_PREFIX=${SERVICE_SSM_PATH_PREFIX}
+  - REGION=${REGION}
+  name: logging-bootstrap-environment-variables
+- behavior: merge
   files:
-    - notifications/sns.json
+  - notifications/sns.json
+  name: os-notifications-channels
 
-patchesStrategicMerge:
-- |-
-  apiVersion: v1
-  kind: ConfigMap
-  metadata:
-    name: cluster-info
-  data:
-    cluster.name: ${CLUSTER_NAME}
-    logs.region: ${REGION}
-    tenant_domain: ${TENANT_DOMAIN}
-    primary_tenant_domain: ${PRIMARY_TENANT_DOMAIN}
-    newrelic_cluster_name: ${NEW_RELIC_ENVIRONMENT_NAME}
 
 ### enrichment-bootstrap service account ###
-- |-
-  apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    labels:
-      app: enrichment
-    name: enrichment
-    annotations:
-      purpose: service-account-for-ping-cloud-stack
-      ${IRSA_PING_ANNOTATION_KEY_VALUE}
 
 
-patchesJson6902:
-- target:
+patches:
+- patch: |-
+    - op: replace
+      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
+      value: opensearch.${DNS_ZONE}
+  target:
     kind: Service
     name: opensearch-cluster-headless
     namespace: elastic-stack-logging
     version: v1
-  patch: |-
-    - op: replace
-      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
-      value: opensearch.${DNS_ZONE}
+- patch: |-
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: cluster-info
+    data:
+      cluster.name: ${CLUSTER_NAME}
+      logs.region: ${REGION}
+      tenant_domain: ${TENANT_DOMAIN}
+      primary_tenant_domain: ${PRIMARY_TENANT_DOMAIN}
+      newrelic_cluster_name: ${NEW_RELIC_ENVIRONMENT_NAME}
+- patch: |-
+    apiVersion: v1
+    kind: ServiceAccount
+    metadata:
+      labels:
+        app: enrichment
+      name: enrichment
+      annotations:
+        purpose: service-account-for-ping-cloud-stack
+        ${IRSA_PING_ANNOTATION_KEY_VALUE}

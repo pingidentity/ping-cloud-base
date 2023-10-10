@@ -4,16 +4,10 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 resources:
 - ${K8S_GIT_URL}/k8s-configs/cluster-tools/base/cluster-autoscaler?ref=${K8S_GIT_BRANCH}
 
-patchesJson6902:
 
 ### Cluster auto-scaler ###
-- target:
-    group: apps
-    version: v1
-    kind: Deployment
-    name: cluster-autoscaler
-    namespace: kube-system
-  patch: |-
+patches:
+- patch: |-
     - op: add
       path: /spec/template/spec/containers/0/command/-
       value:
@@ -23,3 +17,9 @@ patchesJson6902:
       value:
         - name: AWS_REGION
           value: ${REGION}
+  target:
+    group: apps
+    kind: Deployment
+    name: cluster-autoscaler
+    namespace: kube-system
+    version: v1
