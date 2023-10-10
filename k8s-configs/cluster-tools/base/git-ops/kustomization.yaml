@@ -10,9 +10,9 @@ generatorOptions:
   disableNameSuffixHash: true
 
 configMapGenerator:
-- name: git-ops-command
-  files:
-  - git-ops-command.sh
+# - name: git-ops-command
+#   files:
+#   - git-ops-command.sh
 - name: helm-command
   files:
   - helm-command.sh

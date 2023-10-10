@@ -281,46 +281,60 @@ patches:
           spec:
             containers:
             - name: argocd-repo-server
-              securityContext:
-                  runAsNonRoot: true
-                  runAsUser: 999
-              image: busybox
-              imagePullPolicy: Always
-              command: [/var/run/argocd/argocd-cmp-server]
               volumeMounts:
-                - name: git-ops-command
-                  mountPath: /usr/local/bin/git-ops-command.sh
-                  subPath: git-ops-command.sh
-                - name: helm-command
-                  mountPath: /usr/local/bin/helm-command.sh
-                  subPath: helm-command.sh
-                - name: tools-dir
-                  mountPath: /usr/local/bin/envsubst
-                  subPath: envsubst
-                - name: tools-dir
-                  mountPath: /usr/local/bin/kustomize
-                  subPath: kustomize
-                - name: tools-dir
-                  mountPath: /usr/local/bin/git-remote-codecommit
-                  subPath: git-remote-codecommit
-                - name: tools-dir
-                  mountPath: /home/argocd/.local/lib/python3.7/site-packages/git_remote_codecommit/_init_.py
-                  subPath: _init_.py
-                - mountPath: /var/run/argocd
-                  name: var-files
-                - mountPath: /home/argocd/cmp-server/plugins
-                  name: plugins
-                - mountPath: /home/argocd/cmp-server/config/plugin.yaml
-                  subPath: plugin.yaml
-                  name: git-ops-command
-                - mountPath: /tmp
-                  name: cmp-tmp
-            volumes:
-                - name: git-ops-command
-                  configMap:
-                    name: git-ops-command
-                - emptyDir: {}
-                  name: cmp-tmp
+              - name: git-ops-command
+                mountPath: /usr/local/bin/git-ops-command.sh
+                subPath: git-ops-command.sh
+              - name: helm-command
+                mountPath: /usr/local/bin/helm-command.sh
+                subPath: helm-command.sh
+              - name: tools-dir
+                mountPath: /usr/local/bin/envsubst
+                subPath: envsubst
+              - name: tools-dir
+                mountPath: /usr/local/bin/kustomize
+                subPath: kustomize
+              - name: tools-dir
+                mountPath: /usr/local/bin/git-remote-codecommit
+                subPath: git-remote-codecommit
+              - name: tools-dir
+                mountPath: /home/argocd/.local/lib/python3.7/site-packages/git_remote_codecommit/__init__.py
+                subPath: __init__.py
+- patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-repo-server
+    spec:
+      template:
+        spec:
+          containers:
+          - name: git-ops-command
+            command: [/var/run/argocd/argocd-cmp-server] # Entrypoint should be Argo CD lightweight CMP server i.e. argocd-cmp-server
+            # image: busybox # This can be off-the-shelf or custom-built image
+            image: alpine/k8s:1.26.8
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: 999
+            volumeMounts:
+              - mountPath: /var/run/argocd
+                name: var-files
+              - mountPath: /home/argocd/cmp-server/plugins
+                name: plugins
+              # Remove this volumeMount if you've chosen to bake the config file into the sidecar image.
+              - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+                subPath: plugin.yaml
+                name: git-ops-command
+              # Starting with v2.4, do NOT mount the same tmp volume as the repo-server container. The filesystem separation helps 
+              # mitigate path traversal attacks.
+              - mountPath: /tmp
+                name: cmp-tmp
+          volumes:
+          - configMap:
+              name: git-ops-command
+            name: git-ops-command
+          - emptyDir: {}
+            name: cmp-tmp
 - patch: |-
     # Add an init container to install a few custom tools into the ArgoCD repo server
     # TODO: try to manage this image in a way that isn't inline to aid with upgrading/finding the image

@@ -24,7 +24,7 @@ metadata:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: cmp-plugin
+  name: git-ops-command
 data:
   plugin.yaml: |
     apiVersion: argoproj.io/v1alpha1
