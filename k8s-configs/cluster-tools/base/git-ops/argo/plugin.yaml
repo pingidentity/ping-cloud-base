@@ -1,8 +1,0 @@
-apiVersion: argoproj.io/v1alpha1
-kind: ConfigManagementPlugin
-metadata:
-  name: git-ops-command
-spec:
-  version: v1.0
-  generate:
-    command: ["git-ops-command.sh"]
