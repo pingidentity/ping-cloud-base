@@ -6,5 +6,5 @@ namespace: flux
 resources:
 - flux.yaml
 
-patchesStrategicMerge:
-- patch-flux-deployment.yaml
+patches:
+- path: patch-flux-deployment.yaml

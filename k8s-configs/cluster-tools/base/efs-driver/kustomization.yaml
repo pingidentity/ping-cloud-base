@@ -5,8 +5,9 @@ namespace: kube-system
 resources:
 - github.com/kubernetes-sigs/aws-efs-csi-driver/deploy/kubernetes/overlays/stable/?ref=v1.5.8
 
-patchesStrategicMerge:
-  - |-
+
+patches:
+- patch: |-
     kind: Deployment
     apiVersion: apps/v1
     metadata:
@@ -45,8 +46,7 @@ patchesStrategicMerge:
               requests:
                 memory: "30Mi"
                 cpu: "10m"
-
-  - |-
+- patch: |-
     kind: DaemonSet
     apiVersion: apps/v1
     metadata:

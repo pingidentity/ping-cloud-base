@@ -10,56 +10,52 @@ resources:
 
 namespace: ingress-nginx-public
 
-commonLabels:
-  app.kubernetes.io/component: controller
-  app.kubernetes.io/name: ingress-nginx
-  app.kubernetes.io/part-of: ingress-nginx
-  app.kubernetes.io/role: ingress-nginx-public
-  app.kubernetes.io/version: 1.8.0
-
 configMapGenerator:
-- name: ingress-bootstrap-environment-variables
-  literals:
-    - SSM_PATH_DHPARAM=/pcpt/beluga/ingress-keys/ingress-nginx-public"
-    - REGION=${REGION}
+- literals:
+  - SSM_PATH_DHPARAM=/pcpt/beluga/ingress-keys/ingress-nginx-public"
+  - REGION=${REGION}
+  name: ingress-bootstrap-environment-variables
 
-patchesJson6902:
+labels:
+- includeSelectors: true
+  pairs:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/part-of: ingress-nginx
+    app.kubernetes.io/role: ingress-nginx-public
+    app.kubernetes.io/version: 1.8.0
+patches:
 - path: add-deployment-args.yaml
   target:
     group: apps
-    version: v1
     kind: Deployment
     name: nginx-ingress-controller
+    version: v1
 - path: add-owasp-annotations.yaml
   target:
     group: apps
-    version: v1
     kind: Deployment
     name: nginx-ingress-controller
+    version: v1
 - path: add-sigsci-sidecar.yaml
   target:
     group: apps
-    version: v1
     kind: Deployment
     name: nginx-ingress-controller
+    version: v1
 - path: add-sigsci-configmap.yaml
   target:
-    group: ""
-    version: v1
     kind: ConfigMap
     name: nginx-configuration
+    version: v1
 - path: add-tcp-services-configmap.yaml
   target:
-    group: ""
-    version: v1
     kind: ConfigMap
     name: tcp-services
+    version: v1
 - path: add-tcp-protocol-service.yaml
   target:
-    group: ""
-    version: v1
     kind: Service
     name: ingress-nginx
-
-patchesStrategicMerge:
-- add-init-container.yaml
+    version: v1
+- path: add-init-container.yaml

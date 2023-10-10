@@ -3,40 +3,32 @@ kind: Kustomization
 resources:
 - crds.yaml
 
-# Patch the CRDs such that argocd will sync them properly
-patchesJson6902:
-  - target:
-      version: v1
-      kind: CustomResourceDefinition
-      name: grafanas.grafana.integreatly.org
-    patch: |-
-      - op: add
-        path: /metadata/annotations/argocd.argoproj.io~1sync-options
-        value: "ServerSideApply=true"
-
-  - target:
-      version: v1
-      kind: CustomResourceDefinition
-      name: grafanadashboards.grafana.integreatly.org
-    patch: |-
-      - op: add
-        path: /metadata/annotations/argocd.argoproj.io~1sync-options
-        value: "ServerSideApply=true"  
-
-  - target:
-      version: v1
-      kind: CustomResourceDefinition
-      name: grafanadatasources.grafana.integreatly.org
-    patch: |-
-      - op: add
-        path: /metadata/annotations/argocd.argoproj.io~1sync-options
-        value: "ServerSideApply=true"  
-
-  - target:
-      version: v1
-      kind: CustomResourceDefinition
-      name: grafanafolders.grafana.integreatly.org
-    patch: |-
-      - op: add
-        path: /metadata/annotations/argocd.argoproj.io~1sync-options
-        value: "ServerSideApply=true"
+patches:
+- patch: |-
+    - op: add
+      path: /metadata/annotations/argocd.argoproj.io~1sync-options
+      value: "ServerSideApply=true"
+  target:
+    kind: CustomResourceDefinition
+    name: grafanas.grafana.integreatly.org
+    version: v1
+- patch: "- op: add\n  path: /metadata/annotations/argocd.argoproj.io~1sync-options\n
+    \ value: \"ServerSideApply=true\"  "
+  target:
+    kind: CustomResourceDefinition
+    name: grafanadashboards.grafana.integreatly.org
+    version: v1
+- patch: "- op: add\n  path: /metadata/annotations/argocd.argoproj.io~1sync-options\n
+    \ value: \"ServerSideApply=true\"  "
+  target:
+    kind: CustomResourceDefinition
+    name: grafanadatasources.grafana.integreatly.org
+    version: v1
+- patch: |-
+    - op: add
+      path: /metadata/annotations/argocd.argoproj.io~1sync-options
+      value: "ServerSideApply=true"
+  target:
+    kind: CustomResourceDefinition
+    name: grafanafolders.grafana.integreatly.org
+    version: v1
