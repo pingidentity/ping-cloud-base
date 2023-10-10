@@ -63,4 +63,4 @@ patchesStrategicMerge:
 # Initially, by default we will disable Karpenter from taking over node deployment. As customers migrate, we will gradually enable this feature.
 # Once all of our customers have finished migrating, we will enable Karpenter by default.
 # To enable Karpenter, you need to comment out the line below.
-#- disable-karpenter.yaml
+- disable-karpenter.yaml
