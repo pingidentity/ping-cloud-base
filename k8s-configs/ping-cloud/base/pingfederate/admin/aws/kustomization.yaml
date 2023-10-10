@@ -3,13 +3,15 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 namespace: ping-cloud
 
-commonLabels:
-  app: ping-cloud
 
 resources:
 - ../cloud-generic
 - periodic-backup.yaml
 #- periodic-csd-upload.yaml
 
-patchesStrategicMerge:
-- discovery-service.yaml
+labels:
+- includeSelectors: true
+  pairs:
+    app: ping-cloud
+patches:
+- path: discovery-service.yaml
