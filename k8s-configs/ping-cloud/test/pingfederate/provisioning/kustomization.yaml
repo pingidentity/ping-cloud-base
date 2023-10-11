@@ -3,21 +3,23 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 namespace: postgres-operator
 
-commonLabels:
-  app: ping-cloud
 
 resources:
 - ../../../base/pingfederate/provisioning/aws
 
 
-patchesJson6902:
 # Change the number of pingfederate provisioning replicas to 2 for dev/test environments
-- target:
-    group: postgres-operator.crunchydata.com
-    version: v1beta1
-    kind: PostgresCluster
-    name: pf-provisioning
-  patch: |-
+labels:
+- includeSelectors: true
+  pairs:
+    app: ping-cloud
+patches:
+- patch: |-
     - op: replace
       path: /spec/instances/0/replicas
       value: 2
+  target:
+    group: postgres-operator.crunchydata.com
+    kind: PostgresCluster
+    name: pf-provisioning
+    version: v1beta1

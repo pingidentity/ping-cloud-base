@@ -3,11 +3,13 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 namespace: ping-cloud
 
-commonLabels:
-  app: ping-cloud
 
 resources:
 - ../../../base/pingaccess/engine/aws
 
-patchesStrategicMerge:
-- engine-init-env.yaml
+labels:
+- includeSelectors: true
+  pairs:
+    app: ping-cloud
+patches:
+- path: engine-init-env.yaml

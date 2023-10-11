@@ -3,12 +3,14 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 namespace: ping-cloud
 
-commonLabels:
-  app: ping-cloud
-  role: pingdirectory
 
 resources:
 - ../../../base/pingdirectory/server/aws
 
-patchesStrategicMerge:
-- wait-for-service.yaml
+labels:
+- includeSelectors: true
+  pairs:
+    app: ping-cloud
+    role: pingdirectory
+patches:
+- path: wait-for-service.yaml
