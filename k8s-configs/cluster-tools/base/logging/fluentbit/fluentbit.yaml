@@ -69,6 +69,7 @@ spec:
         prometheus.io/scheme: "http"
         prometheus.io/path: "/api/v1/metrics/prometheus"
         prometheus.io/port: "2020"
+        newrelic.io/scrape: "true"
     spec:
       containers:
       - name: fluent-bit
