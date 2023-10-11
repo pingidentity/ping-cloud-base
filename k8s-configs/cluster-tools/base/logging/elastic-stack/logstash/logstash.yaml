@@ -24,7 +24,7 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             allowPrivilegeEscalation: false
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v1.18-release-branch-latest
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:v1.18.0.0_RC4
           imagePullPolicy: Always
           command:
             - sh
@@ -58,7 +58,7 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             allowPrivilegeEscalation: false
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v1.18-release-branch-latest
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:v1.18.0.0_RC4
           imagePullPolicy: Always
           workingDir: /scripts
           command:
@@ -98,7 +98,7 @@ spec:
               cpu: "150m"
               memory: 100Mi
         - name: logstash
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logstash/dev:v1.18-release-branch-latest
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/logstash:v1.18.0.0_RC4
           imagePullPolicy: Always
           securityContext:
             runAsNonRoot: true
@@ -193,7 +193,7 @@ spec:
               readOnly: false
         # Sidecar enrichment container which updates Logstash dictionaries
         - name: enrichment-sidecar
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap/dev:v1.18-release-branch-latest
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/enrichment-bootstrap:v1.18.0.0_RC4
           imagePullPolicy: Always
           workingDir: /scripts
           command:
