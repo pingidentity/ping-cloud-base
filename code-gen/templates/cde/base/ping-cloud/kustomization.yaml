@@ -82,16 +82,6 @@ patchesStrategicMerge:
       purpose: service-account-for-ping-federate
       ${IRSA_PF_ANNOTATION_KEY_VALUE}
 
-### NOTE: For now, use the irsa-ping role as its the only one which exists
-### Ping federate admin service account ###
-- |-
-  apiVersion: v1
-  kind: ServiceAccount
-  metadata:
-    name: pingfederate-admin-serviceaccount
-    annotations:
-      ${IRSA_PING_ANNOTATION_KEY_VALUE}
-
 ### P14C Bootstrap service account ###
 - |-
   apiVersion: v1
