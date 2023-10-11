@@ -248,6 +248,7 @@ _Changes:_
 - [X] PDO-6159 Avoid pending stating by prioritizing PingDirectory pods and its backup / restore Job using k8s pod PriorityClass
 - [X] PDO-6234 Prometheus alerts from secondary region display correct region in alerts
 - [X] PDO-6235 Improve logstash alerting in multi-regional cluster
+- [X] PDO-6249 Fluent-bit kubernetes filter sometimes doesn't work in CW pipeline
 
 ### 1.17.0.0
 
