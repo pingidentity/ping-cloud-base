@@ -1,6 +1,6 @@
 {
   "index_patterns": [
-    "pc-application-*",
+    "pc-application-log-*",
     "pc-application-ext-*",
     "pc-application-api-*"
   ],
