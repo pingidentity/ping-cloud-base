@@ -7,6 +7,7 @@ resources:
 - rbac.yaml
 - hpa.yaml
 - ingress-class.yaml
+- disruption-budget.yaml
 
 namespace: ingress-nginx-public
 
