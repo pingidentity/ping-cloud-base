@@ -60,8 +60,11 @@ spec:
           allowPrivilegeEscalation: false
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.18-release-branch-latest
         imagePullPolicy: Always
-        command:
-        - /opt/in/restore.sh
+        command: [ "/bin/sh","-c" ]
+        # 1) Copy P1AS hooks to staging
+        # 2) Check for customer profile-repo and override P1AS Hooks if needed
+        # 3) Execute the restore configmap script
+        args: [ "cp -Rf /opt/in/hooks/* /opt/staging/hooks && /opt/staging/hooks/02-get-remote-server-profile.sh && /opt/in/restore.sh" ]
         ports:
           - containerPort: 1636
             name: ldaps
