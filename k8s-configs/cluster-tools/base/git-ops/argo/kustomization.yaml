@@ -338,7 +338,7 @@ patches:
           - emptyDir: {}
             name: cmp-tmp
           - configMap:
-               name: git-ops-command
+              name: git-ops-command
             name: git-ops-command
 - patch: |-
     # Add an init container to install a few custom tools into the ArgoCD repo server
