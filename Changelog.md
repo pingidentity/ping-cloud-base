@@ -109,6 +109,7 @@
 - Disable ArgoCD Image Updater
 - Prometheus alerts from secondary region display correct region in alerts
 - Improve logstash alerting in multi-regional cluster
+- Fail PingDirectory backup Job if any backend fails upon running backup CLI
 
 _Changes:_
 
@@ -249,6 +250,7 @@ _Changes:_
 - [X] PDO-6234 Prometheus alerts from secondary region display correct region in alerts
 - [X] PDO-6235 Improve logstash alerting in multi-regional cluster
 - [X] PDO-6249 Fluent-bit kubernetes filter sometimes doesn't work in CW pipeline
+- [X] PDO-6269 Fail PingDirectory backup Job if any backend fails upon running backup CLI
 
 ### 1.17.0.0
 
