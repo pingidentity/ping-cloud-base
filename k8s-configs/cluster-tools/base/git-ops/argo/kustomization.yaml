@@ -328,12 +328,18 @@ patches:
               # mitigate path traversal attacks.
               - mountPath: /tmp
                 name: cmp-tmp
+              - mountPath: /usr/local/bin/git-ops-command.sh
+                name: git-ops-command
+                subPath: git-ops-command.sh
           volumes:
           - configMap:
               name: git-ops-command-plugin-cm
             name: git-ops-command-plugin-cm
           - emptyDir: {}
             name: cmp-tmp
+          - configMap:
+               name: git-ops-command
+            name: git-ops-command
 - patch: |-
     # Add an init container to install a few custom tools into the ArgoCD repo server
     # TODO: try to manage this image in a way that isn't inline to aid with upgrading/finding the image
