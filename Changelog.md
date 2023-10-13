@@ -252,6 +252,87 @@ _Changes:_
 - [X] PDO-6249 Fluent-bit kubernetes filter sometimes doesn't work in CW pipeline
 - [X] PDO-6269 Fail PingDirectory backup Job if any backend fails upon running backup CLI
 
+### 1.17.3.0
+
+- Initialize Replication on New PingDirectory Child Non-Seed Servers
+- Upgrade PingDirectory
+
+_Changes:_
+
+- [X] PDO-6021 Initialize Replication on New PingDirectory Child Non-Seed Servers
+- [X] PDO-6094 Upgrade PingDirectory
+
+### 1.17.2.0
+
+- Create new AES-256 encryption settings for all PingDirectory servers
+- Fix PingDirectory wrong hostname error during replication
+- Disable ArgoCD Image Updater
+- Reset 'cn=replication' server ID entry within PingDirectory on startup
+- Upgrade PingFederate
+
+_Changes:_
+
+- [X] PDO-5925 Upgrade PingFederate
+- [X] PDO-5955 Create new AES-256 encryption settings for all PingDirectory servers
+- [X] PDO-5961 Disable ArgoCD Image Updater
+- [X] PDO-5979 Reset 'cn=replication' server ID entry within PingDirectory on startup
+- [X] PDO-6019 Fix PingDirectory wrong hostname error during replication
+
+### 1.17.1.0
+
+- Modify Prometheus query for all backup alerting to only include the primary pod
+- PF Engines in Small Prod Deployment incorrectly set to minReplicas: 2
+- Add is_primary condition to pf-provisioning setup
+- [Port] - Update Default ngnix hpa configuration in medium & large environment
+- Upgraded & patched CA to balance node across all 3 AZs.
+- Fix PGO namespace for large-size customers
+- Fix pingcentral external ingress pathType
+- batch/v1beta1 CronJob, v1.25 release stopped serving the deprecated API versions
+- policy/v1beta1 PodDisruptionBudget is deprecated is unavailable in v1.25
+- Update kube-state-metrics to v2.7.0
+- [Port] PingFederate server.log events do not appear as a single Kibana document
+- Update cert-manager to v1.11.2 or higher for EKS 1.25
+- Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
+- [Port] Update kubectl to 1.24.0 for EKS 1.25 - 1.17.1.0
+- Upgrade Postgres Operator (PGO) to 5.3.1 to support EKS v1.25
+- Add PGO Backups Jobs TTL
+- Move the update of USER_BASE_DN to manage-profile, Rebuild the indexes for all backends
+- Extend PingDirectory replica count to up to 50 pods per region and 11 base DNs if needed
+- [PORT] Add a new hook script '02-health-check.sh' to support readiness and liveness probes
+- Add region env vars to cluster-health-environment-variables configmap
+- Fix cluster_name in prometheus labels to be the same with ELK cluster_name
+
+_Changes:_
+
+- [X] PDO-5237 Modify Prometheus query for all backup alerting to only include the primary pod
+- [X] PDO-5278 Update cert-manager to v1.11.2 or higher for EKS 1.25
+- [X] PDO-5280 [Port] Update kubectl to 1.24.0 for EKS 1.25 - 1.17.1.0
+- [X] PDO-5340 [Port] - Update Default ngnix hpa configuration in medium & large environment
+- [X] PDO-5342 Fix PGO namespace for large-size customers
+- [X] PDO-5343 PF Engines in Small Prod Deployment incorrectly set to minReplicas: 2
+- [X] PDO-5347 PGO resources - handle secondary region v1.17.1
+- [X] PDO-5341 pingcentral-ext-ingress - fix pathType
+- [X] PDO-5369 Healthchecks run for N engine pods
+- [X] PDO-5376 Cluster-Autoscaler - update to balance node across all AZs
+- [X] PDO-5388 Add PGO Back Jobs TTL
+- [X] PDO-5413 [Port] PingFederate server.log events do not appear as a single Kibana document
+- [X] PDO-5432 Update/Disable healthchecks
+- [X] PDO-5474 upgrade Postgres Operator (PGO) to 5.3.1 to support EKS v1.25
+- [X] PDO-5482 [PORT] Update kube-state-metrics cluster tool to v2.7.0 for EKS 1.25
+- [X] PDO-5488 Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
+- [X] PDO-5489 batch/v1beta1 CronJob, v1.25 release stopped serving the deprecated API versions
+- [X] PDO-5490 policy/v1beta1 PodDisruptionBudget is deprecated is unavailable in v1.25
+- [X] PDO-5507 Move the update of USER_BASE_DN to manage-profile, Rebuild the indexes for all backends
+- [X] PDO-5508 Extend PingDirectory replica count to up to 50 pods per region and 11 base DNs if needed
+- [X] PDO-5509 Update all healthchecks to use k8s service endpoints
+- [X] PDO-5533 [PORT] Add a new hook script '02-health-check.sh' to support readiness and liveness probes
+- [X] PDO-5553 Bugfix: remove-from-secondary-patch is broken for logstash-pipeline-alerts
+- [X] PDO-5555 Bugfix: Index templates uses incorrect ILM policy
+- [X] PDO-5606 Bugfix: Index lifecycle error
+- [X] PDO-5614 Bugfix: 'cluster_name' filter issue in ELK and Grafana on prod CDE
+- [X] PDO-5626 Bugfix: Log is missing in Kibana
+- [X] PDO-5645 Update cert-manager to v1.12.1
+
 ### 1.17.0.0
 
 - Remove logstash tolerations
