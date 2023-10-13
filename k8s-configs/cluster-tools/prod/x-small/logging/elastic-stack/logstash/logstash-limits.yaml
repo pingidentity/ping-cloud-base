@@ -17,7 +17,7 @@ spec:
               memory: 4Gi
           env:
             - name: LS_JAVA_OPTS
-              value: '-Xms3g -Xmx3g'
+              value: '-Xms4g -Xmx4g -XX:MaxDirectMemorySize=2g'
             - name: PIPELINE_WORKERS
               value: "24"
             - name: PIPELINE_BATCH_SIZE
