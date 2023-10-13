@@ -195,7 +195,6 @@ _Changes:_
 - [X] PDO-6263 ArgoCD sync failing due to timeout on v1.19-release-branch
 - [X] PDO-6267 Update to enable detailed monitoring on instances
 
-
 ### 1.18.0.0
 
 - Enable users to download or upload user reports in Delegated Admin
