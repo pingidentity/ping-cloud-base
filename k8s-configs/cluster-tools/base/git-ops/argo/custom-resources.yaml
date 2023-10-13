@@ -34,4 +34,4 @@ data:
     spec:
       version: v1.0
       generate:
-        command: [ "k8s-configs/cluster-tools/base/git-ops/git-ops-command.sh" ]
+        command: [ "git-ops-command.sh" ]
