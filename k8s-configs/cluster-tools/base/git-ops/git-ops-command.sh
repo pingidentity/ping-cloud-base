@@ -258,7 +258,7 @@ if test -f 'env_vars'; then
       log "replacing ${K8S_GIT_URL} in file ${kust_file} with ${rel_resource_dir}"
       sed -i.bak \
           -e "s|${K8S_GIT_URL}|${rel_resource_dir}|g" \
-          -e "s|\?ref=${K8S_GIT_BRANCH}$||g" \
+          -e "s|\?ref=${K8S_GIT_BRANCH}\$||g" \
           "${kust_file}"
       rm -f "${kust_file}".bak
     done
