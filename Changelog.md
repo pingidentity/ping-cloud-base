@@ -191,6 +191,8 @@ _Changes:_
 - [X] PDO-6166 Add PingFederate periodic backup limits
 - [X] PDO-6167 Add PodDisruptionBudget for ingress-nginx-public
 - [X] PDO-6187 Increase wait time for backup alerts for PGO
+- [X] PDO-6189 Fluentbit: Performance degradation under high load
+- [X] PDO-6190 Logstash: Readiness probe fails under high load
 - [X] PDO-6224 Remove Grafana ping-app patches from remove-from-secondary-patch.yaml 
 - [X] PDO-6242 Configure newrelic-prometheus-agent to collect FluentBit and Logstash metrics
 - [X] PDO-6263 ArgoCD sync failing due to timeout on v1.19-release-branch
