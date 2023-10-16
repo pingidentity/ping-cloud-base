@@ -55,8 +55,11 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        command:
-        - /opt/in/backup.sh
+        command: [ "/bin/sh","-c" ]
+        # 1) Copy P1AS hooks to staging
+        # 2) Check for customer profile-repo and override P1AS Hooks if needed
+        # 3) Execute the backup configmap script
+        args: [ "cp -Rf /opt/in/hooks/* /opt/staging/hooks && /opt/staging/hooks/02-get-remote-server-profile.sh && /opt/in/backup.sh" ]
         envFrom:
         - configMapRef:
             name: pingdirectory-environment-variables

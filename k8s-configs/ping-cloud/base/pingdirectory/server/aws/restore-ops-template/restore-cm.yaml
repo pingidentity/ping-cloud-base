@@ -6,9 +6,7 @@ data:
   restore.sh: |
     #!/bin/sh
 
-    # Job will not be using /opt/out, therefore force it to use its own /opt/in directory
-    export HOOKS_DIR="/opt/in/hooks"
-    SCRIPT="/opt/in/hooks/90-restore-backup-s3.sh"
+    SCRIPT="/opt/staging/hooks/90-restore-backup-s3.sh"
     test -z "${BACKUP_RESTORE_POD}" && export SERVER="${K8S_STATEFUL_SET_NAME}-0" || export SERVER="${BACKUP_RESTORE_POD}"
 
     pause_replication () {
