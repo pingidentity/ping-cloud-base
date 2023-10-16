@@ -6,6 +6,8 @@ data:
   restore.sh: |
     #!/bin/sh
 
+    # Set Hooks directory
+    export HOOKS_DIR=/opt/staging/hooks
     SCRIPT="/opt/staging/hooks/90-restore-backup-s3.sh"
     test -z "${BACKUP_RESTORE_POD}" && export SERVER="${K8S_STATEFUL_SET_NAME}-0" || export SERVER="${BACKUP_RESTORE_POD}"
 
@@ -87,5 +89,11 @@ data:
 
     pause_replication
 
-    echo "Running restore script"
-    test -x ${SCRIPT} && sh "${SCRIPT}"
+    if test -x ${SCRIPT}; then
+      # Execute restore script if user has the permissions
+      echo "Running restore script for PingDirectory"
+      ${SCRIPT}
+    else
+      echo "You don't have permissions to execute ${SCRIPT}"
+      exit 1
+    fi
