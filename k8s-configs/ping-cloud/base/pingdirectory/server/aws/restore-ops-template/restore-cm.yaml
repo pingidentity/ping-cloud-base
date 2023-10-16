@@ -94,6 +94,6 @@ data:
       echo "Running restore script for PingDirectory"
       ${SCRIPT}
     else
-      echo "You don't have permissions to execute ${SCRIPT}"
+      echo "You don't have permissions to execute ${SCRIPT}. If you are overriding script be sure to give it execute permissions"
       exit 1
     fi
