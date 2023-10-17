@@ -110,6 +110,7 @@
 - Prometheus alerts from secondary region display correct region in alerts
 - Improve logstash alerting in multi-regional cluster
 - Fail PingDirectory backup Job if any backend fails upon running backup CLI
+- Number of ES-warm nodes increased to 3
 
 _Changes:_
 
@@ -251,6 +252,7 @@ _Changes:_
 - [X] PDO-6235 Improve logstash alerting in multi-regional cluster
 - [X] PDO-6249 Fluent-bit kubernetes filter sometimes doesn't work in CW pipeline
 - [X] PDO-6269 Fail PingDirectory backup Job if any backend fails upon running backup CLI
+- [X] PDO-6270 Fix es-cluster-warm pod doesn't recover gracefully from an AZ Failure
 
 ### 1.17.3.0
 

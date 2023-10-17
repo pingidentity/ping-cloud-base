@@ -7,3 +7,4 @@ resources:
 - es-cluster-hot.yaml
 - es-cluster-warm.yaml
 - es-log4j-properties.yaml
+- pdb.yaml

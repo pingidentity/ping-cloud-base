@@ -10,6 +10,7 @@ spec:
   selector:
     app: elasticsearch
   clusterIP: None
+  publishNotReadyAddresses: true
   ports:
     - port: 9200
       name: rest
