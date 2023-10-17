@@ -31,9 +31,6 @@ pull_helm_charts() {
 
   # make the charts dir if it doesn't exist
   local chart_dir="${app_dir}/charts"
-  echo "DEBUG: ${chart_dir}"
-  ls "${chart_dir}"
-  pwd
   mkdir -p "${chart_dir}"
 
   # find all files with "helmCharts" definitions and loop through them
@@ -49,8 +46,6 @@ pull_helm_charts() {
       chart_version="$(INDEX="${i}" yq ".helmCharts[strenv(INDEX)].version" "${chart_file}")"
       chart_repo="$(INDEX="${i}" yq ".helmCharts[strenv(INDEX)].repo" "${chart_file}")"
       # pull the chart
-      echo "DEBUG: chart_repo: ${chart_repo}"
-      echo "DEBUG: helm command: helm pull --untar --untardir ${chart_dir} ${chart_repo} --version ${chart_version}"
       helm pull --untar --untardir "${chart_dir}" "${chart_repo}" --version "${chart_version}"
     done
   done
