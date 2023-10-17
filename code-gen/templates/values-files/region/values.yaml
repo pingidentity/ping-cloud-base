@@ -1,8 +1,10 @@
 ########################################################################################################################
 # Customer region-specific parameters that are shared by multiple apps
 ########################################################################################################################
-
+pcbDeploy: false
 global:
+  pcbDeploy: false
+
   # region is the AWS region name
   region: "${REGION}"
   regionNickname: "${REGION_NICK_NAME}"

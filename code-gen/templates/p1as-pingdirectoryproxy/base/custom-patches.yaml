@@ -4,4 +4,4 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: pingdirectory-proxy-custom-environment-variables
+  name: pingdirectoryproxy-custom-environment-variables

@@ -18,7 +18,8 @@ if [ $? != 0 ]; then
   echo "Helm is not installed on this system, exiting."
   exit 1
 fi
-
+# dependency_build_cmd="${helm_install} dependency build"
 cmd="${helm_install} --registry-config /helm-working-dir/registry/config.json $args"
 echo "Running '$cmd' " >> /tmp/helm-debug
+# eval $dependency_build_cmd
 eval $cmd
