@@ -49,11 +49,8 @@ data:
               "set_priority": {
                 "priority": 50
               },
-              "shrink": {
-                "number_of_shards": 1
-              },
               "allocate": {
-                "number_of_replicas": 0
+                "number_of_replicas": 1
               }
             }
           },
@@ -90,9 +87,6 @@ data:
               "readonly": {},
               "set_priority": {
                 "priority": 50
-              },
-              "shrink": {
-                "number_of_shards": 1
               }
             }
           },

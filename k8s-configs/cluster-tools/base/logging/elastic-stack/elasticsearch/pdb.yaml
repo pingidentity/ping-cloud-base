@@ -1,0 +1,27 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: "elastic-cluster-hot-pdb"
+  labels:
+    app: elasticsearch
+    tier: hot
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+      tier: hot
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: "elastic-cluster-warm-pdb"
+  labels:
+    app: elasticsearch
+    tier: warm
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: elasticsearch
+      tier: warm
