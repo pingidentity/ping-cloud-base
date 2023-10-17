@@ -4,8 +4,8 @@
 
 global:
 
-  ### PCB Deploy ###
-  pcbDeploy: true
+  ### Enable or disable subchart dependencies ###
+  installDependencyCharts: false
 
   ############################################################
   # Secrets
