@@ -9,13 +9,13 @@ workflow:
 ## Pipeline stages ##
 stages:
 - compile
-- security
 - find-cluster
 - deploy
 - pa-was-test
 - integration-test
 - chaos
 - cleanup
+- security # move this to the end and we'll use the "needs" keyword to allow it to run earlier and out of order
 
 ## Global environment variables ##
 variables:
@@ -49,6 +49,8 @@ compile:
 copy-images:
   stage: security
   image: ${K8S_DEPLOY_TOOLS}
+  needs:
+    - compile
   dependencies:
     - compile
   variables:
@@ -69,6 +71,8 @@ copy-images:
 scan:
   stage: security
   image: ${K8S_DEPLOY_TOOLS}
+  needs:
+    - compile
   dependencies:
     - compile
   variables:
@@ -76,12 +80,12 @@ scan:
     UBER_YAML: $CI_PROJECT_DIR/out/_builds_ping-cloud-private-tenant_ping-cloud-base.yaml
   allow_failure: true
   script:
-    - kubescape scan --format json --format-version v2 --verbose framework all $UBER_YAML | tee scan_out.json
+    - kubescape scan --format json --format-version v2 --verbose framework all $UBER_YAML
   tags:
     - platform-publish-docker
   artifacts:
     paths:
-    - scan.out
+    - report.json
     expire_in: 1 year
   only:
     - /^.*-release-branch$/

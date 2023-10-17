@@ -78,6 +78,8 @@
 - Defined the resource specifications for PGO pods
 - Kube-downscaler excluding grafana deployment from downscaling
 - Defined the resource specifications for ArgoCD pods
+- Add PodDisruptionBudget for ingress-nginx-public
+- Push fluent-bit and logstash metrics to NewRelic
 
 _Changes:_
 
@@ -189,8 +191,14 @@ _Changes:_
 - [X] PDO-6136 Fix common integration tests
 - [X] PDO-6138 Kube-downscaler excluding grafana deployment from downscaling
 - [X] PDO-6166 Add PingFederate periodic backup limits
+- [X] PDO-6167 Add PodDisruptionBudget for ingress-nginx-public
 - [X] PDO-6187 Increase wait time for backup alerts for PGO
+- [X] PDO-6189 Fluentbit: Performance degradation under high load
+- [X] PDO-6190 Logstash: Readiness probe fails under high load
+- [X] PDO-6224 Remove Grafana ping-app patches from remove-from-secondary-patch.yaml 
+- [X] PDO-6242 Configure newrelic-prometheus-agent to collect FluentBit and Logstash metrics
 - [X] PDO-6263 ArgoCD sync failing due to timeout on v1.19-release-branch
+- [X] PDO-6267 Update to enable detailed monitoring on instances
 
 ### 1.18.0.0
 

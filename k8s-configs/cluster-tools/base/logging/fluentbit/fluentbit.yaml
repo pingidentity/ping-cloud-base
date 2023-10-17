@@ -64,11 +64,13 @@ spec:
     metadata:
       labels:
         k8s-app: fluent-bit
+        pod-reaper: enabled
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/scheme: "http"
         prometheus.io/path: "/api/v1/metrics/prometheus"
         prometheus.io/port: "2020"
+        newrelic.io/scrape: "true"
     spec:
       containers:
       - name: fluent-bit

@@ -13,22 +13,41 @@ patches:
   patch: |
     - op: replace
       path: /spec/template/spec/containers/0/resources/requests/cpu
-      value: 20m
+      value: 40m
     - op: replace
       path: /spec/template/spec/containers/1/resources/requests/cpu
-      value: 20m
+      value: 40m
     - op: replace
       path: /spec/template/spec/containers/2/resources/requests/cpu
-      value: 20m
+      value: 40m
     - op: replace
       path: /spec/template/spec/containers/3/resources/requests/cpu
-      value: 20m
+      value: 40m
     - op: replace
       path: /spec/template/spec/containers/4/resources/requests/cpu
-      value: 20m
+      value: 40m
     - op: replace
       path: /spec/template/spec/containers/5/resources/requests/cpu
-      value: 20m
+      value: 40m
+
+    - op: add
+      path: /spec/template/spec/containers/0/resources/limits/cpu
+      value: 40m
+    - op: add
+      path: /spec/template/spec/containers/1/resources/limits/cpu
+      value: 40m
+    - op: add
+      path: /spec/template/spec/containers/2/resources/limits/cpu
+      value: 40m
+    - op: add
+      path: /spec/template/spec/containers/3/resources/limits/cpu
+      value: 40m
+    - op: add
+      path: /spec/template/spec/containers/4/resources/limits/cpu
+      value: 40m
+    - op: add
+      path: /spec/template/spec/containers/5/resources/limits/cpu
+      value: 40m
 
 - target:
     # Adding resource cpu limit in node.yaml
@@ -37,10 +56,20 @@ patches:
   patch: |
     - op: replace
       path: /spec/template/spec/containers/0/resources/requests/cpu
-      value: 20m
+      value: 40m
     - op: replace
       path: /spec/template/spec/containers/1/resources/requests/cpu
-      value: 20m
+      value: 40m
     - op: replace
       path: /spec/template/spec/containers/2/resources/requests/cpu
-      value: 20m
+      value: 40m
+
+    - op: add
+      path: /spec/template/spec/containers/0/resources/limits/cpu
+      value: 40m
+    - op: add
+      path: /spec/template/spec/containers/1/resources/limits/cpu
+      value: 40m
+    - op: add
+      path: /spec/template/spec/containers/2/resources/limits/cpu
+      value: 40m
