@@ -15,6 +15,7 @@ spec:
     metadata:
       labels:
         app: elasticsearch
+        tier: hot
     spec:
       securityContext:
         fsGroup: 1000
@@ -68,7 +69,7 @@ spec:
             timeoutSeconds: 3
           startupProbe:
             failureThreshold: 30
-            initialDelaySeconds: 5
+            initialDelaySeconds: 180
             periodSeconds: 10
             tcpSocket:
               port: 9200
