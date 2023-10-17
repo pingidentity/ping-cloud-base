@@ -51,6 +51,41 @@ spec:
         - name: discovery-service
           mountPath: /get_ssm_env_vars.sh
           subPath: get_ssm_env_vars.sh
+      - name: pingdirectory-init
+        securityContext:
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+          allowPrivilegeEscalation: false
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.24.0
+        imagePullPolicy: IfNotPresent
+        command:
+          - /copy-dependencies.sh
+        envFrom:
+          - configMapRef:
+              name: pingdirectory-environment-variables
+          - configMapRef:
+              name: pingcommon-environment-variables
+        volumeMounts:
+          - name: ssh-dir
+            mountPath: /.ssh
+          - name: data-dir
+            mountPath: /data
+          - name: ssh-id-key-secret
+            mountPath: /id_rsa
+            subPath: id_rsa
+          - name: known-hosts-config
+            mountPath: /known_hosts
+            subPath: known_hosts
+          - name: pingdirectory-init
+            mountPath: /copy-dependencies.sh
+            subPath: copy-dependencies.sh
+          - name: pingdirectory-init
+            mountPath: /utils.lib.sh
+            subPath: utils.lib.sh
+          - name: pingdirectory-init
+            mountPath: /logger.lib.sh
+            subPath: logger.lib.sh
       containers:
       - name: pingdirectory-restore
         securityContext:
@@ -69,6 +104,17 @@ spec:
           - containerPort: 1636
             name: ldaps
         volumeMounts:
+        - name: ssh-dir
+          mountPath: /home/ping/.ssh
+        - name: data-dir
+          mountPath: /usr/local/bin/kubectl
+          subPath: kubectl
+        - name: ssh-id-key-secret
+          mountPath: /id_rsa
+          subPath: id_rsa
+        - name: known-hosts-config
+          mountPath: /known_hosts
+          subPath: known_hosts
         - name: restore-script
           mountPath: /opt/in/restore.sh
           subPath: restore.sh
@@ -112,6 +158,18 @@ spec:
       securityContext:
         fsGroup: 9999
       volumes:
+      - name: ssh-dir
+        emptyDir: {}
+      - name: ssh-id-key-secret
+        secret:
+          secretName: ssh-id-key-secret
+          optional: true
+          defaultMode: 0400
+      - name: known-hosts-config
+        configMap:
+          name: known-hosts-config
+          optional: true
+          defaultMode: 0644
       - name: restore-script
         configMap:
           name: pingdirectory-restore
