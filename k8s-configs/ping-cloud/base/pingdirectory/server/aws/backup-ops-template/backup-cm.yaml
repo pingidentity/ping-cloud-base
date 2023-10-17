@@ -20,7 +20,7 @@ data:
     
     # Set Hooks directory
     export HOOKS_DIR=/opt/staging/hooks
-    SCRIPT="/opt/staging/hooks/90-upload-backup-s3.sh"
+    SCRIPT="${HOOKS_DIR}/90-upload-backup-s3.sh"
     
     if test -x ${SCRIPT}; then
       # Execute backup script if user has the permissions
