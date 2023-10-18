@@ -5,7 +5,7 @@
 global:
 
   ### Enable or disable subchart dependencies ###
-  installDependencyCharts: false
+  installP1asSubcharts: false
 
   ############################################################
   # Secrets
