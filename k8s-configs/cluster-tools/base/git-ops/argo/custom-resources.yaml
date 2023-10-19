@@ -35,4 +35,3 @@ data:
       version: v1.0
       generate:
         command: [ "git-ops-command.sh" ]
-
