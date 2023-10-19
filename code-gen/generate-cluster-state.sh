@@ -150,6 +150,9 @@
 #                                  |                                                    |
 # K8S_GIT_URL                      | The Git URL of the Kubernetes base manifest files. | https://github.com/pingidentity/ping-cloud-base
 #                                  |                                                    |
+# KARPENTER_INSTANCE_PROFILE       | Karpenter Instance profile attached to EKS Clsuter | KarpenterInstanceProfile
+#                                  | IAM Node role                                      |
+#                                  |                                                    |
 # LOG_ARCHIVE_URL                  | The URL of the log archives. If provided, logs are | The string "unused".
 #                                  | periodically captured and sent to this URL. For    |
 #                                  | AWS S3 buckets, it must be an S3 URL, e.g.         |
@@ -1282,7 +1285,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   echo "Using IRSA_INGRESS_ANNOTATION_KEY_VALUE: ${IRSA_INGRESS_ANNOTATION_KEY_VALUE}"
   echo "Using NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE: ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
   echo "Using CLUSTER_ENDPOINT: ${CLUSTER_ENDPOINT}"
-  echo "Using KARPENTER_INSTANCE_PROFILE: ${KARPENTER_INSTANCE_PROFILE}"
 
   ######################################################################################################################
   # Massage files into correct structure for push-cluster-state script
