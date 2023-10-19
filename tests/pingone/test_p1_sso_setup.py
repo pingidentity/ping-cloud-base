@@ -104,6 +104,10 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
             f"{self.cluster_env_endpoints.applications}/{app['id']}", json=app
         )
         expected_uris = uris + modded_uris
+        print("Expected uris:")
+        print(expected_uris)
+        print("Updated uris:")
+        print(updated_uris)
         self.assertCountEqual(
             expected_uris,
             updated_uris,
