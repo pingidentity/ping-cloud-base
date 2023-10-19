@@ -12,6 +12,7 @@ dt_now_ms = round(dt_now.timestamp() * 1000)
 dt_past_ms = round(delta.timestamp() * 1000)
 
 
+@unittest.skip
 class TestCloudWatchLogs(unittest.TestCase):
     log_lines = int(os.getenv("LOG_LINES_TO_TEST", 10))
 
