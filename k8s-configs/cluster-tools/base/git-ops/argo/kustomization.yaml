@@ -311,7 +311,7 @@ patches:
           containers:
           - name: git-ops-command
             command: [/var/run/argocd/argocd-cmp-server] # Entrypoint should be Argo CD lightweight CMP server i.e. argocd-cmp-server
-            image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/busybox:1.32
+            image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/argo/argocd:v2.8.3
             securityContext:
               runAsNonRoot: true
               runAsUser: 999
@@ -331,6 +331,21 @@ patches:
               - mountPath: /usr/local/bin/git-ops-command.sh
                 name: git-ops-command
                 subPath: git-ops-command.sh
+              - name: helm-command
+                mountPath: /usr/local/bin/helm-command.sh
+                subPath: helm-command.sh
+              - name: tools-dir
+                mountPath: /usr/local/bin/envsubst
+                subPath: envsubst
+              - name: tools-dir
+                mountPath: /usr/local/bin/kustomize
+                subPath: kustomize
+              - name: tools-dir
+                mountPath: /usr/local/bin/git-remote-codecommit
+                subPath: git-remote-codecommit
+              - name: tools-dir
+                mountPath: /home/argocd/.local/lib/python3.7/site-packages/git_remote_codecommit/__init__.py
+                subPath: __init__.py
           volumes:
           - configMap:
               name: git-ops-command-plugin-cm
