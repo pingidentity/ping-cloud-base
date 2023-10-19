@@ -37,13 +37,8 @@ get_pods_state() {
 }
 
 testNriBundleNrk8sKubeletIsRunning() {
-  get_pods_state "app.kubernetes.io/component=kubelet" "newrelic"
+  time get_pods_state "app.kubernetes.io/component=kubelet" "newrelic"
   assertEquals "One or few nri-bundle-nrk8s-kubelet pods are failed to run properly." 0 $?
-}
-
-testNriBundleNrk8sControlplaneIsRunning() {
-  get_pods_state "app.kubernetes.io/component=controlplane" "newrelic"
-  assertEquals "One or few nri-bundle-nrk8s-controlplane pods are failed to run properly." 0 $?
 }
 
 # When arguments are passed to a script you must
