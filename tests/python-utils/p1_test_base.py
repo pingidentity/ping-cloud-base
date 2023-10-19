@@ -15,7 +15,7 @@ class P1TestBase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        client = p1_utils.get_client(p1_utils.WORKERAPP_CLIENT)
+        client = p1_utils.get_client()
         P1TestBase.worker_app_token_session = OAuth2Session(
             client["client_id"], token=client["token"]
         )
