@@ -8,36 +8,37 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-get_pods_state() {
-  max_retries=10  # You can adjust the number of retries as needed
-  retry_interval=5  # Adjust the sleep interval (in seconds) between retries
-
-  for ((i = 0; i < $max_retries; i++)); do
-    pods=$(kubectl get pods -l $1 -n $2 -o json | jq -r '.items[] | .metadata.name')
-    if [ -n "$pods" ]; then
-      all_running=true
-      for pod in $pods; do
-        phase=$(kubectl get pod $pod -n $2 -o json | jq -r '.status.phase')
-        if [[ "$phase" != "Running" ]]; then
-          all_running=false
-          break
-        fi
-      done
-      if [ "$all_running" = true ]; then
-        return 0  # All pods are in the "Running" state
-      fi
-    fi
-
-    if [ "$i" -lt $((max_retries - 1)) ]; then
-      sleep $retry_interval  # Sleep before the next retry
-    fi
-  done
-
-  return 1  # Pods did not reach the "Running" state after max_retries
-}
+#get_pods_state() {
+#  max_retries=10  # You can adjust the number of retries as needed
+#  retry_interval=5  # Adjust the sleep interval (in seconds) between retries
+#
+#  for ((i = 0; i < $max_retries; i++)); do
+#    pods=$(kubectl get pods -l $1 -n $2 -o json | jq -r '.items[] | .metadata.name')
+#    if [ -n "$pods" ]; then
+#      all_running=true
+#      for pod in $pods; do
+#        phase=$(kubectl get pod $pod -n $2 -o json | jq -r '.status.phase')
+#        if [[ "$phase" != "Running" ]]; then
+#          all_running=false
+#          break
+#        fi
+#      done
+#      if [ "$all_running" = true ]; then
+#        return 0  # All pods are in the "Running" state
+#      fi
+#    fi
+#
+#    if [ "$i" -lt $((max_retries - 1)) ]; then
+#      sleep $retry_interval  # Sleep before the next retry
+#    fi
+#  done
+#
+#  return 1  # Pods did not reach the "Running" state after max_retries
+#}
 
 testNriBundleNrk8sKubeletIsRunning() {
-  time get_pods_state "app.kubernetes.io/component=kubelet" "newrelic"
+#  time get_pods_state "app.kubernetes.io/component=kubelet" "newrelic"
+  time kubectl wait -l "app.kubernetes.io/component=kubelet" -n "newrelic" --for=condition=Ready=true --timeout=60s
   assertEquals "One or few nri-bundle-nrk8s-kubelet pods are failed to run properly." 0 $?
 }
 
