@@ -38,7 +38,7 @@ fi
 
 testNriBundleNrk8sKubeletIsRunning() {
 #  time get_pods_state "app.kubernetes.io/component=kubelet" "newrelic"
-  time kubectl wait -l "app.kubernetes.io/component=kubelet" -n "newrelic" --for=condition=Ready=true --timeout=60s
+  time kubectl wait pod -l "app.kubernetes.io/component=kubelet" -n "newrelic" --for=condition=Ready=true --timeout=60s
   assertEquals "One or few nri-bundle-nrk8s-kubelet pods are failed to run properly." 0 $?
 }
 
