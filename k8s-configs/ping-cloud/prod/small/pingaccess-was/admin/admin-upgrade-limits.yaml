@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pingaccess-was-admin
+spec:
+  template:
+    spec:
+      initContainers:
+      - name: pingaccess-was-upgrade
+        resources:
+          limits:
+            memory: 6Gi
+            cpu: 2
+          requests:
+            memory: 6Gi
+            cpu: 2
+
