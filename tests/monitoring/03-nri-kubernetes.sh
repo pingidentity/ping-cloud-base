@@ -9,15 +9,31 @@ if skipTest "${0}"; then
 fi
 
 get_pods_state() {
-  pods=$(kubectl get pods -l $1 -n $2  -o json | jq -r '.items[] | .metadata.name')
-  if [ -n "$pods" ]; then
-      for pod in $pods
-      do
-          phase=$(kubectl get pod $pod -n $2 -o json | jq -r '.status.phase')
-          [[ "$phase" != "Running" ]] && return 1;
+  max_retries=10  # You can adjust the number of retries as needed
+  retry_interval=5  # Adjust the sleep interval (in seconds) between retries
+
+  for ((i = 0; i < $max_retries; i++)); do
+    pods=$(kubectl get pods -l $1 -n $2 -o json | jq -r '.items[] | .metadata.name')
+    if [ -n "$pods" ]; then
+      all_running=true
+      for pod in $pods; do
+        phase=$(kubectl get pod $pod -n $2 -o json | jq -r '.status.phase')
+        if [[ "$phase" != "Running" ]]; then
+          all_running=false
+          break
+        fi
       done
-  fi
-  return 0
+      if [ "$all_running" = true ]; then
+        return 0  # All pods are in the "Running" state
+      fi
+    fi
+
+    if [ "$i" -lt $((max_retries - 1)) ]; then
+      sleep $retry_interval  # Sleep before the next retry
+    fi
+  done
+
+  return 1  # Pods did not reach the "Running" state after max_retries
 }
 
 testNriBundleNrk8sKubeletIsRunning() {
