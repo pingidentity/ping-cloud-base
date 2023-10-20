@@ -242,11 +242,6 @@ patches:
                   name: argocd-cmd-params-cm
                   optional: true
 - patch: |-
-    # Add git-ops-command.sh as the config management tool to build the uber Kubernetes YAML
-    # TODO: update the configManagementPlugins to run via a Sidecar - this won't happen until at least Argo 2.6
-    # NOTE: This shouldn't be necessary since we will remove git-ops-command.sh as part of breaking down the monorepo
-    # -> Issue: https://github.com/argoproj/argo-cd/issues/8117
-    # Ignore diffs in webhook client CA bundle (ref: https://argo-cd-docs.readthedocs.io/en/latest/user-guide/diffing/)
     apiVersion: v1
     kind: ConfigMap
     metadata:

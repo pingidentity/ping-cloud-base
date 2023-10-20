@@ -21,6 +21,7 @@ metadata:
   name: argocd-bootstrap
   namespace: argocd
 ---
+# Add the plugin configuration file in the sidecar
 apiVersion: v1
 kind: ConfigMap
 metadata:
