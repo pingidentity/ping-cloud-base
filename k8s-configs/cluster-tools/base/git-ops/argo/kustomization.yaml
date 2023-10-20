@@ -28,7 +28,7 @@ images:
 patches:
 - path: argo-notifications-cm.yaml
 - patch: |-
-    # Set the several log values to "warn"
+    # Set the several log values to "error"
     apiVersion: v1
     kind: ConfigMap
     metadata:
@@ -301,6 +301,7 @@ patches:
                 mountPath: /home/argocd/.local/lib/python3.7/site-packages/git_remote_codecommit/__init__.py
                 subPath: __init__.py
 - patch: |-
+    # Patch argocd-repo-server to run the plugin container as a sidecar
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -376,13 +377,29 @@ patches:
             - name: install-custom-tools
               mountPath: /usr/local/bin/install-custom-tools.sh
               subPath: install-custom-tools.sh
-- patch: "apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: argocd-repo-server\nspec:\n
-    \ template:\n    spec:\n      volumes:\n      - name: tools-dir\n        emptyDir:
-    {}\n      - name: git-ops-command\n        configMap:\n          name: git-ops-command\n
-    \         defaultMode: 0555\n      - name: helm-command\n        configMap:\n
-    \         name: helm-command\n          defaultMode: 0555              \n      -
-    name: install-custom-tools\n        configMap:\n          name: install-custom-tools\n
-    \         defaultMode: 0555"
+- patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-repo-server
+    spec:
+      template:
+        spec:
+          volumes:
+          - name: tools-dir
+            emptyDir: {}
+          - name: git-ops-command
+            configMap:
+              name: git-ops-command
+              defaultMode: 0555
+          - name: helm-command
+            configMap:
+              name: helm-command
+              defaultMode: 0555              
+          - name: install-custom-tools
+            configMap:
+              name: install-custom-tools
+              defaultMode: 0555
 - patch: |-
     # Add the "sealedsecrets.bitnami.com/managed: true" annotation to secrets so they are manageable by Bitnami
     apiVersion: v1
