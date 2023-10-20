@@ -82,9 +82,10 @@ patchesStrategicMerge:
               requests:
                 memory: "50Mi"
                 cpu: "20m"
-              limits:
-                memory: "100Mi"
-                cpu: "40m"
+              # Commented until PDO-6311 can be fixed properly
+              # limits:
+              #   memory: "100Mi"
+              #   cpu: "40m"
 
   - |-
     apiVersion: apps/v1
@@ -100,9 +101,10 @@ patchesStrategicMerge:
               requests:
                 memory: "50Mi"
                 cpu: "10m"
-              limits:
-                memory: "100Mi"
-                cpu: "30m"
+              # Commented until PDO-6311 can be fixed properly
+              # limits:
+              #   memory: "100Mi"
+              #   cpu: "30m"
 
   - |-
     apiVersion: apps/v1
@@ -118,9 +120,10 @@ patchesStrategicMerge:
               requests:
                 memory: "40Mi"
                 cpu: "10m"
-              limits:
-                memory: "80Mi"
-                cpu: "30m"
+              # Commented until PDO-6311 can be fixed properly
+              # limits:
+              #   memory: "80Mi"
+              #   cpu: "30m"
 
   - |-
     apiVersion: apps/v1
@@ -136,9 +139,10 @@ patchesStrategicMerge:
               requests:
                 memory: "50Mi"
                 cpu: "10m"
-              limits:
-                memory: "100Mi"
-                cpu: "30m"
+              # Commented until PDO-6311 can be fixed properly
+              # limits:
+              #   memory: "100Mi"
+              #   cpu: "30m"
 
   - |-
     apiVersion: apps/v1
@@ -154,9 +158,10 @@ patchesStrategicMerge:
               requests:
                 memory: "50Mi"
                 cpu: "10m"
-              limits:
-                memory: "100Mi"
-                cpu: "100m"
+              # Commented until PDO-6311 can be fixed properly
+              # limits:
+              #   memory: "100Mi"
+              #   cpu: "100m"
 
   - |-
     apiVersion: apps/v1
@@ -172,9 +177,10 @@ patchesStrategicMerge:
               requests:
                 memory: "100Mi"
                 cpu: "30m"
-              limits:
-                memory: "300Mi"
-                cpu: "300m"
+              # Commented until PDO-6311 can be fixed properly
+              # limits:
+              #   memory: "300Mi"
+              #   cpu: "300m"
 
   - |-
     apiVersion: apps/v1
@@ -190,9 +196,10 @@ patchesStrategicMerge:
               requests:
                 memory: "50Mi"
                 cpu: "20m"
-              limits:
-                memory: "100Mi"
-                cpu: "50m"
+              # Commented until PDO-6311 can be fixed properly
+              # limits:
+              #   memory: "100Mi"
+              #   cpu: "50m"
 
   - |-
     apiVersion: apps/v1
@@ -208,9 +215,10 @@ patchesStrategicMerge:
               requests:
                 memory: "800Mi"
                 cpu: "800m"
-              limits:
-                memory: "1Gi"
-                cpu: "1000m"
+              # Commented until PDO-6311 can be fixed properly
+              # limits:
+              #   memory: "1Gi"
+              #   cpu: "1000m"
 
   - |-
     apiVersion: apps/v1
