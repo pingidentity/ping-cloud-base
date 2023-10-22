@@ -80,11 +80,11 @@ patchesStrategicMerge:
           - name: argocd-applicationset-controller
             resources:
               requests:
-                memory: "50Mi"
-                cpu: "20m"
+                memory: "500Mi"
+                cpu: "1000m"
               limits:
-                memory: "100Mi"
-                cpu: "40m"
+                memory: "1000Mi"
+                cpu: "2000m"
 
   - |-
     apiVersion: apps/v1
@@ -98,11 +98,11 @@ patchesStrategicMerge:
           - name: dex
             resources:
               requests:
-                memory: "50Mi"
-                cpu: "10m"
+                memory: "125Mi"
+                cpu: "250m"
               limits:
-                memory: "100Mi"
-                cpu: "30m"
+                memory: "250Mi"
+                cpu: "500m"
 
   - |-
     apiVersion: apps/v1
@@ -152,11 +152,11 @@ patchesStrategicMerge:
           - name: redis
             resources:
               requests:
-                memory: "50Mi"
-                cpu: "10m"
+                memory: "125Mi"
+                cpu: "250m"
               limits:
-                memory: "100Mi"
-                cpu: "100m"
+                memory: "250Mi"
+                cpu: "500m"
 
   - |-
     apiVersion: apps/v1
@@ -170,11 +170,11 @@ patchesStrategicMerge:
           - name: argocd-repo-server
             resources:
               requests:
-                memory: "100Mi"
-                cpu: "30m"
+                memory: "500Mi"
+                cpu: "500m"
               limits:
-                memory: "300Mi"
-                cpu: "300m"
+                memory: "1000Mi"
+                cpu: "1000m"
 
   - |-
     apiVersion: apps/v1
@@ -188,11 +188,11 @@ patchesStrategicMerge:
           - name: argocd-server
             resources:
               requests:
-                memory: "50Mi"
-                cpu: "20m"
+                memory: "125Mi"
+                cpu: "125m"
               limits:
-                memory: "100Mi"
-                cpu: "50m"
+                memory: "250Mi"
+                cpu: "250m"
 
   - |-
     apiVersion: apps/v1
@@ -206,11 +206,11 @@ patchesStrategicMerge:
           - name: argocd-application-controller
             resources:
               requests:
-                memory: "800Mi"
-                cpu: "800m"
-              limits:
-                memory: "1Gi"
+                memory: "1000Mi"
                 cpu: "1000m"
+              limits:
+                memory: "2000Mi"
+                cpu: "2000m"
 
   - |-
     apiVersion: apps/v1
