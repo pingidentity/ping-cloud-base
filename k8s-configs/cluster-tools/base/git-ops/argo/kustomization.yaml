@@ -242,6 +242,7 @@ patches:
                   name: argocd-cmd-params-cm
                   optional: true
 - patch: |-
+    # Ignore diffs in webhook client CA bundle (ref: https://argo-cd-docs.readthedocs.io/en/latest/user-guide/diffing/)
     apiVersion: v1
     kind: ConfigMap
     metadata:
