@@ -70,6 +70,7 @@
 - Upgrade sealed secrets controller to v0.23+
 - SealedSecrets: Overwrite existing k8s secrets
 - Fix common integration tests
+- Add Request and Limit resources to PingAccess/PingAccess-WAS Upgrade Init Container
 - Update csr-valdation.sh to create a single .yaml file per microservice, rather than directory
 - Kube-State-Metrics: Refactoring with Third-Party Manifest Policy
 - Metrics-Server : Refactoring with Third-Party Manifest Policy
@@ -79,6 +80,7 @@
 - Defined the resource specifications for ArgoCD pods
 - Add PodDisruptionBudget for ingress-nginx-public
 - Push fluent-bit and logstash metrics to NewRelic
+- PDO-6264 OpenSearch Post-Migration: Cluster: Avail and Recovery: Cluster and Index Tuning, Enable Segment Replication
 
 _Changes:_
 
@@ -186,6 +188,7 @@ _Changes:_
 - [X] PDO-6074 Kube-State-Metrics: Refactoring with Third-Party Manifest Policy
 - [X] PDO-6075 Metrics-Server : Refactoring with Third-Party Manifest Policy
 - [X] PDO-6077 Multiple issues with OpenSearch connect from secondary region
+- [X] PDO-6124 Add Request and Limit resources to PingAccess/PingAccess-WAS Upgrade Init Container
 - [X] PDO-6136 Fix common integration tests
 - [X] PDO-6138 Kube-downscaler excluding grafana deployment from downscaling
 - [X] PDO-6166 Add PingFederate periodic backup limits
@@ -196,6 +199,7 @@ _Changes:_
 - [X] PDO-6224 Remove Grafana ping-app patches from remove-from-secondary-patch.yaml 
 - [X] PDO-6242 Configure newrelic-prometheus-agent to collect FluentBit and Logstash metrics
 - [X] PDO-6263 ArgoCD sync failing due to timeout on v1.19-release-branch
+- [X] PDO-6264 OpenSearch Post-Migration: Cluster: Avail and Recovery: Cluster and Index Tuning, Enable Segment Replication
 - [X] PDO-6267 Update to enable detailed monitoring on instances
 
 ### 1.18.0.0
