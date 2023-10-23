@@ -80,17 +80,11 @@
 - Defined the resource specifications for ArgoCD pods
 - Add PodDisruptionBudget for ingress-nginx-public
 - Push fluent-bit and logstash metrics to NewRelic
-<<<<<<< HEAD
 - PDO-6264 OpenSearch Post-Migration: Cluster: Avail and Recovery: Cluster and Index Tuning, Enable Segment Replication
-<<<<<<< HEAD
-=======
 - Set Karpenter defaultInstanceProfile via Environment Variable
->>>>>>> fc911bf04 (Adding change log)
-=======
-- Set Karpenter defaultInstanceProfile via Environment Variable
->>>>>>> db339d9b2 (Adding change log)
 
-_Chanxfvges:_
+
+_Changes:_
 
 - [X] PDO-3541 Support DHE Ciphers out of the box
 - [X] PDO-4264 Upgraded karpenter to v0.29.2 and adjusted its config to integrate with platform resource.
