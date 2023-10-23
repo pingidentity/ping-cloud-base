@@ -82,7 +82,7 @@ spec:
           timeoutSeconds: 3
         startupProbe:
           failureThreshold: 30
-          initialDelaySeconds: 5
+          initialDelaySeconds: 120
           periodSeconds: 10
           tcpSocket:
             port: 9200
@@ -99,6 +99,19 @@ spec:
           limits:
             cpu: "4"
             memory: 4Gi
+        args:
+          - opensearch
+          - -p
+          - /usr/share/opensearch/os.pid
+        command:
+          - /usr/share/opensearch/opensearch-docker-entrypoint.sh
+        lifecycle:
+          preStop:
+            exec:
+              command:
+                - sh
+                - "-c"
+                - "kill $(cat /usr/share/opensearch/os.pid)"
         env:
         - name: node.name
           valueFrom:
@@ -122,6 +135,24 @@ spec:
           value: "true"
         - name: logger.level
           value: "WARN"
+        - name: indices.recovery.max_bytes_per_sec
+          value: "500mb"
+        - name: indices.recovery.max_concurrent_file_chunks
+          value: "5"
+        - name: indices.recovery.max_concurrent_operations
+          value: "4"
+        - name: cluster.routing.allocation.node_concurrent_recoveries
+          value: "6"
+        - name: cluster.routing.allocation.cluster_concurrent_rebalance
+          value: "6"
+        - name: cluster.routing.allocation.node_initial_primaries_recoveries
+          value: "8"
+        - name: cluster.routing.allocation.balance.prefer_primary
+          value: "true"
+        - name: segrep.pressure.enabled
+          value: "true"
+        - name: cluster.indices.replication.strategy
+          value: "SEGMENT"
         volumeMounts:
         - name: "data"
           mountPath: /usr/share/opensearch/data
@@ -212,7 +243,7 @@ spec:
           timeoutSeconds: 3
         startupProbe:
           failureThreshold: 30
-          initialDelaySeconds: 5
+          initialDelaySeconds: 120
           periodSeconds: 10
           tcpSocket:
             port: 9200
@@ -229,6 +260,19 @@ spec:
           limits:
             cpu: "2"
             memory: 4Gi
+        args:
+          - opensearch
+          - -p
+          - /usr/share/opensearch/os.pid
+        command:
+          - /usr/share/opensearch/opensearch-docker-entrypoint.sh
+        lifecycle:
+          preStop:
+            exec:
+              command:
+                - sh
+                - "-c"
+                - "kill $(cat /usr/share/opensearch/os.pid)"
         env:
         - name: node.name
           valueFrom:
@@ -252,6 +296,24 @@ spec:
           value: "true"
         - name: logger.level
           value: "WARN"
+        - name: indices.recovery.max_bytes_per_sec
+          value: "500mb"
+        - name: indices.recovery.max_concurrent_file_chunks
+          value: "5"
+        - name: indices.recovery.max_concurrent_operations
+          value: "4"
+        - name: cluster.routing.allocation.node_concurrent_recoveries
+          value: "6"
+        - name: cluster.routing.allocation.cluster_concurrent_rebalance
+          value: "6"
+        - name: cluster.routing.allocation.node_initial_primaries_recoveries
+          value: "8"
+        - name: cluster.routing.allocation.balance.prefer_primary
+          value: "true"
+        - name: segrep.pressure.enabled
+          value: "true"
+        - name: cluster.indices.replication.strategy
+          value: "SEGMENT"
         volumeMounts:
         - name: "data"
           mountPath: /usr/share/opensearch/data
