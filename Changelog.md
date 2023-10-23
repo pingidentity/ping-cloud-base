@@ -82,9 +82,13 @@
 - Push fluent-bit and logstash metrics to NewRelic
 <<<<<<< HEAD
 - PDO-6264 OpenSearch Post-Migration: Cluster: Avail and Recovery: Cluster and Index Tuning, Enable Segment Replication
+<<<<<<< HEAD
 =======
 - Set Karpenter defaultInstanceProfile via Environment Variable
 >>>>>>> fc911bf04 (Adding change log)
+=======
+- Set Karpenter defaultInstanceProfile via Environment Variable
+>>>>>>> db339d9b2 (Adding change log)
 
 _Chanxfvges:_
 
