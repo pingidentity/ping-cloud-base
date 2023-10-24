@@ -11,3 +11,4 @@ resources:
 
 patchesStrategicMerge:
 - admin-limits.yaml
+- admin-upgrade-limits.yaml
