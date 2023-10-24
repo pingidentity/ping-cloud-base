@@ -204,6 +204,7 @@ _Changes:_
 - [X] PDO-6264 OpenSearch Post-Migration: Cluster: Avail and Recovery: Cluster and Index Tuning, Enable Segment Replication
 - [X] PDO-6267 Update to enable detailed monitoring on instances
 - [x] PDO-6305 Set Karpenter defaultInstanceProfile via Environment Variable
+- [X] PDO-6311 Argocd pod resources spec adjusted
 
 ### 1.18.0.0
 
