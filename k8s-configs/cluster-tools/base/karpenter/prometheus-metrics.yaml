@@ -1,0 +1,12 @@
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: karpenter
+    namespace: karpenter
+  spec:     
+    template: 
+      metadata:
+        annotations:
+          prometheus.io/path: '/metrics'
+          prometheus.io/port: '8000'
+          prometheus.io/scrape: 'true'
