@@ -81,6 +81,9 @@
 - Add PodDisruptionBudget for ingress-nginx-public
 - Push fluent-bit and logstash metrics to NewRelic
 - PDO-6264 OpenSearch Post-Migration: Cluster: Avail and Recovery: Cluster and Index Tuning, Enable Segment Replication
+- Set Karpenter defaultInstanceProfile via Environment Variable
+
+- Add entry in base values.yaml for disabling subchart dependencies
 
 _Changes:_
 
@@ -189,6 +192,7 @@ _Changes:_
 - [X] PDO-6075 Metrics-Server : Refactoring with Third-Party Manifest Policy
 - [X] PDO-6077 Multiple issues with OpenSearch connect from secondary region
 - [X] PDO-6124 Add Request and Limit resources to PingAccess/PingAccess-WAS Upgrade Init Container
+- [X] PDO-6106 Test using Helm dependency tags
 - [X] PDO-6136 Fix common integration tests
 - [X] PDO-6138 Kube-downscaler excluding grafana deployment from downscaling
 - [X] PDO-6166 Add PingFederate periodic backup limits
@@ -201,6 +205,8 @@ _Changes:_
 - [X] PDO-6263 ArgoCD sync failing due to timeout on v1.19-release-branch
 - [X] PDO-6264 OpenSearch Post-Migration: Cluster: Avail and Recovery: Cluster and Index Tuning, Enable Segment Replication
 - [X] PDO-6267 Update to enable detailed monitoring on instances
+- [x] PDO-6305 Set Karpenter defaultInstanceProfile via Environment Variable
+- [X] PDO-6311 Argocd pod resources spec adjusted
 
 ### 1.18.0.0
 
