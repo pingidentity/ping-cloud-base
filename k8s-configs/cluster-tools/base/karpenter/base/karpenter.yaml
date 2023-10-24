@@ -414,6 +414,9 @@ spec:
         app.kubernetes.io/instance: karpenter
       annotations:
         checksum/settings: 12caac32660ea917c59b0ac9472f0db07e673a5df463599030df103fd85a0fd9
+        prometheus.io/scrape: 'true'
+        prometheus.io/path: '/metrics'
+        prometheus.io/port: '8000'
     spec:
       serviceAccountName: karpenter
       securityContext:
