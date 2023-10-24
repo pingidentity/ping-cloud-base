@@ -83,6 +83,7 @@
 - PDO-6264 OpenSearch Post-Migration: Cluster: Avail and Recovery: Cluster and Index Tuning, Enable Segment Replication
 - Set Karpenter defaultInstanceProfile via Environment Variable
 
+- Add entry in base values.yaml for disabling subchart dependencies
 
 _Changes:_
 
@@ -191,6 +192,7 @@ _Changes:_
 - [X] PDO-6075 Metrics-Server : Refactoring with Third-Party Manifest Policy
 - [X] PDO-6077 Multiple issues with OpenSearch connect from secondary region
 - [X] PDO-6124 Add Request and Limit resources to PingAccess/PingAccess-WAS Upgrade Init Container
+- [X] PDO-6106 Test using Helm dependency tags
 - [X] PDO-6136 Fix common integration tests
 - [X] PDO-6138 Kube-downscaler excluding grafana deployment from downscaling
 - [X] PDO-6166 Add PingFederate periodic backup limits
