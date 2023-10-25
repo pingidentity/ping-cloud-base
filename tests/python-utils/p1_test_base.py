@@ -21,9 +21,9 @@ class P1TestBase(unittest.TestCase):
         )
         cluster_name = os.getenv("CLUSTER_NAME", "not_set")
         P1TestBase.environment_name = (
-            "ci-cd" if cluster_name.startswith("ci-cd") else cluster_name
+            "ci-cd" if cluster_name.startswith("ci-cd") else "dev"
         )
-        P1TestBase.population_name = f"{cluster_name}-{os.getenv('CI_COMMIT_REF_SLUG')}"
+        P1TestBase.population_name = f"{cluster_name}"
         P1TestBase.cluster_env_id = cls.get(
             endpoint=f"{p1_utils.API_LOCATION}/environments",
             name=P1TestBase.environment_name,
