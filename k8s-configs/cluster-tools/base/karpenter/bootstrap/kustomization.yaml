@@ -31,6 +31,7 @@ patchesStrategicMerge:
     namespace: karpenter
   spec:
     template:
+      replicas: 0
       spec:
         containers:
           - name: controller
