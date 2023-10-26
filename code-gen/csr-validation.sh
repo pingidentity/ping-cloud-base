@@ -127,10 +127,12 @@ for app_path in ${app_region_paths}; do
   
   # kustomize build
   if test -z "${OUT_DIR}"; then
+    echo "OUT_DIR FIRST: ${OUT_DIR}"
     result=$( (kustomize build --load-restrictor LoadRestrictionsNone --enable-helm "${app_path}" ) 2>&1)
   else
     full_out_dir="${OUT_DIR}/${app_path#./}"
     mkdir -p "${full_out_dir}"
+    echo "OUT_DIR SECOND: ${full_out_dir}"
     result=$( (kustomize build --load-restrictor LoadRestrictionsNone --enable-helm --output "${full_out_dir}/uber.yaml" "${app_path}" ) 2>&1)
   fi
   # if kustomize build fails: add to failure list and output the error
