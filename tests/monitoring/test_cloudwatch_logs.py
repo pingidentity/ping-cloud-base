@@ -10,12 +10,12 @@ import tenacity
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s:%(name)s:%(levelname)s:%(message)s",
+    format="%(asctime)s: %(name)s %(levelname)s %(message)s",
 )
 
 TENACITY_LOGGER = logging.getLogger("Retrying")
 
-my_retry=tenacity.retry(
+test_retry=tenacity.retry(
     stop=tenacity.stop_after_attempt(5),
     wait=tenacity.wait_random_exponential(5, 60),
     after=tenacity.after_log(TENACITY_LOGGER, logging.WARNING),
@@ -37,7 +37,7 @@ class TestCloudWatchLogs(unittest.TestCase):
     pod_labels = "k8s-app=fluent-bit"
     pod_namespace = "elastic-stack-logging"
     container_name = "fluent-bit"
-    k8s_cluster_name = os.getenv("CLUSTER_NAME")
+    k8s_cluster_name = os.getenv("CLUSTER_NAME", "oleksiikalinin")
     log_group_name = f"/aws/containerinsights/{k8s_cluster_name}/application"
 
     @classmethod
@@ -76,7 +76,6 @@ class TestCloudWatchLogs(unittest.TestCase):
         return cw_logs
 
     def test_cloudwatch_log_group_exists(self):
-        print(self.log_group_name)
         response = self.aws_client.describe_log_groups(
             logGroupNamePrefix=self.log_group_name
         )
@@ -101,11 +100,10 @@ class TestCloudWatchLogs(unittest.TestCase):
         pod_logs = self.k8s.get_latest_pod_logs(
             pod_name, self.container_name, self.pod_namespace, self.log_lines
         )
-        self.assertNotEqual(len(pod_logs), 0, "No pod logs found")
+        self.assertNotEqual(len(pod_logs), 0, f"No pod logs found: {pod_name}")
 
-    @my_retry
+    @test_retry
     def test_cw_logs_equal_pod_logs(self):
-        self.k8s.wait_for_pod_running("app=logstash-elastic", self.pod_namespace, 120)
         pod_name = self.k8s.get_first_matching_pod_name(self.pod_namespace, self.pod_labels)
         pod_logs = self.k8s.get_latest_pod_logs(
             pod_name, self.container_name, self.pod_namespace, self.log_lines
