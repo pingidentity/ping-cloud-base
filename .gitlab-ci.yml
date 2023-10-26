@@ -111,10 +111,10 @@ deploy:
   image: ${K8S_DEPLOY_TOOLS}
   script:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/deploy/deploy.sh
-    - ls -R /tmp
+    - cp /tmp/uber.yaml $CI_PROJECT_DIR
   artifacts:
    paths:
-     - /out
+     - uber.yaml
    expire_in: 1 day
   dependencies:
     - find-cluster
