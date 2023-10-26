@@ -15,7 +15,7 @@ patchesStrategicMerge:
     namespace: karpenter
   data:
     "aws.clusterEndpoint": "${CLUSTER_ENDPOINT}"
-    "aws.clusterName": "${REGION_ENV}"
+    "aws.clusterName": "${CLUSTER_NAME}"
 
 - |-
   apiVersion: v1
@@ -34,9 +34,9 @@ patchesStrategicMerge:
     name: default
   spec:
     securityGroupSelector:
-      karpenter.sh/discovery: "${REGION_ENV}"
+      karpenter.sh/discovery: "${CLUSTER_NAME}"
     subnetSelector:
-      karpenter.sh/discovery: "${REGION_ENV}"
+      karpenter.sh/discovery: "${CLUSTER_NAME}"
 
 - |-
   apiVersion: karpenter.k8s.aws/v1alpha1
@@ -45,9 +45,9 @@ patchesStrategicMerge:
     name: pd-only
   spec:
     securityGroupSelector:
-      karpenter.sh/discovery: "${REGION_ENV}"
+      karpenter.sh/discovery: "${CLUSTER_NAME}"
     subnetSelector:
-      karpenter.sh/discovery: "${REGION_ENV}"
+      karpenter.sh/discovery: "${CLUSTER_NAME}"
 
 - |-
   apiVersion: karpenter.k8s.aws/v1alpha1
@@ -56,9 +56,18 @@ patchesStrategicMerge:
     name: pgo-only
   spec:
     securityGroupSelector:
-      karpenter.sh/discovery: "${REGION_ENV}"
+      karpenter.sh/discovery: "${CLUSTER_NAME}"
     subnetSelector:
-      karpenter.sh/discovery: "${REGION_ENV}"
+      karpenter.sh/discovery: "${CLUSTER_NAME}"
+
+- |-
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: karpenter
+    namespace: karpenter
+  spec:
+    replicas: 2
 
 # Initially, by default we will disable Karpenter from taking over node deployment. As customers migrate, we will gradually enable this feature.
 # Once all of our customers have finished migrating, we will enable Karpenter by default.
