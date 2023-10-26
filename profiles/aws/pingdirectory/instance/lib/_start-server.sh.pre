@@ -16,6 +16,9 @@ test -f "${HOOKS_DIR}/pingdata.lib.sh" && . "${HOOKS_DIR}/pingdata.lib.sh"
 BELUGA_JAVA_ARGS="${BELUGA_JAVA_ARGS:+${BELUGA_JAVA_ARGS} }-Dcom.unboundid.directory.server.plugins.PurgeExpiredDataPlugin.BATCH_SIZE=${PURGE_BATCH_SIZE:-10000}"
 # END PDO-4153 #
 
+# DS-45149, Force dsreplication initialize to override version incompatibility
+BELUGA_JAVA_ARGS="${BELUGA_JAVA_ARGS} -DPINGDIR_CLI_BYPASS_TOPOLOGY_VERSION_CHECK=true"
+
 beluga_log "Setting more java args - BELUGA_JAVA_ARGS: ${BELUGA_JAVA_ARGS}"
 
 # TODO: until fixed, this uses the overriden version of export_container_env set in "${HOOKS_DIR}/utils.lib.sh"
