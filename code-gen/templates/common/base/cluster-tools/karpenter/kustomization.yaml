@@ -60,6 +60,7 @@ patchesStrategicMerge:
     subnetSelector:
       karpenter.sh/discovery: "${CLUSTER_NAME}"
 
+# Setting Karpenter replicas as at this stage of deployment all the CDE specific configuration should be available for Karpenter to utilize.
 - |-
   apiVersion: apps/v1
   kind: Deployment
