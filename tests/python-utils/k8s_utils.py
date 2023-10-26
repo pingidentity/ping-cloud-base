@@ -107,13 +107,13 @@ class K8sUtils:
                     if e.status == 404:
                         break
 
-    def wait_for_pod_running(self, label: str, namespace: str):
+    def wait_for_pod_running(self, label: str, namespace: str, timeout: int = 60):
         watch = k8s.watch.Watch()
         for event in watch.stream(
             func=self.core_client.list_namespaced_pod,
             namespace=namespace,
             label_selector=label,
-            timeout_seconds=60,
+            timeout_seconds=timeout,
         ):
             if event["object"].status.phase == "Running":
                 watch.stop()
