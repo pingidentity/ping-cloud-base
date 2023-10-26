@@ -37,7 +37,7 @@ class TestCloudWatchLogs(unittest.TestCase):
     pod_labels = "k8s-app=fluent-bit"
     pod_namespace = "elastic-stack-logging"
     container_name = "fluent-bit"
-    k8s_cluster_name = os.getenv("CLUSTER_NAME", "oleksiikalinin")
+    k8s_cluster_name = os.getenv("CLUSTER_NAME")
     log_group_name = f"/aws/containerinsights/{k8s_cluster_name}/application"
 
     @classmethod
