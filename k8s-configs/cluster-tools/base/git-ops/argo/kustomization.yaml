@@ -407,7 +407,7 @@ patches:
         spec:
           initContainers:
           - name: argocd-p1as-oauth
-            image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-services/p14c-integration:PDO-5594-argo-sso
+            image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v1.19-release-branch-latest
             imagePullPolicy: Always
             env:
             - name: NAMESPACE
