@@ -1359,7 +1359,11 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     substitute_vars "${ENV_DIR}/values-files" '${IS_BELUGA_ENV}'
 
     # Update patches related to Beluga developer CDEs
-    sed -i.bak 's/^  # \(.*remove-from-developer-cde-patch.yaml\)$/  \1/g' "${PRIMARY_PING_KUST_FILE}"
+
+    # Do not disable CW and NR if in CI/CD
+    if test "${CI_SERVER}" != "yes"; then
+      sed -i.bak 's/^[[:space:]]*# \(.*remove-from-developer-cde-patch.yaml\)$/  \1/g' "${PRIMARY_PING_KUST_FILE}"
+    fi
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
     echo "Contents of ${PRIMARY_PING_KUST_FILE}"
     cat "${PRIMARY_PING_KUST_FILE}"
