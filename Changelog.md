@@ -79,6 +79,7 @@
 - Kube-downscaler excluding grafana deployment from downscaling
 - Defined the resource specifications for ArgoCD pods
 - Add PodDisruptionBudget for ingress-nginx-public
+- Upgrade argocd to v2.8.3 for EKS 1.27
 - Push fluent-bit and logstash metrics to NewRelic
 - PDO-6264 OpenSearch Post-Migration: Cluster: Avail and Recovery: Cluster and Index Tuning, Enable Segment Replication
 - Set Karpenter defaultInstanceProfile via Environment Variable
@@ -162,6 +163,7 @@ _Changes:_
 - [X] PDO-5780 Update kubectl to 1.26.0 for EKS 1.27
 - [X] PDO-5785 Update kube-state-metrics cluster tool to v2.9.2
 - [X] PDO-5789 Upgrade sealed secrets controller to v0.23+
+- [X] PDO-5791 Upgrade argocd to v2.8.3 for EKS 1.27
 - [X] PDO-5797 Unify severity format for all prometheus alerts
 - [X] PDO-5800 Update pd.profile to align with PingDirectory upgrade
 - [X] PDO-5801 Update cluster-autoscaler v1.27.0/1.27.1 for eks 1.27

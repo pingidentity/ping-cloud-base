@@ -12,4 +12,23 @@ resources:
 patchesStrategicMerge:
 - admin-init-env.yaml
 - admin-limits.yaml
-- admin-upgrade-limits.yaml
+
+patchesJson6902:
+- target:
+    group: apps
+    version: v1
+    kind: StatefulSet
+    name: pingaccess-admin
+  patch: |-
+    - op: replace
+      path: /spec/template/spec/initContainers/4/resources/limits/cpu
+      value: 2
+    - op: replace
+      path: /spec/template/spec/initContainers/4/resources/limits/memory
+      value: 8Gi
+    - op: replace
+      path: /spec/template/spec/initContainers/4/resources/requests/cpu
+      value: 2
+    - op: replace
+      path: /spec/template/spec/initContainers/4/resources/requests/memory
+      value: 8Gi

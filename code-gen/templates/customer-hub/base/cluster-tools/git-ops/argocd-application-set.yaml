@@ -46,7 +46,7 @@ spec:
         repoURL: ${CLUSTER_STATE_REPO_URL}
         targetRevision: "{{metadata.annotations.argocd-branch}}"
         plugin:
-          name: git-ops-command
+          name: git-ops-command-v1.0
 
 ---
 # The per-app application set, for splitting up the monorepo
