@@ -36,6 +36,7 @@ spec:
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
       serviceAccountName: nri-bundle-nrk8s-controlplane
+      priorityClassName: high-priority-apps-to-avoid-pending-state
       containers:
         - name: controlplane
           image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/nri-kubernetes:3.17.0"
@@ -192,6 +193,7 @@ spec:
     spec:
       serviceAccountName: nri-bundle-newrelic-infrastructure
       hostNetwork: false
+      priorityClassName: high-priority-apps-to-avoid-pending-state
       containers:
         - name: kubelet
           image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/nri-kubernetes:3.17.0"
