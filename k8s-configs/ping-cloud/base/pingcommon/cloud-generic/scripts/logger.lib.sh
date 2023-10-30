@@ -101,7 +101,7 @@ beluga_log_file() {
 
   #limit to 1000 lines by creating  a tmp log file and replacing that
   if [ $(wc -l < "$log_file") -gt $max_lines ]; then
-    tail -1000 $log_file > tmp.log && cp tmp.log $log_file && rm tmp.log    
+    tail -1000 $log_file > tmp.log && mv tmp.log $log_file    
   fi
 }
 
@@ -125,6 +125,6 @@ beluga_error_file() {
 
   #limit to 1000 lines by creating  a tmp log file and replacing that
   if [ $(wc -l < "$log_file") -gt $max_lines ]; then
-    tail -1000 $log_file > tmp.log && cp tmp.log $log_file && rm tmp.log
+    tail -1000 $log_file > tmp.log && mv tmp.log $log_file
   fi  
 }
