@@ -1349,7 +1349,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
 
   # Copy around files for Developer CDE before substituting vars
   if "${IS_BELUGA_ENV}"; then
-    echo "In IS_BELUGA_ENV modification section"
+    echo "IS_BELUGA_ENV detected, making developer changes to deployment"
     # Add IS_BELUGA_ENV to the base env_vars
     BASE_ENV_VARS="${K8S_CONFIGS_DIR}/base/env_vars"
     echo >> "${BASE_ENV_VARS}"
@@ -1365,8 +1365,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       sed -i.bak 's/^[[:space:]]*# \(.*remove-from-developer-cde-patch.yaml\)$/  \1/g' "${PRIMARY_PING_KUST_FILE}"
     fi
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
-    echo "Contents of ${PRIMARY_PING_KUST_FILE}"
-    cat "${PRIMARY_PING_KUST_FILE}"
 
     # Add ArgoCD to Beluga Environments since it normally runs only in customer-hub
     echo "This is a Beluga Development Environment, copying ArgoCD into the CSR"
