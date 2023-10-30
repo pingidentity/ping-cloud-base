@@ -18,15 +18,12 @@ DBG_LVL=4
 beluga_log() {
   VERBOSITY=$(echo "${VERBOSITY}" | tr '[:upper:]' '[:lower:]')
   case ${VERBOSITY} in
-  [1-4]) ;;
-  debug) VERBOSITY=4 ;;
-  info) VERBOSITY=3 ;;
-  warn) VERBOSITY=2 ;;
-  error) VERBOSITY=1 ;;
-  *)
-    echo "Use number (1-4) or string (debug, info, warn, error) in VERBOSITY variable. Value: '${VERBOSITY}'"
-    exit 1
-    ;;
+    [1-4]) ;;
+    debug) VERBOSITY=4 ;;
+    info) VERBOSITY=3 ;;
+    warn) VERBOSITY=2 ;;
+    error) VERBOSITY=1 ;;
+    *) echo "Use number (1-4) or string (debug, info, warn, error) in VERBOSITY variable. Value: '${VERBOSITY}'" ; exit 1 ;;
   esac
 
   file_name="$(basename "$0")"
