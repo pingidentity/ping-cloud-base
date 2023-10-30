@@ -149,6 +149,13 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
+        resources:
+          requests:
+            memory: "6Gi"
+            cpu: 2
+          limits:
+            memory: "6Gi"
+            cpu: 2       
         volumeMounts:
         - name: ssh-dir
           mountPath: /home/ping/.ssh
