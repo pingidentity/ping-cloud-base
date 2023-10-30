@@ -18,12 +18,15 @@ DBG_LVL=4
 beluga_log() {
   VERBOSITY=$(echo "${VERBOSITY}" | tr '[:upper:]' '[:lower:]')
   case ${VERBOSITY} in
-    [1-4]) ;;
-    debug) VERBOSITY=4 ;;
-    info) VERBOSITY=3 ;;
-    warn) VERBOSITY=2 ;;
-    error) VERBOSITY=1 ;;
-    *) echo "Use number (1-4) or string (debug, info, warn, error) in VERBOSITY variable. Value: '${VERBOSITY}'" ; exit 1 ;;
+  [1-4]) ;;
+  debug) VERBOSITY=4 ;;
+  info) VERBOSITY=3 ;;
+  warn) VERBOSITY=2 ;;
+  error) VERBOSITY=1 ;;
+  *)
+    echo "Use number (1-4) or string (debug, info, warn, error) in VERBOSITY variable. Value: '${VERBOSITY}'"
+    exit 1
+    ;;
   esac
 
   file_name="$(basename "$0")"
@@ -78,4 +81,53 @@ beluga_warn() {
 ########################################################################################################################
 beluga_debug() {
   beluga_log "$1" 'DEBUG'
+}
+
+########################################################################################################################
+# Write Logs to file.
+#
+# Arguments
+#   $1 -> The log message.
+#   $2 -> file name(example: liveness or readiness) 
+########################################################################################################################
+
+beluga_log_file() {
+  local message="$1"
+  local filename="$2"
+
+  local log_file="/tmp/${log_file_name}.log"
+  local log_output=$(beluga_log "$message")
+  local max_lines=1000
+
+  echo "$log_output"
+  echo "$log_output" >"$log_file"
+
+  #limit to 1000 lines by creating  a tmp log file and replacing that
+  if [ $(wc -l < "$log_file") -gt $max_lines ]; then
+    tail -1000 $log_file > tmp.log && cp tmp.log $log_file && rm tmp.log    
+  fi
+}
+
+########################################################################################################################
+# Write Logs to file.
+#
+# Arguments
+#   $1 -> The log message.
+#   $2 -> file name(example: liveness or readiness) 
+########################################################################################################################
+beluga_error_file() {
+  local message="$1"
+  local filename="$2"
+
+  local log_file="/tmp/${filename}.log"
+  local log_output=$(beluga_error "$message")
+  local max_lines=1000
+
+  echo "$log_output"
+  echo "$log_output" >"$log_file"
+
+  #limit to 1000 lines by creating  a tmp log file and replacing that
+  if [ $(wc -l < "$log_file") -gt $max_lines ]; then
+    tail -1000 $log_file > tmp.log && cp tmp.log $log_file && rm tmp.log
+  fi  
 }

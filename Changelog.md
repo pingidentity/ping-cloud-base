@@ -32,6 +32,7 @@
 - Migrated 'profiles' directory away from root of PCB, and into 'code-gen' root dir.  Also removed 'aws' subdir.
 - Improve alerts. JSON format + link to runbook
 - Limit backup/restore logging for PD
+- Add new functions to 'logger.lib.sh' 
 - enrichment-bootstrap Docker image scripts refactoring
 - Change PD alerts to see more specific errors
 - Update pd.profile to align with PingDirectory upgrade
@@ -155,6 +156,7 @@ _Changes:_
 - [X] PDO-5709 Fix intermittent pingone integration test failures
 - [X] PDO-5718 Update PGO dashboards to use grafana CRD
 - [X] PDO-5724 Limit backup/restore logging for PD
+- [X] PDO-5730 Add new functions to 'logger.lib.sh' 
 - [X] PDO-5741 OS: Index migration fails for shrink-*-logstash-* indexes
 - [X] PDO-5781 Update nginx-ingress-controller to v1.8.0 to support EKS 1.27
 - [X] PDO-5762 CloudWatch / New Relic: Disable logging for Dev clusters
