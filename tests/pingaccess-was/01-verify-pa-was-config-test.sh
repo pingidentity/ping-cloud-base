@@ -250,7 +250,7 @@ testUpdatedApplicationReservedPath() {
 testPaWasIdempotent() {
   export APP_ID=123
   export APP_NAME="TestApp"
-  export VIRTUAL_HOST_ID=100
+  export VIRTUAL_HOST_ID=1
   export SITE_ID=100 # SiteID correlating to ArgoCD.  This will test will create a new application referencing the ArgoCD site.
 
   # Cleanup from possible previous run failures
