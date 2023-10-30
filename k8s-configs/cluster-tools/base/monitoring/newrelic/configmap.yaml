@@ -60,7 +60,7 @@ metadata:
   namespace: newrelic
 data:
   nri-kubernetes.yml: |-
-    interval: 30s
+    interval: 15s
     namespaceSelector: {}
     controlPlane:
       retries: 3
@@ -254,7 +254,7 @@ metadata:
   namespace: newrelic
 data:
   nri-kubernetes.yml: |-
-    interval: 30s
+    interval: 15s
     namespaceSelector: {}
     ksm:
       enabled: true
@@ -347,7 +347,7 @@ metadata:
   namespace: newrelic
 data:
   nri-kubernetes.yml: |
-    interval: 30s
+    interval: 15s
     namespaceSelector: {}
     kubelet:
       enabled: true
