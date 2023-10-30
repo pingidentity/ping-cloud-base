@@ -7,9 +7,9 @@ class TestArgoSSO(p1_test_base.P1TestBase):
     def setUp(self) -> None:
         self.tenant_name = os.getenv("TENANT_NAME", f"{os.getenv('USER')}-primary")
         self.group_names = [
-            "argo-beluga",
-            f"{self.tenant_name}-argo-config-team",
-            "argo-platform",
+            "argo-ping-beluga",
+            f"{self.tenant_name}-argo-ping-configteam",
+            "argo-ping-platform",
         ]
         self.app_name = f"client-{self.tenant_name}-{self.environment_name}-argo-sso"
 
