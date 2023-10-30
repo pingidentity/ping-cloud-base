@@ -14,7 +14,7 @@ helmCharts:
       - ../../values-files/${REGION_NICK_NAME}/values.yaml   # regional values.yaml
       - values.yaml   # app specific values.yaml
     version: v1.19-PDO-5225
-    repo:  repo: oci://705370621539.dkr.ecr.us-west-2.amazonaws.com/dev/p1as-beluga-tools
+    repo: oci://705370621539.dkr.ecr.us-west-2.amazonaws.com/dev/p1as-beluga-tools
   valuesInline:
       ecrRegistryName: "705370621539.dkr.ecr.us-west-2.amazonaws.com/dev"
 
