@@ -3,7 +3,7 @@
 CI_SCRIPTS_DIR="${SHARED_CI_SCRIPTS_DIR:-/ci-scripts}"
 . "${CI_SCRIPTS_DIR}"/common.sh "${1}"
 
-if skipTest "${0}"; then
+if skipTest "${0}" || ! [[ "${CI_COMMIT_REF_SLUG}" =~ '^v([0-9]+)\.([0-9]+)-release-branch$' ]] && [[ "${IS_BELUGA_ENV}" != "true" ]]; then
   log "Skipping test ${0}"
   exit 0
 fi
