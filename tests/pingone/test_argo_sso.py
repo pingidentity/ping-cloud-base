@@ -11,7 +11,7 @@ class TestArgoSSO(p1_test_base.P1TestBase):
             f"{self.tenant_name}-argo-ping-configteam",
             "argo-ping-platform",
         ]
-        self.app_name = f"client-{self.tenant_name}-{self.environment_name}-argo-sso"
+        self.app_name = f"client-{self.tenant_name}-argo-sso"
 
     def test_groups_created(self):
         for group_name in self.group_names:
