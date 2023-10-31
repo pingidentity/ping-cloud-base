@@ -16,6 +16,7 @@ patchesStrategicMerge:
   data:
     "aws.clusterEndpoint": "${CLUSTER_ENDPOINT}"
     "aws.clusterName": "${CLUSTER_NAME}"
+    "aws.defaultInstanceProfile": "${KARPENTER_INSTANCE_PROFILE}"
 
 - |-
   apiVersion: v1
