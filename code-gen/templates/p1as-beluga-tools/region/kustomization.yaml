@@ -16,7 +16,7 @@ helmCharts:
     version: v1.19-PDO-5225
     repo: oci://705370621539.dkr.ecr.us-west-2.amazonaws.com/dev/p1as-beluga-tools
     valuesInline:
-      ecrRegistryName: "705370621539.dkr.ecr.us-west-2.amazonaws.com/dev"
+      ecrRegistryName: "705370621539.dkr.ecr.us-west-2.amazonaws.com"
 
 ### This field is used to trigger a resync of the p1as-beluga-tools helm chart ###
 configMapGenerator:
