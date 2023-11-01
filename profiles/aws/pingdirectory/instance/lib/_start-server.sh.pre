@@ -19,11 +19,11 @@ BELUGA_JAVA_ARGS="${BELUGA_JAVA_ARGS:+${BELUGA_JAVA_ARGS} }-Dcom.unboundid.direc
 beluga_log "Setting more java args - BELUGA_JAVA_ARGS: ${BELUGA_JAVA_ARGS}"
 
 # Check if the line contains both strings
-grep -q "dsreplication.java-args=.*PINGDIR_CLI_BYPASS_TOPOLOGY_VERSION_CHECK=true\b" "${SERVER_ROOT_DIR}/config/java.properties"
+grep -q "dsreplication.java-args=.*-DPINGDIR_CLI_BYPASS_TOPOLOGY_VERSION_CHECK=true\b" "${SERVER_ROOT_DIR}/config/java.properties"
 if [ $? -ne 0 ]; then
     sed '/dsreplication.java-args=/ {
-        /PINGDIR_CLI_BYPASS_TOPOLOGY_VERSION_CHECK/!s/$/ PINGDIR_CLI_BYPASS_TOPOLOGY_VERSION_CHECK=true/
-        /PINGDIR_CLI_BYPASS_TOPOLOGY_VERSION_CHECK/s/PINGDIR_CLI_BYPASS_TOPOLOGY_VERSION_CHECK=[^ ]*/PINGDIR_CLI_BYPASS_TOPOLOGY_VERSION_CHECK=true/
+        /-DPINGDIR_CLI_BYPASS_TOPOLOGY_VERSION_CHECK/!s/$/ -DPINGDIR_CLI_BYPASS_TOPOLOGY_VERSION_CHECK=true/
+        /-DPINGDIR_CLI_BYPASS_TOPOLOGY_VERSION_CHECK/s/-DPINGDIR_CLI_BYPASS_TOPOLOGY_VERSION_CHECK=[^ ]*/-DPINGDIR_CLI_BYPASS_TOPOLOGY_VERSION_CHECK=true/
     }' -i "${SERVER_ROOT_DIR}/config/java.properties"
 fi
 
