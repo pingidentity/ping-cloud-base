@@ -25,6 +25,7 @@
 - Update PGO dashboards to use grafana CRD
 - [EKS 1.26] service.alpha.kubernetes.io/tolerate-unready-endpoints (deprecated)
 - Add CW Agent IRSA role
+- Implement IRSA role for cert-manager
 - Update PCB with toolkit image used as replacement for bitnami/kubectl
 - Modified git-ops-command.sh script to handle the SIGTERM signal appropriately.
 - Upgrade Kustomize to 5.0.3
@@ -97,6 +98,7 @@ _Changes:_
 - [X] PDO-4868 Update update-cluster-state script for MonoRepo
 - [X] PDO-4896 Update ping-cloud-base karpenter version to v0.28.1
 - [X] PDO-5005 Update generate-cluster-state script to pull profiles from code-gen dir
+- [X] PDO-5107 Implement IRSA role for cert-manager
 - [X] PDO-5110 OpenSearch migration: Install Opensearch side-by-side with Elastic
 - [X] PDO-5112 OpenSearch migration: Migrate index templates
 - [X] PDO-5113 OpenSearch migration: Change logstash pipelines to send data to OS instead ES
