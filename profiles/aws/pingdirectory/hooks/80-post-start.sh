@@ -150,7 +150,7 @@ initialize_server_for_dn() {
     --no-prompt --ignoreWarnings \
     --enableDebug \
     --globalDebugLevel verbose \
-    -DPINGDIR_CLI_BYPASS_TOPOLOGY_VERSION_CHECK=true
+    --DPINGDIR_CLI_BYPASS_TOPOLOGY_VERSION_CHECK=true
   replInitResult=$?
   beluga_log "replication initialize for ${base_dn} status: ${replInitResult}"
 
