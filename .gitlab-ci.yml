@@ -20,7 +20,7 @@ stages:
 ## Global environment variables ##
 variables:
   DELETE_ENV_AFTER_PIPELINE: 'true'
-  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:PDO-6355-add-ecr-login-to-deploy
+  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:v1.19-release-branch
   SHARED_CI_SCRIPTS_DIR: "/ci-scripts"
   BRANCH_SKIP_TESTS: >
     pingaccess/08-artifact-test.sh
@@ -28,31 +28,31 @@ variables:
     pingdirectory/03-backup-restore.sh
     pingdirectory/08-test-http-connection-handler.sh
 
-# ## Compile stage ##
-# compile:
-#  stage: compile
-#  tags:
-#    - default-gitlab-runner-ping-cloud
-#  image: ${K8S_DEPLOY_TOOLS}
-#  variables:
-#    YAML_OUT_DIR: $CI_PROJECT_DIR/out
-#  before_script:
-#    - mkdir -p $YAML_OUT_DIR
-#  script:
-#    - ${SHARED_CI_SCRIPTS_DIR}/k8s/compile/compile.sh
-#  artifacts:
-#    paths:
-#      - out/
-#    expire_in: 1 day
+## Compile stage ##
+compile:
+ stage: compile
+ tags:
+   - default-gitlab-runner-ping-cloud
+ image: ${K8S_DEPLOY_TOOLS}
+ variables:
+   YAML_OUT_DIR: $CI_PROJECT_DIR/out
+ before_script:
+   - mkdir -p $YAML_OUT_DIR
+ script:
+   - ${SHARED_CI_SCRIPTS_DIR}/k8s/compile/compile.sh
+ artifacts:
+   paths:
+     - out/
+   expire_in: 1 day
    
 ## start security stage ##
 copy-images:
   stage: security
   image: ${K8S_DEPLOY_TOOLS}
-  # needs:
-  #   - compile
-  # dependencies:
-  #   - compile
+  needs:
+    - compile
+  dependencies:
+    - compile
   variables:
     BELUGA_VERSION: $CI_COMMIT_REF_NAME
     ARTIFACTORY_URL: "docker.corp.pingidentity.com:5900"
@@ -71,16 +71,16 @@ copy-images:
 scan:
   stage: security
   image: ${K8S_DEPLOY_TOOLS}
-  # needs:
-  #   - compile
-  # dependencies:
-  #   - compile
+  needs:
+    - compile
+  dependencies:
+    - compile
   variables:
     GIT_STRATEGY: none
     UBER_YAML: $CI_PROJECT_DIR/out/_builds_ping-cloud-private-tenant_ping-cloud-base.yaml
   allow_failure: true
   script:
-    - kubescape scan --format json --format-version v2 --verbose --output report.json framework all $UBER_YAML
+    - kubescape scan --format json --format-version v2 --verbose framework all $UBER_YAML
   tags:
     - platform-publish-docker
   artifacts:
