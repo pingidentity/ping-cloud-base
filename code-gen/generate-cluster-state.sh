@@ -467,6 +467,7 @@ ${CLUSTER_ENDPOINT}
 ${KARPENTER_INSTANCE_PROFILE}
 ${CLUSTER_STATE_REPO_BRANCH}
 ${CLUSTER_STATE_REPO_URL}
+${CUSTOMER_SSO_SSM_PATH_PREFIX}
 ${IRSA_ARGOCD_ANNOTATION_KEY_VALUE}
 ${KARPENTER_ROLE_ANNOTATION_KEY_VALUE}
 ${K8S_GIT_BRANCH}
@@ -478,6 +479,7 @@ ${REGION_NICK_NAME}
 ${REGION}
 ${SLACK_CHANNEL}
 ${SSH_ID_KEY_BASE64}
+${TENANT_DOMAIN}
 ${TENANT_NAME}'
 
 
@@ -859,6 +861,7 @@ export SSH_ID_KEY_FILE="${SSH_ID_KEY_FILE}"
 export TARGET_DIR="${TARGET_DIR:-/tmp/sandbox}"
 
 export ACCOUNT_BASE_PATH=${ACCOUNT_BASE_PATH:-ssm://pcpt/config/k8s-config/accounts/}
+export ACCOUNT_PATH_PREFIX=${ACCOUNT_BASE_PATH#ssm:/}
 export IRSA_BASE_PATH=${IRSA_BASE_PATH:-ssm://pcpt/irsa-role/}
 export PGO_BUCKET_URI_SUFFIX=${PGO_BUCKET_URI_SUFFIX:-/pgo-bucket/uri}
 
@@ -891,8 +894,8 @@ export EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED:-""}"
 export ECR_REGISTRY_NAME='public.ecr.aws/r2h3l6e4'
 export PING_CLOUD_NAMESPACE='ping-cloud'
 export MYSQL_DATABASE="${MYSQL_DATABASE:-pingcentral}"
-export ARGOCD_CDE_ROLE_SSM_TEMPLATE="${ARGOCD_CDE_ROLE_SSM_TEMPLATE:-"/pcpt/config/k8s-config/accounts/{env}/argo/role/arn"}"
-export ARGOCD_CDE_URL_SSM_TEMPLATE="${ARGOCD_CDE_URL_SSM_TEMPLATE:-"/pcpt/config/k8s-config/accounts/{env}/cluster/private-link/cname"}"
+export ARGOCD_CDE_ROLE_SSM_TEMPLATE="${ARGOCD_CDE_ROLE_SSM_TEMPLATE:-"${ACCOUNT_PATH_PREFIX}{env}/argo/role/arn"}"
+export ARGOCD_CDE_URL_SSM_TEMPLATE="${ARGOCD_CDE_URL_SSM_TEMPLATE:-"${ACCOUNT_PATH_PREFIX}{env}/cluster/private-link/cname"}"
 
 DEFAULT_IMAGE_LIST="apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingfederate,apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess,apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess-was"
 export IMAGE_LIST="DISABLE"
@@ -1360,6 +1363,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     # Add ArgoCD to Beluga Environments since it normally runs only in customer-hub
     echo "This is a Beluga Development Environment, copying ArgoCD into the CSR"
     cp -R "${CHUB_TEMPLATES_DIR}/base/cluster-tools/git-ops" "${K8S_CONFIGS_DIR}/base/cluster-tools/"
+    cp "${ENV_BOOTSTRAP_DIR}/env_vars" "${K8S_CONFIGS_DIR}/base/cluster-tools/git-ops/"
     # Append the secrets from customer-hub to the CDE secrets, except PingCentral since that doesn't exist in the CDE
     printf "\n# %%%% NOTE: Below secrets are for the Developer CDE only (when IS_BELUGA_ENV is 'true') to make sure Argo works properly %%%%#\n" >> "${K8S_CONFIGS_DIR}/base/secrets.yaml"
     yq 'del(select(.metadata.name | contains("pingcentral")))' "${CHUB_TEMPLATES_DIR}/base/secrets.yaml" >> "${K8S_CONFIGS_DIR}/base/secrets.yaml"
