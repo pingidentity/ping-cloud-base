@@ -27,7 +27,6 @@ variables:
     pingdelegator/01-admin-user-login.sh
     pingdirectory/03-backup-restore.sh
     pingdirectory/08-test-http-connection-handler.sh
-    monitoring/03-nri-kubernetes.sh
 
 ## Compile stage ##
 compile:
@@ -81,7 +80,7 @@ scan:
     UBER_YAML: $CI_PROJECT_DIR/out/_builds_ping-cloud-private-tenant_ping-cloud-base.yaml
   allow_failure: true
   script:
-    - kubescape scan --format json --format-version v2 --verbose framework all $UBER_YAML
+    - kubescape scan --format json --format-version v2 --verbose --output report.json framework all $UBER_YAML
   tags:
     - platform-publish-docker
   artifacts:

@@ -4,33 +4,31 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 namespace: argocd
 
 resources:
-  - base
-  - argocd-image-updater.yaml
-  - custom-resources.yaml
+- base
+- argocd-image-updater.yaml
+- custom-resources.yaml
 
 generatorOptions:
   disableNameSuffixHash: true
 
 configMapGenerator:
-  - name: install-custom-tools
-    files:
-      - install-custom-tools.sh
+- files:
+  - install-custom-tools.sh
+  name: install-custom-tools
 
 # Point to the ping-cluster-tools repo equivalents pushed to ECR
 images:
-  - name: quay.io/argoproj/argocd
-    newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/argo/argocd
-  - name: redis
-    newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/redis
-  - name: ghcr.io/dexidp/dex
-    newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/dexidp/dex
+- name: quay.io/argoproj/argocd
+  newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/argo/argocd
+- name: redis
+  newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/redis
+- name: ghcr.io/dexidp/dex
+  newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/dexidp/dex
 
 patches:
-  - path: argo-notifications-cm.yaml
-
-patchesStrategicMerge:
-  # Set the several log values to "warn"
-  - |-
+- path: argo-notifications-cm.yaml
+- patch: |-
+    # Set the several log values to "error"
     apiVersion: v1
     kind: ConfigMap
     metadata:
@@ -43,8 +41,7 @@ patchesStrategicMerge:
       reposerver.log.level: "error"
       applicationsetcontroller.log.level: "error"
       notificationscontroller.log.level: "error"
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -54,11 +51,6 @@ patchesStrategicMerge:
         spec:
           containers:
           - name: argocd-applicationset-controller
-            # This command patched to temporarily add '--loglevel' parameter. It should be removed after upgrading ArgoCD probably to 2.8.0+
-            command:
-            - sh
-            - -c
-            - entrypoint.sh argocd-applicationset-controller --loglevel error
             # This env vars added for further compatibility with ArgoCD 2.8.0+ - do not delete this after upgrade
             env:
             - name: ARGOCD_APPLICATIONSET_CONTROLLER_LOGLEVEL
@@ -67,8 +59,7 @@ patchesStrategicMerge:
                   key: applicationsetcontroller.log.level
                   name: argocd-cmd-params-cm
                   optional: true
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -85,8 +76,7 @@ patchesStrategicMerge:
               limits:
                 memory: "1000Mi"
                 cpu: "2000m"
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -103,8 +93,7 @@ patchesStrategicMerge:
               limits:
                 memory: "250Mi"
                 cpu: "500m"
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -121,8 +110,7 @@ patchesStrategicMerge:
               limits:
                 memory: "80Mi"
                 cpu: "30m"
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -139,8 +127,7 @@ patchesStrategicMerge:
               limits:
                 memory: "100Mi"
                 cpu: "30m"
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -157,8 +144,7 @@ patchesStrategicMerge:
               limits:
                 memory: "250Mi"
                 cpu: "500m"
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -175,8 +161,7 @@ patchesStrategicMerge:
               limits:
                 memory: "1000Mi"
                 cpu: "1000m"
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -193,8 +178,7 @@ patchesStrategicMerge:
               limits:
                 memory: "250Mi"
                 cpu: "250m"
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: StatefulSet
     metadata:
@@ -211,38 +195,7 @@ patchesStrategicMerge:
               limits:
                 memory: "2000Mi"
                 cpu: "2000m"
-
-  - |-
-    apiVersion: apps/v1
-    kind: Deployment
-    metadata:
-      name: argocd-dex-server
-    spec:
-      template:
-        spec:
-          containers:
-          - name: dex
-            command:
-            - sh
-            - -c
-            - /shared/argocd-dex rundex --loglevel error
-
-  - |-
-    apiVersion: apps/v1
-    kind: Deployment
-    metadata:
-      name: argocd-image-updater
-    spec:
-      template:
-        spec:
-          containers:
-          - name: argocd-image-updater
-            command:
-            - sh
-            - -c
-            - /usr/local/bin/argocd-image-updater run --loglevel error
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -252,11 +205,6 @@ patchesStrategicMerge:
         spec:
           containers:
           - name: argocd-notifications-controller
-            # This command patched to temporarily add '--loglevel' parameter. It should be removed after upgrading ArgoCD probably to 2.8.0+
-            command:
-            - sh
-            - -c
-            - entrypoint.sh argocd-notifications --loglevel error
             # This env vars added for further compatibility with ArgoCD 2.8.0+ - do not delete this after upgrade
             env:
             - name: ARGOCD_NOTIFICATIONS_CONTROLLER_LOGLEVEL
@@ -265,13 +213,8 @@ patchesStrategicMerge:
                   key: notificationscontroller.log.level
                   name: argocd-cmd-params-cm
                   optional: true
-
-  # Add git-ops-command.sh as the config management tool to build the uber Kubernetes YAML
-  # TODO: update the configManagementPlugins to run via a Sidecar - this won't happen until at least Argo 2.6
-  # NOTE: This shouldn't be necessary since we will remove git-ops-command.sh as part of breaking down the monorepo
-  # -> Issue: https://github.com/argoproj/argo-cd/issues/8117
-  # Ignore diffs in webhook client CA bundle (ref: https://argo-cd-docs.readthedocs.io/en/latest/user-guide/diffing/)
-  - |-
+- patch: |-
+    # Ignore diffs in webhook client CA bundle (ref: https://argo-cd-docs.readthedocs.io/en/latest/user-guide/diffing/)
     apiVersion: v1
     kind: ConfigMap
     metadata:
@@ -279,19 +222,14 @@ patchesStrategicMerge:
     data:
       accounts.image-updater: apiKey
       accounts.config-team: apiKey,login
-      configManagementPlugins: |
-        - name: git-ops-command
-          generate:
-            command: [ "git-ops-command.sh" ]
       resource.customizations: |
         admissionregistration.k8s.io/MutatingWebhookConfiguration:
           ignoreDifferences: |
             jsonPointers:
             - /webhooks/0/clientConfig/caBundle
       kustomize.buildOptions: --load-restrictor LoadRestrictionsNone --enable-helm --helm-command /usr/local/bin/helm-command.sh
-
-  # Policy for a user 'config-team` to allow restart on K8s StatefulSets
-  - |-
+- patch: |-
+    # Policy for a user 'config-team` to allow restart on K8s StatefulSets
     apiVersion: v1
     kind: ConfigMap
     metadata:
@@ -300,19 +238,18 @@ patchesStrategicMerge:
       policy.csv: |
         p, config-team, applications, action/apps/StatefulSet/restart, *, allow
       policy.default: role:readonly
-
-  # Mount Beluga-specific scripts within the container
-  - |-
-    apiVersion: apps/v1
-    kind: Deployment
-    metadata:
-      name: argocd-repo-server
-    spec:
-      template:
-        spec:
-          containers:
-          - name: argocd-repo-server
-            volumeMounts:
+- patch: |-
+      # Mount Beluga-specific scripts within the container
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: argocd-repo-server
+      spec:
+        template:
+          spec:
+            containers:
+            - name: argocd-repo-server
+              volumeMounts:
               - name: git-ops-command
                 mountPath: /usr/local/bin/git-ops-command.sh
                 subPath: git-ops-command.sh
@@ -331,10 +268,65 @@ patchesStrategicMerge:
               - name: tools-dir
                 mountPath: /home/argocd/.local/lib/python3.7/site-packages/git_remote_codecommit/__init__.py
                 subPath: __init__.py
-
-  # Add an init container to install a few custom tools into the ArgoCD repo server
-  # TODO: try to manage this image in a way that isn't inline to aid with upgrading/finding the image
-  - |-
+- patch: |-
+    # Patch argocd-repo-server to run the plugin container as a sidecar
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-repo-server
+    spec:
+      template:
+        spec:
+          containers:
+          - name: git-ops-command
+            command: [/var/run/argocd/argocd-cmp-server] # Entrypoint should be Argo CD lightweight CMP server i.e. argocd-cmp-server
+            # We don't need to use the full ArgoCD image here but we use it for consistency sake when installing all of the tools for both containers.
+            image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/argo/argocd:v2.8.3
+            securityContext:
+              runAsNonRoot: true
+              runAsUser: 999
+            volumeMounts:
+              - mountPath: /var/run/argocd
+                name: var-files
+              - mountPath: /home/argocd/cmp-server/plugins
+                name: plugins
+              - mountPath: /home/argocd/cmp-server/config/plugin.yaml
+                subPath: plugin.yaml
+                name: git-ops-command-plugin-cm
+              # Starting with v2.4, do NOT mount the same tmp volume as the repo-server container. The filesystem separation helps 
+              # mitigate path traversal attacks.
+              - mountPath: /tmp
+                name: cmp-tmp
+              - mountPath: /usr/local/bin/git-ops-command.sh
+                name: git-ops-command
+                subPath: git-ops-command.sh
+              - name: helm-command
+                mountPath: /usr/local/bin/helm-command.sh
+                subPath: helm-command.sh
+              - name: tools-dir
+                mountPath: /usr/local/bin/envsubst
+                subPath: envsubst
+              - name: tools-dir
+                mountPath: /usr/local/bin/kustomize
+                subPath: kustomize
+              - name: tools-dir
+                mountPath: /usr/local/bin/git-remote-codecommit
+                subPath: git-remote-codecommit
+              - name: tools-dir
+                mountPath: /home/argocd/.local/lib/python3.7/site-packages/git_remote_codecommit/__init__.py
+                subPath: __init__.py
+          volumes:
+          - configMap:
+              name: git-ops-command-plugin-cm
+            name: git-ops-command-plugin-cm
+          - emptyDir: {}
+            name: cmp-tmp
+          - configMap:
+              name: git-ops-command
+            name: git-ops-command
+- patch: |-
+    # Add an init container to install a few custom tools into the ArgoCD repo server
+    # TODO: try to manage this image in a way that isn't inline to aid with upgrading/finding the image
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -353,9 +345,7 @@ patchesStrategicMerge:
             - name: install-custom-tools
               mountPath: /usr/local/bin/install-custom-tools.sh
               subPath: install-custom-tools.sh
-
-  # Add Beluga-specific volumes to the pod
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -378,17 +368,15 @@ patchesStrategicMerge:
             configMap:
               name: install-custom-tools
               defaultMode: 0555
-
-  # Add the "sealedsecrets.bitnami.com/managed: true" annotation to secrets so they are manageable by Bitnami
-  - |-
+- patch: |-
+    # Add the "sealedsecrets.bitnami.com/managed: true" annotation to secrets so they are manageable by Bitnami
     apiVersion: v1
     kind: Secret
     metadata:
       name: argocd-notifications-secret
       annotations:
         sealedsecrets.bitnami.com/managed: "true"
-
-  - |-
+- patch: |-
     apiVersion: v1
     kind: Secret
     metadata:
@@ -396,9 +384,8 @@ patchesStrategicMerge:
       annotations:
         sealedsecrets.bitnami.com/managed: "true"
         sealedsecrets.bitnami.com/patch: "true"
-
-  # Add init container to create Argo clusters for all CDEs from customer-hub
-  - |-
+- patch: |-
+    # Add init container to create Argo clusters for all CDEs from customer-hub
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -413,9 +400,8 @@ patchesStrategicMerge:
             envFrom:
               - configMapRef:
                   name: argocd-bootstrap
-
-  # Enabling the deployment of argocd resources on a node belonging to the 'core' node group by adding tolerations
-  - |-
+- patch: |-
+    # Enabling the deployment of argocd resources on a node belonging to the 'core' node group by adding tolerations
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -428,8 +414,7 @@ patchesStrategicMerge:
               operator: Equal
               value: core
               effect: NoSchedule
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -442,8 +427,7 @@ patchesStrategicMerge:
               operator: Equal
               value: core
               effect: NoSchedule
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -456,8 +440,7 @@ patchesStrategicMerge:
               operator: Equal
               value: core
               effect: NoSchedule
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -470,8 +453,7 @@ patchesStrategicMerge:
               operator: Equal
               value: core
               effect: NoSchedule
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -484,8 +466,7 @@ patchesStrategicMerge:
               operator: Equal
               value: core
               effect: NoSchedule
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -498,8 +479,7 @@ patchesStrategicMerge:
               operator: Equal
               value: core
               effect: NoSchedule
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: Deployment
     metadata:
@@ -512,8 +492,7 @@ patchesStrategicMerge:
               operator: Equal
               value: core
               effect: NoSchedule
-
-  - |-
+- patch: |-
     apiVersion: apps/v1
     kind: StatefulSet
     metadata:
