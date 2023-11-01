@@ -42,6 +42,17 @@ patchesStrategicMerge:
           name: pingcommon-passwords
           key: ACME_CERT_KEYSTORE_PASSWORD
 
+- |-
+  # Add IRSA role annotation to cert-manager service account
+  apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: cert-manager
+    namespace: cert-manager
+    annotations:
+      purpose: service-account-for-cert-manager
+      ${IRSA_CERT_MANAGER_ANNOTATION_KEY_VALUE}
+
 patchesJson6902:
 
 # Change the namespace of the ACME certificate to the ping-cloud namespace
