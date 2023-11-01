@@ -83,8 +83,8 @@
 - Push fluent-bit and logstash metrics to NewRelic
 - PDO-6264 OpenSearch Post-Migration: Cluster: Avail and Recovery: Cluster and Index Tuning, Enable Segment Replication
 - Set Karpenter defaultInstanceProfile via Environment Variable
-
 - Add entry in base values.yaml for disabling subchart dependencies
+- Add PingOne SSO for ArgoCD 
 
 _Changes:_
 
