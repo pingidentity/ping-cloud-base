@@ -1,0 +1,48 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: argocd-p1as-bootstrap
+  labels:
+    role: argocd-p1as-bootstrap
+spec:
+  # 24-hour TTL for debugging
+  ttlSecondsAfterFinished: 86400
+  template:
+    spec:
+      serviceAccountName: argocd-server
+      containers:
+      - name: argocd-p1as-bootstrap
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/bootstrap/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        env:
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+        envFrom:
+        - configMapRef:
+            name: argocd-bootstrap
+        volumeMounts:
+          - mountPath: /app/config/app_config.yaml
+            name: argocd-p1as-bootstrap-resources
+            readOnly: true
+            subPath: argocd-p1as-bootstrap-resources.yaml
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "300m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      restartPolicy: Never
+      volumes:
+      - name: argocd-p1as-bootstrap-resources
+        configMap:
+          name: argocd-p1as-bootstrap-resources
+---
