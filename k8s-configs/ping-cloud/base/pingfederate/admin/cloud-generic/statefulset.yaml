@@ -29,7 +29,7 @@ spec:
     spec:
       serviceAccountName: pingfederate-admin-serviceaccount
       initContainers:
-      - name: pingfederate-p14c-init
+      - name: pingfederate-p1as-sso
         securityContext:
           runAsGroup: 9999
           runAsNonRoot: true
@@ -42,10 +42,13 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
-        command: [ 'python3', '-u', '/app/pingfederate_p1_init.py' ]
-        volumeMounts:
-        - name: data-dir
-          mountPath: /opt/staging
+        envFrom:
+          - configMapRef:
+              name: pingfederate-admin-environment-variables
+        command:
+          - /bin/sh
+          - -c
+          - python3 -u /app/oauth_client_services_controller.py --app pingfederate
       - name: pingfederate-init
         securityContext:
           runAsGroup: 9999
@@ -198,6 +201,9 @@ spec:
             name: pingcommon-environment-variables
         - secretRef:
             name: newrelic-license-key
+            optional: false
+        - secretRef:
+            name: pingfederate-admin-p14c
             optional: false
         resources:
           requests:
