@@ -189,6 +189,7 @@ _Changes:_
 - [X] PDO-6006 Change Argo CD log to 'ERROR' level
 - [X] PDO-6007 Change external-dns pod log to 'ERROR' level
 - [X] PDO-6008 Change Opensearch log to 'WARNING' level
+- [X] PDO-6034 Configure PingFederate SSO app for Ping internal group access
 - [X] PDO-6061 Fix pingone-configurator pod crashing when missing ConfigMap ping-cloud/is-pingone
 - [X] PDO-6074 Kube-State-Metrics: Refactoring with Third-Party Manifest Policy
 - [X] PDO-6075 Metrics-Server : Refactoring with Third-Party Manifest Policy
