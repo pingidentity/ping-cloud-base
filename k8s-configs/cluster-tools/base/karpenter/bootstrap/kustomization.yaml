@@ -30,8 +30,8 @@ patchesStrategicMerge:
     name: karpenter
     namespace: karpenter
   spec:
+    replicas: 0
     template:
-      replicas: 0
       spec:
         containers:
           - name: controller
