@@ -1265,7 +1265,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
 =======
   set_var "IRSA_CWAGENT_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-cloudwatch-agent"
 
-  #Reseeting to empty string , once versent is done https://pingidentity.atlassian.net/browse/PP-5719 and pdo is done we will remove this code part
+  #Resetting to empty string , once versent is done https://pingidentity.atlassian.net/browse/PP-5719 and will remove this code as per PDO-6384
   if "${IS_BELUGA_ENV}"; then
     export IRSA_PING_ANNOTATION_KEY_VALUE=""
     export IRSA_PA_ANNOTATION_KEY_VALUE=""
