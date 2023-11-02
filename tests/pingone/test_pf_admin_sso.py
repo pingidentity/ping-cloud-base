@@ -37,11 +37,11 @@ class TestPFAdminSSO(seleniumbase.BaseCase, p1_test_base.P1TestBase):
     def test_groups_created(self):
         for group_name in self.group_names:
             with self.subTest(msg=f"{group_name} created"):
-                p1_group = self.getP1Endpoint(self.cluster_env_endpoints.groups, group_name)
+                p1_group = self.get_p1_endpoint(self.cluster_env_endpoints.groups, group_name)
                 self.assertIsNotNone(p1_group, f"Group '{group_name}' not created")
 
     def test_app_created(self):
-        p1_app = self.getP1Endpoint(self.cluster_env_endpoints.applications, self.app_name)
+        p1_app = self.get_p1_endpoint(self.cluster_env_endpoints.applications, self.app_name)
         self.assertIsNotNone(p1_app, f"Application '{self.app_name}' not created")
 
     def pingone_login(self):

@@ -53,7 +53,7 @@ class P1TestBase(unittest.TestCase):
             "ci-cd" if cluster_name.startswith("ci-cd") else "dev"
         )
         P1TestBase.population_name = f"{cluster_name}"
-        P1TestBase.cluster_env_id = cls.get(
+        P1TestBase.cluster_env_id = cls.get_p1_endpoint(
             endpoint=f"{p1_utils.API_LOCATION}/environments",
             name=P1TestBase.environment_name,
         ).get("id")
@@ -62,5 +62,5 @@ class P1TestBase(unittest.TestCase):
         )
 
     @classmethod
-    def getP1Endpoint(cls, endpoint: str, name: str = "") -> {}:
+    def get_p1_endpoint(cls, endpoint: str, name: str = "") -> {}:
         return get(cls.worker_app_token_session, endpoint=endpoint, name=name)
