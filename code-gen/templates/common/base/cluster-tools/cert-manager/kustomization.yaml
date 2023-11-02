@@ -62,7 +62,7 @@ patchesStrategicMerge:
     namespace: cert-manager
     annotations:
       purpose: service-account-for-cert-manager-cainjector
-      ${IRSA_CERT_MANAGER_CAINJECTOR_ANNOTATION_KEY_VALUE}
+      ${IRSA_CERT_MANAGER_ANNOTATION_KEY_VALUE}
 
 - |-
   # Add IRSA role annotation to cert-manager-webhook service account
@@ -73,7 +73,7 @@ patchesStrategicMerge:
     namespace: cert-manager
     annotations:
       purpose: service-account-for-cert-manager-webhook
-      ${IRSA_CERT_MANAGER_WEBHOOK_ANNOTATION_KEY_VALUE}
+      ${IRSA_CERT_MANAGER_ANNOTATION_KEY_VALUE}
 
 patchesJson6902:
 
