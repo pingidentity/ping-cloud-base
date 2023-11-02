@@ -1349,6 +1349,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
 
   # Copy around files for Developer CDE before substituting vars
   if "${IS_BELUGA_ENV}"; then
+    echo "IS_BELUGA_ENV detected, making developer changes to deployment"
     # Add IS_BELUGA_ENV to the base env_vars
     BASE_ENV_VARS="${K8S_CONFIGS_DIR}/base/env_vars"
     echo >> "${BASE_ENV_VARS}"
@@ -1358,7 +1359,11 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     substitute_vars "${ENV_DIR}/values-files" '${IS_BELUGA_ENV}'
 
     # Update patches related to Beluga developer CDEs
-    sed -i.bak 's/^  # \(.*remove-from-developer-cde-patch.yaml\)$/  \1/g' "${PRIMARY_PING_KUST_FILE}"
+
+    # Do not disable CW and NR if in CI/CD
+    if test "${CI_SERVER}" != "yes"; then
+      sed -i.bak 's/^[[:space:]]*# \(.*remove-from-developer-cde-patch.yaml\)$/  \1/g' "${PRIMARY_PING_KUST_FILE}"
+    fi
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
 
     # Add ArgoCD to Beluga Environments since it normally runs only in customer-hub
