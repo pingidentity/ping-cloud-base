@@ -84,7 +84,8 @@
 - PDO-6264 OpenSearch Post-Migration: Cluster: Avail and Recovery: Cluster and Index Tuning, Enable Segment Replication
 - Set Karpenter defaultInstanceProfile via Environment Variable
 - Add entry in base values.yaml for disabling subchart dependencies
-- Add PingOne SSO for ArgoCD 
+- Add PingOne SSO for ArgoCD
+- Remove Grafana from ping-cloud-base image tag list
 
 _Changes:_
 
@@ -203,6 +204,7 @@ _Changes:_
 - [X] PDO-6189 Fluentbit: Performance degradation under high load
 - [X] PDO-6190 Logstash: Readiness probe fails under high load
 - [X] PDO-6224 Remove Grafana ping-app patches from remove-from-secondary-patch.yaml 
+- [X] PDO-6241 Remove Grafana from ping-cloud-base image tag list
 - [X] PDO-6242 Configure newrelic-prometheus-agent to collect FluentBit and Logstash metrics
 - [X] PDO-6263 ArgoCD sync failing due to timeout on v1.19-release-branch
 - [X] PDO-6264 OpenSearch Post-Migration: Cluster: Avail and Recovery: Cluster and Index Tuning, Enable Segment Replication
