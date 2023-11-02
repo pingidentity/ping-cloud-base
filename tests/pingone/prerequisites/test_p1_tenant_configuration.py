@@ -9,7 +9,7 @@ class TestP1EnvSetupAndTeardown(p1_test_base.P1TestBase):
         super().setUpClass()
 
     def test_population_exists(self):
-        pop = self.get(self.cluster_env_endpoints.populations, self.population_name)
+        pop = self.getP1Endpoint(self.cluster_env_endpoints.populations, self.population_name)
         self.assertIsNotNone(pop)
 
 

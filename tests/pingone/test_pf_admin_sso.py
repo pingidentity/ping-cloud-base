@@ -3,11 +3,12 @@ import time
 import unittest
 
 import seleniumbase
+import p1_test_base
 
 import pingone_ui as p1_ui
 
 @unittest.skipIf(os.environ.get('ENV_TYPE') == "customer-hub", "Customer-hub CDE detected, skipping test module")
-class TestPFAdminSSO(seleniumbase.BaseCase):
+class TestPFAdminSSO(seleniumbase.BaseCase, p1_test_base.P1TestBase):
     pf_admin_public_hostname = os.getenv(
         "PF_ADMIN_PUBLIC_HOSTNAME",
         f"https://pingfederate-admin-{os.environ['BELUGA_ENV_NAME']}.{os.environ['TENANT_DOMAIN']}",
@@ -17,15 +18,31 @@ class TestPFAdminSSO(seleniumbase.BaseCase):
         # This line is needed when overriding seleniumbase.BaseCase.setUp()
         super(TestPFAdminSSO, self).setUp()
         # Add any pre-test setup here
+        self.tenant_name = os.getenv("TENANT_NAME", f"{os.getenv('USER')}-primary")
+        self.environment = os.getenv("ENV", "dev")
+        self.group_names = [
+            f"{self.tenant_name}-{self.environment}-pf-roleadmin",
+            f"{self.tenant_name}-{self.environment}-pf-crypto",
+            f"{self.tenant_name}-{self.environment}-pf-useradmin",
+            f"{self.tenant_name}-{self.environment}-pf-expression",
+            f"{self.tenant_name}-{self.environment}-pf-audit",
+        ]
+        self.app_name = f"client-{self.tenant_name}-${self.environment}-pingfederate-sso"
 
     def tearDown(self):
         # This line is needed when overriding seleniumbase.BaseCase.tearDown()
         super(TestPFAdminSSO, self).tearDown()
         # Add any post-test setup here
 
-    # def test_pf_status_is_deployed(self):
-    #     # check for green PF status marking it as deployed in PingOne
-    #     self.assertTrue(False)
+    def test_groups_created(self):
+        for group_name in self.group_names:
+            with self.subTest(msg=f"{group_name} created"):
+                p1_group = self.getP1Endpoint(self.cluster_env_endpoints.groups, group_name)
+                self.assertIsNotNone(p1_group, f"Group '{group_name}' not created")
+
+    def test_app_created(self):
+        p1_app = self.getP1Endpoint(self.cluster_env_endpoints.applications, self.app_name)
+        self.assertIsNotNone(p1_app, f"Application '{self.app_name}' not created")
 
     def pingone_login(self):
         username = "PingFederateAdmin"

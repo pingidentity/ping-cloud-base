@@ -42,18 +42,18 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
         self.k8s.wait_for_job_complete(name=self.oauth_service_name, namespace=self.ping_cloud_ns)
 
     def test_group_created(self):
-        group = self.get(self.cluster_env_endpoints.groups, self.population_name)
+        group = self.getP1Endpoint(self.cluster_env_endpoints.groups, self.population_name)
         self.assertIsNotNone(group, f"Group '{self.population_name}' not created")
 
     def test_pa_was_application_created(self):
-        app = self.get(self.cluster_env_endpoints.applications, self.pa_was_app_name)
+        app = self.getP1Endpoint(self.cluster_env_endpoints.applications, self.pa_was_app_name)
         self.assertIsNotNone(app, f"App '{self.pa_was_app_name}' not created")
 
     def format_redirect_uri(self, url: str):
         return f"https://{url}/pa-was/oidc/cb"
 
     def test_pa_was_redirect_uris_set(self):
-        app = self.get(self.cluster_env_endpoints.applications, self.pa_was_app_name)
+        app = self.getP1Endpoint(self.cluster_env_endpoints.applications, self.pa_was_app_name)
         app_uris = app["redirectUris"]
         host_env_vars = [
             "PA_ADMIN_PUBLIC_HOSTNAME",
@@ -81,7 +81,7 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
         # Re-run oauth job
         # Get URIs from PA-WAS app
         # Confirm URIs were added
-        app = self.get(self.cluster_env_endpoints.applications, self.pa_was_app_name)
+        app = self.getP1Endpoint(self.cluster_env_endpoints.applications, self.pa_was_app_name)
         uris = app["redirectUris"]
         modded_uris = [f"{uri}-existing" for uri in uris]
         modded_app_payload = copy.deepcopy(app)
@@ -93,7 +93,7 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
 
         self.rerun_oauth_job()
 
-        updated_app = self.get(
+        updated_app = self.getP1Endpoint(
             self.cluster_env_endpoints.applications, self.pa_was_app_name
         )
         updated_uris = updated_app["redirectUris"]
@@ -110,16 +110,16 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
         )
 
     def test_pa_was_resource_created(self):
-        resource = self.get(self.cluster_env_endpoints.resources, self.pa_was_app_name)
+        resource = self.getP1Endpoint(self.cluster_env_endpoints.resources, self.pa_was_app_name)
         self.assertIsNotNone(resource, f"Resource '{self.pa_was_app_name}' not created")
 
     def test_pa_was_resource_linked_to_application(self):
-        app = self.get(self.cluster_env_endpoints.applications, self.pa_was_app_name)
-        grants = self.get(
+        app = self.getP1Endpoint(self.cluster_env_endpoints.applications, self.pa_was_app_name)
+        grants = self.getP1Endpoint(
             f"{self.cluster_env_endpoints.applications}/{app['id']}/grants"
         )
         grant = grants[0]
-        resource = self.get(self.cluster_env_endpoints.resources, self.pa_was_app_name)
+        resource = self.getP1Endpoint(self.cluster_env_endpoints.resources, self.pa_was_app_name)
         self.assertEqual(
             grant["resource"]["id"],
             resource["id"],
@@ -127,8 +127,8 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
         )
 
     def test_configure_pa_was_resource_scope_value(self):
-        resource = self.get(self.cluster_env_endpoints.resources, self.pa_was_app_name)
-        scopes = self.get(
+        resource = self.getP1Endpoint(self.cluster_env_endpoints.resources, self.pa_was_app_name)
+        scopes = self.getP1Endpoint(
             f"{self.cluster_env_endpoints.resources}/{resource['id']}/scopes"
         )
         scope_name = scopes[0]["name"]
@@ -167,11 +167,11 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
         # Re-run oauth job
         # Get app from PingOne
         # Confirm app IDs match
-        expected_app = self.get(
+        expected_app = self.getP1Endpoint(
             self.cluster_env_endpoints.applications, self.pa_was_app_name
         )
         self.rerun_oauth_job()
-        updated_app = self.get(
+        updated_app = self.getP1Endpoint(
             self.cluster_env_endpoints.applications, self.pa_was_app_name
         )
         self.assertEqual(

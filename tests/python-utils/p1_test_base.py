@@ -62,5 +62,5 @@ class P1TestBase(unittest.TestCase):
         )
 
     @classmethod
-    def get(cls, endpoint: str, name: str = "") -> {}:
+    def getP1Endpoint(cls, endpoint: str, name: str = "") -> {}:
         return get(cls.worker_app_token_session, endpoint=endpoint, name=name)
