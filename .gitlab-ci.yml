@@ -114,7 +114,7 @@ deploy:
   artifacts:
    when: always
    paths:
-     - $CI_PROJECT_DIR/uber.yaml
+     - $CI_PROJECT_DIR/uber_yaml
   dependencies:
     - find-cluster
 
