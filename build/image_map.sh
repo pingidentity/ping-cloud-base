@@ -22,7 +22,6 @@ export IMAGE_MAP="pingcloud-apps/pingaccess
    pingcloud-services/healthcheck
    pingcloud-solutions/ansible-beluga
    pingcloud-monitoring/logstash
-   pingcloud-monitoring/grafana
    pingcloud-monitoring/enrichment-bootstrap
    pingcloud-monitoring/os-bootstrap
    pingcloud-monitoring/opensearch
