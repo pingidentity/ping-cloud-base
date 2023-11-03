@@ -6,9 +6,9 @@ data:
   restore.sh: |
     #!/bin/sh
 
-    # Job will not be using /opt/out, therefore force it to use its own /opt/in directory
-    export HOOKS_DIR="/opt/in/hooks"
-    SCRIPT="/opt/in/hooks/90-restore-backup-s3.sh"
+    # Set Hooks directory
+    export HOOKS_DIR=/opt/staging/hooks
+    SCRIPT="${HOOKS_DIR}/90-restore-backup-s3.sh"
     test -z "${BACKUP_RESTORE_POD}" && export SERVER="${K8S_STATEFUL_SET_NAME}-0" || export SERVER="${BACKUP_RESTORE_POD}"
 
     pause_replication () {
@@ -92,5 +92,11 @@ data:
 
     pause_replication
 
-    echo "Running restore script"
-    test -x ${SCRIPT} && sh "${SCRIPT}"
+    if test -x ${SCRIPT}; then
+      # Execute restore script if user has the permissions
+      echo "Running restore script for PingDirectory"
+      ${SCRIPT}
+    else
+      echo "You don't have permissions to execute ${SCRIPT}. If you are overriding script be sure to give it execute permissions"
+      exit 1
+    fi

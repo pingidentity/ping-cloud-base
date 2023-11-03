@@ -84,7 +84,8 @@
 - PDO-6264 OpenSearch Post-Migration: Cluster: Avail and Recovery: Cluster and Index Tuning, Enable Segment Replication
 - Set Karpenter defaultInstanceProfile via Environment Variable
 - Add entry in base values.yaml for disabling subchart dependencies
-- Add PingOne SSO for ArgoCD 
+- Add PingOne SSO for ArgoCD
+- Remove Grafana from ping-cloud-base image tag list
 
 _Changes:_
 
@@ -204,6 +205,7 @@ _Changes:_
 - [X] PDO-6189 Fluentbit: Performance degradation under high load
 - [X] PDO-6190 Logstash: Readiness probe fails under high load
 - [X] PDO-6224 Remove Grafana ping-app patches from remove-from-secondary-patch.yaml 
+- [X] PDO-6241 Remove Grafana from ping-cloud-base image tag list
 - [X] PDO-6242 Configure newrelic-prometheus-agent to collect FluentBit and Logstash metrics
 - [X] PDO-6263 ArgoCD sync failing due to timeout on v1.19-release-branch
 - [X] PDO-6264 OpenSearch Post-Migration: Cluster: Avail and Recovery: Cluster and Index Tuning, Enable Segment Replication
@@ -283,6 +285,7 @@ _Changes:_
 - Update kube-state-metrics to v2.7.0
 - Bug fix, remove-from-secondary-patch.yaml not getting applied
 - Remove healthchecks for undeployed products in customer-hub
+- Add Argo Secondary Region Ingress URL as a Virtual Host within PA-WAS
 - Default ngnix hpa configuration in medium environment is lower than small
 - Fix cluster_name variable in Grafana Dashboards for CHUB
 - Remove PC resources from secondary customer-hub
@@ -309,12 +312,18 @@ _Changes:_
 - Add REGION env var for healthcheck probes in customer hub
 - Fix IRSA role for pingfederate-admin-serviceaccount
 - Add "--skipPrime" flag to PD start-server script
-- Upgrade PingFederate to v11.3.1
+- Upgrade PingFederate
 - Update PA-WAS admin/engine CSD upload job to reference PA-WAS CSD upload configMaps, rather than just pingaccess.  
 - Fluent-Bit: change IMDS vesrion to v2
 - Remove docker logs from fluent-bit
-- Remove unneeded OS\Grafana dashboards from CHUB
-- Fix: ArgoCD sync failing due to timeout on v1.19-release-branch
+- Reset 'cn=replication' server ID entry within PingDirectory on startup
+- Initialize Replication on New PingDirectory Child Non-Seed Servers
+- Avoid pending stating by prioritizing PingDirectory pods and its backup / restore Job using k8s pod PriorityClass
+- Disable ArgoCD Image Updater
+- Prometheus alerts from secondary region display correct region in alerts
+- Improve logstash alerting in multi-regional cluster
+- Fail PingDirectory backup Job if any backend fails upon running backup CLI
+- Number of ES-warm nodes increased to 3
 
 _Changes:_
 
@@ -412,6 +421,7 @@ _Changes:_
 - [X] PDO-5279 Update kube-state-metrics cluster tool to v2.7.0 for EKS 1.25
 - [X] PDO-5281 Default ngnix hpa configuration in medium environment is lower than small
 - [X] PDO-5288 Update health check. healthcheck should only test the resources that have been deployed
+- [X] PDO-5289 Add Argo Secondary Region Ingress URL as a Virtual Host within PA-WAS
 - [X] PDO-5298 Bugfix - make scripts compatible with Debian
 - [X] PDO-5302 Fix PF multiline parsing
 - [X] PDO-5315 Bugfix - argocd-bootstrap to use region specific env vars
@@ -441,15 +451,102 @@ _Changes:_
 - [X] PDO-5650 set NOTIFICATION_ENABLED to True by default
 - [X] PDO-5690 v1.18 Prepare for Ability to Update Upgrade Scripts w/o Release of New Beluga Version
 - [X] PDO-5804 Add REGION env var for healthcheck probes in customer hub
-- [X] PDO-5806 Remove unneeded OS\Grafana dashboards from CHUB
 - [X] PDO-5815 Fluent-Bit: change IMDS version to v2
 - [X] PDO-5832 Add "--skipPrime" flag to PD start-server script
 - [X] PDO-5869 Fix IRSA role for pingfederate-admin-serviceaccount
-- [X] PDO-5906 Upgrade PingFederate to v11.3.1
-- [X] PDO-5911 Update PA-WAS Admin CSD Upload job to use PA-WAS cm
+- [X] PDO-5906 Upgrade PingFederate
+- [X] PDO-5911 Update PA-WAS Admin CSD Upload job to use PA-WAS ConfigMap
+- [X] PDO-5961 Disable ArgoCD Image Updater
+- [X] PDO-5979 Reset 'cn=replication' server ID entry within PingDirectory on startup
 - [X] PDO-6015 Remove docker logs from fluent-bit
-- [X] PDO-6078 Exclude dlq pipeline from alerts
-- [X] PDO-6115 Exclude non-PGO alerts from the PGO Prometheus Alerts dashboard
+- [X] PDO-6021 Initialize Replication on New PingDirectory Child Non-Seed Servers
+- [X] PDO-6159 Avoid pending stating by prioritizing PingDirectory pods and its backup / restore Job using k8s pod PriorityClass
+- [X] PDO-6234 Prometheus alerts from secondary region display correct region in alerts
+- [X] PDO-6235 Improve logstash alerting in multi-regional cluster
+- [X] PDO-6249 Fluent-bit kubernetes filter sometimes doesn't work in CW pipeline
+- [X] PDO-6269 Fail PingDirectory backup Job if any backend fails upon running backup CLI
+- [X] PDO-6270 Fix es-cluster-warm pod doesn't recover gracefully from an AZ Failure
+
+### 1.17.3.0
+
+- Initialize Replication on New PingDirectory Child Non-Seed Servers
+- Upgrade PingDirectory
+
+_Changes:_
+
+- [X] PDO-6021 Initialize Replication on New PingDirectory Child Non-Seed Servers
+- [X] PDO-6094 Upgrade PingDirectory
+
+### 1.17.2.0
+
+- Create new AES-256 encryption settings for all PingDirectory servers
+- Fix PingDirectory wrong hostname error during replication
+- Disable ArgoCD Image Updater
+- Reset 'cn=replication' server ID entry within PingDirectory on startup
+- Upgrade PingFederate
+
+_Changes:_
+
+- [X] PDO-5925 Upgrade PingFederate
+- [X] PDO-5955 Create new AES-256 encryption settings for all PingDirectory servers
+- [X] PDO-5961 Disable ArgoCD Image Updater
+- [X] PDO-5979 Reset 'cn=replication' server ID entry within PingDirectory on startup
+- [X] PDO-6019 Fix PingDirectory wrong hostname error during replication
+
+### 1.17.1.0
+
+- Modify Prometheus query for all backup alerting to only include the primary pod
+- PF Engines in Small Prod Deployment incorrectly set to minReplicas: 2
+- Add is_primary condition to pf-provisioning setup
+- [Port] - Update Default ngnix hpa configuration in medium & large environment
+- Upgraded & patched CA to balance node across all 3 AZs.
+- Fix PGO namespace for large-size customers
+- Fix pingcentral external ingress pathType
+- batch/v1beta1 CronJob, v1.25 release stopped serving the deprecated API versions
+- policy/v1beta1 PodDisruptionBudget is deprecated is unavailable in v1.25
+- Update kube-state-metrics to v2.7.0
+- [Port] PingFederate server.log events do not appear as a single Kibana document
+- Update cert-manager to v1.11.2 or higher for EKS 1.25
+- Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
+- [Port] Update kubectl to 1.24.0 for EKS 1.25 - 1.17.1.0
+- Upgrade Postgres Operator (PGO) to 5.3.1 to support EKS v1.25
+- Add PGO Backups Jobs TTL
+- Move the update of USER_BASE_DN to manage-profile, Rebuild the indexes for all backends
+- Extend PingDirectory replica count to up to 50 pods per region and 11 base DNs if needed
+- [PORT] Add a new hook script '02-health-check.sh' to support readiness and liveness probes
+- Add region env vars to cluster-health-environment-variables configmap
+- Fix cluster_name in prometheus labels to be the same with ELK cluster_name
+
+_Changes:_
+
+- [X] PDO-5237 Modify Prometheus query for all backup alerting to only include the primary pod
+- [X] PDO-5278 Update cert-manager to v1.11.2 or higher for EKS 1.25
+- [X] PDO-5280 [Port] Update kubectl to 1.24.0 for EKS 1.25 - 1.17.1.0
+- [X] PDO-5340 [Port] - Update Default ngnix hpa configuration in medium & large environment
+- [X] PDO-5342 Fix PGO namespace for large-size customers
+- [X] PDO-5343 PF Engines in Small Prod Deployment incorrectly set to minReplicas: 2
+- [X] PDO-5347 PGO resources - handle secondary region v1.17.1
+- [X] PDO-5341 pingcentral-ext-ingress - fix pathType
+- [X] PDO-5369 Healthchecks run for N engine pods
+- [X] PDO-5376 Cluster-Autoscaler - update to balance node across all AZs
+- [X] PDO-5388 Add PGO Back Jobs TTL
+- [X] PDO-5413 [Port] PingFederate server.log events do not appear as a single Kibana document
+- [X] PDO-5432 Update/Disable healthchecks
+- [X] PDO-5474 upgrade Postgres Operator (PGO) to 5.3.1 to support EKS v1.25
+- [X] PDO-5482 [PORT] Update kube-state-metrics cluster tool to v2.7.0 for EKS 1.25
+- [X] PDO-5488 Replace PodSecurityPolicy as it will no longer be served in EKS v1.25
+- [X] PDO-5489 batch/v1beta1 CronJob, v1.25 release stopped serving the deprecated API versions
+- [X] PDO-5490 policy/v1beta1 PodDisruptionBudget is deprecated is unavailable in v1.25
+- [X] PDO-5507 Move the update of USER_BASE_DN to manage-profile, Rebuild the indexes for all backends
+- [X] PDO-5508 Extend PingDirectory replica count to up to 50 pods per region and 11 base DNs if needed
+- [X] PDO-5509 Update all healthchecks to use k8s service endpoints
+- [X] PDO-5533 [PORT] Add a new hook script '02-health-check.sh' to support readiness and liveness probes
+- [X] PDO-5553 Bugfix: remove-from-secondary-patch is broken for logstash-pipeline-alerts
+- [X] PDO-5555 Bugfix: Index templates uses incorrect ILM policy
+- [X] PDO-5606 Bugfix: Index lifecycle error
+- [X] PDO-5614 Bugfix: 'cluster_name' filter issue in ELK and Grafana on prod CDE
+- [X] PDO-5626 Bugfix: Log is missing in Kibana
+- [X] PDO-5645 Update cert-manager to v1.12.1
 
 ### 1.17.0.0
 
@@ -492,8 +589,6 @@ _Changes:_
 - Replace deprecated topologyKey
 - Add IngressClassName to replace the deprecated annotation
 - Fix PingFederate multiline logs parsing
-- Exclude dlq pipeline from alerts
-- Exclude non-PGO alerts from the PGO Prometheus Alerts dashboard
 
 _Changes:_
 

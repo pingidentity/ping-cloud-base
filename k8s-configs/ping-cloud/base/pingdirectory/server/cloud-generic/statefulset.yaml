@@ -24,6 +24,7 @@ spec:
         entitled-app: "true"
     spec:
       serviceAccount: ping-serviceaccount
+      priorityClassName: high-priority-apps-to-avoid-pending-state
       affinity:
         podAntiAffinity:
           # Add a hard requirement for each PD pod to be deployed to a different node
@@ -329,7 +330,7 @@ spec:
             initialDelaySeconds: 180
             periodSeconds: 5
             failureThreshold: 100
-            timeoutSeconds: 5          
+            timeoutSeconds: 5
           livenessProbe:
             exec:
               command:
