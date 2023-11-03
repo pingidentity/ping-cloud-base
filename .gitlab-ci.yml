@@ -111,6 +111,9 @@ deploy:
   image: ${K8S_DEPLOY_TOOLS}
   script:
     - ${SHARED_CI_SCRIPTS_DIR}/k8s/deploy/deploy.sh
+  artifacts:
+   paths:
+     - $CI_PROJECT_DIR/uber.yaml
   dependencies:
     - find-cluster
 
