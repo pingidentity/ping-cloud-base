@@ -882,7 +882,7 @@ export KARPENTER_ROLE_ANNOTATION_KEY_VALUE=${KARPENTER_ROLE_ANNOTATION_KEY_VALUE
 export NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE=${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE:-''}
 
 ### Variable used by argocd-image-updater to scan container image tags matching the prefix.
-export IMAGE_TAG_PREFIX="${K8S_GIT_BRANCH%.*}"
+export IMAGE_TAG_PREFIX="DISABLE"
 
 ### FEATURE FLAG DEFAULTS ###
 export PF_PROVISIONING_ENABLED="${PF_PROVISIONING_ENABLED:-false}"
@@ -898,7 +898,7 @@ export ARGOCD_CDE_ROLE_SSM_TEMPLATE="${ARGOCD_CDE_ROLE_SSM_TEMPLATE:-"${ACCOUNT_
 export ARGOCD_CDE_URL_SSM_TEMPLATE="${ARGOCD_CDE_URL_SSM_TEMPLATE:-"${ACCOUNT_PATH_PREFIX}{env}/cluster/private-link/cname"}"
 
 DEFAULT_IMAGE_LIST="apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingfederate,apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess,apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess-was"
-export IMAGE_LIST="${IMAGE_LIST:-${DEFAULT_IMAGE_LIST}}"
+export IMAGE_LIST="DISABLE"
 
 ALL_ENVIRONMENTS='dev test stage prod customer-hub'
 SUPPORTED_ENVIRONMENT_TYPES="${SUPPORTED_ENVIRONMENT_TYPES:-${ALL_ENVIRONMENTS}}"
@@ -1026,7 +1026,6 @@ echo "Using BACKUP_URL: ${BACKUP_URL}"
 
 echo "Using MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 echo "Using MYSQL_USER: ${MYSQL_USER}"
-echo "Using MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
 echo "Using MYSQL_DATABASE: ${MYSQL_DATABASE}"
 
 echo "Using PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
@@ -1250,7 +1249,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   # shellcheck disable=SC2016
   IRSA_TEMPLATE='eks.amazonaws.com/role-arn: ${ssm_value}'
   set_var "IRSA_ARGOCD_ANNOTATION_KEY_VALUE" "" "${IRSA_BASE_PATH}" "irsa-argocd/arn" "${IRSA_TEMPLATE}"
-  
+
   set_var "IRSA_INGRESS_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}/irsa-role/ingress-controller/arn" "${IRSA_TEMPLATE}"
 
   # shellcheck disable=SC2016

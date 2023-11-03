@@ -13,14 +13,20 @@ data:
     # This guarantees that delete_pvc method will always run, even if the backup job exits due to an error
     trap "delete_pvc" EXIT
 
-    # Job will not be using /opt/out, therefore force it to use its own /opt/in directory
-    export HOOKS_DIR="/opt/in/hooks"
-
     # Install kubectl
     curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
     -o /tmp/kubectl
     chmod +x /tmp/kubectl
-
-    echo "Running backup script for PingDirectory"
-    SCRIPT="/opt/in/hooks/90-upload-backup-s3.sh"
-    test -x ${SCRIPT} && ${SCRIPT}
+    
+    # Set Hooks directory
+    export HOOKS_DIR=/opt/staging/hooks
+    SCRIPT="${HOOKS_DIR}/90-upload-backup-s3.sh"
+    
+    if test -x ${SCRIPT}; then
+      # Execute backup script if user has the permissions
+      echo "Running backup script for PingDirectory"
+      ${SCRIPT}
+    else
+      echo "You don't have permissions to execute ${SCRIPT}. If you are overriding script be sure to give it execute permissions"
+      exit 1
+    fi
