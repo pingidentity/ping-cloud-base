@@ -41,6 +41,11 @@ spec:
             memory: "512Mi"
             cpu: "500m"
       restartPolicy: Never
+      tolerations:
+      - effect: NoSchedule
+        key: CriticalAddonsOnly
+        operator: Equal
+        value: core
       volumes:
       - name: argocd-p1as-bootstrap-resources
         configMap:
