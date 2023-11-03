@@ -20,7 +20,7 @@ stages:
 ## Global environment variables ##
 variables:
   DELETE_ENV_AFTER_PIPELINE: 'true'
-  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:v1.19-release-branch
+  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools@sha256:07f8595e12eca358a8ca795c59a7eb512120ed1dc0539de2b28577d4deeff223
   SHARED_CI_SCRIPTS_DIR: "/ci-scripts"
   BRANCH_SKIP_TESTS: >
     pingaccess/08-artifact-test.sh
@@ -115,6 +115,7 @@ deploy:
    when: always
    paths:
      - $CI_PROJECT_DIR/uber_yaml
+     - $CI_PROJECT_DIR/uber-debug.yaml
   dependencies:
     - find-cluster
 
