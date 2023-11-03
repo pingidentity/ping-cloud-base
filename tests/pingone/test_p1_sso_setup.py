@@ -58,7 +58,6 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
         host_env_vars = [
             "PA_ADMIN_PUBLIC_HOSTNAME",
             "PF_ADMIN_PUBLIC_HOSTNAME",
-            "PA_WAS_ADMIN_PUBLIC_HOSTNAME",
             "PROMETHEUS_PUBLIC_HOSTNAME",
             "GRAFANA_PUBLIC_HOSTNAME",
             "OSD_PUBLIC_HOSTNAME",
