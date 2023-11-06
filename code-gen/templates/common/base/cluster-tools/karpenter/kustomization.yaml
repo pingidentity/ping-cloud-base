@@ -61,16 +61,6 @@ patchesStrategicMerge:
     subnetSelector:
       karpenter.sh/discovery: "${CLUSTER_NAME}"
 
-# Setting Karpenter replicas as at this stage of deployment all the CDE specific configuration should be available for Karpenter to utilize.
-- |-
-  apiVersion: apps/v1
-  kind: Deployment
-  metadata:
-    name: karpenter
-    namespace: karpenter
-  spec:
-    replicas: 2
-
 # Initially, by default we will disable Karpenter from taking over node deployment. As customers migrate, we will gradually enable this feature.
 # Once all of our customers have finished migrating, we will enable Karpenter by default.
 # To enable Karpenter, you need to comment out the line below.
