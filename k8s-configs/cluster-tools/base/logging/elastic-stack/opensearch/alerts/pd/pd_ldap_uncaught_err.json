@@ -95,7 +95,6 @@
                       "action_execution_scope": {
                         "per_alert": {
                           "actionable_alerts": [
-                            "DEDUPED",
                             "NEW"
                           ]
                         }
@@ -118,7 +117,6 @@
                       "action_execution_scope": {
                         "per_alert": {
                           "actionable_alerts": [
-                            "DEDUPED",
                             "NEW"
                           ]
                         }
