@@ -11,6 +11,7 @@ stages:
 - compile
 - find-cluster
 - deploy
+- delete_data
 - pa-was-test
 - integration-test
 - chaos
@@ -118,6 +119,17 @@ deploy:
      - $CI_PROJECT_DIR/uber-debug.yaml
   dependencies:
     - find-cluster
+
+cleanupjob:
+  stage: delete_data
+  tags:
+    - default-gitlab-runner-ping-cloud
+  image: ${K8S_DEPLOY_TOOLS}
+  script:
+    - kubectl delete -f uber-debug.yaml
+  when: on_failure
+  dependencies:
+    - deploy
 
 ## Integration Test stage ##
 
