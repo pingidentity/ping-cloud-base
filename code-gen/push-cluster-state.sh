@@ -182,6 +182,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
 
   if ! ${DISABLE_GIT}; then
     # Check if the branch exists locally. If so, switch to it.
+    # This should fail if there are any changes on the current branch...
     if git rev-parse --verify "${GIT_BRANCH}" &> /dev/null; then
       echo "Branch ${GIT_BRANCH} exists locally. Switching to it."
       git checkout "${GIT_BRANCH}"
@@ -191,11 +192,14 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       # Attempt to create the branch from its default CDE or CHUB branch name.
       echo "Branch ${GIT_BRANCH} does not exist locally"
 
+      # Check if DEFAULT_CDE_BRANCH exists in git at all, locally (since checking branch directly, no 'origin/' specified)
       if git rev-parse --verify "${DEFAULT_CDE_BRANCH}" &> /dev/null; then
         # This block will be executed only during updates. At the time, we want to capture history
         # of all changes in the old CDE or customer-hub branches onto the new ones that are created.
         echo "Creating ${GIT_BRANCH} from its default branch ${DEFAULT_CDE_BRANCH}"
         git checkout -b "${GIT_BRANCH}" "${DEFAULT_CDE_BRANCH}"
+      # If the branch doesn't exist locally or on the origin, we need to create it. But we cannot create a new branch if
+      # there are files already present which haven't been committed, to be safe
       else
         # This block will be executed on initial seeding of the repo or if the default CDE branch does not
         # exist for some reason during an update. Our only option is to create it as an orphan branch.
@@ -203,7 +207,10 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
         # exists, onto the orphan branch in the following block.
         echo "Default branch ${DEFAULT_CDE_BRANCH} does not exist for branch ${GIT_BRANCH}"
         echo "Creating ${GIT_BRANCH} as an orphan branch"
+        # Use existing git checkout --orphan as git switch --orphan is newer and may not be supported everywhere
         git checkout --orphan "${GIT_BRANCH}"
+        # Remove all files since this is a brand new branch
+        git rm -rf .
       fi
     fi
   fi
@@ -263,7 +270,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
         src_dir="${app_path}/${BASE_DIR}"
         echo "Copying ${src_dir} to ${app_name}"
         cp -pr "${src_dir}" "${app_name}/"
-        
       done
     fi
 
