@@ -125,7 +125,6 @@
                       "action_execution_scope": {
                         "per_alert": {
                           "actionable_alerts": [
-                            "DEDUPED",
                             "NEW"
                           ]
                         }
@@ -136,7 +135,7 @@
                     "name": "CUSTOMERHUB",
                     "destination_id": "sns_customerhub",
                     "message_template": {
-                      "source": "{\n  \"alert\": \"{{ctx.monitor.name}}\",\n  \"documents\": {{ctx.results.0.hits.total.value}},\n  \"cluster\": \"{{#ctx.newAlerts}}{{bucket_keys}}{{/ctx.newAlerts}}{{#ctx.dedupedAlerts}}{{bucket_keys}}{{/ctx.dedupedAlerts}}\",\n  \"timestamp\": \"{{ctx.periodEnd}}\"\n}",
+                      "source": "{\n  \"alert\": \"{{ctx.monitor.name}}\",\n  \"documents\": {{ctx.results.0.hits.total.value}},\n  \"cluster\": \"{{#ctx.newAlerts}}{{bucket_keys}}{{/ctx.newAlerts}}\",\n  \"timestamp\": \"{{ctx.periodEnd}}\"\n}",
                       "lang": "mustache"
                     },
                     "throttle_enabled": false,
@@ -148,7 +147,6 @@
                       "action_execution_scope": {
                         "per_alert": {
                           "actionable_alerts": [
-                            "DEDUPED",
                             "NEW"
                           ]
                         }
