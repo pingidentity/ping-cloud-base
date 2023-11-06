@@ -126,6 +126,7 @@ cleanupjob:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
   script:
+    - source "${CI_SCRIPTS_DIR}/k8s/deploy/ci-cd-cluster.properties"
     - kubectl delete -f uber-debug.yaml
   when: on_failure
   dependencies:
