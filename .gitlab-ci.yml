@@ -21,7 +21,7 @@ stages:
 ## Global environment variables ##
 variables:
   DELETE_ENV_AFTER_PIPELINE: 'true'
-  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools@sha256:07f8595e12eca358a8ca795c59a7eb512120ed1dc0539de2b28577d4deeff223
+  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools@ha256:5c30c512990d9c1844a1a181be399d9cbe7fe865147bca5dcddc3474df6fe1d5
   SHARED_CI_SCRIPTS_DIR: "/ci-scripts"
   BRANCH_SKIP_TESTS: >
     pingaccess/08-artifact-test.sh
@@ -126,8 +126,7 @@ cleanupjob:
     - default-gitlab-runner-ping-cloud
   image: ${K8S_DEPLOY_TOOLS}
   script:
-    - source "${SHARED_CI_SCRIPTS_DIR}/k8s/deploy/ci-cd-cluster.properties"
-    - kubectl delete -f uber-debug.yaml
+    - ${SHARED_CI_SCRIPTS_DIR}/k8s/cleanup/cleanup_uber.sh
   when: on_failure
   dependencies:
     - deploy
