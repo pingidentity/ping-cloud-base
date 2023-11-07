@@ -11,21 +11,18 @@ import p1_test_base
 class TestP1SsoSetup(p1_test_base.P1TestBase):
     k8s = None
     ping_cloud_ns = ""
-    oauth_service_name = "p14c-oauth-service"
 
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
         cls.k8s = k8s_utils.K8sUtils()
-        cls.oauth_service_label = f"role={cls.oauth_service_name}"
-        cls.oauth_service_pod_pattern = f"{cls.oauth_service_name}-[0-9a-zA-Z]+-[0-9a-zA-Z]+"
         tenant_name = os.getenv("TENANT_NAME", f"{os.getenv('USER')}-primary")
         cls.pa_was_app_name = f"client-{tenant_name}-pa-was"
         cls.pa_was_secret_name = "pingaccess-was-admin-p14c"
         cls.ping_cloud_ns = os.getenv("PING_CLOUD_NAMESPACE", "ping-cloud")
 
         cls.oauth_env_vars = cls.k8s.core_client.read_namespaced_config_map(
-            "p14c-oauth-service-environment-variables", cls.ping_cloud_ns
+            "pingaccess-was-admin-environment-variables", cls.ping_cloud_ns
         ).data
 
     def test_group_created(self):
