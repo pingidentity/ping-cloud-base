@@ -19,7 +19,7 @@ patches:
     version: v1
 
 - patch: |-
-    # Add IRSA role annotation to cert-manager service account
+    # Add IRSA role annotation to external-dns service account
     apiVersion: v1
     kind: ServiceAccount
     metadata:
