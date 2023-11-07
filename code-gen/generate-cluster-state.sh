@@ -1394,6 +1394,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     fi
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
     rm -f "${K8S_CONFIGS_DIR}/base/cluster-tools/karpenter/kustomization.yaml.bak"
+    rm -f "${K8S_CONFIGS_DIR}/base/cluster-tools/kube-downscaler/kustomization.yaml.bak"
 
     # Add ArgoCD to Beluga Environments since it normally runs only in customer-hub
     echo "This is a Beluga Development Environment, copying ArgoCD into the CSR"
