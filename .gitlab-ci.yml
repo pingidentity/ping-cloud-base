@@ -21,7 +21,7 @@ stages:
 ## Global environment variables ##
 variables:
   DELETE_ENV_AFTER_PIPELINE: 'true'
-  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools@sha256:5c5f5b7d49a6d621b6339b84bd6f88bd3a31c8cc1a1b1a15fbc9c5281e25d43a
+  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools@sha256:7f7e9ea80f74b99ae2b54a6f99fe5f2855dbee290f7333284372e38cbe65c91d
   SHARED_CI_SCRIPTS_DIR: "/ci-scripts"
   BRANCH_SKIP_TESTS: >
     pingaccess/08-artifact-test.sh
