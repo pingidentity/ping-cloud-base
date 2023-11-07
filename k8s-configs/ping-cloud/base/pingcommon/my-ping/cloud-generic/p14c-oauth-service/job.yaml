@@ -7,6 +7,7 @@ metadata:
 spec:
   # 24-hour TTL for debugging
   ttlSecondsAfterFinished: 86400
+  suspend: true
   template:
     spec:
       serviceAccountName: p14c-oauth-serviceaccount
