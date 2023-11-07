@@ -319,7 +319,7 @@ spec:
             optional: false
         - secretRef:
             name: pingaccess-was-admin-p14c
-            optional: false
+            optional: true
       securityContext:
         fsGroup: 9999
       volumes:

@@ -215,10 +215,8 @@ spec:
         envFrom:
           - configMapRef:
               name: pingaccess-admin-environment-variables
-        command:
-          - /bin/sh
-          - -c
-          - python3 -u /app/oauth_client_services_controller.py --app pingaccess
+        command: [ "/bin/sh","-c" ]
+        args: [ "python3 -u /app/oauth_client_services_controller.py --app pingaccess && while true; do sleep 30; done" ]
       - name: pingaccess-admin
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingaccess/dev:v1.19-release-branch-latest
         imagePullPolicy: Always
