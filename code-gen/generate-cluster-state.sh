@@ -1265,15 +1265,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
 =======
   set_var "IRSA_CWAGENT_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-cloudwatch-agent"
 
-  #Resetting to empty string , once versent is done https://pingidentity.atlassian.net/browse/PP-5719 and will remove this code as per PDO-6384
-  if "${IS_BELUGA_ENV}"; then
-    export IRSA_PING_ANNOTATION_KEY_VALUE=""
-    export IRSA_PA_ANNOTATION_KEY_VALUE=""
-    export IRSA_PD_ANNOTATION_KEY_VALUE=""
-    export IRSA_PF_ANNOTATION_KEY_VALUE=""
-    export IRSA_CWAGENT_ANNOTATION_KEY_VALUE=""
-  fi
-
   # shellcheck disable=SC2016
   IRSA_TEMPLATE='eks.amazonaws.com/role-arn: ${ssm_value}'
 >>>>>>> 563d009b7 (Setting IRSA role to empty string)
@@ -1384,6 +1375,14 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
 
     # Add IS_BELUGA_ENV to the base values.yaml
     substitute_vars "${ENV_DIR}/values-files" '${IS_BELUGA_ENV}'
+
+
+  #Resetting to empty string , once versent is done https://pingidentity.atlassian.net/browse/PP-5719 and will remove this code as per PDO-5136
+    export IRSA_PING_ANNOTATION_KEY_VALUE=""
+    export IRSA_PA_ANNOTATION_KEY_VALUE=""
+    export IRSA_PD_ANNOTATION_KEY_VALUE=""
+    export IRSA_PF_ANNOTATION_KEY_VALUE=""
+    export IRSA_CWAGENT_ANNOTATION_KEY_VALUE=""
 
     # Update patches related to Beluga developer CDEs
 
