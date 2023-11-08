@@ -34,7 +34,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-services/p14c-integration:PDO-6033-p1-pa-groups
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-services/p14c-integration:PDO-4900-rm-ismyping-flag
         imagePullPolicy: Always
         envFrom:
         - configMapRef:
