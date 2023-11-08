@@ -11,6 +11,7 @@ stages:
 - compile
 - find-cluster
 - deploy
+- pre-check-test
 - pa-was-test
 - integration-test
 - chaos
@@ -20,7 +21,7 @@ stages:
 ## Global environment variables ##
 variables:
   DELETE_ENV_AFTER_PIPELINE: 'true'
-  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:v1.19-release-branch
+  K8S_DEPLOY_TOOLS: docker.corp.pingidentity.com:5000/platform-pipeline/k8s-deploy-tools:PDO-5228
   SHARED_CI_SCRIPTS_DIR: "/ci-scripts"
   BRANCH_SKIP_TESTS: >
     pingaccess/08-artifact-test.sh
@@ -115,6 +116,17 @@ deploy:
     - find-cluster
 
 ## Integration Test stage ##
+
+# Common pre-check tests
+pre-check:
+  stage: pre-check-test
+  tags:
+    - default-gitlab-runner-ping-cloud
+  image: ${K8S_DEPLOY_TOOLS}
+  script:
+    - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pre-check
+  dependencies:
+    - find-cluster
 
 ## PA-WAS stage ##
 pa-was-integration-tests:
