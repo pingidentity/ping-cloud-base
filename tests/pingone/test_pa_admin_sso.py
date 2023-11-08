@@ -5,18 +5,16 @@ import p1_test_base
 
 
 @unittest.skipIf(os.environ.get('ENV_TYPE') == "customer-hub", "Customer-hub CDE detected, skipping test module")
-class TestPFAdminSSO(p1_test_base.P1TestBase):
+class TestPAAdminSSO(p1_test_base.P1TestBase):
     def setUp(self):
         self.tenant_name = os.getenv("TENANT_NAME", f"{os.getenv('USER')}-primary")
         self.environment = os.getenv("ENV", "dev")
         self.group_names = [
-            f"{self.tenant_name}-{self.environment}-pf-roleadmin",
-            f"{self.tenant_name}-{self.environment}-pf-crypto",
-            f"{self.tenant_name}-{self.environment}-pf-useradmin",
-            f"{self.tenant_name}-{self.environment}-pf-expression",
-            f"{self.tenant_name}-{self.environment}-pf-audit",
+            f"{self.tenant_name}-{self.environment}-pa-admin",
+            f"{self.tenant_name}-{self.environment}-pa-platform",
+            f"{self.tenant_name}-{self.environment}-pa-audit",
         ]
-        self.app_name = f"client-{self.tenant_name}-${self.environment}-pingfederate-sso"
+        self.app_name = f"client-{self.tenant_name}-${self.environment}-pingaccess-sso"
 
     def test_groups_created(self):
         for group_name in self.group_names:

@@ -11,35 +11,19 @@ import p1_test_base
 class TestP1SsoSetup(p1_test_base.P1TestBase):
     k8s = None
     ping_cloud_ns = ""
-    oauth_service_name = "p14c-oauth-service"
 
     @classmethod
     def setUpClass(cls) -> None:
         super().setUpClass()
         cls.k8s = k8s_utils.K8sUtils()
-        cls.oauth_service_label = f"role={cls.oauth_service_name}"
-        cls.oauth_service_pod_pattern = f"{cls.oauth_service_name}-[0-9a-zA-Z]+-[0-9a-zA-Z]+"
         tenant_name = os.getenv("TENANT_NAME", f"{os.getenv('USER')}-primary")
         cls.pa_was_app_name = f"client-{tenant_name}-pa-was"
         cls.pa_was_secret_name = "pingaccess-was-admin-p14c"
         cls.ping_cloud_ns = os.getenv("PING_CLOUD_NAMESPACE", "ping-cloud")
 
         cls.oauth_env_vars = cls.k8s.core_client.read_namespaced_config_map(
-            "p14c-oauth-service-environment-variables", cls.ping_cloud_ns
+            "pingaccess-was-admin-environment-variables", cls.ping_cloud_ns
         ).data
-
-    def rerun_oauth_job(self):
-        # Delete the current pod(s)
-        self.k8s.kill_pods(label=self.oauth_service_label, namespace=self.ping_cloud_ns)
-
-        # Run command to re-run job
-        command = f"kubectl get job {self.oauth_service_name} -n {self.ping_cloud_ns} -o json | jq 'del(" \
-                  f".spec.selector)' | jq 'del(.spec.template.metadata.labels)' | kubectl replace --force -f -"
-        result = subprocess.call(command, shell=True)
-        self.assertEqual(0, result, f"Failed to re-run the {self.oauth_service_name} job")
-
-        # Wait for job completion
-        self.k8s.wait_for_job_complete(name=self.oauth_service_name, namespace=self.ping_cloud_ns)
 
     def test_group_created(self):
         group = self.get(self.cluster_env_endpoints.groups, self.population_name)
@@ -78,7 +62,7 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
 
     def test_configure_pa_was_redirect_uris_updated(self):
         # Change PA-WAS app's redirect URIs to simulate an existing app that already has a list of redirect URIs
-        # Re-run oauth job
+        # Respin PA-WAS pod
         # Get URIs from PA-WAS app
         # Confirm URIs were added
         app = self.get(self.cluster_env_endpoints.applications, self.pa_was_app_name)
@@ -91,7 +75,8 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
             json=modded_app_payload,
         )
 
-        self.rerun_oauth_job()
+        self.k8s.kill_pods(label="role=pingaccess-was-admin", namespace=self.ping_cloud_ns)
+        self.k8s.wait_for_pod_running(label="role=pingaccess-was-admin", namespace=self.ping_cloud_ns)
 
         updated_app = self.get(
             self.cluster_env_endpoints.applications, self.pa_was_app_name
@@ -164,13 +149,16 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
 
     def test_same_pa_was_used_on_successive_runs(self):
         # Get app from PingOne
-        # Re-run oauth job
+        # Respin PA-WAS pod
         # Get app from PingOne
         # Confirm app IDs match
         expected_app = self.get(
             self.cluster_env_endpoints.applications, self.pa_was_app_name
         )
-        self.rerun_oauth_job()
+
+        self.k8s.kill_pods(label="role=pingaccess-was-admin", namespace=self.ping_cloud_ns)
+        self.k8s.wait_for_pod_running(label="role=pingaccess-was-admin", namespace=self.ping_cloud_ns)
+
         updated_app = self.get(
             self.cluster_env_endpoints.applications, self.pa_was_app_name
         )
