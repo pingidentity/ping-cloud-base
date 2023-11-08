@@ -16,12 +16,6 @@ testP14CBootstrapDeploymentAvailability() {
   assertEquals "The Available status of the p14c-bootstrap deployment should be True but was: ${status}" 'True' ${status}
 }
 
-testP14CBOMDeploymentAvailability() {
-  status=$(kubectl get deployment p14c-bom-service -n ${PING_CLOUD_NAMESPACE} -o json| jq -r '.status.conditions[] | select(.type == "Available") | .status')
-  assertEquals 0 $?
-  assertEquals "The Available status of the p14c-bom-service deployment should be True but was: ${status}" 'True' ${status}
-}  
-
 testMetadataAvailability() {
 
   exit_code=0

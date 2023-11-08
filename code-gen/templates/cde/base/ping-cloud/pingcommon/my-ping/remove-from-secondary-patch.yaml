@@ -5,20 +5,3 @@ metadata:
 $patch: delete
 
 ---
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: p14c-bom-service
-$patch: delete
-
----
-
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: pingone-configurator
-$patch: delete
-
----
-

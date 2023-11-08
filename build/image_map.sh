@@ -20,7 +20,6 @@ export IMAGE_MAP="pingcloud-apps/pingaccess
    pingcloud-services/p14c-integration
    pingcloud-services/metadata
    pingcloud-services/healthcheck
-   pingcloud-solutions/ansible-beluga
    pingcloud-monitoring/logstash
    pingcloud-monitoring/enrichment-bootstrap
    pingcloud-monitoring/os-bootstrap

@@ -178,7 +178,6 @@ METADATA_IMAGE_TAG=v1.19-release-branch-latest
 BOOTSTRAP_IMAGE_TAG=v1.19-release-branch-latest
 HEALTHCHECK_IMAGE_TAG=v1.19-release-branch-latest
 P14C_INTEGRATION_IMAGE_TAG=PDO-6033-p1-pa-groups
-ANSIBLE_BELUGA_IMAGE_TAG=v1.19-release-branch-latest
 
 ############################################################
 # Cluster name variables
