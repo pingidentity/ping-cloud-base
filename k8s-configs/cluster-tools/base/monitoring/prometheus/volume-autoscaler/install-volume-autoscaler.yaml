@@ -1,0 +1,381 @@
+---
+# Source: volume-autoscaler/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: volume-autoscaler  
+  labels:
+  # see: https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/
+    app.kubernetes.io/name: "volume-autoscaler"
+    app.kubernetes.io/instance: "volume-autoscaler"
+  
+    
+    # see: https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/
+    app.kubernetes.io/version: "1.0.8"
+    app.kubernetes.io/component: "volume-autoscaler"
+    app.kubernetes.io/created-by: "devops-nirvana"
+    app.kubernetes.io/managed-by: "helm"
+---
+# Source: volume-autoscaler/templates/role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: "ClusterRole"
+metadata:
+  name: volume-autoscaler
+  # include labels for this service to identify it  
+  labels:
+  # see: https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/
+    app.kubernetes.io/name: "volume-autoscaler"
+    app.kubernetes.io/instance: "volume-autoscaler"
+  
+    
+    # see: https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/
+    app.kubernetes.io/version: "1.0.8"
+    app.kubernetes.io/component: "volume-autoscaler"
+    app.kubernetes.io/created-by: "devops-nirvana"
+    app.kubernetes.io/managed-by: "helm"
+    
+rules:
+  - apiGroups: ["*"]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["list", "patch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "patch"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["storageclasses"]
+    verbs: ["list"]
+---
+# Source: volume-autoscaler/templates/role-binding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: "ClusterRoleBinding"
+metadata:
+  name: volume-autoscaler
+  # include labels for this service to identify it  
+  labels:
+  # see: https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/
+    app.kubernetes.io/name: "volume-autoscaler"
+    app.kubernetes.io/instance: "volume-autoscaler"
+  
+    
+    # see: https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/
+    app.kubernetes.io/version: "1.0.8"
+    app.kubernetes.io/component: "volume-autoscaler"
+    app.kubernetes.io/created-by: "devops-nirvana"
+    app.kubernetes.io/managed-by: "helm"
+    
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: "ClusterRole"
+  name: volume-autoscaler
+subjects:
+- kind: ServiceAccount
+  name: volume-autoscaler
+  namespace: "infrastructure"
+---
+# Source: volume-autoscaler/templates/service.yaml
+################################################
+# Standardized Templates - Service
+# Author/Maintainer: Farley <farley@neonsurge.com>
+################################################
+apiVersion: v1
+kind: Service
+
+metadata:
+  # Should use name: volume-autoscaler
+  name: volume-autoscaler
+
+  annotations:
+    # Our service annotations (old method, backwards compatability)
+    # Our service annotations (new)
+    prometheus.io/scrape: "true"
+
+  # include labels for this service to identify it  
+  labels:
+  # see: https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/
+    app.kubernetes.io/name: "volume-autoscaler"
+    app.kubernetes.io/instance: "volume-autoscaler"
+  
+    
+    # see: https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/
+    app.kubernetes.io/version: "1.0.8"
+    app.kubernetes.io/component: "volume-autoscaler"
+    app.kubernetes.io/created-by: "devops-nirvana"
+    app.kubernetes.io/managed-by: "helm"
+    
+
+# Service definition
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8000
+      protocol: TCP
+      name: default-service
+  selector:
+    app.kubernetes.io/name: volume-autoscaler
+---
+# Source: volume-autoscaler/templates/deployment.yaml
+################################################
+# Standardized Templates - Deployment
+# Author/Maintainer: Farley <farley@neonsurge.com>
+################################################
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: volume-autoscaler  
+  labels:
+  # see: https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/
+    app.kubernetes.io/name: "volume-autoscaler"
+    app.kubernetes.io/instance: "volume-autoscaler"
+  
+    
+    # see: https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/
+    app.kubernetes.io/version: "1.0.8"
+    app.kubernetes.io/component: "volume-autoscaler"
+    app.kubernetes.io/created-by: "devops-nirvana"
+    app.kubernetes.io/managed-by: "helm"
+    
+
+# Deployment specification
+spec:
+
+  # Number of pod replicas desired, only use if HPA is not defined...
+  replicas: 1
+
+  # How we rollout in a rolling update type scenario, this is for deployments only
+  strategy:
+    type: Recreate
+
+  # These selectors to match this object with previous versions of this object
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: volume-autoscaler
+
+  # This is the podTemplate, the bread and butter
+  template:
+    metadata:      
+      labels:
+      # see: https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/
+        app.kubernetes.io/name: "volume-autoscaler"
+        app.kubernetes.io/instance: "volume-autoscaler"
+      
+        
+        # see: https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/
+        app.kubernetes.io/version: "1.0.8"
+        app.kubernetes.io/component: "volume-autoscaler"
+        app.kubernetes.io/created-by: "devops-nirvana"
+        app.kubernetes.io/managed-by: "helm"
+        
+    spec:
+
+      # If we have a hostname set, set it here
+
+      # If we have a priority class set, set it here
+
+      # How long to wait till forced termination
+      terminationGracePeriodSeconds: 30
+
+      # To have features such as run as non root
+      # If we have any init containers
+      initContainers:
+
+      # Our list of container(s)
+      containers:
+
+        # The primary container for our service
+        - name: volume-autoscaler
+          image: "devopsnirvana/kubernetes-volume-autoscaler:1.0.8"
+
+
+          env:
+            # Default env variables we want all containers to have
+            - name: "POD_NAME"
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: "POD_NAMESPACE"
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: "NAMESPACE"
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: POD_SERVICE_ACCOUNT
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.serviceAccountName
+            - name: CONTAINER_CPU_REQUESTS_MILLICORES
+              valueFrom:
+                resourceFieldRef:
+                  resource: requests.cpu
+                  divisor: 1m
+            - name: CONTAINER_CPU_LIMITS_MILLICORES
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.cpu
+                  divisor: 1m
+            - name: CONTAINER_MEMORY_REQUESTS_MEGABYTES
+              valueFrom:
+                resourceFieldRef:
+                  resource: requests.memory
+                  divisor: 1Mi
+            - name: CONTAINER_MEMORY_LIMITS_MEGABYTES
+              valueFrom:
+                resourceFieldRef:
+                  resource: limits.memory
+                  divisor: 1Mi
+
+            # Insert globals here, special handling so we can "tpl" these values and use eg: namespace in them
+            - name: "PROMETHEUS_URL"
+              value: ""
+            - name: "SLACK_WEBHOOK_URL"
+              value: "REPLACEME"
+            - name: "SLACK_CHANNEL"
+              value: "REPLACEME"
+            - name: "SLACK_MESSAGE_PREFIX"
+              value: ""
+            - name: "SLACK_MESSAGE_SUFFIX"
+              value: ""
+            - name: "INTERVAL_TIME"
+              value: "60"
+            - name: "SCALE_AFTER_INTERVALS"
+              value: "5"
+            - name: "SCALE_ABOVE_PERCENT"
+              value: "80"
+            - name: "SCALE_UP_PERCENT"
+              value: "20"
+            - name: "SCALE_UP_MIN_INCREMENT"
+              value: "1000000000"
+            - name: "SCALE_UP_MAX_INCREMENT"
+              value: "16000000000000"
+            - name: "SCALE_UP_MAX_SIZE"
+              value: "16000000000000"
+            - name: "SCALE_COOLDOWN_TIME"
+              value: "22200"
+            - name: "DRY_RUN"
+              value: ""
+            - name: "PROMETHEUS_LABEL_MATCH"
+              value: ""
+            - name: "HTTP_TIMEOUT"
+              value: "15"
+            - name: "VERBOSE"
+              value: "false"
+            - name: "VICTORIAMETRICS_MODE"
+              value: "false"
+            - name: "SCOPE_ORGID_AUTH_HEADER"
+              value: ""
+
+            # Insert extra envs here, for sub-values files inserts, with special handling so we can "tpl" in them
+
+# If we want to pull env variables from other confimgaps or secrets
+          envFrom:
+
+# If we have services enabled lets expose their ports
+          ports:
+            - name: default-service
+              containerPort: 8000
+              protocol: TCP
+            # Of course a service can use additional ports if desired
+
+
+# This is for our liveness probes, which dictate if a pod is healthy or should be replaced
+          livenessProbe:
+            initialDelaySeconds: 120
+            periodSeconds: 10
+            timeoutSeconds: 9
+            successThreshold: 1
+            failureThreshold: 3
+            httpGet:
+              scheme: HTTP
+              path: /alive
+              port: default-service
+
+# This is for our readiness probes, which dictate if a pod is ready to receive traffic
+          readinessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 4
+            successThreshold: 2
+            failureThreshold: 2
+            httpGet:
+              scheme: HTTP
+              path: /ready
+              port: default-service
+
+# This defines our resource limits
+          resources:
+
+# This defines any volume mounts we might want, only occurs if set
+          volumeMounts:
+
+# This is for definining sidecars which DOES NOT use the same env vars
+
+# This is for defining a sidecar which DOES automatically use the same env vars as the main pod
+# TODO: Make this an array instead, like extraContainers above?
+
+# Modify /etc/resolv.conf ndots
+
+
+# This limits which nodes we want to run on
+      nodeSelector:
+        kubernetes.io/os: linux
+
+# This is pod affinity and anti-affinity, to determine where to schedule pods
+      affinity:
+        # For now, by default, we want to prefer (but not require) that pods do not get
+        # scheduled on the same availability zone, to get actual redundancy between zone failures
+        # We have this priority set very low (10) so that if someone wants they can specify
+        # rules with higher priority in the affinity value.
+        #
+        # TODO: There is a bug in this, if the user sets `labelsEnableDefault` to false this doesn't work
+        #       if someone has time please fix or figure out another way around this situation
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              topologyKey: "kubernetes.io/hostname"
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - volume-autoscaler
+          - weight: 100
+            podAffinityTerm:
+              topologyKey: "failure-domain.beta.kubernetes.io/zone"
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - volume-autoscaler
+
+# Tolerations is another form of affinity/anti-affinity that is dynamic, nodes
+# can be assigned tolerations which can affect pods
+      tolerations:
+
+# This is our volume definitions, if we have volume mounts
+      volumes:
+
+# Service Account creation
+      serviceAccountName: volume-autoscaler
+
+# This is our image pull secret references, if we have image pull secrets

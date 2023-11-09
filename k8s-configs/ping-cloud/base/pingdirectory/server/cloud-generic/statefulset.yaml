@@ -429,6 +429,8 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: out-dir
+        annotations:
+          volume.autoscaler.kubernetes.io/ignore: "true"
         labels:
           class: pingdirectory-server
       spec:
