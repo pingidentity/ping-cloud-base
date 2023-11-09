@@ -1248,8 +1248,8 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   # ArgoCD, then we can change this IRSA SSM fetch code to be consistent
   # shellcheck disable=SC2016
   IRSA_TEMPLATE='eks.amazonaws.com/role-arn: ${ssm_value}'
-  set_var "IRSA_CERT_MANAGER_ANNOTATION_KEY_VALUE" "" "${IRSA_BASE_PATH}" "cert-manager/arn" "${IRSA_TEMPLATE}"
-  set_var "IRSA_EXTERNAL_DNS_ANNOTATION_KEY_VALUE" "" "${IRSA_BASE_PATH}" "external-dns/arn" "${IRSA_TEMPLATE}"
+  set_var "IRSA_CERT_MANAGER_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}/irsa-role/cert-manager/arn" "${IRSA_TEMPLATE}"
+  set_var "IRSA_EXTERNAL_DNS_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}/irsa-role/external-dns/arn" "${IRSA_TEMPLATE}"
   set_var "IRSA_PING_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-ping"
   set_var "IRSA_PA_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-pingaccess"
   set_var "IRSA_PD_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-pingdirectory"
