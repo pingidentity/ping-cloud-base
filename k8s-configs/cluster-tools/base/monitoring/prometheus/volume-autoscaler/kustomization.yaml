@@ -3,7 +3,7 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 namespace: prometheus
 
 resources:
-- install-volume-autoscaler.yaml
+- base
 
 patchesStrategicMerge:
 
@@ -21,7 +21,7 @@ patchesStrategicMerge:
           - name: volume-autoscaler
             image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/kubernetes-volume-autoscaler:v1.0.8
 
-# Setting up Prometheus-related environment variables
+# # Setting up Prometheus-related environment variables
 - |-
   apiVersion: apps/v1
   kind: Deployment
@@ -35,7 +35,7 @@ patchesStrategicMerge:
           - name: volume-autoscaler
             env:
               - name: "PROMETHEUS_URL"
-              value: "http://prometheus:9090"
+                value: "http://prometheus:9090"
 
 # Add wait-for-prometheus initContainer to prevent volume-autoscaler from reporting metrics if Prometheus still not ready
 - |-
@@ -74,7 +74,7 @@ patchesStrategicMerge:
                 done
                 echo "$(date +'%Y-%m-%d %H:%M:%S') $APP_NAME is up and ready."
 
-# Set resource limits to volume-autoscaler
+# # Set resource limits to volume-autoscaler
 - |-
   apiVersion: apps/v1
   kind: Deployment
