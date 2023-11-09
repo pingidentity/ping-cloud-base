@@ -1,7 +1,6 @@
 {
   "index_patterns": [
-    "pa-agent-audit-*",
-    "pa-was-agent-audit-*"
+    "pa-agent-audit-*"
   ],
   "template": {
     "settings": {
