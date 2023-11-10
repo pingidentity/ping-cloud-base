@@ -14,8 +14,7 @@ patchesStrategicMerge:
   metadata:
     name: volume-autoscaler  
   spec:
-    template:
-      metadata:                
+    template:            
       spec:
         containers:
           - name: volume-autoscaler
@@ -28,8 +27,7 @@ patchesStrategicMerge:
   metadata:
     name: volume-autoscaler  
   spec:
-    template:
-      metadata:                
+    template:           
       spec:
         containers:
           - name: volume-autoscaler
@@ -44,8 +42,7 @@ patchesStrategicMerge:
   metadata:
     name: volume-autoscaler  
   spec:
-    template:
-      metadata:                
+    template:             
       spec:
         initContainers:
           - name: wait-for-prometheus
@@ -81,8 +78,7 @@ patchesStrategicMerge:
   metadata:
     name: volume-autoscaler  
   spec:
-    template:
-      metadata:                
+    template:           
       spec:
         containers:
           - name: volume-autoscaler
