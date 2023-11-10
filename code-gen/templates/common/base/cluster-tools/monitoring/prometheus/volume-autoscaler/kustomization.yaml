@@ -1,0 +1,23 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+namespace: prometheus
+
+resources:
+  - ${K8S_GIT_URL}/k8s-configs/cluster-tools/base/prometheus/volume-autoscaler?ref=${K8S_GIT_BRANCH}
+
+patchesStrategicMerge:
+
+# Setting up Prometheus-related environment variables
+- |-
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: volume-autoscaler  
+  spec:
+    template:           
+      spec:
+        containers:
+          - name: volume-autoscaler
+            env:
+              - name: "PROMETHEUS_LABEL_MATCH"
+                value: "k8s_cluster_name=\"${CLUSTER_NAME}-${TENANT_NAME}-${REGION_NICK_NAME}\""
