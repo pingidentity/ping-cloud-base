@@ -16,3 +16,5 @@ git+https://gitlab.corp.pingidentity.com/ping-cloud-private-tenant/ping-cloud-to
 ruamel.yaml==0.17.26
 
 tenacity==8.2.3
+
+dotenv==1.0.0
