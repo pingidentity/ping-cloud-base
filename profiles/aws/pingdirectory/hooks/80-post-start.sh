@@ -230,20 +230,4 @@ ALLOW_PRE_ENCODED_PW_CONTROL='1.3.6.1.4.1.30221.2.5.51:true::MAOBAf8='
 change_user_password "cn=${ADMIN_USER_NAME}" "${ADMIN_USER_PASSWORD_FILE}" "${ALLOW_PRE_ENCODED_PW_CONTROL}"
 test $? -ne 0 && exit 1
 
-# --- NOTE ---
-# If this pingdirectory pod is a first time deployment and who is a child non-seed server
-# then, run dsreplication initialize where it will get replicated data from another successful
-# running pingdirectory pod
-if is_first_time_deploy_child_server; then
-  beluga_log "replication will be initialized for base DNs: ${DNS_TO_ENABLE}"
-  for DN in ${DNS_TO_ENABLE}; do
-    initialize_server_for_dn "${DN}"
-    replInitResult=$?
-
-    if test ${replInitResult} -ne 0; then
-      exit 1
-    fi
-  done
-fi
-
 exit 0
