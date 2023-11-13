@@ -259,7 +259,7 @@ spec:
             - name: "SCALE_AFTER_INTERVALS"
               value: "5"
             - name: "SCALE_ABOVE_PERCENT"
-              value: "80"
+              value: "100"
             - name: "SCALE_UP_PERCENT"
               value: "20"
             - name: "SCALE_UP_MIN_INCREMENT"

@@ -12,7 +12,8 @@ patchesStrategicMerge:
   apiVersion: apps/v1
   kind: Deployment
   metadata:
-    name: volume-autoscaler  
+    name: volume-autoscaler
+    namespace: prometheus  
   spec:
     template:           
       spec:
