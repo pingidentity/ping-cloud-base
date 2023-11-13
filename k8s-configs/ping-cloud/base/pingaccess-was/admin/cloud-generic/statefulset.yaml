@@ -215,7 +215,7 @@ spec:
             optional: false
       containers:
       - name: pingaccess-was-admin
-        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess-was:PDO-4900-rm-ismyping-flag
+        image: 705370621539.dkr.ecr.us-west-2.amazonaws.com/pingcloud-apps/pingaccess-was@sha256:6c244cd57f7118b7b19d1ba2b8497ad2ab59df8c909a1f2ddfc1f7308f266405
         imagePullPolicy: Always
         securityContext:
           runAsGroup: 9999
