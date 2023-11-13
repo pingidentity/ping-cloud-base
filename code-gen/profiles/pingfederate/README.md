@@ -11,14 +11,12 @@ through a JSON specification as shown below,
   {
     "name": "<ARTIFACT_1_NAME>",
     "version": "<ARTIFACT_1_VERSION>",
-    "source": "public | private | ics" (Default is "public"),
-    "is_myping_only": "true | false" (Default is "false")
+    "source": "public | private | ics" (Default is "public")
   },
   {
     "name": "<ARTIFACT_2_NAME>",
     "version": "<ARTIFACT_2_VERSION>",
-    "source": "public | private | ics" (Default is "public"),
-    "is_myping_only": "true | false" (Default is "false")
+    "source": "public | private | ics" (Default is "public")
   }
 ]
 ```

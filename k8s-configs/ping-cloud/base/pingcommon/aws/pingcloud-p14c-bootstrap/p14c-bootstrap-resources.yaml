@@ -26,20 +26,6 @@ customer-id:
   values_container_key: id
   ssm_type: string
   ssm_path_prefix: CUSTOMER_SSM_PATH_PREFIX
-customer-metadata:
-  kind: ConfigMap
-  name: customer-metadata
-  template:
-  values_container_key: customer-metadata.json
-  ssm_type: json
-  ssm_path_prefix: CUSTOMER_SSM_PATH_PREFIX
-is-myping:
-  kind: ConfigMap
-  name: is-pingone
-  template:
-  values_container_key: P1
-  ssm_type: boolean
-  ssm_path_prefix: CUSTOMER_SSO_SSM_PATH_PREFIX
 davinci-configuration:
   kind: Secret
   name: davinci-configuration
