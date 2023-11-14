@@ -134,10 +134,9 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
         )
 
         expected_keys = [
-            "AUTH_SERVER_BASE_URL",
-            "CLIENT_ID",
-            "CLIENT_SECRET",
-            "ENVIRONMENT_ID",
+            "P14C_CLIENT_ID",
+            "P14C_CLIENT_SECRET",
+            "P14C_ISSUER",
         ]
         for key in expected_keys:
             with self.subTest(key):
