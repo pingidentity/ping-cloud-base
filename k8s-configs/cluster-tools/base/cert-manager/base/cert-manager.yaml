@@ -5314,6 +5314,11 @@ spec:
             capabilities:
               drop:
               - ALL
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Equal
+          value: core
+          effect: NoSchedule
       nodeSelector:
         kubernetes.io/os: linux
 ---
@@ -5378,6 +5383,11 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Equal
+          value: core
+          effect: NoSchedule
       nodeSelector:
         kubernetes.io/os: linux
 ---
@@ -5461,6 +5471,11 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
+      tolerations:
+        - key: CriticalAddonsOnly
+          operator: Equal
+          value: core
+          effect: NoSchedule
       nodeSelector:
         kubernetes.io/os: linux
 ---
