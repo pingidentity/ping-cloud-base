@@ -11,6 +11,7 @@ stages:
 - compile
 - find-cluster
 - deploy
+- pre-check-test
 - pa-was-test
 - integration-test
 - chaos
@@ -115,6 +116,17 @@ deploy:
     - find-cluster
 
 ## Integration Test stage ##
+
+# Common pre-check tests
+pre-check:
+  stage: pre-check-test
+  tags:
+    - default-gitlab-runner-ping-cloud
+  image: ${K8S_DEPLOY_TOOLS}
+  script:
+    - ${SHARED_CI_SCRIPTS_DIR}/test/run-tests.sh pre-check
+  dependencies:
+    - find-cluster
 
 ## PA-WAS stage ##
 pa-was-integration-tests:
