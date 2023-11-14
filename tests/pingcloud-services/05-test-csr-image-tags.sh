@@ -144,17 +144,6 @@ testP14CIntegrationImageTag() {
   assertEquals "P14C Integration CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
 }
 
-testAnsibleBelugaImageTag() {
-  $(test "${ANSIBLE_BELUGA_IMAGE_TAG}")
-  assertEquals "ANSIBLE_BELUGA_IMAGE_TAG missing from env_vars file" 0 $?
-
-  unique_count=$(getUniqueTagCount "ansible-beluga")
-  assertEquals "Ansible Beluga is using multiple image tag versions" 1 "${unique_count}"
-
-  matched_count=$(getMatchedTagCount "${ANSIBLE_BELUGA_IMAGE_TAG}" "ansible-beluga")
-  assertEquals "Ansible Beluga CSR image tag doesn't match Beluga default image tag" 1 "${matched_count}"
-}
-
 # When arguments are passed to a script you must
 # consume all of them before shunit is invoked
 # or your script won't run.  For integration
