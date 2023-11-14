@@ -329,6 +329,7 @@ metadata:
     prometheus.io/scheme: "http"
     prometheus.io/path: "/metrics"
     prometheus.io/port: "9198"
+    newrelic.io/scrape: "true"
 spec:
   selector:
     app: logstash-elastic

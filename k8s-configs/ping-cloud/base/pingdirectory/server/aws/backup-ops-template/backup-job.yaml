@@ -13,6 +13,7 @@ spec:
   template:
     spec:
       serviceAccountName: pingdirectory-ops-serviceaccount
+      priorityClassName: high-priority-apps-to-avoid-pending-state
       affinity:
         # This podAffinity rule is designed to deploy Backup/restore job to the same AZ as its targeted PingDirectory server
         podAffinity:
@@ -45,6 +46,41 @@ spec:
         - name: discovery-service
           mountPath: /get_ssm_env_vars.sh
           subPath: get_ssm_env_vars.sh
+      - name: pingdirectory-init
+        securityContext:
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+          allowPrivilegeEscalation: false
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.24.0
+        imagePullPolicy: IfNotPresent
+        command:
+          - /copy-dependencies.sh
+        envFrom:
+          - configMapRef:
+              name: pingdirectory-environment-variables
+          - configMapRef:
+              name: pingcommon-environment-variables
+        volumeMounts:
+        - name: ssh-dir
+          mountPath: /.ssh
+        - name: data-dir
+          mountPath: /data
+        - name: ssh-id-key-secret
+          mountPath: /id_rsa
+          subPath: id_rsa
+        - name: known-hosts-config
+          mountPath: /known_hosts
+          subPath: known_hosts
+        - name: pingdirectory-init
+          mountPath: /copy-dependencies.sh
+          subPath: copy-dependencies.sh
+        - name: pingdirectory-init
+          mountPath: /utils.lib.sh
+          subPath: utils.lib.sh
+        - name: pingdirectory-init
+          mountPath: /logger.lib.sh
+          subPath: logger.lib.sh
       containers:
       - name: pingdirectory-backup
         image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.19-release-branch-latest
@@ -54,8 +90,11 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        command:
-        - /opt/in/backup.sh
+        command: [ "/bin/sh","-c" ]
+        # 1) Copy P1AS hooks to staging
+        # 2) Check for customer profile-repo and override P1AS Hooks if needed
+        # 3) Execute the backup configmap script
+        args: [ "cp -Rf /opt/in/hooks/* /opt/staging/hooks && /opt/staging/hooks/02-get-remote-server-profile.sh && /opt/in/backup.sh" ]
         envFrom:
         - configMapRef:
             name: pingdirectory-environment-variables
@@ -74,6 +113,17 @@ spec:
             fieldRef:
               fieldPath: metadata.namespace
         volumeMounts:
+        - name: ssh-dir
+          mountPath: /home/ping/.ssh
+        - name: data-dir
+          mountPath: /usr/local/bin/kubectl
+          subPath: kubectl
+        - name: ssh-id-key-secret
+          mountPath: /id_rsa
+          subPath: id_rsa
+        - name: known-hosts-config
+          mountPath: /known_hosts
+          subPath: known_hosts
         - name: pingdirectory-backup-script
           mountPath: /opt/in/backup.sh
           subPath: backup.sh
@@ -93,6 +143,18 @@ spec:
       securityContext:
         fsGroup: 9999
       volumes:
+      - name: ssh-dir
+        emptyDir: {}
+      - name: ssh-id-key-secret
+        secret:
+          secretName: ssh-id-key-secret
+          optional: true
+          defaultMode: 0400
+      - name: known-hosts-config
+        configMap:
+          name: known-hosts-config
+          optional: true
+          defaultMode: 0644
       - name: pingdirectory-backup-script
         configMap:
           name: pingdirectory-backup-script

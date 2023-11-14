@@ -92,6 +92,9 @@ global:
   # The image pull policy for all images
   imagePullPolicy: "Always"
 
+  # Enable or disable subchart dependencies
+  installP1asSubcharts: false
+
   ########################################################
   # Environment-specific variables
   ########################################################

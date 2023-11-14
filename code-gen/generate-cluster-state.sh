@@ -150,6 +150,9 @@
 #                                  |                                                    |
 # K8S_GIT_URL                      | The Git URL of the Kubernetes base manifest files. | https://github.com/pingidentity/ping-cloud-base
 #                                  |                                                    |
+# KARPENTER_INSTANCE_PROFILE       | Karpenter Instance profile attached to EKS Clsuter | KarpenterInstanceProfile
+#                                  | IAM Node role                                      |
+#                                  |                                                    |
 # LOG_ARCHIVE_URL                  | The URL of the log archives. If provided, logs are | The string "unused".
 #                                  | periodically captured and sent to this URL. For    |
 #                                  | AWS S3 buckets, it must be an S3 URL, e.g.         |
@@ -408,6 +411,7 @@ ${MYSQL_DATABASE}
 ${CLUSTER_NAME}
 ${CLUSTER_NAME_LC}
 ${CLUSTER_ENDPOINT}
+${KARPENTER_INSTANCE_PROFILE}
 ${DNS_ZONE}
 ${VALUES_FILES_DNS_ZONE}
 ${DNS_ZONE_DERIVED}
@@ -430,6 +434,8 @@ ${IRSA_PF_ANNOTATION_KEY_VALUE}
 ${IRSA_ARGOCD_ANNOTATION_KEY_VALUE}
 ${IRSA_INGRESS_ANNOTATION_KEY_VALUE}
 ${IRSA_CWAGENT_ANNOTATION_KEY_VALUE}
+${IRSA_CERT_MANAGER_ANNOTATION_KEY_VALUE}
+${IRSA_EXTERNAL_DNS_ANNOTATION_KEY_VALUE}
 ${KARPENTER_ROLE_ANNOTATION_KEY_VALUE}
 ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}
 ${NOTIFICATION_ENABLED}
@@ -460,8 +466,10 @@ ${ARGOCD_CDE_ROLE_SSM_TEMPLATE}
 ${ARGOCD_CDE_URL_SSM_TEMPLATE}
 ${ARGOCD_ENVIRONMENTS}
 ${CLUSTER_ENDPOINT}
+${KARPENTER_INSTANCE_PROFILE}
 ${CLUSTER_STATE_REPO_BRANCH}
 ${CLUSTER_STATE_REPO_URL}
+${CUSTOMER_SSO_SSM_PATH_PREFIX}
 ${IRSA_ARGOCD_ANNOTATION_KEY_VALUE}
 ${KARPENTER_ROLE_ANNOTATION_KEY_VALUE}
 ${K8S_GIT_BRANCH}
@@ -473,6 +481,7 @@ ${REGION_NICK_NAME}
 ${REGION}
 ${SLACK_CHANNEL}
 ${SSH_ID_KEY_BASE64}
+${TENANT_DOMAIN}
 ${TENANT_NAME}'
 
 
@@ -754,11 +763,14 @@ echo "Initial IRSA_PD_ANNOTATION_KEY_VALUE: ${IRSA_PD_ANNOTATION_KEY_VALUE}"
 echo "Initial IRSA_PF_ANNOTATION_KEY_VALUE: ${IRSA_PF_ANNOTATION_KEY_VALUE}"
 echo "Initial IRSA_ARGOCD_ANNOTATION_KEY_VALUE: ${IRSA_ARGOCD_ANNOTATION_KEY_VALUE}"
 echo "Initial IRSA_CWAGENT_ANNOTATION_KEY_VALUE: ${IRSA_CWAGENT_ANNOTATION_KEY_VALUE}"
+echo "Initial IRSA_CERT_MANAGER_ANNOTATION_KEY_VALUE: ${IRSA_CERT_MANAGER_ANNOTATION_KEY_VALUE}"
+echo "Initial IRSA_EXTERNAL_DNS_ANNOTATION_KEY_VALUE: ${IRSA_EXTERNAL_DNS_ANNOTATION_KEY_VALUE}"
 echo "Initial IRSA_INGRESS_ANNOTATION_KEY_VALUE: ${IRSA_INGRESS_ANNOTATION_KEY_VALUE}"
 echo "Initial KARPENTER_ROLE_ANNOTATION_KEY_VALUE: ${KARPENTER_ROLE_ANNOTATION_KEY_VALUE}"
 echo "Initial NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE: ${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE}"
 
 echo "Initial CLUSTER_ENDPOINT: ${CLUSTER_ENDPOINT}"
+echo "Initial KARPENTER_INSTANCE_PROFILE: ${KARPENTER_INSTANCE_PROFILE}"
 
 echo "Initial SLACK_CHANNEL: ${SLACK_CHANNEL}"
 echo "Initial NON_GA_SLACK_CHANNEL: ${NON_GA_SLACK_CHANNEL}"
@@ -853,6 +865,7 @@ export SSH_ID_KEY_FILE="${SSH_ID_KEY_FILE}"
 export TARGET_DIR="${TARGET_DIR:-/tmp/sandbox}"
 
 export ACCOUNT_BASE_PATH=${ACCOUNT_BASE_PATH:-ssm://pcpt/config/k8s-config/accounts/}
+export ACCOUNT_PATH_PREFIX=${ACCOUNT_BASE_PATH#ssm:/}
 export IRSA_BASE_PATH=${IRSA_BASE_PATH:-ssm://pcpt/irsa-role/}
 export PGO_BUCKET_URI_SUFFIX=${PGO_BUCKET_URI_SUFFIX:-/pgo-bucket/uri}
 
@@ -863,16 +876,19 @@ export IRSA_PD_ANNOTATION_KEY_VALUE=${IRSA_PD_ANNOTATION_KEY_VALUE:-''}
 export IRSA_PF_ANNOTATION_KEY_VALUE=${IRSA_PF_ANNOTATION_KEY_VALUE:-''}
 export IRSA_ARGOCD_ANNOTATION_KEY_VALUE=${IRSA_ARGOCD_ANNOTATION_KEY_VALUE:-''}
 export IRSA_CWAGENT_ANNOTATION_KEY_VALUE=${IRSA_CWAGENT_ANNOTATION_KEY_VALUE:-''}
+export IRSA_CERT_MANAGER_ANNOTATION_KEY_VALUE=${IRSA_CERT_MANAGER_ANNOTATION_KEY_VALUE:-''}
+export IRSA_EXTERNAL_DNS_ANNOTATION_KEY_VALUE=${IRSA_EXTERNAL_DNS_ANNOTATION_KEY_VALUE:-''}
 export IRSA_INGRESS_ANNOTATION_KEY_VALUE=${IRSA_INGRESS_ANNOTATION_KEY_VALUE:-''}
 
 export CLUSTER_ENDPOINT=${CLUSTER_ENDPOINT:-''}
+export KARPENTER_INSTANCE_PROFILE=${KARPENTER_INSTANCE_PROFILE:-"KarpenterInstanceProfile"}
 
 export KARPENTER_ROLE_ANNOTATION_KEY_VALUE=${KARPENTER_ROLE_ANNOTATION_KEY_VALUE:-''}
 
 export NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE=${NLB_NGX_PUBLIC_ANNOTATION_KEY_VALUE:-''}
 
 ### Variable used by argocd-image-updater to scan container image tags matching the prefix.
-export IMAGE_TAG_PREFIX="${K8S_GIT_BRANCH%.*}"
+export IMAGE_TAG_PREFIX="DISABLE"
 
 ### FEATURE FLAG DEFAULTS ###
 export PF_PROVISIONING_ENABLED="${PF_PROVISIONING_ENABLED:-false}"
@@ -884,11 +900,11 @@ export EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED:-""}"
 export ECR_REGISTRY_NAME='public.ecr.aws/r2h3l6e4'
 export PING_CLOUD_NAMESPACE='ping-cloud'
 export MYSQL_DATABASE="${MYSQL_DATABASE:-pingcentral}"
-export ARGOCD_CDE_ROLE_SSM_TEMPLATE="${ARGOCD_CDE_ROLE_SSM_TEMPLATE:-"/pcpt/config/k8s-config/accounts/{env}/argo/role/arn"}"
-export ARGOCD_CDE_URL_SSM_TEMPLATE="${ARGOCD_CDE_URL_SSM_TEMPLATE:-"/pcpt/config/k8s-config/accounts/{env}/cluster/private-link/cname"}"
+export ARGOCD_CDE_ROLE_SSM_TEMPLATE="${ARGOCD_CDE_ROLE_SSM_TEMPLATE:-"${ACCOUNT_PATH_PREFIX}{env}/argo/role/arn"}"
+export ARGOCD_CDE_URL_SSM_TEMPLATE="${ARGOCD_CDE_URL_SSM_TEMPLATE:-"${ACCOUNT_PATH_PREFIX}{env}/cluster/private-link/cname"}"
 
 DEFAULT_IMAGE_LIST="apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingfederate,apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess,apps=${ECR_REGISTRY_NAME}/pingcloud-apps/pingaccess-was"
-export IMAGE_LIST="${IMAGE_LIST:-${DEFAULT_IMAGE_LIST}}"
+export IMAGE_LIST="DISABLE"
 
 ALL_ENVIRONMENTS='dev test stage prod customer-hub'
 SUPPORTED_ENVIRONMENT_TYPES="${SUPPORTED_ENVIRONMENT_TYPES:-${ALL_ENVIRONMENTS}}"
@@ -1016,7 +1032,6 @@ echo "Using BACKUP_URL: ${BACKUP_URL}"
 
 echo "Using MYSQL_SERVICE_HOST: ${MYSQL_SERVICE_HOST}"
 echo "Using MYSQL_USER: ${MYSQL_USER}"
-echo "Using MYSQL_PASSWORD: ${MYSQL_PASSWORD}"
 echo "Using MYSQL_DATABASE: ${MYSQL_DATABASE}"
 
 echo "Using PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
@@ -1046,9 +1061,12 @@ echo "Using IRSA_PD_ANNOTATION_KEY_VALUE: ${IRSA_PD_ANNOTATION_KEY_VALUE}"
 echo "Using IRSA_PF_ANNOTATION_KEY_VALUE: ${IRSA_PF_ANNOTATION_KEY_VALUE}"
 echo "Using IRSA_ARGOCD_ANNOTATION_KEY_VALUE: ${IRSA_ARGOCD_ANNOTATION_KEY_VALUE}"
 echo "Using IRSA_CWAGENT_ANNOTATION_KEY_VALUE: ${IRSA_CWAGENT_ANNOTATION_KEY_VALUE}"
+echo "Using IRSA_CERT_MANAGER_ANNOTATION_KEY_VALUE: ${IRSA_CERT_MANAGER_ANNOTATION_KEY_VALUE}"
+echo "Using IRSA_EXTERNAL_DNS_ANNOTATION_KEY_VALUE: ${IRSA_EXTERNAL_DNS_ANNOTATION_KEY_VALUE}"
 echo "Using IRSA_INGRESS_ANNOTATION_KEY_VALUE: ${IRSA_INGRESS_ANNOTATION_KEY_VALUE}"
 
 echo "Using CLUSTER_ENDPOINT: ${CLUSTER_ENDPOINT}"
+echo "Using KARPENTER_INSTANCE_PROFILE: ${KARPENTER_INSTANCE_PROFILE}"
 
 echo "Using KARPENTER_ROLE_ANNOTATION_KEY_VALUE: ${KARPENTER_ROLE_ANNOTATION_KEY_VALUE}"
 
@@ -1161,7 +1179,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   STAGE_LETS_ENCRYPT_SERVER='https://acme-staging-v02.api.letsencrypt.org/directory'
 
   if test ! "${LETS_ENCRYPT_SERVER}"; then
-    if "${IS_GA}" || "${IS_MY_PING}"; then
+    if "${IS_GA}"; then
       LETS_ENCRYPT_SERVER="${PROD_LETS_ENCRYPT_SERVER}"
     else
       case "${ENV}" in
@@ -1229,18 +1247,16 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   # TODO: With https://pingidentity.atlassian.net/browse/PP-5719 we should see all of the IRSA roles represented like
   # ArgoCD, then we can change this IRSA SSM fetch code to be consistent
   # shellcheck disable=SC2016
-  IRSA_TEMPLATE='eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role/pcpt/irsa-roles'
+  IRSA_TEMPLATE='eks.amazonaws.com/role-arn: ${ssm_value}'
+  set_var "IRSA_CERT_MANAGER_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}/irsa-role/cert-manager/arn" "${IRSA_TEMPLATE}"
+  set_var "IRSA_EXTERNAL_DNS_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}/irsa-role/external-dns/arn" "${IRSA_TEMPLATE}"
   set_var "IRSA_PING_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-ping"
   set_var "IRSA_PA_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-pingaccess"
   set_var "IRSA_PD_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-pingdirectory"
   set_var "IRSA_PF_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-pingfederate"
   set_var "IRSA_CWAGENT_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" "${IRSA_TEMPLATE}/irsa-cloudwatch-agent"
-
-  # shellcheck disable=SC2016
-  IRSA_TEMPLATE='eks.amazonaws.com/role-arn: ${ssm_value}'
   set_var "IRSA_ARGOCD_ANNOTATION_KEY_VALUE" "" "${IRSA_BASE_PATH}" "irsa-argocd/arn" "${IRSA_TEMPLATE}"
-  
-  set_var "IRSA_INGRESS_ANNOTATION_KEY_VALUE" "" "${IRSA_BASE_PATH}" "ingress-controller/arn" "${IRSA_TEMPLATE}"
+  set_var "IRSA_INGRESS_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}/irsa-role/ingress-controller/arn" "${IRSA_TEMPLATE}"
 
   # shellcheck disable=SC2016
   KARPENTER_ROLE_TEMPLATE='eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role'
@@ -1338,6 +1354,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
 
   # Copy around files for Developer CDE before substituting vars
   if "${IS_BELUGA_ENV}"; then
+    echo "IS_BELUGA_ENV detected, making developer changes to deployment"
     # Add IS_BELUGA_ENV to the base env_vars
     BASE_ENV_VARS="${K8S_CONFIGS_DIR}/base/env_vars"
     echo >> "${BASE_ENV_VARS}"
@@ -1347,12 +1364,37 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     substitute_vars "${ENV_DIR}/values-files" '${IS_BELUGA_ENV}'
 
     # Update patches related to Beluga developer CDEs
-    sed -i.bak 's/^  # \(.*remove-from-developer-cde-patch.yaml\)$/  \1/g' "${PRIMARY_PING_KUST_FILE}"
+
+    # Do not disable CW and NR if in CI/CD
+    if test "${CI_SERVER}" != "yes"; then
+      sed -i.bak 's/^[[:space:]]*# \(.*remove-from-developer-cde-patch.yaml\)$/  \1/g' "${PRIMARY_PING_KUST_FILE}"
+    fi
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
 
     # Add ArgoCD to Beluga Environments since it normally runs only in customer-hub
     echo "This is a Beluga Development Environment, copying ArgoCD into the CSR"
     cp -R "${CHUB_TEMPLATES_DIR}/base/cluster-tools/git-ops" "${K8S_CONFIGS_DIR}/base/cluster-tools/"
+    cp -R "${CHUB_TEMPLATES_DIR}/region/git-ops" "${K8S_CONFIGS_DIR}/${REGION_NICK_NAME}/"
+
+    # Append patch to merge base and region env vars for ArgoCD in region customization.yaml
+    export CHUB_REGION_KUST_FILE="${CHUB_TEMPLATES_DIR}/region/kustomization.yaml"
+    yq eval -i '.configMapGenerator += (load(strenv(CHUB_REGION_KUST_FILE)).configMapGenerator[] | select(.name == "argocd-bootstrap"))' "${PRIMARY_PING_KUST_FILE}"
+
+    # Keep ArgoCD in pingaccess-was-ingress by replacing the delete patches
+    # shellcheck disable=SC2016
+    export argocd_ingress_patch='
+# Argo CD pingaccess was runtime
+- op: replace
+  path: /spec/tls/0/hosts/6
+  value: argocd.${DNS_ZONE}
+- op: replace
+  path: /spec/rules/6/host
+  value: argocd.${DNS_ZONE}
+'
+    K8S_CONFIGS_PA_WAS_ENGINE_KUSTOMIZE_FILE="${K8S_CONFIGS_DIR}/base/ping-cloud/pingaccess-was/engine/kustomization.yaml"
+    yq eval -i '.patchesJson6902[1].patch |= (from_yaml | .[:-2] | to_yaml)' "${K8S_CONFIGS_PA_WAS_ENGINE_KUSTOMIZE_FILE}"
+    yq eval -i '.patchesJson6902[1].patch += strenv(argocd_ingress_patch)' "${K8S_CONFIGS_PA_WAS_ENGINE_KUSTOMIZE_FILE}"
+
     # Append the secrets from customer-hub to the CDE secrets, except PingCentral since that doesn't exist in the CDE
     printf "\n# %%%% NOTE: Below secrets are for the Developer CDE only (when IS_BELUGA_ENV is 'true') to make sure Argo works properly %%%%#\n" >> "${K8S_CONFIGS_DIR}/base/secrets.yaml"
     yq 'del(select(.metadata.name | contains("pingcentral")))' "${CHUB_TEMPLATES_DIR}/base/secrets.yaml" >> "${K8S_CONFIGS_DIR}/base/secrets.yaml"

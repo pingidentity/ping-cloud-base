@@ -1,48 +1,35 @@
 ---
-# Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/job-createSecret.yaml
-
+# Source: p1as-newrelic/charts/nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/job-createSecret.yaml
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: nri-bundle-nri-metadata-injection-admission-create
   namespace: newrelic
   annotations:
-    argocd.argoproj.io/hook: Sync
-    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
   labels:
-    nri-bundle.version: 5.0.4
     app: nri-metadata-injection-admission-create
     app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: nri-metadata-injection
-    app.kubernetes.io/version: 1.7.0
-    helm.sh/chart: nri-metadata-injection-3.0.4
+    app.kubernetes.io/version: 1.15.0
+    helm.sh/chart: nri-metadata-injection-4.7.0
 spec:
-  ttlSecondsAfterFinished: 30
   template:
     metadata:
       name: nri-bundle-nri-metadata-injection-admission-create
       labels:
-        nri-bundle.version: 5.0.4
         app: nri-metadata-injection-admission-create
         app.kubernetes.io/instance: nri-bundle
+        app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: nri-metadata-injection
-        app.kubernetes.io/version: 1.7.0
-        helm.sh/chart: nri-metadata-injection-3.0.4
+        app.kubernetes.io/version: 1.15.0
+        helm.sh/chart: nri-metadata-injection-4.7.0
     spec:
-      hostIPC: false
-      hostNetwork: false
-      hostPID: false
-      securityContext:
-        runAsNonRoot: true
-        runAsGroup: 2000
-        runAsUser: 2000
       containers:
         - name: create
-          securityContext:
-            privileged: false
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/ingress-nginx/kube-webhook-certgen:v1.1.1
+          image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/ingress-nginx/kube-webhook-certgen:v1.3.0"
           imagePullPolicy: IfNotPresent
           args:
             - create
@@ -53,41 +40,42 @@ spec:
             - --key-name=tls.key
       restartPolicy: OnFailure
       serviceAccountName: nri-bundle-nri-metadata-injection-admission
-
+      securityContext:
+        runAsGroup: 2000
+        runAsNonRoot: true
+        runAsUser: 2000
 ---
-# Source: nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/job-patchWebhook.yaml
-
+# Source: p1as-newrelic/charts/nri-bundle/charts/nri-metadata-injection/templates/admission-webhooks/job-patch/job-patchWebhook.yaml
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: nri-bundle-nri-metadata-injection-admission-patch
   namespace: newrelic
   annotations:
-    argocd.argoproj.io/hook: PostSync
-    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation,HookSucceeded
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
   labels:
-    nri-bundle.version: 5.0.4
     app: nri-metadata-injection-admission-patch
     app.kubernetes.io/instance: nri-bundle
+    app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: nri-metadata-injection
-    app.kubernetes.io/version: 1.7.0
-    helm.sh/chart: nri-metadata-injection-3.0.4
+    app.kubernetes.io/version: 1.15.0
+    helm.sh/chart: nri-metadata-injection-4.7.0
 spec:
-  ttlSecondsAfterFinished: 30
   template:
     metadata:
       name: nri-bundle-nri-metadata-injection-admission-patch
       labels:
-        nri-bundle.version: 5.0.4
         app: nri-metadata-injection-admission-patch
         app.kubernetes.io/instance: nri-bundle
+        app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: nri-metadata-injection
-        app.kubernetes.io/version: 1.7.0
-        helm.sh/chart: nri-metadata-injection-3.0.4
+        app.kubernetes.io/version: 1.15.0
+        helm.sh/chart: nri-metadata-injection-4.7.0
     spec:
       containers:
         - name: patch
-          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/ingress-nginx/kube-webhook-certgen:v1.1.1
+          image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/ingress-nginx/kube-webhook-certgen:v1.3.0"
           imagePullPolicy: IfNotPresent
           args:
             - patch
@@ -100,58 +88,5 @@ spec:
       serviceAccountName: nri-bundle-nri-metadata-injection-admission
       securityContext:
         runAsGroup: 2000
-        runAsUser: 2000
         runAsNonRoot: true
-
----
-# This job copies NR License key secret object to 'newrelic' namespace
-
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: newrelic-license-secret-exporter
-  namespace: newrelic
-  labels:
-    app: newrelic-license-secret-exporter
-  annotations:
-    argocd.argoproj.io/hook: Sync
-spec:
-  ttlSecondsAfterFinished: 30
-  template:
-    metadata:
-      labels:
-        app: newrelic-license-secret-exporter
-      annotations: {}
-    spec:
-      restartPolicy: OnFailure
-      serviceAccountName: nri-bundle-newrelic-infrastructure
-      volumes:
-        - name: copy-secret
-          configMap:
-            name: copy-secret
-            defaultMode: 0555
-      containers:
-      - name: newrelic-license-secret-exporter
-        securityContext:
-          runAsGroup: 2000
-          runAsNonRoot: true
-          runAsUser: 1000
-          allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.15.0
-        command:
-          - /tmp/copy-secret.sh
-        env:
-          - name: "SECRET_NAME"
-            value: "newrelic-license-key"
-          - name: "SECRET_NAMESPACE"
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.annotations['SECRET_NAMESPACE']
-          - name: "CURRENT_NAMESPACE"
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.namespace
-        volumeMounts:
-          - name: copy-secret
-            mountPath: /tmp/copy-secret.sh
-            subPath: copy-secret.sh
+        runAsUser: 2000

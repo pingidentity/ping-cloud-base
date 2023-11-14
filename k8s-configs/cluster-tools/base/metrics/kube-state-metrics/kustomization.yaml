@@ -2,4 +2,38 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-- kube-state-metrics.yaml
+- base
+
+# Point to the ping-cluster-tools repo equivalents pushed to ECR
+images:
+- name: registry.k8s.io/kube-state-metrics/kube-state-metrics
+  newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/coreos/kube-state-metrics
+
+patches:
+- patch: |-
+    # Remove `clusterIP: None` It prevents service update failure as `spec.clusterip` field is immutable
+    - op: remove
+      path: /spec/clusterIP
+  target:
+    kind: Service
+    name: kube-state-metrics
+    namespace: kube-system
+- patch: |-
+    # Add resources into kube-state-metrics container
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: kube-state-metrics
+      namespace: kube-system
+    spec:
+      template:
+        spec:
+          containers:
+            - name: kube-state-metrics
+              resources:
+                limits:
+                  cpu: 30m
+                  memory: 80Mi
+                requests:
+                  cpu: 10m
+                  memory: 50Mi

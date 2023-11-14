@@ -7,6 +7,5 @@ commonLabels:
   app: ping-cloud
 
 resources:
-- p14c-oauth-service
 - pingone-configurator
 - p14c-bom-service

@@ -1,7 +1,6 @@
 {
   "index_patterns": [
-    "pd-replication-*",
-    "pds-replication-*"
+    "pd-replication-*"
   ],
   "template": {
     "settings": {

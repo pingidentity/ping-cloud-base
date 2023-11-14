@@ -84,7 +84,7 @@ testPrometheusSite() {
 }
 
 testArgocdSite() {
-  response=$(get_site "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "24")
+  response=$(get_site "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "100")
   assertEquals "Response value was ${response}" 0 $?
 
   name=$(parse_value_from_response "${response}" 'name')
@@ -170,7 +170,7 @@ testPrometheusVirtualHost() {
 }
 
 testArgocdVirtualHost() {
-  response=$(get_virtual_host "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "24")
+  response=$(get_virtual_host "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "100")
   assertEquals "Response value was ${response}" 0 $?
 
   host=$(parse_value_from_response "${response}" 'host')
@@ -232,7 +232,7 @@ testPrometheusApplication() {
 }
 
 testArgocdApplication() {
-  response=$(get_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "24")
+  response=$(get_application "${PA_ADMIN_PASSWORD}" "${PINGACCESS_WAS_API}" "100")
   assertEquals "Response value was ${response}" 0 $?
 
   name=$(parse_value_from_response "${response}" 'name')
@@ -251,7 +251,7 @@ testPaWasIdempotent() {
   export APP_ID=123
   export APP_NAME="TestApp"
   export VIRTUAL_HOST_ID=1
-  export SITE_ID=24 # SiteID coorelating to ArgoCD.  This will test will create a new application referencing the ArgoCD site.
+  export SITE_ID=100 # SiteID correlating to ArgoCD.  This will test will create a new application referencing the ArgoCD site.
 
   # Cleanup from possible previous run failures
   log "Deleting app: ${APP_NAME} if it exists"

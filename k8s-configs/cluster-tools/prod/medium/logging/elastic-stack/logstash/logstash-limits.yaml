@@ -10,7 +10,7 @@ spec:
           resources:
             limits:
               cpu: "3"
-              memory: 8Gi
+              memory: 10Gi
             requests:
               cpu: "3"
               memory: 8Gi
@@ -18,6 +18,6 @@ spec:
             - name: LS_JAVA_OPTS
               value: '-Xms6g -Xmx6g -XX:MaxDirectMemorySize=2g'
             - name: PIPELINE_WORKERS
-              value: "24"
+              value: "32"
             - name: PIPELINE_BATCH_SIZE
               value: "1000"

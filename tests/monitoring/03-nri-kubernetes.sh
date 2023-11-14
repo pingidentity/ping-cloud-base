@@ -8,26 +8,9 @@ if skipTest "${0}"; then
   exit 0
 fi
 
-get_pods_state() {
-  pods=$(kubectl get pods -l $1 -n $2  -o json | jq -r '.items[] | .metadata.name')
-  if [ -n "$pods" ]; then
-      for pod in $pods
-      do
-          phase=$(kubectl get pod $pod -n $2 -o json | jq -r '.status.phase')
-          [[ "$phase" != "Running" ]] && return 1;
-      done
-  fi
-  return 0
-}
-
 testNriBundleNrk8sKubeletIsRunning() {
-  get_pods_state "app.kubernetes.io/component=kubelet" "newrelic"
+  kubectl wait pod -l app.kubernetes.io/component=kubelet -n newrelic --for=condition=Ready=true --timeout=60s
   assertEquals "One or few nri-bundle-nrk8s-kubelet pods are failed to run properly." 0 $?
-}
-
-testNriBundleNrk8sControlplaneIsRunning() {
-  get_pods_state "app.kubernetes.io/component=controlplane" "newrelic"
-  assertEquals "One or few nri-bundle-nrk8s-controlplane pods are failed to run properly." 0 $?
 }
 
 # When arguments are passed to a script you must

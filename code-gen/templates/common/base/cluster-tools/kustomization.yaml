@@ -18,3 +18,4 @@ resources:
 - pgo
 - notification
 - karpenter
+- kube-downscaler
