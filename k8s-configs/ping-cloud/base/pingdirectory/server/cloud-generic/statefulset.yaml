@@ -216,21 +216,6 @@ spec:
               memory: "4Gi"
               cpu: "2"
           env:
-            - name: P14C_ENVIRONMENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: pingdirectory-passwords
-                  key: P14C_ENVIRONMENT_ID
-            - name: P14C_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: pingdirectory-passwords
-                  key: P14C_CLIENT_ID
-            - name: P14C_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: pingdirectory-passwords
-                  key: P14C_CLIENT_SECRET
             - name: ROOT_USER_PASSWORD
               valueFrom:
                 secretKeyRef:
