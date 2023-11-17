@@ -13,10 +13,6 @@ dsconfig set-backend-prop \
       --set db-cache-percent:15 \
       --set import-thread-count:1
 
-dsconfig set-backend-prop \
-        --backend-name userRoot \
-        --set prime-thread-count:1
-
 dsconfig set-local-db-index-prop \
         --backend-name userRoot --index-name cn \
         --remove index-type:substring
