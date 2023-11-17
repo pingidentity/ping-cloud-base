@@ -89,6 +89,7 @@
 - Add PingOne SSO for ArgoCD
 - Remove Grafana from ping-cloud-base image tag list
 - Remove p14c-oauth-service job and pod
+- Remove PingDirectory Pass-Through Authentication secrets and plugin
 
 _Changes:_
 
@@ -161,6 +162,7 @@ _Changes:_
 - [X] PDO-5709 Fix intermittent pingone integration test failures
 - [X] PDO-5718 Update PGO dashboards to use grafana CRD
 - [X] PDO-5724 Limit backup/restore logging for PD
+- [X] PDO-5739 Remove unused pingdirectory-passwords secrets
 - [X] PDO-5741 OS: Index migration fails for shrink-*-logstash-* indexes
 - [X] PDO-5781 Update nginx-ingress-controller to v1.8.0 to support EKS 1.27
 - [X] PDO-5762 CloudWatch / New Relic: Disable logging for Dev clusters
