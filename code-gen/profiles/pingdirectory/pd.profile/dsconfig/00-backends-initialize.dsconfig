@@ -15,4 +15,5 @@ dsconfig create-backend \
 dsconfig set-backend-prop \
         --backend-name "${USER_BACKEND_ID}" \
         --set "base-dn:${USER_BASE_DN}" \
-        --set enabled:true
+        --set enabled:true \
+        --set prime-method:none
