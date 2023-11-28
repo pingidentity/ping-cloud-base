@@ -19,10 +19,3 @@ davinci-configuration:
   values_container_key: davinciConfiguration
   ssm_type: json
   ssm_path_prefix: CUSTOMER_SSO_SSM_PATH_PREFIX
-is-myping:
-  kind: ConfigMap
-  name: is-pingone
-  template:
-  values_container_key: P1
-  ssm_type: boolean
-  ssm_path_prefix: CUSTOMER_SSO_SSM_PATH_PREFIX
