@@ -92,6 +92,7 @@
 - Remove PingDirectory Pass-Through Authentication secrets and plugin
 - Remove prime-thread-count setting from userRoot backend within PingDirectory
 - Allow CSR to override the duration and renewBefore properties within cert-manager
+- Updating image-map.sh to include CHART_MAP variable. 
 
 _Changes:_
 
@@ -224,6 +225,7 @@ _Changes:_
 - [x] PDO-6305 Set Karpenter defaultInstanceProfile via Environment Variable
 - [X] PDO-6311 Argocd pod resources spec adjusted
 - [X] PDO-6323 Allow CSR to override the duration and renewBefore properties within cert-manager
+- [X] PDO-6420 Update tag-release.sh to replace the helm chart versions in PCB
 
 ### 1.18.0.0
 
