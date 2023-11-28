@@ -41,7 +41,9 @@ patchesStrategicMerge:
         passwordSecretRef:
           name: pingcommon-passwords
           key: ACME_CERT_KEYSTORE_PASSWORD
-
+    # added to enable the auto-renewal functionality from cert-manager
+    renewBefore: ${CERT_RENEW_BEFORE}
+    
 - |-
   # Add IRSA role annotation to cert-manager service account
   apiVersion: v1

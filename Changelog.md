@@ -91,6 +91,7 @@
 - Remove p14c-oauth-service job and pod
 - Remove PingDirectory Pass-Through Authentication secrets and plugin
 - Remove prime-thread-count setting from userRoot backend within PingDirectory
+- Allow CSR to override the duration and renewBefore properties within cert-manager
 
 _Changes:_
 
@@ -222,6 +223,7 @@ _Changes:_
 - [X] PDO-6267 Update to enable detailed monitoring on instances
 - [x] PDO-6305 Set Karpenter defaultInstanceProfile via Environment Variable
 - [X] PDO-6311 Argocd pod resources spec adjusted
+- [X] PDO-6323 Allow CSR to override the duration and renewBefore properties within cert-manager
 
 ### 1.18.0.0
 
