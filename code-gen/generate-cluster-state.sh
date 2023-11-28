@@ -142,9 +142,6 @@
 # IS_MULTI_CLUSTER                 | Flag indicating whether or not this is a           | false
 #                                  | multi-cluster deployment.                          |
 #                                  |                                                    |
-# IS_MY_PING                       | A flag indicating whether or not this is a MyPing  | The SSM path: /pcpt/customer/sso/is-myping
-#                                  | customer.                                          |
-#                                  |                                                    |
 # K8S_GIT_BRANCH                   | The Git branch within the above Git URL.           | The git branch where this script
 #                                  |                                                    | exists, i.e. CI_COMMIT_REF_NAME
 #                                  |                                                    |
@@ -565,43 +562,6 @@ get_is_ga_variable() {
   fi
 }
 
-########################################################################################################################
-# Export the IS_MY_PING environment variable for the provided customer. If it's already present as a boolean environment
-# variable, then export it as is. Otherwise, if the SSM path prefix for it is not 'unused', then try to retrieve it out
-# of SSM. On error, print a warning message, but default the value to false. On success, use the value from SSM.
-# Otherwise, default it to false.
-#
-# Arguments
-#   ${1} -> The value of the IS_MY_PING flag.
-########################################################################################################################
-get_is_myping_variable() {
-  if test "${IS_MY_PING}" = 'true' || test "${IS_MY_PING}" = 'false'; then
-    export IS_MY_PING="${IS_MY_PING}"
-    return
-  fi
-
-  local ssm_path_prefix="$1"
-
-  # Default false
-  IS_MY_PING='false'
-
-  if [ "${ssm_path_prefix}" != "unused" ]; then
-    # Getting value from ssm parameter store.
-    if ! ssm_value=$(get_ssm_value "${ssm_path_prefix}"); then
-      echo "Warn: ${ssm_value}"
-      echo "Defaulting IS_MY_PING=false."
-    else
-      IS_MY_PING="${ssm_value}"
-    fi
-  fi
-
-  if test "${IS_MY_PING}" = 'true' || test "${IS_MY_PING}" = 'false'; then
-    export IS_MY_PING="${IS_MY_PING}"
-  else
-    export IS_MY_PING='false'
-  fi
-}
-
 # Support the various ways to actually set the SSH key pair env vars
 set_ssh_key_pair() {
   # Autogenerate if no keys provided
@@ -984,8 +944,6 @@ if test ! "${KNOWN_HOSTS_CLUSTER_STATE_REPO}"; then
 fi
 export KNOWN_HOSTS_CLUSTER_STATE_REPO
 
-get_is_myping_variable "${CUSTOMER_SSO_SSM_PATH_PREFIX}/is-myping"
-
 # Set some product specific variables
 export USER_BASE_DN="${USER_BASE_DN:-dc=example,dc=com}"
 export USER_BASE_DN_2="${USER_BASE_DN_2}"
@@ -1181,7 +1139,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       ;;
   esac
 
-  # Update the Let's encrypt server to use staging/production based on GA/MyPing customers or the environment type.
+  # Update the Let's encrypt server to use staging/production based on GA customers or the environment type.
   PROD_LETS_ENCRYPT_SERVER='https://acme-v02.api.letsencrypt.org/directory'
   STAGE_LETS_ENCRYPT_SERVER='https://acme-staging-v02.api.letsencrypt.org/directory'
 

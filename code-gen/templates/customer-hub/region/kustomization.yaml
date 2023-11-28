@@ -13,9 +13,6 @@ patchesStrategicMerge:
 ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
 - custom-patches.yaml
 
-### Remove unneccessary MyPing pods
-- ../base/ping-cloud/pingcommon/my-ping/remove-pingone-configurator.yaml
-
 ### Remove healthchecks for undeployed products
 - ../base/cluster-tools/health/remove-from-primary-patch.yaml
 - ../base/cluster-tools/health/remove-from-secondary-patch.yaml
@@ -103,13 +100,6 @@ configMapGenerator:
 #  envs:
 #  - ../base/env_vars
 #  - env_vars
-
-# PingCloud BOM service
-- name: p14c-bom-service-environment-variables
-  behavior: merge
-  envs:
-    - ../base/env_vars
-    - env_vars
 
 # PingCloud P14C bootstrap
 - name: pingcloud-p14c-bootstrap-environment-variables
