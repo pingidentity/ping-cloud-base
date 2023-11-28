@@ -18,13 +18,16 @@ spec:
   volumeClaimTemplates:
   - metadata:
       name: data
+      annotations:
+        volume.autoscaler.kubernetes.io/scale-above-percent: "70"
+        volume.autoscaler.kubernetes.io/scale-up-percent: "50"
     spec:
       accessModes:
       - "ReadWriteOnce"
       resources:
         requests:
           storage: "8Gi"
-      storageClassName: "efs"
+      storageClassName: "opensearch-gp3"
   template:
     metadata:
       name: "opensearch-cluster-hot"

@@ -326,6 +326,8 @@ spec:
   volumeClaimTemplates:
   - metadata:
       name: out-dir
+      annotations:
+        volume.autoscaler.kubernetes.io/ignore: "true"
     spec:
       accessModes:
       - ReadWriteOnce

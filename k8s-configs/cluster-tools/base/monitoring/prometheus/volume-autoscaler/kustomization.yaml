@@ -1,0 +1,93 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+namespace: prometheus
+
+resources:
+- base
+
+images:
+  - name: devopsnirvana/kubernetes-volume-autoscaler
+    newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/kubernetes-volume-autoscaler
+
+patchesStrategicMerge:
+
+# Setting up Prometheus-related environment variables
+- |-
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: volume-autoscaler  
+  spec:
+    template:           
+      spec:
+        containers:
+        - name: volume-autoscaler
+          env:
+          - name: "PROMETHEUS_URL"
+            value: "http://prometheus:9090"
+
+# Add wait-for-prometheus initContainer to prevent volume-autoscaler from reporting metrics if Prometheus still not ready
+- |-
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: volume-autoscaler  
+  spec:
+    template:             
+      spec:
+        initContainers:
+          - name: wait-for-prometheus
+            securityContext:
+              runAsGroup: 2000
+              runAsNonRoot: true
+              runAsUser: 1000
+              allowPrivilegeEscalation: false
+            image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.15.0
+            imagePullPolicy: IfNotPresent
+            env:
+            - name: URL
+              value: "http://prometheus:9090/-/ready"
+            - name: APP_NAME
+              value: "Prometheus"
+            - name: RETRY_SEC
+              value: "5"
+            command:
+              - sh
+              - -c
+              - |
+                until [ "$(curl -s -w '%{http_code}' -o /dev/null $URL)" -eq 200 ]
+                do
+                  echo "$(date +'%Y-%m-%d %H:%M:%S') $APP_NAME is not ready yet, re-check in 5 seconds..."
+                  sleep $RETRY_SEC
+                done
+                echo "$(date +'%Y-%m-%d %H:%M:%S') $APP_NAME is up and ready."
+
+# Set resource limits to volume-autoscaler
+- |-
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: volume-autoscaler  
+  spec:
+    template:           
+      spec:
+        containers:
+          - name: volume-autoscaler
+            resources:
+              limits:
+                cpu: 500m
+                memory: 100Mi
+              requests:
+                cpu: 100m
+                memory: 50Mi
+
+# Change default ClusterRoleBinding subjects namespace to 'prometheus'
+- |-
+  apiVersion: rbac.authorization.k8s.io/v1
+  kind: ClusterRoleBinding
+  metadata:
+    name: volume-autoscaler     
+  subjects:
+  - kind: ServiceAccount
+    name: volume-autoscaler
+    namespace: prometheus
