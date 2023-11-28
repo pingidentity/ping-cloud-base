@@ -14,6 +14,10 @@ spec:
       role: pf-provisioning
   instances:
     - name: instance1
+      metadata:
+        annotations:
+          # This annotation is required to prevent volume-autoscaler to resize this volume
+          volume.autoscaler.kubernetes.io/ignore: "true"
       replicas: 3
       minAvailable: 1
       resources:

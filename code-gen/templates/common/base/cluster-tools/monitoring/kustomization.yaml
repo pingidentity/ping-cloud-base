@@ -262,6 +262,22 @@ patchesStrategicMerge:
             - name: clusterName
               value: ${NEW_RELIC_ENVIRONMENT_NAME}
 
+# Setting up Prometheus-related environment variables for volume-autoscaler
+- |-
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: volume-autoscaler
+    namespace: prometheus  
+  spec:
+    template:           
+      spec:
+        containers:
+          - name: volume-autoscaler
+            env:
+              - name: "PROMETHEUS_LABEL_MATCH"
+                value: "k8s_cluster_name=\"${CLUSTER_NAME}-${TENANT_NAME}-${REGION_NICK_NAME}\""
+
 patchesJson6902:
 
 # Newrelic resources

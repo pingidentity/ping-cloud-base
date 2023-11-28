@@ -1,4 +1,5 @@
 # For more information on prometheus configuration go to https://prometheus.io/docs/prometheus/latest/configuration/configuration/
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:

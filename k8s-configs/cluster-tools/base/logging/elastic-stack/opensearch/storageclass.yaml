@@ -15,3 +15,21 @@ parameters:
   type: sc1
 mountOptions:
   - discard
+
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: opensearch-gp3
+  labels:
+    app: opensearch
+allowVolumeExpansion: true
+provisioner: ebs.csi.aws.com
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  csi.storage.k8s.io/fstype: ext4
+  encrypted: "true"
+  type: gp3
+mountOptions:
+  - discard
