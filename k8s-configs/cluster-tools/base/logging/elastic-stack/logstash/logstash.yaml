@@ -25,6 +25,8 @@ spec:
       labels:
         app: logstash-elastic
     spec:
+      securityContext:
+        fsGroup: 1000
       serviceAccountName: logstash-elastic
       initContainers:
         - name: wait-for-bootstrap-completed
@@ -115,7 +117,7 @@ spec:
             - name: QUEUE_TYPE
               value: persisted
             - name: QUEUE_MAX_BYTES
-              value: 1000gb
+              value: 10gb
             - name: QUEUE_DRAIN
               value: "true"
             - name: DEAD_LETTER_QUEUE_ENABLE
@@ -228,7 +230,7 @@ spec:
             - name: enrichment-cache-files
               mountPath: /enrichment-cache-files
               readOnly: false
-            - name: logstash-efs
+            - name: logstash-gp3
               mountPath: /usr/share/logstash/data/queue
               readOnly: false
             - name: os-certs
@@ -305,17 +307,19 @@ spec:
   serviceName: logstash-elastic
   volumeClaimTemplates:
     - metadata:
-        name: logstash-efs
+        name: logstash-gp3
+        annotations:
+          volume.autoscaler.kubernetes.io/scale-above-percent: "85"
+          volume.autoscaler.kubernetes.io/scale-up-percent: "25"
         labels:
           app: logstash-elastic
       spec:
         accessModes:
           - ReadWriteOnce
-        storageClassName: efs
+        storageClassName: logstash-gp3
         resources:
           requests:
-            storage: 1Mi
-
+            storage: 50Gi
 
 ---
 kind: Service
