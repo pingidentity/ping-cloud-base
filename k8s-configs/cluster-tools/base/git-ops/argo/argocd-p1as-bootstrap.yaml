@@ -1,3 +1,4 @@
+# Configure ArgoCD toleration to allow it to be scheduled on nodes tainted with CriticalAddonsOnly=core. This is done so we can dynamically manage these nodes using Karpenter.
 ---
 apiVersion: batch/v1
 kind: Job
@@ -41,6 +42,11 @@ spec:
             memory: "512Mi"
             cpu: "500m"
       restartPolicy: Never
+      tolerations:
+      - effect: NoSchedule
+        key: CriticalAddonsOnly
+        operator: Equal
+        value: core
       volumes:
       - name: argocd-p1as-bootstrap-resources
         configMap:
