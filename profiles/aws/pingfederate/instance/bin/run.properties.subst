@@ -472,10 +472,10 @@ pf.tls.admin.server.protocols=TLSv1.2,TLSv1.3
 # The following properties control the minimum and the maximum number of threads used to configure PingFederate thread pools.
 #
 # Please refer to the performance tuning guide for further tuning guidance.
-pf.admin.threads.min=${THREADMIN}
-pf.admin.threads.max=${THREADMAX}
-pf.runtime.threads.min=${THREADMIN}
-pf.runtime.threads.max=${THREADMAX}
+pf.admin.threads.min=${PF_JETTY_THREADS_MIN}
+pf.admin.threads.max=${PF_JETTY_THREADS_MAX}
+pf.runtime.threads.min=${PF_JETTY_THREADS_MIN}
+pf.runtime.threads.max=${PF_JETTY_THREADS_MAX}
 
 #   HTTP Connector Queue Size Settings
 #   ----------------------------------
