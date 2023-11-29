@@ -1,5 +1,13 @@
 # Changelog
 
+### 1.17.4.0
+
+- Upgrade PingDirectory to v9.2.0.4
+
+_Changes:_
+
+- [X] PDO-6415 Upgrade PingDirectory to v9.2.0.4
+
 ### 1.17.3.0
 
 - Initialize Replication on New PingDirectory Child Non-Seed Servers
