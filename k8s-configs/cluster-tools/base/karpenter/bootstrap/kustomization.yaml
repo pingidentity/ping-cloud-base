@@ -30,21 +30,32 @@ patchesStrategicMerge:
     name: karpenter
     namespace: karpenter
   spec:
-    template:
-      spec:
-        containers:
-          - name: controller
-            resources:
-              # The resource requirements vary based on the size of the cluster, and during consolidation, they are extensively utilized.
-              # As the cluster size increases, it becomes necessary to reassess these limits.
-              limits:
-                cpu: "500m"
-                memory: "512Mi"
-              requests:
-                cpu: "500m"
-                memory: "512Mi"
-        tolerations:
-          - key: CriticalAddonsOnly
-            operator: Equal
-            value: core
-            effect: NoSchedule
+    replicas: 0
+
+- |-
+  $patch: delete
+  apiVersion: admissionregistration.k8s.io/v1
+  kind: ValidatingWebhookConfiguration
+  metadata:
+    name: validation.webhook.karpenter.sh
+
+- |-
+  $patch: delete
+  apiVersion: admissionregistration.k8s.io/v1
+  kind: ValidatingWebhookConfiguration
+  metadata:
+    name: validation.webhook.karpenter.k8s.aws
+
+- |-
+  $patch: delete
+  apiVersion: admissionregistration.k8s.io/v1
+  kind: ValidatingWebhookConfiguration
+  metadata:
+    name: validation.webhook.config.karpenter.sh
+
+- |-
+  $patch: delete
+  apiVersion: admissionregistration.k8s.io/v1
+  kind: MutatingWebhookConfiguration
+  metadata:
+    name: defaulting.webhook.karpenter.k8s.aws
