@@ -95,6 +95,7 @@
 - Allow CSR to override the duration and renewBefore properties within cert-manager
 - Updating image-map.sh to include CHART_MAP variable. 
 - Logstash: Migrate to AWS EBS gp3 Volumes
+- Newrelic-Prometheus-Agent: Send Kubernetes-volume-Autoscaler Metrics to New Relic
 
 _Changes:_
 
@@ -229,6 +230,7 @@ _Changes:_
 - [X] PDO-6311 Argocd pod resources spec adjusted
 - [X] PDO-6323 Allow CSR to override the duration and renewBefore properties within cert-manager
 - [X] PDO-6333 Implement: OpenSearch EBS gp3 Storage Class + Kubernetes-Volume-Autoscaler
+- [X] PDO-6335 Newrelic-Prometheus-Agent: Send Kubernetes-volume-Autoscaler Metrics to New Relic
 - [X] PDO-6337 Migrate logstash to the GP3 volumes
 - [X] PDO-6420 Update tag-release.sh to replace the helm chart versions in PCB
 

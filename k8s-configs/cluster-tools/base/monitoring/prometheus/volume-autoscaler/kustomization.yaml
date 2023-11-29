@@ -91,3 +91,12 @@ patchesStrategicMerge:
   - kind: ServiceAccount
     name: volume-autoscaler
     namespace: prometheus
+
+# Set annotation to push metrics to Newrelic
+- |-
+  apiVersion: v1
+  kind: Service
+  metadata:
+    name: volume-autoscaler
+    annotations:
+      newrelic.io/scrape: "true"
