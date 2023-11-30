@@ -113,6 +113,7 @@
 - Number of ES-warm nodes increased to 3
 - Kibana: Change PD alerts to see more specific errors
 - Increase PingFederate MaxThreadCount
+- Kibana: Alerting Improvements
 
 _Changes:_
 
@@ -256,6 +257,7 @@ _Changes:_
 - [X] PDO-6269 Fail PingDirectory backup Job if any backend fails upon running backup CLI
 - [X] PDO-6270 Fix es-cluster-warm pod doesn't recover gracefully from an AZ Failure
 - [X] PDO-6435 Kibana: Change PD alerts to see more specific errors
+- [X] PDO-6436 Kibana: Alerting Improvements
 - [X] PDO-6780 Increase PingFederate MaxThreadCount
 
 ### 1.17.3.0
