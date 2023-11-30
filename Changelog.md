@@ -259,6 +259,7 @@ _Changes:_
 - [X] PDO-6435 Kibana: Change PD alerts to see more specific errors
 - [X] PDO-6436 Kibana: Alerting Improvements
 - [X] PDO-6438 Allocate sufficient memory to the ingress controller
+- [X] PDO-6440 Update to fix AWS IAM role ARN for Karpenter
 - [X] PDO-6780 Increase PingFederate MaxThreadCount
 
 ### 1.17.3.0
