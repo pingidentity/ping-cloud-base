@@ -96,6 +96,7 @@
 - Updating image-map.sh to include CHART_MAP variable. 
 - Logstash: Migrate to AWS EBS gp3 Volumes
 - Newrelic-Prometheus-Agent: Send Kubernetes-volume-Autoscaler Metrics to New Relic
+- Update CreateCluster script to provision Karpenter-ready Cluster.
 
 _Changes:_
 
@@ -153,6 +154,7 @@ _Changes:_
 - [X] PDO-5549 Update kube-state-metrics cluster tool to v2.8.1 for EKS 1.26
 - [X] PDO-5558 Mirror our own version of newrelic images
 - [X] PDO-5571 Update nginx-ingress-controller to v1.6.4 to support EKS 1.26
+- [X] PDO-5578 Update CreateCluster script to provision Karpenter-ready Cluster.
 - [X] PDO-5594 PingOne configuration required for ArgoCD SSO authentication
 - [X] PDO-5601 os-dashboards-pf configMap breaks developer, and new ci/cd deploys
 - [X] PDO-5647 Handle SIGTERM properly in enrichment-bootstrap
