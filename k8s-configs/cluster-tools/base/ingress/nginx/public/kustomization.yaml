@@ -54,3 +54,9 @@ patchesJson6902:
     version: v1
     kind: Service
     name: ingress-nginx
+- path: add-controller-resources.yaml
+  target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: nginx-ingress-controller
