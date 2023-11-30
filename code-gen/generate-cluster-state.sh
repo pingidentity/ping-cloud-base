@@ -1169,7 +1169,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   set_var "IRSA_ARGOCD_ANNOTATION_KEY_VALUE" "" "${IRSA_BASE_PATH}" "irsa-argocd/arn" "${IRSA_TEMPLATE}"
 
   # shellcheck disable=SC2016
-  KARPENTER_ROLE_TEMPLATE='eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role/pcpt/KarpenterControllerRole'
+  KARPENTER_ROLE_TEMPLATE='eks.amazonaws.com/role-arn: arn:aws:iam::${ssm_value}:role'
   set_var "KARPENTER_ROLE_ANNOTATION_KEY_VALUE" "" "${ACCOUNT_BASE_PATH}" "${ENV}" \
           "${KARPENTER_ROLE_TEMPLATE}/KarpenterControllerRole"
 
