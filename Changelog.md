@@ -99,7 +99,6 @@
 - Add REGION env var for healthcheck probes in customer hub
 - Fix IRSA role for pingfederate-admin-serviceaccount
 - Add "--skipPrime" flag to PD start-server script
-- Upgrade PingFederate to v11.3.1
 - Update PA-WAS admin/engine CSD upload job to reference PA-WAS CSD upload configMaps, rather than just pingaccess.  
 - Fluent-Bit: change IMDS vesrion to v2
 - Remove docker logs from fluent-bit
@@ -114,6 +113,7 @@
 - Kibana: Change PD alerts to see more specific errors
 - Increase PingFederate MaxThreadCount
 - Kibana: Alerting Improvements
+- Upgrade PingFederate
 
 _Changes:_
 
@@ -244,7 +244,6 @@ _Changes:_
 - [X] PDO-5815 Fluent-Bit: change IMDS version to v2
 - [X] PDO-5832 Add "--skipPrime" flag to PD start-server script
 - [X] PDO-5869 Fix IRSA role for pingfederate-admin-serviceaccount
-- [X] PDO-5906 Upgrade PingFederate to v11.3.1
 - [X] PDO-5911 Update PA-WAS Admin CSD Upload job to use PA-WAS ConfigMap
 - [X] PDO-5961 Disable ArgoCD Image Updater
 - [X] PDO-5979 Reset 'cn=replication' server ID entry within PingDirectory on startup
@@ -261,6 +260,7 @@ _Changes:_
 - [X] PDO-6438 Allocate sufficient memory to the ingress controller
 - [X] PDO-6440 Update to fix AWS IAM role ARN for Karpenter
 - [X] PDO-6780 Increase PingFederate MaxThreadCount
+- [X] PDO-6459 Upgrade PingFederate
 
 ### 1.17.3.0
 
