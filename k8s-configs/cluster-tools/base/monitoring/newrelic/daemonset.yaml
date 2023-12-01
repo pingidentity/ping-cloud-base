@@ -56,7 +56,7 @@ spec:
               value: "newrelic-license-key"
       containers:
         - name: controlplane
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/nri-kubernetes/dev:v1.18-release-branch-latest
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/nri-kubernetes:v1.18.0.0_RC8
           imagePullPolicy: Always
           securityContext:
             privileged: false
@@ -241,7 +241,7 @@ spec:
               value: "newrelic-license-key"
       containers:
         - name: kubelet
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/nri-kubernetes/dev:v1.18-release-branch-latest
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/nri-kubernetes:v1.18.0.0_RC8
           imagePullPolicy: Always
           securityContext:
             privileged: false
