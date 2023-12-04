@@ -8,16 +8,9 @@ spec:
       - port: 12999
         targetPort: 12999
         name: notification
-      - port: 13000
-        targetPort: 13000
-        name: prometheus
   webhook:
     notification:
       port: "12999"
-      endpoint: /notification
-      method: POST
-    prometheus:
-      port: "13000"
       endpoint: /notification
       method: POST
 ---

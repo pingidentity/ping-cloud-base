@@ -2,67 +2,74 @@
 ---
 
 groups:
-- name: elastic-stack-logging
-  rules:
-  - alert: FluentBit dropping records
-    expr: sum(increase(fluentbit_output_dropped_records_total[1m])) by (name, k8s_cluster_name) > 10
-    for: 10m
-    labels:
-      severity: critical
-    annotations:
-      summary: FluentBit dropping records for output {{ $labels.name }}
-      description: "A FluentBit outputs dropping records. Possible {{ $labels.name }} output is down.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+  - name: elastic-stack-logging
+    rules:
+      - alert: FluentBit dropping records
+        expr: sum(increase(fluentbit_output_dropped_records_total[1m])) by (name) > 10
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: FluentBit dropping records for output {{ $labels.name }}
+          description: "A FluentBit output {{ $labels.name }} is dropping records.\nDropped events: {{ $value }}"
+          runbook: "https://pingidentity.atlassian.net/l/cp/1LNbK1h1"
 
-  - alert: FluentBit retries is growing
-    expr: sum(increase(fluentbit_output_retries_total[1m])) by (name, k8s_cluster_name) > 50
-    for: 10m
-    labels:
-      severity: critical
-    annotations:
-      summary: FluentBit has many retries in the output {{ $labels.name }}
-      description: "A FluentBit has many retries in the output. Possible {{ $labels.name }} output is down.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      - alert: FluentBit retries is growing
+        expr: sum(increase(fluentbit_output_retries_total[1m])) by (name) > 50
+        for: 10m
+        labels:
+          severity: alert
+        annotations:
+          summary: FluentBit has many retries in the output {{ $labels.name }}
+          description: "A FluentBit has many retries in the output. Possible {{ $labels.name }} output is down."
+          runbook: "https://pingidentity.atlassian.net/l/cp/vQCAwBPs"
 
-  - alert: Logstash pipeline is growing
-    expr: delta(logstash_node_queue_events[1m]) > 10000
-    for: 10m
-    labels:
-      severity: critical
-    annotations:
-      summary: Logstash pipeline {{ $labels.pipeline }} is growing on {{ $labels.instance }}.
-      description: "A Logstash pipeline is growing. Possible {{ $labels.pipeline }} is overloaded or logs spike.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      - alert: Logstash pipeline is growing
+        expr: delta(logstash_node_queue_events[1m]) > 10000
+        for: 10m
+        labels:
+          severity: alert
+        annotations:
+          summary: Logstash pipeline {{ $labels.pipeline }} is growing on {{ $labels.instance }}.
+          description: "A Logstash pipeline named {{ $labels.pipeline }} is growing. Possible {{ $labels.pipeline }} pipeline is overloaded or logs spike."
+          runbook: "https://pingidentity.atlassian.net/l/cp/fKEd3bpy"
 
-  - alert: Logstash pipeline backlog alert
-    expr: logstash_node_queue_events > 1000000
-    for: 10m
-    labels:
-      severity: critical
-    annotations:
-      summary: Logstash Queue Backlog Alert for {{ $labels.pipeline }} on {{ $labels.instance }}
-      description: "This alert is triggered when the length of the Logstash event queue for {{ $labels.pipeline }} on {{ $labels.instance }} exceeds a certain threshold.\nInvestigate the cause of the backlog for the specified pipeline on the specified instance.\nPossible reason is logstash or Elasticsearch performance issue.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      - alert: Logstash pipeline backlog alert
+        expr: logstash_node_queue_events > 1000000
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: Logstash Queue Backlog Alert for {{ $labels.pipeline }} on {{ $labels.instance }}
+          description: "This alert is triggered when the length of the Logstash event queue for {{ $labels.pipeline }} on {{ $labels.instance }} exceeds a certain threshold.\nNumber of events: {{ $value }}"
+          runbook: "https://pingidentity.atlassian.net/l/cp/ARLdMfXF"
 
-  - alert: Logstash has no outgoing events
-    expr: sum(increase(logstash_node_pipeline_events_out_total{pipeline!="alerts"}[1m])) by (pipeline, k8s_cluster_name) == 0
-    for: 10m
-    labels:
-      severity: critical
-    annotations:
-      summary: Logstash pipeline {{ $labels.pipeline }} didn't produce any outgoing events.
-      description: "An outgoing Logstash pipeline {{ $labels.pipeline }} is dead. Possible no outgoing events.\nCheck logs destination availability.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      - alert: Logstash has no outgoing events
+        expr: sum(increase(logstash_node_pipeline_events_out_total{pipeline!~"alerts|dlq"}[1m])) by (pipeline) == 0
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: Logstash pipeline {{ $labels.pipeline }} didn't produce any outgoing events.
+          description: "An outgoing Logstash pipeline {{ $labels.pipeline }} is dead."
+          runbook: "https://pingidentity.atlassian.net/l/cp/2Y87TfgA"
 
-  - alert: Logstash has no incoming events
-    expr: sum(increase(logstash_node_pipeline_events_in_total{pipeline!="alerts"}[1m])) by (pipeline, k8s_cluster_name) == 0
-    for: 10m
-    labels:
-      severity: critical
-    annotations:
-      summary: Logstash pipeline {{ $labels.pipeline }} didn't recieve any incoming events.
-      description: "An incoming Logstash pipeline {{ $labels.pipeline }} is dead. Possible some inputs stuck.\nCheck fluent-bit logs.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+      - alert: Logstash has no incoming events
+        expr: sum(increase(logstash_node_pipeline_events_in_total{pipeline!~"alerts|dlq"}[1m])) by (pipeline) == 0
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: Logstash pipeline {{ $labels.pipeline }} didn't recieve any incoming events.
+          description: "An incoming Logstash pipeline {{ $labels.pipeline }} is dead."
+          runbook: "https://pingidentity.atlassian.net/l/cp/RvB39RpB"
 
-  - alert: Logstash pods count 0
-    expr: group by (k8s_cluster_name) (present_over_time(logstash_node_up[3h])) unless group by (k8s_cluster_name) (logstash_node_up) > 0
-    for: 10m
-    labels:
-      severity: critical
-    annotations:
-      summary: No available logstash in cluster {{ $labels.k8s_cluster_name }}
-      description: "Running logstash pods is 0 in cluster {{ $labels.k8s_cluster_name }}. Looks like they're died or didn't return any metrics.\n Check logstash pods"
+      - alert: Logstash pods count 0
+        expr: sum(logstash_node_up) == 0 or absent(logstash_node_up) == 1
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: Running logstash pods is count 0
+          description: "Running logstash pods is 0. Looks like they're died or didn't return any metrics."
+          runbook: "https://pingidentity.atlassian.net/l/cp/Rub1Qv6f"

@@ -114,6 +114,7 @@
 - Increase PingFederate MaxThreadCount
 - Kibana: Alerting Improvements
 - Upgrade PingFederate
+- Prometheus alerts now go directly to OpsGenie
 
 _Changes:_
 
@@ -259,6 +260,7 @@ _Changes:_
 - [X] PDO-6436 Kibana: Alerting Improvements
 - [X] PDO-6438 Allocate sufficient memory to the ingress controller
 - [X] PDO-6440 Update to fix AWS IAM role ARN for Karpenter
+- [X] PDO-6458 Send Prometheus alerts to OpsGenie
 - [X] PDO-6780 Increase PingFederate MaxThreadCount
 - [X] PDO-6459 Upgrade PingFederate
 

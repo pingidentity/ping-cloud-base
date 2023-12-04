@@ -258,9 +258,8 @@ NOTIFICATION_ENABLED=true
 SLACK_CHANNEL=${SLACK_CHANNEL}
 NOTIFICATION_ENDPOINT=http://webhook-eventsource-svc.argo-events:12999/notification
 
-# Prometheus argo-events notification configuration
-PROM_NOTIFICATION_ENABLED=true
-PROM_SLACK_CHANNEL=${PROM_SLACK_CHANNEL}
+# Prometheus OpsGenie notification configuration
+OPSGENIE_API_KEY=${OPSGENIE_API_KEY}
 
 # Dashboards repo variables
 DASH_REPO_URL=https://github.com/pingidentity/ping-cloud-dashboards
