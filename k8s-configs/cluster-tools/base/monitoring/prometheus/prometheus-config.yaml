@@ -17,8 +17,6 @@ data:
       # How frequently to evaluate rules.
       evaluation_interval: 5s
       external_labels:
-        slack_channel: ${PROM_SLACK_CHANNEL}
-        notifications_enabled: ${PROM_NOTIFICATION_ENABLED}
         k8s_cluster_name: ${CLUSTER_NAME}-${TENANT_NAME}-${REGION_NICK_NAME}
     alerting:
       alertmanagers:
