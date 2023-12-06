@@ -15,6 +15,10 @@ spec:
         app: prometheus-agent
     spec:
       serviceAccountName: prometheus
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
       containers:
       - name: prometheus
         image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/prom/prometheus:v2.47.0
