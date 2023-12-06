@@ -4,5 +4,7 @@ type: Opaque
 metadata:
   name: opsgenie-key
   namespace: prometheus
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
 data:
   api-key: "UExBQ0VIT0xERVIK"
