@@ -42,10 +42,10 @@ spec:
             - dest: 0.generatorURL
               src:
                 dependencyName: trigger-opsgenie
-                dataTemplate: '{{.Input.body.message.HOSTNAME}}'
+                dataTemplate: '{{.Input.body.message.APP}}'
             - dest: 0.labels.alertname
               src:
-                dataTemplate: '{{.Input.body.message.MSG}} in {{.Input.body.message.HOSTNAME}}'
+                dataTemplate: '{{.Input.body.message.MSG}} in {{.Input.body.message.APP}}'
                 dependencyName: trigger-opsgenie
             - dest: 0.labels.k8s_cluster_name
               src:
