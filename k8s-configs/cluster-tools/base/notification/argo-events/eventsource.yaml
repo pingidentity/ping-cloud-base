@@ -23,6 +23,13 @@ spec:
     - eventName: notification
       eventSourceName: webhook
       name: trigger-opsgenie
+      transform:
+        script: |-
+          event.body.json = {}
+          for k, v in string.gmatch(event.body.message, "'(.-)':%s?'(.-)'") do
+            event.body.json[k] = v
+          end
+          return event
   template:
     serviceAccountName: argo-events-sa
   triggers:
@@ -41,23 +48,23 @@ spec:
                 value: alert
             - dest: 0.generatorURL
               src:
+                dataTemplate: '{{ .Input.body.json.APP}}'
                 dependencyName: trigger-opsgenie
-                dataTemplate: '{{.Input.body.message.APP}}'
             - dest: 0.labels.alertname
               src:
-                dataTemplate: '{{.Input.body.message.MSG}} in {{.Input.body.message.APP}}'
+                dataTemplate: Backup error in {{ .Input.body.json.APP }}
                 dependencyName: trigger-opsgenie
             - dest: 0.labels.k8s_cluster_name
               src:
-                dataTemplate: '{{ .Input.body.message.ENVIRONMENT_TYPE}}-{{ .Input.body.message.TENANT_DOMAIN}}'
+                dataTemplate: '{{ .Input.body.json.ENVIRONMENT_TYPE}}-{{ .Input.body.json.TENANT_DOMAIN}}'
                 dependencyName: trigger-opsgenie
             - dest: 0.annotations.summary
               src:
-                dataTemplate: '{{ .Input.body.message.MSG }}'
+                dataTemplate: '{{ .Input.body.json.MSG }}'
                 dependencyName: trigger-opsgenie
             - dest: 0.annotations.description
               src:
-                dataKey: body.message
+                dataTemplate: '{{ .Input.body.message}}'
                 dependencyName: trigger-opsgenie
           url: http://alertmanager.prometheus:9093/api/v1/alerts
         name: opsgenie
