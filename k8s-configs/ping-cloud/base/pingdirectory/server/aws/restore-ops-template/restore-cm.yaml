@@ -15,7 +15,7 @@ data:
       if "${PAUSE_REPLICATION_BEFORE_RESTORE}" && test ${NUM_REPLICAS} -gt 1; then
         echo "Executing pre-initialization from within ${SERVER} pod for DNs: ${DNS_LIST}"
         for DN in ${DNS_LIST}; do
-          /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
+          kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
             "dsreplication pre-external-initialization \
               --retryTimeoutSeconds \"${RETRY_TIMEOUT_SECONDS}\" \
               --baseDN \"${DN}\" \
@@ -28,7 +28,7 @@ data:
       if "${PAUSE_REPLICATION_BEFORE_RESTORE}" && test ${NUM_REPLICAS} -gt 1; then
         echo "Initializing replication from within ${SERVER} pod for DNs: ${DN_LIST} "
         for DN in ${DNS_LIST}; do
-          /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
+          kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
             "dsreplication initialize-all \
               --retryTimeoutSeconds \"${RETRY_TIMEOUT_SECONDS}\" \
               --baseDN \"${DN}\" \
@@ -37,7 +37,7 @@ data:
 
         echo "Executing post-initialization from within ${SERVER} pod for DNs: ${DNS_LIST}"
         for DN in ${DNS_LIST}; do
-          /tmp/kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
+          kubectl exec "${SERVER}" -c pingdirectory -- sh -c \
             "dsreplication post-external-initialization \
               --retryTimeoutSeconds \"${RETRY_TIMEOUT_SECONDS}\" \
               --baseDN \"${DN}\" \
@@ -47,7 +47,7 @@ data:
     }
 
     delete_pvc() {
-      /tmp/kubectl delete pvc pingdirectory-restore -n ${PING_CLOUD_NAMESPACE} --grace-period=0 --force
+      kubectl delete pvc pingdirectory-restore -n ${PING_CLOUD_NAMESPACE} --grace-period=0 --force
     }
 
     cleanup () {
@@ -58,13 +58,7 @@ data:
     # This guarantees that cleanup method will always run, even if the restore job exits due to an error
     trap "cleanup" EXIT
 
-    # Install kubectl
-    curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
-    -o /tmp/kubectl
-
-    chmod +x /tmp/kubectl
-
-    NUM_REPLICAS=$(/tmp/kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
+    NUM_REPLICAS=$(kubectl get statefulset "${K8S_STATEFUL_SET_NAME}" -o jsonpath='{.spec.replicas}')
     echo "restore: number of replicas: ${NUM_REPLICAS}"
 
     DN_LIST=

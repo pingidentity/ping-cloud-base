@@ -115,6 +115,7 @@
 - Kibana: Alerting Improvements
 - Upgrade PingFederate
 - Prometheus alerts now go directly to OpsGenie
+- Execute kubectl from bin directory for backup and restore scripts
 
 _Changes:_
 
@@ -263,6 +264,7 @@ _Changes:_
 - [X] PDO-6458 Send Prometheus alerts to OpsGenie
 - [X] PDO-6780 Increase PingFederate MaxThreadCount
 - [X] PDO-6459 Upgrade PingFederate
+- [X] PDO-6494 Execute kubectl from bin directory for backup and restore scripts
 
 ### 1.17.3.0
 
