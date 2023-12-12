@@ -16,7 +16,7 @@ class TestPFAdminSSO(p1_test_base.P1TestBase):
             f"{self.tenant_name}-{self.environment}-pf-expression",
             f"{self.tenant_name}-{self.environment}-pf-audit",
         ]
-        self.app_name = f"client-{self.tenant_name}-${self.environment}-pingfederate-sso"
+        self.app_name = f"client-{self.tenant_name}-pingfederate-sso"
 
     def test_groups_created(self):
         for group_name in self.group_names:
