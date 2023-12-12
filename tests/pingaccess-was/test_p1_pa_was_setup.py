@@ -1,7 +1,6 @@
 import copy
 import os
 import unittest
-import subprocess
 
 import k8s_utils
 import p1_test_base
@@ -18,6 +17,7 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
         cls.k8s = k8s_utils.K8sUtils()
         tenant_name = os.getenv("TENANT_NAME", f"{os.getenv('USER')}-primary")
         cls.pa_was_app_name = f"client-{tenant_name}-pa-was"
+        cls.account_type_scope_name = "account_type"
         cls.pa_was_secret_name = "pingaccess-was-admin-p14c"
         cls.ping_cloud_ns = os.getenv("PING_CLOUD_NAMESPACE", "ping-cloud")
 
@@ -94,34 +94,34 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
             f"The {self.pa_was_app_name} application's redirect URIs were not updated in PingOne",
         )
 
-    def test_pa_was_resource_created(self):
-        resource = self.get(self.cluster_env_endpoints.resources, self.pa_was_app_name)
-        self.assertIsNotNone(resource, f"Resource '{self.pa_was_app_name}' not created")
-
-    def test_pa_was_resource_linked_to_application(self):
+    def test_pa_was_account_type_scope_granted_to_application(self):
         app = self.get(self.cluster_env_endpoints.applications, self.pa_was_app_name)
         grants = self.get(
             f"{self.cluster_env_endpoints.applications}/{app['id']}/grants"
         )
-        grant = grants[0]
-        resource = self.get(self.cluster_env_endpoints.resources, self.pa_was_app_name)
-        self.assertEqual(
-            grant["resource"]["id"],
-            resource["id"],
-            f"Resource '{self.pa_was_app_name}' not linked to application '{self.pa_was_app_name}'",
-        )
+        # Get granted resource and scope IDs
+        granted_resource_ids = []
+        granted_scope_ids = []
+        for grant in grants:
+            granted_resource_ids.append(grant["resource"]["id"])
+            granted_scope_ids += [scope["id"] for scope in grant["scopes"]]
 
-    def test_configure_pa_was_resource_scope_value(self):
-        resource = self.get(self.cluster_env_endpoints.resources, self.pa_was_app_name)
-        scopes = self.get(
-            f"{self.cluster_env_endpoints.resources}/{resource['id']}/scopes"
-        )
-        scope_name = scopes[0]["name"]
-        expected = "account_type"
-        self.assertEqual(
-            expected,
-            scope_name,
-            f"Scope name is '{scope_name}', but should be '{expected}'",
+        # Get account_type scope IDs from granted resources
+        account_type_scope_ids = []
+        for resource_id in granted_resource_ids:
+            scope = self.get(
+                endpoint=f"{self.cluster_env_endpoints.resources}/{resource_id}/scopes",
+                name=self.account_type_scope_name,
+            )
+            account_type_scope_ids.append(scope["id"])
+
+        # Check that one of the granted scope IDs is an account_type scope
+        self.assertTrue(
+            any(
+                granted_scope_id in account_type_scope_ids
+                for granted_scope_id in granted_scope_ids
+            ),
+            f"No grant for scope '{self.account_type_scope_name}' found for application '{self.pa_was_app_name}'",
         )
 
     def test_pa_was_k8s_secret_values_created(self):
