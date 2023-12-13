@@ -29,6 +29,8 @@ variables:
     pingdelegator/01-admin-user-login.sh
     pingdirectory/03-backup-restore.sh
     pingdirectory/08-test-http-connection-handler.sh
+    monitoring/test_cloudwatch_logs.py
+    monitoring/03-nri-kubernetes.sh
 
 ## Compile stage ##
 compile:
