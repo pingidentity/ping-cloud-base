@@ -99,6 +99,7 @@
 - Update CreateCluster script to provision Karpenter-ready Cluster.
 - Removed: AWS EFS CSI Driver
 - Prometheus: Migrate to AWS EBS gp3 Volumes
+- Update alert rules for PGO
 
 _Changes:_
 
@@ -222,6 +223,7 @@ _Changes:_
 - [X] PDO-6166 Add PingFederate periodic backup limits
 - [X] PDO-6167 Add PodDisruptionBudget for ingress-nginx-public
 - [X] PDO-6187 Increase wait time for backup alerts for PGO
+- [X] PDO-6188 Update alert rules for PGO
 - [X] PDO-6189 Fluentbit: Performance degradation under high load
 - [X] PDO-6190 Logstash: Readiness probe fails under high load
 - [X] PDO-6224 Remove Grafana ping-app patches from remove-from-secondary-patch.yaml 
