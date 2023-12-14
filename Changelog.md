@@ -1,5 +1,13 @@
 # Changelog
 
+### 2.0.0
+
+- No Changes
+
+_Changes:_
+
+- None
+
 ### 1.19.0.0
 
 - Create a new init container to upgrade PA and PA-WAS and mount volume to admin pod once upgrade is successful
