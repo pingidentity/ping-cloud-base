@@ -26,7 +26,7 @@ spec:
           #- --dry-run
           - --matching-labels=.*
           #- --debug
-          - --include-resources=deployments,statefulsets,horizontalpodautoscalers,cronjobs
+          - --include-resources=deployments,statefulsets,cronjobs
           - --exclude-namespaces=karpenter,kube-system
           # run every minute
           - --interval=300
