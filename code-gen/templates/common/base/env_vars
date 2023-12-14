@@ -282,3 +282,6 @@ PINGFEDERATE_HEALTHCHECK_SCHEDULE="* * * * *"
 # Renewing before 30 days (aka 720 hours) of expiration is suggested by let's encrypt
 # Meaning if cert expires in 90 days we will rotate and renew in 60 days
 CERT_RENEW_BEFORE=${CERT_RENEW_BEFORE}
+
+# Variable to set the default cluster resource uptime/working hours
+DEFAULT_CLUSTER_UPTIME="${DEFAULT_CLUSTER_UPTIME}"
