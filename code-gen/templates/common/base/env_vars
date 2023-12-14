@@ -163,21 +163,21 @@ PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 ############################################################
 # Ping application image tags
 ############################################################
-PINGACCESS_IMAGE_TAG=v1.19-release-branch-latest
-PINGACCESS_WAS_IMAGE_TAG=v1.19-release-branch-latest
-PINGFEDERATE_IMAGE_TAG=v1.19-release-branch-latest
-PINGDIRECTORY_IMAGE_TAG=v1.19-release-branch-latest
-PINGDELEGATOR_IMAGE_TAG=v1.19-release-branch-latest
-PINGCENTRAL_IMAGE_TAG=v1.19-release-branch-latest
-PINGDATASYNC_IMAGE_TAG=v1.19-release-branch-latest
+PINGACCESS_IMAGE_TAG=v2.0-release-branch-latest
+PINGACCESS_WAS_IMAGE_TAG=v2.0-release-branch-latest
+PINGFEDERATE_IMAGE_TAG=v2.0-release-branch-latest
+PINGDIRECTORY_IMAGE_TAG=v2.0-release-branch-latest
+PINGDELEGATOR_IMAGE_TAG=v2.0-release-branch-latest
+PINGCENTRAL_IMAGE_TAG=v2.0-release-branch-latest
+PINGDATASYNC_IMAGE_TAG=v2.0-release-branch-latest
 
 ############################################################
 # Ping solution image tags
 ############################################################
-METADATA_IMAGE_TAG=v1.19-release-branch-latest
-BOOTSTRAP_IMAGE_TAG=v1.19-release-branch-latest
-HEALTHCHECK_IMAGE_TAG=v1.19-release-branch-latest
-P14C_INTEGRATION_IMAGE_TAG=v1.19-release-branch-latest
+METADATA_IMAGE_TAG=v2.0-release-branch-latest
+BOOTSTRAP_IMAGE_TAG=v2.0-release-branch-latest
+HEALTHCHECK_IMAGE_TAG=v2.0-release-branch-latest
+P14C_INTEGRATION_IMAGE_TAG=v2.0-release-branch-latest
 
 ############################################################
 # Cluster name variables
@@ -265,7 +265,7 @@ PROM_SLACK_CHANNEL=${PROM_SLACK_CHANNEL}
 
 # Dashboards repo variables
 DASH_REPO_URL=https://github.com/pingidentity/ping-cloud-dashboards
-DASH_REPO_BRANCH=v1.19-dev-branch
+DASH_REPO_BRANCH=v2.0-dev-branch
 
 # Healthcheck variables
 CLUSTER_HEALTHCHECK_SCHEDULE="* * * * *"
