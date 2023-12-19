@@ -102,6 +102,7 @@
 - Update alert rules for PGO
 - Nginx logs include request hostname
 - Update integration tests to be able to run locally
+- Update to P1AS to use ARN instead of name for IRSA roles
 
 _Changes:_
 
@@ -123,6 +124,7 @@ _Changes:_
 - [X] PDO-5114 OpenSearch migration: Migrate PA dashboard
 - [X] PDO-5116 OpenSearch migration: Migrate PF dashboards
 - [X] PDO-5135 Implement IRSA role for aws cloud watch agent
+- [X] PDO-5136 Update to P1AS to use ARN instead of name for IRSA roles
 - [X] PDO-5145 OpenSearch migration: Develop index migration job
 - [X] PDO-5152 OpenSearch migration: Rewrite bootstrap scripts
 - [X] PDO-5158 Configure PA WAS from Shared P1 Tenant
