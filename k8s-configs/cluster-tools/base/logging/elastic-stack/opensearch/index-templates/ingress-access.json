@@ -281,6 +281,15 @@
                     }
                   }
                 },
+                "hostname": {
+                  "type": "text",
+                  "fields": {
+                    "keyword": {
+                      "ignore_above": 256,
+                      "type": "keyword"
+                    }
+                  }
+                },
                 "upstream_addr": {
                   "type": "text",
                   "fields": {
