@@ -103,6 +103,7 @@
 - Nginx logs include request hostname
 - Update integration tests to be able to run locally
 - Update to P1AS to use ARN instead of name for IRSA roles
+- Replace healthcheck & metadata related manifests & configs with p1as-beluga-tools microservice
 
 _Changes:_
 
@@ -113,6 +114,7 @@ _Changes:_
 - [X] PDO-4847 Add weekly pipeline run logic for PCB
 - [X] PDO-4857 Add Beluga Tools code-gen directory to PCB
 - [X] PDO-4868 Update update-cluster-state script for MonoRepo
+- [X] PDO-4872 BelugaTools Cleanup
 - [X] PDO-4896 Update ping-cloud-base karpenter version to v0.28.1
 - [X] PDO-4900 Remove myping code
 - [X] PDO-5005 Update generate-cluster-state script to pull profiles from code-gen dir

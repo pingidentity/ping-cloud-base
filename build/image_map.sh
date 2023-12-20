@@ -18,8 +18,6 @@ export IMAGE_MAP="pingcloud-apps/pingaccess
    pingcloud-services/argocd-bootstrap
    pingcloud-services/bootstrap
    pingcloud-services/p14c-integration
-   pingcloud-services/metadata
-   pingcloud-services/healthcheck
    pingcloud-monitoring/logstash
    pingcloud-monitoring/enrichment-bootstrap
    pingcloud-monitoring/os-bootstrap
