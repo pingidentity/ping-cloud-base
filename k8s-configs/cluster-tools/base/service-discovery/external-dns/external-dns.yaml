@@ -37,6 +37,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: external-dns
+  labels:
+    app: external-dns
 spec:
   strategy:
     type: Recreate

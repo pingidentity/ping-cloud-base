@@ -40,6 +40,8 @@ kind: Deployment
 metadata:
   name: prometheus-job-exporter
   namespace: prometheus
+  labels:
+    app: prometheus-job-exporter
 spec:
   replicas: 1
   selector:
