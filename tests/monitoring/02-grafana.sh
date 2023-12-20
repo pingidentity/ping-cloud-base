@@ -94,13 +94,17 @@ testGrafanaDashboardsExist() {
     fi
   done
   
+  assertContains "${dashboards}" "Kubernetes Cluster Monitoring"
+
+  if [ "${ENV_TYPE}" == "customer-hub" ]; then
+    return
+  fi
   assertContains "${dashboards}" "PingAccess Per-Server Dashboard"
   assertContains "${dashboards}" "PingAccess Topology Dashboard"
   assertContains "${dashboards}" "PingDirectory Per-Server Dashboard"
   assertContains "${dashboards}" "PingDirectory Topology Dashboard"
   assertContains "${dashboards}" "PingFederate Per-Server Dashboard"
   assertContains "${dashboards}" "PingFederate Topology Dashboard"
-  assertContains "${dashboards}" "Kubernetes Cluster Monitoring"
 }
 
 # When arguments are passed to a script you must
