@@ -174,9 +174,7 @@ PINGDATASYNC_IMAGE_TAG=v1.19-release-branch-latest
 ############################################################
 # Ping solution image tags
 ############################################################
-METADATA_IMAGE_TAG=v1.19-release-branch-latest
 BOOTSTRAP_IMAGE_TAG=v1.19-release-branch-latest
-HEALTHCHECK_IMAGE_TAG=v1.19-release-branch-latest
 P14C_INTEGRATION_IMAGE_TAG=v1.19-release-branch-latest
 
 ############################################################
