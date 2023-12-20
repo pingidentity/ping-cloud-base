@@ -18,17 +18,24 @@ spec:
         version: v24.0.0
     spec:
       serviceAccountName: kube-downscaler
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: karpenter.sh/provisioner-name
+                operator: DoesNotExist
       containers:
       - name: downscaler
         image: public.ecr.aws/r2h3l6e4/kube-downscaler:24.0.0  
         args:
-          # dry run by default, remove to perform downscaling
-          #- --dry-run
           - --matching-labels=.*
-          #- --debug
           - --include-resources=deployments,statefulsets,cronjobs
-          - --exclude-namespaces=karpenter,kube-system
-          # run every minute
+          - --exclude-namespaces="""
+          - --exclude-deployments=coredns,kube-downscaler,karpenter
+          # Grace period in seconds for new deployments before scaling them down
+          - --grace-period=120
+          # Runs every 5 minute
           - --interval=300
         envFrom:
           - configMapRef:

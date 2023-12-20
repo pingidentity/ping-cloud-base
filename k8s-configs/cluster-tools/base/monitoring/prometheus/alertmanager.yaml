@@ -32,6 +32,8 @@ kind: Deployment
 metadata:
   name: alertmanager
   namespace: prometheus
+  labels:
+    app: alertmanager
   annotations:
     argocd.argoproj.io/sync-options: Replace=true
 spec:
