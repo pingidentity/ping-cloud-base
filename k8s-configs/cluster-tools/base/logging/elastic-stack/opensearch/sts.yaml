@@ -182,7 +182,7 @@ spec:
     matchLabels:
       app.kubernetes.io/name: opensearch
       app.kubernetes.io/instance: opensearch-cluster-warm
-  replicas: 1
+  replicas: 3
   volumeClaimTemplates:
   - metadata:
       name: data
