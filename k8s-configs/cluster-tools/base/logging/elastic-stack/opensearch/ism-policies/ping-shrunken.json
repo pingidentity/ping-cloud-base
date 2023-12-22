@@ -1,7 +1,7 @@
 {
    "policy": {
         "policy_id": "ping_shrunken_policy",
-        "description": "Ping policy for shrunken indices(immediately merge, set replica to 0, move to warm, after 180 days delete)",
+        "description": "Ping policy for shrunken indices(immediately merge, move to warm, after 180 days delete)",
         "last_updated_time": 1684846300784,
         "schema_version": 17,
         "error_notification": null,
@@ -17,7 +17,7 @@
                             "delay": "1m"
                         },
                         "replica_count": {
-                            "number_of_replicas": 0
+                            "number_of_replicas": 1
                         }
                     },
                     {
