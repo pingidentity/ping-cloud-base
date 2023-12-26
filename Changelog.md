@@ -250,6 +250,7 @@ _Changes:_
 - [X] PDO-6411 Increase OpenSearch warm replicas to 3 to make it HA
 - [X] PDO-6420 Update tag-release.sh to replace the helm chart versions in PCB
 - [X] PDO-6482 Update nginx logs to include hostname
+- [X] PDO-6506 Update to fix karpenter provisoner config
 - [X] PDO-6526 Update integration tests to be able to run locally
 
 ### 1.18.0.0

@@ -7,7 +7,7 @@ spec:
     provisionerType: fleet
   limits:
     resources:
-      cpu: 300
+      cpu: "300"
       memory: 750Gi
   providerRef:
     name: default
@@ -21,6 +21,10 @@ spec:
     - key: "karpenter.sh/capacity-type"
       operator: In
       values: ["spot", "on-demand"]
+    - key: kubernetes.io/os
+      operator: In
+      values:
+        - linux
   ttlSecondsAfterEmpty: 30
 ---
 apiVersion: karpenter.sh/v1alpha5
@@ -33,7 +37,7 @@ spec:
     pingidentity.com/pgo: "true"
   limits:
     resources:
-      cpu: 24
+      cpu: "24"
       memory: 50Gi
   providerRef:
     name: pgo-only
@@ -67,7 +71,7 @@ spec:
     pingidentity.com/pd: "true"
   limits:
     resources:
-      cpu: 60
+      cpu: "60"
       memory: 500Gi
   providerRef:
     name: pd-only
