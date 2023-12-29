@@ -92,8 +92,8 @@ global:
   # The image pull policy for all images
   imagePullPolicy: "Always"
 
-  # Enable or disable subchart dependencies
-  installP1asSubcharts: false
+  # Boolean determining if this is an isolated microservice or a full PCB deploy
+  isMicroserviceDeploy: false
 
   ########################################################
   # Environment-specific variables
