@@ -99,6 +99,7 @@
 - Update CreateCluster script to provision Karpenter-ready Cluster.
 - Removed: AWS EFS CSI Driver
 - Prometheus: Migrate to AWS EBS gp3 Volumes
+- Set PingDataSync OOTB connection to JVM-Default
 - Update alert rules for PGO
 - Nginx logs include request hostname
 - Update integration tests to be able to run locally
@@ -250,6 +251,7 @@ _Changes:_
 - [X] PDO-6338 Migrate Prometheus to the GP3 volumes
 - [X] PDO-6411 Increase OpenSearch warm replicas to 3 to make it HA
 - [X] PDO-6420 Update tag-release.sh to replace the helm chart versions in PCB
+- [X] PDO-6457 Set PingDataSync OOTB connection to JVM-Default
 - [X] PDO-6476 Update and implement dependency helm chart conditional value
 - [X] PDO-6482 Update nginx logs to include hostname
 - [X] PDO-6506 Update to fix karpenter provisoner config

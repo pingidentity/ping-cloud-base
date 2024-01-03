@@ -10,6 +10,6 @@ dsconfig create-external-server \
   --set "password:${EXT_PD_SYNC_BIND_DN_PASSWORD}" \
   --set connection-security:ssl \
   --set key-manager-provider:Null \
-  --set "trust-manager-provider:Blind Trust" \
+  --set "trust-manager-provider:JVM-Default" \
   --set initial-connections:${EXT_PD_HOST_INITIAL_CONNECTIONS} \
   --set max-connections:${EXT_PD_HOST_MAX_CONNECTIONS}
