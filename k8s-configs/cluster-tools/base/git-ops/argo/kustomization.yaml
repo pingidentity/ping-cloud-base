@@ -356,6 +356,7 @@ patches:
       name: argocd-notifications-secret
       annotations:
         sealedsecrets.bitnami.com/managed: "true"
+        argocd.argoproj.io/sync-options: Prune=false
 - patch: |-
     apiVersion: v1
     kind: Secret
@@ -364,6 +365,7 @@ patches:
       annotations:
         sealedsecrets.bitnami.com/managed: "true"
         sealedsecrets.bitnami.com/patch: "true"
+        argocd.argoproj.io/sync-options: Prune=false
 - patch: |-
     # Add init container to create Argo clusters for all CDEs from customer-hub
     apiVersion: apps/v1

@@ -148,6 +148,7 @@ metadata:
   name: os-bootstrap-creds
   annotations:
     sealedsecrets.bitnami.com/managed: "true"
+    argocd.argoproj.io/sync-options: Prune=false
 data:
   username: Ym9vdHN0cmFw
   password: eGFSYWUxeGFlbmdhaG5pZTBpZURvbzdub2htYWlyb2o=

@@ -276,9 +276,11 @@ PINGFEDERATE_HEALTHCHECK_SCHEDULE="* * * * *"
 # cert-manager variables
 # The maximum duration allowed by Let's Encrypt for certificate rotation is 90 days (equivalent to 2160 hours).
 # See here for more details: https://letsencrypt.org/docs/faq/#what-is-the-lifetime-for-let-s-encrypt-certificates-for-how-long-are-they-valid
-# But it allows the certificate to be renewed before the duration. 
+# But it allows the certificate to be renewed before the duration.
 # Renewing before 30 days (aka 720 hours) of expiration is suggested by let's encrypt
 # Meaning if cert expires in 90 days we will rotate and renew in 60 days
+# NOTE: Format must exactly match Argo's expectations until https://github.com/argoproj/argo-cd/pull/16587 is fixed
+# Format example: 720h0m0s - check Argo sync if not sure after changing this value to make sure there is no diff.
 CERT_RENEW_BEFORE=${CERT_RENEW_BEFORE}
 
 # Variable to set the default cluster resource uptime/working hours

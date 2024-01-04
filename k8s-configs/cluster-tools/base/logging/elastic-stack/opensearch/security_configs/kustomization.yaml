@@ -17,5 +17,7 @@ secretGenerator:
       - tenants.yml
       - whitelist.yml
 generatorOptions:
+  disableNameSuffixHash: true
   annotations:
-    sealedsecrets.bitnami.com/managed: "true"  
+    sealedsecrets.bitnami.com/managed: "true"
+    argocd.argoproj.io/sync-options: Prune=false

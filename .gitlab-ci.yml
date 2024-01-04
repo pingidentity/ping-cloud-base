@@ -48,7 +48,7 @@ compile:
    paths:
      - out/
    expire_in: 1 day
-   
+
 ## start security stage ##
 copy-images:
   stage: security
@@ -185,7 +185,7 @@ pa-was-integration-tests:
   - common
   - monitoring
   - health
-  
+
 .integration-tests-base:
   variables:
     TEST: ""
@@ -212,7 +212,7 @@ integration-tests:
     matrix:
       - TEST: *all-tests
   rules:
-    - if:  '$ENV_TYPE == null && $CI_PIPELINE_SOURCE != "schedule"'
+    - if: '$ENV_TYPE == null && $CI_PIPELINE_SOURCE != "schedule"'
 
 integration-tests-scheduled-pipeline:
   extends: .integration-tests-base
@@ -233,7 +233,7 @@ integration-tests-chub:
       - TEST: *chub-tests
   rules:
   - if: '$ENV_TYPE == "customer-hub"'
-      
+
 ## Chaos testing stage ##
 chaos-tests:
   stage: chaos

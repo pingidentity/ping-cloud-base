@@ -58,6 +58,7 @@ metadata:
   name: slack-secret
   annotations:
     sealedsecrets.bitnami.com/managed: "true"
+    argocd.argoproj.io/sync-options: Prune=false
 data:
   token: QkFTRTY0LUVOQ09ERUQtT0FVVEgtVE9LRU4=
 
