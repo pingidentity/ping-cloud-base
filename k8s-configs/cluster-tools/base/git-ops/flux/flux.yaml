@@ -53,6 +53,7 @@ metadata:
   namespace: flux
   annotations:
     sealedsecrets.bitnami.com/managed: "true"
+    argocd.argoproj.io/sync-options: Prune=false
 type: Opaque
 ---
 apiVersion: v1

@@ -113,29 +113,36 @@ echo "Using certificate file ${CERT_FILE} for encrypting secrets"
 SEALED_SECRETS_FILE=/tmp/sealed-secrets.yaml
 rm -f "${SEALED_SECRETS_FILE}"
 
-# Create default secret file under /tmp. This is required so that ping-secrets.yaml can override secrets.yaml
 SECRETS_FILE=/tmp/ping-secrets.yaml
 rm -f "${SECRETS_FILE}"
-touch "${SECRETS_FILE}"
 
+# Seal all secrets, even if empty, this allows for ArgoCD to manage the corresponding secrets correctly
+# Once ArgoCD sees a SealedSecret with a corresponding Secret, it is able to stop managing the Secret resource properly
 for FILE in ${YAML_FILES}; do
   NAME=$(grep '^  name:' "${FILE}" | cut -d: -f2 | tr -d '[:space:]')
   NAMESPACE=$(grep '^  namespace:' "${FILE}" | cut -d: -f2 | tr -d '[:space:]')
 
-  # Only seal secrets that have data in them.
-  if grep '^data' "${FILE}" &> /dev/null; then
-    echo "Creating sealed secret for \"${NAMESPACE}:${NAME}\""
+  cat >> "${SECRETS_FILE}" <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ${NAME}
+  namespace: ${NAMESPACE}
+\$patch: delete
 
-    # Append the sealed secret to the sealed secrets file.
-    kubeseal --cert "${CERT_FILE}" -o yaml --allow-empty-data < "${FILE}" >> "${SEALED_SECRETS_FILE}"
-    echo --- >> "${SEALED_SECRETS_FILE}"
-    echo >> "${SEALED_SECRETS_FILE}"
+---
 
-    # Replace ping-cloud-* namespace to just ping-cloud because it is the default in the kustomization base.
-    echo -n "${NAMESPACE}" | grep '^ping-cloud' &> /dev/null && NAMESPACE=ping-cloud
-  else
-    echo "Not creating sealed secret for \"${NAMESPACE}:${NAME}\" because it doesn't have any data"
-  fi
+EOF
+
+  echo "Creating sealed secret for \"${NAMESPACE}:${NAME}\""
+
+  # Append the sealed secret to the sealed secrets file.
+  kubeseal --cert "${CERT_FILE}" -o yaml --allow-empty-data < "${FILE}" >> "${SEALED_SECRETS_FILE}"
+  echo --- >> "${SEALED_SECRETS_FILE}"
+  echo >> "${SEALED_SECRETS_FILE}"
+
+  # Replace ping-cloud-* namespace to just ping-cloud because it is the default in the kustomization base.
+  echo -n "${NAMESPACE}" | grep '^ping-cloud' &> /dev/null && NAMESPACE=ping-cloud
 done
 
 if "${UPDATE_MANIFESTS}"; then
@@ -151,7 +158,7 @@ else
   echo "      test -f ${SECRETS_FILE} && cp ${SECRETS_FILE} ${BUILD_DIR}/secrets.yaml"
   echo "      test -f ${SEALED_SECRETS_FILE} && cp ${SEALED_SECRETS_FILE} ${BUILD_DIR}/sealed-secrets.yaml"
   echo "      ./git-ops-command.sh \${REGION_DIR} > /tmp/deploy.yaml"
-  echo "      grep 'kind: Secret' /tmp/deploy.yaml # should have Secrets manifests & ConfigMap manifests"
+  echo "      grep 'kind: Secret' /tmp/deploy.yaml # shouldn't have Secrets manifests, but could have ConfigMap manifests"
   echo "      grep 'kind: SealedSecret' /tmp/deploy.yaml # should have hits"
   echo "- Push all modified files into the cluster state repo"
   echo "- Run this script for each CDE branch and region directory in the order - dev, test, stage, prod"

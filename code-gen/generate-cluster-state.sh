@@ -970,7 +970,7 @@ export PA_GCOPTION='-XX:+UseParallelGC'
 
 export APP_RESYNC_SECONDS="${APP_RESYNC_SECONDS:-60}"
 
-export CERT_RENEW_BEFORE="${CERT_RENEW_BEFORE:-720h}"
+export CERT_RENEW_BEFORE="${CERT_RENEW_BEFORE:-720h0m0s}"
 
 ########################################################################################################################
 # Print out the final value being used for each variable.
