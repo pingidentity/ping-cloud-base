@@ -2,11 +2,11 @@
 
 ### 2.0.0
 
-- No Changes
+- Update version regexes from v*.*.*.* to v*.*.*
 
 _Changes:_
 
-- None
+- [X] PDO-5729 Update version regexes
 
 ### 1.19.0.0
 
