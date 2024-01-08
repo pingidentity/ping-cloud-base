@@ -59,8 +59,7 @@ test_no_secret_in_uber_yaml() {
     echo "Generating uber yaml..."
     ./git-ops-command.sh ${REGION} > ${uber_yaml_output}
 
-    # Find all kind: Secrets at the top level, ignoring karpenter-cert as it's managed by karpenter
-    yq 'select(.kind == "Secret") | select(.metadata.name != "karpenter-cert")' ${uber_yaml_output} -e
+    yq 'select(.kind == "Secret")' ${uber_yaml_output} -e
     assertEquals "yq exit code should be 1 as no matches are found" 1 $?
 }
 

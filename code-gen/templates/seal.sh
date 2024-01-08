@@ -18,6 +18,7 @@
 #   - Make sure you do not have any local changes in your CDE branch
 #   - Copy cluster-state-repo/k8s-configs/base/orig-secrets.yaml into secrets.yaml within the same directory
 #   - Plug in base64-encoded strings for the secret values - these will be environment variables of the form ${VALUE}
+#   - Remove/backup in a safe place the existing sealed-secrets.yaml file if sealed previously
 #   - Run seal.sh and follow the instructions that it prints out
 
 SCRIPT_DIR=$(cd $(dirname "${0}"); pwd)
@@ -122,6 +123,8 @@ for FILE in ${YAML_FILES}; do
   NAME=$(grep '^  name:' "${FILE}" | cut -d: -f2 | tr -d '[:space:]')
   NAMESPACE=$(grep '^  namespace:' "${FILE}" | cut -d: -f2 | tr -d '[:space:]')
 
+  # We create delete patches for all Secrets once we use SealedSecrets so that ArgoCD will stop managing the Secrets
+  # directly
   cat >> "${SECRETS_FILE}" <<EOF
 apiVersion: v1
 kind: Secret
@@ -158,7 +161,7 @@ else
   echo "      test -f ${SECRETS_FILE} && cp ${SECRETS_FILE} ${BUILD_DIR}/secrets.yaml"
   echo "      test -f ${SEALED_SECRETS_FILE} && cp ${SEALED_SECRETS_FILE} ${BUILD_DIR}/sealed-secrets.yaml"
   echo "      ./git-ops-command.sh \${REGION_DIR} > /tmp/deploy.yaml"
-  echo "      grep 'kind: Secret' /tmp/deploy.yaml # shouldn't have Secrets manifests, but could have ConfigMap manifests"
+  echo "      grep 'kind: Secret' /tmp/deploy.yaml # shouldn't have Secrets manifests, but could have Secrets within ConfigMap manifests"
   echo "      grep 'kind: SealedSecret' /tmp/deploy.yaml # should have hits"
   echo "- Push all modified files into the cluster state repo"
   echo "- Run this script for each CDE branch and region directory in the order - dev, test, stage, prod"
