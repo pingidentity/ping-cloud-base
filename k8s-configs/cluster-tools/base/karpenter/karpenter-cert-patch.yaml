@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: karpenter-cert
+  namespace: karpenter
+  # karpenter-cert is managed within karpenter, but we treat it like any other secret for consistency and security sake
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+    # Allow Karpenter to update the secret directly without updating the SealedSecret
+    sealedsecrets.bitnami.com/patch: "true"
+    argocd.argoproj.io/sync-options: Prune=false

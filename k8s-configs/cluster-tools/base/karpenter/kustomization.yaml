@@ -15,6 +15,7 @@ resources:
 # Adjusting the log level to minimize unwanted default log noise.
 patches:
   - path: logging-configmap-patch.yaml
+  - path: karpenter-cert-patch.yaml
 
 # Point to the ping-cluster-tools repo equivalents pushed to ECR
 images:
