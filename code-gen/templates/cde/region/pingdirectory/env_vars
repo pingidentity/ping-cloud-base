@@ -14,3 +14,10 @@ PD_X509_AUTH_CERTS=
 
 # Set to false to avoid skipping liveness probe. Skipping the liveness (SKIP_LIVENESS=true) is the default for PingDirectory.
 SKIP_LIVENESS=true
+
+
+#Set this to 'true' to use shared cache for the local backends
+PD_USE_SHARED_CACHE=false
+
+#Set this to define overall cache size .This would to be shared across all local backends
+SHARED_CACHE_PERCENT=55
