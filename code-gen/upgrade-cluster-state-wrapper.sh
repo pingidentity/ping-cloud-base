@@ -83,15 +83,15 @@ if ! test "${P1AS_UPGRADES_REPO}"; then
   if test -z "${UPGRADE_SCRIPT_VERSION}"; then
     # Derive the UPGRADE_REPO_VERSION from the NEW_VERSION string
     # NEW_VERSION=v*.*-release-branch -> UPGRADE_REPO_VERSION=v*.*-dev-branch
-    # NEW_VERSION=v*.*.*.* -> UPGRADE_REPO_VERSION=v*.*-release-branch
+    # NEW_VERSION=v*.*.* -> UPGRADE_REPO_VERSION=v*.*-release-branch
     # If NEW_VERSION does not match either regex, the script requires UPGRADE_SCRIPT_VERSION to be set
     VERSION_PREFIX=$(echo "${NEW_VERSION}" | grep -Eo 'v[0-9]+.[0-9]+')
-    if [[ "${NEW_VERSION}" =~ ^v[0-9]+.[0-9]+.[0-9]+.[0-9]+$ ]]; then
+    if [[ "${NEW_VERSION}" =~ ^v[0-9]+.[0-9]+.[0-9]+$ ]]; then
       UPGRADE_SCRIPT_VERSION="${VERSION_PREFIX}-release-branch"
     elif [[ "${NEW_VERSION}" =~ ^v[0-9]+.[0-9]+-release-branch$ ]]; then
       UPGRADE_SCRIPT_VERSION="${VERSION_PREFIX}-dev-branch"
     else
-      echo "NEW_VERSION is not in format v*.*.*.* or v*.*-release-branch. UPGRADE_SCRIPT_VERSION or P1AS_UPGRADES_REPO environment variable must be set before invoking this script"
+      echo "NEW_VERSION is not in format v*.*.* or v*.*-release-branch. UPGRADE_SCRIPT_VERSION or P1AS_UPGRADES_REPO environment variable must be set before invoking this script"
       exit 1
     fi
   fi
