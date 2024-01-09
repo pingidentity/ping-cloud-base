@@ -107,6 +107,7 @@
 - Replace healthcheck & metadata related manifests & configs with p1as-beluga-tools microservice
 - Increase OpenSearch warm replicas to 3 to make it HA
 - Renaming installP1asSubcharts value to isMicroserviceDeploy for microservices
+- Implement Shared db cache to enhance support of multiple backends
 
 _Changes:_
 
@@ -254,6 +255,7 @@ _Changes:_
 - [X] PDO-6457 Set PingDataSync OOTB connection to JVM-Default
 - [X] PDO-6476 Update and implement dependency helm chart conditional value
 - [X] PDO-6482 Update nginx logs to include hostname
+- [X] PDO-6494 Implement Shared db cache to enhance support of multiple backends
 - [X] PDO-6506 Update to fix karpenter provisoner config
 - [X] PDO-6526 Update integration tests to be able to run locally
 
