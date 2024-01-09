@@ -77,8 +77,11 @@ patches:
           - name: argocd-applicationset-controller
             resources:
               requests:
-                memory: "500Mi"
-                cpu: "1000m"
+                memory: "50Mi"
+                cpu: "100m"
+              limits:
+                memory: "100Mi"
+                cpu: "200m"
 - patch: |-
     apiVersion: apps/v1
     kind: Deployment
@@ -91,8 +94,11 @@ patches:
           - name: dex
             resources:
               requests:
-                memory: "125Mi"
-                cpu: "250m"
+                memory: "50Mi"
+                cpu: "50m"
+              limits:
+                memory: "100Mi"
+                cpu: "100m"
 - patch: |-
     apiVersion: apps/v1
     kind: Deployment
@@ -107,6 +113,9 @@ patches:
               requests:
                 memory: "40Mi"
                 cpu: "10m"
+              limits:
+                memory: "80Mi"
+                cpu: "30m"
 - patch: |-
     apiVersion: apps/v1
     kind: Deployment
@@ -121,6 +130,9 @@ patches:
               requests:
                 memory: "50Mi"
                 cpu: "10m"
+              limits:
+                memory: "100Mi"
+                cpu: "30m"
 - patch: |-
     apiVersion: apps/v1
     kind: Deployment
@@ -133,8 +145,11 @@ patches:
           - name: redis
             resources:
               requests:
-                memory: "125Mi"
-                cpu: "250m"
+                memory: "50Mi"
+                cpu: "50m"
+              limits:
+                memory: "250Mi"
+                cpu: "100m"
 - patch: |-
     apiVersion: apps/v1
     kind: Deployment
@@ -147,8 +162,11 @@ patches:
           - name: argocd-repo-server
             resources:
               requests:
-                memory: "500Mi"
-                cpu: "500m"
+                memory: "150Mi"
+                cpu: "150m"
+              limits:
+                memory: "250Mi"
+                cpu: "250m"
 - patch: |-
     apiVersion: apps/v1
     kind: Deployment
@@ -161,8 +179,15 @@ patches:
           - name: argocd-server
             resources:
               requests:
-                memory: "125Mi"
-                cpu: "125m"
+                memory: "500Mi"
+                cpu: "500m"
+              # The ArgoCD server gets hit especially hard by requests from the UI, this will hopefully be fixed by
+              # https://github.com/argoproj/argo-cd/issues/14947 in 2.10 (2.10 RC is already out),
+              # https://github.com/argoproj/argo-cd/issues/15509 is another related ticket
+              # We have PDO-6569 to upgrade ArgoCD to 2.10+ in order to take advantage once these issues are solved
+              limits:
+                memory: "1000Mi"
+                cpu: "1000m"
 - patch: |-
     apiVersion: apps/v1
     kind: StatefulSet
@@ -172,11 +197,17 @@ patches:
       template:
         spec:
           containers:
+          # The application controller is the main component which checks the manifest generated vs the resources
+          # actually existing in the cluster. It has high CPU requirements especially, based on testing, and it must
+          # have enough resources to manage all of the customers environments in a given region
           - name: argocd-application-controller
             resources:
               requests:
                 memory: "1000Mi"
-                cpu: "1000m"
+                cpu: "1500m"
+              limits:
+                memory: "2000Mi"
+                cpu: "3000m"
 - patch: |-
     apiVersion: apps/v1
     kind: Deployment
@@ -295,6 +326,13 @@ patches:
               - name: tools-dir
                 mountPath: /home/argocd/.local/lib/python3.7/site-packages/git_remote_codecommit/__init__.py
                 subPath: __init__.py
+            resources:
+              requests:
+                memory: "100Mi"
+                cpu: "300m"
+              limits:
+                memory: "300Mi"
+                cpu: "700m"
           volumes:
           - configMap:
               name: git-ops-command-plugin-cm
@@ -343,7 +381,7 @@ patches:
           - name: helm-command
             configMap:
               name: helm-command
-              defaultMode: 0555              
+              defaultMode: 0555
           - name: install-custom-tools
             configMap:
               name: install-custom-tools
@@ -404,6 +442,9 @@ patches:
               requests:
                 memory: "256Mi"
                 cpu: "300m"
+              limits:
+                memory: "512Mi"
+                cpu: "500m"
             env:
             - name: NAMESPACE
               valueFrom:

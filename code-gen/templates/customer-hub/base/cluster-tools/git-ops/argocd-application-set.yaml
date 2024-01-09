@@ -38,6 +38,9 @@ spec:
       syncPolicy:
         automated:
           prune: true
+        syncOptions:
+          # Only apply changes which are out of sync, since the uber yaml is so large
+          - ApplyOutOfSyncOnly=true
       destination:
         server: "{{server}}"
       project: default
