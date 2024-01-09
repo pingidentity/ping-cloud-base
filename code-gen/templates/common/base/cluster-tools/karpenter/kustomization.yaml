@@ -7,59 +7,80 @@ resources:
 patchesStrategicMerge:
 
 # Patch karpenter configuration by incorporating specific details related to CDE
-- |-
-  apiVersion: v1
-  kind: ConfigMap
-  metadata:
-    name: karpenter-global-settings
-    namespace: karpenter
-  data:
-    "aws.clusterEndpoint": "${CLUSTER_ENDPOINT}"
-    "aws.clusterName": "${CLUSTER_NAME}"
-    "aws.defaultInstanceProfile": "${KARPENTER_INSTANCE_PROFILE}"
 
+- |-
+ apiVersion: apps/v1
+ kind: Deployment
+ metadata:
+   name: karpenter
+   namespace: kube-system
+ spec:
+   template:
+     spec:
+       containers:
+         - name: controller
+           env:
+            - name: CLUSTER_NAME
+              value: "${CLUSTER_NAME}"
+            - name: CLUSTER_ENDPOINT
+              value: "${CLUSTER_ENDPOINT}"
+            - name: DISABLE_WEBHOOK
+              value: "true"
+            - name : WEBHOOK_METRICS_PORT
+              value: "8001"
+            - name: FEATURE_GATES
+              value: "Drift=false"
 - |-
   apiVersion: v1
   kind: ServiceAccount
   metadata:
     name: karpenter
-    namespace: karpenter
+    namespace: kube-system
     annotations:
-      purpose: karpenter-provisioner
+      purpose: karpenter-nodepool
       ${KARPENTER_ROLE_ANNOTATION_KEY_VALUE}
 
 - |-
-  apiVersion: karpenter.k8s.aws/v1alpha1
-  kind: AWSNodeTemplate
+  apiVersion: karpenter.k8s.aws/v1beta1
+  kind: EC2NodeClass
   metadata:
     name: default
   spec:
-    securityGroupSelector:
-      karpenter.sh/discovery: "${CLUSTER_NAME}"
-    subnetSelector:
-      karpenter.sh/discovery: "${CLUSTER_NAME}"
+    securityGroupSelectorTerms:
+      - tags:
+          karpenter.sh/discovery: "${CLUSTER_NAME}"
+    subnetSelectorTerms:
+      - tags:
+          karpenter.sh/discovery: "${CLUSTER_NAME}"
+    instanceProfile: "${KARPENTER_INSTANCE_PROFILE}"
 
 - |-
-  apiVersion: karpenter.k8s.aws/v1alpha1
-  kind: AWSNodeTemplate
+  apiVersion: karpenter.k8s.aws/v1beta1
+  kind: EC2NodeClass
   metadata:
     name: pd-only
   spec:
-    securityGroupSelector:
-      karpenter.sh/discovery: "${CLUSTER_NAME}"
-    subnetSelector:
-      karpenter.sh/discovery: "${CLUSTER_NAME}"
+    securityGroupSelectorTerms:
+      - tags:
+          karpenter.sh/discovery: "${CLUSTER_NAME}"
+    subnetSelectorTerms:
+      - tags:
+          karpenter.sh/discovery: "${CLUSTER_NAME}"
+    instanceProfile: "${KARPENTER_INSTANCE_PROFILE}"
 
 - |-
-  apiVersion: karpenter.k8s.aws/v1alpha1
-  kind: AWSNodeTemplate
+  apiVersion: karpenter.k8s.aws/v1beta1
+  kind: EC2NodeClass
   metadata:
     name: pgo-only
   spec:
-    securityGroupSelector:
-      karpenter.sh/discovery: "${CLUSTER_NAME}"
-    subnetSelector:
-      karpenter.sh/discovery: "${CLUSTER_NAME}"
+    securityGroupSelectorTerms:
+      - tags:
+          karpenter.sh/discovery: "${CLUSTER_NAME}"
+    subnetSelectorTerms:
+      - tags:
+          karpenter.sh/discovery: "${CLUSTER_NAME}"
+    instanceProfile: "${KARPENTER_INSTANCE_PROFILE}"
 
 # Initially, by default we will disable Karpenter from taking over node deployment. As customers migrate, we will gradually enable this feature.
 # Once all of our customers have finished migrating, we will enable Karpenter by default.

@@ -2,11 +2,11 @@
   kind: Deployment
   metadata:
     name: karpenter
-    namespace: karpenter
+    namespace: kube-system
   spec:     
     template: 
       metadata:
         annotations:
           prometheus.io/path: '/metrics'
-          prometheus.io/port: '8000'
+          prometheus.io/port: '8001'
           prometheus.io/scrape: 'true'

@@ -23,7 +23,7 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: karpenter.sh/provisioner-name
+              - key: karpenter.sh/nodepool
                 operator: DoesNotExist
       containers:
       - name: downscaler

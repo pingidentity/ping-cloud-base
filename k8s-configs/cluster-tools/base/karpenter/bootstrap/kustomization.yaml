@@ -2,25 +2,18 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
-namespace: karpenter
-
-# Setting priority to the deployment of karpenter resources over other manifests in the ArgoCD deployment order.
-commonAnnotations:
-  argocd.argoproj.io/sync-wave: "-5"
-
 resources:
 - ../base
-- namespace.yaml
 
-# Adjusting the log level to minimize unwanted default log noise.
-patches:
-  - path: logging-configmap-patch.yaml
+# # Setting priority to the deployment of karpenter resources over other manifests in the ArgoCD deployment order.
+commonAnnotations:
+  argocd.argoproj.io/sync-wave: "-5"
 
 # Point to the ping-cluster-tools repo equivalents pushed to ECR
 images:
   - name: public.ecr.aws/karpenter/controller
     newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/karpenter/controller
-    newTag: v0.29.2
+    newTag: v0.33.1
 
 patchesStrategicMerge:
 - |-
@@ -28,34 +21,6 @@ patchesStrategicMerge:
   kind: Deployment
   metadata:
     name: karpenter
-    namespace: karpenter
+    namespace: kube-system
   spec:
     replicas: 0
-
-- |-
-  $patch: delete
-  apiVersion: admissionregistration.k8s.io/v1
-  kind: ValidatingWebhookConfiguration
-  metadata:
-    name: validation.webhook.karpenter.sh
-
-- |-
-  $patch: delete
-  apiVersion: admissionregistration.k8s.io/v1
-  kind: ValidatingWebhookConfiguration
-  metadata:
-    name: validation.webhook.karpenter.k8s.aws
-
-- |-
-  $patch: delete
-  apiVersion: admissionregistration.k8s.io/v1
-  kind: ValidatingWebhookConfiguration
-  metadata:
-    name: validation.webhook.config.karpenter.sh
-
-- |-
-  $patch: delete
-  apiVersion: admissionregistration.k8s.io/v1
-  kind: MutatingWebhookConfiguration
-  metadata:
-    name: defaulting.webhook.karpenter.k8s.aws

@@ -1,33 +1,10 @@
 # This patch file will remove the Karpenter resources from the deployment.
-$patch: delete
-apiVersion: admissionregistration.k8s.io/v1
-kind: ValidatingWebhookConfiguration
-metadata:
-  name: validation.webhook.karpenter.sh
----
-$patch: delete
-apiVersion: admissionregistration.k8s.io/v1
-kind: ValidatingWebhookConfiguration
-metadata:
-  name: validation.webhook.karpenter.k8s.aws
----
-$patch: delete
-apiVersion: admissionregistration.k8s.io/v1
-kind: ValidatingWebhookConfiguration
-metadata:
-  name: validation.webhook.config.karpenter.sh
----
-$patch: delete
-apiVersion: admissionregistration.k8s.io/v1
-kind: MutatingWebhookConfiguration
-metadata:
-  name: defaulting.webhook.karpenter.k8s.aws
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: karpenter
-  namespace: karpenter
+  namespace: kube-system
 spec:
   replicas: 0
 

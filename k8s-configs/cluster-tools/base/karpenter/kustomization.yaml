@@ -1,27 +1,19 @@
 kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
-namespace: karpenter
+resources:
+- base
+- nodepool.yaml
 
 # Setting priority to the deployment of karpenter resources over other manifests in the ArgoCD deployment order.
 commonAnnotations:
   argocd.argoproj.io/sync-wave: "-5"
 
-resources:
-- base
-- namespace.yaml
-- provisioner.yaml
-
-# Adjusting the log level to minimize unwanted default log noise.
-patches:
-  - path: logging-configmap-patch.yaml
-  - path: karpenter-cert-patch.yaml
-
 # Point to the ping-cluster-tools repo equivalents pushed to ECR
 images:
   - name: public.ecr.aws/karpenter/controller
     newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/karpenter/controller
-    newTag: v0.29.2
+    newTag: v0.33.1
 
 patchesStrategicMerge:
 - prometheus-metrics.yaml
