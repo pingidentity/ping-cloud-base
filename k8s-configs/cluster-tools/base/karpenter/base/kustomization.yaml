@@ -2,8 +2,8 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-- karpenter.sh_provisioners.yaml
-- karpenter.k8s.aws_awsnodetemplates.yaml
-- karpenter.sh_machines.yaml
+- karpenter.k8s.aws_ec2nodeclasses.yaml
+- karpenter.sh_nodepools.yaml
+- karpenter.sh_nodeclaims.yaml
 - karpenter.yaml
 
