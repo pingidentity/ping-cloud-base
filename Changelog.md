@@ -108,6 +108,7 @@
 - Increase OpenSearch warm replicas to 3 to make it HA
 - Renaming installP1asSubcharts value to isMicroserviceDeploy for microservices
 - Implement Shared db cache to enhance support of multiple backends
+- Upgrade all AWSCLI containers to the most recent stable version that includes support for ARM, v2.+
 
 _Changes:_
 
@@ -258,6 +259,7 @@ _Changes:_
 - [X] PDO-6494 Implement Shared db cache to enhance support of multiple backends
 - [X] PDO-6506 Update to fix karpenter provisoner config
 - [X] PDO-6526 Update integration tests to be able to run locally
+- [X] PDO-6585:Upgrade all AWSCLI containers to the most recent stable version that includes support for ARM, v2.+
 
 ### 1.18.0.0
 

@@ -38,7 +38,7 @@ spec:
       restartPolicy: Never
       initContainers:
       - name: pingdirectory-discovery-service
-        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-cli:2.0.17
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-cli:2.0.22
         imagePullPolicy: IfNotPresent
         command:
         - /get_ssm_env_vars.sh
