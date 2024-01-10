@@ -194,6 +194,11 @@ spec:
           value: "/opt/shared-dir/newrelic.yml"
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
           value: "true"
+        - name: PF_CLUSTER_AUTH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: PF_CLUSTER_AUTH_PASSWORD
+              name: pingfederate-cluster-auth-password
         envFrom:
         - configMapRef:
             name: pingfederate-admin-environment-variables
