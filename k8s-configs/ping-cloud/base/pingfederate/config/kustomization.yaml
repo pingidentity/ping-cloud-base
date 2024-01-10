@@ -11,6 +11,7 @@ resources:
 - configmap-heartbeat-exporter.yaml
 - secret-license.yaml
 - secret-passwords.yaml
+- pingfederate-cluster-auth-password.yaml
 
 generatorOptions:
   disableNameSuffixHash: true

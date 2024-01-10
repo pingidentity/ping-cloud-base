@@ -250,7 +250,7 @@ pf.cluster.node.index=
 # A strong, randomly-generated key (22 or more alphanumerics) is recommended.
 # In BCFIPS mode, if encryption is enabled, the minimum length of 22
 # characters is enforced.
-pf.cluster.auth.pwd=
+pf.cluster.auth.pwd=${PF_CLUSTER_AUTH_PASSWORD_OBFUSCATED}
 pf.cluster.encrypt=false
 
 # Specify the key size to use with the AES encryption algorithm that is used

@@ -166,6 +166,11 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
+        - name: PF_CLUSTER_AUTH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: PF_CLUSTER_AUTH_PASSWORD
+              name: pingfederate-cluster-auth-password
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables
