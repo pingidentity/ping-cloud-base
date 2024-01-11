@@ -58,6 +58,7 @@
 - Opensearch cluster log level changed to 'WARNING'
 - Update metrics-server image to v0.6.4
 - Update kubectl to 1.26.0 for EKS 1.27
+- Update BusyBox to 1.36 for EKS 1.27
 - Update kube-state-metrics to v2.9.2
 - Remove dev-env.sh, dev-cluster-state (dir), and corresponding variables.
 - Update Grafana to v10.1.0
@@ -197,6 +198,7 @@ _Changes:_
 - [X] PDO-5797 Unify severity format for all prometheus alerts
 - [X] PDO-5800 Update pd.profile to align with PingDirectory upgrade
 - [X] PDO-5801 Update cluster-autoscaler v1.27.0/1.27.1 for eks 1.27
+- [X] PDO-5802 Update BusyBox to 1.36 for EKS 1.27
 - [X] PDO-5803 Update EBS Driver to 1.21.0 for EKS 1.27
 - [X] PDO-5813 Remove excessive patches for the second region
 - [X] PDO-5835 Create PD init container for KMS
