@@ -1,19 +1,46 @@
-dsconfig create-backend \
-        --backend-name "${PLATFORM_CONFIG_BACKEND_ID}" \
-        --type local-db \
-        --set enabled:true \
-        --set base-dn:"${PLATFORM_CONFIG_BASE_DN}" \
-        --set prime-method:none
+dsconfig set-global-configuration-prop \
+        --set use-shared-database-cache-across-all-local-db-backends:"${PD_USE_SHARED_CACHE}" \
+        --set shared-local-db-backend-database-cache-percent:"${SHARED_CACHE_PERCENT}"
+
+# To ignore specific backend cache property 'db-cache-percent' for every backend listed below use
+# the global configuration above 'use-shared-database-cache-across-all-local-db-backends' be setting
+# PD_USE_SHARED_CACHE=true and setting your desired 'shared-local-db-backend-database-cache-percent'.
+# The property 'shared-local-db-backend-database-cache-percent' will allow the cache percent to be shared across all
+# backends. By default PD_USE_SHARED_CACHE is set to 'false'. Therefore this global configuration is disabled by default.
+# These 2 variables are located within cluster state repo under pingdirectory/env_vars.
+
+# If you continue to leave the variable PD_USE_SHARED_CACHE as 'false', then the 'db-cache-percent' property
+# will be enforced for every backend below.
+
+# Also, important to note. If you are using multiple backends (userRoot_2, userRoot_3, userRoot_4, userRoot_5)
+# and PD_USE_SHARED_CACHE=false you will need to add your own 'db-cache-percent' for your additional backends.
+# Add this configuration to 08-backends.dsconfig file. See 08-backends.dsconfig for more details.
 
 dsconfig create-backend \
-        --backend-name "${APP_INTEGRATIONS_BACKEND_ID}" \
         --type local-db \
+        --backend-name "${PLATFORM_CONFIG_BACKEND_ID}" \
+        --set base-dn:"${PLATFORM_CONFIG_BASE_DN}" \
         --set enabled:true \
+        --set db-cache-percent:5 \
+        --set import-thread-count:1 \
+        --set prime-method:none \
+        --set default-cache-mode:cache-keys-only
+
+dsconfig create-backend \
+        --type local-db \
+        --backend-name "${APP_INTEGRATIONS_BACKEND_ID}" \
         --set base-dn:"${APP_INTEGRATIONS_BASE_DN}" \
-        --set prime-method:none
+        --set enabled:true \
+        --set db-cache-percent:15 \
+        --set import-thread-count:1 \
+        --set prime-method:none \
+        --set default-cache-mode:cache-keys-only
 
 dsconfig set-backend-prop \
         --backend-name "${USER_BACKEND_ID}" \
         --set "base-dn:${USER_BASE_DN}" \
         --set enabled:true \
-        --set prime-method:none
+        --set db-cache-percent:35 \
+        --set import-thread-count:1 \
+        --set prime-method:none \
+        --set default-cache-mode:cache-keys-only
