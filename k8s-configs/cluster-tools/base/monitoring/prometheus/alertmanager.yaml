@@ -11,21 +11,23 @@ data:
     templates:
     - '/etc/alertmanager/*.tmpl'
     route:
-      receiver: alert-webhook
+      receiver: opsgenie
       group_by: ['...']
       group_wait: 10s
       routes:
-        - receiver: alert-webhook
+        - receiver: opsgenie
           continue: true
           group_wait: 10s
           group_interval: 10s
           repeat_interval: 60m
  
     receivers:
-    - name: alert-webhook
-      webhook_configs:
-      - url: http://webhook-eventsource-svc.argo-events:13000/notification
-        send_resolved: true
+    - name: opsgenie
+      opsgenie_configs:
+        - api_key_file: "/var/run/opsgenie.key"
+          message: "{{ .CommonAnnotations.summary }} in {{ .CommonLabels.k8s_cluster_name }}"
+          description: "{{ .CommonAnnotations.description }}"
+          details: { "runbook": "{{ .CommonAnnotations.runbook }}", "severity": "{{ .CommonLabels.severity }}" }
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -68,12 +70,22 @@ spec:
           mountPath: /etc/alertmanager
         - name: alertmanager
           mountPath: /alertmanager
+        - name: opsgenie-api-key
+          mountPath: /var/run/opsgenie.key
+          subPath: api-key
+          readOnly: true
       volumes:
       - name: config-volume
         configMap:
           name: alertmanager-config
       - name: alertmanager
         emptyDir: {}
+      - name: opsgenie-api-key
+        secret:
+          secretName: opsgenie-key
+          items:
+            - key: api-key
+              path: api-key
 ---
 apiVersion: v1
 kind: Service

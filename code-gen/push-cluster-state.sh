@@ -246,6 +246,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       # Attempt to create the branch from its default CDE or CHUB branch name.
       echo "Branch ${GIT_BRANCH} does not exist locally"
 
+      # Check if DEFAULT_CDE_BRANCH branch exists locally
       if git rev-parse --verify "${DEFAULT_CDE_BRANCH}" &> /dev/null; then
         # This block will be executed only during updates. At the time, we want to capture history
         # of all changes in the old CDE or customer-hub branches onto the new ones that are created.
@@ -258,7 +259,15 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
         # exists, onto the orphan branch in the following block.
         echo "Default branch ${DEFAULT_CDE_BRANCH} does not exist for branch ${GIT_BRANCH}"
         echo "Creating ${GIT_BRANCH} as an orphan branch"
+        # Use existing git checkout --orphan as git switch --orphan is newer and may not be supported everywhere
         git checkout --orphan "${GIT_BRANCH}"
+        # Remove all files to prevent the previous branch's files from being brought into the new orphaned branch.
+        # This is critical for the Versent multi-region generation process as they generate the secondary region in
+        # isolation - if the Versent process fails in the secondary region while still in isolation, keeping the files
+        # pulled from the secondary CSR from the previous branch (master) can lead to unexpected behavior for non-master
+        # branches
+        echo "Attempting to delete contents of previous branch before orphan branch was created..."
+        git rm -rf . || echo "Previous git branch was already empty"
       fi
     fi
   fi
