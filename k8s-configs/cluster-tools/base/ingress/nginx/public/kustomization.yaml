@@ -67,6 +67,12 @@ patchesJson6902:
     version: v1
     kind: ConfigMap
     name: nginx-configuration
+- path: add-controller-resources.yaml
+  target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: nginx-ingress-controller
 
 patchesStrategicMerge:
 - add-init-container.yaml

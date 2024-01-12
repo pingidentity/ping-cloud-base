@@ -248,7 +248,7 @@ PROMETHEUS_PING_NAMESPACE=${PING_CLOUD_NAMESPACE}
 PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED}
 
 RADIUS_PROXY_ENABLED=${RADIUS_PROXY_ENABLED}
-# List of ping apps(pingaccess,pingaccess-was,pingdirectory,pingdelegator,pingfederate) for which you can enable external ingress(the values are ping app names)Examplelist:(pingaccess pingdirectory pingfederate)   
+# List of ping apps(pingaccess,pingaccess-was,pingdirectory,pingdelegator,pingfederate) for which you can enable external ingress(the values are ping app names)Examplelist:(pingaccess pingdirectory pingfederate)
 EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED}"
 ########################################################################################################################
 
@@ -260,6 +260,9 @@ NOTIFICATION_ENDPOINT=http://webhook-eventsource-svc.argo-events:12999/notificat
 # Prometheus argo-events notification configuration
 PROM_NOTIFICATION_ENABLED=true
 PROM_SLACK_CHANNEL=${PROM_SLACK_CHANNEL}
+
+# Prometheus OpsGenie notification configuration
+OPSGENIE_API_KEY=${OPSGENIE_API_KEY}
 
 # Dashboards repo variables
 DASH_REPO_URL=https://github.com/pingidentity/ping-cloud-dashboards

@@ -6,11 +6,6 @@ data:
   backup-cronjob.sh: |-
     #!/bin/sh
 
-    # Install kubectl
-    curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
-    -o /tmp/kubectl
-    chmod +x /tmp/kubectl
-
     # Execute backup-ops.sh script (which kicks off the k8s pingdirectory-backup Job)
     SCRIPT="/opt/in/backup-ops.sh"
     test -x ${SCRIPT} && ${SCRIPT} "scheduled-cronjob"
@@ -38,6 +33,34 @@ spec:
         spec:
           serviceAccountName: pingdirectory-ops-serviceaccount
           restartPolicy: OnFailure
+          initContainers:
+            - name: pingdirectory-init
+              securityContext:
+                runAsGroup: 9999
+                runAsNonRoot: true
+                runAsUser: 9031
+                allowPrivilegeEscalation: false
+              image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.24.0
+              imagePullPolicy: IfNotPresent
+              command:
+                - /copy-dependencies.sh
+              envFrom:
+                - configMapRef:
+                    name: pingdirectory-environment-variables
+                - configMapRef:
+                    name: pingcommon-environment-variables
+              volumeMounts:
+                - name: data-dir
+                  mountPath: /data
+                - name: pingdirectory-init
+                  mountPath: /copy-dependencies.sh
+                  subPath: copy-dependencies.sh
+                - name: pingdirectory-init
+                  mountPath: /utils.lib.sh
+                  subPath: utils.lib.sh
+                - name: pingdirectory-init
+                  mountPath: /logger.lib.sh
+                  subPath: logger.lib.sh
           containers:
           - name: pingdirectory-backup
             image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.19-release-branch-latest
@@ -62,6 +85,9 @@ spec:
                 fieldRef:
                   fieldPath: metadata.namespace
             volumeMounts:
+            - name: data-dir
+              mountPath: /usr/local/bin/kubectl
+              subPath: kubectl
             - name: backup-cronjob-script
               mountPath: /opt/in/backup-cronjob.sh
               subPath: backup-cronjob.sh
@@ -74,6 +100,8 @@ spec:
           securityContext:
             fsGroup: 9999
           volumes:
+          - name: data-dir
+            emptyDir: {}
           - name: backup-cronjob-script
             configMap:
               name: pingdirectory-backup-cronjob
