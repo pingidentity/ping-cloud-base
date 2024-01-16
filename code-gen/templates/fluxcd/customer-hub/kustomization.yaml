@@ -39,6 +39,19 @@ patchesStrategicMerge:
     identity: |
       ${SSH_ID_KEY_BASE64}
 
+- |-
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: argocd-server
+  spec:
+    template:
+      spec:
+        initContainers:
+          # Installs custom tools
+          - name: argocd-p1as-oauth
+            $patch: delete
+
 patchesJson6902:
 
 ### Cluster state repo URL and auth configuration for the CD tool ###
