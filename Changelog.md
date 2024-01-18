@@ -265,6 +265,7 @@ _Changes:_
 - [X] PDO-6506 Update to fix karpenter provisoner config
 - [X] PDO-6526 Update integration tests to be able to run locally
 - [X] PDO-6585:Upgrade all AWSCLI containers to the most recent stable version that includes support for ARM, v2.+
+- [X] PDO-6620 [PORT] Add Use_Kubelet configuration parameters to fix Fluentbit Kubernetes filter
 
 ### 1.18.0.0
 
