@@ -110,6 +110,7 @@
 - Renaming installP1asSubcharts value to isMicroserviceDeploy for microservices
 - Implement Shared db cache to enhance support of multiple backends
 - Upgrade all AWSCLI containers to the most recent stable version that includes support for ARM, v2.+
+- Update PCB with toolkit image used as replacement for bitnami/kubectl - Leftover part
 
 _Changes:_
 
