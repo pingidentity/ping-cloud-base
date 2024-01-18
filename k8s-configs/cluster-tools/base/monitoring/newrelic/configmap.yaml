@@ -1,29 +1,4 @@
 ---
-# Script to provision NewRelic secrets
-
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: copy-secret
-  namespace: newrelic
-data:
-  copy-secret.sh: |-
-    #!/bin/sh
-
-    cd /tmp
-
-    kubectl get secret ${SECRET_NAME} \
-        -n ${SECRET_NAMESPACE} \
-        -o jsonpath='{.data.NEW_RELIC_LICENSE_KEY}' |
-    base64 -d > NEW_RELIC_LICENSE_KEY
-
-    kubectl create secret generic ${SECRET_NAME} \
-        -n ${CURRENT_NAMESPACE} \
-        --from-file=NEW_RELIC_LICENSE_KEY
-
-    rm -f NEW_RELIC_LICENSE_KEY
-
----
 # Source: p1as-newrelic/charts/nri-bundle/charts/newrelic-infrastructure/templates/controlplane/agent-configmap.yaml
 apiVersion: v1
 kind: ConfigMap
