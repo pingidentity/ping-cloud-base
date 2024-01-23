@@ -145,6 +145,7 @@ rules:
     - delete
     - get
     - create
+    - patch
   - apiGroups:
     - ""
     - "apps"
