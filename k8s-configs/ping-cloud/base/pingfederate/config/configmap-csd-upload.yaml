@@ -7,8 +7,13 @@ data:
     #!/bin/sh
 
     # Install kubectl
-    curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
-    -o /tmp/kubectl
+    if [[ "`uname -m`" == "aarch64" ]] ; then
+        curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/arm64/kubectl \
+        -o /tmp/kubectl
+    else
+        curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
+        -o /tmp/kubectl
+    fi
 
     chmod +x /tmp/kubectl
 
