@@ -103,6 +103,34 @@ patches:
     apiVersion: apps/v1
     kind: Deployment
     metadata:
+      name: argocd-dex-server
+    spec:
+      template:
+        spec:
+          containers:
+          - name: dex
+            command:
+            - sh
+            - -c
+            - /shared/argocd-dex rundex --loglevel error
+- patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-image-updater
+    spec:
+      template:
+        spec:
+          containers:
+          - name: argocd-image-updater
+            command:
+            - sh
+            - -c
+            - /usr/local/bin/argocd-image-updater run --loglevel error
+- patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
       name: argocd-image-updater
     spec:
       template:
@@ -343,6 +371,20 @@ patches:
               name: git-ops-command
             name: git-ops-command
 - patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-repo-server
+    spec:
+      template:
+        spec:
+          containers:
+          - name: git-ops-command
+            command: 
+            - sh
+            - -c
+            - /var/run/argocd/argocd-cmp-server --loglevel error
+- patch: |-
     # Add an init container to install a few custom tools into the ArgoCD repo server
     # TODO: try to manage this image in a way that isn't inline to aid with upgrading/finding the image
     apiVersion: apps/v1
@@ -562,3 +604,4 @@ patches:
               operator: Equal
               value: core
               effect: NoSchedule
+              

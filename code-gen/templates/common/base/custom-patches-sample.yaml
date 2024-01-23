@@ -582,3 +582,58 @@ spec:
   replicas: 0
 
 ---
+
+################################################
+#                ArgoCD
+################################################
+# The custom logging verbosity level for the below pods is added. So we don’t need to implement it from scratch.
+
+# argocd-image-updater
+# argocd-dex-server
+# argocd-repo-server (only git-ops-command container)
+
+# Added a patch for the above pods in k8s-configs/cluster-tools/base/git-ops/argo/kustomization.yaml file. 
+# If we want to change the logging level change the inline in command to one of  debug|info|warn|error
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-dex-server
+spec:
+  template:
+    spec:
+      containers:
+      - name: dex
+        command:
+        - sh
+        - -c
+        - /shared/argocd-dex rundex --loglevel error
+        
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-image-updater
+spec:
+  template:
+    spec:
+      containers:
+      - name: argocd-image-updater
+        command:
+        - sh
+        - -c
+        - /usr/local/bin/argocd-image-updater run --loglevel error
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argocd-repo-server
+spec:
+  template:
+    spec:
+      containers:
+      - name: git-ops-command
+        command: 
+        - sh
+        - -c
+        - /var/run/argocd/argocd-cmp-server --loglevel error
+
+---
