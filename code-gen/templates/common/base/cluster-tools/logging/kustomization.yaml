@@ -51,6 +51,28 @@ patchesStrategicMerge:
       purpose: service-account-for-ping-cloud-stack
       ${IRSA_PING_ANNOTATION_KEY_VALUE}
 
+- |-
+  # Add IRSA role annotation to logstash-elastic service account
+  apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: logstash-elastic
+    namespace: elastic-stack-logging
+    annotations:
+      purpose: service-account-for-logstash-elastic
+      ${IRSA_LOGSTASH_ANNOTATION_KEY_VALUE}
+
+- |-
+  # Add IRSA role annotation to opensearch service account
+  apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: opensearch
+    namespace: elastic-stack-logging
+    annotations:
+      purpose: service-account-for-opensearch
+      ${IRSA_OPENSEARCH_ANNOTATION_KEY_VALUE}
+
 
 patchesJson6902:
 - target:
