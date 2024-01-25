@@ -50,7 +50,9 @@ data:
     }
 
     delete_pvc() {
-      kubectl delete pvc pingdirectory-restore -n ${PING_CLOUD_NAMESPACE} --grace-period=0 --force
+      kubectl delete pvc pingdirectory-restore -n ${PING_CLOUD_NAMESPACE} --grace-period=0 --force --wait=false
+      kubectl patch pvc pingdirectory-restore -p '{"metadata":{"finalizers":null}}' -n ${PING_CLOUD_NAMESPACE}
+
     }
 
     cleanup () {
