@@ -6,6 +6,18 @@ metadata:
   namespace: elastic-stack-logging
 $patch: delete
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: opensearch-ingest
+  namespace: elastic-stack-logging
+  annotations:
+    $patch: delete
+spec:
+  type: ExternalName
+  externalName: opensearch.${PRIMARY_DNS_ZONE}
+  $patch: replace
+---
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
@@ -13,8 +25,87 @@ metadata:
 provisioner: ebs.csi.aws.com
 $patch: delete
 ---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: opensearch-gp3
+provisioner: ebs.csi.aws.com
+$patch: delete
+---
 apiVersion: opensearch.opster.io/v1
 kind: OpenSearchCluster
 metadata:
   name: opensearch-cluster
+$patch: delete
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: os-controller-manager
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: os-controller-manager-metrics-service
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: os-controller-manager
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: os-leader-election-role
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: os-leader-election-rolebinding
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: os-elastic-stack-logging-manager-role
+$patch: delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: os-elastic-stack-logging-manager-rolebinding
+$patch: delete
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: os-manager-config
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: os-elastic-stack-logging-metrics-reader
+$patch: delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: os-elastic-stack-logging-proxy-rolebinding
+$patch: delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: os-elastic-stack-logging-proxy-role
 $patch: delete
