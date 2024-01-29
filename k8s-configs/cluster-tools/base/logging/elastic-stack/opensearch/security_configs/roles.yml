@@ -25,8 +25,6 @@ alerting_read_access:
   cluster_permissions:
     - 'cluster:admin/opendistro/alerting/alerts/get'
     - 'cluster:admin/opendistro/alerting/destination/get'
-    - 'cluster:admin/opendistro/alerting/destination/email_group/search'
-    - 'cluster:admin/opendistro/alerting/destination/email_account/search'
     - 'cluster:admin/opendistro/alerting/monitor/get'
     - 'cluster:admin/opendistro/alerting/monitor/search'
 
@@ -204,7 +202,7 @@ cross_cluster_replication_follower_full_access:
 ml_read_access:
   reserved: true
   cluster_permissions:
-    - 'cluster:admin/openserach/ml/stats'
+    - 'cluster:admin/opensearch/ml/stats/nodes'
     - 'cluster:admin/opensearch/ml/models/get'
     - 'cluster:admin/opensearch/ml/models/search'
     - 'cluster:admin/opensearch/ml/tasks/get'
@@ -240,63 +238,15 @@ ml_full_access:
       allowed_actions:
         - 'indices_monitor'
 
-# Anonymous access role
-opendistro_security_anonymous_role:
-  reserved: true
-  cluster_permissions:
-    # For using _cat/indices
-    - 'cluster:monitor/state'
-    - 'cluster:monitor/health'
-    - 'cluster:monitor/nodes/info'
-    # To enable read access to ISM
-    - cluster:admin/opendistro/ism/policy/search
-    - cluster:admin/opendistro/ism/managedindex/explain
-    - cluster:admin/opendistro/rollup/search
-    - cluster:admin/opendistro/transform/get_transforms
-    # To enable read access to various ISM Jobs
-    - cluster:admin/opendistro/rollup/explain
-    - cluster:admin/opendistro/ism/policy/get
-    - cluster:admin/opendistro/rollup/get
-    - cluster:admin/opendistro/transform/explain
-    - cluster:admin/opendistro/transform/get
-    # To enable read access to security analytics
-    - cluster:admin/opensearch/securityanalytics/rule/search
-    - cluster:admin/opensearch/securityanalytics/detector/search
-    - cluster:admin/opensearch/securityanalytics/findings/get
-    - cluster:admin/opensearch/securityanalytics/alerts/get
-    - cluster:admin/opensearch/securityanalytics/detector/get
-    # For using sql join query
-    - "indices:data/read/scroll*"
-  index_permissions:
-    - index_patterns:
-      - '*'
-      allowed_actions:
-        - "read"
-        - "indices:data/read/mget"
-        - "indices:data/read/msearch"
-        - "indices:data/read/mtv"
-        - "indices:admin/get"
-        - "indices:admin/aliases/exists*"
-        - "indices:admin/aliases/get*"
-        - "indices:admin/mappings/get"
-        - "indices:data/read/scroll"
-        - "indices:monitor/settings/get"
-        - "indices:monitor/stats"
-  tenant_permissions:
-    - tenant_patterns:
-      - '*'
-      allowed_actions:
-        - "kibana_all_read"
-
 # Allows index-migration.py script to perform indices migration from ElasticSearch to OpenSearch
 index_migration:
   reserved: true
   cluster_permissions:
-        - "create_index"
-        - "indices:data/write/reindex"
-        - "indices:data/write/index"
-        - "cluster:monitor/task/get"
-        - "indices:data/write/bulk*"
+    - "create_index"
+    - "indices:data/write/reindex"
+    - "indices:data/write/index"
+    - "cluster:monitor/task/get"
+    - "indices:data/write/bulk*"
   index_permissions:
     - index_patterns:
         - '*'
@@ -343,3 +293,36 @@ bootstrap:
       allowed_actions:
         - 'crud'
         - 'create_index'
+
+read_prometheus:
+  reserved: true
+  cluster_permissions:
+    - "cluster:monitor/prometheus/metrics" # allow access to the prometheus plugin (the prometheus metrics collector doesn't send authentication information)
+    # allow the plugin to access the required metrics (the plugin also doesn't send authentication information)
+    - "cluster:monitor/health"
+    - "cluster:monitor/state"
+    - "cluster:monitor/nodes/info"
+    - "cluster:monitor/nodes/stats"
+  index_permissions:
+    - index_patterns:
+      - "*"
+      allowed_actions:
+      - "indices:monitor/stats"
+
+customer_role:
+  reserved: false
+  hidden: false
+  cluster_permissions:
+  - "cluster_composite_ops_ro"
+  - "kibana_all_read"
+  index_permissions:
+  - index_patterns:
+    - "*"
+    allowed_actions:
+    - "read"
+    - "kibana_all_read"
+  tenant_permissions:
+  - tenant_patterns:
+    - "global_tenant"
+    allowed_actions:
+    - "kibana_all_read"

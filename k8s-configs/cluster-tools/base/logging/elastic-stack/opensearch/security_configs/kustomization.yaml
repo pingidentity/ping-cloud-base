@@ -3,19 +3,19 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 namespace: elastic-stack-logging
 
+# The secret values for config.yml, internal_users.yml, and roles_mapping.yml
+# are managed by the p1as-oauth init container, and can be found in the p14c-integration image.
+
 secretGenerator:
   - name: opensearch-securityconfig
     type: Opaque
     files:
       - action_groups.yml
+      - allowlist.yml
       - audit.yml
-      - config.yml
-      - internal_users.yml
       - nodes_dn.yml
       - roles.yml
-      - roles_mapping.yml
       - tenants.yml
-      - whitelist.yml
 generatorOptions:
   disableNameSuffixHash: true
   annotations:

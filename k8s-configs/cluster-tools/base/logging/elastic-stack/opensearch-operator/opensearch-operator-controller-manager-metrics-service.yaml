@@ -1,0 +1,15 @@
+---
+# Source: opensearch-operator/templates/opensearch-operator-controller-manager-metrics-service-svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    control-plane: controller-manager
+  name: os-controller-manager-metrics-service
+spec:
+  ports:
+  - name: https
+    port: 8443
+    targetPort: https
+  selector:
+    control-plane: controller-manager

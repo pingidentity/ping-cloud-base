@@ -2,61 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: opensearch-dashboards
-  namespace: elastic-stack-logging
-$patch: delete
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: opensearch-cluster-master
-  namespace: elastic-stack-logging
-  annotations:
-    $patch: delete
-spec:
-  type: ExternalName
-  externalName: opensearch.${PRIMARY_DNS_ZONE}
-  $patch: replace
----
-apiVersion: v1
-kind: Service
-metadata:
   name: opensearch-cluster-headless
-  namespace: elastic-stack-logging
-$patch: delete
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: opensearch-cluster-hot
-  namespace: elastic-stack-logging
-$patch: delete
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: opensearch-cluster-warm
-  namespace: elastic-stack-logging
-$patch: delete
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: opensearch-dashboards
-  namespace: elastic-stack-logging
-$patch: delete
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: opensearch-dashboards-config
-  namespace: elastic-stack-logging
-$patch: delete
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: opensearch-config
   namespace: elastic-stack-logging
 $patch: delete
 ---
@@ -65,4 +11,10 @@ kind: StorageClass
 metadata:
   name: opensearch-sc1
 provisioner: ebs.csi.aws.com
+$patch: delete
+---
+apiVersion: opensearch.opster.io/v1
+kind: OpenSearchCluster
+metadata:
+  name: opensearch-cluster
 $patch: delete

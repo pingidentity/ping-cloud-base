@@ -175,6 +175,12 @@ configMapGenerator:
     - ../base/env_vars
     - env_vars
 
+- name: p1as-bootstrap
+  behavior: merge
+  envs:
+    - ../base/env_vars
+    - env_vars
+
 patchesStrategicMerge:
 
   ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###

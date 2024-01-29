@@ -1,0 +1,169 @@
+---
+# Source: opensearch-operator/templates/opensearch-operator-controller-manager-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    control-plane: controller-manager
+  name: os-controller-manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      control-plane: controller-manager
+  template:
+    metadata:
+      labels:
+        control-plane: controller-manager
+    spec:
+      initContainers:
+        # Pull SSM values for PingOne SSO
+        - name: p1as-bootstrap
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsGroup: 9999
+            runAsNonRoot: true
+            runAsUser: 9031
+          image: public.ecr.aws/r2h3l6e4/pingcloud-services/bootstrap/dev:v1.19-release-branch-latest
+          imagePullPolicy: Always
+          env:
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          envFrom:
+            - configMapRef:
+                name: p1as-bootstrap
+          volumeMounts:
+            - mountPath: /app/config/app_config.yaml
+              name: p1as-bootstrap-resources
+              readOnly: true
+              subPath: p1as-bootstrap-resources.yaml
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "300m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+        # Set up PingOne SSO
+        - name: p1as-oauth
+          image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v1.19-release-branch-latest
+          imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsGroup: 9999
+            runAsNonRoot: true
+            runAsUser: 9031
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "300m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          env:
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          envFrom:
+            - configMapRef:
+                name: p1as-bootstrap
+          command:
+            - /bin/sh
+            - -c
+            - python3 -u /app/oauth_client_services_controller.py --app opensearch
+      volumes:
+        - name: p1as-bootstrap-resources
+          configMap:
+            name: p1as-bootstrap-resources
+      containers:
+      - args:
+        - --secure-listen-address=0.0.0.0:8443
+        - --upstream=http://127.0.0.1:8080/
+        - --logtostderr=true
+        - --v=10
+        image: "gcr.io/kubebuilder/kube-rbac-proxy:v0.12.0"
+        name: kube-rbac-proxy
+        resources:
+          limits:
+            cpu: 50m
+            memory: 50Mi
+          requests:
+            cpu: 25m
+            memory: 25Mi
+        readinessProbe:
+          failureThreshold: 3
+          initialDelaySeconds: 10
+          periodSeconds: 15
+          successThreshold: 1
+          tcpSocket:
+            port: 8443
+          timeoutSeconds: 3
+        livenessProbe:
+          failureThreshold: 3
+          initialDelaySeconds: 10
+          periodSeconds: 15
+          successThreshold: 1
+          tcpSocket:
+            port: 8443
+          timeoutSeconds: 3
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+        ports:
+        - containerPort: 8443
+          name: https
+      - args:
+        - --health-probe-bind-address=:8081
+        - --metrics-bind-address=127.0.0.1:8080
+        - --leader-elect
+        - --loglevel=info
+        command:
+        - /manager
+        image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/opensearch-operator/opensearch-operator:2.4.0"
+        name: operator-controller-manager
+        imagePullPolicy: "Always"
+        resources:
+          limits:
+            cpu: 200m
+            memory: 500Mi
+          requests:
+            cpu: 100m
+            memory: 350Mi
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 10
+          periodSeconds: 15
+          successThreshold: 1
+          timeoutSeconds: 3
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 10
+          periodSeconds: 15
+          successThreshold: 1
+          timeoutSeconds: 3
+        env:
+        - name: DNS_BASE
+          value: cluster.local
+        - name: PARALLEL_RECOVERY_ENABLED
+          value: "true"
+        - name: SKIP_INIT_CONTAINER
+          value: "true"
+        securityContext:
+          allowPrivilegeEscalation: false
+      nodeSelector:
+        {}
+      tolerations:
+        []
+      securityContext:
+        runAsNonRoot: true
+      serviceAccountName: os-controller-manager
+      terminationGracePeriodSeconds: 10

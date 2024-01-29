@@ -143,46 +143,70 @@ spec:
             - name: PIPELINE_WORKERS
               value: "2"
 ---
+
 ################################################
 #                OpenSearch
 ################################################
 
 # Increase CPU resources
-apiVersion: apps/v1
-kind: StatefulSet
+apiVersion: opensearch.opster.io/v1
+kind: OpenSearchCluster
 metadata:
-  name: opensearch-cluster-hot
+  name: opensearch-cluster
 spec:
-  template:
-    spec:
-      containers:
-        - name: opensearch
-          resources:
-            limits:
-              cpu: "8"
-            requests:
-              cpu: "4"
+  nodePools:
+    - component: hot
+      resources:
+        requests:
+          cpu: "3"
+        limits:
+          cpu: "6"
+    - component: warm
+      resources:
+        requests:
+          cpu: "2"
+        limits:
+          cpu: "4"
 ---
 # Increase Memory Resources
-apiVersion: apps/v1
-kind: StatefulSet
+apiVersion: opensearch.opster.io/v1
+kind: OpenSearchCluster
 metadata:
-  name: opensearch-cluster-hot
+  name: opensearch-cluster
 spec:
-  template:
-    spec:
-      containers:
-        - name: opensearch
-          resources:
-            limits:
-              memory: 10Gi
-            requests:
-              memory: 8Gi
-          env:
-            - name: OPENSEARCH_JAVA_OPTS
-              value: "-Xms8g -Xmx8g" # Adjust JVM parameters to the memory JVM <= limits.memory -1 Gb
----
+  nodePools:
+    - component: hot
+      jvm: -Xmx5g -Xms5g
+      resources:
+        requests:
+          memory: 6Gi
+        limits:
+          memory: 6Gi
+    - component: warm
+      jvm: -Xmx5g -Xms5g
+      resources:
+        requests:
+          memory: 6Gi
+        limits:
+          memory: 6Gi
 
+---
+# Scale opensearch replicas
+apiVersion: opensearch.opster.io/v1
+kind: OpenSearchCluster
+metadata:
+  name: opensearch-cluster
+spec:
+  nodePools:
+    - component: hot
+      replicas: 5 # Scale down is not supported
+    - component: warm
+      replicas: 3
+
+################################################
+#                End Opensearch patches.
+################################################
+---
 ################################################
 #                PingDirectory
 ################################################

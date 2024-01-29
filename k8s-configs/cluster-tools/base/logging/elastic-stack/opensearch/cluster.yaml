@@ -1,0 +1,187 @@
+apiVersion: opensearch.opster.io/v1
+kind: OpenSearchCluster
+metadata:
+  name: opensearch-cluster
+spec:
+  security:
+    tls:
+      transport:
+        generate: true
+      http:
+        generate: true
+    config:  # Everything related to the securityconfig
+      securityConfigSecret:
+        name: opensearch-securityconfig # Name of the secret that contains the securityconfig files
+      adminCredentialsSecret:
+        name: opensearch-admin-credentials # Name of a secret that contains username/password for admin access
+  general:
+    serviceName: opensearch
+    serviceAccount: opensearch
+    version: 2.8.0
+    image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/opensearch/dev:v1.19-release-branch-latest
+    podSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      fsGroup: 1000
+    securityContext:
+      allowPrivilegeEscalation: false
+      privileged: false
+      capabilities:
+        drop:
+        - ALL
+    additionalConfig:
+      node.search.cache.size: 500m
+      cluster.max_shards_per_node: "10000"
+      prometheus.indices: "false"
+  dashboards:
+    enable: true
+    version: 2.8.0
+    podSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 1000
+      fsGroup: 1000
+    securityContext:
+      allowPrivilegeEscalation: false
+      privileged: false
+      capabilities:
+        drop:
+        - ALL
+    env:
+      - name: OPENID_CONNECT_URL
+        valueFrom:
+          secretKeyRef:
+            name: opensearch-dashboard-oidc
+            key: connect_url
+      - name: OPENID_CLIENT_ID
+        valueFrom:
+          secretKeyRef:
+            name: opensearch-dashboard-oidc
+            key: client_id
+      - name: OPENID_CLIENT_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: opensearch-dashboard-oidc
+            key: client_secret
+    additionalConfig:
+      opensearch.ssl.verificationMode: "Full"
+      opensearch_security.auth.anonymous_auth_enabled: "false"
+      opensearch_security.auth.type: |
+        ["openid", "basicauth"]
+      opensearch.requestHeadersAllowlist: |
+        ["authorization", "securitytenant"]
+      opensearch_security.openid.trust_dynamic_headers: "true"
+      opensearch_security.multitenancy.enabled: "false"
+      opensearch_security.openid.connect_url: "${OPENID_CONNECT_URL}"
+      opensearch_security.openid.client_id: "${OPENID_CLIENT_ID}"
+      opensearch_security.openid.client_secret: "${OPENID_CLIENT_SECRET}"
+      opensearch_security.openid.scope: "openid profile name groups"
+      opensearch_security.auth.multiple_auth_enabled: "true"
+    opensearchCredentialsSecret:
+      name: opensearch-dashboard-credentials
+    replicas: 1
+    image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/opensearchproject/opensearch-dashboards:2.8.0
+    resources:
+      requests:
+         memory: "512Mi"
+         cpu: "200m"
+      limits:
+         memory: "512Mi"
+         cpu: "200m"
+  nodePools:
+    - component: hot
+      labels:
+        app.kubernetes.io/name: opensearch
+        app.kubernetes.io/instance: opensearch-cluster-hot
+      replicas: 3
+      diskSize: "50Gi"
+      jvm: -Xmx3000M -Xms3000M
+      pdb:
+        enable: true
+        maxUnavailable: 1
+      additionalConfig:
+        node.attr.temp: "hot"
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                topologyKey: failure-domain.beta.kubernetes.io/zone
+                labelSelector:
+                  matchExpressions:
+                    - key: opster.io/opensearch-nodepool
+                      operator: In
+                      values:
+                        - hot
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: opster.io/opensearch-nodepool
+                    operator: In
+                    values:
+                      - hot
+              topologyKey: kubernetes.io/hostname
+      persistence:
+        pvc:
+          storageClass: opensearch-gp3
+          accessModes:
+            - "ReadWriteOnce"
+      resources:
+        requests:
+          cpu: "1"
+          memory: 4Gi
+        limits:
+          cpu: "4"
+          memory: 4Gi
+      roles:
+        - "cluster_manager"
+        - "data"
+        - "ingest"
+        - "remote_cluster_client"
+        - "search"
+    - component: warm
+      labels:
+        app.kubernetes.io/name: opensearch
+        app.kubernetes.io/instance: opensearch-cluster-warm
+      replicas: 3
+      diskSize: "140Gi"
+      jvm: -Xmx3g -Xms3g
+      pdb:
+        enable: true
+        maxUnavailable: 1
+      additionalConfig:
+        node.attr.temp: "warm"
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                topologyKey: failure-domain.beta.kubernetes.io/zone
+                labelSelector:
+                  matchExpressions:
+                    - key: opster.io/opensearch-nodepool
+                      operator: In
+                      values:
+                        - warm
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: opster.io/opensearch-nodepool
+                    operator: In
+                    values:
+                      - warm
+              topologyKey: kubernetes.io/hostname
+      persistence:
+        pvc:
+          storageClass: opensearch-sc1
+          accessModes:
+            - "ReadWriteOnce"
+      resources:
+        requests:
+          cpu: "1"
+          memory: 4Gi
+        limits:
+          cpu: "2"
+          memory: 4Gi
+      roles:
+        - "remote_cluster_client"
+        - "data"
