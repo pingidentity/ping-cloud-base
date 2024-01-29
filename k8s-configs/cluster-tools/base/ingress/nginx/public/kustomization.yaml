@@ -76,3 +76,13 @@ patchesJson6902:
 
 patchesStrategicMerge:
 - add-init-container.yaml
+
+# Add annotation to IngressClass
+patches:
+- target:
+    kind: IngressClass
+    name: nginx-public
+  patch: |-
+    - op: add
+      path: /metadata/annotations/nginx.ingress.kubernetes.io~1enable-annotation-validation
+      value: "true"

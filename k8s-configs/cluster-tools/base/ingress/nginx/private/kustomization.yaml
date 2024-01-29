@@ -35,3 +35,13 @@ patchesJson6902:
     version: v1
     kind: ConfigMap
     name: nginx-configuration
+
+# Add annotation to IngressClass
+patches:
+- target:
+    kind: IngressClass
+    name: nginx-private
+  patch: |-
+    - op: add
+      path: /metadata/annotations/nginx.ingress.kubernetes.io~1enable-annotation-validation
+      value: "true"
