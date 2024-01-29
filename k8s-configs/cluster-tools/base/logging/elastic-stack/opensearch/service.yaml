@@ -1,3 +1,4 @@
+---
 kind: Service
 apiVersion: v1
 metadata:
@@ -5,7 +6,6 @@ metadata:
   labels:
     app.kubernetes.io/name: opensearch
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: opensearch-dev.ping-demo.com
     prometheus.io/scrape: "true"
     prometheus.io/scheme: "https"
     prometheus.io/path: "/_prometheus/metrics"
@@ -20,4 +20,28 @@ spec:
   - name: http
     port: 9200
   - name: transport
+    port: 9300
+    
+---
+# Ingest service used to be created in both (main and secondary) regions to allow logstash communicate inter-regions.
+kind: Service
+apiVersion: v1
+metadata:
+  name: opensearch-ingest
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: opensearch-dev.ping-demo.com
+  labels:
+    app.kubernetes.io/name: opensearch
+    app.kubernetes.io/instance: opensearch-cluster-hot
+spec:
+  type: ClusterIP
+  selector:
+    opster.io/opensearch-cluster: opensearch-cluster
+    opster.io/opensearch-nodepool: hot
+  ports:
+  - name: http
+    protocol: TCP
+    port: 9200
+  - name: transport
+    protocol: TCP
     port: 9300

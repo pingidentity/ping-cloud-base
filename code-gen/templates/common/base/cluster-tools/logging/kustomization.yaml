@@ -77,7 +77,7 @@ patchesStrategicMerge:
 patchesJson6902:
 - target:
     kind: Service
-    name: opensearch-cluster-headless
+    name: opensearch-ingest
     namespace: elastic-stack-logging
     version: v1
   patch: |-
