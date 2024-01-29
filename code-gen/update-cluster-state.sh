@@ -610,8 +610,7 @@ print_readme() {
   if "${RESET_TO_DEFAULT}"; then
     echo "- All environment variables have been reset to the default for '${NEW_VERSION}'."
   else
-    echo "- Environment variables have been migrated to '${NEW_VERSION}' with the exception"
-    echo "  of app JVM settings."
+    echo "- Environment variables have been migrated to '${NEW_VERSION}'."
   fi
   echo
   echo "    - The '${ENV_VARS_FILE_NAME}' files have been copied over from the default git branch"
@@ -619,11 +618,6 @@ print_readme() {
   echo
   echo "    - Use the '${ENV_VARS_FILE_NAME}.old' files as a reference to fix up any"
   echo "      discrepancies in the new '${ENV_VARS_FILE_NAME}'."
-  echo
-  echo "    - WARNING: changing app JVM settings will require related changes to the"
-  echo "      replica set of the apps. Make those changes to '${CUSTOM_PATCHES_FILE_NAME}'."
-  echo "      There is a '${CUSTOM_PATCHES_SAMPLE_FILE_NAME}' peer file with some examples"
-  echo "      showing how to patch HPA settings, replica count, mem/cpu request/limits, etc."
   echo
 
   if test -n "${ID_RSA_VALUE}"; then
