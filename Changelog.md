@@ -88,6 +88,7 @@
 - Set Karpenter defaultInstanceProfile via Environment Variable
 - Add entry in base values.yaml for disabling subchart dependencies
 - Add PingOne SSO for ArgoCD
+- Add PingOne SSO for Opensearch Dashboards
 - Modify appintegrations cache config within PingDirectory
 - Remove Grafana from ping-cloud-base image tag list
 - Remove p14c-oauth-service job and pod
@@ -116,6 +117,7 @@
 - Implement IRSA role for Logstash
 - Implement IRSA role for OpenSearch
 - Upgrade grafana-operator to 5.6.0
+- Deploy opensearch-operator with opensearch cluster
 
 _Changes:_
 
@@ -252,6 +254,7 @@ _Changes:_
 - [X] PDO-6264 OpenSearch Post-Migration: Cluster: Avail and Recovery: Cluster and Index Tuning, Enable Segment Replication
 - [X] PDO-6267 Update to enable detailed monitoring on instances
 - [X] PDO-6282 Modify appintegrations cache config within PingDirectory
+- [X] PDO-6287 OpenSearch Post-Migration: Security: Dashboard SSO - Update p14c-oauth-service
 - [x] PDO-6305 Set Karpenter defaultInstanceProfile via Environment Variable
 - [X] PDO-6311 Argocd pod resources spec adjusted
 - [X] PDO-6323 Allow CSR to override the duration and renewBefore properties within cert-manager
@@ -275,7 +278,8 @@ _Changes:_
 - [X] PDO-6559 Implement IRSA role for OpenSearch
 - [X] PDO-6560 Upgrade grafana-operator, grafana-folders
 - [X] PDO-6570 Nginx ingress-access logs are sent to the logstash index pattern instead of ingress-access index pattern
-- [X] PDO-6585:Upgrade all AWSCLI containers to the most recent stable version that includes support for ARM, v2.+
+- [X] PDO-6585 Upgrade all AWSCLI containers to the most recent stable version that includes support for ARM, v2.+
+- [X] PDO-6599 Migrate opensearch from plain yaml to the operator
 - [X] PDO-6620 [PORT] Add Use_Kubelet configuration parameters to fix Fluentbit Kubernetes filter
 
 ### 1.18.0.0

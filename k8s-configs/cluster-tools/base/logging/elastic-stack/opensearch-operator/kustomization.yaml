@@ -1,0 +1,27 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+namespace: elastic-stack-logging
+
+resources:
+- opensearch-operator-controller-manager-deployment.yaml
+- opensearch-operator-controller-manager-metrics-service.yaml
+- opensearch-operator-controller-manager-sa.yaml
+- opensearch-operator-leader-election-role.yaml
+- opensearch-operator-leader-election-rolebinding.yaml
+- opensearch-operator-manager-configmap.yaml
+- opensearch-operator-manager-clusterrole.yaml
+- opensearch-operator-manager-clusterrolebinding.yaml
+- opensearch-operator-metrics-reader-clusterrole.yaml
+- opensearch-operator-proxy-clusterrolebinding.yaml
+- opensearch-operator-proxy-role-clusterrole.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+- name: p1as-bootstrap
+
+- name: p1as-bootstrap-resources
+  files:
+    - p1as-bootstrap-resources.yaml

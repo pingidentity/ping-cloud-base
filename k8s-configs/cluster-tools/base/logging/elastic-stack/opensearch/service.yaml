@@ -1,27 +1,6 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: opensearch-cluster-master
-  labels:
-    app.kubernetes.io/name: opensearch
-    app.kubernetes.io/instance: opensearch-cluster-hot
-spec:
-  type: ClusterIP
-  selector:
-    app.kubernetes.io/name: opensearch
-    app.kubernetes.io/instance: opensearch-cluster-hot
-  ports:
-  - name: http
-    protocol: TCP
-    port: 9200
-  - name: transport
-    protocol: TCP
-    port: 9300
----
-# Source: opensearch/templates/service.yaml
-kind: Service
-apiVersion: v1
-metadata:
   name: opensearch-cluster-headless
   labels:
     app.kubernetes.io/name: opensearch

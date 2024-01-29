@@ -29,7 +29,7 @@ spec:
     name: OS-PA-Audit
     type: grafana-opensearch-datasource
     access: proxy
-    url: https://opensearch-cluster-master.elastic-stack-logging.svc.cluster.local:9200
+    url: https://opensearch-cluster-headless.elastic-stack-logging.svc.cluster.local:9200
     isDefault: false
     uid: muQHLUs4k
     jsonData:
@@ -54,7 +54,7 @@ spec:
     name: OS-PF-Audit
     type: grafana-opensearch-datasource
     access: proxy
-    url: https://opensearch-cluster-master.elastic-stack-logging.svc.cluster.local:9200
+    url: https://opensearch-cluster-headless.elastic-stack-logging.svc.cluster.local:9200
     isDefault: false
     uid: xCysL8y4z
     jsonData:

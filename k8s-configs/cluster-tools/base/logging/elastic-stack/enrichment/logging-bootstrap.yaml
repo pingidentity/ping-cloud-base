@@ -45,4 +45,3 @@ spec:
       - name: logging-bootstrap-resources
         configMap:
           name: logging-bootstrap-resources
----

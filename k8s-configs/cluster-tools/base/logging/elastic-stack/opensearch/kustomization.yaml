@@ -4,17 +4,16 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 namespace: elastic-stack-logging
 
 resources:
-- configs
-- security_configs
-- pdb.yaml
-- rbac.yaml
-- service.yaml
-- sts.yaml
-- index-templates
-- storageclass.yaml
-- certs.yaml
-- ism-policies
 - alerts
+- index-templates
+- ism-policies
 - notifications
+- security_configs
 - bootstrap.yaml
+- cluster.yaml
+- service.yaml
+- storageclass.yaml
+- serviceaccount.yaml
 
+openapi:
+  path: opensearch-schema.json

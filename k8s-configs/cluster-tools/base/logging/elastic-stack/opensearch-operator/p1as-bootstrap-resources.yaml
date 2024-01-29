@@ -1,0 +1,21 @@
+bootstrap-configuration:
+  kind: Secret
+  name: p14c-bootstrap-secret
+  template: templates/p14c-bootstrap-secret.yaml
+  values_container_key: bootstrapConfiguration
+  ssm_type: json
+  ssm_path_prefix: CUSTOMER_SSO_SSM_PATH_PREFIX
+environment-metadata:
+  kind: ConfigMap
+  name: p14c-environment-metadata
+  template:
+  values_container_key: information.json
+  ssm_type: json
+  ssm_path_prefix: CUSTOMER_SSO_SSM_PATH_PREFIX
+davinci-configuration:
+  kind: Secret
+  name: davinci-configuration
+  template: templates/davinci-configuration.yaml
+  values_container_key: davinciConfiguration
+  ssm_type: json
+  ssm_path_prefix: CUSTOMER_SSO_SSM_PATH_PREFIX

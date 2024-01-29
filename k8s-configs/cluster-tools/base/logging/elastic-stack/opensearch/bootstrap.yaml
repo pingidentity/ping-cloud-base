@@ -21,7 +21,7 @@ spec:
           allowPrivilegeEscalation: false
         env:
           - name: OS_HOST
-            value: "opensearch-cluster-master.elastic-stack-logging.svc.cluster.local"
+            value: "opensearch.elastic-stack-logging.svc.cluster.local"
           - name: OS_PORT
             value: "9200"
           - name: BOOTSTRAP_USER
@@ -141,14 +141,3 @@ spec:
         - name: os-alerts-pf
           configMap:
             name: os-alerts-pf
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: os-bootstrap-creds
-  annotations:
-    sealedsecrets.bitnami.com/managed: "true"
-    argocd.argoproj.io/sync-options: Prune=false
-data:
-  username: Ym9vdHN0cmFw
-  password: eGFSYWUxeGFlbmdhaG5pZTBpZURvbzdub2htYWlyb2o=

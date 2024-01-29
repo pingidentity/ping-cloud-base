@@ -5,3 +5,6 @@ namespace: elastic-stack-logging
 
 resources:
 - ../../base/logging/
+
+patchesStrategicMerge:
+- elastic-stack/opensearch/os-limits.yaml
