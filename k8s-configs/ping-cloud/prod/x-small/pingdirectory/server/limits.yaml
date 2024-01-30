@@ -10,9 +10,9 @@ spec:
       - name: pingdirectory
         resources:
           limits:
-            memory: 4Gi
+            memory: 12Gi
           requests:
-            memory: 4Gi
+            memory: 12Gi
             cpu: 2
       - name: pingdirectory-statsd-exporter
         resources:
