@@ -119,6 +119,7 @@
 - Upgrade grafana-operator to 5.6.0
 - Deploy opensearch-operator with opensearch cluster
 - [Support STAGING-21293] Set --enable-annotation-validation for p1as nginx-ingress
+- PF Heap Value: CSR upgrade-wrapper script should maintain edited values
 
 _Changes:_
 
