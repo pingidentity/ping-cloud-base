@@ -1,3 +1,14 @@
+# Changelog
+
+v1.18.1.0
+
+- Patch PF admin test environment memory and cpu limits to 4Gi
+
+_Changes:_
+
+- [X] Patch PF admin test environment memory and cpu limits to 4Gi
+
+
 v1.18.0.0
 
 **Ping Identity Products**
