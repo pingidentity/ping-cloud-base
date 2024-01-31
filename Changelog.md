@@ -1,13 +1,14 @@
 # Changelog
 
-v1.18.1.0
+### v1.18.1.0
 
 - Patch PF admin test environment memory and cpu limits to 4Gi
+- Add logstash Disruption Budget to avoid logstash outages during upgrade
 
 _Changes:_
 
 - [X] Patch PF admin test environment memory and cpu limits to 4Gi
-
+- [X] PDO-6608 Add logstash Disruption Budget
 
 v1.18.0.0
 

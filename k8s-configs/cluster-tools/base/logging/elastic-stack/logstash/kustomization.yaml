@@ -5,3 +5,4 @@ resources:
 - logstash.yaml
 - logstash_pipelines
 - hpa.yaml
+- pdb.yaml
