@@ -1,0 +1,77 @@
+# This CronJob created for doing cleanup of unclaimed Logstash PVs which stay in cluster after resources scaling down.
+# PDO-6655
+
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: delete-unused-logstash-pvs
+  namespace: elastic-stack-logging
+spec:
+  schedule: "0 0 * * 0" # Once a week
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 1
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 90
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        spec:
+          serviceAccount: delete-unused-logstash-pvs
+          restartPolicy: OnFailure
+          containers:
+          - name: delete-unused-logstash-pvs
+            image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.18.0
+            imagePullPolicy: IfNotPresent
+            securityContext:
+              runAsGroup: 9999
+              runAsNonRoot: true
+              runAsUser: 9031
+              allowPrivilegeEscalation: false
+            command: ["/bin/sh", "-c"]
+            args:
+            - echo starting;
+              kubectl get pv | grep logstash | grep Released | awk '$1 {print$1}' | while read vol; do kubectl delete pv/${vol}; done
+              echo done;
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: delete-unused-logstash-pvs
+  namespace: elastic-stack-logging
+  labels:
+    app: delete-unused-logstash-pvs
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: delete-unused-logstash-pvs
+  labels:
+    app: delete-unused-logstash-pvs
+rules:
+- apiGroups:
+  - ""
+  - "batch"
+  resources:
+  - persistentvolumes
+  verbs:
+  - get
+  - list
+  - watch
+  - delete
+  
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: delete-unused-logstash-pvs
+roleRef:
+  kind: ClusterRole
+  name: delete-unused-logstash-pvs
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  namespace: elastic-stack-logging
+  name: delete-unused-logstash-pvs
