@@ -29,6 +29,7 @@ spec:
   disruption:
     consolidationPolicy: WhenEmpty
     consolidateAfter: 30s
+    expireAfter: Never
     
 ---
 apiVersion: karpenter.sh/v1beta1
@@ -67,6 +68,7 @@ spec:
   disruption:
     consolidationPolicy: WhenEmpty
     consolidateAfter: 30s
+    expireAfter: Never
 
 ---
 apiVersion: karpenter.sh/v1beta1
@@ -105,6 +107,7 @@ spec:
   disruption:
     consolidationPolicy: WhenEmpty
     consolidateAfter: 30s
+    expireAfter: Never
 
 ---
 apiVersion: karpenter.k8s.aws/v1beta1
