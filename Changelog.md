@@ -4,11 +4,13 @@
 
 - Patch PF admin test environment memory and cpu limits to 4Gi
 - Add logstash Disruption Budget to avoid logstash outages during upgrade
+- Add pod-reaper annotations to the fluentbit DS
 
 _Changes:_
 
 - [X] Patch PF admin test environment memory and cpu limits to 4Gi
 - [X] PDO-6608 Add logstash Disruption Budget
+- [X] PDO-6628 Add pod-reaper annotations to the fluentbit DS
 
 v1.18.0.0
 
