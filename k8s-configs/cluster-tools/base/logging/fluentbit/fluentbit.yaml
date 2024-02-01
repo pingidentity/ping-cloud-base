@@ -71,6 +71,7 @@ spec:
     metadata:
       labels:
         k8s-app: fluent-bit
+        pod-reaper: enabled
     spec:
       # There's no information about dnsPolicy and hostNetwork being needed for IMDS,
       # but fluentbit won't start without it.
