@@ -117,6 +117,7 @@
 - Implement IRSA role for Logstash
 - Implement IRSA role for OpenSearch
 - Upgrade grafana-operator to 5.6.0
+- Update irsa-ping to use arn value
 - Deploy opensearch-operator with opensearch cluster
 - CronJob created for doing cleanup of unclaimed Logstash PVs which stay in cluster after resources scaling down
 - [Support STAGING-21293] Set --enable-annotation-validation for p1as nginx-ingress
@@ -278,6 +279,7 @@ _Changes:_
 - [X] PDO-6494 Implement Shared db cache to enhance support of multiple backends
 - [X] PDO-6506 Update to fix karpenter provisoner config
 - [X] PDO-6526 Update integration tests to be able to run locally
+- [X] PDO-6536 Update irsa-ping to use arn
 - [X] PDO-6543 Disable PD File-Based debug logger
 - [X] PDO-6549 [Support STAGING-21293] Set --enable-annotation-validation for p1as nginx-ingress
 - [X] PDO-6558 Implement IRSA role for Logstash
