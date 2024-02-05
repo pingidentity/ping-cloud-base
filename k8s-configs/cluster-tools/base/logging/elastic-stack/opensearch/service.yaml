@@ -10,6 +10,7 @@ metadata:
     prometheus.io/scheme: "https"
     prometheus.io/path: "/_prometheus/metrics"
     prometheus.io/port: "9200"
+    newrelic.io/scrape: "true"
 spec:
   clusterIP: None # This is needed for statefulset hostnames like opensearch-0 to resolve
   # Create endpoints also if the related pod isn't ready
