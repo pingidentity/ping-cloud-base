@@ -123,6 +123,7 @@
 - Ingress Failed to watch *v1.Secret: unknown (get secrets)
 - PF Heap Value: CSR upgrade-wrapper script should maintain edited values
 - Newrelic-Prometheus-Agent: Sending OpenSearch Metrics to New Relic
+- Newrelic-Prometheus-Agent: Sending PGO Metrics to New Relic
 
 _Changes:_
 
@@ -290,6 +291,7 @@ _Changes:_
 - [X] PDO-6620 [PORT] Add Use_Kubelet configuration parameters to fix Fluentbit Kubernetes filter
 - [X] PDO-6655 Implement the scaling pvc down once the number of logstash pods are scaled down
 - [X] PDO-6666 Newrelic-Prometheus-Agent: Send OpenSearch Metrics to New Relic
+- [X] PDO-6667 Newrelic-Prometheus-Agent: Send PGO Metrics to New Relic
 
 ### 1.18.0.0
 
