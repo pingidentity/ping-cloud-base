@@ -12,6 +12,8 @@ spec:
   metadata:
     labels:
       role: pf-provisioning
+    annotations:
+      newrelic.io/scrape: "true"
   instances:
     - name: instance1
       metadata:
