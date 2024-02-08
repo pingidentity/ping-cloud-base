@@ -205,7 +205,7 @@ pf.runtime.context.path=/
 # This property enables detailed event logging where changes to the components are logged.
 # Default is false
 #
-pf.log.eventdetail=false
+pf.log.eventdetail=true
 
 #
 # This property enables detailed system monitoring information to be made available

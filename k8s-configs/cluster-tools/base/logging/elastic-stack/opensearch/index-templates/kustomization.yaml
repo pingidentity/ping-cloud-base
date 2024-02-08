@@ -10,7 +10,8 @@ configMapGenerator:
       - shrink-logstash.json
       - ingress-access.json
       - ingress-errors.json
-      - pa-api-audit.json
+      - pa-api-audit-log.json
+      - pa-api-audit-har.json
       - pa-agent-audit.json
       - pa-engine-audit.json
       - pa-pingaccess.json
@@ -23,6 +24,7 @@ configMapGenerator:
       - pc-application.json
       - pc-monitor.json
       - pd-access.json
+      - pd-http-detailed-access.json
       - pd-errors.json
       - pd-expensive-write-ops.json
       - pd-failed-ops.json
