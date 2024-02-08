@@ -11,6 +11,7 @@ _Changes:_
 - [X] Patch PF admin test environment memory and cpu limits to 4Gi
 - [X] PDO-6608 Add logstash Disruption Budget
 - [X] PDO-6628 Add pod-reaper annotations to the fluentbit DS
+- [X] PDO-6712 Metadata is missing in NewRelic pod logs
 
 v1.18.0.0
 
