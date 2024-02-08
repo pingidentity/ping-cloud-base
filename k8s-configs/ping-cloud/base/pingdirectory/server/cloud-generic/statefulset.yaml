@@ -180,6 +180,7 @@ spec:
           resources:
             limits:
               memory: "12Gi"
+              cpu: "3"
             requests:
               memory: "12Gi"
               cpu: "2"
