@@ -10,3 +10,4 @@
           prometheus.io/path: '/metrics'
           prometheus.io/port: '8001'
           prometheus.io/scrape: 'true'
+          newrelic.io/scrape: 'true'

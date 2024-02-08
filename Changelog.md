@@ -126,6 +126,7 @@
 - Newrelic-Prometheus-Agent: Sending OpenSearch Metrics to New Relic
 - Increase PA, PF, PD logs ingestion into ELK
 - Newrelic-Prometheus-Agent: Sending PGO Metrics to New Relic
+- Newrelic-Prometheus-Agent: Sending Ping apps, ArgoCD and Karpenter metrics to NR
 
 _Changes:_
 
@@ -296,6 +297,7 @@ _Changes:_
 - [X] PDO-6615 Ingress Failed to watch *v1.Secret: unknown (get secrets)
 - [X] PDO-6620 [PORT] Add Use_Kubelet configuration parameters to fix Fluentbit Kubernetes filter
 - [X] PDO-6655 Implement the scaling pvc down once the number of logstash pods are scaled down
+- [X] PDO-6662 [STAGING-21964] P1AS New Relic Prometheus Agent Config Change
 - [X] PDO-6666 Newrelic-Prometheus-Agent: Send OpenSearch Metrics to New Relic
 - [X] PDO-6667 Newrelic-Prometheus-Agent: Send PGO Metrics to New Relic
 

@@ -22,6 +22,10 @@ spec:
         pod-reaper: enabled
       annotations:
         lastUpdateReason: "NA"
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "8080"
+        newrelic.io/scrape: "true"
     spec:
       serviceAccountName: ping-serviceaccount
       affinity:
