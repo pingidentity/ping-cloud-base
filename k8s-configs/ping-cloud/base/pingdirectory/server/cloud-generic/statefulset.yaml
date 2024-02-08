@@ -19,6 +19,10 @@ spec:
     metadata:
       annotations:
         lastUpdateReason: "NA"
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/"
+        prometheus.io/port: "8080"
+        newrelic.io/scrape: "true"
       labels:
         class: pingdirectory-server
         entitled-app: "true"
