@@ -124,6 +124,7 @@
 - Ingress Failed to watch *v1.Secret: unknown (get secrets)
 - PF Heap Value: CSR upgrade-wrapper script should maintain edited values
 - Newrelic-Prometheus-Agent: Sending OpenSearch Metrics to New Relic
+- Increase PA, PF, PD logs ingestion into ELK
 - Newrelic-Prometheus-Agent: Sending PGO Metrics to New Relic
 
 _Changes:_
@@ -269,6 +270,9 @@ _Changes:_
 - [X] PDO-6335 Newrelic-Prometheus-Agent: Send Kubernetes-volume-Autoscaler Metrics to New Relic
 - [X] PDO-6337 Migrate logstash to the GP3 volumes
 - [X] PDO-6338 Migrate Prometheus to the GP3 volumes
+- [X] PDO-6375 Increase PA log ingestion into ELK
+- [X] PDO-6377 Increase PF log ingestion into ELK
+- [X] PDO-6378 Increase PD log ingestion into ELK
 - [X] PDO-6411 Increase OpenSearch warm replicas to 3 to make it HA
 - [X] PDO-6420 Update tag-release.sh to replace the helm chart versions in PCB
 - [X] PDO-6429 Create password for pf.cluster.auth.pwd property within run.properties for PingFederate

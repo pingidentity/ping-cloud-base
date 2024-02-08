@@ -1,6 +1,6 @@
 {
   "index_patterns": [
-    "pa-api-audit-*"
+    "pa-api-audit-log-*"
   ],
   "template": {
     "settings": {

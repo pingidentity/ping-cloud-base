@@ -1,6 +1,6 @@
 {
   "index_patterns": [
-    "pf-admin-event-detail-*"
+    "pa-api-audit-har-*"
   ],
   "template": {
     "settings": {
@@ -208,6 +208,47 @@
             "keyword": {
               "type": "keyword",
               "ignore_above": 256
+            }
+          }
+        },
+        "log": {
+          "properties": {
+            "_metadata": {
+              "properties": {
+                "duration": {
+                  "type": "long"
+                },
+                "proxyRoundTripMS": {
+                  "type": "long"
+                },
+                "reqReceivedMillisec": {
+                  "type": "long"
+                },
+                "reqSentMillisec": {
+                  "type": "long"
+                },
+                "respReceivedMillisec": {
+                  "type": "long"
+                },
+                "respSentMillisec": {
+                  "type": "long"
+                },
+                "responseCode": {
+                  "type": "integer"
+                },
+                "roundTripMS": {
+                  "type": "integer"
+                },
+                "userInfoReqSentMillisec": {
+                  "type": "long"
+                },
+                "userInfoRespReceivedMillisec": {
+                  "type": "long"
+                },
+                "userInfoRoundTripMS": {
+                  "type": "long"
+                }
+              }
             }
           }
         },

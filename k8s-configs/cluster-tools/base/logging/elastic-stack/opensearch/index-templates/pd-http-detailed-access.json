@@ -1,6 +1,6 @@
 {
   "index_patterns": [
-    "pf-admin-event-detail-*"
+    "pd-http-detailed-access-*"
   ],
   "template": {
     "settings": {
