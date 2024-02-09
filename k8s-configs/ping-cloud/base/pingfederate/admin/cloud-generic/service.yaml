@@ -39,5 +39,5 @@ spec:
       port: 7700
       targetPort: 7700
   selector:
-     cluster: pingfederate-cluster
+     role: pingfederate-admin
 
