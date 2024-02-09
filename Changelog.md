@@ -123,6 +123,7 @@
 - CronJob created for doing cleanup of unclaimed Logstash PVs which stay in cluster after resources scaling down
 - [Support STAGING-21293] Set --enable-annotation-validation for p1as nginx-ingress
 - Ingress Failed to watch *v1.Secret: unknown (get secrets)
+- Fix the "pingfederate-cluster" service label selector
 - PF Heap Value: CSR upgrade-wrapper script should maintain edited values
 - Newrelic-Prometheus-Agent: Sending OpenSearch Metrics to New Relic
 - Increase PA, PF, PD logs ingestion into ELK
@@ -298,6 +299,7 @@ _Changes:_
 - [X] PDO-6570 Nginx ingress-access logs are sent to the logstash index pattern instead of ingress-access index pattern
 - [X] PDO-6585 Upgrade all AWSCLI containers to the most recent stable version that includes support for ARM, v2.+
 - [X] PDO-6599 Migrate opensearch from plain yaml to the operator
+- [X] PDO-6615 Fix the "pingfederate-cluster" service label selector
 - [X] PDO-6615 Ingress Failed to watch *v1.Secret: unknown (get secrets)
 - [X] PDO-6620 [PORT] Add Use_Kubelet configuration parameters to fix Fluentbit Kubernetes filter
 - [X] PDO-6655 Implement the scaling pvc down once the number of logstash pods are scaled down
