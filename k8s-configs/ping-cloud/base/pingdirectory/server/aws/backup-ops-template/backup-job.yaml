@@ -9,7 +9,7 @@ metadata:
     role: pingdirectory
 spec:
   ttlSecondsAfterFinished: 30
-  backoffLimit: 5
+  backoffLimit: 0
   template:
     spec:
       serviceAccountName: pingdirectory-ops-serviceaccount

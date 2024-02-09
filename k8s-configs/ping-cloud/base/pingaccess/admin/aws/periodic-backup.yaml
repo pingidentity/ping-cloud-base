@@ -27,13 +27,15 @@ data:
             "test -x ${SCRIPT} && \
             ${SCRIPT}"> "${LOG_FILE}"
 
-    if test ${?} -eq 0; then
+    exit_code=${?}
+    if test ${exit_code} -eq 0; then
       # Sending logs to STDOUT
       cat ${LOG_FILE}
       UPLOAD_FILE=$(tail -1 "${LOG_FILE}")
       test -z "${UPLOAD_FILES}" && UPLOAD_FILES="${UPLOAD_FILE}" || UPLOAD_FILES="${UPLOAD_FILES} ${UPLOAD_FILE}"
     else
-      echo "Upload script not found on server ${SERVER}"
+      echo "The kubectl command attempting to invoke the script exited with '${exit_code}'"
+      exit 1
     fi
     
     # Print the names of the uploaded files so callers know exactly what was uploaded
