@@ -29,13 +29,11 @@ spec:
               secretKeyRef:
                 key: username
                 name: os-bootstrap-creds
-                optional: true
           - name: BOOTSTRAP_PASS
             valueFrom:
               secretKeyRef:
                 key: password
                 name: os-bootstrap-creds
-                optional: true
           - name: TENANT_DOMAIN
             valueFrom:
               configMapKeyRef:

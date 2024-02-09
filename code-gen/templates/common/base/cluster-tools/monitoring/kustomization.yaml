@@ -106,6 +106,8 @@ patchesStrategicMerge:
         - integrations_filter:
             enabled: false
           job_name_prefix: newrelic
+          tls_config:
+            insecure_skip_verify: true
           target_discovery:
             endpoints: true
             filter:
