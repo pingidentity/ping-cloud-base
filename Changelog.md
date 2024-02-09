@@ -127,6 +127,7 @@
 - Increase PA, PF, PD logs ingestion into ELK
 - Newrelic-Prometheus-Agent: Sending PGO Metrics to New Relic
 - Newrelic-Prometheus-Agent: Sending Ping apps, ArgoCD and Karpenter metrics to NR
+- Update backup and CSD upload jobs to properly report failures
 
 _Changes:_
 
@@ -285,6 +286,7 @@ _Changes:_
 - [X] PDO-6494 Implement Shared db cache to enhance support of multiple backends
 - [X] PDO-6506 Update to fix karpenter provisoner config
 - [X] PDO-6526 Update integration tests to be able to run locally
+- [X] PDO-6533 Refactor backup job scripts to make sure it return exit code in case backup was failed
 - [X] PDO-6536 Update irsa-ping to use arn
 - [X] PDO-6543 Disable PD File-Based debug logger
 - [X] PDO-6549 [Support STAGING-21293] Set --enable-annotation-validation for p1as nginx-ingress
