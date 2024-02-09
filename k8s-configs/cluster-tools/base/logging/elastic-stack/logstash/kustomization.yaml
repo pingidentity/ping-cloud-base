@@ -8,3 +8,4 @@ resources:
 - hpa.yaml
 - logstash-search-template.yaml
 - unused-pv-cleanup.yaml
+- secret.yaml

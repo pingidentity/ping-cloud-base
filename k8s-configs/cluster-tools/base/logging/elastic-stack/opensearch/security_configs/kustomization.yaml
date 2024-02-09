@@ -5,6 +5,7 @@ namespace: elastic-stack-logging
 
 # The secret values for config.yml, internal_users.yml, and roles_mapping.yml
 # are managed by the p1as-oauth init container, and can be found in the p14c-integration image.
+# No secret data here. It's a secret by-design and could be removed in the future
 
 secretGenerator:
   - name: opensearch-securityconfig
@@ -18,6 +19,3 @@ secretGenerator:
       - tenants.yml
 generatorOptions:
   disableNameSuffixHash: true
-  annotations:
-    sealedsecrets.bitnami.com/managed: "true"
-    argocd.argoproj.io/sync-options: Prune=false
