@@ -15,7 +15,6 @@ dsconfig create-root-dn-user \
     --set alternate-bind-dn:cn=datasync  \
     --set inherit-default-root-privileges:false  \
     --set privilege:bypass-pw-policy  \
-    --set privilege:config-read  \
     --set privilege:password-reset  \
     --set privilege:unindexed-search \
     --set password<${ROOT_USER_PASSWORD_FILE}

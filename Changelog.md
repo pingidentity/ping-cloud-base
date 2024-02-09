@@ -75,6 +75,7 @@
 - Fix common integration tests
 - Add Request and Limit resources to PingAccess/PingAccess-WAS Upgrade Init Container
 - Update csr-valdation.sh to create a single .yaml file per microservice, rather than directory
+- Add ACIs for PingDataSync
 - Kube-State-Metrics: Refactoring with Third-Party Manifest Policy
 - Metrics-Server : Refactoring with Third-Party Manifest Policy
 - Add PingOne ArgoCD groups integration tests
@@ -243,6 +244,7 @@ _Changes:_
 - [X] PDO-6027 AWS EFS CSI Driver: Remove it
 - [X] PDO-6033 Configure PingAccess SSO app for Ping internal group access
 - [X] PDO-6034 Configure PingFederate SSO app for Ping internal group access
+- [X] PDO-6058 Add ACIs for PingDataSync
 - [X] PDO-6061 Fix pingone-configurator pod crashing when missing ConfigMap ping-cloud/is-pingone
 - [X] PDO-6074 Kube-State-Metrics: Refactoring with Third-Party Manifest Policy
 - [X] PDO-6075 Metrics-Server : Refactoring with Third-Party Manifest Policy
