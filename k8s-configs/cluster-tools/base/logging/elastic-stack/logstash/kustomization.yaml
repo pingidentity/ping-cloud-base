@@ -9,3 +9,4 @@ resources:
 - logstash-search-template.yaml
 - unused-pv-cleanup.yaml
 - secret.yaml
+- pdb.yaml

@@ -129,6 +129,7 @@
 - Increase PA, PF, PD logs ingestion into ELK
 - Newrelic-Prometheus-Agent: Sending PGO Metrics to New Relic
 - Newrelic-Prometheus-Agent: Sending Ping apps, ArgoCD and Karpenter metrics to NR
+- HPA: Update Logstash min pods to be at least 2 (to avoid service downtime over upgrades)
 - Update backup and CSD upload jobs to properly report failures
 
 _Changes:_
@@ -306,6 +307,7 @@ _Changes:_
 - [X] PDO-6662 [STAGING-21964] P1AS New Relic Prometheus Agent Config Change
 - [X] PDO-6666 Newrelic-Prometheus-Agent: Send OpenSearch Metrics to New Relic
 - [X] PDO-6667 Newrelic-Prometheus-Agent: Send PGO Metrics to New Relic
+- [X] PDO-6685 HPA: Update Logstash min pods to be at least 2 (to avoid service downtime over upgrades)
 - [X] PDO-6713 Metadata is missing in NewRelic pod logs
 
 ### 1.18.0.0
