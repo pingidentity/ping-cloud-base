@@ -7,6 +7,7 @@
 - Add pod-reaper annotations to the fluentbit DS
 - [EKS 1.28] autoscaling/v2beta2 API version of HorizontalPodAutoscaler is no longer served
 - Update kube-state-metrics cluster tool to v2.10.1
+- Update kubectl to 1.27.10 for EKS 1.28
 
 _Changes:_
 
@@ -16,6 +17,7 @@ _Changes:_
 - [X] PDO-6712 Metadata is missing in NewRelic pod logs
 - [X] PDO-6715 [EKS 1.28] autoscaling/v2beta2 API version of HorizontalPodAutoscaler is no longer served
 - [X] PDO-6720 Update kube-state-metrics cluster tool to v2.10.1
+- [X] PDO-6721 Update kubectl to 1.27.10 for EKS 1.28
 
 v1.18.0.0
 
