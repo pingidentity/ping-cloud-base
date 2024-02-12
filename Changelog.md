@@ -6,6 +6,7 @@
 - Add logstash Disruption Budget to avoid logstash outages during upgrade
 - Add pod-reaper annotations to the fluentbit DS
 - [EKS 1.28] autoscaling/v2beta2 API version of HorizontalPodAutoscaler is no longer served
+- Update kube-state-metrics cluster tool to v2.10.1
 
 _Changes:_
 
@@ -14,6 +15,7 @@ _Changes:_
 - [X] PDO-6628 Add pod-reaper annotations to the fluentbit DS
 - [X] PDO-6712 Metadata is missing in NewRelic pod logs
 - [X] PDO-6715 [EKS 1.28] autoscaling/v2beta2 API version of HorizontalPodAutoscaler is no longer served
+- [X] PDO-6720 Update kube-state-metrics cluster tool to v2.10.1
 
 v1.18.0.0
 
