@@ -307,6 +307,7 @@ _Changes:_
 - [X] PDO-6662 [STAGING-21964] P1AS New Relic Prometheus Agent Config Change
 - [X] PDO-6666 Newrelic-Prometheus-Agent: Send OpenSearch Metrics to New Relic
 - [X] PDO-6667 Newrelic-Prometheus-Agent: Send PGO Metrics to New Relic
+- [X] PDO-6676 Identify and map numeric fields in OpenSearch
 - [X] PDO-6685 HPA: Update Logstash min pods to be at least 2 (to avoid service downtime over upgrades)
 - [X] PDO-6713 Metadata is missing in NewRelic pod logs
 
