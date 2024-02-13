@@ -25,7 +25,6 @@ kind: Service
 metadata:
   name: pingfederate-cluster
   annotations:
-    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
     external-dns.alpha.kubernetes.io/hostname: pingfederate-cluster-dev.ping-demo.com
 spec:
   publishNotReadyAddresses: true
