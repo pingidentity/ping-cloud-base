@@ -179,6 +179,9 @@ pfProvisioningEnabled: ${PF_PROVISIONING_ENABLED}
 radiusProxyEnabled: ${RADIUS_PROXY_ENABLED}
 
 external_ingress_enabled: ${EXTERNAL_INGRESS_ENABLED}
+
+# Runbook: https://pingidentity.atlassian.net/wiki/spaces/PDA/pages/427753486/How+to+Enable+and+Disable+Healthchecks+-+1.18.1
+healthchecksEnabled: ${HEALTHCHECKS_ENABLED}
 ########################################################################################################################
 
 

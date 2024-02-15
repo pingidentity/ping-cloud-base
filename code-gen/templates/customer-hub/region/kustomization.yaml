@@ -10,16 +10,37 @@ generatorOptions:
 
 patchesStrategicMerge:
 
+### MANUAL UPDATES SECTION - START
+
+## Healthchecks
+# Runbook: https://pingidentity.atlassian.net/wiki/spaces/PDA/pages/427753486/How+to+Enable+and+Disable+Healthchecks+-+1.18.1
+# To disable all healthchecks (default):
+#   - uncomment the disable-all-healthchecks.yaml patch
+#   - comment the other patches
+#   - set HEALTHCHECKS_ENABLED=false in base/env_vars
+# To enable healthchecks for products in the customer-hub primary region (cluster and pa-was health only):
+#   - uncomment chub-healthchecks-primary-region-patch.yaml patch
+#   - comment the other patches
+#   - set HEALTHCHECKS_ENABLED=true in base/env_vars
+#   - re-spin pa-was admin pod when argocd syncs these changes
+# To enable healthchecks for products in a customer-hub child region (cluster health only):
+#   - uncomment the chub-healthchecks-child-region-patch.yaml patch
+#   - comment the other patches
+#   - set HEALTHCHECKS_ENABLED=true in base/env_vars
+
+- ../base/cluster-tools/health/disable-all-healthchecks.yaml
+#- ../base/cluster-tools/health/chub-healthchecks-primary-region-patch.yaml
+#- ../base/cluster-tools/health/chub-healthchecks-child-region-patch.yaml
+
+
+### MANUAL UPDATES SECTION - END
+
 ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
 - custom-patches.yaml
 
 ### Remove unneccessary MyPing pods
 - ../base/ping-cloud/pingcommon/my-ping/remove-oauth-service.yaml
 - ../base/ping-cloud/pingcommon/my-ping/remove-pingone-configurator.yaml
-
-### Remove healthchecks for undeployed products
-- ../base/cluster-tools/health/remove-from-primary-patch.yaml
-- ../base/cluster-tools/health/remove-from-secondary-patch.yaml
 
 ### Regional enablement - remove admins, backups, etc. from secondary ###
 ### The removal of these patches is handled automatically via generate-cluster-state script, manual toggling is not needed ###

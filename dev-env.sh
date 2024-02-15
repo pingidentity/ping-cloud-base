@@ -298,6 +298,7 @@ log "Initial PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
 log "Initial DEPLOY_FILE: ${DEPLOY_FILE}"
 log "Initial K8S_CONTEXT: ${K8S_CONTEXT}"
 log "Initial PF_PROVISIONING_ENABLED: ${PF_PROVISIONING_ENABLED}"
+log "Initial HEALTHCHECKS_ENABLED: ${HEALTHCHECKS_ENABLED}"
 
 log "Initial DASH_REPO_URL: ${DASH_REPO_URL}"
 log "Initial DASH_REPO_BRANCH: ${DASH_REPO_BRANCH}"
@@ -351,6 +352,8 @@ export PING_IDENTITY_DEVOPS_KEY="${PING_IDENTITY_DEVOPS_KEY:-ssm://pcpt/devops-l
 #### FEATURE FLAGS #####################################################################################################
 
 export PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED:-false}
+
+export HEALTHCHECKS_ENABLED=${HEALTHCHECKS_ENABLED:-true}
 
 ########################################################################################################################
 
@@ -410,6 +413,7 @@ log "Using PING_IDENTITY_DEVOPS_USER: ${PING_IDENTITY_DEVOPS_USER}"
 log "Using DEPLOY_FILE: ${DEPLOY_FILE}"
 log "Using K8S_CONTEXT: ${K8S_CONTEXT}"
 log "Using PF_PROVISIONING_ENABLED: ${PF_PROVISIONING_ENABLED}"
+log "Using HEALTHCHECKS_ENABLED: ${HEALTHCHECKS_ENABLED}"
 
 log "Using DASH_REPO_URL: ${DASH_REPO_URL}"
 log "Using DASH_REPO_BRANCH: ${DASH_REPO_BRANCH}"
@@ -544,6 +548,8 @@ export AWS_PROFILE=${AWS_PROFILE:-csg}
 #### FEATURE FLAGS #####################################################################################################
 
 export PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED}
+
+export HEALTHCHECKS_ENABLED=${HEALTHCHECKS_ENABLED}
 
 ########################################################################################################################
 

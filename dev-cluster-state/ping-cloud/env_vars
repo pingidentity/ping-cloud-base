@@ -83,6 +83,7 @@ NEW_RELIC_ENVIRONMENT_NAME=${NEW_RELIC_ENVIRONMENT_NAME}
 
 PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED}
 
+HEALTHCHECKS_ENABLED=${HEALTHCHECKS_ENABLED}
 ########################################################################################################################
 
 # Default argo-events notification configuration
