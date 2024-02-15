@@ -207,6 +207,22 @@ configMapGenerator:
 
 patchesStrategicMerge:
 
+### MANUAL UPDATES SECTION - START
+
+## Healthchecks
+# Runbook: https://pingidentity.atlassian.net/wiki/spaces/PDA/pages/427753486/How+to+Enable+and+Disable+Healthchecks+-+1.18.1
+# To disable all healthchecks (default):
+#   - uncomment the disable-all-healthchecks.yaml patch
+#   - set HEALTHCHECKS_ENABLED=false in base/env_vars
+# To enable all healthchecks:
+#   - comment disable-all-healthchecks.yaml patch
+#   - set HEALTHCHECKS_ENABLED=true in base/env_vars
+#   - re-spin pa and pa-was admin pods when argocd syncs these changes
+
+- ../base/cluster-tools/health/disable-all-healthchecks.yaml
+
+### MANUAL UPDATES SECTION - END
+
 ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
 - custom-patches.yaml
 

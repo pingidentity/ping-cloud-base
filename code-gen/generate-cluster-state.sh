@@ -114,6 +114,9 @@
 #                                  |                                                    | default to "global.poc.ping.com" for
 #                                  |                                                    | tenant domain "us1.poc.ping.cloud".
 #                                  |                                                    |
+# HEALTHCHECKS_ENABLED             | Feature Flag - Indicates if healthcheck deployment | false
+#                                  | pods are enabled. Set to "true" to enable          |
+#                                  |                                                    |
 # IRSA_ARGOCD_ANNOTATION_KEY_VALUE | The IRSA annotation to add to ArgoCD resources     | eks.amazonaws.com/role-arn: arn:aws:iam::SOME_ACCOUNT_ID:role/SOME_ROLE
 #                                  |                                                    |
 # IS_BELUGA_ENV                    | An optional flag that may be provided to indicate  | false. Only intended for Beluga
@@ -418,6 +421,7 @@ ${NOTIFICATION_ENDPOINT}
 ${PF_PROVISIONING_ENABLED}
 ${RADIUS_PROXY_ENABLED}
 ${EXTERNAL_INGRESS_ENABLED}
+${HEALTHCHECKS_ENABLED}
 ${IMAGE_TAG_PREFIX}
 ${ARGOCD_BOOTSTRAP_ENABLED}
 ${ARGOCD_CDE_ROLE_SSM_TEMPLATE}
@@ -686,6 +690,8 @@ echo "Initial PGO_BACKUP_BUCKET_NAME: ${PGO_BACKUP_BUCKET_NAME}"
 echo "Initial RADIUS_PROXY_ENABLED: ${RADIUS_PROXY_ENABLED}"
 echo "Initial EXTERNAL_INGRESS_ENABLED: ${EXTERNAL_INGRESS_ENABLED}"
 
+echo "Initial HEALTHCHECKS_ENABLED: ${HEALTHCHECKS_ENABLED}"
+
 echo "Initial ARGOCD_BOOTSTRAP_ENABLED: ${ARGOCD_BOOTSTRAP_ENABLED}"
 echo "Initial ARGOCD_CDE_ROLE_SSM_TEMPLATE: ${ARGOCD_CDE_ROLE_SSM_TEMPLATE}"
 echo "Initial ARGOCD_CDE_URL_SSM_TEMPLATE: ${ARGOCD_CDE_URL_SSM_TEMPLATE}"
@@ -819,6 +825,7 @@ export PF_PROVISIONING_ENABLED="${PF_PROVISIONING_ENABLED:-false}"
 export RADIUS_PROXY_ENABLED="${RADIUS_PROXY_ENABLED:-false}"
 export ARGOCD_BOOTSTRAP_ENABLED="${ARGOCD_BOOTSTRAP_ENABLED:-true}"
 export EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED:-""}"
+export HEALTHCHECKS_ENABLED="${HEALTHCHECKS_ENABLED:-false}"
 
 ### Default environment variables ###
 export ECR_REGISTRY_NAME='public.ecr.aws/r2h3l6e4'
@@ -962,6 +969,7 @@ echo "Using PF_PROVISIONING_ENABLED: ${PF_PROVISIONING_ENABLED}"
 echo "Using RADIUS_PROXY_ENABLED: ${RADIUS_PROXY_ENABLED}"
 echo "Using ARGOCD_BOOTSTRAP_ENABLED: ${ARGOCD_BOOTSTRAP_ENABLED}"
 echo "Using EXTERNAL_INGRESS_ENABLED: ${EXTERNAL_INGRESS_ENABLED}"
+echo "Using HEALTHCHECKS_ENABLED: ${HEALTHCHECKS_ENABLED}"
 echo "Using TARGET_DIR: ${TARGET_DIR}"
 echo "Using IS_BELUGA_ENV: ${IS_BELUGA_ENV}"
 
