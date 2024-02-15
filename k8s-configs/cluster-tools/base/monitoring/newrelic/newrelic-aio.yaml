@@ -1392,7 +1392,7 @@ spec:
         - --collectors=volumeattachments
         - --telemetry-port=8081
         imagePullPolicy: IfNotPresent
-        image: k8s.gcr.io/kube-state-metrics/kube-state-metrics:v1.9.8
+        image: registry.k8s.io/kube-state-metrics/kube-state-metrics:v1.9.8
         securityContext:
           privileged: false
           runAsGroup: 65534
@@ -1931,7 +1931,7 @@ spec:
             privileged: false
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
-          image: k8s.gcr.io/ingress-nginx/kube-webhook-certgen:v1.1.1
+          image: registry.k8s.io/ingress-nginx/kube-webhook-certgen:v1.1.1
           imagePullPolicy: IfNotPresent
           args:
             - create
@@ -1976,7 +1976,7 @@ spec:
     spec:
       containers:
         - name: patch
-          image: k8s.gcr.io/ingress-nginx/kube-webhook-certgen:v1.1.1
+          image: registry.k8s.io/ingress-nginx/kube-webhook-certgen:v1.1.1
           imagePullPolicy: IfNotPresent
           args:
             - patch
