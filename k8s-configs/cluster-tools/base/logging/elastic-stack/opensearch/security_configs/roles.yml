@@ -302,6 +302,11 @@ bootstrap:
       allowed_actions:
         - 'crud'
         - 'create_index'
+  tenant_permissions:
+  - tenant_patterns:
+    - "global_tenant"
+    allowed_actions:
+    - "kibana_all_write"
 
 read_prometheus:
   reserved: true
@@ -322,8 +327,8 @@ customer_role:
   reserved: false
   hidden: false
   cluster_permissions:
-  - "cluster_composite_ops_ro"
-  - "kibana_all_read"
+  - "kibana_all_read" # action group
+  - "cluster:admin/opensearch/notifications/*" # direct permissions attach
   index_permissions:
   - index_patterns:
     - "*"
@@ -335,3 +340,7 @@ customer_role:
     - "global_tenant"
     allowed_actions:
     - "kibana_all_read"
+  - tenant_patterns:
+    - "customer"
+    allowed_actions:
+    - "kibana_all_write"
