@@ -41,6 +41,12 @@
             }
           }
         },
+        "etime": {
+          "type": "float"
+        },
+        "qtime": {
+          "type": "float"
+        },
         "host": {
           "type": "text",
           "fields": {
