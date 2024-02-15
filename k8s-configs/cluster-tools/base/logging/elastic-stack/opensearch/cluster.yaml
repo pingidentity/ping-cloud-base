@@ -40,6 +40,8 @@ spec:
       cluster.max_shards_per_node: "10000"
       prometheus.indices: "false"
       reindex.remote.allowlist: "elasticsearch.elastic-stack-logging:9200, elasticsearch:9200, localhost:9200"
+      plugins.alerting.filter_by_backend_roles: "true"
+      opensearch.notifications.general.filter_by_backend_roles: "true"
   dashboards:
     enable: true
     version: 2.8.0
@@ -76,8 +78,13 @@ spec:
         ["openid", "basicauth"]
       opensearch.requestHeadersAllowlist: |
         ["authorization", "securitytenant"]
+      opensearch_security.multitenancy.tenants.preferred: |
+        ["global", "customer"]
+      opensearch_security.multitenancy.tenants.enable_global: "true"
+      opensearch_security.multitenancy.tenants.enable_private: "false"
+      opensearch_security.multitenancy.enable_aggregation_view: "false"
       opensearch_security.openid.trust_dynamic_headers: "true"
-      opensearch_security.multitenancy.enabled: "false"
+      opensearch_security.multitenancy.enabled: "true"
       opensearch_security.openid.connect_url: "${OPENID_CONNECT_URL}"
       opensearch_security.openid.client_id: "${OPENID_CLIENT_ID}"
       opensearch_security.openid.client_secret: "${OPENID_CLIENT_SECRET}"

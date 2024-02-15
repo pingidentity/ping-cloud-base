@@ -131,6 +131,7 @@
 - Newrelic-Prometheus-Agent: Sending Ping apps, ArgoCD and Karpenter metrics to NR
 - HPA: Update Logstash min pods to be at least 2 (to avoid service downtime over upgrades)
 - Update backup and CSD upload jobs to properly report failures
+- Add customer tenant to the Opensearch
 
 _Changes:_
 
@@ -269,6 +270,7 @@ _Changes:_
 - [X] PDO-6267 Update to enable detailed monitoring on instances
 - [X] PDO-6282 Modify appintegrations cache config within PingDirectory
 - [X] PDO-6287 OpenSearch Post-Migration: Security: Dashboard SSO - Update p14c-oauth-service
+- [X] PDO-6290 OpenSearch Post-Migration: Security: Dashboard SSO - Configure Customer tenant
 - [x] PDO-6305 Set Karpenter defaultInstanceProfile via Environment Variable
 - [X] PDO-6311 Argocd pod resources spec adjusted
 - [X] PDO-6323 Allow CSR to override the duration and renewBefore properties within cert-manager
