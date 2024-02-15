@@ -1,0 +1,19 @@
+---
+### Patch for RBAC of argocd ###
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-rbac-cm
+  namespace: argocd
+data:
+  policy.csv: |
+    p, role:config-team, applications, get, */${TENANT_NAME}-${REGION}-dev*, allow
+    p, role:config-team, applications, get, */${TENANT_NAME}-${REGION}-test*, allow
+    p, role:config-team, applications, action/apps/StatefulSet/restart, */${TENANT_NAME}-${REGION}-dev*, allow
+    p, role:config-team, applications, action/apps/StatefulSet/restart, */${TENANT_NAME}-${REGION}-test*, allow
+    p, role:platform-team, applications, get, */*, allow
+    p, role:platform-team, applications, action/apps/StatefulSet/restart, */*, allow
+
+    g, config-team, role:config-team
+    g, platform-team, role:platform-team
+  policy.default: role:'' 

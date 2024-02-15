@@ -9,6 +9,7 @@ resources:
 
 patchesStrategicMerge:
   - argocd-strategic-patches.yaml
+  - argocd-rbac-cm-patch.yaml
 
 patchesJson6902:
   ### Cluster state repo URL and auth configuration for the CD tool ###
