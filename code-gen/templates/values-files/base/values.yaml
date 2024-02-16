@@ -123,4 +123,7 @@ global:
   radiusProxyEnabled: ${RADIUS_PROXY_ENABLED}
 
   external_ingress_enabled: ${EXTERNAL_INGRESS_ENABLED}
+
+  # Runbook: https://pingidentity.atlassian.net/wiki/spaces/PDA/pages/427688292/How+to+Enable+and+Disable+Healthchecks+-+1.19.0
+  healthchecksEnabled: ${HEALTHCHECKS_ENABLED}
   #####################################################################################################################
