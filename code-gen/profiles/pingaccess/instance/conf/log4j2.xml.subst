@@ -449,10 +449,10 @@
                      fileName="${sys:pa.home}/log/pingaccess_api_audit_har.log"
                      filePattern="${sys:pa.home}/log/pingaccess_api_audit_har.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
-            <StatusCodeRegExFilter regex=".*"/>
+            <StatusCodeRegExFilter regex="2.."/>
             <HarLogLayout clientBodySizeLimit="16384" appBodySizeLimit="16384">
                 <KeyValuePair key="AUDIT.metadata" value="true"/>
-                <KeyValuePair key="AUDIT.http-client" value="true"/>
+                <KeyValuePair key="AUDIT.http-client-response-content-text" value="true"/>
             </HarLogLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />
