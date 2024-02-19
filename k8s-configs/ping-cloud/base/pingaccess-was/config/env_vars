@@ -51,7 +51,7 @@ CONFIG_QUERY_KP_VALID_DAYS=365
 # Leave blank
 TAIL_LOG_FILES=
 # Individual files should be spelled out, globs are unreliable
-K8S_TAIL_LOG_FILES=/opt/out/instance/log/pingaccess_engine_audit.log /opt/out/instance/log/pingaccess_api_audit.log /opt/out/instance/log/pingaccess_sideband_audit.log /opt/out/instance/log/pingaccess_sideband_client_audit.log /opt/out/instance/log/pingaccess.log /opt/out/instance/upgrade/log/upgrade.log /opt/out/instance/upgrade/log/audit.log /opt/out/instance/upgrade/log/upgrade_status.log
+K8S_TAIL_LOG_FILES=/opt/out/instance/log/pingaccess_engine_audit.log /opt/out/instance/log/pingaccess_api_audit.log /opt/out/instance/log/pingaccess_sideband_audit.log /opt/out/instance/log/pingaccess_sideband_client_audit.log /opt/out/instance/log/pingaccess.log /opt/out/instance/upgrade/log/upgrade.log /opt/out/instance/upgrade/log/audit.log /opt/out/instance/upgrade/log/upgrade_status.log /opt/out/instance/log/pingaccess_api_audit_har.log
 
 SECRETS_DIR=/usr/local/secrets
 

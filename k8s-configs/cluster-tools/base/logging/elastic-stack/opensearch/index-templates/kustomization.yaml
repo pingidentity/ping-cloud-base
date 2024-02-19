@@ -18,9 +18,10 @@ configMapGenerator:
       - pa-sideband-audit.json
       - pa-sideband-client-audit.json
       - pa-upgrade.json
-      - pa-was-api-audit.json
+      - pa-was-api-audit-log.json
       - pa-was-engine-audit.json
       - pa-was-pingaccess.json
+      - pa-was-api-audit-har.json
       - pc-application.json
       - pc-monitor.json
       - pd-access.json
