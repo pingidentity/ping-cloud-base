@@ -15,7 +15,7 @@ commonLabels:
   app.kubernetes.io/name: ingress-nginx
   app.kubernetes.io/part-of: ingress-nginx
   app.kubernetes.io/role: ingress-nginx-private
-  app.kubernetes.io/version: 1.5.1
+  app.kubernetes.io/version: 1.9.6
 
 patchesJson6902:
 - path: add-deployment-args.yaml
@@ -24,9 +24,24 @@ patchesJson6902:
     version: v1
     kind: Deployment
     name: nginx-ingress-controller
-
 - path: make-service-private.yaml
   target:
     version: v1
     kind: Service
     name: ingress-nginx
+- path: add-custom-log-format.yaml
+  target:
+    group: ""
+    version: v1
+    kind: ConfigMap
+    name: nginx-configuration
+
+# Add annotation to IngressClass
+patches:
+- target:
+    kind: IngressClass
+    name: nginx-private
+  patch: |-
+    - op: add
+      path: /metadata/annotations/nginx.ingress.kubernetes.io~1enable-annotation-validation
+      value: "true"
