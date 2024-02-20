@@ -7,3 +7,4 @@ resources:
   - pd
   - pf
   - pds
+  - nginx-ingress

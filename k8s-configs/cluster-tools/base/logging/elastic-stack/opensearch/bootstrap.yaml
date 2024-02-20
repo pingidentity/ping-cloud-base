@@ -87,6 +87,8 @@ spec:
             mountPath: /usr/share/opensearch/data/alerts/pds
           - name: os-alerts-pf
             mountPath: /usr/share/opensearch/data/alerts/pf
+          - name: os-alerts-ingress
+            mountPath: /usr/share/opensearch/data/alerts/nginx
         resources:
           requests:
             memory: "256Mi"
@@ -141,3 +143,6 @@ spec:
         - name: os-alerts-pf
           configMap:
             name: os-alerts-pf
+        - name: os-alerts-ingress
+          configMap:
+            name: os-alerts-ingress
