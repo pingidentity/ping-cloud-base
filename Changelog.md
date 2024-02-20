@@ -313,6 +313,7 @@ _Changes:_
 - [X] PDO-6713 Metadata is missing in NewRelic pod logs
 - [X] PDO-6726 Healthcheck feature is available when the feature flag is turned on
 - [X] PDO-6677 indexmigration user does not have correct roles or access assigned
+- [X] PDO-6788 Remove Karpenter logging to NewRelic
 
 ### 1.18.0.0
 
