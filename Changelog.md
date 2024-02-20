@@ -315,6 +315,7 @@ _Changes:_
 - [X] PDO-6726 Healthcheck feature is available when the feature flag is turned on
 - [X] PDO-6765 Create log based alert for 'signal 9' issues in ingress
 - [X] PDO-6677 indexmigration user does not have correct roles or access assigned
+- [X] PDO-6688 Update kube-state-metrics cluster tool
 - [X] PDO-6788 Remove Karpenter logging to NewRelic
 
 ### 1.18.0.0
@@ -428,6 +429,7 @@ _Changes:_
 - Improve logstash alerting in multi-regional cluster
 - Fail PingDirectory backup Job if any backend fails upon running backup CLI
 - Number of ES-warm nodes increased to 3
+- Update kube-state-metrics cluster tool to 2.10.1
 
 _Changes:_
 
