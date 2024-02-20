@@ -14,6 +14,7 @@
 - [EKS 1.28]  Freeze k8s.gcr.io image registry
 - ArgoCD Partner and PS Access via config-team
 - Add manual healthchecks feature flag
+- Update ingress controller to v1.9.6
 
 _Changes:_
 
@@ -26,6 +27,7 @@ _Changes:_
 - [X] PDO-6715 [EKS 1.28] autoscaling/v2beta2 API version of HorizontalPodAutoscaler is no longer served
 - [X] pdo-6716 [EKS 1.28]  Freeze k8s.gcr.io image registry
 - [X] PDO-6717 [EKS 1.28] service.alpha.kubernetes.io/tolerate-unready-endpoints (deprecated)
+- [X] PDO-6718 Upgrade ingress controller to v1.9.6
 - [X] PDO-6720 Update kube-state-metrics cluster tool to v2.10.1
 - [X] PDO-6721 Update kubectl to 1.27.10 for EKS 1.28
 - [X] PDO-6723 Update cluster-autoscaler v1.28.0 or higher for eks 1.28
