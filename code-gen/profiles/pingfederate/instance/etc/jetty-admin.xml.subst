@@ -275,7 +275,7 @@
     <Call name="addBean">
         <Arg>
             <New id="DeploymentManager" class="org.eclipse.jetty.deploy.DeploymentManager">
-                <Set name="contexts"><Ref id="Contexts" /></Set>
+                <Set name="contexts"><Ref refid="Contexts" /></Set>
                 <Call name="setContextAttribute">
                     <Arg>org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern</Arg>
                     <Arg>.*/servlet-api-[^/]*\.jar$</Arg>
@@ -288,7 +288,7 @@
         </Arg>
     </Call>
 
-    <Ref id="DeploymentManager">
+    <Ref refid="DeploymentManager">
         <Call id="webappprovider" name="addAppProvider">
             <Arg>
                 <New class="com.pingidentity.appserver.jetty.PFWebAppProvider">

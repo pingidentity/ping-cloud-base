@@ -66,6 +66,7 @@ _Changes:_
 - Opensearch cluster log level changed to 'WARNING'
 - Update metrics-server image to v0.6.4
 - Update kubectl to 1.26.0 for EKS 1.27
+- Update BusyBox to 1.36 for EKS 1.27
 - Update kube-state-metrics to v2.9.2
 - Remove dev-env.sh, dev-cluster-state (dir), and corresponding variables.
 - Update Grafana to v10.1.0
@@ -82,6 +83,7 @@ _Changes:_
 - Fix common integration tests
 - Add Request and Limit resources to PingAccess/PingAccess-WAS Upgrade Init Container
 - Update csr-valdation.sh to create a single .yaml file per microservice, rather than directory
+- Add ACIs for PingDataSync
 - Kube-State-Metrics: Refactoring with Third-Party Manifest Policy
 - Metrics-Server : Refactoring with Third-Party Manifest Policy
 - Add PingOne ArgoCD groups integration tests
@@ -95,6 +97,7 @@ _Changes:_
 - Set Karpenter defaultInstanceProfile via Environment Variable
 - Add entry in base values.yaml for disabling subchart dependencies
 - Add PingOne SSO for ArgoCD
+- Add PingOne SSO for Opensearch Dashboards
 - Modify appintegrations cache config within PingDirectory
 - Remove Grafana from ping-cloud-base image tag list
 - Remove p14c-oauth-service job and pod
@@ -107,6 +110,37 @@ _Changes:_
 - Update CreateCluster script to provision Karpenter-ready Cluster.
 - Removed: AWS EFS CSI Driver
 - Prometheus: Migrate to AWS EBS gp3 Volumes
+- Set PingDataSync OOTB connection to JVM-Default
+- Update alert rules for PGO
+- Nginx logs include request hostname
+- Update integration tests to be able to run locally
+- Disable PD File-Based debug logger
+- Update to P1AS to use ARN instead of name for IRSA roles
+- Replace healthcheck & metadata related manifests & configs with p1as-beluga-tools microservice
+- Increase OpenSearch warm replicas to 3 to make it HA
+- Renaming installP1asSubcharts value to isMicroserviceDeploy for microservices
+- Implement Shared db cache to enhance support of multiple backends
+- Upgrade all AWSCLI containers to the most recent stable version that includes support for ARM, v2.+
+- Update PCB with toolkit image used as replacement for bitnami/kubectl - Leftover part
+- Improve Logstash parsing of nginx ingress-access logs
+- Implement IRSA role for Logstash
+- Implement IRSA role for OpenSearch
+- Upgrade grafana-operator to 5.6.0
+- Update irsa-ping to use arn value
+- Deploy opensearch-operator with opensearch cluster
+- CronJob created for doing cleanup of unclaimed Logstash PVs which stay in cluster after resources scaling down
+- [Support STAGING-21293] Set --enable-annotation-validation for p1as nginx-ingress
+- Ingress Failed to watch *v1.Secret: unknown (get secrets)
+- PF Heap Value: CSR upgrade-wrapper script should maintain edited values
+- Newrelic-Prometheus-Agent: Sending OpenSearch Metrics to New Relic
+- Increase PA, PF, PD logs ingestion into ELK
+- Newrelic-Prometheus-Agent: Sending PGO Metrics to New Relic
+- Newrelic-Prometheus-Agent: Sending Ping apps, ArgoCD and Karpenter metrics to NR
+- HPA: Update Logstash min pods to be at least 2 (to avoid service downtime over upgrades)
+- Update backup and CSD upload jobs to properly report failures
+- Add healthcheck feature flag
+- Add customer tenant to the Opensearch
+- Add nginx ingress signal 9 alert
 
 _Changes:_
 
@@ -117,6 +151,7 @@ _Changes:_
 - [X] PDO-4847 Add weekly pipeline run logic for PCB
 - [X] PDO-4857 Add Beluga Tools code-gen directory to PCB
 - [X] PDO-4868 Update update-cluster-state script for MonoRepo
+- [X] PDO-4872 BelugaTools Cleanup
 - [X] PDO-4896 Update ping-cloud-base karpenter version to v0.28.1
 - [X] PDO-4900 Remove myping code
 - [X] PDO-5005 Update generate-cluster-state script to pull profiles from code-gen dir
@@ -128,6 +163,7 @@ _Changes:_
 - [X] PDO-5114 OpenSearch migration: Migrate PA dashboard
 - [X] PDO-5116 OpenSearch migration: Migrate PF dashboards
 - [X] PDO-5135 Implement IRSA role for aws cloud watch agent
+- [X] PDO-5136 Update to P1AS to use ARN instead of name for IRSA roles
 - [X] PDO-5145 OpenSearch migration: Develop index migration job
 - [X] PDO-5152 OpenSearch migration: Rewrite bootstrap scripts
 - [X] PDO-5158 Configure PA WAS from Shared P1 Tenant
@@ -193,6 +229,7 @@ _Changes:_
 - [X] PDO-5797 Unify severity format for all prometheus alerts
 - [X] PDO-5800 Update pd.profile to align with PingDirectory upgrade
 - [X] PDO-5801 Update cluster-autoscaler v1.27.0/1.27.1 for eks 1.27
+- [X] PDO-5802 Update BusyBox to 1.36 for EKS 1.27
 - [X] PDO-5803 Update EBS Driver to 1.21.0 for EKS 1.27
 - [X] PDO-5813 Remove excessive patches for the second region
 - [X] PDO-5835 Create PD init container for KMS
@@ -219,6 +256,7 @@ _Changes:_
 - [X] PDO-6027 AWS EFS CSI Driver: Remove it
 - [X] PDO-6033 Configure PingAccess SSO app for Ping internal group access
 - [X] PDO-6034 Configure PingFederate SSO app for Ping internal group access
+- [X] PDO-6058 Add ACIs for PingDataSync
 - [X] PDO-6061 Fix pingone-configurator pod crashing when missing ConfigMap ping-cloud/is-pingone
 - [X] PDO-6074 Kube-State-Metrics: Refactoring with Third-Party Manifest Policy
 - [X] PDO-6075 Metrics-Server : Refactoring with Third-Party Manifest Policy
@@ -230,6 +268,7 @@ _Changes:_
 - [X] PDO-6166 Add PingFederate periodic backup limits
 - [X] PDO-6167 Add PodDisruptionBudget for ingress-nginx-public
 - [X] PDO-6187 Increase wait time for backup alerts for PGO
+- [X] PDO-6188 Update alert rules for PGO
 - [X] PDO-6189 Fluentbit: Performance degradation under high load
 - [X] PDO-6190 Logstash: Readiness probe fails under high load
 - [X] PDO-6224 Remove Grafana ping-app patches from remove-from-secondary-patch.yaml 
@@ -239,6 +278,8 @@ _Changes:_
 - [X] PDO-6264 OpenSearch Post-Migration: Cluster: Avail and Recovery: Cluster and Index Tuning, Enable Segment Replication
 - [X] PDO-6267 Update to enable detailed monitoring on instances
 - [X] PDO-6282 Modify appintegrations cache config within PingDirectory
+- [X] PDO-6287 OpenSearch Post-Migration: Security: Dashboard SSO - Update p14c-oauth-service
+- [X] PDO-6290 OpenSearch Post-Migration: Security: Dashboard SSO - Configure Customer tenant
 - [x] PDO-6305 Set Karpenter defaultInstanceProfile via Environment Variable
 - [X] PDO-6311 Argocd pod resources spec adjusted
 - [X] PDO-6323 Allow CSR to override the duration and renewBefore properties within cert-manager
@@ -246,7 +287,44 @@ _Changes:_
 - [X] PDO-6335 Newrelic-Prometheus-Agent: Send Kubernetes-volume-Autoscaler Metrics to New Relic
 - [X] PDO-6337 Migrate logstash to the GP3 volumes
 - [X] PDO-6338 Migrate Prometheus to the GP3 volumes
+- [X] PDO-6375 Increase PA log ingestion into ELK
+- [X] PDO-6377 Increase PF log ingestion into ELK
+- [X] PDO-6378 Increase PD log ingestion into ELK
+- [X] PDO-6411 Increase OpenSearch warm replicas to 3 to make it HA
 - [X] PDO-6420 Update tag-release.sh to replace the helm chart versions in PCB
+- [X] PDO-6429 Create password for pf.cluster.auth.pwd property within run.properties for PingFederate
+- [X] PDO-6453 Use cache-keys-only and thread count of 1 when multiple backends are enabled for PingDirectory
+- [X] PDO-6457 Set PingDataSync OOTB connection to JVM-Default
+- [X] PDO-6470 [Support P1ASSD-8982] Seeing NULL character "\x00" throughout logs nginx-ingress-controller container
+- [X] PDO-6476 Update and implement dependency helm chart conditional value
+- [X] PDO-6482 Update nginx logs to include hostname
+- [X] PDO-6494 Implement Shared db cache to enhance support of multiple backends
+- [X] PDO-6506 Update to fix karpenter provisoner config
+- [X] PDO-6526 Update integration tests to be able to run locally
+- [X] PDO-6533 Refactor backup job scripts to make sure it return exit code in case backup was failed
+- [X] PDO-6536 Update irsa-ping to use arn
+- [X] PDO-6543 Disable PD File-Based debug logger
+- [X] PDO-6549 [Support STAGING-21293] Set --enable-annotation-validation for p1as nginx-ingress
+- [X] PDO-6558 Implement IRSA role for Logstash
+- [X] PDO-6559 Implement IRSA role for OpenSearch
+- [X] PDO-6560 Upgrade grafana-operator, grafana-folders
+- [X] PDO-6570 Nginx ingress-access logs are sent to the logstash index pattern instead of ingress-access index pattern
+- [X] PDO-6585 Upgrade all AWSCLI containers to the most recent stable version that includes support for ARM, v2.+
+- [X] PDO-6599 Migrate opensearch from plain yaml to the operator
+- [X] PDO-6615 Ingress Failed to watch *v1.Secret: unknown (get secrets)
+- [X] PDO-6620 [PORT] Add Use_Kubelet configuration parameters to fix Fluentbit Kubernetes filter
+- [X] PDO-6655 Implement the scaling pvc down once the number of logstash pods are scaled down
+- [X] PDO-6662 [STAGING-21964] P1AS New Relic Prometheus Agent Config Change
+- [X] PDO-6666 Newrelic-Prometheus-Agent: Send OpenSearch Metrics to New Relic
+- [X] PDO-6667 Newrelic-Prometheus-Agent: Send PGO Metrics to New Relic
+- [X] PDO-6676 Identify and map numeric fields in OpenSearch
+- [X] PDO-6685 HPA: Update Logstash min pods to be at least 2 (to avoid service downtime over upgrades)
+- [X] PDO-6713 Metadata is missing in NewRelic pod logs
+- [X] PDO-6726 Healthcheck feature is available when the feature flag is turned on
+- [X] PDO-6765 Create log based alert for 'signal 9' issues in ingress
+- [X] PDO-6677 indexmigration user does not have correct roles or access assigned
+- [X] PDO-6688 Update kube-state-metrics cluster tool
+- [X] PDO-6788 Remove Karpenter logging to NewRelic
 
 ### 1.18.0.0
 
@@ -359,6 +437,7 @@ _Changes:_
 - Improve logstash alerting in multi-regional cluster
 - Fail PingDirectory backup Job if any backend fails upon running backup CLI
 - Number of ES-warm nodes increased to 3
+- Update kube-state-metrics cluster tool to 2.10.1
 
 _Changes:_
 

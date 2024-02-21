@@ -145,7 +145,7 @@
             <!--<AppenderRef ref="ApiAuditLog-SQLServer-Database-Failover"/>-->
             <!--<AppenderRef ref="ApiAuditLog-PostgreSQL"/>-->
             <!--<AppenderRef ref="ApiAudit2Splunk"/>-->
-            <!--<AppenderRef ref="ApiAuditLog-HarFile"/>-->
+            <AppenderRef ref="ApiAuditLog-HarFile"/>
         </Logger>
         <Logger name="engineaudit" level="INFO" additivity="false">
             <AppenderRef ref="EngineAuditLog-File"/>
@@ -444,21 +444,20 @@
           1) With the below settings, this will log all requests/responses that the Administrator API receives (client)
           2) Additional settings and details can be found in the PingAccess online documentation
         -->
-        <!--
+
         <RollingFile name="ApiAuditLog-HarFile"
                      fileName="${sys:pa.home}/log/pingaccess_api_audit_har.log"
                      filePattern="${sys:pa.home}/log/pingaccess_api_audit_har.%d{yyyy-MM-dd}.log"
                      ignoreExceptions="false">
-            <StatusCodeRegExFilter regex=".*"/>
+            <StatusCodeRegExFilter regex="2.."/>
             <HarLogLayout clientBodySizeLimit="16384" appBodySizeLimit="16384">
                 <KeyValuePair key="AUDIT.metadata" value="true"/>
-                <KeyValuePair key="AUDIT.http-client" value="true"/>
+                <KeyValuePair key="AUDIT.http-client-response-content-text" value="true"/>
             </HarLogLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy />
             </Policies>
         </RollingFile>
-        -->
 
         <!-- Engine auditing file logging configuration-->
         <!-- Additional Engine Audit values available:-->

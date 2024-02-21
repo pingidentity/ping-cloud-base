@@ -143,22 +143,6 @@ configMapGenerator:
   - env_vars
   - pingdelegator/env_vars
 
-
-# PingCloud services
-# Pingcloud-metadata
-#- name: pingcloud-metadata-environment-variables
-#  behavior: merge
-#  envs:
-#  - ../base/env_vars
-#  - env_vars
-
-# Pingcloud-healthcheck
-#- name: pingcloud-healthcheck-environment-variables
-#  behavior: merge
-#  envs:
-#  - ../base/env_vars
-#  - env_vars
-
 # Health namespace environment variables
 - name: cluster-health-environment-variables
   behavior: merge
@@ -191,9 +175,31 @@ configMapGenerator:
     - ../base/env_vars
     - env_vars
 
+- name: p1as-bootstrap
+  behavior: merge
+  envs:
+    - ../base/env_vars
+    - env_vars
+
 patchesStrategicMerge:
 
-  ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
+### MANUAL UPDATES SECTION - START
+
+## Healthchecks
+# Runbook: https://pingidentity.atlassian.net/wiki/spaces/PDA/pages/427688292/How+to+Enable+and+Disable+Healthchecks+-+1.19.0
+# To disable all healthchecks (default):
+#   - uncomment the disable-all-healthchecks.yaml patch
+#   - set HEALTHCHECKS_ENABLED=false in base/env_vars
+# To enable all healthchecks:
+#   - comment disable-all-healthchecks.yaml patch
+#   - set HEALTHCHECKS_ENABLED=true in base/env_vars
+#   - re-spin pa and pa-was admin pods when argocd syncs these changes
+
+  - ../base/cluster-tools/health/disable-all-healthchecks.yaml
+
+### MANUAL UPDATES SECTION - END
+
+### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
   - custom-patches.yaml
 
   ### Regional enablement - remove admins, backups, etc. from secondary ###

@@ -10,12 +10,33 @@ generatorOptions:
 
 patchesStrategicMerge:
 
+### MANUAL UPDATES SECTION - START
+
+## Healthchecks
+# Runbook: https://pingidentity.atlassian.net/wiki/spaces/PDA/pages/427688292/How+to+Enable+and+Disable+Healthchecks+-+1.19.0
+# To disable all healthchecks (default):
+#   - uncomment the disable-all-healthchecks.yaml patch
+#   - comment the other patches
+#   - set HEALTHCHECKS_ENABLED=false in base/env_vars
+# To enable healthchecks for products in the customer-hub primary region (cluster and pa-was health only):
+#   - uncomment chub-healthchecks-primary-region-patch.yaml patch
+#   - comment the other patches
+#   - set HEALTHCHECKS_ENABLED=true in base/env_vars
+#   - re-spin pa-was admin pod when argocd syncs these changes
+# To enable healthchecks for products in a customer-hub child region (cluster health only):
+#   - uncomment the chub-healthchecks-child-region-patch.yaml patch
+#   - comment the other patches
+#   - set HEALTHCHECKS_ENABLED=true in base/env_vars
+
+- ../base/cluster-tools/health/disable-all-healthchecks.yaml
+#- ../base/cluster-tools/health/chub-healthchecks-primary-region-patch.yaml
+#- ../base/cluster-tools/health/chub-healthchecks-child-region-patch.yaml
+
+
+### MANUAL UPDATES SECTION - END
+
 ### PS/GSO customizations to OOTB resources should only go into this file. Otherwise, CSR auto-updates will break. ###
 - custom-patches.yaml
-
-### Remove healthchecks for undeployed products
-- ../base/cluster-tools/health/remove-from-primary-patch.yaml
-- ../base/cluster-tools/health/remove-from-secondary-patch.yaml
 
 ### Remove observability dashboards for undeployed products
 - ../base/cluster-tools/monitoring/remove-chub-dashboards.yaml
@@ -38,6 +59,12 @@ configMapGenerator:
     - logging/env_vars
 
 - name: prometheus-environment-variables
+  behavior: merge
+  envs:
+    - ../base/env_vars
+    - env_vars
+
+- name: p1as-bootstrap
   behavior: merge
   envs:
     - ../base/env_vars
@@ -84,22 +111,6 @@ configMapGenerator:
     - ../base/env_vars
     - env_vars
     - pingaccess-was/engine/env_vars
-
-
-# PingCloud services
-# Pingcloud-metadata
-#- name: pingcloud-metadata-environment-variables
-#  behavior: merge
-#  envs:
-#  - ../base/env_vars
-#  - env_vars
-
-# Pingcloud-healthcheck
-#- name: pingcloud-healthcheck-environment-variables
-#  behavior: merge
-#  envs:
-#  - ../base/env_vars
-#  - env_vars
 
 # PingCloud P14C bootstrap
 - name: pingcloud-p14c-bootstrap-environment-variables

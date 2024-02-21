@@ -1,0 +1,14 @@
+---
+# Source: opensearch-operator/templates/opensearch-operator-proxy-rolebinding-crb.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: os-elastic-stack-logging-proxy-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: os-elastic-stack-logging-proxy-role
+subjects:
+- kind: ServiceAccount
+  name: os-controller-manager
+  namespace: elastic-stack-logging

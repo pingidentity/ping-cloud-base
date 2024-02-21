@@ -7,8 +7,9 @@ resources:
 - enrichment
 - logstash
 - namespace.yaml
+- opensearch-operator/crd
+- opensearch-operator
 - opensearch
-- os-dashboards
 
 configMapGenerator:
 - name: elk-environment-variables

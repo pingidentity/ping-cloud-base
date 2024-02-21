@@ -23,6 +23,9 @@
         "@timestamp": {
           "type": "date"
         },
+        "roundTripMS": {
+          "type": "integer"
+        },
         "cluster_name": {
           "type": "text",
           "fields": {

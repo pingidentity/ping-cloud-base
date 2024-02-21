@@ -5,6 +5,7 @@ metadata:
   name: nr-license-key
   annotations:
     sealedsecrets.bitnami.com/managed: "true"
+    argocd.argoproj.io/sync-options: Prune=false
 
 ---
 apiVersion: apps/v1
@@ -179,6 +180,14 @@ spec:
             periodSeconds: 10
             successThreshold: 3
             timeoutSeconds: 5
+          startupProbe:
+            failureThreshold: 30
+            httpGet:
+              path: /
+              port: 8080
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
           resources:
             limits:
               cpu: "500m"
@@ -233,8 +242,6 @@ spec:
             - name: logstash-gp3
               mountPath: /usr/share/logstash/data/queue
               readOnly: false
-            - name: os-certs
-              mountPath: /usr/share/logstash/certs
         # Sidecar enrichment container which updates Logstash dictionaries
         - name: enrichment-sidecar
           securityContext:
@@ -301,9 +308,6 @@ spec:
             name: enrichment-cache
         - name: enrichment-cache-files
           emptyDir: {}
-        - name: os-certs
-          secret:
-            secretName: opensearch-cert
   serviceName: logstash-elastic
   volumeClaimTemplates:
     - metadata:
@@ -393,13 +397,3 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: logstash-elastic
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: os-logstash-creds
-  annotations:
-    sealedsecrets.bitnami.com/managed: "true"
-data:
-  username: bG9nc3Rhc2g=
-  password: bWk3ZWl0ZTJvb25vbzhFa3UxdWZvbzRlZ2gxamFpajI=

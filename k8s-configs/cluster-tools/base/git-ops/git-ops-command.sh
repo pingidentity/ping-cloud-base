@@ -136,6 +136,21 @@ disable_grafana_crds() {
 }
 
 ########################################################################################################################
+# Disable grafana operator CRDs if not argo environment.
+########################################################################################################################
+disable_os_operator_crds() {
+  cd "${TMP_DIR}"
+  search_term="opensearch-operator\/crd"
+  for kust_file in $(grep --exclude-dir=.git -rwl -e "${search_term}" | grep "kustomization.yaml"); do
+      log "Commenting opensearch operator ${kust_file}"
+      sed -i.bak \
+        -e "/${search_term}/ s|^#*|#|g" \
+        "${kust_file}"
+      rm -f "${kust_file}".bak
+    done
+}
+
+########################################################################################################################
 # Format the provided kustomize version for numeric comparison. For example, if the kustomize version is 4.0.5, it
 # returns 004000005000.
 #
@@ -288,6 +303,7 @@ fi
 
 if ! command -v argocd &> /dev/null ; then
   disable_grafana_crds
+  disable_os_operator_crds
 fi
 
 # Build the uber deploy yaml

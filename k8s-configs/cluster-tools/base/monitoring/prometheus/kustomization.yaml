@@ -12,6 +12,7 @@ resources:
 - prometheus-config.yaml
 - prometheus-agent-config.yaml
 - prometheus-agent.yaml
+- opsgenie-key.yaml
 
 configMapGenerator:
 - name: prometheus-environment-variables

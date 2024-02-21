@@ -1,0 +1,6 @@
+---
+# Source: opensearch-operator/templates/opensearch-operator-controller-manager-sa.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: os-controller-manager

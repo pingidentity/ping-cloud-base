@@ -2,14 +2,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: opensearch-dashboards
+  name: opensearch-cluster-headless
   namespace: elastic-stack-logging
 $patch: delete
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: opensearch-cluster-master
+  name: opensearch-ingest
   namespace: elastic-stack-logging
   annotations:
     $patch: delete
@@ -18,51 +18,113 @@ spec:
   externalName: opensearch.${PRIMARY_DNS_ZONE}
   $patch: replace
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: opensearch-cluster-headless
-  namespace: elastic-stack-logging
-$patch: delete
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: opensearch-cluster-hot
-  namespace: elastic-stack-logging
-$patch: delete
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: opensearch-cluster-warm
-  namespace: elastic-stack-logging
-$patch: delete
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: opensearch-dashboards
-  namespace: elastic-stack-logging
-$patch: delete
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: opensearch-dashboards-config
-  namespace: elastic-stack-logging
-$patch: delete
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: opensearch-config
-  namespace: elastic-stack-logging
-$patch: delete
----
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: opensearch-sc1
 provisioner: ebs.csi.aws.com
+$patch: delete
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: opensearch-gp3
+provisioner: ebs.csi.aws.com
+$patch: delete
+---
+apiVersion: opensearch.opster.io/v1
+kind: OpenSearchCluster
+metadata:
+  name: opensearch-cluster
+$patch: delete
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: os-controller-manager
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: os-controller-manager-metrics-service
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: os-controller-manager
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: os-leader-election-role
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: os-leader-election-rolebinding
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: os-elastic-stack-logging-manager-role
+$patch: delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: os-elastic-stack-logging-manager-rolebinding
+$patch: delete
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: os-manager-config
+  namespace: elastic-stack-logging
+$patch: delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: os-elastic-stack-logging-metrics-reader
+$patch: delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: os-elastic-stack-logging-proxy-rolebinding
+$patch: delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: os-elastic-stack-logging-proxy-role
+$patch: delete
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: logstash-elastic
+  namespace: elastic-stack-logging
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: wait-for-bootstrap-completed
+          $patch: delete
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: opensearch-bootstrap
+  namespace: elastic-stack-logging
 $patch: delete

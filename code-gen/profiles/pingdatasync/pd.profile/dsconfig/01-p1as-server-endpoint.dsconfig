@@ -3,7 +3,7 @@
 #
 #
 dsconfig set-trust-manager-provider-prop \
-  --provider-name "Blind Trust" \
+  --provider-name "JVM-Default" \
   --set enabled:true
 
 dsconfig create-external-server \
@@ -15,6 +15,6 @@ dsconfig create-external-server \
   --set "password:${P1AS_PD_SYNC_BIND_DN_PASSWORD}" \
   --set connection-security:ssl \
   --set key-manager-provider:Null \
-  --set "trust-manager-provider:Blind Trust" \
+  --set "trust-manager-provider:JVM-Default" \
   --set initial-connections:${P1AS_PD_HOST_INITIAL_CONNECTIONS} \
   --set max-connections:${P1AS_PD_HOST_MAX_CONNECTIONS}

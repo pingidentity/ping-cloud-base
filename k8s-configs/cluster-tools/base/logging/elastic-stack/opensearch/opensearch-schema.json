@@ -1,0 +1,39 @@
+{
+  "definitions": {
+    "io.opster.opensearch.v1.OpenSearchCluster": {
+      "description": "Es is the Schema for the es API",
+      "properties": {
+        "spec": {
+          "description": "ClusterSpec defines the desired state of OpenSearchCluster",
+          "properties": {
+            "nodePools": {
+              "items": {
+                "properties": {
+                  "component": {
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "x-kubernetes-patch-merge-key": "component",
+              "x-kubernetes-patch-strategy": "merge",
+              "type": "array"
+            }
+          },
+          "required": [
+            "nodePools"
+          ],
+          "type": "object"
+        }
+      },
+      "type": "object",
+      "x-kubernetes-group-version-kind": [
+        {
+          "group": "opensearch.opster.io",
+          "kind": "OpenSearchCluster",
+          "version": "v1"
+        }
+      ]
+    }
+  }
+}
