@@ -89,6 +89,7 @@ metadata:
   name: argocd-image-updater-secret
   annotations:
     sealedsecrets.bitnami.com/managed: "true"
+    argocd.argoproj.io/sync-options: Prune=false
 ---
 apiVersion: v1
 kind: Secret
@@ -99,6 +100,7 @@ metadata:
   name: argocd-image-updater-ssh-key
   annotations:
     sealedsecrets.bitnami.com/managed: "true"
+    argocd.argoproj.io/sync-options: Prune=false
 ---
 apiVersion: apps/v1
 kind: Deployment

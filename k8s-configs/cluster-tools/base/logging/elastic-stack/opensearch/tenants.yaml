@@ -1,0 +1,8 @@
+apiVersion: opensearch.opster.io/v1
+kind: OpensearchTenant
+metadata:
+  name: customer
+spec:
+  opensearchCluster:
+    name: opensearch-cluster
+  description: Customer tenant

@@ -23,6 +23,10 @@ spec:
         pod-reaper: enabled
       annotations:
         lastUpdateReason: "NA"
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/"
+        prometheus.io/port: "8080"
+        newrelic.io/scrape: "true"
     spec:
       serviceAccountName: ping-serviceaccount
       affinity:
@@ -166,6 +170,11 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.name
+        - name: PF_CLUSTER_AUTH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: PF_CLUSTER_AUTH_PASSWORD
+              name: pingfederate-cluster-auth-password
         envFrom:
         - configMapRef:
             name: pingfederate-environment-variables

@@ -1,0 +1,55 @@
+kind: Kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+resources:
+  - opensearch-operator-crds.yaml
+
+patchesJson6902:
+  - target:
+      version: v1
+      kind: CustomResourceDefinition
+      name: opensearchactiongroups.opensearch.opster.io
+    patch: |-
+      - op: add
+        path: /metadata/annotations/argocd.argoproj.io~1sync-options
+        value: "ServerSideApply=true"
+  - target:
+      version: v1
+      kind: CustomResourceDefinition
+      name: opensearchclusters.opensearch.opster.io
+    patch: |-
+      - op: add
+        path: /metadata/annotations/argocd.argoproj.io~1sync-options
+        value: "ServerSideApply=true"
+  - target:
+      version: v1
+      kind: CustomResourceDefinition
+      name: opensearchroles.opensearch.opster.io
+    patch: |-
+      - op: add
+        path: /metadata/annotations/argocd.argoproj.io~1sync-options
+        value: "ServerSideApply=true"
+  - target:
+      version: v1
+      kind: CustomResourceDefinition
+      name: opensearchtenants.opensearch.opster.io
+    patch: |-
+      - op: add
+        path: /metadata/annotations/argocd.argoproj.io~1sync-options
+        value: "ServerSideApply=true"
+  - target:
+      version: v1
+      kind: CustomResourceDefinition
+      name: opensearchuserrolebindings.opensearch.opster.io
+    patch: |-
+      - op: add
+        path: /metadata/annotations/argocd.argoproj.io~1sync-options
+        value: "ServerSideApply=true"
+  - target:
+      version: v1
+      kind: CustomResourceDefinition
+      name: opensearchusers.opensearch.opster.io
+    patch: |-
+      - op: add
+        path: /metadata/annotations/argocd.argoproj.io~1sync-options
+        value: "ServerSideApply=true"

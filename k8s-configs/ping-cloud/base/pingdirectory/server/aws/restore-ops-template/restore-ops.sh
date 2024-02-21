@@ -1,16 +1,5 @@
 #!/bin/bash
 
-# Set as a function for this script if kubectl isn't installed.
-# Assume kubectl is available for pod under /tmp/kubectl.
-if ! command -v kubectl >/dev/null 2>&1; then
-  # Check and see if kubectl is installed under /tmp.
-  # If so, then source kubectl method which will be used by pod
-  test -f /tmp/kubectl || (echo "kubectl is not installed: exiting" && exit 1)
-  function kubectl() {
-    /tmp/kubectl "${@}"
-  }
-fi
-
 # Set ping-cloud PING_CLOUD_NAMESPACE
 # Note: The regular expression \bping-cloud\S* matches any string that starts with "ping-cloud" (\bping-cloud) and has zero or more non-space characters after it (\S*).
 # e.g.

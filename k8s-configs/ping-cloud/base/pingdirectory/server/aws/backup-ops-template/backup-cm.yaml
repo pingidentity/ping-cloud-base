@@ -7,16 +7,12 @@ data:
     #!/bin/sh
 
     delete_pvc() {
-      /tmp/kubectl delete pvc pingdirectory-backup -n ${PING_CLOUD_NAMESPACE} --grace-period=0 --force
+      kubectl delete pvc pingdirectory-backup -n ${PING_CLOUD_NAMESPACE} --grace-period=0 --force --wait=false
+      kubectl patch pvc pingdirectory-backup -p '{"metadata":{"finalizers":null}}' -n ${PING_CLOUD_NAMESPACE}
     }
 
     # This guarantees that delete_pvc method will always run, even if the backup job exits due to an error
     trap "delete_pvc" EXIT
-
-    # Install kubectl
-    curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
-    -o /tmp/kubectl
-    chmod +x /tmp/kubectl
     
     # Set Hooks directory
     export HOOKS_DIR=/opt/staging/hooks
@@ -26,6 +22,11 @@ data:
       # Execute backup script if user has the permissions
       echo "Running backup script for PingDirectory"
       ${SCRIPT}
+      exit_code="${?}"
+      if test ${exit_code} -ne 0; then
+        echo "Backup script exited with code '${exit_code}'"
+        exit 1
+      fi
     else
       echo "You don't have permissions to execute ${SCRIPT}. If you are overriding script be sure to give it execute permissions"
       exit 1

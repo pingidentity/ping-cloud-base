@@ -70,6 +70,8 @@ patchesStrategicMerge:
     kind: Deployment
     metadata:
       name: controller-manager
+      labels:
+        app: controller-manager
     spec:
       template:
         spec:

@@ -36,12 +36,7 @@ dsconfig create-plugin \
    --set extension-class:com.pingidentity.pingcloud.pingdatasdk.pingdirectory.P14CPassThroughPreParsePlugin \
    --set extension-argument:base-dn=ou=admins,o=platformconfig
 
-dsconfig create-debug-target \
-  --publisher-name "File-Based Debug Logger" \
-  --set debug-level:verbose \
-  --target-name com.unboundid.directory.server.plugins
-
-dsconfig create-debug-target \
-  --publisher-name "File-Based Debug Logger" \
-  --set debug-level:verbose \
-  --target-name com.pingidentity.pingcloud.pingdatasdk
+#NOTE#######
+# If you need to troubleshoot passthrough-auth-plugin you can enable the "File-Based Debug Logger" targets "com.pingidentity.pingcloud.pingdatasdk" and "com.unboundid.directory.server.plugins". 
+# Set debug-level as verbose.
+# See create-debug-target for more details: https://docs.ping.directory/PingDirectoryProxy/latest/cli/dsconfig.html#create-debug-target-subcommand

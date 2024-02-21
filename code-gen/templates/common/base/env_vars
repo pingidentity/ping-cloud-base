@@ -174,9 +174,7 @@ PINGDATASYNC_IMAGE_TAG=v2.0-release-branch-latest
 ############################################################
 # Ping solution image tags
 ############################################################
-METADATA_IMAGE_TAG=v2.0-release-branch-latest
 BOOTSTRAP_IMAGE_TAG=v2.0-release-branch-latest
-HEALTHCHECK_IMAGE_TAG=v2.0-release-branch-latest
 P14C_INTEGRATION_IMAGE_TAG=v2.0-release-branch-latest
 
 ############################################################
@@ -250,8 +248,11 @@ PROMETHEUS_PING_NAMESPACE=${PING_CLOUD_NAMESPACE}
 PF_PROVISIONING_ENABLED=${PF_PROVISIONING_ENABLED}
 
 RADIUS_PROXY_ENABLED=${RADIUS_PROXY_ENABLED}
-# List of ping apps(pingaccess,pingaccess-was,pingdirectory,pingdelegator,pingfederate) for which you can enable external ingress(the values are ping app names)Examplelist:(pingaccess pingdirectory pingfederate)   
+# List of ping apps(pingaccess,pingaccess-was,pingdirectory,pingdelegator,pingfederate) for which you can enable external ingress(the values are ping app names)Examplelist:(pingaccess pingdirectory pingfederate)
 EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED}"
+
+# Runbook: https://pingidentity.atlassian.net/wiki/spaces/PDA/pages/427688292/How+to+Enable+and+Disable+Healthchecks+-+1.19.0
+HEALTHCHECKS_ENABLED=${HEALTHCHECKS_ENABLED}
 ########################################################################################################################
 
 # Default argo-events notification configuration
@@ -262,6 +263,9 @@ NOTIFICATION_ENDPOINT=http://webhook-eventsource-svc.argo-events:12999/notificat
 # Prometheus argo-events notification configuration
 PROM_NOTIFICATION_ENABLED=true
 PROM_SLACK_CHANNEL=${PROM_SLACK_CHANNEL}
+
+# Prometheus OpsGenie notification configuration
+OPSGENIE_API_KEY=${OPSGENIE_API_KEY}
 
 # Dashboards repo variables
 DASH_REPO_URL=https://github.com/pingidentity/ping-cloud-dashboards
@@ -278,7 +282,12 @@ PINGFEDERATE_HEALTHCHECK_SCHEDULE="* * * * *"
 # cert-manager variables
 # The maximum duration allowed by Let's Encrypt for certificate rotation is 90 days (equivalent to 2160 hours).
 # See here for more details: https://letsencrypt.org/docs/faq/#what-is-the-lifetime-for-let-s-encrypt-certificates-for-how-long-are-they-valid
-# But it allows the certificate to be renewed before the duration. 
+# But it allows the certificate to be renewed before the duration.
 # Renewing before 30 days (aka 720 hours) of expiration is suggested by let's encrypt
 # Meaning if cert expires in 90 days we will rotate and renew in 60 days
+# NOTE: Format must exactly match Argo's expectations until https://github.com/argoproj/argo-cd/pull/16587 is fixed
+# Format example: 720h0m0s - check Argo sync if not sure after changing this value to make sure there is no diff.
 CERT_RENEW_BEFORE=${CERT_RENEW_BEFORE}
+
+# Variable to set the default cluster resource uptime/working hours
+DEFAULT_CLUSTER_UPTIME="${DEFAULT_CLUSTER_UPTIME}"

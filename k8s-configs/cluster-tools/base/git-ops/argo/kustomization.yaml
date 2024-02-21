@@ -77,11 +77,11 @@ patches:
           - name: argocd-applicationset-controller
             resources:
               requests:
-                memory: "500Mi"
-                cpu: "1000m"
+                memory: "50Mi"
+                cpu: "100m"
               limits:
-                memory: "1000Mi"
-                cpu: "2000m"
+                memory: "100Mi"
+                cpu: "200m"
 - patch: |-
     apiVersion: apps/v1
     kind: Deployment
@@ -94,11 +94,39 @@ patches:
           - name: dex
             resources:
               requests:
-                memory: "125Mi"
-                cpu: "250m"
+                memory: "50Mi"
+                cpu: "50m"
               limits:
-                memory: "250Mi"
-                cpu: "500m"
+                memory: "100Mi"
+                cpu: "100m"
+- patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-dex-server
+    spec:
+      template:
+        spec:
+          containers:
+          - name: dex
+            command:
+            - sh
+            - -c
+            - /shared/argocd-dex rundex --loglevel error
+- patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-image-updater
+    spec:
+      template:
+        spec:
+          containers:
+          - name: argocd-image-updater
+            command:
+            - sh
+            - -c
+            - /usr/local/bin/argocd-image-updater run --loglevel error
 - patch: |-
     apiVersion: apps/v1
     kind: Deployment
@@ -145,11 +173,11 @@ patches:
           - name: redis
             resources:
               requests:
-                memory: "125Mi"
-                cpu: "250m"
+                memory: "50Mi"
+                cpu: "50m"
               limits:
                 memory: "250Mi"
-                cpu: "500m"
+                cpu: "100m"
 - patch: |-
     apiVersion: apps/v1
     kind: Deployment
@@ -162,11 +190,11 @@ patches:
           - name: argocd-repo-server
             resources:
               requests:
-                memory: "500Mi"
-                cpu: "500m"
+                memory: "150Mi"
+                cpu: "150m"
               limits:
-                memory: "1000Mi"
-                cpu: "1000m"
+                memory: "250Mi"
+                cpu: "250m"
 - patch: |-
     apiVersion: apps/v1
     kind: Deployment
@@ -179,11 +207,15 @@ patches:
           - name: argocd-server
             resources:
               requests:
-                memory: "125Mi"
-                cpu: "125m"
+                memory: "500Mi"
+                cpu: "500m"
+              # The ArgoCD server gets hit especially hard by requests from the UI, this will hopefully be fixed by
+              # https://github.com/argoproj/argo-cd/issues/14947 in 2.10 (2.10 RC is already out),
+              # https://github.com/argoproj/argo-cd/issues/15509 is another related ticket
+              # We have PDO-6569 to upgrade ArgoCD to 2.10+ in order to take advantage once these issues are solved
               limits:
-                memory: "250Mi"
-                cpu: "250m"
+                memory: "1000Mi"
+                cpu: "1000m"
 - patch: |-
     apiVersion: apps/v1
     kind: StatefulSet
@@ -193,14 +225,17 @@ patches:
       template:
         spec:
           containers:
+          # The application controller is the main component which checks the manifest generated vs the resources
+          # actually existing in the cluster. It has high CPU requirements especially, based on testing, and it must
+          # have enough resources to manage all of the customers environments in a given region
           - name: argocd-application-controller
             resources:
               requests:
                 memory: "1000Mi"
-                cpu: "1000m"
+                cpu: "1500m"
               limits:
                 memory: "2000Mi"
-                cpu: "2000m"
+                cpu: "3000m"
 - patch: |-
     apiVersion: apps/v1
     kind: Deployment
@@ -319,6 +354,13 @@ patches:
               - name: tools-dir
                 mountPath: /home/argocd/.local/lib/python3.7/site-packages/git_remote_codecommit/__init__.py
                 subPath: __init__.py
+            resources:
+              requests:
+                memory: "100Mi"
+                cpu: "300m"
+              limits:
+                memory: "300Mi"
+                cpu: "700m"
           volumes:
           - configMap:
               name: git-ops-command-plugin-cm
@@ -328,6 +370,20 @@ patches:
           - configMap:
               name: git-ops-command
             name: git-ops-command
+- patch: |-
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: argocd-repo-server
+    spec:
+      template:
+        spec:
+          containers:
+          - name: git-ops-command
+            command: 
+            - sh
+            - -c
+            - /var/run/argocd/argocd-cmp-server --loglevel error
 - patch: |-
     # Add an init container to install a few custom tools into the ArgoCD repo server
     # TODO: try to manage this image in a way that isn't inline to aid with upgrading/finding the image
@@ -367,7 +423,7 @@ patches:
           - name: helm-command
             configMap:
               name: helm-command
-              defaultMode: 0555              
+              defaultMode: 0555
           - name: install-custom-tools
             configMap:
               name: install-custom-tools
@@ -380,6 +436,7 @@ patches:
       name: argocd-notifications-secret
       annotations:
         sealedsecrets.bitnami.com/managed: "true"
+        argocd.argoproj.io/sync-options: Prune=false
 - patch: |-
     apiVersion: v1
     kind: Secret
@@ -388,6 +445,7 @@ patches:
       annotations:
         sealedsecrets.bitnami.com/managed: "true"
         sealedsecrets.bitnami.com/patch: "true"
+        argocd.argoproj.io/sync-options: Prune=false
 - patch: |-
     # Add init container to create Argo clusters for all CDEs from customer-hub
     apiVersion: apps/v1
@@ -546,3 +604,54 @@ patches:
               operator: Equal
               value: core
               effect: NoSchedule
+# Add prometheus annotations
+- patch: |-
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: argocd-applicationset-controller
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "8080"
+        newrelic.io/scrape: "true"
+- patch: |-
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: argocd-metrics
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "8082"
+        newrelic.io/scrape: "true"
+- patch: |-
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: argocd-notifications-controller-metrics
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "9001"
+        newrelic.io/scrape: "true"
+- patch: |-
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: argocd-repo-server
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "8084"
+        newrelic.io/scrape: "true"
+- patch: |-
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: argocd-server-metrics
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "8083"
+        newrelic.io/scrape: "true"

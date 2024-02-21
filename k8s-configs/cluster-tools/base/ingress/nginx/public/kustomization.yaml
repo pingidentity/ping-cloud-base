@@ -61,6 +61,28 @@ patchesJson6902:
     version: v1
     kind: Service
     name: ingress-nginx
+- path: add-custom-log-format.yaml
+  target:
+    group: ""
+    version: v1
+    kind: ConfigMap
+    name: nginx-configuration
+- path: add-controller-resources.yaml
+  target:
+    group: apps
+    version: v1
+    kind: Deployment
+    name: nginx-ingress-controller
 
 patchesStrategicMerge:
 - add-init-container.yaml
+
+# Add annotation to IngressClass
+patches:
+- target:
+    kind: IngressClass
+    name: nginx-public
+  patch: |-
+    - op: add
+      path: /metadata/annotations/nginx.ingress.kubernetes.io~1enable-annotation-validation
+      value: "true"

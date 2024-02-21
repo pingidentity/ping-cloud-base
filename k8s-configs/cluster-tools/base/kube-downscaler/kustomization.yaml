@@ -11,5 +11,7 @@ resources:
 
 configMapGenerator:
 - name: kube-downscaler
+  options:
+    disableNameSuffixHash: true
   literals:
     - DEFAULT_UPTIME="Mon-Fri 09:00-18:00 UTC"

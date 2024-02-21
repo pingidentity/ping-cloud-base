@@ -4,6 +4,11 @@ apiVersion: v1
 kind: Service
 metadata:
   name: pingaccess
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/"
+    prometheus.io/port: "8079"
+    newrelic.io/scrape: "true"
 spec:
   ports:
     - port: 443

@@ -9,19 +9,40 @@ if skipTest "${0}"; then
   exit 0
 fi
 
+oneTimeSetUp(){
+  # Save off CSD upload file in case test does not complete and leaves it with 1 or more 'exit 1' statements inserted into it
+  kubectl exec pingaccess-was-admin-0 -c pingaccess-was-admin -n ping-cloud -- sh -c 'cp /opt/staging/hooks/82-upload-csd-s3.sh /tmp/82-upload-csd-s3.sh'
+  kubectl exec pingaccess-was-0 -c pingaccess-was -n ping-cloud -- sh -c 'cp /opt/staging/hooks/82-upload-csd-s3.sh /tmp/82-upload-csd-s3.sh'
+
+}
+oneTimeTearDown(){
+  # Revert the original file back when tests are done execting
+  kubectl exec pingaccess-was-admin-0 -c pingaccess-was-admin -n ping-cloud -- sh -c 'cp /tmp/82-upload-csd-s3.sh /opt/staging/hooks/82-upload-csd-s3.sh'
+  kubectl exec pingaccess-was-0 -c pingaccess-was -n ping-cloud -- sh -c 'cp /tmp/82-upload-csd-s3.sh /opt/staging/hooks/82-upload-csd-s3.sh'
+}
+
 testPingAccessWasRuntimeCsdUpload() {
-  csd_upload "pingaccess-was-periodic-csd-upload" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess-was/engine/aws/periodic-csd-upload.yaml
+  csd_upload "pingaccess-was" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess-was/engine/aws/periodic-csd-upload.yaml
   assertEquals 0 $?
 }
 
 testPingAccessWasAdminCsdUpload() {
-  csd_upload "pingaccess-was-admin-periodic-csd-upload" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess-was/admin/aws/periodic-csd-upload.yaml
+  csd_upload "pingaccess-was-admin" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess-was/admin/aws/periodic-csd-upload.yaml
   assertEquals 0 $?
 }
 
+testPingAccessWasRuntimeCsdUploadCapturesFailure(){
+  init_csd_upload_failure "pingaccess-was" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess-was/engine/aws/periodic-csd-upload.yaml "true"
+  assertEquals "CSD upload job should not have succeeded" 1 $?
+}
+
+testPingAccessWasAdminCsdUploadCapturesFailure(){
+  init_csd_upload_failure "pingaccess-was-admin" "${PROJECT_DIR}"/k8s-configs/ping-cloud/base/pingaccess-was/admin/aws/periodic-csd-upload.yaml "true"
+  assertEquals "CSD upload job should not have succeeded" 1 $?
+}
 
 csd_upload() {
-  local upload_csd_job_name="${1}"
+  local upload_csd_job_name="${1}-periodic-csd-upload"
   local upload_job="${2}"
 
   log "Applying the CSD upload job"

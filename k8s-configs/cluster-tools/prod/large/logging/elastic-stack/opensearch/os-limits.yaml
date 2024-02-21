@@ -1,20 +1,15 @@
-apiVersion: apps/v1
-kind: StatefulSet
+apiVersion: opensearch.opster.io/v1
+kind: OpenSearchCluster
 metadata:
-  name: opensearch-cluster-hot
+  name: opensearch-cluster
 spec:
-  replicas: 7
-  template:
-    spec:
-      containers:
-        - name: opensearch
-          resources:
-            limits:
-              memory: 10Gi
-              cpu: "8"
-            requests:
-              memory: 8Gi
-              cpu: "4"
-          env:
-            - name: OPENSEARCH_JAVA_OPTS
-              value: "-Xms8g -Xmx8g"
+  nodePools:
+    - component: hot
+      jvm: -Xms8g -Xmx8g
+      resources:
+        requests:
+          memory: 8Gi
+          cpu: "4"
+        limits:
+          memory: 10Gi
+          cpu: "8"

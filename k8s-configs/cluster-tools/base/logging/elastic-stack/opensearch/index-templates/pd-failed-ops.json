@@ -79,13 +79,7 @@
           }
         },
         "etime": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
+          "type": "float"
         },
         "filter": {
           "type": "text",
@@ -347,13 +341,7 @@
           }
         },
         "qtime": {
-          "type": "text",
-          "fields": {
-            "keyword": {
-              "type": "keyword",
-              "ignore_above": 256
-            }
-          }
+          "type": "float"
         },
         "requestControls": {
           "type": "text",

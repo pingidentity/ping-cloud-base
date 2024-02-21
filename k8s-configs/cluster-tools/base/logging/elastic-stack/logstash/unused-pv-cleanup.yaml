@@ -1,0 +1,142 @@
+# This CronJob created for doing cleanup of unclaimed PVCs/PVs which stay in cluster after resources scaling down.
+# PDO-6655
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: delete-unused-pvs
+  namespace: elastic-stack-logging
+data:
+  delete-unused-pvs.sh: |-
+    #!/bin/sh
+
+    # Script to find and delete abandoned PVCs/PVs that left after StatefulSet scaled down
+
+    echo "Starting to perform search and cleanup of unclaimed PVCs/PVs..."
+
+    # Parse env var for separate apps and process them one by one
+    for app in $(echo $COMMA_SEPARATED_APPS_NAMES | tr ";" "\n"); do
+      echo "Processing $app PVCs/PVs:"
+      all_pods_pvcs_by_selector=$(kubectl get pods  -n "$NAMESPACE" --selector=app=$app --no-headers -o=jsonpath='{.items[*].spec.volumes[*].persistentVolumeClaim.claimName}')
+      pvcs=$(kubectl get pvc -n "$NAMESPACE" -o custom-columns=":metadata.name" --no-headers | grep "$app")
+      for pvc in $pvcs; do
+        # Delete if current pvc is not within the list of PVCs from selector
+        if ! echo "$all_pods_pvcs_by_selector" | grep -q "$pvc"; then
+          echo "Unattached $pvc found, trying to delete...";
+          pv=$(kubectl get pvc -n "$NAMESPACE" -o json | jq -r --arg pvc "$pvc" '.items[] | select(.metadata.name == $pvc) | .spec.volumeName');
+          # Delete PVC and wait 5 sec for related PV being deleted
+          kubectl delete pvc "$pvc" -n "$NAMESPACE" && sleep 5;
+          # Check if PV was deleted after deleting PVC, if not - remove finalizers and delete manually
+          if kubectl get pv | grep -q "$pv"; then
+            kubectl patch pv "$pv" -p '{"metadata":{"finalizers":null}}' && \
+            kubectl delete pv "$pv";
+          else
+            echo "$pv deleted successfully";
+          fi;
+        fi;
+      done;
+    done;
+
+    echo "Job done"
+
+
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: delete-unused-pvs
+  namespace: elastic-stack-logging
+spec:
+  schedule: "0 0 * * 0" # Once a week
+  successfulJobsHistoryLimit: 0
+  failedJobsHistoryLimit: 1
+  concurrencyPolicy: Forbid
+  startingDeadlineSeconds: 90
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        spec:
+          serviceAccount: delete-unused-pvs
+          restartPolicy: OnFailure
+          containers:
+          - name: delete-unused-pvs
+            image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.18.0
+            imagePullPolicy: IfNotPresent
+            securityContext:
+              runAsGroup: 9999
+              runAsNonRoot: true
+              runAsUser: 9031
+              allowPrivilegeEscalation: false
+            command:
+            - /opt/delete-unused-pvs.sh
+            env:
+            # WARNING! All data located on PVs will be deleted - be sure it's no longer needed or properly backed up before adding any apps to this list!
+            # Specify multiple app names as comma separated value (example: "logstash-elastic,fluent-bit")
+            - name: COMMA_SEPARATED_APPS_NAMES
+              value: "logstash-elastic"
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            volumeMounts:
+            - name: delete-unused-pvs
+              mountPath: /opt/delete-unused-pvs.sh
+              subPath: delete-unused-pvs.sh
+          volumes:
+          - name: delete-unused-pvs
+            configMap:
+              name: delete-unused-pvs
+              defaultMode: 0555
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: delete-unused-pvs
+  namespace: elastic-stack-logging
+  labels:
+    app: delete-unused-pvs
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: delete-unused-pvs
+  labels:
+    app: delete-unused-pvs
+rules:
+- apiGroups:
+  - ""
+  - "batch"
+  resources:
+  - persistentvolumes
+  - persistentvolumeclaims
+  verbs:
+  - get
+  - list
+  - watch
+  - delete
+- apiGroups:
+  - ""
+  - "batch"
+  resources:
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+  
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: delete-unused-pvs
+roleRef:
+  kind: ClusterRole
+  name: delete-unused-pvs
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  namespace: elastic-stack-logging
+  name: delete-unused-pvs

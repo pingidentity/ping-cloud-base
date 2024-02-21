@@ -8,12 +8,18 @@ data:
     set -e
 
     # Install kubectl
-    curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
-    -o /tmp/kubectl
+    if [[ "`uname -m`" == "aarch64" ]] ; then
+        curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/arm64/kubectl \
+        -o /tmp/kubectl
+    else
+        curl -sS https://storage.googleapis.com/kubernetes-release/release/"${KUBECTL_VERSION}"/bin/linux/amd64/kubectl \
+        -o /tmp/kubectl
+    fi
 
     chmod +x /tmp/kubectl
 
     UPLOAD_FILES=
+    # TODO: this script doesn't exist?
     SCRIPT="${HOOKS_DIR}"/15-upload-sync-state-s3.sh
     LOG_FILE=/tmp/upload.log
 
@@ -23,11 +29,13 @@ data:
 
     /tmp/kubectl exec "${SERVER}" -c pingdatasync -- sh -c "test -x ${SCRIPT} && ${SCRIPT}"> "${LOG_FILE}"
 
-    if test ${?} -eq 0; then
+    exit_code=${?}
+    if test ${exit_code} -eq 0; then
       UPLOAD_FILE=$(tail -1 "${LOG_FILE}")
       test -z "${UPLOAD_FILES}" && UPLOAD_FILES="${UPLOAD_FILE}" || UPLOAD_FILES="${UPLOAD_FILES} ${UPLOAD_FILE}"
     else
-      echo "Upload script not found on pod ${SERVER}"
+      echo "The kubectl command attempting to invoke the script exited with '${exit_code}'"
+      exit 1
     fi
 
     echo "${UPLOAD_FILES}"

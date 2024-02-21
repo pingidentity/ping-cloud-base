@@ -291,6 +291,9 @@
             }
           }
         },
+        "responseTime": {
+          "type": "integer"
+        },
         "cluster_name": {
           "type": "text",
           "fields": {

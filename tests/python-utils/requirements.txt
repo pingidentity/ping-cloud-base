@@ -13,3 +13,7 @@ git+https://gitlab.corp.pingidentity.com/ping-cloud-private-tenant/ping-cloud-to
 ruamel.yaml==0.17.26
 
 tenacity==8.2.3
+
+# Not currently used by python directly, but is used by common/01-test-csr.sh tests within PCB, hence being installed
+# in PCB only
+git-remote-codecommit==1.16

@@ -9,7 +9,7 @@ metadata:
     role: pingdirectory
 spec:
   ttlSecondsAfterFinished: 30
-  backoffLimit: 5
+  backoffLimit: 0
   template:
     spec:
       serviceAccountName: pingdirectory-ops-serviceaccount
@@ -33,7 +33,7 @@ spec:
       restartPolicy: Never
       initContainers:
       - name: pingdirectory-discovery-service
-        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-cli:2.0.17
+        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/amazon/aws-cli:2.0.22
         imagePullPolicy: IfNotPresent
         command:
         - /get_ssm_env_vars.sh
@@ -52,7 +52,7 @@ spec:
           runAsNonRoot: true
           runAsUser: 9031
           allowPrivilegeEscalation: false
-        image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/bitnami/kubectl:1.24.0
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/toolkit:v1.15.0
         imagePullPolicy: IfNotPresent
         command:
           - /copy-dependencies.sh

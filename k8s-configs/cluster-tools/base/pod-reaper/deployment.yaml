@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: pod-reaper
+  labels:
+    app: pod-reaper
 spec:
   replicas: 1
   selector:

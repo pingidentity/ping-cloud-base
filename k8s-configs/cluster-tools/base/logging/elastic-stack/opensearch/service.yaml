@@ -1,36 +1,10 @@
-kind: Service
-apiVersion: v1
-metadata:
-  name: opensearch-cluster-master
-  labels:
-    app.kubernetes.io/name: opensearch
-    app.kubernetes.io/instance: opensearch-cluster-hot
-spec:
-  type: ClusterIP
-  selector:
-    app.kubernetes.io/name: opensearch
-    app.kubernetes.io/instance: opensearch-cluster-hot
-  ports:
-  - name: http
-    protocol: TCP
-    port: 9200
-  - name: transport
-    protocol: TCP
-    port: 9300
 ---
-# Source: opensearch/templates/service.yaml
 kind: Service
 apiVersion: v1
 metadata:
   name: opensearch-cluster-headless
   labels:
     app.kubernetes.io/name: opensearch
-  annotations:
-    external-dns.alpha.kubernetes.io/hostname: opensearch-dev.ping-demo.com
-    prometheus.io/scrape: "true"
-    prometheus.io/scheme: "https"
-    prometheus.io/path: "/_prometheus/metrics"
-    prometheus.io/port: "9200"
 spec:
   clusterIP: None # This is needed for statefulset hostnames like opensearch-0 to resolve
   # Create endpoints also if the related pod isn't ready
@@ -41,4 +15,28 @@ spec:
   - name: http
     port: 9200
   - name: transport
+    port: 9300
+    
+---
+# Ingest service used to be created in both (main and secondary) regions to allow logstash communicate inter-regions.
+kind: Service
+apiVersion: v1
+metadata:
+  name: opensearch-ingest
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: opensearch-dev.ping-demo.com
+  labels:
+    app.kubernetes.io/name: opensearch
+    app.kubernetes.io/instance: opensearch-cluster-hot
+spec:
+  clusterIP: None
+  selector:
+    opster.io/opensearch-cluster: opensearch-cluster
+    opster.io/opensearch-nodepool: hot
+  ports:
+  - name: http
+    protocol: TCP
+    port: 9200
+  - name: transport
+    protocol: TCP
     port: 9300

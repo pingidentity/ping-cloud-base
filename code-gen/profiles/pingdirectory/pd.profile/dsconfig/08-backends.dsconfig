@@ -1,18 +1,7 @@
-dsconfig set-backend-prop \
-        --backend-name "userRoot" \
-        --set db-cache-percent:35 \
-        --set import-thread-count:1
-
-dsconfig set-backend-prop \
-      --backend-name "platformconfig" \
-      --set db-cache-percent:5 \
-      --set import-thread-count:1
-
-dsconfig set-backend-prop \
-      --backend-name "appintegrations" \
-      --set db-cache-percent:15 \
-      --set import-thread-count:1 \
-      --set default-cache-mode:cache-keys-only
+# If you are using multiple backends (userRoot_2, userRoot_3, userRoot_4, userRoot_5)
+# and PD_USE_SHARED_CACHE=false you will need to add your own 'db-cache-percent' for your additional backends.
+# Add this configuration here. For example:
+# dsconfig set-backend-prop -backend-name "userRoot_3" -set db-cache-percent:20
 
 dsconfig set-local-db-index-prop \
         --backend-name userRoot --index-name cn \
@@ -39,7 +28,3 @@ dsconfig set-local-db-index-prop \
         --index-name givenName \
         --set index-entry-limit:50000 \
         --set exploded-index-entry-threshold:100
-
-dsconfig set-backend-prop \
-        --backend-name userRoot \
-        --set default-cache-mode:cache-keys-only
