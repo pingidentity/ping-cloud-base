@@ -128,6 +128,7 @@
 - Increase PA, PF, PD logs ingestion into ELK
 - Newrelic-Prometheus-Agent: Sending PGO Metrics to New Relic
 - Newrelic-Prometheus-Agent: Sending Ping apps, ArgoCD and Karpenter metrics to NR
+- Logstash statefulSet: added AZ specific scheduling
 - HPA: Update Logstash min pods to be at least 2 (to avoid service downtime over upgrades)
 - Update backup and CSD upload jobs to properly report failures
 - Add healthcheck feature flag
@@ -310,9 +311,11 @@ _Changes:_
 - [X] PDO-6666 Newrelic-Prometheus-Agent: Send OpenSearch Metrics to New Relic
 - [X] PDO-6667 Newrelic-Prometheus-Agent: Send PGO Metrics to New Relic
 - [X] PDO-6676 Identify and map numeric fields in OpenSearch
+- [X] PDO-6677 indexmigration user does not have correct roles or access assigned
 - [X] PDO-6685 HPA: Update Logstash min pods to be at least 2 (to avoid service downtime over upgrades)
 - [X] PDO-6713 Metadata is missing in NewRelic pod logs
 - [X] PDO-6726 Healthcheck feature is available when the feature flag is turned on
+- [X] PDO-6731 Logstash statefulSet needs AZ specific scheduling
 - [X] PDO-6765 Create log based alert for 'signal 9' issues in ingress
 - [X] PDO-6677 indexmigration user does not have correct roles or access assigned
 - [X] PDO-6688 Update kube-state-metrics cluster tool
