@@ -29,6 +29,19 @@ spec:
       securityContext:
         fsGroup: 1000
       serviceAccountName: logstash-elastic
+      affinity:
+        podAntiAffinity:
+          # Add a soft requirement for each Logstash pod to be deployed to a different AZ
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - logstash-elastic
+                topologyKey: "topology.kubernetes.io/zone"
       initContainers:
         - name: wait-for-bootstrap-completed
           securityContext:
