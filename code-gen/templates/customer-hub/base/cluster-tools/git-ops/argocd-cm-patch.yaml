@@ -9,3 +9,13 @@
 - op: add
   path: /data/timeout.reconciliation
   value: ${APP_RESYNC_SECONDS}s
+# Enable ignore resource updates feature flag
+- op: add
+  path: /data/resource.ignoreResourceUpdatesEnabled
+  value: "true"
+# Ignore entire status portion of HPA to prevent constant reconcilation in the ArgoCD application controller
+- op: add
+  path: /data/resource.customizations.ignoreResourceUpdates.autoscaling_HorizontalPodAutoscaler
+  value: |-
+    jsonPointers:
+    - /status
