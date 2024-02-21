@@ -8,7 +8,6 @@ resources:
 images:
 - name: registry.k8s.io/autoscaling/cluster-autoscaler
   newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/autoscaling/cluster-autoscaler
-  newTag: v1.28.2
                    
 patches:
   - target:
