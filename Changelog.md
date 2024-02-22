@@ -433,6 +433,7 @@ _Changes:_
 - Fail PingDirectory backup Job if any backend fails upon running backup CLI
 - Number of ES-warm nodes increased to 3
 - Update kube-state-metrics cluster tool to 2.10.1
+- Update OS bootstrap role permissions
 
 _Changes:_
 
@@ -575,6 +576,7 @@ _Changes:_
 - [X] PDO-6249 Fluent-bit kubernetes filter sometimes doesn't work in CW pipeline
 - [X] PDO-6269 Fail PingDirectory backup Job if any backend fails upon running backup CLI
 - [X] PDO-6270 Fix es-cluster-warm pod doesn't recover gracefully from an AZ Failure
+- [X] PDO-6780 Resolve 'No matching indices found' warnings on OpenSearch dashboards
 
 ### 1.17.3.0
 
