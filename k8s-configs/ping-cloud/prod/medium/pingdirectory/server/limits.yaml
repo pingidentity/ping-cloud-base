@@ -10,8 +10,8 @@ spec:
       - name: pingdirectory
         resources:
           limits:
-            memory: 45Gi
-            cpu: 6
+            memory: 90Gi
+            cpu: 10
           requests:
             memory: 45Gi
             cpu: 4
