@@ -132,6 +132,7 @@
 - HPA: Update Logstash min pods to be at least 2 (to avoid service downtime over upgrades)
 - Update backup and CSD upload jobs to properly report failures
 - Add healthcheck feature flag
+- Update cluster-autoscaler v1.29.0 for eks 1.28
 - Add customer tenant to the Opensearch
 - Add nginx ingress signal 9 alert
 
@@ -316,6 +317,7 @@ _Changes:_
 - [X] PDO-6713 Metadata is missing in NewRelic pod logs
 - [X] PDO-6726 Healthcheck feature is available when the feature flag is turned on
 - [X] PDO-6731 Logstash statefulSet needs AZ specific scheduling
+- [X] PDO-6762 Update cluster-autoscaler v1.29.0 for eks 1.28
 - [X] PDO-6765 Create log based alert for 'signal 9' issues in ingress
 - [X] PDO-6677 indexmigration user does not have correct roles or access assigned
 - [X] PDO-6688 Update kube-state-metrics cluster tool
