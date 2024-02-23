@@ -132,6 +132,7 @@
 - Logstash statefulSet: added AZ specific scheduling
 - HPA: Update Logstash min pods to be at least 2 (to avoid service downtime over upgrades)
 - Update backup and CSD upload jobs to properly report failures
+- Patch PF admin test environment memory and cpu limits to 4Gi
 - Add healthcheck feature flag
 - Update cluster-autoscaler v1.29.0 for eks 1.28
 - Add customer tenant to the Opensearch
@@ -317,6 +318,7 @@ _Changes:_
 - [X] PDO-6677 indexmigration user does not have correct roles or access assigned
 - [X] PDO-6685 HPA: Update Logstash min pods to be at least 2 (to avoid service downtime over upgrades)
 - [X] PDO-6713 Metadata is missing in NewRelic pod logs
+- [X] PDO-6724 Patch PF admin test environment memory and cpu limits to 4Gi
 - [X] PDO-6726 Healthcheck feature is available when the feature flag is turned on
 - [X] PDO-6731 Logstash statefulSet needs AZ specific scheduling
 - [X] PDO-6762 Update cluster-autoscaler v1.29.0 for eks 1.28
