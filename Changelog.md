@@ -16,12 +16,14 @@
 - Add manual healthchecks feature flag
 - Update ingress controller to v1.9.6
 - Update ArgoCD to v2.10.0
+- Disable Cert Manager ClusterIssuer preferredChain
 
 _Changes:_
 
-- [X] Patch PF admin test environment memory and cpu limits to 4Gi
+- [X] PDO-6441 Disable Cert Manager ClusterIssuer preferredChain
 - [X] PDO-6602 Healthcheck feature is available when the feature flag is turned on
 - [X] PDO-6608 Add logstash Disruption Budget
+- [X] PDO-6623 Patch PF admin test environment memory and cpu limits to 4Gi
 - [X] PDO-6628 Add pod-reaper annotations to the fluentbit DS
 - [X] PDO-6668 ArgoCD Partner and PS Access via config-team
 - [X] PDO-6712 Metadata is missing in NewRelic pod logs
