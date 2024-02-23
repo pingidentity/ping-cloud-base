@@ -322,6 +322,7 @@ _Changes:_
 - [X] PDO-6677 indexmigration user does not have correct roles or access assigned
 - [X] PDO-6688 Update kube-state-metrics cluster tool
 - [X] PDO-6788 Remove Karpenter logging to NewRelic
+- [X] PDO-6674 Logstash: Parsing issue with pd-errors logs
 
 ### 1.18.0.0
 
