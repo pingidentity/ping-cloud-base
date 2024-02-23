@@ -122,6 +122,7 @@
 - Deploy opensearch-operator with opensearch cluster
 - CronJob created for doing cleanup of unclaimed Logstash PVs which stay in cluster after resources scaling down
 - [Support STAGING-21293] Set --enable-annotation-validation for p1as nginx-ingress
+- Use AWS CLI to update DNS records for pingdirectory-cluster service within route53
 - Ingress Failed to watch *v1.Secret: unknown (get secrets)
 - PF Heap Value: CSR upgrade-wrapper script should maintain edited values
 - Newrelic-Prometheus-Agent: Sending OpenSearch Metrics to New Relic
@@ -308,6 +309,7 @@ _Changes:_
 - [X] PDO-6615 Ingress Failed to watch *v1.Secret: unknown (get secrets)
 - [X] PDO-6620 [PORT] Add Use_Kubelet configuration parameters to fix Fluentbit Kubernetes filter
 - [X] PDO-6655 Implement the scaling pvc down once the number of logstash pods are scaled down
+- [X] PDO-6659 Use AWS CLI to update DNS records for pingdirectory-cluster service within route53
 - [X] PDO-6662 [STAGING-21964] P1AS New Relic Prometheus Agent Config Change
 - [X] PDO-6666 Newrelic-Prometheus-Agent: Send OpenSearch Metrics to New Relic
 - [X] PDO-6667 Newrelic-Prometheus-Agent: Send PGO Metrics to New Relic

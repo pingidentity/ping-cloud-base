@@ -1339,7 +1339,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
   organize_code_for_csr
 
   PRIMARY_PING_KUST_FILE="${K8S_CONFIGS_DIR}/${REGION_NICK_NAME}/kustomization.yaml"
-
+  
   # Copy around files for Developer CDE before substituting vars
   if "${IS_BELUGA_ENV}"; then
     echo "IS_BELUGA_ENV detected, making developer changes to deployment"

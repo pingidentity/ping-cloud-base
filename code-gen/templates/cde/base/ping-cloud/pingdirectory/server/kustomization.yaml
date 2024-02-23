@@ -44,16 +44,6 @@ patchesJson6902:
       path: /spec/rules/0/host
       value: pingdirectory.${DNS_ZONE}
 
-# Set a hostname for all the headless services so their endpoint IPs are published to Route53
-- target:
-    version: v1
-    kind: Service
-    name: pingdirectory
-  patch: |-
-    - op: replace
-      path: /metadata/annotations/external-dns.alpha.kubernetes.io~1hostname
-      value: pingdirectory-cluster.${DNS_ZONE}
-
 # pingdirectory admin
 - target:
     version: v1
