@@ -138,6 +138,7 @@
 - Add customer tenant to the Opensearch
 - Add nginx ingress signal 9 alert
 - Update nginx-ingress-controller to v1.9.6 to support EKS 1.28
+- No data on Karpenter Grafana dashboards
 
 _Changes:_
 
