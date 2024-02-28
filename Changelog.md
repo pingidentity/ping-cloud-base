@@ -231,6 +231,7 @@ _Changes:_
 - [X] PDO-5803 Update EBS Driver to 1.21.0 for EKS 1.27
 - [X] PDO-5813 Remove excessive patches for the second region
 - [X] PDO-5835 Create PD init container for KMS
+- [X] PDO-5850 Enable interruption handling for spot instances
 - [X] PDO-5871 Update AWS EFS CSI Driver to v1.5.8
 - [X] PDO-5873 Update OpenSearch/OSD to v2.8.0
 - [X] PDO-5874 Migrate from AWS-for-fluent-bit to fluent-bit v2.1.8
