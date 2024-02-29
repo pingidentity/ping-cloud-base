@@ -5,3 +5,8 @@ namespace: elastic-stack-logging
 
 resources:
 - ../../base/logging/
+
+patchesStrategicMerge:
+  - elastic-stack/logstash/logstash-limits.yaml
+  - elastic-stack/logstash/hpa-limits.yaml
+  - elastic-stack/elasticsearch/es-limits.yaml

@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: logstash-elastic
+spec:
+  template:
+    spec:
+      containers:
+        - name: logstash
+          resources:
+            limits:
+              cpu: "2"
+              memory: 6Gi
+            requests:
+              cpu: "2"
+              memory: 6Gi
+          env:
+            - name: LS_JAVA_OPTS
+              value: '-Xms4g -Xmx4g -XX:MaxDirectMemorySize=2g'
+            - name: PIPELINE_WORKERS
+              value: "16"
+            - name: PIPELINE_BATCH_SIZE
+              value: "1000"
