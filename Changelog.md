@@ -139,6 +139,8 @@
 - Add nginx ingress signal 9 alert
 - Update nginx-ingress-controller to v1.9.6 to support EKS 1.28
 - No data on Karpenter Grafana dashboards
+- Update pod memory limits for PingDirectory
+- Update pod cpu limits for PingDirectory
 
 _Changes:_
 
@@ -331,6 +333,8 @@ _Changes:_
 - [X] PDO-6688 Update kube-state-metrics cluster tool
 - [X] PDO-6788 Remove Karpenter logging to NewRelic
 - [X] PDO-6674 Logstash: Parsing issue with pd-errors logs
+- [X] PDO-6694 Update pod memory limits for PingDirectory
+- [X] PDO-6695 Update pod cpu limits for PingDirectory
 
 ### 1.18.0.0
 
