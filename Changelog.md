@@ -141,6 +141,7 @@
 - No data on Karpenter Grafana dashboards
 - Update pod memory limits for PingDirectory
 - Update pod cpu limits for PingDirectory
+- Upgrade ArgoCD to v2.10.0
 
 _Changes:_
 
@@ -323,6 +324,7 @@ _Changes:_
 - [X] PDO-6677 indexmigration user does not have correct roles or access assigned
 - [X] PDO-6683 Update nginx-ingress-controller to v1.9.6 to support EKS 1.28
 - [X] PDO-6685 HPA: Update Logstash min pods to be at least 2 (to avoid service downtime over upgrades)
+- [X] PDO-6687 Upgrade argocd to v2.9+  for EKS 1.28
 - [X] PDO-6713 Metadata is missing in NewRelic pod logs
 - [X] PDO-6724 Patch PF admin test environment memory and cpu limits to 4Gi
 - [X] PDO-6726 Healthcheck feature is available when the feature flag is turned on
