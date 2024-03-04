@@ -28,7 +28,7 @@ class TestPFAdminUILogin(seleniumbase.BaseCase):
         username = "PingFederateAdmin"
         old_password = "2FederateM0re!"
         new_password = "TestNewPassword1!"
-        self.open(p1_ui.admin_env_ui_url)
+        self.open(p1_ui.ENV_UI_URL)
         self.type("#username", username)
         self.type("#password", old_password)
         self.click('button[data-id="submit-button"]')
