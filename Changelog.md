@@ -135,6 +135,7 @@
 - Patch PF admin test environment memory and cpu limits to 4Gi
 - Add healthcheck feature flag
 - Update cluster-autoscaler v1.29.0 for eks 1.28
+- [EKS 1.28]-Update/fix before deprecated annotation is removed
 - Add customer tenant to the Opensearch
 - Add nginx ingress signal 9 alert
 - Update nginx-ingress-controller to v1.9.6 to support EKS 1.28
@@ -334,6 +335,7 @@ _Changes:_
 - [X] PDO-6765 Create log based alert for 'signal 9' issues in ingress
 - [X] PDO-6677 indexmigration user does not have correct roles or access assigned
 - [X] PDO-6688 Update kube-state-metrics cluster tool
+- [X] PDO-6689 [EKS 1.28]-Update/fix before deprecated annotation is removed
 - [X] PDO-6763 Update kubectl to 1.27.10 for EKS 1.28
 - [X] PDO-6788 Remove Karpenter logging to NewRelic
 - [X] PDO-6674 Logstash: Parsing issue with pd-errors logs

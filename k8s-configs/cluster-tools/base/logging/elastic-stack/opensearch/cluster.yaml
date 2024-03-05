@@ -119,7 +119,7 @@ spec:
           preferredDuringSchedulingIgnoredDuringExecution:
             - weight: 1
               podAffinityTerm:
-                topologyKey: failure-domain.beta.kubernetes.io/zone
+                topologyKey: topology.kubernetes.io/zone
                 labelSelector:
                   matchExpressions:
                     - key: opster.io/opensearch-nodepool
@@ -169,7 +169,7 @@ spec:
           preferredDuringSchedulingIgnoredDuringExecution:
             - weight: 1
               podAffinityTerm:
-                topologyKey: failure-domain.beta.kubernetes.io/zone
+                topologyKey: topology.kubernetes.io/zone
                 labelSelector:
                   matchExpressions:
                     - key: opster.io/opensearch-nodepool
