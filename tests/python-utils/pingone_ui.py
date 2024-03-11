@@ -42,8 +42,6 @@ class ConsoleUILoginTestBase(unittest.TestCase):
         chromedriver_autoinstaller.install()
         cls.tenant_name = os.getenv("TENANT_NAME")
         cls.environment = os.getenv("ENV", "dev")
-        cls.username = f"sso-test-user-{cls.tenant_name}"
-        cls.password = "2FederateM0re!"
         cls.p1_client = p1_utils.get_client()
         cls.p1_session = requests_oauthlib.OAuth2Session(
             cls.p1_client["client_id"], token=cls.p1_client["token"]
@@ -51,13 +49,10 @@ class ConsoleUILoginTestBase(unittest.TestCase):
         cls.p1_environment_endpoints = p1_utils.EnvironmentEndpoints(
             p1_utils.API_LOCATION, ENV_ID
         )
-        cls.delete_pingone_user()
-        cls.create_pingone_user()
 
     @classmethod
     def tearDownClass(cls):
         cls.p1_session.close()
-        cls.delete_pingone_user()
 
     def setUp(self):
         options = webdriver.ChromeOptions()
