@@ -144,6 +144,7 @@
 - Update pod memory limits for PingDirectory
 - Update pod cpu limits for PingDirectory
 - Upgrade ArgoCD to v2.10.0
+- Remove argocd-events, Prometheus alerts, rules, alertmanager
 
 _Changes:_
 
@@ -317,6 +318,7 @@ _Changes:_
 - [X] PDO-6599 Migrate opensearch from plain yaml to the operator
 - [X] PDO-6615 Ingress Failed to watch *v1.Secret: unknown (get secrets)
 - [X] PDO-6620 [PORT] Add Use_Kubelet configuration parameters to fix Fluentbit Kubernetes filter
+- [X] PDO-6626 Remove the argocd-events implementation from P1AS since we have transitioned our alerting to NewRelic
 - [X] PDO-6655 Implement the scaling pvc down once the number of logstash pods are scaled down
 - [X] PDO-6659 Use AWS CLI to update DNS records for pingdirectory-cluster service within route53
 - [X] PDO-6662 [STAGING-21964] P1AS New Relic Prometheus Agent Config Change

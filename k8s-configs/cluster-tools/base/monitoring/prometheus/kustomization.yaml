@@ -8,22 +8,14 @@ resources:
 - namespace.yaml
 - prometheus.yaml
 - prometheus-job-exporter.yaml
-- alertmanager.yaml
 - prometheus-config.yaml
 - prometheus-agent-config.yaml
 - prometheus-agent.yaml
-- opsgenie-key.yaml
 
 configMapGenerator:
 - name: prometheus-environment-variables
   envs:
     - env_vars
-
-- name: prom-alerts
-  files:
-   - default-rule.yml
-   - logging.yml
-   - kube-alerts.yml
 
 patchesJson6902:
 

@@ -8,5 +8,4 @@ resources:
   - pod_details.yaml
   - postgresql_details.yaml
   - postgresql_service_health.yaml
-  - prometheus_alerts.yaml
   - query_statistics.yaml

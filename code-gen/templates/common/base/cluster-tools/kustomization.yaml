@@ -15,6 +15,5 @@ resources:
 - pod-reaper
 - health
 - pgo
-- notification
 - karpenter
 - kube-downscaler
