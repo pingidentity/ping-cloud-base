@@ -2,6 +2,7 @@
 
 CI_SCRIPTS_DIR="${SHARED_CI_SCRIPTS_DIR:-/ci-scripts}"
 . "${CI_SCRIPTS_DIR}"/common.sh "${1}"
+. "${CI_SCRIPTS_DIR}"/test/test_utils.sh
 
 if skipTest "${0}"; then
   log "Skipping test ${0}"
@@ -9,9 +10,13 @@ if skipTest "${0}"; then
 fi
 
 testArgoP1ASBootstrapSucceeded() {
-  status=$(kubectl get pods --selector=job-name=argocd-p1as-bootstrap -n argocd -o json | jq -r '.items[].status.phase')
-  assertEquals 0 $?
-  assertEquals "The status of the p14c-bootstrap pod should be Succeeded but was: ${status}" "${status}" "Succeeded"
+  resource_name="argocd-p1as-bootstrap"
+  resource_kind="job"
+  resource_namespace="argocd"
+  verify_resource_with_sleep "${resource_kind}" "${resource_namespace}" "${resource_name}"
+  status=$?
+
+  assertEquals "The status of the p14c-bootstrap pod should be Succeeded" 0 ${status}
 }
 
 

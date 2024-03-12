@@ -2,6 +2,7 @@
 
 CI_SCRIPTS_DIR="${SHARED_CI_SCRIPTS_DIR:-/ci-scripts}"
 . "${CI_SCRIPTS_DIR}"/common.sh "${1}"
+. "${CI_SCRIPTS_DIR}"/test/test_utils.sh
 
 if skipTest "${0}"; then
   log "Skipping test ${0}"
@@ -9,18 +10,12 @@ if skipTest "${0}"; then
 fi
 
 testPodConnection() {
+  resource_name="pingcentral"
+  resource_kind="deployment"
+  verify_resource_with_sleep "${resource_kind}" "${PING_CLOUD_NAMESPACE}" "${resource_name}"
+  status=$?
 
-  expected_ready_state="1/1"
-  pod_label_name="role=pingcentral"
-
-  # Get pingcentral pod name
-  pingcentral_pod_name=$(kubectl get pods \
-                          -l "${pod_label_name}" \
-                          -n "${PING_CLOUD_NAMESPACE}" \
-                          -o=jsonpath="{.items[*].metadata.name}" | tr -s '[[:space:]]')
-  pingcentral_ready_state=$(kubectl get pods "${pingcentral_pod_name}" \
-                            -n "${PING_CLOUD_NAMESPACE}" | tail -n +2 | awk '{print $2}' | tr -s '[[:space:]]')
-  assertEquals "Failed to get pingcentral running state 1/1" "${expected_ready_state}" "${pingcentral_ready_state}"
+  assertEquals "Failed to get pingcentral running state 1/1" 0 ${status}
 }
 
 
