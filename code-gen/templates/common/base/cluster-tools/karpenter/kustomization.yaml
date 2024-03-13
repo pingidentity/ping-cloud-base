@@ -26,10 +26,10 @@ patchesStrategicMerge:
               value: "${CLUSTER_ENDPOINT}"
             - name: DISABLE_WEBHOOK
               value: "true"
-            - name : WEBHOOK_METRICS_PORT
-              value: "8001"
             - name: FEATURE_GATES
               value: "Drift=false"
+            - name: INTERRUPTION_QUEUE
+              value: "interruption-${CLUSTER_NAME}"
 - |-
   apiVersion: v1
   kind: ServiceAccount

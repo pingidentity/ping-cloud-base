@@ -6,7 +6,6 @@ kind: Service
 metadata:
   name: pingdirectory
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: pingdirectory-cluster-dev.ping-demo.com
     prometheus.io/scrape: "true"
     prometheus.io/path: "/metrics"
     prometheus.io/port: "9102"

@@ -3,6 +3,11 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
 - cluster-autoscaler.yaml
+
+# Point to the ping-cluster-tools repo equivalents pushed to ECR
+images:
+- name: registry.k8s.io/autoscaling/cluster-autoscaler
+  newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/autoscaling/cluster-autoscaler
                    
 patches:
   - target:
@@ -24,11 +29,8 @@ patches:
         path: /spec/template/spec/containers/0/command/3
         value: --cloud-provider=aws
 
-      - op: remove
-        path: /spec/template/spec/containers/0/command/5
-        value: --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/<YOUR CLUSTER NAME>
-
       - op: replace
+       # keeping v==1 since that will lower our logs going to cloudwatch
         path: /spec/template/spec/containers/0/command/1
         value: --v=1
 
@@ -60,7 +62,3 @@ patches:
       - op: replace
         path: /spec/template/spec/containers/0/imagePullPolicy
         value: IfNotPresent
-
-      - op: replace
-        path: /spec/template/spec/containers/0/image
-        value: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/autoscaling/cluster-autoscaler:v1.27.1

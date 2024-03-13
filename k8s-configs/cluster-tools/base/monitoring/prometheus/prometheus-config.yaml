@@ -18,15 +18,6 @@ data:
       evaluation_interval: 5s
       external_labels:
         k8s_cluster_name: ${CLUSTER_NAME}-${TENANT_NAME}-${REGION_NICK_NAME}
-    alerting:
-      alertmanagers:
-        - scheme: http
-          static_configs:
-          - targets: ['alertmanager:9093']
-
-    rule_files:
-      - /etc/prometheus/alert-rules.d/*.yml
-
     storage:
       tsdb:
         out_of_order_time_window: 1d
