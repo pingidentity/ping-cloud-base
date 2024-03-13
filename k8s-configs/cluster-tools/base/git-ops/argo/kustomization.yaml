@@ -5,7 +5,6 @@ namespace: argocd
 
 resources:
 - base
-- argocd-image-updater.yaml
 - custom-resources.yaml
 - argocd-p1as-bootstrap.yaml
 
@@ -113,37 +112,6 @@ patches:
             - sh
             - -c
             - /shared/argocd-dex rundex --loglevel error
-- patch: |-
-    apiVersion: apps/v1
-    kind: Deployment
-    metadata:
-      name: argocd-image-updater
-    spec:
-      template:
-        spec:
-          containers:
-          - name: argocd-image-updater
-            command:
-            - sh
-            - -c
-            - /usr/local/bin/argocd-image-updater run --loglevel error
-- patch: |-
-    apiVersion: apps/v1
-    kind: Deployment
-    metadata:
-      name: argocd-image-updater
-    spec:
-      template:
-        spec:
-          containers:
-          - name: argocd-image-updater
-            resources:
-              requests:
-                memory: "40Mi"
-                cpu: "10m"
-              limits:
-                memory: "80Mi"
-                cpu: "30m"
 - patch: |-
     apiVersion: apps/v1
     kind: Deployment
@@ -261,8 +229,6 @@ patches:
     metadata:
       name: argocd-cm
     data:
-      accounts.image-updater: apiKey
-      accounts.config-team: apiKey,login
       resource.customizations: |
         admissionregistration.k8s.io/MutatingWebhookConfiguration:
           ignoreDifferences: |
@@ -557,19 +523,6 @@ patches:
     kind: Deployment
     metadata:
       name: argocd-repo-server
-    spec:
-      template:
-        spec:
-          tolerations:
-            - key: CriticalAddonsOnly
-              operator: Equal
-              value: core
-              effect: NoSchedule
-- patch: |-
-    apiVersion: apps/v1
-    kind: Deployment
-    metadata:
-      name: argocd-image-updater
     spec:
       template:
         spec:
