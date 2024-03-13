@@ -249,6 +249,13 @@
                   "type": "long"
                 }
               }
+            },
+            "entries": {
+              "properties": {
+                "startedDateTime": {
+                  "type": "text"
+                }
+              }
             }
           }
         },

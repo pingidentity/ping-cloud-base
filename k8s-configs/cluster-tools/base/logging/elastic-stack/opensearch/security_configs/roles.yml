@@ -289,6 +289,7 @@ bootstrap:
         - 'indices:admin/index_template/*'
         - 'indices:admin/template/*'
         - 'indices:admin/settings/update'
+        - "indices:admin/create"
         - 'indices:admin/delete'
         - 'indices:admin/resize'
         - 'indices:data/write/index'

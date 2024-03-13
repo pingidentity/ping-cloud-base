@@ -360,7 +360,7 @@ spec:
                   - volume-autoscaler
           - weight: 100
             podAffinityTerm:
-              topologyKey: "failure-domain.beta.kubernetes.io/zone"
+              topologyKey: "topology.kubernetes.io/zone"
               labelSelector:
                 matchExpressions:
                 - key: app.kubernetes.io/name

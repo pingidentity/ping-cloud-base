@@ -130,17 +130,29 @@ _Changes:_
 - Deploy opensearch-operator with opensearch cluster
 - CronJob created for doing cleanup of unclaimed Logstash PVs which stay in cluster after resources scaling down
 - [Support STAGING-21293] Set --enable-annotation-validation for p1as nginx-ingress
+- Use AWS CLI to update DNS records for pingdirectory-cluster service within route53
 - Ingress Failed to watch *v1.Secret: unknown (get secrets)
 - PF Heap Value: CSR upgrade-wrapper script should maintain edited values
 - Newrelic-Prometheus-Agent: Sending OpenSearch Metrics to New Relic
 - Increase PA, PF, PD logs ingestion into ELK
 - Newrelic-Prometheus-Agent: Sending PGO Metrics to New Relic
 - Newrelic-Prometheus-Agent: Sending Ping apps, ArgoCD and Karpenter metrics to NR
+- Logstash statefulSet: added AZ specific scheduling
 - HPA: Update Logstash min pods to be at least 2 (to avoid service downtime over upgrades)
 - Update backup and CSD upload jobs to properly report failures
+- Patch PF admin test environment memory and cpu limits to 4Gi
 - Add healthcheck feature flag
+- Update cluster-autoscaler v1.29.0 for eks 1.28
+- [EKS 1.28]-Update/fix before deprecated annotation is removed
 - Add customer tenant to the Opensearch
 - Add nginx ingress signal 9 alert
+- Update nginx-ingress-controller to v1.9.6 to support EKS 1.28
+- Update kubectl to 1.27.10 for EKS 1.28
+- No data on Karpenter Grafana dashboards
+- Update pod memory limits for PingDirectory
+- Update pod cpu limits for PingDirectory
+- Upgrade ArgoCD to v2.10.0
+- Remove argocd-events, Prometheus alerts, rules, alertmanager
 
 _Changes:_
 
@@ -233,6 +245,7 @@ _Changes:_
 - [X] PDO-5803 Update EBS Driver to 1.21.0 for EKS 1.27
 - [X] PDO-5813 Remove excessive patches for the second region
 - [X] PDO-5835 Create PD init container for KMS
+- [X] PDO-5850 Enable interruption handling for spot instances
 - [X] PDO-5871 Update AWS EFS CSI Driver to v1.5.8
 - [X] PDO-5873 Update OpenSearch/OSD to v2.8.0
 - [X] PDO-5874 Migrate from AWS-for-fluent-bit to fluent-bit v2.1.8
@@ -313,18 +326,31 @@ _Changes:_
 - [X] PDO-6599 Migrate opensearch from plain yaml to the operator
 - [X] PDO-6615 Ingress Failed to watch *v1.Secret: unknown (get secrets)
 - [X] PDO-6620 [PORT] Add Use_Kubelet configuration parameters to fix Fluentbit Kubernetes filter
+- [X] PDO-6626 Remove the argocd-events implementation from P1AS since we have transitioned our alerting to NewRelic
 - [X] PDO-6655 Implement the scaling pvc down once the number of logstash pods are scaled down
+- [X] PDO-6659 Use AWS CLI to update DNS records for pingdirectory-cluster service within route53
 - [X] PDO-6662 [STAGING-21964] P1AS New Relic Prometheus Agent Config Change
 - [X] PDO-6666 Newrelic-Prometheus-Agent: Send OpenSearch Metrics to New Relic
 - [X] PDO-6667 Newrelic-Prometheus-Agent: Send PGO Metrics to New Relic
 - [X] PDO-6676 Identify and map numeric fields in OpenSearch
+- [X] PDO-6677 indexmigration user does not have correct roles or access assigned
+- [X] PDO-6683 Update nginx-ingress-controller to v1.9.6 to support EKS 1.28
 - [X] PDO-6685 HPA: Update Logstash min pods to be at least 2 (to avoid service downtime over upgrades)
+- [X] PDO-6687 Upgrade argocd to v2.9+  for EKS 1.28
 - [X] PDO-6713 Metadata is missing in NewRelic pod logs
+- [X] PDO-6724 Patch PF admin test environment memory and cpu limits to 4Gi
 - [X] PDO-6726 Healthcheck feature is available when the feature flag is turned on
+- [X] PDO-6731 Logstash statefulSet needs AZ specific scheduling
+- [X] PDO-6762 Update cluster-autoscaler v1.29.0 for eks 1.28
 - [X] PDO-6765 Create log based alert for 'signal 9' issues in ingress
 - [X] PDO-6677 indexmigration user does not have correct roles or access assigned
 - [X] PDO-6688 Update kube-state-metrics cluster tool
+- [X] PDO-6689 [EKS 1.28]-Update/fix before deprecated annotation is removed
+- [X] PDO-6763 Update kubectl to 1.27.10 for EKS 1.28
 - [X] PDO-6788 Remove Karpenter logging to NewRelic
+- [X] PDO-6674 Logstash: Parsing issue with pd-errors logs
+- [X] PDO-6694 Update pod memory limits for PingDirectory
+- [X] PDO-6695 Update pod cpu limits for PingDirectory
 
 ### 1.18.0.0
 
@@ -438,6 +464,7 @@ _Changes:_
 - Fail PingDirectory backup Job if any backend fails upon running backup CLI
 - Number of ES-warm nodes increased to 3
 - Update kube-state-metrics cluster tool to 2.10.1
+- Update OS bootstrap role permissions
 
 _Changes:_
 
@@ -580,6 +607,7 @@ _Changes:_
 - [X] PDO-6249 Fluent-bit kubernetes filter sometimes doesn't work in CW pipeline
 - [X] PDO-6269 Fail PingDirectory backup Job if any backend fails upon running backup CLI
 - [X] PDO-6270 Fix es-cluster-warm pod doesn't recover gracefully from an AZ Failure
+- [X] PDO-6780 Resolve 'No matching indices found' warnings on OpenSearch dashboards
 
 ### 1.17.3.0
 
