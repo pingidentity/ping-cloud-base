@@ -612,7 +612,6 @@ spec:
 ################################################
 # The custom logging verbosity level for the below pods is added. So we don’t need to implement it from scratch.
 
-# argocd-image-updater
 # argocd-dex-server
 # argocd-repo-server (only git-ops-command container)
 
@@ -631,20 +630,7 @@ spec:
         - sh
         - -c
         - /shared/argocd-dex rundex --loglevel error
-        
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: argocd-image-updater
-spec:
-  template:
-    spec:
-      containers:
-      - name: argocd-image-updater
-        command:
-        - sh
-        - -c
-        - /usr/local/bin/argocd-image-updater run --loglevel error
+---
 
 apiVersion: apps/v1
 kind: Deployment
