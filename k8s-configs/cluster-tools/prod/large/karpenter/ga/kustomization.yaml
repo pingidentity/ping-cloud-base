@@ -49,6 +49,9 @@ patchesStrategicMerge:
       - key: "karpenter.sh/capacity-type"
         operator: In
         values: ["on-demand"]
+      - key: kubernetes.io/os
+        operator: In
+        values: ["linux"]
 
 - |-
   apiVersion: karpenter.sh/v1beta1
@@ -68,8 +71,7 @@ patchesStrategicMerge:
         values: ["on-demand"]
       - key: kubernetes.io/os
         operator: In
-        values:
-        - linux
+        values: ["linux"]
 
 - |-
   apiVersion: karpenter.sh/v1beta1
@@ -89,5 +91,4 @@ patchesStrategicMerge:
         values: ["on-demand"]
       - key: kubernetes.io/os
         operator: In
-        values:
-          - linux
+        values: ["linux"]
