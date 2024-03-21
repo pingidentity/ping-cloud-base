@@ -283,7 +283,7 @@ _Changes:_
 - [X] PDO-6224 Remove Grafana ping-app patches from remove-from-secondary-patch.yaml 
 - [X] PDO-6241 Remove Grafana from ping-cloud-base image tag list
 - [X] PDO-6242 Configure newrelic-prometheus-agent to collect FluentBit and Logstash metrics
-- [X] PDO-6263 ArgoCD sync failing due to timeout on v1.19-release-branch
+- [X] PDO-6263 ArgoCD sync failing due to timeout on v1.19.0.0_RC1
 - [X] PDO-6264 OpenSearch Post-Migration: Cluster: Avail and Recovery: Cluster and Index Tuning, Enable Segment Replication
 - [X] PDO-6267 Update to enable detailed monitoring on instances
 - [X] PDO-6282 Modify appintegrations cache config within PingDirectory

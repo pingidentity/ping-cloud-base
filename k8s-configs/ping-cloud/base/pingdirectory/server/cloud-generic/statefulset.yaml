@@ -109,7 +109,7 @@ spec:
             runAsNonRoot: true
             runAsUser: 9031
             allowPrivilegeEscalation: false
-          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter/dev:v1.19-release-branch-latest
+          image: public.ecr.aws/r2h3l6e4/pingcloud-monitoring/newrelic-tags-exporter:v1.19.0.0_RC4
           imagePullPolicy: Always
           envFrom:
           - configMapRef:
@@ -169,7 +169,7 @@ spec:
             runAsNonRoot: true
             runAsUser: 9031
             allowPrivilegeEscalation: false
-          image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.19-release-branch-latest
+          image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory:v1.19.0.0_RC4
           imagePullPolicy: Always
           # Todo - Add script here for pulling the KMS keys from DB and pushing to S3
           command: [ 'sh', '-c', 'echo "kms init container"' ]
@@ -202,7 +202,7 @@ spec:
             runAsNonRoot: true
             runAsUser: 9031
             allowPrivilegeEscalation: false
-          image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory/dev:v1.19-release-branch-latest
+          image: public.ecr.aws/r2h3l6e4/pingcloud-apps/pingdirectory:v1.19.0.0_RC4
           imagePullPolicy: Always
           ports:
             - containerPort: 1389
