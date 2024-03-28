@@ -77,6 +77,54 @@ patchesStrategicMerge:
       purpose: service-account-for-cert-manager-webhook
       ${IRSA_CERT_MANAGER_ANNOTATION_KEY_VALUE}
 
+- |-
+  # Add tolerations to cert-manager-webhook Deployment
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: cert-manager-webhook
+    namespace: cert-manager
+  spec:
+    template:
+      spec:
+        tolerations:
+          - key: CriticalAddonsOnly
+            operator: Equal
+            value: core
+            effect: NoSchedule
+
+- |-
+  # Add tolerations to cert-manager-cainjector Deployment
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: cert-manager-cainjector
+    namespace: cert-manager
+  spec:
+    template:
+      spec:
+        tolerations:
+          - key: CriticalAddonsOnly
+            operator: Equal
+            value: core
+            effect: NoSchedule
+
+- |-
+  # Add tolerations to cert-manager Deployment
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: cert-manager
+    namespace: cert-manager
+  spec:
+    template:
+      spec:
+        tolerations:
+          - key: CriticalAddonsOnly
+            operator: Equal
+            value: core
+            effect: NoSchedule
+
 patchesJson6902:
 
 # Change the namespace of the ACME certificate to the ping-cloud namespace
