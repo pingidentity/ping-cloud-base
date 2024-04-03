@@ -353,6 +353,7 @@ _Changes:_
 - [X] PDO-6873 Remove kube-rbac-proxy logs
 - [X] PDO-6880 Fluent-Bit: TLS error: unexpected EOF
 - [X] PDO-7079 Ingress configuration update as per the Performance team's recommendations
+- [X] PDO-7190 Replace --set with --add operation for 99-changelog-multiple-backends.dsconfig.sample
 
 ### 1.18.0.0
 
