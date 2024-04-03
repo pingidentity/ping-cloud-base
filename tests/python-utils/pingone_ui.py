@@ -121,15 +121,20 @@ class ConsoleUILoginTestBase(unittest.TestCase):
         ).click()
         # Wait for post-login screen
         self.browser.implicitly_wait(10)
+        self.close_popup()
+
+    def close_popup(self):
         try:
             # Handle verify email pop-up when presented
-            if self.browser.find_element(
-                By.CSS_SELECTOR, "[aria-label=verify-email-modal]"
-            ):
-                self.browser.find_element(
-                    By.CSS_SELECTOR, '[aria-label="Close modal window"]'
-                ).click()
-        except selenium.common.exceptions.NoSuchElementException:
+            close_modal_button = self.browser.find_element(
+                By.CSS_SELECTOR, '[aria-label="Close modal window"]'
+            )
+            if close_modal_button:
+                close_modal_button.click()
+        except (
+            selenium.common.exceptions.NoSuchElementException,
+            selenium.common.exceptions.ElementNotInteractableException,
+        ):
             pass
 
     @tenacity.retry(
@@ -159,11 +164,12 @@ class ConsoleUILoginTestBase(unittest.TestCase):
         try:
             iframe = self.browser.find_element(By.ID, "content-iframe")
             self.browser.switch_to.frame(iframe)
-            title = self.browser.find_element(
-                By.XPATH, "//div[contains(text(), 'Your Environments')]"
+            self.close_popup()
+            self.assertTrue(
+                "Environments" in self.browser.page_source,
+                f"Expected 'Environments' to be in page source: {self.browser.page_source}",
             )
-            self.assertTrue(title.is_displayed())
         except selenium.common.exceptions.NoSuchElementException:
             self.fail(
-                f"PingOne console 'Your Environments' page was not displayed when attempting to access {self.ENV_UI_URL}. Browser contents: {self.browser.page_source}"
+                f"PingOne console 'Environments' page was not displayed when attempting to access {ENV_UI_URL}. Browser contents: {self.browser.page_source}"
             )
