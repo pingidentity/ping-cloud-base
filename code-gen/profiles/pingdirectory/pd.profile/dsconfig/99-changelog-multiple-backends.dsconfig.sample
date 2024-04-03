@@ -6,16 +6,16 @@
 
 # dsconfig set-backend-prop \
 #    --backend-name changelog \
-#    --set "changelog-entry-include-base-dn:${USER_BASE_DN_2}"
+#    --add "changelog-entry-include-base-dn:${USER_BASE_DN_2}"
 
 # dsconfig set-backend-prop \
 #    --backend-name changelog \
-#    --set "changelog-entry-include-base-dn:${USER_BASE_DN_3}"
+#    --add "changelog-entry-include-base-dn:${USER_BASE_DN_3}"
 
 # dsconfig set-backend-prop \
 #    --backend-name changelog \
-#    --set "changelog-entry-include-base-dn:${USER_BASE_DN_4}"
+#    --add "changelog-entry-include-base-dn:${USER_BASE_DN_4}"
 
 # dsconfig set-backend-prop \
 #    --backend-name changelog \
-#    --set "changelog-entry-include-base-dn:${USER_BASE_DN_5}"
+#    --add "changelog-entry-include-base-dn:${USER_BASE_DN_5}"
