@@ -31,11 +31,11 @@ spec:
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
           value: "true"
         volumeMounts:
-        - name: pingfederate-backup
+        - name: pingcommon-backup
           mountPath: /opt/in/backup-archive-data.sh
           subPath: backup-archive-data.sh
       volumes:
-      - name: pingfederate-backup
+      - name: pingcommon-backup
         configMap:
-          name: pingfederate-backup
+          name: pingcommon-backup
           defaultMode: 0555

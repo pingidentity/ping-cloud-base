@@ -21,12 +21,6 @@ spec:
       name: "${TENANT_NAME}-${REGION_NICK_NAME}-{{metadata.annotations.argocd-env}}"
       namespace: argocd
       annotations:
-        argocd-image-updater.argoproj.io/git-branch: "{{metadata.annotations.argocd-branch}}"
-        argocd-image-updater.argoproj.io/image-list: "{{metadata.annotations.argocd-image-list}}"
-        argocd-image-updater.argoproj.io/apps.update-strategy: latest
-        argocd-image-updater.argoproj.io/apps.allow-tags: regexp:^{{metadata.annotations.argocd-image-prefix}}.[0-9]+$
-        argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/argocd-image-updater-ssh-key
-        argocd-image-updater.argoproj.io/write-back-target: kustomization
         notifications.argoproj.io/subscribe.on-sync-failed.slack: "{{metadata.annotations.argocd-slack-channel}}"
         notifications.argoproj.io/subscribe.on-sync-status-unknown.slack: "{{metadata.annotations.argocd-slack-channel}}"
     spec:
@@ -89,12 +83,6 @@ spec:
       # metadata comes from argocd-bootstrap, path.basename from the git generator
       name: "${TENANT_NAME}-${REGION_NICK_NAME}-{{metadata.annotations.argocd-env}}-{{path.basename}}"
       annotations:
-        argocd-image-updater.argoproj.io/git-branch: "{{metadata.annotations.argocd-branch}}"
-        argocd-image-updater.argoproj.io/image-list: "{{metadata.annotations.argocd-image-list}}"
-        argocd-image-updater.argoproj.io/apps.update-strategy: latest
-        argocd-image-updater.argoproj.io/apps.allow-tags: regexp:^{{metadata.annotations.argocd-image-prefix}}.[0-9]+$
-        argocd-image-updater.argoproj.io/write-back-method: git:secret:argocd/argocd-image-updater-ssh-key
-        argocd-image-updater.argoproj.io/write-back-target: kustomization
         notifications.argoproj.io/subscribe.on-sync-failed.slack: "{{metadata.annotations.argocd-slack-channel}}"
         notifications.argoproj.io/subscribe.on-sync-status-unknown.slack: "{{metadata.annotations.argocd-slack-channel}}"
     spec:
