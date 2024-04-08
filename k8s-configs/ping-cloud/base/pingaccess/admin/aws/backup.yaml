@@ -34,11 +34,11 @@ spec:
         - name: LOG4J_FORMAT_MSG_NO_LOOKUPS
           value: "true"
         volumeMounts:
-        - name: pingaccess-backup
+        - name: pingcommon-backup
           mountPath: /opt/in/backup-archive-data.sh
           subPath: backup-archive-data.sh
       volumes:
-      - name: pingaccess-backup
+      - name: pingcommon-backup
         configMap:
-          name: pingaccess-backup
+          name: pingcommon-backup
           defaultMode: 0555

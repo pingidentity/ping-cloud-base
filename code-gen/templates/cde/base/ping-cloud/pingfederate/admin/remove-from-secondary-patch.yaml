@@ -14,14 +14,6 @@ $patch: delete
 
 ---
 
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: pingfederate-backup
-$patch: delete
-
----
-
 apiVersion: batch/v1
 kind: CronJob
 metadata:
