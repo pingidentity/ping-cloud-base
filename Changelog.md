@@ -3,12 +3,10 @@
 ### 2.0.0
 
 - Update version regexes from v*.*.*.* to v*.*.*
-- Update utils:apply_crd method to apply only cert-manager crds and remove toleration from cert-manager.yaml
 
 _Changes:_
 
 - [X] PDO-5729 Update version regexes
-- [X] PDO-6468 Update utils:apply_crd method to apply only cert-manager crds and remove toleration from cert-manager.yaml
 
 ### 1.19.0.0
 
