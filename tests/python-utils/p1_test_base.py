@@ -64,3 +64,15 @@ class P1TestBase(unittest.TestCase):
     @classmethod
     def get(cls, endpoint: str, name: str = "") -> {}:
         return get(cls.worker_app_token_session, endpoint=endpoint, name=name)
+
+    def get_user_attribute_values(self, attribute_name: str) -> []:
+        user_schema_id = self.get(self.cluster_env_endpoints.schemas, "User").get("id")
+        response = self.get(
+            f"{self.cluster_env_endpoints.schemas}/{user_schema_id}/attributes"
+        )
+        attribute_values = next(
+            attr["enumeratedValues"]
+            for attr in response
+            if attr["name"] == attribute_name
+        )
+        return [attr["value"] for attr in attribute_values]
