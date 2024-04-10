@@ -8,19 +8,24 @@ from k8s_utils import K8sUtils
 class TestArgoSSO(p1_test_base.P1TestBase):
     def setUp(self) -> None:
         self.tenant_name = os.getenv("TENANT_NAME", f"{os.getenv('USER')}-primary")
-        self.group_names = [
+        self.user_attribute_name = "p1asArgoCDRoles"
+        self.role_names = [
             "argo-pingbeluga",
-            f"{self.tenant_name}-argo-configteam",
+            "argo-configteam",
             "argo-pingplatform",
         ]
         self.app_name = f"client-{self.tenant_name}-argo-sso"
         self.k8s = K8sUtils()
 
-    def test_groups_created(self):
-        for group_name in self.group_names:
-            with self.subTest(msg=f"{group_name} created"):
-                p1_group = self.get(self.cluster_env_endpoints.groups, group_name)
-                self.assertTrue(p1_group, f"Group '{group_name}' not created")
+    def test_roles_created(self):
+        existing_attribute_names = self.get_user_attribute_values(self.user_attribute_name)
+        self.assertTrue(len(existing_attribute_names) > 0, f"No roles found for {self.user_attribute_name}")
+        for role_name in self.role_names:
+            with self.subTest(msg=f"{role_name} created"):
+                self.assertTrue(
+                    role_name in existing_attribute_names,
+                    f"Role '{role_name}' not created",
+                )
 
     def test_app_created(self):
         p1_app = self.get(self.cluster_env_endpoints.applications, self.app_name)

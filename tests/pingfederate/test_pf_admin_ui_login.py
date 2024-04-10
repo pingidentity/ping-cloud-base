@@ -23,18 +23,8 @@ class TestPingFederateUILogin(p1_ui.ConsoleUILoginTestBase):
         cls.username = f"sso-pingfederate-test-user-{cls.tenant_name}"
         cls.password = "2FederateM0re!"
         cls.delete_pingone_user()
-        cls.create_pingone_user()
-        cls.group_names = [
-            f"{cls.tenant_name}-{cls.environment}-pf-roleadmin",
-            cls.tenant_name,
-        ]
-        for group in cls.group_names:
-            p1_utils.add_group_to_user(
-                token_session=cls.p1_session,
-                endpoints=cls.p1_environment_endpoints,
-                user_name=cls.username,
-                group_name=group,
-            )
+        cls.create_pingone_user(role_attribute_name="p1asPingFederateRoles",
+                                role_attribute_values=[f"{cls.environment}-pf-roleadmin"])
 
     @classmethod
     def tearDownClass(cls):
