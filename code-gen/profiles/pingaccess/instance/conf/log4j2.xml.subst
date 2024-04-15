@@ -455,8 +455,10 @@
                 <KeyValuePair key="AUDIT.http-client-response-content-text" value="true"/>
             </HarLogLayout>
             <Policies>
+                <SizeBasedTriggeringPolicy size="100 MB" />
                 <TimeBasedTriggeringPolicy />
             </Policies>
+            <DefaultRolloverStrategy max="4" />
         </RollingFile>
 
         <!-- Engine auditing file logging configuration-->
