@@ -10,8 +10,8 @@ spec:
         - name: prometheus
           resources:
             limits:
-              cpu: “1000m”
-              memory: "3000Mi"
+              cpu: “1500m”
+              memory: "4500Mi"
             requests:
               cpu: “100m”
               memory: "1500Mi"
