@@ -356,6 +356,7 @@ _Changes:_
 - [X] PDO-7079 Ingress configuration update as per the Performance team's recommendations
 - [X] PDO-7190 Replace --set with --add operation for 99-changelog-multiple-backends.dsconfig.sample
 - [X] PDO-7213 Configure log4j to delete pingaccess_api_audit_har log files
+- [X] PDO-7307 Increase prometheus CPU and Mem limits
 
 ### 1.18.0.0
 
