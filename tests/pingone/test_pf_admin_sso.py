@@ -11,22 +11,27 @@ class TestPFAdminSSO(p1_test_base.P1TestBase):
     def setUp(self):
         self.tenant_name = os.getenv("TENANT_NAME", f"{os.getenv('USER')}-primary")
         self.environment = os.getenv("ENV", "dev")
-        self.group_names = [
-            f"{self.tenant_name}-{self.environment}-pf-roleadmin",
-            f"{self.tenant_name}-{self.environment}-pf-crypto",
-            f"{self.tenant_name}-{self.environment}-pf-useradmin",
-            f"{self.tenant_name}-{self.environment}-pf-expression",
-            f"{self.tenant_name}-{self.environment}-pf-audit",
+        self.user_attribute_name = "p1asPingFederateRoles"
+        self.role_names = [
+            f"{self.environment}-pf-roleadmin",
+            f"{self.environment}-pf-crypto",
+            f"{self.environment}-pf-useradmin",
+            f"{self.environment}-pf-expression",
+            f"{self.environment}-pf-audit",
         ]
         self.app_name = f"client-{self.tenant_name}-pingfederate-admin-sso"
         self.k8s = K8sUtils()
         self.namespace = os.getenv("PING_CLOUD_NAMESPACE", "ping-cloud")
 
-    def test_groups_created(self):
-        for group_name in self.group_names:
-            with self.subTest(msg=f"{group_name} created"):
-                p1_group = self.get(self.cluster_env_endpoints.groups, group_name)
-                self.assertTrue(p1_group, f"Group '{group_name}' not created")
+    def test_roles_created(self):
+        existing_attribute_names = self.get_user_attribute_values(self.user_attribute_name)
+        self.assertTrue(len(existing_attribute_names) > 0, f"No roles found for {self.user_attribute_name}")
+        for role_name in self.role_names:
+            with self.subTest(msg=f"{role_name} created"):
+                self.assertTrue(
+                    role_name in existing_attribute_names,
+                    f"Role '{role_name}' not created",
+                )
 
     def test_app_created(self):
         p1_app = self.get(self.cluster_env_endpoints.applications, self.app_name)

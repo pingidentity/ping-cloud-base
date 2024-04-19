@@ -159,6 +159,8 @@ _Changes:_
 - Remove ArgoCD Image Updater
 - Removing duplicate configMaps for backups for PF/PA/PA-WAS, removing product name from  K8S_STATEFUL_SET_NAME var
 - Disable ArgoCD admin user after SSO setup
+- Configure log4j to delete pingaccess_api_audit_har log files
+- Filter out binary encodings from audit logs HAR file for PingAccess/PingAccess-WAS
 
 _Changes:_
 
@@ -364,6 +366,9 @@ _Changes:_
 - [X] PDO-6880 Fluent-Bit: TLS error: unexpected EOF
 - [X] PDO-7079 Ingress configuration update as per the Performance team's recommendations
 - [X] PDO-7190 Replace --set with --add operation for 99-changelog-multiple-backends.dsconfig.sample
+- [X] PDO-7200 Filter out binary encodings from audit logs HAR file for PingAccess/PingAccess-WAS
+- [X] PDO-7213 Configure log4j to delete pingaccess_api_audit_har log files
+- [X] PDO-7307 Increase prometheus CPU and Mem limits
 
 ### 1.18.0.0
 

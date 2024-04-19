@@ -66,7 +66,7 @@ class ConsoleUILoginTestBase(unittest.TestCase):
         self.addCleanup(self.browser.quit)
 
     @classmethod
-    def create_pingone_user(cls):
+    def create_pingone_user(cls, role_attribute_name: str, role_attribute_values: list):
         """
         Get population ID for dev/cicd
         Create a user in population
@@ -85,6 +85,7 @@ class ConsoleUILoginTestBase(unittest.TestCase):
             "population": {"id": population_id},
             "username": cls.username,
             "password": {"value": cls.password, "forceChange": "false"},
+            role_attribute_name: role_attribute_values,
         }
 
         p1_utils.create_user(

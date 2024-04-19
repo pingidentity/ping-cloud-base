@@ -7,9 +7,11 @@ metadata:
   labels:
     role: argocd-p1as-bootstrap
 spec:
-  # 24-hour TTL for debugging
-  ttlSecondsAfterFinished: 86400
   template:
+    metadata:
+      labels:
+        # We create this job once, but we want the pod deleted long-term and not the job resource to prevent Argo drift
+        pod-reaper: enabled
     spec:
       serviceAccountName: argocd-server
       containers:
