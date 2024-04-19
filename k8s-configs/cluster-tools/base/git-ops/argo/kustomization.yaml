@@ -79,7 +79,6 @@ patches:
                 memory: "50Mi"
                 cpu: "100m"
               limits:
-                memory: "100Mi"
                 cpu: "200m"
 - patch: |-
     apiVersion: apps/v1
@@ -96,7 +95,6 @@ patches:
                 memory: "50Mi"
                 cpu: "50m"
               limits:
-                memory: "100Mi"
                 cpu: "100m"
 - patch: |-
     apiVersion: apps/v1
@@ -127,7 +125,6 @@ patches:
                 memory: "50Mi"
                 cpu: "10m"
               limits:
-                memory: "100Mi"
                 cpu: "30m"
 - patch: |-
     apiVersion: apps/v1
@@ -144,7 +141,6 @@ patches:
                 memory: "50Mi"
                 cpu: "50m"
               limits:
-                memory: "250Mi"
                 cpu: "100m"
 - patch: |-
     apiVersion: apps/v1
@@ -161,7 +157,6 @@ patches:
                 memory: "150Mi"
                 cpu: "150m"
               limits:
-                memory: "250Mi"
                 cpu: "250m"
 - patch: |-
     apiVersion: apps/v1
@@ -182,7 +177,6 @@ patches:
               # https://github.com/argoproj/argo-cd/issues/15509 is another related ticket
               # We have PDO-6569 to upgrade ArgoCD to 2.10+ in order to take advantage once these issues are solved
               limits:
-                memory: "1000Mi"
                 cpu: "1000m"
 - patch: |-
     apiVersion: apps/v1
@@ -202,7 +196,6 @@ patches:
                 memory: "1000Mi"
                 cpu: "1500m"
               limits:
-                memory: "2000Mi"
                 cpu: "3000m"
 - patch: |-
     apiVersion: apps/v1
@@ -290,7 +283,7 @@ patches:
               - mountPath: /home/argocd/cmp-server/config/plugin.yaml
                 subPath: plugin.yaml
                 name: git-ops-command-plugin-cm
-              # Starting with v2.4, do NOT mount the same tmp volume as the repo-server container. The filesystem separation helps 
+              # Starting with v2.4, do NOT mount the same tmp volume as the repo-server container. The filesystem separation helps
               # mitigate path traversal attacks.
               - mountPath: /tmp
                 name: cmp-tmp
@@ -317,7 +310,6 @@ patches:
                 memory: "100Mi"
                 cpu: "300m"
               limits:
-                memory: "300Mi"
                 cpu: "700m"
           volumes:
           - configMap:
@@ -338,7 +330,7 @@ patches:
         spec:
           containers:
           - name: git-ops-command
-            command: 
+            command:
             - sh
             - -c
             - /var/run/argocd/argocd-cmp-server --loglevel error
@@ -443,7 +435,6 @@ patches:
                 memory: "256Mi"
                 cpu: "300m"
               limits:
-                memory: "512Mi"
                 cpu: "500m"
             env:
             - name: NAMESPACE
