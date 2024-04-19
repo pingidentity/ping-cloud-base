@@ -2,4 +2,56 @@ kind: Kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 
 resources:
-- cert-manager.yaml
+  - cert-manager.yaml
+
+patches:
+  # Add tolerations to all deployments so cert-manager launches immediately on core nodes
+  # Patches are done here so that the bootstrap manifest also contains these patches
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: cert-manager-cainjector
+        namespace: cert-manager
+      spec:
+        template:
+          spec:
+            tolerations:
+              - key: CriticalAddonsOnly
+                operator: Equal
+                value: core
+                effect: NoSchedule
+            nodeSelector:
+              kubernetes.io/os: linux
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: cert-manager
+        namespace: cert-manager
+      spec:
+        template:
+          spec:
+            tolerations:
+              - key: CriticalAddonsOnly
+                operator: Equal
+                value: core
+                effect: NoSchedule
+            nodeSelector:
+              kubernetes.io/os: linux
+  - patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: cert-manager-webhook
+        namespace: cert-manager
+      spec:
+        template:
+          spec:
+            tolerations:
+              - key: CriticalAddonsOnly
+                operator: Equal
+                value: core
+                effect: NoSchedule
+            nodeSelector:
+              kubernetes.io/os: linux
