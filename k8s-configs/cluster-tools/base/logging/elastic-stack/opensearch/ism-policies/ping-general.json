@@ -1,7 +1,7 @@
 {
     "policy": {
         "policy_id": "ping_standard_policy",
-        "description": "Standard ping policy (after 7 days read-only, after 90 days shrunk and delete, shrunken index will be processed via shrunken policy)",
+        "description": "Standard ping policy (after 30 days read-only, after 90 days shrunk and delete, shrunken index will be processed via shrunken policy)",
         "last_updated_time": 1684846142111,
         "schema_version": 17,
         "error_notification": null,
@@ -14,7 +14,7 @@
                     {
                         "state_name": "RO",
                         "conditions": {
-                            "min_index_age": "7d"
+                            "min_index_age": "30d"
                         }
                     }
                 ]
@@ -78,6 +78,7 @@
                     "pa-*",
                     "pc-*",
                     "pdg-*",
+                    "pds-*",
                     "ingress-*",
                     "logstash-*"
                 ],
