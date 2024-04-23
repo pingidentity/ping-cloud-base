@@ -21,6 +21,12 @@ cp /usr/bin/envsubst /tools
 ### Install specific Kustomize version ###
 KUSTOMIZE_VERSION=5.0.3
 
-wget -qO /tools/kustomize \
+if [ "`uname -m`" = "aarch64" ] ; then
+    wget -qO /tools/kustomize \
+    "https://ping-artifacts.s3.us-west-2.amazonaws.com/pingcommon/kustomize/${KUSTOMIZE_VERSION}/linux_arm64/kustomize"
+    chmod a+x /tools/kustomize
+else
+    wget -qO /tools/kustomize \
     "https://ping-artifacts.s3.us-west-2.amazonaws.com/pingcommon/kustomize/${KUSTOMIZE_VERSION}/linux_amd64/kustomize"
-chmod a+x /tools/kustomize
+    chmod a+x /tools/kustomize
+fi

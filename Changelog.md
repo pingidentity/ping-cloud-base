@@ -151,6 +151,7 @@
 - Disable ArgoCD admin user after SSO setup
 - Configure log4j to delete pingaccess_api_audit_har log files
 - Filter out binary encodings from audit logs HAR file for PingAccess/PingAccess-WAS
+- [INJ]Argocd is not working on arm images(Graviton)
 
 _Changes:_
 
