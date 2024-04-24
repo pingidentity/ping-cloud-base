@@ -86,7 +86,7 @@ if ! test "${P1AS_UPGRADES_REPO}"; then
     # NEW_VERSION=v*.*.*.* -> UPGRADE_REPO_VERSION=v*.*-release-branch
     # If NEW_VERSION does not match either regex, the script requires UPGRADE_SCRIPT_VERSION to be set
     VERSION_PREFIX=$(echo "${NEW_VERSION}" | grep -Eo 'v[0-9]+.[0-9]+')
-    if [[ "${NEW_VERSION}" =~ ^v[0-9]+.[0-9]+.[0-9]+.[0-9]+$ ]]; then
+    if [[ "${NEW_VERSION}" =~ ^v[0-9]+.[0-9]+.[0-9]+.[0-9]+(_RC[0-9]+)?$ ]]; then
       UPGRADE_SCRIPT_VERSION="${VERSION_PREFIX}-release-branch"
     elif [[ "${NEW_VERSION}" =~ ^v[0-9]+.[0-9]+-release-branch$ ]]; then
       UPGRADE_SCRIPT_VERSION="${VERSION_PREFIX}-dev-branch"
