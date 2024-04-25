@@ -1,0 +1,31 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: kubernetes-service-endpoints
+  labels:
+    prometheus: agent
+spec:
+  jobLabel: kubernetes-service-endpoints
+  namespaceSelector:
+    any: true
+  endpoints:
+    - relabelings:
+      - sourceLabels: [ __meta_kubernetes_service_annotation_prometheus_io_scrape ]
+        action: keep
+        regex: "true"
+      - sourceLabels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
+        targetLabel: __address__
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: $1:$2
+      - sourceLabels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
+        targetLabel: __scheme__
+        regex: (https?)
+      - sourceLabels: [__meta_kubernetes_service_annotation_prometheus_io_path]
+        targetLabel: __metrics_path__
+        regex: (.+)
+      - sourceLabels: [__meta_kubernetes_pod_name]
+        action: replace
+        targetLabel: instance
+      tlsConfig:
+        insecureSkipVerify: true
+  selector: {}

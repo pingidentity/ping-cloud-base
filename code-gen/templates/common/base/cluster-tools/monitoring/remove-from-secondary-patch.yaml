@@ -11,7 +11,7 @@ spec:
   $patch: replace
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Prometheus
 metadata:
   name: prometheus
   namespace: prometheus
@@ -126,13 +126,6 @@ apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaFolder
 metadata:
   name: pingdashboards
-  namespace: prometheus
-$patch: delete
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: prometheus-config
   namespace: prometheus
 $patch: delete
 ---

@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: prometheus
+  namespace: prometheus
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: prometheus-central-dev.ping-demo.com
+spec:
+  selector:
+    app.kubernetes.io/name: prometheus
+  ports:
+  - name: web
+    port: 9090
+    targetPort: web
+  sessionAffinity: ClientIP
