@@ -42,7 +42,7 @@ spec:
                 runAsGroup: 472
               resources:
                 limits:
-                  cpu: 500m
+                  cpu: "1"
                   memory: 2500Mi
                 requests:
                   cpu: 100m
