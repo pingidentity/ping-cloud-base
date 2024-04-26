@@ -11,5 +11,14 @@ spec:
           memory: 8Gi
           cpu: "2"
         limits:
+          memory: 12Gi
+          cpu: "6"
+    - component: warm
+      jvm: -Xms6g -Xmx6g
+      resources:
+        requests:
+          memory: 6Gi
+          cpu: "2"
+        limits:
           memory: 10Gi
-          cpu: "8"
+          cpu: "6"
