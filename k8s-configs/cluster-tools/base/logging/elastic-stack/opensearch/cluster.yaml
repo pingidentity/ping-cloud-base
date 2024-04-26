@@ -39,7 +39,7 @@ spec:
       node.search.cache.size: 500m
       cluster.max_shards_per_node: "10000"
       prometheus.indices: "false"
-      reindex.remote.allowlist: "elasticsearch.elastic-stack-logging:9200, elasticsearch:9200, localhost:9200"
+      reindex.remote.allowlist: "localhost:9200"
       plugins.alerting.filter_by_backend_roles: "true"
       opensearch.notifications.general.filter_by_backend_roles: "true"
   dashboards:
