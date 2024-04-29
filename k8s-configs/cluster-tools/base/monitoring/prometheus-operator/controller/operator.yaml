@@ -143,11 +143,11 @@ spec:
       containers:
         - args:
             - --kubelet-service=kube-system/kubelet
-            - --prometheus-config-reloader=quay.io/prometheus-operator/prometheus-config-reloader:v0.73.1
+            - --prometheus-config-reloader=public.ecr.aws/r2h3l6e4/pingcloud-clustertools/prom/prometheus-config-reloader:v0.73.1
           env:
             - name: GOGC
               value: "30"
-          image: quay.io/prometheus-operator/prometheus-operator:v0.73.1
+          image: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/prom/prometheus-operator:v0.73.1
           name: prometheus-operator
           ports:
             - containerPort: 8080
