@@ -39,19 +39,24 @@ patchesStrategicMerge:
   metadata:
     name: default
   spec:
-    requirements:
-      - key: "karpenter.k8s.aws/instance-category"
-        operator: In
-        values: ["c", "m", "r", "t"]
-      - key: "kubernetes.io/arch"
-        operator: In
-        values: ["amd64"]
-      - key: "karpenter.sh/capacity-type"
-        operator: In
-        values: ["on-demand"]
-      - key: kubernetes.io/os
-        operator: In
-        values: ["linux"]
+    template:
+      spec:
+        requirements:
+          - key: "karpenter.k8s.aws/instance-category"
+            operator: In
+            values: ["c"]
+          - key: "kubernetes.io/arch"
+            operator: In
+            values: ["arm64"]
+          - key: "karpenter.sh/capacity-type"
+            operator: In
+            values: ["on-demand"]
+          - key: kubernetes.io/os
+            operator: In
+            values: ["linux"]
+          - key: "karpenter.k8s.aws/instance-generation"
+            operator: In
+            values: ["7"]
 
 - |-
   apiVersion: karpenter.sh/v1beta1
@@ -59,19 +64,24 @@ patchesStrategicMerge:
   metadata:
     name: pd-only
   spec:
-    requirements:
-      - key: "karpenter.k8s.aws/instance-category"
-        operator: In
-        values: ["c", "m", "r", "t"]
-      - key: "kubernetes.io/arch"
-        operator: In
-        values: ["amd64"]
-      - key: "karpenter.sh/capacity-type"
-        operator: In
-        values: ["on-demand"]
-      - key: kubernetes.io/os
-        operator: In
-        values: ["linux"]
+    template:
+      spec:
+        requirements:
+          - key: "karpenter.k8s.aws/instance-category"
+            operator: In
+            values: ["r"]
+          - key: "kubernetes.io/arch"
+            operator: In
+            values: ["arm64"]
+          - key: "karpenter.sh/capacity-type"
+            operator: In
+            values: ["on-demand"]
+          - key: kubernetes.io/os
+            operator: In
+            values: ["linux"]
+          - key: "karpenter.k8s.aws/instance-generation"
+            operator: In
+            values: ["7"]
 
 - |-
   apiVersion: karpenter.sh/v1beta1
@@ -79,16 +89,21 @@ patchesStrategicMerge:
   metadata:
     name: pgo-only
   spec:
-    requirements:
-      - key: "karpenter.k8s.aws/instance-category"
-        operator: In
-        values: ["c", "m", "r", "t"]
-      - key: "kubernetes.io/arch"
-        operator: In
-        values: ["amd64"]
-      - key: "karpenter.sh/capacity-type"
-        operator: In
-        values: ["on-demand"]
-      - key: kubernetes.io/os
-        operator: In
-        values: ["linux"]
+    template:
+      spec:
+        requirements:
+          - key: "karpenter.k8s.aws/instance-category"
+            operator: In
+            values: ["c"]
+          - key: "kubernetes.io/arch"
+            operator: In
+            values: ["amd64"]
+          - key: "karpenter.sh/capacity-type"
+            operator: In
+            values: ["on-demand"]
+          - key: kubernetes.io/os
+            operator: In
+            values: ["linux"]
+          - key: "karpenter.k8s.aws/instance-generation"
+            operator: In
+            values: ["7"]
