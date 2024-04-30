@@ -360,6 +360,7 @@ _Changes:_
 - [X] PDO-7200 Filter out binary encodings from audit logs HAR file for PingAccess/PingAccess-WAS
 - [X] PDO-7213 Configure log4j to delete pingaccess_api_audit_har log files
 - [X] PDO-7307 Increase prometheus CPU and Mem limits
+- [X] PDO-7381 Patch karpenter nodepools with instance type and category recommended from performance
 
 ### 1.18.0.0
 
