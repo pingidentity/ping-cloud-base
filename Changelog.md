@@ -363,6 +363,7 @@ _Changes:_
 - [X] PDO-7307 Increase prometheus CPU and Mem limits
 - [X] PDO-7381 Patch karpenter nodepools with instance type and category recommended from performance
 - [X] PDO-7399 Update sync strategy to sync CRDs before other resources to avoid re-sync during the 1.19 upgrade
+- [X] PDO-7402 Added OS sample patch
 
 ### 1.18.0.0
 
