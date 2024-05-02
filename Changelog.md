@@ -152,6 +152,7 @@
 - Configure log4j to delete pingaccess_api_audit_har log files
 - Filter out binary encodings from audit logs HAR file for PingAccess/PingAccess-WAS
 - [INJ]Argocd is not working on arm images(Graviton)
+- Update sync strategy to sync CRDs before other resources to avoid re-sync during the 1.19 upgrade
 
 _Changes:_
 
@@ -361,6 +362,7 @@ _Changes:_
 - [X] PDO-7213 Configure log4j to delete pingaccess_api_audit_har log files
 - [X] PDO-7307 Increase prometheus CPU and Mem limits
 - [X] PDO-7381 Patch karpenter nodepools with instance type and category recommended from performance
+- [X] PDO-7399 Update sync strategy to sync CRDs before other resources to avoid re-sync during the 1.19 upgrade
 
 ### 1.18.0.0
 
