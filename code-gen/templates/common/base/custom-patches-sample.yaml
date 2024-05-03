@@ -148,6 +148,18 @@ spec:
 #                OpenSearch
 ################################################
 
+# Increase Disk Size
+apiVersion: opensearch.opster.io/v1
+kind: OpenSearchCluster
+metadata:
+  name: opensearch-cluster
+spec:
+  nodePools:
+    - component: hot
+      diskSize: "500Gi"
+    - component: warm
+      diskSize: "500Gi"
+---
 # Increase CPU resources
 apiVersion: opensearch.opster.io/v1
 kind: OpenSearchCluster
