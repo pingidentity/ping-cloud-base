@@ -71,6 +71,20 @@ copy-images:
   only:
     - /^.*-release-branch$/
 
+check-ext-images:
+  stage: security
+  image: ${K8S_DEPLOY_TOOLS}
+  needs:
+    - compile
+  dependencies:
+    - compile
+  variables:
+    UBER_YAML: $CI_PROJECT_DIR/out/_builds_ping-cloud-private-tenant_ping-cloud-base.yaml
+  script:
+    - ${SHARED_CI_SCRIPTS_DIR}/k8s/security/check_ext_images.sh $UBER_YAML
+  tags:
+    - default-gitlab-runner-ping-cloud
+
 scan:
   stage: security
   image: ${K8S_DEPLOY_TOOLS}
