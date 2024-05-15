@@ -10,8 +10,11 @@ class TestArgoSSO(p1_test_base.P1TestBase):
         self.tenant_name = os.getenv("TENANT_NAME", f"{os.getenv('USER')}-primary")
         self.user_attribute_name = "p1asArgoCDRoles"
         self.role_names = [
-            "argo-pingbeluga",
             "argo-configteam",
+        ]
+        self.ping_roles_user_attribute_name = "p1asPingRoles"
+        self.ping_role_names = [
+            "argo-pingbeluga",
             "argo-pingplatform",
         ]
         self.app_name = f"client-{self.tenant_name}-argo-sso"
@@ -21,6 +24,16 @@ class TestArgoSSO(p1_test_base.P1TestBase):
         existing_attribute_names = self.get_user_attribute_values(self.user_attribute_name)
         self.assertTrue(len(existing_attribute_names) > 0, f"No roles found for {self.user_attribute_name}")
         for role_name in self.role_names:
+            with self.subTest(msg=f"{role_name} created"):
+                self.assertTrue(
+                    role_name in existing_attribute_names,
+                    f"Role '{role_name}' not created",
+                )
+
+    def test_ping_roles_created(self):
+        existing_attribute_names = self.get_user_attribute_values(self.ping_roles_user_attribute_name)
+        self.assertTrue(len(existing_attribute_names) > 0, f"No roles found for {self.ping_roles_user_attribute_name}")
+        for role_name in self.ping_role_names:
             with self.subTest(msg=f"{role_name} created"):
                 self.assertTrue(
                     role_name in existing_attribute_names,

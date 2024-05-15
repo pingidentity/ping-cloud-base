@@ -20,7 +20,7 @@ class TestArgoUILogin(p1_ui.ConsoleUILoginTestBase):
         cls.username = f"sso-argocd-test-user-{cls.tenant_name}"
         cls.password = "2FederateM0re!"
         cls.delete_pingone_user()
-        cls.create_pingone_user(role_attribute_name="p1asArgoCDRoles",
+        cls.create_pingone_user(role_attribute_name="p1asPingRoles",
                                 role_attribute_values=["argo-pingbeluga"])
 
     @classmethod
