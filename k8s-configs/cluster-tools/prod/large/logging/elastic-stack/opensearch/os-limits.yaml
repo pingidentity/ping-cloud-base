@@ -8,8 +8,17 @@ spec:
       jvm: -Xms8g -Xmx8g
       resources:
         requests:
-          memory: 8Gi
+          memory: 10Gi
           cpu: "4"
         limits:
-          memory: 10Gi
+          memory: 12Gi
           cpu: "8"
+    - component: warm
+      jvm: -Xms6g -Xmx6g
+      resources:
+        requests:
+          memory: 8Gi
+          cpu: "3"
+        limits:
+          memory: 12Gi
+          cpu: "6"

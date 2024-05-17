@@ -72,7 +72,7 @@
 # ACCOUNT_BASE_PATH                | The account's SSM base path                        | The SSM path: /pcpt/config/k8s-config/accounts/
 #                                  |                                                    |
 # ACCOUNT_TYPE                     | The variable denotes the type of account based on  | No defaults
-#                                  | the IS_GA flag: either 'ga' or 'non-ga'.           |
+#                                  | the IS_GA flag: either 'ga' or 'non-ga'.           |                               
 #                                  |                                                    |
 # ARGOCD_SLACK_TOKEN_SSM_PATH      | SSM path to secret token for ArgoCD slack          | The SSM path:
 #                                  | notifications                                      | ssm://pcpt/argocd/notification/slack/access_token
@@ -247,8 +247,8 @@
 #                                  | state data required for the cluster.               |
 #                                  |                                                    |
 # SLACK_CHANNEL                    | The Slack channel name for ArgoCD-Status Slack     | CDE environment: p1as-application-oncall                                  |                                                    |
-#                                  | notifications.                                     |
-#                                  |                                                    |
+#                                  | notifications.                                     |             
+#                                  |                                                    |                                                                                  
 # NON_GA_SLACK_CHANNEL             | The Slack channel name for ArgoCD-Status Slack     | CDE environment: nowhere
 #                                  | notifications.                                     | Dev environment: nowhere
 #                                  | Overrides SLACK_CHANNEL                            |
@@ -1313,6 +1313,9 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
 
   PRIMARY_PING_KUST_FILE="${K8S_CONFIGS_DIR}/${REGION_NICK_NAME}/kustomization.yaml"
 
+  # Add IS_BELUGA_ENV to the base values.yaml
+  substitute_vars "${ENV_DIR}/values-files" '${IS_BELUGA_ENV}'
+
   # Copy around files for Developer CDE before substituting vars
   if "${IS_BELUGA_ENV}"; then
     echo "IS_BELUGA_ENV detected, making developer changes to deployment"
@@ -1320,9 +1323,6 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     BASE_ENV_VARS="${K8S_CONFIGS_DIR}/base/env_vars"
     echo >> "${BASE_ENV_VARS}"
     echo "IS_BELUGA_ENV=true" >> "${BASE_ENV_VARS}"
-
-    # Add IS_BELUGA_ENV to the base values.yaml
-    substitute_vars "${ENV_DIR}/values-files" '${IS_BELUGA_ENV}'
 
     # Resetting to empty string , once versent is done https://pingidentity.atlassian.net/browse/PP-5719 and will remove this code as per PDO-5136
     export IRSA_PING_ANNOTATION_KEY_VALUE=""

@@ -238,33 +238,6 @@ ml_full_access:
       allowed_actions:
         - 'indices_monitor'
 
-# Allows index-migration.py script to perform indices migration from ElasticSearch to OpenSearch
-index_migration:
-  reserved: true
-  cluster_permissions:
-    - "create_index"
-    - "indices:data/write/reindex"
-    - "indices:data/write/index"
-    - "cluster:monitor/task/get"
-    - "indices:data/write/bulk*"
-    - "cluster:monitor/health"
-    - "cluster:monitor/state"
-  index_permissions:
-    - index_patterns:
-        - '*'
-      allowed_actions:
-        - "create_index"
-        - "indices:data/write/reindex"
-        - "indices:data/write/index"
-        - "indices:data/write/bulk*"
-        - "indices:monitor/settings/get"
-        - "indices:monitor/stats"
-        - "indices:data/read/search"
-        - "indices:admin/aliases/get"
-        - "indices:admin/mappings/get"
-        - "indices:admin/refresh[s]"
-        - "indices:admin/refresh"
-
 bootstrap:
   reserved: true
   cluster_permissions:

@@ -24,3 +24,33 @@ patchesStrategicMerge:
     namespace: kube-system
   spec:
     replicas: 0
+
+# NOTE: This patch overwrites the common annotation sync wave above since the CRDs must exist first
+# This patch does not appear to work using the new `patches` method so be aware that we will need to refactor at that point
+patchesJson6902:
+  - target:
+      version: v1
+      kind: CustomResourceDefinition
+      name: nodepools.karpenter.sh
+    patch: |-
+      - op: replace
+        path: /metadata/annotations/argocd.argoproj.io~1sync-wave
+        value: "-6"
+
+  - target:
+      version: v1
+      kind: CustomResourceDefinition
+      name: nodeclaims.karpenter.sh
+    patch: |-
+      - op: replace
+        path: /metadata/annotations/argocd.argoproj.io~1sync-wave
+        value: "-6"
+
+  - target:
+      version: v1
+      kind: CustomResourceDefinition
+      name: ec2nodeclasses.karpenter.k8s.aws
+    patch: |-
+      - op: replace
+        path: /metadata/annotations/argocd.argoproj.io~1sync-wave
+        value: "-6"
