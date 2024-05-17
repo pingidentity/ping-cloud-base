@@ -1,7 +1,7 @@
 {
     "policy": {
         "policy_id": "ping_standard_policy",
-        "description": "Standard ping policy (after 7 days read-only, after 90 days shrunk and delete, shrunken index will be processed via shrunken policy)",
+        "description": "Standard ping policy (after 30 days read-only, after 90 days move to warm, after 270d delete)",
         "last_updated_time": 1684846142111,
         "schema_version": 17,
         "error_notification": null,
@@ -14,7 +14,7 @@
                     {
                         "state_name": "RO",
                         "conditions": {
-                            "min_index_age": "7d"
+                            "min_index_age": "30d"
                         }
                     }
                 ]
@@ -33,7 +33,7 @@
                 ],
                 "transitions": [
                     {
-                        "state_name": "delete",
+                        "state_name": "warm",
                         "conditions": {
                             "min_index_age": "90d"
                         }
@@ -41,7 +41,7 @@
                 ]
             },
             {
-                "name": "delete",
+                "name": "warm",
                 "actions": [
                     {
                         "retry": {
@@ -49,15 +49,56 @@
                             "backoff": "exponential",
                             "delay": "1m"
                         },
-                        "shrink": {
-                            "num_new_shards": 1,
-                            "target_index_name_template": {
-                                "source": "{{ctx.index}}_shrunken",
-                                "lang": "mustache"
-                            },
-                            "force_unsafe": true
+                        "replica_count": {
+                            "number_of_replicas": 1
                         }
                     },
+                    {
+                        "retry": {
+                            "count": 3,
+                            "backoff": "exponential",
+                            "delay": "1m"
+                        },
+                        "force_merge": {
+                            "max_num_segments": 1
+                        }
+                    },
+                    {
+                        "retry": {
+                            "count": 3,
+                            "backoff": "exponential",
+                            "delay": "1m"
+                        },
+                        "read_only": {}
+                    },
+                    {
+                        "retry": {
+                            "count": 3,
+                            "backoff": "exponential",
+                            "delay": "1m"
+                        },
+                        "allocation": {
+                            "require": {
+                                "temp": "warm"
+                            },
+                            "include": {},
+                            "exclude": {},
+                            "wait_for": false
+                        }
+                    }
+                ],
+                "transitions": [
+                    {
+                        "state_name": "delete",
+                        "conditions": {
+                            "min_index_age": "270d"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "delete",
+                "actions": [
                     {
                         "retry": {
                             "count": 3,
@@ -78,6 +119,7 @@
                     "pa-*",
                     "pc-*",
                     "pdg-*",
+                    "pds-*",
                     "ingress-*",
                     "logstash-*"
                 ],

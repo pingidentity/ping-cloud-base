@@ -213,7 +213,7 @@ spec:
         hostPath:
           path: /var/log/dmesg
       serviceAccountName: fluent-bit
-      priorityClassName: high-priority-apps-to-avoid-pending-state
+      priorityClassName: system-node-critical
       tolerations:
       - key: node-role.kubernetes.io/controlplane
         operator: Exists
