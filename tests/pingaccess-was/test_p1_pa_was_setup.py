@@ -17,6 +17,7 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
         cls.k8s = k8s_utils.K8sUtils()
         tenant_name = os.getenv("TENANT_NAME", f"{os.getenv('USER')}-primary")
         cls.pa_was_app_name = f"client-{tenant_name}-pa-was"
+        cls.auth_policy_name = f"client-{tenant_name}"
         cls.account_type_scope_name = "account_type"
         cls.pa_was_secret_name = "pingaccess-was-admin-p14c"
         cls.ping_cloud_ns = os.getenv("PING_CLOUD_NAMESPACE", "ping-cloud")
@@ -165,6 +166,24 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
             expected_app["id"],
             updated_app["id"],
             "The existing PingAccess-WAS app was not reused on successive runs",
+        )
+
+    def test_authentication_policy_added_to_app(self):
+        p1_auth_policy = self.get(
+            self.cluster_env_endpoints.sign_on_policies, self.auth_policy_name
+        )
+        p1_app = self.get(self.cluster_env_endpoints.applications, self.pa_was_app_name)
+        res = self.worker_app_token_session.get(
+            f"{self.cluster_env_endpoints.applications}/{p1_app.get('id')}/signOnPolicyAssignments"
+        )
+        res.raise_for_status()
+        p1_app_policy_ids = [
+            policy.get("signOnPolicy").get("id")
+            for policy in res.json()["_embedded"]["signOnPolicyAssignments"]
+        ]
+        self.assertTrue(
+            p1_auth_policy.get("id") in p1_app_policy_ids,
+            f"Authentication policy '{self.auth_policy_name}' not added to application '{self.pa_was_app_name}'",
         )
 
 
