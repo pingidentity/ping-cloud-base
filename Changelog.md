@@ -1,4 +1,4 @@
-1.18.2.0
+v1.18.2.0
 
 # Ping Identity Products
 
