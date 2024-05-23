@@ -4,4 +4,4 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: beluga-tools-custom-placeholder
+  name: pingdirectory-custom-placeholder-base
