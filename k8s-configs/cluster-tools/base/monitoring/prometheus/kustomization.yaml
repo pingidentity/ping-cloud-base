@@ -9,9 +9,7 @@ resources:
   - generic-service-monitor.yaml
   - ksm-service-monitor.yaml
   - nodes-service-monitor.yaml
-  - opsgenie-key.yaml
   - pgo-pod-monitor.yaml
-  - prometheus.yaml
   - prometheus-agent.yaml
   - prometheus-scrape-config.yaml
   - prometheus-service.yaml
@@ -19,10 +17,17 @@ resources:
   - storage.yaml
   - volume-autoscaler
   - prometheus-job-exporter.yaml
+  - thanos/thanos.yaml
+  - thanos/thanos-objstore-config.yaml
+
+images:
+  - name: docker.io/bitnami/thanos
+    newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/thanos
+
+generatorOptions:
+  disableNameSuffixHash: true
 
 configMapGenerator:
-- name: prometheus-environment-variables
-  options:
-    disableNameSuffixHash: true
-  envs:
-    - env_vars
+  - name: prometheus-environment-variables
+    envs:
+      - env_vars

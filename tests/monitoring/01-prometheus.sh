@@ -12,12 +12,6 @@ testPrometheusAPIAccessible() {
   curl -k -s ${PROMETHEUS}/api/v1/status/runtimeinfo >> /dev/null
   assertEquals "Prometheus API is unreacheable. URL: ${PROMETHEUS}/api/v1/status/runtimeinfo" 0 $?
 }
-
-testPrometheusTargets() {
-  targets=$(curl -s -k ${PROMETHEUS}/api/v1/targets | jq .data.activeTargets[].labels)
-  assertContains "${targets}" "prometheus"
-}
-
 # When arguments are passed to a script you must
 # consume all of them before shunit is invoked
 # or your script won't run.  For integration
