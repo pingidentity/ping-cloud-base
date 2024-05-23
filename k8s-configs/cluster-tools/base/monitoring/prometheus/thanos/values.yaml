@@ -1,0 +1,32 @@
+existingObjstoreSecret: "thanos-objstore-config"
+query:
+  enabled: true
+  replicaLabel: [ "replica_cluster_name","prometheus_replica", "replica" ]
+compactor:
+  enabled: true
+  retentionResolutionRaw: 15d
+  retentionResolution5m: 15d
+  retentionResolution1h: 15d
+  persistence:
+    storageClass: "prometheus-gp3"
+storegateway:
+  enabled: true
+  persistence:
+    enabled: false
+receive:
+  enabled: true
+  replicaCount: 3
+  config:
+    - endpoints:
+        - "thanos-receive-0.thanos-receive-headless.prometheus.svc.cluster.local:10901"
+        - "thanos-receive-1.thanos-receive-headless.prometheus.svc.cluster.local:10901"
+        - "thanos-receive-2.thanos-receive-headless.prometheus.svc.cluster.local:10901"
+  replicationFactor: 3
+  replicaLabel: replica
+  podManagementPolicy: Parallel
+  resourcesPreset: "xlarge"
+  tsdbRetention: 8h
+  persistence:
+    storageClass: "prometheus-gp3"
+  service:
+    additionalHeadless: true
