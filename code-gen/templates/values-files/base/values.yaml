@@ -15,9 +15,49 @@ global:
   # Note: NAMESPACE & SECRETNAME need to match exactly,
   #   but secret keys should follow Helm's camelCase guidance
   ############################################################
-
   sealedSecrets: false
   secrets:
+    ping-cloud:
+      pingdirectory-passwords:
+        # Used as default password for PD admins
+        rootUserPassword: MkZlZGVyYXRlTTByZQ==
+        # Mounted as a file on PD container and used for dsreplication commands
+        adminUserPassword: MkZlZGVyYXRlTTByZQ==
+        # Mounted as a file on PD container and used for encryption/decryption of database
+        encryptionPassword: MkZlZGVyYXRlTTByZQ==
+        # Backup encryption password
+        oldEncryptionPasswords: MkZlZGVyYXRlTTByZQ==
+        # An alternative to encryption password in .pin file format
+        encryptionSettingsPin: MkZlZGVyYXRlTTByZQ==
+        # Client ID to be used with P14C
+        p14cClientId: "ODkwNzM2NTQtNGVkMy00YTViLWI4OWMtZmY2YjVlMWI3ZDFi"
+        # Client secret to be used with P14C
+        p14cClientSecret: "UXA4aTAudHg4U3dVSWphdnlYWn5KYTZLQlA5SzN+azljTUYuUWF4UTZYclBvdHpmOU5DbFk2bHRLLjBJUU42MA=="
+        # Environment ID to be tused with P14C
+        p14cEnvironmentId: "YzNlMzczNTctNTA2Mi00MWJjLTk5NzItYTdlYTlkMTRhNWEy"
+        # The DManager password for new P1AS clients,  who will inherit the default permissions associated with PingDirectory.
+        dmanagerPassword: MkZlZGVyYXRlTTByZQ==
+        # Default Admin User Password for PingFederate
+        pfAdminUserPassword: MkZlZGVyYXRlTTByZQ==
+        # Used as default password for PF admin users interacting with PD
+        pfLdapPassword: MkZlZGVyYXRlTTByZQ==
+        # Password used to authenticate to PD keystore
+        acmeCertKeystorePassword: MkZlZGVyYXRlTTByZQ==
+        # Secret synced between DelegatedAdmin and PingDirectory
+        daOauthTokenValidatorSecret: MkZlZGVyYXRlTTByZQ==
+        # License key that is used to enable and point to a NewRelic instance
+        newrelicLicenseKey: dW51c2VkCg==
+        
+      # Optional license key for PingDirectory
+      pingdirectory-license:
+        pingDirectoryLicense: ""
+
+      # Optional certificate(s) to add to the PD truststore. Ex:
+      pingdirectory-truststore-certs:
+        #cert_one: "asdfasdf"
+        #cert_two: asdfasdf
+      pingdirectory-ssh-id-key-secret:
+        sshIdKeyBase64: "${SSH_ID_KEY_BASE64}"
 
   ########################################################
   # Multi-region parameters
@@ -89,6 +129,9 @@ global:
   # serverProfileBranch is the git branch for the profile repo
   serverProfileBranch: "${SERVER_PROFILE_BRANCH_DERIVED}"
 
+  # Placed in ~/.ssh/known_hosts file to avoid ssh prompts when cloning the cluster state repo
+  sshKnownHosts: "${KNOWN_HOSTS_CLUSTER_STATE_REPO}"
+
   # The image pull policy for all images
   imagePullPolicy: "Always"
 
@@ -111,6 +154,22 @@ global:
   ########################################################
   pingIdentityDevopsUser: "${PING_IDENTITY_DEVOPS_USER}"
   pingIdentityDevopsKey: "${PING_IDENTITY_DEVOPS_KEY}"
+
+  ########################################################
+  # Shared Application Variables
+  ########################################################
+  # Define the contents for your descriptor.json file here, in yaml. An example is provided below for syntax.  
+  # Also see the descriptor.json.readme file in p1as-pingdirectory/deploy/templates/config directory of the 
+  # p1as-pingdirectory repo for more info
+  # descriptorFile: |-
+  #   us-west-2:
+  #     hostname: abc
+  #     replicas: 1
+  #   us-east-2:
+  #     hostname: def
+  #     replicas: 2
+  descriptorFile: ""
+
 
   #### FEATURE FLAGS ##################################################################################################
   # Most are disabled by default
