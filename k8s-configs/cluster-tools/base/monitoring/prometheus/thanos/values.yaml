@@ -2,26 +2,48 @@ existingObjstoreSecret: "thanos-objstore-config"
 query:
   enabled: true
   replicaLabel: [ "replica_cluster_name","prometheus_replica", "replica" ]
+  resourcesPreset: "large"
+queryFrontend:
+  enabled: true
+  service:
+    clusterIP: None
 compactor:
   enabled: true
   retentionResolutionRaw: 15d
   retentionResolution5m: 15d
   retentionResolution1h: 15d
+  resourcesPreset: 'large'
   persistence:
-    storageClass: "prometheus-gp3"
+    enabled: false
 storegateway:
   enabled: true
+  resourcesPreset: 'large'
   persistence:
     enabled: false
 receive:
   enabled: true
   replicaCount: 3
+  pdb:
+    create: true
+    minAvailable: 2
+  podAntiAffinityPreset: "hard"
+  topologySpreadConstraints:
+    - labelSelector:
+        matchLabels:
+          app.kubernetes.io/instance: thanos
+          app.kubernetes.io/component: receive
+          app.kubernetes.io/name: thanos
+      maxSkew: 1
+      topologyKey: topology.kubernetes.io/zone
+      whenUnsatisfiable: ScheduleAnyway
   config:
     - endpoints:
         - "thanos-receive-0.thanos-receive-headless.prometheus.svc.cluster.local:10901"
         - "thanos-receive-1.thanos-receive-headless.prometheus.svc.cluster.local:10901"
         - "thanos-receive-2.thanos-receive-headless.prometheus.svc.cluster.local:10901"
-  replicationFactor: 3
+  extraFlags:
+    - "--receive.hashrings-algorithm=ketama"
+  replicationFactor: 2
   replicaLabel: replica
   podManagementPolicy: Parallel
   resourcesPreset: "xlarge"
@@ -30,3 +52,11 @@ receive:
     storageClass: "prometheus-gp3"
   service:
     additionalHeadless: true
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    namespace: prometheus
+    labels:
+      prometheus: agent
+    jobLabel: thanos

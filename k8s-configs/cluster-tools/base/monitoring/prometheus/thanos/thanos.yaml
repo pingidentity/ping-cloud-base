@@ -10,7 +10,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: thanos
     app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
+    helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: bucketweb
 spec:
   podSelector:
@@ -39,7 +39,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: thanos
     app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
+    helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: compactor
 spec:
   podSelector:
@@ -68,7 +68,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: thanos
     app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
+    helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: query-frontend
 spec:
   podSelector:
@@ -97,7 +97,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: thanos
     app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
+    helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: query
 spec:
   podSelector:
@@ -128,7 +128,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: thanos
     app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
+    helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: receive
 spec:
   podSelector:
@@ -161,7 +161,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: thanos
     app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
+    helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: ruler
 spec:
   podSelector:
@@ -192,7 +192,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: thanos
     app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
+    helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: storegateway
 spec:
   podSelector:
@@ -212,6 +212,27 @@ spec:
         - port: 10901
         - port: 10901
 ---
+# Source: thanos/templates/receive/pdb.yaml
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: thanos-receive
+  namespace: prometheus
+  labels:
+    app.kubernetes.io/instance: thanos
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: thanos
+    app.kubernetes.io/version: 0.35.0
+    helm.sh/chart: thanos-15.5.0
+    app.kubernetes.io/component: receive
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: thanos
+      app.kubernetes.io/name: thanos
+      app.kubernetes.io/component: receive
+---
 # Source: thanos/templates/compactor/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
@@ -223,7 +244,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: thanos
     app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
+    helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: compactor
 automountServiceAccountToken: false
 ---
@@ -238,7 +259,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: thanos
     app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
+    helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: query-frontend
 automountServiceAccountToken: false
 ---
@@ -253,7 +274,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: thanos
     app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
+    helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: query
 automountServiceAccountToken: false
 ---
@@ -268,7 +289,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: thanos
     app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
+    helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: receive
 automountServiceAccountToken: false
 ---
@@ -283,7 +304,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: thanos
     app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
+    helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: storegateway
 automountServiceAccountToken: false
 ---
@@ -298,7 +319,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: thanos
     app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
+    helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: receive
 data:
   hashrings.json: |-
@@ -312,27 +333,6 @@ data:
       }
     ]
 ---
-# Source: thanos/templates/compactor/pvc.yaml
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  name: thanos-compactor
-  namespace: prometheus
-  labels:
-    app.kubernetes.io/instance: thanos
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/name: thanos
-    app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
-    app.kubernetes.io/component: compactor
-spec:
-  accessModes:
-    - "ReadWriteOnce"
-  resources:
-    requests:
-      storage: "8Gi"
-  storageClassName: prometheus-gp3
----
 # Source: thanos/templates/compactor/service.yaml
 apiVersion: v1
 kind: Service
@@ -344,9 +344,9 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: thanos
     app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
+    helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: compactor
-    
+    prometheus-operator/monitor: 'true'
 spec:
   type: ClusterIP
   ports:
@@ -371,11 +371,12 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: thanos
     app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
+    helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: query-frontend
-    
+    prometheus-operator/monitor: 'true'
 spec:
   type: ClusterIP
+  clusterIP: None
   ports:
     - port: 9090
       targetPort: http
@@ -398,7 +399,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: thanos
     app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
+    helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: query
 spec:
   type: ClusterIP
@@ -424,9 +425,9 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: thanos
     app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
+    helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: query
-    
+    prometheus-operator/monitor: 'true'
 spec:
   type: ClusterIP
   ports:
@@ -451,7 +452,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: thanos
     app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
+    helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: receive
 spec:
   type: ClusterIP
@@ -481,9 +482,9 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: thanos
     app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
+    helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: receive
-    
+    prometheus-operator/monitor: 'true'
 spec:
   type: ClusterIP
   ports:
@@ -518,9 +519,9 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: thanos
     app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
+    helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: storegateway
-    
+    prometheus-operator/monitor: 'true'
 spec:
   type: ClusterIP
   ports:
@@ -550,7 +551,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: thanos
     app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
+    helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: compactor
 spec:
   replicas: 1
@@ -569,7 +570,7 @@ spec:
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: thanos
         app.kubernetes.io/version: 0.35.0
-        helm.sh/chart: thanos-15.4.7
+        helm.sh/chart: thanos-15.5.0
         app.kubernetes.io/component: compactor
     spec:
       
@@ -650,13 +651,13 @@ spec:
               scheme: HTTP
           resources:
             limits:
-              cpu: 150m
+              cpu: "1.5"
               ephemeral-storage: 1024Mi
-              memory: 192Mi
+              memory: 3072Mi
             requests:
-              cpu: 100m
+              cpu: "1.0"
               ephemeral-storage: 50Mi
-              memory: 128Mi
+              memory: 2048Mi
           volumeMounts:
             - name: objstore-config
               mountPath: /conf
@@ -667,8 +668,7 @@ spec:
           secret:
             secretName: thanos-objstore-config
         - name: data
-          persistentVolumeClaim:
-            claimName: thanos-compactor
+          emptyDir: {}
 ---
 # Source: thanos/templates/query-frontend/deployment.yaml
 apiVersion: apps/v1
@@ -681,7 +681,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: thanos
     app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
+    helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: query-frontend
 spec:
   replicas: 1
@@ -700,7 +700,7 @@ spec:
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: thanos
         app.kubernetes.io/version: 0.35.0
-        helm.sh/chart: thanos-15.4.7
+        helm.sh/chart: thanos-15.5.0
         app.kubernetes.io/component: query-frontend
     spec:
       
@@ -796,7 +796,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: thanos
     app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
+    helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: query
 spec:
   replicas: 1
@@ -815,7 +815,7 @@ spec:
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: thanos
         app.kubernetes.io/version: 0.35.0
-        helm.sh/chart: thanos-15.4.7
+        helm.sh/chart: thanos-15.5.0
         app.kubernetes.io/component: query
     spec:
       
@@ -899,13 +899,13 @@ spec:
               scheme: HTTP
           resources:
             limits:
-              cpu: 150m
+              cpu: "1.5"
               ephemeral-storage: 1024Mi
-              memory: 192Mi
+              memory: 3072Mi
             requests:
-              cpu: 100m
+              cpu: "1.0"
               ephemeral-storage: 50Mi
-              memory: 128Mi
+              memory: 2048Mi
           volumeMounts:
       volumes:
 ---
@@ -920,7 +920,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: thanos
     app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
+    helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: receive
 spec:
   replicas: 3
@@ -942,7 +942,7 @@ spec:
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: thanos
         app.kubernetes.io/version: 0.35.0
-        helm.sh/chart: thanos-15.4.7
+        helm.sh/chart: thanos-15.5.0
         app.kubernetes.io/component: receive
       annotations:
         checksum/receive-configuration: 7599a212542718382719555619c160ff5f799fb3b0e9576197507ba4dc693d2b
@@ -954,15 +954,13 @@ spec:
         podAffinity:
           
         podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - podAffinityTerm:
-                labelSelector:
-                  matchLabels:
-                    app.kubernetes.io/instance: thanos
-                    app.kubernetes.io/name: thanos
-                    app.kubernetes.io/component: receive
-                topologyKey: kubernetes.io/hostname
-              weight: 1
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchLabels:
+                  app.kubernetes.io/instance: thanos
+                  app.kubernetes.io/name: thanos
+                  app.kubernetes.io/component: receive
+              topologyKey: kubernetes.io/hostname
         nodeAffinity:
           
       securityContext:
@@ -970,6 +968,15 @@ spec:
         fsGroupChangePolicy: Always
         supplementalGroups: []
         sysctls: []
+      topologySpreadConstraints:
+        - labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: receive
+              app.kubernetes.io/instance: thanos
+              app.kubernetes.io/name: thanos
+          maxSkew: 1
+          topologyKey: topology.kubernetes.io/zone
+          whenUnsatisfiable: ScheduleAnyway
       containers:
         - name: receive
           image: docker.io/bitnami/thanos:0.35.0-debian-12-r4
@@ -1001,7 +1008,8 @@ spec:
             - --tsdb.retention=8h
             - --receive.local-endpoint=$(NAME).thanos-receive-headless.$(NAMESPACE).svc.cluster.local:10901
             - --receive.hashrings-file=/var/lib/thanos-receive/hashrings.json
-            - --receive.replication-factor=3
+            - --receive.replication-factor=2
+            - --receive.hashrings-algorithm=ketama
           env:
             - name: NAME
               valueFrom:
@@ -1086,7 +1094,7 @@ metadata:
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: thanos
     app.kubernetes.io/version: 0.35.0
-    helm.sh/chart: thanos-15.4.7
+    helm.sh/chart: thanos-15.5.0
     app.kubernetes.io/component: storegateway
 spec:
   replicas: 1
@@ -1107,7 +1115,7 @@ spec:
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: thanos
         app.kubernetes.io/version: 0.35.0
-        helm.sh/chart: thanos-15.4.7
+        helm.sh/chart: thanos-15.5.0
         app.kubernetes.io/component: storegateway
     spec:
       
@@ -1187,13 +1195,13 @@ spec:
               scheme: HTTP
           resources:
             limits:
-              cpu: 150m
+              cpu: "1.5"
               ephemeral-storage: 1024Mi
-              memory: 192Mi
+              memory: 3072Mi
             requests:
-              cpu: 100m
+              cpu: "1.0"
               ephemeral-storage: 50Mi
-              memory: 128Mi
+              memory: 2048Mi
           volumeMounts:
             - name: objstore-config
               mountPath: /conf
@@ -1205,3 +1213,143 @@ spec:
             secretName: thanos-objstore-config
         - name: data
           emptyDir: {}
+---
+# Source: thanos/templates/compactor/servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: thanos-compactor
+  namespace: "prometheus"
+  labels:
+    app.kubernetes.io/instance: thanos
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: thanos
+    app.kubernetes.io/version: 0.35.0
+    helm.sh/chart: thanos-15.5.0
+    prometheus: agent
+    app.kubernetes.io/component: compactor
+spec:
+  jobLabel: thanos
+  endpoints:
+    - port: http
+  namespaceSelector:
+    matchNames:
+      - "prometheus"
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: thanos
+      app.kubernetes.io/name: thanos
+      app.kubernetes.io/component: compactor
+      prometheus-operator/monitor: 'true'
+---
+# Source: thanos/templates/query-frontend/servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: thanos-query-frontend
+  namespace: "prometheus"
+  labels:
+    app.kubernetes.io/instance: thanos
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: thanos
+    app.kubernetes.io/version: 0.35.0
+    helm.sh/chart: thanos-15.5.0
+    prometheus: agent
+    app.kubernetes.io/component: query-frontend
+spec:
+  jobLabel: thanos
+  endpoints:
+    - port: http
+  namespaceSelector:
+    matchNames:
+      - "prometheus"
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: thanos
+      app.kubernetes.io/name: thanos
+      app.kubernetes.io/component: query-frontend
+      prometheus-operator/monitor: 'true'
+---
+# Source: thanos/templates/query/servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: thanos-query
+  namespace: "prometheus"
+  labels:
+    app.kubernetes.io/instance: thanos
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: thanos
+    app.kubernetes.io/version: 0.35.0
+    helm.sh/chart: thanos-15.5.0
+    prometheus: agent
+    app.kubernetes.io/component: query
+spec:
+  jobLabel: thanos
+  endpoints:
+    - port: http
+  namespaceSelector:
+    matchNames:
+      - "prometheus"
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: thanos
+      app.kubernetes.io/name: thanos
+      app.kubernetes.io/component: query
+      prometheus-operator/monitor: 'true'
+---
+# Source: thanos/templates/receive/servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: thanos-receive
+  namespace: "prometheus"
+  labels:
+    app.kubernetes.io/instance: thanos
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: thanos
+    app.kubernetes.io/version: 0.35.0
+    helm.sh/chart: thanos-15.5.0
+    prometheus: agent
+    app.kubernetes.io/component: receive
+spec:
+  jobLabel: thanos
+  endpoints:
+    - port: http
+  namespaceSelector:
+    matchNames:
+      - "prometheus"
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: thanos
+      app.kubernetes.io/name: thanos
+      app.kubernetes.io/component: receive
+      prometheus-operator/monitor: 'true'
+---
+# Source: thanos/templates/storegateway/servicemonitor.yaml
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: thanos-storegateway
+  namespace: "prometheus"
+  labels:
+    app.kubernetes.io/instance: thanos
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: thanos
+    app.kubernetes.io/version: 0.35.0
+    helm.sh/chart: thanos-15.5.0
+    prometheus: agent
+    app.kubernetes.io/component: storegateway
+spec:
+  jobLabel: thanos
+  endpoints:
+    - port: http
+  namespaceSelector:
+    matchNames:
+      - "prometheus"
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: thanos
+      app.kubernetes.io/name: thanos
+      app.kubernetes.io/component: storegateway
+      prometheus-operator/monitor: 'true'
