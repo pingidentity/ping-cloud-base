@@ -315,9 +315,18 @@ patchesStrategicMerge:
   kind: Service
   metadata:
     namespace: prometheus
-    name: thanos-receive
+    name: thanos-receive-headless
     annotations:
       external-dns.alpha.kubernetes.io/hostname: thanos-central.${DNS_ZONE}
+
+- |-
+  apiVersion: v1
+  kind: Service
+  metadata:
+    namespace: prometheus
+    name: thanos-query-frontend
+    annotations:
+      external-dns.alpha.kubernetes.io/hostname: thanos-query-central.${DNS_ZONE}
 
 - |-
   apiVersion: v1
@@ -334,7 +343,7 @@ patchesStrategicMerge:
         endpoint: "s3.${REGION_NICK_NAME}.amazonaws.com"
         region: "${REGION_NICK_NAME}"
         aws_sdk_auth: True
-      prefix: "${CLUSTER_NAME}-${TENANT_NAME}-${REGION_NICK_NAME}"
+      prefix: "${CLUSTER_NAME}-${TENANT_NAME}"
 
 patchesJson6902:
 
