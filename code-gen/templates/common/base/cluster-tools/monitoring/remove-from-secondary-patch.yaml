@@ -1,7 +1,7 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: thanos-receive
+  name: thanos-receive-headless
   namespace: prometheus
   annotations:
     $patch: delete
