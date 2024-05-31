@@ -25,7 +25,7 @@ spec:
     matchLabels:
       prometheus: agent
   remoteWrite:
-    - url: 'http://thanos-receive:19291/api/v1/receive'
+    - url: 'http://thanos-receive-headless:19291/api/v1/receive'
   enableFeatures:
     - agent
     - expand-external-labels

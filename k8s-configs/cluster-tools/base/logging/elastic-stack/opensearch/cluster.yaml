@@ -15,6 +15,11 @@ spec:
       adminCredentialsSecret:
         name: opensearch-admin-credentials # Name of a secret that contains username/password for admin access
   general:
+    annotations:
+      newrelic.io/scrape: "true"
+      prometheus.io/path: /_prometheus/metrics
+      prometheus.io/port: "9200"
+      prometheus.io/scheme: https
     serviceName: opensearch
     serviceAccount: opensearch
     version: 2.8.0

@@ -775,13 +775,13 @@ spec:
               scheme: HTTP
           resources:
             limits:
-              cpu: 150m
+              cpu: "1.5"
               ephemeral-storage: 1024Mi
-              memory: 192Mi
+              memory: 3072Mi
             requests:
-              cpu: 100m
+              cpu: "1.0"
               ephemeral-storage: 50Mi
-              memory: 128Mi
+              memory: 2048Mi
           volumeMounts:
       volumes:
 ---
@@ -929,7 +929,7 @@ spec:
   serviceName: thanos-receive-headless
   updateStrategy:
     type: RollingUpdate
-  minReadySeconds: 0
+  minReadySeconds: 120
   selector:
     matchLabels:
       app.kubernetes.io/instance: thanos
@@ -1008,8 +1008,8 @@ spec:
             - --tsdb.retention=8h
             - --receive.local-endpoint=$(NAME).thanos-receive-headless.$(NAMESPACE).svc.cluster.local:10901
             - --receive.hashrings-file=/var/lib/thanos-receive/hashrings.json
-            - --receive.replication-factor=2
-            - --receive.hashrings-algorithm=ketama
+            - --receive.replication-factor=3
+            - --receive-forward-timeout=5m
           env:
             - name: NAME
               valueFrom:

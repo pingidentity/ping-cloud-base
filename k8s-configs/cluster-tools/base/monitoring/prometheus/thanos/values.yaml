@@ -5,6 +5,7 @@ query:
   resourcesPreset: "large"
 queryFrontend:
   enabled: true
+  resourcesPreset: "large"
   service:
     clusterIP: None
 compactor:
@@ -42,10 +43,11 @@ receive:
         - "thanos-receive-1.thanos-receive-headless.prometheus.svc.cluster.local:10901"
         - "thanos-receive-2.thanos-receive-headless.prometheus.svc.cluster.local:10901"
   extraFlags:
-    - "--receive.hashrings-algorithm=ketama"
-  replicationFactor: 2
+    - "--receive-forward-timeout=5m"
+  replicationFactor: 3
   replicaLabel: replica
   podManagementPolicy: Parallel
+  minReadySeconds: 120
   resourcesPreset: "xlarge"
   tsdbRetention: 8h
   persistence:
