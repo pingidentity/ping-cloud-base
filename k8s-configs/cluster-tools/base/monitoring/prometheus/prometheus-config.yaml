@@ -18,6 +18,7 @@ data:
       evaluation_interval: 5s
       external_labels:
         k8s_cluster_name: ${CLUSTER_NAME}-${TENANT_NAME}-${REGION_NICK_NAME}
+        k8s_cluster_region: ${REGION_NICK_NAME}
     storage:
       tsdb:
         out_of_order_time_window: 1d
