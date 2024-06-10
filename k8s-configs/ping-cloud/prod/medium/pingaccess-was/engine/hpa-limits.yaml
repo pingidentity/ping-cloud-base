@@ -3,5 +3,5 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: pingaccess-was
 spec:
-  minReplicas: 4
+  minReplicas: 2
   maxReplicas: 12
