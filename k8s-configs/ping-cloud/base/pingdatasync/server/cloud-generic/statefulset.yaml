@@ -207,6 +207,9 @@ spec:
           - name: pingdirectory-license
             mountPath: /opt/in/instance/conf/PingDirectory.lic
             subPath: PingDirectory.lic
+          - name: pingdatasync-truststore-certs
+            mountPath: /usr/local/secrets/truststore_certs
+            readOnly: true
       securityContext:
         fsGroup: 9999
       volumes:
@@ -244,6 +247,11 @@ spec:
         - name: pingdirectory-license
           secret:
             secretName: pingdirectory-license
+            optional: true
+            defaultMode: 0400
+        - name: pingdatasync-truststore-certs
+          secret:
+            secretName: pingdatasync-truststore-certs
             optional: true
             defaultMode: 0400
   volumeClaimTemplates:
