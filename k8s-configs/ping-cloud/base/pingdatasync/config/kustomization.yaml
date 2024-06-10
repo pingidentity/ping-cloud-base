@@ -7,7 +7,7 @@ commonLabels:
   app: ping-cloud
 
 resources:
-- secret-passwords.yaml
+- secret.yaml
 
 generatorOptions:
   disableNameSuffixHash: true

@@ -2,11 +2,23 @@
 # Create external PD server endpoint
 #
 
-# If the external client has a trusted certificate that is supported by OpenJDK,
-# use "trust-manager-provider:JVM-Default" and disable "Blind Trust" by setting
-# "set-trust-manager-provider-prop enable:false".
+### Option 1) JVM-Default ###
+# If the external client has a trusted certificate that is supported by OpenJDK.
+# See supported OpenJDK default CAs: https://openjdk.org/jeps/319 for more details.
+# Use the following sample dsconfig commands. Note these are snippets that will need to be integrated in this file:
 
-# OpenJDK default CAs: https://openjdk.org/jeps/319
+# dsconfig set-trust-manager-provider-prop --provider-name "JVM-Default"
+# dsconfig create-external-server --set "trust-manager-provider:JVM-Default"
+
+### Option 2) Client providing their own certificate ###
+# If the external client has a self-signed certificate or if certificate not supported by OpenJDK.
+# Use the following sample dsconfig commands. Note these are snippets that will need to be integrated in this file:
+
+# dsconfig set-trust-manager-provider-prop --provider-name "JKS"
+# dsconfig create-external-server --set "trust-manager-provider:JKS"
+
+# If option 1 or option 2 is done. Disable "Blind Trust" by setting.
+# dsconfig set-trust-manager-provider-prop --provider-name "Blind Trust" --set enabled:false
 
 dsconfig set-trust-manager-provider-prop \
   --provider-name "Blind Trust" \
