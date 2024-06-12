@@ -11,7 +11,7 @@ pingdirectory:
   maxHeapSize: "15g"
   # Add auth cert(s) - space delimited if multiple - here to enable X.509-based authentication via SASL
   # More info here: https://confluence.pingidentity.com/display/proserv/Enabling+X.509+Authentication+with+PingDirectory
-  # Example: PD_X509_AUTH_CERTS=cert_one cert_two
+  # Example: PD_X509_AUTH_CERTS=pdTruststoreCertOne pdTruststoreCertTwo
   pdX509AuthCerts: ""
   # Set to false to avoid skipping liveness probe. Skipping the liveness (SKIP_LIVENESS=true) is the default for PingDirectory.
   skipLiveness: true

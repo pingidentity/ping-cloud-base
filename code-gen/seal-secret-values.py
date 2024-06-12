@@ -76,42 +76,41 @@ class SealSecrets:
         # Loop through the secrets
         for k8s_namespace in self.values[GLOBAL_KEY][SECRETS_KEY]:
             for k8s_secret in self.values[GLOBAL_KEY][SECRETS_KEY][k8s_namespace]:
-                for key in self.values[GLOBAL_KEY][SECRETS_KEY][k8s_namespace][k8s_secret]:
-                    # Get the value
-                    value = self.values[GLOBAL_KEY][SECRETS_KEY][k8s_namespace][k8s_secret][key]
-                    if value is not None:
-                        # Try to base64 decode the value
-                        try:
-                            decoded_value = b64.b64decode(value.encode("ascii"), validate=True).decode("ascii")
-                        except UnicodeDecodeError as err:
-                            if self.values[GLOBAL_KEY][SEALED_SECRETS_VAR]:
-                                # Value couldn't be base64 decoded, so it may already be sealed or an invalid value
-                                # Move on to the next secret
-                                print("Warning: secret '%s: %s: %s' could not be base64 decoded. It is either already "
-                                      "sealed or an invalid value."
-                                      % (k8s_namespace, k8s_secret, key))
-                                continue
-                            else:
-                                raise Exception("Error sealing secret. See following output:\n%s" % err)
+                # Get the value
+                value = self.values[GLOBAL_KEY][SECRETS_KEY][k8s_namespace][k8s_secret]
+                if value is not None:
+                    # Try to base64 decode the value
+                    try:
+                        decoded_value = b64.b64decode(value.encode("ascii"), validate=True).decode("ascii")
+                    except UnicodeDecodeError as err:
+                        if self.values[GLOBAL_KEY][SEALED_SECRETS_VAR]:
+                            # Value couldn't be base64 decoded, so it may already be sealed or an invalid value
+                            # Move on to the next secret
+                            print("Warning: secret '%s: %s' could not be base64 decoded. It is either already "
+                                    "sealed or an invalid value."
+                                    % (k8s_namespace, k8s_secret))
+                            continue
+                        else:
+                            raise Exception("Error sealing secret. See following output:\n%s" % err)
 
-                        print("Sealing secret '%s: %s: %s'" % (k8s_namespace, k8s_secret, key))
+                    print("Sealing secret '%s: %s'" % (k8s_namespace, k8s_secret))
 
-                        # Run seal secret command to get the sealed value
-                        p1 = subprocess.run(args=["kubeseal", "--cert", self.cert, "--raw", "--namespace",
-                                                  k8s_namespace, "--name", k8s_secret], input=decoded_value,
-                                            capture_output=True, text=True)
+                    # Run seal secret command to get the sealed value
+                    p1 = subprocess.run(args=["kubeseal", "--scope", "namespace-wide", "--cert", self.cert, "--raw", "--namespace",
+                                                k8s_namespace], input=decoded_value,
+                                        capture_output=True, text=True)
 
-                        # Check if sealing the secret failed
-                        if p1.returncode != 0:
-                            raise Exception("Error sealing secret. See following output:\n%s" % p1.stderr)
+                    # Check if sealing the secret failed
+                    if p1.returncode != 0:
+                        raise Exception("Error sealing secret. See following output:\n%s" % p1.stderr)
 
-                        sealed_value = p1.stdout
+                    sealed_value = p1.stdout
 
-                        # Update yaml with sealed value
-                        self.values[GLOBAL_KEY][SECRETS_KEY][k8s_namespace][k8s_secret][key] = sealed_value
+                    # Update yaml with sealed value
+                    self.values[GLOBAL_KEY][SECRETS_KEY][k8s_namespace][k8s_secret] = sealed_value
 
-                        # Update sealed secrets list with key
-                        self.sealed_secrets.append("%s: %s: %s" % (k8s_namespace, k8s_secret, key))
+                    # Update sealed secrets list with key
+                    self.sealed_secrets.append("%s: %s" % (k8s_namespace, k8s_secret))
 
         # Update sealedSecrets variable to true
         self.values[GLOBAL_KEY][SEALED_SECRETS_VAR] = True
