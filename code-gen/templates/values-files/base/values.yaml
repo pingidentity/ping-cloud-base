@@ -9,10 +9,9 @@ global:
   ############################################################
   # Expected format for each secret:
   # NAMESPACE:
-  #   SECRETNAME:
-  #     KEY1: VALUE1
-  #     KEY2: VALUE2
-  # Note: NAMESPACE & SECRETNAME need to match exactly,
+  #   KEY1: VALUE1
+  #   KEY2: VALUE2
+  # Note: NAMESPACE need to match exactly,
   #   but secret keys should follow Helm's camelCase guidance
   ############################################################
   sealedSecrets: false
