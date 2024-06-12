@@ -2,6 +2,7 @@
 
 ### 2.0.0
 
+- Update seal-secret-values.py script to seal with namespace only. Update secret structure
 - Update version regexes from v*.*.*.* to v*.*.*
 - Update csd upload tests for products to support removal of ad-hoc PD jobs
 - Update HPAs to prevent flapping on short bursting CPU loads
@@ -10,6 +11,7 @@
 
 _Changes:_
 
+- [X] PDO-7428 Update seal-secret-values.py to seal with namespace only. Update secret structure
 - [X] PDO-5729 Update version regexes
 - [X] PDO-5888 Implement p1as-pingdirectory pipeline deploy stage
 - [X] PDO-5900 Add p1as-pingdirectory code-gen directory to PCB

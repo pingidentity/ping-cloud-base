@@ -15,7 +15,7 @@ def run_seal_script(cert) -> subprocess.CompletedProcess:
 
 def get_valid_yaml():
     return {'global': {'sealedSecrets': False, 'secrets': {
-        'test-ns': {'test-secret': {'valueone': 'VGhpcyBpcyBhIHRlc3Q=', 'valuetwo': 'dGVzdDI='}}}}}
+        'test-ns': {'valueone': 'VGhpcyBpcyBhIHRlc3Q=', 'valuetwo': 'dGVzdDI='}}}}
 
 
 def write_values_file(values):
@@ -81,7 +81,7 @@ class TestSealScript(unittest.TestCase):
 
         # Add a secret & run seal script again
         p1 = subprocess.run(args=["yq", "eval", "--inplace",
-                                  '.global.secrets.test-ns.test-secret += {"valuethree": "VGhpcyBpcyBhIHRlc3Q="}',
+                                  '.global.secrets.test-ns += {"valuethree": "VGhpcyBpcyBhIHRlc3Q="}',
                                   VALUES_FILE_PATH + "/values.yaml"], capture_output=True, text=True)
         self.assertEqual(p1.returncode, 0, "could not add additional secret to values.yaml file")
         results = run_seal_script(self.cert_file)
@@ -90,7 +90,7 @@ class TestSealScript(unittest.TestCase):
 
     def test_secret_decode_error(self):
         write_values_file({'global': {'sealedSecrets': False, 'secrets': {
-            'test-ns': {'test-secret': {'valueone': 'notbase64encoded'}}}}})
+            'test-ns': {'valueone': 'notbase64encoded'}}}})
         results = run_seal_script(self.cert_file)
         self.assertEqual(results.returncode, 1, "seal script succeeded when non-base64encoded value passed")
         self.assertIn("Error sealing secret. See following output", results.stderr,

@@ -18,46 +18,46 @@ global:
   sealedSecrets: false
   secrets:
     ping-cloud:
-      pingdirectory-passwords:
-        # Used as default password for PD admins
-        rootUserPassword: MkZlZGVyYXRlTTByZQ==
-        # Mounted as a file on PD container and used for dsreplication commands
-        adminUserPassword: MkZlZGVyYXRlTTByZQ==
-        # Mounted as a file on PD container and used for encryption/decryption of database
-        encryptionPassword: MkZlZGVyYXRlTTByZQ==
-        # Backup encryption password
-        oldEncryptionPasswords: MkZlZGVyYXRlTTByZQ==
-        # An alternative to encryption password in .pin file format
-        encryptionSettingsPin: MkZlZGVyYXRlTTByZQ==
-        # Client ID to be used with P14C
-        p14cClientId: "ODkwNzM2NTQtNGVkMy00YTViLWI4OWMtZmY2YjVlMWI3ZDFi"
-        # Client secret to be used with P14C
-        p14cClientSecret: "UXA4aTAudHg4U3dVSWphdnlYWn5KYTZLQlA5SzN+azljTUYuUWF4UTZYclBvdHpmOU5DbFk2bHRLLjBJUU42MA=="
-        # Environment ID to be tused with P14C
-        p14cEnvironmentId: "YzNlMzczNTctNTA2Mi00MWJjLTk5NzItYTdlYTlkMTRhNWEy"
-        # The DManager password for new P1AS clients,  who will inherit the default permissions associated with PingDirectory.
-        dmanagerPassword: MkZlZGVyYXRlTTByZQ==
-        # Default Admin User Password for PingFederate
-        pfAdminUserPassword: MkZlZGVyYXRlTTByZQ==
-        # Used as default password for PF admin users interacting with PD
-        pfLdapPassword: MkZlZGVyYXRlTTByZQ==
-        # Password used to authenticate to PD keystore
-        acmeCertKeystorePassword: MkZlZGVyYXRlTTByZQ==
-        # Secret synced between DelegatedAdmin and PingDirectory
-        daOauthTokenValidatorSecret: MkZlZGVyYXRlTTByZQ==
-        # License key that is used to enable and point to a NewRelic instance
-        newrelicLicenseKey: dW51c2VkCg==
-        
-      # Optional license key for PingDirectory
-      pingdirectory-license:
-        pingDirectoryLicense: ""
+      ###### Shared Secrets ######
 
-      # Optional certificate(s) to add to the PD truststore. Ex:
-      pingdirectory-truststore-certs:
-        #cert_one: "asdfasdf"
-        #cert_two: asdfasdf
-      pingdirectory-ssh-id-key-secret:
-        sshIdKeyBase64: "${SSH_ID_KEY_BASE64}"
+      # License key that is used to enable and point to a NewRelic instance
+      newrelicLicenseKey: dW51c2VkCg==
+      # Profile Repo SSH Id key secret
+      sshIdKeyBase64: "${SSH_ID_KEY_BASE64}"
+      
+      ###### PingDirectory Secrets #####
+
+      # Used as default password for PD admins
+      rootUserPassword: MkZlZGVyYXRlTTByZQ==
+      # Mounted as a file on PD container and used for dsreplication commands
+      adminUserPassword: MkZlZGVyYXRlTTByZQ==
+      # Mounted as a file on PD container and used for encryption/decryption of database
+      encryptionPassword: MkZlZGVyYXRlTTByZQ==
+      # Backup encryption password
+      oldEncryptionPasswords: MkZlZGVyYXRlTTByZQ==
+      # An alternative to encryption password in .pin file format
+      encryptionSettingsPin: MkZlZGVyYXRlTTByZQ==
+      # Client ID to be used with P14C
+      p14cClientId: "ODkwNzM2NTQtNGVkMy00YTViLWI4OWMtZmY2YjVlMWI3ZDFi"
+      # Client secret to be used with P14C
+      p14cClientSecret: "UXA4aTAudHg4U3dVSWphdnlYWn5KYTZLQlA5SzN+azljTUYuUWF4UTZYclBvdHpmOU5DbFk2bHRLLjBJUU42MA=="
+      # Environment ID to be tused with P14C
+      p14cEnvironmentId: "YzNlMzczNTctNTA2Mi00MWJjLTk5NzItYTdlYTlkMTRhNWEy"
+      # The DManager password for new P1AS clients,  who will inherit the default permissions associated with PingDirectory.
+      dmanagerPassword: MkZlZGVyYXRlTTByZQ==
+      # Default Admin User Password for PingFederate
+      pfAdminUserPassword: MkZlZGVyYXRlTTByZQ==
+      # Used as default password for PF admin users interacting with PD
+      pfLdapPassword: MkZlZGVyYXRlTTByZQ==
+      # Password used to authenticate to PD keystore
+      acmeCertKeystorePassword: MkZlZGVyYXRlTTByZQ==
+      # Secret synced between DelegatedAdmin and PingDirectory
+      daOauthTokenValidatorSecret: MkZlZGVyYXRlTTByZQ==
+      # Optional license key for PingDirectory
+      pingDirectoryLicense: ""
+      # Optional certificate(s) to add to the PD truststore. Name must have the prefix "pdTruststore" Ex:
+      # pdTruststoreCertOne: "asdfasdf"
+      # pdTruststoreCertTwo: "asdfasdf"
 
   ########################################################
   # Multi-region parameters
