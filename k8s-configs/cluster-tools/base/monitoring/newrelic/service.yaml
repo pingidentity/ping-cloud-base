@@ -9,8 +9,8 @@ metadata:
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: nri-metadata-injection
-    app.kubernetes.io/version: 1.15.0
-    helm.sh/chart: nri-metadata-injection-4.7.0
+    app.kubernetes.io/version: 1.27.2
+    helm.sh/chart: nri-metadata-injection-4.19.2
 spec:
   ports:
     - port: 443
