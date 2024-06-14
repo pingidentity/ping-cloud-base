@@ -7,6 +7,8 @@ resources:
 - base
 - custom-resources.yaml
 - argocd-p1as-bootstrap.yaml
+- customer-p1-app.yaml
+- customer-p1-connection.yaml
 
 generatorOptions:
   disableNameSuffixHash: true
@@ -20,6 +22,7 @@ configMapGenerator:
   - argocd-p1as-bootstrap-resources.yaml
   name: argocd-p1as-bootstrap-resources
 
+- name: p14c-environment-variables
 
 # Point to the ping-cluster-tools repo equivalents pushed to ECR
 images:

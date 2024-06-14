@@ -32,7 +32,7 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
 
     def test_pa_was_application_created(self):
         app = self.get(self.cluster_env_endpoints.applications, self.pa_was_app_name)
-        self.assertIsNotNone(app, f"App '{self.pa_was_app_name}' not created")
+        self.assertTrue(app, f"App '{self.pa_was_app_name}' not created")
 
     def format_redirect_uri(self, url: str):
         return f"https://{url}/pa-was/oidc/cb"

@@ -151,6 +151,23 @@ disable_os_operator_crds() {
 }
 
 ########################################################################################################################
+# Set customer-p1-connection job suspension value
+########################################################################################################################
+set_customer_p1_connection_job_suspension() {
+  cd "${TMP_DIR}"
+  local search_term='customer-p1-connection'
+  for job_file in $(grep --exclude-dir=.git -rwl -e "${search_term}" | grep "customer-p1-connection.yaml"); do
+    local customer_p1_enabled_lc
+    customer_p1_enabled_lc=$(echo "${CUSTOMER_PINGONE_ENABLED}" | tr '[:upper:]' '[:lower:]')
+    if [[ "${customer_p1_enabled_lc}" == "true" ]]; then
+      log "Setting customer-p1-connection job suspension value in ${job_file}"
+      sed -i.bak 's/suspend: true/suspend: false/g' "${job_file}"
+      rm -f "${job_file}".bak
+    fi
+  done
+}
+
+########################################################################################################################
 # Format the provided kustomize version for numeric comparison. For example, if the kustomize version is 4.0.5, it
 # returns 004000005000.
 #
@@ -305,6 +322,8 @@ if ! command -v argocd &> /dev/null ; then
   disable_grafana_crds
   disable_os_operator_crds
 fi
+
+set_customer_p1_connection_job_suspension
 
 # Build the uber deploy yaml
 if [[ ${DEBUG} == "true" ]]; then
