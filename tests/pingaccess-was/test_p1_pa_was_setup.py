@@ -26,9 +26,41 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
             "pingaccess-was-admin-environment-variables", cls.ping_cloud_ns
         ).data
 
-    def test_group_created(self):
-        group = self.get(self.cluster_env_endpoints.groups, self.population_name)
-        self.assertIsNotNone(group, f"Group '{self.population_name}' not created")
+    def test_prometheus_roles_created(self):
+        user_attribute_name = "p1asPrometheusRoles"
+        role_names = ["prom"]
+        existing_attribute_names = self.get_user_attribute_values(user_attribute_name)
+        self.assertTrue(len(existing_attribute_names) > 0, f"No roles found for {user_attribute_name}")
+        for role_name in role_names:
+            with self.subTest(msg=f"{role_name} created"):
+                self.assertTrue(
+                    role_name in existing_attribute_names,
+                    f"Role '{role_name}' not created",
+                    )
+
+    def test_grafana_roles_created(self):
+        user_attribute_name = "p1asGrafanaRoles"
+        role_names = ["dev-graf-editor", "test-graf-editor", "stage-graf-editor", "prod-graf-editor"]
+        existing_attribute_names = self.get_user_attribute_values(user_attribute_name)
+        self.assertTrue(len(existing_attribute_names) > 0, f"No roles found for {user_attribute_name}")
+        for role_name in role_names:
+            with self.subTest(msg=f"{role_name} created"):
+                self.assertTrue(
+                    role_name in existing_attribute_names,
+                    f"Role '{role_name}' not created",
+                    )
+
+    def test_ping_roles_created(self):
+        user_attribute_name = "p1asPingRoles"
+        role_names = ["graf-ping"]
+        existing_attribute_names = self.get_user_attribute_values(user_attribute_name)
+        self.assertTrue(len(existing_attribute_names) > 0, f"No roles found for {user_attribute_name}")
+        for role_name in role_names:
+            with self.subTest(msg=f"{role_name} created"):
+                self.assertTrue(
+                    role_name in existing_attribute_names,
+                    f"Role '{role_name}' not created",
+                    )
 
     def test_pa_was_application_created(self):
         app = self.get(self.cluster_env_endpoints.applications, self.pa_was_app_name)
