@@ -8,8 +8,8 @@ metadata:
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: newrelic-infrastructure
-    app.kubernetes.io/version: 3.17.0
-    helm.sh/chart: newrelic-infrastructure-3.22.0
+    app.kubernetes.io/version: 3.28.8
+    helm.sh/chart: newrelic-infrastructure-3.33.8
     mode: privileged
   name: nri-bundle-nrk8s-controlplane
 spec:
@@ -39,7 +39,7 @@ spec:
       priorityClassName: system-node-critical
       containers:
         - name: controlplane
-          image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/nri-kubernetes:3.17.0"
+          image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/nri-kubernetes:3.28.8"
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
@@ -75,7 +75,7 @@ spec:
               cpu: 100m
               memory: 150M
         - name: forwarder
-          image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/k8s-events-forwarder:1.47.0"
+          image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/k8s-events-forwarder:1.52.3"
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
@@ -165,8 +165,8 @@ metadata:
     app.kubernetes.io/instance: nri-bundle
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: newrelic-infrastructure
-    app.kubernetes.io/version: 3.17.0
-    helm.sh/chart: newrelic-infrastructure-3.22.0
+    app.kubernetes.io/version: 3.28.8
+    helm.sh/chart: newrelic-infrastructure-3.33.8
     mode: privileged
   name: nri-bundle-nrk8s-kubelet
 spec:
@@ -196,7 +196,7 @@ spec:
       priorityClassName: system-node-critical
       containers:
         - name: kubelet
-          image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/nri-kubernetes:3.17.0"
+          image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/nri-kubernetes:3.28.8"
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
@@ -233,7 +233,7 @@ spec:
               cpu: 100m
               memory: 150M
         - name: agent
-          image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/infrastructure-bundle:3.2.16"
+          image: "public.ecr.aws/r2h3l6e4/pingcloud-clustertools/newrelic/infrastructure-bundle:3.2.43"
           args: [ "newrelic-infra" ]
           imagePullPolicy: IfNotPresent
           securityContext:
