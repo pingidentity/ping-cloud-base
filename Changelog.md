@@ -9,6 +9,7 @@
 - Commenting out existing PD refs, now pulling in p1as-pingdirectory helm chart
 - Grafana fix PGO dashboard
 - Support customer bringing their own certificate for their external server and adding it to PingDataSync truststore
+- Making Graviton as default for NON-GA environment, fix GA consistency across envs
 
 _Changes:_
 
@@ -19,6 +20,7 @@ _Changes:_
 - [X] PDO-6573 Support customer bringing their own certificate for their external server and adding it to PingDataSync truststore
 - [X] PDO-6877 Update HPAs to prevent flapping on short bursting CPU loads
 - [X] PDO-7527 Grafana: Update PGO dashboards to be compatible with the current PGO version
+- [X] PDO-7608 Making Graviton as default for NON-GA environment, fix GA consistency across envs
 
 ### 1.19.1.0
 
