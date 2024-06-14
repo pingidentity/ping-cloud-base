@@ -253,6 +253,8 @@ EXTERNAL_INGRESS_ENABLED="${EXTERNAL_INGRESS_ENABLED}"
 
 # Runbook: https://pingidentity.atlassian.net/wiki/spaces/PDA/pages/427688292/How+to+Enable+and+Disable+Healthchecks+-+1.19.0
 HEALTHCHECKS_ENABLED=${HEALTHCHECKS_ENABLED}
+
+CUSTOMER_PINGONE_ENABLED=${CUSTOMER_PINGONE_ENABLED}
 ########################################################################################################################
 
 # For ArgoCD-status slack notifications (notifications.argoproj.io/subscribe.on-sync-failed.slack)

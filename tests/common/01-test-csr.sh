@@ -59,8 +59,8 @@ test_no_secret_in_uber_yaml() {
     echo "Generating uber yaml..."
     ./git-ops-command.sh ${REGION} > ${uber_yaml_output}
 
-    # Exclude opensearch-securityconfig here since no actually secret data there
-    yq 'select(.kind == "Secret" and .metadata.name != "opensearch-securityconfig")' ${uber_yaml_output} -e
+    # Exclude opensearch-securityconfig and customer-p1-app here since no actual secret data there
+    yq 'select(.kind == "Secret" and .metadata.name != "opensearch-securityconfig" and .metadata.name != "customer-p1-app")' ${uber_yaml_output} -e
     assertEquals "yq exit code should be 1 as no matches are found" 1 $?
 }
 

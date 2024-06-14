@@ -128,6 +128,13 @@ configMapGenerator:
     - ../base/cluster-tools/git-ops/env_vars
     - git-ops/env_vars
 
+- name: p14c-environment-variables
+  namespace: argocd
+  behavior: merge
+  envs:
+    - ../base/env_vars
+    - env_vars
+
 # Healthcheck probes
 - name: cluster-health-environment-variables
   namespace: health
