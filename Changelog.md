@@ -10,6 +10,7 @@
 - Grafana fix PGO dashboard
 - Support customer bringing their own certificate for their external server and adding it to PingDataSync truststore
 - Making Graviton as default for NON-GA environment, fix GA consistency across envs
+- Updated Newrelic agent to latest version
 
 _Changes:_
 
@@ -21,9 +22,11 @@ _Changes:_
 - [X] PDO-6877 Update HPAs to prevent flapping on short bursting CPU loads
 - [X] PDO-7527 Grafana: Update PGO dashboards to be compatible with the current PGO version
 - [X] PDO-7608 Making Graviton as default for NON-GA environment, fix GA consistency across envs
+- [X] PDO-7248 NewRelic: Upgrade APM agent to latest version
 
 ### 1.19.1.0
 
 _Changes:_
 
 - [X] PDO-7238 Remove KMS Init Container from PingDirectory
+
