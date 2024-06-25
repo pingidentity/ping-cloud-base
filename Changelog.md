@@ -12,3 +12,4 @@ _Changes:_
 - [X] PDO-7461 Updated Prometheus CPU and memory limits
 - [X] PDO-7528 Making Graviton as default for NON-GA environment, fix GA consistency across envs
 - [X] PDO-7548 Add 'source cluster' identifier to graphs legend for Volume Autoscaler dashboard 
+- [X] PDO-7606 Updated Fluent Bit resource to successfully flush records when under minimal load 
