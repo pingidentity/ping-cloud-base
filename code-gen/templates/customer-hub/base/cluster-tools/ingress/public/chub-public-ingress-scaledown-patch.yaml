@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-ingress-controller
+  namespace: ingress-nginx-public
+spec:
+  replicas: 2
+
+---
+
+$patch: delete
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: nginx-ingress-controller
+  namespace: ingress-nginx-public
+
+---

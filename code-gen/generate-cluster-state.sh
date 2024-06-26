@@ -1412,6 +1412,13 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     echo "CHUB deploy identified, retaining only PingCentral and PingAccess profiles"
     # Retain only the pingcentral & pingaccess profiles
     find "${ENV_PROFILES_DIR}" -type d -mindepth 1 -maxdepth 1 -not -name "${PING_CENTRAL}" -not -name "${PING_ACCESS}" -exec rm -rf {} +
+
+    if test "${TENANT_DOMAIN}" = "${PRIMARY_TENANT_DOMAIN}"; then
+      echo "Primary CHUB identified, disabling opensearch cluster."
+      sed -i.bak '/disable-opensearch-primary-region-patch.yaml/s/#//' "${PRIMARY_PING_KUST_FILE}"
+      rm -f "${PRIMARY_PING_KUST_FILE}.bak"
+    fi
+
   elif test "${ENV}" = "dev" && "${IS_BELUGA_ENV}" &&  test "${CI_SERVER}" = "yes"; then
     echo "Running a dev cluster in CI/CD pipeline, not removing PingCentral profiles"
   else
