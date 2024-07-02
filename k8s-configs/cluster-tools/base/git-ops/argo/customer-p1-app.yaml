@@ -1,0 +1,13 @@
+# Customer PingOne application for external IdP setup
+apiVersion: v1
+kind: Secret
+metadata:
+  name: customer-p1-app
+  annotations:
+    sealedsecrets.bitnami.com/managed: "true"
+    argocd.argoproj.io/sync-options: Prune=false
+type: Opaque
+data:
+  CLIENT_ID: ""
+  CLIENT_SECRET: ""
+  ISSUER: ""

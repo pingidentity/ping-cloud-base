@@ -217,6 +217,7 @@ patchesStrategicMerge:
 
   - ../base/ping-cloud/pingdatasync/server/remove-from-secondary-patch.yaml
   - ../base/cluster-tools/monitoring/remove-from-secondary-patch.yaml
+
   - ../base/cluster-tools/logging/remove-from-secondary-patch.yaml
   - ../base/cluster-tools/health/remove-from-secondary-patch.yaml
 
@@ -228,6 +229,9 @@ patchesStrategicMerge:
   - pingfederate/ff-external-ingress/remove-external-ingress.yaml
   ### The patch is copied from pingcommon
   - ../base/ping-cloud/pingaccess-was/ff-external-ingress/remove-external-ingress.yaml
+
+  ### Remove PGO dashboards from secondary region, uncomment line below for PGO enabled multi-region environment
+  #- ../base/cluster-tools/monitoring/remove-pgo-dashboard-from-secondary-patch.yaml
 
   #- ../base/ping-cloud/pingfederate/provisioning/remove-from-secondary-patch.yaml
 

@@ -1,0 +1,54 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: customer-p1-connection
+  namespace: argocd
+  labels:
+    role: customer-p1-connection
+spec:
+  # Job is suspended by default, as the job depends on a customer's PingOne being configured before running.
+  # Value is changed to false via git-ops-command.sh when CUSTOMER_P1_ENABLED env_var is set to true.
+  suspend: true
+  template:
+    metadata:
+      labels:
+        # We create this job once, but we want the pod deleted long-term and not the job resource to prevent Argo drift
+        pod-reaper: enabled
+    spec:
+      serviceAccountName: argocd-server
+      containers:
+      - name: customer-p1-connection
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsGroup: 9999
+          runAsNonRoot: true
+          runAsUser: 9031
+        image: public.ecr.aws/r2h3l6e4/pingcloud-services/p14c-integration/dev:v1.19-release-branch-latest
+        imagePullPolicy: Always
+        env:
+          - name: NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+        envFrom:
+        - configMapRef:
+            name: p14c-environment-variables
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "300m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        command:
+          - /bin/sh
+          - -c
+          - python3 -u /app/oauth_client_services_controller.py --app customer-pingone
+      restartPolicy: Never
+      tolerations:
+      - effect: NoSchedule
+        key: CriticalAddonsOnly
+        operator: Equal
+        value: core
+---

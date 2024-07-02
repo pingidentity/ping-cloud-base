@@ -17,6 +17,7 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
         cls.k8s = k8s_utils.K8sUtils()
         tenant_name = os.getenv("TENANT_NAME", f"{os.getenv('USER')}-primary")
         cls.pa_was_app_name = f"client-{tenant_name}-pa-was"
+        cls.auth_policy_name = f"client-{tenant_name}"
         cls.account_type_scope_name = "account_type"
         cls.pa_was_secret_name = "pingaccess-was-admin-p14c"
         cls.ping_cloud_ns = os.getenv("PING_CLOUD_NAMESPACE", "ping-cloud")
@@ -25,13 +26,45 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
             "pingaccess-was-admin-environment-variables", cls.ping_cloud_ns
         ).data
 
-    def test_group_created(self):
-        group = self.get(self.cluster_env_endpoints.groups, self.population_name)
-        self.assertIsNotNone(group, f"Group '{self.population_name}' not created")
+    def test_prometheus_roles_created(self):
+        user_attribute_name = "p1asPrometheusRoles"
+        role_names = ["prom"]
+        existing_attribute_names = self.get_user_attribute_values(user_attribute_name)
+        self.assertTrue(len(existing_attribute_names) > 0, f"No roles found for {user_attribute_name}")
+        for role_name in role_names:
+            with self.subTest(msg=f"{role_name} created"):
+                self.assertTrue(
+                    role_name in existing_attribute_names,
+                    f"Role '{role_name}' not created",
+                    )
+
+    def test_grafana_roles_created(self):
+        user_attribute_name = "p1asGrafanaRoles"
+        role_names = ["dev-graf-editor", "test-graf-editor", "stage-graf-editor", "prod-graf-editor"]
+        existing_attribute_names = self.get_user_attribute_values(user_attribute_name)
+        self.assertTrue(len(existing_attribute_names) > 0, f"No roles found for {user_attribute_name}")
+        for role_name in role_names:
+            with self.subTest(msg=f"{role_name} created"):
+                self.assertTrue(
+                    role_name in existing_attribute_names,
+                    f"Role '{role_name}' not created",
+                    )
+
+    def test_ping_roles_created(self):
+        user_attribute_name = "p1asPingRoles"
+        role_names = ["graf-ping"]
+        existing_attribute_names = self.get_user_attribute_values(user_attribute_name)
+        self.assertTrue(len(existing_attribute_names) > 0, f"No roles found for {user_attribute_name}")
+        for role_name in role_names:
+            with self.subTest(msg=f"{role_name} created"):
+                self.assertTrue(
+                    role_name in existing_attribute_names,
+                    f"Role '{role_name}' not created",
+                    )
 
     def test_pa_was_application_created(self):
         app = self.get(self.cluster_env_endpoints.applications, self.pa_was_app_name)
-        self.assertIsNotNone(app, f"App '{self.pa_was_app_name}' not created")
+        self.assertTrue(app, f"App '{self.pa_was_app_name}' not created")
 
     def format_redirect_uri(self, url: str):
         return f"https://{url}/pa-was/oidc/cb"
@@ -165,6 +198,24 @@ class TestP1SsoSetup(p1_test_base.P1TestBase):
             expected_app["id"],
             updated_app["id"],
             "The existing PingAccess-WAS app was not reused on successive runs",
+        )
+
+    def test_authentication_policy_added_to_app(self):
+        p1_auth_policy = self.get(
+            self.cluster_env_endpoints.sign_on_policies, self.auth_policy_name
+        )
+        p1_app = self.get(self.cluster_env_endpoints.applications, self.pa_was_app_name)
+        res = self.worker_app_token_session.get(
+            f"{self.cluster_env_endpoints.applications}/{p1_app.get('id')}/signOnPolicyAssignments"
+        )
+        res.raise_for_status()
+        p1_app_policy_ids = [
+            policy.get("signOnPolicy").get("id")
+            for policy in res.json()["_embedded"]["signOnPolicyAssignments"]
+        ]
+        self.assertTrue(
+            p1_auth_policy.get("id") in p1_app_policy_ids,
+            f"Authentication policy '{self.auth_policy_name}' not added to application '{self.pa_was_app_name}'",
         )
 
 
