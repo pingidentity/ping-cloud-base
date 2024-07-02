@@ -3,5 +3,5 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: pingfederate
 spec:
-  minReplicas: 6
+  minReplicas: 3
   maxReplicas: 16

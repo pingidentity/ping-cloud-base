@@ -1,0 +1,42 @@
+---
+
+apiVersion: opensearch.opster.io/v1
+kind: OpenSearchCluster
+metadata:
+  name: opensearch-cluster
+  namespace: elastic-stack-logging
+$patch: delete
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: os-controller-manager
+  namespace: elastic-stack-logging
+$patch: delete
+
+---
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: opensearch-bootstrap
+  namespace: elastic-stack-logging
+$patch: delete
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: logstash-elastic
+  namespace: elastic-stack-logging
+spec:
+  template:
+    spec:
+      initContainers:
+      - name: wait-for-bootstrap-completed
+        $patch: delete
+
+---
