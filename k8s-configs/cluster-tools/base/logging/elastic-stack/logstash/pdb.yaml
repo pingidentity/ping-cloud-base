@@ -2,8 +2,13 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: logstash-pdb
+  namespace: elastic-stack-logging
+  labels:
+    app: logstash-elastic
+    component: logging
 spec:
-  minAvailable: 1
+  maxUnavailable: 25%
   selector:
     matchLabels:
       app: logstash-elastic
+
