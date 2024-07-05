@@ -9,12 +9,11 @@ pingdirectory:
   # Changes PURGE_BATCH_SIZE for -Dcom.unboundid.directory.server.plugins.PurgeExpiredDataPlugin.BATCH_SIZE= - default is 10000
   purgeBatchSize: "10000"
   maxHeapSize: "3g"
-  # Add auth cert(s) - space delimited if multiple - here to enable X.509-based authentication via SASL
-  # More info here: https://confluence.pingidentity.com/display/proserv/Enabling+X.509+Authentication+with+PingDirectory
-  # Example: PD_X509_AUTH_CERTS=pdTruststoreCertOne pdTruststoreCertTwo
-  pdX509AuthCerts: ""
   # Set to false to avoid skipping liveness probe. Skipping the liveness (SKIP_LIVENESS=true) is the default for PingDirectory.
   skipLiveness: true
+  # The IRSA role ARN to be used for the PingDirectory serviceAccount
+  irsaPdAnnotationKeyValue: "${IRSA_PD_ANNOTATION_KEY_VALUE}"
+
   # Customization for pingdirectory ingress resource
   ingress:
     enableExternalIngress: false
