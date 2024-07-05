@@ -166,7 +166,7 @@ PING_IDENTITY_DEVOPS_KEY=${PING_IDENTITY_DEVOPS_KEY}
 PINGACCESS_IMAGE_TAG=v2.0-release-branch-latest
 PINGACCESS_WAS_IMAGE_TAG=v2.0-release-branch-latest
 PINGFEDERATE_IMAGE_TAG=v2.0-release-branch-latest
-PINGDIRECTORY_IMAGE_TAG=v2.0-release-branch-latest
+# PINGDIRECTORY_IMAGE_TAG=v2.0-release-branch-latest
 PINGDELEGATOR_IMAGE_TAG=v2.0-release-branch-latest
 PINGCENTRAL_IMAGE_TAG=v2.0-release-branch-latest
 PINGDATASYNC_IMAGE_TAG=v2.0-release-branch-latest
@@ -192,7 +192,7 @@ PRIMARY_DNS_ZONE=${PRIMARY_DNS_ZONE}
 # Public hostnames
 ############################################################
 # Ping admin configuration required for admin access and clustering
-PD_PRIMARY_PUBLIC_HOSTNAME=pingdirectory-admin.${PRIMARY_DNS_ZONE_DERIVED}
+# PD_PRIMARY_PUBLIC_HOSTNAME=pingdirectory-admin.${PRIMARY_DNS_ZONE_DERIVED}
 PF_ADMIN_PUBLIC_HOSTNAME=pingfederate-admin.${PRIMARY_DNS_ZONE_DERIVED}
 PF_ADMIN_API_PUBLIC_HOSTNAME=pingfederate-admin-api.${PRIMARY_DNS_ZONE_DERIVED}
 PA_ADMIN_PUBLIC_HOSTNAME=pingaccess-admin.${PRIMARY_DNS_ZONE_DERIVED}
