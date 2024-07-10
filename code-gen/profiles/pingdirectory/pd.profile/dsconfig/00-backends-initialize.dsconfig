@@ -1,4 +1,4 @@
-dsconfig set-global-configuration-prop \
+gitdsconfig set-global-configuration-prop \
         --set use-shared-database-cache-across-all-local-db-backends:"${PD_USE_SHARED_CACHE}" \
         --set shared-local-db-backend-database-cache-percent:"${SHARED_CACHE_PERCENT}"
 
