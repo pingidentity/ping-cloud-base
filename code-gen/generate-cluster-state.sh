@@ -621,10 +621,11 @@ organize_code_for_csr() {
           find "${app_target_dir}" -type f -name "prod-values.yaml" -exec rm -f {} +
           ;;
         stage | prod | customer-hub)
-          # rename prod-values.yaml to values.yaml (overwriting values.yaml if it exists)
+          # merge prod-values.yaml to values.yaml (overwriting values.yaml if it exists)
           prod_values_files=$(find "${app_target_dir}" -type f -name "prod-values.yaml")
           for prod_values_file in ${prod_values_files}; do
-            mv -f "${prod_values_file}" "${prod_values_file//prod-/}"
+            yq -i ". *= load(\"${prod_values_file}\")" "${prod_values_file//prod-/}"
+            rm -f $prod_values_file
           done
           ;;
       esac
@@ -640,7 +641,7 @@ organize_code_for_csr() {
 }
 
 # Checking required tools and environment variables.
-check_binaries "openssl" "ssh-keygen" "ssh-keyscan" "base64" "envsubst" "git" "aws" "rsync"
+check_binaries "openssl" "ssh-keygen" "ssh-keyscan" "base64" "envsubst" "git" "aws" "rsync" "yq"
 HAS_REQUIRED_TOOLS=${?}
 
 if test ${HAS_REQUIRED_TOOLS} -ne 0; then
@@ -791,8 +792,6 @@ export SECONDARY_TENANT_DOMAINS="${SECONDARY_TENANT_DOMAINS}"
 
 if "${IS_BELUGA_ENV}"; then
   DERIVED_GLOBAL_TENANT_DOMAIN="global.${TENANT_DOMAIN_NO_DOT_SUFFIX}"
-  # 'yq' is only checked here because it is only used within Developer CDEs
-  check_binaries "yq" || { popd >/dev/null 2>&1 && exit 1; }
 else
   DERIVED_GLOBAL_TENANT_DOMAIN="$(echo "${TENANT_DOMAIN_NO_DOT_SUFFIX}" | sed -e "s/\([^.]*\).[^.]*.\(.*\)/global.\1.\2/")"
 fi

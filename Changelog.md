@@ -12,6 +12,7 @@
 - Making Graviton as default for NON-GA environment, fix GA consistency across envs
 - Updated Newrelic agent to latest version
 - Refactor update-profile-wrapper code to support new variables for microservice profile mirrors.
+- De-duplicate prod-values.yaml
 
 _Changes:_
 
@@ -25,6 +26,7 @@ _Changes:_
 - [X] PDO-7527 Grafana: Update PGO dashboards to be compatible with the current PGO version
 - [X] PDO-7608 Making Graviton as default for NON-GA environment, fix GA consistency across envs
 - [X] PDO-7248 NewRelic: Upgrade APM agent to latest version
+- [X] PDO-7469 De-duplicate prod-values.yaml
 
 ### 1.19.1.0
 
