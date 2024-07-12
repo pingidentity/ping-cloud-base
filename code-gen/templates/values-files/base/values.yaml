@@ -174,12 +174,12 @@ global:
   #     replicas: 2
   descriptorFile: ""
   # PingDirectory base DN
-  userBaseDn: "dc=example,dc=com"
+  userBaseDn: "${USER_BASE_DN}"
   # Alternate Base DNs
-  userBaseDn_2: ""
-  userBaseDn_3: ""
-  userBaseDn_4: ""
-  userBaseDn_5: ""
+  userBaseDn_2: "${USER_BASE_DN_2}"
+  userBaseDn_3: "${USER_BASE_DN_3}"
+  userBaseDn_4: "${USER_BASE_DN_4}"
+  userBaseDn_5: "${USER_BASE_DN_5}"
 
 
   #### FEATURE FLAGS ##################################################################################################
