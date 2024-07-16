@@ -150,9 +150,6 @@ spec:
           mountPath: /home/ping/.ssh
         - name: shared-dir
           mountPath: /opt/shared-dir
-        - name: topology-descriptor
-          mountPath: /opt/staging/topology/descriptor.json
-          subPath: descriptor.json
         - name: data-dir
           mountPath: /usr/local/bin/kubectl
           subPath: kubectl
@@ -220,11 +217,6 @@ spec:
         configMap:
           name: pingcommon-init
           defaultMode: 0555
-      - name: topology-descriptor
-        configMap:
-          name: topology-descriptor
-          optional: true
-          defaultMode: 0644
       - name: ssh-id-key-secret
         secret:
           secretName: ssh-id-key-secret

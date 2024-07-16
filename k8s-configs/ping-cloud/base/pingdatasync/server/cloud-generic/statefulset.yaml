@@ -198,9 +198,6 @@ spec:
           - name: data-dir
             mountPath: /opt/staging/hooks/logger.lib.sh
             subPath: logger.lib.sh
-          - name: topology-descriptor
-            mountPath: /opt/staging/topology/descriptor.json
-            subPath: descriptor.json
           - name: pingdatasync-passwords
             mountPath: /usr/local/secrets
             readOnly: true
@@ -221,11 +218,6 @@ spec:
           configMap:
             name: pingcommon-init
             defaultMode: 0555
-        - name: topology-descriptor
-          configMap:
-            name: topology-descriptor
-            optional: true
-            defaultMode: 0644
         - name: ssh-id-key-secret
           secret:
             secretName: ssh-id-key-secret
