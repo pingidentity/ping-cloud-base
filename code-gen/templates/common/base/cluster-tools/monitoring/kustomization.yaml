@@ -200,6 +200,7 @@ patchesStrategicMerge:
       http_server_enabled: true
       enable_process_metrics: true
       http_server_port: 8003
+
 - |-
   apiVersion: apps/v1
   kind: DaemonSet

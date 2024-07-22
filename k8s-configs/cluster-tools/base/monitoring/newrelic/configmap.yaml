@@ -35,7 +35,7 @@ metadata:
   namespace: newrelic
 data:
   nri-kubernetes.yml: |-
-    interval: 15s
+    interval: 30s
     namespaceSelector: {}
     controlPlane:
       retries: 3
@@ -229,7 +229,7 @@ metadata:
   namespace: newrelic
 data:
   nri-kubernetes.yml: |-
-    interval: 15s
+    interval: 30s
     namespaceSelector: {}
     ksm:
       enabled: true
@@ -260,7 +260,7 @@ data:
     features:
       docker_enabled: false
     http_server_enabled: true
-    http_server_port: 8003
+    http_server_port: 8003  
 ---
 # Source: p1as-newrelic/charts/nri-bundle/charts/newrelic-infrastructure/templates/kubelet/integrations-configmap.yaml
 apiVersion: v1
@@ -322,7 +322,7 @@ metadata:
   namespace: newrelic
 data:
   nri-kubernetes.yml: |
-    interval: 15s
+    interval: 30s
     namespaceSelector: {}
     kubelet:
       enabled: true
