@@ -1,18 +1,13 @@
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: prometheus
-  namespace: prometheus
-spec:
-  template:
-    spec:
-      containers:
-        - name: prometheus
-          resources:
-            limits:
-              cpu: "1500m"  # 1.5 Cores
-              memory: "6Gi"
-            requests:
-              cpu: "750m"  # 0.75 Cores
-              memory: "3Gi"
+- op: replace
+  path: /spec/template/spec/containers/0/resources/limits/cpu
+  value: "1500m"
+- op: replace
+  path: /spec/template/spec/containers/0/resources/limits/memory
+  value: "6Gi"
+- op: replace
+  path: /spec/template/spec/containers/0/resources/requests/cpu
+  value: "750m"
+- op: replace
+  path: /spec/template/spec/containers/0/resources/requests/memory
+  value: "3Gi"
 

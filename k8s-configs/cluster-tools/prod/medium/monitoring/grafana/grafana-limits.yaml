@@ -1,19 +1,13 @@
-apiVersion: grafana.integreatly.org/v1beta1
-kind: Grafana
-metadata:
-  name: grafana
-  namespace: prometheus
-spec:
-  deployment:
-    spec:
-      template:
-        spec:
-          containers:
-            - name: grafana
-              resources:
-                limits:
-                  cpu: "500m"
-                  memory: "2500Mi"
-                requests:
-                  cpu: "250m"
-                  memory: "1500Mi"
+- op: replace
+  path: /spec/deployment/spec/template/spec/containers/0/resources/limits/cpu
+  value: "500m"
+- op: replace
+  path: /spec/deployment/spec/template/spec/containers/0/resources/limits/memory
+  value: "2500Mi"
+- op: replace
+  path: /spec/deployment/spec/template/spec/containers/0/resources/requests/cpu
+  value: "250m"
+- op: replace
+  path: /spec/deployment/spec/template/spec/containers/0/resources/requests/memory
+  value: "1500Mi"
+
