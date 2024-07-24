@@ -11,3 +11,4 @@ data:
   CLIENT_ID: ""
   CLIENT_SECRET: ""
   ISSUER: ""
+  DISPLAY_NAME: ""
