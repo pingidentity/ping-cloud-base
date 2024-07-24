@@ -46,3 +46,4 @@ _Changes:_
 - [X] PDO-7530 Implement permanent reduction of OS resources in 1.19.1
 - [X] PDO-7548 Add 'source cluster' identifier to graphs legend for Volume Autoscaler dashboard 
 - [X] PDO-7606 Updated Fluent Bit resource to successfully flush records when under minimal load 
+- [X] PDO-7768 Add customer-defined name to external IdP
