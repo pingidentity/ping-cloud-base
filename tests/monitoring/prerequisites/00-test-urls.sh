@@ -10,6 +10,15 @@ if skipTest "${0}"; then
 fi
 
 testUrls() {
+  # Remove websession for grafana app
+  # Note: Grafana app id is hardcoded in `pingcloud-apps/pingaccess/src/hooks/83-configure-initial-pa-was.sh`
+  # Update here if it is changed
+  removeWebsession "22"
+
+  # Remove websession for prometheus app
+  # Note: Prometheus app id is hardcoded in `pingcloud-apps/pingaccess/src/hooks/83-configure-initial-pa-was.sh`
+  # Update here if it is changed
+  removeWebsession "23"
 
   return_code=0
   for i in {1..10}
@@ -25,6 +34,30 @@ testUrls() {
   done
 
   assertEquals "Failed to connect to the Monitoring URLs: ${PROMETHEUS}/api/v1/status/runtimeinfo ${GRAFANA}/api/health" 0 ${return_code}
+}
+
+removeWebsession() {
+  local app_id="${1}"
+
+  # Get app current config
+  app_config=$(curl -k -s -u "Administrator:${ADMIN_PASS}" -H 'X-Xsrf-Header: PingAccess' \
+                "${PINGACCESS_WAS_API}/applications/${app_id}")
+
+  # Remove websession from app config
+  app_config=$(jq -n "${app_config}" | jq '.webSessionId = 0')
+
+  # Update app config
+  curl -s -k -X PUT -d "${app_config}" -u "Administrator:${ADMIN_PASS}" \
+      -H 'X-Xsrf-Header: PingAccess' \
+      "${PINGACCESS_WAS_API}/applications/${app_id}" -o /dev/null 2>/dev/null
+  curl_result=$?
+  if test "${curl_result}" -ne 0; then
+    log "Admin API connection refused with the curl exit code: ${curl_result}"
+    return 1
+  fi
+
+  # sleep 10 seconds to allow the app to update
+  sleep 10
 }
 
 # When arguments are passed to a script you must
