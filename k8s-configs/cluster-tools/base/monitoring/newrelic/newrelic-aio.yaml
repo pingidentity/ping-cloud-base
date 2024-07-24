@@ -100,7 +100,18 @@ metadata:
 data:
   nri-kubernetes.yml: |-
     interval: 30s
-    namespaceSelector: {}
+    namespaceSelector:
+      matchExpressions:
+      - key: kubernetes.io/metadata.name
+        operator: NotIn
+        values:
+        - default
+        - health
+        - kube-node-lease
+        - kube-public
+        - kube-system
+        - pod-reaper
+        - newrelic
     controlPlane:
       retries: 3
       timeout: 10s
@@ -294,7 +305,18 @@ metadata:
 data:
   nri-kubernetes.yml: |-
     interval: 30s
-    namespaceSelector: {}
+    namespaceSelector:
+      matchExpressions:
+      - key: kubernetes.io/metadata.name
+        operator: NotIn
+        values:
+        - default
+        - health
+        - kube-node-lease
+        - kube-public
+        - kube-system
+        - pod-reaper
+        - newrelic
     ksm:
       enabled: true
       retries: 3
@@ -387,7 +409,18 @@ metadata:
 data:
   nri-kubernetes.yml: |
     interval: 30s
-    namespaceSelector: {}
+    namespaceSelector:
+      matchExpressions:
+      - key: kubernetes.io/metadata.name
+        operator: NotIn
+        values:
+        - default
+        - health
+        - kube-node-lease
+        - kube-public
+        - kube-system
+        - pod-reaper
+        - newrelic
     kubelet:
       enabled: true
       retries: 3
