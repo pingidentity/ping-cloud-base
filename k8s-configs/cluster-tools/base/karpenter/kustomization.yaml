@@ -13,7 +13,7 @@ commonAnnotations:
 images:
   - name: public.ecr.aws/karpenter/controller
     newName: public.ecr.aws/r2h3l6e4/pingcloud-clustertools/karpenter/controller
-    newTag: 0.37.0
+    newTag: v0.33.1
 
 patchesStrategicMerge:
 - prometheus-metrics.yaml

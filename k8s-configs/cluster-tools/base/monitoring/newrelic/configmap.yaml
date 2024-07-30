@@ -35,8 +35,19 @@ metadata:
   namespace: newrelic
 data:
   nri-kubernetes.yml: |-
-    interval: 15s
-    namespaceSelector: {}
+    interval: 30s
+    namespaceSelector:
+      matchExpressions:
+      - key: kubernetes.io/metadata.name
+        operator: NotIn
+        values:
+        - default
+        - health
+        - kube-node-lease
+        - kube-public
+        - kube-system
+        - pod-reaper
+        - newrelic
     controlPlane:
       retries: 3
       timeout: 10s
@@ -229,14 +240,26 @@ metadata:
   namespace: newrelic
 data:
   nri-kubernetes.yml: |-
-    interval: 15s
-    namespaceSelector: {}
+    interval: 30s
+    namespaceSelector:
+      matchExpressions:
+      - key: kubernetes.io/metadata.name
+        operator: NotIn
+        values:
+        - default
+        - health
+        - kube-node-lease
+        - kube-public
+        - kube-system
+        - pod-reaper
+        - newrelic
     ksm:
       enabled: true
       retries: 3
       scheme: http
       selector: app.kubernetes.io/name=kube-state-metrics
       timeout: 10s
+
 ---
 # Source: p1as-newrelic/charts/nri-bundle/charts/newrelic-infrastructure/templates/kubelet/agent-configmap.yaml
 apiVersion: v1
@@ -260,7 +283,7 @@ data:
     features:
       docker_enabled: false
     http_server_enabled: true
-    http_server_port: 8003
+    http_server_port: 8003  
 ---
 # Source: p1as-newrelic/charts/nri-bundle/charts/newrelic-infrastructure/templates/kubelet/integrations-configmap.yaml
 apiVersion: v1
@@ -322,8 +345,19 @@ metadata:
   namespace: newrelic
 data:
   nri-kubernetes.yml: |
-    interval: 15s
-    namespaceSelector: {}
+    interval: 30s
+    namespaceSelector:
+      matchExpressions:
+      - key: kubernetes.io/metadata.name
+        operator: NotIn
+        values:
+        - default
+        - health
+        - kube-node-lease
+        - kube-public
+        - kube-system
+        - pod-reaper
+        - newrelic
     kubelet:
       enabled: true
       retries: 3
