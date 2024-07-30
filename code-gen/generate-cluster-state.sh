@@ -1367,7 +1367,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
 
     # Do not disable CW and NR if in CI/CD
     if test "${CI_SERVER}" != "yes"; then
-      sed -i.bak 's/^[[:space:]]*# \(.*remove-from-developer-cde-patch.yaml\)$/  \1/g' "${PRIMARY_PING_KUST_FILE}"
+      sed -i.bak 's/^[[:space:]]*#[[:space:]]*\(.*remove-from-developer-cde-patch.yaml\)$/  \1/g' "${PRIMARY_PING_KUST_FILE}"
     fi
     rm -f "${PRIMARY_PING_KUST_FILE}.bak"
 
@@ -1407,6 +1407,12 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
     printf "\n# %%%% END automatically appended secrets from generate-cluster-state.sh\n" >> "${K8S_CONFIGS_DIR}/base/secrets.yaml"
   fi
 
+  # Disable CW if non-GA
+  if test "${CI_SERVER}" != "yes" && test "${ACCOUNT_TYPE}" = "non-ga"; then
+    sed -i.bak 's/^[[:space:]]*#[[:space:]]*\(.*disable-cloudwatch.yaml\)$/  \1/g' "${PRIMARY_PING_KUST_FILE}"
+  fi
+  rm -f "${PRIMARY_PING_KUST_FILE}.bak"
+
   echo "Substituting env vars, this may take some time..."
   substitute_vars "${ENV_DIR}" "${REPO_VARS}" secrets.yaml env_vars
 
@@ -1422,7 +1428,7 @@ for ENV_OR_BRANCH in ${SUPPORTED_ENVIRONMENT_TYPES}; do
       rm -f "${PRIMARY_PING_KUST_FILE}.bak"
     fi
   fi
-  
+
   ########################################################################################################################
   # Begin profile repo cloning and processing
   ########################################################################################################################

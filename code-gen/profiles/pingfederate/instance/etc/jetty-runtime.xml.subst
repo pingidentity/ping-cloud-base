@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure_9_0.dtd">
 
 
 <!-- =============================================================== -->
@@ -8,8 +8,8 @@
 <!--                                                                 -->
 <!-- Additional configuration files are available in $JETTY_HOME/etc -->
 <!-- and can be mixed in. See start.ini file for the default         -->
-<!-- configuration files. The default values defined in start.ini        -->
-<!-- override the values defined in this file.                                           -->
+<!-- configuration files. The default values defined in start.ini	 -->
+<!-- override the values defined in this file.						 -->
 <!--                                                                 -->
 <!-- For a description of the configuration mechanism, see the       -->
 <!-- output of:                                                      -->
@@ -115,6 +115,9 @@
         <Set name="sendServerVersion">false</Set>
         <Set name="sendDateHeader">true</Set>
         <Set name="headerCacheSize">512</Set>
+        <Set name="requestCookieCompliance">
+            <Call class="org.eclipse.jetty.http.CookieCompliance" name="valueOf"><Arg>RFC6265_LEGACY</Arg></Call>
+        </Set>
         <!-- SameSite default has moved to WebAppContext (below) -->
         <!--
         Some web browsers have known incompatibilities with the SameSite cookie attribute
@@ -126,17 +129,17 @@
         <Set name="sameSiteExcludedUserAgentPatterns">
             <Array type="java.lang.String">
                 <!-- User Agents based on https://www.chromium.org/updates/same-site/incompatible-clients -->
-                <!-- MacOS 10.14 and all browsers on iOS12 -->
+                <!-- Safari 12 on MacOS [10.12 to 10.14] and all browsers on iOS12 -->
                 <Item>\(iP.+; CPU .*OS 12[_\d]*.*\) AppleWebKit\/</Item>
-                <Item>^.*Macintosh;.*Mac OS X 10_14.*Version.*Safari.*$</Item>
+                <Item>^.*Macintosh;.*Mac OS X 10_(\d+)[\d]*.*Version\/12.*Safari.*$</Item>
                 <!-- Chrome 51-66 -->
                 <Item>(Chromium|Chrome)\/(5[1-9]|6[0-6])\.(\d+)(?:\.(\d+)|)(?:\.(\d+)|)</Item>
                 <!-- UC browser on Android prior to 13-->
                 <Item>UCBrowser\/[0-9][0-1]?.(\d+)\.(\d+)[\.\d]*</Item>
                 <Item>UCBrowser\/12.[0-9][0-2]?.(\d+)[\.\d]*</Item>
                 <Item>UCBrowser\/12.13.[0-2][\.\d]*</Item>
-                <!-- Embedded Apple Webkit Browsers on MacOS 10.14 -->
-                <Item>\(Macintosh;.*Mac OS X 10_14[_\d]*.*\) AppleWebKit\/[\.\d]+ \(KHTML, like Gecko\)$</Item>
+                <!-- Embedded Apple Webkit Browser Safari 12 on MacOS [10.12 to 10.14] -->
+                <Item>\(Macintosh;.*Mac OS X 10_(\d+)[\d]*.*\) AppleWebKit\/60[6-7][\.\d]+ \(KHTML, like Gecko\)$</Item>
                 <!-- Box Client on MacOS 10.14 -->
                 <Item>Box.*\/.+Darwin\/10.14</Item>
                 <!-- Palo Alto Networks VPN Client on MacOS 10.14 -->
@@ -452,9 +455,10 @@
             <Set name="handler"><Ref refid="oldhandler" /></Set>
         </New>
     </Set>
-    <Call class="org.eclipse.jetty.server.ConnectorStatistics"
-        name="addToAllConnectors">
-        <Arg><Ref refid="RuntimeServer" /></Arg>
+    <Call name="addBeanToAllConnectors">
+        <Arg>
+            <New class="org.eclipse.jetty.io.ConnectionStatistics"/>
+        </Arg>
     </Call>
 
     <!-- =========================================================== -->
@@ -463,7 +467,7 @@
     <Call name="addBean">
         <Arg>
             <New id="DeploymentManager" class="org.eclipse.jetty.deploy.DeploymentManager">
-                <Set name="contexts"><Ref refid="Contexts" /></Set>
+                <Set name="contexts"><Ref refid="Contexts"/></Set>
                 <Call name="setContextAttribute">
                     <Arg>org.eclipse.jetty.server.webapp.ContainerIncludeJarPattern</Arg>
                     <Arg>.*/servlet-api-[^/]*\.jar$</Arg>
