@@ -1,5 +1,13 @@
 # Changelog
 
+### 2.1.0
+
+- No Changes
+
+_Changes:_
+
+- None
+
 ### 2.0.0
 
 - Update seal-secret-values.py script to seal with namespace only. Update secret structure
