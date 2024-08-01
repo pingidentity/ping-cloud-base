@@ -13,13 +13,13 @@ patchesStrategicMerge:
   spec:
     minReplicas: 4
     maxReplicas: 6
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 50
+    metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 50
 
 - |-
   apiVersion: v1
