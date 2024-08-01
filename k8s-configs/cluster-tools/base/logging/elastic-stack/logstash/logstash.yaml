@@ -241,8 +241,6 @@ spec:
             - name: logstash-pipeline-dlq
               mountPath: /usr/share/logstash/pipeline/dlq
               readOnly: true
-            - name: logstash-pipeline-cw
-              mountPath: /usr/share/logstash/pipeline/cloudwatch
             - name: logstash-pipeline-nr
               mountPath: /usr/share/logstash/pipeline/newrelic
               readOnly: true
@@ -304,9 +302,6 @@ spec:
         - name: logstash-pipeline-dlq
           configMap:
             name: logstash-pipeline-dlq
-        - name: logstash-pipeline-cw
-          configMap:
-            name: logstash-pipeline-cw
         - name: logstash-pipeline-nr
           configMap:
             name: logstash-pipeline-nr
