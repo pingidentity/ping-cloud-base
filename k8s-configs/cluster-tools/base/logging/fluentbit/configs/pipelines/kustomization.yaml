@@ -8,9 +8,6 @@ generatorOptions:
     k8s-app: fluent-bit
 
 configMapGenerator:
-  - name: fluent-bit-pipeline-cw
-    files:
-      - cw.conf
   - name: fluent-bit-pipeline-elk
     files:
       - elk.conf

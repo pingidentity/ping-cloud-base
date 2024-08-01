@@ -150,9 +150,6 @@ spec:
         - name: fluent-bit-parsers
           mountPath: /fluent-bit/etc/parsers.conf
           subPath: parsers.conf
-        - name: fluent-bit-pipeline-cw
-          mountPath: /fluent-bit/etc/pipelines_cw.conf
-          subPath: cw.conf
         - name: fluent-bit-pipeline-elk
           mountPath: /fluent-bit/etc/pipelines_elk.conf
           subPath: elk.conf
@@ -191,9 +188,6 @@ spec:
       - name: fluent-bit-parsers
         configMap:
           name: fluent-bit-parsers
-      - name: fluent-bit-pipeline-cw
-        configMap:
-          name: fluent-bit-pipeline-cw
       - name: fluent-bit-pipeline-elk
         configMap:
           name: fluent-bit-pipeline-elk

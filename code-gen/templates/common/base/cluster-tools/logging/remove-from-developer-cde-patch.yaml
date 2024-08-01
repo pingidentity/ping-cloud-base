@@ -20,14 +20,6 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: fluent-bit-pipeline-cw
-  namespace: elastic-stack-logging
-data:
-
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
   name: fluent-bit-pipeline-nr
   namespace: elastic-stack-logging
 data:
