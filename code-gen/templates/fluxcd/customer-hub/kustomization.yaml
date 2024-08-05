@@ -52,6 +52,14 @@ patchesStrategicMerge:
           - name: argocd-p1as-oauth
             $patch: delete
 
+- |-
+  apiVersion: batch/v1
+  kind: Job
+  metadata:
+    name: customer-p1-connection
+    namespace: argocd
+  $patch: delete
+
 patchesJson6902:
 
 ### Cluster state repo URL and auth configuration for the CD tool ###

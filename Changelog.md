@@ -22,5 +22,6 @@ _Changes:_
 - [X] PDO-7742 NewRelic: Optimize Metric Collection by Removing Unnecessary Data Points
 - [X] PDO-7759 Increase NR interval to 30s
 - [X] PDO-7768 Add customer-defined name to external IdP
+- [X] PDO-7788 customer-p1-connection job suspension prevents ArgoCD app healthy status
 - [X] PDO-7805 Remove application/node logs from CloudWatch
 - [X] PDO-7806 added additional labels in logstash config
